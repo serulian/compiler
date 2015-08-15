@@ -1,0 +1,8 @@
+NodeTypeFile
+  end-rune = 16
+  start-rune = 0
+  child-node =>
+    NodeTypeImport
+      end-rune = 16
+      import-source = Something
+      start-rune = 0

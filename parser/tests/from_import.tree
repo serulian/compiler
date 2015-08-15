@@ -1,0 +1,9 @@
+NodeTypeFile
+  end-rune = 25
+  start-rune = 0
+  child-node =>
+    NodeTypeImport
+      end-rune = 25
+      import-source = foobar
+      import-subsource = barbaz
+      start-rune = 0
