@@ -15,13 +15,17 @@ func (p *sourceParser) consumeTopLevel() AstNode {
 Loop:
 	for {
 		switch {
+
+		// imports.
 		case p.isKeyword("import") || p.isKeyword("from"):
 			p.currentNode().Connect(NodePredicateChild, p.consumeImport())
 
+		// Whitespace.
 		case p.isToken(tokenTypeNewline):
 			// Skip the whitespace.
 			continue
 
+		// EOF.
 		case p.isToken(tokenTypeEOF):
 			// If we hit the end of the file, then we're done but not because of an expected
 			// rule.
@@ -34,6 +38,7 @@ Loop:
 		default:
 			p.emitError("Unknown token at root level: %v", p.currentToken)
 			break Loop
+
 		}
 
 		if p.isToken(tokenTypeEOF) {
