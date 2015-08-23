@@ -46,7 +46,7 @@ func (p *sourceParser) createNode(kind NodeType) AstNode {
 
 // createErrorNode creates a new error node and returns it.
 func (p *sourceParser) createErrorNode(format string, args ...interface{}) AstNode {
-	message := fmt.Sprintf(format, args)
+	message := fmt.Sprintf(format, args...)
 	node := p.startNode(NodeTypeError).Decorate(NodePredicateErrorMessage, message)
 	p.finishNode()
 	return node
@@ -151,7 +151,7 @@ func (p *sourceParser) consumeIdentifier() (string, bool) {
 func (p *sourceParser) consume(types ...tokenType) (lexeme, bool) {
 	token, ok := p.tryConsume(types...)
 	if !ok {
-		p.emitError("Expected one of: %v, found: %s", types, p.currentToken.kind)
+		p.emitError("Expected one of: %v, found: %v", types, p.currentToken.kind)
 	}
 	return token, ok
 }

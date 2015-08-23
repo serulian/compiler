@@ -67,11 +67,17 @@ func (tn *testNode) Decorate(property string, value string) AstNode {
 }
 
 var parserTests = []parserTest{
-	// Simple tests.
-	{"basic import test", "basic_import"},
-	{"from import test", "from_import"},
-	{"string import test", "string_import"},
-	{"multiple import test", "multiple_import"},
+	// Import success tests.
+	{"basic import test", "import/basic"},
+	{"from import test", "import/from"},
+	{"string import test", "import/string_import"},
+	{"multiple imports test", "import/multiple"},
+	{"complex imports test", "import/complex"},
+
+	// Import failure tests.
+	{"missing source import test", "import/missing_source"},
+	{"invalid source", "import/invalid_source"},
+	{"invalid subsource", "import/invalid_subsource"},
 }
 
 func TestParser(t *testing.T) {

@@ -1,0 +1,2 @@
+from "some-git-repo" import Something as SomethingElse
+from SomeLocalFile import Blah as Foobar

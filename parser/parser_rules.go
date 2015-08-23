@@ -36,7 +36,7 @@ Loop:
 			break Loop
 
 		default:
-			p.emitError("Unknown token at root level: %v", p.currentToken)
+			p.emitError("Unexpected token at root level: %v", p.currentToken.kind)
 			break Loop
 
 		}
@@ -50,14 +50,14 @@ Loop:
 }
 
 // consumeImport attempts to consume an import statement.
+//
+// Supported forms (all must be terminated by \n or EOF):
+// from something import foobar
+// from something import foobar as barbaz
+// import something
+// import something as foobar
+// import "somestring" as barbaz
 func (p *sourceParser) consumeImport() AstNode {
-	// Supported forms (all must be terminated by \n):
-	// from something import foobar
-	// from something import foobar as barbaz
-	// import something
-	// import something as foobar
-	// import "somestring" as barbaz
-
 	importNode := p.startNode(NodeTypeImport)
 	defer p.finishNode()
 
