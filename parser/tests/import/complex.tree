@@ -1,0 +1,16 @@
+NodeTypeFile
+  end-rune = 95
+  start-rune = 0
+  child-node =>
+    NodeTypeImport
+      end-rune = 54
+      import-source = "some-git-repo"
+      import-subsource = Something
+      named = SomethingElse
+      start-rune = 0
+    NodeTypeImport
+      end-rune = 95
+      import-source = SomeLocalFile
+      import-subsource = Blah
+      named = Foobar
+      start-rune = 55

@@ -5,6 +5,8 @@
 // Based on design first introduced in: http://blog.golang.org/two-go-talks-lexical-scanning-in-go-and
 // Portions copied and modified from: https://github.com/golang/go/blob/master/src/text/template/parse/lex.go
 
+//go:generate stringer -type=tokenType
+
 package parser
 
 import (
@@ -17,7 +19,7 @@ import (
 const EOFRUNE = -1
 
 // lex creates a new scanner for the input string.
-func lex(source inputSource, input string) *lexer {
+func lex(source InputSource, input string) *lexer {
 	l := &lexer{
 		source: source,
 		input:  input,
@@ -142,7 +144,7 @@ type stateFn func(*lexer) stateFn
 
 // lexer holds the state of the scanner.
 type lexer struct {
-	source  inputSource  // the name of the input; used only for error reports
+	source  InputSource  // the name of the input; used only for error reports
 	input   string       // the string being scanned
 	state   stateFn      // the next lexing function to enter
 	pos     bytePosition // current position in the input

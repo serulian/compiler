@@ -1,0 +1,16 @@
+NodeTypeFile
+  end-rune = 6
+  start-rune = 0
+  child-node =>
+    NodeTypeImport
+      end-rune = 6
+      start-rune = 0
+      child-node =>
+        NodeTypeError
+          end-rune = 6
+          error-message = Expected one of: [tokenTypeIdentifer tokenTypeStringLiteral], found: tokenTypeNumericLiteral
+          start-rune = 7
+    NodeTypeError
+      end-rune = 6
+      error-message = Unexpected token at root level: tokenTypeNumericLiteral
+      start-rune = 7

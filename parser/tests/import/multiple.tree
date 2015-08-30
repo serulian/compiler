@@ -1,0 +1,17 @@
+NodeTypeFile
+  end-rune = 63
+  start-rune = 0
+  child-node =>
+    NodeTypeImport
+      end-rune = 13
+      import-source = FooBar
+      start-rune = 0
+    NodeTypeImport
+      end-rune = 27
+      import-source = BarBaz
+      start-rune = 14
+    NodeTypeImport
+      end-rune = 63
+      import-source = Something
+      import-subsource = SomethingElse
+      start-rune = 28

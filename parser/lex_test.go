@@ -205,7 +205,7 @@ func TestLexerPositioning(t *testing.T) {
 	text := `this.foo // some comment
 class SomeClass`
 
-	l := lex(inputSource("position test"), text)
+	l := lex(InputSource("position test"), text)
 	checkNext(l, t, lexeme{tokenTypeKeyword, 0, "this"}, 0, 0)
 	checkNext(l, t, lexeme{tokenTypeDotAccessOperator, 4, "."}, 0, 4)
 	checkNext(l, t, lexeme{tokenTypeIdentifer, 5, "foo"}, 0, 5)
@@ -239,7 +239,7 @@ func checkNext(l *lexer, t *testing.T, expected lexeme, line int, column int) {
 
 // collect gathers the emitted tokens into a slice.
 func collect(t *lexerTest) (tokens []lexeme) {
-	l := lex(inputSource(t.name), t.input)
+	l := lex(InputSource(t.name), t.input)
 	for {
 		token := l.nextToken()
 		tokens = append(tokens, token)
