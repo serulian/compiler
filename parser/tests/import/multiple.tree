@@ -1,5 +1,5 @@
 NodeTypeFile
-  end-rune = 63
+  end-rune = 62
   start-rune = 0
   child-node =>
     NodeTypeImport
@@ -11,7 +11,7 @@ NodeTypeFile
       import-source = BarBaz
       start-rune = 14
     NodeTypeImport
-      end-rune = 63
+      end-rune = 62
       import-source = Something
       import-subsource = SomethingElse
       start-rune = 28

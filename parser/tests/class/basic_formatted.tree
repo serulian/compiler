@@ -1,0 +1,8 @@
+NodeTypeFile
+  end-rune = 18
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 18
+      named = SomeClass
+      start-rune = 0

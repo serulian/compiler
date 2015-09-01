@@ -1,0 +1,60 @@
+NodeTypeFile
+  end-rune = 91
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 91
+      named = SomeFunction
+      start-rune = 0
+      typemember-body =>
+        NodeTypeStatementBlock
+          end-rune = 91
+          start-rune = 30
+          block-child =>
+            NodeTypeVariableStatement
+              end-rune = 54
+              named = someName
+              start-rune = 33
+              var-declared-type =>
+                NodeTypeTypeReference
+                  end-rune = 44
+                  start-rune = 37
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 44
+                      start-rune = 37
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 44
+                          identifieraccess-name = SomeType
+                          start-rune = 37
+            NodeTypeVariableStatement
+              end-rune = 89
+              named = someName
+              start-rune = 57
+              var-declared-type =>
+                NodeTypeTypeReference
+                  end-rune = 68
+                  start-rune = 61
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 68
+                      start-rune = 61
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 68
+                          identifieraccess-name = SomeType
+                          start-rune = 61
+              var-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 89
+                  identexpr-name = someExpr
+                  start-rune = 82
+      typemember-return-type =>
+        NodeTypeTypeReference
+          end-rune = 12
+          start-rune = 9
+          typereference-path =>
+            NodeTypeVoid
+              end-rune = 12
+              start-rune = 9

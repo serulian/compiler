@@ -1,0 +1,49 @@
+NodeTypeFile
+  end-rune = 124
+  start-rune = 0
+  child-node =>
+    NodeTypeImport
+      end-rune = 32
+      import-source = SomeLibrary
+      import-subsource = Console
+      start-rune = 0
+    NodeTypeClass
+      end-rune = 124
+      named = SimpleClass
+      start-rune = 33
+      type-member =>
+        NodeTypeFunction
+          end-rune = 123
+          named = SayHelloWorld
+          start-rune = 54
+          typemember-body =>
+            NodeTypeStatementBlock
+              end-rune = 123
+              start-rune = 85
+              block-child =>
+                NodeFunctionCallExpression
+                  end-rune = 119
+                  start-rune = 96
+                  function-call-argument =>
+                    NodeStringLiteralExpression
+                      end-rune = 118
+                      literal-value = 'hello world!'
+                      start-rune = 105
+                  function-call-expr =>
+                    NodeMemberAccessExpression
+                      end-rune = 103
+                      member-access-identifier = Println
+                      start-rune = 89
+                      member-access-expr =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 95
+                          identexpr-name = Console
+                          start-rune = 89
+          typemember-return-type =>
+            NodeTypeTypeReference
+              end-rune = 66
+              start-rune = 63
+              typereference-path =>
+                NodeTypeVoid
+                  end-rune = 66
+                  start-rune = 63

@@ -1,0 +1,1 @@
+class SomeClass<Foo> : Bar + Baz {}

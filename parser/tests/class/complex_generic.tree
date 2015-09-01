@@ -1,0 +1,40 @@
+NodeTypeFile
+  end-rune = 45
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 45
+      named = SomeClass
+      start-rune = 0
+      type-generic =>
+        NodeTypeGeneric
+          end-rune = 24
+          named = Foo
+          start-rune = 16
+          generic-subtype =>
+            NodeTypeIdentifierPath
+              end-rune = 24
+              start-rune = 22
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 24
+                  identifieraccess-name = Bar
+                  start-rune = 22
+        NodeTypeGeneric
+          end-rune = 41
+          named = Baz
+          start-rune = 27
+          generic-subtype =>
+            NodeTypeIdentifierPath
+              end-rune = 41
+              start-rune = 33
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 41
+                  identifieraccess-name = Blarg
+                  start-rune = 37
+                  identifieraccess-source =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 35
+                      identifieraccess-name = Meh
+                      start-rune = 33

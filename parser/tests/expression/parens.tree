@@ -1,0 +1,124 @@
+NodeTypeFile
+  end-rune = 145
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 145
+      named = SomeFunction
+      start-rune = 0
+      typemember-body =>
+        NodeTypeStatementBlock
+          end-rune = 145
+          start-rune = 30
+          block-child =>
+            NodeBinarySubtractExpression
+              end-rune = 44
+              start-rune = 34
+              binary-expression-left =>
+                NodeTypeIdentifierExpression
+                  end-rune = 35
+                  identexpr-name = a
+                  start-rune = 34
+              binary-expression-right =>
+                NodeBinarySubtractExpression
+                  end-rune = 43
+                  start-rune = 39
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 40
+                      identexpr-name = b
+                      start-rune = 39
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 43
+                      identexpr-name = c
+                      start-rune = 43
+            NodeFunctionCallExpression
+              end-rune = 56
+              start-rune = 48
+              function-call-expr =>
+                NodeBinaryAddExpression
+                  end-rune = 53
+                  start-rune = 49
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 50
+                      identexpr-name = a
+                      start-rune = 49
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 53
+                      identexpr-name = b
+                      start-rune = 53
+            NodeBooleanAndExpression
+              end-rune = 78
+              start-rune = 60
+              binary-expression-left =>
+                NodeBooleanOrExpression
+                  end-rune = 70
+                  start-rune = 61
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 64
+                      identexpr-name = foo
+                      start-rune = 61
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 70
+                      identexpr-name = bar
+                      start-rune = 68
+              binary-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 78
+                  identexpr-name = baz
+                  start-rune = 76
+            NodeFunctionCallExpression
+              end-rune = 94
+              start-rune = 82
+              function-call-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 91
+                  identexpr-name = something
+                  start-rune = 83
+            NodeSliceExpression
+              end-rune = 119
+              start-rune = 98
+              slice-expr-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 111
+                  identexpr-name = somethingElse
+                  start-rune = 99
+              slice-expr-index =>
+                NodeTypeIdentifierExpression
+                  end-rune = 118
+                  identexpr-name = index
+                  start-rune = 114
+            NodeCastExpression
+              end-rune = 143
+              start-rune = 123
+              cast-expr-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 135
+                  identexpr-name = somethingBad
+                  start-rune = 124
+              cast-expr-type =>
+                NodeTypeTypeReference
+                  end-rune = 142
+                  start-rune = 139
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 142
+                      start-rune = 139
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 142
+                          identifieraccess-name = good
+                          start-rune = 139
+      typemember-return-type =>
+        NodeTypeTypeReference
+          end-rune = 12
+          start-rune = 9
+          typereference-path =>
+            NodeTypeVoid
+              end-rune = 12
+              start-rune = 9

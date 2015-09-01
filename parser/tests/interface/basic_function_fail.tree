@@ -1,0 +1,66 @@
+NodeTypeFile
+  end-rune = 75
+  start-rune = 0
+  child-node =>
+    NodeTypeInterface
+      end-rune = 75
+      named = ISomeInterface
+      start-rune = 0
+      child-node =>
+        NodeTypeError
+          end-rune = 71
+          error-message = Expected interface member, found {
+          start-rune = 72
+      type-member =>
+        NodeTypeFunction
+          end-rune = 71
+          named = DoSomething
+          start-rune = 28
+          child-node =>
+            NodeTypeError
+              end-rune = 71
+              error-message = Expected end of statement or definition, found: tokenTypeLeftBrace
+              start-rune = 72
+          typemember-parameter =>
+            NodeTypeParameter
+              end-rune = 59
+              parameter-type = a
+              start-rune = 55
+              parameter-type =>
+                NodeTypeTypeReference
+                  end-rune = 59
+                  start-rune = 57
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 59
+                      start-rune = 57
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 59
+                          identifieraccess-name = int
+                          start-rune = 57
+            NodeTypeParameter
+              end-rune = 69
+              parameter-type = b
+              start-rune = 62
+              parameter-type =>
+                NodeTypeTypeReference
+                  end-rune = 69
+                  start-rune = 64
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 69
+                      start-rune = 64
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 69
+                          identifieraccess-name = double
+                          start-rune = 64
+          typemember-return-type =>
+            NodeTypeTypeReference
+              end-rune = 40
+              start-rune = 37
+              typereference-path =>
+                NodeTypeVoid
+                  end-rune = 40
+                  start-rune = 37

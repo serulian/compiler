@@ -1,0 +1,8 @@
+NodeTypeFile
+  end-rune = 26
+  start-rune = 0
+  child-node =>
+    NodeTypeInterface
+      end-rune = 26
+      named = ISomeInterface
+      start-rune = 0

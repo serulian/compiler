@@ -1,0 +1,6 @@
+function<void> SomeFunction() {
+	break
+	continue
+	break someLabel
+	continue anotherLabel
+}

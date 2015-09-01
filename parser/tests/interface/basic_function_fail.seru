@@ -1,0 +1,3 @@
+interface ISomeInterface {
+	function<void> DoSomething(a int, b double) {}
+}

@@ -1,0 +1,43 @@
+NodeTypeFile
+  end-rune = 43
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 43
+      named = SomeFunction
+      start-rune = 0
+      typemember-body =>
+        NodeTypeStatementBlock
+          end-rune = 43
+          start-rune = 30
+          block-child =>
+            NodeBinarySubtractExpression
+              end-rune = 41
+              start-rune = 35
+              binary-expression-left =>
+                NodeBinarySubtractExpression
+                  end-rune = 38
+                  start-rune = 33
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 34
+                      identexpr-name = a
+                      start-rune = 33
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 38
+                      identexpr-name = b
+                      start-rune = 37
+              binary-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 41
+                  identexpr-name = c
+                  start-rune = 41
+      typemember-return-type =>
+        NodeTypeTypeReference
+          end-rune = 12
+          start-rune = 9
+          typereference-path =>
+            NodeTypeVoid
+              end-rune = 12
+              start-rune = 9

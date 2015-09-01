@@ -1,0 +1,26 @@
+NodeTypeFile
+  end-rune = 59
+  start-rune = 0
+  child-node =>
+    NodeTypeInterface
+      end-rune = 59
+      named = ISomeInterface
+      start-rune = 0
+      type-member =>
+        NodeTypeProperty
+          end-rune = 58
+          named = DoSomething
+          start-rune = 28
+          typemember-declared-type =>
+            NodeTypeTypeReference
+              end-rune = 44
+              start-rune = 37
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 44
+                  start-rune = 37
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 44
+                      identifieraccess-name = SomeType
+                      start-rune = 37

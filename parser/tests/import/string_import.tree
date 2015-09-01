@@ -1,9 +1,9 @@
 NodeTypeFile
-  end-rune = 55
+  end-rune = 54
   start-rune = 0
   child-node =>
     NodeTypeImport
-      end-rune = 55
+      end-rune = 54
       import-source = "github.com/Serulian/something"
       named = SomethingElse
       start-rune = 0

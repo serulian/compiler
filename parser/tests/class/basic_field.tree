@@ -1,0 +1,26 @@
+NodeTypeFile
+  end-rune = 38
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 38
+      named = SomeClass
+      start-rune = 0
+      type-member =>
+        NodeTypeField
+          end-rune = 36
+          named = someField
+          start-rune = 19
+          var-declared-type =>
+            NodeTypeTypeReference
+              end-rune = 25
+              start-rune = 23
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 25
+                  start-rune = 23
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 25
+                      identifieraccess-name = int
+                      start-rune = 23

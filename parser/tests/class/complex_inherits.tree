@@ -1,0 +1,43 @@
+NodeTypeFile
+  end-rune = 49
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 49
+      named = SomeClass
+      start-rune = 0
+      class-basetypepath =>
+        NodeTypeIdentifierPath
+          end-rune = 25
+          start-rune = 18
+          identifierpath-root =>
+            NodeTypeIdentifierAccess
+              end-rune = 25
+              identifieraccess-name = Bar
+              start-rune = 22
+              identifieraccess-source =>
+                NodeTypeIdentifierAccess
+                  end-rune = 20
+                  identifieraccess-name = Foo
+                  start-rune = 18
+        NodeTypeIdentifierPath
+          end-rune = 35
+          start-rune = 28
+          identifierpath-root =>
+            NodeTypeIdentifierAccess
+              end-rune = 35
+              identifieraccess-name = Baz
+              start-rune = 32
+              identifieraccess-source =>
+                NodeTypeIdentifierAccess
+                  end-rune = 30
+                  identifieraccess-name = Bar
+                  start-rune = 28
+        NodeTypeIdentifierPath
+          end-rune = 47
+          start-rune = 38
+          identifierpath-root =>
+            NodeTypeIdentifierAccess
+              end-rune = 47
+              identifieraccess-name = Something
+              start-rune = 38

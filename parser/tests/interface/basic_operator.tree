@@ -1,0 +1,48 @@
+NodeTypeFile
+  end-rune = 85
+  start-rune = 0
+  child-node =>
+    NodeTypeInterface
+      end-rune = 85
+      named = ISomeInterface
+      start-rune = 0
+      type-member =>
+        NodeTypeOperator
+          end-rune = 84
+          operator-named = Plus
+          start-rune = 28
+          typemember-parameter =>
+            NodeTypeParameter
+              end-rune = 60
+              parameter-type = left
+              start-rune = 42
+              parameter-type =>
+                NodeTypeTypeReference
+                  end-rune = 60
+                  start-rune = 47
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 60
+                      start-rune = 47
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 60
+                          identifieraccess-name = ISomeInterface
+                          start-rune = 47
+            NodeTypeParameter
+              end-rune = 82
+              parameter-type = right
+              start-rune = 63
+              parameter-type =>
+                NodeTypeTypeReference
+                  end-rune = 82
+                  start-rune = 69
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 82
+                      start-rune = 69
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 82
+                          identifieraccess-name = ISomeInterface
+                          start-rune = 69

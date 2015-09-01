@@ -1,0 +1,25 @@
+NodeTypeFile
+  end-rune = 51
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 51
+      named = SomeClass
+      start-rune = 0
+      type-member =>
+        NodeTypeFunction
+          end-rune = 50
+          named = DoSomething
+          start-rune = 19
+          typemember-body =>
+            NodeTypeStatementBlock
+              end-rune = 50
+              start-rune = 48
+          typemember-return-type =>
+            NodeTypeTypeReference
+              end-rune = 31
+              start-rune = 28
+              typereference-path =>
+                NodeTypeVoid
+                  end-rune = 31
+                  start-rune = 28

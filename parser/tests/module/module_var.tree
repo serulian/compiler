@@ -1,0 +1,26 @@
+NodeTypeFile
+  end-rune = 21
+  start-rune = 0
+  child-node =>
+    NodeTypeVariableStatement
+      end-rune = 21
+      named = something
+      start-rune = 0
+      var-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 6
+          start-rune = 4
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 6
+              start-rune = 4
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 6
+                  identifieraccess-name = int
+                  start-rune = 4
+      var-expr =>
+        NodeNumericLiteralExpression
+          end-rune = 21
+          literal-value = 2
+          start-rune = 21

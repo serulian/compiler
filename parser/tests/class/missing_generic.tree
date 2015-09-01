@@ -1,0 +1,17 @@
+NodeTypeFile
+  end-rune = 19
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 19
+      named = SomeClass
+      start-rune = 0
+      type-generic =>
+        NodeTypeGeneric
+          end-rune = 15
+          start-rune = 16
+          child-node =>
+            NodeTypeError
+              end-rune = 15
+              error-message = Expected identifier, found token tokenTypeGreaterThan
+              start-rune = 16

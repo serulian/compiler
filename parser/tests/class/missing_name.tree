@@ -1,0 +1,16 @@
+NodeTypeFile
+  end-rune = 5
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 5
+      start-rune = 0
+      child-node =>
+        NodeTypeError
+          end-rune = 5
+          error-message = Expected identifier, found token tokenTypeLeftBrace
+          start-rune = 6
+    NodeTypeError
+      end-rune = 5
+      error-message = Unexpected token at root level: tokenTypeLeftBrace
+      start-rune = 6
