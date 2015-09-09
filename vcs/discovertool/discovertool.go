@@ -31,6 +31,6 @@ func main() {
 		},
 	}
 
-	cmdRun.Flags().StringVar(&url, "url", "", "The URL to discovr")
+	cmdRun.Flags().StringVar(&url, "url", "", "The URL to discover")
 	cmdRun.Execute()
 }
