@@ -1,9 +1,11 @@
 NodeTypeFile
   end-rune = 54
+  input-source = string import test
   start-rune = 0
   child-node =>
     NodeTypeImport
       end-rune = 54
       import-source = "github.com/Serulian/something"
+      input-source = string import test
       named = SomethingElse
       start-rune = 0

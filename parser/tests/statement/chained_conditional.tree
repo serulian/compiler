@@ -1,50 +1,62 @@
 NodeTypeFile
   end-rune = 87
+  input-source = chained conditional statement test
   start-rune = 0
   child-node =>
     NodeTypeFunction
       end-rune = 87
+      input-source = chained conditional statement test
       named = SomeFunction
       start-rune = 0
       typemember-body =>
         NodeTypeStatementBlock
           end-rune = 87
+          input-source = chained conditional statement test
           start-rune = 30
           block-child =>
             NodeTypeConditionalStatement
               end-rune = 85
+              input-source = chained conditional statement test
               start-rune = 33
               conditional-block =>
                 NodeTypeStatementBlock
                   end-rune = 50
+                  input-source = chained conditional statement test
                   start-rune = 45
               conditional-else =>
                 NodeTypeConditionalStatement
                   end-rune = 85
+                  input-source = chained conditional statement test
                   start-rune = 56
                   conditional-block =>
                     NodeTypeStatementBlock
                       end-rune = 76
+                      input-source = chained conditional statement test
                       start-rune = 71
                   conditional-else =>
                     NodeTypeStatementBlock
                       end-rune = 85
+                      input-source = chained conditional statement test
                       start-rune = 82
                   conditional-expr =>
                     NodeTypeIdentifierExpression
                       end-rune = 70
                       identexpr-name = anotherExpr
+                      input-source = chained conditional statement test
                       start-rune = 59
               conditional-expr =>
                 NodeTypeIdentifierExpression
                   end-rune = 44
                   identexpr-name = someExpr
+                  input-source = chained conditional statement test
                   start-rune = 36
       typemember-return-type =>
         NodeTypeTypeReference
           end-rune = 12
+          input-source = chained conditional statement test
           start-rune = 9
           typereference-path =>
             NodeTypeVoid
               end-rune = 12
+              input-source = chained conditional statement test
               start-rune = 9

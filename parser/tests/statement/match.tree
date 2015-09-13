@@ -1,62 +1,77 @@
 NodeTypeFile
   end-rune = 127
+  input-source = match statement basic test
   start-rune = 0
   child-node =>
     NodeTypeFunction
       end-rune = 127
+      input-source = match statement basic test
       named = SomeFunction
       start-rune = 0
       typemember-body =>
         NodeTypeStatementBlock
           end-rune = 127
+          input-source = match statement basic test
           start-rune = 30
           block-child =>
             NodeTypeMatchStatement
               end-rune = 125
+              input-source = match statement basic test
               start-rune = 33
               match-case =>
                 NodeTypeMatchStatementCase
                   end-rune = 77
+                  input-source = match statement basic test
                   start-rune = 57
                   match-case-expression =>
                     NodeTypeIdentifierExpression
                       end-rune = 62
                       identexpr-name = foobar
+                      input-source = match statement basic test
                       start-rune = 57
                   match-case-statement =>
                     NodeTypeReturnStatement
                       end-rune = 73
+                      input-source = match statement basic test
                       start-rune = 68
                 NodeTypeMatchStatementCase
                   end-rune = 105
+                  input-source = match statement basic test
                   start-rune = 83
                   match-case-expression =>
                     NodeTypeIdentifierExpression
                       end-rune = 88
                       identexpr-name = barbaz
+                      input-source = match statement basic test
                       start-rune = 83
                   match-case-statement =>
                     NodeTypeIdentifierExpression
                       end-rune = 101
                       identexpr-name = someExpr
+                      input-source = match statement basic test
                       start-rune = 94
                 NodeTypeMatchStatementCase
                   end-rune = 124
+                  input-source = match statement basic test
                   start-rune = 113
                   match-case-statement =>
                     NodeTypeBreakStatement
                       end-rune = 122
+                      input-source = match statement basic test
                       start-rune = 118
               match-expression =>
                 NodeTypeIdentifierExpression
                   end-rune = 47
                   identexpr-name = someExpr
+                  input-source = match statement basic test
                   start-rune = 39
       typemember-return-type =>
         NodeTypeTypeReference
           end-rune = 12
+          input-source = match statement basic test
           start-rune = 9
           typereference-path =>
             NodeTypeVoid
               end-rune = 12
+              input-source = match statement basic test
               start-rune = 9

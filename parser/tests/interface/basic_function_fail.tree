@@ -1,66 +1,81 @@
 NodeTypeFile
   end-rune = 75
+  input-source = basic interface function failure test
   start-rune = 0
   child-node =>
     NodeTypeInterface
       end-rune = 75
+      input-source = basic interface function failure test
       named = ISomeInterface
       start-rune = 0
       child-node =>
         NodeTypeError
           end-rune = 71
           error-message = Expected interface member, found {
+          input-source = basic interface function failure test
           start-rune = 72
       type-member =>
         NodeTypeFunction
           end-rune = 71
+          input-source = basic interface function failure test
           named = DoSomething
           start-rune = 28
           child-node =>
             NodeTypeError
               end-rune = 71
               error-message = Expected end of statement or definition, found: tokenTypeLeftBrace
+              input-source = basic interface function failure test
               start-rune = 72
           typemember-parameter =>
             NodeTypeParameter
               end-rune = 59
+              input-source = basic interface function failure test
               parameter-type = a
               start-rune = 55
               parameter-type =>
                 NodeTypeTypeReference
                   end-rune = 59
+                  input-source = basic interface function failure test
                   start-rune = 57
                   typereference-path =>
                     NodeTypeIdentifierPath
                       end-rune = 59
+                      input-source = basic interface function failure test
                       start-rune = 57
                       identifierpath-root =>
                         NodeTypeIdentifierAccess
                           end-rune = 59
                           identifieraccess-name = int
+                          input-source = basic interface function failure test
                           start-rune = 57
             NodeTypeParameter
               end-rune = 69
+              input-source = basic interface function failure test
               parameter-type = b
               start-rune = 62
               parameter-type =>
                 NodeTypeTypeReference
                   end-rune = 69
+                  input-source = basic interface function failure test
                   start-rune = 64
                   typereference-path =>
                     NodeTypeIdentifierPath
                       end-rune = 69
+                      input-source = basic interface function failure test
                       start-rune = 64
                       identifierpath-root =>
                         NodeTypeIdentifierAccess
                           end-rune = 69
                           identifieraccess-name = double
+                          input-source = basic interface function failure test
                           start-rune = 64
           typemember-return-type =>
             NodeTypeTypeReference
               end-rune = 40
+              input-source = basic interface function failure test
               start-rune = 37
               typereference-path =>
                 NodeTypeVoid
                   end-rune = 40
+                  input-source = basic interface function failure test
                   start-rune = 37

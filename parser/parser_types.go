@@ -7,9 +7,6 @@ package parser
 //go:generate stringer -type=NodeType
 
 type AstNode interface {
-	// GetType returns the type of this AST node.
-	GetType() NodeType
-
 	// Connect connects this AstNode to another AstNode with the given predicate,
 	// and returns the same AstNode.
 	Connect(predicate string, other AstNode) AstNode
@@ -17,6 +14,21 @@ type AstNode interface {
 	// Decorate decorates this AstNode with the given property and string value,
 	// and returns the same AstNode.
 	Decorate(property string, value string) AstNode
+}
+
+// PackageImportType identifies the types of imports.
+type PackageImportType int
+
+const (
+	ImportTypeLocal PackageImportType = iota
+	ImportTypeVCS
+)
+
+// PackageImport defines the import of a package.
+type PackageImport struct {
+	Path       string
+	ImportType PackageImportType
+	SourceFile InputSource
 }
 
 // NodeType identifies the type of AST node.
@@ -128,6 +140,8 @@ const (
 	//
 	// All nodes
 	//
+	// The source of this node.
+	NodePredicateSource = "input-source"
 
 	// The rune position in the input string at which this node begins.
 	NodePredicateStartRune = "start-rune"

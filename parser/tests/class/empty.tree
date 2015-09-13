@@ -1,8 +1,10 @@
 NodeTypeFile
   end-rune = 17
+  input-source = empty class test
   start-rune = 0
   child-node =>
     NodeTypeClass
       end-rune = 17
+      input-source = empty class test
       named = SomeClass
       start-rune = 0

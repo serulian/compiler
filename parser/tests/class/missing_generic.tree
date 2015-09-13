@@ -1,17 +1,21 @@
 NodeTypeFile
   end-rune = 19
+  input-source = missing generic test
   start-rune = 0
   child-node =>
     NodeTypeClass
       end-rune = 19
+      input-source = missing generic test
       named = SomeClass
       start-rune = 0
       type-generic =>
         NodeTypeGeneric
           end-rune = 15
+          input-source = missing generic test
           start-rune = 16
           child-node =>
             NodeTypeError
               end-rune = 15
               error-message = Expected identifier, found token tokenTypeGreaterThan
+              input-source = missing generic test
               start-rune = 16

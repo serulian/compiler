@@ -21,7 +21,7 @@ func main() {
 
 			fmt.Printf("Performing discovery for URL: %v\n", url)
 
-			found, err := vcs.GetVCSInformation(url, nil)
+			found, err := vcs.DiscoverVCSInformation(url)
 			if err != nil {
 				fmt.Printf("Error: %v\n", err)
 				return

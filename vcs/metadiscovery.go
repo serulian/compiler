@@ -10,6 +10,13 @@ import (
 	"golang.org/x/net/html"
 )
 
+// VCSUrlInformation holds information about a VCS source URL.
+type VCSUrlInformation struct {
+	UrlPrefix    string  // The prefix matching the source URL.
+	Kind         VCSKind // The kind of VCS for the source URL.
+	DownloadPath string  // The VCS-specific download path.
+}
+
 // discoveryUrlParamter holds the name of the parameter added to the URL to request it
 // to add the golang <meta> discovery tag.
 const discoveryUrlParamter = "go-get"
@@ -22,9 +29,9 @@ const discoveryUrlValue = "1"
 // information.
 const discoveryMetaTagName = "go-import"
 
-// discoverInformationForVCSUrl attempts to download the given URL, find the discovery <meta> tag,
+// DiscoverVCSInformation attempts to download the given URL, find the discovery <meta> tag,
 // and return the VCSUrlInformation found.
-func discoverInformationForVCSUrl(vcsUrl string) (VCSUrlInformation, error) {
+func DiscoverVCSInformation(vcsUrl string) (VCSUrlInformation, error) {
 	log.Printf("Parsing VCS URL %s", vcsUrl)
 
 	// Parse the VCS url.
@@ -40,7 +47,7 @@ func discoverInformationForVCSUrl(vcsUrl string) (VCSUrlInformation, error) {
 
 	// Make sure we have a known scheme.
 	if parsedUrl.Scheme == "" {
-		parsedUrl.Scheme = "http"
+		parsedUrl.Scheme = "https"
 	}
 
 	// Attempt to download the URL.
@@ -84,9 +91,9 @@ func discoverInformationForVCSUrl(vcsUrl string) (VCSUrlInformation, error) {
 		return VCSUrlInformation{}, notFoundErr
 	}
 
-	// Ensure that the path component (index 0) matches or is a prefix of the import URL.
-	if strings.Index(vcsUrl, pieces[0]) != 0 {
-		log.Printf("<meta> tag prefix '%v' does not match VCS URL %v", pieces[0], vcsUrl)
+	// Ensure that the path component matches the import URL.
+	if vcsUrl != pieces[0] {
+		log.Printf("<meta> tag '%v' does not match VCS URL %v", pieces[0], vcsUrl)
 		return VCSUrlInformation{}, notFoundErr
 	}
 
