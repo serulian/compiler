@@ -11,51 +11,66 @@ import (
 
 var _ = fmt.Printf
 
-func TestVCSParsing(t *testing.T) {
-	assertParses(t, "github.com/some/project", "github.com/some/project", "", "", "")
-	assertParses(t, "github.com/some/project:somebranch", "github.com/some/project", "somebranch", "", "")
-	assertParses(t, "github.com/some/project@sometag", "github.com/some/project", "", "sometag", "")
-	assertParses(t, "github.com/some/project//somesubdir", "github.com/some/project", "", "", "somesubdir")
-	assertParses(t, "github.com/some/project//somesubdir:somebranch", "github.com/some/project", "somebranch", "", "somesubdir")
-	assertParses(t, "github.com/some/project//somesubdir@sometag", "github.com/some/project", "", "sometag", "somesubdir")
-
-	assertParseError(t, "")
-	assertParseError(t, "github.com/foo/bar@@blah")
-	assertParseError(t, "github.com/foo/bar:@blah")
-	assertParseError(t, "github.com/foo/../bar")
+type pathSuccessTest struct {
+	path           string
+	url            string
+	branchOrCommit string
+	tag            string
+	subpackage     string
 }
 
-func assertParses(t *testing.T, path string, url string, branchOrCommit string, tag string, subpackage string) {
-	result, err := parseVCSPath(path)
-	if err != nil {
-		t.Errorf("Expected no error, found: %v", err)
-		return
-	}
+var successTests = []pathSuccessTest{
+	pathSuccessTest{"github.com/some/project", "github.com/some/project", "", "", ""},
+	pathSuccessTest{"github.com/some/project:somebranch", "github.com/some/project", "somebranch", "", ""},
+	pathSuccessTest{"github.com/some/project@sometag", "github.com/some/project", "", "sometag", ""},
+	pathSuccessTest{"github.com/some/project//somesubdir", "github.com/some/project", "", "", "somesubdir"},
+	pathSuccessTest{"github.com/some/project//somesubdir:somebranch", "github.com/some/project", "somebranch", "", "somesubdir"},
+	pathSuccessTest{"github.com/some/project//somesubdir@sometag", "github.com/some/project", "", "sometag", "somesubdir"},
+}
 
-	if result.url != url {
-		t.Errorf("Expected url %s, found: %s", url, result.url)
-		return
-	}
+var failTests = []string{
+	"",
+	"github.com/foo/bar@@blah",
+	"github.com/foo/bar:@blah",
+	"github.com/foo/../bar",
+}
 
-	if result.branchOrCommit != branchOrCommit {
-		t.Errorf("Expected branchOrCommit %s, found: %s", branchOrCommit, result.branchOrCommit)
-		return
-	}
-
-	if result.tag != tag {
-		t.Errorf("Expected tag %s, found: %s", tag, result.tag)
-		return
-	}
-
-	if result.subpackage != subpackage {
-		t.Errorf("Expected subpackage %s, found: %s", subpackage, result.subpackage)
-		return
+func TestVCSParsingFailure(t *testing.T) {
+	for _, test := range failTests {
+		result, err := parseVCSPath(test)
+		if err == nil {
+			t.Errorf("Expected error, found: %v", result)
+		}
 	}
 }
 
-func assertParseError(t *testing.T, path string) {
-	result, err := parseVCSPath(path)
-	if err == nil {
-		t.Errorf("Expected error, found: %v", result)
+func TestVCSParsingSuccess(t *testing.T) {
+	for _, test := range successTests {
+		result, err := parseVCSPath(test.path)
+
+		if err != nil {
+			t.Errorf("Expected no error, found: %v", err)
+			return
+		}
+
+		if result.url != test.url {
+			t.Errorf("Expected url %s, found: %s", test.url, result.url)
+			return
+		}
+
+		if result.branchOrCommit != test.branchOrCommit {
+			t.Errorf("Expected branchOrCommit %s, found: %s", test.branchOrCommit, result.branchOrCommit)
+			return
+		}
+
+		if result.tag != test.tag {
+			t.Errorf("Expected tag %s, found: %s", test.tag, result.tag)
+			return
+		}
+
+		if result.subpackage != test.subpackage {
+			t.Errorf("Expected subpackage %s, found: %s", test.subpackage, result.subpackage)
+			return
+		}
 	}
 }
