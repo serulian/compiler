@@ -4,9 +4,9 @@ package parser
 
 import "fmt"
 
-const _NodeType_name = "NodeTypeErrorNodeTypeFileNodeTypeCommentNodeTypeImport"
+const _NodeType_name = "NodeTypeErrorNodeTypeFileNodeTypeCommentNodeTypeImportNodeTypeClassNodeTypeInterfaceNodeTypeGenericNodeTypeFunctionNodeTypeConstructorNodeTypePropertyNodeTypeOperatorNodeTypeFieldNodeTypePropertyBlockNodeTypeParameterNodeTypeStatementBlockNodeTypeLoopStatementNodeTypeConditionalStatementNodeTypeReturnStatementNodeTypeBreakStatementNodeTypeContinueStatementNodeTypeVariableStatementNodeTypeWithStatementNodeTypeMatchStatementNodeTypeAssignStatementNodeTypeMatchStatementCaseNodeTypeAwaitExpressionNodeTypeArrowExpressionNodeTypeLambdaExpressionNodeBitwiseXorExpressionNodeBitwiseOrExpressionNodeBitwiseAndExpressionNodeBitwiseShiftLeftExpressionNodeBitwiseShiftRightExpressionNodeBitwiseNotExpressionNodeBooleanOrExpressionNodeBooleanAndExpressionNodeBooleanNotExpressionNodeComparisonEqualsExpressionNodeComparisonNotEqualsExpressionNodeComparisonLTEExpressionNodeComparisonGTEExpressionNodeComparisonLTExpressionNodeComparisonGTExpressionNodeNullComparisonExpressionNodeDefineRangeExpressionNodeBinaryAddExpressionNodeBinarySubtractExpressionNodeBinaryMultiplyExpressionNodeBinaryDivideExpressionNodeBinaryModuloExpressionNodeMemberAccessExpressionNodeNullableMemberAccessExpressionNodeDynamicMemberAccessExpressionNodeStreamMemberAccessExpressionNodeCastExpressionNodeFunctionCallExpressionNodeSliceExpressionNodeNumericLiteralExpressionNodeStringLiteralExpressionNodeBooleanLiteralExpressionNodeTemplateStringLiteralExpressionNodeListExpressionNodeMapExpressionNodeMapExpressionEntryNodeTypeIdentifierExpressionNodeTypeTypeReferenceNodeTypeStreamNodeTypeNullableNodeTypeVoidNodeTypeIdentifierPathNodeTypeIdentifierAccess"
 
-var _NodeType_index = [...]uint8{0, 13, 25, 40, 54}
+var _NodeType_index = [...]uint16{0, 13, 25, 40, 54, 67, 84, 99, 115, 134, 150, 166, 179, 200, 217, 239, 260, 288, 311, 333, 358, 383, 404, 426, 449, 475, 498, 521, 545, 569, 592, 616, 646, 677, 701, 724, 748, 772, 802, 835, 862, 889, 915, 941, 969, 994, 1017, 1045, 1073, 1099, 1125, 1151, 1185, 1218, 1250, 1268, 1294, 1313, 1341, 1368, 1396, 1431, 1449, 1466, 1488, 1516, 1537, 1551, 1567, 1579, 1601, 1625}
 
 func (i NodeType) String() string {
 	if i < 0 || i >= NodeType(len(_NodeType_index)-1) {

@@ -1,0 +1,47 @@
+NodeTypeFile
+  end-rune = 45
+  input-source = list call expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 45
+      input-source = list call expr test
+      named = SomeFunction
+      start-rune = 0
+      typemember-body =>
+        NodeTypeStatementBlock
+          end-rune = 45
+          input-source = list call expr test
+          start-rune = 30
+          block-child =>
+            NodeListExpression
+              end-rune = 43
+              input-source = list call expr test
+              start-rune = 33
+              list-expr-value =>
+                NodeFunctionCallExpression
+                  end-rune = 42
+                  input-source = list call expr test
+                  start-rune = 37
+                  function-call-expr =>
+                    NodeMemberAccessExpression
+                      end-rune = 40
+                      input-source = list call expr test
+                      member-access-identifier = bar
+                      start-rune = 34
+                      member-access-expr =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 36
+                          identexpr-name = foo
+                          input-source = list call expr test
+                          start-rune = 34
+      typemember-return-type =>
+        NodeTypeTypeReference
+          end-rune = 12
+          input-source = list call expr test
+          start-rune = 9
+          typereference-path =>
+            NodeTypeVoid
+              end-rune = 12
+              input-source = list call expr test
+              start-rune = 9

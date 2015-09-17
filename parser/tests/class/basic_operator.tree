@@ -1,0 +1,64 @@
+NodeTypeFile
+  end-rune = 69
+  input-source = basic class operator test
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 69
+      input-source = basic class operator test
+      named = SomeClass
+      start-rune = 0
+      type-member =>
+        NodeTypeOperator
+          end-rune = 68
+          input-source = basic class operator test
+          operator-named = Plus
+          start-rune = 19
+          typemember-body =>
+            NodeTypeStatementBlock
+              end-rune = 68
+              input-source = basic class operator test
+              start-rune = 66
+          typemember-parameter =>
+            NodeTypeParameter
+              end-rune = 46
+              input-source = basic class operator test
+              parameter-type = left
+              start-rune = 33
+              parameter-type =>
+                NodeTypeTypeReference
+                  end-rune = 46
+                  input-source = basic class operator test
+                  start-rune = 38
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 46
+                      input-source = basic class operator test
+                      start-rune = 38
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 46
+                          identifieraccess-name = SomeClass
+                          input-source = basic class operator test
+                          start-rune = 38
+            NodeTypeParameter
+              end-rune = 63
+              input-source = basic class operator test
+              parameter-type = right
+              start-rune = 49
+              parameter-type =>
+                NodeTypeTypeReference
+                  end-rune = 63
+                  input-source = basic class operator test
+                  start-rune = 55
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 63
+                      input-source = basic class operator test
+                      start-rune = 55
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 63
+                          identifieraccess-name = SomeClass
+                          input-source = basic class operator test
+                          start-rune = 55

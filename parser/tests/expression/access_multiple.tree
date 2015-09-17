@@ -1,0 +1,55 @@
+NodeTypeFile
+  end-rune = 46
+  input-source = multiple access expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 46
+      input-source = multiple access expr test
+      named = SomeFunction
+      start-rune = 0
+      typemember-body =>
+        NodeTypeStatementBlock
+          end-rune = 46
+          input-source = multiple access expr test
+          start-rune = 30
+          block-child =>
+            NodeDynamicMemberAccessExpression
+              end-rune = 44
+              input-source = multiple access expr test
+              member-access-identifier = e
+              start-rune = 39
+              member-access-expr =>
+                NodeStreamMemberAccessExpression
+                  end-rune = 41
+                  input-source = multiple access expr test
+                  member-access-identifier = d
+                  start-rune = 36
+                  member-access-expr =>
+                    NodeNullableMemberAccessExpression
+                      end-rune = 38
+                      input-source = multiple access expr test
+                      member-access-identifier = c
+                      start-rune = 34
+                      member-access-expr =>
+                        NodeMemberAccessExpression
+                          end-rune = 35
+                          input-source = multiple access expr test
+                          member-access-identifier = b
+                          start-rune = 33
+                          member-access-expr =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 33
+                              identexpr-name = a
+                              input-source = multiple access expr test
+                              start-rune = 33
+      typemember-return-type =>
+        NodeTypeTypeReference
+          end-rune = 12
+          input-source = multiple access expr test
+          start-rune = 9
+          typereference-path =>
+            NodeTypeVoid
+              end-rune = 12
+              input-source = multiple access expr test
+              start-rune = 9

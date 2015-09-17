@@ -1,0 +1,51 @@
+NodeTypeFile
+  end-rune = 86
+  input-source = match statement no expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 86
+      input-source = match statement no expr test
+      named = SomeFunction
+      start-rune = 0
+      typemember-body =>
+        NodeTypeStatementBlock
+          end-rune = 86
+          input-source = match statement no expr test
+          start-rune = 30
+          block-child =>
+            NodeTypeMatchStatement
+              end-rune = 84
+              input-source = match statement no expr test
+              start-rune = 33
+              match-case =>
+                NodeTypeMatchStatementCase
+                  end-rune = 83
+                  input-source = match statement no expr test
+                  start-rune = 48
+                  match-case-expression =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 53
+                      identexpr-name = foobar
+                      input-source = match statement no expr test
+                      start-rune = 48
+                  match-case-statement =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 71
+                      identexpr-name = someOtherExpr
+                      input-source = match statement no expr test
+                      start-rune = 59
+                    NodeTypeReturnStatement
+                      end-rune = 81
+                      input-source = match statement no expr test
+                      start-rune = 76
+      typemember-return-type =>
+        NodeTypeTypeReference
+          end-rune = 12
+          input-source = match statement no expr test
+          start-rune = 9
+          typereference-path =>
+            NodeTypeVoid
+              end-rune = 12
+              input-source = match statement no expr test
+              start-rune = 9

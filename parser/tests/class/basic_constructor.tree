@@ -1,0 +1,49 @@
+NodeTypeFile
+  end-rune = 54
+  input-source = basic class constructor test
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 54
+      input-source = basic class constructor test
+      named = SomeClass
+      start-rune = 0
+      type-member =>
+        NodeTypeConstructor
+          end-rune = 53
+          input-source = basic class constructor test
+          named = Build
+          start-rune = 19
+          typemember-body =>
+            NodeTypeStatementBlock
+              end-rune = 53
+              input-source = basic class constructor test
+              start-rune = 51
+          typemember-generic =>
+            NodeTypeGeneric
+              end-rune = 37
+              input-source = basic class constructor test
+              named = T
+              start-rune = 37
+          typemember-parameter =>
+            NodeTypeParameter
+              end-rune = 48
+              input-source = basic class constructor test
+              parameter-type = someArg
+              start-rune = 40
+              parameter-type =>
+                NodeTypeTypeReference
+                  end-rune = 48
+                  input-source = basic class constructor test
+                  start-rune = 48
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 48
+                      input-source = basic class constructor test
+                      start-rune = 48
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 48
+                          identifieraccess-name = T
+                          input-source = basic class constructor test
+                          start-rune = 48

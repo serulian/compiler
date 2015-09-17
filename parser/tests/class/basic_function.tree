@@ -1,0 +1,92 @@
+NodeTypeFile
+  end-rune = 89
+  input-source = basic class function test
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 89
+      input-source = basic class function test
+      named = SomeClass
+      start-rune = 0
+      type-member =>
+        NodeTypeFunction
+          end-rune = 88
+          input-source = basic class function test
+          named = SomeFunction
+          start-rune = 19
+          typemember-body =>
+            NodeTypeStatementBlock
+              end-rune = 88
+              input-source = basic class function test
+              start-rune = 86
+          typemember-parameter =>
+            NodeTypeParameter
+              end-rune = 63
+              input-source = basic class function test
+              parameter-type = someParam
+              start-rune = 51
+              parameter-type =>
+                NodeTypeTypeReference
+                  end-rune = 63
+                  input-source = basic class function test
+                  start-rune = 61
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 63
+                      input-source = basic class function test
+                      start-rune = 61
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 63
+                          identifieraccess-name = int
+                          input-source = basic class function test
+                          start-rune = 61
+            NodeTypeParameter
+              end-rune = 83
+              input-source = basic class function test
+              parameter-type = anotherParam
+              start-rune = 66
+              parameter-type =>
+                NodeTypeTypeReference
+                  end-rune = 83
+                  input-source = basic class function test
+                  start-rune = 79
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 83
+                      input-source = basic class function test
+                      start-rune = 79
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 83
+                          identifieraccess-name = C
+                          input-source = basic class function test
+                          start-rune = 83
+                          identifieraccess-source =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 81
+                              identifieraccess-name = B
+                              input-source = basic class function test
+                              start-rune = 81
+                              identifieraccess-source =>
+                                NodeTypeIdentifierAccess
+                                  end-rune = 79
+                                  identifieraccess-name = A
+                                  input-source = basic class function test
+                                  start-rune = 79
+          typemember-return-type =>
+            NodeTypeTypeReference
+              end-rune = 35
+              input-source = basic class function test
+              start-rune = 28
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 35
+                  input-source = basic class function test
+                  start-rune = 28
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 35
+                      identifieraccess-name = SomeType
+                      input-source = basic class function test
+                      start-rune = 28

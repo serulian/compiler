@@ -1,0 +1,102 @@
+NodeTypeFile
+  end-rune = 95
+  input-source = generic function test
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 95
+      input-source = generic function test
+      named = SomeClass
+      start-rune = 0
+      type-member =>
+        NodeTypeFunction
+          end-rune = 94
+          input-source = generic function test
+          named = SomeFunction
+          start-rune = 19
+          typemember-body =>
+            NodeTypeStatementBlock
+              end-rune = 94
+              input-source = generic function test
+              start-rune = 92
+          typemember-generic =>
+            NodeTypeGeneric
+              end-rune = 51
+              input-source = generic function test
+              named = T
+              start-rune = 51
+            NodeTypeGeneric
+              end-rune = 60
+              input-source = generic function test
+              named = Q
+              start-rune = 54
+              generic-subtype =>
+                NodeTypeIdentifierPath
+                  end-rune = 60
+                  input-source = generic function test
+                  start-rune = 58
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 60
+                      identifieraccess-name = int
+                      input-source = generic function test
+                      start-rune = 58
+          typemember-parameter =>
+            NodeTypeParameter
+              end-rune = 73
+              input-source = generic function test
+              parameter-type = someParam
+              start-rune = 63
+              parameter-type =>
+                NodeTypeTypeReference
+                  end-rune = 73
+                  input-source = generic function test
+                  start-rune = 73
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 73
+                      input-source = generic function test
+                      start-rune = 73
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 73
+                          identifieraccess-name = T
+                          input-source = generic function test
+                          start-rune = 73
+            NodeTypeParameter
+              end-rune = 89
+              input-source = generic function test
+              parameter-type = anotherParam
+              start-rune = 76
+              parameter-type =>
+                NodeTypeTypeReference
+                  end-rune = 89
+                  input-source = generic function test
+                  start-rune = 89
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 89
+                      input-source = generic function test
+                      start-rune = 89
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 89
+                          identifieraccess-name = Q
+                          input-source = generic function test
+                          start-rune = 89
+          typemember-return-type =>
+            NodeTypeTypeReference
+              end-rune = 35
+              input-source = generic function test
+              start-rune = 28
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 35
+                  input-source = generic function test
+                  start-rune = 28
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 35
+                      identifieraccess-name = SomeType
+                      input-source = generic function test
+                      start-rune = 28

@@ -1,0 +1,8 @@
+function<void> SomeFunction() {
+  a - (b - c)
+  (a + b)()
+  (foo || bar) && baz
+  (something)()
+  (somethingElse)[index]
+  (somethingBad).(good)
+}

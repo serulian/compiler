@@ -1,0 +1,42 @@
+NodeTypeFile
+  end-rune = 61
+  input-source = in expr loop statement test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 61
+      input-source = in expr loop statement test
+      named = SomeFunction
+      start-rune = 0
+      typemember-body =>
+        NodeTypeStatementBlock
+          end-rune = 61
+          input-source = in expr loop statement test
+          start-rune = 30
+          block-child =>
+            NodeTypeLoopStatement
+              end-rune = 59
+              input-source = in expr loop statement test
+              named = someName
+              start-rune = 33
+              loop-block =>
+                NodeTypeStatementBlock
+                  end-rune = 59
+                  input-source = in expr loop statement test
+                  start-rune = 58
+              loop-expression =>
+                NodeTypeIdentifierExpression
+                  end-rune = 57
+                  identexpr-name = someExpr
+                  input-source = in expr loop statement test
+                  start-rune = 49
+      typemember-return-type =>
+        NodeTypeTypeReference
+          end-rune = 12
+          input-source = in expr loop statement test
+          start-rune = 9
+          typereference-path =>
+            NodeTypeVoid
+              end-rune = 12
+              input-source = in expr loop statement test
+              start-rune = 9

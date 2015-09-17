@@ -51,6 +51,9 @@ const (
 	tokenTypeError tokenType = iota // error occurred; value is text of error
 	tokenTypeEOF
 
+	// Synthetic semicolon
+	tokenTypeSyntheticSemicolon
+
 	// Whitespace
 	tokenTypeWhitespace
 	tokenTypeNewline
@@ -59,11 +62,21 @@ const (
 	tokenTypeSinglelineComment
 	tokenTypeMultilineComment
 
+	// Misc Operators
+	tokenTypeColon     // :
+	tokenTypeComma     // ,
+	tokenTypeSemicolon // ;
+
 	// Access Operators
 	tokenTypeDotAccessOperator     // .
 	tokenTypeArrowAccessOperator   // ->
 	tokenTypeNullDotAccessOperator // ?.
 	tokenTypeNullOrValueOperator   // ??
+	tokenTypeDotCastStart          // .(
+	tokenTypeStreamAccessOperator  // *.
+
+	tokenTypeArrowPortOperator   // <-
+	tokenTypeLambdaArrowOperator // =>
 
 	// Braces
 	tokenTypeLeftBrace    // {
@@ -77,10 +90,11 @@ const (
 	tokenTypeEquals // =
 
 	// Numeric Operators
-	tokenTypePlus  // +
-	tokenTypeMinus // -
-	tokenTypeDiv   // /
-	tokenTypeTimes // *
+	tokenTypePlus   // +
+	tokenTypeMinus  // -
+	tokenTypeDiv    // /
+	tokenTypeTimes  // *
+	tokenTypeModulo // %
 
 	// Comparison Operators
 	tokenTypeLessThan    // <
@@ -88,8 +102,13 @@ const (
 	tokenTypeLTE         // <=
 	tokenTypeGTE         // >=
 
+	tokenTypeBitwiseShiftLeft // <<
+
 	tokenTypeEqualsEquals // ==
 	tokenTypeNotEquals    // !=
+
+	// Stream Operators
+	tokenTypeEllipsis // ..
 
 	// Unary Operators
 	tokenTypeNot   // !
@@ -98,10 +117,13 @@ const (
 	// Bitwise Operators
 	tokenTypePipe // |
 	tokenTypeAnd  // &
+	tokenTypeXor  // ^
 
 	// Boolean Operators
 	tokenTypeBooleanOr  // ||
 	tokenTypeBooleanAnd // &&
+
+	tokenTypeQuestionMark // ?
 
 	// Literals
 	tokenTypeNumericLiteral
@@ -137,6 +159,38 @@ var keywords = map[string]bool{
 
 	"this": true,
 	"new":  true,
+
+	"for":      true,
+	"if":       true,
+	"else":     true,
+	"return":   true,
+	"break":    true,
+	"continue": true,
+	"with":     true,
+	"match":    true,
+	"case":     true,
+
+	"in": true,
+}
+
+// syntheticPredecessors contains the full set of token types after which, if a newline is found,
+// we emit a synthetic semicolon rather than a normal newline token.
+var syntheticPredecessors = map[tokenType]bool{
+	tokenTypeIdentifer: true,
+	tokenTypeKeyword:   true,
+
+	tokenTypeNumericLiteral: true,
+	tokenTypeBooleanLiteral: true,
+
+	tokenTypeStringLiteral:         true,
+	tokenTypeTemplateStringLiteral: true,
+
+	tokenTypeRightBrace:   true,
+	tokenTypeRightParen:   true,
+	tokenTypeRightBracket: true,
+
+	tokenTypeSinglelineComment: true,
+	tokenTypeMultilineComment:  true,
 }
 
 // stateFn represents the state of the scanner as a function that returns the next state.
@@ -144,17 +198,18 @@ type stateFn func(*lexer) stateFn
 
 // lexer holds the state of the scanner.
 type lexer struct {
-	source  InputSource  // the name of the input; used only for error reports
-	input   string       // the string being scanned
-	state   stateFn      // the next lexing function to enter
-	pos     bytePosition // current position in the input
-	start   bytePosition // start position of this token
-	width   bytePosition // width of last rune read from input
-	lastPos bytePosition // position of most recent token returned by nextToken
-	tokens  chan lexeme  // channel of scanned lexemes
+	source       InputSource  // the name of the input; used only for error reports
+	input        string       // the string being scanned
+	state        stateFn      // the next lexing function to enter
+	pos          bytePosition // current position in the input
+	start        bytePosition // start position of this token
+	width        bytePosition // width of last rune read from input
+	lastPos      bytePosition // position of most recent token returned by nextToken
+	tokens       chan lexeme  // channel of scanned lexemes
+	currentToken lexeme       // The current token if any
 }
 
-// nexToken returns the next token from the input.
+// nextToken returns the next token from the input.
 func (l *lexer) nextToken() lexeme {
 	token := <-l.tokens
 	l.lastPos = token.position
@@ -211,7 +266,10 @@ func (l *lexer) value() string {
 
 // emit passes an token back to the client.
 func (l *lexer) emit(t tokenType) {
-	l.tokens <- lexeme{t, l.start, l.value()}
+	currentToken := lexeme{t, l.start, l.value()}
+
+	l.tokens <- currentToken
+	l.currentToken = currentToken
 	l.start = l.pos
 }
 
@@ -284,7 +342,13 @@ Loop:
 			l.emit(tokenTypeWhitespace)
 
 		case isNewline(r):
-			l.emit(tokenTypeNewline)
+			// If the previous token matches the synthetic semicolon list,
+			// we emit a synthetic semicolon instead of a simple newline.
+			if _, ok := syntheticPredecessors[l.currentToken.kind]; ok {
+				l.emit(tokenTypeSyntheticSemicolon)
+			} else {
+				l.emit(tokenTypeNewline)
+			}
 
 		case r == '`':
 			return lexTemplateStringLiteral
@@ -299,12 +363,30 @@ Loop:
 			l.emit(tokenTypePlus)
 
 		case r == '*':
+			if l.peek() == '.' {
+				l.next()
+				l.emit(tokenTypeStreamAccessOperator)
+				continue
+			}
+
 			l.emit(tokenTypeTimes)
 
 		case r == '~':
 			l.emit(tokenTypeTilde)
 
 		case r == '.':
+			if l.peek() == '.' {
+				l.next()
+				l.emit(tokenTypeEllipsis)
+				continue
+			}
+
+			if l.peek() == '(' {
+				l.next()
+				l.emit(tokenTypeDotCastStart)
+				continue
+			}
+
 			l.emit(tokenTypeDotAccessOperator)
 
 		case r == '{':
@@ -325,6 +407,21 @@ Loop:
 		case r == ']':
 			l.emit(tokenTypeRightBracket)
 
+		case r == ':':
+			l.emit(tokenTypeColon)
+
+		case r == ',':
+			l.emit(tokenTypeComma)
+
+		case r == '%':
+			l.emit(tokenTypeModulo)
+
+		case r == ';':
+			l.emit(tokenTypeSemicolon)
+
+		case r == '^':
+			l.emit(tokenTypeXor)
+
 		// Cases:
 		// -
 		// -1234
@@ -344,13 +441,14 @@ Loop:
 		// ??
 		// ?.
 		case r == '?':
-			r2 := l.next()
-			if r2 == '?' {
+			if l.peek() == '?' {
+				l.next()
 				l.emit(tokenTypeNullOrValueOperator)
-			} else if r2 == '.' {
+			} else if l.peek() == '.' {
+				l.next()
 				l.emit(tokenTypeNullDotAccessOperator)
 			} else {
-				l.errorf("Unterminated question mark operator")
+				l.emit(tokenTypeQuestionMark)
 			}
 
 		case unicode.IsDigit(r):
@@ -361,12 +459,30 @@ Loop:
 			return l.lexPossibleEqualsOperator(tokenTypeNot, tokenTypeNotEquals)
 
 		case r == '<':
+			if l.peek() == '-' {
+				l.next()
+				l.emit(tokenTypeArrowPortOperator)
+				continue
+			}
+
+			if l.peek() == '<' {
+				l.next()
+				l.emit(tokenTypeBitwiseShiftLeft)
+				continue
+			}
+
 			return l.lexPossibleEqualsOperator(tokenTypeLessThan, tokenTypeLTE)
 
 		case r == '>':
 			return l.lexPossibleEqualsOperator(tokenTypeGreaterThan, tokenTypeGTE)
 
 		case r == '=':
+			if l.peek() == '>' {
+				l.next()
+				l.emit(tokenTypeLambdaArrowOperator)
+				continue
+			}
+
 			return l.lexPossibleEqualsOperator(tokenTypeEquals, tokenTypeEqualsEquals)
 
 		case r == '&':

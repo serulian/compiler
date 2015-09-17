@@ -1,0 +1,53 @@
+NodeTypeFile
+  end-rune = 43
+  input-source = basic binary expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 43
+      input-source = basic binary expr test
+      named = SomeFunction
+      start-rune = 0
+      typemember-body =>
+        NodeTypeStatementBlock
+          end-rune = 43
+          input-source = basic binary expr test
+          start-rune = 30
+          block-child =>
+            NodeBinaryAddExpression
+              end-rune = 41
+              input-source = basic binary expr test
+              start-rune = 33
+              binary-expression-left =>
+                NodeTypeIdentifierExpression
+                  end-rune = 34
+                  identexpr-name = a
+                  input-source = basic binary expr test
+                  start-rune = 33
+              binary-expression-right =>
+                NodeBinarySubtractExpression
+                  end-rune = 41
+                  input-source = basic binary expr test
+                  start-rune = 37
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 38
+                      identexpr-name = b
+                      input-source = basic binary expr test
+                      start-rune = 37
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 41
+                      identexpr-name = c
+                      input-source = basic binary expr test
+                      start-rune = 41
+      typemember-return-type =>
+        NodeTypeTypeReference
+          end-rune = 12
+          input-source = basic binary expr test
+          start-rune = 9
+          typereference-path =>
+            NodeTypeVoid
+              end-rune = 12
+              input-source = basic binary expr test
+              start-rune = 9

@@ -1,0 +1,31 @@
+NodeTypeFile
+  end-rune = 51
+  input-source = class function no parameters test
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 51
+      input-source = class function no parameters test
+      named = SomeClass
+      start-rune = 0
+      type-member =>
+        NodeTypeFunction
+          end-rune = 50
+          input-source = class function no parameters test
+          named = DoSomething
+          start-rune = 19
+          typemember-body =>
+            NodeTypeStatementBlock
+              end-rune = 50
+              input-source = class function no parameters test
+              start-rune = 48
+          typemember-return-type =>
+            NodeTypeTypeReference
+              end-rune = 31
+              input-source = class function no parameters test
+              start-rune = 28
+              typereference-path =>
+                NodeTypeVoid
+                  end-rune = 31
+                  input-source = class function no parameters test
+                  start-rune = 28

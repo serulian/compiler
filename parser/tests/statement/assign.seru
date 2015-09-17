@@ -1,0 +1,4 @@
+function<void> SomeFunction() {
+	a = someExpr
+	b, c = someOtherExpr
+}

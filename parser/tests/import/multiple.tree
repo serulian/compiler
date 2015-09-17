@@ -1,17 +1,21 @@
 NodeTypeFile
-  end-rune = 63
+  end-rune = 62
+  input-source = multiple imports test
   start-rune = 0
   child-node =>
     NodeTypeImport
       end-rune = 13
       import-source = FooBar
+      input-source = multiple imports test
       start-rune = 0
     NodeTypeImport
       end-rune = 27
       import-source = BarBaz
+      input-source = multiple imports test
       start-rune = 14
     NodeTypeImport
-      end-rune = 63
+      end-rune = 62
       import-source = Something
       import-subsource = SomethingElse
+      input-source = multiple imports test
       start-rune = 28

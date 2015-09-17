@@ -1,0 +1,12 @@
+function<void> SomeFunction() {
+	match someExpr {
+		case foobar:
+			return
+
+		case barbaz:
+			someExpr
+
+		default:
+			break
+	}
+}

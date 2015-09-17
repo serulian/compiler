@@ -1,0 +1,44 @@
+NodeTypeFile
+  end-rune = 89
+  input-source = jump statements test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 89
+      input-source = jump statements test
+      named = SomeFunction
+      start-rune = 0
+      typemember-body =>
+        NodeTypeStatementBlock
+          end-rune = 89
+          input-source = jump statements test
+          start-rune = 30
+          block-child =>
+            NodeTypeBreakStatement
+              end-rune = 37
+              input-source = jump statements test
+              start-rune = 33
+            NodeTypeContinueStatement
+              end-rune = 47
+              input-source = jump statements test
+              start-rune = 40
+            NodeTypeBreakStatement
+              end-rune = 64
+              input-source = jump statements test
+              start-rune = 50
+              statement-label-destination = someLabel
+            NodeTypeContinueStatement
+              end-rune = 87
+              input-source = jump statements test
+              start-rune = 67
+              statement-label-destination = anotherLabel
+      typemember-return-type =>
+        NodeTypeTypeReference
+          end-rune = 12
+          input-source = jump statements test
+          start-rune = 9
+          typereference-path =>
+            NodeTypeVoid
+              end-rune = 12
+              input-source = jump statements test
+              start-rune = 9

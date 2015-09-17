@@ -16,20 +16,132 @@ type AstNode interface {
 	Decorate(property string, value string) AstNode
 }
 
+// PackageImportType identifies the types of imports.
+type PackageImportType int
+
+const (
+	ImportTypeLocal PackageImportType = iota
+	ImportTypeVCS
+)
+
+// PackageImport defines the import of a package.
+type PackageImport struct {
+	Path       string
+	ImportType PackageImportType
+	SourceFile InputSource
+}
+
 // NodeType identifies the type of AST node.
 type NodeType int
 
 const (
+	// Top-level
 	NodeTypeError   NodeType = iota // error occurred; value is text of error
 	NodeTypeFile                    // The file root node
 	NodeTypeComment                 // A single or multiline comment
-	NodeTypeImport                  // An import
+
+	// Module-level
+	NodeTypeImport    // An import
+	NodeTypeClass     // A class
+	NodeTypeInterface // An interface
+	NodeTypeGeneric   // A generic definition on a type
+
+	// Type Members
+	NodeTypeFunction    // A function declaration or definition
+	NodeTypeConstructor // A constructor declaration or definition
+	NodeTypeProperty    // A property declaration or definition
+	NodeTypeOperator    // An operator declaration or definition
+	NodeTypeField       // A field (var) definition
+
+	// Type member blocks
+	NodeTypePropertyBlock // A child block (get or set) of a property definition
+	NodeTypeParameter     // A parameter under a type member (function, iterator, etc)
+
+	// Statements
+	NodeTypeStatementBlock       // A block of statements
+	NodeTypeLoopStatement        // A for statement
+	NodeTypeConditionalStatement // An if statement
+	NodeTypeReturnStatement      // A return statement
+	NodeTypeBreakStatement       // A break statement
+	NodeTypeContinueStatement    // A continue statement
+	NodeTypeVariableStatement    // A variable statement
+	NodeTypeWithStatement        // A with statement
+	NodeTypeMatchStatement       // A match statement
+	NodeTypeAssignStatement      // An assignment state: a = b
+
+	NodeTypeMatchStatementCase // A case of a match statement.
+
+	// Expressions
+	NodeTypeAwaitExpression // An await expression: <- a
+	NodeTypeArrowExpression // An arrow expression: a <- b
+
+	NodeTypeLambdaExpression // A lambda expression
+
+	NodeBitwiseXorExpression        // a ^ b
+	NodeBitwiseOrExpression         // a | b
+	NodeBitwiseAndExpression        // a & b
+	NodeBitwiseShiftLeftExpression  // a << b
+	NodeBitwiseShiftRightExpression // a >> b
+	NodeBitwiseNotExpression        // ~a
+
+	NodeBooleanOrExpression  // a || b
+	NodeBooleanAndExpression // a && b
+	NodeBooleanNotExpression // !a
+
+	NodeComparisonEqualsExpression    // a == b
+	NodeComparisonNotEqualsExpression // a != b
+
+	NodeComparisonLTEExpression // a <= b
+	NodeComparisonGTEExpression // a >= b
+	NodeComparisonLTExpression  // a < b
+	NodeComparisonGTExpression  // a > b
+
+	NodeNullComparisonExpression // a ?? b
+
+	NodeDefineRangeExpression // a .. b
+
+	NodeBinaryAddExpression      // A plus expression: +
+	NodeBinarySubtractExpression // A subtract expression: -
+	NodeBinaryMultiplyExpression // A multiply expression: *
+	NodeBinaryDivideExpression   // A divide expression: /
+	NodeBinaryModuloExpression   // A modulo expression: %
+
+	NodeMemberAccessExpression         // a.b
+	NodeNullableMemberAccessExpression // a?.b
+	NodeDynamicMemberAccessExpression  // a->b
+	NodeStreamMemberAccessExpression   // a*.b
+	NodeCastExpression                 // a.(b)
+	NodeFunctionCallExpression         // a(b, c, d)
+	NodeSliceExpression                // a[b]
+
+	NodeNumericLiteralExpression        // 123
+	NodeStringLiteralExpression         // 'hello'
+	NodeBooleanLiteralExpression        // true
+	NodeTemplateStringLiteralExpression // `foobar`
+
+	NodeListExpression     // [1, 2, 3]
+	NodeMapExpression      // {a: 1, b: 2}
+	NodeMapExpressionEntry // a: 1
+
+	NodeTypeIdentifierExpression // An identifier expression
+
+	// Type references
+	NodeTypeTypeReference // A type reference
+	NodeTypeStream
+	NodeTypeNullable
+	NodeTypeVoid
+
+	// Misc
+	NodeTypeIdentifierPath   // An identifier path
+	NodeTypeIdentifierAccess // A named reference via an identifier or a dot access
 )
 
 const (
 	//
 	// All nodes
 	//
+	// The source of this node.
+	NodePredicateSource = "input-source"
 
 	// The rune position in the input string at which this node begins.
 	NodePredicateStartRune = "start-rune"
@@ -62,4 +174,239 @@ const (
 	NodeImportPredicateSource    = "import-source"
 	NodeImportPredicateSubsource = "import-subsource"
 	NodeImportPredicateName      = "named"
+
+	//
+	// NodeTypeClass + NodeTypeInterface
+	//
+	NodeTypeDefinitionGeneric = "type-generic"
+	NodeTypeDefinitionMember  = "type-member"
+
+	//
+	// NodeTypeClass
+	//
+	NodeClassPredicateName     = "named"
+	NodeClassPredicateBaseType = "class-basetypepath"
+
+	//
+	// NodeTypeInterface
+	//
+	NodeInterfacePredicateName = "named"
+
+	//
+	// NodeTypeGeneric
+	//
+	NodeGenericPredicateName = "named"
+	NodeGenericSubtype       = "generic-subtype"
+
+	//
+	// NodeTypeOperator
+	//
+	NodeOperatorName      = "operator-named"
+	NodeOperatorParameter = "typemember-parameter"
+	NodeOperatorBody      = "typemember-body"
+
+	//
+	// NodeTypeProperty
+	//
+	NodePropertyName         = "named"
+	NodePropertyDeclaredType = "typemember-declared-type"
+	NodePropertyReadOnly     = "typemember-readonly"
+	NodePropertyGetter       = "property-getter"
+	NodePropertySetter       = "property-setter"
+
+	//
+	// NodeTypePropertyBlock
+	//
+	NodePropertyBlockType = "propertyblock-type"
+	NodePropertyBlockBody = "typemember-body"
+
+	//
+	// NodeTypeConstructor
+	//
+	NodeConstructorName      = "named"
+	NodeConstructorGeneric   = "typemember-generic"
+	NodeConstructorParameter = "typemember-parameter"
+	NodeConstructorBody      = "typemember-body"
+
+	//
+	// NodeTypeFunction
+	//
+	NodeFunctionName       = "named"
+	NodeFunctionReturnType = "typemember-return-type"
+	NodeFunctionGeneric    = "typemember-generic"
+	NodeFunctionParameter  = "typemember-parameter"
+	NodeFunctionBody       = "typemember-body"
+
+	//
+	// NodeTypeParameter
+	//
+	NodeParameterType = "parameter-type"
+	NodeParameterName = "named"
+
+	//
+	// NodeTypeTypeReference
+	//
+	NodeTypeReferencePath      = "typereference-path"
+	NodeTypeReferenceGeneric   = "typereference-generic"
+	NodeTypeReferenceInnerType = "typereference-inner-type"
+
+	//
+	// NodeTypeIdentifierPath
+	//
+	NodeIdentifierPathRoot = "identifierpath-root"
+
+	//
+	// NodeTypeIdentifierAccess
+	//
+	NodeIdentifierAccessName   = "identifieraccess-name"
+	NodeIdentifierAccessSource = "identifieraccess-source"
+
+	//
+	// NodeTypeStatementBlock
+	//
+	NodeStatementBlockStatement = "block-child"
+	NodeStatementLabel          = "statement-label"
+
+	//
+	// NodeTypeLoopStatement
+	//
+	NodeLoopStatementVariableName = "named"
+	NodeLoopStatementExpression   = "loop-expression"
+	NodeLoopStatementBlock        = "loop-block"
+
+	//
+	// NodeTypeAssignStatement
+	//
+	NodeAssignStatementName  = "assign-statement-name"
+	NodeAssignStatementValue = "assign-statement-expr"
+
+	//
+	// NodeTypeField/NodeTypeVariableStatement
+	//
+	NodeVariableStatementDeclaredType = "var-declared-type"
+	NodeVariableStatementName         = "named"
+	NodeVariableStatementExpression   = "var-expr"
+
+	//
+	// NodeTypeConditionalStatement
+	//
+	NodeConditionalStatementConditional = "conditional-expr"
+	NodeConditionalStatementBlock       = "conditional-block"
+	NodeConditionalStatementElseClause  = "conditional-else"
+
+	//
+	// NodeTypeReturnStatement
+	//
+	NodeReturnStatementValue = "return-expr"
+
+	//
+	// NodeTypeBreakStatement
+	//
+	NodeBreakStatementLabel = "statement-label-destination"
+
+	//
+	// NodeTypeContinueStatement
+	//
+	NodeContinueStatementLabel = "statement-label-destination"
+
+	//
+	// NodeTypeWithStatement
+	//
+	NodeWithStatementExpression     = "with-expression"
+	NodeWithStatementExpressionName = "named"
+	NodeWithStatementBlock          = "with-block"
+
+	//
+	// NodeTypeMatchStatement
+	//
+	NodeMatchStatementExpression = "match-expression"
+	NodeMatchStatementCase       = "match-case"
+
+	//
+	// NodeTypeMatchStatementCase
+	//
+	NodeMatchStatementCaseExpression = "match-case-expression"
+	NodeMatchStatementCaseStatement  = "match-case-statement"
+
+	//
+	// NodeTypeAwaitExpression
+	//
+	NodeAwaitExpressionSource = "await-expression-source"
+
+	//
+	// NodeTypeArrowExpression
+	//
+	NodeArrowExpressionDestination = "arrow-expression-left"
+	NodeArrowExpressionSource      = "arrow-expression-right"
+
+	//
+	// NodeTypeLambdaExpression
+	//
+	NodeLambdaExpressionReturnType = "lambda-expression-return-type"
+	NodeLambdaExpressionParameter  = "lambda-expression-parameter"
+	NodeLambdaExpressionBlock      = "lambda-expression-block"
+	NodeLambdaExpressionChildExpr  = "lambda-expression-child-expr"
+
+	//
+	// Binary expressions.
+	//
+	NodeBinaryExpressionLeftExpr  = "binary-expression-left"
+	NodeBinaryExpressionRightExpr = "binary-expression-right"
+
+	//
+	// Unary expressions.
+	//
+	NodeUnaryExpressionChildExpr = "unary-expression-child"
+
+	//
+	// Member Access expressions.
+	//
+	NodeMemberAccessChildExpr  = "member-access-expr"
+	NodeMemberAccessIdentifier = "member-access-identifier"
+
+	//
+	// NodeCastExpression
+	//
+	NodeCastExpressionType      = "cast-expr-type"
+	NodeCastExpressionChildExpr = "cast-expr-expr"
+
+	//
+	// NodeSliceExpression
+	//
+	NodeSliceExpressionChildExpr  = "slice-expr-expr"
+	NodeSliceExpressionIndex      = "slice-expr-index"
+	NodeSliceExpressionLeftIndex  = "slice-expr-left-index"
+	NodeSliceExpressionRightIndex = "slice-expr-right-index"
+
+	//
+	// NodeFunctionCallExpression
+	//
+	NodeFunctionCallArgument            = "function-call-argument"
+	NodeFunctionCallExpressionChildExpr = "function-call-expr"
+
+	//
+	// NodeListExpression
+	//
+	NodeListExpressionValue = "list-expr-value"
+
+	//
+	// NodeMapExpression
+	//
+	NodeMapExpressionChildEntry = "map-expr-entry"
+
+	NodeMapExpressionEntryKey   = "map-entry-key"
+	NodeMapExpressionEntryValue = "map-entry-value"
+
+	//
+	// Literals.
+	//
+	NodeNumericLiteralExpressionValue        = "literal-value"
+	NodeStringLiteralExpressionValue         = "literal-value"
+	NodeBooleanLiteralExpressionValue        = "literal-value"
+	NodeTemplateStringLiteralExpressionValue = "literal-value"
+
+	//
+	// NodeTypeIdentifierExpression
+	//
+	NodeIdentifierExpressionName = "identexpr-name"
 )

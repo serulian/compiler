@@ -1,0 +1,37 @@
+NodeTypeFile
+  end-rune = 34
+  input-source = complex class def test
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 34
+      input-source = complex class def test
+      named = SomeClass
+      start-rune = 0
+      class-basetypepath =>
+        NodeTypeIdentifierPath
+          end-rune = 26
+          input-source = complex class def test
+          start-rune = 23
+          identifierpath-root =>
+            NodeTypeIdentifierAccess
+              end-rune = 26
+              identifieraccess-name = Bar
+              input-source = complex class def test
+              start-rune = 23
+        NodeTypeIdentifierPath
+          end-rune = 32
+          input-source = complex class def test
+          start-rune = 29
+          identifierpath-root =>
+            NodeTypeIdentifierAccess
+              end-rune = 32
+              identifieraccess-name = Baz
+              input-source = complex class def test
+              start-rune = 29
+      type-generic =>
+        NodeTypeGeneric
+          end-rune = 18
+          input-source = complex class def test
+          named = Foo
+          start-rune = 16

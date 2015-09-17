@@ -1,16 +1,19 @@
 NodeTypeFile
-  end-rune = 95
+  end-rune = 94
+  input-source = complex imports test
   start-rune = 0
   child-node =>
     NodeTypeImport
       end-rune = 54
       import-source = "some-git-repo"
       import-subsource = Something
+      input-source = complex imports test
       named = SomethingElse
       start-rune = 0
     NodeTypeImport
-      end-rune = 95
+      end-rune = 94
       import-source = SomeLocalFile
       import-subsource = Blah
+      input-source = complex imports test
       named = Foobar
       start-rune = 55

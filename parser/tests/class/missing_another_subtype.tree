@@ -1,0 +1,36 @@
+NodeTypeFile
+  end-rune = 25
+  input-source = missing another subtype test
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 25
+      input-source = missing another subtype test
+      named = SomeClass
+      start-rune = 0
+      class-basetypepath =>
+        NodeTypeIdentifierPath
+          end-rune = 21
+          input-source = missing another subtype test
+          start-rune = 18
+          identifierpath-root =>
+            NodeTypeIdentifierAccess
+              end-rune = 21
+              identifieraccess-name = Bar
+              input-source = missing another subtype test
+              start-rune = 18
+        NodeTypeIdentifierPath
+          end-rune = 23
+          input-source = missing another subtype test
+          start-rune = 24
+          identifierpath-root =>
+            NodeTypeIdentifierAccess
+              end-rune = 23
+              input-source = missing another subtype test
+              start-rune = 24
+              child-node =>
+                NodeTypeError
+                  end-rune = 23
+                  error-message = Expected identifier, found token tokenTypeLeftBrace
+                  input-source = missing another subtype test
+                  start-rune = 24

@@ -1,8 +1,10 @@
 NodeTypeFile
-  end-rune = 16
+  end-rune = 15
+  input-source = basic import test
   start-rune = 0
   child-node =>
     NodeTypeImport
-      end-rune = 16
+      end-rune = 15
       import-source = Something
+      input-source = basic import test
       start-rune = 0
