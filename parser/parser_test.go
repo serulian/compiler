@@ -189,6 +189,9 @@ var parserTests = []parserTest{
 	{"basic full example test", "full/basic"},
 }
 
+func reportImport(path PackageImport) {
+}
+
 func TestParser(t *testing.T) {
 	for _, test := range parserTests {
 		if os.Getenv("FILTER") != "" {
@@ -197,7 +200,7 @@ func TestParser(t *testing.T) {
 			}
 		}
 
-		rootNode := parse(createAstNode, InputSource(test.name), test.input())
+		rootNode := Parse(createAstNode, reportImport, InputSource(test.name), test.input())
 		parseTree := getParseTree((rootNode).(*testNode), 0)
 		assert := assert.New(t)
 

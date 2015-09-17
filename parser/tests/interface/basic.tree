@@ -1,8 +1,10 @@
 NodeTypeFile
   end-rune = 26
+  input-source = basic interface test
   start-rune = 0
   child-node =>
     NodeTypeInterface
       end-rune = 26
+      input-source = basic interface test
       named = ISomeInterface
       start-rune = 0

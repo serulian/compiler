@@ -1,25 +1,31 @@
 NodeTypeFile
   end-rune = 51
+  input-source = labeled statement test
   start-rune = 0
   child-node =>
     NodeTypeFunction
       end-rune = 51
+      input-source = labeled statement test
       named = SomeFunction
       start-rune = 0
       typemember-body =>
         NodeTypeStatementBlock
           end-rune = 51
+          input-source = labeled statement test
           start-rune = 30
           block-child =>
             NodeTypeReturnStatement
               end-rune = 49
+              input-source = labeled statement test
               start-rune = 44
               statement-label = someLabel
       typemember-return-type =>
         NodeTypeTypeReference
           end-rune = 12
+          input-source = labeled statement test
           start-rune = 9
           typereference-path =>
             NodeTypeVoid
               end-rune = 12
+              input-source = labeled statement test
               start-rune = 9

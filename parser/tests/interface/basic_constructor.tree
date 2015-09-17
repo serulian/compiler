@@ -1,48 +1,59 @@
 NodeTypeFile
   end-rune = 69
+  input-source = basic interface constructor test
   start-rune = 0
   child-node =>
     NodeTypeInterface
       end-rune = 69
+      input-source = basic interface constructor test
       named = ISomeInterface
       start-rune = 0
       type-member =>
         NodeTypeConstructor
           end-rune = 68
+          input-source = basic interface constructor test
           named = DoSomething
           start-rune = 28
           typemember-parameter =>
             NodeTypeParameter
               end-rune = 56
+              input-source = basic interface constructor test
               parameter-type = a
               start-rune = 52
               parameter-type =>
                 NodeTypeTypeReference
                   end-rune = 56
+                  input-source = basic interface constructor test
                   start-rune = 54
                   typereference-path =>
                     NodeTypeIdentifierPath
                       end-rune = 56
+                      input-source = basic interface constructor test
                       start-rune = 54
                       identifierpath-root =>
                         NodeTypeIdentifierAccess
                           end-rune = 56
                           identifieraccess-name = int
+                          input-source = basic interface constructor test
                           start-rune = 54
             NodeTypeParameter
               end-rune = 66
+              input-source = basic interface constructor test
               parameter-type = b
               start-rune = 59
               parameter-type =>
                 NodeTypeTypeReference
                   end-rune = 66
+                  input-source = basic interface constructor test
                   start-rune = 61
                   typereference-path =>
                     NodeTypeIdentifierPath
                       end-rune = 66
+                      input-source = basic interface constructor test
                       start-rune = 61
                       identifierpath-root =>
                         NodeTypeIdentifierAccess
                           end-rune = 66
                           identifieraccess-name = double
+                          input-source = basic interface constructor test
                           start-rune = 61

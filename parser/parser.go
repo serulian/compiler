@@ -9,10 +9,14 @@ package parser
 import (
 	"fmt"
 	"strconv"
+	"strings"
 )
 
-// nodeBuilder is a function for building AST nodes.
-type nodeBuilder func(source InputSource, kind NodeType) AstNode
+// NodeBuilder is a function for building AST nodes.
+type NodeBuilder func(source InputSource, kind NodeType) AstNode
+
+// ImportHandler is a function called for registering imports encountered.
+type ImportHandler func(importInfo PackageImport)
 
 // tryParserFn is a function that attempts to build an AST node.
 type tryParserFn func() (AstNode, bool)
@@ -24,12 +28,13 @@ type rightNodeConstructor func(AstNode, lexeme) (AstNode, bool)
 
 // sourceParser holds the state of the parser.
 type sourceParser struct {
-	source        InputSource    // the name of the input; used only for error reports
-	lex           *peekableLexer // a reference to the lexer used for tokenization
-	builder       nodeBuilder    // the builder function for creating AstNode instances
-	nodes         *nodeStack     // the stack of the current nodes
-	currentToken  lexeme         // the current token
-	previousToken lexeme         // the previous token
+	source         InputSource    // the name of the input; used only for error reports
+	lex            *peekableLexer // a reference to the lexer used for tokenization
+	builder        NodeBuilder    // the builder function for creating AstNode instances
+	nodes          *nodeStack     // the stack of the current nodes
+	currentToken   lexeme         // the current token
+	previousToken  lexeme         // the previous token
+	importReporter ImportHandler  // callback invoked when an import is found
 }
 
 // lookaheadTracker holds state when conducting a multi-token lookahead in the parser.
@@ -54,19 +59,29 @@ const (
 	readTokenAdvancePeek
 )
 
-// parse performs parsing of the given input string and returns the root AST node.
-func parse(builder nodeBuilder, source InputSource, input string) AstNode {
+// Parse performs parsing of the given input string and returns the root AST node.
+func Parse(builder NodeBuilder, importReporter ImportHandler, source InputSource, input string) AstNode {
 	l := peekable_lex(lex(source, input))
 	p := &sourceParser{
-		source:        source,
-		lex:           l,
-		builder:       builder,
-		nodes:         &nodeStack{},
-		currentToken:  lexeme{tokenTypeEOF, 0, ""},
-		previousToken: lexeme{tokenTypeEOF, 0, ""},
+		source:         source,
+		lex:            l,
+		builder:        builder,
+		nodes:          &nodeStack{},
+		currentToken:   lexeme{tokenTypeEOF, 0, ""},
+		previousToken:  lexeme{tokenTypeEOF, 0, ""},
+		importReporter: importReporter,
 	}
 
 	return p.consumeTopLevel()
+}
+
+// reportImport reports an import of the given token value as a path.
+func (p *sourceParser) reportImport(value string) {
+	if strings.HasPrefix(value, "\"") {
+		p.importReporter(PackageImport{value[1 : len(value)-2], ImportTypeVCS, p.source})
+	} else {
+		p.importReporter(PackageImport{value, ImportTypeLocal, p.source})
+	}
 }
 
 // createNode creates a new AstNode and returns it.
@@ -94,6 +109,7 @@ func (p *sourceParser) startNode(kind NodeType) AstNode {
 // decorateStartRune decorates the given node with the location of the given token as its
 // starting rune.
 func (p *sourceParser) decorateStartRune(node AstNode, token lexeme) {
+	node.Decorate(NodePredicateSource, string(p.source))
 	node.Decorate(NodePredicateStartRune, strconv.Itoa(int(token.position)))
 }
 

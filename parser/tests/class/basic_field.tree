@@ -1,26 +1,32 @@
 NodeTypeFile
   end-rune = 38
+  input-source = basic class field test
   start-rune = 0
   child-node =>
     NodeTypeClass
       end-rune = 38
+      input-source = basic class field test
       named = SomeClass
       start-rune = 0
       type-member =>
         NodeTypeField
           end-rune = 36
+          input-source = basic class field test
           named = someField
           start-rune = 19
           var-declared-type =>
             NodeTypeTypeReference
               end-rune = 25
+              input-source = basic class field test
               start-rune = 23
               typereference-path =>
                 NodeTypeIdentifierPath
                   end-rune = 25
+                  input-source = basic class field test
                   start-rune = 23
                   identifierpath-root =>
                     NodeTypeIdentifierAccess
                       end-rune = 25
                       identifieraccess-name = int
+                      input-source = basic class field test
                       start-rune = 23

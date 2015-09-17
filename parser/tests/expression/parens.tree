@@ -1,124 +1,153 @@
 NodeTypeFile
   end-rune = 145
+  input-source = parens expr test
   start-rune = 0
   child-node =>
     NodeTypeFunction
       end-rune = 145
+      input-source = parens expr test
       named = SomeFunction
       start-rune = 0
       typemember-body =>
         NodeTypeStatementBlock
           end-rune = 145
+          input-source = parens expr test
           start-rune = 30
           block-child =>
             NodeBinarySubtractExpression
               end-rune = 44
+              input-source = parens expr test
               start-rune = 34
               binary-expression-left =>
                 NodeTypeIdentifierExpression
                   end-rune = 35
                   identexpr-name = a
+                  input-source = parens expr test
                   start-rune = 34
               binary-expression-right =>
                 NodeBinarySubtractExpression
                   end-rune = 43
+                  input-source = parens expr test
                   start-rune = 39
                   binary-expression-left =>
                     NodeTypeIdentifierExpression
                       end-rune = 40
                       identexpr-name = b
+                      input-source = parens expr test
                       start-rune = 39
                   binary-expression-right =>
                     NodeTypeIdentifierExpression
                       end-rune = 43
                       identexpr-name = c
+                      input-source = parens expr test
                       start-rune = 43
             NodeFunctionCallExpression
               end-rune = 56
+              input-source = parens expr test
               start-rune = 48
               function-call-expr =>
                 NodeBinaryAddExpression
                   end-rune = 53
+                  input-source = parens expr test
                   start-rune = 49
                   binary-expression-left =>
                     NodeTypeIdentifierExpression
                       end-rune = 50
                       identexpr-name = a
+                      input-source = parens expr test
                       start-rune = 49
                   binary-expression-right =>
                     NodeTypeIdentifierExpression
                       end-rune = 53
                       identexpr-name = b
+                      input-source = parens expr test
                       start-rune = 53
             NodeBooleanAndExpression
               end-rune = 78
+              input-source = parens expr test
               start-rune = 60
               binary-expression-left =>
                 NodeBooleanOrExpression
                   end-rune = 70
+                  input-source = parens expr test
                   start-rune = 61
                   binary-expression-left =>
                     NodeTypeIdentifierExpression
                       end-rune = 64
                       identexpr-name = foo
+                      input-source = parens expr test
                       start-rune = 61
                   binary-expression-right =>
                     NodeTypeIdentifierExpression
                       end-rune = 70
                       identexpr-name = bar
+                      input-source = parens expr test
                       start-rune = 68
               binary-expression-right =>
                 NodeTypeIdentifierExpression
                   end-rune = 78
                   identexpr-name = baz
+                  input-source = parens expr test
                   start-rune = 76
             NodeFunctionCallExpression
               end-rune = 94
+              input-source = parens expr test
               start-rune = 82
               function-call-expr =>
                 NodeTypeIdentifierExpression
                   end-rune = 91
                   identexpr-name = something
+                  input-source = parens expr test
                   start-rune = 83
             NodeSliceExpression
               end-rune = 119
+              input-source = parens expr test
               start-rune = 98
               slice-expr-expr =>
                 NodeTypeIdentifierExpression
                   end-rune = 111
                   identexpr-name = somethingElse
+                  input-source = parens expr test
                   start-rune = 99
               slice-expr-index =>
                 NodeTypeIdentifierExpression
                   end-rune = 118
                   identexpr-name = index
+                  input-source = parens expr test
                   start-rune = 114
             NodeCastExpression
               end-rune = 143
+              input-source = parens expr test
               start-rune = 123
               cast-expr-expr =>
                 NodeTypeIdentifierExpression
                   end-rune = 135
                   identexpr-name = somethingBad
+                  input-source = parens expr test
                   start-rune = 124
               cast-expr-type =>
                 NodeTypeTypeReference
                   end-rune = 142
+                  input-source = parens expr test
                   start-rune = 139
                   typereference-path =>
                     NodeTypeIdentifierPath
                       end-rune = 142
+                      input-source = parens expr test
                       start-rune = 139
                       identifierpath-root =>
                         NodeTypeIdentifierAccess
                           end-rune = 142
                           identifieraccess-name = good
+                          input-source = parens expr test
                           start-rune = 139
       typemember-return-type =>
         NodeTypeTypeReference
           end-rune = 12
+          input-source = parens expr test
           start-rune = 9
           typereference-path =>
             NodeTypeVoid
               end-rune = 12
+              input-source = parens expr test
               start-rune = 9

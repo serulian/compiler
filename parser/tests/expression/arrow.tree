@@ -1,34 +1,42 @@
 NodeTypeFile
   end-rune = 59
+  input-source = arrow expr test
   start-rune = 0
   child-node =>
     NodeTypeFunction
       end-rune = 59
+      input-source = arrow expr test
       named = SomeFunction
       start-rune = 0
       typemember-body =>
         NodeTypeStatementBlock
           end-rune = 59
+          input-source = arrow expr test
           start-rune = 30
           block-child =>
             NodeTypeArrowExpression
               end-rune = 57
+              input-source = arrow expr test
               start-rune = 33
               arrow-expression-left =>
                 NodeTypeIdentifierExpression
                   end-rune = 41
                   identexpr-name = someExpr
+                  input-source = arrow expr test
                   start-rune = 33
               arrow-expression-right =>
                 NodeTypeIdentifierExpression
                   end-rune = 57
                   identexpr-name = someOtherExpr
+                  input-source = arrow expr test
                   start-rune = 45
       typemember-return-type =>
         NodeTypeTypeReference
           end-rune = 12
+          input-source = arrow expr test
           start-rune = 9
           typereference-path =>
             NodeTypeVoid
               end-rune = 12
+              input-source = arrow expr test
               start-rune = 9

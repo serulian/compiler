@@ -1,16 +1,20 @@
 NodeTypeFile
   end-rune = 6
+  input-source = invalid source
   start-rune = 0
   child-node =>
     NodeTypeImport
       end-rune = 6
+      input-source = invalid source
       start-rune = 0
       child-node =>
         NodeTypeError
           end-rune = 6
           error-message = Expected one of: [tokenTypeIdentifer tokenTypeStringLiteral], found: tokenTypeNumericLiteral
+          input-source = invalid source
           start-rune = 7
     NodeTypeError
       end-rune = 6
       error-message = Unexpected token at root level: tokenTypeNumericLiteral
+      input-source = invalid source
       start-rune = 7
