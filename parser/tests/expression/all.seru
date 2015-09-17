@@ -1,0 +1,49 @@
+function<void> SomeFunction() {
+	<- a
+	a <- b
+	a + b
+	a - b
+	a * b
+	a / b
+	a % b
+	a | b
+	a & b
+	a ^ b
+	a << b
+	a && b
+	a || b
+	a == b
+	a != b
+	a <= b
+	a >= b
+	a < b
+	a > b
+	a ?? b
+	a .. b
+	a.b
+	a->b
+	a?.b
+	a*.b
+	a.(b)
+	a(b, c, d)
+	a[b]
+	a[b:]
+	a[:b]
+	a[b:c]
+	(a + b)
+	1234
+	1.245
+	true
+	false
+	'hello world'
+	"hello world"
+	`hello
+	world`
+	[]
+	[1]
+	[1, 2, 3]
+	~someName
+	!someName
+	function (first int, second bool) { return first }
+	() => someExpr
+}

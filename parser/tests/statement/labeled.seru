@@ -1,0 +1,3 @@
+function<void> SomeFunction() {
+	someLabel: return
+}

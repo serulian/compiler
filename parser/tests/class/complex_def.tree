@@ -1,0 +1,30 @@
+NodeTypeFile
+  end-rune = 34
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 34
+      named = SomeClass
+      start-rune = 0
+      class-basetypepath =>
+        NodeTypeIdentifierPath
+          end-rune = 26
+          start-rune = 23
+          identifierpath-root =>
+            NodeTypeIdentifierAccess
+              end-rune = 26
+              identifieraccess-name = Bar
+              start-rune = 23
+        NodeTypeIdentifierPath
+          end-rune = 32
+          start-rune = 29
+          identifierpath-root =>
+            NodeTypeIdentifierAccess
+              end-rune = 32
+              identifieraccess-name = Baz
+              start-rune = 29
+      type-generic =>
+        NodeTypeGeneric
+          end-rune = 18
+          named = Foo
+          start-rune = 16

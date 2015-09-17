@@ -1,0 +1,26 @@
+NodeTypeFile
+  end-rune = 42
+  start-rune = 0
+  child-node =>
+    NodeTypeInterface
+      end-rune = 42
+      named = ISomeInterface
+      start-rune = 0
+      type-generic =>
+        NodeTypeGeneric
+          end-rune = 27
+          named = Foo
+          start-rune = 25
+        NodeTypeGeneric
+          end-rune = 38
+          named = Bar
+          start-rune = 30
+          generic-subtype =>
+            NodeTypeIdentifierPath
+              end-rune = 38
+              start-rune = 36
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 38
+                  identifieraccess-name = Baz
+                  start-rune = 36

@@ -1,0 +1,7 @@
+function<void> SomeFunction() {
+	match {
+		case foobar:
+			someOtherExpr
+			return
+	}
+}

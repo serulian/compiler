@@ -1,0 +1,51 @@
+NodeTypeFile
+  end-rune = 68
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 68
+      named = SomeFunction
+      start-rune = 0
+      typemember-body =>
+        NodeTypeStatementBlock
+          end-rune = 68
+          start-rune = 30
+          block-child =>
+            NodeTypeAssignStatement
+              end-rune = 44
+              start-rune = 33
+              assign-statement-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 44
+                  identexpr-name = someExpr
+                  start-rune = 37
+              assign-statement-name =>
+                NodeTypeIdentifierExpression
+                  end-rune = 34
+                  identexpr-name = a
+                  start-rune = 33
+            NodeTypeAssignStatement
+              end-rune = 66
+              start-rune = 47
+              assign-statement-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 66
+                  identexpr-name = someOtherExpr
+                  start-rune = 54
+              assign-statement-name =>
+                NodeTypeIdentifierExpression
+                  end-rune = 47
+                  identexpr-name = b
+                  start-rune = 47
+                NodeTypeIdentifierExpression
+                  end-rune = 51
+                  identexpr-name = c
+                  start-rune = 50
+      typemember-return-type =>
+        NodeTypeTypeReference
+          end-rune = 12
+          start-rune = 9
+          typereference-path =>
+            NodeTypeVoid
+              end-rune = 12
+              start-rune = 9

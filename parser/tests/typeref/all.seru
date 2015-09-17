@@ -1,0 +1,14 @@
+var<int> basic
+var<int?> nullable
+var<int*> streamable
+var<SomeGeneric<T>> generic
+var<SomeGeneric<T, Q>> multigeneric
+var<SomeGeneric<T?, Q>> nested
+var<SomeGeneric<T>?> nullablegeneric
+var<SomeGeneric<T>*> streamgeneric
+var<SomeGeneric<List<T?>, Map<T, Q>*>> multinested
+var<Some.Reference.To.Type> pathed
+var<Some.Type?> nullablepathed
+var<Some.Type*> streamablepathed
+var<Some.Type<T>> genercipathed
+var<int?*> nullablestream

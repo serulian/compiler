@@ -1,0 +1,3 @@
+class SomeClass {
+	function<SomeType> SomeFunction<T, Q : int>(someParam T, anotherParam Q) {}
+}

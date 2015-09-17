@@ -1,0 +1,30 @@
+NodeTypeFile
+  end-rune = 57
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 57
+      named = SomeFunction
+      start-rune = 0
+      typemember-body =>
+        NodeTypeStatementBlock
+          end-rune = 57
+          start-rune = 30
+          block-child =>
+            NodeTypeVariableStatement
+              end-rune = 55
+              named = someName
+              start-rune = 33
+              var-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 55
+                  identexpr-name = someExpr
+                  start-rune = 48
+      typemember-return-type =>
+        NodeTypeTypeReference
+          end-rune = 12
+          start-rune = 9
+          typereference-path =>
+            NodeTypeVoid
+              end-rune = 12
+              start-rune = 9

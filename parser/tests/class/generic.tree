@@ -1,0 +1,13 @@
+NodeTypeFile
+  end-rune = 22
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 22
+      named = SomeClass
+      start-rune = 0
+      type-generic =>
+        NodeTypeGeneric
+          end-rune = 18
+          named = Foo
+          start-rune = 16

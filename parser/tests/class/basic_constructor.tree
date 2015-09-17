@@ -1,0 +1,40 @@
+NodeTypeFile
+  end-rune = 54
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 54
+      named = SomeClass
+      start-rune = 0
+      type-member =>
+        NodeTypeConstructor
+          end-rune = 53
+          named = Build
+          start-rune = 19
+          typemember-body =>
+            NodeTypeStatementBlock
+              end-rune = 53
+              start-rune = 51
+          typemember-generic =>
+            NodeTypeGeneric
+              end-rune = 37
+              named = T
+              start-rune = 37
+          typemember-parameter =>
+            NodeTypeParameter
+              end-rune = 48
+              parameter-type = someArg
+              start-rune = 40
+              parameter-type =>
+                NodeTypeTypeReference
+                  end-rune = 48
+                  start-rune = 48
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 48
+                      start-rune = 48
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 48
+                          identifieraccess-name = T
+                          start-rune = 48

@@ -1,0 +1,568 @@
+NodeTypeFile
+  end-rune = 449
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 449
+      named = SomeFunction
+      start-rune = 0
+      typemember-body =>
+        NodeTypeStatementBlock
+          end-rune = 449
+          start-rune = 30
+          block-child =>
+            NodeTypeAwaitExpression
+              end-rune = 36
+              start-rune = 36
+              await-expression-source =>
+                NodeTypeIdentifierExpression
+                  end-rune = 36
+                  identexpr-name = a
+                  start-rune = 36
+            NodeTypeArrowExpression
+              end-rune = 44
+              start-rune = 39
+              arrow-expression-left =>
+                NodeTypeIdentifierExpression
+                  end-rune = 40
+                  identexpr-name = a
+                  start-rune = 39
+              arrow-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 44
+                  identexpr-name = b
+                  start-rune = 44
+            NodeBinaryAddExpression
+              end-rune = 51
+              start-rune = 47
+              binary-expression-left =>
+                NodeTypeIdentifierExpression
+                  end-rune = 48
+                  identexpr-name = a
+                  start-rune = 47
+              binary-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 51
+                  identexpr-name = b
+                  start-rune = 51
+            NodeBinarySubtractExpression
+              end-rune = 58
+              start-rune = 54
+              binary-expression-left =>
+                NodeTypeIdentifierExpression
+                  end-rune = 55
+                  identexpr-name = a
+                  start-rune = 54
+              binary-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 58
+                  identexpr-name = b
+                  start-rune = 58
+            NodeBinaryMultiplyExpression
+              end-rune = 65
+              start-rune = 61
+              binary-expression-left =>
+                NodeTypeIdentifierExpression
+                  end-rune = 62
+                  identexpr-name = a
+                  start-rune = 61
+              binary-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 65
+                  identexpr-name = b
+                  start-rune = 65
+            NodeBinaryDivideExpression
+              end-rune = 72
+              start-rune = 68
+              binary-expression-left =>
+                NodeTypeIdentifierExpression
+                  end-rune = 69
+                  identexpr-name = a
+                  start-rune = 68
+              binary-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 72
+                  identexpr-name = b
+                  start-rune = 72
+            NodeBinaryModuloExpression
+              end-rune = 79
+              start-rune = 75
+              binary-expression-left =>
+                NodeTypeIdentifierExpression
+                  end-rune = 76
+                  identexpr-name = a
+                  start-rune = 75
+              binary-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 79
+                  identexpr-name = b
+                  start-rune = 79
+            NodeBitwiseOrExpression
+              end-rune = 86
+              start-rune = 82
+              binary-expression-left =>
+                NodeTypeIdentifierExpression
+                  end-rune = 83
+                  identexpr-name = a
+                  start-rune = 82
+              binary-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 86
+                  identexpr-name = b
+                  start-rune = 86
+            NodeBitwiseAndExpression
+              end-rune = 93
+              start-rune = 89
+              binary-expression-left =>
+                NodeTypeIdentifierExpression
+                  end-rune = 90
+                  identexpr-name = a
+                  start-rune = 89
+              binary-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 93
+                  identexpr-name = b
+                  start-rune = 93
+            NodeBitwiseXorExpression
+              end-rune = 100
+              start-rune = 96
+              binary-expression-left =>
+                NodeTypeIdentifierExpression
+                  end-rune = 97
+                  identexpr-name = a
+                  start-rune = 96
+              binary-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 100
+                  identexpr-name = b
+                  start-rune = 100
+            NodeBitwiseShiftLeftExpression
+              end-rune = 108
+              start-rune = 103
+              binary-expression-left =>
+                NodeTypeIdentifierExpression
+                  end-rune = 104
+                  identexpr-name = a
+                  start-rune = 103
+              binary-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 108
+                  identexpr-name = b
+                  start-rune = 108
+            NodeBooleanAndExpression
+              end-rune = 116
+              start-rune = 111
+              binary-expression-left =>
+                NodeTypeIdentifierExpression
+                  end-rune = 112
+                  identexpr-name = a
+                  start-rune = 111
+              binary-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 116
+                  identexpr-name = b
+                  start-rune = 116
+            NodeBooleanOrExpression
+              end-rune = 124
+              start-rune = 119
+              binary-expression-left =>
+                NodeTypeIdentifierExpression
+                  end-rune = 120
+                  identexpr-name = a
+                  start-rune = 119
+              binary-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 124
+                  identexpr-name = b
+                  start-rune = 124
+            NodeComparisonEqualsExpression
+              end-rune = 132
+              start-rune = 127
+              binary-expression-left =>
+                NodeTypeIdentifierExpression
+                  end-rune = 128
+                  identexpr-name = a
+                  start-rune = 127
+              binary-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 132
+                  identexpr-name = b
+                  start-rune = 132
+            NodeComparisonNotEqualsExpression
+              end-rune = 140
+              start-rune = 135
+              binary-expression-left =>
+                NodeTypeIdentifierExpression
+                  end-rune = 136
+                  identexpr-name = a
+                  start-rune = 135
+              binary-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 140
+                  identexpr-name = b
+                  start-rune = 140
+            NodeComparisonLTEExpression
+              end-rune = 148
+              start-rune = 143
+              binary-expression-left =>
+                NodeTypeIdentifierExpression
+                  end-rune = 144
+                  identexpr-name = a
+                  start-rune = 143
+              binary-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 148
+                  identexpr-name = b
+                  start-rune = 148
+            NodeComparisonGTEExpression
+              end-rune = 156
+              start-rune = 151
+              binary-expression-left =>
+                NodeTypeIdentifierExpression
+                  end-rune = 152
+                  identexpr-name = a
+                  start-rune = 151
+              binary-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 156
+                  identexpr-name = b
+                  start-rune = 156
+            NodeComparisonLTExpression
+              end-rune = 163
+              start-rune = 159
+              binary-expression-left =>
+                NodeTypeIdentifierExpression
+                  end-rune = 160
+                  identexpr-name = a
+                  start-rune = 159
+              binary-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 163
+                  identexpr-name = b
+                  start-rune = 163
+            NodeComparisonGTExpression
+              end-rune = 170
+              start-rune = 166
+              binary-expression-left =>
+                NodeTypeIdentifierExpression
+                  end-rune = 167
+                  identexpr-name = a
+                  start-rune = 166
+              binary-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 170
+                  identexpr-name = b
+                  start-rune = 170
+            NodeNullComparisonExpression
+              end-rune = 178
+              start-rune = 173
+              binary-expression-left =>
+                NodeTypeIdentifierExpression
+                  end-rune = 174
+                  identexpr-name = a
+                  start-rune = 173
+              binary-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 178
+                  identexpr-name = b
+                  start-rune = 178
+            NodeDefineRangeExpression
+              end-rune = 186
+              start-rune = 181
+              binary-expression-left =>
+                NodeTypeIdentifierExpression
+                  end-rune = 182
+                  identexpr-name = a
+                  start-rune = 181
+              binary-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 186
+                  identexpr-name = b
+                  start-rune = 186
+            NodeMemberAccessExpression
+              end-rune = 191
+              member-access-identifier = b
+              start-rune = 189
+              member-access-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 189
+                  identexpr-name = a
+                  start-rune = 189
+            NodeDynamicMemberAccessExpression
+              end-rune = 197
+              member-access-identifier = b
+              start-rune = 194
+              member-access-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 194
+                  identexpr-name = a
+                  start-rune = 194
+            NodeNullableMemberAccessExpression
+              end-rune = 203
+              member-access-identifier = b
+              start-rune = 200
+              member-access-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 200
+                  identexpr-name = a
+                  start-rune = 200
+            NodeStreamMemberAccessExpression
+              end-rune = 209
+              member-access-identifier = b
+              start-rune = 206
+              member-access-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 206
+                  identexpr-name = a
+                  start-rune = 206
+            NodeCastExpression
+              end-rune = 216
+              start-rune = 212
+              cast-expr-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 212
+                  identexpr-name = a
+                  start-rune = 212
+              cast-expr-type =>
+                NodeTypeTypeReference
+                  end-rune = 215
+                  start-rune = 215
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 215
+                      start-rune = 215
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 215
+                          identifieraccess-name = b
+                          start-rune = 215
+            NodeFunctionCallExpression
+              end-rune = 228
+              start-rune = 219
+              function-call-argument =>
+                NodeTypeIdentifierExpression
+                  end-rune = 221
+                  identexpr-name = b
+                  start-rune = 221
+                NodeTypeIdentifierExpression
+                  end-rune = 224
+                  identexpr-name = c
+                  start-rune = 224
+                NodeTypeIdentifierExpression
+                  end-rune = 227
+                  identexpr-name = d
+                  start-rune = 227
+              function-call-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 219
+                  identexpr-name = a
+                  start-rune = 219
+            NodeSliceExpression
+              end-rune = 234
+              start-rune = 231
+              slice-expr-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 231
+                  identexpr-name = a
+                  start-rune = 231
+              slice-expr-index =>
+                NodeTypeIdentifierExpression
+                  end-rune = 233
+                  identexpr-name = b
+                  start-rune = 233
+            NodeSliceExpression
+              end-rune = 241
+              start-rune = 237
+              slice-expr-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 237
+                  identexpr-name = a
+                  start-rune = 237
+              slice-expr-left-index =>
+                NodeTypeIdentifierExpression
+                  end-rune = 239
+                  identexpr-name = b
+                  start-rune = 239
+            NodeSliceExpression
+              end-rune = 248
+              start-rune = 244
+              slice-expr-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 244
+                  identexpr-name = a
+                  start-rune = 244
+              slice-expr-right-index =>
+                NodeTypeIdentifierExpression
+                  end-rune = 247
+                  identexpr-name = b
+                  start-rune = 247
+            NodeSliceExpression
+              end-rune = 256
+              start-rune = 251
+              slice-expr-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 251
+                  identexpr-name = a
+                  start-rune = 251
+              slice-expr-left-index =>
+                NodeTypeIdentifierExpression
+                  end-rune = 253
+                  identexpr-name = b
+                  start-rune = 253
+              slice-expr-right-index =>
+                NodeTypeIdentifierExpression
+                  end-rune = 255
+                  identexpr-name = c
+                  start-rune = 255
+            NodeBinaryAddExpression
+              end-rune = 264
+              start-rune = 260
+              binary-expression-left =>
+                NodeTypeIdentifierExpression
+                  end-rune = 261
+                  identexpr-name = a
+                  start-rune = 260
+              binary-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 264
+                  identexpr-name = b
+                  start-rune = 264
+            NodeNumericLiteralExpression
+              end-rune = 271
+              literal-value = 1234
+              start-rune = 268
+            NodeNumericLiteralExpression
+              end-rune = 278
+              literal-value = 1.245
+              start-rune = 274
+            NodeBooleanLiteralExpression
+              end-rune = 284
+              literal-value = true
+              start-rune = 281
+            NodeBooleanLiteralExpression
+              end-rune = 291
+              literal-value = false
+              start-rune = 287
+            NodeStringLiteralExpression
+              end-rune = 306
+              literal-value = 'hello world'
+              start-rune = 294
+            NodeStringLiteralExpression
+              end-rune = 321
+              literal-value = "hello world"
+              start-rune = 309
+            NodeTemplateStringLiteralExpression
+              end-rune = 337
+              literal-value = `hello
+	world`
+              start-rune = 324
+            NodeListExpression
+              end-rune = 341
+              start-rune = 340
+            NodeListExpression
+              end-rune = 346
+              start-rune = 344
+              list-expr-value =>
+                NodeNumericLiteralExpression
+                  end-rune = 345
+                  literal-value = 1
+                  start-rune = 345
+            NodeListExpression
+              end-rune = 357
+              start-rune = 349
+              list-expr-value =>
+                NodeNumericLiteralExpression
+                  end-rune = 350
+                  literal-value = 1
+                  start-rune = 350
+                NodeNumericLiteralExpression
+                  end-rune = 353
+                  literal-value = 2
+                  start-rune = 353
+                NodeNumericLiteralExpression
+                  end-rune = 356
+                  literal-value = 3
+                  start-rune = 356
+            NodeBitwiseNotExpression
+              end-rune = 368
+              start-rune = 361
+              unary-expression-child =>
+                NodeTypeIdentifierExpression
+                  end-rune = 368
+                  identexpr-name = someName
+                  start-rune = 361
+            NodeBooleanNotExpression
+              end-rune = 379
+              start-rune = 372
+              unary-expression-child =>
+                NodeTypeIdentifierExpression
+                  end-rune = 379
+                  identexpr-name = someName
+                  start-rune = 372
+            NodeTypeLambdaExpression
+              end-rune = 431
+              start-rune = 382
+              lambda-expression-block =>
+                NodeTypeStatementBlock
+                  end-rune = 431
+                  start-rune = 416
+                  block-child =>
+                    NodeTypeReturnStatement
+                      end-rune = 430
+                      start-rune = 418
+                      return-expr =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 430
+                          identexpr-name = first
+                          start-rune = 425
+              lambda-expression-parameter =>
+                NodeTypeParameter
+                  end-rune = 400
+                  parameter-type = first
+                  start-rune = 392
+                  parameter-type =>
+                    NodeTypeTypeReference
+                      end-rune = 400
+                      start-rune = 398
+                      typereference-path =>
+                        NodeTypeIdentifierPath
+                          end-rune = 400
+                          start-rune = 398
+                          identifierpath-root =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 400
+                              identifieraccess-name = int
+                              start-rune = 398
+                NodeTypeParameter
+                  end-rune = 413
+                  parameter-type = second
+                  start-rune = 403
+                  parameter-type =>
+                    NodeTypeTypeReference
+                      end-rune = 413
+                      start-rune = 410
+                      typereference-path =>
+                        NodeTypeIdentifierPath
+                          end-rune = 413
+                          start-rune = 410
+                          identifierpath-root =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 413
+                              identifieraccess-name = bool
+                              start-rune = 410
+            NodeTypeLambdaExpression
+              end-rune = 447
+              start-rune = 434
+              lambda-expression-child-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 447
+                  identexpr-name = someExpr
+                  start-rune = 440
+      typemember-return-type =>
+        NodeTypeTypeReference
+          end-rune = 12
+          start-rune = 9
+          typereference-path =>
+            NodeTypeVoid
+              end-rune = 12
+              start-rune = 9

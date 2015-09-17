@@ -1,0 +1,44 @@
+NodeTypeFile
+  end-rune = 72
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 72
+      named = SomeClass
+      start-rune = 0
+      type-member =>
+        NodeTypeProperty
+          end-rune = 71
+          named = MyProperty
+          start-rune = 19
+          property-getter =>
+            NodeTypePropertyBlock
+              end-rune = 61
+              propertyblock-type = get
+              start-rune = 53
+              typemember-body =>
+                NodeTypeStatementBlock
+                  end-rune = 61
+                  start-rune = 57
+          property-setter =>
+            NodeTypePropertyBlock
+              end-rune = 69
+              propertyblock-type = set
+              start-rune = 62
+              typemember-body =>
+                NodeTypeStatementBlock
+                  end-rune = 69
+                  start-rune = 66
+          typemember-declared-type =>
+            NodeTypeTypeReference
+              end-rune = 35
+              start-rune = 28
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 35
+                  start-rune = 28
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 35
+                      identifieraccess-name = SomeType
+                      start-rune = 28

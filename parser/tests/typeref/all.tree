@@ -1,0 +1,481 @@
+NodeTypeFile
+  end-rune = 428
+  start-rune = 0
+  child-node =>
+    NodeTypeVariableStatement
+      end-rune = 13
+      named = basic
+      start-rune = 0
+      var-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 6
+          start-rune = 4
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 6
+              start-rune = 4
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 6
+                  identifieraccess-name = int
+                  start-rune = 4
+    NodeTypeVariableStatement
+      end-rune = 32
+      named = nullable
+      start-rune = 15
+      var-declared-type =>
+        NodeTypeNullable
+          end-rune = 22
+          start-rune = 19
+          typereference-inner-type =>
+            NodeTypeTypeReference
+              end-rune = 21
+              start-rune = 19
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 21
+                  start-rune = 19
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 21
+                      identifieraccess-name = int
+                      start-rune = 19
+    NodeTypeVariableStatement
+      end-rune = 53
+      named = streamable
+      start-rune = 34
+      var-declared-type =>
+        NodeTypeStream
+          end-rune = 41
+          start-rune = 38
+          typereference-inner-type =>
+            NodeTypeTypeReference
+              end-rune = 40
+              start-rune = 38
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 40
+                  start-rune = 38
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 40
+                      identifieraccess-name = int
+                      start-rune = 38
+    NodeTypeVariableStatement
+      end-rune = 81
+      named = generic
+      start-rune = 55
+      var-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 72
+          start-rune = 59
+          typereference-generic =>
+            NodeTypeTypeReference
+              end-rune = 71
+              start-rune = 71
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 71
+                  start-rune = 71
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 71
+                      identifieraccess-name = T
+                      start-rune = 71
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 69
+              start-rune = 59
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 69
+                  identifieraccess-name = SomeGeneric
+                  start-rune = 59
+    NodeTypeVariableStatement
+      end-rune = 117
+      named = multigeneric
+      start-rune = 83
+      var-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 103
+          start-rune = 87
+          typereference-generic =>
+            NodeTypeTypeReference
+              end-rune = 99
+              start-rune = 99
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 99
+                  start-rune = 99
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 99
+                      identifieraccess-name = T
+                      start-rune = 99
+            NodeTypeTypeReference
+              end-rune = 102
+              start-rune = 102
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 102
+                  start-rune = 102
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 102
+                      identifieraccess-name = Q
+                      start-rune = 102
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 97
+              start-rune = 87
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 97
+                  identifieraccess-name = SomeGeneric
+                  start-rune = 87
+    NodeTypeVariableStatement
+      end-rune = 148
+      named = nested
+      start-rune = 119
+      var-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 140
+          start-rune = 123
+          typereference-generic =>
+            NodeTypeNullable
+              end-rune = 136
+              start-rune = 135
+              typereference-inner-type =>
+                NodeTypeTypeReference
+                  end-rune = 135
+                  start-rune = 135
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 135
+                      start-rune = 135
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 135
+                          identifieraccess-name = T
+                          start-rune = 135
+            NodeTypeTypeReference
+              end-rune = 139
+              start-rune = 139
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 139
+                  start-rune = 139
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 139
+                      identifieraccess-name = Q
+                      start-rune = 139
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 133
+              start-rune = 123
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 133
+                  identifieraccess-name = SomeGeneric
+                  start-rune = 123
+    NodeTypeVariableStatement
+      end-rune = 185
+      named = nullablegeneric
+      start-rune = 150
+      var-declared-type =>
+        NodeTypeNullable
+          end-rune = 168
+          start-rune = 154
+          typereference-inner-type =>
+            NodeTypeTypeReference
+              end-rune = 167
+              start-rune = 154
+              typereference-generic =>
+                NodeTypeTypeReference
+                  end-rune = 166
+                  start-rune = 166
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 166
+                      start-rune = 166
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 166
+                          identifieraccess-name = T
+                          start-rune = 166
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 164
+                  start-rune = 154
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 164
+                      identifieraccess-name = SomeGeneric
+                      start-rune = 154
+    NodeTypeVariableStatement
+      end-rune = 220
+      named = streamgeneric
+      start-rune = 187
+      var-declared-type =>
+        NodeTypeStream
+          end-rune = 205
+          start-rune = 191
+          typereference-inner-type =>
+            NodeTypeTypeReference
+              end-rune = 204
+              start-rune = 191
+              typereference-generic =>
+                NodeTypeTypeReference
+                  end-rune = 203
+                  start-rune = 203
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 203
+                      start-rune = 203
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 203
+                          identifieraccess-name = T
+                          start-rune = 203
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 201
+                  start-rune = 191
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 201
+                      identifieraccess-name = SomeGeneric
+                      start-rune = 191
+    NodeTypeVariableStatement
+      end-rune = 271
+      named = multinested
+      start-rune = 222
+      var-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 258
+          start-rune = 226
+          typereference-generic =>
+            NodeTypeTypeReference
+              end-rune = 245
+              start-rune = 238
+              typereference-generic =>
+                NodeTypeNullable
+                  end-rune = 244
+                  start-rune = 243
+                  typereference-inner-type =>
+                    NodeTypeTypeReference
+                      end-rune = 243
+                      start-rune = 243
+                      typereference-path =>
+                        NodeTypeIdentifierPath
+                          end-rune = 243
+                          start-rune = 243
+                          identifierpath-root =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 243
+                              identifieraccess-name = T
+                              start-rune = 243
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 241
+                  start-rune = 238
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 241
+                      identifieraccess-name = List
+                      start-rune = 238
+            NodeTypeStream
+              end-rune = 257
+              start-rune = 248
+              typereference-inner-type =>
+                NodeTypeTypeReference
+                  end-rune = 256
+                  start-rune = 248
+                  typereference-generic =>
+                    NodeTypeTypeReference
+                      end-rune = 252
+                      start-rune = 252
+                      typereference-path =>
+                        NodeTypeIdentifierPath
+                          end-rune = 252
+                          start-rune = 252
+                          identifierpath-root =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 252
+                              identifieraccess-name = T
+                              start-rune = 252
+                    NodeTypeTypeReference
+                      end-rune = 255
+                      start-rune = 255
+                      typereference-path =>
+                        NodeTypeIdentifierPath
+                          end-rune = 255
+                          start-rune = 255
+                          identifierpath-root =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 255
+                              identifieraccess-name = Q
+                              start-rune = 255
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 250
+                      start-rune = 248
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 250
+                          identifieraccess-name = Map
+                          start-rune = 248
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 236
+              start-rune = 226
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 236
+                  identifieraccess-name = SomeGeneric
+                  start-rune = 226
+    NodeTypeVariableStatement
+      end-rune = 306
+      named = pathed
+      start-rune = 273
+      var-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 298
+          start-rune = 277
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 298
+              start-rune = 277
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 298
+                  identifieraccess-name = Type
+                  start-rune = 295
+                  identifieraccess-source =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 293
+                      identifieraccess-name = To
+                      start-rune = 292
+                      identifieraccess-source =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 290
+                          identifieraccess-name = Reference
+                          start-rune = 282
+                          identifieraccess-source =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 280
+                              identifieraccess-name = Some
+                              start-rune = 277
+    NodeTypeVariableStatement
+      end-rune = 337
+      named = nullablepathed
+      start-rune = 308
+      var-declared-type =>
+        NodeTypeNullable
+          end-rune = 321
+          start-rune = 312
+          typereference-inner-type =>
+            NodeTypeTypeReference
+              end-rune = 320
+              start-rune = 312
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 320
+                  start-rune = 312
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 320
+                      identifieraccess-name = Type
+                      start-rune = 317
+                      identifieraccess-source =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 315
+                          identifieraccess-name = Some
+                          start-rune = 312
+    NodeTypeVariableStatement
+      end-rune = 370
+      named = streamablepathed
+      start-rune = 339
+      var-declared-type =>
+        NodeTypeStream
+          end-rune = 352
+          start-rune = 343
+          typereference-inner-type =>
+            NodeTypeTypeReference
+              end-rune = 351
+              start-rune = 343
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 351
+                  start-rune = 343
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 351
+                      identifieraccess-name = Type
+                      start-rune = 348
+                      identifieraccess-source =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 346
+                          identifieraccess-name = Some
+                          start-rune = 343
+    NodeTypeVariableStatement
+      end-rune = 402
+      named = genercipathed
+      start-rune = 372
+      var-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 387
+          start-rune = 376
+          typereference-generic =>
+            NodeTypeTypeReference
+              end-rune = 386
+              start-rune = 386
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 386
+                  start-rune = 386
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 386
+                      identifieraccess-name = T
+                      start-rune = 386
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 384
+              start-rune = 376
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 384
+                  identifieraccess-name = Type
+                  start-rune = 381
+                  identifieraccess-source =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 379
+                      identifieraccess-name = Some
+                      start-rune = 376
+    NodeTypeVariableStatement
+      end-rune = 428
+      named = nullablestream
+      start-rune = 404
+      var-declared-type =>
+        NodeTypeStream
+          end-rune = 412
+          start-rune = 411
+          typereference-inner-type =>
+            NodeTypeNullable
+              end-rune = 411
+              start-rune = 408
+              typereference-inner-type =>
+                NodeTypeTypeReference
+                  end-rune = 410
+                  start-rune = 408
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 410
+                      start-rune = 408
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 410
+                          identifieraccess-name = int
+                          start-rune = 408

@@ -54,6 +54,8 @@ var lexerTests = []lexerTest{
 	{"boolean and", "&&", []lexeme{lexeme{tokenTypeBooleanAnd, 0, "&&"}, tEOF}},
 	{"bitwise and", "&", []lexeme{lexeme{tokenTypeAnd, 0, "&"}, tEOF}},
 
+	{"bitwise xor", "^", []lexeme{lexeme{tokenTypeXor, 0, "^"}, tEOF}},
+
 	{"left brace", "{", []lexeme{lexeme{tokenTypeLeftBrace, 0, "{"}, tEOF}},
 	{"left paren", "(", []lexeme{lexeme{tokenTypeLeftParen, 0, "("}, tEOF}},
 	{"left bracket", "[", []lexeme{lexeme{tokenTypeLeftBracket, 0, "["}, tEOF}},
@@ -68,14 +70,25 @@ var lexerTests = []lexerTest{
 	{"gt", ">", []lexeme{lexeme{tokenTypeGreaterThan, 0, ">"}, tEOF}},
 	{"gte", ">=", []lexeme{lexeme{tokenTypeGTE, 0, ">="}, tEOF}},
 
+	{"bsl", "<<", []lexeme{lexeme{tokenTypeBitwiseShiftLeft, 0, "<<"}, tEOF}},
+
 	{"not", "!", []lexeme{lexeme{tokenTypeNot, 0, "!"}, tEOF}},
 	{"not equals", "!=", []lexeme{lexeme{tokenTypeNotEquals, 0, "!="}, tEOF}},
 
+	{"ellipsis", "..", []lexeme{lexeme{tokenTypeEllipsis, 0, ".."}, tEOF}},
+
 	{"dot access", ".", []lexeme{lexeme{tokenTypeDotAccessOperator, 0, "."}, tEOF}},
 	{"arrow access", "->", []lexeme{lexeme{tokenTypeArrowAccessOperator, 0, "->"}, tEOF}},
+	{"stream access", "*.", []lexeme{lexeme{tokenTypeStreamAccessOperator, 0, "*."}, tEOF}},
 
+	{"port arrow access", "<-", []lexeme{lexeme{tokenTypeArrowPortOperator, 0, "<-"}, tEOF}},
+	{"lambda arrow", "=>", []lexeme{lexeme{tokenTypeLambdaArrowOperator, 0, "=>"}, tEOF}},
+
+	{"question mark", "?", []lexeme{lexeme{tokenTypeQuestionMark, 0, "?"}, tEOF}},
 	{"null or access", "??", []lexeme{lexeme{tokenTypeNullOrValueOperator, 0, "??"}, tEOF}},
 	{"null dot access", "?.", []lexeme{lexeme{tokenTypeNullDotAccessOperator, 0, "?."}, tEOF}},
+
+	{"cast start access", ".(", []lexeme{lexeme{tokenTypeDotCastStart, 0, ".("}, tEOF}},
 
 	{"true literal", "true", []lexeme{tTrue, tEOF}},
 	{"false literal", "false", []lexeme{tFalse, tEOF}},
@@ -150,11 +163,11 @@ var lexerTests = []lexerTest{
 		lexeme{tokenTypeIdentifer, 0, "foo"},
 		tEOF}},
 
-	{"class def test", "class SomeClass\n{}", []lexeme{
+	{"class def test", "class SomeClass {}", []lexeme{
 		lexeme{tokenTypeKeyword, 0, "class"},
 		tWhitespace,
 		lexeme{tokenTypeIdentifer, 0, "SomeClass"},
-		lexeme{tokenTypeNewline, 0, "\n"},
+		lexeme{tokenTypeWhitespace, 0, " "},
 		lexeme{tokenTypeLeftBrace, 0, "{"},
 		lexeme{tokenTypeRightBrace, 0, "}"},
 		tEOF}},
@@ -181,7 +194,7 @@ var lexerTests = []lexerTest{
 	{"dot expression comment newline test", "this//.foo\nbar", []lexeme{
 		lexeme{tokenTypeKeyword, 0, "this"},
 		lexeme{tokenTypeSinglelineComment, 0, "//.foo"},
-		lexeme{tokenTypeNewline, 0, "\n"},
+		lexeme{tokenTypeSyntheticSemicolon, 0, "\n"},
 		lexeme{tokenTypeIdentifer, 0, "bar"},
 		tEOF}},
 
@@ -189,6 +202,18 @@ var lexerTests = []lexerTest{
 		lexeme{tokenTypeKeyword, 0, "this"},
 		lexeme{tokenTypeMultilineComment, 0, "/*.foo*/"},
 		lexeme{tokenTypeIdentifer, 0, "bar"},
+		tEOF}},
+
+	// Synthetic semi tests
+	{"basic synthetic semi test", "foo\n", []lexeme{
+		lexeme{tokenTypeIdentifer, 0, "foo"},
+		lexeme{tokenTypeSyntheticSemicolon, 0, "\n"},
+		tEOF}},
+
+	{"basic normal newline test", "foo{\n", []lexeme{
+		lexeme{tokenTypeIdentifer, 0, "foo"},
+		lexeme{tokenTypeLeftBrace, 0, "{"},
+		lexeme{tokenTypeNewline, 0, "\n"},
 		tEOF}},
 }
 
@@ -212,7 +237,7 @@ class SomeClass`
 	checkNext(l, t, lexeme{tokenTypeWhitespace, 8, " "}, 0, 8)
 	checkNext(l, t, lexeme{tokenTypeSinglelineComment, 9, "// some comment"}, 0, 9)
 
-	checkNext(l, t, lexeme{tokenTypeNewline, 24, "\n"}, 0, 24)
+	checkNext(l, t, lexeme{tokenTypeSyntheticSemicolon, 24, "\n"}, 0, 24)
 
 	checkNext(l, t, lexeme{tokenTypeKeyword, 25, "class"}, 1, 0)
 	checkNext(l, t, lexeme{tokenTypeWhitespace, 30, " "}, 1, 5)

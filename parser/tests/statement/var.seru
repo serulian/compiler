@@ -1,0 +1,4 @@
+function<void> SomeFunction() {
+	var<SomeType> someName
+	var<SomeType> someName = someExpr
+}

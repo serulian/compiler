@@ -1,5 +1,5 @@
 NodeTypeFile
-  end-rune = 95
+  end-rune = 94
   start-rune = 0
   child-node =>
     NodeTypeImport
@@ -9,7 +9,7 @@ NodeTypeFile
       named = SomethingElse
       start-rune = 0
     NodeTypeImport
-      end-rune = 95
+      end-rune = 94
       import-source = SomeLocalFile
       import-subsource = Blah
       named = Foobar

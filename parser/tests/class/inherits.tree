@@ -1,0 +1,17 @@
+NodeTypeFile
+  end-rune = 23
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 23
+      named = SomeClass
+      start-rune = 0
+      class-basetypepath =>
+        NodeTypeIdentifierPath
+          end-rune = 21
+          start-rune = 18
+          identifierpath-root =>
+            NodeTypeIdentifierAccess
+              end-rune = 21
+              identifieraccess-name = Foo
+              start-rune = 18
