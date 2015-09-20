@@ -30,7 +30,7 @@ type GraphLayer struct {
 
 // GraphNode represents a single node in a graph layer.
 type GraphNode struct {
-	NodeID string      // Unique ID for the node.
+	NodeId string      // Unique ID for the node.
 	layer  *GraphLayer // The layer that owns the node.
 }
 
@@ -55,20 +55,20 @@ func (gl *GraphLayer) CreateNode() GraphNode {
 	gl.cayleyStore.AddQuad(cayley.Quad(nodeId, nodeMemberPredicate, gl.id, gl.prefix))
 
 	return GraphNode{
-		NodeID: nodeId,
+		NodeId: nodeId,
 		layer:  gl,
 	}
 }
 
 // Connect decorates the given graph node with a predicate pointing at the given target node.
 func (gn *GraphNode) Connect(predicate string, target GraphNode) {
-	gn.Decorate(predicate, target.NodeID)
+	gn.Decorate(predicate, target.NodeId)
 }
 
 // Decorate decorates the given graph node with a predicate pointing at the given target.
 func (gn *GraphNode) Decorate(predicate string, target string) {
 	fullPredicate := gn.layer.prefix + "-" + predicate
-	gn.layer.cayleyStore.AddQuad(cayley.Quad(gn.NodeID, fullPredicate, target, gn.layer.prefix))
+	gn.layer.cayleyStore.AddQuad(cayley.Quad(gn.NodeId, fullPredicate, target, gn.layer.prefix))
 }
 
 // getPredicatePrefix returns the prefix to apply to all predicates in this layer kind

@@ -28,7 +28,7 @@ type graphNodeIterator struct {
 	iterator   graph.Iterator // The wrapped Cayley Iterator.
 	predicates []string       // The set of predicates to retrieve.
 
-	NodeId string            // The current node ID (if any).
+	Node   GraphNode         // The current node (if any).
 	Values map[string]string // The current predicate values (if any).
 }
 
@@ -112,7 +112,12 @@ func (gni *graphNodeIterator) Next() bool {
 		updatedTags[predicate] = gni.layer.cayleyStore.NameOf(tags[fullPredicate])
 	}
 
-	gni.NodeId = gni.layer.cayleyStore.NameOf(gni.iterator.Result())
+	node := GraphNode{
+		NodeId: gni.layer.cayleyStore.NameOf(gni.iterator.Result()),
+		layer:  gni.layer,
+	}
+
+	gni.Node = node
 	gni.Values = updatedTags
 	return true
 }
