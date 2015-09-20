@@ -11,8 +11,8 @@ import (
 	"path"
 	"sync"
 
-	"github.com/Serulian/compiler/parser"
-	"github.com/Serulian/compiler/vcs"
+	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/vcs"
 )
 
 // pathKind identifies the supported kind of paths
@@ -59,9 +59,9 @@ type PackageLoader struct {
 }
 
 type LoadResult struct {
-	status   bool     // True on success, false otherwise
-	errors   []error  // The errors encountered, if any
-	warnings []string // The warnings encountered, if any
+	Status   bool     // True on success, false otherwise
+	Errors   []error  // The errors encountered, if any
+	Warnings []string // The warnings encountered, if any
 }
 
 // NewPackageLoader creates and returns a new package loader for the given path.
@@ -89,9 +89,9 @@ func (p *PackageLoader) Load() *LoadResult {
 
 	// Start the error/warning collection goroutine.
 	result := &LoadResult{
-		status:   true,
-		errors:   make([]error, 0),
-		warnings: make([]string, 0),
+		Status:   true,
+		Errors:   make([]error, 0),
+		Warnings: make([]string, 0),
 	}
 
 	go p.collectIssues(result)
@@ -120,11 +120,11 @@ func (p *PackageLoader) collectIssues(result *LoadResult) {
 	for {
 		select {
 		case newError := <-p.errors:
-			result.errors = append(result.errors, newError)
-			result.status = false
+			result.Errors = append(result.Errors, newError)
+			result.Status = false
 
 		case newWarnings := <-p.warnings:
-			result.warnings = append(result.warnings, newWarnings)
+			result.Warnings = append(result.Warnings, newWarnings)
 
 		case <-p.finished:
 			return
@@ -168,7 +168,6 @@ func (p *PackageLoader) loadAndParsePath(currentPath pathInformation) {
 
 	case pathVCSPackage:
 		p.loadVCSPackage(currentPath)
-		break
 	}
 }
 
