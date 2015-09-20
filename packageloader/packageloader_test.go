@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Serulian/compiler/parser"
+	"github.com/serulian/compiler/parser"
 )
 
 var _ = fmt.Printf
@@ -48,8 +48,8 @@ func TestBasicLoading(t *testing.T) {
 
 	loader := NewPackageLoader("tests/basic/somefile.seru", tt.createAstNode)
 	result := loader.Load()
-	if !result.status || len(result.errors) > 0 {
-		t.Errorf("Expected success, found: %v", result.errors)
+	if !result.Status || len(result.Errors) > 0 {
+		t.Errorf("Expected success, found: %v", result.Errors)
 	}
 
 	assertFileImported(t, tt, "tests/basic/somefile.seru")
@@ -64,11 +64,11 @@ func TestUnknownPath(t *testing.T) {
 
 	loader := NewPackageLoader("tests/unknownimport/importsunknown.seru", tt.createAstNode)
 	result := loader.Load()
-	if result.status || len(result.errors) != 1 {
+	if result.Status || len(result.Errors) != 1 {
 		t.Errorf("Expected error")
 	}
 
-	if !strings.Contains(result.errors[0].Error(), "someunknownpath") {
+	if !strings.Contains(result.Errors[0].Error(), "someunknownpath") {
 		t.Errorf("Expected error referencing someunknownpath")
 	}
 
