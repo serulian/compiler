@@ -81,6 +81,17 @@ func (gq *GraphQuery) getAdjustedPredicates(predicates ...string) []interface{} 
 	return adjusted
 }
 
+// GetValue executes the query and returns the name of the node found, as a value.
+func (gq *GraphQuery) GetValue() (string, bool) {
+	it := gq.path.BuildIterator()
+	result := cayley.RawNext(it)
+	if !result {
+		return "", false
+	}
+
+	return gq.layer.cayleyStore.NameOf(it.Result()), true
+}
+
 // GetNode executes the query and returns the single node found or false. If there is
 // more than a single node as a result of the query, the first node is returned.
 func (gq *GraphQuery) GetNode() (GraphNode, bool) {

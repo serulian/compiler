@@ -41,6 +41,21 @@ func (g *SRG) FindModuleBySource(source parser.InputSource) (SRGModule, bool) {
 	return moduleForSRGNode(node, string(source)), true
 }
 
+// FindTypeByName searches for the type definition or declaration with the given name under
+// this module and returns it (if found).
+func (m *SRGModule) FindTypeByName(typeName string) (SRGType, bool) {
+	typeNode, found := m.fileNode.StartQuery().
+		Out(parser.NodePredicateChild).
+		Has(parser.NodeClassPredicateName, typeName).
+		GetNode()
+
+	if !found {
+		return SRGType{}, false
+	}
+
+	return typeForSRGNode(typeNode, typeName), true
+}
+
 // moduleForSRGNode returns an SRGModule struct representing the node, which is the root
 // file node in the SRG for the module.
 func moduleForSRGNode(fileNode compilergraph.GraphNode, inputSource string) SRGModule {

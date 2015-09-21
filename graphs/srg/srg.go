@@ -57,8 +57,13 @@ func (g *SRG) LoadAndParse() *packageloader.LoadResult {
 }
 
 // FindAllNodes starts a new query over the SRG from nodes of the given type.
-func (g *SRG) FindAllNodes(nodeType parser.NodeType) *compilergraph.GraphQuery {
-	return g.layer.StartQuery(fmt.Sprintf("%v", nodeType)).In(srgNodeAstKindPredicate)
+func (g *SRG) FindAllNodes(nodeType ...parser.NodeType) *compilergraph.GraphQuery {
+	var nodeNames []string = make([]string, 0, len(nodeType))
+	for _, typeId := range nodeType {
+		nodeNames = append(nodeNames, fmt.Sprintf("%v", typeId))
+	}
+
+	return g.layer.StartQuery(nodeNames...).In(srgNodeAstKindPredicate)
 }
 
 // srgASTNode represents a parser-compatible AST node, backed by an SRG node.

@@ -5,6 +5,8 @@
 package compilergraph
 
 import (
+	"fmt"
+
 	"github.com/google/cayley"
 )
 
@@ -26,4 +28,24 @@ func (gn *GraphNode) Connect(predicate string, target GraphNode) {
 func (gn *GraphNode) Decorate(predicate string, target string) {
 	fullPredicate := gn.layer.prefix + "-" + predicate
 	gn.layer.cayleyStore.AddQuad(cayley.Quad(string(gn.NodeId), fullPredicate, target, gn.layer.prefix))
+}
+
+// StartQuery starts a new query on the graph layer, with its origin being the current node.
+func (gn *GraphNode) StartQuery() *GraphQuery {
+	return gn.layer.StartQuery(string(gn.NodeId))
+}
+
+// Get returns the value of the given predicate found on this node and panics otherwise.
+func (gn *GraphNode) Get(predicateName string) string {
+	value, found := gn.TryGet(predicateName)
+	if !found {
+		panic(fmt.Sprintf("Could not find value for predicate %s on node %s", predicateName, gn.NodeId))
+	}
+
+	return value
+}
+
+// TryGet returns the value of the given predicate found on this node (if any).
+func (gn *GraphNode) TryGet(predicateName string) (string, bool) {
+	return gn.StartQuery().Out(predicateName).GetValue()
 }
