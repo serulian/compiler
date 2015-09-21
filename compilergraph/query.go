@@ -61,6 +61,16 @@ func (gq *GraphQuery) Out(via ...string) *GraphQuery {
 	}
 }
 
+// Has filters this Query to represent the nodes that have some linkage
+// to some known node.
+func (gq *GraphQuery) Has(via string, nodes ...string) *GraphQuery {
+	adjustedVia := gq.getAdjustedPredicates(via)[0]
+	return &GraphQuery{
+		path:  gq.path.Has(adjustedVia, nodes...),
+		layer: gq.layer,
+	}
+}
+
 func (gq *GraphQuery) getAdjustedPredicates(predicates ...string) []interface{} {
 	adjusted := make([]interface{}, 0, len(predicates))
 
@@ -69,6 +79,17 @@ func (gq *GraphQuery) getAdjustedPredicates(predicates ...string) []interface{} 
 		adjusted = append(adjusted, fullPredicate)
 	}
 	return adjusted
+}
+
+// GetNode executes the query and returns the single node found or false. If there is
+// more than a single node as a result of the query, the first node is returned.
+func (gq *GraphQuery) GetNode() (GraphNode, bool) {
+	it := gq.BuildNodeIterator()
+	if !it.Next() {
+		return GraphNode{}, false
+	}
+
+	return it.Node, true
 }
 
 // BuildNodeIterator returns an iterator for retrieving the results of the query, with
