@@ -113,7 +113,7 @@ func (gni *graphNodeIterator) Next() bool {
 	}
 
 	node := GraphNode{
-		NodeId: gni.layer.cayleyStore.NameOf(gni.iterator.Result()),
+		NodeId: GraphNodeId(gni.layer.cayleyStore.NameOf(gni.iterator.Result())),
 		layer:  gni.layer,
 	}
 
