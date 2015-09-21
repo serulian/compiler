@@ -31,6 +31,12 @@ func (gn *GraphNode) Decorate(predicate string, target string) {
 	gn.layer.cayleyStore.AddQuad(cayley.Quad(string(gn.NodeId), fullPredicate, target, gn.layer.prefix))
 }
 
+// DecorateWithEnum decorates the given graph node with a predicate pointing to an enumeration value.
+// The enumName is specified to ensure there are no conflicts with other numeric values.
+func (gn *GraphNode) DecorateWithEnum(predicate string, enumName string, enumValue int) {
+	gn.Decorate(predicate, gn.layer.getEnumKey(enumName, enumValue))
+}
+
 // StartQuery starts a new query on the graph layer, with its origin being the current node.
 func (gn *GraphNode) StartQuery() *GraphQuery {
 	return gn.layer.StartQuery(string(gn.NodeId))
@@ -44,6 +50,12 @@ func (gn *GraphNode) GetInt(predicateName string) int64 {
 		panic(fmt.Sprintf("Could not convert predicate %v on node %v to an int: %v", predicateName, gn.NodeId, strValue))
 	}
 	return i
+}
+
+// GetEnum returns the value of the given predicate found on this node as an enum int value.
+func (gn *GraphNode) GetEnum(predicateName string, enumName string) int {
+	strValue := gn.Get(predicateName)
+	return gn.layer.parseEnumKey(strValue, enumName)
 }
 
 // Get returns the value of the given predicate found on this node and panics otherwise.

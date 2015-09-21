@@ -40,6 +40,22 @@ func (gl *GraphLayer) StartQuery(nodeNames ...string) *GraphQuery {
 	}
 }
 
+// FindNodesWithEnumType returns a new query starting at the nodes who are linked to enumeration values
+// (of the given name) by the given predicate.
+//
+// For example:
+//
+// `FindNodesWithEnumType("parser-ast-node-type", "NodeType", NodeType.Class, NodeType.Interface)`
+// would return all classes and interfaces.
+func (gl *GraphLayer) FindNodesWithEnumType(predicate string, enumName string, values ...int) *GraphQuery {
+	var nodeNames []string
+	for _, value := range values {
+		nodeNames = append(nodeNames, gl.getEnumKey(enumName, value))
+	}
+
+	return gl.StartQuery(nodeNames...).In(predicate)
+}
+
 // In updates this Query to represent the nodes that are adjacent to the
 // current nodes, via the given inbound predicate.
 func (gq *GraphQuery) In(via ...string) *GraphQuery {

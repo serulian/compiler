@@ -8,6 +8,8 @@ package compilergraph
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 
 	"github.com/google/cayley"
 	"github.com/nu7hatch/gouuid"
@@ -52,6 +54,32 @@ func (gl *GraphLayer) CreateNode() GraphNode {
 		NodeId: GraphNodeId(nodeId),
 		layer:  gl,
 	}
+}
+
+// getEnumKey returns a unique string representing the enumeration name and associated value, such
+// that it doesn't conflict with other numeric values in the system (either other enums or raw
+// numeric values).
+func (gl *GraphLayer) getEnumKey(enumName string, enumValue int) string {
+	return strconv.Itoa(enumValue) + "|" + enumName
+}
+
+// parseEnumKey parses an enum key (as returned by getEnumKey) and returns the int value.
+func (gl *GraphLayer) parseEnumKey(strValue string, enumName string) int {
+	pieces := strings.SplitN(strValue, "|", 2)
+	if len(pieces) != 2 {
+		panic(fmt.Sprintf("Expected 2 pieces in enum key, found: %v", pieces))
+	}
+
+	if pieces[1] != enumName {
+		panic(fmt.Sprintf("Expected enum key %s, found: %s", enumName, pieces[1]))
+	}
+
+	i, err := strconv.Atoi(pieces[0])
+	if err != nil {
+		panic(fmt.Sprintf("Expected int value in enum key, found: %s", pieces[0]))
+	}
+
+	return i
 }
 
 // getPredicatePrefix returns the prefix to apply to all predicates in this layer kind

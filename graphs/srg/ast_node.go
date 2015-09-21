@@ -5,8 +5,6 @@
 package srg
 
 import (
-	"strconv"
-
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/parser"
 )
@@ -31,7 +29,7 @@ func (ast *srgASTNode) Decorate(predicate string, value string) parser.AstNode {
 // buildASTNode constructs a new node in the SRG.
 func (g *SRG) buildASTNode(source parser.InputSource, kind parser.NodeType) parser.AstNode {
 	graphNode := g.layer.CreateNode()
-	graphNode.Decorate(srgNodeAstKindPredicate, strconv.Itoa(int(kind)))
+	graphNode.DecorateWithEnum(srgNodeAstKindPredicate, srgNodeAstKindEnumName, int(kind))
 
 	return &srgASTNode{
 		graphNode: graphNode,
