@@ -60,35 +60,10 @@ func (g *SRG) LoadAndParse() *packageloader.LoadResult {
 func (g *SRG) FindAllNodes(nodeType ...parser.NodeType) *compilergraph.GraphQuery {
 	var nodeNames []string = make([]string, 0, len(nodeType))
 	for _, typeId := range nodeType {
-		nodeNames = append(nodeNames, fmt.Sprintf("%v", typeId))
+		nodeNames = append(nodeNames, fmt.Sprintf("%d", typeId))
 	}
 
+	// TODO(jschorr): We should use something besides raw ints here, but then we need
+	// a way to parse the enums out from the graph.
 	return g.layer.StartQuery(nodeNames...).In(srgNodeAstKindPredicate)
-}
-
-// srgASTNode represents a parser-compatible AST node, backed by an SRG node.
-type srgASTNode struct {
-	graphNode compilergraph.GraphNode // The backing graph node.
-}
-
-// Connect connects an SRG AST node to another SRG AST node.
-func (ast *srgASTNode) Connect(predicate string, other parser.AstNode) parser.AstNode {
-	ast.graphNode.Connect(predicate, other.(*srgASTNode).graphNode)
-	return ast
-}
-
-// Decorate decorates an SRG AST node with the given value.
-func (ast *srgASTNode) Decorate(predicate string, value string) parser.AstNode {
-	ast.graphNode.Decorate(predicate, value)
-	return ast
-}
-
-// buildASTNode constructs a new node in the SRG.
-func (g *SRG) buildASTNode(source parser.InputSource, kind parser.NodeType) parser.AstNode {
-	graphNode := g.layer.CreateNode()
-	graphNode.Decorate(srgNodeAstKindPredicate, fmt.Sprintf("%v", kind))
-
-	return &srgASTNode{
-		graphNode: graphNode,
-	}
 }

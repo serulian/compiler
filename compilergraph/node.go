@@ -6,6 +6,7 @@ package compilergraph
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/google/cayley"
 )
@@ -33,6 +34,16 @@ func (gn *GraphNode) Decorate(predicate string, target string) {
 // StartQuery starts a new query on the graph layer, with its origin being the current node.
 func (gn *GraphNode) StartQuery() *GraphQuery {
 	return gn.layer.StartQuery(string(gn.NodeId))
+}
+
+// GetAsInt returns the value of the given predicate found on this node as an integer.
+func (gn *GraphNode) GetInt(predicateName string) int64 {
+	strValue := gn.Get(predicateName)
+	i, err := strconv.ParseInt(strValue, 10, 64)
+	if err != nil {
+		panic(fmt.Sprintf("Could not convert predicate %v on node %v to an int: %v", predicateName, gn.NodeId, strValue))
+	}
+	return i
 }
 
 // Get returns the value of the given predicate found on this node and panics otherwise.

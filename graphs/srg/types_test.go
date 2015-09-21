@@ -43,6 +43,7 @@ func TestBasicTypes(t *testing.T) {
 		// Search for the type under the module again and verify matches.
 		node, found := module.FindTypeByName(typeDef.Name)
 
+		assert.Equal(t, ClassType, node.GetTypeKind(), "Expected class as kind of type")
 		assert.True(t, found, "Could not find type def or decl %s", typeDef.Name)
 		assert.Equal(t, node.typeNode.NodeId, typeDef.typeNode.NodeId, "Node ID mismatch on types")
 	}

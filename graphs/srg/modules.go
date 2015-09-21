@@ -44,6 +44,7 @@ func (g *SRG) FindModuleBySource(source parser.InputSource) (SRGModule, bool) {
 // FindTypeByName searches for the type definition or declaration with the given name under
 // this module and returns it (if found).
 func (m *SRGModule) FindTypeByName(typeName string) (SRGType, bool) {
+	// TODO(jschorr): Filter out non-types.
 	typeNode, found := m.fileNode.StartQuery().
 		Out(parser.NodePredicateChild).
 		Has(parser.NodeClassPredicateName, typeName).

@@ -4,6 +4,8 @@
 
 package srg
 
+//go:generate stringer -type=TypeKind
+
 import (
 	"fmt"
 
@@ -17,6 +19,14 @@ type SRGType struct {
 
 	Name string // The name of the type.
 }
+
+// TypeKind defines the various supported kinds of types in the SRG.
+type TypeKind int
+
+const (
+	ClassType TypeKind = iota
+	InterfaceType
+)
 
 // GetTypes returns all the types defined in the SRG.
 func (g *SRG) GetTypes() []SRGType {
@@ -40,6 +50,22 @@ func (t *SRGType) Module() SRGModule {
 	}
 
 	return moduleForSRGNode(moduleNode, moduleNode.Get(parser.NodePredicateSource))
+}
+
+// GetTypeKind returns the kind of this type declaration or definition.
+func (t *SRGType) GetTypeKind() TypeKind {
+	nodeType := parser.NodeType(t.typeNode.GetInt(srgNodeAstKindPredicate))
+	switch nodeType {
+	case parser.NodeTypeClass:
+		return ClassType
+
+	case parser.NodeTypeInterface:
+		return InterfaceType
+
+	default:
+		panic(fmt.Sprintf("Unknown kind of type %s for node %s", nodeType, t.typeNode.NodeId))
+		return ClassType
+	}
 }
 
 // typeForSRGNode returns an SRGType struct representing the node, which is the root node
