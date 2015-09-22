@@ -54,7 +54,8 @@ func (t *SRGType) Module() SRGModule {
 
 // GetTypeKind returns the kind of this type declaration or definition.
 func (t *SRGType) GetTypeKind() TypeKind {
-	nodeType := parser.NodeType(t.typeNode.GetEnum(srgNodeAstKindPredicate, srgNodeAstKindEnumName))
+	nodeType := t.typeNode.GetTagged(srgNodeAstKindPredicate, parser.NodeTypeTagged).(parser.NodeType)
+
 	switch nodeType {
 	case parser.NodeTypeClass:
 		return ClassType

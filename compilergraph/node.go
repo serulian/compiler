@@ -20,6 +20,13 @@ type GraphNode struct {
 	layer  *GraphLayer // The layer that owns the node.
 }
 
+// taggedValue defines an interface for
+type TaggedValue interface {
+	Name() string                   // The unique name for this kind of value.
+	Value() string                  // The string value.
+	Build(value string) interface{} // Builds a new tagged value from the given value string.
+}
+
 // Connect decorates the given graph node with a predicate pointing at the given target node.
 func (gn *GraphNode) Connect(predicate string, target GraphNode) {
 	gn.Decorate(predicate, string(target.NodeId))
@@ -31,10 +38,10 @@ func (gn *GraphNode) Decorate(predicate string, target string) {
 	gn.layer.cayleyStore.AddQuad(cayley.Quad(string(gn.NodeId), fullPredicate, target, gn.layer.prefix))
 }
 
-// DecorateWithEnum decorates the given graph node with a predicate pointing to an enumeration value.
-// The enumName is specified to ensure there are no conflicts with other numeric values.
-func (gn *GraphNode) DecorateWithEnum(predicate string, enumName string, enumValue int) {
-	gn.Decorate(predicate, gn.layer.getEnumKey(enumName, enumValue))
+// DecorateWithTagged decorates the given graph node with a predicate pointing to a tagged value.
+// Tagged values are typically used for values that would otherwise not be unique (such as enums).
+func (gn *GraphNode) DecorateWithTagged(predicate string, value TaggedValue) {
+	gn.Decorate(predicate, gn.layer.getTaggedKey(value))
 }
 
 // StartQuery starts a new query on the graph layer, with its origin being the current node.
@@ -52,10 +59,11 @@ func (gn *GraphNode) GetInt(predicateName string) int64 {
 	return i
 }
 
-// GetEnum returns the value of the given predicate found on this node as an enum int value.
-func (gn *GraphNode) GetEnum(predicateName string, enumName string) int {
+// GetTagged returns the value of the given predicate found on this node, "cast" to the type of the
+// given tagged value.
+func (gn *GraphNode) GetTagged(predicateName string, example TaggedValue) interface{} {
 	strValue := gn.Get(predicateName)
-	return gn.layer.parseEnumKey(strValue, enumName)
+	return gn.layer.parseTaggedKey(strValue, example)
 }
 
 // Get returns the value of the given predicate found on this node and panics otherwise.

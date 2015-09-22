@@ -6,6 +6,10 @@ package parser
 
 //go:generate stringer -type=NodeType
 
+import (
+	"strconv"
+)
+
 type AstNode interface {
 	// Connect connects this AstNode to another AstNode with the given predicate,
 	// and returns the same AstNode.
@@ -134,7 +138,26 @@ const (
 	// Misc
 	NodeTypeIdentifierPath   // An identifier path
 	NodeTypeIdentifierAccess // A named reference via an identifier or a dot access
+
+	// NodeType is a tagged type.
+	NodeTypeTagged
 )
+
+func (t NodeType) Name() string {
+	return "NodeType"
+}
+
+func (t NodeType) Value() string {
+	return strconv.Itoa(int(t))
+}
+
+func (t NodeType) Build(value string) interface{} {
+	i, err := strconv.Atoi(value)
+	if err != nil {
+		panic("Invalid value for NodeType: " + value)
+	}
+	return NodeType(i)
+}
 
 const (
 	//

@@ -16,9 +16,6 @@ import (
 // Predicate for decorating an SRG node with its AST kind.
 const srgNodeAstKindPredicate = "ast-kind"
 
-// The name of the NodeType enumeration when used in the graph.
-const srgNodeAstKindEnumName = "NodeType"
-
 // SRG represents the SRG layer and all its associated helper methods.
 type SRG struct {
 	graph *compilergraph.SerulianGraph // The root graph.
@@ -61,10 +58,10 @@ func (g *SRG) LoadAndParse() *packageloader.LoadResult {
 
 // FindAllNodes starts a new query over the SRG from nodes of the given type.
 func (g *SRG) FindAllNodes(nodeTypes ...parser.NodeType) *compilergraph.GraphQuery {
-	nodeTypeInts := make([]int, len(nodeTypes))
+	var nodeTypesTagged []compilergraph.TaggedValue = make([]compilergraph.TaggedValue, len(nodeTypes))
 	for index, nodeType := range nodeTypes {
-		nodeTypeInts[index] = int(nodeType)
+		nodeTypesTagged[index] = nodeType
 	}
 
-	return g.layer.FindNodesWithEnumType(srgNodeAstKindPredicate, srgNodeAstKindEnumName, nodeTypeInts...)
+	return g.layer.FindNodesWithTaggedType(srgNodeAstKindPredicate, nodeTypesTagged...)
 }
