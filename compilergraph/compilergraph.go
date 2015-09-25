@@ -13,6 +13,9 @@ import (
 
 import _ "github.com/google/cayley/graph/bolt"
 
+// The length of node IDs in characters.
+const NodeIDLength = 36
+
 // The filename for the cached Serulian graph.
 const serulianGraphStoragePath = ".graph"
 

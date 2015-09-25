@@ -18,14 +18,15 @@ const srgNodeAstKindPredicate = "ast-kind"
 
 // SRG represents the SRG layer and all its associated helper methods.
 type SRG struct {
-	graph *compilergraph.SerulianGraph // The root graph.
-	layer *compilergraph.GraphLayer    // The SRG layer in the graph.
+	Graph *compilergraph.SerulianGraph // The root graph.
+
+	layer *compilergraph.GraphLayer // The SRG layer in the graph.
 }
 
 // NewSRG returns a new SRG for populating the graph with parsed source.
 func NewSRG(graph *compilergraph.SerulianGraph) *SRG {
 	return &SRG{
-		graph: graph,
+		Graph: graph,
 		layer: graph.NewGraphLayer(compilergraph.GraphLayerSRG),
 	}
 }
@@ -34,7 +35,7 @@ func NewSRG(graph *compilergraph.SerulianGraph) *SRG {
 // found starting at the root source file.
 func (g *SRG) LoadAndParse() *packageloader.LoadResult {
 	// Load and parse recursively.
-	packageLoader := packageloader.NewPackageLoader(g.graph.RootSourceFilePath, g.buildASTNode)
+	packageLoader := packageloader.NewPackageLoader(g.Graph.RootSourceFilePath, g.buildASTNode)
 	result := packageLoader.Load()
 
 	// Collect any parse errors found and add them to the result.
