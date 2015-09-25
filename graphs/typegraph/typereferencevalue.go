@@ -144,7 +144,7 @@ func (tr *TypeReference) getSubReferences(kind subReferenceKind) []TypeReference
 	var collectedCount int = 0
 
 	for {
-		// Retrieve the rune for the subreference (G or P)
+		// Retrieve the character for the subreference (G or P)
 		subReferenceChar := tr.value[currentIndex]
 
 		// Retrieve the length of the subreference's value string.
@@ -217,13 +217,13 @@ func buildTypeReferenceValue(typeNode compilergraph.GraphNode, nullable bool, ge
 	// Referenced type ID.
 	buffer.WriteByte('[')
 	buffer.WriteString(string(typeNode.NodeId))
-	buffer.WriteRune(']')
+	buffer.WriteByte(']')
 
 	// Nullable: 'T' or 'F'.
 	if nullable {
-		buffer.WriteRune('T')
+		buffer.WriteByte('T')
 	} else {
-		buffer.WriteRune('F')
+		buffer.WriteByte('F')
 	}
 
 	// Generic count and parameter count.
@@ -236,7 +236,7 @@ func buildTypeReferenceValue(typeNode compilergraph.GraphNode, nullable bool, ge
 
 	// For each generic, add the length of its value string and then the value string itself.
 	for _, generic := range generics {
-		buffer.WriteRune('G')
+		buffer.WriteByte('G')
 		buffer.WriteString(padNumberToString(len(generic.value), typeRefValueSubReferenceLength))
 		buffer.WriteString(generic.value)
 	}
