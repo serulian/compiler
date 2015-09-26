@@ -28,9 +28,7 @@ func (ast *srgASTNode) Decorate(predicate string, value string) parser.AstNode {
 
 // buildASTNode constructs a new node in the SRG.
 func (g *SRG) buildASTNode(source parser.InputSource, kind parser.NodeType) parser.AstNode {
-	graphNode := g.layer.CreateNode()
-	graphNode.DecorateWithTagged(srgNodeAstKindPredicate, kind)
-
+	graphNode := g.layer.CreateNode(kind)
 	return &srgASTNode{
 		graphNode: graphNode,
 	}

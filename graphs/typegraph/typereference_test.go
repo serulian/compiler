@@ -24,7 +24,7 @@ func TestBasicReferenceOperations(t *testing.T) {
 	testSRG := srg.NewSRG(graph)
 	testTG := BuildTypeGraph(testSRG).Graph
 
-	newNode := testTG.layer.CreateNode()
+	newNode := testTG.layer.CreateNode(NodeTypeClass)
 	testRef := testTG.NewTypeReference(newNode)
 
 	// ReferredType returns the node.
@@ -45,7 +45,7 @@ func TestBasicReferenceOperations(t *testing.T) {
 	assert.True(t, testRef.AsNullable().IsNullable(), "Expected nullable")
 
 	// Add a generic.
-	anotherNode := testTG.layer.CreateNode()
+	anotherNode := testTG.layer.CreateNode(NodeTypeClass)
 	anotherRef := testTG.NewTypeReference(anotherNode)
 
 	withGeneric := testRef.WithGeneric(anotherRef)
@@ -68,7 +68,7 @@ func TestBasicReferenceOperations(t *testing.T) {
 	assert.Equal(t, anotherRef, withGenericAndParameter.Parameters()[0], "Expected parameter to be equal to anotherRef")
 
 	// Add another generic.
-	thirdNode := testTG.layer.CreateNode()
+	thirdNode := testTG.layer.CreateNode(NodeTypeClass)
 	thirdRef := testTG.NewTypeReference(thirdNode)
 
 	withMultipleGenerics := withGenericAndParameter.WithGeneric(thirdRef)
@@ -85,7 +85,7 @@ func TestBasicReferenceOperations(t *testing.T) {
 	assert.Equal(t, anotherRef, withMultipleGenerics.Parameters()[0], "Expected parameter to be equal to anotherRef")
 
 	// Replace the "anotherRef" with a completely new type.
-	replacementNode := testTG.layer.CreateNode()
+	replacementNode := testTG.layer.CreateNode(NodeTypeClass)
 	replacementRef := testTG.NewTypeReference(replacementNode)
 
 	replaced := withMultipleGenerics.ReplaceType(anotherNode, replacementRef)

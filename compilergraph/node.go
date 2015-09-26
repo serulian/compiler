@@ -17,10 +17,11 @@ type GraphNodeId string
 // GraphNode represents a single node in a graph layer.
 type GraphNode struct {
 	NodeId GraphNodeId // Unique ID for the node.
+	Kind   TaggedValue // The kind of the node.
 	layer  *GraphLayer // The layer that owns the node.
 }
 
-// taggedValue defines an interface for
+// taggedValue defines an interface for storing uniquely tagged string data in the graph.
 type TaggedValue interface {
 	Name() string                   // The unique name for this kind of value.
 	Value() string                  // The string value.

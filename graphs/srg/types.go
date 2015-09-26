@@ -17,7 +17,8 @@ import (
 type SRGType struct {
 	typeNode compilergraph.GraphNode // The root node for the declaration or definition.
 
-	Name string // The name of the type.
+	Name string   // The name of the type.
+	Kind TypeKind // The kind of this type.
 }
 
 // TypeKind defines the various supported kinds of types in the SRG.
@@ -30,7 +31,7 @@ const (
 
 // GetTypes returns all the types defined in the SRG.
 func (g *SRG) GetTypes() []SRGType {
-	it := g.FindAllNodes(parser.NodeTypeClass, parser.NodeTypeInterface).
+	it := g.findAllNodes(parser.NodeTypeClass, parser.NodeTypeInterface).
 		BuildNodeIterator(parser.NodeClassPredicateName)
 
 	var types []SRGType
@@ -43,30 +44,9 @@ func (g *SRG) GetTypes() []SRGType {
 }
 
 // Module returns the module under which the type is defined.
-func (t *SRGType) Module() SRGModule {
-	moduleNode, found := t.typeNode.StartQuery().In(parser.NodePredicateChild).GetNode()
-	if !found {
-		panic(fmt.Sprintf("Module for type %s not found", t.Name))
-	}
-
+func (t SRGType) Module() SRGModule {
+	moduleNode := t.typeNode.StartQuery().In(parser.NodePredicateChild).GetNode()
 	return moduleForSRGNode(moduleNode, moduleNode.Get(parser.NodePredicateSource))
-}
-
-// GetTypeKind returns the kind of this type declaration or definition.
-func (t *SRGType) GetTypeKind() TypeKind {
-	nodeType := t.typeNode.GetTagged(srgNodeAstKindPredicate, parser.NodeTypeTagged).(parser.NodeType)
-
-	switch nodeType {
-	case parser.NodeTypeClass:
-		return ClassType
-
-	case parser.NodeTypeInterface:
-		return InterfaceType
-
-	default:
-		panic(fmt.Sprintf("Unknown kind of type %s for node %s", nodeType, t.typeNode.NodeId))
-		return ClassType
-	}
 }
 
 // typeForSRGNode returns an SRGType struct representing the node, which is the root node
@@ -75,5 +55,21 @@ func typeForSRGNode(rootNode compilergraph.GraphNode, name string) SRGType {
 	return SRGType{
 		typeNode: rootNode,
 		Name:     name,
+		Kind:     getTypeKind(rootNode.Kind.(parser.NodeType)),
+	}
+}
+
+// getTypeKind returns the kind matching the type definition/declaration node type.
+func getTypeKind(nodeType parser.NodeType) TypeKind {
+	switch nodeType {
+	case parser.NodeTypeClass:
+		return ClassType
+
+	case parser.NodeTypeInterface:
+		return InterfaceType
+
+	default:
+		panic(fmt.Sprintf("Unknown kind of type %s", nodeType))
+		return ClassType
 	}
 }

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// packageloader package defines functions and types for loading Serulian source from disk or VCS.
 package packageloader
 
 import "os"

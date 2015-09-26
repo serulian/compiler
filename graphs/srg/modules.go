@@ -18,7 +18,7 @@ type SRGModule struct {
 
 // GetModules returns all the modules defined in the SRG.
 func (g *SRG) GetModules() []SRGModule {
-	it := g.FindAllNodes(parser.NodeTypeFile).BuildNodeIterator(parser.NodePredicateSource)
+	it := g.findAllNodes(parser.NodeTypeFile).BuildNodeIterator(parser.NodePredicateSource)
 	var modules []SRGModule
 
 	for it.Next() {
@@ -30,9 +30,9 @@ func (g *SRG) GetModules() []SRGModule {
 
 // FindModuleByPath returns the module with the given input source, if any.
 func (g *SRG) FindModuleBySource(source parser.InputSource) (SRGModule, bool) {
-	node, found := g.FindAllNodes(parser.NodeTypeFile).
+	node, found := g.findAllNodes(parser.NodeTypeFile).
 		Has(parser.NodePredicateSource, string(source)).
-		GetNode()
+		TryGetNode()
 
 	if !found {
 		return SRGModule{}, false
@@ -41,14 +41,19 @@ func (g *SRG) FindModuleBySource(source parser.InputSource) (SRGModule, bool) {
 	return moduleForSRGNode(node, string(source)), true
 }
 
+// FileNode returns the root file node for this module.
+func (m SRGModule) FileNode() compilergraph.GraphNode {
+	return m.fileNode
+}
+
 // FindTypeByName searches for the type definition or declaration with the given name under
 // this module and returns it (if found).
-func (m *SRGModule) FindTypeByName(typeName string) (SRGType, bool) {
+func (m SRGModule) FindTypeByName(typeName string) (SRGType, bool) {
 	// TODO(jschorr): Filter out non-types.
 	typeNode, found := m.fileNode.StartQuery().
 		Out(parser.NodePredicateChild).
 		Has(parser.NodeClassPredicateName, typeName).
-		GetNode()
+		TryGetNode()
 
 	if !found {
 		return SRGType{}, false

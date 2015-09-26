@@ -28,7 +28,7 @@ func TestBasicLoading(t *testing.T) {
 	}
 
 	// Ensure that both classes were loaded.
-	iterator := testSRG.FindAllNodes(parser.NodeTypeClass).BuildNodeIterator(parser.NodeClassPredicateName)
+	iterator := testSRG.findAllNodes(parser.NodeTypeClass).BuildNodeIterator(parser.NodeClassPredicateName)
 
 	var classesFound []string = make([]string, 0, 2)
 	for iterator.Next() {

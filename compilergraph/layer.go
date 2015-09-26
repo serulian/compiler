@@ -25,10 +25,12 @@ const (
 
 // GraphLayer represents a single layer in the overall project graph.
 type GraphLayer struct {
-	id          string         // Unique ID for the layer.
-	kind        GraphLayerKind // The kind of this graph layer.
-	prefix      string         // The predicate prefix
-	cayleyStore *cayley.Handle // Handle to the cayley store.
+	id                string         // Unique ID for the layer.
+	kind              GraphLayerKind // The kind of this graph layer.
+	prefix            string         // The predicate prefix
+	cayleyStore       *cayley.Handle // Handle to the cayley store.
+	nodeKindPredicate string         // Name of the predicate for representing the kind of a node in this layer.
+	nodeKindEnum      TaggedValue    // Tagged value type that is the enum of possible node kinds.
 }
 
 // nodeMemberPredicate is a predicate reserved for marking nodes as being
@@ -36,12 +38,14 @@ type GraphLayer struct {
 const nodeMemberPredicate = "is-member"
 
 // NewGraphLayer returns a new graph layer of the given kind.
-func (sg *SerulianGraph) NewGraphLayer(kind GraphLayerKind) *GraphLayer {
+func (sg *SerulianGraph) NewGraphLayer(kind GraphLayerKind, nodeKindEnum TaggedValue) *GraphLayer {
 	return &GraphLayer{
-		id:          newUniqueId(),
-		kind:        kind,
-		prefix:      getPredicatePrefix(kind),
-		cayleyStore: sg.cayleyStore,
+		id:                newUniqueId(),
+		kind:              kind,
+		prefix:            getPredicatePrefix(kind),
+		cayleyStore:       sg.cayleyStore,
+		nodeKindPredicate: "node-kind",
+		nodeKindEnum:      nodeKindEnum,
 	}
 }
 
@@ -56,21 +60,26 @@ func (gl *GraphLayer) GetNode(nodeId string) GraphNode {
 
 // TryGetNode tries to return a node found in the graph layer.
 func (gl *GraphLayer) TryGetNode(nodeId string) (GraphNode, bool) {
-	return gl.StartQuery(nodeId).GetNode()
+	return gl.StartQuery(nodeId).TryGetNode()
 }
 
 // CreateNode creates a new node in the graph layer.
-func (gl *GraphLayer) CreateNode() GraphNode {
+func (gl *GraphLayer) CreateNode(nodeKind TaggedValue) GraphNode {
 	// Add the node as a member of the layer.
 	nodeId := newUniqueId()
 	compilerutil.DCHECK(func() bool { return len(nodeId) == NodeIDLength }, "Unexpected node ID length")
 
 	gl.cayleyStore.AddQuad(cayley.Quad(nodeId, nodeMemberPredicate, gl.id, gl.prefix))
 
-	return GraphNode{
+	node := GraphNode{
 		NodeId: GraphNodeId(nodeId),
+		Kind:   nodeKind,
 		layer:  gl,
 	}
+
+	// Decorate the node with its kind.
+	node.DecorateWithTagged(gl.nodeKindPredicate, nodeKind)
+	return node
 }
 
 // getTaggedKey returns a unique string representing the tagged name and associated value, such
@@ -83,7 +92,7 @@ func (gl *GraphLayer) getTaggedKey(value TaggedValue) string {
 func (gl *GraphLayer) parseTaggedKey(strValue string, example TaggedValue) interface{} {
 	pieces := strings.SplitN(strValue, "|", 3)
 	if len(pieces) != 3 {
-		panic(fmt.Sprintf("Expected 3 pieces in tagged key, found: %v", pieces))
+		panic(fmt.Sprintf("Expected 3 pieces in tagged key, found: %v for value '%s'", pieces, strValue))
 	}
 
 	if pieces[2] != gl.prefix {

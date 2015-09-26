@@ -40,6 +40,9 @@ const (
 	// Connects a type definition to a member (function, var, etc).
 	NodePredicateTypeMember = "definition-member"
 
+	// Marks a type with its name.
+	NodePredicateTypeName = "type-name"
+
 	//
 	// NodeTypeMember
 	//

@@ -30,25 +30,20 @@ type Result struct {
 func BuildTypeGraph(srg *srg.SRG) *Result {
 	typeGraph := &TypeGraph{
 		graph: srg.Graph,
-		layer: srg.Graph.NewGraphLayer(compilergraph.GraphLayerTypeGraph),
+		layer: srg.Graph.NewGraphLayer(compilergraph.GraphLayerTypeGraph, NodeTypeTagged),
 	}
 
-	return typeGraph.build()
+	return typeGraph.build(srg)
 }
 
-// Build builds the type graph from the SRG used to initialize it.
-func (t *TypeGraph) build() *Result {
-	// Goroutines?
-	// For each type:
-	// Create type node
+// TypeDecls returns all types defined in the type graph.
+func (g *TypeGraph) TypeDecls() []TGTypeDecl {
+	it := g.findAllNodes(NodeTypeClass, NodeTypeInterface).
+		BuildNodeIterator(NodePredicateTypeName)
 
-	// Add generics
-	// Add members (along full inheritance)
-
-	return &Result{
-		Status:   true,
-		Warnings: make([]string, 0),
-		Errors:   make([]error, 0),
-		Graph:    t,
+	var types []TGTypeDecl
+	for it.Next() {
+		types = append(types, TGTypeDecl{it.Node, it.Values[NodePredicateTypeName], getTypeKind(it.Node)})
 	}
+	return types
 }

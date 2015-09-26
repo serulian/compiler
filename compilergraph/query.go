@@ -40,6 +40,19 @@ func (gl *GraphLayer) StartQuery(nodeNames ...string) *GraphQuery {
 	}
 }
 
+// AllNodesQuery returns a query starting from all the nodes in the layer.
+func (gl *GraphLayer) AllNodesQuery() *GraphQuery {
+	return &GraphQuery{
+		path:  cayley.StartPath(gl.cayleyStore, gl.id).In(nodeMemberPredicate),
+		layer: gl,
+	}
+}
+
+// FindNodesOfKind returns a new query starting at the nodes who have the given kind in this layer.
+func (gl *GraphLayer) FindNodesOfKind(kinds ...TaggedValue) *GraphQuery {
+	return gl.FindNodesWithTaggedType(gl.nodeKindPredicate, kinds...)
+}
+
 // FindNodesWithTaggedType returns a new query starting at the nodes who are linked to tagged values
 // (of the given name) by the given predicate.
 //
@@ -108,9 +121,18 @@ func (gq *GraphQuery) GetValue() (string, bool) {
 	return gq.layer.cayleyStore.NameOf(it.Result()), true
 }
 
-// GetNode executes the query and returns the single node found or false. If there is
+// GetNode executes the query and returns the single node found or panics.
+func (gq *GraphQuery) GetNode() GraphNode {
+	node, found := gq.TryGetNode()
+	if !found {
+		panic(fmt.Sprintf("Could not return node for query: %v", gq))
+	}
+	return node
+}
+
+// TryGetNode executes the query and returns the single node found or false. If there is
 // more than a single node as a result of the query, the first node is returned.
-func (gq *GraphQuery) GetNode() (GraphNode, bool) {
+func (gq *GraphQuery) TryGetNode() (GraphNode, bool) {
 	it := gq.BuildNodeIterator()
 	if !it.Next() {
 		return GraphNode{}, false
@@ -125,10 +147,15 @@ func (gq *GraphQuery) GetNode() (GraphNode, bool) {
 func (gq *GraphQuery) BuildNodeIterator(predicates ...string) *graphNodeIterator {
 	var updatedPath *path.Path = gq.path
 
+	// Save the predicates the user requested.
 	for _, predicate := range predicates {
 		fullPredicate := gq.layer.prefix + "-" + predicate
 		updatedPath = updatedPath.Save(fullPredicate, fullPredicate)
 	}
+
+	// Save the predicate for the kind of the node as well.
+	fullKindPredicate := gq.layer.prefix + "-" + gq.layer.nodeKindPredicate
+	updatedPath = updatedPath.Save(fullKindPredicate, fullKindPredicate)
 
 	it := updatedPath.BuildIterator()
 
@@ -140,6 +167,12 @@ func (gq *GraphQuery) BuildNodeIterator(predicates ...string) *graphNodeIterator
 		iterator:   it,
 		predicates: predicates,
 	}
+}
+
+// Returns the tagged value at the given predicate on the current node.
+func (gni *graphNodeIterator) GetTaggedValue(predicate string, example TaggedValue) interface{} {
+	strValue := gni.Values[predicate]
+	return gni.layer.parseTaggedKey(strValue, example)
 }
 
 // Next move the iterator forward.
@@ -160,8 +193,13 @@ func (gni *graphNodeIterator) Next() bool {
 		updatedTags[predicate] = gni.layer.cayleyStore.NameOf(tags[fullPredicate])
 	}
 
+	// Load the kind of the node.
+	fullKindPredicate := gni.layer.prefix + "-" + gni.layer.nodeKindPredicate
+	kindString := gni.layer.cayleyStore.NameOf(tags[fullKindPredicate])
+
 	node := GraphNode{
 		NodeId: GraphNodeId(gni.layer.cayleyStore.NameOf(gni.iterator.Result())),
+		Kind:   gni.layer.parseTaggedKey(kindString, gni.layer.nodeKindEnum).(TaggedValue),
 		layer:  gni.layer,
 	}
 

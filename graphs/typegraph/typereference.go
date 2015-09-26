@@ -101,3 +101,18 @@ func (tr TypeReference) ReplaceType(typeNode compilergraph.GraphNode, replacemen
 		layer: tr.layer,
 	}
 }
+
+func (tr TypeReference) Name() string {
+	return "TypeReference"
+}
+
+func (tr TypeReference) Value() string {
+	return tr.value
+}
+
+func (tr TypeReference) Build(value string) interface{} {
+	return TypeReference{
+		layer: tr.layer,
+		value: value,
+	}
+}

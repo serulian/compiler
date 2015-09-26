@@ -13,9 +13,6 @@ import (
 	"github.com/serulian/compiler/parser"
 )
 
-// Predicate for decorating an SRG node with its AST kind.
-const srgNodeAstKindPredicate = "ast-kind"
-
 // SRG represents the SRG layer and all its associated helper methods.
 type SRG struct {
 	Graph *compilergraph.SerulianGraph // The root graph.
@@ -27,7 +24,7 @@ type SRG struct {
 func NewSRG(graph *compilergraph.SerulianGraph) *SRG {
 	return &SRG{
 		Graph: graph,
-		layer: graph.NewGraphLayer(compilergraph.GraphLayerSRG),
+		layer: graph.NewGraphLayer(compilergraph.GraphLayerSRG, parser.NodeTypeTagged),
 	}
 }
 
@@ -39,7 +36,7 @@ func (g *SRG) LoadAndParse() *packageloader.LoadResult {
 	result := packageLoader.Load()
 
 	// Collect any parse errors found and add them to the result.
-	it := g.FindAllNodes(parser.NodeTypeError).BuildNodeIterator(
+	it := g.findAllNodes(parser.NodeTypeError).BuildNodeIterator(
 		parser.NodePredicateErrorMessage,
 		parser.NodePredicateSource,
 		parser.NodePredicateStartRune)
@@ -55,14 +52,4 @@ func (g *SRG) LoadAndParse() *packageloader.LoadResult {
 	}
 
 	return result
-}
-
-// FindAllNodes starts a new query over the SRG from nodes of the given type.
-func (g *SRG) FindAllNodes(nodeTypes ...parser.NodeType) *compilergraph.GraphQuery {
-	var nodeTypesTagged []compilergraph.TaggedValue = make([]compilergraph.TaggedValue, len(nodeTypes))
-	for index, nodeType := range nodeTypes {
-		nodeTypesTagged[index] = nodeType
-	}
-
-	return g.layer.FindNodesWithTaggedType(srgNodeAstKindPredicate, nodeTypesTagged...)
 }
