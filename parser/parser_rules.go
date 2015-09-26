@@ -65,17 +65,19 @@ Loop:
 		case p.isKeyword("class") || p.isKeyword("interface"):
 			seenNonImport = true
 			p.currentNode().Connect(NodePredicateChild, p.consumeTypeDefinition())
+			p.tryConsumeStatementTerminator()
 
 		// functions.
 		case p.isKeyword("function"):
 			seenNonImport = true
 			p.currentNode().Connect(NodePredicateChild, p.consumeFunction(typeMemberDefinition))
+			p.tryConsumeStatementTerminator()
 
 		// variables.
 		case p.isKeyword("var"):
 			seenNonImport = true
 			p.currentNode().Connect(NodePredicateChild, p.consumeVar(NodeTypeVariableStatement))
-			p.consumeStatementTerminator()
+			p.tryConsumeStatementTerminator()
 
 		// EOF.
 		case p.isToken(tokenTypeEOF):

@@ -291,9 +291,14 @@ func (p *sourceParser) isStatementTerminator() bool {
 	return p.isToken(tokenTypeSemicolon, tokenTypeEOF, tokenTypeSyntheticSemicolon)
 }
 
+// tryConsumeStatementTerminator tries to consume a statement terminator.
+func (p *sourceParser) tryConsumeStatementTerminator() (lexeme, bool) {
+	return p.tryConsume(tokenTypeSemicolon, tokenTypeEOF, tokenTypeSyntheticSemicolon)
+}
+
 // consumeStatementTerminator consumes a statement terminator.
 func (p *sourceParser) consumeStatementTerminator() (lexeme, bool) {
-	found, ok := p.tryConsume(tokenTypeSemicolon, tokenTypeEOF, tokenTypeSyntheticSemicolon)
+	found, ok := p.tryConsumeStatementTerminator()
 	if ok {
 		return found, true
 	}
