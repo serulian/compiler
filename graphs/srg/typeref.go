@@ -13,10 +13,6 @@ import (
 type SRGTypeRef struct {
 	srg           *SRG                    // The parent SRG.
 	referenceNode compilergraph.GraphNode // The root node for the type reference.
-
-	typePath   string // The type path under the module.
-	nullable   bool   // Whether this is a nullable type.
-	streamable bool   // Whether this is a streamable type.
 }
 
 // Location returns the source location for this type ref.

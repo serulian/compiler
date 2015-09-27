@@ -70,4 +70,7 @@ func TestGenericType(t *testing.T) {
 
 	assert.Equal(t, "T", generics[0].Name)
 	assert.Equal(t, "Q", generics[1].Name)
+
+	assert.False(t, generics[0].HasConstraint, "Expected T to have no constraint")
+	assert.True(t, generics[1].HasConstraint, "Expected Q to have constraint")
 }
