@@ -11,6 +11,7 @@ import (
 
 // SRGModule wraps a module defined in the SRG.
 type SRGModule struct {
+	srg      *SRG                    // The parent SRG.
 	fileNode compilergraph.GraphNode // The root file node in the SRG for the module.
 
 	InputSource parser.InputSource // The input source for the module
@@ -22,13 +23,13 @@ func (g *SRG) GetModules() []SRGModule {
 	var modules []SRGModule
 
 	for it.Next() {
-		modules = append(modules, moduleForSRGNode(it.Node, it.Values[parser.NodePredicateSource]))
+		modules = append(modules, moduleForSRGNode(g, it.Node, it.Values[parser.NodePredicateSource]))
 	}
 
 	return modules
 }
 
-// FindModuleByPath returns the module with the given input source, if any.
+// FindModuleBySource returns the module with the given input source, if any.
 func (g *SRG) FindModuleBySource(source parser.InputSource) (SRGModule, bool) {
 	node, found := g.findAllNodes(parser.NodeTypeFile).
 		Has(parser.NodePredicateSource, string(source)).
@@ -38,7 +39,7 @@ func (g *SRG) FindModuleBySource(source parser.InputSource) (SRGModule, bool) {
 		return SRGModule{}, false
 	}
 
-	return moduleForSRGNode(node, string(source)), true
+	return moduleForSRGNode(g, node, string(source)), true
 }
 
 // FileNode returns the root file node for this module.
@@ -49,8 +50,8 @@ func (m SRGModule) FileNode() compilergraph.GraphNode {
 // FindTypeByName searches for the type definition or declaration with the given name under
 // this module and returns it (if found).
 func (m SRGModule) FindTypeByName(typeName string) (SRGType, bool) {
-	// TODO(jschorr): Filter out non-types.
-	typeNode, found := m.fileNode.StartQuery().
+	// TODO(jschorr): Filter out non-types and non-imports.
+	typeOrImportNode, found := m.fileNode.StartQuery().
 		Out(parser.NodePredicateChild).
 		Has(parser.NodeClassPredicateName, typeName).
 		TryGetNode()
@@ -59,13 +60,28 @@ func (m SRGModule) FindTypeByName(typeName string) (SRGType, bool) {
 		return SRGType{}, false
 	}
 
-	return typeForSRGNode(typeNode, typeName), true
+	// If the node is an import node, find the type under the imported module/package.
+	if typeOrImportNode.Kind == parser.NodeTypeImport {
+		packageInfo := m.srg.getPackageForImport(typeOrImportNode)
+
+		// If there is a subsource on the import, then we resolve that type name under the package.
+		if subsource, ok := typeOrImportNode.TryGet(parser.NodeImportPredicateSubsource); ok {
+			return packageInfo.FindTypeByName(subsource)
+		}
+
+		// Otherwise, we resolve the original requested type name.
+		return packageInfo.FindTypeByName(typeName)
+	}
+
+	// Otherwise, return the type found.
+	return typeForSRGNode(m.srg, typeOrImportNode, typeName), true
 }
 
 // moduleForSRGNode returns an SRGModule struct representing the node, which is the root
 // file node in the SRG for the module.
-func moduleForSRGNode(fileNode compilergraph.GraphNode, inputSource string) SRGModule {
+func moduleForSRGNode(g *SRG, fileNode compilergraph.GraphNode, inputSource string) SRGModule {
 	return SRGModule{
+		srg:         g,
 		fileNode:    fileNode,
 		InputSource: parser.InputSource(inputSource),
 	}

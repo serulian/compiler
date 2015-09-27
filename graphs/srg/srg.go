@@ -17,7 +17,8 @@ import (
 type SRG struct {
 	Graph *compilergraph.SerulianGraph // The root graph.
 
-	layer *compilergraph.GraphLayer // The SRG layer in the graph.
+	layer      *compilergraph.GraphLayer             // The SRG layer in the graph.
+	packageMap map[string]*packageloader.PackageInfo // Map from package internal ID to info.
 }
 
 // NewSRG returns a new SRG for populating the graph with parsed source.
@@ -50,6 +51,12 @@ func (g *SRG) LoadAndParse() *packageloader.LoadResult {
 		result.Errors = append(result.Errors, err)
 		result.Status = false
 	}
+
+	// Using the package, semantic check all imports.
+	// TODO(jschorr): this
+
+	// Save the package map.
+	g.packageMap = result.PackageMap
 
 	return result
 }

@@ -1,0 +1,11 @@
+from anothermodule import AnotherClass
+from anothermodule import AThirdClass as BestClass
+
+import anothermodule
+import subpackage
+
+from subpackage import FirstClass
+from subpackage import SecondClass
+from subpackage import FirstClass as BusinessClass
+
+class SomeClass {}

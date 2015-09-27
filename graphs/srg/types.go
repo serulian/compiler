@@ -15,6 +15,7 @@ import (
 
 // SRGType wraps a type declaration or definition in the SRG.
 type SRGType struct {
+	srg      *SRG                    // The parent SRG.
 	typeNode compilergraph.GraphNode // The root node for the declaration or definition.
 
 	Name string   // The name of the type.
@@ -37,7 +38,7 @@ func (g *SRG) GetTypes() []SRGType {
 	var types []SRGType
 
 	for it.Next() {
-		types = append(types, typeForSRGNode(it.Node, it.Values[parser.NodeClassPredicateName]))
+		types = append(types, typeForSRGNode(g, it.Node, it.Values[parser.NodeClassPredicateName]))
 	}
 
 	return types
@@ -46,13 +47,14 @@ func (g *SRG) GetTypes() []SRGType {
 // Module returns the module under which the type is defined.
 func (t SRGType) Module() SRGModule {
 	moduleNode := t.typeNode.StartQuery().In(parser.NodePredicateChild).GetNode()
-	return moduleForSRGNode(moduleNode, moduleNode.Get(parser.NodePredicateSource))
+	return moduleForSRGNode(t.srg, moduleNode, moduleNode.Get(parser.NodePredicateSource))
 }
 
 // typeForSRGNode returns an SRGType struct representing the node, which is the root node
 // for a type declaration or definition.
-func typeForSRGNode(rootNode compilergraph.GraphNode, name string) SRGType {
+func typeForSRGNode(g *SRG, rootNode compilergraph.GraphNode, name string) SRGType {
 	return SRGType{
+		srg:      g,
 		typeNode: rootNode,
 		Name:     name,
 		Kind:     getTypeKind(rootNode.Kind.(parser.NodeType)),

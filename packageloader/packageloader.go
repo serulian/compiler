@@ -136,7 +136,8 @@ func (p *PackageLoader) Load() *LoadResult {
 
 // pushPath adds a path to be processed by the package loader.
 func (p *PackageLoader) pushPath(kind pathKind, path string, source string) string {
-	pathId := compilerutil.NewUniqueId()
+	pi := &pathInformation{compilerutil.NewUniqueId(), kind, path, source}
+	pathId := pi.String()
 	return p.pushPathWithId(pathId, kind, path, source)
 }
 

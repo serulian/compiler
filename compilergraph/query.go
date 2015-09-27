@@ -69,6 +69,11 @@ func (gl *GraphLayer) FindNodesWithTaggedType(predicate string, values ...Tagged
 	return gl.StartQuery(nodeNames...).In(predicate)
 }
 
+// IsKind updates thi Query to represent only those nodes that are of the given kind.
+func (gq *GraphQuery) IsKind(nodeKind TaggedValue) *GraphQuery {
+	return gq.HasTagged(gq.layer.nodeKindPredicate, nodeKind)
+}
+
 // In updates this Query to represent the nodes that are adjacent to the
 // current nodes, via the given inbound predicate.
 func (gq *GraphQuery) In(via ...string) *GraphQuery {
@@ -88,6 +93,17 @@ func (gq *GraphQuery) Out(via ...string) *GraphQuery {
 		path:  gq.path.Out(adjustedVia...),
 		layer: gq.layer,
 	}
+}
+
+// HasTagged filters this Query to represent the nodes that have some linkage
+// to some known node.
+func (gq *GraphQuery) HasTagged(via string, taggedValues ...TaggedValue) *GraphQuery {
+	var values []string = make([]string, len(taggedValues))
+	for index, taggedValue := range taggedValues {
+		values[index] = gq.layer.getTaggedKey(taggedValue)
+	}
+
+	return gq.Has(via, values...)
 }
 
 // Has filters this Query to represent the nodes that have some linkage
