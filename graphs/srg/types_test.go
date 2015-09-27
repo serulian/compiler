@@ -14,8 +14,8 @@ import (
 
 var _ = fmt.Printf
 
-func TestBasicTypes(t *testing.T) {
-	graph, err := compilergraph.NewGraph("tests/basic/basic.seru")
+func loadSRG(t *testing.T, path string) *SRG {
+	graph, err := compilergraph.NewGraph(path)
 	if err != nil {
 		t.Errorf("%v", err)
 	}
@@ -25,6 +25,12 @@ func TestBasicTypes(t *testing.T) {
 	if !result.Status {
 		t.Errorf("Expected successful parse")
 	}
+
+	return testSRG
+}
+
+func TestBasicTypes(t *testing.T) {
+	testSRG := loadSRG(t, "tests/basic/basic.seru")
 
 	// Ensure that both classes were loaded.
 	types := testSRG.GetTypes()
@@ -50,4 +56,18 @@ func TestBasicTypes(t *testing.T) {
 
 	assert.Contains(t, typeNames, "SomeClass", "Missing SomeClass class")
 	assert.Contains(t, typeNames, "AnotherClass", "Missing AnotherClass class")
+}
+
+func TestGenericType(t *testing.T) {
+	testSRG := loadSRG(t, "tests/generics/generics.seru")
+	genericType := testSRG.GetTypes()[0]
+
+	assert.Equal(t, ClassType, genericType.Kind, "Expected class as kind of type")
+	assert.Equal(t, "SomeClass", genericType.Name)
+
+	generics := genericType.Generics()
+	assert.Equal(t, 2, len(generics), "Expected two generics on type")
+
+	assert.Equal(t, "T", generics[0].Name)
+	assert.Equal(t, "Q", generics[1].Name)
 }

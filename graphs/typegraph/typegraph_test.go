@@ -43,6 +43,7 @@ func (tgt *typegraphTest) writeJson(value string) {
 var typeGraphTests = []typegraphTest{
 	// Success tests.
 	typegraphTest{"simple test", "simple", "simple.seru", ""},
+	typegraphTest{"generic test", "generic", "generic.seru", ""},
 
 	// Failure tests.
 	typegraphTest{"redeclaration test", "redeclare", "redeclare.seru", "Type 'SomeClass' is already defined in the module"},

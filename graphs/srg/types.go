@@ -61,6 +61,20 @@ func (t SRGType) Location() compilercommon.SourceAndLocation {
 	return salForNode(t.typeNode)
 }
 
+// Generics returns the generics on this type.
+func (t SRGType) Generics() []SRGGeneric {
+	it := t.typeNode.StartQuery().
+		Out(parser.NodeTypeDefinitionGeneric).
+		BuildNodeIterator(parser.NodeGenericPredicateName)
+
+	var generics = make([]SRGGeneric, 0)
+	for it.Next() {
+		generics = append(generics, genericForSRGNode(t.srg, it.Node, it.Values[parser.NodeGenericPredicateName]))
+	}
+
+	return generics
+}
+
 // typeForSRGNode returns an SRGType struct representing the node, which is the root node
 // for a type declaration or definition.
 func typeForSRGNode(g *SRG, rootNode compilergraph.GraphNode, name string) SRGType {

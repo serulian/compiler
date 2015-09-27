@@ -43,6 +43,9 @@ const (
 	// Connects a type declaration to a member (function, var, etc).
 	NodePredicateTypeMember = "declaration-member"
 
+	// Connects a type declaration to a generic.
+	NodePredicateTypeGeneric = "declaration-generic"
+
 	// Marks a type with its name.
 	NodePredicateTypeName = "type-name"
 

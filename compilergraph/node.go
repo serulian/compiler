@@ -72,6 +72,16 @@ func (gn *GraphNode) GetTagged(predicateName string, example TaggedValue) interf
 	return gn.layer.parseTaggedKey(strValue, example)
 }
 
+// TryGetNode returns the node found off of the given predicate found on this node (if any).
+func (gn *GraphNode) TryGetNode(predicateName string) (GraphNode, bool) {
+	result, found := gn.TryGet(predicateName)
+	if !found {
+		return GraphNode{}, false
+	}
+
+	return gn.layer.GetNode(result), true
+}
+
 // Get returns the value of the given predicate found on this node and panics otherwise.
 func (gn *GraphNode) Get(predicateName string) string {
 	value, found := gn.TryGet(predicateName)

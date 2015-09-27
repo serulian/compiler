@@ -33,12 +33,20 @@ func (t *TypeGraph) build(g *srg.SRG) *Result {
 		}
 	}
 
-	// Add generics and resolve their constraints.
-	//for _, srgType := range g.GetTypes() {
-	//
-	//}
+	// Add generics.
+	for srgType, typeNode := range typeMap {
+		for _, generic := range srgType.Generics() {
+			err := t.buildGenericNode(typeNode, generic)
+			if err != nil {
+				result.Errors = append(result.Errors, err)
+				result.Status = false
+			}
+		}
+	}
 
 	// Add members (along full inheritance)
+
+	// Type check all type references.
 
 	return result
 }
@@ -46,7 +54,7 @@ func (t *TypeGraph) build(g *srg.SRG) *Result {
 // buildTypeNode adds a new type node to the type graph for the given SRG type. Note that
 // this does not handle generics or members.
 func (t *TypeGraph) buildTypeNode(srgType srg.SRGType) (compilergraph.GraphNode, *compilercommon.SourceError) {
-	// Ensure that there exists no other type with this name under the module.
+	// Ensure that there exists no other type with this name under the parent module.
 	_, exists := srgType.Module().
 		FileNode().
 		StartQueryToLayer(t.layer).
@@ -80,4 +88,33 @@ func getTypeNodeType(kind srg.TypeKind) NodeType {
 		panic(fmt.Sprintf("Unknown kind of type declaration: %v", kind))
 		return NodeTypeClass
 	}
+}
+
+// buildGenericNode adds a new generic node to the specified type node for the given SRG generic.
+func (t *TypeGraph) buildGenericNode(typeNode compilergraph.GraphNode, generic srg.SRGGeneric) *compilercommon.SourceError {
+	// Ensure that there exists no other generic with this name under the parent type.
+	_, exists := typeNode.StartQuery().
+		Out(NodePredicateTypeGeneric).
+		Has(NodePredicateGenericName, generic.Name).
+		TryGetNode()
+
+	if exists {
+		sourceError := compilercommon.SourceErrorf(generic.Location(),
+			"Generic '%s' is already defined under type '%s'",
+			generic.Name,
+			typeNode.Get(NodePredicateTypeName))
+
+		return sourceError
+	}
+
+	// Create the generic node.
+	genericNode := t.layer.CreateNode(NodeTypeGeneric)
+	genericNode.Decorate(NodePredicateTypeName, generic.Name)
+
+	// Decorate the generic with its subtype constraint. If none in the SRG, decorate with "any".
+	// TOD(jschorr): this
+
+	// Add the generic to the type node.
+	typeNode.Connect(NodePredicateTypeGeneric, genericNode)
+	return nil
 }
