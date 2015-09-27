@@ -198,6 +198,8 @@ const (
 	NodeImportPredicateSubsource = "import-subsource"
 	NodeImportPredicateName      = "named"
 
+	NodeImportPredicateLocation = "import-location-ref"
+
 	//
 	// NodeTypeClass + NodeTypeInterface
 	//

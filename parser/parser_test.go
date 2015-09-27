@@ -190,7 +190,8 @@ var parserTests = []parserTest{
 	{"basic full example test", "full/basic"},
 }
 
-func reportImport(path PackageImport) {
+func reportImport(path PackageImport) string {
+	return "location:" + path.Path
 }
 
 func TestParser(t *testing.T) {

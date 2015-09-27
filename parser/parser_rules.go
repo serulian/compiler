@@ -123,8 +123,7 @@ func (p *sourceParser) consumeImport() AstNode {
 			return importNode
 		}
 
-		p.reportImport(token.value)
-
+		importNode.Decorate(NodeImportPredicateLocation, p.reportImport(token.value))
 		importNode.Decorate(NodeImportPredicateSource, token.value)
 		p.consumeImportSource(importNode, NodeImportPredicateSubsource, tokenTypeIdentifer)
 		return importNode
@@ -147,7 +146,7 @@ func (p *sourceParser) consumeImportSource(importNode AstNode, predicate string,
 	}
 
 	if predicate == NodeImportPredicateSource {
-		p.reportImport(token.value)
+		importNode.Decorate(NodeImportPredicateLocation, p.reportImport(token.value))
 	}
 
 	importNode.Decorate(predicate, token.value)

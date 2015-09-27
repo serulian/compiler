@@ -5,16 +5,19 @@ NodeTypeFile
   child-node =>
     NodeTypeImport
       end-rune = 13
+      import-location-ref = location:FooBar
       import-source = FooBar
       input-source = multiple imports test
       start-rune = 0
     NodeTypeImport
       end-rune = 27
+      import-location-ref = location:BarBaz
       import-source = BarBaz
       input-source = multiple imports test
       start-rune = 14
     NodeTypeImport
       end-rune = 62
+      import-location-ref = location:Something
       import-source = Something
       import-subsource = SomethingElse
       input-source = multiple imports test

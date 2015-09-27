@@ -8,6 +8,8 @@ package compilerutil
 import (
 	"fmt"
 	"os"
+
+	"github.com/nu7hatch/gouuid"
 )
 
 type checkFn func() bool
@@ -22,4 +24,15 @@ func DCHECK(checker checkFn, failMessage string, args ...interface{}) {
 	if !checker() {
 		panic(fmt.Sprintf(failMessage, args...))
 	}
+}
+
+// NewUniqueId returns a new unique ID.
+func NewUniqueId() string {
+	u4, err := uuid.NewV4()
+	if err != nil {
+		panic(err)
+		return ""
+	}
+
+	return u4.String()
 }

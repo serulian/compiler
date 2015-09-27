@@ -15,8 +15,10 @@ import (
 // NodeBuilder is a function for building AST nodes.
 type NodeBuilder func(source InputSource, kind NodeType) AstNode
 
-// ImportHandler is a function called for registering imports encountered.
-type ImportHandler func(importInfo PackageImport)
+// ImportHandler is a function called for registering imports encountered. The function
+// returns a reference string for the package or file location of the import after the
+// full set of packages is parsed.
+type ImportHandler func(importInfo PackageImport) string
 
 // tryParserFn is a function that attempts to build an AST node.
 type tryParserFn func() (AstNode, bool)
@@ -76,11 +78,11 @@ func Parse(builder NodeBuilder, importReporter ImportHandler, source InputSource
 }
 
 // reportImport reports an import of the given token value as a path.
-func (p *sourceParser) reportImport(value string) {
+func (p *sourceParser) reportImport(value string) string {
 	if strings.HasPrefix(value, "\"") {
-		p.importReporter(PackageImport{value[1 : len(value)-2], ImportTypeVCS, p.source})
+		return p.importReporter(PackageImport{value[1 : len(value)-2], ImportTypeVCS, p.source})
 	} else {
-		p.importReporter(PackageImport{value, ImportTypeLocal, p.source})
+		return p.importReporter(PackageImport{value, ImportTypeLocal, p.source})
 	}
 }
 

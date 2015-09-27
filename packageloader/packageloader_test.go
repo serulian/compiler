@@ -15,7 +15,8 @@ import (
 var _ = fmt.Printf
 
 type testTracker struct {
-	pathsImported map[string]bool
+	pathsImported    map[string]bool
+	packagesImported map[string]bool
 }
 
 type testNode struct {
@@ -38,12 +39,18 @@ func (tn *testNode) Decorate(property string, value string) parser.AstNode {
 	if property == parser.NodePredicateSource {
 		tn.tracker.pathsImported[value] = true
 	}
+
+	if property == parser.NodeImportPredicateLocation {
+		tn.tracker.packagesImported[value] = true
+	}
+
 	return tn
 }
 
 func TestBasicLoading(t *testing.T) {
 	tt := &testTracker{
-		pathsImported: map[string]bool{},
+		pathsImported:    map[string]bool{},
+		packagesImported: map[string]bool{},
 	}
 
 	loader := NewPackageLoader("tests/basic/somefile.seru", tt.createAstNode)
@@ -55,11 +62,19 @@ func TestBasicLoading(t *testing.T) {
 	assertFileImported(t, tt, "tests/basic/somefile.seru")
 	assertFileImported(t, tt, "tests/basic/anotherfile.seru")
 	assertFileImported(t, tt, "tests/basic/somesubdir/subdirfile.seru")
+
+	// Ensure that the package map contains an entry for package imported.
+	for key := range tt.packagesImported {
+		if _, ok := result.PackageMap[key]; !ok {
+			t.Errorf("Expected package %s in packages map", key)
+		}
+	}
 }
 
 func TestUnknownPath(t *testing.T) {
 	tt := &testTracker{
-		pathsImported: map[string]bool{},
+		pathsImported:    map[string]bool{},
+		packagesImported: map[string]bool{},
 	}
 
 	loader := NewPackageLoader("tests/unknownimport/importsunknown.seru", tt.createAstNode)
