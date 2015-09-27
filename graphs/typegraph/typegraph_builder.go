@@ -14,10 +14,11 @@ import (
 func (t *TypeGraph) build(srg *srg.SRG) *Result {
 	// Create a type node for each type defined in the SRG.
 	for _, srgType := range srg.GetTypes() {
-		t.addTypeNode(srgType)
+		t.buildTypeNode(srgType)
 	}
 
-	// Add generics
+	// Add generics and resolve their constraints.
+
 	// Add members (along full inheritance)
 
 	return &Result{
@@ -28,9 +29,10 @@ func (t *TypeGraph) build(srg *srg.SRG) *Result {
 	}
 }
 
-// addTypeNode adds a new type node to the type graph for the given SRG type. Note that
+// buildTypeNode adds a new type node to the type graph for the given SRG type. Note that
 // this does not handle generics or members.
-func (t *TypeGraph) addTypeNode(srgType srg.SRGType) {
+func (t *TypeGraph) buildTypeNode(srgType srg.SRGType) {
+	// Create the type node.
 	typeNode := t.layer.CreateNode(getTypeNodeType(srgType.Kind))
 	typeNode.Connect(NodePredicateModule, srgType.Module().FileNode())
 	typeNode.Decorate(NodePredicateTypeName, srgType.Name)
