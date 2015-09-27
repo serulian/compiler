@@ -94,6 +94,7 @@ var parserTests = []parserTest{
 	{"missing source import test", "import/missing_source"},
 	{"invalid source", "import/invalid_source"},
 	{"invalid subsource", "import/invalid_subsource"},
+	{"missing as for SCM test", "import/missing_as_scm"},
 
 	// Module success tests.
 	{"module variable test", "module/module_var"},

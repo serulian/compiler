@@ -1,0 +1,16 @@
+NodeTypeFile
+  end-rune = 29
+  input-source = missing as for SCM test
+  start-rune = 0
+  child-node =>
+    NodeTypeImport
+      end-rune = 29
+      import-source = "github.com/some/thing"
+      input-source = missing as for SCM test
+      start-rune = 0
+      child-node =>
+        NodeTypeError
+          end-rune = 29
+          error-message = Import from SCM URL requires an 'as' clause
+          input-source = missing as for SCM test
+          start-rune = 30
