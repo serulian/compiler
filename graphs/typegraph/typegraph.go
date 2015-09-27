@@ -8,6 +8,7 @@
 package typegraph
 
 import (
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/srg"
 )
@@ -20,10 +21,10 @@ type TypeGraph struct {
 
 // Results represents the results of building a type graph.
 type Result struct {
-	Status   bool       // Whether the construction succeeded.
-	Warnings []string   // Any warnings encountered during construction.
-	Errors   []error    // Any errors encountered during construction.
-	Graph    *TypeGraph // The constructed type graph.
+	Status   bool                            // Whether the construction succeeded.
+	Warnings []*compilercommon.SourceWarning // Any warnings encountered during construction.
+	Errors   []*compilercommon.SourceError   // Any errors encountered during construction.
+	Graph    *TypeGraph                      // The constructed type graph.
 }
 
 // BuildTypeGraph returns a new TypeGraph that is populated from the given SRG.

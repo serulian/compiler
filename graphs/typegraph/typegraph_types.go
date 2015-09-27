@@ -34,11 +34,14 @@ const (
 	// NodeTypeClass/NodeTypeInterface
 	//
 
-	// Connects a type definition to its parent module.
-	NodePredicateModule = "definition-module"
+	// Connects a type declaration to its parent module.
+	NodePredicateTypeModule = "declaration-module"
 
-	// Connects a type definition to a member (function, var, etc).
-	NodePredicateTypeMember = "definition-member"
+	// Connects a type declaration to its SRG declaration/definition.
+	NodePredicateTypeSource = "declaration-source"
+
+	// Connects a type declaration to a member (function, var, etc).
+	NodePredicateTypeMember = "declaration-member"
 
 	// Marks a type with its name.
 	NodePredicateTypeName = "type-name"

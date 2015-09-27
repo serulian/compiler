@@ -46,8 +46,13 @@ func (gn *GraphNode) DecorateWithTagged(predicate string, value TaggedValue) {
 }
 
 // StartQuery starts a new query on the graph layer, with its origin being the current node.
-func (gn *GraphNode) StartQuery() *GraphQuery {
-	return gn.layer.StartQuery(string(gn.NodeId))
+func (gn GraphNode) StartQuery() *GraphQuery {
+	return gn.StartQueryToLayer(gn.layer)
+}
+
+// StartQueryToLayer starts a new query on the specified graph layer, with its origin being the current node.
+func (gn GraphNode) StartQueryToLayer(layer *GraphLayer) *GraphQuery {
+	return layer.StartQuery(string(gn.NodeId))
 }
 
 // GetAsInt returns the value of the given predicate found on this node as an integer.

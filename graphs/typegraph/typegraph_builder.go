@@ -7,35 +7,64 @@ package typegraph
 import (
 	"fmt"
 
+	"github.com/serulian/compiler/compilercommon"
+	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/srg"
 )
 
 // Build builds the type graph from the SRG used to initialize it.
-func (t *TypeGraph) build(srg *srg.SRG) *Result {
+func (t *TypeGraph) build(g *srg.SRG) *Result {
+	result := &Result{
+		Status:   true,
+		Warnings: make([]*compilercommon.SourceWarning, 0),
+		Errors:   make([]*compilercommon.SourceError, 0),
+		Graph:    t,
+	}
+
 	// Create a type node for each type defined in the SRG.
-	for _, srgType := range srg.GetTypes() {
-		t.buildTypeNode(srgType)
+	typeMap := map[srg.SRGType]compilergraph.GraphNode{}
+	for _, srgType := range g.GetTypes() {
+		typeNode, err := t.buildTypeNode(srgType)
+		if err != nil {
+			result.Errors = append(result.Errors, err)
+			result.Status = false
+		} else {
+			typeMap[srgType] = typeNode
+		}
 	}
 
 	// Add generics and resolve their constraints.
+	//for _, srgType := range g.GetTypes() {
+	//
+	//}
 
 	// Add members (along full inheritance)
 
-	return &Result{
-		Status:   true,
-		Warnings: make([]string, 0),
-		Errors:   make([]error, 0),
-		Graph:    t,
-	}
+	return result
 }
 
 // buildTypeNode adds a new type node to the type graph for the given SRG type. Note that
 // this does not handle generics or members.
-func (t *TypeGraph) buildTypeNode(srgType srg.SRGType) {
+func (t *TypeGraph) buildTypeNode(srgType srg.SRGType) (compilergraph.GraphNode, *compilercommon.SourceError) {
+	// Ensure that there exists no other type with this name under the module.
+	_, exists := srgType.Module().
+		FileNode().
+		StartQueryToLayer(t.layer).
+		In(NodePredicateTypeModule).
+		Has(NodePredicateTypeName, srgType.Name).
+		TryGetNode()
+
+	if exists {
+		sourceError := compilercommon.SourceErrorf(srgType.Location(), "Type '%s' is already defined in the module", srgType.Name)
+		return compilergraph.GraphNode{}, sourceError
+	}
+
 	// Create the type node.
 	typeNode := t.layer.CreateNode(getTypeNodeType(srgType.Kind))
-	typeNode.Connect(NodePredicateModule, srgType.Module().FileNode())
+	typeNode.Connect(NodePredicateTypeModule, srgType.Module().FileNode())
+	typeNode.Connect(NodePredicateTypeSource, srgType.TypeNode())
 	typeNode.Decorate(NodePredicateTypeName, srgType.Name)
+	return typeNode, nil
 }
 
 // getTypeNodeType returns the NodeType for creating type graph nodes for an SRG type declaration.

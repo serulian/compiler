@@ -9,16 +9,27 @@ import (
 	"strconv"
 
 	"github.com/serulian/compiler/compilercommon"
+	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/parser"
 )
 
 // salForPredicates returns a SourceAndLocation for the loaded predicate map. Note that
 // the map *must* contain the NodePredicateSource and NodePredicateStartRune predicates.
 func salForPredicates(predicateValues map[string]string) compilercommon.SourceAndLocation {
-	source := compilercommon.InputSource(predicateValues[parser.NodePredicateSource])
-	bytePosition, err := strconv.Atoi(predicateValues[parser.NodePredicateStartRune])
+	return salForValues(predicateValues[parser.NodePredicateSource], predicateValues[parser.NodePredicateStartRune])
+}
+
+// salForNode returns a SourceAndLocation for the given graph node.
+func salForNode(node compilergraph.GraphNode) compilercommon.SourceAndLocation {
+	return salForValues(node.Get(parser.NodePredicateSource), node.Get(parser.NodePredicateStartRune))
+}
+
+// salForValues returns a SourceAndLocation for the given string predicate values.
+func salForValues(sourceStr string, bytePositionStr string) compilercommon.SourceAndLocation {
+	source := compilercommon.InputSource(sourceStr)
+	bytePosition, err := strconv.Atoi(bytePositionStr)
 	if err != nil {
-		panic(fmt.Sprintf("Expected int value for byte position, found: %v", bytePosition))
+		panic(fmt.Sprintf("Expected int value for byte position, found: %v", bytePositionStr))
 	}
 
 	return compilercommon.NewSourceAndLocation(source, bytePosition)

@@ -18,9 +18,10 @@ import (
 var _ = fmt.Printf
 
 type typegraphTest struct {
-	name       string
-	input      string
-	entrypoint string
+	name          string
+	input         string
+	entrypoint    string
+	expectedError string
 }
 
 func (tgt *typegraphTest) json() string {
@@ -40,7 +41,11 @@ func (tgt *typegraphTest) writeJson(value string) {
 }
 
 var typeGraphTests = []typegraphTest{
-	typegraphTest{"simple test", "simple", "simple.seru"},
+	// Success tests.
+	typegraphTest{"simple test", "simple", "simple.seru", ""},
+
+	// Failure tests.
+	typegraphTest{"redeclaration test", "redeclare", "redeclare.seru", "Type 'SomeClass' is already defined in the module"},
 }
 
 func TestGraphs(t *testing.T) {
@@ -53,18 +58,28 @@ func TestGraphs(t *testing.T) {
 		testSRG := srg.NewSRG(graph)
 		srgResult := testSRG.LoadAndParse()
 
-		// Make sure we had errors during construction.
+		// Make sure we had no errors during construction.
 		assert.True(t, srgResult.Status, "Got error for SRG construction %v: %s", test.name, srgResult.Errors)
 
 		// Construct the type graph.
 		result := BuildTypeGraph(testSRG)
 
-		// Make sure we had errors during construction.
-		assert.True(t, result.Status, "Got error for type graph construction %v: %s", test.name, result.Errors)
+		if test.expectedError == "" {
+			// Make sure we had no errors during construction.
+			assert.True(t, result.Status, "Got error for type graph construction %v: %s", test.name, result.Errors)
 
-		// Compare the constructed graph layer to the expected.
-		b, err := json.Marshal(result.Graph.TypeDecls())
-		assert.Nil(t, err, "JSON marshal error")
-		assert.Equal(t, test.json(), string(b), "JSON mismatch")
+			// Compare the constructed graph layer to the expected.
+			b, err := json.Marshal(result.Graph.TypeDecls())
+			assert.Nil(t, err, "JSON marshal error")
+			assert.Equal(t, test.json(), string(b), "JSON mismatch")
+		} else {
+			// Make sure we had an error during construction.
+			if !assert.False(t, result.Status, "Found no error for type graph construction %v: %s", test.name, result.Errors) {
+				continue
+			}
+
+			// Make sure the error expected is found.
+			assert.Equal(t, test.expectedError, result.Errors[0].Error())
+		}
 	}
 }

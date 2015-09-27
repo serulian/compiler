@@ -9,6 +9,7 @@ package srg
 import (
 	"fmt"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/parser"
 )
@@ -48,6 +49,16 @@ func (g *SRG) GetTypes() []SRGType {
 func (t SRGType) Module() SRGModule {
 	moduleNode := t.typeNode.StartQuery().In(parser.NodePredicateChild).GetNode()
 	return moduleForSRGNode(t.srg, moduleNode, moduleNode.Get(parser.NodePredicateSource))
+}
+
+// TypeNode returns the underlying type node for this type.
+func (t SRGType) TypeNode() compilergraph.GraphNode {
+	return t.typeNode
+}
+
+// Location returns the source location for this type.
+func (t SRGType) Location() compilercommon.SourceAndLocation {
+	return salForNode(t.typeNode)
 }
 
 // typeForSRGNode returns an SRGType struct representing the node, which is the root node
