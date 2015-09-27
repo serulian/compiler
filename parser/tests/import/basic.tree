@@ -8,4 +8,5 @@ NodeTypeFile
       import-location-ref = location:Something
       import-source = Something
       input-source = basic import test
+      named = Something
       start-rune = 0

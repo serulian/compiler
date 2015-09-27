@@ -9,4 +9,5 @@ NodeTypeFile
       import-source = foobar
       import-subsource = barbaz
       input-source = from import test
+      named = barbaz
       start-rune = 0

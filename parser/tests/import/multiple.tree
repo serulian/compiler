@@ -8,12 +8,14 @@ NodeTypeFile
       import-location-ref = location:FooBar
       import-source = FooBar
       input-source = multiple imports test
+      named = FooBar
       start-rune = 0
     NodeTypeImport
       end-rune = 27
       import-location-ref = location:BarBaz
       import-source = BarBaz
       input-source = multiple imports test
+      named = BarBaz
       start-rune = 14
     NodeTypeImport
       end-rune = 62
@@ -21,4 +23,5 @@ NodeTypeFile
       import-source = Something
       import-subsource = SomethingElse
       input-source = multiple imports test
+      named = SomethingElse
       start-rune = 28

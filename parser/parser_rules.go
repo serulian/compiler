@@ -164,6 +164,9 @@ func (p *sourceParser) consumeImportSource(importNode AstNode, predicate string,
 		if token.kind == tokenTypeStringLiteral {
 			p.emitError("Import from SCM URL requires an 'as' clause")
 		}
+
+		// Otherwise, literal imports receive the name of the package source as their own name.
+		importNode.Decorate(NodeImportPredicateName, token.value)
 	}
 
 	// end of the statement

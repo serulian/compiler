@@ -8,6 +8,7 @@ NodeTypeFile
       import-location-ref = location:github.com/some/thin
       import-source = "github.com/some/thing"
       input-source = missing as for SCM test
+      named = "github.com/some/thing"
       start-rune = 0
       child-node =>
         NodeTypeError
