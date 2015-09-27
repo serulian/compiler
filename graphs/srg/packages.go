@@ -7,6 +7,7 @@ package srg
 import (
 	"fmt"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/parser"
@@ -39,7 +40,7 @@ type srgPackage struct {
 }
 
 // ModulePaths returns the paths of all the modules under this package.
-func (p *srgPackage) ModulePaths() []parser.InputSource {
+func (p *srgPackage) ModulePaths() []compilercommon.InputSource {
 	return p.packageInfo.ModulePaths()
 }
 

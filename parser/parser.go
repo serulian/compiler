@@ -10,10 +10,12 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	"github.com/serulian/compiler/compilercommon"
 )
 
 // NodeBuilder is a function for building AST nodes.
-type NodeBuilder func(source InputSource, kind NodeType) AstNode
+type NodeBuilder func(source compilercommon.InputSource, kind NodeType) AstNode
 
 // ImportHandler is a function called for registering imports encountered. The function
 // returns a reference string for the package or file location of the import after the
@@ -30,13 +32,13 @@ type rightNodeConstructor func(AstNode, lexeme) (AstNode, bool)
 
 // sourceParser holds the state of the parser.
 type sourceParser struct {
-	source         InputSource    // the name of the input; used only for error reports
-	lex            *peekableLexer // a reference to the lexer used for tokenization
-	builder        NodeBuilder    // the builder function for creating AstNode instances
-	nodes          *nodeStack     // the stack of the current nodes
-	currentToken   lexeme         // the current token
-	previousToken  lexeme         // the previous token
-	importReporter ImportHandler  // callback invoked when an import is found
+	source         compilercommon.InputSource // the name of the input; used only for error reports
+	lex            *peekableLexer             // a reference to the lexer used for tokenization
+	builder        NodeBuilder                // the builder function for creating AstNode instances
+	nodes          *nodeStack                 // the stack of the current nodes
+	currentToken   lexeme                     // the current token
+	previousToken  lexeme                     // the previous token
+	importReporter ImportHandler              // callback invoked when an import is found
 }
 
 // lookaheadTracker holds state when conducting a multi-token lookahead in the parser.
@@ -62,7 +64,7 @@ const (
 )
 
 // Parse performs parsing of the given input string and returns the root AST node.
-func Parse(builder NodeBuilder, importReporter ImportHandler, source InputSource, input string) AstNode {
+func Parse(builder NodeBuilder, importReporter ImportHandler, source compilercommon.InputSource, input string) AstNode {
 	l := peekable_lex(lex(source, input))
 	p := &sourceParser{
 		source:         source,
@@ -79,10 +81,12 @@ func Parse(builder NodeBuilder, importReporter ImportHandler, source InputSource
 
 // reportImport reports an import of the given token value as a path.
 func (p *sourceParser) reportImport(value string) string {
+	sal := compilercommon.NewSourceAndLocation(p.source, int(p.currentToken.position))
+
 	if strings.HasPrefix(value, "\"") {
-		return p.importReporter(PackageImport{value[1 : len(value)-2], ImportTypeVCS, p.source})
+		return p.importReporter(PackageImport{value[1 : len(value)-2], ImportTypeVCS, sal})
 	} else {
-		return p.importReporter(PackageImport{value, ImportTypeLocal, p.source})
+		return p.importReporter(PackageImport{value, ImportTypeLocal, sal})
 	}
 }
 

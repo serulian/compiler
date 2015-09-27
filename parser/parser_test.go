@@ -13,6 +13,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -52,7 +53,7 @@ func (pt *parserTest) writeTree(value string) {
 	}
 }
 
-func createAstNode(source InputSource, kind NodeType) AstNode {
+func createAstNode(source compilercommon.InputSource, kind NodeType) AstNode {
 	return &testNode{
 		nodeType:   kind,
 		properties: make(map[string]string),
@@ -202,7 +203,7 @@ func TestParser(t *testing.T) {
 			}
 		}
 
-		rootNode := Parse(createAstNode, reportImport, InputSource(test.name), test.input())
+		rootNode := Parse(createAstNode, reportImport, compilercommon.InputSource(test.name), test.input())
 		parseTree := getParseTree((rootNode).(*testNode), 0)
 		assert := assert.New(t)
 

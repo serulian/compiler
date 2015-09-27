@@ -5,6 +5,7 @@
 package srg
 
 import (
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/parser"
 )
@@ -21,7 +22,7 @@ type SRGModule struct {
 	srg      *SRG                    // The parent SRG.
 	fileNode compilergraph.GraphNode // The root file node in the SRG for the module.
 
-	InputSource parser.InputSource // The input source for the module
+	InputSource compilercommon.InputSource // The input source for the module
 }
 
 // GetModules returns all the modules defined in the SRG.
@@ -37,7 +38,7 @@ func (g *SRG) GetModules() []SRGModule {
 }
 
 // FindModuleBySource returns the module with the given input source, if any.
-func (g *SRG) FindModuleBySource(source parser.InputSource) (SRGModule, bool) {
+func (g *SRG) FindModuleBySource(source compilercommon.InputSource) (SRGModule, bool) {
 	node, found := g.findAllNodes(parser.NodeTypeFile).
 		Has(parser.NodePredicateSource, string(source)).
 		TryGetNode()
@@ -103,6 +104,6 @@ func moduleForSRGNode(g *SRG, fileNode compilergraph.GraphNode, inputSource stri
 	return SRGModule{
 		srg:         g,
 		fileNode:    fileNode,
-		InputSource: parser.InputSource(inputSource),
+		InputSource: compilercommon.InputSource(inputSource),
 	}
 }

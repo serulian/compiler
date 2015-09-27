@@ -8,6 +8,8 @@ package parser
 
 import (
 	"strconv"
+
+	"github.com/serulian/compiler/compilercommon"
 )
 
 type AstNode interface {
@@ -30,9 +32,9 @@ const (
 
 // PackageImport defines the import of a package.
 type PackageImport struct {
-	Path       string
-	ImportType PackageImportType
-	SourceFile InputSource
+	Path           string
+	ImportType     PackageImportType
+	SourceLocation compilercommon.SourceAndLocation
 }
 
 // NodeType identifies the type of AST node.

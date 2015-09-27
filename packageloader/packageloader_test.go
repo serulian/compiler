@@ -9,6 +9,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/parser"
 )
 
@@ -24,7 +25,7 @@ type testNode struct {
 	tracker  *testTracker
 }
 
-func (tt *testTracker) createAstNode(source parser.InputSource, kind parser.NodeType) parser.AstNode {
+func (tt *testTracker) createAstNode(source compilercommon.InputSource, kind parser.NodeType) parser.AstNode {
 	return &testNode{
 		nodeType: kind,
 		tracker:  tt,

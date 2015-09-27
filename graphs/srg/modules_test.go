@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
-	"github.com/serulian/compiler/parser"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -65,7 +65,7 @@ func TestBasicResolveType(t *testing.T) {
 	testSRG := getSRG(t, "tests/basic/basic.seru")
 
 	// Lookup the basic module.
-	basicModule, ok := testSRG.FindModuleBySource(parser.InputSource("tests/basic/basic.seru"))
+	basicModule, ok := testSRG.FindModuleBySource(compilercommon.InputSource("tests/basic/basic.seru"))
 	assert.True(t, ok, "Could not find basic module")
 
 	// Lookup both expected types.
@@ -77,7 +77,7 @@ func TestComplexResolveType(t *testing.T) {
 	testSRG := getSRG(t, "tests/complexresolve/entrypoint.seru")
 
 	// Lookup the entrypoint module.
-	entrypointModule, ok := testSRG.FindModuleBySource(parser.InputSource("tests/complexresolve/entrypoint.seru"))
+	entrypointModule, ok := testSRG.FindModuleBySource(compilercommon.InputSource("tests/complexresolve/entrypoint.seru"))
 	assert.True(t, ok, "Could not find entrypoint module")
 
 	// Lookup all the expected types.
@@ -105,7 +105,7 @@ func TestComplexResolveType(t *testing.T) {
 	assert.False(t, found, "Expected localClass to not be exported")
 
 	// Lookup another module.
-	anotherModule, ok := testSRG.FindModuleBySource(parser.InputSource("tests/complexresolve/anothermodule.seru"))
+	anotherModule, ok := testSRG.FindModuleBySource(compilercommon.InputSource("tests/complexresolve/anothermodule.seru"))
 	assert.True(t, ok, "Could not find another module")
 	assertResolveType(t, anotherModule, "localClass", "localClass")
 }

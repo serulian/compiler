@@ -5,6 +5,7 @@
 package srg
 
 import (
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/parser"
 )
@@ -27,7 +28,7 @@ func (ast *srgASTNode) Decorate(predicate string, value string) parser.AstNode {
 }
 
 // buildASTNode constructs a new node in the SRG.
-func (g *SRG) buildASTNode(source parser.InputSource, kind parser.NodeType) parser.AstNode {
+func (g *SRG) buildASTNode(source compilercommon.InputSource, kind parser.NodeType) parser.AstNode {
 	graphNode := g.layer.CreateNode(kind)
 	return &srgASTNode{
 		graphNode: graphNode,

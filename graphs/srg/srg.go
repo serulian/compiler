@@ -6,8 +6,9 @@
 package srg
 
 import (
-	"fmt"
+	"strconv"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/parser"
@@ -43,16 +44,15 @@ func (g *SRG) LoadAndParse() *packageloader.LoadResult {
 		parser.NodePredicateStartRune)
 
 	for it.Next() {
-		err := fmt.Errorf("At %s, position: %s: %s",
-			it.Values[parser.NodePredicateSource],
-			it.Values[parser.NodePredicateStartRune],
-			it.Values[parser.NodePredicateErrorMessage])
+		source := compilercommon.InputSource(it.Values[parser.NodePredicateSource])
+		bytePosition, _ := strconv.Atoi(it.Values[parser.NodePredicateStartRune])
 
-		result.Errors = append(result.Errors, err)
+		sal := compilercommon.NewSourceAndLocation(source, bytePosition)
+		result.Errors = append(result.Errors, compilercommon.NewSourceError(sal, it.Values[parser.NodePredicateErrorMessage]))
 		result.Status = false
 	}
 
-	// Using the package, semantic check all imports.
+	// Verify all imports are valid.
 	// TODO(jschorr): this
 
 	// Save the package map.

@@ -70,8 +70,8 @@ func (gl *GraphLayer) FindNodesWithTaggedType(predicate string, values ...Tagged
 }
 
 // IsKind updates thi Query to represent only those nodes that are of the given kind.
-func (gq *GraphQuery) IsKind(nodeKind TaggedValue) *GraphQuery {
-	return gq.HasTagged(gq.layer.nodeKindPredicate, nodeKind)
+func (gq *GraphQuery) IsKind(nodeKinds ...TaggedValue) *GraphQuery {
+	return gq.HasTagged(gq.layer.nodeKindPredicate, nodeKinds...)
 }
 
 // In updates this Query to represent the nodes that are adjacent to the

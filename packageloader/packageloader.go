@@ -11,6 +11,7 @@ import (
 	"path"
 	"sync"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/parser"
 	"github.com/serulian/compiler/vcs"
@@ -18,8 +19,8 @@ import (
 
 // PackageInfo holds information about a loaded package.
 type PackageInfo struct {
-	referenceId string               // The unique ID for this package.
-	modulePaths []parser.InputSource // The module paths making up this package.
+	referenceId string                       // The unique ID for this package.
+	modulePaths []compilercommon.InputSource // The module paths making up this package.
 }
 
 // ReferenceId returns the unique reference ID for this package.
@@ -28,7 +29,7 @@ func (pi *PackageInfo) ReferenceId() string {
 }
 
 // ModulePaths returns the list of full paths of the modules in this package.
-func (pi *PackageInfo) ModulePaths() []parser.InputSource {
+func (pi *PackageInfo) ModulePaths() []compilercommon.InputSource {
 	return pi.modulePaths
 }
 
@@ -52,7 +53,7 @@ type pathInformation struct {
 	referenceId string
 	kind        pathKind
 	path        string
-	source      string
+	sal         compilercommon.SourceAndLocation
 }
 
 // Returns the string representation of the given path.
@@ -65,8 +66,8 @@ func (p *pathInformation) String() string {
 type PackageLoader struct {
 	rootSourceFile string // The root source file location.
 
-	errors   chan error  // Errors are reported on this channel
-	warnings chan string // Warnings are reported on this channel
+	errors   chan *compilercommon.SourceError   // Errors are reported on this channel
+	warnings chan *compilercommon.SourceWarning // Warnings are reported on this channel
 
 	nodeBuilder parser.NodeBuilder // Builder to use for constructing the parse nodes
 
@@ -79,10 +80,10 @@ type PackageLoader struct {
 }
 
 type LoadResult struct {
-	Status     bool                    // True on success, false otherwise
-	Errors     []error                 // The errors encountered, if any
-	Warnings   []string                // The warnings encountered, if any
-	PackageMap map[string]*PackageInfo // Map of packages loaded
+	Status     bool                            // True on success, false otherwise
+	Errors     []*compilercommon.SourceError   // The errors encountered, if any
+	Warnings   []*compilercommon.SourceWarning // The warnings encountered, if any
+	PackageMap map[string]*PackageInfo         // Map of packages loaded
 }
 
 // NewPackageLoader creates and returns a new package loader for the given path.
@@ -90,8 +91,8 @@ func NewPackageLoader(rootSourceFile string, nodeBuilder parser.NodeBuilder) *Pa
 	return &PackageLoader{
 		rootSourceFile: rootSourceFile,
 
-		errors:   make(chan error),
-		warnings: make(chan string),
+		errors:   make(chan *compilercommon.SourceError),
+		warnings: make(chan *compilercommon.SourceWarning),
 
 		nodeBuilder: nodeBuilder,
 
@@ -112,14 +113,15 @@ func (p *PackageLoader) Load() *LoadResult {
 	// Start the error/warning collection goroutine.
 	result := &LoadResult{
 		Status:   true,
-		Errors:   make([]error, 0),
-		Warnings: make([]string, 0),
+		Errors:   make([]*compilercommon.SourceError, 0),
+		Warnings: make([]*compilercommon.SourceWarning, 0),
 	}
 
 	go p.collectIssues(result)
 
 	// Add the root source file as the first package to be parsed.
-	p.pushPath(pathSourceFile, p.rootSourceFile, "(root)")
+	sal := compilercommon.NewSourceAndLocation(compilercommon.InputSource(p.rootSourceFile), 0)
+	p.pushPath(pathSourceFile, p.rootSourceFile, sal)
 
 	// Wait for all packages and source files to be completed.
 	p.workTracker.Wait()
@@ -135,16 +137,16 @@ func (p *PackageLoader) Load() *LoadResult {
 }
 
 // pushPath adds a path to be processed by the package loader.
-func (p *PackageLoader) pushPath(kind pathKind, path string, source string) string {
-	pi := &pathInformation{compilerutil.NewUniqueId(), kind, path, source}
+func (p *PackageLoader) pushPath(kind pathKind, path string, sal compilercommon.SourceAndLocation) string {
+	pi := &pathInformation{compilerutil.NewUniqueId(), kind, path, sal}
 	pathId := pi.String()
-	return p.pushPathWithId(pathId, kind, path, source)
+	return p.pushPathWithId(pathId, kind, path, sal)
 }
 
 // pushPathWithId adds a path to be processed by the package loader, with the specified ID.
-func (p *PackageLoader) pushPathWithId(pathId string, kind pathKind, path string, source string) string {
+func (p *PackageLoader) pushPathWithId(pathId string, kind pathKind, path string, sal compilercommon.SourceAndLocation) string {
 	p.workTracker.Add(1)
-	p.pathsToLoad <- pathInformation{pathId, kind, path, source}
+	p.pathsToLoad <- pathInformation{pathId, kind, path, sal}
 	return pathId
 }
 
@@ -213,37 +215,37 @@ func (p *PackageLoader) loadVCSPackage(packagePath pathInformation) {
 	// Perform the checkout of the VCS package.
 	checkoutDirectory, err, warning := vcs.PerformVCSCheckout(packagePath.path, pkgDirectory)
 	if err != nil {
-		p.errors <- fmt.Errorf("Error loading VCS package '%s' referenced by '%s': %v", packagePath.path, packagePath.source, err)
+		p.errors <- compilercommon.SourceErrorf(packagePath.sal, "Error loading VCS package '%s'", packagePath.path)
 		return
 	}
 
 	if warning != "" {
-		p.warnings <- warning
+		p.warnings <- compilercommon.NewSourceWarning(packagePath.sal, warning)
 	}
 
 	// Push the now-local directory onto the package loading channel.
-	p.pushPathWithId(packagePath.referenceId, pathLocalPackage, checkoutDirectory, packagePath.source)
+	p.pushPathWithId(packagePath.referenceId, pathLocalPackage, checkoutDirectory, packagePath.sal)
 }
 
 // loadLocalPackage loads the package found at the path relative to the package directory.
 func (p *PackageLoader) loadLocalPackage(packagePath pathInformation) {
 	// Ensure the directory exists.
 	if ok, _ := exists(packagePath.path); !ok {
-		p.errors <- fmt.Errorf("Path '%s' referenced by '%s' could not be found", packagePath.path, packagePath.source)
+		p.errors <- compilercommon.SourceErrorf(packagePath.sal, "Could not find directory '%s'", packagePath.path)
 		return
 	}
 
 	// Read the contents of the directory.
 	directoryContents, err := ioutil.ReadDir(packagePath.path)
 	if err != nil {
-		p.errors <- err
+		p.errors <- compilercommon.SourceErrorf(packagePath.sal, "Could not load directory '%s'", packagePath.path)
 		return
 	}
 
 	// Add the package information to the map.
 	packageInfo := &PackageInfo{
 		referenceId: packagePath.referenceId,
-		modulePaths: make([]parser.InputSource, 0),
+		modulePaths: make([]compilercommon.InputSource, 0),
 	}
 
 	// Find all source files in the directory and add them to the paths list.
@@ -253,17 +255,17 @@ func (p *PackageLoader) loadLocalPackage(packagePath pathInformation) {
 		if path.Ext(fileInfo.Name()) == serulianSourceFileExtension {
 			fileFound = true
 			filePath := path.Join(packagePath.path, fileInfo.Name())
-			p.pushPath(pathSourceFile, filePath, packagePath.path)
+			p.pushPath(pathSourceFile, filePath, packagePath.sal)
 
 			// Add the source file to the package information.
-			packageInfo.modulePaths = append(packageInfo.modulePaths, parser.InputSource(filePath))
+			packageInfo.modulePaths = append(packageInfo.modulePaths, compilercommon.InputSource(filePath))
 		}
 	}
 
 	p.packageMap[packagePath.referenceId] = packageInfo
 
 	if !fileFound {
-		p.warnings <- fmt.Sprintf("Package '%s' has no source files", packagePath.path)
+		p.warnings <- compilercommon.SourceWarningf(packagePath.sal, "Package '%s' has no source files", packagePath.path)
 		return
 	}
 }
@@ -272,44 +274,44 @@ func (p *PackageLoader) loadLocalPackage(packagePath pathInformation) {
 func (p *PackageLoader) conductParsing(sourceFile pathInformation) {
 	// Ensure the file exists.
 	if ok, _ := exists(sourceFile.path); !ok {
-		p.errors <- fmt.Errorf("Path '%s' referenced by '%s' could not be found", sourceFile.path, sourceFile.source)
+		p.errors <- compilercommon.SourceErrorf(sourceFile.sal, "Could not find source file '%s'", sourceFile.path)
 		return
 	}
 
 	// Load the source file's contents.
 	contents, err := ioutil.ReadFile(sourceFile.path)
 	if err != nil {
-		p.errors <- fmt.Errorf("Path '%s' referenced by '%s' could not be loaded: %v", sourceFile.path, sourceFile.source, err)
+		p.errors <- compilercommon.SourceErrorf(sourceFile.sal, "Could not load source file '%s'", sourceFile.path)
 		return
 	}
 
 	// Parse the source file.
-	inputSource := parser.InputSource(sourceFile.path)
+	inputSource := compilercommon.InputSource(sourceFile.path)
 	parser.Parse(p.nodeBuilder, p.handleImport, inputSource, string(contents))
 
 	// Add the file to the package map as a package of one file.
 	p.packageMap[sourceFile.referenceId] = &PackageInfo{
 		referenceId: sourceFile.referenceId,
-		modulePaths: []parser.InputSource{inputSource},
+		modulePaths: []compilercommon.InputSource{inputSource},
 	}
 }
 
 // handleImport queues an import found in a source file.
 func (p *PackageLoader) handleImport(importInformation parser.PackageImport) string {
-	sourcePath := string(importInformation.SourceFile)
+	sourcePath := string(importInformation.SourceLocation.Source())
 
 	if importInformation.ImportType == parser.ImportTypeVCS {
 		// VCS paths get added directly.
-		return p.pushPath(pathVCSPackage, importInformation.Path, sourcePath)
+		return p.pushPath(pathVCSPackage, importInformation.Path, importInformation.SourceLocation)
 	} else {
 		// Otherwise, check the path to see if it exists as a single source file. If so, we add it
 		// as a source file instead of a local package.
 		dirPath := path.Join(path.Dir(sourcePath), importInformation.Path)
 		filePath := dirPath + serulianSourceFileExtension
 		if ok, _ := exists(filePath); ok {
-			return p.pushPath(pathSourceFile, filePath, sourcePath)
+			return p.pushPath(pathSourceFile, filePath, importInformation.SourceLocation)
 		} else {
-			return p.pushPath(pathLocalPackage, dirPath, sourcePath)
+			return p.pushPath(pathLocalPackage, dirPath, importInformation.SourceLocation)
 		}
 	}
 }
