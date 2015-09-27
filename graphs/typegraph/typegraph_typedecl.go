@@ -20,15 +20,13 @@ const (
 
 // TGTypeDeclaration represents a type declaration in the type graph.
 type TGTypeDecl struct {
-	typeNode compilergraph.GraphNode // The underlying node.
-
-	TypeName string   // The name of this type.
-	Kind     TypeKind // The kind of this type declaration.
+	compilergraph.GraphNode
+	tdg *TypeGraph
 }
 
-// getTypeKind returns the kind of the type node.
-func getTypeKind(typeNode compilergraph.GraphNode) TypeKind {
-	nodeType := typeNode.Kind.(NodeType)
+// TypeKind returns the kind of the type node.
+func (tn *TGTypeDecl) TypeKind() TypeKind {
+	nodeType := tn.Kind.(NodeType)
 
 	switch nodeType {
 	case NodeTypeClass:
@@ -38,7 +36,7 @@ func getTypeKind(typeNode compilergraph.GraphNode) TypeKind {
 		return InterfaceType
 
 	default:
-		panic(fmt.Sprintf("Unknown kind of type %s for node %s", nodeType, typeNode.NodeId))
+		panic(fmt.Sprintf("Unknown kind of type %s for node %s", nodeType, tn.NodeId))
 		return ClassType
 	}
 }

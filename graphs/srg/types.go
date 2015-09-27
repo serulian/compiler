@@ -16,11 +16,8 @@ import (
 
 // SRGType wraps a type declaration or definition in the SRG.
 type SRGType struct {
-	srg      *SRG                    // The parent SRG.
-	typeNode compilergraph.GraphNode // The root node for the declaration or definition.
-
-	Name string   // The name of the type.
-	Kind TypeKind // The kind of this type.
+	compilergraph.GraphNode
+	srg *SRG // The parent SRG.
 }
 
 // TypeKind defines the various supported kinds of types in the SRG.
@@ -34,12 +31,12 @@ const (
 // GetTypes returns all the types defined in the SRG.
 func (g *SRG) GetTypes() []SRGType {
 	it := g.findAllNodes(parser.NodeTypeClass, parser.NodeTypeInterface).
-		BuildNodeIterator(parser.NodeClassPredicateName)
+		BuildNodeIterator()
 
 	var types []SRGType
 
 	for it.Next() {
-		types = append(types, typeForSRGNode(g, it.Node, it.Values[parser.NodeClassPredicateName]))
+		types = append(types, SRGType{it.Node, g})
 	}
 
 	return types
@@ -47,48 +44,28 @@ func (g *SRG) GetTypes() []SRGType {
 
 // Module returns the module under which the type is defined.
 func (t SRGType) Module() SRGModule {
-	moduleNode := t.typeNode.StartQuery().In(parser.NodePredicateChild).GetNode()
-	return moduleForSRGNode(t.srg, moduleNode, moduleNode.Get(parser.NodePredicateSource))
+	moduleNode := t.GraphNode.StartQuery().In(parser.NodePredicateChild).GetNode()
+	return SRGModule{moduleNode, t.srg}
 }
 
-// TypeNode returns the underlying type node for this type.
-func (t SRGType) TypeNode() compilergraph.GraphNode {
-	return t.typeNode
+// Name returns the name of this type.
+func (t SRGType) Name() string {
+	return t.GraphNode.Get(parser.NodeClassPredicateName)
+}
+
+// Node returns the underlying type node for this type.
+func (t SRGType) Node() compilergraph.GraphNode {
+	return t.GraphNode
 }
 
 // Location returns the source location for this type.
 func (t SRGType) Location() compilercommon.SourceAndLocation {
-	return salForNode(t.typeNode)
+	return salForNode(t.GraphNode)
 }
 
-// Generics returns the generics on this type.
-func (t SRGType) Generics() []SRGGeneric {
-	it := t.typeNode.StartQuery().
-		Out(parser.NodeTypeDefinitionGeneric).
-		BuildNodeIterator(parser.NodeGenericPredicateName)
-
-	var generics = make([]SRGGeneric, 0)
-	for it.Next() {
-		generics = append(generics, genericForSRGNode(t.srg, it.Node, it.Values[parser.NodeGenericPredicateName]))
-	}
-
-	return generics
-}
-
-// typeForSRGNode returns an SRGType struct representing the node, which is the root node
-// for a type declaration or definition.
-func typeForSRGNode(g *SRG, rootNode compilergraph.GraphNode, name string) SRGType {
-	return SRGType{
-		srg:      g,
-		typeNode: rootNode,
-		Name:     name,
-		Kind:     getTypeKind(rootNode.Kind.(parser.NodeType)),
-	}
-}
-
-// getTypeKind returns the kind matching the type definition/declaration node type.
-func getTypeKind(nodeType parser.NodeType) TypeKind {
-	switch nodeType {
+// GetTypeKind returns the kind matching the type definition/declaration node type.
+func (t SRGType) TypeKind() TypeKind {
+	switch t.GraphNode.Kind {
 	case parser.NodeTypeClass:
 		return ClassType
 
@@ -96,7 +73,21 @@ func getTypeKind(nodeType parser.NodeType) TypeKind {
 		return InterfaceType
 
 	default:
-		panic(fmt.Sprintf("Unknown kind of type %s", nodeType))
+		panic(fmt.Sprintf("Unknown kind of type %s", t.GraphNode.Kind))
 		return ClassType
 	}
+}
+
+// Generics returns the generics on this type.
+func (t SRGType) Generics() []SRGGeneric {
+	it := t.GraphNode.StartQuery().
+		Out(parser.NodeTypeDefinitionGeneric).
+		BuildNodeIterator()
+
+	var generics = make([]SRGGeneric, 0)
+	for it.Next() {
+		generics = append(generics, SRGGeneric{it.Node, t.srg})
+	}
+
+	return generics
 }

@@ -56,22 +56,21 @@ func (t *TypeGraph) build(g *srg.SRG) *Result {
 func (t *TypeGraph) buildTypeNode(srgType srg.SRGType) (compilergraph.GraphNode, *compilercommon.SourceError) {
 	// Ensure that there exists no other type with this name under the parent module.
 	_, exists := srgType.Module().
-		FileNode().
 		StartQueryToLayer(t.layer).
 		In(NodePredicateTypeModule).
-		Has(NodePredicateTypeName, srgType.Name).
+		Has(NodePredicateTypeName, srgType.Name()).
 		TryGetNode()
 
 	if exists {
-		sourceError := compilercommon.SourceErrorf(srgType.Location(), "Type '%s' is already defined in the module", srgType.Name)
+		sourceError := compilercommon.SourceErrorf(srgType.Location(), "Type '%s' is already defined in the module", srgType.Name())
 		return compilergraph.GraphNode{}, sourceError
 	}
 
 	// Create the type node.
-	typeNode := t.layer.CreateNode(getTypeNodeType(srgType.Kind))
-	typeNode.Connect(NodePredicateTypeModule, srgType.Module().FileNode())
-	typeNode.Connect(NodePredicateTypeSource, srgType.TypeNode())
-	typeNode.Decorate(NodePredicateTypeName, srgType.Name)
+	typeNode := t.layer.CreateNode(getTypeNodeType(srgType.TypeKind()))
+	typeNode.Connect(NodePredicateTypeModule, srgType.Module().Node())
+	typeNode.Connect(NodePredicateTypeSource, srgType.Node())
+	typeNode.Decorate(NodePredicateTypeName, srgType.Name())
 	return typeNode, nil
 }
 
@@ -95,13 +94,13 @@ func (t *TypeGraph) buildGenericNode(typeNode compilergraph.GraphNode, generic s
 	// Ensure that there exists no other generic with this name under the parent type.
 	_, exists := typeNode.StartQuery().
 		Out(NodePredicateTypeGeneric).
-		Has(NodePredicateGenericName, generic.Name).
+		Has(NodePredicateGenericName, generic.Name()).
 		TryGetNode()
 
 	if exists {
 		sourceError := compilercommon.SourceErrorf(generic.Location(),
 			"Generic '%s' is already defined under type '%s'",
-			generic.Name,
+			generic.Name(),
 			typeNode.Get(NodePredicateTypeName))
 
 		return sourceError
@@ -109,7 +108,7 @@ func (t *TypeGraph) buildGenericNode(typeNode compilergraph.GraphNode, generic s
 
 	// Create the generic node.
 	genericNode := t.layer.CreateNode(NodeTypeGeneric)
-	genericNode.Decorate(NodePredicateTypeName, generic.Name)
+	genericNode.Decorate(NodePredicateTypeName, generic.Name())
 
 	// Decorate the generic with its subtype constraint. If none in the SRG, decorate with "any".
 	// TOD(jschorr): this

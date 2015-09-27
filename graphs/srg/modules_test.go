@@ -41,11 +41,11 @@ func TestBasicModules(t *testing.T) {
 
 	var modulePaths []string
 	for _, module := range modules {
-		modulePaths = append(modulePaths, string(module.InputSource))
-		node, found := testSRG.FindModuleBySource(module.InputSource)
+		modulePaths = append(modulePaths, string(module.InputSource()))
+		node, found := testSRG.FindModuleBySource(module.InputSource())
 
-		assert.True(t, found, "Could not find module %s", module.InputSource)
-		assert.Equal(t, node.fileNode.NodeId, module.fileNode.NodeId, "Node ID mismatch on modules")
+		assert.True(t, found, "Could not find module %s", module.InputSource())
+		assert.Equal(t, node.NodeId, module.NodeId, "Node ID mismatch on modules")
 	}
 
 	assert.Contains(t, modulePaths, "tests/basic/basic.seru", "Missing basic.seru module")
@@ -58,7 +58,7 @@ func assertResolveType(t *testing.T, module SRGModule, path string, expectedName
 		return
 	}
 
-	assert.Equal(t, expectedName, typeDecl.Name, "Name mismatch on found type")
+	assert.Equal(t, expectedName, typeDecl.Name(), "Name mismatch on found type")
 }
 
 func TestBasicResolveType(t *testing.T) {

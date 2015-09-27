@@ -19,19 +19,17 @@ const (
 
 // SRGModule wraps a module defined in the SRG.
 type SRGModule struct {
-	srg      *SRG                    // The parent SRG.
-	fileNode compilergraph.GraphNode // The root file node in the SRG for the module.
-
-	InputSource compilercommon.InputSource // The input source for the module
+	compilergraph.GraphNode
+	srg *SRG // The parent SRG.
 }
 
 // GetModules returns all the modules defined in the SRG.
 func (g *SRG) GetModules() []SRGModule {
-	it := g.findAllNodes(parser.NodeTypeFile).BuildNodeIterator(parser.NodePredicateSource)
+	it := g.findAllNodes(parser.NodeTypeFile).BuildNodeIterator()
 	var modules []SRGModule
 
 	for it.Next() {
-		modules = append(modules, moduleForSRGNode(g, it.Node, it.Values[parser.NodePredicateSource]))
+		modules = append(modules, SRGModule{it.Node, g})
 	}
 
 	return modules
@@ -43,16 +41,17 @@ func (g *SRG) FindModuleBySource(source compilercommon.InputSource) (SRGModule, 
 		Has(parser.NodePredicateSource, string(source)).
 		TryGetNode()
 
-	if !found {
-		return SRGModule{}, false
-	}
-
-	return moduleForSRGNode(g, node, string(source)), true
+	return SRGModule{node, g}, found
 }
 
-// FileNode returns the root file node for this module.
-func (m SRGModule) FileNode() compilergraph.GraphNode {
-	return m.fileNode
+// InputSource returns the input source for this module.
+func (m SRGModule) InputSource() compilercommon.InputSource {
+	return compilercommon.InputSource(m.GraphNode.Get(parser.NodePredicateSource))
+}
+
+// Node returns the underlying node.
+func (m SRGModule) Node() compilergraph.GraphNode {
+	return m.GraphNode
 }
 
 // FindTypeByName searches for the type definition or declaration with the given name under
@@ -71,7 +70,7 @@ func (m SRGModule) FindTypeByName(typeName string, option ModuleResolutionOption
 		allowedKinds = append(allowedKinds, parser.NodeTypeImport)
 	}
 
-	typeOrImportNode, found := m.fileNode.StartQuery().
+	typeOrImportNode, found := m.StartQuery().
 		Out(parser.NodePredicateChild).
 		Has(parser.NodeClassPredicateName, typeName).
 		IsKind(allowedKinds...).
@@ -95,15 +94,5 @@ func (m SRGModule) FindTypeByName(typeName string, option ModuleResolutionOption
 	}
 
 	// Otherwise, return the type found.
-	return typeForSRGNode(m.srg, typeOrImportNode, typeName), true
-}
-
-// moduleForSRGNode returns an SRGModule struct representing the node, which is the root
-// file node in the SRG for the module.
-func moduleForSRGNode(g *SRG, fileNode compilergraph.GraphNode, inputSource string) SRGModule {
-	return SRGModule{
-		srg:         g,
-		fileNode:    fileNode,
-		InputSource: compilercommon.InputSource(inputSource),
-	}
+	return SRGType{typeOrImportNode, m.srg}, true
 }

@@ -73,7 +73,7 @@ func (m SRGModule) ResolveTypeContainer(name string) (typeContainer, bool) {
 // packageName.
 func (m SRGModule) ResolveImportedPackage(packageName string) (*srgPackage, bool) {
 	// Search for the import under the module with the given package name.
-	node, found := m.fileNode.StartQuery().
+	node, found := m.StartQuery().
 		Out(parser.NodePredicateChild).
 		IsKind(parser.NodeTypeImport).
 		Has(parser.NodeImportPredicatePackageName, packageName).

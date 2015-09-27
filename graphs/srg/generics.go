@@ -12,28 +12,22 @@ import (
 
 // SRGGeneric represents a generic declaration on a type or type member.
 type SRGGeneric struct {
-	srg         *SRG                    // The parent SRG.
-	genericNode compilergraph.GraphNode // The root node for the generic declaration.
+	compilergraph.GraphNode
+	srg *SRG // The parent SRG.
+}
 
-	Name          string     // The name of the generic.
-	Constraint    SRGTypeRef // The type constraint on the generic (if any)
-	HasConstraint bool       // Whether this generic has a defined constraint.
+// Name returns the name of this generic.
+func (t SRGGeneric) Name() string {
+	return t.GraphNode.Get(parser.NodeGenericPredicateName)
 }
 
 // Location returns the source location for this generic.
 func (t SRGGeneric) Location() compilercommon.SourceAndLocation {
-	return salForNode(t.genericNode)
+	return salForNode(t.GraphNode)
 }
 
-// genericForSRGNode returns an SRGGeneric struct representing the node.
-func genericForSRGNode(g *SRG, genericNode compilergraph.GraphNode, name string) SRGGeneric {
-	constraint, found := genericNode.TryGetNode(parser.NodeGenericSubtype)
-
-	return SRGGeneric{
-		srg:           g,
-		genericNode:   genericNode,
-		Name:          name,
-		Constraint:    referenceForSRGNode(g, constraint),
-		HasConstraint: found,
-	}
+// HasConstraint returns whether this generic has a type constraint.
+func (t SRGGeneric) HasConstraint() bool {
+	_, exists := t.GraphNode.StartQuery().Out(parser.NodeGenericSubtype).TryGetNode()
+	return exists
 }
