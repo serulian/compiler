@@ -1,2 +1,4 @@
 class AnotherClass {}
 class AThirdClass {}
+
+class localClass {}

@@ -15,7 +15,7 @@ import (
 type typeContainer interface {
 	// FindTypeByName searches for the type definition with the given name and returns
 	// it if found.
-	FindTypeByName(typeName string) (SRGType, bool)
+	FindTypeByName(typeName string, option ModuleResolutionOption) (SRGType, bool)
 }
 
 // ResolveType attempts to resolve the type at the given path under this module and its
@@ -30,7 +30,7 @@ func (m SRGModule) ResolveType(path string) (SRGType, bool) {
 	// If there is only a single piece, this is a local-module type.
 	// TODO(jschorr): Handle global aliases here as well.
 	if len(pieces) == 1 {
-		return m.FindTypeByName(path)
+		return m.FindTypeByName(path, ModuleResolveAll)
 	}
 
 	// Otherwise, we first need to find a type container.
@@ -40,7 +40,7 @@ func (m SRGModule) ResolveType(path string) (SRGType, bool) {
 	}
 
 	// Resolve the type under the container.
-	return container.FindTypeByName(pieces[1])
+	return container.FindTypeByName(pieces[1], ModuleResolveExportedOnly)
 }
 
 // ResolveTypeContainer attempts to resolve a name under the imports of a module and
@@ -70,13 +70,13 @@ func (m SRGModule) ResolveTypeContainer(name string) (typeContainer, bool) {
 }
 
 // ResolveImportedPackage attempts to find a package imported by this module under the given
-// name.
-func (m SRGModule) ResolveImportedPackage(name string) (*srgPackage, bool) {
+// packageName.
+func (m SRGModule) ResolveImportedPackage(packageName string) (*srgPackage, bool) {
 	// Search for the import under the module with the given package name.
 	node, found := m.fileNode.StartQuery().
 		Out(parser.NodePredicateChild).
 		IsKind(parser.NodeTypeImport).
-		Has(parser.NodeImportPredicatePackageName, name).
+		Has(parser.NodeImportPredicatePackageName, packageName).
 		TryGetNode()
 
 	if !found {

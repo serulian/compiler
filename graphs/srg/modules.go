@@ -9,6 +9,13 @@ import (
 	"github.com/serulian/compiler/parser"
 )
 
+type ModuleResolutionOption int
+
+const (
+	ModuleResolveExportedOnly ModuleResolutionOption = iota
+	ModuleResolveAll          ModuleResolutionOption = iota
+)
+
 // SRGModule wraps a module defined in the SRG.
 type SRGModule struct {
 	srg      *SRG                    // The parent SRG.
@@ -49,11 +56,24 @@ func (m SRGModule) FileNode() compilergraph.GraphNode {
 
 // FindTypeByName searches for the type definition or declaration with the given name under
 // this module and returns it (if found).
-func (m SRGModule) FindTypeByName(typeName string) (SRGType, bool) {
-	// TODO(jschorr): Filter out non-types and non-imports.
+func (m SRGModule) FindTypeByName(typeName string, option ModuleResolutionOption) (SRGType, bool) {
+	// If only exported members are allowed, ensure that the name being searched matches exported
+	// name rules.
+	if option == ModuleResolveExportedOnly && !isExportedName(typeName) {
+		return SRGType{}, false
+	}
+
+	// By default, we find matching types in the module. If the resolution option allows for
+	// imports as well, add them to the allowed list.
+	allowedKinds := []compilergraph.TaggedValue{parser.NodeTypeClass, parser.NodeTypeInterface}
+	if option == ModuleResolveAll {
+		allowedKinds = append(allowedKinds, parser.NodeTypeImport)
+	}
+
 	typeOrImportNode, found := m.fileNode.StartQuery().
 		Out(parser.NodePredicateChild).
 		Has(parser.NodeClassPredicateName, typeName).
+		IsKind(allowedKinds...).
 		TryGetNode()
 
 	if !found {
@@ -66,11 +86,11 @@ func (m SRGModule) FindTypeByName(typeName string) (SRGType, bool) {
 
 		// If there is a subsource on the import, then we resolve that type name under the package.
 		if subsource, ok := typeOrImportNode.TryGet(parser.NodeImportPredicateSubsource); ok {
-			return packageInfo.FindTypeByName(subsource)
+			return packageInfo.FindTypeByName(subsource, ModuleResolveExportedOnly)
 		}
 
 		// Otherwise, we resolve the original requested type name.
-		return packageInfo.FindTypeByName(typeName)
+		return packageInfo.FindTypeByName(typeName, ModuleResolveExportedOnly)
 	}
 
 	// Otherwise, return the type found.

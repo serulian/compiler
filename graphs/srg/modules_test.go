@@ -99,4 +99,13 @@ func TestComplexResolveType(t *testing.T) {
 
 	assertResolveType(t, entrypointModule, "subpackage.FirstClass", "FirstClass")
 	assertResolveType(t, entrypointModule, "subpackage.SecondClass", "SecondClass")
+
+	// Ensure that an non-exported type is only accessible inside the module.
+	_, found := entrypointModule.ResolveType("anothermodule.localClass")
+	assert.False(t, found, "Expected localClass to not be exported")
+
+	// Lookup another module.
+	anotherModule, ok := testSRG.FindModuleBySource(parser.InputSource("tests/complexresolve/anothermodule.seru"))
+	assert.True(t, ok, "Could not find another module")
+	assertResolveType(t, anotherModule, "localClass", "localClass")
 }
