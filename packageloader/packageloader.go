@@ -12,7 +12,6 @@ import (
 	"sync"
 
 	"github.com/serulian/compiler/compilercommon"
-	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/parser"
 	"github.com/serulian/compiler/vcs"
 )
@@ -132,15 +131,12 @@ func (p *PackageLoader) Load() *LoadResult {
 
 	// Save the package map.
 	result.PackageMap = p.packageMap
-
 	return result
 }
 
 // pushPath adds a path to be processed by the package loader.
 func (p *PackageLoader) pushPath(kind pathKind, path string, sal compilercommon.SourceAndLocation) string {
-	pi := &pathInformation{compilerutil.NewUniqueId(), kind, path, sal}
-	pathId := pi.String()
-	return p.pushPathWithId(pathId, kind, path, sal)
+	return p.pushPathWithId(path, kind, path, sal)
 }
 
 // pushPathWithId adds a path to be processed by the package loader, with the specified ID.
@@ -272,6 +268,14 @@ func (p *PackageLoader) loadLocalPackage(packagePath pathInformation) {
 
 // conductParsing performs parsing of a source file found at the given path.
 func (p *PackageLoader) conductParsing(sourceFile pathInformation) {
+	inputSource := compilercommon.InputSource(sourceFile.path)
+
+	// Add the file to the package map as a package of one file.
+	p.packageMap[sourceFile.referenceId] = &PackageInfo{
+		referenceId: sourceFile.referenceId,
+		modulePaths: []compilercommon.InputSource{inputSource},
+	}
+
 	// Ensure the file exists.
 	if ok, _ := exists(sourceFile.path); !ok {
 		p.errors <- compilercommon.SourceErrorf(sourceFile.sal, "Could not find source file '%s'", sourceFile.path)
@@ -286,14 +290,7 @@ func (p *PackageLoader) conductParsing(sourceFile pathInformation) {
 	}
 
 	// Parse the source file.
-	inputSource := compilercommon.InputSource(sourceFile.path)
 	parser.Parse(p.nodeBuilder, p.handleImport, inputSource, string(contents))
-
-	// Add the file to the package map as a package of one file.
-	p.packageMap[sourceFile.referenceId] = &PackageInfo{
-		referenceId: sourceFile.referenceId,
-		modulePaths: []compilercommon.InputSource{inputSource},
-	}
 }
 
 // handleImport queues an import found in a source file.

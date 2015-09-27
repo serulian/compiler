@@ -11,6 +11,7 @@ import (
 
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/parser"
+	"github.com/stretchr/testify/assert"
 )
 
 var _ = fmt.Printf
@@ -56,4 +57,20 @@ func TestSyntaxError(t *testing.T) {
 	if !strings.Contains(result.Errors[0].Error(), "Expected identifier") {
 		t.Errorf("Expected parse error, found: %v", result.Errors)
 	}
+}
+
+func TestImportError(t *testing.T) {
+	graph, err := compilergraph.NewGraph("tests/importerror/start.seru")
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+
+	testSRG := NewSRG(graph)
+	result := testSRG.LoadAndParse()
+	if result.Status {
+		t.Errorf("Expected failed import")
+	}
+
+	// Ensure the import error was reported.
+	assert.Equal(t, "Import 'MissingClass' not found under package 'other'", result.Errors[0].Error())
 }
