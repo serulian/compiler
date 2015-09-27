@@ -6,7 +6,7 @@ NodeTypeFile
     NodeTypeImport
       end-rune = 54
       import-location-ref = location:github.com/Serulian/somethin
+      import-package-name = SomethingElse
       import-source = "github.com/Serulian/something"
       input-source = string import test
-      named = SomethingElse
       start-rune = 0

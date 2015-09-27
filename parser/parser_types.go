@@ -193,10 +193,11 @@ const (
 	//
 	// NodeTypeImport
 	//
-	NodeImportPredicateKind      = "import-kind"
-	NodeImportPredicateSource    = "import-source"
-	NodeImportPredicateSubsource = "import-subsource"
-	NodeImportPredicateName      = "named"
+	NodeImportPredicateKind        = "import-kind"
+	NodeImportPredicateSource      = "import-source"
+	NodeImportPredicateSubsource   = "import-subsource"
+	NodeImportPredicateName        = "named"
+	NodeImportPredicatePackageName = "import-package-name"
 
 	NodeImportPredicateLocation = "import-location-ref"
 

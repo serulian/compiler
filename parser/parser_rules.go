@@ -125,15 +125,15 @@ func (p *sourceParser) consumeImport() AstNode {
 
 		importNode.Decorate(NodeImportPredicateLocation, p.reportImport(token.value))
 		importNode.Decorate(NodeImportPredicateSource, token.value)
-		p.consumeImportSource(importNode, NodeImportPredicateSubsource, tokenTypeIdentifer)
+		p.consumeImportSource(importNode, NodeImportPredicateSubsource, NodeImportPredicateName, tokenTypeIdentifer)
 		return importNode
 	}
 
-	p.consumeImportSource(importNode, NodeImportPredicateSource, tokenTypeIdentifer, tokenTypeStringLiteral)
+	p.consumeImportSource(importNode, NodeImportPredicateSource, NodeImportPredicatePackageName, tokenTypeIdentifer, tokenTypeStringLiteral)
 	return importNode
 }
 
-func (p *sourceParser) consumeImportSource(importNode AstNode, predicate string, allowedValues ...tokenType) {
+func (p *sourceParser) consumeImportSource(importNode AstNode, sourcePredicate string, namePredicate string, allowedValues ...tokenType) {
 	// import ...
 	if !p.consumeKeyword("import") {
 		return
@@ -145,11 +145,11 @@ func (p *sourceParser) consumeImportSource(importNode AstNode, predicate string,
 		return
 	}
 
-	if predicate == NodeImportPredicateSource {
+	if sourcePredicate == NodeImportPredicateSource {
 		importNode.Decorate(NodeImportPredicateLocation, p.reportImport(token.value))
 	}
 
-	importNode.Decorate(predicate, token.value)
+	importNode.Decorate(sourcePredicate, token.value)
 
 	// as something (optional)
 	if p.tryConsumeKeyword("as") {
@@ -158,15 +158,15 @@ func (p *sourceParser) consumeImportSource(importNode AstNode, predicate string,
 			return
 		}
 
-		importNode.Decorate(NodeImportPredicateName, named)
+		importNode.Decorate(namePredicate, named)
 	} else {
 		// If the import was a string value, then an 'as' is required.
 		if token.kind == tokenTypeStringLiteral {
 			p.emitError("Import from SCM URL requires an 'as' clause")
+		} else {
+			// Otherwise, literal imports receive the name of the package source as their own package name.
+			importNode.Decorate(namePredicate, token.value)
 		}
-
-		// Otherwise, literal imports receive the name of the package source as their own name.
-		importNode.Decorate(NodeImportPredicateName, token.value)
 	}
 
 	// end of the statement
