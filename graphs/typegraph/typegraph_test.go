@@ -11,11 +11,74 @@ import (
 	"testing"
 
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/stretchr/testify/assert"
 )
 
 var _ = fmt.Printf
+
+type graphNodeRep struct {
+	Kind       interface{}
+	Children   []graphNodeRep
+	Predicates map[string]string
+}
+
+// buildLayerJSON walks the given type graph starting at the type decls and builds a JSON
+// representation of the type graph tree.
+func buildLayerJSON(t *testing.T, tg *TypeGraph) string {
+	repMap := map[compilergraph.GraphNode]graphNodeRep{}
+
+	// Start the walk at the type declarations.
+	startingNodes := make([]compilergraph.GraphNode, len(tg.TypeDecls()))
+	for index, typeDecl := range tg.TypeDecls() {
+		startingNodes[index] = typeDecl.Node()
+	}
+
+	// Walk the graph outward from the type declaration nodes, building an in-memory tree
+	// representation along the waya.
+	tg.layer.WalkOutward(startingNodes, func(result *compilergraph.WalkResult) bool {
+		// Filter any predicates that match UUIDs, as they attach to other graph layers
+		// and will have rotating IDs.
+		filteredPredicates := map[string]string{}
+		for name, value := range result.Predicates {
+			if compilerutil.IsId(value) {
+				filteredPredicates[name] = "(NodeRef)"
+			} else {
+				filteredPredicates[name] = value
+			}
+		}
+
+		// Build the representation of the node.
+		repMap[result.Node] = graphNodeRep{
+			Kind:       result.Node.Kind,
+			Children:   make([]graphNodeRep, 0),
+			Predicates: filteredPredicates,
+		}
+
+		if result.ParentNode != nil {
+			parentNode := *result.ParentNode
+			children := append(repMap[parentNode].Children, repMap[result.Node])
+			repMap[parentNode] = graphNodeRep{
+				Kind:       repMap[parentNode].Kind,
+				Children:   children,
+				Predicates: repMap[parentNode].Predicates,
+			}
+		}
+
+		return true
+	})
+
+	rootReps := make([]graphNodeRep, len(tg.TypeDecls()))
+	for index, typeDecl := range tg.TypeDecls() {
+		rootReps[index] = repMap[typeDecl.Node()]
+	}
+
+	// Marshal the tree to JSON.
+	b, err := json.MarshalIndent(rootReps, "", "    ")
+	assert.Nil(t, err, "JSON marshal error")
+	return string(b)
+}
 
 type typegraphTest struct {
 	name          string
@@ -70,9 +133,10 @@ func TestGraphs(t *testing.T) {
 			assert.True(t, result.Status, "Got error for type graph construction %v: %s", test.name, result.Errors)
 
 			// Compare the constructed graph layer to the expected.
-			b, err := json.Marshal(result.Graph.TypeDecls())
-			assert.Nil(t, err, "JSON marshal error")
-			assert.Equal(t, test.json(), string(b), "JSON mismatch")
+			currentLayerJson := buildLayerJSON(t, result.Graph)
+			if !assert.Equal(t, test.json(), currentLayerJson, "JSON mismatch") {
+				fmt.Printf("%s\n\n", currentLayerJson)
+			}
 		} else {
 			// Make sure we had an error during construction.
 			if !assert.False(t, result.Status, "Found no error for type graph construction %v: %s", test.name, result.Errors) {

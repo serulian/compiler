@@ -10,9 +10,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/google/cayley"
-	"github.com/nu7hatch/gouuid"
 	"github.com/serulian/compiler/compilerutil"
+
+	"github.com/google/cayley"
+	"github.com/google/cayley/graph"
+	"github.com/google/cayley/quad"
+
+	"github.com/nu7hatch/gouuid"
 )
 
 // GraphLayerKind identifies the supported kinds of graph layers.
@@ -80,6 +84,78 @@ func (gl *GraphLayer) CreateNode(nodeKind TaggedValue) GraphNode {
 	// Decorate the node with its kind.
 	node.DecorateWithTagged(gl.nodeKindPredicate, nodeKind)
 	return node
+}
+
+// WalkResult is a result for each step of a walk.
+type WalkResult struct {
+	ParentNode *GraphNode        // The parent node that led to this node in the walk. May be nil.
+	Node       GraphNode         // The current node.
+	Predicates map[string]string // The list of outgoing predicates on this node.
+}
+
+// WalkCallback is a callback invoked for each step of a walk. If the callback returns false, the
+// walk is terminated immediately.
+type WalkCallback func(result *WalkResult) bool
+
+// WalkOutward walks the graph layer outward, starting from the specified nodes, and hitting each
+// node found from the outgoing predicates in the layer. Note that this method can be quite slow,
+// so it should only be used for testing.
+func (gl *GraphLayer) WalkOutward(startingNodes []GraphNode, callback WalkCallback) {
+	encountered := map[GraphNodeId]bool{}
+	var workList = make([]*WalkResult, len(startingNodes))
+
+	// Start with walk results at the roots.
+	for index, startNode := range startingNodes {
+		workList[index] = &WalkResult{nil, startNode, map[string]string{}}
+	}
+
+	for {
+		if len(workList) == 0 {
+			break
+		}
+
+		// Trim the work list.
+		currentResult := workList[0]
+		workList = workList[1:]
+
+		// Skip this node if we have seen it already. This prevents cycles from infinitely looping.
+		currentId := currentResult.Node.NodeId
+		if _, ok := encountered[currentId]; ok {
+			continue
+		}
+		encountered[currentId] = true
+
+		// Lookup all quads in the system from the current node, outward.
+		it := gl.cayleyStore.QuadIterator(quad.Subject, gl.cayleyStore.ValueOf(string(currentId)))
+
+		for graph.Next(it) {
+			quad := gl.cayleyStore.Quad(it.Result())
+
+			// Note: We skip any predicates that are not part of this graph layer.
+			predicate := quad.Predicate
+			if !strings.HasPrefix(predicate, gl.prefix+"-") {
+				continue
+			}
+
+			// Try to retrieve the object as a node. If found, then we have another step in the walk.
+			// Otherwise, we have a string predicate value.
+
+			// TODO(jschorr): Should we make graph node IDs tagged and then filter here rather than
+			// this check?
+			object := quad.Object
+			targetNode, found := gl.TryGetNode(object)
+			if found {
+				workList = append(workList, &WalkResult{&currentResult.Node, targetNode, map[string]string{}})
+			} else {
+				// This is a value predicate.
+				currentResult.Predicates[predicate] = object
+			}
+		}
+
+		if !callback(currentResult) {
+			return
+		}
+	}
 }
 
 // getTaggedKey returns a unique string representing the tagged name and associated value, such

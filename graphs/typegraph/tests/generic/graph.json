@@ -1,0 +1,39 @@
+[
+    {
+        "Kind": 1,
+        "Children": [
+            {
+                "Kind": 4,
+                "Children": [],
+                "Predicates": {
+                    "tdg-node-kind": "4|NodeType|tdg",
+                    "tdg-type-name": "T"
+                }
+            },
+            {
+                "Kind": 4,
+                "Children": [],
+                "Predicates": {
+                    "tdg-node-kind": "4|NodeType|tdg",
+                    "tdg-type-name": "Q"
+                }
+            }
+        ],
+        "Predicates": {
+            "tdg-declaration-module": "(NodeRef)",
+            "tdg-declaration-source": "(NodeRef)",
+            "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-type-name": "SomeClass"
+        }
+    },
+    {
+        "Kind": 1,
+        "Children": [],
+        "Predicates": {
+            "tdg-declaration-module": "(NodeRef)",
+            "tdg-declaration-source": "(NodeRef)",
+            "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-type-name": "AnotherClass"
+        }
+    }
+]

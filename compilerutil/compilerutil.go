@@ -26,6 +26,12 @@ func DCHECK(checker checkFn, failMessage string, args ...interface{}) {
 	}
 }
 
+// IsId returns whether the given string is a possible ID as returned by NewUniqueId.
+func IsId(possibleId string) bool {
+	_, err := uuid.ParseHex(possibleId)
+	return err == nil
+}
+
 // NewUniqueId returns a new unique ID.
 func NewUniqueId() string {
 	u4, err := uuid.NewV4()
