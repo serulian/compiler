@@ -174,13 +174,11 @@ func (gq *GraphQuery) BuildNodeIterator(predicates ...string) *graphNodeIterator
 	updatedPath = updatedPath.Save(fullKindPredicate, fullKindPredicate)
 
 	it := updatedPath.BuildIterator()
-
-	// TODO(jschorr): Uncomment and use this once fixed.
-	// oit, _ := it.Optimize()
+	oit, _ := it.Optimize()
 
 	return &graphNodeIterator{
 		layer:      gq.layer,
-		iterator:   it,
+		iterator:   oit,
 		predicates: predicates,
 	}
 }
