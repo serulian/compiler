@@ -5,6 +5,7 @@
 package typegraph
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/serulian/compiler/compilergraph"
@@ -22,6 +23,19 @@ func (t *TypeGraph) NewTypeReference(typeNode compilergraph.GraphNode, generics 
 		layer: t.layer,
 		value: buildTypeReferenceValue(typeNode, false, generics...),
 	}
+}
+
+// AnyTypeReference returns a reference to the special 'any' type.
+func (t *TypeGraph) AnyTypeReference() TypeReference {
+	return TypeReference{
+		layer: t.layer,
+		value: buildSpecialTypeReferenceValue(specialFlagAny),
+	}
+}
+
+// IsAny returns whether this type reference refers to the special 'any' type.
+func (tr TypeReference) IsAny() bool {
+	return tr.getSlot(trhSlotFlagSpecial)[0] == specialFlagAny
 }
 
 // HasGenerics returns whether the type reference has generics.
@@ -56,11 +70,15 @@ func (tr TypeReference) Parameters() []TypeReference {
 
 // IsNullable returns whether the type reference refers to a nullable type.
 func (tr TypeReference) IsNullable() bool {
-	return tr.getSlot(trhSlotFlagNullable) == "T"
+	return tr.getSlot(trhSlotFlagNullable)[0] == nullableFlagTrue
 }
 
 // ReferredType returns the node to which the type reference refers.
 func (tr TypeReference) ReferredType() compilergraph.GraphNode {
+	if tr.getSlot(trhSlotFlagSpecial)[0] != specialFlagNormal {
+		panic(fmt.Sprintf("Cannot get referred type for special type references of type %s", tr.getSlot(trhSlotFlagSpecial)))
+	}
+
 	return tr.layer.GetNode(tr.getSlot(trhSlotTypeId))
 }
 
@@ -76,7 +94,7 @@ func (tr TypeReference) WithParameter(parameter TypeReference) TypeReference {
 
 // AsNullable returns a copy of this type reference that is nullable.
 func (tr TypeReference) AsNullable() TypeReference {
-	return tr.withFlag(trhSlotFlagNullable, 'T')
+	return tr.withFlag(trhSlotFlagNullable, nullableFlagTrue)
 }
 
 // ReplaceType returns a copy of this type reference, with the given type node replaced with the

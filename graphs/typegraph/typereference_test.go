@@ -41,6 +41,9 @@ func TestBasicReferenceOperations(t *testing.T) {
 	// Not nullable.
 	assert.False(t, testRef.IsNullable(), "Expected not nullable")
 
+	// Not special.
+	assert.False(t, testRef.IsAny(), "Expected not special")
+
 	// Make nullable.
 	assert.True(t, testRef.AsNullable().IsNullable(), "Expected nullable")
 
@@ -100,4 +103,17 @@ func TestBasicReferenceOperations(t *testing.T) {
 	assert.Equal(t, 1, replaced.ParameterCount(), "Expected 1 parameter")
 	assert.Equal(t, 1, len(replaced.Parameters()), "Expected 1 parameter")
 	assert.Equal(t, replacementRef, replaced.Parameters()[0], "Expected parameter to be equal to replacementRef")
+}
+
+func TestSpecialReferenceOperations(t *testing.T) {
+	graph, err := compilergraph.NewGraph("someunknownfile.seru")
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+
+	testSRG := srg.NewSRG(graph)
+	testTG := BuildTypeGraph(testSRG).Graph
+
+	anyRef := testTG.AnyTypeReference()
+	assert.True(t, anyRef.IsAny(), "Expected 'any' reference")
 }

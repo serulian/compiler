@@ -15,11 +15,11 @@ import (
 
 // Value string example:
 //
-// [9242167c-2d57-4212-8aea-fedf32bd708e]T00010000G000039[04f97d44-d8fc-4a7d-9c46-955d1bd5add6]F
-//  ^ Type ID of SomeType                ^ Nullable
-//                                                ^ G000039 = generic with 39 chars in length for subreference
-//                                        ^ 0001 = 1 generic
-//                                            ^ 0000 = 0 parameters
+// [9242167c-2d57-4212-8aea-fedf32bd708e]-T00010000G000039[04f97d44-d8fc-4a7d-9c46-955d1bd5add6]F
+//  ^ Type ID of SomeType                 ^ Nullable
+//                                       ^ Special ^ G000039 = generic with 39 chars in length for subreference
+//                                         ^ 0001 = 1 generic
+//                                             ^ 0000 = 0 parameters
 // represents
 //
 // SomeType<SomeGeneric>?
@@ -27,7 +27,7 @@ import (
 // where SomeType is 9242167c-2d57-4212-8aea-fedf32bd708e
 // and SomeGeneric is 04f97d44-d8fc-4a7d-9c46-955d1bd5add6
 type typeReferenceHeaderSlot struct {
-	index     int  // The slot index.
+	index     int  // The slot indexs.
 	length    int  // The length of this slot.
 	writeable bool // Whether this slot is writeable.
 }
@@ -36,21 +36,34 @@ var (
 	trhSlotStartTypeId        = typeReferenceHeaderSlot{0, 1, false}
 	trhSlotTypeId             = typeReferenceHeaderSlot{1, compilergraph.NodeIDLength, true}
 	trhSlotEndTypeId          = typeReferenceHeaderSlot{2, 1, false}
-	trhSlotFlagNullable       = typeReferenceHeaderSlot{3, 1, true}
-	trhSlotGenericCount       = typeReferenceHeaderSlot{4, 4, true}
-	trhSlotParameterCount     = typeReferenceHeaderSlot{5, 4, true}
-	trhSlotSubReferenceMarker = typeReferenceHeaderSlot{6, 0, false}
+	trhSlotFlagSpecial        = typeReferenceHeaderSlot{3, 1, false}
+	trhSlotFlagNullable       = typeReferenceHeaderSlot{4, 1, true}
+	trhSlotGenericCount       = typeReferenceHeaderSlot{5, 4, true}
+	trhSlotParameterCount     = typeReferenceHeaderSlot{6, 4, true}
+	trhSlotSubReferenceMarker = typeReferenceHeaderSlot{7, 0, false}
 )
 
 var typeReferenceHeaderSlots = [...]typeReferenceHeaderSlot{
 	trhSlotStartTypeId,
 	trhSlotTypeId,
 	trhSlotEndTypeId,
+	trhSlotFlagSpecial,
 	trhSlotFlagNullable,
 	trhSlotGenericCount,
 	trhSlotParameterCount,
 	trhSlotSubReferenceMarker,
 }
+
+const (
+	subReferenceGenericChar   = 'G' // The prefix for generic sub references.
+	subReferenceParameterChar = 'P' // The prefix for parameter sub references.
+
+	nullableFlagTrue  = 'T' // The value of the trhSlotFlagNullable when the typeref is nullable.
+	nullableFlagFalse = 'F' // The value of the trhSlotFlagNullable when the typeref is nullable.
+
+	specialFlagNormal = '-' // The value of the trhSlotFlagSpecial for normal typerefs.
+	specialFlagAny    = 'A' // The value of the trhSlotFlagSpecial for "any" type refs.
+)
 
 // The size of the length prefix for subreferences.
 const typeRefValueSubReferenceLength = 6
@@ -182,10 +195,10 @@ func (tr *TypeReference) getSubReferences(kind subReferenceKind) []TypeReference
 func getSubReferenceSlotAndChar(kind subReferenceKind) (typeReferenceHeaderSlot, uint8) {
 	switch kind {
 	case subReferenceGeneric:
-		return trhSlotGenericCount, 'G'
+		return trhSlotGenericCount, subReferenceGenericChar
 
 	case subReferenceParameter:
-		return trhSlotParameterCount, 'P'
+		return trhSlotParameterCount, subReferenceParameterChar
 
 	default:
 		panic("Unknown kind of subreference")
@@ -219,11 +232,14 @@ func buildTypeReferenceValue(typeNode compilergraph.GraphNode, nullable bool, ge
 	buffer.WriteString(string(typeNode.NodeId))
 	buffer.WriteByte(']')
 
-	// Nullable: 'T' or 'F'.
+	// Special: This is a normal type reference.
+	buffer.WriteByte(specialFlagNormal)
+
+	// Nullable.
 	if nullable {
-		buffer.WriteByte('T')
+		buffer.WriteByte(nullableFlagTrue)
 	} else {
-		buffer.WriteByte('F')
+		buffer.WriteByte(nullableFlagFalse)
 	}
 
 	// Generic count and parameter count.
@@ -236,10 +252,31 @@ func buildTypeReferenceValue(typeNode compilergraph.GraphNode, nullable bool, ge
 
 	// For each generic, add the length of its value string and then the value string itself.
 	for _, generic := range generics {
-		buffer.WriteByte('G')
+		buffer.WriteByte(subReferenceGenericChar)
 		buffer.WriteString(padNumberToString(len(generic.value), typeRefValueSubReferenceLength))
 		buffer.WriteString(generic.value)
 	}
+
+	return buffer.String()
+}
+
+// buildSpecialTypeReferenceValue returns a string value for representing the given special type
+// reference.
+func buildSpecialTypeReferenceValue(specialFlagValue byte) string {
+	var buffer bytes.Buffer
+
+	// Referenced type ID. For special types, we leave this empty.
+	buffer.WriteByte('[')
+	buffer.WriteString(strings.Repeat(" ", trhSlotTypeId.length))
+	buffer.WriteByte(']')
+
+	// Flags: special and nullable.
+	buffer.WriteByte(specialFlagValue)
+	buffer.WriteByte(nullableFlagFalse)
+
+	// Generic count and parameter count.
+	buffer.WriteString(padNumberToString(0, trhSlotGenericCount.length))
+	buffer.WriteString(padNumberToString(0, trhSlotParameterCount.length))
 
 	return buffer.String()
 }
