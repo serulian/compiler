@@ -58,9 +58,10 @@ func (t SRGTypeRef) ResolveType() (SRGType, bool) {
 	}
 
 	// Find the parent module.
-	srgModule, found := t.srg.FindModuleBySource(t.Location().Source())
+	source := compilercommon.InputSource(t.GraphNode.Get(parser.NodePredicateSource))
+	srgModule, found := t.srg.FindModuleBySource(source)
 	if !found {
-		panic(fmt.Sprintf("Unknown parent module: %s", t.Location().Source()))
+		panic(fmt.Sprintf("Unknown parent module: %s", source))
 	}
 
 	// Resolve the type path under the module.
