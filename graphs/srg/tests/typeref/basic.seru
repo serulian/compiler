@@ -1,0 +1,18 @@
+from othermod import AnotherClass
+import othermod as om
+
+class BasicClass {}
+
+class GenericClass<T, Q>{}
+
+var<BasicClass> basicref
+var<AnotherClass> anotherref
+var<om.AnotherClass> multipart
+var<BasicClass?> nullable
+var<AnotherClass*> stream
+var<om.AnotherClass*> streammultipart
+var<GenericClass<BasicClass, AnotherClass>> generic
+var<InvalidClass> invalid
+var<InvalidClass*> streaminvalid
+var<om.UnknownClass> invalidpath
+var<invalid.AnotherClass> invalidpath2
