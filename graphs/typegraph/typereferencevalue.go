@@ -16,10 +16,11 @@ import (
 // Value string example:
 //
 // [9242167c-2d57-4212-8aea-fedf32bd708e]-T00010000G000039[04f97d44-d8fc-4a7d-9c46-955d1bd5add6]F
-//  ^ Type ID of SomeType                 ^ Nullable
-//                                       ^ Special ^ G000039 = generic with 39 chars in length for subreference
+//  ^ Type ID of SomeType                ^ Special
+//										  ^ Nullable
 //                                         ^ 0001 = 1 generic
 //                                             ^ 0000 = 0 parameters
+//                                                 ^ G000039 = generic with 39 chars in length for subreference
 // represents
 //
 // SomeType<SomeGeneric>?
@@ -64,6 +65,9 @@ const (
 	specialFlagNormal = '-' // The value of the trhSlotFlagSpecial for normal typerefs.
 	specialFlagAny    = 'A' // The value of the trhSlotFlagSpecial for "any" type refs.
 )
+
+// typeReferenceHeaderSlotCacheMap holds a cache for looking up the offset of a TRH.
+var typeReferenceHeaderSlotCacheMap = map[typeReferenceHeaderSlot]int{}
 
 // The size of the length prefix for subreferences.
 const typeRefValueSubReferenceLength = 6
@@ -208,10 +212,14 @@ func getSubReferenceSlotAndChar(kind subReferenceKind) (typeReferenceHeaderSlot,
 
 // getSlotLocation returns the slot location (0-indexed) in the value string.
 func getSlotLocation(slot typeReferenceHeaderSlot) int {
-	// TODO(jschorr): Add a map here to be a cache?
+	if location, ok := typeReferenceHeaderSlotCacheMap[slot]; ok {
+		return location
+	}
+
 	var location int
 	for _, currentSlot := range typeReferenceHeaderSlots {
 		if currentSlot == slot {
+			typeReferenceHeaderSlotCacheMap[slot] = location
 			return location
 		}
 
