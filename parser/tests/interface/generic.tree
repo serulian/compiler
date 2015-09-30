@@ -20,13 +20,18 @@ NodeTypeFile
           named = Bar
           start-rune = 30
           generic-subtype =>
-            NodeTypeIdentifierPath
+            NodeTypeTypeReference
               end-rune = 38
               input-source = generic interface test
               start-rune = 36
-              identifierpath-root =>
-                NodeTypeIdentifierAccess
+              typereference-path =>
+                NodeTypeIdentifierPath
                   end-rune = 38
-                  identifieraccess-name = Baz
                   input-source = generic interface test
                   start-rune = 36
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 38
+                      identifieraccess-name = Baz
+                      input-source = generic interface test
+                      start-rune = 36

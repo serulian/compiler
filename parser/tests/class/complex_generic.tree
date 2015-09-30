@@ -15,35 +15,45 @@ NodeTypeFile
           named = Foo
           start-rune = 16
           generic-subtype =>
-            NodeTypeIdentifierPath
+            NodeTypeTypeReference
               end-rune = 24
               input-source = complex generic class test
               start-rune = 22
-              identifierpath-root =>
-                NodeTypeIdentifierAccess
+              typereference-path =>
+                NodeTypeIdentifierPath
                   end-rune = 24
-                  identifieraccess-name = Bar
                   input-source = complex generic class test
                   start-rune = 22
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 24
+                      identifieraccess-name = Bar
+                      input-source = complex generic class test
+                      start-rune = 22
         NodeTypeGeneric
           end-rune = 41
           input-source = complex generic class test
           named = Baz
           start-rune = 27
           generic-subtype =>
-            NodeTypeIdentifierPath
+            NodeTypeTypeReference
               end-rune = 41
               input-source = complex generic class test
               start-rune = 33
-              identifierpath-root =>
-                NodeTypeIdentifierAccess
+              typereference-path =>
+                NodeTypeIdentifierPath
                   end-rune = 41
-                  identifieraccess-name = Blarg
                   input-source = complex generic class test
-                  start-rune = 37
-                  identifieraccess-source =>
+                  start-rune = 33
+                  identifierpath-root =>
                     NodeTypeIdentifierAccess
-                      end-rune = 35
-                      identifieraccess-name = Meh
+                      end-rune = 41
+                      identifieraccess-name = Blarg
                       input-source = complex generic class test
-                      start-rune = 33
+                      start-rune = 37
+                      identifieraccess-source =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 35
+                          identifieraccess-name = Meh
+                          input-source = complex generic class test
+                          start-rune = 33

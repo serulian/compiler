@@ -738,7 +738,7 @@ func (p *sourceParser) consumeGeneric() AstNode {
 		return genericNode
 	}
 
-	genericNode.Connect(NodeGenericSubtype, p.consumeIdentifierPath())
+	genericNode.Connect(NodeGenericSubtype, p.consumeTypeReference(typeReferenceNoVoid))
 	return genericNode
 }
 
