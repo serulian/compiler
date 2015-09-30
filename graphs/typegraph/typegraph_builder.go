@@ -110,10 +110,72 @@ func (t *TypeGraph) buildGenericNode(typeNode compilergraph.GraphNode, generic s
 	genericNode := t.layer.CreateNode(NodeTypeGeneric)
 	genericNode.Decorate(NodePredicateTypeName, generic.Name())
 
-	// Decorate the generic with its subtype constraint. If none in the SRG, decorate with "any".
-	// TOD(jschorr): this
-
 	// Add the generic to the type node.
 	typeNode.Connect(NodePredicateTypeGeneric, genericNode)
+
+	// Decorate the generic with its subtype constraint. If none in the SRG, decorate with "any".
+	constraint, found := generic.GetConstraint()
+	if found {
+		subtype, err := t.buildTypeRef(constraint)
+		if err != nil {
+			return err
+		}
+
+		genericNode.DecorateWithTagged(NodePredicateGenericSubtype, subtype)
+	} else {
+		genericNode.DecorateWithTagged(NodePredicateGenericSubtype, t.AnyTypeReference())
+	}
+
 	return nil
+}
+
+// buildTypeRef builds a type graph type reference from the SRG type reference. This also fully
+// resolves the type reference.
+func (t *TypeGraph) buildTypeRef(typeref srg.SRGTypeRef) (TypeReference, *compilercommon.SourceError) {
+	switch typeref.RefKind() {
+	case srg.TypeRefStream:
+		// TODO(jschorr): THIS!
+		panic("Streams not yet implemented!")
+
+	case srg.TypeRefNullable:
+		innerType, err := t.buildTypeRef(typeref.InnerReference())
+		if err != nil {
+			return TypeReference{}, err
+		}
+
+		return innerType.AsNullable(), nil
+
+	case srg.TypeRefPath:
+		// Resolve the SRG type for the type ref.
+		resolvedSRGType, found := typeref.ResolveType()
+		if !found {
+			sourceError := compilercommon.SourceErrorf(typeref.Location(),
+				"Type '%s' could not be found",
+				typeref.ResolutionPath())
+
+			return TypeReference{}, sourceError
+		}
+
+		// Get the type in the type graph.
+		resolvedType := t.findAllNodes(NodeTypeClass, NodeTypeInterface).
+			Has(NodePredicateTypeSource, string(resolvedSRGType.Node().NodeId)).
+			GetNode()
+
+		// Create the generics array.
+		srgGenerics := typeref.Generics()
+		generics := make([]TypeReference, len(srgGenerics))
+		for index, srgGeneric := range srgGenerics {
+			genericTypeRef, err := t.buildTypeRef(srgGeneric)
+			if err != nil {
+				return TypeReference{}, err
+			}
+			generics[index] = genericTypeRef
+		}
+
+		return t.NewTypeReference(resolvedType, generics...), nil
+
+	default:
+		panic(fmt.Sprintf("Unknown kind of SRG type ref: %v", typeref.RefKind()))
+		return t.AnyTypeReference(), nil
+	}
 }

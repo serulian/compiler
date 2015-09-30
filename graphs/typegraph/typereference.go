@@ -5,6 +5,7 @@
 package typegraph
 
 import (
+	"bytes"
 	"fmt"
 	"strings"
 
@@ -117,6 +118,42 @@ func (tr TypeReference) ReplaceType(typeNode compilergraph.GraphNode, replacemen
 	return TypeReference{
 		value: strings.Replace(tr.value, searchString, replacementStr, -1),
 		layer: tr.layer,
+	}
+}
+
+// String returns a human-friendly string.
+func (tr TypeReference) String() string {
+	var buffer bytes.Buffer
+	tr.appendHumanString(&buffer)
+	return buffer.String()
+}
+
+// appendHumanString appends the human-readable version of this type reference to
+// the given buffer.
+func (tr TypeReference) appendHumanString(buffer *bytes.Buffer) {
+	if tr.IsAny() {
+		buffer.WriteString("any")
+		return
+	}
+
+	typeNode := tr.ReferredType()
+	buffer.WriteString(typeNode.Get(NodePredicateTypeName))
+
+	if tr.HasGenerics() {
+		buffer.WriteRune('<')
+		for index, generic := range tr.Generics() {
+			if index > 0 {
+				buffer.WriteString(", ")
+			}
+
+			generic.appendHumanString(buffer)
+		}
+
+		buffer.WriteByte('>')
+	}
+
+	if tr.IsNullable() {
+		buffer.WriteByte('?')
 	}
 }
 

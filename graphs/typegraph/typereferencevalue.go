@@ -28,7 +28,7 @@ import (
 // where SomeType is 9242167c-2d57-4212-8aea-fedf32bd708e
 // and SomeGeneric is 04f97d44-d8fc-4a7d-9c46-955d1bd5add6
 type typeReferenceHeaderSlot struct {
-	index     int  // The slot indexs.
+	index     int  // The slot index.
 	length    int  // The length of this slot.
 	writeable bool // Whether this slot is writeable.
 }

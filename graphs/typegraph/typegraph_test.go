@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"strings"
 	"testing"
 
 	"github.com/serulian/compiler/compilergraph"
@@ -44,6 +45,10 @@ func buildLayerJSON(t *testing.T, tg *TypeGraph) string {
 		for name, value := range result.Predicates {
 			if compilerutil.IsId(value) {
 				filteredPredicates[name] = "(NodeRef)"
+			} else if strings.Contains(value, "|TypeReference") {
+				// Convert type references into human strings so that they don't change constantly
+				// due to the underlying IDs.
+				filteredPredicates[name] = tg.AnyTypeReference().Build(value).(TypeReference).String()
 			} else {
 				filteredPredicates[name] = value
 			}
@@ -107,6 +112,7 @@ var typeGraphTests = []typegraphTest{
 	// Success tests.
 	typegraphTest{"simple test", "simple", "simple.seru", ""},
 	typegraphTest{"generic test", "generic", "generic.seru", ""},
+	typegraphTest{"complex generic test", "complexgeneric", "complexgeneric.seru", ""},
 
 	// Failure tests.
 	typegraphTest{"redeclaration test", "redeclare", "redeclare.seru", "Type 'SomeClass' is already defined in the module"},

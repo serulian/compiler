@@ -15,7 +15,7 @@
                 "Kind": 4,
                 "Children": [],
                 "Predicates": {
-                    "tdg-generic-subtype": "AnotherClass",
+                    "tdg-generic-subtype": "AnotherClass\u003cInnerClass\u003e?",
                     "tdg-node-kind": "4|NodeType|tdg",
                     "tdg-type-name": "Q"
                 }
@@ -31,6 +31,26 @@
     {
         "Kind": 1,
         "Children": [],
+        "Predicates": {
+            "tdg-declaration-module": "(NodeRef)",
+            "tdg-declaration-source": "(NodeRef)",
+            "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-type-name": "InnerClass"
+        }
+    },
+    {
+        "Kind": 1,
+        "Children": [
+            {
+                "Kind": 4,
+                "Children": [],
+                "Predicates": {
+                    "tdg-generic-subtype": "any",
+                    "tdg-node-kind": "4|NodeType|tdg",
+                    "tdg-type-name": "T"
+                }
+            }
+        ],
         "Predicates": {
             "tdg-declaration-module": "(NodeRef)",
             "tdg-declaration-source": "(NodeRef)",
