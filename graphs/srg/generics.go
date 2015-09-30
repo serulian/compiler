@@ -28,6 +28,12 @@ func (t SRGGeneric) Location() compilercommon.SourceAndLocation {
 
 // HasConstraint returns whether this generic has a type constraint.
 func (t SRGGeneric) HasConstraint() bool {
-	_, exists := t.GraphNode.StartQuery().Out(parser.NodeGenericSubtype).TryGetNode()
+	_, exists := t.GetConstraint()
 	return exists
+}
+
+// GetConstraint returns the constraint for this generic, if any.
+func (t SRGGeneric) GetConstraint() (SRGTypeRef, bool) {
+	constraint, exists := t.GraphNode.StartQuery().Out(parser.NodeGenericSubtype).TryGetNode()
+	return SRGTypeRef{constraint, t.srg}, exists
 }

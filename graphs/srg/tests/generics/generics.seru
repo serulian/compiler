@@ -1,1 +1,2 @@
-class SomeClass<T, Q : int>{}
+class SomeClass<T, Q : InnerClass>{}
+class InnerClass {}

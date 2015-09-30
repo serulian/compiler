@@ -33,9 +33,9 @@ func (t SRGTypeRef) Location() compilercommon.SourceAndLocation {
 	return salForNode(t.GraphNode)
 }
 
-// ResolveType attempts to resolve the type path referenced by this type ref.
+// ResolutionPath returns the full resolution path for this type reference.
 // Panics if this is not a RefKind of TypeRefPath.
-func (t SRGTypeRef) ResolveType() (SRGType, bool) {
+func (t SRGTypeRef) ResolutionPath() string {
 	compilerutil.DCHECK(func() bool { return t.RefKind() == TypeRefPath }, "Expected type ref path")
 
 	var resolvePathPieces = make([]string, 0)
@@ -57,6 +57,12 @@ func (t SRGTypeRef) ResolveType() (SRGType, bool) {
 		currentPath = source
 	}
 
+	return strings.Join(resolvePathPieces, ".")
+}
+
+// ResolveType attempts to resolve the type path referenced by this type ref.
+// Panics if this is not a RefKind of TypeRefPath.
+func (t SRGTypeRef) ResolveType() (SRGType, bool) {
 	// Find the parent module.
 	source := compilercommon.InputSource(t.GraphNode.Get(parser.NodePredicateSource))
 	srgModule, found := t.srg.FindModuleBySource(source)
@@ -65,8 +71,7 @@ func (t SRGTypeRef) ResolveType() (SRGType, bool) {
 	}
 
 	// Resolve the type path under the module.
-	resolvePath := strings.Join(resolvePathPieces, ".")
-	return srgModule.ResolveType(resolvePath)
+	return srgModule.ResolveType(t.ResolutionPath())
 }
 
 // InnerReference returns the inner type reference, if this is a nullable or stream.

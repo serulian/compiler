@@ -73,4 +73,11 @@ func TestGenericType(t *testing.T) {
 
 	assert.False(t, generics[0].HasConstraint(), "Expected T to have no constraint")
 	assert.True(t, generics[1].HasConstraint(), "Expected Q to have constraint")
+
+	constraint, _ := generics[1].GetConstraint()
+	assert.Equal(t, TypeRefPath, constraint.RefKind(), "Expected path typeref on generic Q")
+
+	resolvedConstraint, valid := constraint.ResolveType()
+	assert.True(t, valid, "Expected resolved constraint on generic Q")
+	assert.Equal(t, "InnerClass", resolvedConstraint.Name(), "Expected InnerClass constraint on generic Q")
 }
