@@ -8,6 +8,7 @@ package compilerutil
 import (
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/nu7hatch/gouuid"
 )
@@ -24,6 +25,15 @@ func DCHECK(checker checkFn, failMessage string, args ...interface{}) {
 	if !checker() {
 		panic(fmt.Sprintf(failMessage, args...))
 	}
+}
+
+// ParseFloat parses the given string value into a float64, panicing on failure.
+func ParseFloat(strValue string) float64 {
+	value, err := strconv.ParseFloat(strValue, 64)
+	if err != nil {
+		panic(fmt.Sprintf("Expected numeric value, got: %s", value))
+	}
+	return value
 }
 
 // IsId returns whether the given string is a possible ID as returned by NewUniqueId.

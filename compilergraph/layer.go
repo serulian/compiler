@@ -15,8 +15,6 @@ import (
 	"github.com/google/cayley"
 	"github.com/google/cayley/graph"
 	"github.com/google/cayley/quad"
-
-	"github.com/nu7hatch/gouuid"
 )
 
 // GraphLayerKind identifies the supported kinds of graph layers.
@@ -30,7 +28,6 @@ const (
 // GraphLayer represents a single layer in the overall project graph.
 type GraphLayer struct {
 	id                string         // Unique ID for the layer.
-	kind              GraphLayerKind // The kind of this graph layer.
 	prefix            string         // The predicate prefix
 	cayleyStore       *cayley.Handle // Handle to the cayley store.
 	nodeKindPredicate string         // Name of the predicate for representing the kind of a node in this layer.
@@ -44,8 +41,7 @@ const nodeMemberPredicate = "is-member"
 // NewGraphLayer returns a new graph layer of the given kind.
 func (sg *SerulianGraph) NewGraphLayer(kind GraphLayerKind, nodeKindEnum TaggedValue) *GraphLayer {
 	return &GraphLayer{
-		id:                newUniqueId(),
-		kind:              kind,
+		id:                compilerutil.NewUniqueId(),
 		prefix:            getPredicatePrefix(kind),
 		cayleyStore:       sg.cayleyStore,
 		nodeKindPredicate: "node-kind",
@@ -70,7 +66,7 @@ func (gl *GraphLayer) TryGetNode(nodeId string) (GraphNode, bool) {
 // CreateNode creates a new node in the graph layer.
 func (gl *GraphLayer) CreateNode(nodeKind TaggedValue) GraphNode {
 	// Add the node as a member of the layer.
-	nodeId := newUniqueId()
+	nodeId := compilerutil.NewUniqueId()
 	compilerutil.DCHECK(func() bool { return len(nodeId) == NodeIDLength }, "Unexpected node ID length")
 
 	gl.cayleyStore.AddQuad(cayley.Quad(nodeId, nodeMemberPredicate, gl.id, gl.prefix))
@@ -182,6 +178,17 @@ func (gl *GraphLayer) parseTaggedKey(strValue string, example TaggedValue) inter
 	return example.Build(pieces[0])
 }
 
+// getPrefixedPredicates returns the given predicates prefixed with the layer prefix.
+func (gl *GraphLayer) getPrefixedPredicates(predicates ...string) []interface{} {
+	adjusted := make([]interface{}, 0, len(predicates))
+
+	for _, predicate := range predicates {
+		fullPredicate := gl.prefix + "-" + predicate
+		adjusted = append(adjusted, fullPredicate)
+	}
+	return adjusted
+}
+
 // getPredicatePrefix returns the prefix to apply to all predicates in this layer kind
 // when added into the graph database.
 func getPredicatePrefix(kind GraphLayerKind) string {
@@ -195,15 +202,4 @@ func getPredicatePrefix(kind GraphLayerKind) string {
 	default:
 		panic(fmt.Sprintf("Unknown graph layer kind: %v", kind))
 	}
-}
-
-// newUniqueId returns a new unique ID.
-func newUniqueId() string {
-	u4, err := uuid.NewV4()
-	if err != nil {
-		panic(err)
-		return ""
-	}
-
-	return u4.String()
 }
