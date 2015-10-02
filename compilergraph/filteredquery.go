@@ -45,6 +45,11 @@ func (fq *FilteredQuery) BuildNodeIterator(predicates ...string) NodeIterator {
 		filteredIds = append(filteredIds, fit.Values()[markId])
 	}
 
+	// If there are no nodes found, nothing more to do.
+	if len(filteredIds) == 0 {
+		return &EmptyIterator{}
+	}
+
 	// Return a query at just those nodes.
 	return fq.query.layer.StartQuery(filteredIds...).BuildNodeIterator(predicates...)
 }

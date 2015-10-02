@@ -51,6 +51,42 @@ func TestBasicFiltering(t *testing.T) {
 	assert.Equal(t, rootNodeOne, result, "Expected first node")
 }
 
+func TestEmptyFiltering(t *testing.T) {
+	store, err := cayley.NewMemoryGraph()
+	assert.Nil(t, err, "Could not construct Cayley graph")
+
+	gl := &GraphLayer{
+		id:                compilerutil.NewUniqueId(),
+		prefix:            "testprefix",
+		cayleyStore:       store,
+		nodeKindPredicate: "node-kind",
+		nodeKindEnum:      TestNodeTypeTagged,
+	}
+
+	// Add some nodes.
+	rootNodeOne := gl.CreateNode(TestNodeTypeFirst)
+	rootNodeTwo := gl.CreateNode(TestNodeTypeFirst)
+	childNodeOne := gl.CreateNode(TestNodeTypeSecond)
+	childNodeTwo := gl.CreateNode(TestNodeTypeSecond)
+
+	rootNodeOne.Decorate("is-root", "true")
+	rootNodeTwo.Decorate("is-root", "true")
+
+	childNodeOne.Decorate("child-id", "1")
+	childNodeTwo.Decorate("child-id", "2")
+
+	rootNodeOne.Connect("has-child", childNodeOne)
+	rootNodeTwo.Connect("has-child", childNodeTwo)
+
+	// Find the root node whose child has an ID of 3 (i.e. none).
+	filter := func(q *GraphQuery) Query {
+		return q.Out("has-child").Has("child-id", "3")
+	}
+
+	_, found := gl.StartQuery().Has("is-root", "true").FilterBy(filter).TryGetNode()
+	assert.False(t, found, "Expected no node")
+}
+
 func TestFilteringViaClientQuery(t *testing.T) {
 	store, err := cayley.NewMemoryGraph()
 	assert.Nil(t, err, "Could not construct Cayley graph")
