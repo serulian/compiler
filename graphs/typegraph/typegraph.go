@@ -44,7 +44,7 @@ func (g *TypeGraph) TypeDecls() []TGTypeDecl {
 
 	var types []TGTypeDecl
 	for it.Next() {
-		types = append(types, TGTypeDecl{it.Node, g})
+		types = append(types, TGTypeDecl{it.Node(), g})
 	}
 	return types
 }

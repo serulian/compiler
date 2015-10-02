@@ -157,6 +157,9 @@ func (t *TypeGraph) buildTypeRef(typeref srg.SRGTypeRef) (TypeReference, *compil
 		}
 
 		// Get the type in the type graph.
+		// TODO(jschorr): Should we reverse this query for better performance? If we start
+		// at the SRG node by ID, it should immediately filter, but we'll have to cross the
+		// layers to do it.
 		resolvedType := t.findAllNodes(NodeTypeClass, NodeTypeInterface).
 			Has(NodePredicateTypeSource, string(resolvedSRGType.Node().NodeId)).
 			GetNode()
