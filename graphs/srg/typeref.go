@@ -23,7 +23,8 @@ type SRGTypeRef struct {
 type TypeRefKind int
 
 const (
-	TypeRefNullable TypeRefKind = iota // A nullable type.
+	typeRefUnknown  TypeRefKind = iota // An unknown type.
+	TypeRefNullable                    // A nullable type.
 	TypeRefStream                      // A stream type.
 	TypeRefPath                        // A normal path type. May have generics.
 )

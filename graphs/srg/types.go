@@ -78,6 +78,48 @@ func (t SRGType) TypeKind() TypeKind {
 	}
 }
 
+// FindOperator returns the operator with the given name under this type, if any.
+func (t SRGType) FindOperator(name string) (SRGTypeMember, bool) {
+	memberNode, found := t.GraphNode.StartQuery().
+		Out(parser.NodeTypeDefinitionMember).
+		Has(parser.NodeOperatorName, name).
+		TryGetNode()
+
+	if !found {
+		return SRGTypeMember{}, false
+	}
+
+	return SRGTypeMember{memberNode, t.srg}, true
+}
+
+// FindMember returns the type member with the given name under this type, if any.
+func (t SRGType) FindMember(name string) (SRGTypeMember, bool) {
+	memberNode, found := t.GraphNode.StartQuery().
+		Out(parser.NodeTypeDefinitionMember).
+		Has(parser.NodePropertyName, name).
+		TryGetNode()
+
+	if !found {
+		return SRGTypeMember{}, false
+	}
+
+	return SRGTypeMember{memberNode, t.srg}, true
+}
+
+// Members returns the members on this type.
+func (t SRGType) Members() []SRGTypeMember {
+	it := t.GraphNode.StartQuery().
+		Out(parser.NodeTypeDefinitionMember).
+		BuildNodeIterator()
+
+	var members = make([]SRGTypeMember, 0)
+	for it.Next() {
+		members = append(members, SRGTypeMember{it.Node(), t.srg})
+	}
+
+	return members
+}
+
 // Generics returns the generics on this type.
 func (t SRGType) Generics() []SRGGeneric {
 	it := t.GraphNode.StartQuery().

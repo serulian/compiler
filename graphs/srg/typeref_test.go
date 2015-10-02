@@ -70,27 +70,27 @@ var trTests = []typeRefTest{
 	typeRefTest{"invalidgeneric", "basic", expectedTypeRef{"", TypeRefPath, false, []expectedTypeRef{}}},
 }
 
-func assertTypeRef(t *testing.T, test typeRefTest, typeRef SRGTypeRef, expected expectedTypeRef) {
-	if !assert.Equal(t, expected.kind, typeRef.RefKind(), "In test %s, expected kind %v, found: %v", test.name, expected.kind, typeRef.RefKind()) {
+func assertTypeRef(t *testing.T, test string, typeRef SRGTypeRef, expected expectedTypeRef) {
+	if !assert.Equal(t, expected.kind, typeRef.RefKind(), "In test %s, expected kind %v, found: %v", test, expected.kind, typeRef.RefKind()) {
 		return
 	}
 
 	if expected.kind == TypeRefPath {
 		// Resolve type.
 		resolvedType, found := typeRef.ResolveType()
-		if !assert.Equal(t, expected.resolves, found, "In test %s, resolution expectation mismatch", test.name) {
+		if !assert.Equal(t, expected.resolves, found, "In test %s, resolution expectation mismatch", test) {
 			return
 		}
 
 		if found {
-			if !assert.Equal(t, expected.typeName, resolvedType.Name(), "In test %s, expected type name %s, found: %s", test.name, expected.typeName, resolvedType.Name()) {
+			if !assert.Equal(t, expected.typeName, resolvedType.Name(), "In test %s, expected type name %s, found: %s", test, expected.typeName, resolvedType.Name()) {
 				return
 			}
 		}
 
 		// Resolve generics.
 		generics := typeRef.Generics()
-		if !assert.Equal(t, len(expected.genericsOrInner), len(generics), "In test %s, generic count mismatch", test.name) {
+		if !assert.Equal(t, len(expected.genericsOrInner), len(generics), "In test %s, generic count mismatch", test) {
 			return
 		}
 
@@ -122,6 +122,6 @@ func TestTypeReferences(t *testing.T) {
 			GetNode()
 
 		typeref := SRGTypeRef{typerefNode, testSRG}
-		assertTypeRef(t, test, typeref, test.expected)
+		assertTypeRef(t, test.name, typeref, test.expected)
 	}
 }
