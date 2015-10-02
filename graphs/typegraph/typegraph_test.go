@@ -115,7 +115,9 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"complex generic test", "complexgeneric", "complexgeneric.seru", ""},
 
 	// Failure tests.
-	typegraphTest{"redeclaration test", "redeclare", "redeclare.seru", "Type 'SomeClass' is already defined in the module"},
+	typegraphTest{"type redeclaration test", "redeclare", "redeclare.seru", "Type 'SomeClass' is already defined in the module"},
+	typegraphTest{"generic redeclaration test", "genericredeclare", "redeclare.seru", "Generic 'T' is already defined on type 'SomeClass'"},
+	typegraphTest{"generic constraint resolve failure test", "genericconstraint", "notfound.seru", "Type 'UnknownType' could not be found"},
 }
 
 func TestGraphs(t *testing.T) {
@@ -150,6 +152,7 @@ func TestGraphs(t *testing.T) {
 			}
 
 			// Make sure the error expected is found.
+			assert.Equal(t, 1, len(result.Errors), "Expected one error")
 			assert.Equal(t, test.expectedError, result.Errors[0].Error())
 		}
 	}

@@ -28,6 +28,16 @@ func NewSRG(graph *compilergraph.SerulianGraph) *SRG {
 	}
 }
 
+// GetNode returns the node with the given ID in this layer or panics.
+func (g *SRG) GetNode(nodeId compilergraph.GraphNodeId) compilergraph.GraphNode {
+	return g.layer.GetNode(string(nodeId))
+}
+
+// NodeLocation returns the location of the given SRG node.
+func (g *SRG) NodeLocation(node compilergraph.GraphNode) compilercommon.SourceAndLocation {
+	return salForNode(node)
+}
+
 // LoadAndParse attemptps to load and parse the transition closure of the source code
 // found starting at the root source file.
 func (g *SRG) LoadAndParse() *packageloader.LoadResult {

@@ -24,6 +24,11 @@ type TGTypeDecl struct {
 	tdg *TypeGraph
 }
 
+// Name returns the name of the underlying type.
+func (tn *TGTypeDecl) Name() string {
+	return tn.GraphNode.Get(NodePredicateTypeName)
+}
+
 // Node returns the underlying node in this declaration.
 func (tn *TGTypeDecl) Node() compilergraph.GraphNode {
 	return tn.GraphNode

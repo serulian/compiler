@@ -30,15 +30,25 @@ const (
 )
 
 const (
+	// Connects a node to its error node.
+	NodePredicateError = "node-error"
+
+	// Connects a type node to its SRG declaration/definition.
+	NodePredicateSource = "srg-source"
+
+	//
+	// NodeTypeError
+	//
+
+	// The message for the parsing error.
+	NodePredicateErrorMessage = "error-message"
+
 	//
 	// NodeTypeClass/NodeTypeInterface
 	//
 
 	// Connects a type declaration to its parent module.
 	NodePredicateTypeModule = "declaration-module"
-
-	// Connects a type declaration to its SRG declaration/definition.
-	NodePredicateTypeSource = "declaration-source"
 
 	// Connects a type declaration to a member (function, var, etc).
 	NodePredicateTypeMember = "declaration-member"

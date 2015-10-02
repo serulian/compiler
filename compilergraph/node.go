@@ -72,7 +72,7 @@ func (gn *GraphNode) GetTagged(predicateName string, example TaggedValue) interf
 	return gn.layer.parseTaggedKey(strValue, example)
 }
 
-// GetNode returns the node found off of the given predicate found on this node and panics otherwise.
+// GetNode returns the node in this layer found off of the given predicate found on this node and panics otherwise.
 func (gn GraphNode) GetNode(predicateName string) GraphNode {
 	result, found := gn.TryGetNode(predicateName)
 	if !found {
@@ -82,7 +82,7 @@ func (gn GraphNode) GetNode(predicateName string) GraphNode {
 	return result
 }
 
-// TryGetNode returns the node found off of the given predicate found on this node (if any).
+// TryGetNode returns the node in this layer found off of the given predicate  found on this node (if any).
 func (gn *GraphNode) TryGetNode(predicateName string) (GraphNode, bool) {
 	result, found := gn.TryGet(predicateName)
 	if !found {
@@ -90,6 +90,26 @@ func (gn *GraphNode) TryGetNode(predicateName string) (GraphNode, bool) {
 	}
 
 	return gn.layer.GetNode(result), true
+}
+
+// GetNodeInLayer returns the node in the specified layer found off of the given predicate found on this node and panics otherwise.
+func (gn GraphNode) GetNodeInLayer(predicateName string, layer *GraphLayer) GraphNode {
+	result, found := gn.TryGetNodeInLayer(predicateName, layer)
+	if !found {
+		panic(fmt.Sprintf("Could not find node for predicate %s on node %s", predicateName, gn.NodeId))
+	}
+
+	return result
+}
+
+// TryGetNodeInLayer returns the node found off of the given predicate  found on this node (if any).
+func (gn *GraphNode) TryGetNodeInLayer(predicateName string, layer *GraphLayer) (GraphNode, bool) {
+	result, found := gn.TryGet(predicateName)
+	if !found {
+		return GraphNode{}, false
+	}
+
+	return layer.TryGetNode(result)
 }
 
 // Get returns the value of the given predicate found on this node and panics otherwise.

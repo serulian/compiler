@@ -21,6 +21,11 @@ func (t SRGGeneric) Name() string {
 	return t.GraphNode.Get(parser.NodeGenericPredicateName)
 }
 
+// Node returns the underlying node.
+func (t SRGGeneric) Node() compilergraph.GraphNode {
+	return t.GraphNode
+}
+
 // Location returns the source location for this generic.
 func (t SRGGeneric) Location() compilercommon.SourceAndLocation {
 	return salForNode(t.GraphNode)

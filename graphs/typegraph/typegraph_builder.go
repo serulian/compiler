@@ -22,23 +22,21 @@ func (t *TypeGraph) build(g *srg.SRG) *Result {
 	}
 
 	// Create a type node for each type defined in the SRG.
-	typeMap := map[srg.SRGType]compilergraph.GraphNode{}
+	typeMap := map[srg.SRGType]TGTypeDecl{}
 	for _, srgType := range g.GetTypes() {
-		typeNode, err := t.buildTypeNode(srgType)
-		if err != nil {
-			result.Errors = append(result.Errors, err)
+		typeNode, success := t.buildTypeNode(srgType)
+		typeMap[srgType] = TGTypeDecl{typeNode, t}
+
+		if !success {
 			result.Status = false
-		} else {
-			typeMap[srgType] = typeNode
 		}
 	}
 
 	// Add generics.
-	for srgType, typeNode := range typeMap {
+	for srgType, typeDecl := range typeMap {
 		for _, generic := range srgType.Generics() {
-			err := t.buildGenericNode(typeNode, generic)
-			if err != nil {
-				result.Errors = append(result.Errors, err)
+			success := t.buildGenericNode(typeDecl, generic)
+			if !success {
 				result.Status = false
 			}
 		}
@@ -48,12 +46,32 @@ func (t *TypeGraph) build(g *srg.SRG) *Result {
 
 	// Type check all type references.
 
+	// If the result is not true, collect all the errors found.
+	if !result.Status {
+		it := t.layer.StartQuery().
+			With(NodePredicateError).
+			BuildNodeIterator(NodePredicateSource)
+
+		for it.Next() {
+			node := it.Node()
+
+			// Lookup the location of the SRG source node.
+			srgSourceNode := g.GetNode(compilergraph.GraphNodeId(it.Values()[NodePredicateSource]))
+			location := g.NodeLocation(srgSourceNode)
+
+			// Add the error.
+			errNode := node.GetNode(NodePredicateError)
+			msg := errNode.Get(NodePredicateErrorMessage)
+			result.Errors = append(result.Errors, compilercommon.NewSourceError(location, msg))
+		}
+	}
+
 	return result
 }
 
 // buildTypeNode adds a new type node to the type graph for the given SRG type. Note that
 // this does not handle generics or members.
-func (t *TypeGraph) buildTypeNode(srgType srg.SRGType) (compilergraph.GraphNode, *compilercommon.SourceError) {
+func (t *TypeGraph) buildTypeNode(srgType srg.SRGType) (compilergraph.GraphNode, bool) {
 	// Ensure that there exists no other type with this name under the parent module.
 	_, exists := srgType.Module().
 		StartQueryToLayer(t.layer).
@@ -61,17 +79,17 @@ func (t *TypeGraph) buildTypeNode(srgType srg.SRGType) (compilergraph.GraphNode,
 		Has(NodePredicateTypeName, srgType.Name()).
 		TryGetNode()
 
-	if exists {
-		sourceError := compilercommon.SourceErrorf(srgType.Location(), "Type '%s' is already defined in the module", srgType.Name())
-		return compilergraph.GraphNode{}, sourceError
-	}
-
 	// Create the type node.
 	typeNode := t.layer.CreateNode(getTypeNodeType(srgType.TypeKind()))
 	typeNode.Connect(NodePredicateTypeModule, srgType.Module().Node())
-	typeNode.Connect(NodePredicateTypeSource, srgType.Node())
+	typeNode.Connect(NodePredicateSource, srgType.Node())
 	typeNode.Decorate(NodePredicateTypeName, srgType.Name())
-	return typeNode, nil
+
+	if exists {
+		t.decorateWithError(typeNode, "Type '%s' is already defined in the module", srgType.Name())
+	}
+
+	return typeNode, !exists
 }
 
 // getTypeNodeType returns the NodeType for creating type graph nodes for an SRG type declaration.
@@ -90,48 +108,51 @@ func getTypeNodeType(kind srg.TypeKind) NodeType {
 }
 
 // buildGenericNode adds a new generic node to the specified type node for the given SRG generic.
-func (t *TypeGraph) buildGenericNode(typeNode compilergraph.GraphNode, generic srg.SRGGeneric) *compilercommon.SourceError {
+func (t *TypeGraph) buildGenericNode(typeDecl TGTypeDecl, generic srg.SRGGeneric) bool {
+	typeNode := typeDecl.Node()
+
 	// Ensure that there exists no other generic with this name under the parent type.
 	_, exists := typeNode.StartQuery().
 		Out(NodePredicateTypeGeneric).
 		Has(NodePredicateGenericName, generic.Name()).
 		TryGetNode()
 
-	if exists {
-		sourceError := compilercommon.SourceErrorf(generic.Location(),
-			"Generic '%s' is already defined under type '%s'",
-			generic.Name(),
-			typeNode.Get(NodePredicateTypeName))
-
-		return sourceError
-	}
-
 	// Create the generic node.
 	genericNode := t.layer.CreateNode(NodeTypeGeneric)
-	genericNode.Decorate(NodePredicateTypeName, generic.Name())
+	genericNode.Decorate(NodePredicateGenericName, generic.Name())
+	genericNode.Connect(NodePredicateSource, generic.Node())
 
 	// Add the generic to the type node.
 	typeNode.Connect(NodePredicateTypeGeneric, genericNode)
 
 	// Decorate the generic with its subtype constraint. If none in the SRG, decorate with "any".
+	var success = true
+
 	constraint, found := generic.GetConstraint()
 	if found {
 		subtype, err := t.buildTypeRef(constraint)
 		if err != nil {
-			return err
+			t.decorateWithError(genericNode, err.Error())
+			success = false
+		} else {
+			genericNode.DecorateWithTagged(NodePredicateGenericSubtype, subtype)
 		}
-
-		genericNode.DecorateWithTagged(NodePredicateGenericSubtype, subtype)
 	} else {
 		genericNode.DecorateWithTagged(NodePredicateGenericSubtype, t.AnyTypeReference())
 	}
 
-	return nil
+	// Mark the generic with an error if it is repeated.
+	if exists {
+		t.decorateWithError(genericNode, "Generic '%s' is already defined on type '%s'", generic.Name(), typeDecl.Name())
+		success = false
+	}
+
+	return success
 }
 
 // buildTypeRef builds a type graph type reference from the SRG type reference. This also fully
 // resolves the type reference.
-func (t *TypeGraph) buildTypeRef(typeref srg.SRGTypeRef) (TypeReference, *compilercommon.SourceError) {
+func (t *TypeGraph) buildTypeRef(typeref srg.SRGTypeRef) (TypeReference, error) {
 	switch typeref.RefKind() {
 	case srg.TypeRefStream:
 		// TODO(jschorr): THIS!
@@ -161,7 +182,7 @@ func (t *TypeGraph) buildTypeRef(typeref srg.SRGTypeRef) (TypeReference, *compil
 		// at the SRG node by ID, it should immediately filter, but we'll have to cross the
 		// layers to do it.
 		resolvedType := t.findAllNodes(NodeTypeClass, NodeTypeInterface).
-			Has(NodePredicateTypeSource, string(resolvedSRGType.Node().NodeId)).
+			Has(NodePredicateSource, string(resolvedSRGType.Node().NodeId)).
 			GetNode()
 
 		// Create the generics array.
@@ -181,4 +202,11 @@ func (t *TypeGraph) buildTypeRef(typeref srg.SRGTypeRef) (TypeReference, *compil
 		panic(fmt.Sprintf("Unknown kind of SRG type ref: %v", typeref.RefKind()))
 		return t.AnyTypeReference(), nil
 	}
+}
+
+// decorateWithError decorates the given node with an associated error node.
+func (t *TypeGraph) decorateWithError(node compilergraph.GraphNode, message string, args ...interface{}) {
+	errorNode := t.layer.CreateNode(NodeTypeError)
+	errorNode.Decorate(NodePredicateErrorMessage, fmt.Sprintf(message, args...))
+	node.Connect(NodePredicateError, errorNode)
 }

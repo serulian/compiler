@@ -74,6 +74,16 @@ func (gq *GraphQuery) FilterBy(filter nodeFilter) *FilteredQuery {
 	}
 }
 
+// With updates this Query to represents the nodes that have the given predicate.
+func (gq *GraphQuery) With(predicate string) *GraphQuery {
+	adjustedPredicate := gq.layer.getPrefixedPredicates(predicate)[0]
+	return &GraphQuery{
+		path:  gq.path.Save(adjustedPredicate, "-"),
+		layer: gq.layer,
+		tags:  gq.tags,
+	}
+}
+
 // In updates this Query to represent the nodes that are adjacent to the
 // current nodes, via the given inbound predicate.
 func (gq *GraphQuery) In(via ...string) *GraphQuery {
@@ -119,7 +129,7 @@ func (gq *GraphQuery) Has(via string, nodes ...string) *GraphQuery {
 	}
 }
 
-// Mark marks the current node(s) with a name that will appear in the Values map.
+// mark marks the current node(s) with a name that will appear in the Values map.
 func (gq *GraphQuery) mark(name string) *GraphQuery {
 	return &GraphQuery{
 		path:  gq.path.Tag(name),
