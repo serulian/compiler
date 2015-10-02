@@ -36,7 +36,7 @@ func (g *SRG) GetTypes() []SRGType {
 	var types []SRGType
 
 	for it.Next() {
-		types = append(types, SRGType{it.Node, g})
+		types = append(types, SRGType{it.Node(), g})
 	}
 
 	return types
@@ -86,7 +86,7 @@ func (t SRGType) Generics() []SRGGeneric {
 
 	var generics = make([]SRGGeneric, 0)
 	for it.Next() {
-		generics = append(generics, SRGGeneric{it.Node, t.srg})
+		generics = append(generics, SRGGeneric{it.Node(), t.srg})
 	}
 
 	return generics

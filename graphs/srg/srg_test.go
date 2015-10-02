@@ -33,7 +33,7 @@ func TestBasicLoading(t *testing.T) {
 
 	var classesFound []string = make([]string, 0, 2)
 	for iterator.Next() {
-		classesFound = append(classesFound, iterator.Values[parser.NodeClassPredicateName])
+		classesFound = append(classesFound, iterator.Values()[parser.NodeClassPredicateName])
 	}
 
 	if len(classesFound) != 2 {

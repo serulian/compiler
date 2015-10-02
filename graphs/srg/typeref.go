@@ -71,7 +71,44 @@ func (t SRGTypeRef) ResolveType() (SRGType, bool) {
 	}
 
 	// Resolve the type path under the module.
-	return srgModule.ResolveType(t.ResolutionPath())
+	resolutionPath := t.ResolutionPath()
+	resolvedType, typeFound := srgModule.ResolveType(resolutionPath)
+	if typeFound {
+		return resolvedType, true
+	}
+
+	// If not found and the path is a single name, try to resolve as a generic
+	// under a parent function or type.
+	if strings.ContainsRune(resolutionPath, '.') {
+		// Not a single name.
+		return SRGType{}, false
+	}
+
+	containingFilter := func(q *compilergraph.GraphQuery) compilergraph.Query {
+		// For this filter, we check if the defining type (or type member) if the
+		// generic is the same type (or type member) containing the typeref. To do so,
+		// we perform a check that the start rune and end rune of the definition
+		// contains the range of the start and end rune, respectively, of the typeref. Since
+		// we know both nodes are in the same module, and the SRG is a tree, this validates
+		// that we are in the correct scope without having to walk the tree upward.
+		startRune := t.GraphNode.Get(parser.NodePredicateStartRune)
+		endRune := t.GraphNode.Get(parser.NodePredicateEndRune)
+
+		return q.
+			In(parser.NodeTypeDefinitionGeneric, parser.NodeFunctionGeneric).
+			HasWhere(parser.NodePredicateStartRune, compilergraph.WhereLTE, startRune).
+			HasWhere(parser.NodePredicateEndRune, compilergraph.WhereGTE, endRune)
+	}
+
+	resolvedGeneric, genericFound := t.srg.layer.
+		StartQuery().                                         // Find a node...
+		Has(parser.NodeGenericPredicateName, resolutionPath). // With the generic name..
+		Has(parser.NodePredicateSource, string(source)).      // That is in this module...
+		IsKind(parser.NodeTypeGeneric).                       // That is a generic...
+		FilterBy(containingFilter).                           // Filter by whether its defining type or member contains this typeref.
+		TryGetNode()
+
+	return SRGType{resolvedGeneric, t.srg}, genericFound
 }
 
 // InnerReference returns the inner type reference, if this is a nullable or stream.
@@ -92,7 +129,7 @@ func (t SRGTypeRef) subReferences(predicate string) []SRGTypeRef {
 	subRefs := make([]SRGTypeRef, 0)
 	it := t.GraphNode.StartQuery().Out(predicate).BuildNodeIterator()
 	for it.Next() {
-		subRefs = append(subRefs, SRGTypeRef{it.Node, t.srg})
+		subRefs = append(subRefs, SRGTypeRef{it.Node(), t.srg})
 	}
 	return subRefs
 }

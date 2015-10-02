@@ -45,8 +45,8 @@ func (g *SRG) LoadAndParse() *packageloader.LoadResult {
 		parser.NodePredicateStartRune)
 
 	for it.Next() {
-		sal := salForPredicates(it.Values)
-		result.Errors = append(result.Errors, compilercommon.NewSourceError(sal, it.Values[parser.NodePredicateErrorMessage]))
+		sal := salForPredicates(it.Values())
+		result.Errors = append(result.Errors, compilercommon.NewSourceError(sal, it.Values()[parser.NodePredicateErrorMessage]))
 		result.Status = false
 	}
 
@@ -61,16 +61,16 @@ func (g *SRG) LoadAndParse() *packageloader.LoadResult {
 
 		for it.Next() {
 			// Load the package information.
-			packageInfo := g.getPackageForImport(it.Node)
+			packageInfo := g.getPackageForImport(it.Node())
 
 			// Search for the subsource.
 			// TODO(jschorr): This needs to be everything, not just types.
-			subsource := it.Values[parser.NodeImportPredicateSubsource]
-			source := it.Values[parser.NodeImportPredicateSource]
+			subsource := it.Values()[parser.NodeImportPredicateSubsource]
+			source := it.Values()[parser.NodeImportPredicateSource]
 
 			_, found := packageInfo.FindTypeByName(subsource, ModuleResolveExportedOnly)
 			if !found {
-				sal := salForPredicates(it.Values)
+				sal := salForPredicates(it.Values())
 				result.Errors = append(result.Errors, compilercommon.SourceErrorf(sal, "Import '%s' not found under package '%s'", subsource, source))
 				result.Status = false
 			}

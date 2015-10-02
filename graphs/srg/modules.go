@@ -29,7 +29,7 @@ func (g *SRG) GetModules() []SRGModule {
 	var modules []SRGModule
 
 	for it.Next() {
-		modules = append(modules, SRGModule{it.Node, g})
+		modules = append(modules, SRGModule{it.Node(), g})
 	}
 
 	return modules

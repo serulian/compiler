@@ -16,3 +16,12 @@ var<InvalidClass> invalid
 var<InvalidClass*> streaminvalid
 var<om.UnknownClass> invalidpath
 var<invalid.AnotherClass> invalidpath2
+
+class ParentClass<T> {
+	function<void> ParentFunction<Q>() {
+		var<T> typegeneric
+		var<Q> membergeneric
+	}
+}
+
+var<T> invalidgeneric
