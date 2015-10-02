@@ -76,6 +76,8 @@ func (gq *GraphQuery) FilterBy(filter nodeFilter) *FilteredQuery {
 
 // With updates this Query to represents the nodes that have the given predicate.
 func (gq *GraphQuery) With(predicate string) *GraphQuery {
+	// Note: This relies on a quirk of Cayley: If you specifiy a 'Save' of a predicate
+	// that does not exist, the node is removed from the query.
 	adjustedPredicate := gq.layer.getPrefixedPredicates(predicate)[0]
 	return &GraphQuery{
 		path:  gq.path.Save(adjustedPredicate, "-"),
