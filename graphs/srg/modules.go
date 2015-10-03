@@ -72,7 +72,7 @@ func (m SRGModule) FindTypeByName(typeName string, option ModuleResolutionOption
 
 	typeOrImportNode, found := m.StartQuery().
 		Out(parser.NodePredicateChild).
-		Has(parser.NodeClassPredicateName, typeName).
+		Has(parser.NodeTypeDefinitionName, typeName).
 		IsKind(allowedKinds...).
 		TryGetNode()
 

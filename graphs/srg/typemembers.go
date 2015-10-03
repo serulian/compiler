@@ -37,7 +37,7 @@ func (m SRGTypeMember) Name() string {
 		return m.GraphNode.Get(parser.NodeOperatorName)
 	}
 
-	return m.GraphNode.Get(parser.NodeFunctionName)
+	return m.GraphNode.Get(parser.NodePredicateTypeMemberName)
 }
 
 // Node returns the underlying type member node for this type member.
@@ -76,13 +76,7 @@ func (m SRGTypeMember) TypeMemberKind() TypeMemberKind {
 
 // ReturnType returns a type reference to the declared type of this type member, if any.
 func (m SRGTypeMember) DeclaredType() (SRGTypeRef, bool) {
-	// TODO(jschorr): Remove this conditional by unifying the predicates.
-	var predicate = parser.NodePropertyDeclaredType
-	if m.GraphNode.Kind == parser.NodeTypeField {
-		predicate = parser.NodeVariableStatementDeclaredType
-	}
-
-	typeRefNode, found := m.GraphNode.TryGetNode(predicate)
+	typeRefNode, found := m.GraphNode.TryGetNode(parser.NodePredicateTypeMemberDeclaredType)
 	if !found {
 		return SRGTypeRef{}, false
 	}
@@ -92,7 +86,7 @@ func (m SRGTypeMember) DeclaredType() (SRGTypeRef, bool) {
 
 // ReturnType returns a type reference to the return type of this type member, if any.
 func (m SRGTypeMember) ReturnType() (SRGTypeRef, bool) {
-	typeRefNode, found := m.GraphNode.TryGetNode(parser.NodeFunctionReturnType)
+	typeRefNode, found := m.GraphNode.TryGetNode(parser.NodePredicateTypeMemberReturnType)
 	if !found {
 		return SRGTypeRef{}, false
 	}
@@ -103,7 +97,7 @@ func (m SRGTypeMember) ReturnType() (SRGTypeRef, bool) {
 // Generics returns the generics on this type member.
 func (m SRGTypeMember) Generics() []SRGGeneric {
 	it := m.GraphNode.StartQuery().
-		Out(parser.NodeFunctionGeneric).
+		Out(parser.NodePredicateTypeMemberGeneric).
 		BuildNodeIterator()
 
 	var generics = make([]SRGGeneric, 0)

@@ -50,7 +50,7 @@ func (t SRGType) Module() SRGModule {
 
 // Name returns the name of this type.
 func (t SRGType) Name() string {
-	return t.GraphNode.Get(parser.NodeClassPredicateName)
+	return t.GraphNode.Get(parser.NodeTypeDefinitionName)
 }
 
 // Node returns the underlying type node for this type.
@@ -96,7 +96,7 @@ func (t SRGType) FindOperator(name string) (SRGTypeMember, bool) {
 func (t SRGType) FindMember(name string) (SRGTypeMember, bool) {
 	memberNode, found := t.GraphNode.StartQuery().
 		Out(parser.NodeTypeDefinitionMember).
-		Has(parser.NodePropertyName, name).
+		Has(parser.NodePredicateTypeMemberName, name).
 		TryGetNode()
 
 	if !found {

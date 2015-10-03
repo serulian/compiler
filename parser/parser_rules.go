@@ -76,7 +76,7 @@ Loop:
 		// variables.
 		case p.isKeyword("var"):
 			seenNonImport = true
-			p.currentNode().Connect(NodePredicateChild, p.consumeVar(NodeTypeVariableStatement))
+			p.currentNode().Connect(NodePredicateChild, p.consumeVar(NodeTypeVariableStatement, NodeVariableStatementName, NodeVariableStatementDeclaredType))
 			p.tryConsumeStatementTerminator()
 
 		// EOF.
@@ -205,7 +205,7 @@ func (p *sourceParser) consumeClassDefinition() AstNode {
 		return classNode
 	}
 
-	classNode.Decorate(NodeClassPredicateName, className)
+	classNode.Decorate(NodeTypeDefinitionName, className)
 
 	// Generics (optional).
 	p.consumeGenerics(classNode, NodeTypeDefinitionGeneric)
@@ -254,7 +254,7 @@ func (p *sourceParser) consumeInterfaceDefinition() AstNode {
 		return interfaceNode
 	}
 
-	interfaceNode.Decorate(NodeInterfacePredicateName, interfaceName)
+	interfaceNode.Decorate(NodeTypeDefinitionName, interfaceName)
 
 	// Generics (optional).
 	p.consumeGenerics(interfaceNode, NodeTypeDefinitionGeneric)
@@ -277,7 +277,7 @@ func (p *sourceParser) consumeClassMembers(typeNode AstNode) {
 	for {
 		switch {
 		case p.isKeyword("var"):
-			typeNode.Connect(NodeTypeDefinitionMember, p.consumeVar(NodeTypeField))
+			typeNode.Connect(NodeTypeDefinitionMember, p.consumeVar(NodeTypeField, NodePredicateTypeMemberName, NodePredicateTypeMemberDeclaredType))
 			p.consumeStatementTerminator()
 
 		case p.isKeyword("function"):
@@ -358,7 +358,7 @@ func (p *sourceParser) consumeOperator(option typeMemberOption) AstNode {
 
 	// identifier TypeReference (, another)
 	for {
-		operatorNode.Connect(NodeOperatorParameter, p.consumeParameter())
+		operatorNode.Connect(NodePredicateTypeMemberParameter, p.consumeParameter())
 
 		if _, ok := p.tryConsume(tokenTypeComma); !ok {
 			break
@@ -378,7 +378,7 @@ func (p *sourceParser) consumeOperator(option typeMemberOption) AstNode {
 	}
 
 	// Otherwise, we need a body.
-	operatorNode.Connect(NodeOperatorBody, p.consumeStatementBlock(statementBlockWithTerminator))
+	operatorNode.Connect(NodePredicateTypeMemberBody, p.consumeStatementBlock(statementBlockWithTerminator))
 	return operatorNode
 }
 
@@ -404,7 +404,7 @@ func (p *sourceParser) consumeProperty(option typeMemberOption) AstNode {
 		return propertyNode
 	}
 
-	propertyNode.Connect(NodePropertyDeclaredType, p.consumeTypeReference(typeReferenceNoVoid))
+	propertyNode.Connect(NodePredicateTypeMemberDeclaredType, p.consumeTypeReference(typeReferenceNoVoid))
 
 	if _, ok := p.consume(tokenTypeGreaterThan); !ok {
 		return propertyNode
@@ -416,7 +416,7 @@ func (p *sourceParser) consumeProperty(option typeMemberOption) AstNode {
 		return propertyNode
 	}
 
-	propertyNode.Decorate(NodePropertyName, identifier)
+	propertyNode.Decorate(NodePredicateTypeMemberName, identifier)
 
 	// If this is a declaration, then having a brace is optional.
 	if option == typeMemberDeclaration {
@@ -495,10 +495,10 @@ func (p *sourceParser) consumeConstructor(option typeMemberOption) AstNode {
 		return constructorNode
 	}
 
-	constructorNode.Decorate(NodeConstructorName, identifier)
+	constructorNode.Decorate(NodePredicateTypeMemberName, identifier)
 
 	// Generics (optional).
-	p.consumeGenerics(constructorNode, NodeConstructorGeneric)
+	p.consumeGenerics(constructorNode, NodePredicateTypeMemberGeneric)
 
 	// Parameters.
 	// (
@@ -508,7 +508,7 @@ func (p *sourceParser) consumeConstructor(option typeMemberOption) AstNode {
 
 	// identifier TypeReference (, another)
 	for {
-		constructorNode.Connect(NodeConstructorParameter, p.consumeParameter())
+		constructorNode.Connect(NodePredicateTypeMemberParameter, p.consumeParameter())
 
 		if _, ok := p.tryConsume(tokenTypeComma); !ok {
 			break
@@ -528,7 +528,7 @@ func (p *sourceParser) consumeConstructor(option typeMemberOption) AstNode {
 	}
 
 	// Otherwise, we need a body.
-	constructorNode.Connect(NodeConstructorBody, p.consumeStatementBlock(statementBlockWithTerminator))
+	constructorNode.Connect(NodePredicateTypeMemberBody, p.consumeStatementBlock(statementBlockWithTerminator))
 	return constructorNode
 }
 
@@ -550,7 +550,7 @@ func (p *sourceParser) consumeFunction(option typeMemberOption) AstNode {
 		return functionNode
 	}
 
-	functionNode.Connect(NodeFunctionReturnType, p.consumeTypeReference(typeReferenceWithVoid))
+	functionNode.Connect(NodePredicateTypeMemberReturnType, p.consumeTypeReference(typeReferenceWithVoid))
 
 	if _, ok := p.consume(tokenTypeGreaterThan); !ok {
 		return functionNode
@@ -562,10 +562,10 @@ func (p *sourceParser) consumeFunction(option typeMemberOption) AstNode {
 		return functionNode
 	}
 
-	functionNode.Decorate(NodeFunctionName, identifier)
+	functionNode.Decorate(NodePredicateTypeMemberName, identifier)
 
 	// Generics (optional).
-	p.consumeGenerics(functionNode, NodeFunctionGeneric)
+	p.consumeGenerics(functionNode, NodePredicateTypeMemberGeneric)
 
 	// Parameters.
 	// (
@@ -579,7 +579,7 @@ func (p *sourceParser) consumeFunction(option typeMemberOption) AstNode {
 			break
 		}
 
-		functionNode.Connect(NodeFunctionParameter, p.consumeParameter())
+		functionNode.Connect(NodePredicateTypeMemberParameter, p.consumeParameter())
 
 		if _, ok := p.tryConsume(tokenTypeComma); !ok {
 			break
@@ -599,7 +599,7 @@ func (p *sourceParser) consumeFunction(option typeMemberOption) AstNode {
 	}
 
 	// Otherwise, we need a function body.
-	functionNode.Connect(NodeFunctionBody, p.consumeStatementBlock(statementBlockWithTerminator))
+	functionNode.Connect(NodePredicateTypeMemberBody, p.consumeStatementBlock(statementBlockWithTerminator))
 	return functionNode
 }
 
@@ -856,7 +856,7 @@ func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
 
 	// Var statement.
 	case p.isKeyword("var"):
-		return p.consumeVar(NodeTypeVariableStatement), true
+		return p.consumeVar(NodeTypeVariableStatement, NodeVariableStatementName, NodeVariableStatementDeclaredType), true
 
 	// If statement.
 	case p.isKeyword("if"):
@@ -1114,7 +1114,7 @@ func (p *sourceParser) consumeForStatement() AstNode {
 // var<SomeType> someName
 // var<SomeType> someName = someExpr
 // var someName = someExpr
-func (p *sourceParser) consumeVar(nodeType NodeType) AstNode {
+func (p *sourceParser) consumeVar(nodeType NodeType, namePredicate string, typePredicate string) AstNode {
 	variableNode := p.startNode(nodeType)
 	defer p.finishNode()
 
@@ -1124,7 +1124,7 @@ func (p *sourceParser) consumeVar(nodeType NodeType) AstNode {
 	// Type declaration (optional if there is an init expression)
 	var hasType bool
 	if _, ok := p.tryConsume(tokenTypeLessThan); ok {
-		variableNode.Connect(NodeVariableStatementDeclaredType, p.consumeTypeReference(typeReferenceNoVoid))
+		variableNode.Connect(typePredicate, p.consumeTypeReference(typeReferenceNoVoid))
 
 		if _, ok := p.consume(tokenTypeGreaterThan); !ok {
 			return variableNode
@@ -1139,7 +1139,7 @@ func (p *sourceParser) consumeVar(nodeType NodeType) AstNode {
 		return variableNode
 	}
 
-	variableNode.Decorate(NodeVariableStatementName, identifier)
+	variableNode.Decorate(namePredicate, identifier)
 
 	// Initializer expression. Optional if a type given, otherwise required.
 	if !hasType && !p.isToken(tokenTypeEquals) {

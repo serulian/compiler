@@ -96,7 +96,7 @@ func (t SRGTypeRef) ResolveType() (SRGType, bool) {
 		endRune := t.GraphNode.Get(parser.NodePredicateEndRune)
 
 		return q.
-			In(parser.NodeTypeDefinitionGeneric, parser.NodeFunctionGeneric).
+			In(parser.NodeTypeDefinitionGeneric, parser.NodePredicateTypeMemberGeneric).
 			HasWhere(parser.NodePredicateStartRune, compilergraph.WhereLTE, startRune).
 			HasWhere(parser.NodePredicateEndRune, compilergraph.WhereGTE, endRune)
 	}

@@ -208,17 +208,12 @@ const (
 	//
 	NodeTypeDefinitionGeneric = "type-generic"
 	NodeTypeDefinitionMember  = "type-member"
+	NodeTypeDefinitionName    = "named"
 
 	//
 	// NodeTypeClass
 	//
-	NodeClassPredicateName     = "named"
 	NodeClassPredicateBaseType = "class-basetypepath"
-
-	//
-	// NodeTypeInterface
-	//
-	NodeInterfacePredicateName = "named"
 
 	//
 	// NodeTypeGeneric
@@ -227,43 +222,32 @@ const (
 	NodeGenericSubtype       = "generic-subtype"
 
 	//
+	// Type members: NodeTypeProperty, NodeTypeFunction, NodeTypeField, NodeTypeConstructor
+	//
+	NodePredicateTypeMemberName         = "named"
+	NodePredicateTypeMemberDeclaredType = "typemember-declared-type"
+	NodePredicateTypeMemberReturnType   = "typemember-return-type"
+	NodePredicateTypeMemberGeneric      = "typemember-generic"
+	NodePredicateTypeMemberParameter    = "typemember-parameter"
+	NodePredicateTypeMemberBody         = "typemember-body"
+
+	//
 	// NodeTypeOperator
 	//
-	NodeOperatorName      = "operator-named"
-	NodeOperatorParameter = "typemember-parameter"
-	NodeOperatorBody      = "typemember-body"
+	NodeOperatorName = "operator-named"
 
 	//
 	// NodeTypeProperty
 	//
-	NodePropertyName         = "named"
-	NodePropertyDeclaredType = "typemember-declared-type"
-	NodePropertyReadOnly     = "typemember-readonly"
-	NodePropertyGetter       = "property-getter"
-	NodePropertySetter       = "property-setter"
+	NodePropertyReadOnly = "typemember-readonly"
+	NodePropertyGetter   = "property-getter"
+	NodePropertySetter   = "property-setter"
 
 	//
 	// NodeTypePropertyBlock
 	//
 	NodePropertyBlockType = "propertyblock-type"
 	NodePropertyBlockBody = "typemember-body"
-
-	//
-	// NodeTypeConstructor
-	//
-	NodeConstructorName      = "named"
-	NodeConstructorGeneric   = "typemember-generic"
-	NodeConstructorParameter = "typemember-parameter"
-	NodeConstructorBody      = "typemember-body"
-
-	//
-	// NodeTypeFunction
-	//
-	NodeFunctionName       = "named"
-	NodeFunctionReturnType = "typemember-return-type"
-	NodeFunctionGeneric    = "typemember-generic"
-	NodeFunctionParameter  = "typemember-parameter"
-	NodeFunctionBody       = "typemember-body"
 
 	//
 	// NodeTypeParameter
