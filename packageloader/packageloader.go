@@ -105,7 +105,7 @@ func NewPackageLoader(rootSourceFile string, nodeBuilder parser.NodeBuilder) *Pa
 
 // Load performs the loading of a Serulian package found at the directory path.
 // Any dependencies will be loaded as well.
-func (p *PackageLoader) Load() *LoadResult {
+func (p *PackageLoader) Load(libPaths ...string) *LoadResult {
 	// Start the loading goroutine.
 	go p.loadAndParse()
 
@@ -121,6 +121,13 @@ func (p *PackageLoader) Load() *LoadResult {
 	// Add the root source file as the first package to be parsed.
 	sal := compilercommon.NewSourceAndLocation(compilercommon.InputSource(p.rootSourceFile), 0)
 	p.pushPath(pathSourceFile, p.rootSourceFile, sal)
+
+	// Add the library paths to be parsed.
+	for _, libPath := range libPaths {
+		sal := compilercommon.NewSourceAndLocation(compilercommon.InputSource(libPath), 0)
+		p.pushPath(pathLocalPackage, libPath, sal)
+
+	}
 
 	// Wait for all packages and source files to be completed.
 	p.workTracker.Wait()

@@ -91,6 +91,26 @@ func TestUnknownPath(t *testing.T) {
 	assertFileImported(t, tt, "tests/unknownimport/importsunknown.seru")
 }
 
+func TestLibraryPath(t *testing.T) {
+	tt := &testTracker{
+		pathsImported:    map[string]bool{},
+		packagesImported: map[string]bool{},
+	}
+
+	loader := NewPackageLoader("tests/basic/somefile.seru", tt.createAstNode)
+	result := loader.Load("tests/libtest")
+	if !result.Status || len(result.Errors) > 0 {
+		t.Errorf("Expected success, found: %v", result.Errors)
+	}
+
+	assertFileImported(t, tt, "tests/basic/somefile.seru")
+	assertFileImported(t, tt, "tests/basic/anotherfile.seru")
+	assertFileImported(t, tt, "tests/basic/somesubdir/subdirfile.seru")
+
+	assertFileImported(t, tt, "tests/libtest/libfile1.seru")
+	assertFileImported(t, tt, "tests/libtest/libfile2.seru")
+}
+
 func assertFileImported(t *testing.T, tt *testTracker, filePath string) {
 	if _, ok := tt.pathsImported[filePath]; !ok {
 		t.Errorf("Expected import of file %s", filePath)
