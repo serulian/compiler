@@ -15,14 +15,14 @@ import (
 
 var _ = fmt.Printf
 
-func getSRG(t *testing.T, path string) *SRG {
+func getSRG(t *testing.T, path string, libPaths ...string) *SRG {
 	graph, err := compilergraph.NewGraph(path)
 	if err != nil {
 		t.Errorf("%v", err)
 	}
 
 	testSRG := NewSRG(graph)
-	result := testSRG.LoadAndParse()
+	result := testSRG.LoadAndParse(libPaths...)
 	if !result.Status {
 		t.Errorf("Expected successful parse")
 	}

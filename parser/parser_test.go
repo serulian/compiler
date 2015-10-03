@@ -189,6 +189,9 @@ var parserTests = []parserTest{
 
 	// Full example tests.
 	{"basic full example test", "full/basic"},
+
+	// Decorator tests.
+	{"basic decorator test", "decorator/basic"},
 }
 
 func reportImport(path PackageImport) string {

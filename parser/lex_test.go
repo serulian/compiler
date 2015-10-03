@@ -42,6 +42,9 @@ var lexerTests = []lexerTest{
 
 	{"multi line comment unterminated", "/* a\ncomment", []lexeme{lexeme{tokenTypeError, 0, "Unterminated multiline comment"}}},
 
+	{"at sign", "@", []lexeme{lexeme{tokenTypeAtSign, 0, "@"}, tEOF}},
+	{"special dot", "•", []lexeme{lexeme{tokenTypeSpecialDot, 0, "•"}, tEOF}},
+
 	{"plus", "+", []lexeme{lexeme{tokenTypePlus, 0, "+"}, tEOF}},
 	{"minus", "-", []lexeme{lexeme{tokenTypeMinus, 0, "-"}, tEOF}},
 

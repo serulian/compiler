@@ -135,6 +135,9 @@ const (
 	tokenTypeBooleanLiteral
 	tokenTypeIdentifer
 	tokenTypeKeyword
+
+	tokenTypeAtSign     // @
+	tokenTypeSpecialDot // •
 )
 
 // keywords contains the full set of keywords supported.
@@ -408,6 +411,12 @@ Loop:
 
 		case r == '^':
 			l.emit(tokenTypeXor)
+
+		case r == '@':
+			l.emit(tokenTypeAtSign)
+
+		case r == '•':
+			l.emit(tokenTypeSpecialDot)
 
 		// Cases:
 		// -

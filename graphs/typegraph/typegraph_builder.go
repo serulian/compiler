@@ -155,8 +155,12 @@ func (t *TypeGraph) buildGenericNode(typeDecl TGTypeDecl, generic srg.SRGGeneric
 func (t *TypeGraph) buildTypeRef(typeref srg.SRGTypeRef) (TypeReference, error) {
 	switch typeref.RefKind() {
 	case srg.TypeRefStream:
-		// TODO(jschorr): THIS!
-		panic("Streams not yet implemented!")
+		innerType, err := t.buildTypeRef(typeref.InnerReference())
+		if err != nil {
+			return TypeReference{}, err
+		}
+
+		return t.NewTypeReference(t.StreamType().GraphNode, innerType), nil
 
 	case srg.TypeRefNullable:
 		innerType, err := t.buildTypeRef(typeref.InnerReference())
@@ -178,12 +182,7 @@ func (t *TypeGraph) buildTypeRef(typeref srg.SRGTypeRef) (TypeReference, error) 
 		}
 
 		// Get the type in the type graph.
-		// TODO(jschorr): Should we reverse this query for better performance? If we start
-		// at the SRG node by ID, it should immediately filter, but we'll have to cross the
-		// layers to do it.
-		resolvedType := t.findAllNodes(NodeTypeClass, NodeTypeInterface).
-			Has(NodePredicateSource, string(resolvedSRGType.Node().NodeId)).
-			GetNode()
+		resolvedType := t.getDeclForSRGType(resolvedSRGType)
 
 		// Create the generics array.
 		srgGenerics := typeref.Generics()
@@ -196,7 +195,7 @@ func (t *TypeGraph) buildTypeRef(typeref srg.SRGTypeRef) (TypeReference, error) 
 			generics[index] = genericTypeRef
 		}
 
-		return t.NewTypeReference(resolvedType, generics...), nil
+		return t.NewTypeReference(resolvedType.GraphNode, generics...), nil
 
 	default:
 		panic(fmt.Sprintf("Unknown kind of SRG type ref: %v", typeref.RefKind()))

@@ -68,6 +68,9 @@ var trTests = []typeRefTest{
 	typeRefTest{"membergeneric", "basic", expectedTypeRef{"Q", TypeRefPath, true, []expectedTypeRef{}}},
 
 	typeRefTest{"invalidgeneric", "basic", expectedTypeRef{"", TypeRefPath, false, []expectedTypeRef{}}},
+
+	typeRefTest{"somealiasref", "basic", expectedTypeRef{"Stream", TypeRefPath, false, []expectedTypeRef{}}},
+	typeRefTest{"anotheraliasref", "basic", expectedTypeRef{"Boolean", TypeRefPath, false, []expectedTypeRef{}}},
 }
 
 func assertTypeRef(t *testing.T, test string, typeRef SRGTypeRef, expected expectedTypeRef) {
@@ -106,7 +109,7 @@ func assertTypeRef(t *testing.T, test string, typeRef SRGTypeRef, expected expec
 func TestTypeReferences(t *testing.T) {
 	for _, test := range trTests {
 		source := fmt.Sprintf("tests/typeref/%s.seru", test.source)
-		testSRG := getSRG(t, source)
+		testSRG := getSRG(t, source, "tests/testlib")
 
 		_, found := testSRG.FindModuleBySource(compilercommon.InputSource(source))
 		if !assert.True(t, found, "Test module not found") {

@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
 	"strings"
 	"testing"
 
@@ -113,6 +114,7 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"simple test", "simple", "simple.seru", ""},
 	typegraphTest{"generic test", "generic", "generic.seru", ""},
 	typegraphTest{"complex generic test", "complexgeneric", "complexgeneric.seru", ""},
+	typegraphTest{"stream test", "stream", "stream.seru", ""},
 
 	// Failure tests.
 	typegraphTest{"type redeclaration test", "redeclare", "redeclare.seru", "Type 'SomeClass' is already defined in the module"},
@@ -128,7 +130,7 @@ func TestGraphs(t *testing.T) {
 		}
 
 		testSRG := srg.NewSRG(graph)
-		srgResult := testSRG.LoadAndParse()
+		srgResult := testSRG.LoadAndParse("tests/testlib")
 
 		// Make sure we had no errors during construction.
 		assert.True(t, srgResult.Status, "Got error for SRG construction %v: %s", test.name, srgResult.Errors)
@@ -139,11 +141,15 @@ func TestGraphs(t *testing.T) {
 		if test.expectedError == "" {
 			// Make sure we had no errors during construction.
 			assert.True(t, result.Status, "Got error for type graph construction %v: %s", test.name, result.Errors)
-
-			// Compare the constructed graph layer to the expected.
 			currentLayerJson := buildLayerJSON(t, result.Graph)
-			if !assert.Equal(t, test.json(), currentLayerJson, "JSON mismatch") {
-				fmt.Printf("%s\n\n", currentLayerJson)
+
+			if os.Getenv("REGEN") == "true" {
+				test.writeJson(currentLayerJson)
+			} else {
+				// Compare the constructed graph layer to the expected.
+				if !assert.Equal(t, test.json(), currentLayerJson, "JSON mismatch") {
+					fmt.Printf("%s\n\n", currentLayerJson)
+				}
 			}
 		} else {
 			// Make sure we had an error during construction.

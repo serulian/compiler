@@ -27,9 +27,13 @@ func (m SRGModule) ResolveType(path string) (SRGType, bool) {
 		panic(fmt.Sprintf("Expected type string with one or two pieces, found: %v", pieces))
 	}
 
-	// If there is only a single piece, this is a local-module type.
-	// TODO(jschorr): Handle global aliases here as well.
+	// If there is only a single piece, this is a local-module type or alias.
 	if len(pieces) == 1 {
+		// Check the aliases map.
+		if aliasedType, ok := m.srg.ResolveAliasedType(path); ok {
+			return aliasedType, true
+		}
+
 		return m.FindTypeByName(path, ModuleResolveAll)
 	}
 

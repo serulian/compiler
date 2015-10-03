@@ -26,14 +26,6 @@ func (t *TypeGraph) NewTypeReference(typeNode compilergraph.GraphNode, generics 
 	}
 }
 
-// AnyTypeReference returns a reference to the special 'any' type.
-func (t *TypeGraph) AnyTypeReference() TypeReference {
-	return TypeReference{
-		layer: t.layer,
-		value: buildSpecialTypeReferenceValue(specialFlagAny),
-	}
-}
-
 // IsAny returns whether this type reference refers to the special 'any' type.
 func (tr TypeReference) IsAny() bool {
 	return tr.getSlot(trhSlotFlagSpecial)[0] == specialFlagAny

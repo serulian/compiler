@@ -22,6 +22,7 @@ func TestBasicReferenceOperations(t *testing.T) {
 	}
 
 	testSRG := srg.NewSRG(graph)
+
 	testTG := BuildTypeGraph(testSRG).Graph
 
 	newNode := testTG.layer.CreateNode(NodeTypeClass)

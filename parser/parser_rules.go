@@ -4,7 +4,9 @@
 
 package parser
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // Useful for debugging.
 var _ = fmt.Printf
@@ -48,6 +50,11 @@ func (p *sourceParser) consumeTopLevel() AstNode {
 	// Once we've seen a non-import, no further imports are allowed.
 	seenNonImport := false
 
+	if p.currentToken.kind == tokenTypeError {
+		p.emitError("%s", p.currentToken.value)
+		return rootNode
+	}
+
 Loop:
 	for {
 		switch {
@@ -62,7 +69,7 @@ Loop:
 			p.currentNode().Connect(NodePredicateChild, p.consumeImport())
 
 		// type definitions.
-		case p.isKeyword("class") || p.isKeyword("interface"):
+		case p.isToken(tokenTypeAtSign) || p.isKeyword("class") || p.isKeyword("interface"):
 			seenNonImport = true
 			p.currentNode().Connect(NodePredicateChild, p.consumeTypeDefinition())
 			p.tryConsumeStatementTerminator()
@@ -101,6 +108,56 @@ Loop:
 	}
 
 	return rootNode
+}
+
+// tryConsumeDecorator attempts to consume a decorator.
+//
+// Supported internal form:
+// @•identifier
+// @•identifier(literal parameters)
+func (p *sourceParser) tryConsumeDecorator() (AstNode, bool) {
+	if !p.isToken(tokenTypeAtSign) {
+		return nil, false
+	}
+
+	decoratorNode := p.startNode(NodeTypeDecorator)
+	defer p.finishNode()
+
+	// @
+	p.consume(tokenTypeAtSign)
+
+	// •
+	// TODO(jschorr): Loosen this check once fully decorators are supported.
+	p.consume(tokenTypeSpecialDot)
+
+	// Path.
+	// TODO(jschorr): Replace this with a path once decorators are generally supported.
+	path, result := p.consumeIdentifier()
+	if !result {
+		return decoratorNode, true
+	}
+
+	decoratorNode.Decorate(NodeDecoratorPredicateInternal, path)
+
+	// Parameters (optional).
+	// (
+	if _, ok := p.consume(tokenTypeLeftParen); !ok {
+		return decoratorNode, true
+	}
+
+	// literalValue (, another)
+	for {
+		decoratorNode.Connect(NodeDecoratorPredicateParameter, p.consumeLiteralValue())
+
+		if _, ok := p.tryConsume(tokenTypeComma); !ok {
+			break
+		}
+	}
+
+	// )
+	p.consume(tokenTypeRightParen)
+	p.tryConsumeStatementTerminator()
+	return decoratorNode, true
 }
 
 // consumeImport attempts to consume an import statement.
@@ -175,13 +232,25 @@ func (p *sourceParser) consumeImportSource(importNode AstNode, sourcePredicate s
 
 // consumeTypeDefinition attempts to consume a type definition.
 func (p *sourceParser) consumeTypeDefinition() AstNode {
+	// Consume any decorator.
+	decoratorNode, ok := p.tryConsumeDecorator()
+
+	// Consume the type itself.
+	var typeDef AstNode
 	if p.isKeyword("class") {
-		return p.consumeClassDefinition()
+		typeDef = p.consumeClassDefinition()
 	} else if p.isKeyword("interface") {
-		return p.consumeInterfaceDefinition()
+		typeDef = p.consumeInterfaceDefinition()
 	} else {
 		return p.createErrorNode("Expected 'class' or 'interface', Found: %s", p.currentToken.value)
 	}
+
+	if ok {
+		// Add the decorator to the type.
+		typeDef.Connect(NodeTypeDefinitionDecorator, decoratorNode)
+	}
+
+	return typeDef
 }
 
 // consumeClassDefinition consumes a class definition.
@@ -195,9 +264,7 @@ func (p *sourceParser) consumeClassDefinition() AstNode {
 	defer p.finishNode()
 
 	// class ...
-	if !p.consumeKeyword("class") {
-		return classNode
-	}
+	p.consumeKeyword("class")
 
 	// Identifier
 	className, ok := p.consumeIdentifier()
@@ -244,9 +311,7 @@ func (p *sourceParser) consumeInterfaceDefinition() AstNode {
 	defer p.finishNode()
 
 	// interface ...
-	if !p.consumeKeyword("interface") {
-		return interfaceNode
-	}
+	p.consumeKeyword("interface")
 
 	// Identifier
 	interfaceName, ok := p.consumeIdentifier()
@@ -1628,39 +1693,20 @@ func (p *sourceParser) tryConsumeCallAccessExpression() (AstNode, bool) {
 		tokenTypeStreamAccessOperator)
 }
 
-// tryConsumeBaseExpression attempts to consume base expressions (literals, identifiers, parenthesis).
-func (p *sourceParser) tryConsumeBaseExpression() (AstNode, bool) {
+// consumeLiteralValue consumes a literal value.
+func (p *sourceParser) consumeLiteralValue() AstNode {
+	node, found := p.tryConsumeLiteralValue()
+	if !found {
+		p.emitError("Expected literal value, found: %v", p.currentToken.kind)
+		return nil
+	}
+
+	return node
+}
+
+// tryConsumeLiteralValue attempts to consume a literal value.
+func (p *sourceParser) tryConsumeLiteralValue() (AstNode, bool) {
 	switch {
-
-	// List expression.
-	case p.isToken(tokenTypeLeftBracket):
-		return p.consumeListExpression(), true
-
-	// Unary: ~
-	case p.isToken(tokenTypeTilde):
-		p.consume(tokenTypeTilde)
-
-		bitNode := p.startNode(NodeBitwiseNotExpression)
-		defer p.finishNode()
-		bitNode.Connect(NodeUnaryExpressionChildExpr, p.consumeExpression())
-		return bitNode, true
-
-	// Unary: !
-	case p.isToken(tokenTypeNot):
-		p.consume(tokenTypeNot)
-
-		notNode := p.startNode(NodeBooleanNotExpression)
-		defer p.finishNode()
-		notNode.Connect(NodeUnaryExpressionChildExpr, p.consumeExpression())
-		return notNode, true
-
-	// Nested expression.
-	case p.isToken(tokenTypeLeftParen):
-		p.consume(tokenTypeLeftParen)
-		exprNode := p.consumeExpression()
-		p.consume(tokenTypeRightParen)
-		return exprNode, true
-
 	// Numeric literal.
 	case p.isToken(tokenTypeNumericLiteral):
 		literalNode := p.startNode(NodeNumericLiteralExpression)
@@ -1694,6 +1740,48 @@ func (p *sourceParser) tryConsumeBaseExpression() (AstNode, bool) {
 	// Template string literal.
 	case p.isToken(tokenTypeTemplateStringLiteral):
 		return p.consumeTemplateString(), true
+	}
+
+	return nil, false
+}
+
+// tryConsumeBaseExpression attempts to consume base expressions (literals, identifiers, parenthesis).
+func (p *sourceParser) tryConsumeBaseExpression() (AstNode, bool) {
+	switch {
+
+	// List expression.
+	case p.isToken(tokenTypeLeftBracket):
+		return p.consumeListExpression(), true
+
+	// Unary: ~
+	case p.isToken(tokenTypeTilde):
+		p.consume(tokenTypeTilde)
+
+		bitNode := p.startNode(NodeBitwiseNotExpression)
+		defer p.finishNode()
+		bitNode.Connect(NodeUnaryExpressionChildExpr, p.consumeExpression())
+		return bitNode, true
+
+	// Unary: !
+	case p.isToken(tokenTypeNot):
+		p.consume(tokenTypeNot)
+
+		notNode := p.startNode(NodeBooleanNotExpression)
+		defer p.finishNode()
+		notNode.Connect(NodeUnaryExpressionChildExpr, p.consumeExpression())
+		return notNode, true
+
+	// Nested expression.
+	case p.isToken(tokenTypeLeftParen):
+		p.consume(tokenTypeLeftParen)
+		exprNode := p.consumeExpression()
+		p.consume(tokenTypeRightParen)
+		return exprNode, true
+	}
+
+	// Literal value.
+	if value, ok := p.tryConsumeLiteralValue(); ok {
+		return value, true
 	}
 
 	return p.tryConsumeIdentifierExpression()

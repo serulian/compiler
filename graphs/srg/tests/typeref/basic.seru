@@ -25,3 +25,5 @@ class ParentClass<T> {
 }
 
 var<T> invalidgeneric
+var<stream> somealiasref
+var<bool> anotheraliasref

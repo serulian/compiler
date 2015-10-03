@@ -1,0 +1,5 @@
+@•typealias('stream')
+interface Stream<T> {}
+
+@•typealias('function')
+class Function<T> {}

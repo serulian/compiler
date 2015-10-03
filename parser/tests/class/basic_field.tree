@@ -14,7 +14,7 @@ NodeTypeFile
           input-source = basic class field test
           named = someField
           start-rune = 19
-          var-declared-type =>
+          typemember-declared-type =>
             NodeTypeTypeReference
               end-rune = 25
               input-source = basic class field test

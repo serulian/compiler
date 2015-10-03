@@ -7,17 +7,7 @@
                 "Children": [],
                 "Predicates": {
                     "tdg-generic-name": "T",
-                    "tdg-generic-subtype": "any",
-                    "tdg-node-kind": "4|NodeType|tdg",
-                    "tdg-srg-source": "(NodeRef)"
-                }
-            },
-            {
-                "Kind": 4,
-                "Children": [],
-                "Predicates": {
-                    "tdg-generic-name": "Q",
-                    "tdg-generic-subtype": "AnotherClass",
+                    "tdg-generic-subtype": "Stream\u003cAnotherClass\u003e",
                     "tdg-node-kind": "4|NodeType|tdg",
                     "tdg-srg-source": "(NodeRef)"
                 }

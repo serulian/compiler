@@ -5,7 +5,10 @@
 package typegraph
 
 import (
+	"fmt"
+
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/graphs/srg"
 )
 
 // findAllNodes starts a new query over the TypeGraph from nodes of the given type.
@@ -16,4 +19,20 @@ func (g *TypeGraph) findAllNodes(nodeTypes ...NodeType) *compilergraph.GraphQuer
 	}
 
 	return g.layer.FindNodesOfKind(nodeTypesTagged...)
+}
+
+// getDeclForSRGType returns the type decl in the type graph for the associated SRG type definition.
+func (g *TypeGraph) getDeclForSRGType(srgType srg.SRGType) TGTypeDecl {
+	// TODO(jschorr): Should we reverse this query for better performance? If we start
+	// at the SRG node by ID, it should immediately filter, but we'll have to cross the
+	// layers to do it.
+	resolvedType, found := g.findAllNodes(NodeTypeClass, NodeTypeInterface).
+		Has(NodePredicateSource, string(srgType.Node().NodeId)).
+		TryGetNode()
+
+	if !found {
+		panic(fmt.Sprintf("Type node not found in type graph for SRG type node: %v", srgType))
+	}
+
+	return TGTypeDecl{resolvedType, g}
 }

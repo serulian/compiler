@@ -6,11 +6,18 @@
 package srg
 
 import (
+	"fmt"
+
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/parser"
 )
+
+var _ = fmt.Print
+
+// The name of the internal decorator for marking a type with a global alias.
+const aliasInternalDecoratorName = "typealias"
 
 // SRG represents the SRG layer and all its associated helper methods.
 type SRG struct {
@@ -18,14 +25,22 @@ type SRG struct {
 
 	layer      *compilergraph.GraphLayer             // The SRG layer in the graph.
 	packageMap map[string]*packageloader.PackageInfo // Map from package internal ID to info.
+	aliasMap   map[string]SRGType                    // Map of aliased types.
 }
 
 // NewSRG returns a new SRG for populating the graph with parsed source.
 func NewSRG(graph *compilergraph.SerulianGraph) *SRG {
 	return &SRG{
-		Graph: graph,
-		layer: graph.NewGraphLayer(compilergraph.GraphLayerSRG, parser.NodeTypeTagged),
+		Graph:    graph,
+		layer:    graph.NewGraphLayer(compilergraph.GraphLayerSRG, parser.NodeTypeTagged),
+		aliasMap: map[string]SRGType{},
 	}
+}
+
+// ResolveAliasedType returns the type with the global alias, if any.
+func (g *SRG) ResolveAliasedType(name string) (SRGType, bool) {
+	found, ok := g.aliasMap[name]
+	return found, ok
 }
 
 // GetNode returns the node with the given ID in this layer or panics.
@@ -40,10 +55,10 @@ func (g *SRG) NodeLocation(node compilergraph.GraphNode) compilercommon.SourceAn
 
 // LoadAndParse attemptps to load and parse the transition closure of the source code
 // found starting at the root source file.
-func (g *SRG) LoadAndParse() *packageloader.LoadResult {
+func (g *SRG) LoadAndParse(libPaths ...string) *packageloader.LoadResult {
 	// Load and parse recursively.
 	packageLoader := packageloader.NewPackageLoader(g.Graph.RootSourceFilePath, g.buildASTNode)
-	result := packageLoader.Load()
+	result := packageLoader.Load(libPaths...)
 
 	// Save the package map.
 	g.packageMap = result.PackageMap
@@ -85,6 +100,29 @@ func (g *SRG) LoadAndParse() *packageloader.LoadResult {
 				result.Status = false
 			}
 		}
+	}
+
+	// Build the map for globally aliased types.
+	ait := g.findAllNodes(parser.NodeTypeDecorator).
+		Has(parser.NodeDecoratorPredicateInternal, aliasInternalDecoratorName).
+		BuildNodeIterator()
+
+	for ait.Next() {
+		// Find the name of the alias.
+		decorator := ait.Node()
+		parameter, ok := decorator.TryGetNode(parser.NodeDecoratorPredicateParameter)
+		if !ok || parameter.Kind != parser.NodeStringLiteralExpression {
+			sal := salForNode(decorator)
+			result.Errors = append(result.Errors, compilercommon.SourceErrorf(sal, "Alias decorator requires a single string literal parameter"))
+			result.Status = false
+			continue
+		}
+
+		var aliasName = parameter.Get(parser.NodeStringLiteralExpressionValue)
+		aliasName = aliasName[1 : len(aliasName)-1] // Remove the quotes.
+
+		aliasedType := SRGType{decorator.GetIncomingNode(parser.NodeTypeDefinitionDecorator), g}
+		g.aliasMap[aliasName] = aliasedType
 	}
 
 	return result

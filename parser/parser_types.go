@@ -46,6 +46,9 @@ const (
 	NodeTypeFile                    // The file root node
 	NodeTypeComment                 // A single or multiline comment
 
+	// Decorator
+	NodeTypeDecorator
+
 	// Module-level
 	NodeTypeImport    // An import
 	NodeTypeClass     // A class
@@ -193,6 +196,12 @@ const (
 	NodeCommentPredicateValue = "comment-value"
 
 	//
+	// NodeTypeDecorator
+	//
+	NodeDecoratorPredicateInternal  = "decorator-internal"
+	NodeDecoratorPredicateParameter = "decorator-parameter"
+
+	//
 	// NodeTypeImport
 	//
 	NodeImportPredicateKind        = "import-kind"
@@ -206,9 +215,10 @@ const (
 	//
 	// NodeTypeClass + NodeTypeInterface
 	//
-	NodeTypeDefinitionGeneric = "type-generic"
-	NodeTypeDefinitionMember  = "type-member"
-	NodeTypeDefinitionName    = "named"
+	NodeTypeDefinitionGeneric   = "type-generic"
+	NodeTypeDefinitionMember    = "type-member"
+	NodeTypeDefinitionName      = "named"
+	NodeTypeDefinitionDecorator = "decorator"
 
 	//
 	// NodeTypeClass
