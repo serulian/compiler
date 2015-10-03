@@ -23,7 +23,7 @@ NodeTypeFile
             NodeTypeParameter
               end-rune = 46
               input-source = basic class operator test
-              parameter-type = left
+              named = left
               start-rune = 33
               parameter-type =>
                 NodeTypeTypeReference
@@ -44,7 +44,7 @@ NodeTypeFile
             NodeTypeParameter
               end-rune = 63
               input-source = basic class operator test
-              parameter-type = right
+              named = right
               start-rune = 49
               parameter-type =>
                 NodeTypeTypeReference

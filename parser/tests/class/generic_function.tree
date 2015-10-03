@@ -50,7 +50,7 @@ NodeTypeFile
             NodeTypeParameter
               end-rune = 73
               input-source = generic function test
-              parameter-type = someParam
+              named = someParam
               start-rune = 63
               parameter-type =>
                 NodeTypeTypeReference
@@ -71,7 +71,7 @@ NodeTypeFile
             NodeTypeParameter
               end-rune = 89
               input-source = generic function test
-              parameter-type = anotherParam
+              named = anotherParam
               start-rune = 76
               parameter-type =>
                 NodeTypeTypeReference

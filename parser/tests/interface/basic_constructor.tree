@@ -18,7 +18,7 @@ NodeTypeFile
             NodeTypeParameter
               end-rune = 56
               input-source = basic interface constructor test
-              parameter-type = a
+              named = a
               start-rune = 52
               parameter-type =>
                 NodeTypeTypeReference
@@ -39,7 +39,7 @@ NodeTypeFile
             NodeTypeParameter
               end-rune = 66
               input-source = basic interface constructor test
-              parameter-type = b
+              named = b
               start-rune = 59
               parameter-type =>
                 NodeTypeTypeReference

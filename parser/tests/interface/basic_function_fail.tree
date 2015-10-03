@@ -30,7 +30,7 @@ NodeTypeFile
             NodeTypeParameter
               end-rune = 59
               input-source = basic interface function failure test
-              parameter-type = a
+              named = a
               start-rune = 55
               parameter-type =>
                 NodeTypeTypeReference
@@ -51,7 +51,7 @@ NodeTypeFile
             NodeTypeParameter
               end-rune = 69
               input-source = basic interface function failure test
-              parameter-type = b
+              named = b
               start-rune = 62
               parameter-type =>
                 NodeTypeTypeReference

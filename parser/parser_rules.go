@@ -679,7 +679,7 @@ func (p *sourceParser) consumeParameter() AstNode {
 		return parameterNode
 	}
 
-	parameterNode.Decorate(NodeParameterType, identifier)
+	parameterNode.Decorate(NodeParameterName, identifier)
 
 	// Parameter type.
 	parameterNode.Connect(NodeParameterType, p.consumeTypeReference(typeReferenceNoVoid))

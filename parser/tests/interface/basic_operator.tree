@@ -18,7 +18,7 @@ NodeTypeFile
             NodeTypeParameter
               end-rune = 60
               input-source = basic interface operator test
-              parameter-type = left
+              named = left
               start-rune = 42
               parameter-type =>
                 NodeTypeTypeReference
@@ -39,7 +39,7 @@ NodeTypeFile
             NodeTypeParameter
               end-rune = 82
               input-source = basic interface operator test
-              parameter-type = right
+              named = right
               start-rune = 63
               parameter-type =>
                 NodeTypeTypeReference

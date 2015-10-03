@@ -23,7 +23,7 @@ NodeTypeFile
             NodeTypeParameter
               end-rune = 63
               input-source = basic class function test
-              parameter-type = someParam
+              named = someParam
               start-rune = 51
               parameter-type =>
                 NodeTypeTypeReference
@@ -44,7 +44,7 @@ NodeTypeFile
             NodeTypeParameter
               end-rune = 83
               input-source = basic class function test
-              parameter-type = anotherParam
+              named = anotherParam
               start-rune = 66
               parameter-type =>
                 NodeTypeTypeReference
