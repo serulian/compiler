@@ -69,8 +69,8 @@ var trTests = []typeRefTest{
 
 	typeRefTest{"invalidgeneric", "basic", expectedTypeRef{"", TypeRefPath, false, []expectedTypeRef{}}},
 
-	typeRefTest{"somealiasref", "basic", expectedTypeRef{"Stream", TypeRefPath, false, []expectedTypeRef{}}},
-	typeRefTest{"anotheraliasref", "basic", expectedTypeRef{"Boolean", TypeRefPath, false, []expectedTypeRef{}}},
+	typeRefTest{"somealiasref", "basic", expectedTypeRef{"Stream", TypeRefPath, true, []expectedTypeRef{}}},
+	typeRefTest{"anotheraliasref", "basic", expectedTypeRef{"Boolean", TypeRefPath, true, []expectedTypeRef{}}},
 }
 
 func assertTypeRef(t *testing.T, test string, typeRef SRGTypeRef, expected expectedTypeRef) {

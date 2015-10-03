@@ -94,6 +94,13 @@ func (m SRGTypeMember) ReturnType() (SRGTypeRef, bool) {
 	return SRGTypeRef{typeRefNode, m.srg}, true
 }
 
+// HasSetter returns true if the property has a setter defined. Will always return false
+// for non-properties.
+func (m SRGTypeMember) HasSetter() bool {
+	_, found := m.GraphNode.TryGet(parser.NodePropertySetter)
+	return found
+}
+
 // Generics returns the generics on this type member.
 func (m SRGTypeMember) Generics() []SRGGeneric {
 	it := m.GraphNode.StartQuery().
@@ -106,4 +113,18 @@ func (m SRGTypeMember) Generics() []SRGGeneric {
 	}
 
 	return generics
+}
+
+// Parameters returns the parameters on this type member.
+func (m SRGTypeMember) Parameters() []SRGParameter {
+	it := m.GraphNode.StartQuery().
+		Out(parser.NodePredicateTypeMemberParameter).
+		BuildNodeIterator()
+
+	var parameters = make([]SRGParameter, 0)
+	for it.Next() {
+		parameters = append(parameters, SRGParameter{it.Node(), m.srg})
+	}
+
+	return parameters
 }

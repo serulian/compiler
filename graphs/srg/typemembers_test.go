@@ -21,6 +21,7 @@ type memberTest struct {
 	memberName           string
 	expectedKind         TypeMemberKind
 	expectedGenerics     []string
+	expectedParameters   []string
 	expectedDeclaredType expectedTypeRef
 	expectedReturnType   expectedTypeRef
 }
@@ -30,12 +31,14 @@ var memberTests = []memberTest{
 	memberTest{"class function test", "class", "TestClass", "SomeFunction",
 		FunctionTypeMember,
 		[]string{"T"},
+		[]string{"foo", "bar"},
 		expectedTypeRef{},
 		expectedTypeRef{"AnotherClass", TypeRefPath, true, []expectedTypeRef{}},
 	},
 
 	memberTest{"class property test", "class", "TestClass", "SomeProperty",
 		PropertyTypeMember,
+		[]string{},
 		[]string{},
 		expectedTypeRef{"SomeClass", TypeRefPath, true, []expectedTypeRef{}},
 		expectedTypeRef{},
@@ -44,12 +47,14 @@ var memberTests = []memberTest{
 	memberTest{"class constructor test", "class", "TestClass", "BuildMe",
 		ConstructorTypeMember,
 		[]string{"T", "Q"},
+		[]string{"first", "second"},
 		expectedTypeRef{},
 		expectedTypeRef{},
 	},
 
 	memberTest{"class var test", "class", "TestClass", "SomeVar",
 		VarTypeMember,
+		[]string{},
 		[]string{},
 		expectedTypeRef{"SomeClass", TypeRefPath, true, []expectedTypeRef{}},
 		expectedTypeRef{},
@@ -58,6 +63,7 @@ var memberTests = []memberTest{
 	memberTest{"class operator test", "class", "TestClass", "Plus",
 		OperatorTypeMember,
 		[]string{},
+		[]string{"left", "right"},
 		expectedTypeRef{},
 		expectedTypeRef{},
 	},
@@ -66,12 +72,14 @@ var memberTests = []memberTest{
 	memberTest{"interface function test", "interface", "TestInterface", "SomeFunction",
 		FunctionTypeMember,
 		[]string{"T"},
+		[]string{"foo", "bar"},
 		expectedTypeRef{},
 		expectedTypeRef{"AnotherClass", TypeRefPath, true, []expectedTypeRef{}},
 	},
 
 	memberTest{"interface property test", "interface", "TestInterface", "SomeProperty",
 		PropertyTypeMember,
+		[]string{},
 		[]string{},
 		expectedTypeRef{"SomeClass", TypeRefPath, true, []expectedTypeRef{}},
 		expectedTypeRef{},
@@ -80,6 +88,7 @@ var memberTests = []memberTest{
 	memberTest{"interface constructor test", "interface", "TestInterface", "BuildMe",
 		ConstructorTypeMember,
 		[]string{"T", "Q"},
+		[]string{"first", "second"},
 		expectedTypeRef{},
 		expectedTypeRef{},
 	},
@@ -87,6 +96,7 @@ var memberTests = []memberTest{
 	memberTest{"interface operator test", "interface", "TestInterface", "Plus",
 		OperatorTypeMember,
 		[]string{},
+		[]string{"left", "right"},
 		expectedTypeRef{},
 		expectedTypeRef{},
 	},
@@ -132,6 +142,14 @@ func TestTypeMembers(t *testing.T) {
 
 		for index, genericName := range test.expectedGenerics {
 			assert.Equal(t, genericName, foundGenerics[index].Name(), "Generic name mismatch")
+		}
+
+		// Check parameters.
+		foundParameters := member.Parameters()
+		assert.Equal(t, len(test.expectedParameters), len(foundParameters), "Parameter count mismatch")
+
+		for index, parameterName := range test.expectedParameters {
+			assert.Equal(t, parameterName, foundParameters[index].Name(), "Parameter name mismatch")
 		}
 
 		// Check declared and return type.
