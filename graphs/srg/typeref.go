@@ -63,7 +63,7 @@ func (t SRGTypeRef) ResolutionPath() string {
 
 // ResolveType attempts to resolve the type path referenced by this type ref.
 // Panics if this is not a RefKind of TypeRefPath.
-func (t SRGTypeRef) ResolveType() (SRGType, bool) {
+func (t SRGTypeRef) ResolveType() (SRGTypeOrGeneric, bool) {
 	// Find the parent module.
 	source := compilercommon.InputSource(t.GraphNode.Get(parser.NodePredicateSource))
 	srgModule, found := t.srg.FindModuleBySource(source)
@@ -75,14 +75,14 @@ func (t SRGTypeRef) ResolveType() (SRGType, bool) {
 	resolutionPath := t.ResolutionPath()
 	resolvedType, typeFound := srgModule.ResolveType(resolutionPath)
 	if typeFound {
-		return resolvedType, true
+		return SRGTypeOrGeneric{resolvedType.GraphNode, t.srg}, true
 	}
 
 	// If not found and the path is a single name, try to resolve as a generic
 	// under a parent function or type.
 	if strings.ContainsRune(resolutionPath, '.') {
 		// Not a single name.
-		return SRGType{}, false
+		return SRGTypeOrGeneric{}, false
 	}
 
 	containingFilter := func(q *compilergraph.GraphQuery) compilergraph.Query {
@@ -109,7 +109,7 @@ func (t SRGTypeRef) ResolveType() (SRGType, bool) {
 		FilterBy(containingFilter).                           // Filter by whether its defining type or member contains this typeref.
 		TryGetNode()
 
-	return SRGType{resolvedGeneric, t.srg}, genericFound
+	return SRGTypeOrGeneric{resolvedGeneric, t.srg}, genericFound
 }
 
 // InnerReference returns the inner type reference, if this is a nullable or stream.

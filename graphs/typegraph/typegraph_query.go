@@ -21,17 +21,31 @@ func (g *TypeGraph) findAllNodes(nodeTypes ...NodeType) *compilergraph.GraphQuer
 	return g.layer.FindNodesOfKind(nodeTypesTagged...)
 }
 
+// getTypeNodeForSRGTypeOrGeneric returns the node in the type graph for the associated SRG type or generic.
+func (g *TypeGraph) getTypeNodeForSRGTypeOrGeneric(srgTypeOrGeneric srg.SRGTypeOrGeneric) compilergraph.GraphNode {
+	return g.getMatchingTypeGraphNode(srgTypeOrGeneric.Node(), NodeTypeClass, NodeTypeInterface, NodeTypeGeneric)
+}
+
 // getTypeNodeForSRGType returns the node in the type graph for the associated SRG type definition.
 func (g *TypeGraph) getTypeNodeForSRGType(srgType srg.SRGType) compilergraph.GraphNode {
+	return g.getMatchingTypeGraphNode(srgType.Node(), NodeTypeClass, NodeTypeInterface)
+}
+
+// getGenericNodeForSRGGeneric returns the node in the type graph for the associated SRG generic.
+func (g *TypeGraph) getGenericNodeForSRGGeneric(srgGeneric srg.SRGGeneric) compilergraph.GraphNode {
+	return g.getMatchingTypeGraphNode(srgGeneric.Node(), NodeTypeGeneric)
+}
+
+func (g *TypeGraph) getMatchingTypeGraphNode(srgNode compilergraph.GraphNode, allowedKinds ...NodeType) compilergraph.GraphNode {
 	// TODO(jschorr): Should we reverse this query for better performance? If we start
 	// at the SRG node by ID, it should immediately filter, but we'll have to cross the
 	// layers to do it.
-	resolvedNode, found := g.findAllNodes(NodeTypeClass, NodeTypeInterface, NodeTypeGeneric).
-		Has(NodePredicateSource, string(srgType.Node().NodeId)).
+	resolvedNode, found := g.findAllNodes(allowedKinds...).
+		Has(NodePredicateSource, string(srgNode.NodeId)).
 		TryGetNode()
 
 	if !found {
-		panic(fmt.Sprintf("Type graph node not found in type graph for SRG type node: %v", srgType))
+		panic(fmt.Sprintf("Type graph node not found in type graph for SRG node: %v", srgNode))
 	}
 
 	return resolvedNode

@@ -42,6 +42,36 @@ func (g *SRG) GetTypes() []SRGType {
 	return types
 }
 
+// GetGenericTypes returns all the generic types defined in the SRG.
+func (g *SRG) GetGenericTypes() []SRGType {
+	it := g.findAllNodes(parser.NodeTypeClass, parser.NodeTypeInterface).
+		With(parser.NodeTypeDefinitionGeneric).
+		BuildNodeIterator()
+
+	var types []SRGType
+
+	for it.Next() {
+		types = append(types, SRGType{it.Node(), g})
+	}
+
+	return types
+}
+
+// GetTypeGenerics returns all the generics defined under types in the SRG.
+func (g *SRG) GetTypeGenerics() []SRGGeneric {
+	it := g.findAllNodes(parser.NodeTypeClass, parser.NodeTypeInterface).
+		Out(parser.NodeTypeDefinitionGeneric).
+		BuildNodeIterator()
+
+	var generics []SRGGeneric
+
+	for it.Next() {
+		generics = append(generics, SRGGeneric{it.Node(), g})
+	}
+
+	return generics
+}
+
 // Module returns the module under which the type is defined.
 func (t SRGType) Module() SRGModule {
 	moduleNode := t.GraphNode.StartQuery().In(parser.NodePredicateChild).GetNode()
