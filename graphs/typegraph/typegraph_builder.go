@@ -34,12 +34,22 @@ func (t *TypeGraph) build(g *srg.SRG) *Result {
 	}
 
 	// Add generics.
+	genericMap := map[srg.SRGGeneric]compilergraph.GraphNode{}
 	for srgType, typeDecl := range typeMap {
 		for _, generic := range srgType.Generics() {
-			success := t.buildGenericNode(generic, typeDecl.GraphNode, NodePredicateTypeGeneric)
+			node, success := t.buildGenericNode(generic, typeDecl.GraphNode, NodePredicateTypeGeneric)
 			if !success {
 				result.Status = false
 			}
+			genericMap[generic] = node
+		}
+	}
+
+	// Resolve generic constraints. We do this outside of adding generics as they may depend
+	// on other generics.
+	for srgGeneric, genericNode := range genericMap {
+		if !t.resolveGenericConstraint(srgGeneric, genericNode) {
+			result.Status = false
 		}
 	}
 
@@ -121,8 +131,16 @@ func getTypeNodeType(kind srg.TypeKind) NodeType {
 	}
 }
 
+// resolveGenericConstraint decorates a generic node with its defined constraint. Returns false if the constraint
+// is invalid due to a resolution error.
+func (t *TypeGraph) resolveGenericConstraint(generic srg.SRGGeneric, genericNode compilergraph.GraphNode) bool {
+	constraintType, valid := t.resolvePossibleType(genericNode, generic.GetConstraint)
+	genericNode.DecorateWithTagged(NodePredicateGenericSubtype, constraintType)
+	return valid
+}
+
 // buildGenericNode adds a new generic node to the specified type or type membe node for the given SRG generic.
-func (t *TypeGraph) buildGenericNode(generic srg.SRGGeneric, parentNode compilergraph.GraphNode, parentPredicate string) bool {
+func (t *TypeGraph) buildGenericNode(generic srg.SRGGeneric, parentNode compilergraph.GraphNode, parentPredicate string) (compilergraph.GraphNode, bool) {
 	// Ensure that there exists no other generic with this name under the parent node.
 	_, exists := parentNode.StartQuery().
 		Out(parentPredicate).
@@ -137,23 +155,13 @@ func (t *TypeGraph) buildGenericNode(generic srg.SRGGeneric, parentNode compiler
 	// Add the generic to the parent node.
 	parentNode.Connect(parentPredicate, genericNode)
 
-	// Decorate the generic with its subtype constraint. If none in the SRG, decorate with "any".
-	var success = true
-
-	constraintType, valid := t.resolvePossibleType(genericNode, generic.GetConstraint)
-	if !valid {
-		success = false
-	}
-
-	genericNode.DecorateWithTagged(NodePredicateGenericSubtype, constraintType)
-
 	// Mark the generic with an error if it is repeated.
 	if exists {
 		t.decorateWithError(genericNode, "Generic '%s' is already defined", generic.Name())
-		success = false
+		return genericNode, false
 	}
 
-	return success
+	return genericNode, true
 }
 
 // buildMemberNode adds a new type member node to the specified type node for the given SRG member.
@@ -263,8 +271,13 @@ func (t *TypeGraph) buildTypeMemberNode(typeDecl TGTypeDecl, member srg.SRGTypeM
 	typeNode.Connect(NodePredicateTypeMember, memberNode)
 
 	// Add the generics on the type member.
-	for _, generic := range member.Generics() {
-		if !t.buildGenericNode(generic, memberNode, NodePredicateMemberGeneric) {
+	for _, srgGeneric := range member.Generics() {
+		genericNode, result := t.buildGenericNode(srgGeneric, memberNode, NodePredicateMemberGeneric)
+		if !result {
+			success = false
+		}
+
+		if !t.resolveGenericConstraint(srgGeneric, genericNode) {
 			success = false
 		}
 	}
