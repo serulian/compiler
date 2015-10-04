@@ -15,9 +15,10 @@ import (
 
 // TypeGraph represents the TypeGraph layer and all its associated helper methods.
 type TypeGraph struct {
-	srg   *srg.SRG                     // The SRG behind this type graph.
-	graph *compilergraph.SerulianGraph // The root graph.
-	layer *compilergraph.GraphLayer    // The TypeGraph layer in the graph.
+	srg       *srg.SRG                      // The SRG behind this type graph.
+	graph     *compilergraph.SerulianGraph  // The root graph.
+	layer     *compilergraph.GraphLayer     // The TypeGraph layer in the graph.
+	operators map[string]operatorDefinition // The supported operators.
 }
 
 // Results represents the results of building a type graph.
@@ -31,9 +32,10 @@ type Result struct {
 // BuildTypeGraph returns a new TypeGraph that is populated from the given SRG.
 func BuildTypeGraph(srg *srg.SRG) *Result {
 	typeGraph := &TypeGraph{
-		srg:   srg,
-		graph: srg.Graph,
-		layer: srg.Graph.NewGraphLayer(compilergraph.GraphLayerTypeGraph, NodeTypeTagged),
+		srg:       srg,
+		graph:     srg.Graph,
+		layer:     srg.Graph.NewGraphLayer(compilergraph.GraphLayerTypeGraph, NodeTypeTagged),
+		operators: map[string]operatorDefinition{},
 	}
 
 	return typeGraph.build(srg)

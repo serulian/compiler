@@ -126,6 +126,10 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"type redeclaration test", "redeclare", "redeclare.seru", "Type 'SomeClass' is already defined in the module"},
 	typegraphTest{"generic redeclaration test", "genericredeclare", "redeclare.seru", "Generic 'T' is already defined"},
 	typegraphTest{"generic constraint resolve failure test", "genericconstraint", "notfound.seru", "Type 'UnknownType' could not be found"},
+	typegraphTest{"unknown operator failure test", "operatorfail", "unknown.seru", "Unknown operator 'NotValid' defined on type 'SomeType'"},
+	typegraphTest{"operator redefine failure test", "operatorfail", "redefine.seru", "Operator 'plus' is already defined on type 'SomeType'"},
+	typegraphTest{"operator param count mismatch failure test", "operatorfail", "paramcount.seru", "Operator 'Plus' defined on type 'SomeType' expects 2 parameters; found 1"},
+	typegraphTest{"operator param type mismatch failure test", "operatorfail", "paramtype.seru", "Parameter 'right' (#1) for operator 'Plus' defined on type 'SomeType' expects type SomeType; found Integer"},
 }
 
 func TestGraphs(t *testing.T) {

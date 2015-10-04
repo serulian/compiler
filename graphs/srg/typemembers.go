@@ -101,6 +101,11 @@ func (m SRGTypeMember) HasSetter() bool {
 	return found
 }
 
+// IsExported returns whether the given type member is exported for use outside its module.
+func (m SRGTypeMember) IsExported() bool {
+	return isExportedName(m.Name())
+}
+
 // Generics returns the generics on this type member.
 func (m SRGTypeMember) Generics() []SRGGeneric {
 	it := m.GraphNode.StartQuery().

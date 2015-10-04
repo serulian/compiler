@@ -20,7 +20,8 @@ const (
 	NodeTypeInterface                 // An interface
 
 	// Member-level
-	NodeTypeMember // A member of a type
+	NodeTypeMember   // A member of a type
+	NodeTypeOperator // An operator defined on a type.
 
 	// Generics.
 	NodeTypeGeneric // A defined generic on a type or type member.
@@ -90,6 +91,16 @@ const (
 
 	// Marks a member with a generic.
 	NodePredicateMemberGeneric = "member-generic"
+
+	//
+	// NodeTypeOperator
+	//
+
+	// Marks an operator with its searchable name.
+	NodePredicateOperatorName = "operator-name"
+
+	// Marks an operator with the fact that it is exported.
+	NodePredicateOperatorExported = "operator-exported"
 )
 
 func (t NodeType) Name() string {

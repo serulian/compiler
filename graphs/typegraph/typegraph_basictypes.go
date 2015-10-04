@@ -20,7 +20,7 @@ func (t *TypeGraph) AnyTypeReference() TypeReference {
 func (t *TypeGraph) StreamType() compilergraph.GraphNode {
 	srgType, found := t.srg.ResolveAliasedType("stream")
 	if !found {
-		panic("Stream type not found in SRG")
+		panic("stream type not found in SRG")
 	}
 
 	return t.getTypeNodeForSRGType(srgType)
@@ -30,7 +30,17 @@ func (t *TypeGraph) StreamType() compilergraph.GraphNode {
 func (t *TypeGraph) FunctionType() compilergraph.GraphNode {
 	srgType, found := t.srg.ResolveAliasedType("function")
 	if !found {
-		panic("Function type not found in SRG")
+		panic("function type not found in SRG")
+	}
+
+	return t.getTypeNodeForSRGType(srgType)
+}
+
+// IntType returns the integer type.
+func (t *TypeGraph) IntType() compilergraph.GraphNode {
+	srgType, found := t.srg.ResolveAliasedType("int")
+	if !found {
+		panic("int type not found in SRG")
 	}
 
 	return t.getTypeNodeForSRGType(srgType)

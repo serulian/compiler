@@ -6,6 +6,7 @@ package typegraph
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
@@ -42,8 +43,12 @@ func (t *TypeGraph) build(g *srg.SRG) *Result {
 		}
 	}
 
+	// Load the operators map.
+	t.buildOperatorDefinitions()
+
 	// Add members (along full inheritance)
 	for srgType, typeDecl := range typeMap {
+		// TODO: add inheritance and cycle checking
 		for _, member := range srgType.Members() {
 			success := t.buildMemberNode(typeDecl, member)
 			if !success {
@@ -53,6 +58,7 @@ func (t *TypeGraph) build(g *srg.SRG) *Result {
 	}
 
 	// Constraint check all type references.
+	// TODO: this.
 
 	// If the result is not true, collect all the errors found.
 	if !result.Status {
@@ -161,8 +167,73 @@ func (t *TypeGraph) buildMemberNode(typeDecl TGTypeDecl, member srg.SRGTypeMembe
 
 // buildTypeOperatorNode adds a new type operator node to the specified type node for the given SRG member.
 func (t *TypeGraph) buildTypeOperatorNode(typeDecl TGTypeDecl, operator srg.SRGTypeMember) bool {
-	// TODO: this.
-	return true
+	typeNode := typeDecl.Node()
+
+	// Normalize the name by lowercasing it.
+	name := strings.ToLower(operator.Name())
+
+	// Ensure that there exists no other operator with the same name under the parent type.
+	_, exists := typeNode.StartQuery().
+		Out(NodePredicateTypeOperator).
+		Has(NodePredicateOperatorName, name).
+		TryGetNode()
+
+	// Create the operator node.
+	memberNode := t.layer.CreateNode(NodeTypeOperator)
+	memberNode.Decorate(NodePredicateOperatorName, name)
+	memberNode.Connect(NodePredicateSource, operator.Node())
+
+	if operator.IsExported() {
+		memberNode.Decorate(NodePredicateOperatorExported, "true")
+	}
+
+	var success = true
+
+	// Mark the member with an error if it is repeated.
+	if exists {
+		t.decorateWithError(memberNode, "Operator '%s' is already defined on type '%s'", operator.Name(), typeDecl.Name())
+		success = false
+	}
+
+	// Add the operator to the type node.
+	typeNode.Connect(NodePredicateTypeOperator, memberNode)
+
+	// Verify that the operator matches a known operator.
+	definition, ok := t.operators[name]
+	if !ok {
+		t.decorateWithError(memberNode, "Unknown operator '%s' defined on type '%s'", operator.Name(), typeDecl.Name())
+		return false
+	}
+
+	// Ensure we have the expected number of parameters.
+	parametersExpected := definition.Parameters
+	parametersDefined := operator.Parameters()
+
+	if len(parametersDefined) != len(parametersExpected) {
+		t.decorateWithError(memberNode, "Operator '%s' defined on type '%s' expects %v parameters; found %v",
+			operator.Name(), typeDecl.Name(), len(parametersExpected), len(parametersDefined))
+		return false
+	}
+
+	// Ensure the parameters expected on the operator match those specified.
+	containingType := t.NewInstanceTypeReference(typeNode)
+	for index, parameter := range parametersDefined {
+		parameterType, valid := t.resolvePossibleType(memberNode, parameter.DeclaredType)
+		if !valid {
+			success = false
+			continue
+		}
+
+		expectedType := parametersExpected[index].ExpectedType(containingType)
+		if expectedType != parameterType {
+			t.decorateWithError(memberNode, "Parameter '%s' (#%v) for operator '%s' defined on type '%s' expects type %v; found %v",
+				parametersExpected[index].Name, index, operator.Name(), typeDecl.Name(),
+				expectedType, parameterType)
+			success = false
+		}
+	}
+
+	return success
 }
 
 // buildTypeMemberNode adds a new type member node to the specified type node for the given SRG member.

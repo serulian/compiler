@@ -15,15 +15,20 @@ import (
 
 var _ = fmt.Printf
 
-func TestBasicReferenceOperations(t *testing.T) {
-	graph, err := compilergraph.NewGraph("someunknownfile.seru")
+func newTypeGraph(t *testing.T) *TypeGraph {
+	graph, err := compilergraph.NewGraph("tests/testlib/basictypes.seru")
 	if err != nil {
 		t.Errorf("%v", err)
 	}
 
 	testSRG := srg.NewSRG(graph)
+	assert.True(t, testSRG.LoadAndParse().Status)
 
-	testTG := BuildTypeGraph(testSRG).Graph
+	return BuildTypeGraph(testSRG).Graph
+}
+
+func TestBasicReferenceOperations(t *testing.T) {
+	testTG := newTypeGraph(t)
 
 	newNode := testTG.layer.CreateNode(NodeTypeClass)
 	testRef := testTG.NewTypeReference(newNode)
@@ -107,13 +112,7 @@ func TestBasicReferenceOperations(t *testing.T) {
 }
 
 func TestSpecialReferenceOperations(t *testing.T) {
-	graph, err := compilergraph.NewGraph("someunknownfile.seru")
-	if err != nil {
-		t.Errorf("%v", err)
-	}
-
-	testSRG := srg.NewSRG(graph)
-	testTG := BuildTypeGraph(testSRG).Graph
+	testTG := newTypeGraph(t)
 
 	anyRef := testTG.AnyTypeReference()
 	assert.True(t, anyRef.IsAny(), "Expected 'any' reference")

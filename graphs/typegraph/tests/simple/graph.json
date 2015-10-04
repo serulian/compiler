@@ -25,12 +25,12 @@
             {
                 "Predicate": "tdg-declaration-generic",
                 "Child": {
-                    "Kind": 4,
+                    "Kind": 5,
                     "Children": [],
                     "Predicates": {
                         "tdg-generic-name": "T",
                         "tdg-generic-subtype": "any",
-                        "tdg-node-kind": "4|NodeType|tdg",
+                        "tdg-node-kind": "5|NodeType|tdg",
                         "tdg-srg-source": "(NodeRef)"
                     }
                 }
@@ -49,12 +49,12 @@
             {
                 "Predicate": "tdg-declaration-generic",
                 "Child": {
-                    "Kind": 4,
+                    "Kind": 5,
                     "Children": [],
                     "Predicates": {
                         "tdg-generic-name": "T",
                         "tdg-generic-subtype": "any",
-                        "tdg-node-kind": "4|NodeType|tdg",
+                        "tdg-node-kind": "5|NodeType|tdg",
                         "tdg-srg-source": "(NodeRef)"
                     }
                 }
@@ -65,6 +65,16 @@
             "tdg-node-kind": "1|NodeType|tdg",
             "tdg-srg-source": "(NodeRef)",
             "tdg-type-name": "Function"
+        }
+    },
+    {
+        "Kind": 1,
+        "Children": [],
+        "Predicates": {
+            "tdg-declaration-module": "(NodeRef)",
+            "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-srg-source": "(NodeRef)",
+            "tdg-type-name": "Integer"
         }
     }
 ]
