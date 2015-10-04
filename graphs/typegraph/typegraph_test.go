@@ -20,16 +20,21 @@ import (
 
 var _ = fmt.Printf
 
+type graphChildRep struct {
+	Predicate string
+	Child     *graphNodeRep
+}
+
 type graphNodeRep struct {
 	Kind       interface{}
-	Children   []graphNodeRep
+	Children   []graphChildRep
 	Predicates map[string]string
 }
 
 // buildLayerJSON walks the given type graph starting at the type decls and builds a JSON
 // representation of the type graph tree.
 func buildLayerJSON(t *testing.T, tg *TypeGraph) string {
-	repMap := map[compilergraph.GraphNode]graphNodeRep{}
+	repMap := map[compilergraph.GraphNodeId]*graphNodeRep{}
 
 	// Start the walk at the type declarations.
 	startingNodes := make([]compilergraph.GraphNode, len(tg.TypeDecls()))
@@ -56,28 +61,28 @@ func buildLayerJSON(t *testing.T, tg *TypeGraph) string {
 		}
 
 		// Build the representation of the node.
-		repMap[result.Node] = graphNodeRep{
+		repMap[result.Node.NodeId] = &graphNodeRep{
 			Kind:       result.Node.Kind,
-			Children:   make([]graphNodeRep, 0),
+			Children:   make([]graphChildRep, 0),
 			Predicates: filteredPredicates,
 		}
 
 		if result.ParentNode != nil {
-			parentNode := *result.ParentNode
-			children := append(repMap[parentNode].Children, repMap[result.Node])
-			repMap[parentNode] = graphNodeRep{
-				Kind:       repMap[parentNode].Kind,
-				Children:   children,
-				Predicates: repMap[parentNode].Predicates,
-			}
+			parentRep := repMap[result.ParentNode.NodeId]
+			childRep := repMap[result.Node.NodeId]
+
+			parentRep.Children = append(parentRep.Children, graphChildRep{
+				Predicate: result.IncomingPredicate,
+				Child:     childRep,
+			})
 		}
 
 		return true
 	})
 
-	rootReps := make([]graphNodeRep, len(tg.TypeDecls()))
+	rootReps := make([]*graphNodeRep, len(tg.TypeDecls()))
 	for index, typeDecl := range tg.TypeDecls() {
-		rootReps[index] = repMap[typeDecl.Node()]
+		rootReps[index] = repMap[typeDecl.Node().NodeId]
 	}
 
 	// Marshal the tree to JSON.
@@ -115,10 +120,11 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"generic test", "generic", "generic.seru", ""},
 	typegraphTest{"complex generic test", "complexgeneric", "complexgeneric.seru", ""},
 	typegraphTest{"stream test", "stream", "stream.seru", ""},
+	typegraphTest{"class members test", "members", "class.seru", ""},
 
 	// Failure tests.
 	typegraphTest{"type redeclaration test", "redeclare", "redeclare.seru", "Type 'SomeClass' is already defined in the module"},
-	typegraphTest{"generic redeclaration test", "genericredeclare", "redeclare.seru", "Generic 'T' is already defined on type 'SomeClass'"},
+	typegraphTest{"generic redeclaration test", "genericredeclare", "redeclare.seru", "Generic 'T' is already defined"},
 	typegraphTest{"generic constraint resolve failure test", "genericconstraint", "notfound.seru", "Type 'UnknownType' could not be found"},
 }
 

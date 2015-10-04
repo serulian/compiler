@@ -26,6 +26,18 @@ func (t *TypeGraph) NewTypeReference(typeNode compilergraph.GraphNode, generics 
 	}
 }
 
+// NewInstanceTypeReference returns a new type reference pointing to a type and its generic (if any).
+func (t *TypeGraph) NewInstanceTypeReference(typeNode compilergraph.GraphNode) TypeReference {
+	var generics = make([]TypeReference, 0)
+
+	git := typeNode.StartQuery().Out(NodePredicateTypeGeneric).BuildNodeIterator()
+	for git.Next() {
+		generics = append(generics, t.NewTypeReference(git.Node()))
+	}
+
+	return t.NewTypeReference(typeNode, generics...)
+}
+
 // IsAny returns whether this type reference refers to the special 'any' type.
 func (tr TypeReference) IsAny() bool {
 	return tr.getSlot(trhSlotFlagSpecial)[0] == specialFlagAny
@@ -129,7 +141,12 @@ func (tr TypeReference) appendHumanString(buffer *bytes.Buffer) {
 	}
 
 	typeNode := tr.ReferredType()
-	buffer.WriteString(typeNode.Get(NodePredicateTypeName))
+
+	if typeNode.Kind == NodeTypeGeneric {
+		buffer.WriteString(typeNode.Get(NodePredicateGenericName))
+	} else {
+		buffer.WriteString(typeNode.Get(NodePredicateTypeName))
+	}
 
 	if tr.HasGenerics() {
 		buffer.WriteRune('<')
@@ -142,6 +159,19 @@ func (tr TypeReference) appendHumanString(buffer *bytes.Buffer) {
 		}
 
 		buffer.WriteByte('>')
+	}
+
+	if tr.HasParameters() {
+		buffer.WriteRune('(')
+		for index, parameter := range tr.Parameters() {
+			if index > 0 {
+				buffer.WriteString(", ")
+			}
+
+			parameter.appendHumanString(buffer)
+		}
+
+		buffer.WriteByte(')')
 	}
 
 	if tr.IsNullable() {

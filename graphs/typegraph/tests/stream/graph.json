@@ -3,13 +3,16 @@
         "Kind": 1,
         "Children": [
             {
-                "Kind": 4,
-                "Children": [],
-                "Predicates": {
-                    "tdg-generic-name": "T",
-                    "tdg-generic-subtype": "Stream\u003cAnotherClass\u003e",
-                    "tdg-node-kind": "4|NodeType|tdg",
-                    "tdg-srg-source": "(NodeRef)"
+                "Predicate": "tdg-declaration-generic",
+                "Child": {
+                    "Kind": 4,
+                    "Children": [],
+                    "Predicates": {
+                        "tdg-generic-name": "T",
+                        "tdg-generic-subtype": "Stream\u003cAnotherClass\u003e",
+                        "tdg-node-kind": "4|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
                 }
             }
         ],
@@ -24,13 +27,16 @@
         "Kind": 2,
         "Children": [
             {
-                "Kind": 4,
-                "Children": [],
-                "Predicates": {
-                    "tdg-generic-name": "T",
-                    "tdg-generic-subtype": "any",
-                    "tdg-node-kind": "4|NodeType|tdg",
-                    "tdg-srg-source": "(NodeRef)"
+                "Predicate": "tdg-declaration-generic",
+                "Child": {
+                    "Kind": 4,
+                    "Children": [],
+                    "Predicates": {
+                        "tdg-generic-name": "T",
+                        "tdg-generic-subtype": "any",
+                        "tdg-node-kind": "4|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
                 }
             }
         ],
@@ -55,13 +61,16 @@
         "Kind": 1,
         "Children": [
             {
-                "Kind": 4,
-                "Children": [],
-                "Predicates": {
-                    "tdg-generic-name": "T",
-                    "tdg-generic-subtype": "any",
-                    "tdg-node-kind": "4|NodeType|tdg",
-                    "tdg-srg-source": "(NodeRef)"
+                "Predicate": "tdg-declaration-generic",
+                "Child": {
+                    "Kind": 4,
+                    "Children": [],
+                    "Predicates": {
+                        "tdg-generic-name": "T",
+                        "tdg-generic-subtype": "any",
+                        "tdg-node-kind": "4|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
                 }
             }
         ],

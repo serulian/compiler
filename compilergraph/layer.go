@@ -84,9 +84,10 @@ func (gl *GraphLayer) CreateNode(nodeKind TaggedValue) GraphNode {
 
 // WalkResult is a result for each step of a walk.
 type WalkResult struct {
-	ParentNode *GraphNode        // The parent node that led to this node in the walk. May be nil.
-	Node       GraphNode         // The current node.
-	Predicates map[string]string // The list of outgoing predicates on this node.
+	ParentNode        *GraphNode        // The parent node that led to this node in the walk. May be nil.
+	IncomingPredicate string            // The predicate followed from the parent node to this node.
+	Node              GraphNode         // The current node.
+	Predicates        map[string]string // The list of outgoing predicates on this node.
 }
 
 // WalkCallback is a callback invoked for each step of a walk. If the callback returns false, the
@@ -102,7 +103,7 @@ func (gl *GraphLayer) WalkOutward(startingNodes []GraphNode, callback WalkCallba
 
 	// Start with walk results at the roots.
 	for index, startNode := range startingNodes {
-		workList[index] = &WalkResult{nil, startNode, map[string]string{}}
+		workList[index] = &WalkResult{nil, "", startNode, map[string]string{}}
 	}
 
 	for {
@@ -140,8 +141,9 @@ func (gl *GraphLayer) WalkOutward(startingNodes []GraphNode, callback WalkCallba
 			// this check?
 			object := quad.Object
 			targetNode, found := gl.TryGetNode(object)
+
 			if found {
-				workList = append(workList, &WalkResult{&currentResult.Node, targetNode, map[string]string{}})
+				workList = append(workList, &WalkResult{&currentResult.Node, predicate, targetNode, map[string]string{}})
 			} else {
 				// This is a value predicate.
 				currentResult.Predicates[predicate] = object

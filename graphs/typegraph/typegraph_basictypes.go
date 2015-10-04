@@ -4,6 +4,10 @@
 
 package typegraph
 
+import (
+	"github.com/serulian/compiler/compilergraph"
+)
+
 // AnyTypeReference returns a reference to the special 'any' type.
 func (t *TypeGraph) AnyTypeReference() TypeReference {
 	return TypeReference{
@@ -13,21 +17,21 @@ func (t *TypeGraph) AnyTypeReference() TypeReference {
 }
 
 // StreamType returns the stream type.
-func (t *TypeGraph) StreamType() TGTypeDecl {
+func (t *TypeGraph) StreamType() compilergraph.GraphNode {
 	srgType, found := t.srg.ResolveAliasedType("stream")
 	if !found {
 		panic("Stream type not found in SRG")
 	}
 
-	return t.getDeclForSRGType(srgType)
+	return t.getTypeNodeForSRGType(srgType)
 }
 
 // FunctionType returns the function type.
-func (t *TypeGraph) FunctionType() TGTypeDecl {
+func (t *TypeGraph) FunctionType() compilergraph.GraphNode {
 	srgType, found := t.srg.ResolveAliasedType("function")
 	if !found {
 		panic("Function type not found in SRG")
 	}
 
-	return t.getDeclForSRGType(srgType)
+	return t.getTypeNodeForSRGType(srgType)
 }

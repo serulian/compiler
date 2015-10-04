@@ -53,24 +53,14 @@ const (
 	// Connects a type declaration to a member (function, var, etc).
 	NodePredicateTypeMember = "declaration-member"
 
+	// Connects a type declaration to an operator (function, var, etc).
+	NodePredicateTypeOperator = "declaration-operator"
+
 	// Connects a type declaration to a generic.
 	NodePredicateTypeGeneric = "declaration-generic"
 
 	// Marks a type with its name.
 	NodePredicateTypeName = "type-name"
-
-	//
-	// NodeTypeMember
-	//
-
-	// Marks a member with its name.
-	NodePredicateMemberName = "member-name"
-
-	// Marks a member as being "static", i.e. accessed under the type, rather than instances.
-	NodePredicateMemberStatic = "member-static"
-
-	// Marks a member with its resolved type.
-	NodePredicateMemberType = "member-resolved-type"
 
 	//
 	// NodeTypeGeneric
@@ -81,6 +71,25 @@ const (
 
 	// Connects a generic definition to its subtype reference (usually 'any').
 	NodePredicateGenericSubtype = "generic-subtype"
+
+	//
+	// NodeTypeMember
+	//
+
+	// Marks a member with its name.
+	NodePredicateMemberName = "member-name"
+
+	// Marks a member as being read-only.
+	NodePredicateMemberReadOnly = "member-readonly"
+
+	// Marks a member as being "static", i.e. accessed under the type, rather than instances.
+	NodePredicateMemberStatic = "member-static"
+
+	// Marks a member with its resolved type.
+	NodePredicateMemberType = "member-resolved-type"
+
+	// Marks a member with a generic.
+	NodePredicateMemberGeneric = "member-generic"
 )
 
 func (t NodeType) Name() string {

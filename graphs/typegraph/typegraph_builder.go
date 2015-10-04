@@ -35,7 +35,7 @@ func (t *TypeGraph) build(g *srg.SRG) *Result {
 	// Add generics.
 	for srgType, typeDecl := range typeMap {
 		for _, generic := range srgType.Generics() {
-			success := t.buildGenericNode(typeDecl, generic)
+			success := t.buildGenericNode(generic, typeDecl.GraphNode, NodePredicateTypeGeneric)
 			if !success {
 				result.Status = false
 			}
@@ -43,8 +43,16 @@ func (t *TypeGraph) build(g *srg.SRG) *Result {
 	}
 
 	// Add members (along full inheritance)
+	for srgType, typeDecl := range typeMap {
+		for _, member := range srgType.Members() {
+			success := t.buildMemberNode(typeDecl, member)
+			if !success {
+				result.Status = false
+			}
+		}
+	}
 
-	// Type check all type references.
+	// Constraint check all type references.
 
 	// If the result is not true, collect all the errors found.
 	if !result.Status {
@@ -107,13 +115,11 @@ func getTypeNodeType(kind srg.TypeKind) NodeType {
 	}
 }
 
-// buildGenericNode adds a new generic node to the specified type node for the given SRG generic.
-func (t *TypeGraph) buildGenericNode(typeDecl TGTypeDecl, generic srg.SRGGeneric) bool {
-	typeNode := typeDecl.Node()
-
-	// Ensure that there exists no other generic with this name under the parent type.
-	_, exists := typeNode.StartQuery().
-		Out(NodePredicateTypeGeneric).
+// buildGenericNode adds a new generic node to the specified type or type membe node for the given SRG generic.
+func (t *TypeGraph) buildGenericNode(generic srg.SRGGeneric, parentNode compilergraph.GraphNode, parentPredicate string) bool {
+	// Ensure that there exists no other generic with this name under the parent node.
+	_, exists := parentNode.StartQuery().
+		Out(parentPredicate).
 		Has(NodePredicateGenericName, generic.Name()).
 		TryGetNode()
 
@@ -122,29 +128,133 @@ func (t *TypeGraph) buildGenericNode(typeDecl TGTypeDecl, generic srg.SRGGeneric
 	genericNode.Decorate(NodePredicateGenericName, generic.Name())
 	genericNode.Connect(NodePredicateSource, generic.Node())
 
-	// Add the generic to the type node.
-	typeNode.Connect(NodePredicateTypeGeneric, genericNode)
+	// Add the generic to the parent node.
+	parentNode.Connect(parentPredicate, genericNode)
 
 	// Decorate the generic with its subtype constraint. If none in the SRG, decorate with "any".
 	var success = true
 
-	constraint, found := generic.GetConstraint()
-	if found {
-		subtype, err := t.buildTypeRef(constraint)
-		if err != nil {
-			t.decorateWithError(genericNode, err.Error())
-			success = false
-		} else {
-			genericNode.DecorateWithTagged(NodePredicateGenericSubtype, subtype)
-		}
-	} else {
-		genericNode.DecorateWithTagged(NodePredicateGenericSubtype, t.AnyTypeReference())
+	constraintType, valid := t.resolvePossibleType(genericNode, generic.GetConstraint)
+	if !valid {
+		success = false
 	}
+
+	genericNode.DecorateWithTagged(NodePredicateGenericSubtype, constraintType)
 
 	// Mark the generic with an error if it is repeated.
 	if exists {
-		t.decorateWithError(genericNode, "Generic '%s' is already defined on type '%s'", generic.Name(), typeDecl.Name())
+		t.decorateWithError(genericNode, "Generic '%s' is already defined", generic.Name())
 		success = false
+	}
+
+	return success
+}
+
+// buildMemberNode adds a new type member node to the specified type node for the given SRG member.
+func (t *TypeGraph) buildMemberNode(typeDecl TGTypeDecl, member srg.SRGTypeMember) bool {
+	if member.TypeMemberKind() == srg.OperatorTypeMember {
+		return t.buildTypeOperatorNode(typeDecl, member)
+	} else {
+		return t.buildTypeMemberNode(typeDecl, member)
+	}
+}
+
+// buildTypeOperatorNode adds a new type operator node to the specified type node for the given SRG member.
+func (t *TypeGraph) buildTypeOperatorNode(typeDecl TGTypeDecl, operator srg.SRGTypeMember) bool {
+	// TODO: this.
+	return true
+}
+
+// buildTypeMemberNode adds a new type member node to the specified type node for the given SRG member.
+func (t *TypeGraph) buildTypeMemberNode(typeDecl TGTypeDecl, member srg.SRGTypeMember) bool {
+	typeNode := typeDecl.Node()
+
+	// Ensure that there exists no other member with this name under the parent type.
+	_, exists := typeNode.StartQuery().
+		Out(NodePredicateTypeMember).
+		Has(NodePredicateMemberName, member.Name()).
+		TryGetNode()
+
+	// Create the member node.
+	memberNode := t.layer.CreateNode(NodeTypeMember)
+	memberNode.Decorate(NodePredicateMemberName, member.Name())
+	memberNode.Connect(NodePredicateSource, member.Node())
+
+	var success = true
+
+	// Mark the member with an error if it is repeated.
+	if exists {
+		t.decorateWithError(memberNode, "Type member '%s' is already defined on type '%s'", member.Name(), typeDecl.Name())
+		success = false
+	}
+
+	// Add the member to the type node.
+	typeNode.Connect(NodePredicateTypeMember, memberNode)
+
+	// Add the generics on the type member.
+	for _, generic := range member.Generics() {
+		if !t.buildGenericNode(generic, memberNode, NodePredicateMemberGeneric) {
+			success = false
+		}
+	}
+
+	// Set member-kind specific data (types, static, read-only).
+	switch member.TypeMemberKind() {
+	case srg.VarTypeMember:
+		// Variables have their declared type.
+		declaredType, valid := t.resolvePossibleType(memberNode, member.DeclaredType)
+		if !valid {
+			success = false
+		}
+
+		memberNode.DecorateWithTagged(NodePredicateMemberType, declaredType)
+
+	case srg.PropertyTypeMember:
+		// Properties have their declared type.
+		declaredType, valid := t.resolvePossibleType(memberNode, member.DeclaredType)
+		if !valid {
+			success = false
+		}
+
+		memberNode.DecorateWithTagged(NodePredicateMemberType, declaredType)
+
+		// Properties are read-only without a setter.
+		if !member.HasSetter() {
+			memberNode.Decorate(NodePredicateMemberReadOnly, "true")
+		}
+
+	case srg.ConstructorTypeMember:
+		// Constructors are read-only and static.
+		memberNode.Decorate(NodePredicateMemberStatic, "true")
+		memberNode.Decorate(NodePredicateMemberReadOnly, "true")
+
+		// Constructors have a type of a function that returns an instance of the parent type.
+		functionType := t.NewTypeReference(t.FunctionType(), t.NewInstanceTypeReference(typeNode))
+		withParameters, valid := t.addSRGParameterTypes(memberNode, member, functionType)
+		if !valid {
+			success = false
+		}
+
+		memberNode.DecorateWithTagged(NodePredicateMemberType, withParameters)
+
+	case srg.FunctionTypeMember:
+		// Functions are read-only.
+		memberNode.Decorate(NodePredicateMemberReadOnly, "true")
+
+		// Functions have type function<ReturnType>(parameters).
+		returnType, valid := t.resolvePossibleType(memberNode, member.ReturnType)
+		if valid {
+			functionType := t.NewTypeReference(t.FunctionType(), returnType)
+			withParameters, valid := t.addSRGParameterTypes(memberNode, member, functionType)
+			if !valid {
+				success = false
+			}
+
+			memberNode.DecorateWithTagged(NodePredicateMemberType, withParameters)
+		} else {
+			success = false
+		}
+
 	}
 
 	return success
@@ -160,7 +270,7 @@ func (t *TypeGraph) buildTypeRef(typeref srg.SRGTypeRef) (TypeReference, error) 
 			return TypeReference{}, err
 		}
 
-		return t.NewTypeReference(t.StreamType().GraphNode, innerType), nil
+		return t.NewTypeReference(t.StreamType(), innerType), nil
 
 	case srg.TypeRefNullable:
 		innerType, err := t.buildTypeRef(typeref.InnerReference())
@@ -182,7 +292,7 @@ func (t *TypeGraph) buildTypeRef(typeref srg.SRGTypeRef) (TypeReference, error) 
 		}
 
 		// Get the type in the type graph.
-		resolvedType := t.getDeclForSRGType(resolvedSRGType)
+		resolvedType := t.getTypeNodeForSRGType(resolvedSRGType)
 
 		// Create the generics array.
 		srgGenerics := typeref.Generics()
@@ -195,7 +305,7 @@ func (t *TypeGraph) buildTypeRef(typeref srg.SRGTypeRef) (TypeReference, error) 
 			generics[index] = genericTypeRef
 		}
 
-		return t.NewTypeReference(resolvedType.GraphNode, generics...), nil
+		return t.NewTypeReference(resolvedType, generics...), nil
 
 	default:
 		panic(fmt.Sprintf("Unknown kind of SRG type ref: %v", typeref.RefKind()))
@@ -208,4 +318,41 @@ func (t *TypeGraph) decorateWithError(node compilergraph.GraphNode, message stri
 	errorNode := t.layer.CreateNode(NodeTypeError)
 	errorNode.Decorate(NodePredicateErrorMessage, fmt.Sprintf(message, args...))
 	node.Connect(NodePredicateError, errorNode)
+}
+
+// addSRGParameterTypes iterates over the parameters defined on the given srgMember, adding their types as parameters
+// to the specified base type reference.
+func (t *TypeGraph) addSRGParameterTypes(node compilergraph.GraphNode, srgMember srg.SRGTypeMember, baseReference TypeReference) (TypeReference, bool) {
+	var currentReference = baseReference
+	var success = true
+
+	for _, parameter := range srgMember.Parameters() {
+		parameterTypeRef, result := t.resolvePossibleType(node, parameter.DeclaredType)
+		if !result {
+			success = false
+		}
+
+		currentReference = currentReference.WithParameter(parameterTypeRef)
+	}
+
+	return currentReference, success
+}
+
+type typeGetter func() (srg.SRGTypeRef, bool)
+
+// resolvePossibleType calls the specified type getter function and, if found, attempts to resolve it.
+// Returns a reference to the resolved type or Any if the getter returns false.
+func (t *TypeGraph) resolvePossibleType(node compilergraph.GraphNode, getter typeGetter) (TypeReference, bool) {
+	srgTypeRef, found := getter()
+	if !found {
+		return t.AnyTypeReference(), true
+	}
+
+	resolvedTypeRef, err := t.buildTypeRef(srgTypeRef)
+	if err != nil {
+		t.decorateWithError(node, "%s", err.Error())
+		return t.AnyTypeReference(), false
+	}
+
+	return resolvedTypeRef, true
 }
