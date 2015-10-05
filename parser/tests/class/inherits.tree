@@ -9,13 +9,18 @@ NodeTypeFile
       named = SomeClass
       start-rune = 0
       class-basetypepath =>
-        NodeTypeIdentifierPath
+        NodeTypeTypeReference
           end-rune = 21
           input-source = basic inheritance test
           start-rune = 18
-          identifierpath-root =>
-            NodeTypeIdentifierAccess
+          typereference-path =>
+            NodeTypeIdentifierPath
               end-rune = 21
-              identifieraccess-name = Foo
               input-source = basic inheritance test
               start-rune = 18
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 21
+                  identifieraccess-name = Foo
+                  input-source = basic inheritance test
+                  start-rune = 18

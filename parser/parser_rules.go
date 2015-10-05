@@ -279,9 +279,9 @@ func (p *sourceParser) consumeClassDefinition() AstNode {
 
 	// Inheritance.
 	if _, ok := p.tryConsume(tokenTypeColon); ok {
-		// Consume identifier paths until we don't find a plus.
+		// Consume type references until we don't find a plus.
 		for {
-			classNode.Connect(NodeClassPredicateBaseType, p.consumeIdentifierPath())
+			classNode.Connect(NodeClassPredicateBaseType, p.consumeTypeReference(typeReferenceNoVoid))
 			if _, ok := p.tryConsume(tokenTypePlus); !ok {
 				break
 			}
