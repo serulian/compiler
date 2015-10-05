@@ -6,7 +6,6 @@ package compilerutil
 
 import (
 	"container/list"
-	"fmt"
 	"sync"
 )
 
@@ -17,7 +16,7 @@ import (
 // any shared state (which itself should be minimized if at all possible)
 type orderedWorkQueue struct {
 	running bool
-	status  bool
+	result  *orderedWorkQueueResult // Result of the run.
 
 	jobs        *list.List           // The jobs. Only to be accessed by Enqueue and runQueue
 	keyCounter  map[interface{}]int  // The map of keys to their count. Only to be accessed by Enqueue and runQueue.
@@ -35,11 +34,17 @@ type orderedWorkQueueItem struct {
 	performer      performFn     // The function to execute.
 }
 
+// orderedWorkQueueResult represents a result of a run of an orderedWorkQueue
+type orderedWorkQueueResult struct {
+	Status   bool          // Status of the work performed. Will be the combination of the return values of all the jobs.
+	HasCycle bool          // Whether a cycle was detected.
+	Cycle    []interface{} // If a cycle was detected, the keys of the remaining jobs when it was detected.
+}
+
 // Queue returns a new ordered work queue.
 func Queue() *orderedWorkQueue {
 	return &orderedWorkQueue{
 		running:    false,
-		status:     true,
 		jobs:       list.New(),
 		terminated: make(chan bool),
 
@@ -73,23 +78,23 @@ func (q *orderedWorkQueue) Enqueue(key interface{}, value interface{}, performer
 
 // Run performs all the work in the queue, blocking until completion and returns true only if
 // ALL functions run returned true.
-func (q *orderedWorkQueue) Run() bool {
+func (q *orderedWorkQueue) Run() *orderedWorkQueueResult {
 	// Mark the queue as running.
 	q.running = true
-	q.status = true
+	q.result = &orderedWorkQueueResult{true, false, make([]interface{}, 0)}
 
 	// Run the internal gorountine.
 	go q.runQueue()
 
 	// Wait for the run to terminate.
 	<-q.terminated
-	return q.status
+	return q.result
 }
 
 // performJob performs the specified job. This is called under a goroutine.
 func (q *orderedWorkQueue) performJob(job orderedWorkQueueItem) {
 	if !job.performer(job.key, job.value) {
-		q.status = false
+		q.result.Status = false
 	}
 
 	// Tell runQueue that we're ready for more work.
@@ -142,7 +147,18 @@ func (q *orderedWorkQueue) runQueue() {
 
 		// If we have reached this point and no jobs have been started, then we have a circular dependency.
 		if len(jobsStarted) == 0 {
-			panic(fmt.Sprintf("Circular dependency in jobs list: %v", q.jobs))
+			// Nothing more to do.
+			q.result.HasCycle = true
+			q.result.Cycle = make([]interface{}, q.jobs.Len())
+
+			var index = 0
+			for e := q.jobs.Front(); e != nil; e = e.Next() {
+				q.result.Cycle[index] = e.Value.(orderedWorkQueueItem).key
+				index++
+			}
+
+			q.terminated <- true
+			return
 		}
 
 		// Wait for the jobs to finish.

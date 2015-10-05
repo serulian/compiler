@@ -131,6 +131,7 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"operator redefine failure test", "operatorfail", "redefine.seru", "Operator 'plus' is already defined on type 'SomeType'"},
 	typegraphTest{"operator param count mismatch failure test", "operatorfail", "paramcount.seru", "Operator 'Plus' defined on type 'SomeType' expects 2 parameters; found 1"},
 	typegraphTest{"operator param type mismatch failure test", "operatorfail", "paramtype.seru", "Parameter 'right' (#1) for operator 'Plus' defined on type 'SomeType' expects type SomeType; found Integer"},
+	typegraphTest{"inheritance cycle failure test", "inheritscycle", "inheritscycle.seru", "A cycle was detected in the inheritance of types: [ThirdClass SecondClass FirstClass]"},
 }
 
 func TestGraphs(t *testing.T) {

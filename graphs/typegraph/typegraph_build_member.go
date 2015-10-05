@@ -10,6 +10,19 @@ import (
 	"github.com/serulian/compiler/graphs/srg"
 )
 
+// buildMembership builds the full membership of the given type, including inheritance. When called, the
+// typegraph *MUST* already contain the full membership for all parent types.
+func (t *TypeGraph) buildMembership(typeDecl TGTypeDecl, srgType srg.SRGType) bool {
+	var success = true
+	for _, member := range srgType.Members() {
+		if !t.buildMemberNode(typeDecl, member) {
+			success = false
+		}
+	}
+
+	return success
+}
+
 // buildMemberNode adds a new type member node to the specified type node for the given SRG member.
 func (t *TypeGraph) buildMemberNode(typeDecl TGTypeDecl, member srg.SRGTypeMember) bool {
 	if member.TypeMemberKind() == srg.OperatorTypeMember {

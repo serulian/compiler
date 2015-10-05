@@ -136,6 +136,20 @@ func (t SRGType) FindMember(name string) (SRGTypeMember, bool) {
 	return SRGTypeMember{memberNode, t.srg}, true
 }
 
+// Inheritance returns type references to the types this type composes, if any.
+func (t SRGType) Inheritance() []SRGTypeRef {
+	it := t.GraphNode.StartQuery().
+		Out(parser.NodeClassPredicateBaseType).
+		BuildNodeIterator()
+
+	var inherits = make([]SRGTypeRef, 0)
+	for it.Next() {
+		inherits = append(inherits, SRGTypeRef{it.Node(), t.srg})
+	}
+
+	return inherits
+}
+
 // Members returns the members on this type.
 func (t SRGType) Members() []SRGTypeMember {
 	it := t.GraphNode.StartQuery().

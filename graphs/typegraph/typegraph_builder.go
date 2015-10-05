@@ -37,15 +37,8 @@ func (t *TypeGraph) build(g *srg.SRG) *Result {
 	t.buildOperatorDefinitions()
 
 	// Add members (along full inheritance)
-	for _, srgType := range g.GetTypes() {
-		// TODO: add inheritance and cycle checking
-		for _, member := range srgType.Members() {
-			typeDecl := TGTypeDecl{t.getTypeNodeForSRGType(srgType), t}
-			success := t.buildMemberNode(typeDecl, member)
-			if !success {
-				result.Status = false
-			}
-		}
+	if !t.translateTypeMembers() {
+		result.Status = false
 	}
 
 	// Constraint check all type references.
@@ -81,9 +74,63 @@ type workKey struct {
 	Kind       string
 }
 
+// genericWork holds data for a generic translation.
 type genericWork struct {
 	generic    srg.SRGGeneric
 	parentType srg.SRGType
+}
+
+// translateTypeMembers translates the type members from the SRG, including handling class
+// composition/inheritance.
+func (t *TypeGraph) translateTypeMembers() bool {
+	buildTypeMembers := func(key interface{}, value interface{}) bool {
+		srgType := value.(srg.SRGType)
+		return t.buildMembership(TGTypeDecl{t.getTypeNodeForSRGType(srgType), t}, srgType)
+	}
+
+	// Enqueue the full set of SRG types with dependencies on any parent types.
+	workqueue := compilerutil.Queue()
+
+	var success = true
+	for _, srgType := range t.srg.GetTypes() {
+		// The key for inheritance is the node itself.
+		typeNode := t.getTypeNodeForSRGType(srgType)
+		typeKey := workKey{typeNode, "-", "Members"}
+
+		// Build the list of dependency keys. A job here depends on the members jobs for
+		// all types it inherits/composes. This is done to ensure that the entire membership
+		// graph for the parent type is in place before we process this type.
+		var dependencies = make([]interface{}, 0)
+		for _, inheritsRef := range srgType.Inheritance() {
+			// Resolve the type to which the inherits points.
+			resolvedType, err := t.buildTypeRef(inheritsRef)
+			if err != nil {
+				t.decorateWithError(typeNode, "%s", err.Error())
+				success = false
+			}
+
+			dependencyKey := workKey{resolvedType.ReferredType(), "-", "Members"}
+			dependencies = append(dependencies, dependencyKey)
+		}
+
+		workqueue.Enqueue(typeKey, srgType, buildTypeMembers, dependencies...)
+	}
+
+	// Run the queue to construct the full inheritance.
+	result := workqueue.Run()
+	if !result.HasCycle {
+		return result.Status && success
+	} else {
+		var types = make([]string, len(result.Cycle))
+		for index, key := range result.Cycle {
+			decl := TGTypeDecl{key.(workKey).ParentNode, t}
+			types[index] = decl.Name()
+		}
+
+		t.decorateWithError(result.Cycle[0].(workKey).ParentNode, "A cycle was detected in the inheritance of types: %v", types)
+
+		return false
+	}
 }
 
 // translateTypesAndGenerics translates the types and their generics defined in the SRG into
@@ -118,7 +165,7 @@ func (t *TypeGraph) translateTypesAndGenerics() bool {
 	}
 
 	// Run the queue to construct the full set of types and generics.
-	return workqueue.Run()
+	return workqueue.Run().Status
 }
 
 // resolveGenericConstraints resolves all constraints defined on generics in the type graph.
@@ -137,7 +184,7 @@ func (t *TypeGraph) resolveGenericConstraints() bool {
 		workqueue.Enqueue(srgGeneric, srgGeneric, resolveGenericConstraint)
 	}
 
-	return workqueue.Run()
+	return workqueue.Run().Status
 }
 
 // decorateWithError decorates the given node with an associated error node.
