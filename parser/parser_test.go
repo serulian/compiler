@@ -192,6 +192,9 @@ var parserTests = []parserTest{
 
 	// Decorator tests.
 	{"basic decorator test", "decorator/basic"},
+
+	// Known issue tests.
+	{"known issue test", "class/knownissue"},
 }
 
 func reportImport(path PackageImport) string {

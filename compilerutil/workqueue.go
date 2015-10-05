@@ -147,7 +147,7 @@ func (q *orderedWorkQueue) runQueue() {
 
 		// If we have reached this point and no jobs have been started, then we have a circular dependency.
 		if len(jobsStarted) == 0 {
-			// Nothing more to do.
+			// Collect the remaining jobs and terminate.
 			q.result.HasCycle = true
 			q.result.Cycle = make([]interface{}, q.jobs.Len())
 

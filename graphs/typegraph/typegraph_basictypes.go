@@ -11,7 +11,7 @@ import (
 // AnyTypeReference returns a reference to the special 'any' type.
 func (t *TypeGraph) AnyTypeReference() TypeReference {
 	return TypeReference{
-		layer: t.layer,
+		tdg:   t,
 		value: buildSpecialTypeReferenceValue(specialFlagAny),
 	}
 }

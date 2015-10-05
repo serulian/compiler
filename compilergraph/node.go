@@ -9,6 +9,8 @@ import (
 	"strconv"
 
 	"github.com/google/cayley"
+	"github.com/google/cayley/graph"
+	"github.com/google/cayley/quad"
 )
 
 // GraphNodeId represents an ID for a node in the graph.
@@ -26,6 +28,40 @@ type TaggedValue interface {
 	Name() string                   // The unique name for this kind of value.
 	Value() string                  // The string value.
 	Build(value string) interface{} // Builds a new tagged value from the given value string.
+}
+
+// Clone returns a clone of this graph node, with all *outgoing* predicates copied.
+func (gn *GraphNode) Clone() GraphNode {
+	return gn.CloneExcept()
+}
+
+// CloneExcept returns a clone of this graph node, with all *outgoing* predicates copied except those specified.
+func (gn *GraphNode) CloneExcept(predicates ...string) GraphNode {
+	predicateBlacklist := map[string]bool{}
+
+	if len(predicates) > 0 {
+		for _, predicate := range gn.layer.getPrefixedPredicates(predicates...) {
+			predicateBlacklist[predicate.(string)] = true
+		}
+	}
+
+	cloneNode := gn.layer.CreateNode(gn.Kind)
+	store := gn.layer.cayleyStore
+
+	it := store.QuadIterator(quad.Subject, store.ValueOf(string(gn.NodeId)))
+	for graph.Next(it) {
+		quad := store.Quad(it.Result())
+
+		if len(predicates) > 0 {
+			if _, ok := predicateBlacklist[quad.Predicate]; ok {
+				continue
+			}
+		}
+
+		store.AddQuad(cayley.Quad(string(cloneNode.NodeId), quad.Predicate, quad.Object, quad.Label))
+	}
+
+	return cloneNode
 }
 
 // Connect decorates the given graph node with a predicate pointing at the given target node.
@@ -76,7 +112,7 @@ func (gn GraphNode) GetTagged(predicateName string, example TaggedValue) interfa
 func (gn GraphNode) GetNode(predicateName string) GraphNode {
 	result, found := gn.TryGetNode(predicateName)
 	if !found {
-		panic(fmt.Sprintf("Could not find node for predicate %s on node %s", predicateName, gn.NodeId))
+		panic(fmt.Sprintf("Could not find node for predicate %s on node %s (%v)", predicateName, gn.NodeId, gn.Kind))
 	}
 
 	return result
@@ -96,7 +132,7 @@ func (gn GraphNode) TryGetNode(predicateName string) (GraphNode, bool) {
 func (gn GraphNode) GetNodeInLayer(predicateName string, layer *GraphLayer) GraphNode {
 	result, found := gn.TryGetNodeInLayer(predicateName, layer)
 	if !found {
-		panic(fmt.Sprintf("Could not find node for predicate %s on node %s", predicateName, gn.NodeId))
+		panic(fmt.Sprintf("Could not find node for predicate %s on node %s (%v)", predicateName, gn.NodeId, gn.Kind))
 	}
 
 	return result

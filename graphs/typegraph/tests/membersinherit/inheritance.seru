@@ -1,0 +1,24 @@
+class FirstBaseType {
+	function<FirstBaseType> DoSomething(foo int, bar int) {}
+
+	property<int> SomeCoolProp {
+		get {}
+	}
+	property<int> MainProp {
+		get {}
+	}
+}
+
+class SecondBaseType {
+	function<int> DoSomething() {}
+
+	property<int> SomeOtherProp {
+		get {}
+	}
+}
+
+class SomeDerivingType : FirstBaseType + SecondBaseType {
+	property<FirstBaseType> MainProp {
+		get {}
+	}
+}

@@ -96,7 +96,7 @@ func (tr *TypeReference) replaceSlot(slot typeReferenceHeaderSlot, value string)
 	size := slot.length
 
 	return TypeReference{
-		layer: tr.layer,
+		tdg:   tr.tdg,
 		value: tr.value[:location] + value + tr.value[location+size:],
 	}
 }
@@ -139,7 +139,7 @@ func (tr *TypeReference) withSubReference(kind subReferenceKind, subref TypeRefe
 	// Add to the count and append the subreference.
 	updated := tr.replaceSlot(slot, padNumberToString(count+1, slot.length))
 	return TypeReference{
-		layer: tr.layer,
+		tdg:   tr.tdg,
 		value: updated.value + string(kindRune) + subref.lengthPrefixedValue(),
 	}
 }
@@ -178,7 +178,7 @@ func (tr *TypeReference) getSubReferences(kind subReferenceKind) []TypeReference
 		// If we have found a subreference of the known kind, add it.
 		if subReferenceChar == kindChar {
 			subrefs[collectedCount] = TypeReference{
-				layer: tr.layer,
+				tdg:   tr.tdg,
 				value: subReferenceValue,
 			}
 

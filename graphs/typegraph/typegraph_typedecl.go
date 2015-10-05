@@ -25,17 +25,31 @@ type TGTypeDecl struct {
 }
 
 // Name returns the name of the underlying type.
-func (tn *TGTypeDecl) Name() string {
+func (tn TGTypeDecl) Name() string {
 	return tn.GraphNode.Get(NodePredicateTypeName)
 }
 
 // Node returns the underlying node in this declaration.
-func (tn *TGTypeDecl) Node() compilergraph.GraphNode {
+func (tn TGTypeDecl) Node() compilergraph.GraphNode {
 	return tn.GraphNode
 }
 
+// Generics returns the generics on this type.
+func (tn TGTypeDecl) Generics() []TGGeneric {
+	it := tn.GraphNode.StartQuery().
+		Out(NodePredicateTypeGeneric).
+		BuildNodeIterator()
+
+	var generics = make([]TGGeneric, 0)
+	for it.Next() {
+		generics = append(generics, TGGeneric{it.Node(), tn.tdg})
+	}
+
+	return generics
+}
+
 // TypeKind returns the kind of the type node.
-func (tn *TGTypeDecl) TypeKind() TypeKind {
+func (tn TGTypeDecl) TypeKind() TypeKind {
 	nodeType := tn.Kind.(NodeType)
 
 	switch nodeType {

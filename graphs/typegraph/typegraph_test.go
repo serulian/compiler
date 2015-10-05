@@ -122,6 +122,8 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"stream test", "stream", "stream.seru", ""},
 	typegraphTest{"class members test", "members", "class.seru", ""},
 	typegraphTest{"generic local constraint test", "genericlocalconstraint", "example.seru", ""},
+	typegraphTest{"class inherits members test", "membersinherit", "inheritance.seru", ""},
+	typegraphTest{"generic class inherits members test", "genericmembersinherit", "inheritance.seru", ""},
 
 	// Failure tests.
 	typegraphTest{"type redeclaration test", "redeclare", "redeclare.seru", "Type 'SomeClass' is already defined in the module"},

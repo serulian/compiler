@@ -80,12 +80,18 @@ type genericWork struct {
 	parentType srg.SRGType
 }
 
+// memberWork holds data for a member translations.
+type memberWork struct {
+	srgType          srg.SRGType
+	parentReferences []TypeReference
+}
+
 // translateTypeMembers translates the type members from the SRG, including handling class
 // composition/inheritance.
 func (t *TypeGraph) translateTypeMembers() bool {
 	buildTypeMembers := func(key interface{}, value interface{}) bool {
-		srgType := value.(srg.SRGType)
-		return t.buildMembership(TGTypeDecl{t.getTypeNodeForSRGType(srgType), t}, srgType)
+		data := value.(memberWork)
+		return t.buildMembership(TGTypeDecl{t.getTypeNodeForSRGType(data.srgType), t}, data.srgType, data.parentReferences)
 	}
 
 	// Enqueue the full set of SRG types with dependencies on any parent types.
@@ -101,6 +107,8 @@ func (t *TypeGraph) translateTypeMembers() bool {
 		// all types it inherits/composes. This is done to ensure that the entire membership
 		// graph for the parent type is in place before we process this type.
 		var dependencies = make([]interface{}, 0)
+		var parentTypes = make([]TypeReference, 0)
+
 		for _, inheritsRef := range srgType.Inheritance() {
 			// Resolve the type to which the inherits points.
 			resolvedType, err := t.buildTypeRef(inheritsRef)
@@ -109,11 +117,20 @@ func (t *TypeGraph) translateTypeMembers() bool {
 				success = false
 			}
 
-			dependencyKey := workKey{resolvedType.ReferredType(), "-", "Members"}
-			dependencies = append(dependencies, dependencyKey)
+			// Ensure the referred type is not a generic.
+			referredType := resolvedType.ReferredType()
+			if referredType.Kind == NodeTypeGeneric {
+				name := referredType.Get(NodePredicateGenericName)
+				t.decorateWithError(typeNode, "Type '%s' cannot derive from generic '%s'", srgType.Name(), name)
+				success = false
+				continue
+			}
+
+			dependencies = append(dependencies, workKey{referredType, "-", "Members"})
+			parentTypes = append(parentTypes, resolvedType)
 		}
 
-		workqueue.Enqueue(typeKey, srgType, buildTypeMembers, dependencies...)
+		workqueue.Enqueue(typeKey, memberWork{srgType, parentTypes}, buildTypeMembers, dependencies...)
 	}
 
 	// Run the queue to construct the full inheritance.
@@ -121,6 +138,8 @@ func (t *TypeGraph) translateTypeMembers() bool {
 	if !result.HasCycle {
 		return result.Status && success
 	} else {
+		// TODO(jschorr): If there are two cycles, this will conflate them. We should do actual
+		// checking here.
 		var types = make([]string, len(result.Cycle))
 		for index, key := range result.Cycle {
 			decl := TGTypeDecl{key.(workKey).ParentNode, t}
@@ -128,7 +147,6 @@ func (t *TypeGraph) translateTypeMembers() bool {
 		}
 
 		t.decorateWithError(result.Cycle[0].(workKey).ParentNode, "A cycle was detected in the inheritance of types: %v", types)
-
 		return false
 	}
 }

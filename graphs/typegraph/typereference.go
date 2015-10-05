@@ -14,14 +14,14 @@ import (
 
 // TypeReference represents a saved type reference in the graph.
 type TypeReference struct {
-	layer *compilergraph.GraphLayer // The type graph layer.
-	value string                    // The encoded value of the type reference.
+	tdg   *TypeGraph // The type graph.
+	value string     // The encoded value of the type reference.
 }
 
 // NewTypeReference returns a new type reference pointing to the given type node and some (optional) generics.
 func (t *TypeGraph) NewTypeReference(typeNode compilergraph.GraphNode, generics ...TypeReference) TypeReference {
 	return TypeReference{
-		layer: t.layer,
+		tdg:   t,
 		value: buildTypeReferenceValue(typeNode, false, generics...),
 	}
 }
@@ -84,7 +84,7 @@ func (tr TypeReference) ReferredType() compilergraph.GraphNode {
 		panic(fmt.Sprintf("Cannot get referred type for special type references of type %s", tr.getSlot(trhSlotFlagSpecial)))
 	}
 
-	return tr.layer.GetNode(tr.getSlot(trhSlotTypeId))
+	return tr.tdg.layer.GetNode(tr.getSlot(trhSlotTypeId))
 }
 
 // WithGeneric returns a copy of this type reference with the given generic added.
@@ -102,11 +102,49 @@ func (tr TypeReference) AsNullable() TypeReference {
 	return tr.withFlag(trhSlotFlagNullable, nullableFlagTrue)
 }
 
+// TransformUnder replaces any generic references in this type reference with the references found in
+// the other type reference.
+//
+// For example, if this type reference is function<T> and the other is
+// SomeClass<int>, where T is the generic of 'SomeClass', this method will return function<int>.
+func (tr TypeReference) TransformUnder(other TypeReference) TypeReference {
+	// Skip 'any' types.
+	if tr.IsAny() || other.IsAny() {
+		return tr
+	}
+
+	// Skip any non-generic types.
+	generics := other.Generics()
+	if len(generics) == 0 {
+		return tr
+	}
+
+	// Make sure we have the same number of generics.
+	otherTypeNode := other.ReferredType()
+	if otherTypeNode.Kind == NodeTypeGeneric {
+		panic(fmt.Sprintf("Cannot transform a reference to a generic: %v", other))
+	}
+
+	otherType := TGTypeDecl{otherTypeNode, tr.tdg}
+	otherTypeGenerics := otherType.Generics()
+	if len(generics) != len(otherTypeGenerics) {
+		return tr
+	}
+
+	// Replace the generics.
+	var currentTypeReference = tr
+	for index, generic := range generics {
+		currentTypeReference = currentTypeReference.ReplaceType(otherTypeGenerics[index].GraphNode, generic)
+	}
+
+	return currentTypeReference
+}
+
 // ReplaceType returns a copy of this type reference, with the given type node replaced with the
 // given type reference.
 func (tr TypeReference) ReplaceType(typeNode compilergraph.GraphNode, replacement TypeReference) TypeReference {
 	typeNodeRef := TypeReference{
-		layer: tr.layer,
+		tdg:   tr.tdg,
 		value: buildTypeReferenceValue(typeNode, false),
 	}
 
@@ -120,8 +158,8 @@ func (tr TypeReference) ReplaceType(typeNode compilergraph.GraphNode, replacemen
 	replacementStr := replacement.lengthPrefixedValue()
 
 	return TypeReference{
+		tdg:   tr.tdg,
 		value: strings.Replace(tr.value, searchString, replacementStr, -1),
-		layer: tr.layer,
 	}
 }
 
@@ -189,7 +227,7 @@ func (tr TypeReference) Value() string {
 
 func (tr TypeReference) Build(value string) interface{} {
 	return TypeReference{
-		layer: tr.layer,
+		tdg:   tr.tdg,
 		value: value,
 	}
 }
