@@ -77,6 +77,7 @@ type workKey struct {
 // genericWork holds data for a generic translation.
 type genericWork struct {
 	generic    srg.SRGGeneric
+	index      int
 	parentType srg.SRGType
 }
 
@@ -117,13 +118,22 @@ func (t *TypeGraph) translateTypeMembers() bool {
 				success = false
 			}
 
-			// Ensure the referred type is not a generic.
+			// Ensure the referred type is a class.
 			referredType := resolvedType.ReferredType()
-			if referredType.Kind == NodeTypeGeneric {
-				name := referredType.Get(NodePredicateGenericName)
-				t.decorateWithError(typeNode, "Type '%s' cannot derive from generic '%s'", srgType.Name(), name)
+			if referredType.Kind != NodeTypeClass {
+				switch referredType.Kind {
+				case NodeTypeGeneric:
+					name := referredType.Get(NodePredicateGenericName)
+					t.decorateWithError(typeNode, "Type '%s' cannot derive from a generic ('%s')", srgType.Name(), name)
+
+				case NodeTypeInterface:
+					name := referredType.Get(NodePredicateTypeName)
+					t.decorateWithError(typeNode, "Type '%s' cannot derive from an interface ('%s')", srgType.Name(), name)
+				}
+
 				success = false
 				continue
+
 			}
 
 			dependencies = append(dependencies, workKey{referredType, "-", "Members"})
@@ -161,7 +171,7 @@ func (t *TypeGraph) translateTypesAndGenerics() bool {
 	buildTypeGeneric := func(key interface{}, value interface{}) bool {
 		data := value.(genericWork)
 		parentType := t.getTypeNodeForSRGType(data.parentType)
-		_, ok := t.buildGenericNode(data.generic, parentType, NodePredicateTypeGeneric)
+		_, ok := t.buildGenericNode(data.generic, data.index, typeDeclGeneric, parentType, NodePredicateTypeGeneric)
 		return ok
 	}
 
@@ -176,9 +186,9 @@ func (t *TypeGraph) translateTypesAndGenerics() bool {
 
 		// Enqueue the type's generics. The key is the generic name under the type, and the
 		// dependency is that the parent type has been constructed.
-		for _, srgGeneric := range srgType.Generics() {
+		for index, srgGeneric := range srgType.Generics() {
 			genericKey := workKey{srgType.Node(), srgGeneric.Name(), "Generic"}
-			workqueue.Enqueue(genericKey, genericWork{srgGeneric, srgType}, buildTypeGeneric, typeKey)
+			workqueue.Enqueue(genericKey, genericWork{srgGeneric, index, srgType}, buildTypeGeneric, typeKey)
 		}
 	}
 

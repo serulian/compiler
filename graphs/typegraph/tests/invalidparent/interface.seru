@@ -1,0 +1,2 @@
+interface SomeInterface {}
+class DerivesFromInterface : SomeInterface {}

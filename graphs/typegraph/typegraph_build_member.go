@@ -5,10 +5,15 @@
 package typegraph
 
 import (
+	"fmt"
 	"strings"
 
+	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/srg"
+	"github.com/serulian/compiler/graphs/typegraph/proto"
 )
+
+var _ = fmt.Printf
 
 // buildMembership builds the full membership of the given type, including inheritance. When called, the
 // typegraph *MUST* already contain the full membership for all parent types.
@@ -134,6 +139,9 @@ func (t *TypeGraph) buildTypeOperatorNode(typeDecl TGTypeDecl, operator srg.SRGT
 		return false
 	}
 
+	// Add the member signature for this operator.
+	t.decorateWithSig(memberNode, name, uint64(NodeTypeOperator), false, t.AnyTypeReference())
+
 	// Ensure we have the expected number of parameters.
 	parametersExpected := definition.Parameters
 	parametersDefined := operator.Parameters()
@@ -192,75 +200,97 @@ func (t *TypeGraph) buildTypeMemberNode(typeDecl TGTypeDecl, member srg.SRGTypeM
 	typeNode.Connect(NodePredicateTypeMember, memberNode)
 
 	// Add the generics on the type member.
-	for _, srgGeneric := range member.Generics() {
-		genericNode, result := t.buildGenericNode(srgGeneric, memberNode, NodePredicateMemberGeneric)
+	srgGenerics := member.Generics()
+	generics := make([]compilergraph.GraphNode, len(srgGenerics))
+
+	for index, srgGeneric := range srgGenerics {
+		genericNode, result := t.buildGenericNode(srgGeneric, index, typeMemberGeneric, memberNode, NodePredicateMemberGeneric)
 		if !result {
 			success = false
 		}
 
-		if !t.resolveGenericConstraint(srgGeneric, genericNode) {
+		generics[index] = genericNode
+	}
+
+	// Resolve the generic constraints.
+	for index, srgGeneric := range srgGenerics {
+		if !t.resolveGenericConstraint(srgGeneric, generics[index]) {
 			success = false
 		}
 	}
 
-	// Set member-kind specific data (types, static, read-only).
+	// Determine member-kind specific data (types, static, read-only).
+	var memberType TypeReference = t.AnyTypeReference()
+	var memberTypeValid bool = false
+	var isReadOnly bool = true
+
 	switch member.TypeMemberKind() {
 	case srg.VarTypeMember:
 		// Variables have their declared type.
-		declaredType, valid := t.resolvePossibleType(memberNode, member.DeclaredType)
-		if !valid {
-			success = false
-		}
-
-		memberNode.DecorateWithTagged(NodePredicateMemberType, declaredType)
+		memberType, memberTypeValid = t.resolvePossibleType(memberNode, member.DeclaredType)
+		isReadOnly = false
 
 	case srg.PropertyTypeMember:
 		// Properties have their declared type.
-		declaredType, valid := t.resolvePossibleType(memberNode, member.DeclaredType)
-		if !valid {
-			success = false
-		}
-
-		memberNode.DecorateWithTagged(NodePredicateMemberType, declaredType)
-
-		// Properties are read-only without a setter.
-		if !member.HasSetter() {
-			memberNode.Decorate(NodePredicateMemberReadOnly, "true")
-		}
+		memberType, memberTypeValid = t.resolvePossibleType(memberNode, member.DeclaredType)
+		isReadOnly = !member.HasSetter()
 
 	case srg.ConstructorTypeMember:
-		// Constructors are read-only and static.
+		// Constructors are static.
 		memberNode.Decorate(NodePredicateMemberStatic, "true")
-		memberNode.Decorate(NodePredicateMemberReadOnly, "true")
 
 		// Constructors have a type of a function that returns an instance of the parent type.
 		functionType := t.NewTypeReference(t.FunctionType(), t.NewInstanceTypeReference(typeNode))
-		withParameters, valid := t.addSRGParameterTypes(memberNode, member, functionType)
-		if !valid {
-			success = false
-		}
-
-		memberNode.DecorateWithTagged(NodePredicateMemberType, withParameters)
+		memberType, memberTypeValid = t.addSRGParameterTypes(memberNode, member, functionType)
 
 	case srg.FunctionTypeMember:
 		// Functions are read-only.
 		memberNode.Decorate(NodePredicateMemberReadOnly, "true")
 
 		// Functions have type function<ReturnType>(parameters).
-		returnType, valid := t.resolvePossibleType(memberNode, member.ReturnType)
-		if valid {
+		returnType, returnTypeValid := t.resolvePossibleType(memberNode, member.ReturnType)
+		if returnTypeValid {
 			functionType := t.NewTypeReference(t.FunctionType(), returnType)
-			withParameters, valid := t.addSRGParameterTypes(memberNode, member, functionType)
-			if !valid {
-				success = false
-			}
-
-			memberNode.DecorateWithTagged(NodePredicateMemberType, withParameters)
+			memberType, memberTypeValid = t.addSRGParameterTypes(memberNode, member, functionType)
 		} else {
-			success = false
+			memberTypeValid = false
 		}
-
 	}
 
-	return success
+	// Set the member type, read-only and type signature.
+	memberNode.DecorateWithTagged(NodePredicateMemberType, memberType)
+
+	if isReadOnly {
+		memberNode.Decorate(NodePredicateMemberReadOnly, "true")
+	}
+
+	t.decorateWithSig(memberNode, member.Name(), uint64(member.TypeMemberKind()), !isReadOnly, memberType, generics...)
+
+	return success && memberTypeValid
+}
+
+// decorateWithSig decorates the given member node with a unique signature for fast subtype checking.
+func (t *TypeGraph) decorateWithSig(memberNode compilergraph.GraphNode, name string, kind uint64,
+	isWritable bool, memberType TypeReference, generics ...compilergraph.GraphNode) {
+
+	// Build type reference value strings for the member type and any generic constraints (which
+	// handles generic count as well). The call to Localize replaces the type node IDs in the
+	// type references with a local ID (#1, #2, etc), to allow for positional comparison between
+	// different member signatures.
+	memberTypeStr := memberType.Localize(generics...).Value()
+	constraintStr := make([]string, len(generics))
+	for index, generic := range generics {
+		genericConstraint := generic.GetTagged(NodePredicateGenericSubtype, t.AnyTypeReference()).(TypeReference)
+		constraintStr[index] = genericConstraint.Localize(generics...).Value()
+	}
+
+	signature := &proto.MemberSig{
+		MemberName:         &name,
+		MemberKind:         &kind,
+		IsWritable:         &isWritable,
+		MemberType:         &memberTypeStr,
+		GenericConstraints: constraintStr,
+	}
+
+	memberNode.DecorateWithTagged(NodePredicateMemberSignature, signature)
 }

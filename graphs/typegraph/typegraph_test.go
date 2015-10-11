@@ -5,16 +5,20 @@
 package typegraph
 
 import (
+	"crypto/md5"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
+	"sort"
 	"strings"
 	"testing"
 
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/graphs/srg"
+	"github.com/serulian/compiler/graphs/typegraph/proto"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -26,13 +30,14 @@ type graphChildRep struct {
 }
 
 type graphNodeRep struct {
+	Key        string
 	Kind       interface{}
-	Children   []graphChildRep
+	Children   map[string]graphChildRep
 	Predicates map[string]string
 }
 
-// buildLayerJSON walks the given type graph starting at the type decls and builds a JSON
-// representation of the type graph tree.
+// buildLayerJSON walks the given type graph starting at the type decls and builds a map
+// representation of the type graph tree, returning it in JSON form.
 func buildLayerJSON(t *testing.T, tg *TypeGraph) string {
 	repMap := map[compilergraph.GraphNodeId]*graphNodeRep{}
 
@@ -48,22 +53,51 @@ func buildLayerJSON(t *testing.T, tg *TypeGraph) string {
 		// Filter any predicates that match UUIDs, as they attach to other graph layers
 		// and will have rotating IDs.
 		filteredPredicates := map[string]string{}
+
+		var keys []string
 		for name, value := range result.Predicates {
 			if compilerutil.IsId(value) {
 				filteredPredicates[name] = "(NodeRef)"
 			} else if strings.Contains(value, "|TypeReference") {
-				// Convert type references into human strings so that they don't change constantly
+				// Convert type references into human-readable strings so that they don't change constantly
 				// due to the underlying IDs.
 				filteredPredicates[name] = tg.AnyTypeReference().Build(value).(TypeReference).String()
+			} else if name == "tdg-"+NodePredicateMemberSignature {
+				esig := &proto.MemberSig{}
+				sig := esig.Build(value[:len(value)-len("|MemberSig|tdg")]).(*proto.MemberSig)
+
+				// Normalize the member type and constraints into human-readable strings.
+				memberType := tg.AnyTypeReference().Build(sig.GetMemberType()).(TypeReference).String()
+				sig.MemberType = &memberType
+
+				genericTypes := make([]string, len(sig.GetGenericConstraints()))
+				for index, constraint := range sig.GetGenericConstraints() {
+					genericTypes[index] = tg.AnyTypeReference().Build(constraint).(TypeReference).String()
+				}
+
+				sig.GenericConstraints = genericTypes
+				marshalled, _ := sig.Marshal()
+				filteredPredicates[name] = string(marshalled)
 			} else {
 				filteredPredicates[name] = value
 			}
+
+			keys = append(keys, name)
+		}
+
+		// Build a hash of all predicates and values.
+		sort.Strings(keys)
+		h := md5.New()
+		for _, key := range keys {
+			io.WriteString(h, key+":"+filteredPredicates[key])
 		}
 
 		// Build the representation of the node.
+		repKey := fmt.Sprintf("%x", h.Sum(nil))
 		repMap[result.Node.NodeId] = &graphNodeRep{
+			Key:        repKey,
 			Kind:       result.Node.Kind,
-			Children:   make([]graphChildRep, 0),
+			Children:   map[string]graphChildRep{},
 			Predicates: filteredPredicates,
 		}
 
@@ -71,18 +105,18 @@ func buildLayerJSON(t *testing.T, tg *TypeGraph) string {
 			parentRep := repMap[result.ParentNode.NodeId]
 			childRep := repMap[result.Node.NodeId]
 
-			parentRep.Children = append(parentRep.Children, graphChildRep{
+			parentRep.Children[repKey] = graphChildRep{
 				Predicate: result.IncomingPredicate,
 				Child:     childRep,
-			})
+			}
 		}
 
 		return true
 	})
 
-	rootReps := make([]*graphNodeRep, len(tg.TypeDecls()))
-	for index, typeDecl := range tg.TypeDecls() {
-		rootReps[index] = repMap[typeDecl.Node().NodeId]
+	rootReps := map[string]*graphNodeRep{}
+	for _, typeDecl := range tg.TypeDecls() {
+		rootReps[repMap[typeDecl.Node().NodeId].Key] = repMap[typeDecl.Node().NodeId]
 	}
 
 	// Marshal the tree to JSON.
@@ -124,6 +158,7 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"generic local constraint test", "genericlocalconstraint", "example.seru", ""},
 	typegraphTest{"class inherits members test", "membersinherit", "inheritance.seru", ""},
 	typegraphTest{"generic class inherits members test", "genericmembersinherit", "inheritance.seru", ""},
+	typegraphTest{"generic function constraint test", "genericfunctionconstraint", "example.seru", ""},
 
 	// Failure tests.
 	typegraphTest{"type redeclaration test", "redeclare", "redeclare.seru", "Type 'SomeClass' is already defined in the module"},
@@ -134,6 +169,8 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"operator param count mismatch failure test", "operatorfail", "paramcount.seru", "Operator 'Plus' defined on type 'SomeType' expects 2 parameters; found 1"},
 	typegraphTest{"operator param type mismatch failure test", "operatorfail", "paramtype.seru", "Parameter 'right' (#1) for operator 'Plus' defined on type 'SomeType' expects type SomeType; found Integer"},
 	typegraphTest{"inheritance cycle failure test", "inheritscycle", "inheritscycle.seru", "A cycle was detected in the inheritance of types: [ThirdClass SecondClass FirstClass]"},
+	typegraphTest{"invalid parents test", "invalidparent", "generic.seru", "Type 'DerivesFromGeneric' cannot derive from a generic ('T')"},
+	typegraphTest{"invalid parents test", "invalidparent", "interface.seru", "Type 'DerivesFromInterface' cannot derive from an interface ('SomeInterface')"},
 }
 
 func TestGraphs(t *testing.T) {
@@ -155,15 +192,14 @@ func TestGraphs(t *testing.T) {
 		if test.expectedError == "" {
 			// Make sure we had no errors during construction.
 			assert.True(t, result.Status, "Got error for type graph construction %v: %s", test.name, result.Errors)
-			currentLayerJson := buildLayerJSON(t, result.Graph)
+			currentLayerView := buildLayerJSON(t, result.Graph)
 
 			if os.Getenv("REGEN") == "true" {
-				test.writeJson(currentLayerJson)
+				test.writeJson(currentLayerView)
 			} else {
 				// Compare the constructed graph layer to the expected.
-				if !assert.Equal(t, test.json(), currentLayerJson, "JSON mismatch") {
-					fmt.Printf("%s\n\n", currentLayerJson)
-				}
+				expectedLayerView := test.json()
+				assert.Equal(t, expectedLayerView, currentLayerView, "Graph view mismatch on test %s\nExpected: %v\nActual: %v\n\n", test.name, expectedLayerView, currentLayerView)
 			}
 		} else {
 			// Make sure we had an error during construction.

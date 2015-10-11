@@ -67,11 +67,17 @@ const (
 	// NodeTypeGeneric
 	//
 
-	// Connects a generic definition to its name.
+	// Decorates a generic definition to its name.
 	NodePredicateGenericName = "generic-name"
 
 	// Connects a generic definition to its subtype reference (usually 'any').
 	NodePredicateGenericSubtype = "generic-subtype"
+
+	// Decorates a generic definition with its index.
+	NodePredicateGenericIndex = "generic-index"
+
+	// Decorates a generic definition with its kind (type generic or member generic)
+	NodePredicateGenericKind = "generic-kind"
 
 	//
 	// NodeTypeMember
@@ -91,6 +97,9 @@ const (
 
 	// Marks a member with a generic.
 	NodePredicateMemberGeneric = "member-generic"
+
+	// Marks a member with its signature.
+	NodePredicateMemberSignature = "member-signature"
 
 	//
 	// NodeTypeOperator

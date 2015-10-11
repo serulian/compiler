@@ -16,9 +16,10 @@ type TypeKind int
 const (
 	ClassType TypeKind = iota
 	InterfaceType
+	GenericType
 )
 
-// TGTypeDeclaration represents a type declaration in the type graph.
+// TGTypeDeclaration represents a type declaration (class, interface or generic) in the type graph.
 type TGTypeDecl struct {
 	compilergraph.GraphNode
 	tdg *TypeGraph
@@ -26,6 +27,10 @@ type TGTypeDecl struct {
 
 // Name returns the name of the underlying type.
 func (tn TGTypeDecl) Name() string {
+	if tn.GraphNode.Kind == NodeTypeGeneric {
+		return tn.GraphNode.Get(NodePredicateGenericName)
+	}
+
 	return tn.GraphNode.Get(NodePredicateTypeName)
 }
 
@@ -36,6 +41,10 @@ func (tn TGTypeDecl) Node() compilergraph.GraphNode {
 
 // Generics returns the generics on this type.
 func (tn TGTypeDecl) Generics() []TGGeneric {
+	if tn.GraphNode.Kind == NodeTypeGeneric {
+		return make([]TGGeneric, 0)
+	}
+
 	it := tn.GraphNode.StartQuery().
 		Out(NodePredicateTypeGeneric).
 		BuildNodeIterator()
@@ -58,6 +67,9 @@ func (tn TGTypeDecl) TypeKind() TypeKind {
 
 	case NodeTypeInterface:
 		return InterfaceType
+
+	case NodeTypeGeneric:
+		return GenericType
 
 	default:
 		panic(fmt.Sprintf("Unknown kind of type %s for node %s", nodeType, tn.NodeId))

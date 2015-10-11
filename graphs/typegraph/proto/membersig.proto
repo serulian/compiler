@@ -1,0 +1,13 @@
+// Copyright 2015 The Serulian Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+package proto;
+
+message MemberSig {
+   optional string MemberName = 1;
+   optional uint64 MemberKind = 2;
+   optional bool IsWritable = 3;
+   optional string MemberType = 4;
+   repeated string GenericConstraints = 5;
+}

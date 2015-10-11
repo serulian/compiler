@@ -23,3 +23,8 @@ func (tn TGGeneric) Name() string {
 func (tn TGGeneric) Node() compilergraph.GraphNode {
 	return tn.GraphNode
 }
+
+// Constraint returns the type constraint on this generic.
+func (tn TGGeneric) Constraint() TypeReference {
+	return tn.GraphNode.GetTagged(NodePredicateGenericSubtype, tn.tdg.AnyTypeReference()).(TypeReference)
+}

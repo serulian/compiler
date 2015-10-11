@@ -64,6 +64,7 @@ const (
 
 	specialFlagNormal = '-' // The value of the trhSlotFlagSpecial for normal typerefs.
 	specialFlagAny    = 'A' // The value of the trhSlotFlagSpecial for "any" type refs.
+	specialFlagLocal  = 'L' // The value of the trhSlotFlagSpecial for localized type refs.
 )
 
 // typeReferenceHeaderSlotCacheMap holds a cache for looking up the offset of a TRH.
@@ -94,6 +95,10 @@ func (tr *TypeReference) replaceSlot(slot typeReferenceHeaderSlot, value string)
 
 	location := getSlotLocation(slot)
 	size := slot.length
+
+	if len(value) < size {
+		value = value + strings.Repeat(" ", size-len(value))
+	}
 
 	return TypeReference{
 		tdg:   tr.tdg,
@@ -264,6 +269,32 @@ func buildTypeReferenceValue(typeNode compilergraph.GraphNode, nullable bool, ge
 		buffer.WriteString(padNumberToString(len(generic.value), typeRefValueSubReferenceLength))
 		buffer.WriteString(generic.value)
 	}
+
+	return buffer.String()
+}
+
+// buildLocalizedRefValue returns a string value for representing a localized type reference.
+func buildLocalizedRefValue(genericNode compilergraph.GraphNode) string {
+	var buffer bytes.Buffer
+
+	genericKind := genericNode.Get(NodePredicateGenericKind)
+	genericIndex := genericNode.Get(NodePredicateGenericIndex)
+
+	localId := "local:" + genericKind + ":" + genericIndex
+
+	// Referenced type ID. For localized types, this is the generic index and kind.
+	buffer.WriteByte('[')
+	buffer.WriteString(localId)
+	buffer.WriteString(strings.Repeat(" ", trhSlotTypeId.length-len(localId)))
+	buffer.WriteByte(']')
+
+	// Flags: special and nullable.
+	buffer.WriteByte(specialFlagLocal)
+	buffer.WriteByte(nullableFlagFalse)
+
+	// Generic count and parameter count.
+	buffer.WriteString(padNumberToString(0, trhSlotGenericCount.length))
+	buffer.WriteString(padNumberToString(0, trhSlotParameterCount.length))
 
 	return buffer.String()
 }

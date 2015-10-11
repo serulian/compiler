@@ -38,9 +38,79 @@ func (t *TypeGraph) NewInstanceTypeReference(typeNode compilergraph.GraphNode) T
 	return t.NewTypeReference(typeNode, generics...)
 }
 
+// Verify returns an error if the type reference is invalid in some way. Returns nil if it is valid.
+func (tr TypeReference) Verify() error {
+	if tr.IsAny() {
+		return nil
+	}
+
+	refGenerics := tr.Generics()
+	referredType := TGTypeDecl{tr.ReferredType(), tr.tdg}
+	typeGenerics := referredType.Generics()
+
+	// Check generics count.
+	if len(typeGenerics) != len(refGenerics) {
+		return fmt.Errorf("Expected %v generics on type '%s', found: %s", len(typeGenerics), referredType.Name(), len(refGenerics))
+	}
+
+	// Check generics constraints.
+	if len(typeGenerics) > 0 {
+		for index, typeGeneric := range typeGenerics {
+			refGeneric := refGenerics[index]
+			if !refGeneric.IsSubTypeOf(typeGeneric.Constraint()) {
+				return fmt.Errorf("Generic '%s' (#%v) on type '%s' has constraint '%v'. Specified type '%v' does not match.", typeGeneric.Name(), index+1, typeGeneric.Constraint(), refGeneric)
+			}
+		}
+	}
+
+	// Check parameters.
+	if tr.HasParameters() && referredType.GraphNode != tr.tdg.FunctionType() {
+		return fmt.Errorf("Only function types can have parameters. Found on type: %v", tr)
+	}
+
+	return nil
+}
+
+// IsSubTypeOf returns whether the type pointed to by this type reference is a subtype
+// of the other type reference: tr <: other
+//
+// Subtyping rules in Serulian are as follows:
+//   - All types are subtypes of 'any'.
+//   - A class is a subtype of itself (and no other class) and only if generics and parameters match.
+//   - A class (or interface) is a subtype of an interface if it defines that interface's full signature.
+func (tr TypeReference) IsSubTypeOf(other TypeReference) bool {
+	// If the other is the any type, then we know this to be a subtype.
+	if other.IsAny() {
+		return true
+	}
+
+	// Directly the same = subtype.
+	if other == tr {
+		return true
+	}
+
+	localType := TGTypeDecl{tr.ReferredType(), tr.tdg}
+	otherType := TGTypeDecl{other.ReferredType(), tr.tdg}
+
+	// If the other reference's type node is not an interface, then this reference cannot be a subtype.
+	if otherType.TypeKind() != InterfaceType {
+		return false
+	}
+
+	// TODO: compare member signatures.
+	if localType == otherType {
+	}
+	return false
+}
+
 // IsAny returns whether this type reference refers to the special 'any' type.
 func (tr TypeReference) IsAny() bool {
 	return tr.getSlot(trhSlotFlagSpecial)[0] == specialFlagAny
+}
+
+// IsLocalRef returns whether this type reference is a localized reference.
+func (tr TypeReference) IsLocalRef() bool {
+	return tr.getSlot(trhSlotFlagSpecial)[0] == specialFlagLocal
 }
 
 // HasGenerics returns whether the type reference has generics.
@@ -100,6 +170,27 @@ func (tr TypeReference) WithParameter(parameter TypeReference) TypeReference {
 // AsNullable returns a copy of this type reference that is nullable.
 func (tr TypeReference) AsNullable() TypeReference {
 	return tr.withFlag(trhSlotFlagNullable, nullableFlagTrue)
+}
+
+// Localize returns a copy of this type reference with any references to the specified generics replaced with
+// a string that does reference a specific type node ID, but a localized ID instead. This allows
+// type references that reference different type and type member generics to be compared.
+func (tr TypeReference) Localize(generics ...compilergraph.GraphNode) TypeReference {
+	if tr.getSlot(trhSlotFlagSpecial)[0] != specialFlagNormal {
+		return tr
+	}
+
+	var currentTypeReference = tr
+	for _, genericNode := range generics {
+		replacement := TypeReference{
+			value: buildLocalizedRefValue(genericNode),
+			tdg:   tr.tdg,
+		}
+
+		currentTypeReference = currentTypeReference.ReplaceType(genericNode, replacement)
+	}
+
+	return currentTypeReference
 }
 
 // TransformUnder replaces any generic references in this type reference with the references found in
@@ -175,6 +266,11 @@ func (tr TypeReference) String() string {
 func (tr TypeReference) appendHumanString(buffer *bytes.Buffer) {
 	if tr.IsAny() {
 		buffer.WriteString("any")
+		return
+	}
+
+	if tr.IsLocalRef() {
+		buffer.WriteString(tr.getSlot(trhSlotTypeId))
 		return
 	}
 

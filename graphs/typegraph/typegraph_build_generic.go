@@ -5,8 +5,17 @@
 package typegraph
 
 import (
+	"strconv"
+
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/srg"
+)
+
+type genericKind int
+
+const (
+	typeDeclGeneric genericKind = iota
+	typeMemberGeneric
 )
 
 // resolveGenericConstraint decorates a generic node with its defined constraint. Returns false if the constraint
@@ -18,7 +27,7 @@ func (t *TypeGraph) resolveGenericConstraint(generic srg.SRGGeneric, genericNode
 }
 
 // buildGenericNode adds a new generic node to the specified type or type membe node for the given SRG generic.
-func (t *TypeGraph) buildGenericNode(generic srg.SRGGeneric, parentNode compilergraph.GraphNode, parentPredicate string) (compilergraph.GraphNode, bool) {
+func (t *TypeGraph) buildGenericNode(generic srg.SRGGeneric, index int, kind genericKind, parentNode compilergraph.GraphNode, parentPredicate string) (compilergraph.GraphNode, bool) {
 	// Ensure that there exists no other generic with this name under the parent node.
 	_, exists := parentNode.StartQuery().
 		Out(parentPredicate).
@@ -28,6 +37,9 @@ func (t *TypeGraph) buildGenericNode(generic srg.SRGGeneric, parentNode compiler
 	// Create the generic node.
 	genericNode := t.layer.CreateNode(NodeTypeGeneric)
 	genericNode.Decorate(NodePredicateGenericName, generic.Name())
+	genericNode.Decorate(NodePredicateGenericIndex, strconv.Itoa(index))
+	genericNode.Decorate(NodePredicateGenericKind, strconv.Itoa(int(kind)))
+
 	genericNode.Connect(NodePredicateSource, generic.Node())
 
 	// Add the generic to the parent node.
