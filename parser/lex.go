@@ -203,15 +203,16 @@ type stateFn func(*lexer) stateFn
 
 // lexer holds the state of the scanner.
 type lexer struct {
-	source       compilercommon.InputSource // the name of the input; used only for error reports
-	input        string                     // the string being scanned
-	state        stateFn                    // the next lexing function to enter
-	pos          bytePosition               // current position in the input
-	start        bytePosition               // start position of this token
-	width        bytePosition               // width of last rune read from input
-	lastPos      bytePosition               // position of most recent token returned by nextToken
-	tokens       chan lexeme                // channel of scanned lexemes
-	currentToken lexeme                     // The current token if any
+	source                 compilercommon.InputSource // the name of the input; used only for error reports
+	input                  string                     // the string being scanned
+	state                  stateFn                    // the next lexing function to enter
+	pos                    bytePosition               // current position in the input
+	start                  bytePosition               // start position of this token
+	width                  bytePosition               // width of last rune read from input
+	lastPos                bytePosition               // position of most recent token returned by nextToken
+	tokens                 chan lexeme                // channel of scanned lexemes
+	currentToken           lexeme                     // The current token if any
+	lastNonWhitespaceToken lexeme                     // The last token returned that is non-whitespace
 }
 
 // nextToken returns the next token from the input.
@@ -272,6 +273,10 @@ func (l *lexer) value() string {
 // emit passes an token back to the client.
 func (l *lexer) emit(t tokenType) {
 	currentToken := lexeme{t, l.start, l.value()}
+
+	if t != tokenTypeWhitespace {
+		l.lastNonWhitespaceToken = currentToken
+	}
 
 	l.tokens <- currentToken
 	l.currentToken = currentToken
@@ -334,7 +339,7 @@ Loop:
 		case isNewline(r):
 			// If the previous token matches the synthetic semicolon list,
 			// we emit a synthetic semicolon instead of a simple newline.
-			if _, ok := syntheticPredecessors[l.currentToken.kind]; ok {
+			if _, ok := syntheticPredecessors[l.lastNonWhitespaceToken.kind]; ok {
 				l.emit(tokenTypeSyntheticSemicolon)
 			} else {
 				l.emit(tokenTypeNewline)

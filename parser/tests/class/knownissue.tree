@@ -1,16 +1,16 @@
 NodeTypeFile
-  end-rune = 68
+  end-rune = 69
   input-source = known issue test
   start-rune = 0
   child-node =>
     NodeTypeClass
-      end-rune = 68
+      end-rune = 69
       input-source = known issue test
       named = SomeDerivingType
       start-rune = 0
       type-member =>
         NodeTypeProperty
-          end-rune = 67
+          end-rune = 68
           input-source = known issue test
           named = MainProp
           start-rune = 26

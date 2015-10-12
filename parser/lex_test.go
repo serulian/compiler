@@ -220,6 +220,18 @@ var lexerTests = []lexerTest{
 		lexeme{tokenTypeLeftBrace, 0, "{"},
 		lexeme{tokenTypeNewline, 0, "\n"},
 		tEOF}},
+
+	{"whitespace after token before newline test", "foo \n", []lexeme{
+		lexeme{tokenTypeIdentifer, 0, "foo"},
+		lexeme{tokenTypeWhitespace, 0, " "},
+		lexeme{tokenTypeSyntheticSemicolon, 0, "\n"},
+		tEOF}},
+
+	{"tab after token before newline test", "foo\t\n", []lexeme{
+		lexeme{tokenTypeIdentifer, 0, "foo"},
+		lexeme{tokenTypeWhitespace, 0, "\t"},
+		lexeme{tokenTypeSyntheticSemicolon, 0, "\n"},
+		tEOF}},
 }
 
 func TestLexer(t *testing.T) {
