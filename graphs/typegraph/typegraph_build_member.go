@@ -15,6 +15,10 @@ import (
 
 var _ = fmt.Printf
 
+// operatorMemberNamePrefix defines a unicode character for prefixing the "member name" of operators. Allows
+// for easier comparison of all members under a type.
+var operatorMemberNamePrefix = "•"
+
 // buildMembership builds the full membership of the given type, including inheritance. When called, the
 // typegraph *MUST* already contain the full membership for all parent types.
 func (t *TypeGraph) buildMembership(typeDecl TGTypeDecl, srgType srg.SRGType, inherits []TypeReference) bool {
@@ -28,20 +32,20 @@ func (t *TypeGraph) buildMembership(typeDecl TGTypeDecl, srgType srg.SRGType, in
 	}
 
 	// Copy over the type members and operators.
-	t.buildInheritedMembership(typeDecl, inherits, NodePredicateTypeMember, NodePredicateMemberName)
-	t.buildInheritedMembership(typeDecl, inherits, NodePredicateTypeOperator, NodePredicateOperatorName)
+	t.buildInheritedMembership(typeDecl, inherits, NodePredicateTypeMember)
+	t.buildInheritedMembership(typeDecl, inherits, NodePredicateTypeOperator)
 	return success
 }
 
-func (t *TypeGraph) buildInheritedMembership(typeDecl TGTypeDecl, inherits []TypeReference, childPredicate string, namePredicate string) {
+func (t *TypeGraph) buildInheritedMembership(typeDecl TGTypeDecl, inherits []TypeReference, childPredicate string) {
 	// Build a map of all the existing names.
 	names := map[string]bool{}
 	it := typeDecl.GraphNode.StartQuery().
 		Out(childPredicate).
-		BuildNodeIterator(namePredicate)
+		BuildNodeIterator(NodePredicateMemberName)
 
 	for it.Next() {
-		names[it.Values()[namePredicate]] = true
+		names[it.Values()[NodePredicateMemberName]] = true
 	}
 
 	// Add members defined on the type's inheritance, skipping those already defined.
@@ -51,11 +55,11 @@ func (t *TypeGraph) buildInheritedMembership(typeDecl TGTypeDecl, inherits []Typ
 
 		pit := parentType.StartQuery().
 			Out(childPredicate).
-			BuildNodeIterator(namePredicate)
+			BuildNodeIterator(NodePredicateMemberName)
 
 		for pit.Next() {
 			// Skip this member if already defined.
-			name := pit.Values()[namePredicate]
+			name := pit.Values()[NodePredicateMemberName]
 			if _, exists := names[name]; exists {
 				continue
 			}
@@ -115,6 +119,7 @@ func (t *TypeGraph) buildTypeOperatorNode(typeDecl TGTypeDecl, operator srg.SRGT
 	// Create the operator node.
 	memberNode := t.layer.CreateNode(NodeTypeOperator)
 	memberNode.Decorate(NodePredicateOperatorName, name)
+	memberNode.Decorate(NodePredicateMemberName, operatorMemberNamePrefix+name)
 	memberNode.Connect(NodePredicateSource, operator.Node())
 
 	if operator.IsExported() {
