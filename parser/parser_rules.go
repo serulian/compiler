@@ -435,14 +435,7 @@ func (p *sourceParser) consumeOperator(option typeMemberOption) AstNode {
 		return operatorNode
 	}
 
-	// If this is a declaration, then we look for a statement terminator and
-	// finish the parse.
-	if option == typeMemberDeclaration {
-		p.consumeStatementTerminator()
-		return operatorNode
-	}
-
-	// Otherwise, we need a body.
+	// Operators always need bodies.
 	operatorNode.Connect(NodePredicateTypeMemberBody, p.consumeStatementBlock(statementBlockWithTerminator))
 	return operatorNode
 }
@@ -585,14 +578,7 @@ func (p *sourceParser) consumeConstructor(option typeMemberOption) AstNode {
 		return constructorNode
 	}
 
-	// If this is a declaration, then we look for a statement terminator and
-	// finish the parse.
-	if option == typeMemberDeclaration {
-		p.consumeStatementTerminator()
-		return constructorNode
-	}
-
-	// Otherwise, we need a body.
+	// Constructors always have a body.
 	constructorNode.Connect(NodePredicateTypeMemberBody, p.consumeStatementBlock(statementBlockWithTerminator))
 	return constructorNode
 }

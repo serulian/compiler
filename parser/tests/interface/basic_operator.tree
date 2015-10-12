@@ -1,19 +1,24 @@
 NodeTypeFile
-  end-rune = 85
+  end-rune = 88
   input-source = basic interface operator test
   start-rune = 0
   child-node =>
     NodeTypeInterface
-      end-rune = 85
+      end-rune = 88
       input-source = basic interface operator test
       named = ISomeInterface
       start-rune = 0
       type-member =>
         NodeTypeOperator
-          end-rune = 84
+          end-rune = 87
           input-source = basic interface operator test
           operator-named = Plus
           start-rune = 28
+          typemember-body =>
+            NodeTypeStatementBlock
+              end-rune = 87
+              input-source = basic interface operator test
+              start-rune = 85
           typemember-parameter =>
             NodeTypeParameter
               end-rune = 60
