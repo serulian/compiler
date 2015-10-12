@@ -53,13 +53,14 @@
         "Key": "91d8b3ecc5d735a2dbb5e2daddec070a",
         "Kind": 1,
         "Children": {
-            "6433870acfcb51d6063bc034e2568a53": {
+            "308e0f2f47fab5b782842d36cc9fc3cb": {
                 "Predicate": "tdg-declaration-operator",
                 "Child": {
-                    "Key": "6433870acfcb51d6063bc034e2568a53",
+                    "Key": "308e0f2f47fab5b782842d36cc9fc3cb",
                     "Kind": 4,
                     "Children": {},
                     "Predicates": {
+                        "tdg-member-name": "•plus",
                         "tdg-member-signature": "\n\u0004plus\u0010\u0004\u0018\u0000\"\u0003any",
                         "tdg-node-kind": "4|NodeType|tdg",
                         "tdg-operator-exported": "true",
