@@ -133,7 +133,7 @@ type typegraphTest struct {
 }
 
 func (tgt *typegraphTest) json() string {
-	b, err := ioutil.ReadFile(fmt.Sprintf("tests/%s/graph.json", tgt.input))
+	b, err := ioutil.ReadFile(fmt.Sprintf("tests/%s/%s.json", tgt.input, tgt.entrypoint))
 	if err != nil {
 		panic(err)
 	}
@@ -142,7 +142,7 @@ func (tgt *typegraphTest) json() string {
 }
 
 func (tgt *typegraphTest) writeJson(value string) {
-	err := ioutil.WriteFile(fmt.Sprintf("tests/%s/graph.json", tgt.input), []byte(value), 0644)
+	err := ioutil.WriteFile(fmt.Sprintf("tests/%s/%s.json", tgt.input, tgt.entrypoint), []byte(value), 0644)
 	if err != nil {
 		panic(err)
 	}
@@ -150,33 +150,33 @@ func (tgt *typegraphTest) writeJson(value string) {
 
 var typeGraphTests = []typegraphTest{
 	// Success tests.
-	typegraphTest{"simple test", "simple", "simple.seru", ""},
-	typegraphTest{"generic test", "generic", "generic.seru", ""},
-	typegraphTest{"complex generic test", "complexgeneric", "complexgeneric.seru", ""},
-	typegraphTest{"stream test", "stream", "stream.seru", ""},
-	typegraphTest{"class members test", "members", "class.seru", ""},
-	typegraphTest{"generic local constraint test", "genericlocalconstraint", "example.seru", ""},
-	typegraphTest{"class inherits members test", "membersinherit", "inheritance.seru", ""},
-	typegraphTest{"generic class inherits members test", "genericmembersinherit", "inheritance.seru", ""},
-	typegraphTest{"generic function constraint test", "genericfunctionconstraint", "example.seru", ""},
-	typegraphTest{"interface constraint test", "interfaceconstraint", "interface.seru", ""},
+	typegraphTest{"simple test", "simple", "simple", ""},
+	typegraphTest{"generic test", "generic", "generic", ""},
+	typegraphTest{"complex generic test", "complexgeneric", "complexgeneric", ""},
+	typegraphTest{"stream test", "stream", "stream", ""},
+	typegraphTest{"class members test", "members", "class", ""},
+	typegraphTest{"generic local constraint test", "genericlocalconstraint", "example", ""},
+	typegraphTest{"class inherits members test", "membersinherit", "inheritance", ""},
+	typegraphTest{"generic class inherits members test", "genericmembersinherit", "inheritance", ""},
+	typegraphTest{"generic function constraint test", "genericfunctionconstraint", "example", ""},
+	typegraphTest{"interface constraint test", "interfaceconstraint", "interface", ""},
 
 	// Failure tests.
-	typegraphTest{"type redeclaration test", "redeclare", "redeclare.seru", "Type 'SomeClass' is already defined in the module"},
-	typegraphTest{"generic redeclaration test", "genericredeclare", "redeclare.seru", "Generic 'T' is already defined"},
-	typegraphTest{"generic constraint resolve failure test", "genericconstraint", "notfound.seru", "Type 'UnknownType' could not be found"},
-	typegraphTest{"unknown operator failure test", "operatorfail", "unknown.seru", "Unknown operator 'NotValid' defined on type 'SomeType'"},
-	typegraphTest{"operator redefine failure test", "operatorfail", "redefine.seru", "Operator 'plus' is already defined on type 'SomeType'"},
-	typegraphTest{"operator param count mismatch failure test", "operatorfail", "paramcount.seru", "Operator 'Plus' defined on type 'SomeType' expects 2 parameters; found 1"},
-	typegraphTest{"operator param type mismatch failure test", "operatorfail", "paramtype.seru", "Parameter 'right' (#1) for operator 'Plus' defined on type 'SomeType' expects type SomeType; found Integer"},
-	typegraphTest{"inheritance cycle failure test", "inheritscycle", "inheritscycle.seru", "A cycle was detected in the inheritance of types: [ThirdClass SecondClass FirstClass]"},
-	typegraphTest{"invalid parents test", "invalidparent", "generic.seru", "Type 'DerivesFromGeneric' cannot derive from a generic ('T')"},
-	typegraphTest{"invalid parents test", "invalidparent", "interface.seru", "Type 'DerivesFromInterface' cannot derive from an interface ('SomeInterface')"},
+	typegraphTest{"type redeclaration test", "redeclare", "redeclare", "Type 'SomeClass' is already defined in the module"},
+	typegraphTest{"generic redeclaration test", "genericredeclare", "redeclare", "Generic 'T' is already defined"},
+	typegraphTest{"generic constraint resolve failure test", "genericconstraint", "notfound", "Type 'UnknownType' could not be found"},
+	typegraphTest{"unknown operator failure test", "operatorfail", "unknown", "Unknown operator 'NotValid' defined on type 'SomeType'"},
+	typegraphTest{"operator redefine failure test", "operatorfail", "redefine", "Operator 'plus' is already defined on type 'SomeType'"},
+	typegraphTest{"operator param count mismatch failure test", "operatorfail", "paramcount", "Operator 'Plus' defined on type 'SomeType' expects 2 parameters; found 1"},
+	typegraphTest{"operator param type mismatch failure test", "operatorfail", "paramtype", "Parameter 'right' (#1) for operator 'Plus' defined on type 'SomeType' expects type SomeType; found Integer"},
+	typegraphTest{"inheritance cycle failure test", "inheritscycle", "inheritscycle", "A cycle was detected in the inheritance of types: [ThirdClass SecondClass FirstClass]"},
+	typegraphTest{"invalid parents test", "invalidparent", "generic", "Type 'DerivesFromGeneric' cannot derive from a generic ('T')"},
+	typegraphTest{"invalid parents test", "invalidparent", "interface", "Type 'DerivesFromInterface' cannot derive from an interface ('SomeInterface')"},
 }
 
 func TestGraphs(t *testing.T) {
 	for _, test := range typeGraphTests {
-		graph, err := compilergraph.NewGraph("tests/" + test.input + "/" + test.entrypoint)
+		graph, err := compilergraph.NewGraph("tests/" + test.input + "/" + test.entrypoint + ".seru")
 		if err != nil {
 			t.Errorf("Got error on test %s: %v", test.name, err)
 		}
