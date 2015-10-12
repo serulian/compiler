@@ -79,12 +79,18 @@ func (tr TypeReference) Verify() error {
 //
 // Subtyping rules in Serulian are as follows:
 //   - All types are subtypes of 'any'.
+//   - A non-nullable type is a subtype of a nullable type (but not vice versa).
 //   - A class is a subtype of itself (and no other class) and only if generics and parameters match.
 //   - A class (or interface) is a subtype of an interface if it defines that interface's full signature.
 func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
 	// If the other is the any type, then we know this to be a subtype.
 	if other.IsAny() {
 		return nil
+	}
+
+	// Check nullability.
+	if !other.IsNullable() && tr.IsNullable() {
+		return fmt.Errorf("Nullable type '%v' cannot be used in place of non-nullable type '%v'", tr, other)
 	}
 
 	// Directly the same = subtype.
@@ -181,7 +187,7 @@ func (tr TypeReference) adjustedMemberSignature(node compilergraph.GraphNode) st
 	esig := &proto.MemberSig{}
 	memberSig := node.GetTagged(NodePredicateMemberSignature, esig).(*proto.MemberSig)
 
-	// Replace the generics of th parent type in the signature with those of the type reference.
+	// Replace the generics of the parent type in the signature with those of the type reference.
 	generics := tr.Generics()
 
 	var index = 0

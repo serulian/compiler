@@ -161,6 +161,7 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"generic function constraint test", "genericfunctionconstraint", "example", ""},
 	typegraphTest{"interface constraint test", "interfaceconstraint", "interface", ""},
 	typegraphTest{"generic interface constraint test", "interfaceconstraint", "genericinterface", ""},
+	typegraphTest{"nullable generic interface constraint test", "interfaceconstraint", "nullable", ""},
 	typegraphTest{"function generic interface constraint test", "interfaceconstraint", "functiongeneric", ""},
 
 	// Failure tests.
@@ -179,6 +180,7 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"generic interface constraint missing test", "interfaceconstraint", "genericinterfacemissing", "Generic 'T' (#1) on type 'SomeClass' has constraint 'ISomeInterface<Integer>'. Specified type 'ThirdClass' does not match: 'ThirdClass' cannot be used in place of 'ISomeInterface<Integer>' as it does not define member 'DoSomething'"},
 	typegraphTest{"generic interface constraint invalid test", "interfaceconstraint", "genericinterfaceinvalid", "Generic 'T' (#1) on type 'SomeClass' has constraint 'ISomeInterface<Integer>'. Specified type 'ThirdClass' does not match: 'ThirdClass' cannot be used in place of 'ISomeInterface<Integer>' as member 'DoSomething' does not have the same signature in both types"},
 	typegraphTest{"function generic interface constraint invalid test", "interfaceconstraint", "invalidfunctiongeneric", "Generic 'T' (#1) on type 'AnotherClass' has constraint 'ISomeInterface'. Specified type 'SomeClass' does not match: 'SomeClass' cannot be used in place of 'ISomeInterface' as it does not define member 'DoSomething' with matching signature"},
+	typegraphTest{"nullable constraint invalid test", "interfaceconstraint", "invalidnullable", "Generic 'T' (#1) on type 'SomeClass' has constraint 'ISomeInterface<Integer>'. Specified type 'ThirdClass?' does not match: Nullable type 'ThirdClass?' cannot be used in place of non-nullable type 'ISomeInterface<Integer>'"},
 }
 
 func TestGraphs(t *testing.T) {
