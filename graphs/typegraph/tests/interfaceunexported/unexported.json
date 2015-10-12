@@ -1,0 +1,164 @@
+{
+    "270b0f1775ea6f43139651de58e41e6f": {
+        "Key": "270b0f1775ea6f43139651de58e41e6f",
+        "Kind": 1,
+        "Children": {
+            "485b87715e808539e443f0c9fa675de8": {
+                "Predicate": "tdg-declaration-generic",
+                "Child": {
+                    "Key": "485b87715e808539e443f0c9fa675de8",
+                    "Kind": 5,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-generic-index": "0",
+                        "tdg-generic-kind": "0",
+                        "tdg-generic-name": "T",
+                        "tdg-generic-subtype": "ISomething",
+                        "tdg-node-kind": "5|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-declaration-module": "(NodeRef)",
+            "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-srg-source": "(NodeRef)",
+            "tdg-type-name": "GenericClass"
+        }
+    },
+    "794a5310bd2bca2ab8beaeb7b7004af5": {
+        "Key": "794a5310bd2bca2ab8beaeb7b7004af5",
+        "Kind": 1,
+        "Children": {},
+        "Predicates": {
+            "tdg-declaration-module": "(NodeRef)",
+            "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-srg-source": "(NodeRef)",
+            "tdg-type-name": "Integer"
+        }
+    },
+    "83a803f30d7c5f6aea39b0cd4d03c407": {
+        "Key": "83a803f30d7c5f6aea39b0cd4d03c407",
+        "Kind": 1,
+        "Children": {
+            "cca1e2e63967231fa211dfb153130d74": {
+                "Predicate": "tdg-declaration-generic",
+                "Child": {
+                    "Key": "cca1e2e63967231fa211dfb153130d74",
+                    "Kind": 5,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-generic-index": "0",
+                        "tdg-generic-kind": "0",
+                        "tdg-generic-name": "T",
+                        "tdg-generic-subtype": "any",
+                        "tdg-node-kind": "5|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-declaration-module": "(NodeRef)",
+            "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-srg-source": "(NodeRef)",
+            "tdg-type-name": "Function"
+        }
+    },
+    "91d8b3ecc5d735a2dbb5e2daddec070a": {
+        "Key": "91d8b3ecc5d735a2dbb5e2daddec070a",
+        "Kind": 1,
+        "Children": {
+            "e02a669b9f852ca0b47052cc08036a98": {
+                "Predicate": "tdg-declaration-member",
+                "Child": {
+                    "Key": "e02a669b9f852ca0b47052cc08036a98",
+                    "Kind": 3,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-name": "privateFunc",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "Function\u003cInteger\u003e",
+                        "tdg-member-signature": "\n\u000bprivateFunc\u0010\u0002\u0018\u0000 \u0000*\u0011Function\u003cInteger\u003e",
+                        "tdg-node-kind": "3|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-declaration-module": "(NodeRef)",
+            "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-srg-source": "(NodeRef)",
+            "tdg-type-name": "SomeClass"
+        }
+    },
+    "98921bb184e038351685f4e1c54f0c0c": {
+        "Key": "98921bb184e038351685f4e1c54f0c0c",
+        "Kind": 2,
+        "Children": {
+            "cca1e2e63967231fa211dfb153130d74": {
+                "Predicate": "tdg-declaration-generic",
+                "Child": {
+                    "Key": "cca1e2e63967231fa211dfb153130d74",
+                    "Kind": 5,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-generic-index": "0",
+                        "tdg-generic-kind": "0",
+                        "tdg-generic-name": "T",
+                        "tdg-generic-subtype": "any",
+                        "tdg-node-kind": "5|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-declaration-module": "(NodeRef)",
+            "tdg-node-kind": "2|NodeType|tdg",
+            "tdg-srg-source": "(NodeRef)",
+            "tdg-type-name": "Stream"
+        }
+    },
+    "adcb184797bfbad843d482060aa254fe": {
+        "Key": "adcb184797bfbad843d482060aa254fe",
+        "Kind": 1,
+        "Children": {},
+        "Predicates": {
+            "tdg-declaration-module": "(NodeRef)",
+            "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-srg-source": "(NodeRef)",
+            "tdg-type-name": "AnotherClass"
+        }
+    },
+    "dcf27132aac9e51189c77a6f43d7d2e2": {
+        "Key": "dcf27132aac9e51189c77a6f43d7d2e2",
+        "Kind": 2,
+        "Children": {
+            "e02a669b9f852ca0b47052cc08036a98": {
+                "Predicate": "tdg-declaration-member",
+                "Child": {
+                    "Key": "e02a669b9f852ca0b47052cc08036a98",
+                    "Kind": 3,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-name": "privateFunc",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "Function\u003cInteger\u003e",
+                        "tdg-member-signature": "\n\u000bprivateFunc\u0010\u0002\u0018\u0000 \u0000*\u0011Function\u003cInteger\u003e",
+                        "tdg-node-kind": "3|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-declaration-module": "(NodeRef)",
+            "tdg-node-kind": "2|NodeType|tdg",
+            "tdg-srg-source": "(NodeRef)",
+            "tdg-type-name": "ISomething"
+        }
+    }
+}

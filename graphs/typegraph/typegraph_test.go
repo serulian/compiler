@@ -164,6 +164,7 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"nullable generic interface constraint test", "interfaceconstraint", "nullable", ""},
 	typegraphTest{"function generic interface constraint test", "interfaceconstraint", "functiongeneric", ""},
 	typegraphTest{"interface with operator constraint test", "interfaceconstraint", "interfaceoperator", ""},
+	typegraphTest{"unexported in interface test", "interfaceunexported", "unexported", ""},
 
 	// Failure tests.
 	typegraphTest{"type redeclaration test", "redeclare", "redeclare", "Type 'SomeClass' is already defined in the module"},

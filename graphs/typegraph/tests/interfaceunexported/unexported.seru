@@ -1,0 +1,11 @@
+interface ISomething {
+	function<int> privateFunc()
+}
+
+class SomeClass {
+	function<int> privateFunc() {}
+}
+
+class GenericClass<T : ISomething>{}
+
+class AnotherClass : GenericClass<SomeClass> {}
