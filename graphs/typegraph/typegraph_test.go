@@ -160,6 +160,8 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"generic class inherits members test", "genericmembersinherit", "inheritance", ""},
 	typegraphTest{"generic function constraint test", "genericfunctionconstraint", "example", ""},
 	typegraphTest{"interface constraint test", "interfaceconstraint", "interface", ""},
+	typegraphTest{"generic interface constraint test", "interfaceconstraint", "genericinterface", ""},
+	typegraphTest{"function generic interface constraint test", "interfaceconstraint", "functiongeneric", ""},
 
 	// Failure tests.
 	typegraphTest{"type redeclaration test", "redeclare", "redeclare", "Type 'SomeClass' is already defined in the module"},
@@ -172,6 +174,11 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"inheritance cycle failure test", "inheritscycle", "inheritscycle", "A cycle was detected in the inheritance of types: [ThirdClass SecondClass FirstClass]"},
 	typegraphTest{"invalid parents test", "invalidparent", "generic", "Type 'DerivesFromGeneric' cannot derive from a generic ('T')"},
 	typegraphTest{"invalid parents test", "invalidparent", "interface", "Type 'DerivesFromInterface' cannot derive from an interface ('SomeInterface')"},
+	typegraphTest{"interface constraint failure missing func test", "interfaceconstraint", "missingfunc", "Generic 'T' (#1) on type 'SomeClass' has constraint 'ISomeInterface'. Specified type 'ThirdClass' does not match: 'ThirdClass' cannot be used in place of 'ISomeInterface' as it does not define member 'DoSomething' with matching signature"},
+	typegraphTest{"interface constraint failure misdefined func test", "interfaceconstraint", "notmatchingfunc", "Generic 'T' (#1) on type 'SomeClass' has constraint 'ISomeInterface'. Specified type 'ThirdClass' does not match: 'ThirdClass' cannot be used in place of 'ISomeInterface' as it does not define member 'DoSomething' with matching signature"},
+	typegraphTest{"generic interface constraint missing test", "interfaceconstraint", "genericinterfacemissing", "Generic 'T' (#1) on type 'SomeClass' has constraint 'ISomeInterface<Integer>'. Specified type 'ThirdClass' does not match: 'ThirdClass' cannot be used in place of 'ISomeInterface<Integer>' as it does not define member 'DoSomething'"},
+	typegraphTest{"generic interface constraint invalid test", "interfaceconstraint", "genericinterfaceinvalid", "Generic 'T' (#1) on type 'SomeClass' has constraint 'ISomeInterface<Integer>'. Specified type 'ThirdClass' does not match: 'ThirdClass' cannot be used in place of 'ISomeInterface<Integer>' as member 'DoSomething' does not have the same signature in both types"},
+	typegraphTest{"function generic interface constraint invalid test", "interfaceconstraint", "invalidfunctiongeneric", "Generic 'T' (#1) on type 'AnotherClass' has constraint 'ISomeInterface'. Specified type 'SomeClass' does not match: 'SomeClass' cannot be used in place of 'ISomeInterface' as it does not define member 'DoSomething' with matching signature"},
 }
 
 func TestGraphs(t *testing.T) {
@@ -192,7 +199,10 @@ func TestGraphs(t *testing.T) {
 
 		if test.expectedError == "" {
 			// Make sure we had no errors during construction.
-			assert.True(t, result.Status, "Got error for type graph construction %v: %s", test.name, result.Errors)
+			if !assert.True(t, result.Status, "Got error for type graph construction %v: %s", test.name, result.Errors) {
+				continue
+			}
+
 			currentLayerView := buildLayerJSON(t, result.Graph)
 
 			if os.Getenv("REGEN") == "true" {

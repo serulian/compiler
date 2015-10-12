@@ -10,6 +10,8 @@ import (
 	"strings"
 
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/compilerutil"
+	"github.com/serulian/compiler/graphs/typegraph/proto"
 )
 
 // TypeReference represents a saved type reference in the graph.
@@ -57,8 +59,9 @@ func (tr TypeReference) Verify() error {
 	if len(typeGenerics) > 0 {
 		for index, typeGeneric := range typeGenerics {
 			refGeneric := refGenerics[index]
-			if !refGeneric.IsSubTypeOf(typeGeneric.Constraint()) {
-				return fmt.Errorf("Generic '%s' (#%v) on type '%s' has constraint '%v'. Specified type '%v' does not match.", typeGeneric.Name(), index+1, typeGeneric.Constraint(), refGeneric)
+			err := refGeneric.CheckSubTypeOf(typeGeneric.Constraint())
+			if err != nil {
+				return fmt.Errorf("Generic '%s' (#%v) on type '%s' has constraint '%v'. Specified type '%v' does not match: %v", typeGeneric.Name(), index+1, referredType.Name(), typeGeneric.Constraint(), refGeneric, err)
 			}
 		}
 	}
@@ -71,22 +74,22 @@ func (tr TypeReference) Verify() error {
 	return nil
 }
 
-// IsSubTypeOf returns whether the type pointed to by this type reference is a subtype
+// CheckSubTypeOf returns whether the type pointed to by this type reference is a subtype
 // of the other type reference: tr <: other
 //
 // Subtyping rules in Serulian are as follows:
 //   - All types are subtypes of 'any'.
 //   - A class is a subtype of itself (and no other class) and only if generics and parameters match.
 //   - A class (or interface) is a subtype of an interface if it defines that interface's full signature.
-func (tr TypeReference) IsSubTypeOf(other TypeReference) bool {
+func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
 	// If the other is the any type, then we know this to be a subtype.
 	if other.IsAny() {
-		return true
+		return nil
 	}
 
 	// Directly the same = subtype.
 	if other == tr {
-		return true
+		return nil
 	}
 
 	localType := TGTypeDecl{tr.ReferredType(), tr.tdg}
@@ -94,7 +97,7 @@ func (tr TypeReference) IsSubTypeOf(other TypeReference) bool {
 
 	// If the other reference's type node is not an interface, then this reference cannot be a subtype.
 	if otherType.TypeKind() != InterfaceType {
-		return false
+		return fmt.Errorf("'%v' cannot be used in place of non-interface '%v'", tr, other)
 	}
 
 	localGenerics := tr.Generics()
@@ -115,17 +118,96 @@ func (tr TypeReference) IsSubTypeOf(other TypeReference) bool {
 				TryGetNode()
 
 			if !exists {
-				return false
+				memberName := oit.Node().Get(NodePredicateMemberName)
+				return fmt.Errorf("'%v' cannot be used in place of '%v' as it does not define member '%s' with matching signature", tr, other, memberName)
 			}
 		}
 
-		return true
+		return nil
 	}
 
 	// Otherwise, build the list of member signatures to compare. We'll have to deserialize them
 	// and replace the generic types properly in order to compare.
+	otherSigs := other.buildMemberSignaturesMap()
+	localSigs := tr.buildMemberSignaturesMap()
 
-	return false
+	// Ensure that every signature in otherSigs is under localSigs.
+	for memberName, memberSig := range otherSigs {
+		localSig, exists := localSigs[memberName]
+		if !exists {
+			return fmt.Errorf("'%v' cannot be used in place of '%v' as it does not define member '%s'", tr, other, memberName)
+		}
+
+		if localSig != memberSig {
+			return fmt.Errorf("'%v' cannot be used in place of '%v' as member '%s' does not have the same signature in both types", tr, other, memberName)
+		}
+	}
+
+	return nil
+}
+
+// buildMemberSignaturesMap returns a map of member name -> member signature, where each signature
+// is adjusted by replacing the referred type's generics, with the references found under this
+// overall type reference.
+func (tr TypeReference) buildMemberSignaturesMap() map[string]string {
+	membersMap := map[string]string{}
+
+	mit := tr.ReferredType().StartQuery().
+		Out(NodePredicateTypeMember, NodePredicateTypeOperator).
+		BuildNodeIterator(NodePredicateMemberName)
+
+	for mit.Next() {
+		// Get the current member's signature, adjusted for the type's generics.
+		adjustedMemberSig := tr.adjustedMemberSignature(mit.Node())
+		membersMap[mit.Values()[NodePredicateMemberName]] = adjustedMemberSig
+	}
+
+	return membersMap
+}
+
+// adjustedMemberSignature returns the member signature found on the given node, adjusted for
+// the parent type's generics, as specified in this type reference. Will panic if the type reference
+// does not refer to the node's parent type.
+func (tr TypeReference) adjustedMemberSignature(node compilergraph.GraphNode) string {
+	compilerutil.DCHECK(func() bool {
+		return node.StartQuery().In(NodePredicateTypeMember).GetNode() == tr.ReferredType()
+	}, "Type reference must be parent of member node")
+
+	// Retrieve the generics of the parent type.
+	parentNode := tr.ReferredType()
+	pgit := parentNode.StartQuery().Out(NodePredicateTypeGeneric).BuildNodeIterator()
+
+	// Parse the member signature.
+	esig := &proto.MemberSig{}
+	memberSig := node.GetTagged(NodePredicateMemberSignature, esig).(*proto.MemberSig)
+
+	// Replace the generics of th parent type in the signature with those of the type reference.
+	generics := tr.Generics()
+
+	var index = 0
+	for pgit.Next() {
+		genericNode := pgit.Node()
+		genericRef := generics[index]
+
+		// Replace the generic in the member type.
+		adjustedType := tr.Build(memberSig.GetMemberType()).(TypeReference).
+			ReplaceType(genericNode, genericRef).
+			Value()
+
+		memberSig.MemberType = &adjustedType
+
+		// Replace the generic in any generic constraints.
+		for cindex, constraint := range memberSig.GetGenericConstraints() {
+			memberSig.GenericConstraints[cindex] = tr.Build(constraint).(TypeReference).
+				ReplaceType(genericNode, genericRef).
+				Value()
+		}
+
+		index = index + 1
+	}
+
+	// Reserialize the member signature.
+	return memberSig.Value()
 }
 
 // IsAny returns whether this type reference refers to the special 'any' type.
