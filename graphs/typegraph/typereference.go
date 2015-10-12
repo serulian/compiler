@@ -132,7 +132,7 @@ func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
 	}
 
 	// Otherwise, build the list of member signatures to compare. We'll have to deserialize them
-	// and replace the generic types properly in order to compare.
+	// and replace the generic types in order to properly compare.
 	otherSigs := other.buildMemberSignaturesMap()
 	localSigs := tr.buildMemberSignaturesMap()
 
