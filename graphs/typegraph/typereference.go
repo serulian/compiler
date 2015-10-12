@@ -50,7 +50,7 @@ func (tr TypeReference) Verify() error {
 
 	// Check generics count.
 	if len(typeGenerics) != len(refGenerics) {
-		return fmt.Errorf("Expected %v generics on type '%s', found: %s", len(typeGenerics), referredType.Name(), len(refGenerics))
+		return fmt.Errorf("Expected %v generics on type '%s', found: %v", len(typeGenerics), referredType.Name(), len(refGenerics))
 	}
 
 	// Check generics constraints.
@@ -97,9 +97,34 @@ func (tr TypeReference) IsSubTypeOf(other TypeReference) bool {
 		return false
 	}
 
-	// TODO: compare member signatures.
-	if localType == otherType {
+	localGenerics := tr.Generics()
+	otherGenerics := other.Generics()
+
+	// If both types are non-generic, fast path by looking up the signatures on otherType directly on
+	// the members of localType. If we don't find exact matches, then we know this is not a subtype.
+	if len(localGenerics) == 0 && len(otherGenerics) == 0 {
+		oit := otherType.StartQuery().
+			Out(NodePredicateTypeMember, NodePredicateTypeOperator).
+			BuildNodeIterator(NodePredicateMemberSignature)
+
+		for oit.Next() {
+			signature := oit.Values()[NodePredicateMemberSignature]
+			_, exists := localType.StartQuery().
+				Out(NodePredicateTypeMember, NodePredicateTypeOperator).
+				Has(NodePredicateMemberSignature, signature).
+				TryGetNode()
+
+			if !exists {
+				return false
+			}
+		}
+
+		return true
 	}
+
+	// Otherwise, build the list of member signatures to compare. We'll have to deserialize them
+	// and replace the generic types properly in order to compare.
+
 	return false
 }
 

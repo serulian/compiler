@@ -26,6 +26,9 @@ const (
 	// Generics.
 	NodeTypeGeneric // A defined generic on a type or type member.
 
+	// An issue with a type reference.
+	NodeTypeReferenceIssue
+
 	// NodeType is a tagged type.
 	NodeTypeTagged
 )

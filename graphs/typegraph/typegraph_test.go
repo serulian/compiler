@@ -159,6 +159,7 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"class inherits members test", "membersinherit", "inheritance.seru", ""},
 	typegraphTest{"generic class inherits members test", "genericmembersinherit", "inheritance.seru", ""},
 	typegraphTest{"generic function constraint test", "genericfunctionconstraint", "example.seru", ""},
+	typegraphTest{"interface constraint test", "interfaceconstraint", "interface.seru", ""},
 
 	// Failure tests.
 	typegraphTest{"type redeclaration test", "redeclare", "redeclare.seru", "Type 'SomeClass' is already defined in the module"},
@@ -208,7 +209,7 @@ func TestGraphs(t *testing.T) {
 			}
 
 			// Make sure the error expected is found.
-			assert.Equal(t, 1, len(result.Errors), "Expected one error")
+			assert.Equal(t, 1, len(result.Errors), "In test %v: Expected one error, found: %v", test.name, result.Errors)
 			assert.Equal(t, test.expectedError, result.Errors[0].Error())
 		}
 	}

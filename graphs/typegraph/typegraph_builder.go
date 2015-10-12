@@ -42,7 +42,9 @@ func (t *TypeGraph) build(g *srg.SRG) *Result {
 	}
 
 	// Constraint check all type references.
-	// TODO: this.
+	if result.Status && !t.verifyTypeReferences() {
+		result.Status = false
+	}
 
 	// If the result is not true, collect all the errors found.
 	if !result.Status {
@@ -87,12 +89,46 @@ type memberWork struct {
 	parentReferences []TypeReference
 }
 
+// verifyTypeReferences verifies and validates all type references in the *SRG*.
+func (t *TypeGraph) verifyTypeReferences() bool {
+	validateTyperef := func(key interface{}, value interface{}) bool {
+		srgTypeRef := value.(srg.SRGTypeRef)
+		typeref, err := t.buildTypeRef(srgTypeRef)
+		if err != nil {
+			issueNode := t.layer.CreateNode(NodeTypeReferenceIssue)
+			issueNode.Connect(NodePredicateSource, srgTypeRef.GraphNode)
+			t.decorateWithError(issueNode, "%v", err)
+			return false
+		}
+
+		verr := typeref.Verify()
+		if verr != nil {
+			issueNode := t.layer.CreateNode(NodeTypeReferenceIssue)
+			issueNode.Connect(NodePredicateSource, srgTypeRef.GraphNode)
+			t.decorateWithError(issueNode, "%v", verr)
+			return false
+		}
+
+		return true
+	}
+
+	workqueue := compilerutil.Queue()
+
+	for _, srgTypeRef := range t.srg.GetTypeReferences() {
+		refKey := workKey{srgTypeRef.GraphNode, "-", "Typeref"}
+		workqueue.Enqueue(refKey, srgTypeRef, validateTyperef)
+	}
+
+	return workqueue.Run().Status
+}
+
 // translateTypeMembers translates the type members from the SRG, including handling class
 // composition/inheritance.
 func (t *TypeGraph) translateTypeMembers() bool {
 	buildTypeMembers := func(key interface{}, value interface{}) bool {
 		data := value.(memberWork)
-		return t.buildMembership(TGTypeDecl{t.getTypeNodeForSRGType(data.srgType), t}, data.srgType, data.parentReferences)
+		typeDecl := TGTypeDecl{t.getTypeNodeForSRGType(data.srgType), t}
+		return t.buildMembership(typeDecl, data.srgType, data.parentReferences)
 	}
 
 	// Enqueue the full set of SRG types with dependencies on any parent types.
@@ -133,7 +169,6 @@ func (t *TypeGraph) translateTypeMembers() bool {
 
 				success = false
 				continue
-
 			}
 
 			dependencies = append(dependencies, workKey{referredType, "-", "Members"})

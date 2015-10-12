@@ -29,6 +29,19 @@ const (
 	TypeRefPath                        // A normal path type. May have generics.
 )
 
+// GetTypeReferences returns all the type references in the SRG.
+func (g *SRG) GetTypeReferences() []SRGTypeRef {
+	it := g.findAllNodes(parser.NodeTypeTypeReference).
+		BuildNodeIterator()
+
+	var refs []SRGTypeRef
+	for it.Next() {
+		refs = append(refs, SRGTypeRef{it.Node(), g})
+	}
+
+	return refs
+}
+
 // Location returns the source location for this type ref.
 func (t SRGTypeRef) Location() compilercommon.SourceAndLocation {
 	return salForNode(t.GraphNode)

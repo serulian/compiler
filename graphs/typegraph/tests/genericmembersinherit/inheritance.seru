@@ -17,8 +17,8 @@ class SecondBaseType<Q> {
 	}
 }
 
-class SomeDerivingType<T> : FirstBaseType<SecondBaseType> + SecondBaseType<T> {
-	property<FirstBaseType> MainProp {
+class SomeDerivingType<T> : FirstBaseType<SecondBaseType<int>> + SecondBaseType<T> {
+	property<FirstBaseType<int>> MainProp {
 		get {}
 	}
 }

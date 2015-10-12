@@ -1,0 +1,15 @@
+interface ISomeInterface {
+	function<int> DoSomething(foo int, bar int)
+}
+
+class SomeClass<T : ISomeInterface>{
+}
+
+class ThirdClass {
+   function<int> DoSomething(foo int, bar int) {}
+   function<int> AnotherThing() {}
+}
+
+class AnotherClass<ThirdClass>{
+
+}
