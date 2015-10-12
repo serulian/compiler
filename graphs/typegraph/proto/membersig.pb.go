@@ -28,8 +28,9 @@ type MemberSig struct {
 	MemberName         *string  `protobuf:"bytes,1,opt,name=MemberName" json:"MemberName,omitempty"`
 	MemberKind         *uint64  `protobuf:"varint,2,opt,name=MemberKind" json:"MemberKind,omitempty"`
 	IsWritable         *bool    `protobuf:"varint,3,opt,name=IsWritable" json:"IsWritable,omitempty"`
-	MemberType         *string  `protobuf:"bytes,4,opt,name=MemberType" json:"MemberType,omitempty"`
-	GenericConstraints []string `protobuf:"bytes,5,rep,name=GenericConstraints" json:"GenericConstraints,omitempty"`
+	IsExported         *bool    `protobuf:"varint,4,opt,name=IsExported" json:"IsExported,omitempty"`
+	MemberType         *string  `protobuf:"bytes,5,opt,name=MemberType" json:"MemberType,omitempty"`
+	GenericConstraints []string `protobuf:"bytes,6,rep,name=GenericConstraints" json:"GenericConstraints,omitempty"`
 	XXX_unrecognized   []byte   `json:"-"`
 }
 
@@ -54,6 +55,13 @@ func (m *MemberSig) GetMemberKind() uint64 {
 func (m *MemberSig) GetIsWritable() bool {
 	if m != nil && m.IsWritable != nil {
 		return *m.IsWritable
+	}
+	return false
+}
+
+func (m *MemberSig) GetIsExported() bool {
+	if m != nil && m.IsExported != nil {
+		return *m.IsExported
 	}
 	return false
 }
@@ -108,15 +116,25 @@ func (m *MemberSig) MarshalTo(data []byte) (int, error) {
 		}
 		i++
 	}
+	if m.IsExported != nil {
+		data[i] = 0x20
+		i++
+		if *m.IsExported {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
 	if m.MemberType != nil {
-		data[i] = 0x22
+		data[i] = 0x2a
 		i++
 		i = encodeVarintMembersig(data, i, uint64(len(*m.MemberType)))
 		i += copy(data[i:], *m.MemberType)
 	}
 	if len(m.GenericConstraints) > 0 {
 		for _, s := range m.GenericConstraints {
-			data[i] = 0x2a
+			data[i] = 0x32
 			i++
 			l = len(s)
 			for l >= 1<<7 {
@@ -173,6 +191,9 @@ func (m *MemberSig) Size() (n int) {
 		n += 1 + sovMembersig(uint64(*m.MemberKind))
 	}
 	if m.IsWritable != nil {
+		n += 2
+	}
+	if m.IsExported != nil {
 		n += 2
 	}
 	if m.MemberType != nil {
@@ -305,6 +326,27 @@ func (m *MemberSig) Unmarshal(data []byte) error {
 			b := bool(v != 0)
 			m.IsWritable = &b
 		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field IsExported", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowMembersig
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				v |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			b := bool(v != 0)
+			m.IsExported = &b
+		case 5:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field MemberType", wireType)
 			}
@@ -334,7 +376,7 @@ func (m *MemberSig) Unmarshal(data []byte) error {
 			s := string(data[iNdEx:postIndex])
 			m.MemberType = &s
 			iNdEx = postIndex
-		case 5:
+		case 6:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field GenericConstraints", wireType)
 			}

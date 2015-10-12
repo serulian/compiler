@@ -3,10 +3,10 @@
         "Key": "1be89dd03870cb2e19c2218b8bb968b7",
         "Kind": 2,
         "Children": {
-            "22aec2d2f80c148994c780388007ff87": {
+            "3819de9e915e8f19c80d82010d5929fd": {
                 "Predicate": "tdg-declaration-member",
                 "Child": {
-                    "Key": "22aec2d2f80c148994c780388007ff87",
+                    "Key": "3819de9e915e8f19c80d82010d5929fd",
                     "Kind": 3,
                     "Children": {
                         "e45941f91a05157206766a0f162557bc": {
@@ -30,7 +30,7 @@
                         "tdg-member-name": "DoSomething",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "Function\u003cInteger\u003e(T)",
-                        "tdg-member-signature": "\n\u000bDoSomething\u0010\u0002\u0018\u0000\"7Function\u003cInteger\u003e(local:1:0                           )*\u0007Integer",
+                        "tdg-member-signature": "\n\u000bDoSomething\u0010\u0002\u0018\u0000 \u0001*7Function\u003cInteger\u003e(local:1:0                           )2\u0007Integer",
                         "tdg-node-kind": "3|NodeType|tdg",
                         "tdg-srg-source": "(NodeRef)"
                     }
@@ -98,10 +98,10 @@
         "Key": "91d8b3ecc5d735a2dbb5e2daddec070a",
         "Kind": 1,
         "Children": {
-            "22aec2d2f80c148994c780388007ff87": {
+            "3819de9e915e8f19c80d82010d5929fd": {
                 "Predicate": "tdg-declaration-member",
                 "Child": {
-                    "Key": "22aec2d2f80c148994c780388007ff87",
+                    "Key": "3819de9e915e8f19c80d82010d5929fd",
                     "Kind": 3,
                     "Children": {
                         "e45941f91a05157206766a0f162557bc": {
@@ -125,7 +125,7 @@
                         "tdg-member-name": "DoSomething",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "Function\u003cInteger\u003e(T)",
-                        "tdg-member-signature": "\n\u000bDoSomething\u0010\u0002\u0018\u0000\"7Function\u003cInteger\u003e(local:1:0                           )*\u0007Integer",
+                        "tdg-member-signature": "\n\u000bDoSomething\u0010\u0002\u0018\u0000 \u0001*7Function\u003cInteger\u003e(local:1:0                           )2\u0007Integer",
                         "tdg-node-kind": "3|NodeType|tdg",
                         "tdg-srg-source": "(NodeRef)"
                     }

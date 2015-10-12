@@ -114,7 +114,7 @@ func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
 	if len(localGenerics) == 0 && len(otherGenerics) == 0 {
 		oit := otherType.StartQuery().
 			Out(NodePredicateTypeMember, NodePredicateTypeOperator).
-			BuildNodeIterator(NodePredicateMemberSignature)
+			BuildNodeIterator(NodePredicateMemberSignature, NodePredicateMemberName)
 
 		for oit.Next() {
 			signature := oit.Values()[NodePredicateMemberSignature]
@@ -124,8 +124,7 @@ func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
 				TryGetNode()
 
 			if !exists {
-				memberName := oit.Node().Get(NodePredicateMemberName)
-				return fmt.Errorf("'%v' cannot be used in place of '%v' as it does not define member '%s' with matching signature", tr, other, memberName)
+				return buildSubtypeMismatchError(tr, other, oit.Values()[NodePredicateMemberName])
 			}
 		}
 
@@ -140,16 +139,46 @@ func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
 	// Ensure that every signature in otherSigs is under localSigs.
 	for memberName, memberSig := range otherSigs {
 		localSig, exists := localSigs[memberName]
-		if !exists {
-			return fmt.Errorf("'%v' cannot be used in place of '%v' as it does not define member '%s'", tr, other, memberName)
-		}
-
-		if localSig != memberSig {
-			return fmt.Errorf("'%v' cannot be used in place of '%v' as member '%s' does not have the same signature in both types", tr, other, memberName)
+		if !exists || localSig != memberSig {
+			return buildSubtypeMismatchError(tr, other, memberName)
 		}
 	}
 
 	return nil
+}
+
+// buildSubtypeMismatchError returns an error describing the mismatch between the two types for the given
+// member name.
+func buildSubtypeMismatchError(left TypeReference, right TypeReference, memberName string) error {
+	rightMember, rightExists := right.ReferredType().
+		StartQuery().
+		Out(NodePredicateTypeMember, NodePredicateTypeOperator).
+		Has(NodePredicateMemberName, memberName).
+		TryGetNode()
+
+	if !rightExists {
+		// Should never happen... (of course, it will at some point, now that I said this!)
+		panic(fmt.Sprintf("Member '%s' doesn't exist under type '%v'", memberName, right))
+	}
+
+	var memberKind = "member"
+	if rightMember.Kind == NodeTypeOperator {
+		memberKind = "operator"
+		memberName = rightMember.Get(NodePredicateOperatorName)
+	}
+
+	_, leftExists := left.ReferredType().
+		StartQuery().
+		Out(NodePredicateTypeMember, NodePredicateTypeOperator).
+		Has(NodePredicateMemberName, memberName).
+		TryGetNode()
+
+	if !leftExists {
+		return fmt.Errorf("Type '%v' does not define or export %s '%s', which is required by type '%v'", left, memberKind, memberName, right)
+	} else {
+		// TODO(jschorr): Be nice to have specific errors here, but it'll require a lot of manual checking.
+		return fmt.Errorf("%s '%s' under type '%v' does not match that defined in type '%v'", memberKind, memberName, left, right)
+	}
 }
 
 // buildMemberSignaturesMap returns a map of member name -> member signature, where each signature

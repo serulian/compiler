@@ -42,10 +42,10 @@
         "Key": "91d8b3ecc5d735a2dbb5e2daddec070a",
         "Kind": 1,
         "Children": {
-            "dc5777f9ee97e68f68da6cceb2318488": {
+            "e5d79f177059cd607338a91ab109afab": {
                 "Predicate": "tdg-declaration-member",
                 "Child": {
-                    "Key": "dc5777f9ee97e68f68da6cceb2318488",
+                    "Key": "e5d79f177059cd607338a91ab109afab",
                     "Kind": 3,
                     "Children": {
                         "24083a8fd3a7a916d064eb605c72e48d": {
@@ -85,7 +85,7 @@
                         "tdg-member-name": "SomeFunction",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "Function\u003cInteger\u003e",
-                        "tdg-member-signature": "\n\u000cSomeFunction\u0010\u0002\u0018\u0000\"\u0011Function\u003cInteger\u003e*$local:1:1                           *\u0003any",
+                        "tdg-member-signature": "\n\u000cSomeFunction\u0010\u0002\u0018\u0000 \u0001*\u0011Function\u003cInteger\u003e2$local:1:1                           2\u0003any",
                         "tdg-node-kind": "3|NodeType|tdg",
                         "tdg-srg-source": "(NodeRef)"
                     }

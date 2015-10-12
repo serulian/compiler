@@ -3,9 +3,9 @@ interface TestInterface {
 
 	property<SomeClass> SomeProperty { get }
 
-	constructor BuildMe<T, Q>(first T, second Q)
+	constructor BuildMe<T, Q>(first T, second Q) {}
 
-	operator Plus(left SomeClass, right SomeClass)
+	operator Plus(left SomeClass, right SomeClass) {}
 }
 
 class SomeClass {}

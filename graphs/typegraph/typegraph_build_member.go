@@ -145,7 +145,7 @@ func (t *TypeGraph) buildTypeOperatorNode(typeDecl TGTypeDecl, operator srg.SRGT
 	}
 
 	// Add the member signature for this operator.
-	t.decorateWithSig(memberNode, name, uint64(NodeTypeOperator), false, t.AnyTypeReference())
+	t.decorateWithSig(memberNode, name, uint64(NodeTypeOperator), false, operator.IsExported(), t.AnyTypeReference())
 
 	// Ensure we have the expected number of parameters.
 	parametersExpected := definition.Parameters
@@ -269,14 +269,14 @@ func (t *TypeGraph) buildTypeMemberNode(typeDecl TGTypeDecl, member srg.SRGTypeM
 		memberNode.Decorate(NodePredicateMemberReadOnly, "true")
 	}
 
-	t.decorateWithSig(memberNode, member.Name(), uint64(member.TypeMemberKind()), !isReadOnly, memberType, generics...)
+	t.decorateWithSig(memberNode, member.Name(), uint64(member.TypeMemberKind()), !isReadOnly, member.IsExported(), memberType, generics...)
 
 	return success && memberTypeValid
 }
 
 // decorateWithSig decorates the given member node with a unique signature for fast subtype checking.
 func (t *TypeGraph) decorateWithSig(memberNode compilergraph.GraphNode, name string, kind uint64,
-	isWritable bool, memberType TypeReference, generics ...compilergraph.GraphNode) {
+	isWritable bool, isExported bool, memberType TypeReference, generics ...compilergraph.GraphNode) {
 
 	// Build type reference value strings for the member type and any generic constraints (which
 	// handles generic count as well). The call to Localize replaces the type node IDs in the
@@ -292,6 +292,7 @@ func (t *TypeGraph) decorateWithSig(memberNode compilergraph.GraphNode, name str
 	signature := &proto.MemberSig{
 		MemberName:         &name,
 		MemberKind:         &kind,
+		IsExported:         &isExported,
 		IsWritable:         &isWritable,
 		MemberType:         &memberTypeStr,
 		GenericConstraints: constraintStr,
