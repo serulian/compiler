@@ -36,7 +36,10 @@ func (t *TypeGraph) build(g *srg.SRG) *Result {
 	// Load the operators map. Requires the types loaded as it performs lookups of certain types (int, etc).
 	t.buildOperatorDefinitions()
 
-	// Add members (along full inheritance)
+	// Add modules and its members.
+	t.translateModulesAndMembers()
+
+	// Add type members (along full inheritance)
 	if !t.translateTypeMembers() {
 		result.Status = false
 	}
@@ -83,10 +86,16 @@ type genericWork struct {
 	parentType srg.SRGType
 }
 
-// memberWork holds data for a member translations.
-type memberWork struct {
+// typeMemberWork holds data for type member translations.
+type typeMemberWork struct {
 	srgType          srg.SRGType
 	parentReferences []TypeReference
+}
+
+// moduleMemberWork holds data for a module member translations.
+type moduleMemberWork struct {
+	srgModule srg.SRGModule
+	srgMember srg.SRGMember
 }
 
 // verifyTypeReferences verifies and validates all type references in the *SRG*.
@@ -122,11 +131,49 @@ func (t *TypeGraph) verifyTypeReferences() bool {
 	return workqueue.Run().Status
 }
 
+// translateModulesAndMembers translate the modules and its direct members from the SRG.
+func (t *TypeGraph) translateModulesAndMembers() bool {
+	buildModule := func(key interface{}, value interface{}) bool {
+		return t.buildModuleNode(value.(srg.SRGModule))
+	}
+
+	buildModuleMember := func(key interface{}, value interface{}) bool {
+		data := value.(moduleMemberWork)
+		module, found := t.getModuleForSRGModule(data.srgModule)
+		if !found {
+			panic(fmt.Sprintf("Could not find matching TG module for %v", data.srgModule.Name()))
+		}
+
+		return t.buildMemberNode(module, data.srgMember)
+	}
+
+	// Enqueue the set of SRG modules that have members defined.
+	workqueue := compilerutil.Queue()
+
+	for _, module := range t.srg.GetModules() {
+		moduleMembers := module.GetMembers()
+		if len(moduleMembers) == 0 {
+			continue
+		}
+
+		moduleKey := workKey{module.GraphNode, module.Name(), "Module"}
+		workqueue.Enqueue(moduleKey, module, buildModule)
+
+		// Enqueue the members of the module.
+		for _, member := range moduleMembers {
+			memberKey := workKey{member.GraphNode, member.Name(), "ModuleMember"}
+			workqueue.Enqueue(memberKey, moduleMemberWork{module, member}, buildModuleMember, moduleKey)
+		}
+	}
+
+	return workqueue.Run().Status
+}
+
 // translateTypeMembers translates the type members from the SRG, including handling class
 // composition/inheritance.
 func (t *TypeGraph) translateTypeMembers() bool {
 	buildTypeMembers := func(key interface{}, value interface{}) bool {
-		data := value.(memberWork)
+		data := value.(typeMemberWork)
 		typeDecl := TGTypeDecl{t.getTypeNodeForSRGType(data.srgType), t}
 		return t.buildMembership(typeDecl, data.srgType, data.parentReferences)
 	}
@@ -175,7 +222,7 @@ func (t *TypeGraph) translateTypeMembers() bool {
 			parentTypes = append(parentTypes, resolvedType)
 		}
 
-		workqueue.Enqueue(typeKey, memberWork{srgType, parentTypes}, buildTypeMembers, dependencies...)
+		workqueue.Enqueue(typeKey, typeMemberWork{srgType, parentTypes}, buildTypeMembers, dependencies...)
 	}
 
 	// Run the queue to construct the full inheritance.

@@ -21,6 +21,20 @@ func (g *TypeGraph) findAllNodes(nodeTypes ...NodeType) *compilergraph.GraphQuer
 	return g.layer.FindNodesOfKind(nodeTypesTagged...)
 }
 
+// getModuleForSRGModule returns the Type Graph module for the corresponding SRG module. Note that it
+// may not exist.
+func (g *TypeGraph) getModuleForSRGModule(srgModule srg.SRGModule) (TGModule, bool) {
+	resolvedNode, found := g.findAllNodes(NodeTypeModule).
+		Has(NodePredicateSource, string(srgModule.NodeId)).
+		TryGetNode()
+
+	if !found {
+		return TGModule{}, false
+	}
+
+	return TGModule{resolvedNode, g}, true
+}
+
 // getTypeNodeForSRGTypeOrGeneric returns the node in the type graph for the associated SRG type or generic.
 func (g *TypeGraph) getTypeNodeForSRGTypeOrGeneric(srgTypeOrGeneric srg.SRGTypeOrGeneric) compilergraph.GraphNode {
 	return g.getMatchingTypeGraphNode(srgTypeOrGeneric.Node(), NodeTypeClass, NodeTypeInterface, NodeTypeGeneric)

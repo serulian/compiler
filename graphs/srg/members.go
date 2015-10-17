@@ -14,7 +14,7 @@ import (
 	"github.com/serulian/compiler/parser"
 )
 
-// SRGTypeMember wraps a member declaration or definition in the SRG.
+// SRGMember wraps a member declaration or definition in the SRG.
 type SRGMember struct {
 	compilergraph.GraphNode
 	srg *SRG // The parent SRG.

@@ -113,13 +113,13 @@ func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
 	// the members of localType. If we don't find exact matches, then we know this is not a subtype.
 	if len(localGenerics) == 0 && len(otherGenerics) == 0 {
 		oit := otherType.StartQuery().
-			Out(NodePredicateTypeMember, NodePredicateTypeOperator).
+			Out(NodePredicateMember, NodePredicateTypeOperator).
 			BuildNodeIterator(NodePredicateMemberSignature, NodePredicateMemberName)
 
 		for oit.Next() {
 			signature := oit.Values()[NodePredicateMemberSignature]
 			_, exists := localType.StartQuery().
-				Out(NodePredicateTypeMember, NodePredicateTypeOperator).
+				Out(NodePredicateMember, NodePredicateTypeOperator).
 				Has(NodePredicateMemberSignature, signature).
 				TryGetNode()
 
@@ -152,7 +152,7 @@ func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
 func buildSubtypeMismatchError(left TypeReference, right TypeReference, memberName string) error {
 	rightMember, rightExists := right.ReferredType().
 		StartQuery().
-		Out(NodePredicateTypeMember, NodePredicateTypeOperator).
+		Out(NodePredicateMember, NodePredicateTypeOperator).
 		Has(NodePredicateMemberName, memberName).
 		TryGetNode()
 
@@ -169,7 +169,7 @@ func buildSubtypeMismatchError(left TypeReference, right TypeReference, memberNa
 
 	_, leftExists := left.ReferredType().
 		StartQuery().
-		Out(NodePredicateTypeMember, NodePredicateTypeOperator).
+		Out(NodePredicateMember, NodePredicateTypeOperator).
 		Has(NodePredicateMemberName, memberName).
 		TryGetNode()
 
@@ -188,7 +188,7 @@ func (tr TypeReference) buildMemberSignaturesMap() map[string]string {
 	membersMap := map[string]string{}
 
 	mit := tr.ReferredType().StartQuery().
-		Out(NodePredicateTypeMember, NodePredicateTypeOperator).
+		Out(NodePredicateMember, NodePredicateTypeOperator).
 		BuildNodeIterator(NodePredicateMemberName)
 
 	for mit.Next() {
@@ -205,7 +205,7 @@ func (tr TypeReference) buildMemberSignaturesMap() map[string]string {
 // does not refer to the node's parent type.
 func (tr TypeReference) adjustedMemberSignature(node compilergraph.GraphNode) string {
 	compilerutil.DCHECK(func() bool {
-		return node.StartQuery().In(NodePredicateTypeMember).GetNode() == tr.ReferredType()
+		return node.StartQuery().In(NodePredicateMember).GetNode() == tr.ReferredType()
 	}, "Type reference must be parent of member node")
 
 	// Retrieve the generics of the parent type.

@@ -41,10 +41,22 @@ func BuildTypeGraph(srg *srg.SRG) *Result {
 	return typeGraph.build(srg)
 }
 
+// ModulesWithMembers returns all modules containing members defined in the type graph.
+func (g *TypeGraph) ModulesWithMembers() []TGModule {
+	it := g.findAllNodes(NodeTypeModule).
+		BuildNodeIterator()
+
+	var modules []TGModule
+	for it.Next() {
+		modules = append(modules, TGModule{it.Node(), g})
+	}
+	return modules
+}
+
 // TypeDecls returns all types defined in the type graph.
 func (g *TypeGraph) TypeDecls() []TGTypeDecl {
 	it := g.findAllNodes(NodeTypeClass, NodeTypeInterface).
-		BuildNodeIterator(NodePredicateTypeName)
+		BuildNodeIterator()
 
 	var types []TGTypeDecl
 	for it.Next() {

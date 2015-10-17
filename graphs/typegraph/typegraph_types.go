@@ -18,6 +18,7 @@ const (
 	NodeTypeError     NodeType = iota // error occurred; value is text of error
 	NodeTypeClass                     // A class
 	NodeTypeInterface                 // An interface
+	NodeTypeModule                    // A module
 
 	// Member-level
 	NodeTypeMember   // A member of a type or module.
@@ -48,14 +49,23 @@ const (
 	NodePredicateErrorMessage = "error-message"
 
 	//
+	// NodeTypeModule/NodeTypeClass/NodeTypeInterface
+	//
+
+	// Connects a type or module to a member (function, var, etc).
+	NodePredicateMember = "node-member"
+
+	//
+	// NodeTypeModule
+	//
+	NodePredicateModuleName = "module-name"
+
+	//
 	// NodeTypeClass/NodeTypeInterface
 	//
 
-	// Connects a type declaration to its parent module.
+	// Connects a type declaration to its parent module in the *SRG*.
 	NodePredicateTypeModule = "declaration-module"
-
-	// Connects a type declaration to a member (function, var, etc).
-	NodePredicateTypeMember = "declaration-member"
 
 	// Connects a type declaration to an operator (function, var, etc).
 	NodePredicateTypeOperator = "declaration-operator"

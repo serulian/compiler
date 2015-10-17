@@ -5,6 +5,8 @@
 package srg
 
 import (
+	"path"
+
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/parser"
@@ -47,6 +49,11 @@ func (g *SRG) FindModuleBySource(source compilercommon.InputSource) (SRGModule, 
 // InputSource returns the input source for this module.
 func (m SRGModule) InputSource() compilercommon.InputSource {
 	return compilercommon.InputSource(m.GraphNode.Get(parser.NodePredicateSource))
+}
+
+// Name returns the name of the module.
+func (m SRGModule) Name() string {
+	return path.Base(string(m.InputSource()))
 }
 
 // Node returns the underlying node.

@@ -8,6 +8,7 @@ package compilercommon
 import (
 	"fmt"
 	"io/ioutil"
+	"path"
 	"strings"
 )
 
@@ -68,6 +69,11 @@ type SourceAndLocation struct {
 // Source returns the input source path.
 func (sal SourceAndLocation) Source() InputSource {
 	return sal.source
+}
+
+// SourceName returns the name portion of the source path.
+func (sal SourceAndLocation) SourceName() string {
+	return path.Base(string(sal.source))
 }
 
 // Location returns the SourceLocation for this SourceAndLocation.

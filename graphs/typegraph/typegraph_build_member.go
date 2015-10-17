@@ -32,7 +32,7 @@ func (t *TypeGraph) buildMembership(typeDecl TGTypeDecl, srgType srg.SRGType, in
 	}
 
 	// Copy over the type members and operators.
-	t.buildInheritedMembership(typeDecl, inherits, NodePredicateTypeMember)
+	t.buildInheritedMembership(typeDecl, inherits, NodePredicateMember)
 	t.buildInheritedMembership(typeDecl, inherits, NodePredicateTypeOperator)
 	return success
 }
@@ -94,18 +94,18 @@ func (t *TypeGraph) buildInheritedMembership(typeDecl TGTypeDecl, inherits []Typ
 	}
 }
 
-// buildMemberNode adds a new type member node to the specified type node for the given SRG member.
-func (t *TypeGraph) buildMemberNode(typeDecl TGTypeDecl, member srg.SRGMember) bool {
+// buildMemberNode adds a new member node to the specified type or module node for the given SRG member.
+func (t *TypeGraph) buildMemberNode(parent TGTypeOrModule, member srg.SRGMember) bool {
 	if member.MemberKind() == srg.OperatorMember {
-		return t.buildTypeOperatorNode(typeDecl, member)
+		return t.buildTypeOperatorNode(parent, member)
 	} else {
-		return t.buildTypeMemberNode(typeDecl, member)
+		return t.buildTypeMemberNode(parent, member)
 	}
 }
 
 // buildTypeOperatorNode adds a new type operator node to the specified type node for the given SRG member.
-func (t *TypeGraph) buildTypeOperatorNode(typeDecl TGTypeDecl, operator srg.SRGMember) bool {
-	typeNode := typeDecl.Node()
+func (t *TypeGraph) buildTypeOperatorNode(parent TGTypeOrModule, operator srg.SRGMember) bool {
+	typeNode := parent.Node()
 
 	// Normalize the name by lowercasing it.
 	name := strings.ToLower(operator.Name())
@@ -130,7 +130,7 @@ func (t *TypeGraph) buildTypeOperatorNode(typeDecl TGTypeDecl, operator srg.SRGM
 
 	// Mark the member with an error if it is repeated.
 	if exists {
-		t.decorateWithError(memberNode, "Operator '%s' is already defined on type '%s'", operator.Name(), typeDecl.Name())
+		t.decorateWithError(memberNode, "Operator '%s' is already defined on type '%s'", operator.Name(), parent.Name())
 		success = false
 	}
 
@@ -140,7 +140,7 @@ func (t *TypeGraph) buildTypeOperatorNode(typeDecl TGTypeDecl, operator srg.SRGM
 	// Verify that the operator matches a known operator.
 	definition, ok := t.operators[name]
 	if !ok {
-		t.decorateWithError(memberNode, "Unknown operator '%s' defined on type '%s'", operator.Name(), typeDecl.Name())
+		t.decorateWithError(memberNode, "Unknown operator '%s' defined on type '%s'", operator.Name(), parent.Name())
 		return false
 	}
 
@@ -153,7 +153,7 @@ func (t *TypeGraph) buildTypeOperatorNode(typeDecl TGTypeDecl, operator srg.SRGM
 
 	if len(parametersDefined) != len(parametersExpected) {
 		t.decorateWithError(memberNode, "Operator '%s' defined on type '%s' expects %v parameters; found %v",
-			operator.Name(), typeDecl.Name(), len(parametersExpected), len(parametersDefined))
+			operator.Name(), parent.Name(), len(parametersExpected), len(parametersDefined))
 		return false
 	}
 
@@ -169,7 +169,7 @@ func (t *TypeGraph) buildTypeOperatorNode(typeDecl TGTypeDecl, operator srg.SRGM
 		expectedType := parametersExpected[index].ExpectedType(containingType)
 		if expectedType != parameterType {
 			t.decorateWithError(memberNode, "Parameter '%s' (#%v) for operator '%s' defined on type '%s' expects type %v; found %v",
-				parametersExpected[index].Name, index, operator.Name(), typeDecl.Name(),
+				parametersExpected[index].Name, index, operator.Name(), parent.Name(),
 				expectedType, parameterType)
 			success = false
 		}
@@ -179,12 +179,12 @@ func (t *TypeGraph) buildTypeOperatorNode(typeDecl TGTypeDecl, operator srg.SRGM
 }
 
 // buildTypeMemberNode adds a new type member node to the specified type node for the given SRG member.
-func (t *TypeGraph) buildTypeMemberNode(typeDecl TGTypeDecl, member srg.SRGMember) bool {
-	typeNode := typeDecl.Node()
+func (t *TypeGraph) buildTypeMemberNode(parent TGTypeOrModule, member srg.SRGMember) bool {
+	parentNode := parent.Node()
 
 	// Ensure that there exists no other member with this name under the parent type.
-	_, exists := typeNode.StartQuery().
-		Out(NodePredicateTypeMember).
+	_, exists := parentNode.StartQuery().
+		Out(NodePredicateMember).
 		Has(NodePredicateMemberName, member.Name()).
 		TryGetNode()
 
@@ -197,12 +197,12 @@ func (t *TypeGraph) buildTypeMemberNode(typeDecl TGTypeDecl, member srg.SRGMembe
 
 	// Mark the member with an error if it is repeated.
 	if exists {
-		t.decorateWithError(memberNode, "Type member '%s' is already defined on type '%s'", member.Name(), typeDecl.Name())
+		t.decorateWithError(memberNode, "Type member '%s' is already defined on type '%s'", member.Name(), parent.Name())
 		success = false
 	}
 
 	// Add the member to the type node.
-	typeNode.Connect(NodePredicateTypeMember, memberNode)
+	parentNode.Connect(NodePredicateMember, memberNode)
 
 	// Add the generics on the type member.
 	srgGenerics := member.Generics()
@@ -245,7 +245,7 @@ func (t *TypeGraph) buildTypeMemberNode(typeDecl TGTypeDecl, member srg.SRGMembe
 		memberNode.Decorate(NodePredicateMemberStatic, "true")
 
 		// Constructors have a type of a function that returns an instance of the parent type.
-		functionType := t.NewTypeReference(t.FunctionType(), t.NewInstanceTypeReference(typeNode))
+		functionType := t.NewTypeReference(t.FunctionType(), t.NewInstanceTypeReference(parentNode))
 		memberType, memberTypeValid = t.addSRGParameterTypes(memberNode, member, functionType)
 
 	case srg.FunctionMember:

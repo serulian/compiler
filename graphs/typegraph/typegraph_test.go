@@ -42,9 +42,13 @@ func buildLayerJSON(t *testing.T, tg *TypeGraph) string {
 	repMap := map[compilergraph.GraphNodeId]*graphNodeRep{}
 
 	// Start the walk at the type declarations.
-	startingNodes := make([]compilergraph.GraphNode, len(tg.TypeDecls()))
+	startingNodes := make([]compilergraph.GraphNode, len(tg.TypeDecls())+len(tg.ModulesWithMembers()))
 	for index, typeDecl := range tg.TypeDecls() {
 		startingNodes[index] = typeDecl.Node()
+	}
+
+	for index, module := range tg.ModulesWithMembers() {
+		startingNodes[len(tg.TypeDecls())+index] = module.Node()
 	}
 
 	// Walk the graph outward from the type declaration nodes, building an in-memory tree
@@ -117,6 +121,10 @@ func buildLayerJSON(t *testing.T, tg *TypeGraph) string {
 	rootReps := map[string]*graphNodeRep{}
 	for _, typeDecl := range tg.TypeDecls() {
 		rootReps[repMap[typeDecl.Node().NodeId].Key] = repMap[typeDecl.Node().NodeId]
+	}
+
+	for _, module := range tg.ModulesWithMembers() {
+		rootReps[repMap[module.Node().NodeId].Key] = repMap[module.Node().NodeId]
 	}
 
 	// Marshal the tree to JSON.
