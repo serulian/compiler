@@ -1,0 +1,5 @@
+var<int> SomeVar
+
+function<int> DoSomething() {
+	
+}

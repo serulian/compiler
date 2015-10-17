@@ -119,9 +119,9 @@ func TestTypeReferences(t *testing.T) {
 		// Find the type reference on a var with the test name.
 		typerefNode := testSRG.layer.
 			StartQuery(test.name).
-			In(parser.NodeVariableStatementName).
-			IsKind(parser.NodeTypeVariableStatement).
-			Out(parser.NodeVariableStatementDeclaredType).
+			In(parser.NodePredicateTypeMemberName, parser.NodeVariableStatementName).
+			IsKind(parser.NodeTypeVariable, parser.NodeTypeVariableStatement).
+			Out(parser.NodePredicateTypeMemberDeclaredType, parser.NodeVariableStatementDeclaredType).
 			GetNode()
 
 		typeref := SRGTypeRef{typerefNode, testSRG}

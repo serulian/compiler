@@ -83,7 +83,7 @@ Loop:
 		// variables.
 		case p.isKeyword("var"):
 			seenNonImport = true
-			p.currentNode().Connect(NodePredicateChild, p.consumeVar(NodeTypeVariableStatement, NodeVariableStatementName, NodeVariableStatementDeclaredType))
+			p.currentNode().Connect(NodePredicateChild, p.consumeVar(NodeTypeVariable, NodePredicateTypeMemberName, NodePredicateTypeMemberDeclaredType))
 			p.tryConsumeStatementTerminator()
 
 		// EOF.

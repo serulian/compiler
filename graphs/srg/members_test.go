@@ -102,6 +102,18 @@ var memberTests = []memberTest{
 	},
 }
 
+func TestModuleMembers(t *testing.T) {
+	testSRG := loadSRG(t, "tests/members/module.seru")
+
+	// Ensure both module-level members are found.
+	module, _ := testSRG.FindModuleBySource(compilercommon.InputSource("tests/members/module.seru"))
+	members := module.GetMembers()
+
+	assert.Equal(t, 2, len(members), "Expected 2 members found")
+	assert.Equal(t, members[0].MemberKind(), VarMember)
+	assert.Equal(t, members[1].MemberKind(), FunctionMember)
+}
+
 func TestTypeMembers(t *testing.T) {
 	for _, test := range memberTests {
 		testSRG := loadSRG(t, fmt.Sprintf("tests/members/%s.seru", test.input))

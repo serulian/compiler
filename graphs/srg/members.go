@@ -68,6 +68,9 @@ func (m SRGMember) MemberKind() MemberKind {
 	case parser.NodeTypeField:
 		return VarMember
 
+	case parser.NodeTypeVariable:
+		return VarMember
+
 	default:
 		panic(fmt.Sprintf("Unknown kind of member %s", m.GraphNode.Kind))
 		return ConstructorMember

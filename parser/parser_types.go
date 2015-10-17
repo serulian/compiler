@@ -55,8 +55,11 @@ const (
 	NodeTypeInterface // An interface
 	NodeTypeGeneric   // A generic definition on a type
 
+	// Module and Type Members
+	NodeTypeFunction // A function declaration or definition
+	NodeTypeVariable // A variable definition at the module level.
+
 	// Type Members
-	NodeTypeFunction    // A function declaration or definition
 	NodeTypeConstructor // A constructor declaration or definition
 	NodeTypeProperty    // A property declaration or definition
 	NodeTypeOperator    // An operator declaration or definition

@@ -54,6 +54,22 @@ func (m SRGModule) Node() compilergraph.GraphNode {
 	return m.GraphNode
 }
 
+// GetMembers returns the members declared directly under the module.
+func (m SRGModule) GetMembers() []SRGMember {
+	it := m.GraphNode.StartQuery().
+		Out(parser.NodePredicateChild).
+		IsKind(parser.NodeTypeFunction, parser.NodeTypeVariable).
+		BuildNodeIterator()
+
+	var members []SRGMember
+
+	for it.Next() {
+		members = append(members, SRGMember{it.Node(), m.srg})
+	}
+
+	return members
+}
+
 // FindTypeByName searches for the type definition or declaration with the given name under
 // this module and returns it (if found).
 func (m SRGModule) FindTypeByName(typeName string, option ModuleResolutionOption) (SRGType, bool) {

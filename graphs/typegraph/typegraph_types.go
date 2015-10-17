@@ -20,7 +20,7 @@ const (
 	NodeTypeInterface                 // An interface
 
 	// Member-level
-	NodeTypeMember   // A member of a type
+	NodeTypeMember   // A member of a type or module.
 	NodeTypeOperator // An operator defined on a type.
 
 	// Generics.

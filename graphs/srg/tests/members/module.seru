@@ -1,0 +1,5 @@
+class SomeClass {}
+
+var<SomeClass> SomeVar
+
+function<SomeClass> SomeFunction() {}

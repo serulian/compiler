@@ -3,12 +3,12 @@ NodeTypeFile
   input-source = module variable test
   start-rune = 0
   child-node =>
-    NodeTypeVariableStatement
+    NodeTypeVariable
       end-rune = 21
       input-source = module variable test
       named = something
       start-rune = 0
-      var-declared-type =>
+      typemember-declared-type =>
         NodeTypeTypeReference
           end-rune = 6
           input-source = module variable test
