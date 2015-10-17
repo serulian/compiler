@@ -95,8 +95,8 @@ func (t *TypeGraph) buildInheritedMembership(typeDecl TGTypeDecl, inherits []Typ
 }
 
 // buildMemberNode adds a new type member node to the specified type node for the given SRG member.
-func (t *TypeGraph) buildMemberNode(typeDecl TGTypeDecl, member srg.SRGTypeMember) bool {
-	if member.TypeMemberKind() == srg.OperatorTypeMember {
+func (t *TypeGraph) buildMemberNode(typeDecl TGTypeDecl, member srg.SRGMember) bool {
+	if member.MemberKind() == srg.OperatorMember {
 		return t.buildTypeOperatorNode(typeDecl, member)
 	} else {
 		return t.buildTypeMemberNode(typeDecl, member)
@@ -104,7 +104,7 @@ func (t *TypeGraph) buildMemberNode(typeDecl TGTypeDecl, member srg.SRGTypeMembe
 }
 
 // buildTypeOperatorNode adds a new type operator node to the specified type node for the given SRG member.
-func (t *TypeGraph) buildTypeOperatorNode(typeDecl TGTypeDecl, operator srg.SRGTypeMember) bool {
+func (t *TypeGraph) buildTypeOperatorNode(typeDecl TGTypeDecl, operator srg.SRGMember) bool {
 	typeNode := typeDecl.Node()
 
 	// Normalize the name by lowercasing it.
@@ -179,7 +179,7 @@ func (t *TypeGraph) buildTypeOperatorNode(typeDecl TGTypeDecl, operator srg.SRGT
 }
 
 // buildTypeMemberNode adds a new type member node to the specified type node for the given SRG member.
-func (t *TypeGraph) buildTypeMemberNode(typeDecl TGTypeDecl, member srg.SRGTypeMember) bool {
+func (t *TypeGraph) buildTypeMemberNode(typeDecl TGTypeDecl, member srg.SRGMember) bool {
 	typeNode := typeDecl.Node()
 
 	// Ensure that there exists no other member with this name under the parent type.
@@ -229,18 +229,18 @@ func (t *TypeGraph) buildTypeMemberNode(typeDecl TGTypeDecl, member srg.SRGTypeM
 	var memberTypeValid bool = false
 	var isReadOnly bool = true
 
-	switch member.TypeMemberKind() {
-	case srg.VarTypeMember:
+	switch member.MemberKind() {
+	case srg.VarMember:
 		// Variables have their declared type.
 		memberType, memberTypeValid = t.resolvePossibleType(memberNode, member.DeclaredType)
 		isReadOnly = false
 
-	case srg.PropertyTypeMember:
+	case srg.PropertyMember:
 		// Properties have their declared type.
 		memberType, memberTypeValid = t.resolvePossibleType(memberNode, member.DeclaredType)
 		isReadOnly = !member.HasSetter()
 
-	case srg.ConstructorTypeMember:
+	case srg.ConstructorMember:
 		// Constructors are static.
 		memberNode.Decorate(NodePredicateMemberStatic, "true")
 
@@ -248,7 +248,7 @@ func (t *TypeGraph) buildTypeMemberNode(typeDecl TGTypeDecl, member srg.SRGTypeM
 		functionType := t.NewTypeReference(t.FunctionType(), t.NewInstanceTypeReference(typeNode))
 		memberType, memberTypeValid = t.addSRGParameterTypes(memberNode, member, functionType)
 
-	case srg.FunctionTypeMember:
+	case srg.FunctionMember:
 		// Functions are read-only.
 		memberNode.Decorate(NodePredicateMemberReadOnly, "true")
 
@@ -269,7 +269,7 @@ func (t *TypeGraph) buildTypeMemberNode(typeDecl TGTypeDecl, member srg.SRGTypeM
 		memberNode.Decorate(NodePredicateMemberReadOnly, "true")
 	}
 
-	t.decorateWithSig(memberNode, member.Name(), uint64(member.TypeMemberKind()), !isReadOnly, member.IsExported(), memberType, generics...)
+	t.decorateWithSig(memberNode, member.Name(), uint64(member.MemberKind()), !isReadOnly, member.IsExported(), memberType, generics...)
 
 	return success && memberTypeValid
 }

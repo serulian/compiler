@@ -19,7 +19,7 @@ type memberTest struct {
 	input                string
 	typeName             string
 	memberName           string
-	expectedKind         TypeMemberKind
+	expectedKind         MemberKind
 	expectedGenerics     []string
 	expectedParameters   []string
 	expectedDeclaredType expectedTypeRef
@@ -29,7 +29,7 @@ type memberTest struct {
 var memberTests = []memberTest{
 	// Class tests.
 	memberTest{"class function test", "class", "TestClass", "SomeFunction",
-		FunctionTypeMember,
+		FunctionMember,
 		[]string{"T"},
 		[]string{"foo", "bar"},
 		expectedTypeRef{},
@@ -37,7 +37,7 @@ var memberTests = []memberTest{
 	},
 
 	memberTest{"class property test", "class", "TestClass", "SomeProperty",
-		PropertyTypeMember,
+		PropertyMember,
 		[]string{},
 		[]string{},
 		expectedTypeRef{"SomeClass", TypeRefPath, true, []expectedTypeRef{}},
@@ -45,7 +45,7 @@ var memberTests = []memberTest{
 	},
 
 	memberTest{"class constructor test", "class", "TestClass", "BuildMe",
-		ConstructorTypeMember,
+		ConstructorMember,
 		[]string{"T", "Q"},
 		[]string{"first", "second"},
 		expectedTypeRef{},
@@ -53,7 +53,7 @@ var memberTests = []memberTest{
 	},
 
 	memberTest{"class var test", "class", "TestClass", "SomeVar",
-		VarTypeMember,
+		VarMember,
 		[]string{},
 		[]string{},
 		expectedTypeRef{"SomeClass", TypeRefPath, true, []expectedTypeRef{}},
@@ -61,7 +61,7 @@ var memberTests = []memberTest{
 	},
 
 	memberTest{"class operator test", "class", "TestClass", "Plus",
-		OperatorTypeMember,
+		OperatorMember,
 		[]string{},
 		[]string{"left", "right"},
 		expectedTypeRef{},
@@ -70,7 +70,7 @@ var memberTests = []memberTest{
 
 	// Interface tests.
 	memberTest{"interface function test", "interface", "TestInterface", "SomeFunction",
-		FunctionTypeMember,
+		FunctionMember,
 		[]string{"T"},
 		[]string{"foo", "bar"},
 		expectedTypeRef{},
@@ -78,7 +78,7 @@ var memberTests = []memberTest{
 	},
 
 	memberTest{"interface property test", "interface", "TestInterface", "SomeProperty",
-		PropertyTypeMember,
+		PropertyMember,
 		[]string{},
 		[]string{},
 		expectedTypeRef{"SomeClass", TypeRefPath, true, []expectedTypeRef{}},
@@ -86,7 +86,7 @@ var memberTests = []memberTest{
 	},
 
 	memberTest{"interface constructor test", "interface", "TestInterface", "BuildMe",
-		ConstructorTypeMember,
+		ConstructorMember,
 		[]string{"T", "Q"},
 		[]string{"first", "second"},
 		expectedTypeRef{},
@@ -94,7 +94,7 @@ var memberTests = []memberTest{
 	},
 
 	memberTest{"interface operator test", "interface", "TestInterface", "Plus",
-		OperatorTypeMember,
+		OperatorMember,
 		[]string{},
 		[]string{"left", "right"},
 		expectedTypeRef{},
@@ -118,10 +118,10 @@ func TestTypeMembers(t *testing.T) {
 		}
 
 		// Find the type member.
-		var member SRGTypeMember
+		var member SRGMember
 		var found bool
 
-		if test.expectedKind == OperatorTypeMember {
+		if test.expectedKind == OperatorMember {
 			member, found = testType.FindOperator(test.memberName)
 		} else {
 			member, found = testType.FindMember(test.memberName)
@@ -133,8 +133,8 @@ func TestTypeMembers(t *testing.T) {
 
 		assert.Equal(t, test.memberName, member.Name(), "Member name mismatch")
 
-		// Check the type member.
-		assert.Equal(t, test.expectedKind, member.TypeMemberKind(), "Member kind mismatch")
+		// Check the member.
+		assert.Equal(t, test.expectedKind, member.MemberKind(), "Member kind mismatch")
 
 		// Check generics.
 		foundGenerics := member.Generics()

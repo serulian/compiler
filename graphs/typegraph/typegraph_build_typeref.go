@@ -67,7 +67,7 @@ func (t *TypeGraph) buildTypeRef(typeref srg.SRGTypeRef) (TypeReference, error) 
 
 // addSRGParameterTypes iterates over the parameters defined on the given srgMember, adding their types as parameters
 // to the specified base type reference.
-func (t *TypeGraph) addSRGParameterTypes(node compilergraph.GraphNode, srgMember srg.SRGTypeMember, baseReference TypeReference) (TypeReference, bool) {
+func (t *TypeGraph) addSRGParameterTypes(node compilergraph.GraphNode, srgMember srg.SRGMember, baseReference TypeReference) (TypeReference, bool) {
 	var currentReference = baseReference
 	var success = true
 

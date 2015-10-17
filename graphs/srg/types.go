@@ -109,31 +109,31 @@ func (t SRGType) TypeKind() TypeKind {
 }
 
 // FindOperator returns the operator with the given name under this type, if any.
-func (t SRGType) FindOperator(name string) (SRGTypeMember, bool) {
+func (t SRGType) FindOperator(name string) (SRGMember, bool) {
 	memberNode, found := t.GraphNode.StartQuery().
 		Out(parser.NodeTypeDefinitionMember).
 		Has(parser.NodeOperatorName, name).
 		TryGetNode()
 
 	if !found {
-		return SRGTypeMember{}, false
+		return SRGMember{}, false
 	}
 
-	return SRGTypeMember{memberNode, t.srg}, true
+	return SRGMember{memberNode, t.srg}, true
 }
 
 // FindMember returns the type member with the given name under this type, if any.
-func (t SRGType) FindMember(name string) (SRGTypeMember, bool) {
+func (t SRGType) FindMember(name string) (SRGMember, bool) {
 	memberNode, found := t.GraphNode.StartQuery().
 		Out(parser.NodeTypeDefinitionMember).
 		Has(parser.NodePredicateTypeMemberName, name).
 		TryGetNode()
 
 	if !found {
-		return SRGTypeMember{}, false
+		return SRGMember{}, false
 	}
 
-	return SRGTypeMember{memberNode, t.srg}, true
+	return SRGMember{memberNode, t.srg}, true
 }
 
 // Inheritance returns type references to the types this type composes, if any.
@@ -151,14 +151,14 @@ func (t SRGType) Inheritance() []SRGTypeRef {
 }
 
 // Members returns the members on this type.
-func (t SRGType) Members() []SRGTypeMember {
+func (t SRGType) Members() []SRGMember {
 	it := t.GraphNode.StartQuery().
 		Out(parser.NodeTypeDefinitionMember).
 		BuildNodeIterator()
 
-	var members = make([]SRGTypeMember, 0)
+	var members = make([]SRGMember, 0)
 	for it.Next() {
-		members = append(members, SRGTypeMember{it.Node(), t.srg})
+		members = append(members, SRGMember{it.Node(), t.srg})
 	}
 
 	return members

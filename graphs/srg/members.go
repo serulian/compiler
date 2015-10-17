@@ -14,25 +14,25 @@ import (
 	"github.com/serulian/compiler/parser"
 )
 
-// SRGTypeMember wraps a type memeber declaration or definition in the SRG.
-type SRGTypeMember struct {
+// SRGTypeMember wraps a member declaration or definition in the SRG.
+type SRGMember struct {
 	compilergraph.GraphNode
 	srg *SRG // The parent SRG.
 }
 
-// TypeMemberKind defines the various supported kinds of type members in the SRG.
-type TypeMemberKind int
+// TypeMemberKind defines the various supported kinds of members in the SRG.
+type MemberKind int
 
 const (
-	ConstructorTypeMember TypeMemberKind = iota
-	VarTypeMember
-	FunctionTypeMember
-	PropertyTypeMember
-	OperatorTypeMember
+	ConstructorMember MemberKind = iota
+	VarMember
+	FunctionMember
+	PropertyMember
+	OperatorMember
 )
 
-// Name returns the name of this type member.
-func (m SRGTypeMember) Name() string {
+// Name returns the name of this member.
+func (m SRGMember) Name() string {
 	if m.GraphNode.Kind == parser.NodeTypeOperator {
 		return m.GraphNode.Get(parser.NodeOperatorName)
 	}
@@ -40,42 +40,42 @@ func (m SRGTypeMember) Name() string {
 	return m.GraphNode.Get(parser.NodePredicateTypeMemberName)
 }
 
-// Node returns the underlying type member node for this type member.
-func (m SRGTypeMember) Node() compilergraph.GraphNode {
+// Node returns the underlying member node for this member.
+func (m SRGMember) Node() compilergraph.GraphNode {
 	return m.GraphNode
 }
 
-// Location returns the source location for this type member.
-func (m SRGTypeMember) Location() compilercommon.SourceAndLocation {
+// Location returns the source location for this member.
+func (m SRGMember) Location() compilercommon.SourceAndLocation {
 	return salForNode(m.GraphNode)
 }
 
-// TypeMemberKind returns the kind matching the type member definition/declaration node type.
-func (m SRGTypeMember) TypeMemberKind() TypeMemberKind {
+// MemberKind returns the kind matching the member definition/declaration node type.
+func (m SRGMember) MemberKind() MemberKind {
 	switch m.GraphNode.Kind {
 	case parser.NodeTypeConstructor:
-		return ConstructorTypeMember
+		return ConstructorMember
 
 	case parser.NodeTypeFunction:
-		return FunctionTypeMember
+		return FunctionMember
 
 	case parser.NodeTypeProperty:
-		return PropertyTypeMember
+		return PropertyMember
 
 	case parser.NodeTypeOperator:
-		return OperatorTypeMember
+		return OperatorMember
 
 	case parser.NodeTypeField:
-		return VarTypeMember
+		return VarMember
 
 	default:
-		panic(fmt.Sprintf("Unknown kind of type member %s", m.GraphNode.Kind))
-		return ConstructorTypeMember
+		panic(fmt.Sprintf("Unknown kind of member %s", m.GraphNode.Kind))
+		return ConstructorMember
 	}
 }
 
-// ReturnType returns a type reference to the declared type of this type member, if any.
-func (m SRGTypeMember) DeclaredType() (SRGTypeRef, bool) {
+// ReturnType returns a type reference to the declared type of this member, if any.
+func (m SRGMember) DeclaredType() (SRGTypeRef, bool) {
 	typeRefNode, found := m.GraphNode.TryGetNode(parser.NodePredicateTypeMemberDeclaredType)
 	if !found {
 		return SRGTypeRef{}, false
@@ -84,8 +84,8 @@ func (m SRGTypeMember) DeclaredType() (SRGTypeRef, bool) {
 	return SRGTypeRef{typeRefNode, m.srg}, true
 }
 
-// ReturnType returns a type reference to the return type of this type member, if any.
-func (m SRGTypeMember) ReturnType() (SRGTypeRef, bool) {
+// ReturnType returns a type reference to the return type of this member, if any.
+func (m SRGMember) ReturnType() (SRGTypeRef, bool) {
 	typeRefNode, found := m.GraphNode.TryGetNode(parser.NodePredicateTypeMemberReturnType)
 	if !found {
 		return SRGTypeRef{}, false
@@ -96,18 +96,18 @@ func (m SRGTypeMember) ReturnType() (SRGTypeRef, bool) {
 
 // HasSetter returns true if the property has a setter defined. Will always return false
 // for non-properties.
-func (m SRGTypeMember) HasSetter() bool {
+func (m SRGMember) HasSetter() bool {
 	_, found := m.GraphNode.TryGet(parser.NodePropertySetter)
 	return found
 }
 
-// IsExported returns whether the given type member is exported for use outside its module.
-func (m SRGTypeMember) IsExported() bool {
+// IsExported returns whether the given member is exported for use outside its module.
+func (m SRGMember) IsExported() bool {
 	return isExportedName(m.Name())
 }
 
-// Generics returns the generics on this type member.
-func (m SRGTypeMember) Generics() []SRGGeneric {
+// Generics returns the generics on this member.
+func (m SRGMember) Generics() []SRGGeneric {
 	it := m.GraphNode.StartQuery().
 		Out(parser.NodePredicateTypeMemberGeneric).
 		BuildNodeIterator()
@@ -120,8 +120,8 @@ func (m SRGTypeMember) Generics() []SRGGeneric {
 	return generics
 }
 
-// Parameters returns the parameters on this type member.
-func (m SRGTypeMember) Parameters() []SRGParameter {
+// Parameters returns the parameters on this member.
+func (m SRGMember) Parameters() []SRGParameter {
 	it := m.GraphNode.StartQuery().
 		Out(parser.NodePredicateTypeMemberParameter).
 		BuildNodeIterator()
