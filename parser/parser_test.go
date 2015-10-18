@@ -195,6 +195,10 @@ var parserTests = []parserTest{
 
 	// Known issue tests.
 	{"known issue test", "class/knownissue"},
+
+	// Comment tests.
+	{"comment function test", "comment/function"},
+	{"comment block test", "comment/block"},
 }
 
 func reportImport(path PackageImport) string {

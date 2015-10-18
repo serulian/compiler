@@ -20,7 +20,7 @@ NodeTypeFile
               start-rune = 33
               match-case =>
                 NodeTypeMatchStatementCase
-                  end-rune = 83
+                  end-rune = 82
                   input-source = match statement no expr test
                   start-rune = 48
                   match-case-expression =>

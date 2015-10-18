@@ -10,19 +10,19 @@ NodeTypeFile
       start-rune = 0
       child-node =>
         NodeTypeError
-          end-rune = 71
+          end-rune = 70
           error-message = Expected interface member, found {
           input-source = basic interface function failure test
           start-rune = 72
       type-member =>
         NodeTypeFunction
-          end-rune = 71
+          end-rune = 70
           input-source = basic interface function failure test
           named = DoSomething
           start-rune = 28
           child-node =>
             NodeTypeError
-              end-rune = 71
+              end-rune = 70
               error-message = Expected end of statement or definition, found: tokenTypeLeftBrace
               input-source = basic interface function failure test
               start-rune = 72

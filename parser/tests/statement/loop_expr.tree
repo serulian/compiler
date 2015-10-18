@@ -25,7 +25,7 @@ NodeTypeFile
                   start-rune = 46
               loop-expression =>
                 NodeTypeIdentifierExpression
-                  end-rune = 45
+                  end-rune = 44
                   identexpr-name = someExpr
                   input-source = expr loop statement test
                   start-rune = 37

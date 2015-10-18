@@ -30,7 +30,7 @@ NodeTypeFile
               start-rune = 39
               arrow-expression-left =>
                 NodeTypeIdentifierExpression
-                  end-rune = 40
+                  end-rune = 39
                   identexpr-name = a
                   input-source = all expr test
                   start-rune = 39
@@ -46,7 +46,7 @@ NodeTypeFile
               start-rune = 47
               binary-expression-left =>
                 NodeTypeIdentifierExpression
-                  end-rune = 48
+                  end-rune = 47
                   identexpr-name = a
                   input-source = all expr test
                   start-rune = 47
@@ -62,7 +62,7 @@ NodeTypeFile
               start-rune = 54
               binary-expression-left =>
                 NodeTypeIdentifierExpression
-                  end-rune = 55
+                  end-rune = 54
                   identexpr-name = a
                   input-source = all expr test
                   start-rune = 54
@@ -78,7 +78,7 @@ NodeTypeFile
               start-rune = 61
               binary-expression-left =>
                 NodeTypeIdentifierExpression
-                  end-rune = 62
+                  end-rune = 61
                   identexpr-name = a
                   input-source = all expr test
                   start-rune = 61
@@ -94,7 +94,7 @@ NodeTypeFile
               start-rune = 68
               binary-expression-left =>
                 NodeTypeIdentifierExpression
-                  end-rune = 69
+                  end-rune = 68
                   identexpr-name = a
                   input-source = all expr test
                   start-rune = 68
@@ -110,7 +110,7 @@ NodeTypeFile
               start-rune = 75
               binary-expression-left =>
                 NodeTypeIdentifierExpression
-                  end-rune = 76
+                  end-rune = 75
                   identexpr-name = a
                   input-source = all expr test
                   start-rune = 75
@@ -126,7 +126,7 @@ NodeTypeFile
               start-rune = 82
               binary-expression-left =>
                 NodeTypeIdentifierExpression
-                  end-rune = 83
+                  end-rune = 82
                   identexpr-name = a
                   input-source = all expr test
                   start-rune = 82
@@ -142,7 +142,7 @@ NodeTypeFile
               start-rune = 89
               binary-expression-left =>
                 NodeTypeIdentifierExpression
-                  end-rune = 90
+                  end-rune = 89
                   identexpr-name = a
                   input-source = all expr test
                   start-rune = 89
@@ -158,7 +158,7 @@ NodeTypeFile
               start-rune = 96
               binary-expression-left =>
                 NodeTypeIdentifierExpression
-                  end-rune = 97
+                  end-rune = 96
                   identexpr-name = a
                   input-source = all expr test
                   start-rune = 96
@@ -174,7 +174,7 @@ NodeTypeFile
               start-rune = 103
               binary-expression-left =>
                 NodeTypeIdentifierExpression
-                  end-rune = 104
+                  end-rune = 103
                   identexpr-name = a
                   input-source = all expr test
                   start-rune = 103
@@ -190,7 +190,7 @@ NodeTypeFile
               start-rune = 111
               binary-expression-left =>
                 NodeTypeIdentifierExpression
-                  end-rune = 112
+                  end-rune = 111
                   identexpr-name = a
                   input-source = all expr test
                   start-rune = 111
@@ -206,7 +206,7 @@ NodeTypeFile
               start-rune = 119
               binary-expression-left =>
                 NodeTypeIdentifierExpression
-                  end-rune = 120
+                  end-rune = 119
                   identexpr-name = a
                   input-source = all expr test
                   start-rune = 119
@@ -222,7 +222,7 @@ NodeTypeFile
               start-rune = 127
               binary-expression-left =>
                 NodeTypeIdentifierExpression
-                  end-rune = 128
+                  end-rune = 127
                   identexpr-name = a
                   input-source = all expr test
                   start-rune = 127
@@ -238,7 +238,7 @@ NodeTypeFile
               start-rune = 135
               binary-expression-left =>
                 NodeTypeIdentifierExpression
-                  end-rune = 136
+                  end-rune = 135
                   identexpr-name = a
                   input-source = all expr test
                   start-rune = 135
@@ -254,7 +254,7 @@ NodeTypeFile
               start-rune = 143
               binary-expression-left =>
                 NodeTypeIdentifierExpression
-                  end-rune = 144
+                  end-rune = 143
                   identexpr-name = a
                   input-source = all expr test
                   start-rune = 143
@@ -270,7 +270,7 @@ NodeTypeFile
               start-rune = 151
               binary-expression-left =>
                 NodeTypeIdentifierExpression
-                  end-rune = 152
+                  end-rune = 151
                   identexpr-name = a
                   input-source = all expr test
                   start-rune = 151
@@ -286,7 +286,7 @@ NodeTypeFile
               start-rune = 159
               binary-expression-left =>
                 NodeTypeIdentifierExpression
-                  end-rune = 160
+                  end-rune = 159
                   identexpr-name = a
                   input-source = all expr test
                   start-rune = 159
@@ -302,7 +302,7 @@ NodeTypeFile
               start-rune = 166
               binary-expression-left =>
                 NodeTypeIdentifierExpression
-                  end-rune = 167
+                  end-rune = 166
                   identexpr-name = a
                   input-source = all expr test
                   start-rune = 166
@@ -318,7 +318,7 @@ NodeTypeFile
               start-rune = 173
               binary-expression-left =>
                 NodeTypeIdentifierExpression
-                  end-rune = 174
+                  end-rune = 173
                   identexpr-name = a
                   input-source = all expr test
                   start-rune = 173
@@ -334,7 +334,7 @@ NodeTypeFile
               start-rune = 181
               binary-expression-left =>
                 NodeTypeIdentifierExpression
-                  end-rune = 182
+                  end-rune = 181
                   identexpr-name = a
                   input-source = all expr test
                   start-rune = 181
@@ -516,7 +516,7 @@ NodeTypeFile
               start-rune = 260
               binary-expression-left =>
                 NodeTypeIdentifierExpression
-                  end-rune = 261
+                  end-rune = 260
                   identexpr-name = a
                   input-source = all expr test
                   start-rune = 260
@@ -627,12 +627,12 @@ NodeTypeFile
                   start-rune = 416
                   block-child =>
                     NodeTypeReturnStatement
-                      end-rune = 430
+                      end-rune = 429
                       input-source = all expr test
                       start-rune = 418
                       return-expr =>
                         NodeTypeIdentifierExpression
-                          end-rune = 430
+                          end-rune = 429
                           identexpr-name = first
                           input-source = all expr test
                           start-rune = 425

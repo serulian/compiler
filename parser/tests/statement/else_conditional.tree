@@ -20,7 +20,7 @@ NodeTypeFile
               start-rune = 33
               conditional-block =>
                 NodeTypeStatementBlock
-                  end-rune = 50
+                  end-rune = 49
                   input-source = else conditional statement test
                   start-rune = 45
               conditional-else =>
@@ -30,7 +30,7 @@ NodeTypeFile
                   start-rune = 56
               conditional-expr =>
                 NodeTypeIdentifierExpression
-                  end-rune = 44
+                  end-rune = 43
                   identexpr-name = someExpr
                   input-source = else conditional statement test
                   start-rune = 36

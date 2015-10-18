@@ -25,7 +25,7 @@ NodeTypeFile
                   start-rune = 47
               with-expression =>
                 NodeTypeIdentifierExpression
-                  end-rune = 46
+                  end-rune = 45
                   identexpr-name = someExpr
                   input-source = basic with test
                   start-rune = 38

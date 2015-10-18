@@ -1,22 +1,22 @@
 NodeTypeFile
-  end-rune = 17
+  end-rune = 16
   input-source = invalid subsource
   start-rune = 0
   child-node =>
     NodeTypeImport
-      end-rune = 17
+      end-rune = 16
       import-location-ref = location:fo
       import-source = "foo"
       input-source = invalid subsource
       start-rune = 0
       child-node =>
         NodeTypeError
-          end-rune = 17
+          end-rune = 16
           error-message = Expected one of: [tokenTypeIdentifer], found: tokenTypeStringLiteral
           input-source = invalid subsource
           start-rune = 18
     NodeTypeError
-      end-rune = 17
+      end-rune = 16
       error-message = Unexpected token at root level: tokenTypeStringLiteral
       input-source = invalid subsource
       start-rune = 18

@@ -1,15 +1,15 @@
 NodeTypeFile
-  end-rune = 6
+  end-rune = 5
   input-source = missing source import test
   start-rune = 0
   child-node =>
     NodeTypeImport
-      end-rune = 6
+      end-rune = 5
       input-source = missing source import test
       start-rune = 0
       child-node =>
         NodeTypeError
-          end-rune = 6
+          end-rune = 5
           error-message = Expected one of: [tokenTypeIdentifer tokenTypeStringLiteral], found: tokenTypeEOF
           input-source = missing source import test
           start-rune = 7

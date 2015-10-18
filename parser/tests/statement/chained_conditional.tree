@@ -20,7 +20,7 @@ NodeTypeFile
               start-rune = 33
               conditional-block =>
                 NodeTypeStatementBlock
-                  end-rune = 50
+                  end-rune = 49
                   input-source = chained conditional statement test
                   start-rune = 45
               conditional-else =>
@@ -30,7 +30,7 @@ NodeTypeFile
                   start-rune = 56
                   conditional-block =>
                     NodeTypeStatementBlock
-                      end-rune = 76
+                      end-rune = 75
                       input-source = chained conditional statement test
                       start-rune = 71
                   conditional-else =>
@@ -40,13 +40,13 @@ NodeTypeFile
                       start-rune = 82
                   conditional-expr =>
                     NodeTypeIdentifierExpression
-                      end-rune = 70
+                      end-rune = 69
                       identexpr-name = anotherExpr
                       input-source = chained conditional statement test
                       start-rune = 59
               conditional-expr =>
                 NodeTypeIdentifierExpression
-                  end-rune = 44
+                  end-rune = 43
                   identexpr-name = someExpr
                   input-source = chained conditional statement test
                   start-rune = 36

@@ -20,40 +20,40 @@ NodeTypeFile
               start-rune = 43
               binary-expression-left =>
                 NodeBinaryAddExpression
-                  end-rune = 46
+                  end-rune = 45
                   input-source = multiple binary expr test
                   start-rune = 33
                   binary-expression-left =>
                     NodeBinarySubtractExpression
-                      end-rune = 42
+                      end-rune = 41
                       input-source = multiple binary expr test
                       start-rune = 33
                       binary-expression-left =>
                         NodeBinaryDivideExpression
-                          end-rune = 38
+                          end-rune = 37
                           input-source = multiple binary expr test
                           start-rune = 33
                           binary-expression-left =>
                             NodeTypeIdentifierExpression
-                              end-rune = 34
+                              end-rune = 33
                               identexpr-name = a
                               input-source = multiple binary expr test
                               start-rune = 33
                           binary-expression-right =>
                             NodeTypeIdentifierExpression
-                              end-rune = 38
+                              end-rune = 37
                               identexpr-name = b
                               input-source = multiple binary expr test
                               start-rune = 37
                       binary-expression-right =>
                         NodeTypeIdentifierExpression
-                          end-rune = 42
+                          end-rune = 41
                           identexpr-name = c
                           input-source = multiple binary expr test
                           start-rune = 41
                   binary-expression-right =>
                     NodeTypeIdentifierExpression
-                      end-rune = 46
+                      end-rune = 45
                       identexpr-name = d
                       input-source = multiple binary expr test
                       start-rune = 45
@@ -64,18 +64,18 @@ NodeTypeFile
                   start-rune = 49
                   binary-expression-left =>
                     NodeBinaryMultiplyExpression
-                      end-rune = 54
+                      end-rune = 53
                       input-source = multiple binary expr test
                       start-rune = 49
                       binary-expression-left =>
                         NodeTypeIdentifierExpression
-                          end-rune = 50
+                          end-rune = 49
                           identexpr-name = e
                           input-source = multiple binary expr test
                           start-rune = 49
                       binary-expression-right =>
                         NodeTypeIdentifierExpression
-                          end-rune = 54
+                          end-rune = 53
                           identexpr-name = f
                           input-source = multiple binary expr test
                           start-rune = 53

@@ -20,7 +20,7 @@ NodeTypeFile
               start-rune = 33
               binary-expression-left =>
                 NodeTypeIdentifierExpression
-                  end-rune = 34
+                  end-rune = 33
                   identexpr-name = a
                   input-source = basic binary expr test
                   start-rune = 33
@@ -31,7 +31,7 @@ NodeTypeFile
                   start-rune = 37
                   binary-expression-left =>
                     NodeTypeIdentifierExpression
-                      end-rune = 38
+                      end-rune = 37
                       identexpr-name = b
                       input-source = basic binary expr test
                       start-rune = 37

@@ -1,20 +1,20 @@
 NodeTypeFile
-  end-rune = 5
+  end-rune = 4
   input-source = missing name class test
   start-rune = 0
   child-node =>
     NodeTypeClass
-      end-rune = 5
+      end-rune = 4
       input-source = missing name class test
       start-rune = 0
       child-node =>
         NodeTypeError
-          end-rune = 5
+          end-rune = 4
           error-message = Expected identifier, found token tokenTypeLeftBrace
           input-source = missing name class test
           start-rune = 6
     NodeTypeError
-      end-rune = 5
+      end-rune = 4
       error-message = Unexpected token at root level: tokenTypeLeftBrace
       input-source = missing name class test
       start-rune = 6

@@ -1,0 +1,28 @@
+NodeTypeFile
+  end-rune = 47
+  input-source = comment block test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 47
+      input-source = comment block test
+      named = SomeFunction
+      start-rune = 0
+      typemember-body =>
+        NodeTypeStatementBlock
+          end-rune = 47
+          input-source = comment block test
+          start-rune = 46
+          child-node =>
+            NodeTypeComment
+              comment-value = /* someblock */
+      typemember-return-type =>
+        NodeTypeTypeReference
+          end-rune = 12
+          input-source = comment block test
+          start-rune = 9
+          typereference-path =>
+            NodeTypeVoid
+              end-rune = 12
+              input-source = comment block test
+              start-rune = 9

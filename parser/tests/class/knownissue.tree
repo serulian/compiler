@@ -17,13 +17,13 @@ NodeTypeFile
           typemember-readonly = true
           property-getter =>
             NodeTypePropertyBlock
-              end-rune = 65
+              end-rune = 64
               input-source = known issue test
               propertyblock-type = get
               start-rune = 58
               typemember-body =>
                 NodeTypeStatementBlock
-                  end-rune = 65
+                  end-rune = 64
                   input-source = known issue test
                   start-rune = 62
           typemember-declared-type =>

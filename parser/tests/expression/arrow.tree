@@ -20,7 +20,7 @@ NodeTypeFile
               start-rune = 33
               arrow-expression-left =>
                 NodeTypeIdentifierExpression
-                  end-rune = 41
+                  end-rune = 40
                   identexpr-name = someExpr
                   input-source = arrow expr test
                   start-rune = 33

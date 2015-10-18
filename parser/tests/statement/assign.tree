@@ -26,7 +26,7 @@ NodeTypeFile
                   start-rune = 37
               assign-statement-name =>
                 NodeTypeIdentifierExpression
-                  end-rune = 34
+                  end-rune = 33
                   identexpr-name = a
                   input-source = assignment statement test
                   start-rune = 33
@@ -47,7 +47,7 @@ NodeTypeFile
                   input-source = assignment statement test
                   start-rune = 47
                 NodeTypeIdentifierExpression
-                  end-rune = 51
+                  end-rune = 50
                   identexpr-name = c
                   input-source = assignment statement test
                   start-rune = 50

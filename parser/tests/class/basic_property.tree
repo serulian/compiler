@@ -16,24 +16,24 @@ NodeTypeFile
           start-rune = 19
           property-getter =>
             NodeTypePropertyBlock
-              end-rune = 61
+              end-rune = 59
               input-source = basic class property test
               propertyblock-type = get
               start-rune = 53
               typemember-body =>
                 NodeTypeStatementBlock
-                  end-rune = 61
+                  end-rune = 59
                   input-source = basic class property test
                   start-rune = 57
           property-setter =>
             NodeTypePropertyBlock
-              end-rune = 69
+              end-rune = 68
               input-source = basic class property test
               propertyblock-type = set
               start-rune = 62
               typemember-body =>
                 NodeTypeStatementBlock
-                  end-rune = 69
+                  end-rune = 68
                   input-source = basic class property test
                   start-rune = 66
           typemember-declared-type =>
