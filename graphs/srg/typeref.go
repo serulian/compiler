@@ -27,6 +27,7 @@ const (
 	TypeRefNullable                    // A nullable type.
 	TypeRefStream                      // A stream type.
 	TypeRefPath                        // A normal path type. May have generics.
+	TypeRefVoid                        // A void type reference.
 )
 
 // GetTypeReferences returns all the type references in the SRG.
@@ -152,6 +153,9 @@ func (t SRGTypeRef) subReferences(predicate string) []SRGTypeRef {
 func (t SRGTypeRef) RefKind() TypeRefKind {
 	nodeKind := t.GraphNode.Kind.(parser.NodeType)
 	switch nodeKind {
+	case parser.NodeTypeVoid:
+		return TypeRefVoid
+
 	case parser.NodeTypeStream:
 		return TypeRefStream
 

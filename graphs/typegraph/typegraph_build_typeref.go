@@ -16,6 +16,9 @@ import (
 // resolves the type reference.
 func (t *TypeGraph) buildTypeRef(typeref srg.SRGTypeRef) (TypeReference, error) {
 	switch typeref.RefKind() {
+	case srg.TypeRefVoid:
+		return t.VoidTypeReference(), nil
+
 	case srg.TypeRefStream:
 		innerType, err := t.buildTypeRef(typeref.InnerReference())
 		if err != nil {

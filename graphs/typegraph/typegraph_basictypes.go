@@ -8,6 +8,14 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 )
 
+// VoidTypeReference returns a reference to the special 'void' type.
+func (t *TypeGraph) VoidTypeReference() TypeReference {
+	return TypeReference{
+		tdg:   t,
+		value: buildSpecialTypeReferenceValue(specialFlagVoid),
+	}
+}
+
 // AnyTypeReference returns a reference to the special 'any' type.
 func (t *TypeGraph) AnyTypeReference() TypeReference {
 	return TypeReference{

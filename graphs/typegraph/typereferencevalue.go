@@ -64,6 +64,7 @@ const (
 
 	specialFlagNormal = '-' // The value of the trhSlotFlagSpecial for normal typerefs.
 	specialFlagAny    = 'A' // The value of the trhSlotFlagSpecial for "any" type refs.
+	specialFlagVoid   = 'V' // The value of the trhSlotFlagSpecial for "void" tyoe refs.
 	specialFlagLocal  = 'L' // The value of the trhSlotFlagSpecial for localized type refs.
 )
 

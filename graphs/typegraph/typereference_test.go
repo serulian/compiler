@@ -116,4 +116,7 @@ func TestSpecialReferenceOperations(t *testing.T) {
 
 	anyRef := testTG.AnyTypeReference()
 	assert.True(t, anyRef.IsAny(), "Expected 'any' reference")
+
+	voidRef := testTG.VoidTypeReference()
+	assert.True(t, voidRef.IsVoid(), "Expected 'void' reference")
 }

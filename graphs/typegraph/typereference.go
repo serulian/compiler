@@ -50,7 +50,7 @@ func (t *TypeGraph) NewInstanceTypeReference(typeNode compilergraph.GraphNode) T
 
 // Verify returns an error if the type reference is invalid in some way. Returns nil if it is valid.
 func (tr TypeReference) Verify() error {
-	if tr.IsAny() {
+	if tr.IsAny() || tr.IsVoid() {
 		return nil
 	}
 
@@ -91,9 +91,18 @@ func (tr TypeReference) Verify() error {
 //   - A class is a subtype of itself (and no other class) and only if generics and parameters match.
 //   - A class (or interface) is a subtype of an interface if it defines that interface's full signature.
 func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
+	if tr.IsVoid() || other.IsVoid() {
+		return fmt.Errorf("Void types cannot be used interchangeably")
+	}
+
 	// If the other is the any type, then we know this to be a subtype.
 	if other.IsAny() {
 		return nil
+	}
+
+	// If this type is the any type, then it cannot be a subtype.
+	if tr.IsAny() {
+		return fmt.Errorf("Cannot use type 'any' in place of type '%v'", other)
 	}
 
 	// Check nullability.
@@ -258,6 +267,11 @@ func (tr TypeReference) IsAny() bool {
 	return tr.getSlot(trhSlotFlagSpecial)[0] == specialFlagAny
 }
 
+// IsVoid returns whether this type reference refers to the special 'void' type.
+func (tr TypeReference) IsVoid() bool {
+	return tr.getSlot(trhSlotFlagSpecial)[0] == specialFlagVoid
+}
+
 // IsLocalRef returns whether this type reference is a localized reference.
 func (tr TypeReference) IsLocalRef() bool {
 	return tr.getSlot(trhSlotFlagSpecial)[0] == specialFlagLocal
@@ -371,8 +385,12 @@ func (tr TypeReference) Localize(generics ...compilergraph.GraphNode) TypeRefere
 // For example, if this type reference is function<T> and the other is
 // SomeClass<int>, where T is the generic of 'SomeClass', this method will return function<int>.
 func (tr TypeReference) TransformUnder(other TypeReference) TypeReference {
-	// Skip 'any' types.
+	// Skip 'any' and 'void' types.
 	if tr.IsAny() || other.IsAny() {
+		return tr
+	}
+
+	if tr.IsVoid() || other.IsVoid() {
 		return tr
 	}
 
@@ -438,6 +456,11 @@ func (tr TypeReference) String() string {
 func (tr TypeReference) appendHumanString(buffer *bytes.Buffer) {
 	if tr.IsAny() {
 		buffer.WriteString("any")
+		return
+	}
+
+	if tr.IsVoid() {
+		buffer.WriteString("void")
 		return
 	}
 
