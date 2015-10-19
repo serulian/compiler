@@ -41,6 +41,11 @@ func BuildTypeGraph(srg *srg.SRG) *Result {
 	return typeGraph.build(srg)
 }
 
+// SourceGraph returns the SRG behind this type graph.
+func (g *TypeGraph) SourceGraph() *srg.SRG {
+	return g.srg
+}
+
 // ModulesWithMembers returns all modules containing members defined in the type graph.
 func (g *TypeGraph) ModulesWithMembers() []TGModule {
 	it := g.findAllNodes(NodeTypeModule).
@@ -63,4 +68,17 @@ func (g *TypeGraph) TypeDecls() []TGTypeDecl {
 		types = append(types, TGTypeDecl{it.Node(), g})
 	}
 	return types
+}
+
+// LookupReturnType looks up the return type for an SRG member or property getter.
+func (g *TypeGraph) LookupReturnType(srgNode compilergraph.GraphNode) (TypeReference, bool) {
+	resolvedNode, found := g.findAllNodes(NodeTypeReturnable).
+		Has(NodePredicateSource, string(srgNode.NodeId)).
+		TryGetNode()
+
+	if !found {
+		return g.AnyTypeReference(), false
+	}
+
+	return resolvedNode.GetTagged(NodePredicateReturnType, g.AnyTypeReference()).(TypeReference), true
 }

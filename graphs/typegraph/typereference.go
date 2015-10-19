@@ -20,6 +20,14 @@ type TypeReference struct {
 	value string     // The encoded value of the type reference.
 }
 
+// Deserializes a type reference string value into a TypeReference.
+func (t *TypeGraph) DeserializieTypeRef(value string) TypeReference {
+	return TypeReference{
+		tdg:   t,
+		value: value,
+	}
+}
+
 // NewTypeReference returns a new type reference pointing to the given type node and some (optional) generics.
 func (t *TypeGraph) NewTypeReference(typeNode compilergraph.GraphNode, generics ...TypeReference) TypeReference {
 	return TypeReference{
@@ -290,6 +298,15 @@ func (tr TypeReference) IsNullable() bool {
 	return tr.getSlot(trhSlotFlagNullable)[0] == nullableFlagTrue
 }
 
+// HasReferredType returns whether this type references refers to the given type.
+func (tr TypeReference) HasReferredType(typeNode compilergraph.GraphNode) bool {
+	if tr.getSlot(trhSlotFlagSpecial)[0] != specialFlagNormal {
+		return false
+	}
+
+	return tr.ReferredType() == typeNode
+}
+
 // ReferredType returns the node to which the type reference refers.
 func (tr TypeReference) ReferredType() compilergraph.GraphNode {
 	if tr.getSlot(trhSlotFlagSpecial)[0] != specialFlagNormal {
@@ -312,6 +329,19 @@ func (tr TypeReference) WithParameter(parameter TypeReference) TypeReference {
 // AsNullable returns a copy of this type reference that is nullable.
 func (tr TypeReference) AsNullable() TypeReference {
 	return tr.withFlag(trhSlotFlagNullable, nullableFlagTrue)
+}
+
+// Intersect returns the type common to both type references or any if they are uncommon.
+func (tr TypeReference) Intersect(other TypeReference) TypeReference {
+	if tr == other {
+		return tr
+	}
+
+	if tr.CheckSubTypeOf(other) != nil {
+		return other
+	}
+
+	return tr.tdg.AnyTypeReference()
 }
 
 // Localize returns a copy of this type reference with any references to the specified generics replaced with

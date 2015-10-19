@@ -24,6 +24,9 @@ const (
 	NodeTypeMember   // A member of a type or module.
 	NodeTypeOperator // An operator defined on a type.
 
+	// Body-level
+	NodeTypeReturnable // A returnable member or property getter.
+
 	// Generics.
 	NodeTypeGeneric // A defined generic on a type or type member.
 
@@ -114,6 +117,9 @@ const (
 	// Marks a member with its signature.
 	NodePredicateMemberSignature = "member-signature"
 
+	// Connects a member to a returnable definition, itself connected to an SRG node.
+	NodePredicateReturnable = "member-returnable"
+
 	//
 	// NodeTypeOperator
 	//
@@ -123,6 +129,13 @@ const (
 
 	// Marks an operator with the fact that it is exported.
 	NodePredicateOperatorExported = "operator-exported"
+
+	//
+	// NodeTypeReturnable
+	//
+
+	// Marks a returnable with its expected return type.
+	NodePredicateReturnType = "return-type"
 )
 
 func (t NodeType) Name() string {

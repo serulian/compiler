@@ -77,6 +77,11 @@ func (m SRGMember) MemberKind() MemberKind {
 	}
 }
 
+// Body returns the statement block forming the implementation body for this member, if any.
+func (m SRGMember) Body() (compilergraph.GraphNode, bool) {
+	return m.TryGetNode(parser.NodePredicateBody)
+}
+
 // ReturnType returns a type reference to the declared type of this member, if any.
 func (m SRGMember) DeclaredType() (SRGTypeRef, bool) {
 	typeRefNode, found := m.GraphNode.TryGetNode(parser.NodePredicateTypeMemberDeclaredType)
@@ -95,6 +100,15 @@ func (m SRGMember) ReturnType() (SRGTypeRef, bool) {
 	}
 
 	return SRGTypeRef{typeRefNode, m.srg}, true
+}
+
+// Getter returns the defined getter for this property. Panics if this is not a property.
+func (m SRGMember) Getter() compilergraph.GraphNode {
+	if m.MemberKind() != PropertyMember {
+		panic("Expected property node")
+	}
+
+	return m.GraphNode.GetNode(parser.NodePropertyGetter)
 }
 
 // HasSetter returns true if the property has a setter defined. Will always return false

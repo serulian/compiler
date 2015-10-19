@@ -15,6 +15,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/graphs/srg"
@@ -237,4 +238,60 @@ func TestGraphs(t *testing.T) {
 			assert.Equal(t, test.expectedError, result.Errors[0].Error(), "Error mismatch on test %v", test.name)
 		}
 	}
+}
+
+func TestLookupReturnType(t *testing.T) {
+	graph, err := compilergraph.NewGraph("tests/returntype/returntype.seru")
+	if !assert.Nil(t, err, "Got graph creation error: %v", err) {
+		return
+	}
+
+	testSRG := srg.NewSRG(graph)
+	srgResult := testSRG.LoadAndParse("tests/testlib")
+	if !assert.True(t, srgResult.Status, "Got error for SRG construction: %v", srgResult.Errors) {
+		return
+	}
+
+	// Construct the type graph.
+	result := BuildTypeGraph(testSRG)
+	if !assert.True(t, result.Status, "Got error for TypeGraph construction: %v", result.Errors) {
+		return
+	}
+
+	// Ensure that the function and the property getter have return types.
+	module, found := testSRG.FindModuleBySource(compilercommon.InputSource("tests/returntype/returntype.seru"))
+	if !assert.True(t, found, "Could not find source module") {
+		return
+	}
+
+	someclass, foundClass := module.ResolveType("SomeClass")
+	if !assert.True(t, foundClass, "Could not find SomeClass") {
+		return
+	}
+
+	// Check the function.
+	dosomethingFunc, foundFunc := someclass.FindMember("DoSomething")
+	if !assert.True(t, foundFunc, "Could not find DoSomething") {
+		return
+	}
+
+	dosomethingFuncReturnType, hasReturnType := result.Graph.LookupReturnType(dosomethingFunc.Node())
+	if !assert.True(t, hasReturnType, "Could not find return type for DoSomething") {
+		return
+	}
+
+	assert.Equal(t, "Integer", dosomethingFuncReturnType.String(), "Expected int for DoSomething return type, found: %v", dosomethingFuncReturnType)
+
+	// Check the property getter.
+	someProp, foundProp := someclass.FindMember("SomeProp")
+	if !assert.True(t, foundProp, "Could not find SomeProp") {
+		return
+	}
+
+	somePropReturnType, hasPropReturnType := result.Graph.LookupReturnType(someProp.Getter())
+	if !assert.True(t, hasPropReturnType, "Could not find return type for SomeProp getter") {
+		return
+	}
+
+	assert.Equal(t, "SomeClass", somePropReturnType.String(), "Expected SomeClass for SomeProp return type, found: %v", somePropReturnType)
 }
