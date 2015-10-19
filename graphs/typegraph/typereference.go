@@ -347,6 +347,14 @@ func (tr TypeReference) AsNullable() TypeReference {
 
 // Intersect returns the type common to both type references or any if they are uncommon.
 func (tr TypeReference) Intersect(other TypeReference) TypeReference {
+	if tr.IsVoid() {
+		return other
+	}
+
+	if other.IsVoid() {
+		return tr
+	}
+
 	if tr == other {
 		return tr
 	}

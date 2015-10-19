@@ -1,0 +1,14 @@
+// Copyright 2015 The Serulian Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+package proto;
+
+message ScopeInfo {
+	optional bool IsValid = 1;        // Whether this scope is valid.
+	optional bool IsGeneric = 2;      // If true, generics are required to complete the scope.
+	optional bool IsStatic = 3;       // If true, the scope refers to a type itself, rather than an instance.
+
+	optional string ResolvedType = 4; // The type of the scope, if any.
+	optional string ReturnedType = 5; // The returned type, if any.
+}

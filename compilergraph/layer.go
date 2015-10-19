@@ -21,8 +21,9 @@ import (
 type GraphLayerKind int
 
 const (
-	GraphLayerSRG       GraphLayerKind = iota // An SRG graph layer.
-	GraphLayerTypeGraph                       // A TypeGraph graph layer.
+	GraphLayerSRG        GraphLayerKind = iota // An SRG graph layer.
+	GraphLayerTypeGraph                        // A TypeGraph graph layer.
+	GraphLayerScopeGraph                       // A ScopeGraph graph layer.
 )
 
 // GraphLayer represents a single layer in the overall project graph.
@@ -201,7 +202,31 @@ func getPredicatePrefix(kind GraphLayerKind) string {
 	case GraphLayerTypeGraph:
 		return "tdg"
 
+	case GraphLayerScopeGraph:
+		return "sig"
+
 	default:
 		panic(fmt.Sprintf("Unknown graph layer kind: %v", kind))
 	}
+}
+
+// getPredicatesListForDebugging returns a developer-friendly set of predicate description strings
+// for all the predicates on a node.
+func (gl *GraphLayer) getPredicatesListForDebugging(graphNode GraphNode) []string {
+	var predicates = make([]string, 0)
+
+	nodeIdValue := gl.cayleyStore.ValueOf(string(graphNode.NodeId))
+	iit := gl.cayleyStore.QuadIterator(quad.Subject, nodeIdValue)
+	for graph.Next(iit) {
+		quad := gl.cayleyStore.Quad(iit.Result())
+		predicates = append(predicates, fmt.Sprintf("Outgoing predicate: %v => %v", quad.Predicate, quad.Object))
+	}
+
+	oit := gl.cayleyStore.QuadIterator(quad.Object, nodeIdValue)
+	for graph.Next(oit) {
+		quad := gl.cayleyStore.Quad(oit.Result())
+		predicates = append(predicates, fmt.Sprintf("Incoming predicate: %v <= %v", quad.Predicate, quad.Subject))
+	}
+
+	return predicates
 }

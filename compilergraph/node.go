@@ -172,7 +172,7 @@ func (gn GraphNode) TryGetIncoming(predicateName string) (string, bool) {
 func (gn GraphNode) GetIncomingNode(predicateName string) GraphNode {
 	result, found := gn.TryGetIncomingNode(predicateName)
 	if !found {
-		panic(fmt.Sprintf("Could not find node for predicate %s on node %s", predicateName, gn.NodeId))
+		panic(fmt.Sprintf("Could not find node for incoming predicate %s on node %s: %v", predicateName, gn.NodeId, gn.layer.getPredicatesListForDebugging(gn)))
 	}
 
 	return result
