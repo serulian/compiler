@@ -17,12 +17,7 @@ NodeTypeFile
           input-source = comment function test
           start-rune = 48
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 30
           input-source = comment function test
           start-rune = 27
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 30
-              input-source = comment function test
-              start-rune = 27

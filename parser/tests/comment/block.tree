@@ -17,12 +17,7 @@ NodeTypeFile
             NodeTypeComment
               comment-value = /* someblock */
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = comment block test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = comment block test
-              start-rune = 9

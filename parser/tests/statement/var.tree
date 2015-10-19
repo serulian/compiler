@@ -63,12 +63,7 @@ NodeTypeFile
                   input-source = basic variable test
                   start-rune = 82
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = basic variable test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = basic variable test
-              start-rune = 9

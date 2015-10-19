@@ -19,12 +19,7 @@ NodeTypeFile
               input-source = return no value statement test
               start-rune = 33
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = return no value statement test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = return no value statement test
-              start-rune = 9

@@ -31,12 +31,7 @@ NodeTypeFile
                   input-source = with as test
                   start-rune = 38
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = with as test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = with as test
-              start-rune = 9

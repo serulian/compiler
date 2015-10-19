@@ -690,12 +690,7 @@ NodeTypeFile
                   input-source = all expr test
                   start-rune = 440
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = all expr test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = all expr test
-              start-rune = 9

@@ -683,14 +683,10 @@ var typeReferenceMap = map[tokenType]NodeType{
 func (p *sourceParser) consumeTypeReference(option typeReferenceOption) AstNode {
 	// If void is allowed, check for it first.
 	if option == typeReferenceWithVoid && p.isKeyword("void") {
-		typeRefNode := p.startNode(NodeTypeTypeReference)
 		voidNode := p.startNode(NodeTypeVoid)
 		p.consumeKeyword("void")
 		p.finishNode()
-		p.finishNode()
-
-		typeRefNode.Connect(NodeTypeReferencePath, voidNode)
-		return typeRefNode
+		return voidNode
 	}
 
 	// Otherwise, left recursively build a type reference.

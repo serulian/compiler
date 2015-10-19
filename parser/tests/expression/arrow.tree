@@ -31,12 +31,7 @@ NodeTypeFile
                   input-source = arrow expr test
                   start-rune = 45
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = arrow expr test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = arrow expr test
-              start-rune = 9

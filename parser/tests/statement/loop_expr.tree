@@ -30,12 +30,7 @@ NodeTypeFile
                   input-source = expr loop statement test
                   start-rune = 37
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = expr loop statement test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = expr loop statement test
-              start-rune = 9

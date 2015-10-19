@@ -62,12 +62,7 @@ NodeTypeFile
                   input-source = lambda expr test
                   start-rune = 75
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = lambda expr test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = lambda expr test
-              start-rune = 9

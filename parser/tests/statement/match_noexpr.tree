@@ -40,12 +40,7 @@ NodeTypeFile
                       input-source = match statement no expr test
                       start-rune = 76
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = match statement no expr test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = match statement no expr test
-              start-rune = 9

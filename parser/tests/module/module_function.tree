@@ -36,12 +36,7 @@ NodeTypeFile
                       input-source = module function test
                       start-rune = 44
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = module function test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = module function test
-              start-rune = 9

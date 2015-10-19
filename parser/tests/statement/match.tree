@@ -66,12 +66,7 @@ NodeTypeFile
                   input-source = match statement basic test
                   start-rune = 39
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = match statement basic test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = match statement basic test
-              start-rune = 9

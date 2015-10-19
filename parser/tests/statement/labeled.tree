@@ -20,12 +20,7 @@ NodeTypeFile
               start-rune = 44
               statement-label = someLabel
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = labeled statement test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = labeled statement test
-              start-rune = 9

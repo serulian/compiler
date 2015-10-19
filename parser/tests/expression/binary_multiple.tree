@@ -86,12 +86,7 @@ NodeTypeFile
                       input-source = multiple binary expr test
                       start-rune = 57
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = multiple binary expr test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = multiple binary expr test
-              start-rune = 9
