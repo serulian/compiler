@@ -20,7 +20,7 @@ NodeTypeFile
               input-source = basic class property test
               propertyblock-type = get
               start-rune = 53
-              typemember-body =>
+              definition-body =>
                 NodeTypeStatementBlock
                   end-rune = 59
                   input-source = basic class property test
@@ -31,7 +31,7 @@ NodeTypeFile
               input-source = basic class property test
               propertyblock-type = set
               start-rune = 62
-              typemember-body =>
+              definition-body =>
                 NodeTypeStatementBlock
                   end-rune = 68
                   input-source = basic class property test

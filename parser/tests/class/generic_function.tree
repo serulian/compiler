@@ -14,7 +14,7 @@ NodeTypeFile
           input-source = generic function test
           named = SomeFunction
           start-rune = 19
-          typemember-body =>
+          definition-body =>
             NodeTypeStatementBlock
               end-rune = 94
               input-source = generic function test

@@ -21,7 +21,7 @@ NodeTypeFile
               input-source = known issue test
               propertyblock-type = get
               start-rune = 58
-              typemember-body =>
+              definition-body =>
                 NodeTypeStatementBlock
                   end-rune = 64
                   input-source = known issue test

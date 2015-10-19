@@ -8,7 +8,7 @@ NodeTypeFile
       input-source = match statement basic test
       named = SomeFunction
       start-rune = 0
-      typemember-body =>
+      definition-body =>
         NodeTypeStatementBlock
           end-rune = 127
           input-source = match statement basic test

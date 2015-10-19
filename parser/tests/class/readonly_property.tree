@@ -21,7 +21,7 @@ NodeTypeFile
               input-source = readonly class property test
               propertyblock-type = get
               start-rune = 53
-              typemember-body =>
+              definition-body =>
                 NodeTypeStatementBlock
                   end-rune = 59
                   input-source = readonly class property test

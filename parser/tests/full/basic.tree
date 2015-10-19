@@ -22,7 +22,7 @@ NodeTypeFile
           input-source = basic full example test
           named = SayHelloWorld
           start-rune = 54
-          typemember-body =>
+          definition-body =>
             NodeTypeStatementBlock
               end-rune = 123
               input-source = basic full example test

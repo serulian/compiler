@@ -14,7 +14,7 @@ NodeTypeFile
           input-source = basic class operator test
           operator-named = Plus
           start-rune = 19
-          typemember-body =>
+          definition-body =>
             NodeTypeStatementBlock
               end-rune = 68
               input-source = basic class operator test

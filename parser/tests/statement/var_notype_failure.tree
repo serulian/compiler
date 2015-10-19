@@ -8,7 +8,7 @@ NodeTypeFile
       input-source = variable no type failure test
       named = SomeFunction
       start-rune = 0
-      typemember-body =>
+      definition-body =>
         NodeTypeStatementBlock
           end-rune = 46
           input-source = variable no type failure test

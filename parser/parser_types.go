@@ -235,6 +235,11 @@ const (
 	NodeGenericSubtype       = "generic-subtype"
 
 	//
+	// Type members and properties
+	//
+	NodePredicateBody = "definition-body"
+
+	//
 	// Type members: NodeTypeProperty, NodeTypeFunction, NodeTypeField, NodeTypeConstructor
 	//
 	NodePredicateTypeMemberName         = "named"
@@ -242,7 +247,6 @@ const (
 	NodePredicateTypeMemberReturnType   = "typemember-return-type"
 	NodePredicateTypeMemberGeneric      = "typemember-generic"
 	NodePredicateTypeMemberParameter    = "typemember-parameter"
-	NodePredicateTypeMemberBody         = "typemember-body"
 
 	//
 	// NodeTypeOperator
@@ -260,7 +264,6 @@ const (
 	// NodeTypePropertyBlock
 	//
 	NodePropertyBlockType = "propertyblock-type"
-	NodePropertyBlockBody = "typemember-body"
 
 	//
 	// NodeTypeParameter

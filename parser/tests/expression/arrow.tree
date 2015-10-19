@@ -8,7 +8,7 @@ NodeTypeFile
       input-source = arrow expr test
       named = SomeFunction
       start-rune = 0
-      typemember-body =>
+      definition-body =>
         NodeTypeStatementBlock
           end-rune = 59
           input-source = arrow expr test

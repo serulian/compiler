@@ -8,7 +8,7 @@ NodeTypeFile
       input-source = comment block test
       named = SomeFunction
       start-rune = 0
-      typemember-body =>
+      definition-body =>
         NodeTypeStatementBlock
           end-rune = 47
           input-source = comment block test

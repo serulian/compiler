@@ -436,7 +436,7 @@ func (p *sourceParser) consumeOperator(option typeMemberOption) AstNode {
 	}
 
 	// Operators always need bodies.
-	operatorNode.Connect(NodePredicateTypeMemberBody, p.consumeStatementBlock(statementBlockWithTerminator))
+	operatorNode.Connect(NodePredicateBody, p.consumeStatementBlock(statementBlockWithTerminator))
 	return operatorNode
 }
 
@@ -529,7 +529,7 @@ func (p *sourceParser) consumePropertyBlock(keyword string) AstNode {
 	}
 
 	// Statement block.
-	blockNode.Connect(NodePropertyBlockBody, p.consumeStatementBlock(statementBlockWithTerminator))
+	blockNode.Connect(NodePredicateBody, p.consumeStatementBlock(statementBlockWithTerminator))
 	return blockNode
 }
 
@@ -579,7 +579,7 @@ func (p *sourceParser) consumeConstructor(option typeMemberOption) AstNode {
 	}
 
 	// Constructors always have a body.
-	constructorNode.Connect(NodePredicateTypeMemberBody, p.consumeStatementBlock(statementBlockWithTerminator))
+	constructorNode.Connect(NodePredicateBody, p.consumeStatementBlock(statementBlockWithTerminator))
 	return constructorNode
 }
 
@@ -650,7 +650,7 @@ func (p *sourceParser) consumeFunction(option typeMemberOption) AstNode {
 	}
 
 	// Otherwise, we need a function body.
-	functionNode.Connect(NodePredicateTypeMemberBody, p.consumeStatementBlock(statementBlockWithTerminator))
+	functionNode.Connect(NodePredicateBody, p.consumeStatementBlock(statementBlockWithTerminator))
 	return functionNode
 }
 

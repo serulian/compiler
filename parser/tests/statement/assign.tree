@@ -8,7 +8,7 @@ NodeTypeFile
       input-source = assignment statement test
       named = SomeFunction
       start-rune = 0
-      typemember-body =>
+      definition-body =>
         NodeTypeStatementBlock
           end-rune = 68
           input-source = assignment statement test

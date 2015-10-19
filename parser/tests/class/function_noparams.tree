@@ -14,7 +14,7 @@ NodeTypeFile
           input-source = class function no parameters test
           named = DoSomething
           start-rune = 19
-          typemember-body =>
+          definition-body =>
             NodeTypeStatementBlock
               end-rune = 50
               input-source = class function no parameters test

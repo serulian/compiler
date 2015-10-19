@@ -8,7 +8,7 @@ NodeTypeFile
       input-source = chained conditional statement test
       named = SomeFunction
       start-rune = 0
-      typemember-body =>
+      definition-body =>
         NodeTypeStatementBlock
           end-rune = 87
           input-source = chained conditional statement test

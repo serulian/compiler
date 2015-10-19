@@ -8,7 +8,7 @@ NodeTypeFile
       input-source = jump statements test
       named = SomeFunction
       start-rune = 0
-      typemember-body =>
+      definition-body =>
         NodeTypeStatementBlock
           end-rune = 89
           input-source = jump statements test
