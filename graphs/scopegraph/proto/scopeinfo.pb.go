@@ -61,11 +61,12 @@ func (x *ScopeKind) UnmarshalJSON(data []byte) error {
 }
 
 type ScopeInfo struct {
-	IsValid          *bool      `protobuf:"varint,1,opt,name=IsValid" json:"IsValid,omitempty"`
-	Kind             *ScopeKind `protobuf:"varint,2,opt,name=Kind,enum=proto.ScopeKind,def=0" json:"Kind,omitempty"`
-	ResolvedType     *string    `protobuf:"bytes,3,opt,name=ResolvedType" json:"ResolvedType,omitempty"`
-	ReturnedType     *string    `protobuf:"bytes,4,opt,name=ReturnedType" json:"ReturnedType,omitempty"`
-	XXX_unrecognized []byte     `json:"-"`
+	IsValid                *bool      `protobuf:"varint,1,opt,name=IsValid" json:"IsValid,omitempty"`
+	Kind                   *ScopeKind `protobuf:"varint,2,opt,name=Kind,enum=proto.ScopeKind,def=0" json:"Kind,omitempty"`
+	ResolvedType           *string    `protobuf:"bytes,3,opt,name=ResolvedType" json:"ResolvedType,omitempty"`
+	ReturnedType           *string    `protobuf:"bytes,4,opt,name=ReturnedType" json:"ReturnedType,omitempty"`
+	IsTerminatingStatement *bool      `protobuf:"varint,5,opt,name=IsTerminatingStatement" json:"IsTerminatingStatement,omitempty"`
+	XXX_unrecognized       []byte     `json:"-"`
 }
 
 func (m *ScopeInfo) Reset()         { *m = ScopeInfo{} }
@@ -100,6 +101,13 @@ func (m *ScopeInfo) GetReturnedType() string {
 		return *m.ReturnedType
 	}
 	return ""
+}
+
+func (m *ScopeInfo) GetIsTerminatingStatement() bool {
+	if m != nil && m.IsTerminatingStatement != nil {
+		return *m.IsTerminatingStatement
+	}
+	return false
 }
 
 func init() {
@@ -146,6 +154,16 @@ func (m *ScopeInfo) MarshalTo(data []byte) (int, error) {
 		i++
 		i = encodeVarintScopeinfo(data, i, uint64(len(*m.ReturnedType)))
 		i += copy(data[i:], *m.ReturnedType)
+	}
+	if m.IsTerminatingStatement != nil {
+		data[i] = 0x28
+		i++
+		if *m.IsTerminatingStatement {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
 	}
 	if m.XXX_unrecognized != nil {
 		i += copy(data[i:], m.XXX_unrecognized)
@@ -196,6 +214,9 @@ func (m *ScopeInfo) Size() (n int) {
 	if m.ReturnedType != nil {
 		l = len(*m.ReturnedType)
 		n += 1 + l + sovScopeinfo(uint64(l))
+	}
+	if m.IsTerminatingStatement != nil {
+		n += 2
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
@@ -346,6 +367,27 @@ func (m *ScopeInfo) Unmarshal(data []byte) error {
 			s := string(data[iNdEx:postIndex])
 			m.ReturnedType = &s
 			iNdEx = postIndex
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field IsTerminatingStatement", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowScopeinfo
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				v |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			b := bool(v != 0)
+			m.IsTerminatingStatement = &b
 		default:
 			iNdEx = preIndex
 			skippy, err := skipScopeinfo(data[iNdEx:])

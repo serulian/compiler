@@ -32,11 +32,12 @@ type expectedScopeEntry struct {
 }
 
 type scopegraphTest struct {
-	name          string
-	input         string
-	entrypoint    string
-	expectedScope []expectedScopeEntry
-	expectedError string
+	name            string
+	input           string
+	entrypoint      string
+	expectedScope   []expectedScopeEntry
+	expectedError   string
+	expectedWarning string
 }
 
 func (sgt *scopegraphTest) json() string {
@@ -61,11 +62,15 @@ var scopeGraphTests = []scopegraphTest{
 	// Empty block on void function.
 	scopegraphTest{"empty block void test", "empty", "block", []expectedScopeEntry{
 		expectedScopeEntry{"emptyblock", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
-	}, ""},
+	}, "", ""},
 
 	// Empty block on int function.
 	scopegraphTest{"empty block int test", "empty", "missingreturn", []expectedScopeEntry{},
-		"Expected return value of type 'Integer' but not all paths return a value"},
+		"Expected return value of type 'Integer' but not all paths return a value", ""},
+
+	// Unreachable statement.
+	scopegraphTest{"unreachable statement test", "unreachable", "return", []expectedScopeEntry{},
+		"", "Unreachable statement found"},
 }
 
 func TestGraphs(t *testing.T) {
@@ -106,6 +111,11 @@ func TestGraphs(t *testing.T) {
 			if !assert.True(t, result.Status, "Expected success in scoping on test : %v", test.name) {
 				continue
 			}
+		}
+
+		if test.expectedWarning != "" {
+			assert.Equal(t, 1, len(result.Warnings), "Expected 1 warning on test %v, found: %v", test.name, len(result.Warnings))
+			assert.Equal(t, test.expectedWarning, result.Warnings[0].Warning(), "Warning mismatch on test %v", test.name)
 		}
 
 		// Check each of the scopes.

@@ -31,6 +31,20 @@ func newScopeBuilder(sg *ScopeGraph) *scopeBuilder {
 	return &scopeBuilder{sg, cmap.New(), true}
 }
 
+// getScopeHandler returns the scope building handler for nodes of the given type.
+func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandler {
+	switch node.Kind {
+	case parser.NodeTypeStatementBlock:
+		return sb.scopeStatementBlock
+
+	case parser.NodeTypeReturnStatement:
+		return sb.scopeReturnStatement
+
+	default:
+		panic(fmt.Sprintf("Unknown SRG node in scoping: %v", node.Kind))
+	}
+}
+
 // getScope returns the scope for the given node, building (and waiting) if necessary.
 func (sb *scopeBuilder) getScope(node compilergraph.GraphNode) *proto.ScopeInfo {
 	// Check the map cache for the scope.
@@ -47,17 +61,8 @@ func (sb *scopeBuilder) getScope(node compilergraph.GraphNode) *proto.ScopeInfo 
 // buildScope builds the scope for the given node, returning a channel
 // that can be watched for the result.
 func (sb *scopeBuilder) buildScope(node compilergraph.GraphNode) chan proto.ScopeInfo {
-	var handler scopeHandler
-
-	switch node.Kind {
-	case parser.NodeTypeStatementBlock:
-		handler = sb.scopeStatementBlock
-
-	default:
-		panic(fmt.Sprintf("Unknown SRG node in scoping: %v", node.Kind))
-	}
-
 	// Execute the handler in a gorountine and return the result channel.
+	handler := sb.getScopeHandler(node)
 	resultChan := make(chan proto.ScopeInfo)
 	go (func() {
 		result := handler(node)
@@ -78,16 +83,41 @@ func (sb *scopeBuilder) buildScope(node compilergraph.GraphNode) chan proto.Scop
 	return resultChan
 }
 
+// decorateWithError decorates an *SRG* node with the specified scope warning.
+func (sb *scopeBuilder) decorateWithWarning(node compilergraph.GraphNode, message string, args ...interface{}) {
+	warningNode := sb.sg.layer.CreateNode(NodeTypeWarning)
+	warningNode.Decorate(NodePredicateNoticeMessage, fmt.Sprintf(message, args...))
+	warningNode.Connect(NodePredicateNoticeSource, node)
+}
+
 // decorateWithError decorates an *SRG* node with the specified scope error.
 func (sb *scopeBuilder) decorateWithError(node compilergraph.GraphNode, message string, args ...interface{}) {
 	errorNode := sb.sg.layer.CreateNode(NodeTypeError)
-	errorNode.Decorate(NodePredicateErrorMessage, fmt.Sprintf(message, args...))
-	errorNode.Connect(NodePredicateErrorSource, node)
+	errorNode.Decorate(NodePredicateNoticeMessage, fmt.Sprintf(message, args...))
+	errorNode.Connect(NodePredicateNoticeSource, node)
 }
 
 // GetWarnings returns the warnings created during the build pass.
 func (sb *scopeBuilder) GetWarnings() []*compilercommon.SourceWarning {
-	return make([]*compilercommon.SourceWarning, 0)
+	var warnings = make([]*compilercommon.SourceWarning, 0)
+
+	it := sb.sg.layer.StartQuery().
+		IsKind(NodeTypeWarning).
+		BuildNodeIterator()
+
+	for it.Next() {
+		warningNode := it.Node()
+
+		// Lookup the location of the SRG source node.
+		warningSource := sb.sg.srg.GetNode(compilergraph.GraphNodeId(warningNode.Get(NodePredicateNoticeSource)))
+		location := sb.sg.srg.NodeLocation(warningSource)
+
+		// Add the error.
+		msg := warningNode.Get(NodePredicateNoticeMessage)
+		warnings = append(warnings, compilercommon.NewSourceWarning(location, msg))
+	}
+
+	return warnings
 }
 
 // GetErrors returns the errors created during the build pass.
@@ -102,11 +132,11 @@ func (sb *scopeBuilder) GetErrors() []*compilercommon.SourceError {
 		errNode := it.Node()
 
 		// Lookup the location of the SRG source node.
-		errorSource := sb.sg.srg.GetNode(compilergraph.GraphNodeId(errNode.Get(NodePredicateErrorSource)))
+		errorSource := sb.sg.srg.GetNode(compilergraph.GraphNodeId(errNode.Get(NodePredicateNoticeSource)))
 		location := sb.sg.srg.NodeLocation(errorSource)
 
 		// Add the error.
-		msg := errNode.Get(NodePredicateErrorMessage)
+		msg := errNode.Get(NodePredicateNoticeMessage)
 		errors = append(errors, compilercommon.NewSourceError(location, msg))
 	}
 

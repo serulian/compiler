@@ -9,20 +9,54 @@ import (
 	"github.com/serulian/compiler/graphs/typegraph"
 )
 
-// newEmptyScopeInfo returns a ScopeInfo block representing empty scope, with some validation.
-func newEmptyScopeInfo(valid bool) proto.ScopeInfo {
-	return proto.ScopeInfo{
-		IsValid: &valid,
+type scopeInfoBuilder struct {
+	info *proto.ScopeInfo
+}
+
+func newScope() *scopeInfoBuilder {
+	return &scopeInfoBuilder{
+		info: &proto.ScopeInfo{},
 	}
 }
 
-// newReturningScopeInfo returns a ScopeInfo block representing scope that returns an instance of
-// some type.
-func newReturningScopeInfo(valid bool, returning typegraph.TypeReference) proto.ScopeInfo {
-	returnedValue := returning.Value()
+// Valid marks the scope as valid.
+func (sib *scopeInfoBuilder) Valid() *scopeInfoBuilder {
+	return sib.IsValid(true)
+}
 
-	return proto.ScopeInfo{
-		IsValid:      &valid,
-		ReturnedType: &returnedValue,
-	}
+// Invalid marks the scope as invalid.
+func (sib *scopeInfoBuilder) Invalid() *scopeInfoBuilder {
+	return sib.IsValid(false)
+}
+
+// IsValid marks the scope as valid or invalid.
+func (sib *scopeInfoBuilder) IsValid(isValid bool) *scopeInfoBuilder {
+	sib.info.IsValid = &isValid
+	return sib
+}
+
+// ReturningTypeOf marks the scope as returning the type of the given scope.
+func (sib *scopeInfoBuilder) ReturningTypeOf(scope *proto.ScopeInfo) *scopeInfoBuilder {
+	returnedValue := scope.GetReturnedType()
+	sib.info.ReturnedType = &returnedValue
+	return sib
+}
+
+// Returning marks the scope as returning a value of the given type.
+func (sib *scopeInfoBuilder) Returning(returning typegraph.TypeReference) *scopeInfoBuilder {
+	returnedValue := returning.Value()
+	sib.info.ReturnedType = &returnedValue
+	return sib
+}
+
+// IsTerminatingStatement marks the scope as containing a terminating statement.
+func (sib *scopeInfoBuilder) IsTerminatingStatement() *scopeInfoBuilder {
+	trueValue := true
+	sib.info.IsTerminatingStatement = &trueValue
+	return sib
+}
+
+// GetScope returns the scope constructed.
+func (sib *scopeInfoBuilder) GetScope() proto.ScopeInfo {
+	return *sib.info
 }

@@ -16,4 +16,6 @@ message ScopeInfo {
 
 	optional string ResolvedType = 3; // The type of the scope, if any.
 	optional string ReturnedType = 4; // The returned type, if any.
+
+	optional bool IsTerminatingStatement = 5; // If true, the statement terminates execution in the block.
 }

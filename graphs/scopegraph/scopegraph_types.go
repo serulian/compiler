@@ -15,7 +15,8 @@ type NodeType int
 
 const (
 	// Top-level
-	NodeTypeError         NodeType = iota // error occurred; value is text of error
+	NodeTypeError         NodeType = iota // A scope error
+	NodeTypeWarning                       // A scope warning
 	NodeTypeResolvedScope                 // Resolved scope for an SRG node
 
 	// NodeType is a tagged type.
@@ -29,11 +30,11 @@ const (
 	// Decorates a scope node with its scope info.
 	NodePredicateScopeInfo = "scope-info"
 
-	// Connects an error to its SRG source.
-	NodePredicateErrorSource = "scope-error"
+	// Connects an error or warning to its SRG source.
+	NodePredicateNoticeSource = "scope-notice"
 
-	// The error message on a scope error node.
-	NodePredicateErrorMessage = "error-message"
+	// The error or warning message on a scope notice node.
+	NodePredicateNoticeMessage = "notice-message"
 )
 
 func (t NodeType) Name() string {
