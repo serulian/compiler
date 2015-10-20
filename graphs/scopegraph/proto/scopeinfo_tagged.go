@@ -32,6 +32,14 @@ func (t *ScopeInfo) Build(value string) interface{} {
 	return t
 }
 
+func (t *ScopeInfo) ResolvedTypeRef(tg *typegraph.TypeGraph) typegraph.TypeReference {
+	if t.GetResolvedType() == "" {
+		return tg.VoidTypeReference()
+	}
+
+	return tg.DeserializieTypeRef(t.GetResolvedType())
+}
+
 func (t *ScopeInfo) ReturnedTypeRef(tg *typegraph.TypeGraph) typegraph.TypeReference {
 	if t.GetReturnedType() == "" {
 		return tg.VoidTypeReference()

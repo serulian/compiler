@@ -1,2 +1,2 @@
-function<int> DoSomething() /* emptyblock */ {
+function<void> DoSomething() /* emptyblock */ {
 }

@@ -24,18 +24,55 @@ var _ = proto1.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
+type ScopeKind int32
+
+const (
+	ScopeKind_VALUE   ScopeKind = 0
+	ScopeKind_GENERIC ScopeKind = 1
+	ScopeKind_STATIC  ScopeKind = 2
+)
+
+var ScopeKind_name = map[int32]string{
+	0: "VALUE",
+	1: "GENERIC",
+	2: "STATIC",
+}
+var ScopeKind_value = map[string]int32{
+	"VALUE":   0,
+	"GENERIC": 1,
+	"STATIC":  2,
+}
+
+func (x ScopeKind) Enum() *ScopeKind {
+	p := new(ScopeKind)
+	*p = x
+	return p
+}
+func (x ScopeKind) String() string {
+	return proto1.EnumName(ScopeKind_name, int32(x))
+}
+func (x *ScopeKind) UnmarshalJSON(data []byte) error {
+	value, err := proto1.UnmarshalJSONEnum(ScopeKind_value, data, "ScopeKind")
+	if err != nil {
+		return err
+	}
+	*x = ScopeKind(value)
+	return nil
+}
+
 type ScopeInfo struct {
-	IsValid          *bool   `protobuf:"varint,1,opt,name=IsValid" json:"IsValid,omitempty"`
-	IsGeneric        *bool   `protobuf:"varint,2,opt,name=IsGeneric" json:"IsGeneric,omitempty"`
-	IsStatic         *bool   `protobuf:"varint,3,opt,name=IsStatic" json:"IsStatic,omitempty"`
-	ResolvedType     *string `protobuf:"bytes,4,opt,name=ResolvedType" json:"ResolvedType,omitempty"`
-	ReturnedType     *string `protobuf:"bytes,5,opt,name=ReturnedType" json:"ReturnedType,omitempty"`
-	XXX_unrecognized []byte  `json:"-"`
+	IsValid          *bool      `protobuf:"varint,1,opt,name=IsValid" json:"IsValid,omitempty"`
+	Kind             *ScopeKind `protobuf:"varint,2,opt,name=Kind,enum=proto.ScopeKind,def=0" json:"Kind,omitempty"`
+	ResolvedType     *string    `protobuf:"bytes,3,opt,name=ResolvedType" json:"ResolvedType,omitempty"`
+	ReturnedType     *string    `protobuf:"bytes,4,opt,name=ReturnedType" json:"ReturnedType,omitempty"`
+	XXX_unrecognized []byte     `json:"-"`
 }
 
 func (m *ScopeInfo) Reset()         { *m = ScopeInfo{} }
 func (m *ScopeInfo) String() string { return proto1.CompactTextString(m) }
 func (*ScopeInfo) ProtoMessage()    {}
+
+const Default_ScopeInfo_Kind ScopeKind = ScopeKind_VALUE
 
 func (m *ScopeInfo) GetIsValid() bool {
 	if m != nil && m.IsValid != nil {
@@ -44,18 +81,11 @@ func (m *ScopeInfo) GetIsValid() bool {
 	return false
 }
 
-func (m *ScopeInfo) GetIsGeneric() bool {
-	if m != nil && m.IsGeneric != nil {
-		return *m.IsGeneric
+func (m *ScopeInfo) GetKind() ScopeKind {
+	if m != nil && m.Kind != nil {
+		return *m.Kind
 	}
-	return false
-}
-
-func (m *ScopeInfo) GetIsStatic() bool {
-	if m != nil && m.IsStatic != nil {
-		return *m.IsStatic
-	}
-	return false
+	return Default_ScopeInfo_Kind
 }
 
 func (m *ScopeInfo) GetResolvedType() string {
@@ -72,6 +102,9 @@ func (m *ScopeInfo) GetReturnedType() string {
 	return ""
 }
 
+func init() {
+	proto1.RegisterEnum("proto.ScopeKind", ScopeKind_name, ScopeKind_value)
+}
 func (m *ScopeInfo) Marshal() (data []byte, err error) {
 	size := m.Size()
 	data = make([]byte, size)
@@ -97,34 +130,19 @@ func (m *ScopeInfo) MarshalTo(data []byte) (int, error) {
 		}
 		i++
 	}
-	if m.IsGeneric != nil {
+	if m.Kind != nil {
 		data[i] = 0x10
 		i++
-		if *m.IsGeneric {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
-	}
-	if m.IsStatic != nil {
-		data[i] = 0x18
-		i++
-		if *m.IsStatic {
-			data[i] = 1
-		} else {
-			data[i] = 0
-		}
-		i++
+		i = encodeVarintScopeinfo(data, i, uint64(*m.Kind))
 	}
 	if m.ResolvedType != nil {
-		data[i] = 0x22
+		data[i] = 0x1a
 		i++
 		i = encodeVarintScopeinfo(data, i, uint64(len(*m.ResolvedType)))
 		i += copy(data[i:], *m.ResolvedType)
 	}
 	if m.ReturnedType != nil {
-		data[i] = 0x2a
+		data[i] = 0x22
 		i++
 		i = encodeVarintScopeinfo(data, i, uint64(len(*m.ReturnedType)))
 		i += copy(data[i:], *m.ReturnedType)
@@ -168,11 +186,8 @@ func (m *ScopeInfo) Size() (n int) {
 	if m.IsValid != nil {
 		n += 2
 	}
-	if m.IsGeneric != nil {
-		n += 2
-	}
-	if m.IsStatic != nil {
-		n += 2
+	if m.Kind != nil {
+		n += 1 + sovScopeinfo(uint64(*m.Kind))
 	}
 	if m.ResolvedType != nil {
 		l = len(*m.ResolvedType)
@@ -253,9 +268,9 @@ func (m *ScopeInfo) Unmarshal(data []byte) error {
 			m.IsValid = &b
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field IsGeneric", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Kind", wireType)
 			}
-			var v int
+			var v ScopeKind
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowScopeinfo
@@ -265,35 +280,13 @@ func (m *ScopeInfo) Unmarshal(data []byte) error {
 				}
 				b := data[iNdEx]
 				iNdEx++
-				v |= (int(b) & 0x7F) << shift
+				v |= (ScopeKind(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			b := bool(v != 0)
-			m.IsGeneric = &b
+			m.Kind = &v
 		case 3:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field IsStatic", wireType)
-			}
-			var v int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowScopeinfo
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := data[iNdEx]
-				iNdEx++
-				v |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			b := bool(v != 0)
-			m.IsStatic = &b
-		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ResolvedType", wireType)
 			}
@@ -323,7 +316,7 @@ func (m *ScopeInfo) Unmarshal(data []byte) error {
 			s := string(data[iNdEx:postIndex])
 			m.ResolvedType = &s
 			iNdEx = postIndex
-		case 5:
+		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ReturnedType", wireType)
 			}

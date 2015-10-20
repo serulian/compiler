@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/typegraph"
 
@@ -18,10 +19,23 @@ import (
 
 var _ = fmt.Printf
 
+type expectedScope struct {
+	IsValid      bool
+	ScopeKind    proto.ScopeKind
+	ResolvedType string
+	ReturnedType string
+}
+
+type expectedScopeEntry struct {
+	name  string
+	scope expectedScope
+}
+
 type scopegraphTest struct {
 	name          string
 	input         string
 	entrypoint    string
+	expectedScope []expectedScopeEntry
 	expectedError string
 }
 
@@ -42,8 +56,16 @@ func (sgt *scopegraphTest) writeJson(value string) {
 }
 
 var scopeGraphTests = []scopegraphTest{
-	// Success tests.
-	scopegraphTest{"empty block test", "empty", "block", ""},
+	/////// Success tests ///////
+
+	// Empty block on void function.
+	scopegraphTest{"empty block void test", "empty", "block", []expectedScopeEntry{
+		expectedScopeEntry{"emptyblock", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
+	}, ""},
+
+	// Empty block on int function.
+	scopegraphTest{"empty block int test", "empty", "missingreturn", []expectedScopeEntry{},
+		"Expected return value of type 'Integer' but not all paths return a value"},
 }
 
 func TestGraphs(t *testing.T) {
@@ -71,15 +93,54 @@ func TestGraphs(t *testing.T) {
 
 		// Construct the scope graph.
 		result := BuildScopeGraph(tdgResult.Graph)
-		fmt.Printf("%v", result)
 
-		// Collect the scopes for all requested nodes and compare.
-		node, found := testSRG.FindCommentedNode("/* emptyblock */")
-		if !assert.True(t, found, "Missing commented node in test: %v", test.name) {
+		if test.expectedError != "" {
+			if !assert.False(t, result.Status, "Expected failure in scoping on test : %v", test.name) {
+				continue
+			}
+
+			assert.Equal(t, 1, len(result.Errors), "Expected 1 error on test %v, found: %v", test.name, len(result.Errors))
+			assert.Equal(t, test.expectedError, result.Errors[0].Error(), "Error mismatch on test %v", test.name)
 			continue
+		} else {
+			if !assert.True(t, result.Status, "Expected success in scoping on test : %v", test.name) {
+				continue
+			}
 		}
 
-		scope, valid := result.Graph.GetScope(node)
-		fmt.Printf("%v %v", scope, valid)
+		// Check each of the scopes.
+		for _, expected := range test.expectedScope {
+			// Collect the scopes for all requested nodes and compare.
+			node, found := testSRG.FindCommentedNode(fmt.Sprintf("/* %s */", expected.name))
+			if !assert.True(t, found, "Missing commented node %s in test: %v", expected.name, test.name) {
+				continue
+			}
+
+			scope, valid := result.Graph.GetScope(node)
+			if !assert.True(t, valid, "Could not get scope for commented node %s in test: %v", expected.name, test.name) {
+				continue
+			}
+
+			// Compare the scope found to that expected.
+			if !assert.Equal(t, expected.scope.IsValid, scope.GetIsValid(), "Scope valid mismatch for commented node %s in test: %v", expected.name, test.name) {
+				continue
+			}
+
+			if !expected.scope.IsValid {
+				continue
+			}
+
+			if !assert.Equal(t, expected.scope.ScopeKind, scope.GetKind(), "Scope kind mismatch for commented node %s in test: %v", expected.name, test.name) {
+				continue
+			}
+
+			if !assert.Equal(t, expected.scope.ResolvedType, scope.ResolvedTypeRef(tdgResult.Graph).String(), "Resolved type mismatch for commented node %s in test: %v", expected.name, test.name) {
+				continue
+			}
+
+			if !assert.Equal(t, expected.scope.ReturnedType, scope.ReturnedTypeRef(tdgResult.Graph).String(), "Returned type mismatch for commented node %s in test: %v", expected.name, test.name) {
+				continue
+			}
+		}
 	}
 }
