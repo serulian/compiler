@@ -35,6 +35,20 @@ func (sib *scopeInfoBuilder) IsValid(isValid bool) *scopeInfoBuilder {
 	return sib
 }
 
+// ResolvingTypeOf marks the scope as resolving the type of the given scope.
+func (sib *scopeInfoBuilder) ResolvingTypeOf(scope *proto.ScopeInfo) *scopeInfoBuilder {
+	resolvedValue := scope.GetResolvedType()
+	sib.info.ResolvedType = &resolvedValue
+	return sib
+}
+
+// Resolving marks the scope as resolving a value of the given type.
+func (sib *scopeInfoBuilder) Resolving(resolved typegraph.TypeReference) *scopeInfoBuilder {
+	resolvedValue := resolved.Value()
+	sib.info.ResolvedType = &resolvedValue
+	return sib
+}
+
 // ReturningTypeOf marks the scope as returning the type of the given scope.
 func (sib *scopeInfoBuilder) ReturningTypeOf(scope *proto.ScopeInfo) *scopeInfoBuilder {
 	returnedValue := scope.GetReturnedType()

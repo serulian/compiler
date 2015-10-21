@@ -34,11 +34,25 @@ func newScopeBuilder(sg *ScopeGraph) *scopeBuilder {
 // getScopeHandler returns the scope building handler for nodes of the given type.
 func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandler {
 	switch node.Kind {
+	// Statements.
 	case parser.NodeTypeStatementBlock:
 		return sb.scopeStatementBlock
 
 	case parser.NodeTypeReturnStatement:
 		return sb.scopeReturnStatement
+
+	case parser.NodeTypeLoopStatement:
+		return sb.scopeLoopStatement
+
+	// Expressions.
+	case parser.NodeDefineRangeExpression:
+		return sb.scopeDefineRangeExpression
+
+	case parser.NodeBooleanLiteralExpression:
+		return sb.scopeBooleanLiteralExpression
+
+	case parser.NodeNumericLiteralExpression:
+		return sb.scopeNumericLiteralExpression
 
 	default:
 		panic(fmt.Sprintf("Unknown SRG node in scoping: %v", node.Kind))

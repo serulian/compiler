@@ -6,3 +6,9 @@ class Function<T> {}
 
 @•typealias('int')
 class Integer {}
+
+@•typealias('bool')
+class Boolean {}
+
+@•typealias('float64')
+class Float64 {}

@@ -1,0 +1,6 @@
+function<void> SomeFunc() {
+	/* emptyloop */ for {
+
+	}
+	return
+}

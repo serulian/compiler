@@ -16,6 +16,56 @@ import (
 
 var _ = fmt.Printf
 
+// scopeLoopStatement scopes a loop statement in the SRG.
+func (sb *scopeBuilder) scopeLoopStatement(node compilergraph.GraphNode) proto.ScopeInfo {
+	// Scope the underlying block.
+	blockNode := node.GetNode(parser.NodeLoopStatementBlock)
+	blockScope := sb.getScope(blockNode)
+
+	// If the loop has no expression, it is an infinite loop, so we know it is valid and
+	// returns whatever the internal type is.
+	loopExprNode, hasExpr := node.TryGetNode(parser.NodeLoopStatementExpression)
+	if !hasExpr {
+		// for { ... }
+		return newScope().
+			IsTerminatingStatement().
+			IsValid(blockScope.GetIsValid()).
+			ReturningTypeOf(blockScope).
+			GetScope()
+	}
+
+	// Otherwise, scope the expression.
+	loopExprScope := sb.getScope(loopExprNode)
+	if !loopExprScope.GetIsValid() {
+		return newScope().
+			Invalid().
+			GetScope()
+	}
+
+	loopExprType := loopExprScope.ResolvedTypeRef(sb.sg.tdg)
+
+	// If the loop has a variable defined, ensure the loop expression is an IIterable. Otherwise,
+	// it must be a boolean value.
+	_, hasVar := node.TryGet(parser.NodeLoopStatementVariableName)
+	if hasVar {
+		if !loopExprType.HasReferredType(sb.sg.tdg.StreamType()) {
+			sb.decorateWithError(node, "Loop iterable expression must be of type 'stream', found: %v", loopExprType)
+			return newScope().
+				Invalid().
+				GetScope()
+		}
+	} else {
+		if !loopExprType.HasReferredType(sb.sg.tdg.BoolType()) {
+			sb.decorateWithError(node, "Loop conditional expression must be of type 'bool', found: %v", loopExprType)
+			return newScope().
+				Invalid().
+				GetScope()
+		}
+	}
+
+	return newScope().Valid().GetScope()
+}
+
 // scopeReturnStatement scopes a return statement in the SRG.
 func (sb *scopeBuilder) scopeReturnStatement(node compilergraph.GraphNode) proto.ScopeInfo {
 	exprNode, found := node.TryGetNode(parser.NodeReturnStatementValue)

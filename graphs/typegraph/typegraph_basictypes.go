@@ -5,6 +5,8 @@
 package typegraph
 
 import (
+	"fmt"
+
 	"github.com/serulian/compiler/compilergraph"
 )
 
@@ -24,31 +26,41 @@ func (t *TypeGraph) AnyTypeReference() TypeReference {
 	}
 }
 
+// BoolTypeReference returns a reference to the bool type.
+func (t *TypeGraph) BoolTypeReference() TypeReference {
+	return t.NewTypeReference(t.BoolType())
+}
+
 // StreamType returns the stream type.
 func (t *TypeGraph) StreamType() compilergraph.GraphNode {
-	srgType, found := t.srg.ResolveAliasedType("stream")
-	if !found {
-		panic("stream type not found in SRG")
-	}
-
-	return t.getTypeNodeForSRGType(srgType)
+	return t.getAliasedType("stream")
 }
 
 // FunctionType returns the function type.
 func (t *TypeGraph) FunctionType() compilergraph.GraphNode {
-	srgType, found := t.srg.ResolveAliasedType("function")
-	if !found {
-		panic("function type not found in SRG")
-	}
-
-	return t.getTypeNodeForSRGType(srgType)
+	return t.getAliasedType("function")
 }
 
 // IntType returns the integer type.
 func (t *TypeGraph) IntType() compilergraph.GraphNode {
-	srgType, found := t.srg.ResolveAliasedType("int")
+	return t.getAliasedType("int")
+}
+
+// FloatType returns the float type.
+func (t *TypeGraph) FloatType() compilergraph.GraphNode {
+	return t.getAliasedType("float64")
+}
+
+// BoolType returns the boolean type.
+func (t *TypeGraph) BoolType() compilergraph.GraphNode {
+	return t.getAliasedType("bool")
+}
+
+// getAliasedType returns the type defined for the given alias.
+func (t *TypeGraph) getAliasedType(alias string) compilergraph.GraphNode {
+	srgType, found := t.srg.ResolveAliasedType(alias)
 	if !found {
-		panic("int type not found in SRG")
+		panic(fmt.Sprintf("%s type not found in SRG", alias))
 	}
 
 	return t.getTypeNodeForSRGType(srgType)

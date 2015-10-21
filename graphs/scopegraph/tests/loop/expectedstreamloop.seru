@@ -1,0 +1,5 @@
+function<void> SomeFunc() {
+	for a in 1234 {
+
+	}
+}

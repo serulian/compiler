@@ -149,6 +149,7 @@ func (t *TypeGraph) buildTypeOperatorNode(parent TGTypeOrModule, operator srg.SR
 	t.decorateWithSig(memberNode, name, uint64(NodeTypeOperator), false, operator.IsExported(), t.AnyTypeReference())
 
 	// Decorate the operator with its return type.
+	// TODO: check for the defined return type here and compare!
 	t.createReturnable(memberNode, operator.Node(), t.NewInstanceTypeReference(typeNode))
 
 	// Ensure we have the expected number of parameters.

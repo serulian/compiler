@@ -57,20 +57,46 @@ func (sgt *scopegraphTest) writeJson(value string) {
 }
 
 var scopeGraphTests = []scopegraphTest{
-	/////// Success tests ///////
+	/** Empty block **/
 
 	// Empty block on void function.
 	scopegraphTest{"empty block void test", "empty", "block", []expectedScopeEntry{
 		expectedScopeEntry{"emptyblock", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
 	}, "", ""},
 
+	// Unreachable statement.
+	scopegraphTest{"unreachable statement test", "unreachable", "return", []expectedScopeEntry{},
+		"", "Unreachable statement found"},
+
 	// Empty block on int function.
 	scopegraphTest{"empty block int test", "empty", "missingreturn", []expectedScopeEntry{},
 		"Expected return value of type 'Integer' but not all paths return a value", ""},
 
-	// Unreachable statement.
-	scopegraphTest{"unreachable statement test", "unreachable", "return", []expectedScopeEntry{},
-		"", "Unreachable statement found"},
+	/** Loops **/
+
+	// Empty loop test.
+	scopegraphTest{"empty loop test", "loop", "empty", []expectedScopeEntry{
+		expectedScopeEntry{"emptyloop", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
+	}, "", "Unreachable statement found"},
+
+	// Boolean loop test.
+	scopegraphTest{"bool loop test", "loop", "boolloop", []expectedScopeEntry{
+		expectedScopeEntry{"loopexpr", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+		expectedScopeEntry{"loop", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
+	}, "", ""},
+
+	// Stream loop test.
+	scopegraphTest{"stream loop test", "loop", "streamloop", []expectedScopeEntry{
+		expectedScopeEntry{"loop", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
+	}, "", ""},
+
+	// Expected bool loop test.
+	scopegraphTest{"expected bool loop test", "loop", "expectedboolloop", []expectedScopeEntry{},
+		"Loop conditional expression must be of type 'bool', found: Integer", ""},
+
+	// Expected stream loop test.
+	scopegraphTest{"expected stream loop test", "loop", "expectedstreamloop", []expectedScopeEntry{},
+		"Loop iterable expression must be of type 'stream', found: Integer", ""},
 }
 
 func TestGraphs(t *testing.T) {
@@ -108,7 +134,7 @@ func TestGraphs(t *testing.T) {
 			assert.Equal(t, test.expectedError, result.Errors[0].Error(), "Error mismatch on test %v", test.name)
 			continue
 		} else {
-			if !assert.True(t, result.Status, "Expected success in scoping on test : %v", test.name) {
+			if !assert.True(t, result.Status, "Expected success in scoping on test: %v\n%v", test.name, result.Errors) {
 				continue
 			}
 		}
@@ -127,7 +153,7 @@ func TestGraphs(t *testing.T) {
 			}
 
 			scope, valid := result.Graph.GetScope(node)
-			if !assert.True(t, valid, "Could not get scope for commented node %s in test: %v", expected.name, test.name) {
+			if !assert.True(t, valid, "Could not get scope for commented node %s (%v) in test: %v", expected.name, node, test.name) {
 				continue
 			}
 
