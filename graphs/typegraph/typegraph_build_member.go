@@ -145,12 +145,27 @@ func (t *TypeGraph) buildTypeOperatorNode(parent TGTypeOrModule, operator srg.SR
 		return false
 	}
 
-	// Add the member signature for this operator.
-	t.decorateWithSig(memberNode, name, uint64(NodeTypeOperator), false, operator.IsExported(), t.AnyTypeReference())
+	// Retrieve the declared return type for the operator.
+	var declaredReturnType = t.AnyTypeReference()
 
-	// Decorate the operator with its return type.
-	// TODO: check for the defined return type here and compare!
-	t.createReturnable(memberNode, operator.Node(), t.NewInstanceTypeReference(typeNode))
+	if _, hasDeclaredType := operator.DeclaredType(); hasDeclaredType {
+		resolvedReturnType, valid := t.resolvePossibleType(memberNode, operator.DeclaredType)
+		if valid {
+			declaredReturnType = resolvedReturnType
+		} else {
+			success = false
+		}
+	}
+
+	// Ensure that the declared return type is equal to that expected.
+	containingType := t.NewInstanceTypeReference(typeNode)
+	expectedReturnType := definition.ExpectedReturnType(containingType)
+
+	if !declaredReturnType.EqualsOrAny(expectedReturnType) {
+		t.decorateWithError(memberNode, "Operator '%s' defined on type '%s' expects a return type of '%v'; found %v",
+			operator.Name(), parent.Name(), expectedReturnType, declaredReturnType)
+		success = false
+	}
 
 	// Ensure we have the expected number of parameters.
 	parametersExpected := definition.Parameters
@@ -163,7 +178,6 @@ func (t *TypeGraph) buildTypeOperatorNode(parent TGTypeOrModule, operator srg.SR
 	}
 
 	// Ensure the parameters expected on the operator match those specified.
-	containingType := t.NewInstanceTypeReference(typeNode)
 	for index, parameter := range parametersDefined {
 		parameterType, valid := t.resolvePossibleType(memberNode, parameter.DeclaredType)
 		if !valid {
@@ -179,6 +193,12 @@ func (t *TypeGraph) buildTypeOperatorNode(parent TGTypeOrModule, operator srg.SR
 			success = false
 		}
 	}
+
+	// Decorate the operator with its return type.
+	t.createReturnable(memberNode, operator.Node(), declaredReturnType)
+
+	// Add the member signature for this operator.
+	t.decorateWithSig(memberNode, name, uint64(NodeTypeOperator), false, operator.IsExported(), t.AnyTypeReference())
 
 	return success
 }

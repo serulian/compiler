@@ -82,6 +82,15 @@ func (tr TypeReference) Verify() error {
 	return nil
 }
 
+// EqualsOrAny returns true if this type reference is equal to the other given, OR if it is 'any'.
+func (tr TypeReference) EqualsOrAny(other TypeReference) bool {
+	if tr.IsAny() {
+		return true
+	}
+
+	return tr == other
+}
+
 // CheckSubTypeOf returns whether the type pointed to by this type reference is a subtype
 // of the other type reference: tr <: other
 //

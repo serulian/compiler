@@ -121,5 +121,27 @@
             "tdg-srg-source": "(NodeRef)",
             "tdg-type-name": "Stream"
         }
+    },
+    "a37acd1c9467a0f9cbd40d159215daf1": {
+        "Key": "a37acd1c9467a0f9cbd40d159215daf1",
+        "Kind": 1,
+        "Children": {},
+        "Predicates": {
+            "tdg-declaration-module": "(NodeRef)",
+            "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-srg-source": "(NodeRef)",
+            "tdg-type-name": "Boolean"
+        }
+    },
+    "c5bf685c9118e9f413e28b3ea87421da": {
+        "Key": "c5bf685c9118e9f413e28b3ea87421da",
+        "Kind": 1,
+        "Children": {},
+        "Predicates": {
+            "tdg-declaration-module": "(NodeRef)",
+            "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-srg-source": "(NodeRef)",
+            "tdg-type-name": "Float64"
+        }
     }
 }
