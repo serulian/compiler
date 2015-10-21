@@ -1,0 +1,3 @@
+class SomeClass {
+	operator<SomeClass> Plus(left SomeClass, right SomeClass) {}
+}

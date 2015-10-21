@@ -407,6 +407,15 @@ func (p *sourceParser) consumeOperator(option typeMemberOption) AstNode {
 	// operator
 	p.consumeKeyword("operator")
 
+	// Optional: Return type.
+	if _, ok := p.tryConsume(tokenTypeLessThan); ok {
+		operatorNode.Connect(NodePredicateTypeMemberDeclaredType, p.consumeTypeReference(typeReferenceNoVoid))
+
+		if _, ok := p.consume(tokenTypeGreaterThan); !ok {
+			return operatorNode
+		}
+	}
+
 	// Operator Name.
 	identifier, ok := p.consumeIdentifier()
 	if !ok {
