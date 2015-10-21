@@ -1,0 +1,5 @@
+function<void> SomeFunc() {
+	/* loop */ for /* loopexpr */true {
+
+	}
+}

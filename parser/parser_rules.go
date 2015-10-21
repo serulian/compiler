@@ -1491,8 +1491,7 @@ func (p *sourceParser) tryConsumeAwaitExpression() (AstNode, bool) {
 //
 // Form: a <- b
 func (p *sourceParser) tryConsumeArrowExpression() (AstNode, bool) {
-	exprNode := p.startNode(NodeTypeArrowExpression)
-	defer p.finishNode()
+	currentToken := p.currentToken
 
 	destinationNode, ok := p.tryConsumeNonArrowExpression()
 	if !ok {
@@ -1502,6 +1501,11 @@ func (p *sourceParser) tryConsumeArrowExpression() (AstNode, bool) {
 	if _, ok := p.tryConsume(tokenTypeArrowPortOperator); !ok {
 		return destinationNode, true
 	}
+
+	exprNode := p.createNode(NodeTypeArrowExpression)
+	p.nodes.push(exprNode)
+	p.decorateStartRuneAndComments(exprNode, currentToken)
+	defer p.finishNode()
 
 	exprNode.Connect(NodeArrowExpressionDestination, destinationNode)
 	exprNode.Connect(NodeArrowExpressionSource, p.consumeNonArrowExpression())
