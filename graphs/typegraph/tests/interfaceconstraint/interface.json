@@ -3,10 +3,10 @@
         "Key": "0fd4f123f61f36d83fe449edea0ac60a",
         "Kind": 1,
         "Children": {
-            "30933d6dae5e40ffa98d4af33883cc96": {
+            "5b80be25b31e10947400022b89d266d9": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "30933d6dae5e40ffa98d4af33883cc96",
+                    "Key": "5b80be25b31e10947400022b89d266d9",
                     "Kind": 4,
                     "Children": {
                         "80ca9847fdc8406e5c0e3724344fcc53": {
@@ -24,6 +24,7 @@
                         }
                     },
                     "Predicates": {
+                        "tdg-member-exported": "true",
                         "tdg-member-name": "DoSomething",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "Function\u003cInteger\u003e(Integer, Integer)",
@@ -33,10 +34,10 @@
                     }
                 }
             },
-            "862548820e5b84321317ff50b22c79ef": {
+            "7b9ae274f0910a4f6ba58a46bc440060": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "862548820e5b84321317ff50b22c79ef",
+                    "Key": "7b9ae274f0910a4f6ba58a46bc440060",
                     "Kind": 4,
                     "Children": {
                         "80ca9847fdc8406e5c0e3724344fcc53": {
@@ -54,6 +55,7 @@
                         }
                     },
                     "Predicates": {
+                        "tdg-member-exported": "true",
                         "tdg-member-name": "AnotherThing",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "Function\u003cInteger\u003e",
@@ -75,10 +77,10 @@
         "Key": "1be89dd03870cb2e19c2218b8bb968b7",
         "Kind": 2,
         "Children": {
-            "30933d6dae5e40ffa98d4af33883cc96": {
+            "5b80be25b31e10947400022b89d266d9": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "30933d6dae5e40ffa98d4af33883cc96",
+                    "Key": "5b80be25b31e10947400022b89d266d9",
                     "Kind": 4,
                     "Children": {
                         "80ca9847fdc8406e5c0e3724344fcc53": {
@@ -96,6 +98,7 @@
                         }
                     },
                     "Predicates": {
+                        "tdg-member-exported": "true",
                         "tdg-member-name": "DoSomething",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "Function\u003cInteger\u003e(Integer, Integer)",
@@ -116,7 +119,38 @@
     "794a5310bd2bca2ab8beaeb7b7004af5": {
         "Key": "794a5310bd2bca2ab8beaeb7b7004af5",
         "Kind": 1,
-        "Children": {},
+        "Children": {
+            "324b98801dc4800ea334d8366f524274": {
+                "Predicate": "tdg-declaration-operator",
+                "Child": {
+                    "Key": "324b98801dc4800ea334d8366f524274",
+                    "Kind": 5,
+                    "Children": {
+                        "4b002c6a2e870bae4a9f985ac467b577": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "4b002c6a2e870bae4a9f985ac467b577",
+                                "Kind": 6,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "6|NodeType|tdg",
+                                    "tdg-return-type": "any",
+                                    "tdg-srg-source": "(NodeRef)"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "•range",
+                        "tdg-member-signature": "\n\u0005range\u0010\u0005\u0018\u0000 \u0001*\u0003any",
+                        "tdg-node-kind": "5|NodeType|tdg",
+                        "tdg-operator-name": "range",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            }
+        },
         "Predicates": {
             "tdg-declaration-module": "(NodeRef)",
             "tdg-node-kind": "1|NodeType|tdg",

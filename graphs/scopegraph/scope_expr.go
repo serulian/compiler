@@ -9,8 +9,10 @@ package scopegraph
 import (
 	"fmt"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
+	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/parser"
 )
 
@@ -33,8 +35,8 @@ func (sb *scopeBuilder) scopeBinaryExpression(node compilergraph.GraphNode, opNa
 	}
 
 	// Ensure that both scopes have the same type.
-	leftType := leftScope.ReturnedTypeRef(sb.sg.tdg)
-	rightType := rightScope.ReturnedTypeRef(sb.sg.tdg)
+	leftType := leftScope.ResolvedTypeRef(sb.sg.tdg)
+	rightType := rightScope.ResolvedTypeRef(sb.sg.tdg)
 
 	if leftType != rightType {
 		sb.decorateWithError(node, "Operator '%v' requires operands of the same type. Found: '%v' and '%v'", opName, leftType, rightType)
@@ -42,9 +44,13 @@ func (sb *scopeBuilder) scopeBinaryExpression(node compilergraph.GraphNode, opNa
 	}
 
 	// Ensure that the operator exists under the resolved type.
-	// TODO(jschorr): Do this!
+	module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
+	operator, found := leftType.ResolveMember(opName, module, typegraph.MemberResolutionOperator)
+	if !found {
+		sb.decorateWithError(node, "Operator '%v' is not defined on type '%v'", opName, leftType)
+		return newScope().Invalid().GetScope()
+	}
 
-	// TODO(jschorr): Read this from the binary expression operator itself!
-	streamType := sb.sg.tdg.NewTypeReference(sb.sg.tdg.StreamType(), leftType)
-	return newScope().Valid().Resolving(streamType).GetScope()
+	returnType, _ := operator.ReturnType()
+	return newScope().Valid().Resolving(returnType).GetScope()
 }

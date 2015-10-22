@@ -5,7 +5,12 @@ interface Stream<T> {}
 class Function<T> {}
 
 @•typealias('int')
-class Integer {}
+class Integer {
+	operator Range(start int, end int) {
+		// TODO: fix this once we can actually create a stream
+		return 2
+	}
+}
 
 @•typealias('bool')
 class Boolean {}

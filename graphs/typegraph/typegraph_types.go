@@ -117,6 +117,9 @@ const (
 	// Marks a member with its signature.
 	NodePredicateMemberSignature = "member-signature"
 
+	// Marks a member with the fact that it is exported.
+	NodePredicateMemberExported = "member-exported"
+
 	// Connects a member to a returnable definition, itself connected to an SRG node.
 	NodePredicateReturnable = "member-returnable"
 
@@ -126,9 +129,6 @@ const (
 
 	// Marks an operator with its searchable name.
 	NodePredicateOperatorName = "operator-name"
-
-	// Marks an operator with the fact that it is exported.
-	NodePredicateOperatorExported = "operator-exported"
 
 	//
 	// NodeTypeReturnable

@@ -9,9 +9,12 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/compilerutil"
+
 	"github.com/serulian/compiler/graphs/typegraph/proto"
+	"github.com/serulian/compiler/parser"
 )
 
 // TypeReference represents a saved type reference in the graph.
@@ -337,6 +340,49 @@ func (tr TypeReference) ReferredType() compilergraph.GraphNode {
 	}
 
 	return tr.tdg.layer.GetNode(tr.getSlot(trhSlotTypeId))
+}
+
+type MemberResolutionKind int
+
+const (
+	MemberResolutionOperator MemberResolutionKind = iota
+	MemberResolutioNonOperator
+)
+
+// ResolveMember looks for an member with the given name under the referred type and returns it (if any).
+func (tr TypeReference) ResolveMember(memberName string, module compilercommon.InputSource, kind MemberResolutionKind) (TGMember, bool) {
+	if tr.getSlot(trhSlotFlagSpecial)[0] != specialFlagNormal {
+		return TGMember{}, false
+	}
+
+	var connectingPredicate = NodePredicateMember
+	var namePredicate = NodePredicateMemberName
+
+	if kind == MemberResolutionOperator {
+		connectingPredicate = NodePredicateTypeOperator
+		namePredicate = NodePredicateOperatorName
+	}
+
+	memberNode, found := tr.ReferredType().
+		StartQuery().
+		Out(connectingPredicate).
+		Has(namePredicate, memberName).
+		TryGetNode()
+
+	if !found {
+		return TGMember{}, false
+	}
+
+	// If the member is exported, then always return it. Otherwise, only return it if the asking module
+	// is the same as the declaring module.
+	if _, exported := memberNode.TryGet(NodePredicateMemberExported); !exported {
+		srgSourceNode := tr.tdg.srg.GetNode(compilergraph.GraphNodeId(memberNode.Get(NodePredicateSource)))
+		if srgSourceNode.Get(parser.NodePredicateSource) != string(module) {
+			return TGMember{}, false
+		}
+	}
+
+	return TGMember{memberNode, tr.tdg}, true
 }
 
 // WithGeneric returns a copy of this type reference with the given generic added.

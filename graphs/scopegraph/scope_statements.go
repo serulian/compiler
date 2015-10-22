@@ -80,7 +80,7 @@ func (sb *scopeBuilder) scopeReturnStatement(node compilergraph.GraphNode) proto
 	return newScope().
 		IsTerminatingStatement().
 		IsValid(exprScope.GetIsValid()).
-		ReturningTypeOf(exprScope).
+		ReturningResolvedTypeOf(exprScope).
 		GetScope()
 }
 

@@ -70,6 +70,21 @@ func (g *TypeGraph) TypeDecls() []TGTypeDecl {
 	return types
 }
 
+// LookupType looks up the type declaration with the given name in the given module and returns it (if any).
+func (g *TypeGraph) LookupType(typeName string, module compilercommon.InputSource) (TGTypeDecl, bool) {
+	srgModule, found := g.srg.FindModuleBySource(module)
+	if !found {
+		return TGTypeDecl{}, false
+	}
+
+	srgType, typeFound := srgModule.FindTypeByName(typeName, srg.ModuleResolveAll)
+	if !typeFound {
+		return TGTypeDecl{}, false
+	}
+
+	return TGTypeDecl{g.getTypeNodeForSRGType(srgType), g}, true
+}
+
 // LookupReturnType looks up the return type for an SRG member or property getter.
 func (g *TypeGraph) LookupReturnType(srgNode compilergraph.GraphNode) (TypeReference, bool) {
 	resolvedNode, found := g.findAllNodes(NodeTypeReturnable).

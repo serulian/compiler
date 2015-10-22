@@ -49,10 +49,17 @@ func (sib *scopeInfoBuilder) Resolving(resolved typegraph.TypeReference) *scopeI
 	return sib
 }
 
-// ReturningTypeOf marks the scope as returning the type of the given scope.
+// ReturningTypeOf marks the scope as returning the return type of the given scope.
 func (sib *scopeInfoBuilder) ReturningTypeOf(scope *proto.ScopeInfo) *scopeInfoBuilder {
 	returnedValue := scope.GetReturnedType()
 	sib.info.ReturnedType = &returnedValue
+	return sib
+}
+
+// ReturningResolvedTypeOf marks the scope as returning the *resolved* type of the given scope.
+func (sib *scopeInfoBuilder) ReturningResolvedTypeOf(scope *proto.ScopeInfo) *scopeInfoBuilder {
+	resolvedValue := scope.GetResolvedType()
+	sib.info.ReturnedType = &resolvedValue
 	return sib
 }
 

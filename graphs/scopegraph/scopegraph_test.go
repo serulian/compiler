@@ -57,7 +57,7 @@ func (sgt *scopegraphTest) writeJson(value string) {
 }
 
 var scopeGraphTests = []scopegraphTest{
-	/** Empty block **/
+	/////////// Empty block ///////////
 
 	// Empty block on void function.
 	scopegraphTest{"empty block void test", "empty", "block", []expectedScopeEntry{
@@ -72,7 +72,7 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"empty block int test", "empty", "missingreturn", []expectedScopeEntry{},
 		"Expected return value of type 'Integer' but not all paths return a value", ""},
 
-	/** Loops **/
+	/////////// Loops ///////////
 
 	// Empty loop test.
 	scopegraphTest{"empty loop test", "loop", "empty", []expectedScopeEntry{
@@ -140,8 +140,9 @@ func TestGraphs(t *testing.T) {
 		}
 
 		if test.expectedWarning != "" {
-			assert.Equal(t, 1, len(result.Warnings), "Expected 1 warning on test %v, found: %v", test.name, len(result.Warnings))
-			assert.Equal(t, test.expectedWarning, result.Warnings[0].Warning(), "Warning mismatch on test %v", test.name)
+			if assert.Equal(t, 1, len(result.Warnings), "Expected 1 warning on test %v, found: %v", test.name, len(result.Warnings)) {
+				assert.Equal(t, test.expectedWarning, result.Warnings[0].Warning(), "Warning mismatch on test %v", test.name)
+			}
 		}
 
 		// Check each of the scopes.
@@ -153,7 +154,7 @@ func TestGraphs(t *testing.T) {
 			}
 
 			scope, valid := result.Graph.GetScope(node)
-			if !assert.True(t, valid, "Could not get scope for commented node %s (%v) in test: %v", expected.name, node, test.name) {
+			if !assert.True(t, valid, "Could not get scope for commented node %s (%v) in test: %v (%v)", expected.name, node, test.name, result.Errors) {
 				continue
 			}
 

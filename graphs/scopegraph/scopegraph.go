@@ -51,10 +51,10 @@ func BuildScopeGraph(tdg *typegraph.TypeGraph) *Result {
 	sit := tdg.SourceGraph().EntrypointStatements()
 	for sit.Next() {
 		wg.Add(1)
-		go (func() {
-			<-builder.buildScope(sit.Node())
+		go (func(node compilergraph.GraphNode) {
+			<-builder.buildScope(node)
 			wg.Done()
-		})()
+		})(sit.Node())
 	}
 
 	wg.Wait()

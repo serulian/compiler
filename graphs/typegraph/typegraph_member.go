@@ -23,3 +23,16 @@ func (tn TGMember) Name() string {
 func (tn TGMember) Node() compilergraph.GraphNode {
 	return tn.GraphNode
 }
+
+// ReturnType returns the return type for this member.
+func (tn TGMember) ReturnType() (TypeReference, bool) {
+	returnNode, found := tn.GraphNode.StartQuery().
+		Out(NodePredicateReturnable).
+		TryGetNode()
+
+	if !found {
+		return tn.tdg.AnyTypeReference(), false
+	}
+
+	return returnNode.GetTagged(NodePredicateReturnType, tn.tdg.AnyTypeReference()).(TypeReference), true
+}

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/stretchr/testify/assert"
@@ -119,4 +120,72 @@ func TestSpecialReferenceOperations(t *testing.T) {
 
 	voidRef := testTG.VoidTypeReference()
 	assert.True(t, voidRef.IsVoid(), "Expected 'void' reference")
+}
+
+type resolveMemberTest struct {
+	name          string
+	parentType    TGTypeDecl
+	memberName    string
+	modulePath    string
+	expectedFound bool
+}
+
+func TestResolveMembers(t *testing.T) {
+	graph, err := compilergraph.NewGraph("tests/typeresolve/entrypoint.seru")
+	if !assert.Nil(t, err, "Got graph creation error: %v", err) {
+		return
+	}
+
+	testSRG := srg.NewSRG(graph)
+	srgResult := testSRG.LoadAndParse("tests/testlib")
+	if !assert.True(t, srgResult.Status, "Got error for SRG construction: %v", srgResult.Errors) {
+		return
+	}
+
+	// Construct the type graph.
+	result := BuildTypeGraph(testSRG)
+	if !assert.True(t, result.Status, "Got error for TypeGraph construction: %v", result.Errors) {
+		return
+	}
+
+	// Get a reference to SomeClass and attempt to resolve members from both modules.
+	someClass, someClassFound := result.Graph.LookupType("SomeClass", compilercommon.InputSource("tests/typeresolve/entrypoint.seru"))
+	if !assert.True(t, someClassFound, "Could not find 'SomeClass'") {
+		return
+	}
+
+	otherClass, otherClassFound := result.Graph.LookupType("OtherClass", compilercommon.InputSource("tests/typeresolve/otherfile.seru"))
+	if !assert.True(t, otherClassFound, "Could not find 'OtherClass'") {
+		return
+	}
+
+	tests := []resolveMemberTest{
+		resolveMemberTest{"Exported function from SomeClass via Entrpoint", someClass, "ExportedFunction", "entrypoint", true},
+		resolveMemberTest{"Unexported function from SomeClass via Entrypoint", someClass, "notExported", "entrypoint", true},
+		resolveMemberTest{"Exported function from SomeClass via otherfile", someClass, "ExportedFunction", "otherfile", true},
+		resolveMemberTest{"Unexported function from SomeClass via otherfile", someClass, "notExported", "otherfile", false},
+
+		resolveMemberTest{"Exported function from OtherClass via Entrpoint", otherClass, "OtherExportedFunction", "entrypoint", true},
+		resolveMemberTest{"Unexported function from OtherClass via Entrypoint", otherClass, "otherNotExported", "entrypoint", false},
+		resolveMemberTest{"Exported function from OtherClass via otherfile", otherClass, "OtherExportedFunction", "otherfile", true},
+		resolveMemberTest{"Unexported function from OtherClass via otherfile", otherClass, "otherNotExported", "otherfile", true},
+	}
+
+	for _, test := range tests {
+		typeref := result.Graph.NewTypeReference(test.parentType.GraphNode)
+		memberNode, memberFound := typeref.ResolveMember(test.memberName,
+			compilercommon.InputSource(fmt.Sprintf("tests/typeresolve/%s.seru", test.modulePath)), MemberResolutioNonOperator)
+
+		if !assert.Equal(t, test.expectedFound, memberFound, "Member found mismatch on %s", test.name) {
+			continue
+		}
+
+		if !memberFound {
+			continue
+		}
+
+		if !assert.Equal(t, test.memberName, memberNode.Name(), "Member name mismatch on %s", test.name) {
+			continue
+		}
+	}
 }

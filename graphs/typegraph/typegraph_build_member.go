@@ -124,7 +124,7 @@ func (t *TypeGraph) buildTypeOperatorNode(parent TGTypeOrModule, operator srg.SR
 	memberNode.Connect(NodePredicateSource, operator.Node())
 
 	if operator.IsExported() {
-		memberNode.Decorate(NodePredicateOperatorExported, "true")
+		memberNode.Decorate(NodePredicateMemberExported, "true")
 	}
 
 	var success = true
@@ -161,7 +161,7 @@ func (t *TypeGraph) buildTypeOperatorNode(parent TGTypeOrModule, operator srg.SR
 	containingType := t.NewInstanceTypeReference(typeNode)
 	expectedReturnType := definition.ExpectedReturnType(containingType)
 
-	if !declaredReturnType.EqualsOrAny(expectedReturnType) {
+	if !declaredReturnType.IsAny() && declaredReturnType != expectedReturnType {
 		t.decorateWithError(memberNode, "Operator '%s' defined on type '%s' expects a return type of '%v'; found %v",
 			operator.Name(), parent.Name(), expectedReturnType, declaredReturnType)
 		success = false
@@ -195,7 +195,12 @@ func (t *TypeGraph) buildTypeOperatorNode(parent TGTypeOrModule, operator srg.SR
 	}
 
 	// Decorate the operator with its return type.
-	t.createReturnable(memberNode, operator.Node(), declaredReturnType)
+	var actualReturnType = expectedReturnType
+	if expectedReturnType.IsAny() {
+		actualReturnType = declaredReturnType
+	}
+
+	t.createReturnable(memberNode, operator.Node(), actualReturnType)
 
 	// Add the member signature for this operator.
 	t.decorateWithSig(memberNode, name, uint64(NodeTypeOperator), false, operator.IsExported(), t.AnyTypeReference())
@@ -217,6 +222,10 @@ func (t *TypeGraph) buildTypeMemberNode(parent TGTypeOrModule, member srg.SRGMem
 	memberNode := t.layer.CreateNode(NodeTypeMember)
 	memberNode.Decorate(NodePredicateMemberName, member.Name())
 	memberNode.Connect(NodePredicateSource, member.Node())
+
+	if member.IsExported() {
+		memberNode.Decorate(NodePredicateMemberExported, "true")
+	}
 
 	var success = true
 
