@@ -72,6 +72,26 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"empty block int test", "empty", "missingreturn", []expectedScopeEntry{},
 		"Expected return value of type 'Integer' but not all paths return a value", ""},
 
+	/////////// Break ///////////
+
+	// Normal break statement.
+	scopegraphTest{"break statement test", "break", "normal", []expectedScopeEntry{},
+		"", "Unreachable statement found"},
+
+	// break statement not under a breakable node.
+	scopegraphTest{"break statement error test", "break", "badparent", []expectedScopeEntry{},
+		"'break' statement must be a under a loop or match statement", ""},
+
+	/////////// Continue ///////////
+
+	// Normal continue statement.
+	scopegraphTest{"continue statement test", "continue", "normal", []expectedScopeEntry{},
+		"", "Unreachable statement found"},
+
+	// continue statement not under a breakable node.
+	scopegraphTest{"continue statement error test", "continue", "badparent", []expectedScopeEntry{},
+		"'continue' statement must be a under a loop statement", ""},
+
 	/////////// Loops ///////////
 
 	// Empty loop test.

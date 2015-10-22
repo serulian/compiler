@@ -66,6 +66,40 @@ func (sb *scopeBuilder) scopeLoopStatement(node compilergraph.GraphNode) proto.S
 	return newScope().Valid().GetScope()
 }
 
+// scopeContinueStatement scopes a continue statement in the SRG.
+func (sb *scopeBuilder) scopeContinueStatement(node compilergraph.GraphNode) proto.ScopeInfo {
+	// Ensure that the node is under a loop.
+	if !sb.sg.srg.HasContainingNode(node, parser.NodeTypeLoopStatement) {
+		sb.decorateWithError(node, "'continue' statement must be a under a loop statement")
+		return newScope().
+			IsTerminatingStatement().
+			Invalid().
+			GetScope()
+	}
+
+	return newScope().
+		IsTerminatingStatement().
+		Valid().
+		GetScope()
+}
+
+// scopeBreakStatement scopes a break statement in the SRG.
+func (sb *scopeBuilder) scopeBreakStatement(node compilergraph.GraphNode) proto.ScopeInfo {
+	// Ensure that the node is under a loop or match.
+	if !sb.sg.srg.HasContainingNode(node, parser.NodeTypeLoopStatement, parser.NodeTypeMatchStatement) {
+		sb.decorateWithError(node, "'break' statement must be a under a loop or match statement")
+		return newScope().
+			IsTerminatingStatement().
+			Invalid().
+			GetScope()
+	}
+
+	return newScope().
+		IsTerminatingStatement().
+		Valid().
+		GetScope()
+}
+
 // scopeReturnStatement scopes a return statement in the SRG.
 func (sb *scopeBuilder) scopeReturnStatement(node compilergraph.GraphNode) proto.ScopeInfo {
 	exprNode, found := node.TryGetNode(parser.NodeReturnStatementValue)
