@@ -202,6 +202,7 @@ var parserTests = []parserTest{
 	{"comment block test", "comment/block"},
 	{"comment loop test", "comment/loop"},
 	{"comment literal test", "comment/literal"},
+	{"comment line test", "comment/line"},
 }
 
 func reportImport(path PackageImport) string {
