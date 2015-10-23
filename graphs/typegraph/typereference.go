@@ -414,10 +414,15 @@ func (tr TypeReference) Intersect(other TypeReference) TypeReference {
 		return tr
 	}
 
-	if tr.CheckSubTypeOf(other) != nil {
+	if tr.CheckSubTypeOf(other) == nil {
 		return other
 	}
 
+	if other.CheckSubTypeOf(tr) == nil {
+		return tr
+	}
+
+	// TODO: support some sort of union types here if/when we need to?
 	return tr.tdg.AnyTypeReference()
 }
 

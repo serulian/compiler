@@ -1,0 +1,9 @@
+class SomeClass {
+	function<int> DoSomething() {
+		/* conditional */if true /* trueblock */{
+			return 1
+		} else /* falseblock */{
+			return 2
+		}
+	}
+}

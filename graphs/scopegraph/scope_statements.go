@@ -16,6 +16,46 @@ import (
 
 var _ = fmt.Printf
 
+// scopeConditionalStatement scopes a conditional statement in the SRG.
+func (sb *scopeBuilder) scopeConditionalStatement(node compilergraph.GraphNode) proto.ScopeInfo {
+	var returningType = sb.sg.tdg.VoidTypeReference()
+	var valid = true
+
+	// Scope the child block(s).
+	statementBlockScope := sb.getScope(node.GetNode(parser.NodeConditionalStatementBlock))
+	if !statementBlockScope.GetIsValid() {
+		valid = false
+	}
+
+	elseClauseNode, hasElseClause := node.TryGetNode(parser.NodeConditionalStatementElseClause)
+	if hasElseClause {
+		elseClauseScope := sb.getScope(elseClauseNode)
+		if !elseClauseScope.GetIsValid() {
+			valid = false
+		}
+
+		// The type returned by this conditional is only non-void if both the block and the
+		// else clause return values.
+		returningType = statementBlockScope.ReturnedTypeRef(sb.sg.tdg).
+			Intersect(elseClauseScope.ReturnedTypeRef(sb.sg.tdg))
+	}
+
+	// Scope the conditional expression and make sure it has type boolean.
+	conditionalExprNode := node.GetNode(parser.NodeConditionalStatementConditional)
+	conditionalExprScope := sb.getScope(conditionalExprNode)
+	if !conditionalExprScope.GetIsValid() {
+		return newScope().Invalid().Returning(returningType).GetScope()
+	}
+
+	conditionalExprType := conditionalExprScope.ResolvedTypeRef(sb.sg.tdg)
+	if !conditionalExprType.HasReferredType(sb.sg.tdg.BoolType()) {
+		sb.decorateWithError(node, "Conditional expression must be of type 'bool', found: %v", conditionalExprType)
+		return newScope().Invalid().Returning(returningType).GetScope()
+	}
+
+	return newScope().IsValid(valid).Returning(returningType).GetScope()
+}
+
 // scopeLoopStatement scopes a loop statement in the SRG.
 func (sb *scopeBuilder) scopeLoopStatement(node compilergraph.GraphNode) proto.ScopeInfo {
 	// Scope the underlying block.

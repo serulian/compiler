@@ -92,6 +92,40 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"continue statement error test", "continue", "badparent", []expectedScopeEntry{},
 		"'continue' statement must be a under a loop statement", ""},
 
+	/////////// Conditionals ///////////
+
+	scopegraphTest{"basic conditional test", "conditional", "basic",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"conditional", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"conditional with else test", "conditional", "else",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"conditional", expectedScope{true, proto.ScopeKind_VALUE, "void", "Integer"}},
+			expectedScopeEntry{"trueblock", expectedScope{true, proto.ScopeKind_VALUE, "void", "Integer"}},
+			expectedScopeEntry{"falseblock", expectedScope{true, proto.ScopeKind_VALUE, "void", "Integer"}},
+		},
+		"", ""},
+
+	scopegraphTest{"chained conditional test", "conditional", "chained",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"conditional", expectedScope{true, proto.ScopeKind_VALUE, "void", "Integer"}},
+			expectedScopeEntry{"true1block", expectedScope{true, proto.ScopeKind_VALUE, "void", "Integer"}},
+			expectedScopeEntry{"true2block", expectedScope{true, proto.ScopeKind_VALUE, "void", "Integer"}},
+			expectedScopeEntry{"falseblock", expectedScope{true, proto.ScopeKind_VALUE, "void", "Integer"}},
+		},
+		"", ""},
+
+	scopegraphTest{"conditional invalid expr test", "conditional", "nonboolexpr", []expectedScopeEntry{},
+		"Conditional expression must be of type 'bool', found: Integer", ""},
+
+	scopegraphTest{"conditional return test", "conditional", "return", []expectedScopeEntry{},
+		"Expected return value of type 'Integer' but not all paths return a value", ""},
+
+	scopegraphTest{"conditional chained return intersect test", "conditional", "chainedintersect", []expectedScopeEntry{},
+		"Expected return value of type 'Integer': Cannot use type 'any' in place of type 'Integer'", ""},
+
 	/////////// Loops ///////////
 
 	// Empty loop test.

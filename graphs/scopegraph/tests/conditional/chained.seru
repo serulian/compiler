@@ -1,0 +1,11 @@
+class SomeClass {
+	function<int> DoSomething() {
+		/* conditional */if true /* true1block */{
+			return 1
+		} else if false /* true2block */{
+			return 2
+		} else /* falseblock */{
+			return 3
+		}
+	}
+}
