@@ -31,6 +31,11 @@ func (t *TypeGraph) BoolTypeReference() TypeReference {
 	return t.NewTypeReference(t.BoolType())
 }
 
+// ReleasableTypeReference returns a reference to the done type.
+func (t *TypeGraph) ReleasableTypeReference() TypeReference {
+	return t.NewTypeReference(t.ReleasableType())
+}
+
 // StreamType returns the stream type.
 func (t *TypeGraph) StreamType() compilergraph.GraphNode {
 	return t.getAliasedType("stream")
@@ -54,6 +59,11 @@ func (t *TypeGraph) FloatType() compilergraph.GraphNode {
 // BoolType returns the boolean type.
 func (t *TypeGraph) BoolType() compilergraph.GraphNode {
 	return t.getAliasedType("bool")
+}
+
+// ReleasableType returns the releasable type.
+func (t *TypeGraph) ReleasableType() compilergraph.GraphNode {
+	return t.getAliasedType("releasable")
 }
 
 // getAliasedType returns the type defined for the given alias.

@@ -16,6 +16,32 @@ import (
 
 var _ = fmt.Printf
 
+// scopeWithStatement scopes a with statement in the SRG.
+func (sb *scopeBuilder) scopeWithStatement(node compilergraph.GraphNode) proto.ScopeInfo {
+	// Scope the child block.
+	var valid = true
+
+	statementBlockScope := sb.getScope(node.GetNode(parser.NodeWithStatementBlock))
+	if !statementBlockScope.GetIsValid() {
+		valid = false
+	}
+
+	// Scope the with expression, ensuring that it is a releasable value.
+	exprScope := sb.getScope(node.GetNode(parser.NodeWithStatementExpression))
+	if !exprScope.GetIsValid() {
+		return newScope().Invalid().ReturningTypeOf(statementBlockScope).GetScope()
+	}
+
+	exprType := exprScope.ResolvedTypeRef(sb.sg.tdg)
+	serr := exprType.CheckSubTypeOf(sb.sg.tdg.ReleasableTypeReference())
+	if serr != nil {
+		sb.decorateWithError(node, "With expression must implement the Releasable interface: %v", serr)
+		return newScope().Invalid().ReturningTypeOf(statementBlockScope).GetScope()
+	}
+
+	return newScope().IsValid(valid).ReturningTypeOf(statementBlockScope).GetScope()
+}
+
 // scopeConditionalStatement scopes a conditional statement in the SRG.
 func (sb *scopeBuilder) scopeConditionalStatement(node compilergraph.GraphNode) proto.ScopeInfo {
 	var returningType = sb.sg.tdg.VoidTypeReference()

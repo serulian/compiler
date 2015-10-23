@@ -151,6 +151,16 @@ var scopeGraphTests = []scopegraphTest{
 	// Expected stream loop test.
 	scopegraphTest{"expected stream loop test", "loop", "expectedstreamloop", []expectedScopeEntry{},
 		"Loop iterable expression must be of type 'stream', found: Integer", ""},
+
+	/////////// With ///////////
+
+	// Basic with test.
+	scopegraphTest{"basic with test", "with", "basic", []expectedScopeEntry{
+		expectedScopeEntry{"with", expectedScope{true, proto.ScopeKind_VALUE, "void", "Integer"}},
+	}, "", ""},
+
+	scopegraphTest{"invalid with expr test", "with", "nonreleasable", []expectedScopeEntry{},
+		"With expression must implement the Releasable interface: Type 'Boolean' does not define or export member 'Release', which is required by type 'Releasable'", ""},
 }
 
 func TestGraphs(t *testing.T) {

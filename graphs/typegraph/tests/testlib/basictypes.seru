@@ -1,6 +1,11 @@
 @•typealias('stream')
 interface Stream<T> {}
 
+@•typealias('releasable')
+interface Releasable {
+	function<void> Release()
+}
+
 @•typealias('function')
 class Function<T> {}
 
@@ -10,6 +15,9 @@ class Integer {
 		// TODO: fix this once we can actually create a stream
 		return 2
 	}
+
+	// TODO: remove once we scope constructors
+	function<void> Release() {}
 }
 
 @•typealias('bool')
