@@ -14,13 +14,13 @@ import (
 
 // buildTypeRef builds a type graph type reference from the SRG type reference. This also fully
 // resolves the type reference.
-func (t *TypeGraph) buildTypeRef(typeref srg.SRGTypeRef) (TypeReference, error) {
+func (t *TypeGraph) BuildTypeRef(typeref srg.SRGTypeRef) (TypeReference, error) {
 	switch typeref.RefKind() {
 	case srg.TypeRefVoid:
 		return t.VoidTypeReference(), nil
 
 	case srg.TypeRefStream:
-		innerType, err := t.buildTypeRef(typeref.InnerReference())
+		innerType, err := t.BuildTypeRef(typeref.InnerReference())
 		if err != nil {
 			return TypeReference{}, err
 		}
@@ -28,7 +28,7 @@ func (t *TypeGraph) buildTypeRef(typeref srg.SRGTypeRef) (TypeReference, error) 
 		return t.NewTypeReference(t.StreamType(), innerType), nil
 
 	case srg.TypeRefNullable:
-		innerType, err := t.buildTypeRef(typeref.InnerReference())
+		innerType, err := t.BuildTypeRef(typeref.InnerReference())
 		if err != nil {
 			return TypeReference{}, err
 		}
@@ -53,7 +53,7 @@ func (t *TypeGraph) buildTypeRef(typeref srg.SRGTypeRef) (TypeReference, error) 
 		srgGenerics := typeref.Generics()
 		generics := make([]TypeReference, len(srgGenerics))
 		for index, srgGeneric := range srgGenerics {
-			genericTypeRef, err := t.buildTypeRef(srgGeneric)
+			genericTypeRef, err := t.BuildTypeRef(srgGeneric)
 			if err != nil {
 				return TypeReference{}, err
 			}
@@ -96,7 +96,7 @@ func (t *TypeGraph) resolvePossibleType(node compilergraph.GraphNode, getter typ
 		return t.AnyTypeReference(), true
 	}
 
-	resolvedTypeRef, err := t.buildTypeRef(srgTypeRef)
+	resolvedTypeRef, err := t.BuildTypeRef(srgTypeRef)
 	if err != nil {
 		t.decorateWithError(node, "%s", err.Error())
 		return t.AnyTypeReference(), false

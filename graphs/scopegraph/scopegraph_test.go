@@ -161,6 +161,27 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"invalid with expr test", "with", "nonreleasable", []expectedScopeEntry{},
 		"With expression must implement the Releasable interface: Type 'Boolean' does not define or export member 'Release', which is required by type 'Releasable'", ""},
+
+	/////////// Var ///////////
+	scopegraphTest{"basic var test", "var", "basic",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"var", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"no declared type var test", "var", "notype",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"var", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
+			expectedScopeEntry{"number", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"initialized var test", "var", "initialized",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"var", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
+			expectedScopeEntry{"number", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+		},
+		"", ""},
 }
 
 func TestGraphs(t *testing.T) {

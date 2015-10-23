@@ -16,6 +16,43 @@ import (
 
 var _ = fmt.Printf
 
+// scopeVariableStatement scopes a variable statement in the SRG.
+func (sb *scopeBuilder) scopeVariableStatement(node compilergraph.GraphNode) proto.ScopeInfo {
+	exprNode, hasExpression := node.TryGetNode(parser.NodeVariableStatementExpression)
+	if !hasExpression {
+		return newScope().Valid().GetScope()
+	}
+
+	// Scope the expression.
+	exprScope := sb.getScope(exprNode)
+	if !exprScope.GetIsValid() {
+		return newScope().Invalid().GetScope()
+	}
+
+	// If there is a declared type, compare against it.
+	declaredTypeNode, hasDeclaredType := node.TryGetNode(parser.NodeVariableStatementDeclaredType)
+	if !hasDeclaredType {
+		return newScope().Valid().GetScope()
+	}
+
+	// Load the declared type.
+	typeref := sb.sg.srg.GetTypeRef(declaredTypeNode)
+	declaredType, rerr := sb.sg.tdg.BuildTypeRef(typeref)
+	if rerr != nil {
+		sb.decorateWithError(node, "Variable '%s' has invalid declared type: %v", node.Get(parser.NodeVariableStatementName), rerr)
+		return newScope().Invalid().GetScope()
+	}
+
+	// Compare against the type of the expression.
+	exprType := exprScope.ResolvedTypeRef(sb.sg.tdg)
+	if serr := exprType.CheckSubTypeOf(declaredType); serr != nil {
+		sb.decorateWithError(node, "Variable '%s' has declared type '%v': %v", node.Get(parser.NodeVariableStatementName), declaredType, serr)
+		return newScope().Invalid().GetScope()
+	}
+
+	return newScope().Valid().GetScope()
+}
+
 // scopeWithStatement scopes a with statement in the SRG.
 func (sb *scopeBuilder) scopeWithStatement(node compilergraph.GraphNode) proto.ScopeInfo {
 	// Scope the child block.

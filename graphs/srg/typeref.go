@@ -30,6 +30,11 @@ const (
 	TypeRefVoid                        // A void type reference.
 )
 
+// GetTypeRef returns an SRGTypeRef wrapper for the given type reference now.
+func (g *SRG) GetTypeRef(node compilergraph.GraphNode) SRGTypeRef {
+	return SRGTypeRef{node, g}
+}
+
 // GetTypeReferences returns all the type references in the SRG.
 func (g *SRG) GetTypeReferences() []SRGTypeRef {
 	it := g.findAllNodes(parser.NodeTypeTypeReference).
