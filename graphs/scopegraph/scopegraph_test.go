@@ -162,7 +162,40 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"invalid with expr test", "with", "nonreleasable", []expectedScopeEntry{},
 		"With expression must implement the Releasable interface: Type 'Boolean' does not define or export member 'Release', which is required by type 'Releasable'", ""},
 
+	/////////// Match ///////////
+
+	scopegraphTest{"basic bool match test", "match", "bool",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"match", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"bool default match test", "match", "booldefault",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"match", expectedScope{true, proto.ScopeKind_VALUE, "void", "Integer"}},
+		},
+		"", ""},
+
+	scopegraphTest{"basic non-bool match test", "match", "typed",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"match", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"non-bool default match test", "match", "typeddefault",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"match", expectedScope{true, proto.ScopeKind_VALUE, "void", "Integer"}},
+		},
+		"", ""},
+
+	scopegraphTest{"invalid bool match test", "match", "boolinvalid", []expectedScopeEntry{},
+		"Match cases must have values matching type 'Boolean': 'Integer' cannot be used in place of non-interface 'Boolean'", ""},
+
+	scopegraphTest{"invalid non-bool match test", "match", "typedinvalid", []expectedScopeEntry{},
+		"Match cases must have values matching type 'Integer': 'Boolean' cannot be used in place of non-interface 'Integer'", ""},
+
 	/////////// Var ///////////
+
 	scopegraphTest{"basic var test", "var", "basic",
 		[]expectedScopeEntry{
 			expectedScopeEntry{"var", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},

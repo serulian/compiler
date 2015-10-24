@@ -16,6 +16,66 @@ import (
 
 var _ = fmt.Printf
 
+// scopeMatchStatement scopes a match statement in the SRG.
+func (sb *scopeBuilder) scopeMatchStatement(node compilergraph.GraphNode) proto.ScopeInfo {
+	// Check for an expression. If a match has an expression, then all cases must match against it.
+	var isValid = true
+	var matchValueType = sb.sg.tdg.BoolTypeReference()
+
+	exprNode, hasExpression := node.TryGetNode(parser.NodeMatchStatementExpression)
+	if hasExpression {
+		exprScope := sb.getScope(exprNode)
+		if exprScope.GetIsValid() {
+			matchValueType = exprScope.ResolvedTypeRef(sb.sg.tdg)
+		} else {
+			isValid = false
+		}
+	}
+
+	// Scope each of the case statements under the match.
+	var returnedType = sb.sg.tdg.VoidTypeReference()
+	var hasDefault = false
+
+	sit := node.StartQuery().
+		Out(parser.NodeMatchStatementCase).
+		BuildNodeIterator()
+
+	for sit.Next() {
+		// Scope the statement block under the case.
+		statementBlockNode := sit.Node().GetNode(parser.NodeMatchStatementCaseStatement)
+		statementBlockScope := sb.getScope(statementBlockNode)
+		if !statementBlockScope.GetIsValid() {
+			isValid = false
+		}
+
+		returnedType = returnedType.Intersect(statementBlockScope.ReturnedTypeRef(sb.sg.tdg))
+
+		// Check the case's expression (if any) against the type expected.
+		caseExprNode, hasCaseExpression := sit.Node().TryGetNode(parser.NodeMatchStatementCaseExpression)
+		if hasCaseExpression {
+			caseExprScope := sb.getScope(caseExprNode)
+			if caseExprScope.GetIsValid() {
+				caseExprType := caseExprScope.ResolvedTypeRef(sb.sg.tdg)
+				if serr := caseExprType.CheckSubTypeOf(matchValueType); serr != nil {
+					sb.decorateWithError(node, "Match cases must have values matching type '%v': %v", matchValueType, serr)
+					isValid = false
+				}
+			} else {
+				isValid = false
+			}
+		} else {
+			hasDefault = true
+		}
+	}
+
+	// If there isn't a default case, then the match cannot be known to return in all cases.
+	if !hasDefault {
+		returnedType = sb.sg.tdg.VoidTypeReference()
+	}
+
+	return newScope().IsValid(isValid).Returning(returnedType).GetScope()
+}
+
 // scopeVariableStatement scopes a variable statement in the SRG.
 func (sb *scopeBuilder) scopeVariableStatement(node compilergraph.GraphNode) proto.ScopeInfo {
 	exprNode, hasExpression := node.TryGetNode(parser.NodeVariableStatementExpression)
