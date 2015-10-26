@@ -93,7 +93,7 @@ func (g *SRG) LoadAndParse(libPaths ...string) *packageloader.LoadResult {
 			subsource := it.Values()[parser.NodeImportPredicateSubsource]
 			source := it.Values()[parser.NodeImportPredicateSource]
 
-			_, found := packageInfo.FindTypeByName(subsource, ModuleResolveExportedOnly)
+			_, found := packageInfo.FindTypeOrMemberByName(subsource, ModuleResolveExportedOnly)
 			if !found {
 				sal := salForPredicates(it.Values())
 				result.Errors = append(result.Errors, compilercommon.SourceErrorf(sal, "Import '%s' not found under package '%s'", subsource, source))

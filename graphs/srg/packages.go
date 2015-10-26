@@ -67,11 +67,28 @@ func (p *srgPackage) FindTypeByName(typeName string, option ModuleResolutionOpti
 			panic(fmt.Sprintf("Could not find module with path: %s", modulePath))
 		}
 
-		typeFound, ok := module.FindTypeByName(typeName, option)
+		namedFound, ok := module.FindTypeByName(typeName, option)
 		if ok {
-			return typeFound, true
+			return namedFound, true
 		}
 	}
 
 	return SRGType{}, false
+}
+
+// FindTypeOrMemberByName searches all of the modules in this package for a type or member with the given name.
+func (p *srgPackage) FindTypeOrMemberByName(name string, option ModuleResolutionOption) (SRGTypeOrMember, bool) {
+	for _, modulePath := range p.packageInfo.ModulePaths() {
+		module, ok := p.srg.FindModuleBySource(modulePath)
+		if !ok {
+			panic(fmt.Sprintf("Could not find module with path: %s", modulePath))
+		}
+
+		namedFound, ok := module.FindTypeOrMemberByName(name, option)
+		if ok {
+			return namedFound, true
+		}
+	}
+
+	return SRGTypeOrMember{}, false
 }

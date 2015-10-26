@@ -84,9 +84,12 @@ var nameScopeTests = []nameScopeTest{
 		expectedScopeResult{true, parser.NodeTypeVariableStatement},
 	},
 
+	// Resolve "EF" under the if statement under the function "AliasTest".
+	nameScopeTest{"exported function under if", "basic", "aliasif", "EF",
+		expectedScopeResult{true, parser.NodeTypeFunction},
+	},
+
 	// TO-ADD:
-	// - Resolve function under import
-	// - Attempt to resolve unexpected function under import
 	// - Resolve under package
 }
 

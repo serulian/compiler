@@ -68,10 +68,10 @@ func (g *SRG) FindNameInScope(name string, node compilergraph.GraphNode) (compil
 		panic(fmt.Sprintf("Missing module for source %v", nodeSource))
 	}
 
-	// Try to resolve as a local or imported type.
-	srgType, typeFound := parentModule.FindTypeByName(name, ModuleResolveAll)
-	if typeFound {
-		return srgType.GraphNode, true
+	// Try to resolve as a local or imported type or member.
+	srgTypeOrMember, typeOrMemberFound := parentModule.FindTypeOrMemberByName(name, ModuleResolveAll)
+	if typeOrMemberFound {
+		return srgTypeOrMember.GraphNode, true
 	}
 
 	// Try to resolve as an imported module/package.
