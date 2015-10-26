@@ -77,6 +77,26 @@ func (m SRGModule) GetMembers() []SRGMember {
 	return members
 }
 
+// findImportedByName searches for the imported module or package with the given name and returns it, if any.
+func (m SRGModule) findImportedByName(name string) (compilergraph.GraphNode, bool) {
+	importNode, importFound := m.StartQuery().
+		Out(parser.NodePredicateChild).
+		Has(parser.NodeImportPredicatePackageName, name).
+		TryGetNode()
+
+	if importFound {
+		packageInfo := m.srg.getPackageForImport(importNode)
+		singleModule, hasSingleModule := packageInfo.SingleModule()
+		if hasSingleModule {
+			return singleModule.GraphNode, true
+		}
+
+		// TODO(jschorr): Handle packages with more than a single module.
+	}
+
+	return compilergraph.GraphNode{}, false
+}
+
 // FindTypeByName searches for the type definition or declaration with the given name under
 // this module and returns it (if found).
 func (m SRGModule) FindTypeByName(typeName string, option ModuleResolutionOption) (SRGType, bool) {

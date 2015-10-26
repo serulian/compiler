@@ -1,0 +1,3 @@
+class AnotherClass {}
+class ThirdClass {}
+class unexportedClass {}

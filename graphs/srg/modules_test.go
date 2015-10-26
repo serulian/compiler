@@ -24,7 +24,7 @@ func getSRG(t *testing.T, path string, libPaths ...string) *SRG {
 	testSRG := NewSRG(graph)
 	result := testSRG.LoadAndParse(libPaths...)
 	if !result.Status {
-		t.Errorf("Expected successful parse")
+		t.Errorf("Expected successful parse: %v", result.Errors)
 	}
 
 	return testSRG

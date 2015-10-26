@@ -1,0 +1,24 @@
+from anotherfile import AnotherClass
+from anotherfile import ThirdClass as TC
+
+import anotherfile
+
+class SomeClass {
+	
+}
+
+function<void> DoSomething(someparam int) /* dosomething */{
+	var<int> someVar
+	if true /* if */{
+	}
+}
+
+function<void> AnotherFunc() /* anotherfunc */{
+}
+
+function<void> AliasTest(aliased int) /* aliasfn */{
+	var<bool> aliased
+	if true /* aliasif */{
+
+	}
+}

@@ -44,6 +44,21 @@ func (p *srgPackage) ModulePaths() []compilercommon.InputSource {
 	return p.packageInfo.ModulePaths()
 }
 
+// SingleModule returns the single module in this package, if any.
+func (p *srgPackage) SingleModule() (SRGModule, bool) {
+	if len(p.packageInfo.ModulePaths()) == 1 {
+		modulePath := p.packageInfo.ModulePaths()[0]
+		module, ok := p.srg.FindModuleBySource(modulePath)
+		if !ok {
+			panic(fmt.Sprintf("Could not find module with path: %s", modulePath))
+		}
+
+		return module, true
+	}
+
+	return SRGModule{}, false
+}
+
 // FindTypeByName searches all of the modules in this package for a type with the given name.
 func (p *srgPackage) FindTypeByName(typeName string, option ModuleResolutionOption) (SRGType, bool) {
 	for _, modulePath := range p.packageInfo.ModulePaths() {
