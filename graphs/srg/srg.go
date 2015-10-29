@@ -89,7 +89,6 @@ func (g *SRG) LoadAndParse(libPaths ...string) *packageloader.LoadResult {
 			packageInfo := g.getPackageForImport(it.Node())
 
 			// Search for the subsource.
-			// TODO(jschorr): This needs to be everything, not just types.
 			subsource := it.Values()[parser.NodeImportPredicateSubsource]
 			source := it.Values()[parser.NodeImportPredicateSource]
 

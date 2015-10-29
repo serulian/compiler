@@ -6,6 +6,8 @@ package srg
 
 import (
 	"fmt"
+	"os"
+	"strings"
 	"testing"
 
 	"github.com/serulian/compiler/compilercommon"
@@ -18,6 +20,8 @@ var _ = fmt.Printf
 type expectedScopeResult struct {
 	isValid          bool
 	expectedNodeType parser.NodeType
+	expectedName     string
+	expectedKind     NamedScopeKind
 }
 
 type nameScopeTest struct {
@@ -31,70 +35,96 @@ type nameScopeTest struct {
 var nameScopeTests = []nameScopeTest{
 	// Resolve "SomeClass" under function "DoSomething"
 	nameScopeTest{"basic type scoping", "basic", "dosomething", "SomeClass",
-		expectedScopeResult{true, parser.NodeTypeClass},
+		expectedScopeResult{true, parser.NodeTypeClass, "SomeClass", NamedScopeType},
 	},
 
 	// Resolve "AnotherClass" under function "DoSomething"
 	nameScopeTest{"imported type scoping", "basic", "dosomething", "AnotherClass",
-		expectedScopeResult{true, parser.NodeTypeClass},
+		expectedScopeResult{true, parser.NodeTypeClass, "AnotherClass", NamedScopeType},
 	},
 
 	// Resolve "TC" under function "DoSomething"
 	nameScopeTest{"imported aliased type scoping", "basic", "dosomething", "TC",
-		expectedScopeResult{true, parser.NodeTypeClass},
+		expectedScopeResult{true, parser.NodeTypeClass, "ThirdClass", NamedScopeType},
 	},
 
 	// Resolve "anotherfile" under function "DoSomething"
-	nameScopeTest{"import scoping", "basic", "dosomething", "anotherfile",
-		expectedScopeResult{true, parser.NodeTypeFile},
+	nameScopeTest{"import module scoping", "basic", "dosomething", "anotherfile",
+		expectedScopeResult{true, parser.NodeTypeImport, "anotherfile", NamedScopeImport},
+	},
+
+	// Resolve "somepackage" under function "DoSomething"
+	nameScopeTest{"import package scoping", "basic", "dosomething", "somepackage",
+		expectedScopeResult{true, parser.NodeTypeImport, "somepackage", NamedScopeImport},
 	},
 
 	// Resolve "someparam" under function "DoSomething"
 	nameScopeTest{"param scoping", "basic", "dosomething", "someparam",
-		expectedScopeResult{true, parser.NodeTypeParameter},
+		expectedScopeResult{true, parser.NodeTypeParameter, "someparam", NamedScopeValue},
 	},
 
 	// Attempt to resolve "someparam" under function "DoSomething"
 	nameScopeTest{"invalid param scoping", "basic", "anotherfunc", "someparam",
-		expectedScopeResult{false, parser.NodeTypeTagged},
+		expectedScopeResult{false, parser.NodeTypeTagged, "", NamedScopeValue},
 	},
 
 	// Resolve "someparam" under the if statement.
 	nameScopeTest{"param under if scoping", "basic", "if", "someparam",
-		expectedScopeResult{true, parser.NodeTypeParameter},
+		expectedScopeResult{true, parser.NodeTypeParameter, "someparam", NamedScopeValue},
 	},
 
 	// Resolve "someVar" under the if statement.
 	nameScopeTest{"var under if scoping", "basic", "if", "someVar",
-		expectedScopeResult{true, parser.NodeTypeVariableStatement},
+		expectedScopeResult{true, parser.NodeTypeVariableStatement, "someVar", NamedScopeVariable},
 	},
 
 	// Attempt to resolve "someVar" under the function "DoSomething"
 	nameScopeTest{"var under function scoping", "basic", "dosomething", "someVar",
-		expectedScopeResult{false, parser.NodeTypeTagged},
+		expectedScopeResult{false, parser.NodeTypeTagged, "", NamedScopeVariable},
 	},
 
 	// Resolve "aliased" under function "AliasTest".
 	nameScopeTest{"aliased var under function", "basic", "aliasfn", "aliased",
-		expectedScopeResult{true, parser.NodeTypeParameter},
+		expectedScopeResult{true, parser.NodeTypeParameter, "aliased", NamedScopeValue},
 	},
 
 	// Resolve "aliased" under the if statement under the function "AliasTest".
 	nameScopeTest{"aliased var under if", "basic", "aliasif", "aliased",
-		expectedScopeResult{true, parser.NodeTypeVariableStatement},
+		expectedScopeResult{true, parser.NodeTypeVariableStatement, "aliased", NamedScopeVariable},
 	},
 
 	// Resolve "EF" under the if statement under the function "AliasTest".
 	nameScopeTest{"exported function under if", "basic", "aliasif", "EF",
-		expectedScopeResult{true, parser.NodeTypeFunction},
+		expectedScopeResult{true, parser.NodeTypeFunction, "ExportedFunction", NamedScopeMember},
 	},
 
-	// TO-ADD:
-	// - Resolve under package
+	// Attempt to resolve "SomeName" under function "WithTest".
+	nameScopeTest{"above with scoping test", "basic", "withfn", "SomeName",
+		expectedScopeResult{false, parser.NodeTypeTagged, "", NamedScopeVariable},
+	},
+
+	// Resolve "SomeName" under the with statement under the function "WithTest".
+	nameScopeTest{"with scoping test", "basic", "withblock", "SomeName",
+		expectedScopeResult{true, parser.NodeTypeWithStatement, "SomeName", NamedScopeValue},
+	},
+
+	// Attempt to resolve "SomeLoopValue" under function "LoopTest".
+	nameScopeTest{"above loop scoping test", "basic", "loopfn", "SomeLoopValue",
+		expectedScopeResult{false, parser.NodeTypeTagged, "", NamedScopeVariable},
+	},
+
+	// Resolve "SomeLoopValue" under the loop statement under the function "LoopTest".
+	nameScopeTest{"loop scoping test", "basic", "loopblock", "SomeLoopValue",
+		expectedScopeResult{true, parser.NodeTypeLoopStatement, "SomeLoopValue", NamedScopeValue},
+	},
 }
 
 func TestNameScoping(t *testing.T) {
 	for _, test := range nameScopeTests {
+		if os.Getenv("FILTER") != "" && !strings.Contains(test.name, os.Getenv("FILTER")) {
+			continue
+		}
+
 		source := fmt.Sprintf("tests/namescope/%s.seru", test.source)
 		testSRG := getSRG(t, source, "tests/testlib")
 
@@ -110,7 +140,7 @@ func TestNameScoping(t *testing.T) {
 		}
 
 		// Resolve the name from the node.
-		resolvedNode, nameFound := testSRG.FindNameInScope(test.queryName, commentedNode)
+		resolved, nameFound := testSRG.FindNameInScope(test.queryName, commentedNode)
 		if !test.result.isValid {
 			assert.False(t, nameFound, "Test %v expected name %v to not be found", test.name, test.queryName)
 			continue
@@ -120,7 +150,15 @@ func TestNameScoping(t *testing.T) {
 			continue
 		}
 
-		if !assert.Equal(t, test.result.expectedNodeType, resolvedNode.Kind, "Test %v expected node of kind %v", test.name, test.result.expectedNodeType) {
+		if !assert.Equal(t, test.result.expectedNodeType, resolved.Kind, "Test %v expected node of kind %v", test.name, test.result.expectedNodeType) {
+			continue
+		}
+
+		if !assert.Equal(t, test.result.expectedName, resolved.Name(), "Test %v expected name %v", test.name, test.result.expectedName) {
+			continue
+		}
+
+		if !assert.Equal(t, test.result.expectedKind, resolved.ScopeKind(), "Test %v expected kind %v", test.name, test.result.expectedKind) {
 			continue
 		}
 	}
