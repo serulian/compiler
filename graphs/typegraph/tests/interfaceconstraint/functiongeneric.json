@@ -69,6 +69,49 @@
             "tdg-type-name": "Tester"
         }
     },
+    "5655ba59997607f736afcf6a76bd989e": {
+        "Key": "5655ba59997607f736afcf6a76bd989e",
+        "Kind": 2,
+        "Children": {
+            "d99b9fdb91ee2af83d283cc4096c4f58": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "d99b9fdb91ee2af83d283cc4096c4f58",
+                    "Kind": 4,
+                    "Children": {
+                        "69e4aa590caed84142a39b2b808efa11": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "69e4aa590caed84142a39b2b808efa11",
+                                "Kind": 6,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "6|NodeType|tdg",
+                                    "tdg-return-type": "void",
+                                    "tdg-srg-source": "(NodeRef)"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "Release",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "Function\u003cvoid\u003e",
+                        "tdg-member-signature": "\n\u0007Release\u0010\u0002\u0018\u0000 \u0001*\u000eFunction\u003cvoid\u003e",
+                        "tdg-node-kind": "4|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-declaration-module": "(NodeRef)",
+            "tdg-node-kind": "2|NodeType|tdg",
+            "tdg-srg-source": "(NodeRef)",
+            "tdg-type-name": "Releasable"
+        }
+    },
     "794a5310bd2bca2ab8beaeb7b7004af5": {
         "Key": "794a5310bd2bca2ab8beaeb7b7004af5",
         "Kind": 1,
@@ -79,15 +122,15 @@
                     "Key": "324b98801dc4800ea334d8366f524274",
                     "Kind": 5,
                     "Children": {
-                        "4b002c6a2e870bae4a9f985ac467b577": {
+                        "a85c7aab6596946e31ed4419f28c08cc": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "4b002c6a2e870bae4a9f985ac467b577",
+                                "Key": "a85c7aab6596946e31ed4419f28c08cc",
                                 "Kind": 6,
                                 "Children": {},
                                 "Predicates": {
                                     "tdg-node-kind": "6|NodeType|tdg",
-                                    "tdg-return-type": "any",
+                                    "tdg-return-type": "Stream\u003cInteger\u003e",
                                     "tdg-srg-source": "(NodeRef)"
                                 }
                             }
@@ -99,6 +142,37 @@
                         "tdg-member-signature": "\n\u0005range\u0010\u0005\u0018\u0000 \u0001*\u0003any",
                         "tdg-node-kind": "5|NodeType|tdg",
                         "tdg-operator-name": "range",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            },
+            "d99b9fdb91ee2af83d283cc4096c4f58": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "d99b9fdb91ee2af83d283cc4096c4f58",
+                    "Kind": 4,
+                    "Children": {
+                        "69e4aa590caed84142a39b2b808efa11": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "69e4aa590caed84142a39b2b808efa11",
+                                "Kind": 6,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "6|NodeType|tdg",
+                                    "tdg-return-type": "void",
+                                    "tdg-srg-source": "(NodeRef)"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "Release",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "Function\u003cvoid\u003e",
+                        "tdg-member-signature": "\n\u0007Release\u0010\u0002\u0018\u0000 \u0001*\u000eFunction\u003cvoid\u003e",
+                        "tdg-node-kind": "4|NodeType|tdg",
                         "tdg-srg-source": "(NodeRef)"
                     }
                 }
