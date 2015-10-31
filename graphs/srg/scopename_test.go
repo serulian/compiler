@@ -105,7 +105,7 @@ var nameScopeTests = []nameScopeTest{
 
 	// Resolve "SomeName" under the with statement under the function "WithTest".
 	nameScopeTest{"with scoping test", "basic", "withblock", "SomeName",
-		expectedScopeResult{true, parser.NodeTypeWithStatement, "SomeName", NamedScopeValue},
+		expectedScopeResult{true, parser.NodeTypeNamedValue, "SomeName", NamedScopeValue},
 	},
 
 	// Attempt to resolve "SomeLoopValue" under function "LoopTest".
@@ -115,7 +115,7 @@ var nameScopeTests = []nameScopeTest{
 
 	// Resolve "SomeLoopValue" under the loop statement under the function "LoopTest".
 	nameScopeTest{"loop scoping test", "basic", "loopblock", "SomeLoopValue",
-		expectedScopeResult{true, parser.NodeTypeLoopStatement, "SomeLoopValue", NamedScopeValue},
+		expectedScopeResult{true, parser.NodeTypeNamedValue, "SomeLoopValue", NamedScopeValue},
 	},
 }
 

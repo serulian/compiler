@@ -37,30 +37,33 @@ const (
 func (ns *SRGNamedScope) ScopeKind() NamedScopeKind {
 	switch ns.Kind {
 
+	/* Types */
 	case parser.NodeTypeClass:
 		return NamedScopeType
 
 	case parser.NodeTypeInterface:
 		return NamedScopeType
 
+	/* Import */
 	case parser.NodeTypeImport:
 		return NamedScopeImport
 
+	/* Members */
 	case parser.NodeTypeVariable:
 		return NamedScopeMember
 
 	case parser.NodeTypeFunction:
 		return NamedScopeMember
 
+	/* Parameter */
 	case parser.NodeTypeParameter:
 		return NamedScopeParameter
 
-	case parser.NodeTypeLoopStatement:
+	/* Named Value */
+	case parser.NodeTypeNamedValue:
 		return NamedScopeValue
 
-	case parser.NodeTypeWithStatement:
-		return NamedScopeValue
-
+	/* Variable */
 	case parser.NodeTypeVariableStatement:
 		return NamedScopeVariable
 
@@ -94,11 +97,8 @@ func (ns *SRGNamedScope) Name() string {
 	case parser.NodeTypeVariableStatement:
 		return ns.Get(parser.NodeVariableStatementName)
 
-	case parser.NodeTypeLoopStatement:
-		return ns.Get(parser.NodeLoopStatementVariableName)
-
-	case parser.NodeTypeWithStatement:
-		return ns.Get(parser.NodeWithStatementExpressionName)
+	case parser.NodeTypeNamedValue:
+		return ns.Get(parser.NodeNamedValueName)
 
 	default:
 		panic(fmt.Sprintf("Unknown scoped name %v", ns.Kind))
@@ -172,8 +172,7 @@ func (g *SRG) findAddedNameInScope(name string, node compilergraph.GraphNode) (c
 
 		return q.
 			In(parser.NodePredicateTypeMemberParameter,
-			parser.NodeLoopStatementVariableName,
-			parser.NodeWithStatementExpressionName,
+			parser.NodeStatementNamedValue,
 			parser.NodePredicateChild,
 			parser.NodeStatementBlockStatement).
 			HasWhere(parser.NodePredicateStartRune, compilergraph.WhereLT, startRune).
@@ -183,7 +182,7 @@ func (g *SRG) findAddedNameInScope(name string, node compilergraph.GraphNode) (c
 	nit := g.layer.StartQuery(name).
 		In("named").
 		Has(parser.NodePredicateSource, nodeSource).
-		IsKind(parser.NodeTypeParameter, parser.NodeTypeLoopStatement, parser.NodeTypeWithStatement, parser.NodeTypeVariableStatement).
+		IsKind(parser.NodeTypeParameter, parser.NodeTypeNamedValue, parser.NodeTypeVariableStatement).
 		FilterBy(containingFilter).
 		BuildNodeIterator(parser.NodePredicateStartRune)
 
