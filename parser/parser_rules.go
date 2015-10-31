@@ -1121,12 +1121,7 @@ func (p *sourceParser) consumeWithStatement() AstNode {
 
 	// Optional: 'as' and then an identifier.
 	if p.tryConsumeKeyword("as") {
-		identifier, ok := p.consumeIdentifier()
-		if !ok {
-			return withNode
-		}
-
-		withNode.Decorate(NodeWithStatementExpressionName, identifier)
+		withNode.Connect(NodeStatementNamedValue, p.consumeNamedValue())
 	}
 
 	// Consume the statement block.
@@ -1150,8 +1145,7 @@ func (p *sourceParser) consumeForStatement() AstNode {
 	// If the next two tokens are an identifier and the keyword "in",
 	// then we have a variable declaration of the for loop.
 	if p.isToken(tokenTypeIdentifer) && p.isNextKeyword("in") {
-		forVariableIdentifier, _ := p.consumeIdentifier()
-		forNode.Decorate(NodeLoopStatementVariableName, forVariableIdentifier)
+		forNode.Connect(NodeStatementNamedValue, p.consumeNamedValue())
 		p.consumeKeyword("in")
 	}
 
@@ -1162,6 +1156,23 @@ func (p *sourceParser) consumeForStatement() AstNode {
 
 	forNode.Connect(NodeLoopStatementBlock, p.consumeStatementBlock(statementBlockWithoutTerminator))
 	return forNode
+}
+
+// consumeNamedValue consumes an identifier as a named value.
+//
+// Forms:
+// someName
+func (p *sourceParser) consumeNamedValue() AstNode {
+	valueNode := p.startNode(NodeTypeNamedValue)
+	defer p.finishNode()
+
+	name, found := p.consumeIdentifier()
+	if !found {
+		p.emitError("An identifier was expected here for the name of the value emitted")
+	}
+
+	valueNode.Decorate(NodeNamedValueName, name)
+	return valueNode
 }
 
 // consumeVar consumes a variable field or statement.

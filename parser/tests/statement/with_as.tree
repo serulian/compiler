@@ -17,8 +17,13 @@ NodeTypeFile
             NodeTypeWithStatement
               end-rune = 60
               input-source = with as test
-              named = someName
               start-rune = 33
+              named-value =>
+                NodeTypeNamedValue
+                  end-rune = 57
+                  input-source = with as test
+                  named = someName
+                  start-rune = 50
               with-block =>
                 NodeTypeStatementBlock
                   end-rune = 60

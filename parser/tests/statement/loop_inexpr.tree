@@ -17,7 +17,6 @@ NodeTypeFile
             NodeTypeLoopStatement
               end-rune = 59
               input-source = in expr loop statement test
-              named = someName
               start-rune = 33
               loop-block =>
                 NodeTypeStatementBlock
@@ -30,6 +29,12 @@ NodeTypeFile
                   identexpr-name = someExpr
                   input-source = in expr loop statement test
                   start-rune = 49
+              named-value =>
+                NodeTypeNamedValue
+                  end-rune = 44
+                  input-source = in expr loop statement test
+                  named = someName
+                  start-rune = 37
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 12

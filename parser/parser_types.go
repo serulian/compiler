@@ -83,6 +83,8 @@ const (
 
 	NodeTypeMatchStatementCase // A case of a match statement.
 
+	NodeTypeNamedValue // A named value added to the scope of the parent statement.
+
 	// Expressions
 	NodeTypeAwaitExpression // An await expression: <- a
 	NodeTypeArrowExpression // An arrow expression: a <- b
@@ -296,11 +298,15 @@ const (
 	NodeStatementLabel          = "statement-label"
 
 	//
+	// NodeTypeLoopStatement + NodeTypeWithStatement
+	//
+	NodeStatementNamedValue = "named-value"
+
+	//
 	// NodeTypeLoopStatement
 	//
-	NodeLoopStatementVariableName = "named"
-	NodeLoopStatementExpression   = "loop-expression"
-	NodeLoopStatementBlock        = "loop-block"
+	NodeLoopStatementExpression = "loop-expression"
+	NodeLoopStatementBlock      = "loop-block"
 
 	//
 	// NodeTypeAssignStatement
@@ -340,9 +346,8 @@ const (
 	//
 	// NodeTypeWithStatement
 	//
-	NodeWithStatementExpression     = "with-expression"
-	NodeWithStatementExpressionName = "named"
-	NodeWithStatementBlock          = "with-block"
+	NodeWithStatementExpression = "with-expression"
+	NodeWithStatementBlock      = "with-block"
 
 	//
 	// NodeTypeMatchStatement
@@ -437,4 +442,9 @@ const (
 	// NodeTypeIdentifierExpression
 	//
 	NodeIdentifierExpressionName = "identexpr-name"
+
+	//
+	// NodeTypeNamedValue
+	//
+	NodeNamedValueName = "named"
 )
