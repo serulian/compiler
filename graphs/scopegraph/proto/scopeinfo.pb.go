@@ -65,7 +65,8 @@ type ScopeInfo struct {
 	Kind                   *ScopeKind `protobuf:"varint,2,opt,name=Kind,enum=proto.ScopeKind,def=0" json:"Kind,omitempty"`
 	ResolvedType           *string    `protobuf:"bytes,3,opt,name=ResolvedType" json:"ResolvedType,omitempty"`
 	ReturnedType           *string    `protobuf:"bytes,4,opt,name=ReturnedType" json:"ReturnedType,omitempty"`
-	IsTerminatingStatement *bool      `protobuf:"varint,5,opt,name=IsTerminatingStatement" json:"IsTerminatingStatement,omitempty"`
+	AssignableType         *string    `protobuf:"bytes,5,opt,name=AssignableType" json:"AssignableType,omitempty"`
+	IsTerminatingStatement *bool      `protobuf:"varint,6,opt,name=IsTerminatingStatement" json:"IsTerminatingStatement,omitempty"`
 	XXX_unrecognized       []byte     `json:"-"`
 }
 
@@ -99,6 +100,13 @@ func (m *ScopeInfo) GetResolvedType() string {
 func (m *ScopeInfo) GetReturnedType() string {
 	if m != nil && m.ReturnedType != nil {
 		return *m.ReturnedType
+	}
+	return ""
+}
+
+func (m *ScopeInfo) GetAssignableType() string {
+	if m != nil && m.AssignableType != nil {
+		return *m.AssignableType
 	}
 	return ""
 }
@@ -155,8 +163,14 @@ func (m *ScopeInfo) MarshalTo(data []byte) (int, error) {
 		i = encodeVarintScopeinfo(data, i, uint64(len(*m.ReturnedType)))
 		i += copy(data[i:], *m.ReturnedType)
 	}
+	if m.AssignableType != nil {
+		data[i] = 0x2a
+		i++
+		i = encodeVarintScopeinfo(data, i, uint64(len(*m.AssignableType)))
+		i += copy(data[i:], *m.AssignableType)
+	}
 	if m.IsTerminatingStatement != nil {
-		data[i] = 0x28
+		data[i] = 0x30
 		i++
 		if *m.IsTerminatingStatement {
 			data[i] = 1
@@ -213,6 +227,10 @@ func (m *ScopeInfo) Size() (n int) {
 	}
 	if m.ReturnedType != nil {
 		l = len(*m.ReturnedType)
+		n += 1 + l + sovScopeinfo(uint64(l))
+	}
+	if m.AssignableType != nil {
+		l = len(*m.AssignableType)
 		n += 1 + l + sovScopeinfo(uint64(l))
 	}
 	if m.IsTerminatingStatement != nil {
@@ -368,6 +386,36 @@ func (m *ScopeInfo) Unmarshal(data []byte) error {
 			m.ReturnedType = &s
 			iNdEx = postIndex
 		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AssignableType", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowScopeinfo
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthScopeinfo
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			s := string(data[iNdEx:postIndex])
+			m.AssignableType = &s
+			iNdEx = postIndex
+		case 6:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field IsTerminatingStatement", wireType)
 			}

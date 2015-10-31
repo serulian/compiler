@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// scopegraph package defines methods for creating and interacting with the Scope Information Graph, which
-// represents the determing scopes of all expressions and statements.
 package scopegraph
 
 import (
@@ -15,6 +13,42 @@ import (
 )
 
 var _ = fmt.Printf
+
+// scopeAssignStatement scopes a assign statement in the SRG.
+func (sb *scopeBuilder) scopeAssignStatement(node compilergraph.GraphNode) proto.ScopeInfo {
+	// TODO: Handle tuple assignment once we figure out tuple types
+	panic("FIXME")
+
+	// Scope the expression value. We check whether it is valid below.
+	exprScope := sb.getScope(node.GetNode(parser.NodeAssignStatementValue))
+
+	// Lookup the scope of the name.
+	name := node.Get(parser.NodeAssignStatementName)
+	namedScope, found := sb.lookupNamedScope(name, node)
+	if !found {
+		sb.decorateWithError(node, "Name '%v' not found in context", name)
+		return newScope().Invalid().GetScope()
+	}
+
+	// If the scope is read-only, raise an error.
+	if !namedScope.IsAssignable() {
+		sb.decorateWithError(node, "%v %v cannot be assigned to, as it is read-only", namedScope.Title(), name)
+		return newScope().Invalid().GetScope()
+	}
+
+	// If the expr scope is invalid, we cannot compare its type to that expected by the named scope.
+	if !exprScope.GetIsValid() {
+		return newScope().Invalid().GetScope()
+	}
+
+	// Ensure that we can assign the expr value to the named scope.
+	if serr := exprScope.ResolvedTypeRef(sb.sg.tdg).CheckSubTypeOf(namedScope.AssignableType()); serr != nil {
+		sb.decorateWithError(node, "Cannot assign value to %v %v: %v", namedScope.Title(), name, serr)
+		return newScope().Invalid().GetScope()
+	}
+
+	return newScope().Valid().GetScope()
+}
 
 // scopeMatchStatement scopes a match statement in the SRG.
 func (sb *scopeBuilder) scopeMatchStatement(node compilergraph.GraphNode) proto.ScopeInfo {
@@ -92,7 +126,7 @@ func (sb *scopeBuilder) scopeVariableStatement(node compilergraph.GraphNode) pro
 	// If there is a declared type, compare against it.
 	declaredTypeNode, hasDeclaredType := node.TryGetNode(parser.NodeVariableStatementDeclaredType)
 	if !hasDeclaredType {
-		return newScope().Valid().GetScope()
+		return newScope().Valid().AssignableResolvedTypeOf(exprScope).GetScope()
 	}
 
 	// Load the declared type.
@@ -110,7 +144,7 @@ func (sb *scopeBuilder) scopeVariableStatement(node compilergraph.GraphNode) pro
 		return newScope().Invalid().GetScope()
 	}
 
-	return newScope().Valid().GetScope()
+	return newScope().Valid().AssignableResolvedTypeOf(declaredType).GetScope()
 }
 
 // scopeWithStatement scopes a with statement in the SRG.

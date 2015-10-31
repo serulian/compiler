@@ -42,10 +42,24 @@ func (sib *scopeInfoBuilder) ResolvingTypeOf(scope *proto.ScopeInfo) *scopeInfoB
 	return sib
 }
 
+// Assignable marks the scope as being assignable with a value of the given type.
+func (sib *scopeInfoBuilder) Assignable(assignable typegraph.TypeReference) *scopeInfoBuilder {
+	assignableValue := assignable.Value()
+	sib.info.AssignableType = &assignableValue
+	return sib
+}
+
 // Resolving marks the scope as resolving a value of the given type.
 func (sib *scopeInfoBuilder) Resolving(resolved typegraph.TypeReference) *scopeInfoBuilder {
 	resolvedValue := resolved.Value()
 	sib.info.ResolvedType = &resolvedValue
+	return sib
+}
+
+// AssignableResolvedTypeOf marks the scope as being assignable of the *resolved* type of the given scope.
+func (sib *scopeInfoBuilder) AssignableResolvedTypeOf(scope *proto.ScopeInfo) *scopeInfoBuilder {
+	resolvedValue := scope.GetAssignableType()
+	sib.info.AssignableType = &resolvedValue
 	return sib
 }
 

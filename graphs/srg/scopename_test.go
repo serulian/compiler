@@ -60,17 +60,17 @@ var nameScopeTests = []nameScopeTest{
 
 	// Resolve "someparam" under function "DoSomething"
 	nameScopeTest{"param scoping", "basic", "dosomething", "someparam",
-		expectedScopeResult{true, parser.NodeTypeParameter, "someparam", NamedScopeValue},
+		expectedScopeResult{true, parser.NodeTypeParameter, "someparam", NamedScopeParameter},
 	},
 
 	// Attempt to resolve "someparam" under function "DoSomething"
 	nameScopeTest{"invalid param scoping", "basic", "anotherfunc", "someparam",
-		expectedScopeResult{false, parser.NodeTypeTagged, "", NamedScopeValue},
+		expectedScopeResult{false, parser.NodeTypeTagged, "", NamedScopeParameter},
 	},
 
 	// Resolve "someparam" under the if statement.
 	nameScopeTest{"param under if scoping", "basic", "if", "someparam",
-		expectedScopeResult{true, parser.NodeTypeParameter, "someparam", NamedScopeValue},
+		expectedScopeResult{true, parser.NodeTypeParameter, "someparam", NamedScopeParameter},
 	},
 
 	// Resolve "someVar" under the if statement.
@@ -85,7 +85,7 @@ var nameScopeTests = []nameScopeTest{
 
 	// Resolve "aliased" under function "AliasTest".
 	nameScopeTest{"aliased var under function", "basic", "aliasfn", "aliased",
-		expectedScopeResult{true, parser.NodeTypeParameter, "aliased", NamedScopeValue},
+		expectedScopeResult{true, parser.NodeTypeParameter, "aliased", NamedScopeParameter},
 	},
 
 	// Resolve "aliased" under the if statement under the function "AliasTest".

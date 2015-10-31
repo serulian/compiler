@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// scopegraph package defines methods for creating and interacting with the Scope Information Graph, which
-// represents the determing scopes of all expressions and statements.
 package scopegraph
 
 import (
@@ -29,8 +27,8 @@ func (sb *scopeBuilder) scopeBooleanLiteralExpression(node compilergraph.GraphNo
 func (sb *scopeBuilder) scopeNumericLiteralExpression(node compilergraph.GraphNode) proto.ScopeInfo {
 	numericValueStr := node.Get(parser.NodeNumericLiteralExpressionValue)
 
-	_, isInt := strconv.ParseInt(numericValueStr, 10, 64)
-	if isInt == nil {
+	_, isNotInt := strconv.ParseInt(numericValueStr, 10, 64)
+	if isNotInt == nil {
 		return newScope().
 			Valid().
 			Resolving(sb.sg.tdg.NewTypeReference(sb.sg.tdg.IntType())).

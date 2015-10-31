@@ -23,11 +23,12 @@ type SRGNamedScope struct {
 type NamedScopeKind int
 
 const (
-	NamedScopeType     NamedScopeKind = iota // The named scope refers to a type.
-	NamedScopeMember                         // The named scope refers to a module member.
-	NamedScopeImport                         // The named scope refers to an import.
-	NamedScopeValue                          // The named scope refers to a read-only value exported by a statement.
-	NamedScopeVariable                       // The named scope refers to a variable statement.
+	NamedScopeType      NamedScopeKind = iota // The named scope refers to a type.
+	NamedScopeMember                          // The named scope refers to a module member.
+	NamedScopeImport                          // The named scope refers to an import.
+	NamedScopeParameter                       // The named scope refers to a parameter.
+	NamedScopeValue                           // The named scope refers to a read-only value exported by a statement.
+	NamedScopeVariable                        // The named scope refers to a variable statement.
 )
 
 // ScopeKind returns the kind of the scoped node.
@@ -50,7 +51,7 @@ func (ns *SRGNamedScope) ScopeKind() NamedScopeKind {
 		return NamedScopeMember
 
 	case parser.NodeTypeParameter:
-		return NamedScopeValue
+		return NamedScopeParameter
 
 	case parser.NodeTypeLoopStatement:
 		return NamedScopeValue

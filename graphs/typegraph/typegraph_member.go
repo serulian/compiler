@@ -14,6 +14,16 @@ type TGMember struct {
 	tdg *TypeGraph
 }
 
+// GetMemberForSRGNode returns the TypeGraph member for the given SRG member node, if any.
+func (g *TypeGraph) GetMemberForSRGNode(node compilergraph.GraphNode) (TGMember, bool) {
+	memberNode, found := g.tryGetMatchingTypeGraphNode(node, NodeTypeMember)
+	if !found {
+		return TGMember{}, false
+	}
+
+	return TGMember{memberNode, g}, true
+}
+
 // Name returns the name of the underlying member.
 func (tn TGMember) Name() string {
 	return tn.GraphNode.Get(NodePredicateMemberName)
@@ -22,6 +32,17 @@ func (tn TGMember) Name() string {
 // Node returns the underlying node in this declaration.
 func (tn TGMember) Node() compilergraph.GraphNode {
 	return tn.GraphNode
+}
+
+// IsReadOnly returns whether the member is read-only.
+func (tn TGMember) IsReadOnly() bool {
+	_, isReadOnly := tn.GraphNode.TryGet(NodePredicateMemberReadOnly)
+	return isReadOnly
+}
+
+// MemberType returns the type for this member.
+func (tn TGMember) MemberType() TypeReference {
+	return tn.GraphNode.GetTagged(NodePredicateMemberType, tn.tdg.AnyTypeReference()).(TypeReference)
 }
 
 // ReturnType returns the return type for this member.
