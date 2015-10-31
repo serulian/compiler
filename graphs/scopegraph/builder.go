@@ -65,6 +65,9 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 	case parser.NodeTypeAssignStatement:
 		return sb.scopeAssignStatement
 
+	case parser.NodeTypeNamedValue:
+		return sb.scopeNamedValue
+
 	// Expressions.
 	case parser.NodeDefineRangeExpression:
 		return sb.scopeDefineRangeExpression

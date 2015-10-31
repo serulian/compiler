@@ -282,7 +282,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"identifier expr value test", "identexpr", "value",
 		[]expectedScopeEntry{
-			expectedScopeEntry{"valueref", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+			expectedScopeEntry{"valueref", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
 		},
 		"", ""},
 }
