@@ -1,0 +1,5 @@
+var<int> someVar
+
+function<void> DoSomething() {
+	/* memberref */someVar
+}

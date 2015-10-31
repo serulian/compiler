@@ -94,6 +94,40 @@ func (tr TypeReference) EqualsOrAny(other TypeReference) bool {
 	return tr == other
 }
 
+// CheckImplOfGeneric checks that the current type reference refers to a type that implements the *generic*
+// type specified. Returns the concrete generics (if there is a match).
+func (tr TypeReference) CheckImplOfGeneric(typeNode compilergraph.GraphNode) ([]TypeReference, error) {
+	typeDecl := TGTypeDecl{typeNode, tr.tdg}
+
+	if typeDecl.TypeKind() != InterfaceType {
+		panic("Cannot use non-interface type in call to CheckImplOfGeneric")
+	}
+
+	if !typeDecl.HasGenerics() {
+		panic("Cannot use non-generic type in call to CheckImplOfGeneric")
+	}
+
+	if tr.IsAny() {
+		return nil, fmt.Errorf("Any type %v does not implement type %v", tr, typeDecl.Name())
+	}
+
+	if tr.IsVoid() {
+		return nil, fmt.Errorf("Void type %v does not implement type %v", tr, typeDecl.Name())
+	}
+
+	if tr.IsNullable() {
+		return nil, fmt.Errorf("Nullable type %v cannot match type %v", tr, typeDecl.Name())
+	}
+	/*
+		typeGenerics := typeDecl.Generics()
+	*/
+
+	generics := make([]TypeReference, 1)
+	generics[0] = tr.tdg.AnyTypeReference()
+
+	return generics, nil
+}
+
 // CheckSubTypeOf returns whether the type pointed to by this type reference is a subtype
 // of the other type reference: tr <: other
 //

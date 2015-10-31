@@ -63,6 +63,7 @@ func (x *ScopeKind) UnmarshalJSON(data []byte) error {
 type ScopeInfo struct {
 	IsValid                *bool      `protobuf:"varint,1,opt,name=IsValid" json:"IsValid,omitempty"`
 	Kind                   *ScopeKind `protobuf:"varint,2,opt,name=Kind,enum=proto.ScopeKind,def=0" json:"Kind,omitempty"`
+	NamedReferenceNode     *string    `protobuf:"bytes,7,opt,name=NamedReferenceNode" json:"NamedReferenceNode,omitempty"`
 	ResolvedType           *string    `protobuf:"bytes,3,opt,name=ResolvedType" json:"ResolvedType,omitempty"`
 	ReturnedType           *string    `protobuf:"bytes,4,opt,name=ReturnedType" json:"ReturnedType,omitempty"`
 	AssignableType         *string    `protobuf:"bytes,5,opt,name=AssignableType" json:"AssignableType,omitempty"`
@@ -88,6 +89,13 @@ func (m *ScopeInfo) GetKind() ScopeKind {
 		return *m.Kind
 	}
 	return Default_ScopeInfo_Kind
+}
+
+func (m *ScopeInfo) GetNamedReferenceNode() string {
+	if m != nil && m.NamedReferenceNode != nil {
+		return *m.NamedReferenceNode
+	}
+	return ""
 }
 
 func (m *ScopeInfo) GetResolvedType() string {
@@ -179,6 +187,12 @@ func (m *ScopeInfo) MarshalTo(data []byte) (int, error) {
 		}
 		i++
 	}
+	if m.NamedReferenceNode != nil {
+		data[i] = 0x3a
+		i++
+		i = encodeVarintScopeinfo(data, i, uint64(len(*m.NamedReferenceNode)))
+		i += copy(data[i:], *m.NamedReferenceNode)
+	}
 	if m.XXX_unrecognized != nil {
 		i += copy(data[i:], m.XXX_unrecognized)
 	}
@@ -235,6 +249,10 @@ func (m *ScopeInfo) Size() (n int) {
 	}
 	if m.IsTerminatingStatement != nil {
 		n += 2
+	}
+	if m.NamedReferenceNode != nil {
+		l = len(*m.NamedReferenceNode)
+		n += 1 + l + sovScopeinfo(uint64(l))
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
@@ -436,6 +454,36 @@ func (m *ScopeInfo) Unmarshal(data []byte) error {
 			}
 			b := bool(v != 0)
 			m.IsTerminatingStatement = &b
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NamedReferenceNode", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowScopeinfo
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthScopeinfo
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			s := string(data[iNdEx:postIndex])
+			m.NamedReferenceNode = &s
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipScopeinfo(data[iNdEx:])

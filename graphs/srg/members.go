@@ -4,7 +4,7 @@
 
 package srg
 
-//go:generate stringer -type=TypeMemberKind
+//go:generate stringer -type=MemberKind
 
 import (
 	"fmt"

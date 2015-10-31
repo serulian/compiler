@@ -45,6 +45,12 @@ func (tn TGMember) MemberType() TypeReference {
 	return tn.GraphNode.GetTagged(NodePredicateMemberType, tn.tdg.AnyTypeReference()).(TypeReference)
 }
 
+// HasGenerics returns whether this member has generics defined.
+func (tn TGMember) HasGenerics() bool {
+	_, isGeneric := tn.GraphNode.TryGet(NodePredicateMemberGeneric)
+	return isGeneric
+}
+
 // ReturnType returns the return type for this member.
 func (tn TGMember) ReturnType() (TypeReference, bool) {
 	returnNode, found := tn.GraphNode.StartQuery().

@@ -58,7 +58,7 @@ func (sib *scopeInfoBuilder) Resolving(resolved typegraph.TypeReference) *scopeI
 
 // AssignableResolvedTypeOf marks the scope as being assignable of the *resolved* type of the given scope.
 func (sib *scopeInfoBuilder) AssignableResolvedTypeOf(scope *proto.ScopeInfo) *scopeInfoBuilder {
-	resolvedValue := scope.GetAssignableType()
+	resolvedValue := scope.GetResolvedType()
 	sib.info.AssignableType = &resolvedValue
 	return sib
 }
@@ -89,6 +89,21 @@ func (sib *scopeInfoBuilder) IsTerminatingStatement() *scopeInfoBuilder {
 	trueValue := true
 	sib.info.IsTerminatingStatement = &trueValue
 	return sib
+}
+
+// ForNamedScope points the scope to the referred named scope.
+func (sib *scopeInfoBuilder) ForNamedScope(info namedScopeInfo) *scopeInfoBuilder {
+	if info.IsGeneric() {
+		genericKind := proto.ScopeKind_GENERIC
+		sib.info.Kind = &genericKind
+	} else if info.IsStatic() {
+		staticKind := proto.ScopeKind_STATIC
+		sib.info.Kind = &staticKind
+	}
+
+	namedId := string(info.srgInfo.GraphNode.NodeId)
+	sib.info.NamedReferenceNode = &namedId
+	return sib.Resolving(info.ValueType()).Valid()
 }
 
 // GetScope returns the scope constructed.

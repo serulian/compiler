@@ -4,6 +4,8 @@
 
 package srg
 
+//go:generate stringer -type=NamedScopeKind
+
 import (
 	"fmt"
 	"sort"

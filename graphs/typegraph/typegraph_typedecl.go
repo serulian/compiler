@@ -25,6 +25,16 @@ type TGTypeDecl struct {
 	tdg *TypeGraph
 }
 
+// GetTypeForSRGNode returns the TypeGraph type decl for the given SRG type node, if any.
+func (g *TypeGraph) GetTypeForSRGNode(node compilergraph.GraphNode) (TGTypeDecl, bool) {
+	typeNode, found := g.tryGetMatchingTypeGraphNode(node, NodeTypeClass, NodeTypeInterface)
+	if !found {
+		return TGTypeDecl{}, false
+	}
+
+	return TGTypeDecl{typeNode, g}, true
+}
+
 // Name returns the name of the underlying type.
 func (tn TGTypeDecl) Name() string {
 	if tn.GraphNode.Kind == NodeTypeGeneric {
@@ -37,6 +47,12 @@ func (tn TGTypeDecl) Name() string {
 // Node returns the underlying node in this declaration.
 func (tn TGTypeDecl) Node() compilergraph.GraphNode {
 	return tn.GraphNode
+}
+
+// HasGenerics returns whether this type has generics defined.
+func (tn TGTypeDecl) HasGenerics() bool {
+	_, isGeneric := tn.GraphNode.TryGet(NodePredicateTypeGeneric)
+	return isGeneric
 }
 
 // Generics returns the generics on this type.

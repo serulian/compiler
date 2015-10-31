@@ -10,6 +10,7 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/typegraph"
+	"github.com/serulian/compiler/parser"
 )
 
 var _ = fmt.Printf
@@ -57,6 +58,21 @@ func (nsi *namedScopeInfo) Title() string {
 	}
 }
 
+// TypeInfo returns the TypeGraph type info for this named scope. Will panic
+// for non-types.
+func (nsi *namedScopeInfo) TypeInfo() typegraph.TGTypeDecl {
+	if nsi.srgInfo.ScopeKind() != srg.NamedScopeType {
+		panic("TypeInfo can only be called on types")
+	}
+
+	typeInfo, found := nsi.sb.sg.tdg.GetTypeForSRGNode(nsi.srgInfo.GraphNode)
+	if !found {
+		panic("Unknown type for named scope to type")
+	}
+
+	return typeInfo
+}
+
 // MemberInfo returns the TypeGraph member info for this named scope. Will panic
 // for non-members.
 func (nsi *namedScopeInfo) MemberInfo() typegraph.TGMember {
@@ -72,16 +88,36 @@ func (nsi *namedScopeInfo) MemberInfo() typegraph.TGMember {
 	return member
 }
 
-// AssignableType returns the assignable type of the named scope. For scopes without types,
+// ValueType returns the value type of the named scope. For scopes without types,
 // this method will return void.
-func (nsi *namedScopeInfo) AssignableType() typegraph.TypeReference {
+func (nsi *namedScopeInfo) ValueType() typegraph.TypeReference {
 	if nsi.IsStatic() {
 		return nsi.sb.sg.tdg.VoidTypeReference()
 	}
 
 	switch nsi.srgInfo.ScopeKind() {
+	case srg.NamedScopeParameter:
+		// TODO: We should probably cache this in the type graph instead of resolving here.s
+		typeref := nsi.sb.sg.srg.GetTypeRef(nsi.srgInfo.GraphNode.GetNode(parser.NodeParameterType))
+		declaredType, rerr := nsi.sb.sg.tdg.BuildTypeRef(typeref)
+		if rerr != nil {
+			panic(rerr)
+		}
+
+		return declaredType
+
+	case srg.NamedScopeValue:
+		// The value type of a named value is found by scoping the node creating the named value
+		// and then checking its scope info.
+		creatingScope := nsi.sb.getScope(nsi.srgInfo.GraphNode)
+		if !creatingScope.GetIsValid() {
+			return nsi.sb.sg.tdg.AnyTypeReference()
+		}
+
+		return creatingScope.AssignableTypeRef(nsi.sb.sg.tdg)
+
 	case srg.NamedScopeVariable:
-		// The assignable type of a variable is found by scoping the variable
+		// The value type of a variable is found by scoping the variable
 		// and then checking its scope info.
 		variableScope := nsi.sb.getScope(nsi.srgInfo.GraphNode)
 		if !variableScope.GetIsValid() {
@@ -91,7 +127,7 @@ func (nsi *namedScopeInfo) AssignableType() typegraph.TypeReference {
 		return variableScope.AssignableTypeRef(nsi.sb.sg.tdg)
 
 	case srg.NamedScopeMember:
-		// The assignable type for a member is the type of the member itself.
+		// The value type for a member is the type of the member itself.
 		return nsi.MemberInfo().MemberType()
 
 	default:
@@ -146,6 +182,33 @@ func (nsi *namedScopeInfo) IsStatic() bool {
 		fallthrough
 
 	case srg.NamedScopeMember:
+		return false
+
+	default:
+		panic(fmt.Sprintf("Unknown named scope type: %v", nsi.srgInfo.ScopeKind()))
+	}
+}
+
+// IsGeneric returns whether the named scope is generic, requiring type specification before
+// being usable.
+func (nsi *namedScopeInfo) IsGeneric() bool {
+	switch nsi.srgInfo.ScopeKind() {
+	case srg.NamedScopeType:
+		return nsi.TypeInfo().HasGenerics()
+
+	case srg.NamedScopeMember:
+		return nsi.MemberInfo().HasGenerics()
+
+	case srg.NamedScopeImport:
+		fallthrough
+
+	case srg.NamedScopeParameter:
+		fallthrough
+
+	case srg.NamedScopeValue:
+		fallthrough
+
+	case srg.NamedScopeVariable:
 		return false
 
 	default:

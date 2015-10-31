@@ -215,6 +215,76 @@ var scopeGraphTests = []scopegraphTest{
 			expectedScopeEntry{"number", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
 		},
 		"", ""},
+
+	/////////// Assign ///////////
+
+	scopegraphTest{"assign unknown name test", "assign", "unknown", []expectedScopeEntry{},
+		"The name 'something' could not be found in this context", ""},
+
+	/////////// Identifier expression ///////////
+
+	scopegraphTest{"identifier expr unknown name test", "identexpr", "unknown", []expectedScopeEntry{},
+		"The name 'unknown' could not be found in this context", ""},
+
+	scopegraphTest{"identifier expr parameter test", "identexpr", "parameter",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"paramref", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"identifier expr variable test", "identexpr", "var",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"varref", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"identifier expr implicit variable test", "identexpr", "implicitvar",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"varref", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"identifier expr import test", "identexpr", "import",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"importref", expectedScope{true, proto.ScopeKind_STATIC, "void", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"identifier expr type test", "identexpr", "type",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"typeref", expectedScope{true, proto.ScopeKind_STATIC, "void", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"identifier expr generic type test", "identexpr", "generictype",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"typeref", expectedScope{true, proto.ScopeKind_GENERIC, "void", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"identifier expr member var test", "identexpr", "membervar",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"memberref", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"identifier expr member func test", "identexpr", "memberfunc",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"memberref", expectedScope{true, proto.ScopeKind_VALUE, "Function<void>", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"identifier expr generic member test", "identexpr", "genericmember",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"memberref", expectedScope{true, proto.ScopeKind_GENERIC, "Function<void>", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"identifier expr value test", "identexpr", "value",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"valueref", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+		},
+		"", ""},
 }
 
 func TestGraphs(t *testing.T) {

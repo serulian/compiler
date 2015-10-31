@@ -1,0 +1,11 @@
+class SomeClass {
+	function<void> Release() {}	
+}
+
+function<void> DoSomething() {
+	var<SomeClass> something
+
+	with something as somethingElse {
+		/* valueref */somethingElse
+	}
+}
