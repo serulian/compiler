@@ -1779,9 +1779,15 @@ func (p *sourceParser) tryConsumeBaseExpression() (AstNode, bool) {
 
 	// Nested expression.
 	case p.isToken(tokenTypeLeftParen):
+		comments := p.currentToken.comments
+
 		p.consume(tokenTypeLeftParen)
 		exprNode := p.consumeExpression()
 		p.consume(tokenTypeRightParen)
+
+		// Attach any comments found to the consumed expression.
+		p.decorateComments(exprNode, comments)
+
 		return exprNode, true
 	}
 

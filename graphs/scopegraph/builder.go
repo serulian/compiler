@@ -105,6 +105,36 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 	case parser.NodeBinaryModuloExpression:
 		return sb.scopeBinaryModuloExpression
 
+	case parser.NodeBooleanAndExpression:
+		return sb.scopeBooleanBinaryExpression
+
+	case parser.NodeBooleanOrExpression:
+		return sb.scopeBooleanBinaryExpression
+
+	case parser.NodeBooleanNotExpression:
+		return sb.scopeBooleanUnaryExpression
+
+	case parser.NodeComparisonEqualsExpression:
+		return sb.scopeEqualsExpression
+
+	case parser.NodeComparisonNotEqualsExpression:
+		return sb.scopeEqualsExpression
+
+	case parser.NodeComparisonLTEExpression:
+		return sb.scopeComparisonExpression
+
+	case parser.NodeComparisonLTExpression:
+		return sb.scopeComparisonExpression
+
+	case parser.NodeComparisonGTEExpression:
+		return sb.scopeComparisonExpression
+
+	case parser.NodeComparisonGTExpression:
+		return sb.scopeComparisonExpression
+
+	case parser.NodeNullComparisonExpression:
+		return sb.scopeNullComparisonExpression
+
 	// Literal expressions.
 	case parser.NodeBooleanLiteralExpression:
 		return sb.scopeBooleanLiteralExpression

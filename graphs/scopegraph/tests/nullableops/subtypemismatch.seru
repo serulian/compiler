@@ -1,0 +1,3 @@
+function<void> DoSomething(left int?, right bool) {
+	left ?? right
+}

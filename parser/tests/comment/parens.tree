@@ -1,0 +1,40 @@
+NodeTypeFile
+  end-rune = 57
+  input-source = comment parens test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 57
+      input-source = comment parens test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 57
+          input-source = comment parens test
+          start-rune = 29
+          block-child =>
+            NodeBinaryAddExpression
+              end-rune = 54
+              input-source = comment parens test
+              start-rune = 50
+              binary-expression-left =>
+                NodeTypeIdentifierExpression
+                  end-rune = 50
+                  identexpr-name = a
+                  input-source = comment parens test
+                  start-rune = 50
+              binary-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 54
+                  identexpr-name = b
+                  input-source = comment parens test
+                  start-rune = 54
+              child-node =>
+                NodeTypeComment
+                  comment-value = /* somecomment */
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 12
+          input-source = comment parens test
+          start-rune = 9

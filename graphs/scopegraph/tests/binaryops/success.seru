@@ -41,15 +41,19 @@ class SomeClass {
 }
 
 function<void> DoSomething(left SomeClass, right SomeClass) {
-	/* xor */left ^ right
-	/* or */left | right
-	/* and */left & right
-	/* shiftleft */left << right
+	/* xor */(left ^ right)
+	/* or */(left | right)
+	/* and */(left & right)
+	/* shiftleft */(left << right)
 	~right
 
-	/* plus */left + right
-	/* minus */left - right
-	/* times */left * right
-	/* div */left / right
-	/* mod */left % right
+	/* plus */(left + right)
+	/* minus */(left - right)
+	/* times */(left * right)
+	/* div */(left / right)
+	/* mod */(left % right)
+
+	/* bor */(true && true)
+	/* band */(true || true)
+	!true
 }

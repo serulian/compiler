@@ -123,11 +123,14 @@ func (p *sourceParser) startNode(kind NodeType) AstNode {
 func (p *sourceParser) decorateStartRuneAndComments(node AstNode, token commentedLexeme) {
 	node.Decorate(NodePredicateSource, string(p.source))
 	node.Decorate(NodePredicateStartRune, strconv.Itoa(int(token.position)))
+	p.decorateComments(node, token.comments)
+}
 
-	for _, comment := range token.comments {
+// decorateComments decorates the given node with the specified comments.
+func (p *sourceParser) decorateComments(node AstNode, comments []string) {
+	for _, comment := range comments {
 		commentNode := p.createNode(NodeTypeComment)
 		commentNode.Decorate(NodeCommentPredicateValue, comment)
-
 		node.Connect(NodePredicateChild, commentNode)
 	}
 }

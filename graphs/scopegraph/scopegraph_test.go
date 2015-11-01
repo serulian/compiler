@@ -233,6 +233,44 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"assign success test", "assign", "success", []expectedScopeEntry{},
 		"", ""},
 
+	/////////// Comparison operator expressions ///////////
+
+	scopegraphTest{"comparison op success test", "compareops", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"equals", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+			expectedScopeEntry{"notequals", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+
+			expectedScopeEntry{"lt", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+			expectedScopeEntry{"lte", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+			expectedScopeEntry{"gt", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+			expectedScopeEntry{"gte", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+		},
+		"", ""},
+
+	/////////// Nullable operator expression ///////////
+
+	scopegraphTest{"nullable ops success test", "nullableops", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"cnullclass", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+			expectedScopeEntry{"cnullinter", expectedScope{true, proto.ScopeKind_VALUE, "ISomeInterface", "void"}},
+
+			expectedScopeEntry{"inullclass", expectedScope{true, proto.ScopeKind_VALUE, "ISomeInterface", "void"}},
+			expectedScopeEntry{"inullinter", expectedScope{true, proto.ScopeKind_VALUE, "ISomeInterface", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"nullable ops non-nullable left test", "nullableops", "nonnullable",
+		[]expectedScopeEntry{},
+		"Left hand side of a nullable operator must be nullable. Found: SomeClass", ""},
+
+	scopegraphTest{"nullable ops nullable right test", "nullableops", "nullableright",
+		[]expectedScopeEntry{},
+		"Right hand side of a nullable operator cannot be nullable. Found: SomeClass?", ""},
+
+	scopegraphTest{"nullable ops non-subtype test", "nullableops", "subtypemismatch",
+		[]expectedScopeEntry{},
+		"Left and right hand sides of a nullable operator must have common subtype. None found between 'Integer' and 'Boolean'", ""},
+
 	/////////// Binary operator expressions ///////////
 
 	scopegraphTest{"binary ops success test", "binaryops", "success",
@@ -247,8 +285,15 @@ var scopeGraphTests = []scopegraphTest{
 			expectedScopeEntry{"times", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
 			expectedScopeEntry{"div", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
 			expectedScopeEntry{"mod", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+
+			expectedScopeEntry{"bor", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+			expectedScopeEntry{"band", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
 		},
 		"", ""},
+
+	scopegraphTest{"boolean ops fail test", "binaryops", "boolfail",
+		[]expectedScopeEntry{},
+		"Boolean operator requires type Boolean for operands. Left hand operand has type: Integer", ""},
 
 	/////////// Identifier expression ///////////
 

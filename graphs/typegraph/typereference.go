@@ -579,6 +579,11 @@ func (tr TypeReference) AsNullable() TypeReference {
 	return tr.withFlag(trhSlotFlagNullable, nullableFlagTrue)
 }
 
+// AsNonNullable returns a copy of this type reference that is non-nullable.
+func (tr TypeReference) AsNonNullable() TypeReference {
+	return tr.withFlag(trhSlotFlagNullable, nullableFlagFalse)
+}
+
 // Intersect returns the type common to both type references or any if they are uncommon.
 func (tr TypeReference) Intersect(other TypeReference) TypeReference {
 	if tr.IsVoid() {

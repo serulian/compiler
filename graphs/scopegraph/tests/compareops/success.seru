@@ -1,0 +1,19 @@
+class SomeClass {
+	operator equals(left SomeClass, right SomeClass) {
+		return true
+	}
+
+	operator compare(left SomeClass, right SomeClass) {
+		return 1
+	}
+}
+
+function<void> DoSomething(left SomeClass, right SomeClass) {
+	/* equals */(left == right)
+	/* notequals */(left != right)
+
+	/* lte */(left <= right)
+	/* lt */(left < right)
+	/* gte */(left >= right)
+	/* gt */(left > right)
+}
