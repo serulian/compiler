@@ -39,15 +39,21 @@ func (t *TypeGraph) NewTypeReference(typeNode compilergraph.GraphNode, generics 
 	}
 }
 
-// NewInstanceTypeReference returns a new type reference pointing to a type and its generic (if any).
+// NewInstanceTypeReference returns a new type reference pointing to a type and its generics (if any).
 func (t *TypeGraph) NewInstanceTypeReference(typeNode compilergraph.GraphNode) TypeReference {
-	var generics = make([]TypeReference, 0)
+	// Fast path for generics.
+	if typeNode.Kind == NodeTypeGeneric {
+		return TypeReference{
+			tdg:   t,
+			value: buildTypeReferenceValue(typeNode, false),
+		}
+	}
 
+	var generics = make([]TypeReference, 0)
 	git := typeNode.StartQuery().Out(NodePredicateTypeGeneric).BuildNodeIterator()
 	for git.Next() {
 		generics = append(generics, t.NewTypeReference(git.Node()))
 	}
-
 	return t.NewTypeReference(typeNode, generics...)
 }
 
@@ -94,38 +100,172 @@ func (tr TypeReference) EqualsOrAny(other TypeReference) bool {
 	return tr == other
 }
 
-// CheckImplOfGeneric checks that the current type reference refers to a type that implements the *generic*
-// type specified. Returns the concrete generics (if there is a match).
-func (tr TypeReference) CheckImplOfGeneric(typeNode compilergraph.GraphNode) ([]TypeReference, error) {
-	typeDecl := TGTypeDecl{typeNode, tr.tdg}
+// ContainsType returns true if the current type reference has a reference to the given type.
+func (tr TypeReference) ContainsType(typeNode compilergraph.GraphNode) bool {
+	reference := tr.tdg.NewInstanceTypeReference(typeNode)
+	return strings.Contains(tr.value, reference.value)
+}
 
-	if typeDecl.TypeKind() != InterfaceType {
+// ExtractTypeDiff attempts to extract the child type reference from this type reference used in place
+// of a reference to the given type in the other reference. For example, if this is a reference
+// to SomeClass<int> and the other reference is SomeClass<T>, passing in 'T' will return 'int'.
+func (tr TypeReference) ExtractTypeDiff(otherRef TypeReference, diffType compilergraph.GraphNode) (TypeReference, bool) {
+	// Only normal type references apply.
+	if !tr.isNormal() || !otherRef.isNormal() {
+		return TypeReference{}, false
+	}
+
+	// If the referred type is not the same as the other ref's referred type, nothing more to do.
+	if tr.ReferredType() != otherRef.ReferredType() {
+		return TypeReference{}, false
+	}
+
+	// If the other reference doesn't even contain the diff type, nothing more to do.
+	if !otherRef.ContainsType(diffType) {
+		return TypeReference{}, false
+	}
+
+	// Check the generics of the type.
+	otherGenerics := otherRef.Generics()
+	localGenerics := tr.Generics()
+
+	for index, genericRef := range otherGenerics {
+		if !genericRef.isNormal() {
+			continue
+		}
+
+		// If the type referred to by the generic is the diff type, then return the associated
+		// generic type in the local reference.
+		if genericRef.ReferredType() == diffType {
+			return localGenerics[index], true
+		}
+
+		// Recursively check the generic.
+		extracted, found := genericRef.ExtractTypeDiff(localGenerics[index], diffType)
+		if found {
+			return extracted, true
+		}
+	}
+
+	// Check the parameters of the type.
+	otherParameters := otherRef.Parameters()
+	localParameters := tr.Parameters()
+
+	if len(otherParameters) != len(localParameters) {
+		return TypeReference{}, false
+	}
+
+	for index, parameterRef := range otherParameters {
+		if !parameterRef.isNormal() {
+			continue
+		}
+
+		// If the type referred to by the parameter is the diff type, then return the associated
+		// parameter type in the local reference.
+		if parameterRef.ReferredType() == diffType {
+			return localParameters[index], true
+		}
+
+		// Recursively check the parameter.
+		extracted, found := parameterRef.ExtractTypeDiff(localParameters[index], diffType)
+		if found {
+			return extracted, true
+		}
+	}
+
+	return TypeReference{}, false
+}
+
+// CheckConcreteSubtypeOf checks that the current type reference refers to a type that is a concrete subtype
+// of the specified *generic* interface.
+func (tr TypeReference) CheckConcreteSubtypeOf(otherTypeNode compilergraph.GraphNode) ([]TypeReference, error) {
+	localType := TGTypeDecl{tr.ReferredType(), tr.tdg}
+	otherType := TGTypeDecl{otherTypeNode, tr.tdg}
+
+	if otherType.TypeKind() != InterfaceType {
 		panic("Cannot use non-interface type in call to CheckImplOfGeneric")
 	}
 
-	if !typeDecl.HasGenerics() {
+	if !otherType.HasGenerics() {
 		panic("Cannot use non-generic type in call to CheckImplOfGeneric")
 	}
 
 	if tr.IsAny() {
-		return nil, fmt.Errorf("Any type %v does not implement type %v", tr, typeDecl.Name())
+		return nil, fmt.Errorf("Any type %v does not implement type %v", tr, otherType.Name())
 	}
 
 	if tr.IsVoid() {
-		return nil, fmt.Errorf("Void type %v does not implement type %v", tr, typeDecl.Name())
+		return nil, fmt.Errorf("Void type %v does not implement type %v", tr, otherType.Name())
 	}
 
 	if tr.IsNullable() {
-		return nil, fmt.Errorf("Nullable type %v cannot match type %v", tr, typeDecl.Name())
+		return nil, fmt.Errorf("Nullable type %v cannot match type %v", tr, otherType.Name())
 	}
-	/*
-		typeGenerics := typeDecl.Generics()
-	*/
 
-	generics := make([]TypeReference, 1)
-	generics[0] = tr.tdg.AnyTypeReference()
+	// Fast check: If the referred type is the type expected, return it directly.
+	if tr.ReferredType() == otherTypeNode {
+		return tr.Generics(), nil
+	}
 
-	return generics, nil
+	// For each of the generics defined on the interface, find at least one type member whose
+	// type contains a reference to that generic. We'll then search for the same member in the
+	// current type reference and (if found), infer the generic type for that generic based
+	// on the type found in the same position. Once we have concrete types for each of the generics,
+	// we can then perform normal subtype checking to verify.
+	otherTypeGenerics := otherType.Generics()
+	localTypeGenerics := localType.Generics()
+
+	localRefGenerics := tr.Generics()
+
+	resolvedGenerics := make([]TypeReference, len(otherTypeGenerics))
+
+	for index, typeGeneric := range otherTypeGenerics {
+		var matchingMember *TGMember = nil
+
+		// Find a member in the interface that uses the generic in its member type.
+		for _, member := range otherType.Members() {
+			memberType := member.MemberType()
+			if !memberType.ContainsType(typeGeneric.GraphNode) {
+				continue
+			}
+
+			matchingMember = &member
+			break
+		}
+
+		// If there is no matching member, then we assign a type of "any" for this generic.
+		if matchingMember == nil {
+			resolvedGenerics[index] = tr.tdg.AnyTypeReference()
+			continue
+		}
+
+		// Otherwise, lookup the member under the current type reference's type.
+		localMember, found := localType.GetMember(matchingMember.Name())
+		if !found {
+			// If not found, this is not a matching type.
+			return nil, fmt.Errorf("Type %v cannot be used in place of type %v as it does not implement member %v", tr, otherType.Name(), matchingMember.Name())
+		}
+
+		// Now that we have a matching member in the local type, attempt to extract the concrete type
+		// used as the generic.
+		concreteType, found := localMember.MemberType().ExtractTypeDiff(matchingMember.MemberType(), typeGeneric.GraphNode)
+		if !found {
+			// If not found, this is not a matching type.
+			return nil, fmt.Errorf("Type %v cannot be used in place of type %v as member %v does not have the same signature", tr, otherType.Name(), matchingMember.Name())
+		}
+
+		// Replace any generics from the local type reference with those of the type.
+		var replacedConcreteType = concreteType
+		if len(localTypeGenerics) > 0 {
+			for index, localGeneric := range localTypeGenerics {
+				replacedConcreteType = replacedConcreteType.ReplaceType(localGeneric.GraphNode, localRefGenerics[index])
+			}
+		}
+
+		resolvedGenerics[index] = replacedConcreteType
+	}
+
+	return resolvedGenerics, tr.CheckSubTypeOf(tr.tdg.NewTypeReference(otherTypeNode, resolvedGenerics...))
 }
 
 // CheckSubTypeOf returns whether the type pointed to by this type reference is a subtype
@@ -306,6 +446,11 @@ func (tr TypeReference) adjustedMemberSignature(node compilergraph.GraphNode) st
 
 	// Reserialize the member signature.
 	return memberSig.Value()
+}
+
+// isNormal returns whether this type reference refers to a normal type.
+func (tr TypeReference) isNormal() bool {
+	return tr.getSlot(trhSlotFlagSpecial)[0] == specialFlagNormal
 }
 
 // IsAny returns whether this type reference refers to the special 'any' type.

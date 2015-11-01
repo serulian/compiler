@@ -53,6 +53,21 @@ func (g *SRG) NodeLocation(node compilergraph.GraphNode) compilercommon.SourceAn
 	return salForNode(node)
 }
 
+// FindVariableTypeWithName returns the SRGTypeRef for the declared type of the
+// variable in the SRG with the given name.
+//
+// Note: FOR TESTING ONLY.
+func (g *SRG) FindVariableTypeWithName(name string) SRGTypeRef {
+	typerefNode := g.layer.
+		StartQuery(name).
+		In(parser.NodePredicateTypeMemberName, parser.NodeVariableStatementName).
+		IsKind(parser.NodeTypeVariable, parser.NodeTypeVariableStatement).
+		Out(parser.NodePredicateTypeMemberDeclaredType, parser.NodeVariableStatementDeclaredType).
+		GetNode()
+
+	return SRGTypeRef{typerefNode, g}
+}
+
 // LoadAndParse attemptps to load and parse the transition closure of the source code
 // found starting at the root source file.
 func (g *SRG) LoadAndParse(libPaths ...string) *packageloader.LoadResult {

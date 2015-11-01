@@ -73,6 +73,35 @@ func (tn TGTypeDecl) Generics() []TGGeneric {
 	return generics
 }
 
+// GetMember returns the member with the given name under this type, if any.
+func (tn TGTypeDecl) GetMember(name string) (TGMember, bool) {
+	node, found := tn.GraphNode.
+		StartQuery().
+		Out(NodePredicateMember).
+		Has(NodePredicateMemberName, name).
+		TryGetNode()
+
+	if !found {
+		return TGMember{}, false
+	}
+
+	return TGMember{node, tn.tdg}, true
+}
+
+// Members returns the type graph members for this type node.
+func (tn TGTypeDecl) Members() []TGMember {
+	it := tn.GraphNode.StartQuery().
+		Out(NodePredicateMember).
+		BuildNodeIterator()
+
+	var members = make([]TGMember, 0)
+	for it.Next() {
+		members = append(members, TGMember{it.Node(), tn.tdg})
+	}
+
+	return members
+}
+
 // TypeKind returns the kind of the type node.
 func (tn TGTypeDecl) TypeKind() TypeKind {
 	nodeType := tn.Kind.(NodeType)

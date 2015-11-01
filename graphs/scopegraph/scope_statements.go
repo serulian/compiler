@@ -173,7 +173,7 @@ func (sb *scopeBuilder) scopeNamedValue(node compilergraph.GraphNode) proto.Scop
 		}
 
 		loopExprType := exprScope.ResolvedTypeRef(sb.sg.tdg)
-		generics, serr := loopExprType.CheckImplOfGeneric(sb.sg.tdg.StreamType())
+		generics, serr := loopExprType.CheckConcreteSubtypeOf(sb.sg.tdg.StreamType())
 		if serr != nil {
 			sb.decorateWithError(parentNode, "Loop iterable expression must implement type 'stream': %v", serr)
 			return newScope().Invalid().GetScope()

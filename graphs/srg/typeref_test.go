@@ -8,8 +8,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/serulian/compiler/compilercommon"
-	"github.com/serulian/compiler/parser"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -110,21 +108,7 @@ func TestTypeReferences(t *testing.T) {
 	for _, test := range trTests {
 		source := fmt.Sprintf("tests/typeref/%s.seru", test.source)
 		testSRG := getSRG(t, source, "tests/testlib")
-
-		_, found := testSRG.FindModuleBySource(compilercommon.InputSource(source))
-		if !assert.True(t, found, "Test module not found") {
-			continue
-		}
-
-		// Find the type reference on a var with the test name.
-		typerefNode := testSRG.layer.
-			StartQuery(test.name).
-			In(parser.NodePredicateTypeMemberName, parser.NodeVariableStatementName).
-			IsKind(parser.NodeTypeVariable, parser.NodeTypeVariableStatement).
-			Out(parser.NodePredicateTypeMemberDeclaredType, parser.NodeVariableStatementDeclaredType).
-			GetNode()
-
-		typeref := SRGTypeRef{typerefNode, testSRG}
+		typeref := testSRG.FindVariableTypeWithName(test.name)
 		assertTypeRef(t, test.name, typeref, test.expected)
 	}
 }
