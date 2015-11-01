@@ -233,6 +233,23 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"assign success test", "assign", "success", []expectedScopeEntry{},
 		"", ""},
 
+	/////////// Binary operator expressions ///////////
+
+	scopegraphTest{"binary ops success test", "binaryops", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"xor", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+			expectedScopeEntry{"or", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+			expectedScopeEntry{"and", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+			expectedScopeEntry{"shiftleft", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+
+			expectedScopeEntry{"plus", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+			expectedScopeEntry{"minus", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+			expectedScopeEntry{"times", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+			expectedScopeEntry{"div", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+			expectedScopeEntry{"mod", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+		},
+		"", ""},
+
 	/////////// Identifier expression ///////////
 
 	scopegraphTest{"identifier expr unknown name test", "identexpr", "unknown", []expectedScopeEntry{},

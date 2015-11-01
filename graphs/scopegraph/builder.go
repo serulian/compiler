@@ -68,16 +68,51 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 	case parser.NodeTypeNamedValue:
 		return sb.scopeNamedValue
 
-	// Expressions.
+	// Operator expressions.
 	case parser.NodeDefineRangeExpression:
 		return sb.scopeDefineRangeExpression
 
+	case parser.NodeBitwiseXorExpression:
+		return sb.scopeBitwiseXorExpression
+
+	case parser.NodeBitwiseOrExpression:
+		return sb.scopeBitwiseOrExpression
+
+	case parser.NodeBitwiseAndExpression:
+		return sb.scopeBitwiseAndExpression
+
+	case parser.NodeBitwiseShiftLeftExpression:
+		return sb.scopeBitwiseShiftLeftExpression
+
+	case parser.NodeBitwiseShiftRightExpression:
+		return sb.scopeBitwiseShiftRightExpression
+
+	case parser.NodeBitwiseNotExpression:
+		return sb.scopeBitwiseNotExpression
+
+	case parser.NodeBinaryAddExpression:
+		return sb.scopeBinaryAddExpression
+
+	case parser.NodeBinarySubtractExpression:
+		return sb.scopeBinarySubtractExpression
+
+	case parser.NodeBinaryMultiplyExpression:
+		return sb.scopeBinaryMultiplyExpression
+
+	case parser.NodeBinaryDivideExpression:
+		return sb.scopeBinaryDivideExpression
+
+	case parser.NodeBinaryModuloExpression:
+		return sb.scopeBinaryModuloExpression
+
+	// Literal expressions.
 	case parser.NodeBooleanLiteralExpression:
 		return sb.scopeBooleanLiteralExpression
 
 	case parser.NodeNumericLiteralExpression:
 		return sb.scopeNumericLiteralExpression
 
+	// Named expressions.
 	case parser.NodeTypeIdentifierExpression:
 		return sb.scopeIdentifierExpression
 

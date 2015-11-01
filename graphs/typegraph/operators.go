@@ -72,6 +72,10 @@ func (t *TypeGraph) buildOperatorDefinitions() {
 		return t.NewTypeReference(t.StreamType(), t.AnyTypeReference())
 	}
 
+	unaryParameters := []operatorParameter{
+		operatorParameter{"value", containingTypeGetter},
+	}
+
 	binaryParameters := []operatorParameter{
 		operatorParameter{"left", containingTypeGetter},
 		operatorParameter{"right", containingTypeGetter},
@@ -91,7 +95,8 @@ func (t *TypeGraph) buildOperatorDefinitions() {
 		operatorDefinition{"and", containingTypeGetter, binaryParameters},
 		operatorDefinition{"leftshift", containingTypeGetter, binaryParameters},
 		operatorDefinition{"rightshift", containingTypeGetter, binaryParameters},
-		operatorDefinition{"not", containingTypeGetter, binaryParameters},
+
+		operatorDefinition{"not", containingTypeGetter, unaryParameters},
 
 		// Equality.
 		operatorDefinition{"equals", staticTypeGetter(t.BoolType()), binaryParameters},
