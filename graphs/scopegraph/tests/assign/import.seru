@@ -1,0 +1,5 @@
+import success
+
+function<void> DoSomething() {
+	success = 2
+}

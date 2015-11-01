@@ -28,20 +28,24 @@ func (sb *scopeBuilder) scopeAssignStatement(node compilergraph.GraphNode) proto
 		return newScope().Invalid().GetScope()
 	}
 
-	/*
-		// If the scope is read-only, raise an error.
-		if !namedScope.IsAssignable() {
-			sb.decorateWithError(node, "%v %v cannot be assigned to, as it is read-only", namedScope.Title(), name)
-			return newScope().Invalid().GetScope()
-		}
+	// Check that we have a named item.
+	namedScopedRef, found := sb.getNamedScopeForScope(nameScope)
+	if !found {
+		sb.decorateWithError(node, "Cannot assign to non-named value")
+		return newScope().Invalid().GetScope()
+	}
 
+	// Check that the item is assignable.
+	if !namedScopedRef.IsAssignable() {
+		sb.decorateWithError(node, "Cannot assign to non-assignable %v %v", namedScopedRef.Title(), namedScopedRef.Name())
+		return newScope().Invalid().GetScope()
+	}
 
-
-		// Ensure that we can assign the expr value to the named scope.
-		if serr := exprScope.ResolvedTypeRef(sb.sg.tdg).CheckSubTypeOf(namedScope.AssignableType()); serr != nil {
-			sb.decorateWithError(node, "Cannot assign value to %v %v: %v", namedScope.Title(), name, serr)
-			return newScope().Invalid().GetScope()
-		}*/
+	// Ensure that we can assign the expr value to the named scope.
+	if serr := exprScope.ResolvedTypeRef(sb.sg.tdg).CheckSubTypeOf(namedScopedRef.ValueType()); serr != nil {
+		sb.decorateWithError(node, "Cannot assign value to %v %v: %v", namedScopedRef.Title(), namedScopedRef.Name(), serr)
+		return newScope().Invalid().GetScope()
+	}
 
 	return newScope().Valid().GetScope()
 }

@@ -8,6 +8,7 @@ import (
 	"fmt"
 
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/parser"
@@ -32,26 +33,63 @@ func (sb *scopeBuilder) lookupNamedScope(name string, node compilergraph.GraphNo
 	return namedScopeInfo{srgInfo, sb}, true
 }
 
+// getNamedScopeForScope returns namedScopeInfo for the given name, if it references a node by name.
+func (sb *scopeBuilder) getNamedScopeForScope(scope *proto.ScopeInfo) (namedScopeInfo, bool) {
+	if scope.NamedReferenceNode == nil {
+		return namedScopeInfo{}, false
+	}
+
+	referencedNode := sb.sg.srg.GetNamedScope(compilergraph.GraphNodeId(*scope.NamedReferenceNode))
+	return namedScopeInfo{referencedNode, sb}, true
+}
+
 // Title returns a human-readable title for the named scope.
 func (nsi *namedScopeInfo) Title() string {
 	switch nsi.srgInfo.ScopeKind() {
 	case srg.NamedScopeType:
-		return "Type"
+		return "type"
 
 	case srg.NamedScopeMember:
-		return "Module member"
+		return "module member"
 
 	case srg.NamedScopeImport:
-		return "Import"
+		return "import"
 
 	case srg.NamedScopeParameter:
-		return "Parameter"
+		return "parameter"
 
 	case srg.NamedScopeValue:
-		return "Named value"
+		return "named value"
 
 	case srg.NamedScopeVariable:
-		return "Variable"
+		return "variable"
+
+	default:
+		panic(fmt.Sprintf("Unknown named scope type: %v", nsi.srgInfo.ScopeKind()))
+	}
+}
+
+// Name returns a human-readable name for the named scope.
+func (nsi *namedScopeInfo) Name() string {
+	switch nsi.srgInfo.ScopeKind() {
+	case srg.NamedScopeType:
+		return nsi.TypeInfo().Name()
+
+	case srg.NamedScopeMember:
+		return nsi.MemberInfo().Name()
+
+	case srg.NamedScopeImport:
+		return nsi.srgInfo.Get(parser.NodeImportPredicatePackageName)
+
+	case srg.NamedScopeParameter:
+		// TODO: move to parameter info
+		return nsi.srgInfo.Get(parser.NodeParameterName)
+
+	case srg.NamedScopeValue:
+		return nsi.srgInfo.Get(parser.NodeNamedValueName)
+
+	case srg.NamedScopeVariable:
+		return nsi.srgInfo.Get(parser.NodeVariableStatementName)
 
 	default:
 		panic(fmt.Sprintf("Unknown named scope type: %v", nsi.srgInfo.ScopeKind()))

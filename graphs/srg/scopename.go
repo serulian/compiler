@@ -22,6 +22,11 @@ type SRGNamedScope struct {
 	srg *SRG // The parent SRG.
 }
 
+// GetNamedScope returns SRGNamedScope for the given SRG node. Panics on failure to lookup.
+func (g *SRG) GetNamedScope(nodeId compilergraph.GraphNodeId) SRGNamedScope {
+	return SRGNamedScope{g.layer.GetNode(string(nodeId)), g}
+}
+
 type NamedScopeKind int
 
 const (

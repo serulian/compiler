@@ -221,6 +221,18 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"assign unknown name test", "assign", "unknown", []expectedScopeEntry{},
 		"The name 'something' could not be found in this context", ""},
 
+	scopegraphTest{"assign readonly test", "assign", "readonly", []expectedScopeEntry{},
+		"Cannot assign to non-assignable module member DoSomething", ""},
+
+	scopegraphTest{"assign import test", "assign", "import", []expectedScopeEntry{},
+		"Cannot assign to non-assignable import success", ""},
+
+	scopegraphTest{"assign type mismatch test", "assign", "typemismatch", []expectedScopeEntry{},
+		"Cannot assign value to variable something: 'Boolean' cannot be used in place of non-interface 'Integer'", ""},
+
+	scopegraphTest{"assign success test", "assign", "success", []expectedScopeEntry{},
+		"", ""},
+
 	/////////// Identifier expression ///////////
 
 	scopegraphTest{"identifier expr unknown name test", "identexpr", "unknown", []expectedScopeEntry{},
@@ -318,7 +330,7 @@ func TestGraphs(t *testing.T) {
 				continue
 			}
 
-			assert.Equal(t, 1, len(result.Errors), "Expected 1 error on test %v, found: %v", test.name, len(result.Errors))
+			assert.Equal(t, 1, len(result.Errors), "Expected 1 error on test %v, found: %v", test.name, result.Errors)
 			assert.Equal(t, test.expectedError, result.Errors[0].Error(), "Error mismatch on test %v", test.name)
 			continue
 		} else {
