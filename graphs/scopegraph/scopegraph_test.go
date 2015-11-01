@@ -150,7 +150,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	// Expected stream loop test.
 	scopegraphTest{"expected stream loop test", "loop", "expectedstreamloop", []expectedScopeEntry{},
-		"Loop iterable expression must be of type 'stream', found: Integer", ""},
+		"Loop iterable expression must implement type 'stream': Type Integer cannot be used in place of type Stream as it does not implement member CurrentValue", ""},
 
 	/////////// With ///////////
 
