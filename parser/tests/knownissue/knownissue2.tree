@@ -1,0 +1,82 @@
+NodeTypeFile
+  end-rune = 96
+  input-source = known issue 2 test
+  start-rune = 0
+  child-node =>
+    NodeTypeInterface
+      end-rune = 96
+      input-source = known issue 2 test
+      named = Port
+      start-rune = 22
+      decorator =>
+        NodeTypeDecorator
+          decorator-internal = typealias
+          end-rune = 21
+          input-source = known issue 2 test
+          start-rune = 0
+          decorator-parameter =>
+            NodeStringLiteralExpression
+              end-rune = 19
+              input-source = known issue 2 test
+              literal-value = 'port'
+              start-rune = 14
+      type-generic =>
+        NodeTypeGeneric
+          end-rune = 37
+          input-source = known issue 2 test
+          named = T
+          start-rune = 37
+      type-member =>
+        NodeTypeFunction
+          end-rune = 95
+          input-source = known issue 2 test
+          named = AwaitNext
+          start-rune = 43
+          typemember-parameter =>
+            NodeTypeParameter
+              end-rune = 93
+              input-source = known issue 2 test
+              named = callback
+              start-rune = 68
+              parameter-type =>
+                NodeTypeTypeReference
+                  end-rune = 93
+                  input-source = known issue 2 test
+                  start-rune = 77
+                  typereference-generic =>
+                    NodeTypeVoid
+                      end-rune = 89
+                      input-source = known issue 2 test
+                      start-rune = 86
+                  typereference-parameter =>
+                    NodeTypeTypeReference
+                      end-rune = 92
+                      input-source = known issue 2 test
+                      start-rune = 92
+                      typereference-path =>
+                        NodeTypeIdentifierPath
+                          end-rune = 92
+                          input-source = known issue 2 test
+                          start-rune = 92
+                          identifierpath-root =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 92
+                              identifieraccess-name = T
+                              input-source = known issue 2 test
+                              start-rune = 92
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 84
+                      input-source = known issue 2 test
+                      start-rune = 77
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 84
+                          identifieraccess-name = function
+                          input-source = known issue 2 test
+                          start-rune = 77
+          typemember-return-type =>
+            NodeTypeVoid
+              end-rune = 55
+              input-source = known issue 2 test
+              start-rune = 52

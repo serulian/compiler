@@ -278,6 +278,7 @@ const (
 	//
 	NodeTypeReferencePath      = "typereference-path"
 	NodeTypeReferenceGeneric   = "typereference-generic"
+	NodeTypeReferenceParameter = "typereference-parameter"
 	NodeTypeReferenceInnerType = "typereference-inner-type"
 
 	//

@@ -719,6 +719,11 @@ func (p *sourceParser) consumeTypeReference(option typeReferenceOption) AstNode 
 // consumeSimpleTypeReference consumes a type reference that cannot be void, nullable
 // or streamable.
 func (p *sourceParser) consumeSimpleTypeReference() (AstNode, bool) {
+	// Check for 'function'. If found, we consume via a custom path.
+	if p.isKeyword("function") {
+		return p.consumeFunctionTypeReference()
+	}
+
 	typeRefNode := p.startNode(NodeTypeTypeReference)
 	defer p.finishNode()
 
@@ -742,6 +747,49 @@ func (p *sourceParser) consumeSimpleTypeReference() (AstNode, bool) {
 
 	// >
 	p.consume(tokenTypeGreaterThan)
+	return typeRefNode, true
+}
+
+// consumeFunctionTypeReference consumes a function type reference.
+func (p *sourceParser) consumeFunctionTypeReference() (AstNode, bool) {
+	typeRefNode := p.startNode(NodeTypeTypeReference)
+	defer p.finishNode()
+
+	// Consume "function" as the identifier path.
+	identifierPath := p.startNode(NodeTypeIdentifierPath)
+	identifierPath.Connect(NodeIdentifierPathRoot, p.consumeIdentifierAccess(identifierAccessAllowFunction))
+	p.finishNode()
+
+	typeRefNode.Connect(NodeTypeReferencePath, identifierPath)
+
+	// Consume the single generic argument.
+	if _, ok := p.consume(tokenTypeLessThan); !ok {
+		return typeRefNode, true
+	}
+
+	// Consume the generic typeref.
+	typeRefNode.Connect(NodeTypeReferenceGeneric, p.consumeTypeReference(typeReferenceWithVoid))
+
+	// >
+	p.consume(tokenTypeGreaterThan)
+
+	// Consume the parameters.
+	if _, ok := p.consume(tokenTypeLeftParen); !ok {
+		return typeRefNode, true
+	}
+
+	if !p.isToken(tokenTypeRightParen) {
+		for {
+			typeRefNode.Connect(NodeTypeReferenceParameter, p.consumeTypeReference(typeReferenceNoVoid))
+			if _, ok := p.tryConsume(tokenTypeComma); !ok {
+				break
+			}
+		}
+	}
+
+	// )
+	p.consume(tokenTypeRightParen)
+
 	return typeRefNode, true
 }
 
@@ -798,6 +846,13 @@ func (p *sourceParser) consumeGeneric() AstNode {
 	return genericNode
 }
 
+type identifierAccessOption int
+
+const (
+	identifierAccessAllowFunction identifierAccessOption = iota
+	identifierAccessDisallowFunction
+)
+
 // consumeIdentifierPath consumes a path consisting of one (or more identifies)
 //
 // Supported Forms:
@@ -809,7 +864,7 @@ func (p *sourceParser) consumeIdentifierPath() AstNode {
 
 	var currentNode AstNode
 	for {
-		nextNode := p.consumeIdentifierAccess()
+		nextNode := p.consumeIdentifierAccess(identifierAccessDisallowFunction)
 		if currentNode != nil {
 			nextNode.Connect(NodeIdentifierAccessSource, currentNode)
 		}
@@ -827,17 +882,22 @@ func (p *sourceParser) consumeIdentifierPath() AstNode {
 }
 
 // consumeIdentifierAccess consumes an identifier and returns an IdentifierAccessNode.
-func (p *sourceParser) consumeIdentifierAccess() AstNode {
+func (p *sourceParser) consumeIdentifierAccess(option identifierAccessOption) AstNode {
 	identifierAccessNode := p.startNode(NodeTypeIdentifierAccess)
 	defer p.finishNode()
 
 	// Consume the next step in the path.
-	identifier, ok := p.consumeIdentifier()
-	if !ok {
-		return identifierAccessNode
+	if option == identifierAccessAllowFunction && p.tryConsumeKeyword("function") {
+		identifierAccessNode.Decorate(NodeIdentifierAccessName, "function")
+	} else {
+		identifier, ok := p.consumeIdentifier()
+		if !ok {
+			return identifierAccessNode
+		}
+
+		identifierAccessNode.Decorate(NodeIdentifierAccessName, identifier)
 	}
 
-	identifierAccessNode.Decorate(NodeIdentifierAccessName, identifier)
 	return identifierAccessNode
 }
 
