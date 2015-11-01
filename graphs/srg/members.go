@@ -103,12 +103,12 @@ func (m SRGMember) ReturnType() (SRGTypeRef, bool) {
 }
 
 // Getter returns the defined getter for this property. Panics if this is not a property.
-func (m SRGMember) Getter() compilergraph.GraphNode {
+func (m SRGMember) Getter() (compilergraph.GraphNode, bool) {
 	if m.MemberKind() != PropertyMember {
 		panic("Expected property node")
 	}
 
-	return m.GraphNode.GetNode(parser.NodePropertyGetter)
+	return m.GraphNode.TryGetNode(parser.NodePropertyGetter)
 }
 
 // HasSetter returns true if the property has a setter defined. Will always return false

@@ -307,6 +307,23 @@
                         "tdg-srg-source": "(NodeRef)"
                     }
                 }
+            },
+            "a046a3582fd4c77968f11c35e7e4d1de": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "a046a3582fd4c77968f11c35e7e4d1de",
+                    "Kind": 4,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "CurrentValue",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "T",
+                        "tdg-member-signature": "\n\u000cCurrentValue\u0010\u0003\u0018\u0000 \u0001*\u0001T",
+                        "tdg-node-kind": "4|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
             }
         },
         "Predicates": {

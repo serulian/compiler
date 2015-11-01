@@ -275,7 +275,10 @@ func (t *TypeGraph) buildTypeMemberNode(parent TGTypeOrModule, member srg.SRGMem
 		isReadOnly = !member.HasSetter()
 
 		// Decorate the property *getter* with its return type.
-		t.createReturnable(memberNode, member.Getter(), memberType)
+		getter, found := member.Getter()
+		if found {
+			t.createReturnable(memberNode, getter, memberType)
+		}
 
 	case srg.ConstructorMember:
 		// Constructors are static.

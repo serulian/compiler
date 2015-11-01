@@ -1,5 +1,7 @@
 @•typealias('stream')
-interface Stream<T> {}
+interface Stream<T> {
+	property<T> CurrentValue { get }
+}
 
 @•typealias('releasable')
 interface Releasable {
@@ -12,8 +14,8 @@ class Function<T> {}
 @•typealias('int')
 class Integer {
 	operator Range(start int, end int) {
-		// TODO: fix this once we can actually create a stream
-		return 2
+		var<Stream<int>> s
+		return s
 	}
 
 	// TODO: remove once we scope constructors
