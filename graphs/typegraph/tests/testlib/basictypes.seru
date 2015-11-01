@@ -3,6 +3,11 @@ interface Stream<T> {
 	property<T> CurrentValue { get }
 }
 
+@•typealias('port')
+interface Port<T> {
+	function<void> AwaitNext(callback function<void>(T))
+}
+
 @•typealias('releasable')
 interface Releasable {
 	function<void> Release()

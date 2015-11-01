@@ -10,6 +10,65 @@
             "tdg-type-name": "ThirdClass"
         }
     },
+    "13b8c76c5f0b95ee7d94a3d8c3bbd4f5": {
+        "Key": "13b8c76c5f0b95ee7d94a3d8c3bbd4f5",
+        "Kind": 2,
+        "Children": {
+            "239e334ea86d27bcba0b318dad811725": {
+                "Predicate": "tdg-declaration-generic",
+                "Child": {
+                    "Key": "239e334ea86d27bcba0b318dad811725",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-generic-index": "0",
+                        "tdg-generic-kind": "0",
+                        "tdg-generic-name": "T",
+                        "tdg-generic-subtype": "any",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            },
+            "7e5e3c2c7eab1aae7aa9f9a15e0e9626": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "7e5e3c2c7eab1aae7aa9f9a15e0e9626",
+                    "Kind": 4,
+                    "Children": {
+                        "69e4aa590caed84142a39b2b808efa11": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "69e4aa590caed84142a39b2b808efa11",
+                                "Kind": 6,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "6|NodeType|tdg",
+                                    "tdg-return-type": "void",
+                                    "tdg-srg-source": "(NodeRef)"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "AwaitNext",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "Function\u003cvoid\u003e(Function\u003cvoid\u003e(T))",
+                        "tdg-member-signature": "\n\tAwaitNext\u0010\u0002\u0018\u0000 \u0001*!Function\u003cvoid\u003e(Function\u003cvoid\u003e(T))",
+                        "tdg-node-kind": "4|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-declaration-module": "(NodeRef)",
+            "tdg-node-kind": "2|NodeType|tdg",
+            "tdg-srg-source": "(NodeRef)",
+            "tdg-type-name": "Port"
+        }
+    },
     "5655ba59997607f736afcf6a76bd989e": {
         "Key": "5655ba59997607f736afcf6a76bd989e",
         "Kind": 2,

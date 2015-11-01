@@ -144,6 +144,25 @@ func (t SRGTypeRef) Generics() []SRGTypeRef {
 	return t.subReferences(parser.NodeTypeReferenceGeneric)
 }
 
+// HasGenerics returns whether this type reference has generics.
+func (t SRGTypeRef) HasGenerics() bool {
+	_, found := t.GraphNode.TryGet(parser.NodeTypeReferenceGeneric)
+	return found
+}
+
+// Parameters returns the parameters defined on this type ref.
+// Panics if this is not a RefKind of TypeRefPath.
+func (t SRGTypeRef) Parameters() []SRGTypeRef {
+	compilerutil.DCHECK(func() bool { return t.RefKind() == TypeRefPath }, "Expected type ref path")
+	return t.subReferences(parser.NodeTypeReferenceParameter)
+}
+
+// HasParameters returns whether this type reference has parameters.
+func (t SRGTypeRef) HasParameters() bool {
+	_, found := t.GraphNode.TryGet(parser.NodeTypeReferenceParameter)
+	return found
+}
+
 // subReferences returns the subreferences found off of the given predicate, if any.
 func (t SRGTypeRef) subReferences(predicate string) []SRGTypeRef {
 	subRefs := make([]SRGTypeRef, 0)

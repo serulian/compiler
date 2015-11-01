@@ -60,7 +60,20 @@ func (t *TypeGraph) BuildTypeRef(typeref srg.SRGTypeRef) (TypeReference, error) 
 			generics[index] = genericTypeRef
 		}
 
-		return t.NewTypeReference(resolvedType, generics...), nil
+		var constructedRef = t.NewTypeReference(resolvedType, generics...)
+
+		// Add the parameters.
+		if typeref.HasParameters() {
+			for _, srgParameter := range typeref.Parameters() {
+				parameterTypeRef, err := t.BuildTypeRef(srgParameter)
+				if err != nil {
+					return TypeReference{}, err
+				}
+				constructedRef = constructedRef.WithParameter(parameterTypeRef)
+			}
+		}
+
+		return constructedRef, nil
 
 	default:
 		panic(fmt.Sprintf("Unknown kind of SRG type ref: %v", typeref.RefKind()))

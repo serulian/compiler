@@ -63,8 +63,14 @@ func (tr TypeReference) Verify() error {
 		return nil
 	}
 
-	refGenerics := tr.Generics()
 	referredType := TGTypeDecl{tr.ReferredType(), tr.tdg}
+
+	// Function type references are properly restricted based on the parser, so no checks to make.
+	if referredType.GraphNode == tr.tdg.FunctionType() {
+		return nil
+	}
+
+	refGenerics := tr.Generics()
 	typeGenerics := referredType.Generics()
 
 	// Check generics count.
@@ -81,11 +87,6 @@ func (tr TypeReference) Verify() error {
 				return fmt.Errorf("Generic '%s' (#%v) on type '%s' has constraint '%v'. Specified type '%v' does not match: %v", typeGeneric.Name(), index+1, referredType.Name(), typeGeneric.Constraint(), refGeneric, err)
 			}
 		}
-	}
-
-	// Check parameters.
-	if tr.HasParameters() && referredType.GraphNode != tr.tdg.FunctionType() {
-		return fmt.Errorf("Only function types can have parameters. Found on type: %v", tr)
 	}
 
 	return nil
