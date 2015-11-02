@@ -359,6 +359,23 @@ var scopeGraphTests = []scopegraphTest{
 			expectedScopeEntry{"valueref", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
 		},
 		"", ""},
+
+	/////////// Arrow operator expression ///////////
+
+	scopegraphTest{"arrow operator success test", "arrowops", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"await", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+			expectedScopeEntry{"arrow", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"arrow operator invalid source test", "arrowops", "invalidsource",
+		[]expectedScopeEntry{},
+		"Right hand side of an arrow expression must be of type Port: Type Integer cannot be used in place of type Port as it does not implement member AwaitNext", ""},
+
+	scopegraphTest{"arrow operator invalid destination test", "arrowops", "invaliddestination",
+		[]expectedScopeEntry{},
+		"Left hand side of arrow expression must accept type Boolean: 'Boolean' cannot be used in place of non-interface 'Integer'", ""},
 }
 
 func TestGraphs(t *testing.T) {
