@@ -1887,7 +1887,7 @@ func (p *sourceParser) tryConsumeMapExpression() (AstNode, bool) {
 	if !p.isToken(tokenTypeRightBrace) {
 		for {
 			mapNode.Connect(NodeMapExpressionChildEntry, p.consumeMapExpressionEntry())
-			if p.isToken(tokenTypeRightBrace) {
+			if p.isToken(tokenTypeRightBrace) || p.isStatementTerminator() {
 				break
 			}
 		}

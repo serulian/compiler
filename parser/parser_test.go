@@ -183,6 +183,7 @@ var parserTests = []parserTest{
 	{"list expr test", "expression/list"},
 	{"list call expr test", "expression/list_call"},
 	{"lambda expr test", "expression/lambda"},
+	{"map missing comma expr test", "expression/map_missingcomma"},
 	{"all expr test", "expression/all"},
 
 	// Type reference tests.
