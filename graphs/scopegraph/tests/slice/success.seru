@@ -1,0 +1,17 @@
+class SomeClass {
+	operator<bool> slice(startIndex int?, endIndex int?) {
+		return true
+	}
+
+	operator<int> index(value int) {
+		return value
+	}
+}
+
+function<void> DoSomething() {
+	var<SomeClass> sc
+	/* slice */(sc[0:1])
+	/* endslice */(sc[:1])
+	/* startslice */(sc[1:])
+	/* index */(sc[0])
+}

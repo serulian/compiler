@@ -1,0 +1,10 @@
+class SomeClass {
+	operator<bool> index(value bool) {
+		return value
+	}
+}
+
+function<void> DoSomething() {
+	var<SomeClass> sc
+	sc[0]
+}

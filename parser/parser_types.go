@@ -126,7 +126,7 @@ const (
 	NodeStreamMemberAccessExpression   // a*.b
 	NodeCastExpression                 // a.(b)
 	NodeFunctionCallExpression         // a(b, c, d)
-	NodeSliceExpression                // a[b]
+	NodeSliceExpression                // a[b:c]
 
 	NodeNumericLiteralExpression        // 123
 	NodeStringLiteralExpression         // 'hello'

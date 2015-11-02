@@ -64,12 +64,14 @@ func (t *TypeGraph) buildOperatorDefinitions() {
 		}
 	}
 
-	anyTypeGetter := func(containingType TypeReference) TypeReference {
-		return t.AnyTypeReference()
+	staticNullableTypeGetter := func(staticType compilergraph.GraphNode) typerefGetter {
+		return func(containingType TypeReference) TypeReference {
+			return t.NewTypeReference(staticType).AsNullable()
+		}
 	}
 
-	streamAnyTypeGetter := func(containingType TypeReference) TypeReference {
-		return t.NewTypeReference(t.StreamType(), t.AnyTypeReference())
+	anyTypeGetter := func(containingType TypeReference) TypeReference {
+		return t.AnyTypeReference()
 	}
 
 	unaryParameters := []operatorParameter{
@@ -108,9 +110,9 @@ func (t *TypeGraph) buildOperatorDefinitions() {
 		operatorDefinition{"range", streamContainingTypeGetter, binaryParameters},
 
 		// Slice.
-		operatorDefinition{"slice", streamAnyTypeGetter, []operatorParameter{
-			operatorParameter{"startindex", staticTypeGetter(t.IntType())},
-			operatorParameter{"endindex", staticTypeGetter(t.IntType())},
+		operatorDefinition{"slice", anyTypeGetter, []operatorParameter{
+			operatorParameter{"startindex", staticNullableTypeGetter(t.IntType())},
+			operatorParameter{"endindex", staticNullableTypeGetter(t.IntType())},
 		}},
 
 		// Index.

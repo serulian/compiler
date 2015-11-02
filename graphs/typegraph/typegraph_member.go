@@ -63,3 +63,8 @@ func (tn TGMember) ReturnType() (TypeReference, bool) {
 
 	return returnNode.GetTagged(NodePredicateReturnType, tn.tdg.AnyTypeReference()).(TypeReference), true
 }
+
+// ParameterTypes returns the types of the parameters defined on this member, if any.
+func (tn TGMember) ParameterTypes() []TypeReference {
+	return tn.MemberType().Parameters()
+}

@@ -161,11 +161,19 @@ func (t *TypeGraph) buildTypeOperatorNode(parent TGTypeOrModule, operator srg.SR
 	containingType := t.NewInstanceTypeReference(typeNode)
 	expectedReturnType := definition.ExpectedReturnType(containingType)
 
-	if !declaredReturnType.IsAny() && declaredReturnType != expectedReturnType {
+	if !expectedReturnType.IsAny() && !declaredReturnType.IsAny() && declaredReturnType != expectedReturnType {
 		t.decorateWithError(memberNode, "Operator '%s' defined on type '%s' expects a return type of '%v'; found %v",
 			operator.Name(), parent.Name(), expectedReturnType, declaredReturnType)
 		success = false
 	}
+
+	// Decorate the operator with its return type.
+	var actualReturnType = expectedReturnType
+	if expectedReturnType.IsAny() {
+		actualReturnType = declaredReturnType
+	}
+
+	t.createReturnable(memberNode, operator.Node(), actualReturnType)
 
 	// Ensure we have the expected number of parameters.
 	parametersExpected := definition.Parameters
@@ -177,6 +185,8 @@ func (t *TypeGraph) buildTypeOperatorNode(parent TGTypeOrModule, operator srg.SR
 		return false
 	}
 
+	var memberType = t.NewTypeReference(t.FunctionType(), actualReturnType)
+
 	// Ensure the parameters expected on the operator match those specified.
 	for index, parameter := range parametersDefined {
 		parameterType, valid := t.resolvePossibleType(memberNode, parameter.DeclaredType)
@@ -186,21 +196,18 @@ func (t *TypeGraph) buildTypeOperatorNode(parent TGTypeOrModule, operator srg.SR
 		}
 
 		expectedType := parametersExpected[index].ExpectedType(containingType)
-		if expectedType != parameterType {
+		if !expectedType.IsAny() && expectedType != parameterType {
 			t.decorateWithError(memberNode, "Parameter '%s' (#%v) for operator '%s' defined on type '%s' expects type %v; found %v",
 				parametersExpected[index].Name, index, operator.Name(), parent.Name(),
 				expectedType, parameterType)
 			success = false
 		}
+
+		memberType = memberType.WithParameter(parameterType)
 	}
 
-	// Decorate the operator with its return type.
-	var actualReturnType = expectedReturnType
-	if expectedReturnType.IsAny() {
-		actualReturnType = declaredReturnType
-	}
-
-	t.createReturnable(memberNode, operator.Node(), actualReturnType)
+	// Decorate the operator with its member type.
+	memberNode.DecorateWithTagged(NodePredicateMemberType, memberType)
 
 	// Add the member signature for this operator.
 	t.decorateWithSig(memberNode, name, uint64(NodeTypeOperator), false, operator.IsExported(), t.AnyTypeReference())

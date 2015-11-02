@@ -79,6 +79,9 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 	case parser.NodeDefineRangeExpression:
 		return sb.scopeDefineRangeExpression
 
+	case parser.NodeSliceExpression:
+		return sb.scopeSliceExpression
+
 	case parser.NodeBitwiseXorExpression:
 		return sb.scopeBitwiseXorExpression
 

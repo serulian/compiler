@@ -16,6 +16,105 @@ import (
 
 var _ = fmt.Printf
 
+// scopeSliceExpression scopes a slice expression in the SRG.
+func (sb *scopeBuilder) scopeSliceExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+	// Check if this is a slice vs an index.
+	_, isIndexer := node.TryGet(parser.NodeSliceExpressionIndex)
+	if isIndexer {
+		return sb.scopeIndexerExpression(node)
+	} else {
+		return sb.scopeSlicerExpression(node)
+	}
+}
+
+// scopeSliceChildExpression scopes the child expression of a slice expression, returning whether it
+// is valid and the associated operator found, if any.
+func (sb *scopeBuilder) scopeSliceChildExpression(node compilergraph.GraphNode, opName string) (typegraph.TGMember, bool) {
+	// Scope the child expression of the slice.
+	childScope := sb.getScope(node.GetNode(parser.NodeSliceExpressionChildExpr))
+	if !childScope.GetIsValid() {
+		return typegraph.TGMember{}, false
+	}
+
+	childType := childScope.ResolvedTypeRef(sb.sg.tdg)
+	module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
+	operator, found := childType.ResolveMember(opName, module, typegraph.MemberResolutionOperator)
+	if !found {
+		sb.decorateWithError(node, "Operator '%v' is not defined on type '%v'", opName, childType)
+		return typegraph.TGMember{}, false
+	}
+
+	return operator, true
+}
+
+// scopeSlicerExpression scopes a slice expression (one with left and/or right expressions) in the SRG.
+func (sb *scopeBuilder) scopeSlicerExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+	var isValid = true
+
+	// Lookup the slice operator.
+	operator, found := sb.scopeSliceChildExpression(node, "slice")
+	if !found {
+		isValid = false
+	}
+
+	scopeAndCheckExpr := func(exprNode compilergraph.GraphNode) bool {
+		exprScope := sb.getScope(exprNode)
+		if !exprScope.GetIsValid() {
+			return false
+		}
+
+		exprType := exprScope.ResolvedTypeRef(sb.sg.tdg)
+		if !exprType.HasReferredType(sb.sg.tdg.IntType()) {
+			sb.decorateWithError(node, "Slice index must be of type Integer, found: %v", exprType)
+			return false
+		}
+
+		return true
+	}
+
+	// Check the left and/or right expressions.
+	leftNode, hasLeftNode := node.TryGetNode(parser.NodeSliceExpressionLeftIndex)
+	rightNode, hasRightNode := node.TryGetNode(parser.NodeSliceExpressionRightIndex)
+
+	if hasLeftNode && !scopeAndCheckExpr(leftNode) {
+		isValid = false
+	}
+
+	if hasRightNode && !scopeAndCheckExpr(rightNode) {
+		isValid = false
+	}
+
+	returnType, _ := operator.ReturnType()
+	return newScope().IsValid(isValid).Resolving(returnType).GetScope()
+}
+
+// scopeIndexerExpression scopes an indexer expression (slice with single numerical index) in the SRG.
+func (sb *scopeBuilder) scopeIndexerExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+	// Lookup the indexing operator.
+	operator, found := sb.scopeSliceChildExpression(node, "index")
+	if !found {
+		return newScope().Invalid().GetScope()
+	}
+
+	// Scope the index expression.
+	exprScope := sb.getScope(node.GetNode(parser.NodeSliceExpressionIndex))
+	if !exprScope.GetIsValid() {
+		return newScope().Invalid().GetScope()
+	}
+
+	// Ensure the index expression type matches that expected.
+	exprType := exprScope.ResolvedTypeRef(sb.sg.tdg)
+	parameterType := operator.ParameterTypes()[0]
+
+	if serr := exprType.CheckSubTypeOf(parameterType); serr != nil {
+		sb.decorateWithError(node, "Indexer parameter must be type %v: %v", parameterType, serr)
+		return newScope().Invalid().GetScope()
+	}
+
+	returnType, _ := operator.ReturnType()
+	return newScope().Valid().Resolving(returnType).GetScope()
+}
+
 // scopeNullComparisonExpression scopes a nullable comparison expression in the SRG.
 func (sb *scopeBuilder) scopeNullComparisonExpression(node compilergraph.GraphNode) proto.ScopeInfo {
 	// Get the scope of the left and right expressions.
@@ -150,7 +249,7 @@ func (sb *scopeBuilder) scopeBitwiseShiftRightExpression(node compilergraph.Grap
 
 // scopeBitwiseNotExpression scopes a bitwise not operator expression in the SRG.
 func (sb *scopeBuilder) scopeBitwiseNotExpression(node compilergraph.GraphNode) proto.ScopeInfo {
-	return sb.scopeUnaryExpression(node, "not").GetScope()
+	return sb.scopeUnaryExpression(node, "not", parser.NodeUnaryExpressionChildExpr).GetScope()
 }
 
 // scopeBinaryAddExpression scopes an add operator expression in the SRG.
@@ -211,9 +310,9 @@ func (sb *scopeBuilder) scopeBinaryExpression(node compilergraph.GraphNode, opNa
 }
 
 // scopeUnaryExpression scopes a unary expression in the SRG.
-func (sb *scopeBuilder) scopeUnaryExpression(node compilergraph.GraphNode, opName string) *scopeInfoBuilder {
+func (sb *scopeBuilder) scopeUnaryExpression(node compilergraph.GraphNode, opName string, predicateName string) *scopeInfoBuilder {
 	// Get the scope of the sub expression.
-	childScope := sb.getScope(node.GetNode(parser.NodeUnaryExpressionChildExpr))
+	childScope := sb.getScope(node.GetNode(predicateName))
 
 	// Ensure that the child scope is valid.
 	if !childScope.GetIsValid() {

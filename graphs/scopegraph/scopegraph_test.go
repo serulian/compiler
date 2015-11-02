@@ -399,6 +399,25 @@ var scopeGraphTests = []scopegraphTest{
 			expectedScopeEntry{"mixedkeymap", expectedScope{true, proto.ScopeKind_VALUE, "Map<any, Integer>", "void"}},
 		},
 		"", ""},
+
+	/////////// Slice expression ///////////
+
+	scopegraphTest{"slice operator success test", "slice", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"slice", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+			expectedScopeEntry{"startslice", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+			expectedScopeEntry{"endslice", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+			expectedScopeEntry{"index", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"indexer invalid param test", "slice", "invalidindex",
+		[]expectedScopeEntry{},
+		"Indexer parameter must be type Boolean: 'Integer' cannot be used in place of non-interface 'Boolean'", ""},
+
+	scopegraphTest{"slice invalid param test", "slice", "invalidslice",
+		[]expectedScopeEntry{},
+		"Slice index must be of type Integer, found: Boolean", ""},
 }
 
 func TestGraphs(t *testing.T) {
