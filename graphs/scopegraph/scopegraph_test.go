@@ -418,6 +418,18 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"slice invalid param test", "slice", "invalidslice",
 		[]expectedScopeEntry{},
 		"Slice index must be of type Integer, found: Boolean", ""},
+
+	/////////// Cast expression ///////////
+
+	scopegraphTest{"cast success test", "castexpr", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"cast", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"cast failure test", "castexpr", "failure",
+		[]expectedScopeEntry{},
+		"Cannot cast value of type 'ISomeInterface' to type 'SomeClass': Type 'SomeClass' does not define or export member 'DoSomething', which is required by type 'ISomeInterface'", ""},
 }
 
 func TestGraphs(t *testing.T) {
