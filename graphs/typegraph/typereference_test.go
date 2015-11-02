@@ -153,8 +153,16 @@ func TestExtractTypeDiff(t *testing.T) {
 	thirdTypeNode := testTG.layer.CreateNode(NodeTypeClass)
 	fourthTypeNode := testTG.layer.CreateNode(NodeTypeClass)
 
+	firstTypeNode.Decorate(NodePredicateTypeName, "First")
+	secondTypeNode.Decorate(NodePredicateTypeName, "Second")
+	thirdTypeNode.Decorate(NodePredicateTypeName, "Third")
+	fourthTypeNode.Decorate(NodePredicateTypeName, "Fourth")
+
 	tGenericNode := testTG.layer.CreateNode(NodeTypeGeneric)
 	qGenericNode := testTG.layer.CreateNode(NodeTypeGeneric)
+
+	tGenericNode.Decorate(NodePredicateGenericName, "T")
+	qGenericNode.Decorate(NodePredicateGenericName, "Q")
 
 	tests := []extractTypeDiff{
 		extractTypeDiff{
@@ -228,11 +236,23 @@ func TestExtractTypeDiff(t *testing.T) {
 			false,
 			testTG.VoidTypeReference(),
 		},
+
+		extractTypeDiff{
+			"extract from First<Third>(Second), reference is First<Third>(T): T = Second",
+			testTG.NewTypeReference(firstTypeNode, testTG.NewTypeReference(thirdTypeNode)).WithParameter(testTG.NewTypeReference(secondTypeNode)),
+			testTG.NewTypeReference(firstTypeNode, testTG.NewTypeReference(thirdTypeNode)).WithParameter(testTG.NewTypeReference(tGenericNode)),
+			tGenericNode,
+			true,
+			testTG.NewTypeReference(secondTypeNode),
+		},
 	}
 
 	for _, test := range tests {
 		extractedRef, extracted := test.extractFromRef.ExtractTypeDiff(test.extractBaseRef, test.typeToExtract)
-		assert.Equal(t, test.expectSuccess, extracted, "Mismatch on expected success for test %v", test.name)
+		if !assert.Equal(t, test.expectSuccess, extracted, "Mismatch on expected success for test %v", test.name) {
+			continue
+		}
+
 		if test.expectSuccess {
 			assert.Equal(t, test.expectedTypeRef, extractedRef)
 		}
@@ -302,6 +322,11 @@ func TestConcreteSubtypes(t *testing.T) {
 		concreteSubtypeCheckTest{"MultiClass subtype of multi member interface test", "multiClass", "IMultiMember",
 			"",
 			[]string{"Integer", "Boolean"},
+		},
+
+		concreteSubtypeCheckTest{"SomePort subtype of port", "somePort", "Port",
+			"",
+			[]string{"Integer"},
 		},
 	}
 

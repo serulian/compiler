@@ -142,7 +142,7 @@ func (tr TypeReference) ExtractTypeDiff(otherRef TypeReference, diffType compile
 		}
 
 		// Recursively check the generic.
-		extracted, found := genericRef.ExtractTypeDiff(localGenerics[index], diffType)
+		extracted, found := localGenerics[index].ExtractTypeDiff(genericRef, diffType)
 		if found {
 			return extracted, true
 		}
@@ -168,7 +168,7 @@ func (tr TypeReference) ExtractTypeDiff(otherRef TypeReference, diffType compile
 		}
 
 		// Recursively check the parameter.
-		extracted, found := parameterRef.ExtractTypeDiff(localParameters[index], diffType)
+		extracted, found := localParameters[index].ExtractTypeDiff(parameterRef, diffType)
 		if found {
 			return extracted, true
 		}
@@ -251,6 +251,7 @@ func (tr TypeReference) CheckConcreteSubtypeOf(otherTypeNode compilergraph.Graph
 		// used as the generic.
 		concreteType, found := localMember.MemberType().ExtractTypeDiff(matchingMember.MemberType(), typeGeneric.GraphNode)
 		if !found {
+			fmt.Printf("[[%v %v]]", localMember.MemberType(), matchingMember.MemberType())
 			// If not found, this is not a matching type.
 			return nil, fmt.Errorf("Type %v cannot be used in place of type %v as member %v does not have the same signature", tr, otherType.Name(), matchingMember.Name())
 		}
