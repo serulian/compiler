@@ -1,16 +1,16 @@
 NodeTypeFile
-  end-rune = 449
+  end-rune = 483
   input-source = all expr test
   start-rune = 0
   child-node =>
     NodeTypeFunction
-      end-rune = 449
+      end-rune = 483
       input-source = all expr test
       named = SomeFunction
       start-rune = 0
       definition-body =>
         NodeTypeStatementBlock
-          end-rune = 449
+          end-rune = 483
           input-source = all expr test
           start-rune = 30
           block-child =>
@@ -689,6 +689,52 @@ NodeTypeFile
                   identexpr-name = someExpr
                   input-source = all expr test
                   start-rune = 440
+            NodeMapExpression
+              end-rune = 451
+              input-source = all expr test
+              start-rune = 450
+            NodeMapExpression
+              end-rune = 467
+              input-source = all expr test
+              start-rune = 454
+              map-expr-entry =>
+                NodeMapExpressionEntry
+                  end-rune = 464
+                  input-source = all expr test
+                  start-rune = 458
+                  map-entry-key =>
+                    NodeStringLiteralExpression
+                      end-rune = 460
+                      input-source = all expr test
+                      literal-value = 'a'
+                      start-rune = 458
+                  map-entry-value =>
+                    NodeNumericLiteralExpression
+                      end-rune = 463
+                      input-source = all expr test
+                      literal-value = 2
+                      start-rune = 463
+            NodeMapExpression
+              end-rune = 481
+              input-source = all expr test
+              start-rune = 470
+              map-expr-entry =>
+                NodeMapExpressionEntry
+                  end-rune = 478
+                  input-source = all expr test
+                  start-rune = 474
+                  map-entry-key =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 474
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 474
+                  map-entry-value =>
+                    NodeNumericLiteralExpression
+                      end-rune = 477
+                      input-source = all expr test
+                      literal-value = 2
+                      start-rune = 477
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 12

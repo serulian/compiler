@@ -46,4 +46,11 @@ function<void> SomeFunction() {
 	!someName
 	function (first int, second bool) { return first }
 	() => someExpr
+	{}
+	{
+		'a': 2,
+	}
+	{
+		a: 2,
+	}
 }
