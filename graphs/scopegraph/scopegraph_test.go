@@ -376,6 +376,16 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"arrow operator invalid destination test", "arrowops", "invaliddestination",
 		[]expectedScopeEntry{},
 		"Left hand side of arrow expression must accept type Boolean: 'Boolean' cannot be used in place of non-interface 'Integer'", ""},
+
+	/////////// List literal expression ///////////
+
+	scopegraphTest{"list literal success test", "listliteral", "listliteral",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"emptylist", expectedScope{true, proto.ScopeKind_VALUE, "List<any>", "void"}},
+			expectedScopeEntry{"intlist", expectedScope{true, proto.ScopeKind_VALUE, "List<Integer>", "void"}},
+			expectedScopeEntry{"mixedlist", expectedScope{true, proto.ScopeKind_VALUE, "List<any>", "void"}},
+		},
+		"", ""},
 }
 
 func TestGraphs(t *testing.T) {

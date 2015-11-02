@@ -31,6 +31,21 @@ func (t *TypeGraph) BoolTypeReference() TypeReference {
 	return t.NewTypeReference(t.BoolType())
 }
 
+// StringTypeReference returns a reference to the string type.
+func (t *TypeGraph) StringTypeReference() TypeReference {
+	return t.NewTypeReference(t.StringType())
+}
+
+// ListTypeReference returns a new reference to the list type, with the given generic.
+func (t *TypeGraph) ListTypeReference(generic TypeReference) TypeReference {
+	return t.NewTypeReference(t.ListType(), generic)
+}
+
+// MapTypeReference returns a new reference to the map type, with the given generic.
+func (t *TypeGraph) MapTypeReference(generic TypeReference) TypeReference {
+	return t.NewTypeReference(t.MapType(), generic)
+}
+
 // ReleasableTypeReference returns a reference to the done type.
 func (t *TypeGraph) ReleasableTypeReference() TypeReference {
 	return t.NewTypeReference(t.ReleasableType())
@@ -51,6 +66,11 @@ func (t *TypeGraph) FunctionType() compilergraph.GraphNode {
 	return t.getAliasedType("function")
 }
 
+// StringType returns the string type.
+func (t *TypeGraph) StringType() compilergraph.GraphNode {
+	return t.getAliasedType("string")
+}
+
 // IntType returns the integer type.
 func (t *TypeGraph) IntType() compilergraph.GraphNode {
 	return t.getAliasedType("int")
@@ -64,6 +84,16 @@ func (t *TypeGraph) FloatType() compilergraph.GraphNode {
 // BoolType returns the boolean type.
 func (t *TypeGraph) BoolType() compilergraph.GraphNode {
 	return t.getAliasedType("bool")
+}
+
+// ListType returns the list type.
+func (t *TypeGraph) ListType() compilergraph.GraphNode {
+	return t.getAliasedType("list")
+}
+
+// MapType returns the map type.
+func (t *TypeGraph) MapType() compilergraph.GraphNode {
+	return t.getAliasedType("map")
 }
 
 // ReleasableType returns the releasable type.

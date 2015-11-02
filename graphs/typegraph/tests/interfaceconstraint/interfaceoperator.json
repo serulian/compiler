@@ -286,6 +286,34 @@
             "tdg-type-name": "Function"
         }
     },
+    "888d5fecb27552a6e274742cd8fb9af5": {
+        "Key": "888d5fecb27552a6e274742cd8fb9af5",
+        "Kind": 1,
+        "Children": {
+            "239e334ea86d27bcba0b318dad811725": {
+                "Predicate": "tdg-declaration-generic",
+                "Child": {
+                    "Key": "239e334ea86d27bcba0b318dad811725",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-generic-index": "0",
+                        "tdg-generic-kind": "0",
+                        "tdg-generic-name": "T",
+                        "tdg-generic-subtype": "any",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-declaration-module": "(NodeRef)",
+            "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-srg-source": "(NodeRef)",
+            "tdg-type-name": "List"
+        }
+    },
     "91d8b3ecc5d735a2dbb5e2daddec070a": {
         "Key": "91d8b3ecc5d735a2dbb5e2daddec070a",
         "Kind": 1,
@@ -390,6 +418,45 @@
             "tdg-node-kind": "1|NodeType|tdg",
             "tdg-srg-source": "(NodeRef)",
             "tdg-type-name": "Float64"
+        }
+    },
+    "e123cca3a2c1b715e3292e13e9be8958": {
+        "Key": "e123cca3a2c1b715e3292e13e9be8958",
+        "Kind": 1,
+        "Children": {
+            "239e334ea86d27bcba0b318dad811725": {
+                "Predicate": "tdg-declaration-generic",
+                "Child": {
+                    "Key": "239e334ea86d27bcba0b318dad811725",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-generic-index": "0",
+                        "tdg-generic-kind": "0",
+                        "tdg-generic-name": "T",
+                        "tdg-generic-subtype": "any",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-declaration-module": "(NodeRef)",
+            "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-srg-source": "(NodeRef)",
+            "tdg-type-name": "Map"
+        }
+    },
+    "f8695555709beadc637a085f2f01277a": {
+        "Key": "f8695555709beadc637a085f2f01277a",
+        "Kind": 1,
+        "Children": {},
+        "Predicates": {
+            "tdg-declaration-module": "(NodeRef)",
+            "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-srg-source": "(NodeRef)",
+            "tdg-type-name": "String"
         }
     }
 }

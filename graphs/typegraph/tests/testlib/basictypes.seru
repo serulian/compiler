@@ -32,3 +32,12 @@ class Boolean {}
 
 @•typealias('float64')
 class Float64 {}
+
+@•typealias('string')
+class String {}
+
+@•typealias('list')
+class List<T> {}
+
+@•typealias('map')
+class Map<T> {}
