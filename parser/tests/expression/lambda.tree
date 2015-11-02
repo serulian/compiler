@@ -34,7 +34,7 @@ NodeTypeFile
                   identexpr-name = someOtherExpr
                   input-source = lambda expr test
                   start-rune = 56
-              lambda-expression-parameter =>
+              lambda-expression-inferred-parameter =>
                 NodeTypeIdentifierExpression
                   end-rune = 50
                   identexpr-name = a
@@ -50,7 +50,7 @@ NodeTypeFile
                   identexpr-name = someThirdExpr
                   input-source = lambda expr test
                   start-rune = 81
-              lambda-expression-parameter =>
+              lambda-expression-inferred-parameter =>
                 NodeTypeIdentifierExpression
                   end-rune = 72
                   identexpr-name = a

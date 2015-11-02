@@ -1404,7 +1404,7 @@ func (p *sourceParser) tryConsumeLambdaExpression() (AstNode, bool) {
 	// Optional: arguments.
 	if !p.isToken(tokenTypeRightParen) {
 		for {
-			lambdaNode.Connect(NodeLambdaExpressionParameter, p.consumeIdentifierExpression())
+			lambdaNode.Connect(NodeLambdaExpressionInferredParameter, p.consumeIdentifierExpression())
 			if _, ok := p.tryConsume(tokenTypeComma); !ok {
 				break
 			}

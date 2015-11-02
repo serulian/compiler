@@ -376,10 +376,11 @@ const (
 	//
 	// NodeTypeLambdaExpression
 	//
-	NodeLambdaExpressionReturnType = "lambda-expression-return-type"
-	NodeLambdaExpressionParameter  = "lambda-expression-parameter"
-	NodeLambdaExpressionBlock      = "lambda-expression-block"
-	NodeLambdaExpressionChildExpr  = "lambda-expression-child-expr"
+	NodeLambdaExpressionReturnType        = "lambda-expression-return-type"
+	NodeLambdaExpressionParameter         = "lambda-expression-parameter"
+	NodeLambdaExpressionInferredParameter = "lambda-expression-inferred-parameter"
+	NodeLambdaExpressionBlock             = "lambda-expression-block"
+	NodeLambdaExpressionChildExpr         = "lambda-expression-child-expr"
 
 	//
 	// Binary expressions.
