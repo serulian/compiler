@@ -16,6 +16,59 @@ import (
 
 var _ = fmt.Printf
 
+// scopeFunctionCallExpression scopes a function call expression in the SRG.
+func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+	// Scope the child expression.
+	childScope := sb.getScope(node.GetNode(parser.NodeFunctionCallExpressionChildExpr))
+	if !childScope.GetIsValid() {
+		return newScope().Invalid().GetScope()
+	}
+
+	// Ensure the child expression has type function.
+	childType := childScope.ResolvedTypeRef(sb.sg.tdg)
+	if !childType.HasReferredType(sb.sg.tdg.FunctionType()) {
+		sb.decorateWithError(node, "Cannot invoke function call on non-function. Found: %v", childType)
+		return newScope().Invalid().GetScope()
+	}
+
+	// Ensure that the parameters of the function call match those of the child type.
+	childParameters := childType.Parameters()
+
+	var index = -1
+	ait := node.StartQuery().
+		Out(parser.NodeFunctionCallArgument).
+		BuildNodeIterator()
+
+	var isValid = true
+	for ait.Next() {
+		index = index + 1
+
+		// Resolve the scope of the argument.
+		argumentScope := sb.getScope(ait.Node())
+		if !argumentScope.GetIsValid() {
+			isValid = false
+			continue
+		}
+
+		if index < len(childParameters) {
+			// Ensure the type of the argument matches the parameter.
+			argumentType := argumentScope.ResolvedTypeRef(sb.sg.tdg)
+			if serr := argumentType.CheckSubTypeOf(childParameters[index]); serr != nil {
+				sb.decorateWithError(ait.Node(), "Parameter #%v expects type %v: %v", index+1, childParameters[index], serr)
+				isValid = false
+			}
+		}
+	}
+
+	if index >= len(childParameters) {
+		sb.decorateWithError(node, "Function call expects %v arguments, found %v", len(childParameters), index+1)
+		return newScope().Invalid().GetScope()
+	}
+
+	// The function call returns the first generic of the function.
+	return newScope().IsValid(isValid).Resolving(childType.Generics()[0]).GetScope()
+}
+
 // scopeSliceExpression scopes a slice expression in the SRG.
 func (sb *scopeBuilder) scopeSliceExpression(node compilergraph.GraphNode) proto.ScopeInfo {
 	// Check if this is a slice vs an index.

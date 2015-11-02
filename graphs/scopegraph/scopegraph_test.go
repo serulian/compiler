@@ -430,6 +430,28 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"cast failure test", "castexpr", "failure",
 		[]expectedScopeEntry{},
 		"Cannot cast value of type 'ISomeInterface' to type 'SomeClass': Type 'SomeClass' does not define or export member 'DoSomething', which is required by type 'ISomeInterface'", ""},
+
+	/////////// Function call expression ///////////
+
+	scopegraphTest{"function call success test", "funccall", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"empty", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
+			expectedScopeEntry{"somefunc", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+			expectedScopeEntry{"anotherfunc", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"function call not function failure test", "funccall", "notfunc",
+		[]expectedScopeEntry{},
+		"Cannot invoke function call on non-function. Found: SomeClass", ""},
+
+	scopegraphTest{"function call invalid count failure test", "funccall", "invalidcount",
+		[]expectedScopeEntry{},
+		"Function call expects 0 arguments, found 1", ""},
+
+	scopegraphTest{"function call type mismatch failure test", "funccall", "typemismatch",
+		[]expectedScopeEntry{},
+		"Parameter #1 expects type Integer: 'Boolean' cannot be used in place of non-interface 'Integer'", ""},
 }
 
 func TestGraphs(t *testing.T) {

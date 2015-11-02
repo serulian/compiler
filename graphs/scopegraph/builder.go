@@ -149,6 +149,9 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 	case parser.NodeNullComparisonExpression:
 		return sb.scopeNullComparisonExpression
 
+	case parser.NodeFunctionCallExpression:
+		return sb.scopeFunctionCallExpression
+
 	// Literal expressions.
 	case parser.NodeBooleanLiteralExpression:
 		return sb.scopeBooleanLiteralExpression
