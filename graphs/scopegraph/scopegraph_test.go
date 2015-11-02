@@ -386,6 +386,19 @@ var scopeGraphTests = []scopegraphTest{
 			expectedScopeEntry{"mixedlist", expectedScope{true, proto.ScopeKind_VALUE, "List<any>", "void"}},
 		},
 		"", ""},
+
+	/////////// Map literal expression ///////////
+
+	scopegraphTest{"map literal success test", "mapliteral", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"emptymap", expectedScope{true, proto.ScopeKind_VALUE, "Map<any, any>", "void"}},
+			expectedScopeEntry{"intmap", expectedScope{true, proto.ScopeKind_VALUE, "Map<String, Integer>", "void"}},
+			expectedScopeEntry{"mixedmap", expectedScope{true, proto.ScopeKind_VALUE, "Map<String, any>", "void"}},
+
+			expectedScopeEntry{"intkeymap", expectedScope{true, proto.ScopeKind_VALUE, "Map<Integer, Integer>", "void"}},
+			expectedScopeEntry{"mixedkeymap", expectedScope{true, proto.ScopeKind_VALUE, "Map<any, Integer>", "void"}},
+		},
+		"", ""},
 }
 
 func TestGraphs(t *testing.T) {

@@ -1,0 +1,24 @@
+function<void> DoSomething() {
+	/* emptymap */{}
+	/* intmap */{
+		'a': 1,
+		'b': 2,
+	}
+
+	/* mixedmap */{
+		'a': 1,
+		'b': true,
+	}
+
+	var<int> a
+	var<bool> b
+
+	/* intkeymap */{
+		a: 1,
+	}
+
+	/* mixedkeymap */{
+		a: 1,
+		b: 2,
+	}
+}

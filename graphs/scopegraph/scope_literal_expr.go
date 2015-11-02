@@ -15,6 +15,46 @@ import (
 
 var _ = fmt.Printf
 
+// scopeMapLiteralExpression scopes a map literal expression in the SRG.
+func (sb *scopeBuilder) scopeMapLiteralExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+	var isValid = true
+	var keyType = sb.sg.tdg.VoidTypeReference()
+	var valueType = sb.sg.tdg.VoidTypeReference()
+
+	// Scope each of the entries and determine the map key and value types based on the entries found.
+	eit := node.StartQuery().
+		Out(parser.NodeMapExpressionChildEntry).
+		BuildNodeIterator()
+
+	for eit.Next() {
+		entryNode := eit.Node()
+
+		keyNode := entryNode.GetNode(parser.NodeMapExpressionEntryKey)
+		valueNode := entryNode.GetNode(parser.NodeMapExpressionEntryValue)
+
+		keyScope := sb.getScope(keyNode)
+		valueScope := sb.getScope(valueNode)
+
+		if !keyScope.GetIsValid() || !valueScope.GetIsValid() {
+			isValid = false
+			continue
+		}
+
+		keyType = keyType.Intersect(keyScope.ResolvedTypeRef(sb.sg.tdg))
+		valueType = valueType.Intersect(valueScope.ResolvedTypeRef(sb.sg.tdg))
+	}
+
+	if keyType.IsVoid() {
+		keyType = sb.sg.tdg.AnyTypeReference()
+	}
+
+	if valueType.IsVoid() {
+		valueType = sb.sg.tdg.AnyTypeReference()
+	}
+
+	return newScope().IsValid(isValid).Resolving(sb.sg.tdg.MapTypeReference(keyType, valueType)).GetScope()
+}
+
 // scopeListLiteralExpression scopes a list literal expression in the SRG.
 func (sb *scopeBuilder) scopeListLiteralExpression(node compilergraph.GraphNode) proto.ScopeInfo {
 	var isValid = true

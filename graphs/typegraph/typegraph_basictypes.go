@@ -41,9 +41,9 @@ func (t *TypeGraph) ListTypeReference(generic TypeReference) TypeReference {
 	return t.NewTypeReference(t.ListType(), generic)
 }
 
-// MapTypeReference returns a new reference to the map type, with the given generic.
-func (t *TypeGraph) MapTypeReference(generic TypeReference) TypeReference {
-	return t.NewTypeReference(t.MapType(), generic)
+// MapTypeReference returns a new reference to the map type, with the given generics.
+func (t *TypeGraph) MapTypeReference(key TypeReference, value TypeReference) TypeReference {
+	return t.NewTypeReference(t.MapType(), key, value)
 }
 
 // ReleasableTypeReference returns a reference to the done type.

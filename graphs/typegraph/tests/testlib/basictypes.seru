@@ -40,4 +40,4 @@ class String {}
 class List<T> {}
 
 @•typealias('map')
-class Map<T> {}
+class Map<T, Q> {}
