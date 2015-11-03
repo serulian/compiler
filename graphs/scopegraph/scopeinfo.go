@@ -91,6 +91,13 @@ func (sib *scopeInfoBuilder) IsTerminatingStatement() *scopeInfoBuilder {
 	return sib
 }
 
+// ForNamedScopeUnderType points the scope to the referred named scope, with its value
+// type being transformed under the given parent type.
+func (sib *scopeInfoBuilder) ForNamedScopeUnderType(info namedScopeInfo, parentType typegraph.TypeReference) *scopeInfoBuilder {
+	transformedValueType := info.ValueType().TransformUnder(parentType)
+	return sib.ForNamedScope(info).Resolving(transformedValueType)
+}
+
 // ForNamedScope points the scope to the referred named scope.
 func (sib *scopeInfoBuilder) ForNamedScope(info namedScopeInfo) *scopeInfoBuilder {
 	if info.IsGeneric() {

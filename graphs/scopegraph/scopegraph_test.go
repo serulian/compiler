@@ -464,6 +464,9 @@ var scopeGraphTests = []scopegraphTest{
 			expectedScopeEntry{"modfunc", expectedScope{true, proto.ScopeKind_VALUE, "Function<void>", "void"}},
 			expectedScopeEntry{"generictype", expectedScope{true, proto.ScopeKind_GENERIC, "void", "void"}},
 			expectedScopeEntry{"prop", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+
+			expectedScopeEntry{"genmembool", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+			expectedScopeEntry{"genmemint", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
 		},
 		"", ""},
 

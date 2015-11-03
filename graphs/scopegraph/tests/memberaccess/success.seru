@@ -13,8 +13,14 @@ class SomeClass {
 	}
 }
 
+class LocalClass<T> {
+	var<T> SomeVar
+}
+
 function<void> DoSomething() {
 	var<SomeClass> sc
+	var<LocalClass<bool>> gcbool
+	var<LocalClass<int>> gcint
 	
 	/* varmember */(sc.someInt)
 	/* constructor */(SomeClass.Build)
@@ -23,4 +29,6 @@ function<void> DoSomething() {
 	/* modint */(anothermodule.SomeInt)
 	/* modfunc */(anothermodule.SomeFunction)
 	/* generictype */(anothermodule.GenericType)
+	/* genmembool */(gcbool.SomeVar)
+	/* genmemint */(gcint.SomeVar)
 }

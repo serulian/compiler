@@ -69,7 +69,7 @@ func (sb *scopeBuilder) scopeMemberAccessExpression(node compilergraph.GraphNode
 		}
 
 		memberScope := sb.getNamedScopeForMember(typeMember)
-		return newScope().ForNamedScope(memberScope).GetScope()
+		return newScope().ForNamedScopeUnderType(memberScope, childType).GetScope()
 
 	case proto.ScopeKind_GENERIC:
 		namedScope, _ := sb.getNamedScopeForScope(childScope)
