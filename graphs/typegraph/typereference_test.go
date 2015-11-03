@@ -535,7 +535,7 @@ func TestResolveMembers(t *testing.T) {
 	for _, test := range tests {
 		typeref := result.Graph.NewTypeReference(test.parentType.GraphNode)
 		memberNode, memberFound := typeref.ResolveMember(test.memberName,
-			compilercommon.InputSource(fmt.Sprintf("tests/typeresolve/%s.seru", test.modulePath)), MemberResolutioNonOperator)
+			compilercommon.InputSource(fmt.Sprintf("tests/typeresolve/%s.seru", test.modulePath)), MemberResolutionInstance)
 
 		if !assert.Equal(t, test.expectedFound, memberFound, "Member found mismatch on %s", test.name) {
 			continue
