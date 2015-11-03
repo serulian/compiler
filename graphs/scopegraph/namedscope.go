@@ -240,6 +240,11 @@ func (nsi *namedScopeInfo) IsAssignable() bool {
 	}
 }
 
+// IsType returns whether the named scope refers to a type.
+func (nsi *namedScopeInfo) IsType() bool {
+	return nsi.srgInfo.ScopeKind() == srg.NamedScopeType
+}
+
 // IsStatic returns whether the named scope is static, referring to a non-type value.
 func (nsi *namedScopeInfo) IsStatic() bool {
 	switch nsi.srgInfo.ScopeKind() {

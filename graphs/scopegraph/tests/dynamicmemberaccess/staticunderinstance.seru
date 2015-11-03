@@ -1,0 +1,11 @@
+class SomeClass {
+	constructor Build(someparam int) {
+		var<SomeClass> sc
+		return sc
+	}
+}
+
+function<void> DoSomething() {
+	var<SomeClass> sc
+	sc->Build
+}

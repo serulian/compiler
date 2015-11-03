@@ -10,6 +10,7 @@ import (
 
 type Warning interface {
 	Warning() string // Returns the warning message.
+	String() string
 }
 
 // SourceWarning represents an warning produced by a source file at a specific location.
@@ -19,6 +20,10 @@ type SourceWarning struct {
 }
 
 func (sw *SourceWarning) Warning() string {
+	return sw.message
+}
+
+func (sw *SourceWarning) String() string {
 	return sw.message
 }
 

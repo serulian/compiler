@@ -82,6 +82,12 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 	case parser.NodeMemberAccessExpression:
 		return sb.scopeMemberAccessExpression
 
+	case parser.NodeNullableMemberAccessExpression:
+		return sb.scopeNullableMemberAccessExpression
+
+	case parser.NodeDynamicMemberAccessExpression:
+		return sb.scopeDynamicMemberAccessExpression
+
 	// Operator expressions.
 	case parser.NodeDefineRangeExpression:
 		return sb.scopeDefineRangeExpression

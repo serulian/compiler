@@ -529,6 +529,7 @@ const (
 	MemberResolutionOperator MemberResolutionKind = iota
 	MemberResolutionStatic
 	MemberResolutionInstance
+	MemberResolutionInstanceOrStatic
 )
 
 // ResolveMember looks for an member with the given name under the referred type and returns it (if any).

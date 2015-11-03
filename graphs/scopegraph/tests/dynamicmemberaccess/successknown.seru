@@ -1,0 +1,8 @@
+class SomeClass {
+	var<int> someInt
+}
+
+function<void> DoSomething() {
+	var<SomeClass> sc
+	/* dynaccess */(sc->someInt)
+}

@@ -1,0 +1,10 @@
+class SomeClass {
+	constructor Build(someparam int) {
+		var<SomeClass> sc
+		return sc
+	}
+}
+
+function<void> DoSomething() {
+	SomeClass?.Build
+}

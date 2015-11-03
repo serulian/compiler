@@ -489,6 +489,55 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"member access generic func failure test", "memberaccess", "genericfunc",
 		[]expectedScopeEntry{},
 		"Cannot attempt member access of someMember under module member GenericFunc, as it is generic without specification", ""},
+
+	/////////// Nullable member access expression ///////////
+
+	scopegraphTest{"nullable member access success test", "nullablememberaccess", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"sci", expectedScope{true, proto.ScopeKind_VALUE, "Integer?", "void"}},
+			expectedScopeEntry{"scb", expectedScope{true, proto.ScopeKind_VALUE, "Boolean?", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"nullable member access non-nullable failure test", "nullablememberaccess", "nonnullable",
+		[]expectedScopeEntry{},
+		"Cannot access name SomeInt under non-nullable type 'SomeClass'. Please use the . operator to ensure type safety.", ""},
+
+	scopegraphTest{"nullable member access static failure test", "nullablememberaccess", "static",
+		[]expectedScopeEntry{},
+		"Cannot attempt nullable member access of Build under type SomeClass, as it is a static type", ""},
+
+	scopegraphTest{"nullable member access generic failure test", "nullablememberaccess", "generic",
+		[]expectedScopeEntry{},
+		"Cannot attempt nullable member access of something under type SomeClass, as it is generic without specification", ""},
+
+	/////////// Dynamic member access expression ///////////
+
+	scopegraphTest{"dynamic member access success unknown test", "dynamicmemberaccess", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"dynaccess", expectedScope{true, proto.ScopeKind_VALUE, "any", "void"}},
+		},
+		"", "Member someValue is unknown under known type Integer. This call will return null."},
+
+	scopegraphTest{"dynamic member access success known test", "dynamicmemberaccess", "successknown",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"dynaccess", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+		},
+		"", "Dynamic access of known member someInt under type SomeClass. The . operator is suggested."},
+
+	scopegraphTest{"dynamic member access success nullable known test", "dynamicmemberaccess", "successnullableknown",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"dynaccess", expectedScope{true, proto.ScopeKind_VALUE, "Integer?", "void"}},
+		},
+		"", "Dynamic access of known member someInt under type SomeClass?. The ?. operator is suggested."},
+
+	scopegraphTest{"dynamic member access static under non-static failure test", "dynamicmemberaccess", "staticunderinstance",
+		[]expectedScopeEntry{},
+		"Member Build is static but accessed under an instance value", ""},
+
+	scopegraphTest{"dynamic member access non-static under static failure test", "dynamicmemberaccess", "instanceunderstatic",
+		[]expectedScopeEntry{},
+		"Member SomeInt is non-static but accessed under a static value", ""},
 }
 
 func TestGraphs(t *testing.T) {
@@ -526,7 +575,7 @@ func TestGraphs(t *testing.T) {
 			assert.Equal(t, test.expectedError, result.Errors[0].Error(), "Error mismatch on test %v", test.name)
 			continue
 		} else {
-			if !assert.True(t, result.Status, "Expected success in scoping on test: %v\n%v", test.name, result.Errors) {
+			if !assert.True(t, result.Status, "Expected success in scoping on test: %v\n%v\n%v", test.name, result.Errors, result.Warnings) {
 				continue
 			}
 		}
