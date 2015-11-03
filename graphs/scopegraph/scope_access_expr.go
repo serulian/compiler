@@ -7,8 +7,10 @@ package scopegraph
 import (
 	"fmt"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
+	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/parser"
 )
 
@@ -38,4 +40,55 @@ func (sb *scopeBuilder) scopeCastExpression(node compilergraph.GraphNode) proto.
 	}
 
 	return newScope().Valid().Resolving(castType).GetScope()
+}
+
+// scopeMemberAccessExpression scopes a memebr access expression in the SRG.
+func (sb *scopeBuilder) scopeMemberAccessExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+	// Get the scope of the child expression.
+	childScope := sb.getScope(node.GetNode(parser.NodeMemberAccessChildExpr))
+	if !childScope.GetIsValid() {
+		return newScope().Invalid().GetScope()
+	}
+
+	memberName := node.Get(parser.NodeMemberAccessIdentifier)
+	module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
+
+	switch childScope.GetKind() {
+
+	case proto.ScopeKind_VALUE:
+		childType := childScope.ResolvedTypeRef(sb.sg.tdg)
+		if childType.IsNullable() {
+			sb.decorateWithError(node, "Cannot access name %v under nullable type '%v'. Please use the ?. operator to ensure type safety.", memberName, childType)
+			return newScope().Invalid().GetScope()
+		}
+
+		typeMember, found := childType.ResolveMember(memberName, module, typegraph.MemberResolutionInstance)
+		if !found {
+			sb.decorateWithError(node, "Could not find instance name %v under type %v", memberName, childType)
+			return newScope().Invalid().GetScope()
+		}
+
+		memberScope := sb.getNamedScopeForMember(typeMember)
+		return newScope().ForNamedScope(memberScope).GetScope()
+
+	case proto.ScopeKind_GENERIC:
+		namedScope, _ := sb.getNamedScopeForScope(childScope)
+		sb.decorateWithError(node, "Cannot attempt member access of %v under %v %v, as it is generic without specification", memberName, namedScope.Title(), namedScope.Name())
+		return newScope().Invalid().GetScope()
+
+	case proto.ScopeKind_STATIC:
+		namedScope, _ := sb.getNamedScopeForScope(childScope)
+		memberScope, found := namedScope.ResolveStaticMember(memberName, module)
+		if !found {
+			sb.decorateWithError(node, "Could not find static name %v under %v %v", memberName, namedScope.Title(), namedScope.Name())
+			return newScope().Invalid().GetScope()
+		}
+
+		return newScope().ForNamedScope(memberScope).GetScope()
+
+	default:
+		panic("Unknown scope kind")
+	}
+
+	return newScope().Invalid().GetScope()
 }

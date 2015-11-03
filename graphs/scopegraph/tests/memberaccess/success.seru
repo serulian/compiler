@@ -1,0 +1,26 @@
+import anothermodule
+
+class SomeClass {
+	var<int> someInt
+
+	constructor Build(someparam int) {
+		var<SomeClass> sc
+		return sc
+	}
+
+	property<int> SomeProp {
+	 	get { return 2 }
+	}
+}
+
+function<void> DoSomething() {
+	var<SomeClass> sc
+	
+	/* varmember */(sc.someInt)
+	/* constructor */(SomeClass.Build)
+	/* prop */(sc.SomeProp)
+	/* modtype */(anothermodule.AnotherClass)
+	/* modint */(anothermodule.SomeInt)
+	/* modfunc */(anothermodule.SomeFunction)
+	/* generictype */(anothermodule.GenericType)
+}

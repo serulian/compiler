@@ -1,0 +1,6 @@
+var<int> SomeInt
+function<void> SomeFunction() {
+}
+
+class AnotherClass {}
+class GenericType<T> {}

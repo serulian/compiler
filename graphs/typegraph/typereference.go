@@ -527,7 +527,8 @@ type MemberResolutionKind int
 
 const (
 	MemberResolutionOperator MemberResolutionKind = iota
-	MemberResolutioNonOperator
+	MemberResolutionStatic
+	MemberResolutionInstance
 )
 
 // ResolveMember looks for an member with the given name under the referred type and returns it (if any).
@@ -554,16 +555,24 @@ func (tr TypeReference) ResolveMember(memberName string, module compilercommon.I
 		return TGMember{}, false
 	}
 
+	member := TGMember{memberNode, tr.tdg}
+
 	// If the member is exported, then always return it. Otherwise, only return it if the asking module
 	// is the same as the declaring module.
-	if _, exported := memberNode.TryGet(NodePredicateMemberExported); !exported {
+	if !member.IsExported() {
 		srgSourceNode := tr.tdg.srg.GetNode(compilergraph.GraphNodeId(memberNode.Get(NodePredicateSource)))
 		if srgSourceNode.Get(parser.NodePredicateSource) != string(module) {
 			return TGMember{}, false
 		}
 	}
 
-	return TGMember{memberNode, tr.tdg}, true
+	// Check that the member being static matches the resolution option.
+	if (kind == MemberResolutionInstance && member.IsStatic()) ||
+		(kind == MemberResolutionStatic && !member.IsStatic()) {
+		return TGMember{}, false
+	}
+
+	return member, true
 }
 
 // WithGeneric returns a copy of this type reference with the given generic added.

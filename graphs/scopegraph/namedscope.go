@@ -7,6 +7,7 @@ package scopegraph
 import (
 	"fmt"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/srg"
@@ -41,6 +42,12 @@ func (sb *scopeBuilder) getNamedScopeForScope(scope *proto.ScopeInfo) (namedScop
 
 	referencedNode := sb.sg.srg.GetNamedScope(compilergraph.GraphNodeId(*scope.NamedReferenceNode))
 	return namedScopeInfo{referencedNode, sb}, true
+}
+
+// getNamedScopeForMember returns namedScopeInfo for the given type member.
+func (sb *scopeBuilder) getNamedScopeForMember(member typegraph.TGMember) namedScopeInfo {
+	referencedNode := sb.sg.srg.GetNamedScope(member.SRGMemberNode().NodeId)
+	return namedScopeInfo{referencedNode, sb}
 }
 
 // Title returns a human-readable title for the named scope.
@@ -96,6 +103,38 @@ func (nsi *namedScopeInfo) Name() string {
 	}
 }
 
+// ResolveStaticMember attempts to resolve a member (child) with the given name under this named scope, which
+// must be Static.
+func (nsi *namedScopeInfo) ResolveStaticMember(name string, module compilercommon.InputSource) (namedScopeInfo, bool) {
+	if !nsi.IsStatic() {
+		return namedScopeInfo{}, false
+	}
+
+	switch nsi.srgInfo.ScopeKind() {
+	case srg.NamedScopeType:
+		parentType := nsi.TypeInfo().GetTypeReference()
+		typeMember, found := parentType.ResolveMember(name, module, typegraph.MemberResolutionStatic)
+		if !found {
+			return namedScopeInfo{}, false
+		}
+
+		return nsi.sb.getNamedScopeForMember(typeMember), true
+
+	case srg.NamedScopeImport:
+		srgNamedScope, found := nsi.srgInfo.ResolveNameUnderScope(name)
+		if !found {
+			return namedScopeInfo{}, false
+		}
+
+		return namedScopeInfo{srgNamedScope, nsi.sb}, true
+
+	default:
+		panic("Unknown static scope kind")
+	}
+
+	return namedScopeInfo{}, false
+}
+
 // TypeInfo returns the TypeGraph type info for this named scope. Will panic
 // for non-types.
 func (nsi *namedScopeInfo) TypeInfo() typegraph.TGTypeDecl {
@@ -129,7 +168,7 @@ func (nsi *namedScopeInfo) MemberInfo() typegraph.TGMember {
 // ValueType returns the value type of the named scope. For scopes without types,
 // this method will return void.
 func (nsi *namedScopeInfo) ValueType() typegraph.TypeReference {
-	if nsi.IsStatic() {
+	if nsi.IsStatic() || nsi.IsGeneric() {
 		return nsi.sb.sg.tdg.VoidTypeReference()
 	}
 

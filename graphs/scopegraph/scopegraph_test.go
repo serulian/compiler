@@ -350,7 +350,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"identifier expr generic member test", "identexpr", "genericmember",
 		[]expectedScopeEntry{
-			expectedScopeEntry{"memberref", expectedScope{true, proto.ScopeKind_GENERIC, "Function<void>", "void"}},
+			expectedScopeEntry{"memberref", expectedScope{true, proto.ScopeKind_GENERIC, "void", "void"}},
 		},
 		"", ""},
 
@@ -452,6 +452,40 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"function call type mismatch failure test", "funccall", "typemismatch",
 		[]expectedScopeEntry{},
 		"Parameter #1 expects type Integer: 'Boolean' cannot be used in place of non-interface 'Integer'", ""},
+
+	/////////// Member access expression ///////////
+
+	scopegraphTest{"member access success test", "memberaccess", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"varmember", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+			expectedScopeEntry{"constructor", expectedScope{true, proto.ScopeKind_VALUE, "Function<SomeClass>(Integer)", "void"}},
+			expectedScopeEntry{"modtype", expectedScope{true, proto.ScopeKind_STATIC, "void", "void"}},
+			expectedScopeEntry{"modint", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+			expectedScopeEntry{"modfunc", expectedScope{true, proto.ScopeKind_VALUE, "Function<void>", "void"}},
+			expectedScopeEntry{"generictype", expectedScope{true, proto.ScopeKind_GENERIC, "void", "void"}},
+			expectedScopeEntry{"prop", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"member access static under instance failure test", "memberaccess", "staticunderinstance",
+		[]expectedScopeEntry{},
+		"Could not find instance name Build under type SomeClass", ""},
+
+	scopegraphTest{"member access instance under static failure test", "memberaccess", "instanceunderstatic",
+		[]expectedScopeEntry{},
+		"Could not find static name SomeInt under type SomeClass", ""},
+
+	scopegraphTest{"member access nullable failure test", "memberaccess", "nullable",
+		[]expectedScopeEntry{},
+		"Cannot access name someInt under nullable type 'SomeClass?'. Please use the ?. operator to ensure type safety.", ""},
+
+	scopegraphTest{"member access generic failure test", "memberaccess", "generic",
+		[]expectedScopeEntry{},
+		"Cannot attempt member access of Build under type SomeClass, as it is generic without specification", ""},
+
+	scopegraphTest{"member access generic func failure test", "memberaccess", "genericfunc",
+		[]expectedScopeEntry{},
+		"Cannot attempt member access of someMember under module member GenericFunc, as it is generic without specification", ""},
 }
 
 func TestGraphs(t *testing.T) {

@@ -34,10 +34,22 @@ func (tn TGMember) Node() compilergraph.GraphNode {
 	return tn.GraphNode
 }
 
+// IsExported returns whether the member is exported.
+func (tn TGMember) IsExported() bool {
+	_, isExported := tn.GraphNode.TryGet(NodePredicateMemberExported)
+	return isExported
+}
+
 // IsReadOnly returns whether the member is read-only.
 func (tn TGMember) IsReadOnly() bool {
 	_, isReadOnly := tn.GraphNode.TryGet(NodePredicateMemberReadOnly)
 	return isReadOnly
+}
+
+// IsStatic returns whether the member is static.
+func (tn TGMember) IsStatic() bool {
+	_, isStatic := tn.GraphNode.TryGet(NodePredicateMemberStatic)
+	return isStatic
 }
 
 // MemberType returns the type for this member.
@@ -67,4 +79,9 @@ func (tn TGMember) ReturnType() (TypeReference, bool) {
 // ParameterTypes returns the types of the parameters defined on this member, if any.
 func (tn TGMember) ParameterTypes() []TypeReference {
 	return tn.MemberType().Parameters()
+}
+
+// SRGMemberNode returns the associated SRG member node for this type graph member.
+func (tn TGMember) SRGMemberNode() compilergraph.GraphNode {
+	return tn.tdg.srg.GetNode(compilergraph.GraphNodeId(tn.Get(NodePredicateSource)))
 }

@@ -57,7 +57,16 @@ func (ns *SRGNamedScope) ScopeKind() NamedScopeKind {
 	case parser.NodeTypeVariable:
 		return NamedScopeMember
 
+	case parser.NodeTypeField:
+		return NamedScopeMember
+
 	case parser.NodeTypeFunction:
+		return NamedScopeMember
+
+	case parser.NodeTypeConstructor:
+		return NamedScopeMember
+
+	case parser.NodeTypeProperty:
 		return NamedScopeMember
 
 	/* Parameter */
@@ -90,8 +99,17 @@ func (ns *SRGNamedScope) Name() string {
 	case parser.NodeTypeImport:
 		return ns.Get(parser.NodeImportPredicatePackageName)
 
+	case parser.NodeTypeProperty:
+		fallthrough
+
+	case parser.NodeTypeConstructor:
+		fallthrough
+
 	case parser.NodeTypeVariable:
-		return ns.Get(parser.NodePredicateTypeMemberName)
+		fallthrough
+
+	case parser.NodeTypeField:
+		fallthrough
 
 	case parser.NodeTypeFunction:
 		return ns.Get(parser.NodePredicateTypeMemberName)
@@ -108,6 +126,21 @@ func (ns *SRGNamedScope) Name() string {
 	default:
 		panic(fmt.Sprintf("Unknown scoped name %v", ns.Kind))
 	}
+}
+
+// ResolveNameUnderScope attempts to resolve the given name under this scope. Only applies to imports.
+func (ns *SRGNamedScope) ResolveNameUnderScope(name string) (SRGNamedScope, bool) {
+	if ns.Kind != parser.NodeTypeImport {
+		return SRGNamedScope{}, false
+	}
+
+	packageInfo := ns.srg.getPackageForImport(ns.GraphNode)
+	moduleOrType, found := packageInfo.FindTypeOrMemberByName(name, ModuleResolveExportedOnly)
+	if !found {
+		return SRGNamedScope{}, false
+	}
+
+	return SRGNamedScope{moduleOrType.GraphNode, ns.srg}, true
 }
 
 // FindNameInScope finds the given name accessible from the scope under which the given node exists, if any.

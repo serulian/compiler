@@ -73,6 +73,21 @@ func (tn TGTypeDecl) Generics() []TGGeneric {
 	return generics
 }
 
+// GetTypeReference returns a new type reference to this type.
+func (tn TGTypeDecl) GetTypeReference() TypeReference {
+	return tn.tdg.NewInstanceTypeReference(tn.GraphNode)
+}
+
+// GetStaticMember returns the static member with the given name under this type, if any.
+func (tn TGTypeDecl) GetStaticMember(name string) (TGMember, bool) {
+	member, found := tn.GetMember(name)
+	if !found || !member.IsStatic() {
+		return TGMember{}, false
+	}
+
+	return member, true
+}
+
 // GetMember returns the member with the given name under this type, if any.
 func (tn TGTypeDecl) GetMember(name string) (TGMember, bool) {
 	node, found := tn.GraphNode.
