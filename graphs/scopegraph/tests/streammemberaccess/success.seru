@@ -1,0 +1,11 @@
+class SomeClass<T> {
+	var<T> someThing
+}
+
+function<void> DoSomething() {
+	var<SomeClass<int>*> intstream
+	var<SomeClass<bool>*> boolstream
+
+	/* intstream */(intstream*.someThing)
+	/* boolstream */(boolstream*.someThing)
+}

@@ -586,6 +586,11 @@ func (tr TypeReference) WithParameter(parameter TypeReference) TypeReference {
 	return tr.withSubReference(subReferenceParameter, parameter)
 }
 
+// AsValueOfStream returns a type reference to a Stream, with this type reference as the value.
+func (tr TypeReference) AsValueOfStream() TypeReference {
+	return tr.tdg.NewTypeReference(tr.tdg.StreamType(), tr)
+}
+
 // AsNullable returns a copy of this type reference that is nullable.
 func (tr TypeReference) AsNullable() TypeReference {
 	return tr.withFlag(trhSlotFlagNullable, nullableFlagTrue)

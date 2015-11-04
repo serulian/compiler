@@ -91,11 +91,13 @@ func (sib *scopeInfoBuilder) IsTerminatingStatement() *scopeInfoBuilder {
 	return sib
 }
 
-// ForNamedScopeUnderNullableType points the scope to the referred named scope, with its value
-// type being transformed under the given parent type and make nullable.
-func (sib *scopeInfoBuilder) ForNamedScopeUnderNullableType(info namedScopeInfo, parentType typegraph.TypeReference) *scopeInfoBuilder {
-	transformedValueType := info.ValueType().TransformUnder(parentType).AsNullable()
-	return sib.ForNamedScope(info).Resolving(transformedValueType)
+type typeModifier func(typeRef typegraph.TypeReference) typegraph.TypeReference
+
+// ForNamedScopeUnderModifiedType points the scope to the referred named scope, with its value
+// type being transformed under the given parent type and then transformed by the modifier.
+func (sib *scopeInfoBuilder) ForNamedScopeUnderModifiedType(info namedScopeInfo, parentType typegraph.TypeReference, modifier typeModifier) *scopeInfoBuilder {
+	transformedValueType := info.ValueType().TransformUnder(parentType)
+	return sib.ForNamedScope(info).Resolving(modifier(transformedValueType))
 }
 
 // ForNamedScopeUnderType points the scope to the referred named scope, with its value

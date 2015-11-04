@@ -538,6 +538,27 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"dynamic member access non-static under static failure test", "dynamicmemberaccess", "instanceunderstatic",
 		[]expectedScopeEntry{},
 		"Member SomeInt is non-static but accessed under a static value", ""},
+
+	/////////// Stream member access expression ///////////
+
+	scopegraphTest{"stream member access success test", "streammemberaccess", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"intstream", expectedScope{true, proto.ScopeKind_VALUE, "Stream<Integer>", "void"}},
+			expectedScopeEntry{"boolstream", expectedScope{true, proto.ScopeKind_VALUE, "Stream<Boolean>", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"stream member access non-stream failure test", "streammemberaccess", "nonstream",
+		[]expectedScopeEntry{},
+		"Cannot attempt stream access of name something under non-stream type 'Integer': Type Integer cannot be used in place of type Stream as it does not implement member CurrentValue", ""},
+
+	scopegraphTest{"stream member access generic failure test", "streammemberaccess", "generic",
+		[]expectedScopeEntry{},
+		"Cannot attempt stream member access of something under type SomeClass, as it is generic without specification", ""},
+
+	scopegraphTest{"stream member access static failure test", "streammemberaccess", "static",
+		[]expectedScopeEntry{},
+		"Cannot attempt stream member access of something under type SomeClass, as it is a static type", ""},
 }
 
 func TestGraphs(t *testing.T) {

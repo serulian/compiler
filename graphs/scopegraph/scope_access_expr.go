@@ -16,6 +16,14 @@ import (
 
 var _ = fmt.Printf
 
+var makeNullable = func(tr typegraph.TypeReference) typegraph.TypeReference {
+	return tr.AsNullable()
+}
+
+var makeStream = func(tr typegraph.TypeReference) typegraph.TypeReference {
+	return tr.AsValueOfStream()
+}
+
 // scopeCastExpression scopes a cast expression in the SRG.
 func (sb *scopeBuilder) scopeCastExpression(node compilergraph.GraphNode) proto.ScopeInfo {
 	// Scope the child expression.
@@ -40,6 +48,55 @@ func (sb *scopeBuilder) scopeCastExpression(node compilergraph.GraphNode) proto.
 	}
 
 	return newScope().Valid().Resolving(castType).GetScope()
+}
+
+// scopeStreamMemberAccessExpression scopes a stream member access expression in the SRG.
+func (sb *scopeBuilder) scopeStreamMemberAccessExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+	// Get the scope of the child expression.
+	childScope := sb.getScope(node.GetNode(parser.NodeMemberAccessChildExpr))
+	if !childScope.GetIsValid() {
+		return newScope().Invalid().GetScope()
+	}
+
+	memberName := node.Get(parser.NodeMemberAccessIdentifier)
+	module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
+
+	switch childScope.GetKind() {
+	case proto.ScopeKind_VALUE:
+		childType := childScope.ResolvedTypeRef(sb.sg.tdg)
+
+		// Ensure the child type is a stream.
+		generics, serr := childType.CheckConcreteSubtypeOf(sb.sg.tdg.StreamType())
+		if serr != nil {
+			sb.decorateWithError(node, "Cannot attempt stream access of name %v under non-stream type '%v': %v", memberName, childType, serr)
+			return newScope().Invalid().GetScope()
+		}
+
+		valueType := generics[0]
+		typeMember, found := valueType.ResolveMember(memberName, module, typegraph.MemberResolutionInstance)
+		if !found {
+			sb.decorateWithError(node, "Could not find instance name %v under stream value type %v", memberName, valueType)
+			return newScope().Invalid().GetScope()
+		}
+
+		memberScope := sb.getNamedScopeForMember(typeMember)
+		return newScope().ForNamedScopeUnderModifiedType(memberScope, valueType, makeStream).GetScope()
+
+	case proto.ScopeKind_GENERIC:
+		namedScope, _ := sb.getNamedScopeForScope(childScope)
+		sb.decorateWithError(node, "Cannot attempt stream member access of %v under %v %v, as it is generic without specification", memberName, namedScope.Title(), namedScope.Name())
+		return newScope().Invalid().GetScope()
+
+	case proto.ScopeKind_STATIC:
+		namedScope, _ := sb.getNamedScopeForScope(childScope)
+		sb.decorateWithError(node, "Cannot attempt stream member access of %v under %v %v, as it is a static type", memberName, namedScope.Title(), namedScope.Name())
+		return newScope().Invalid().GetScope()
+
+	default:
+		panic("Unknown scope kind")
+	}
+
+	return newScope().Invalid().GetScope()
 }
 
 // scopeDynamicMemberAccessExpression scopes a dynamic member access expression in the SRG.
@@ -88,7 +145,7 @@ func (sb *scopeBuilder) scopeDynamicMemberAccessExpression(node compilergraph.Gr
 
 		if childType.IsNullable() {
 			sb.decorateWithWarning(node, "Dynamic access of known member %v under type %v. The ?. operator is suggested.", typeMember.Name(), childType)
-			return newScope().ForNamedScopeUnderNullableType(memberScope, lookupType).GetScope()
+			return newScope().ForNamedScopeUnderModifiedType(memberScope, lookupType, makeNullable).GetScope()
 		} else {
 			sb.decorateWithWarning(node, "Dynamic access of known member %v under type %v. The . operator is suggested.", typeMember.Name(), childType)
 			return newScope().ForNamedScopeUnderType(memberScope, lookupType).GetScope()
@@ -149,7 +206,7 @@ func (sb *scopeBuilder) scopeNullableMemberAccessExpression(node compilergraph.G
 		}
 
 		memberScope := sb.getNamedScopeForMember(typeMember)
-		return newScope().ForNamedScopeUnderNullableType(memberScope, childNonNullableType).GetScope()
+		return newScope().ForNamedScopeUnderModifiedType(memberScope, childNonNullableType, makeNullable).GetScope()
 
 	case proto.ScopeKind_GENERIC:
 		namedScope, _ := sb.getNamedScopeForScope(childScope)
