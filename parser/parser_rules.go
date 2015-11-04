@@ -573,18 +573,20 @@ func (p *sourceParser) consumeConstructor(option typeMemberOption) AstNode {
 		return constructorNode
 	}
 
-	// identifier TypeReference (, another)
-	for {
-		constructorNode.Connect(NodePredicateTypeMemberParameter, p.consumeParameter())
+	if _, ok := p.tryConsume(tokenTypeRightParen); !ok {
+		// identifier TypeReference (, another)
+		for {
+			constructorNode.Connect(NodePredicateTypeMemberParameter, p.consumeParameter())
 
-		if _, ok := p.tryConsume(tokenTypeComma); !ok {
-			break
+			if _, ok := p.tryConsume(tokenTypeComma); !ok {
+				break
+			}
 		}
-	}
 
-	// )
-	if _, ok := p.consume(tokenTypeRightParen); !ok {
-		return constructorNode
+		// )
+		if _, ok := p.consume(tokenTypeRightParen); !ok {
+			return constructorNode
+		}
 	}
 
 	// Constructors always have a body.

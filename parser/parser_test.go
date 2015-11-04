@@ -130,6 +130,7 @@ var parserTests = []parserTest{
 	{"basic class operator test", "class/basic_operator"},
 	{"basic class field test", "class/basic_field"},
 	{"basic class operator with return type test", "class/operator_returns"},
+	{"class constructor no params stest", "class/constructor_noparams"},
 
 	// Interface member success tests.
 	{"basic interface function test", "interface/basic_function"},
