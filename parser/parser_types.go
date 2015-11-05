@@ -132,6 +132,8 @@ const (
 	NodeStringLiteralExpression         // 'hello'
 	NodeBooleanLiteralExpression        // true
 	NodeTemplateStringLiteralExpression // `foobar`
+	NodeThisLiteralExpression           // this
+	NodeNullLiteralExpression           // null
 
 	NodeListExpression     // [1, 2, 3]
 	NodeMapExpression      // {a: 1, b: 2}

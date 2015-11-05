@@ -1,16 +1,16 @@
 NodeTypeFile
-  end-rune = 483
+  end-rune = 495
   input-source = all expr test
   start-rune = 0
   child-node =>
     NodeTypeFunction
-      end-rune = 483
+      end-rune = 495
       input-source = all expr test
       named = SomeFunction
       start-rune = 0
       definition-body =>
         NodeTypeStatementBlock
-          end-rune = 483
+          end-rune = 495
           input-source = all expr test
           start-rune = 30
           block-child =>
@@ -735,6 +735,14 @@ NodeTypeFile
                       input-source = all expr test
                       literal-value = 2
                       start-rune = 477
+            NodeNullLiteralExpression
+              end-rune = 487
+              input-source = all expr test
+              start-rune = 484
+            NodeThisLiteralExpression
+              end-rune = 493
+              input-source = all expr test
+              start-rune = 490
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 12

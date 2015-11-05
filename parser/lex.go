@@ -163,7 +163,7 @@ var keywords = map[string]bool{
 	"set": true,
 
 	"this": true,
-	"new":  true,
+	"null": true,
 
 	"for":      true,
 	"if":       true,

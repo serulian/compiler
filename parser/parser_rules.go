@@ -1819,6 +1819,23 @@ func (p *sourceParser) tryConsumeLiteralValue() (AstNode, bool) {
 	// Template string literal.
 	case p.isToken(tokenTypeTemplateStringLiteral):
 		return p.consumeTemplateString(), true
+
+	// null literal.
+	case p.isKeyword("null"):
+		literalNode := p.startNode(NodeNullLiteralExpression)
+		defer p.finishNode()
+
+		p.consumeKeyword("null")
+		return literalNode, true
+
+	// this literal.
+	case p.isKeyword("this"):
+		literalNode := p.startNode(NodeThisLiteralExpression)
+		defer p.finishNode()
+
+		p.consumeKeyword("this")
+		return literalNode, true
+
 	}
 
 	return nil, false
