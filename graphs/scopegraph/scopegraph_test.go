@@ -559,6 +559,35 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"stream member access static failure test", "streammemberaccess", "static",
 		[]expectedScopeEntry{},
 		"Cannot attempt stream member access of something under type SomeClass, as it is a static type", ""},
+
+	/////////// Null literal expression ///////////
+
+	scopegraphTest{"null literal expression success test", "nullliteral", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"null", expectedScope{true, proto.ScopeKind_VALUE, "null", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"non-nullable null assign failure test", "nullliteral", "nonnullableassign",
+		[]expectedScopeEntry{},
+		"Variable 'foo' has declared type 'Integer': null cannot be used in place of non-nullable type Integer", ""},
+
+	/////////// this literal expression ///////////
+
+	scopegraphTest{"this literal expression success test", "thisliteral", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"scthis", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+			expectedScopeEntry{"acthis", expectedScope{true, proto.ScopeKind_VALUE, "AnotherClass<T>", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"this under module member test", "thisliteral", "modulemember",
+		[]expectedScopeEntry{},
+		"The 'this' keyword cannot be used under module member DoSomething", ""},
+
+	scopegraphTest{"this under static member test", "thisliteral", "staticmember",
+		[]expectedScopeEntry{},
+		"The 'this' keyword cannot be used under static type member Build", ""},
 }
 
 func TestGraphs(t *testing.T) {

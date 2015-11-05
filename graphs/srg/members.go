@@ -31,6 +31,23 @@ const (
 	OperatorMember
 )
 
+// TryGetContainingMember looks for the type or module member containing the given node
+// and returns it, if any.
+func (g *SRG) TryGetContainingMember(node compilergraph.GraphNode) (SRGMember, bool) {
+	containingNode, found := g.TryGetContainingNode(node,
+		parser.NodeTypeConstructor,
+		parser.NodeTypeFunction,
+		parser.NodeTypeOperator,
+		parser.NodeTypeField,
+		parser.NodeTypeVariable)
+
+	if !found {
+		return SRGMember{}, false
+	}
+
+	return SRGMember{containingNode, g}, true
+}
+
 // Name returns the name of this member.
 func (m SRGMember) Name() string {
 	if m.GraphNode.Kind == parser.NodeTypeOperator {

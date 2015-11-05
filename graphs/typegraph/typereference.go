@@ -758,6 +758,11 @@ func (tr TypeReference) appendHumanString(buffer *bytes.Buffer) {
 		return
 	}
 
+	if tr.IsNull() {
+		buffer.WriteString("null")
+		return
+	}
+
 	if tr.IsLocalRef() {
 		buffer.WriteString(tr.getSlot(trhSlotTypeId))
 		return

@@ -115,3 +115,42 @@ func (sb *scopeBuilder) scopeNumericLiteralExpression(node compilergraph.GraphNo
 			GetScope()
 	}
 }
+
+// scopeNullLiteralExpression scopes a null literal expression in the SRG.
+func (sb *scopeBuilder) scopeNullLiteralExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+	return newScope().
+		Valid().
+		Resolving(sb.sg.tdg.NullTypeReference()).
+		GetScope()
+}
+
+// scopeThisLiteralExpression scopes a this literal expression in the SRG.
+func (sb *scopeBuilder) scopeThisLiteralExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+	srgMember, found := sb.sg.srg.TryGetContainingMember(node)
+	if !found {
+		sb.decorateWithError(node, "The 'this' keyword can only be used under non-static type members")
+		return newScope().Invalid().GetScope()
+	}
+
+	tgMember, tgFound := sb.sg.tdg.GetMemberForSRGNode(srgMember.GraphNode)
+	if !tgFound {
+		sb.decorateWithError(node, "The 'this' keyword can only be used under non-static type members")
+		return newScope().Invalid().GetScope()
+	}
+
+	if tgMember.IsStatic() {
+		sb.decorateWithError(node, "The 'this' keyword cannot be used under static type member %v", tgMember.Name())
+		return newScope().Invalid().GetScope()
+	}
+
+	tgType, hasParentType := tgMember.ParentType()
+	if !hasParentType {
+		sb.decorateWithError(node, "The 'this' keyword cannot be used under module member %v", tgMember.Name())
+		return newScope().Invalid().GetScope()
+	}
+
+	return newScope().
+		Valid().
+		Resolving(tgType.GetTypeReference()).
+		GetScope()
+}

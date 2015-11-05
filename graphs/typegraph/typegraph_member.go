@@ -63,6 +63,20 @@ func (tn TGMember) HasGenerics() bool {
 	return isGeneric
 }
 
+// ParentType returns the type containing this member, if any.
+func (tn TGMember) ParentType() (TGTypeDecl, bool) {
+	typeNode, hasType := tn.GraphNode.StartQuery().
+		In(NodePredicateMember).
+		IsKind(NodeTypeClass, NodeTypeInterface).
+		TryGetNode()
+
+	if !hasType {
+		return TGTypeDecl{}, false
+	}
+
+	return TGTypeDecl{typeNode, tn.tdg}, true
+}
+
 // ReturnType returns the return type for this member.
 func (tn TGMember) ReturnType() (TypeReference, bool) {
 	returnNode, found := tn.GraphNode.StartQuery().
