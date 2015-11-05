@@ -191,16 +191,22 @@ func (tr TypeReference) CheckConcreteSubtypeOf(otherTypeNode compilergraph.Graph
 		panic("Cannot use non-generic type in call to CheckImplOfGeneric")
 	}
 
-	if tr.IsAny() {
-		return nil, fmt.Errorf("Any type %v does not implement type %v", tr, otherType.Name())
-	}
+	if !tr.isNormal() {
+		if tr.IsAny() {
+			return nil, fmt.Errorf("Any type %v does not implement type %v", tr, otherType.Name())
+		}
 
-	if tr.IsVoid() {
-		return nil, fmt.Errorf("Void type %v does not implement type %v", tr, otherType.Name())
-	}
+		if tr.IsVoid() {
+			return nil, fmt.Errorf("Void type %v does not implement type %v", tr, otherType.Name())
+		}
 
-	if tr.IsNullable() {
-		return nil, fmt.Errorf("Nullable type %v cannot match type %v", tr, otherType.Name())
+		if tr.IsNullable() {
+			return nil, fmt.Errorf("Nullable type %v cannot match type %v", tr, otherType.Name())
+		}
+
+		if tr.IsNull() {
+			return nil, fmt.Errorf("null %v cannot match type %v", tr, otherType.Name())
+		}
 	}
 
 	// Fast check: If the referred type is the type expected, return it directly.
@@ -275,12 +281,25 @@ func (tr TypeReference) CheckConcreteSubtypeOf(otherTypeNode compilergraph.Graph
 //
 // Subtyping rules in Serulian are as follows:
 //   - All types are subtypes of 'any'.
+//   - The special "null" type is a subtype of any *nullable* type.
 //   - A non-nullable type is a subtype of a nullable type (but not vice versa).
 //   - A class is a subtype of itself (and no other class) and only if generics and parameters match.
 //   - A class (or interface) is a subtype of an interface if it defines that interface's full signature.
 func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
 	if tr.IsVoid() || other.IsVoid() {
 		return fmt.Errorf("Void types cannot be used interchangeably")
+	}
+
+	if tr.IsNull() {
+		if !other.IsAny() && !other.IsNullable() {
+			return fmt.Errorf("null cannot be used in place of non-nullable type %v", other)
+		}
+
+		return nil
+	}
+
+	if other.IsNull() {
+		return fmt.Errorf("null cannot be supertype of any other type")
 	}
 
 	// If the other is the any type, then we know this to be a subtype.
@@ -463,6 +482,12 @@ func (tr TypeReference) IsAny() bool {
 // IsVoid returns whether this type reference refers to the special 'void' type.
 func (tr TypeReference) IsVoid() bool {
 	return tr.getSlot(trhSlotFlagSpecial)[0] == specialFlagVoid
+}
+
+// IsNull returns whether this type reference refers to the special 'null' type
+// (which is distinct from a nullable type).
+func (tr TypeReference) IsNull() bool {
+	return tr.getSlot(trhSlotFlagSpecial)[0] == specialFlagNull
 }
 
 // IsLocalRef returns whether this type reference is a localized reference.

@@ -18,6 +18,14 @@ func (t *TypeGraph) VoidTypeReference() TypeReference {
 	}
 }
 
+// NullTypeReference returns a reference to the special 'null' type.
+func (t *TypeGraph) NullTypeReference() TypeReference {
+	return TypeReference{
+		tdg:   t,
+		value: buildSpecialTypeReferenceValue(specialFlagNull),
+	}
+}
+
 // AnyTypeReference returns a reference to the special 'any' type.
 func (t *TypeGraph) AnyTypeReference() TypeReference {
 	return TypeReference{

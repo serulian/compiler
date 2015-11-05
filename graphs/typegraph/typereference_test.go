@@ -134,6 +134,15 @@ func TestSpecialReferenceOperations(t *testing.T) {
 
 	voidRef := testTG.VoidTypeReference()
 	assert.True(t, voidRef.IsVoid(), "Expected 'void' reference")
+
+	nullRef := testTG.NullTypeReference()
+	assert.True(t, nullRef.IsNull(), "Expected 'null' reference")
+
+	// Ensure null is a subtype of any.
+	assert.Nil(t, nullRef.CheckSubTypeOf(anyRef), "Null unexpectedly not subtype of any")
+
+	// Ensure any is *not* a subtype of null.
+	assert.NotNil(t, anyRef.CheckSubTypeOf(nullRef), "Any unexpectedly subtype of null")
 }
 
 type extractTypeDiff struct {
