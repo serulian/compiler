@@ -1,0 +1,7 @@
+function<void> DoSomethingElse() {
+	a<b>
+}
+
+function<void> DoSomething() {
+	a < b
+}

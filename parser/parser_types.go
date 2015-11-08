@@ -127,6 +127,7 @@ const (
 	NodeCastExpression                 // a.(b)
 	NodeFunctionCallExpression         // a(b, c, d)
 	NodeSliceExpression                // a[b:c]
+	NodeGenericSpecifierExpression     // a<b>
 
 	NodeNumericLiteralExpression        // 123
 	NodeStringLiteralExpression         // 'hello'
@@ -433,6 +434,13 @@ const (
 
 	NodeMapExpressionEntryKey   = "map-entry-key"
 	NodeMapExpressionEntryValue = "map-entry-value"
+
+	//
+	// NodeGenericSpecifierExpression
+	//
+
+	NodeGenericSpecifierChildExpr = "generic-specifier-expr"
+	NodeGenericSpecifierType      = "generic-specifier-type"
 
 	//
 	// Literals.

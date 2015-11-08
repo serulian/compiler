@@ -25,6 +25,9 @@ type ImportHandler func(importInfo PackageImport) string
 // tryParserFn is a function that attempts to build an AST node.
 type tryParserFn func() (AstNode, bool)
 
+// lookaheadParserFn is a function that performs lookahead.
+type lookaheadParserFn func(currentToken lexeme) bool
+
 // rightNodeConstructor is a function which takes in a left expr node and the
 // token consumed for a left-recursive operator, and returns a newly constructed
 // operator expression if a right expression could be found.
@@ -353,7 +356,7 @@ func (p *sourceParser) oneOf(subParsers ...tryParserFn) (AstNode, bool) {
 // operator token types found. If none found, the left expression is returned. Otherwise, the
 // rightNodeBuilder is called to attempt to construct an operator expression. This method also
 // properly handles decoration of the nodes with their proper start and end run locations.
-func (p *sourceParser) performLeftRecursiveParsing(subTryExprFn tryParserFn, rightNodeBuilder rightNodeConstructor, operatorTokens ...tokenType) (AstNode, bool) {
+func (p *sourceParser) performLeftRecursiveParsing(subTryExprFn tryParserFn, rightNodeBuilder rightNodeConstructor, rightTokenTester lookaheadParserFn, operatorTokens ...tokenType) (AstNode, bool) {
 	var currentLeftToken commentedLexeme
 	currentLeftToken = p.currentToken
 
@@ -376,6 +379,16 @@ func (p *sourceParser) performLeftRecursiveParsing(subTryExprFn tryParserFn, rig
 	currentLeftNode = leftNode
 
 	for {
+		// Check for an operator.
+		if !p.isToken(operatorTokens...) {
+			break
+		}
+
+		// If a lookahead function is defined, check the lookahead for the matched token.
+		if rightTokenTester != nil && !rightTokenTester(p.currentToken.lexeme) {
+			break
+		}
+
 		// Consume the operator.
 		operatorToken, ok := p.tryConsumeWithComments(operatorTokens...)
 		if !ok {

@@ -55,4 +55,6 @@ function<void> SomeFunction() {
 	}
 	null
 	this
+	a<b>
+	a<b<c>?>
 }

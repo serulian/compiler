@@ -76,7 +76,7 @@ func (tn *testNode) Connect(predicate string, other AstNode) AstNode {
 
 func (tn *testNode) Decorate(property string, value string) AstNode {
 	if _, ok := tn.properties[property]; ok {
-		panic(fmt.Sprintf("Existing key for property %s", property))
+		panic(fmt.Sprintf("Existing key for property %s\n\tNode: %v", property, tn.properties))
 	}
 
 	tn.properties[property] = value
@@ -185,7 +185,11 @@ var parserTests = []parserTest{
 	{"list call expr test", "expression/list_call"},
 	{"lambda expr test", "expression/lambda"},
 	{"map missing comma expr test", "expression/map_missingcomma"},
+	{"generic specifier expr test", "expression/generic_specifier"},
+	{"less than and generic specifier expr test", "expression/ltandgeneric"},
+
 	{"all expr test", "expression/all"},
+	{"complex expr test", "expression/complex"},
 
 	// Type reference tests.
 	{"all type reference test", "typeref/all"},
@@ -219,6 +223,8 @@ func TestParser(t *testing.T) {
 		if os.Getenv("FILTER") != "" {
 			if !strings.Contains(test.name, os.Getenv("FILTER")) {
 				continue
+			} else {
+				fmt.Printf("Matched Test: %v\n", test.name)
 			}
 		}
 

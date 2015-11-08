@@ -713,7 +713,7 @@ func (p *sourceParser) consumeTypeReference(option typeReferenceOption) AstNode 
 		return parentNode, true
 	}
 
-	found, _ := p.performLeftRecursiveParsing(p.consumeSimpleTypeReference, rightNodeBuilder,
+	found, _ := p.performLeftRecursiveParsing(p.consumeSimpleTypeReference, rightNodeBuilder, nil,
 		tokenTypeTimes, tokenTypeQuestionMark)
 	return found
 }
@@ -1648,7 +1648,7 @@ func (p *sourceParser) tryConsumeBinaryExpression(subTryExprFn tryParserFn, bina
 		return exprNode, true
 	}
 
-	return p.performLeftRecursiveParsing(subTryExprFn, rightNodeBuilder, binaryTokenType)
+	return p.performLeftRecursiveParsing(subTryExprFn, rightNodeBuilder, nil, binaryTokenType)
 }
 
 // memberAccessExprMap contains a map from the member access token types to their
@@ -1660,8 +1660,8 @@ var memberAccessExprMap = map[tokenType]NodeType{
 	tokenTypeStreamAccessOperator:  NodeStreamMemberAccessExpression,
 }
 
-// tryConsumeCallAccessExpression attempts to consume call expressions (function calls or slices) or
-// member accesses (dot, nullable, stream, etc.
+// tryConsumeCallAccessExpression attempts to consume call expressions (function calls, slices, generic specifier)
+// or member accesses (dot, nullable, stream, etc.)
 func (p *sourceParser) tryConsumeCallAccessExpression() (AstNode, bool) {
 	rightNodeBuilder := func(leftNode AstNode, operatorToken lexeme) (AstNode, bool) {
 		// If this is a member access of some kind, we next look for an identifier.
@@ -1715,6 +1715,28 @@ func (p *sourceParser) tryConsumeCallAccessExpression() (AstNode, bool) {
 			p.consume(tokenTypeRightParen)
 			return exprNode, true
 
+		case tokenTypeLessThan:
+			// Generic specifier:
+			// a<b>
+
+			// Consume the generic specifier.
+			genericNode := p.createNode(NodeGenericSpecifierExpression)
+
+			// child expression
+			genericNode.Connect(NodeGenericSpecifierChildExpr, leftNode)
+
+			// Consume the generic type references.
+			for {
+				genericNode.Connect(NodeGenericSpecifierType, p.consumeTypeReference(typeReferenceNoVoid))
+				if _, ok := p.tryConsume(tokenTypeComma); !ok {
+					break
+				}
+			}
+
+			// >
+			p.consume(tokenTypeGreaterThan)
+			return genericNode, true
+
 		case tokenTypeLeftBracket:
 			// Slice/Indexer:
 			// a[b]
@@ -1762,10 +1784,20 @@ func (p *sourceParser) tryConsumeCallAccessExpression() (AstNode, bool) {
 		return nil, false
 	}
 
-	return p.performLeftRecursiveParsing(p.tryConsumeBaseExpression, rightNodeBuilder,
+	rightNodeLookahead := func(operatorToken lexeme) bool {
+		if operatorToken.kind == tokenTypeLessThan {
+			t := p.newLookaheadTracker()
+			return p.lookaheadGenericSpecifier(t)
+		}
+
+		return true
+	}
+
+	return p.performLeftRecursiveParsing(p.tryConsumeBaseExpression, rightNodeBuilder, rightNodeLookahead,
 		tokenTypeDotCastStart,
 		tokenTypeLeftParen,
 		tokenTypeLeftBracket,
+		tokenTypeLessThan,
 		tokenTypeDotAccessOperator,
 		tokenTypeArrowAccessOperator,
 		tokenTypeNullDotAccessOperator,
@@ -1886,7 +1918,107 @@ func (p *sourceParser) tryConsumeBaseExpression() (AstNode, bool) {
 		return value, true
 	}
 
+	// Identifier.
 	return p.tryConsumeIdentifierExpression()
+}
+
+// lookaheadGenericSpecifier performs lookahead via the given tracker, attempting to
+// match a generic specifier.
+//
+// Forms:
+//  <typeref, typeref, etc>
+func (p *sourceParser) lookaheadGenericSpecifier(t *lookaheadTracker) bool {
+	if _, ok := t.matchToken(tokenTypeLessThan); !ok {
+		return false
+	}
+
+	for {
+		if !p.lookaheadTypeReference(t) {
+			return false
+		}
+
+		if _, ok := t.matchToken(tokenTypeComma); !ok {
+			break
+		}
+	}
+
+	if _, ok := t.matchToken(tokenTypeGreaterThan); !ok {
+		return false
+	}
+
+	return true
+}
+
+// lookaheadTypeReference performs lookahead via the given tracker, attempting to
+// match a type reference.
+func (p *sourceParser) lookaheadTypeReference(t *lookaheadTracker) bool {
+	for {
+		// Type name or path.
+		if _, ok := t.matchToken(tokenTypeIdentifer); !ok {
+			return false
+		}
+
+		// Member access under the path (optional).
+		if _, ok := t.matchToken(tokenTypeDotAccessOperator); !ok {
+			break
+		}
+	}
+
+	// Generics, nullable, stream.
+	genericMatched, genericOk := t.matchToken(tokenTypeLessThan, tokenTypeTimes, tokenTypeQuestionMark)
+	if !genericOk {
+		return true
+	}
+
+	if genericMatched.kind != tokenTypeLessThan {
+		return true
+	}
+
+	// Start generics.
+	for {
+		if !p.lookaheadTypeReference(t) {
+			return false
+		}
+
+		if _, ok := t.matchToken(tokenTypeComma); !ok {
+			break
+		}
+	}
+
+	// End generics.
+	if _, ok := t.matchToken(tokenTypeGreaterThan); !ok {
+		return false
+	}
+
+	// Check for parameters.
+	paramMatched, paramOk := t.matchToken(tokenTypeLeftParen, tokenTypeTimes, tokenTypeQuestionMark)
+	if !paramOk {
+		return true
+	}
+
+	if paramMatched.kind != tokenTypeLeftParen {
+		return true
+	}
+
+	// Start parameters.
+	for {
+		if !p.lookaheadTypeReference(t) {
+			return false
+		}
+
+		if _, ok := t.matchToken(tokenTypeComma); !ok {
+			break
+		}
+	}
+
+	// End parameters.
+	if _, ok := t.matchToken(tokenTypeRightParen); !ok {
+		return false
+	}
+
+	// Match any nullable or streams.
+	t.matchToken(tokenTypeTimes, tokenTypeQuestionMark)
+	return true
 }
 
 // tryConsumeMapExpression tries to consume an inline map expression.

@@ -193,6 +193,7 @@ var syntheticPredecessors = map[tokenType]bool{
 	tokenTypeRightBrace:   true,
 	tokenTypeRightParen:   true,
 	tokenTypeRightBracket: true,
+	tokenTypeGreaterThan:  true,
 
 	tokenTypeMultilineComment: true,
 }

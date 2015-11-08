@@ -1,16 +1,16 @@
 NodeTypeFile
-  end-rune = 495
+  end-rune = 511
   input-source = all expr test
   start-rune = 0
   child-node =>
     NodeTypeFunction
-      end-rune = 495
+      end-rune = 511
       input-source = all expr test
       named = SomeFunction
       start-rune = 0
       definition-body =>
         NodeTypeStatementBlock
-          end-rune = 495
+          end-rune = 511
           input-source = all expr test
           start-rune = 30
           block-child =>
@@ -743,6 +743,79 @@ NodeTypeFile
               end-rune = 493
               input-source = all expr test
               start-rune = 490
+            NodeGenericSpecifierExpression
+              end-rune = 499
+              input-source = all expr test
+              start-rune = 496
+              generic-specifier-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 496
+                  identexpr-name = a
+                  input-source = all expr test
+                  start-rune = 496
+              generic-specifier-type =>
+                NodeTypeTypeReference
+                  end-rune = 498
+                  input-source = all expr test
+                  start-rune = 498
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 498
+                      input-source = all expr test
+                      start-rune = 498
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 498
+                          identifieraccess-name = b
+                          input-source = all expr test
+                          start-rune = 498
+            NodeGenericSpecifierExpression
+              end-rune = 509
+              input-source = all expr test
+              start-rune = 502
+              generic-specifier-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 502
+                  identexpr-name = a
+                  input-source = all expr test
+                  start-rune = 502
+              generic-specifier-type =>
+                NodeTypeNullable
+                  end-rune = 508
+                  input-source = all expr test
+                  start-rune = 504
+                  typereference-inner-type =>
+                    NodeTypeTypeReference
+                      end-rune = 507
+                      input-source = all expr test
+                      start-rune = 504
+                      typereference-generic =>
+                        NodeTypeTypeReference
+                          end-rune = 506
+                          input-source = all expr test
+                          start-rune = 506
+                          typereference-path =>
+                            NodeTypeIdentifierPath
+                              end-rune = 506
+                              input-source = all expr test
+                              start-rune = 506
+                              identifierpath-root =>
+                                NodeTypeIdentifierAccess
+                                  end-rune = 506
+                                  identifieraccess-name = c
+                                  input-source = all expr test
+                                  start-rune = 506
+                      typereference-path =>
+                        NodeTypeIdentifierPath
+                          end-rune = 504
+                          input-source = all expr test
+                          start-rune = 504
+                          identifierpath-root =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 504
+                              identifieraccess-name = b
+                              input-source = all expr test
+                              start-rune = 504
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 12

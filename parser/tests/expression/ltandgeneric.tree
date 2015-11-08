@@ -1,0 +1,79 @@
+NodeTypeFile
+  end-rune = 83
+  input-source = less than and generic specifier expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 42
+      input-source = less than and generic specifier expr test
+      named = DoSomethingElse
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 42
+          input-source = less than and generic specifier expr test
+          start-rune = 33
+          block-child =>
+            NodeGenericSpecifierExpression
+              end-rune = 39
+              input-source = less than and generic specifier expr test
+              start-rune = 36
+              generic-specifier-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 36
+                  identexpr-name = a
+                  input-source = less than and generic specifier expr test
+                  start-rune = 36
+              generic-specifier-type =>
+                NodeTypeTypeReference
+                  end-rune = 38
+                  input-source = less than and generic specifier expr test
+                  start-rune = 38
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 38
+                      input-source = less than and generic specifier expr test
+                      start-rune = 38
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 38
+                          identifieraccess-name = b
+                          input-source = less than and generic specifier expr test
+                          start-rune = 38
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 12
+          input-source = less than and generic specifier expr test
+          start-rune = 9
+    NodeTypeFunction
+      end-rune = 83
+      input-source = less than and generic specifier expr test
+      named = DoSomething
+      start-rune = 44
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 83
+          input-source = less than and generic specifier expr test
+          start-rune = 73
+          block-child =>
+            NodeComparisonLTExpression
+              end-rune = 80
+              input-source = less than and generic specifier expr test
+              start-rune = 76
+              binary-expression-left =>
+                NodeTypeIdentifierExpression
+                  end-rune = 76
+                  identexpr-name = a
+                  input-source = less than and generic specifier expr test
+                  start-rune = 76
+              binary-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 80
+                  identexpr-name = b
+                  input-source = less than and generic specifier expr test
+                  start-rune = 80
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 56
+          input-source = less than and generic specifier expr test
+          start-rune = 53
