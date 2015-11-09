@@ -1,5 +1,5 @@
 class SomeClass<T> {
-	var<T> SomeVar 
+	var<T?> SomeVar
 }
 
 function<void> DoSomething() {

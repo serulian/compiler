@@ -4,8 +4,8 @@ class SomePort {
 }
 
 function<void> DoSomething() {
-	var<SomePort> port
-	var<int> someInt
+	var<SomePort> port = SomePort.new()
+	var<int> someInt = 2
 
 	/* await */(<- port)
 	/* arrow */(someInt <- port)

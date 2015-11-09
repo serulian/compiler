@@ -27,7 +27,7 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 	// Ensure the child expression has type function.
 	childType := childScope.ResolvedTypeRef(sb.sg.tdg)
 	if !childType.HasReferredType(sb.sg.tdg.FunctionType()) {
-		sb.decorateWithError(node, "Cannot invoke function call on non-function. Found: %v", childType)
+		sb.decorateWithError(node, "Cannot invoke function call on non-function '%v'.", childType)
 		return newScope().Invalid().GetScope()
 	}
 
@@ -135,6 +135,10 @@ func (sb *scopeBuilder) scopeSlicerExpression(node compilergraph.GraphNode) prot
 
 	if hasRightNode && !scopeAndCheckExpr(rightNode) {
 		isValid = false
+	}
+
+	if !isValid {
+		return newScope().Invalid().GetScope()
 	}
 
 	returnType, _ := operator.ReturnType()

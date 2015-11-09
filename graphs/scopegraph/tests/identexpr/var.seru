@@ -1,4 +1,4 @@
 function<void> DoSomething() {
-	var<int> someVar
+	var<int> someVar = 2
 	/* varref */someVar
 }

@@ -1,7 +1,7 @@
 class SomeClass {
 	function<void> DoSomething() {
-		var<SomeClass> sc
-		var<ISomeInterface> isi
+		var<SomeClass> sc = SomeClass.new()
+		var<ISomeInterface> isi = SomeClass.new()
 
 		var<SomeClass?> scn
 		var<ISomeInterface?> isn

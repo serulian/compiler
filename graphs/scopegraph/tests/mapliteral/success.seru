@@ -10,8 +10,8 @@ function<void> DoSomething() {
 		'b': true,
 	}
 
-	var<int> a
-	var<bool> b
+	var<int> a = 2
+	var<bool> b = false
 
 	/* intkeymap */{
 		a: 1,

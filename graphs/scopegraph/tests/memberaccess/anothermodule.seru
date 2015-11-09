@@ -1,4 +1,5 @@
-var<int> SomeInt
+var<int> SomeInt = 2
+
 function<void> SomeFunction() {
 }
 

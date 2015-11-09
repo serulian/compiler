@@ -11,6 +11,7 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/typegraph/proto"
+	"github.com/serulian/compiler/parser"
 )
 
 var _ = fmt.Printf
@@ -29,6 +30,23 @@ func (t *TypeGraph) buildMembership(typeDecl TGTypeDecl, srgType srg.SRGType, in
 		if !t.buildMemberNode(typeDecl, member) {
 			success = false
 		}
+	}
+
+	// Add the implicit 'new' constructor for any classes.
+	if typeDecl.TypeKind() == ClassType {
+		implicitConstructorNode := t.layer.CreateNode(NodeTypeMember)
+		implicitConstructorNode.Decorate(NodePredicateMemberName, "new")
+		implicitConstructorNode.Decorate(NodePredicateMemberReadOnly, "true")
+		implicitConstructorNode.Decorate(NodePredicateMemberStatic, "true")
+
+		constructorType := t.NewTypeReference(t.FunctionType(), typeDecl.GetTypeReference())
+		implicitConstructorNode.DecorateWithTagged(NodePredicateMemberType, constructorType)
+
+		t.createReturnable(implicitConstructorNode, srgType.GraphNode, typeDecl.GetTypeReference())
+		t.decorateWithSig(implicitConstructorNode, "name", uint64(parser.NodeTypeConstructor), false, false, constructorType)
+
+		implicitConstructorNode.Connect(NodePredicateSource, srgType.GraphNode)
+		typeDecl.GraphNode.Connect(NodePredicateMember, implicitConstructorNode)
 	}
 
 	// Copy over the type members and operators.

@@ -3,7 +3,7 @@ class SomeClass {
 }
 
 function<void> DoSomething() {
-	var<SomeClass> something
+	var<SomeClass> something = SomeClass.new()
 
 	with something as somethingElse {
 		/* valueref */somethingElse

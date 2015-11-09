@@ -1,11 +1,10 @@
 class SomeClass {
 	constructor Build(someparam int) {
-		var<SomeClass> sc
-		return sc
+		return SomeClass.new()
 	}
 }
 
 function<void> DoSomething() {
-	var<SomeClass> sc
+	var<SomeClass> sc = SomeClass.Build(2)
 	sc.Build
 }

@@ -180,7 +180,6 @@ func (tr TypeReference) ExtractTypeDiff(otherRef TypeReference, diffType compile
 // CheckConcreteSubtypeOf checks that the current type reference refers to a type that is a concrete subtype
 // of the specified *generic* interface.
 func (tr TypeReference) CheckConcreteSubtypeOf(otherTypeNode compilergraph.GraphNode) ([]TypeReference, error) {
-	localType := TGTypeDecl{tr.ReferredType(), tr.tdg}
 	otherType := TGTypeDecl{otherTypeNode, tr.tdg}
 
 	if otherType.TypeKind() != InterfaceType {
@@ -209,8 +208,10 @@ func (tr TypeReference) CheckConcreteSubtypeOf(otherTypeNode compilergraph.Graph
 		}
 	}
 
+	localType := TGTypeDecl{tr.ReferredType(), tr.tdg}
+
 	// Fast check: If the referred type is the type expected, return it directly.
-	if tr.ReferredType() == otherTypeNode {
+	if localType.GraphNode == otherTypeNode {
 		return tr.Generics(), nil
 	}
 
@@ -586,9 +587,12 @@ func (tr TypeReference) ResolveMember(memberName string, module compilercommon.I
 	// If the member is exported, then always return it. Otherwise, only return it if the asking module
 	// is the same as the declaring module.
 	if !member.IsExported() {
-		srgSourceNode := tr.tdg.srg.GetNode(compilergraph.GraphNodeId(memberNode.Get(NodePredicateSource)))
-		if srgSourceNode.Get(parser.NodePredicateSource) != string(module) {
-			return TGMember{}, false
+		source, found := memberNode.TryGet(NodePredicateSource)
+		if found {
+			srgSourceNode := tr.tdg.srg.GetNode(compilergraph.GraphNodeId(source))
+			if srgSourceNode.Get(parser.NodePredicateSource) != string(module) {
+				return TGMember{}, false
+			}
 		}
 	}
 

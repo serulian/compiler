@@ -9,7 +9,7 @@ class SomeClass {
 }
 
 function<void> DoSomething() {
-	var<SomeClass> sc
+	var<SomeClass> sc = SomeClass.new()
 	/* slice */(sc[0:1])
 	/* endslice */(sc[:1])
 	/* startslice */(sc[1:])

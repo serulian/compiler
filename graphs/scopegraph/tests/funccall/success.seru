@@ -10,7 +10,7 @@ function<bool> AnotherFunc(first int, second bool) {
 }
 
 function<void> DoSomething() {
-	var<SomeClass> sc
+	var<SomeClass> sc = SomeClass.new()
 
 	/* empty */(EmptyFunc())
 	/* somefunc */(SomeFunc(2))

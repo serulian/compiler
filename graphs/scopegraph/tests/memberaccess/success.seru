@@ -1,11 +1,10 @@
 import anothermodule
 
 class SomeClass {
-	var<int> someInt
+	var<int> someInt = 2
 
 	constructor Build(someparam int) {
-		var<SomeClass> sc
-		return sc
+		return SomeClass.new()
 	}
 
 	property<int> SomeProp {
@@ -14,13 +13,13 @@ class SomeClass {
 }
 
 class LocalClass<T> {
-	var<T> SomeVar
+	var<T?> SomeVar
 }
 
 function<void> DoSomething() {
-	var<SomeClass> sc
-	var<LocalClass<bool>> gcbool
-	var<LocalClass<int>> gcint
+	var<SomeClass> sc = SomeClass.Build(2)
+	var<LocalClass<bool>> gcbool = LocalClass<bool>.new()
+	var<LocalClass<int>> gcint = LocalClass<int>.new()
 	
 	/* varmember */(sc.someInt)
 	/* constructor */(SomeClass.Build)

@@ -148,6 +148,12 @@ func (sb *scopeBuilder) scopeVariableStatement(node compilergraph.GraphNode) pro
 			sb.decorateWithError(node, "Variable '%s' has declared type '%v': %v", node.Get(parser.NodeVariableStatementName), declaredType, serr)
 			return newScope().Invalid().GetScope()
 		}
+	} else {
+		// Make sure if the type is non-nullable that there is an expression.
+		if !declaredType.IsNullable() {
+			sb.decorateWithError(node, "Variable '%s' must have explicit initializer as its type '%v' is non-nullable", node.Get(parser.NodeVariableStatementName), declaredType)
+			return newScope().Invalid().Assignable(declaredType).GetScope()
+		}
 	}
 
 	return newScope().Valid().Assignable(declaredType).GetScope()

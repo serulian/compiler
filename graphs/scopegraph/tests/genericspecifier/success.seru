@@ -1,7 +1,6 @@
 class SomeClass<T> {
 	constructor Build(someParam T) {
-		var<SomeClass<T>> sc
-		return sc
+		return SomeClass.new()
 	}
 }
 

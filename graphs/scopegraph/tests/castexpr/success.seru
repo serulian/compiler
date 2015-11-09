@@ -7,6 +7,6 @@ interface ISomeInterface {
 }
 
 function<void> DoSomething() {
-	var<ISomeInterface> isi
+	var<ISomeInterface> isi = SomeClass.new()
 	/* cast */(isi.(SomeClass))
 }

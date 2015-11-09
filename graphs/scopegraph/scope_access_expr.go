@@ -152,14 +152,14 @@ func (sb *scopeBuilder) scopeStreamMemberAccessExpression(node compilergraph.Gra
 		// Ensure the child type is a stream.
 		generics, serr := childType.CheckConcreteSubtypeOf(sb.sg.tdg.StreamType())
 		if serr != nil {
-			sb.decorateWithError(node, "Cannot attempt stream access of name %v under non-stream type '%v': %v", memberName, childType, serr)
+			sb.decorateWithError(node, "Cannot attempt stream access of name '%v' under non-stream type '%v': %v", memberName, childType, serr)
 			return newScope().Invalid().GetScope()
 		}
 
 		valueType := generics[0]
 		typeMember, found := valueType.ResolveMember(memberName, module, typegraph.MemberResolutionInstance)
 		if !found {
-			sb.decorateWithError(node, "Could not find instance name %v under stream value type %v", memberName, valueType)
+			sb.decorateWithError(node, "Could not find instance name '%v' under stream value type %v", memberName, valueType)
 			return newScope().Invalid().GetScope()
 		}
 
@@ -168,12 +168,12 @@ func (sb *scopeBuilder) scopeStreamMemberAccessExpression(node compilergraph.Gra
 
 	case proto.ScopeKind_GENERIC:
 		namedScope, _ := sb.getNamedScopeForScope(childScope)
-		sb.decorateWithError(node, "Cannot attempt stream member access of %v under %v %v, as it is generic without specification", memberName, namedScope.Title(), namedScope.Name())
+		sb.decorateWithError(node, "Cannot attempt stream member access of '%v' under %v %v, as it is generic without specification", memberName, namedScope.Title(), namedScope.Name())
 		return newScope().Invalid().GetScope()
 
 	case proto.ScopeKind_STATIC:
 		namedScope, _ := sb.getNamedScopeForScope(childScope)
-		sb.decorateWithError(node, "Cannot attempt stream member access of %v under %v %v, as it is a static type", memberName, namedScope.Title(), namedScope.Name())
+		sb.decorateWithError(node, "Cannot attempt stream member access of '%v' under %v %v, as it is a static type", memberName, namedScope.Title(), namedScope.Name())
 		return newScope().Invalid().GetScope()
 
 	default:
@@ -244,7 +244,7 @@ func (sb *scopeBuilder) scopeDynamicMemberAccessExpression(node compilergraph.Gr
 	case proto.ScopeKind_STATIC:
 		namedScope, _ := sb.getNamedScopeForScope(childScope)
 		if !namedScope.IsType() {
-			sb.decorateWithError(node, "Cannot attempt dynamic member access of %v under %v %v, as it is not a type", memberName, namedScope.Title(), namedScope.Name())
+			sb.decorateWithError(node, "Cannot attempt dynamic member access of '%v' under %v %v, as it is not a type", memberName, namedScope.Title(), namedScope.Name())
 			return newScope().Invalid().GetScope()
 		}
 
@@ -253,7 +253,7 @@ func (sb *scopeBuilder) scopeDynamicMemberAccessExpression(node compilergraph.Gr
 
 	case proto.ScopeKind_GENERIC:
 		namedScope, _ := sb.getNamedScopeForScope(childScope)
-		sb.decorateWithError(node, "Cannot attempt dynamic member access of %v under %v %v, as it is generic without specification", memberName, namedScope.Title(), namedScope.Name())
+		sb.decorateWithError(node, "Cannot attempt dynamic member access of '%v' under %v %v, as it is generic without specification", memberName, namedScope.Title(), namedScope.Name())
 		return newScope().Invalid().GetScope()
 
 	default:
@@ -278,14 +278,14 @@ func (sb *scopeBuilder) scopeNullableMemberAccessExpression(node compilergraph.G
 	case proto.ScopeKind_VALUE:
 		childType := childScope.ResolvedTypeRef(sb.sg.tdg)
 		if !childType.IsNullable() {
-			sb.decorateWithError(node, "Cannot access name %v under non-nullable type '%v'. Please use the . operator to ensure type safety.", memberName, childType)
+			sb.decorateWithError(node, "Cannot access name '%v' under non-nullable type '%v'. Please use the . operator to ensure type safety.", memberName, childType)
 			return newScope().Invalid().GetScope()
 		}
 
 		childNonNullableType := childType.AsNonNullable()
 		typeMember, found := childNonNullableType.ResolveMember(memberName, module, typegraph.MemberResolutionInstance)
 		if !found {
-			sb.decorateWithError(node, "Could not find instance name %v under type %v", memberName, childNonNullableType)
+			sb.decorateWithError(node, "Could not find instance name '%v' under type %v", memberName, childNonNullableType)
 			return newScope().Invalid().GetScope()
 		}
 
@@ -294,12 +294,12 @@ func (sb *scopeBuilder) scopeNullableMemberAccessExpression(node compilergraph.G
 
 	case proto.ScopeKind_GENERIC:
 		namedScope, _ := sb.getNamedScopeForScope(childScope)
-		sb.decorateWithError(node, "Cannot attempt nullable member access of %v under %v %v, as it is generic without specification", memberName, namedScope.Title(), namedScope.Name())
+		sb.decorateWithError(node, "Cannot attempt nullable member access of '%v' under %v %v, as it is generic without specification", memberName, namedScope.Title(), namedScope.Name())
 		return newScope().Invalid().GetScope()
 
 	case proto.ScopeKind_STATIC:
 		namedScope, _ := sb.getNamedScopeForScope(childScope)
-		sb.decorateWithError(node, "Cannot attempt nullable member access of %v under %v %v, as it is a static type", memberName, namedScope.Title(), namedScope.Name())
+		sb.decorateWithError(node, "Cannot attempt nullable member access of '%v' under %v %v, as it is a static type", memberName, namedScope.Title(), namedScope.Name())
 		return newScope().Invalid().GetScope()
 
 	default:
@@ -325,13 +325,13 @@ func (sb *scopeBuilder) scopeMemberAccessExpression(node compilergraph.GraphNode
 	case proto.ScopeKind_VALUE:
 		childType := childScope.ResolvedTypeRef(sb.sg.tdg)
 		if childType.IsNullable() {
-			sb.decorateWithError(node, "Cannot access name %v under nullable type '%v'. Please use the ?. operator to ensure type safety.", memberName, childType)
+			sb.decorateWithError(node, "Cannot access name '%v' under nullable type '%v'. Please use the ?. operator to ensure type safety.", memberName, childType)
 			return newScope().Invalid().GetScope()
 		}
 
 		typeMember, found := childType.ResolveMember(memberName, module, typegraph.MemberResolutionInstance)
 		if !found {
-			sb.decorateWithError(node, "Could not find instance name %v under type %v", memberName, childType)
+			sb.decorateWithError(node, "Could not find instance name '%v' under type %v", memberName, childType)
 			return newScope().Invalid().GetScope()
 		}
 
@@ -340,7 +340,7 @@ func (sb *scopeBuilder) scopeMemberAccessExpression(node compilergraph.GraphNode
 
 	case proto.ScopeKind_GENERIC:
 		namedScope, _ := sb.getNamedScopeForScope(childScope)
-		sb.decorateWithError(node, "Cannot attempt member access of %v under %v %v, as it is generic without specification", memberName, namedScope.Title(), namedScope.Name())
+		sb.decorateWithError(node, "Cannot attempt member access of '%v' under %v %v, as it is generic without specification", memberName, namedScope.Title(), namedScope.Name())
 		return newScope().Invalid().GetScope()
 
 	case proto.ScopeKind_STATIC:
@@ -348,7 +348,7 @@ func (sb *scopeBuilder) scopeMemberAccessExpression(node compilergraph.GraphNode
 		namedScope, _ := sb.getNamedScopeForScope(childScope)
 		memberScope, found := namedScope.ResolveStaticMember(memberName, module, staticType)
 		if !found {
-			sb.decorateWithError(node, "Could not find static name %v under %v %v", memberName, namedScope.Title(), namedScope.Name())
+			sb.decorateWithError(node, "Could not find static name '%v' under %v %v", memberName, namedScope.Title(), namedScope.Name())
 			return newScope().Invalid().GetScope()
 		}
 

@@ -1,4 +1,4 @@
-var<int> someVar
+var<int> someVar = 2
 
 function<void> DoSomething() {
 	/* memberref */someVar

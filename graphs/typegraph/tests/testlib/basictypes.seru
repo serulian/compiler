@@ -16,11 +16,18 @@ interface Releasable {
 @•typealias('function')
 class Function<T> {}
 
+class FakeIntStream {
+	property<int> CurrentValue {
+		get {
+			return 2
+		}
+	}
+}
+
 @•typealias('int')
 class Integer {
 	operator Range(start int, end int) {
-		var<Stream<int>> s
-		return s
+		return FakeIntStream.new()
 	}
 
 	// TODO: remove once we scope constructors

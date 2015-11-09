@@ -5,7 +5,11 @@ interface ISomeInterface {
 	function<void> DoSomething()	
 }
 
+class AnotherClass {
+	function<void> DoSomething() {}
+}
+
 function<void> DoSomething() {
-	var<ISomeInterface> isi
+	var<ISomeInterface> isi = AnotherClass.new()
 	isi.(SomeClass)
 }
