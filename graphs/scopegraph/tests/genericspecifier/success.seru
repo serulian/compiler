@@ -1,0 +1,21 @@
+class SomeClass<T> {
+	constructor Build(someParam T) {
+		var<SomeClass<T>> sc
+		return sc
+	}
+}
+
+function<T?> SomeFunction<T, Q>(someparam Q) {
+	return null
+}
+
+function<void> DoSomething() {
+	/* someclassint */(SomeClass<int>)
+	/* someclassintbuild */(SomeClass<int>.Build)
+
+	/* someclassbool */(SomeClass<bool>)
+	/* someclassboolbuild */(SomeClass<bool>.Build)
+
+	/* somefuncintbool */(SomeFunction<int, bool>)
+	/* somefuncboolint */(SomeFunction<bool, int>)
+}

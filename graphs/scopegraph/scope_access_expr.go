@@ -24,6 +24,90 @@ var makeStream = func(tr typegraph.TypeReference) typegraph.TypeReference {
 	return tr.AsValueOfStream()
 }
 
+// scopeGenericSpecifierExpression scopes a generic specifier in the SRG.
+func (sb *scopeBuilder) scopeGenericSpecifierExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+	// Scope the child expression.
+	childScope := sb.getScope(node.GetNode(parser.NodeGenericSpecifierChildExpr))
+	if !childScope.GetIsValid() {
+		return newScope().Invalid().GetScope()
+	}
+
+	if childScope.GetKind() != proto.ScopeKind_GENERIC {
+		sb.decorateWithError(node, "Cannot apply generics to non-generic scope")
+		return newScope().Invalid().GetScope()
+	}
+
+	// Retrieve the underlying named scope.
+	namedScope, isNamedScope := sb.getNamedScopeForScope(childScope)
+	if !isNamedScope {
+		panic("Generic non-named scope")
+	}
+
+	var genericType = namedScope.ValueOrGenericType()
+	if namedScope.IsStatic() {
+		genericType = namedScope.StaticType()
+	}
+
+	genericsToReplace := namedScope.Generics()
+	if len(genericsToReplace) == 0 {
+		sb.decorateWithError(node, "Cannot apply generics to non-generic type %v", genericType)
+		return newScope().Invalid().GetScope()
+	}
+
+	git := node.StartQuery().
+		Out(parser.NodeGenericSpecifierType).
+		BuildNodeIterator()
+
+	var genericIndex = 0
+	for git.Next() {
+		// Ensure we haven't gone outside the required number of generics.
+		if genericIndex >= len(genericsToReplace) {
+			genericIndex++
+			continue
+		}
+
+		// Build the type to use in place of the generic.
+		replacementType, gerr := sb.sg.tdg.BuildTypeRef(sb.sg.srg.GetTypeRef(git.Node()))
+		if gerr != nil {
+			sb.decorateWithError(node, "Error on type #%v in generic specifier: %v", gerr, genericIndex+1)
+			return newScope().Invalid().GetScope()
+		}
+
+		// Ensure that the type meets the generic constraint.
+		toReplace := genericsToReplace[genericIndex]
+		if serr := replacementType.CheckSubTypeOf(toReplace.Constraint()); serr != nil {
+			sb.decorateWithError(node, "Cannot use type %v as generic %v (#%v) over %v %v: %v", replacementType, toReplace.Name(), genericIndex+1, namedScope.Title(), namedScope.Name(), serr)
+			return newScope().Invalid().GetScope()
+		}
+
+		// Replace the generic with the associated type.
+		genericType = genericType.ReplaceType(toReplace.GraphNode, replacementType)
+		genericIndex = genericIndex + 1
+	}
+
+	if genericIndex != len(genericsToReplace) {
+		sb.decorateWithError(node, "Generic count must match. Found: %v, expected: %v on %v %v", genericIndex, len(genericsToReplace), namedScope.Title(), namedScope.Name())
+		return newScope().Invalid().GetScope()
+	}
+
+	// Save the updated type.
+	if namedScope.IsStatic() {
+		return newScope().
+			Valid().
+			ForNamedScope(namedScope).
+			WithStaticType(genericType).
+			WithKind(proto.ScopeKind_STATIC).
+			GetScope()
+	} else {
+		return newScope().
+			Valid().
+			ForNamedScope(namedScope).
+			Resolving(genericType).
+			WithKind(proto.ScopeKind_VALUE).
+			GetScope()
+	}
+}
+
 // scopeCastExpression scopes a cast expression in the SRG.
 func (sb *scopeBuilder) scopeCastExpression(node compilergraph.GraphNode) proto.ScopeInfo {
 	// Scope the child expression.
@@ -260,14 +344,15 @@ func (sb *scopeBuilder) scopeMemberAccessExpression(node compilergraph.GraphNode
 		return newScope().Invalid().GetScope()
 
 	case proto.ScopeKind_STATIC:
+		staticType := childScope.StaticTypeRef(sb.sg.tdg)
 		namedScope, _ := sb.getNamedScopeForScope(childScope)
-		memberScope, found := namedScope.ResolveStaticMember(memberName, module)
+		memberScope, found := namedScope.ResolveStaticMember(memberName, module, staticType)
 		if !found {
 			sb.decorateWithError(node, "Could not find static name %v under %v %v", memberName, namedScope.Title(), namedScope.Name())
 			return newScope().Invalid().GetScope()
 		}
 
-		return newScope().ForNamedScope(memberScope).GetScope()
+		return newScope().ForNamedScopeUnderType(memberScope, staticType).GetScope()
 
 	default:
 		panic("Unknown scope kind")

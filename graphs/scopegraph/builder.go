@@ -164,6 +164,9 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 	case parser.NodeFunctionCallExpression:
 		return sb.scopeFunctionCallExpression
 
+	case parser.NodeGenericSpecifierExpression:
+		return sb.scopeGenericSpecifierExpression
+
 	// Literal expressions.
 	case parser.NodeBooleanLiteralExpression:
 		return sb.scopeBooleanLiteralExpression

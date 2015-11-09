@@ -63,6 +63,20 @@ func (tn TGMember) HasGenerics() bool {
 	return isGeneric
 }
 
+// Generics returns the generics on this member.
+func (tn TGMember) Generics() []TGGeneric {
+	it := tn.GraphNode.StartQuery().
+		Out(NodePredicateMemberGeneric).
+		BuildNodeIterator()
+
+	var generics = make([]TGGeneric, 0)
+	for it.Next() {
+		generics = append(generics, TGGeneric{it.Node(), tn.tdg})
+	}
+
+	return generics
+}
+
 // ParentType returns the type containing this member, if any.
 func (tn TGMember) ParentType() (TGTypeDecl, bool) {
 	typeNode, hasType := tn.GraphNode.StartQuery().

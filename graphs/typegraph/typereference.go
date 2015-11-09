@@ -732,9 +732,20 @@ func (tr TypeReference) ReplaceType(typeNode compilergraph.GraphNode, replacemen
 	searchString := typeNodeRef.lengthPrefixedValue()
 	replacementStr := replacement.lengthPrefixedValue()
 
+	updatedStr := strings.Replace(tr.value, searchString, replacementStr, -1)
+
+	// Also replace the nullable version.
+	tnNullable := typeNodeRef.AsNullable()
+	replacementNullable := replacement.AsNullable()
+
+	nullableSearchString := tnNullable.lengthPrefixedValue()
+	nullableReplacementStr := replacementNullable.lengthPrefixedValue()
+
+	nullableUpdatedStr := strings.Replace(updatedStr, nullableSearchString, nullableReplacementStr, -1)
+
 	return TypeReference{
 		tdg:   tr.tdg,
-		value: strings.Replace(tr.value, searchString, replacementStr, -1),
+		value: nullableUpdatedStr,
 	}
 }
 

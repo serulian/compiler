@@ -588,6 +588,37 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"this under static member test", "thisliteral", "staticmember",
 		[]expectedScopeEntry{},
 		"The 'this' keyword cannot be used under static type member Build", ""},
+
+	/////////// generic specifier expression ///////////
+
+	scopegraphTest{"generic specifier expression success test", "genericspecifier", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"someclassint", expectedScope{true, proto.ScopeKind_STATIC, "void", "void"}},
+			expectedScopeEntry{"someclassbool", expectedScope{true, proto.ScopeKind_STATIC, "void", "void"}},
+
+			expectedScopeEntry{"someclassintbuild", expectedScope{true, proto.ScopeKind_VALUE, "Function<SomeClass<Integer>>(Integer)", "void"}},
+			expectedScopeEntry{"someclassboolbuild", expectedScope{true, proto.ScopeKind_VALUE, "Function<SomeClass<Boolean>>(Boolean)", "void"}},
+
+			expectedScopeEntry{"somefuncintbool", expectedScope{true, proto.ScopeKind_VALUE, "Function<Integer?>(Boolean)", "void"}},
+			expectedScopeEntry{"somefuncboolint", expectedScope{true, proto.ScopeKind_VALUE, "Function<Boolean?>(Integer)", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"generic specifier non-generic test", "genericspecifier", "nongeneric",
+		[]expectedScopeEntry{},
+		"Cannot apply generics to non-generic scope", ""},
+
+	scopegraphTest{"generic specifier not enough generics test", "genericspecifier", "countmismatch",
+		[]expectedScopeEntry{},
+		"Generic count must match. Found: 1, expected: 2 on type SomeClass", ""},
+
+	scopegraphTest{"generic specifier too many generics test", "genericspecifier", "countmismatch2",
+		[]expectedScopeEntry{},
+		"Generic count must match. Found: 2, expected: 1 on type SomeClass", ""},
+
+	scopegraphTest{"generic specifier constraint failure test", "genericspecifier", "constraintfail",
+		[]expectedScopeEntry{},
+		"Cannot use type Boolean as generic T (#1) over type SomeClass: Type 'Boolean' does not define or export member 'DoSomething', which is required by type 'ISomeInterface'", ""},
 }
 
 func TestGraphs(t *testing.T) {

@@ -1,0 +1,5 @@
+class SomeClass {}
+
+function<void> DoSomething() {
+	SomeClass<int>
+}

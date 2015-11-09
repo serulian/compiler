@@ -56,6 +56,13 @@ func (sib *scopeInfoBuilder) Resolving(resolved typegraph.TypeReference) *scopeI
 	return sib
 }
 
+// WithStaticType marks the scope as having the given static type.
+func (sib *scopeInfoBuilder) WithStaticType(static typegraph.TypeReference) *scopeInfoBuilder {
+	staticValue := static.Value()
+	sib.info.StaticType = &staticValue
+	return sib
+}
+
 // AssignableResolvedTypeOf marks the scope as being assignable of the *resolved* type of the given scope.
 func (sib *scopeInfoBuilder) AssignableResolvedTypeOf(scope *proto.ScopeInfo) *scopeInfoBuilder {
 	resolvedValue := scope.GetResolvedType()
@@ -115,11 +122,18 @@ func (sib *scopeInfoBuilder) ForNamedScope(info namedScopeInfo) *scopeInfoBuilde
 	} else if info.IsStatic() {
 		staticKind := proto.ScopeKind_STATIC
 		sib.info.Kind = &staticKind
+		sib.WithStaticType(info.StaticType())
 	}
 
 	namedId := string(info.srgInfo.GraphNode.NodeId)
 	sib.info.NamedReferenceNode = &namedId
 	return sib.Resolving(info.ValueType()).Valid()
+}
+
+// WithKind sets the kind of this scope to the given kind.
+func (sib *scopeInfoBuilder) WithKind(kind proto.ScopeKind) *scopeInfoBuilder {
+	sib.info.Kind = &kind
+	return sib
 }
 
 // GetScope returns the scope constructed.

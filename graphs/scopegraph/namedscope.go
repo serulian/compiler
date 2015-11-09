@@ -105,15 +105,14 @@ func (nsi *namedScopeInfo) Name() string {
 
 // ResolveStaticMember attempts to resolve a member (child) with the given name under this named scope, which
 // must be Static.
-func (nsi *namedScopeInfo) ResolveStaticMember(name string, module compilercommon.InputSource) (namedScopeInfo, bool) {
+func (nsi *namedScopeInfo) ResolveStaticMember(name string, module compilercommon.InputSource, staticType typegraph.TypeReference) (namedScopeInfo, bool) {
 	if !nsi.IsStatic() {
 		return namedScopeInfo{}, false
 	}
 
 	switch nsi.srgInfo.ScopeKind() {
 	case srg.NamedScopeType:
-		parentType := nsi.TypeInfo().GetTypeReference()
-		typeMember, found := parentType.ResolveMember(name, module, typegraph.MemberResolutionStatic)
+		typeMember, found := staticType.ResolveMember(name, module, typegraph.MemberResolutionStatic)
 		if !found {
 			return namedScopeInfo{}, false
 		}
@@ -165,10 +164,40 @@ func (nsi *namedScopeInfo) MemberInfo() typegraph.TGMember {
 	return member
 }
 
+// StaticType returns the static type of the named scope. For scopes that are not static,
+// will panic.
+func (nsi *namedScopeInfo) StaticType() typegraph.TypeReference {
+	if !nsi.IsStatic() {
+		panic("Cannot call StaticType on non-static scope")
+	}
+
+	switch nsi.srgInfo.ScopeKind() {
+	case srg.NamedScopeType:
+		return nsi.TypeInfo().GetTypeReference()
+
+	case srg.NamedScopeImport:
+		return nsi.sb.sg.tdg.VoidTypeReference()
+
+	default:
+		panic("Unknown static scope kind")
+		return nsi.sb.sg.tdg.VoidTypeReference()
+	}
+}
+
 // ValueType returns the value type of the named scope. For scopes without types,
 // this method will return void.
 func (nsi *namedScopeInfo) ValueType() typegraph.TypeReference {
 	if nsi.IsStatic() || nsi.IsGeneric() {
+		return nsi.sb.sg.tdg.VoidTypeReference()
+	}
+
+	return nsi.ValueOrGenericType()
+}
+
+// ValueOrGenericType returns the value type of the named scope. For scopes without types,
+// this method will return void.
+func (nsi *namedScopeInfo) ValueOrGenericType() typegraph.TypeReference {
+	if nsi.IsStatic() {
 		return nsi.sb.sg.tdg.VoidTypeReference()
 	}
 
@@ -265,6 +294,24 @@ func (nsi *namedScopeInfo) IsStatic() bool {
 
 	case srg.NamedScopeMember:
 		return false
+
+	default:
+		panic(fmt.Sprintf("Unknown named scope type: %v", nsi.srgInfo.ScopeKind()))
+	}
+}
+
+// Generics returns the generics defined on the named scope, if any.
+func (nsi *namedScopeInfo) Generics() []typegraph.TGGeneric {
+	if !nsi.IsGeneric() {
+		return make([]typegraph.TGGeneric, 0)
+	}
+
+	switch nsi.srgInfo.ScopeKind() {
+	case srg.NamedScopeType:
+		return nsi.TypeInfo().Generics()
+
+	case srg.NamedScopeMember:
+		return nsi.MemberInfo().Generics()
 
 	default:
 		panic(fmt.Sprintf("Unknown named scope type: %v", nsi.srgInfo.ScopeKind()))

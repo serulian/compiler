@@ -126,6 +126,29 @@ func TestBasicReferenceOperations(t *testing.T) {
 	assert.True(t, replaced.ContainsType(replacementNode))
 }
 
+func TestReplaceTypeNullable(t *testing.T) {
+	testTG := newTypeGraph(t)
+
+	firstTypeNode := testTG.layer.CreateNode(NodeTypeClass)
+	secondTypeNode := testTG.layer.CreateNode(NodeTypeClass)
+	thirdTypeNode := testTG.layer.CreateNode(NodeTypeClass)
+	fourthTypeNode := testTG.layer.CreateNode(NodeTypeClass)
+
+	firstTypeNode.Decorate(NodePredicateTypeName, "First")
+	secondTypeNode.Decorate(NodePredicateTypeName, "Second")
+	thirdTypeNode.Decorate(NodePredicateTypeName, "Third")
+	fourthTypeNode.Decorate(NodePredicateTypeName, "Fourth")
+
+	secondRef := testTG.NewTypeReference(secondTypeNode).AsNullable()
+	firstRef := testTG.NewTypeReference(firstTypeNode, secondRef)
+
+	assert.Equal(t, "First<Second?>", firstRef.String())
+
+	// Replace the Second with third.
+	newRef := firstRef.ReplaceType(secondTypeNode, testTG.NewTypeReference(thirdTypeNode))
+	assert.Equal(t, "First<Third?>", newRef.String())
+}
+
 func TestSpecialReferenceOperations(t *testing.T) {
 	testTG := newTypeGraph(t)
 

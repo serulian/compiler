@@ -63,11 +63,12 @@ func (x *ScopeKind) UnmarshalJSON(data []byte) error {
 type ScopeInfo struct {
 	IsValid                *bool      `protobuf:"varint,1,opt,name=IsValid" json:"IsValid,omitempty"`
 	Kind                   *ScopeKind `protobuf:"varint,2,opt,name=Kind,enum=proto.ScopeKind,def=0" json:"Kind,omitempty"`
-	NamedReferenceNode     *string    `protobuf:"bytes,7,opt,name=NamedReferenceNode" json:"NamedReferenceNode,omitempty"`
+	NamedReferenceNode     *string    `protobuf:"bytes,8,opt,name=NamedReferenceNode" json:"NamedReferenceNode,omitempty"`
 	ResolvedType           *string    `protobuf:"bytes,3,opt,name=ResolvedType" json:"ResolvedType,omitempty"`
 	ReturnedType           *string    `protobuf:"bytes,4,opt,name=ReturnedType" json:"ReturnedType,omitempty"`
 	AssignableType         *string    `protobuf:"bytes,5,opt,name=AssignableType" json:"AssignableType,omitempty"`
-	IsTerminatingStatement *bool      `protobuf:"varint,6,opt,name=IsTerminatingStatement" json:"IsTerminatingStatement,omitempty"`
+	StaticType             *string    `protobuf:"bytes,6,opt,name=StaticType" json:"StaticType,omitempty"`
+	IsTerminatingStatement *bool      `protobuf:"varint,7,opt,name=IsTerminatingStatement" json:"IsTerminatingStatement,omitempty"`
 	XXX_unrecognized       []byte     `json:"-"`
 }
 
@@ -115,6 +116,13 @@ func (m *ScopeInfo) GetReturnedType() string {
 func (m *ScopeInfo) GetAssignableType() string {
 	if m != nil && m.AssignableType != nil {
 		return *m.AssignableType
+	}
+	return ""
+}
+
+func (m *ScopeInfo) GetStaticType() string {
+	if m != nil && m.StaticType != nil {
+		return *m.StaticType
 	}
 	return ""
 }
@@ -177,8 +185,14 @@ func (m *ScopeInfo) MarshalTo(data []byte) (int, error) {
 		i = encodeVarintScopeinfo(data, i, uint64(len(*m.AssignableType)))
 		i += copy(data[i:], *m.AssignableType)
 	}
+	if m.StaticType != nil {
+		data[i] = 0x32
+		i++
+		i = encodeVarintScopeinfo(data, i, uint64(len(*m.StaticType)))
+		i += copy(data[i:], *m.StaticType)
+	}
 	if m.IsTerminatingStatement != nil {
-		data[i] = 0x30
+		data[i] = 0x38
 		i++
 		if *m.IsTerminatingStatement {
 			data[i] = 1
@@ -188,7 +202,7 @@ func (m *ScopeInfo) MarshalTo(data []byte) (int, error) {
 		i++
 	}
 	if m.NamedReferenceNode != nil {
-		data[i] = 0x3a
+		data[i] = 0x42
 		i++
 		i = encodeVarintScopeinfo(data, i, uint64(len(*m.NamedReferenceNode)))
 		i += copy(data[i:], *m.NamedReferenceNode)
@@ -245,6 +259,10 @@ func (m *ScopeInfo) Size() (n int) {
 	}
 	if m.AssignableType != nil {
 		l = len(*m.AssignableType)
+		n += 1 + l + sovScopeinfo(uint64(l))
+	}
+	if m.StaticType != nil {
+		l = len(*m.StaticType)
 		n += 1 + l + sovScopeinfo(uint64(l))
 	}
 	if m.IsTerminatingStatement != nil {
@@ -434,6 +452,36 @@ func (m *ScopeInfo) Unmarshal(data []byte) error {
 			m.AssignableType = &s
 			iNdEx = postIndex
 		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StaticType", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowScopeinfo
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				stringLen |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthScopeinfo
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			s := string(data[iNdEx:postIndex])
+			m.StaticType = &s
+			iNdEx = postIndex
+		case 7:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field IsTerminatingStatement", wireType)
 			}
@@ -454,7 +502,7 @@ func (m *ScopeInfo) Unmarshal(data []byte) error {
 			}
 			b := bool(v != 0)
 			m.IsTerminatingStatement = &b
-		case 7:
+		case 8:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field NamedReferenceNode", wireType)
 			}
