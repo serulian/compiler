@@ -44,6 +44,9 @@ const (
 	// Connects a type node to its SRG declaration/definition.
 	NodePredicateSource = "srg-source"
 
+	// Decorates a type node with its SRG module.
+	NodePredicateModule = "srg-module"
+
 	//
 	// NodeTypeError
 	//

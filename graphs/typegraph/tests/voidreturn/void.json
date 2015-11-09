@@ -19,10 +19,10 @@
                     }
                 }
             },
-            "7e5e3c2c7eab1aae7aa9f9a15e0e9626": {
+            "b945044cf3c35128f655a9506afb537d": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "7e5e3c2c7eab1aae7aa9f9a15e0e9626",
+                    "Key": "b945044cf3c35128f655a9506afb537d",
                     "Kind": 4,
                     "Children": {
                         "69e4aa590caed84142a39b2b808efa11": {
@@ -46,6 +46,7 @@
                         "tdg-member-resolved-type": "Function\u003cvoid\u003e(Function\u003cvoid\u003e(T))",
                         "tdg-member-signature": "\n\tAwaitNext\u0010\u0002\u0018\u0000 \u0001*!Function\u003cvoid\u003e(Function\u003cvoid\u003e(T))",
                         "tdg-node-kind": "4|NodeType|tdg",
+                        "tdg-srg-module": "tests/testlib/basictypes.seru",
                         "tdg-srg-source": "(NodeRef)"
                     }
                 }
@@ -62,10 +63,10 @@
         "Key": "5655ba59997607f736afcf6a76bd989e",
         "Kind": 2,
         "Children": {
-            "d99b9fdb91ee2af83d283cc4096c4f58": {
+            "b8ed99bb7427d4385c8ed69b8e6b1260": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "d99b9fdb91ee2af83d283cc4096c4f58",
+                    "Key": "b8ed99bb7427d4385c8ed69b8e6b1260",
                     "Kind": 4,
                     "Children": {
                         "69e4aa590caed84142a39b2b808efa11": {
@@ -89,6 +90,7 @@
                         "tdg-member-resolved-type": "Function\u003cvoid\u003e",
                         "tdg-member-signature": "\n\u0007Release\u0010\u0002\u0018\u0000 \u0001*\u000eFunction\u003cvoid\u003e",
                         "tdg-node-kind": "4|NodeType|tdg",
+                        "tdg-srg-module": "tests/testlib/basictypes.seru",
                         "tdg-srg-source": "(NodeRef)"
                     }
                 }
@@ -105,10 +107,10 @@
         "Key": "6682551d772ec9bd53921251ac094668",
         "Kind": 3,
         "Children": {
-            "007d48e1a8954946f70d282d137c8163": {
+            "c3ca67ff76b448b0f4ec576f5e645540": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "007d48e1a8954946f70d282d137c8163",
+                    "Key": "c3ca67ff76b448b0f4ec576f5e645540",
                     "Kind": 4,
                     "Children": {
                         "69e4aa590caed84142a39b2b808efa11": {
@@ -132,6 +134,7 @@
                         "tdg-member-resolved-type": "Function\u003cvoid\u003e",
                         "tdg-member-signature": "\n\u0010SomeVoidFunction\u0010\u0002\u0018\u0000 \u0001*\u000eFunction\u003cvoid\u003e",
                         "tdg-node-kind": "4|NodeType|tdg",
+                        "tdg-srg-module": "tests/voidreturn/void.seru",
                         "tdg-srg-source": "(NodeRef)"
                     }
                 }
@@ -147,10 +150,10 @@
         "Key": "794a5310bd2bca2ab8beaeb7b7004af5",
         "Kind": 1,
         "Children": {
-            "1a44ef4067277c69e8ca63711349a8a9": {
+            "6b343e96df3073186b72a295237345d0": {
                 "Predicate": "tdg-declaration-operator",
                 "Child": {
-                    "Key": "1a44ef4067277c69e8ca63711349a8a9",
+                    "Key": "6b343e96df3073186b72a295237345d0",
                     "Kind": 5,
                     "Children": {
                         "a85c7aab6596946e31ed4419f28c08cc": {
@@ -174,30 +177,17 @@
                         "tdg-member-signature": "\n\u0005range\u0010\u0005\u0018\u0000 \u0001*\u0003any",
                         "tdg-node-kind": "5|NodeType|tdg",
                         "tdg-operator-name": "range",
+                        "tdg-srg-module": "tests/testlib/basictypes.seru",
                         "tdg-srg-source": "(NodeRef)"
                     }
                 }
             },
-            "23287ac8d733f5932c68a9270b5af720": {
+            "6cfccddd98302f6b61215051c2bbc599": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "23287ac8d733f5932c68a9270b5af720",
+                    "Key": "6cfccddd98302f6b61215051c2bbc599",
                     "Kind": 4,
-                    "Children": {
-                        "80ca9847fdc8406e5c0e3724344fcc53": {
-                            "Predicate": "tdg-member-returnable",
-                            "Child": {
-                                "Key": "80ca9847fdc8406e5c0e3724344fcc53",
-                                "Kind": 6,
-                                "Children": {},
-                                "Predicates": {
-                                    "tdg-node-kind": "6|NodeType|tdg",
-                                    "tdg-return-type": "Integer",
-                                    "tdg-srg-source": "(NodeRef)"
-                                }
-                            }
-                        }
-                    },
+                    "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
                         "tdg-member-readonly": "true",
@@ -205,14 +195,14 @@
                         "tdg-member-signature": "\n\u0004name\u0010\n\u0018\u0000 \u0000*\u0011Function\u003cInteger\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "4|NodeType|tdg",
-                        "tdg-srg-source": "(NodeRef)"
+                        "tdg-srg-module": "tests/testlib/basictypes.seru"
                     }
                 }
             },
-            "d99b9fdb91ee2af83d283cc4096c4f58": {
+            "b8ed99bb7427d4385c8ed69b8e6b1260": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "d99b9fdb91ee2af83d283cc4096c4f58",
+                    "Key": "b8ed99bb7427d4385c8ed69b8e6b1260",
                     "Kind": 4,
                     "Children": {
                         "69e4aa590caed84142a39b2b808efa11": {
@@ -236,6 +226,7 @@
                         "tdg-member-resolved-type": "Function\u003cvoid\u003e",
                         "tdg-member-signature": "\n\u0007Release\u0010\u0002\u0018\u0000 \u0001*\u000eFunction\u003cvoid\u003e",
                         "tdg-node-kind": "4|NodeType|tdg",
+                        "tdg-srg-module": "tests/testlib/basictypes.seru",
                         "tdg-srg-source": "(NodeRef)"
                     }
                 }
@@ -252,6 +243,23 @@
         "Key": "83a803f30d7c5f6aea39b0cd4d03c407",
         "Kind": 1,
         "Children": {
+            "1c8eed52fd7021705def866c52430990": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "1c8eed52fd7021705def866c52430990",
+                    "Kind": 4,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-name": "new",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "Function\u003cFunction\u003cT\u003e\u003e",
+                        "tdg-member-signature": "\n\u0004name\u0010\n\u0018\u0000 \u0000*\u0015Function\u003cFunction\u003cT\u003e\u003e",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "4|NodeType|tdg",
+                        "tdg-srg-module": "tests/testlib/basictypes.seru"
+                    }
+                }
+            },
             "239e334ea86d27bcba0b318dad811725": {
                 "Predicate": "tdg-declaration-generic",
                 "Child": {
@@ -264,37 +272,6 @@
                         "tdg-generic-name": "T",
                         "tdg-generic-subtype": "any",
                         "tdg-node-kind": "7|NodeType|tdg",
-                        "tdg-srg-source": "(NodeRef)"
-                    }
-                }
-            },
-            "971f42d5861d27364d241576dfc92bb8": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "971f42d5861d27364d241576dfc92bb8",
-                    "Kind": 4,
-                    "Children": {
-                        "5c494138d9c0a15d0f66a0a30e78eb6d": {
-                            "Predicate": "tdg-member-returnable",
-                            "Child": {
-                                "Key": "5c494138d9c0a15d0f66a0a30e78eb6d",
-                                "Kind": 6,
-                                "Children": {},
-                                "Predicates": {
-                                    "tdg-node-kind": "6|NodeType|tdg",
-                                    "tdg-return-type": "Function\u003cT\u003e",
-                                    "tdg-srg-source": "(NodeRef)"
-                                }
-                            }
-                        }
-                    },
-                    "Predicates": {
-                        "tdg-member-name": "new",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "Function\u003cFunction\u003cT\u003e\u003e",
-                        "tdg-member-signature": "\n\u0004name\u0010\n\u0018\u0000 \u0000*\u0015Function\u003cFunction\u003cT\u003e\u003e",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "4|NodeType|tdg",
                         "tdg-srg-source": "(NodeRef)"
                     }
                 }
@@ -327,26 +304,12 @@
                     }
                 }
             },
-            "8ef89092e609ceb55a198bf4a3f0f317": {
+            "b3dee4455f4e05ebcda1230769e700b5": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "8ef89092e609ceb55a198bf4a3f0f317",
+                    "Key": "b3dee4455f4e05ebcda1230769e700b5",
                     "Kind": 4,
-                    "Children": {
-                        "040884b70e3dd7f0226f5036731d5faf": {
-                            "Predicate": "tdg-member-returnable",
-                            "Child": {
-                                "Key": "040884b70e3dd7f0226f5036731d5faf",
-                                "Kind": 6,
-                                "Children": {},
-                                "Predicates": {
-                                    "tdg-node-kind": "6|NodeType|tdg",
-                                    "tdg-return-type": "List\u003cT\u003e",
-                                    "tdg-srg-source": "(NodeRef)"
-                                }
-                            }
-                        }
-                    },
+                    "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
                         "tdg-member-readonly": "true",
@@ -354,7 +317,7 @@
                         "tdg-member-signature": "\n\u0004name\u0010\n\u0018\u0000 \u0000*\u0011Function\u003cList\u003cT\u003e\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "4|NodeType|tdg",
-                        "tdg-srg-source": "(NodeRef)"
+                        "tdg-srg-module": "tests/testlib/basictypes.seru"
                     }
                 }
             }
@@ -370,10 +333,27 @@
         "Key": "8d0103a5454ba406bf4312dde234746c",
         "Kind": 1,
         "Children": {
-            "c56fc72f800f97a21f3486a8d0b64d99": {
+            "32e3364952282fec5353fc115f33adfe": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "c56fc72f800f97a21f3486a8d0b64d99",
+                    "Key": "32e3364952282fec5353fc115f33adfe",
+                    "Kind": 4,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-name": "new",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "Function\u003cFakeIntStream\u003e",
+                        "tdg-member-signature": "\n\u0004name\u0010\n\u0018\u0000 \u0000*\u0017Function\u003cFakeIntStream\u003e",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "4|NodeType|tdg",
+                        "tdg-srg-module": "tests/testlib/basictypes.seru"
+                    }
+                }
+            },
+            "d6ab9fc2627440ec757286f16d6e42b8": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "d6ab9fc2627440ec757286f16d6e42b8",
                     "Kind": 4,
                     "Children": {
                         "80ca9847fdc8406e5c0e3724344fcc53": {
@@ -397,37 +377,7 @@
                         "tdg-member-resolved-type": "Integer",
                         "tdg-member-signature": "\n\u000cCurrentValue\u0010\u0003\u0018\u0000 \u0001*\u0007Integer",
                         "tdg-node-kind": "4|NodeType|tdg",
-                        "tdg-srg-source": "(NodeRef)"
-                    }
-                }
-            },
-            "fbf51f4aaa61e3677ccf66ead8c00097": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "fbf51f4aaa61e3677ccf66ead8c00097",
-                    "Kind": 4,
-                    "Children": {
-                        "5dbc9094a0fc3c19104f7b3fc1bab049": {
-                            "Predicate": "tdg-member-returnable",
-                            "Child": {
-                                "Key": "5dbc9094a0fc3c19104f7b3fc1bab049",
-                                "Kind": 6,
-                                "Children": {},
-                                "Predicates": {
-                                    "tdg-node-kind": "6|NodeType|tdg",
-                                    "tdg-return-type": "FakeIntStream",
-                                    "tdg-srg-source": "(NodeRef)"
-                                }
-                            }
-                        }
-                    },
-                    "Predicates": {
-                        "tdg-member-name": "new",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "Function\u003cFakeIntStream\u003e",
-                        "tdg-member-signature": "\n\u0004name\u0010\n\u0018\u0000 \u0000*\u0017Function\u003cFakeIntStream\u003e",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "4|NodeType|tdg",
+                        "tdg-srg-module": "tests/testlib/basictypes.seru",
                         "tdg-srg-source": "(NodeRef)"
                     }
                 }
@@ -460,10 +410,10 @@
                     }
                 }
             },
-            "a046a3582fd4c77968f11c35e7e4d1de": {
+            "6543a225e78731d13f3c987bb6670a47": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "a046a3582fd4c77968f11c35e7e4d1de",
+                    "Key": "6543a225e78731d13f3c987bb6670a47",
                     "Kind": 4,
                     "Children": {},
                     "Predicates": {
@@ -473,6 +423,7 @@
                         "tdg-member-resolved-type": "T",
                         "tdg-member-signature": "\n\u000cCurrentValue\u0010\u0003\u0018\u0000 \u0001*\u0001T",
                         "tdg-node-kind": "4|NodeType|tdg",
+                        "tdg-srg-module": "tests/testlib/basictypes.seru",
                         "tdg-srg-source": "(NodeRef)"
                     }
                 }
@@ -489,26 +440,12 @@
         "Key": "a37acd1c9467a0f9cbd40d159215daf1",
         "Kind": 1,
         "Children": {
-            "f38ebd408b43d32e3663d180113117b0": {
+            "39025996f33d170857db3efeb5c152b5": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "f38ebd408b43d32e3663d180113117b0",
+                    "Key": "39025996f33d170857db3efeb5c152b5",
                     "Kind": 4,
-                    "Children": {
-                        "ce14eddd2359ecfc822eee0ab207fa40": {
-                            "Predicate": "tdg-member-returnable",
-                            "Child": {
-                                "Key": "ce14eddd2359ecfc822eee0ab207fa40",
-                                "Kind": 6,
-                                "Children": {},
-                                "Predicates": {
-                                    "tdg-node-kind": "6|NodeType|tdg",
-                                    "tdg-return-type": "Boolean",
-                                    "tdg-srg-source": "(NodeRef)"
-                                }
-                            }
-                        }
-                    },
+                    "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
                         "tdg-member-readonly": "true",
@@ -516,7 +453,7 @@
                         "tdg-member-signature": "\n\u0004name\u0010\n\u0018\u0000 \u0000*\u0011Function\u003cBoolean\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "4|NodeType|tdg",
-                        "tdg-srg-source": "(NodeRef)"
+                        "tdg-srg-module": "tests/testlib/basictypes.seru"
                     }
                 }
             }
@@ -532,26 +469,12 @@
         "Key": "c5bf685c9118e9f413e28b3ea87421da",
         "Kind": 1,
         "Children": {
-            "9f7204c8a3fb3d8ff4b198d980ca336b": {
+            "421b22e97aad590e48032e789f835fda": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "9f7204c8a3fb3d8ff4b198d980ca336b",
+                    "Key": "421b22e97aad590e48032e789f835fda",
                     "Kind": 4,
-                    "Children": {
-                        "09846e29b8268e2155442642475a9a2a": {
-                            "Predicate": "tdg-member-returnable",
-                            "Child": {
-                                "Key": "09846e29b8268e2155442642475a9a2a",
-                                "Kind": 6,
-                                "Children": {},
-                                "Predicates": {
-                                    "tdg-node-kind": "6|NodeType|tdg",
-                                    "tdg-return-type": "Float64",
-                                    "tdg-srg-source": "(NodeRef)"
-                                }
-                            }
-                        }
-                    },
+                    "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
                         "tdg-member-readonly": "true",
@@ -559,7 +482,7 @@
                         "tdg-member-signature": "\n\u0004name\u0010\n\u0018\u0000 \u0000*\u0011Function\u003cFloat64\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "4|NodeType|tdg",
-                        "tdg-srg-source": "(NodeRef)"
+                        "tdg-srg-module": "tests/testlib/basictypes.seru"
                     }
                 }
             }
@@ -591,26 +514,12 @@
                     }
                 }
             },
-            "260221f68ab36dcbb992cf4df7815325": {
+            "30189ec006a49b5f3c43c48725135ebc": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "260221f68ab36dcbb992cf4df7815325",
+                    "Key": "30189ec006a49b5f3c43c48725135ebc",
                     "Kind": 4,
-                    "Children": {
-                        "da208e62efa33afe3fd99b159096d852": {
-                            "Predicate": "tdg-member-returnable",
-                            "Child": {
-                                "Key": "da208e62efa33afe3fd99b159096d852",
-                                "Kind": 6,
-                                "Children": {},
-                                "Predicates": {
-                                    "tdg-node-kind": "6|NodeType|tdg",
-                                    "tdg-return-type": "Map\u003cT, Q\u003e",
-                                    "tdg-srg-source": "(NodeRef)"
-                                }
-                            }
-                        }
-                    },
+                    "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
                         "tdg-member-readonly": "true",
@@ -618,7 +527,7 @@
                         "tdg-member-signature": "\n\u0004name\u0010\n\u0018\u0000 \u0000*\u0013Function\u003cMap\u003cT, Q\u003e\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "4|NodeType|tdg",
-                        "tdg-srg-source": "(NodeRef)"
+                        "tdg-srg-module": "tests/testlib/basictypes.seru"
                     }
                 }
             },
@@ -650,26 +559,12 @@
         "Key": "f8695555709beadc637a085f2f01277a",
         "Kind": 1,
         "Children": {
-            "89e9eada6ec3b61506c64db40d06d04d": {
+            "4412991f632df3bf0b747ad2bba792ad": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "89e9eada6ec3b61506c64db40d06d04d",
+                    "Key": "4412991f632df3bf0b747ad2bba792ad",
                     "Kind": 4,
-                    "Children": {
-                        "6435db8e697ef61ba888b960ec78a38d": {
-                            "Predicate": "tdg-member-returnable",
-                            "Child": {
-                                "Key": "6435db8e697ef61ba888b960ec78a38d",
-                                "Kind": 6,
-                                "Children": {},
-                                "Predicates": {
-                                    "tdg-node-kind": "6|NodeType|tdg",
-                                    "tdg-return-type": "String",
-                                    "tdg-srg-source": "(NodeRef)"
-                                }
-                            }
-                        }
-                    },
+                    "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
                         "tdg-member-readonly": "true",
@@ -677,7 +572,7 @@
                         "tdg-member-signature": "\n\u0004name\u0010\n\u0018\u0000 \u0000*\u0010Function\u003cString\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "4|NodeType|tdg",
-                        "tdg-srg-source": "(NodeRef)"
+                        "tdg-srg-module": "tests/testlib/basictypes.seru"
                     }
                 }
             }

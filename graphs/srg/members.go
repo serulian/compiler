@@ -48,6 +48,13 @@ func (g *SRG) TryGetContainingMember(node compilergraph.GraphNode) (SRGMember, b
 	return SRGMember{containingNode, g}, true
 }
 
+// Module returns the module under which the member is defined.
+func (m SRGMember) Module() SRGModule {
+	source := m.GraphNode.Get(parser.NodePredicateSource)
+	module, _ := m.srg.FindModuleBySource(compilercommon.InputSource(source))
+	return module
+}
+
 // Name returns the name of this member.
 func (m SRGMember) Name() string {
 	if m.GraphNode.Kind == parser.NodeTypeOperator {

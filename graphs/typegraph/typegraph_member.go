@@ -108,8 +108,3 @@ func (tn TGMember) ReturnType() (TypeReference, bool) {
 func (tn TGMember) ParameterTypes() []TypeReference {
 	return tn.MemberType().Parameters()
 }
-
-// SRGMemberNode returns the associated SRG member node for this type graph member.
-func (tn TGMember) SRGMemberNode() compilergraph.GraphNode {
-	return tn.tdg.srg.GetNode(compilergraph.GraphNodeId(tn.Get(NodePredicateSource)))
-}

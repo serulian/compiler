@@ -14,7 +14,6 @@ import (
 	"github.com/serulian/compiler/compilerutil"
 
 	"github.com/serulian/compiler/graphs/typegraph/proto"
-	"github.com/serulian/compiler/parser"
 )
 
 // TypeReference represents a saved type reference in the graph.
@@ -587,12 +586,9 @@ func (tr TypeReference) ResolveMember(memberName string, module compilercommon.I
 	// If the member is exported, then always return it. Otherwise, only return it if the asking module
 	// is the same as the declaring module.
 	if !member.IsExported() {
-		source, found := memberNode.TryGet(NodePredicateSource)
-		if found {
-			srgSourceNode := tr.tdg.srg.GetNode(compilergraph.GraphNodeId(source))
-			if srgSourceNode.Get(parser.NodePredicateSource) != string(module) {
-				return TGMember{}, false
-			}
+		memberModule := memberNode.Get(NodePredicateModule)
+		if memberModule != string(module) {
+			return TGMember{}, false
 		}
 	}
 
