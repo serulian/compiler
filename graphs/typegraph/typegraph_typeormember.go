@@ -8,8 +8,14 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 )
 
-// TGTypeOrModule represents an interface shared by types and modules.
-type TGTypeOrModule interface {
+// TGTypeOrMember represents an interface shared by types and members.
+type TGTypeOrMember interface {
 	Name() string
+	Title() string
 	Node() compilergraph.GraphNode
+	Generics() []TGGeneric
+	HasGenerics() bool
+	IsReadOnly() bool
+	IsType() bool
+	IsStatic() bool
 }

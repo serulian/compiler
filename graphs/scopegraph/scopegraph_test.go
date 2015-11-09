@@ -443,7 +443,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"function call not function failure test", "funccall", "notfunc",
 		[]expectedScopeEntry{},
-		"Cannot invoke function call on non-function. Found: SomeClass", ""},
+		"Cannot invoke function call on non-function 'SomeClass'.", ""},
 
 	scopegraphTest{"function call invalid count failure test", "funccall", "invalidcount",
 		[]expectedScopeEntry{},
@@ -465,30 +465,30 @@ var scopeGraphTests = []scopegraphTest{
 			expectedScopeEntry{"generictype", expectedScope{true, proto.ScopeKind_GENERIC, "void", "void"}},
 			expectedScopeEntry{"prop", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
 
-			expectedScopeEntry{"genmembool", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
-			expectedScopeEntry{"genmemint", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+			expectedScopeEntry{"genmembool", expectedScope{true, proto.ScopeKind_VALUE, "Boolean?", "void"}},
+			expectedScopeEntry{"genmemint", expectedScope{true, proto.ScopeKind_VALUE, "Integer?", "void"}},
 		},
 		"", ""},
 
 	scopegraphTest{"member access static under instance failure test", "memberaccess", "staticunderinstance",
 		[]expectedScopeEntry{},
-		"Could not find instance name Build under type SomeClass", ""},
+		"Could not find instance name 'Build' under type SomeClass", ""},
 
 	scopegraphTest{"member access instance under static failure test", "memberaccess", "instanceunderstatic",
 		[]expectedScopeEntry{},
-		"Could not find static name SomeInt under type SomeClass", ""},
+		"Could not find static name 'SomeInt' under class SomeClass", ""},
 
 	scopegraphTest{"member access nullable failure test", "memberaccess", "nullable",
 		[]expectedScopeEntry{},
-		"Cannot access name someInt under nullable type 'SomeClass?'. Please use the ?. operator to ensure type safety.", ""},
+		"Cannot access name 'someInt' under nullable type 'SomeClass?'. Please use the ?. operator to ensure type safety.", ""},
 
 	scopegraphTest{"member access generic failure test", "memberaccess", "generic",
 		[]expectedScopeEntry{},
-		"Cannot attempt member access of Build under type SomeClass, as it is generic without specification", ""},
+		"Cannot attempt member access of 'Build' under class SomeClass, as it is generic without specification", ""},
 
 	scopegraphTest{"member access generic func failure test", "memberaccess", "genericfunc",
 		[]expectedScopeEntry{},
-		"Cannot attempt member access of someMember under module member GenericFunc, as it is generic without specification", ""},
+		"Cannot attempt member access of 'someMember' under module member GenericFunc, as it is generic without specification", ""},
 
 	/////////// Nullable member access expression ///////////
 
@@ -501,15 +501,15 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"nullable member access non-nullable failure test", "nullablememberaccess", "nonnullable",
 		[]expectedScopeEntry{},
-		"Cannot access name SomeInt under non-nullable type 'SomeClass'. Please use the . operator to ensure type safety.", ""},
+		"Cannot access name 'SomeInt' under non-nullable type 'SomeClass'. Please use the . operator to ensure type safety.", ""},
 
 	scopegraphTest{"nullable member access static failure test", "nullablememberaccess", "static",
 		[]expectedScopeEntry{},
-		"Cannot attempt nullable member access of Build under type SomeClass, as it is a static type", ""},
+		"Cannot attempt nullable member access of 'Build' under class SomeClass, as it is a static type", ""},
 
 	scopegraphTest{"nullable member access generic failure test", "nullablememberaccess", "generic",
 		[]expectedScopeEntry{},
-		"Cannot attempt nullable member access of something under type SomeClass, as it is generic without specification", ""},
+		"Cannot attempt nullable member access of 'something' under class SomeClass, as it is generic without specification", ""},
 
 	/////////// Dynamic member access expression ///////////
 
@@ -517,48 +517,48 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{
 			expectedScopeEntry{"dynaccess", expectedScope{true, proto.ScopeKind_VALUE, "any", "void"}},
 		},
-		"", "Member someValue is unknown under known type Integer. This call will return null."},
+		"", "Member 'someValue' is unknown under known type Integer. This call will return null."},
 
 	scopegraphTest{"dynamic member access success known test", "dynamicmemberaccess", "successknown",
 		[]expectedScopeEntry{
 			expectedScopeEntry{"dynaccess", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
 		},
-		"", "Dynamic access of known member someInt under type SomeClass. The . operator is suggested."},
+		"", "Dynamic access of known member 'someInt' under type SomeClass. The . operator is suggested."},
 
 	scopegraphTest{"dynamic member access success nullable known test", "dynamicmemberaccess", "successnullableknown",
 		[]expectedScopeEntry{
 			expectedScopeEntry{"dynaccess", expectedScope{true, proto.ScopeKind_VALUE, "Integer?", "void"}},
 		},
-		"", "Dynamic access of known member someInt under type SomeClass?. The ?. operator is suggested."},
+		"", "Dynamic access of known member 'someInt' under type SomeClass?. The ?. operator is suggested."},
 
 	scopegraphTest{"dynamic member access static under non-static failure test", "dynamicmemberaccess", "staticunderinstance",
 		[]expectedScopeEntry{},
-		"Member Build is static but accessed under an instance value", ""},
+		"Member 'Build' is static but accessed under an instance value", ""},
 
 	scopegraphTest{"dynamic member access non-static under static failure test", "dynamicmemberaccess", "instanceunderstatic",
 		[]expectedScopeEntry{},
-		"Member SomeInt is non-static but accessed under a static value", ""},
+		"Member 'SomeInt' is non-static but accessed under a static value", ""},
 
 	/////////// Stream member access expression ///////////
 
 	scopegraphTest{"stream member access success test", "streammemberaccess", "success",
 		[]expectedScopeEntry{
-			expectedScopeEntry{"intstream", expectedScope{true, proto.ScopeKind_VALUE, "Stream<Integer>", "void"}},
-			expectedScopeEntry{"boolstream", expectedScope{true, proto.ScopeKind_VALUE, "Stream<Boolean>", "void"}},
+			expectedScopeEntry{"intstream", expectedScope{true, proto.ScopeKind_VALUE, "Stream<Integer?>", "void"}},
+			expectedScopeEntry{"boolstream", expectedScope{true, proto.ScopeKind_VALUE, "Stream<Boolean?>", "void"}},
 		},
 		"", ""},
 
 	scopegraphTest{"stream member access non-stream failure test", "streammemberaccess", "nonstream",
 		[]expectedScopeEntry{},
-		"Cannot attempt stream access of name something under non-stream type 'Integer': Type Integer cannot be used in place of type Stream as it does not implement member CurrentValue", ""},
+		"Cannot attempt stream access of name 'something' under non-stream type 'Integer': Type Integer cannot be used in place of type Stream as it does not implement member CurrentValue", ""},
 
 	scopegraphTest{"stream member access generic failure test", "streammemberaccess", "generic",
 		[]expectedScopeEntry{},
-		"Cannot attempt stream member access of something under type SomeClass, as it is generic without specification", ""},
+		"Cannot attempt stream member access of 'something' under class SomeClass, as it is generic without specification", ""},
 
 	scopegraphTest{"stream member access static failure test", "streammemberaccess", "static",
 		[]expectedScopeEntry{},
-		"Cannot attempt stream member access of something under type SomeClass, as it is a static type", ""},
+		"Cannot attempt stream member access of 'something' under class SomeClass, as it is a static type", ""},
 
 	/////////// Null literal expression ///////////
 
@@ -610,15 +610,15 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"generic specifier not enough generics test", "genericspecifier", "countmismatch",
 		[]expectedScopeEntry{},
-		"Generic count must match. Found: 1, expected: 2 on type SomeClass", ""},
+		"Generic count must match. Found: 1, expected: 2 on class SomeClass", ""},
 
 	scopegraphTest{"generic specifier too many generics test", "genericspecifier", "countmismatch2",
 		[]expectedScopeEntry{},
-		"Generic count must match. Found: 2, expected: 1 on type SomeClass", ""},
+		"Generic count must match. Found: 2, expected: 1 on class SomeClass", ""},
 
 	scopegraphTest{"generic specifier constraint failure test", "genericspecifier", "constraintfail",
 		[]expectedScopeEntry{},
-		"Cannot use type Boolean as generic T (#1) over type SomeClass: Type 'Boolean' does not define or export member 'DoSomething', which is required by type 'ISomeInterface'", ""},
+		"Cannot use type Boolean as generic T (#1) over class SomeClass: Type 'Boolean' does not define or export member 'DoSomething', which is required by type 'ISomeInterface'", ""},
 }
 
 func TestGraphs(t *testing.T) {

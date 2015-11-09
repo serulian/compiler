@@ -70,6 +70,28 @@ func (g *TypeGraph) TypeDecls() []TGTypeDecl {
 	return types
 }
 
+// GetTypeOrMember returns the type or member matching the given node ID.
+func (g *TypeGraph) GetTypeOrMember(nodeId compilergraph.GraphNodeId) TGTypeOrMember {
+	node := g.layer.GetNode(string(nodeId))
+	switch node.Kind {
+	case NodeTypeClass:
+		fallthrough
+
+	case NodeTypeInterface:
+		fallthrough
+
+	case NodeTypeGeneric:
+		return TGTypeDecl{node, g}
+
+	case NodeTypeMember:
+		return TGMember{node, g}
+
+	default:
+		panic("Node is not a type or member")
+		return TGMember{node, g}
+	}
+}
+
 // LookupType looks up the type declaration with the given name in the given module and returns it (if any).
 func (g *TypeGraph) LookupType(typeName string, module compilercommon.InputSource) (TGTypeDecl, bool) {
 	srgModule, found := g.srg.FindModuleBySource(module)

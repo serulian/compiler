@@ -38,6 +38,85 @@ const (
 	NamedScopeVariable                        // The named scope refers to a variable statement.
 )
 
+// Title returns a nice title for the given named scope.
+func (ns *SRGNamedScope) Title() string {
+	switch ns.ScopeKind() {
+	case NamedScopeType:
+		return "type"
+
+	case NamedScopeMember:
+		return "member"
+
+	case NamedScopeImport:
+		return "import"
+
+	case NamedScopeValue:
+		return "value"
+
+	case NamedScopeParameter:
+		return "parameter"
+
+	case NamedScopeVariable:
+		return "variable"
+
+	default:
+		panic("Unknown kind of named scope")
+	}
+}
+
+// IsAssignable returns whether the scoped node is assignable.
+func (ns *SRGNamedScope) IsAssignable() bool {
+	switch ns.ScopeKind() {
+	case NamedScopeType:
+		fallthrough
+
+	case NamedScopeMember:
+		// Note: Only the type graph knows whether a member is assignable, so this always returns false.
+		fallthrough
+
+	case NamedScopeImport:
+		fallthrough
+
+	case NamedScopeValue:
+		fallthrough
+
+	case NamedScopeParameter:
+		return false
+
+	case NamedScopeVariable:
+		return true
+
+	default:
+		panic("Unknown kind of named scope")
+	}
+}
+
+// IsStatic returns whether the scoped node is static.
+func (ns *SRGNamedScope) IsStatic() bool {
+	switch ns.ScopeKind() {
+	case NamedScopeType:
+		return true
+
+	case NamedScopeMember:
+		return ns.Kind == parser.NodeTypeConstructor
+
+	case NamedScopeImport:
+		return true
+
+	case NamedScopeValue:
+		fallthrough
+
+	case NamedScopeParameter:
+		fallthrough
+
+	case NamedScopeVariable:
+		return false
+
+	default:
+		panic("Unknown kind of named scope")
+	}
+}
+
 // ScopeKind returns the kind of the scoped node.
 func (ns *SRGNamedScope) ScopeKind() NamedScopeKind {
 	switch ns.Kind {

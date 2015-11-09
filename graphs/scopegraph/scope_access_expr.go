@@ -209,16 +209,16 @@ func (sb *scopeBuilder) scopeDynamicMemberAccessExpression(node compilergraph.Gr
 		// returns an "any" type.
 		typeMember, found := lookupType.ResolveMember(memberName, module, typegraph.MemberResolutionInstanceOrStatic)
 		if !found {
-			sb.decorateWithWarning(node, "Member %v is unknown under known type %v. This call will return null.", memberName, childType)
+			sb.decorateWithWarning(node, "Member '%v' is unknown under known type %v. This call will return null.", memberName, childType)
 			return newScope().Valid().Resolving(sb.sg.tdg.AnyTypeReference()).GetScope()
 		}
 
 		// Ensure static isn't accessed under instance and vice versa.
 		if typeMember.IsStatic() != expectStatic {
 			if typeMember.IsStatic() {
-				sb.decorateWithError(node, "Member %v is static but accessed under an instance value", typeMember.Name())
+				sb.decorateWithError(node, "Member '%v' is static but accessed under an instance value", typeMember.Name())
 			} else {
-				sb.decorateWithError(node, "Member %v is non-static but accessed under a static value", typeMember.Name())
+				sb.decorateWithError(node, "Member '%v' is non-static but accessed under a static value", typeMember.Name())
 			}
 			return newScope().Invalid().GetScope()
 		}
@@ -228,10 +228,10 @@ func (sb *scopeBuilder) scopeDynamicMemberAccessExpression(node compilergraph.Gr
 		memberScope := sb.getNamedScopeForMember(typeMember)
 
 		if childType.IsNullable() {
-			sb.decorateWithWarning(node, "Dynamic access of known member %v under type %v. The ?. operator is suggested.", typeMember.Name(), childType)
+			sb.decorateWithWarning(node, "Dynamic access of known member '%v' under type %v. The ?. operator is suggested.", typeMember.Name(), childType)
 			return newScope().ForNamedScopeUnderModifiedType(memberScope, lookupType, makeNullable).GetScope()
 		} else {
-			sb.decorateWithWarning(node, "Dynamic access of known member %v under type %v. The . operator is suggested.", typeMember.Name(), childType)
+			sb.decorateWithWarning(node, "Dynamic access of known member '%v' under type %v. The . operator is suggested.", typeMember.Name(), childType)
 			return newScope().ForNamedScopeUnderType(memberScope, lookupType).GetScope()
 		}
 	}
@@ -248,7 +248,7 @@ func (sb *scopeBuilder) scopeDynamicMemberAccessExpression(node compilergraph.Gr
 			return newScope().Invalid().GetScope()
 		}
 
-		childType := namedScope.TypeInfo().GetTypeReference()
+		childType := namedScope.StaticType()
 		return scopeMemberAccess(childType, true)
 
 	case proto.ScopeKind_GENERIC:

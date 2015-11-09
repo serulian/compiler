@@ -5,9 +5,13 @@
 package scopegraph
 
 import (
+	"fmt"
+
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/typegraph"
 )
+
+var _ = fmt.Print
 
 type scopeInfoBuilder struct {
 	info *proto.ScopeInfo
@@ -125,8 +129,20 @@ func (sib *scopeInfoBuilder) ForNamedScope(info namedScopeInfo) *scopeInfoBuilde
 		sib.WithStaticType(info.StaticType())
 	}
 
-	namedId := string(info.srgInfo.GraphNode.NodeId)
-	sib.info.NamedReferenceNode = &namedId
+	sib.info.NamedReference = &proto.ScopeReference{}
+
+	if info.typeInfo != nil {
+		falseValue := false
+		namedId := string(info.typeInfo.Node().NodeId)
+		sib.info.NamedReference.ReferencedNode = &namedId
+		sib.info.NamedReference.IsSRGNode = &falseValue
+	} else {
+		trueValue := true
+		namedId := string(info.srgInfo.GraphNode.NodeId)
+		sib.info.NamedReference.ReferencedNode = &namedId
+		sib.info.NamedReference.IsSRGNode = &trueValue
+	}
+
 	return sib.Resolving(info.ValueType()).Valid()
 }
 

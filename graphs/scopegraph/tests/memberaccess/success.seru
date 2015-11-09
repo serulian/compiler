@@ -13,7 +13,7 @@ class SomeClass {
 }
 
 class LocalClass<T> {
-	var<T?> SomeVar
+	var<T?> SomeGenericVar
 }
 
 function<void> DoSomething() {
@@ -28,6 +28,6 @@ function<void> DoSomething() {
 	/* modint */(anothermodule.SomeInt)
 	/* modfunc */(anothermodule.SomeFunction)
 	/* generictype */(anothermodule.GenericType)
-	/* genmembool */(gcbool.SomeVar)
-	/* genmemint */(gcint.SomeVar)
+	/* genmembool */(gcbool.SomeGenericVar)
+	/* genmemint */(gcint.SomeGenericVar)
 }

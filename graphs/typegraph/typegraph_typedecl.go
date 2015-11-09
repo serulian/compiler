@@ -44,6 +44,26 @@ func (tn TGTypeDecl) Name() string {
 	return tn.GraphNode.Get(NodePredicateTypeName)
 }
 
+// Title returns a nice title for the type.
+func (tn TGTypeDecl) Title() string {
+	nodeType := tn.Kind.(NodeType)
+
+	switch nodeType {
+	case NodeTypeClass:
+		return "class"
+
+	case NodeTypeInterface:
+		return "interface"
+
+	case NodeTypeGeneric:
+		return "generic"
+
+	default:
+		panic(fmt.Sprintf("Unknown kind of type %s for node %s", nodeType, tn.NodeId))
+		return "class"
+	}
+}
+
 // Node returns the underlying node in this declaration.
 func (tn TGTypeDecl) Node() compilergraph.GraphNode {
 	return tn.GraphNode
@@ -115,6 +135,21 @@ func (tn TGTypeDecl) Members() []TGMember {
 	}
 
 	return members
+}
+
+// IsReadOnly returns whether the type is read-only (which is always)
+func (tn TGTypeDecl) IsReadOnly() bool {
+	return true
+}
+
+// IsType returns whether this is a type (always true).
+func (tn TGTypeDecl) IsType() bool {
+	return true
+}
+
+// IsStatic returns whether this type is static (always true).
+func (tn TGTypeDecl) IsStatic() bool {
+	return true
 }
 
 // TypeKind returns the kind of the type node.

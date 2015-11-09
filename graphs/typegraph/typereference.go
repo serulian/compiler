@@ -689,8 +689,8 @@ func (tr TypeReference) TransformUnder(other TypeReference) TypeReference {
 	}
 
 	// Skip any non-generic types.
-	generics := other.Generics()
-	if len(generics) == 0 {
+	otherRefGenerics := other.Generics()
+	if len(otherRefGenerics) == 0 {
 		return tr
 	}
 
@@ -702,13 +702,13 @@ func (tr TypeReference) TransformUnder(other TypeReference) TypeReference {
 
 	otherType := TGTypeDecl{otherTypeNode, tr.tdg}
 	otherTypeGenerics := otherType.Generics()
-	if len(generics) != len(otherTypeGenerics) {
+	if len(otherRefGenerics) != len(otherTypeGenerics) {
 		return tr
 	}
 
 	// Replace the generics.
 	var currentTypeReference = tr
-	for index, generic := range generics {
+	for index, generic := range otherRefGenerics {
 		currentTypeReference = currentTypeReference.ReplaceType(otherTypeGenerics[index].GraphNode, generic)
 	}
 
@@ -726,6 +726,11 @@ func (tr TypeReference) ReplaceType(typeNode compilergraph.GraphNode, replacemen
 	// If the current type reference refers to the type node itself, then just wholesale replace it.
 	if tr.value == typeNodeRef.value {
 		return replacement
+	}
+
+	// Check if we have a direct nullable type as well.
+	if tr.AsNullable().value == typeNodeRef.AsNullable().value {
+		return replacement.AsNullable()
 	}
 
 	// Otherwise, search for the type string (with length prefix) in the subreferences and replace it there.

@@ -29,6 +29,16 @@ func (tn TGMember) Name() string {
 	return tn.GraphNode.Get(NodePredicateMemberName)
 }
 
+// Title returns a nice title for the member.
+func (tn TGMember) Title() string {
+	_, underType := tn.ParentType()
+	if underType {
+		return "type member"
+	} else {
+		return "module member"
+	}
+}
+
 // Node returns the underlying node in this declaration.
 func (tn TGMember) Node() compilergraph.GraphNode {
 	return tn.GraphNode
@@ -50,6 +60,11 @@ func (tn TGMember) IsReadOnly() bool {
 func (tn TGMember) IsStatic() bool {
 	_, isStatic := tn.GraphNode.TryGet(NodePredicateMemberStatic)
 	return isStatic
+}
+
+// IsType returns whether this is a type (always false).
+func (tn TGMember) IsType() bool {
+	return false
 }
 
 // MemberType returns the type for this member.

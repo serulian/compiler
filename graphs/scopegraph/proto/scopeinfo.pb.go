@@ -10,6 +10,7 @@
 
 	It has these top-level messages:
 		ScopeInfo
+		ScopeReference
 */
 package proto
 
@@ -61,15 +62,15 @@ func (x *ScopeKind) UnmarshalJSON(data []byte) error {
 }
 
 type ScopeInfo struct {
-	IsValid                *bool      `protobuf:"varint,1,opt,name=IsValid" json:"IsValid,omitempty"`
-	Kind                   *ScopeKind `protobuf:"varint,2,opt,name=Kind,enum=proto.ScopeKind,def=0" json:"Kind,omitempty"`
-	NamedReferenceNode     *string    `protobuf:"bytes,8,opt,name=NamedReferenceNode" json:"NamedReferenceNode,omitempty"`
-	ResolvedType           *string    `protobuf:"bytes,3,opt,name=ResolvedType" json:"ResolvedType,omitempty"`
-	ReturnedType           *string    `protobuf:"bytes,4,opt,name=ReturnedType" json:"ReturnedType,omitempty"`
-	AssignableType         *string    `protobuf:"bytes,5,opt,name=AssignableType" json:"AssignableType,omitempty"`
-	StaticType             *string    `protobuf:"bytes,6,opt,name=StaticType" json:"StaticType,omitempty"`
-	IsTerminatingStatement *bool      `protobuf:"varint,7,opt,name=IsTerminatingStatement" json:"IsTerminatingStatement,omitempty"`
-	XXX_unrecognized       []byte     `json:"-"`
+	IsValid                *bool           `protobuf:"varint,1,opt,name=IsValid" json:"IsValid,omitempty"`
+	Kind                   *ScopeKind      `protobuf:"varint,2,opt,name=Kind,enum=proto.ScopeKind,def=0" json:"Kind,omitempty"`
+	NamedReference         *ScopeReference `protobuf:"bytes,8,opt,name=NamedReference" json:"NamedReference,omitempty"`
+	ResolvedType           *string         `protobuf:"bytes,3,opt,name=ResolvedType" json:"ResolvedType,omitempty"`
+	ReturnedType           *string         `protobuf:"bytes,4,opt,name=ReturnedType" json:"ReturnedType,omitempty"`
+	AssignableType         *string         `protobuf:"bytes,5,opt,name=AssignableType" json:"AssignableType,omitempty"`
+	StaticType             *string         `protobuf:"bytes,6,opt,name=StaticType" json:"StaticType,omitempty"`
+	IsTerminatingStatement *bool           `protobuf:"varint,7,opt,name=IsTerminatingStatement" json:"IsTerminatingStatement,omitempty"`
+	XXX_unrecognized       []byte          `json:"-"`
 }
 
 func (m *ScopeInfo) Reset()         { *m = ScopeInfo{} }
@@ -92,11 +93,11 @@ func (m *ScopeInfo) GetKind() ScopeKind {
 	return Default_ScopeInfo_Kind
 }
 
-func (m *ScopeInfo) GetNamedReferenceNode() string {
-	if m != nil && m.NamedReferenceNode != nil {
-		return *m.NamedReferenceNode
+func (m *ScopeInfo) GetNamedReference() *ScopeReference {
+	if m != nil {
+		return m.NamedReference
 	}
-	return ""
+	return nil
 }
 
 func (m *ScopeInfo) GetResolvedType() string {
@@ -130,6 +131,30 @@ func (m *ScopeInfo) GetStaticType() string {
 func (m *ScopeInfo) GetIsTerminatingStatement() bool {
 	if m != nil && m.IsTerminatingStatement != nil {
 		return *m.IsTerminatingStatement
+	}
+	return false
+}
+
+type ScopeReference struct {
+	ReferencedNode   *string `protobuf:"bytes,1,opt,name=ReferencedNode" json:"ReferencedNode,omitempty"`
+	IsSRGNode        *bool   `protobuf:"varint,2,opt,name=IsSRGNode" json:"IsSRGNode,omitempty"`
+	XXX_unrecognized []byte  `json:"-"`
+}
+
+func (m *ScopeReference) Reset()         { *m = ScopeReference{} }
+func (m *ScopeReference) String() string { return proto1.CompactTextString(m) }
+func (*ScopeReference) ProtoMessage()    {}
+
+func (m *ScopeReference) GetReferencedNode() string {
+	if m != nil && m.ReferencedNode != nil {
+		return *m.ReferencedNode
+	}
+	return ""
+}
+
+func (m *ScopeReference) GetIsSRGNode() bool {
+	if m != nil && m.IsSRGNode != nil {
+		return *m.IsSRGNode
 	}
 	return false
 }
@@ -201,11 +226,52 @@ func (m *ScopeInfo) MarshalTo(data []byte) (int, error) {
 		}
 		i++
 	}
-	if m.NamedReferenceNode != nil {
+	if m.NamedReference != nil {
 		data[i] = 0x42
 		i++
-		i = encodeVarintScopeinfo(data, i, uint64(len(*m.NamedReferenceNode)))
-		i += copy(data[i:], *m.NamedReferenceNode)
+		i = encodeVarintScopeinfo(data, i, uint64(m.NamedReference.Size()))
+		n1, err := m.NamedReference.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n1
+	}
+	if m.XXX_unrecognized != nil {
+		i += copy(data[i:], m.XXX_unrecognized)
+	}
+	return i, nil
+}
+
+func (m *ScopeReference) Marshal() (data []byte, err error) {
+	size := m.Size()
+	data = make([]byte, size)
+	n, err := m.MarshalTo(data)
+	if err != nil {
+		return nil, err
+	}
+	return data[:n], nil
+}
+
+func (m *ScopeReference) MarshalTo(data []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if m.ReferencedNode != nil {
+		data[i] = 0xa
+		i++
+		i = encodeVarintScopeinfo(data, i, uint64(len(*m.ReferencedNode)))
+		i += copy(data[i:], *m.ReferencedNode)
+	}
+	if m.IsSRGNode != nil {
+		data[i] = 0x10
+		i++
+		if *m.IsSRGNode {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
 	}
 	if m.XXX_unrecognized != nil {
 		i += copy(data[i:], m.XXX_unrecognized)
@@ -268,9 +334,25 @@ func (m *ScopeInfo) Size() (n int) {
 	if m.IsTerminatingStatement != nil {
 		n += 2
 	}
-	if m.NamedReferenceNode != nil {
-		l = len(*m.NamedReferenceNode)
+	if m.NamedReference != nil {
+		l = m.NamedReference.Size()
 		n += 1 + l + sovScopeinfo(uint64(l))
+	}
+	if m.XXX_unrecognized != nil {
+		n += len(m.XXX_unrecognized)
+	}
+	return n
+}
+
+func (m *ScopeReference) Size() (n int) {
+	var l int
+	_ = l
+	if m.ReferencedNode != nil {
+		l = len(*m.ReferencedNode)
+		n += 1 + l + sovScopeinfo(uint64(l))
+	}
+	if m.IsSRGNode != nil {
+		n += 2
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
@@ -504,7 +586,91 @@ func (m *ScopeInfo) Unmarshal(data []byte) error {
 			m.IsTerminatingStatement = &b
 		case 8:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field NamedReferenceNode", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field NamedReference", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowScopeinfo
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthScopeinfo
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.NamedReference == nil {
+				m.NamedReference = &ScopeReference{}
+			}
+			if err := m.NamedReference.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipScopeinfo(data[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthScopeinfo
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.XXX_unrecognized = append(m.XXX_unrecognized, data[iNdEx:iNdEx+skippy]...)
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ScopeReference) Unmarshal(data []byte) error {
+	l := len(data)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowScopeinfo
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := data[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ScopeReference: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ScopeReference: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ReferencedNode", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -530,8 +696,29 @@ func (m *ScopeInfo) Unmarshal(data []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			s := string(data[iNdEx:postIndex])
-			m.NamedReferenceNode = &s
+			m.ReferencedNode = &s
 			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field IsSRGNode", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowScopeinfo
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				v |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			b := bool(v != 0)
+			m.IsSRGNode = &b
 		default:
 			iNdEx = preIndex
 			skippy, err := skipScopeinfo(data[iNdEx:])

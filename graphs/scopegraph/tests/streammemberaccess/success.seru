@@ -1,5 +1,5 @@
 class SomeClass<T> {
-	var<T?> someThing
+	var<T?> SomeGenericVar
 }
 
 class SomeStream<T> {
@@ -14,6 +14,6 @@ function<void> DoSomething() {
 	var<SomeClass<int>*> intstream = SomeStream<int>.new()
 	var<SomeClass<bool>*> boolstream = SomeStream<bool>.new()
 
-	/* intstream */(intstream*.someThing)
-	/* boolstream */(boolstream*.someThing)
+	/* intstream */(intstream*.SomeGenericVar)
+	/* boolstream */(boolstream*.SomeGenericVar)
 }

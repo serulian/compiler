@@ -1,6 +1,6 @@
 class SomeClass<T> {
 	constructor Build(someParam T) {
-		return SomeClass.new()
+		return SomeClass<T>.new()
 	}
 }
 
