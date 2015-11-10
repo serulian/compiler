@@ -319,7 +319,7 @@ const (
 	NodeAssignStatementValue = "assign-statement-expr"
 
 	//
-	// NodeTypeField/NodeTypeVariableStatement
+	// NodeTypeField/NodeTypeVariable/NodeTypeVariableStatement
 	//
 	NodeVariableStatementDeclaredType = "var-declared-type"
 	NodeVariableStatementName         = "named"

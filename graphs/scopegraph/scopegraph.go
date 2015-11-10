@@ -46,7 +46,7 @@ func BuildScopeGraph(tdg *typegraph.TypeGraph) *Result {
 
 	builder := newScopeBuilder(scopeGraph)
 
-	// Scope all the entrypoint statements in the SRG. These will recursively scope downward.
+	// Scope all the entrypoint statements and members in the SRG. These will recursively scope downward.
 	var wg sync.WaitGroup
 	sit := tdg.SourceGraph().EntrypointStatements()
 	for sit.Next() {
@@ -55,6 +55,15 @@ func BuildScopeGraph(tdg *typegraph.TypeGraph) *Result {
 			<-builder.buildScope(node)
 			wg.Done()
 		})(sit.Node())
+	}
+
+	mit := tdg.SourceGraph().EntrypointMembers()
+	for mit.Next() {
+		wg.Add(1)
+		go (func(node compilergraph.GraphNode) {
+			<-builder.buildScope(node)
+			wg.Done()
+		})(mit.Node())
 	}
 
 	wg.Wait()

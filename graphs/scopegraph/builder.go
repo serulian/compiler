@@ -34,6 +34,13 @@ func newScopeBuilder(sg *ScopeGraph) *scopeBuilder {
 // getScopeHandler returns the scope building handler for nodes of the given type.
 func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandler {
 	switch node.Kind {
+	// Members.
+	case parser.NodeTypeVariable:
+		return sb.scopeVariable
+
+	case parser.NodeTypeField:
+		return sb.scopeField
+
 	// Statements.
 	case parser.NodeTypeStatementBlock:
 		return sb.scopeStatementBlock

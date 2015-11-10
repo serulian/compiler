@@ -619,6 +619,12 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"generic specifier constraint failure test", "genericspecifier", "constraintfail",
 		[]expectedScopeEntry{},
 		"Cannot use type Boolean as generic T (#1) over class SomeClass: Type 'Boolean' does not define or export member 'DoSomething', which is required by type 'ISomeInterface'", ""},
+
+	/////////// class field ///////////
+
+	scopegraphTest{"class field uninitialized failure test", "var", "uninitializedfield",
+		[]expectedScopeEntry{},
+		"Field 'someVar' must have explicit initializer as its type 'Integer' is non-nullable", ""},
 }
 
 func TestGraphs(t *testing.T) {

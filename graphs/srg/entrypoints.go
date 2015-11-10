@@ -14,3 +14,9 @@ import (
 func (g *SRG) EntrypointStatements() compilergraph.NodeIterator {
 	return g.layer.StartQuery().Out(parser.NodePredicateBody).BuildNodeIterator()
 }
+
+// EntrypointMembers returns an iterator of all members in the SRG that are entrypoints for
+// scoping (currently variables and fields).
+func (g *SRG) EntrypointMembers() compilergraph.NodeIterator {
+	return g.layer.StartQuery().IsKind(parser.NodeTypeVariable, parser.NodeTypeField).BuildNodeIterator()
+}

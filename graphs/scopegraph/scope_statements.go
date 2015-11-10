@@ -110,55 +110,6 @@ func (sb *scopeBuilder) scopeMatchStatement(node compilergraph.GraphNode) proto.
 	return newScope().IsValid(isValid).Returning(returnedType).GetScope()
 }
 
-// scopeVariableStatement scopes a variable statement in the SRG.
-func (sb *scopeBuilder) scopeVariableStatement(node compilergraph.GraphNode) proto.ScopeInfo {
-	var exprScope *proto.ScopeInfo = nil
-
-	exprNode, hasExpression := node.TryGetNode(parser.NodeVariableStatementExpression)
-	if hasExpression {
-		// Scope the expression.
-		exprScope = sb.getScope(exprNode)
-		if !exprScope.GetIsValid() {
-			return newScope().Invalid().GetScope()
-		}
-	}
-
-	// If there is a declared type, compare against it.
-	declaredTypeNode, hasDeclaredType := node.TryGetNode(parser.NodeVariableStatementDeclaredType)
-	if !hasDeclaredType {
-		if exprScope == nil {
-			panic("Somehow ended up with no declared type and no expr scope")
-		}
-
-		return newScope().Valid().AssignableResolvedTypeOf(exprScope).GetScope()
-	}
-
-	// Load the declared type.
-	typeref := sb.sg.srg.GetTypeRef(declaredTypeNode)
-	declaredType, rerr := sb.sg.tdg.BuildTypeRef(typeref)
-	if rerr != nil {
-		sb.decorateWithError(node, "Variable '%s' has invalid declared type: %v", node.Get(parser.NodeVariableStatementName), rerr)
-		return newScope().Invalid().GetScope()
-	}
-
-	// Compare against the type of the expression.
-	if hasExpression {
-		exprType := exprScope.ResolvedTypeRef(sb.sg.tdg)
-		if serr := exprType.CheckSubTypeOf(declaredType); serr != nil {
-			sb.decorateWithError(node, "Variable '%s' has declared type '%v': %v", node.Get(parser.NodeVariableStatementName), declaredType, serr)
-			return newScope().Invalid().GetScope()
-		}
-	} else {
-		// Make sure if the type is non-nullable that there is an expression.
-		if !declaredType.IsNullable() {
-			sb.decorateWithError(node, "Variable '%s' must have explicit initializer as its type '%v' is non-nullable", node.Get(parser.NodeVariableStatementName), declaredType)
-			return newScope().Invalid().Assignable(declaredType).GetScope()
-		}
-	}
-
-	return newScope().Valid().Assignable(declaredType).GetScope()
-}
-
 // scopeNamedValue scopes a named value exported by a with or loop statement into context.
 func (sb *scopeBuilder) scopeNamedValue(node compilergraph.GraphNode) proto.ScopeInfo {
 	// Find the parent node creating this named value.
