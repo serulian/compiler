@@ -142,6 +142,9 @@ const (
 
 	NodeTypeIdentifierExpression // An identifier expression
 
+	// Lambda expression members
+	NodeTypeLambdaParameter
+
 	// Type references
 	NodeTypeTypeReference // A type reference
 	NodeTypeStream
@@ -384,6 +387,11 @@ const (
 	NodeLambdaExpressionInferredParameter = "lambda-expression-inferred-parameter"
 	NodeLambdaExpressionBlock             = "lambda-expression-block"
 	NodeLambdaExpressionChildExpr         = "lambda-expression-child-expr"
+
+	//
+	//	NodeTypeLambdaParameter
+	//
+	NodeLambdaExpressionParameterNamed = "named"
 
 	//
 	// Binary expressions.

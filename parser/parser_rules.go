@@ -1417,7 +1417,7 @@ func (p *sourceParser) tryConsumeLambdaExpression() (AstNode, bool) {
 	// Optional: arguments.
 	if !p.isToken(tokenTypeRightParen) {
 		for {
-			lambdaNode.Connect(NodeLambdaExpressionInferredParameter, p.consumeIdentifierExpression())
+			lambdaNode.Connect(NodeLambdaExpressionInferredParameter, p.consumeLambdaParameter())
 			if _, ok := p.tryConsume(tokenTypeComma); !ok {
 				break
 			}
@@ -1433,6 +1433,23 @@ func (p *sourceParser) tryConsumeLambdaExpression() (AstNode, bool) {
 	// expression.
 	lambdaNode.Connect(NodeLambdaExpressionChildExpr, p.consumeExpression(consumeExpressionAllowMaps))
 	return lambdaNode, true
+}
+
+// consumeLambdaParameter consumes an identifier as a lambda expression parameter.
+//
+// Form:
+// someIdentifier
+func (p *sourceParser) consumeLambdaParameter() AstNode {
+	parameterNode := p.startNode(NodeTypeLambdaParameter)
+	defer p.finishNode()
+
+	value, ok := p.consumeIdentifier()
+	if !ok {
+		return parameterNode
+	}
+
+	parameterNode.Decorate(NodeLambdaExpressionParameterNamed, value)
+	return parameterNode
 }
 
 // lookaheadLambdaExpr performs lookahead to determine if there is a lambda expression
