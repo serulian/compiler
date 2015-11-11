@@ -46,6 +46,19 @@ func BuildScopeGraph(tdg *typegraph.TypeGraph) *Result {
 
 	builder := newScopeBuilder(scopeGraph)
 
+	// Find all lambda expressions and infer their argument types.
+	var lwg sync.WaitGroup
+	lit := tdg.SourceGraph().LambdaExpressions()
+	for lit.Next() {
+		lwg.Add(1)
+		go (func(node compilergraph.GraphNode) {
+			builder.inferLambdaParameterTypes(node)
+			lwg.Done()
+		})(lit.Node())
+	}
+
+	lwg.Wait()
+
 	// Scope all the entrypoint statements and members in the SRG. These will recursively scope downward.
 	var wg sync.WaitGroup
 	sit := tdg.SourceGraph().EntrypointStatements()

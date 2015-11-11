@@ -9,6 +9,7 @@ import (
 
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
+	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/parser"
 )
 
@@ -16,21 +17,42 @@ var _ = fmt.Printf
 
 // scopeField scopes a field member in the SRG.
 func (sb *scopeBuilder) scopeField(node compilergraph.GraphNode) proto.ScopeInfo {
-	return sb.scopeDeclaredValue(node, parser.NodePredicateTypeMemberDeclaredType, "Field")
+	return sb.scopeDeclaredValue(node, "Field")
 }
 
 // scopeVariable scopes a variable module member in the SRG.
 func (sb *scopeBuilder) scopeVariable(node compilergraph.GraphNode) proto.ScopeInfo {
-	return sb.scopeDeclaredValue(node, parser.NodePredicateTypeMemberDeclaredType, "Variable")
+	return sb.scopeDeclaredValue(node, "Variable")
 }
 
 // scopeVariableStatement scopes a variable statement in the SRG.
 func (sb *scopeBuilder) scopeVariableStatement(node compilergraph.GraphNode) proto.ScopeInfo {
-	return sb.scopeDeclaredValue(node, parser.NodeVariableStatementDeclaredType, "Variable")
+	return sb.scopeDeclaredValue(node, "Variable")
+}
+
+// getDeclaredVariableType returns the declared type of a variable statement, member or type field (if any).
+func (sb *scopeBuilder) getDeclaredVariableType(node compilergraph.GraphNode) (typegraph.TypeReference, bool) {
+	declaredTypeNode, hasDeclaredType := node.StartQuery().
+		Out(parser.NodeVariableStatementDeclaredType, parser.NodePredicateTypeMemberDeclaredType).
+		TryGetNode()
+
+	if !hasDeclaredType {
+		return sb.sg.tdg.AnyTypeReference(), false
+	}
+
+	// Load the declared type.
+	typeref := sb.sg.srg.GetTypeRef(declaredTypeNode)
+	declaredType, rerr := sb.sg.tdg.BuildTypeRef(typeref)
+	if rerr != nil {
+		panic(rerr)
+		return sb.sg.tdg.AnyTypeReference(), false
+	}
+
+	return declaredType, true
 }
 
 // scopeDeclaredValue scopes a declared value (variable statement, variable member, type field).
-func (sb *scopeBuilder) scopeDeclaredValue(node compilergraph.GraphNode, typePredicate string, title string) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeDeclaredValue(node compilergraph.GraphNode, title string) proto.ScopeInfo {
 	var exprScope *proto.ScopeInfo = nil
 
 	exprNode, hasExpression := node.TryGetNode(parser.NodeVariableStatementExpression)
@@ -42,22 +64,14 @@ func (sb *scopeBuilder) scopeDeclaredValue(node compilergraph.GraphNode, typePre
 		}
 	}
 
-	// If there is a declared type, compare against it.
-	declaredTypeNode, hasDeclaredType := node.TryGetNode(typePredicate)
+	// Load the declared type, if any.
+	declaredType, hasDeclaredType := sb.getDeclaredVariableType(node)
 	if !hasDeclaredType {
 		if exprScope == nil {
 			panic("Somehow ended up with no declared type and no expr scope")
 		}
 
 		return newScope().Valid().AssignableResolvedTypeOf(exprScope).GetScope()
-	}
-
-	// Load the declared type.
-	typeref := sb.sg.srg.GetTypeRef(declaredTypeNode)
-	declaredType, rerr := sb.sg.tdg.BuildTypeRef(typeref)
-	if rerr != nil {
-		sb.decorateWithError(node, "%s '%s' has invalid declared type: %v", title, node.Get(parser.NodeVariableStatementName), rerr)
-		return newScope().Invalid().GetScope()
 	}
 
 	// Compare against the type of the expression.

@@ -16,8 +16,7 @@ func (g *SRG) HasContainingNode(node compilergraph.GraphNode, nodeTypes ...parse
 	return found
 }
 
-// HasContainingNode returns true if and only if the given node has a node of the given type that contains
-// its in the SRG.
+// TryGetContainingNode returns the containing node of the given node that is one of the given types, if any.
 func (g *SRG) TryGetContainingNode(node compilergraph.GraphNode, nodeTypes ...parser.NodeType) (compilergraph.GraphNode, bool) {
 	containingFilter := func(q *compilergraph.GraphQuery) compilergraph.Query {
 		startRune := node.Get(parser.NodePredicateStartRune)

@@ -625,6 +625,12 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"class field uninitialized failure test", "var", "uninitializedfield",
 		[]expectedScopeEntry{},
 		"Field 'someVar' must have explicit initializer as its type 'Integer' is non-nullable", ""},
+
+	/////////// lambda expression ///////////
+
+	scopegraphTest{"lambda expression basic inference test", "lambda", "basicinference",
+		[]expectedScopeEntry{},
+		"", ""},
 }
 
 func TestGraphs(t *testing.T) {

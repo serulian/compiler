@@ -20,3 +20,8 @@ func (g *SRG) EntrypointStatements() compilergraph.NodeIterator {
 func (g *SRG) EntrypointMembers() compilergraph.NodeIterator {
 	return g.layer.StartQuery().IsKind(parser.NodeTypeVariable, parser.NodeTypeField).BuildNodeIterator()
 }
+
+// LambdaExpressions returns an iterator of all lambda expressions defined in the SRG.
+func (g *SRG) LambdaExpressions() compilergraph.NodeIterator {
+	return g.layer.StartQuery().IsKind(parser.NodeTypeLambdaExpression).BuildNodeIterator()
+}

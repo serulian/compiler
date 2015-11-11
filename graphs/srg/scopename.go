@@ -222,6 +222,28 @@ func (ns *SRGNamedScope) ResolveNameUnderScope(name string) (SRGNamedScope, bool
 	return SRGNamedScope{moduleOrType.GraphNode, ns.srg}, true
 }
 
+// FindReferencesInScope finds all identifier expressions that refer to the given name, under the given
+// scope.
+func (g *SRG) FindReferencesInScope(name string, node compilergraph.GraphNode) compilergraph.NodeIterator {
+	// Note: This filter ensures that the name is accessible in the scope of the given node by checking that
+	// the node referencing the name is contained by the given node.
+	containingFilter := func(q *compilergraph.GraphQuery) compilergraph.Query {
+		startRune := node.Get(parser.NodePredicateStartRune)
+		endRune := node.Get(parser.NodePredicateEndRune)
+
+		return q.
+			HasWhere(parser.NodePredicateStartRune, compilergraph.WhereGT, startRune).
+			HasWhere(parser.NodePredicateEndRune, compilergraph.WhereLT, endRune)
+	}
+
+	return g.layer.StartQuery(name).
+		In(parser.NodeIdentifierExpressionName).
+		IsKind(parser.NodeTypeIdentifierExpression).
+		Has(parser.NodePredicateSource, node.Get(parser.NodePredicateSource)).
+		FilterBy(containingFilter).
+		BuildNodeIterator()
+}
+
 // FindNameInScope finds the given name accessible from the scope under which the given node exists, if any.
 func (g *SRG) FindNameInScope(name string, node compilergraph.GraphNode) (SRGNamedScope, bool) {
 	// Attempt to resolve the name as pointing to a parameter, var statement, loop var or with var.
