@@ -117,6 +117,16 @@ var nameScopeTests = []nameScopeTest{
 	nameScopeTest{"loop scoping test", "basic", "loopblock", "SomeLoopValue",
 		expectedScopeResult{true, parser.NodeTypeNamedValue, "SomeLoopValue", NamedScopeValue},
 	},
+
+	// Resolve "a" under the lambda expression.
+	nameScopeTest{"lambda expression param test", "basic", "lambdaexpr", "a",
+		expectedScopeResult{true, parser.NodeTypeLambdaParameter, "a", NamedScopeParameter},
+	},
+
+	// Resolve "a" under the full lambda expression.
+	nameScopeTest{"full lambda expression param test", "basic", "fulllambdabody", "a",
+		expectedScopeResult{true, parser.NodeTypeParameter, "a", NamedScopeParameter},
+	},
 }
 
 func TestNameScoping(t *testing.T) {

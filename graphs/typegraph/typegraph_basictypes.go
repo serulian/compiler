@@ -44,6 +44,11 @@ func (t *TypeGraph) StringTypeReference() TypeReference {
 	return t.NewTypeReference(t.StringType())
 }
 
+// FunctionTypeReference returns a new reference to the function type, with the given generic.
+func (t *TypeGraph) FunctionTypeReference(generic TypeReference) TypeReference {
+	return t.NewTypeReference(t.FunctionType(), generic)
+}
+
 // ListTypeReference returns a new reference to the list type, with the given generic.
 func (t *TypeGraph) ListTypeReference(generic TypeReference) TypeReference {
 	return t.NewTypeReference(t.ListType(), generic)

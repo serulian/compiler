@@ -152,6 +152,9 @@ func (ns *SRGNamedScope) ScopeKind() NamedScopeKind {
 	case parser.NodeTypeParameter:
 		return NamedScopeParameter
 
+	case parser.NodeTypeLambdaParameter:
+		return NamedScopeParameter
+
 	/* Named Value */
 	case parser.NodeTypeNamedValue:
 		return NamedScopeValue
@@ -195,6 +198,9 @@ func (ns *SRGNamedScope) Name() string {
 
 	case parser.NodeTypeParameter:
 		return ns.Get(parser.NodeParameterName)
+
+	case parser.NodeTypeLambdaParameter:
+		return ns.Get(parser.NodeLambdaExpressionParameterName)
 
 	case parser.NodeTypeVariableStatement:
 		return ns.Get(parser.NodeVariableStatementName)
@@ -311,6 +317,8 @@ func (g *SRG) findAddedNameInScope(name string, node compilergraph.GraphNode) (c
 
 		return q.
 			In(parser.NodePredicateTypeMemberParameter,
+			parser.NodeLambdaExpressionInferredParameter,
+			parser.NodeLambdaExpressionParameter,
 			parser.NodeStatementNamedValue,
 			parser.NodePredicateChild,
 			parser.NodeStatementBlockStatement).
@@ -321,7 +329,7 @@ func (g *SRG) findAddedNameInScope(name string, node compilergraph.GraphNode) (c
 	nit := g.layer.StartQuery(name).
 		In("named").
 		Has(parser.NodePredicateSource, nodeSource).
-		IsKind(parser.NodeTypeParameter, parser.NodeTypeNamedValue, parser.NodeTypeVariableStatement).
+		IsKind(parser.NodeTypeParameter, parser.NodeTypeNamedValue, parser.NodeTypeVariableStatement, parser.NodeTypeLambdaParameter).
 		FilterBy(containingFilter).
 		BuildNodeIterator(parser.NodePredicateStartRune)
 

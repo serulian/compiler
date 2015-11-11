@@ -629,7 +629,21 @@ var scopeGraphTests = []scopegraphTest{
 	/////////// lambda expression ///////////
 
 	scopegraphTest{"lambda expression basic inference test", "lambda", "basicinference",
-		[]expectedScopeEntry{},
+		[]expectedScopeEntry{
+			expectedScopeEntry{"varref", expectedScope{true, proto.ScopeKind_VALUE, "Function<Boolean>(Integer, String)", "void"}},
+			expectedScopeEntry{"vardeclare", expectedScope{true, proto.ScopeKind_VALUE, "Function<Boolean>(Boolean, Boolean)", "void"}},
+			expectedScopeEntry{"callref", expectedScope{true, proto.ScopeKind_VALUE, "Function<Boolean>(String, String)", "void"}},
+			expectedScopeEntry{"nonref", expectedScope{true, proto.ScopeKind_VALUE, "Function<Boolean>(any, any)", "void"}},
+			expectedScopeEntry{"ripref", expectedScope{true, proto.ScopeKind_VALUE, "Function<Integer>(Integer)", "void"}},
+			expectedScopeEntry{"multiripref", expectedScope{true, proto.ScopeKind_VALUE, "Function<any>(any)", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"lambda expression full definition test", "lambda", "full",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"implicitreturn", expectedScope{true, proto.ScopeKind_VALUE, "Function<Integer>(Integer, Boolean)", "void"}},
+			expectedScopeEntry{"explicitreturn", expectedScope{true, proto.ScopeKind_VALUE, "Function<String>(Integer, Boolean)", "void"}},
+		},
 		"", ""},
 }
 

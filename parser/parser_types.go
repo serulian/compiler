@@ -391,7 +391,7 @@ const (
 	//
 	//	NodeTypeLambdaParameter
 	//
-	NodeLambdaExpressionParameterNamed = "named"
+	NodeLambdaExpressionParameterName = "named"
 
 	//
 	// Binary expressions.

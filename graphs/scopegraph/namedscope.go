@@ -178,7 +178,13 @@ func (nsi *namedScopeInfo) ValueOrGenericType() typegraph.TypeReference {
 	// Otherwise, we need custom logic to retrieve the type.
 	switch nsi.srgInfo.ScopeKind() {
 	case srg.NamedScopeParameter:
-		// TODO: We should probably cache this in the type graph instead of resolving here.s
+		// Check for an inferred type.
+		inferredType, hasInferredType := nsi.srgInfo.GraphNode.TryGetTagged(NodePredicateInferredType, nsi.sb.sg.tdg.AnyTypeReference())
+		if hasInferredType {
+			return inferredType.(typegraph.TypeReference)
+		}
+
+		// TODO: We should probably cache this in the type graph instead of resolving here.
 		typeref := nsi.sb.sg.srg.GetTypeRef(nsi.srgInfo.GraphNode.GetNode(parser.NodeParameterType))
 		declaredType, rerr := nsi.sb.sg.tdg.BuildTypeRef(typeref)
 		if rerr != nil {

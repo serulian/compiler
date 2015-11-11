@@ -1448,7 +1448,7 @@ func (p *sourceParser) consumeLambdaParameter() AstNode {
 		return parameterNode
 	}
 
-	parameterNode.Decorate(NodeLambdaExpressionParameterNamed, value)
+	parameterNode.Decorate(NodeLambdaExpressionParameterName, value)
 	return parameterNode
 }
 

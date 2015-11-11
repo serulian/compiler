@@ -36,3 +36,13 @@ function<void> LoopTest() /* loopfn */{
 
 	}
 }
+
+function<void> LambdaTest() {
+	(a, b) => /* lambdaexpr */a
+}
+
+function<void> FullLambdaTest() {
+	function (a int, b bool) {
+		/* fulllambdabody */a
+	}
+}

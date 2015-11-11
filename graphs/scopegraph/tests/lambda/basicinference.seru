@@ -1,4 +1,17 @@
 function<void> DoSomething() {
-	var someVar = (a, b) => true
+	var someVar = /* varref */(a, b) => true
 	someVar(1, 'hello')
+
+	var<function<bool>(bool, bool)> anotherVar = /* vardeclare */(b, c) => true
+
+	(/* callref */(b, c) => true)('hello', 'hi')
+
+	var thirdVar = /* nonref */(a, b) => true
+
+	var returnIsParam = /* ripref */(a) => a
+	returnIsParam(123)
+
+	var returnIsParam2 = /* multiripref */(a) => a
+	returnIsParam2(123)
+	returnIsParam2(true)
 }

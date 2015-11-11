@@ -10,7 +10,6 @@ import (
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
-	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/parser"
 
 	"github.com/streamrail/concurrent-map"
@@ -200,6 +199,9 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 	case parser.NodeThisLiteralExpression:
 		return sb.scopeThisLiteralExpression
 
+	case parser.NodeTypeLambdaExpression:
+		return sb.scopeLambdaExpression
+
 	// Named expressions.
 	case parser.NodeTypeIdentifierExpression:
 		return sb.scopeIdentifierExpression
@@ -305,107 +307,4 @@ func (sb *scopeBuilder) GetErrors() []*compilercommon.SourceError {
 	}
 
 	return errors
-}
-
-// inferLambdaParameterTypes performs type inference to determine the types of the parameters of the
-// given lambda expression (if necessary).
-//
-// Forms supported for inference:
-//
-// var someVar = (a, b) => someExpr
-// someVar(1, 2)
-//
-// var<function<void>(...)> = (a, b) => someExpr
-//
-// ((a, b) => someExpr)(1, 2)
-func (sb *scopeBuilder) inferLambdaParameterTypes(node compilergraph.GraphNode) {
-	// If the lambda has no inferred parameters, nothing more to do.
-	if _, ok := node.TryGet(parser.NodeLambdaExpressionInferredParameter); !ok {
-		return
-	}
-
-	// Otherwise, collect the names and positions of the inferred parameters.
-	pit := node.StartQuery().
-		Out(parser.NodeLambdaExpressionInferredParameter).
-		BuildNodeIterator()
-
-	var inferenceParameters = make([]compilergraph.GraphNode, 0)
-	for pit.Next() {
-		inferenceParameters = append(inferenceParameters, pit.Node())
-	}
-
-	getInferredTypes := func() ([]typegraph.TypeReference, bool) {
-		// Check if the lambda expression is under a function call expression. If so, we use the types of
-		// the parameters.
-		parentCall, hasParentCall := node.TryGetIncomingNode(parser.NodeFunctionCallExpressionChildExpr)
-		if hasParentCall {
-			return sb.getFunctionCallArgumentTypes(parentCall), true
-		}
-
-		// Check if the lambda expression is under a variable declaration. If so, we try to infer from
-		// either its declared type or its use(s).
-		parentVariable, hasParentVariable := node.TryGetIncomingNode(parser.NodeVariableStatementExpression)
-		if !hasParentVariable {
-			return make([]typegraph.TypeReference, 0), false
-		}
-
-		// Check if the parent variable has a declared type of function. If so, then we simply
-		// use the declared parameter types.
-		declaredType, hasDeclaredType := sb.getDeclaredVariableType(parentVariable)
-		if hasDeclaredType && declaredType.HasReferredType(sb.sg.tdg.FunctionType()) {
-			return declaredType.Parameters(), true
-		}
-
-		// Otherwise, we find all references of the variable under the parent scope that are,
-		// themselves, under a function call, and intersect the types of arguments found.
-		parentVariableName := parentVariable.Get(parser.NodeVariableStatementName)
-		parentBlock, hasParentBlock := parentVariable.TryGetIncomingNode(parser.NodeStatementBlockStatement)
-		if !hasParentBlock {
-			return make([]typegraph.TypeReference, 0), false
-		}
-
-		var inferredTypes = make([]typegraph.TypeReference, 0)
-		rit := sb.sg.srg.FindReferencesInScope(parentVariableName, parentBlock)
-		for rit.Next() {
-			funcCall, hasFuncCall := rit.Node().TryGetIncomingNode(parser.NodeFunctionCallExpressionChildExpr)
-			if !hasFuncCall {
-				continue
-			}
-
-			inferredTypes = sb.sg.tdg.IntersectTypes(inferredTypes, sb.getFunctionCallArgumentTypes(funcCall))
-		}
-
-		return inferredTypes, true
-	}
-
-	// Resolve the inferred types and decorate the parameters with them (if any).
-	inferredTypes, hasInferredTypes := getInferredTypes()
-	if hasInferredTypes {
-		for index, inferenceParameter := range inferenceParameters {
-			if index < len(inferredTypes) {
-				inferenceParameter.DecorateWithTagged(NodePredicateInferredType, inferredTypes[index])
-			}
-		}
-	}
-}
-
-// getFunctionCallArgumentTypes returns the resolved types of the argument expressions to the given function
-// call.
-func (sb *scopeBuilder) getFunctionCallArgumentTypes(node compilergraph.GraphNode) []typegraph.TypeReference {
-	ait := node.StartQuery().
-		Out(parser.NodeFunctionCallArgument).
-		BuildNodeIterator()
-
-	var types = make([]typegraph.TypeReference, 0)
-	for ait.Next() {
-		// Resolve the scope of the argument.
-		argumentScope := sb.getScope(ait.Node())
-		if !argumentScope.GetIsValid() {
-			continue
-		}
-
-		types = append(types, argumentScope.ResolvedTypeRef(sb.sg.tdg))
-	}
-
-	return types
 }
