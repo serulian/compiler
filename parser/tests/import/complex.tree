@@ -5,6 +5,7 @@ NodeTypeFile
   child-node =>
     NodeTypeImport
       end-rune = 54
+      import-location-ref = location:some-git-rep
       import-source = "some-git-repo"
       import-subsource = Something
       input-source = complex imports test
@@ -12,6 +13,7 @@ NodeTypeFile
       start-rune = 0
     NodeTypeImport
       end-rune = 94
+      import-location-ref = location:SomeLocalFile
       import-source = SomeLocalFile
       import-subsource = Blah
       input-source = complex imports test

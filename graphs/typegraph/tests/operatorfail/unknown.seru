@@ -1,0 +1,3 @@
+class SomeType {
+  operator NotValid(someParam int) {}
+}

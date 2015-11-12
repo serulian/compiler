@@ -9,45 +9,60 @@ NodeTypeFile
       named = SomeClass
       start-rune = 0
       class-basetypepath =>
-        NodeTypeIdentifierPath
+        NodeTypeTypeReference
           end-rune = 25
           input-source = complex inheritance test
           start-rune = 18
-          identifierpath-root =>
-            NodeTypeIdentifierAccess
+          typereference-path =>
+            NodeTypeIdentifierPath
               end-rune = 25
-              identifieraccess-name = Bar
               input-source = complex inheritance test
-              start-rune = 22
-              identifieraccess-source =>
+              start-rune = 18
+              identifierpath-root =>
                 NodeTypeIdentifierAccess
-                  end-rune = 20
-                  identifieraccess-name = Foo
+                  end-rune = 25
+                  identifieraccess-name = Bar
                   input-source = complex inheritance test
-                  start-rune = 18
-        NodeTypeIdentifierPath
+                  start-rune = 22
+                  identifieraccess-source =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 20
+                      identifieraccess-name = Foo
+                      input-source = complex inheritance test
+                      start-rune = 18
+        NodeTypeTypeReference
           end-rune = 35
           input-source = complex inheritance test
           start-rune = 28
-          identifierpath-root =>
-            NodeTypeIdentifierAccess
+          typereference-path =>
+            NodeTypeIdentifierPath
               end-rune = 35
-              identifieraccess-name = Baz
               input-source = complex inheritance test
-              start-rune = 32
-              identifieraccess-source =>
+              start-rune = 28
+              identifierpath-root =>
                 NodeTypeIdentifierAccess
-                  end-rune = 30
-                  identifieraccess-name = Bar
+                  end-rune = 35
+                  identifieraccess-name = Baz
                   input-source = complex inheritance test
-                  start-rune = 28
-        NodeTypeIdentifierPath
+                  start-rune = 32
+                  identifieraccess-source =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 30
+                      identifieraccess-name = Bar
+                      input-source = complex inheritance test
+                      start-rune = 28
+        NodeTypeTypeReference
           end-rune = 47
           input-source = complex inheritance test
           start-rune = 38
-          identifierpath-root =>
-            NodeTypeIdentifierAccess
+          typereference-path =>
+            NodeTypeIdentifierPath
               end-rune = 47
-              identifieraccess-name = Something
               input-source = complex inheritance test
               start-rune = 38
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 47
+                  identifieraccess-name = Something
+                  input-source = complex inheritance test
+                  start-rune = 38

@@ -1,0 +1,4 @@
+class SomeClass<T, Q : AnotherClass<InnerClass>?> {}
+
+class InnerClass {}
+class AnotherClass<T> {}

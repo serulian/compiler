@@ -1,3 +1,4 @@
 import FooBar
 import BarBaz
+import ThirdThing as FirstThing
 from Something import SomethingElse

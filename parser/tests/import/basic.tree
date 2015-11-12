@@ -5,6 +5,8 @@ NodeTypeFile
   child-node =>
     NodeTypeImport
       end-rune = 15
+      import-location-ref = location:Something
+      import-package-name = Something
       import-source = Something
       input-source = basic import test
       start-rune = 0

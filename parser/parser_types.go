@@ -6,6 +6,12 @@ package parser
 
 //go:generate stringer -type=NodeType
 
+import (
+	"strconv"
+
+	"github.com/serulian/compiler/compilercommon"
+)
+
 type AstNode interface {
 	// Connect connects this AstNode to another AstNode with the given predicate,
 	// and returns the same AstNode.
@@ -26,9 +32,9 @@ const (
 
 // PackageImport defines the import of a package.
 type PackageImport struct {
-	Path       string
-	ImportType PackageImportType
-	SourceFile InputSource
+	Path           string
+	ImportType     PackageImportType
+	SourceLocation compilercommon.SourceAndLocation
 }
 
 // NodeType identifies the type of AST node.
@@ -40,14 +46,20 @@ const (
 	NodeTypeFile                    // The file root node
 	NodeTypeComment                 // A single or multiline comment
 
+	// Decorator
+	NodeTypeDecorator
+
 	// Module-level
 	NodeTypeImport    // An import
 	NodeTypeClass     // A class
 	NodeTypeInterface // An interface
 	NodeTypeGeneric   // A generic definition on a type
 
+	// Module and Type Members
+	NodeTypeFunction // A function declaration or definition
+	NodeTypeVariable // A variable definition at the module level.
+
 	// Type Members
-	NodeTypeFunction    // A function declaration or definition
 	NodeTypeConstructor // A constructor declaration or definition
 	NodeTypeProperty    // A property declaration or definition
 	NodeTypeOperator    // An operator declaration or definition
@@ -134,7 +146,26 @@ const (
 	// Misc
 	NodeTypeIdentifierPath   // An identifier path
 	NodeTypeIdentifierAccess // A named reference via an identifier or a dot access
+
+	// NodeType is a tagged type.
+	NodeTypeTagged
 )
+
+func (t NodeType) Name() string {
+	return "NodeType"
+}
+
+func (t NodeType) Value() string {
+	return strconv.Itoa(int(t))
+}
+
+func (t NodeType) Build(value string) interface{} {
+	i, err := strconv.Atoi(value)
+	if err != nil {
+		panic("Invalid value for NodeType: " + value)
+	}
+	return NodeType(i)
+}
 
 const (
 	//
@@ -168,29 +199,34 @@ const (
 	NodeCommentPredicateValue = "comment-value"
 
 	//
+	// NodeTypeDecorator
+	//
+	NodeDecoratorPredicateInternal  = "decorator-internal"
+	NodeDecoratorPredicateParameter = "decorator-parameter"
+
+	//
 	// NodeTypeImport
 	//
-	NodeImportPredicateKind      = "import-kind"
-	NodeImportPredicateSource    = "import-source"
-	NodeImportPredicateSubsource = "import-subsource"
-	NodeImportPredicateName      = "named"
+	NodeImportPredicateKind        = "import-kind"
+	NodeImportPredicateSource      = "import-source"
+	NodeImportPredicateSubsource   = "import-subsource"
+	NodeImportPredicateName        = "named"
+	NodeImportPredicatePackageName = "import-package-name"
+
+	NodeImportPredicateLocation = "import-location-ref"
 
 	//
 	// NodeTypeClass + NodeTypeInterface
 	//
-	NodeTypeDefinitionGeneric = "type-generic"
-	NodeTypeDefinitionMember  = "type-member"
+	NodeTypeDefinitionGeneric   = "type-generic"
+	NodeTypeDefinitionMember    = "type-member"
+	NodeTypeDefinitionName      = "named"
+	NodeTypeDefinitionDecorator = "decorator"
 
 	//
 	// NodeTypeClass
 	//
-	NodeClassPredicateName     = "named"
 	NodeClassPredicateBaseType = "class-basetypepath"
-
-	//
-	// NodeTypeInterface
-	//
-	NodeInterfacePredicateName = "named"
 
 	//
 	// NodeTypeGeneric
@@ -199,43 +235,32 @@ const (
 	NodeGenericSubtype       = "generic-subtype"
 
 	//
+	// Type members: NodeTypeProperty, NodeTypeFunction, NodeTypeField, NodeTypeConstructor
+	//
+	NodePredicateTypeMemberName         = "named"
+	NodePredicateTypeMemberDeclaredType = "typemember-declared-type"
+	NodePredicateTypeMemberReturnType   = "typemember-return-type"
+	NodePredicateTypeMemberGeneric      = "typemember-generic"
+	NodePredicateTypeMemberParameter    = "typemember-parameter"
+	NodePredicateTypeMemberBody         = "typemember-body"
+
+	//
 	// NodeTypeOperator
 	//
-	NodeOperatorName      = "operator-named"
-	NodeOperatorParameter = "typemember-parameter"
-	NodeOperatorBody      = "typemember-body"
+	NodeOperatorName = "operator-named"
 
 	//
 	// NodeTypeProperty
 	//
-	NodePropertyName         = "named"
-	NodePropertyDeclaredType = "typemember-declared-type"
-	NodePropertyReadOnly     = "typemember-readonly"
-	NodePropertyGetter       = "property-getter"
-	NodePropertySetter       = "property-setter"
+	NodePropertyReadOnly = "typemember-readonly"
+	NodePropertyGetter   = "property-getter"
+	NodePropertySetter   = "property-setter"
 
 	//
 	// NodeTypePropertyBlock
 	//
 	NodePropertyBlockType = "propertyblock-type"
 	NodePropertyBlockBody = "typemember-body"
-
-	//
-	// NodeTypeConstructor
-	//
-	NodeConstructorName      = "named"
-	NodeConstructorGeneric   = "typemember-generic"
-	NodeConstructorParameter = "typemember-parameter"
-	NodeConstructorBody      = "typemember-body"
-
-	//
-	// NodeTypeFunction
-	//
-	NodeFunctionName       = "named"
-	NodeFunctionReturnType = "typemember-return-type"
-	NodeFunctionGeneric    = "typemember-generic"
-	NodeFunctionParameter  = "typemember-parameter"
-	NodeFunctionBody       = "typemember-body"
 
 	//
 	// NodeTypeParameter

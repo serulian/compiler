@@ -8,6 +8,8 @@ package parser
 
 import (
 	"testing"
+
+	"github.com/serulian/compiler/compilercommon"
 )
 
 type lexerTest struct {
@@ -39,6 +41,9 @@ var lexerTests = []lexerTest{
 	{"multi line comment", "/* a\ncomment*/", []lexeme{lexeme{tokenTypeMultilineComment, 0, "/* a\ncomment*/"}, tEOF}},
 
 	{"multi line comment unterminated", "/* a\ncomment", []lexeme{lexeme{tokenTypeError, 0, "Unterminated multiline comment"}}},
+
+	{"at sign", "@", []lexeme{lexeme{tokenTypeAtSign, 0, "@"}, tEOF}},
+	{"special dot", "•", []lexeme{lexeme{tokenTypeSpecialDot, 0, "•"}, tEOF}},
 
 	{"plus", "+", []lexeme{lexeme{tokenTypePlus, 0, "+"}, tEOF}},
 	{"minus", "-", []lexeme{lexeme{tokenTypeMinus, 0, "-"}, tEOF}},
@@ -215,6 +220,18 @@ var lexerTests = []lexerTest{
 		lexeme{tokenTypeLeftBrace, 0, "{"},
 		lexeme{tokenTypeNewline, 0, "\n"},
 		tEOF}},
+
+	{"whitespace after token before newline test", "foo \n", []lexeme{
+		lexeme{tokenTypeIdentifer, 0, "foo"},
+		lexeme{tokenTypeWhitespace, 0, " "},
+		lexeme{tokenTypeSyntheticSemicolon, 0, "\n"},
+		tEOF}},
+
+	{"tab after token before newline test", "foo\t\n", []lexeme{
+		lexeme{tokenTypeIdentifer, 0, "foo"},
+		lexeme{tokenTypeWhitespace, 0, "\t"},
+		lexeme{tokenTypeSyntheticSemicolon, 0, "\n"},
+		tEOF}},
 }
 
 func TestLexer(t *testing.T) {
@@ -230,41 +247,44 @@ func TestLexerPositioning(t *testing.T) {
 	text := `this.foo // some comment
 class SomeClass`
 
-	l := lex(InputSource("position test"), text)
-	checkNext(l, t, lexeme{tokenTypeKeyword, 0, "this"}, 0, 0)
-	checkNext(l, t, lexeme{tokenTypeDotAccessOperator, 4, "."}, 0, 4)
-	checkNext(l, t, lexeme{tokenTypeIdentifer, 5, "foo"}, 0, 5)
-	checkNext(l, t, lexeme{tokenTypeWhitespace, 8, " "}, 0, 8)
-	checkNext(l, t, lexeme{tokenTypeSinglelineComment, 9, "// some comment"}, 0, 9)
+	l := lex(compilercommon.InputSource("position test"), text)
+	checkNext(t, l, text, lexeme{tokenTypeKeyword, 0, "this"}, 0, 0)
+	checkNext(t, l, text, lexeme{tokenTypeDotAccessOperator, 4, "."}, 0, 4)
+	checkNext(t, l, text, lexeme{tokenTypeIdentifer, 5, "foo"}, 0, 5)
+	checkNext(t, l, text, lexeme{tokenTypeWhitespace, 8, " "}, 0, 8)
+	checkNext(t, l, text, lexeme{tokenTypeSinglelineComment, 9, "// some comment"}, 0, 9)
 
-	checkNext(l, t, lexeme{tokenTypeSyntheticSemicolon, 24, "\n"}, 0, 24)
+	checkNext(t, l, text, lexeme{tokenTypeSyntheticSemicolon, 24, "\n"}, 0, 24)
 
-	checkNext(l, t, lexeme{tokenTypeKeyword, 25, "class"}, 1, 0)
-	checkNext(l, t, lexeme{tokenTypeWhitespace, 30, " "}, 1, 5)
-	checkNext(l, t, lexeme{tokenTypeIdentifer, 31, "SomeClass"}, 1, 6)
-	checkNext(l, t, lexeme{tokenTypeEOF, 40, ""}, 1, 15)
+	checkNext(t, l, text, lexeme{tokenTypeKeyword, 25, "class"}, 1, 0)
+	checkNext(t, l, text, lexeme{tokenTypeWhitespace, 30, " "}, 1, 5)
+	checkNext(t, l, text, lexeme{tokenTypeIdentifer, 31, "SomeClass"}, 1, 6)
+	checkNext(t, l, text, lexeme{tokenTypeEOF, 40, ""}, 1, 15)
 }
 
 // checkNext checks that the next token found in the lexer matches that expected, including
 // positioning information.
-func checkNext(l *lexer, t *testing.T, expected lexeme, line int, column int) {
+func checkNext(t *testing.T, l *lexer, text string, expected lexeme, line int, column int) {
 	found := l.nextToken()
+
 	if expected.kind != found.kind || expected.value != found.value || expected.position != found.position {
 		t.Errorf("%s: got\n\t%+v\nexpected\n\t%v", l.source, found, expected)
 	}
 
-	if line != l.currentPosition().lineNumber {
-		t.Errorf("%s line: got\n\t%+v\nexpected\n\t%v", l.source, l.currentPosition().lineNumber, line)
+	foundLocation := compilercommon.GetSourceLocation(text, int(found.position))
+
+	if line != foundLocation.LineNumber() {
+		t.Errorf("%s line: got\n\t%+v\nexpected\n\t%v", l.source, foundLocation.LineNumber(), line)
 	}
 
-	if column != l.currentPosition().columnPosition {
-		t.Errorf("%s column: got\n\t%+v\nexpected\n\t%v", l.source, l.currentPosition().columnPosition, column)
+	if column != foundLocation.ColumnPosition() {
+		t.Errorf("%s column: got\n\t%+v\nexpected\n\t%v", l.source, foundLocation.ColumnPosition(), column)
 	}
 }
 
 // collect gathers the emitted tokens into a slice.
 func collect(t *lexerTest) (tokens []lexeme) {
-	l := lex(InputSource(t.name), t.input)
+	l := lex(compilercommon.InputSource(t.name), t.input)
 	for {
 		token := l.nextToken()
 		tokens = append(tokens, token)

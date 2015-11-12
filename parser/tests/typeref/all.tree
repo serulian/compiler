@@ -3,12 +3,12 @@ NodeTypeFile
   input-source = all type reference test
   start-rune = 0
   child-node =>
-    NodeTypeVariableStatement
+    NodeTypeVariable
       end-rune = 13
       input-source = all type reference test
       named = basic
       start-rune = 0
-      var-declared-type =>
+      typemember-declared-type =>
         NodeTypeTypeReference
           end-rune = 6
           input-source = all type reference test
@@ -24,12 +24,12 @@ NodeTypeFile
                   identifieraccess-name = int
                   input-source = all type reference test
                   start-rune = 4
-    NodeTypeVariableStatement
+    NodeTypeVariable
       end-rune = 32
       input-source = all type reference test
       named = nullable
       start-rune = 15
-      var-declared-type =>
+      typemember-declared-type =>
         NodeTypeNullable
           end-rune = 22
           input-source = all type reference test
@@ -50,12 +50,12 @@ NodeTypeFile
                       identifieraccess-name = int
                       input-source = all type reference test
                       start-rune = 19
-    NodeTypeVariableStatement
+    NodeTypeVariable
       end-rune = 53
       input-source = all type reference test
       named = streamable
       start-rune = 34
-      var-declared-type =>
+      typemember-declared-type =>
         NodeTypeStream
           end-rune = 41
           input-source = all type reference test
@@ -76,12 +76,12 @@ NodeTypeFile
                       identifieraccess-name = int
                       input-source = all type reference test
                       start-rune = 38
-    NodeTypeVariableStatement
+    NodeTypeVariable
       end-rune = 81
       input-source = all type reference test
       named = generic
       start-rune = 55
-      var-declared-type =>
+      typemember-declared-type =>
         NodeTypeTypeReference
           end-rune = 72
           input-source = all type reference test
@@ -113,12 +113,12 @@ NodeTypeFile
                   identifieraccess-name = SomeGeneric
                   input-source = all type reference test
                   start-rune = 59
-    NodeTypeVariableStatement
+    NodeTypeVariable
       end-rune = 117
       input-source = all type reference test
       named = multigeneric
       start-rune = 83
-      var-declared-type =>
+      typemember-declared-type =>
         NodeTypeTypeReference
           end-rune = 103
           input-source = all type reference test
@@ -165,12 +165,12 @@ NodeTypeFile
                   identifieraccess-name = SomeGeneric
                   input-source = all type reference test
                   start-rune = 87
-    NodeTypeVariableStatement
+    NodeTypeVariable
       end-rune = 148
       input-source = all type reference test
       named = nested
       start-rune = 119
-      var-declared-type =>
+      typemember-declared-type =>
         NodeTypeTypeReference
           end-rune = 140
           input-source = all type reference test
@@ -222,12 +222,12 @@ NodeTypeFile
                   identifieraccess-name = SomeGeneric
                   input-source = all type reference test
                   start-rune = 123
-    NodeTypeVariableStatement
+    NodeTypeVariable
       end-rune = 185
       input-source = all type reference test
       named = nullablegeneric
       start-rune = 150
-      var-declared-type =>
+      typemember-declared-type =>
         NodeTypeNullable
           end-rune = 168
           input-source = all type reference test
@@ -264,12 +264,12 @@ NodeTypeFile
                       identifieraccess-name = SomeGeneric
                       input-source = all type reference test
                       start-rune = 154
-    NodeTypeVariableStatement
+    NodeTypeVariable
       end-rune = 220
       input-source = all type reference test
       named = streamgeneric
       start-rune = 187
-      var-declared-type =>
+      typemember-declared-type =>
         NodeTypeStream
           end-rune = 205
           input-source = all type reference test
@@ -306,12 +306,12 @@ NodeTypeFile
                       identifieraccess-name = SomeGeneric
                       input-source = all type reference test
                       start-rune = 191
-    NodeTypeVariableStatement
+    NodeTypeVariable
       end-rune = 271
       input-source = all type reference test
       named = multinested
       start-rune = 222
-      var-declared-type =>
+      typemember-declared-type =>
         NodeTypeTypeReference
           end-rune = 258
           input-source = all type reference test
@@ -415,12 +415,12 @@ NodeTypeFile
                   identifieraccess-name = SomeGeneric
                   input-source = all type reference test
                   start-rune = 226
-    NodeTypeVariableStatement
+    NodeTypeVariable
       end-rune = 306
       input-source = all type reference test
       named = pathed
       start-rune = 273
-      var-declared-type =>
+      typemember-declared-type =>
         NodeTypeTypeReference
           end-rune = 298
           input-source = all type reference test
@@ -454,12 +454,12 @@ NodeTypeFile
                               identifieraccess-name = Some
                               input-source = all type reference test
                               start-rune = 277
-    NodeTypeVariableStatement
+    NodeTypeVariable
       end-rune = 337
       input-source = all type reference test
       named = nullablepathed
       start-rune = 308
-      var-declared-type =>
+      typemember-declared-type =>
         NodeTypeNullable
           end-rune = 321
           input-source = all type reference test
@@ -486,12 +486,12 @@ NodeTypeFile
                           identifieraccess-name = Some
                           input-source = all type reference test
                           start-rune = 312
-    NodeTypeVariableStatement
+    NodeTypeVariable
       end-rune = 370
       input-source = all type reference test
       named = streamablepathed
       start-rune = 339
-      var-declared-type =>
+      typemember-declared-type =>
         NodeTypeStream
           end-rune = 352
           input-source = all type reference test
@@ -518,12 +518,12 @@ NodeTypeFile
                           identifieraccess-name = Some
                           input-source = all type reference test
                           start-rune = 343
-    NodeTypeVariableStatement
+    NodeTypeVariable
       end-rune = 402
       input-source = all type reference test
       named = genercipathed
       start-rune = 372
-      var-declared-type =>
+      typemember-declared-type =>
         NodeTypeTypeReference
           end-rune = 387
           input-source = all type reference test
@@ -561,12 +561,12 @@ NodeTypeFile
                       identifieraccess-name = Some
                       input-source = all type reference test
                       start-rune = 376
-    NodeTypeVariableStatement
+    NodeTypeVariable
       end-rune = 428
       input-source = all type reference test
       named = nullablestream
       start-rune = 404
-      var-declared-type =>
+      typemember-declared-type =>
         NodeTypeStream
           end-rune = 412
           input-source = all type reference test

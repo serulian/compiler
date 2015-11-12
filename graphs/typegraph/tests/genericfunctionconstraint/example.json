@@ -1,0 +1,130 @@
+{
+    "794a5310bd2bca2ab8beaeb7b7004af5": {
+        "Key": "794a5310bd2bca2ab8beaeb7b7004af5",
+        "Kind": 1,
+        "Children": {},
+        "Predicates": {
+            "tdg-declaration-module": "(NodeRef)",
+            "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-srg-source": "(NodeRef)",
+            "tdg-type-name": "Integer"
+        }
+    },
+    "83a803f30d7c5f6aea39b0cd4d03c407": {
+        "Key": "83a803f30d7c5f6aea39b0cd4d03c407",
+        "Kind": 1,
+        "Children": {
+            "517bb6d04b682e223afee38685c8f520": {
+                "Predicate": "tdg-declaration-generic",
+                "Child": {
+                    "Key": "517bb6d04b682e223afee38685c8f520",
+                    "Kind": 6,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-generic-index": "0",
+                        "tdg-generic-kind": "0",
+                        "tdg-generic-name": "T",
+                        "tdg-generic-subtype": "any",
+                        "tdg-node-kind": "6|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-declaration-module": "(NodeRef)",
+            "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-srg-source": "(NodeRef)",
+            "tdg-type-name": "Function"
+        }
+    },
+    "91d8b3ecc5d735a2dbb5e2daddec070a": {
+        "Key": "91d8b3ecc5d735a2dbb5e2daddec070a",
+        "Kind": 1,
+        "Children": {
+            "9cfa4df669d7e06c501140b3d9a42829": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "9cfa4df669d7e06c501140b3d9a42829",
+                    "Kind": 4,
+                    "Children": {
+                        "69768d1e409202ccd162c5bb8a3bd669": {
+                            "Predicate": "tdg-member-generic",
+                            "Child": {
+                                "Key": "69768d1e409202ccd162c5bb8a3bd669",
+                                "Kind": 6,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-generic-index": "1",
+                                    "tdg-generic-kind": "1",
+                                    "tdg-generic-name": "Q",
+                                    "tdg-generic-subtype": "any",
+                                    "tdg-node-kind": "6|NodeType|tdg",
+                                    "tdg-srg-source": "(NodeRef)"
+                                }
+                            }
+                        },
+                        "ae18cb740d7659c2355110743ece8850": {
+                            "Predicate": "tdg-member-generic",
+                            "Child": {
+                                "Key": "ae18cb740d7659c2355110743ece8850",
+                                "Kind": 6,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-generic-index": "0",
+                                    "tdg-generic-kind": "1",
+                                    "tdg-generic-name": "T",
+                                    "tdg-generic-subtype": "Q",
+                                    "tdg-node-kind": "6|NodeType|tdg",
+                                    "tdg-srg-source": "(NodeRef)"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-name": "SomeFunction",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "Function\u003cInteger\u003e",
+                        "tdg-member-signature": "\n\u000cSomeFunction\u0010\u0002\u0018\u0000 \u0001*\u0011Function\u003cInteger\u003e2$local:1:1                           2\u0003any",
+                        "tdg-node-kind": "4|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-declaration-module": "(NodeRef)",
+            "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-srg-source": "(NodeRef)",
+            "tdg-type-name": "SomeClass"
+        }
+    },
+    "98921bb184e038351685f4e1c54f0c0c": {
+        "Key": "98921bb184e038351685f4e1c54f0c0c",
+        "Kind": 2,
+        "Children": {
+            "517bb6d04b682e223afee38685c8f520": {
+                "Predicate": "tdg-declaration-generic",
+                "Child": {
+                    "Key": "517bb6d04b682e223afee38685c8f520",
+                    "Kind": 6,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-generic-index": "0",
+                        "tdg-generic-kind": "0",
+                        "tdg-generic-name": "T",
+                        "tdg-generic-subtype": "any",
+                        "tdg-node-kind": "6|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-declaration-module": "(NodeRef)",
+            "tdg-node-kind": "2|NodeType|tdg",
+            "tdg-srg-source": "(NodeRef)",
+            "tdg-type-name": "Stream"
+        }
+    }
+}

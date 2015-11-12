@@ -14,12 +14,14 @@ import (
 	"strings"
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/serulian/compiler/compilercommon"
 )
 
 const EOFRUNE = -1
 
 // lex creates a new scanner for the input string.
-func lex(source InputSource, input string) *lexer {
+func lex(source compilercommon.InputSource, input string) *lexer {
 	l := &lexer{
 		source: source,
 		input:  input,
@@ -133,6 +135,9 @@ const (
 	tokenTypeBooleanLiteral
 	tokenTypeIdentifer
 	tokenTypeKeyword
+
+	tokenTypeAtSign     // @
+	tokenTypeSpecialDot // •
 )
 
 // keywords contains the full set of keywords supported.
@@ -198,15 +203,16 @@ type stateFn func(*lexer) stateFn
 
 // lexer holds the state of the scanner.
 type lexer struct {
-	source       InputSource  // the name of the input; used only for error reports
-	input        string       // the string being scanned
-	state        stateFn      // the next lexing function to enter
-	pos          bytePosition // current position in the input
-	start        bytePosition // start position of this token
-	width        bytePosition // width of last rune read from input
-	lastPos      bytePosition // position of most recent token returned by nextToken
-	tokens       chan lexeme  // channel of scanned lexemes
-	currentToken lexeme       // The current token if any
+	source                 compilercommon.InputSource // the name of the input; used only for error reports
+	input                  string                     // the string being scanned
+	state                  stateFn                    // the next lexing function to enter
+	pos                    bytePosition               // current position in the input
+	start                  bytePosition               // start position of this token
+	width                  bytePosition               // width of last rune read from input
+	lastPos                bytePosition               // position of most recent token returned by nextToken
+	tokens                 chan lexeme                // channel of scanned lexemes
+	currentToken           lexeme                     // The current token if any
+	lastNonWhitespaceToken lexeme                     // The last token returned that is non-whitespace
 }
 
 // nextToken returns the next token from the input.
@@ -268,6 +274,10 @@ func (l *lexer) value() string {
 func (l *lexer) emit(t tokenType) {
 	currentToken := lexeme{t, l.start, l.value()}
 
+	if t != tokenTypeWhitespace {
+		l.lastNonWhitespaceToken = currentToken
+	}
+
 	l.tokens <- currentToken
 	l.currentToken = currentToken
 	l.start = l.pos
@@ -315,21 +325,6 @@ func (l *lexer) acceptString(value string) bool {
 	return true
 }
 
-func (l *lexer) currentPosition() sourcePosition {
-	lineNumber := strings.Count(l.input[:l.lastPos], "\n")
-	newlineLocation := strings.LastIndex(l.input[:l.lastPos], "\n")
-	if newlineLocation < 0 {
-		// Since there was no newline, the "synthetic" newline is at position -1
-		newlineLocation = -1
-	}
-
-	columnPosition := int(l.lastPos) - newlineLocation - 1
-	return sourcePosition{
-		lineNumber:     lineNumber,
-		columnPosition: columnPosition,
-	}
-}
-
 // lexSource scans until EOFRUNE
 func lexSource(l *lexer) stateFn {
 Loop:
@@ -344,7 +339,7 @@ Loop:
 		case isNewline(r):
 			// If the previous token matches the synthetic semicolon list,
 			// we emit a synthetic semicolon instead of a simple newline.
-			if _, ok := syntheticPredecessors[l.currentToken.kind]; ok {
+			if _, ok := syntheticPredecessors[l.lastNonWhitespaceToken.kind]; ok {
 				l.emit(tokenTypeSyntheticSemicolon)
 			} else {
 				l.emit(tokenTypeNewline)
@@ -421,6 +416,12 @@ Loop:
 
 		case r == '^':
 			l.emit(tokenTypeXor)
+
+		case r == '@':
+			l.emit(tokenTypeAtSign)
+
+		case r == '•':
+			l.emit(tokenTypeSpecialDot)
 
 		// Cases:
 		// -

@@ -5,9 +5,11 @@ NodeTypeFile
   child-node =>
     NodeTypeImport
       end-rune = 32
+      import-location-ref = location:SomeLibrary
       import-source = SomeLibrary
       import-subsource = Console
       input-source = basic full example test
+      named = Console
       start-rune = 0
     NodeTypeClass
       end-rune = 124

@@ -640,7 +640,7 @@ NodeTypeFile
                 NodeTypeParameter
                   end-rune = 400
                   input-source = all expr test
-                  parameter-type = first
+                  named = first
                   start-rune = 392
                   parameter-type =>
                     NodeTypeTypeReference
@@ -661,7 +661,7 @@ NodeTypeFile
                 NodeTypeParameter
                   end-rune = 413
                   input-source = all expr test
-                  parameter-type = second
+                  named = second
                   start-rune = 403
                   parameter-type =>
                     NodeTypeTypeReference

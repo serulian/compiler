@@ -1,0 +1,39 @@
+NodeTypeFile
+  end-rune = 88
+  input-source = basic decorator test
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 43
+      input-source = basic decorator test
+      named = SomeOtherClass
+      start-rune = 21
+      decorator =>
+        NodeTypeDecorator
+          decorator-internal = typealias
+          end-rune = 20
+          input-source = basic decorator test
+          start-rune = 0
+          decorator-parameter =>
+            NodeStringLiteralExpression
+              end-rune = 18
+              input-source = basic decorator test
+              literal-value = 'soc'
+              start-rune = 14
+    NodeTypeInterface
+      end-rune = 88
+      input-source = basic decorator test
+      named = AnotherType
+      start-rune = 65
+      decorator =>
+        NodeTypeDecorator
+          decorator-internal = typealias
+          end-rune = 64
+          input-source = basic decorator test
+          start-rune = 45
+          decorator-parameter =>
+            NodeStringLiteralExpression
+              end-rune = 62
+              input-source = basic decorator test
+              literal-value = 'at'
+              start-rune = 59

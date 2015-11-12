@@ -1,0 +1,3 @@
+class AnotherClass : SomeClass + SecondClass {}
+class SomeClass {}
+class SecondClass {}

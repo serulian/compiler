@@ -1,0 +1,5 @@
+@•typealias('stream')
+interface Stream {}
+
+@•typealias('bool')
+class Boolean {}

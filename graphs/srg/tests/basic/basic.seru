@@ -1,0 +1,3 @@
+from anotherfile import AnotherClass
+
+class SomeClass {}

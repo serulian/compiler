@@ -31,21 +31,26 @@ NodeTypeFile
               named = Q
               start-rune = 54
               generic-subtype =>
-                NodeTypeIdentifierPath
+                NodeTypeTypeReference
                   end-rune = 60
                   input-source = generic function test
                   start-rune = 58
-                  identifierpath-root =>
-                    NodeTypeIdentifierAccess
+                  typereference-path =>
+                    NodeTypeIdentifierPath
                       end-rune = 60
-                      identifieraccess-name = int
                       input-source = generic function test
                       start-rune = 58
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 60
+                          identifieraccess-name = int
+                          input-source = generic function test
+                          start-rune = 58
           typemember-parameter =>
             NodeTypeParameter
               end-rune = 73
               input-source = generic function test
-              parameter-type = someParam
+              named = someParam
               start-rune = 63
               parameter-type =>
                 NodeTypeTypeReference
@@ -66,7 +71,7 @@ NodeTypeFile
             NodeTypeParameter
               end-rune = 89
               input-source = generic function test
-              parameter-type = anotherParam
+              named = anotherParam
               start-rune = 76
               parameter-type =>
                 NodeTypeTypeReference

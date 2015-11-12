@@ -1,0 +1,9 @@
+class SomeClass {
+	function<AnotherClass> DoSomething(first ThirdClass, second AnotherClass) {}
+	var<AnotherClass> SomeVar
+	constructor BuildMe<C>(param C) {}
+	operator Plus (left SomeClass, right SomeClass) {}
+}
+
+class ThirdClass {}
+class AnotherClass {}

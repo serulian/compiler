@@ -1,0 +1,4 @@
+class SomeType {
+  operator Plus(left SomeType, right SomeType) {}
+  operator plus(left SomeType, right SomeType) {}
+}

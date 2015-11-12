@@ -4,7 +4,9 @@
 
 package parser
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // Useful for debugging.
 var _ = fmt.Printf
@@ -48,6 +50,11 @@ func (p *sourceParser) consumeTopLevel() AstNode {
 	// Once we've seen a non-import, no further imports are allowed.
 	seenNonImport := false
 
+	if p.currentToken.kind == tokenTypeError {
+		p.emitError("%s", p.currentToken.value)
+		return rootNode
+	}
+
 Loop:
 	for {
 		switch {
@@ -62,20 +69,22 @@ Loop:
 			p.currentNode().Connect(NodePredicateChild, p.consumeImport())
 
 		// type definitions.
-		case p.isKeyword("class") || p.isKeyword("interface"):
+		case p.isToken(tokenTypeAtSign) || p.isKeyword("class") || p.isKeyword("interface"):
 			seenNonImport = true
 			p.currentNode().Connect(NodePredicateChild, p.consumeTypeDefinition())
+			p.tryConsumeStatementTerminator()
 
 		// functions.
 		case p.isKeyword("function"):
 			seenNonImport = true
 			p.currentNode().Connect(NodePredicateChild, p.consumeFunction(typeMemberDefinition))
+			p.tryConsumeStatementTerminator()
 
 		// variables.
 		case p.isKeyword("var"):
 			seenNonImport = true
-			p.currentNode().Connect(NodePredicateChild, p.consumeVar(NodeTypeVariableStatement))
-			p.consumeStatementTerminator()
+			p.currentNode().Connect(NodePredicateChild, p.consumeVar(NodeTypeVariable, NodePredicateTypeMemberName, NodePredicateTypeMemberDeclaredType))
+			p.tryConsumeStatementTerminator()
 
 		// EOF.
 		case p.isToken(tokenTypeEOF):
@@ -101,6 +110,56 @@ Loop:
 	return rootNode
 }
 
+// tryConsumeDecorator attempts to consume a decorator.
+//
+// Supported internal form:
+// @•identifier
+// @•identifier(literal parameters)
+func (p *sourceParser) tryConsumeDecorator() (AstNode, bool) {
+	if !p.isToken(tokenTypeAtSign) {
+		return nil, false
+	}
+
+	decoratorNode := p.startNode(NodeTypeDecorator)
+	defer p.finishNode()
+
+	// @
+	p.consume(tokenTypeAtSign)
+
+	// •
+	// TODO(jschorr): Loosen this check once fully decorators are supported.
+	p.consume(tokenTypeSpecialDot)
+
+	// Path.
+	// TODO(jschorr): Replace this with a path once decorators are generally supported.
+	path, result := p.consumeIdentifier()
+	if !result {
+		return decoratorNode, true
+	}
+
+	decoratorNode.Decorate(NodeDecoratorPredicateInternal, path)
+
+	// Parameters (optional).
+	// (
+	if _, ok := p.consume(tokenTypeLeftParen); !ok {
+		return decoratorNode, true
+	}
+
+	// literalValue (, another)
+	for {
+		decoratorNode.Connect(NodeDecoratorPredicateParameter, p.consumeLiteralValue())
+
+		if _, ok := p.tryConsume(tokenTypeComma); !ok {
+			break
+		}
+	}
+
+	// )
+	p.consume(tokenTypeRightParen)
+	p.tryConsumeStatementTerminator()
+	return decoratorNode, true
+}
+
 // consumeImport attempts to consume an import statement.
 //
 // Supported forms (all must be terminated by \n or EOF):
@@ -121,18 +180,17 @@ func (p *sourceParser) consumeImport() AstNode {
 			return importNode
 		}
 
-		p.reportImport(token.value)
-
+		importNode.Decorate(NodeImportPredicateLocation, p.reportImport(token.value))
 		importNode.Decorate(NodeImportPredicateSource, token.value)
-		p.consumeImportSource(importNode, NodeImportPredicateSubsource, tokenTypeIdentifer)
+		p.consumeImportSource(importNode, NodeImportPredicateSubsource, NodeImportPredicateName, tokenTypeIdentifer)
 		return importNode
 	}
 
-	p.consumeImportSource(importNode, NodeImportPredicateSource, tokenTypeIdentifer, tokenTypeStringLiteral)
+	p.consumeImportSource(importNode, NodeImportPredicateSource, NodeImportPredicatePackageName, tokenTypeIdentifer, tokenTypeStringLiteral)
 	return importNode
 }
 
-func (p *sourceParser) consumeImportSource(importNode AstNode, predicate string, allowedValues ...tokenType) {
+func (p *sourceParser) consumeImportSource(importNode AstNode, sourcePredicate string, namePredicate string, allowedValues ...tokenType) {
 	// import ...
 	if !p.consumeKeyword("import") {
 		return
@@ -144,11 +202,11 @@ func (p *sourceParser) consumeImportSource(importNode AstNode, predicate string,
 		return
 	}
 
-	if predicate == NodeImportPredicateSource {
-		p.reportImport(token.value)
+	if sourcePredicate == NodeImportPredicateSource {
+		importNode.Decorate(NodeImportPredicateLocation, p.reportImport(token.value))
 	}
 
-	importNode.Decorate(predicate, token.value)
+	importNode.Decorate(sourcePredicate, token.value)
 
 	// as something (optional)
 	if p.tryConsumeKeyword("as") {
@@ -157,7 +215,15 @@ func (p *sourceParser) consumeImportSource(importNode AstNode, predicate string,
 			return
 		}
 
-		importNode.Decorate(NodeImportPredicateName, named)
+		importNode.Decorate(namePredicate, named)
+	} else {
+		// If the import was a string value, then an 'as' is required.
+		if token.kind == tokenTypeStringLiteral {
+			p.emitError("Import from SCM URL requires an 'as' clause")
+		} else {
+			// Otherwise, literal imports receive the name of the package source as their own package name.
+			importNode.Decorate(namePredicate, token.value)
+		}
 	}
 
 	// end of the statement
@@ -166,13 +232,25 @@ func (p *sourceParser) consumeImportSource(importNode AstNode, predicate string,
 
 // consumeTypeDefinition attempts to consume a type definition.
 func (p *sourceParser) consumeTypeDefinition() AstNode {
+	// Consume any decorator.
+	decoratorNode, ok := p.tryConsumeDecorator()
+
+	// Consume the type itself.
+	var typeDef AstNode
 	if p.isKeyword("class") {
-		return p.consumeClassDefinition()
+		typeDef = p.consumeClassDefinition()
 	} else if p.isKeyword("interface") {
-		return p.consumeInterfaceDefinition()
+		typeDef = p.consumeInterfaceDefinition()
 	} else {
 		return p.createErrorNode("Expected 'class' or 'interface', Found: %s", p.currentToken.value)
 	}
+
+	if ok {
+		// Add the decorator to the type.
+		typeDef.Connect(NodeTypeDefinitionDecorator, decoratorNode)
+	}
+
+	return typeDef
 }
 
 // consumeClassDefinition consumes a class definition.
@@ -186,9 +264,7 @@ func (p *sourceParser) consumeClassDefinition() AstNode {
 	defer p.finishNode()
 
 	// class ...
-	if !p.consumeKeyword("class") {
-		return classNode
-	}
+	p.consumeKeyword("class")
 
 	// Identifier
 	className, ok := p.consumeIdentifier()
@@ -196,16 +272,16 @@ func (p *sourceParser) consumeClassDefinition() AstNode {
 		return classNode
 	}
 
-	classNode.Decorate(NodeClassPredicateName, className)
+	classNode.Decorate(NodeTypeDefinitionName, className)
 
 	// Generics (optional).
 	p.consumeGenerics(classNode, NodeTypeDefinitionGeneric)
 
 	// Inheritance.
 	if _, ok := p.tryConsume(tokenTypeColon); ok {
-		// Consume identifier paths until we don't find a plus.
+		// Consume type references until we don't find a plus.
 		for {
-			classNode.Connect(NodeClassPredicateBaseType, p.consumeIdentifierPath())
+			classNode.Connect(NodeClassPredicateBaseType, p.consumeTypeReference(typeReferenceNoVoid))
 			if _, ok := p.tryConsume(tokenTypePlus); !ok {
 				break
 			}
@@ -235,9 +311,7 @@ func (p *sourceParser) consumeInterfaceDefinition() AstNode {
 	defer p.finishNode()
 
 	// interface ...
-	if !p.consumeKeyword("interface") {
-		return interfaceNode
-	}
+	p.consumeKeyword("interface")
 
 	// Identifier
 	interfaceName, ok := p.consumeIdentifier()
@@ -245,7 +319,7 @@ func (p *sourceParser) consumeInterfaceDefinition() AstNode {
 		return interfaceNode
 	}
 
-	interfaceNode.Decorate(NodeInterfacePredicateName, interfaceName)
+	interfaceNode.Decorate(NodeTypeDefinitionName, interfaceName)
 
 	// Generics (optional).
 	p.consumeGenerics(interfaceNode, NodeTypeDefinitionGeneric)
@@ -268,7 +342,7 @@ func (p *sourceParser) consumeClassMembers(typeNode AstNode) {
 	for {
 		switch {
 		case p.isKeyword("var"):
-			typeNode.Connect(NodeTypeDefinitionMember, p.consumeVar(NodeTypeField))
+			typeNode.Connect(NodeTypeDefinitionMember, p.consumeVar(NodeTypeField, NodePredicateTypeMemberName, NodePredicateTypeMemberDeclaredType))
 			p.consumeStatementTerminator()
 
 		case p.isKeyword("function"):
@@ -349,7 +423,7 @@ func (p *sourceParser) consumeOperator(option typeMemberOption) AstNode {
 
 	// identifier TypeReference (, another)
 	for {
-		operatorNode.Connect(NodeOperatorParameter, p.consumeParameter())
+		operatorNode.Connect(NodePredicateTypeMemberParameter, p.consumeParameter())
 
 		if _, ok := p.tryConsume(tokenTypeComma); !ok {
 			break
@@ -361,15 +435,8 @@ func (p *sourceParser) consumeOperator(option typeMemberOption) AstNode {
 		return operatorNode
 	}
 
-	// If this is a declaration, then we look for a statement terminator and
-	// finish the parse.
-	if option == typeMemberDeclaration {
-		p.consumeStatementTerminator()
-		return operatorNode
-	}
-
-	// Otherwise, we need a body.
-	operatorNode.Connect(NodeOperatorBody, p.consumeStatementBlock(statementBlockWithTerminator))
+	// Operators always need bodies.
+	operatorNode.Connect(NodePredicateTypeMemberBody, p.consumeStatementBlock(statementBlockWithTerminator))
 	return operatorNode
 }
 
@@ -395,7 +462,7 @@ func (p *sourceParser) consumeProperty(option typeMemberOption) AstNode {
 		return propertyNode
 	}
 
-	propertyNode.Connect(NodePropertyDeclaredType, p.consumeTypeReference(typeReferenceNoVoid))
+	propertyNode.Connect(NodePredicateTypeMemberDeclaredType, p.consumeTypeReference(typeReferenceNoVoid))
 
 	if _, ok := p.consume(tokenTypeGreaterThan); !ok {
 		return propertyNode
@@ -407,7 +474,7 @@ func (p *sourceParser) consumeProperty(option typeMemberOption) AstNode {
 		return propertyNode
 	}
 
-	propertyNode.Decorate(NodePropertyName, identifier)
+	propertyNode.Decorate(NodePredicateTypeMemberName, identifier)
 
 	// If this is a declaration, then having a brace is optional.
 	if option == typeMemberDeclaration {
@@ -486,10 +553,10 @@ func (p *sourceParser) consumeConstructor(option typeMemberOption) AstNode {
 		return constructorNode
 	}
 
-	constructorNode.Decorate(NodeConstructorName, identifier)
+	constructorNode.Decorate(NodePredicateTypeMemberName, identifier)
 
 	// Generics (optional).
-	p.consumeGenerics(constructorNode, NodeConstructorGeneric)
+	p.consumeGenerics(constructorNode, NodePredicateTypeMemberGeneric)
 
 	// Parameters.
 	// (
@@ -499,7 +566,7 @@ func (p *sourceParser) consumeConstructor(option typeMemberOption) AstNode {
 
 	// identifier TypeReference (, another)
 	for {
-		constructorNode.Connect(NodeConstructorParameter, p.consumeParameter())
+		constructorNode.Connect(NodePredicateTypeMemberParameter, p.consumeParameter())
 
 		if _, ok := p.tryConsume(tokenTypeComma); !ok {
 			break
@@ -511,15 +578,8 @@ func (p *sourceParser) consumeConstructor(option typeMemberOption) AstNode {
 		return constructorNode
 	}
 
-	// If this is a declaration, then we look for a statement terminator and
-	// finish the parse.
-	if option == typeMemberDeclaration {
-		p.consumeStatementTerminator()
-		return constructorNode
-	}
-
-	// Otherwise, we need a body.
-	constructorNode.Connect(NodeConstructorBody, p.consumeStatementBlock(statementBlockWithTerminator))
+	// Constructors always have a body.
+	constructorNode.Connect(NodePredicateTypeMemberBody, p.consumeStatementBlock(statementBlockWithTerminator))
 	return constructorNode
 }
 
@@ -541,7 +601,7 @@ func (p *sourceParser) consumeFunction(option typeMemberOption) AstNode {
 		return functionNode
 	}
 
-	functionNode.Connect(NodeFunctionReturnType, p.consumeTypeReference(typeReferenceWithVoid))
+	functionNode.Connect(NodePredicateTypeMemberReturnType, p.consumeTypeReference(typeReferenceWithVoid))
 
 	if _, ok := p.consume(tokenTypeGreaterThan); !ok {
 		return functionNode
@@ -553,10 +613,10 @@ func (p *sourceParser) consumeFunction(option typeMemberOption) AstNode {
 		return functionNode
 	}
 
-	functionNode.Decorate(NodeFunctionName, identifier)
+	functionNode.Decorate(NodePredicateTypeMemberName, identifier)
 
 	// Generics (optional).
-	p.consumeGenerics(functionNode, NodeFunctionGeneric)
+	p.consumeGenerics(functionNode, NodePredicateTypeMemberGeneric)
 
 	// Parameters.
 	// (
@@ -570,7 +630,7 @@ func (p *sourceParser) consumeFunction(option typeMemberOption) AstNode {
 			break
 		}
 
-		functionNode.Connect(NodeFunctionParameter, p.consumeParameter())
+		functionNode.Connect(NodePredicateTypeMemberParameter, p.consumeParameter())
 
 		if _, ok := p.tryConsume(tokenTypeComma); !ok {
 			break
@@ -590,7 +650,7 @@ func (p *sourceParser) consumeFunction(option typeMemberOption) AstNode {
 	}
 
 	// Otherwise, we need a function body.
-	functionNode.Connect(NodeFunctionBody, p.consumeStatementBlock(statementBlockWithTerminator))
+	functionNode.Connect(NodePredicateTypeMemberBody, p.consumeStatementBlock(statementBlockWithTerminator))
 	return functionNode
 }
 
@@ -605,7 +665,7 @@ func (p *sourceParser) consumeParameter() AstNode {
 		return parameterNode
 	}
 
-	parameterNode.Decorate(NodeParameterType, identifier)
+	parameterNode.Decorate(NodeParameterName, identifier)
 
 	// Parameter type.
 	parameterNode.Connect(NodeParameterType, p.consumeTypeReference(typeReferenceNoVoid))
@@ -729,7 +789,7 @@ func (p *sourceParser) consumeGeneric() AstNode {
 		return genericNode
 	}
 
-	genericNode.Connect(NodeGenericSubtype, p.consumeIdentifierPath())
+	genericNode.Connect(NodeGenericSubtype, p.consumeTypeReference(typeReferenceNoVoid))
 	return genericNode
 }
 
@@ -847,7 +907,7 @@ func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
 
 	// Var statement.
 	case p.isKeyword("var"):
-		return p.consumeVar(NodeTypeVariableStatement), true
+		return p.consumeVar(NodeTypeVariableStatement, NodeVariableStatementName, NodeVariableStatementDeclaredType), true
 
 	// If statement.
 	case p.isKeyword("if"):
@@ -1105,7 +1165,7 @@ func (p *sourceParser) consumeForStatement() AstNode {
 // var<SomeType> someName
 // var<SomeType> someName = someExpr
 // var someName = someExpr
-func (p *sourceParser) consumeVar(nodeType NodeType) AstNode {
+func (p *sourceParser) consumeVar(nodeType NodeType, namePredicate string, typePredicate string) AstNode {
 	variableNode := p.startNode(nodeType)
 	defer p.finishNode()
 
@@ -1115,7 +1175,7 @@ func (p *sourceParser) consumeVar(nodeType NodeType) AstNode {
 	// Type declaration (optional if there is an init expression)
 	var hasType bool
 	if _, ok := p.tryConsume(tokenTypeLessThan); ok {
-		variableNode.Connect(NodeVariableStatementDeclaredType, p.consumeTypeReference(typeReferenceNoVoid))
+		variableNode.Connect(typePredicate, p.consumeTypeReference(typeReferenceNoVoid))
 
 		if _, ok := p.consume(tokenTypeGreaterThan); !ok {
 			return variableNode
@@ -1130,7 +1190,7 @@ func (p *sourceParser) consumeVar(nodeType NodeType) AstNode {
 		return variableNode
 	}
 
-	variableNode.Decorate(NodeVariableStatementName, identifier)
+	variableNode.Decorate(namePredicate, identifier)
 
 	// Initializer expression. Optional if a type given, otherwise required.
 	if !hasType && !p.isToken(tokenTypeEquals) {
@@ -1619,39 +1679,20 @@ func (p *sourceParser) tryConsumeCallAccessExpression() (AstNode, bool) {
 		tokenTypeStreamAccessOperator)
 }
 
-// tryConsumeBaseExpression attempts to consume base expressions (literals, identifiers, parenthesis).
-func (p *sourceParser) tryConsumeBaseExpression() (AstNode, bool) {
+// consumeLiteralValue consumes a literal value.
+func (p *sourceParser) consumeLiteralValue() AstNode {
+	node, found := p.tryConsumeLiteralValue()
+	if !found {
+		p.emitError("Expected literal value, found: %v", p.currentToken.kind)
+		return nil
+	}
+
+	return node
+}
+
+// tryConsumeLiteralValue attempts to consume a literal value.
+func (p *sourceParser) tryConsumeLiteralValue() (AstNode, bool) {
 	switch {
-
-	// List expression.
-	case p.isToken(tokenTypeLeftBracket):
-		return p.consumeListExpression(), true
-
-	// Unary: ~
-	case p.isToken(tokenTypeTilde):
-		p.consume(tokenTypeTilde)
-
-		bitNode := p.startNode(NodeBitwiseNotExpression)
-		defer p.finishNode()
-		bitNode.Connect(NodeUnaryExpressionChildExpr, p.consumeExpression())
-		return bitNode, true
-
-	// Unary: !
-	case p.isToken(tokenTypeNot):
-		p.consume(tokenTypeNot)
-
-		notNode := p.startNode(NodeBooleanNotExpression)
-		defer p.finishNode()
-		notNode.Connect(NodeUnaryExpressionChildExpr, p.consumeExpression())
-		return notNode, true
-
-	// Nested expression.
-	case p.isToken(tokenTypeLeftParen):
-		p.consume(tokenTypeLeftParen)
-		exprNode := p.consumeExpression()
-		p.consume(tokenTypeRightParen)
-		return exprNode, true
-
 	// Numeric literal.
 	case p.isToken(tokenTypeNumericLiteral):
 		literalNode := p.startNode(NodeNumericLiteralExpression)
@@ -1685,6 +1726,48 @@ func (p *sourceParser) tryConsumeBaseExpression() (AstNode, bool) {
 	// Template string literal.
 	case p.isToken(tokenTypeTemplateStringLiteral):
 		return p.consumeTemplateString(), true
+	}
+
+	return nil, false
+}
+
+// tryConsumeBaseExpression attempts to consume base expressions (literals, identifiers, parenthesis).
+func (p *sourceParser) tryConsumeBaseExpression() (AstNode, bool) {
+	switch {
+
+	// List expression.
+	case p.isToken(tokenTypeLeftBracket):
+		return p.consumeListExpression(), true
+
+	// Unary: ~
+	case p.isToken(tokenTypeTilde):
+		p.consume(tokenTypeTilde)
+
+		bitNode := p.startNode(NodeBitwiseNotExpression)
+		defer p.finishNode()
+		bitNode.Connect(NodeUnaryExpressionChildExpr, p.consumeExpression())
+		return bitNode, true
+
+	// Unary: !
+	case p.isToken(tokenTypeNot):
+		p.consume(tokenTypeNot)
+
+		notNode := p.startNode(NodeBooleanNotExpression)
+		defer p.finishNode()
+		notNode.Connect(NodeUnaryExpressionChildExpr, p.consumeExpression())
+		return notNode, true
+
+	// Nested expression.
+	case p.isToken(tokenTypeLeftParen):
+		p.consume(tokenTypeLeftParen)
+		exprNode := p.consumeExpression()
+		p.consume(tokenTypeRightParen)
+		return exprNode, true
+	}
+
+	// Literal value.
+	if value, ok := p.tryConsumeLiteralValue(); ok {
+		return value, true
 	}
 
 	return p.tryConsumeIdentifierExpression()

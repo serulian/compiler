@@ -17,7 +17,7 @@ NodeTypeFile
         NodeTypeParameter
           end-rune = 46
           input-source = module function test
-          parameter-type = someParam
+          named = someParam
           start-rune = 34
           parameter-type =>
             NodeTypeTypeReference

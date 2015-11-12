@@ -9,26 +9,36 @@ NodeTypeFile
       named = SomeClass
       start-rune = 0
       class-basetypepath =>
-        NodeTypeIdentifierPath
+        NodeTypeTypeReference
           end-rune = 26
           input-source = complex class def test
           start-rune = 23
-          identifierpath-root =>
-            NodeTypeIdentifierAccess
+          typereference-path =>
+            NodeTypeIdentifierPath
               end-rune = 26
-              identifieraccess-name = Bar
               input-source = complex class def test
               start-rune = 23
-        NodeTypeIdentifierPath
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 26
+                  identifieraccess-name = Bar
+                  input-source = complex class def test
+                  start-rune = 23
+        NodeTypeTypeReference
           end-rune = 32
           input-source = complex class def test
           start-rune = 29
-          identifierpath-root =>
-            NodeTypeIdentifierAccess
+          typereference-path =>
+            NodeTypeIdentifierPath
               end-rune = 32
-              identifieraccess-name = Baz
               input-source = complex class def test
               start-rune = 29
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 32
+                  identifieraccess-name = Baz
+                  input-source = complex class def test
+                  start-rune = 29
       type-generic =>
         NodeTypeGeneric
           end-rune = 18

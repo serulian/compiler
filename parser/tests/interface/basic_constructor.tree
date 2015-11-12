@@ -1,24 +1,29 @@
 NodeTypeFile
-  end-rune = 69
+  end-rune = 72
   input-source = basic interface constructor test
   start-rune = 0
   child-node =>
     NodeTypeInterface
-      end-rune = 69
+      end-rune = 72
       input-source = basic interface constructor test
       named = ISomeInterface
       start-rune = 0
       type-member =>
         NodeTypeConstructor
-          end-rune = 68
+          end-rune = 71
           input-source = basic interface constructor test
           named = DoSomething
           start-rune = 28
+          typemember-body =>
+            NodeTypeStatementBlock
+              end-rune = 71
+              input-source = basic interface constructor test
+              start-rune = 69
           typemember-parameter =>
             NodeTypeParameter
               end-rune = 56
               input-source = basic interface constructor test
-              parameter-type = a
+              named = a
               start-rune = 52
               parameter-type =>
                 NodeTypeTypeReference
@@ -39,7 +44,7 @@ NodeTypeFile
             NodeTypeParameter
               end-rune = 66
               input-source = basic interface constructor test
-              parameter-type = b
+              named = b
               start-rune = 59
               parameter-type =>
                 NodeTypeTypeReference

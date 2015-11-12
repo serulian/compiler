@@ -5,7 +5,9 @@ NodeTypeFile
   child-node =>
     NodeTypeImport
       end-rune = 24
+      import-location-ref = location:foobar
       import-source = foobar
       import-subsource = barbaz
       input-source = from import test
+      named = barbaz
       start-rune = 0

@@ -1,0 +1,44 @@
+NodeTypeFile
+  end-rune = 69
+  input-source = known issue test
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 69
+      input-source = known issue test
+      named = SomeDerivingType
+      start-rune = 0
+      type-member =>
+        NodeTypeProperty
+          end-rune = 68
+          input-source = known issue test
+          named = MainProp
+          start-rune = 26
+          typemember-readonly = true
+          property-getter =>
+            NodeTypePropertyBlock
+              end-rune = 65
+              input-source = known issue test
+              propertyblock-type = get
+              start-rune = 58
+              typemember-body =>
+                NodeTypeStatementBlock
+                  end-rune = 65
+                  input-source = known issue test
+                  start-rune = 62
+          typemember-declared-type =>
+            NodeTypeTypeReference
+              end-rune = 42
+              input-source = known issue test
+              start-rune = 35
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 42
+                  input-source = known issue test
+                  start-rune = 35
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 42
+                      identifieraccess-name = sometype
+                      input-source = known issue test
+                      start-rune = 35

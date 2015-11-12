@@ -13,6 +13,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -52,7 +53,7 @@ func (pt *parserTest) writeTree(value string) {
 	}
 }
 
-func createAstNode(source InputSource, kind NodeType) AstNode {
+func createAstNode(source compilercommon.InputSource, kind NodeType) AstNode {
 	return &testNode{
 		nodeType:   kind,
 		properties: make(map[string]string),
@@ -94,6 +95,7 @@ var parserTests = []parserTest{
 	{"missing source import test", "import/missing_source"},
 	{"invalid source", "import/invalid_source"},
 	{"invalid subsource", "import/invalid_subsource"},
+	{"missing as for SCM test", "import/missing_as_scm"},
 
 	// Module success tests.
 	{"module variable test", "module/module_var"},
@@ -187,9 +189,16 @@ var parserTests = []parserTest{
 
 	// Full example tests.
 	{"basic full example test", "full/basic"},
+
+	// Decorator tests.
+	{"basic decorator test", "decorator/basic"},
+
+	// Known issue tests.
+	{"known issue test", "class/knownissue"},
 }
 
-func reportImport(path PackageImport) {
+func reportImport(path PackageImport) string {
+	return "location:" + path.Path
 }
 
 func TestParser(t *testing.T) {
@@ -200,7 +209,7 @@ func TestParser(t *testing.T) {
 			}
 		}
 
-		rootNode := Parse(createAstNode, reportImport, InputSource(test.name), test.input())
+		rootNode := Parse(createAstNode, reportImport, compilercommon.InputSource(test.name), test.input())
 		parseTree := getParseTree((rootNode).(*testNode), 0)
 		assert := assert.New(t)
 

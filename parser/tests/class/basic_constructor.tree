@@ -29,7 +29,7 @@ NodeTypeFile
             NodeTypeParameter
               end-rune = 48
               input-source = basic class constructor test
-              parameter-type = someArg
+              named = someArg
               start-rune = 40
               parameter-type =>
                 NodeTypeTypeReference

@@ -5,6 +5,7 @@ NodeTypeFile
   child-node =>
     NodeTypeImport
       end-rune = 17
+      import-location-ref = location:fo
       import-source = "foo"
       input-source = invalid subsource
       start-rune = 0
