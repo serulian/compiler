@@ -645,6 +645,15 @@ var scopeGraphTests = []scopegraphTest{
 			expectedScopeEntry{"explicitreturn", expectedScope{true, proto.ScopeKind_VALUE, "Function<String>(Integer, Boolean)", "void"}},
 		},
 		"", ""},
+
+	/////////// chained inference test ///////////
+
+	scopegraphTest{"chained inference test", "chained", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"someVar", expectedScope{true, proto.ScopeKind_VALUE, "Function<void>(Integer, Boolean)", "void"}},
+			expectedScopeEntry{"anotherVar", expectedScope{true, proto.ScopeKind_VALUE, "Function<void>(Integer, Boolean)", "void"}},
+		},
+		"", ""},
 }
 
 func TestGraphs(t *testing.T) {
