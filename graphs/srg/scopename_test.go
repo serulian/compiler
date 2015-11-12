@@ -127,6 +127,21 @@ var nameScopeTests = []nameScopeTest{
 	nameScopeTest{"full lambda expression param test", "basic", "fulllambdabody", "a",
 		expectedScopeResult{true, parser.NodeTypeParameter, "a", NamedScopeParameter},
 	},
+
+	// Attempt to resolve "someVar" under its own expression.
+	nameScopeTest{"variable under itself test", "basic", "somevarexpr", "someVar",
+		expectedScopeResult{false, parser.NodeTypeTagged, "", NamedScopeVariable},
+	},
+
+	// Attempt to resolve "anotherValue" under its own expression.
+	nameScopeTest{"variable under its own closure test", "basic", "funcclosure", "anotherValue",
+		expectedScopeResult{false, parser.NodeTypeTagged, "", NamedScopeVariable},
+	},
+
+	// Resolve "someVar" under the function clousre.
+	nameScopeTest{"variable under other closure test", "basic", "funcclosure", "someVar",
+		expectedScopeResult{true, parser.NodeTypeVariableStatement, "someVar", NamedScopeVariable},
+	},
 }
 
 func TestNameScoping(t *testing.T) {
@@ -152,7 +167,7 @@ func TestNameScoping(t *testing.T) {
 		// Resolve the name from the node.
 		resolved, nameFound := testSRG.FindNameInScope(test.queryName, commentedNode)
 		if !test.result.isValid {
-			assert.False(t, nameFound, "Test %v expected name %v to not be found", test.name, test.queryName)
+			assert.False(t, nameFound, "Test %v expected name %v to not be found. Found: %v", test.name, test.queryName, resolved)
 			continue
 		}
 

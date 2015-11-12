@@ -46,3 +46,8 @@ function<void> FullLambdaTest() {
 		/* fulllambdabody */a
 	}
 }
+
+function<void> VarReference() {
+	var someVar = /* somevarexpr */2
+	var anotherVar = function () /* funcclosure */{}
+}

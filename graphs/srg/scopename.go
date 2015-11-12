@@ -283,7 +283,7 @@ func (g *SRG) FindNameInScope(name string, node compilergraph.GraphNode) (SRGNam
 // scopeResultNode is a sorted result of a named scope lookup.
 type scopeResultNode struct {
 	node       compilergraph.GraphNode
-	startIndex int
+	startIndex int64
 }
 
 type scopeResultNodes []scopeResultNode
@@ -303,10 +303,7 @@ func (slice scopeResultNodes) Swap(i, j int) {
 // findAddedNameInScope finds the {parameter, with, loop, var} node exposing the given name, if any.
 func (g *SRG) findAddedNameInScope(name string, node compilergraph.GraphNode) (compilergraph.GraphNode, bool) {
 	nodeSource := node.Get(parser.NodePredicateSource)
-	nodeStartIndex, aerr := strconv.Atoi(node.Get(parser.NodePredicateStartRune))
-	if aerr != nil {
-		panic(aerr)
-	}
+	nodeStartIndex := node.GetInt(parser.NodePredicateStartRune)
 
 	// Note: This filter ensures that the name is accessible in the scope of the given node by checking that
 	// the node adding the name contains the given node. We use LT because we checking the node adding
@@ -331,21 +328,34 @@ func (g *SRG) findAddedNameInScope(name string, node compilergraph.GraphNode) (c
 		Has(parser.NodePredicateSource, nodeSource).
 		IsKind(parser.NodeTypeParameter, parser.NodeTypeNamedValue, parser.NodeTypeVariableStatement, parser.NodeTypeLambdaParameter).
 		FilterBy(containingFilter).
-		BuildNodeIterator(parser.NodePredicateStartRune)
+		BuildNodeIterator(parser.NodePredicateStartRune, parser.NodePredicateEndRune)
 
 	// Sort the nodes found by location and choose the closest node.
 	var results = make(scopeResultNodes, 0)
 	for nit.Next() {
 		node := nit.Node()
-		startIndex, err := strconv.Atoi(nit.Values()[parser.NodePredicateStartRune])
+		startIndex, err := strconv.ParseInt(nit.Values()[parser.NodePredicateStartRune], 10, 64)
 		if err != nil {
 			panic(err)
 		}
 
-		// If the node is a variable statement, we also have to check that the startIndex of the variable
-		// statement is <= the startIndex of the parent node (since it is not fully block scoped).
-		if node.Kind == parser.NodeTypeVariableStatement && startIndex > nodeStartIndex {
-			continue
+		// If the node is a variable statement, we have do to additional checks (since it isn't block scoped.)
+		if node.Kind == parser.NodeTypeVariableStatement {
+			endIndex, err := strconv.ParseInt(nit.Values()[parser.NodePredicateEndRune], 10, 64)
+			if err != nil {
+				panic(err)
+			}
+
+			// Check that the startIndex of the variable statement is <= the startIndex of the parent node
+			if startIndex > nodeStartIndex {
+				continue
+			}
+
+			// Ensure that the scope starts after the end index of the variable. Otherwise, the variable
+			// name could be used in its initializer expression (which is expressly disallowed).
+			if nodeStartIndex <= endIndex {
+				continue
+			}
 		}
 
 		results = append(results, scopeResultNode{node, startIndex})
