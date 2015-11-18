@@ -101,6 +101,17 @@ func (gn GraphNode) GetInt(predicateName string) int64 {
 	return i
 }
 
+// TryGetTagged returns the value of the given predicate found on this node, "cast" to the type of the
+// given tagged value, if any.
+func (gn GraphNode) TryGetTagged(predicateName string, example TaggedValue) (interface{}, bool) {
+	strValue, found := gn.TryGet(predicateName)
+	if !found {
+		return nil, false
+	}
+
+	return gn.layer.parseTaggedKey(strValue, example), true
+}
+
 // GetTagged returns the value of the given predicate found on this node, "cast" to the type of the
 // given tagged value.
 func (gn GraphNode) GetTagged(predicateName string, example TaggedValue) interface{} {
@@ -172,7 +183,7 @@ func (gn GraphNode) TryGetIncoming(predicateName string) (string, bool) {
 func (gn GraphNode) GetIncomingNode(predicateName string) GraphNode {
 	result, found := gn.TryGetIncomingNode(predicateName)
 	if !found {
-		panic(fmt.Sprintf("Could not find node for predicate %s on node %s", predicateName, gn.NodeId))
+		panic(fmt.Sprintf("Could not find node for incoming predicate %s on node %s: %v", predicateName, gn.NodeId, gn.layer.getPredicatesListForDebugging(gn)))
 	}
 
 	return result

@@ -1,0 +1,19 @@
+class SomeClass<T> {
+	var<T?> SomeGenericVar
+}
+
+class SomeStream<T> {
+	property<SomeClass<T>> CurrentValue {
+		get {
+			return SomeClass<T>.new()
+		}
+	}
+}
+
+function<void> DoSomething() {
+	var<SomeClass<int>*> intstream = SomeStream<int>.new()
+	var<SomeClass<bool>*> boolstream = SomeStream<bool>.new()
+
+	/* intstream */(intstream*.SomeGenericVar)
+	/* boolstream */(boolstream*.SomeGenericVar)
+}

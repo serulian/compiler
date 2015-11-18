@@ -1,5 +1,5 @@
 NodeTypeFile
-  end-rune = 428
+  end-rune = 502
   input-source = all type reference test
   start-rune = 0
   child-node =>
@@ -592,3 +592,71 @@ NodeTypeFile
                           identifieraccess-name = int
                           input-source = all type reference test
                           start-rune = 408
+    NodeTypeVariable
+      end-rune = 459
+      input-source = all type reference test
+      named = functype
+      start-rune = 430
+      typemember-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 449
+          input-source = all type reference test
+          start-rune = 434
+          typereference-generic =>
+            NodeTypeVoid
+              end-rune = 446
+              input-source = all type reference test
+              start-rune = 443
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 441
+              input-source = all type reference test
+              start-rune = 434
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 441
+                  identifieraccess-name = function
+                  input-source = all type reference test
+                  start-rune = 434
+    NodeTypeVariable
+      end-rune = 502
+      input-source = all type reference test
+      named = functypewithparam
+      start-rune = 461
+      typemember-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 483
+          input-source = all type reference test
+          start-rune = 465
+          typereference-generic =>
+            NodeTypeVoid
+              end-rune = 477
+              input-source = all type reference test
+              start-rune = 474
+          typereference-parameter =>
+            NodeTypeTypeReference
+              end-rune = 482
+              input-source = all type reference test
+              start-rune = 480
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 482
+                  input-source = all type reference test
+                  start-rune = 480
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 482
+                      identifieraccess-name = int
+                      input-source = all type reference test
+                      start-rune = 480
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 472
+              input-source = all type reference test
+              start-rune = 465
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 472
+                  identifieraccess-name = function
+                  input-source = all type reference test
+                  start-rune = 465

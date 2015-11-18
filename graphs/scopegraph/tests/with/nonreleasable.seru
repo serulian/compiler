@@ -1,0 +1,7 @@
+class SomeOtherClass {
+	function<int> DoSomething() {
+		/* with */with false {
+			return 2
+		}
+	}	
+}

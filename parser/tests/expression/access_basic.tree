@@ -8,7 +8,7 @@ NodeTypeFile
       input-source = basic access expr test
       named = SomeFunction
       start-rune = 0
-      typemember-body =>
+      definition-body =>
         NodeTypeStatementBlock
           end-rune = 41
           input-source = basic access expr test
@@ -38,12 +38,7 @@ NodeTypeFile
                           input-source = basic access expr test
                           start-rune = 33
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = basic access expr test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = basic access expr test
-              start-rune = 9

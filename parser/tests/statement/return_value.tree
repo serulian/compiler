@@ -8,7 +8,7 @@ NodeTypeFile
       input-source = return value statement test
       named = SomeFunction
       start-rune = 0
-      typemember-body =>
+      definition-body =>
         NodeTypeStatementBlock
           end-rune = 49
           input-source = return value statement test
@@ -25,12 +25,7 @@ NodeTypeFile
                   input-source = return value statement test
                   start-rune = 40
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = return value statement test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = return value statement test
-              start-rune = 9

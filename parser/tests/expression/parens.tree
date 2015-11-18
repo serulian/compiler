@@ -8,7 +8,7 @@ NodeTypeFile
       input-source = parens expr test
       named = SomeFunction
       start-rune = 0
-      typemember-body =>
+      definition-body =>
         NodeTypeStatementBlock
           end-rune = 145
           input-source = parens expr test
@@ -20,7 +20,7 @@ NodeTypeFile
               start-rune = 34
               binary-expression-left =>
                 NodeTypeIdentifierExpression
-                  end-rune = 35
+                  end-rune = 34
                   identexpr-name = a
                   input-source = parens expr test
                   start-rune = 34
@@ -31,7 +31,7 @@ NodeTypeFile
                   start-rune = 39
                   binary-expression-left =>
                     NodeTypeIdentifierExpression
-                      end-rune = 40
+                      end-rune = 39
                       identexpr-name = b
                       input-source = parens expr test
                       start-rune = 39
@@ -52,7 +52,7 @@ NodeTypeFile
                   start-rune = 49
                   binary-expression-left =>
                     NodeTypeIdentifierExpression
-                      end-rune = 50
+                      end-rune = 49
                       identexpr-name = a
                       input-source = parens expr test
                       start-rune = 49
@@ -73,7 +73,7 @@ NodeTypeFile
                   start-rune = 61
                   binary-expression-left =>
                     NodeTypeIdentifierExpression
-                      end-rune = 64
+                      end-rune = 63
                       identexpr-name = foo
                       input-source = parens expr test
                       start-rune = 61
@@ -142,12 +142,7 @@ NodeTypeFile
                           input-source = parens expr test
                           start-rune = 139
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = parens expr test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = parens expr test
-              start-rune = 9

@@ -9,8 +9,10 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/compilerutil"
+
 	"github.com/serulian/compiler/graphs/typegraph/proto"
 )
 
@@ -18,6 +20,14 @@ import (
 type TypeReference struct {
 	tdg   *TypeGraph // The type graph.
 	value string     // The encoded value of the type reference.
+}
+
+// Deserializes a type reference string value into a TypeReference.
+func (t *TypeGraph) DeserializieTypeRef(value string) TypeReference {
+	return TypeReference{
+		tdg:   t,
+		value: value,
+	}
 }
 
 // NewTypeReference returns a new type reference pointing to the given type node and some (optional) generics.
@@ -28,26 +38,38 @@ func (t *TypeGraph) NewTypeReference(typeNode compilergraph.GraphNode, generics 
 	}
 }
 
-// NewInstanceTypeReference returns a new type reference pointing to a type and its generic (if any).
+// NewInstanceTypeReference returns a new type reference pointing to a type and its generics (if any).
 func (t *TypeGraph) NewInstanceTypeReference(typeNode compilergraph.GraphNode) TypeReference {
-	var generics = make([]TypeReference, 0)
+	// Fast path for generics.
+	if typeNode.Kind == NodeTypeGeneric {
+		return TypeReference{
+			tdg:   t,
+			value: buildTypeReferenceValue(typeNode, false),
+		}
+	}
 
+	var generics = make([]TypeReference, 0)
 	git := typeNode.StartQuery().Out(NodePredicateTypeGeneric).BuildNodeIterator()
 	for git.Next() {
 		generics = append(generics, t.NewTypeReference(git.Node()))
 	}
-
 	return t.NewTypeReference(typeNode, generics...)
 }
 
 // Verify returns an error if the type reference is invalid in some way. Returns nil if it is valid.
 func (tr TypeReference) Verify() error {
-	if tr.IsAny() {
+	if tr.IsAny() || tr.IsVoid() {
+		return nil
+	}
+
+	referredType := TGTypeDecl{tr.ReferredType(), tr.tdg}
+
+	// Function type references are properly restricted based on the parser, so no checks to make.
+	if referredType.GraphNode == tr.tdg.FunctionType() {
 		return nil
 	}
 
 	refGenerics := tr.Generics()
-	referredType := TGTypeDecl{tr.ReferredType(), tr.tdg}
 	typeGenerics := referredType.Generics()
 
 	// Check generics count.
@@ -66,12 +88,192 @@ func (tr TypeReference) Verify() error {
 		}
 	}
 
-	// Check parameters.
-	if tr.HasParameters() && referredType.GraphNode != tr.tdg.FunctionType() {
-		return fmt.Errorf("Only function types can have parameters. Found on type: %v", tr)
+	return nil
+}
+
+// EqualsOrAny returns true if this type reference is equal to the other given, OR if it is 'any'.
+func (tr TypeReference) EqualsOrAny(other TypeReference) bool {
+	if tr.IsAny() {
+		return true
 	}
 
-	return nil
+	return tr == other
+}
+
+// ContainsType returns true if the current type reference has a reference to the given type.
+func (tr TypeReference) ContainsType(typeNode compilergraph.GraphNode) bool {
+	reference := tr.tdg.NewInstanceTypeReference(typeNode)
+	return strings.Contains(tr.value, reference.value)
+}
+
+// ExtractTypeDiff attempts to extract the child type reference from this type reference used in place
+// of a reference to the given type in the other reference. For example, if this is a reference
+// to SomeClass<int> and the other reference is SomeClass<T>, passing in 'T' will return 'int'.
+func (tr TypeReference) ExtractTypeDiff(otherRef TypeReference, diffType compilergraph.GraphNode) (TypeReference, bool) {
+	// Only normal type references apply.
+	if !tr.isNormal() || !otherRef.isNormal() {
+		return TypeReference{}, false
+	}
+
+	// If the referred type is not the same as the other ref's referred type, nothing more to do.
+	if tr.ReferredType() != otherRef.ReferredType() {
+		return TypeReference{}, false
+	}
+
+	// If the other reference doesn't even contain the diff type, nothing more to do.
+	if !otherRef.ContainsType(diffType) {
+		return TypeReference{}, false
+	}
+
+	// Check the generics of the type.
+	otherGenerics := otherRef.Generics()
+	localGenerics := tr.Generics()
+
+	for index, genericRef := range otherGenerics {
+		if !genericRef.isNormal() {
+			continue
+		}
+
+		// If the type referred to by the generic is the diff type, then return the associated
+		// generic type in the local reference.
+		if genericRef.ReferredType() == diffType {
+			return localGenerics[index], true
+		}
+
+		// Recursively check the generic.
+		extracted, found := localGenerics[index].ExtractTypeDiff(genericRef, diffType)
+		if found {
+			return extracted, true
+		}
+	}
+
+	// Check the parameters of the type.
+	otherParameters := otherRef.Parameters()
+	localParameters := tr.Parameters()
+
+	if len(otherParameters) != len(localParameters) {
+		return TypeReference{}, false
+	}
+
+	for index, parameterRef := range otherParameters {
+		if !parameterRef.isNormal() {
+			continue
+		}
+
+		// If the type referred to by the parameter is the diff type, then return the associated
+		// parameter type in the local reference.
+		if parameterRef.ReferredType() == diffType {
+			return localParameters[index], true
+		}
+
+		// Recursively check the parameter.
+		extracted, found := localParameters[index].ExtractTypeDiff(parameterRef, diffType)
+		if found {
+			return extracted, true
+		}
+	}
+
+	return TypeReference{}, false
+}
+
+// CheckConcreteSubtypeOf checks that the current type reference refers to a type that is a concrete subtype
+// of the specified *generic* interface.
+func (tr TypeReference) CheckConcreteSubtypeOf(otherTypeNode compilergraph.GraphNode) ([]TypeReference, error) {
+	otherType := TGTypeDecl{otherTypeNode, tr.tdg}
+
+	if otherType.TypeKind() != InterfaceType {
+		panic("Cannot use non-interface type in call to CheckImplOfGeneric")
+	}
+
+	if !otherType.HasGenerics() {
+		panic("Cannot use non-generic type in call to CheckImplOfGeneric")
+	}
+
+	if !tr.isNormal() {
+		if tr.IsAny() {
+			return nil, fmt.Errorf("Any type %v does not implement type %v", tr, otherType.Name())
+		}
+
+		if tr.IsVoid() {
+			return nil, fmt.Errorf("Void type %v does not implement type %v", tr, otherType.Name())
+		}
+
+		if tr.IsNullable() {
+			return nil, fmt.Errorf("Nullable type %v cannot match type %v", tr, otherType.Name())
+		}
+
+		if tr.IsNull() {
+			return nil, fmt.Errorf("null %v cannot match type %v", tr, otherType.Name())
+		}
+	}
+
+	localType := TGTypeDecl{tr.ReferredType(), tr.tdg}
+
+	// Fast check: If the referred type is the type expected, return it directly.
+	if localType.GraphNode == otherTypeNode {
+		return tr.Generics(), nil
+	}
+
+	// For each of the generics defined on the interface, find at least one type member whose
+	// type contains a reference to that generic. We'll then search for the same member in the
+	// current type reference and (if found), infer the generic type for that generic based
+	// on the type found in the same position. Once we have concrete types for each of the generics,
+	// we can then perform normal subtype checking to verify.
+	otherTypeGenerics := otherType.Generics()
+	localTypeGenerics := localType.Generics()
+
+	localRefGenerics := tr.Generics()
+
+	resolvedGenerics := make([]TypeReference, len(otherTypeGenerics))
+
+	for index, typeGeneric := range otherTypeGenerics {
+		var matchingMember *TGMember = nil
+
+		// Find a member in the interface that uses the generic in its member type.
+		for _, member := range otherType.Members() {
+			memberType := member.MemberType()
+			if !memberType.ContainsType(typeGeneric.GraphNode) {
+				continue
+			}
+
+			matchingMember = &member
+			break
+		}
+
+		// If there is no matching member, then we assign a type of "any" for this generic.
+		if matchingMember == nil {
+			resolvedGenerics[index] = tr.tdg.AnyTypeReference()
+			continue
+		}
+
+		// Otherwise, lookup the member under the current type reference's type.
+		localMember, found := localType.GetMember(matchingMember.Name())
+		if !found {
+			// If not found, this is not a matching type.
+			return nil, fmt.Errorf("Type %v cannot be used in place of type %v as it does not implement member %v", tr, otherType.Name(), matchingMember.Name())
+		}
+
+		// Now that we have a matching member in the local type, attempt to extract the concrete type
+		// used as the generic.
+		concreteType, found := localMember.MemberType().ExtractTypeDiff(matchingMember.MemberType(), typeGeneric.GraphNode)
+		if !found {
+			fmt.Printf("[[%v %v]]", localMember.MemberType(), matchingMember.MemberType())
+			// If not found, this is not a matching type.
+			return nil, fmt.Errorf("Type %v cannot be used in place of type %v as member %v does not have the same signature", tr, otherType.Name(), matchingMember.Name())
+		}
+
+		// Replace any generics from the local type reference with those of the type.
+		var replacedConcreteType = concreteType
+		if len(localTypeGenerics) > 0 {
+			for index, localGeneric := range localTypeGenerics {
+				replacedConcreteType = replacedConcreteType.ReplaceType(localGeneric.GraphNode, localRefGenerics[index])
+			}
+		}
+
+		resolvedGenerics[index] = replacedConcreteType
+	}
+
+	return resolvedGenerics, tr.CheckSubTypeOf(tr.tdg.NewTypeReference(otherTypeNode, resolvedGenerics...))
 }
 
 // CheckSubTypeOf returns whether the type pointed to by this type reference is a subtype
@@ -79,13 +281,35 @@ func (tr TypeReference) Verify() error {
 //
 // Subtyping rules in Serulian are as follows:
 //   - All types are subtypes of 'any'.
+//   - The special "null" type is a subtype of any *nullable* type.
 //   - A non-nullable type is a subtype of a nullable type (but not vice versa).
 //   - A class is a subtype of itself (and no other class) and only if generics and parameters match.
 //   - A class (or interface) is a subtype of an interface if it defines that interface's full signature.
 func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
+	if tr.IsVoid() || other.IsVoid() {
+		return fmt.Errorf("Void types cannot be used interchangeably")
+	}
+
+	if tr.IsNull() {
+		if !other.IsAny() && !other.IsNullable() {
+			return fmt.Errorf("null cannot be used in place of non-nullable type %v", other)
+		}
+
+		return nil
+	}
+
+	if other.IsNull() {
+		return fmt.Errorf("null cannot be supertype of any other type")
+	}
+
 	// If the other is the any type, then we know this to be a subtype.
 	if other.IsAny() {
 		return nil
+	}
+
+	// If this type is the any type, then it cannot be a subtype.
+	if tr.IsAny() {
+		return fmt.Errorf("Cannot use type 'any' in place of type '%v'", other)
 	}
 
 	// Check nullability.
@@ -245,9 +469,25 @@ func (tr TypeReference) adjustedMemberSignature(node compilergraph.GraphNode) st
 	return memberSig.Value()
 }
 
+// isNormal returns whether this type reference refers to a normal type.
+func (tr TypeReference) isNormal() bool {
+	return tr.getSlot(trhSlotFlagSpecial)[0] == specialFlagNormal
+}
+
 // IsAny returns whether this type reference refers to the special 'any' type.
 func (tr TypeReference) IsAny() bool {
 	return tr.getSlot(trhSlotFlagSpecial)[0] == specialFlagAny
+}
+
+// IsVoid returns whether this type reference refers to the special 'void' type.
+func (tr TypeReference) IsVoid() bool {
+	return tr.getSlot(trhSlotFlagSpecial)[0] == specialFlagVoid
+}
+
+// IsNull returns whether this type reference refers to the special 'null' type
+// (which is distinct from a nullable type).
+func (tr TypeReference) IsNull() bool {
+	return tr.getSlot(trhSlotFlagSpecial)[0] == specialFlagNull
 }
 
 // IsLocalRef returns whether this type reference is a localized reference.
@@ -290,6 +530,15 @@ func (tr TypeReference) IsNullable() bool {
 	return tr.getSlot(trhSlotFlagNullable)[0] == nullableFlagTrue
 }
 
+// HasReferredType returns whether this type references refers to the given type.
+func (tr TypeReference) HasReferredType(typeNode compilergraph.GraphNode) bool {
+	if tr.getSlot(trhSlotFlagSpecial)[0] != specialFlagNormal {
+		return false
+	}
+
+	return tr.ReferredType() == typeNode
+}
+
 // ReferredType returns the node to which the type reference refers.
 func (tr TypeReference) ReferredType() compilergraph.GraphNode {
 	if tr.getSlot(trhSlotFlagSpecial)[0] != specialFlagNormal {
@@ -297,6 +546,59 @@ func (tr TypeReference) ReferredType() compilergraph.GraphNode {
 	}
 
 	return tr.tdg.layer.GetNode(tr.getSlot(trhSlotTypeId))
+}
+
+type MemberResolutionKind int
+
+const (
+	MemberResolutionOperator MemberResolutionKind = iota
+	MemberResolutionStatic
+	MemberResolutionInstance
+	MemberResolutionInstanceOrStatic
+)
+
+// ResolveMember looks for an member with the given name under the referred type and returns it (if any).
+func (tr TypeReference) ResolveMember(memberName string, module compilercommon.InputSource, kind MemberResolutionKind) (TGMember, bool) {
+	if tr.getSlot(trhSlotFlagSpecial)[0] != specialFlagNormal {
+		return TGMember{}, false
+	}
+
+	var connectingPredicate = NodePredicateMember
+	var namePredicate = NodePredicateMemberName
+
+	if kind == MemberResolutionOperator {
+		connectingPredicate = NodePredicateTypeOperator
+		namePredicate = NodePredicateOperatorName
+	}
+
+	memberNode, found := tr.ReferredType().
+		StartQuery().
+		Out(connectingPredicate).
+		Has(namePredicate, memberName).
+		TryGetNode()
+
+	if !found {
+		return TGMember{}, false
+	}
+
+	member := TGMember{memberNode, tr.tdg}
+
+	// If the member is exported, then always return it. Otherwise, only return it if the asking module
+	// is the same as the declaring module.
+	if !member.IsExported() {
+		memberModule := memberNode.Get(NodePredicateModule)
+		if memberModule != string(module) {
+			return TGMember{}, false
+		}
+	}
+
+	// Check that the member being static matches the resolution option.
+	if (kind == MemberResolutionInstance && member.IsStatic()) ||
+		(kind == MemberResolutionStatic && !member.IsStatic()) {
+		return TGMember{}, false
+	}
+
+	return member, true
 }
 
 // WithGeneric returns a copy of this type reference with the given generic added.
@@ -309,9 +611,45 @@ func (tr TypeReference) WithParameter(parameter TypeReference) TypeReference {
 	return tr.withSubReference(subReferenceParameter, parameter)
 }
 
+// AsValueOfStream returns a type reference to a Stream, with this type reference as the value.
+func (tr TypeReference) AsValueOfStream() TypeReference {
+	return tr.tdg.NewTypeReference(tr.tdg.StreamType(), tr)
+}
+
 // AsNullable returns a copy of this type reference that is nullable.
 func (tr TypeReference) AsNullable() TypeReference {
 	return tr.withFlag(trhSlotFlagNullable, nullableFlagTrue)
+}
+
+// AsNonNullable returns a copy of this type reference that is non-nullable.
+func (tr TypeReference) AsNonNullable() TypeReference {
+	return tr.withFlag(trhSlotFlagNullable, nullableFlagFalse)
+}
+
+// Intersect returns the type common to both type references or any if they are uncommon.
+func (tr TypeReference) Intersect(other TypeReference) TypeReference {
+	if tr.IsVoid() {
+		return other
+	}
+
+	if other.IsVoid() {
+		return tr
+	}
+
+	if tr == other {
+		return tr
+	}
+
+	if tr.CheckSubTypeOf(other) == nil {
+		return other
+	}
+
+	if other.CheckSubTypeOf(tr) == nil {
+		return tr
+	}
+
+	// TODO: support some sort of union types here if/when we need to?
+	return tr.tdg.AnyTypeReference()
 }
 
 // Localize returns a copy of this type reference with any references to the specified generics replaced with
@@ -341,14 +679,18 @@ func (tr TypeReference) Localize(generics ...compilergraph.GraphNode) TypeRefere
 // For example, if this type reference is function<T> and the other is
 // SomeClass<int>, where T is the generic of 'SomeClass', this method will return function<int>.
 func (tr TypeReference) TransformUnder(other TypeReference) TypeReference {
-	// Skip 'any' types.
+	// Skip 'any' and 'void' types.
 	if tr.IsAny() || other.IsAny() {
 		return tr
 	}
 
+	if tr.IsVoid() || other.IsVoid() {
+		return tr
+	}
+
 	// Skip any non-generic types.
-	generics := other.Generics()
-	if len(generics) == 0 {
+	otherRefGenerics := other.Generics()
+	if len(otherRefGenerics) == 0 {
 		return tr
 	}
 
@@ -360,13 +702,13 @@ func (tr TypeReference) TransformUnder(other TypeReference) TypeReference {
 
 	otherType := TGTypeDecl{otherTypeNode, tr.tdg}
 	otherTypeGenerics := otherType.Generics()
-	if len(generics) != len(otherTypeGenerics) {
+	if len(otherRefGenerics) != len(otherTypeGenerics) {
 		return tr
 	}
 
 	// Replace the generics.
 	var currentTypeReference = tr
-	for index, generic := range generics {
+	for index, generic := range otherRefGenerics {
 		currentTypeReference = currentTypeReference.ReplaceType(otherTypeGenerics[index].GraphNode, generic)
 	}
 
@@ -386,13 +728,29 @@ func (tr TypeReference) ReplaceType(typeNode compilergraph.GraphNode, replacemen
 		return replacement
 	}
 
+	// Check if we have a direct nullable type as well.
+	if tr.AsNullable().value == typeNodeRef.AsNullable().value {
+		return replacement.AsNullable()
+	}
+
 	// Otherwise, search for the type string (with length prefix) in the subreferences and replace it there.
 	searchString := typeNodeRef.lengthPrefixedValue()
 	replacementStr := replacement.lengthPrefixedValue()
 
+	updatedStr := strings.Replace(tr.value, searchString, replacementStr, -1)
+
+	// Also replace the nullable version.
+	tnNullable := typeNodeRef.AsNullable()
+	replacementNullable := replacement.AsNullable()
+
+	nullableSearchString := tnNullable.lengthPrefixedValue()
+	nullableReplacementStr := replacementNullable.lengthPrefixedValue()
+
+	nullableUpdatedStr := strings.Replace(updatedStr, nullableSearchString, nullableReplacementStr, -1)
+
 	return TypeReference{
 		tdg:   tr.tdg,
-		value: strings.Replace(tr.value, searchString, replacementStr, -1),
+		value: nullableUpdatedStr,
 	}
 }
 
@@ -408,6 +766,16 @@ func (tr TypeReference) String() string {
 func (tr TypeReference) appendHumanString(buffer *bytes.Buffer) {
 	if tr.IsAny() {
 		buffer.WriteString("any")
+		return
+	}
+
+	if tr.IsVoid() {
+		buffer.WriteString("void")
+		return
+	}
+
+	if tr.IsNull() {
+		buffer.WriteString("null")
 		return
 	}
 

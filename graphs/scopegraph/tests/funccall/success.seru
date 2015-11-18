@@ -1,0 +1,18 @@
+class SomeClass {}
+
+function<void> EmptyFunc() {}
+function<int> SomeFunc(someparam int) {
+	return 2
+}
+
+function<bool> AnotherFunc(first int, second bool) {
+	return true
+}
+
+function<void> DoSomething() {
+	var<SomeClass> sc = SomeClass.new()
+
+	/* empty */(EmptyFunc())
+	/* somefunc */(SomeFunc(2))
+	/* anotherfunc */(AnotherFunc(2, true))
+}

@@ -14,10 +14,13 @@ import (
 
 // buildTypeRef builds a type graph type reference from the SRG type reference. This also fully
 // resolves the type reference.
-func (t *TypeGraph) buildTypeRef(typeref srg.SRGTypeRef) (TypeReference, error) {
+func (t *TypeGraph) BuildTypeRef(typeref srg.SRGTypeRef) (TypeReference, error) {
 	switch typeref.RefKind() {
+	case srg.TypeRefVoid:
+		return t.VoidTypeReference(), nil
+
 	case srg.TypeRefStream:
-		innerType, err := t.buildTypeRef(typeref.InnerReference())
+		innerType, err := t.BuildTypeRef(typeref.InnerReference())
 		if err != nil {
 			return TypeReference{}, err
 		}
@@ -25,7 +28,7 @@ func (t *TypeGraph) buildTypeRef(typeref srg.SRGTypeRef) (TypeReference, error) 
 		return t.NewTypeReference(t.StreamType(), innerType), nil
 
 	case srg.TypeRefNullable:
-		innerType, err := t.buildTypeRef(typeref.InnerReference())
+		innerType, err := t.BuildTypeRef(typeref.InnerReference())
 		if err != nil {
 			return TypeReference{}, err
 		}
@@ -50,14 +53,27 @@ func (t *TypeGraph) buildTypeRef(typeref srg.SRGTypeRef) (TypeReference, error) 
 		srgGenerics := typeref.Generics()
 		generics := make([]TypeReference, len(srgGenerics))
 		for index, srgGeneric := range srgGenerics {
-			genericTypeRef, err := t.buildTypeRef(srgGeneric)
+			genericTypeRef, err := t.BuildTypeRef(srgGeneric)
 			if err != nil {
 				return TypeReference{}, err
 			}
 			generics[index] = genericTypeRef
 		}
 
-		return t.NewTypeReference(resolvedType, generics...), nil
+		var constructedRef = t.NewTypeReference(resolvedType, generics...)
+
+		// Add the parameters.
+		if typeref.HasParameters() {
+			for _, srgParameter := range typeref.Parameters() {
+				parameterTypeRef, err := t.BuildTypeRef(srgParameter)
+				if err != nil {
+					return TypeReference{}, err
+				}
+				constructedRef = constructedRef.WithParameter(parameterTypeRef)
+			}
+		}
+
+		return constructedRef, nil
 
 	default:
 		panic(fmt.Sprintf("Unknown kind of SRG type ref: %v", typeref.RefKind()))
@@ -93,7 +109,7 @@ func (t *TypeGraph) resolvePossibleType(node compilergraph.GraphNode, getter typ
 		return t.AnyTypeReference(), true
 	}
 
-	resolvedTypeRef, err := t.buildTypeRef(srgTypeRef)
+	resolvedTypeRef, err := t.BuildTypeRef(srgTypeRef)
 	if err != nil {
 		t.decorateWithError(node, "%s", err.Error())
 		return t.AnyTypeReference(), false

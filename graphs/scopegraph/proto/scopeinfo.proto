@@ -1,0 +1,30 @@
+// Copyright 2015 The Serulian Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+package proto;
+
+enum ScopeKind {
+    VALUE = 0;
+    GENERIC = 1;
+    STATIC = 2;
+}
+
+message ScopeInfo {
+	optional bool IsValid = 1;        // Whether this scope is valid.
+	optional ScopeKind Kind = 2 [default = VALUE];
+
+	optional ScopeReference NamedReference = 8; 
+
+	optional string ResolvedType = 3;   // The type of the scope, if any.
+	optional string ReturnedType = 4;   // The returned type, if any.
+	optional string AssignableType = 5; // The assignable type of the scope, if any.
+	optional string StaticType = 6; 	// The static type of the scope, if any.
+
+	optional bool IsTerminatingStatement = 7; // If true, the statement terminates execution in the block.
+}
+
+message ScopeReference {
+	optional string ReferencedNode = 1; // The ID of the node that this scope references by name.
+	optional bool IsSRGNode = 2; // If true, references an SRG node. Otherwise, a typegraph node.
+}

@@ -4,7 +4,7 @@ NodeTypeFile
   start-rune = 0
   child-node =>
     NodeTypeImport
-      end-rune = 32
+      end-rune = 31
       import-location-ref = location:SomeLibrary
       import-source = SomeLibrary
       import-subsource = Console
@@ -22,7 +22,7 @@ NodeTypeFile
           input-source = basic full example test
           named = SayHelloWorld
           start-rune = 54
-          typemember-body =>
+          definition-body =>
             NodeTypeStatementBlock
               end-rune = 123
               input-source = basic full example test
@@ -51,12 +51,7 @@ NodeTypeFile
                           input-source = basic full example test
                           start-rune = 89
           typemember-return-type =>
-            NodeTypeTypeReference
+            NodeTypeVoid
               end-rune = 66
               input-source = basic full example test
               start-rune = 63
-              typereference-path =>
-                NodeTypeVoid
-                  end-rune = 66
-                  input-source = basic full example test
-                  start-rune = 63

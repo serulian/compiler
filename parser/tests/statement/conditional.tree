@@ -8,7 +8,7 @@ NodeTypeFile
       input-source = basic conditional statement test
       named = SomeFunction
       start-rune = 0
-      typemember-body =>
+      definition-body =>
         NodeTypeStatementBlock
           end-rune = 48
           input-source = basic conditional statement test
@@ -25,17 +25,12 @@ NodeTypeFile
                   start-rune = 45
               conditional-expr =>
                 NodeTypeIdentifierExpression
-                  end-rune = 44
+                  end-rune = 43
                   identexpr-name = someExpr
                   input-source = basic conditional statement test
                   start-rune = 36
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = basic conditional statement test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = basic conditional statement test
-              start-rune = 9

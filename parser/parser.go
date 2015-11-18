@@ -25,10 +25,19 @@ type ImportHandler func(importInfo PackageImport) string
 // tryParserFn is a function that attempts to build an AST node.
 type tryParserFn func() (AstNode, bool)
 
-// rightNodeConstructor is a function which takes in a left expr ndoe and the
+// lookaheadParserFn is a function that performs lookahead.
+type lookaheadParserFn func(currentToken lexeme) bool
+
+// rightNodeConstructor is a function which takes in a left expr node and the
 // token consumed for a left-recursive operator, and returns a newly constructed
 // operator expression if a right expression could be found.
 type rightNodeConstructor func(AstNode, lexeme) (AstNode, bool)
+
+// commentedLexeme is a lexeme with comments attached.
+type commentedLexeme struct {
+	lexeme
+	comments []string
+}
 
 // sourceParser holds the state of the parser.
 type sourceParser struct {
@@ -36,8 +45,8 @@ type sourceParser struct {
 	lex            *peekableLexer             // a reference to the lexer used for tokenization
 	builder        NodeBuilder                // the builder function for creating AstNode instances
 	nodes          *nodeStack                 // the stack of the current nodes
-	currentToken   lexeme                     // the current token
-	previousToken  lexeme                     // the previous token
+	currentToken   commentedLexeme            // the current token
+	previousToken  commentedLexeme            // the previous token
 	importReporter ImportHandler              // callback invoked when an import is found
 }
 
@@ -71,8 +80,8 @@ func Parse(builder NodeBuilder, importReporter ImportHandler, source compilercom
 		lex:            l,
 		builder:        builder,
 		nodes:          &nodeStack{},
-		currentToken:   lexeme{tokenTypeEOF, 0, ""},
-		previousToken:  lexeme{tokenTypeEOF, 0, ""},
+		currentToken:   commentedLexeme{lexeme{tokenTypeEOF, 0, ""}, make([]string, 0)},
+		previousToken:  commentedLexeme{lexeme{tokenTypeEOF, 0, ""}, make([]string, 0)},
 		importReporter: importReporter,
 	}
 
@@ -107,21 +116,31 @@ func (p *sourceParser) createErrorNode(format string, args ...interface{}) AstNo
 // position as its start position, and pushes it onto the nodes stack.
 func (p *sourceParser) startNode(kind NodeType) AstNode {
 	node := p.createNode(kind)
-	p.decorateStartRune(node, p.currentToken)
+	p.decorateStartRuneAndComments(node, p.currentToken)
 	p.nodes.push(node)
 	return node
 }
 
-// decorateStartRune decorates the given node with the location of the given token as its
-// starting rune.
-func (p *sourceParser) decorateStartRune(node AstNode, token lexeme) {
+// decorateStartRuneAndComments decorates the given node with the location of the given token as its
+// starting rune, as well as any comments attached to the token.
+func (p *sourceParser) decorateStartRuneAndComments(node AstNode, token commentedLexeme) {
 	node.Decorate(NodePredicateSource, string(p.source))
 	node.Decorate(NodePredicateStartRune, strconv.Itoa(int(token.position)))
+	p.decorateComments(node, token.comments)
+}
+
+// decorateComments decorates the given node with the specified comments.
+func (p *sourceParser) decorateComments(node AstNode, comments []string) {
+	for _, comment := range comments {
+		commentNode := p.createNode(NodeTypeComment)
+		commentNode.Decorate(NodeCommentPredicateValue, comment)
+		node.Connect(NodePredicateChild, commentNode)
+	}
 }
 
 // decorateEndRune decorates the given node with the location of the given token as its
 // ending rune.
-func (p *sourceParser) decorateEndRune(node AstNode, token lexeme) {
+func (p *sourceParser) decorateEndRune(node AstNode, token commentedLexeme) {
 	position := int(token.position) + len(token.value) - 1
 	node.Decorate(NodePredicateEndRune, strconv.Itoa(position))
 }
@@ -143,32 +162,20 @@ func (p *sourceParser) finishNode() {
 }
 
 // consumeToken advances the lexer forward, returning the next token.
-func (p *sourceParser) consumeToken() lexeme {
+func (p *sourceParser) consumeToken() commentedLexeme {
+	var comments = make([]string, 0)
+
 	for {
 		token := p.lex.nextToken()
-		p.previousToken = p.currentToken
-		p.currentToken = token
 
-		if _, ok := ignoredTokenTypes[token.kind]; !ok {
-			return token
+		if token.kind == tokenTypeSinglelineComment || token.kind == tokenTypeMultilineComment {
+			comments = append(comments, token.value)
 		}
 
-		switch {
-		case p.isToken(tokenTypeNewline):
-			// Skip whitespace.
-			continue
-
-		case p.isToken(tokenTypeWhitespace):
-			// Skip whitespace.
-			continue
-
-		case p.isToken(tokenTypeSinglelineComment) || p.isToken(tokenTypeMultilineComment):
-			// Save comments under the current node.
-			commentNode := p.startNode(NodeTypeComment)
-			commentNode.Decorate(NodeCommentPredicateValue, p.currentToken.value)
-			p.finishNode()
-
-			p.currentNode().Connect(NodePredicateChild, commentNode)
+		if _, ok := ignoredTokenTypes[token.kind]; !ok {
+			p.previousToken = p.currentToken
+			p.currentToken = commentedLexeme{token, comments}
+			return p.currentToken
 		}
 	}
 }
@@ -279,16 +286,23 @@ func (p *sourceParser) consume(types ...tokenType) (lexeme, bool) {
 	return token, ok
 }
 
-// consume performs consumption of the next token if it matches any of the given
+// tryConsume performs consumption of the next token if it matches any of the given
 // types and returns it.
 func (p *sourceParser) tryConsume(types ...tokenType) (lexeme, bool) {
+	token, found := p.tryConsumeWithComments(types...)
+	return token.lexeme, found
+}
+
+// tryConsume performs consumption of the next token if it matches any of the given
+// types and returns it.
+func (p *sourceParser) tryConsumeWithComments(types ...tokenType) (commentedLexeme, bool) {
 	if p.isToken(types...) {
 		token := p.currentToken
 		p.consumeToken()
 		return token, true
 	}
 
-	return lexeme{tokenTypeError, -1, ""}, false
+	return commentedLexeme{lexeme{tokenTypeError, -1, ""}, make([]string, 0)}, false
 }
 
 // isStatementTerminator returns whether the current token is a statement terminator
@@ -342,8 +356,8 @@ func (p *sourceParser) oneOf(subParsers ...tryParserFn) (AstNode, bool) {
 // operator token types found. If none found, the left expression is returned. Otherwise, the
 // rightNodeBuilder is called to attempt to construct an operator expression. This method also
 // properly handles decoration of the nodes with their proper start and end run locations.
-func (p *sourceParser) performLeftRecursiveParsing(subTryExprFn tryParserFn, rightNodeBuilder rightNodeConstructor, operatorTokens ...tokenType) (AstNode, bool) {
-	var currentLeftToken lexeme
+func (p *sourceParser) performLeftRecursiveParsing(subTryExprFn tryParserFn, rightNodeBuilder rightNodeConstructor, rightTokenTester lookaheadParserFn, operatorTokens ...tokenType) (AstNode, bool) {
+	var currentLeftToken commentedLexeme
 	currentLeftToken = p.currentToken
 
 	// Consume the left side of the expression.
@@ -365,20 +379,30 @@ func (p *sourceParser) performLeftRecursiveParsing(subTryExprFn tryParserFn, rig
 	currentLeftNode = leftNode
 
 	for {
+		// Check for an operator.
+		if !p.isToken(operatorTokens...) {
+			break
+		}
+
+		// If a lookahead function is defined, check the lookahead for the matched token.
+		if rightTokenTester != nil && !rightTokenTester(p.currentToken.lexeme) {
+			break
+		}
+
 		// Consume the operator.
-		operatorToken, ok := p.tryConsume(operatorTokens...)
+		operatorToken, ok := p.tryConsumeWithComments(operatorTokens...)
 		if !ok {
 			break
 		}
 
 		// Consume the right hand expression and build an expression node (if applicable).
-		exprNode, ok := rightNodeBuilder(currentLeftNode, operatorToken)
+		exprNode, ok := rightNodeBuilder(currentLeftNode, operatorToken.lexeme)
 		if !ok {
 			p.emitError("Expected right hand expression, found: %v", p.currentToken.kind)
 			return currentLeftNode, true
 		}
 
-		p.decorateStartRune(exprNode, currentLeftToken)
+		p.decorateStartRuneAndComments(exprNode, currentLeftToken)
 		p.decorateEndRune(exprNode, p.previousToken)
 
 		currentLeftNode = exprNode
@@ -394,7 +418,7 @@ func (p *sourceParser) newLookaheadTracker() *lookaheadTracker {
 	return &lookaheadTracker{
 		parser:       p,
 		counter:      0,
-		currentToken: p.currentToken,
+		currentToken: p.currentToken.lexeme,
 	}
 }
 

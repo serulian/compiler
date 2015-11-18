@@ -4,69 +4,120 @@
 
 package typegraph
 
+import (
+	"github.com/serulian/compiler/compilergraph"
+)
+
+type typerefGetter func(containingType TypeReference) TypeReference
+
 // operatorParameter represents a single expected parameter on an operator.
 type operatorParameter struct {
 	Name             string        // The name of the parameter.
-	isContainingType bool          // If true, the expected type of the parameter is the type containing type.
-	predefinedType   TypeReference // The expected type (if not dependent on the defining type.)
+	getParameterType typerefGetter // The expected type.
 }
 
 // ExpectedType returns the type expected for this parameter.
 func (op *operatorParameter) ExpectedType(containingType TypeReference) TypeReference {
-	if op.isContainingType {
-		return containingType
-	}
-
-	return op.predefinedType
+	return op.getParameterType(containingType)
 }
 
 // operatorDefinition represents the definition of a supported operator on a Serulian type.
 type operatorDefinition struct {
-	Name       string              // The name of the operator.
-	Parameters []operatorParameter // The expected parameters.
+	Name          string              // The name of the operator.
+	getReturnType typerefGetter       // The expected return type.
+	Parameters    []operatorParameter // The expected parameters.
+}
+
+// ExpectedReturnType returns the return type expected for this operator.
+func (od *operatorDefinition) ExpectedReturnType(containingType TypeReference) TypeReference {
+	return od.getReturnType(containingType)
+}
+
+// GetMemberType returns the member type for this operator definition.
+func (od *operatorDefinition) GetMemberType(containingType TypeReference, declaredReturnType TypeReference) TypeReference {
+	// The member type for an operator is a function that takes in the expected parameters
+	// and returns the declared return type.
+	typegraph := containingType.tdg
+
+	// Add the operator's parameters.
+	var funcType = typegraph.NewTypeReference(typegraph.FunctionType()).WithGeneric(declaredReturnType)
+	for _, param := range od.Parameters {
+		funcType = funcType.WithParameter(param.getParameterType(containingType))
+	}
+
+	return funcType
 }
 
 // buildOperatorDefinitions sets the defined operators supported in the type system.
 func (t *TypeGraph) buildOperatorDefinitions() {
+	containingTypeGetter := func(containingType TypeReference) TypeReference {
+		return containingType
+	}
+
+	streamContainingTypeGetter := func(containingType TypeReference) TypeReference {
+		return t.NewTypeReference(t.StreamType(), containingType)
+	}
+
+	staticTypeGetter := func(staticType compilergraph.GraphNode) typerefGetter {
+		return func(containingType TypeReference) TypeReference {
+			return t.NewTypeReference(staticType)
+		}
+	}
+
+	staticNullableTypeGetter := func(staticType compilergraph.GraphNode) typerefGetter {
+		return func(containingType TypeReference) TypeReference {
+			return t.NewTypeReference(staticType).AsNullable()
+		}
+	}
+
+	anyTypeGetter := func(containingType TypeReference) TypeReference {
+		return t.AnyTypeReference()
+	}
+
+	unaryParameters := []operatorParameter{
+		operatorParameter{"value", containingTypeGetter},
+	}
+
 	binaryParameters := []operatorParameter{
-		operatorParameter{"left", true, TypeReference{}},
-		operatorParameter{"right", true, TypeReference{}},
+		operatorParameter{"left", containingTypeGetter},
+		operatorParameter{"right", containingTypeGetter},
 	}
 
 	operators := []operatorDefinition{
 		// Binary operators: +, -, *, /, %
-		operatorDefinition{"plus", binaryParameters},
-		operatorDefinition{"minus", binaryParameters},
-		operatorDefinition{"times", binaryParameters},
-		operatorDefinition{"div", binaryParameters},
-		operatorDefinition{"mod", binaryParameters},
+		operatorDefinition{"plus", containingTypeGetter, binaryParameters},
+		operatorDefinition{"minus", containingTypeGetter, binaryParameters},
+		operatorDefinition{"times", containingTypeGetter, binaryParameters},
+		operatorDefinition{"div", containingTypeGetter, binaryParameters},
+		operatorDefinition{"mod", containingTypeGetter, binaryParameters},
 
 		// Bitwise operators: ^, |, &, <<, >>, ~
-		operatorDefinition{"xor", binaryParameters},
-		operatorDefinition{"or", binaryParameters},
-		operatorDefinition{"and", binaryParameters},
-		operatorDefinition{"leftshift", binaryParameters},
-		operatorDefinition{"rightshift", binaryParameters},
-		operatorDefinition{"not", binaryParameters},
+		operatorDefinition{"xor", containingTypeGetter, binaryParameters},
+		operatorDefinition{"or", containingTypeGetter, binaryParameters},
+		operatorDefinition{"and", containingTypeGetter, binaryParameters},
+		operatorDefinition{"leftshift", containingTypeGetter, binaryParameters},
+		operatorDefinition{"rightshift", containingTypeGetter, binaryParameters},
+
+		operatorDefinition{"not", containingTypeGetter, unaryParameters},
 
 		// Equality.
-		operatorDefinition{"equals", binaryParameters},
+		operatorDefinition{"equals", staticTypeGetter(t.BoolType()), binaryParameters},
 
 		// Comparison.
-		operatorDefinition{"compare", binaryParameters},
+		operatorDefinition{"compare", staticTypeGetter(t.IntType()), binaryParameters},
 
 		// Range.
-		operatorDefinition{"range", binaryParameters},
+		operatorDefinition{"range", streamContainingTypeGetter, binaryParameters},
 
 		// Slice.
-		operatorDefinition{"slice", []operatorParameter{
-			operatorParameter{"startindex", false, t.NewTypeReference(t.IntType())},
-			operatorParameter{"endindex", false, t.NewTypeReference(t.IntType())},
+		operatorDefinition{"slice", anyTypeGetter, []operatorParameter{
+			operatorParameter{"startindex", staticNullableTypeGetter(t.IntType())},
+			operatorParameter{"endindex", staticNullableTypeGetter(t.IntType())},
 		}},
 
 		// Index.
-		operatorDefinition{"index", []operatorParameter{
-			operatorParameter{"index", false, t.AnyTypeReference()},
+		operatorDefinition{"index", anyTypeGetter, []operatorParameter{
+			operatorParameter{"index", anyTypeGetter},
 		}},
 	}
 

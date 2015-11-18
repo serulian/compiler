@@ -407,6 +407,15 @@ func (p *sourceParser) consumeOperator(option typeMemberOption) AstNode {
 	// operator
 	p.consumeKeyword("operator")
 
+	// Optional: Return type.
+	if _, ok := p.tryConsume(tokenTypeLessThan); ok {
+		operatorNode.Connect(NodePredicateTypeMemberDeclaredType, p.consumeTypeReference(typeReferenceNoVoid))
+
+		if _, ok := p.consume(tokenTypeGreaterThan); !ok {
+			return operatorNode
+		}
+	}
+
 	// Operator Name.
 	identifier, ok := p.consumeIdentifier()
 	if !ok {
@@ -436,7 +445,7 @@ func (p *sourceParser) consumeOperator(option typeMemberOption) AstNode {
 	}
 
 	// Operators always need bodies.
-	operatorNode.Connect(NodePredicateTypeMemberBody, p.consumeStatementBlock(statementBlockWithTerminator))
+	operatorNode.Connect(NodePredicateBody, p.consumeStatementBlock(statementBlockWithTerminator))
 	return operatorNode
 }
 
@@ -529,7 +538,7 @@ func (p *sourceParser) consumePropertyBlock(keyword string) AstNode {
 	}
 
 	// Statement block.
-	blockNode.Connect(NodePropertyBlockBody, p.consumeStatementBlock(statementBlockWithTerminator))
+	blockNode.Connect(NodePredicateBody, p.consumeStatementBlock(statementBlockWithTerminator))
 	return blockNode
 }
 
@@ -564,22 +573,24 @@ func (p *sourceParser) consumeConstructor(option typeMemberOption) AstNode {
 		return constructorNode
 	}
 
-	// identifier TypeReference (, another)
-	for {
-		constructorNode.Connect(NodePredicateTypeMemberParameter, p.consumeParameter())
+	if _, ok := p.tryConsume(tokenTypeRightParen); !ok {
+		// identifier TypeReference (, another)
+		for {
+			constructorNode.Connect(NodePredicateTypeMemberParameter, p.consumeParameter())
 
-		if _, ok := p.tryConsume(tokenTypeComma); !ok {
-			break
+			if _, ok := p.tryConsume(tokenTypeComma); !ok {
+				break
+			}
+		}
+
+		// )
+		if _, ok := p.consume(tokenTypeRightParen); !ok {
+			return constructorNode
 		}
 	}
 
-	// )
-	if _, ok := p.consume(tokenTypeRightParen); !ok {
-		return constructorNode
-	}
-
 	// Constructors always have a body.
-	constructorNode.Connect(NodePredicateTypeMemberBody, p.consumeStatementBlock(statementBlockWithTerminator))
+	constructorNode.Connect(NodePredicateBody, p.consumeStatementBlock(statementBlockWithTerminator))
 	return constructorNode
 }
 
@@ -650,7 +661,7 @@ func (p *sourceParser) consumeFunction(option typeMemberOption) AstNode {
 	}
 
 	// Otherwise, we need a function body.
-	functionNode.Connect(NodePredicateTypeMemberBody, p.consumeStatementBlock(statementBlockWithTerminator))
+	functionNode.Connect(NodePredicateBody, p.consumeStatementBlock(statementBlockWithTerminator))
 	return functionNode
 }
 
@@ -683,14 +694,10 @@ var typeReferenceMap = map[tokenType]NodeType{
 func (p *sourceParser) consumeTypeReference(option typeReferenceOption) AstNode {
 	// If void is allowed, check for it first.
 	if option == typeReferenceWithVoid && p.isKeyword("void") {
-		typeRefNode := p.startNode(NodeTypeTypeReference)
 		voidNode := p.startNode(NodeTypeVoid)
 		p.consumeKeyword("void")
 		p.finishNode()
-		p.finishNode()
-
-		typeRefNode.Connect(NodeTypeReferencePath, voidNode)
-		return typeRefNode
+		return voidNode
 	}
 
 	// Otherwise, left recursively build a type reference.
@@ -706,7 +713,7 @@ func (p *sourceParser) consumeTypeReference(option typeReferenceOption) AstNode 
 		return parentNode, true
 	}
 
-	found, _ := p.performLeftRecursiveParsing(p.consumeSimpleTypeReference, rightNodeBuilder,
+	found, _ := p.performLeftRecursiveParsing(p.consumeSimpleTypeReference, rightNodeBuilder, nil,
 		tokenTypeTimes, tokenTypeQuestionMark)
 	return found
 }
@@ -714,6 +721,11 @@ func (p *sourceParser) consumeTypeReference(option typeReferenceOption) AstNode 
 // consumeSimpleTypeReference consumes a type reference that cannot be void, nullable
 // or streamable.
 func (p *sourceParser) consumeSimpleTypeReference() (AstNode, bool) {
+	// Check for 'function'. If found, we consume via a custom path.
+	if p.isKeyword("function") {
+		return p.consumeFunctionTypeReference()
+	}
+
 	typeRefNode := p.startNode(NodeTypeTypeReference)
 	defer p.finishNode()
 
@@ -737,6 +749,49 @@ func (p *sourceParser) consumeSimpleTypeReference() (AstNode, bool) {
 
 	// >
 	p.consume(tokenTypeGreaterThan)
+	return typeRefNode, true
+}
+
+// consumeFunctionTypeReference consumes a function type reference.
+func (p *sourceParser) consumeFunctionTypeReference() (AstNode, bool) {
+	typeRefNode := p.startNode(NodeTypeTypeReference)
+	defer p.finishNode()
+
+	// Consume "function" as the identifier path.
+	identifierPath := p.startNode(NodeTypeIdentifierPath)
+	identifierPath.Connect(NodeIdentifierPathRoot, p.consumeIdentifierAccess(identifierAccessAllowFunction))
+	p.finishNode()
+
+	typeRefNode.Connect(NodeTypeReferencePath, identifierPath)
+
+	// Consume the single generic argument.
+	if _, ok := p.consume(tokenTypeLessThan); !ok {
+		return typeRefNode, true
+	}
+
+	// Consume the generic typeref.
+	typeRefNode.Connect(NodeTypeReferenceGeneric, p.consumeTypeReference(typeReferenceWithVoid))
+
+	// >
+	p.consume(tokenTypeGreaterThan)
+
+	// Consume the parameters.
+	if _, ok := p.consume(tokenTypeLeftParen); !ok {
+		return typeRefNode, true
+	}
+
+	if !p.isToken(tokenTypeRightParen) {
+		for {
+			typeRefNode.Connect(NodeTypeReferenceParameter, p.consumeTypeReference(typeReferenceNoVoid))
+			if _, ok := p.tryConsume(tokenTypeComma); !ok {
+				break
+			}
+		}
+	}
+
+	// )
+	p.consume(tokenTypeRightParen)
+
 	return typeRefNode, true
 }
 
@@ -793,6 +848,13 @@ func (p *sourceParser) consumeGeneric() AstNode {
 	return genericNode
 }
 
+type identifierAccessOption int
+
+const (
+	identifierAccessAllowFunction identifierAccessOption = iota
+	identifierAccessDisallowFunction
+)
+
 // consumeIdentifierPath consumes a path consisting of one (or more identifies)
 //
 // Supported Forms:
@@ -804,7 +866,7 @@ func (p *sourceParser) consumeIdentifierPath() AstNode {
 
 	var currentNode AstNode
 	for {
-		nextNode := p.consumeIdentifierAccess()
+		nextNode := p.consumeIdentifierAccess(identifierAccessDisallowFunction)
 		if currentNode != nil {
 			nextNode.Connect(NodeIdentifierAccessSource, currentNode)
 		}
@@ -822,17 +884,22 @@ func (p *sourceParser) consumeIdentifierPath() AstNode {
 }
 
 // consumeIdentifierAccess consumes an identifier and returns an IdentifierAccessNode.
-func (p *sourceParser) consumeIdentifierAccess() AstNode {
+func (p *sourceParser) consumeIdentifierAccess(option identifierAccessOption) AstNode {
 	identifierAccessNode := p.startNode(NodeTypeIdentifierAccess)
 	defer p.finishNode()
 
 	// Consume the next step in the path.
-	identifier, ok := p.consumeIdentifier()
-	if !ok {
-		return identifierAccessNode
+	if option == identifierAccessAllowFunction && p.tryConsumeKeyword("function") {
+		identifierAccessNode.Decorate(NodeIdentifierAccessName, "function")
+	} else {
+		identifier, ok := p.consumeIdentifier()
+		if !ok {
+			return identifierAccessNode
+		}
+
+		identifierAccessNode.Decorate(NodeIdentifierAccessName, identifier)
 	}
 
-	identifierAccessNode.Decorate(NodeIdentifierAccessName, identifier)
 	return identifierAccessNode
 }
 
@@ -932,7 +999,7 @@ func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
 		}
 
 		// Look for an expression as a statement.
-		if exprNode, ok := p.tryConsumeExpression(); ok {
+		if exprNode, ok := p.tryConsumeExpression(consumeExpressionAllowMaps); ok {
 			return exprNode, true
 		}
 
@@ -966,7 +1033,7 @@ func (p *sourceParser) tryConsumeAssignStatement() (AstNode, bool) {
 	}
 
 	p.consume(tokenTypeEquals)
-	assignNode.Connect(NodeAssignStatementValue, p.consumeExpression())
+	assignNode.Connect(NodeAssignStatementValue, p.consumeExpression(consumeExpressionAllowMaps))
 	return assignNode, true
 }
 
@@ -1030,7 +1097,7 @@ func (p *sourceParser) consumeMatchStatement() AstNode {
 	p.consumeKeyword("match")
 
 	// Consume a match expression (if any).
-	if expression, ok := p.tryConsumeExpression(); ok {
+	if expression, ok := p.tryConsumeExpression(consumeExpressionNoMaps); ok {
 		matchNode.Connect(NodeMatchStatementExpression, expression)
 	}
 
@@ -1074,7 +1141,7 @@ func (p *sourceParser) tryConsumeMatchCase(keyword string, option matchCaseOptio
 	defer p.finishNode()
 
 	if option == matchCaseWithExpression {
-		caseNode.Connect(NodeMatchStatementCaseExpression, p.consumeExpression())
+		caseNode.Connect(NodeMatchStatementCaseExpression, p.consumeExpression(consumeExpressionNoMaps))
 	}
 
 	// Colon after the expression or keyword.
@@ -1112,16 +1179,11 @@ func (p *sourceParser) consumeWithStatement() AstNode {
 	p.consumeKeyword("with")
 
 	// Scoped expression.
-	withNode.Connect(NodeWithStatementExpression, p.consumeExpression())
+	withNode.Connect(NodeWithStatementExpression, p.consumeExpression(consumeExpressionNoMaps))
 
 	// Optional: 'as' and then an identifier.
 	if p.tryConsumeKeyword("as") {
-		identifier, ok := p.consumeIdentifier()
-		if !ok {
-			return withNode
-		}
-
-		withNode.Decorate(NodeWithStatementExpressionName, identifier)
+		withNode.Connect(NodeStatementNamedValue, p.consumeNamedValue())
 	}
 
 	// Consume the statement block.
@@ -1145,18 +1207,34 @@ func (p *sourceParser) consumeForStatement() AstNode {
 	// If the next two tokens are an identifier and the keyword "in",
 	// then we have a variable declaration of the for loop.
 	if p.isToken(tokenTypeIdentifer) && p.isNextKeyword("in") {
-		forVariableIdentifier, _ := p.consumeIdentifier()
-		forNode.Decorate(NodeLoopStatementVariableName, forVariableIdentifier)
+		forNode.Connect(NodeStatementNamedValue, p.consumeNamedValue())
 		p.consumeKeyword("in")
 	}
 
 	// Consume the expression (if any).
-	if expression, ok := p.tryConsumeExpression(); ok {
+	if expression, ok := p.tryConsumeExpression(consumeExpressionNoMaps); ok {
 		forNode.Connect(NodeLoopStatementExpression, expression)
 	}
 
 	forNode.Connect(NodeLoopStatementBlock, p.consumeStatementBlock(statementBlockWithoutTerminator))
 	return forNode
+}
+
+// consumeNamedValue consumes an identifier as a named value.
+//
+// Forms:
+// someName
+func (p *sourceParser) consumeNamedValue() AstNode {
+	valueNode := p.startNode(NodeTypeNamedValue)
+	defer p.finishNode()
+
+	name, found := p.consumeIdentifier()
+	if !found {
+		p.emitError("An identifier was expected here for the name of the value emitted")
+	}
+
+	valueNode.Decorate(NodeNamedValueName, name)
+	return valueNode
 }
 
 // consumeVar consumes a variable field or statement.
@@ -1198,7 +1276,7 @@ func (p *sourceParser) consumeVar(nodeType NodeType, namePredicate string, typeP
 	}
 
 	if _, ok := p.tryConsume(tokenTypeEquals); ok {
-		variableNode.Connect(NodeVariableStatementExpression, p.consumeExpression())
+		variableNode.Connect(NodeVariableStatementExpression, p.consumeExpression(consumeExpressionAllowMaps))
 	}
 
 	return variableNode
@@ -1218,7 +1296,7 @@ func (p *sourceParser) consumeIfStatement() AstNode {
 	p.consumeKeyword("if")
 
 	// Expression.
-	conditionalNode.Connect(NodeConditionalStatementConditional, p.consumeExpression())
+	conditionalNode.Connect(NodeConditionalStatementConditional, p.consumeExpression(consumeExpressionNoMaps))
 
 	// Statement block.
 	conditionalNode.Connect(NodeConditionalStatementBlock, p.consumeStatementBlock(statementBlockWithoutTerminator))
@@ -1255,7 +1333,7 @@ func (p *sourceParser) consumeReturnStatement() AstNode {
 		return returnNode
 	}
 
-	returnNode.Connect(NodeReturnStatementValue, p.consumeExpression())
+	returnNode.Connect(NodeReturnStatementValue, p.consumeExpression(consumeExpressionAllowMaps))
 	return returnNode
 }
 
@@ -1281,9 +1359,16 @@ func (p *sourceParser) consumeJumpStatement(keyword string, nodeType NodeType, l
 	return jumpNode
 }
 
+type consumeExpressionOption int
+
+const (
+	consumeExpressionNoMaps consumeExpressionOption = iota
+	consumeExpressionAllowMaps
+)
+
 // consumeExpression consumes an expression.
-func (p *sourceParser) consumeExpression() AstNode {
-	if exprNode, ok := p.tryConsumeExpression(); ok {
+func (p *sourceParser) consumeExpression(option consumeExpressionOption) AstNode {
+	if exprNode, ok := p.tryConsumeExpression(option); ok {
 		return exprNode
 	}
 
@@ -1292,8 +1377,12 @@ func (p *sourceParser) consumeExpression() AstNode {
 
 // tryConsumeExpression attempts to consume an expression. If an expression
 // coult not be found, returns false.
-func (p *sourceParser) tryConsumeExpression() (AstNode, bool) {
-	return p.oneOf(p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, p.tryConsumeArrowExpression)
+func (p *sourceParser) tryConsumeExpression(option consumeExpressionOption) (AstNode, bool) {
+	if option == consumeExpressionAllowMaps {
+		return p.oneOf(p.tryConsumeMapExpression, p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, p.tryConsumeArrowExpression)
+	} else {
+		return p.oneOf(p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, p.tryConsumeArrowExpression)
+	}
 }
 
 // tryConsumeLambdaExpression tries to consume a lambda expression of one of the following forms:
@@ -1328,7 +1417,7 @@ func (p *sourceParser) tryConsumeLambdaExpression() (AstNode, bool) {
 	// Optional: arguments.
 	if !p.isToken(tokenTypeRightParen) {
 		for {
-			lambdaNode.Connect(NodeLambdaExpressionParameter, p.consumeIdentifierExpression())
+			lambdaNode.Connect(NodeLambdaExpressionInferredParameter, p.consumeLambdaParameter())
 			if _, ok := p.tryConsume(tokenTypeComma); !ok {
 				break
 			}
@@ -1342,8 +1431,25 @@ func (p *sourceParser) tryConsumeLambdaExpression() (AstNode, bool) {
 	p.consume(tokenTypeLambdaArrowOperator)
 
 	// expression.
-	lambdaNode.Connect(NodeLambdaExpressionChildExpr, p.consumeExpression())
+	lambdaNode.Connect(NodeLambdaExpressionChildExpr, p.consumeExpression(consumeExpressionAllowMaps))
 	return lambdaNode, true
+}
+
+// consumeLambdaParameter consumes an identifier as a lambda expression parameter.
+//
+// Form:
+// someIdentifier
+func (p *sourceParser) consumeLambdaParameter() AstNode {
+	parameterNode := p.startNode(NodeTypeLambdaParameter)
+	defer p.finishNode()
+
+	value, ok := p.consumeIdentifier()
+	if !ok {
+		return parameterNode
+	}
+
+	parameterNode.Decorate(NodeLambdaExpressionParameterName, value)
+	return parameterNode
 }
 
 // lookaheadLambdaExpr performs lookahead to determine if there is a lambda expression
@@ -1495,8 +1601,7 @@ func (p *sourceParser) tryConsumeAwaitExpression() (AstNode, bool) {
 //
 // Form: a <- b
 func (p *sourceParser) tryConsumeArrowExpression() (AstNode, bool) {
-	exprNode := p.startNode(NodeTypeArrowExpression)
-	defer p.finishNode()
+	currentToken := p.currentToken
 
 	destinationNode, ok := p.tryConsumeNonArrowExpression()
 	if !ok {
@@ -1506,6 +1611,11 @@ func (p *sourceParser) tryConsumeArrowExpression() (AstNode, bool) {
 	if _, ok := p.tryConsume(tokenTypeArrowPortOperator); !ok {
 		return destinationNode, true
 	}
+
+	exprNode := p.createNode(NodeTypeArrowExpression)
+	p.nodes.push(exprNode)
+	p.decorateStartRuneAndComments(exprNode, currentToken)
+	defer p.finishNode()
 
 	exprNode.Connect(NodeArrowExpressionDestination, destinationNode)
 	exprNode.Connect(NodeArrowExpressionSource, p.consumeNonArrowExpression())
@@ -1555,7 +1665,7 @@ func (p *sourceParser) tryConsumeBinaryExpression(subTryExprFn tryParserFn, bina
 		return exprNode, true
 	}
 
-	return p.performLeftRecursiveParsing(subTryExprFn, rightNodeBuilder, binaryTokenType)
+	return p.performLeftRecursiveParsing(subTryExprFn, rightNodeBuilder, nil, binaryTokenType)
 }
 
 // memberAccessExprMap contains a map from the member access token types to their
@@ -1567,8 +1677,8 @@ var memberAccessExprMap = map[tokenType]NodeType{
 	tokenTypeStreamAccessOperator:  NodeStreamMemberAccessExpression,
 }
 
-// tryConsumeCallAccessExpression attempts to consume call expressions (function calls or slices) or
-// member accesses (dot, nullable, stream, etc.
+// tryConsumeCallAccessExpression attempts to consume call expressions (function calls, slices, generic specifier)
+// or member accesses (dot, nullable, stream, etc.)
 func (p *sourceParser) tryConsumeCallAccessExpression() (AstNode, bool) {
 	rightNodeBuilder := func(leftNode AstNode, operatorToken lexeme) (AstNode, bool) {
 		// If this is a member access of some kind, we next look for an identifier.
@@ -1609,7 +1719,7 @@ func (p *sourceParser) tryConsumeCallAccessExpression() (AstNode, bool) {
 			if !p.isToken(tokenTypeRightParen) {
 				for {
 					// Consume an expression.
-					exprNode.Connect(NodeFunctionCallArgument, p.consumeExpression())
+					exprNode.Connect(NodeFunctionCallArgument, p.consumeExpression(consumeExpressionAllowMaps))
 
 					// Consume an (optional) comma.
 					if _, ok := p.tryConsume(tokenTypeComma); !ok {
@@ -1621,6 +1731,28 @@ func (p *sourceParser) tryConsumeCallAccessExpression() (AstNode, bool) {
 			// Consume the close parens.
 			p.consume(tokenTypeRightParen)
 			return exprNode, true
+
+		case tokenTypeLessThan:
+			// Generic specifier:
+			// a<b>
+
+			// Consume the generic specifier.
+			genericNode := p.createNode(NodeGenericSpecifierExpression)
+
+			// child expression
+			genericNode.Connect(NodeGenericSpecifierChildExpr, leftNode)
+
+			// Consume the generic type references.
+			for {
+				genericNode.Connect(NodeGenericSpecifierType, p.consumeTypeReference(typeReferenceNoVoid))
+				if _, ok := p.tryConsume(tokenTypeComma); !ok {
+					break
+				}
+			}
+
+			// >
+			p.consume(tokenTypeGreaterThan)
+			return genericNode, true
 
 		case tokenTypeLeftBracket:
 			// Slice/Indexer:
@@ -1634,13 +1766,13 @@ func (p *sourceParser) tryConsumeCallAccessExpression() (AstNode, bool) {
 			// Check for a colon token. If found, this is a right-side-only
 			// slice.
 			if _, ok := p.tryConsume(tokenTypeColon); ok {
-				exprNode.Connect(NodeSliceExpressionRightIndex, p.consumeExpression())
+				exprNode.Connect(NodeSliceExpressionRightIndex, p.consumeExpression(consumeExpressionNoMaps))
 				p.consume(tokenTypeRightBracket)
 				return exprNode, true
 			}
 
 			// Otherwise, look for the left or index expression.
-			indexNode := p.consumeExpression()
+			indexNode := p.consumeExpression(consumeExpressionNoMaps)
 
 			// If we find a right bracket after the expression, then we're done.
 			if _, ok := p.tryConsume(tokenTypeRightBracket); ok {
@@ -1661,7 +1793,7 @@ func (p *sourceParser) tryConsumeCallAccessExpression() (AstNode, bool) {
 			}
 
 			exprNode.Connect(NodeSliceExpressionLeftIndex, indexNode)
-			exprNode.Connect(NodeSliceExpressionRightIndex, p.consumeExpression())
+			exprNode.Connect(NodeSliceExpressionRightIndex, p.consumeExpression(consumeExpressionNoMaps))
 			p.consume(tokenTypeRightBracket)
 			return exprNode, true
 		}
@@ -1669,10 +1801,20 @@ func (p *sourceParser) tryConsumeCallAccessExpression() (AstNode, bool) {
 		return nil, false
 	}
 
-	return p.performLeftRecursiveParsing(p.tryConsumeBaseExpression, rightNodeBuilder,
+	rightNodeLookahead := func(operatorToken lexeme) bool {
+		if operatorToken.kind == tokenTypeLessThan {
+			t := p.newLookaheadTracker()
+			return p.lookaheadGenericSpecifier(t)
+		}
+
+		return true
+	}
+
+	return p.performLeftRecursiveParsing(p.tryConsumeBaseExpression, rightNodeBuilder, rightNodeLookahead,
 		tokenTypeDotCastStart,
 		tokenTypeLeftParen,
 		tokenTypeLeftBracket,
+		tokenTypeLessThan,
 		tokenTypeDotAccessOperator,
 		tokenTypeArrowAccessOperator,
 		tokenTypeNullDotAccessOperator,
@@ -1726,6 +1868,23 @@ func (p *sourceParser) tryConsumeLiteralValue() (AstNode, bool) {
 	// Template string literal.
 	case p.isToken(tokenTypeTemplateStringLiteral):
 		return p.consumeTemplateString(), true
+
+	// null literal.
+	case p.isKeyword("null"):
+		literalNode := p.startNode(NodeNullLiteralExpression)
+		defer p.finishNode()
+
+		p.consumeKeyword("null")
+		return literalNode, true
+
+	// this literal.
+	case p.isKeyword("this"):
+		literalNode := p.startNode(NodeThisLiteralExpression)
+		defer p.finishNode()
+
+		p.consumeKeyword("this")
+		return literalNode, true
+
 	}
 
 	return nil, false
@@ -1745,7 +1904,7 @@ func (p *sourceParser) tryConsumeBaseExpression() (AstNode, bool) {
 
 		bitNode := p.startNode(NodeBitwiseNotExpression)
 		defer p.finishNode()
-		bitNode.Connect(NodeUnaryExpressionChildExpr, p.consumeExpression())
+		bitNode.Connect(NodeUnaryExpressionChildExpr, p.consumeExpression(consumeExpressionNoMaps))
 		return bitNode, true
 
 	// Unary: !
@@ -1754,14 +1913,20 @@ func (p *sourceParser) tryConsumeBaseExpression() (AstNode, bool) {
 
 		notNode := p.startNode(NodeBooleanNotExpression)
 		defer p.finishNode()
-		notNode.Connect(NodeUnaryExpressionChildExpr, p.consumeExpression())
+		notNode.Connect(NodeUnaryExpressionChildExpr, p.consumeExpression(consumeExpressionNoMaps))
 		return notNode, true
 
 	// Nested expression.
 	case p.isToken(tokenTypeLeftParen):
+		comments := p.currentToken.comments
+
 		p.consume(tokenTypeLeftParen)
-		exprNode := p.consumeExpression()
+		exprNode := p.consumeExpression(consumeExpressionAllowMaps)
 		p.consume(tokenTypeRightParen)
+
+		// Attach any comments found to the consumed expression.
+		p.decorateComments(exprNode, comments)
+
 		return exprNode, true
 	}
 
@@ -1770,7 +1935,155 @@ func (p *sourceParser) tryConsumeBaseExpression() (AstNode, bool) {
 		return value, true
 	}
 
+	// Identifier.
 	return p.tryConsumeIdentifierExpression()
+}
+
+// lookaheadGenericSpecifier performs lookahead via the given tracker, attempting to
+// match a generic specifier.
+//
+// Forms:
+//  <typeref, typeref, etc>
+func (p *sourceParser) lookaheadGenericSpecifier(t *lookaheadTracker) bool {
+	if _, ok := t.matchToken(tokenTypeLessThan); !ok {
+		return false
+	}
+
+	for {
+		if !p.lookaheadTypeReference(t) {
+			return false
+		}
+
+		if _, ok := t.matchToken(tokenTypeComma); !ok {
+			break
+		}
+	}
+
+	if _, ok := t.matchToken(tokenTypeGreaterThan); !ok {
+		return false
+	}
+
+	return true
+}
+
+// lookaheadTypeReference performs lookahead via the given tracker, attempting to
+// match a type reference.
+func (p *sourceParser) lookaheadTypeReference(t *lookaheadTracker) bool {
+	for {
+		// Type name or path.
+		if _, ok := t.matchToken(tokenTypeIdentifer); !ok {
+			return false
+		}
+
+		// Member access under the path (optional).
+		if _, ok := t.matchToken(tokenTypeDotAccessOperator); !ok {
+			break
+		}
+	}
+
+	// Generics, nullable, stream.
+	genericMatched, genericOk := t.matchToken(tokenTypeLessThan, tokenTypeTimes, tokenTypeQuestionMark)
+	if !genericOk {
+		return true
+	}
+
+	if genericMatched.kind != tokenTypeLessThan {
+		return true
+	}
+
+	// Start generics.
+	for {
+		if !p.lookaheadTypeReference(t) {
+			return false
+		}
+
+		if _, ok := t.matchToken(tokenTypeComma); !ok {
+			break
+		}
+	}
+
+	// End generics.
+	if _, ok := t.matchToken(tokenTypeGreaterThan); !ok {
+		return false
+	}
+
+	// Check for parameters.
+	paramMatched, paramOk := t.matchToken(tokenTypeLeftParen, tokenTypeTimes, tokenTypeQuestionMark)
+	if !paramOk {
+		return true
+	}
+
+	if paramMatched.kind != tokenTypeLeftParen {
+		return true
+	}
+
+	// Start parameters.
+	for {
+		if !p.lookaheadTypeReference(t) {
+			return false
+		}
+
+		if _, ok := t.matchToken(tokenTypeComma); !ok {
+			break
+		}
+	}
+
+	// End parameters.
+	if _, ok := t.matchToken(tokenTypeRightParen); !ok {
+		return false
+	}
+
+	// Match any nullable or streams.
+	t.matchToken(tokenTypeTimes, tokenTypeQuestionMark)
+	return true
+}
+
+// tryConsumeMapExpression tries to consume an inline map expression.
+func (p *sourceParser) tryConsumeMapExpression() (AstNode, bool) {
+	if !p.isToken(tokenTypeLeftBrace) {
+		return nil, false
+	}
+
+	mapNode := p.startNode(NodeMapExpression)
+	defer p.finishNode()
+
+	// {
+	if _, ok := p.consume(tokenTypeLeftBrace); !ok {
+		return mapNode, true
+	}
+
+	if !p.isToken(tokenTypeRightBrace) {
+		for {
+			mapNode.Connect(NodeMapExpressionChildEntry, p.consumeMapExpressionEntry())
+			if p.isToken(tokenTypeRightBrace) || p.isStatementTerminator() {
+				break
+			}
+		}
+	}
+
+	// }
+	p.consume(tokenTypeRightBrace)
+	return mapNode, true
+}
+
+// consumeMapExpressionEntry consumes an entry of an inline map expression.
+func (p *sourceParser) consumeMapExpressionEntry() AstNode {
+	entryNode := p.startNode(NodeMapExpressionEntry)
+	defer p.finishNode()
+
+	// Consume an expression.
+	entryNode.Connect(NodeMapExpressionEntryKey, p.consumeExpression(consumeExpressionNoMaps))
+
+	// Consume a colon.
+	p.consume(tokenTypeColon)
+
+	// Consume an expression.
+	entryNode.Connect(NodeMapExpressionEntryValue, p.consumeExpression(consumeExpressionAllowMaps))
+
+	// Consume a comma.
+	p.consume(tokenTypeComma)
+
+	return entryNode
 }
 
 // consumeListExpression consumes an inline list expression.
@@ -1786,7 +2099,7 @@ func (p *sourceParser) consumeListExpression() AstNode {
 	if !p.isToken(tokenTypeRightBracket) {
 		// Consume one (or more) values.
 		for {
-			listNode.Connect(NodeListExpressionValue, p.consumeExpression())
+			listNode.Connect(NodeListExpressionValue, p.consumeExpression(consumeExpressionAllowMaps))
 
 			if p.isToken(tokenTypeRightBracket) {
 				break

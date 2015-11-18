@@ -1,0 +1,4 @@
+function<void> DoSomething() {
+	/* implicitreturn */function (a int, b bool) { return a }
+	/* explicitreturn */function<string> (a int, b bool) { return 'hello' }
+}

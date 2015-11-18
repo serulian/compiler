@@ -8,7 +8,7 @@ NodeTypeFile
       input-source = jump statements test
       named = SomeFunction
       start-rune = 0
-      typemember-body =>
+      definition-body =>
         NodeTypeStatementBlock
           end-rune = 89
           input-source = jump statements test
@@ -33,12 +33,7 @@ NodeTypeFile
               start-rune = 67
               statement-label-destination = anotherLabel
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = jump statements test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = jump statements test
-              start-rune = 9

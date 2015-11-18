@@ -15,6 +15,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/graphs/srg"
@@ -174,6 +175,7 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"interface with operator constraint test", "interfaceconstraint", "interfaceoperator", ""},
 	typegraphTest{"unexported in interface test", "interfaceunexported", "unexported", ""},
 	typegraphTest{"module-level test", "modulelevel", "module", ""},
+	typegraphTest{"void return type test", "voidreturn", "void", ""},
 
 	// Failure tests.
 	typegraphTest{"type redeclaration test", "redeclare", "redeclare", "Type 'SomeClass' is already defined in the module"},
@@ -193,6 +195,7 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"function generic interface constraint invalid test", "interfaceconstraint", "invalidfunctiongeneric", "Generic 'T' (#1) on type 'AnotherClass' has constraint 'ISomeInterface'. Specified type 'SomeClass' does not match: member 'DoSomething' under type 'SomeClass' does not match that defined in type 'ISomeInterface'"},
 	typegraphTest{"nullable constraint invalid test", "interfaceconstraint", "invalidnullable", "Generic 'T' (#1) on type 'SomeClass' has constraint 'ISomeInterface<Integer>'. Specified type 'ThirdClass?' does not match: Nullable type 'ThirdClass?' cannot be used in place of non-nullable type 'ISomeInterface<Integer>'"},
 	typegraphTest{"unexported interface operator test", "interfaceconstraint", "unexportedoperator", "Generic 'T' (#1) on type 'SomeClass' has constraint 'ISomeInterface'. Specified type 'ThirdClass' does not match: Type 'ThirdClass' does not define or export operator 'plus', which is required by type 'ISomeInterface'"},
+	typegraphTest{"operator return type mismatch test", "operatorreturnmismatch", "operator", "Operator 'Plus' defined on type 'SomeClass' expects a return type of 'SomeClass'; found Integer"},
 }
 
 func TestGraphs(t *testing.T) {
@@ -237,4 +240,61 @@ func TestGraphs(t *testing.T) {
 			assert.Equal(t, test.expectedError, result.Errors[0].Error(), "Error mismatch on test %v", test.name)
 		}
 	}
+}
+
+func TestLookupReturnType(t *testing.T) {
+	graph, err := compilergraph.NewGraph("tests/returntype/returntype.seru")
+	if !assert.Nil(t, err, "Got graph creation error: %v", err) {
+		return
+	}
+
+	testSRG := srg.NewSRG(graph)
+	srgResult := testSRG.LoadAndParse("tests/testlib")
+	if !assert.True(t, srgResult.Status, "Got error for SRG construction: %v", srgResult.Errors) {
+		return
+	}
+
+	// Construct the type graph.
+	result := BuildTypeGraph(testSRG)
+	if !assert.True(t, result.Status, "Got error for TypeGraph construction: %v", result.Errors) {
+		return
+	}
+
+	// Ensure that the function and the property getter have return types.
+	module, found := testSRG.FindModuleBySource(compilercommon.InputSource("tests/returntype/returntype.seru"))
+	if !assert.True(t, found, "Could not find source module") {
+		return
+	}
+
+	someclass, foundClass := module.ResolveType("SomeClass")
+	if !assert.True(t, foundClass, "Could not find SomeClass") {
+		return
+	}
+
+	// Check the function.
+	dosomethingFunc, foundFunc := someclass.FindMember("DoSomething")
+	if !assert.True(t, foundFunc, "Could not find DoSomething") {
+		return
+	}
+
+	dosomethingFuncReturnType, hasReturnType := result.Graph.LookupReturnType(dosomethingFunc.Node())
+	if !assert.True(t, hasReturnType, "Could not find return type for DoSomething") {
+		return
+	}
+
+	assert.Equal(t, "Integer", dosomethingFuncReturnType.String(), "Expected int for DoSomething return type, found: %v", dosomethingFuncReturnType)
+
+	// Check the property getter.
+	someProp, foundProp := someclass.FindMember("SomeProp")
+	if !assert.True(t, foundProp, "Could not find SomeProp") {
+		return
+	}
+
+	getter, _ := someProp.Getter()
+	somePropReturnType, hasPropReturnType := result.Graph.LookupReturnType(getter)
+	if !assert.True(t, hasPropReturnType, "Could not find return type for SomeProp getter") {
+		return
+	}
+
+	assert.Equal(t, "SomeClass", somePropReturnType.String(), "Expected SomeClass for SomeProp return type, found: %v", somePropReturnType)
 }

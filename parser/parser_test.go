@@ -76,7 +76,7 @@ func (tn *testNode) Connect(predicate string, other AstNode) AstNode {
 
 func (tn *testNode) Decorate(property string, value string) AstNode {
 	if _, ok := tn.properties[property]; ok {
-		panic(fmt.Sprintf("Existing key for property %s", property))
+		panic(fmt.Sprintf("Existing key for property %s\n\tNode: %v", property, tn.properties))
 	}
 
 	tn.properties[property] = value
@@ -129,6 +129,8 @@ var parserTests = []parserTest{
 	{"class function no parameters test", "class/function_noparams"},
 	{"basic class operator test", "class/basic_operator"},
 	{"basic class field test", "class/basic_field"},
+	{"basic class operator with return type test", "class/operator_returns"},
+	{"class constructor no params stest", "class/constructor_noparams"},
 
 	// Interface member success tests.
 	{"basic interface function test", "interface/basic_function"},
@@ -182,7 +184,12 @@ var parserTests = []parserTest{
 	{"list expr test", "expression/list"},
 	{"list call expr test", "expression/list_call"},
 	{"lambda expr test", "expression/lambda"},
+	{"map missing comma expr test", "expression/map_missingcomma"},
+	{"generic specifier expr test", "expression/generic_specifier"},
+	{"less than and generic specifier expr test", "expression/ltandgeneric"},
+
 	{"all expr test", "expression/all"},
+	{"complex expr test", "expression/complex"},
 
 	// Type reference tests.
 	{"all type reference test", "typeref/all"},
@@ -195,6 +202,16 @@ var parserTests = []parserTest{
 
 	// Known issue tests.
 	{"known issue test", "class/knownissue"},
+	{"known issue 1 test", "knownissue/knownissue1"},
+	{"known issue 2 test", "knownissue/knownissue2"},
+
+	// Comment tests.
+	{"comment function test", "comment/function"},
+	{"comment block test", "comment/block"},
+	{"comment loop test", "comment/loop"},
+	{"comment literal test", "comment/literal"},
+	{"comment line test", "comment/line"},
+	{"comment parens test", "comment/parens"},
 }
 
 func reportImport(path PackageImport) string {
@@ -206,6 +223,8 @@ func TestParser(t *testing.T) {
 		if os.Getenv("FILTER") != "" {
 			if !strings.Contains(test.name, os.Getenv("FILTER")) {
 				continue
+			} else {
+				fmt.Printf("Matched Test: %v\n", test.name)
 			}
 		}
 

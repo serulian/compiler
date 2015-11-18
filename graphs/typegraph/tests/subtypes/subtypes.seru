@@ -1,0 +1,40 @@
+interface IEmpty {}
+interface IWithMethod {
+	function<void> SomeMethod()	
+}
+
+interface IWithOperator {
+	operator Range(left IWithOperator, right IWithOperator) {}
+}
+
+class SomeClass {
+	function<void> SomeMethod()	{}
+}
+
+class AnotherClass {
+	operator Range(left AnotherClass, right AnotherClass) {}
+}
+
+interface IGeneric<T, Q> {
+	function<T> SomeMethod(someparam Q)
+}
+
+class ThirdClass {
+	function<int> SomeMethod(someparam bool) {}
+}
+
+class FourthClass<T, Q> {
+	function<Q> SomeMethod(someparam T) {}	
+}
+
+var<IEmpty> empty
+var<IWithMethod> withMethod
+var<IGeneric<int, bool>> genericIntBool
+var<IGeneric<bool, int>> genericBoolInt
+var<IWithOperator> withOperator
+
+var<SomeClass> someClass
+var<AnotherClass> anotherClass
+var<ThirdClass> thirdClass
+var<FourthClass<int, bool>> fourthIntBool
+var<FourthClass<bool, int>> fourthBoolInt

@@ -1,0 +1,53 @@
+from anotherfile import AnotherClass
+from anotherfile import ThirdClass as TC
+from anotherfile import ExportedFunction as EF
+
+import anotherfile
+import somepackage
+
+class SomeClass {
+	
+}
+
+function<void> DoSomething(someparam int) /* dosomething */{
+	var<int> someVar
+	if true /* if */{
+	}
+}
+
+function<void> AnotherFunc() /* anotherfunc */{
+}
+
+function<void> AliasTest(aliased int) /* aliasfn */{
+	var<bool> aliased
+	if true /* aliasif */{
+
+	}
+}
+
+function<void> WithTest() /* withfn */{
+	with something as SomeName /* withblock */{
+
+	}
+}
+
+function<void> LoopTest() /* loopfn */{
+	for SomeLoopValue in something /* loopblock */{
+
+	}
+}
+
+function<void> LambdaTest() {
+	(a, b) => /* lambdaexpr */a
+}
+
+function<void> FullLambdaTest() {
+	function (a int, b bool) {
+		/* fulllambdabody */a
+	}
+}
+
+function<void> VarReference() {
+	var someVar = /* somevarexpr */2
+	var anotherVar = function () /* funcclosure */{}
+}

@@ -1,0 +1,12 @@
+class SomePort {
+	function<void> AwaitNext(callback function<void>(int)) {	
+	}
+}
+
+function<void> DoSomething() {
+	var<SomePort> port = SomePort.new()
+	var<int> someInt = 2
+
+	/* await */(<- port)
+	/* arrow */(someInt <- port)
+}

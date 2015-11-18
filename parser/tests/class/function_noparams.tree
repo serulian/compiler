@@ -14,18 +14,13 @@ NodeTypeFile
           input-source = class function no parameters test
           named = DoSomething
           start-rune = 19
-          typemember-body =>
+          definition-body =>
             NodeTypeStatementBlock
               end-rune = 50
               input-source = class function no parameters test
               start-rune = 48
           typemember-return-type =>
-            NodeTypeTypeReference
+            NodeTypeVoid
               end-rune = 31
               input-source = class function no parameters test
               start-rune = 28
-              typereference-path =>
-                NodeTypeVoid
-                  end-rune = 31
-                  input-source = class function no parameters test
-                  start-rune = 28

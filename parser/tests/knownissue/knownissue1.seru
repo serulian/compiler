@@ -1,0 +1,7 @@
+interface IEmpty {}
+class SomeClass {}
+class AnotherClass {}
+
+var<IEmpty> empty
+var<SomeClass> someClass
+var<AnotherClass> anotherClass

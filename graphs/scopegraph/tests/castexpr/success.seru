@@ -1,0 +1,12 @@
+class SomeClass {
+	function<void> DoSomething() {}
+}
+
+interface ISomeInterface {
+	function<void> DoSomething()	
+}
+
+function<void> DoSomething() {
+	var<ISomeInterface> isi = SomeClass.new()
+	/* cast */(isi.(SomeClass))
+}

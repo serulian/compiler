@@ -11,7 +11,7 @@ NodeTypeFile
       decorator =>
         NodeTypeDecorator
           decorator-internal = typealias
-          end-rune = 20
+          end-rune = 19
           input-source = basic decorator test
           start-rune = 0
           decorator-parameter =>

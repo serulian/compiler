@@ -8,7 +8,7 @@ NodeTypeFile
       input-source = variable no type success test
       named = SomeFunction
       start-rune = 0
-      typemember-body =>
+      definition-body =>
         NodeTypeStatementBlock
           end-rune = 57
           input-source = variable no type success test
@@ -26,12 +26,7 @@ NodeTypeFile
                   input-source = variable no type success test
                   start-rune = 48
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = variable no type success test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = variable no type success test
-              start-rune = 9

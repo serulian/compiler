@@ -1,0 +1,9 @@
+class SomeClass {
+	constructor Build(someparam int) {
+		return SomeClass.new()
+	}
+}
+
+function<void> DoSomething() {
+	SomeClass?.Build
+}

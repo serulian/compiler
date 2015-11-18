@@ -1,0 +1,83 @@
+NodeTypeFile
+  end-rune = 135
+  input-source = known issue 1 test
+  start-rune = 0
+  child-node =>
+    NodeTypeInterface
+      end-rune = 18
+      input-source = known issue 1 test
+      named = IEmpty
+      start-rune = 0
+    NodeTypeClass
+      end-rune = 37
+      input-source = known issue 1 test
+      named = SomeClass
+      start-rune = 20
+    NodeTypeClass
+      end-rune = 59
+      input-source = known issue 1 test
+      named = AnotherClass
+      start-rune = 39
+    NodeTypeVariable
+      end-rune = 78
+      input-source = known issue 1 test
+      named = empty
+      start-rune = 62
+      typemember-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 71
+          input-source = known issue 1 test
+          start-rune = 66
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 71
+              input-source = known issue 1 test
+              start-rune = 66
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 71
+                  identifieraccess-name = IEmpty
+                  input-source = known issue 1 test
+                  start-rune = 66
+    NodeTypeVariable
+      end-rune = 103
+      input-source = known issue 1 test
+      named = someClass
+      start-rune = 80
+      typemember-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 92
+          input-source = known issue 1 test
+          start-rune = 84
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 92
+              input-source = known issue 1 test
+              start-rune = 84
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 92
+                  identifieraccess-name = SomeClass
+                  input-source = known issue 1 test
+                  start-rune = 84
+    NodeTypeVariable
+      end-rune = 134
+      input-source = known issue 1 test
+      named = anotherClass
+      start-rune = 105
+      typemember-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 120
+          input-source = known issue 1 test
+          start-rune = 109
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 120
+              input-source = known issue 1 test
+              start-rune = 109
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 120
+                  identifieraccess-name = AnotherClass
+                  input-source = known issue 1 test
+                  start-rune = 109

@@ -1,8 +1,50 @@
 @•typealias('stream')
-interface Stream<T> {}
+interface Stream<T> {
+	property<T> CurrentValue { get }
+}
+
+@•typealias('port')
+interface Port<T> {
+	function<void> AwaitNext(callback function<void>(T))
+}
+
+@•typealias('releasable')
+interface Releasable {
+	function<void> Release()
+}
 
 @•typealias('function')
 class Function<T> {}
 
+class FakeIntStream {
+	property<int> CurrentValue {
+		get {
+			return 2
+		}
+	}
+}
+
 @•typealias('int')
-class Integer {}
+class Integer {
+	operator Range(start int, end int) {
+		return FakeIntStream.new()
+	}
+
+	// TODO: remove once we scope constructors
+	function<void> Release() {}
+}
+
+@•typealias('bool')
+class Boolean {}
+
+@•typealias('float64')
+class Float64 {}
+
+@•typealias('string')
+class String {}
+
+@•typealias('list')
+class List<T> {}
+
+@•typealias('map')
+class Map<T, Q> {}

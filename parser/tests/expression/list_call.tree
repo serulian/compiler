@@ -8,7 +8,7 @@ NodeTypeFile
       input-source = list call expr test
       named = SomeFunction
       start-rune = 0
-      typemember-body =>
+      definition-body =>
         NodeTypeStatementBlock
           end-rune = 45
           input-source = list call expr test
@@ -36,12 +36,7 @@ NodeTypeFile
                           input-source = list call expr test
                           start-rune = 34
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = list call expr test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = list call expr test
-              start-rune = 9

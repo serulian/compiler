@@ -14,7 +14,7 @@ NodeTypeFile
           input-source = basic interface operator test
           operator-named = Plus
           start-rune = 28
-          typemember-body =>
+          definition-body =>
             NodeTypeStatementBlock
               end-rune = 87
               input-source = basic interface operator test

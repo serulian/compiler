@@ -1,0 +1,10 @@
+class SomeClass {
+	operator<bool> slice(left int?, right int?) {
+		return true
+	}
+}
+
+function<void> DoSomething() {
+	var<SomeClass> sc = SomeClass.new()
+	sc[true:]
+}

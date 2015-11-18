@@ -1,0 +1,8 @@
+class SomeClass {
+	var<int> someInt = 2
+}
+
+function<void> DoSomething() {
+	var<SomeClass> sc = SomeClass.new()
+	/* dynaccess */(sc->someInt)
+}

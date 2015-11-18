@@ -28,3 +28,8 @@ func (tn TGGeneric) Node() compilergraph.GraphNode {
 func (tn TGGeneric) Constraint() TypeReference {
 	return tn.GraphNode.GetTagged(NodePredicateGenericSubtype, tn.tdg.AnyTypeReference()).(TypeReference)
 }
+
+// Title returns a nice title for the generic.
+func (tn TGGeneric) Title() string {
+	return "generic"
+}

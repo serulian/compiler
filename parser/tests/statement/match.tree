@@ -8,7 +8,7 @@ NodeTypeFile
       input-source = match statement basic test
       named = SomeFunction
       start-rune = 0
-      typemember-body =>
+      definition-body =>
         NodeTypeStatementBlock
           end-rune = 127
           input-source = match statement basic test
@@ -20,7 +20,7 @@ NodeTypeFile
               start-rune = 33
               match-case =>
                 NodeTypeMatchStatementCase
-                  end-rune = 77
+                  end-rune = 74
                   input-source = match statement basic test
                   start-rune = 57
                   match-case-expression =>
@@ -35,7 +35,7 @@ NodeTypeFile
                       input-source = match statement basic test
                       start-rune = 68
                 NodeTypeMatchStatementCase
-                  end-rune = 105
+                  end-rune = 102
                   input-source = match statement basic test
                   start-rune = 83
                   match-case-expression =>
@@ -51,7 +51,7 @@ NodeTypeFile
                       input-source = match statement basic test
                       start-rune = 94
                 NodeTypeMatchStatementCase
-                  end-rune = 124
+                  end-rune = 123
                   input-source = match statement basic test
                   start-rune = 113
                   match-case-statement =>
@@ -61,17 +61,12 @@ NodeTypeFile
                       start-rune = 118
               match-expression =>
                 NodeTypeIdentifierExpression
-                  end-rune = 47
+                  end-rune = 46
                   identexpr-name = someExpr
                   input-source = match statement basic test
                   start-rune = 39
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = match statement basic test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = match statement basic test
-              start-rune = 9

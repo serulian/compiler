@@ -1,0 +1,4 @@
+@•typealias('port')
+interface Port<T> {
+	function<void> AwaitNext(callback function<void>(T))
+}

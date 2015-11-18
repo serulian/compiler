@@ -10,32 +10,32 @@ NodeTypeFile
       start-rune = 0
       class-basetypepath =>
         NodeTypeTypeReference
-          end-rune = 26
+          end-rune = 25
           input-source = complex class def test
           start-rune = 23
           typereference-path =>
             NodeTypeIdentifierPath
-              end-rune = 26
+              end-rune = 25
               input-source = complex class def test
               start-rune = 23
               identifierpath-root =>
                 NodeTypeIdentifierAccess
-                  end-rune = 26
+                  end-rune = 25
                   identifieraccess-name = Bar
                   input-source = complex class def test
                   start-rune = 23
         NodeTypeTypeReference
-          end-rune = 32
+          end-rune = 31
           input-source = complex class def test
           start-rune = 29
           typereference-path =>
             NodeTypeIdentifierPath
-              end-rune = 32
+              end-rune = 31
               input-source = complex class def test
               start-rune = 29
               identifierpath-root =>
                 NodeTypeIdentifierAccess
-                  end-rune = 32
+                  end-rune = 31
                   identifieraccess-name = Baz
                   input-source = complex class def test
                   start-rune = 29

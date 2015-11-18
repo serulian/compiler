@@ -11,6 +11,7 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/typegraph/proto"
+	"github.com/serulian/compiler/parser"
 )
 
 var _ = fmt.Printf
@@ -29,6 +30,22 @@ func (t *TypeGraph) buildMembership(typeDecl TGTypeDecl, srgType srg.SRGType, in
 		if !t.buildMemberNode(typeDecl, member) {
 			success = false
 		}
+	}
+
+	// Add the implicit 'new' constructor for any classes.
+	if typeDecl.TypeKind() == ClassType {
+		implicitConstructorNode := t.layer.CreateNode(NodeTypeMember)
+		implicitConstructorNode.Decorate(NodePredicateMemberName, "new")
+		implicitConstructorNode.Decorate(NodePredicateMemberReadOnly, "true")
+		implicitConstructorNode.Decorate(NodePredicateMemberStatic, "true")
+		implicitConstructorNode.Decorate(NodePredicateModule, string(srgType.Module().InputSource()))
+
+		constructorType := t.NewTypeReference(t.FunctionType(), typeDecl.GetTypeReference())
+		implicitConstructorNode.DecorateWithTagged(NodePredicateMemberType, constructorType)
+
+		t.decorateWithSig(implicitConstructorNode, "name", uint64(parser.NodeTypeConstructor), false, false, constructorType)
+
+		typeDecl.GraphNode.Connect(NodePredicateMember, implicitConstructorNode)
 	}
 
 	// Copy over the type members and operators.
@@ -120,10 +137,12 @@ func (t *TypeGraph) buildTypeOperatorNode(parent TGTypeOrModule, operator srg.SR
 	memberNode := t.layer.CreateNode(NodeTypeOperator)
 	memberNode.Decorate(NodePredicateOperatorName, name)
 	memberNode.Decorate(NodePredicateMemberName, operatorMemberNamePrefix+name)
+	memberNode.Decorate(NodePredicateModule, string(operator.Module().InputSource()))
+
 	memberNode.Connect(NodePredicateSource, operator.Node())
 
 	if operator.IsExported() {
-		memberNode.Decorate(NodePredicateOperatorExported, "true")
+		memberNode.Decorate(NodePredicateMemberExported, "true")
 	}
 
 	var success = true
@@ -144,8 +163,35 @@ func (t *TypeGraph) buildTypeOperatorNode(parent TGTypeOrModule, operator srg.SR
 		return false
 	}
 
-	// Add the member signature for this operator.
-	t.decorateWithSig(memberNode, name, uint64(NodeTypeOperator), false, operator.IsExported(), t.AnyTypeReference())
+	// Retrieve the declared return type for the operator.
+	var declaredReturnType = t.AnyTypeReference()
+
+	if _, hasDeclaredType := operator.DeclaredType(); hasDeclaredType {
+		resolvedReturnType, valid := t.resolvePossibleType(memberNode, operator.DeclaredType)
+		if valid {
+			declaredReturnType = resolvedReturnType
+		} else {
+			success = false
+		}
+	}
+
+	// Ensure that the declared return type is equal to that expected.
+	containingType := t.NewInstanceTypeReference(typeNode)
+	expectedReturnType := definition.ExpectedReturnType(containingType)
+
+	if !expectedReturnType.IsAny() && !declaredReturnType.IsAny() && declaredReturnType != expectedReturnType {
+		t.decorateWithError(memberNode, "Operator '%s' defined on type '%s' expects a return type of '%v'; found %v",
+			operator.Name(), parent.Name(), expectedReturnType, declaredReturnType)
+		success = false
+	}
+
+	// Decorate the operator with its return type.
+	var actualReturnType = expectedReturnType
+	if expectedReturnType.IsAny() {
+		actualReturnType = declaredReturnType
+	}
+
+	t.createReturnable(memberNode, operator.Node(), actualReturnType)
 
 	// Ensure we have the expected number of parameters.
 	parametersExpected := definition.Parameters
@@ -157,8 +203,9 @@ func (t *TypeGraph) buildTypeOperatorNode(parent TGTypeOrModule, operator srg.SR
 		return false
 	}
 
+	var memberType = t.NewTypeReference(t.FunctionType(), actualReturnType)
+
 	// Ensure the parameters expected on the operator match those specified.
-	containingType := t.NewInstanceTypeReference(typeNode)
 	for index, parameter := range parametersDefined {
 		parameterType, valid := t.resolvePossibleType(memberNode, parameter.DeclaredType)
 		if !valid {
@@ -167,13 +214,21 @@ func (t *TypeGraph) buildTypeOperatorNode(parent TGTypeOrModule, operator srg.SR
 		}
 
 		expectedType := parametersExpected[index].ExpectedType(containingType)
-		if expectedType != parameterType {
+		if !expectedType.IsAny() && expectedType != parameterType {
 			t.decorateWithError(memberNode, "Parameter '%s' (#%v) for operator '%s' defined on type '%s' expects type %v; found %v",
 				parametersExpected[index].Name, index, operator.Name(), parent.Name(),
 				expectedType, parameterType)
 			success = false
 		}
+
+		memberType = memberType.WithParameter(parameterType)
 	}
+
+	// Decorate the operator with its member type.
+	memberNode.DecorateWithTagged(NodePredicateMemberType, memberType)
+
+	// Add the member signature for this operator.
+	t.decorateWithSig(memberNode, name, uint64(NodeTypeOperator), false, operator.IsExported(), t.AnyTypeReference())
 
 	return success
 }
@@ -191,7 +246,13 @@ func (t *TypeGraph) buildTypeMemberNode(parent TGTypeOrModule, member srg.SRGMem
 	// Create the member node.
 	memberNode := t.layer.CreateNode(NodeTypeMember)
 	memberNode.Decorate(NodePredicateMemberName, member.Name())
+	memberNode.Decorate(NodePredicateModule, string(member.Module().InputSource()))
+
 	memberNode.Connect(NodePredicateSource, member.Node())
+
+	if member.IsExported() {
+		memberNode.Decorate(NodePredicateMemberExported, "true")
+	}
 
 	var success = true
 
@@ -240,6 +301,12 @@ func (t *TypeGraph) buildTypeMemberNode(parent TGTypeOrModule, member srg.SRGMem
 		memberType, memberTypeValid = t.resolvePossibleType(memberNode, member.DeclaredType)
 		isReadOnly = !member.HasSetter()
 
+		// Decorate the property *getter* with its return type.
+		getter, found := member.Getter()
+		if found {
+			t.createReturnable(memberNode, getter, memberType)
+		}
+
 	case srg.ConstructorMember:
 		// Constructors are static.
 		memberNode.Decorate(NodePredicateMemberStatic, "true")
@@ -248,6 +315,9 @@ func (t *TypeGraph) buildTypeMemberNode(parent TGTypeOrModule, member srg.SRGMem
 		functionType := t.NewTypeReference(t.FunctionType(), t.NewInstanceTypeReference(parentNode))
 		memberType, memberTypeValid = t.addSRGParameterTypes(memberNode, member, functionType)
 
+		// Decorate the constructor with its return type.
+		t.createReturnable(memberNode, member.Node(), t.NewInstanceTypeReference(parentNode))
+
 	case srg.FunctionMember:
 		// Functions are read-only.
 		memberNode.Decorate(NodePredicateMemberReadOnly, "true")
@@ -255,6 +325,9 @@ func (t *TypeGraph) buildTypeMemberNode(parent TGTypeOrModule, member srg.SRGMem
 		// Functions have type function<ReturnType>(parameters).
 		returnType, returnTypeValid := t.resolvePossibleType(memberNode, member.ReturnType)
 		if returnTypeValid {
+			// Decorate the function with its return type.
+			t.createReturnable(memberNode, member.Node(), returnType)
+
 			functionType := t.NewTypeReference(t.FunctionType(), returnType)
 			memberType, memberTypeValid = t.addSRGParameterTypes(memberNode, member, functionType)
 		} else {
@@ -272,6 +345,16 @@ func (t *TypeGraph) buildTypeMemberNode(parent TGTypeOrModule, member srg.SRGMem
 	t.decorateWithSig(memberNode, member.Name(), uint64(member.MemberKind()), !isReadOnly, member.IsExported(), memberType, generics...)
 
 	return success && memberTypeValid
+}
+
+// createReturnable creates a new returnable node in the graph, marking a member or property getter with
+// its return type.
+func (t *TypeGraph) createReturnable(memberNode compilergraph.GraphNode, srgSourceNode compilergraph.GraphNode, returnType TypeReference) {
+	returnNode := t.layer.CreateNode(NodeTypeReturnable)
+	returnNode.Connect(NodePredicateSource, srgSourceNode)
+	returnNode.DecorateWithTagged(NodePredicateReturnType, returnType)
+
+	memberNode.Connect(NodePredicateReturnable, returnNode)
 }
 
 // decorateWithSig decorates the given member node with a unique signature for fast subtype checking.

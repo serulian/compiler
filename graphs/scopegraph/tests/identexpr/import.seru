@@ -1,0 +1,5 @@
+import parameter
+
+function<void> DoSomething() {
+	/* importref */parameter	
+}

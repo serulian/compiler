@@ -83,6 +83,8 @@ const (
 
 	NodeTypeMatchStatementCase // A case of a match statement.
 
+	NodeTypeNamedValue // A named value added to the scope of the parent statement.
+
 	// Expressions
 	NodeTypeAwaitExpression // An await expression: <- a
 	NodeTypeArrowExpression // An arrow expression: a <- b
@@ -124,18 +126,24 @@ const (
 	NodeStreamMemberAccessExpression   // a*.b
 	NodeCastExpression                 // a.(b)
 	NodeFunctionCallExpression         // a(b, c, d)
-	NodeSliceExpression                // a[b]
+	NodeSliceExpression                // a[b:c]
+	NodeGenericSpecifierExpression     // a<b>
 
 	NodeNumericLiteralExpression        // 123
 	NodeStringLiteralExpression         // 'hello'
 	NodeBooleanLiteralExpression        // true
 	NodeTemplateStringLiteralExpression // `foobar`
+	NodeThisLiteralExpression           // this
+	NodeNullLiteralExpression           // null
 
 	NodeListExpression     // [1, 2, 3]
 	NodeMapExpression      // {a: 1, b: 2}
 	NodeMapExpressionEntry // a: 1
 
 	NodeTypeIdentifierExpression // An identifier expression
+
+	// Lambda expression members
+	NodeTypeLambdaParameter
 
 	// Type references
 	NodeTypeTypeReference // A type reference
@@ -235,6 +243,11 @@ const (
 	NodeGenericSubtype       = "generic-subtype"
 
 	//
+	// Type members and properties
+	//
+	NodePredicateBody = "definition-body"
+
+	//
 	// Type members: NodeTypeProperty, NodeTypeFunction, NodeTypeField, NodeTypeConstructor
 	//
 	NodePredicateTypeMemberName         = "named"
@@ -242,7 +255,6 @@ const (
 	NodePredicateTypeMemberReturnType   = "typemember-return-type"
 	NodePredicateTypeMemberGeneric      = "typemember-generic"
 	NodePredicateTypeMemberParameter    = "typemember-parameter"
-	NodePredicateTypeMemberBody         = "typemember-body"
 
 	//
 	// NodeTypeOperator
@@ -260,7 +272,6 @@ const (
 	// NodeTypePropertyBlock
 	//
 	NodePropertyBlockType = "propertyblock-type"
-	NodePropertyBlockBody = "typemember-body"
 
 	//
 	// NodeTypeParameter
@@ -273,6 +284,7 @@ const (
 	//
 	NodeTypeReferencePath      = "typereference-path"
 	NodeTypeReferenceGeneric   = "typereference-generic"
+	NodeTypeReferenceParameter = "typereference-parameter"
 	NodeTypeReferenceInnerType = "typereference-inner-type"
 
 	//
@@ -293,11 +305,15 @@ const (
 	NodeStatementLabel          = "statement-label"
 
 	//
+	// NodeTypeLoopStatement + NodeTypeWithStatement
+	//
+	NodeStatementNamedValue = "named-value"
+
+	//
 	// NodeTypeLoopStatement
 	//
-	NodeLoopStatementVariableName = "named"
-	NodeLoopStatementExpression   = "loop-expression"
-	NodeLoopStatementBlock        = "loop-block"
+	NodeLoopStatementExpression = "loop-expression"
+	NodeLoopStatementBlock      = "loop-block"
 
 	//
 	// NodeTypeAssignStatement
@@ -306,7 +322,7 @@ const (
 	NodeAssignStatementValue = "assign-statement-expr"
 
 	//
-	// NodeTypeField/NodeTypeVariableStatement
+	// NodeTypeField/NodeTypeVariable/NodeTypeVariableStatement
 	//
 	NodeVariableStatementDeclaredType = "var-declared-type"
 	NodeVariableStatementName         = "named"
@@ -337,9 +353,8 @@ const (
 	//
 	// NodeTypeWithStatement
 	//
-	NodeWithStatementExpression     = "with-expression"
-	NodeWithStatementExpressionName = "named"
-	NodeWithStatementBlock          = "with-block"
+	NodeWithStatementExpression = "with-expression"
+	NodeWithStatementBlock      = "with-block"
 
 	//
 	// NodeTypeMatchStatement
@@ -367,10 +382,16 @@ const (
 	//
 	// NodeTypeLambdaExpression
 	//
-	NodeLambdaExpressionReturnType = "lambda-expression-return-type"
-	NodeLambdaExpressionParameter  = "lambda-expression-parameter"
-	NodeLambdaExpressionBlock      = "lambda-expression-block"
-	NodeLambdaExpressionChildExpr  = "lambda-expression-child-expr"
+	NodeLambdaExpressionReturnType        = "lambda-expression-return-type"
+	NodeLambdaExpressionParameter         = "lambda-expression-parameter"
+	NodeLambdaExpressionInferredParameter = "lambda-expression-inferred-parameter"
+	NodeLambdaExpressionBlock             = "lambda-expression-block"
+	NodeLambdaExpressionChildExpr         = "lambda-expression-child-expr"
+
+	//
+	//	NodeTypeLambdaParameter
+	//
+	NodeLambdaExpressionParameterName = "named"
 
 	//
 	// Binary expressions.
@@ -423,6 +444,13 @@ const (
 	NodeMapExpressionEntryValue = "map-entry-value"
 
 	//
+	// NodeGenericSpecifierExpression
+	//
+
+	NodeGenericSpecifierChildExpr = "generic-specifier-expr"
+	NodeGenericSpecifierType      = "generic-specifier-type"
+
+	//
 	// Literals.
 	//
 	NodeNumericLiteralExpressionValue        = "literal-value"
@@ -434,4 +462,9 @@ const (
 	// NodeTypeIdentifierExpression
 	//
 	NodeIdentifierExpressionName = "identexpr-name"
+
+	//
+	// NodeTypeNamedValue
+	//
+	NodeNamedValueName = "named"
 )

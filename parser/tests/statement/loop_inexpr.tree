@@ -8,7 +8,7 @@ NodeTypeFile
       input-source = in expr loop statement test
       named = SomeFunction
       start-rune = 0
-      typemember-body =>
+      definition-body =>
         NodeTypeStatementBlock
           end-rune = 61
           input-source = in expr loop statement test
@@ -17,7 +17,6 @@ NodeTypeFile
             NodeTypeLoopStatement
               end-rune = 59
               input-source = in expr loop statement test
-              named = someName
               start-rune = 33
               loop-block =>
                 NodeTypeStatementBlock
@@ -26,17 +25,18 @@ NodeTypeFile
                   start-rune = 58
               loop-expression =>
                 NodeTypeIdentifierExpression
-                  end-rune = 57
+                  end-rune = 56
                   identexpr-name = someExpr
                   input-source = in expr loop statement test
                   start-rune = 49
+              named-value =>
+                NodeTypeNamedValue
+                  end-rune = 44
+                  input-source = in expr loop statement test
+                  named = someName
+                  start-rune = 37
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = in expr loop statement test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = in expr loop statement test
-              start-rune = 9

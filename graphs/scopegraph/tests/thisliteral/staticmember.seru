@@ -1,0 +1,7 @@
+class SomeClass {
+	constructor Build() {
+		var<SomeClass> sc = SomeClass.new()
+		this
+		return sc
+	}
+}

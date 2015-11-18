@@ -8,7 +8,7 @@ NodeTypeFile
       input-source = basic with test
       named = SomeFunction
       start-rune = 0
-      typemember-body =>
+      definition-body =>
         NodeTypeStatementBlock
           end-rune = 50
           input-source = basic with test
@@ -25,17 +25,12 @@ NodeTypeFile
                   start-rune = 47
               with-expression =>
                 NodeTypeIdentifierExpression
-                  end-rune = 46
+                  end-rune = 45
                   identexpr-name = someExpr
                   input-source = basic with test
                   start-rune = 38
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = basic with test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = basic with test
-              start-rune = 9

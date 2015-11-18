@@ -53,6 +53,21 @@ func (g *SRG) NodeLocation(node compilergraph.GraphNode) compilercommon.SourceAn
 	return salForNode(node)
 }
 
+// FindVariableTypeWithName returns the SRGTypeRef for the declared type of the
+// variable in the SRG with the given name.
+//
+// Note: FOR TESTING ONLY.
+func (g *SRG) FindVariableTypeWithName(name string) SRGTypeRef {
+	typerefNode := g.layer.
+		StartQuery(name).
+		In(parser.NodePredicateTypeMemberName, parser.NodeVariableStatementName).
+		IsKind(parser.NodeTypeVariable, parser.NodeTypeVariableStatement).
+		Out(parser.NodePredicateTypeMemberDeclaredType, parser.NodeVariableStatementDeclaredType).
+		GetNode()
+
+	return SRGTypeRef{typerefNode, g}
+}
+
 // LoadAndParse attemptps to load and parse the transition closure of the source code
 // found starting at the root source file.
 func (g *SRG) LoadAndParse(libPaths ...string) *packageloader.LoadResult {
@@ -89,11 +104,10 @@ func (g *SRG) LoadAndParse(libPaths ...string) *packageloader.LoadResult {
 			packageInfo := g.getPackageForImport(it.Node())
 
 			// Search for the subsource.
-			// TODO(jschorr): This needs to be everything, not just types.
 			subsource := it.Values()[parser.NodeImportPredicateSubsource]
 			source := it.Values()[parser.NodeImportPredicateSource]
 
-			_, found := packageInfo.FindTypeByName(subsource, ModuleResolveExportedOnly)
+			_, found := packageInfo.FindTypeOrMemberByName(subsource, ModuleResolveExportedOnly)
 			if !found {
 				sal := salForPredicates(it.Values())
 				result.Errors = append(result.Errors, compilercommon.SourceErrorf(sal, "Import '%s' not found under package '%s'", subsource, source))

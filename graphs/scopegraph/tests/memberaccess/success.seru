@@ -1,0 +1,33 @@
+import anothermodule
+
+class SomeClass {
+	var<int> someInt = 2
+
+	constructor Build(someparam int) {
+		return SomeClass.new()
+	}
+
+	property<int> SomeProp {
+	 	get { return 2 }
+	}
+}
+
+class LocalClass<T> {
+	var<T?> SomeGenericVar
+}
+
+function<void> DoSomething() {
+	var<SomeClass> sc = SomeClass.Build(2)
+	var<LocalClass<bool>> gcbool = LocalClass<bool>.new()
+	var<LocalClass<int>> gcint = LocalClass<int>.new()
+	
+	/* varmember */(sc.someInt)
+	/* constructor */(SomeClass.Build)
+	/* prop */(sc.SomeProp)
+	/* modtype */(anothermodule.AnotherClass)
+	/* modint */(anothermodule.SomeInt)
+	/* modfunc */(anothermodule.SomeFunction)
+	/* generictype */(anothermodule.GenericType)
+	/* genmembool */(gcbool.SomeGenericVar)
+	/* genmemint */(gcint.SomeGenericVar)
+}

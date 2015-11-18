@@ -59,13 +59,17 @@ func (t *TypeGraph) build(g *srg.SRG) *Result {
 			node := it.Node()
 
 			// Lookup the location of the SRG source node.
-			srgSourceNode := g.GetNode(compilergraph.GraphNodeId(it.Values()[NodePredicateSource]))
-			location := g.NodeLocation(srgSourceNode)
+			if sourceNodeId, ok := it.Values()[NodePredicateSource]; ok {
+				srgSourceNode := g.GetNode(compilergraph.GraphNodeId(sourceNodeId))
+				location := g.NodeLocation(srgSourceNode)
 
-			// Add the error.
-			errNode := node.GetNode(NodePredicateError)
-			msg := errNode.Get(NodePredicateErrorMessage)
-			result.Errors = append(result.Errors, compilercommon.NewSourceError(location, msg))
+				// Add the error.
+				errNode := node.GetNode(NodePredicateError)
+				msg := errNode.Get(NodePredicateErrorMessage)
+				result.Errors = append(result.Errors, compilercommon.NewSourceError(location, msg))
+			} else {
+				panic(fmt.Sprintf("Error on non-sourced node: %v", it.Node()))
+			}
 		}
 	}
 
@@ -102,7 +106,7 @@ type moduleMemberWork struct {
 func (t *TypeGraph) verifyTypeReferences() bool {
 	validateTyperef := func(key interface{}, value interface{}) bool {
 		srgTypeRef := value.(srg.SRGTypeRef)
-		typeref, err := t.buildTypeRef(srgTypeRef)
+		typeref, err := t.BuildTypeRef(srgTypeRef)
 		if err != nil {
 			issueNode := t.layer.CreateNode(NodeTypeReferenceIssue)
 			issueNode.Connect(NodePredicateSource, srgTypeRef.GraphNode)
@@ -195,7 +199,7 @@ func (t *TypeGraph) translateTypeMembers() bool {
 
 		for _, inheritsRef := range srgType.Inheritance() {
 			// Resolve the type to which the inherits points.
-			resolvedType, err := t.buildTypeRef(inheritsRef)
+			resolvedType, err := t.BuildTypeRef(inheritsRef)
 			if err != nil {
 				t.decorateWithError(typeNode, "%s", err.Error())
 				success = false

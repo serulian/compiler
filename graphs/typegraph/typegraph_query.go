@@ -50,14 +50,20 @@ func (g *TypeGraph) getGenericNodeForSRGGeneric(srgGeneric srg.SRGGeneric) compi
 	return g.getMatchingTypeGraphNode(srgGeneric.Node(), NodeTypeGeneric)
 }
 
+func (g *TypeGraph) tryGetMatchingTypeGraphNode(srgNode compilergraph.GraphNode, allowedKinds ...NodeType) (compilergraph.GraphNode, bool) {
+	// TODO(jschorr): Should we reverse this query for better performance? If we start
+	// at the SRG node by ID, it should immediately filter, but we'll have to cross the
+	// layers to do it.
+	return g.findAllNodes(allowedKinds...).
+		Has(NodePredicateSource, string(srgNode.NodeId)).
+		TryGetNode()
+}
+
 func (g *TypeGraph) getMatchingTypeGraphNode(srgNode compilergraph.GraphNode, allowedKinds ...NodeType) compilergraph.GraphNode {
 	// TODO(jschorr): Should we reverse this query for better performance? If we start
 	// at the SRG node by ID, it should immediately filter, but we'll have to cross the
 	// layers to do it.
-	resolvedNode, found := g.findAllNodes(allowedKinds...).
-		Has(NodePredicateSource, string(srgNode.NodeId)).
-		TryGetNode()
-
+	resolvedNode, found := g.tryGetMatchingTypeGraphNode(srgNode, allowedKinds...)
 	if !found {
 		panic(fmt.Sprintf("Type graph node not found in type graph for SRG node: %v", srgNode))
 	}

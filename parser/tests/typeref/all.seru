@@ -12,3 +12,5 @@ var<Some.Type?> nullablepathed
 var<Some.Type*> streamablepathed
 var<Some.Type<T>> genercipathed
 var<int?*> nullablestream
+var<function<void>()> functype
+var<function<void>(int)> functypewithparam

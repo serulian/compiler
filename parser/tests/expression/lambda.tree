@@ -8,7 +8,7 @@ NodeTypeFile
       input-source = lambda expr test
       named = SomeFunction
       start-rune = 0
-      typemember-body =>
+      definition-body =>
         NodeTypeStatementBlock
           end-rune = 95
           input-source = lambda expr test
@@ -34,11 +34,11 @@ NodeTypeFile
                   identexpr-name = someOtherExpr
                   input-source = lambda expr test
                   start-rune = 56
-              lambda-expression-parameter =>
-                NodeTypeIdentifierExpression
+              lambda-expression-inferred-parameter =>
+                NodeTypeLambdaParameter
                   end-rune = 50
-                  identexpr-name = a
                   input-source = lambda expr test
+                  named = a
                   start-rune = 50
             NodeTypeLambdaExpression
               end-rune = 93
@@ -50,24 +50,19 @@ NodeTypeFile
                   identexpr-name = someThirdExpr
                   input-source = lambda expr test
                   start-rune = 81
-              lambda-expression-parameter =>
-                NodeTypeIdentifierExpression
+              lambda-expression-inferred-parameter =>
+                NodeTypeLambdaParameter
                   end-rune = 72
-                  identexpr-name = a
                   input-source = lambda expr test
+                  named = a
                   start-rune = 72
-                NodeTypeIdentifierExpression
+                NodeTypeLambdaParameter
                   end-rune = 75
-                  identexpr-name = b
                   input-source = lambda expr test
+                  named = b
                   start-rune = 75
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = lambda expr test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = lambda expr test
-              start-rune = 9

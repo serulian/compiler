@@ -1,0 +1,59 @@
+class SomeClass {
+	operator xor(left SomeClass, right SomeClass) {
+		return left
+	}
+
+	operator or(left SomeClass, right SomeClass) {
+		return left
+	}
+
+	operator and(left SomeClass, right SomeClass) {
+		return left
+	}
+
+	operator leftshift(left SomeClass, right SomeClass) {
+		return left
+	}
+
+	operator not(value SomeClass) {
+		return value
+	}
+
+	operator plus(left SomeClass, right SomeClass) {
+		return left
+	}
+
+	operator minus(left SomeClass, right SomeClass) {
+		return left
+	}
+
+	operator times(left SomeClass, right SomeClass) {
+		return left
+	}
+
+	operator div(left SomeClass, right SomeClass) {
+		return left
+	}
+
+	operator mod(left SomeClass, right SomeClass) {
+		return left
+	}
+}
+
+function<void> DoSomething(left SomeClass, right SomeClass) {
+	/* xor */(left ^ right)
+	/* or */(left | right)
+	/* and */(left & right)
+	/* shiftleft */(left << right)
+	~right
+
+	/* plus */(left + right)
+	/* minus */(left - right)
+	/* times */(left * right)
+	/* div */(left / right)
+	/* mod */(left % right)
+
+	/* bor */(true && true)
+	/* band */(true || true)
+	!true
+}

@@ -17,13 +17,13 @@ NodeTypeFile
           typemember-readonly = true
           property-getter =>
             NodeTypePropertyBlock
-              end-rune = 60
+              end-rune = 59
               input-source = readonly class property test
               propertyblock-type = get
               start-rune = 53
-              typemember-body =>
+              definition-body =>
                 NodeTypeStatementBlock
-                  end-rune = 60
+                  end-rune = 59
                   input-source = readonly class property test
                   start-rune = 57
           typemember-declared-type =>

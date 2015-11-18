@@ -1,0 +1,8 @@
+class SomeClass {
+	function<void> DoSomething() {
+		for {
+			break
+			return
+		}
+	}
+}

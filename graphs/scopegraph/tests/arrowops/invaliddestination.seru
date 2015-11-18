@@ -1,0 +1,11 @@
+class SomePort {
+	function<void> AwaitNext(callback function<void>(bool)) {	
+	}
+}
+
+function<void> DoSomething() {
+	var<SomePort> port = SomePort.new()
+	var<int> someInt = 2
+
+	someInt <- port
+}

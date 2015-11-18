@@ -4,7 +4,7 @@
 
 package srg
 
-//go:generate stringer -type=TypeMemberKind
+//go:generate stringer -type=MemberKind
 
 import (
 	"fmt"
@@ -30,6 +30,30 @@ const (
 	PropertyMember
 	OperatorMember
 )
+
+// TryGetContainingMember looks for the type or module member containing the given node
+// and returns it, if any.
+func (g *SRG) TryGetContainingMember(node compilergraph.GraphNode) (SRGMember, bool) {
+	containingNode, found := g.TryGetContainingNode(node,
+		parser.NodeTypeConstructor,
+		parser.NodeTypeFunction,
+		parser.NodeTypeOperator,
+		parser.NodeTypeField,
+		parser.NodeTypeVariable)
+
+	if !found {
+		return SRGMember{}, false
+	}
+
+	return SRGMember{containingNode, g}, true
+}
+
+// Module returns the module under which the member is defined.
+func (m SRGMember) Module() SRGModule {
+	source := m.GraphNode.Get(parser.NodePredicateSource)
+	module, _ := m.srg.FindModuleBySource(compilercommon.InputSource(source))
+	return module
+}
 
 // Name returns the name of this member.
 func (m SRGMember) Name() string {
@@ -77,6 +101,11 @@ func (m SRGMember) MemberKind() MemberKind {
 	}
 }
 
+// Body returns the statement block forming the implementation body for this member, if any.
+func (m SRGMember) Body() (compilergraph.GraphNode, bool) {
+	return m.TryGetNode(parser.NodePredicateBody)
+}
+
 // ReturnType returns a type reference to the declared type of this member, if any.
 func (m SRGMember) DeclaredType() (SRGTypeRef, bool) {
 	typeRefNode, found := m.GraphNode.TryGetNode(parser.NodePredicateTypeMemberDeclaredType)
@@ -95,6 +124,15 @@ func (m SRGMember) ReturnType() (SRGTypeRef, bool) {
 	}
 
 	return SRGTypeRef{typeRefNode, m.srg}, true
+}
+
+// Getter returns the defined getter for this property. Panics if this is not a property.
+func (m SRGMember) Getter() (compilergraph.GraphNode, bool) {
+	if m.MemberKind() != PropertyMember {
+		panic("Expected property node")
+	}
+
+	return m.GraphNode.TryGetNode(parser.NodePropertyGetter)
 }
 
 // HasSetter returns true if the property has a setter defined. Will always return false

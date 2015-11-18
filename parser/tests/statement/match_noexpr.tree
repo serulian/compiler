@@ -8,7 +8,7 @@ NodeTypeFile
       input-source = match statement no expr test
       named = SomeFunction
       start-rune = 0
-      typemember-body =>
+      definition-body =>
         NodeTypeStatementBlock
           end-rune = 86
           input-source = match statement no expr test
@@ -20,7 +20,7 @@ NodeTypeFile
               start-rune = 33
               match-case =>
                 NodeTypeMatchStatementCase
-                  end-rune = 83
+                  end-rune = 82
                   input-source = match statement no expr test
                   start-rune = 48
                   match-case-expression =>
@@ -40,12 +40,7 @@ NodeTypeFile
                       input-source = match statement no expr test
                       start-rune = 76
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = match statement no expr test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = match statement no expr test
-              start-rune = 9

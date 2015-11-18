@@ -1,0 +1,23 @@
+NodeTypeFile
+  end-rune = 49
+  input-source = comment function test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 49
+      input-source = comment function test
+      named = SomeFunction
+      start-rune = 18
+      child-node =>
+        NodeTypeComment
+          comment-value = /* somefunction */
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 49
+          input-source = comment function test
+          start-rune = 48
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 30
+          input-source = comment function test
+          start-rune = 27

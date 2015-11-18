@@ -8,7 +8,7 @@ NodeTypeFile
       input-source = arrow expr test
       named = SomeFunction
       start-rune = 0
-      typemember-body =>
+      definition-body =>
         NodeTypeStatementBlock
           end-rune = 59
           input-source = arrow expr test
@@ -20,7 +20,7 @@ NodeTypeFile
               start-rune = 33
               arrow-expression-left =>
                 NodeTypeIdentifierExpression
-                  end-rune = 41
+                  end-rune = 40
                   identexpr-name = someExpr
                   input-source = arrow expr test
                   start-rune = 33
@@ -31,12 +31,7 @@ NodeTypeFile
                   input-source = arrow expr test
                   start-rune = 45
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = arrow expr test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = arrow expr test
-              start-rune = 9

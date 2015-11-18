@@ -1,0 +1,7 @@
+class SomeClass<T> {
+	
+}
+
+function<void> DoSomething() {
+	SomeClass?.something
+}

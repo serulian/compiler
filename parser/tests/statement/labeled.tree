@@ -8,7 +8,7 @@ NodeTypeFile
       input-source = labeled statement test
       named = SomeFunction
       start-rune = 0
-      typemember-body =>
+      definition-body =>
         NodeTypeStatementBlock
           end-rune = 51
           input-source = labeled statement test
@@ -20,12 +20,7 @@ NodeTypeFile
               start-rune = 44
               statement-label = someLabel
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = labeled statement test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = labeled statement test
-              start-rune = 9

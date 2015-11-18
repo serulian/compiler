@@ -14,7 +14,7 @@ NodeTypeFile
           input-source = basic class constructor test
           named = Build
           start-rune = 19
-          typemember-body =>
+          definition-body =>
             NodeTypeStatementBlock
               end-rune = 53
               input-source = basic class constructor test

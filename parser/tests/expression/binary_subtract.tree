@@ -8,7 +8,7 @@ NodeTypeFile
       input-source = subtract binary expr test
       named = SomeFunction
       start-rune = 0
-      typemember-body =>
+      definition-body =>
         NodeTypeStatementBlock
           end-rune = 43
           input-source = subtract binary expr test
@@ -20,18 +20,18 @@ NodeTypeFile
               start-rune = 35
               binary-expression-left =>
                 NodeBinarySubtractExpression
-                  end-rune = 38
+                  end-rune = 37
                   input-source = subtract binary expr test
                   start-rune = 33
                   binary-expression-left =>
                     NodeTypeIdentifierExpression
-                      end-rune = 34
+                      end-rune = 33
                       identexpr-name = a
                       input-source = subtract binary expr test
                       start-rune = 33
                   binary-expression-right =>
                     NodeTypeIdentifierExpression
-                      end-rune = 38
+                      end-rune = 37
                       identexpr-name = b
                       input-source = subtract binary expr test
                       start-rune = 37
@@ -42,12 +42,7 @@ NodeTypeFile
                   input-source = subtract binary expr test
                   start-rune = 41
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = subtract binary expr test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = subtract binary expr test
-              start-rune = 9

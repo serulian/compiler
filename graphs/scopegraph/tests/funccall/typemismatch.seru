@@ -1,0 +1,5 @@
+function<void> EmptyFunc(someparam int) {}
+
+function<void> DoSomething() {
+	EmptyFunc(true)
+}

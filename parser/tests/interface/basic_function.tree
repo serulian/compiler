@@ -58,12 +58,7 @@ NodeTypeFile
                           input-source = basic interface function test
                           start-rune = 64
           typemember-return-type =>
-            NodeTypeTypeReference
+            NodeTypeVoid
               end-rune = 40
               input-source = basic interface function test
               start-rune = 37
-              typereference-path =>
-                NodeTypeVoid
-                  end-rune = 40
-                  input-source = basic interface function test
-                  start-rune = 37

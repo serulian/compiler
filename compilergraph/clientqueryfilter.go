@@ -22,7 +22,9 @@ type clientQueryOperation int
 
 const (
 	WhereLTE clientQueryOperation = iota // Floating point: Less than or equals
-	WhereGTE clientQueryOperation = iota // Floating point: Greater than or equals
+	WhereGTE                             // Floating point: Greater than or equals
+	WhereLT                              // Floating point: Less than
+	WhereGT                              // Floating point: Greater than
 )
 
 // apply applies this filter to the given node, returning true if the node meets the criteria and false
@@ -34,6 +36,12 @@ func (cqf clientQueryFilter) apply(node GraphNode, values map[string]string) boo
 
 	case WhereLTE:
 		return compilerutil.ParseFloat(values[cqf.predicate]) <= compilerutil.ParseFloat(cqf.value)
+
+	case WhereGT:
+		return compilerutil.ParseFloat(values[cqf.predicate]) > compilerutil.ParseFloat(cqf.value)
+
+	case WhereLT:
+		return compilerutil.ParseFloat(values[cqf.predicate]) < compilerutil.ParseFloat(cqf.value)
 
 	default:
 		panic(fmt.Sprintf("Unknown client filter operation kind: %v", cqf.operation))

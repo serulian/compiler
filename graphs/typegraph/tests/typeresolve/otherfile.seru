@@ -1,0 +1,4 @@
+class OtherClass {
+	function<void> OtherExportedFunction() {}
+	function<void> otherNotExported() {}
+}

@@ -8,7 +8,7 @@ NodeTypeFile
       input-source = list expr test
       named = SomeFunction
       start-rune = 0
-      typemember-body =>
+      definition-body =>
         NodeTypeStatementBlock
           end-rune = 109
           input-source = list expr test
@@ -69,7 +69,7 @@ NodeTypeFile
                   start-rune = 75
                   binary-expression-left =>
                     NodeTypeIdentifierExpression
-                      end-rune = 76
+                      end-rune = 75
                       identexpr-name = a
                       input-source = list expr test
                       start-rune = 75
@@ -85,7 +85,7 @@ NodeTypeFile
                   start-rune = 83
                   binary-expression-left =>
                     NodeTypeIdentifierExpression
-                      end-rune = 84
+                      end-rune = 83
                       identexpr-name = c
                       input-source = list expr test
                       start-rune = 83
@@ -117,12 +117,7 @@ NodeTypeFile
                   literal-value = `baz`
                   start-rune = 102
       typemember-return-type =>
-        NodeTypeTypeReference
+        NodeTypeVoid
           end-rune = 12
           input-source = list expr test
           start-rune = 9
-          typereference-path =>
-            NodeTypeVoid
-              end-rune = 12
-              input-source = list expr test
-              start-rune = 9

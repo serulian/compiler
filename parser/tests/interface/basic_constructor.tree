@@ -14,7 +14,7 @@ NodeTypeFile
           input-source = basic interface constructor test
           named = DoSomething
           start-rune = 28
-          typemember-body =>
+          definition-body =>
             NodeTypeStatementBlock
               end-rune = 71
               input-source = basic interface constructor test

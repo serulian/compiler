@@ -1,0 +1,10 @@
+class SomeClass<T> {
+	var<T?> SomeVar
+}
+
+function<void> DoSomething() {
+	var<SomeClass<int>?> sci
+	var<SomeClass<bool>?> scb
+	/* sci */(sci?.SomeVar)
+	/* scb */(scb?.SomeVar)
+}

@@ -1,0 +1,55 @@
+interface IBasicInterface<T> {
+	function<T> DoSomething()	
+}
+
+class SomeClass {
+	function<int> DoSomething() {}
+}
+
+class AnotherClass {
+	function<bool> DoSomething() {}	
+}
+
+class ThirdClass {}
+
+class FourthClass {
+	function<int> DoSomething(someparam int) {}
+}
+
+interface IMultiGeneric<T, Q> {
+	function<T> DoSomething(someparam Q)	
+}
+
+class FifthClass<T, Q> {
+	function<Q> DoSomething(someparam T) {}
+}
+
+interface IMultiMember<T, Q> {
+	function<T> TFunc()
+	function<void> QFunc(someparam Q)
+}
+
+class MultiClass {
+	function<int> TFunc() {}
+	function<void> QFunc(someparam bool) {}	
+}
+
+interface Port<T> {
+	function<void> AwaitNext(callback function<void>(T))
+}
+
+class SomePort {
+	function<void> AwaitNext(callback function<void>(int)) {	
+	}
+}
+
+var<SomeClass> someClass
+var<AnotherClass> anotherClass
+var<ThirdClass> thirdClass
+var<FourthClass> fourthClass
+
+var<FifthClass<int, bool>> fifthIntBool
+var<FifthClass<bool, int>> fifthBoolInt
+var<MultiClass> multiClass
+
+var<SomePort> somePort

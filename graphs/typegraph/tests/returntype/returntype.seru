@@ -1,0 +1,6 @@
+class SomeClass {
+	function<int> DoSomething() {}
+	property<SomeClass> SomeProp {
+		get {}
+	}
+}

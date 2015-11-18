@@ -10,17 +10,17 @@ NodeTypeFile
       start-rune = 0
       class-basetypepath =>
         NodeTypeTypeReference
-          end-rune = 25
+          end-rune = 24
           input-source = complex inheritance test
           start-rune = 18
           typereference-path =>
             NodeTypeIdentifierPath
-              end-rune = 25
+              end-rune = 24
               input-source = complex inheritance test
               start-rune = 18
               identifierpath-root =>
                 NodeTypeIdentifierAccess
-                  end-rune = 25
+                  end-rune = 24
                   identifieraccess-name = Bar
                   input-source = complex inheritance test
                   start-rune = 22
@@ -31,17 +31,17 @@ NodeTypeFile
                       input-source = complex inheritance test
                       start-rune = 18
         NodeTypeTypeReference
-          end-rune = 35
+          end-rune = 34
           input-source = complex inheritance test
           start-rune = 28
           typereference-path =>
             NodeTypeIdentifierPath
-              end-rune = 35
+              end-rune = 34
               input-source = complex inheritance test
               start-rune = 28
               identifierpath-root =>
                 NodeTypeIdentifierAccess
-                  end-rune = 35
+                  end-rune = 34
                   identifieraccess-name = Baz
                   input-source = complex inheritance test
                   start-rune = 32
@@ -52,17 +52,17 @@ NodeTypeFile
                       input-source = complex inheritance test
                       start-rune = 28
         NodeTypeTypeReference
-          end-rune = 47
+          end-rune = 46
           input-source = complex inheritance test
           start-rune = 38
           typereference-path =>
             NodeTypeIdentifierPath
-              end-rune = 47
+              end-rune = 46
               input-source = complex inheritance test
               start-rune = 38
               identifierpath-root =>
                 NodeTypeIdentifierAccess
-                  end-rune = 47
+                  end-rune = 46
                   identifieraccess-name = Something
                   input-source = complex inheritance test
                   start-rune = 38

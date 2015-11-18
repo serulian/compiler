@@ -1,0 +1,6 @@
+class SomeClass {
+	function<void> DoSomething() {
+		var<SomeClass> sc = SomeClass.new()
+		sc ?? sc
+	}
+}

@@ -163,7 +163,7 @@ var keywords = map[string]bool{
 	"set": true,
 
 	"this": true,
-	"new":  true,
+	"null": true,
 
 	"for":      true,
 	"if":       true,
@@ -193,9 +193,9 @@ var syntheticPredecessors = map[tokenType]bool{
 	tokenTypeRightBrace:   true,
 	tokenTypeRightParen:   true,
 	tokenTypeRightBracket: true,
+	tokenTypeGreaterThan:  true,
 
-	tokenTypeSinglelineComment: true,
-	tokenTypeMultilineComment:  true,
+	tokenTypeMultilineComment: true,
 }
 
 // stateFn represents the state of the scanner as a function that returns the next state.
