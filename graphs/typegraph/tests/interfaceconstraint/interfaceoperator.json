@@ -182,22 +182,25 @@
                         "tdg-srg-source": "(NodeRef)"
                     }
                 }
+            },
+            "e547e4d04efc103c9cc053ce8cab8e1f": {
+                "Predicate": "tdg-declaration-module",
+                "Child": {
+                    "Key": "e547e4d04efc103c9cc053ce8cab8e1f",
+                    "Kind": 3,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-module-name": "basictypes.seru",
+                        "tdg-node-kind": "3|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
             }
         },
         "Predicates": {
             "tdg-node-kind": "1|NodeType|tdg",
             "tdg-srg-source": "(NodeRef)",
             "tdg-type-name": "Function"
-        }
-    },
-    "3e82539778fcd7456256f6b82284eb9c": {
-        "Key": "3e82539778fcd7456256f6b82284eb9c",
-        "Kind": 3,
-        "Children": {},
-        "Predicates": {
-            "tdg-module-name": "interfaceoperator.seru",
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-srg-source": "(NodeRef)"
         }
     },
     "4bb6d5069e54e69bceeefcfe92ea3064": {
@@ -671,20 +674,23 @@
             "tdg-type-name": "Releasable"
         }
     },
-    "e547e4d04efc103c9cc053ce8cab8e1f": {
-        "Key": "e547e4d04efc103c9cc053ce8cab8e1f",
-        "Kind": 3,
-        "Children": {},
-        "Predicates": {
-            "tdg-module-name": "basictypes.seru",
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-srg-source": "(NodeRef)"
-        }
-    },
     "f9b41ac49c300a21c9577980a7af9380": {
         "Key": "f9b41ac49c300a21c9577980a7af9380",
         "Kind": 1,
         "Children": {
+            "3e82539778fcd7456256f6b82284eb9c": {
+                "Predicate": "tdg-declaration-module",
+                "Child": {
+                    "Key": "3e82539778fcd7456256f6b82284eb9c",
+                    "Kind": 3,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-module-name": "interfaceoperator.seru",
+                        "tdg-node-kind": "3|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            },
             "44c4f5ed9d960b44deba4d86cbb13d41": {
                 "Predicate": "tdg-node-member",
                 "Child": {

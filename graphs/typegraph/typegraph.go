@@ -46,9 +46,22 @@ func (g *TypeGraph) SourceGraph() *srg.SRG {
 	return g.srg
 }
 
+// Modules returns all modules defined in the type graph.
+func (g *TypeGraph) Modules() []TGModule {
+	it := g.findAllNodes(NodeTypeModule).
+		BuildNodeIterator()
+
+	var modules []TGModule
+	for it.Next() {
+		modules = append(modules, TGModule{it.Node(), g})
+	}
+	return modules
+}
+
 // ModulesWithMembers returns all modules containing members defined in the type graph.
 func (g *TypeGraph) ModulesWithMembers() []TGModule {
 	it := g.findAllNodes(NodeTypeModule).
+		Has(NodePredicateMember).
 		BuildNodeIterator()
 
 	var modules []TGModule

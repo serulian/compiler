@@ -58,16 +58,6 @@
             "tdg-type-name": "Port"
         }
     },
-    "290007daee55b24cc69c12d81e7126c4": {
-        "Key": "290007daee55b24cc69c12d81e7126c4",
-        "Kind": 3,
-        "Children": {},
-        "Predicates": {
-            "tdg-module-name": "stream.seru",
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-srg-source": "(NodeRef)"
-        }
-    },
     "2c27eebe379b2e0bef7262a516c26bdb": {
         "Key": "2c27eebe379b2e0bef7262a516c26bdb",
         "Kind": 1,
@@ -129,6 +119,19 @@
                         "tdg-generic-name": "T",
                         "tdg-generic-subtype": "any",
                         "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            },
+            "e547e4d04efc103c9cc053ce8cab8e1f": {
+                "Predicate": "tdg-declaration-module",
+                "Child": {
+                    "Key": "e547e4d04efc103c9cc053ce8cab8e1f",
+                    "Kind": 3,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-module-name": "basictypes.seru",
+                        "tdg-node-kind": "3|NodeType|tdg",
                         "tdg-srg-source": "(NodeRef)"
                     }
                 }
@@ -568,20 +571,23 @@
             "tdg-type-name": "Releasable"
         }
     },
-    "e547e4d04efc103c9cc053ce8cab8e1f": {
-        "Key": "e547e4d04efc103c9cc053ce8cab8e1f",
-        "Kind": 3,
-        "Children": {},
-        "Predicates": {
-            "tdg-module-name": "basictypes.seru",
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-srg-source": "(NodeRef)"
-        }
-    },
     "f9b41ac49c300a21c9577980a7af9380": {
         "Key": "f9b41ac49c300a21c9577980a7af9380",
         "Kind": 1,
         "Children": {
+            "290007daee55b24cc69c12d81e7126c4": {
+                "Predicate": "tdg-declaration-module",
+                "Child": {
+                    "Key": "290007daee55b24cc69c12d81e7126c4",
+                    "Kind": 3,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-module-name": "stream.seru",
+                        "tdg-node-kind": "3|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            },
             "d5680b582856b55125490ea5decf48b3": {
                 "Predicate": "tdg-node-member",
                 "Child": {

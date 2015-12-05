@@ -122,6 +122,19 @@
                         "tdg-srg-source": "(NodeRef)"
                     }
                 }
+            },
+            "e547e4d04efc103c9cc053ce8cab8e1f": {
+                "Predicate": "tdg-declaration-module",
+                "Child": {
+                    "Key": "e547e4d04efc103c9cc053ce8cab8e1f",
+                    "Kind": 3,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-module-name": "basictypes.seru",
+                        "tdg-node-kind": "3|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
             }
         },
         "Predicates": {
@@ -590,16 +603,6 @@
             "tdg-type-name": "List"
         }
     },
-    "dcf0759db1d993f6ebd7355539e14d36": {
-        "Key": "dcf0759db1d993f6ebd7355539e14d36",
-        "Kind": 3,
-        "Children": {},
-        "Predicates": {
-            "tdg-module-name": "functiongeneric.seru",
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-srg-source": "(NodeRef)"
-        }
-    },
     "e3cdb6f2d6aa380c3ab8286dc9b3f452": {
         "Key": "e3cdb6f2d6aa380c3ab8286dc9b3f452",
         "Kind": 2,
@@ -641,16 +644,6 @@
             "tdg-node-kind": "2|NodeType|tdg",
             "tdg-srg-source": "(NodeRef)",
             "tdg-type-name": "Releasable"
-        }
-    },
-    "e547e4d04efc103c9cc053ce8cab8e1f": {
-        "Key": "e547e4d04efc103c9cc053ce8cab8e1f",
-        "Kind": 3,
-        "Children": {},
-        "Predicates": {
-            "tdg-module-name": "basictypes.seru",
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-srg-source": "(NodeRef)"
         }
     },
     "f124647df24713158d613dceb791fc8b": {
@@ -729,6 +722,19 @@
                         "tdg-member-signature": "\n\u000bDoSomething\u0010\u0002\u0018\u0000 \u0001*7Function\u003cInteger\u003e(local:1:0                           )2\u0007Integer",
                         "tdg-node-kind": "4|NodeType|tdg",
                         "tdg-srg-module": "tests/interfaceconstraint/functiongeneric.seru",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            },
+            "dcf0759db1d993f6ebd7355539e14d36": {
+                "Predicate": "tdg-declaration-module",
+                "Child": {
+                    "Key": "dcf0759db1d993f6ebd7355539e14d36",
+                    "Kind": 3,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-module-name": "functiongeneric.seru",
+                        "tdg-node-kind": "3|NodeType|tdg",
                         "tdg-srg-source": "(NodeRef)"
                     }
                 }

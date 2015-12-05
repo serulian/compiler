@@ -150,6 +150,19 @@
                         "tdg-srg-source": "(NodeRef)"
                     }
                 }
+            },
+            "e547e4d04efc103c9cc053ce8cab8e1f": {
+                "Predicate": "tdg-declaration-module",
+                "Child": {
+                    "Key": "e547e4d04efc103c9cc053ce8cab8e1f",
+                    "Kind": 3,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-module-name": "basictypes.seru",
+                        "tdg-node-kind": "3|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
             }
         },
         "Predicates": {
@@ -499,16 +512,6 @@
             "tdg-type-name": "Float64"
         }
     },
-    "cd960978331c0608925fcc076584c70a": {
-        "Key": "cd960978331c0608925fcc076584c70a",
-        "Kind": 3,
-        "Children": {},
-        "Predicates": {
-            "tdg-module-name": "class.seru",
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-srg-source": "(NodeRef)"
-        }
-    },
     "d9a3b5f49784a0486d7752f807a47c6d": {
         "Key": "d9a3b5f49784a0486d7752f807a47c6d",
         "Kind": 1,
@@ -594,16 +597,6 @@
             "tdg-node-kind": "2|NodeType|tdg",
             "tdg-srg-source": "(NodeRef)",
             "tdg-type-name": "Releasable"
-        }
-    },
-    "e547e4d04efc103c9cc053ce8cab8e1f": {
-        "Key": "e547e4d04efc103c9cc053ce8cab8e1f",
-        "Kind": 3,
-        "Children": {},
-        "Predicates": {
-            "tdg-module-name": "basictypes.seru",
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-srg-source": "(NodeRef)"
         }
     },
     "f9b41ac49c300a21c9577980a7af9380": {
@@ -753,6 +746,19 @@
                         "tdg-member-signature": "\n\u000bDoSomething\u0010\u0002\u0018\u0000 \u0001*0Function\u003cAnotherClass\u003e(ThirdClass, AnotherClass)",
                         "tdg-node-kind": "4|NodeType|tdg",
                         "tdg-srg-module": "tests/members/class.seru",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            },
+            "cd960978331c0608925fcc076584c70a": {
+                "Predicate": "tdg-declaration-module",
+                "Child": {
+                    "Key": "cd960978331c0608925fcc076584c70a",
+                    "Kind": 3,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-module-name": "class.seru",
+                        "tdg-node-kind": "3|NodeType|tdg",
                         "tdg-srg-source": "(NodeRef)"
                     }
                 }

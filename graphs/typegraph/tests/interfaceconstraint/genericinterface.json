@@ -182,6 +182,19 @@
                         "tdg-srg-source": "(NodeRef)"
                     }
                 }
+            },
+            "e547e4d04efc103c9cc053ce8cab8e1f": {
+                "Predicate": "tdg-declaration-module",
+                "Child": {
+                    "Key": "e547e4d04efc103c9cc053ce8cab8e1f",
+                    "Kind": 3,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-module-name": "basictypes.seru",
+                        "tdg-node-kind": "3|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
             }
         },
         "Predicates": {
@@ -677,26 +690,6 @@
             "tdg-type-name": "Releasable"
         }
     },
-    "e547e4d04efc103c9cc053ce8cab8e1f": {
-        "Key": "e547e4d04efc103c9cc053ce8cab8e1f",
-        "Kind": 3,
-        "Children": {},
-        "Predicates": {
-            "tdg-module-name": "basictypes.seru",
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-srg-source": "(NodeRef)"
-        }
-    },
-    "ec4f2b2fbb72be1c9fb1b5f81ddfcb10": {
-        "Key": "ec4f2b2fbb72be1c9fb1b5f81ddfcb10",
-        "Kind": 3,
-        "Children": {},
-        "Predicates": {
-            "tdg-module-name": "genericinterface.seru",
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-srg-source": "(NodeRef)"
-        }
-    },
     "f9b41ac49c300a21c9577980a7af9380": {
         "Key": "f9b41ac49c300a21c9577980a7af9380",
         "Kind": 1,
@@ -715,6 +708,19 @@
                         "tdg-member-static": "true",
                         "tdg-node-kind": "4|NodeType|tdg",
                         "tdg-srg-module": "tests/interfaceconstraint/genericinterface.seru"
+                    }
+                }
+            },
+            "ec4f2b2fbb72be1c9fb1b5f81ddfcb10": {
+                "Predicate": "tdg-declaration-module",
+                "Child": {
+                    "Key": "ec4f2b2fbb72be1c9fb1b5f81ddfcb10",
+                    "Kind": 3,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-module-name": "genericinterface.seru",
+                        "tdg-node-kind": "3|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
                     }
                 }
             },

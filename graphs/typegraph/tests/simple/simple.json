@@ -122,6 +122,19 @@
                         "tdg-srg-source": "(NodeRef)"
                     }
                 }
+            },
+            "e547e4d04efc103c9cc053ce8cab8e1f": {
+                "Predicate": "tdg-declaration-module",
+                "Child": {
+                    "Key": "e547e4d04efc103c9cc053ce8cab8e1f",
+                    "Kind": 3,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-module-name": "basictypes.seru",
+                        "tdg-node-kind": "3|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
             }
         },
         "Predicates": {
@@ -530,26 +543,6 @@
             "tdg-type-name": "Releasable"
         }
     },
-    "e547e4d04efc103c9cc053ce8cab8e1f": {
-        "Key": "e547e4d04efc103c9cc053ce8cab8e1f",
-        "Kind": 3,
-        "Children": {},
-        "Predicates": {
-            "tdg-module-name": "basictypes.seru",
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-srg-source": "(NodeRef)"
-        }
-    },
-    "eae8553adff2243fb83588ff6071f8ea": {
-        "Key": "eae8553adff2243fb83588ff6071f8ea",
-        "Kind": 3,
-        "Children": {},
-        "Predicates": {
-            "tdg-module-name": "simple.seru",
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-srg-source": "(NodeRef)"
-        }
-    },
     "f2e01363d9ba64d1d6c9ff91b5e48d62": {
         "Key": "f2e01363d9ba64d1d6c9ff91b5e48d62",
         "Kind": 2,
@@ -578,6 +571,19 @@
                         "tdg-member-static": "true",
                         "tdg-node-kind": "4|NodeType|tdg",
                         "tdg-srg-module": "tests/simple/simple.seru"
+                    }
+                }
+            },
+            "eae8553adff2243fb83588ff6071f8ea": {
+                "Predicate": "tdg-declaration-module",
+                "Child": {
+                    "Key": "eae8553adff2243fb83588ff6071f8ea",
+                    "Kind": 3,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-module-name": "simple.seru",
+                        "tdg-node-kind": "3|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
                     }
                 }
             }

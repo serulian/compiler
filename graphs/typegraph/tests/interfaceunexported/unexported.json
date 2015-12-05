@@ -164,6 +164,19 @@
                         "tdg-srg-source": "(NodeRef)"
                     }
                 }
+            },
+            "e547e4d04efc103c9cc053ce8cab8e1f": {
+                "Predicate": "tdg-declaration-module",
+                "Child": {
+                    "Key": "e547e4d04efc103c9cc053ce8cab8e1f",
+                    "Kind": 3,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-module-name": "basictypes.seru",
+                        "tdg-node-kind": "3|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
             }
         },
         "Predicates": {
@@ -412,16 +425,6 @@
             "tdg-type-name": "String"
         }
     },
-    "a444ed57e26265facfa6bde455e10aa4": {
-        "Key": "a444ed57e26265facfa6bde455e10aa4",
-        "Kind": 3,
-        "Children": {},
-        "Predicates": {
-            "tdg-module-name": "unexported.seru",
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-srg-source": "(NodeRef)"
-        }
-    },
     "baadb2853bde27e4e82f0911a358f763": {
         "Key": "baadb2853bde27e4e82f0911a358f763",
         "Kind": 2,
@@ -654,16 +657,6 @@
             "tdg-type-name": "Releasable"
         }
     },
-    "e547e4d04efc103c9cc053ce8cab8e1f": {
-        "Key": "e547e4d04efc103c9cc053ce8cab8e1f",
-        "Kind": 3,
-        "Children": {},
-        "Predicates": {
-            "tdg-module-name": "basictypes.seru",
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-srg-source": "(NodeRef)"
-        }
-    },
     "f9b41ac49c300a21c9577980a7af9380": {
         "Key": "f9b41ac49c300a21c9577980a7af9380",
         "Kind": 1,
@@ -695,6 +688,19 @@
                         "tdg-member-signature": "\n\u000bprivateFunc\u0010\u0002\u0018\u0000 \u0000*\u0011Function\u003cInteger\u003e",
                         "tdg-node-kind": "4|NodeType|tdg",
                         "tdg-srg-module": "tests/interfaceunexported/unexported.seru",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            },
+            "a444ed57e26265facfa6bde455e10aa4": {
+                "Predicate": "tdg-declaration-module",
+                "Child": {
+                    "Key": "a444ed57e26265facfa6bde455e10aa4",
+                    "Kind": 3,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-module-name": "unexported.seru",
+                        "tdg-node-kind": "3|NodeType|tdg",
                         "tdg-srg-source": "(NodeRef)"
                     }
                 }

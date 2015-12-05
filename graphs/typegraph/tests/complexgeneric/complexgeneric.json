@@ -58,16 +58,6 @@
             "tdg-type-name": "Port"
         }
     },
-    "1c477f6cb2330f5fcd2cab4861d3fb6b": {
-        "Key": "1c477f6cb2330f5fcd2cab4861d3fb6b",
-        "Kind": 3,
-        "Children": {},
-        "Predicates": {
-            "tdg-module-name": "complexgeneric.seru",
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-srg-source": "(NodeRef)"
-        }
-    },
     "2c27eebe379b2e0bef7262a516c26bdb": {
         "Key": "2c27eebe379b2e0bef7262a516c26bdb",
         "Kind": 1,
@@ -129,6 +119,19 @@
                         "tdg-generic-name": "T",
                         "tdg-generic-subtype": "any",
                         "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            },
+            "e547e4d04efc103c9cc053ce8cab8e1f": {
+                "Predicate": "tdg-declaration-module",
+                "Child": {
+                    "Key": "e547e4d04efc103c9cc053ce8cab8e1f",
+                    "Kind": 3,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-module-name": "basictypes.seru",
+                        "tdg-node-kind": "3|NodeType|tdg",
                         "tdg-srg-source": "(NodeRef)"
                     }
                 }
@@ -612,20 +615,23 @@
             "tdg-type-name": "Releasable"
         }
     },
-    "e547e4d04efc103c9cc053ce8cab8e1f": {
-        "Key": "e547e4d04efc103c9cc053ce8cab8e1f",
-        "Kind": 3,
-        "Children": {},
-        "Predicates": {
-            "tdg-module-name": "basictypes.seru",
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-srg-source": "(NodeRef)"
-        }
-    },
     "f9b41ac49c300a21c9577980a7af9380": {
         "Key": "f9b41ac49c300a21c9577980a7af9380",
         "Kind": 1,
         "Children": {
+            "1c477f6cb2330f5fcd2cab4861d3fb6b": {
+                "Predicate": "tdg-declaration-module",
+                "Child": {
+                    "Key": "1c477f6cb2330f5fcd2cab4861d3fb6b",
+                    "Kind": 3,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-module-name": "complexgeneric.seru",
+                        "tdg-node-kind": "3|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            },
             "239e334ea86d27bcba0b318dad811725": {
                 "Predicate": "tdg-declaration-generic",
                 "Child": {
