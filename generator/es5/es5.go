@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"text/template"
 
+	"github.com/robertkrimen/otto"
+
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph"
 )
@@ -18,6 +20,7 @@ import (
 type es5generator struct {
 	graph      *compilergraph.SerulianGraph // The root graph.
 	scopegraph *scopegraph.ScopeGraph       // The scope graph.
+	ottovm     *otto.Otto                   // The otto VM.
 }
 
 // GenerateES5 produces ES5 code from the given scope graph.
@@ -25,6 +28,7 @@ func GenerateES5(sg *scopegraph.ScopeGraph) (string, error) {
 	generator := es5generator{
 		graph:      sg.SourceGraph().Graph,
 		scopegraph: sg,
+		ottovm:     nil,
 	}
 
 	// Generate the code for each of the modules.
@@ -32,7 +36,7 @@ func GenerateES5(sg *scopegraph.ScopeGraph) (string, error) {
 
 	// Collect the generated modules into their final source.
 	for _, source := range generated {
-		fmt.Printf("%v", source)
+		fmt.Printf("%v", generator.formatSource(source))
 	}
 
 	return "", nil
