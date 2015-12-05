@@ -38,7 +38,7 @@ func (t *TypeGraph) buildMembership(typeDecl TGTypeDecl, srgType srg.SRGType, in
 		implicitConstructorNode.Decorate(NodePredicateMemberName, "new")
 		implicitConstructorNode.Decorate(NodePredicateMemberReadOnly, "true")
 		implicitConstructorNode.Decorate(NodePredicateMemberStatic, "true")
-		implicitConstructorNode.Decorate(NodePredicateModule, string(srgType.Module().InputSource()))
+		implicitConstructorNode.Decorate(NodePredicateModulePath, string(srgType.Module().InputSource()))
 
 		constructorType := t.NewTypeReference(t.FunctionType(), typeDecl.GetTypeReference())
 		implicitConstructorNode.DecorateWithTagged(NodePredicateMemberType, constructorType)
@@ -137,7 +137,7 @@ func (t *TypeGraph) buildTypeOperatorNode(parent TGTypeOrModule, operator srg.SR
 	memberNode := t.layer.CreateNode(NodeTypeOperator)
 	memberNode.Decorate(NodePredicateOperatorName, name)
 	memberNode.Decorate(NodePredicateMemberName, operatorMemberNamePrefix+name)
-	memberNode.Decorate(NodePredicateModule, string(operator.Module().InputSource()))
+	memberNode.Decorate(NodePredicateModulePath, string(operator.Module().InputSource()))
 
 	memberNode.Connect(NodePredicateSource, operator.Node())
 
@@ -246,7 +246,7 @@ func (t *TypeGraph) buildTypeMemberNode(parent TGTypeOrModule, member srg.SRGMem
 	// Create the member node.
 	memberNode := t.layer.CreateNode(NodeTypeMember)
 	memberNode.Decorate(NodePredicateMemberName, member.Name())
-	memberNode.Decorate(NodePredicateModule, string(member.Module().InputSource()))
+	memberNode.Decorate(NodePredicateModulePath, string(member.Module().InputSource()))
 
 	memberNode.Connect(NodePredicateSource, member.Node())
 

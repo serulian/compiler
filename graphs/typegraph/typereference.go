@@ -586,7 +586,7 @@ func (tr TypeReference) ResolveMember(memberName string, module compilercommon.I
 	// If the member is exported, then always return it. Otherwise, only return it if the asking module
 	// is the same as the declaring module.
 	if !member.IsExported() {
-		memberModule := memberNode.Get(NodePredicateModule)
+		memberModule := memberNode.Get(NodePredicateModulePath)
 		if memberModule != string(module) {
 			return TGMember{}, false
 		}

@@ -13,16 +13,18 @@ import (
 // buildTypeNode adds a new type node to the type graph for the given SRG type. Note that
 // this does not handle generics or members.
 func (t *TypeGraph) buildTypeNode(srgType srg.SRGType) bool {
+	// Find the parent module.
+	parentModule := srgType.Module().StartQueryToLayer(t.layer).In(NodePredicateSource).GetNode()
+
 	// Ensure that there exists no other type with this name under the parent module.
-	_, exists := srgType.Module().
-		StartQueryToLayer(t.layer).
+	_, exists := parentModule.StartQuery().
 		In(NodePredicateTypeModule).
 		Has(NodePredicateTypeName, srgType.Name()).
 		TryGetNode()
 
 	// Create the type node.
 	typeNode := t.layer.CreateNode(getTypeNodeType(srgType.TypeKind()))
-	typeNode.Connect(NodePredicateTypeModule, srgType.Module().Node())
+	typeNode.Connect(NodePredicateTypeModule, parentModule)
 	typeNode.Connect(NodePredicateSource, srgType.Node())
 	typeNode.Decorate(NodePredicateTypeName, srgType.Name())
 

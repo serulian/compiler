@@ -41,11 +41,11 @@ const (
 	// Connects a node to its error node.
 	NodePredicateError = "node-error"
 
-	// Connects a type node to its SRG declaration/definition.
+	// Connects a node to its SRG declaration/definition.
 	NodePredicateSource = "srg-source"
 
-	// Decorates a type node with its SRG module.
-	NodePredicateModule = "srg-module"
+	// Decorates a type or type member node with the path of its containing SRG module.
+	NodePredicateModulePath = "srg-module"
 
 	//
 	// NodeTypeError
@@ -70,7 +70,7 @@ const (
 	// NodeTypeClass/NodeTypeInterface
 	//
 
-	// Connects a type declaration to its parent module in the *SRG*.
+	// Connects a type declaration to its parent module.
 	NodePredicateTypeModule = "declaration-module"
 
 	// Connects a type declaration to an operator (function, var, etc).

@@ -22,6 +22,9 @@ func (t *TypeGraph) build(g *srg.SRG) *Result {
 		Graph:    t,
 	}
 
+	// Translate modules.
+	t.translateModules()
+
 	// Translate types and generics.
 	if !t.translateTypesAndGenerics() {
 		result.Status = false
@@ -36,8 +39,8 @@ func (t *TypeGraph) build(g *srg.SRG) *Result {
 	// Load the operators map. Requires the types loaded as it performs lookups of certain types (int, etc).
 	t.buildOperatorDefinitions()
 
-	// Add modules and its members.
-	t.translateModulesAndMembers()
+	// Translate module members.
+	t.translateModuleMembers()
 
 	// Add type members (along full inheritance)
 	if !t.translateTypeMembers() {
@@ -135,12 +138,25 @@ func (t *TypeGraph) verifyTypeReferences() bool {
 	return workqueue.Run().Status
 }
 
-// translateModulesAndMembers translate the modules and its direct members from the SRG.
-func (t *TypeGraph) translateModulesAndMembers() bool {
+// translateModules translate the modules from the SRG.
+func (t *TypeGraph) translateModules() bool {
 	buildModule := func(key interface{}, value interface{}) bool {
 		return t.buildModuleNode(value.(srg.SRGModule))
 	}
 
+	// Enqueue the set of SRG modules.
+	workqueue := compilerutil.Queue()
+
+	for _, module := range t.srg.GetModules() {
+		moduleKey := workKey{module.GraphNode, module.Name(), "Module"}
+		workqueue.Enqueue(moduleKey, module, buildModule)
+	}
+
+	return workqueue.Run().Status
+}
+
+// translateModuleMembers translate direcy module members from the SRG.
+func (t *TypeGraph) translateModuleMembers() bool {
 	buildModuleMember := func(key interface{}, value interface{}) bool {
 		data := value.(moduleMemberWork)
 		module, found := t.getModuleForSRGModule(data.srgModule)
@@ -151,22 +167,20 @@ func (t *TypeGraph) translateModulesAndMembers() bool {
 		return t.buildMemberNode(module, data.srgMember)
 	}
 
-	// Enqueue the set of SRG modules that have members defined.
+	// Enqueue the set of SRG module members.
 	workqueue := compilerutil.Queue()
 
 	for _, module := range t.srg.GetModules() {
+		// Check for direct members under the module.
 		moduleMembers := module.GetMembers()
 		if len(moduleMembers) == 0 {
 			continue
 		}
 
-		moduleKey := workKey{module.GraphNode, module.Name(), "Module"}
-		workqueue.Enqueue(moduleKey, module, buildModule)
-
 		// Enqueue the members of the module.
 		for _, member := range moduleMembers {
 			memberKey := workKey{member.GraphNode, member.Name(), "ModuleMember"}
-			workqueue.Enqueue(memberKey, moduleMemberWork{module, member}, buildModuleMember, moduleKey)
+			workqueue.Enqueue(memberKey, moduleMemberWork{module, member}, buildModuleMember)
 		}
 	}
 
