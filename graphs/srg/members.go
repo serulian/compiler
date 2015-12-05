@@ -48,6 +48,14 @@ func (g *SRG) TryGetContainingMember(node compilergraph.GraphNode) (SRGMember, b
 	return SRGMember{containingNode, g}, true
 }
 
+// GetMemberReference returns an SRGMember wrapper around the given SRG member node. Panics
+// if the node is not a member node.
+func (g *SRG) GetMemberReference(node compilergraph.GraphNode) SRGMember {
+	member := SRGMember{node, g}
+	member.MemberKind() // Will panic on error.
+	return member
+}
+
 // Module returns the module under which the member is defined.
 func (m SRGMember) Module() SRGModule {
 	source := m.GraphNode.Get(parser.NodePredicateSource)
@@ -145,6 +153,36 @@ func (m SRGMember) HasSetter() bool {
 // IsExported returns whether the given member is exported for use outside its module.
 func (m SRGMember) IsExported() bool {
 	return isExportedName(m.Name())
+}
+
+// HasImplementation returns whether the given member has a defined implementation.
+func (m SRGMember) HasImplementation() bool {
+	switch m.MemberKind() {
+	case VarMember:
+		return false
+
+	case PropertyMember:
+		getter, hasGetter := m.Getter()
+		if !hasGetter {
+			return false
+		}
+
+		_, hasGetterBody := getter.TryGet(parser.NodePredicateBody)
+		return hasGetterBody
+
+	case ConstructorMember:
+		fallthrough
+
+	case FunctionMember:
+		fallthrough
+
+	case OperatorMember:
+		_, hasBody := m.Body()
+		return hasBody
+	}
+
+	panic(fmt.Sprintf("Unknown kind of member %s", m.GraphNode.Kind))
+	return false
 }
 
 // Generics returns the generics on this member.

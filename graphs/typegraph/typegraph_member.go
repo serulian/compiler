@@ -6,6 +6,7 @@ package typegraph
 
 import (
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/graphs/srg"
 )
 
 // TGMember represents a type or module member.
@@ -42,6 +43,27 @@ func (tn TGMember) Title() string {
 // Node returns the underlying node in this declaration.
 func (tn TGMember) Node() compilergraph.GraphNode {
 	return tn.GraphNode
+}
+
+// HasImplementation returns true if this type member has an SRG implementation.
+func (tn TGMember) HasImplementation() bool {
+	srgMember, hasSRGMember := tn.SRGMember()
+	if !hasSRGMember {
+		return false
+	}
+
+	return srgMember.HasImplementation()
+}
+
+// SRGMember returns the SRG member decl for this member, if any.
+func (tn TGMember) SRGMember() (srg.SRGMember, bool) {
+	sourceNodeId, hasSource := tn.GraphNode.TryGet(NodePredicateSource)
+	if !hasSource {
+		return srg.SRGMember{}, false
+	}
+
+	srgNode := tn.tdg.srg.GetNode(compilergraph.GraphNodeId(sourceNodeId))
+	return tn.tdg.srg.GetMemberReference(srgNode), true
 }
 
 // IsExported returns whether the member is exported.

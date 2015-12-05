@@ -1,7 +1,9 @@
+var<int> someInt = 2
+
 function<void> HelloWorld() {
-	AnotherFunction()
+	AnotherFunction<int, string>(2, 'hello')
 }
 
-function<int> AnotherFunction() {
+function<int> AnotherFunction<T, Q>(first T, second Q) {
   return 2
 }

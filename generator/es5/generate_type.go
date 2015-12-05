@@ -59,14 +59,48 @@ type generatingType struct {
 	Generator *es5generator // The parent generator.
 }
 
+// Generics returns a string representing the named generics on this type.
+func (gt generatingType) Generics() string {
+	return gt.Generator.runTemplate("generics", genericsTemplateStr, gt.Type)
+}
+
+// GenerateImplementedMembers generates the source for all the members defined under the type that
+// have implementations.
+func (gt generatingType) GenerateImplementedMembers() map[typegraph.TGMember]string {
+	return gt.Generator.generateImplementedMembers(gt.Type)
+}
+
+// GenerateVariables generates the source for all the variables defined under the type.
+func (gt generatingType) GenerateVariables() map[typegraph.TGMember]string {
+	return gt.Generator.generateVariables(gt.Type)
+}
+
+// genericsTemplateStr defines a template for generating generics.
+const genericsTemplateStr = `{{ range $index, $generic := .Context.Generics }}{{ if $index }}, {{ end }}{{ $generic.Name }}{{ end }}`
+
 // classTemplateStr defines the template for generating a class type.
 const classTemplateStr = `
-$parent.cls('{{ .Context.Type.Name }}', function() {
+this.cls('{{ .Context.Type.Name }}', function({{ .Context.Generics }}) {
+	var $static = this;
+    var $instance = this.prototype;
+
+	$static.$new = function() {
+		{{range $member, $source := .Context.GenerateVariables }}
+	  	  {{ $source }}
+  		{{end}}
+	};
+
+	{{range $member, $source := .Context.GenerateImplementedMembers }}
+  	  {{ $source }}
+  	{{end}}
 });
 `
 
 // interfaceTemplateStr defines the template for generating an interface type.
 const interfaceTemplateStr = `
-$parent.interface('{{ .Context.Type.Name }}', function() {
+this.interface('{{ .Context.Type.Name }}', function({{ .Context.Generics }}) {
+	{{range $member, $source := .Context.GenerateImplementedMembers }}
+  	  {{ $source }}
+  	{{end}}
 });
 `

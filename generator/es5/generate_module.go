@@ -68,15 +68,35 @@ func (gm generatingModule) ExportedPath() string {
 	return rel
 }
 
+// GenerateMembers generates the source for all the implemented members defined under the module.
+func (gm generatingModule) GenerateMembers() map[typegraph.TGMember]string {
+	return gm.Generator.generateImplementedMembers(gm.Module)
+}
+
 // GenerateTypes generates the source for all the types defined under the module.
 func (gm generatingModule) GenerateTypes() map[typegraph.TGTypeDecl]string {
 	return gm.Generator.generateTypes(gm.Module)
 }
 
+// GenerateVariables generates the source for all the variables defined under the module.
+func (gm generatingModule) GenerateVariables() map[typegraph.TGMember]string {
+	return gm.Generator.generateVariables(gm.Module)
+}
+
 // moduleTemplateStr defines the template for generating a module.
 const moduleTemplateStr = `
-$module('{{ .Context.ExportedPath }}', function($parent) {
+$module('{{ .Context.ExportedPath }}', function() {
+  var $instance = this;
+
   {{range $type, $source := .Context.GenerateTypes }}
+  	{{ $source }}
+  {{end}}
+  
+  {{range $member, $source := .Context.GenerateMembers }}
+  	{{ $source }}
+  {{end}}
+
+  {{range $member, $source := .Context.GenerateVariables }}
   	{{ $source }}
   {{end}}
 });

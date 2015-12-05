@@ -12,4 +12,5 @@ import (
 type TGTypeOrModule interface {
 	Name() string
 	Node() compilergraph.GraphNode
+	Members() []TGMember
 }
