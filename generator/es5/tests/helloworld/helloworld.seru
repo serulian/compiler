@@ -1,0 +1,7 @@
+function<void> HelloWorld() {
+	AnotherFunction()
+}
+
+function<int> AnotherFunction() {
+  return 2
+}

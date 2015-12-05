@@ -34,6 +34,16 @@ type Result struct {
 	Graph    *ScopeGraph                     // The constructed scope graph.
 }
 
+// SourceGraph returns the SRG behind this scope graph.
+func (g *ScopeGraph) SourceGraph() *srg.SRG {
+	return g.srg
+}
+
+// TypeGraph returns the type graph behind this scope graph.
+func (g *ScopeGraph) TypeGraph() *typegraph.TypeGraph {
+	return g.tdg
+}
+
 // BuildScopeGraph returns a new ScopeGraph that is populated from the given TypeGraph,
 // computing scope for all statements and expressions and semantic checking along the way.
 func BuildScopeGraph(tdg *typegraph.TypeGraph) *Result {
