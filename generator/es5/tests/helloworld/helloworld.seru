@@ -7,3 +7,8 @@ function<void> HelloWorld() {
 function<int> AnotherFunction<T, Q>(first T, second Q) {
   return 2
 }
+
+class SomeClass {
+	var<int> someOtherInt = 2
+	var<bool> someBool = true
+}

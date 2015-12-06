@@ -304,7 +304,7 @@ func (t *TypeGraph) buildTypeMemberNode(parent TGTypeOrModule, member srg.SRGMem
 		// Decorate the property *getter* with its return type.
 		getter, found := member.Getter()
 		if found {
-			t.createReturnable(memberNode, getter, memberType)
+			t.createReturnable(memberNode, getter.GraphNode, memberType)
 		}
 
 	case srg.ConstructorMember:

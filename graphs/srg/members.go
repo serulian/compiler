@@ -109,8 +109,21 @@ func (m SRGMember) MemberKind() MemberKind {
 	}
 }
 
+// Initializer returns the expression forming the initializer for this variable, if any.
+func (m SRGMember) Initializer() (compilergraph.GraphNode, bool) {
+	if m.MemberKind() != VarMember {
+		panic("Expected variable node")
+	}
+
+	return m.TryGetNode(parser.NodeVariableStatementExpression)
+}
+
 // Body returns the statement block forming the implementation body for this member, if any.
 func (m SRGMember) Body() (compilergraph.GraphNode, bool) {
+	if m.MemberKind() == VarMember {
+		panic("Expected non-variable node")
+	}
+
 	return m.TryGetNode(parser.NodePredicateBody)
 }
 
@@ -135,19 +148,38 @@ func (m SRGMember) ReturnType() (SRGTypeRef, bool) {
 }
 
 // Getter returns the defined getter for this property. Panics if this is not a property.
-func (m SRGMember) Getter() (compilergraph.GraphNode, bool) {
+func (m SRGMember) Getter() (SRGImplementable, bool) {
 	if m.MemberKind() != PropertyMember {
 		panic("Expected property node")
 	}
 
-	return m.GraphNode.TryGetNode(parser.NodePropertyGetter)
+	node, found := m.GraphNode.TryGetNode(parser.NodePropertyGetter)
+	if !found {
+		return SRGImplementable{}, false
+	}
+
+	return SRGImplementable{node}, true
+}
+
+// Setter returns the defined setter for this property. Panics if this is not a property.
+func (m SRGMember) Setter() (SRGImplementable, bool) {
+	if m.MemberKind() != PropertyMember {
+		panic("Expected property node")
+	}
+
+	node, found := m.GraphNode.TryGetNode(parser.NodePropertySetter)
+	if !found {
+		return SRGImplementable{}, false
+	}
+
+	return SRGImplementable{node}, true
 }
 
 // HasSetter returns true if the property has a setter defined. Will always return false
 // for non-properties.
 func (m SRGMember) HasSetter() bool {
-	_, found := m.GraphNode.TryGet(parser.NodePropertySetter)
-	return found
+	_, hasSetter := m.Setter()
+	return hasSetter
 }
 
 // IsExported returns whether the given member is exported for use outside its module.

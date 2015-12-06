@@ -82,6 +82,26 @@ func (gm generatingMember) Parameters() string {
 	return gm.Generator.runTemplate("parameters", parametersTemplateStr, gm)
 }
 
+// Body returns the generated code for the body implementation for this member.
+func (gm generatingMember) Body() string {
+	bodyNode, _ := gm.SRGMember.Body()
+	return gm.Generator.generateImplementation(bodyNode)
+}
+
+// GetterBody returns the generated code for the getter body implementation for this member.
+func (gm generatingMember) GetterBody() string {
+	getter, _ := gm.SRGMember.Getter()
+	bodyNode, _ := getter.Body()
+	return gm.Generator.generateImplementation(bodyNode)
+}
+
+// SetterBody returns the generated code for the setter body implementation for this member.
+func (gm generatingMember) SetterBody() string {
+	setter, _ := gm.SRGMember.Setter()
+	bodyNode, _ := setter.Body()
+	return gm.Generator.generateImplementation(bodyNode)
+}
+
 // parametersTemplateStr defines a template for generating parameters.
 const parametersTemplateStr = `{{ range $index, $parameter := .Context.SRGMember.Parameters }}{{ if $index }}, {{ end }}{{ $parameter.Name }}{{ end }}`
 
@@ -93,7 +113,7 @@ const functionTemplateStr = `
 	var $f =
 {{ end }}
 		function({{ .Context.Parameters }}) {
-			// Impl
+			{{ .Context.Body }}
 		};
 {{ if .Context.Member.HasGenerics }}
 	return $f;
@@ -104,12 +124,12 @@ const functionTemplateStr = `
 // propertyTemplateStr defines the template for generating properties.
 const propertyTemplateStr = `
   $instance.get${{ .Context.Member.Name }} = function() {
-  	// Impl
+  	{{ .Context.GetterBody }}
   };
 
   {{ if .Context.SRGMember.HasSetter }}
   $instance.set${{ .Context.Member.Name }} = function(value) {
-  	// Impl
+  	{{ .Context.SetterBody }}
   };
   {{ end }}
 `

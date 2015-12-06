@@ -49,9 +49,19 @@ func (gen *es5generator) generateVariable(member typegraph.TGMember) string {
 	return gen.runTemplate("variable", variableTemplateStr, generating)
 }
 
+// Initializer returns the source for the initialization of this variable.
+func (gm generatingMember) Initializer() string {
+	initializer, hasInitializer := gm.SRGMember.Initializer()
+	if !hasInitializer {
+		return ""
+	}
+
+	return gm.Generator.generateImplementation(initializer)
+}
+
 // variableTemplateStr defines the template for generating variables/fields.
 const variableTemplateStr = `
 	this.{{ .Context.Member.Name }} = (function() {
-		// value here
-	}());
+		{{ .Context.Initializer }}
+	})();
 `

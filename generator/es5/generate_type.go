@@ -85,9 +85,13 @@ this.cls('{{ .Context.Type.Name }}', function({{ .Context.Generics }}) {
     var $instance = this.prototype;
 
 	$static.$new = function() {
+		var instance = new $static();
+		(function() {
 		{{range $member, $source := .Context.GenerateVariables }}
 	  	  {{ $source }}
   		{{end}}
+  		}).call(instance);
+		return instance;
 	};
 
 	{{range $member, $source := .Context.GenerateImplementedMembers }}
