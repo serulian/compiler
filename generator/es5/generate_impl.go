@@ -9,6 +9,8 @@ import (
 )
 
 // generateImplementation generates the state machine representing a statement or expression node.
-func (gen *es5generator) generateImplementation(body compilergraph.GraphNode) string {
-	return "/*impl*/"
+func (gen *es5generator) generateImplementation(body compilergraph.GraphNode) *stateMachine {
+	machine := newStateMachine(gen)
+	machine.generate(body)
+	return machine
 }

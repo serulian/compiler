@@ -56,12 +56,23 @@ func (gm generatingMember) Initializer() string {
 		return ""
 	}
 
-	return gm.Generator.generateImplementation(initializer)
+	stateMachine := gm.Generator.generateImplementation(initializer)
+	return gm.Generator.runTemplate("varclosure", variableTemplateClosureStr, stateMachine)
 }
 
 // variableTemplateStr defines the template for generating variables/fields.
 const variableTemplateStr = `
-	this.{{ .Context.Member.Name }} = (function() {
-		{{ .Context.Initializer }}
-	})();
+	this.{{ .Context.Member.Name }} = {{ .Context.Initializer }};
+`
+
+// variableTemplateClosureStr defines the template for generating a closure for variable init functions.
+const variableTemplateClosureStr = `
+{{ if .Context.HasStates }}
+(function() {
+	{{ .Context.Source }}
+	return {{ .Context.TopExpression }}
+})()
+{{ else }}
+{{ .Context.TopExpression }}
+{{ end }}
 `

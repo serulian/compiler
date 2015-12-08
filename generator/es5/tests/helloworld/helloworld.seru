@@ -1,10 +1,10 @@
 var<int> someInt = 2
 
-function<void> HelloWorld() {
-	AnotherFunction<int, string>(2, 'hello')
+function<int> HelloWorld() {
+  return AnotherFunction(2, 'hello')
 }
 
-function<int> AnotherFunction<T, Q>(first T, second Q) {
+function<int> AnotherFunction(first int, second string) {
   return 2
 }
 

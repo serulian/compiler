@@ -85,21 +85,21 @@ func (gm generatingMember) Parameters() string {
 // Body returns the generated code for the body implementation for this member.
 func (gm generatingMember) Body() string {
 	bodyNode, _ := gm.SRGMember.Body()
-	return gm.Generator.generateImplementation(bodyNode)
+	return gm.Generator.generateImplementation(bodyNode).Source()
 }
 
 // GetterBody returns the generated code for the getter body implementation for this member.
 func (gm generatingMember) GetterBody() string {
 	getter, _ := gm.SRGMember.Getter()
 	bodyNode, _ := getter.Body()
-	return gm.Generator.generateImplementation(bodyNode)
+	return gm.Generator.generateImplementation(bodyNode).Source()
 }
 
 // SetterBody returns the generated code for the setter body implementation for this member.
 func (gm generatingMember) SetterBody() string {
 	setter, _ := gm.SRGMember.Setter()
 	bodyNode, _ := setter.Body()
-	return gm.Generator.generateImplementation(bodyNode)
+	return gm.Generator.generateImplementation(bodyNode).Source()
 }
 
 // parametersTemplateStr defines a template for generating parameters.
