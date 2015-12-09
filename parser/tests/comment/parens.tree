@@ -14,25 +14,33 @@ NodeTypeFile
           input-source = comment parens test
           start-rune = 29
           block-child =>
-            NodeBinaryAddExpression
-              end-rune = 54
+            NodeTypeExpressionStatement
+              end-rune = 56
               input-source = comment parens test
-              start-rune = 50
-              binary-expression-left =>
-                NodeTypeIdentifierExpression
-                  end-rune = 50
-                  identexpr-name = a
-                  input-source = comment parens test
-                  start-rune = 50
-              binary-expression-right =>
-                NodeTypeIdentifierExpression
-                  end-rune = 54
-                  identexpr-name = b
-                  input-source = comment parens test
-                  start-rune = 54
+              start-rune = 49
               child-node =>
                 NodeTypeComment
                   comment-value = /* somecomment */
+              expr-statement-expr =>
+                NodeBinaryAddExpression
+                  end-rune = 54
+                  input-source = comment parens test
+                  start-rune = 50
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 50
+                      identexpr-name = a
+                      input-source = comment parens test
+                      start-rune = 50
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 54
+                      identexpr-name = b
+                      input-source = comment parens test
+                      start-rune = 54
+                  child-node =>
+                    NodeTypeComment
+                      comment-value = /* somecomment */
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 12

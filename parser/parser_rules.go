@@ -999,8 +999,15 @@ func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
 		}
 
 		// Look for an expression as a statement.
+		exprToken := p.currentToken
+
 		if exprNode, ok := p.tryConsumeExpression(consumeExpressionAllowMaps); ok {
-			return exprNode, true
+			exprStatementNode := p.createNode(NodeTypeExpressionStatement)
+			exprStatementNode.Connect(NodeExpressionStatementExpression, exprNode)
+			p.decorateStartRuneAndComments(exprStatementNode, exprToken)
+			p.decorateEndRune(exprStatementNode, p.currentToken)
+
+			return exprStatementNode, true
 		}
 
 		return nil, false

@@ -14,16 +14,21 @@ NodeTypeFile
           input-source = await expr test
           start-rune = 30
           block-child =>
-            NodeTypeAwaitExpression
-              end-rune = 43
+            NodeTypeExpressionStatement
+              end-rune = 44
               input-source = await expr test
-              start-rune = 36
-              await-expression-source =>
-                NodeTypeIdentifierExpression
+              start-rune = 33
+              expr-statement-expr =>
+                NodeTypeAwaitExpression
                   end-rune = 43
-                  identexpr-name = someExpr
                   input-source = await expr test
                   start-rune = 36
+                  await-expression-source =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 43
+                      identexpr-name = someExpr
+                      input-source = await expr test
+                      start-rune = 36
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 12

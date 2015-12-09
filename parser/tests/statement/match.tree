@@ -45,11 +45,16 @@ NodeTypeFile
                       input-source = match statement basic test
                       start-rune = 83
                   match-case-statement =>
-                    NodeTypeIdentifierExpression
-                      end-rune = 101
-                      identexpr-name = someExpr
+                    NodeTypeExpressionStatement
+                      end-rune = 102
                       input-source = match statement basic test
                       start-rune = 94
+                      expr-statement-expr =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 101
+                          identexpr-name = someExpr
+                          input-source = match statement basic test
+                          start-rune = 94
                 NodeTypeMatchStatementCase
                   end-rune = 123
                   input-source = match statement basic test

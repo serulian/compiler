@@ -80,6 +80,7 @@ const (
 	NodeTypeWithStatement        // A with statement
 	NodeTypeMatchStatement       // A match statement
 	NodeTypeAssignStatement      // An assignment state: a = b
+	NodeTypeExpressionStatement  // A statement containing a single expression
 
 	NodeTypeMatchStatementCase // A case of a match statement.
 
@@ -367,6 +368,11 @@ const (
 	//
 	NodeMatchStatementCaseExpression = "match-case-expression"
 	NodeMatchStatementCaseStatement  = "match-case-statement"
+
+	//
+	// NodeTypeExpressionStatement
+	//
+	NodeExpressionStatementExpression = "expr-statement-expr"
 
 	//
 	// NodeTypeAwaitExpression

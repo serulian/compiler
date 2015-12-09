@@ -14,39 +14,44 @@ NodeTypeFile
           input-source = map missing comma expr test
           start-rune = 30
           block-child =>
-            NodeMapExpression
-              end-rune = 42
+            NodeTypeExpressionStatement
+              end-rune = 43
               input-source = map missing comma expr test
               start-rune = 33
-              child-node =>
-                NodeTypeError
-                  end-rune = 42
-                  error-message = Expected one of: [tokenTypeRightBrace], found: tokenTypeSyntheticSemicolon
-                  input-source = map missing comma expr test
-                  start-rune = 43
-              map-expr-entry =>
-                NodeMapExpressionEntry
+              expr-statement-expr =>
+                NodeMapExpression
                   end-rune = 42
                   input-source = map missing comma expr test
-                  start-rune = 37
+                  start-rune = 33
                   child-node =>
                     NodeTypeError
                       end-rune = 42
-                      error-message = Expected one of: [tokenTypeComma], found: tokenTypeSyntheticSemicolon
+                      error-message = Expected one of: [tokenTypeRightBrace], found: tokenTypeSyntheticSemicolon
                       input-source = map missing comma expr test
                       start-rune = 43
-                  map-entry-key =>
-                    NodeStringLiteralExpression
-                      end-rune = 39
-                      input-source = map missing comma expr test
-                      literal-value = 'a'
-                      start-rune = 37
-                  map-entry-value =>
-                    NodeNumericLiteralExpression
+                  map-expr-entry =>
+                    NodeMapExpressionEntry
                       end-rune = 42
                       input-source = map missing comma expr test
-                      literal-value = 2
-                      start-rune = 42
+                      start-rune = 37
+                      child-node =>
+                        NodeTypeError
+                          end-rune = 42
+                          error-message = Expected one of: [tokenTypeComma], found: tokenTypeSyntheticSemicolon
+                          input-source = map missing comma expr test
+                          start-rune = 43
+                      map-entry-key =>
+                        NodeStringLiteralExpression
+                          end-rune = 39
+                          input-source = map missing comma expr test
+                          literal-value = 'a'
+                          start-rune = 37
+                      map-entry-value =>
+                        NodeNumericLiteralExpression
+                          end-rune = 42
+                          input-source = map missing comma expr test
+                          literal-value = 2
+                          start-rune = 42
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 12
