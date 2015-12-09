@@ -14,6 +14,16 @@ import (
 
 var _ = fmt.Printf
 
+// scopeExpressionStatement scopes an expression statement in the SRG.
+func (sb *scopeBuilder) scopeExpressionStatement(node compilergraph.GraphNode) proto.ScopeInfo {
+	scope := sb.getScope(node.GetNode(parser.NodeExpressionStatementExpression))
+	if !scope.GetIsValid() {
+		return newScope().Invalid().GetScope()
+	}
+
+	return newScope().Valid().GetScope()
+}
+
 // scopeAssignStatement scopes a assign statement in the SRG.
 func (sb *scopeBuilder) scopeAssignStatement(node compilergraph.GraphNode) proto.ScopeInfo {
 	// TODO: Handle tuple assignment once we figure out tuple types

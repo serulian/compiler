@@ -291,7 +291,7 @@ func TestLookupReturnType(t *testing.T) {
 	}
 
 	getter, _ := someProp.Getter()
-	somePropReturnType, hasPropReturnType := result.Graph.LookupReturnType(getter)
+	somePropReturnType, hasPropReturnType := result.Graph.LookupReturnType(getter.GraphNode)
 	if !assert.True(t, hasPropReturnType, "Could not find return type for SomeProp getter") {
 		return
 	}
