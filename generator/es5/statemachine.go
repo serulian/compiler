@@ -59,9 +59,9 @@ func newStateMachine(generator *es5generator) *stateMachine {
 }
 
 // Source returns the full source for the generated state machine.
-func (sm *stateMachine) Source() string {
+func (sm *stateMachine) Source() (string, bool) {
 	if !sm.HasStates() {
-		return ""
+		return "", false
 	}
 
 	states := make([]*state, sm.states.Len())
@@ -76,7 +76,7 @@ func (sm *stateMachine) Source() string {
 		Variables []string
 	}{states, sm.variables}
 
-	return sm.generator.runTemplate("statemachine", stateMachineTemplateStr, data)
+	return sm.generator.runTemplate("statemachine", stateMachineTemplateStr, data), true
 }
 
 // TopExpression returns the top expression on the current state's expression list.
@@ -200,16 +200,20 @@ const stateMachineTemplateStr = `
 	{{ end }}
 
 	$state.next = function($callback) {
-		while (true) {
-			switch ($state.current) {
-				{{range .Context.States }}
-				case {{ .ID }}:
-					{{ .Source }}
-					break;
-				{{end}}
+		try {
+			while (true) {
+				switch ($state.current) {
+					{{range .Context.States }}
+					case {{ .ID }}:
+						{{ .Source }}
+						break;
+					{{end}}
+				}
 			}
+		} catch (e) {
+			$state.error = e;
+			$state.current = -1;
+			$callback($state);
 		}
 	};
-
-	return $state;
 `

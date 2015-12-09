@@ -10,6 +10,9 @@ $instance.DoSomething =
 
 		function() {
 			
+			
+			
+				
 	var $state = {
 		current: 0,
 		returnValue: null
@@ -18,25 +21,31 @@ $instance.DoSomething =
 	
 
 	$state.next = function($callback) {
-		while (true) {
-			switch ($state.current) {
-				
-				case 0:
-					'hello world';
+		try {
+			while (true) {
+				switch ($state.current) {
+					
+					case 0:
+						'hello world';
 "hi world";
 'single quote with "quoted"';
 "double quote with 'quoted'";
 "escaped \" quote";
 'escaped \' quote';
 
-					break;
-				
+						break;
+					
+				}
 			}
+		} catch (e) {
+			$state.error = e;
+			$state.current = -1;
+			$callback($state);
 		}
 	};
 
-	return $state;
-
+				return $promise.build($state);
+			
 		};
 
 

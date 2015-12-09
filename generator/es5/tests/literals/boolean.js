@@ -10,6 +10,9 @@ $instance.DoSomething =
 
 		function() {
 			
+			
+			
+				
 	var $state = {
 		current: 0,
 		returnValue: null
@@ -18,21 +21,27 @@ $instance.DoSomething =
 	
 
 	$state.next = function($callback) {
-		while (true) {
-			switch ($state.current) {
-				
-				case 0:
-					true;
+		try {
+			while (true) {
+				switch ($state.current) {
+					
+					case 0:
+						true;
 false;
 
-					break;
-				
+						break;
+					
+				}
 			}
+		} catch (e) {
+			$state.error = e;
+			$state.current = -1;
+			$callback($state);
 		}
 	};
 
-	return $state;
-
+				return $promise.build($state);
+			
 		};
 
 

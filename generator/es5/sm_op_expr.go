@@ -42,10 +42,14 @@ func (sm *stateMachine) generateFunctionCall(node compilergraph.GraphNode) {
 	}{callExprSource, arguments, returnValueVariable, returnState}
 
 	generated := sm.generator.runTemplate("functionCall", `
-		({{ .Context.CallExprSource }})({{ range $index, $arg := .Context.Arguments }}{{ if $index }} ,{{ end }}{{ $arg }}{{ end }}).next(function(returnValue) {
+		({{ .Context.CallExprSource }})({{ range $index, $arg := .Context.Arguments }}{{ if $index }} ,{{ end }}{{ $arg }}{{ end }}).then(function(returnValue) {
 			$state.current = {{ .Context.ReturnState.ID }};
 			{{ .Context.ReturnValueVariable }} = returnValue;
 			$state.next($callback);
+		}).catch(function(e) {
+			$state.error = e;
+			$state.current = -1;
+			$callback($state);
 		});
 		return;
 	`, data)

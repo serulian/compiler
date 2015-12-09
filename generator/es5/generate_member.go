@@ -83,23 +83,15 @@ func (gm generatingMember) Parameters() string {
 }
 
 // Body returns the generated code for the body implementation for this member.
-func (gm generatingMember) Body() string {
+type bodyData struct {
+	Source  string
+	HasBody bool
+}
+
+func (gm generatingMember) Body() bodyData {
 	bodyNode, _ := gm.SRGMember.Body()
-	return gm.Generator.generateImplementation(bodyNode).Source()
-}
-
-// GetterBody returns the generated code for the getter body implementation for this member.
-func (gm generatingMember) GetterBody() string {
-	getter, _ := gm.SRGMember.Getter()
-	bodyNode, _ := getter.Body()
-	return gm.Generator.generateImplementation(bodyNode).Source()
-}
-
-// SetterBody returns the generated code for the setter body implementation for this member.
-func (gm generatingMember) SetterBody() string {
-	setter, _ := gm.SRGMember.Setter()
-	bodyNode, _ := setter.Body()
-	return gm.Generator.generateImplementation(bodyNode).Source()
+	bodySource, hasBody := gm.Generator.generateImplementation(bodyNode).Source()
+	return bodyData{bodySource, hasBody}
 }
 
 // parametersTemplateStr defines a template for generating parameters.
@@ -113,7 +105,14 @@ const functionTemplateStr = `
 	var $f =
 {{ end }}
 		function({{ .Context.Parameters }}) {
-			{{ .Context.Body }}
+			{{ $body := .Context.Body.Source }}
+			{{ $hasBody := .Context.Body.HasBody }}
+			{{ if $hasBody }}
+				{{ $body }}
+				return $promise.build($state);
+			{{ else }}
+				return $promise.empty();
+			{{ end }}
 		};
 {{ if .Context.Member.HasGenerics }}
 	return $f;
@@ -123,13 +122,5 @@ const functionTemplateStr = `
 
 // propertyTemplateStr defines the template for generating properties.
 const propertyTemplateStr = `
-  $instance.get${{ .Context.Member.Name }} = function() {
-  	{{ .Context.GetterBody }}
-  };
-
-  {{ if .Context.SRGMember.HasSetter }}
-  $instance.set${{ .Context.Member.Name }} = function(value) {
-  	{{ .Context.SetterBody }}
-  };
-  {{ end }}
+	// THIS
 `

@@ -6,19 +6,13 @@ $module('functioncall', function() {
   
   
   	
-$instance.AnotherFunction = 
-
-		function(someparam) {
-			
-		};
-
-
-  
-  	
 $instance.DoSomething = 
 
 		function() {
 			
+			
+			
+				
 	var $state = {
 		current: 0,
 		returnValue: null
@@ -29,32 +23,55 @@ $instance.DoSomething =
 	
 
 	$state.next = function($callback) {
-		while (true) {
-			switch ($state.current) {
-				
-				case 0:
+		try {
+			while (true) {
+				switch ($state.current) {
 					
-		(AnotherFunction)(2).next(function(returnValue) {
+					case 0:
+						
+		(AnotherFunction)(2).then(function(returnValue) {
 			$state.current = 1;
 			$returnValue$1 = returnValue;
 			$state.next($callback);
+		}).catch(function(e) {
+			$state.error = e;
+			$state.current = -1;
+			$callback($state);
 		});
 		return;
 	
 
-					break;
-				
-				case 1:
-					$returnValue$1;
+						break;
+					
+					case 1:
+						$returnValue$1;
 
-					break;
-				
+						break;
+					
+				}
 			}
+		} catch (e) {
+			$state.error = e;
+			$state.current = -1;
+			$callback($state);
 		}
 	};
 
-	return $state;
+				return $promise.build($state);
+			
+		};
 
+
+  
+  	
+$instance.AnotherFunction = 
+
+		function(someparam) {
+			
+			
+			
+				return $promise.empty();
+			
 		};
 
 
