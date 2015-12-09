@@ -3,9 +3,15 @@ interface Stream<T> {
 	property<T> CurrentValue { get }
 }
 
-@•typealias('port')
-interface Port<T> {
-	function<void> AwaitNext(callback function<void>(T))
+@•typealias('error')
+interface Error {
+}
+
+
+@•typealias('promise')
+interface Promise<T> {
+	function<Promise<T>> Then(callback function<void>(T))
+	function<Promise<T>> Catch(callback function<void>(error))
 }
 
 @•typealias('releasable')

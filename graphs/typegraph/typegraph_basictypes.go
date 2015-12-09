@@ -69,9 +69,9 @@ func (t *TypeGraph) StreamType() compilergraph.GraphNode {
 	return t.getAliasedType("stream")
 }
 
-// PortType returns the port type.
-func (t *TypeGraph) PortType() compilergraph.GraphNode {
-	return t.getAliasedType("port")
+// PromiseType returns the promise type.
+func (t *TypeGraph) PromiseType() compilergraph.GraphNode {
+	return t.getAliasedType("promise")
 }
 
 // FunctionType returns the function type.

@@ -371,7 +371,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"arrow operator invalid source test", "arrowops", "invalidsource",
 		[]expectedScopeEntry{},
-		"Right hand side of an arrow expression must be of type Port: Type Integer cannot be used in place of type Port as it does not implement member AwaitNext", ""},
+		"Right hand side of an arrow expression must be of type Promise: Type Integer cannot be used in place of type Promise as it does not implement member Then", ""},
 
 	scopegraphTest{"arrow operator invalid destination test", "arrowops", "invaliddestination",
 		[]expectedScopeEntry{},

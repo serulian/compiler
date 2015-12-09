@@ -1,63 +1,4 @@
 {
-    "07cc1f2085c5e3bd06fd603f932e338c": {
-        "Key": "07cc1f2085c5e3bd06fd603f932e338c",
-        "Kind": 2,
-        "Children": {
-            "239e334ea86d27bcba0b318dad811725": {
-                "Predicate": "tdg-declaration-generic",
-                "Child": {
-                    "Key": "239e334ea86d27bcba0b318dad811725",
-                    "Kind": 7,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-generic-index": "0",
-                        "tdg-generic-kind": "0",
-                        "tdg-generic-name": "T",
-                        "tdg-generic-subtype": "any",
-                        "tdg-node-kind": "7|NodeType|tdg",
-                        "tdg-srg-source": "(NodeRef)"
-                    }
-                }
-            },
-            "b945044cf3c35128f655a9506afb537d": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "b945044cf3c35128f655a9506afb537d",
-                    "Kind": 4,
-                    "Children": {
-                        "69e4aa590caed84142a39b2b808efa11": {
-                            "Predicate": "tdg-member-returnable",
-                            "Child": {
-                                "Key": "69e4aa590caed84142a39b2b808efa11",
-                                "Kind": 6,
-                                "Children": {},
-                                "Predicates": {
-                                    "tdg-node-kind": "6|NodeType|tdg",
-                                    "tdg-return-type": "void",
-                                    "tdg-srg-source": "(NodeRef)"
-                                }
-                            }
-                        }
-                    },
-                    "Predicates": {
-                        "tdg-member-exported": "true",
-                        "tdg-member-name": "AwaitNext",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "Function\u003cvoid\u003e(Function\u003cvoid\u003e(T))",
-                        "tdg-member-signature": "\n\tAwaitNext\u0010\u0002\u0018\u0000 \u0001*!Function\u003cvoid\u003e(Function\u003cvoid\u003e(T))",
-                        "tdg-node-kind": "4|NodeType|tdg",
-                        "tdg-srg-module": "tests/testlib/basictypes.seru",
-                        "tdg-srg-source": "(NodeRef)"
-                    }
-                }
-            }
-        },
-        "Predicates": {
-            "tdg-node-kind": "2|NodeType|tdg",
-            "tdg-srg-source": "(NodeRef)",
-            "tdg-type-name": "Port"
-        }
-    },
     "2c27eebe379b2e0bef7262a516c26bdb": {
         "Key": "2c27eebe379b2e0bef7262a516c26bdb",
         "Kind": 1,
@@ -261,6 +202,16 @@
             "tdg-node-kind": "1|NodeType|tdg",
             "tdg-srg-source": "(NodeRef)",
             "tdg-type-name": "Map"
+        }
+    },
+    "741e719c95a67eeea1ef5528114f954f": {
+        "Key": "741e719c95a67eeea1ef5528114f954f",
+        "Kind": 2,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "2|NodeType|tdg",
+            "tdg-srg-source": "(NodeRef)",
+            "tdg-type-name": "Error"
         }
     },
     "75aa06d2795e1881181b2eb50a35ff69": {
@@ -884,6 +835,97 @@
             "tdg-node-kind": "2|NodeType|tdg",
             "tdg-srg-source": "(NodeRef)",
             "tdg-type-name": "Releasable"
+        }
+    },
+    "f15ce2102e208e05f95c6c8444c4b57e": {
+        "Key": "f15ce2102e208e05f95c6c8444c4b57e",
+        "Kind": 2,
+        "Children": {
+            "239e334ea86d27bcba0b318dad811725": {
+                "Predicate": "tdg-declaration-generic",
+                "Child": {
+                    "Key": "239e334ea86d27bcba0b318dad811725",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-generic-index": "0",
+                        "tdg-generic-kind": "0",
+                        "tdg-generic-name": "T",
+                        "tdg-generic-subtype": "any",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            },
+            "dac3cb7ec95214f78c88f9843d8f85c0": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "dac3cb7ec95214f78c88f9843d8f85c0",
+                    "Kind": 4,
+                    "Children": {
+                        "8ad9f63e73f205d8cc3808a10c3067d3": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "8ad9f63e73f205d8cc3808a10c3067d3",
+                                "Kind": 6,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "6|NodeType|tdg",
+                                    "tdg-return-type": "Promise\u003cT\u003e",
+                                    "tdg-srg-source": "(NodeRef)"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "Then",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "Function\u003cPromise\u003cT\u003e\u003e(Function\u003cvoid\u003e(T))",
+                        "tdg-member-signature": "\n\u0004Then\u0010\u0002\u0018\u0000 \u0001*'Function\u003cPromise\u003cT\u003e\u003e(Function\u003cvoid\u003e(T))",
+                        "tdg-node-kind": "4|NodeType|tdg",
+                        "tdg-srg-module": "tests/testlib/basictypes.seru",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            },
+            "ddebd79f2eb297c2499562a619864f82": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "ddebd79f2eb297c2499562a619864f82",
+                    "Kind": 4,
+                    "Children": {
+                        "8ad9f63e73f205d8cc3808a10c3067d3": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "8ad9f63e73f205d8cc3808a10c3067d3",
+                                "Kind": 6,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "6|NodeType|tdg",
+                                    "tdg-return-type": "Promise\u003cT\u003e",
+                                    "tdg-srg-source": "(NodeRef)"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "Catch",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "Function\u003cPromise\u003cT\u003e\u003e(Function\u003cvoid\u003e(Error))",
+                        "tdg-member-signature": "\n\u0005Catch\u0010\u0002\u0018\u0000 \u0001*+Function\u003cPromise\u003cT\u003e\u003e(Function\u003cvoid\u003e(Error))",
+                        "tdg-node-kind": "4|NodeType|tdg",
+                        "tdg-srg-module": "tests/testlib/basictypes.seru",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-node-kind": "2|NodeType|tdg",
+            "tdg-srg-source": "(NodeRef)",
+            "tdg-type-name": "Promise"
         }
     }
 }
