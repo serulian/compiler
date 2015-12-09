@@ -32,7 +32,7 @@ func (sm *stateMachine) generateFunctionCall(node compilergraph.GraphNode) {
 	// Generate the call to the function, with the callback invoking a return state.
 	callState := sm.currentState()
 	returnState := sm.newState()
-	returnValueVariable := sm.addVariable("returnValue")
+	returnValueVariable := sm.addVariable("$returnValue")
 
 	data := struct {
 		CallExprSource      string
@@ -50,7 +50,9 @@ func (sm *stateMachine) generateFunctionCall(node compilergraph.GraphNode) {
 		return;
 	`, data)
 
+	// Push the call to the call state.
 	callState.pushSource(generated)
 
+	// Push the returned value.
 	sm.pushExpression(returnValueVariable)
 }

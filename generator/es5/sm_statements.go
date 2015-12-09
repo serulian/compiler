@@ -22,6 +22,12 @@ func (sm *stateMachine) generateStatementBlock(node compilergraph.GraphNode) {
 	}
 }
 
+// generateExpressionStatement generates the state machine for an expression statement.
+func (sm *stateMachine) generateExpressionStatement(node compilergraph.GraphNode) {
+	sm.generate(node.GetNode(parser.NodeExpressionStatementExpression))
+	sm.pushSource(sm.TopExpression() + ";")
+}
+
 // generateReturnStatement generates the state machine for a return statement.
 func (sm *stateMachine) generateReturnStatement(node compilergraph.GraphNode) {
 	returnExpr, hasReturnExpr := node.TryGetNode(parser.NodeReturnStatementValue)

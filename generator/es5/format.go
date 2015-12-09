@@ -10,9 +10,11 @@ import (
 	"github.com/robertkrimen/otto"
 )
 
-func (gen *es5generator) formatSource(source string) string {
-	if gen.ottovm == nil {
-		gen.ottovm = otto.New()
+var ottovm *otto.Otto // The otto VM.
+
+func formatSource(source string) string {
+	if ottovm == nil {
+		ottovm = otto.New()
 		file, err := os.Open("jsbeautifier.js")
 		defer file.Close()
 
@@ -20,19 +22,19 @@ func (gen *es5generator) formatSource(source string) string {
 			panic(err)
 		}
 
-		_, err2 := gen.ottovm.Run(`exports = {}`)
+		_, err2 := ottovm.Run(`exports = {}`)
 		if err2 != nil {
 			panic(err2)
 		}
 
-		_, err3 := gen.ottovm.Run(file)
+		_, err3 := ottovm.Run(file)
 		if err != nil {
 			panic(err3)
 		}
 	}
 
-	gen.ottovm.Set("sourceCode", source)
-	formatted, err := gen.ottovm.Run(`exports.js_beautify(sourceCode, {
+	ottovm.Set("sourceCode", source)
+	formatted, err := ottovm.Run(`exports.js_beautify(sourceCode, {
 		'indent_size': 2,
 		'preserve_newlines': false,
 		'jslint_happy': true,

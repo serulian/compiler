@@ -5,8 +5,12 @@
 package es5
 
 import (
+	"fmt"
+	"io/ioutil"
+	"os"
 	"testing"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 
 	"github.com/serulian/compiler/graphs/scopegraph"
@@ -22,8 +26,29 @@ type generationTest struct {
 	entrypoint string
 }
 
+func (gt *generationTest) expected() string {
+	b, err := ioutil.ReadFile(fmt.Sprintf("tests/%s/%s.js", gt.input, gt.entrypoint))
+	if err != nil {
+		panic(err)
+	}
+
+	return string(b)
+}
+
+func (gt *generationTest) writeExpected(value string) {
+	err := ioutil.WriteFile(fmt.Sprintf("tests/%s/%s.js", gt.input, gt.entrypoint), []byte(value), 0644)
+	if err != nil {
+		panic(err)
+	}
+}
+
 var tests = []generationTest{
-	generationTest{"helloworld", "helloworld", "helloworld"},
+	generationTest{"function call", "opexpr", "functioncall"},
+
+	generationTest{"boolean literal", "literals", "boolean"},
+	generationTest{"numeric literal", "literals", "numeric"},
+	generationTest{"string literal", "literals", "string"},
+	generationTest{"null literal", "literals", "null"},
 }
 
 func TestGenerator(t *testing.T) {
@@ -55,6 +80,23 @@ func TestGenerator(t *testing.T) {
 			continue
 		}
 
-		GenerateES5(result.Graph)
+		module, found := tdgResult.Graph.LookupModule(compilercommon.InputSource(entrypointFile))
+		if !assert.True(t, found, "Could not find entrypoint module %s for test: %s", entrypointFile, test.name) {
+			continue
+		}
+
+		moduleMap := generateModules(result.Graph, false)
+		source, hasSource := moduleMap[module]
+		if !assert.True(t, hasSource, "Could not find source for module %s for test: %s", entrypointFile, test.name) {
+			continue
+		}
+
+		if os.Getenv("REGEN") == "true" {
+			test.writeExpected(source)
+		} else {
+			// Compare the generated source to the expected.
+			expectedSource := test.expected()
+			assert.Equal(t, expectedSource, source, "Source mismatch on test %s\nExpected: %v\nActual: %v\n\n", test.name, expectedSource, source)
+		}
 	}
 }

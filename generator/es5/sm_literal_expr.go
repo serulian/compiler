@@ -15,6 +15,11 @@ func (sm *stateMachine) generateIdentifierExpression(node compilergraph.GraphNod
 	sm.pushExpression(node.Get(parser.NodeIdentifierExpressionName))
 }
 
+// generateNullLiteral generates the state machine for a null literal.
+func (sm *stateMachine) generateNullLiteral(node compilergraph.GraphNode) {
+	sm.pushExpression("null")
+}
+
 // generateNumericLiteral generates the state machine for a numeric literal.
 func (sm *stateMachine) generateNumericLiteral(node compilergraph.GraphNode) {
 	numericValueStr := node.Get(parser.NodeNumericLiteralExpressionValue)

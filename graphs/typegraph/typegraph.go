@@ -58,6 +58,24 @@ func (g *TypeGraph) Modules() []TGModule {
 	return modules
 }
 
+// LookupModule looks up the module with the given source and returns it, if any.
+func (g *TypeGraph) LookupModule(source compilercommon.InputSource) (TGModule, bool) {
+	srgModule, found := g.srg.FindModuleBySource(source)
+	if !found {
+		return TGModule{}, false
+	}
+
+	moduleNode, nodeFound := g.layer.StartQuery().
+		IsKind(NodeTypeModule).
+		Has(NodePredicateSource, string(srgModule.NodeId)).
+		TryGetNode()
+	if !nodeFound {
+		return TGModule{}, false
+	}
+
+	return TGModule{moduleNode, g}, true
+}
+
 // ModulesWithMembers returns all modules containing members defined in the type graph.
 func (g *TypeGraph) ModulesWithMembers() []TGModule {
 	it := g.findAllNodes(NodeTypeModule).

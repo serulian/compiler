@@ -146,17 +146,29 @@ func (sm *stateMachine) generate(node compilergraph.GraphNode) {
 	sm.startStateMap[node.NodeId] = sm.currentState()
 
 	switch node.Kind {
+
+	// Statements.
+
 	case parser.NodeTypeStatementBlock:
 		sm.generateStatementBlock(node)
 
 	case parser.NodeTypeReturnStatement:
 		sm.generateReturnStatement(node)
 
+	case parser.NodeTypeExpressionStatement:
+		sm.generateExpressionStatement(node)
+
+	// Op Expressions.
+
 	case parser.NodeFunctionCallExpression:
 		sm.generateFunctionCall(node)
 
+	// Identifiers.
+
 	case parser.NodeTypeIdentifierExpression:
 		sm.generateIdentifierExpression(node)
+
+	// Literals.
 
 	case parser.NodeNumericLiteralExpression:
 		sm.generateNumericLiteral(node)
@@ -166,6 +178,9 @@ func (sm *stateMachine) generate(node compilergraph.GraphNode) {
 
 	case parser.NodeStringLiteralExpression:
 		sm.generateStringLiteral(node)
+
+	case parser.NodeNullLiteralExpression:
+		sm.generateNullLiteral(node)
 
 	default:
 		panic(fmt.Sprintf("Unknown SRG node: %s", node.Kind))
