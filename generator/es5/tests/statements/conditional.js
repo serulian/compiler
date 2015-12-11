@@ -1,22 +1,9 @@
 
-$module('functioncall', function() {
+$module('conditional', function() {
   var $instance = this;
 
   
   
-  
-  	
-$instance.AnotherFunction = 
-
-		function(someparam) {
-			
-			
-			
-				return $promise.empty();
-			
-		};
-
-
   
   	
 $instance.DoSomething = 
@@ -32,8 +19,6 @@ $instance.DoSomething =
 	};
 
 	
-	   var $returnValue$1;
-	
 
 	$state.next = function($callback) {
 		try {
@@ -42,23 +27,27 @@ $instance.DoSomething =
 					
 					case 0:
 						
-		(AnotherFunction)(2).then(function(returnValue) {
+		if (true) {
 			$state.current = 1;
-			$returnValue$1 = returnValue;
-			$state.next($callback);
-		}).catch(function(e) {
-			$state.error = e;
-			$state.current = -1;
-			$callback($state);
-		});
-		return;
+		} else {
+			$state.current = 2;
+		}
+		continue;			
 	
 
 						break;
 					
 					case 1:
-						$returnValue$1;
+						123;
 
+		$state.current = 2;
+		continue;
+	
+
+						break;
+					
+					case 2:
+						
 						break;
 					
 				}
@@ -77,8 +66,6 @@ $instance.DoSomething =
 
   
 
-  
-  	
   
   	
   

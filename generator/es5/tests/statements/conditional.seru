@@ -1,0 +1,5 @@
+function<void> DoSomething() {
+	if true {
+		123
+	}
+}

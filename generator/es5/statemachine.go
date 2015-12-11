@@ -117,7 +117,7 @@ func (sm *stateMachine) addUnconditionalJump(before *state, after *state) {
 	}
 
 	before.pushSource(fmt.Sprintf(`
-		$state.current = {{ %v }};
+		$state.current = %v;
 		continue;
 	`, after.ID))
 }
@@ -154,6 +154,9 @@ func (sm *stateMachine) generate(node compilergraph.GraphNode) {
 
 	case parser.NodeTypeReturnStatement:
 		sm.generateReturnStatement(node)
+
+	case parser.NodeTypeConditionalStatement:
+		sm.generateConditionalStatement(node)
 
 	case parser.NodeTypeExpressionStatement:
 		sm.generateExpressionStatement(node)
