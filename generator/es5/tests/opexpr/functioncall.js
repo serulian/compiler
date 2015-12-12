@@ -6,19 +6,6 @@ $module('functioncall', function() {
   
   
   	
-$instance.AnotherFunction = 
-
-		function(someparam) {
-			
-			
-			
-				return $promise.empty();
-			
-		};
-
-
-  
-  	
 $instance.DoSomething = 
 
 		function() {
@@ -59,6 +46,10 @@ $instance.DoSomething =
 					case 1:
 						$returnValue$1;
 
+		$state.current = -1;
+		return;
+	
+
 						break;
 					
 				}
@@ -71,6 +62,19 @@ $instance.DoSomething =
 	};
 
 				return $promise.build($state);
+			
+		};
+
+
+  
+  	
+$instance.AnotherFunction = 
+
+		function(someparam) {
+			
+			
+			
+				return $promise.empty();
 			
 		};
 

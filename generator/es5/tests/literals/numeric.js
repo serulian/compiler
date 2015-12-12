@@ -30,6 +30,10 @@ $instance.DoSomething =
 2.0;
 3.14159;
 
+		$state.current = -1;
+		return;
+	
+
 						break;
 					
 				}

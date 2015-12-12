@@ -41,7 +41,7 @@ func (gen *es5generator) generateModules(modules []typegraph.TGModule) map[typeg
 // generateModule generates the given module into ES5.
 func (gen *es5generator) generateModule(module typegraph.TGModule) string {
 	generating := generatingModule{module, gen}
-	return gen.runTemplate("module", moduleTemplateStr, generating)
+	return gen.templater.Execute("module", moduleTemplateStr, generating)
 }
 
 // generatingModule represents a module being generated.
@@ -85,18 +85,18 @@ func (gm generatingModule) GenerateVariables() map[typegraph.TGMember]string {
 
 // moduleTemplateStr defines the template for generating a module.
 const moduleTemplateStr = `
-$module('{{ .Context.ExportedPath }}', function() {
+$module('{{ .ExportedPath }}', function() {
   var $instance = this;
 
-  {{range $type, $source := .Context.GenerateTypes }}
+  {{range $type, $source := .GenerateTypes }}
   	{{ $source }}
   {{end}}
   
-  {{range $member, $source := .Context.GenerateMembers }}
+  {{range $member, $source := .GenerateMembers }}
   	{{ $source }}
   {{end}}
 
-  {{range $member, $source := .Context.GenerateVariables }}
+  {{range $member, $source := .GenerateVariables }}
   	{{ $source }}
   {{end}}
 });

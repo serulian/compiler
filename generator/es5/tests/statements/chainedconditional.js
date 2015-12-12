@@ -32,7 +32,7 @@ $instance.DoSomething =
 		} else {
 			$state.current = 2;
 		}
-		continue;			
+		continue;
 	
 
 						break;
@@ -53,7 +53,7 @@ $instance.DoSomething =
 		} else {
 			$state.current = 4;
 		}
-		continue;			
+		continue;
 	
 
 						break;
@@ -82,10 +82,10 @@ $instance.DoSomething =
 		continue;
 	
 
-						break;
-					
-					case 6:
-						
+		$state.current = -1;
+		return;
+	
+
 						break;
 					
 				}

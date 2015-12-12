@@ -33,6 +33,10 @@ $instance.DoSomething =
 "escaped \" quote";
 'escaped \' quote';
 
+		$state.current = -1;
+		return;
+	
+
 						break;
 					
 				}

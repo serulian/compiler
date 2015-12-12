@@ -29,6 +29,10 @@ $instance.DoSomething =
 						true;
 false;
 
+		$state.current = -1;
+		return;
+	
+
 						break;
 					
 				}

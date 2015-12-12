@@ -6,11 +6,10 @@
 package es5
 
 import (
-	"bytes"
 	"fmt"
-	"text/template"
 
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/generator/es5/templater"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/graphs/typegraph"
 )
@@ -19,6 +18,7 @@ import (
 type es5generator struct {
 	graph      *compilergraph.SerulianGraph // The root graph.
 	scopegraph *scopegraph.ScopeGraph       // The scope graph.
+	templater  *templater.Templater         // The cached templater.
 }
 
 // generateModules generates all the modules found in the given scope graph into source.
@@ -26,6 +26,7 @@ func generateModules(sg *scopegraph.ScopeGraph, format bool) map[typegraph.TGMod
 	generator := es5generator{
 		graph:      sg.SourceGraph().Graph,
 		scopegraph: sg,
+		templater:  templater.New(),
 	}
 
 	// Generate the code for each of the modules.
@@ -52,28 +53,4 @@ func GenerateES5(sg *scopegraph.ScopeGraph) (string, error) {
 	}
 
 	return "", nil
-}
-
-// templateContext defines context given when invoking a template.
-type templateContext struct {
-	Context   interface{}   // The inner context.
-	Generator *es5generator // The code generator.
-}
-
-// runTemplate runs the given go-template over the given context.
-func (gen *es5generator) runTemplate(name string, templateStr string, context interface{}) string {
-	// TODO: Cache this?
-	t := template.New(name)
-	parsed, err := t.Parse(templateStr)
-	if err != nil {
-		panic(err)
-	}
-
-	var source bytes.Buffer
-	eerr := parsed.Execute(&source, templateContext{context, gen})
-	if eerr != nil {
-		panic(eerr)
-	}
-
-	return source.String()
 }

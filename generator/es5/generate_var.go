@@ -46,7 +46,7 @@ func (gen *es5generator) generateVariables(typeOrModule typegraph.TGTypeOrModule
 func (gen *es5generator) generateVariable(member typegraph.TGMember) string {
 	srgMember, _ := member.SRGMember()
 	generating := generatingMember{member, srgMember, gen}
-	return gen.runTemplate("variable", variableTemplateStr, generating)
+	return gen.templater.Execute("variable", variableTemplateStr, generating)
 }
 
 // Initializer returns the source for the initialization of this variable.
@@ -57,22 +57,22 @@ func (gm generatingMember) Initializer() string {
 	}
 
 	stateMachine := gm.Generator.generateImplementation(initializer)
-	return gm.Generator.runTemplate("varclosure", variableTemplateClosureStr, stateMachine)
+	return gm.Generator.templater.Execute("varclosure", variableTemplateClosureStr, stateMachine)
 }
 
 // variableTemplateStr defines the template for generating variables/fields.
 const variableTemplateStr = `
-	this.{{ .Context.Member.Name }} = {{ .Context.Initializer }};
+	this.{{ .Member.Name }} = {{ .Initializer }};
 `
 
 // variableTemplateClosureStr defines the template for generating a closure for variable init functions.
 const variableTemplateClosureStr = `
-{{ if .Context.HasStates }}
+{{ if .HasStates }}
 (function() {
-	{{ .Context.Source }}
-	return {{ .Context.TopExpression }}
+	{{ .Source }}
+	return {{ .TopExpression }}
 })()
 {{ else }}
-{{ .Context.TopExpression }}
+{{ .TopExpression }}
 {{ end }}
 `

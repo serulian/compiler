@@ -6,11 +6,10 @@ package es5
 
 import (
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/generator/es5/statemachine"
 )
 
 // generateImplementation generates the state machine representing a statement or expression node.
-func (gen *es5generator) generateImplementation(body compilergraph.GraphNode) *stateMachine {
-	machine := newStateMachine(gen)
-	machine.generate(body)
-	return machine
+func (gen *es5generator) generateImplementation(body compilergraph.GraphNode) statemachine.GeneratedMachine {
+	return statemachine.Build(body, gen.templater)
 }

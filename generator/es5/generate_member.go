@@ -8,6 +8,7 @@ import (
 	"fmt"
 
 	"github.com/serulian/compiler/compilerutil"
+	"github.com/serulian/compiler/generator/es5/statemachine"
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/typegraph"
 )
@@ -55,10 +56,10 @@ func (gen *es5generator) generateImplementedMember(member typegraph.TGMember) st
 		fallthrough
 
 	case srg.OperatorMember:
-		return gen.runTemplate("function", functionTemplateStr, generating)
+		return gen.templater.Execute("function", functionTemplateStr, generating)
 
 	case srg.PropertyMember:
-		return gen.runTemplate("property", propertyTemplateStr, generating)
+		return gen.templater.Execute("property", propertyTemplateStr, generating)
 
 	default:
 		panic(fmt.Sprintf("Unknown kind of member %s", srgMember.MemberKind()))
@@ -74,39 +75,38 @@ type generatingMember struct {
 
 // Generics returns a string representing the named generics on this member.
 func (gm generatingMember) Generics() string {
-	return gm.Generator.runTemplate("generics", genericsTemplateStr, gm.Member)
+	return gm.Generator.templater.Execute("generics", genericsTemplateStr, gm.Member)
 }
 
 // Parameters returns a string representing the named parameters on this member.
 func (gm generatingMember) Parameters() string {
-	return gm.Generator.runTemplate("parameters", parametersTemplateStr, gm)
+	return gm.Generator.templater.Execute("parameters", parametersTemplateStr, gm)
 }
 
-// Body returns the generated code for the body implementation for this member.
 type bodyData struct {
 	Source  string
 	HasBody bool
 }
 
-func (gm generatingMember) Body() bodyData {
+// Body returns the generated code for the body implementation for this member.
+func (gm generatingMember) Body() statemachine.GeneratedMachine {
 	bodyNode, _ := gm.SRGMember.Body()
-	bodySource, hasBody := gm.Generator.generateImplementation(bodyNode).Source()
-	return bodyData{bodySource, hasBody}
+	return gm.Generator.generateImplementation(bodyNode)
 }
 
 // parametersTemplateStr defines a template for generating parameters.
-const parametersTemplateStr = `{{ range $index, $parameter := .Context.SRGMember.Parameters }}{{ if $index }}, {{ end }}{{ $parameter.Name }}{{ end }}`
+const parametersTemplateStr = `{{ range $index, $parameter := .SRGMember.Parameters }}{{ if $index }}, {{ end }}{{ $parameter.Name }}{{ end }}`
 
 // functionTemplateStr defines the template for generating functions.
 const functionTemplateStr = `
-{{ if .Context.Member.IsStatic }}$static{{ else }}$instance{{ end }}.{{ .Context.Member.Name }} = 
-{{ if .Context.Member.HasGenerics }}
+{{ if .Member.IsStatic }}$static{{ else }}$instance{{ end }}.{{ .Member.Name }} = 
+{{ if .Member.HasGenerics }}
   function({{ .Context.Generics }}) {
 	var $f =
 {{ end }}
-		function({{ .Context.Parameters }}) {
-			{{ $body := .Context.Body.Source }}
-			{{ $hasBody := .Context.Body.HasBody }}
+		function({{ .Parameters }}) {
+			{{ $body := .Body.Source }}
+			{{ $hasBody := .Body.HasSource }}
 			{{ if $hasBody }}
 				{{ $body }}
 				return $promise.build($state);
@@ -114,7 +114,7 @@ const functionTemplateStr = `
 				return $promise.empty();
 			{{ end }}
 		};
-{{ if .Context.Member.HasGenerics }}
+{{ if .Member.HasGenerics }}
 	return $f;
   };
 {{ end }}

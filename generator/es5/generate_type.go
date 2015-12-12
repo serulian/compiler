@@ -42,10 +42,10 @@ func (gen *es5generator) generateType(typedef typegraph.TGTypeDecl) string {
 
 	switch typedef.TypeKind() {
 	case typegraph.ClassType:
-		return gen.runTemplate("class", classTemplateStr, generating)
+		return gen.templater.Execute("class", classTemplateStr, generating)
 
 	case typegraph.InterfaceType:
-		return gen.runTemplate("interface", interfaceTemplateStr, generating)
+		return gen.templater.Execute("interface", interfaceTemplateStr, generating)
 
 	default:
 		panic("Unknown typedef kind")
@@ -61,7 +61,7 @@ type generatingType struct {
 
 // Generics returns a string representing the named generics on this type.
 func (gt generatingType) Generics() string {
-	return gt.Generator.runTemplate("generics", genericsTemplateStr, gt.Type)
+	return gt.Generator.templater.Execute("generics", genericsTemplateStr, gt.Type)
 }
 
 // GenerateImplementedMembers generates the source for all the members defined under the type that
@@ -76,25 +76,25 @@ func (gt generatingType) GenerateVariables() map[typegraph.TGMember]string {
 }
 
 // genericsTemplateStr defines a template for generating generics.
-const genericsTemplateStr = `{{ range $index, $generic := .Context.Generics }}{{ if $index }}, {{ end }}{{ $generic.Name }}{{ end }}`
+const genericsTemplateStr = `{{ range $index, $generic := .Generics }}{{ if $index }}, {{ end }}{{ $generic.Name }}{{ end }}`
 
 // classTemplateStr defines the template for generating a class type.
 const classTemplateStr = `
-this.cls('{{ .Context.Type.Name }}', function({{ .Context.Generics }}) {
+this.cls('{{ .Type.Name }}', function({{ .Generics }}) {
 	var $static = this;
     var $instance = this.prototype;
 
 	$static.$new = function() {
 		var instance = new $static();
 		(function() {
-		{{range $member, $source := .Context.GenerateVariables }}
+		{{range $member, $source := .GenerateVariables }}
 	  	  {{ $source }}
   		{{end}}
   		}).call(instance);
 		return instance;
 	};
 
-	{{range $member, $source := .Context.GenerateImplementedMembers }}
+	{{range $member, $source := .GenerateImplementedMembers }}
   	  {{ $source }}
   	{{end}}
 });
@@ -102,8 +102,8 @@ this.cls('{{ .Context.Type.Name }}', function({{ .Context.Generics }}) {
 
 // interfaceTemplateStr defines the template for generating an interface type.
 const interfaceTemplateStr = `
-this.interface('{{ .Context.Type.Name }}', function({{ .Context.Generics }}) {
-	{{range $member, $source := .Context.GenerateImplementedMembers }}
+this.interface('{{ .Type.Name }}', function({{ .Generics }}) {
+	{{range $member, $source := .GenerateImplementedMembers }}
   	  {{ $source }}
   	{{end}}
 });
