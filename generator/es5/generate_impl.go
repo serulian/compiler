@@ -11,5 +11,5 @@ import (
 
 // generateImplementation generates the state machine representing a statement or expression node.
 func (gen *es5generator) generateImplementation(body compilergraph.GraphNode) statemachine.GeneratedMachine {
-	return statemachine.Build(body, gen.templater)
+	return statemachine.Build(body, gen.templater, gen.scopegraph)
 }

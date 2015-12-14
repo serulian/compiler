@@ -13,11 +13,13 @@ import (
 
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/templater"
+	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/parser"
 )
 
 // stateMachine represents a state machine being generated to represent a statement or expression.
 type stateMachine struct {
+	scopegraph      *scopegraph.ScopeGraph               // The parent scope graph.
 	templater       *templater.Templater                 // The cached templater.
 	states          *list.List                           // The list of states.
 	variables       []string                             // The generated variables.
@@ -34,8 +36,9 @@ type GeneratedMachine struct {
 }
 
 // newStateMachine creates a new state machine for the given generator.
-func Build(node compilergraph.GraphNode, templater *templater.Templater) GeneratedMachine {
+func Build(node compilergraph.GraphNode, templater *templater.Templater, scopegraph *scopegraph.ScopeGraph) GeneratedMachine {
 	machine := &stateMachine{
+		scopegraph:      scopegraph,
 		templater:       templater,
 		states:          list.New(),
 		variables:       make([]string, 0),

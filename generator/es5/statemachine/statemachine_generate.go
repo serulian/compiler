@@ -68,6 +68,12 @@ func (sm *stateMachine) generate(node compilergraph.GraphNode, parentState *stat
 	case parser.NodeTypeExpressionStatement:
 		sm.generateExpressionStatement(node, parentState)
 
+	case parser.NodeTypeContinueStatement:
+		sm.generateContinueStatement(node, parentState)
+
+	case parser.NodeTypeBreakStatement:
+		sm.generateBreakStatement(node, parentState)
+
 	// Op Expressions.
 
 	case parser.NodeFunctionCallExpression:

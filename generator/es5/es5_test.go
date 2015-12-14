@@ -49,6 +49,8 @@ var tests = []generationTest{
 	generationTest{"loop statement", "statements", "loop"},
 	generationTest{"loop expr statement", "statements", "loopexpr"},
 	generationTest{"loop var statement", "statements", "loopvar"},
+	generationTest{"continue statement", "statements", "continue"},
+	generationTest{"break statement", "statements", "break"},
 
 	generationTest{"function call", "opexpr", "functioncall"},
 

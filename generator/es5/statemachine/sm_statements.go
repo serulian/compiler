@@ -25,6 +25,26 @@ func (sm *stateMachine) generateStatementBlock(node compilergraph.GraphNode, par
 	sm.markStates(node, parentState, currentState)
 }
 
+// generateBreakStatement generates the state machine for a break statement.
+func (sm *stateMachine) generateBreakStatement(node compilergraph.GraphNode, parentState *state) {
+	// Find the parent statement (guarenteed to be there due to scope graph constraints).
+	parentNode, _ := sm.scopegraph.SourceGraph().TryGetContainingNode(node, parser.NodeTypeLoopStatement, parser.NodeTypeMatchStatement)
+
+	// Add a jump to the end state for the parent.
+	endState, _ := sm.endStateMap[parentNode.NodeId]
+	sm.addUnconditionalJump(parentState, endState)
+}
+
+// generateContinueStatement generates the state machine for a continue statement.
+func (sm *stateMachine) generateContinueStatement(node compilergraph.GraphNode, parentState *state) {
+	// Find the parent loop statement (guarenteed to be there due to scope graph constraints).
+	loopNode, _ := sm.scopegraph.SourceGraph().TryGetContainingNode(node, parser.NodeTypeLoopStatement)
+
+	// Add a jump to the start state for the loop.
+	startState, _ := sm.startStateMap[loopNode.NodeId]
+	sm.addUnconditionalJump(parentState, startState)
+}
+
 // generateLoopStatement generates the state machine for a loop statement.
 func (sm *stateMachine) generateLoopStatement(node compilergraph.GraphNode, parentState *state) {
 	// Create a state for checking the loop expr.
@@ -97,7 +117,7 @@ func (sm *stateMachine) generateLoopStatement(node compilergraph.GraphNode, pare
 	sm.addUnconditionalJump(parentState, loopStartState)
 
 	// Mark the states of the loop *before* we handle the block, as it may have a continue or break.
-	sm.markStates(node, parentState, completionState)
+	sm.markStates(node, loopStartState, completionState)
 
 	// Add the block to the run state.
 	runInfo := sm.generate(node.GetNode(parser.NodeLoopStatementBlock), runState)
