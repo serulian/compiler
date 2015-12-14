@@ -62,6 +62,9 @@ func (sm *stateMachine) generate(node compilergraph.GraphNode, parentState *stat
 	case parser.NodeTypeConditionalStatement:
 		sm.generateConditionalStatement(node, parentState)
 
+	case parser.NodeTypeLoopStatement:
+		sm.generateLoopStatement(node, parentState)
+
 	case parser.NodeTypeExpressionStatement:
 		sm.generateExpressionStatement(node, parentState)
 

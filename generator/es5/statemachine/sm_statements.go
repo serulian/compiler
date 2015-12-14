@@ -25,6 +25,87 @@ func (sm *stateMachine) generateStatementBlock(node compilergraph.GraphNode, par
 	sm.markStates(node, parentState, currentState)
 }
 
+// generateLoopStatement generates the state machine for a loop statement.
+func (sm *stateMachine) generateLoopStatement(node compilergraph.GraphNode, parentState *state) {
+	// Create a state for checking the loop expr.
+	checkState := sm.newState()
+	loopExprInfo, hasExpr := sm.tryGenerate(node, parser.NodeLoopStatementExpression, checkState)
+
+	// Create a state for running the loop contents.
+	runState := sm.newState()
+
+	// Create a state for after the loop completes.
+	completionState := sm.newState()
+
+	// If the loop has an expression, then process the loop expression.
+	var loopStartState *state = nil
+	if hasExpr {
+		// The loop starts at the checking state.
+		loopStartState = checkState
+
+		// If the loop has a defined variable, then we treat the expression as a stream.
+		varNode, hasVar := node.TryGetNode(parser.NodeStatementNamedValue)
+		if hasVar {
+			// Add a variable mapping for the named variable.
+			itemVarName := sm.addVariableMapping(varNode)
+
+			// Ask the stream for the next item.
+			// TODO(jschorr): This need to be a function call.
+			data := struct {
+				ItemVarName     string
+				StreamExpr      string
+				RunState        *state
+				CompletionState *state
+			}{itemVarName, loopExprInfo.expression, runState, completionState}
+
+			loopExprInfo.endState.pushSource(sm.templater.Execute("loopcheck", `
+				({{ .StreamExpr }}).Next(function($hasNext, $nextItem) {
+					if ($hasNext) {
+						{{ .ItemVarName }} = $nextItem;
+						$state.current = {{ .RunState.ID }};
+					} else {
+						$state.current = {{ .CompletionState.ID }};
+					}
+					$state.$next($callback);
+				});
+				return;
+			`, data))
+		} else {
+			// Jump to the run state if and only if the expression is true. Otherwise, we jump to the
+			// completion state.
+			data := struct {
+				LoopExpr        string
+				RunState        *state
+				CompletionState *state
+			}{loopExprInfo.Expression(), runState, completionState}
+
+			loopExprInfo.endState.pushSource(sm.templater.Execute("loopcheck", `
+				if ({{ .LoopExpr }}) {
+					$state.current = {{ .RunState.ID }};
+				} else {
+					$state.current = {{ .CompletionState.ID }};
+				}
+				continue;
+			`, data))
+		}
+	} else {
+		// The loop starts at the running state.
+		loopStartState = runState
+	}
+
+	// Unconditionally jump to the start state.
+	sm.addUnconditionalJump(parentState, loopStartState)
+
+	// Mark the states of the loop *before* we handle the block, as it may have a continue or break.
+	sm.markStates(node, parentState, completionState)
+
+	// Add the block to the run state.
+	runInfo := sm.generate(node.GetNode(parser.NodeLoopStatementBlock), runState)
+
+	// At the end of the run, jump back to the start state.
+	sm.addUnconditionalJump(runInfo.endState, loopStartState)
+}
+
 // generateConditionalStatement generates the state machine for a conditional statement.
 func (sm *stateMachine) generateConditionalStatement(node compilergraph.GraphNode, parentState *state) {
 	// Generate the conditional expression.

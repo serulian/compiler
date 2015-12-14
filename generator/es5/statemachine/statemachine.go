@@ -13,13 +13,15 @@ import (
 
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/templater"
+	"github.com/serulian/compiler/parser"
 )
 
 // stateMachine represents a state machine being generated to represent a statement or expression.
 type stateMachine struct {
-	templater *templater.Templater // The cached templater.
-	states    *list.List           // The list of states.
-	variables []string             // The generated variables.
+	templater       *templater.Templater                 // The cached templater.
+	states          *list.List                           // The list of states.
+	variables       []string                             // The generated variables.
+	mappedVariables map[compilergraph.GraphNodeId]string // The mapped variables.
 
 	startStateMap map[compilergraph.GraphNodeId]*state // The start states.
 	endStateMap   map[compilergraph.GraphNodeId]*state // The start end.
@@ -34,9 +36,10 @@ type GeneratedMachine struct {
 // newStateMachine creates a new state machine for the given generator.
 func Build(node compilergraph.GraphNode, templater *templater.Templater) GeneratedMachine {
 	machine := &stateMachine{
-		templater: templater,
-		states:    list.New(),
-		variables: make([]string, 0),
+		templater:       templater,
+		states:          list.New(),
+		variables:       make([]string, 0),
+		mappedVariables: map[compilergraph.GraphNodeId]string{},
 
 		startStateMap: map[compilergraph.GraphNodeId]*state{},
 		endStateMap:   map[compilergraph.GraphNodeId]*state{},
@@ -94,6 +97,18 @@ func (sm *stateMachine) addVariable(niceName string) string {
 	name := fmt.Sprintf("%s$%v", niceName, sm.states.Len())
 	sm.variables = append(sm.variables, name)
 	return name
+}
+
+// addVariableMapping adds a new variable for the given named node.
+func (sm *stateMachine) addVariableMapping(namedNode compilergraph.GraphNode) string {
+	if mapped, exists := sm.mappedVariables[namedNode.NodeId]; exists {
+		return mapped
+	}
+
+	nodeName := namedNode.Get(parser.NodeNamedValueName)
+	sm.mappedVariables[namedNode.NodeId] = nodeName
+	sm.variables = append(sm.variables, nodeName)
+	return nodeName
 }
 
 // newState adds and returns a new state in the state machine.

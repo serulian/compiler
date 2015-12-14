@@ -46,6 +46,9 @@ var tests = []generationTest{
 	generationTest{"conditional statement", "statements", "conditional"},
 	generationTest{"conditional else statement", "statements", "conditionalelse"},
 	generationTest{"chained conditional statement", "statements", "chainedconditional"},
+	generationTest{"loop statement", "statements", "loop"},
+	generationTest{"loop expr statement", "statements", "loopexpr"},
+	generationTest{"loop var statement", "statements", "loopvar"},
 
 	generationTest{"function call", "opexpr", "functioncall"},
 
