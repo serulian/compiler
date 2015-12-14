@@ -49,11 +49,6 @@ $instance.DoSomething =
 					case 2:
 						4567;
 
-		$state.current = 3;
-		continue;
-	
-8901;
-
 		$state.current = 1;
 		continue;
 	

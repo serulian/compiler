@@ -52,11 +52,6 @@ $instance.DoSomething =
 		$state.current = 1;
 		continue;
 	
-8901;
-
-		$state.current = 1;
-		continue;
-	
 
 						break;
 					

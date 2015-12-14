@@ -28,20 +28,6 @@ $instance.DoSomething =
 					case 0:
 						1234;
 
-		$state.current = 2;
-		continue;
-	
-
-						break;
-					
-					case 2:
-						1357;
-
-						break;
-					
-					case 3:
-						5678;
-
 		$state.current = -1;
 		return;
 	
