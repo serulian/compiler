@@ -94,7 +94,7 @@ func TestGenerator(t *testing.T) {
 			continue
 		}
 
-		moduleMap := generateModules(result.Graph, false)
+		moduleMap := generateModules(result.Graph, true)
 		source, hasSource := moduleMap[module]
 		if !assert.True(t, hasSource, "Could not find source for module %s for test: %s", entrypointFile, test.name) {
 			continue
