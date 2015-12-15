@@ -19,13 +19,13 @@ func (sm *stateMachine) generateStatementBlock(node compilergraph.GraphNode, par
 
 	var currentState = parentState
 	for sit.Next() {
+		currentState = sm.generate(sit.Node(), currentState).endState
+
 		// If the current node is a terminating statement, skip the rest of the block.
 		scope, hasScope := sm.scopegraph.GetScope(sit.Node())
 		if hasScope && scope.GetIsTerminatingStatement() {
 			break
 		}
-
-		currentState = sm.generate(sit.Node(), currentState).endState
 	}
 
 	sm.markStates(node, parentState, currentState)
@@ -117,6 +117,9 @@ func (sm *stateMachine) generateLoopStatement(node compilergraph.GraphNode, pare
 	} else {
 		// The loop starts at the running state.
 		loopStartState = runState
+
+		// Add something to the completion state to ensure it is created.
+		completionState.pushSource(" ")
 	}
 
 	// Unconditionally jump to the start state.

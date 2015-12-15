@@ -24,7 +24,7 @@ $module('break', function () {
 
             case 2:
               4567;
-              $state.current = 1;
+              $state.current = 3;
               continue;
 
             case 3:

@@ -11,6 +11,14 @@ $module('loop', function () {
           switch ($state.current) {
             case 0:
               1234;
+              $state.current = 2;
+              continue;
+
+            case 2:
+              1357;
+              break;
+
+            case 3:
               $state.current = -1;
               return;
           }
