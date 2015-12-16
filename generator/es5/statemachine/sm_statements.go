@@ -11,6 +11,41 @@ import (
 	"github.com/serulian/compiler/parser"
 )
 
+// generateWithStatement generates the state machine for a with statement.
+func (sm *stateMachine) generateWithStatement(node compilergraph.GraphNode, parentState *state) {
+	// Generate the with expression.
+	exprInfo := sm.generate(node.GetNode(parser.NodeWithStatementExpression), parentState)
+
+	// If the with statement has a named variable, add it to the context.
+	var exprName = ""
+	namedVar, hasNamed := node.TryGetNode(parser.NodeStatementNamedValue)
+	if hasNamed {
+		exprName = sm.addVariableMapping(namedVar)
+	} else {
+		exprName = sm.addVariable("$withExpr")
+	}
+
+	data := struct {
+		TargetName string
+		TargetExpr string
+	}{exprName, exprInfo.expression}
+
+	exprInfo.endState.pushSource(sm.templater.Execute("withinit", `
+		{{ .TargetName }} = {{ .TargetExpr }};
+		$state.$pushRAII('{{ .TargetName }}', {{ .TargetName }});
+	`, data))
+
+	// Add the with block.
+	blockInfo := sm.generate(node.GetNode(parser.NodeWithStatementBlock), exprInfo.endState)
+
+	// Add code to pop the with expression.
+	blockInfo.endState.pushSource(sm.templater.Execute("withteardown", `
+		$state.$popRAII('{{ .TargetName }}');
+	`, data))
+
+	sm.markStates(node, parentState, blockInfo.endState)
+}
+
 // generateVarStatement generates the state machine for a variable statement.
 func (sm *stateMachine) generateVarStatement(node compilergraph.GraphNode, parentState *state) {
 	initInfo, hasInit := sm.tryGenerate(node, parser.NodeVariableStatementExpression, parentState)

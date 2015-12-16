@@ -1,0 +1,7 @@
+function<void> DoSomething(someExpr releasable) {
+	123
+	with someExpr {
+		456
+	}
+	789
+}

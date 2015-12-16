@@ -53,6 +53,8 @@ var tests = []generationTest{
 	generationTest{"break statement", "statements", "break"},
 	generationTest{"var and assign statements", "statements", "varassign"},
 	generationTest{"var no init statement", "statements", "varnoinit"},
+	generationTest{"with statement", "statements", "with"},
+	generationTest{"with as statement", "statements", "withas"},
 
 	generationTest{"function call", "opexpr", "functioncall"},
 
