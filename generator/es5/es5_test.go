@@ -55,6 +55,8 @@ var tests = []generationTest{
 	generationTest{"var no init statement", "statements", "varnoinit"},
 	generationTest{"with statement", "statements", "with"},
 	generationTest{"with as statement", "statements", "withas"},
+	generationTest{"match no expr statement", "statements", "matchnoexpr"},
+	generationTest{"match expr statement", "statements", "matchexpr"},
 
 	generationTest{"function call", "opexpr", "functioncall"},
 

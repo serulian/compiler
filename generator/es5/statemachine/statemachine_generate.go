@@ -83,6 +83,9 @@ func (sm *stateMachine) generate(node compilergraph.GraphNode, parentState *stat
 	case parser.NodeTypeWithStatement:
 		sm.generateWithStatement(node, parentState)
 
+	case parser.NodeTypeMatchStatement:
+		sm.generateMatchStatement(node, parentState)
+
 	// Op Expressions.
 
 	case parser.NodeFunctionCallExpression:

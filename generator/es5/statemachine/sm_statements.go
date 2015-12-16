@@ -11,6 +11,68 @@ import (
 	"github.com/serulian/compiler/parser"
 )
 
+// generateMatchStatement generates the state machine for a match statement.
+func (sm *stateMachine) generateMatchStatement(node compilergraph.GraphNode, parentState *state) {
+	// Generate the match expression, if any.
+	matchExprInfo, hasMatchExpr := sm.tryGenerate(node, parser.NodeMatchStatementExpression, parentState)
+
+	var currentState = parentState
+	var matchExpr = "true"
+
+	if hasMatchExpr {
+		matchExpr = matchExprInfo.expression
+		currentState = matchExprInfo.endState
+	}
+
+	// For each match case, generate a state that will check against the expression (or 'true' if none).
+	// If the expression check matches, then perform some work and jump to the end state. Otherwise,
+	// jump to the next check.
+	bit := node.StartQuery().
+		Out(parser.NodeMatchStatementCase).
+		BuildNodeIterator()
+
+	var branchEndStates = []*state{}
+
+	for bit.Next() {
+		branchNode := bit.Node()
+		nextState := sm.newState()
+
+		// Generate the check expression, if any.
+		checkExprInfo, hasCheckExpr := sm.tryGenerate(branchNode, parser.NodeMatchStatementCaseExpression, currentState)
+		if hasCheckExpr {
+			currentState = checkExprInfo.endState
+
+			data := struct {
+				CheckExpr string
+				MatchExpr string
+				NextState *state
+			}{checkExprInfo.expression, matchExpr, nextState}
+
+			// Add code to jump to the next state if the expression doesn't match.
+			currentState.pushSource(sm.templater.Execute("matchbranch", `
+				if ({{ .CheckExpr }} != {{ .MatchExpr }}) {
+					$state.current = {{ .NextState.ID }};
+					continue;
+				}
+			`, data))
+		}
+
+		// Generate the current branch's statement.
+		caseInfo := sm.generate(branchNode.GetNode(parser.NodeMatchStatementCaseStatement), currentState)
+
+		// Add the end state to the list.
+		branchEndStates = append(branchEndStates, caseInfo.endState)
+		currentState = nextState
+	}
+
+	// Have each branch end state jump to the final state.
+	for _, branchEndState := range branchEndStates {
+		sm.addUnconditionalJump(branchEndState, currentState)
+	}
+
+	sm.markStates(node, parentState, currentState)
+}
+
 // generateWithStatement generates the state machine for a with statement.
 func (sm *stateMachine) generateWithStatement(node compilergraph.GraphNode, parentState *state) {
 	// Generate the with expression.

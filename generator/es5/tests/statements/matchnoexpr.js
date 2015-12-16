@@ -1,32 +1,40 @@
-$module('functioncall', function () {
+$module('matchnoexpr', function () {
   var $instance = this;
-  $instance.AnotherFunction = function (someparam) {
-    return $promise.empty();
-  };
   $instance.DoSomething = function () {
     var $state = {
       current: 0,
       returnValue: null,
     };
-    var $returnValue$1;
     $state.next = function ($callback) {
       try {
         while (true) {
           switch ($state.current) {
             case 0:
-              AnotherFunction(2).then(function (returnValue) {
+              123;
+              if (true != true) {
                 $state.current = 1;
-                $returnValue$1 = returnValue;
-                $state.next($callback);
-              }).catch(function (e) {
-                $state.error = e;
-                $state.current = -1;
-                $callback($state);
-              });
-              return;
+                continue;
+              }
+              1234;
+              $state.current = 3;
+              continue;
 
             case 1:
-              $returnValue$1;
+              if (false != true) {
+                $state.current = 2;
+                continue;
+              }
+              2345;
+              $state.current = 3;
+              continue;
+
+            case 2:
+              3456;
+              $state.current = 3;
+              continue;
+
+            case 3:
+              789;
               $state.current = -1;
               return;
           }
