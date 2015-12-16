@@ -11,6 +11,48 @@ import (
 	"github.com/serulian/compiler/parser"
 )
 
+// generateVarStatement generates the state machine for a variable statement.
+func (sm *stateMachine) generateVarStatement(node compilergraph.GraphNode, parentState *state) {
+	initInfo, hasInit := sm.tryGenerate(node, parser.NodeVariableStatementExpression, parentState)
+	if hasInit {
+		mappedNamed := sm.addVariableMapping(node)
+		data := struct {
+			TargetName string
+			TargetExpr string
+		}{mappedNamed, initInfo.expression}
+
+		initInfo.endState.pushSource(sm.templater.Execute("varinit", `
+			{{ .TargetName }} = {{ .TargetExpr }};
+		`, data))
+
+		sm.markStates(node, parentState, initInfo.endState)
+	} else {
+		sm.markStates(node, parentState, parentState)
+	}
+}
+
+// generateAssignStatement generates the state machine for an assignment statement.
+func (sm *stateMachine) generateAssignStatement(node compilergraph.GraphNode, parentState *state) {
+	// Generate the states for the expression.
+	exprInfo := sm.generate(node.GetNode(parser.NodeAssignStatementValue), parentState)
+
+	// TODO: handle multiple assignment.
+	nameScope, _ := sm.scopegraph.GetScope(node.GetNode(parser.NodeAssignStatementName))
+	namedRefNode, _ := nameScope.NamedReferenceNode(sm.scopegraph.TypeGraph())
+	name := sm.addVariableMapping(namedRefNode)
+
+	data := struct {
+		TargetName string
+		TargetExpr string
+	}{name, exprInfo.expression}
+
+	exprInfo.endState.pushSource(sm.templater.Execute("assignstatement", `
+		{{ .TargetName }} = {{ .TargetExpr }};
+	`, data))
+
+	sm.markStates(node, parentState, exprInfo.endState)
+}
+
 // generateStatementBlock generates the state machine for a statement block.
 func (sm *stateMachine) generateStatementBlock(node compilergraph.GraphNode, parentState *state) {
 	sit := node.StartQuery().

@@ -41,6 +41,11 @@ func BuildTypeGraph(srg *srg.SRG) *Result {
 	return typeGraph.build(srg)
 }
 
+// GetNode returns the node with the given ID in this layer or panics.
+func (g *TypeGraph) GetNode(nodeId compilergraph.GraphNodeId) compilergraph.GraphNode {
+	return g.layer.GetNode(string(nodeId))
+}
+
 // SourceGraph returns the SRG behind this type graph.
 func (g *TypeGraph) SourceGraph() *srg.SRG {
 	return g.srg
