@@ -117,6 +117,9 @@ func (sm *stateMachine) generate(node compilergraph.GraphNode, parentState *stat
 	case parser.NodeNullLiteralExpression:
 		sm.generateNullLiteral(node, parentState)
 
+	case parser.NodeThisLiteralExpression:
+		sm.generateThisLiteral(node, parentState)
+
 	default:
 		panic(fmt.Sprintf("Unknown SRG node: %s", node.Kind))
 	}

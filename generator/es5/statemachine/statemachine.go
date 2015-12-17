@@ -17,13 +17,19 @@ import (
 	"github.com/serulian/compiler/parser"
 )
 
+// A variable declared in the state machine.
+type variable struct {
+	Name        string // The name of the variable.
+	Initializer string // Optional initializer for the variable.
+}
+
 // stateMachine represents a state machine being generated to represent a statement or expression.
 type stateMachine struct {
-	scopegraph      *scopegraph.ScopeGraph               // The parent scope graph.
-	templater       *templater.Templater                 // The cached templater.
-	states          *list.List                           // The list of states.
-	variables       []string                             // The generated variables.
-	mappedVariables map[compilergraph.GraphNodeId]string // The mapped variables.
+	scopegraph      *scopegraph.ScopeGraph                 // The parent scope graph.
+	templater       *templater.Templater                   // The cached templater.
+	states          *list.List                             // The list of states.
+	variables       []variable                             // The generated variables.
+	mappedVariables map[compilergraph.GraphNodeId]variable // The mapped variables.
 
 	startStateMap map[compilergraph.GraphNodeId]*state // The start states.
 	endStateMap   map[compilergraph.GraphNodeId]*state // The start end.
@@ -41,8 +47,8 @@ func Build(node compilergraph.GraphNode, templater *templater.Templater, scopegr
 		scopegraph:      scopegraph,
 		templater:       templater,
 		states:          list.New(),
-		variables:       make([]string, 0),
-		mappedVariables: map[compilergraph.GraphNodeId]string{},
+		variables:       make([]variable, 0),
+		mappedVariables: map[compilergraph.GraphNodeId]variable{},
 
 		startStateMap: map[compilergraph.GraphNodeId]*state{},
 		endStateMap:   map[compilergraph.GraphNodeId]*state{},
@@ -89,28 +95,44 @@ func (sm *stateMachine) source(states []*state) (string, bool) {
 
 	data := struct {
 		States    []*state
-		Variables []string
+		Variables []variable
 	}{states, sm.variables}
 
 	return sm.templater.Execute("statemachine", stateMachineTemplateStr, data), true
 }
 
+// addGlobalVariableWithInitializer adds a new globally named variable, initialized with the given expression.
+func (sm *stateMachine) addGlobalVariableWithInitializer(name string, expression string) {
+	for _, variable := range sm.variables {
+		if variable.Name == name {
+			return
+		}
+	}
+
+	sm.variables = append(sm.variables, variable{name, expression})
+}
+
+// addVariableWithInitializer adds a new variable, initialized with the given expression.
+func (sm *stateMachine) addVariableWithInitializer(niceName string, expression string) string {
+	name := fmt.Sprintf("%s$%v", niceName, sm.states.Len())
+	sm.variables = append(sm.variables, variable{name, expression})
+	return name
+}
+
 // addVariable adds a new variable to the state machine, returning its name.
 func (sm *stateMachine) addVariable(niceName string) string {
-	name := fmt.Sprintf("%s$%v", niceName, sm.states.Len())
-	sm.variables = append(sm.variables, name)
-	return name
+	return sm.addVariableWithInitializer(niceName, "")
 }
 
 // addVariableMapping adds a new variable for the given named node.
 func (sm *stateMachine) addVariableMapping(namedNode compilergraph.GraphNode) string {
 	if mapped, exists := sm.mappedVariables[namedNode.NodeId]; exists {
-		return mapped
+		return mapped.Name
 	}
 
 	nodeName := namedNode.Get(parser.NodeNamedValueName)
-	sm.mappedVariables[namedNode.NodeId] = nodeName
-	sm.variables = append(sm.variables, nodeName)
+	sm.mappedVariables[namedNode.NodeId] = variable{nodeName, ""}
+	sm.variables = append(sm.variables, variable{nodeName, ""})
 	return nodeName
 }
 
@@ -153,7 +175,7 @@ const stateMachineTemplateStr = `
 	};
 
 	{{ range .Variables }}
-	   var {{ . }};
+	   var {{ .Name }}{{ if .Initializer }} = {{ .Initializer }}{{ end }};
 	{{ end }}
 
 	$state.next = function($callback) {

@@ -67,6 +67,7 @@ var tests = []generationTest{
 	generationTest{"numeric literal", "literals", "numeric"},
 	generationTest{"string literal", "literals", "string"},
 	generationTest{"null literal", "literals", "null"},
+	generationTest{"this literal", "literals", "this"},
 }
 
 func TestGenerator(t *testing.T) {

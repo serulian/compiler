@@ -37,3 +37,9 @@ func (sm *stateMachine) generateStringLiteral(node compilergraph.GraphNode, pare
 	stringValueStr := node.Get(parser.NodeStringLiteralExpressionValue)
 	parentState.pushExpression(stringValueStr)
 }
+
+// generateThisLiteral generates the state machine for the this literal.
+func (sm *stateMachine) generateThisLiteral(node compilergraph.GraphNode, parentState *state) {
+	sm.addGlobalVariableWithInitializer("$this", "this")
+	parentState.pushExpression("$this")
+}
