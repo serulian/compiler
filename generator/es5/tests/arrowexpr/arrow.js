@@ -1,19 +1,19 @@
-$module('functioncall', function () {
+$module('arrow', function () {
   var $instance = this;
-  $instance.DoSomething = function () {
+  $instance.DoSomething = function (p) {
     var $state = {
       current: 0,
       returnValue: null,
     };
-    var $returnValue$1;
+    var someint;
     $state.next = function ($callback) {
       try {
         while (true) {
           switch ($state.current) {
             case 0:
-              AnotherFunction(2).then(function (returnValue) {
+              p.then(function (returnValue) {
                 $state.current = 1;
-                $returnValue$1 = returnValue;
+                someint = returnValue;
                 $state.next($callback);
               }).catch(function (e) {
                 $state.error = e;
@@ -23,7 +23,7 @@ $module('functioncall', function () {
               return;
 
             case 1:
-              $returnValue$1;
+              someint;
               $state.current = -1;
               return;
           }
@@ -35,8 +35,5 @@ $module('functioncall', function () {
       }
     };
     return $promise.build($state);
-  };
-  $instance.AnotherFunction = function (someparam) {
-    return $promise.empty();
   };
 });

@@ -58,6 +58,9 @@ var tests = []generationTest{
 	generationTest{"match no expr statement", "statements", "matchnoexpr"},
 	generationTest{"match expr statement", "statements", "matchexpr"},
 
+	generationTest{"await expression", "arrowexpr", "await"},
+	generationTest{"arrow expression", "arrowexpr", "arrow"},
+
 	generationTest{"function call", "opexpr", "functioncall"},
 
 	generationTest{"boolean literal", "literals", "boolean"},

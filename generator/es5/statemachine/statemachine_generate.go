@@ -86,6 +86,13 @@ func (sm *stateMachine) generate(node compilergraph.GraphNode, parentState *stat
 	case parser.NodeTypeMatchStatement:
 		sm.generateMatchStatement(node, parentState)
 
+	// Arrow Expressions.
+	case parser.NodeTypeArrowExpression:
+		sm.generateArrowExpression(node, parentState)
+
+	case parser.NodeTypeAwaitExpression:
+		sm.generateAwaitExpression(node, parentState)
+
 	// Op Expressions.
 
 	case parser.NodeFunctionCallExpression:

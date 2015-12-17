@@ -343,7 +343,7 @@ func (sm *stateMachine) generateReturnStatement(node compilergraph.GraphNode, pa
 
 	endState.pushSource(`
 		$state.current = -1;
-		$callback($state.returnValue);
+		$callback($state);
 		return;
 	`)
 
