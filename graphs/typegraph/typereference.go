@@ -317,6 +317,12 @@ func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
 		return fmt.Errorf("Nullable type '%v' cannot be used in place of non-nullable type '%v'", tr, other)
 	}
 
+	// Strip out the nullability from the other type.
+	originalOther := other
+	if other.IsNullable() {
+		other = other.AsNonNullable()
+	}
+
 	// Directly the same = subtype.
 	if other == tr {
 		return nil
@@ -327,7 +333,7 @@ func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
 
 	// If the other reference's type node is not an interface, then this reference cannot be a subtype.
 	if otherType.TypeKind() != InterfaceType {
-		return fmt.Errorf("'%v' cannot be used in place of non-interface '%v'", tr, other)
+		return fmt.Errorf("'%v' cannot be used in place of non-interface '%v'", tr, originalOther)
 	}
 
 	localGenerics := tr.Generics()
@@ -348,7 +354,7 @@ func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
 				TryGetNode()
 
 			if !exists {
-				return buildSubtypeMismatchError(tr, other, oit.Values()[NodePredicateMemberName])
+				return buildSubtypeMismatchError(tr, originalOther, oit.Values()[NodePredicateMemberName])
 			}
 		}
 
@@ -364,7 +370,7 @@ func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
 	for memberName, memberSig := range otherSigs {
 		localSig, exists := localSigs[memberName]
 		if !exists || localSig != memberSig {
-			return buildSubtypeMismatchError(tr, other, memberName)
+			return buildSubtypeMismatchError(tr, originalOther, memberName)
 		}
 	}
 

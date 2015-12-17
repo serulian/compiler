@@ -7,6 +7,8 @@ package scopegraph
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
+	"strings"
 	"testing"
 
 	"github.com/serulian/compiler/compilergraph"
@@ -658,6 +660,10 @@ var scopeGraphTests = []scopegraphTest{
 
 func TestGraphs(t *testing.T) {
 	for _, test := range scopeGraphTests {
+		if os.Getenv("FILTER") != "" && !strings.Contains(test.name, os.Getenv("FILTER")) {
+			continue
+		}
+
 		entrypointFile := "tests/" + test.input + "/" + test.entrypoint + ".seru"
 
 		graph, err := compilergraph.NewGraph(entrypointFile)
