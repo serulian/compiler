@@ -1,6 +1,7 @@
 $module('with', function () {
   var $instance = this;
   $instance.DoSomething = function (someExpr) {
+    var $this = this;
     var $state = {
       current: 0,
       returnValue: null,

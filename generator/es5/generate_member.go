@@ -104,10 +104,11 @@ const functionTemplateStr = `
   function({{ .Context.Generics }}) {
 	var $f =
 {{ end }}
-		function({{ .Parameters }}) {
+		function({{ .Parameters }}) {			
 			{{ $body := .Body.Source }}
 			{{ $hasBody := .Body.HasSource }}
 			{{ if $hasBody }}
+				{{ if not .Member.IsStatic }}var $this = this;{{ end }}
 				{{ $body }}
 				return $promise.build($state);
 			{{ else }}

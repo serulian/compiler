@@ -10,11 +10,11 @@ $module('this', function () {
       return instance;
     };
     $instance.DoSomething = function () {
+      var $this = this;
       var $state = {
         current: 0,
         returnValue: null,
       };
-      var $this = this;
       $state.next = function ($callback) {
         try {
           while (true) {
