@@ -51,13 +51,13 @@ func (gen *es5generator) generateVariable(member typegraph.TGMember) string {
 
 // Initializer returns the source for the initialization of this variable.
 func (gm generatingMember) Initializer() string {
-	initializer, hasInitializer := gm.SRGMember.Initializer()
+	_, hasInitializer := gm.SRGMember.Initializer()
 	if !hasInitializer {
 		return ""
 	}
 
-	stateMachine := gm.Generator.generateImplementation(initializer)
-	return gm.Generator.templater.Execute("varclosure", variableTemplateClosureStr, stateMachine)
+	// TODO
+	return "TODO"
 }
 
 // variableTemplateStr defines the template for generating variables/fields.

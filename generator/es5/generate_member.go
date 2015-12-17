@@ -7,6 +7,7 @@ package es5
 import (
 	"fmt"
 
+	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/generator/es5/statemachine"
 	"github.com/serulian/compiler/graphs/srg"
@@ -73,53 +74,46 @@ type generatingMember struct {
 	Generator *es5generator // The parent generator.
 }
 
-// Generics returns a string representing the named generics on this member.
-func (gm generatingMember) Generics() string {
-	return gm.Generator.templater.Execute("generics", genericsTemplateStr, gm.Member)
+// IsStatic returns whether the generating member is static.
+func (gm generatingMember) IsStatic() bool {
+	return gm.Member.IsStatic()
 }
 
-// Parameters returns a string representing the named parameters on this member.
-func (gm generatingMember) Parameters() string {
-	return gm.Generator.templater.Execute("parameters", parametersTemplateStr, gm)
+// Generics returns the names of the generics for this member, if any.
+func (gm generatingMember) Generics() []string {
+	generics := gm.Member.Generics()
+	genericNames := make([]string, len(generics))
+	for index, generic := range generics {
+		genericNames[index] = generic.Name()
+	}
+
+	return genericNames
 }
 
-type bodyData struct {
-	Source  string
-	HasBody bool
+// Parameters returns the names of the parameters for this member, if any.
+func (gm generatingMember) Parameters() []string {
+	parameters := gm.SRGMember.Parameters()
+	parameterNames := make([]string, len(parameters))
+	for index, parameter := range parameters {
+		parameterNames[index] = parameter.Name()
+	}
+
+	return parameterNames
 }
 
-// Body returns the generated code for the body implementation for this member.
-func (gm generatingMember) Body() statemachine.GeneratedMachine {
+func (gm generatingMember) BodyNode() compilergraph.GraphNode {
 	bodyNode, _ := gm.SRGMember.Body()
-	return gm.Generator.generateImplementation(bodyNode)
+	return bodyNode
 }
 
-// parametersTemplateStr defines a template for generating parameters.
-const parametersTemplateStr = `{{ range $index, $parameter := .SRGMember.Parameters }}{{ if $index }}, {{ end }}{{ $parameter.Name }}{{ end }}`
+// FunctionSource returns the generated code for the implementation for this member.
+func (gm generatingMember) FunctionSource() string {
+	return statemachine.GenerateFunctionSource(gm, gm.Generator.templater, gm.Generator.scopegraph)
+}
 
-// functionTemplateStr defines the template for generating functions.
+// functionTemplateStr defines the template for generating function members.
 const functionTemplateStr = `
-{{ if .Member.IsStatic }}$static{{ else }}$instance{{ end }}.{{ .Member.Name }} = 
-{{ if .Member.HasGenerics }}
-  function({{ .Context.Generics }}) {
-	var $f =
-{{ end }}
-		function({{ .Parameters }}) {			
-			{{ $body := .Body.Source }}
-			{{ $hasBody := .Body.HasSource }}
-			{{ if $hasBody }}
-				{{ if not .Member.IsStatic }}var $this = this;{{ end }}
-				{{ $body }}
-				return $promise.build($state);
-			{{ else }}
-				return $promise.empty();
-			{{ end }}
-		};
-{{ if .Member.HasGenerics }}
-	return $f;
-  };
-{{ end }}
-`
+{{ if .Member.IsStatic }}$static{{ else }}$instance{{ end }}.{{ .Member.Name }} = {{ .FunctionSource }}`
 
 // propertyTemplateStr defines the template for generating properties.
 const propertyTemplateStr = `
