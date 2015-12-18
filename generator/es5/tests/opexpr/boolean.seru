@@ -1,0 +1,5 @@
+function<void> SomeFunction(first bool, second bool) {
+	first && second
+	first || second
+	!first
+}

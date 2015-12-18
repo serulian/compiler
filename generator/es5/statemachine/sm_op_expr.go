@@ -71,3 +71,37 @@ func (sm *stateMachine) generateNullComparisonExpression(node compilergraph.Grap
 
 	sm.markStates(node, parentState, rightHandInfo.endState)
 }
+
+// generateNativeBinaryExpression generates the state machine for a binary operator that is natively invoked.
+func (sm *stateMachine) generateNativeBinaryExpression(node compilergraph.GraphNode, parentState *state, op string) {
+	leftHandInfo := sm.generate(node.GetNode(parser.NodeBinaryExpressionLeftExpr), parentState)
+	rightHandInfo := sm.generate(node.GetNode(parser.NodeBinaryExpressionRightExpr), leftHandInfo.endState)
+
+	data := struct {
+		LeftExpr  string
+		RightExpr string
+		Operator  string
+	}{leftHandInfo.expression, rightHandInfo.expression, op}
+
+	rightHandInfo.endState.pushExpression(sm.templater.Execute("binaryop", `
+		({{ .LeftExpr }}) {{ .Operator }} ({{ .RightExpr }})
+	`, data))
+
+	sm.markStates(node, parentState, rightHandInfo.endState)
+}
+
+// generateNativeUnaryExpression generates the state machine for a unary operator that is natively invoked.
+func (sm *stateMachine) generateNativeUnaryExpression(node compilergraph.GraphNode, parentState *state, op string) {
+	childInfo := sm.generate(node.GetNode(parser.NodeUnaryExpressionChildExpr), parentState)
+
+	data := struct {
+		ChildExpr string
+		Operator  string
+	}{childInfo.expression, op}
+
+	childInfo.endState.pushExpression(sm.templater.Execute("unaryop", `
+		{{ .Operator }}({{ .ChildExpr }})
+	`, data))
+
+	sm.markStates(node, parentState, childInfo.endState)
+}

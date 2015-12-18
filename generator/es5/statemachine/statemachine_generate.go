@@ -105,6 +105,17 @@ func (sm *stateMachine) generate(node compilergraph.GraphNode, parentState *stat
 	case parser.NodeNullComparisonExpression:
 		sm.generateNullComparisonExpression(node, parentState)
 
+	// Boolean operators.
+
+	case parser.NodeBooleanAndExpression:
+		sm.generateNativeBinaryExpression(node, parentState, "&&")
+
+	case parser.NodeBooleanOrExpression:
+		sm.generateNativeBinaryExpression(node, parentState, "||")
+
+	case parser.NodeBooleanNotExpression:
+		sm.generateNativeUnaryExpression(node, parentState, "!")
+
 	// Identifiers.
 
 	case parser.NodeTypeIdentifierExpression:
