@@ -41,8 +41,8 @@ type GeneratedMachine struct {
 	HasSource bool
 }
 
-// newStateMachine creates a new state machine for the given generator.
-func Build(node compilergraph.GraphNode, templater *templater.Templater, scopegraph *scopegraph.ScopeGraph) GeneratedMachine {
+// buildStateMachine builds a new state machine for the given node.
+func buildStateMachine(node compilergraph.GraphNode, templater *templater.Templater, scopegraph *scopegraph.ScopeGraph) *stateMachine {
 	machine := &stateMachine{
 		scopegraph:      scopegraph,
 		templater:       templater,
@@ -55,7 +55,17 @@ func Build(node compilergraph.GraphNode, templater *templater.Templater, scopegr
 	}
 
 	machine.generate(node, machine.newState())
-	filtered := machine.filterStates()
+	return machine
+}
+
+// Build creates a new state machine for the given generator.
+func Build(node compilergraph.GraphNode, templater *templater.Templater, scopegraph *scopegraph.ScopeGraph) GeneratedMachine {
+	return buildStateMachine(node, templater, scopegraph).buildGeneratedMachine()
+}
+
+// buildGeneratedMachine builds the final GeneratedMachine struct for this state machine.
+func (sm *stateMachine) buildGeneratedMachine() GeneratedMachine {
+	filtered := sm.filterStates()
 	if len(filtered) > 0 {
 		filtered[len(filtered)-1].pushSource(`
 		$state.current = -1;
@@ -63,7 +73,7 @@ func Build(node compilergraph.GraphNode, templater *templater.Templater, scopegr
 	`)
 	}
 
-	source, hasSource := machine.source(filtered)
+	source, hasSource := sm.source(filtered)
 	return GeneratedMachine{
 		Source:    source,
 		HasSource: hasSource,

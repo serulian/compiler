@@ -1,0 +1,6 @@
+function<void> DoSomething() {
+	function<int> (firstParam int, secondParam bool) {
+		1234
+		return 4567
+	}
+}

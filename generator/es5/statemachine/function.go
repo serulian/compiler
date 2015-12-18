@@ -14,7 +14,7 @@ import (
 type FunctionDef interface {
 	Generics() []string                // Returns the names of the generics on the function, if any.
 	Parameters() []string              // Returns the names of the parameters on the function, if any.
-	IsStatic() bool                    // Returns if this function is instance or static.
+	RequiresThis() bool                // Returns if this function is requires the "this" var to be added.
 	BodyNode() compilergraph.GraphNode // The parser root node for the function body.
 }
 
@@ -23,7 +23,7 @@ func GenerateFunctionSource(functionDef FunctionDef, templater *templater.Templa
 	data := functionData{
 		Generics:     functionDef.Generics(),
 		Parameters:   functionDef.Parameters(),
-		RequiresThis: !functionDef.IsStatic(),
+		RequiresThis: functionDef.RequiresThis(),
 		Body:         Build(functionDef.BodyNode(), templater, scopegraph),
 	}
 

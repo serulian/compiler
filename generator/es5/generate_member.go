@@ -79,6 +79,11 @@ func (gm generatingMember) IsStatic() bool {
 	return gm.Member.IsStatic()
 }
 
+// RequiresThis returns whether the generating member is requires the "this" var.
+func (gm generatingMember) RequiresThis() bool {
+	return !gm.Member.IsStatic()
+}
+
 // Generics returns the names of the generics for this member, if any.
 func (gm generatingMember) Generics() []string {
 	generics := gm.Member.Generics()

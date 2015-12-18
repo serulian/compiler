@@ -93,6 +93,10 @@ func (sm *stateMachine) generate(node compilergraph.GraphNode, parentState *stat
 	case parser.NodeTypeAwaitExpression:
 		sm.generateAwaitExpression(node, parentState)
 
+	// Lambda Expressions.
+	case parser.NodeTypeLambdaExpression:
+		sm.generateLambdaExpression(node, parentState)
+
 	// Op Expressions.
 
 	case parser.NodeFunctionCallExpression:
