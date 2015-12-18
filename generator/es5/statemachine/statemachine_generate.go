@@ -102,6 +102,9 @@ func (sm *stateMachine) generate(node compilergraph.GraphNode, parentState *stat
 	case parser.NodeFunctionCallExpression:
 		sm.generateFunctionCall(node, parentState)
 
+	case parser.NodeNullComparisonExpression:
+		sm.generateNullComparisonExpression(node, parentState)
+
 	// Identifiers.
 
 	case parser.NodeTypeIdentifierExpression:

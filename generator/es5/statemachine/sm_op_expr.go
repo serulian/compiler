@@ -52,3 +52,22 @@ func (sm *stateMachine) generateFunctionCall(node compilergraph.GraphNode, paren
 
 	sm.markStates(node, parentState, returnReceiveState)
 }
+
+// generateNullComparisonExpression generates the state machine for a null comparison operation expression.
+func (sm *stateMachine) generateNullComparisonExpression(node compilergraph.GraphNode, parentState *state) {
+	// Generate the state for the child expressions.
+	leftHandInfo := sm.generate(node.GetNode(parser.NodeBinaryExpressionLeftExpr), parentState)
+	rightHandInfo := sm.generate(node.GetNode(parser.NodeBinaryExpressionRightExpr), leftHandInfo.endState)
+
+	// Add a call to compare the expressions as an expression itself.
+	data := struct {
+		LeftExpr  string
+		RightExpr string
+	}{leftHandInfo.expression, rightHandInfo.expression}
+
+	rightHandInfo.endState.pushExpression(sm.templater.Execute("nullcompare", `
+		$op.nullcompare({{ .LeftExpr }}, {{ .RightExpr }})
+	`, data))
+
+	sm.markStates(node, parentState, rightHandInfo.endState)
+}

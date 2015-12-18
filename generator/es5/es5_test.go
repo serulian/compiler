@@ -64,6 +64,7 @@ var tests = []generationTest{
 	generationTest{"full lambda expression", "lambdaexpr", "full"},
 	generationTest{"mini lambda expression", "lambdaexpr", "mini"},
 
+	generationTest{"null comparison", "opexpr", "nullcompare"},
 	generationTest{"function call", "opexpr", "functioncall"},
 
 	generationTest{"boolean literal", "literals", "boolean"},
