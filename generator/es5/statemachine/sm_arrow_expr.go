@@ -39,24 +39,13 @@ func (sm *stateMachine) generatePromiseExpression(node compilergraph.GraphNode, 
 	}
 
 	// Listen on the promise and jump to the target state.
-	data := struct {
-		SourceExpr     string
-		ResultVariable string
-		TargetState    *state
-	}{sourceExprInfo.expression, resultVariable, targetState}
-
-	sourceExprInfo.endState.pushSource(sm.templater.Execute("promisejump", `
-		({{ .SourceExpr }}).then(function(returnValue) {
-			$state.current = {{ .TargetState.ID }};
-			{{ .ResultVariable }} = returnValue;
-			$state.next($callback);
-		}).catch(function(e) {
-			$state.error = e;
-			$state.current = -1;
-			$callback($state);
-		});
-		return;
-	`, data))
+	data := asyncFunctionCallData{
+		PromiseExpr:         sourceExprInfo.expression,
+		Arguments:           make([]generatedStateInfo, 0),
+		ReturnValueVariable: resultVariable,
+		ReturnState:         targetState,
+	}
+	sm.addAsyncFunctionCall(sourceExprInfo.endState, data)
 
 	targetState.pushExpression(resultVariable)
 	sm.markStates(node, parentState, targetState)

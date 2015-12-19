@@ -178,6 +178,39 @@ func (sm *stateMachine) addUnconditionalJump(before *state, after *state) {
 	`, after.ID))
 }
 
+// asyncFunctionCallData represents data for an async function call.
+type asyncFunctionCallData struct {
+	CallExpr            string
+	PromiseExpr         string
+	Arguments           []generatedStateInfo
+	ReturnValueVariable string
+	ReturnState         *state
+}
+
+// addAsyncFunctionCall adds an async function call to the given state with the given data.
+func (sm *stateMachine) addAsyncFunctionCall(callState *state, data asyncFunctionCallData) {
+	callState.pushSource(sm.templater.Execute("asyncfunctionCall", asyncFunctionCallTemplateStr, data))
+}
+
+const asyncFunctionCallTemplateStr = `
+	{{ if .CallExpr }}
+	({{ .CallExpr }})({{ range $index, $arg := .Arguments }}{{ if $index }} ,{{ end }}{{ $arg.Expression }}{{ end }}).then(function(returnValue) {
+	{{ else }}
+	({{ .PromiseExpr }}).then(function(returnValue) {
+	{{ end}}
+		$state.current = {{ .ReturnState.ID }};
+		{{ if .ReturnValueVariable }}
+		{{ .ReturnValueVariable }} = returnValue;
+		{{ end }}
+		$state.next($callback);
+	}).catch(function(e) {
+		$state.error = e;
+		$state.current = -1;
+		$callback($state);
+	});
+	return;
+`
+
 const stateMachineTemplateStr = `
 	var $state = {
 		current: 0,

@@ -30,25 +30,13 @@ func (sm *stateMachine) generateFunctionCall(node compilergraph.GraphNode, paren
 	// In the call state, add source to call the function and jump to the return state once complete.
 	callState := sm.getEndState(callExprInfo.endState, argumentInfo)
 
-	data := struct {
-		CallExpr            generatedStateInfo
-		Arguments           []generatedStateInfo
-		ReturnValueVariable string
-		ReturnState         *state
-	}{callExprInfo, argumentInfo, returnValueVariable, returnReceiveState}
-
-	callState.pushSource(sm.templater.Execute("functionCall", `
-		({{ .CallExpr.Expression }})({{ range $index, $arg := .Arguments }}{{ if $index }} ,{{ end }}{{ $arg.Expression }}{{ end }}).then(function(returnValue) {
-			$state.current = {{ .ReturnState.ID }};
-			{{ .ReturnValueVariable }} = returnValue;
-			$state.next($callback);
-		}).catch(function(e) {
-			$state.error = e;
-			$state.current = -1;
-			$callback($state);
-		});
-		return;
-	`, data))
+	data := asyncFunctionCallData{
+		CallExpr:            callExprInfo.expression,
+		Arguments:           argumentInfo,
+		ReturnValueVariable: returnValueVariable,
+		ReturnState:         returnReceiveState,
+	}
+	sm.addAsyncFunctionCall(callState, data)
 
 	sm.markStates(node, parentState, returnReceiveState)
 }
