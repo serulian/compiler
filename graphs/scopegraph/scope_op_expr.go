@@ -142,7 +142,7 @@ func (sb *scopeBuilder) scopeSlicerExpression(node compilergraph.GraphNode) prot
 	}
 
 	returnType, _ := operator.ReturnType()
-	return newScope().IsValid(isValid).Resolving(returnType).GetScope()
+	return newScope().IsValid(isValid).CallsOperator(operator).Resolving(returnType).GetScope()
 }
 
 // scopeIndexerExpression scopes an indexer expression (slice with single numerical index) in the SRG.
@@ -169,7 +169,7 @@ func (sb *scopeBuilder) scopeIndexerExpression(node compilergraph.GraphNode) pro
 	}
 
 	returnType, _ := operator.ReturnType()
-	return newScope().Valid().Resolving(returnType).GetScope()
+	return newScope().Valid().CallsOperator(operator).Resolving(returnType).GetScope()
 }
 
 // scopeNullComparisonExpression scopes a nullable comparison expression in the SRG.
@@ -363,7 +363,7 @@ func (sb *scopeBuilder) scopeBinaryExpression(node compilergraph.GraphNode, opNa
 	}
 
 	returnType, _ := operator.ReturnType()
-	return newScope().Valid().Resolving(returnType)
+	return newScope().Valid().CallsOperator(operator).Resolving(returnType)
 }
 
 // scopeUnaryExpression scopes a unary expression in the SRG.
@@ -386,5 +386,5 @@ func (sb *scopeBuilder) scopeUnaryExpression(node compilergraph.GraphNode, opNam
 	}
 
 	returnType, _ := operator.ReturnType()
-	return newScope().Valid().Resolving(returnType)
+	return newScope().Valid().CallsOperator(operator).Resolving(returnType)
 }
