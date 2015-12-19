@@ -22,7 +22,7 @@ func (sm *stateMachine) generateFunctionCall(node compilergraph.GraphNode, paren
 
 	argumentInfo := sm.generateIterator(ait, callExprInfo.endState)
 
-	// Create a new state to which we'll jump the function returns.
+	// Create a new state to which we'll jump after the function returns.
 	returnValueVariable := sm.addVariable("$returnValue")
 	returnReceiveState := sm.newState()
 	returnReceiveState.pushExpression(returnValueVariable)
@@ -58,6 +58,67 @@ func (sm *stateMachine) generateNullComparisonExpression(node compilergraph.Grap
 	`, data))
 
 	sm.markStates(node, parentState, rightHandInfo.endState)
+}
+
+// generateBinaryOperatorExpression generates the state machine for a code-defined binary operator.
+func (sm *stateMachine) generateBinaryOperatorExpression(node compilergraph.GraphNode, parentState *state, exprTemplateStr string) {
+	scope, _ := sm.scopegraph.GetScope(node)
+	operator, _ := scope.CalledOperator(sm.scopegraph.TypeGraph())
+
+	// Generate the state for the child expressions.
+	leftNode := node.GetNode(parser.NodeBinaryExpressionLeftExpr)
+	leftScope, _ := sm.scopegraph.GetScope(leftNode)
+
+	leftHandInfo := sm.generate(leftNode, parentState)
+	rightHandInfo := sm.generate(node.GetNode(parser.NodeBinaryExpressionRightExpr), leftHandInfo.endState)
+
+	// Create a new state to which we'll jump after the operator function returns.
+	returnValueVariable := sm.addVariable("$returnValue")
+	returnReceiveState := sm.newState()
+
+	if exprTemplateStr == "" {
+		returnReceiveState.pushExpression(returnValueVariable)
+	} else {
+		returnReceiveState.pushExpression(sm.templater.Execute("binaryopexpr", exprTemplateStr, returnValueVariable))
+	}
+
+	// Add a call to the operator node.
+	data := asyncFunctionCallData{
+		CallExpr:            sm.pather.GetStaticMemberPath(operator, leftScope.ResolvedTypeRef(sm.scopegraph.TypeGraph())),
+		Arguments:           []generatedStateInfo{leftHandInfo, rightHandInfo},
+		ReturnValueVariable: returnValueVariable,
+		ReturnState:         returnReceiveState,
+	}
+	sm.addAsyncFunctionCall(rightHandInfo.endState, data)
+
+	sm.markStates(node, parentState, returnReceiveState)
+}
+
+// generateUnaryOperatorExpression generates the state machine for a code-defined binary operator.
+func (sm *stateMachine) generateUnaryOperatorExpression(node compilergraph.GraphNode, parentState *state) {
+	scope, _ := sm.scopegraph.GetScope(node)
+	operator, _ := scope.CalledOperator(sm.scopegraph.TypeGraph())
+
+	// Generate the state for the child expression.
+	childNode := node.GetNode(parser.NodeUnaryExpressionChildExpr)
+	childScope, _ := sm.scopegraph.GetScope(childNode)
+	childInfo := sm.generate(childNode, parentState)
+
+	// Create a new state to which we'll jump after the operator function returns.
+	returnValueVariable := sm.addVariable("$returnValue")
+	returnReceiveState := sm.newState()
+	returnReceiveState.pushExpression(returnValueVariable)
+
+	// Add a call to the operator node.
+	data := asyncFunctionCallData{
+		CallExpr:            sm.pather.GetStaticMemberPath(operator, childScope.ResolvedTypeRef(sm.scopegraph.TypeGraph())),
+		Arguments:           []generatedStateInfo{childInfo},
+		ReturnValueVariable: returnValueVariable,
+		ReturnState:         returnReceiveState,
+	}
+	sm.addAsyncFunctionCall(childInfo.endState, data)
+
+	sm.markStates(node, parentState, returnReceiveState)
 }
 
 // generateNativeBinaryExpression generates the state machine for a binary operator that is natively invoked.

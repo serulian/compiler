@@ -43,7 +43,7 @@ func (sm *stateMachine) generateLambdaExpressionInternal(node compilergraph.Grap
 	}
 
 	// Build the state machine for the lambda function.
-	createdMachine := buildStateMachine(bodyNode, sm.templater, sm.scopegraph)
+	createdMachine := buildStateMachine(bodyNode, sm.templater, sm.pather, sm.scopegraph)
 
 	// If the lambda expression simply returns an expression, set the return value to the last state's expression.
 	if requiresReturn {

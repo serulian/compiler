@@ -5,9 +5,6 @@
 package es5
 
 import (
-	"path/filepath"
-	"strings"
-
 	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/graphs/typegraph"
 )
@@ -52,20 +49,7 @@ type generatingModule struct {
 
 // ExportedPath returns the full exported path for this module.
 func (gm generatingModule) ExportedPath() string {
-	// We create the exported path based on the location of this module's source file relative
-	// to the entrypoint file.
-	srgModule, _ := gm.Module.SRGModule()
-
-	basePath := filepath.Dir(gm.Generator.graph.RootSourceFilePath)
-	rel, err := filepath.Rel(basePath, string(srgModule.InputSource()))
-	if err != nil {
-		panic(err)
-	}
-
-	rel = strings.Replace(rel, "../", "_", -1)
-	rel = strings.Replace(rel, "/", ".", -1)
-	rel = rel[0 : len(rel)-5]
-	return rel
+	return gm.Generator.pather.GetModulePath(gm.Module)
 }
 
 // GenerateMembers generates the source for all the implemented members defined under the module.

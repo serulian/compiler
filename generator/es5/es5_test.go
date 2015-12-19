@@ -67,6 +67,9 @@ var tests = []generationTest{
 	generationTest{"null comparison", "opexpr", "nullcompare"},
 	generationTest{"function call", "opexpr", "functioncall"},
 	generationTest{"boolean operators", "opexpr", "boolean"},
+	generationTest{"binary op expressions", "opexpr", "binary"},
+	generationTest{"unary op expressions", "opexpr", "unary"},
+	generationTest{"comparison op expressions", "opexpr", "compare"},
 
 	generationTest{"boolean literal", "literals", "boolean"},
 	generationTest{"numeric literal", "literals", "numeric"},

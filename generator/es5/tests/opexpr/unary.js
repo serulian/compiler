@@ -1,9 +1,16 @@
-$module('functioncall', function () {
+$module('unary', function () {
   var $instance = this;
-  $instance.AnotherFunction = function (someparam) {
-    return $promise.empty();
-  };
-  $instance.DoSomething = function () {
+  this.cls('SomeClass', function () {
+    var $static = this;
+    var $instance = this.prototype;
+    $static.$new = function () {
+      var instance = new $static();
+      function () {
+      }.call(instance);
+      return instance;
+    };
+  });
+  $instance.DoSomething = function (first) {
     var $this = this;
     var $state = {
       current: 0,
@@ -15,7 +22,7 @@ $module('functioncall', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              AnotherFunction(2).then(function (returnValue) {
+              not(first).then(function (returnValue) {
                 $state.current = 1;
                 $returnValue$1 = returnValue;
                 $state.next($callback);

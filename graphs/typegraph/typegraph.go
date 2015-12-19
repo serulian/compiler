@@ -8,6 +8,8 @@
 package typegraph
 
 import (
+	"fmt"
+
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/srg"
@@ -119,11 +121,14 @@ func (g *TypeGraph) GetTypeOrMember(nodeId compilergraph.GraphNodeId) TGTypeOrMe
 	case NodeTypeGeneric:
 		return TGTypeDecl{node, g}
 
+	case NodeTypeOperator:
+		fallthrough
+
 	case NodeTypeMember:
 		return TGMember{node, g}
 
 	default:
-		panic("Node is not a type or member")
+		panic(fmt.Sprintf("Node is not a type or member: %v", node))
 		return TGMember{node, g}
 	}
 }

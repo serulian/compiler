@@ -12,6 +12,7 @@ import (
 	"fmt"
 
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/generator/es5/es5pather"
 	"github.com/serulian/compiler/generator/es5/templater"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/parser"
@@ -27,6 +28,7 @@ type variable struct {
 type stateMachine struct {
 	scopegraph      *scopegraph.ScopeGraph                 // The parent scope graph.
 	templater       *templater.Templater                   // The cached templater.
+	pather          *es5pather.Pather                      // The pather.
 	states          *list.List                             // The list of states.
 	variables       []variable                             // The generated variables.
 	mappedVariables map[compilergraph.GraphNodeId]variable // The mapped variables.
@@ -42,10 +44,11 @@ type GeneratedMachine struct {
 }
 
 // buildStateMachine builds a new state machine for the given node.
-func buildStateMachine(node compilergraph.GraphNode, templater *templater.Templater, scopegraph *scopegraph.ScopeGraph) *stateMachine {
+func buildStateMachine(node compilergraph.GraphNode, templater *templater.Templater, pather *es5pather.Pather, scopegraph *scopegraph.ScopeGraph) *stateMachine {
 	machine := &stateMachine{
 		scopegraph:      scopegraph,
 		templater:       templater,
+		pather:          pather,
 		states:          list.New(),
 		variables:       make([]variable, 0),
 		mappedVariables: map[compilergraph.GraphNodeId]variable{},
@@ -59,8 +62,8 @@ func buildStateMachine(node compilergraph.GraphNode, templater *templater.Templa
 }
 
 // Build creates a new state machine for the given generator.
-func Build(node compilergraph.GraphNode, templater *templater.Templater, scopegraph *scopegraph.ScopeGraph) GeneratedMachine {
-	return buildStateMachine(node, templater, scopegraph).buildGeneratedMachine()
+func Build(node compilergraph.GraphNode, templater *templater.Templater, pather *es5pather.Pather, scopegraph *scopegraph.ScopeGraph) GeneratedMachine {
+	return buildStateMachine(node, templater, pather, scopegraph).buildGeneratedMachine()
 }
 
 // buildGeneratedMachine builds the final GeneratedMachine struct for this state machine.

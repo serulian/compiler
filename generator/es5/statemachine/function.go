@@ -6,6 +6,7 @@ package statemachine
 
 import (
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/generator/es5/es5pather"
 	"github.com/serulian/compiler/generator/es5/templater"
 	"github.com/serulian/compiler/graphs/scopegraph"
 )
@@ -19,12 +20,12 @@ type FunctionDef interface {
 }
 
 // GenerateFunctionSource generates the source code for a function, including its internal state machine.
-func GenerateFunctionSource(functionDef FunctionDef, templater *templater.Templater, scopegraph *scopegraph.ScopeGraph) string {
+func GenerateFunctionSource(functionDef FunctionDef, templater *templater.Templater, pather *es5pather.Pather, scopegraph *scopegraph.ScopeGraph) string {
 	data := functionData{
 		Generics:     functionDef.Generics(),
 		Parameters:   functionDef.Parameters(),
 		RequiresThis: functionDef.RequiresThis(),
-		Body:         Build(functionDef.BodyNode(), templater, scopegraph),
+		Body:         Build(functionDef.BodyNode(), templater, pather, scopegraph),
 	}
 
 	return templater.Execute("functionSource", functionTemplateStr, data)

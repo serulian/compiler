@@ -24,17 +24,13 @@ func (t *ScopeInfo) Value() string {
 	return string(bytes)
 }
 
-func (t *ScopeInfo) CalledOpNode(tg *typegraph.TypeGraph) (compilergraph.GraphNode, bool) {
+func (t *ScopeInfo) CalledOperator(tg *typegraph.TypeGraph) (typegraph.TGMember, bool) {
 	if t.CalledOpReference == nil {
-		return compilergraph.GraphNode{}, false
+		return typegraph.TGMember{}, false
 	}
 
 	nodeId := compilergraph.GraphNodeId(t.CalledOpReference.GetReferencedNode())
-	if t.CalledOpReference.GetIsSRGNode() {
-		return tg.SourceGraph().GetNode(nodeId), true
-	} else {
-		return tg.GetNode(nodeId), true
-	}
+	return tg.GetTypeOrMember(nodeId).(typegraph.TGMember), true
 }
 
 func (t *ScopeInfo) NamedReferenceNode(tg *typegraph.TypeGraph) (compilergraph.GraphNode, bool) {

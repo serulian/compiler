@@ -105,6 +105,60 @@ func (sm *stateMachine) generate(node compilergraph.GraphNode, parentState *stat
 	case parser.NodeNullComparisonExpression:
 		sm.generateNullComparisonExpression(node, parentState)
 
+	case parser.NodeDefineRangeExpression:
+		fallthrough
+
+	case parser.NodeBitwiseXorExpression:
+		fallthrough
+
+	case parser.NodeBitwiseOrExpression:
+		fallthrough
+
+	case parser.NodeBitwiseAndExpression:
+		fallthrough
+
+	case parser.NodeBitwiseShiftLeftExpression:
+		fallthrough
+
+	case parser.NodeBitwiseShiftRightExpression:
+		fallthrough
+
+	case parser.NodeBinaryAddExpression:
+		fallthrough
+
+	case parser.NodeBinarySubtractExpression:
+		fallthrough
+
+	case parser.NodeBinaryMultiplyExpression:
+		fallthrough
+
+	case parser.NodeBinaryDivideExpression:
+		fallthrough
+
+	case parser.NodeBinaryModuloExpression:
+		sm.generateBinaryOperatorExpression(node, parentState, "")
+
+	case parser.NodeBitwiseNotExpression:
+		sm.generateUnaryOperatorExpression(node, parentState)
+
+	case parser.NodeComparisonEqualsExpression:
+		sm.generateBinaryOperatorExpression(node, parentState, "")
+
+	case parser.NodeComparisonNotEqualsExpression:
+		sm.generateBinaryOperatorExpression(node, parentState, "!({{ . }})")
+
+	case parser.NodeComparisonLTEExpression:
+		sm.generateBinaryOperatorExpression(node, parentState, "({{ . }}) <= 0")
+
+	case parser.NodeComparisonLTExpression:
+		sm.generateBinaryOperatorExpression(node, parentState, "({{ . }}) < 0")
+
+	case parser.NodeComparisonGTEExpression:
+		sm.generateBinaryOperatorExpression(node, parentState, "({{ . }}) >= 0")
+
+	case parser.NodeComparisonGTExpression:
+		sm.generateBinaryOperatorExpression(node, parentState, "({{ . }}) > 0")
+
 	// Boolean operators.
 
 	case parser.NodeBooleanAndExpression:

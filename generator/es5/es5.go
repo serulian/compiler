@@ -9,6 +9,7 @@ import (
 	"fmt"
 
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/generator/es5/es5pather"
 	"github.com/serulian/compiler/generator/es5/templater"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/graphs/typegraph"
@@ -19,6 +20,7 @@ type es5generator struct {
 	graph      *compilergraph.SerulianGraph // The root graph.
 	scopegraph *scopegraph.ScopeGraph       // The scope graph.
 	templater  *templater.Templater         // The cached templater.
+	pather     *es5pather.Pather            // The pather.
 }
 
 // generateModules generates all the modules found in the given scope graph into source.
@@ -27,6 +29,7 @@ func generateModules(sg *scopegraph.ScopeGraph, format bool) map[typegraph.TGMod
 		graph:      sg.SourceGraph().Graph,
 		scopegraph: sg,
 		templater:  templater.New(),
+		pather:     es5pather.New(sg.SourceGraph().Graph),
 	}
 
 	// Generate the code for each of the modules.

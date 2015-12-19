@@ -113,7 +113,7 @@ func (gm generatingMember) BodyNode() compilergraph.GraphNode {
 
 // FunctionSource returns the generated code for the implementation for this member.
 func (gm generatingMember) FunctionSource() string {
-	return statemachine.GenerateFunctionSource(gm, gm.Generator.templater, gm.Generator.scopegraph)
+	return statemachine.GenerateFunctionSource(gm, gm.Generator.templater, gm.Generator.pather, gm.Generator.scopegraph)
 }
 
 // functionTemplateStr defines the template for generating function members.
