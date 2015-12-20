@@ -22,7 +22,7 @@ $module('unary', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              not(first).then(function (returnValue) {
+              $g.unary.SomeClass.$not(first).then(function (returnValue) {
                 $state.current = 1;
                 $returnValue$1 = returnValue;
                 $state.next($callback);

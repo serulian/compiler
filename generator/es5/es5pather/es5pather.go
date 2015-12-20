@@ -25,9 +25,67 @@ func New(graph *compilergraph.SerulianGraph) *Pather {
 	return &Pather{graph}
 }
 
+// TypeReferenceCall returns source for retrieving an object reference to the type defined by the given
+// type reference.
+func (p *Pather) TypeReferenceCall(typeRef typegraph.TypeReference) string {
+	if typeRef.IsAny() {
+		return "$t.any"
+	}
+
+	if typeRef.IsNull() {
+		return "$t.null"
+	}
+
+	if typeRef.IsVoid() {
+		return "$t.void"
+	}
+
+	referredType := typeRef.ReferredTypeDecl()
+	if referredType.TypeKind() == typegraph.GenericType {
+		return referredType.Name()
+	}
+
+	// Add the module path.
+	modulePath := "$g." + p.GetModulePath(referredType.ParentModule())
+
+	// Add the type name.
+	typePath := modulePath + "." + referredType.Name()
+
+	// If the type has generics, invoke them under the given reference type.
+	generics := referredType.Generics()
+	if len(generics) > 0 {
+
+		var genericsString = "("
+		for index, generic := range typeRef.Generics() {
+			if index > 0 {
+				genericsString = genericsString + ", "
+			}
+
+			genericsString = genericsString + p.TypeReferenceCall(generic)
+		}
+
+		genericsString = genericsString + ")"
+		return typePath + genericsString
+	}
+
+	return typePath
+}
+
+// GetStaticTypePath returns the global path for the given defined type.
+func (p *Pather) GetStaticTypePath(typedecl typegraph.TGTypeDecl, referenceType typegraph.TypeReference) string {
+	instanceTypeRef := typedecl.GetTypeReference().TransformUnder(referenceType)
+	return p.TypeReferenceCall(instanceTypeRef)
+}
+
 // GetStaticMemberPath returns the global path for the given statically defined type member.
-func (p *Pather) GetStaticMemberPath(member typegraph.TGMember, parentType typegraph.TypeReference) string {
-	return strings.Replace(unidecode.Unidecode(member.Name()), "*", "", 1)
+func (p *Pather) GetStaticMemberPath(member typegraph.TGMember, referenceType typegraph.TypeReference) string {
+	name := strings.Replace(unidecode.Unidecode(member.Name()), "*", "$", 1)
+	parent := member.Parent()
+	if parent.IsType() {
+		return p.GetStaticTypePath(parent.(typegraph.TGTypeDecl), referenceType) + "." + name
+	} else {
+		return "$g." + p.GetModulePath(parent.(typegraph.TGModule)) + "." + name
+	}
 }
 
 // GetModulePath returns the global path for the given module.

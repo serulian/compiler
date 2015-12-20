@@ -137,6 +137,11 @@ func (tn TGTypeDecl) Members() []TGMember {
 	return members
 }
 
+// ParentModule returns the module containing this type.
+func (tn TGTypeDecl) ParentModule() TGModule {
+	return TGModule{tn.GraphNode.GetNode(NodePredicateTypeModule), tn.tdg}
+}
+
 // IsReadOnly returns whether the type is read-only (which is always)
 func (tn TGTypeDecl) IsReadOnly() bool {
 	return true

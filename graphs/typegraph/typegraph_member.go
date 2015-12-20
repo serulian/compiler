@@ -114,10 +114,23 @@ func (tn TGMember) Generics() []TGGeneric {
 	return generics
 }
 
+// Parent returns the type or module containing this member.
+func (tn TGMember) Parent() TGTypeOrModule {
+	parentNode := tn.GraphNode.StartQuery().
+		In(NodePredicateMember, NodePredicateTypeOperator).
+		GetNode()
+
+	if parentNode.Kind == NodeTypeModule {
+		return TGModule{parentNode, tn.tdg}
+	} else {
+		return TGTypeDecl{parentNode, tn.tdg}
+	}
+}
+
 // ParentType returns the type containing this member, if any.
 func (tn TGMember) ParentType() (TGTypeDecl, bool) {
 	typeNode, hasType := tn.GraphNode.StartQuery().
-		In(NodePredicateMember).
+		In(NodePredicateMember, NodePredicateTypeOperator).
 		IsKind(NodeTypeClass, NodeTypeInterface).
 		TryGetNode()
 

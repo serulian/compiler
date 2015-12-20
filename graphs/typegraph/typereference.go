@@ -545,6 +545,11 @@ func (tr TypeReference) HasReferredType(typeNode compilergraph.GraphNode) bool {
 	return tr.ReferredType() == typeNode
 }
 
+// ReferredTypeDecl returns the type decl to which the type reference refers.
+func (tr TypeReference) ReferredTypeDecl() TGTypeDecl {
+	return TGTypeDecl{tr.ReferredType(), tr.tdg}
+}
+
 // ReferredType returns the node to which the type reference refers.
 func (tr TypeReference) ReferredType() compilergraph.GraphNode {
 	if tr.getSlot(trhSlotFlagSpecial)[0] != specialFlagNormal {

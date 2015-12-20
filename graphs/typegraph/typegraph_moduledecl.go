@@ -41,6 +41,11 @@ func (tn TGModule) Members() []TGMember {
 	return members
 }
 
+// IsType returns whether this module is a type (always false).
+func (tn TGModule) IsType() bool {
+	return false
+}
+
 // Types returns the types defined in this module.
 func (tn TGModule) Types() []TGTypeDecl {
 	it := tn.GraphNode.StartQuery().

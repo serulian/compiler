@@ -23,7 +23,7 @@ $module('binary', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              plus(first, second).then(function (returnValue) {
+              $g.binary.SomeClass.$plus(first, second).then(function (returnValue) {
                 $state.current = 1;
                 $returnValue$1 = returnValue;
                 $state.next($callback);
@@ -36,7 +36,7 @@ $module('binary', function () {
 
             case 1:
               $returnValue$1;
-              minus(first, second).then(function (returnValue) {
+              $g.binary.SomeClass.$minus(first, second).then(function (returnValue) {
                 $state.current = 2;
                 $returnValue$2 = returnValue;
                 $state.next($callback);
