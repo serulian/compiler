@@ -9,6 +9,87 @@ import (
 	"github.com/serulian/compiler/parser"
 )
 
+// generateSliceExpression generates the state machine for a slice/indexer call.
+func (sm *stateMachine) generateSliceExpression(node compilergraph.GraphNode, parentState *state) {
+	// Check if this is a slice vs an index.
+	_, isIndexer := node.TryGet(parser.NodeSliceExpressionIndex)
+	if isIndexer {
+		sm.generateIndexerExpression(node, parentState)
+	} else {
+		sm.generateSlicerExpression(node, parentState)
+	}
+}
+
+// generateIndexerExpression generates the state machine for an indexer call.
+func (sm *stateMachine) generateIndexerExpression(node compilergraph.GraphNode, parentState *state) {
+	// Generate the state for the child expression.
+	childExprInfo := sm.generate(node.GetNode(parser.NodeSliceExpressionChildExpr), parentState)
+
+	// Generate the state for the index expression.
+	indexExprInfo := sm.generate(node.GetNode(parser.NodeSliceExpressionIndex), childExprInfo.endState)
+
+	// Create a new state to which we'll jump after the function returns.
+	returnValueVariable := sm.addVariable("$returnValue")
+	returnReceiveState := sm.newState()
+	returnReceiveState.pushExpression(returnValueVariable)
+
+	// Invoke the index function on the child expression, with the index expr info as an argument.
+	scope, _ := sm.scopegraph.GetScope(node)
+	operator, _ := scope.CalledOperator(sm.scopegraph.TypeGraph())
+
+	data := asyncFunctionCallData{
+		CallExpr:            childExprInfo.expression + "." + sm.pather.GetMemberName(operator),
+		Arguments:           []generatedStateInfo{indexExprInfo},
+		ReturnValueVariable: returnValueVariable,
+		ReturnState:         returnReceiveState,
+	}
+	sm.addAsyncFunctionCall(indexExprInfo.endState, data)
+
+	sm.markStates(node, parentState, returnReceiveState)
+}
+
+// generateSlicerExpression generates the state machine for a slice call.
+func (sm *stateMachine) generateSlicerExpression(node compilergraph.GraphNode, parentState *state) {
+	// Generate the state for the child expression.
+	childExprInfo := sm.generate(node.GetNode(parser.NodeSliceExpressionChildExpr), parentState)
+
+	var currentState = childExprInfo.endState
+	var leftExpr = generatedStateInfo{expression: "null"}
+	var rightExpr = generatedStateInfo{expression: "null"}
+
+	// Generate the states for the left and right indexer expressions, if any.
+	leftInfo, hasLeftExpr := sm.tryGenerate(node, parser.NodeSliceExpressionLeftIndex, currentState)
+	if hasLeftExpr {
+		currentState = leftInfo.endState
+		leftExpr = leftInfo
+	}
+
+	rightInfo, hasRightInfo := sm.tryGenerate(node, parser.NodeSliceExpressionRightIndex, currentState)
+	if hasRightInfo {
+		currentState = rightInfo.endState
+		rightExpr = rightInfo
+	}
+
+	// Create a new state to which we'll jump after the function returns.
+	returnValueVariable := sm.addVariable("$returnValue")
+	returnReceiveState := sm.newState()
+	returnReceiveState.pushExpression(returnValueVariable)
+
+	// Invoke the index function on the child expression, with the necessary argument(s).
+	scope, _ := sm.scopegraph.GetScope(node)
+	operator, _ := scope.CalledOperator(sm.scopegraph.TypeGraph())
+
+	data := asyncFunctionCallData{
+		CallExpr:            childExprInfo.expression + "." + sm.pather.GetMemberName(operator),
+		Arguments:           []generatedStateInfo{leftExpr, rightExpr},
+		ReturnValueVariable: returnValueVariable,
+		ReturnState:         returnReceiveState,
+	}
+	sm.addAsyncFunctionCall(currentState, data)
+
+	sm.markStates(node, parentState, returnReceiveState)
+}
+
 // generateFunctionCall generates the state machine for a function call.
 func (sm *stateMachine) generateFunctionCall(node compilergraph.GraphNode, parentState *state) {
 	// Generate the expression for the function itself that will be called.
@@ -62,9 +143,6 @@ func (sm *stateMachine) generateNullComparisonExpression(node compilergraph.Grap
 
 // generateBinaryOperatorExpression generates the state machine for a code-defined binary operator.
 func (sm *stateMachine) generateBinaryOperatorExpression(node compilergraph.GraphNode, parentState *state, exprTemplateStr string) {
-	scope, _ := sm.scopegraph.GetScope(node)
-	operator, _ := scope.CalledOperator(sm.scopegraph.TypeGraph())
-
 	// Generate the state for the child expressions.
 	leftNode := node.GetNode(parser.NodeBinaryExpressionLeftExpr)
 	leftScope, _ := sm.scopegraph.GetScope(leftNode)
@@ -83,6 +161,9 @@ func (sm *stateMachine) generateBinaryOperatorExpression(node compilergraph.Grap
 	}
 
 	// Add a call to the operator node.
+	scope, _ := sm.scopegraph.GetScope(node)
+	operator, _ := scope.CalledOperator(sm.scopegraph.TypeGraph())
+
 	data := asyncFunctionCallData{
 		CallExpr:            sm.pather.GetStaticMemberPath(operator, leftScope.ResolvedTypeRef(sm.scopegraph.TypeGraph())),
 		Arguments:           []generatedStateInfo{leftHandInfo, rightHandInfo},
@@ -96,9 +177,6 @@ func (sm *stateMachine) generateBinaryOperatorExpression(node compilergraph.Grap
 
 // generateUnaryOperatorExpression generates the state machine for a code-defined binary operator.
 func (sm *stateMachine) generateUnaryOperatorExpression(node compilergraph.GraphNode, parentState *state) {
-	scope, _ := sm.scopegraph.GetScope(node)
-	operator, _ := scope.CalledOperator(sm.scopegraph.TypeGraph())
-
 	// Generate the state for the child expression.
 	childNode := node.GetNode(parser.NodeUnaryExpressionChildExpr)
 	childScope, _ := sm.scopegraph.GetScope(childNode)
@@ -110,6 +188,9 @@ func (sm *stateMachine) generateUnaryOperatorExpression(node compilergraph.Graph
 	returnReceiveState.pushExpression(returnValueVariable)
 
 	// Add a call to the operator node.
+	scope, _ := sm.scopegraph.GetScope(node)
+	operator, _ := scope.CalledOperator(sm.scopegraph.TypeGraph())
+
 	data := asyncFunctionCallData{
 		CallExpr:            sm.pather.GetStaticMemberPath(operator, childScope.ResolvedTypeRef(sm.scopegraph.TypeGraph())),
 		Arguments:           []generatedStateInfo{childInfo},

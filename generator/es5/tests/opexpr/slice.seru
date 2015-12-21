@@ -1,0 +1,11 @@
+class SomeClass {
+	operator<string> slice(start int?, end int?) {
+		return ''
+	}
+}
+
+function<void> DoSomething(c SomeClass) {
+	c[1:2]
+	c[:1]
+	c[1:]
+}

@@ -28,6 +28,8 @@ func New(graph *compilergraph.SerulianGraph) *Pather {
 // TypeReferenceCall returns source for retrieving an object reference to the type defined by the given
 // type reference.
 func (p *Pather) TypeReferenceCall(typeRef typegraph.TypeReference) string {
+	// TODO: nullable
+
 	if typeRef.IsAny() {
 		return "$t.any"
 	}
@@ -71,6 +73,11 @@ func (p *Pather) TypeReferenceCall(typeRef typegraph.TypeReference) string {
 	return typePath
 }
 
+// GetMemberName returns the name of the given member.
+func (p *Pather) GetMemberName(member typegraph.TGMember) string {
+	return strings.Replace(unidecode.Unidecode(member.Name()), "*", "$", 1)
+}
+
 // GetStaticTypePath returns the global path for the given defined type.
 func (p *Pather) GetStaticTypePath(typedecl typegraph.TGTypeDecl, referenceType typegraph.TypeReference) string {
 	instanceTypeRef := typedecl.GetTypeReference().TransformUnder(referenceType)
@@ -79,7 +86,7 @@ func (p *Pather) GetStaticTypePath(typedecl typegraph.TGTypeDecl, referenceType 
 
 // GetStaticMemberPath returns the global path for the given statically defined type member.
 func (p *Pather) GetStaticMemberPath(member typegraph.TGMember, referenceType typegraph.TypeReference) string {
-	name := strings.Replace(unidecode.Unidecode(member.Name()), "*", "$", 1)
+	name := p.GetMemberName(member)
 	parent := member.Parent()
 	if parent.IsType() {
 		return p.GetStaticTypePath(parent.(typegraph.TGTypeDecl), referenceType) + "." + name

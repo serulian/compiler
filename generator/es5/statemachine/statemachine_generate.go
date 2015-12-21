@@ -99,6 +99,9 @@ func (sm *stateMachine) generate(node compilergraph.GraphNode, parentState *stat
 
 	// Op Expressions.
 
+	case parser.NodeSliceExpression:
+		sm.generateSliceExpression(node, parentState)
+
 	case parser.NodeFunctionCallExpression:
 		sm.generateFunctionCall(node, parentState)
 
