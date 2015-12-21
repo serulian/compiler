@@ -62,6 +62,7 @@ var tests = []generationTest{
 	generationTest{"arrow expression", "arrowexpr", "arrow"},
 
 	generationTest{"generic specifier expression", "accessexpr", "genericspecifier"},
+	generationTest{"cast expression", "accessexpr", "cast"},
 
 	generationTest{"full lambda expression", "lambdaexpr", "full"},
 	generationTest{"mini lambda expression", "lambdaexpr", "mini"},

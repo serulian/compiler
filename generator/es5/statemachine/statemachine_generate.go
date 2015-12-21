@@ -90,6 +90,9 @@ func (sm *stateMachine) generate(node compilergraph.GraphNode, parentState *stat
 	case parser.NodeGenericSpecifierExpression:
 		sm.generateGenericSpecifierExpression(node, parentState)
 
+	case parser.NodeCastExpression:
+		sm.generateCastExpression(node, parentState)
+
 	// Arrow Expressions.
 	case parser.NodeTypeArrowExpression:
 		sm.generateArrowExpression(node, parentState)

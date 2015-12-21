@@ -9,6 +9,28 @@ import (
 	"github.com/serulian/compiler/parser"
 )
 
+// generateCastExpression generates the state machine for a cast expression.
+func (sm *stateMachine) generateCastExpression(node compilergraph.GraphNode, parentState *state) {
+	// Generate the states for the child expression.
+	childExprInfo := sm.generate(node.GetNode(parser.NodeCastExpressionChildExpr), parentState)
+
+	// Determine the resulting type.
+	scope, _ := sm.scopegraph.GetScope(node)
+	resultingType := scope.ResolvedTypeRef(sm.scopegraph.TypeGraph())
+
+	// Add a function call with the generic type(s).
+	data := struct {
+		ChildExpr      string
+		CastTypeString string
+	}{childExprInfo.expression, sm.pather.TypeReferenceCall(resultingType)}
+
+	childExprInfo.endState.pushExpression(sm.templater.Execute("castexpr", `
+		$t.cast(({{ .ChildExpr }}), {{ .CastTypeString }})
+	`, data))
+
+	sm.markStates(node, parentState, childExprInfo.endState)
+}
+
 // generateGenericSpecifierExpression generates the state machine for a generic specification of a function or type.
 func (sm *stateMachine) generateGenericSpecifierExpression(node compilergraph.GraphNode, parentState *state) {
 	// Generate the states for the child expression.
