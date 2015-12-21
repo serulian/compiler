@@ -1,4 +1,4 @@
-$module('identifier', function () {
+$module('streammember', function () {
   var $instance = this;
   this.cls('SomeClass', function () {
     var $static = this;
@@ -6,30 +6,23 @@ $module('identifier', function () {
     $static.$new = function () {
       var instance = new $static();
       function () {
+        this.SomeInt = TODO;
       }.call(instance);
       return instance;
     };
   });
-  $instance.AnotherFunction = function () {
-    return $promise.empty();
-  };
-  $instance.DoSomething = function (someParam) {
+  $instance.AnotherThing = function (somestream) {
     var $this = this;
     var $state = {
       current: 0,
       returnValue: null,
     };
-    var someVar;
     $state.next = function ($callback) {
       try {
         while (true) {
           switch ($state.current) {
             case 0:
-              someVar = 2;
-              $g.identifier.SomeClass;
-              $g.identifier.AnotherFunction;
-              someParam;
-              someVar;
+              $t.streamaccess(somestream, 'SomeInt');
               $state.current = -1;
               return;
           }

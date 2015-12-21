@@ -9,6 +9,24 @@ import (
 	"github.com/serulian/compiler/parser"
 )
 
+// generateStreamMemberAccessExpression generates the state machine for a stream member access expression (*.)
+func (sm *stateMachine) generateStreamMemberAccessExpression(node compilergraph.GraphNode, parentState *state) {
+	// Generate the states for the child expression.
+	childExprInfo := sm.generate(node.GetNode(parser.NodeMemberAccessChildExpr), parentState)
+
+	// Add a function call to retrieve the member under the stream.
+	data := struct {
+		ChildExpr  string
+		MemberName string
+	}{childExprInfo.expression, node.Get(parser.NodeMemberAccessIdentifier)}
+
+	childExprInfo.endState.pushExpression(sm.templater.Execute("streammember", `
+		$t.streamaccess(({{ .ChildExpr }}), '{{ .MemberName }}')
+	`, data))
+
+	sm.markStates(node, parentState, childExprInfo.endState)
+}
+
 // generateCastExpression generates the state machine for a cast expression.
 func (sm *stateMachine) generateCastExpression(node compilergraph.GraphNode, parentState *state) {
 	// Generate the states for the child expression.
