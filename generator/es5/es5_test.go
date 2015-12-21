@@ -76,6 +76,8 @@ var tests = []generationTest{
 	generationTest{"indexer op expressions", "opexpr", "indexer"},
 	generationTest{"slice op expressions", "opexpr", "slice"},
 
+	generationTest{"identifier expressions", "literals", "identifier"},
+
 	generationTest{"boolean literal", "literals", "boolean"},
 	generationTest{"numeric literal", "literals", "numeric"},
 	generationTest{"string literal", "literals", "string"},

@@ -134,6 +134,7 @@ func (sm *stateMachine) generateAssignStatement(node compilergraph.GraphNode, pa
 	exprInfo := sm.generate(node.GetNode(parser.NodeAssignStatementValue), parentState)
 
 	// TODO: handle multiple assignment.
+	// TODO: handle properties.
 	nameScope, _ := sm.scopegraph.GetScope(node.GetNode(parser.NodeAssignStatementName))
 	namedRefNode, _ := nameScope.NamedReferenceNode(sm.scopegraph.TypeGraph())
 	name := sm.addVariableMapping(namedRefNode)

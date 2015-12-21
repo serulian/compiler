@@ -47,30 +47,26 @@ func (p *Pather) TypeReferenceCall(typeRef typegraph.TypeReference) string {
 		return referredType.Name()
 	}
 
-	// Add the module path.
-	modulePath := "$g." + p.GetModulePath(referredType.ParentModule())
-
 	// Add the type name.
-	typePath := modulePath + "." + referredType.Name()
+	typePath := p.GetTypePath(referredType)
 
-	// If the type has generics, invoke them under the given reference type.
-	generics := referredType.Generics()
-	if len(generics) > 0 {
-
-		var genericsString = "("
-		for index, generic := range typeRef.Generics() {
-			if index > 0 {
-				genericsString = genericsString + ", "
-			}
-
-			genericsString = genericsString + p.TypeReferenceCall(generic)
-		}
-
-		genericsString = genericsString + ")"
-		return typePath + genericsString
+	// If there are no generics, then simply return the type path.
+	if !typeRef.HasGenerics() {
+		return typePath
 	}
 
-	return typePath
+	// Invoke the type with generics (if any).
+	var genericsString = "("
+	for index, generic := range typeRef.Generics() {
+		if index > 0 {
+			genericsString = genericsString + ", "
+		}
+
+		genericsString = genericsString + p.TypeReferenceCall(generic)
+	}
+
+	genericsString = genericsString + ")"
+	return typePath + genericsString
 }
 
 // GetMemberName returns the name of the given member.
@@ -93,6 +89,12 @@ func (p *Pather) GetStaticMemberPath(member typegraph.TGMember, referenceType ty
 	} else {
 		return "$g." + p.GetModulePath(parent.(typegraph.TGModule)) + "." + name
 	}
+}
+
+// GetTypePath returns the global path for the given type.
+func (p *Pather) GetTypePath(typedecl typegraph.TGTypeDecl) string {
+	modulePath := "$g." + p.GetModulePath(typedecl.ParentModule())
+	return modulePath + "." + typedecl.Name()
 }
 
 // GetModulePath returns the global path for the given module.

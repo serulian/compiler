@@ -1,6 +1,6 @@
-$module('genericspecifier', function () {
+$module('identifier', function () {
   var $instance = this;
-  this.cls('SomeClass', function (T) {
+  this.cls('SomeClass', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.$new = function () {
@@ -10,25 +10,23 @@ $module('genericspecifier', function () {
       return instance;
     };
   });
-  $instance.SomeFunction = function (T, Q) {
-    var $f = function () {
-      return $promise.empty();
-    };
-    return $f;
-  };
-  $instance.DoSomething = function () {
+  $instance.DoSomething = function (someParam) {
     var $this = this;
     var $state = {
       current: 0,
       returnValue: null,
     };
+    var someVar;
     $state.next = function ($callback) {
       try {
         while (true) {
           switch ($state.current) {
             case 0:
-              $g.genericspecifier.SomeFunction($g.____graphs.typegraph.tests.testlib.basictypes.Integer, $g.____graphs.typegraph.tests.testlib.basictypes.String);
-              $g.genericspecifier.SomeClass($g.____graphs.typegraph.tests.testlib.basictypes.Boolean);
+              someVar = 2;
+              $g.identifier.SomeClass;
+              $g.identifier.AnotherFunction;
+              someParam;
+              someVar;
               $state.current = -1;
               return;
           }
@@ -40,5 +38,8 @@ $module('genericspecifier', function () {
       }
     };
     return $promise.build($state);
+  };
+  $instance.AnotherFunction = function () {
+    return $promise.empty();
   };
 });
