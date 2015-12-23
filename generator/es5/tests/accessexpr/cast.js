@@ -1,8 +1,5 @@
 $module('cast', function () {
   var $static = this;
-  this.interface('ISomeInterface', function () {
-  });
-
   this.cls('SomeClass', function () {
     var $static = this;
     var $instance = this.prototype;
@@ -13,6 +10,9 @@ $module('cast', function () {
         return instance;
       });
     };
+  });
+
+  this.interface('ISomeInterface', function () {
   });
 
   $static.DoSomething = function (i) {

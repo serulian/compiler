@@ -8,36 +8,23 @@ import (
 	"fmt"
 
 	"github.com/serulian/compiler/compilergraph"
-	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/generator/es5/statemachine"
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/typegraph"
+
+	"github.com/cevaris/ordered_map"
 )
 
 // generateImplementedMembers generates all the members under the given type or module into ES5.
-func (gen *es5generator) generateImplementedMembers(typeOrModule typegraph.TGTypeOrModule) map[typegraph.TGMember]string {
-	// Queue all the members to be generated.
+func (gen *es5generator) generateImplementedMembers(typeOrModule typegraph.TGTypeOrModule) *ordered_map.OrderedMap {
+	memberMap := ordered_map.NewOrderedMap()
 	members := typeOrModule.Members()
-	generatedSource := make([]string, len(members))
-	queue := compilerutil.Queue()
-	for index, member := range members {
-		fn := func(key interface{}, value interface{}) bool {
-			generatedSource[key.(int)] = gen.generateImplementedMember(value.(typegraph.TGMember))
-			return true
+	for _, member := range members {
+		if !member.HasImplementation() {
+			continue
 		}
 
-		if member.HasImplementation() {
-			queue.Enqueue(index, member, fn)
-		}
-	}
-
-	// Generate the full source tree for each member.
-	queue.Run()
-
-	// Build a map from member to source tree.
-	memberMap := map[typegraph.TGMember]string{}
-	for index, member := range members {
-		memberMap[member] = generatedSource[index]
+		memberMap.Set(member, gen.generateImplementedMember(member))
 	}
 
 	return memberMap

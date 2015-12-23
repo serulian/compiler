@@ -55,12 +55,12 @@ func (gm generatingModule) ExportedPath() string {
 }
 
 // GenerateMembers generates the source for all the implemented members defined under the module.
-func (gm generatingModule) GenerateMembers() map[typegraph.TGMember]string {
+func (gm generatingModule) GenerateMembers() *ordered_map.OrderedMap {
 	return gm.Generator.generateImplementedMembers(gm.Module)
 }
 
 // GenerateTypes generates the source for all the types defined under the module.
-func (gm generatingModule) GenerateTypes() map[typegraph.TGTypeDecl]string {
+func (gm generatingModule) GenerateTypes() *ordered_map.OrderedMap {
 	return gm.Generator.generateTypes(gm.Module)
 }
 
@@ -74,12 +74,12 @@ const moduleTemplateStr = `
 $module('{{ .ExportedPath }}', function() {
   var $static = this;
 
-  {{range $type, $source := .GenerateTypes }}
-  	{{ $source }};
+  {{range $idx, $kv := .GenerateTypes.Iter }}
+  	{{ $kv.Value }};
   {{end}}
   
-  {{range $member, $source := .GenerateMembers }}
-  	{{ $source }};
+  {{range $idx, $kv := .GenerateMembers.Iter }}
+  	{{ $kv.Value }};
   {{end}}
 
   {{range $idx, $kv := .GenerateVariables.Iter }}

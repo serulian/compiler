@@ -1,6 +1,5 @@
 $module('basic', function () {
   var $static = this;
-
   $static.AnotherFunction = function () {
     var $state = {
       current: 0,
@@ -25,7 +24,6 @@ $module('basic', function () {
     };
     return $promise.build($state);
   };
-
   this.$init(function () {
     return $promise.wrap(function () {
       $this.someInt = 2;

@@ -5,34 +5,17 @@
 package es5
 
 import (
-	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/graphs/typegraph"
 
 	"github.com/cevaris/ordered_map"
 )
 
 // generateTypes generates all the types under the  given modules into ES5.
-func (gen *es5generator) generateTypes(module typegraph.TGModule) map[typegraph.TGTypeDecl]string {
-	// Queue all the types to be generated.
+func (gen *es5generator) generateTypes(module typegraph.TGModule) *ordered_map.OrderedMap {
+	typeMap := ordered_map.NewOrderedMap()
 	types := module.Types()
-	generatedSource := make([]string, len(types))
-	queue := compilerutil.Queue()
-	for index, typedef := range types {
-		fn := func(key interface{}, value interface{}) bool {
-			generatedSource[key.(int)] = gen.generateType(value.(typegraph.TGTypeDecl))
-			return true
-		}
-
-		queue.Enqueue(index, typedef, fn)
-	}
-
-	// Generate the full source tree for each type.
-	queue.Run()
-
-	// Build a map from type to source tree.
-	typeMap := map[typegraph.TGTypeDecl]string{}
-	for index, typedef := range types {
-		typeMap[typedef] = generatedSource[index]
+	for _, typedecl := range types {
+		typeMap.Set(typedecl, gen.generateType(typedecl))
 	}
 
 	return typeMap
@@ -68,7 +51,7 @@ func (gt generatingType) Generics() string {
 
 // GenerateImplementedMembers generates the source for all the members defined under the type that
 // have implementations.
-func (gt generatingType) GenerateImplementedMembers() map[typegraph.TGMember]string {
+func (gt generatingType) GenerateImplementedMembers() *ordered_map.OrderedMap {
 	return gt.Generator.generateImplementedMembers(gt.Type)
 }
 
@@ -100,8 +83,8 @@ this.cls('{{ .Type.Name }}', function({{ .Generics }}) {
 	};
 	{{ end }}
 
-	{{range $member, $source := .GenerateImplementedMembers }}
-  	  {{ $source }}
+	{{range $idx, $kv := .GenerateImplementedMembers.Iter }}
+  	  {{ $kv.Value }}
   	{{end}}
 });
 `
@@ -109,8 +92,8 @@ this.cls('{{ .Type.Name }}', function({{ .Generics }}) {
 // interfaceTemplateStr defines the template for generating an interface type.
 const interfaceTemplateStr = `
 this.interface('{{ .Type.Name }}', function({{ .Generics }}) {
-	{{range $member, $source := .GenerateImplementedMembers }}
-  	  {{ $source }}
+	{{range $idx, $kv := .GenerateImplementedMembers.Iter }}
+  	  {{ $kv.Value }}
   	{{end}}
 });
 `
