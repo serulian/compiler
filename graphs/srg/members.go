@@ -31,6 +31,24 @@ const (
 	OperatorMember
 )
 
+// TryGetContainingPropertySetter looks for the property setter containing the given node and returns it,
+// if any.
+func (g *SRG) TryGetContainingPropertySetter(node compilergraph.GraphNode) (SRGImplementable, bool) {
+	containingNode, found := g.TryGetContainingNode(node,
+		parser.NodeTypePropertyBlock)
+
+	if !found {
+		return SRGImplementable{}, false
+	}
+
+	_, underSetter := containingNode.TryGetIncoming(parser.NodePropertySetter)
+	if !underSetter {
+		return SRGImplementable{}, false
+	}
+
+	return SRGImplementable{containingNode}, true
+}
+
 // TryGetContainingMember looks for the type or module member containing the given node
 // and returns it, if any.
 func (g *SRG) TryGetContainingMember(node compilergraph.GraphNode) (SRGMember, bool) {
@@ -39,7 +57,8 @@ func (g *SRG) TryGetContainingMember(node compilergraph.GraphNode) (SRGMember, b
 		parser.NodeTypeFunction,
 		parser.NodeTypeOperator,
 		parser.NodeTypeField,
-		parser.NodeTypeVariable)
+		parser.NodeTypeVariable,
+		parser.NodeTypeProperty)
 
 	if !found {
 		return SRGMember{}, false

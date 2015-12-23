@@ -1,0 +1,8 @@
+class SomeClass {
+	property<bool> SomeProp {
+		get {
+			val
+			return true
+		}
+	}
+}

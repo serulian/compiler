@@ -136,6 +136,7 @@ const (
 	NodeTemplateStringLiteralExpression // `foobar`
 	NodeThisLiteralExpression           // this
 	NodeNullLiteralExpression           // null
+	NodeValLiteralExpression            // val
 
 	NodeListExpression     // [1, 2, 3]
 	NodeMapExpression      // {a: 1, b: 2}

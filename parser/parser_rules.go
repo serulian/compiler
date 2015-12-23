@@ -1909,6 +1909,13 @@ func (p *sourceParser) tryConsumeLiteralValue() (AstNode, bool) {
 		p.consumeKeyword("this")
 		return literalNode, true
 
+	// val literal.
+	case p.isKeyword("val"):
+		literalNode := p.startNode(NodeValLiteralExpression)
+		defer p.finishNode()
+
+		p.consumeKeyword("val")
+		return literalNode, true
 	}
 
 	return nil, false

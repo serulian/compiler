@@ -591,6 +591,12 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"The 'this' keyword cannot be used under static type member Build", ""},
 
+	scopegraphTest{"this under property test", "thisliteral", "property",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"scthis", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+		},
+		"", ""},
+
 	/////////// generic specifier expression ///////////
 
 	scopegraphTest{"generic specifier expression success test", "genericspecifier", "success",
@@ -654,6 +660,18 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{
 			expectedScopeEntry{"someVar", expectedScope{true, proto.ScopeKind_VALUE, "Function<void>(Integer, Boolean)", "void"}},
 			expectedScopeEntry{"anotherVar", expectedScope{true, proto.ScopeKind_VALUE, "Function<void>(Integer, Boolean)", "void"}},
+		},
+		"", ""},
+
+	/////////// property value test /////////////
+
+	scopegraphTest{"property val test", "property", "getterval",
+		[]expectedScopeEntry{},
+		"The 'val' keyword can only be used under property setters", ""},
+
+	scopegraphTest{"property val test", "property", "value",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"val", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
 		},
 		"", ""},
 }

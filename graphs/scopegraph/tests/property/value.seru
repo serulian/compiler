@@ -1,0 +1,10 @@
+class SomeClass {
+	property<bool> SomeProp {
+		get {
+			return true
+		}
+		set {
+			/* val */val			
+		}
+	}
+}

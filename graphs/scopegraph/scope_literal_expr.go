@@ -154,3 +154,22 @@ func (sb *scopeBuilder) scopeThisLiteralExpression(node compilergraph.GraphNode)
 		Resolving(tgType.GetTypeReference()).
 		GetScope()
 }
+
+// scopeValLiteralExpression scopes a val literal expression in the SRG.
+func (sb *scopeBuilder) scopeValLiteralExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+	_, found := sb.sg.srg.TryGetContainingPropertySetter(node)
+	if !found {
+		sb.decorateWithError(node, "The 'val' keyword can only be used under property setters")
+		return newScope().Invalid().GetScope()
+	}
+
+	// Find the containing property.
+	srgMember, _ := sb.sg.srg.TryGetContainingMember(node)
+	tgMember, _ := sb.sg.tdg.GetMemberForSRGNode(srgMember.GraphNode)
+
+	// The value of the 'val' keyword is an instance of the property type.
+	return newScope().
+		Valid().
+		Resolving(tgMember.MemberType()).
+		GetScope()
+}
