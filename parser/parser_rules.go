@@ -1019,6 +1019,7 @@ func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
 // Forms:
 // a = expression
 // a, b = expression
+// a.b = expression
 func (p *sourceParser) tryConsumeAssignStatement() (AstNode, bool) {
 	// To determine if we have an assignment statement, we need to perform
 	// a non-insignificant amount of lookahead, as this form can be mistaken for
@@ -1030,9 +1031,13 @@ func (p *sourceParser) tryConsumeAssignStatement() (AstNode, bool) {
 	assignNode := p.startNode(NodeTypeAssignStatement)
 	defer p.finishNode()
 
-	// Consume the identifiers.
+	// Consume the identifiers or member access.
 	for {
-		assignNode.Connect(NodeAssignStatementName, p.consumeIdentifierExpression())
+		if memberAccess, ok := p.tryConsumeCallAccessExpression(); ok {
+			assignNode.Connect(NodeAssignStatementName, memberAccess)
+		} else {
+			assignNode.Connect(NodeAssignStatementName, p.consumeIdentifierExpression())
+		}
 
 		if _, ok := p.tryConsume(tokenTypeComma); !ok {
 			break
@@ -1049,8 +1054,20 @@ func (p *sourceParser) tryConsumeAssignStatement() (AstNode, bool) {
 func (p *sourceParser) lookaheadAssignStatement() bool {
 	t := p.newLookaheadTracker()
 
+	// Match the opening identifier.
 	if _, ok := t.matchToken(tokenTypeIdentifer); !ok {
 		return false
+	}
+
+	// Match member access (optional).
+	for {
+		if _, ok := t.matchToken(tokenTypeDotAccessOperator); !ok {
+			break
+		}
+
+		if _, ok := t.matchToken(tokenTypeIdentifer); !ok {
+			return false
+		}
 	}
 
 	if _, ok := t.matchToken(tokenTypeEquals); !ok {

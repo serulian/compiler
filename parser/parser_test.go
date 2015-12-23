@@ -205,6 +205,7 @@ var parserTests = []parserTest{
 	{"known issue 1 test", "knownissue/knownissue1"},
 	{"known issue 2 test", "knownissue/knownissue2"},
 	{"known issue 3 test", "knownissue/knownissue3"},
+	{"known issue 4 test", "knownissue/knownissue4"},
 
 	// Comment tests.
 	{"comment function test", "comment/function"},

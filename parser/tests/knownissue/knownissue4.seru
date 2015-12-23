@@ -1,0 +1,3 @@
+function<void> AnotherFunction(sc SomeClass) {
+	sc.SomeProp = 4
+}
