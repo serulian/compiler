@@ -12,30 +12,20 @@ $module('this', function () {
     };
     $instance.DoSomething = function () {
       var $this = this;
-      var $state = {
-        current: 0,
-        returnValue: null,
-      };
-      $state.next = function ($callback) {
-        try {
-          while (true) {
-            switch ($state.current) {
-              case 0:
-                $this;
-                $state.current = -1;
-                return;
+      var $state = $t.sm(function ($callback) {
+        while (true) {
+          switch ($state.current) {
+            case 0:
+              $this;
+              $state.current = -1;
+              return;
 
-              default:
-                $state.current = -1;
-                return;
-            }
+            default:
+              $state.current = -1;
+              return;
           }
-        } catch (e) {
-          $state.error = e;
-          $state.current = -1;
-          $callback($state);
         }
-      };
+      });
       return $promise.build($state);
     };
   });

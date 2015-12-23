@@ -16,35 +16,25 @@ $module('identifier', function () {
     return $promise.empty();
   };
   $static.DoSomething = function (someParam) {
-    var $state = {
-      current: 0,
-      returnValue: null,
-    };
     var someVar;
-    $state.next = function ($callback) {
-      try {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              someVar = 2;
-              $g.identifier.SomeClass;
-              $g.identifier.AnotherFunction;
-              someParam;
-              someVar;
-              $state.current = -1;
-              return;
+    var $state = $t.sm(function ($callback) {
+      while (true) {
+        switch ($state.current) {
+          case 0:
+            someVar = 2;
+            $g.identifier.SomeClass;
+            $g.identifier.AnotherFunction;
+            someParam;
+            someVar;
+            $state.current = -1;
+            return;
 
-            default:
-              $state.current = -1;
-              return;
-          }
+          default:
+            $state.current = -1;
+            return;
         }
-      } catch (e) {
-        $state.error = e;
-        $state.current = -1;
-        $callback($state);
       }
-    };
+    });
     return $promise.build($state);
   };
 });

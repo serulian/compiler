@@ -220,6 +220,8 @@ func (sm *stateMachine) addAsyncFunctionCall(callState *state, data asyncFunctio
 	callState.pushSource(sm.templater.Execute("asyncfunctionCall", asyncFunctionCallTemplateStr, data))
 }
 
+// asyncFunctionCallTemplateStr is a template for generating a call to an async function that returns
+// a promise.
 const asyncFunctionCallTemplateStr = `
 	{{ if .CallExpr }}
 	({{ .CallExpr }})({{ range $index, $arg := .Arguments }}{{ if $index }} ,{{ end }}{{ $arg.Expression }}{{ end }}).then(function(returnValue) {
@@ -239,35 +241,25 @@ const asyncFunctionCallTemplateStr = `
 	return;
 `
 
+// stateMachineTemplateStr is a template for the generated state machine.
 const stateMachineTemplateStr = `
-	var $state = {
-		current: 0,
-		returnValue: null
-	};
-
 	{{ range .Variables }}
 	   var {{ .Name }}{{ if .Initializer }} = {{ .Initializer }}{{ end }};
 	{{ end }}
 
-	$state.next = function($callback) {
-		try {
-			while (true) {
-				switch ($state.current) {
-					{{range .States }}
-					case {{ .ID }}:
-						{{ .Source }}
-						break;
-					{{end}}
+	var $state = $t.sm(function($callback) {
+		while (true) {
+			switch ($state.current) {
+				{{range .States }}
+				case {{ .ID }}:
+					{{ .Source }}
+					break;
+				{{end}}
 
-					default:
-						$state.current = -1;
-						return;
-				}
+				default:
+					$state.current = -1;
+					return;
 			}
-		} catch (e) {
-			$state.error = e;
-			$state.current = -1;
-			$callback($state);
 		}
-	};
+	});
 `
