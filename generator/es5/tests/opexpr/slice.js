@@ -1,5 +1,5 @@
 $module('slice', function () {
-  var $instance = this;
+  var $static = this;
   this.cls('SomeClass', function () {
     var $static = this;
     var $instance = this.prototype;
@@ -10,8 +10,7 @@ $module('slice', function () {
       return instance;
     };
   });
-  $instance.DoSomething = function (c) {
-    var $this = this;
+  $static.DoSomething = function (c) {
     var $state = {
       current: 0,
       returnValue: null,

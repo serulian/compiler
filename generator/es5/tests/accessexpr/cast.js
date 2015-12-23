@@ -1,5 +1,5 @@
 $module('cast', function () {
-  var $instance = this;
+  var $static = this;
   this.cls('SomeClass', function () {
     var $static = this;
     var $instance = this.prototype;
@@ -12,8 +12,7 @@ $module('cast', function () {
   });
   this.interface('ISomeInterface', function () {
   });
-  $instance.DoSomething = function (i) {
-    var $this = this;
+  $static.DoSomething = function (i) {
     var $state = {
       current: 0,
       returnValue: null,

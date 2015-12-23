@@ -1,7 +1,6 @@
 $module('matchexpr', function () {
-  var $instance = this;
-  $instance.DoSomething = function (someVar) {
-    var $this = this;
+  var $static = this;
+  $static.DoSomething = function (someVar) {
     var $state = {
       current: 0,
       returnValue: null,

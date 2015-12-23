@@ -1,7 +1,6 @@
 $module('numeric', function () {
-  var $instance = this;
-  $instance.DoSomething = function () {
-    var $this = this;
+  var $static = this;
+  $static.DoSomething = function () {
     var $state = {
       current: 0,
       returnValue: null,

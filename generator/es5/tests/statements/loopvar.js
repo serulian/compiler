@@ -1,7 +1,6 @@
 $module('loopvar', function () {
-  var $instance = this;
-  $instance.DoSomething = function (somethingElse) {
-    var $this = this;
+  var $static = this;
+  $static.DoSomething = function (somethingElse) {
     var $state = {
       current: 0,
       returnValue: null,

@@ -47,12 +47,16 @@ func (sm *stateMachine) tryGenerate(node compilergraph.GraphNode, predicateName 
 	return sm.generate(nodeFound, parentState), true
 }
 
-// generate generates the state(s) for the given nodes.
+// generate generates the state(s) for the given node.
 func (sm *stateMachine) generate(node compilergraph.GraphNode, parentState *state) generatedStateInfo {
+	return sm.generateWithAccessOption(node, parentState, memberAccessGet)
+}
+
+// generateWithAccessOption generates the state(s) for the given node with the given access option.
+func (sm *stateMachine) generateWithAccessOption(node compilergraph.GraphNode, parentState *state, option memberAccessOption) generatedStateInfo {
 	switch node.Kind {
 
 	// Statements.
-
 	case parser.NodeTypeStatementBlock:
 		sm.generateStatementBlock(node, parentState)
 
@@ -96,6 +100,15 @@ func (sm *stateMachine) generate(node compilergraph.GraphNode, parentState *stat
 	case parser.NodeStreamMemberAccessExpression:
 		sm.generateStreamMemberAccessExpression(node, parentState)
 
+	case parser.NodeMemberAccessExpression:
+		sm.generateMemberAccessExpression(node, parentState, "({{ .ChildExpr }}).{{ .MemberName }}", option)
+
+	case parser.NodeNullableMemberAccessExpression:
+		sm.generateMemberAccessExpression(node, parentState, "$t.nullaccess(({{ .ChildExpr }}), '{{ .MemberName }}')", option)
+
+	case parser.NodeDynamicMemberAccessExpression:
+		sm.generateMemberAccessExpression(node, parentState, "$t.dynamicaccess(({{ .ChildExpr }}), '{{ .MemberName }}')", option)
+
 	// Arrow Expressions.
 	case parser.NodeTypeArrowExpression:
 		sm.generateArrowExpression(node, parentState)
@@ -108,7 +121,6 @@ func (sm *stateMachine) generate(node compilergraph.GraphNode, parentState *stat
 		sm.generateLambdaExpression(node, parentState)
 
 	// Op Expressions.
-
 	case parser.NodeSliceExpression:
 		sm.generateSliceExpression(node, parentState)
 
@@ -173,7 +185,6 @@ func (sm *stateMachine) generate(node compilergraph.GraphNode, parentState *stat
 		sm.generateBinaryOperatorExpression(node, parentState, "({{ . }}) > 0")
 
 	// Boolean operators.
-
 	case parser.NodeBooleanAndExpression:
 		sm.generateNativeBinaryExpression(node, parentState, "&&")
 
@@ -184,12 +195,10 @@ func (sm *stateMachine) generate(node compilergraph.GraphNode, parentState *stat
 		sm.generateNativeUnaryExpression(node, parentState, "!")
 
 	// Identifiers.
-
 	case parser.NodeTypeIdentifierExpression:
 		sm.generateIdentifierExpression(node, parentState)
 
 	// Literals.
-
 	case parser.NodeNumericLiteralExpression:
 		sm.generateNumericLiteral(node, parentState)
 

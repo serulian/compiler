@@ -70,7 +70,7 @@ func (gm generatingModule) GenerateVariables() map[typegraph.TGMember]string {
 // moduleTemplateStr defines the template for generating a module.
 const moduleTemplateStr = `
 $module('{{ .ExportedPath }}', function() {
-  var $instance = this;
+  var $static = this;
 
   {{range $type, $source := .GenerateTypes }}
   	{{ $source }}

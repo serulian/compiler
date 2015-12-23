@@ -42,7 +42,7 @@ func (sg *ScopeGraph) GetReferencedName(scope proto.ScopeInfo) (ReferencedName, 
 // IsStatic returns true if the referenced name is static.
 func (rn ReferencedName) IsStatic() bool {
 	if rn.typeInfo != nil {
-		return rn.typeInfo.IsType()
+		return rn.typeInfo.IsStatic()
 	} else {
 		return rn.srgInfo.IsStatic()
 	}

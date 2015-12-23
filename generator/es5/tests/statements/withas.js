@@ -1,7 +1,6 @@
 $module('withas', function () {
-  var $instance = this;
-  $instance.DoSomething = function (someExpr) {
-    var $this = this;
+  var $static = this;
+  $static.DoSomething = function (someExpr) {
     var $state = {
       current: 0,
       returnValue: null,

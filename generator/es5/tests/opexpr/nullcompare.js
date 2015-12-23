@@ -1,7 +1,6 @@
 $module('nullcompare', function () {
-  var $instance = this;
-  $instance.DoSomething = function (someParam) {
-    var $this = this;
+  var $static = this;
+  $static.DoSomething = function (someParam) {
     var $state = {
       current: 0,
       returnValue: null,

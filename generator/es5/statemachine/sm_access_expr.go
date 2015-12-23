@@ -9,6 +9,40 @@ import (
 	"github.com/serulian/compiler/parser"
 )
 
+type memberAccessOption int
+
+const (
+	memberAccessGet memberAccessOption = iota
+	memberAccessSet
+)
+
+// generateMemberAccessExpression generates the state machine for various kinds of member access expressions
+func (sm *stateMachine) generateMemberAccessExpression(node compilergraph.GraphNode, parentState *state, templateStr string, option memberAccessOption) {
+	scope, _ := sm.scopegraph.GetScope(node)
+	namedReference, hasNamedReference := sm.scopegraph.GetReferencedName(scope)
+
+	// If the scope is a named reference to a defined item (static member or type), generate its
+	// path directly by treating it as an identifier to the scope. This will handle
+	// imports for us.
+	if hasNamedReference && namedReference.IsStatic() {
+		sm.generateIdentifierExpression(node, parentState)
+		return
+	}
+
+	// Otherwise, generate as an access under the child expression.
+	childExprInfo := sm.generate(node.GetNode(parser.NodeMemberAccessChildExpr), parentState)
+
+	// Add a function call to retrieve the member under the stream.
+	data := struct {
+		ChildExpr  string
+		MemberName string
+	}{childExprInfo.expression, node.Get(parser.NodeMemberAccessIdentifier)}
+
+	childExprInfo.endState.pushExpression(sm.templater.Execute("memberaccess", templateStr, data))
+
+	sm.markStates(node, parentState, childExprInfo.endState)
+}
+
 // generateStreamMemberAccessExpression generates the state machine for a stream member access expression (*.)
 func (sm *stateMachine) generateStreamMemberAccessExpression(node compilergraph.GraphNode, parentState *state) {
 	// Generate the states for the child expression.

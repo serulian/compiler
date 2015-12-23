@@ -1,7 +1,6 @@
 $module('arrow', function () {
-  var $instance = this;
-  $instance.DoSomething = function (p) {
-    var $this = this;
+  var $static = this;
+  $static.DoSomething = function (p) {
     var $state = {
       current: 0,
       returnValue: null,

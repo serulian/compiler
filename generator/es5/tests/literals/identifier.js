@@ -1,5 +1,5 @@
 $module('identifier', function () {
-  var $instance = this;
+  var $static = this;
   this.cls('SomeClass', function () {
     var $static = this;
     var $instance = this.prototype;
@@ -10,11 +10,10 @@ $module('identifier', function () {
       return instance;
     };
   });
-  $instance.AnotherFunction = function () {
+  $static.AnotherFunction = function () {
     return $promise.empty();
   };
-  $instance.DoSomething = function (someParam) {
-    var $this = this;
+  $static.DoSomething = function (someParam) {
     var $state = {
       current: 0,
       returnValue: null,

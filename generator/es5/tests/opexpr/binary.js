@@ -1,5 +1,5 @@
 $module('binary', function () {
-  var $instance = this;
+  var $static = this;
   this.cls('SomeClass', function () {
     var $static = this;
     var $instance = this.prototype;
@@ -10,8 +10,7 @@ $module('binary', function () {
       return instance;
     };
   });
-  $instance.DoSomething = function (first, second) {
-    var $this = this;
+  $static.DoSomething = function (first, second) {
     var $state = {
       current: 0,
       returnValue: null,

@@ -1,7 +1,6 @@
 $module('boolean', function () {
-  var $instance = this;
-  $instance.SomeFunction = function (first, second) {
-    var $this = this;
+  var $static = this;
+  $static.SomeFunction = function (first, second) {
     var $state = {
       current: 0,
       returnValue: null,

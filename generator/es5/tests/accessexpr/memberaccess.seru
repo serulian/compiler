@@ -1,0 +1,25 @@
+import maimport
+from maimport import AnotherFunction
+from maimport import AnotherFunction as af
+
+class SomeClass {
+	var<int> someInt = 2
+
+	constructor Build() {
+		return SomeClass.new()
+	}
+}
+
+function<void> DoSomething(sc SomeClass, scn SomeClass?) {
+	sc.someInt
+	SomeClass.Build
+
+	sc->someInt
+	SomeClass->Build
+
+	scn?.someInt
+
+	maimport.AnotherFunction
+	AnotherFunction
+	af
+}

@@ -1,5 +1,5 @@
 $module('this', function () {
-  var $instance = this;
+  var $static = this;
   this.cls('SomeClass', function () {
     var $static = this;
     var $instance = this.prototype;

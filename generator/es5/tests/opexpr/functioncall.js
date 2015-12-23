@@ -1,10 +1,6 @@
 $module('functioncall', function () {
-  var $instance = this;
-  $instance.AnotherFunction = function (someparam) {
-    return $promise.empty();
-  };
-  $instance.DoSomething = function () {
-    var $this = this;
+  var $static = this;
+  $static.DoSomething = function () {
     var $state = {
       current: 0,
       returnValue: null,
@@ -39,5 +35,8 @@ $module('functioncall', function () {
       }
     };
     return $promise.build($state);
+  };
+  $static.AnotherFunction = function (someparam) {
+    return $promise.empty();
   };
 });

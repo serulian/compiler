@@ -1,5 +1,5 @@
 $module('genericspecifier', function () {
-  var $instance = this;
+  var $static = this;
   this.cls('SomeClass', function (T) {
     var $static = this;
     var $instance = this.prototype;
@@ -10,14 +10,13 @@ $module('genericspecifier', function () {
       return instance;
     };
   });
-  $instance.SomeFunction = function (T, Q) {
+  $static.SomeFunction = function (T, Q) {
     var $f = function () {
       return $promise.empty();
     };
     return $f;
   };
-  $instance.DoSomething = function () {
-    var $this = this;
+  $static.DoSomething = function () {
     var $state = {
       current: 0,
       returnValue: null,

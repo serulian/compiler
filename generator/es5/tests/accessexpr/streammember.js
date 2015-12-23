@@ -1,5 +1,5 @@
 $module('streammember', function () {
-  var $instance = this;
+  var $static = this;
   this.cls('SomeClass', function () {
     var $static = this;
     var $instance = this.prototype;
@@ -11,8 +11,7 @@ $module('streammember', function () {
       return instance;
     };
   });
-  $instance.AnotherThing = function (somestream) {
-    var $this = this;
+  $static.AnotherThing = function (somestream) {
     var $state = {
       current: 0,
       returnValue: null,
