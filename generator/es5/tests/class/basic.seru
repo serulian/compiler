@@ -1,0 +1,10 @@
+function<int> CoolFunction() {
+	return 4
+}
+
+class SomeClass {
+	var<int> SomeInt = 2
+	var<int> AnotherInt = CoolFunction()
+
+	function<void> AnotherFunction() {}
+}

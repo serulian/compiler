@@ -3,11 +3,12 @@ $module('this', function () {
   this.cls('SomeClass', function () {
     var $static = this;
     var $instance = this.prototype;
-    $static.$new = function () {
+    $static.new = function ($callback) {
       var instance = new $static();
-      function () {
-      }.call(instance);
-      return instance;
+      var init = [];
+      return $promise.all(init).then(function () {
+        return instance;
+      });
     };
     $instance.DoSomething = function () {
       var $this = this;
@@ -34,4 +35,5 @@ $module('this', function () {
       return $promise.build($state);
     };
   });
+
 });

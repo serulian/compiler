@@ -20,6 +20,7 @@ func formatSource(source string) string {
 	// Parse the ES source.
 	program, err := parser.ParseFile(nil, "", source, 0)
 	if err != nil {
+		fmt.Printf("Parse error in source: %v", source)
 		panic(err)
 	}
 

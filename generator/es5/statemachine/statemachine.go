@@ -18,6 +18,13 @@ import (
 	"github.com/serulian/compiler/parser"
 )
 
+// GeneratedMachine represents the result of a Build call.
+type GeneratedMachine struct {
+	Source          string
+	HasSource       bool
+	FinalExpression string
+}
+
 // A variable declared in the state machine.
 type variable struct {
 	Name        string // The name of the variable.
@@ -35,12 +42,6 @@ type stateMachine struct {
 
 	startStateMap map[compilergraph.GraphNodeId]*state // The start states.
 	endStateMap   map[compilergraph.GraphNodeId]*state // The start end.
-}
-
-// GeneratedMachine represents the result of a Build call.
-type GeneratedMachine struct {
-	Source    string
-	HasSource bool
 }
 
 // buildStateMachine builds a new state machine for the given node.
@@ -61,25 +62,49 @@ func buildStateMachine(node compilergraph.GraphNode, templater *templater.Templa
 	return machine
 }
 
-// Build creates a new state machine for the given generator.
+// Build creates a new state machine for the given node.
 func Build(node compilergraph.GraphNode, templater *templater.Templater, pather *es5pather.Pather, scopegraph *scopegraph.ScopeGraph) GeneratedMachine {
 	return buildStateMachine(node, templater, pather, scopegraph).buildGeneratedMachine()
+}
+
+// BuildExpression creates a new state machine for the given expression node. The created state machine will return
+// the final expression value.
+func BuildExpression(node compilergraph.GraphNode, templater *templater.Templater, pather *es5pather.Pather, scopegraph *scopegraph.ScopeGraph) GeneratedMachine {
+	machine := buildStateMachine(node, templater, pather, scopegraph)
+
+	if machine.states.Len() > 1 {
+		machine.endStateMap[node.NodeId].pushSource(templater.Execute("buildexpr", `
+		$state.returnValue = {{ . }};
+		$state.current = -1;
+		$callback($state);
+		return;
+	`, machine.endStateMap[node.NodeId].expression))
+	}
+
+	return machine.buildGeneratedMachine()
 }
 
 // buildGeneratedMachine builds the final GeneratedMachine struct for this state machine.
 func (sm *stateMachine) buildGeneratedMachine() GeneratedMachine {
 	filtered := sm.filterStates()
+
 	if len(filtered) > 0 {
 		filtered[len(filtered)-1].pushSource(`
-		$state.current = -1;
-		return;
-	`)
+			$state.current = -1;
+			return;
+		`)
+	}
+
+	var finalExpression = ""
+	if sm.states.Len() > 0 {
+		finalExpression = sm.states.Back().Value.(*state).expression
 	}
 
 	source, hasSource := sm.source(filtered)
 	return GeneratedMachine{
-		Source:    source,
-		HasSource: hasSource,
+		Source:          source,
+		HasSource:       hasSource,
+		FinalExpression: finalExpression,
 	}
 }
 

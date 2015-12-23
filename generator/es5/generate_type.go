@@ -7,6 +7,8 @@ package es5
 import (
 	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/graphs/typegraph"
+
+	"github.com/cevaris/ordered_map"
 )
 
 // generateTypes generates all the types under the  given modules into ES5.
@@ -71,7 +73,7 @@ func (gt generatingType) GenerateImplementedMembers() map[typegraph.TGMember]str
 }
 
 // GenerateVariables generates the source for all the variables defined under the type.
-func (gt generatingType) GenerateVariables() map[typegraph.TGMember]string {
+func (gt generatingType) GenerateVariables() *ordered_map.OrderedMap {
 	return gt.Generator.generateVariables(gt.Type)
 }
 
@@ -84,15 +86,19 @@ this.cls('{{ .Type.Name }}', function({{ .Generics }}) {
 	var $static = this;
     var $instance = this.prototype;
 
-	$static.$new = function() {
+    {{ $vars := .GenerateVariables }}
+    {{ if $vars.Iter }}
+	$static.new = function($callback) {
 		var instance = new $static();
-		(function() {
-		{{range $member, $source := .GenerateVariables }}
-	  	  {{ $source }}
-  		{{end}}
-  		}).call(instance);
-		return instance;
+		var init = [];
+		{{ range $idx, $kv := $vars.Iter }}
+			init.push(({{ $kv.Value }})());
+		{{ end }}
+		return $promise.all(init).then(function() {
+			return instance;
+		});
 	};
+	{{ end }}
 
 	{{range $member, $source := .GenerateImplementedMembers }}
   	  {{ $source }}

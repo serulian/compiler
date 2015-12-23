@@ -13,9 +13,9 @@ $module('with', function () {
             case 0:
               123;
               $withExpr$1 = someExpr;
-              $state.$pushRAII('$withExpr$1', $withExpr$1);
+              $t.pushr($state, '$withExpr$1', $withExpr$1);
               456;
-              $state.$popRAII('$withExpr$1');
+              $t.popr($state, '$withExpr$1');
               789;
               $state.current = -1;
               return;

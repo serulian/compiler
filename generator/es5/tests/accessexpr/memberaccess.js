@@ -3,12 +3,17 @@ $module('memberaccess', function () {
   this.cls('SomeClass', function () {
     var $static = this;
     var $instance = this.prototype;
-    $static.$new = function () {
+    $static.new = function ($callback) {
       var instance = new $static();
-      function () {
-        this.someInt = TODO;
-      }.call(instance);
-      return instance;
+      var init = [];
+      init.push(function () {
+        return $promise.wrap(function () {
+          $this.someInt = 2;
+        });
+      }());
+      return $promise.all(init).then(function () {
+        return instance;
+      });
     };
     $static.Build = function () {
       var $state = {
@@ -48,6 +53,7 @@ $module('memberaccess', function () {
       return $promise.build($state);
     };
   });
+
   $static.DoSomething = function (sc, scn) {
     var $state = {
       current: 0,

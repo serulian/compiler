@@ -3,14 +3,20 @@ $module('streammember', function () {
   this.cls('SomeClass', function () {
     var $static = this;
     var $instance = this.prototype;
-    $static.$new = function () {
+    $static.new = function ($callback) {
       var instance = new $static();
-      function () {
-        this.SomeInt = TODO;
-      }.call(instance);
-      return instance;
+      var init = [];
+      init.push(function () {
+        return $promise.wrap(function () {
+          $this.SomeInt = 2;
+        });
+      }());
+      return $promise.all(init).then(function () {
+        return instance;
+      });
     };
   });
+
   $static.AnotherThing = function (somestream) {
     var $state = {
       current: 0,

@@ -1,17 +1,20 @@
 $module('cast', function () {
   var $static = this;
+  this.interface('ISomeInterface', function () {
+  });
+
   this.cls('SomeClass', function () {
     var $static = this;
     var $instance = this.prototype;
-    $static.$new = function () {
+    $static.new = function ($callback) {
       var instance = new $static();
-      function () {
-      }.call(instance);
-      return instance;
+      var init = [];
+      return $promise.all(init).then(function () {
+        return instance;
+      });
     };
   });
-  this.interface('ISomeInterface', function () {
-  });
+
   $static.DoSomething = function (i) {
     var $state = {
       current: 0,

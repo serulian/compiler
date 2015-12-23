@@ -43,6 +43,9 @@ func (gt *generationTest) writeExpected(value string) {
 }
 
 var tests = []generationTest{
+	generationTest{"basic module test", "module", "basic"},
+	generationTest{"basic class test", "class", "basic"},
+
 	generationTest{"conditional statement", "statements", "conditional"},
 	generationTest{"conditional else statement", "statements", "conditionalelse"},
 	generationTest{"chained conditional statement", "statements", "chainedconditional"},

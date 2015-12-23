@@ -94,7 +94,7 @@ func (sm *stateMachine) generateWithStatement(node compilergraph.GraphNode, pare
 
 	exprInfo.endState.pushSource(sm.templater.Execute("withinit", `
 		{{ .TargetName }} = {{ .TargetExpr }};
-		$state.$pushRAII('{{ .TargetName }}', {{ .TargetName }});
+		$t.pushr($state, '{{ .TargetName }}', {{ .TargetName }});
 	`, data))
 
 	// Add the with block.
@@ -102,7 +102,7 @@ func (sm *stateMachine) generateWithStatement(node compilergraph.GraphNode, pare
 
 	// Add code to pop the with expression.
 	blockInfo.endState.pushSource(sm.templater.Execute("withteardown", `
-		$state.$popRAII('{{ .TargetName }}');
+		$t.popr($state, '{{ .TargetName }}');
 	`, data))
 
 	sm.markStates(node, parentState, blockInfo.endState)
@@ -216,7 +216,6 @@ func (sm *stateMachine) generateLoopStatement(node compilergraph.GraphNode, pare
 			itemVarName := sm.addVariableMapping(varNode)
 
 			// Ask the stream for the next item.
-			// TODO(jschorr): This need to be a function call.
 			data := struct {
 				ItemVarName     string
 				StreamExpr      string
