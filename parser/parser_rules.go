@@ -1054,8 +1054,8 @@ func (p *sourceParser) tryConsumeAssignStatement() (AstNode, bool) {
 func (p *sourceParser) lookaheadAssignStatement() bool {
 	t := p.newLookaheadTracker()
 
-	// Match the opening identifier.
-	if _, ok := t.matchToken(tokenTypeIdentifer); !ok {
+	// Match the opening identifier or keyword (this).
+	if _, ok := t.matchToken(tokenTypeIdentifer, tokenTypeKeyword); !ok {
 		return false
 	}
 

@@ -1,16 +1,16 @@
 NodeTypeFile
-  end-rune = 64
+  end-rune = 83
   input-source = known issue 4 test
   start-rune = 0
   child-node =>
     NodeTypeFunction
-      end-rune = 64
+      end-rune = 83
       input-source = known issue 4 test
       named = AnotherFunction
       start-rune = 0
       definition-body =>
         NodeTypeStatementBlock
-          end-rune = 64
+          end-rune = 83
           input-source = known issue 4 test
           start-rune = 45
           block-child =>
@@ -36,6 +36,27 @@ NodeTypeFile
                       identexpr-name = sc
                       input-source = known issue 4 test
                       start-rune = 48
+            NodeTypeAssignStatement
+              end-rune = 81
+              input-source = known issue 4 test
+              start-rune = 65
+              assign-statement-expr =>
+                NodeNumericLiteralExpression
+                  end-rune = 81
+                  input-source = known issue 4 test
+                  literal-value = 5
+                  start-rune = 81
+              assign-statement-name =>
+                NodeMemberAccessExpression
+                  end-rune = 77
+                  input-source = known issue 4 test
+                  member-access-identifier = SomeProp
+                  start-rune = 65
+                  member-access-expr =>
+                    NodeThisLiteralExpression
+                      end-rune = 68
+                      input-source = known issue 4 test
+                      start-rune = 65
       typemember-parameter =>
         NodeTypeParameter
           end-rune = 42

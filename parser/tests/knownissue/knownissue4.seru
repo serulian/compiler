@@ -1,3 +1,4 @@
 function<void> AnotherFunction(sc SomeClass) {
 	sc.SomeProp = 4
+	this.SomeProp = 5
 }
