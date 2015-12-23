@@ -39,6 +39,15 @@ func (sg *ScopeGraph) GetReferencedName(scope proto.ScopeInfo) (ReferencedName, 
 	}
 }
 
+// IsStatic returns true if the referenced name is static.
+func (rn ReferencedName) IsStatic() bool {
+	if rn.typeInfo != nil {
+		return rn.typeInfo.IsType()
+	} else {
+		return rn.srgInfo.IsStatic()
+	}
+}
+
 // IsLocal returns true if the referenced name is in the local scope.
 func (rn ReferencedName) IsLocal() bool {
 	return rn.typeInfo == nil

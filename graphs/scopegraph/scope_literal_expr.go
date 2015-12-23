@@ -138,14 +138,14 @@ func (sb *scopeBuilder) scopeThisLiteralExpression(node compilergraph.GraphNode)
 		return newScope().Invalid().GetScope()
 	}
 
-	if tgMember.IsStatic() {
-		sb.decorateWithError(node, "The 'this' keyword cannot be used under static type member %v", tgMember.Name())
-		return newScope().Invalid().GetScope()
-	}
-
 	tgType, hasParentType := tgMember.ParentType()
 	if !hasParentType {
 		sb.decorateWithError(node, "The 'this' keyword cannot be used under module member %v", tgMember.Name())
+		return newScope().Invalid().GetScope()
+	}
+
+	if tgMember.IsStatic() {
+		sb.decorateWithError(node, "The 'this' keyword cannot be used under static type member %v", tgMember.Name())
 		return newScope().Invalid().GetScope()
 	}
 

@@ -335,6 +335,11 @@ func (t *TypeGraph) buildTypeMemberNode(parent TGTypeOrModule, member srg.SRGMem
 		}
 	}
 
+	// If the member is under a module, then it is static.
+	if !parent.IsType() {
+		memberNode.Decorate(NodePredicateMemberStatic, "true")
+	}
+
 	// Set the member type, read-only and type signature.
 	memberNode.DecorateWithTagged(NodePredicateMemberType, memberType)
 
