@@ -32,6 +32,10 @@ $module('genericspecifier', function () {
               $g.genericspecifier.SomeClass($g.____graphs.typegraph.tests.testlib.basictypes.Boolean);
               $state.current = -1;
               return;
+
+            default:
+              $state.current = -1;
+              return;
           }
         }
       } catch (e) {

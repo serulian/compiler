@@ -18,6 +18,10 @@ $module('string', function () {
               'escaped \' quote';
               $state.current = -1;
               return;
+
+            default:
+              $state.current = -1;
+              return;
           }
         }
       } catch (e) {

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/serulian/compiler/compilercommon"
@@ -45,6 +46,7 @@ func (gt *generationTest) writeExpected(value string) {
 var tests = []generationTest{
 	generationTest{"basic module test", "module", "basic"},
 	generationTest{"basic class test", "class", "basic"},
+	generationTest{"class property test", "class", "property"},
 
 	generationTest{"conditional statement", "statements", "conditional"},
 	generationTest{"conditional else statement", "statements", "conditionalelse"},
@@ -93,6 +95,10 @@ var tests = []generationTest{
 func TestGenerator(t *testing.T) {
 	for _, test := range tests {
 		entrypointFile := "tests/" + test.input + "/" + test.entrypoint + ".seru"
+
+		if os.Getenv("FILTER") != "" && !strings.Contains(test.name, os.Getenv("FILTER")) {
+			continue
+		}
 
 		graph, err := compilergraph.NewGraph(entrypointFile)
 		if err != nil {

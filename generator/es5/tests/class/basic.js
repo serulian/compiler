@@ -38,6 +38,10 @@ $module('basic', function () {
                   $state.current = -1;
                   $callback($state);
                   return;
+
+                default:
+                  $state.current = -1;
+                  return;
               }
             }
           } catch (e) {
@@ -70,6 +74,10 @@ $module('basic', function () {
               $state.returnValue = 4;
               $state.current = -1;
               $callback($state);
+              return;
+
+            default:
+              $state.current = -1;
               return;
           }
         }

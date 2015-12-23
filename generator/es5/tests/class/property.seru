@@ -1,0 +1,16 @@
+class SomeClass {
+	var<int> SomeInt = 2
+
+	property<int> SomeProp {
+		get { return this.SomeInt }
+		set {
+			this.SomeInt = val
+		}
+	}
+}
+
+function<void> AnotherFunction(sc SomeClass) {
+	sc.SomeInt
+	sc.SomeProp
+	sc.SomeProp = 4
+}

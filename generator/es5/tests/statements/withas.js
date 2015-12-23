@@ -19,6 +19,10 @@ $module('withas', function () {
               789;
               $state.current = -1;
               return;
+
+            default:
+              $state.current = -1;
+              return;
           }
         }
       } catch (e) {

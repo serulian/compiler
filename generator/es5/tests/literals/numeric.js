@@ -15,6 +15,10 @@ $module('numeric', function () {
               3.14159;
               $state.current = -1;
               return;
+
+            default:
+              $state.current = -1;
+              return;
           }
         }
       } catch (e) {

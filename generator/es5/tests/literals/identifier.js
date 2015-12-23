@@ -33,6 +33,10 @@ $module('identifier', function () {
               someVar;
               $state.current = -1;
               return;
+
+            default:
+              $state.current = -1;
+              return;
           }
         }
       } catch (e) {

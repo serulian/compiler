@@ -108,6 +108,10 @@ $module('compare', function () {
               $returnValue$6 >= 0;
               $state.current = -1;
               return;
+
+            default:
+              $state.current = -1;
+              return;
           }
         }
       } catch (e) {

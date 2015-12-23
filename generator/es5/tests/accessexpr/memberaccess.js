@@ -42,6 +42,10 @@ $module('memberaccess', function () {
                 $state.current = -1;
                 $callback($state);
                 return;
+
+              default:
+                $state.current = -1;
+                return;
             }
           }
         } catch (e) {
@@ -72,6 +76,10 @@ $module('memberaccess', function () {
               $g.maimport.AnotherFunction;
               $g.maimport.AnotherFunction;
               $g.maimport.AnotherFunction;
+              $state.current = -1;
+              return;
+
+            default:
               $state.current = -1;
               return;
           }

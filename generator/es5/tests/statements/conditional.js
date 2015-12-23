@@ -21,6 +21,10 @@ $module('conditional', function () {
               123;
               $state.current = 2;
               continue;
+
+            default:
+              $state.current = -1;
+              return;
           }
         }
       } catch (e) {

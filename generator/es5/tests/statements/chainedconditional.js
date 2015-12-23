@@ -43,6 +43,10 @@ $module('chainedconditional', function () {
             case 5:
               $state.current = 6;
               continue;
+
+            default:
+              $state.current = -1;
+              return;
           }
         }
       } catch (e) {

@@ -23,6 +23,10 @@ $module('mini', function () {
                           $state.returnValue = someParam;
                           $state.current = -1;
                           return;
+
+                        default:
+                          $state.current = -1;
+                          return;
                       }
                     }
                   } catch (e) {
@@ -33,6 +37,10 @@ $module('mini', function () {
                 };
                 return $promise.build($state);
               };
+              $state.current = -1;
+              return;
+
+            default:
               $state.current = -1;
               return;
           }

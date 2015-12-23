@@ -214,6 +214,9 @@ func (sm *stateMachine) generateWithAccessOption(node compilergraph.GraphNode, p
 	case parser.NodeThisLiteralExpression:
 		sm.generateThisLiteral(node, parentState)
 
+	case parser.NodeValLiteralExpression:
+		sm.generateValLiteral(node, parentState)
+
 	default:
 		panic(fmt.Sprintf("Unknown SRG node: %s", node.Kind))
 	}

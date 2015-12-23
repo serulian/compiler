@@ -13,6 +13,10 @@ $module('varnoinit', function () {
               1234;
               $state.current = -1;
               return;
+
+            default:
+              $state.current = -1;
+              return;
           }
         }
       } catch (e) {

@@ -26,6 +26,10 @@ $module('conditionalelse', function () {
               456;
               $state.current = 3;
               continue;
+
+            default:
+              $state.current = -1;
+              return;
           }
         }
       } catch (e) {

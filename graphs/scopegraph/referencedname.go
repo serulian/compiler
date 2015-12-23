@@ -39,6 +39,15 @@ func (sg *ScopeGraph) GetReferencedName(scope proto.ScopeInfo) (ReferencedName, 
 	}
 }
 
+// ReferencedNode returns the named node underlying this referenced name.
+func (rn ReferencedName) ReferencedNode() compilergraph.GraphNode {
+	if rn.typeInfo != nil {
+		return rn.typeInfo.Node()
+	} else {
+		return rn.srgInfo.GraphNode
+	}
+}
+
 // IsStatic returns true if the referenced name is static.
 func (rn ReferencedName) IsStatic() bool {
 	if rn.typeInfo != nil {
@@ -51,6 +60,21 @@ func (rn ReferencedName) IsStatic() bool {
 // IsLocal returns true if the referenced name is in the local scope.
 func (rn ReferencedName) IsLocal() bool {
 	return rn.typeInfo == nil
+}
+
+// IsProperty returns true if the referenced name is to a property.
+func (rn ReferencedName) IsProperty() bool {
+	member, isMember := rn.Member()
+	if !isMember {
+		return false
+	}
+
+	srgMember, hasSRGMember := member.SRGMember()
+	if !hasSRGMember {
+		return false
+	}
+
+	return srgMember.MemberKind() == srg.PropertyMember
 }
 
 // Member returns the type member referred to by this referenced, if any.

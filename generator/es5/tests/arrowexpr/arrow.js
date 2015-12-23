@@ -26,6 +26,10 @@ $module('arrow', function () {
               someint;
               $state.current = -1;
               return;
+
+            default:
+              $state.current = -1;
+              return;
           }
         }
       } catch (e) {

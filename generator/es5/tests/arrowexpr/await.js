@@ -27,6 +27,10 @@ $module('await', function () {
               $state.current = -1;
               $callback($state);
               return;
+
+            default:
+              $state.current = -1;
+              return;
           }
         }
       } catch (e) {

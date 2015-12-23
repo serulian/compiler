@@ -59,6 +59,11 @@ func (sm *stateMachine) generateStringLiteral(node compilergraph.GraphNode, pare
 	parentState.pushExpression(stringValueStr)
 }
 
+// generateValLiteral generates the state machine for the val literal.
+func (sm *stateMachine) generateValLiteral(node compilergraph.GraphNode, parentState *state) {
+	parentState.pushExpression("val")
+}
+
 // generateThisLiteral generates the state machine for the this literal.
 func (sm *stateMachine) generateThisLiteral(node compilergraph.GraphNode, parentState *state) {
 	parentState.pushExpression("$this")

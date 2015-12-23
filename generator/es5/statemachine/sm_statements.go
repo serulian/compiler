@@ -134,21 +134,53 @@ func (sm *stateMachine) generateAssignStatement(node compilergraph.GraphNode, pa
 	exprInfo := sm.generate(node.GetNode(parser.NodeAssignStatementValue), parentState)
 
 	// TODO: handle multiple assignment.
-	// TODO: handle properties.
 	nameScope, _ := sm.scopegraph.GetScope(node.GetNode(parser.NodeAssignStatementName))
-	namedRefNode, _ := nameScope.NamedReferenceNode(sm.scopegraph.TypeGraph())
-	name := sm.addVariableMapping(namedRefNode)
+	namedReference, _ := sm.scopegraph.GetReferencedName(nameScope)
 
-	data := struct {
-		TargetName string
-		TargetExpr string
-	}{name, exprInfo.expression}
+	if namedReference.IsProperty() {
+		// This is a property assignment, which is a function call to the property with a value.
+		setterInfo := sm.generateWithAccessOption(node.GetNode(parser.NodeAssignStatementName), exprInfo.endState, memberAccessSet)
 
-	exprInfo.endState.pushSource(sm.templater.Execute("assignstatement", `
-		{{ .TargetName }} = {{ .TargetExpr }};
-	`, data))
+		returnValueVariable := sm.addVariable("$setValue")
+		returnReceiveState := sm.newState()
+		returnReceiveState.pushExpression(returnValueVariable)
 
-	sm.markStates(node, parentState, exprInfo.endState)
+		data := asyncFunctionCallData{
+			CallExpr:            setterInfo.expression,
+			Arguments:           []generatedStateInfo{exprInfo},
+			ReturnValueVariable: returnValueVariable,
+			ReturnState:         returnReceiveState,
+		}
+		sm.addAsyncFunctionCall(exprInfo.endState, data)
+		sm.markStates(node, parentState, returnReceiveState)
+	} else if namedReference.IsLocal() {
+		namedRefNode := namedReference.ReferencedNode()
+		name := sm.addVariableMapping(namedRefNode)
+
+		data := struct {
+			TargetExpr string
+			SourceExpr string
+		}{name, exprInfo.expression}
+
+		exprInfo.endState.pushSource(sm.templater.Execute("assignstatement", `
+			{{ .TargetExpr }} = {{ .SourceExpr }};
+		`, data))
+
+		sm.markStates(node, parentState, exprInfo.endState)
+	} else {
+		setterInfo := sm.generateWithAccessOption(node.GetNode(parser.NodeAssignStatementName), exprInfo.endState, memberAccessSet)
+
+		data := struct {
+			TargetExpr string
+			SourceExpr string
+		}{setterInfo.expression, exprInfo.expression}
+
+		setterInfo.endState.pushSource(sm.templater.Execute("assignstatement", `
+			{{ .TargetExpr }} = {{ .SourceExpr }};
+		`, data))
+
+		sm.markStates(node, parentState, setterInfo.endState)
+	}
 }
 
 // generateStatementBlock generates the state machine for a statement block.

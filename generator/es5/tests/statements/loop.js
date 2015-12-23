@@ -21,6 +21,10 @@ $module('loop', function () {
             case 3:
               $state.current = -1;
               return;
+
+            default:
+              $state.current = -1;
+              return;
           }
         }
       } catch (e) {

@@ -29,17 +29,37 @@ func (sm *stateMachine) generateMemberAccessExpression(node compilergraph.GraphN
 		return
 	}
 
-	// Otherwise, generate as an access under the child expression.
+	// Generate the call to retrieve the member.
 	childExprInfo := sm.generate(node.GetNode(parser.NodeMemberAccessChildExpr), parentState)
 
-	// Add a function call to retrieve the member under the stream.
 	data := struct {
 		ChildExpr  string
 		MemberName string
 	}{childExprInfo.expression, node.Get(parser.NodeMemberAccessIdentifier)}
 
-	childExprInfo.endState.pushExpression(sm.templater.Execute("memberaccess", templateStr, data))
+	getMemberExpr := sm.templater.Execute("memberaccess", templateStr, data)
 
+	// If the scope is a named reference to a property, then we need to turn the access into
+	// a function call (if a getter). Setter calls will be handled by the assign statement
+	// generation.
+	if option == memberAccessGet && hasNamedReference && namedReference.IsProperty() {
+		// Generate a function call to the getter.
+		returnValueVariable := sm.addVariable("$getValue")
+		returnReceiveState := sm.newState()
+		returnReceiveState.pushExpression(returnValueVariable)
+
+		data := asyncFunctionCallData{
+			CallExpr:            getMemberExpr,
+			Arguments:           []generatedStateInfo{},
+			ReturnValueVariable: returnValueVariable,
+			ReturnState:         returnReceiveState,
+		}
+		sm.addAsyncFunctionCall(childExprInfo.endState, data)
+		sm.markStates(node, parentState, returnReceiveState)
+		return
+	}
+
+	childExprInfo.endState.pushExpression(getMemberExpr)
 	sm.markStates(node, parentState, childExprInfo.endState)
 }
 

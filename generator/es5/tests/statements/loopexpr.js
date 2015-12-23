@@ -31,6 +31,10 @@ $module('loopexpr', function () {
               5678;
               $state.current = -1;
               return;
+
+            default:
+              $state.current = -1;
+              return;
           }
         }
       } catch (e) {

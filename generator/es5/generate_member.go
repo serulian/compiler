@@ -103,11 +103,59 @@ func (gm generatingMember) FunctionSource() string {
 	return statemachine.GenerateFunctionSource(gm, gm.Generator.templater, gm.Generator.pather, gm.Generator.scopegraph)
 }
 
+// GetterSource returns the generated code for the getter for this member.
+func (gm generatingMember) GetterSource() string {
+	getterNode, _ := gm.SRGMember.Getter()
+	getterBodyNode, _ := getterNode.Body()
+	getterBody := propertyBodyInfo{getterBodyNode, []string{""}}
+	return statemachine.GenerateFunctionSource(getterBody, gm.Generator.templater, gm.Generator.pather, gm.Generator.scopegraph)
+}
+
+// SetterSource returns the generated code for the setter for this member.
+func (gm generatingMember) SetterSource() string {
+	setterNode, _ := gm.SRGMember.Setter()
+	setterBodyNode, _ := setterNode.Body()
+	setterBody := propertyBodyInfo{setterBodyNode, []string{"val"}}
+	return statemachine.GenerateFunctionSource(setterBody, gm.Generator.templater, gm.Generator.pather, gm.Generator.scopegraph)
+}
+
+type propertyBodyInfo struct {
+	bodyNode       compilergraph.GraphNode
+	parameterNames []string
+}
+
+func (pbi propertyBodyInfo) BodyNode() compilergraph.GraphNode {
+	return pbi.bodyNode
+}
+
+func (pbi propertyBodyInfo) Parameters() []string {
+	return pbi.parameterNames
+}
+
+func (pbi propertyBodyInfo) Generics() []string {
+	return []string{}
+}
+
+func (pbi propertyBodyInfo) RequiresThis() bool {
+	return true
+}
+
 // functionTemplateStr defines the template for generating function members.
 const functionTemplateStr = `
 {{ if .Member.IsStatic }}$static{{ else }}$instance{{ end }}.{{ .Member.Name }} = {{ .FunctionSource }}`
 
 // propertyTemplateStr defines the template for generating properties.
 const propertyTemplateStr = `
-	// THIS
+{{ if .Member.IsStatic }}$static{{ else }}$instance{{ end }}.{{ .Member.Name }} = 
+	{{ if .Member.IsReadOnly }}
+		{{ .GetterSource }}
+	{{ else }}
+	function(opt_val) {
+		if (arguments.length == 0) {
+			return ({{ .GetterSource }}).call(this);
+		} else {
+			return ({{ .SetterSource }}).call(this, opt_val);
+		}
+	};
+	{{ end }}
 `

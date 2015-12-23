@@ -25,6 +25,10 @@ $module('full', function () {
                           $state.current = -1;
                           $callback($state);
                           return;
+
+                        default:
+                          $state.current = -1;
+                          return;
                       }
                     }
                   } catch (e) {
@@ -35,6 +39,10 @@ $module('full', function () {
                 };
                 return $promise.build($state);
               };
+              $state.current = -1;
+              return;
+
+            default:
               $state.current = -1;
               return;
           }

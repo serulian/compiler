@@ -28,6 +28,10 @@ $module('cast', function () {
               $t.cast(i, $g.cast.SomeClass);
               $state.current = -1;
               return;
+
+            default:
+              $state.current = -1;
+              return;
           }
         }
       } catch (e) {

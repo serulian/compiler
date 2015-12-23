@@ -258,6 +258,10 @@ const stateMachineTemplateStr = `
 						{{ .Source }}
 						break;
 					{{end}}
+
+					default:
+						$state.current = -1;
+						return;
 				}
 			}
 		} catch (e) {

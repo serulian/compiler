@@ -31,6 +31,10 @@ $module('continue', function () {
               2567;
               $state.current = -1;
               return;
+
+            default:
+              $state.current = -1;
+              return;
           }
         }
       } catch (e) {
