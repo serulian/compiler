@@ -76,6 +76,16 @@ func (tn TGMember) BaseMember() (TGMember, bool) {
 	return TGMember{parentMember, tn.tdg}, true
 }
 
+// BaseMemberSource returns the type from which this member was cloned/inherited, if any.
+func (tn TGMember) BaseMemberSource() (TypeReference, bool) {
+	source, found := tn.GraphNode.TryGetTagged(NodePredicateMemberBaseSource, tn.tdg.AnyTypeReference())
+	if !found {
+		return tn.tdg.AnyTypeReference(), false
+	}
+
+	return source.(TypeReference), true
+}
+
 // IsExported returns whether the member is exported.
 func (tn TGMember) IsExported() bool {
 	_, isExported := tn.GraphNode.TryGet(NodePredicateMemberExported)

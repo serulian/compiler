@@ -22,6 +22,11 @@ func (gen *es5generator) generateVariables(typeOrModule typegraph.TGTypeOrModule
 			continue
 		}
 
+		_, hasBaseMember := member.BaseMember()
+		if hasBaseMember {
+			continue
+		}
+
 		memberMap.Set(member, gen.generateVariable(member))
 	}
 

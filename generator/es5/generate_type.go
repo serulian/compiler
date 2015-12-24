@@ -60,6 +60,36 @@ func (gt generatingType) GenerateVariables() *ordered_map.OrderedMap {
 	return gt.Generator.generateVariables(gt.Type)
 }
 
+// GenerateComposition generates the source for all the composed types structurually inherited by the type.
+func (gt generatingType) GenerateComposition() *ordered_map.OrderedMap {
+	typeMap := ordered_map.NewOrderedMap()
+	parentTypes := gt.Type.ParentTypes()
+	for _, parentTypeRef := range parentTypes {
+		data := struct {
+			ComposedTypeLocation string
+			InnerInstanceName    string
+		}{
+			gt.Generator.pather.TypeReferenceCall(parentTypeRef),
+			gt.Generator.pather.InnerInstanceName(parentTypeRef),
+		}
+
+		source := gt.Generator.templater.Execute("composition", compositionTemplateStr, data)
+		typeMap.Set(parentTypeRef, source)
+	}
+
+	return typeMap
+}
+
+// compositionTemplateStr defines a template for instantiating a composed type.
+const compositionTemplateStr = `
+	function() {
+		var $this = this;
+		return ({{ .ComposedTypeLocation }}).new().then(function(value) {
+			$this.{{ .InnerInstanceName }} = value;
+		});
+	}
+`
+
 // genericsTemplateStr defines a template for generating generics.
 const genericsTemplateStr = `{{ range $index, $generic := .Generics }}{{ if $index }}, {{ end }}{{ $generic.Name }}{{ end }}`
 
@@ -70,10 +100,14 @@ this.cls('{{ .Type.Name }}', function({{ .Generics }}) {
     var $instance = this.prototype;
 
     {{ $vars := .GenerateVariables }}
-    {{ if $vars.Iter }}
+    {{ $composed := .GenerateComposition }}
+    {{ if or $vars.Iter $composed.Iter }}
 	$static.new = function() {
 		var instance = new $static();
 		var init = [];
+		{{range $idx, $kv := $composed.Iter }}
+			init.push(({{ $kv.Value }})());
+  		{{ end }}
 		{{ range $idx, $kv := $vars.Iter }}
 			init.push(({{ $kv.Value }})());
 		{{ end }}

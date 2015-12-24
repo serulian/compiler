@@ -132,6 +132,9 @@ const (
 	// Connects a member to the member in the parent type from which it was cloned.
 	NodePredicateMemberBaseMember = "member-base-member"
 
+	// Decorates a member with the type from which it was aliased.
+	NodePredicateMemberBaseSource = "member-base-source"
+
 	//
 	// NodeTypeOperator
 	//

@@ -67,6 +67,22 @@ func (p *Pather) TypeReferenceCall(typeRef typegraph.TypeReference) string {
 	return typePath + genericsString
 }
 
+// InnerInstanceName returns the name of an inner instance of the given type, when accessed under a
+// type instance which structurally composes it.
+func (p *Pather) InnerInstanceName(innerType typegraph.TypeReference) string {
+	var name = unidecode.Unidecode(innerType.ReferredTypeDecl().Name())
+	if !innerType.HasGenerics() {
+		return name
+	}
+
+	for _, generic := range innerType.Generics() {
+		name = name + "$"
+		name = name + p.InnerInstanceName(generic)
+	}
+
+	return name
+}
+
 // GetMemberName returns the name of the given member.
 func (p *Pather) GetMemberName(member typegraph.TGMember) string {
 	return strings.Replace(unidecode.Unidecode(member.Name()), "*", "$", 1)

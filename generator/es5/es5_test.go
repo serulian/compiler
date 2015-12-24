@@ -47,6 +47,7 @@ var tests = []generationTest{
 	generationTest{"basic module test", "module", "basic"},
 	generationTest{"basic class test", "class", "basic"},
 	generationTest{"class property test", "class", "property"},
+	generationTest{"class inheritance test", "class", "inheritance"},
 
 	generationTest{"conditional statement", "statements", "conditional"},
 	generationTest{"conditional else statement", "statements", "conditionalelse"},
@@ -68,6 +69,7 @@ var tests = []generationTest{
 
 	generationTest{"generic specifier expression", "accessexpr", "genericspecifier"},
 	generationTest{"cast expression", "accessexpr", "cast"},
+	generationTest{"structural cast expression", "accessexpr", "structuralcast"},
 	generationTest{"stream member access expression", "accessexpr", "streammember"},
 	generationTest{"member access expressions", "accessexpr", "memberaccess"},
 

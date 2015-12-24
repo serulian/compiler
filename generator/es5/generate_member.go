@@ -20,6 +20,12 @@ func (gen *es5generator) generateImplementedMembers(typeOrModule typegraph.TGTyp
 	memberMap := ordered_map.NewOrderedMap()
 	members := typeOrModule.Members()
 	for _, member := range members {
+		_, hasBaseMember := member.BaseMember()
+		if hasBaseMember {
+			memberMap.Set(member, gen.generateImplementedAliasedMember(member))
+			continue
+		}
+
 		if !member.HasImplementation() {
 			continue
 		}
@@ -30,10 +36,16 @@ func (gen *es5generator) generateImplementedMembers(typeOrModule typegraph.TGTyp
 	return memberMap
 }
 
+// generateImplementedAliasedMember generates the given member into an alias in ES5.
+func (gen *es5generator) generateImplementedAliasedMember(member typegraph.TGMember) string {
+	srgMember, _ := member.SRGMember()
+	generating := generatingMember{member, srgMember, gen}
+	return gen.templater.Execute("aliasedmember", aliasedMemberTemplateStr, generating)
+}
+
 // generateImplementedMember generates the given member into ES5.
 func (gen *es5generator) generateImplementedMember(member typegraph.TGMember) string {
 	srgMember, _ := member.SRGMember()
-
 	generating := generatingMember{member, srgMember, gen}
 
 	switch srgMember.MemberKind() {
@@ -98,6 +110,12 @@ func (gm generatingMember) BodyNode() compilergraph.GraphNode {
 	return bodyNode
 }
 
+// InnerInstanceName returns the path of the inner type at which this aliased member can be found.
+func (gm generatingMember) InnerInstanceName() string {
+	baseMemberSource, _ := gm.Member.BaseMemberSource()
+	return gm.Generator.pather.InnerInstanceName(baseMemberSource)
+}
+
 // FunctionSource returns the generated code for the implementation for this member.
 func (gm generatingMember) FunctionSource() string {
 	return statemachine.GenerateFunctionSource(gm, gm.Generator.templater, gm.Generator.pather, gm.Generator.scopegraph)
@@ -117,6 +135,11 @@ func (gm generatingMember) SetterSource() string {
 	setterBodyNode, _ := setterNode.Body()
 	setterBody := propertyBodyInfo{setterBodyNode, []string{"val"}}
 	return statemachine.GenerateFunctionSource(setterBody, gm.Generator.templater, gm.Generator.pather, gm.Generator.scopegraph)
+}
+
+// AliasRequiresSet returns whether a member (which is being aliased) requires a 'set' block.
+func (gm generatingMember) AliasRequiresSet() bool {
+	return gm.SRGMember.MemberKind() == srg.VarMember
 }
 
 type propertyBodyInfo struct {
@@ -139,6 +162,22 @@ func (pbi propertyBodyInfo) Generics() []string {
 func (pbi propertyBodyInfo) RequiresThis() bool {
 	return true
 }
+
+// aliasedMemberTemplateStr defines the template for generating an aliased member.
+const aliasedMemberTemplateStr = `
+  Object.defineProperty($instance, '{{ .Member.Name }}', {
+    get: function() {
+    	return $instance.{{ .InnerInstanceName }}.{{ .Member.Name }};
+    }
+
+    {{ if .AliasRequiresSet }}
+    ,
+    set: function(val) {
+    	$instance.{{ .InnerInstanceName }}.{{ .Member.Name }} = val;
+    }
+    {{ end }} 
+  });
+`
 
 // functionTemplateStr defines the template for generating function members.
 const functionTemplateStr = `

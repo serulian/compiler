@@ -94,6 +94,7 @@ func (t *TypeGraph) buildInheritedMembership(typeDecl TGTypeDecl, inherits []Typ
 			parentMemberNode := pit.Node()
 			memberNode := parentMemberNode.CloneExcept(NodePredicateMemberType)
 			memberNode.Connect(NodePredicateMemberBaseMember, parentMemberNode)
+			memberNode.DecorateWithTagged(NodePredicateMemberBaseSource, inherit)
 
 			typeNode.Connect(childPredicate, memberNode)
 

@@ -84,13 +84,31 @@ func (sm *stateMachine) generateStreamMemberAccessExpression(node compilergraph.
 // generateCastExpression generates the state machine for a cast expression.
 func (sm *stateMachine) generateCastExpression(node compilergraph.GraphNode, parentState *state) {
 	// Generate the states for the child expression.
+	childExprScope, _ := sm.scopegraph.GetScope(node.GetNode(parser.NodeCastExpressionChildExpr))
 	childExprInfo := sm.generate(node.GetNode(parser.NodeCastExpressionChildExpr), parentState)
 
 	// Determine the resulting type.
 	scope, _ := sm.scopegraph.GetScope(node)
 	resultingType := scope.ResolvedTypeRef(sm.scopegraph.TypeGraph())
 
-	// Add a function call with the generic type(s).
+	// If the resulting type is a structural subtype of the child expression's type, then
+	// we are accessing the automatically composited inner instance.
+	childType := childExprScope.ResolvedTypeRef(sm.scopegraph.TypeGraph())
+	if childType.CheckStructuralSubtypeOf(resultingType) {
+		data := struct {
+			ChildExpr         string
+			InnerInstanceName string
+		}{childExprInfo.expression, sm.pather.InnerInstanceName(resultingType)}
+
+		childExprInfo.endState.pushExpression(sm.templater.Execute("innerinstance", `
+			({{ .ChildExpr }}).{{ .InnerInstanceName }}
+		`, data))
+
+		sm.markStates(node, parentState, childExprInfo.endState)
+		return
+	}
+
+	// Otherwise, add a cast call with the cast type.
 	data := struct {
 		ChildExpr      string
 		CastTypeString string
