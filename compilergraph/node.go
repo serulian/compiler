@@ -159,6 +159,23 @@ func (gn GraphNode) TryGetNodeInLayer(predicateName string, layer *GraphLayer) (
 	return layer.TryGetNode(result)
 }
 
+// GetAllTagged returns the tagged values of the given predicate found on this node.
+func (gn GraphNode) GetAllTagged(predicateName string, example TaggedValue) []interface{} {
+	data := gn.GetAll(predicateName)
+	tagged := make([]interface{}, len(data))
+
+	for index, strValue := range data {
+		tagged[index] = gn.layer.parseTaggedKey(strValue, example)
+	}
+
+	return tagged
+}
+
+// GetAll returns the values of the given predicate found on this node.
+func (gn GraphNode) GetAll(predicateName string) []string {
+	return gn.StartQuery().Out(predicateName).GetValues()
+}
+
 // Get returns the value of the given predicate found on this node and panics otherwise.
 func (gn GraphNode) Get(predicateName string) string {
 	value, found := gn.TryGet(predicateName)

@@ -46,11 +46,17 @@ func (t *TypeGraph) buildMembership(typeDecl TGTypeDecl, srgType srg.SRGType, in
 		t.decorateWithSig(implicitConstructorNode, "name", uint64(parser.NodeTypeConstructor), false, false, constructorType)
 
 		typeDecl.GraphNode.Connect(NodePredicateMember, implicitConstructorNode)
+
+		// Mark the type with its inheritance.
+		for _, inherit := range inherits {
+			typeDecl.GraphNode.DecorateWithTagged(NodePredicateParentType, inherit)
+		}
 	}
 
 	// Copy over the type members and operators.
 	t.buildInheritedMembership(typeDecl, inherits, NodePredicateMember)
 	t.buildInheritedMembership(typeDecl, inherits, NodePredicateTypeOperator)
+
 	return success
 }
 
@@ -87,6 +93,7 @@ func (t *TypeGraph) buildInheritedMembership(typeDecl TGTypeDecl, inherits []Typ
 			// Create a new node of the same kind and copy over any predicates except the type.
 			parentMemberNode := pit.Node()
 			memberNode := parentMemberNode.CloneExcept(NodePredicateMemberType)
+			memberNode.Connect(NodePredicateMemberBaseMember, parentMemberNode)
 
 			typeNode.Connect(childPredicate, memberNode)
 

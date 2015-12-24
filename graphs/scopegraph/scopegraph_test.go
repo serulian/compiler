@@ -423,9 +423,16 @@ var scopeGraphTests = []scopegraphTest{
 
 	/////////// Cast expression ///////////
 
-	scopegraphTest{"cast success test", "castexpr", "success",
+	scopegraphTest{"cast interface success test", "castexpr", "success",
 		[]expectedScopeEntry{
 			expectedScopeEntry{"cast", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"cast subclass success test", "castexpr", "subclass",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"bc", expectedScope{true, proto.ScopeKind_VALUE, "BaseClass", "void"}},
+			expectedScopeEntry{"abc", expectedScope{true, proto.ScopeKind_VALUE, "AnotherBaseClass", "void"}},
 		},
 		"", ""},
 

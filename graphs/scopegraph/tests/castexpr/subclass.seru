@@ -1,0 +1,9 @@
+class BaseClass {}
+class AnotherBaseClass {}
+
+class SomeClass : BaseClass + AnotherBaseClass {}
+
+function<void> DoSomething(sc SomeClass) {
+  /* abc */(sc.(AnotherBaseClass))
+  /* bc */(sc.(BaseClass))
+}

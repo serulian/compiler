@@ -176,6 +176,23 @@ func (tr TypeReference) ExtractTypeDiff(otherRef TypeReference, diffType compile
 	return TypeReference{}, false
 }
 
+// CheckStructuralSubtypeOf checks that the current type reference refers to a type that is structurally deriving
+// from the given type reference's type.
+func (tr TypeReference) CheckStructuralSubtypeOf(other TypeReference) bool {
+	if !tr.isNormal() || !other.isNormal() {
+		return false
+	}
+
+	referredType := TGTypeDecl{tr.ReferredType(), tr.tdg}
+	for _, parentRef := range referredType.ParentTypes() {
+		if parentRef == other {
+			return true
+		}
+	}
+
+	return false
+}
+
 // CheckConcreteSubtypeOf checks that the current type reference refers to a type that is a concrete subtype
 // of the specified *generic* interface.
 func (tr TypeReference) CheckConcreteSubtypeOf(otherTypeNode compilergraph.GraphNode) ([]TypeReference, error) {
@@ -257,7 +274,6 @@ func (tr TypeReference) CheckConcreteSubtypeOf(otherTypeNode compilergraph.Graph
 		// used as the generic.
 		concreteType, found := localMember.MemberType().ExtractTypeDiff(matchingMember.MemberType(), typeGeneric.GraphNode)
 		if !found {
-			fmt.Printf("[[%v %v]]", localMember.MemberType(), matchingMember.MemberType())
 			// If not found, this is not a matching type.
 			return nil, fmt.Errorf("Type %v cannot be used in place of type %v as member %v does not have the same signature", tr, otherType.Name(), matchingMember.Name())
 		}

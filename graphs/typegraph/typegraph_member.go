@@ -66,6 +66,16 @@ func (tn TGMember) SRGMember() (srg.SRGMember, bool) {
 	return tn.tdg.srg.GetMemberReference(srgNode), true
 }
 
+// BaseMember returns the member in a parent type from which this member was cloned/inherited, if any.
+func (tn TGMember) BaseMember() (TGMember, bool) {
+	parentMember, hasParentMember := tn.GraphNode.TryGetNode(NodePredicateMemberBaseMember)
+	if !hasParentMember {
+		return TGMember{}, false
+	}
+
+	return TGMember{parentMember, tn.tdg}, true
+}
+
 // IsExported returns whether the member is exported.
 func (tn TGMember) IsExported() bool {
 	_, isExported := tn.GraphNode.TryGet(NodePredicateMemberExported)

@@ -124,8 +124,12 @@ func (sb *scopeBuilder) scopeCastExpression(node compilergraph.GraphNode) proto.
 		return newScope().Invalid().GetScope()
 	}
 
-	// Ensure the child expression is a subtype of the cast expression.
+	// Ensure the child expression is a subtype of the cast expression OR is a structural subtype.
 	childType := childScope.ResolvedTypeRef(sb.sg.tdg)
+	if childType.CheckStructuralSubtypeOf(castType) {
+		return newScope().Valid().Resolving(castType).GetScope()
+	}
+
 	if serr := castType.CheckSubTypeOf(childType); serr != nil {
 		sb.decorateWithError(node, "Cannot cast value of type '%v' to type '%v': %v", childType, castType, serr)
 		return newScope().Invalid().GetScope()

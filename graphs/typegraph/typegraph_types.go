@@ -82,6 +82,9 @@ const (
 	// Marks a type with its name.
 	NodePredicateTypeName = "type-name"
 
+	// Marks a type with a type reference to a parent type.
+	NodePredicateParentType = "parent-type"
+
 	//
 	// NodeTypeGeneric
 	//
@@ -125,6 +128,9 @@ const (
 
 	// Connects a member to a returnable definition, itself connected to an SRG node.
 	NodePredicateReturnable = "member-returnable"
+
+	// Connects a member to the member in the parent type from which it was cloned.
+	NodePredicateMemberBaseMember = "member-base-member"
 
 	//
 	// NodeTypeOperator

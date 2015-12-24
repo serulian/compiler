@@ -28,8 +28,6 @@ func New(graph *compilergraph.SerulianGraph) *Pather {
 // TypeReferenceCall returns source for retrieving an object reference to the type defined by the given
 // type reference.
 func (p *Pather) TypeReferenceCall(typeRef typegraph.TypeReference) string {
-	// TODO: nullable
-
 	if typeRef.IsAny() {
 		return "$t.any"
 	}

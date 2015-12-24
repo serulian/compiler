@@ -71,7 +71,7 @@ this.cls('{{ .Type.Name }}', function({{ .Generics }}) {
 
     {{ $vars := .GenerateVariables }}
     {{ if $vars.Iter }}
-	$static.new = function($callback) {
+	$static.new = function() {
 		var instance = new $static();
 		var init = [];
 		{{ range $idx, $kv := $vars.Iter }}
