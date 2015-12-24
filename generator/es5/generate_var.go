@@ -45,7 +45,7 @@ func (gen *es5generator) generateVariable(member typegraph.TGMember) string {
 func (gm generatingMember) Initializer() statemachine.GeneratedMachine {
 	initializer, _ := gm.SRGMember.Initializer()
 	gen := gm.Generator
-	return statemachine.BuildExpression(initializer, gen.templater, gen.pather, gen.scopegraph)
+	return statemachine.BuildExpression(initializer, "$this."+gm.Member.Name(), gen.templater, gen.pather, gen.scopegraph)
 }
 
 // variableTemplateStr defines the template for generating variables/fields.

@@ -41,7 +41,7 @@ $module('basic', function () {
             return;
 
           case 1:
-            $state.returnValue = $returnValue$1;
+            $this.anotherInt = $returnValue$1;
             $state.current = -1;
             $callback($state);
             return;

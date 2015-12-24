@@ -69,16 +69,21 @@ func Build(node compilergraph.GraphNode, templater *templater.Templater, pather 
 
 // BuildExpression creates a new state machine for the given expression node. The created state machine will return
 // the final expression value.
-func BuildExpression(node compilergraph.GraphNode, templater *templater.Templater, pather *es5pather.Pather, scopegraph *scopegraph.ScopeGraph) GeneratedMachine {
+func BuildExpression(node compilergraph.GraphNode, finalExprVar string, templater *templater.Templater, pather *es5pather.Pather, scopegraph *scopegraph.ScopeGraph) GeneratedMachine {
 	machine := buildStateMachine(node, templater, pather, scopegraph)
 
 	if machine.states.Len() > 1 {
+		data := struct {
+			FinalVar  string
+			FinalExpr string
+		}{finalExprVar, machine.endStateMap[node.NodeId].expression}
+
 		machine.endStateMap[node.NodeId].pushSource(templater.Execute("buildexpr", `
-		$state.returnValue = {{ . }};
+		{{ .FinalVar }} = {{ .FinalExpr }};
 		$state.current = -1;
 		$callback($state);
 		return;
-	`, machine.endStateMap[node.NodeId].expression))
+	`, data))
 	}
 
 	return machine.buildGeneratedMachine()
