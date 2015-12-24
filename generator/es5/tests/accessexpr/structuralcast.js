@@ -1,6 +1,6 @@
 $module('structuralcast', function () {
   var $static = this;
-  this.cls('BaseClass', function (T) {
+  this.$class('BaseClass', function (T) {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -12,7 +12,7 @@ $module('structuralcast', function () {
     };
   });
 
-  this.cls('SomeClass', function () {
+  this.$class('SomeClass', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {

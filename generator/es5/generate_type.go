@@ -95,7 +95,7 @@ const genericsTemplateStr = `{{ range $index, $generic := .Generics }}{{ if $ind
 
 // classTemplateStr defines the template for generating a class type.
 const classTemplateStr = `
-this.cls('{{ .Type.Name }}', function({{ .Generics }}) {
+this.$class('{{ .Type.Name }}', function({{ .Generics }}) {
 	var $static = this;
     var $instance = this.prototype;
 
@@ -125,7 +125,7 @@ this.cls('{{ .Type.Name }}', function({{ .Generics }}) {
 
 // interfaceTemplateStr defines the template for generating an interface type.
 const interfaceTemplateStr = `
-this.interface('{{ .Type.Name }}', function({{ .Generics }}) {
+this.$interface('{{ .Type.Name }}', function({{ .Generics }}) {
 	{{range $idx, $kv := .GenerateImplementedMembers.Iter }}
   	  {{ $kv.Value }}
   	{{end}}

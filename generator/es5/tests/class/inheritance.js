@@ -1,6 +1,6 @@
 $module('inheritance', function () {
   var $static = this;
-  this.cls('FirstClass', function () {
+  this.$class('FirstClass', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -20,7 +20,7 @@ $module('inheritance', function () {
     };
   });
 
-  this.cls('SecondClass', function () {
+  this.$class('SecondClass', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -40,7 +40,7 @@ $module('inheritance', function () {
     };
   });
 
-  this.cls('MainClass', function () {
+  this.$class('MainClass', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {

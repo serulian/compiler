@@ -1,6 +1,6 @@
 $module('genericspecifier', function () {
   var $static = this;
-  this.cls('SomeClass', function (T) {
+  this.$class('SomeClass', function (T) {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
