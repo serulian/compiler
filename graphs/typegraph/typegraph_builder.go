@@ -220,7 +220,7 @@ func (t *TypeGraph) translateTypeMembers() bool {
 			}
 
 			// Ensure the referred type is a class.
-			referredType := resolvedType.ReferredType()
+			referredType := resolvedType.referredTypeNode()
 			if referredType.Kind != NodeTypeClass {
 				switch referredType.Kind {
 				case NodeTypeGeneric:

@@ -3,7 +3,7 @@ $module('property', function () {
   this.cls('SomeClass', function () {
     var $static = this;
     var $instance = this.prototype;
-    $static.new = function ($callback) {
+    $static.new = function () {
       var instance = new $static();
       var init = [];
       init.push(function () {

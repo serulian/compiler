@@ -40,7 +40,7 @@ func (p *Pather) TypeReferenceCall(typeRef typegraph.TypeReference) string {
 		return "$t.void"
 	}
 
-	referredType := typeRef.ReferredTypeDecl()
+	referredType := typeRef.ReferredType()
 	if referredType.TypeKind() == typegraph.GenericType {
 		return referredType.Name()
 	}
@@ -70,7 +70,7 @@ func (p *Pather) TypeReferenceCall(typeRef typegraph.TypeReference) string {
 // InnerInstanceName returns the name of an inner instance of the given type, when accessed under a
 // type instance which structurally composes it.
 func (p *Pather) InnerInstanceName(innerType typegraph.TypeReference) string {
-	var name = unidecode.Unidecode(innerType.ReferredTypeDecl().Name())
+	var name = unidecode.Unidecode(innerType.ReferredType().Name())
 	if !innerType.HasGenerics() {
 		return name
 	}

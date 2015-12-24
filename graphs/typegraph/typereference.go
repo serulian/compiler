@@ -62,7 +62,7 @@ func (tr TypeReference) Verify() error {
 		return nil
 	}
 
-	referredType := TGTypeDecl{tr.ReferredType(), tr.tdg}
+	referredType := tr.ReferredType()
 
 	// Function type references are properly restricted based on the parser, so no checks to make.
 	if referredType.GraphNode == tr.tdg.FunctionType() {
@@ -116,7 +116,7 @@ func (tr TypeReference) ExtractTypeDiff(otherRef TypeReference, diffType compile
 	}
 
 	// If the referred type is not the same as the other ref's referred type, nothing more to do.
-	if tr.ReferredType() != otherRef.ReferredType() {
+	if tr.referredTypeNode() != otherRef.referredTypeNode() {
 		return TypeReference{}, false
 	}
 
@@ -136,7 +136,7 @@ func (tr TypeReference) ExtractTypeDiff(otherRef TypeReference, diffType compile
 
 		// If the type referred to by the generic is the diff type, then return the associated
 		// generic type in the local reference.
-		if genericRef.ReferredType() == diffType {
+		if genericRef.referredTypeNode() == diffType {
 			return localGenerics[index], true
 		}
 
@@ -162,7 +162,7 @@ func (tr TypeReference) ExtractTypeDiff(otherRef TypeReference, diffType compile
 
 		// If the type referred to by the parameter is the diff type, then return the associated
 		// parameter type in the local reference.
-		if parameterRef.ReferredType() == diffType {
+		if parameterRef.referredTypeNode() == diffType {
 			return localParameters[index], true
 		}
 
@@ -183,7 +183,7 @@ func (tr TypeReference) CheckStructuralSubtypeOf(other TypeReference) bool {
 		return false
 	}
 
-	referredType := TGTypeDecl{tr.ReferredType(), tr.tdg}
+	referredType := tr.ReferredType()
 	for _, parentRef := range referredType.ParentTypes() {
 		if parentRef == other {
 			return true
@@ -224,7 +224,7 @@ func (tr TypeReference) CheckConcreteSubtypeOf(otherTypeNode compilergraph.Graph
 		}
 	}
 
-	localType := TGTypeDecl{tr.ReferredType(), tr.tdg}
+	localType := tr.ReferredType()
 
 	// Fast check: If the referred type is the type expected, return it directly.
 	if localType.GraphNode == otherTypeNode {
@@ -344,8 +344,8 @@ func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
 		return nil
 	}
 
-	localType := TGTypeDecl{tr.ReferredType(), tr.tdg}
-	otherType := TGTypeDecl{other.ReferredType(), tr.tdg}
+	localType := tr.ReferredType()
+	otherType := other.ReferredType()
 
 	// If the other reference's type node is not an interface, then this reference cannot be a subtype.
 	if otherType.TypeKind() != InterfaceType {
@@ -396,7 +396,7 @@ func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
 // buildSubtypeMismatchError returns an error describing the mismatch between the two types for the given
 // member name.
 func buildSubtypeMismatchError(left TypeReference, right TypeReference, memberName string) error {
-	rightMember, rightExists := right.ReferredType().
+	rightMember, rightExists := right.referredTypeNode().
 		StartQuery().
 		Out(NodePredicateMember, NodePredicateTypeOperator).
 		Has(NodePredicateMemberName, memberName).
@@ -413,7 +413,7 @@ func buildSubtypeMismatchError(left TypeReference, right TypeReference, memberNa
 		memberName = rightMember.Get(NodePredicateOperatorName)
 	}
 
-	_, leftExists := left.ReferredType().
+	_, leftExists := left.referredTypeNode().
 		StartQuery().
 		Out(NodePredicateMember, NodePredicateTypeOperator).
 		Has(NodePredicateMemberName, memberName).
@@ -433,7 +433,7 @@ func buildSubtypeMismatchError(left TypeReference, right TypeReference, memberNa
 func (tr TypeReference) buildMemberSignaturesMap() map[string]string {
 	membersMap := map[string]string{}
 
-	mit := tr.ReferredType().StartQuery().
+	mit := tr.referredTypeNode().StartQuery().
 		Out(NodePredicateMember, NodePredicateTypeOperator).
 		BuildNodeIterator(NodePredicateMemberName)
 
@@ -451,11 +451,11 @@ func (tr TypeReference) buildMemberSignaturesMap() map[string]string {
 // does not refer to the node's parent type.
 func (tr TypeReference) adjustedMemberSignature(node compilergraph.GraphNode) string {
 	compilerutil.DCHECK(func() bool {
-		return node.StartQuery().In(NodePredicateMember).GetNode() == tr.ReferredType()
+		return node.StartQuery().In(NodePredicateMember).GetNode() == tr.referredTypeNode()
 	}, "Type reference must be parent of member node")
 
 	// Retrieve the generics of the parent type.
-	parentNode := tr.ReferredType()
+	parentNode := tr.referredTypeNode()
 	pgit := parentNode.StartQuery().Out(NodePredicateTypeGeneric).BuildNodeIterator()
 
 	// Parse the member signature.
@@ -558,16 +558,16 @@ func (tr TypeReference) HasReferredType(typeNode compilergraph.GraphNode) bool {
 		return false
 	}
 
-	return tr.ReferredType() == typeNode
+	return tr.referredTypeNode() == typeNode
 }
 
-// ReferredTypeDecl returns the type decl to which the type reference refers.
-func (tr TypeReference) ReferredTypeDecl() TGTypeDecl {
-	return TGTypeDecl{tr.ReferredType(), tr.tdg}
+// ReferredType returns the type decl to which the type reference refers.
+func (tr TypeReference) ReferredType() TGTypeDecl {
+	return TGTypeDecl{tr.referredTypeNode(), tr.tdg}
 }
 
-// ReferredType returns the node to which the type reference refers.
-func (tr TypeReference) ReferredType() compilergraph.GraphNode {
+// referredTypeNode returns the node to which the type reference refers.
+func (tr TypeReference) referredTypeNode() compilergraph.GraphNode {
 	if tr.getSlot(trhSlotFlagSpecial)[0] != specialFlagNormal {
 		panic(fmt.Sprintf("Cannot get referred type for special type references of type %s", tr.getSlot(trhSlotFlagSpecial)))
 	}
@@ -598,7 +598,7 @@ func (tr TypeReference) ResolveMember(memberName string, module compilercommon.I
 		namePredicate = NodePredicateOperatorName
 	}
 
-	memberNode, found := tr.ReferredType().
+	memberNode, found := tr.referredTypeNode().
 		StartQuery().
 		Out(connectingPredicate).
 		Has(namePredicate, memberName).
@@ -722,12 +722,11 @@ func (tr TypeReference) TransformUnder(other TypeReference) TypeReference {
 	}
 
 	// Make sure we have the same number of generics.
-	otherTypeNode := other.ReferredType()
-	if otherTypeNode.Kind == NodeTypeGeneric {
+	otherType := other.ReferredType()
+	if otherType.GraphNode.Kind == NodeTypeGeneric {
 		panic(fmt.Sprintf("Cannot transform a reference to a generic: %v", other))
 	}
 
-	otherType := TGTypeDecl{otherTypeNode, tr.tdg}
 	otherTypeGenerics := otherType.Generics()
 	if len(otherRefGenerics) != len(otherTypeGenerics) {
 		return tr
@@ -811,7 +810,7 @@ func (tr TypeReference) appendHumanString(buffer *bytes.Buffer) {
 		return
 	}
 
-	typeNode := tr.ReferredType()
+	typeNode := tr.referredTypeNode()
 
 	if typeNode.Kind == NodeTypeGeneric {
 		buffer.WriteString(typeNode.Get(NodePredicateGenericName))

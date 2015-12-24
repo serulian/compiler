@@ -35,7 +35,7 @@ func TestBasicReferenceOperations(t *testing.T) {
 	testRef := testTG.NewTypeReference(newNode)
 
 	// ReferredType returns the node.
-	assert.Equal(t, newNode.NodeId, testRef.ReferredType().NodeId, "ReferredType node mismatch")
+	assert.Equal(t, newNode.NodeId, testRef.referredTypeNode().NodeId, "ReferredType node mismatch")
 
 	// No generics.
 	assert.False(t, testRef.HasGenerics(), "Expected no generics")

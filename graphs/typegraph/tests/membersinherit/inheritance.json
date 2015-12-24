@@ -835,6 +835,25 @@
                     }
                 }
             },
+            "5351495db75c9d09330eac887e94bb88": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "5351495db75c9d09330eac887e94bb88",
+                    "Kind": 4,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-base-source": "FirstBaseType",
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "DoSomething",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "Function\u003cFirstBaseType\u003e(Integer, Integer)",
+                        "tdg-member-signature": "\n\u000bDoSomething\u0010\u0002\u0018\u0000 \u0001*)Function\u003cFirstBaseType\u003e(Integer, Integer)",
+                        "tdg-node-kind": "4|NodeType|tdg",
+                        "tdg-srg-module": "tests/membersinherit/inheritance.seru",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            },
             "5e8c9bde734fcf02bafdc7c84b332a6f": {
                 "Predicate": "tdg-node-member",
                 "Child": {
@@ -867,13 +886,14 @@
                     }
                 }
             },
-            "76ecf4c747717b81e357f2dd0d36b5ae": {
+            "7d2237572c433af76f09dd27115cff99": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "76ecf4c747717b81e357f2dd0d36b5ae",
+                    "Key": "7d2237572c433af76f09dd27115cff99",
                     "Kind": 4,
                     "Children": {},
                     "Predicates": {
+                        "tdg-member-base-source": "FirstBaseType",
                         "tdg-member-exported": "true",
                         "tdg-member-name": "SomeCoolProp",
                         "tdg-member-readonly": "true",
@@ -885,36 +905,19 @@
                     }
                 }
             },
-            "7746731f11872f0f7257029ba013537d": {
+            "8978302db421bcbe5383b64ea76c1b14": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "7746731f11872f0f7257029ba013537d",
+                    "Key": "8978302db421bcbe5383b64ea76c1b14",
                     "Kind": 4,
                     "Children": {},
                     "Predicates": {
+                        "tdg-member-base-source": "SecondBaseType",
                         "tdg-member-exported": "true",
                         "tdg-member-name": "SomeOtherProp",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "Integer",
                         "tdg-member-signature": "\n\rSomeOtherProp\u0010\u0003\u0018\u0000 \u0001*\u0007Integer",
-                        "tdg-node-kind": "4|NodeType|tdg",
-                        "tdg-srg-module": "tests/membersinherit/inheritance.seru",
-                        "tdg-srg-source": "(NodeRef)"
-                    }
-                }
-            },
-            "ccaf7a0b6aba00fb48b7945ab848d574": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "ccaf7a0b6aba00fb48b7945ab848d574",
-                    "Kind": 4,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-exported": "true",
-                        "tdg-member-name": "DoSomething",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "Function\u003cFirstBaseType\u003e(Integer, Integer)",
-                        "tdg-member-signature": "\n\u000bDoSomething\u0010\u0002\u0018\u0000 \u0001*)Function\u003cFirstBaseType\u003e(Integer, Integer)",
                         "tdg-node-kind": "4|NodeType|tdg",
                         "tdg-srg-module": "tests/membersinherit/inheritance.seru",
                         "tdg-srg-source": "(NodeRef)"

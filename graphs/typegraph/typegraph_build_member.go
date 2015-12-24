@@ -74,7 +74,7 @@ func (t *TypeGraph) buildInheritedMembership(typeDecl TGTypeDecl, inherits []Typ
 	// Add members defined on the type's inheritance, skipping those already defined.
 	typeNode := typeDecl.GraphNode
 	for _, inherit := range inherits {
-		parentType := inherit.ReferredType()
+		parentType := inherit.referredTypeNode()
 
 		pit := parentType.StartQuery().
 			Out(childPredicate).

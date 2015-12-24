@@ -18,6 +18,12 @@ $module('structuralcast', function () {
     $static.new = function () {
       var instance = new $static();
       var init = [];
+      init.push(function () {
+        var $this = this;
+        return $g.structuralcast.BaseClass($g.____graphs.typegraph.tests.testlib.basictypes.Integer).new().then(function (value) {
+          $this.BaseClass$Integer = value;
+        });
+      }());
       return $promise.all(init).then(function () {
         return instance;
       });
