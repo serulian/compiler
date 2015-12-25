@@ -57,7 +57,7 @@ window.Serulian = (function($global) {
 
   				if (statemachine.error !== undefined) {
             statemachine.popall();
-  					reject(statemachine.returnValue);
+  					reject(statemachine.error);
   					return;					
   				}
 
