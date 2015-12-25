@@ -1408,10 +1408,28 @@ func (p *sourceParser) consumeExpression(option consumeExpressionOption) AstNode
 }
 
 // tryConsumeExpression attempts to consume an expression. If an expression
-// coult not be found, returns false.
+// could not be found, returns false.
 func (p *sourceParser) tryConsumeExpression(option consumeExpressionOption) (AstNode, bool) {
 	if option == consumeExpressionAllowMaps {
-		return p.oneOf(p.tryConsumeMapExpression, p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, p.tryConsumeArrowExpression)
+		startToken := p.currentToken
+
+		node, found := p.oneOf(p.tryConsumeMapExpression, p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, p.tryConsumeArrowExpression)
+		if !found {
+			return node, false
+		}
+
+		// Check for a template literal string. If found, then the expression tags the template literal string.
+		if p.isToken(tokenTypeTemplateStringLiteral) {
+			templateNode := p.createNode(NodeTaggedTemplateLiteralString)
+			templateNode.Connect(NodeTaggedTemplateCallExpression, node)
+			templateNode.Connect(NodeTaggedTemplateParsed, p.consumeTemplateString())
+
+			p.decorateStartRuneAndComments(templateNode, startToken)
+			p.decorateEndRune(templateNode, p.currentToken)
+
+			return templateNode, true
+		}
+		return node, true
 	} else {
 		return p.oneOf(p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, p.tryConsumeArrowExpression)
 	}

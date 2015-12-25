@@ -130,6 +130,8 @@ const (
 	NodeSliceExpression                // a[b:c]
 	NodeGenericSpecifierExpression     // a<b>
 
+	NodeTaggedTemplateLiteralString // someexpr`foo`
+
 	NodeNumericLiteralExpression        // 123
 	NodeStringLiteralExpression         // 'hello'
 	NodeBooleanLiteralExpression        // true
@@ -457,6 +459,12 @@ const (
 
 	NodeGenericSpecifierChildExpr = "generic-specifier-expr"
 	NodeGenericSpecifierType      = "generic-specifier-type"
+
+	//
+	// NodeTaggedTemplateLiteralString
+	//
+	NodeTaggedTemplateCallExpression = "tagged-template-callexpr"
+	NodeTaggedTemplateParsed         = "tagged-template-parsed"
 
 	//
 	// Literals.

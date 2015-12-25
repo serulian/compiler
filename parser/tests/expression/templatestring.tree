@@ -1,0 +1,54 @@
+NodeTypeFile
+  end-rune = 61
+  input-source = template string expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 61
+      input-source = template string expr test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 61
+          input-source = template string expr test
+          start-rune = 29
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 60
+              input-source = template string expr test
+              start-rune = 32
+              expr-statement-expr =>
+                NodeTaggedTemplateLiteralString
+                  end-rune = 60
+                  input-source = template string expr test
+                  start-rune = 32
+                  tagged-template-callexpr =>
+                    NodeMemberAccessExpression
+                      end-rune = 51
+                      input-source = template string expr test
+                      member-access-identifier = String
+                      start-rune = 36
+                      member-access-expr =>
+                        NodeMemberAccessExpression
+                          end-rune = 44
+                          input-source = template string expr test
+                          member-access-identifier = template
+                          start-rune = 32
+                          member-access-expr =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 35
+                              identexpr-name = Some
+                              input-source = template string expr test
+                              start-rune = 32
+                  tagged-template-parsed =>
+                    NodeTemplateStringLiteralExpression
+                      end-rune = 59
+                      input-source = template string expr test
+                      literal-value = `foobar`
+                      start-rune = 52
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 12
+          input-source = template string expr test
+          start-rune = 9
