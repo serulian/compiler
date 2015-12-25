@@ -6,13 +6,15 @@
 package es5
 
 import (
-	"fmt"
+	"sort"
 
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/es5pather"
 	"github.com/serulian/compiler/generator/es5/templater"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/graphs/typegraph"
+
+	"github.com/cevaris/ordered_map"
 )
 
 // es5generator defines a generator for producing ECMAScript 5 code.
@@ -50,10 +52,26 @@ func generateModules(sg *scopegraph.ScopeGraph, format bool) map[typegraph.TGMod
 func GenerateES5(sg *scopegraph.ScopeGraph) (string, error) {
 	generated := generateModules(sg, false)
 
-	// Collect the generated modules into their final source.
-	for _, source := range generated {
-		fmt.Printf("%v", source)
+	// Order the modules by their paths.
+	pather := es5pather.New(sg.SourceGraph().Graph)
+	templater := templater.New()
+
+	var modulePathList = make([]string, 0)
+	modulePathMap := map[string]string{}
+
+	for module, _ := range generated {
+		path := pather.GetModulePath(module)
+		modulePathList = append(modulePathList, path)
+		modulePathMap[path] = generated[module]
 	}
 
-	return "", nil
+	sort.Strings(modulePathList)
+
+	// Collect the generated modules into their final source.
+	ordered := ordered_map.NewOrderedMap()
+	for _, modulePath := range modulePathList {
+		ordered.Set(modulePath, modulePathMap[modulePath])
+	}
+
+	return formatSource(templater.Execute("es5", runtimeTemplate, ordered)), nil
 }

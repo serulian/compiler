@@ -94,7 +94,7 @@ func (sm *stateMachine) generateWithStatement(node compilergraph.GraphNode, pare
 
 	exprInfo.endState.pushSource(sm.templater.Execute("withinit", `
 		{{ .TargetName }} = {{ .TargetExpr }};
-		$t.pushr($state, '{{ .TargetName }}', {{ .TargetName }});
+		$state.pushr('{{ .TargetName }}', {{ .TargetName }});
 	`, data))
 
 	// Add the with block.
@@ -102,7 +102,7 @@ func (sm *stateMachine) generateWithStatement(node compilergraph.GraphNode, pare
 
 	// Add code to pop the with expression.
 	blockInfo.endState.pushSource(sm.templater.Execute("withteardown", `
-		$t.popr($state, '{{ .TargetName }}');
+		$state.popr('{{ .TargetName }}');
 	`, data))
 
 	sm.markStates(node, parentState, blockInfo.endState)

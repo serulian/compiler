@@ -27,6 +27,11 @@ func (gen *es5generator) generateVariables(typeOrModule typegraph.TGTypeOrModule
 			continue
 		}
 
+		_, hasInitializer := srgMember.Initializer()
+		if !hasInitializer {
+			continue
+		}
+
 		memberMap.Set(member, gen.generateVariable(member))
 	}
 
@@ -46,11 +51,21 @@ func (gen *es5generator) generateVariable(member typegraph.TGMember) string {
 	return gen.templater.Execute("variable", variableTemplateStr, generating)
 }
 
+// Prefix returns "$this" or "$static", depending on whether the member is an instance member or
+// static member.
+func (gm generatingMember) Prefix() string {
+	if gm.Member.IsStatic() {
+		return "$static"
+	} else {
+		return "$this"
+	}
+}
+
 // Initializer returns the initializer state machine for this member.
 func (gm generatingMember) Initializer() statemachine.GeneratedMachine {
 	initializer, _ := gm.SRGMember.Initializer()
 	gen := gm.Generator
-	return statemachine.BuildExpression(initializer, "$this."+gm.Member.Name(), gen.templater, gen.pather, gen.scopegraph)
+	return statemachine.BuildExpression(initializer, gm.Prefix()+gm.Member.Name(), gen.templater, gen.pather, gen.scopegraph)
 }
 
 // variableTemplateStr defines the template for generating variables/fields.
@@ -63,7 +78,7 @@ const variableTemplateStr = `
 		})
 	{{ else }}
 		(function() {
-			return $promise.wrap(function() { $this.{{ .Member.Name }} = ({{ $machine.FinalExpression }}) });
+			return $promise.wrap(function() { {{ .Prefix }}.{{ .Member.Name }} = ({{ $machine.FinalExpression }}) });
 		})
 	{{ end }}
 `

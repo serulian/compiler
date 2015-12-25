@@ -228,6 +228,9 @@ func (sf *sourceFormatter) FormatExpression(expression ast.Expression) {
 			sf.append(e.Operator.String())
 		} else {
 			sf.append(e.Operator.String())
+			if e.Operator.String() == "delete" {
+				sf.append(" ")
+			}
 			sf.FormatExpression(e.Operand)
 		}
 
@@ -350,6 +353,15 @@ func (sf *sourceFormatter) FormatStatement(statement ast.Statement) {
 		if s.Update != nil {
 			sf.FormatExpression(s.Update)
 		}
+		sf.append(") ")
+		sf.FormatStatement(s.Body)
+
+	// ForInStatement
+	case *ast.ForInStatement:
+		sf.append("for (")
+		sf.FormatExpression(s.Into)
+		sf.append(" in ")
+		sf.FormatExpression(s.Source)
 		sf.append(") ")
 		sf.FormatStatement(s.Body)
 
