@@ -698,11 +698,11 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"template string non-stringable failure", "templatestr", "nonstringable",
 		[]expectedScopeEntry{},
-		"All expressions in a template string must be of type String or Stringable: Type 'SomeClass' does not define or export member 'String', which is required by type 'Stringable'", ""},
+		"All expressions in a template string must be of type Stringable: Type 'SomeClass' does not define or export member 'String', which is required by type 'Stringable'", ""},
 
 	scopegraphTest{"tagged template failure success", "templatestr", "taggedfailure",
 		[]expectedScopeEntry{},
-		"Tagging expression for template string must have type Function<String>(List<String>, List<any>). Found: Function<void>", ""},
+		"Tagging expression for template string must have type Function<String>(List<String>, List<Stringable>). Found: Function<void>", ""},
 }
 
 func TestGraphs(t *testing.T) {

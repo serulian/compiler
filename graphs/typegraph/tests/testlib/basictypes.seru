@@ -52,7 +52,11 @@ class Boolean {}
 class Float64 {}
 
 @•typealias('string')
-class String {}
+class String {
+	function<string> String() {
+		return ''
+	}
+}
 
 @•typealias('list')
 class List<T> {}

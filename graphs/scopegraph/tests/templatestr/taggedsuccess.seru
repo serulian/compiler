@@ -4,7 +4,7 @@ class SomeClass {
 	}	
 }
 
-function<string> tagged(strings list<string>, values list<any>) {
+function<string> tagged(strings list<string>, values list<stringable>) {
 	return ''
 }
 

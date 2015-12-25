@@ -31,12 +31,12 @@ func (sb *scopeBuilder) scopeTaggedTemplateString(node compilergraph.GraphNode) 
 		isValid = false
 	}
 
-	// Ensure that the tagging expression is a function of type function<string>(list<string>, list<any>).
+	// Ensure that the tagging expression is a function of type function<string>(list<string>, list<stringable>).
 	if tagScope.GetIsValid() {
 		expectedType := sb.sg.tdg.
 			FunctionTypeReference(sb.sg.tdg.StringTypeReference()).
 			WithParameter(sb.sg.tdg.ListTypeReference(sb.sg.tdg.StringTypeReference())).
-			WithParameter(sb.sg.tdg.ListTypeReference(sb.sg.tdg.AnyTypeReference()))
+			WithParameter(sb.sg.tdg.ListTypeReference(sb.sg.tdg.StringableTypeReference()))
 
 		tagType := tagScope.ResolvedTypeRef(sb.sg.tdg)
 		if tagType != expectedType {
@@ -65,13 +65,9 @@ func (sb *scopeBuilder) scopeTemplateStringExpression(node compilergraph.GraphNo
 		}
 
 		pieceType := pieceScope.ResolvedTypeRef(sb.sg.tdg)
-		if pieceType.HasReferredType(sb.sg.tdg.StringType()) {
-			continue
-		}
-
 		if serr := pieceType.CheckSubTypeOf(sb.sg.tdg.StringableTypeReference()); serr != nil {
 			isValid = false
-			sb.decorateWithError(pieceNode, "All expressions in a template string must be of type String or Stringable: %v", serr)
+			sb.decorateWithError(pieceNode, "All expressions in a template string must be of type Stringable: %v", serr)
 		}
 	}
 
