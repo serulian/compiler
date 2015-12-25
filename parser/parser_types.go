@@ -152,6 +152,7 @@ const (
 	NodeTypeStream
 	NodeTypeNullable
 	NodeTypeVoid
+	NodeTypeAny
 
 	// Misc
 	NodeTypeIdentifierPath   // An identifier path

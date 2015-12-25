@@ -158,6 +158,7 @@ var keywords = map[string]bool{
 
 	"static": true,
 	"void":   true,
+	"any":    true,
 
 	"get": true,
 	"set": true,

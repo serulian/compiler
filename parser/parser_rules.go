@@ -700,6 +700,14 @@ func (p *sourceParser) consumeTypeReference(option typeReferenceOption) AstNode 
 		return voidNode
 	}
 
+	// Check for the "any" keyword.
+	if p.isKeyword("any") {
+		anyNode := p.startNode(NodeTypeAny)
+		p.consumeKeyword("any")
+		p.finishNode()
+		return anyNode
+	}
+
 	// Otherwise, left recursively build a type reference.
 	rightNodeBuilder := func(leftNode AstNode, operatorToken lexeme) (AstNode, bool) {
 		nodeType, ok := typeReferenceMap[operatorToken.kind]
