@@ -65,7 +65,7 @@ func (gm generatingMember) Prefix() string {
 func (gm generatingMember) Initializer() statemachine.GeneratedMachine {
 	initializer, _ := gm.SRGMember.Initializer()
 	gen := gm.Generator
-	return statemachine.BuildExpression(initializer, gm.Prefix()+gm.Member.Name(), gen.templater, gen.pather, gen.scopegraph)
+	return statemachine.BuildExpression(initializer, gm.Prefix()+"."+gm.Member.Name(), gen.templater, gen.pather, gen.scopegraph)
 }
 
 // variableTemplateStr defines the template for generating variables/fields.

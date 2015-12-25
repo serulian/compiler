@@ -20,7 +20,7 @@ $module('basic', function () {
   };
   this.$init(function () {
     return $promise.wrap(function () {
-      $this.someInt = 2;
+      $static.someInt = 2;
     });
   });
   this.$init(function () {
@@ -41,7 +41,7 @@ $module('basic', function () {
             return;
 
           case 1:
-            $this.anotherInt = $returnValue$1;
+            $static.anotherInt = $returnValue$1;
             $state.current = -1;
             $callback($state);
             return;

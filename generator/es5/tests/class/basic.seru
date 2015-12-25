@@ -5,6 +5,7 @@ function<int> CoolFunction() {
 class SomeClass {
 	var<int> SomeInt = 2
 	var<int> AnotherInt = CoolFunction()
+	var<int?> NullableInt
 
 	function<void> AnotherFunction() {}
 }

@@ -8,9 +8,9 @@ $module('with', function () {
           case 0:
             123;
             $withExpr$1 = someExpr;
-            $t.pushr($state, '$withExpr$1', $withExpr$1);
+            $state.pushr('$withExpr$1', $withExpr$1);
             456;
-            $t.popr($state, '$withExpr$1');
+            $state.popr('$withExpr$1');
             789;
             $state.current = -1;
             return;

@@ -8,9 +8,9 @@ $module('withas', function () {
           case 0:
             123;
             someName = someExpr;
-            $t.pushr($state, 'someName', someName);
+            $state.pushr('someName', someName);
             456;
-            $t.popr($state, 'someName');
+            $state.popr('someName');
             789;
             $state.current = -1;
             return;
