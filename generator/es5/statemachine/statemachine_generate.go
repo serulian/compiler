@@ -104,7 +104,7 @@ func (sm *stateMachine) generateWithAccessOption(node compilergraph.GraphNode, p
 		sm.generateMemberAccessExpression(node, parentState, "({{ .ChildExpr }}).{{ .MemberName }}", option)
 
 	case parser.NodeNullableMemberAccessExpression:
-		sm.generateMemberAccessExpression(node, parentState, "$t.nullaccess(({{ .ChildExpr }}), '{{ .MemberName }}')", option)
+		fallthrough
 
 	case parser.NodeDynamicMemberAccessExpression:
 		sm.generateMemberAccessExpression(node, parentState, "$t.dynamicaccess(({{ .ChildExpr }}), '{{ .MemberName }}')", option)

@@ -57,7 +57,7 @@ $module('memberaccess', function () {
             $g.memberaccess.SomeClass.Build;
             $t.dynamicaccess(sc, 'someInt');
             $g.memberaccess.SomeClass.Build;
-            $t.nullaccess(scn, 'someInt');
+            $t.dynamicaccess(scn, 'someInt');
             $g.maimport.AnotherFunction;
             $g.maimport.AnotherFunction;
             $g.maimport.AnotherFunction;

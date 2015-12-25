@@ -10,9 +10,9 @@ const runtimeTemplate = `
 window.Serulian = (function($global) {
   var $g = {};
   var $t = {
-    'nullaccess': function(obj, name) {
-      if (obj[name] === null) {
-        return {};
+    'dynamicaccess': function(obj, name) {
+      if (obj == null) {
+        return null;
       }
 
       return obj[name];
