@@ -751,12 +751,14 @@ NodeTypeFile
               input-source = all expr test
               start-rune = 324
               expr-statement-expr =>
-                NodeTemplateStringLiteralExpression
+                NodeTypeTemplateString
                   end-rune = 337
                   input-source = all expr test
-                  literal-value = `hello
-	world`
                   start-rune = 324
+                  template-string-piece =>
+                    NodeStringLiteralExpression
+                      literal-value = `hello
+	world`
             NodeTypeExpressionStatement
               end-rune = 342
               input-source = all expr test

@@ -131,14 +131,14 @@ const (
 	NodeGenericSpecifierExpression     // a<b>
 
 	NodeTaggedTemplateLiteralString // someexpr`foo`
+	NodeTypeTemplateString          // `foo`
 
-	NodeNumericLiteralExpression        // 123
-	NodeStringLiteralExpression         // 'hello'
-	NodeBooleanLiteralExpression        // true
-	NodeTemplateStringLiteralExpression // `foobar`
-	NodeThisLiteralExpression           // this
-	NodeNullLiteralExpression           // null
-	NodeValLiteralExpression            // val
+	NodeNumericLiteralExpression // 123
+	NodeStringLiteralExpression  // 'hello'
+	NodeBooleanLiteralExpression // true
+	NodeThisLiteralExpression    // this
+	NodeNullLiteralExpression    // null
+	NodeValLiteralExpression     // val
 
 	NodeListExpression     // [1, 2, 3]
 	NodeMapExpression      // {a: 1, b: 2}
@@ -467,12 +467,16 @@ const (
 	NodeTaggedTemplateParsed         = "tagged-template-parsed"
 
 	//
+	// NodeTypeTemplateString
+	//
+	NodeTemplateStringPiece = "template-string-piece"
+
+	//
 	// Literals.
 	//
-	NodeNumericLiteralExpressionValue        = "literal-value"
-	NodeStringLiteralExpressionValue         = "literal-value"
-	NodeBooleanLiteralExpressionValue        = "literal-value"
-	NodeTemplateStringLiteralExpressionValue = "literal-value"
+	NodeNumericLiteralExpressionValue = "literal-value"
+	NodeStringLiteralExpressionValue  = "literal-value"
+	NodeBooleanLiteralExpressionValue = "literal-value"
 
 	//
 	// NodeTypeIdentifierExpression

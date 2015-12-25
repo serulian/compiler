@@ -1,3 +1,7 @@
 function<void> DoSomething() {
 	Some.template.String`foobar`
 }
+
+function<void> AnotherFunction() {
+	`Hello ${adj.modifier} world ${suffix}`
+}

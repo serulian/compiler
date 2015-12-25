@@ -131,11 +131,13 @@ NodeTypeFile
                               identexpr-name = foo
                               input-source = list expr test
                               start-rune = 91
-                    NodeTemplateStringLiteralExpression
+                    NodeTypeTemplateString
                       end-rune = 106
                       input-source = list expr test
-                      literal-value = `baz`
                       start-rune = 102
+                      template-string-piece =>
+                        NodeStringLiteralExpression
+                          literal-value = `baz`
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 12

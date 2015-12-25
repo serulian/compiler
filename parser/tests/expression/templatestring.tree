@@ -1,16 +1,16 @@
 NodeTypeFile
-  end-rune = 61
+  end-rune = 140
   input-source = template string expr test
   start-rune = 0
   child-node =>
     NodeTypeFunction
-      end-rune = 61
+      end-rune = 62
       input-source = template string expr test
       named = DoSomething
       start-rune = 0
       definition-body =>
         NodeTypeStatementBlock
-          end-rune = 61
+          end-rune = 62
           input-source = template string expr test
           start-rune = 29
           block-child =>
@@ -42,13 +42,61 @@ NodeTypeFile
                               input-source = template string expr test
                               start-rune = 32
                   tagged-template-parsed =>
-                    NodeTemplateStringLiteralExpression
+                    NodeTypeTemplateString
                       end-rune = 59
                       input-source = template string expr test
-                      literal-value = `foobar`
                       start-rune = 52
+                      template-string-piece =>
+                        NodeStringLiteralExpression
+                          literal-value = `foobar`
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 12
           input-source = template string expr test
           start-rune = 9
+    NodeTypeFunction
+      end-rune = 140
+      input-source = template string expr test
+      named = AnotherFunction
+      start-rune = 64
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 140
+          input-source = template string expr test
+          start-rune = 97
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 139
+              input-source = template string expr test
+              start-rune = 100
+              expr-statement-expr =>
+                NodeTypeTemplateString
+                  end-rune = 138
+                  input-source = template string expr test
+                  start-rune = 100
+                  template-string-piece =>
+                    NodeStringLiteralExpression
+                      literal-value = `Hello `
+                    NodeMemberAccessExpression
+                      end-rune = 120
+                      input-source = template string expr test
+                      member-access-identifier = modifier
+                      start-rune = 109
+                      member-access-expr =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 111
+                          identexpr-name = adj
+                          input-source = template string expr test
+                          start-rune = 109
+                    NodeStringLiteralExpression
+                      literal-value = ` world `
+                    NodeTypeIdentifierExpression
+                      end-rune = 136
+                      identexpr-name = suffix
+                      input-source = template string expr test
+                      start-rune = 131
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 76
+          input-source = template string expr test
+          start-rune = 73

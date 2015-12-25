@@ -6,6 +6,7 @@ package parser
 
 import (
 	"fmt"
+	"strings"
 )
 
 // Useful for debugging.
@@ -2175,14 +2176,70 @@ func (p *sourceParser) consumeListExpression() AstNode {
 
 // consumeTemplateString consumes a template string literal.
 func (p *sourceParser) consumeTemplateString() AstNode {
-	literalNode := p.startNode(NodeTemplateStringLiteralExpression)
+	templateNode := p.startNode(NodeTypeTemplateString)
 	defer p.finishNode()
 
-	// TODO(jschorr): We be parsing the contents of this string literal. Yaarr!
+	// Consume the template string literal token.
 	token, _ := p.consume(tokenTypeTemplateStringLiteral)
-	literalNode.Decorate(NodeTemplateStringLiteralExpressionValue, token.value)
 
-	return literalNode
+	// Parse the token by looking for ${expression}'s. All other data remains literal. We start by dropping
+	// the tick marks (`) on either side of the expression string.
+	var tokenValue = token.value[1 : len(token.value)-1]
+	var offset = 1
+
+	for {
+		// If there isn't anymore template text, nothing more to do.
+		if len(tokenValue) == 0 {
+			break
+		}
+
+		// Search for a nested expression. Expressions are of the form: ${expression}
+		startIndex := strings.Index(tokenValue, "${")
+
+		// Add any non-expression text found before the expression start index (if any).
+		var prefix = tokenValue
+		if startIndex > 0 {
+			prefix = tokenValue[0:startIndex]
+		}
+
+		if len(prefix) > 0 {
+			literalNode := p.createNode(NodeStringLiteralExpression)
+			literalNode.Decorate(NodeStringLiteralExpressionValue, "`"+prefix+"`")
+			templateNode.Connect(NodeTemplateStringPiece, literalNode)
+		}
+
+		// If there is no expression after the literal text, nothing more to do.
+		if startIndex < 0 {
+			break
+		}
+
+		// Strip off the literal text, along with the starting ${, so that the remaining tokens
+		// at the beginning of the text "stream" represent an expression.
+		offset += (startIndex + 2)
+		tokenValue = tokenValue[startIndex+2 : len(tokenValue)]
+
+		// Parse the token value as an expression.
+		exprStartIndex := bytePosition(offset + int(token.position))
+		expr, lastToken, ok := parseExpression(p.builder, p.importReporter, p.source, exprStartIndex, tokenValue)
+		if !ok {
+			templateNode.Connect(NodeTemplateStringPiece, p.createErrorNode("Could not parse expression in template string"))
+			return templateNode
+		}
+
+		// Add the expression found to the template.
+		templateNode.Connect(NodeTemplateStringPiece, expr)
+
+		// Create a new starting index for the template string after the end of the expression.
+		newStartIndex := int(lastToken.position) + len(lastToken.value)
+		if newStartIndex+1 >= len(tokenValue) {
+			break
+		}
+
+		tokenValue = tokenValue[newStartIndex+1 : len(tokenValue)]
+		offset += newStartIndex + 1
+	}
+
+	return templateNode
 }
 
 // tryConsumeIdentifierExpression tries to consume an identifier as an expression.
