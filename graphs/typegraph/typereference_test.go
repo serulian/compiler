@@ -35,7 +35,7 @@ func TestBasicReferenceOperations(t *testing.T) {
 	testRef := testTG.NewTypeReference(newNode)
 
 	// ReferredType returns the node.
-	assert.Equal(t, newNode.NodeId, testRef.ReferredType().NodeId, "ReferredType node mismatch")
+	assert.Equal(t, newNode.NodeId, testRef.referredTypeNode().NodeId, "ReferredType node mismatch")
 
 	// No generics.
 	assert.False(t, testRef.HasGenerics(), "Expected no generics")
@@ -481,6 +481,12 @@ func TestSubtypes(t *testing.T) {
 			"Type 'SomeClass' does not define or export operator 'range', which is required by type 'IWithOperator'"},
 
 		subtypeCheckTest{"Another subtype of IWithOperator", "anotherClass", "withOperator", ""},
+
+		// Nullable.
+		subtypeCheckTest{"AnotherClass subtype of AnotherClass?", "anotherClass", "nullableAnotherClass", ""},
+
+		subtypeCheckTest{"AnotherClass not subtype of SomeClass?", "anotherClass", "nullableSomeClass",
+			"'AnotherClass' cannot be used in place of non-interface 'SomeClass?'"},
 	}
 
 	for _, test := range tests {

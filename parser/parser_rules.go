@@ -6,6 +6,7 @@ package parser
 
 import (
 	"fmt"
+	"strings"
 )
 
 // Useful for debugging.
@@ -700,6 +701,14 @@ func (p *sourceParser) consumeTypeReference(option typeReferenceOption) AstNode 
 		return voidNode
 	}
 
+	// Check for the "any" keyword.
+	if p.isKeyword("any") {
+		anyNode := p.startNode(NodeTypeAny)
+		p.consumeKeyword("any")
+		p.finishNode()
+		return anyNode
+	}
+
 	// Otherwise, left recursively build a type reference.
 	rightNodeBuilder := func(leftNode AstNode, operatorToken lexeme) (AstNode, bool) {
 		nodeType, ok := typeReferenceMap[operatorToken.kind]
@@ -999,8 +1008,15 @@ func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
 		}
 
 		// Look for an expression as a statement.
+		exprToken := p.currentToken
+
 		if exprNode, ok := p.tryConsumeExpression(consumeExpressionAllowMaps); ok {
-			return exprNode, true
+			exprStatementNode := p.createNode(NodeTypeExpressionStatement)
+			exprStatementNode.Connect(NodeExpressionStatementExpression, exprNode)
+			p.decorateStartRuneAndComments(exprStatementNode, exprToken)
+			p.decorateEndRune(exprStatementNode, p.currentToken)
+
+			return exprStatementNode, true
 		}
 
 		return nil, false
@@ -1012,6 +1028,7 @@ func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
 // Forms:
 // a = expression
 // a, b = expression
+// a.b = expression
 func (p *sourceParser) tryConsumeAssignStatement() (AstNode, bool) {
 	// To determine if we have an assignment statement, we need to perform
 	// a non-insignificant amount of lookahead, as this form can be mistaken for
@@ -1023,9 +1040,13 @@ func (p *sourceParser) tryConsumeAssignStatement() (AstNode, bool) {
 	assignNode := p.startNode(NodeTypeAssignStatement)
 	defer p.finishNode()
 
-	// Consume the identifiers.
+	// Consume the identifiers or member access.
 	for {
-		assignNode.Connect(NodeAssignStatementName, p.consumeIdentifierExpression())
+		if memberAccess, ok := p.tryConsumeCallAccessExpression(); ok {
+			assignNode.Connect(NodeAssignStatementName, memberAccess)
+		} else {
+			assignNode.Connect(NodeAssignStatementName, p.consumeIdentifierExpression())
+		}
 
 		if _, ok := p.tryConsume(tokenTypeComma); !ok {
 			break
@@ -1042,8 +1063,20 @@ func (p *sourceParser) tryConsumeAssignStatement() (AstNode, bool) {
 func (p *sourceParser) lookaheadAssignStatement() bool {
 	t := p.newLookaheadTracker()
 
-	if _, ok := t.matchToken(tokenTypeIdentifer); !ok {
+	// Match the opening identifier or keyword (this).
+	if _, ok := t.matchToken(tokenTypeIdentifer, tokenTypeKeyword); !ok {
 		return false
+	}
+
+	// Match member access (optional).
+	for {
+		if _, ok := t.matchToken(tokenTypeDotAccessOperator); !ok {
+			break
+		}
+
+		if _, ok := t.matchToken(tokenTypeIdentifer); !ok {
+			return false
+		}
 	}
 
 	if _, ok := t.matchToken(tokenTypeEquals); !ok {
@@ -1376,10 +1409,28 @@ func (p *sourceParser) consumeExpression(option consumeExpressionOption) AstNode
 }
 
 // tryConsumeExpression attempts to consume an expression. If an expression
-// coult not be found, returns false.
+// could not be found, returns false.
 func (p *sourceParser) tryConsumeExpression(option consumeExpressionOption) (AstNode, bool) {
 	if option == consumeExpressionAllowMaps {
-		return p.oneOf(p.tryConsumeMapExpression, p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, p.tryConsumeArrowExpression)
+		startToken := p.currentToken
+
+		node, found := p.oneOf(p.tryConsumeMapExpression, p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, p.tryConsumeArrowExpression)
+		if !found {
+			return node, false
+		}
+
+		// Check for a template literal string. If found, then the expression tags the template literal string.
+		if p.isToken(tokenTypeTemplateStringLiteral) {
+			templateNode := p.createNode(NodeTaggedTemplateLiteralString)
+			templateNode.Connect(NodeTaggedTemplateCallExpression, node)
+			templateNode.Connect(NodeTaggedTemplateParsed, p.consumeTemplateString())
+
+			p.decorateStartRuneAndComments(templateNode, startToken)
+			p.decorateEndRune(templateNode, p.currentToken)
+
+			return templateNode, true
+		}
+		return node, true
 	} else {
 		return p.oneOf(p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, p.tryConsumeArrowExpression)
 	}
@@ -1885,6 +1936,13 @@ func (p *sourceParser) tryConsumeLiteralValue() (AstNode, bool) {
 		p.consumeKeyword("this")
 		return literalNode, true
 
+	// val literal.
+	case p.isKeyword("val"):
+		literalNode := p.startNode(NodeValLiteralExpression)
+		defer p.finishNode()
+
+		p.consumeKeyword("val")
+		return literalNode, true
 	}
 
 	return nil, false
@@ -2118,14 +2176,70 @@ func (p *sourceParser) consumeListExpression() AstNode {
 
 // consumeTemplateString consumes a template string literal.
 func (p *sourceParser) consumeTemplateString() AstNode {
-	literalNode := p.startNode(NodeTemplateStringLiteralExpression)
+	templateNode := p.startNode(NodeTypeTemplateString)
 	defer p.finishNode()
 
-	// TODO(jschorr): We be parsing the contents of this string literal. Yaarr!
+	// Consume the template string literal token.
 	token, _ := p.consume(tokenTypeTemplateStringLiteral)
-	literalNode.Decorate(NodeTemplateStringLiteralExpressionValue, token.value)
 
-	return literalNode
+	// Parse the token by looking for ${expression}'s. All other data remains literal. We start by dropping
+	// the tick marks (`) on either side of the expression string.
+	var tokenValue = token.value[1 : len(token.value)-1]
+	var offset = 1
+
+	for {
+		// If there isn't anymore template text, nothing more to do.
+		if len(tokenValue) == 0 {
+			break
+		}
+
+		// Search for a nested expression. Expressions are of the form: ${expression}
+		startIndex := strings.Index(tokenValue, "${")
+
+		// Add any non-expression text found before the expression start index (if any).
+		var prefix = tokenValue
+		if startIndex > 0 {
+			prefix = tokenValue[0:startIndex]
+		}
+
+		if len(prefix) > 0 {
+			literalNode := p.createNode(NodeStringLiteralExpression)
+			literalNode.Decorate(NodeStringLiteralExpressionValue, "`"+prefix+"`")
+			templateNode.Connect(NodeTemplateStringPiece, literalNode)
+		}
+
+		// If there is no expression after the literal text, nothing more to do.
+		if startIndex < 0 {
+			break
+		}
+
+		// Strip off the literal text, along with the starting ${, so that the remaining tokens
+		// at the beginning of the text "stream" represent an expression.
+		offset += (startIndex + 2)
+		tokenValue = tokenValue[startIndex+2 : len(tokenValue)]
+
+		// Parse the token value as an expression.
+		exprStartIndex := bytePosition(offset + int(token.position))
+		expr, lastToken, ok := parseExpression(p.builder, p.importReporter, p.source, exprStartIndex, tokenValue)
+		if !ok {
+			templateNode.Connect(NodeTemplateStringPiece, p.createErrorNode("Could not parse expression in template string"))
+			return templateNode
+		}
+
+		// Add the expression found to the template.
+		templateNode.Connect(NodeTemplateStringPiece, expr)
+
+		// Create a new starting index for the template string after the end of the expression.
+		newStartIndex := int(lastToken.position) + len(lastToken.value)
+		if newStartIndex+1 >= len(tokenValue) {
+			break
+		}
+
+		tokenValue = tokenValue[newStartIndex+1 : len(tokenValue)]
+		offset += newStartIndex + 1
+	}
+
+	return templateNode
 }
 
 // tryConsumeIdentifierExpression tries to consume an identifier as an expression.

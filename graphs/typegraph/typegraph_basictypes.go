@@ -59,9 +59,14 @@ func (t *TypeGraph) MapTypeReference(key TypeReference, value TypeReference) Typ
 	return t.NewTypeReference(t.MapType(), key, value)
 }
 
-// ReleasableTypeReference returns a reference to the done type.
+// ReleasableTypeReference returns a reference to the releasable type.
 func (t *TypeGraph) ReleasableTypeReference() TypeReference {
 	return t.NewTypeReference(t.ReleasableType())
+}
+
+// StringableTypeReference returns a reference to the stringable type.
+func (t *TypeGraph) StringableTypeReference() TypeReference {
+	return t.NewTypeReference(t.StringableType())
 }
 
 // StreamType returns the stream type.
@@ -69,14 +74,19 @@ func (t *TypeGraph) StreamType() compilergraph.GraphNode {
 	return t.getAliasedType("stream")
 }
 
-// PortType returns the port type.
-func (t *TypeGraph) PortType() compilergraph.GraphNode {
-	return t.getAliasedType("port")
+// PromiseType returns the promise type.
+func (t *TypeGraph) PromiseType() compilergraph.GraphNode {
+	return t.getAliasedType("promise")
 }
 
 // FunctionType returns the function type.
 func (t *TypeGraph) FunctionType() compilergraph.GraphNode {
 	return t.getAliasedType("function")
+}
+
+// StringableType returns the string type.
+func (t *TypeGraph) StringableType() compilergraph.GraphNode {
+	return t.getAliasedType("stringable")
 }
 
 // StringType returns the string type.

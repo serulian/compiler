@@ -1,0 +1,7 @@
+class SomeClass {
+	var<int> SomeInt = 2	
+}
+
+function<void> AnotherThing(somestream SomeClass*) {
+	somestream*.SomeInt
+}

@@ -1,0 +1,9 @@
+function<void> DoSomething() {
+	1234
+	for true {
+		4567
+		continue
+		8901
+	}
+	2567
+}

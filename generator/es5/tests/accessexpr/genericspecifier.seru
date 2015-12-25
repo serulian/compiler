@@ -1,0 +1,10 @@
+class SomeClass<T> {}
+
+function<void> SomeFunction<T, Q>() {
+	
+}
+
+function<void> DoSomething() {
+	SomeFunction<int, string>
+	SomeClass<bool>
+}

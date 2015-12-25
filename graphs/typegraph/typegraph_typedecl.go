@@ -137,6 +137,22 @@ func (tn TGTypeDecl) Members() []TGMember {
 	return members
 }
 
+// ParentTypes returns the types from which this type derives, structually (if any).
+func (tn TGTypeDecl) ParentTypes() []TypeReference {
+	tagged := tn.GraphNode.GetAllTagged(NodePredicateParentType, tn.tdg.AnyTypeReference())
+	typerefs := make([]TypeReference, len(tagged))
+	for index, taggedValue := range tagged {
+		typerefs[index] = taggedValue.(TypeReference)
+	}
+
+	return typerefs
+}
+
+// ParentModule returns the module containing this type.
+func (tn TGTypeDecl) ParentModule() TGModule {
+	return TGModule{tn.GraphNode.GetNode(NodePredicateTypeModule), tn.tdg}
+}
+
 // IsReadOnly returns whether the type is read-only (which is always)
 func (tn TGTypeDecl) IsReadOnly() bool {
 	return true

@@ -1,0 +1,13 @@
+class SomeClass {}
+
+function<void> AnotherFunction() {
+
+}
+
+function<void> DoSomething(someParam int) {
+	var<int> someVar = 2
+	SomeClass
+	AnotherFunction
+	someParam
+	someVar
+}

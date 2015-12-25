@@ -1,0 +1,6 @@
+function<void> DoSomething() {
+	AnotherFunction(2)
+}
+
+function<void> AnotherFunction(someparam int) {	
+}

@@ -28,6 +28,7 @@ const (
 	TypeRefStream                      // A stream type.
 	TypeRefPath                        // A normal path type. May have generics.
 	TypeRefVoid                        // A void type reference.
+	TypeRefAny                         // An any type reference.
 )
 
 // GetTypeRef returns an SRGTypeRef wrapper for the given type reference now.
@@ -179,6 +180,9 @@ func (t SRGTypeRef) RefKind() TypeRefKind {
 	switch nodeKind {
 	case parser.NodeTypeVoid:
 		return TypeRefVoid
+
+	case parser.NodeTypeAny:
+		return TypeRefAny
 
 	case parser.NodeTypeStream:
 		return TypeRefStream

@@ -14,7 +14,8 @@ message ScopeInfo {
 	optional bool IsValid = 1;        // Whether this scope is valid.
 	optional ScopeKind Kind = 2 [default = VALUE];
 
-	optional ScopeReference NamedReference = 8; 
+	optional ScopeReference NamedReference = 8;
+	optional ScopeReference CalledOpReference = 9;
 
 	optional string ResolvedType = 3;   // The type of the scope, if any.
 	optional string ReturnedType = 4;   // The returned type, if any.

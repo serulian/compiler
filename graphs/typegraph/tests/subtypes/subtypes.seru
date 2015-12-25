@@ -38,3 +38,5 @@ var<AnotherClass> anotherClass
 var<ThirdClass> thirdClass
 var<FourthClass<int, bool>> fourthIntBool
 var<FourthClass<bool, int>> fourthBoolInt
+var<AnotherClass?> nullableAnotherClass
+var<SomeClass?> nullableSomeClass

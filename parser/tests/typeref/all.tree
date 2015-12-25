@@ -1,5 +1,5 @@
 NodeTypeFile
-  end-rune = 502
+  end-rune = 550
   input-source = all type reference test
   start-rune = 0
   child-node =>
@@ -660,3 +660,39 @@ NodeTypeFile
                   identifieraccess-name = function
                   input-source = all type reference test
                   start-rune = 465
+    NodeTypeVariable
+      end-rune = 518
+      input-source = all type reference test
+      named = anyref
+      start-rune = 504
+      typemember-declared-type =>
+        NodeTypeAny
+          end-rune = 510
+          input-source = all type reference test
+          start-rune = 508
+    NodeTypeVariable
+      end-rune = 550
+      input-source = all type reference test
+      named = anyinnerref
+      start-rune = 520
+      typemember-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 537
+          input-source = all type reference test
+          start-rune = 524
+          typereference-generic =>
+            NodeTypeAny
+              end-rune = 536
+              input-source = all type reference test
+              start-rune = 534
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 532
+              input-source = all type reference test
+              start-rune = 524
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 532
+                  identifieraccess-name = SomeClass
+                  input-source = all type reference test
+                  start-rune = 524

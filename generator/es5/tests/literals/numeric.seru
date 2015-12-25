@@ -1,0 +1,5 @@
+function<void> DoSomething() {
+	2
+	2.0
+	3.14159
+}

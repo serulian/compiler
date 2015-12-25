@@ -1,0 +1,14 @@
+function<void> DoSomething() {
+	123
+	match {
+		case true:
+			1234
+
+		case false:
+			2345
+
+		default:
+			3456
+	}
+	789
+}

@@ -1,0 +1,6 @@
+class BaseClass<T> {}
+class SomeClass : BaseClass<int> {}
+
+function<void> DoSomething(sc SomeClass) {
+	sc.(BaseClass<int>)
+}

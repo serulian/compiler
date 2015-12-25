@@ -1,0 +1,151 @@
+// Copyright 2015 The Serulian Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
+package statemachine
+
+import (
+	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/parser"
+)
+
+type memberAccessOption int
+
+const (
+	memberAccessGet memberAccessOption = iota
+	memberAccessSet
+)
+
+// generateMemberAccessExpression generates the state machine for various kinds of member access expressions
+func (sm *stateMachine) generateMemberAccessExpression(node compilergraph.GraphNode, parentState *state, templateStr string, option memberAccessOption) {
+	scope, _ := sm.scopegraph.GetScope(node)
+	namedReference, hasNamedReference := sm.scopegraph.GetReferencedName(scope)
+
+	// If the scope is a named reference to a defined item (static member or type), generate its
+	// path directly by treating it as an identifier to the scope. This will handle
+	// imports for us.
+	if hasNamedReference && namedReference.IsStatic() {
+		sm.generateIdentifierExpression(node, parentState)
+		return
+	}
+
+	// Generate the call to retrieve the member.
+	childExprInfo := sm.generate(node.GetNode(parser.NodeMemberAccessChildExpr), parentState)
+
+	data := struct {
+		ChildExpr  string
+		MemberName string
+	}{childExprInfo.expression, node.Get(parser.NodeMemberAccessIdentifier)}
+
+	getMemberExpr := sm.templater.Execute("memberaccess", templateStr, data)
+
+	// If the scope is a named reference to a property, then we need to turn the access into
+	// a function call (if a getter). Setter calls will be handled by the assign statement
+	// generation.
+	if option == memberAccessGet && hasNamedReference && namedReference.IsProperty() {
+		// Generate a function call to the getter.
+		returnValueVariable := sm.addVariable("$getValue")
+		returnReceiveState := sm.newState()
+		returnReceiveState.pushExpression(returnValueVariable)
+
+		data := asyncFunctionCallData{
+			CallExpr:            getMemberExpr,
+			Arguments:           []generatedStateInfo{},
+			ReturnValueVariable: returnValueVariable,
+			ReturnState:         returnReceiveState,
+		}
+		sm.addAsyncFunctionCall(childExprInfo.endState, data)
+		sm.markStates(node, parentState, returnReceiveState)
+		return
+	}
+
+	childExprInfo.endState.pushExpression(getMemberExpr)
+	sm.markStates(node, parentState, childExprInfo.endState)
+}
+
+// generateStreamMemberAccessExpression generates the state machine for a stream member access expression (*.)
+func (sm *stateMachine) generateStreamMemberAccessExpression(node compilergraph.GraphNode, parentState *state) {
+	// Generate the states for the child expression.
+	childExprInfo := sm.generate(node.GetNode(parser.NodeMemberAccessChildExpr), parentState)
+
+	// Add a function call to retrieve the member under the stream.
+	data := struct {
+		ChildExpr  string
+		MemberName string
+	}{childExprInfo.expression, node.Get(parser.NodeMemberAccessIdentifier)}
+
+	childExprInfo.endState.pushExpression(sm.templater.Execute("streammember", `
+		$t.streamaccess(({{ .ChildExpr }}), '{{ .MemberName }}')
+	`, data))
+
+	sm.markStates(node, parentState, childExprInfo.endState)
+}
+
+// generateCastExpression generates the state machine for a cast expression.
+func (sm *stateMachine) generateCastExpression(node compilergraph.GraphNode, parentState *state) {
+	// Generate the states for the child expression.
+	childExprScope, _ := sm.scopegraph.GetScope(node.GetNode(parser.NodeCastExpressionChildExpr))
+	childExprInfo := sm.generate(node.GetNode(parser.NodeCastExpressionChildExpr), parentState)
+
+	// Determine the resulting type.
+	scope, _ := sm.scopegraph.GetScope(node)
+	resultingType := scope.ResolvedTypeRef(sm.scopegraph.TypeGraph())
+
+	// If the resulting type is a structural subtype of the child expression's type, then
+	// we are accessing the automatically composited inner instance.
+	childType := childExprScope.ResolvedTypeRef(sm.scopegraph.TypeGraph())
+	if childType.CheckStructuralSubtypeOf(resultingType) {
+		data := struct {
+			ChildExpr         string
+			InnerInstanceName string
+		}{childExprInfo.expression, sm.pather.InnerInstanceName(resultingType)}
+
+		childExprInfo.endState.pushExpression(sm.templater.Execute("innerinstance", `
+			({{ .ChildExpr }}).{{ .InnerInstanceName }}
+		`, data))
+
+		sm.markStates(node, parentState, childExprInfo.endState)
+		return
+	}
+
+	// Otherwise, add a cast call with the cast type.
+	data := struct {
+		ChildExpr      string
+		CastTypeString string
+	}{childExprInfo.expression, sm.pather.TypeReferenceCall(resultingType)}
+
+	childExprInfo.endState.pushExpression(sm.templater.Execute("castexpr", `
+		$t.cast(({{ .ChildExpr }}), {{ .CastTypeString }})
+	`, data))
+
+	sm.markStates(node, parentState, childExprInfo.endState)
+}
+
+// generateGenericSpecifierExpression generates the state machine for a generic specification of a function or type.
+func (sm *stateMachine) generateGenericSpecifierExpression(node compilergraph.GraphNode, parentState *state) {
+	// Generate the states for the child expression.
+	childExprInfo := sm.generate(node.GetNode(parser.NodeGenericSpecifierChildExpr), parentState)
+
+	// Collect the generic types being specified.
+	git := node.StartQuery().
+		Out(parser.NodeGenericSpecifierType).
+		BuildNodeIterator()
+
+	var genericTypeStrings = make([]string, 0)
+	for git.Next() {
+		replacementType, _ := sm.scopegraph.TypeGraph().BuildTypeRef(sm.scopegraph.SourceGraph().GetTypeRef(git.Node()))
+		genericTypeStrings = append(genericTypeStrings, sm.pather.TypeReferenceCall(replacementType))
+	}
+
+	// Add a function call with the generic type(s).
+	data := struct {
+		ChildExpr    string
+		GenericTypes []string
+	}{childExprInfo.expression, genericTypeStrings}
+
+	childExprInfo.endState.pushExpression(sm.templater.Execute("genericspecifier", `
+		({{ .ChildExpr }})({{ range $index, $generic := .GenericTypes }}{{ if $index }} ,{{ end }}{{ $generic }}{{ end }})
+	`, data))
+
+	sm.markStates(node, parentState, childExprInfo.endState)
+}

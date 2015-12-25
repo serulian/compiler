@@ -1,0 +1,18 @@
+class SomeClass {
+	operator equals(first SomeClass, second SomeClass) {
+		return true
+	}
+
+	operator compare(first SomeClass, second SomeClass) {
+		return 1
+	}
+}
+
+function<void> DoSomething(first SomeClass, second SomeClass) {
+	first == second
+	first != second
+	first < second
+	first > second
+	first <= second
+	first >= second
+}

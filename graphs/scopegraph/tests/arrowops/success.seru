@@ -1,12 +1,23 @@
-class SomePort {
-	function<void> AwaitNext(callback function<void>(int)) {	
+class SomePromise {
+	function<promise<int>> Then(callback function<void>(int)) {
+		return this
+	}
+
+	function<promise<int>> Catch(callback function<void>(error)) {
+		return this	
 	}
 }
 
 function<void> DoSomething() {
-	var<SomePort> port = SomePort.new()
+	var<SomePromise> promise = SomePromise.new()
 	var<int> someInt = 2
 
-	/* await */(<- port)
-	/* arrow */(someInt <- port)
+	/* await */(<- promise)
+	/* arrow */(someInt <- promise)
+}
+
+function<void> NullableTest() {
+	var<SomePromise> promise = SomePromise.new()
+	var<int?> someInt
+	someInt <- promise
 }

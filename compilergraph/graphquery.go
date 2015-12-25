@@ -151,6 +151,21 @@ func (gq *GraphQuery) GetValue() (string, bool) {
 	return gq.layer.cayleyStore.NameOf(it.Result()), true
 }
 
+// GetValues executes the query and returns the names of the nodes found.
+func (gq *GraphQuery) GetValues() []string {
+	var values = make([]string, 0)
+	it := gq.path.BuildIterator()
+
+	for {
+		result := cayley.RawNext(it)
+		if !result {
+			return values
+		}
+
+		values = append(values, gq.layer.cayleyStore.NameOf(it.Result()))
+	}
+}
+
 // GetNode executes the query and returns the single node found or panics.
 func (gq *GraphQuery) GetNode() GraphNode {
 	node, found := gq.TryGetNode()

@@ -38,7 +38,7 @@ func (t *TypeGraph) buildMembership(typeDecl TGTypeDecl, srgType srg.SRGType, in
 		implicitConstructorNode.Decorate(NodePredicateMemberName, "new")
 		implicitConstructorNode.Decorate(NodePredicateMemberReadOnly, "true")
 		implicitConstructorNode.Decorate(NodePredicateMemberStatic, "true")
-		implicitConstructorNode.Decorate(NodePredicateModule, string(srgType.Module().InputSource()))
+		implicitConstructorNode.Decorate(NodePredicateModulePath, string(srgType.Module().InputSource()))
 
 		constructorType := t.NewTypeReference(t.FunctionType(), typeDecl.GetTypeReference())
 		implicitConstructorNode.DecorateWithTagged(NodePredicateMemberType, constructorType)
@@ -46,11 +46,17 @@ func (t *TypeGraph) buildMembership(typeDecl TGTypeDecl, srgType srg.SRGType, in
 		t.decorateWithSig(implicitConstructorNode, "name", uint64(parser.NodeTypeConstructor), false, false, constructorType)
 
 		typeDecl.GraphNode.Connect(NodePredicateMember, implicitConstructorNode)
+
+		// Mark the type with its inheritance.
+		for _, inherit := range inherits {
+			typeDecl.GraphNode.DecorateWithTagged(NodePredicateParentType, inherit)
+		}
 	}
 
 	// Copy over the type members and operators.
 	t.buildInheritedMembership(typeDecl, inherits, NodePredicateMember)
 	t.buildInheritedMembership(typeDecl, inherits, NodePredicateTypeOperator)
+
 	return success
 }
 
@@ -68,7 +74,7 @@ func (t *TypeGraph) buildInheritedMembership(typeDecl TGTypeDecl, inherits []Typ
 	// Add members defined on the type's inheritance, skipping those already defined.
 	typeNode := typeDecl.GraphNode
 	for _, inherit := range inherits {
-		parentType := inherit.ReferredType()
+		parentType := inherit.referredTypeNode()
 
 		pit := parentType.StartQuery().
 			Out(childPredicate).
@@ -87,6 +93,8 @@ func (t *TypeGraph) buildInheritedMembership(typeDecl TGTypeDecl, inherits []Typ
 			// Create a new node of the same kind and copy over any predicates except the type.
 			parentMemberNode := pit.Node()
 			memberNode := parentMemberNode.CloneExcept(NodePredicateMemberType)
+			memberNode.Connect(NodePredicateMemberBaseMember, parentMemberNode)
+			memberNode.DecorateWithTagged(NodePredicateMemberBaseSource, inherit)
 
 			typeNode.Connect(childPredicate, memberNode)
 
@@ -137,7 +145,7 @@ func (t *TypeGraph) buildTypeOperatorNode(parent TGTypeOrModule, operator srg.SR
 	memberNode := t.layer.CreateNode(NodeTypeOperator)
 	memberNode.Decorate(NodePredicateOperatorName, name)
 	memberNode.Decorate(NodePredicateMemberName, operatorMemberNamePrefix+name)
-	memberNode.Decorate(NodePredicateModule, string(operator.Module().InputSource()))
+	memberNode.Decorate(NodePredicateModulePath, string(operator.Module().InputSource()))
 
 	memberNode.Connect(NodePredicateSource, operator.Node())
 
@@ -246,7 +254,7 @@ func (t *TypeGraph) buildTypeMemberNode(parent TGTypeOrModule, member srg.SRGMem
 	// Create the member node.
 	memberNode := t.layer.CreateNode(NodeTypeMember)
 	memberNode.Decorate(NodePredicateMemberName, member.Name())
-	memberNode.Decorate(NodePredicateModule, string(member.Module().InputSource()))
+	memberNode.Decorate(NodePredicateModulePath, string(member.Module().InputSource()))
 
 	memberNode.Connect(NodePredicateSource, member.Node())
 
@@ -304,7 +312,7 @@ func (t *TypeGraph) buildTypeMemberNode(parent TGTypeOrModule, member srg.SRGMem
 		// Decorate the property *getter* with its return type.
 		getter, found := member.Getter()
 		if found {
-			t.createReturnable(memberNode, getter, memberType)
+			t.createReturnable(memberNode, getter.GraphNode, memberType)
 		}
 
 	case srg.ConstructorMember:
@@ -333,6 +341,11 @@ func (t *TypeGraph) buildTypeMemberNode(parent TGTypeOrModule, member srg.SRGMem
 		} else {
 			memberTypeValid = false
 		}
+	}
+
+	// If the member is under a module, then it is static.
+	if !parent.IsType() {
+		memberNode.Decorate(NodePredicateMemberStatic, "true")
 	}
 
 	// Set the member type, read-only and type signature.

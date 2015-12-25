@@ -80,6 +80,7 @@ const (
 	NodeTypeWithStatement        // A with statement
 	NodeTypeMatchStatement       // A match statement
 	NodeTypeAssignStatement      // An assignment state: a = b
+	NodeTypeExpressionStatement  // A statement containing a single expression
 
 	NodeTypeMatchStatementCase // A case of a match statement.
 
@@ -129,12 +130,15 @@ const (
 	NodeSliceExpression                // a[b:c]
 	NodeGenericSpecifierExpression     // a<b>
 
-	NodeNumericLiteralExpression        // 123
-	NodeStringLiteralExpression         // 'hello'
-	NodeBooleanLiteralExpression        // true
-	NodeTemplateStringLiteralExpression // `foobar`
-	NodeThisLiteralExpression           // this
-	NodeNullLiteralExpression           // null
+	NodeTaggedTemplateLiteralString // someexpr`foo`
+	NodeTypeTemplateString          // `foo`
+
+	NodeNumericLiteralExpression // 123
+	NodeStringLiteralExpression  // 'hello'
+	NodeBooleanLiteralExpression // true
+	NodeThisLiteralExpression    // this
+	NodeNullLiteralExpression    // null
+	NodeValLiteralExpression     // val
 
 	NodeListExpression     // [1, 2, 3]
 	NodeMapExpression      // {a: 1, b: 2}
@@ -150,6 +154,7 @@ const (
 	NodeTypeStream
 	NodeTypeNullable
 	NodeTypeVoid
+	NodeTypeAny
 
 	// Misc
 	NodeTypeIdentifierPath   // An identifier path
@@ -369,6 +374,11 @@ const (
 	NodeMatchStatementCaseStatement  = "match-case-statement"
 
 	//
+	// NodeTypeExpressionStatement
+	//
+	NodeExpressionStatementExpression = "expr-statement-expr"
+
+	//
 	// NodeTypeAwaitExpression
 	//
 	NodeAwaitExpressionSource = "await-expression-source"
@@ -451,12 +461,22 @@ const (
 	NodeGenericSpecifierType      = "generic-specifier-type"
 
 	//
+	// NodeTaggedTemplateLiteralString
+	//
+	NodeTaggedTemplateCallExpression = "tagged-template-callexpr"
+	NodeTaggedTemplateParsed         = "tagged-template-parsed"
+
+	//
+	// NodeTypeTemplateString
+	//
+	NodeTemplateStringPiece = "template-string-piece"
+
+	//
 	// Literals.
 	//
-	NodeNumericLiteralExpressionValue        = "literal-value"
-	NodeStringLiteralExpressionValue         = "literal-value"
-	NodeBooleanLiteralExpressionValue        = "literal-value"
-	NodeTemplateStringLiteralExpressionValue = "literal-value"
+	NodeNumericLiteralExpressionValue = "literal-value"
+	NodeStringLiteralExpressionValue  = "literal-value"
+	NodeBooleanLiteralExpressionValue = "literal-value"
 
 	//
 	// NodeTypeIdentifierExpression

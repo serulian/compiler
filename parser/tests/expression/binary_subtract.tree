@@ -14,33 +14,38 @@ NodeTypeFile
           input-source = subtract binary expr test
           start-rune = 30
           block-child =>
-            NodeBinarySubtractExpression
-              end-rune = 41
+            NodeTypeExpressionStatement
+              end-rune = 42
               input-source = subtract binary expr test
-              start-rune = 35
-              binary-expression-left =>
+              start-rune = 33
+              expr-statement-expr =>
                 NodeBinarySubtractExpression
-                  end-rune = 37
+                  end-rune = 41
                   input-source = subtract binary expr test
-                  start-rune = 33
+                  start-rune = 35
                   binary-expression-left =>
-                    NodeTypeIdentifierExpression
-                      end-rune = 33
-                      identexpr-name = a
+                    NodeBinarySubtractExpression
+                      end-rune = 37
                       input-source = subtract binary expr test
                       start-rune = 33
+                      binary-expression-left =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 33
+                          identexpr-name = a
+                          input-source = subtract binary expr test
+                          start-rune = 33
+                      binary-expression-right =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 37
+                          identexpr-name = b
+                          input-source = subtract binary expr test
+                          start-rune = 37
                   binary-expression-right =>
                     NodeTypeIdentifierExpression
-                      end-rune = 37
-                      identexpr-name = b
+                      end-rune = 41
+                      identexpr-name = c
                       input-source = subtract binary expr test
-                      start-rune = 37
-              binary-expression-right =>
-                NodeTypeIdentifierExpression
-                  end-rune = 41
-                  identexpr-name = c
-                  input-source = subtract binary expr test
-                  start-rune = 41
+                      start-rune = 41
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 12

@@ -72,6 +72,9 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 	case parser.NodeTypeAssignStatement:
 		return sb.scopeAssignStatement
 
+	case parser.NodeTypeExpressionStatement:
+		return sb.scopeExpressionStatement
+
 	case parser.NodeTypeNamedValue:
 		return sb.scopeNamedValue
 
@@ -184,9 +187,6 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 	case parser.NodeStringLiteralExpression:
 		return sb.scopeStringLiteralExpression
 
-	case parser.NodeTemplateStringLiteralExpression:
-		return sb.scopeStringLiteralExpression
-
 	case parser.NodeListExpression:
 		return sb.scopeListLiteralExpression
 
@@ -201,6 +201,16 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 
 	case parser.NodeTypeLambdaExpression:
 		return sb.scopeLambdaExpression
+
+	case parser.NodeValLiteralExpression:
+		return sb.scopeValLiteralExpression
+
+	// Template string.
+	case parser.NodeTaggedTemplateLiteralString:
+		return sb.scopeTaggedTemplateString
+
+	case parser.NodeTypeTemplateString:
+		return sb.scopeTemplateStringExpression
 
 	// Named expressions.
 	case parser.NodeTypeIdentifierExpression:

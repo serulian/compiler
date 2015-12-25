@@ -30,11 +30,16 @@ NodeTypeFile
                       input-source = match statement no expr test
                       start-rune = 48
                   match-case-statement =>
-                    NodeTypeIdentifierExpression
-                      end-rune = 71
-                      identexpr-name = someOtherExpr
+                    NodeTypeExpressionStatement
+                      end-rune = 72
                       input-source = match statement no expr test
                       start-rune = 59
+                      expr-statement-expr =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 71
+                          identexpr-name = someOtherExpr
+                          input-source = match statement no expr test
+                          start-rune = 59
                     NodeTypeReturnStatement
                       end-rune = 81
                       input-source = match statement no expr test

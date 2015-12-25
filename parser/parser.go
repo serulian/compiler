@@ -41,6 +41,7 @@ type commentedLexeme struct {
 
 // sourceParser holds the state of the parser.
 type sourceParser struct {
+	startIndex     bytePosition               // The start index for position decoration on nodes.
 	source         compilercommon.InputSource // the name of the input; used only for error reports
 	lex            *peekableLexer             // a reference to the lexer used for tokenization
 	builder        NodeBuilder                // the builder function for creating AstNode instances
@@ -74,8 +75,23 @@ const (
 
 // Parse performs parsing of the given input string and returns the root AST node.
 func Parse(builder NodeBuilder, importReporter ImportHandler, source compilercommon.InputSource, input string) AstNode {
+	p := buildParser(builder, importReporter, source, bytePosition(0), input)
+	return p.consumeTopLevel()
+}
+
+// parseExpression parses the given string as an expression.
+func parseExpression(builder NodeBuilder, importReporter ImportHandler, source compilercommon.InputSource, startIndex bytePosition, input string) (AstNode, commentedLexeme, bool) {
+	p := buildParser(builder, importReporter, source, startIndex, input)
+	p.consumeToken()
+	node, ok := p.tryConsumeExpression(consumeExpressionNoMaps)
+	return node, p.previousToken, ok
+}
+
+// buildParser returns a new sourceParser instance.
+func buildParser(builder NodeBuilder, importReporter ImportHandler, source compilercommon.InputSource, startIndex bytePosition, input string) *sourceParser {
 	l := peekable_lex(lex(source, input))
-	p := &sourceParser{
+	return &sourceParser{
+		startIndex:     startIndex,
 		source:         source,
 		lex:            l,
 		builder:        builder,
@@ -84,8 +100,6 @@ func Parse(builder NodeBuilder, importReporter ImportHandler, source compilercom
 		previousToken:  commentedLexeme{lexeme{tokenTypeEOF, 0, ""}, make([]string, 0)},
 		importReporter: importReporter,
 	}
-
-	return p.consumeTopLevel()
 }
 
 // reportImport reports an import of the given token value as a path.
@@ -125,7 +139,7 @@ func (p *sourceParser) startNode(kind NodeType) AstNode {
 // starting rune, as well as any comments attached to the token.
 func (p *sourceParser) decorateStartRuneAndComments(node AstNode, token commentedLexeme) {
 	node.Decorate(NodePredicateSource, string(p.source))
-	node.Decorate(NodePredicateStartRune, strconv.Itoa(int(token.position)))
+	node.Decorate(NodePredicateStartRune, strconv.Itoa(int(token.position)+int(p.startIndex)))
 	p.decorateComments(node, token.comments)
 }
 
@@ -141,7 +155,7 @@ func (p *sourceParser) decorateComments(node AstNode, comments []string) {
 // decorateEndRune decorates the given node with the location of the given token as its
 // ending rune.
 func (p *sourceParser) decorateEndRune(node AstNode, token commentedLexeme) {
-	position := int(token.position) + len(token.value) - 1
+	position := int(token.position) + len(token.value) - 1 + int(p.startIndex)
 	node.Decorate(NodePredicateEndRune, strconv.Itoa(position))
 }
 

@@ -1,0 +1,4 @@
+function<void> DoSomething(p promise<int>) {
+   var<int?> someint
+   someint <- p
+}

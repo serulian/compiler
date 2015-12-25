@@ -65,6 +65,7 @@ type ScopeInfo struct {
 	IsValid                *bool           `protobuf:"varint,1,opt,name=IsValid" json:"IsValid,omitempty"`
 	Kind                   *ScopeKind      `protobuf:"varint,2,opt,name=Kind,enum=proto.ScopeKind,def=0" json:"Kind,omitempty"`
 	NamedReference         *ScopeReference `protobuf:"bytes,8,opt,name=NamedReference" json:"NamedReference,omitempty"`
+	CalledOpReference      *ScopeReference `protobuf:"bytes,9,opt,name=CalledOpReference" json:"CalledOpReference,omitempty"`
 	ResolvedType           *string         `protobuf:"bytes,3,opt,name=ResolvedType" json:"ResolvedType,omitempty"`
 	ReturnedType           *string         `protobuf:"bytes,4,opt,name=ReturnedType" json:"ReturnedType,omitempty"`
 	AssignableType         *string         `protobuf:"bytes,5,opt,name=AssignableType" json:"AssignableType,omitempty"`
@@ -96,6 +97,13 @@ func (m *ScopeInfo) GetKind() ScopeKind {
 func (m *ScopeInfo) GetNamedReference() *ScopeReference {
 	if m != nil {
 		return m.NamedReference
+	}
+	return nil
+}
+
+func (m *ScopeInfo) GetCalledOpReference() *ScopeReference {
+	if m != nil {
+		return m.CalledOpReference
 	}
 	return nil
 }
@@ -236,6 +244,16 @@ func (m *ScopeInfo) MarshalTo(data []byte) (int, error) {
 		}
 		i += n1
 	}
+	if m.CalledOpReference != nil {
+		data[i] = 0x4a
+		i++
+		i = encodeVarintScopeinfo(data, i, uint64(m.CalledOpReference.Size()))
+		n2, err := m.CalledOpReference.MarshalTo(data[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n2
+	}
 	if m.XXX_unrecognized != nil {
 		i += copy(data[i:], m.XXX_unrecognized)
 	}
@@ -336,6 +354,10 @@ func (m *ScopeInfo) Size() (n int) {
 	}
 	if m.NamedReference != nil {
 		l = m.NamedReference.Size()
+		n += 1 + l + sovScopeinfo(uint64(l))
+	}
+	if m.CalledOpReference != nil {
+		l = m.CalledOpReference.Size()
 		n += 1 + l + sovScopeinfo(uint64(l))
 	}
 	if m.XXX_unrecognized != nil {
@@ -614,6 +636,39 @@ func (m *ScopeInfo) Unmarshal(data []byte) error {
 				m.NamedReference = &ScopeReference{}
 			}
 			if err := m.NamedReference.Unmarshal(data[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 9:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CalledOpReference", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowScopeinfo
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthScopeinfo
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.CalledOpReference == nil {
+				m.CalledOpReference = &ScopeReference{}
+			}
+			if err := m.CalledOpReference.Unmarshal(data[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex

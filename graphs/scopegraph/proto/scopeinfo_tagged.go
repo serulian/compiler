@@ -7,6 +7,7 @@
 package proto
 
 import (
+	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/typegraph"
 )
 
@@ -21,6 +22,28 @@ func (t *ScopeInfo) Value() string {
 	}
 
 	return string(bytes)
+}
+
+func (t *ScopeInfo) CalledOperator(tg *typegraph.TypeGraph) (typegraph.TGMember, bool) {
+	if t.CalledOpReference == nil {
+		return typegraph.TGMember{}, false
+	}
+
+	nodeId := compilergraph.GraphNodeId(t.CalledOpReference.GetReferencedNode())
+	return tg.GetTypeOrMember(nodeId).(typegraph.TGMember), true
+}
+
+func (t *ScopeInfo) NamedReferenceNode(tg *typegraph.TypeGraph) (compilergraph.GraphNode, bool) {
+	if t.NamedReference == nil {
+		return compilergraph.GraphNode{}, false
+	}
+
+	nodeId := compilergraph.GraphNodeId(t.NamedReference.GetReferencedNode())
+	if t.NamedReference.GetIsSRGNode() {
+		return tg.SourceGraph().GetNode(nodeId), true
+	} else {
+		return tg.GetNode(nodeId), true
+	}
 }
 
 func (t *ScopeInfo) Build(value string) interface{} {

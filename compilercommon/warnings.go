@@ -27,6 +27,10 @@ func (sw *SourceWarning) String() string {
 	return sw.message
 }
 
+func (sw *SourceWarning) SourceAndLocation() SourceAndLocation {
+	return sw.sal
+}
+
 // SourcePositionWarningf returns a new SourceWarning for the given source, byte position and message.
 func SourcePositionWarningf(source InputSource, bytePosition int, msg string, args ...interface{}) *SourceWarning {
 	return SourceWarningf(NewSourceAndLocation(source, bytePosition), msg, args...)

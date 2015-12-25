@@ -14,32 +14,37 @@ NodeTypeFile
           input-source = less than and generic specifier expr test
           start-rune = 33
           block-child =>
-            NodeGenericSpecifierExpression
-              end-rune = 39
+            NodeTypeExpressionStatement
+              end-rune = 40
               input-source = less than and generic specifier expr test
               start-rune = 36
-              generic-specifier-expr =>
-                NodeTypeIdentifierExpression
-                  end-rune = 36
-                  identexpr-name = a
+              expr-statement-expr =>
+                NodeGenericSpecifierExpression
+                  end-rune = 39
                   input-source = less than and generic specifier expr test
                   start-rune = 36
-              generic-specifier-type =>
-                NodeTypeTypeReference
-                  end-rune = 38
-                  input-source = less than and generic specifier expr test
-                  start-rune = 38
-                  typereference-path =>
-                    NodeTypeIdentifierPath
+                  generic-specifier-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 36
+                      identexpr-name = a
+                      input-source = less than and generic specifier expr test
+                      start-rune = 36
+                  generic-specifier-type =>
+                    NodeTypeTypeReference
                       end-rune = 38
                       input-source = less than and generic specifier expr test
                       start-rune = 38
-                      identifierpath-root =>
-                        NodeTypeIdentifierAccess
+                      typereference-path =>
+                        NodeTypeIdentifierPath
                           end-rune = 38
-                          identifieraccess-name = b
                           input-source = less than and generic specifier expr test
                           start-rune = 38
+                          identifierpath-root =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 38
+                              identifieraccess-name = b
+                              input-source = less than and generic specifier expr test
+                              start-rune = 38
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 12
@@ -56,22 +61,27 @@ NodeTypeFile
           input-source = less than and generic specifier expr test
           start-rune = 73
           block-child =>
-            NodeComparisonLTExpression
-              end-rune = 80
+            NodeTypeExpressionStatement
+              end-rune = 81
               input-source = less than and generic specifier expr test
               start-rune = 76
-              binary-expression-left =>
-                NodeTypeIdentifierExpression
-                  end-rune = 76
-                  identexpr-name = a
+              expr-statement-expr =>
+                NodeComparisonLTExpression
+                  end-rune = 80
                   input-source = less than and generic specifier expr test
                   start-rune = 76
-              binary-expression-right =>
-                NodeTypeIdentifierExpression
-                  end-rune = 80
-                  identexpr-name = b
-                  input-source = less than and generic specifier expr test
-                  start-rune = 80
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 76
+                      identexpr-name = a
+                      input-source = less than and generic specifier expr test
+                      start-rune = 76
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 80
+                      identexpr-name = b
+                      input-source = less than and generic specifier expr test
+                      start-rune = 80
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 56

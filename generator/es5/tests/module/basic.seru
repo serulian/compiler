@@ -1,0 +1,7 @@
+var<int> someInt = 2
+
+function<int> AnotherFunction() {
+	return 2
+}
+
+var<int> anotherInt = AnotherFunction()

@@ -61,6 +61,22 @@ func (m SRGModule) Node() compilergraph.GraphNode {
 	return m.GraphNode
 }
 
+// GetTypes returns the types declared directly under the module.
+func (m SRGModule) GetTypes() []SRGType {
+	it := m.GraphNode.StartQuery().
+		Out(parser.NodePredicateChild).
+		IsKind(parser.NodeTypeClass, parser.NodeTypeInterface).
+		BuildNodeIterator()
+
+	var types []SRGType
+
+	for it.Next() {
+		types = append(types, SRGType{it.Node(), m.srg})
+	}
+
+	return types
+}
+
 // GetMembers returns the members declared directly under the module.
 func (m SRGModule) GetMembers() []SRGMember {
 	it := m.GraphNode.StartQuery().

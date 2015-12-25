@@ -1,0 +1,9 @@
+class SomeClass {
+	operator<string> index(someParam bool) {
+		return ''
+	}
+}
+
+function<void> DoSomething(c SomeClass) {
+	c[true]
+}

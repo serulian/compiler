@@ -1,0 +1,7 @@
+function<void> DoSomething(somethingElse int*) {
+	1234
+	for something in somethingElse {
+		7654
+	}
+	5678
+}

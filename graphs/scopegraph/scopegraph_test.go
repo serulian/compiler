@@ -7,6 +7,8 @@ package scopegraph
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
+	"strings"
 	"testing"
 
 	"github.com/serulian/compiler/compilergraph"
@@ -371,7 +373,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"arrow operator invalid source test", "arrowops", "invalidsource",
 		[]expectedScopeEntry{},
-		"Right hand side of an arrow expression must be of type Port: Type Integer cannot be used in place of type Port as it does not implement member AwaitNext", ""},
+		"Right hand side of an arrow expression must be of type Promise: Type Integer cannot be used in place of type Promise as it does not implement member Then", ""},
 
 	scopegraphTest{"arrow operator invalid destination test", "arrowops", "invaliddestination",
 		[]expectedScopeEntry{},
@@ -421,9 +423,16 @@ var scopeGraphTests = []scopegraphTest{
 
 	/////////// Cast expression ///////////
 
-	scopegraphTest{"cast success test", "castexpr", "success",
+	scopegraphTest{"cast interface success test", "castexpr", "success",
 		[]expectedScopeEntry{
 			expectedScopeEntry{"cast", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"cast subclass success test", "castexpr", "subclass",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"bc", expectedScope{true, proto.ScopeKind_VALUE, "BaseClass", "void"}},
+			expectedScopeEntry{"abc", expectedScope{true, proto.ScopeKind_VALUE, "AnotherBaseClass", "void"}},
 		},
 		"", ""},
 
@@ -589,6 +598,12 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"The 'this' keyword cannot be used under static type member Build", ""},
 
+	scopegraphTest{"this under property test", "thisliteral", "property",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"scthis", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+		},
+		"", ""},
+
 	/////////// generic specifier expression ///////////
 
 	scopegraphTest{"generic specifier expression success test", "genericspecifier", "success",
@@ -654,10 +669,48 @@ var scopeGraphTests = []scopegraphTest{
 			expectedScopeEntry{"anotherVar", expectedScope{true, proto.ScopeKind_VALUE, "Function<void>(Integer, Boolean)", "void"}},
 		},
 		"", ""},
+
+	/////////// property value test /////////////
+
+	scopegraphTest{"property val test", "property", "getterval",
+		[]expectedScopeEntry{},
+		"The 'val' keyword can only be used under property setters", ""},
+
+	scopegraphTest{"property val test", "property", "value",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"val", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+		},
+		"", ""},
+
+	/////////// template strings /////////////
+
+	scopegraphTest{"untagged template string success", "templatestr", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"templatestr", expectedScope{true, proto.ScopeKind_VALUE, "String", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"tagged template string success", "templatestr", "taggedsuccess",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"templatestr", expectedScope{true, proto.ScopeKind_VALUE, "String", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"template string non-stringable failure", "templatestr", "nonstringable",
+		[]expectedScopeEntry{},
+		"All expressions in a template string must be of type Stringable: Type 'SomeClass' does not define or export member 'String', which is required by type 'Stringable'", ""},
+
+	scopegraphTest{"tagged template failure success", "templatestr", "taggedfailure",
+		[]expectedScopeEntry{},
+		"Tagging expression for template string must have type Function<String>(List<String>, List<Stringable>). Found: Function<void>", ""},
 }
 
 func TestGraphs(t *testing.T) {
 	for _, test := range scopeGraphTests {
+		if os.Getenv("FILTER") != "" && !strings.Contains(test.name, os.Getenv("FILTER")) {
+			continue
+		}
+
 		entrypointFile := "tests/" + test.input + "/" + test.entrypoint + ".seru"
 
 		graph, err := compilergraph.NewGraph(entrypointFile)

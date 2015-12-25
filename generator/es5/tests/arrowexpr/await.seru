@@ -1,0 +1,3 @@
+function<int> DoSomething(p promise<int>) {
+   return <- p
+}

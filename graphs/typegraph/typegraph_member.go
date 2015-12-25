@@ -6,6 +6,7 @@ package typegraph
 
 import (
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/graphs/srg"
 )
 
 // TGMember represents a type or module member.
@@ -42,6 +43,47 @@ func (tn TGMember) Title() string {
 // Node returns the underlying node in this declaration.
 func (tn TGMember) Node() compilergraph.GraphNode {
 	return tn.GraphNode
+}
+
+// HasImplementation returns true if this type member has an SRG implementation.
+func (tn TGMember) HasImplementation() bool {
+	srgMember, hasSRGMember := tn.SRGMember()
+	if !hasSRGMember {
+		return false
+	}
+
+	return srgMember.HasImplementation()
+}
+
+// SRGMember returns the SRG member decl for this member, if any.
+func (tn TGMember) SRGMember() (srg.SRGMember, bool) {
+	sourceNodeId, hasSource := tn.GraphNode.TryGet(NodePredicateSource)
+	if !hasSource {
+		return srg.SRGMember{}, false
+	}
+
+	srgNode := tn.tdg.srg.GetNode(compilergraph.GraphNodeId(sourceNodeId))
+	return tn.tdg.srg.GetMemberReference(srgNode), true
+}
+
+// BaseMember returns the member in a parent type from which this member was cloned/inherited, if any.
+func (tn TGMember) BaseMember() (TGMember, bool) {
+	parentMember, hasParentMember := tn.GraphNode.TryGetNode(NodePredicateMemberBaseMember)
+	if !hasParentMember {
+		return TGMember{}, false
+	}
+
+	return TGMember{parentMember, tn.tdg}, true
+}
+
+// BaseMemberSource returns the type from which this member was cloned/inherited, if any.
+func (tn TGMember) BaseMemberSource() (TypeReference, bool) {
+	source, found := tn.GraphNode.TryGetTagged(NodePredicateMemberBaseSource, tn.tdg.AnyTypeReference())
+	if !found {
+		return tn.tdg.AnyTypeReference(), false
+	}
+
+	return source.(TypeReference), true
 }
 
 // IsExported returns whether the member is exported.
@@ -92,10 +134,23 @@ func (tn TGMember) Generics() []TGGeneric {
 	return generics
 }
 
+// Parent returns the type or module containing this member.
+func (tn TGMember) Parent() TGTypeOrModule {
+	parentNode := tn.GraphNode.StartQuery().
+		In(NodePredicateMember, NodePredicateTypeOperator).
+		GetNode()
+
+	if parentNode.Kind == NodeTypeModule {
+		return TGModule{parentNode, tn.tdg}
+	} else {
+		return TGTypeDecl{parentNode, tn.tdg}
+	}
+}
+
 // ParentType returns the type containing this member, if any.
 func (tn TGMember) ParentType() (TGTypeDecl, bool) {
 	typeNode, hasType := tn.GraphNode.StartQuery().
-		In(NodePredicateMember).
+		In(NodePredicateMember, NodePredicateTypeOperator).
 		IsKind(NodeTypeClass, NodeTypeInterface).
 		TryGetNode()
 

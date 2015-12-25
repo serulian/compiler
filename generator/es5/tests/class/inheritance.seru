@@ -1,0 +1,15 @@
+class FirstClass {
+	var<int> SomeInt = 2
+	function<void> DoSomething() {}
+}
+
+class SecondClass {
+	var<int> SomeInt = 4
+	function<void> AnotherThing() {}
+}
+
+class MainClass : FirstClass + SecondClass {
+	function<int> DoSomething(i int) {
+		return this.SomeInt
+	}
+}

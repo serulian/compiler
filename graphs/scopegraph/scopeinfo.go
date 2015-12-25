@@ -118,6 +118,17 @@ func (sib *scopeInfoBuilder) ForNamedScopeUnderType(info namedScopeInfo, parentT
 	return sib.ForNamedScope(info).Resolving(transformedValueType)
 }
 
+// CallsOperator marks the scope as being the result of a call to the specified operator.
+func (sib *scopeInfoBuilder) CallsOperator(op typegraph.TGMember) *scopeInfoBuilder {
+	sib.info.CalledOpReference = &proto.ScopeReference{}
+
+	falseValue := false
+	namedId := string(op.GraphNode.NodeId)
+	sib.info.CalledOpReference.ReferencedNode = &namedId
+	sib.info.CalledOpReference.IsSRGNode = &falseValue
+	return sib
+}
+
 // ForNamedScope points the scope to the referred named scope.
 func (sib *scopeInfoBuilder) ForNamedScope(info namedScopeInfo) *scopeInfoBuilder {
 	if info.IsGeneric() {

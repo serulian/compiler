@@ -187,6 +187,7 @@ var parserTests = []parserTest{
 	{"map missing comma expr test", "expression/map_missingcomma"},
 	{"generic specifier expr test", "expression/generic_specifier"},
 	{"less than and generic specifier expr test", "expression/ltandgeneric"},
+	{"template string expr test", "expression/templatestring"},
 
 	{"all expr test", "expression/all"},
 	{"complex expr test", "expression/complex"},
@@ -204,6 +205,8 @@ var parserTests = []parserTest{
 	{"known issue test", "class/knownissue"},
 	{"known issue 1 test", "knownissue/knownissue1"},
 	{"known issue 2 test", "knownissue/knownissue2"},
+	{"known issue 3 test", "knownissue/knownissue3"},
+	{"known issue 4 test", "knownissue/knownissue4"},
 
 	// Comment tests.
 	{"comment function test", "comment/function"},

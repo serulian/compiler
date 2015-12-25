@@ -1,0 +1,7 @@
+class SomeClass {}
+
+interface ISomeInterface {}
+
+function<void> DoSomething(i ISomeInterface) {
+	i.(SomeClass)
+}

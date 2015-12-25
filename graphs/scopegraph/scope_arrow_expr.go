@@ -17,13 +17,13 @@ var _ = fmt.Printf
 
 // scopeAwaitExpression scopes an await expression in the SRG.
 func (sb *scopeBuilder) scopeAwaitExpression(node compilergraph.GraphNode) proto.ScopeInfo {
-	scopeBuilder, _ := sb.scopePortExpression(node, parser.NodeAwaitExpressionSource)
+	scopeBuilder, _ := sb.scopePromiseExpression(node, parser.NodeAwaitExpressionSource)
 	return scopeBuilder.GetScope()
 }
 
 // scopeArrowExpression scopes an arrow expression in the SRG.
 func (sb *scopeBuilder) scopeArrowExpression(node compilergraph.GraphNode) proto.ScopeInfo {
-	scopeBuilder, receivedType := sb.scopePortExpression(node, parser.NodeArrowExpressionSource)
+	scopeBuilder, receivedType := sb.scopePromiseExpression(node, parser.NodeArrowExpressionSource)
 	sourceScope := scopeBuilder.GetScope()
 
 	// Scope the destination.
@@ -54,8 +54,8 @@ func (sb *scopeBuilder) scopeArrowExpression(node compilergraph.GraphNode) proto
 	return newScope().Valid().Resolving(receivedType).GetScope()
 }
 
-// scopePortExpression scopes the right hand side of an arrow or await expression.
-func (sb *scopeBuilder) scopePortExpression(node compilergraph.GraphNode, sourcePredicate string) (*scopeInfoBuilder, typegraph.TypeReference) {
+// scopePromiseExpression scopes the right hand side of an arrow or await expression.
+func (sb *scopeBuilder) scopePromiseExpression(node compilergraph.GraphNode, sourcePredicate string) (*scopeInfoBuilder, typegraph.TypeReference) {
 	// Scope the source node.
 	sourceNode := node.GetNode(sourcePredicate)
 	sourceScope := sb.getScope(sourceNode)
@@ -63,11 +63,11 @@ func (sb *scopeBuilder) scopePortExpression(node compilergraph.GraphNode, source
 		return newScope().Invalid(), sb.sg.tdg.AnyTypeReference()
 	}
 
-	// Ensure the source node is a Port<T>.
+	// Ensure the source node is a Promise<T>.
 	sourceType := sourceScope.ResolvedTypeRef(sb.sg.tdg)
-	generics, err := sourceType.CheckConcreteSubtypeOf(sb.sg.tdg.PortType())
+	generics, err := sourceType.CheckConcreteSubtypeOf(sb.sg.tdg.PromiseType())
 	if err != nil {
-		sb.decorateWithError(sourceNode, "Right hand side of an arrow expression must be of type Port: %v", err)
+		sb.decorateWithError(sourceNode, "Right hand side of an arrow expression must be of type Promise: %v", err)
 		return newScope().Invalid(), sb.sg.tdg.AnyTypeReference()
 	}
 

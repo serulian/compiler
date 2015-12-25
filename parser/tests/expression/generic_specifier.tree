@@ -14,75 +14,85 @@ NodeTypeFile
           input-source = generic specifier expr test
           start-rune = 29
           block-child =>
-            NodeGenericSpecifierExpression
-              end-rune = 48
+            NodeTypeExpressionStatement
+              end-rune = 49
               input-source = generic specifier expr test
               start-rune = 32
-              generic-specifier-expr =>
-                NodeTypeIdentifierExpression
-                  end-rune = 40
-                  identexpr-name = something
+              expr-statement-expr =>
+                NodeGenericSpecifierExpression
+                  end-rune = 48
                   input-source = generic specifier expr test
                   start-rune = 32
-              generic-specifier-type =>
-                NodeTypeNullable
-                  end-rune = 47
-                  input-source = generic specifier expr test
-                  start-rune = 42
-                  typereference-inner-type =>
-                    NodeTypeTypeReference
-                      end-rune = 46
+                  generic-specifier-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 40
+                      identexpr-name = something
+                      input-source = generic specifier expr test
+                      start-rune = 32
+                  generic-specifier-type =>
+                    NodeTypeNullable
+                      end-rune = 47
                       input-source = generic specifier expr test
                       start-rune = 42
-                      typereference-path =>
-                        NodeTypeIdentifierPath
+                      typereference-inner-type =>
+                        NodeTypeTypeReference
                           end-rune = 46
                           input-source = generic specifier expr test
                           start-rune = 42
-                          identifierpath-root =>
-                            NodeTypeIdentifierAccess
+                          typereference-path =>
+                            NodeTypeIdentifierPath
                               end-rune = 46
-                              identifieraccess-name = c
                               input-source = generic specifier expr test
-                              start-rune = 46
-                              identifieraccess-source =>
+                              start-rune = 42
+                              identifierpath-root =>
                                 NodeTypeIdentifierAccess
-                                  end-rune = 44
-                                  identifieraccess-name = b
+                                  end-rune = 46
+                                  identifieraccess-name = c
                                   input-source = generic specifier expr test
-                                  start-rune = 44
+                                  start-rune = 46
                                   identifieraccess-source =>
                                     NodeTypeIdentifierAccess
-                                      end-rune = 42
-                                      identifieraccess-name = a
+                                      end-rune = 44
+                                      identifieraccess-name = b
                                       input-source = generic specifier expr test
-                                      start-rune = 42
-            NodeGenericSpecifierExpression
-              end-rune = 66
+                                      start-rune = 44
+                                      identifieraccess-source =>
+                                        NodeTypeIdentifierAccess
+                                          end-rune = 42
+                                          identifieraccess-name = a
+                                          input-source = generic specifier expr test
+                                          start-rune = 42
+            NodeTypeExpressionStatement
+              end-rune = 67
               input-source = generic specifier expr test
               start-rune = 51
-              generic-specifier-expr =>
-                NodeTypeIdentifierExpression
-                  end-rune = 63
-                  identexpr-name = somethingelse
+              expr-statement-expr =>
+                NodeGenericSpecifierExpression
+                  end-rune = 66
                   input-source = generic specifier expr test
                   start-rune = 51
-              generic-specifier-type =>
-                NodeTypeTypeReference
-                  end-rune = 65
-                  input-source = generic specifier expr test
-                  start-rune = 65
-                  typereference-path =>
-                    NodeTypeIdentifierPath
+                  generic-specifier-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 63
+                      identexpr-name = somethingelse
+                      input-source = generic specifier expr test
+                      start-rune = 51
+                  generic-specifier-type =>
+                    NodeTypeTypeReference
                       end-rune = 65
                       input-source = generic specifier expr test
                       start-rune = 65
-                      identifierpath-root =>
-                        NodeTypeIdentifierAccess
+                      typereference-path =>
+                        NodeTypeIdentifierPath
                           end-rune = 65
-                          identifieraccess-name = a
                           input-source = generic specifier expr test
                           start-rune = 65
+                          identifierpath-root =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 65
+                              identifieraccess-name = a
+                              input-source = generic specifier expr test
+                              start-rune = 65
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 12

@@ -8,6 +8,8 @@
 package typegraph
 
 import (
+	"fmt"
+
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/srg"
@@ -41,14 +43,50 @@ func BuildTypeGraph(srg *srg.SRG) *Result {
 	return typeGraph.build(srg)
 }
 
+// GetNode returns the node with the given ID in this layer or panics.
+func (g *TypeGraph) GetNode(nodeId compilergraph.GraphNodeId) compilergraph.GraphNode {
+	return g.layer.GetNode(string(nodeId))
+}
+
 // SourceGraph returns the SRG behind this type graph.
 func (g *TypeGraph) SourceGraph() *srg.SRG {
 	return g.srg
 }
 
+// Modules returns all modules defined in the type graph.
+func (g *TypeGraph) Modules() []TGModule {
+	it := g.findAllNodes(NodeTypeModule).
+		BuildNodeIterator()
+
+	var modules []TGModule
+	for it.Next() {
+		modules = append(modules, TGModule{it.Node(), g})
+	}
+	return modules
+}
+
+// LookupModule looks up the module with the given source and returns it, if any.
+func (g *TypeGraph) LookupModule(source compilercommon.InputSource) (TGModule, bool) {
+	srgModule, found := g.srg.FindModuleBySource(source)
+	if !found {
+		return TGModule{}, false
+	}
+
+	moduleNode, nodeFound := g.layer.StartQuery().
+		IsKind(NodeTypeModule).
+		Has(NodePredicateSource, string(srgModule.NodeId)).
+		TryGetNode()
+	if !nodeFound {
+		return TGModule{}, false
+	}
+
+	return TGModule{moduleNode, g}, true
+}
+
 // ModulesWithMembers returns all modules containing members defined in the type graph.
 func (g *TypeGraph) ModulesWithMembers() []TGModule {
 	it := g.findAllNodes(NodeTypeModule).
+		Has(NodePredicateMember).
 		BuildNodeIterator()
 
 	var modules []TGModule
@@ -83,11 +121,14 @@ func (g *TypeGraph) GetTypeOrMember(nodeId compilergraph.GraphNodeId) TGTypeOrMe
 	case NodeTypeGeneric:
 		return TGTypeDecl{node, g}
 
+	case NodeTypeOperator:
+		fallthrough
+
 	case NodeTypeMember:
 		return TGMember{node, g}
 
 	default:
-		panic("Node is not a type or member")
+		panic(fmt.Sprintf("Node is not a type or member: %v", node))
 		return TGMember{node, g}
 	}
 }

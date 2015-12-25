@@ -1,0 +1,4 @@
+function<void> DoSomething() {
+	var<int?> i
+	1234
+}

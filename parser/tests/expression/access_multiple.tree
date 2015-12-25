@@ -14,35 +14,40 @@ NodeTypeFile
           input-source = multiple access expr test
           start-rune = 30
           block-child =>
-            NodeDynamicMemberAccessExpression
-              end-rune = 44
+            NodeTypeExpressionStatement
+              end-rune = 45
               input-source = multiple access expr test
-              member-access-identifier = e
-              start-rune = 39
-              member-access-expr =>
-                NodeStreamMemberAccessExpression
-                  end-rune = 41
+              start-rune = 33
+              expr-statement-expr =>
+                NodeDynamicMemberAccessExpression
+                  end-rune = 44
                   input-source = multiple access expr test
-                  member-access-identifier = d
-                  start-rune = 36
+                  member-access-identifier = e
+                  start-rune = 39
                   member-access-expr =>
-                    NodeNullableMemberAccessExpression
-                      end-rune = 38
+                    NodeStreamMemberAccessExpression
+                      end-rune = 41
                       input-source = multiple access expr test
-                      member-access-identifier = c
-                      start-rune = 34
+                      member-access-identifier = d
+                      start-rune = 36
                       member-access-expr =>
-                        NodeMemberAccessExpression
-                          end-rune = 35
+                        NodeNullableMemberAccessExpression
+                          end-rune = 38
                           input-source = multiple access expr test
-                          member-access-identifier = b
-                          start-rune = 33
+                          member-access-identifier = c
+                          start-rune = 34
                           member-access-expr =>
-                            NodeTypeIdentifierExpression
-                              end-rune = 33
-                              identexpr-name = a
+                            NodeMemberAccessExpression
+                              end-rune = 35
                               input-source = multiple access expr test
+                              member-access-identifier = b
                               start-rune = 33
+                              member-access-expr =>
+                                NodeTypeIdentifierExpression
+                                  end-rune = 33
+                                  identexpr-name = a
+                                  input-source = multiple access expr test
+                                  start-rune = 33
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 12

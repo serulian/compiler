@@ -1,0 +1,9 @@
+class SomeClass {
+	operator not(instance SomeClass) {
+		return instance
+	}
+}
+
+function<void> DoSomething(first SomeClass) {
+	~first
+}

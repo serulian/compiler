@@ -14,22 +14,27 @@ NodeTypeFile
           input-source = arrow expr test
           start-rune = 30
           block-child =>
-            NodeTypeArrowExpression
-              end-rune = 57
+            NodeTypeExpressionStatement
+              end-rune = 58
               input-source = arrow expr test
               start-rune = 33
-              arrow-expression-left =>
-                NodeTypeIdentifierExpression
-                  end-rune = 40
-                  identexpr-name = someExpr
+              expr-statement-expr =>
+                NodeTypeArrowExpression
+                  end-rune = 57
                   input-source = arrow expr test
                   start-rune = 33
-              arrow-expression-right =>
-                NodeTypeIdentifierExpression
-                  end-rune = 57
-                  identexpr-name = someOtherExpr
-                  input-source = arrow expr test
-                  start-rune = 45
+                  arrow-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 40
+                      identexpr-name = someExpr
+                      input-source = arrow expr test
+                      start-rune = 33
+                  arrow-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 57
+                      identexpr-name = someOtherExpr
+                      input-source = arrow expr test
+                      start-rune = 45
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 12

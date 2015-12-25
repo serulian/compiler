@@ -1,0 +1,8 @@
+function<void> DoSomething() {
+	'hello world'
+	"hi world"
+	'single quote with "quoted"'
+	"double quote with 'quoted'"
+	"escaped \" quote"
+	'escaped \' quote'
+}
