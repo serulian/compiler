@@ -19,6 +19,9 @@ func (t *TypeGraph) BuildTypeRef(typeref srg.SRGTypeRef) (TypeReference, error) 
 	case srg.TypeRefVoid:
 		return t.VoidTypeReference(), nil
 
+	case srg.TypeRefAny:
+		return t.AnyTypeReference(), nil
+
 	case srg.TypeRefStream:
 		innerType, err := t.BuildTypeRef(typeref.InnerReference())
 		if err != nil {
