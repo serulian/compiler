@@ -8,6 +8,7 @@ package builder
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"path"
 
 	"github.com/serulian/compiler/compilercommon"
@@ -16,9 +17,17 @@ import (
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/typegraph"
+	"github.com/serulian/compiler/packageloader"
 
 	"github.com/fatih/color"
 )
+
+// CORE_LIBRARY contains the location of the Serulian core library.
+var CORE_LIBRARY = packageloader.Library{
+	// TODO: this should be set to a defined tag once the compiler is stable.
+	PathOrURL: "github.com/Serulian/corelib:master",
+	IsSCM:     true,
+}
 
 func outputWarnings(warnings []*compilercommon.SourceWarning) {
 	highlight := color.New(color.FgYellow, color.Bold)
@@ -45,7 +54,12 @@ func outputErrors(errors []*compilercommon.SourceError) {
 }
 
 // BuildSource invokes the compiler starting at the given root source file path.
-func BuildSource(rootSourceFilePath string) bool {
+func BuildSource(rootSourceFilePath string, debug bool) bool {
+	// Disable logging unless the debug flag is on.
+	if !debug {
+		log.SetOutput(ioutil.Discard)
+	}
+
 	// Initialize the project graph.
 	graph, err := compilergraph.NewGraph(rootSourceFilePath)
 	if err != nil {
@@ -55,9 +69,7 @@ func BuildSource(rootSourceFilePath string) bool {
 
 	// Parse all source into the SRG.
 	projectSRG := srg.NewSRG(graph)
-
-	// TODO: load the stdlib properly.
-	srgResult := projectSRG.LoadAndParse("graphs/typegraph/tests/testlib")
+	srgResult := projectSRG.LoadAndParse(CORE_LIBRARY)
 
 	outputWarnings(srgResult.Warnings)
 	if !srgResult.Status {

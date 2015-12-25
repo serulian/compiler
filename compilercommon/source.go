@@ -6,7 +6,6 @@
 package compilercommon
 
 import (
-	"fmt"
 	"io/ioutil"
 	"path"
 	"strings"
@@ -19,7 +18,7 @@ type InputSource string
 func (i InputSource) GetLocation(bytePosition int) SourceLocation {
 	contents, err := ioutil.ReadFile(string(i))
 	if err != nil {
-		panic(fmt.Sprintf("Could not read source file %v in GetLocation", i))
+		return SourceLocation{0, 0, 0}
 	}
 
 	return GetSourceLocation(string(contents), bytePosition)

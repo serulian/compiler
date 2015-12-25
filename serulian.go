@@ -24,7 +24,7 @@ func main() {
 				os.Exit(-1)
 			}
 
-			if !builder.BuildSource(args[0]) {
+			if !builder.BuildSource(args[0], false) {
 				os.Exit(-1)
 			}
 		},

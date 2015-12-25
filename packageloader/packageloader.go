@@ -78,6 +78,15 @@ type PackageLoader struct {
 	finished    chan bool      // Channel used to tell background goroutines to quit
 }
 
+// Library contains a reference to an external library to load, in addition to those referenced
+// by the root source file.
+type Library struct {
+	PathOrURL string // The file location or SCM URL of the library's package.
+	IsSCM     bool   // If true, the PathOrURL is treated as a remote SCM package.
+}
+
+// LoadResult contains the result of attempting to load all packages and source files for this
+// project.
 type LoadResult struct {
 	Status     bool                            // True on success, false otherwise
 	Errors     []*compilercommon.SourceError   // The errors encountered, if any
@@ -104,8 +113,8 @@ func NewPackageLoader(rootSourceFile string, nodeBuilder parser.NodeBuilder) *Pa
 }
 
 // Load performs the loading of a Serulian package found at the directory path.
-// Any dependencies will be loaded as well.
-func (p *PackageLoader) Load(libPaths ...string) *LoadResult {
+// Any libraries specified will be loaded as well.
+func (p *PackageLoader) Load(libraries ...Library) *LoadResult {
 	// Start the loading goroutine.
 	go p.loadAndParse()
 
@@ -122,11 +131,15 @@ func (p *PackageLoader) Load(libPaths ...string) *LoadResult {
 	sal := compilercommon.NewSourceAndLocation(compilercommon.InputSource(p.rootSourceFile), 0)
 	p.pushPath(pathSourceFile, p.rootSourceFile, sal)
 
-	// Add the library paths to be parsed.
-	for _, libPath := range libPaths {
-		sal := compilercommon.NewSourceAndLocation(compilercommon.InputSource(libPath), 0)
-		p.pushPath(pathLocalPackage, libPath, sal)
-
+	// Add the libraries to be parsed.
+	for _, library := range libraries {
+		if library.IsSCM {
+			sal := compilercommon.NewSourceAndLocation(compilercommon.InputSource(library.PathOrURL), 0)
+			p.pushPath(pathVCSPackage, library.PathOrURL, sal)
+		} else {
+			sal := compilercommon.NewSourceAndLocation(compilercommon.InputSource(library.PathOrURL), 0)
+			p.pushPath(pathLocalPackage, library.PathOrURL, sal)
+		}
 	}
 
 	// Wait for all packages and source files to be completed.

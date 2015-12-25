@@ -70,10 +70,10 @@ func (g *SRG) FindVariableTypeWithName(name string) SRGTypeRef {
 
 // LoadAndParse attemptps to load and parse the transition closure of the source code
 // found starting at the root source file.
-func (g *SRG) LoadAndParse(libPaths ...string) *packageloader.LoadResult {
+func (g *SRG) LoadAndParse(libraries ...packageloader.Library) *packageloader.LoadResult {
 	// Load and parse recursively.
 	packageLoader := packageloader.NewPackageLoader(g.Graph.RootSourceFilePath, g.buildASTNode)
-	result := packageLoader.Load(libPaths...)
+	result := packageLoader.Load(libraries...)
 
 	// Save the package map.
 	g.packageMap = result.PackageMap
