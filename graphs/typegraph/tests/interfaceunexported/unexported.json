@@ -1,4 +1,47 @@
 {
+    "045886d68f9d706cd30466f0e8fad458": {
+        "Key": "045886d68f9d706cd30466f0e8fad458",
+        "Kind": 2,
+        "Children": {
+            "eca2619c815e41abeae8c57cd7b93703": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "eca2619c815e41abeae8c57cd7b93703",
+                    "Kind": 4,
+                    "Children": {
+                        "6435db8e697ef61ba888b960ec78a38d": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "6435db8e697ef61ba888b960ec78a38d",
+                                "Kind": 6,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "6|NodeType|tdg",
+                                    "tdg-return-type": "String",
+                                    "tdg-srg-source": "(NodeRef)"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "String",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "Function\u003cString\u003e",
+                        "tdg-member-signature": "\n\u0006String\u0010\u0002\u0018\u0000 \u0001*\u0010Function\u003cString\u003e",
+                        "tdg-node-kind": "4|NodeType|tdg",
+                        "tdg-srg-module": "tests/testlib/basictypes.seru",
+                        "tdg-srg-source": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-node-kind": "2|NodeType|tdg",
+            "tdg-srg-source": "(NodeRef)",
+            "tdg-type-name": "Stringable"
+        }
+    },
     "1a4cfe6f0a96133d094610c9b9726040": {
         "Key": "1a4cfe6f0a96133d094610c9b9726040",
         "Kind": 2,

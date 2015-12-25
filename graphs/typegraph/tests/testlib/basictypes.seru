@@ -1,3 +1,8 @@
+@•typealias('stringable')
+interface Stringable {
+	function<string> String()
+}
+
 @•typealias('stream')
 interface Stream<T> {
 	property<T> CurrentValue { get }
