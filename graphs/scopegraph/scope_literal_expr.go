@@ -15,6 +15,69 @@ import (
 
 var _ = fmt.Printf
 
+// scopeTaggedTemplateString scopes a tagged template string expression in the SRG.
+func (sb *scopeBuilder) scopeTaggedTemplateString(node compilergraph.GraphNode) proto.ScopeInfo {
+	var isValid = true
+
+	// Scope the tagging expression.
+	tagScope := sb.getScope(node.GetNode(parser.NodeTaggedTemplateCallExpression))
+	if !tagScope.GetIsValid() {
+		isValid = false
+	}
+
+	// Scope the template string.
+	templateScope := sb.getScope(node.GetNode(parser.NodeTaggedTemplateParsed))
+	if !templateScope.GetIsValid() {
+		isValid = false
+	}
+
+	// Ensure that the tagging expression is a function of type function<string>(list<string>, list<any>).
+	if tagScope.GetIsValid() {
+		expectedType := sb.sg.tdg.
+			FunctionTypeReference(sb.sg.tdg.StringTypeReference()).
+			WithParameter(sb.sg.tdg.ListTypeReference(sb.sg.tdg.StringTypeReference())).
+			WithParameter(sb.sg.tdg.ListTypeReference(sb.sg.tdg.AnyTypeReference()))
+
+		tagType := tagScope.ResolvedTypeRef(sb.sg.tdg)
+		if tagType != expectedType {
+			isValid = false
+			sb.decorateWithError(node, "Tagging expression for template string must have type %v. Found: %v", expectedType, tagType)
+		}
+	}
+
+	return newScope().IsValid(isValid).Resolving(sb.sg.tdg.StringTypeReference()).GetScope()
+}
+
+// scopeTemplateStringExpression scopes a template string expression in the SRG.
+func (sb *scopeBuilder) scopeTemplateStringExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+	// Scope each of the pieces of the template string. All pieces must be strings or Stringable.
+	pit := node.StartQuery().
+		Out(parser.NodeTemplateStringPiece).
+		BuildNodeIterator()
+
+	var isValid = true
+	for pit.Next() {
+		pieceNode := pit.Node()
+		pieceScope := sb.getScope(pieceNode)
+		if !pieceScope.GetIsValid() {
+			isValid = false
+			continue
+		}
+
+		pieceType := pieceScope.ResolvedTypeRef(sb.sg.tdg)
+		if pieceType.HasReferredType(sb.sg.tdg.StringType()) {
+			continue
+		}
+
+		if serr := pieceType.CheckSubTypeOf(sb.sg.tdg.StringableTypeReference()); serr != nil {
+			isValid = false
+			sb.decorateWithError(pieceNode, "All expressions in a template string must be of type String or Stringable: %v", serr)
+		}
+	}
+
+	return newScope().IsValid(isValid).Resolving(sb.sg.tdg.StringTypeReference()).GetScope()
+}
+
 // scopeMapLiteralExpression scopes a map literal expression in the SRG.
 func (sb *scopeBuilder) scopeMapLiteralExpression(node compilergraph.GraphNode) proto.ScopeInfo {
 	var isValid = true

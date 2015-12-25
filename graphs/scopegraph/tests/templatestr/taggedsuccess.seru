@@ -1,0 +1,14 @@
+class SomeClass {
+	function<string> String() {
+		return ''
+	}	
+}
+
+function<string> tagged(strings list<string>, values list<any>) {
+	return ''
+}
+
+function<void> DoSomething(first string, sc SomeClass) {
+	/* templatestr */(tagged`${sc}: This is a cool
+	${first} string`)
+}
