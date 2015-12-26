@@ -66,13 +66,6 @@ var ignoredTokenTypes = map[tokenType]bool{
 	tokenTypeMultilineComment:  true,
 }
 
-type readTokenOption int
-
-const (
-	readTokenAdvanceParser readTokenOption = iota
-	readTokenAdvancePeek
-)
-
 // Parse performs parsing of the given input string and returns the root AST node.
 func Parse(builder NodeBuilder, importReporter ImportHandler, source compilercommon.InputSource, input string) AstNode {
 	p := buildParser(builder, importReporter, source, bytePosition(0), input)
