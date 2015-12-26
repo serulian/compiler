@@ -4,7 +4,7 @@
 
 // Portions copied and modified from: https://github.com/golang/go/blob/master/src/text/template/parse/lex_test.go
 
-package webidl
+package parser
 
 import (
 	"testing"
