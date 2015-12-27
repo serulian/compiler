@@ -178,7 +178,7 @@ func (tr *TypeReference) getSubReferences(kind subReferenceKind) []TypeReference
 			panic(fmt.Sprintf("Expected int value for subreference length, found: %v", subReferenceLengthStr))
 		}
 
-		// Move the current index forward to the point at which the subreference value string beings.
+		// Move the current index forward to the point at which the subreference value string begins.
 		currentIndex = currentIndex + 1 + typeRefValueSubReferenceLength
 		subReferenceValue := tr.value[currentIndex : currentIndex+subReferenceLength]
 

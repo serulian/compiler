@@ -680,7 +680,7 @@ func (tr TypeReference) Intersect(other TypeReference) TypeReference {
 }
 
 // Localize returns a copy of this type reference with any references to the specified generics replaced with
-// a string that does reference a specific type node ID, but a localized ID instead. This allows
+// a string that does not reference a specific type node ID, but rather a localized ID instead. This allows
 // type references that reference different type and type member generics to be compared.
 func (tr TypeReference) Localize(generics ...compilergraph.GraphNode) TypeReference {
 	if tr.getSlot(trhSlotFlagSpecial)[0] != specialFlagNormal {
