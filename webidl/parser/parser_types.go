@@ -7,6 +7,8 @@ import (
 	"strconv"
 )
 
+//go:generate stringer -type=NodeType
+
 // NodeType identifies the type of AST node.
 type NodeType int
 
@@ -16,7 +18,120 @@ const (
 	NodeTypeFile                    // The file root node
 	NodeTypeComment                 // A single or multiline comment
 
+	NodeTypeAnnotation  // [Constructor]
+	NodeTypeParameter   // optional any SomeArg
+	NodeTypeDeclaration // interface Foo { ... }
+	NodeTypeMember      // readonly attribute something
+
+	NodeTypeImplementation // Window implements ECMA262Globals
+
 	NodeTypeTagged
+)
+
+const (
+	//
+	// All nodes
+	//
+	// The source of this node.
+	NodePredicateSource = "input-source"
+
+	// The rune position in the input string at which this node begins.
+	NodePredicateStartRune = "start-rune"
+
+	// The rune position in the input string at which this node ends.
+	NodePredicateEndRune = "end-rune"
+
+	// A direct child of this node. Implementations should handle the ordering
+	// automatically for this predicate.
+	NodePredicateChild = "child-node"
+
+	//
+	// NodeTypeError
+	//
+
+	// The message for the parsing error.
+	NodePredicateErrorMessage = "error-message"
+
+	//
+	// NodeTypeComment
+	//
+
+	// The value of the comment, including its delimeter(s)
+	NodePredicateCommentValue = "comment-value"
+
+	//
+	// NodeTypeAnnotation
+	//
+
+	// Decorates with the name of the annotation.
+	NodePredicateAnnotationName = "annotation-name"
+
+	// Connects an annotation to a parameter.
+	NodePredicateAnnotationParameter = "annotation-parameter"
+
+	//
+	// NodeTypeParameter
+	//
+
+	// Decorates a parameter with its name.
+	NodePredicateParameterName = "parameter-name"
+
+	// Decorates a parameter as being optional.
+	NodePredicateParameterOptional = "parameter-optional"
+
+	// Decorates a parameter with its type.
+	NodePredicateParameterType = "parameter-type"
+
+	//
+	// NodeTypeDeclaration
+	//
+
+	// Decorates a declaration with its kind (interface, etc)
+	NodePredicateDeclarationKind = "declaration-kind"
+
+	// Decorates a declaration with its name.
+	NodePredicateDeclarationName = "declaration-name"
+
+	// Connects a declaration to an annotation.
+	NodePredicateDeclarationAnnotation = "declaration-annotation"
+
+	// Connects a declaration to one of its member definitions.
+	NodePredicateDeclarationMember = "declaration-member"
+
+	//
+	// NodeTypeMember
+	//
+
+	// Decorates a member with its name.
+	NodePredicateMemberName = "member-name"
+
+	// Decorates a member as being an attribute (instead of an operation).
+	NodePredicateMemberAttribute = "member-attribute"
+
+	// Decorates a member as being static.
+	NodePredicateMemberStatic = "member-static"
+
+	// Decorates a member as being readonly.
+	NodePredicateMemberReadonly = "member-readonly"
+
+	// Decorates a member with its type.
+	NodePredicateMemberType = "member-type"
+
+	// Connects a member to a parameter.
+	NodePredicateMemberParameter = "member-parameter"
+
+	// Connects a member to an annotation.
+	NodePredicateMemberAnnotation = "member-annotation"
+
+	//
+	// NodeTypeImplementation
+	//
+
+	// Decorates an implementation with its name.
+	NodePredicateImplementationName = "implementation-name"
+
+	// Decorates an implementation with the name of its source interface.
+	NodePredicateImplementationSource = "implementation-source"
 )
 
 func (t NodeType) Name() string {

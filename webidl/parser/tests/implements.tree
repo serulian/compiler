@@ -1,0 +1,11 @@
+NodeTypeFile
+  end-rune = 18
+  input-source = implements test
+  start-rune = 0
+  child-node =>
+    NodeTypeImplementation
+      end-rune = 18
+      implementation-name = Foo
+      implementation-source = Bar
+      input-source = implements test
+      start-rune = 0
