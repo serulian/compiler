@@ -28,7 +28,7 @@ type TGTypeDecl struct {
 
 // GetTypeForSourceNode returns the TypeGraph type decl for the given source type node, if any.
 func (g *TypeGraph) GetTypeForSourceNode(node compilergraph.GraphNode) (TGTypeDecl, bool) {
-	typeNode, found := g.tryGetMatchingTypeGraphNode(node, TYPE_NODE_TYPES...)
+	typeNode, found := g.tryGetMatchingTypeGraphNode(node, TYPEORGENERIC_NODE_TYPES...)
 	if !found {
 		return TGTypeDecl{}, false
 	}
@@ -71,6 +71,11 @@ func (tn TGTypeDecl) Title() string {
 // Node returns the underlying node in this declaration.
 func (tn TGTypeDecl) Node() compilergraph.GraphNode {
 	return tn.GraphNode
+}
+
+// SourceNode returns the node in the source graph that created this type, if any.
+func (tn TGTypeDecl) SourceNode() (compilergraph.GraphNode, bool) {
+	return tn.TryGetNode(NodePredicateSource)
 }
 
 // HasGenerics returns whether this type has generics defined.
@@ -165,6 +170,11 @@ func (tn TGTypeDecl) IsReadOnly() bool {
 // IsType returns whether this is a type (always true).
 func (tn TGTypeDecl) IsType() bool {
 	return true
+}
+
+// AsType returns this type.
+func (tn TGTypeDecl) AsType() TGTypeDecl {
+	return tn
 }
 
 // IsStatic returns whether this type is static (always true).

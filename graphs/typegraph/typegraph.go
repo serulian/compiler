@@ -21,6 +21,8 @@ var TYPE_NODE_TYPES_TAGGED = []compilergraph.TaggedValue{NodeTypeClass, NodeType
 // TYPE_NODE_TYPES defines the NodeTypes that represent defined types or a module in the graph.
 var TYPEORMODULE_NODE_TYPES = []NodeType{NodeTypeModule, NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface}
 
+var TYPEORGENERIC_NODE_TYPES = []NodeType{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeGeneric}
+
 // TypeGraph represents the TypeGraph layer and all its associated helper methods.
 type TypeGraph struct {
 	graph     *compilergraph.SerulianGraph  // The root graph.
@@ -75,7 +77,7 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 	// Annotate all dependencies.
 	for _, constructor := range constructors {
 		annotator := &Annotator{
-			tdg: typeGraph,
+			issueReporterImpl{typeGraph},
 		}
 
 		constructor.DefineDependencies(annotator, typeGraph)
@@ -86,16 +88,16 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 
 	// Build all members.
 	for _, constructor := range constructors {
-		constructor.DefineMembers(func(moduleOrTypeSourceNode compilergraph.GraphNode, isOperator bool) *memberBuilder {
+		constructor.DefineMembers(func(moduleOrTypeSourceNode compilergraph.GraphNode, isOperator bool) *MemberBuilder {
 			typegraphNode := typeGraph.getMatchingTypeGraphNode(moduleOrTypeSourceNode, TYPEORMODULE_NODE_TYPES...)
 
 			if typegraphNode.Kind == NodeTypeModule {
-				return &memberBuilder{
+				return &MemberBuilder{
 					parent: TGModule{typegraphNode, typeGraph},
 					tdg:    typeGraph,
 				}
 			} else {
-				return &memberBuilder{
+				return &MemberBuilder{
 					parent: TGTypeDecl{typegraphNode, typeGraph},
 					tdg:    typeGraph,
 				}
@@ -106,7 +108,7 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 
 	// Validate everything.
 	for _, constructor := range constructors {
-		reporter := &IssueReporter{typeGraph}
+		reporter := &issueReporterImpl{typeGraph}
 		constructor.Validate(reporter, typeGraph)
 	}
 
@@ -196,6 +198,20 @@ func (g *TypeGraph) TypeDecls() []TGTypeDecl {
 		types = append(types, TGTypeDecl{it.Node(), g})
 	}
 	return types
+}
+
+// GetTypeOrModuleForSourceNode returns the type or module for the given source node, if any.
+func (g *TypeGraph) GetTypeOrModuleForSourceNode(sourceNode compilergraph.GraphNode) (TGTypeOrModule, bool) {
+	node, found := g.tryGetMatchingTypeGraphNode(sourceNode, TYPEORMODULE_NODE_TYPES...)
+	if !found {
+		return TGTypeDecl{}, false
+	}
+
+	if node.Kind == NodeTypeModule {
+		return TGModule{node, g}, true
+	} else {
+		return TGTypeDecl{node, g}, true
+	}
 }
 
 // GetTypeOrMember returns the type or member matching the given node ID.

@@ -48,6 +48,11 @@ func (g *SRG) GetNode(nodeId compilergraph.GraphNodeId) compilergraph.GraphNode 
 	return g.layer.GetNode(string(nodeId))
 }
 
+// TryGetNode attempts to return the node with the given ID in this layer, if any.
+func (g *SRG) TryGetNode(nodeId compilergraph.GraphNodeId) (compilergraph.GraphNode, bool) {
+	return g.layer.TryGetNode(string(nodeId))
+}
+
 // NodeLocation returns the location of the given SRG node.
 func (g *SRG) NodeLocation(node compilergraph.GraphNode) compilercommon.SourceAndLocation {
 	return salForNode(node)

@@ -15,4 +15,5 @@ type TGTypeOrModule interface {
 	Members() []TGMember
 	IsType() bool
 	ParentModule() TGModule
+	AsType() TGTypeDecl
 }
