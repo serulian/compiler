@@ -11,6 +11,7 @@ import (
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/srg"
+	"github.com/serulian/compiler/packageloader"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -306,7 +307,7 @@ func TestConcreteSubtypes(t *testing.T) {
 	}
 
 	testSRG := srg.NewSRG(graph)
-	srgResult := testSRG.LoadAndParse("tests/testlib")
+	srgResult := testSRG.LoadAndParse(packageloader.Library{"tests/testlib", false})
 	if !assert.True(t, srgResult.Status, "Got error for SRG construction: %v", srgResult.Errors) {
 		return
 	}
@@ -364,7 +365,7 @@ func TestConcreteSubtypes(t *testing.T) {
 
 	for _, test := range tests {
 		subTypeRef := testSRG.FindVariableTypeWithName(test.subtypeVarName)
-		subRef, serr := result.Graph.BuildTypeRef(subTypeRef)
+		subRef, serr := testSRG.BuildTypeRef(subTypeRef, result.Graph)
 
 		if !assert.Nil(t, serr, "Error in constructing sub ref for test %v: %v", test.name, serr) {
 			continue
@@ -417,7 +418,7 @@ func TestSubtypes(t *testing.T) {
 	}
 
 	testSRG := srg.NewSRG(graph)
-	srgResult := testSRG.LoadAndParse("tests/testlib")
+	srgResult := testSRG.LoadAndParse(packageloader.Library{"tests/testlib", false})
 	if !assert.True(t, srgResult.Status, "Got error for SRG construction: %v", srgResult.Errors) {
 		return
 	}
@@ -493,8 +494,8 @@ func TestSubtypes(t *testing.T) {
 		baseTypeRef := testSRG.FindVariableTypeWithName(test.baseVarName)
 		subTypeRef := testSRG.FindVariableTypeWithName(test.subtypeVarName)
 
-		baseRef, berr := result.Graph.BuildTypeRef(baseTypeRef)
-		subRef, serr := result.Graph.BuildTypeRef(subTypeRef)
+		baseRef, berr := testSRG.BuildTypeRef(baseTypeRef, result.Graph)
+		subRef, serr := testSRG.BuildTypeRef(subTypeRef, result.Graph)
 
 		if !assert.Nil(t, berr, "Error in constructing base ref for test %v: %v", test.name, berr) {
 			continue
@@ -536,7 +537,7 @@ func TestResolveMembers(t *testing.T) {
 	}
 
 	testSRG := srg.NewSRG(graph)
-	srgResult := testSRG.LoadAndParse("tests/testlib")
+	srgResult := testSRG.LoadAndParse(packageloader.Library{"tests/testlib", false})
 	if !assert.True(t, srgResult.Status, "Got error for SRG construction: %v", srgResult.Errors) {
 		return
 	}

@@ -198,7 +198,7 @@ func (tr TypeReference) CheckStructuralSubtypeOf(other TypeReference) bool {
 func (tr TypeReference) CheckConcreteSubtypeOf(otherTypeNode compilergraph.GraphNode) ([]TypeReference, error) {
 	otherType := TGTypeDecl{otherTypeNode, tr.tdg}
 
-	if otherType.TypeKind() != InterfaceType {
+	if otherType.TypeKind() != ImplicitInterfaceType {
 		panic("Cannot use non-interface type in call to CheckImplOfGeneric")
 	}
 
@@ -348,7 +348,7 @@ func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
 	otherType := other.ReferredType()
 
 	// If the other reference's type node is not an interface, then this reference cannot be a subtype.
-	if otherType.TypeKind() != InterfaceType {
+	if otherType.TypeKind() != ImplicitInterfaceType {
 		return fmt.Errorf("'%v' cannot be used in place of non-interface '%v'", tr, originalOther)
 	}
 

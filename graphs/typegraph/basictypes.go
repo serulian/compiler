@@ -126,10 +126,14 @@ func (t *TypeGraph) ReleasableType() compilergraph.GraphNode {
 
 // getAliasedType returns the type defined for the given alias.
 func (t *TypeGraph) getAliasedType(alias string) compilergraph.GraphNode {
-	srgType, found := t.srg.ResolveAliasedType(alias)
+	typeNode, found := t.layer.StartQuery(alias).
+		In(NodePredicateTypeAlias).
+		IsKind(TYPE_NODE_TYPES_TAGGED...).
+		TryGetNode()
+
 	if !found {
-		panic(fmt.Sprintf("%s type not found in SRG", alias))
+		panic(fmt.Sprintf("%s type not found", alias))
 	}
 
-	return t.getTypeNodeForSRGType(srgType)
+	return typeNode
 }

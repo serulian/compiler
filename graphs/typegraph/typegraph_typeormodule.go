@@ -14,4 +14,5 @@ type TGTypeOrModule interface {
 	Node() compilergraph.GraphNode
 	Members() []TGMember
 	IsType() bool
+	ParentModule() TGModule
 }

@@ -15,7 +15,8 @@ type TypeKind int
 
 const (
 	ClassType TypeKind = iota
-	InterfaceType
+	ImplicitInterfaceType
+	ExternalInternalType
 	GenericType
 )
 
@@ -25,9 +26,9 @@ type TGTypeDecl struct {
 	tdg *TypeGraph
 }
 
-// GetTypeForSRGNode returns the TypeGraph type decl for the given SRG type node, if any.
-func (g *TypeGraph) GetTypeForSRGNode(node compilergraph.GraphNode) (TGTypeDecl, bool) {
-	typeNode, found := g.tryGetMatchingTypeGraphNode(node, NodeTypeClass, NodeTypeInterface)
+// GetTypeForSourceNode returns the TypeGraph type decl for the given source type node, if any.
+func (g *TypeGraph) GetTypeForSourceNode(node compilergraph.GraphNode) (TGTypeDecl, bool) {
+	typeNode, found := g.tryGetMatchingTypeGraphNode(node, TYPE_NODE_TYPES...)
 	if !found {
 		return TGTypeDecl{}, false
 	}
@@ -54,6 +55,9 @@ func (tn TGTypeDecl) Title() string {
 
 	case NodeTypeInterface:
 		return "interface"
+
+	case NodeTypeExternalInterface:
+		return "external interface"
 
 	case NodeTypeGeneric:
 		return "generic"
@@ -177,7 +181,10 @@ func (tn TGTypeDecl) TypeKind() TypeKind {
 		return ClassType
 
 	case NodeTypeInterface:
-		return InterfaceType
+		return ImplicitInterfaceType
+
+	case NodeTypeExternalInterface:
+		return ExternalInternalType
 
 	case NodeTypeGeneric:
 		return GenericType
