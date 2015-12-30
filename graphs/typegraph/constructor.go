@@ -270,7 +270,7 @@ func (gb *genericBuilder) Define() {
 	gb.defineGeneric()
 }
 
-func (gb *genericBuilder) defineGeneric() compilergraph.GraphNode {
+func (gb *genericBuilder) defineGeneric() TGGeneric {
 	if gb.name == "" {
 		panic("Missing name on defined generic")
 	}
@@ -300,7 +300,7 @@ func (gb *genericBuilder) defineGeneric() compilergraph.GraphNode {
 		gb.tdg.decorateWithError(genericNode, "Generic '%s' is already defined", gb.name)
 	}
 
-	return genericNode
+	return TGGeneric{genericNode, gb.tdg}
 }
 
 // MemberBuilder ////////////////////////////////////////////////////////////////////////////////////
@@ -335,9 +335,9 @@ type dependentMemberBuilder struct {
 	isOperator bool                    // Whether the member being defined is an operator.
 	sourceNode compilergraph.GraphNode // The node for the generic in the source graph.
 
-	memberNode compilergraph.GraphNode   // The constructed member node.
-	name       string                    // The name of the member.
-	generics   []compilergraph.GraphNode // The member's generics.
+	memberNode compilergraph.GraphNode // The constructed member node.
+	name       string                  // The name of the member.
+	generics   []TGGeneric             // The member's generics.
 
 	issueReporter IssueReporter // The underlying issue reporter.
 
@@ -413,7 +413,7 @@ func (mb *MemberBuilder) InitialDefine() (*dependentMemberBuilder, IssueReporter
 	memberNode.Decorate(NodePredicateModulePath, mb.parent.ParentModule().Get(NodePredicateModulePath))
 
 	// Decorate the member with its generics.
-	generics := make([]compilergraph.GraphNode, len(mb.memberGenerics))
+	generics := make([]TGGeneric, len(mb.memberGenerics))
 	for index, genericInfo := range mb.memberGenerics {
 		genericBuilder := genericBuilder{
 			tdg:             mb.tdg,
@@ -554,7 +554,7 @@ func (mb *dependentMemberBuilder) checkAndComputeOperator(memberNode compilergra
 
 	// Ensure that the declared return type is equal to that expected.
 	declaredReturnType := mb.memberType.Generics()[0]
-	containingType := mb.tdg.NewInstanceTypeReference(mb.parent.AsType().GraphNode)
+	containingType := mb.tdg.NewInstanceTypeReference(mb.parent.AsType())
 	expectedReturnType := definition.ExpectedReturnType(containingType)
 
 	if !expectedReturnType.IsAny() && !declaredReturnType.IsAny() && declaredReturnType != expectedReturnType {
@@ -602,7 +602,7 @@ func (mb *dependentMemberBuilder) checkAndComputeOperator(memberNode compilergra
 }
 
 // decorateWithSig decorates the given member node with a unique signature for fast subtype checking.
-func (mb *dependentMemberBuilder) decorateWithSig(memberNode compilergraph.GraphNode, sigMemberType TypeReference, generics ...compilergraph.GraphNode) {
+func (mb *dependentMemberBuilder) decorateWithSig(memberNode compilergraph.GraphNode, sigMemberType TypeReference, generics ...TGGeneric) {
 	// Build type reference value strings for the member type and any generic constraints (which
 	// handles generic count as well). The call to Localize replaces the type node IDs in the
 	// type references with a local ID (#1, #2, etc), to allow for positional comparison between

@@ -15,12 +15,16 @@ import (
 
 var _ = fmt.Printf
 
+func toType(tdg *TypeGraph, typeNode compilergraph.GraphNode) TGTypeDecl {
+	return TGTypeDecl{typeNode, tdg}
+}
+
 func TestBasicReferenceOperations(t *testing.T) {
 	g, _ := compilergraph.NewGraph("-")
 	testTG := newTestTypeGraph(g)
 
 	newNode := testTG.layer.CreateNode(NodeTypeClass)
-	testRef := testTG.NewTypeReference(newNode)
+	testRef := testTG.NewTypeReference(toType(testTG, newNode))
 
 	// ReferredType returns the node.
 	assert.Equal(t, newNode.NodeId, testRef.referredTypeNode().NodeId, "ReferredType node mismatch")
@@ -43,13 +47,13 @@ func TestBasicReferenceOperations(t *testing.T) {
 	assert.True(t, testRef.AsNullable().IsNullable(), "Expected nullable")
 
 	// Contains a reference to the newNode.
-	assert.True(t, testRef.ContainsType(newNode))
+	assert.True(t, testRef.ContainsType(toType(testTG, newNode)))
 
 	// Ensure that the reference does not contain a reference to anotherNode.
 	anotherNode := testTG.layer.CreateNode(NodeTypeClass)
-	anotherRef := testTG.NewTypeReference(anotherNode)
+	anotherRef := testTG.NewTypeReference(toType(testTG, anotherNode))
 
-	assert.False(t, testRef.ContainsType(anotherNode))
+	assert.False(t, testRef.ContainsType(toType(testTG, anotherNode)))
 
 	// Add a generic.
 	withGeneric := testRef.WithGeneric(anotherRef)
@@ -57,7 +61,7 @@ func TestBasicReferenceOperations(t *testing.T) {
 	assert.Equal(t, 1, withGeneric.GenericCount(), "Expected 1 generic")
 	assert.Equal(t, 1, len(withGeneric.Generics()), "Expected 1 generic")
 	assert.Equal(t, anotherRef, withGeneric.Generics()[0], "Expected generic to be equal to anotherRef")
-	assert.True(t, withGeneric.ContainsType(anotherNode))
+	assert.True(t, withGeneric.ContainsType(toType(testTG, anotherNode)))
 
 	// Add a parameter.
 	withGenericAndParameter := withGeneric.WithParameter(anotherRef)
@@ -74,7 +78,7 @@ func TestBasicReferenceOperations(t *testing.T) {
 
 	// Add another generic.
 	thirdNode := testTG.layer.CreateNode(NodeTypeClass)
-	thirdRef := testTG.NewTypeReference(thirdNode)
+	thirdRef := testTG.NewTypeReference(toType(testTG, thirdNode))
 
 	withMultipleGenerics := withGenericAndParameter.WithGeneric(thirdRef)
 
@@ -89,14 +93,14 @@ func TestBasicReferenceOperations(t *testing.T) {
 	assert.Equal(t, 1, len(withMultipleGenerics.Parameters()), "Expected 1 parameter")
 	assert.Equal(t, anotherRef, withMultipleGenerics.Parameters()[0], "Expected parameter to be equal to anotherRef")
 
-	assert.True(t, withMultipleGenerics.ContainsType(anotherNode))
-	assert.True(t, withMultipleGenerics.ContainsType(thirdNode))
+	assert.True(t, withMultipleGenerics.ContainsType(toType(testTG, anotherNode)))
+	assert.True(t, withMultipleGenerics.ContainsType(toType(testTG, thirdNode)))
 
 	// Replace the "anotherRef" with a completely new type.
 	replacementNode := testTG.layer.CreateNode(NodeTypeClass)
-	replacementRef := testTG.NewTypeReference(replacementNode)
+	replacementRef := testTG.NewTypeReference(toType(testTG, replacementNode))
 
-	replaced := withMultipleGenerics.ReplaceType(anotherNode, replacementRef)
+	replaced := withMultipleGenerics.ReplaceType(toType(testTG, anotherNode), replacementRef)
 
 	assert.True(t, replaced.HasGenerics(), "Expected 2 generics")
 	assert.Equal(t, 2, replaced.GenericCount(), "Expected 2 generics")
@@ -109,9 +113,9 @@ func TestBasicReferenceOperations(t *testing.T) {
 	assert.Equal(t, 1, len(replaced.Parameters()), "Expected 1 parameter")
 	assert.Equal(t, replacementRef, replaced.Parameters()[0], "Expected parameter to be equal to replacementRef")
 
-	assert.False(t, replaced.ContainsType(anotherNode))
-	assert.True(t, replaced.ContainsType(thirdNode))
-	assert.True(t, replaced.ContainsType(replacementNode))
+	assert.False(t, replaced.ContainsType(toType(testTG, anotherNode)))
+	assert.True(t, replaced.ContainsType(toType(testTG, thirdNode)))
+	assert.True(t, replaced.ContainsType(toType(testTG, replacementNode)))
 }
 
 func TestReplaceTypeNullable(t *testing.T) {
@@ -128,13 +132,17 @@ func TestReplaceTypeNullable(t *testing.T) {
 	thirdTypeNode.Decorate(NodePredicateTypeName, "Third")
 	fourthTypeNode.Decorate(NodePredicateTypeName, "Fourth")
 
-	secondRef := testTG.NewTypeReference(secondTypeNode).AsNullable()
-	firstRef := testTG.NewTypeReference(firstTypeNode, secondRef)
+	firstType := toType(testTG, firstTypeNode)
+	secondType := toType(testTG, secondTypeNode)
+	thirdType := toType(testTG, thirdTypeNode)
+
+	secondRef := testTG.NewTypeReference(secondType).AsNullable()
+	firstRef := testTG.NewTypeReference(firstType, secondRef)
 
 	assert.Equal(t, "First<Second?>", firstRef.String())
 
 	// Replace the Second with third.
-	newRef := firstRef.ReplaceType(secondTypeNode, testTG.NewTypeReference(thirdTypeNode))
+	newRef := firstRef.ReplaceType(secondType, testTG.NewTypeReference(thirdType))
 	assert.Equal(t, "First<Third?>", newRef.String())
 }
 
@@ -162,7 +170,7 @@ type extractTypeDiff struct {
 	name            string
 	extractFromRef  TypeReference
 	extractBaseRef  TypeReference
-	typeToExtract   compilergraph.GraphNode
+	typeToExtract   TGTypeDecl
 	expectSuccess   bool
 	expectedTypeRef TypeReference
 }
@@ -187,48 +195,56 @@ func TestExtractTypeDiff(t *testing.T) {
 	tGenericNode.Decorate(NodePredicateGenericName, "T")
 	qGenericNode.Decorate(NodePredicateGenericName, "Q")
 
+	firstType := toType(testTG, firstTypeNode)
+	secondType := toType(testTG, secondTypeNode)
+	thirdType := toType(testTG, thirdTypeNode)
+	fourthType := toType(testTG, fourthTypeNode)
+
+	tGeneric := toType(testTG, tGenericNode)
+	qGeneric := toType(testTG, qGenericNode)
+
 	tests := []extractTypeDiff{
 		extractTypeDiff{
 			"extract from First<Second>, reference is First<T>: T = Second",
-			testTG.NewTypeReference(firstTypeNode).WithGeneric(testTG.NewTypeReference(secondTypeNode)),
-			testTG.NewTypeReference(firstTypeNode).WithGeneric(testTG.NewTypeReference(tGenericNode)),
-			tGenericNode,
+			testTG.NewTypeReference(firstType).WithGeneric(testTG.NewTypeReference(secondType)),
+			testTG.NewTypeReference(firstType).WithGeneric(testTG.NewTypeReference(tGeneric)),
+			tGeneric,
 			true,
-			testTG.NewTypeReference(secondTypeNode),
+			testTG.NewTypeReference(secondType),
 		},
 
 		extractTypeDiff{
 			"extract from First<Second, Third>, reference is First<T, Q>: Q = Third",
-			testTG.NewTypeReference(firstTypeNode, testTG.NewTypeReference(secondTypeNode), testTG.NewTypeReference(thirdTypeNode)),
-			testTG.NewTypeReference(firstTypeNode, testTG.NewTypeReference(tGenericNode), testTG.NewTypeReference(qGenericNode)),
-			qGenericNode,
+			testTG.NewTypeReference(firstType, testTG.NewTypeReference(secondType), testTG.NewTypeReference(thirdType)),
+			testTG.NewTypeReference(firstType, testTG.NewTypeReference(tGeneric), testTG.NewTypeReference(qGeneric)),
+			qGeneric,
 			true,
-			testTG.NewTypeReference(thirdTypeNode),
+			testTG.NewTypeReference(thirdType),
 		},
 
 		extractTypeDiff{
 			"attempt to extract from Fourth<Second>, reference is First<T>",
-			testTG.NewTypeReference(fourthTypeNode, testTG.NewTypeReference(secondTypeNode)),
-			testTG.NewTypeReference(firstTypeNode, testTG.NewTypeReference(tGenericNode)),
-			tGenericNode,
+			testTG.NewTypeReference(fourthType, testTG.NewTypeReference(secondType)),
+			testTG.NewTypeReference(firstType, testTG.NewTypeReference(tGeneric)),
+			tGeneric,
 			false,
 			testTG.VoidTypeReference(),
 		},
 
 		extractTypeDiff{
 			"extract from First(Second, Third), reference is First(T, Q): Q = Third",
-			testTG.NewTypeReference(firstTypeNode).WithParameter(testTG.NewTypeReference(secondTypeNode)).WithParameter(testTG.NewTypeReference(thirdTypeNode)),
-			testTG.NewTypeReference(firstTypeNode).WithParameter(testTG.NewTypeReference(tGenericNode)).WithParameter(testTG.NewTypeReference(qGenericNode)),
-			qGenericNode,
+			testTG.NewTypeReference(firstType).WithParameter(testTG.NewTypeReference(secondType)).WithParameter(testTG.NewTypeReference(thirdType)),
+			testTG.NewTypeReference(firstType).WithParameter(testTG.NewTypeReference(tGeneric)).WithParameter(testTG.NewTypeReference(qGeneric)),
+			qGeneric,
 			true,
-			testTG.NewTypeReference(thirdTypeNode),
+			testTG.NewTypeReference(thirdType),
 		},
 
 		extractTypeDiff{
 			"attempt to extract from any, reference is First<T>",
 			testTG.AnyTypeReference(),
-			testTG.NewTypeReference(firstTypeNode, testTG.NewTypeReference(tGenericNode)),
-			tGenericNode,
+			testTG.NewTypeReference(firstType, testTG.NewTypeReference(tGeneric)),
+			tGeneric,
 			false,
 			testTG.VoidTypeReference(),
 		},
@@ -236,37 +252,37 @@ func TestExtractTypeDiff(t *testing.T) {
 		extractTypeDiff{
 			"attempt to extract from void, reference is First<T>",
 			testTG.VoidTypeReference(),
-			testTG.NewTypeReference(firstTypeNode, testTG.NewTypeReference(tGenericNode)),
-			tGenericNode,
+			testTG.NewTypeReference(firstType, testTG.NewTypeReference(tGeneric)),
+			tGeneric,
 			false,
 			testTG.VoidTypeReference(),
 		},
 
 		extractTypeDiff{
 			"extract from First<any>, reference is First<T>: T = any",
-			testTG.NewTypeReference(firstTypeNode, testTG.AnyTypeReference()),
-			testTG.NewTypeReference(firstTypeNode, testTG.NewTypeReference(tGenericNode)),
-			tGenericNode,
+			testTG.NewTypeReference(firstType, testTG.AnyTypeReference()),
+			testTG.NewTypeReference(firstType, testTG.NewTypeReference(tGeneric)),
+			tGeneric,
 			true,
 			testTG.AnyTypeReference(),
 		},
 
 		extractTypeDiff{
 			"attempt to extract from First<Second>, reference is First<any>",
-			testTG.NewTypeReference(firstTypeNode, testTG.NewTypeReference(secondTypeNode)),
-			testTG.NewTypeReference(firstTypeNode, testTG.AnyTypeReference()),
-			tGenericNode,
+			testTG.NewTypeReference(firstType, testTG.NewTypeReference(secondType)),
+			testTG.NewTypeReference(firstType, testTG.AnyTypeReference()),
+			tGeneric,
 			false,
 			testTG.VoidTypeReference(),
 		},
 
 		extractTypeDiff{
 			"extract from First<Third>(Second), reference is First<Third>(T): T = Second",
-			testTG.NewTypeReference(firstTypeNode, testTG.NewTypeReference(thirdTypeNode)).WithParameter(testTG.NewTypeReference(secondTypeNode)),
-			testTG.NewTypeReference(firstTypeNode, testTG.NewTypeReference(thirdTypeNode)).WithParameter(testTG.NewTypeReference(tGenericNode)),
-			tGenericNode,
+			testTG.NewTypeReference(firstType, testTG.NewTypeReference(thirdType)).WithParameter(testTG.NewTypeReference(secondType)),
+			testTG.NewTypeReference(firstType, testTG.NewTypeReference(thirdType)).WithParameter(testTG.NewTypeReference(tGeneric)),
+			tGeneric,
 			true,
-			testTG.NewTypeReference(secondTypeNode),
+			testTG.NewTypeReference(secondType),
 		},
 	}
 
@@ -457,7 +473,7 @@ func TestConcreteSubtypes(t *testing.T) {
 
 		moduleSourceNode := *testConstruction.moduleNode
 		subRef := parseTypeReferenceForTesting(test.subtype, graph, moduleSourceNode)
-		generics, sterr := subRef.CheckConcreteSubtypeOf(interfaceType.GraphNode)
+		generics, sterr := subRef.CheckConcreteSubtypeOf(interfaceType)
 		if test.expectedError != "" {
 			if !assert.NotNil(t, sterr, "Expected subtype error for test %v", test.name) {
 				continue
@@ -731,7 +747,7 @@ func TestResolveMembers(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		typeref := graph.NewTypeReference(test.parentType.GraphNode)
+		typeref := graph.NewTypeReference(test.parentType)
 		memberNode, memberFound := typeref.ResolveMember(test.memberName, compilercommon.InputSource(test.modulePath), MemberResolutionInstance)
 
 		if !assert.Equal(t, test.expectedFound, memberFound, "Member found mismatch on %s", test.name) {

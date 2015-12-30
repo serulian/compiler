@@ -6,8 +6,6 @@ package typegraph
 
 import (
 	"fmt"
-
-	"github.com/serulian/compiler/compilergraph"
 )
 
 // VoidTypeReference returns a reference to the special 'void' type.
@@ -70,62 +68,62 @@ func (t *TypeGraph) StringableTypeReference() TypeReference {
 }
 
 // StreamType returns the stream type.
-func (t *TypeGraph) StreamType() compilergraph.GraphNode {
+func (t *TypeGraph) StreamType() TGTypeDecl {
 	return t.getAliasedType("stream")
 }
 
 // PromiseType returns the promise type.
-func (t *TypeGraph) PromiseType() compilergraph.GraphNode {
+func (t *TypeGraph) PromiseType() TGTypeDecl {
 	return t.getAliasedType("promise")
 }
 
 // FunctionType returns the function type.
-func (t *TypeGraph) FunctionType() compilergraph.GraphNode {
+func (t *TypeGraph) FunctionType() TGTypeDecl {
 	return t.getAliasedType("function")
 }
 
 // StringableType returns the string type.
-func (t *TypeGraph) StringableType() compilergraph.GraphNode {
+func (t *TypeGraph) StringableType() TGTypeDecl {
 	return t.getAliasedType("stringable")
 }
 
 // StringType returns the string type.
-func (t *TypeGraph) StringType() compilergraph.GraphNode {
+func (t *TypeGraph) StringType() TGTypeDecl {
 	return t.getAliasedType("string")
 }
 
 // IntType returns the integer type.
-func (t *TypeGraph) IntType() compilergraph.GraphNode {
+func (t *TypeGraph) IntType() TGTypeDecl {
 	return t.getAliasedType("int")
 }
 
 // FloatType returns the float type.
-func (t *TypeGraph) FloatType() compilergraph.GraphNode {
+func (t *TypeGraph) FloatType() TGTypeDecl {
 	return t.getAliasedType("float64")
 }
 
 // BoolType returns the boolean type.
-func (t *TypeGraph) BoolType() compilergraph.GraphNode {
+func (t *TypeGraph) BoolType() TGTypeDecl {
 	return t.getAliasedType("bool")
 }
 
 // ListType returns the list type.
-func (t *TypeGraph) ListType() compilergraph.GraphNode {
+func (t *TypeGraph) ListType() TGTypeDecl {
 	return t.getAliasedType("list")
 }
 
 // MapType returns the map type.
-func (t *TypeGraph) MapType() compilergraph.GraphNode {
+func (t *TypeGraph) MapType() TGTypeDecl {
 	return t.getAliasedType("map")
 }
 
 // ReleasableType returns the releasable type.
-func (t *TypeGraph) ReleasableType() compilergraph.GraphNode {
+func (t *TypeGraph) ReleasableType() TGTypeDecl {
 	return t.getAliasedType("releasable")
 }
 
 // getAliasedType returns the type defined for the given alias.
-func (t *TypeGraph) getAliasedType(alias string) compilergraph.GraphNode {
+func (t *TypeGraph) getAliasedType(alias string) TGTypeDecl {
 	typeNode, found := t.layer.StartQuery(alias).
 		In(NodePredicateTypeAlias).
 		IsKind(TYPE_NODE_TYPES_TAGGED...).
@@ -135,5 +133,5 @@ func (t *TypeGraph) getAliasedType(alias string) compilergraph.GraphNode {
 		panic(fmt.Sprintf("%s type not found", alias))
 	}
 
-	return typeNode
+	return TGTypeDecl{typeNode, t}
 }

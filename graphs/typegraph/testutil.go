@@ -101,7 +101,7 @@ func resolveTestingTypeRef(name string, refNode compilergraph.GraphNode, graph *
 		memberInfo := TGMember{currentNode, graph}
 		for _, generic := range memberInfo.Generics() {
 			if generic.Name() == name {
-				return graph.NewTypeReference(generic.GraphNode), true
+				return graph.NewTypeReference(generic.AsType()), true
 			}
 		}
 
@@ -125,7 +125,7 @@ func resolveTestingTypeRef(name string, refNode compilergraph.GraphNode, graph *
 		typeInfo := TGTypeDecl{currentNode, graph}
 		for _, generic := range typeInfo.Generics() {
 			if generic.Name() == name {
-				return graph.NewTypeReference(generic.GraphNode), true
+				return graph.NewTypeReference(generic.AsType()), true
 			}
 		}
 
@@ -141,7 +141,7 @@ func resolveTestingTypeRef(name string, refNode compilergraph.GraphNode, graph *
 		moduleInfo := TGModule{currentNode, graph}
 		for _, typeDecl := range moduleInfo.Types() {
 			if typeDecl.Name() == name {
-				return graph.NewTypeReference(typeDecl.GraphNode), true
+				return graph.NewTypeReference(typeDecl), true
 			}
 		}
 

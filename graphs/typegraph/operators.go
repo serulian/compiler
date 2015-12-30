@@ -4,10 +4,6 @@
 
 package typegraph
 
-import (
-	"github.com/serulian/compiler/compilergraph"
-)
-
 type typerefGetter func(containingType TypeReference) TypeReference
 
 // operatorParameter represents a single expected parameter on an operator.
@@ -58,13 +54,13 @@ func (t *TypeGraph) buildOperatorDefinitions() {
 		return t.NewTypeReference(t.StreamType(), containingType)
 	}
 
-	staticTypeGetter := func(staticType compilergraph.GraphNode) typerefGetter {
+	staticTypeGetter := func(staticType TGTypeDecl) typerefGetter {
 		return func(containingType TypeReference) TypeReference {
 			return t.NewTypeReference(staticType)
 		}
 	}
 
-	staticNullableTypeGetter := func(staticType compilergraph.GraphNode) typerefGetter {
+	staticNullableTypeGetter := func(staticType TGTypeDecl) typerefGetter {
 		return func(containingType TypeReference) TypeReference {
 			return t.NewTypeReference(staticType).AsNullable()
 		}

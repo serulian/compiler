@@ -192,7 +192,7 @@ func (stc *srgTypeConstructor) defineMember(member srg.SRGMember, parent typegra
 		isStatic = true
 
 		// Constructors have a type of a function that returns an instance of the parent type.
-		returnType := graph.NewInstanceTypeReference(parent.(typegraph.TGTypeDecl).GraphNode)
+		returnType := graph.NewInstanceTypeReference(parent.(typegraph.TGTypeDecl))
 		functionType := graph.NewTypeReference(graph.FunctionType(), returnType)
 		memberType, _ = stc.addSRGParameterTypes(member, functionType, graph, reporter)
 
@@ -336,8 +336,7 @@ func (stc *srgTypeConstructor) BuildTypeRef(typeref srg.SRGTypeRef, tdg *typegra
 			generics[index] = genericTypeRef
 		}
 
-		// TODO: make NewTypeReference take in a TGTypeDecl
-		var constructedRef = tdg.NewTypeReference(resolvedType.Node(), generics...)
+		var constructedRef = tdg.NewTypeReference(resolvedType, generics...)
 
 		// Add the parameters.
 		if typeref.HasParameters() {

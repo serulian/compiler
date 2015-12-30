@@ -31,15 +31,17 @@ func (t *TypeGraph) DeserializieTypeRef(value string) TypeReference {
 }
 
 // NewTypeReference returns a new type reference pointing to the given type node and some (optional) generics.
-func (t *TypeGraph) NewTypeReference(typeNode compilergraph.GraphNode, generics ...TypeReference) TypeReference {
+func (t *TypeGraph) NewTypeReference(typeDecl TGTypeDecl, generics ...TypeReference) TypeReference {
 	return TypeReference{
 		tdg:   t,
-		value: buildTypeReferenceValue(typeNode, false, generics...),
+		value: buildTypeReferenceValue(typeDecl.GraphNode, false, generics...),
 	}
 }
 
 // NewInstanceTypeReference returns a new type reference pointing to a type and its generics (if any).
-func (t *TypeGraph) NewInstanceTypeReference(typeNode compilergraph.GraphNode) TypeReference {
+func (t *TypeGraph) NewInstanceTypeReference(typeDecl TGTypeDecl) TypeReference {
+	typeNode := typeDecl.GraphNode
+
 	// Fast path for generics.
 	if typeNode.Kind == NodeTypeGeneric {
 		return TypeReference{
@@ -51,9 +53,11 @@ func (t *TypeGraph) NewInstanceTypeReference(typeNode compilergraph.GraphNode) T
 	var generics = make([]TypeReference, 0)
 	git := typeNode.StartQuery().Out(NodePredicateTypeGeneric).BuildNodeIterator()
 	for git.Next() {
-		generics = append(generics, t.NewTypeReference(git.Node()))
+		genericType := TGTypeDecl{git.Node(), t}
+		generics = append(generics, t.NewTypeReference(genericType))
 	}
-	return t.NewTypeReference(typeNode, generics...)
+
+	return t.NewTypeReference(typeDecl, generics...)
 }
 
 // Verify returns an error if the type reference is invalid in some way. Returns nil if it is valid.
@@ -62,14 +66,13 @@ func (tr TypeReference) Verify() error {
 		return nil
 	}
 
-	referredType := tr.ReferredType()
-
 	// Function type references are properly restricted based on the parser, so no checks to make.
-	if referredType.GraphNode == tr.tdg.FunctionType() {
+	if tr.HasReferredType(tr.tdg.FunctionType()) {
 		return nil
 	}
 
 	refGenerics := tr.Generics()
+	referredType := tr.ReferredType()
 	typeGenerics := referredType.Generics()
 
 	// Check generics count.
@@ -101,15 +104,15 @@ func (tr TypeReference) EqualsOrAny(other TypeReference) bool {
 }
 
 // ContainsType returns true if the current type reference has a reference to the given type.
-func (tr TypeReference) ContainsType(typeNode compilergraph.GraphNode) bool {
-	reference := tr.tdg.NewInstanceTypeReference(typeNode)
+func (tr TypeReference) ContainsType(typeDecl TGTypeDecl) bool {
+	reference := tr.tdg.NewInstanceTypeReference(typeDecl)
 	return strings.Contains(tr.value, reference.value)
 }
 
 // ExtractTypeDiff attempts to extract the child type reference from this type reference used in place
 // of a reference to the given type in the other reference. For example, if this is a reference
 // to SomeClass<int> and the other reference is SomeClass<T>, passing in 'T' will return 'int'.
-func (tr TypeReference) ExtractTypeDiff(otherRef TypeReference, diffType compilergraph.GraphNode) (TypeReference, bool) {
+func (tr TypeReference) ExtractTypeDiff(otherRef TypeReference, diffType TGTypeDecl) (TypeReference, bool) {
 	// Only normal type references apply.
 	if !tr.isNormal() || !otherRef.isNormal() {
 		return TypeReference{}, false
@@ -136,7 +139,7 @@ func (tr TypeReference) ExtractTypeDiff(otherRef TypeReference, diffType compile
 
 		// If the type referred to by the generic is the diff type, then return the associated
 		// generic type in the local reference.
-		if genericRef.referredTypeNode() == diffType {
+		if genericRef.HasReferredType(diffType) {
 			return localGenerics[index], true
 		}
 
@@ -162,7 +165,7 @@ func (tr TypeReference) ExtractTypeDiff(otherRef TypeReference, diffType compile
 
 		// If the type referred to by the parameter is the diff type, then return the associated
 		// parameter type in the local reference.
-		if parameterRef.referredTypeNode() == diffType {
+		if parameterRef.HasReferredType(diffType) {
 			return localParameters[index], true
 		}
 
@@ -195,9 +198,7 @@ func (tr TypeReference) CheckStructuralSubtypeOf(other TypeReference) bool {
 
 // CheckConcreteSubtypeOf checks that the current type reference refers to a type that is a concrete subtype
 // of the specified *generic* interface.
-func (tr TypeReference) CheckConcreteSubtypeOf(otherTypeNode compilergraph.GraphNode) ([]TypeReference, error) {
-	otherType := TGTypeDecl{otherTypeNode, tr.tdg}
-
+func (tr TypeReference) CheckConcreteSubtypeOf(otherType TGTypeDecl) ([]TypeReference, error) {
 	if otherType.TypeKind() != ImplicitInterfaceType {
 		panic("Cannot use non-interface type in call to CheckImplOfGeneric")
 	}
@@ -227,7 +228,7 @@ func (tr TypeReference) CheckConcreteSubtypeOf(otherTypeNode compilergraph.Graph
 	localType := tr.ReferredType()
 
 	// Fast check: If the referred type is the type expected, return it directly.
-	if localType.GraphNode == otherTypeNode {
+	if localType.GraphNode == otherType.GraphNode {
 		return tr.Generics(), nil
 	}
 
@@ -249,7 +250,7 @@ func (tr TypeReference) CheckConcreteSubtypeOf(otherTypeNode compilergraph.Graph
 		// Find a member in the interface that uses the generic in its member type.
 		for _, member := range otherType.Members() {
 			memberType := member.MemberType()
-			if !memberType.ContainsType(typeGeneric.GraphNode) {
+			if !memberType.ContainsType(typeGeneric.AsType()) {
 				continue
 			}
 
@@ -272,7 +273,7 @@ func (tr TypeReference) CheckConcreteSubtypeOf(otherTypeNode compilergraph.Graph
 
 		// Now that we have a matching member in the local type, attempt to extract the concrete type
 		// used as the generic.
-		concreteType, found := localMember.MemberType().ExtractTypeDiff(matchingMember.MemberType(), typeGeneric.GraphNode)
+		concreteType, found := localMember.MemberType().ExtractTypeDiff(matchingMember.MemberType(), typeGeneric.AsType())
 		if !found {
 			// If not found, this is not a matching type.
 			return nil, fmt.Errorf("Type %v cannot be used in place of type %v as member %v does not have the same signature", tr, otherType.Name(), matchingMember.Name())
@@ -282,14 +283,14 @@ func (tr TypeReference) CheckConcreteSubtypeOf(otherTypeNode compilergraph.Graph
 		var replacedConcreteType = concreteType
 		if len(localTypeGenerics) > 0 {
 			for index, localGeneric := range localTypeGenerics {
-				replacedConcreteType = replacedConcreteType.ReplaceType(localGeneric.GraphNode, localRefGenerics[index])
+				replacedConcreteType = replacedConcreteType.ReplaceType(localGeneric.AsType(), localRefGenerics[index])
 			}
 		}
 
 		resolvedGenerics[index] = replacedConcreteType
 	}
 
-	return resolvedGenerics, tr.CheckSubTypeOf(tr.tdg.NewTypeReference(otherTypeNode, resolvedGenerics...))
+	return resolvedGenerics, tr.CheckSubTypeOf(tr.tdg.NewTypeReference(otherType, resolvedGenerics...))
 }
 
 // CheckSubTypeOf returns whether the type pointed to by this type reference is a subtype
@@ -469,10 +470,11 @@ func (tr TypeReference) adjustedMemberSignature(node compilergraph.GraphNode) st
 	for pgit.Next() {
 		genericNode := pgit.Node()
 		genericRef := generics[index]
+		genericType := TGTypeDecl{genericNode, tr.tdg}
 
 		// Replace the generic in the member type.
 		adjustedType := tr.Build(memberSig.GetMemberType()).(TypeReference).
-			ReplaceType(genericNode, genericRef).
+			ReplaceType(genericType, genericRef).
 			Value()
 
 		memberSig.MemberType = &adjustedType
@@ -480,7 +482,7 @@ func (tr TypeReference) adjustedMemberSignature(node compilergraph.GraphNode) st
 		// Replace the generic in any generic constraints.
 		for cindex, constraint := range memberSig.GetGenericConstraints() {
 			memberSig.GenericConstraints[cindex] = tr.Build(constraint).(TypeReference).
-				ReplaceType(genericNode, genericRef).
+				ReplaceType(genericType, genericRef).
 				Value()
 		}
 
@@ -553,12 +555,12 @@ func (tr TypeReference) IsNullable() bool {
 }
 
 // HasReferredType returns whether this type references refers to the given type.
-func (tr TypeReference) HasReferredType(typeNode compilergraph.GraphNode) bool {
+func (tr TypeReference) HasReferredType(typeDecl TGTypeDecl) bool {
 	if tr.getSlot(trhSlotFlagSpecial)[0] != specialFlagNormal {
 		return false
 	}
 
-	return tr.referredTypeNode() == typeNode
+	return tr.referredTypeNode() == typeDecl.GraphNode
 }
 
 // ReferredType returns the type decl to which the type reference refers.
@@ -682,19 +684,20 @@ func (tr TypeReference) Intersect(other TypeReference) TypeReference {
 // Localize returns a copy of this type reference with any references to the specified generics replaced with
 // a string that does not reference a specific type node ID, but rather a localized ID instead. This allows
 // type references that reference different type and type member generics to be compared.
-func (tr TypeReference) Localize(generics ...compilergraph.GraphNode) TypeReference {
+func (tr TypeReference) Localize(generics ...TGGeneric) TypeReference {
 	if tr.getSlot(trhSlotFlagSpecial)[0] != specialFlagNormal {
 		return tr
 	}
 
 	var currentTypeReference = tr
-	for _, genericNode := range generics {
+	for _, generic := range generics {
+		genericNode := generic.GraphNode
 		replacement := TypeReference{
 			value: buildLocalizedRefValue(genericNode),
 			tdg:   tr.tdg,
 		}
 
-		currentTypeReference = currentTypeReference.ReplaceType(genericNode, replacement)
+		currentTypeReference = currentTypeReference.ReplaceType(generic.AsType(), replacement)
 	}
 
 	return currentTypeReference
@@ -735,7 +738,7 @@ func (tr TypeReference) TransformUnder(other TypeReference) TypeReference {
 	// Replace the generics.
 	var currentTypeReference = tr
 	for index, generic := range otherRefGenerics {
-		currentTypeReference = currentTypeReference.ReplaceType(otherTypeGenerics[index].GraphNode, generic)
+		currentTypeReference = currentTypeReference.ReplaceType(otherTypeGenerics[index].AsType(), generic)
 	}
 
 	return currentTypeReference
@@ -743,7 +746,9 @@ func (tr TypeReference) TransformUnder(other TypeReference) TypeReference {
 
 // ReplaceType returns a copy of this type reference, with the given type node replaced with the
 // given type reference.
-func (tr TypeReference) ReplaceType(typeNode compilergraph.GraphNode, replacement TypeReference) TypeReference {
+func (tr TypeReference) ReplaceType(typeDecl TGTypeDecl, replacement TypeReference) TypeReference {
+	typeNode := typeDecl.GraphNode
+
 	typeNodeRef := TypeReference{
 		tdg:   tr.tdg,
 		value: buildTypeReferenceValue(typeNode, false),

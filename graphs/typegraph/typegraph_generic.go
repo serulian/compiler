@@ -33,3 +33,8 @@ func (tn TGGeneric) Constraint() TypeReference {
 func (tn TGGeneric) Title() string {
 	return "generic"
 }
+
+// AsType returns the generic as a TGTypeDecl.
+func (tn TGGeneric) AsType() TGTypeDecl {
+	return TGTypeDecl{tn.GraphNode, tn.tdg}
+}
