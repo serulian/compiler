@@ -10,6 +10,7 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/packageloader"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -21,8 +22,13 @@ func getSRG(t *testing.T, path string, libPaths ...string) *SRG {
 		t.Errorf("%v", err)
 	}
 
+	libraries := make([]packageloader.Library, len(libPaths))
+	for index, libPath := range libPaths {
+		libraries[index] = packageloader.Library{libPath, false}
+	}
+
 	testSRG := NewSRG(graph)
-	result := testSRG.LoadAndParse(libPaths...)
+	result := testSRG.LoadAndParse(libraries...)
 	if !result.Status {
 		t.Errorf("Expected successful parse: %v", result.Errors)
 	}
