@@ -5,12 +5,17 @@
 package typegraph
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 )
+
+var _ = fmt.Sprint
 
 // newTestTypeGraph creates a new type graph for testing.
 func newTestTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGraphConstructor) *TypeGraph {
@@ -26,7 +31,7 @@ func parseTypeReferenceForTesting(humanString string, graph *TypeGraph, refSourc
 	var isNullable = false
 	if strings.HasSuffix(humanString, "?") {
 		isNullable = true
-		humanString = humanString[0 : len(humanString)-2]
+		humanString = humanString[0 : len(humanString)-1]
 	}
 
 	if humanString == "any" {
@@ -92,7 +97,6 @@ func resolveTestingTypeRefFromSourceNodes(name string, graph *TypeGraph, refSour
 func resolveTestingTypeRef(name string, refNode compilergraph.GraphNode, graph *TypeGraph) (TypeReference, bool) {
 	// Check for member generics.
 	var currentNode = refNode
-
 	if currentNode.Kind == NodeTypeMember {
 		memberInfo := TGMember{currentNode, graph}
 		for _, generic := range memberInfo.Generics() {
@@ -108,6 +112,14 @@ func resolveTestingTypeRef(name string, refNode compilergraph.GraphNode, graph *
 		currentNode = currentNode.GetIncomingNode(NodePredicateMember)
 	}
 
+	if currentNode.Kind == NodeTypeOperator {
+		if _, ok := currentNode.TryGetIncoming(NodePredicateTypeOperator); !ok {
+			return TypeReference{}, false
+		}
+
+		currentNode = currentNode.GetIncomingNode(NodePredicateTypeOperator)
+	}
+
 	// Check for type generics.
 	if currentNode.Kind == NodeTypeClass || currentNode.Kind == NodeTypeInterface {
 		typeInfo := TGTypeDecl{currentNode, graph}
@@ -117,11 +129,11 @@ func resolveTestingTypeRef(name string, refNode compilergraph.GraphNode, graph *
 			}
 		}
 
-		if _, ok := currentNode.TryGetIncoming(NodePredicateMember); !ok {
+		if _, ok := currentNode.TryGet(NodePredicateTypeModule); !ok {
 			return TypeReference{}, false
 		}
 
-		currentNode = currentNode.GetIncomingNode(NodePredicateMember)
+		currentNode = currentNode.GetNode(NodePredicateTypeModule)
 	}
 
 	// Check the module for the type.
@@ -132,6 +144,7 @@ func resolveTestingTypeRef(name string, refNode compilergraph.GraphNode, graph *
 				return graph.NewTypeReference(typeDecl.GraphNode), true
 			}
 		}
+
 	}
 
 	return TypeReference{}, false
@@ -207,13 +220,21 @@ func (t *testBasicTypesConstructor) DefineTypes(builder GetTypeBuilder) {
 		Alias("int").
 		Define()
 
-	genBuilder := builder(*t.moduleNode).
+	funcGenBuilder := builder(*t.moduleNode).
 		Name("function").
 		SourceNode(t.layer.CreateNode(fakeNodeTypeTagged)).
 		Alias("function").
 		Define()
 
-	genBuilder().Name("T").SourceNode(t.layer.CreateNode(fakeNodeTypeTagged)).Define()
+	funcGenBuilder().Name("T").SourceNode(t.layer.CreateNode(fakeNodeTypeTagged)).Define()
+
+	streamGenBuilder := builder(*t.moduleNode).
+		Name("stream").
+		SourceNode(t.layer.CreateNode(fakeNodeTypeTagged)).
+		Alias("stream").
+		Define()
+
+	streamGenBuilder().Name("T").SourceNode(t.layer.CreateNode(fakeNodeTypeTagged)).Define()
 }
 
 func (t *testTypeGraphConstructor) DefineModules(builder GetModuleBuilder) {
@@ -258,13 +279,18 @@ func (t *testTypeGraphConstructor) DefineDependencies(annotator *Annotator, grap
 	}
 }
 
+func isExportedName(name string) bool {
+	r, _ := utf8.DecodeRuneInString(name)
+	return unicode.IsUpper(r)
+}
+
 func (t *testTypeGraphConstructor) DefineMembers(builder GetMemberBuilder, graph *TypeGraph) {
 	for _, typeInfo := range t.testTypes {
 		typeNode, _ := t.typeMap[typeInfo.name]
 		for _, memberInfo := range typeInfo.members {
 			memberNode := t.layer.CreateNode(fakeNodeTypeTagged)
 
-			ib := builder(typeNode, false).
+			ib := builder(typeNode, memberInfo.kind == "operator").
 				Name(memberInfo.name).
 				SourceNode(memberNode)
 
@@ -288,7 +314,7 @@ func (t *testTypeGraphConstructor) DefineMembers(builder GetMemberBuilder, graph
 				memberType = memberType.WithParameter(parseTypeReferenceForTesting(paramInfo.paramType, graph, memberNode, typeNode))
 			}
 
-			builder.Exported(true).
+			builder.Exported(isExportedName(memberInfo.name)).
 				ReadOnly(false).
 				MemberType(memberType).
 				MemberKind(1).
