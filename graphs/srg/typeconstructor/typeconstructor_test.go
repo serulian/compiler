@@ -67,10 +67,10 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"type redeclaration test", "redeclare", "redeclare", "Type 'SomeClass' is already defined in the module"},
 	typegraphTest{"generic redeclaration test", "genericredeclare", "redeclare", "Generic 'T' is already defined"},
 	typegraphTest{"generic constraint resolve failure test", "genericconstraint", "notfound", "Type 'UnknownType' could not be found"},
-	typegraphTest{"unknown operator failure test", "operatorfail", "unknown", "Unknown operator 'NotValid' defined on type 'SomeType'"},
-	typegraphTest{"operator redefine failure test", "operatorfail", "redefine", "Operator 'plus' is already defined on type 'SomeType'"},
-	typegraphTest{"operator param count mismatch failure test", "operatorfail", "paramcount", "Operator 'Plus' defined on type 'SomeType' expects 2 parameters; found 1"},
-	typegraphTest{"operator param type mismatch failure test", "operatorfail", "paramtype", "Parameter 'right' (#1) for operator 'Plus' defined on type 'SomeType' expects type SomeType; found Integer"},
+	typegraphTest{"unknown operator failure test", "operatorfail", "unknown", "Unknown operator 'notvalid' defined on type 'SomeType'"},
+	typegraphTest{"operator redefine failure test", "operatorfail", "redefine", "Operator 'plus' is already defined on class 'SomeType'"},
+	typegraphTest{"operator param count mismatch failure test", "operatorfail", "paramcount", "Operator 'plus' defined on type 'SomeType' expects 2 parameters; found 1"},
+	typegraphTest{"operator param type mismatch failure test", "operatorfail", "paramtype", "Parameter 'right' (#1) for operator 'plus' defined on type 'SomeType' expects type SomeType; found Integer"},
 	typegraphTest{"inheritance cycle failure test", "inheritscycle", "inheritscycle", "A cycle was detected in the inheritance of types: [ThirdClass SecondClass FirstClass]"},
 	typegraphTest{"invalid parents test", "invalidparent", "generic", "Type 'DerivesFromGeneric' cannot derive from a generic ('T')"},
 	typegraphTest{"invalid parents test", "invalidparent", "interface", "Type 'DerivesFromInterface' cannot derive from an interface ('SomeInterface')"},
@@ -81,7 +81,7 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"function generic interface constraint invalid test", "interfaceconstraint", "invalidfunctiongeneric", "Generic 'T' (#1) on type 'AnotherClass' has constraint 'ISomeInterface'. Specified type 'SomeClass' does not match: member 'DoSomething' under type 'SomeClass' does not match that defined in type 'ISomeInterface'"},
 	typegraphTest{"nullable constraint invalid test", "interfaceconstraint", "invalidnullable", "Generic 'T' (#1) on type 'SomeClass' has constraint 'ISomeInterface<Integer>'. Specified type 'ThirdClass?' does not match: Nullable type 'ThirdClass?' cannot be used in place of non-nullable type 'ISomeInterface<Integer>'"},
 	typegraphTest{"unexported interface operator test", "interfaceconstraint", "unexportedoperator", "Generic 'T' (#1) on type 'SomeClass' has constraint 'ISomeInterface'. Specified type 'ThirdClass' does not match: Type 'ThirdClass' does not define or export operator 'plus', which is required by type 'ISomeInterface'"},
-	typegraphTest{"operator return type mismatch test", "operatorreturnmismatch", "operator", "Operator 'Plus' defined on type 'SomeClass' expects a return type of 'SomeClass'; found Integer"},
+	typegraphTest{"operator return type mismatch test", "operatorreturnmismatch", "operator", "Operator 'mod' defined on type 'SomeClass' expects a return type of 'SomeClass'; found Integer"},
 }
 
 func TestGraphs(t *testing.T) {
@@ -112,8 +112,8 @@ func TestGraphs(t *testing.T) {
 				test.writeJson(currentLayerView)
 			} else {
 				// Compare the constructed graph layer to the expected.
-				//expectedLayerView := test.json()
-				//assert.Equal(t, expectedLayerView, currentLayerView, "Graph view mismatch on test %s\nExpected: %v\nActual: %v\n\n", test.name, expectedLayerView, currentLayerView)
+				expectedLayerView := test.json()
+				assert.Equal(t, expectedLayerView, currentLayerView, "Graph view mismatch on test %s\nExpected: %v\nActual: %v\n\n", test.name, expectedLayerView, currentLayerView)
 			}
 		} else {
 			// Make sure we had an error during construction.

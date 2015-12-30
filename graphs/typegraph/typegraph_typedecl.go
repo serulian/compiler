@@ -75,6 +75,8 @@ func (tn TGTypeDecl) Node() compilergraph.GraphNode {
 
 // SourceNode returns the node in the source graph that created this type, if any.
 func (tn TGTypeDecl) SourceNode() (compilergraph.GraphNode, bool) {
+	// TODO: fix this!
+	panic("FIXME")
 	return tn.TryGetNode(NodePredicateSource)
 }
 

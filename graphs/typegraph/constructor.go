@@ -398,15 +398,17 @@ func (mb *MemberBuilder) InitialDefine() (*dependentMemberBuilder, IssueReporter
 	}
 
 	// Create the member node.
-	memberNode := mb.tdg.layer.CreateNode(NodeTypeMember)
-
+	var memberNode compilergraph.GraphNode
 	if mb.isOperator {
+		memberNode = mb.tdg.layer.CreateNode(NodeTypeOperator)
 		memberNode.Decorate(NodePredicateOperatorName, name)
 		memberNode.Decorate(NodePredicateMemberName, operatorMemberNamePrefix+name)
 	} else {
+		memberNode = mb.tdg.layer.CreateNode(NodeTypeMember)
 		memberNode.Decorate(NodePredicateMemberName, name)
 	}
 
+	memberNode.Connect(NodePredicateSource, mb.sourceNode)
 	memberNode.Decorate(NodePredicateModulePath, mb.parent.ParentModule().Get(NodePredicateModulePath))
 
 	// Decorate the member with its generics.
@@ -500,8 +502,12 @@ func (mb *dependentMemberBuilder) Define() {
 
 	// Mark the member with an error if it is repeated.
 	if mb.exists {
-		// TODO: fix error message for non-type members and operators.
-		mb.tdg.decorateWithError(memberNode, "Type member '%s' is already defined on type '%s'", mb.name, mb.parent.Name())
+		var kindTitle = "Member"
+		if mb.isOperator {
+			kindTitle = "Operator"
+		}
+
+		mb.tdg.decorateWithError(memberNode, "%s '%s' is already defined on %s '%s'", kindTitle, mb.name, mb.parent.Title(), mb.parent.Name())
 	}
 
 	// If this is an operator, type check and compute member type.
@@ -536,6 +542,8 @@ func (mb *dependentMemberBuilder) Define() {
 
 // checkAndComputeOperator handles specialized logic for operator members.
 func (mb *dependentMemberBuilder) checkAndComputeOperator(memberNode compilergraph.GraphNode, name string) {
+	name = strings.ToLower(name)
+
 	// Verify that the operator matches a known operator.
 	definition, ok := mb.tdg.operators[name]
 	if !ok {

@@ -93,23 +93,33 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 
 			if typegraphNode.Kind == NodeTypeModule {
 				return &MemberBuilder{
-					parent: TGModule{typegraphNode, typeGraph},
-					tdg:    typeGraph,
+					parent:     TGModule{typegraphNode, typeGraph},
+					tdg:        typeGraph,
+					isOperator: isOperator,
 				}
 			} else {
 				return &MemberBuilder{
-					parent: TGTypeDecl{typegraphNode, typeGraph},
-					tdg:    typeGraph,
+					parent:     TGTypeDecl{typegraphNode, typeGraph},
+					tdg:        typeGraph,
+					isOperator: isOperator,
 				}
 			}
 
 		}, typeGraph)
 	}
 
-	// Validate everything.
-	for _, constructor := range constructors {
-		reporter := &issueReporterImpl{typeGraph}
-		constructor.Validate(reporter, typeGraph)
+	// Handle inheritance checking and member cloning.
+	typeGraph.defineFullInheritance()
+
+	// Define implicit members.
+	typeGraph.defineAllImplicitMembers()
+
+	// If there are no errors yet, validate everything.
+	if _, hasError := typeGraph.layer.StartQuery().In(NodePredicateError).TryGetNode(); !hasError {
+		for _, constructor := range constructors {
+			reporter := &issueReporterImpl{typeGraph}
+			constructor.Validate(reporter, typeGraph)
+		}
 	}
 
 	// Collect any errors generated during construction.

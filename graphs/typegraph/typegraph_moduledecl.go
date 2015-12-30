@@ -19,6 +19,11 @@ func (tn TGModule) Name() string {
 	return tn.GraphNode.Get(NodePredicateModuleName)
 }
 
+// Title returns the human readable name of this type ("Module")
+func (tn TGModule) Title() string {
+	return "Module"
+}
+
 // Node returns the underlying node in this declaration.
 func (tn TGModule) Node() compilergraph.GraphNode {
 	return tn.GraphNode

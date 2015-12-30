@@ -118,7 +118,6 @@ type typeMemberWork struct {
 }
 
 func (stc *srgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder, graph *typegraph.TypeGraph) {
-
 	// Define all module members.
 	for _, module := range stc.srg.GetModules() {
 		for _, member := range module.GetMembers() {
@@ -201,10 +200,18 @@ func (stc *srgTypeConstructor) defineMember(member srg.SRGMember, parent typegra
 		dependentBuilder.CreateReturnable(member.Node(), returnType)
 
 	case srg.OperatorMember:
-		// Operators are static.
+		// Operators are static and read-only.
 		isStatic = true
+		isReadOnly = true
 
-		fallthrough
+		// Operators have type function<DeclaredType>(parameters).
+		returnType, _ := stc.resolvePossibleType(member.Node(), member.DeclaredType, graph, reporter)
+
+		// Decorate the function with its return type.
+		dependentBuilder.CreateReturnable(member.Node(), returnType)
+
+		functionType := graph.NewTypeReference(graph.FunctionType(), returnType)
+		memberType, _ = stc.addSRGParameterTypes(member, functionType, graph, reporter)
 
 	case srg.FunctionMember:
 		// Functions are read-only.
