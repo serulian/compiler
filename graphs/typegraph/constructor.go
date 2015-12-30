@@ -189,6 +189,7 @@ func (tb *typeBuilder) Define() getGenericBuilder {
 	typeNode.Connect(NodePredicateTypeModule, tb.module.GraphNode)
 	typeNode.Connect(NodePredicateSource, tb.sourceNode)
 	typeNode.Decorate(NodePredicateTypeName, tb.name)
+	typeNode.Decorate(NodePredicateModulePath, tb.module.Get(NodePredicateModulePath))
 
 	if tb.alias != "" {
 		typeNode.Decorate(NodePredicateTypeAlias, tb.alias)

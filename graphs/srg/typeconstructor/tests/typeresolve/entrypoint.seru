@@ -1,6 +1,0 @@
-from otherfile import OtherClass
-
-class SomeClass {
-	function<void> ExportedFunction() {}
-	function<void> notExported() {}
-}

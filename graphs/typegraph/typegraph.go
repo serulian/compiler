@@ -251,7 +251,8 @@ func (g *TypeGraph) GetTypeOrMember(nodeId compilergraph.GraphNodeId) TGTypeOrMe
 
 // LookupType looks up the type declaration with the given name in the given module and returns it (if any).
 func (g *TypeGraph) LookupType(typeName string, module compilercommon.InputSource) (TGTypeDecl, bool) {
-	typeNode, found := g.layer.StartQuery().
+	typeNode, found := g.layer.StartQuery(typeName).
+		In(NodePredicateTypeName).
 		Has(NodePredicateModulePath, string(module)).
 		IsKind(TYPE_NODE_TYPES_TAGGED...).
 		TryGetNode()
