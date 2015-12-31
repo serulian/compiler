@@ -98,7 +98,7 @@ func TestLibraryPath(t *testing.T) {
 	}
 
 	loader := NewPackageLoader("tests/basic/somefile.seru", tt.createAstNode)
-	result := loader.Load("tests/libtest")
+	result := loader.Load(Library{"tests/libtest", false})
 	if !result.Status || len(result.Errors) > 0 {
 		t.Errorf("Expected success, found: %v", result.Errors)
 	}
