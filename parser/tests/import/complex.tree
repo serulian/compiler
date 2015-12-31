@@ -5,7 +5,7 @@ NodeTypeFile
   child-node =>
     NodeTypeImport
       end-rune = 54
-      import-location-ref = location:some-git-rep
+      import-location-ref = location:some-git-repo
       import-source = "some-git-repo"
       import-subsource = Something
       input-source = complex imports test
@@ -22,7 +22,7 @@ NodeTypeFile
     NodeTypeImport
       end-rune = 137
       import-kind = webidl
-      import-location-ref = location:`coolthing`
+      import-location-ref = location:coolthing
       import-source = `coolthing`
       import-subsource = WebIDLThing
       input-source = complex imports test
@@ -31,7 +31,7 @@ NodeTypeFile
     NodeTypeImport
       end-rune = 182
       import-kind = anotherkind
-      import-location-ref = location:`some url`
+      import-location-ref = location:some url
       import-package-name = SomethingNeat
       import-source = `some url`
       input-source = complex imports test

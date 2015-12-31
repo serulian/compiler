@@ -5,7 +5,7 @@ NodeTypeFile
   child-node =>
     NodeTypeImport
       end-rune = 29
-      import-location-ref = location:github.com/some/thin
+      import-location-ref = location:github.com/some/thing
       import-source = "github.com/some/thing"
       input-source = missing as for SCM test
       start-rune = 0

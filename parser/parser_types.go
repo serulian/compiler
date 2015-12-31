@@ -32,6 +32,7 @@ const (
 
 // PackageImport defines the import of a package.
 type PackageImport struct {
+	Kind           string // The kind of the import. Will be empty for normal source imports.
 	Path           string
 	ImportType     PackageImportType
 	SourceLocation compilercommon.SourceAndLocation

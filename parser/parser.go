@@ -99,10 +99,10 @@ func buildParser(builder NodeBuilder, importReporter ImportHandler, source compi
 func (p *sourceParser) reportImport(value string, kind string) string {
 	sal := compilercommon.NewSourceAndLocation(p.source, int(p.currentToken.position))
 
-	if strings.HasPrefix(value, "\"") {
-		return p.importReporter(PackageImport{value[1 : len(value)-2], ImportTypeVCS, sal})
+	if strings.HasPrefix(value, "\"") || strings.HasPrefix(value, "`") {
+		return p.importReporter(PackageImport{kind, value[1 : len(value)-1], ImportTypeVCS, sal})
 	} else {
-		return p.importReporter(PackageImport{value, ImportTypeLocal, sal})
+		return p.importReporter(PackageImport{kind, value, ImportTypeLocal, sal})
 	}
 }
 
