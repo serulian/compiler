@@ -32,7 +32,7 @@ type SRG struct {
 func NewSRG(graph *compilergraph.SerulianGraph) *SRG {
 	return &SRG{
 		Graph:    graph,
-		layer:    graph.NewGraphLayer(compilergraph.GraphLayerSRG, parser.NodeTypeTagged),
+		layer:    graph.NewGraphLayer("srg", parser.NodeTypeTagged),
 		aliasMap: map[string]SRGType{},
 	}
 }

@@ -43,7 +43,7 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 	// Create the type graph.
 	typeGraph := &TypeGraph{
 		graph:     graph,
-		layer:     graph.NewGraphLayer(compilergraph.GraphLayerTypeGraph, NodeTypeTagged),
+		layer:     graph.NewGraphLayer("tdg", NodeTypeTagged),
 		operators: map[string]operatorDefinition{},
 	}
 

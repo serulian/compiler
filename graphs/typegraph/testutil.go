@@ -19,7 +19,7 @@ var _ = fmt.Sprint
 
 // newTestTypeGraph creates a new type graph for testing.
 func newTestTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGraphConstructor) *TypeGraph {
-	fsg := graph.NewGraphLayer(compilergraph.GraphLayerSRG, fakeNodeTypeTagged)
+	fsg := graph.NewGraphLayer("test", fakeNodeTypeTagged)
 
 	constructors = append(constructors, &testBasicTypesConstructor{emptyTypeConstructor{}, fsg, nil})
 	return BuildTypeGraph(graph, constructors...).Graph
@@ -156,7 +156,7 @@ func newTestTypeGraphConstructor(graph *compilergraph.SerulianGraph, moduleName 
 	return &testTypeGraphConstructor{
 		moduleName: moduleName,
 		testTypes:  testTypes,
-		layer:      graph.NewGraphLayer(compilergraph.GraphLayerSRG, fakeNodeTypeTagged),
+		layer:      graph.NewGraphLayer(moduleName, fakeNodeTypeTagged),
 
 		typeMap:    map[string]compilergraph.GraphNode{},
 		genericMap: map[string]compilergraph.GraphNode{},
