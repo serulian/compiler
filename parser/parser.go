@@ -96,7 +96,7 @@ func buildParser(builder NodeBuilder, importReporter ImportHandler, source compi
 }
 
 // reportImport reports an import of the given token value as a path.
-func (p *sourceParser) reportImport(value string) string {
+func (p *sourceParser) reportImport(value string, kind string) string {
 	sal := compilercommon.NewSourceAndLocation(p.source, int(p.currentToken.position))
 
 	if strings.HasPrefix(value, "\"") {

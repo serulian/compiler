@@ -12,7 +12,7 @@ NodeTypeFile
       child-node =>
         NodeTypeError
           end-rune = 16
-          error-message = Expected one of: [tokenTypeIdentifer], found: tokenTypeStringLiteral
+          error-message = Expected identifier, found token tokenTypeStringLiteral
           input-source = invalid subsource
           start-rune = 18
     NodeTypeError

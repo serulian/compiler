@@ -12,6 +12,6 @@ NodeTypeFile
       child-node =>
         NodeTypeError
           end-rune = 29
-          error-message = Import from SCM URL requires an 'as' clause
+          error-message = Remote package import requires an 'as' clause
           input-source = missing as for SCM test
           start-rune = 30
