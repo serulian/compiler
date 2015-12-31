@@ -14,6 +14,7 @@ import (
 
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/srg"
+	"github.com/serulian/compiler/graphs/srg/typeconstructor"
 	"github.com/serulian/compiler/graphs/typegraph"
 )
 
@@ -44,21 +45,21 @@ func (g *ScopeGraph) TypeGraph() *typegraph.TypeGraph {
 	return g.tdg
 }
 
-// BuildScopeGraph returns a new ScopeGraph that is populated from the given TypeGraph,
+// BuildScopeGraph returns a new ScopeGraph that is populated from the given SRG and TypeGraph,
 // computing scope for all statements and expressions and semantic checking along the way.
-func BuildScopeGraph(tdg *typegraph.TypeGraph) *Result {
+func BuildScopeGraph(srg *srg.SRG, tdg *typegraph.TypeGraph) *Result {
 	scopeGraph := &ScopeGraph{
-		srg:   tdg.SourceGraph(),
+		srg:   srg,
 		tdg:   tdg,
-		graph: tdg.SourceGraph().Graph,
-		layer: tdg.SourceGraph().Graph.NewGraphLayer(compilergraph.GraphLayerScopeGraph, NodeTypeTagged),
+		graph: srg.Graph,
+		layer: srg.Graph.NewGraphLayer("sig", NodeTypeTagged),
 	}
 
 	builder := newScopeBuilder(scopeGraph)
 
 	// Find all lambda expressions and infer their argument types.
 	var lwg sync.WaitGroup
-	lit := tdg.SourceGraph().LambdaExpressions()
+	lit := srg.LambdaExpressions()
 	for lit.Next() {
 		lwg.Add(1)
 		go (func(node compilergraph.GraphNode) {
@@ -71,7 +72,7 @@ func BuildScopeGraph(tdg *typegraph.TypeGraph) *Result {
 
 	// Scope all the entrypoint statements and members in the SRG. These will recursively scope downward.
 	var wg sync.WaitGroup
-	sit := tdg.SourceGraph().EntrypointStatements()
+	sit := srg.EntrypointStatements()
 	for sit.Next() {
 		wg.Add(1)
 		go (func(node compilergraph.GraphNode) {
@@ -80,7 +81,7 @@ func BuildScopeGraph(tdg *typegraph.TypeGraph) *Result {
 		})(sit.Node())
 	}
 
-	mit := tdg.SourceGraph().EntrypointMembers()
+	mit := srg.EntrypointMembers()
 	for mit.Next() {
 		wg.Add(1)
 		go (func(node compilergraph.GraphNode) {
@@ -113,4 +114,10 @@ func (sg *ScopeGraph) GetScope(srgNode compilergraph.GraphNode) (proto.ScopeInfo
 
 	scopeInfo := scopeNode.GetTagged(NodePredicateScopeInfo, &proto.ScopeInfo{}).(*proto.ScopeInfo)
 	return *scopeInfo, true
+}
+
+// resolveSRGTypeRef builds an SRG type reference into a resolved type reference.
+func (sg *ScopeGraph) resolveSRGTypeRef(srgTypeRef srg.SRGTypeRef) (typegraph.TypeReference, error) {
+	constructor := typeconstructor.GetConstructor(sg.srg)
+	return constructor.BuildTypeRef(srgTypeRef, sg.tdg)
 }

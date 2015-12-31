@@ -39,7 +39,7 @@ func (sb *scopeBuilder) lookupNamedScope(name string, node compilergraph.GraphNo
 func (sb *scopeBuilder) buildNamedScopeForSRGInfo(srgInfo srg.SRGNamedScope) namedScopeInfo {
 	switch srgInfo.ScopeKind() {
 	case srg.NamedScopeType:
-		typeInfo, found := sb.sg.tdg.GetTypeForSRGNode(srgInfo.GraphNode)
+		typeInfo, found := sb.sg.tdg.GetTypeForSourceNode(srgInfo.GraphNode)
 		if !found {
 			panic("Missing type info for SRG node")
 		}
@@ -47,7 +47,7 @@ func (sb *scopeBuilder) buildNamedScopeForSRGInfo(srgInfo srg.SRGNamedScope) nam
 		return namedScopeInfo{srgInfo, typeInfo, sb}
 
 	case srg.NamedScopeMember:
-		memberInfo, found := sb.sg.tdg.GetMemberForSRGNode(srgInfo.GraphNode)
+		memberInfo, found := sb.sg.tdg.GetMemberForSourceNode(srgInfo.GraphNode)
 		if !found {
 			panic("Missing member info for SRG node")
 		}
@@ -185,13 +185,10 @@ func (nsi *namedScopeInfo) ValueOrGenericType() typegraph.TypeReference {
 		}
 
 		// TODO: We should probably cache this in the type graph instead of resolving here.
-		typeref := nsi.sb.sg.srg.GetTypeRef(nsi.srgInfo.GraphNode.GetNode(parser.NodeParameterType))
-		declaredType, rerr := nsi.sb.sg.tdg.BuildTypeRef(typeref)
-		if rerr != nil {
-			panic(rerr)
-		}
-
-		return declaredType
+		srg := nsi.sb.sg.srg
+		parameterTypeNode := nsi.srgInfo.GraphNode.GetNode(parser.NodeParameterType)
+		typeref, _ := nsi.sb.sg.resolveSRGTypeRef(srg.GetTypeRef(parameterTypeNode))
+		return typeref
 
 	case srg.NamedScopeValue:
 		// The value type of a named value is found by scoping the node creating the named value

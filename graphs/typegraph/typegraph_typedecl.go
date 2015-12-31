@@ -73,13 +73,6 @@ func (tn TGTypeDecl) Node() compilergraph.GraphNode {
 	return tn.GraphNode
 }
 
-// SourceNode returns the node in the source graph that created this type, if any.
-func (tn TGTypeDecl) SourceNode() (compilergraph.GraphNode, bool) {
-	// TODO: fix this!
-	panic("FIXME")
-	return tn.TryGetNode(NodePredicateSource)
-}
-
 // HasGenerics returns whether this type has generics defined.
 func (tn TGTypeDecl) HasGenerics() bool {
 	_, isGeneric := tn.GraphNode.TryGet(NodePredicateTypeGeneric)

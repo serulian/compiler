@@ -62,18 +62,19 @@ func (rn ReferencedName) IsLocal() bool {
 	return rn.typeInfo == nil
 }
 
-// IsProperty returns true if the referenced name is to a property.
+// IsProperty returns true if the referenced name points to a property.
 func (rn ReferencedName) IsProperty() bool {
 	member, isMember := rn.Member()
 	if !isMember {
 		return false
 	}
 
-	srgMember, hasSRGMember := member.SRGMember()
-	if !hasSRGMember {
+	sourceNodeId, hasSourceNode := member.SourceNodeId()
+	if !hasSourceNode {
 		return false
 	}
 
+	srgMember := rn.sg.srg.GetMemberReference(rn.sg.srg.GetNode(sourceNodeId))
 	return srgMember.MemberKind() == srg.PropertyMember
 }
 

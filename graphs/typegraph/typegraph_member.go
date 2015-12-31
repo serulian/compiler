@@ -44,6 +44,16 @@ func (tn TGMember) Node() compilergraph.GraphNode {
 	return tn.GraphNode
 }
 
+// SourceNodeId returns the ID of the source node for this member, if any.
+func (tn TGMember) SourceNodeId() (compilergraph.GraphNodeId, bool) {
+	idFound, hasId := tn.GraphNode.TryGet(NodePredicateSource)
+	if !hasId {
+		return compilergraph.GraphNodeId(""), false
+	}
+
+	return compilergraph.GraphNodeId(idFound), true
+}
+
 // BaseMember returns the member in a parent type from which this member was cloned/inherited, if any.
 func (tn TGMember) BaseMember() (TGMember, bool) {
 	parentMember, hasParentMember := tn.GraphNode.TryGetNode(NodePredicateMemberBaseMember)

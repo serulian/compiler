@@ -191,7 +191,7 @@ func (sb *scopeBuilder) scopeThisLiteralExpression(node compilergraph.GraphNode)
 		return newScope().Invalid().GetScope()
 	}
 
-	tgMember, tgFound := sb.sg.tdg.GetMemberForSRGNode(srgMember.GraphNode)
+	tgMember, tgFound := sb.sg.tdg.GetMemberForSourceNode(srgMember.GraphNode)
 	if !tgFound {
 		sb.decorateWithError(node, "The 'this' keyword can only be used under non-static type members")
 		return newScope().Invalid().GetScope()
@@ -224,7 +224,7 @@ func (sb *scopeBuilder) scopeValLiteralExpression(node compilergraph.GraphNode) 
 
 	// Find the containing property.
 	srgMember, _ := sb.sg.srg.TryGetContainingMember(node)
-	tgMember, _ := sb.sg.tdg.GetMemberForSRGNode(srgMember.GraphNode)
+	tgMember, _ := sb.sg.tdg.GetMemberForSourceNode(srgMember.GraphNode)
 
 	// The value of the 'val' keyword is an instance of the property type.
 	return newScope().

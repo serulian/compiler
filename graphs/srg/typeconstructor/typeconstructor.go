@@ -206,12 +206,10 @@ func (stc *srgTypeConstructor) defineMember(member srg.SRGMember, parent typegra
 
 		// Operators have type function<DeclaredType>(parameters).
 		returnType, _ := stc.resolvePossibleType(member.Node(), member.DeclaredType, graph, reporter)
-
-		// Decorate the function with its return type.
-		dependentBuilder.CreateReturnable(member.Node(), returnType)
-
 		functionType := graph.NewTypeReference(graph.FunctionType(), returnType)
 		memberType, _ = stc.addSRGParameterTypes(member, functionType, graph, reporter)
+
+		// Note: Operators get decorated with a returnable by the construction system automatically.
 
 	case srg.FunctionMember:
 		// Functions are read-only.

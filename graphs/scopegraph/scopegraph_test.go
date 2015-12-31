@@ -14,7 +14,9 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/srg"
+	"github.com/serulian/compiler/graphs/srg/typeconstructor"
 	"github.com/serulian/compiler/graphs/typegraph"
+	"github.com/serulian/compiler/packageloader"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -719,7 +721,7 @@ func TestGraphs(t *testing.T) {
 		}
 
 		testSRG := srg.NewSRG(graph)
-		srgResult := testSRG.LoadAndParse("../typegraph/tests/testlib")
+		srgResult := testSRG.LoadAndParse(packageloader.Library{"../srg/typeconstructor/tests/testlib", false})
 
 		// Make sure we had no errors during construction.
 		if !assert.True(t, srgResult.Status, "Got error for SRG construction %v: %s", test.name, srgResult.Errors) {
@@ -727,13 +729,13 @@ func TestGraphs(t *testing.T) {
 		}
 
 		// Construct the type graph.
-		tdgResult := typegraph.BuildTypeGraph(testSRG)
+		tdgResult := typegraph.BuildTypeGraph(testSRG.Graph, typeconstructor.GetConstructor(testSRG))
 		if !assert.True(t, tdgResult.Status, "Got error for TypeGraph construction %v: %s", test.name, tdgResult.Errors) {
 			continue
 		}
 
 		// Construct the scope graph.
-		result := BuildScopeGraph(tdgResult.Graph)
+		result := BuildScopeGraph(testSRG, tdgResult.Graph)
 
 		if test.expectedError != "" {
 			if !assert.False(t, result.Status, "Expected failure in scoping on test : %v", test.name) {
