@@ -12,15 +12,11 @@ import (
 	"strings"
 
 	"github.com/serulian/compiler/compilercommon"
+	"github.com/serulian/compiler/packageloader"
 )
 
 // NodeBuilder is a function for building AST nodes.
 type NodeBuilder func(source compilercommon.InputSource, kind NodeType) AstNode
-
-// ImportHandler is a function called for registering imports encountered. The function
-// returns a reference string for the package or file location of the import after the
-// full set of packages is parsed.
-type ImportHandler func(importInfo PackageImport) string
 
 // tryParserFn is a function that attempts to build an AST node.
 type tryParserFn func() (AstNode, bool)
@@ -41,14 +37,14 @@ type commentedLexeme struct {
 
 // sourceParser holds the state of the parser.
 type sourceParser struct {
-	startIndex     bytePosition               // The start index for position decoration on nodes.
-	source         compilercommon.InputSource // the name of the input; used only for error reports
-	lex            *peekableLexer             // a reference to the lexer used for tokenization
-	builder        NodeBuilder                // the builder function for creating AstNode instances
-	nodes          *nodeStack                 // the stack of the current nodes
-	currentToken   commentedLexeme            // the current token
-	previousToken  commentedLexeme            // the previous token
-	importReporter ImportHandler              // callback invoked when an import is found
+	startIndex     bytePosition                // The start index for position decoration on nodes.
+	source         compilercommon.InputSource  // the name of the input; used only for error reports
+	lex            *peekableLexer              // a reference to the lexer used for tokenization
+	builder        NodeBuilder                 // the builder function for creating AstNode instances
+	nodes          *nodeStack                  // the stack of the current nodes
+	currentToken   commentedLexeme             // the current token
+	previousToken  commentedLexeme             // the previous token
+	importReporter packageloader.ImportHandler // callback invoked when an import is found
 }
 
 // lookaheadTracker holds state when conducting a multi-token lookahead in the parser.
@@ -67,13 +63,13 @@ var ignoredTokenTypes = map[tokenType]bool{
 }
 
 // Parse performs parsing of the given input string and returns the root AST node.
-func Parse(builder NodeBuilder, importReporter ImportHandler, source compilercommon.InputSource, input string) AstNode {
+func Parse(builder NodeBuilder, importReporter packageloader.ImportHandler, source compilercommon.InputSource, input string) AstNode {
 	p := buildParser(builder, importReporter, source, bytePosition(0), input)
 	return p.consumeTopLevel()
 }
 
 // parseExpression parses the given string as an expression.
-func parseExpression(builder NodeBuilder, importReporter ImportHandler, source compilercommon.InputSource, startIndex bytePosition, input string) (AstNode, commentedLexeme, bool) {
+func parseExpression(builder NodeBuilder, importReporter packageloader.ImportHandler, source compilercommon.InputSource, startIndex bytePosition, input string) (AstNode, commentedLexeme, bool) {
 	p := buildParser(builder, importReporter, source, startIndex, input)
 	p.consumeToken()
 	node, ok := p.tryConsumeExpression(consumeExpressionNoMaps)
@@ -81,7 +77,7 @@ func parseExpression(builder NodeBuilder, importReporter ImportHandler, source c
 }
 
 // buildParser returns a new sourceParser instance.
-func buildParser(builder NodeBuilder, importReporter ImportHandler, source compilercommon.InputSource, startIndex bytePosition, input string) *sourceParser {
+func buildParser(builder NodeBuilder, importReporter packageloader.ImportHandler, source compilercommon.InputSource, startIndex bytePosition, input string) *sourceParser {
 	l := peekable_lex(lex(source, input))
 	return &sourceParser{
 		startIndex:     startIndex,
@@ -100,9 +96,9 @@ func (p *sourceParser) reportImport(value string, kind string) string {
 	sal := compilercommon.NewSourceAndLocation(p.source, int(p.currentToken.position))
 
 	if strings.HasPrefix(value, "\"") || strings.HasPrefix(value, "`") {
-		return p.importReporter(PackageImport{kind, value[1 : len(value)-1], ImportTypeVCS, sal})
+		return p.importReporter(packageloader.PackageImport{kind, value[1 : len(value)-1], packageloader.ImportTypeVCS, sal})
 	} else {
-		return p.importReporter(PackageImport{kind, value, ImportTypeLocal, sal})
+		return p.importReporter(packageloader.PackageImport{kind, value, packageloader.ImportTypeLocal, sal})
 	}
 }
 

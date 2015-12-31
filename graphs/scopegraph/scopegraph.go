@@ -7,6 +7,7 @@
 package scopegraph
 
 import (
+	"log"
 	"sync"
 
 	"github.com/serulian/compiler/compilercommon"
@@ -16,6 +17,7 @@ import (
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/srg/typeconstructor"
 	"github.com/serulian/compiler/graphs/typegraph"
+	"github.com/serulian/compiler/packageloader"
 )
 
 // ScopeGraph represents the ScopeGraph layer and all its associated helper methods.
@@ -29,10 +31,50 @@ type ScopeGraph struct {
 
 // Results represents the results of building a scope graph.
 type Result struct {
-	Status   bool                            // Whether the construction succeeded.
-	Warnings []*compilercommon.SourceWarning // Any warnings encountered during construction.
-	Errors   []*compilercommon.SourceError   // Any errors encountered during construction.
-	Graph    *ScopeGraph                     // The constructed scope graph.
+	Status   bool                           // Whether the construction succeeded.
+	Warnings []compilercommon.SourceWarning // Any warnings encountered during construction.
+	Errors   []compilercommon.SourceError   // Any errors encountered during construction.
+	Graph    *ScopeGraph                    // The constructed scope graph.
+}
+
+// ParseAndBuildScopeGraph conducts full parsing and type graph construction for the project
+// starting at the given root source file.
+func ParseAndBuildScopeGraph(rootSourceFilePath string, libraries ...packageloader.Library) Result {
+	graph, err := compilergraph.NewGraph(rootSourceFilePath)
+	if err != nil {
+		log.Fatalf("Could not instantiate graph: %v", err)
+	}
+
+	// Create the SRG for the source and load it.
+	sourcegraph := srg.NewSRG(graph)
+	loader := packageloader.NewPackageLoader(rootSourceFilePath, sourcegraph.PackageLoaderHandler())
+	loaderResult := loader.Load(libraries...)
+	if !loaderResult.Status {
+		return Result{
+			Status:   false,
+			Errors:   loaderResult.Errors,
+			Warnings: loaderResult.Warnings,
+		}
+	}
+
+	// Construct the type graph.
+	typeResult := typegraph.BuildTypeGraph(sourcegraph.Graph, typeconstructor.GetConstructor(sourcegraph))
+	if !typeResult.Status {
+		return Result{
+			Status:   false,
+			Errors:   typeResult.Errors,
+			Warnings: combineWarnings(loaderResult.Warnings, typeResult.Warnings),
+		}
+	}
+
+	// Construct the scope graph.
+	scopeResult := BuildScopeGraph(sourcegraph, typeResult.Graph)
+	return Result{
+		Status:   scopeResult.Status,
+		Errors:   scopeResult.Errors,
+		Warnings: combineWarnings(loaderResult.Warnings, typeResult.Warnings, scopeResult.Warnings),
+		Graph:    scopeResult.Graph,
+	}
 }
 
 // SourceGraph returns the SRG behind this scope graph.
@@ -45,9 +87,20 @@ func (g *ScopeGraph) TypeGraph() *typegraph.TypeGraph {
 	return g.tdg
 }
 
+func combineWarnings(warnings ...[]compilercommon.SourceWarning) []compilercommon.SourceWarning {
+	var newWarnings = make([]compilercommon.SourceWarning, 0)
+	for _, warningsSlice := range warnings {
+		for _, warning := range warningsSlice {
+			newWarnings = append(newWarnings, warning)
+		}
+	}
+
+	return newWarnings
+}
+
 // BuildScopeGraph returns a new ScopeGraph that is populated from the given SRG and TypeGraph,
 // computing scope for all statements and expressions and semantic checking along the way.
-func BuildScopeGraph(srg *srg.SRG, tdg *typegraph.TypeGraph) *Result {
+func BuildScopeGraph(srg *srg.SRG, tdg *typegraph.TypeGraph) Result {
 	scopeGraph := &ScopeGraph{
 		srg:   srg,
 		tdg:   tdg,
@@ -93,7 +146,7 @@ func BuildScopeGraph(srg *srg.SRG, tdg *typegraph.TypeGraph) *Result {
 	wg.Wait()
 
 	// Collect any errors or warnings that were added.
-	return &Result{
+	return Result{
 		Status:   builder.Status,
 		Warnings: builder.GetWarnings(),
 		Errors:   builder.GetErrors(),

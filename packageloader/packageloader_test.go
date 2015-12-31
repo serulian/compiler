@@ -35,6 +35,9 @@ func (tt *testTracker) createHandler() SourceHandler {
 	return tt
 }
 
+func (tt *testTracker) Verify(packageMap map[string]*PackageInfo, errorReporter ErrorReporter, warningReporter WarningReporter) {
+}
+
 func (tt *testTracker) Parse(source compilercommon.InputSource, input string, importHandler ImportHandler) {
 	tt.pathsImported[string(source)] = true
 

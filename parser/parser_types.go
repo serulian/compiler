@@ -8,8 +8,6 @@ package parser
 
 import (
 	"strconv"
-
-	"github.com/serulian/compiler/compilercommon"
 )
 
 type AstNode interface {

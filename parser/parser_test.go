@@ -14,6 +14,7 @@ import (
 	"testing"
 
 	"github.com/serulian/compiler/compilercommon"
+	"github.com/serulian/compiler/packageloader"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -217,7 +218,7 @@ var parserTests = []parserTest{
 	{"comment parens test", "comment/parens"},
 }
 
-func reportImport(path PackageImport) string {
+func reportImport(path packageloader.PackageImport) string {
 	return "location:" + path.Path
 }
 

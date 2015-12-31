@@ -19,34 +19,34 @@ type SourceWarning struct {
 	sal     SourceAndLocation // The source and location of the error.
 }
 
-func (sw *SourceWarning) Warning() string {
+func (sw SourceWarning) Warning() string {
 	return sw.message
 }
 
-func (sw *SourceWarning) String() string {
+func (sw SourceWarning) String() string {
 	return sw.message
 }
 
-func (sw *SourceWarning) SourceAndLocation() SourceAndLocation {
+func (sw SourceWarning) SourceAndLocation() SourceAndLocation {
 	return sw.sal
 }
 
 // SourcePositionWarningf returns a new SourceWarning for the given source, byte position and message.
-func SourcePositionWarningf(source InputSource, bytePosition int, msg string, args ...interface{}) *SourceWarning {
+func SourcePositionWarningf(source InputSource, bytePosition int, msg string, args ...interface{}) SourceWarning {
 	return SourceWarningf(NewSourceAndLocation(source, bytePosition), msg, args...)
 }
 
 // SourceWarningf returns a new SourceWarning for the given location and message.
-func SourceWarningf(sal SourceAndLocation, msg string, args ...interface{}) *SourceWarning {
-	return &SourceWarning{
+func SourceWarningf(sal SourceAndLocation, msg string, args ...interface{}) SourceWarning {
+	return SourceWarning{
 		message: fmt.Sprintf(msg, args...),
 		sal:     sal,
 	}
 }
 
 // NewSourceWarning returns a new SourceWarning for the given location and message.
-func NewSourceWarning(sal SourceAndLocation, msg string) *SourceWarning {
-	return &SourceWarning{
+func NewSourceWarning(sal SourceAndLocation, msg string) SourceWarning {
+	return SourceWarning{
 		message: msg,
 		sal:     sal,
 	}

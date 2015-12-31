@@ -92,7 +92,8 @@ func TestGraphs(t *testing.T) {
 		}
 
 		testSRG := srg.NewSRG(graph)
-		srgResult := testSRG.LoadAndParse(packageloader.Library{"tests/testlib", false})
+		loader := packageloader.NewPackageLoader(graph.RootSourceFilePath, testSRG.PackageLoaderHandler())
+		srgResult := loader.Load(packageloader.Library{"tests/testlib", false, ""})
 
 		// Make sure we had no errors during construction.
 		assert.True(t, srgResult.Status, "Got error for SRG construction %v: %s", test.name, srgResult.Errors)
@@ -135,7 +136,8 @@ func TestLookupReturnType(t *testing.T) {
 	}
 
 	testSRG := srg.NewSRG(graph)
-	srgResult := testSRG.LoadAndParse(packageloader.Library{"tests/testlib", false})
+	loader := packageloader.NewPackageLoader(graph.RootSourceFilePath, testSRG.PackageLoaderHandler())
+	srgResult := loader.Load(packageloader.Library{"tests/testlib", false, ""})
 	if !assert.True(t, srgResult.Status, "Got error for SRG construction: %v", srgResult.Errors) {
 		return
 	}

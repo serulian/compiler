@@ -12,11 +12,7 @@ import (
 	"testing"
 
 	"github.com/serulian/compiler/compilercommon"
-	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph"
-	"github.com/serulian/compiler/graphs/srg"
-	"github.com/serulian/compiler/graphs/srg/typeconstructor"
-	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/packageloader"
 
 	"github.com/stretchr/testify/assert"
@@ -103,32 +99,12 @@ func TestGenerator(t *testing.T) {
 			continue
 		}
 
-		graph, err := compilergraph.NewGraph(entrypointFile)
-		if err != nil {
-			t.Errorf("Got error on test %s: %v", test.name, err)
-		}
-
-		testSRG := srg.NewSRG(graph)
-		srgResult := testSRG.LoadAndParse(packageloader.Library{"../../graphs/srg/typeconstructor/tests/testlib", false})
-
-		// Make sure we had no errors during construction.
-		if !assert.True(t, srgResult.Status, "Got error for SRG construction %v: %s", test.name, srgResult.Errors) {
-			continue
-		}
-
-		// Construct the type graph.
-		tdgResult := typegraph.BuildTypeGraph(testSRG.Graph, typeconstructor.GetConstructor(testSRG))
-		if !assert.True(t, tdgResult.Status, "Got error for TypeGraph construction %v: %s", test.name, tdgResult.Errors) {
-			continue
-		}
-
-		// Construct the scope graph.
-		result := scopegraph.BuildScopeGraph(testSRG, tdgResult.Graph)
+		result := scopegraph.ParseAndBuildScopeGraph(entrypointFile, packageloader.Library{"../../graphs/srg/typeconstructor/tests/testlib", false, ""})
 		if !assert.True(t, result.Status, "Got error for ScopeGraph construction %v: %s", test.name, result.Errors) {
 			continue
 		}
 
-		module, found := tdgResult.Graph.LookupModule(compilercommon.InputSource(entrypointFile))
+		module, found := result.Graph.TypeGraph().LookupModule(compilercommon.InputSource(entrypointFile))
 		if !assert.True(t, found, "Could not find entrypoint module %s for test: %s", entrypointFile, test.name) {
 			continue
 		}

@@ -6,18 +6,13 @@
 package builder
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"path"
 
 	"github.com/serulian/compiler/compilercommon"
-	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5"
 	"github.com/serulian/compiler/graphs/scopegraph"
-	"github.com/serulian/compiler/graphs/srg"
-	"github.com/serulian/compiler/graphs/srg/typeconstructor"
-	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/packageloader"
 
 	"github.com/fatih/color"
@@ -30,7 +25,7 @@ var CORE_LIBRARY = packageloader.Library{
 	IsSCM:     true,
 }
 
-func outputWarnings(warnings []*compilercommon.SourceWarning) {
+func outputWarnings(warnings []compilercommon.SourceWarning) {
 	highlight := color.New(color.FgYellow, color.Bold)
 	location := color.New(color.FgWhite)
 	message := color.New(color.FgHiWhite)
@@ -42,7 +37,7 @@ func outputWarnings(warnings []*compilercommon.SourceWarning) {
 	}
 }
 
-func outputErrors(errors []*compilercommon.SourceError) {
+func outputErrors(errors []compilercommon.SourceError) {
 	highlight := color.New(color.FgRed, color.Bold)
 	location := color.New(color.FgWhite)
 	message := color.New(color.FgHiWhite)
@@ -61,34 +56,9 @@ func BuildSource(rootSourceFilePath string, debug bool) bool {
 		log.SetOutput(ioutil.Discard)
 	}
 
-	// Initialize the project graph.
-	graph, err := compilergraph.NewGraph(rootSourceFilePath)
-	if err != nil {
-		fmt.Printf("Error initializating compiler graph: %v", err)
-		return false
-	}
-
-	// Parse all source into the SRG.
-	projectSRG := srg.NewSRG(graph)
-	srgResult := projectSRG.LoadAndParse(CORE_LIBRARY)
-
-	outputWarnings(srgResult.Warnings)
-	if !srgResult.Status {
-		outputErrors(srgResult.Errors)
-		return false
-	}
-
-	// Build the type graph.
-	tgResult := typegraph.BuildTypeGraph(projectSRG.Graph, typeconstructor.GetConstructor(projectSRG))
-
-	outputWarnings(tgResult.Warnings)
-	if !tgResult.Status {
-		outputErrors(tgResult.Errors)
-		return false
-	}
-
-	// Scope the program.
-	scopeResult := scopegraph.BuildScopeGraph(projectSRG, tgResult.Graph)
+	// Build a scope graph for the project. This will conduct parsing and type graph
+	// construction on our behalf.
+	scopeResult := scopegraph.ParseAndBuildScopeGraph(rootSourceFilePath, CORE_LIBRARY)
 
 	outputWarnings(scopeResult.Warnings)
 	if !scopeResult.Status {

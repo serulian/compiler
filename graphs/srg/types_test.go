@@ -8,29 +8,13 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/serulian/compiler/compilergraph"
 	"github.com/stretchr/testify/assert"
 )
 
 var _ = fmt.Printf
 
-func loadSRG(t *testing.T, path string) *SRG {
-	graph, err := compilergraph.NewGraph(path)
-	if err != nil {
-		t.Errorf("%v", err)
-	}
-
-	testSRG := NewSRG(graph)
-	result := testSRG.LoadAndParse()
-	if !result.Status {
-		t.Errorf("Expected successful parse")
-	}
-
-	return testSRG
-}
-
 func TestBasicTypes(t *testing.T) {
-	testSRG := loadSRG(t, "tests/basic/basic.seru")
+	testSRG := getSRG(t, "tests/basic/basic.seru")
 
 	// Ensure that both classes were loaded.
 	types := testSRG.GetTypes()
@@ -59,7 +43,7 @@ func TestBasicTypes(t *testing.T) {
 }
 
 func TestGenericType(t *testing.T) {
-	testSRG := loadSRG(t, "tests/generics/generics.seru")
+	testSRG := getSRG(t, "tests/generics/generics.seru")
 	genericType := testSRG.GetTypes()[0]
 
 	assert.Equal(t, ClassType, genericType.TypeKind(), "Expected class as kind of type")
@@ -83,7 +67,7 @@ func TestGenericType(t *testing.T) {
 }
 
 func TestInheritance(t *testing.T) {
-	testSRG := loadSRG(t, "tests/inheritance/inheritance.seru")
+	testSRG := getSRG(t, "tests/inheritance/inheritance.seru")
 	inheritsType := testSRG.GetTypes()[0]
 
 	assert.Equal(t, ClassType, inheritsType.TypeKind(), "Expected class as kind of type")

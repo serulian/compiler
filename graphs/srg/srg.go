@@ -39,8 +39,8 @@ func NewSRG(graph *compilergraph.SerulianGraph) *SRG {
 
 // ResolveAliasedType returns the type with the global alias, if any.
 func (g *SRG) ResolveAliasedType(name string) (SRGType, bool) {
-	found, ok := g.aliasMap[name]
-	return found, ok
+	aliased, ok := g.aliasMap[name]
+	return aliased, ok
 }
 
 // GetNode returns the node with the given ID in this layer or panics.
@@ -58,6 +58,11 @@ func (g *SRG) NodeLocation(node compilergraph.GraphNode) compilercommon.SourceAn
 	return salForNode(node)
 }
 
+// PackageLoaderHandler returns a SourceHandler for populating the SRG via a package loader.
+func (g *SRG) PackageLoaderHandler() packageloader.SourceHandler {
+	return &srgSourceHandler{g}
+}
+
 // FindVariableTypeWithName returns the SRGTypeRef for the declared type of the
 // variable in the SRG with the given name.
 //
@@ -71,78 +76,4 @@ func (g *SRG) FindVariableTypeWithName(name string) SRGTypeRef {
 		GetNode()
 
 	return SRGTypeRef{typerefNode, g}
-}
-
-// LoadAndParse attemptps to load and parse the transition closure of the source code
-// found starting at the root source file.
-func (g *SRG) LoadAndParse(libraries ...packageloader.Library) *packageloader.LoadResult {
-	// Load and parse recursively.
-	packageLoader := packageloader.NewPackageLoader(g.Graph.RootSourceFilePath, g.buildASTNode)
-	result := packageLoader.Load(libraries...)
-
-	// Save the package map.
-	g.packageMap = result.PackageMap
-
-	// Collect any parse errors found and add them to the result.
-	it := g.findAllNodes(parser.NodeTypeError).BuildNodeIterator(
-		parser.NodePredicateErrorMessage,
-		parser.NodePredicateSource,
-		parser.NodePredicateStartRune)
-
-	for it.Next() {
-		sal := salForPredicates(it.Values())
-		result.Errors = append(result.Errors, compilercommon.NewSourceError(sal, it.Values()[parser.NodePredicateErrorMessage]))
-		result.Status = false
-	}
-
-	// Verify all 'from ... import ...' are valid.
-	if result.Status {
-		it := g.findAllNodes(parser.NodeTypeImport).
-			Has(parser.NodeImportPredicateSubsource).
-			BuildNodeIterator(parser.NodeImportPredicateSubsource,
-			parser.NodeImportPredicateSource,
-			parser.NodePredicateSource,
-			parser.NodePredicateStartRune)
-
-		for it.Next() {
-			// Load the package information.
-			packageInfo := g.getPackageForImport(it.Node())
-
-			// Search for the subsource.
-			subsource := it.Values()[parser.NodeImportPredicateSubsource]
-			source := it.Values()[parser.NodeImportPredicateSource]
-
-			_, found := packageInfo.FindTypeOrMemberByName(subsource, ModuleResolveExportedOnly)
-			if !found {
-				sal := salForPredicates(it.Values())
-				result.Errors = append(result.Errors, compilercommon.SourceErrorf(sal, "Import '%s' not found under package '%s'", subsource, source))
-				result.Status = false
-			}
-		}
-	}
-
-	// Build the map for globally aliased types.
-	ait := g.findAllNodes(parser.NodeTypeDecorator).
-		Has(parser.NodeDecoratorPredicateInternal, aliasInternalDecoratorName).
-		BuildNodeIterator()
-
-	for ait.Next() {
-		// Find the name of the alias.
-		decorator := ait.Node()
-		parameter, ok := decorator.TryGetNode(parser.NodeDecoratorPredicateParameter)
-		if !ok || parameter.Kind != parser.NodeStringLiteralExpression {
-			sal := salForNode(decorator)
-			result.Errors = append(result.Errors, compilercommon.SourceErrorf(sal, "Alias decorator requires a single string literal parameter"))
-			result.Status = false
-			continue
-		}
-
-		var aliasName = parameter.Get(parser.NodeStringLiteralExpressionValue)
-		aliasName = aliasName[1 : len(aliasName)-1] // Remove the quotes.
-
-		aliasedType := SRGType{decorator.GetIncomingNode(parser.NodeTypeDefinitionDecorator), g}
-		g.aliasMap[aliasName] = aliasedType
-	}
-
-	return result
 }

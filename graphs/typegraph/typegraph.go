@@ -32,10 +32,10 @@ type TypeGraph struct {
 
 // Results represents the results of building a type graph.
 type Result struct {
-	Status   bool                            // Whether the construction succeeded.
-	Warnings []*compilercommon.SourceWarning // Any warnings encountered during construction.
-	Errors   []*compilercommon.SourceError   // Any errors encountered during construction.
-	Graph    *TypeGraph                      // The constructed type graph.
+	Status   bool                           // Whether the construction succeeded.
+	Warnings []compilercommon.SourceWarning // Any warnings encountered during construction.
+	Errors   []compilercommon.SourceError   // Any errors encountered during construction.
+	Graph    *TypeGraph                     // The constructed type graph.
 }
 
 // BuildTypeGraph returns a new TypeGraph that is populated from the given constructors.
@@ -50,8 +50,8 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 	// Create a struct to hold the results of the construction.
 	result := &Result{
 		Status:   true,
-		Warnings: make([]*compilercommon.SourceWarning, 0),
-		Errors:   make([]*compilercommon.SourceError, 0),
+		Warnings: make([]compilercommon.SourceWarning, 0),
+		Errors:   make([]compilercommon.SourceError, 0),
 		Graph:    typeGraph,
 	}
 

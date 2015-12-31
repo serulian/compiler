@@ -16,7 +16,7 @@ import (
 
 var _ = fmt.Printf
 
-func getSRG(t *testing.T, path string, libPaths ...string) *SRG {
+func loadSRG(t *testing.T, path string, libPaths ...string) (*SRG, packageloader.LoadResult) {
 	graph, err := compilergraph.NewGraph(path)
 	if err != nil {
 		t.Errorf("%v", err)
@@ -24,11 +24,18 @@ func getSRG(t *testing.T, path string, libPaths ...string) *SRG {
 
 	libraries := make([]packageloader.Library, len(libPaths))
 	for index, libPath := range libPaths {
-		libraries[index] = packageloader.Library{libPath, false}
+		libraries[index] = packageloader.Library{libPath, false, ""}
 	}
 
 	testSRG := NewSRG(graph)
-	result := testSRG.LoadAndParse(libraries...)
+	loader := packageloader.NewPackageLoader(graph.RootSourceFilePath, testSRG.PackageLoaderHandler())
+	result := loader.Load(libraries...)
+	return testSRG, result
+}
+
+func getSRG(t *testing.T, path string, libPaths ...string) *SRG {
+	testSRG, result := loadSRG(t, path, libPaths...)
+
 	if !result.Status {
 		t.Errorf("Expected successful parse: %v", result.Errors)
 	}

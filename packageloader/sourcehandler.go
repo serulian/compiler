@@ -20,6 +20,9 @@ type SourceHandler interface {
 
 	// Parse parses the given source file.
 	Parse(source compilercommon.InputSource, input string, importHandler ImportHandler)
+
+	// Verify performs verification of the loaded source.
+	Verify(packageMap map[string]*PackageInfo, errorReporter ErrorReporter, warningReporter WarningReporter)
 }
 
 // PackageImportType identifies the types of imports.
@@ -42,3 +45,9 @@ type PackageImport struct {
 // returns a reference string for the package or file location of the import after the
 // full set of packages is parsed.
 type ImportHandler func(importInfo PackageImport) string
+
+// WarningReporter is a callback for reporting any warnings during verification.
+type WarningReporter func(warning compilercommon.SourceWarning)
+
+// ErrorReporter is a callback for reporting any errors during verification.
+type ErrorReporter func(err compilercommon.SourceError)

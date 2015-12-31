@@ -103,7 +103,7 @@ var memberTests = []memberTest{
 }
 
 func TestModuleMembers(t *testing.T) {
-	testSRG := loadSRG(t, "tests/members/module.seru")
+	testSRG := getSRG(t, "tests/members/module.seru")
 
 	// Ensure both module-level members are found.
 	module, _ := testSRG.FindModuleBySource(compilercommon.InputSource("tests/members/module.seru"))
@@ -116,7 +116,7 @@ func TestModuleMembers(t *testing.T) {
 
 func TestTypeMembers(t *testing.T) {
 	for _, test := range memberTests {
-		testSRG := loadSRG(t, fmt.Sprintf("tests/members/%s.seru", test.input))
+		testSRG := getSRG(t, fmt.Sprintf("tests/members/%s.seru", test.input))
 
 		// Ensure that the type was loaded.
 		module, _ := testSRG.FindModuleBySource(compilercommon.InputSource(fmt.Sprintf("tests/members/%s.seru", test.input)))

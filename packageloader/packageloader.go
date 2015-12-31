@@ -62,8 +62,8 @@ func (p *pathInformation) String() string {
 type PackageLoader struct {
 	rootSourceFile string // The root source file location.
 
-	errors   chan *compilercommon.SourceError   // Errors are reported on this channel
-	warnings chan *compilercommon.SourceWarning // Warnings are reported on this channel
+	errors   chan compilercommon.SourceError   // Errors are reported on this channel
+	warnings chan compilercommon.SourceWarning // Warnings are reported on this channel
 
 	handlers map[string]SourceHandler // The handlers for each of the supported package kinds.
 
@@ -86,10 +86,10 @@ type Library struct {
 // LoadResult contains the result of attempting to load all packages and source files for this
 // project.
 type LoadResult struct {
-	Status     bool                            // True on success, false otherwise
-	Errors     []*compilercommon.SourceError   // The errors encountered, if any
-	Warnings   []*compilercommon.SourceWarning // The warnings encountered, if any
-	PackageMap map[string]*PackageInfo         // Map of packages loaded
+	Status     bool                           // True on success, false otherwise
+	Errors     []compilercommon.SourceError   // The errors encountered, if any
+	Warnings   []compilercommon.SourceWarning // The warnings encountered, if any
+	PackageMap map[string]*PackageInfo        // Map of packages loaded
 }
 
 // NewPackageLoader creates and returns a new package loader for the given path.
@@ -102,8 +102,8 @@ func NewPackageLoader(rootSourceFile string, handlers ...SourceHandler) *Package
 	return &PackageLoader{
 		rootSourceFile: rootSourceFile,
 
-		errors:   make(chan *compilercommon.SourceError),
-		warnings: make(chan *compilercommon.SourceWarning),
+		errors:   make(chan compilercommon.SourceError),
+		warnings: make(chan compilercommon.SourceWarning),
 
 		handlers: handlersMap,
 
@@ -117,15 +117,15 @@ func NewPackageLoader(rootSourceFile string, handlers ...SourceHandler) *Package
 
 // Load performs the loading of a Serulian package found at the directory path.
 // Any libraries specified will be loaded as well.
-func (p *PackageLoader) Load(libraries ...Library) *LoadResult {
+func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 	// Start the loading goroutine.
 	go p.loadAndParse()
 
 	// Start the error/warning collection goroutine.
 	result := &LoadResult{
 		Status:   true,
-		Errors:   make([]*compilercommon.SourceError, 0),
-		Warnings: make([]*compilercommon.SourceWarning, 0),
+		Errors:   make([]compilercommon.SourceError, 0),
+		Warnings: make([]compilercommon.SourceWarning, 0),
 	}
 
 	go p.collectIssues(result)
@@ -154,7 +154,24 @@ func (p *PackageLoader) Load(libraries ...Library) *LoadResult {
 
 	// Save the package map.
 	result.PackageMap = p.packageMap
-	return result
+
+	// Perform verification in all handlers.
+	if len(result.Errors) == 0 {
+		errorReporter := func(err compilercommon.SourceError) {
+			result.Errors = append(result.Errors, err)
+			result.Status = false
+		}
+
+		warningReporter := func(warning compilercommon.SourceWarning) {
+			result.Warnings = append(result.Warnings, warning)
+		}
+
+		for _, handler := range p.handlers {
+			handler.Verify(p.packageMap, errorReporter, warningReporter)
+		}
+	}
+
+	return *result
 }
 
 // pushPath adds a path to be processed by the package loader.
@@ -321,7 +338,12 @@ func (p *PackageLoader) conductParsing(sourceFile pathInformation) {
 
 // handleImport queues an import found in a source file.
 func (p *PackageLoader) handleImport(importInformation PackageImport) string {
-	handler, _ := p.handlers[importInformation.Kind]
+	handler, hasHandler := p.handlers[importInformation.Kind]
+	if !hasHandler {
+		p.errors <- compilercommon.SourceErrorf(importInformation.SourceLocation, "Unknown kind of import '%s'", importInformation.Kind)
+		return ""
+	}
+
 	sourcePath := string(importInformation.SourceLocation.Source())
 
 	if importInformation.ImportType == ImportTypeVCS {
