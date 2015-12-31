@@ -115,10 +115,8 @@ func (p *Pather) GetTypePath(typedecl typegraph.TGTypeDecl) string {
 func (p *Pather) GetModulePath(module typegraph.TGModule) string {
 	// We create the exported path based on the location of this module's source file relative
 	// to the entrypoint file.
-	srgModule, _ := module.SRGModule()
-
 	basePath := filepath.Dir(p.graph.RootSourceFilePath)
-	rel, err := filepath.Rel(basePath, string(srgModule.InputSource()))
+	rel, err := filepath.Rel(basePath, module.Path())
 	if err != nil {
 		panic(err)
 	}

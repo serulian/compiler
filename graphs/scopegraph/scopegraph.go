@@ -117,7 +117,7 @@ func (sg *ScopeGraph) GetScope(srgNode compilergraph.GraphNode) (proto.ScopeInfo
 }
 
 // resolveSRGTypeRef builds an SRG type reference into a resolved type reference.
-func (sg *ScopeGraph) resolveSRGTypeRef(srgTypeRef srg.SRGTypeRef) (typegraph.TypeReference, error) {
+func (sg *ScopeGraph) ResolveSRGTypeRef(srgTypeRef srg.SRGTypeRef) (typegraph.TypeReference, error) {
 	constructor := typeconstructor.GetConstructor(sg.srg)
 	return constructor.BuildTypeRef(srgTypeRef, sg.tdg)
 }

@@ -67,7 +67,7 @@ func (sb *scopeBuilder) scopeGenericSpecifierExpression(node compilergraph.Graph
 		}
 
 		// Build the type to use in place of the generic.
-		replacementType, gerr := sb.sg.resolveSRGTypeRef(sb.sg.srg.GetTypeRef(git.Node()))
+		replacementType, gerr := sb.sg.ResolveSRGTypeRef(sb.sg.srg.GetTypeRef(git.Node()))
 		if gerr != nil {
 			sb.decorateWithError(node, "Error on type #%v in generic specifier: %v", gerr, genericIndex+1)
 			return newScope().Invalid().GetScope()
@@ -118,7 +118,7 @@ func (sb *scopeBuilder) scopeCastExpression(node compilergraph.GraphNode) proto.
 
 	// Resolve the type reference.
 	typeref := sb.sg.srg.GetTypeRef(node.GetNode(parser.NodeCastExpressionType))
-	castType, rerr := sb.sg.resolveSRGTypeRef(typeref)
+	castType, rerr := sb.sg.ResolveSRGTypeRef(typeref)
 	if rerr != nil {
 		sb.decorateWithError(node, "Invalid cast type found: %v", rerr)
 		return newScope().Invalid().GetScope()

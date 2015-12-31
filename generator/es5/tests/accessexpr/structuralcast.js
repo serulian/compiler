@@ -20,7 +20,7 @@ $module('structuralcast', function () {
       var init = [];
       init.push(function () {
         var $this = this;
-        return $g.structuralcast.BaseClass($g.____graphs.typegraph.tests.testlib.basictypes.Integer).new().then(function (value) {
+        return $g.structuralcast.BaseClass($g.____graphs.srg.typeconstructor.tests.testlib.basictypes.Integer).new().then(function (value) {
           $this.BaseClass$Integer = value;
         });
       }());

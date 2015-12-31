@@ -26,7 +26,8 @@ func (gen *es5generator) generateImplementedMembers(typeOrModule typegraph.TGTyp
 			continue
 		}
 
-		if !member.HasImplementation() {
+		srgMember, hasSRGMember := gen.getSRGMember(member)
+		if !hasSRGMember || !srgMember.HasImplementation() {
 			continue
 		}
 
@@ -38,14 +39,14 @@ func (gen *es5generator) generateImplementedMembers(typeOrModule typegraph.TGTyp
 
 // generateImplementedAliasedMember generates the given member into an alias in ES5.
 func (gen *es5generator) generateImplementedAliasedMember(member typegraph.TGMember) string {
-	srgMember, _ := member.SRGMember()
+	srgMember, _ := gen.getSRGMember(member)
 	generating := generatingMember{member, srgMember, gen}
 	return gen.templater.Execute("aliasedmember", aliasedMemberTemplateStr, generating)
 }
 
 // generateImplementedMember generates the given member into ES5.
 func (gen *es5generator) generateImplementedMember(member typegraph.TGMember) string {
-	srgMember, _ := member.SRGMember()
+	srgMember, _ := gen.getSRGMember(member)
 	generating := generatingMember{member, srgMember, gen}
 
 	switch srgMember.MemberKind() {

@@ -133,7 +133,7 @@ func (sm *stateMachine) generateGenericSpecifierExpression(node compilergraph.Gr
 
 	var genericTypeStrings = make([]string, 0)
 	for git.Next() {
-		replacementType, _ := sm.scopegraph.TypeGraph().BuildTypeRef(sm.scopegraph.SourceGraph().GetTypeRef(git.Node()))
+		replacementType, _ := sm.scopegraph.ResolveSRGTypeRef(sm.scopegraph.SourceGraph().GetTypeRef(git.Node()))
 		genericTypeStrings = append(genericTypeStrings, sm.pather.TypeReferenceCall(replacementType))
 	}
 

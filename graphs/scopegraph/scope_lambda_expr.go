@@ -57,7 +57,7 @@ func (sb *scopeBuilder) scopeFullLambaExpression(node compilergraph.GraphNode) p
 	// Check for a defined return type for the lambda expression.
 	returnTypeNode, hasReturnType := node.TryGetNode(parser.NodeLambdaExpressionReturnType)
 	if hasReturnType {
-		resolvedReturnType, rerr := sb.sg.resolveSRGTypeRef(sb.sg.srg.GetTypeRef(returnTypeNode))
+		resolvedReturnType, rerr := sb.sg.ResolveSRGTypeRef(sb.sg.srg.GetTypeRef(returnTypeNode))
 		if rerr != nil {
 			panic(rerr)
 		}
@@ -81,7 +81,7 @@ func (sb *scopeBuilder) scopeFullLambaExpression(node compilergraph.GraphNode) p
 
 	for pit.Next() {
 		parameterTypeNode := pit.Node().GetNode(parser.NodeParameterType)
-		parameterType, perr := sb.sg.resolveSRGTypeRef(sb.sg.srg.GetTypeRef(parameterTypeNode))
+		parameterType, perr := sb.sg.ResolveSRGTypeRef(sb.sg.srg.GetTypeRef(parameterTypeNode))
 		if perr != nil {
 			panic(perr)
 		}

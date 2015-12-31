@@ -324,6 +324,7 @@ type MemberBuilder struct {
 	isOperator     bool                    // Whether the member being defined is an operator.
 	name           string                  // The name of the member.
 	sourceNode     compilergraph.GraphNode // The node for the generic in the source graph.
+	hasSourceNode  bool                    // Whether there is a source node.
 	memberGenerics []memberGeneric         // The generics on the member.
 }
 
@@ -363,6 +364,7 @@ func (mb *MemberBuilder) Name(name string) *MemberBuilder {
 // SourceNode sets the source node for the member in the source graph.
 func (mb *MemberBuilder) SourceNode(sourceNode compilergraph.GraphNode) *MemberBuilder {
 	mb.sourceNode = sourceNode
+	mb.hasSourceNode = true
 	return mb
 }
 
@@ -409,7 +411,10 @@ func (mb *MemberBuilder) InitialDefine() (*dependentMemberBuilder, IssueReporter
 		memberNode.Decorate(NodePredicateMemberName, name)
 	}
 
-	memberNode.Connect(NodePredicateSource, mb.sourceNode)
+	if mb.hasSourceNode {
+		memberNode.Connect(NodePredicateSource, mb.sourceNode)
+	}
+
 	memberNode.Decorate(NodePredicateModulePath, mb.parent.ParentModule().Get(NodePredicateModulePath))
 
 	// Decorate the member with its generics.

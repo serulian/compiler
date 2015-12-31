@@ -19,6 +19,11 @@ func (tn TGModule) Name() string {
 	return tn.GraphNode.Get(NodePredicateModuleName)
 }
 
+// Path returns the path of the underlying module.
+func (tn TGModule) Path() string {
+	return tn.GraphNode.Get(NodePredicateModulePath)
+}
+
 // Title returns the human readable name of this type ("Module")
 func (tn TGModule) Title() string {
 	return "Module"

@@ -187,7 +187,7 @@ func (nsi *namedScopeInfo) ValueOrGenericType() typegraph.TypeReference {
 		// TODO: We should probably cache this in the type graph instead of resolving here.
 		srg := nsi.sb.sg.srg
 		parameterTypeNode := nsi.srgInfo.GraphNode.GetNode(parser.NodeParameterType)
-		typeref, _ := nsi.sb.sg.resolveSRGTypeRef(srg.GetTypeRef(parameterTypeNode))
+		typeref, _ := nsi.sb.sg.ResolveSRGTypeRef(srg.GetTypeRef(parameterTypeNode))
 		return typeref
 
 	case srg.NamedScopeValue:

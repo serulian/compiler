@@ -29,8 +29,11 @@ func (gen *es5generator) generateType(typedef typegraph.TGTypeDecl) string {
 	case typegraph.ClassType:
 		return gen.templater.Execute("class", classTemplateStr, generating)
 
-	case typegraph.InterfaceType:
+	case typegraph.ImplicitInterfaceType:
 		return gen.templater.Execute("interface", interfaceTemplateStr, generating)
+
+	case typegraph.ExternalInternalType:
+		return ""
 
 	default:
 		panic("Unknown typedef kind")

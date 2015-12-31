@@ -23,8 +23,8 @@ $module('genericspecifier', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            $g.genericspecifier.SomeFunction($g.____graphs.typegraph.tests.testlib.basictypes.Integer, $g.____graphs.typegraph.tests.testlib.basictypes.String);
-            $g.genericspecifier.SomeClass($g.____graphs.typegraph.tests.testlib.basictypes.Boolean);
+            $g.genericspecifier.SomeFunction($g.____graphs.srg.typeconstructor.tests.testlib.basictypes.Integer, $g.____graphs.srg.typeconstructor.tests.testlib.basictypes.String);
+            $g.genericspecifier.SomeClass($g.____graphs.srg.typeconstructor.tests.testlib.basictypes.Boolean);
             $state.current = -1;
             return;
 

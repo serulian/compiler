@@ -32,7 +32,7 @@ func (sm *stateMachine) generatePromiseExpression(node compilergraph.GraphNode, 
 	if hasDestination {
 		// TODO: handle multiple assignment
 		nameScope, _ := sm.scopegraph.GetScope(destinationNode)
-		namedRefNode, _ := nameScope.NamedReferenceNode(sm.scopegraph.TypeGraph())
+		namedRefNode, _ := nameScope.NamedReferenceNode(sm.scopegraph.SourceGraph(), sm.scopegraph.TypeGraph())
 		resultVariable = sm.addVariableMapping(namedRefNode)
 	} else {
 		resultVariable = sm.addVariable("$awaitresult")

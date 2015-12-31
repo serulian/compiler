@@ -17,7 +17,7 @@ func (gen *es5generator) generateVariables(typeOrModule typegraph.TGTypeOrModule
 	memberMap := ordered_map.NewOrderedMap()
 	members := typeOrModule.Members()
 	for _, member := range members {
-		srgMember, hasSRGMember := member.SRGMember()
+		srgMember, hasSRGMember := gen.getSRGMember(member)
 		if !hasSRGMember || srgMember.MemberKind() != srg.VarMember {
 			continue
 		}
@@ -40,7 +40,7 @@ func (gen *es5generator) generateVariables(typeOrModule typegraph.TGTypeOrModule
 
 // generateVariable generates the given variable into ES5.
 func (gen *es5generator) generateVariable(member typegraph.TGMember) string {
-	srgMember, _ := member.SRGMember()
+	srgMember, _ := gen.getSRGMember(member)
 	_, hasInitializer := srgMember.Initializer()
 	if !hasInitializer {
 		// Skip variables with no initializers, as they'll just default to null under ES5 anyway.
