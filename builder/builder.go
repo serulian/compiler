@@ -16,6 +16,7 @@ import (
 	"github.com/serulian/compiler/generator/es5"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/graphs/srg"
+	"github.com/serulian/compiler/graphs/srg/typeconstructor"
 	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/packageloader"
 
@@ -78,7 +79,7 @@ func BuildSource(rootSourceFilePath string, debug bool) bool {
 	}
 
 	// Build the type graph.
-	tgResult := typegraph.BuildTypeGraph(projectSRG)
+	tgResult := typegraph.BuildTypeGraph(projectSRG.Graph, typeconstructor.GetConstructor(projectSRG))
 
 	outputWarnings(tgResult.Warnings)
 	if !tgResult.Status {
@@ -87,7 +88,7 @@ func BuildSource(rootSourceFilePath string, debug bool) bool {
 	}
 
 	// Scope the program.
-	scopeResult := scopegraph.BuildScopeGraph(tgResult.Graph)
+	scopeResult := scopegraph.BuildScopeGraph(projectSRG, tgResult.Graph)
 
 	outputWarnings(scopeResult.Warnings)
 	if !scopeResult.Status {
