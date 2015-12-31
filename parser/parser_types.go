@@ -22,22 +22,6 @@ type AstNode interface {
 	Decorate(property string, value string) AstNode
 }
 
-// PackageImportType identifies the types of imports.
-type PackageImportType int
-
-const (
-	ImportTypeLocal PackageImportType = iota
-	ImportTypeVCS
-)
-
-// PackageImport defines the import of a package.
-type PackageImport struct {
-	Kind           string // The kind of the import. Will be empty for normal source imports.
-	Path           string
-	ImportType     PackageImportType
-	SourceLocation compilercommon.SourceAndLocation
-}
-
 // NodeType identifies the type of AST node.
 type NodeType int
 

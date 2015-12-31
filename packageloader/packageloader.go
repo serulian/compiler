@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// packageloader package defines functions and types for loading Serulian source from disk or VCS.
+// packageloader package defines functions and types for loading and parsing source from disk or VCS.
 package packageloader
 
 import (
@@ -12,7 +12,6 @@ import (
 	"sync"
 
 	"github.com/serulian/compiler/compilercommon"
-	"github.com/serulian/compiler/parser"
 	"github.com/serulian/compiler/vcs"
 )
 
@@ -41,9 +40,6 @@ const (
 	pathVCSPackage
 )
 
-// serulianFileExtension is the extension for Serulian source files.
-const serulianSourceFileExtension = ".seru"
-
 // serulianPackageDirectory is the directory under the root directory holding cached packages.
 const serulianPackageDirectory = ".pkg"
 
@@ -52,6 +48,7 @@ type pathInformation struct {
 	referenceId string
 	kind        pathKind
 	path        string
+	sourceKind  string
 	sal         compilercommon.SourceAndLocation
 }
 
@@ -68,7 +65,7 @@ type PackageLoader struct {
 	errors   chan *compilercommon.SourceError   // Errors are reported on this channel
 	warnings chan *compilercommon.SourceWarning // Warnings are reported on this channel
 
-	nodeBuilder parser.NodeBuilder // Builder to use for constructing the parse nodes
+	handlers map[string]SourceHandler // The handlers for each of the supported package kinds.
 
 	pathsToLoad      chan pathInformation    // The paths to load
 	pathsEncountered map[string]bool         // The paths processed by the loader goroutine
@@ -83,6 +80,7 @@ type PackageLoader struct {
 type Library struct {
 	PathOrURL string // The file location or SCM URL of the library's package.
 	IsSCM     bool   // If true, the PathOrURL is treated as a remote SCM package.
+	Kind      string // The kind of the library. Leave empty for Serulian files.
 }
 
 // LoadResult contains the result of attempting to load all packages and source files for this
@@ -95,14 +93,19 @@ type LoadResult struct {
 }
 
 // NewPackageLoader creates and returns a new package loader for the given path.
-func NewPackageLoader(rootSourceFile string, nodeBuilder parser.NodeBuilder) *PackageLoader {
+func NewPackageLoader(rootSourceFile string, handlers ...SourceHandler) *PackageLoader {
+	handlersMap := map[string]SourceHandler{}
+	for _, handler := range handlers {
+		handlersMap[handler.Kind()] = handler
+	}
+
 	return &PackageLoader{
 		rootSourceFile: rootSourceFile,
 
 		errors:   make(chan *compilercommon.SourceError),
 		warnings: make(chan *compilercommon.SourceWarning),
 
-		nodeBuilder: nodeBuilder,
+		handlers: handlersMap,
 
 		pathsEncountered: map[string]bool{},
 		packageMap:       map[string]*PackageInfo{},
@@ -129,16 +132,16 @@ func (p *PackageLoader) Load(libraries ...Library) *LoadResult {
 
 	// Add the root source file as the first package to be parsed.
 	sal := compilercommon.NewSourceAndLocation(compilercommon.InputSource(p.rootSourceFile), 0)
-	p.pushPath(pathSourceFile, p.rootSourceFile, sal)
+	p.pushPath(pathSourceFile, "", p.rootSourceFile, sal)
 
 	// Add the libraries to be parsed.
 	for _, library := range libraries {
 		if library.IsSCM {
 			sal := compilercommon.NewSourceAndLocation(compilercommon.InputSource(library.PathOrURL), 0)
-			p.pushPath(pathVCSPackage, library.PathOrURL, sal)
+			p.pushPath(pathVCSPackage, library.Kind, library.PathOrURL, sal)
 		} else {
 			sal := compilercommon.NewSourceAndLocation(compilercommon.InputSource(library.PathOrURL), 0)
-			p.pushPath(pathLocalPackage, library.PathOrURL, sal)
+			p.pushPath(pathLocalPackage, library.Kind, library.PathOrURL, sal)
 		}
 	}
 
@@ -155,14 +158,14 @@ func (p *PackageLoader) Load(libraries ...Library) *LoadResult {
 }
 
 // pushPath adds a path to be processed by the package loader.
-func (p *PackageLoader) pushPath(kind pathKind, path string, sal compilercommon.SourceAndLocation) string {
-	return p.pushPathWithId(path, kind, path, sal)
+func (p *PackageLoader) pushPath(kind pathKind, sourceKind string, path string, sal compilercommon.SourceAndLocation) string {
+	return p.pushPathWithId(path, sourceKind, kind, path, sal)
 }
 
 // pushPathWithId adds a path to be processed by the package loader, with the specified ID.
-func (p *PackageLoader) pushPathWithId(pathId string, kind pathKind, path string, sal compilercommon.SourceAndLocation) string {
+func (p *PackageLoader) pushPathWithId(pathId string, sourceKind string, kind pathKind, path string, sal compilercommon.SourceAndLocation) string {
 	p.workTracker.Add(1)
-	p.pathsToLoad <- pathInformation{pathId, kind, path, sal}
+	p.pathsToLoad <- pathInformation{pathId, kind, path, sourceKind, sal}
 	return pathId
 }
 
@@ -240,7 +243,7 @@ func (p *PackageLoader) loadVCSPackage(packagePath pathInformation) {
 	}
 
 	// Push the now-local directory onto the package loading channel.
-	p.pushPathWithId(packagePath.referenceId, pathLocalPackage, checkoutDirectory, packagePath.sal)
+	p.pushPathWithId(packagePath.referenceId, packagePath.sourceKind, pathLocalPackage, checkoutDirectory, packagePath.sal)
 }
 
 // loadLocalPackage loads the package found at the path relative to the package directory.
@@ -264,14 +267,16 @@ func (p *PackageLoader) loadLocalPackage(packagePath pathInformation) {
 		modulePaths: make([]compilercommon.InputSource, 0),
 	}
 
+	// Load the handler for the package.
+	handler, _ := p.handlers[packagePath.sourceKind]
+
 	// Find all source files in the directory and add them to the paths list.
 	var fileFound bool
-
 	for _, fileInfo := range directoryContents {
-		if path.Ext(fileInfo.Name()) == serulianSourceFileExtension {
+		if path.Ext(fileInfo.Name()) == handler.PackageFileExtension() {
 			fileFound = true
 			filePath := path.Join(packagePath.path, fileInfo.Name())
-			p.pushPath(pathSourceFile, filePath, packagePath.sal)
+			p.pushPath(pathSourceFile, packagePath.sourceKind, filePath, packagePath.sal)
 
 			// Add the source file to the package information.
 			packageInfo.modulePaths = append(packageInfo.modulePaths, compilercommon.InputSource(filePath))
@@ -310,25 +315,28 @@ func (p *PackageLoader) conductParsing(sourceFile pathInformation) {
 	}
 
 	// Parse the source file.
-	parser.Parse(p.nodeBuilder, p.handleImport, inputSource, string(contents))
+	handler, _ := p.handlers[sourceFile.sourceKind]
+	handler.Parse(inputSource, string(contents), p.handleImport)
 }
 
 // handleImport queues an import found in a source file.
-func (p *PackageLoader) handleImport(importInformation parser.PackageImport) string {
+func (p *PackageLoader) handleImport(importInformation PackageImport) string {
+	handler, _ := p.handlers[importInformation.Kind]
 	sourcePath := string(importInformation.SourceLocation.Source())
 
-	if importInformation.ImportType == parser.ImportTypeVCS {
+	if importInformation.ImportType == ImportTypeVCS {
 		// VCS paths get added directly.
-		return p.pushPath(pathVCSPackage, importInformation.Path, importInformation.SourceLocation)
+		return p.pushPath(pathVCSPackage, importInformation.Kind, importInformation.Path, importInformation.SourceLocation)
 	} else {
 		// Otherwise, check the path to see if it exists as a single source file. If so, we add it
 		// as a source file instead of a local package.
 		dirPath := path.Join(path.Dir(sourcePath), importInformation.Path)
-		filePath := dirPath + serulianSourceFileExtension
+		filePath := dirPath + handler.PackageFileExtension()
+
 		if ok, _ := exists(filePath); ok {
-			return p.pushPath(pathSourceFile, filePath, importInformation.SourceLocation)
+			return p.pushPath(pathSourceFile, handler.Kind(), filePath, importInformation.SourceLocation)
 		} else {
-			return p.pushPath(pathLocalPackage, dirPath, importInformation.SourceLocation)
+			return p.pushPath(pathLocalPackage, handler.Kind(), dirPath, importInformation.SourceLocation)
 		}
 	}
 }
