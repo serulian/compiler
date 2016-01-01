@@ -8,7 +8,9 @@ package packageloader
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"path"
+	"strings"
 	"sync"
 
 	"github.com/serulian/compiler/compilercommon"
@@ -138,7 +140,19 @@ func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 
 	// Add the root source file as the first package to be parsed.
 	sal := compilercommon.NewSourceAndLocation(compilercommon.InputSource(p.rootSourceFile), 0)
-	p.pushPath(pathSourceFile, "", p.rootSourceFile, sal)
+
+	var added = false
+	for _, handler := range p.handlers {
+		if strings.HasSuffix(p.rootSourceFile, handler.PackageFileExtension()) {
+			p.pushPath(pathSourceFile, handler.Kind(), p.rootSourceFile, sal)
+			added = true
+			break
+		}
+	}
+
+	if !added {
+		log.Fatalf("Could not find handler for root source file: %v", p.rootSourceFile)
+	}
 
 	// Add the libraries to be parsed.
 	for _, library := range libraries {
@@ -340,7 +354,11 @@ func (p *PackageLoader) conductParsing(sourceFile pathInformation) {
 	}
 
 	// Parse the source file.
-	handler, _ := p.handlers[sourceFile.sourceKind]
+	handler, hasHandler := p.handlers[sourceFile.sourceKind]
+	if !hasHandler {
+		log.Fatalf("Missing handler for source file of kind: [%v]", sourceFile.sourceKind)
+	}
+
 	handler.Parse(inputSource, string(contents), p.handleImport)
 }
 

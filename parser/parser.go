@@ -95,8 +95,14 @@ func buildParser(builder NodeBuilder, importReporter packageloader.ImportHandler
 func (p *sourceParser) reportImport(value string, kind string) string {
 	sal := compilercommon.NewSourceAndLocation(p.source, int(p.currentToken.position))
 
-	if strings.HasPrefix(value, "\"") || strings.HasPrefix(value, "`") {
+	if strings.HasPrefix(value, "\"") {
 		return p.importReporter(packageloader.PackageImport{kind, value[1 : len(value)-1], packageloader.ImportTypeVCS, sal})
+	} else if strings.HasPrefix(value, "`") {
+		if strings.Contains(value, "/") {
+			return p.importReporter(packageloader.PackageImport{kind, value[1 : len(value)-1], packageloader.ImportTypeVCS, sal})
+		} else {
+			return p.importReporter(packageloader.PackageImport{kind, value[1 : len(value)-1], packageloader.ImportTypeLocal, sal})
+		}
 	} else {
 		return p.importReporter(packageloader.PackageImport{kind, value, packageloader.ImportTypeLocal, sal})
 	}
