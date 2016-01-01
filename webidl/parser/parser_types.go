@@ -14,9 +14,10 @@ type NodeType int
 
 const (
 	// Top-level
-	NodeTypeError   NodeType = iota // error occurred; value is text of error
-	NodeTypeFile                    // The file root node
-	NodeTypeComment                 // A single or multiline comment
+	NodeTypeError        NodeType = iota // error occurred; value is text of error
+	NodeTypeGlobalModule                 // Virtual node created to hold all files.
+	NodeTypeFile                         // The file root node
+	NodeTypeComment                      // A single or multiline comment
 
 	NodeTypeAnnotation  // [Constructor]
 	NodeTypeParameter   // optional any SomeArg

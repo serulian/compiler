@@ -8,7 +8,7 @@ import (
 )
 
 // Parse parses the given WebIDL source into a parse tree.
-func Parse(builder NodeBuilder, source compilercommon.InputSource, input string) AstNode {
+func Parse(moduleNode AstNode, builder NodeBuilder, source compilercommon.InputSource, input string) AstNode {
 	lexer := lex(source, input)
 
 	config := parserConfig{
@@ -39,13 +39,15 @@ func Parse(builder NodeBuilder, source compilercommon.InputSource, input string)
 	}
 
 	parser := buildParser(lexer, builder, config, source, bytePosition(0), input)
-	return parser.consumeTopLevel()
+	return parser.consumeTopLevel(moduleNode)
 }
 
 // consumeTopLevel attempts to consume the top-level constructs of a WebIDL file.
-func (p *sourceParser) consumeTopLevel() AstNode {
+func (p *sourceParser) consumeTopLevel(moduleNode AstNode) AstNode {
 	rootNode := p.startNode(NodeTypeFile)
 	defer p.finishNode()
+
+	moduleNode.Connect(NodePredicateChild, rootNode)
 
 	// Start at the first token.
 	p.consumeToken()

@@ -102,8 +102,10 @@ func TestParser(t *testing.T) {
 			}
 		}
 
-		rootNode := Parse(createAstNode, compilercommon.InputSource(test.name), test.input())
-		parseTree := getParseTree((rootNode).(*testNode), 0)
+		moduleNode := createAstNode(compilercommon.InputSource(test.name), NodeTypeGlobalModule)
+
+		Parse(moduleNode, createAstNode, compilercommon.InputSource(test.name), test.input())
+		parseTree := getParseTree((moduleNode).(*testNode), 0)
 		assert := assert.New(t)
 
 		expected := strings.TrimSpace(test.tree())

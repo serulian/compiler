@@ -1,22 +1,24 @@
-NodeTypeFile
-  end-rune = 27
-  input-source = annotated interface test
-  start-rune = 0
+NodeTypeGlobalModule
   child-node =>
-    NodeTypeDeclaration
-      declaration-kind = interface
-      declaration-name = Bar
+    NodeTypeFile
       end-rune = 27
       input-source = annotated interface test
       start-rune = 0
-      declaration-annotation =>
-        NodeTypeAnnotation
-          annotation-name = Foo
-          end-rune = 3
+      child-node =>
+        NodeTypeDeclaration
+          declaration-kind = interface
+          declaration-name = Bar
+          end-rune = 27
           input-source = annotated interface test
-          start-rune = 1
-        NodeTypeAnnotation
-          annotation-name = Baz
-          end-rune = 8
-          input-source = annotated interface test
-          start-rune = 6
+          start-rune = 0
+          declaration-annotation =>
+            NodeTypeAnnotation
+              annotation-name = Foo
+              end-rune = 3
+              input-source = annotated interface test
+              start-rune = 1
+            NodeTypeAnnotation
+              annotation-name = Baz
+              end-rune = 8
+              input-source = annotated interface test
+              start-rune = 6

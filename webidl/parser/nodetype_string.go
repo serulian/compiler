@@ -4,9 +4,9 @@ package parser
 
 import "fmt"
 
-const _NodeType_name = "NodeTypeErrorNodeTypeFileNodeTypeCommentNodeTypeAnnotationNodeTypeParameterNodeTypeDeclarationNodeTypeMemberNodeTypeImplementationNodeTypeTagged"
+const _NodeType_name = "NodeTypeErrorNodeTypeGlobalModuleNodeTypeFileNodeTypeCommentNodeTypeAnnotationNodeTypeParameterNodeTypeDeclarationNodeTypeMemberNodeTypeImplementationNodeTypeTagged"
 
-var _NodeType_index = [...]uint8{0, 13, 25, 40, 58, 75, 94, 108, 130, 144}
+var _NodeType_index = [...]uint8{0, 13, 33, 45, 60, 78, 95, 114, 128, 150, 164}
 
 func (i NodeType) String() string {
 	if i < 0 || i >= NodeType(len(_NodeType_index)-1) {
