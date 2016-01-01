@@ -25,7 +25,7 @@ func (sh *irgSourceHandler) PackageFileExtension() string {
 }
 
 func (sh *irgSourceHandler) Parse(source compilercommon.InputSource, input string, importHandler packageloader.ImportHandler) {
-	parser.Parse(sh.irg.buildASTNode, source, input)
+	parser.Parse(&irgASTNode{sh.irg.rootModuleNode}, sh.irg.buildASTNode, source, input)
 }
 
 func (sh *irgSourceHandler) Verify(packageMap map[string]packageloader.PackageInfo, errorReporter packageloader.ErrorReporter, warningReporter packageloader.WarningReporter) {

@@ -306,7 +306,10 @@ func (p *PackageLoader) loadLocalPackage(packagePath pathInformation) {
 	}
 
 	// Load the handler for the package.
-	handler, _ := p.handlers[packagePath.sourceKind]
+	handler, hasHandler := p.handlers[packagePath.sourceKind]
+	if !hasHandler {
+		log.Fatalf("Missing handler for source file of kind: [%v]", packagePath.sourceKind)
+	}
 
 	// Find all source files in the directory and add them to the paths list.
 	var fileFound bool

@@ -194,6 +194,11 @@ func (t *emptyTypeConstructor) GetLocation(sourceNodeId compilergraph.GraphNodeI
 	return compilercommon.SourceAndLocation{}, false
 }
 
+func NewBasicTypesConstructor(graph *compilergraph.SerulianGraph) TypeGraphConstructor {
+	fsg := graph.NewGraphLayer("test", fakeNodeTypeTagged)
+	return &testBasicTypesConstructor{emptyTypeConstructor{}, fsg, nil}
+}
+
 type testBasicTypesConstructor struct {
 	emptyTypeConstructor
 
