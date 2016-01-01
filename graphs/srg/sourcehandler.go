@@ -28,7 +28,7 @@ func (sh *srgSourceHandler) Parse(source compilercommon.InputSource, input strin
 	parser.Parse(sh.srg.buildASTNode, importHandler, source, input)
 }
 
-func (sh *srgSourceHandler) Verify(packageMap map[string]*packageloader.PackageInfo, errorReporter packageloader.ErrorReporter, warningReporter packageloader.WarningReporter) {
+func (sh *srgSourceHandler) Verify(packageMap map[string]packageloader.PackageInfo, errorReporter packageloader.ErrorReporter, warningReporter packageloader.WarningReporter) {
 	g := sh.srg
 
 	// Save the package map for later resolution.

@@ -17,17 +17,23 @@ import (
 
 // PackageInfo holds information about a loaded package.
 type PackageInfo struct {
+	kind        string                       // The kind of the package.
 	referenceId string                       // The unique ID for this package.
 	modulePaths []compilercommon.InputSource // The module paths making up this package.
 }
 
+// Kind returns the kind code this package.
+func (pi PackageInfo) Kind() string {
+	return pi.kind
+}
+
 // ReferenceId returns the unique reference ID for this package.
-func (pi *PackageInfo) ReferenceId() string {
+func (pi PackageInfo) ReferenceId() string {
 	return pi.referenceId
 }
 
 // ModulePaths returns the list of full paths of the modules in this package.
-func (pi *PackageInfo) ModulePaths() []compilercommon.InputSource {
+func (pi PackageInfo) ModulePaths() []compilercommon.InputSource {
 	return pi.modulePaths
 }
 
@@ -67,9 +73,9 @@ type PackageLoader struct {
 
 	handlers map[string]SourceHandler // The handlers for each of the supported package kinds.
 
-	pathsToLoad      chan pathInformation    // The paths to load
-	pathsEncountered map[string]bool         // The paths processed by the loader goroutine
-	packageMap       map[string]*PackageInfo // The package map
+	pathsToLoad      chan pathInformation   // The paths to load
+	pathsEncountered map[string]bool        // The paths processed by the loader goroutine
+	packageMap       map[string]PackageInfo // The package map
 
 	workTracker sync.WaitGroup // WaitGroup used to wait until all loading is complete
 	finished    chan bool      // Channel used to tell background goroutines to quit
@@ -89,7 +95,7 @@ type LoadResult struct {
 	Status     bool                           // True on success, false otherwise
 	Errors     []compilercommon.SourceError   // The errors encountered, if any
 	Warnings   []compilercommon.SourceWarning // The warnings encountered, if any
-	PackageMap map[string]*PackageInfo        // Map of packages loaded
+	PackageMap map[string]PackageInfo         // Map of packages loaded
 }
 
 // NewPackageLoader creates and returns a new package loader for the given path.
@@ -108,7 +114,7 @@ func NewPackageLoader(rootSourceFile string, handlers ...SourceHandler) *Package
 		handlers: handlersMap,
 
 		pathsEncountered: map[string]bool{},
-		packageMap:       map[string]*PackageInfo{},
+		packageMap:       map[string]PackageInfo{},
 		pathsToLoad:      make(chan pathInformation),
 
 		finished: make(chan bool, 2),
@@ -280,6 +286,7 @@ func (p *PackageLoader) loadLocalPackage(packagePath pathInformation) {
 
 	// Add the package information to the map.
 	packageInfo := &PackageInfo{
+		kind:        packagePath.sourceKind,
 		referenceId: packagePath.referenceId,
 		modulePaths: make([]compilercommon.InputSource, 0),
 	}
@@ -300,7 +307,7 @@ func (p *PackageLoader) loadLocalPackage(packagePath pathInformation) {
 		}
 	}
 
-	p.packageMap[packagePath.referenceId] = packageInfo
+	p.packageMap[packagePath.referenceId] = *packageInfo
 
 	if !fileFound {
 		p.warnings <- compilercommon.SourceWarningf(packagePath.sal, "Package '%s' has no source files", packagePath.path)
@@ -313,7 +320,8 @@ func (p *PackageLoader) conductParsing(sourceFile pathInformation) {
 	inputSource := compilercommon.InputSource(sourceFile.path)
 
 	// Add the file to the package map as a package of one file.
-	p.packageMap[sourceFile.referenceId] = &PackageInfo{
+	p.packageMap[sourceFile.referenceId] = PackageInfo{
+		kind:        sourceFile.sourceKind,
 		referenceId: sourceFile.referenceId,
 		modulePaths: []compilercommon.InputSource{inputSource},
 	}

@@ -35,8 +35,8 @@ func (g *SRG) getPackageForImport(importNode compilergraph.GraphNode) *srgPackag
 // srgPackage implements the typeContainer information for searching over a package of
 // modules.
 type srgPackage struct {
-	srg         *SRG                       // The parent SRG.
-	packageInfo *packageloader.PackageInfo // The package info for this package.
+	srg         *SRG                      // The parent SRG.
+	packageInfo packageloader.PackageInfo // The package info for this package.
 }
 
 // ModulePaths returns the paths of all the modules under this package.

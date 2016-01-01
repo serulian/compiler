@@ -22,7 +22,7 @@ type SourceHandler interface {
 	Parse(source compilercommon.InputSource, input string, importHandler ImportHandler)
 
 	// Verify performs verification of the loaded source.
-	Verify(packageMap map[string]*PackageInfo, errorReporter ErrorReporter, warningReporter WarningReporter)
+	Verify(packageMap map[string]PackageInfo, errorReporter ErrorReporter, warningReporter WarningReporter)
 }
 
 // PackageImportType identifies the types of imports.
