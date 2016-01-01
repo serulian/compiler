@@ -108,7 +108,7 @@ func TestTypeReferences(t *testing.T) {
 	for _, test := range trTests {
 		source := fmt.Sprintf("tests/typeref/%s.seru", test.source)
 		testSRG := getSRG(t, source, "tests/testlib")
-		typeref := testSRG.FindVariableTypeWithName(test.name)
+		typeref := testSRG.findVariableTypeWithName(test.name)
 		assertTypeRef(t, test.name, typeref, test.expected)
 	}
 }

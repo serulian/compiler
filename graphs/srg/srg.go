@@ -63,11 +63,11 @@ func (g *SRG) PackageLoaderHandler() packageloader.SourceHandler {
 	return &srgSourceHandler{g}
 }
 
-// FindVariableTypeWithName returns the SRGTypeRef for the declared type of the
+// findVariableTypeWithName returns the SRGTypeRef for the declared type of the
 // variable in the SRG with the given name.
 //
 // Note: FOR TESTING ONLY.
-func (g *SRG) FindVariableTypeWithName(name string) SRGTypeRef {
+func (g *SRG) findVariableTypeWithName(name string) SRGTypeRef {
 	typerefNode := g.layer.
 		StartQuery(name).
 		In(parser.NodePredicateTypeMemberName, parser.NodeVariableStatementName).
