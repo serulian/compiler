@@ -23,9 +23,10 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 		// The new constructor returns an instance of the type.
 		memberType := g.FunctionTypeReference(g.NewInstanceTypeReference(typeDecl))
 
-		ibuilder := &MemberBuilder{tdg: g, parent: typeDecl}
-		builder, _ := ibuilder.Name("new").InitialDefine()
-		builder.Static(true).
+		builder := &MemberBuilder{tdg: g, parent: typeDecl}
+		builder.Name("new").
+			InitialDefine().
+			Static(true).
 			Exported(false).
 			ReadOnly(true).
 			MemberType(memberType).

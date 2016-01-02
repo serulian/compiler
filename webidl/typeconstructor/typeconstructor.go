@@ -17,6 +17,10 @@ import (
 // (e.g. Window) in WebIDL.
 const GLOBAL_CONTEXT_ANNOTATION = "GlobalContext"
 
+// CONSTRUCTOR_ANNOTATION is an annotation that describes support for a constructor on a WebIDL
+// type. This translates to being able to do "new Type(...)" in ECMAScript.
+const CONSTRUCTOR_ANNOTATION = "Constructor"
+
 // GetConstructor returns a TypeGraph constructor for the given IRG.
 func GetConstructor(irg *webidl.WebIRG) *irgTypeConstructor {
 	return &irgTypeConstructor{
@@ -59,19 +63,67 @@ func (itc *irgTypeConstructor) DefineDependencies(annotator *typegraph.Annotator
 
 }
 
-func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder, graph *typegraph.TypeGraph) {
+func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder, reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {
 	for _, declaration := range itc.irg.Declarations() {
-		// If the declaration has one (or more) constructors, add then as "new"
-
 		// GlobalContext members get defined under their module, not their declaration.
 		var parentNode = declaration.GraphNode
 		if declaration.HasAnnotation(GLOBAL_CONTEXT_ANNOTATION) {
 			parentNode = declaration.Module().GraphNode
 		}
 
+		// If the declaration has one (or more) constructors, add then as a "new".
+		if declaration.HasAnnotation(CONSTRUCTOR_ANNOTATION) {
+			// For each constructor defined, create the intersection of their parameters.
+			var parameters = make([]typegraph.TypeReference, 0)
+			for constructorIndex, constructor := range declaration.GetAnnotations(CONSTRUCTOR_ANNOTATION) {
+				for index, parameter := range constructor.Parameters() {
+					parameterType, err := itc.ResolveType(parameter.DeclaredType(), graph)
+					if err != nil {
+						reporter.ReportError(parameter.GraphNode, "%v", err)
+						continue
+					}
+
+					var resolvedParameterType = parameterType
+					if parameter.IsOptional() {
+						resolvedParameterType = resolvedParameterType.AsNullable()
+					}
+
+					if index >= len(parameters) {
+						// If this is not the first constructor, then this parameter is implicitly optional
+						// and therefore nullable.
+						if constructorIndex > 0 {
+							resolvedParameterType = resolvedParameterType.AsNullable()
+						}
+
+						parameters = append(parameters, resolvedParameterType)
+					} else {
+						parameters[index] = parameters[index].Intersect(resolvedParameterType)
+					}
+				}
+			}
+
+			// Define the construction function for the type.
+			typeDecl, _ := graph.GetTypeForSourceNode(declaration.GraphNode)
+			var constructorFunction = graph.FunctionTypeReference(typeDecl.GetTypeReference())
+			for _, parameterType := range parameters {
+				constructorFunction = constructorFunction.WithParameter(parameterType)
+			}
+
+			// Declare a "new" member which returns an instance of this type.
+			builder(parentNode, false).
+				Name("new").
+				InitialDefine().
+				Static(true).
+				ReadOnly(true).
+				Synchronous(true).
+				MemberKind(0).
+				MemberType(constructorFunction).
+				Define()
+		}
+
 		// Add the declared members.
 		for _, member := range declaration.Members() {
-			ibuilder, reporter := builder(parentNode, false).
+			ibuilder := builder(parentNode, false).
 				Name(member.Name()).
 				SourceNode(member.GraphNode).
 				InitialDefine()

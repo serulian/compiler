@@ -109,6 +109,22 @@ func (i *IRGDeclaration) HasAnnotation(name string) bool {
 	return hasNode
 }
 
+// GetAnnotations returns all the annotations with the given name declared on the declaration.
+func (i *IRGDeclaration) GetAnnotations(name string) []IRGAnnotation {
+	ait := i.GraphNode.StartQuery().
+		Out(parser.NodePredicateDeclarationAnnotation).
+		Has(parser.NodePredicateAnnotationName, name).
+		BuildNodeIterator()
+
+	var annotations = make([]IRGAnnotation, 0)
+	for ait.Next() {
+		annotation := IRGAnnotation{ait.Node(), i.irg}
+		annotations = append(annotations, annotation)
+	}
+
+	return annotations
+}
+
 // Annotations returns all the annotations declared on the declaration.
 func (i *IRGDeclaration) Annotations() []IRGAnnotation {
 	ait := i.GraphNode.StartQuery().

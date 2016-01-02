@@ -188,8 +188,9 @@ type emptyTypeConstructor struct{}
 func (t *emptyTypeConstructor) DefineModules(builder GetModuleBuilder)                    {}
 func (t *emptyTypeConstructor) DefineTypes(builder GetTypeBuilder)                        {}
 func (t *emptyTypeConstructor) DefineDependencies(annotator *Annotator, graph *TypeGraph) {}
-func (t *emptyTypeConstructor) DefineMembers(builder GetMemberBuilder, graph *TypeGraph)  {}
-func (t *emptyTypeConstructor) Validate(reporter IssueReporter, graph *TypeGraph)         {}
+func (t *emptyTypeConstructor) DefineMembers(builder GetMemberBuilder, reporter IssueReporter, graph *TypeGraph) {
+}
+func (t *emptyTypeConstructor) Validate(reporter IssueReporter, graph *TypeGraph) {}
 func (t *emptyTypeConstructor) GetLocation(sourceNodeId compilergraph.GraphNodeId) (compilercommon.SourceAndLocation, bool) {
 	return compilercommon.SourceAndLocation{}, false
 }
@@ -289,7 +290,7 @@ func isExportedName(name string) bool {
 	return unicode.IsUpper(r)
 }
 
-func (t *testTypeGraphConstructor) DefineMembers(builder GetMemberBuilder, graph *TypeGraph) {
+func (t *testTypeGraphConstructor) DefineMembers(builder GetMemberBuilder, reporter IssueReporter, graph *TypeGraph) {
 	for _, typeInfo := range t.testTypes {
 		typeNode, _ := t.typeMap[typeInfo.name]
 		for _, memberInfo := range typeInfo.members {
@@ -305,7 +306,7 @@ func (t *testTypeGraphConstructor) DefineMembers(builder GetMemberBuilder, graph
 				ib.WithGeneric(genericInfo.name, genericNode)
 			}
 
-			builder, _ := ib.InitialDefine()
+			builder := ib.InitialDefine()
 
 			for _, genericInfo := range memberInfo.generics {
 				if genericInfo.constraint != "" {

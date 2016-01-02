@@ -647,6 +647,10 @@ func (tr TypeReference) AsValueOfStream() TypeReference {
 
 // AsNullable returns a copy of this type reference that is nullable.
 func (tr TypeReference) AsNullable() TypeReference {
+	if tr.IsAny() || tr.IsVoid() || tr.IsNull() {
+		return tr
+	}
+
 	return tr.withFlag(trhSlotFlagNullable, nullableFlagTrue)
 }
 
@@ -665,16 +669,32 @@ func (tr TypeReference) Intersect(other TypeReference) TypeReference {
 		return tr
 	}
 
-	if tr == other {
-		return tr
+	if tr.IsAny() || other.IsAny() {
+		return tr.tdg.AnyTypeReference()
 	}
 
-	if tr.CheckSubTypeOf(other) == nil {
-		return other
+	// Ensure both are nullable or non-nullable.
+	var trAdjusted = tr
+	var otherAdjusted = other
+
+	if tr.IsNullable() {
+		otherAdjusted = other.AsNullable()
 	}
 
-	if other.CheckSubTypeOf(tr) == nil {
-		return tr
+	if other.IsNullable() {
+		trAdjusted = tr.AsNullable()
+	}
+
+	if trAdjusted == otherAdjusted {
+		return trAdjusted
+	}
+
+	if trAdjusted.CheckSubTypeOf(otherAdjusted) == nil {
+		return otherAdjusted
+	}
+
+	if otherAdjusted.CheckSubTypeOf(trAdjusted) == nil {
+		return trAdjusted
 	}
 
 	// TODO: support some sort of union types here if/when we need to?

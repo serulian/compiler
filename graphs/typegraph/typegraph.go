@@ -106,7 +106,7 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 				}
 			}
 
-		}, typeGraph)
+		}, &issueReporterImpl{typeGraph}, typeGraph)
 	}
 
 	// Handle inheritance checking and member cloning.

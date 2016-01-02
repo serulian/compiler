@@ -117,12 +117,12 @@ type typeMemberWork struct {
 	srgType srg.SRGType
 }
 
-func (stc *srgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder, graph *typegraph.TypeGraph) {
+func (stc *srgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder, reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {
 	// Define all module members.
 	for _, module := range stc.srg.GetModules() {
 		for _, member := range module.GetMembers() {
 			parent, _ := graph.GetTypeOrModuleForSourceNode(module.Node())
-			stc.defineMember(member, parent, builder(module.Node(), member.IsOperator()), graph)
+			stc.defineMember(member, parent, builder(module.Node(), member.IsOperator()), reporter, graph)
 		}
 	}
 
@@ -131,7 +131,7 @@ func (stc *srgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 		data := value.(typeMemberWork)
 		for _, member := range data.srgType.GetMembers() {
 			parent, _ := graph.GetTypeOrModuleForSourceNode(data.srgType.Node())
-			stc.defineMember(member, parent, builder(data.srgType.Node(), member.IsOperator()), graph)
+			stc.defineMember(member, parent, builder(data.srgType.Node(), member.IsOperator()), reporter, graph)
 		}
 		return true
 	}
@@ -144,7 +144,7 @@ func (stc *srgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 }
 
 // defineMember defines a single type member under a type or module.
-func (stc *srgTypeConstructor) defineMember(member srg.SRGMember, parent typegraph.TGTypeOrModule, builder *typegraph.MemberBuilder, graph *typegraph.TypeGraph) {
+func (stc *srgTypeConstructor) defineMember(member srg.SRGMember, parent typegraph.TGTypeOrModule, builder *typegraph.MemberBuilder, reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {
 	// Define the member's name and source node.
 	builder.Name(member.Name()).
 		SourceNode(member.Node())
@@ -156,7 +156,7 @@ func (stc *srgTypeConstructor) defineMember(member srg.SRGMember, parent typegra
 
 	// Define the member and its generics. We then populate the remainder of its attributes
 	// that depend on having the generics and member present.
-	dependentBuilder, reporter := builder.InitialDefine()
+	dependentBuilder := builder.InitialDefine()
 
 	// Add the generic's constraints.
 	for _, generic := range member.Generics() {

@@ -31,7 +31,7 @@ type TypeGraphConstructor interface {
 	DefineDependencies(annotator *Annotator, graph *TypeGraph)
 
 	// Defines the members under the modules and types.
-	DefineMembers(builder GetMemberBuilder, graph *TypeGraph)
+	DefineMembers(builder GetMemberBuilder, reporter IssueReporter, graph *TypeGraph)
 
 	// Performs final validation of the type graph after full definition.
 	Validate(reporter IssueReporter, graph *TypeGraph)
@@ -381,7 +381,7 @@ func (mb *MemberBuilder) WithGeneric(name string, sourceNode compilergraph.Graph
 // Define defines the member under the type or module in the type graph. Returns another builder to finish
 // construction of the member. A two-step process is required because type member generics must be in the
 // type graph before member types can be resolved.
-func (mb *MemberBuilder) InitialDefine() (*dependentMemberBuilder, IssueReporter) {
+func (mb *MemberBuilder) InitialDefine() *dependentMemberBuilder {
 	// Ensure that there exists no other member with this name under the parent type or module.
 	var exists = false
 	var name = mb.name
@@ -443,7 +443,7 @@ func (mb *MemberBuilder) InitialDefine() (*dependentMemberBuilder, IssueReporter
 		name:       mb.name,
 		generics:   generics,
 		exists:     exists,
-	}, &issueReporterImpl{mb.tdg}
+	}
 }
 
 // Exported sets whether the member is exported publicly.
