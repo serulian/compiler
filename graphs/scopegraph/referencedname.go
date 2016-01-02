@@ -48,6 +48,15 @@ func (rn ReferencedName) ReferencedNode() compilergraph.GraphNode {
 	}
 }
 
+// IsSynchronous returns true if the referenced name is synchronous.
+func (rn ReferencedName) IsSynchronous() bool {
+	if rn.typeInfo != nil {
+		return rn.typeInfo.IsSynchronous()
+	} else {
+		return false
+	}
+}
+
 // IsStatic returns true if the referenced name is static.
 func (rn ReferencedName) IsStatic() bool {
 	if rn.typeInfo != nil {
@@ -74,7 +83,12 @@ func (rn ReferencedName) IsProperty() bool {
 		return false
 	}
 
-	srgMember := rn.sg.srg.GetMemberReference(rn.sg.srg.GetNode(sourceNodeId))
+	srgNode, hasSRGNode := rn.sg.srg.TryGetNode(sourceNodeId)
+	if !hasSRGNode {
+		return false
+	}
+
+	srgMember := rn.sg.srg.GetMemberReference(srgNode)
 	return srgMember.MemberKind() == srg.PropertyMember
 }
 

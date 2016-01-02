@@ -18,4 +18,5 @@ type TGTypeOrMember interface {
 	IsReadOnly() bool
 	IsType() bool
 	IsStatic() bool
+	IsSynchronous() bool
 }

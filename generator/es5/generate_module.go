@@ -51,7 +51,7 @@ type generatingModule struct {
 
 // ExportedPath returns the full exported path for this module.
 func (gm generatingModule) ExportedPath() string {
-	return gm.Generator.pather.GetModulePath(gm.Module)
+	return gm.Generator.pather.GetRelativeModulePath(gm.Module)
 }
 
 // GenerateMembers generates the source for all the implemented members defined under the module.

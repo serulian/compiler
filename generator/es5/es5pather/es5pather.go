@@ -101,18 +101,27 @@ func (p *Pather) GetStaticMemberPath(member typegraph.TGMember, referenceType ty
 	if parent.IsType() {
 		return p.GetStaticTypePath(parent.(typegraph.TGTypeDecl), referenceType) + "." + name
 	} else {
-		return "$g." + p.GetModulePath(parent.(typegraph.TGModule)) + "." + name
+		return p.GetModulePath(parent.(typegraph.TGModule)) + "." + name
 	}
 }
 
 // GetTypePath returns the global path for the given type.
 func (p *Pather) GetTypePath(typedecl typegraph.TGTypeDecl) string {
-	modulePath := "$g." + p.GetModulePath(typedecl.ParentModule())
-	return modulePath + "." + typedecl.Name()
+	return p.GetModulePath(typedecl.ParentModule()) + "." + typedecl.Name()
 }
 
 // GetModulePath returns the global path for the given module.
 func (p *Pather) GetModulePath(module typegraph.TGModule) string {
+	// TODO(jschorr): We should generalize non-SRG support.
+	if strings.HasSuffix(module.Path(), ".webidl") {
+		return "$global"
+	}
+
+	return "$g." + p.GetRelativeModulePath(module)
+}
+
+// GetRelativeModulePath returns the relative path for the given module.
+func (p *Pather) GetRelativeModulePath(module typegraph.TGModule) string {
 	// We create the exported path based on the location of this module's source file relative
 	// to the entrypoint file.
 	basePath := filepath.Dir(p.graph.RootSourceFilePath)

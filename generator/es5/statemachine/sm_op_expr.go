@@ -94,6 +94,7 @@ func (sm *stateMachine) generateSlicerExpression(node compilergraph.GraphNode, p
 func (sm *stateMachine) generateFunctionCall(node compilergraph.GraphNode, parentState *state) {
 	// Generate the expression for the function itself that will be called.
 	childExpr := node.GetNode(parser.NodeFunctionCallExpressionChildExpr)
+	childScope, _ := sm.scopegraph.GetScope(childExpr)
 	callExprInfo := sm.generate(childExpr, parentState)
 
 	// For each of the arguments (if any) generate the expressions.
@@ -102,6 +103,23 @@ func (sm *stateMachine) generateFunctionCall(node compilergraph.GraphNode, paren
 		BuildNodeIterator()
 
 	argumentInfo := sm.generateIterator(ait, callExprInfo.endState)
+
+	// If the function is synchronous, then call it directly. Otherwise, we need to generate it
+	// as an async Promise-based call.
+	namedRef, isNamed := sm.scopegraph.GetReferencedName(childScope)
+	if isNamed && namedRef.IsSynchronous() {
+		data := struct {
+			CallExpr  string
+			Arguments []generatedStateInfo
+		}{callExprInfo.expression, argumentInfo}
+
+		parentState.pushExpression(sm.templater.Execute("syncfunccall", `
+			({{ .CallExpr }})({{ range $index, $arg := .Arguments }}{{ if $index }} ,{{ end }}{{ $arg.Expression }}{{ end }})
+		`, data))
+
+		sm.markStates(node, parentState, parentState)
+		return
+	}
 
 	// Create a new state to which we'll jump after the function returns.
 	returnValueVariable := sm.addVariable("$returnValue")
