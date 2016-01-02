@@ -61,7 +61,7 @@ func (itc *irgTypeConstructor) DefineDependencies(annotator *typegraph.Annotator
 
 func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder, graph *typegraph.TypeGraph) {
 	for _, declaration := range itc.irg.Declarations() {
-		// TODO: define constructors.
+		// If the declaration has one (or more) constructors, add then as "new"
 
 		// GlobalContext members get defined under their module, not their declaration.
 		var parentNode = declaration.GraphNode
@@ -69,6 +69,7 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 			parentNode = declaration.Module().GraphNode
 		}
 
+		// Add the declared members.
 		for _, member := range declaration.Members() {
 			ibuilder, reporter := builder(parentNode, false).
 				Name(member.Name()).
@@ -90,14 +91,25 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 				memberType = graph.FunctionTypeReference(memberType)
 
 				// Add the parameter types.
+				var markOptional = false
 				for _, parameter := range member.Parameters() {
+					if parameter.IsOptional() {
+						markOptional = true
+					}
+
 					parameterType, err := itc.ResolveType(parameter.DeclaredType(), graph)
 					if err != nil {
 						reporter.ReportError(member.GraphNode, "%v", err)
 						continue
 					}
 
-					memberType = memberType.WithParameter(parameterType)
+					// All optional parameters get marked as nullable, which means we can skip
+					// passing them on function calls.
+					if markOptional {
+						memberType = memberType.WithParameter(parameterType.AsNullable())
+					} else {
+						memberType = memberType.WithParameter(parameterType)
+					}
 				}
 
 			case webidl.AttributeMember:
