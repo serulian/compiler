@@ -709,6 +709,8 @@ var scopeGraphTests = []scopegraphTest{
 			expectedScopeEntry{"sometype", expectedScope{true, proto.ScopeKind_STATIC, "void", "void"}},
 			expectedScopeEntry{"someparam", expectedScope{true, proto.ScopeKind_VALUE, "SomeType", "void"}},
 			expectedScopeEntry{"somefunc", expectedScope{true, proto.ScopeKind_VALUE, "any", "void"}},
+			expectedScopeEntry{"con1", expectedScope{true, proto.ScopeKind_VALUE, "SomeType", "void"}},
+			expectedScopeEntry{"con2", expectedScope{true, proto.ScopeKind_VALUE, "SomeType", "void"}},
 		},
 		"", ""},
 

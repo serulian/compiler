@@ -113,6 +113,7 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 			builder(parentNode, false).
 				Name("new").
 				InitialDefine().
+				Exported(true).
 				Static(true).
 				ReadOnly(true).
 				Synchronous(true).

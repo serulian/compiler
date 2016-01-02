@@ -9,10 +9,16 @@ function<bool> AnotherFunc(first int, second bool) {
 	return true
 }
 
+function<void> FuncWithOptionalArgs(first int, second bool?, third int?) {}
+
 function<void> DoSomething() {
 	var<SomeClass> sc = SomeClass.new()
 
 	/* empty */(EmptyFunc())
 	/* somefunc */(SomeFunc(2))
 	/* anotherfunc */(AnotherFunc(2, true))
+
+	FuncWithOptionalArgs(1)
+	FuncWithOptionalArgs(1, true)
+	FuncWithOptionalArgs(1, true, 3)
 }
