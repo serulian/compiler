@@ -44,6 +44,7 @@ func (tgt *typegraphTest) writeJson(value string) {
 var typeGraphTests = []typegraphTest{
 	// Success tests.
 	typegraphTest{"basic test", "basic", ""},
+	typegraphTest{"global context test", "global", ""},
 
 	// Failure tests.
 	typegraphTest{"redeclaration test", "redeclare", "Type 'Foo' is already defined in the module"},

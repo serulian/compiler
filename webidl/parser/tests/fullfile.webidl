@@ -2,7 +2,6 @@
 
 [NoInterfaceObject]
 interface ECMA262Globals {
-
   readonly attribute Number NaN;
   readonly attribute Number Infinity;
   readonly attribute Object undefined;

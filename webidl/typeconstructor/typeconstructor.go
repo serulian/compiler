@@ -13,6 +13,10 @@ import (
 	"github.com/serulian/compiler/webidl"
 )
 
+// GLOBAL_CONTEXT_ANNOTATION is the annotation that marks an interface as being the global context
+// (e.g. Window) in WebIDL.
+const GLOBAL_CONTEXT_ANNOTATION = "GlobalContext"
+
 // GetConstructor returns a TypeGraph constructor for the given IRG.
 func GetConstructor(irg *webidl.WebIRG) *irgTypeConstructor {
 	return &irgTypeConstructor{
@@ -38,6 +42,10 @@ func (itc *irgTypeConstructor) DefineModules(builder typegraph.GetModuleBuilder)
 func (itc *irgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 	for _, module := range itc.irg.GetModules() {
 		for _, declaration := range module.Declarations() {
+			if declaration.HasAnnotation(GLOBAL_CONTEXT_ANNOTATION) {
+				continue
+			}
+
 			typeBuilder := builder(module.Node())
 			typeBuilder.Name(declaration.Name()).
 				SourceNode(declaration.GraphNode).
@@ -55,8 +63,14 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 	for _, declaration := range itc.irg.Declarations() {
 		// TODO: define constructors.
 
+		// GlobalContext members get defined under their module, not their declaration.
+		var parentNode = declaration.GraphNode
+		if declaration.HasAnnotation(GLOBAL_CONTEXT_ANNOTATION) {
+			parentNode = declaration.Module().GraphNode
+		}
+
 		for _, member := range declaration.Members() {
-			ibuilder, reporter := builder(declaration.GraphNode, false).
+			ibuilder, reporter := builder(parentNode, false).
 				Name(member.Name()).
 				SourceNode(member.GraphNode).
 				InitialDefine()

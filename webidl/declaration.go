@@ -64,6 +64,12 @@ func (i *IRGDeclaration) Kind() DeclarationKind {
 	}
 }
 
+// Module returns the parent module.
+func (i *IRGDeclaration) Module() IRGModule {
+	moduleNode := i.GraphNode.GetIncomingNode(parser.NodePredicateChild)
+	return IRGModule{moduleNode, i.irg}
+}
+
 // FindMember finds the member under this declaration with the given name, if any.
 func (i *IRGDeclaration) FindMember(name string) (IRGMember, bool) {
 	memberNode, hasMember := i.GraphNode.StartQuery().
@@ -91,6 +97,16 @@ func (i *IRGDeclaration) Members() []IRGMember {
 	}
 
 	return members
+}
+
+// HasAnnotation returns true if the declaration is decorated with the given annotation.
+func (i *IRGDeclaration) HasAnnotation(name string) bool {
+	_, hasNode := i.GraphNode.StartQuery().
+		Out(parser.NodePredicateDeclarationAnnotation).
+		Has(parser.NodePredicateAnnotationName, name).
+		TryGetNode()
+
+	return hasNode
 }
 
 // Annotations returns all the annotations declared on the declaration.
