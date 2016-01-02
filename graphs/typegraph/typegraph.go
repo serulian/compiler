@@ -12,6 +12,7 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/packageloader"
 )
 
 // TYPE_NODE_TYPES defines the NodeTypes that represent defined types in the graph.
@@ -222,6 +223,19 @@ func (g *TypeGraph) GetTypeOrModuleForSourceNode(sourceNode compilergraph.GraphN
 	} else {
 		return TGTypeDecl{node, g}, true
 	}
+}
+
+// ResolveTypeUnderPackage searches the type graph for a type with the given name, located in any modules
+// found in the given package.
+func (g *TypeGraph) ResolveTypeUnderPackage(name string, packageInfo packageloader.PackageInfo) (TGTypeDecl, bool) {
+	for _, modulePath := range packageInfo.ModulePaths() {
+		typeDecl, found := g.LookupType(name, modulePath)
+		if found {
+			return typeDecl, true
+		}
+	}
+
+	return TGTypeDecl{}, false
 }
 
 // GetTypeOrMember returns the type or member matching the given node ID.

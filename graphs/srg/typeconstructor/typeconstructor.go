@@ -306,8 +306,8 @@ func (stc *srgTypeConstructor) BuildTypeRef(typeref srg.SRGTypeRef, tdg *typegra
 		return innerType.AsNullable(), nil
 
 	case srg.TypeRefPath:
-		// Resolve the SRG type for the type ref.
-		resolvedSRGTypeOrGeneric, found := typeref.ResolveType()
+		// Resolve the package type for the type ref.
+		resolvedTypeInfo, found := typeref.ResolveType()
 		if !found {
 			sourceError := compilercommon.SourceErrorf(typeref.Location(),
 				"Type '%s' could not be found",
@@ -316,25 +316,43 @@ func (stc *srgTypeConstructor) BuildTypeRef(typeref srg.SRGTypeRef, tdg *typegra
 			return tdg.AnyTypeReference(), sourceError
 		}
 
-		// Get the type in the type graph.
-		resolvedType, foundType := tdg.GetTypeForSourceNode(resolvedSRGTypeOrGeneric.Node())
-		if !foundType {
-			panic(fmt.Sprintf("Unable to resolve known type: %v", resolvedSRGTypeOrGeneric.Name()))
-		}
-
-		// Create the generics array.
-		srgGenerics := typeref.Generics()
-		generics := make([]typegraph.TypeReference, len(srgGenerics))
-		for index, srgGeneric := range srgGenerics {
-			genericTypeRef, err := stc.BuildTypeRef(srgGeneric, tdg)
-			if err != nil {
-				return tdg.AnyTypeReference(), err
+		// If the type information refers to an SRG type or generic, find the node directly
+		// in the type graph.
+		var constructedRef = tdg.AnyTypeReference()
+		if !resolvedTypeInfo.IsExternalPackage {
+			// Get the type in the type graph.
+			resolvedType, hasResolvedType := tdg.GetTypeForSourceNode(resolvedTypeInfo.ResolvedType.Node())
+			if !hasResolvedType {
+				panic("Could not find typegraph type for SRG type")
 			}
 
-			generics[index] = genericTypeRef
+			constructedRef = tdg.NewTypeReference(resolvedType)
+		} else {
+			// Otherwise, we search for the type in the type graph based on the package from which it
+			// was imported.
+			resolvedType, hasResolvedType := tdg.ResolveTypeUnderPackage(resolvedTypeInfo.ExternalPackageTypePath, resolvedTypeInfo.ExternalPackage)
+			if !hasResolvedType {
+				sourceError := compilercommon.SourceErrorf(typeref.Location(),
+					"Type '%s' could not be found",
+					typeref.ResolutionPath())
+
+				return tdg.AnyTypeReference(), sourceError
+			}
+
+			constructedRef = tdg.NewTypeReference(resolvedType)
 		}
 
-		var constructedRef = tdg.NewTypeReference(resolvedType, generics...)
+		// Add the generics.
+		if typeref.HasGenerics() {
+			for _, srgGeneric := range typeref.Generics() {
+				genericTypeRef, err := stc.BuildTypeRef(srgGeneric, tdg)
+				if err != nil {
+					return tdg.AnyTypeReference(), err
+				}
+
+				constructedRef = constructedRef.WithGeneric(genericTypeRef)
+			}
+		}
 
 		// Add the parameters.
 		if typeref.HasParameters() {

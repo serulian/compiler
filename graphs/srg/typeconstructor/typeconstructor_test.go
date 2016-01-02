@@ -154,10 +154,12 @@ func TestLookupReturnType(t *testing.T) {
 		return
 	}
 
-	someclass, foundClass := module.ResolveType("SomeClass")
+	resolvedclass, foundClass := module.ResolveType("SomeClass")
 	if !assert.True(t, foundClass, "Could not find SomeClass") {
 		return
 	}
+
+	someclass := resolvedclass.ResolvedType.AsType()
 
 	// Check the function.
 	dosomethingFunc, foundFunc := someclass.FindMember("DoSomething")

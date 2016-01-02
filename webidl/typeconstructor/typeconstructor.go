@@ -121,6 +121,10 @@ func (itc *irgTypeConstructor) ResolveType(typeString string, graph *typegraph.T
 		return graph.AnyTypeReference(), nil
 	}
 
+	if typeString == "void" {
+		return graph.VoidTypeReference(), nil
+	}
+
 	declaration, hasDeclaration := itc.irg.FindDeclaration(typeString)
 	if !hasDeclaration {
 		return graph.AnyTypeReference(), fmt.Errorf("Could not find WebIDL type %v", typeString)
