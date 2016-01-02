@@ -17,6 +17,7 @@ type expectedTypeRef struct {
 	typeName        string
 	kind            TypeRefKind
 	resolves        bool
+	isExternal      bool
 	genericsOrInner []expectedTypeRef
 }
 
@@ -27,48 +28,52 @@ type typeRefTest struct {
 }
 
 var trTests = []typeRefTest{
-	typeRefTest{"basicref", "basic", expectedTypeRef{"BasicClass", TypeRefPath, true, []expectedTypeRef{}}},
-	typeRefTest{"anotherref", "basic", expectedTypeRef{"AnotherClass", TypeRefPath, true, []expectedTypeRef{}}},
-	typeRefTest{"multipart", "basic", expectedTypeRef{"AnotherClass", TypeRefPath, true, []expectedTypeRef{}}},
+	typeRefTest{"basicref", "basic", expectedTypeRef{"BasicClass", TypeRefPath, true, false, []expectedTypeRef{}}},
+	typeRefTest{"anotherref", "basic", expectedTypeRef{"AnotherClass", TypeRefPath, true, false, []expectedTypeRef{}}},
+	typeRefTest{"multipart", "basic", expectedTypeRef{"AnotherClass", TypeRefPath, true, false, []expectedTypeRef{}}},
 
 	typeRefTest{"nullable", "basic",
-		expectedTypeRef{"", TypeRefNullable, true,
+		expectedTypeRef{"", TypeRefNullable, true, false,
 			[]expectedTypeRef{
-				expectedTypeRef{"BasicClass", TypeRefPath, true, []expectedTypeRef{}}}}},
+				expectedTypeRef{"BasicClass", TypeRefPath, true, false, []expectedTypeRef{}}}}},
 
 	typeRefTest{"stream", "basic",
-		expectedTypeRef{"", TypeRefStream, true,
+		expectedTypeRef{"", TypeRefStream, true, false,
 			[]expectedTypeRef{
-				expectedTypeRef{"AnotherClass", TypeRefPath, true, []expectedTypeRef{}}}}},
+				expectedTypeRef{"AnotherClass", TypeRefPath, true, false, []expectedTypeRef{}}}}},
 
 	typeRefTest{"streammultipart", "basic",
-		expectedTypeRef{"", TypeRefStream, true,
+		expectedTypeRef{"", TypeRefStream, true, false,
 			[]expectedTypeRef{
-				expectedTypeRef{"AnotherClass", TypeRefPath, true, []expectedTypeRef{}}}}},
+				expectedTypeRef{"AnotherClass", TypeRefPath, true, false, []expectedTypeRef{}}}}},
 
 	typeRefTest{"generic", "basic",
-		expectedTypeRef{"GenericClass", TypeRefPath, true,
+		expectedTypeRef{"GenericClass", TypeRefPath, true, false,
 			[]expectedTypeRef{
-				expectedTypeRef{"BasicClass", TypeRefPath, true, []expectedTypeRef{}},
-				expectedTypeRef{"AnotherClass", TypeRefPath, true, []expectedTypeRef{}}}}},
+				expectedTypeRef{"BasicClass", TypeRefPath, true, false, []expectedTypeRef{}},
+				expectedTypeRef{"AnotherClass", TypeRefPath, true, false, []expectedTypeRef{}}}}},
 
-	typeRefTest{"invalid", "basic", expectedTypeRef{"", TypeRefPath, false, []expectedTypeRef{}}},
+	typeRefTest{"invalid", "basic", expectedTypeRef{"", TypeRefPath, false, false, []expectedTypeRef{}}},
 
 	typeRefTest{"streaminvalid", "basic",
-		expectedTypeRef{"", TypeRefStream, true,
+		expectedTypeRef{"", TypeRefStream, true, false,
 			[]expectedTypeRef{
-				expectedTypeRef{"", TypeRefPath, false, []expectedTypeRef{}}}}},
+				expectedTypeRef{"", TypeRefPath, false, false, []expectedTypeRef{}}}}},
 
-	typeRefTest{"invalidpath", "basic", expectedTypeRef{"", TypeRefPath, false, []expectedTypeRef{}}},
-	typeRefTest{"invalidpath2", "basic", expectedTypeRef{"", TypeRefPath, false, []expectedTypeRef{}}},
+	typeRefTest{"invalidpath", "basic", expectedTypeRef{"", TypeRefPath, false, false, []expectedTypeRef{}}},
+	typeRefTest{"invalidpath2", "basic", expectedTypeRef{"", TypeRefPath, false, false, []expectedTypeRef{}}},
 
-	typeRefTest{"typegeneric", "basic", expectedTypeRef{"T", TypeRefPath, true, []expectedTypeRef{}}},
-	typeRefTest{"membergeneric", "basic", expectedTypeRef{"Q", TypeRefPath, true, []expectedTypeRef{}}},
+	typeRefTest{"typegeneric", "basic", expectedTypeRef{"T", TypeRefPath, true, false, []expectedTypeRef{}}},
+	typeRefTest{"membergeneric", "basic", expectedTypeRef{"Q", TypeRefPath, true, false, []expectedTypeRef{}}},
 
-	typeRefTest{"invalidgeneric", "basic", expectedTypeRef{"", TypeRefPath, false, []expectedTypeRef{}}},
+	typeRefTest{"invalidgeneric", "basic", expectedTypeRef{"", TypeRefPath, false, false, []expectedTypeRef{}}},
 
-	typeRefTest{"somealiasref", "basic", expectedTypeRef{"Stream", TypeRefPath, true, []expectedTypeRef{}}},
-	typeRefTest{"anotheraliasref", "basic", expectedTypeRef{"Boolean", TypeRefPath, true, []expectedTypeRef{}}},
+	typeRefTest{"somealiasref", "basic", expectedTypeRef{"Stream", TypeRefPath, true, false, []expectedTypeRef{}}},
+	typeRefTest{"anotheraliasref", "basic", expectedTypeRef{"Boolean", TypeRefPath, true, false, []expectedTypeRef{}}},
+
+	typeRefTest{"externalpackage", "external", expectedTypeRef{"TestType", TypeRefPath, true, true, []expectedTypeRef{}}},
+	typeRefTest{"externaltype", "external", expectedTypeRef{"SomeExternalType", TypeRefPath, true, true, []expectedTypeRef{}}},
+	typeRefTest{"aliasedexternaltype", "external", expectedTypeRef{"AnotherExternalType", TypeRefPath, true, true, []expectedTypeRef{}}},
 }
 
 func assertTypeRef(t *testing.T, test string, typeRef SRGTypeRef, expected expectedTypeRef) {
@@ -83,21 +88,37 @@ func assertTypeRef(t *testing.T, test string, typeRef SRGTypeRef, expected expec
 			return
 		}
 
-		if found {
-			if !assert.Equal(t, expected.typeName, resolvedType.Name(), "In test %s, expected type name %s, found: %s", test, expected.typeName, resolvedType.Name()) {
-				return
-			}
-		}
-
-		// Resolve generics.
-		generics := typeRef.Generics()
-		if !assert.Equal(t, len(expected.genericsOrInner), len(generics), "In test %s, generic count mismatch", test) {
+		if !found {
 			return
 		}
 
-		// Compare generics.
-		for index, generic := range generics {
-			assertTypeRef(t, test, generic, expected.genericsOrInner[index])
+		if !assert.Equal(t, expected.isExternal, resolvedType.IsExternalPackage, "External package mismatch for test %v", test) {
+			return
+		}
+
+		if resolvedType.IsExternalPackage {
+			if !assert.Equal(t, expected.typeName, resolvedType.ExternalPackageTypePath, "In test %s, expected type name %s, found: %s", test, expected.typeName, resolvedType.ExternalPackageTypePath) {
+				return
+			}
+		} else {
+			if !assert.NotNil(t, resolvedType.ResolvedType, "In test %s found nil ResolvedType", test) {
+				return
+			}
+
+			if !assert.Equal(t, expected.typeName, resolvedType.ResolvedType.Name(), "In test %s, expected type name %s, found: %s", test, expected.typeName, resolvedType.ResolvedType.Name()) {
+				return
+			}
+
+			// Resolve generics.
+			generics := typeRef.Generics()
+			if !assert.Equal(t, len(expected.genericsOrInner), len(generics), "In test %s, generic count mismatch", test) {
+				return
+			}
+
+			// Compare generics.
+			for index, generic := range generics {
+				assertTypeRef(t, test, generic, expected.genericsOrInner[index])
+			}
 		}
 	} else {
 		assertTypeRef(t, test, typeRef.InnerReference(), expected.genericsOrInner[0])

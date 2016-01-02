@@ -83,7 +83,7 @@ func (t SRGTypeRef) ResolutionPath() string {
 
 // ResolveType attempts to resolve the type path referenced by this type ref.
 // Panics if this is not a RefKind of TypeRefPath.
-func (t SRGTypeRef) ResolveType() (SRGTypeOrGeneric, bool) {
+func (t SRGTypeRef) ResolveType() (TypeResolutionResult, bool) {
 	// Find the parent module.
 	source := compilercommon.InputSource(t.GraphNode.Get(parser.NodePredicateSource))
 	srgModule, found := t.srg.FindModuleBySource(source)
@@ -95,14 +95,14 @@ func (t SRGTypeRef) ResolveType() (SRGTypeOrGeneric, bool) {
 	resolutionPath := t.ResolutionPath()
 	resolvedType, typeFound := srgModule.ResolveType(resolutionPath)
 	if typeFound {
-		return SRGTypeOrGeneric{resolvedType.GraphNode, t.srg}, true
+		return resolvedType, true
 	}
 
 	// If not found and the path is a single name, try to resolve as a generic
 	// under a parent function or type.
 	if strings.ContainsRune(resolutionPath, '.') {
 		// Not a single name.
-		return SRGTypeOrGeneric{}, false
+		return TypeResolutionResult{}, false
 	}
 
 	containingFilter := func(q *compilergraph.GraphQuery) compilergraph.Query {
@@ -121,7 +121,7 @@ func (t SRGTypeRef) ResolveType() (SRGTypeOrGeneric, bool) {
 			HasWhere(parser.NodePredicateEndRune, compilergraph.WhereGTE, endRune)
 	}
 
-	resolvedGeneric, genericFound := t.srg.layer.
+	resolvedGenericNode, genericFound := t.srg.layer.
 		StartQuery().                                         // Find a node...
 		Has(parser.NodeGenericPredicateName, resolutionPath). // With the generic name..
 		Has(parser.NodePredicateSource, string(source)).      // That is in this module...
@@ -129,7 +129,7 @@ func (t SRGTypeRef) ResolveType() (SRGTypeOrGeneric, bool) {
 		FilterBy(containingFilter).                           // Filter by whether its defining type or member contains this typeref.
 		TryGetNode()
 
-	return SRGTypeOrGeneric{resolvedGeneric, t.srg}, genericFound
+	return resultForTypeOrGeneric(SRGTypeOrGeneric{resolvedGenericNode, t.srg}), genericFound
 }
 
 // InnerReference returns the inner type reference, if this is a nullable or stream.

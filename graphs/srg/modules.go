@@ -93,16 +93,26 @@ func (m SRGModule) GetMembers() []SRGMember {
 	return members
 }
 
-// findImportByName searches for the import with the given name and returns it, if any.
-func (m SRGModule) findImportByName(name string) (compilergraph.GraphNode, bool) {
+// findImportByName searches for the import with the given package name and returns it, if any.
+func (m SRGModule) findImportByPackageName(name string) (compilergraph.GraphNode, bool) {
 	return m.StartQuery().
 		Out(parser.NodePredicateChild).
+		IsKind(parser.NodeTypeImport).
 		Has(parser.NodeImportPredicatePackageName, name).
 		TryGetNode()
 }
 
+// findImportWithLocalName attempts to find an import in this module with the given local name.
+func (m SRGModule) findImportWithLocalName(name string) (compilergraph.GraphNode, bool) {
+	return m.GraphNode.StartQuery().
+		Out(parser.NodePredicateChild).
+		IsKind(parser.NodeTypeImport).
+		Has(parser.NodeImportPredicateName, name).
+		TryGetNode()
+}
+
 // FindTypeOrMemberByName searches for the type definition, declaration or module member with the given
-// name under this module and returns it (if found)
+// name under this module and returns it (if found). Note that this method does not handle imports.
 func (m SRGModule) FindTypeOrMemberByName(name string, option ModuleResolutionOption) (SRGTypeOrMember, bool) {
 	// If only exported members are allowed, ensure that the name being searched matches exported
 	// name rules.
@@ -110,39 +120,18 @@ func (m SRGModule) FindTypeOrMemberByName(name string, option ModuleResolutionOp
 		return SRGTypeOrMember{}, false
 	}
 
-	// By default, we find matching types and members in the module. If the resolution option allows for
-	// imports as well, add them to the allowed list.
-	allowedKinds := []compilergraph.TaggedValue{parser.NodeTypeClass, parser.NodeTypeInterface,
-		parser.NodeTypeVariable, parser.NodeTypeFunction}
-
-	if option == ModuleResolveAll {
-		allowedKinds = append(allowedKinds, parser.NodeTypeImport)
-	}
-
+	// Find matching types and members in the module.
 	nodeFound, found := m.StartQuery().
 		Out(parser.NodePredicateChild).
 		Has("named", name).
-		IsKind(allowedKinds...).
+		IsKind(parser.NodeTypeClass, parser.NodeTypeInterface, parser.NodeTypeVariable, parser.NodeTypeFunction).
 		TryGetNode()
 
 	if !found {
 		return SRGTypeOrMember{}, false
 	}
 
-	// If the node is an import node, search under the imported module/package.
-	if nodeFound.Kind == parser.NodeTypeImport {
-		packageInfo := m.srg.getPackageForImport(nodeFound)
-
-		// If there is a subsource on the import, then we resolve that name under the package.
-		if subsource, ok := nodeFound.TryGet(parser.NodeImportPredicateSubsource); ok {
-			return packageInfo.FindTypeOrMemberByName(subsource, ModuleResolveExportedOnly)
-		}
-
-		// Otherwise, we resolve the original requested name.
-		return packageInfo.FindTypeOrMemberByName(name, ModuleResolveExportedOnly)
-	}
-
-	// Otherwise, return the type found.
+	// Return the type found.
 	return SRGTypeOrMember{nodeFound, m.srg}, true
 }
 

@@ -17,7 +17,7 @@ type srgSourceHandler struct {
 }
 
 func (sh *srgSourceHandler) Kind() string {
-	return "" // SRG is the default handler.
+	return srgSourceKind
 }
 
 func (sh *srgSourceHandler) PackageFileExtension() string {
@@ -56,6 +56,9 @@ func (sh *srgSourceHandler) Verify(packageMap map[string]packageloader.PackageIn
 	for fit.Next() {
 		// Load the package information.
 		packageInfo := g.getPackageForImport(fit.Node())
+		if !packageInfo.IsSRGPackage() {
+			continue
+		}
 
 		// Search for the subsource.
 		subsource := fit.Values()[parser.NodeImportPredicateSubsource]

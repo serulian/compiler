@@ -13,8 +13,36 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/parser"
 )
+
+// SRGScopeOrImport represents a named scope or an external package import.
+type SRGScopeOrImport interface {
+	IsNamedScope() bool // Whether this is a named scope.
+	AsNamedScope() SRGNamedScope
+	AsPackageImport() SRGExternalPackageImport
+}
+
+// SRGExternalPackageImport represents a reference to an imported name from another package
+// within the SRG.
+type SRGExternalPackageImport struct {
+	packageInfo packageloader.PackageInfo // The external package.
+	name        string                    // The name of the imported member.
+	srg         *SRG                      // The parent SRG.
+}
+
+func (ns SRGExternalPackageImport) IsNamedScope() bool {
+	return false
+}
+
+func (ns SRGExternalPackageImport) AsNamedScope() SRGNamedScope {
+	panic("Not a named scope!")
+}
+
+func (ns SRGExternalPackageImport) AsPackageImport() SRGExternalPackageImport {
+	return ns
+}
 
 // SRGNamedScope represents a reference to a named scope in the SRG (import, variable, etc).
 type SRGNamedScope struct {
@@ -38,8 +66,20 @@ const (
 	NamedScopeVariable                        // The named scope refers to a variable statement.
 )
 
+func (ns SRGNamedScope) IsNamedScope() bool {
+	return true
+}
+
+func (ns SRGNamedScope) AsNamedScope() SRGNamedScope {
+	return ns
+}
+
+func (ns SRGNamedScope) AsPackageImport() SRGExternalPackageImport {
+	panic("Not an imported package!")
+}
+
 // Title returns a nice title for the given named scope.
-func (ns *SRGNamedScope) Title() string {
+func (ns SRGNamedScope) Title() string {
 	switch ns.ScopeKind() {
 	case NamedScopeType:
 		return "type"
@@ -65,7 +105,7 @@ func (ns *SRGNamedScope) Title() string {
 }
 
 // IsAssignable returns whether the scoped node is assignable.
-func (ns *SRGNamedScope) IsAssignable() bool {
+func (ns SRGNamedScope) IsAssignable() bool {
 	switch ns.ScopeKind() {
 	case NamedScopeType:
 		fallthrough
@@ -92,7 +132,7 @@ func (ns *SRGNamedScope) IsAssignable() bool {
 }
 
 // IsStatic returns whether the scoped node is static.
-func (ns *SRGNamedScope) IsStatic() bool {
+func (ns SRGNamedScope) IsStatic() bool {
 	switch ns.ScopeKind() {
 	case NamedScopeType:
 		return true
@@ -118,7 +158,7 @@ func (ns *SRGNamedScope) IsStatic() bool {
 }
 
 // ScopeKind returns the kind of the scoped node.
-func (ns *SRGNamedScope) ScopeKind() NamedScopeKind {
+func (ns SRGNamedScope) ScopeKind() NamedScopeKind {
 	switch ns.Kind {
 
 	/* Types */
@@ -169,7 +209,7 @@ func (ns *SRGNamedScope) ScopeKind() NamedScopeKind {
 }
 
 // Name returns the name of the scoped node.
-func (ns *SRGNamedScope) Name() string {
+func (ns SRGNamedScope) Name() string {
 	switch ns.Kind {
 
 	case parser.NodeTypeClass:
@@ -214,7 +254,7 @@ func (ns *SRGNamedScope) Name() string {
 }
 
 // ResolveNameUnderScope attempts to resolve the given name under this scope. Only applies to imports.
-func (ns *SRGNamedScope) ResolveNameUnderScope(name string) (SRGNamedScope, bool) {
+func (ns SRGNamedScope) ResolveNameUnderScope(name string) (SRGNamedScope, bool) {
 	if ns.Kind != parser.NodeTypeImport {
 		return SRGNamedScope{}, false
 	}
@@ -251,7 +291,7 @@ func (g *SRG) FindReferencesInScope(name string, node compilergraph.GraphNode) c
 }
 
 // FindNameInScope finds the given name accessible from the scope under which the given node exists, if any.
-func (g *SRG) FindNameInScope(name string, node compilergraph.GraphNode) (SRGNamedScope, bool) {
+func (g *SRG) FindNameInScope(name string, node compilergraph.GraphNode) (SRGScopeOrImport, bool) {
 	// Attempt to resolve the name as pointing to a parameter, var statement, loop var or with var.
 	srgNode, srgNodeFound := g.findAddedNameInScope(name, node)
 	if srgNodeFound {
@@ -265,14 +305,34 @@ func (g *SRG) FindNameInScope(name string, node compilergraph.GraphNode) (SRGNam
 		panic(fmt.Sprintf("Missing module for source %v", nodeSource))
 	}
 
-	// Try to resolve as a local or imported type or member.
+	// Try to resolve as a local member.
 	srgTypeOrMember, typeOrMemberFound := parentModule.FindTypeOrMemberByName(name, ModuleResolveAll)
 	if typeOrMemberFound {
 		return SRGNamedScope{srgTypeOrMember.GraphNode, g}, true
 	}
 
-	// Try to resolve as an import.
-	importNode, importFound := parentModule.findImportByName(name)
+	// Try to resolve as an imported member.
+	localImportNode, localImportFound := parentModule.findImportWithLocalName(name)
+	if localImportFound {
+		// Retrieve the package for the imported member.
+		packageInfo := g.getPackageForImport(localImportNode)
+		resolutionName := localImportNode.Get(parser.NodeImportPredicateSubsource)
+
+		// If an SRG package, then continue with the resolution. Otherwise,
+		// we return a named scope that says that the name needs to be furthered
+		// resolved in the package by the type graph.
+		if packageInfo.IsSRGPackage() {
+			packageTypeOrMember, packagetypeOrMemberFound := packageInfo.FindTypeOrMemberByName(resolutionName, ModuleResolveExportedOnly)
+			if packagetypeOrMemberFound {
+				return SRGNamedScope{packageTypeOrMember.GraphNode, g}, true
+			}
+		}
+
+		return SRGExternalPackageImport{packageInfo.packageInfo, resolutionName, g}, true
+	}
+
+	// Try to resolve as an imported package.
+	importNode, importFound := parentModule.findImportByPackageName(name)
 	if importFound {
 		return SRGNamedScope{importNode, g}, true
 	}

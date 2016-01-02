@@ -33,14 +33,14 @@ var memberTests = []memberTest{
 		[]string{"T"},
 		[]string{"foo", "bar"},
 		expectedTypeRef{},
-		expectedTypeRef{"AnotherClass", TypeRefPath, true, []expectedTypeRef{}},
+		expectedTypeRef{"AnotherClass", TypeRefPath, true, false, []expectedTypeRef{}},
 	},
 
 	memberTest{"class property test", "class", "TestClass", "SomeProperty",
 		PropertyMember,
 		[]string{},
 		[]string{},
-		expectedTypeRef{"SomeClass", TypeRefPath, true, []expectedTypeRef{}},
+		expectedTypeRef{"SomeClass", TypeRefPath, true, false, []expectedTypeRef{}},
 		expectedTypeRef{},
 	},
 
@@ -56,7 +56,7 @@ var memberTests = []memberTest{
 		VarMember,
 		[]string{},
 		[]string{},
-		expectedTypeRef{"SomeClass", TypeRefPath, true, []expectedTypeRef{}},
+		expectedTypeRef{"SomeClass", TypeRefPath, true, false, []expectedTypeRef{}},
 		expectedTypeRef{},
 	},
 
@@ -74,14 +74,14 @@ var memberTests = []memberTest{
 		[]string{"T"},
 		[]string{"foo", "bar"},
 		expectedTypeRef{},
-		expectedTypeRef{"AnotherClass", TypeRefPath, true, []expectedTypeRef{}},
+		expectedTypeRef{"AnotherClass", TypeRefPath, true, false, []expectedTypeRef{}},
 	},
 
 	memberTest{"interface property test", "interface", "TestInterface", "SomeProperty",
 		PropertyMember,
 		[]string{},
 		[]string{},
-		expectedTypeRef{"SomeClass", TypeRefPath, true, []expectedTypeRef{}},
+		expectedTypeRef{"SomeClass", TypeRefPath, true, false, []expectedTypeRef{}},
 		expectedTypeRef{},
 	},
 
@@ -120,10 +120,12 @@ func TestTypeMembers(t *testing.T) {
 
 		// Ensure that the type was loaded.
 		module, _ := testSRG.FindModuleBySource(compilercommon.InputSource(fmt.Sprintf("tests/members/%s.seru", test.input)))
-		testType, typeFound := module.ResolveType(test.typeName)
+		resolvedType, typeFound := module.ResolveType(test.typeName)
 		if !assert.True(t, typeFound, "Test type %s not found", test.typeName) {
 			continue
 		}
+
+		testType := resolvedType.ResolvedType.AsType()
 
 		if !assert.Equal(t, test.typeName, testType.Name(), "Expected type mismatch") {
 			continue

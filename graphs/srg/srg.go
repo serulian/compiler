@@ -19,6 +19,9 @@ var _ = fmt.Print
 // The name of the internal decorator for marking a type with a global alias.
 const aliasInternalDecoratorName = "typealias"
 
+// The kind code for the SRG in the packageloader. Since SRG is the default, it is the empty string.
+const srgSourceKind = ""
+
 // SRG represents the SRG layer and all its associated helper methods.
 type SRG struct {
 	Graph *compilergraph.SerulianGraph // The root graph.

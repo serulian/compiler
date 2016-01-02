@@ -39,3 +39,12 @@ func (t SRGTypeOrGeneric) Node() compilergraph.GraphNode {
 func (t SRGTypeOrGeneric) Location() compilercommon.SourceAndLocation {
 	return salForNode(t.GraphNode)
 }
+
+// AsType returns this type or generic as a type. Panics if not a type.
+func (t SRGTypeOrGeneric) AsType() SRGType {
+	if t.IsGeneric() {
+		panic("Cannot convert generic to a type")
+	}
+
+	return SRGType{t.GraphNode, t.srg}
+}

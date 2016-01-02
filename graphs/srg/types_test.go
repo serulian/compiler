@@ -63,7 +63,7 @@ func TestGenericType(t *testing.T) {
 
 	resolvedConstraint, valid := constraint.ResolveType()
 	assert.True(t, valid, "Expected resolved constraint on generic Q")
-	assert.Equal(t, "InnerClass", resolvedConstraint.Name(), "Expected InnerClass constraint on generic Q")
+	assert.Equal(t, "InnerClass", resolvedConstraint.ResolvedType.Name(), "Expected InnerClass constraint on generic Q")
 }
 
 func TestInheritance(t *testing.T) {
@@ -77,8 +77,8 @@ func TestInheritance(t *testing.T) {
 	assert.Equal(t, 2, len(inherits), "Expected two parent types on type")
 
 	firstParent, _ := inherits[0].ResolveType()
-	assert.Equal(t, "SomeClass", firstParent.Name(), "Expected SomeClass")
+	assert.Equal(t, "SomeClass", firstParent.ResolvedType.Name(), "Expected SomeClass")
 
 	secondParent, _ := inherits[1].ResolveType()
-	assert.Equal(t, "SecondClass", secondParent.Name(), "Expected SecondClass")
+	assert.Equal(t, "SecondClass", secondParent.ResolvedType.Name(), "Expected SecondClass")
 }
