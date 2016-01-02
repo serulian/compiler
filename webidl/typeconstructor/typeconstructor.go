@@ -97,6 +97,7 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 
 			ibuilder.Exported(true).
 				Static(member.IsStatic()).
+				Synchronous(true).
 				ReadOnly(isReadonly).
 				MemberKind(uint64(member.Kind())).
 				MemberType(memberType).

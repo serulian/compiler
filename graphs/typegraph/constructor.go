@@ -344,9 +344,10 @@ type dependentMemberBuilder struct {
 
 	exists bool // Whether a member with the same name already exists under the parent
 
-	exported bool // Whether the member is exported publicly.
-	readonly bool // Whether the member is readonly.
-	static   bool // Whether the member is static.
+	exported    bool // Whether the member is exported publicly.
+	readonly    bool // Whether the member is readonly.
+	static      bool // Whether the member is static.
+	synchronous bool // Whether the member is synchronous.
 
 	memberType TypeReference // The defined type of the member.
 	memberKind uint64        // The kind of the member.
@@ -463,6 +464,12 @@ func (mb *dependentMemberBuilder) Static(static bool) *dependentMemberBuilder {
 	return mb
 }
 
+// Synchronous sets whether the member is synchronous. Should only be set for non-Serulian functions.
+func (mb *dependentMemberBuilder) Synchronous(synchronous bool) *dependentMemberBuilder {
+	mb.synchronous = synchronous
+	return mb
+}
+
 // MemberType sets the type of the member.
 func (mb *dependentMemberBuilder) MemberType(memberType TypeReference) *dependentMemberBuilder {
 	mb.memberType = memberType
@@ -493,6 +500,10 @@ func (mb *dependentMemberBuilder) DefineGenericConstraint(genericSourceNode comp
 // Define completes the definition of the member.
 func (mb *dependentMemberBuilder) Define() {
 	memberNode := mb.memberNode
+
+	if mb.synchronous {
+		memberNode.Decorate(NodePredicateMemberSynchronous, "true")
+	}
 
 	if mb.exported {
 		memberNode.Decorate(NodePredicateMemberExported, "true")

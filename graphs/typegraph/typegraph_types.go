@@ -139,6 +139,10 @@ const (
 	// Decorates a member with the type from which it was aliased.
 	NodePredicateMemberBaseSource = "member-base-source"
 
+	// Decorates a member as being synchronous when called (only applies to functions).
+	// The only synchronous functions will be those added by non-Serulian code (e.g. WebIDL).
+	NodePredicateMemberSynchronous = "member-synchronous"
+
 	//
 	// NodeTypeOperator
 	//

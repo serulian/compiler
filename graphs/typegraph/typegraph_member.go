@@ -92,6 +92,12 @@ func (tn TGMember) IsStatic() bool {
 	return isStatic
 }
 
+// IsSynchronous returns whether the member is synchronous.
+func (tn TGMember) IsSynchronous() bool {
+	_, isSynchronous := tn.GraphNode.TryGet(NodePredicateMemberSynchronous)
+	return isSynchronous
+}
+
 // IsType returns whether this is a type (always false).
 func (tn TGMember) IsType() bool {
 	return false
