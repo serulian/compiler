@@ -48,17 +48,18 @@
         "Key": "292ef3d465da1e85428d9927008fffff",
         "Kind": 3,
         "Children": {
-            "6f0103dedec303cdf2ff6af82215c4d9": {
+            "979da7e6dd351f60baac7855d7b3f164": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "6f0103dedec303cdf2ff6af82215c4d9",
+                    "Key": "979da7e6dd351f60baac7855d7b3f164",
                     "Kind": 5,
                     "Children": {},
                     "Predicates": {
+                        "tdg-member-exported": "true",
                         "tdg-member-name": "new",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cFourthInterface\u003e(any)",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u001efunction\u003cFourthInterface\u003e(any)",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0001*\u001efunction\u003cFourthInterface\u003e(any)",
                         "tdg-member-static": "true",
                         "tdg-member-synchronous": "true",
                         "tdg-node-kind": "5|NodeType|tdg",
@@ -108,17 +109,18 @@
         "Key": "a91059f47ea1eced3507cd124556c192",
         "Kind": 3,
         "Children": {
-            "754740f2a8f9de5b54ab559b1e69b3ab": {
+            "ddb2fc5ad4bdad4ca2046b41fb7d6e63": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "754740f2a8f9de5b54ab559b1e69b3ab",
+                    "Key": "ddb2fc5ad4bdad4ca2046b41fb7d6e63",
                     "Kind": 5,
                     "Children": {},
                     "Predicates": {
+                        "tdg-member-exported": "true",
                         "tdg-member-name": "new",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cThirdInterface\u003e(SomeInterface, AnotherInterface?)",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*:function\u003cThirdInterface\u003e(SomeInterface, AnotherInterface?)",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0001*:function\u003cThirdInterface\u003e(SomeInterface, AnotherInterface?)",
                         "tdg-member-static": "true",
                         "tdg-member-synchronous": "true",
                         "tdg-node-kind": "5|NodeType|tdg",
@@ -182,17 +184,18 @@
         "Key": "c3e48b032516805ecc48807d37e94b5f",
         "Kind": 3,
         "Children": {
-            "fcd446b7a296239d27c64e58c4caaa2f": {
+            "15fe79f6c41c2a0fa881f15831ccbe2a": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "fcd446b7a296239d27c64e58c4caaa2f",
+                    "Key": "15fe79f6c41c2a0fa881f15831ccbe2a",
                     "Kind": 5,
                     "Children": {},
                     "Predicates": {
+                        "tdg-member-exported": "true",
                         "tdg-member-name": "new",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cAnotherInterface\u003e(SomeInterface)",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*)function\u003cAnotherInterface\u003e(SomeInterface)",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0001*)function\u003cAnotherInterface\u003e(SomeInterface)",
                         "tdg-member-static": "true",
                         "tdg-member-synchronous": "true",
                         "tdg-node-kind": "5|NodeType|tdg",
@@ -257,17 +260,18 @@
         "Key": "fd0087590c250339d68f95902c9be968",
         "Kind": 3,
         "Children": {
-            "05b9af9fd08b016cb14738370628ed0b": {
+            "3c3c092a3dd6d9babfc6a93e4626f12c": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "05b9af9fd08b016cb14738370628ed0b",
+                    "Key": "3c3c092a3dd6d9babfc6a93e4626f12c",
                     "Kind": 5,
                     "Children": {},
                     "Predicates": {
+                        "tdg-member-exported": "true",
                         "tdg-member-name": "new",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cSomeInterface\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0017function\u003cSomeInterface\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0001*\u0017function\u003cSomeInterface\u003e",
                         "tdg-member-static": "true",
                         "tdg-member-synchronous": "true",
                         "tdg-node-kind": "5|NodeType|tdg",
