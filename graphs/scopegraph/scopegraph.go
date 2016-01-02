@@ -15,15 +15,18 @@ import (
 
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/srg"
-	"github.com/serulian/compiler/graphs/srg/typeconstructor"
+	srgtc "github.com/serulian/compiler/graphs/srg/typeconstructor"
 	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/packageloader"
+	"github.com/serulian/compiler/webidl"
+	webidltc "github.com/serulian/compiler/webidl/typeconstructor"
 )
 
 // ScopeGraph represents the ScopeGraph layer and all its associated helper methods.
 type ScopeGraph struct {
 	srg   *srg.SRG                     // The SRG behind this scope graph.
 	tdg   *typegraph.TypeGraph         // The TDG behind this scope graph.
+	irg   *webidl.WebIRG               // The IRG for WebIDL behind this scope graph.
 	graph *compilergraph.SerulianGraph // The root graph.
 
 	layer *compilergraph.GraphLayer // The ScopeGraph layer in the graph.
@@ -47,7 +50,9 @@ func ParseAndBuildScopeGraph(rootSourceFilePath string, libraries ...packageload
 
 	// Create the SRG for the source and load it.
 	sourcegraph := srg.NewSRG(graph)
-	loader := packageloader.NewPackageLoader(rootSourceFilePath, sourcegraph.PackageLoaderHandler())
+	webidlgraph := webidl.NewIRG(graph)
+
+	loader := packageloader.NewPackageLoader(rootSourceFilePath, sourcegraph.PackageLoaderHandler(), webidlgraph.PackageLoaderHandler())
 	loaderResult := loader.Load(libraries...)
 	if !loaderResult.Status {
 		return Result{
@@ -58,7 +63,7 @@ func ParseAndBuildScopeGraph(rootSourceFilePath string, libraries ...packageload
 	}
 
 	// Construct the type graph.
-	typeResult := typegraph.BuildTypeGraph(sourcegraph.Graph, typeconstructor.GetConstructor(sourcegraph))
+	typeResult := typegraph.BuildTypeGraph(sourcegraph.Graph, srgtc.GetConstructor(sourcegraph), webidltc.GetConstructor(webidlgraph))
 	if !typeResult.Status {
 		return Result{
 			Status:   false,
@@ -68,7 +73,7 @@ func ParseAndBuildScopeGraph(rootSourceFilePath string, libraries ...packageload
 	}
 
 	// Construct the scope graph.
-	scopeResult := BuildScopeGraph(sourcegraph, typeResult.Graph)
+	scopeResult := BuildScopeGraph(sourcegraph, webidlgraph, typeResult.Graph)
 	return Result{
 		Status:   scopeResult.Status,
 		Errors:   scopeResult.Errors,
@@ -100,10 +105,11 @@ func combineWarnings(warnings ...[]compilercommon.SourceWarning) []compilercommo
 
 // BuildScopeGraph returns a new ScopeGraph that is populated from the given SRG and TypeGraph,
 // computing scope for all statements and expressions and semantic checking along the way.
-func BuildScopeGraph(srg *srg.SRG, tdg *typegraph.TypeGraph) Result {
+func BuildScopeGraph(srg *srg.SRG, irg *webidl.WebIRG, tdg *typegraph.TypeGraph) Result {
 	scopeGraph := &ScopeGraph{
 		srg:   srg,
 		tdg:   tdg,
+		irg:   irg,
 		graph: srg.Graph,
 		layer: srg.Graph.NewGraphLayer("sig", NodeTypeTagged),
 	}
@@ -171,6 +177,6 @@ func (sg *ScopeGraph) GetScope(srgNode compilergraph.GraphNode) (proto.ScopeInfo
 
 // resolveSRGTypeRef builds an SRG type reference into a resolved type reference.
 func (sg *ScopeGraph) ResolveSRGTypeRef(srgTypeRef srg.SRGTypeRef) (typegraph.TypeReference, error) {
-	constructor := typeconstructor.GetConstructor(sg.srg)
+	constructor := srgtc.GetConstructor(sg.srg)
 	return constructor.BuildTypeRef(srgTypeRef, sg.tdg)
 }

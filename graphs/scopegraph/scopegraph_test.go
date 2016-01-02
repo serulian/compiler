@@ -701,6 +701,28 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"tagged template failure success", "templatestr", "taggedfailure",
 		[]expectedScopeEntry{},
 		"Tagging expression for template string must have type Function<String>(List<String>, List<Stringable>). Found: Function<void>", ""},
+
+	/////////// webidl tests /////////////////
+
+	scopegraphTest{"webidl success", "webidl", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"sometype", expectedScope{true, proto.ScopeKind_STATIC, "void", "void"}},
+			expectedScopeEntry{"someparam", expectedScope{true, proto.ScopeKind_VALUE, "SomeType", "void"}},
+			expectedScopeEntry{"somefunc", expectedScope{true, proto.ScopeKind_VALUE, "any", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"webidl unknown type failure", "webidl", "unknowntype",
+		[]expectedScopeEntry{},
+		"Type 'global.UnknownType' could not be found", ""},
+
+	scopegraphTest{"webidl non-static function failure", "webidl", "nonstatic",
+		[]expectedScopeEntry{},
+		"Could not find static name 'SomeFunction' under external interface SomeType", ""},
+
+	scopegraphTest{"webidl static function failure", "webidl", "static",
+		[]expectedScopeEntry{},
+		"Could not find static name 'SomeFunction' under external interface SomeType", ""},
 }
 
 func TestGraphs(t *testing.T) {

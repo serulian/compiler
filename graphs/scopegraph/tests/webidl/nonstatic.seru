@@ -1,0 +1,5 @@
+import webidl`local` as global
+
+function<void> DoSomething() {
+	global.SomeType.SomeFunction()
+}

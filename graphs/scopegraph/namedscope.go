@@ -32,7 +32,26 @@ func (sb *scopeBuilder) lookupNamedScope(name string, node compilergraph.GraphNo
 		return namedScopeInfo{}, false
 	}
 
-	return sb.buildNamedScopeForSRGInfo(srgInfo), true
+	return sb.processSRGNameOrInfo(srgInfo)
+}
+
+// processSRGNameOrInfo handles an SRGScopeOrImport, either translating an SRGNamedScope into a namedScopeInfo
+// or performing the actual lookup under the typegraph for non-SRG names.
+func (sb *scopeBuilder) processSRGNameOrInfo(srgInfo srg.SRGScopeOrImport) (namedScopeInfo, bool) {
+	// If the SRG info refers to an SRG named scope, build the info for it.
+	if srgInfo.IsNamedScope() {
+		return sb.buildNamedScopeForSRGInfo(srgInfo.AsNamedScope()), true
+	}
+
+	// Otherwise, the SRG info refers to a member of an external package, which we need to resolve
+	// under the type graph.
+	packageImportInfo := srgInfo.AsPackageImport()
+	typeOrMember, found := sb.sg.tdg.ResolveTypeOrMemberUnderPackage(packageImportInfo.ImportedName(), packageImportInfo.Package())
+	if !found {
+		return namedScopeInfo{}, false
+	}
+
+	return namedScopeInfo{srg.SRGNamedScope{}, typeOrMember, sb}, true
 }
 
 // buildNamedScopeForSRGInfo builds a namedScopeInfo for the given SRG scope info.
@@ -128,12 +147,12 @@ func (nsi *namedScopeInfo) ResolveStaticMember(name string, module compilercommo
 
 		return namedScopeInfo{srg.SRGNamedScope{}, typeMember, nsi.sb}, true
 	} else {
-		srgNamedScope, found := nsi.srgInfo.ResolveNameUnderScope(name)
+		namedScopeOrImport, found := nsi.srgInfo.ResolveNameUnderScope(name)
 		if !found {
 			return namedScopeInfo{}, false
 		}
 
-		return nsi.sb.buildNamedScopeForSRGInfo(srgNamedScope), true
+		return nsi.sb.processSRGNameOrInfo(namedScopeOrImport)
 	}
 }
 

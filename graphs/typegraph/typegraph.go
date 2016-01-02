@@ -225,6 +225,19 @@ func (g *TypeGraph) GetTypeOrModuleForSourceNode(sourceNode compilergraph.GraphN
 	}
 }
 
+// ResolveTypeOrMemberUnderPackage searches the type graph for a type or member with the given name, located
+// in any modules found in the given package.
+func (g *TypeGraph) ResolveTypeOrMemberUnderPackage(name string, packageInfo packageloader.PackageInfo) (TGTypeOrMember, bool) {
+	for _, modulePath := range packageInfo.ModulePaths() {
+		typeOrMember, found := g.LookupTypeOrMember(name, modulePath)
+		if found {
+			return typeOrMember, true
+		}
+	}
+
+	return TGTypeDecl{}, false
+}
+
 // ResolveTypeUnderPackage searches the type graph for a type with the given name, located in any modules
 // found in the given package.
 func (g *TypeGraph) ResolveTypeUnderPackage(name string, packageInfo packageloader.PackageInfo) (TGTypeDecl, bool) {
@@ -245,6 +258,9 @@ func (g *TypeGraph) GetTypeOrMember(nodeId compilergraph.GraphNodeId) TGTypeOrMe
 	case NodeTypeClass:
 		fallthrough
 
+	case NodeTypeExternalInterface:
+		fallthrough
+
 	case NodeTypeInterface:
 		fallthrough
 
@@ -261,6 +277,36 @@ func (g *TypeGraph) GetTypeOrMember(nodeId compilergraph.GraphNodeId) TGTypeOrMe
 		panic(fmt.Sprintf("Node is not a type or member: %v", node))
 		return TGMember{node, g}
 	}
+}
+
+// LookupTypeOrMember looks up the type or member with the given name in the given module and returns it (if any).
+func (g *TypeGraph) LookupTypeOrMember(name string, module compilercommon.InputSource) (TGTypeOrMember, bool) {
+	typeDecl, found := g.LookupType(name, module)
+	if found {
+		return typeDecl, true
+	}
+
+	member, found := g.LookupMember(name, module)
+	if found {
+		return member, true
+	}
+
+	return TGTypeDecl{}, false
+}
+
+// LookupMember looks up the member with the given name in the given module and returns it (if any).
+func (g *TypeGraph) LookupMember(memberName string, module compilercommon.InputSource) (TGMember, bool) {
+	memberNode, found := g.layer.StartQuery(memberName).
+		In(NodePredicateMemberName).
+		Has(NodePredicateModulePath, string(module)).
+		IsKind(NodeTypeMember).
+		TryGetNode()
+
+	if !found {
+		return TGMember{}, false
+	}
+
+	return TGMember{memberNode, g}, true
 }
 
 // LookupType looks up the type declaration with the given name in the given module and returns it (if any).

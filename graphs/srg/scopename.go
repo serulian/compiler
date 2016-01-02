@@ -32,6 +32,16 @@ type SRGExternalPackageImport struct {
 	srg         *SRG                      // The parent SRG.
 }
 
+// Package returns the package under which the name is being imported.
+func (ns SRGExternalPackageImport) Package() packageloader.PackageInfo {
+	return ns.packageInfo
+}
+
+// ImportedName returns the name being accessed under the package.
+func (ns SRGExternalPackageImport) ImportedName() string {
+	return ns.name
+}
+
 func (ns SRGExternalPackageImport) IsNamedScope() bool {
 	return false
 }
@@ -254,12 +264,16 @@ func (ns SRGNamedScope) Name() string {
 }
 
 // ResolveNameUnderScope attempts to resolve the given name under this scope. Only applies to imports.
-func (ns SRGNamedScope) ResolveNameUnderScope(name string) (SRGNamedScope, bool) {
+func (ns SRGNamedScope) ResolveNameUnderScope(name string) (SRGScopeOrImport, bool) {
 	if ns.Kind != parser.NodeTypeImport {
 		return SRGNamedScope{}, false
 	}
 
 	packageInfo := ns.srg.getPackageForImport(ns.GraphNode)
+	if !packageInfo.IsSRGPackage() {
+		return SRGExternalPackageImport{packageInfo.packageInfo, name, ns.srg}, true
+	}
+
 	moduleOrType, found := packageInfo.FindTypeOrMemberByName(name, ModuleResolveExportedOnly)
 	if !found {
 		return SRGNamedScope{}, false

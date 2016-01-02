@@ -1,0 +1,9 @@
+import webidl`local` as global
+
+function<void> DoSomething(someParam global.SomeType) {
+	global.SomeType.StaticFunction()
+
+	/* sometype */(global.SomeType)
+	/* someparam */someParam
+	/* somefunc */(someParam.SomeFunction())
+}
