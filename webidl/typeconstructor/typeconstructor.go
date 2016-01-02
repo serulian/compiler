@@ -26,21 +26,24 @@ type irgTypeConstructor struct {
 }
 
 func (itc *irgTypeConstructor) DefineModules(builder typegraph.GetModuleBuilder) {
-	// WebIDL has a single virtual namespace defined as a single module in the typegraph.
-	builder().
-		Name("global").
-		Path("__webidl_global").
-		SourceNode(itc.irg.RootModuleNode()).
-		Define()
+	for _, module := range itc.irg.GetModules() {
+		builder().
+			Name(module.Name()).
+			Path(string(module.InputSource())).
+			SourceNode(module.Node()).
+			Define()
+	}
 }
 
 func (itc *irgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
-	for _, declaration := range itc.irg.Declarations() {
-		typeBuilder := builder(itc.irg.RootModuleNode())
-		typeBuilder.Name(declaration.Name()).
-			SourceNode(declaration.GraphNode).
-			TypeKind(typegraph.ExternalInternalType).
-			Define()
+	for _, module := range itc.irg.GetModules() {
+		for _, declaration := range module.Declarations() {
+			typeBuilder := builder(module.Node())
+			typeBuilder.Name(declaration.Name()).
+				SourceNode(declaration.GraphNode).
+				TypeKind(typegraph.ExternalInternalType).
+				Define()
+		}
 	}
 }
 
@@ -103,7 +106,16 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 }
 
 func (itc *irgTypeConstructor) Validate(reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {
+	seen := map[string]bool{}
 
+	for _, module := range itc.irg.GetModules() {
+		for _, declaration := range module.Declarations() {
+			if _, ok := seen[declaration.Name()]; ok {
+				reporter.ReportError(declaration.GraphNode, "'%s' is already declared in WebIDL", declaration.Name())
+			}
+			seen[declaration.Name()] = true
+		}
+	}
 }
 
 func (itc *irgTypeConstructor) GetLocation(sourceNodeId compilergraph.GraphNodeId) (compilercommon.SourceAndLocation, bool) {
