@@ -150,8 +150,8 @@ func (t SRGType) Inheritance() []SRGTypeRef {
 	return inherits
 }
 
-// Members returns the members on this type.
-func (t SRGType) Members() []SRGMember {
+// GetMembers returns the members on this type.
+func (t SRGType) GetMembers() []SRGMember {
 	it := t.GraphNode.StartQuery().
 		Out(parser.NodeTypeDefinitionMember).
 		BuildNodeIterator()
@@ -176,4 +176,26 @@ func (t SRGType) Generics() []SRGGeneric {
 	}
 
 	return generics
+}
+
+// Alias returns the global alias for this type, if any.
+func (t SRGType) Alias() (string, bool) {
+	dit := t.GraphNode.StartQuery().
+		Out(parser.NodeTypeDefinitionDecorator).
+		Has(parser.NodeDecoratorPredicateInternal, aliasInternalDecoratorName).
+		BuildNodeIterator()
+
+	for dit.Next() {
+		decorator := dit.Node()
+		parameter, ok := decorator.TryGetNode(parser.NodeDecoratorPredicateParameter)
+		if !ok || parameter.Kind != parser.NodeStringLiteralExpression {
+			continue
+		}
+
+		var aliasName = parameter.Get(parser.NodeStringLiteralExpressionValue)
+		aliasName = aliasName[1 : len(aliasName)-1] // Remove the quotes.
+		return aliasName, true
+	}
+
+	return "", false
 }

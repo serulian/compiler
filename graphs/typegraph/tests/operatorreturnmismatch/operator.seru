@@ -1,3 +1,0 @@
-class SomeClass {
-	operator<int> Plus(left SomeClass, right SomeClass) {}
-}

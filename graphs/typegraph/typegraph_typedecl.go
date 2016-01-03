@@ -15,7 +15,8 @@ type TypeKind int
 
 const (
 	ClassType TypeKind = iota
-	InterfaceType
+	ImplicitInterfaceType
+	ExternalInternalType
 	GenericType
 )
 
@@ -25,9 +26,9 @@ type TGTypeDecl struct {
 	tdg *TypeGraph
 }
 
-// GetTypeForSRGNode returns the TypeGraph type decl for the given SRG type node, if any.
-func (g *TypeGraph) GetTypeForSRGNode(node compilergraph.GraphNode) (TGTypeDecl, bool) {
-	typeNode, found := g.tryGetMatchingTypeGraphNode(node, NodeTypeClass, NodeTypeInterface)
+// GetTypeForSourceNode returns the TypeGraph type decl for the given source type node, if any.
+func (g *TypeGraph) GetTypeForSourceNode(node compilergraph.GraphNode) (TGTypeDecl, bool) {
+	typeNode, found := g.tryGetMatchingTypeGraphNode(node, TYPEORGENERIC_NODE_TYPES...)
 	if !found {
 		return TGTypeDecl{}, false
 	}
@@ -54,6 +55,9 @@ func (tn TGTypeDecl) Title() string {
 
 	case NodeTypeInterface:
 		return "interface"
+
+	case NodeTypeExternalInterface:
+		return "external interface"
 
 	case NodeTypeGeneric:
 		return "generic"
@@ -95,7 +99,7 @@ func (tn TGTypeDecl) Generics() []TGGeneric {
 
 // GetTypeReference returns a new type reference to this type.
 func (tn TGTypeDecl) GetTypeReference() TypeReference {
-	return tn.tdg.NewInstanceTypeReference(tn.GraphNode)
+	return tn.tdg.NewInstanceTypeReference(tn)
 }
 
 // GetStaticMember returns the static member with the given name under this type, if any.
@@ -163,9 +167,19 @@ func (tn TGTypeDecl) IsType() bool {
 	return true
 }
 
+// AsType returns this type.
+func (tn TGTypeDecl) AsType() TGTypeDecl {
+	return tn
+}
+
 // IsStatic returns whether this type is static (always true).
 func (tn TGTypeDecl) IsStatic() bool {
 	return true
+}
+
+// IsSynchronous returns whether this type is synchronous (always false).
+func (tn TGTypeDecl) IsSynchronous() bool {
+	return false
 }
 
 // TypeKind returns the kind of the type node.
@@ -177,7 +191,10 @@ func (tn TGTypeDecl) TypeKind() TypeKind {
 		return ClassType
 
 	case NodeTypeInterface:
-		return InterfaceType
+		return ImplicitInterfaceType
+
+	case NodeTypeExternalInterface:
+		return ExternalInternalType
 
 	case NodeTypeGeneric:
 		return GenericType

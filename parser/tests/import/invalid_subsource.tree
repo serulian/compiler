@@ -5,14 +5,14 @@ NodeTypeFile
   child-node =>
     NodeTypeImport
       end-rune = 16
-      import-location-ref = location:fo
+      import-location-ref = location:foo
       import-source = "foo"
       input-source = invalid subsource
       start-rune = 0
       child-node =>
         NodeTypeError
           end-rune = 16
-          error-message = Expected one of: [tokenTypeIdentifer], found: tokenTypeStringLiteral
+          error-message = Expected identifier, found token tokenTypeStringLiteral
           input-source = invalid subsource
           start-rune = 18
     NodeTypeError

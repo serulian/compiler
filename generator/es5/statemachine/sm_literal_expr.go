@@ -9,33 +9,6 @@ import (
 	"github.com/serulian/compiler/parser"
 )
 
-// generateIdentifierExpression generates the state machine for an identifier expression.
-func (sm *stateMachine) generateIdentifierExpression(node compilergraph.GraphNode, parentState *state) {
-	scope, _ := sm.scopegraph.GetScope(node)
-	namedReference, _ := sm.scopegraph.GetReferencedName(scope)
-
-	// If the identifier refers to a local name, then the expression is just a name.
-	if namedReference.IsLocal() {
-		parentState.pushExpression(namedReference.Name())
-		return
-	}
-
-	// Otherwise the identifier refers to a type or member, so we generate the full path.
-	memberRef, isMember := namedReference.Member()
-	if isMember {
-		parentState.pushExpression(sm.pather.GetStaticMemberPath(memberRef, sm.scopegraph.TypeGraph().AnyTypeReference()))
-		return
-	}
-
-	typeRef, isType := namedReference.Type()
-	if isType {
-		parentState.pushExpression(sm.pather.GetTypePath(typeRef))
-		return
-	}
-
-	panic("Unknown identifier reference")
-}
-
 // generateNullLiteral generates the state machine for a null literal.
 func (sm *stateMachine) generateNullLiteral(node compilergraph.GraphNode, parentState *state) {
 	parentState.pushExpression("null")

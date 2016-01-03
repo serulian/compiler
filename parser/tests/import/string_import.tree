@@ -5,7 +5,7 @@ NodeTypeFile
   child-node =>
     NodeTypeImport
       end-rune = 54
-      import-location-ref = location:github.com/Serulian/somethin
+      import-location-ref = location:github.com/Serulian/something
       import-package-name = SomethingElse
       import-source = "github.com/Serulian/something"
       input-source = string import test

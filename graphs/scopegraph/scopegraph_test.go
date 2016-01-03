@@ -11,10 +11,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
-	"github.com/serulian/compiler/graphs/srg"
-	"github.com/serulian/compiler/graphs/typegraph"
+	"github.com/serulian/compiler/packageloader"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -703,6 +701,30 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"tagged template failure success", "templatestr", "taggedfailure",
 		[]expectedScopeEntry{},
 		"Tagging expression for template string must have type Function<String>(List<String>, List<Stringable>). Found: Function<void>", ""},
+
+	/////////// webidl tests /////////////////
+
+	scopegraphTest{"webidl success", "webidl", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"sometype", expectedScope{true, proto.ScopeKind_STATIC, "void", "void"}},
+			expectedScopeEntry{"someparam", expectedScope{true, proto.ScopeKind_VALUE, "SomeType", "void"}},
+			expectedScopeEntry{"somefunc", expectedScope{true, proto.ScopeKind_VALUE, "any", "void"}},
+			expectedScopeEntry{"con1", expectedScope{true, proto.ScopeKind_VALUE, "SomeType", "void"}},
+			expectedScopeEntry{"con2", expectedScope{true, proto.ScopeKind_VALUE, "SomeType", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"webidl unknown type failure", "webidl", "unknowntype",
+		[]expectedScopeEntry{},
+		"Type 'global.UnknownType' could not be found", ""},
+
+	scopegraphTest{"webidl non-static function failure", "webidl", "nonstatic",
+		[]expectedScopeEntry{},
+		"Could not find static name 'SomeFunction' under external interface SomeType", ""},
+
+	scopegraphTest{"webidl static function failure", "webidl", "static",
+		[]expectedScopeEntry{},
+		"Could not find static name 'SomeFunction' under external interface SomeType", ""},
 }
 
 func TestGraphs(t *testing.T) {
@@ -712,28 +734,7 @@ func TestGraphs(t *testing.T) {
 		}
 
 		entrypointFile := "tests/" + test.input + "/" + test.entrypoint + ".seru"
-
-		graph, err := compilergraph.NewGraph(entrypointFile)
-		if err != nil {
-			t.Errorf("Got error on test %s: %v", test.name, err)
-		}
-
-		testSRG := srg.NewSRG(graph)
-		srgResult := testSRG.LoadAndParse("../typegraph/tests/testlib")
-
-		// Make sure we had no errors during construction.
-		if !assert.True(t, srgResult.Status, "Got error for SRG construction %v: %s", test.name, srgResult.Errors) {
-			continue
-		}
-
-		// Construct the type graph.
-		tdgResult := typegraph.BuildTypeGraph(testSRG)
-		if !assert.True(t, tdgResult.Status, "Got error for TypeGraph construction %v: %s", test.name, tdgResult.Errors) {
-			continue
-		}
-
-		// Construct the scope graph.
-		result := BuildScopeGraph(tdgResult.Graph)
+		result := ParseAndBuildScopeGraph(entrypointFile, packageloader.Library{"../srg/typeconstructor/tests/testlib", false, ""})
 
 		if test.expectedError != "" {
 			if !assert.False(t, result.Status, "Expected failure in scoping on test : %v", test.name) {
@@ -758,7 +759,7 @@ func TestGraphs(t *testing.T) {
 		// Check each of the scopes.
 		for _, expected := range test.expectedScope {
 			// Collect the scopes for all requested nodes and compare.
-			node, found := testSRG.FindCommentedNode(fmt.Sprintf("/* %s */", expected.name))
+			node, found := result.Graph.SourceGraph().FindCommentedNode(fmt.Sprintf("/* %s */", expected.name))
 			if !assert.True(t, found, "Missing commented node %s in test: %v", expected.name, test.name) {
 				continue
 			}
@@ -781,11 +782,11 @@ func TestGraphs(t *testing.T) {
 				continue
 			}
 
-			if !assert.Equal(t, expected.scope.ResolvedType, scope.ResolvedTypeRef(tdgResult.Graph).String(), "Resolved type mismatch for commented node %s in test: %v", expected.name, test.name) {
+			if !assert.Equal(t, expected.scope.ResolvedType, scope.ResolvedTypeRef(result.Graph.TypeGraph()).String(), "Resolved type mismatch for commented node %s in test: %v", expected.name, test.name) {
 				continue
 			}
 
-			if !assert.Equal(t, expected.scope.ReturnedType, scope.ReturnedTypeRef(tdgResult.Graph).String(), "Returned type mismatch for commented node %s in test: %v", expected.name, test.name) {
+			if !assert.Equal(t, expected.scope.ReturnedType, scope.ReturnedTypeRef(result.Graph.TypeGraph()).String(), "Returned type mismatch for commented node %s in test: %v", expected.name, test.name) {
 				continue
 			}
 		}

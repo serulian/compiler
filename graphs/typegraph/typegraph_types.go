@@ -15,10 +15,11 @@ type NodeType int
 
 const (
 	// Top-level
-	NodeTypeError     NodeType = iota // error occurred; value is text of error
-	NodeTypeClass                     // A class
-	NodeTypeInterface                 // An interface
-	NodeTypeModule                    // A module
+	NodeTypeError             NodeType = iota // error occurred; value is text of error
+	NodeTypeClass                             // A class
+	NodeTypeInterface                         // An implicitly-defined interface
+	NodeTypeExternalInterface                 // An externally defined interface
+	NodeTypeModule                            // A module
 
 	// Member-level
 	NodeTypeMember   // A member of a type or module.
@@ -30,8 +31,8 @@ const (
 	// Generics.
 	NodeTypeGeneric // A defined generic on a type or type member.
 
-	// An issue with a type reference.
-	NodeTypeReferenceIssue
+	// An issue reported by a source graph.
+	NodeTypeReportedIssue
 
 	// NodeType is a tagged type.
 	NodeTypeTagged
@@ -41,11 +42,11 @@ const (
 	// Connects a node to its error node.
 	NodePredicateError = "node-error"
 
-	// Connects a node to its SRG declaration/definition.
-	NodePredicateSource = "srg-source"
+	// Connects a node to the source node in the source graph (SRG, IRG, etc).
+	NodePredicateSource = "source-node"
 
-	// Decorates a type or type member node with the path of its containing SRG module.
-	NodePredicateModulePath = "srg-module"
+	// Decorates a type or type member node with the path of its source module.
+	NodePredicateModulePath = "source-module"
 
 	//
 	// NodeTypeError
@@ -84,6 +85,9 @@ const (
 
 	// Marks a type with a type reference to a parent type.
 	NodePredicateParentType = "parent-type"
+
+	// Marks a type with its alias.
+	NodePredicateTypeAlias = "type-alias"
 
 	//
 	// NodeTypeGeneric
@@ -134,6 +138,10 @@ const (
 
 	// Decorates a member with the type from which it was aliased.
 	NodePredicateMemberBaseSource = "member-base-source"
+
+	// Decorates a member as being synchronous when called (only applies to functions).
+	// The only synchronous functions will be those added by non-Serulian code (e.g. WebIDL).
+	NodePredicateMemberSynchronous = "member-synchronous"
 
 	//
 	// NodeTypeOperator

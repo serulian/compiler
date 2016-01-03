@@ -274,8 +274,8 @@ func (sb *scopeBuilder) decorateWithError(node compilergraph.GraphNode, message 
 }
 
 // GetWarnings returns the warnings created during the build pass.
-func (sb *scopeBuilder) GetWarnings() []*compilercommon.SourceWarning {
-	var warnings = make([]*compilercommon.SourceWarning, 0)
+func (sb *scopeBuilder) GetWarnings() []compilercommon.SourceWarning {
+	var warnings = make([]compilercommon.SourceWarning, 0)
 
 	it := sb.sg.layer.StartQuery().
 		IsKind(NodeTypeWarning).
@@ -297,8 +297,8 @@ func (sb *scopeBuilder) GetWarnings() []*compilercommon.SourceWarning {
 }
 
 // GetErrors returns the errors created during the build pass.
-func (sb *scopeBuilder) GetErrors() []*compilercommon.SourceError {
-	var errors = make([]*compilercommon.SourceError, 0)
+func (sb *scopeBuilder) GetErrors() []compilercommon.SourceError {
+	var errors = make([]compilercommon.SourceError, 0)
 
 	it := sb.sg.layer.StartQuery().
 		IsKind(NodeTypeError).

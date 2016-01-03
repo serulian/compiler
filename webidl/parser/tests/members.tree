@@ -1,0 +1,65 @@
+NodeTypeGlobalModule
+  child-node =>
+    NodeTypeFile
+      end-rune = 195
+      input-source = members test
+      start-rune = 0
+      child-node =>
+        NodeTypeDeclaration
+          declaration-kind = interface
+          declaration-name = SomeInterface
+          end-rune = 195
+          input-source = members test
+          start-rune = 0
+          declaration-member =>
+            NodeTypeMember
+              end-rune = 56
+              input-source = members test
+              member-attribute = true
+              member-name = NaN
+              member-readonly = true
+              member-type = Number
+              start-rune = 27
+            NodeTypeMember
+              end-rune = 101
+              input-source = members test
+              member-attribute = true
+              member-name = prototype
+              member-readonly = true
+              member-static = true
+              member-type = Object
+              start-rune = 59
+            NodeTypeMember
+              end-rune = 136
+              input-source = members test
+              member-name = keys
+              member-static = true
+              member-type = Array
+              start-rune = 104
+              member-parameter =>
+                NodeTypeParameter
+                  end-rune = 134
+                  input-source = members test
+                  parameter-name = object
+                  parameter-type = Object
+                  start-rune = 122
+            NodeTypeMember
+              end-rune = 192
+              input-source = members test
+              member-name = create
+              member-type = Object
+              start-rune = 139
+              member-parameter =>
+                NodeTypeParameter
+                  end-rune = 165
+                  input-source = members test
+                  parameter-name = object
+                  parameter-type = Object
+                  start-rune = 153
+                NodeTypeParameter
+                  end-rune = 190
+                  input-source = members test
+                  parameter-name = properties
+                  parameter-optional = true
+                  parameter-type = any
+                  start-rune = 168

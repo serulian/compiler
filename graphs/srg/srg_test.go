@@ -9,7 +9,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/parser"
 	"github.com/stretchr/testify/assert"
 )
@@ -17,16 +16,7 @@ import (
 var _ = fmt.Printf
 
 func TestBasicLoading(t *testing.T) {
-	graph, err := compilergraph.NewGraph("tests/basic/basic.seru")
-	if err != nil {
-		t.Errorf("%v", err)
-	}
-
-	testSRG := NewSRG(graph)
-	result := testSRG.LoadAndParse()
-	if !result.Status {
-		t.Errorf("Expected successful parse")
-	}
+	testSRG := getSRG(t, "tests/basic/basic.seru")
 
 	// Ensure that both classes were loaded.
 	iterator := testSRG.findAllNodes(parser.NodeTypeClass).BuildNodeIterator(parser.NodeTypeDefinitionName)
@@ -42,13 +32,7 @@ func TestBasicLoading(t *testing.T) {
 }
 
 func TestSyntaxError(t *testing.T) {
-	graph, err := compilergraph.NewGraph("tests/syntaxerror/start.seru")
-	if err != nil {
-		t.Errorf("%v", err)
-	}
-
-	testSRG := NewSRG(graph)
-	result := testSRG.LoadAndParse()
+	_, result := loadSRG(t, "tests/syntaxerror/start.seru")
 	if result.Status {
 		t.Errorf("Expected failed parse")
 	}
@@ -60,17 +44,11 @@ func TestSyntaxError(t *testing.T) {
 }
 
 func TestImportError(t *testing.T) {
-	graph, err := compilergraph.NewGraph("tests/importerror/start.seru")
-	if err != nil {
-		t.Errorf("%v", err)
-	}
-
-	testSRG := NewSRG(graph)
-	result := testSRG.LoadAndParse()
+	_, result := loadSRG(t, "tests/syntaxerror/start.seru")
 	if result.Status {
-		t.Errorf("Expected failed import")
+		t.Errorf("Expected failed parse")
 	}
 
-	// Ensure the import error was reported.
-	assert.Equal(t, "Import 'MissingClass' not found under package 'other'", result.Errors[0].Error())
+	// Ensure the parse error was reported.
+	assert.Equal(t, "Expected identifier, found token tokenTypeLeftBrace", result.Errors[0].Error())
 }

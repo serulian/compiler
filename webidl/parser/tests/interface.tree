@@ -1,0 +1,13 @@
+NodeTypeGlobalModule
+  child-node =>
+    NodeTypeFile
+      end-rune = 24
+      input-source = empty interface test
+      start-rune = 0
+      child-node =>
+        NodeTypeDeclaration
+          declaration-kind = interface
+          declaration-name = MyInterface
+          end-rune = 24
+          input-source = empty interface test
+          start-rune = 0

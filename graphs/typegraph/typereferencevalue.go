@@ -129,7 +129,14 @@ func (tr *TypeReference) getSlot(slot typeReferenceHeaderSlot) string {
 	location := getSlotLocation(slot)
 	size := slot.length
 
-	return tr.value[location : location+size]
+	start := location
+	end := location + size
+
+	if start > len(tr.value) || end > len(tr.value) {
+		panic("Invalid TypeReference value: " + tr.value)
+	}
+
+	return tr.value[start:end]
 }
 
 // lengthPrefixedValue returns this type reference's value string, prefixed with its length value
@@ -178,7 +185,7 @@ func (tr *TypeReference) getSubReferences(kind subReferenceKind) []TypeReference
 			panic(fmt.Sprintf("Expected int value for subreference length, found: %v", subReferenceLengthStr))
 		}
 
-		// Move the current index forward to the point at which the subreference value string beings.
+		// Move the current index forward to the point at which the subreference value string begins.
 		currentIndex = currentIndex + 1 + typeRefValueSubReferenceLength
 		subReferenceValue := tr.value[currentIndex : currentIndex+subReferenceLength]
 

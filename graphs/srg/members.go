@@ -206,6 +206,11 @@ func (m SRGMember) IsExported() bool {
 	return isExportedName(m.Name())
 }
 
+// IsOperator returns whether the given member is an operator.
+func (m SRGMember) IsOperator() bool {
+	return m.MemberKind() == OperatorMember
+}
+
 // HasImplementation returns whether the given member has a defined implementation.
 func (m SRGMember) HasImplementation() bool {
 	switch m.MemberKind() {

@@ -14,30 +14,30 @@ type SourceError struct {
 	sal     SourceAndLocation // The source and location of the error.
 }
 
-func (se *SourceError) Error() string {
+func (se SourceError) Error() string {
 	return se.message
 }
 
-func (se *SourceError) SourceAndLocation() SourceAndLocation {
+func (se SourceError) SourceAndLocation() SourceAndLocation {
 	return se.sal
 }
 
 // SourcePositionErrorf returns a new SourceError for the given source, byte position and message.
-func SourcePositionErrorf(source InputSource, bytePosition int, msg string, args ...interface{}) *SourceError {
+func SourcePositionErrorf(source InputSource, bytePosition int, msg string, args ...interface{}) SourceError {
 	return SourceErrorf(NewSourceAndLocation(source, bytePosition), msg, args...)
 }
 
 // SourceErrorf returns a new SourceError for the given location and message.
-func SourceErrorf(sal SourceAndLocation, msg string, args ...interface{}) *SourceError {
-	return &SourceError{
+func SourceErrorf(sal SourceAndLocation, msg string, args ...interface{}) SourceError {
+	return SourceError{
 		message: fmt.Sprintf(msg, args...),
 		sal:     sal,
 	}
 }
 
 // NewSourceError returns a new SourceError for the given location and message.
-func NewSourceError(sal SourceAndLocation, msg string) *SourceError {
-	return &SourceError{
+func NewSourceError(sal SourceAndLocation, msg string) SourceError {
+	return SourceError{
 		message: msg,
 		sal:     sal,
 	}

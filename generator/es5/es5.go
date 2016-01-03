@@ -12,6 +12,7 @@ import (
 	"github.com/serulian/compiler/generator/es5/es5pather"
 	"github.com/serulian/compiler/generator/es5/templater"
 	"github.com/serulian/compiler/graphs/scopegraph"
+	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/typegraph"
 
 	"github.com/cevaris/ordered_map"
@@ -74,4 +75,20 @@ func GenerateES5(sg *scopegraph.ScopeGraph) (string, error) {
 	}
 
 	return formatSource(templater.Execute("es5", runtimeTemplate, ordered)), nil
+}
+
+// getSRGMember returns the SRG member type for the given type graph member, if any.
+func (gen *es5generator) getSRGMember(member typegraph.TGMember) (srg.SRGMember, bool) {
+	sourceNodeId, hasSource := member.SourceNodeId()
+	if !hasSource {
+		return srg.SRGMember{}, false
+	}
+
+	sourcegraph := gen.scopegraph.SourceGraph()
+	srgNode, hasSRGNode := sourcegraph.TryGetNode(sourceNodeId)
+	if !hasSRGNode {
+		return srg.SRGMember{}, false
+	}
+
+	return sourcegraph.GetMemberReference(srgNode), true
 }

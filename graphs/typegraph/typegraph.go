@@ -12,12 +12,20 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
-	"github.com/serulian/compiler/graphs/srg"
+	"github.com/serulian/compiler/packageloader"
 )
+
+// TYPE_NODE_TYPES defines the NodeTypes that represent defined types in the graph.
+var TYPE_NODE_TYPES = []NodeType{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface}
+var TYPE_NODE_TYPES_TAGGED = []compilergraph.TaggedValue{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface}
+
+// TYPE_NODE_TYPES defines the NodeTypes that represent defined types or a module in the graph.
+var TYPEORMODULE_NODE_TYPES = []NodeType{NodeTypeModule, NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface}
+
+var TYPEORGENERIC_NODE_TYPES = []NodeType{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeGeneric}
 
 // TypeGraph represents the TypeGraph layer and all its associated helper methods.
 type TypeGraph struct {
-	srg       *srg.SRG                      // The SRG behind this type graph.
 	graph     *compilergraph.SerulianGraph  // The root graph.
 	layer     *compilergraph.GraphLayer     // The TypeGraph layer in the graph.
 	operators map[string]operatorDefinition // The supported operators.
@@ -25,32 +33,131 @@ type TypeGraph struct {
 
 // Results represents the results of building a type graph.
 type Result struct {
-	Status   bool                            // Whether the construction succeeded.
-	Warnings []*compilercommon.SourceWarning // Any warnings encountered during construction.
-	Errors   []*compilercommon.SourceError   // Any errors encountered during construction.
-	Graph    *TypeGraph                      // The constructed type graph.
+	Status   bool                           // Whether the construction succeeded.
+	Warnings []compilercommon.SourceWarning // Any warnings encountered during construction.
+	Errors   []compilercommon.SourceError   // Any errors encountered during construction.
+	Graph    *TypeGraph                     // The constructed type graph.
 }
 
-// BuildTypeGraph returns a new TypeGraph that is populated from the given SRG.
-func BuildTypeGraph(srg *srg.SRG) *Result {
+// BuildTypeGraph returns a new TypeGraph that is populated from the given constructors.
+func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGraphConstructor) *Result {
+	// Create the type graph.
 	typeGraph := &TypeGraph{
-		srg:       srg,
-		graph:     srg.Graph,
-		layer:     srg.Graph.NewGraphLayer(compilergraph.GraphLayerTypeGraph, NodeTypeTagged),
+		graph:     graph,
+		layer:     graph.NewGraphLayer("tdg", NodeTypeTagged),
 		operators: map[string]operatorDefinition{},
 	}
 
-	return typeGraph.build(srg)
+	// Create a struct to hold the results of the construction.
+	result := &Result{
+		Status:   true,
+		Warnings: make([]compilercommon.SourceWarning, 0),
+		Errors:   make([]compilercommon.SourceError, 0),
+		Graph:    typeGraph,
+	}
+
+	// Build all modules.
+	for _, constructor := range constructors {
+		constructor.DefineModules(func() *moduleBuilder {
+			return &moduleBuilder{
+				tdg: typeGraph,
+			}
+		})
+	}
+
+	// Build all types.
+	for _, constructor := range constructors {
+		constructor.DefineTypes(func(moduleSourceNode compilergraph.GraphNode) *typeBuilder {
+			moduleNode := typeGraph.getMatchingTypeGraphNode(moduleSourceNode, NodeTypeModule)
+			return &typeBuilder{
+				module: TGModule{moduleNode, typeGraph},
+			}
+		})
+	}
+
+	// Annotate all dependencies.
+	for _, constructor := range constructors {
+		annotator := &Annotator{
+			issueReporterImpl{typeGraph},
+		}
+
+		constructor.DefineDependencies(annotator, typeGraph)
+	}
+
+	// Load the operators map. Requires the types loaded as it performs lookups of certain types (int, etc).
+	typeGraph.buildOperatorDefinitions()
+
+	// Build all members.
+	for _, constructor := range constructors {
+		constructor.DefineMembers(func(moduleOrTypeSourceNode compilergraph.GraphNode, isOperator bool) *MemberBuilder {
+			typegraphNode := typeGraph.getMatchingTypeGraphNode(moduleOrTypeSourceNode, TYPEORMODULE_NODE_TYPES...)
+
+			if typegraphNode.Kind == NodeTypeModule {
+				return &MemberBuilder{
+					parent:     TGModule{typegraphNode, typeGraph},
+					tdg:        typeGraph,
+					isOperator: isOperator,
+				}
+			} else {
+				return &MemberBuilder{
+					parent:     TGTypeDecl{typegraphNode, typeGraph},
+					tdg:        typeGraph,
+					isOperator: isOperator,
+				}
+			}
+
+		}, &issueReporterImpl{typeGraph}, typeGraph)
+	}
+
+	// Handle inheritance checking and member cloning.
+	typeGraph.defineFullInheritance()
+
+	// Define implicit members.
+	typeGraph.defineAllImplicitMembers()
+
+	// If there are no errors yet, validate everything.
+	if _, hasError := typeGraph.layer.StartQuery().In(NodePredicateError).TryGetNode(); !hasError {
+		for _, constructor := range constructors {
+			reporter := &issueReporterImpl{typeGraph}
+			constructor.Validate(reporter, typeGraph)
+		}
+	}
+
+	// Collect any errors generated during construction.
+	it := typeGraph.layer.StartQuery().
+		With(NodePredicateError).
+		BuildNodeIterator(NodePredicateSource)
+
+	for it.Next() {
+		node := it.Node()
+		result.Status = false
+
+		sourceNodeId, ok := it.Values()[NodePredicateSource]
+		if !ok {
+			panic(fmt.Sprintf("Error on non-sourced node: %v", it.Node()))
+		}
+
+		// Lookup the location of the source node.
+		var location = compilercommon.SourceAndLocation{}
+		for _, constructor := range constructors {
+			constructorLocation, found := constructor.GetLocation(compilergraph.GraphNodeId(sourceNodeId))
+			if found {
+				location = constructorLocation
+			}
+		}
+
+		// Add the error.
+		errNode := node.GetNode(NodePredicateError)
+		msg := errNode.Get(NodePredicateErrorMessage)
+		result.Errors = append(result.Errors, compilercommon.NewSourceError(location, msg))
+	}
+
+	return result
 }
 
 // GetNode returns the node with the given ID in this layer or panics.
 func (g *TypeGraph) GetNode(nodeId compilergraph.GraphNodeId) compilergraph.GraphNode {
 	return g.layer.GetNode(string(nodeId))
-}
-
-// SourceGraph returns the SRG behind this type graph.
-func (g *TypeGraph) SourceGraph() *srg.SRG {
-	return g.srg
 }
 
 // Modules returns all modules defined in the type graph.
@@ -67,16 +174,12 @@ func (g *TypeGraph) Modules() []TGModule {
 
 // LookupModule looks up the module with the given source and returns it, if any.
 func (g *TypeGraph) LookupModule(source compilercommon.InputSource) (TGModule, bool) {
-	srgModule, found := g.srg.FindModuleBySource(source)
-	if !found {
-		return TGModule{}, false
-	}
-
-	moduleNode, nodeFound := g.layer.StartQuery().
+	moduleNode, found := g.layer.StartQuery(string(source)).
+		In(NodePredicateModulePath).
 		IsKind(NodeTypeModule).
-		Has(NodePredicateSource, string(srgModule.NodeId)).
 		TryGetNode()
-	if !nodeFound {
+
+	if !found {
 		return TGModule{}, false
 	}
 
@@ -98,7 +201,7 @@ func (g *TypeGraph) ModulesWithMembers() []TGModule {
 
 // TypeDecls returns all types defined in the type graph.
 func (g *TypeGraph) TypeDecls() []TGTypeDecl {
-	it := g.findAllNodes(NodeTypeClass, NodeTypeInterface).
+	it := g.findAllNodes(TYPE_NODE_TYPES...).
 		BuildNodeIterator()
 
 	var types []TGTypeDecl
@@ -108,11 +211,54 @@ func (g *TypeGraph) TypeDecls() []TGTypeDecl {
 	return types
 }
 
+// GetTypeOrModuleForSourceNode returns the type or module for the given source node, if any.
+func (g *TypeGraph) GetTypeOrModuleForSourceNode(sourceNode compilergraph.GraphNode) (TGTypeOrModule, bool) {
+	node, found := g.tryGetMatchingTypeGraphNode(sourceNode, TYPEORMODULE_NODE_TYPES...)
+	if !found {
+		return TGTypeDecl{}, false
+	}
+
+	if node.Kind == NodeTypeModule {
+		return TGModule{node, g}, true
+	} else {
+		return TGTypeDecl{node, g}, true
+	}
+}
+
+// ResolveTypeOrMemberUnderPackage searches the type graph for a type or member with the given name, located
+// in any modules found in the given package.
+func (g *TypeGraph) ResolveTypeOrMemberUnderPackage(name string, packageInfo packageloader.PackageInfo) (TGTypeOrMember, bool) {
+	for _, modulePath := range packageInfo.ModulePaths() {
+		typeOrMember, found := g.LookupTypeOrMember(name, modulePath)
+		if found {
+			return typeOrMember, true
+		}
+	}
+
+	return TGTypeDecl{}, false
+}
+
+// ResolveTypeUnderPackage searches the type graph for a type with the given name, located in any modules
+// found in the given package.
+func (g *TypeGraph) ResolveTypeUnderPackage(name string, packageInfo packageloader.PackageInfo) (TGTypeDecl, bool) {
+	for _, modulePath := range packageInfo.ModulePaths() {
+		typeDecl, found := g.LookupType(name, modulePath)
+		if found {
+			return typeDecl, true
+		}
+	}
+
+	return TGTypeDecl{}, false
+}
+
 // GetTypeOrMember returns the type or member matching the given node ID.
 func (g *TypeGraph) GetTypeOrMember(nodeId compilergraph.GraphNodeId) TGTypeOrMember {
 	node := g.layer.GetNode(string(nodeId))
 	switch node.Kind {
 	case NodeTypeClass:
+		fallthrough
+
+	case NodeTypeExternalInterface:
 		fallthrough
 
 	case NodeTypeInterface:
@@ -133,25 +279,55 @@ func (g *TypeGraph) GetTypeOrMember(nodeId compilergraph.GraphNodeId) TGTypeOrMe
 	}
 }
 
+// LookupTypeOrMember looks up the type or member with the given name in the given module and returns it (if any).
+func (g *TypeGraph) LookupTypeOrMember(name string, module compilercommon.InputSource) (TGTypeOrMember, bool) {
+	typeDecl, found := g.LookupType(name, module)
+	if found {
+		return typeDecl, true
+	}
+
+	member, found := g.LookupMember(name, module)
+	if found {
+		return member, true
+	}
+
+	return TGTypeDecl{}, false
+}
+
+// LookupMember looks up the member with the given name in the given module and returns it (if any).
+func (g *TypeGraph) LookupMember(memberName string, module compilercommon.InputSource) (TGMember, bool) {
+	memberNode, found := g.layer.StartQuery(memberName).
+		In(NodePredicateMemberName).
+		Has(NodePredicateModulePath, string(module)).
+		IsKind(NodeTypeMember).
+		TryGetNode()
+
+	if !found {
+		return TGMember{}, false
+	}
+
+	return TGMember{memberNode, g}, true
+}
+
 // LookupType looks up the type declaration with the given name in the given module and returns it (if any).
 func (g *TypeGraph) LookupType(typeName string, module compilercommon.InputSource) (TGTypeDecl, bool) {
-	srgModule, found := g.srg.FindModuleBySource(module)
+	typeNode, found := g.layer.StartQuery(typeName).
+		In(NodePredicateTypeName).
+		Has(NodePredicateModulePath, string(module)).
+		IsKind(TYPE_NODE_TYPES_TAGGED...).
+		TryGetNode()
+
 	if !found {
 		return TGTypeDecl{}, false
 	}
 
-	srgType, typeFound := srgModule.FindTypeByName(typeName, srg.ModuleResolveAll)
-	if !typeFound {
-		return TGTypeDecl{}, false
-	}
-
-	return TGTypeDecl{g.getTypeNodeForSRGType(srgType), g}, true
+	return TGTypeDecl{typeNode, g}, true
 }
 
-// LookupReturnType looks up the return type for an SRG member or property getter.
-func (g *TypeGraph) LookupReturnType(srgNode compilergraph.GraphNode) (TypeReference, bool) {
+// LookupReturnType looks up the return type for an source member or property getter.
+func (g *TypeGraph) LookupReturnType(sourceNode compilergraph.GraphNode) (TypeReference, bool) {
 	resolvedNode, found := g.findAllNodes(NodeTypeReturnable).
-		Has(NodePredicateSource, string(srgNode.NodeId)).
+		Has(NodePredicateSource, string(sourceNode.NodeId)).
 		TryGetNode()
 
 	if !found {

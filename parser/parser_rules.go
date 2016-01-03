@@ -164,71 +164,121 @@ func (p *sourceParser) tryConsumeDecorator() (AstNode, bool) {
 // consumeImport attempts to consume an import statement.
 //
 // Supported forms (all must be terminated by \n or EOF):
+//
 // from something import foobar
 // from something import foobar as barbaz
+// from "something" import foobar
+// from "something" import foobar as barbaz
+// from somekind`somestring` import foobar
+// from somekind`somestring` import foobar as barbaz
+//
 // import something
 // import something as foobar
 // import "somestring" as barbaz
+// import somekind`somestring` as something
 func (p *sourceParser) consumeImport() AstNode {
 	importNode := p.startNode(NodeTypeImport)
 	defer p.finishNode()
 
 	// from ...
 	if p.tryConsumeKeyword("from") {
-		// Decorate the node with its source.
-		token, ok := p.consume(tokenTypeIdentifer, tokenTypeStringLiteral)
-		if !ok {
+		// Consume the source for the import.
+		_, valid := p.consumeImportSource(importNode)
+		if !valid {
 			return importNode
 		}
 
-		importNode.Decorate(NodeImportPredicateLocation, p.reportImport(token.value))
-		importNode.Decorate(NodeImportPredicateSource, token.value)
-		p.consumeImportSource(importNode, NodeImportPredicateSubsource, NodeImportPredicateName, tokenTypeIdentifer)
+		// ... import ...
+		if !p.consumeKeyword("import") {
+			return importNode
+		}
+
+		// Consume the subsource for the import.
+		sourceName, subvalid := p.consumeImportSubsource(importNode)
+		if !subvalid {
+			return importNode
+		}
+
+		// ... as ...
+		p.consumeImportAlias(importNode, sourceName, NodeImportPredicateName)
 		return importNode
+	} else {
+		// import ...
+		p.consumeKeyword("import")
+		sourceName, valid := p.consumeImportSource(importNode)
+		if !valid {
+			return importNode
+		}
+
+		// ... as ...
+		p.consumeImportAlias(importNode, sourceName, NodeImportPredicatePackageName)
 	}
 
-	p.consumeImportSource(importNode, NodeImportPredicateSource, NodeImportPredicatePackageName, tokenTypeIdentifer, tokenTypeStringLiteral)
 	return importNode
 }
 
-func (p *sourceParser) consumeImportSource(importNode AstNode, sourcePredicate string, namePredicate string, allowedValues ...tokenType) {
-	// import ...
-	if !p.consumeKeyword("import") {
-		return
-	}
-
-	// "something" or something
-	token, ok := p.consume(allowedValues...)
+func (p *sourceParser) consumeImportSource(importNode AstNode) (string, bool) {
+	// Consume a source or kind.
+	token, ok := p.consume(tokenTypeIdentifer, tokenTypeStringLiteral)
 	if !ok {
-		return
+		return "", false
 	}
 
-	if sourcePredicate == NodeImportPredicateSource {
-		importNode.Decorate(NodeImportPredicateLocation, p.reportImport(token.value))
+	// If the previous token is an identifier and next token is a template string literal,
+	// then the previous token was a kind.
+	if token.kind == tokenTypeIdentifer && p.isToken(tokenTypeTemplateStringLiteral) {
+		sourceToken, _ := p.consume(tokenTypeTemplateStringLiteral)
+
+		importNode.Decorate(NodeImportPredicateKind, token.value)
+		importNode.Decorate(NodeImportPredicateLocation, p.reportImport(sourceToken.value, token.value))
+		importNode.Decorate(NodeImportPredicateSource, sourceToken.value)
+
+		return "", true
 	}
 
-	importNode.Decorate(sourcePredicate, token.value)
+	// Otherwise, decorate the node with its source.
+	importNode.Decorate(NodeImportPredicateLocation, p.reportImport(token.value, ""))
+	importNode.Decorate(NodeImportPredicateSource, token.value)
 
-	// as something (optional)
+	if token.kind == tokenTypeIdentifer {
+		return token.value, true
+	} else {
+		return "", true
+	}
+}
+
+func (p *sourceParser) consumeImportSubsource(importNode AstNode) (string, bool) {
+	// something
+	value, ok := p.consumeIdentifier()
+	if !ok {
+		return "", false
+	}
+
+	importNode.Decorate(NodeImportPredicateSubsource, value)
+	return value, true
+}
+
+func (p *sourceParser) consumeImportAlias(importNode AstNode, sourceName string, namePredicate string) bool {
+	// as something (sometimes optional)
 	if p.tryConsumeKeyword("as") {
 		named, ok := p.consumeIdentifier()
 		if !ok {
-			return
+			return false
 		}
 
 		importNode.Decorate(namePredicate, named)
 	} else {
-		// If the import was a string value, then an 'as' is required.
-		if token.kind == tokenTypeStringLiteral {
-			p.emitError("Import from SCM URL requires an 'as' clause")
+		if sourceName == "" {
+			p.emitError("Remote package import requires an 'as' clause")
+			return false
 		} else {
-			// Otherwise, literal imports receive the name of the package source as their own package name.
-			importNode.Decorate(namePredicate, token.value)
+			importNode.Decorate(namePredicate, sourceName)
 		}
 	}
 
 	// end of the statement
 	p.consumeStatementTerminator()
+	return true
 }
 
 // consumeTypeDefinition attempts to consume a type definition.

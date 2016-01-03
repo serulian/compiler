@@ -17,15 +17,6 @@ import (
 	"github.com/google/cayley/quad"
 )
 
-// GraphLayerKind identifies the supported kinds of graph layers.
-type GraphLayerKind int
-
-const (
-	GraphLayerSRG        GraphLayerKind = iota // An SRG graph layer.
-	GraphLayerTypeGraph                        // A TypeGraph graph layer.
-	GraphLayerScopeGraph                       // A ScopeGraph graph layer.
-)
-
 // GraphLayer represents a single layer in the overall project graph.
 type GraphLayer struct {
 	id                string         // Unique ID for the layer.
@@ -40,10 +31,10 @@ type GraphLayer struct {
 const nodeMemberPredicate = "is-member"
 
 // NewGraphLayer returns a new graph layer of the given kind.
-func (sg *SerulianGraph) NewGraphLayer(kind GraphLayerKind, nodeKindEnum TaggedValue) *GraphLayer {
+func (sg *SerulianGraph) NewGraphLayer(uniqueId string, nodeKindEnum TaggedValue) *GraphLayer {
 	return &GraphLayer{
 		id:                compilerutil.NewUniqueId(),
-		prefix:            getPredicatePrefix(kind),
+		prefix:            uniqueId,
 		cayleyStore:       sg.cayleyStore,
 		nodeKindPredicate: "node-kind",
 		nodeKindEnum:      nodeKindEnum,
@@ -190,24 +181,6 @@ func (gl *GraphLayer) getPrefixedPredicates(predicates ...string) []interface{} 
 		adjusted = append(adjusted, fullPredicate)
 	}
 	return adjusted
-}
-
-// getPredicatePrefix returns the prefix to apply to all predicates in this layer kind
-// when added into the graph database.
-func getPredicatePrefix(kind GraphLayerKind) string {
-	switch kind {
-	case GraphLayerSRG:
-		return "srg"
-
-	case GraphLayerTypeGraph:
-		return "tdg"
-
-	case GraphLayerScopeGraph:
-		return "sig"
-
-	default:
-		panic(fmt.Sprintf("Unknown graph layer kind: %v", kind))
-	}
 }
 
 // getPredicatesListForDebugging returns a developer-friendly set of predicate description strings

@@ -9,26 +9,10 @@ import (
 	"testing"
 
 	"github.com/serulian/compiler/compilercommon"
-	"github.com/serulian/compiler/compilergraph"
 	"github.com/stretchr/testify/assert"
 )
 
 var _ = fmt.Printf
-
-func getSRG(t *testing.T, path string, libPaths ...string) *SRG {
-	graph, err := compilergraph.NewGraph(path)
-	if err != nil {
-		t.Errorf("%v", err)
-	}
-
-	testSRG := NewSRG(graph)
-	result := testSRG.LoadAndParse(libPaths...)
-	if !result.Status {
-		t.Errorf("Expected successful parse: %v", result.Errors)
-	}
-
-	return testSRG
-}
 
 func TestBasicModules(t *testing.T) {
 	testSRG := getSRG(t, "tests/basic/basic.seru")
@@ -58,7 +42,7 @@ func assertResolveType(t *testing.T, module SRGModule, path string, expectedName
 		return
 	}
 
-	assert.Equal(t, expectedName, typeDecl.Name(), "Name mismatch on found type")
+	assert.Equal(t, expectedName, typeDecl.ResolvedType.AsType().Name(), "Name mismatch on found type")
 }
 
 func TestBasicResolveType(t *testing.T) {

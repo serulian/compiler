@@ -8,8 +8,6 @@ package parser
 
 import (
 	"strconv"
-
-	"github.com/serulian/compiler/compilercommon"
 )
 
 type AstNode interface {
@@ -20,21 +18,6 @@ type AstNode interface {
 	// Decorate decorates this AstNode with the given property and string value,
 	// and returns the same AstNode.
 	Decorate(property string, value string) AstNode
-}
-
-// PackageImportType identifies the types of imports.
-type PackageImportType int
-
-const (
-	ImportTypeLocal PackageImportType = iota
-	ImportTypeVCS
-)
-
-// PackageImport defines the import of a package.
-type PackageImport struct {
-	Path           string
-	ImportType     PackageImportType
-	SourceLocation compilercommon.SourceAndLocation
 }
 
 // NodeType identifies the type of AST node.

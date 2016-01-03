@@ -16,33 +16,95 @@ const (
 	memberAccessSet
 )
 
+// generateIdentifierExpression generates the state machine for an identifier expression.
+func (sm *stateMachine) generateIdentifierExpression(node compilergraph.GraphNode, parentState *state) {
+	scope, _ := sm.scopegraph.GetScope(node)
+	namedReference, _ := sm.scopegraph.GetReferencedName(scope)
+
+	// If the identifier refers to a local name, then the expression is just a name.
+	if namedReference.IsLocal() {
+		parentState.pushExpression(namedReference.Name())
+		return
+	}
+
+	// Otherwise the identifier refers to a type or member, so we generate the full path.
+	memberRef, isMember := namedReference.Member()
+	if isMember {
+		parentState.pushExpression(sm.pather.GetStaticMemberPath(memberRef, sm.scopegraph.TypeGraph().AnyTypeReference()))
+		return
+	}
+
+	typeRef, isType := namedReference.Type()
+	if isType {
+		parentState.pushExpression(sm.pather.GetTypePath(typeRef))
+		return
+	}
+
+	panic("Unknown identifier reference")
+}
+
 // generateMemberAccessExpression generates the state machine for various kinds of member access expressions
-func (sm *stateMachine) generateMemberAccessExpression(node compilergraph.GraphNode, parentState *state, templateStr string, option memberAccessOption) {
+func (sm *stateMachine) generateMemberAccessExpression(node compilergraph.GraphNode, parentState *state, wrapper string, option memberAccessOption) {
 	scope, _ := sm.scopegraph.GetScope(node)
 	namedReference, hasNamedReference := sm.scopegraph.GetReferencedName(scope)
 
 	// If the scope is a named reference to a defined item (static member or type), generate its
 	// path directly by treating it as an identifier to the scope. This will handle
 	// imports for us.
-	if hasNamedReference && namedReference.IsStatic() {
+	if hasNamedReference && namedReference.IsStatic() && !namedReference.IsSynchronous() {
 		sm.generateIdentifierExpression(node, parentState)
 		return
 	}
 
-	// Generate the call to retrieve the member.
 	childExprInfo := sm.generate(node.GetNode(parser.NodeMemberAccessChildExpr), parentState)
 
-	data := struct {
-		ChildExpr  string
-		MemberName string
-	}{childExprInfo.expression, node.Get(parser.NodeMemberAccessIdentifier)}
+	// Determine whether we are a property getter. If so, we'll need to generate additional code
+	// later.
+	isPropertyGetter := option == memberAccessGet && hasNamedReference && namedReference.IsProperty()
+	isSynchronous := option == memberAccessGet && hasNamedReference && namedReference.IsSynchronous()
 
-	getMemberExpr := sm.templater.Execute("memberaccess", templateStr, data)
+	// Determine whether this is a member access of an aliased function not under a function call.
+	// If so, additional metadata will be needed on the member ('this' reference being the most
+	// important).
+	_, isUnderFunctionCall := node.StartQuery().
+		In(parser.NodeFunctionCallExpressionChildExpr).
+		IsKind(parser.NodeFunctionCallExpression).
+		TryGetNode()
+
+	typegraph := sm.scopegraph.TypeGraph()
+	isAliasedFunctionAccess := (option == memberAccessGet && !isUnderFunctionCall &&
+		scope.ResolvedTypeRef(typegraph).HasReferredType(typegraph.FunctionType()))
+
+	if isAliasedFunctionAccess {
+		wrapper = "$t.dynamicaccess"
+	}
+
+	// TODO(jschorr): This needs to be generalized and not only hacked in for WebIDL.
+	if namedReference.Name() == "new" && namedReference.IsSynchronous() {
+		wrapper = "$t.nativenew"
+	}
+
+	// Generate the call to retrieve the member.
+	data := struct {
+		ChildExpr           string
+		MemberName          string
+		Wrapper             string
+		RequiresPromiseNoop bool
+		RequiresPromiseWrap bool
+	}{childExprInfo.expression, node.Get(parser.NodeMemberAccessIdentifier), wrapper, isPropertyGetter, isSynchronous && isAliasedFunctionAccess}
+
+	getMemberExpr := sm.templater.Execute("memberaccess", `
+		{{ if .Wrapper }}
+			{{ .Wrapper }}({{ .ChildExpr }}, '{{ .MemberName }}', {{ .RequiresPromiseNoop }}, {{ .RequiresPromiseWrap }})
+		{{ else }}
+			({{ .ChildExpr }}).{{ .MemberName }}
+		{{ end }}
+	`, data)
 
 	// If the scope is a named reference to a property, then we need to turn the access into
 	// a function call (if a getter). Setter calls will be handled by the assign statement
 	// generation.
-	if option == memberAccessGet && hasNamedReference && namedReference.IsProperty() {
+	if isPropertyGetter {
 		// Generate a function call to the getter.
 		returnValueVariable := sm.addVariable("$getValue")
 		returnReceiveState := sm.newState()
@@ -133,7 +195,7 @@ func (sm *stateMachine) generateGenericSpecifierExpression(node compilergraph.Gr
 
 	var genericTypeStrings = make([]string, 0)
 	for git.Next() {
-		replacementType, _ := sm.scopegraph.TypeGraph().BuildTypeRef(sm.scopegraph.SourceGraph().GetTypeRef(git.Node()))
+		replacementType, _ := sm.scopegraph.ResolveSRGTypeRef(sm.scopegraph.SourceGraph().GetTypeRef(git.Node()))
 		genericTypeStrings = append(genericTypeStrings, sm.pather.TypeReferenceCall(replacementType))
 	}
 

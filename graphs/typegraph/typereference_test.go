@@ -10,29 +10,21 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
-	"github.com/serulian/compiler/graphs/srg"
 	"github.com/stretchr/testify/assert"
 )
 
 var _ = fmt.Printf
 
-func newTypeGraph(t *testing.T) *TypeGraph {
-	graph, err := compilergraph.NewGraph("tests/testlib/basictypes.seru")
-	if err != nil {
-		t.Errorf("%v", err)
-	}
-
-	testSRG := srg.NewSRG(graph)
-	assert.True(t, testSRG.LoadAndParse().Status)
-
-	return BuildTypeGraph(testSRG).Graph
+func toType(tdg *TypeGraph, typeNode compilergraph.GraphNode) TGTypeDecl {
+	return TGTypeDecl{typeNode, tdg}
 }
 
 func TestBasicReferenceOperations(t *testing.T) {
-	testTG := newTypeGraph(t)
+	g, _ := compilergraph.NewGraph("-")
+	testTG := newTestTypeGraph(g)
 
 	newNode := testTG.layer.CreateNode(NodeTypeClass)
-	testRef := testTG.NewTypeReference(newNode)
+	testRef := testTG.NewTypeReference(toType(testTG, newNode))
 
 	// ReferredType returns the node.
 	assert.Equal(t, newNode.NodeId, testRef.referredTypeNode().NodeId, "ReferredType node mismatch")
@@ -55,13 +47,13 @@ func TestBasicReferenceOperations(t *testing.T) {
 	assert.True(t, testRef.AsNullable().IsNullable(), "Expected nullable")
 
 	// Contains a reference to the newNode.
-	assert.True(t, testRef.ContainsType(newNode))
+	assert.True(t, testRef.ContainsType(toType(testTG, newNode)))
 
 	// Ensure that the reference does not contain a reference to anotherNode.
 	anotherNode := testTG.layer.CreateNode(NodeTypeClass)
-	anotherRef := testTG.NewTypeReference(anotherNode)
+	anotherRef := testTG.NewTypeReference(toType(testTG, anotherNode))
 
-	assert.False(t, testRef.ContainsType(anotherNode))
+	assert.False(t, testRef.ContainsType(toType(testTG, anotherNode)))
 
 	// Add a generic.
 	withGeneric := testRef.WithGeneric(anotherRef)
@@ -69,7 +61,7 @@ func TestBasicReferenceOperations(t *testing.T) {
 	assert.Equal(t, 1, withGeneric.GenericCount(), "Expected 1 generic")
 	assert.Equal(t, 1, len(withGeneric.Generics()), "Expected 1 generic")
 	assert.Equal(t, anotherRef, withGeneric.Generics()[0], "Expected generic to be equal to anotherRef")
-	assert.True(t, withGeneric.ContainsType(anotherNode))
+	assert.True(t, withGeneric.ContainsType(toType(testTG, anotherNode)))
 
 	// Add a parameter.
 	withGenericAndParameter := withGeneric.WithParameter(anotherRef)
@@ -86,7 +78,7 @@ func TestBasicReferenceOperations(t *testing.T) {
 
 	// Add another generic.
 	thirdNode := testTG.layer.CreateNode(NodeTypeClass)
-	thirdRef := testTG.NewTypeReference(thirdNode)
+	thirdRef := testTG.NewTypeReference(toType(testTG, thirdNode))
 
 	withMultipleGenerics := withGenericAndParameter.WithGeneric(thirdRef)
 
@@ -101,14 +93,14 @@ func TestBasicReferenceOperations(t *testing.T) {
 	assert.Equal(t, 1, len(withMultipleGenerics.Parameters()), "Expected 1 parameter")
 	assert.Equal(t, anotherRef, withMultipleGenerics.Parameters()[0], "Expected parameter to be equal to anotherRef")
 
-	assert.True(t, withMultipleGenerics.ContainsType(anotherNode))
-	assert.True(t, withMultipleGenerics.ContainsType(thirdNode))
+	assert.True(t, withMultipleGenerics.ContainsType(toType(testTG, anotherNode)))
+	assert.True(t, withMultipleGenerics.ContainsType(toType(testTG, thirdNode)))
 
 	// Replace the "anotherRef" with a completely new type.
 	replacementNode := testTG.layer.CreateNode(NodeTypeClass)
-	replacementRef := testTG.NewTypeReference(replacementNode)
+	replacementRef := testTG.NewTypeReference(toType(testTG, replacementNode))
 
-	replaced := withMultipleGenerics.ReplaceType(anotherNode, replacementRef)
+	replaced := withMultipleGenerics.ReplaceType(toType(testTG, anotherNode), replacementRef)
 
 	assert.True(t, replaced.HasGenerics(), "Expected 2 generics")
 	assert.Equal(t, 2, replaced.GenericCount(), "Expected 2 generics")
@@ -121,13 +113,14 @@ func TestBasicReferenceOperations(t *testing.T) {
 	assert.Equal(t, 1, len(replaced.Parameters()), "Expected 1 parameter")
 	assert.Equal(t, replacementRef, replaced.Parameters()[0], "Expected parameter to be equal to replacementRef")
 
-	assert.False(t, replaced.ContainsType(anotherNode))
-	assert.True(t, replaced.ContainsType(thirdNode))
-	assert.True(t, replaced.ContainsType(replacementNode))
+	assert.False(t, replaced.ContainsType(toType(testTG, anotherNode)))
+	assert.True(t, replaced.ContainsType(toType(testTG, thirdNode)))
+	assert.True(t, replaced.ContainsType(toType(testTG, replacementNode)))
 }
 
 func TestReplaceTypeNullable(t *testing.T) {
-	testTG := newTypeGraph(t)
+	g, _ := compilergraph.NewGraph("-")
+	testTG := newTestTypeGraph(g)
 
 	firstTypeNode := testTG.layer.CreateNode(NodeTypeClass)
 	secondTypeNode := testTG.layer.CreateNode(NodeTypeClass)
@@ -139,18 +132,23 @@ func TestReplaceTypeNullable(t *testing.T) {
 	thirdTypeNode.Decorate(NodePredicateTypeName, "Third")
 	fourthTypeNode.Decorate(NodePredicateTypeName, "Fourth")
 
-	secondRef := testTG.NewTypeReference(secondTypeNode).AsNullable()
-	firstRef := testTG.NewTypeReference(firstTypeNode, secondRef)
+	firstType := toType(testTG, firstTypeNode)
+	secondType := toType(testTG, secondTypeNode)
+	thirdType := toType(testTG, thirdTypeNode)
+
+	secondRef := testTG.NewTypeReference(secondType).AsNullable()
+	firstRef := testTG.NewTypeReference(firstType, secondRef)
 
 	assert.Equal(t, "First<Second?>", firstRef.String())
 
 	// Replace the Second with third.
-	newRef := firstRef.ReplaceType(secondTypeNode, testTG.NewTypeReference(thirdTypeNode))
+	newRef := firstRef.ReplaceType(secondType, testTG.NewTypeReference(thirdType))
 	assert.Equal(t, "First<Third?>", newRef.String())
 }
 
 func TestSpecialReferenceOperations(t *testing.T) {
-	testTG := newTypeGraph(t)
+	g, _ := compilergraph.NewGraph("-")
+	testTG := newTestTypeGraph(g)
 
 	anyRef := testTG.AnyTypeReference()
 	assert.True(t, anyRef.IsAny(), "Expected 'any' reference")
@@ -172,13 +170,14 @@ type extractTypeDiff struct {
 	name            string
 	extractFromRef  TypeReference
 	extractBaseRef  TypeReference
-	typeToExtract   compilergraph.GraphNode
+	typeToExtract   TGTypeDecl
 	expectSuccess   bool
 	expectedTypeRef TypeReference
 }
 
 func TestExtractTypeDiff(t *testing.T) {
-	testTG := newTypeGraph(t)
+	g, _ := compilergraph.NewGraph("-")
+	testTG := newTestTypeGraph(g)
 
 	firstTypeNode := testTG.layer.CreateNode(NodeTypeClass)
 	secondTypeNode := testTG.layer.CreateNode(NodeTypeClass)
@@ -196,48 +195,56 @@ func TestExtractTypeDiff(t *testing.T) {
 	tGenericNode.Decorate(NodePredicateGenericName, "T")
 	qGenericNode.Decorate(NodePredicateGenericName, "Q")
 
+	firstType := toType(testTG, firstTypeNode)
+	secondType := toType(testTG, secondTypeNode)
+	thirdType := toType(testTG, thirdTypeNode)
+	fourthType := toType(testTG, fourthTypeNode)
+
+	tGeneric := toType(testTG, tGenericNode)
+	qGeneric := toType(testTG, qGenericNode)
+
 	tests := []extractTypeDiff{
 		extractTypeDiff{
 			"extract from First<Second>, reference is First<T>: T = Second",
-			testTG.NewTypeReference(firstTypeNode).WithGeneric(testTG.NewTypeReference(secondTypeNode)),
-			testTG.NewTypeReference(firstTypeNode).WithGeneric(testTG.NewTypeReference(tGenericNode)),
-			tGenericNode,
+			testTG.NewTypeReference(firstType).WithGeneric(testTG.NewTypeReference(secondType)),
+			testTG.NewTypeReference(firstType).WithGeneric(testTG.NewTypeReference(tGeneric)),
+			tGeneric,
 			true,
-			testTG.NewTypeReference(secondTypeNode),
+			testTG.NewTypeReference(secondType),
 		},
 
 		extractTypeDiff{
 			"extract from First<Second, Third>, reference is First<T, Q>: Q = Third",
-			testTG.NewTypeReference(firstTypeNode, testTG.NewTypeReference(secondTypeNode), testTG.NewTypeReference(thirdTypeNode)),
-			testTG.NewTypeReference(firstTypeNode, testTG.NewTypeReference(tGenericNode), testTG.NewTypeReference(qGenericNode)),
-			qGenericNode,
+			testTG.NewTypeReference(firstType, testTG.NewTypeReference(secondType), testTG.NewTypeReference(thirdType)),
+			testTG.NewTypeReference(firstType, testTG.NewTypeReference(tGeneric), testTG.NewTypeReference(qGeneric)),
+			qGeneric,
 			true,
-			testTG.NewTypeReference(thirdTypeNode),
+			testTG.NewTypeReference(thirdType),
 		},
 
 		extractTypeDiff{
 			"attempt to extract from Fourth<Second>, reference is First<T>",
-			testTG.NewTypeReference(fourthTypeNode, testTG.NewTypeReference(secondTypeNode)),
-			testTG.NewTypeReference(firstTypeNode, testTG.NewTypeReference(tGenericNode)),
-			tGenericNode,
+			testTG.NewTypeReference(fourthType, testTG.NewTypeReference(secondType)),
+			testTG.NewTypeReference(firstType, testTG.NewTypeReference(tGeneric)),
+			tGeneric,
 			false,
 			testTG.VoidTypeReference(),
 		},
 
 		extractTypeDiff{
 			"extract from First(Second, Third), reference is First(T, Q): Q = Third",
-			testTG.NewTypeReference(firstTypeNode).WithParameter(testTG.NewTypeReference(secondTypeNode)).WithParameter(testTG.NewTypeReference(thirdTypeNode)),
-			testTG.NewTypeReference(firstTypeNode).WithParameter(testTG.NewTypeReference(tGenericNode)).WithParameter(testTG.NewTypeReference(qGenericNode)),
-			qGenericNode,
+			testTG.NewTypeReference(firstType).WithParameter(testTG.NewTypeReference(secondType)).WithParameter(testTG.NewTypeReference(thirdType)),
+			testTG.NewTypeReference(firstType).WithParameter(testTG.NewTypeReference(tGeneric)).WithParameter(testTG.NewTypeReference(qGeneric)),
+			qGeneric,
 			true,
-			testTG.NewTypeReference(thirdTypeNode),
+			testTG.NewTypeReference(thirdType),
 		},
 
 		extractTypeDiff{
 			"attempt to extract from any, reference is First<T>",
 			testTG.AnyTypeReference(),
-			testTG.NewTypeReference(firstTypeNode, testTG.NewTypeReference(tGenericNode)),
-			tGenericNode,
+			testTG.NewTypeReference(firstType, testTG.NewTypeReference(tGeneric)),
+			tGeneric,
 			false,
 			testTG.VoidTypeReference(),
 		},
@@ -245,37 +252,37 @@ func TestExtractTypeDiff(t *testing.T) {
 		extractTypeDiff{
 			"attempt to extract from void, reference is First<T>",
 			testTG.VoidTypeReference(),
-			testTG.NewTypeReference(firstTypeNode, testTG.NewTypeReference(tGenericNode)),
-			tGenericNode,
+			testTG.NewTypeReference(firstType, testTG.NewTypeReference(tGeneric)),
+			tGeneric,
 			false,
 			testTG.VoidTypeReference(),
 		},
 
 		extractTypeDiff{
 			"extract from First<any>, reference is First<T>: T = any",
-			testTG.NewTypeReference(firstTypeNode, testTG.AnyTypeReference()),
-			testTG.NewTypeReference(firstTypeNode, testTG.NewTypeReference(tGenericNode)),
-			tGenericNode,
+			testTG.NewTypeReference(firstType, testTG.AnyTypeReference()),
+			testTG.NewTypeReference(firstType, testTG.NewTypeReference(tGeneric)),
+			tGeneric,
 			true,
 			testTG.AnyTypeReference(),
 		},
 
 		extractTypeDiff{
 			"attempt to extract from First<Second>, reference is First<any>",
-			testTG.NewTypeReference(firstTypeNode, testTG.NewTypeReference(secondTypeNode)),
-			testTG.NewTypeReference(firstTypeNode, testTG.AnyTypeReference()),
-			tGenericNode,
+			testTG.NewTypeReference(firstType, testTG.NewTypeReference(secondType)),
+			testTG.NewTypeReference(firstType, testTG.AnyTypeReference()),
+			tGeneric,
 			false,
 			testTG.VoidTypeReference(),
 		},
 
 		extractTypeDiff{
 			"extract from First<Third>(Second), reference is First<Third>(T): T = Second",
-			testTG.NewTypeReference(firstTypeNode, testTG.NewTypeReference(thirdTypeNode)).WithParameter(testTG.NewTypeReference(secondTypeNode)),
-			testTG.NewTypeReference(firstTypeNode, testTG.NewTypeReference(thirdTypeNode)).WithParameter(testTG.NewTypeReference(tGenericNode)),
-			tGenericNode,
+			testTG.NewTypeReference(firstType, testTG.NewTypeReference(thirdType)).WithParameter(testTG.NewTypeReference(secondType)),
+			testTG.NewTypeReference(firstType, testTG.NewTypeReference(thirdType)).WithParameter(testTG.NewTypeReference(tGeneric)),
+			tGeneric,
 			true,
-			testTG.NewTypeReference(secondTypeNode),
+			testTG.NewTypeReference(secondType),
 		},
 	}
 
@@ -293,90 +300,180 @@ func TestExtractTypeDiff(t *testing.T) {
 
 type concreteSubtypeCheckTest struct {
 	name             string
-	subtypeVarName   string
+	subtype          string
 	interfaceName    string
 	expectedError    string
 	expectedGenerics []string
 }
 
 func TestConcreteSubtypes(t *testing.T) {
-	graph, err := compilergraph.NewGraph("tests/subtypes/concrete.seru")
-	if !assert.Nil(t, err, "Got graph creation error: %v", err) {
-		return
-	}
+	g, _ := compilergraph.NewGraph("-")
+	testConstruction := newTestTypeGraphConstructor(g,
+		"concrete",
+		[]testType{
+			// interface IBasicInterface<T> {
+			//	 function<T> DoSomething()
+			// }
+			testType{"interface", "IBasicInterface", []testGeneric{testGeneric{"T", ""}},
+				[]testMember{
+					testMember{"function", "DoSomething", "T", []testGeneric{}, []testParam{}},
+				},
+			},
 
-	testSRG := srg.NewSRG(graph)
-	srgResult := testSRG.LoadAndParse("tests/testlib")
-	if !assert.True(t, srgResult.Status, "Got error for SRG construction: %v", srgResult.Errors) {
-		return
-	}
+			// class SomeClass {
+			//   function<int> DoSomething() {}
+			// }
+			testType{"class", "SomeClass", []testGeneric{},
+				[]testMember{
+					testMember{"function", "DoSomething", "int", []testGeneric{}, []testParam{}},
+				},
+			},
 
-	// Construct the type graph.
-	result := BuildTypeGraph(testSRG)
-	if !assert.True(t, result.Status, "Got error for TypeGraph construction: %v", result.Errors) {
-		return
-	}
+			// class AnotherClass {
+			//   function<bool> DoSomething() {}
+			// }
+			testType{"class", "AnotherClass", []testGeneric{},
+				[]testMember{
+					testMember{"function", "DoSomething", "bool", []testGeneric{}, []testParam{}},
+				},
+			},
+
+			// class ThirdClass {}
+			testType{"class", "ThirdClass", []testGeneric{}, []testMember{}},
+
+			// class FourthClass {
+			//   function<int> DoSomething(someparam int) {}
+			// }
+			testType{"class", "FourthClass", []testGeneric{},
+				[]testMember{
+					testMember{"function", "DoSomething", "int", []testGeneric{},
+						[]testParam{testParam{"someparam", "int"}}},
+				},
+			},
+
+			// interface IMultiGeneric<T, Q> {
+			//    function<T> DoSomething(someparam Q)
+			// }
+			testType{"interface", "IMultiGeneric", []testGeneric{testGeneric{"T", ""}, testGeneric{"Q", ""}},
+				[]testMember{
+					testMember{"function", "DoSomething", "T", []testGeneric{},
+						[]testParam{testParam{"someparam", "Q"}}},
+				},
+			},
+
+			// class FifthClass<T, Q> {
+			//   function<Q> DoSomething(someparam T) {}
+			// }
+			testType{"class", "FifthClass", []testGeneric{testGeneric{"T", ""}, testGeneric{"Q", ""}},
+				[]testMember{
+					testMember{"function", "DoSomething", "Q", []testGeneric{},
+						[]testParam{testParam{"someparam", "T"}}},
+				},
+			},
+
+			// interface IMultiMember<T, Q> {
+			//    function<T> TFunc()
+			//    function<void> QFunc(someparam Q)
+			// }
+			testType{"interface", "IMultiMember", []testGeneric{testGeneric{"T", ""}, testGeneric{"Q", ""}},
+				[]testMember{
+					testMember{"function", "TFunc", "T", []testGeneric{}, []testParam{}},
+					testMember{"function", "QFunc", "void", []testGeneric{},
+						[]testParam{testParam{"someparam", "Q"}}},
+				},
+			},
+
+			// class MultiClass {
+			//	function<int> TFunc() {}
+			//	function<void> QFunc(someparam bool) {}
+			// }
+			testType{"class", "MultiClass", []testGeneric{},
+				[]testMember{
+					testMember{"function", "TFunc", "int", []testGeneric{}, []testParam{}},
+					testMember{"function", "QFunc", "void", []testGeneric{},
+						[]testParam{testParam{"someparam", "bool"}}},
+				},
+			},
+
+			// interface Port<T> {
+			//   function<void> AwaitNext(callback function<void>(T))
+			// }
+			testType{"interface", "Port", []testGeneric{testGeneric{"T", ""}},
+				[]testMember{
+					testMember{"function", "AwaitNext", "void", []testGeneric{},
+						[]testParam{testParam{"callback", "function<void>(T)"}}},
+				},
+			},
+
+			// class SomePort {
+			//   function<void> AwaitNext(callback function<void>(int))
+			// }
+			testType{"class", "SomePort", []testGeneric{},
+				[]testMember{
+					testMember{"function", "AwaitNext", "void", []testGeneric{},
+						[]testParam{testParam{"callback", "function<void>(int)"}}},
+				},
+			},
+		},
+	)
+
+	graph := newTestTypeGraph(g, testConstruction)
 
 	tests := []concreteSubtypeCheckTest{
-		concreteSubtypeCheckTest{"SomeClass subtype of basic generic interface test", "someClass", "IBasicInterface", "",
-			[]string{"Integer"},
+		concreteSubtypeCheckTest{"SomeClass subtype of basic generic interface test", "SomeClass", "IBasicInterface", "",
+			[]string{"int"},
 		},
 
-		concreteSubtypeCheckTest{"AnotherClass subtype of basic generic interface test", "anotherClass", "IBasicInterface", "",
-			[]string{"Boolean"},
+		concreteSubtypeCheckTest{"AnotherClass subtype of basic generic interface test", "AnotherClass", "IBasicInterface", "",
+			[]string{"bool"},
 		},
 
-		concreteSubtypeCheckTest{"ThirdClass not subtype of basic generic interface test", "thirdClass", "IBasicInterface",
+		concreteSubtypeCheckTest{"ThirdClass not subtype of basic generic interface test", "ThirdClass", "IBasicInterface",
 			"Type ThirdClass cannot be used in place of type IBasicInterface as it does not implement member DoSomething",
 			[]string{},
 		},
 
-		concreteSubtypeCheckTest{"FourthClass not subtype of basic generic interface test", "fourthClass", "IBasicInterface",
-			"member 'DoSomething' under type 'FourthClass' does not match that defined in type 'IBasicInterface<Integer>'",
+		concreteSubtypeCheckTest{"FourthClass not subtype of basic generic interface test", "FourthClass", "IBasicInterface",
+			"member 'DoSomething' under type 'FourthClass' does not match that defined in type 'IBasicInterface<int>'",
 			[]string{},
 		},
 
-		concreteSubtypeCheckTest{"FourthClass subtype of multi generic interface test", "fourthClass", "IMultiGeneric",
+		concreteSubtypeCheckTest{"FourthClass subtype of multi generic interface test", "FourthClass", "IMultiGeneric",
 			"",
-			[]string{"Integer", "Integer"},
+			[]string{"int", "int"},
 		},
 
-		concreteSubtypeCheckTest{"FifthClass<int, bool> subtype of multi generic interface test", "fifthIntBool", "IMultiGeneric",
+		concreteSubtypeCheckTest{"FifthClass<int, bool> subtype of multi generic interface test", "FifthClass<int, bool>", "IMultiGeneric",
 			"",
-			[]string{"Boolean", "Integer"},
+			[]string{"bool", "int"},
 		},
 
-		concreteSubtypeCheckTest{"FifthClass<bool, int> subtype of multi generic interface test", "fifthBoolInt", "IMultiGeneric",
+		concreteSubtypeCheckTest{"FifthClass<bool, int> subtype of multi generic interface test", "FifthClass<bool, int>", "IMultiGeneric",
 			"",
-			[]string{"Integer", "Boolean"},
+			[]string{"int", "bool"},
 		},
 
-		concreteSubtypeCheckTest{"MultiClass subtype of multi member interface test", "multiClass", "IMultiMember",
+		concreteSubtypeCheckTest{"MultiClass subtype of multi member interface test", "MultiClass", "IMultiMember",
 			"",
-			[]string{"Integer", "Boolean"},
+			[]string{"int", "bool"},
 		},
 
-		concreteSubtypeCheckTest{"SomePort subtype of port", "somePort", "Port",
+		concreteSubtypeCheckTest{"SomePort subtype of port", "SomePort", "Port",
 			"",
-			[]string{"Integer"},
+			[]string{"int"},
 		},
 	}
 
 	for _, test := range tests {
-		subTypeRef := testSRG.FindVariableTypeWithName(test.subtypeVarName)
-		subRef, serr := result.Graph.BuildTypeRef(subTypeRef)
-
-		if !assert.Nil(t, serr, "Error in constructing sub ref for test %v: %v", test.name, serr) {
-			continue
-		}
-
-		source := compilercommon.InputSource("tests/subtypes/concrete.seru")
-		interfaceType, found := result.Graph.LookupType(test.interfaceName, source)
+		source := compilercommon.InputSource("concrete")
+		interfaceType, found := graph.LookupType(test.interfaceName, source)
 		if !assert.True(t, found, "Could not find interface %v for test %v", test.interfaceName, test.name) {
 			continue
 		}
 
-		generics, sterr := subRef.CheckConcreteSubtypeOf(interfaceType.GraphNode)
+		moduleSourceNode := *testConstruction.moduleNode
+		subRef := parseTypeReferenceForTesting(test.subtype, graph, moduleSourceNode)
+		generics, sterr := subRef.CheckConcreteSubtypeOf(interfaceType)
 		if test.expectedError != "" {
 			if !assert.NotNil(t, sterr, "Expected subtype error for test %v", test.name) {
 				continue
@@ -404,105 +501,165 @@ func TestConcreteSubtypes(t *testing.T) {
 }
 
 type subtypeCheckTest struct {
-	name           string
-	subtypeVarName string
-	baseVarName    string
-	expectedError  string
+	name          string
+	subtype       string
+	basetype      string
+	expectedError string
 }
 
 func TestSubtypes(t *testing.T) {
-	graph, err := compilergraph.NewGraph("tests/subtypes/subtypes.seru")
-	if !assert.Nil(t, err, "Got graph creation error: %v", err) {
-		return
-	}
+	g, _ := compilergraph.NewGraph("-")
+	testConstruction := newTestTypeGraphConstructor(g,
+		"subtype",
+		[]testType{
+			// interface IEmpty {}
+			testType{"interface", "IEmpty", []testGeneric{},
+				[]testMember{},
+			},
 
-	testSRG := srg.NewSRG(graph)
-	srgResult := testSRG.LoadAndParse("tests/testlib")
-	if !assert.True(t, srgResult.Status, "Got error for SRG construction: %v", srgResult.Errors) {
-		return
-	}
+			// interface IWithMethod {
+			//    function<void> SomeMethod()
+			// }
+			testType{"interface", "IWithMethod", []testGeneric{},
+				[]testMember{
+					testMember{"function", "SomeMethod", "void", []testGeneric{}, []testParam{}},
+				},
+			},
 
-	// Construct the type graph.
-	result := BuildTypeGraph(testSRG)
-	if !assert.True(t, result.Status, "Got error for TypeGraph construction: %v", result.Errors) {
-		return
-	}
+			// interface IWithOperator {
+			//    operator Range(left IWithOperator, right IWithOperator) {}
+			// }
+			testType{"interface", "IWithOperator", []testGeneric{},
+				[]testMember{
+					testMember{"operator", "Range", "any", []testGeneric{},
+						[]testParam{
+							testParam{"left", "IWithOperator"},
+							testParam{"right", "IWithOperator"},
+						}},
+				},
+			},
+
+			// class SomeClass {
+			//   function<void> SomeMethod() {}
+			// }
+			testType{"class", "SomeClass", []testGeneric{},
+				[]testMember{
+					testMember{"function", "SomeMethod", "void", []testGeneric{}, []testParam{}},
+				},
+			},
+
+			// class AnotherClass {
+			//   operator Range(left AnotherClass, right AnotherClass) {}
+			// }
+			testType{"class", "AnotherClass", []testGeneric{},
+				[]testMember{
+					testMember{"operator", "Range", "any", []testGeneric{},
+						[]testParam{
+							testParam{"left", "AnotherClass"},
+							testParam{"right", "AnotherClass"},
+						}},
+				},
+			},
+
+			// interface IGeneric<T, Q> {
+			//    function<T> SomeMethod(someparam Q)
+			// }
+			testType{"interface", "IGeneric", []testGeneric{testGeneric{"T", ""}, testGeneric{"Q", ""}},
+				[]testMember{
+					testMember{"function", "SomeMethod", "T", []testGeneric{},
+						[]testParam{testParam{"someparam", "Q"}}},
+				},
+			},
+
+			// class ThirdClass {
+			//   function<int> SomeMethod(someparam bool) {}
+			// }
+			testType{"class", "ThirdClass", []testGeneric{},
+				[]testMember{
+					testMember{"function", "SomeMethod", "int", []testGeneric{},
+						[]testParam{testParam{"someparam", "bool"}}},
+				},
+			},
+
+			// class FourthClass<T, Q> {
+			//   function<Q> SomeMethod(someparam T) {}
+			// }
+			testType{"class", "FourthClass", []testGeneric{testGeneric{"T", ""}, testGeneric{"Q", ""}},
+				[]testMember{
+					testMember{"function", "SomeMethod", "Q", []testGeneric{},
+						[]testParam{testParam{"someparam", "T"}}},
+				},
+			},
+		},
+	)
+
+	graph := newTestTypeGraph(g, testConstruction)
+	moduleSourceNode := *testConstruction.moduleNode
 
 	tests := []subtypeCheckTest{
 		// IEmpty
-		subtypeCheckTest{"SomeClass subtype of IEmpty", "someClass", "empty", ""},
-		subtypeCheckTest{"AnotherClass subtype of IEmpty", "anotherClass", "empty", ""},
-		subtypeCheckTest{"ThirdClass subtype of IEmpty", "thirdClass", "empty", ""},
-		subtypeCheckTest{"FourthClass<int, bool> subtype of IEmpty", "fourthIntBool", "empty", ""},
-		subtypeCheckTest{"FourthClass<bool, int> subtype of IEmpty", "fourthBoolInt", "empty", ""},
+		subtypeCheckTest{"SomeClass subtype of IEmpty", "SomeClass", "IEmpty", ""},
+		subtypeCheckTest{"AnotherClass subtype of IEmpty", "AnotherClass", "IEmpty", ""},
+		subtypeCheckTest{"ThirdClass subtype of IEmpty", "ThirdClass", "IEmpty", ""},
+		subtypeCheckTest{"FourthClass<int, bool> subtype of IEmpty", "FourthClass<int, bool>", "IEmpty", ""},
+		subtypeCheckTest{"FourthClass<bool, int> subtype of IEmpty", "FourthClass<bool, int>", "IEmpty", ""},
 
 		// SomeClass and AnotherClass
-		subtypeCheckTest{"AnotherClass not a subtype of SomeClass", "anotherClass", "someClass",
+		subtypeCheckTest{"AnotherClass not a subtype of SomeClass", "AnotherClass", "SomeClass",
 			"'AnotherClass' cannot be used in place of non-interface 'SomeClass'"},
 
-		subtypeCheckTest{"SomeClass not a subtype of AnotherClass", "someClass", "anotherClass",
+		subtypeCheckTest{"SomeClass not a subtype of AnotherClass", "SomeClass", "AnotherClass",
 			"'SomeClass' cannot be used in place of non-interface 'AnotherClass'"},
 
 		// IWithMethod
-		subtypeCheckTest{"SomeClass subtype of IWithMethod", "someClass", "withMethod", ""},
+		subtypeCheckTest{"SomeClass subtype of IWithMethod", "SomeClass", "IWithMethod", ""},
 
-		subtypeCheckTest{"AnotherClass not a subtype of IWithMethod", "anotherClass", "withMethod",
+		subtypeCheckTest{"AnotherClass not a subtype of IWithMethod", "AnotherClass", "IWithMethod",
 			"Type 'AnotherClass' does not define or export member 'SomeMethod', which is required by type 'IWithMethod'"},
 
 		// IGeneric
-		subtypeCheckTest{"AnotherClass not a subtype of IGeneric<int, bool>", "anotherClass", "genericIntBool",
-			"Type 'AnotherClass' does not define or export member 'SomeMethod', which is required by type 'IGeneric<Integer, Boolean>'"},
+		subtypeCheckTest{"AnotherClass not a subtype of IGeneric<int, bool>", "AnotherClass", "IGeneric<int, bool>",
+			"Type 'AnotherClass' does not define or export member 'SomeMethod', which is required by type 'IGeneric<int, bool>'"},
 
-		subtypeCheckTest{"AnotherClass not a subtype of IGeneric<bool, int>", "anotherClass", "genericBoolInt",
-			"Type 'AnotherClass' does not define or export member 'SomeMethod', which is required by type 'IGeneric<Boolean, Integer>'"},
+		subtypeCheckTest{"AnotherClass not a subtype of IGeneric<bool, int>", "AnotherClass", "IGeneric<bool, int>",
+			"Type 'AnotherClass' does not define or export member 'SomeMethod', which is required by type 'IGeneric<bool, int>'"},
 
-		subtypeCheckTest{"SomeClass not subtype of IGeneric<int, bool>", "someClass", "genericIntBool",
-			"member 'SomeMethod' under type 'SomeClass' does not match that defined in type 'IGeneric<Integer, Boolean>'"},
+		subtypeCheckTest{"SomeClass not subtype of IGeneric<int, bool>", "SomeClass", "IGeneric<int, bool>",
+			"member 'SomeMethod' under type 'SomeClass' does not match that defined in type 'IGeneric<int, bool>'"},
 
-		subtypeCheckTest{"SomeClass not subtype of IGeneric<bool, int>", "someClass", "genericBoolInt",
-			"member 'SomeMethod' under type 'SomeClass' does not match that defined in type 'IGeneric<Boolean, Integer>'"},
+		subtypeCheckTest{"SomeClass not subtype of IGeneric<bool, int>", "SomeClass", "IGeneric<bool, int>",
+			"member 'SomeMethod' under type 'SomeClass' does not match that defined in type 'IGeneric<bool, int>'"},
 
-		subtypeCheckTest{"ThirdClass subtype of IGeneric<int, bool>", "thirdClass", "genericIntBool", ""},
+		subtypeCheckTest{"ThirdClass subtype of IGeneric<int, bool>", "ThirdClass", "IGeneric<int, bool>", ""},
 
-		subtypeCheckTest{"ThirdClass not subtype of IGeneric<bool, int>", "thirdClass", "genericBoolInt",
-			"member 'SomeMethod' under type 'ThirdClass' does not match that defined in type 'IGeneric<Boolean, Integer>'"},
+		subtypeCheckTest{"ThirdClass not subtype of IGeneric<bool, int>", "ThirdClass", "IGeneric<bool, int>",
+			"member 'SomeMethod' under type 'ThirdClass' does not match that defined in type 'IGeneric<bool, int>'"},
 
-		subtypeCheckTest{"fourthIntBool not subtype of IGeneric<int, bool>", "fourthIntBool", "genericIntBool",
-			"member 'SomeMethod' under type 'FourthClass<Integer, Boolean>' does not match that defined in type 'IGeneric<Integer, Boolean>'"},
+		subtypeCheckTest{"FourthClass<int, bool> not subtype of IGeneric<int, bool>", "FourthClass<int, bool>", "IGeneric<int, bool>",
+			"member 'SomeMethod' under type 'FourthClass<int, bool>' does not match that defined in type 'IGeneric<int, bool>'"},
 
-		subtypeCheckTest{"fourthBoolInt not subtype of IGeneric<bool, int>", "fourthBoolInt", "genericBoolInt",
-			"member 'SomeMethod' under type 'FourthClass<Boolean, Integer>' does not match that defined in type 'IGeneric<Boolean, Integer>'"},
+		subtypeCheckTest{"FourthClass<bool, int> not subtype of IGeneric<bool, int>", "FourthClass<bool, int>", "IGeneric<bool, int>",
+			"member 'SomeMethod' under type 'FourthClass<bool, int>' does not match that defined in type 'IGeneric<bool, int>'"},
 
-		subtypeCheckTest{"fourthIntBool subtype of IGeneric<bool, int>", "fourthIntBool", "genericBoolInt", ""},
-		subtypeCheckTest{"fourthBoolInt subtype of IGeneric<int, bool>", "fourthBoolInt", "genericIntBool", ""},
+		subtypeCheckTest{"FourthClass<int, bool> subtype of IGeneric<bool, int>", "FourthClass<int, bool>", "FourthClass<int, bool>", ""},
+		subtypeCheckTest{"FourthClass<bool, int> subtype of IGeneric<int, bool>", "FourthClass<bool, int>", "IGeneric<int, bool>", ""},
 
 		// IWithOperator
-		subtypeCheckTest{"SomeClass not subtype of IWithOperator", "someClass", "withOperator",
+		subtypeCheckTest{"SomeClass not subtype of IWithOperator", "SomeClass", "IWithOperator",
 			"Type 'SomeClass' does not define or export operator 'range', which is required by type 'IWithOperator'"},
 
-		subtypeCheckTest{"Another subtype of IWithOperator", "anotherClass", "withOperator", ""},
+		subtypeCheckTest{"AnotherClass subtype of IWithOperator", "AnotherClass", "IWithOperator", ""},
 
 		// Nullable.
-		subtypeCheckTest{"AnotherClass subtype of AnotherClass?", "anotherClass", "nullableAnotherClass", ""},
+		subtypeCheckTest{"AnotherClass subtype of AnotherClass?", "AnotherClass", "AnotherClass?", ""},
 
-		subtypeCheckTest{"AnotherClass not subtype of SomeClass?", "anotherClass", "nullableSomeClass",
+		subtypeCheckTest{"AnotherClass not subtype of SomeClass?", "AnotherClass", "SomeClass?",
 			"'AnotherClass' cannot be used in place of non-interface 'SomeClass?'"},
 	}
 
 	for _, test := range tests {
-		baseTypeRef := testSRG.FindVariableTypeWithName(test.baseVarName)
-		subTypeRef := testSRG.FindVariableTypeWithName(test.subtypeVarName)
-
-		baseRef, berr := result.Graph.BuildTypeRef(baseTypeRef)
-		subRef, serr := result.Graph.BuildTypeRef(subTypeRef)
-
-		if !assert.Nil(t, berr, "Error in constructing base ref for test %v: %v", test.name, berr) {
-			continue
-		}
-
-		if !assert.Nil(t, serr, "Error in constructing sub ref for test %v: %v", test.name, serr) {
-			continue
-		}
+		baseRef := parseTypeReferenceForTesting(test.basetype, graph, moduleSourceNode)
+		subRef := parseTypeReferenceForTesting(test.subtype, graph, moduleSourceNode)
 
 		sterr := subRef.CheckSubTypeOf(baseRef)
 		if test.expectedError != "" {
@@ -530,30 +687,49 @@ type resolveMemberTest struct {
 }
 
 func TestResolveMembers(t *testing.T) {
-	graph, err := compilergraph.NewGraph("tests/typeresolve/entrypoint.seru")
-	if !assert.Nil(t, err, "Got graph creation error: %v", err) {
-		return
-	}
 
-	testSRG := srg.NewSRG(graph)
-	srgResult := testSRG.LoadAndParse("tests/testlib")
-	if !assert.True(t, srgResult.Status, "Got error for SRG construction: %v", srgResult.Errors) {
-		return
-	}
+	g, _ := compilergraph.NewGraph("-")
+	entrypoint := newTestTypeGraphConstructor(g,
+		"entrypoint",
+		[]testType{
+			// class SomeClass {
+			//	function<void> ExportedFunction() {}
+			//	function<void> notExported() {}
+			//}
+			testType{"class", "SomeClass", []testGeneric{},
+				[]testMember{
+					testMember{"function", "ExportedFunction", "void", []testGeneric{}, []testParam{}},
+					testMember{"function", "notExported", "void", []testGeneric{}, []testParam{}},
+				},
+			},
+		},
+	)
 
-	// Construct the type graph.
-	result := BuildTypeGraph(testSRG)
-	if !assert.True(t, result.Status, "Got error for TypeGraph construction: %v", result.Errors) {
-		return
-	}
+	otherfile := newTestTypeGraphConstructor(g,
+		"otherfile",
+		[]testType{
+			// class OtherClass {
+			//	function<void> OtherExportedFunction() {}
+			//	function<void> otherNotExported() {}
+			//}
+			testType{"class", "OtherClass", []testGeneric{},
+				[]testMember{
+					testMember{"function", "OtherExportedFunction", "void", []testGeneric{}, []testParam{}},
+					testMember{"function", "otherNotExported", "void", []testGeneric{}, []testParam{}},
+				},
+			},
+		},
+	)
+
+	graph := newTestTypeGraph(g, entrypoint, otherfile)
 
 	// Get a reference to SomeClass and attempt to resolve members from both modules.
-	someClass, someClassFound := result.Graph.LookupType("SomeClass", compilercommon.InputSource("tests/typeresolve/entrypoint.seru"))
+	someClass, someClassFound := graph.LookupType("SomeClass", compilercommon.InputSource("entrypoint"))
 	if !assert.True(t, someClassFound, "Could not find 'SomeClass'") {
 		return
 	}
 
-	otherClass, otherClassFound := result.Graph.LookupType("OtherClass", compilercommon.InputSource("tests/typeresolve/otherfile.seru"))
+	otherClass, otherClassFound := graph.LookupType("OtherClass", compilercommon.InputSource("otherfile"))
 	if !assert.True(t, otherClassFound, "Could not find 'OtherClass'") {
 		return
 	}
@@ -571,9 +747,8 @@ func TestResolveMembers(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		typeref := result.Graph.NewTypeReference(test.parentType.GraphNode)
-		memberNode, memberFound := typeref.ResolveMember(test.memberName,
-			compilercommon.InputSource(fmt.Sprintf("tests/typeresolve/%s.seru", test.modulePath)), MemberResolutionInstance)
+		typeref := graph.NewTypeReference(test.parentType)
+		memberNode, memberFound := typeref.ResolveMember(test.memberName, compilercommon.InputSource(test.modulePath), MemberResolutionInstance)
 
 		if !assert.Equal(t, test.expectedFound, memberFound, "Member found mismatch on %s", test.name) {
 			continue

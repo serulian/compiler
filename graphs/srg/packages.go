@@ -15,7 +15,7 @@ import (
 
 // getPackageForImport returns the package information for the package imported by the given import
 // node.
-func (g *SRG) getPackageForImport(importNode compilergraph.GraphNode) *srgPackage {
+func (g *SRG) getPackageForImport(importNode compilergraph.GraphNode) importedPackage {
 	packageReference := importNode.Get(parser.NodeImportPredicateLocation)
 	packageInfo, ok := g.packageMap[packageReference]
 	if !ok {
@@ -26,7 +26,7 @@ func (g *SRG) getPackageForImport(importNode compilergraph.GraphNode) *srgPackag
 			source, subsource, packageReference, importNode, g.packageMap))
 	}
 
-	return &srgPackage{
+	return importedPackage{
 		srg:         g,
 		packageInfo: packageInfo,
 	}
@@ -34,19 +34,24 @@ func (g *SRG) getPackageForImport(importNode compilergraph.GraphNode) *srgPackag
 
 // srgPackage implements the typeContainer information for searching over a package of
 // modules.
-type srgPackage struct {
-	srg         *SRG                       // The parent SRG.
-	packageInfo *packageloader.PackageInfo // The package info for this package.
+type importedPackage struct {
+	srg         *SRG                      // The parent SRG.
+	packageInfo packageloader.PackageInfo // The package info for this package.
+}
+
+// IsSRGPackage returns true if the imported package is an SRG package.
+func (p importedPackage) IsSRGPackage() bool {
+	return p.packageInfo.Kind() == srgSourceKind
 }
 
 // ModulePaths returns the paths of all the modules under this package.
-func (p *srgPackage) ModulePaths() []compilercommon.InputSource {
+func (p importedPackage) ModulePaths() []compilercommon.InputSource {
 	return p.packageInfo.ModulePaths()
 }
 
 // SingleModule returns the single module in this package, if any.
-func (p *srgPackage) SingleModule() (SRGModule, bool) {
-	if len(p.packageInfo.ModulePaths()) == 1 {
+func (p importedPackage) SingleModule() (SRGModule, bool) {
+	if p.IsSRGPackage() && len(p.packageInfo.ModulePaths()) == 1 {
 		modulePath := p.packageInfo.ModulePaths()[0]
 		module, ok := p.srg.FindModuleBySource(modulePath)
 		if !ok {
@@ -59,25 +64,34 @@ func (p *srgPackage) SingleModule() (SRGModule, bool) {
 	return SRGModule{}, false
 }
 
-// FindTypeByName searches all of the modules in this package for a type with the given name.
-func (p *srgPackage) FindTypeByName(typeName string, option ModuleResolutionOption) (SRGType, bool) {
+// ResolveType will attempt to resolve the given type path under all modules in this package.
+func (p importedPackage) ResolveExportedType(path string) (TypeResolutionResult, bool) {
+	if !p.IsSRGPackage() {
+		return resultForExternalPackage(path, p.packageInfo), true
+	}
+
 	for _, modulePath := range p.packageInfo.ModulePaths() {
 		module, ok := p.srg.FindModuleBySource(modulePath)
 		if !ok {
 			panic(fmt.Sprintf("Could not find module with path: %s", modulePath))
 		}
 
-		namedFound, ok := module.FindTypeByName(typeName, option)
+		result, ok := module.ResolveExportedType(path)
 		if ok {
-			return namedFound, true
+			return result, true
 		}
 	}
 
-	return SRGType{}, false
+	return TypeResolutionResult{}, false
 }
 
 // FindTypeOrMemberByName searches all of the modules in this package for a type or member with the given name.
-func (p *srgPackage) FindTypeOrMemberByName(name string, option ModuleResolutionOption) (SRGTypeOrMember, bool) {
+// Will panic for non-SRG imported packages.
+func (p importedPackage) FindTypeOrMemberByName(name string, option ModuleResolutionOption) (SRGTypeOrMember, bool) {
+	if !p.IsSRGPackage() {
+		panic("Cannot call FindTypeOrMemberByName on non-SRG package")
+	}
+
 	for _, modulePath := range p.packageInfo.ModulePaths() {
 		module, ok := p.srg.FindModuleBySource(modulePath)
 		if !ok {

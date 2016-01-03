@@ -41,8 +41,7 @@ func (sb *scopeBuilder) getDeclaredVariableType(node compilergraph.GraphNode) (t
 	}
 
 	// Load the declared type.
-	typeref := sb.sg.srg.GetTypeRef(declaredTypeNode)
-	declaredType, rerr := sb.sg.tdg.BuildTypeRef(typeref)
+	declaredType, rerr := sb.sg.ResolveSRGTypeRef(sb.sg.srg.GetTypeRef(declaredTypeNode))
 	if rerr != nil {
 		panic(rerr)
 		return sb.sg.tdg.AnyTypeReference(), false

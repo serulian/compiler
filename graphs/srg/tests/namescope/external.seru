@@ -1,0 +1,6 @@
+import testp`externalpackage` as externalpackage
+from testp`externalpackage` import ExternalMember
+from testp`externalpackage` import AnotherMember as CoolMember
+
+function<void> SomeFunction() /* somefunction */{
+}

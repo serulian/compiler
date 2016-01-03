@@ -39,6 +39,7 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 		Out(parser.NodeFunctionCallArgument).
 		BuildNodeIterator()
 
+	var nonOptionalIndex = len(childParameters) - 1
 	var isValid = true
 	for ait.Next() {
 		index = index + 1
@@ -47,6 +48,7 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 		argumentScope := sb.getScope(ait.Node())
 		if !argumentScope.GetIsValid() {
 			isValid = false
+			nonOptionalIndex = index
 			continue
 		}
 
@@ -57,7 +59,16 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 				sb.decorateWithError(ait.Node(), "Parameter #%v expects type %v: %v", index+1, childParameters[index], serr)
 				isValid = false
 			}
+
+			if !childParameters[index].IsNullable() {
+				nonOptionalIndex = index
+			}
 		}
+	}
+
+	if index < nonOptionalIndex {
+		sb.decorateWithError(node, "Function call expects %v non-optional arguments, found %v", nonOptionalIndex+1, index+1)
+		return newScope().Invalid().GetScope()
 	}
 
 	if index >= len(childParameters) {

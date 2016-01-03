@@ -5,10 +5,7 @@
 package typegraph
 
 import (
-	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
-	"github.com/serulian/compiler/graphs/srg"
-	"github.com/serulian/compiler/parser"
 )
 
 // TGModule represents a module in the type graph.
@@ -20,6 +17,16 @@ type TGModule struct {
 // Name returns the name of the underlying module.
 func (tn TGModule) Name() string {
 	return tn.GraphNode.Get(NodePredicateModuleName)
+}
+
+// Path returns the path of the underlying module.
+func (tn TGModule) Path() string {
+	return tn.GraphNode.Get(NodePredicateModulePath)
+}
+
+// Title returns the human readable name of this type ("Module")
+func (tn TGModule) Title() string {
+	return "Module"
 }
 
 // Node returns the underlying node in this declaration.
@@ -46,6 +53,16 @@ func (tn TGModule) IsType() bool {
 	return false
 }
 
+// AsType panics (since module is not a type).
+func (tn TGModule) AsType() TGTypeDecl {
+	panic("Module is not a type!")
+}
+
+// ParentModule returns the parent module (which, is this module).
+func (tn TGModule) ParentModule() TGModule {
+	return tn
+}
+
 // Types returns the types defined in this module.
 func (tn TGModule) Types() []TGTypeDecl {
 	it := tn.GraphNode.StartQuery().
@@ -58,21 +75,4 @@ func (tn TGModule) Types() []TGTypeDecl {
 	}
 
 	return types
-}
-
-// SRGModule returns the SRG definition for this module, if any.
-func (tn TGModule) SRGModule() (srg.SRGModule, bool) {
-	sourceNodeId, hasSource := tn.TryGet(NodePredicateSource)
-	if !hasSource {
-		return srg.SRGModule{}, false
-	}
-
-	sourceNode := tn.tdg.srg.GetNode(compilergraph.GraphNodeId(sourceNodeId))
-	inputSource := compilercommon.InputSource(sourceNode.Get(parser.NodePredicateSource))
-	module, found := tn.tdg.srg.FindModuleBySource(inputSource)
-	if !found {
-		return srg.SRGModule{}, false
-	}
-
-	return module, true
 }

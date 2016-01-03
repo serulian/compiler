@@ -32,14 +32,33 @@ func (sb *scopeBuilder) lookupNamedScope(name string, node compilergraph.GraphNo
 		return namedScopeInfo{}, false
 	}
 
-	return sb.buildNamedScopeForSRGInfo(srgInfo), true
+	return sb.processSRGNameOrInfo(srgInfo)
+}
+
+// processSRGNameOrInfo handles an SRGScopeOrImport, either translating an SRGNamedScope into a namedScopeInfo
+// or performing the actual lookup under the typegraph for non-SRG names.
+func (sb *scopeBuilder) processSRGNameOrInfo(srgInfo srg.SRGScopeOrImport) (namedScopeInfo, bool) {
+	// If the SRG info refers to an SRG named scope, build the info for it.
+	if srgInfo.IsNamedScope() {
+		return sb.buildNamedScopeForSRGInfo(srgInfo.AsNamedScope()), true
+	}
+
+	// Otherwise, the SRG info refers to a member of an external package, which we need to resolve
+	// under the type graph.
+	packageImportInfo := srgInfo.AsPackageImport()
+	typeOrMember, found := sb.sg.tdg.ResolveTypeOrMemberUnderPackage(packageImportInfo.ImportedName(), packageImportInfo.Package())
+	if !found {
+		return namedScopeInfo{}, false
+	}
+
+	return namedScopeInfo{srg.SRGNamedScope{}, typeOrMember, sb}, true
 }
 
 // buildNamedScopeForSRGInfo builds a namedScopeInfo for the given SRG scope info.
 func (sb *scopeBuilder) buildNamedScopeForSRGInfo(srgInfo srg.SRGNamedScope) namedScopeInfo {
 	switch srgInfo.ScopeKind() {
 	case srg.NamedScopeType:
-		typeInfo, found := sb.sg.tdg.GetTypeForSRGNode(srgInfo.GraphNode)
+		typeInfo, found := sb.sg.tdg.GetTypeForSourceNode(srgInfo.GraphNode)
 		if !found {
 			panic("Missing type info for SRG node")
 		}
@@ -47,7 +66,7 @@ func (sb *scopeBuilder) buildNamedScopeForSRGInfo(srgInfo srg.SRGNamedScope) nam
 		return namedScopeInfo{srgInfo, typeInfo, sb}
 
 	case srg.NamedScopeMember:
-		memberInfo, found := sb.sg.tdg.GetMemberForSRGNode(srgInfo.GraphNode)
+		memberInfo, found := sb.sg.tdg.GetMemberForSourceNode(srgInfo.GraphNode)
 		if !found {
 			panic("Missing member info for SRG node")
 		}
@@ -128,12 +147,12 @@ func (nsi *namedScopeInfo) ResolveStaticMember(name string, module compilercommo
 
 		return namedScopeInfo{srg.SRGNamedScope{}, typeMember, nsi.sb}, true
 	} else {
-		srgNamedScope, found := nsi.srgInfo.ResolveNameUnderScope(name)
+		namedScopeOrImport, found := nsi.srgInfo.ResolveNameUnderScope(name)
 		if !found {
 			return namedScopeInfo{}, false
 		}
 
-		return nsi.sb.buildNamedScopeForSRGInfo(srgNamedScope), true
+		return nsi.sb.processSRGNameOrInfo(namedScopeOrImport)
 	}
 }
 
@@ -185,13 +204,10 @@ func (nsi *namedScopeInfo) ValueOrGenericType() typegraph.TypeReference {
 		}
 
 		// TODO: We should probably cache this in the type graph instead of resolving here.
-		typeref := nsi.sb.sg.srg.GetTypeRef(nsi.srgInfo.GraphNode.GetNode(parser.NodeParameterType))
-		declaredType, rerr := nsi.sb.sg.tdg.BuildTypeRef(typeref)
-		if rerr != nil {
-			panic(rerr)
-		}
-
-		return declaredType
+		srg := nsi.sb.sg.srg
+		parameterTypeNode := nsi.srgInfo.GraphNode.GetNode(parser.NodeParameterType)
+		typeref, _ := nsi.sb.sg.ResolveSRGTypeRef(srg.GetTypeRef(parameterTypeNode))
+		return typeref
 
 	case srg.NamedScopeValue:
 		// The value type of a named value is found by scoping the node creating the named value
