@@ -10,7 +10,7 @@ $module('basic', function () {
             $t.dynamicaccess($global.SomeBrowserThing, 'SomeStaticFunction', false, true);
             $global.SomeBrowserThing.SomeStaticAttribute.SomeInterfaceFunction();
             $t.dynamicaccess($global.SomeBrowserThing.SomeStaticAttribute, 'SomeInterfaceFunction', false, true);
-            $t.nativenew($global.SomeBrowserThing, 'new', false, true)('foo');
+            $t.nativenew($global.SomeBrowserThing, 'new', false, false)('foo');
             $state.current = -1;
             return;
 

@@ -1,14 +1,14 @@
 NodeTypeGlobalModule
   child-node =>
     NodeTypeFile
-      end-rune = 8988
+      end-rune = 8987
       input-source = full file test
       start-rune = 0
       child-node =>
         NodeTypeDeclaration
           declaration-kind = interface
           declaration-name = ECMA262Globals
-          end-rune = 560
+          end-rune = 559
           input-source = full file test
           start-rune = 87
           child-node =>
@@ -22,2885 +22,2885 @@ NodeTypeGlobalModule
               start-rune = 88
           declaration-member =>
             NodeTypeMember
-              end-rune = 166
+              end-rune = 165
               input-source = full file test
               member-attribute = true
               member-name = NaN
               member-readonly = true
               member-type = Number
-              start-rune = 137
+              start-rune = 136
             NodeTypeMember
-              end-rune = 204
+              end-rune = 203
               input-source = full file test
               member-attribute = true
               member-name = Infinity
               member-readonly = true
               member-type = Number
-              start-rune = 170
+              start-rune = 169
             NodeTypeMember
-              end-rune = 243
+              end-rune = 242
               input-source = full file test
               member-attribute = true
               member-name = undefined
               member-readonly = true
               member-type = Object
-              start-rune = 208
+              start-rune = 207
             NodeTypeMember
-              end-rune = 263
+              end-rune = 262
               input-source = full file test
               member-name = eval
               member-type = any
-              start-rune = 248
+              start-rune = 247
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 261
+                  end-rune = 260
                   input-source = full file test
                   parameter-name = x
                   parameter-type = any
-                  start-rune = 257
+                  start-rune = 256
             NodeTypeMember
-              end-rune = 305
+              end-rune = 304
               input-source = full file test
               member-name = parseInt
               member-type = int
-              start-rune = 267
+              start-rune = 266
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 292
+                  end-rune = 291
                   input-source = full file test
                   parameter-name = string
                   parameter-type = String
-                  start-rune = 280
+                  start-rune = 279
                 NodeTypeParameter
-                  end-rune = 303
+                  end-rune = 302
                   input-source = full file test
                   parameter-name = radix
                   parameter-type = int
-                  start-rune = 295
+                  start-rune = 294
             NodeTypeMember
-              end-rune = 341
+              end-rune = 340
               input-source = full file test
               member-name = parseFloat
               member-type = Number
-              start-rune = 309
+              start-rune = 308
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 339
+                  end-rune = 338
                   input-source = full file test
                   parameter-name = string
                   parameter-type = String
-                  start-rune = 327
+                  start-rune = 326
             NodeTypeMember
-              end-rune = 373
+              end-rune = 372
               input-source = full file test
               member-name = isNaN
               member-type = boolean
-              start-rune = 345
+              start-rune = 344
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 371
+                  end-rune = 370
                   input-source = full file test
                   parameter-name = number
                   parameter-type = Number
-                  start-rune = 359
+                  start-rune = 358
             NodeTypeMember
-              end-rune = 408
+              end-rune = 407
               input-source = full file test
               member-name = isFinite
               member-type = boolean
-              start-rune = 377
+              start-rune = 376
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 406
+                  end-rune = 405
                   input-source = full file test
                   parameter-name = number
                   parameter-type = Number
-                  start-rune = 394
+                  start-rune = 393
             NodeTypeMember
-              end-rune = 444
+              end-rune = 443
               input-source = full file test
               member-name = decodeURI
               member-type = String
-              start-rune = 412
+              start-rune = 411
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 442
+                  end-rune = 441
                   input-source = full file test
                   parameter-name = encodedUri
                   parameter-type = any
-                  start-rune = 429
+                  start-rune = 428
             NodeTypeMember
-              end-rune = 489
+              end-rune = 488
               input-source = full file test
               member-name = decodeURIComponent
               member-type = String
-              start-rune = 448
+              start-rune = 447
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 487
+                  end-rune = 486
                   input-source = full file test
                   parameter-name = encodedUri
                   parameter-type = any
-                  start-rune = 474
+                  start-rune = 473
             NodeTypeMember
-              end-rune = 518
+              end-rune = 517
               input-source = full file test
               member-name = encodeURI
               member-type = String
-              start-rune = 493
+              start-rune = 492
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 516
+                  end-rune = 515
                   input-source = full file test
                   parameter-name = uri
                   parameter-type = any
-                  start-rune = 510
+                  start-rune = 509
             NodeTypeMember
-              end-rune = 556
+              end-rune = 555
               input-source = full file test
               member-name = encodeURIComponent
               member-type = String
-              start-rune = 522
+              start-rune = 521
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 554
+                  end-rune = 553
                   input-source = full file test
                   parameter-name = uri
                   parameter-type = any
-                  start-rune = 548
+                  start-rune = 547
         NodeTypeImplementation
-          end-rune = 594
+          end-rune = 593
           implementation-name = Window
           implementation-source = ECMA262Globals
           input-source = full file test
-          start-rune = 562
+          start-rune = 561
         NodeTypeDeclaration
           declaration-kind = interface
           declaration-name = Object
-          end-rune = 1526
+          end-rune = 1525
           input-source = full file test
-          start-rune = 597
+          start-rune = 596
           declaration-annotation =>
             NodeTypeAnnotation
               annotation-name = Constructor
-              end-rune = 608
+              end-rune = 607
               input-source = full file test
-              start-rune = 598
+              start-rune = 597
           declaration-member =>
             NodeTypeMember
-              end-rune = 674
+              end-rune = 673
               input-source = full file test
               member-attribute = true
               member-name = prototype
               member-readonly = true
               member-static = true
               member-type = Object
-              start-rune = 632
+              start-rune = 631
             NodeTypeMember
-              end-rune = 721
+              end-rune = 720
               input-source = full file test
               member-name = getPrototypeOf
               member-static = true
               member-type = Object
-              start-rune = 678
+              start-rune = 677
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 719
+                  end-rune = 718
                   input-source = full file test
                   parameter-name = object
                   parameter-type = Object
-                  start-rune = 707
+                  start-rune = 706
             NodeTypeMember
-              end-rune = 788
+              end-rune = 787
               input-source = full file test
               member-name = getOwnPropertyDescriptor
               member-static = true
               member-type = Object
-              start-rune = 725
+              start-rune = 724
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 776
+                  end-rune = 775
                   input-source = full file test
                   parameter-name = object
                   parameter-type = Object
-                  start-rune = 764
+                  start-rune = 763
                 NodeTypeParameter
-                  end-rune = 786
+                  end-rune = 785
                   input-source = full file test
                   parameter-name = name
                   parameter-type = any
-                  start-rune = 779
+                  start-rune = 778
             NodeTypeMember
-              end-rune = 839
+              end-rune = 838
               input-source = full file test
               member-name = getOwnPropertyNames
               member-static = true
               member-type = Array
-              start-rune = 792
+              start-rune = 791
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 837
+                  end-rune = 836
                   input-source = full file test
                   parameter-name = object
                   parameter-type = Object
-                  start-rune = 825
+                  start-rune = 824
             NodeTypeMember
-              end-rune = 903
+              end-rune = 902
               input-source = full file test
               member-name = create
               member-static = true
               member-type = Object
-              start-rune = 843
+              start-rune = 842
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 876
+                  end-rune = 875
                   input-source = full file test
                   parameter-name = object
                   parameter-type = Object
-                  start-rune = 864
+                  start-rune = 863
                 NodeTypeParameter
-                  end-rune = 901
+                  end-rune = 900
                   input-source = full file test
                   parameter-name = properties
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 879
+                  start-rune = 878
             NodeTypeMember
-              end-rune = 979
+              end-rune = 978
               input-source = full file test
               member-name = defineProperty
               member-static = true
               member-type = Object
-              start-rune = 907
+              start-rune = 906
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 948
+                  end-rune = 947
                   input-source = full file test
                   parameter-name = object
                   parameter-type = Object
-                  start-rune = 936
+                  start-rune = 935
                 NodeTypeParameter
-                  end-rune = 958
+                  end-rune = 957
                   input-source = full file test
                   parameter-name = name
                   parameter-type = any
-                  start-rune = 951
+                  start-rune = 950
                 NodeTypeParameter
-                  end-rune = 977
+                  end-rune = 976
                   input-source = full file test
                   parameter-name = attributes
                   parameter-type = Object
-                  start-rune = 961
+                  start-rune = 960
             NodeTypeMember
-              end-rune = 1047
+              end-rune = 1046
               input-source = full file test
               member-name = defineProperties
               member-static = true
               member-type = Object
-              start-rune = 983
+              start-rune = 982
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 1026
+                  end-rune = 1025
                   input-source = full file test
                   parameter-name = object
                   parameter-type = Object
-                  start-rune = 1014
+                  start-rune = 1013
                 NodeTypeParameter
-                  end-rune = 1045
+                  end-rune = 1044
                   input-source = full file test
                   parameter-name = attributes
                   parameter-type = Object
-                  start-rune = 1029
+                  start-rune = 1028
             NodeTypeMember
-              end-rune = 1084
+              end-rune = 1083
               input-source = full file test
               member-name = seal
               member-static = true
               member-type = Object
-              start-rune = 1051
+              start-rune = 1050
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 1082
+                  end-rune = 1081
                   input-source = full file test
                   parameter-name = object
                   parameter-type = Object
-                  start-rune = 1070
+                  start-rune = 1069
             NodeTypeMember
-              end-rune = 1123
+              end-rune = 1122
               input-source = full file test
               member-name = freeze
               member-static = true
               member-type = Object
-              start-rune = 1088
+              start-rune = 1087
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 1121
+                  end-rune = 1120
                   input-source = full file test
                   parameter-name = object
                   parameter-type = Object
-                  start-rune = 1109
+                  start-rune = 1108
             NodeTypeMember
-              end-rune = 1173
+              end-rune = 1172
               input-source = full file test
               member-name = preventExtensions
               member-static = true
               member-type = Object
-              start-rune = 1127
+              start-rune = 1126
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 1171
+                  end-rune = 1170
                   input-source = full file test
                   parameter-name = object
                   parameter-type = Object
-                  start-rune = 1159
+                  start-rune = 1158
             NodeTypeMember
-              end-rune = 1215
+              end-rune = 1214
               input-source = full file test
               member-name = isSealed
               member-static = true
               member-type = boolean
-              start-rune = 1177
+              start-rune = 1176
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 1213
+                  end-rune = 1212
                   input-source = full file test
                   parameter-name = object
                   parameter-type = Object
-                  start-rune = 1201
+                  start-rune = 1200
             NodeTypeMember
-              end-rune = 1257
+              end-rune = 1256
               input-source = full file test
               member-name = isFrozen
               member-static = true
               member-type = boolean
-              start-rune = 1219
+              start-rune = 1218
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 1255
+                  end-rune = 1254
                   input-source = full file test
                   parameter-name = object
                   parameter-type = Object
-                  start-rune = 1243
+                  start-rune = 1242
             NodeTypeMember
-              end-rune = 1303
+              end-rune = 1302
               input-source = full file test
               member-name = isExtensible
               member-static = true
               member-type = boolean
-              start-rune = 1261
+              start-rune = 1260
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 1301
+                  end-rune = 1300
                   input-source = full file test
                   parameter-name = object
                   parameter-type = Object
-                  start-rune = 1289
+                  start-rune = 1288
             NodeTypeMember
-              end-rune = 1339
+              end-rune = 1338
               input-source = full file test
               member-name = keys
               member-static = true
               member-type = Array
-              start-rune = 1307
+              start-rune = 1306
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 1337
+                  end-rune = 1336
                   input-source = full file test
                   parameter-name = object
                   parameter-type = Object
-                  start-rune = 1325
+                  start-rune = 1324
             NodeTypeMember
-              end-rune = 1360
+              end-rune = 1359
               input-source = full file test
               member-name = toString
               member-type = String
-              start-rune = 1343
+              start-rune = 1342
             NodeTypeMember
-              end-rune = 1387
+              end-rune = 1386
               input-source = full file test
               member-name = toLocaleString
               member-type = String
-              start-rune = 1364
+              start-rune = 1363
             NodeTypeMember
-              end-rune = 1407
+              end-rune = 1406
               input-source = full file test
               member-name = valueOf
               member-type = Object
-              start-rune = 1391
+              start-rune = 1390
             NodeTypeMember
-              end-rune = 1444
+              end-rune = 1443
               input-source = full file test
               member-name = hasOwnProperty
               member-type = boolean
-              start-rune = 1411
+              start-rune = 1410
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 1442
+                  end-rune = 1441
                   input-source = full file test
                   parameter-name = value
                   parameter-type = any
-                  start-rune = 1434
+                  start-rune = 1433
             NodeTypeMember
-              end-rune = 1480
+              end-rune = 1479
               input-source = full file test
               member-name = isPrototypeOf
               member-type = boolean
-              start-rune = 1448
+              start-rune = 1447
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 1478
+                  end-rune = 1477
                   input-source = full file test
                   parameter-name = value
                   parameter-type = any
-                  start-rune = 1470
+                  start-rune = 1469
             NodeTypeMember
-              end-rune = 1523
+              end-rune = 1522
               input-source = full file test
               member-name = propertyIsEnumerable
               member-type = boolean
-              start-rune = 1484
+              start-rune = 1483
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 1521
+                  end-rune = 1520
                   input-source = full file test
                   parameter-name = value
                   parameter-type = any
-                  start-rune = 1513
+                  start-rune = 1512
         NodeTypeDeclaration
           declaration-kind = interface
           declaration-name = Function
-          end-rune = 1877
+          end-rune = 1876
           input-source = full file test
-          start-rune = 1529
+          start-rune = 1528
           declaration-annotation =>
             NodeTypeAnnotation
               annotation-name = Constructor
-              end-rune = 1540
+              end-rune = 1539
               input-source = full file test
-              start-rune = 1530
+              start-rune = 1529
           declaration-member =>
             NodeTypeMember
-              end-rune = 1608
+              end-rune = 1607
               input-source = full file test
               member-attribute = true
               member-name = prototype
               member-readonly = true
               member-static = true
               member-type = Object
-              start-rune = 1566
+              start-rune = 1565
             NodeTypeMember
-              end-rune = 1648
+              end-rune = 1647
               input-source = full file test
               member-attribute = true
               member-name = length
               member-readonly = true
               member-static = true
               member-type = int
-              start-rune = 1612
+              start-rune = 1611
             NodeTypeMember
-              end-rune = 1669
+              end-rune = 1668
               input-source = full file test
               member-name = toString
               member-type = String
-              start-rune = 1652
+              start-rune = 1651
             NodeTypeMember
-              end-rune = 1712
+              end-rune = 1711
               input-source = full file test
               member-name = apply
               member-type = any
-              start-rune = 1673
+              start-rune = 1672
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 1693
+                  end-rune = 1692
                   input-source = full file test
                   parameter-name = this
                   parameter-type = Object
-                  start-rune = 1683
+                  start-rune = 1682
                 NodeTypeParameter
-                  end-rune = 1710
+                  end-rune = 1709
                   input-source = full file test
                   parameter-name = arguments
                   parameter-type = Array
-                  start-rune = 1696
+                  start-rune = 1695
             NodeTypeMember
-              end-rune = 1757
+              end-rune = 1756
               input-source = full file test
               member-name = call
               member-type = any
-              start-rune = 1716
+              start-rune = 1715
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 1735
+                  end-rune = 1734
                   input-source = full file test
                   parameter-name = this
                   parameter-type = Object
-                  start-rune = 1725
+                  start-rune = 1724
                 NodeTypeParameter
-                  end-rune = 1755
+                  end-rune = 1754
                   input-source = full file test
                   parameter-name = item1
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 1738
+                  start-rune = 1737
             NodeTypeMember
-              end-rune = 1802
+              end-rune = 1801
               input-source = full file test
               member-name = bind
               member-type = any
-              start-rune = 1761
+              start-rune = 1760
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 1780
+                  end-rune = 1779
                   input-source = full file test
                   parameter-name = this
                   parameter-type = Object
-                  start-rune = 1770
+                  start-rune = 1769
                 NodeTypeParameter
-                  end-rune = 1800
+                  end-rune = 1799
                   input-source = full file test
                   parameter-name = item1
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 1783
+                  start-rune = 1782
             NodeTypeMember
-              end-rune = 1841
+              end-rune = 1840
               input-source = full file test
               member-attribute = true
               member-name = prototype
               member-readonly = true
               member-type = Object
-              start-rune = 1806
+              start-rune = 1805
             NodeTypeMember
-              end-rune = 1874
+              end-rune = 1873
               input-source = full file test
               member-attribute = true
               member-name = length
               member-readonly = true
               member-type = int
-              start-rune = 1845
+              start-rune = 1844
         NodeTypeDeclaration
           declaration-kind = interface
           declaration-name = Array
-          end-rune = 2821
+          end-rune = 2820
           input-source = full file test
-          start-rune = 1880
+          start-rune = 1879
           declaration-annotation =>
             NodeTypeAnnotation
               annotation-name = Constructor
-              end-rune = 1891
+              end-rune = 1890
               input-source = full file test
-              start-rune = 1881
+              start-rune = 1880
           declaration-member =>
             NodeTypeMember
-              end-rune = 1956
+              end-rune = 1955
               input-source = full file test
               member-attribute = true
               member-name = prototype
               member-readonly = true
               member-static = true
               member-type = Object
-              start-rune = 1914
+              start-rune = 1913
             NodeTypeMember
-              end-rune = 1989
+              end-rune = 1988
               input-source = full file test
               member-name = isArray
               member-static = true
               member-type = boolean
-              start-rune = 1960
+              start-rune = 1959
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 1987
+                  end-rune = 1986
                   input-source = full file test
                   parameter-name = x
                   parameter-type = any
-                  start-rune = 1983
+                  start-rune = 1982
             NodeTypeMember
-              end-rune = 2010
+              end-rune = 2009
               input-source = full file test
               member-name = toString
               member-type = String
-              start-rune = 1993
+              start-rune = 1992
             NodeTypeMember
-              end-rune = 2037
+              end-rune = 2036
               input-source = full file test
               member-name = toLocaleString
               member-type = String
-              start-rune = 2014
+              start-rune = 2013
             NodeTypeMember
-              end-rune = 2073
+              end-rune = 2072
               input-source = full file test
               member-name = concat
               member-type = Array
-              start-rune = 2041
+              start-rune = 2040
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 2071
+                  end-rune = 2070
                   input-source = full file test
                   parameter-name = item1
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 2054
+                  start-rune = 2053
             NodeTypeMember
-              end-rune = 2103
+              end-rune = 2102
               input-source = full file test
               member-name = join
               member-type = String
-              start-rune = 2077
+              start-rune = 2076
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 2101
+                  end-rune = 2100
                   input-source = full file test
                   parameter-name = separator
                   parameter-type = any
-                  start-rune = 2089
+                  start-rune = 2088
             NodeTypeMember
-              end-rune = 2118
+              end-rune = 2117
               input-source = full file test
               member-name = pop
               member-type = Array
-              start-rune = 2107
+              start-rune = 2106
             NodeTypeMember
-              end-rune = 2152
+              end-rune = 2151
               input-source = full file test
               member-name = push
               member-type = Array
-              start-rune = 2122
+              start-rune = 2121
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 2150
+                  end-rune = 2149
                   input-source = full file test
                   parameter-name = item1
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 2133
+                  start-rune = 2132
             NodeTypeMember
-              end-rune = 2171
+              end-rune = 2170
               input-source = full file test
               member-name = reverse
               member-type = Array
-              start-rune = 2156
+              start-rune = 2155
             NodeTypeMember
-              end-rune = 2186
+              end-rune = 2185
               input-source = full file test
               member-name = shift
               member-type = any
-              start-rune = 2175
+              start-rune = 2174
             NodeTypeMember
-              end-rune = 2221
+              end-rune = 2220
               input-source = full file test
               member-name = slice
               member-type = Array
-              start-rune = 2190
+              start-rune = 2189
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 2210
+                  end-rune = 2209
                   input-source = full file test
                   parameter-name = start
                   parameter-type = any
-                  start-rune = 2202
+                  start-rune = 2201
                 NodeTypeParameter
-                  end-rune = 2219
+                  end-rune = 2218
                   input-source = full file test
                   parameter-name = end
                   parameter-type = any
-                  start-rune = 2213
+                  start-rune = 2212
             NodeTypeMember
-              end-rune = 2251
+              end-rune = 2250
               input-source = full file test
               member-name = sort
               member-type = Array
-              start-rune = 2225
+              start-rune = 2224
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 2249
+                  end-rune = 2248
                   input-source = full file test
                   parameter-name = comparator
                   parameter-type = any
-                  start-rune = 2236
+                  start-rune = 2235
             NodeTypeMember
-              end-rune = 2315
+              end-rune = 2314
               input-source = full file test
               member-name = splice
               member-type = Array
-              start-rune = 2255
+              start-rune = 2254
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 2276
+                  end-rune = 2275
                   input-source = full file test
                   parameter-name = start
                   parameter-type = any
-                  start-rune = 2268
+                  start-rune = 2267
                 NodeTypeParameter
-                  end-rune = 2293
+                  end-rune = 2292
                   input-source = full file test
                   parameter-name = deleteCount
                   parameter-type = any
-                  start-rune = 2279
+                  start-rune = 2278
                 NodeTypeParameter
-                  end-rune = 2313
+                  end-rune = 2312
                   input-source = full file test
                   parameter-name = item1
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 2296
+                  start-rune = 2295
             NodeTypeMember
-              end-rune = 2350
+              end-rune = 2349
               input-source = full file test
               member-name = unshift
               member-type = int
-              start-rune = 2319
+              start-rune = 2318
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 2348
+                  end-rune = 2347
                   input-source = full file test
                   parameter-name = item1
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 2331
+                  start-rune = 2330
             NodeTypeMember
-              end-rune = 2408
+              end-rune = 2407
               input-source = full file test
               member-name = indexOf
               member-type = int
-              start-rune = 2354
+              start-rune = 2353
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 2382
+                  end-rune = 2381
                   input-source = full file test
                   parameter-name = searchElement
                   parameter-type = any
-                  start-rune = 2366
+                  start-rune = 2365
                 NodeTypeParameter
-                  end-rune = 2406
+                  end-rune = 2405
                   input-source = full file test
                   parameter-name = fromIndex
                   parameter-optional = true
                   parameter-type = int
-                  start-rune = 2385
+                  start-rune = 2384
             NodeTypeMember
-              end-rune = 2470
+              end-rune = 2469
               input-source = full file test
               member-name = lastIndexOf
               member-type = int
-              start-rune = 2412
+              start-rune = 2411
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 2444
+                  end-rune = 2443
                   input-source = full file test
                   parameter-name = searchElement
                   parameter-type = any
-                  start-rune = 2428
+                  start-rune = 2427
                 NodeTypeParameter
-                  end-rune = 2468
+                  end-rune = 2467
                   input-source = full file test
                   parameter-name = fromIndex
                   parameter-optional = true
                   parameter-type = int
-                  start-rune = 2447
+                  start-rune = 2446
             NodeTypeMember
-              end-rune = 2516
+              end-rune = 2515
               input-source = full file test
               member-name = every
               member-type = boolean
-              start-rune = 2474
+              start-rune = 2473
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 2501
+                  end-rune = 2500
                   input-source = full file test
                   parameter-name = predicator
                   parameter-type = any
-                  start-rune = 2488
+                  start-rune = 2487
                 NodeTypeParameter
-                  end-rune = 2514
+                  end-rune = 2513
                   input-source = full file test
                   parameter-name = this
                   parameter-type = Object
-                  start-rune = 2504
+                  start-rune = 2503
             NodeTypeMember
-              end-rune = 2561
+              end-rune = 2560
               input-source = full file test
               member-name = some
               member-type = boolean
-              start-rune = 2520
+              start-rune = 2519
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 2546
+                  end-rune = 2545
                   input-source = full file test
                   parameter-name = predicator
                   parameter-type = any
-                  start-rune = 2533
+                  start-rune = 2532
                 NodeTypeParameter
-                  end-rune = 2559
+                  end-rune = 2558
                   input-source = full file test
                   parameter-name = this
                   parameter-type = Object
-                  start-rune = 2549
+                  start-rune = 2548
             NodeTypeMember
-              end-rune = 2604
+              end-rune = 2603
               input-source = full file test
               member-name = forEach
               member-type = void
-              start-rune = 2565
+              start-rune = 2564
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 2589
+                  end-rune = 2588
                   input-source = full file test
                   parameter-name = iterator
                   parameter-type = any
-                  start-rune = 2578
+                  start-rune = 2577
                 NodeTypeParameter
-                  end-rune = 2602
+                  end-rune = 2601
                   input-source = full file test
                   parameter-name = this
                   parameter-type = Object
-                  start-rune = 2592
+                  start-rune = 2591
             NodeTypeMember
-              end-rune = 2644
+              end-rune = 2643
               input-source = full file test
               member-name = map
               member-type = Array
-              start-rune = 2608
+              start-rune = 2607
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 2629
+                  end-rune = 2628
                   input-source = full file test
                   parameter-name = iterator
                   parameter-type = any
-                  start-rune = 2618
+                  start-rune = 2617
                 NodeTypeParameter
-                  end-rune = 2642
+                  end-rune = 2641
                   input-source = full file test
                   parameter-name = this
                   parameter-type = Object
-                  start-rune = 2632
+                  start-rune = 2631
             NodeTypeMember
-              end-rune = 2689
+              end-rune = 2688
               input-source = full file test
               member-name = filter
               member-type = Array
-              start-rune = 2648
+              start-rune = 2647
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 2674
+                  end-rune = 2673
                   input-source = full file test
                   parameter-name = predicator
                   parameter-type = any
-                  start-rune = 2661
+                  start-rune = 2660
                 NodeTypeParameter
-                  end-rune = 2687
+                  end-rune = 2686
                   input-source = full file test
                   parameter-name = this
                   parameter-type = Object
-                  start-rune = 2677
+                  start-rune = 2676
             NodeTypeMember
-              end-rune = 2739
+              end-rune = 2738
               input-source = full file test
               member-name = reduce
               member-type = any
-              start-rune = 2693
+              start-rune = 2692
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 2715
+                  end-rune = 2714
                   input-source = full file test
                   parameter-name = reductor
                   parameter-type = any
-                  start-rune = 2704
+                  start-rune = 2703
                 NodeTypeParameter
-                  end-rune = 2737
+                  end-rune = 2736
                   input-source = full file test
                   parameter-name = initial
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 2718
+                  start-rune = 2717
             NodeTypeMember
-              end-rune = 2794
+              end-rune = 2793
               input-source = full file test
               member-name = reduceRight
               member-type = any
-              start-rune = 2743
+              start-rune = 2742
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 2770
+                  end-rune = 2769
                   input-source = full file test
                   parameter-name = reductor
                   parameter-type = any
-                  start-rune = 2759
+                  start-rune = 2758
                 NodeTypeParameter
-                  end-rune = 2792
+                  end-rune = 2791
                   input-source = full file test
                   parameter-name = initial
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 2773
+                  start-rune = 2772
             NodeTypeMember
-              end-rune = 2818
+              end-rune = 2817
               input-source = full file test
               member-attribute = true
               member-name = length
               member-type = int
-              start-rune = 2798
+              start-rune = 2797
         NodeTypeDeclaration
           declaration-kind = interface
           declaration-name = String
-          end-rune = 3661
+          end-rune = 3660
           input-source = full file test
-          start-rune = 2824
+          start-rune = 2823
           declaration-annotation =>
             NodeTypeAnnotation
               annotation-name = Constructor
-              end-rune = 2835
+              end-rune = 2834
               input-source = full file test
-              start-rune = 2825
+              start-rune = 2824
           declaration-member =>
             NodeTypeMember
-              end-rune = 2901
+              end-rune = 2900
               input-source = full file test
               member-attribute = true
               member-name = prototype
               member-readonly = true
               member-static = true
               member-type = Object
-              start-rune = 2859
+              start-rune = 2858
             NodeTypeMember
-              end-rune = 2954
+              end-rune = 2953
               input-source = full file test
               member-name = fromCharCode
               member-static = true
               member-type = String
-              start-rune = 2905
+              start-rune = 2904
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 2952
+                  end-rune = 2951
                   input-source = full file test
                   parameter-name = char1
                   parameter-optional = true
                   parameter-type = Number
-                  start-rune = 2932
+                  start-rune = 2931
             NodeTypeMember
-              end-rune = 2975
+              end-rune = 2974
               input-source = full file test
               member-name = toString
               member-type = String
-              start-rune = 2958
+              start-rune = 2957
             NodeTypeMember
-              end-rune = 2995
+              end-rune = 2994
               input-source = full file test
               member-name = valueOf
               member-type = String
-              start-rune = 2979
+              start-rune = 2978
             NodeTypeMember
-              end-rune = 3026
+              end-rune = 3025
               input-source = full file test
               member-name = charAt
               member-type = String
-              start-rune = 2999
+              start-rune = 2998
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 3024
+                  end-rune = 3023
                   input-source = full file test
                   parameter-name = position
                   parameter-type = any
-                  start-rune = 3013
+                  start-rune = 3012
             NodeTypeMember
-              end-rune = 3061
+              end-rune = 3060
               input-source = full file test
               member-name = charCodeAt
               member-type = Number
-              start-rune = 3030
+              start-rune = 3029
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 3059
+                  end-rune = 3058
                   input-source = full file test
                   parameter-name = position
                   parameter-type = any
-                  start-rune = 3048
+                  start-rune = 3047
             NodeTypeMember
-              end-rune = 3100
+              end-rune = 3099
               input-source = full file test
               member-name = concat
               member-type = String
-              start-rune = 3065
+              start-rune = 3064
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 3098
+                  end-rune = 3097
                   input-source = full file test
                   parameter-name = string1
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 3079
+                  start-rune = 3078
             NodeTypeMember
-              end-rune = 3165
+              end-rune = 3164
               input-source = full file test
               member-name = indexOf
               member-type = int
-              start-rune = 3104
+              start-rune = 3103
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 3140
+                  end-rune = 3139
                   input-source = full file test
                   parameter-name = searchString
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 3116
+                  start-rune = 3115
                 NodeTypeParameter
-                  end-rune = 3163
+                  end-rune = 3162
                   input-source = full file test
                   parameter-name = position
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 3143
+                  start-rune = 3142
             NodeTypeMember
-              end-rune = 3234
+              end-rune = 3233
               input-source = full file test
               member-name = lastIndexOf
               member-type = int
-              start-rune = 3169
+              start-rune = 3168
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 3209
+                  end-rune = 3208
                   input-source = full file test
                   parameter-name = searchString
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 3185
+                  start-rune = 3184
                 NodeTypeParameter
-                  end-rune = 3232
+                  end-rune = 3231
                   input-source = full file test
                   parameter-name = position
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 3212
+                  start-rune = 3211
             NodeTypeMember
-              end-rune = 3268
+              end-rune = 3267
               input-source = full file test
               member-name = localeCompare
               member-type = Number
-              start-rune = 3238
+              start-rune = 3237
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 3266
+                  end-rune = 3265
                   input-source = full file test
                   parameter-name = that
                   parameter-type = any
-                  start-rune = 3259
+                  start-rune = 3258
             NodeTypeMember
-              end-rune = 3299
+              end-rune = 3298
               input-source = full file test
               member-name = match
               member-type = Array
-              start-rune = 3272
+              start-rune = 3271
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 3297
+                  end-rune = 3296
                   input-source = full file test
                   parameter-name = pattern
                   parameter-type = RegExp
-                  start-rune = 3284
+                  start-rune = 3283
             NodeTypeMember
-              end-rune = 3347
+              end-rune = 3346
               input-source = full file test
               member-name = replace
               member-type = String
-              start-rune = 3303
+              start-rune = 3302
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 3328
+                  end-rune = 3327
                   input-source = full file test
                   parameter-name = pattern
                   parameter-type = any
-                  start-rune = 3318
+                  start-rune = 3317
                 NodeTypeParameter
-                  end-rune = 3345
+                  end-rune = 3344
                   input-source = full file test
                   parameter-name = replacement
                   parameter-type = any
-                  start-rune = 3331
+                  start-rune = 3330
             NodeTypeMember
-              end-rune = 3380
+              end-rune = 3379
               input-source = full file test
               member-name = search
               member-type = Number
-              start-rune = 3351
+              start-rune = 3350
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 3378
+                  end-rune = 3377
                   input-source = full file test
                   parameter-name = pattern
                   parameter-type = RegExp
-                  start-rune = 3365
+                  start-rune = 3364
             NodeTypeMember
-              end-rune = 3416
+              end-rune = 3415
               input-source = full file test
               member-name = slice
               member-type = String
-              start-rune = 3384
+              start-rune = 3383
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 3405
+                  end-rune = 3404
                   input-source = full file test
                   parameter-name = start
                   parameter-type = any
-                  start-rune = 3397
+                  start-rune = 3396
                 NodeTypeParameter
-                  end-rune = 3414
+                  end-rune = 3413
                   input-source = full file test
                   parameter-name = end
                   parameter-type = any
-                  start-rune = 3408
+                  start-rune = 3407
             NodeTypeMember
-              end-rune = 3469
+              end-rune = 3468
               input-source = full file test
               member-name = split
               member-type = Array
-              start-rune = 3420
+              start-rune = 3419
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 3444
+                  end-rune = 3443
                   input-source = full file test
                   parameter-name = separator
                   parameter-type = any
-                  start-rune = 3432
+                  start-rune = 3431
                 NodeTypeParameter
-                  end-rune = 3467
+                  end-rune = 3466
                   input-source = full file test
                   parameter-name = limit
                   parameter-optional = true
                   parameter-type = Number
-                  start-rune = 3447
+                  start-rune = 3446
             NodeTypeMember
-              end-rune = 3509
+              end-rune = 3508
               input-source = full file test
               member-name = substring
               member-type = String
-              start-rune = 3473
+              start-rune = 3472
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 3498
+                  end-rune = 3497
                   input-source = full file test
                   parameter-name = start
                   parameter-type = any
-                  start-rune = 3490
+                  start-rune = 3489
                 NodeTypeParameter
-                  end-rune = 3507
+                  end-rune = 3506
                   input-source = full file test
                   parameter-name = end
                   parameter-type = any
-                  start-rune = 3501
+                  start-rune = 3500
             NodeTypeMember
-              end-rune = 3533
+              end-rune = 3532
               input-source = full file test
               member-name = toLowerCase
               member-type = String
-              start-rune = 3513
+              start-rune = 3512
             NodeTypeMember
-              end-rune = 3563
+              end-rune = 3562
               input-source = full file test
               member-name = toLocaleLowerCase
               member-type = String
-              start-rune = 3537
+              start-rune = 3536
             NodeTypeMember
-              end-rune = 3587
+              end-rune = 3586
               input-source = full file test
               member-name = toUpperCase
               member-type = String
-              start-rune = 3567
+              start-rune = 3566
             NodeTypeMember
-              end-rune = 3617
+              end-rune = 3616
               input-source = full file test
               member-name = toLocaleUpperCase
               member-type = String
-              start-rune = 3591
+              start-rune = 3590
             NodeTypeMember
-              end-rune = 3634
+              end-rune = 3633
               input-source = full file test
               member-name = trim
               member-type = String
-              start-rune = 3621
+              start-rune = 3620
             NodeTypeMember
-              end-rune = 3658
+              end-rune = 3657
               input-source = full file test
               member-attribute = true
               member-name = length
               member-type = int
-              start-rune = 3638
+              start-rune = 3637
         NodeTypeDeclaration
           declaration-kind = interface
           declaration-name = Boolean
-          end-rune = 3798
+          end-rune = 3797
           input-source = full file test
-          start-rune = 3664
+          start-rune = 3663
           declaration-annotation =>
             NodeTypeAnnotation
               annotation-name = Constructor
-              end-rune = 3686
+              end-rune = 3685
               input-source = full file test
-              start-rune = 3665
+              start-rune = 3664
               annotation-parameter =>
                 NodeTypeParameter
-                  end-rune = 3685
+                  end-rune = 3684
                   input-source = full file test
                   parameter-name = value
                   parameter-type = any
-                  start-rune = 3677
+                  start-rune = 3676
           declaration-member =>
             NodeTypeMember
-              end-rune = 3753
+              end-rune = 3752
               input-source = full file test
               member-attribute = true
               member-name = prototype
               member-readonly = true
               member-static = true
               member-type = Object
-              start-rune = 3711
+              start-rune = 3710
             NodeTypeMember
-              end-rune = 3774
+              end-rune = 3773
               input-source = full file test
               member-name = toString
               member-type = String
-              start-rune = 3757
+              start-rune = 3756
             NodeTypeMember
-              end-rune = 3795
+              end-rune = 3794
               input-source = full file test
               member-name = valueOf
               member-type = Boolean
-              start-rune = 3778
+              start-rune = 3777
         NodeTypeDeclaration
           declaration-kind = interface
           declaration-name = Number
-          end-rune = 4346
+          end-rune = 4345
           input-source = full file test
-          start-rune = 3801
+          start-rune = 3800
           declaration-annotation =>
             NodeTypeAnnotation
               annotation-name = Constructor
-              end-rune = 3832
+              end-rune = 3831
               input-source = full file test
-              start-rune = 3802
+              start-rune = 3801
               annotation-parameter =>
                 NodeTypeParameter
-                  end-rune = 3831
+                  end-rune = 3830
                   input-source = full file test
                   parameter-name = value
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 3814
+                  start-rune = 3813
           declaration-member =>
             NodeTypeMember
-              end-rune = 3898
+              end-rune = 3897
               input-source = full file test
               member-attribute = true
               member-name = prototype
               member-readonly = true
               member-static = true
               member-type = Object
-              start-rune = 3856
+              start-rune = 3855
             NodeTypeMember
-              end-rune = 3944
+              end-rune = 3943
               input-source = full file test
               member-attribute = true
               member-name = MAX_VALUE
               member-readonly = true
               member-static = true
               member-type = Number
-              start-rune = 3902
+              start-rune = 3901
             NodeTypeMember
-              end-rune = 3990
+              end-rune = 3989
               input-source = full file test
               member-attribute = true
               member-name = MIN_VALUE
               member-readonly = true
               member-static = true
               member-type = Number
-              start-rune = 3948
+              start-rune = 3947
             NodeTypeMember
-              end-rune = 4030
+              end-rune = 4029
               input-source = full file test
               member-attribute = true
               member-name = NaN
               member-readonly = true
               member-static = true
               member-type = Number
-              start-rune = 3994
+              start-rune = 3993
             NodeTypeMember
-              end-rune = 4084
+              end-rune = 4083
               input-source = full file test
               member-attribute = true
               member-name = NEGATIVE_INFINITY
               member-readonly = true
               member-static = true
               member-type = Number
-              start-rune = 4034
+              start-rune = 4033
             NodeTypeMember
-              end-rune = 4138
+              end-rune = 4137
               input-source = full file test
               member-attribute = true
               member-name = POSITIVE_INFINITY
               member-readonly = true
               member-static = true
               member-type = Number
-              start-rune = 4088
+              start-rune = 4087
             NodeTypeMember
-              end-rune = 4177
+              end-rune = 4176
               input-source = full file test
               member-name = toString
               member-type = String
-              start-rune = 4142
+              start-rune = 4141
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 4175
+                  end-rune = 4174
                   input-source = full file test
                   parameter-name = radix
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 4158
+                  start-rune = 4157
             NodeTypeMember
-              end-rune = 4204
+              end-rune = 4203
               input-source = full file test
               member-name = toLocaleString
               member-type = String
-              start-rune = 4181
+              start-rune = 4180
             NodeTypeMember
-              end-rune = 4224
+              end-rune = 4223
               input-source = full file test
               member-name = valueOf
               member-type = Number
-              start-rune = 4208
+              start-rune = 4207
             NodeTypeMember
-              end-rune = 4262
+              end-rune = 4261
               input-source = full file test
               member-name = toFixed
               member-type = String
-              start-rune = 4228
+              start-rune = 4227
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 4260
+                  end-rune = 4259
                   input-source = full file test
                   parameter-name = fractionDigits
                   parameter-type = any
-                  start-rune = 4243
+                  start-rune = 4242
             NodeTypeMember
-              end-rune = 4306
+              end-rune = 4305
               input-source = full file test
               member-name = toExponential
               member-type = String
-              start-rune = 4266
+              start-rune = 4265
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 4304
+                  end-rune = 4303
                   input-source = full file test
                   parameter-name = fractionDigits
                   parameter-type = any
-                  start-rune = 4287
+                  start-rune = 4286
             NodeTypeMember
-              end-rune = 4343
+              end-rune = 4342
               input-source = full file test
               member-name = toPrecision
               member-type = String
-              start-rune = 4310
+              start-rune = 4309
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 4341
+                  end-rune = 4340
                   input-source = full file test
                   parameter-name = precision
                   parameter-type = any
-                  start-rune = 4329
+                  start-rune = 4328
         NodeTypeDeclaration
           declaration-kind = interface
           declaration-name = Math
-          end-rune = 5146
+          end-rune = 5145
           input-source = full file test
-          start-rune = 4349
+          start-rune = 4348
           declaration-annotation =>
             NodeTypeAnnotation
               annotation-name = NoInterfaceObject
-              end-rune = 4366
+              end-rune = 4365
               input-source = full file test
-              start-rune = 4350
+              start-rune = 4349
           declaration-member =>
             NodeTypeMember
-              end-rune = 4415
+              end-rune = 4414
               input-source = full file test
               member-attribute = true
               member-name = E
               member-readonly = true
               member-type = Number
-              start-rune = 4388
+              start-rune = 4387
             NodeTypeMember
-              end-rune = 4449
+              end-rune = 4448
               input-source = full file test
               member-attribute = true
               member-name = LN10
               member-readonly = true
               member-type = Number
-              start-rune = 4419
+              start-rune = 4418
             NodeTypeMember
-              end-rune = 4482
+              end-rune = 4481
               input-source = full file test
               member-attribute = true
               member-name = LN2
               member-readonly = true
               member-type = Number
-              start-rune = 4453
+              start-rune = 4452
             NodeTypeMember
-              end-rune = 4517
+              end-rune = 4516
               input-source = full file test
               member-attribute = true
               member-name = LOG2E
               member-readonly = true
               member-type = Number
-              start-rune = 4486
+              start-rune = 4485
             NodeTypeMember
-              end-rune = 4553
+              end-rune = 4552
               input-source = full file test
               member-attribute = true
               member-name = LOG10E
               member-readonly = true
               member-type = Number
-              start-rune = 4521
+              start-rune = 4520
             NodeTypeMember
-              end-rune = 4585
+              end-rune = 4584
               input-source = full file test
               member-attribute = true
               member-name = PI
               member-readonly = true
               member-type = Number
-              start-rune = 4557
+              start-rune = 4556
             NodeTypeMember
-              end-rune = 4622
+              end-rune = 4621
               input-source = full file test
               member-attribute = true
               member-name = SQRT1_2
               member-readonly = true
               member-type = Number
-              start-rune = 4589
+              start-rune = 4588
             NodeTypeMember
-              end-rune = 4657
+              end-rune = 4656
               input-source = full file test
               member-attribute = true
               member-name = SQRT2
               member-readonly = true
               member-type = Number
-              start-rune = 4626
+              start-rune = 4625
             NodeTypeMember
-              end-rune = 4681
+              end-rune = 4680
               input-source = full file test
               member-name = abs
               member-type = Number
-              start-rune = 4661
+              start-rune = 4660
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 4679
+                  end-rune = 4678
                   input-source = full file test
                   parameter-name = x
                   parameter-type = Number
-                  start-rune = 4672
+                  start-rune = 4671
             NodeTypeMember
-              end-rune = 4706
+              end-rune = 4705
               input-source = full file test
               member-name = acos
               member-type = Number
-              start-rune = 4685
+              start-rune = 4684
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 4704
+                  end-rune = 4703
                   input-source = full file test
                   parameter-name = x
                   parameter-type = Number
-                  start-rune = 4697
+                  start-rune = 4696
             NodeTypeMember
-              end-rune = 4731
+              end-rune = 4730
               input-source = full file test
               member-name = asin
               member-type = Number
-              start-rune = 4710
+              start-rune = 4709
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 4729
+                  end-rune = 4728
                   input-source = full file test
                   parameter-name = x
                   parameter-type = Number
-                  start-rune = 4722
+                  start-rune = 4721
             NodeTypeMember
-              end-rune = 4756
+              end-rune = 4755
               input-source = full file test
               member-name = atan
               member-type = Number
-              start-rune = 4735
+              start-rune = 4734
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 4754
+                  end-rune = 4753
                   input-source = full file test
                   parameter-name = x
                   parameter-type = Number
-                  start-rune = 4747
+                  start-rune = 4746
             NodeTypeMember
-              end-rune = 4792
+              end-rune = 4791
               input-source = full file test
               member-name = atan2
               member-type = Number
-              start-rune = 4760
+              start-rune = 4759
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 4780
+                  end-rune = 4779
                   input-source = full file test
                   parameter-name = x
                   parameter-type = Number
-                  start-rune = 4773
+                  start-rune = 4772
                 NodeTypeParameter
-                  end-rune = 4790
+                  end-rune = 4789
                   input-source = full file test
                   parameter-name = y
                   parameter-type = Number
-                  start-rune = 4783
+                  start-rune = 4782
             NodeTypeMember
-              end-rune = 4817
+              end-rune = 4816
               input-source = full file test
               member-name = ceil
               member-type = Number
-              start-rune = 4796
+              start-rune = 4795
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 4815
+                  end-rune = 4814
                   input-source = full file test
                   parameter-name = x
                   parameter-type = Number
-                  start-rune = 4808
+                  start-rune = 4807
             NodeTypeMember
-              end-rune = 4841
+              end-rune = 4840
               input-source = full file test
               member-name = cos
               member-type = Number
-              start-rune = 4821
+              start-rune = 4820
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 4839
+                  end-rune = 4838
                   input-source = full file test
                   parameter-name = x
                   parameter-type = Number
-                  start-rune = 4832
+                  start-rune = 4831
             NodeTypeMember
-              end-rune = 4865
+              end-rune = 4864
               input-source = full file test
               member-name = exp
               member-type = Number
-              start-rune = 4845
+              start-rune = 4844
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 4863
+                  end-rune = 4862
                   input-source = full file test
                   parameter-name = x
                   parameter-type = Number
-                  start-rune = 4856
+                  start-rune = 4855
             NodeTypeMember
-              end-rune = 4891
+              end-rune = 4890
               input-source = full file test
               member-name = floor
               member-type = Number
-              start-rune = 4869
+              start-rune = 4868
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 4889
+                  end-rune = 4888
                   input-source = full file test
                   parameter-name = x
                   parameter-type = Number
-                  start-rune = 4882
+                  start-rune = 4881
             NodeTypeMember
-              end-rune = 4915
+              end-rune = 4914
               input-source = full file test
               member-name = log
               member-type = Number
-              start-rune = 4895
+              start-rune = 4894
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 4913
+                  end-rune = 4912
                   input-source = full file test
                   parameter-name = x
                   parameter-type = Number
-                  start-rune = 4906
+                  start-rune = 4905
             NodeTypeMember
-              end-rune = 4953
+              end-rune = 4952
               input-source = full file test
               member-name = max
               member-type = Number
-              start-rune = 4919
+              start-rune = 4918
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 4951
+                  end-rune = 4950
                   input-source = full file test
                   parameter-name = value1
                   parameter-optional = true
                   parameter-type = Number
-                  start-rune = 4930
+                  start-rune = 4929
             NodeTypeMember
-              end-rune = 4991
+              end-rune = 4990
               input-source = full file test
               member-name = min
               member-type = Number
-              start-rune = 4957
+              start-rune = 4956
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 4989
+                  end-rune = 4988
                   input-source = full file test
                   parameter-name = value1
                   parameter-optional = true
                   parameter-type = Number
-                  start-rune = 4968
+                  start-rune = 4967
             NodeTypeMember
-              end-rune = 5025
+              end-rune = 5024
               input-source = full file test
               member-name = pow
               member-type = Number
-              start-rune = 4995
+              start-rune = 4994
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 5013
+                  end-rune = 5012
                   input-source = full file test
                   parameter-name = x
                   parameter-type = Number
-                  start-rune = 5006
+                  start-rune = 5005
                 NodeTypeParameter
-                  end-rune = 5023
+                  end-rune = 5022
                   input-source = full file test
                   parameter-name = y
                   parameter-type = Number
-                  start-rune = 5016
+                  start-rune = 5015
             NodeTypeMember
-              end-rune = 5044
+              end-rune = 5043
               input-source = full file test
               member-name = random
               member-type = Number
-              start-rune = 5029
+              start-rune = 5028
             NodeTypeMember
-              end-rune = 5070
+              end-rune = 5069
               input-source = full file test
               member-name = round
               member-type = Number
-              start-rune = 5048
+              start-rune = 5047
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 5068
+                  end-rune = 5067
                   input-source = full file test
                   parameter-name = x
                   parameter-type = Number
-                  start-rune = 5061
+                  start-rune = 5060
             NodeTypeMember
-              end-rune = 5094
+              end-rune = 5093
               input-source = full file test
               member-name = sin
               member-type = Number
-              start-rune = 5074
+              start-rune = 5073
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 5092
+                  end-rune = 5091
                   input-source = full file test
                   parameter-name = x
                   parameter-type = Number
-                  start-rune = 5085
+                  start-rune = 5084
             NodeTypeMember
-              end-rune = 5119
+              end-rune = 5118
               input-source = full file test
               member-name = sqrt
               member-type = Number
-              start-rune = 5098
+              start-rune = 5097
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 5117
+                  end-rune = 5116
                   input-source = full file test
                   parameter-name = x
                   parameter-type = Number
-                  start-rune = 5110
+                  start-rune = 5109
             NodeTypeMember
-              end-rune = 5143
+              end-rune = 5142
               input-source = full file test
               member-name = tan
               member-type = Number
-              start-rune = 5123
+              start-rune = 5122
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 5141
+                  end-rune = 5140
                   input-source = full file test
                   parameter-name = x
                   parameter-type = Number
-                  start-rune = 5134
+                  start-rune = 5133
         NodeTypeDeclaration
           declaration-kind = interface
           declaration-name = Date
-          end-rune = 7114
+          end-rune = 7113
           input-source = full file test
-          start-rune = 5149
+          start-rune = 5148
           declaration-annotation =>
             NodeTypeAnnotation
               annotation-name = Constructor
-              end-rune = 5162
+              end-rune = 5161
               input-source = full file test
-              start-rune = 5152
+              start-rune = 5151
             NodeTypeAnnotation
               annotation-name = Constructor
-              end-rune = 5187
+              end-rune = 5186
               input-source = full file test
-              start-rune = 5166
+              start-rune = 5165
               annotation-parameter =>
                 NodeTypeParameter
-                  end-rune = 5186
+                  end-rune = 5185
                   input-source = full file test
                   parameter-name = value
                   parameter-type = any
-                  start-rune = 5178
+                  start-rune = 5177
             NodeTypeAnnotation
               annotation-name = Constructor
-              end-rune = 5319
+              end-rune = 5318
               input-source = full file test
-              start-rune = 5191
+              start-rune = 5190
               annotation-parameter =>
                 NodeTypeParameter
-                  end-rune = 5210
+                  end-rune = 5209
                   input-source = full file test
                   parameter-name = year
                   parameter-type = any
-                  start-rune = 5203
+                  start-rune = 5202
                 NodeTypeParameter
-                  end-rune = 5221
+                  end-rune = 5220
                   input-source = full file test
                   parameter-name = month
                   parameter-type = any
-                  start-rune = 5213
+                  start-rune = 5212
                 NodeTypeParameter
-                  end-rune = 5240
+                  end-rune = 5239
                   input-source = full file test
                   parameter-name = date
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 5224
+                  start-rune = 5223
                 NodeTypeParameter
-                  end-rune = 5259
+                  end-rune = 5258
                   input-source = full file test
                   parameter-name = hour
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 5243
+                  start-rune = 5242
                 NodeTypeParameter
-                  end-rune = 5280
+                  end-rune = 5279
                   input-source = full file test
                   parameter-name = minute
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 5262
+                  start-rune = 5261
                 NodeTypeParameter
-                  end-rune = 5301
+                  end-rune = 5300
                   input-source = full file test
                   parameter-name = second
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 5283
+                  start-rune = 5282
                 NodeTypeParameter
-                  end-rune = 5318
+                  end-rune = 5317
                   input-source = full file test
                   parameter-name = ms
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 5304
+                  start-rune = 5303
           declaration-member =>
             NodeTypeMember
-              end-rune = 5384
+              end-rune = 5383
               input-source = full file test
               member-attribute = true
               member-name = prototype
               member-readonly = true
               member-static = true
               member-type = Object
-              start-rune = 5342
+              start-rune = 5341
             NodeTypeMember
-              end-rune = 5419
+              end-rune = 5418
               input-source = full file test
               member-name = parse
               member-static = true
               member-type = Number
-              start-rune = 5388
+              start-rune = 5387
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 5417
+                  end-rune = 5416
                   input-source = full file test
                   parameter-name = string
                   parameter-type = any
-                  start-rune = 5408
+                  start-rune = 5407
             NodeTypeMember
-              end-rune = 5558
+              end-rune = 5557
               input-source = full file test
               member-name = UTC
               member-static = true
               member-type = Number
-              start-rune = 5423
+              start-rune = 5422
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 5448
+                  end-rune = 5447
                   input-source = full file test
                   parameter-name = year
                   parameter-type = any
-                  start-rune = 5441
+                  start-rune = 5440
                 NodeTypeParameter
-                  end-rune = 5459
+                  end-rune = 5458
                   input-source = full file test
                   parameter-name = month
                   parameter-type = any
-                  start-rune = 5451
+                  start-rune = 5450
                 NodeTypeParameter
-                  end-rune = 5478
+                  end-rune = 5477
                   input-source = full file test
                   parameter-name = date
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 5462
+                  start-rune = 5461
                 NodeTypeParameter
-                  end-rune = 5497
+                  end-rune = 5496
                   input-source = full file test
                   parameter-name = hour
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 5481
+                  start-rune = 5480
                 NodeTypeParameter
-                  end-rune = 5518
+                  end-rune = 5517
                   input-source = full file test
                   parameter-name = minute
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 5500
+                  start-rune = 5499
                 NodeTypeParameter
-                  end-rune = 5539
+                  end-rune = 5538
                   input-source = full file test
                   parameter-name = second
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 5521
+                  start-rune = 5520
                 NodeTypeParameter
-                  end-rune = 5556
+                  end-rune = 5555
                   input-source = full file test
                   parameter-name = ms
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 5542
+                  start-rune = 5541
             NodeTypeMember
-              end-rune = 5581
+              end-rune = 5580
               input-source = full file test
               member-name = now
               member-static = true
               member-type = Number
-              start-rune = 5562
+              start-rune = 5561
             NodeTypeMember
-              end-rune = 5602
+              end-rune = 5601
               input-source = full file test
               member-name = toString
               member-type = String
-              start-rune = 5585
+              start-rune = 5584
             NodeTypeMember
-              end-rune = 5627
+              end-rune = 5626
               input-source = full file test
               member-name = toDateString
               member-type = String
-              start-rune = 5606
+              start-rune = 5605
             NodeTypeMember
-              end-rune = 5652
+              end-rune = 5651
               input-source = full file test
               member-name = toTimeString
               member-type = String
-              start-rune = 5631
+              start-rune = 5630
             NodeTypeMember
-              end-rune = 5679
+              end-rune = 5678
               input-source = full file test
               member-name = toLocaleString
               member-type = String
-              start-rune = 5656
+              start-rune = 5655
             NodeTypeMember
-              end-rune = 5710
+              end-rune = 5709
               input-source = full file test
               member-name = toLocaleDateString
               member-type = String
-              start-rune = 5683
+              start-rune = 5682
             NodeTypeMember
-              end-rune = 5741
+              end-rune = 5740
               input-source = full file test
               member-name = toLocaleTimeString
               member-type = String
-              start-rune = 5714
+              start-rune = 5713
             NodeTypeMember
-              end-rune = 5761
+              end-rune = 5760
               input-source = full file test
               member-name = valueOf
               member-type = Number
-              start-rune = 5745
+              start-rune = 5744
             NodeTypeMember
-              end-rune = 5781
+              end-rune = 5780
               input-source = full file test
               member-name = getTime
               member-type = Number
-              start-rune = 5765
+              start-rune = 5764
             NodeTypeMember
-              end-rune = 5805
+              end-rune = 5804
               input-source = full file test
               member-name = getFullYear
               member-type = Number
-              start-rune = 5785
+              start-rune = 5784
             NodeTypeMember
-              end-rune = 5832
+              end-rune = 5831
               input-source = full file test
               member-name = getUTCFullYear
               member-type = Number
-              start-rune = 5809
+              start-rune = 5808
             NodeTypeMember
-              end-rune = 5853
+              end-rune = 5852
               input-source = full file test
               member-name = getMonth
               member-type = Number
-              start-rune = 5836
+              start-rune = 5835
             NodeTypeMember
-              end-rune = 5877
+              end-rune = 5876
               input-source = full file test
               member-name = getUTCMonth
               member-type = Number
-              start-rune = 5857
+              start-rune = 5856
             NodeTypeMember
-              end-rune = 5897
+              end-rune = 5896
               input-source = full file test
               member-name = getDate
               member-type = Number
-              start-rune = 5881
+              start-rune = 5880
             NodeTypeMember
-              end-rune = 5920
+              end-rune = 5919
               input-source = full file test
               member-name = getUTCDate
               member-type = Number
-              start-rune = 5901
+              start-rune = 5900
             NodeTypeMember
-              end-rune = 5939
+              end-rune = 5938
               input-source = full file test
               member-name = getDay
               member-type = Number
-              start-rune = 5924
+              start-rune = 5923
             NodeTypeMember
-              end-rune = 5961
+              end-rune = 5960
               input-source = full file test
               member-name = getUTCDay
               member-type = Number
-              start-rune = 5943
+              start-rune = 5942
             NodeTypeMember
-              end-rune = 5982
+              end-rune = 5981
               input-source = full file test
               member-name = getHours
               member-type = Number
-              start-rune = 5965
+              start-rune = 5964
             NodeTypeMember
-              end-rune = 6006
+              end-rune = 6005
               input-source = full file test
               member-name = getUTCHours
               member-type = Number
-              start-rune = 5986
+              start-rune = 5985
             NodeTypeMember
-              end-rune = 6029
+              end-rune = 6028
               input-source = full file test
               member-name = getMinutes
               member-type = Number
-              start-rune = 6010
+              start-rune = 6009
             NodeTypeMember
-              end-rune = 6055
+              end-rune = 6054
               input-source = full file test
               member-name = getUTCMinutes
               member-type = Number
-              start-rune = 6033
+              start-rune = 6032
             NodeTypeMember
-              end-rune = 6078
+              end-rune = 6077
               input-source = full file test
               member-name = getSeconds
               member-type = Number
-              start-rune = 6059
+              start-rune = 6058
             NodeTypeMember
-              end-rune = 6104
+              end-rune = 6103
               input-source = full file test
               member-name = getUTCSeconds
               member-type = Number
-              start-rune = 6082
+              start-rune = 6081
             NodeTypeMember
-              end-rune = 6132
+              end-rune = 6131
               input-source = full file test
               member-name = getMilliseconds
               member-type = Number
-              start-rune = 6108
+              start-rune = 6107
             NodeTypeMember
-              end-rune = 6163
+              end-rune = 6162
               input-source = full file test
               member-name = getUTCMilliseconds
               member-type = Number
-              start-rune = 6136
+              start-rune = 6135
             NodeTypeMember
-              end-rune = 6193
+              end-rune = 6192
               input-source = full file test
               member-name = getTimezoneOffset
               member-type = Number
-              start-rune = 6167
+              start-rune = 6166
             NodeTypeMember
-              end-rune = 6221
+              end-rune = 6220
               input-source = full file test
               member-name = setTime
               member-type = Number
-              start-rune = 6197
+              start-rune = 6196
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 6219
+                  end-rune = 6218
                   input-source = full file test
                   parameter-name = time
                   parameter-type = any
-                  start-rune = 6212
+                  start-rune = 6211
             NodeTypeMember
-              end-rune = 6255
+              end-rune = 6254
               input-source = full file test
               member-name = setMilliseconds
               member-type = Number
-              start-rune = 6225
+              start-rune = 6224
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 6253
+                  end-rune = 6252
                   input-source = full file test
                   parameter-name = ms
                   parameter-type = any
-                  start-rune = 6248
+                  start-rune = 6247
             NodeTypeMember
-              end-rune = 6292
+              end-rune = 6291
               input-source = full file test
               member-name = setUTCMilliseconds
               member-type = Number
-              start-rune = 6259
+              start-rune = 6258
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 6290
+                  end-rune = 6289
                   input-source = full file test
                   parameter-name = ms
                   parameter-type = any
-                  start-rune = 6285
+                  start-rune = 6284
             NodeTypeMember
-              end-rune = 6343
+              end-rune = 6342
               input-source = full file test
               member-name = setSeconds
               member-type = Number
-              start-rune = 6296
+              start-rune = 6295
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 6324
+                  end-rune = 6323
                   input-source = full file test
                   parameter-name = seconds
                   parameter-type = any
-                  start-rune = 6314
+                  start-rune = 6313
                 NodeTypeParameter
-                  end-rune = 6341
+                  end-rune = 6340
                   input-source = full file test
                   parameter-name = ms
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 6327
+                  start-rune = 6326
             NodeTypeMember
-              end-rune = 6397
+              end-rune = 6396
               input-source = full file test
               member-name = setUTCSeconds
               member-type = Number
-              start-rune = 6347
+              start-rune = 6346
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 6378
+                  end-rune = 6377
                   input-source = full file test
                   parameter-name = seconds
                   parameter-type = any
-                  start-rune = 6368
+                  start-rune = 6367
                 NodeTypeParameter
-                  end-rune = 6395
+                  end-rune = 6394
                   input-source = full file test
                   parameter-name = ms
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 6381
+                  start-rune = 6380
             NodeTypeMember
-              end-rune = 6470
+              end-rune = 6469
               input-source = full file test
               member-name = setMinutes
               member-type = Number
-              start-rune = 6401
+              start-rune = 6400
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 6429
+                  end-rune = 6428
                   input-source = full file test
                   parameter-name = minutes
                   parameter-type = any
-                  start-rune = 6419
+                  start-rune = 6418
                 NodeTypeParameter
-                  end-rune = 6451
+                  end-rune = 6450
                   input-source = full file test
                   parameter-name = seconds
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 6432
+                  start-rune = 6431
                 NodeTypeParameter
-                  end-rune = 6468
+                  end-rune = 6467
                   input-source = full file test
                   parameter-name = ms
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 6454
+                  start-rune = 6453
             NodeTypeMember
-              end-rune = 6546
+              end-rune = 6545
               input-source = full file test
               member-name = setUTCMinutes
               member-type = Number
-              start-rune = 6474
+              start-rune = 6473
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 6505
+                  end-rune = 6504
                   input-source = full file test
                   parameter-name = minutes
                   parameter-type = any
-                  start-rune = 6495
+                  start-rune = 6494
                 NodeTypeParameter
-                  end-rune = 6527
+                  end-rune = 6526
                   input-source = full file test
                   parameter-name = seconds
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 6508
+                  start-rune = 6507
                 NodeTypeParameter
-                  end-rune = 6544
+                  end-rune = 6543
                   input-source = full file test
                   parameter-name = ms
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 6530
+                  start-rune = 6529
             NodeTypeMember
-              end-rune = 6637
+              end-rune = 6636
               input-source = full file test
               member-name = setHours
               member-type = Number
-              start-rune = 6550
+              start-rune = 6549
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 6574
+                  end-rune = 6573
                   input-source = full file test
                   parameter-name = hours
                   parameter-type = any
-                  start-rune = 6566
+                  start-rune = 6565
                 NodeTypeParameter
-                  end-rune = 6596
+                  end-rune = 6595
                   input-source = full file test
                   parameter-name = minutes
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 6577
+                  start-rune = 6576
                 NodeTypeParameter
-                  end-rune = 6618
+                  end-rune = 6617
                   input-source = full file test
                   parameter-name = seconds
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 6599
+                  start-rune = 6598
                 NodeTypeParameter
-                  end-rune = 6635
+                  end-rune = 6634
                   input-source = full file test
                   parameter-name = ms
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 6621
+                  start-rune = 6620
             NodeTypeMember
-              end-rune = 6731
+              end-rune = 6730
               input-source = full file test
               member-name = setUTCHours
               member-type = Number
-              start-rune = 6641
+              start-rune = 6640
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 6668
+                  end-rune = 6667
                   input-source = full file test
                   parameter-name = hours
                   parameter-type = any
-                  start-rune = 6660
+                  start-rune = 6659
                 NodeTypeParameter
-                  end-rune = 6690
+                  end-rune = 6689
                   input-source = full file test
                   parameter-name = minutes
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 6671
+                  start-rune = 6670
                 NodeTypeParameter
-                  end-rune = 6712
+                  end-rune = 6711
                   input-source = full file test
                   parameter-name = seconds
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 6693
+                  start-rune = 6692
                 NodeTypeParameter
-                  end-rune = 6729
+                  end-rune = 6728
                   input-source = full file test
                   parameter-name = ms
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 6715
+                  start-rune = 6714
             NodeTypeMember
-              end-rune = 6759
+              end-rune = 6758
               input-source = full file test
               member-name = setDate
               member-type = Number
-              start-rune = 6735
+              start-rune = 6734
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 6757
+                  end-rune = 6756
                   input-source = full file test
                   parameter-name = date
                   parameter-type = any
-                  start-rune = 6750
+                  start-rune = 6749
             NodeTypeMember
-              end-rune = 6790
+              end-rune = 6789
               input-source = full file test
               member-name = setUTCDate
               member-type = Number
-              start-rune = 6763
+              start-rune = 6762
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 6788
+                  end-rune = 6787
                   input-source = full file test
                   parameter-name = date
                   parameter-type = any
-                  start-rune = 6781
+                  start-rune = 6780
             NodeTypeMember
-              end-rune = 6839
+              end-rune = 6838
               input-source = full file test
               member-name = setMonth
               member-type = Number
-              start-rune = 6794
+              start-rune = 6793
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 6818
+                  end-rune = 6817
                   input-source = full file test
                   parameter-name = month
                   parameter-type = any
-                  start-rune = 6810
+                  start-rune = 6809
                 NodeTypeParameter
-                  end-rune = 6837
+                  end-rune = 6836
                   input-source = full file test
                   parameter-name = date
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 6821
+                  start-rune = 6820
             NodeTypeMember
-              end-rune = 6891
+              end-rune = 6890
               input-source = full file test
               member-name = setUTCMonth
               member-type = Number
-              start-rune = 6843
+              start-rune = 6842
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 6870
+                  end-rune = 6869
                   input-source = full file test
                   parameter-name = month
                   parameter-type = any
-                  start-rune = 6862
+                  start-rune = 6861
                 NodeTypeParameter
-                  end-rune = 6889
+                  end-rune = 6888
                   input-source = full file test
                   parameter-name = date
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 6873
+                  start-rune = 6872
             NodeTypeMember
-              end-rune = 6962
+              end-rune = 6961
               input-source = full file test
               member-name = setFullYear
               member-type = Number
-              start-rune = 6895
+              start-rune = 6894
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 6921
+                  end-rune = 6920
                   input-source = full file test
                   parameter-name = year
                   parameter-type = any
-                  start-rune = 6914
+                  start-rune = 6913
                 NodeTypeParameter
-                  end-rune = 6941
+                  end-rune = 6940
                   input-source = full file test
                   parameter-name = month
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 6924
+                  start-rune = 6923
                 NodeTypeParameter
-                  end-rune = 6960
+                  end-rune = 6959
                   input-source = full file test
                   parameter-name = date
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 6944
+                  start-rune = 6943
             NodeTypeMember
-              end-rune = 7037
+              end-rune = 7036
               input-source = full file test
               member-name = setUTCFullYear
               member-type = Number
-              start-rune = 6966
+              start-rune = 6965
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 6996
+                  end-rune = 6995
                   input-source = full file test
                   parameter-name = year
                   parameter-type = any
-                  start-rune = 6988
+                  start-rune = 6987
                 NodeTypeParameter
-                  end-rune = 7016
+                  end-rune = 7015
                   input-source = full file test
                   parameter-name = month
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 6999
+                  start-rune = 6998
                 NodeTypeParameter
-                  end-rune = 7035
+                  end-rune = 7034
                   input-source = full file test
                   parameter-name = date
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 7019
+                  start-rune = 7018
             NodeTypeMember
-              end-rune = 7061
+              end-rune = 7060
               input-source = full file test
               member-name = toUTCString
               member-type = String
-              start-rune = 7041
+              start-rune = 7040
             NodeTypeMember
-              end-rune = 7085
+              end-rune = 7084
               input-source = full file test
               member-name = toISOString
               member-type = String
-              start-rune = 7065
+              start-rune = 7064
             NodeTypeMember
-              end-rune = 7111
+              end-rune = 7110
               input-source = full file test
               member-name = toJSON
               member-type = String
-              start-rune = 7089
+              start-rune = 7088
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 7109
+                  end-rune = 7108
                   input-source = full file test
                   parameter-name = key
                   parameter-type = any
-                  start-rune = 7103
+                  start-rune = 7102
         NodeTypeDeclaration
           declaration-kind = interface
           declaration-name = RegExp
-          end-rune = 7480
+          end-rune = 7479
           input-source = full file test
-          start-rune = 7117
+          start-rune = 7116
           declaration-annotation =>
             NodeTypeAnnotation
               annotation-name = Constructor
-              end-rune = 7152
+              end-rune = 7151
               input-source = full file test
-              start-rune = 7118
+              start-rune = 7117
               annotation-parameter =>
                 NodeTypeParameter
-                  end-rune = 7140
+                  end-rune = 7139
                   input-source = full file test
                   parameter-name = pattern
                   parameter-type = any
-                  start-rune = 7130
+                  start-rune = 7129
                 NodeTypeParameter
-                  end-rune = 7151
+                  end-rune = 7150
                   input-source = full file test
                   parameter-name = flags
                   parameter-type = any
-                  start-rune = 7143
+                  start-rune = 7142
           declaration-member =>
             NodeTypeMember
-              end-rune = 7218
+              end-rune = 7217
               input-source = full file test
               member-attribute = true
               member-name = prototype
               member-readonly = true
               member-static = true
               member-type = Object
-              start-rune = 7176
+              start-rune = 7175
             NodeTypeMember
-              end-rune = 7254
+              end-rune = 7253
               input-source = full file test
               member-attribute = true
               member-name = source
               member-readonly = true
               member-type = String
-              start-rune = 7222
+              start-rune = 7221
             NodeTypeMember
-              end-rune = 7291
+              end-rune = 7290
               input-source = full file test
               member-attribute = true
               member-name = global
               member-readonly = true
               member-type = Boolean
-              start-rune = 7258
+              start-rune = 7257
             NodeTypeMember
-              end-rune = 7332
+              end-rune = 7331
               input-source = full file test
               member-attribute = true
               member-name = ignoreCase
               member-readonly = true
               member-type = Boolean
-              start-rune = 7295
+              start-rune = 7294
             NodeTypeMember
-              end-rune = 7372
+              end-rune = 7371
               input-source = full file test
               member-attribute = true
               member-name = multiline
               member-readonly = true
               member-type = Boolean
-              start-rune = 7336
+              start-rune = 7335
             NodeTypeMember
-              end-rune = 7402
+              end-rune = 7401
               input-source = full file test
               member-attribute = true
               member-name = lastIndex
               member-type = Number
-              start-rune = 7376
+              start-rune = 7375
             NodeTypeMember
-              end-rune = 7428
+              end-rune = 7427
               input-source = full file test
               member-name = exec
               member-type = Array
-              start-rune = 7406
+              start-rune = 7405
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 7426
+                  end-rune = 7425
                   input-source = full file test
                   parameter-name = string
                   parameter-type = any
-                  start-rune = 7417
+                  start-rune = 7416
             NodeTypeMember
-              end-rune = 7456
+              end-rune = 7455
               input-source = full file test
               member-name = test
               member-type = boolean
-              start-rune = 7432
+              start-rune = 7431
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 7454
+                  end-rune = 7453
                   input-source = full file test
                   parameter-name = string
                   parameter-type = any
-                  start-rune = 7445
+                  start-rune = 7444
             NodeTypeMember
-              end-rune = 7477
+              end-rune = 7476
               input-source = full file test
               member-name = toString
               member-type = String
-              start-rune = 7460
+              start-rune = 7459
         NodeTypeDeclaration
           declaration-kind = interface
           declaration-name = Error
-          end-rune = 7667
+          end-rune = 7666
           input-source = full file test
-          start-rune = 7483
+          start-rune = 7482
           declaration-annotation =>
             NodeTypeAnnotation
               annotation-name = Constructor
-              end-rune = 7507
+              end-rune = 7506
               input-source = full file test
-              start-rune = 7484
+              start-rune = 7483
               annotation-parameter =>
                 NodeTypeParameter
-                  end-rune = 7506
+                  end-rune = 7505
                   input-source = full file test
                   parameter-name = message
                   parameter-type = any
-                  start-rune = 7496
+                  start-rune = 7495
           declaration-member =>
             NodeTypeMember
-              end-rune = 7572
+              end-rune = 7571
               input-source = full file test
               member-attribute = true
               member-name = prototype
               member-readonly = true
               member-static = true
               member-type = Object
-              start-rune = 7530
+              start-rune = 7529
             NodeTypeMember
-              end-rune = 7606
+              end-rune = 7605
               input-source = full file test
               member-attribute = true
               member-name = name
               member-readonly = true
               member-type = String
-              start-rune = 7576
+              start-rune = 7575
             NodeTypeMember
-              end-rune = 7643
+              end-rune = 7642
               input-source = full file test
               member-attribute = true
               member-name = message
               member-readonly = true
               member-type = String
-              start-rune = 7610
+              start-rune = 7609
             NodeTypeMember
-              end-rune = 7664
+              end-rune = 7663
               input-source = full file test
               member-name = toString
               member-type = String
-              start-rune = 7647
+              start-rune = 7646
         NodeTypeDeclaration
           declaration-kind = interface
           declaration-name = EvalError
-          end-rune = 7858
+          end-rune = 7857
           input-source = full file test
-          start-rune = 7670
+          start-rune = 7669
           declaration-annotation =>
             NodeTypeAnnotation
               annotation-name = Constructor
-              end-rune = 7694
+              end-rune = 7693
               input-source = full file test
-              start-rune = 7671
+              start-rune = 7670
               annotation-parameter =>
                 NodeTypeParameter
-                  end-rune = 7693
+                  end-rune = 7692
                   input-source = full file test
                   parameter-name = message
                   parameter-type = any
-                  start-rune = 7683
+                  start-rune = 7682
           declaration-member =>
             NodeTypeMember
-              end-rune = 7763
+              end-rune = 7762
               input-source = full file test
               member-attribute = true
               member-name = prototype
               member-readonly = true
               member-static = true
               member-type = Object
-              start-rune = 7721
+              start-rune = 7720
             NodeTypeMember
-              end-rune = 7797
+              end-rune = 7796
               input-source = full file test
               member-attribute = true
               member-name = name
               member-readonly = true
               member-type = String
-              start-rune = 7767
+              start-rune = 7766
             NodeTypeMember
-              end-rune = 7834
+              end-rune = 7833
               input-source = full file test
               member-attribute = true
               member-name = message
               member-readonly = true
               member-type = String
-              start-rune = 7801
+              start-rune = 7800
             NodeTypeMember
-              end-rune = 7855
+              end-rune = 7854
               input-source = full file test
               member-name = toString
               member-type = String
-              start-rune = 7838
+              start-rune = 7837
         NodeTypeDeclaration
           declaration-kind = interface
           declaration-name = RangeError
-          end-rune = 8050
+          end-rune = 8049
           input-source = full file test
-          start-rune = 7861
+          start-rune = 7860
           declaration-annotation =>
             NodeTypeAnnotation
               annotation-name = Constructor
-              end-rune = 7885
+              end-rune = 7884
               input-source = full file test
-              start-rune = 7862
+              start-rune = 7861
               annotation-parameter =>
                 NodeTypeParameter
-                  end-rune = 7884
+                  end-rune = 7883
                   input-source = full file test
                   parameter-name = message
                   parameter-type = any
-                  start-rune = 7874
+                  start-rune = 7873
           declaration-member =>
             NodeTypeMember
-              end-rune = 7955
+              end-rune = 7954
               input-source = full file test
               member-attribute = true
               member-name = prototype
               member-readonly = true
               member-static = true
               member-type = Object
-              start-rune = 7913
+              start-rune = 7912
             NodeTypeMember
-              end-rune = 7989
+              end-rune = 7988
               input-source = full file test
               member-attribute = true
               member-name = name
               member-readonly = true
               member-type = String
-              start-rune = 7959
+              start-rune = 7958
             NodeTypeMember
-              end-rune = 8026
+              end-rune = 8025
               input-source = full file test
               member-attribute = true
               member-name = message
               member-readonly = true
               member-type = String
-              start-rune = 7993
+              start-rune = 7992
             NodeTypeMember
-              end-rune = 8047
+              end-rune = 8046
               input-source = full file test
               member-name = toString
               member-type = String
-              start-rune = 8030
+              start-rune = 8029
         NodeTypeDeclaration
           declaration-kind = interface
           declaration-name = ReferenceError
-          end-rune = 8246
+          end-rune = 8245
           input-source = full file test
-          start-rune = 8053
+          start-rune = 8052
           declaration-annotation =>
             NodeTypeAnnotation
               annotation-name = Constructor
-              end-rune = 8077
+              end-rune = 8076
               input-source = full file test
-              start-rune = 8054
+              start-rune = 8053
               annotation-parameter =>
                 NodeTypeParameter
-                  end-rune = 8076
+                  end-rune = 8075
                   input-source = full file test
                   parameter-name = message
                   parameter-type = any
-                  start-rune = 8066
+                  start-rune = 8065
           declaration-member =>
             NodeTypeMember
-              end-rune = 8151
+              end-rune = 8150
               input-source = full file test
               member-attribute = true
               member-name = prototype
               member-readonly = true
               member-static = true
               member-type = Object
-              start-rune = 8109
+              start-rune = 8108
             NodeTypeMember
-              end-rune = 8185
+              end-rune = 8184
               input-source = full file test
               member-attribute = true
               member-name = name
               member-readonly = true
               member-type = String
-              start-rune = 8155
+              start-rune = 8154
             NodeTypeMember
-              end-rune = 8222
+              end-rune = 8221
               input-source = full file test
               member-attribute = true
               member-name = message
               member-readonly = true
               member-type = String
-              start-rune = 8189
+              start-rune = 8188
             NodeTypeMember
-              end-rune = 8243
+              end-rune = 8242
               input-source = full file test
               member-name = toString
               member-type = String
-              start-rune = 8226
+              start-rune = 8225
         NodeTypeDeclaration
           declaration-kind = interface
           declaration-name = SyntaxError
-          end-rune = 8439
+          end-rune = 8438
           input-source = full file test
-          start-rune = 8249
+          start-rune = 8248
           declaration-annotation =>
             NodeTypeAnnotation
               annotation-name = Constructor
-              end-rune = 8273
+              end-rune = 8272
               input-source = full file test
-              start-rune = 8250
+              start-rune = 8249
               annotation-parameter =>
                 NodeTypeParameter
-                  end-rune = 8272
+                  end-rune = 8271
                   input-source = full file test
                   parameter-name = message
                   parameter-type = any
-                  start-rune = 8262
+                  start-rune = 8261
           declaration-member =>
             NodeTypeMember
-              end-rune = 8344
+              end-rune = 8343
               input-source = full file test
               member-attribute = true
               member-name = prototype
               member-readonly = true
               member-static = true
               member-type = Object
-              start-rune = 8302
+              start-rune = 8301
             NodeTypeMember
-              end-rune = 8378
+              end-rune = 8377
               input-source = full file test
               member-attribute = true
               member-name = name
               member-readonly = true
               member-type = String
-              start-rune = 8348
+              start-rune = 8347
             NodeTypeMember
-              end-rune = 8415
+              end-rune = 8414
               input-source = full file test
               member-attribute = true
               member-name = message
               member-readonly = true
               member-type = String
-              start-rune = 8382
+              start-rune = 8381
             NodeTypeMember
-              end-rune = 8436
+              end-rune = 8435
               input-source = full file test
               member-name = toString
               member-type = String
-              start-rune = 8419
+              start-rune = 8418
         NodeTypeDeclaration
           declaration-kind = interface
           declaration-name = TypeError
-          end-rune = 8630
+          end-rune = 8629
           input-source = full file test
-          start-rune = 8442
+          start-rune = 8441
           declaration-annotation =>
             NodeTypeAnnotation
               annotation-name = Constructor
-              end-rune = 8466
+              end-rune = 8465
               input-source = full file test
-              start-rune = 8443
+              start-rune = 8442
               annotation-parameter =>
                 NodeTypeParameter
-                  end-rune = 8465
+                  end-rune = 8464
                   input-source = full file test
                   parameter-name = message
                   parameter-type = any
-                  start-rune = 8455
+                  start-rune = 8454
           declaration-member =>
             NodeTypeMember
-              end-rune = 8535
+              end-rune = 8534
               input-source = full file test
               member-attribute = true
               member-name = prototype
               member-readonly = true
               member-static = true
               member-type = Object
-              start-rune = 8493
+              start-rune = 8492
             NodeTypeMember
-              end-rune = 8569
+              end-rune = 8568
               input-source = full file test
               member-attribute = true
               member-name = name
               member-readonly = true
               member-type = String
-              start-rune = 8539
+              start-rune = 8538
             NodeTypeMember
-              end-rune = 8606
+              end-rune = 8605
               input-source = full file test
               member-attribute = true
               member-name = message
               member-readonly = true
               member-type = String
-              start-rune = 8573
+              start-rune = 8572
             NodeTypeMember
-              end-rune = 8627
+              end-rune = 8626
               input-source = full file test
               member-name = toString
               member-type = String
-              start-rune = 8610
+              start-rune = 8609
         NodeTypeDeclaration
           declaration-kind = interface
           declaration-name = URIError
-          end-rune = 8820
+          end-rune = 8819
           input-source = full file test
-          start-rune = 8633
+          start-rune = 8632
           declaration-annotation =>
             NodeTypeAnnotation
               annotation-name = Constructor
-              end-rune = 8657
+              end-rune = 8656
               input-source = full file test
-              start-rune = 8634
+              start-rune = 8633
               annotation-parameter =>
                 NodeTypeParameter
-                  end-rune = 8656
+                  end-rune = 8655
                   input-source = full file test
                   parameter-name = message
                   parameter-type = any
-                  start-rune = 8646
+                  start-rune = 8645
           declaration-member =>
             NodeTypeMember
-              end-rune = 8725
+              end-rune = 8724
               input-source = full file test
               member-attribute = true
               member-name = prototype
               member-readonly = true
               member-static = true
               member-type = Object
-              start-rune = 8683
+              start-rune = 8682
             NodeTypeMember
-              end-rune = 8759
+              end-rune = 8758
               input-source = full file test
               member-attribute = true
               member-name = name
               member-readonly = true
               member-type = String
-              start-rune = 8729
+              start-rune = 8728
             NodeTypeMember
-              end-rune = 8796
+              end-rune = 8795
               input-source = full file test
               member-attribute = true
               member-name = message
               member-readonly = true
               member-type = String
-              start-rune = 8763
+              start-rune = 8762
             NodeTypeMember
-              end-rune = 8817
+              end-rune = 8816
               input-source = full file test
               member-name = toString
               member-type = String
-              start-rune = 8800
+              start-rune = 8799
         NodeTypeDeclaration
           declaration-kind = interface
           declaration-name = JSON
-          end-rune = 8988
+          end-rune = 8987
           input-source = full file test
-          start-rune = 8823
+          start-rune = 8822
           declaration-annotation =>
             NodeTypeAnnotation
               annotation-name = NoInterfaceObject
-              end-rune = 8840
+              end-rune = 8839
               input-source = full file test
-              start-rune = 8824
+              start-rune = 8823
           declaration-member =>
             NodeTypeMember
-              end-rune = 8911
+              end-rune = 8910
               input-source = full file test
               member-name = parse
               member-type = Object
-              start-rune = 8862
+              start-rune = 8861
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 8882
+                  end-rune = 8881
                   input-source = full file test
                   parameter-name = text
                   parameter-type = any
-                  start-rune = 8875
+                  start-rune = 8874
                 NodeTypeParameter
-                  end-rune = 8909
+                  end-rune = 8908
                   input-source = full file test
                   parameter-name = reviver
                   parameter-optional = true
                   parameter-type = Function
-                  start-rune = 8885
+                  start-rune = 8884
             NodeTypeMember
-              end-rune = 8985
+              end-rune = 8984
               input-source = full file test
               member-name = stringify
               member-type = String
-              start-rune = 8915
+              start-rune = 8914
               member-parameter =>
                 NodeTypeParameter
-                  end-rune = 8940
+                  end-rune = 8939
                   input-source = full file test
                   parameter-name = value
                   parameter-type = any
-                  start-rune = 8932
+                  start-rune = 8931
                 NodeTypeParameter
-                  end-rune = 8963
+                  end-rune = 8962
                   input-source = full file test
                   parameter-name = replacer
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 8943
+                  start-rune = 8942
                 NodeTypeParameter
-                  end-rune = 8983
+                  end-rune = 8982
                   input-source = full file test
                   parameter-name = space
                   parameter-optional = true
                   parameter-type = any
-                  start-rune = 8966
+                  start-rune = 8965
