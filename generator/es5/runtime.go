@@ -10,12 +10,19 @@ const runtimeTemplate = `
 window.Serulian = (function($global) {
   var $g = {};
   var $t = {
-    'dynamicaccess': function(obj, name) {
-      if (obj == null) {
-        return null;
+    'dynamicaccess': function(obj, name, requirepromise) {
+      if (obj == null || obj[name] == null) {
+        return requirepromise ? $promise.wrap(function() { return null; }) : null;
       }
 
-      return obj[name];
+      var value = obj[name];
+      if (typeof value == 'function') {
+        return function() {
+          return value.apply(obj, arguments);
+        };
+      }
+
+      return value
     },
 
   	'sm': function(caller) {

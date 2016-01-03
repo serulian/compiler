@@ -17,7 +17,7 @@ const (
 )
 
 // generateMemberAccessExpression generates the state machine for various kinds of member access expressions
-func (sm *stateMachine) generateMemberAccessExpression(node compilergraph.GraphNode, parentState *state, templateStr string, option memberAccessOption) {
+func (sm *stateMachine) generateMemberAccessExpression(node compilergraph.GraphNode, parentState *state, wrapper string, option memberAccessOption) {
 	scope, _ := sm.scopegraph.GetScope(node)
 	namedReference, hasNamedReference := sm.scopegraph.GetReferencedName(scope)
 
@@ -29,20 +29,48 @@ func (sm *stateMachine) generateMemberAccessExpression(node compilergraph.GraphN
 		return
 	}
 
-	// Generate the call to retrieve the member.
 	childExprInfo := sm.generate(node.GetNode(parser.NodeMemberAccessChildExpr), parentState)
 
-	data := struct {
-		ChildExpr  string
-		MemberName string
-	}{childExprInfo.expression, node.Get(parser.NodeMemberAccessIdentifier)}
+	// Determine whether we are a property getter. If so, we'll need to generate additional code
+	// later.
+	isPropertyGetter := option == memberAccessGet && hasNamedReference && namedReference.IsProperty()
 
-	getMemberExpr := sm.templater.Execute("memberaccess", templateStr, data)
+	// Determine whether this is a member access of an aliased function not under a function call.
+	// If so, additional metadata will be needed on the member ('this' reference being the most
+	// important).
+	_, isUnderFunctionCall := node.StartQuery().
+		In(parser.NodeFunctionCallExpressionChildExpr).
+		IsKind(parser.NodeFunctionCallExpression).
+		TryGetNode()
+
+	typegraph := sm.scopegraph.TypeGraph()
+	isAliasedFunctionAccess := (option == memberAccessGet && !isUnderFunctionCall &&
+		scope.ResolvedTypeRef(typegraph).HasReferredType(typegraph.FunctionType()))
+
+	if isAliasedFunctionAccess && wrapper == "" {
+		wrapper = "$t.dynamicaccess"
+	}
+
+	// Generate the call to retrieve the member.
+	data := struct {
+		ChildExpr    string
+		MemberName   string
+		Wrapper      string
+		RequiresNoop bool
+	}{childExprInfo.expression, node.Get(parser.NodeMemberAccessIdentifier), wrapper, isPropertyGetter}
+
+	getMemberExpr := sm.templater.Execute("memberaccess", `
+		{{ if .Wrapper }}
+			{{ .Wrapper }}({{ .ChildExpr }}, '{{ .MemberName }}', {{ .RequiresNoop }})
+		{{ else }}
+			({{ .ChildExpr }}).{{ .MemberName }}
+		{{ end }}
+	`, data)
 
 	// If the scope is a named reference to a property, then we need to turn the access into
 	// a function call (if a getter). Setter calls will be handled by the assign statement
 	// generation.
-	if option == memberAccessGet && hasNamedReference && namedReference.IsProperty() {
+	if isPropertyGetter {
 		// Generate a function call to the getter.
 		returnValueVariable := sm.addVariable("$getValue")
 		returnReceiveState := sm.newState()
