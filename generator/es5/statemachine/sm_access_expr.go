@@ -16,6 +16,33 @@ const (
 	memberAccessSet
 )
 
+// generateIdentifierExpression generates the state machine for an identifier expression.
+func (sm *stateMachine) generateIdentifierExpression(node compilergraph.GraphNode, parentState *state) {
+	scope, _ := sm.scopegraph.GetScope(node)
+	namedReference, _ := sm.scopegraph.GetReferencedName(scope)
+
+	// If the identifier refers to a local name, then the expression is just a name.
+	if namedReference.IsLocal() {
+		parentState.pushExpression(namedReference.Name())
+		return
+	}
+
+	// Otherwise the identifier refers to a type or member, so we generate the full path.
+	memberRef, isMember := namedReference.Member()
+	if isMember {
+		parentState.pushExpression(sm.pather.GetStaticMemberPath(memberRef, sm.scopegraph.TypeGraph().AnyTypeReference()))
+		return
+	}
+
+	typeRef, isType := namedReference.Type()
+	if isType {
+		parentState.pushExpression(sm.pather.GetTypePath(typeRef))
+		return
+	}
+
+	panic("Unknown identifier reference")
+}
+
 // generateMemberAccessExpression generates the state machine for various kinds of member access expressions
 func (sm *stateMachine) generateMemberAccessExpression(node compilergraph.GraphNode, parentState *state, wrapper string, option memberAccessOption) {
 	scope, _ := sm.scopegraph.GetScope(node)
@@ -24,7 +51,7 @@ func (sm *stateMachine) generateMemberAccessExpression(node compilergraph.GraphN
 	// If the scope is a named reference to a defined item (static member or type), generate its
 	// path directly by treating it as an identifier to the scope. This will handle
 	// imports for us.
-	if hasNamedReference && namedReference.IsStatic() {
+	if hasNamedReference && namedReference.IsStatic() && !namedReference.IsSynchronous() {
 		sm.generateIdentifierExpression(node, parentState)
 		return
 	}
@@ -34,6 +61,7 @@ func (sm *stateMachine) generateMemberAccessExpression(node compilergraph.GraphN
 	// Determine whether we are a property getter. If so, we'll need to generate additional code
 	// later.
 	isPropertyGetter := option == memberAccessGet && hasNamedReference && namedReference.IsProperty()
+	isSynchronous := option == memberAccessGet && hasNamedReference && namedReference.IsSynchronous()
 
 	// Determine whether this is a member access of an aliased function not under a function call.
 	// If so, additional metadata will be needed on the member ('this' reference being the most
@@ -47,21 +75,22 @@ func (sm *stateMachine) generateMemberAccessExpression(node compilergraph.GraphN
 	isAliasedFunctionAccess := (option == memberAccessGet && !isUnderFunctionCall &&
 		scope.ResolvedTypeRef(typegraph).HasReferredType(typegraph.FunctionType()))
 
-	if isAliasedFunctionAccess && wrapper == "" {
+	if isAliasedFunctionAccess {
 		wrapper = "$t.dynamicaccess"
 	}
 
 	// Generate the call to retrieve the member.
 	data := struct {
-		ChildExpr    string
-		MemberName   string
-		Wrapper      string
-		RequiresNoop bool
-	}{childExprInfo.expression, node.Get(parser.NodeMemberAccessIdentifier), wrapper, isPropertyGetter}
+		ChildExpr           string
+		MemberName          string
+		Wrapper             string
+		RequiresPromiseNoop bool
+		RequiresPromiseWrap bool
+	}{childExprInfo.expression, node.Get(parser.NodeMemberAccessIdentifier), wrapper, isPropertyGetter, isSynchronous}
 
 	getMemberExpr := sm.templater.Execute("memberaccess", `
 		{{ if .Wrapper }}
-			{{ .Wrapper }}({{ .ChildExpr }}, '{{ .MemberName }}', {{ .RequiresNoop }})
+			{{ .Wrapper }}({{ .ChildExpr }}, '{{ .MemberName }}', {{ .RequiresPromiseNoop }}, {{ .RequiresPromiseWrap }})
 		{{ else }}
 			({{ .ChildExpr }}).{{ .MemberName }}
 		{{ end }}

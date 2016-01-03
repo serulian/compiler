@@ -3,5 +3,7 @@ from webidl`basic` import SomeBrowserThing
 function<void> DoSomething() {
 	SomeBrowserThing.SomeStaticAttribute
 	SomeBrowserThing.SomeStaticFunction()
+	SomeBrowserThing.SomeStaticFunction
 	SomeBrowserThing.SomeStaticAttribute.SomeInterfaceFunction()
+	SomeBrowserThing.SomeStaticAttribute.SomeInterfaceFunction
 }

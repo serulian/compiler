@@ -10,16 +10,22 @@ const runtimeTemplate = `
 window.Serulian = (function($global) {
   var $g = {};
   var $t = {
-    'dynamicaccess': function(obj, name, requirepromise) {
+    'dynamicaccess': function(obj, name, promisenoop, promisewrap) {
       if (obj == null || obj[name] == null) {
-        return requirepromise ? $promise.wrap(function() { return null; }) : null;
+        return promisenoop ? $promise.wrap(function() { return null; }) : null;
       }
 
       var value = obj[name];
       if (typeof value == 'function') {
-        return function() {
-          return value.apply(obj, arguments);
-        };
+        if (promisewrap) {
+          return $promise.wrap(function() {
+            return value.apply(obj, arguments);
+          });
+        } else {
+          return function() {
+            return value.apply(obj, arguments);
+          };
+        }
       }
 
       return value

@@ -7,7 +7,9 @@ $module('basic', function () {
           case 0:
             $global.SomeBrowserThing.SomeStaticAttribute;
             $global.SomeBrowserThing.SomeStaticFunction();
+            $t.dynamicaccess($global.SomeBrowserThing, 'SomeStaticFunction', false, true);
             $global.SomeBrowserThing.SomeStaticAttribute.SomeInterfaceFunction();
+            $t.dynamicaccess($global.SomeBrowserThing.SomeStaticAttribute, 'SomeInterfaceFunction', false, true);
             $state.current = -1;
             return;
 
