@@ -11,6 +11,10 @@ class SomeClass {
 
 	function<void> InstanceFunc() {
 	}
+
+	property<int> SomeProp {
+		get { return this.someInt }
+	}
 }
 
 function<void> DoSomething(sc SomeClass, scn SomeClass?) {
@@ -28,4 +32,8 @@ function<void> DoSomething(sc SomeClass, scn SomeClass?) {
 
 	sc.InstanceFunc()
 	sc.InstanceFunc
+
+	sc.SomeProp
+	sc->SomeProp
+	scn->SomeProp
 }
