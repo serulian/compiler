@@ -6,4 +6,5 @@ function<void> DoSomething() {
 	SomeBrowserThing.SomeStaticFunction
 	SomeBrowserThing.SomeStaticAttribute.SomeInterfaceFunction()
 	SomeBrowserThing.SomeStaticAttribute.SomeInterfaceFunction
+	SomeBrowserThing.new('foo')
 }

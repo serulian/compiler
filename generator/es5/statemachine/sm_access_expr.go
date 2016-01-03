@@ -79,6 +79,11 @@ func (sm *stateMachine) generateMemberAccessExpression(node compilergraph.GraphN
 		wrapper = "$t.dynamicaccess"
 	}
 
+	// TODO(jschorr): This needs to be generalized and not only hacked in for WebIDL.
+	if namedReference.Name() == "new" && namedReference.IsSynchronous() {
+		wrapper = "$t.nativenew"
+	}
+
 	// Generate the call to retrieve the member.
 	data := struct {
 		ChildExpr           string
@@ -86,7 +91,7 @@ func (sm *stateMachine) generateMemberAccessExpression(node compilergraph.GraphN
 		Wrapper             string
 		RequiresPromiseNoop bool
 		RequiresPromiseWrap bool
-	}{childExprInfo.expression, node.Get(parser.NodeMemberAccessIdentifier), wrapper, isPropertyGetter, isSynchronous}
+	}{childExprInfo.expression, node.Get(parser.NodeMemberAccessIdentifier), wrapper, isPropertyGetter, isSynchronous && isAliasedFunctionAccess}
 
 	getMemberExpr := sm.templater.Execute("memberaccess", `
 		{{ if .Wrapper }}

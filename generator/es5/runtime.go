@@ -4,12 +4,24 @@
 
 package es5
 
+// Note: nativenew is based on http://www.bennadel.com/blog/2291-invoking-a-native-javascript-constructor-using-call-or-apply.htm
+
 // runtimeTemplate contains all the necessary code for wrapping generated modules into a complete Serulian
 // runtime bundle.
 const runtimeTemplate = `
 window.Serulian = (function($global) {
   var $g = {};
   var $t = {
+    'nativenew': function(type, name, promisenoop, promisewrap) {
+      return function () {
+        var newInstance = Object.create(type.prototype);
+        newInstance = type.apply(newInstance, arguments) || newInstance;
+        return promisewrap ? $promise.wrap(function () {
+          return newInstance;
+        }) : newInstance;
+      };
+    },
+
     'dynamicaccess': function(obj, name, promisenoop, promisewrap) {
       if (obj == null || obj[name] == null) {
         return promisenoop ? $promise.wrap(function() { return null; }) : null;
