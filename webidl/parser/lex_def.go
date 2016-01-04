@@ -39,6 +39,7 @@ const (
 	tokenTypeLeftBracket  // [
 	tokenTypeRightBracket // ]
 
+	tokenTypeEquals    // =
 	tokenTypeSemicolon // ;
 	tokenTypeComma     // ,
 )
@@ -89,6 +90,9 @@ Loop:
 
 		case r == ',':
 			l.emit(tokenTypeComma)
+
+		case r == '=':
+			l.emit(tokenTypeEquals)
 
 		case isSpace(r) || isNewline(r):
 			l.emit(tokenTypeWhitespace)

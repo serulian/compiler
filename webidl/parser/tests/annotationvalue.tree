@@ -1,0 +1,20 @@
+NodeTypeGlobalModule
+  child-node =>
+    NodeTypeFile
+      end-rune = 52
+      input-source = annotation value test
+      start-rune = 0
+      child-node =>
+        NodeTypeDeclaration
+          declaration-kind = interface
+          declaration-name = SomeInterface
+          end-rune = 52
+          input-source = annotation value test
+          start-rune = 0
+          declaration-annotation =>
+            NodeTypeAnnotation
+              annotation-defined-value = SomeName
+              annotation-name = CoolAnnotation
+              end-rune = 23
+              input-source = annotation value test
+              start-rune = 1
