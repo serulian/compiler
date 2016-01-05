@@ -148,6 +148,7 @@ var keywords = map[string]bool{
 
 	"class":     true,
 	"interface": true,
+	"type":      true,
 	"default":   true,
 
 	"function":    true,

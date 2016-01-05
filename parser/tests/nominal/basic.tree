@@ -1,0 +1,144 @@
+NodeTypeFile
+  end-rune = 196
+  input-source = basic nominal type test
+  start-rune = 0
+  child-node =>
+    NodeTypeNominal
+      end-rune = 196
+      input-source = basic nominal type test
+      named = SomeType
+      start-rune = 0
+      nominal-basetypepath =>
+        NodeTypeTypeReference
+          end-rune = 33
+          input-source = basic nominal type test
+          start-rune = 16
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 33
+              input-source = basic nominal type test
+              start-rune = 16
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 33
+                  identifieraccess-name = TypeHere
+                  input-source = basic nominal type test
+                  start-rune = 26
+                  identifieraccess-source =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 24
+                      identifieraccess-name = SomeOther
+                      input-source = basic nominal type test
+                      start-rune = 16
+      type-member =>
+        NodeTypeFunction
+          end-rune = 71
+          input-source = basic nominal type test
+          named = DoSomething
+          start-rune = 38
+          definition-body =>
+            NodeTypeStatementBlock
+              end-rune = 71
+              input-source = basic nominal type test
+              start-rune = 67
+          typemember-return-type =>
+            NodeTypeVoid
+              end-rune = 50
+              input-source = basic nominal type test
+              start-rune = 47
+        NodeTypeConstructor
+          end-rune = 96
+          input-source = basic nominal type test
+          named = Build
+          start-rune = 74
+          definition-body =>
+            NodeTypeStatementBlock
+              end-rune = 96
+              input-source = basic nominal type test
+              start-rune = 94
+        NodeTypeProperty
+          end-rune = 143
+          input-source = basic nominal type test
+          named = DoSomethingElse
+          start-rune = 99
+          typemember-readonly = true
+          property-getter =>
+            NodeTypePropertyBlock
+              end-rune = 140
+              input-source = basic nominal type test
+              propertyblock-type = get
+              start-rune = 133
+              definition-body =>
+                NodeTypeStatementBlock
+                  end-rune = 140
+                  input-source = basic nominal type test
+                  start-rune = 137
+          typemember-declared-type =>
+            NodeTypeTypeReference
+              end-rune = 110
+              input-source = basic nominal type test
+              start-rune = 108
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 110
+                  input-source = basic nominal type test
+                  start-rune = 108
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 110
+                      identifieraccess-name = int
+                      input-source = basic nominal type test
+                      start-rune = 108
+        NodeTypeOperator
+          end-rune = 195
+          input-source = basic nominal type test
+          operator-named = Plus
+          start-rune = 146
+          definition-body =>
+            NodeTypeStatementBlock
+              end-rune = 195
+              input-source = basic nominal type test
+              start-rune = 193
+          typemember-parameter =>
+            NodeTypeParameter
+              end-rune = 173
+              input-source = basic nominal type test
+              named = first
+              start-rune = 160
+              parameter-type =>
+                NodeTypeTypeReference
+                  end-rune = 173
+                  input-source = basic nominal type test
+                  start-rune = 166
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 173
+                      input-source = basic nominal type test
+                      start-rune = 166
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 173
+                          identifieraccess-name = SomeType
+                          input-source = basic nominal type test
+                          start-rune = 166
+            NodeTypeParameter
+              end-rune = 190
+              input-source = basic nominal type test
+              named = second
+              start-rune = 176
+              parameter-type =>
+                NodeTypeTypeReference
+                  end-rune = 190
+                  input-source = basic nominal type test
+                  start-rune = 183
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 190
+                      input-source = basic nominal type test
+                      start-rune = 183
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 190
+                          identifieraccess-name = SomeType
+                          input-source = basic nominal type test
+                          start-rune = 183

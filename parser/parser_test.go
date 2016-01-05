@@ -121,6 +121,10 @@ var parserTests = []parserTest{
 	{"basic interface test", "interface/basic"},
 	{"generic interface test", "interface/generic"},
 
+	// Nominal type tests.
+	{"basic nominal type test", "nominal/basic"},
+	{"missing subtype nominal type test", "nominal/missingsubtype"},
+
 	// Class member success tests.
 	{"basic class function test", "class/basic_function"},
 	{"generic function test", "class/generic_function"},
