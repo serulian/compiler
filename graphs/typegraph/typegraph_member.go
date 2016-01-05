@@ -98,6 +98,12 @@ func (tn TGMember) IsSynchronous() bool {
 	return isSynchronous
 }
 
+// IsNative returns whether the member is a native operator.
+func (tn TGMember) IsNative() bool {
+	_, isNative := tn.GraphNode.TryGet(NodePredicateOperatorNative)
+	return isNative
+}
+
 // IsType returns whether this is a type (always false).
 func (tn TGMember) IsType() bool {
 	return false

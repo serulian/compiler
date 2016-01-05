@@ -21,6 +21,10 @@ const GLOBAL_CONTEXT_ANNOTATION = "GlobalContext"
 // type. This translates to being able to do "new Type(...)" in ECMAScript.
 const CONSTRUCTOR_ANNOTATION = "Constructor"
 
+// NATIVE_OPERATOR_ANNOTATION is an annotation that marks an declaration as supporting the
+// specified operator natively (i.e. not a custom defined operator).
+const NATIVE_OPERATOR_ANNOTATION = "NativeOperator"
+
 // GetConstructor returns a TypeGraph constructor for the given IRG.
 func GetConstructor(irg *webidl.WebIRG) *irgTypeConstructor {
 	return &irgTypeConstructor{
@@ -117,8 +121,40 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 				Static(true).
 				ReadOnly(true).
 				Synchronous(true).
-				MemberKind(0).
+				MemberKind(uint64(webidl.ConstructorMember)).
 				MemberType(constructorFunction).
+				Define()
+		}
+
+		// Add support for any native operators.
+		if declaration.HasAnnotation(GLOBAL_CONTEXT_ANNOTATION) && declaration.HasAnnotation(NATIVE_OPERATOR_ANNOTATION) {
+			reporter.ReportError(declaration.GraphNode, "[NativeOperator] not supported on declarations marked with [GlobalContext]")
+			return
+		}
+
+		for _, nativeOp := range declaration.GetAnnotations(NATIVE_OPERATOR_ANNOTATION) {
+			opName, hasOpName := nativeOp.Value()
+			if !hasOpName {
+				reporter.ReportError(nativeOp.GraphNode, "Missing operator name on [NativeOperator] annotation")
+				continue
+			}
+
+			typeDecl, _ := graph.GetTypeForSourceNode(declaration.GraphNode)
+
+			var operatorType = graph.FunctionTypeReference(typeDecl.GetTypeReference())
+			operatorType = operatorType.WithParameter(typeDecl.GetTypeReference())
+			operatorType = operatorType.WithParameter(typeDecl.GetTypeReference())
+
+			builder(parentNode, true).
+				Name(opName).
+				SourceNode(nativeOp.GraphNode).
+				InitialDefine().
+				Native(true).
+				Exported(true).
+				Static(true).
+				ReadOnly(true).
+				MemberType(operatorType).
+				MemberKind(uint64(webidl.OperatorMember)).
 				Define()
 		}
 

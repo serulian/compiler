@@ -348,6 +348,7 @@ type dependentMemberBuilder struct {
 	readonly    bool // Whether the member is readonly.
 	static      bool // Whether the member is static.
 	synchronous bool // Whether the member is synchronous.
+	native      bool // Whether this operator is native to ES.
 
 	memberType TypeReference // The defined type of the member.
 	memberKind uint64        // The kind of the member.
@@ -446,6 +447,16 @@ func (mb *MemberBuilder) InitialDefine() *dependentMemberBuilder {
 	}
 }
 
+// Native sets whether the member is native.
+func (mb *dependentMemberBuilder) Native(native bool) *dependentMemberBuilder {
+	if !mb.isOperator {
+		panic("Native can only be called for operators")
+	}
+
+	mb.native = native
+	return mb
+}
+
 // Exported sets whether the member is exported publicly.
 func (mb *dependentMemberBuilder) Exported(exported bool) *dependentMemberBuilder {
 	mb.exported = exported
@@ -517,6 +528,10 @@ func (mb *dependentMemberBuilder) Define() {
 		memberNode.Decorate(NodePredicateMemberReadOnly, "true")
 	}
 
+	if mb.native {
+		memberNode.Decorate(NodePredicateOperatorNative, "true")
+	}
+
 	// Mark the member with an error if it is repeated.
 	if mb.exists {
 		var kindTitle = "Member"
@@ -560,6 +575,10 @@ func (mb *dependentMemberBuilder) Define() {
 // checkAndComputeOperator handles specialized logic for operator members.
 func (mb *dependentMemberBuilder) checkAndComputeOperator(memberNode compilergraph.GraphNode, name string) {
 	name = strings.ToLower(name)
+
+	// Operators are by definition read-only and static.
+	mb.readonly = true
+	mb.static = true
 
 	// Verify that the operator matches a known operator.
 	definition, ok := mb.tdg.operators[name]

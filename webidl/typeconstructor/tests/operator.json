@@ -74,20 +74,90 @@
             "tdg-type-name": "int"
         }
     },
-    "5081b1fd9250d182827633669821218c": {
-        "Key": "5081b1fd9250d182827633669821218c",
+    "6209115a03329a4693c6a5fbb8ae7b6a": {
+        "Key": "6209115a03329a4693c6a5fbb8ae7b6a",
         "Kind": 3,
         "Children": {
-            "40a159e9ee221517edca8053d087c86c": {
+            "14ec24b8386f11f960d9dfc9546fd7c0": {
+                "Predicate": "tdg-declaration-operator",
+                "Child": {
+                    "Key": "14ec24b8386f11f960d9dfc9546fd7c0",
+                    "Kind": 6,
+                    "Children": {
+                        "3ff79c2c6710abfda11e12ad085279b9": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "3ff79c2c6710abfda11e12ad085279b9",
+                                "Kind": 7,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "7|NodeType|tdg",
+                                    "tdg-return-type": "SomeInterface",
+                                    "tdg-source-node": "(NodeRef)"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "•minus",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cSomeInterface\u003e(SomeInterface, SomeInterface)",
+                        "tdg-member-signature": "\n\u0005Minus\u0010\u0001\u0018\u0000 \u0001*\u0003any",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "6|NodeType|tdg",
+                        "tdg-operator-name": "minus",
+                        "tdg-operator-native": "true",
+                        "tdg-source-module": "tests/operator.webidl",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "7039b7a97e98e9d60406ebf35dd8a097": {
+                "Predicate": "tdg-declaration-operator",
+                "Child": {
+                    "Key": "7039b7a97e98e9d60406ebf35dd8a097",
+                    "Kind": 6,
+                    "Children": {
+                        "3ff79c2c6710abfda11e12ad085279b9": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "3ff79c2c6710abfda11e12ad085279b9",
+                                "Kind": 7,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "7|NodeType|tdg",
+                                    "tdg-return-type": "SomeInterface",
+                                    "tdg-source-node": "(NodeRef)"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "•plus",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cSomeInterface\u003e(SomeInterface, SomeInterface)",
+                        "tdg-member-signature": "\n\u0004Plus\u0010\u0001\u0018\u0000 \u0001*\u0003any",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "6|NodeType|tdg",
+                        "tdg-operator-name": "plus",
+                        "tdg-operator-native": "true",
+                        "tdg-source-module": "tests/operator.webidl",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "b639c134b78a184dd0a8c60a21d0d3d9": {
                 "Predicate": "tdg-declaration-module",
                 "Child": {
-                    "Key": "40a159e9ee221517edca8053d087c86c",
+                    "Key": "b639c134b78a184dd0a8c60a21d0d3d9",
                     "Kind": 4,
                     "Children": {},
                     "Predicates": {
-                        "tdg-module-name": "optionalparam.webidl",
+                        "tdg-module-name": "operator.webidl",
                         "tdg-node-kind": "4|NodeType|tdg",
-                        "tdg-source-module": "tests/optionalparam.webidl",
+                        "tdg-source-module": "tests/operator.webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
                 }
@@ -95,38 +165,7 @@
         },
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "tests/optionalparam.webidl",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-name": "Foo"
-        }
-    },
-    "9e5e541b117f5979f4908a344eb9a9ce": {
-        "Key": "9e5e541b117f5979f4908a344eb9a9ce",
-        "Kind": 3,
-        "Children": {
-            "8f4eaeca77d611dd1711216c099ec3db": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "8f4eaeca77d611dd1711216c099ec3db",
-                    "Kind": 5,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-exported": "true",
-                        "tdg-member-name": "SomeFunction",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cvoid\u003e(Foo, Foo, Foo?, Foo?)",
-                        "tdg-member-signature": "\n\u000cSomeFunction\u0010\u0002\u0018\u0000 \u0001*$function\u003cvoid\u003e(Foo, Foo, Foo?, Foo?)",
-                        "tdg-member-synchronous": "true",
-                        "tdg-node-kind": "5|NodeType|tdg",
-                        "tdg-source-module": "tests/optionalparam.webidl",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            }
-        },
-        "Predicates": {
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "tests/optionalparam.webidl",
+            "tdg-source-module": "tests/operator.webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-name": "SomeInterface"
         }

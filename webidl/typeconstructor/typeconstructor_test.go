@@ -47,6 +47,7 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"global context test", "global", ""},
 	typegraphTest{"optional parameter test", "optionalparam", ""},
 	typegraphTest{"constructors test", "constructors", ""},
+	typegraphTest{"native operators test", "operator", ""},
 
 	// Failure tests.
 	typegraphTest{"redeclaration test", "redeclare", "Type 'Foo' is already defined in the module"},
