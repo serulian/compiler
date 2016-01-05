@@ -145,7 +145,7 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 			var operatorType = graph.FunctionTypeReference(typeDecl.GetTypeReference())
 			operatorType = operatorType.WithParameter(typeDecl.GetTypeReference())
 
-			if strings.Lower(opName) != "not" {
+			if strings.ToLower(opName) != "not" {
 				operatorType = operatorType.WithParameter(typeDecl.GetTypeReference())
 			}
 
