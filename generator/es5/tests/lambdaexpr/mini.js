@@ -12,6 +12,8 @@ $module('mini', function () {
                     case 0:
                       $state.returnValue = someParam;
                       $state.current = -1;
+                      $state.returnValue = null;
+                      $callback($state);
                       return;
 
                     default:
@@ -23,6 +25,8 @@ $module('mini', function () {
               return $promise.build($state);
             };
             $state.current = -1;
+            $state.returnValue = null;
+            $callback($state);
             return;
 
           default:

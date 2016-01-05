@@ -1,0 +1,14 @@
+class SomeClass {
+	function<void> DoSomething(anotherParam int) {
+	}
+}
+
+type MyType : SomeClass {
+	function<void> AnotherThing(someParam int) {
+		SomeClass(this).DoSomething(someParam)
+	}
+}
+
+function<void> CoolFunc(m MyType) {
+	m.AnotherThing(2)
+}

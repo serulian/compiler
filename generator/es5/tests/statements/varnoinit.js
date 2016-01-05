@@ -7,6 +7,8 @@ $module('varnoinit', function () {
           case 0:
             1234;
             $state.current = -1;
+            $state.returnValue = null;
+            $callback($state);
             return;
 
           default:

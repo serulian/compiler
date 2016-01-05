@@ -102,6 +102,8 @@ $module('compare', function () {
           case 6:
             $returnValue$6 >= 0;
             $state.current = -1;
+            $state.returnValue = null;
+            $callback($state);
             return;
 
           default:

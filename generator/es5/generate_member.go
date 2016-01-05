@@ -79,6 +79,11 @@ func (gm generatingMember) IsStatic() bool {
 	return gm.Member.IsStatic()
 }
 
+// IsExtension returns whether the generating member is an extension member.
+func (gm generatingMember) IsExtension() bool {
+	return gm.Member.IsExtension()
+}
+
 // RequiresThis returns whether the generating member is requires the "this" var.
 func (gm generatingMember) RequiresThis() bool {
 	return !gm.Member.IsStatic()
@@ -126,7 +131,7 @@ func (gm generatingMember) FunctionSource() string {
 func (gm generatingMember) GetterSource() string {
 	getterNode, _ := gm.SRGMember.Getter()
 	getterBodyNode, _ := getterNode.Body()
-	getterBody := propertyBodyInfo{getterBodyNode, []string{""}}
+	getterBody := propertyBodyInfo{gm.Member, getterBodyNode, []string{""}}
 	return statemachine.GenerateFunctionSource(getterBody, gm.Generator.templater, gm.Generator.pather, gm.Generator.scopegraph)
 }
 
@@ -134,7 +139,7 @@ func (gm generatingMember) GetterSource() string {
 func (gm generatingMember) SetterSource() string {
 	setterNode, _ := gm.SRGMember.Setter()
 	setterBodyNode, _ := setterNode.Body()
-	setterBody := propertyBodyInfo{setterBodyNode, []string{"val"}}
+	setterBody := propertyBodyInfo{gm.Member, setterBodyNode, []string{"val"}}
 	return statemachine.GenerateFunctionSource(setterBody, gm.Generator.templater, gm.Generator.pather, gm.Generator.scopegraph)
 }
 
@@ -144,6 +149,7 @@ func (gm generatingMember) AliasRequiresSet() bool {
 }
 
 type propertyBodyInfo struct {
+	propertyMember typegraph.TGMember
 	bodyNode       compilergraph.GraphNode
 	parameterNames []string
 }
@@ -158,6 +164,10 @@ func (pbi propertyBodyInfo) Parameters() []string {
 
 func (pbi propertyBodyInfo) Generics() []string {
 	return []string{}
+}
+
+func (pbi propertyBodyInfo) IsExtension() bool {
+	return pbi.propertyMember.IsExtension()
 }
 
 func (pbi propertyBodyInfo) RequiresThis() bool {

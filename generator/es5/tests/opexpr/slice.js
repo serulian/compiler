@@ -60,6 +60,8 @@ $module('slice', function () {
           case 3:
             $returnValue$3;
             $state.current = -1;
+            $state.returnValue = null;
+            $callback($state);
             return;
 
           default:

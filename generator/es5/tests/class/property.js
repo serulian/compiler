@@ -45,6 +45,8 @@ $module('property', function () {
                 case 0:
                   $this.SomeInt = val;
                   $state.current = -1;
+                  $state.returnValue = null;
+                  $callback($state);
                   return;
 
                 default:

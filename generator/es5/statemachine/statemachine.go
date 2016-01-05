@@ -118,6 +118,8 @@ func (sm *stateMachine) buildGeneratedMachine() GeneratedMachine {
 	if len(filtered) > 0 {
 		filtered[len(filtered)-1].pushSource(`
 			$state.current = -1;
+			$state.returnValue = null;
+			$callback($state);
 			return;
 		`)
 	}

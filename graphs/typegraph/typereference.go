@@ -179,38 +179,57 @@ func (tr TypeReference) ExtractTypeDiff(otherRef TypeReference, diffType TGTypeD
 	return TypeReference{}, false
 }
 
-// CheckNominalSubtypeOf checks that the current type reference refers to a type that is nominally deriving
-// from the given type reference's type.
-func (tr TypeReference) CheckNominalSubtypeOf(other TypeReference) error {
+// CheckNominalConvertable checks that the current type reference refers to a type that is nominally deriving
+// from the given type reference's type or vice versa.
+func (tr TypeReference) CheckNominalConvertable(other TypeReference) error {
 	if !tr.isNormal() || !other.isNormal() {
 		return fmt.Errorf("Type '%v' cannot be converted to type '%v'", tr, other)
 	}
 
 	referredType := tr.ReferredType()
-	if referredType.TypeKind() != NominalType {
-		return fmt.Errorf("Non-nominal type '%v' cannot be converted to type '%v'", tr, other)
+	otherType := other.ReferredType()
+
+	if referredType.TypeKind() != NominalType && otherType.TypeKind() != NominalType {
+		return fmt.Errorf("Type '%v' cannot be converted to or from type '%v'", tr, other)
+	}
+
+	if !tr.checkNominalParent(other) && !other.checkNominalParent(tr) {
+		return fmt.Errorf("Type '%v' cannot be converted to or from type '%v'", tr, other)
+	}
+
+	return nil
+}
+
+func (tr TypeReference) checkNominalParent(other TypeReference) bool {
+	if tr == other {
+		return true
 	}
 
 	// Walk the parent types, comparing as we go along.
+	referredType := tr.ReferredType()
+	if referredType.TypeKind() != NominalType {
+		return false
+	}
+
 	var parentType = referredType.ParentTypes()[0]
 	for {
 		if parentType == other {
-			return nil
+			return true
 		}
 
 		if !parentType.isNormal() {
-			return fmt.Errorf("Nominal type '%v' cannot be converted to type '%v'", tr, other)
+			return false
 		}
 
 		parentTypeRef := parentType.ReferredType()
 		if parentTypeRef.TypeKind() != NominalType {
-			return fmt.Errorf("Nominal type '%v' cannot be converted to type '%v'", tr, other)
+			return false
 		}
 
 		parentType = parentTypeRef.ParentTypes()[0]
 	}
 
-	return nil
+	return false
 }
 
 // CheckStructuralSubtypeOf checks that the current type reference refers to a type that is structurally deriving

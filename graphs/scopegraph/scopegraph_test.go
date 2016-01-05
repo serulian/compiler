@@ -739,7 +739,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"nominal conversion failure", "nominal", "cannotconvert",
 		[]expectedScopeEntry{},
-		"Cannot perform type conversion: Nominal type 'MyType' cannot be converted to type 'SomeType'", ""},
+		"Cannot perform type conversion: Type 'MyType' cannot be converted to or from type 'SomeType'", ""},
 
 	scopegraphTest{"nominal conversion argument count mismatch", "nominal", "convertargcount",
 		[]expectedScopeEntry{},

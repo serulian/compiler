@@ -6,6 +6,7 @@ package statemachine
 
 import (
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/parser"
 )
 
@@ -95,6 +96,15 @@ func (sm *stateMachine) generateFunctionCall(node compilergraph.GraphNode, paren
 	// Generate the expression for the function itself that will be called.
 	childExpr := node.GetNode(parser.NodeFunctionCallExpressionChildExpr)
 	childScope, _ := sm.scopegraph.GetScope(childExpr)
+
+	// Check if the child expression has a static scope. If so, this is a type conversion between
+	// a nominal type and a base type. Type conversions are always compile-time checked, so this
+	// becomes a noop and we just place the first argument in the call.
+	if childScope.GetKind() == proto.ScopeKind_STATIC {
+		sm.generate(node.GetNode(parser.NodeFunctionCallArgument), parentState)
+		return
+	}
+
 	callExprInfo := sm.generate(childExpr, parentState)
 
 	// For each of the arguments (if any) generate the expressions.
@@ -103,6 +113,7 @@ func (sm *stateMachine) generateFunctionCall(node compilergraph.GraphNode, paren
 		BuildNodeIterator()
 
 	argumentInfo := sm.generateIterator(ait, callExprInfo.endState)
+	callState := sm.getEndState(callExprInfo.endState, argumentInfo)
 
 	// If the function is synchronous, then call it directly. Otherwise, we need to generate it
 	// as an async Promise-based call.
@@ -113,11 +124,11 @@ func (sm *stateMachine) generateFunctionCall(node compilergraph.GraphNode, paren
 			Arguments []generatedStateInfo
 		}{callExprInfo.expression, argumentInfo}
 
-		parentState.pushExpression(sm.templater.Execute("syncfunccall", `
+		callState.pushExpression(sm.templater.Execute("syncfunccall", `
 			({{ .CallExpr }})({{ range $index, $arg := .Arguments }}{{ if $index }} ,{{ end }}{{ $arg.Expression }}{{ end }})
 		`, data))
 
-		sm.markStates(node, parentState, parentState)
+		sm.markStates(node, callState, callState)
 		return
 	}
 
@@ -127,8 +138,6 @@ func (sm *stateMachine) generateFunctionCall(node compilergraph.GraphNode, paren
 	returnReceiveState.pushExpression(returnValueVariable)
 
 	// In the call state, add source to call the function and jump to the return state once complete.
-	callState := sm.getEndState(callExprInfo.endState, argumentInfo)
-
 	data := asyncFunctionCallData{
 		CallExpr:            callExprInfo.expression,
 		Arguments:           argumentInfo,

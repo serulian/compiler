@@ -32,6 +32,9 @@ func (gen *es5generator) generateType(typedef typegraph.TGTypeDecl) string {
 	case typegraph.ImplicitInterfaceType:
 		return gen.templater.Execute("interface", interfaceTemplateStr, generating)
 
+	case typegraph.NominalType:
+		return gen.templater.Execute("nominal", nominalTemplateStr, generating)
+
 	case typegraph.ExternalInternalType:
 		return ""
 
@@ -129,6 +132,16 @@ this.$class('{{ .Type.Name }}', function({{ .Generics }}) {
 // interfaceTemplateStr defines the template for generating an interface type.
 const interfaceTemplateStr = `
 this.$interface('{{ .Type.Name }}', function({{ .Generics }}) {
+	{{range $idx, $kv := .GenerateImplementedMembers.Iter }}
+  	  {{ $kv.Value }}
+  	{{end}}
+});
+`
+
+// nominalTemplateStr defines the template for generating a nominal type.
+const nominalTemplateStr = `
+this.$type('{{ .Type.Name }}', function() {
+	var $instance = this;
 	{{range $idx, $kv := .GenerateImplementedMembers.Iter }}
   	  {{ $kv.Value }}
   	{{end}}

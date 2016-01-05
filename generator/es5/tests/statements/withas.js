@@ -13,6 +13,8 @@ $module('withas', function () {
             $state.popr('someName');
             789;
             $state.current = -1;
+            $state.returnValue = null;
+            $callback($state);
             return;
 
           default:

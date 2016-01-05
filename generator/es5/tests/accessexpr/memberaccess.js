@@ -81,9 +81,9 @@ $module('memberaccess', function () {
           case 0:
             sc.someInt;
             $g.memberaccess.SomeClass.Build;
-            $t.dynamicaccess(sc, 'someInt', false, false);
+            $t.dynamicaccess(sc, 'someInt', null, false, false);
             $g.memberaccess.SomeClass.Build;
-            $t.dynamicaccess(scn, 'someInt', false, false);
+            $t.dynamicaccess(scn, 'someInt', null, false, false);
             $g.maimport.AnotherFunction;
             $g.maimport.AnotherFunction;
             $g.maimport.AnotherFunction;
@@ -100,7 +100,7 @@ $module('memberaccess', function () {
 
           case 1:
             $returnValue$1;
-            $t.dynamicaccess(sc, 'InstanceFunc', false, false);
+            $t.dynamicaccess(sc, 'InstanceFunc', null, false, false);
             sc.SomeProp().then(function (returnValue) {
               $state.current = 2;
               $getValue$2 = returnValue;
@@ -114,7 +114,7 @@ $module('memberaccess', function () {
 
           case 2:
             $getValue$2;
-            $t.dynamicaccess(sc, 'SomeProp', true, false)().then(function (returnValue) {
+            $t.dynamicaccess(sc, 'SomeProp', null, true, false)().then(function (returnValue) {
               $state.current = 3;
               $getValue$3 = returnValue;
               $state.next($callback);
@@ -127,7 +127,7 @@ $module('memberaccess', function () {
 
           case 3:
             $getValue$3;
-            $t.dynamicaccess(scn, 'SomeProp', true, false)().then(function (returnValue) {
+            $t.dynamicaccess(scn, 'SomeProp', null, true, false)().then(function (returnValue) {
               $state.current = 4;
               $getValue$4 = returnValue;
               $state.next($callback);
@@ -141,6 +141,8 @@ $module('memberaccess', function () {
           case 4:
             $getValue$4;
             $state.current = -1;
+            $state.returnValue = null;
+            $callback($state);
             return;
 
           default:

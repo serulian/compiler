@@ -47,7 +47,7 @@ func (sb *scopeBuilder) scopeTypeConversionExpression(node compilergraph.GraphNo
 
 		// The argument must be a nominal subtype of the conversion type.
 		argumentType := argumentScope.ResolvedTypeRef(sb.sg.tdg)
-		if nerr := argumentType.CheckNominalSubtypeOf(conversionType); nerr != nil {
+		if nerr := argumentType.CheckNominalConvertable(conversionType); nerr != nil {
 			sb.decorateWithError(node, "Cannot perform type conversion: %v", nerr)
 			isValid = false
 			break

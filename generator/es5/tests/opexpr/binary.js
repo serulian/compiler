@@ -46,6 +46,8 @@ $module('binary', function () {
           case 2:
             $returnValue$2;
             $state.current = -1;
+            $state.returnValue = null;
+            $callback($state);
             return;
 
           default:

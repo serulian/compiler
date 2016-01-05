@@ -91,6 +91,7 @@ var tests = []generationTest{
 	generationTest{"this literal", "literals", "this"},
 
 	generationTest{"basic webidl", "webidl", "basic"},
+	generationTest{"basic nominal type", "nominal", "basic"},
 }
 
 func TestGenerator(t *testing.T) {

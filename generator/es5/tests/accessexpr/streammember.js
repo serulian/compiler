@@ -24,6 +24,8 @@ $module('streammember', function () {
           case 0:
             $t.streamaccess(somestream, 'SomeInt');
             $state.current = -1;
+            $state.returnValue = null;
+            $callback($state);
             return;
 
           default:
