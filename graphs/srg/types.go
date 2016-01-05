@@ -14,6 +14,9 @@ import (
 	"github.com/serulian/compiler/parser"
 )
 
+var TYPE_KINDS = []parser.NodeType{parser.NodeTypeClass, parser.NodeTypeInterface, parser.NodeTypeNominal}
+var TYPE_KINDS_TAGGED = []compilergraph.TaggedValue{parser.NodeTypeClass, parser.NodeTypeInterface, parser.NodeTypeNominal}
+
 // SRGType wraps a type declaration or definition in the SRG.
 type SRGType struct {
 	compilergraph.GraphNode
@@ -26,11 +29,12 @@ type TypeKind int
 const (
 	ClassType TypeKind = iota
 	InterfaceType
+	NominalType
 )
 
 // GetTypes returns all the types defined in the SRG.
 func (g *SRG) GetTypes() []SRGType {
-	it := g.findAllNodes(parser.NodeTypeClass, parser.NodeTypeInterface).
+	it := g.findAllNodes(TYPE_KINDS...).
 		BuildNodeIterator()
 
 	var types []SRGType
@@ -44,7 +48,7 @@ func (g *SRG) GetTypes() []SRGType {
 
 // GetGenericTypes returns all the generic types defined in the SRG.
 func (g *SRG) GetGenericTypes() []SRGType {
-	it := g.findAllNodes(parser.NodeTypeClass, parser.NodeTypeInterface).
+	it := g.findAllNodes(TYPE_KINDS...).
 		With(parser.NodeTypeDefinitionGeneric).
 		BuildNodeIterator()
 
@@ -59,7 +63,7 @@ func (g *SRG) GetGenericTypes() []SRGType {
 
 // GetTypeGenerics returns all the generics defined under types in the SRG.
 func (g *SRG) GetTypeGenerics() []SRGGeneric {
-	it := g.findAllNodes(parser.NodeTypeClass, parser.NodeTypeInterface).
+	it := g.findAllNodes(TYPE_KINDS...).
 		Out(parser.NodeTypeDefinitionGeneric).
 		BuildNodeIterator()
 
@@ -102,6 +106,9 @@ func (t SRGType) TypeKind() TypeKind {
 	case parser.NodeTypeInterface:
 		return InterfaceType
 
+	case parser.NodeTypeNominal:
+		return NominalType
+
 	default:
 		panic(fmt.Sprintf("Unknown kind of type %s", t.GraphNode.Kind))
 		return ClassType
@@ -138,16 +145,30 @@ func (t SRGType) FindMember(name string) (SRGMember, bool) {
 
 // Inheritance returns type references to the types this type composes, if any.
 func (t SRGType) Inheritance() []SRGTypeRef {
-	it := t.GraphNode.StartQuery().
-		Out(parser.NodeClassPredicateBaseType).
-		BuildNodeIterator()
+	switch t.TypeKind() {
+	case ClassType:
+		it := t.GraphNode.StartQuery().
+			Out(parser.NodeClassPredicateBaseType).
+			BuildNodeIterator()
 
-	var inherits = make([]SRGTypeRef, 0)
-	for it.Next() {
-		inherits = append(inherits, SRGTypeRef{it.Node(), t.srg})
+		var inherits = make([]SRGTypeRef, 0)
+		for it.Next() {
+			inherits = append(inherits, SRGTypeRef{it.Node(), t.srg})
+		}
+
+		return inherits
+
+	case InterfaceType:
+		return make([]SRGTypeRef, 0)
+
+	case NominalType:
+		inherits := make([]SRGTypeRef, 1)
+		inherits[0] = SRGTypeRef{t.GraphNode.GetNode(parser.NodeNominalPredicateBaseType), t.srg}
+		return inherits
+
+	default:
+		panic("Unknown kind of type")
 	}
-
-	return inherits
 }
 
 // GetMembers returns the members on this type.

@@ -199,7 +199,7 @@ func (sb *scopeBuilder) scopeThisLiteralExpression(node compilergraph.GraphNode)
 
 	tgType, hasParentType := tgMember.ParentType()
 	if !hasParentType {
-		sb.decorateWithError(node, "The 'this' keyword cannot be used under module member %v", tgMember.Name())
+		sb.decorateWithError(node, "The 'this' keyword cannot be used under %v %v", tgMember.Title(), tgMember.Name())
 		return newScope().Invalid().GetScope()
 	}
 

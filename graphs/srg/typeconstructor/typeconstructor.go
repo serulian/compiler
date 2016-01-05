@@ -54,6 +54,10 @@ func (stc *srgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 		case srg.InterfaceType:
 			typeBuilder.TypeKind(typegraph.ImplicitInterfaceType)
 			break
+
+		case srg.NominalType:
+			typeBuilder.TypeKind(typegraph.NominalType)
+			break
 		}
 
 		// Add the global alias (if any).
@@ -78,7 +82,7 @@ func (stc *srgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 func (stc *srgTypeConstructor) DefineDependencies(annotator *typegraph.Annotator, graph *typegraph.TypeGraph) {
 	for _, srgType := range stc.srg.GetTypes() {
 		// Decorate all types with their inheritance.
-		if srgType.TypeKind() == srg.ClassType {
+		if srgType.TypeKind() != srg.InterfaceType {
 			for _, inheritsRef := range srgType.Inheritance() {
 				// Resolve the type to which the inherits points.
 				resolvedType, err := stc.BuildTypeRef(inheritsRef, graph)
@@ -87,19 +91,23 @@ func (stc *srgTypeConstructor) DefineDependencies(annotator *typegraph.Annotator
 					continue
 				}
 
-				if resolvedType.ReferredType().TypeKind() != typegraph.ClassType {
-					switch resolvedType.ReferredType().TypeKind() {
-					case typegraph.GenericType:
-						annotator.ReportError(srgType.Node(), "Type '%s' cannot derive from a generic ('%s')", srgType.Name(), resolvedType.ReferredType().Name())
+				if srgType.TypeKind() == srg.ClassType {
+					if resolvedType.ReferredType().TypeKind() != typegraph.ClassType {
+						switch resolvedType.ReferredType().TypeKind() {
+						case typegraph.GenericType:
+							annotator.ReportError(srgType.Node(), "Type '%s' cannot derive from a generic ('%s')", srgType.Name(), resolvedType.ReferredType().Name())
 
-					case typegraph.ImplicitInterfaceType:
-						annotator.ReportError(srgType.Node(), "Type '%s' cannot derive from an interface ('%s')", srgType.Name(), resolvedType.ReferredType().Name())
+						case typegraph.ImplicitInterfaceType:
+							annotator.ReportError(srgType.Node(), "Type '%s' cannot derive from an interface ('%s')", srgType.Name(), resolvedType.ReferredType().Name())
+						}
+
+						continue
 					}
 
-					continue
+					annotator.DefineParentType(srgType.Node(), resolvedType)
+				} else if srgType.TypeKind() == srg.NominalType {
+					annotator.DefineParentType(srgType.Node(), resolvedType)
 				}
-
-				annotator.DefineStructuralInheritance(srgType.Node(), resolvedType)
 			}
 		}
 

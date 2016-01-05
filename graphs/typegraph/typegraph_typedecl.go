@@ -17,6 +17,7 @@ const (
 	ClassType TypeKind = iota
 	ImplicitInterfaceType
 	ExternalInternalType
+	NominalType
 	GenericType
 )
 
@@ -61,6 +62,9 @@ func (tn TGTypeDecl) Title() string {
 
 	case NodeTypeGeneric:
 		return "generic"
+
+	case NodeTypeNominalType:
+		return "nominal type"
 
 	default:
 		panic(fmt.Sprintf("Unknown kind of type %s for node %s", nodeType, tn.NodeId))
@@ -195,6 +199,9 @@ func (tn TGTypeDecl) TypeKind() TypeKind {
 
 	case NodeTypeExternalInterface:
 		return ExternalInternalType
+
+	case NodeTypeNominalType:
+		return NominalType
 
 	case NodeTypeGeneric:
 		return GenericType

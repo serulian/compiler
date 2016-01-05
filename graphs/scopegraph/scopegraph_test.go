@@ -726,6 +726,32 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"webidl static function failure", "webidl", "static",
 		[]expectedScopeEntry{},
 		"Could not find static name 'SomeFunction' under external interface SomeType", ""},
+
+	/////////// nominal tests /////////////////
+
+	scopegraphTest{"nominal type success", "nominal", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"this", expectedScope{true, proto.ScopeKind_VALUE, "MyType", "void"}},
+			expectedScopeEntry{"sometype", expectedScope{true, proto.ScopeKind_VALUE, "SomeType", "void"}},
+			expectedScopeEntry{"m", expectedScope{true, proto.ScopeKind_VALUE, "MyType", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"nominal conversion failure", "nominal", "cannotconvert",
+		[]expectedScopeEntry{},
+		"Cannot perform type conversion: Nominal type 'MyType' cannot be converted to type 'SomeType'", ""},
+
+	scopegraphTest{"nominal conversion argument count mismatch", "nominal", "convertargcount",
+		[]expectedScopeEntry{},
+		"Type conversion requires a single argument", ""},
+
+	scopegraphTest{"nominal conversion no argument mismatch", "nominal", "convertnoarg",
+		[]expectedScopeEntry{},
+		"Type conversion requires a single argument", ""},
+
+	scopegraphTest{"nominal call base type member", "nominal", "basetypecall",
+		[]expectedScopeEntry{},
+		"Could not find instance name 'DoSomething' under type MyType", ""},
 }
 
 func TestGraphs(t *testing.T) {

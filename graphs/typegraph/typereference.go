@@ -179,6 +179,40 @@ func (tr TypeReference) ExtractTypeDiff(otherRef TypeReference, diffType TGTypeD
 	return TypeReference{}, false
 }
 
+// CheckNominalSubtypeOf checks that the current type reference refers to a type that is nominally deriving
+// from the given type reference's type.
+func (tr TypeReference) CheckNominalSubtypeOf(other TypeReference) error {
+	if !tr.isNormal() || !other.isNormal() {
+		return fmt.Errorf("Type '%v' cannot be converted to type '%v'", tr, other)
+	}
+
+	referredType := tr.ReferredType()
+	if referredType.TypeKind() != NominalType {
+		return fmt.Errorf("Non-nominal type '%v' cannot be converted to type '%v'", tr, other)
+	}
+
+	// Walk the parent types, comparing as we go along.
+	var parentType = referredType.ParentTypes()[0]
+	for {
+		if parentType == other {
+			return nil
+		}
+
+		if !parentType.isNormal() {
+			return fmt.Errorf("Nominal type '%v' cannot be converted to type '%v'", tr, other)
+		}
+
+		parentTypeRef := parentType.ReferredType()
+		if parentTypeRef.TypeKind() != NominalType {
+			return fmt.Errorf("Nominal type '%v' cannot be converted to type '%v'", tr, other)
+		}
+
+		parentType = parentTypeRef.ParentTypes()[0]
+	}
+
+	return nil
+}
+
 // CheckStructuralSubtypeOf checks that the current type reference refers to a type that is structurally deriving
 // from the given type reference's type.
 func (tr TypeReference) CheckStructuralSubtypeOf(other TypeReference) bool {

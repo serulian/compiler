@@ -151,7 +151,7 @@ func (tn TGMember) Parent() TGTypeOrModule {
 func (tn TGMember) ParentType() (TGTypeDecl, bool) {
 	typeNode, hasType := tn.GraphNode.StartQuery().
 		In(NodePredicateMember, NodePredicateTypeOperator).
-		IsKind(NodeTypeClass, NodeTypeInterface).
+		IsKind(TYPE_NODE_TYPES_TAGGED...).
 		TryGetNode()
 
 	if !hasType {

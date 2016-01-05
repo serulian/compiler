@@ -79,9 +79,10 @@ func (an *Annotator) DefineGenericConstraint(genericSourceNode compilergraph.Gra
 	genericNode.DecorateWithTagged(NodePredicateGenericSubtype, constraint)
 }
 
-// DefineStructuralInheritance defines that the given type *structurally* inherits from the given type.
-func (an *Annotator) DefineStructuralInheritance(typeSourceNode compilergraph.GraphNode, inherits TypeReference) {
-	typeNode := an.tdg.getMatchingTypeGraphNode(typeSourceNode, NodeTypeClass)
+// DefineParentType defines that the given type inherits from the given parent type. For classes, the parent
+// is structurally inherited and for nominal types, it describes conversion.
+func (an *Annotator) DefineParentType(typeSourceNode compilergraph.GraphNode, inherits TypeReference) {
+	typeNode := an.tdg.getMatchingTypeGraphNode(typeSourceNode, NodeTypeClass, NodeTypeNominalType)
 	typeNode.DecorateWithTagged(NodePredicateParentType, inherits)
 }
 
@@ -225,6 +226,9 @@ func getTypeNodeType(kind TypeKind) NodeType {
 
 	case ExternalInternalType:
 		return NodeTypeExternalInterface
+
+	case NominalType:
+		return NodeTypeNominalType
 
 	default:
 		panic(fmt.Sprintf("Unknown kind of type declaration: %v", kind))

@@ -4,9 +4,9 @@ package srg
 
 import "fmt"
 
-const _TypeKind_name = "ClassTypeInterfaceType"
+const _TypeKind_name = "ClassTypeInterfaceTypeNominalType"
 
-var _TypeKind_index = [...]uint8{0, 9, 22}
+var _TypeKind_index = [...]uint8{0, 9, 22, 33}
 
 func (i TypeKind) String() string {
 	if i < 0 || i >= TypeKind(len(_TypeKind_index)-1) {

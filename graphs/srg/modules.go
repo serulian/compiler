@@ -124,7 +124,7 @@ func (m SRGModule) FindTypeOrMemberByName(name string, option ModuleResolutionOp
 	nodeFound, found := m.StartQuery().
 		Out(parser.NodePredicateChild).
 		Has("named", name).
-		IsKind(parser.NodeTypeClass, parser.NodeTypeInterface, parser.NodeTypeVariable, parser.NodeTypeFunction).
+		IsKind(parser.NodeTypeClass, parser.NodeTypeInterface, parser.NodeTypeNominal, parser.NodeTypeVariable, parser.NodeTypeFunction).
 		TryGetNode()
 
 	if !found {
