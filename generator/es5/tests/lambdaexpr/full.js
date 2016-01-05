@@ -25,6 +25,8 @@ $module('full', function () {
               return $promise.build($state);
             };
             $state.current = -1;
+            $state.returnValue = null;
+            $callback($state);
             return;
 
           default:

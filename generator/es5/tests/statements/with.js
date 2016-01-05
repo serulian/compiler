@@ -13,6 +13,8 @@ $module('with', function () {
             $state.popr('$withExpr$1');
             789;
             $state.current = -1;
+            $state.returnValue = null;
+            $callback($state);
             return;
 
           default:

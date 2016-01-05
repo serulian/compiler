@@ -36,6 +36,7 @@ const (
 	NodeTypeImport    // An import
 	NodeTypeClass     // A class
 	NodeTypeInterface // An interface
+	NodeTypeNominal   // A nominal type
 	NodeTypeGeneric   // A generic definition on a type
 
 	// Module and Type Members
@@ -223,6 +224,11 @@ const (
 	// NodeTypeClass
 	//
 	NodeClassPredicateBaseType = "class-basetypepath"
+
+	//
+	// NodeTypeNominal
+	//
+	NodeNominalPredicateBaseType = "nominal-basetypepath"
 
 	//
 	// NodeTypeGeneric

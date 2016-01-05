@@ -19,4 +19,5 @@ type TGTypeOrMember interface {
 	IsType() bool
 	IsStatic() bool
 	IsSynchronous() bool
+	IsExtension() bool
 }

@@ -20,6 +20,8 @@ $module('functioncall', function () {
           case 1:
             $returnValue$1;
             $state.current = -1;
+            $state.returnValue = null;
+            $callback($state);
             return;
 
           default:

@@ -30,6 +30,8 @@ $module('loopvar', function () {
           case 3:
             5678;
             $state.current = -1;
+            $state.returnValue = null;
+            $callback($state);
             return;
 
           default:

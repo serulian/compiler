@@ -22,6 +22,8 @@ $module('cast', function () {
           case 0:
             $t.cast(i, $g.cast.SomeClass);
             $state.current = -1;
+            $state.returnValue = null;
+            $callback($state);
             return;
 
           default:

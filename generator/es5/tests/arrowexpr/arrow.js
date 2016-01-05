@@ -20,6 +20,8 @@ $module('arrow', function () {
           case 1:
             someint;
             $state.current = -1;
+            $state.returnValue = null;
+            $callback($state);
             return;
 
           default:

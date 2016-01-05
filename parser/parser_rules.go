@@ -70,7 +70,7 @@ Loop:
 			p.currentNode().Connect(NodePredicateChild, p.consumeImport())
 
 		// type definitions.
-		case p.isToken(tokenTypeAtSign) || p.isKeyword("class") || p.isKeyword("interface"):
+		case p.isToken(tokenTypeAtSign) || p.isKeyword("class") || p.isKeyword("interface") || p.isKeyword("type"):
 			seenNonImport = true
 			p.currentNode().Connect(NodePredicateChild, p.consumeTypeDefinition())
 			p.tryConsumeStatementTerminator()
@@ -292,8 +292,10 @@ func (p *sourceParser) consumeTypeDefinition() AstNode {
 		typeDef = p.consumeClassDefinition()
 	} else if p.isKeyword("interface") {
 		typeDef = p.consumeInterfaceDefinition()
+	} else if p.isKeyword("type") {
+		typeDef = p.consumeNominalDefinition()
 	} else {
-		return p.createErrorNode("Expected 'class' or 'interface', Found: %s", p.currentToken.value)
+		return p.createErrorNode("Expected 'class', 'interface' or 'type', Found: %s", p.currentToken.value)
 	}
 
 	if ok {
@@ -302,6 +304,46 @@ func (p *sourceParser) consumeTypeDefinition() AstNode {
 	}
 
 	return typeDef
+}
+
+// consumeNominalDefinition consumes a nominal type definition.
+//
+// type Identifier : BaseType.Path { ... }
+func (p *sourceParser) consumeNominalDefinition() AstNode {
+	nominalNode := p.startNode(NodeTypeNominal)
+	defer p.finishNode()
+
+	// type ...
+	p.consumeKeyword("type")
+
+	// Identifier
+	typeName, ok := p.consumeIdentifier()
+	if !ok {
+		return nominalNode
+	}
+
+	nominalNode.Decorate(NodeTypeDefinitionName, typeName)
+
+	// :
+	if _, ok := p.consume(tokenTypeColon); !ok {
+		return nominalNode
+	}
+
+	// Base type.
+	nominalNode.Connect(NodeNominalPredicateBaseType, p.consumeTypeReference(typeReferenceNoVoid))
+
+	// Open bracket.
+	if _, ok := p.consume(tokenTypeLeftBrace); !ok {
+		return nominalNode
+	}
+
+	// Consume type members.
+	p.consumeNominalTypeMembers(nominalNode)
+
+	// Close bracket.
+	p.consume(tokenTypeRightBrace)
+
+	return nominalNode
 }
 
 // consumeClassDefinition consumes a class definition.
@@ -388,6 +430,33 @@ func (p *sourceParser) consumeInterfaceDefinition() AstNode {
 	return interfaceNode
 }
 
+// consumeNominalTypeMembers consumes the member definitions of a nominal type.
+func (p *sourceParser) consumeNominalTypeMembers(typeNode AstNode) {
+	for {
+		switch {
+		case p.isKeyword("function"):
+			typeNode.Connect(NodeTypeDefinitionMember, p.consumeFunction(typeMemberDefinition))
+
+		case p.isKeyword("constructor"):
+			typeNode.Connect(NodeTypeDefinitionMember, p.consumeConstructor())
+
+		case p.isKeyword("property"):
+			typeNode.Connect(NodeTypeDefinitionMember, p.consumeProperty(typeMemberDefinition))
+
+		case p.isKeyword("operator"):
+			typeNode.Connect(NodeTypeDefinitionMember, p.consumeOperator(typeMemberDefinition))
+
+		case p.isToken(tokenTypeRightBrace):
+			// End of the nominal type members list
+			return
+
+		default:
+			p.emitError("Expected nominal type member, found %s", p.currentToken.value)
+			return
+		}
+	}
+}
+
 // consumeClassMembers consumes the member definitions of a class.
 func (p *sourceParser) consumeClassMembers(typeNode AstNode) {
 	for {
@@ -400,7 +469,7 @@ func (p *sourceParser) consumeClassMembers(typeNode AstNode) {
 			typeNode.Connect(NodeTypeDefinitionMember, p.consumeFunction(typeMemberDefinition))
 
 		case p.isKeyword("constructor"):
-			typeNode.Connect(NodeTypeDefinitionMember, p.consumeConstructor(typeMemberDefinition))
+			typeNode.Connect(NodeTypeDefinitionMember, p.consumeConstructor())
 
 		case p.isKeyword("property"):
 			typeNode.Connect(NodeTypeDefinitionMember, p.consumeProperty(typeMemberDefinition))
@@ -427,7 +496,7 @@ func (p *sourceParser) consumeInterfaceMembers(typeNode AstNode) {
 			typeNode.Connect(NodeTypeDefinitionMember, p.consumeFunction(typeMemberDeclaration))
 
 		case p.isKeyword("constructor"):
-			typeNode.Connect(NodeTypeDefinitionMember, p.consumeConstructor(typeMemberDeclaration))
+			typeNode.Connect(NodeTypeDefinitionMember, p.consumeConstructor())
 
 		case p.isKeyword("property"):
 			typeNode.Connect(NodeTypeDefinitionMember, p.consumeProperty(typeMemberDeclaration))
@@ -593,14 +662,14 @@ func (p *sourceParser) consumePropertyBlock(keyword string) AstNode {
 	return blockNode
 }
 
-// consumeConstructor consumes a constructor declaration or definition
+// consumeConstructor consumes a constructor definition
 //
 // Supported forms:
-// constructor SomeName()
-// constructor SomeName<SomeGeneric>()
-// constructor SomeName(someArg int)
+// constructor SomeName() {}
+// constructor SomeName<SomeGeneric>() {}
+// constructor SomeName(someArg int) {}
 //
-func (p *sourceParser) consumeConstructor(option typeMemberOption) AstNode {
+func (p *sourceParser) consumeConstructor() AstNode {
 	constructorNode := p.startNode(NodeTypeConstructor)
 	defer p.finishNode()
 

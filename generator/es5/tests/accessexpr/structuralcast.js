@@ -37,6 +37,8 @@ $module('structuralcast', function () {
           case 0:
             sc.BaseClass$Integer;
             $state.current = -1;
+            $state.returnValue = null;
+            $callback($state);
             return;
 
           default:

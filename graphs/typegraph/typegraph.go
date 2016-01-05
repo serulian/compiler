@@ -16,13 +16,13 @@ import (
 )
 
 // TYPE_NODE_TYPES defines the NodeTypes that represent defined types in the graph.
-var TYPE_NODE_TYPES = []NodeType{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface}
-var TYPE_NODE_TYPES_TAGGED = []compilergraph.TaggedValue{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface}
+var TYPE_NODE_TYPES = []NodeType{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType}
+var TYPE_NODE_TYPES_TAGGED = []compilergraph.TaggedValue{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType}
 
 // TYPE_NODE_TYPES defines the NodeTypes that represent defined types or a module in the graph.
-var TYPEORMODULE_NODE_TYPES = []NodeType{NodeTypeModule, NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface}
+var TYPEORMODULE_NODE_TYPES = []NodeType{NodeTypeModule, NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType}
 
-var TYPEORGENERIC_NODE_TYPES = []NodeType{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeGeneric}
+var TYPEORGENERIC_NODE_TYPES = []NodeType{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType, NodeTypeGeneric}
 
 // TypeGraph represents the TypeGraph layer and all its associated helper methods.
 type TypeGraph struct {
@@ -262,6 +262,9 @@ func (g *TypeGraph) GetTypeOrMember(nodeId compilergraph.GraphNodeId) TGTypeOrMe
 		fallthrough
 
 	case NodeTypeInterface:
+		fallthrough
+
+	case NodeTypeNominalType:
 		fallthrough
 
 	case NodeTypeGeneric:

@@ -31,6 +31,8 @@ $module('matchnoexpr', function () {
           case 3:
             789;
             $state.current = -1;
+            $state.returnValue = null;
+            $callback($state);
             return;
 
           default:

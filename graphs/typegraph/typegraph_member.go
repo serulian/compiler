@@ -109,6 +109,16 @@ func (tn TGMember) IsType() bool {
 	return false
 }
 
+// IsExtension returns whether this member is an extension member, declared under a nominal type.
+func (tn TGMember) IsExtension() bool {
+	parentType, hasParentType := tn.ParentType()
+	if !hasParentType {
+		return false
+	}
+
+	return parentType.TypeKind() == NominalType
+}
+
 // MemberType returns the type for this member.
 func (tn TGMember) MemberType() TypeReference {
 	return tn.GraphNode.GetTagged(NodePredicateMemberType, tn.tdg.AnyTypeReference()).(TypeReference)
@@ -151,7 +161,7 @@ func (tn TGMember) Parent() TGTypeOrModule {
 func (tn TGMember) ParentType() (TGTypeDecl, bool) {
 	typeNode, hasType := tn.GraphNode.StartQuery().
 		In(NodePredicateMember, NodePredicateTypeOperator).
-		IsKind(NodeTypeClass, NodeTypeInterface).
+		IsKind(TYPE_NODE_TYPES_TAGGED...).
 		TryGetNode()
 
 	if !hasType {

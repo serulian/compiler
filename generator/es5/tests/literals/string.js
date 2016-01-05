@@ -12,6 +12,8 @@ $module('string', function () {
             "escaped \" quote";
             'escaped \' quote';
             $state.current = -1;
+            $state.returnValue = null;
+            $callback($state);
             return;
 
           default:

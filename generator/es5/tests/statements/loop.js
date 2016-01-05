@@ -15,6 +15,8 @@ $module('loop', function () {
 
           case 3:
             $state.current = -1;
+            $state.returnValue = null;
+            $callback($state);
             return;
 
           default:

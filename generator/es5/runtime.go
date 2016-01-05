@@ -12,7 +12,7 @@ const runtimeTemplate = `
 window.Serulian = (function($global) {
   var $g = {};
   var $t = {
-    'nativenew': function(type, name, promisenoop, promisewrap) {
+    'nativenew': function(type, name, nominalType, promisenoop, promisewrap) {
       return function () {
         var newInstance = Object.create(type.prototype);
         newInstance = type.apply(newInstance, arguments) || newInstance;
@@ -22,7 +22,22 @@ window.Serulian = (function($global) {
       };
     },
 
-    'dynamicaccess': function(obj, name, promisenoop, promisewrap) {
+    'extension': function(obj, name, nominalType, promisenoop, promisewrap) {
+       if (obj == null) {
+          return $t.dynamicaccess(obj, name, null, promisenoop, promisewrap);
+       }
+
+       var func = function() {
+          var args = [];
+          args.push(obj);
+          args.push.apply(args, arguments);
+          return nominalType[name].apply(null, args)
+       };
+
+       return promisewrap ? $promise.wrap(func) : func;
+    },
+
+    'dynamicaccess': function(obj, name, nominalType, promisenoop, promisewrap) {
       if (obj == null || obj[name] == null) {
         return promisenoop ? $promise.wrap(function() { return null; }) : null;
       }
@@ -130,6 +145,12 @@ window.Serulian = (function($global) {
   		creator.call(cls);
   		module[name] = cls;
   	};
+
+    module.$type = function(name, creator) {
+      var cls = function() {};
+      creator.call(cls);
+      module[name] = cls;
+    };
 
   	creator.call(module)
   	$g[name] = module;

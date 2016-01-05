@@ -7,7 +7,6 @@ package srg
 import (
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
-	"github.com/serulian/compiler/parser"
 )
 
 // SRGTypeOrMember represents a resolved reference to a type or module member.
@@ -27,7 +26,13 @@ func (t SRGTypeOrMember) Name() string {
 
 // IsType returns whether this represents a reference to a type.
 func (t SRGTypeOrMember) IsType() bool {
-	return t.Kind == parser.NodeTypeClass || t.Kind == parser.NodeTypeInterface
+	for _, kind := range TYPE_KINDS {
+		if t.Kind == kind {
+			return true
+		}
+	}
+
+	return false
 }
 
 // Node returns the underlying node.

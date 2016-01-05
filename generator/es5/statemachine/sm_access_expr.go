@@ -62,6 +62,7 @@ func (sm *stateMachine) generateMemberAccessExpression(node compilergraph.GraphN
 	// later.
 	isPropertyGetter := option == memberAccessGet && hasNamedReference && namedReference.IsProperty()
 	isSynchronous := option == memberAccessGet && hasNamedReference && namedReference.IsSynchronous()
+	isExtension := option == memberAccessGet && hasNamedReference && namedReference.IsExtension()
 
 	// Determine whether this is a member access of an aliased function not under a function call.
 	// If so, additional metadata will be needed on the member ('this' reference being the most
@@ -79,6 +80,13 @@ func (sm *stateMachine) generateMemberAccessExpression(node compilergraph.GraphN
 		wrapper = "$t.dynamicaccess"
 	}
 
+	var nominalType = "null"
+	if isExtension {
+		childScope, _ := sm.scopegraph.GetScope(node.GetNode(parser.NodeMemberAccessChildExpr))
+		nominalType = sm.pather.GetTypePath(childScope.ResolvedTypeRef(sm.scopegraph.TypeGraph()).ReferredType())
+		wrapper = "$t.extension"
+	}
+
 	// TODO(jschorr): This needs to be generalized and not only hacked in for WebIDL.
 	if namedReference.Name() == "new" && namedReference.IsSynchronous() {
 		wrapper = "$t.nativenew"
@@ -89,13 +97,14 @@ func (sm *stateMachine) generateMemberAccessExpression(node compilergraph.GraphN
 		ChildExpr           string
 		MemberName          string
 		Wrapper             string
+		NominalType         string
 		RequiresPromiseNoop bool
 		RequiresPromiseWrap bool
-	}{childExprInfo.expression, node.Get(parser.NodeMemberAccessIdentifier), wrapper, isPropertyGetter, isSynchronous && isAliasedFunctionAccess}
+	}{childExprInfo.expression, node.Get(parser.NodeMemberAccessIdentifier), wrapper, nominalType, isPropertyGetter, isSynchronous && isAliasedFunctionAccess}
 
-	getMemberExpr := sm.templater.Execute("memberaccess", `
+	var getMemberExpr = sm.templater.Execute("memberaccess", `
 		{{ if .Wrapper }}
-			{{ .Wrapper }}({{ .ChildExpr }}, '{{ .MemberName }}', {{ .RequiresPromiseNoop }}, {{ .RequiresPromiseWrap }})
+			{{ .Wrapper }}({{ .ChildExpr }}, '{{ .MemberName }}', {{ .NominalType }}, {{ .RequiresPromiseNoop }}, {{ .RequiresPromiseWrap }})
 		{{ else }}
 			({{ .ChildExpr }}).{{ .MemberName }}
 		{{ end }}

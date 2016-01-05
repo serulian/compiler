@@ -48,6 +48,15 @@ func (rn ReferencedName) ReferencedNode() compilergraph.GraphNode {
 	}
 }
 
+// IsExtension returns true if the referenced name is an extension member.
+func (rn ReferencedName) IsExtension() bool {
+	if rn.typeInfo != nil {
+		return rn.typeInfo.IsExtension()
+	} else {
+		return false
+	}
+}
+
 // IsSynchronous returns true if the referenced name is synchronous.
 func (rn ReferencedName) IsSynchronous() bool {
 	if rn.typeInfo != nil {

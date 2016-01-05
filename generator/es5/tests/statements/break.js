@@ -25,6 +25,8 @@ $module('break', function () {
           case 3:
             2567;
             $state.current = -1;
+            $state.returnValue = null;
+            $callback($state);
             return;
 
           default:

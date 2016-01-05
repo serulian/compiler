@@ -16,12 +16,65 @@ import (
 
 var _ = fmt.Printf
 
+// scopeTypeConversionExpression scopes a conversion from a nominal type to a base type.
+func (sb *scopeBuilder) scopeTypeConversionExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+	childScope := sb.getScope(node.GetNode(parser.NodeFunctionCallExpressionChildExpr))
+	conversionType := childScope.StaticTypeRef(sb.sg.tdg)
+
+	// Ensure that the function call has a single argument.
+	ait := node.StartQuery().
+		Out(parser.NodeFunctionCallArgument).
+		BuildNodeIterator()
+
+	var index = 0
+	var isValid = true
+
+	for ait.Next() {
+		if index > 0 {
+			sb.decorateWithError(node, "Type conversion requires a single argument")
+			isValid = false
+			break
+		}
+
+		index = index + 1
+
+		// Make sure the argument's scope is valid.
+		argumentScope := sb.getScope(ait.Node())
+		if !argumentScope.GetIsValid() {
+			isValid = false
+			continue
+		}
+
+		// The argument must be a nominal subtype of the conversion type.
+		argumentType := argumentScope.ResolvedTypeRef(sb.sg.tdg)
+		if nerr := argumentType.CheckNominalConvertable(conversionType); nerr != nil {
+			sb.decorateWithError(node, "Cannot perform type conversion: %v", nerr)
+			isValid = false
+			break
+		}
+	}
+
+	if index == 0 {
+		sb.decorateWithError(node, "Type conversion requires a single argument")
+		isValid = false
+	}
+
+	// The type conversion returns an instance of the converted type.
+	return newScope().IsValid(isValid).Resolving(conversionType).GetScope()
+}
+
 // scopeFunctionCallExpression scopes a function call expression in the SRG.
 func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode) proto.ScopeInfo {
 	// Scope the child expression.
 	childScope := sb.getScope(node.GetNode(parser.NodeFunctionCallExpressionChildExpr))
 	if !childScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
+	}
+
+	// Check if the child expression has a static scope. If so, this is a type conversion between
+	// a nominal type and a base type.
+	if childScope.GetKind() == proto.ScopeKind_STATIC {
+		return sb.scopeTypeConversionExpression(node)
 	}
 
 	// Ensure the child expression has type function.

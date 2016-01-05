@@ -54,7 +54,7 @@ func (sm *stateMachine) generateLambdaExpressionInternal(node compilergraph.Grap
 	}
 
 	// Generate the function body.
-	data := functionData{generics, parameters, false, createdMachine.buildGeneratedMachine()}
+	data := functionData{generics, parameters, false, createdMachine.buildGeneratedMachine(), false}
 	source := sm.templater.Execute("functionSource", functionTemplateStr, data)
 	parentState.pushExpression("(" + source + ")")
 }

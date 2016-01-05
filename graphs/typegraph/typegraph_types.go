@@ -19,6 +19,7 @@ const (
 	NodeTypeClass                             // A class
 	NodeTypeInterface                         // An implicitly-defined interface
 	NodeTypeExternalInterface                 // An externally defined interface
+	NodeTypeNominalType                       // A nominal type
 	NodeTypeModule                            // A module
 
 	// Member-level
@@ -56,7 +57,7 @@ const (
 	NodePredicateErrorMessage = "error-message"
 
 	//
-	// NodeTypeModule/NodeTypeClass/NodeTypeInterface
+	// NodeTypeModule/NodeTypeClass/NodeTypeInterface/NodeTypeExternalInterface/NodeTypeNominal
 	//
 
 	// Connects a type or module to a member (function, var, etc).

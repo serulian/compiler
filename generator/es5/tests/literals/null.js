@@ -7,6 +7,8 @@ $module('null', function () {
           case 0:
             null;
             $state.current = -1;
+            $state.returnValue = null;
+            $callback($state);
             return;
 
           default:

@@ -1,0 +1,24 @@
+class SomeType {
+	function<void> DoSomething() {}
+}
+
+type MyType : SomeType {
+	function<void> AnotherFunction() {
+		/* this */this
+		/* sometype */(SomeType(this))
+		SomeType(this).DoSomething()
+	}
+}
+
+type AnotherType : MyType {
+	function<void> AnotherFunction() {
+		MyType(this)
+		SomeType(this)
+	}
+}
+
+function<void> CoolFunction(m MyType) {
+	/* m */m
+	m.AnotherFunction()
+
+}

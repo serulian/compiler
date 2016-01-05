@@ -26,6 +26,8 @@ $module('genericspecifier', function () {
             $g.genericspecifier.SomeFunction($g.____graphs.srg.typeconstructor.tests.testlib.basictypes.Integer, $g.____graphs.srg.typeconstructor.tests.testlib.basictypes.String);
             $g.genericspecifier.SomeClass($g.____graphs.srg.typeconstructor.tests.testlib.basictypes.Boolean);
             $state.current = -1;
+            $state.returnValue = null;
+            $callback($state);
             return;
 
           default:
