@@ -6,6 +6,7 @@ package typeconstructor
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
@@ -143,7 +144,10 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 
 			var operatorType = graph.FunctionTypeReference(typeDecl.GetTypeReference())
 			operatorType = operatorType.WithParameter(typeDecl.GetTypeReference())
-			operatorType = operatorType.WithParameter(typeDecl.GetTypeReference())
+
+			if strings.Lower(opName) != "not" {
+				operatorType = operatorType.WithParameter(typeDecl.GetTypeReference())
+			}
 
 			builder(parentNode, true).
 				Name(opName).
