@@ -20,6 +20,11 @@ func (i *IRGAnnotation) Name() string {
 	return i.GraphNode.Get(parser.NodePredicateAnnotationName)
 }
 
+// Value returns the value of the annotation, if any.
+func (i *IRGAnnotation) Value() (string, bool) {
+	return i.GraphNode.TryGet(parser.NodePredicateAnnotationDefinedValue)
+}
+
 // Parameters returns all the parameters declared on the annotation.
 func (i *IRGAnnotation) Parameters() []IRGParameter {
 	pit := i.GraphNode.StartQuery().

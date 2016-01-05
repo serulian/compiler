@@ -161,6 +161,13 @@ func (sm *stateMachine) generateNullComparisonExpression(node compilergraph.Grap
 
 // generateBinaryOperatorExpression generates the state machine for a code-defined binary operator.
 func (sm *stateMachine) generateBinaryOperatorExpression(node compilergraph.GraphNode, parentState *state, exprTemplateStr string) {
+	scope, _ := sm.scopegraph.GetScope(node)
+	operator, _ := scope.CalledOperator(sm.scopegraph.TypeGraph())
+	if operator.IsNative() {
+		sm.generateNativeBinaryExpression(node, parentState, operatorMap[node.Kind])
+		return
+	}
+
 	// Generate the state for the child expressions.
 	leftNode := node.GetNode(parser.NodeBinaryExpressionLeftExpr)
 	leftScope, _ := sm.scopegraph.GetScope(leftNode)
@@ -179,9 +186,6 @@ func (sm *stateMachine) generateBinaryOperatorExpression(node compilergraph.Grap
 	}
 
 	// Add a call to the operator node.
-	scope, _ := sm.scopegraph.GetScope(node)
-	operator, _ := scope.CalledOperator(sm.scopegraph.TypeGraph())
-
 	data := asyncFunctionCallData{
 		CallExpr:            sm.pather.GetStaticMemberPath(operator, leftScope.ResolvedTypeRef(sm.scopegraph.TypeGraph())),
 		Arguments:           []generatedStateInfo{leftHandInfo, rightHandInfo},
@@ -195,6 +199,13 @@ func (sm *stateMachine) generateBinaryOperatorExpression(node compilergraph.Grap
 
 // generateUnaryOperatorExpression generates the state machine for a code-defined binary operator.
 func (sm *stateMachine) generateUnaryOperatorExpression(node compilergraph.GraphNode, parentState *state) {
+	scope, _ := sm.scopegraph.GetScope(node)
+	operator, _ := scope.CalledOperator(sm.scopegraph.TypeGraph())
+	if operator.IsNative() {
+		sm.generateNativeUnaryExpression(node, parentState, operatorMap[node.Kind])
+		return
+	}
+
 	// Generate the state for the child expression.
 	childNode := node.GetNode(parser.NodeUnaryExpressionChildExpr)
 	childScope, _ := sm.scopegraph.GetScope(childNode)
@@ -206,9 +217,6 @@ func (sm *stateMachine) generateUnaryOperatorExpression(node compilergraph.Graph
 	returnReceiveState.pushExpression(returnValueVariable)
 
 	// Add a call to the operator node.
-	scope, _ := sm.scopegraph.GetScope(node)
-	operator, _ := scope.CalledOperator(sm.scopegraph.TypeGraph())
-
 	data := asyncFunctionCallData{
 		CallExpr:            sm.pather.GetStaticMemberPath(operator, childScope.ResolvedTypeRef(sm.scopegraph.TypeGraph())),
 		Arguments:           []generatedStateInfo{childInfo},

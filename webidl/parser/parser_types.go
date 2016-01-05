@@ -70,6 +70,10 @@ const (
 	// Connects an annotation to a parameter.
 	NodePredicateAnnotationParameter = "annotation-parameter"
 
+	// Decorates an annotation with its defined value. For example [Foo=Value], "Bar" is
+	// the defined value.
+	NodePredicateAnnotationDefinedValue = "annotation-defined-value"
+
 	//
 	// NodeTypeParameter
 	//

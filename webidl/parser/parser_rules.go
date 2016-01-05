@@ -183,6 +183,11 @@ func (p *sourceParser) consumeAnnotation() AstNode {
 	// Consume the name of the annotation.
 	annotationNode.Decorate(NodePredicateAnnotationName, p.consumeIdentifier())
 
+	// Consume (optional) value.
+	if _, ok := p.tryConsume(tokenTypeEquals); ok {
+		annotationNode.Decorate(NodePredicateAnnotationDefinedValue, p.consumeIdentifier())
+	}
+
 	// Consume (optional) parameters.
 	if p.isToken(tokenTypeLeftParen) {
 		p.consumeParameters(annotationNode, NodePredicateAnnotationParameter)

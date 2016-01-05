@@ -150,6 +150,9 @@ const (
 	// Marks an operator with its searchable name.
 	NodePredicateOperatorName = "operator-name"
 
+	// Marks an operator as being a call to a native (ES) operator.
+	NodePredicateOperatorNative = "operator-native"
+
 	//
 	// NodeTypeReturnable
 	//

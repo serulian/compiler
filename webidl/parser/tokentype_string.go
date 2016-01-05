@@ -4,9 +4,9 @@ package parser
 
 import "fmt"
 
-const _tokenType_name = "tokenTypeErrortokenTypeEOFtokenTypeWhitespacetokenTypeCommenttokenTypeKeywordtokenTypeIdentifiertokenTypeNumbertokenTypeLeftBracetokenTypeRightBracetokenTypeLeftParentokenTypeRightParentokenTypeLeftBrackettokenTypeRightBrackettokenTypeSemicolontokenTypeComma"
+const _tokenType_name = "tokenTypeErrortokenTypeEOFtokenTypeWhitespacetokenTypeCommenttokenTypeKeywordtokenTypeIdentifiertokenTypeNumbertokenTypeLeftBracetokenTypeRightBracetokenTypeLeftParentokenTypeRightParentokenTypeLeftBrackettokenTypeRightBrackettokenTypeEqualstokenTypeSemicolontokenTypeComma"
 
-var _tokenType_index = [...]uint16{0, 14, 26, 45, 61, 77, 96, 111, 129, 148, 166, 185, 205, 226, 244, 258}
+var _tokenType_index = [...]uint16{0, 14, 26, 45, 61, 77, 96, 111, 129, 148, 166, 185, 205, 226, 241, 259, 273}
 
 func (i tokenType) String() string {
 	if i < 0 || i >= tokenType(len(_tokenType_index)-1) {

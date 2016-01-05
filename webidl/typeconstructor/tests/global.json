@@ -122,10 +122,10 @@
         "Key": "e60562e915bba7494939048327046707",
         "Kind": 4,
         "Children": {
-            "603367fbd701ba8ecf7b3d7b706bb92d": {
+            "0fc6ded3635f0c22f62fb2b597f51a7e": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "603367fbd701ba8ecf7b3d7b706bb92d",
+                    "Key": "0fc6ded3635f0c22f62fb2b597f51a7e",
                     "Kind": 5,
                     "Children": {},
                     "Predicates": {
@@ -133,7 +133,7 @@
                         "tdg-member-name": "alert",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cvoid\u003e(any)",
-                        "tdg-member-signature": "\n\u0005alert\u0010\u0000\u0018\u0000 \u0001*\u0013function\u003cvoid\u003e(any)",
+                        "tdg-member-signature": "\n\u0005alert\u0010\u0002\u0018\u0000 \u0001*\u0013function\u003cvoid\u003e(any)",
                         "tdg-member-synchronous": "true",
                         "tdg-node-kind": "5|NodeType|tdg",
                         "tdg-source-module": "tests/global.webidl",

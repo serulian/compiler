@@ -12,7 +12,9 @@ import (
 type MemberKind int
 
 const (
-	FunctionMember MemberKind = iota
+	ConstructorMember MemberKind = iota
+	OperatorMember
+	FunctionMember
 	AttributeMember
 )
 
