@@ -18,6 +18,28 @@ import (
 	"github.com/serulian/compiler/parser"
 )
 
+var operatorMap = map[compilergraph.TaggedValue]string{
+	parser.NodeBinaryAddExpression:      "+",
+	parser.NodeBinarySubtractExpression: "-",
+	parser.NodeBinaryDivideExpression:   "/",
+	parser.NodeBinaryMultiplyExpression: "*",
+	parser.NodeBinaryModuloExpression:   "%",
+
+	parser.NodeBitwiseAndExpression:        "&",
+	parser.NodeBitwiseNotExpression:        "~",
+	parser.NodeBitwiseOrExpression:         "|",
+	parser.NodeBitwiseXorExpression:        "^",
+	parser.NodeBitwiseShiftLeftExpression:  "<<",
+	parser.NodeBitwiseShiftRightExpression: ">>",
+
+	parser.NodeComparisonEqualsExpression:    "==",
+	parser.NodeComparisonNotEqualsExpression: "!=",
+	parser.NodeComparisonGTEExpression:       ">=",
+	parser.NodeComparisonLTEExpression:       "<=",
+	parser.NodeComparisonGTExpression:        ">",
+	parser.NodeComparisonLTExpression:        "<",
+}
+
 // GeneratedMachine represents the result of a Build call.
 type GeneratedMachine struct {
 	Source          string
