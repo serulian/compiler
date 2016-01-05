@@ -9,4 +9,6 @@ function<void> DoSomething(someParam global.SomeType) {
 
 	/* con1 */(global.SomeType.new(1))
 	/* con2 */(global.SomeType.new(1, 2))
+
+	/* addition */(someParam + someParam)
 }
