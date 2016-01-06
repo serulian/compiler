@@ -22,8 +22,9 @@ const (
 type typeReferenceOption int
 
 const (
-	typeReferenceWithVoid typeReferenceOption = iota
+	typeReferenceAllowAll typeReferenceOption = iota
 	typeReferenceNoVoid
+	typeReferenceNoSpecialTypes
 )
 
 type statementBlockOption int
@@ -330,7 +331,7 @@ func (p *sourceParser) consumeNominalDefinition() AstNode {
 	}
 
 	// Base type.
-	nominalNode.Connect(NodeNominalPredicateBaseType, p.consumeTypeReference(typeReferenceNoVoid))
+	nominalNode.Connect(NodeNominalPredicateBaseType, p.consumeTypeReference(typeReferenceNoSpecialTypes))
 
 	// Open bracket.
 	if _, ok := p.consume(tokenTypeLeftBrace); !ok {
@@ -374,7 +375,7 @@ func (p *sourceParser) consumeClassDefinition() AstNode {
 	if _, ok := p.tryConsume(tokenTypeColon); ok {
 		// Consume type references until we don't find a plus.
 		for {
-			classNode.Connect(NodeClassPredicateBaseType, p.consumeTypeReference(typeReferenceNoVoid))
+			classNode.Connect(NodeClassPredicateBaseType, p.consumeTypeReference(typeReferenceNoSpecialTypes))
 			if _, ok := p.tryConsume(tokenTypePlus); !ok {
 				break
 			}
@@ -732,7 +733,7 @@ func (p *sourceParser) consumeFunction(option typeMemberOption) AstNode {
 		return functionNode
 	}
 
-	functionNode.Connect(NodePredicateTypeMemberReturnType, p.consumeTypeReference(typeReferenceWithVoid))
+	functionNode.Connect(NodePredicateTypeMemberReturnType, p.consumeTypeReference(typeReferenceAllowAll))
 
 	if _, ok := p.consume(tokenTypeGreaterThan); !ok {
 		return functionNode
@@ -812,8 +813,14 @@ var typeReferenceMap = map[tokenType]NodeType{
 
 // consumeTypeReference consumes a type reference
 func (p *sourceParser) consumeTypeReference(option typeReferenceOption) AstNode {
+	// If no special types are allowed, consume a simple reference.
+	if option == typeReferenceNoSpecialTypes {
+		typeref, _ := p.consumeSimpleTypeReference()
+		return typeref
+	}
+
 	// If void is allowed, check for it first.
-	if option == typeReferenceWithVoid && p.isKeyword("void") {
+	if option == typeReferenceAllowAll && p.isKeyword("void") {
 		voidNode := p.startNode(NodeTypeVoid)
 		p.consumeKeyword("void")
 		p.finishNode()
@@ -898,7 +905,7 @@ func (p *sourceParser) consumeFunctionTypeReference() (AstNode, bool) {
 	}
 
 	// Consume the generic typeref.
-	typeRefNode.Connect(NodeTypeReferenceGeneric, p.consumeTypeReference(typeReferenceWithVoid))
+	typeRefNode.Connect(NodeTypeReferenceGeneric, p.consumeTypeReference(typeReferenceAllowAll))
 
 	// >
 	p.consume(tokenTypeGreaterThan)
@@ -1673,7 +1680,7 @@ func (p *sourceParser) consumeFullLambdaExpression() AstNode {
 
 	// return type (optional)
 	if _, ok := p.tryConsume(tokenTypeLessThan); ok {
-		funcNode.Connect(NodeLambdaExpressionReturnType, p.consumeTypeReference(typeReferenceWithVoid))
+		funcNode.Connect(NodeLambdaExpressionReturnType, p.consumeTypeReference(typeReferenceAllowAll))
 		p.consume(tokenTypeGreaterThan)
 	}
 

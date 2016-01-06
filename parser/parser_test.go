@@ -116,6 +116,7 @@ var parserTests = []parserTest{
 	{"missing subtype test", "class/missing_subtype"},
 	{"missing another subtype test", "class/missing_another_subtype"},
 	{"missing generic test", "class/missing_generic"},
+	{"invalid inherits test", "class/invalidinherits"},
 
 	// Interface success tests.
 	{"basic interface test", "interface/basic"},
