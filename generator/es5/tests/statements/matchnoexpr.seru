@@ -1,10 +1,10 @@
 function<void> DoSomething() {
 	123
 	match {
-		case true:
+		case false:
 			1234
 
-		case false:
+		case true:
 			2345
 
 		default:

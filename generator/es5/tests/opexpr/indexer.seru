@@ -1,9 +1,10 @@
 class SomeClass {
-	operator<string> index(someParam bool) {
-		return ''
+	operator<bool> index(someParam bool) {
+		return !someParam
 	}
 }
 
-function<void> DoSomething(c SomeClass) {
-	c[true]
+function<any> TEST() {
+	var sc = SomeClass.new()
+	return sc[false]
 }

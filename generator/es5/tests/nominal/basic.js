@@ -1,6 +1,6 @@
 $module('basic', function () {
   var $static = this;
-  this.$class('SomeClass', function () {
+  this.$class('SomeClass', false, function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -10,35 +10,13 @@ $module('basic', function () {
         return instance;
       });
     };
-    $instance.DoSomething = function (anotherParam) {
-      return $promise.empty();
-    };
-  });
-
-  this.$type('MyType', function () {
-    var $instance = this;
-    $instance.AnotherThing = function ($this, someParam) {
-      var $returnValue$1;
+    $instance.DoSomething = function () {
+      var $this = this;
       var $state = $t.sm(function ($callback) {
         while (true) {
           switch ($state.current) {
             case 0:
-              $this.DoSomething(someParam).then(function (returnValue) {
-                $state.current = 1;
-                $returnValue$1 = returnValue;
-                $state.next($callback);
-              }).catch(function (e) {
-                $state.error = e;
-                $state.current = -1;
-                $callback($state);
-              });
-              return;
-
-            case 1:
-              $returnValue$1;
-              $state.current = -1;
-              $state.returnValue = null;
-              $callback($state);
+              $state.resolve(true);
               return;
 
             default:
@@ -51,28 +29,84 @@ $module('basic', function () {
     };
   });
 
-  $static.CoolFunc = function (m) {
-    var $returnValue$1;
+  this.$type('MyType', function () {
+    var $instance = this;
+    $instance.AnotherThing = function ($this) {
+      var $state = $t.sm(function ($callback) {
+        while (true) {
+          switch ($state.current) {
+            case 0:
+              $this.DoSomething().then(function ($result0) {
+                $result = $result0;
+                $state.current = 1;
+                $callback($state);
+              }).catch(function (err) {
+                $state.reject(err);
+              });
+              return;
+
+            case 1:
+              $state.resolve($result);
+              return;
+
+            default:
+              $state.current = -1;
+              return;
+          }
+        }
+      });
+      return $promise.build($state);
+    };
+    $instance.SomeProp = $t.property(true, function ($this) {
+      var $state = $t.sm(function ($callback) {
+        while (true) {
+          switch ($state.current) {
+            case 0:
+              $state.resolve(true);
+              return;
+
+            default:
+              $state.current = -1;
+              return;
+          }
+        }
+      });
+      return $promise.build($state);
+    });
+  });
+
+  $static.TEST = function () {
+    var m;
+    var sc;
     var $state = $t.sm(function ($callback) {
       while (true) {
         switch ($state.current) {
           case 0:
-            $t.extension(m, 'AnotherThing', $g.basic.MyType, false, false)(2).then(function (returnValue) {
+            $g.basic.SomeClass.new().then(function ($result0) {
+              $result = $result0;
               $state.current = 1;
-              $returnValue$1 = returnValue;
-              $state.next($callback);
-            }).catch(function (e) {
-              $state.error = e;
-              $state.current = -1;
               $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
             });
             return;
 
           case 1:
-            $returnValue$1;
-            $state.current = -1;
-            $state.returnValue = null;
-            $callback($state);
+            sc = $result;
+            m = sc;
+            $g.basic.MyType.SomeProp(m).then(function ($result0) {
+              return $g.basic.MyType.AnotherThing(m).then(function ($result1) {
+                $result = $result0 && $result1;
+                $state.current = 2;
+                $callback($state);
+              });
+            }).catch(function (err) {
+              $state.reject(err);
+            });
+            return;
+
+          case 2:
+            $state.resolve($result);
             return;
 
           default:

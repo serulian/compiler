@@ -1,16 +1,14 @@
 $module('streammember', function () {
   var $static = this;
-  this.$class('SomeClass', function () {
+  this.$class('SomeClass', false, function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
       var init = [];
-      init.push(function () {
-        return $promise.wrap(function () {
-          $this.SomeInt = 2;
-        });
-      }());
+      init.push($promise.resolve(2).then(function (result) {
+        instance.SomeInt = result;
+      }));
       return $promise.all(init).then(function () {
         return instance;
       });
@@ -24,8 +22,6 @@ $module('streammember', function () {
           case 0:
             $t.streamaccess(somestream, 'SomeInt');
             $state.current = -1;
-            $state.returnValue = null;
-            $callback($state);
             return;
 
           default:

@@ -1,6 +1,11 @@
 from webidl`basic` import SomeBrowserThing
+from webidl`basic` import boolValue
+
+function<void> AnotherFunction() {}
 
 function<void> DoSomething() {
+	AnotherFunction()
+	
 	SomeBrowserThing.SomeStaticAttribute
 	SomeBrowserThing.SomeStaticFunction()
 	SomeBrowserThing.SomeStaticFunction
@@ -8,7 +13,13 @@ function<void> DoSomething() {
 	SomeBrowserThing.SomeStaticAttribute.SomeInterfaceFunction
 	SomeBrowserThing.new('foo')
 
+	SomeBrowserThing.SomeStaticAttribute.SomeInterfaceFunction().InstanceAttr
+
 	var first = SomeBrowserThing.new('foo')
 	var second = SomeBrowserThing.new('bar')
 	first + second
+}
+
+function<any> TEST() {
+	return boolValue
 }

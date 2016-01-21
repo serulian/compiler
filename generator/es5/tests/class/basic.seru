@@ -1,11 +1,15 @@
-function<int> CoolFunction() {
-	return 4
+function<bool> CoolFunction() {
+	return true
 }
 
 class SomeClass {
 	var<int> SomeInt = 2
-	var<int> AnotherInt = CoolFunction()
+	var<bool> AnotherBool = CoolFunction()
 	var<int?> NullableInt
 
 	function<void> AnotherFunction() {}
+}
+
+function<any> TEST() {
+	return SomeClass.new().AnotherBool
 }

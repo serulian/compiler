@@ -1,5 +1,7 @@
-function<void> DoSomething() {
+function<any> TEST() {
 	if true {
-		123
+		return true
 	}
+
+	return false
 }

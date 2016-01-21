@@ -1,3 +1,4 @@
-function<int> DoSomething(someParam int?) {
-	return someParam ?? 2
+function<any> TEST() {
+	var<bool?> someBool = null
+	return someBool ?? true
 }

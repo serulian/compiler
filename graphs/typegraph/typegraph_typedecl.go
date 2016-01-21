@@ -134,7 +134,7 @@ func (tn TGTypeDecl) GetMember(name string) (TGMember, bool) {
 // Members returns the type graph members for this type node.
 func (tn TGTypeDecl) Members() []TGMember {
 	it := tn.GraphNode.StartQuery().
-		Out(NodePredicateMember).
+		Out(NodePredicateMember, NodePredicateTypeOperator).
 		BuildNodeIterator()
 
 	var members = make([]TGMember, 0)
@@ -181,8 +181,8 @@ func (tn TGTypeDecl) IsStatic() bool {
 	return true
 }
 
-// IsSynchronous returns whether this type is synchronous (always false).
-func (tn TGTypeDecl) IsSynchronous() bool {
+// IsPromising returns whether this type is promising (always false).
+func (tn TGTypeDecl) IsPromising() bool {
 	return false
 }
 

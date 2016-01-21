@@ -1,7 +1,11 @@
-var<int> someInt = 2
+var<bool> someInt = true
 
-function<int> AnotherFunction() {
-	return 2
+function<bool> AnotherFunction() {
+	return someInt
 }
 
-var<int> anotherInt = AnotherFunction()
+var<bool> anotherBool = AnotherFunction()
+
+function<any> TEST() {
+	return anotherBool
+}

@@ -55,6 +55,11 @@ func (gt generatingType) Generics() string {
 	return gt.Generator.templater.Execute("generics", genericsTemplateStr, gt.Type)
 }
 
+// HasGenerics returns whether the type has generics.
+func (gt generatingType) HasGenerics() bool {
+	return gt.Type.HasGenerics()
+}
+
 // GenerateImplementedMembers generates the source for all the members defined under the type that
 // have implementations.
 func (gt generatingType) GenerateImplementedMembers() *ordered_map.OrderedMap {
@@ -88,12 +93,9 @@ func (gt generatingType) GenerateComposition() *ordered_map.OrderedMap {
 
 // compositionTemplateStr defines a template for instantiating a composed type.
 const compositionTemplateStr = `
-	function() {
-		var $this = this;
-		return ({{ .ComposedTypeLocation }}).new().then(function(value) {
-			$this.{{ .InnerInstanceName }} = value;
-		});
-	}
+	({{ .ComposedTypeLocation }}).new().then(function(value) {
+	  instance.{{ .InnerInstanceName }} = value;
+	})
 `
 
 // genericsTemplateStr defines a template for generating generics.
@@ -101,7 +103,7 @@ const genericsTemplateStr = `{{ range $index, $generic := .Generics }}{{ if $ind
 
 // classTemplateStr defines the template for generating a class type.
 const classTemplateStr = `
-this.$class('{{ .Type.Name }}', function({{ .Generics }}) {
+this.$class('{{ .Type.Name }}', {{ .HasGenerics }}, function({{ .Generics }}) {
 	var $static = this;
     var $instance = this.prototype;
 
@@ -112,10 +114,10 @@ this.$class('{{ .Type.Name }}', function({{ .Generics }}) {
 		var instance = new $static();
 		var init = [];
 		{{range $idx, $kv := $composed.Iter }}
-			init.push(({{ $kv.Value }})());
+			init.push({{ $kv.Value }});
   		{{ end }}
 		{{ range $idx, $kv := $vars.Iter }}
-			init.push(({{ $kv.Value }})());
+			init.push({{ $kv.Value }});
 		{{ end }}
 		return $promise.all(init).then(function() {
 			return instance;

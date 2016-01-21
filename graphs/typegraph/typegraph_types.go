@@ -140,9 +140,13 @@ const (
 	// Decorates a member with the type from which it was aliased.
 	NodePredicateMemberBaseSource = "member-base-source"
 
-	// Decorates a member as being synchronous when called (only applies to functions).
-	// The only synchronous functions will be those added by non-Serulian code (e.g. WebIDL).
-	NodePredicateMemberSynchronous = "member-synchronous"
+	// Decorates a member returning a promise of the member or return type. Used for
+	// functions and properties in SRG-created types.
+	NodePredicateMemberPromising = "member-promising"
+
+	// Decorates a member as being implicitly called on access or assignment. Used for
+	// properties that are backed by functions.
+	NodePredicateMemberImplicitlyCalled = "member-implicitly-called"
 
 	//
 	// NodeTypeOperator

@@ -8,8 +8,6 @@ $module('boolean', function () {
             true;
             false;
             $state.current = -1;
-            $state.returnValue = null;
-            $callback($state);
             return;
 
           default:

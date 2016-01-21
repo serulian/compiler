@@ -387,6 +387,11 @@ func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
 		return fmt.Errorf("Nullable type '%v' cannot be used in place of non-nullable type '%v'", tr, other)
 	}
 
+	// Directly the same = subtype.
+	if other == tr {
+		return nil
+	}
+
 	// Strip out the nullability from the other type.
 	originalOther := other
 	if other.IsNullable() {

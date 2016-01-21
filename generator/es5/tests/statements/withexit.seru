@@ -1,0 +1,23 @@
+var someBool = false
+
+class SomeReleasable {
+	function<void> Release() {
+		someBool = true
+	}
+}
+
+function<any> TEST() {
+	123
+	for {
+		with SomeReleasable.new() {
+			456
+			if false {
+				break
+			}
+			012
+		}
+		return someBool
+	}
+	789
+	return someBool
+}

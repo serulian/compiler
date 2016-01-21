@@ -1,19 +1,17 @@
 $module('mini', function () {
   var $static = this;
-  $static.DoSomething = function () {
+  $static.TEST = function () {
+    var lambda;
     var $state = $t.sm(function ($callback) {
       while (true) {
         switch ($state.current) {
           case 0:
-            function (someParam) {
+            lambda = function (someParam) {
               var $state = $t.sm(function ($callback) {
                 while (true) {
                   switch ($state.current) {
                     case 0:
-                      $state.returnValue = someParam;
-                      $state.current = -1;
-                      $state.returnValue = null;
-                      $callback($state);
+                      $state.resolve(!someParam);
                       return;
 
                     default:
@@ -24,9 +22,17 @@ $module('mini', function () {
               });
               return $promise.build($state);
             };
-            $state.current = -1;
-            $state.returnValue = null;
-            $callback($state);
+            lambda(false).then(function ($result0) {
+              $result = $result0;
+              $state.current = 1;
+              $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
+            });
+            return;
+
+          case 1:
+            $state.resolve($result);
             return;
 
           default:

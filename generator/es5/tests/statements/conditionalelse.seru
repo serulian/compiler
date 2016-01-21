@@ -1,7 +1,7 @@
-function<void> DoSomething() {
-	if true {
-		123
+function<any> TEST() {
+	if false {
+		return false
 	} else {
-		456
+		return true
 	}
 }

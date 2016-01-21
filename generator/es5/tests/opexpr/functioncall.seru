@@ -1,6 +1,7 @@
-function<void> DoSomething() {
-	AnotherFunction(2)
+function<any> TEST() {
+	return AnotherFunction(false)
 }
 
-function<void> AnotherFunction(someparam int) {	
+function<bool> AnotherFunction(param bool) {
+  return !param
 }

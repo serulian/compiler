@@ -1,11 +1,13 @@
 class SomeClass {
-	operator<string> slice(start int?, end int?) {
-		return ''
+	operator<bool> slice(start int?, end int?) {
+		return true
 	}
 }
 
-function<void> DoSomething(c SomeClass) {
+function<any> TEST() {
+	var c = SomeClass.new()
 	c[1:2]
 	c[:1]
 	c[1:]
+	return c[1:7]
 }

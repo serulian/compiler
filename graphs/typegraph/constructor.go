@@ -348,11 +348,12 @@ type dependentMemberBuilder struct {
 
 	exists bool // Whether a member with the same name already exists under the parent
 
-	exported    bool // Whether the member is exported publicly.
-	readonly    bool // Whether the member is readonly.
-	static      bool // Whether the member is static.
-	synchronous bool // Whether the member is synchronous.
-	native      bool // Whether this operator is native to ES.
+	exported  bool // Whether the member is exported publicly.
+	readonly  bool // Whether the member is readonly.
+	static    bool // Whether the member is static.
+	promising bool // Whether the member is promising.
+	implicit  bool // Whether the member is implicitly called.
+	native    bool // Whether this operator is native to ES.
 
 	memberType TypeReference // The defined type of the member.
 	memberKind uint64        // The kind of the member.
@@ -461,6 +462,12 @@ func (mb *dependentMemberBuilder) Native(native bool) *dependentMemberBuilder {
 	return mb
 }
 
+// ImplicitlyCalled sets whether the member is implicitly called on access or assignment.
+func (mb *dependentMemberBuilder) ImplicitlyCalled(implicit bool) *dependentMemberBuilder {
+	mb.implicit = implicit
+	return mb
+}
+
 // Exported sets whether the member is exported publicly.
 func (mb *dependentMemberBuilder) Exported(exported bool) *dependentMemberBuilder {
 	mb.exported = exported
@@ -479,9 +486,9 @@ func (mb *dependentMemberBuilder) Static(static bool) *dependentMemberBuilder {
 	return mb
 }
 
-// Synchronous sets whether the member is synchronous. Should only be set for non-Serulian functions.
-func (mb *dependentMemberBuilder) Synchronous(synchronous bool) *dependentMemberBuilder {
-	mb.synchronous = synchronous
+// Promising sets whether the member is promising.
+func (mb *dependentMemberBuilder) Promising(promising bool) *dependentMemberBuilder {
+	mb.promising = promising
 	return mb
 }
 
@@ -516,26 +523,6 @@ func (mb *dependentMemberBuilder) DefineGenericConstraint(genericSourceNode comp
 func (mb *dependentMemberBuilder) Define() {
 	memberNode := mb.memberNode
 
-	if mb.synchronous {
-		memberNode.Decorate(NodePredicateMemberSynchronous, "true")
-	}
-
-	if mb.exported {
-		memberNode.Decorate(NodePredicateMemberExported, "true")
-	}
-
-	if mb.static {
-		memberNode.Decorate(NodePredicateMemberStatic, "true")
-	}
-
-	if mb.readonly {
-		memberNode.Decorate(NodePredicateMemberReadOnly, "true")
-	}
-
-	if mb.native {
-		memberNode.Decorate(NodePredicateOperatorNative, "true")
-	}
-
 	// Mark the member with an error if it is repeated.
 	if mb.exists {
 		var kindTitle = "Member"
@@ -555,6 +542,30 @@ func (mb *dependentMemberBuilder) Define() {
 
 		// Decorate the member with its signature.
 		mb.decorateWithSig(memberNode, mb.memberType, mb.generics...)
+	}
+
+	if mb.promising {
+		memberNode.Decorate(NodePredicateMemberPromising, "true")
+	}
+
+	if mb.exported {
+		memberNode.Decorate(NodePredicateMemberExported, "true")
+	}
+
+	if mb.static {
+		memberNode.Decorate(NodePredicateMemberStatic, "true")
+	}
+
+	if mb.readonly {
+		memberNode.Decorate(NodePredicateMemberReadOnly, "true")
+	}
+
+	if mb.implicit {
+		memberNode.Decorate(NodePredicateMemberImplicitlyCalled, "true")
+	}
+
+	if mb.native {
+		memberNode.Decorate(NodePredicateOperatorNative, "true")
 	}
 
 	// Add the returnables to the member (if any).
@@ -580,9 +591,8 @@ func (mb *dependentMemberBuilder) Define() {
 func (mb *dependentMemberBuilder) checkAndComputeOperator(memberNode compilergraph.GraphNode, name string) {
 	name = strings.ToLower(name)
 
-	// Operators are by definition read-only and static.
+	// Operators are by definition read-only and can be static.
 	mb.readonly = true
-	mb.static = true
 
 	// Verify that the operator matches a known operator.
 	definition, ok := mb.tdg.operators[name]
@@ -590,6 +600,8 @@ func (mb *dependentMemberBuilder) checkAndComputeOperator(memberNode compilergra
 		mb.tdg.decorateWithError(memberNode, "Unknown operator '%s' defined on type '%s'", name, mb.parent.Name())
 		return
 	}
+
+	mb.static = definition.IsStatic
 
 	// Ensure that the declared return type is equal to that expected.
 	declaredReturnType := mb.memberType.Generics()[0]

@@ -5,9 +5,7 @@ $module('basic', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            $state.returnValue = 2;
-            $state.current = -1;
-            $callback($state);
+            $state.resolve($g.basic.someInt);
             return;
 
           default:
@@ -18,32 +16,12 @@ $module('basic', function () {
     });
     return $promise.build($state);
   };
-  this.$init(function () {
-    return $promise.wrap(function () {
-      $static.someInt = 2;
-    });
-  });
-  this.$init(function () {
-    var $returnValue$1;
+  $static.TEST = function () {
     var $state = $t.sm(function ($callback) {
       while (true) {
         switch ($state.current) {
           case 0:
-            $g.basic.AnotherFunction().then(function (returnValue) {
-              $state.current = 1;
-              $returnValue$1 = returnValue;
-              $state.next($callback);
-            }).catch(function (e) {
-              $state.error = e;
-              $state.current = -1;
-              $callback($state);
-            });
-            return;
-
-          case 1:
-            $static.anotherInt = $returnValue$1;
-            $state.current = -1;
-            $callback($state);
+            $state.resolve($g.basic.anotherBool);
             return;
 
           default:
@@ -53,5 +31,13 @@ $module('basic', function () {
       }
     });
     return $promise.build($state);
-  });
+  };
+  this.$init($promise.resolve(true).then(function (result) {
+    $static.someInt = result;
+  }));
+  this.$init($g.basic.AnotherFunction().then(function ($result0) {
+    return $promise.resolve($result0);
+  }).then(function (result) {
+    $static.anotherBool = result;
+  }));
 });

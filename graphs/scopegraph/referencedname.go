@@ -57,10 +57,10 @@ func (rn ReferencedName) IsExtension() bool {
 	}
 }
 
-// IsSynchronous returns true if the referenced name is synchronous.
-func (rn ReferencedName) IsSynchronous() bool {
+// IsPromising returns true if the referenced name is promising.
+func (rn ReferencedName) IsPromising() bool {
 	if rn.typeInfo != nil {
-		return rn.typeInfo.IsSynchronous()
+		return rn.typeInfo.IsPromising()
 	} else {
 		return false
 	}

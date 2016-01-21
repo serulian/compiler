@@ -1,3 +1,18 @@
-function<int> DoSomething(p promise<int>) {
+class SomePromise {
+	function<promise<bool>> Then(resolve function<void>(bool)) {
+		resolve(true)
+		return this
+	}
+
+	function<promise<bool>> Catch(reject function<void>(error)) {
+		return this
+	}
+}
+
+function<bool?> DoSomething(p promise<bool>) {
    return <- p
+}
+
+function<any> TEST() {
+  return DoSomething(SomePromise.new())
 }

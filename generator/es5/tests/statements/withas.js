@@ -8,13 +8,21 @@ $module('withas', function () {
           case 0:
             123;
             someName = someExpr;
-            $state.pushr('someName', someName);
+            $state.pushr(someName, 'someName');
             456;
-            $state.popr('someName');
+            $state.popr('someName').then(function ($result0) {
+              $result = $result0;
+              $state.current = 1;
+              $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
+            });
+            return;
+
+          case 1:
+            $result;
             789;
             $state.current = -1;
-            $state.returnValue = null;
-            $callback($state);
             return;
 
           default:

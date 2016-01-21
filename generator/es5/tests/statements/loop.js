@@ -6,18 +6,13 @@ $module('loop', function () {
         switch ($state.current) {
           case 0:
             1234;
-            $state.current = 2;
+            $state.current = 1;
             continue;
 
-          case 2:
+          case 1:
             1357;
-            break;
-
-          case 3:
-            $state.current = -1;
-            $state.returnValue = null;
-            $callback($state);
-            return;
+            $state.current = 1;
+            continue;
 
           default:
             $state.current = -1;

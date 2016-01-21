@@ -221,6 +221,10 @@ func (sf *sourceFormatter) FormatExpression(expression ast.Expression) {
 	case *ast.ThisExpression:
 		sf.append("this")
 
+	// SequenceExpression:
+	case *ast.SequenceExpression:
+		sf.FormatExpressionList(e.Sequence)
+
 	// UnaryExpression
 	case *ast.UnaryExpression:
 		if e.Postfix {
@@ -244,7 +248,7 @@ func (sf *sourceFormatter) FormatExpression(expression ast.Expression) {
 		}
 
 	default:
-		panic(fmt.Sprintf("Unknown expression AST node: %v", e))
+		panic(fmt.Sprintf("Unknown expression AST node: %T", e))
 	}
 }
 

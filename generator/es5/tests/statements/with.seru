@@ -1,7 +1,16 @@
-function<void> DoSomething(someExpr releasable) {
+var someBool = false
+
+class SomeReleasable {
+	function<void> Release() {
+		someBool = true
+	}
+}
+
+function<any> TEST() {
 	123
-	with someExpr {
+	with SomeReleasable.new() {
 		456
 	}
 	789
+	return someBool
 }

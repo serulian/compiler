@@ -1,6 +1,6 @@
 $module('slice', function () {
   var $static = this;
-  this.$class('SomeClass', function () {
+  this.$class('SomeClass', false, function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -10,58 +10,86 @@ $module('slice', function () {
         return instance;
       });
     };
+    $instance.$slice = function (start, end) {
+      var $this = this;
+      var $state = $t.sm(function ($callback) {
+        while (true) {
+          switch ($state.current) {
+            case 0:
+              $state.resolve(true);
+              return;
+
+            default:
+              $state.current = -1;
+              return;
+          }
+        }
+      });
+      return $promise.build($state);
+    };
   });
 
-  $static.DoSomething = function (c) {
-    var $returnValue$1;
-    var $returnValue$2;
-    var $returnValue$3;
+  $static.TEST = function () {
+    var c;
     var $state = $t.sm(function ($callback) {
       while (true) {
         switch ($state.current) {
           case 0:
-            c.$slice(1, 2).then(function (returnValue) {
+            $g.slice.SomeClass.new().then(function ($result0) {
+              $result = $result0;
               $state.current = 1;
-              $returnValue$1 = returnValue;
-              $state.next($callback);
-            }).catch(function (e) {
-              $state.error = e;
-              $state.current = -1;
               $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
             });
             return;
 
           case 1:
-            $returnValue$1;
-            c.$slice(null, 1).then(function (returnValue) {
+            c = $result;
+            c.$slice(1, 2).then(function ($result0) {
+              $result = $result0;
               $state.current = 2;
-              $returnValue$2 = returnValue;
-              $state.next($callback);
-            }).catch(function (e) {
-              $state.error = e;
-              $state.current = -1;
               $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
             });
             return;
 
           case 2:
-            $returnValue$2;
-            c.$slice(1, null).then(function (returnValue) {
+            $result;
+            c.$slice(null, 1).then(function ($result0) {
+              $result = $result0;
               $state.current = 3;
-              $returnValue$3 = returnValue;
-              $state.next($callback);
-            }).catch(function (e) {
-              $state.error = e;
-              $state.current = -1;
               $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
             });
             return;
 
           case 3:
-            $returnValue$3;
-            $state.current = -1;
-            $state.returnValue = null;
-            $callback($state);
+            $result;
+            c.$slice(1, null).then(function ($result0) {
+              $result = $result0;
+              $state.current = 4;
+              $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
+            });
+            return;
+
+          case 4:
+            $result;
+            c.$slice(1, 7).then(function ($result0) {
+              $result = $result0;
+              $state.current = 5;
+              $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
+            });
+            return;
+
+          case 5:
+            $state.resolve($result);
             return;
 
           default:

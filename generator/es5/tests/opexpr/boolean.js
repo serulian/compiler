@@ -1,16 +1,15 @@
 $module('boolean', function () {
   var $static = this;
-  $static.SomeFunction = function (first, second) {
+  $static.TEST = function () {
+    var first;
+    var second;
     var $state = $t.sm(function ($callback) {
       while (true) {
         switch ($state.current) {
           case 0:
-            first && second;
-            first || second;
-            !first;
-            $state.current = -1;
-            $state.returnValue = null;
-            $callback($state);
+            first = true;
+            second = false;
+            $state.resolve(first && second || first || !second);
             return;
 
           default:

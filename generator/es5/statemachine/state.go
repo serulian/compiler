@@ -16,6 +16,7 @@ type state struct {
 	ID         stateId       // The ID of the current state.
 	source     *bytes.Buffer // The source for this state.
 	expression string        // The last expression value, if any.
+	leafState  bool          // Whether this is a leaf state.
 }
 
 // Expression returns the expression value for this state, if any.
@@ -31,6 +32,11 @@ func (s *state) Source() string {
 // HasSource returns true if the state has any source.
 func (s *state) HasSource() bool {
 	return s.source.Len() > 0
+}
+
+// IsLeafState returns true if the state is a leaf state in the state graph.
+func (s *state) IsLeafState() bool {
+	return s.leafState
 }
 
 // pushExpression adds the given expression to the current state.

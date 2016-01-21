@@ -12,10 +12,12 @@ $module('continue', function () {
           case 1:
             if (true) {
               $state.current = 2;
+              continue;
             } else {
               $state.current = 3;
+              continue;
             }
-            continue;
+            break;
 
           case 2:
             4567;
@@ -25,8 +27,6 @@ $module('continue', function () {
           case 3:
             2567;
             $state.current = -1;
-            $state.returnValue = null;
-            $callback($state);
             return;
 
           default:

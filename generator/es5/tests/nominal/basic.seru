@@ -1,14 +1,21 @@
 class SomeClass {
-	function<void> DoSomething(anotherParam int) {
+	function<bool> DoSomething() {
+		return true
 	}
 }
 
 type MyType : SomeClass {
-	function<void> AnotherThing(someParam int) {
-		SomeClass(this).DoSomething(someParam)
+	function<bool> AnotherThing() {
+		return SomeClass(this).DoSomething()
+	}
+
+	property<bool> SomeProp {
+		get { return true }
 	}
 }
 
-function<void> CoolFunc(m MyType) {
-	m.AnotherThing(2)
+function<any> TEST() {
+	var sc = SomeClass.new()
+	var m = MyType(sc)
+	return m.SomeProp && m.AnotherThing()
 }

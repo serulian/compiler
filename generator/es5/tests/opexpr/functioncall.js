@@ -1,27 +1,21 @@
 $module('functioncall', function () {
   var $static = this;
-  $static.DoSomething = function () {
-    var $returnValue$1;
+  $static.TEST = function () {
     var $state = $t.sm(function ($callback) {
       while (true) {
         switch ($state.current) {
           case 0:
-            $g.functioncall.AnotherFunction(2).then(function (returnValue) {
+            $g.functioncall.AnotherFunction(false).then(function ($result0) {
+              $result = $result0;
               $state.current = 1;
-              $returnValue$1 = returnValue;
-              $state.next($callback);
-            }).catch(function (e) {
-              $state.error = e;
-              $state.current = -1;
               $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
             });
             return;
 
           case 1:
-            $returnValue$1;
-            $state.current = -1;
-            $state.returnValue = null;
-            $callback($state);
+            $state.resolve($result);
             return;
 
           default:
@@ -32,7 +26,20 @@ $module('functioncall', function () {
     });
     return $promise.build($state);
   };
-  $static.AnotherFunction = function (someparam) {
-    return $promise.empty();
+  $static.AnotherFunction = function (param) {
+    var $state = $t.sm(function ($callback) {
+      while (true) {
+        switch ($state.current) {
+          case 0:
+            $state.resolve(!param);
+            return;
+
+          default:
+            $state.current = -1;
+            return;
+        }
+      }
+    });
+    return $promise.build($state);
   };
 });

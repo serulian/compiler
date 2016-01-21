@@ -201,6 +201,16 @@ func (m SRGMember) HasSetter() bool {
 	return hasSetter
 }
 
+// IsStatic returns whether the given member is static.
+func (m SRGMember) IsStatic() bool {
+	_, hasType := m.GraphNode.TryGetIncomingNode(parser.NodeTypeDefinitionMember)
+	if !hasType {
+		return true
+	}
+
+	return m.MemberKind() == OperatorMember || m.MemberKind() == ConstructorMember
+}
+
 // IsExported returns whether the given member is exported for use outside its module.
 func (m SRGMember) IsExported() bool {
 	return isExportedName(m.Name())

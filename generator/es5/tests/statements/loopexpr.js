@@ -12,10 +12,12 @@ $module('loopexpr', function () {
           case 1:
             if (true) {
               $state.current = 2;
+              continue;
             } else {
               $state.current = 3;
+              continue;
             }
-            continue;
+            break;
 
           case 2:
             1357;
@@ -25,8 +27,6 @@ $module('loopexpr', function () {
           case 3:
             5678;
             $state.current = -1;
-            $state.returnValue = null;
-            $callback($state);
             return;
 
           default:

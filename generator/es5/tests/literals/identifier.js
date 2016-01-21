@@ -1,6 +1,6 @@
 $module('identifier', function () {
   var $static = this;
-  this.$class('SomeClass', function () {
+  this.$class('SomeClass', false, function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -27,8 +27,6 @@ $module('identifier', function () {
             someParam;
             someVar;
             $state.current = -1;
-            $state.returnValue = null;
-            $callback($state);
             return;
 
           default:

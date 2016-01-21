@@ -1,6 +1,6 @@
 $module('compare', function () {
   var $static = this;
-  this.$class('SomeClass', function () {
+  this.$class('SomeClass', false, function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -10,100 +10,146 @@ $module('compare', function () {
         return instance;
       });
     };
+    $static.$equals = function (first, second) {
+      var $state = $t.sm(function ($callback) {
+        while (true) {
+          switch ($state.current) {
+            case 0:
+              $state.resolve(true);
+              return;
+
+            default:
+              $state.current = -1;
+              return;
+          }
+        }
+      });
+      return $promise.build($state);
+    };
+    $static.$compare = function (first, second) {
+      var $state = $t.sm(function ($callback) {
+        while (true) {
+          switch ($state.current) {
+            case 0:
+              $state.resolve(1);
+              return;
+
+            default:
+              $state.current = -1;
+              return;
+          }
+        }
+      });
+      return $promise.build($state);
+    };
   });
 
-  $static.DoSomething = function (first, second) {
-    var $returnValue$1;
-    var $returnValue$2;
-    var $returnValue$3;
-    var $returnValue$4;
-    var $returnValue$5;
-    var $returnValue$6;
+  $static.TEST = function () {
+    var first;
+    var second;
     var $state = $t.sm(function ($callback) {
       while (true) {
         switch ($state.current) {
           case 0:
-            $g.compare.SomeClass.$equals(first, second).then(function (returnValue) {
+            $g.compare.SomeClass.new().then(function ($result0) {
+              $result = $result0;
               $state.current = 1;
-              $returnValue$1 = returnValue;
-              $state.next($callback);
-            }).catch(function (e) {
-              $state.error = e;
-              $state.current = -1;
               $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
             });
             return;
 
           case 1:
-            $returnValue$1;
-            $g.compare.SomeClass.$equals(first, second).then(function (returnValue) {
+            first = $result;
+            $g.compare.SomeClass.new().then(function ($result0) {
+              $result = $result0;
               $state.current = 2;
-              $returnValue$2 = returnValue;
-              $state.next($callback);
-            }).catch(function (e) {
-              $state.error = e;
-              $state.current = -1;
               $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
             });
             return;
 
           case 2:
-            !$returnValue$2;
-            $g.compare.SomeClass.$compare(first, second).then(function (returnValue) {
+            second = $result;
+            $g.compare.SomeClass.$equals(first, second).then(function ($result0) {
+              $result = $result0;
               $state.current = 3;
-              $returnValue$3 = returnValue;
-              $state.next($callback);
-            }).catch(function (e) {
-              $state.error = e;
-              $state.current = -1;
               $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
             });
             return;
 
           case 3:
-            $returnValue$3 < 0;
-            $g.compare.SomeClass.$compare(first, second).then(function (returnValue) {
+            $result;
+            $g.compare.SomeClass.$equals(first, second).then(function ($result0) {
+              $result = !$result0;
               $state.current = 4;
-              $returnValue$4 = returnValue;
-              $state.next($callback);
-            }).catch(function (e) {
-              $state.error = e;
-              $state.current = -1;
               $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
             });
             return;
 
           case 4:
-            $returnValue$4 > 0;
-            $g.compare.SomeClass.$compare(first, second).then(function (returnValue) {
+            $result;
+            $g.compare.SomeClass.$compare(first, second).then(function ($result0) {
+              $result = $result0 < 0;
               $state.current = 5;
-              $returnValue$5 = returnValue;
-              $state.next($callback);
-            }).catch(function (e) {
-              $state.error = e;
-              $state.current = -1;
               $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
             });
             return;
 
           case 5:
-            $returnValue$5 <= 0;
-            $g.compare.SomeClass.$compare(first, second).then(function (returnValue) {
+            $result;
+            $g.compare.SomeClass.$compare(first, second).then(function ($result0) {
+              $result = $result0 > 0;
               $state.current = 6;
-              $returnValue$6 = returnValue;
-              $state.next($callback);
-            }).catch(function (e) {
-              $state.error = e;
-              $state.current = -1;
               $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
             });
             return;
 
           case 6:
-            $returnValue$6 >= 0;
-            $state.current = -1;
-            $state.returnValue = null;
-            $callback($state);
+            $result;
+            $g.compare.SomeClass.$compare(first, second).then(function ($result0) {
+              $result = $result0 <= 0;
+              $state.current = 7;
+              $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
+            });
+            return;
+
+          case 7:
+            $result;
+            $g.compare.SomeClass.$compare(first, second).then(function ($result0) {
+              $result = $result0 >= 0;
+              $state.current = 8;
+              $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
+            });
+            return;
+
+          case 8:
+            $result;
+            $g.compare.SomeClass.$equals(first, second).then(function ($result0) {
+              $result = $result0;
+              $state.current = 9;
+              $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
+            });
+            return;
+
+          case 9:
+            $state.resolve($result);
             return;
 
           default:
