@@ -18,6 +18,6 @@ type TGTypeOrMember interface {
 	IsReadOnly() bool
 	IsType() bool
 	IsStatic() bool
-	IsSynchronous() bool
+	IsPromising() bool
 	IsExtension() bool
 }

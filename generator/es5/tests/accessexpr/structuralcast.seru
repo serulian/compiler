@@ -1,6 +1,20 @@
-class BaseClass<T> {}
-class SomeClass : BaseClass<int> {}
+class BaseClass<T> {
+	property<bool> Result {
+		get { return true }
+	}
+}
+
+class SomeClass : BaseClass<int> {
+	property<bool> Result {
+		get { return false }
+	}	
+}
 
 function<void> DoSomething(sc SomeClass) {
 	sc.(BaseClass<int>)
+}
+
+function<any> TEST() {
+	var sc = SomeClass.new()
+	return sc.(BaseClass<int>).Result
 }

@@ -92,10 +92,16 @@ func (tn TGMember) IsStatic() bool {
 	return isStatic
 }
 
-// IsSynchronous returns whether the member is synchronous.
-func (tn TGMember) IsSynchronous() bool {
-	_, isSynchronous := tn.GraphNode.TryGet(NodePredicateMemberSynchronous)
-	return isSynchronous
+// IsPromising returns whether the member is promising.
+func (tn TGMember) IsPromising() bool {
+	_, isPromising := tn.GraphNode.TryGet(NodePredicateMemberPromising)
+	return isPromising
+}
+
+// IsImplicitlyCalled returns whether the member is implicitly called on access or assignment.
+func (tn TGMember) IsImplicitlyCalled() bool {
+	_, isImplicit := tn.GraphNode.TryGet(NodePredicateMemberImplicitlyCalled)
+	return isImplicit
 }
 
 // IsNative returns whether the member is a native operator.

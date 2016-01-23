@@ -111,6 +111,11 @@ func (gm generatingMember) Parameters() []string {
 	return parameterNames
 }
 
+// MemberName returns the name of the member, as adjusted by the pather.
+func (gm generatingMember) MemberName() string {
+	return gm.Generator.pather.GetMemberName(gm.Member)
+}
+
 func (gm generatingMember) BodyNode() compilergraph.GraphNode {
 	bodyNode, _ := gm.SRGMember.Body()
 	return bodyNode
@@ -176,15 +181,15 @@ func (pbi propertyBodyInfo) RequiresThis() bool {
 
 // aliasedMemberTemplateStr defines the template for generating an aliased member.
 const aliasedMemberTemplateStr = `
-  Object.defineProperty($instance, '{{ .Member.Name }}', {
+  Object.defineProperty($instance, '{{ .MemberName }}', {
     get: function() {
-    	return $instance.{{ .InnerInstanceName }}.{{ .Member.Name }};
+    	return this.{{ .InnerInstanceName }}.{{ .MemberName }};
     }
 
     {{ if .AliasRequiresSet }}
     ,
     set: function(val) {
-    	$instance.{{ .InnerInstanceName }}.{{ .Member.Name }} = val;
+    	this.{{ .InnerInstanceName }}.{{ .MemberName }} = val;
     }
     {{ end }} 
   });
@@ -192,20 +197,14 @@ const aliasedMemberTemplateStr = `
 
 // functionTemplateStr defines the template for generating function members.
 const functionTemplateStr = `
-{{ if .Member.IsStatic }}$static{{ else }}$instance{{ end }}.{{ .Member.Name }} = {{ .FunctionSource }}`
+{{ if .Member.IsStatic }}$static{{ else }}$instance{{ end }}.{{ .MemberName }} = {{ .FunctionSource }}`
 
 // propertyTemplateStr defines the template for generating properties.
 const propertyTemplateStr = `
-{{ if .Member.IsStatic }}$static{{ else }}$instance{{ end }}.{{ .Member.Name }} = 
-	{{ if .Member.IsReadOnly }}
-		{{ .GetterSource }}
-	{{ else }}
-	function(opt_val) {
-		if (arguments.length == 0) {
-			return ({{ .GetterSource }}).call(this);
-		} else {
-			return ({{ .SetterSource }}).call(this, opt_val);
-		}
-	};
-	{{ end }}
+{{ if .Member.IsStatic }}$static{{ else }}$instance{{ end }}.{{ .MemberName }} = 
+  {{ if .Member.IsReadOnly }}
+  	$t.property({{ .Member.IsExtension }}, {{ .GetterSource }})
+  {{ else }}
+  	$t.property({{ .Member.IsExtension }}, {{ .GetterSource }}, {{ .SetterSource }});
+  {{ end }}
 `

@@ -20,6 +20,7 @@ func (op *operatorParameter) ExpectedType(containingType TypeReference) TypeRefe
 // operatorDefinition represents the definition of a supported operator on a Serulian type.
 type operatorDefinition struct {
 	Name          string              // The name of the operator.
+	IsStatic      bool                // Whether the operator is static.
 	getReturnType typerefGetter       // The expected return type.
 	Parameters    []operatorParameter // The expected parameters.
 }
@@ -81,38 +82,38 @@ func (t *TypeGraph) buildOperatorDefinitions() {
 
 	operators := []operatorDefinition{
 		// Binary operators: +, -, *, /, %
-		operatorDefinition{"plus", containingTypeGetter, binaryParameters},
-		operatorDefinition{"minus", containingTypeGetter, binaryParameters},
-		operatorDefinition{"times", containingTypeGetter, binaryParameters},
-		operatorDefinition{"div", containingTypeGetter, binaryParameters},
-		operatorDefinition{"mod", containingTypeGetter, binaryParameters},
+		operatorDefinition{"plus", true, containingTypeGetter, binaryParameters},
+		operatorDefinition{"minus", true, containingTypeGetter, binaryParameters},
+		operatorDefinition{"times", true, containingTypeGetter, binaryParameters},
+		operatorDefinition{"div", true, containingTypeGetter, binaryParameters},
+		operatorDefinition{"mod", true, containingTypeGetter, binaryParameters},
 
 		// Bitwise operators: ^, |, &, <<, >>, ~
-		operatorDefinition{"xor", containingTypeGetter, binaryParameters},
-		operatorDefinition{"or", containingTypeGetter, binaryParameters},
-		operatorDefinition{"and", containingTypeGetter, binaryParameters},
-		operatorDefinition{"leftshift", containingTypeGetter, binaryParameters},
-		operatorDefinition{"rightshift", containingTypeGetter, binaryParameters},
+		operatorDefinition{"xor", true, containingTypeGetter, binaryParameters},
+		operatorDefinition{"or", true, containingTypeGetter, binaryParameters},
+		operatorDefinition{"and", true, containingTypeGetter, binaryParameters},
+		operatorDefinition{"leftshift", true, containingTypeGetter, binaryParameters},
+		operatorDefinition{"rightshift", true, containingTypeGetter, binaryParameters},
 
-		operatorDefinition{"not", containingTypeGetter, unaryParameters},
+		operatorDefinition{"not", true, containingTypeGetter, unaryParameters},
 
 		// Equality.
-		operatorDefinition{"equals", staticTypeGetter(t.BoolType()), binaryParameters},
+		operatorDefinition{"equals", true, staticTypeGetter(t.BoolType()), binaryParameters},
 
 		// Comparison.
-		operatorDefinition{"compare", staticTypeGetter(t.IntType()), binaryParameters},
+		operatorDefinition{"compare", true, staticTypeGetter(t.IntType()), binaryParameters},
 
 		// Range.
-		operatorDefinition{"range", streamContainingTypeGetter, binaryParameters},
+		operatorDefinition{"range", true, streamContainingTypeGetter, binaryParameters},
 
 		// Slice.
-		operatorDefinition{"slice", anyTypeGetter, []operatorParameter{
+		operatorDefinition{"slice", false, anyTypeGetter, []operatorParameter{
 			operatorParameter{"startindex", staticNullableTypeGetter(t.IntType())},
 			operatorParameter{"endindex", staticNullableTypeGetter(t.IntType())},
 		}},
 
 		// Index.
-		operatorDefinition{"index", anyTypeGetter, []operatorParameter{
+		operatorDefinition{"index", false, anyTypeGetter, []operatorParameter{
 			operatorParameter{"index", anyTypeGetter},
 		}},
 	}

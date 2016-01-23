@@ -1,96 +1,121 @@
 $module('property', function () {
   var $static = this;
-  this.$class('SomeClass', function () {
+  this.$class('SomeClass', false, function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
       var init = [];
-      init.push(function () {
-        return $promise.wrap(function () {
-          $this.SomeInt = 2;
-        });
-      }());
+      init.push($promise.resolve(false).then(function (result) {
+        instance.SomeBool = result;
+      }));
       return $promise.all(init).then(function () {
         return instance;
       });
     };
-    $instance.SomeProp = function (opt_val) {
-      if (arguments.length == 0) {
-        return function () {
-          var $this = this;
-          var $state = $t.sm(function ($callback) {
-            while (true) {
-              switch ($state.current) {
-                case 0:
-                  $state.returnValue = $this.SomeInt;
-                  $state.current = -1;
-                  $callback($state);
-                  return;
+    $instance.SomeProp = $t.property(false, function () {
+      var $this = this;
+      var $state = $t.sm(function ($callback) {
+        while (true) {
+          switch ($state.current) {
+            case 0:
+              $state.resolve($this.SomeBool);
+              return;
 
-                default:
-                  $state.current = -1;
-                  return;
-              }
-            }
-          });
-          return $promise.build($state);
-        }.call(this);
-      } else {
-        return function (val) {
-          var $this = this;
-          var $state = $t.sm(function ($callback) {
-            while (true) {
-              switch ($state.current) {
-                case 0:
-                  $this.SomeInt = val;
-                  $state.current = -1;
-                  $state.returnValue = null;
-                  $callback($state);
-                  return;
+            default:
+              $state.current = -1;
+              return;
+          }
+        }
+      });
+      return $promise.build($state);
+    }, function (val) {
+      var $this = this;
+      var $state = $t.sm(function ($callback) {
+        while (true) {
+          switch ($state.current) {
+            case 0:
+              $this.SomeBool = val;
+              $state.current = -1;
+              return;
 
-                default:
-                  $state.current = -1;
-                  return;
-              }
-            }
-          });
-          return $promise.build($state);
-        }.call(this, opt_val);
-      }
-    };
+            default:
+              $state.current = -1;
+              return;
+          }
+        }
+      });
+      return $promise.build($state);
+    });
   });
 
   $static.AnotherFunction = function (sc) {
-    var $getValue$1;
-    var $setValue$2;
     var $state = $t.sm(function ($callback) {
       while (true) {
         switch ($state.current) {
           case 0:
-            sc.SomeInt;
-            sc.SomeProp().then(function (returnValue) {
+            sc.SomeBool;
+            sc.SomeProp().then(function ($result0) {
+              $result = $result0;
               $state.current = 1;
-              $getValue$1 = returnValue;
-              $state.next($callback);
-            }).catch(function (e) {
-              $state.error = e;
-              $state.current = -1;
               $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
             });
             return;
 
           case 1:
-            $getValue$1;
-            sc.SomeProp(4).then(function (returnValue) {
+            $result;
+            sc.SomeProp(true).then(function ($result0) {
+              $result = $result0;
               $state.current = 2;
-              $setValue$2 = returnValue;
-              $state.next($callback);
-            }).catch(function (e) {
-              $state.error = e;
-              $state.current = -1;
               $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
             });
+            return;
+
+          case 2:
+            $result;
+            sc.SomeProp().then(function ($result0) {
+              $result = $result0;
+              $state.current = 3;
+              $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
+            });
+            return;
+
+          case 3:
+            $state.resolve($result);
+            return;
+
+          default:
+            $state.current = -1;
+            return;
+        }
+      }
+    });
+    return $promise.build($state);
+  };
+  $static.TEST = function () {
+    var $state = $t.sm(function ($callback) {
+      while (true) {
+        switch ($state.current) {
+          case 0:
+            $g.property.SomeClass.new().then(function ($result0) {
+              return $g.property.AnotherFunction($result0).then(function ($result1) {
+                $result = $result1;
+                $state.current = 1;
+                $callback($state);
+              });
+            }).catch(function (err) {
+              $state.reject(err);
+            });
+            return;
+
+          case 1:
+            $state.resolve($result);
             return;
 
           default:

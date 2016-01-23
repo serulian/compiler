@@ -1,76 +1,66 @@
 $module('inheritance', function () {
   var $static = this;
-  this.$class('FirstClass', function () {
+  this.$class('FirstClass', false, function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
       var init = [];
-      init.push(function () {
-        return $promise.wrap(function () {
-          $this.SomeInt = 2;
-        });
-      }());
+      init.push($promise.resolve(true).then(function (result) {
+        instance.SomeBool = result;
+      }));
       return $promise.all(init).then(function () {
         return instance;
       });
     };
     $instance.DoSomething = function () {
+      var $this = this;
       return $promise.empty();
     };
   });
 
-  this.$class('SecondClass', function () {
+  this.$class('SecondClass', false, function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
       var init = [];
-      init.push(function () {
-        return $promise.wrap(function () {
-          $this.SomeInt = 4;
-        });
-      }());
+      init.push($promise.resolve(false).then(function (result) {
+        instance.SomeBool = result;
+      }));
       return $promise.all(init).then(function () {
         return instance;
       });
     };
     $instance.AnotherThing = function () {
+      var $this = this;
       return $promise.empty();
     };
   });
 
-  this.$class('MainClass', function () {
+  this.$class('MainClass', false, function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
       var init = [];
-      init.push(function () {
-        var $this = this;
-        return $g.inheritance.FirstClass.new().then(function (value) {
-          $this.FirstClass = value;
-        });
-      }());
-      init.push(function () {
-        var $this = this;
-        return $g.inheritance.SecondClass.new().then(function (value) {
-          $this.SecondClass = value;
-        });
-      }());
+      init.push($g.inheritance.FirstClass.new().then(function (value) {
+        instance.FirstClass = value;
+      }));
+      init.push($g.inheritance.SecondClass.new().then(function (value) {
+        instance.SecondClass = value;
+      }));
       return $promise.all(init).then(function () {
         return instance;
       });
     };
-    $instance.DoSomething = function (i) {
+    $instance.DoSomething = function () {
       var $this = this;
       var $state = $t.sm(function ($callback) {
         while (true) {
           switch ($state.current) {
             case 0:
-              $state.returnValue = $this.SomeInt;
-              $state.current = -1;
-              $callback($state);
+              $state.resolve($this.SomeBool);
               return;
 
             default:
@@ -81,19 +71,47 @@ $module('inheritance', function () {
       });
       return $promise.build($state);
     };
-    Object.defineProperty($instance, 'SomeInt', {
+    Object.defineProperty($instance, 'SomeBool', {
       get: function () {
-        return $instance.FirstClass.SomeInt;
+        return this.FirstClass.SomeBool;
       },
       set: function (val) {
-        $instance.FirstClass.SomeInt = val;
+        this.FirstClass.SomeBool = val;
       },
     });
     Object.defineProperty($instance, 'AnotherThing', {
       get: function () {
-        return $instance.SecondClass.AnotherThing;
+        return this.SecondClass.AnotherThing;
       },
     });
   });
 
+  $static.TEST = function () {
+    var $state = $t.sm(function ($callback) {
+      while (true) {
+        switch ($state.current) {
+          case 0:
+            $g.inheritance.MainClass.new().then(function ($result0) {
+              return $result0.DoSomething().then(function ($result1) {
+                $result = $result1;
+                $state.current = 1;
+                $callback($state);
+              });
+            }).catch(function (err) {
+              $state.reject(err);
+            });
+            return;
+
+          case 1:
+            $state.resolve($result);
+            return;
+
+          default:
+            $state.current = -1;
+            return;
+        }
+      }
+    });
+    return $promise.build($state);
+  };
 });

@@ -177,17 +177,21 @@ func (stc *srgTypeConstructor) defineMember(member srg.SRGMember, parent typegra
 	var memberType typegraph.TypeReference = graph.AnyTypeReference()
 	var isReadOnly bool = true
 	var isStatic bool = false
+	var isPromising bool = true
+	var isImplicitlyCalled bool = false
 
 	switch member.MemberKind() {
 	case srg.VarMember:
 		// Variables have their declared type.
 		memberType, _ = stc.resolvePossibleType(member.Node(), member.DeclaredType, graph, reporter)
 		isReadOnly = false
+		isPromising = false
 
 	case srg.PropertyMember:
 		// Properties have their declared type.
 		memberType, _ = stc.resolvePossibleType(member.Node(), member.DeclaredType, graph, reporter)
 		isReadOnly = !member.HasSetter()
+		isImplicitlyCalled = true
 
 		// Decorate the property *getter* with its return type.
 		getter, found := member.Getter()
@@ -208,8 +212,7 @@ func (stc *srgTypeConstructor) defineMember(member srg.SRGMember, parent typegra
 		dependentBuilder.CreateReturnable(member.Node(), returnType)
 
 	case srg.OperatorMember:
-		// Operators are static and read-only.
-		isStatic = true
+		// Operators are read-only.
 		isReadOnly = true
 
 		// Operators have type function<DeclaredType>(parameters).
@@ -238,6 +241,12 @@ func (stc *srgTypeConstructor) defineMember(member srg.SRGMember, parent typegra
 
 	// If the member is under a module, then it is static.
 	dependentBuilder.Static(isStatic || !parent.IsType())
+
+	// Decorate the member with whether it is promising.
+	dependentBuilder.Promising(isPromising)
+
+	// Decorate the member with whether it is implicitly called.
+	dependentBuilder.ImplicitlyCalled(isImplicitlyCalled)
 
 	// Decorate the member with whether it is read-only.
 	dependentBuilder.ReadOnly(isReadOnly)

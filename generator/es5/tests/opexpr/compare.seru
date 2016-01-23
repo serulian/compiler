@@ -8,11 +8,16 @@ class SomeClass {
 	}
 }
 
-function<void> DoSomething(first SomeClass, second SomeClass) {
+function<any> TEST() {
+	var first = SomeClass.new()
+	var second = SomeClass.new()
+
 	first == second
 	first != second
 	first < second
 	first > second
 	first <= second
 	first >= second
+
+	return first == second
 }

@@ -10,8 +10,6 @@ $module('varassign', function () {
             i = 3;
             1234;
             $state.current = -1;
-            $state.returnValue = null;
-            $callback($state);
             return;
 
           default:

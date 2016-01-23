@@ -1,7 +1,6 @@
 $module('loopvar', function () {
   var $static = this;
   $static.DoSomething = function (somethingElse) {
-    var something;
     var $state = $t.sm(function ($callback) {
       while (true) {
         switch ($state.current) {
@@ -11,16 +10,14 @@ $module('loopvar', function () {
             continue;
 
           case 1:
-            somethingElse.Next(function ($hasNext, $nextItem) {
-              if ($hasNext) {
-                something = $nextItem;
-                $state.current = 2;
-              } else {
-                $state.current = 3;
-              }
-              $state.$next($callback);
-            });
-            return;
+            if (somethingElse) {
+              $state.current = 2;
+              continue;
+            } else {
+              $state.current = 3;
+              continue;
+            }
+            break;
 
           case 2:
             7654;
@@ -30,8 +27,6 @@ $module('loopvar', function () {
           case 3:
             5678;
             $state.current = -1;
-            $state.returnValue = null;
-            $callback($state);
             return;
 
           default:

@@ -1,9 +1,12 @@
-function<void> DoSomething() {
-	if true {
+function<any> TEST() {
+	if false {
 		123
+		return false
 	} else if false {
 		456
+		return false
 	} else {
 		789
+		return true
 	}
 }

@@ -12,68 +12,80 @@ const runtimeTemplate = `
 window.Serulian = (function($global) {
   var $g = {};
   var $t = {
-    'nativenew': function(type, name, nominalType, promisenoop, promisewrap) {
+    'cast': function(value, type) {
+      // TODO: implement cast checking.
+      return value
+    },
+
+    'nativenew': function(type) {
       return function () {
         var newInstance = Object.create(type.prototype);
         newInstance = type.apply(newInstance, arguments) || newInstance;
-        return promisewrap ? $promise.wrap(function () {
-          return newInstance;
-        }) : newInstance;
+        return newInstance;
       };
     },
 
-    'extension': function(obj, name, nominalType, promisenoop, promisewrap) {
-       if (obj == null) {
-          return $t.dynamicaccess(obj, name, null, promisenoop, promisewrap);
-       }
+    'property': function(isExtension, getter, opt_setter) {
+      var count = isExtension ? 2 : 1;
+      var f = function() {
+        if (arguments.length == count) {
+          return opt_setter.apply(this, arguments);
+        } else {
+          return getter.apply(this, arguments);
+        }
+      };
 
-       var func = function() {
-          var args = [];
-          args.push(obj);
-          args.push.apply(args, arguments);
-          return nominalType[name].apply(null, args)
-       };
-
-       return promisewrap ? $promise.wrap(func) : func;
+      f.$property = true;
+      return f;
     },
 
-    'dynamicaccess': function(obj, name, nominalType, promisenoop, promisewrap) {
+    'dynamicaccess': function(obj, name) {
       if (obj == null || obj[name] == null) {
-        return promisenoop ? $promise.wrap(function() { return null; }) : null;
+        return null;
       }
 
       var value = obj[name];
-      if (typeof value == 'function') {
-        if (promisewrap) {
-          return $promise.wrap(function() {
-            return value.apply(obj, arguments);
-          });
-        } else {
-          return function() {
-            return value.apply(obj, arguments);
-          };
-        }
+      if (typeof value == 'function' && value.$property) {
+        return $promise.wrap(function() {
+          return value.apply(obj, arguments);
+        });
       }
 
       return value
+    },
+
+    'nullcompare': function(first, second) {
+      return first == null ? second : first;
     },
 
   	'sm': function(caller) {
   		return {
         resources: {},
   			current: 0,
-  			returnValue: undefined,
-  			error: undefined,
   			next: caller,
-        pushr: function(name, value) {
+
+        pushr: function(value, name) {
           this.resources[name] = value;
         },
-        popr: function(name) {
-          if (this.resources[name]) {
-            this.resources[name].Release()
-            delete this.resources[name];
+
+        popr: function(names) {
+          var promises = [];
+
+          for (var i = 0; i < arguments.length; ++i) {
+            var name = arguments[i];
+            if (this.resources[name]) {
+              promises.push(this.resources[name].Release());
+              delete this.resources[name];
+            }
+          }
+
+          if (promises.length > 0) {
+            return $promise.all(promises);
+          } else {
+            return $promise.resolve(null);
           }
         },
+
         popall: function() {
           for (var name in this.resources) {
             if (this.resources.hasOwnProperty(name)) {
@@ -88,26 +100,30 @@ window.Serulian = (function($global) {
   var $promise = {
   	'build': function(statemachine) {
   		return new Promise(function(resolve, reject) {
+        statemachine.resolve = function(value) {
+          statemachine.popall();
+          statemachine.current = -1;
+          resolve(value);
+        };
+
+        statemachine.reject = function(value) {
+          statemachine.popall();
+          statemachine.current = -1;
+          reject(value);
+        };
+
   			var continueFunc = function() {
-  				if (statemachine.returnValue !== undefined) {
-            statemachine.popall();
-  					resolve(statemachine.returnValue);
-  					return;
-  				}
-
-  				if (statemachine.error !== undefined) {
-            statemachine.popall();
-  					reject(statemachine.error);
-  					return;					
-  				}
-
   				if (statemachine.current < 0) {
   					return;
   				}
 
   				statemachine.next(continueFunc);				
-			};
-			continueFunc();
+			  };
+        
+  			continueFunc();
+        if (statemachine.current < 0) {
+          statemachine.resolve(null);
+        }
   		});
   	},
 
@@ -121,30 +137,64 @@ window.Serulian = (function($global) {
   		});
   	},
 
+    'resolve': function(value) {
+      return Promise.resolve(value);
+    },
+
   	'wrap': function(func) {
   		return Promise.resolve(func());
-  	}
+  	},
+
+    'translate': function(prom) {
+       return {
+          'then': function() {
+             return prom.Then.apply(prom, arguments);
+          },
+          'catch': function() {
+             return prom.Catch.apply(prom, arguments);
+          }
+       };
+    }
   };
 
   var moduleInits = [];
 
   var $module = function(name, creator) {
   	var module = {};
+
+    var parts = name.split('.');
+    var current = $g;
+    for (var i = 0; i < parts.length - 1; ++i) {
+      if (!current[parts[i]]) {
+        current[parts[i]] = {};
+      }
+      current = current[parts[i]]
+    }
+
+    current[parts[parts.length - 1]] = module;
+
   	module.$init = function(cpromise) {
-  	  moduleInits.push(cpromise());
+  	  moduleInits.push(cpromise);
   	};
 
-  	module.$class = function(name, creator) {
-  		var cls = function() {};
-  		creator.call(cls);
-  		module[name] = cls;
-  	};
+    module.$newtypebuilder = function(kind) {
+      return function(name, hasGenerics, creator) {
+        if (hasGenerics) {
+          module[name] = function(genericargs) {
+            var tpe = function() {};
+            creator.apply(tpe, arguments);
+            return tpe;
+          };
+        } else {
+          var tpe = function() {};
+          creator.call(tpe);
+          module[name] = tpe;
+        }
+      };
+    };
 
-  	module.$interface = function(name, creator) {
-  		var cls = function() {};
-  		creator.call(cls);
-  		module[name] = cls;
-  	};
+  	module.$class = module.$newtypebuilder('class');
+  	module.$interface = module.$newtypebuilder('interface');
 
     module.$type = function(name, creator) {
       var cls = function() {};
@@ -153,7 +203,6 @@ window.Serulian = (function($global) {
     };
 
   	creator.call(module)
-  	$g[name] = module;
   };
 
   {{ range $idx, $kv := .Iter }}

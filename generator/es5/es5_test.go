@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -15,13 +16,15 @@ import (
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/packageloader"
 
+	"github.com/robertkrimen/otto"
 	"github.com/stretchr/testify/assert"
 )
 
 type generationTest struct {
-	name       string
-	input      string
-	entrypoint string
+	name            string
+	input           string
+	entrypoint      string
+	integrationTest bool
 }
 
 func (gt *generationTest) expected() string {
@@ -40,58 +43,89 @@ func (gt *generationTest) writeExpected(value string) {
 	}
 }
 
+func assertNoOttoError(t *testing.T, testName string, source string, err error) bool {
+	if err != nil {
+		ottoErr := err.(*otto.Error)
+
+		// TODO: stop parsing if we can get otto to export this information.
+		errorString := ottoErr.String()
+		lines := strings.Split(errorString, "\n")
+
+		atLine := lines[1]
+		atParts := strings.Split(atLine, ":")
+
+		lineNumber, _ := strconv.Atoi(atParts[1])
+		columnPos, _ := strconv.Atoi(atParts[2])
+
+		sourceLines := strings.Split(source, "\n")
+		for index, line := range sourceLines {
+			fmt.Println(line)
+			if index+1 == lineNumber {
+				fmt.Print(strings.Repeat("~", columnPos-1))
+				fmt.Println("^")
+			}
+		}
+
+		fmt.Printf("%v\n", ottoErr.String())
+		return false
+	}
+	return true
+}
+
 var tests = []generationTest{
-	generationTest{"basic module test", "module", "basic"},
-	generationTest{"basic class test", "class", "basic"},
-	generationTest{"class property test", "class", "property"},
-	generationTest{"class inheritance test", "class", "inheritance"},
+	generationTest{"basic module test", "module", "basic", true},
+	generationTest{"basic class test", "class", "basic", true},
+	generationTest{"class property test", "class", "property", true},
+	generationTest{"class inheritance test", "class", "inheritance", true},
 
-	generationTest{"conditional statement", "statements", "conditional"},
-	generationTest{"conditional else statement", "statements", "conditionalelse"},
-	generationTest{"chained conditional statement", "statements", "chainedconditional"},
-	generationTest{"loop statement", "statements", "loop"},
-	generationTest{"loop expr statement", "statements", "loopexpr"},
-	generationTest{"loop var statement", "statements", "loopvar"},
-	generationTest{"continue statement", "statements", "continue"},
-	generationTest{"break statement", "statements", "break"},
-	generationTest{"var and assign statements", "statements", "varassign"},
-	generationTest{"var no init statement", "statements", "varnoinit"},
-	generationTest{"with statement", "statements", "with"},
-	generationTest{"with as statement", "statements", "withas"},
-	generationTest{"match no expr statement", "statements", "matchnoexpr"},
-	generationTest{"match expr statement", "statements", "matchexpr"},
+	generationTest{"conditional statement", "statements", "conditional", true},
+	generationTest{"conditional else statement", "statements", "conditionalelse", true},
+	generationTest{"chained conditional statement", "statements", "chainedconditional", true},
+	generationTest{"loop statement", "statements", "loop", false},
+	generationTest{"loop expr statement", "statements", "loopexpr", false},
+	generationTest{"loop var statement", "statements", "loopvar", false},
+	generationTest{"continue statement", "statements", "continue", false},
+	generationTest{"break statement", "statements", "break", false},
+	generationTest{"var and assign statements", "statements", "varassign", false},
+	generationTest{"var no init statement", "statements", "varnoinit", false},
+	generationTest{"match no expr statement", "statements", "matchnoexpr", false},
+	generationTest{"match expr statement", "statements", "matchexpr", false},
+	generationTest{"with statement", "statements", "with", true},
+	generationTest{"with as statement", "statements", "withas", false},
+	generationTest{"with exit scope statement", "statements", "withexit", true},
 
-	generationTest{"await expression", "arrowexpr", "await"},
-	generationTest{"arrow expression", "arrowexpr", "arrow"},
+	generationTest{"await expression", "arrowexpr", "await", true},
+	generationTest{"multiawait expression", "arrowexpr", "multiawait", false},
+	generationTest{"arrow expression", "arrowexpr", "arrow", true},
 
-	generationTest{"generic specifier expression", "accessexpr", "genericspecifier"},
-	generationTest{"cast expression", "accessexpr", "cast"},
-	generationTest{"structural cast expression", "accessexpr", "structuralcast"},
-	generationTest{"stream member access expression", "accessexpr", "streammember"},
-	generationTest{"member access expressions", "accessexpr", "memberaccess"},
+	generationTest{"generic specifier expression", "accessexpr", "genericspecifier", true},
+	generationTest{"cast expression", "accessexpr", "cast", true},
+	generationTest{"structural cast expression", "accessexpr", "structuralcast", true},
+	generationTest{"stream member access expression", "accessexpr", "streammember", false},
+	generationTest{"member access expressions", "accessexpr", "memberaccess", true},
 
-	generationTest{"full lambda expression", "lambdaexpr", "full"},
-	generationTest{"mini lambda expression", "lambdaexpr", "mini"},
+	generationTest{"full lambda expression", "lambdaexpr", "full", true},
+	generationTest{"mini lambda expression", "lambdaexpr", "mini", true},
 
-	generationTest{"null comparison", "opexpr", "nullcompare"},
-	generationTest{"function call", "opexpr", "functioncall"},
-	generationTest{"boolean operators", "opexpr", "boolean"},
-	generationTest{"binary op expressions", "opexpr", "binary"},
-	generationTest{"unary op expressions", "opexpr", "unary"},
-	generationTest{"comparison op expressions", "opexpr", "compare"},
-	generationTest{"indexer op expressions", "opexpr", "indexer"},
-	generationTest{"slice op expressions", "opexpr", "slice"},
+	generationTest{"null comparison", "opexpr", "nullcompare", true},
+	generationTest{"function call", "opexpr", "functioncall", true},
+	generationTest{"boolean operators", "opexpr", "boolean", true},
+	generationTest{"binary op expressions", "opexpr", "binary", false},
+	generationTest{"unary op expressions", "opexpr", "unary", false},
+	generationTest{"comparison op expressions", "opexpr", "compare", true},
+	generationTest{"indexer op expressions", "opexpr", "indexer", true},
+	generationTest{"slice op expressions", "opexpr", "slice", true},
 
-	generationTest{"identifier expressions", "literals", "identifier"},
+	generationTest{"identifier expressions", "literals", "identifier", false},
 
-	generationTest{"boolean literal", "literals", "boolean"},
-	generationTest{"numeric literal", "literals", "numeric"},
-	generationTest{"string literal", "literals", "string"},
-	generationTest{"null literal", "literals", "null"},
-	generationTest{"this literal", "literals", "this"},
+	generationTest{"boolean literal", "literals", "boolean", false},
+	generationTest{"numeric literal", "literals", "numeric", false},
+	generationTest{"string literal", "literals", "string", false},
+	generationTest{"null literal", "literals", "null", false},
+	generationTest{"this literal", "literals", "this", false},
 
-	generationTest{"basic webidl", "webidl", "basic"},
-	generationTest{"basic nominal type", "nominal", "basic"},
+	generationTest{"basic webidl", "webidl", "basic", true},
+	generationTest{"basic nominal type", "nominal", "basic", true},
 }
 
 func TestGenerator(t *testing.T) {
@@ -124,6 +158,74 @@ func TestGenerator(t *testing.T) {
 			// Compare the generated source to the expected.
 			expectedSource := test.expected()
 			assert.Equal(t, expectedSource, source, "Source mismatch on test %s\nExpected: %v\nActual: %v\n\n", test.name, expectedSource, source)
+
+			if test.integrationTest {
+				fullSource, err := GenerateES5(result.Graph)
+				if !assert.Nil(t, err, "Error generating full source for test %s: %v", test.name, err) {
+					continue
+				}
+
+				vm := otto.New()
+				vm.Run(`window = {};
+
+				function setTimeout(f, t) {
+					f()
+				}
+				`)
+
+				promiseFile, _ := os.Open("es6-promise.js")
+				defer promiseFile.Close()
+
+				promiseSource, _ := ioutil.ReadAll(promiseFile)
+
+				_, perr := vm.Run(promiseSource)
+				if !assertNoOttoError(t, test.name, string(promiseSource), perr) {
+					continue
+				}
+
+				_, verr := vm.Run(fullSource)
+				if !assertNoOttoError(t, test.name, fullSource, verr) {
+					continue
+				}
+
+				if !assert.Nil(t, verr, "Error running full source for test %s: %v", test.name, verr) {
+					continue
+				}
+
+				testCall := `
+					$resolved = undefined;
+					$rejected = undefined;
+
+					window.boolValue = true;
+
+					window.Serulian.then(function(g) {
+						g.` + test.entrypoint + `.TEST().then(function(r) {
+							$resolved = r;
+						}).catch(function(err) {
+							$rejected = err;
+						});
+					});
+					
+					if ($rejected) {
+						throw $rejected;
+					}
+
+					$resolved`
+
+				rresult, rerr := vm.Run(testCall)
+				if !assertNoOttoError(t, test.name, testCall, rerr) {
+					continue
+				}
+
+				if !assert.True(t, rresult.IsBoolean(), "Non-boolean result for running test case %s: %v", test.name, rresult) {
+					continue
+				}
+
+				boolValue, _ := rresult.ToBoolean()
+				if !assert.True(t, boolValue, "Non-true boolean result for running test case %s", test.name) {
+					continue
+				}
+			}
 		}
 	}
 }

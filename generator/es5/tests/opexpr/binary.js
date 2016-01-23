@@ -1,6 +1,6 @@
 $module('binary', function () {
   var $static = this;
-  this.$class('SomeClass', function () {
+  this.$class('SomeClass', false, function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -10,44 +10,196 @@ $module('binary', function () {
         return instance;
       });
     };
+    $static.$xor = function (left, right) {
+      var $state = $t.sm(function ($callback) {
+        while (true) {
+          switch ($state.current) {
+            case 0:
+              $state.resolve(left);
+              return;
+
+            default:
+              $state.current = -1;
+              return;
+          }
+        }
+      });
+      return $promise.build($state);
+    };
+    $static.$or = function (left, right) {
+      var $state = $t.sm(function ($callback) {
+        while (true) {
+          switch ($state.current) {
+            case 0:
+              $state.resolve(left);
+              return;
+
+            default:
+              $state.current = -1;
+              return;
+          }
+        }
+      });
+      return $promise.build($state);
+    };
+    $static.$and = function (left, right) {
+      var $state = $t.sm(function ($callback) {
+        while (true) {
+          switch ($state.current) {
+            case 0:
+              $state.resolve(left);
+              return;
+
+            default:
+              $state.current = -1;
+              return;
+          }
+        }
+      });
+      return $promise.build($state);
+    };
+    $static.$leftshift = function (left, right) {
+      var $state = $t.sm(function ($callback) {
+        while (true) {
+          switch ($state.current) {
+            case 0:
+              $state.resolve(left);
+              return;
+
+            default:
+              $state.current = -1;
+              return;
+          }
+        }
+      });
+      return $promise.build($state);
+    };
+    $static.$not = function (value) {
+      var $state = $t.sm(function ($callback) {
+        while (true) {
+          switch ($state.current) {
+            case 0:
+              $state.resolve(value);
+              return;
+
+            default:
+              $state.current = -1;
+              return;
+          }
+        }
+      });
+      return $promise.build($state);
+    };
+    $static.$plus = function (left, right) {
+      var $state = $t.sm(function ($callback) {
+        while (true) {
+          switch ($state.current) {
+            case 0:
+              $state.resolve(left);
+              return;
+
+            default:
+              $state.current = -1;
+              return;
+          }
+        }
+      });
+      return $promise.build($state);
+    };
+    $static.$minus = function (left, right) {
+      var $state = $t.sm(function ($callback) {
+        while (true) {
+          switch ($state.current) {
+            case 0:
+              $state.resolve(right);
+              return;
+
+            default:
+              $state.current = -1;
+              return;
+          }
+        }
+      });
+      return $promise.build($state);
+    };
+    $static.$times = function (left, right) {
+      var $state = $t.sm(function ($callback) {
+        while (true) {
+          switch ($state.current) {
+            case 0:
+              $state.resolve(left);
+              return;
+
+            default:
+              $state.current = -1;
+              return;
+          }
+        }
+      });
+      return $promise.build($state);
+    };
+    $static.$div = function (left, right) {
+      var $state = $t.sm(function ($callback) {
+        while (true) {
+          switch ($state.current) {
+            case 0:
+              $state.resolve(left);
+              return;
+
+            default:
+              $state.current = -1;
+              return;
+          }
+        }
+      });
+      return $promise.build($state);
+    };
+    $static.$mod = function (left, right) {
+      var $state = $t.sm(function ($callback) {
+        while (true) {
+          switch ($state.current) {
+            case 0:
+              $state.resolve(left);
+              return;
+
+            default:
+              $state.current = -1;
+              return;
+          }
+        }
+      });
+      return $promise.build($state);
+    };
   });
 
   $static.DoSomething = function (first, second) {
-    var $returnValue$1;
-    var $returnValue$2;
     var $state = $t.sm(function ($callback) {
       while (true) {
         switch ($state.current) {
           case 0:
-            $g.binary.SomeClass.$plus(first, second).then(function (returnValue) {
+            $g.binary.SomeClass.$plus(first, second).then(function ($result0) {
+              $result = $result0;
               $state.current = 1;
-              $returnValue$1 = returnValue;
-              $state.next($callback);
-            }).catch(function (e) {
-              $state.error = e;
-              $state.current = -1;
               $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
             });
             return;
 
           case 1:
-            $returnValue$1;
-            $g.binary.SomeClass.$minus(first, second).then(function (returnValue) {
+            $result;
+            $g.binary.SomeClass.$minus(first, second).then(function ($result0) {
+              $result = $result0;
               $state.current = 2;
-              $returnValue$2 = returnValue;
-              $state.next($callback);
-            }).catch(function (e) {
-              $state.error = e;
-              $state.current = -1;
               $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
             });
             return;
 
           case 2:
-            $returnValue$2;
+            $result;
             $state.current = -1;
-            $state.returnValue = null;
-            $callback($state);
             return;
 
           default:

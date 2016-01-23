@@ -121,7 +121,6 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 				Exported(true).
 				Static(true).
 				ReadOnly(true).
-				Synchronous(true).
 				MemberKind(uint64(webidl.ConstructorMember)).
 				MemberType(constructorFunction).
 				Define()
@@ -216,7 +215,6 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 
 			ibuilder.Exported(true).
 				Static(member.IsStatic()).
-				Synchronous(true).
 				ReadOnly(isReadonly).
 				MemberKind(uint64(member.Kind())).
 				MemberType(memberType).

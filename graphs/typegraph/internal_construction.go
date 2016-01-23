@@ -27,6 +27,7 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 		builder.Name("new").
 			InitialDefine().
 			Static(true).
+			Promising(true).
 			Exported(false).
 			ReadOnly(true).
 			MemberType(memberType).

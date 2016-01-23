@@ -1,6 +1,7 @@
-function<void> DoSomething() {
-	function<int> (firstParam int, secondParam bool) {
-		1234
-		return 4567
+function<any> TEST() {
+	var lambda = function<bool>(firstParam int, secondParam bool) {
+		return secondParam
 	}
+
+	return lambda(123, true)
 }

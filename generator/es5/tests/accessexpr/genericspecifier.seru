@@ -1,10 +1,7 @@
-class SomeClass<T> {}
-
-function<void> SomeFunction<T, Q>() {
-	
+function<bool> SomeFunction<T, Q>() {
+   return true
 }
 
-function<void> DoSomething() {
-	SomeFunction<int, string>
-	SomeClass<bool>
+function<any> TEST() {
+	return SomeFunction<int, string>()
 }

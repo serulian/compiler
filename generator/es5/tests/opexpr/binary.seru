@@ -24,7 +24,7 @@ class SomeClass {
 	}
 
 	operator minus(left SomeClass, right SomeClass) {
-		return left
+		return right
 	}
 
 	operator times(left SomeClass, right SomeClass) {

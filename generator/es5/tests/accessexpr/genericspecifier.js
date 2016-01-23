@@ -1,33 +1,40 @@
 $module('genericspecifier', function () {
   var $static = this;
-  this.$class('SomeClass', function (T) {
-    var $static = this;
-    var $instance = this.prototype;
-    $static.new = function () {
-      var instance = new $static();
-      var init = [];
-      return $promise.all(init).then(function () {
-        return instance;
-      });
-    };
-  });
-
   $static.SomeFunction = function (T, Q) {
     var $f = function () {
-      return $promise.empty();
+      var $state = $t.sm(function ($callback) {
+        while (true) {
+          switch ($state.current) {
+            case 0:
+              $state.resolve(true);
+              return;
+
+            default:
+              $state.current = -1;
+              return;
+          }
+        }
+      });
+      return $promise.build($state);
     };
     return $f;
   };
-  $static.DoSomething = function () {
+  $static.TEST = function () {
     var $state = $t.sm(function ($callback) {
       while (true) {
         switch ($state.current) {
           case 0:
-            $g.genericspecifier.SomeFunction($g.____graphs.srg.typeconstructor.tests.testlib.basictypes.Integer, $g.____graphs.srg.typeconstructor.tests.testlib.basictypes.String);
-            $g.genericspecifier.SomeClass($g.____graphs.srg.typeconstructor.tests.testlib.basictypes.Boolean);
-            $state.current = -1;
-            $state.returnValue = null;
-            $callback($state);
+            $g.genericspecifier.SomeFunction($g.____graphs.srg.typeconstructor.tests.testlib.basictypes.Integer, $g.____graphs.srg.typeconstructor.tests.testlib.basictypes.String)().then(function ($result0) {
+              $result = $result0;
+              $state.current = 1;
+              $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
+            });
+            return;
+
+          case 1:
+            $state.resolve($result);
             return;
 
           default:

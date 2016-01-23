@@ -1,13 +1,13 @@
 $module('nullcompare', function () {
   var $static = this;
-  $static.DoSomething = function (someParam) {
+  $static.TEST = function () {
+    var someBool;
     var $state = $t.sm(function ($callback) {
       while (true) {
         switch ($state.current) {
           case 0:
-            $state.returnValue = $op.nullcompare(someParam, 2);
-            $state.current = -1;
-            $callback($state);
+            someBool = null;
+            $state.resolve($t.nullcompare(someBool, true));
             return;
 
           default:

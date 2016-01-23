@@ -1,15 +1,19 @@
 class FirstClass {
-	var<int> SomeInt = 2
+	var<bool> SomeBool = true
 	function<void> DoSomething() {}
 }
 
 class SecondClass {
-	var<int> SomeInt = 4
+	var<bool> SomeBool = false
 	function<void> AnotherThing() {}
 }
 
 class MainClass : FirstClass + SecondClass {
-	function<int> DoSomething(i int) {
-		return this.SomeInt
+	function<bool> DoSomething() {
+		return this.SomeBool
 	}
+}
+
+function<any> TEST() {
+	return MainClass.new().DoSomething()
 }

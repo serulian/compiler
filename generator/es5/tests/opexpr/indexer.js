@@ -1,6 +1,6 @@
 $module('indexer', function () {
   var $static = this;
-  this.$class('SomeClass', function () {
+  this.$class('SomeClass', false, function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -10,30 +10,53 @@ $module('indexer', function () {
         return instance;
       });
     };
+    $instance.$index = function (someParam) {
+      var $this = this;
+      var $state = $t.sm(function ($callback) {
+        while (true) {
+          switch ($state.current) {
+            case 0:
+              $state.resolve(!someParam);
+              return;
+
+            default:
+              $state.current = -1;
+              return;
+          }
+        }
+      });
+      return $promise.build($state);
+    };
   });
 
-  $static.DoSomething = function (c) {
-    var $returnValue$1;
+  $static.TEST = function () {
+    var sc;
     var $state = $t.sm(function ($callback) {
       while (true) {
         switch ($state.current) {
           case 0:
-            c.$index(true).then(function (returnValue) {
+            $g.indexer.SomeClass.new().then(function ($result0) {
+              $result = $result0;
               $state.current = 1;
-              $returnValue$1 = returnValue;
-              $state.next($callback);
-            }).catch(function (e) {
-              $state.error = e;
-              $state.current = -1;
               $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
             });
             return;
 
           case 1:
-            $returnValue$1;
-            $state.current = -1;
-            $state.returnValue = null;
-            $callback($state);
+            sc = $result;
+            sc.$index(false).then(function ($result0) {
+              $result = $result0;
+              $state.current = 2;
+              $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
+            });
+            return;
+
+          case 2:
+            $state.resolve($result);
             return;
 
           default:

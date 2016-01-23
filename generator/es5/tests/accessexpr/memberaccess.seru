@@ -4,6 +4,7 @@ from maimport import AnotherFunction as af
 
 class SomeClass {
 	var<int> someInt = 2
+	var<bool> someBool = true
 
 	constructor Build() {
 		return SomeClass.new()
@@ -36,4 +37,9 @@ function<void> DoSomething(sc SomeClass, scn SomeClass?) {
 	sc.SomeProp
 	sc->SomeProp
 	scn->SomeProp
+}
+
+function<any> TEST() {
+	var sc = SomeClass.new()
+	return sc.someBool && sc->someBool
 }

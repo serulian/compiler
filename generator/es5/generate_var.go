@@ -51,34 +51,34 @@ func (gen *es5generator) generateVariable(member typegraph.TGMember) string {
 	return gen.templater.Execute("variable", variableTemplateStr, generating)
 }
 
+// Initializer returns the initializer expression for the member.
+func (gm generatingMember) Initializer() statemachine.ExpressionResult {
+	initializer, hasInitializer := gm.SRGMember.Initializer()
+	if !hasInitializer {
+		panic("Member must have an initializer")
+	}
+
+	return statemachine.GenerateExpressionResult(initializer, gm.Generator.templater, gm.Generator.pather, gm.Generator.scopegraph)
+}
+
 // Prefix returns "$this" or "$static", depending on whether the member is an instance member or
 // static member.
 func (gm generatingMember) Prefix() string {
 	if gm.Member.IsStatic() {
 		return "$static"
 	} else {
-		return "$this"
+		return "instance"
 	}
-}
-
-// Initializer returns the initializer state machine for this member.
-func (gm generatingMember) Initializer() statemachine.GeneratedMachine {
-	initializer, _ := gm.SRGMember.Initializer()
-	gen := gm.Generator
-	return statemachine.BuildExpression(initializer, gm.Prefix()+"."+gm.Member.Name(), gen.templater, gen.pather, gen.scopegraph)
 }
 
 // variableTemplateStr defines the template for generating variables/fields.
 const variableTemplateStr = `
-	{{ $machine := .Initializer }}
-	{{ if $machine.HasSource }}
-		(function() {
-			{{ $machine.Source }}
-			return $promise.build($state);
-		})
+	({{ $result := .Initializer }}
+	{{ if $result.IsPromise }}
+	({{ $result.Source "return $promise.resolve({{ . }})" }})
 	{{ else }}
-		(function() {
-			return $promise.wrap(function() { {{ .Prefix }}.{{ .Member.Name }} = ({{ $machine.FinalExpression }}) });
-		})
-	{{ end }}
+	$promise.resolve({{ $result.Source "" }})
+	{{ end }}).then(function(result) {
+		{{ .Prefix }}.{{ .Member.Name }} = result;
+	})
 `
