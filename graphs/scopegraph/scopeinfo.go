@@ -77,21 +77,35 @@ func (sib *scopeInfoBuilder) AssignableResolvedTypeOf(scope *proto.ScopeInfo) *s
 // ReturningTypeOf marks the scope as returning the return type of the given scope.
 func (sib *scopeInfoBuilder) ReturningTypeOf(scope *proto.ScopeInfo) *scopeInfoBuilder {
 	returnedValue := scope.GetReturnedType()
+	settlesValue := scope.GetIsSettlingScope()
+
 	sib.info.ReturnedType = &returnedValue
+	sib.info.IsSettlingScope = &settlesValue
 	return sib
 }
 
 // ReturningResolvedTypeOf marks the scope as returning the *resolved* type of the given scope.
 func (sib *scopeInfoBuilder) ReturningResolvedTypeOf(scope *proto.ScopeInfo) *scopeInfoBuilder {
 	resolvedValue := scope.GetResolvedType()
+	settlesScope := true
+
 	sib.info.ReturnedType = &resolvedValue
+	sib.info.IsSettlingScope = &settlesScope
 	return sib
 }
 
 // Returning marks the scope as returning a value of the given type.
-func (sib *scopeInfoBuilder) Returning(returning typegraph.TypeReference) *scopeInfoBuilder {
+func (sib *scopeInfoBuilder) Returning(returning typegraph.TypeReference, settlesScope bool) *scopeInfoBuilder {
 	returnedValue := returning.Value()
 	sib.info.ReturnedType = &returnedValue
+	sib.info.IsSettlingScope = &settlesScope
+	return sib
+}
+
+// IsSettlingScope marks the scope as settling the function.
+func (sib *scopeInfoBuilder) IsSettlingScope() *scopeInfoBuilder {
+	trueValue := true
+	sib.info.IsSettlingScope = &trueValue
 	return sib
 }
 

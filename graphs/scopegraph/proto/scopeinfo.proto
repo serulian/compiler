@@ -23,6 +23,7 @@ message ScopeInfo {
 	optional string StaticType = 6; 	// The static type of the scope, if any.
 
 	optional bool IsTerminatingStatement = 7; // If true, the statement terminates execution in the block.
+	optional bool IsSettlingScope = 10; // If true, the scope settles the function in some way.
 }
 
 message ScopeReference {

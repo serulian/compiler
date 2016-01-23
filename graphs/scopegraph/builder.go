@@ -54,6 +54,9 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 	case parser.NodeTypeReturnStatement:
 		return sb.scopeReturnStatement
 
+	case parser.NodeTypeRejectStatement:
+		return sb.scopeRejectStatement
+
 	case parser.NodeTypeConditionalStatement:
 		return sb.scopeConditionalStatement
 

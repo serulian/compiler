@@ -71,6 +71,7 @@ type ScopeInfo struct {
 	AssignableType         *string         `protobuf:"bytes,5,opt,name=AssignableType" json:"AssignableType,omitempty"`
 	StaticType             *string         `protobuf:"bytes,6,opt,name=StaticType" json:"StaticType,omitempty"`
 	IsTerminatingStatement *bool           `protobuf:"varint,7,opt,name=IsTerminatingStatement" json:"IsTerminatingStatement,omitempty"`
+	IsSettlingScope        *bool           `protobuf:"varint,10,opt,name=IsSettlingScope" json:"IsSettlingScope,omitempty"`
 	XXX_unrecognized       []byte          `json:"-"`
 }
 
@@ -139,6 +140,13 @@ func (m *ScopeInfo) GetStaticType() string {
 func (m *ScopeInfo) GetIsTerminatingStatement() bool {
 	if m != nil && m.IsTerminatingStatement != nil {
 		return *m.IsTerminatingStatement
+	}
+	return false
+}
+
+func (m *ScopeInfo) GetIsSettlingScope() bool {
+	if m != nil && m.IsSettlingScope != nil {
+		return *m.IsSettlingScope
 	}
 	return false
 }
@@ -254,6 +262,16 @@ func (m *ScopeInfo) MarshalTo(data []byte) (int, error) {
 		}
 		i += n2
 	}
+	if m.IsSettlingScope != nil {
+		data[i] = 0x50
+		i++
+		if *m.IsSettlingScope {
+			data[i] = 1
+		} else {
+			data[i] = 0
+		}
+		i++
+	}
 	if m.XXX_unrecognized != nil {
 		i += copy(data[i:], m.XXX_unrecognized)
 	}
@@ -359,6 +377,9 @@ func (m *ScopeInfo) Size() (n int) {
 	if m.CalledOpReference != nil {
 		l = m.CalledOpReference.Size()
 		n += 1 + l + sovScopeinfo(uint64(l))
+	}
+	if m.IsSettlingScope != nil {
+		n += 2
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
@@ -672,6 +693,27 @@ func (m *ScopeInfo) Unmarshal(data []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 10:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field IsSettlingScope", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowScopeinfo
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				v |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			b := bool(v != 0)
+			m.IsSettlingScope = &b
 		default:
 			iNdEx = preIndex
 			skippy, err := skipScopeinfo(data[iNdEx:])

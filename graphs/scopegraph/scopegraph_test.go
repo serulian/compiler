@@ -72,6 +72,20 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"empty block int test", "empty", "missingreturn", []expectedScopeEntry{},
 		"Expected return value of type 'Integer' but not all paths return a value", ""},
 
+	/////////// Settling (return and reject) ///////////
+
+	// Success test.
+	scopegraphTest{"settlement statements success test", "settlement", "success", []expectedScopeEntry{},
+		"", ""},
+
+	// Missing branch test.
+	scopegraphTest{"settlement missing branch test", "settlement", "missingbranch", []expectedScopeEntry{},
+		"Expected return value of type 'Integer' but not all paths return a value", ""},
+
+	// Invalid reject value test.
+	scopegraphTest{"settlement invalid reject test", "settlement", "invalidreject", []expectedScopeEntry{},
+		"'reject' statement value must be an Error: Type 'String' does not define or export member 'Message', which is required by type 'Error'", ""},
+
 	/////////// Break ///////////
 
 	// Normal break statement.
