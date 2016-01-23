@@ -33,22 +33,49 @@ func (sb *scopeBuilder) scopeArrowExpression(node compilergraph.GraphNode) proto
 	}
 
 	// Ensure the destination is a named node, is assignable, and has the proper type.
-	destinationName, isNamed := sb.getNamedScopeForScope(destinationScope)
-	if !isNamed {
-		sb.decorateWithError(node, "Left hand side of arrow expression must be named")
-		return newScope().Invalid().GetScope()
+	if !destinationScope.GetIsAnonymousReference() {
+		destinationName, isNamed := sb.getNamedScopeForScope(destinationScope)
+		if !isNamed {
+			sb.decorateWithError(node, "Destination of arrow expression must be named")
+			return newScope().Invalid().GetScope()
+		}
+
+		if !destinationName.IsAssignable() {
+			sb.decorateWithError(node, "Destinationof arrow expression must be assignable. %v %v is not assignable", destinationName.Title(), destinationName.Name())
+			return newScope().Invalid().GetScope()
+		}
+
+		// The destination must match the received type.
+		destinationType := destinationName.ValueType()
+		if serr := receivedType.CheckSubTypeOf(destinationType); serr != nil {
+			sb.decorateWithError(node, "Destination of arrow expression must accept type %v: %v", receivedType, serr)
+			return newScope().Invalid().GetScope()
+		}
 	}
 
-	if !destinationName.IsAssignable() {
-		sb.decorateWithError(node, "Left hand side of arrow expression must be assignable. %v %v is not assignable", destinationName.Title(), destinationName.Name())
-		return newScope().Invalid().GetScope()
-	}
+	// Scope the rejection (if any).
+	rejectionNode, hasRejection := node.TryGetNode(parser.NodeArrowExpressionRejection)
+	if hasRejection {
+		rejectionScope := sb.getScope(rejectionNode)
+		if !rejectionScope.GetIsAnonymousReference() {
+			rejectionName, isNamed := sb.getNamedScopeForScope(rejectionScope)
+			if !isNamed {
+				sb.decorateWithError(node, "Rejection of arrow expression must be named")
+				return newScope().Invalid().GetScope()
+			}
 
-	// The destination must match the received type.
-	destinationType := destinationName.ValueType()
-	if serr := receivedType.CheckSubTypeOf(destinationType); serr != nil {
-		sb.decorateWithError(node, "Left hand side of arrow expression must accept type %v: %v", receivedType, serr)
-		return newScope().Invalid().GetScope()
+			if !rejectionName.IsAssignable() {
+				sb.decorateWithError(node, "Rejection of arrow expression must be assignable. %v %v is not assignable", rejectionName.Title(), rejectionName.Name())
+				return newScope().Invalid().GetScope()
+			}
+
+			// The rejection must match the error type.
+			rejectionType := rejectionName.ValueType()
+			if serr := sb.sg.tdg.ErrorTypeReference().CheckSubTypeOf(rejectionType); serr != nil {
+				sb.decorateWithError(node, "Rejection of arrow expression must accept type Error: %v", serr)
+				return newScope().Invalid().GetScope()
+			}
+		}
 	}
 
 	return newScope().Valid().Resolving(receivedType).GetScope()

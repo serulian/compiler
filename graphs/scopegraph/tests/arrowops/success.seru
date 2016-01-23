@@ -21,3 +21,13 @@ function<void> NullableTest() {
 	var<int?> someInt
 	someInt <- promise
 }
+
+function<void> RejectionTest() {
+	var<SomePromise> promise = SomePromise.new()
+	var<int?> someInt
+	var<error?> someError
+
+	someInt, _ <- promise
+	_, someError <- promise
+	_, _ <- promise
+}

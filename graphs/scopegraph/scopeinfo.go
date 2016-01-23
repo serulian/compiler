@@ -132,6 +132,13 @@ func (sib *scopeInfoBuilder) ForNamedScopeUnderType(info namedScopeInfo, parentT
 	return sib.ForNamedScope(info).Resolving(transformedValueType)
 }
 
+// ForAnonymousScope points the scope to an anonymously scope.
+func (sib *scopeInfoBuilder) ForAnonymousScope(typegraph *typegraph.TypeGraph) *scopeInfoBuilder {
+	trueValue := true
+	sib.info.IsAnonymousReference = &trueValue
+	return sib.Resolving(typegraph.VoidTypeReference()).Valid()
+}
+
 // CallsOperator marks the scope as being the result of a call to the specified operator.
 func (sib *scopeInfoBuilder) CallsOperator(op typegraph.TGMember) *scopeInfoBuilder {
 	sib.info.CalledOpReference = &proto.ScopeReference{}
