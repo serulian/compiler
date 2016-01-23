@@ -163,6 +163,7 @@ var parserTests = []parserTest{
 
 	{"return no value statement test", "statement/return"},
 	{"return value statement test", "statement/return_value"},
+	{"reject value statement test", "statement/reject"},
 
 	{"jump statements test", "statement/jump"},
 

@@ -58,6 +58,7 @@ const (
 	NodeTypeLoopStatement        // A for statement
 	NodeTypeConditionalStatement // An if statement
 	NodeTypeReturnStatement      // A return statement
+	NodeTypeRejectStatement      // A reject statement
 	NodeTypeBreakStatement       // A break statement
 	NodeTypeContinueStatement    // A continue statement
 	NodeTypeVariableStatement    // A variable statement
@@ -333,6 +334,11 @@ const (
 	// NodeTypeReturnStatement
 	//
 	NodeReturnStatementValue = "return-expr"
+
+	//
+	// NodeTypeRejectStatement
+	//
+	NodeRejectStatementValue = "reject-expr"
 
 	//
 	// NodeTypeBreakStatement

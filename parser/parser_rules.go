@@ -1119,6 +1119,10 @@ func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
 	case p.isKeyword("return"):
 		return p.consumeReturnStatement(), true
 
+	// Reject statement.
+	case p.isKeyword("reject"):
+		return p.consumeRejectStatement(), true
+
 	// Break statement.
 	case p.isKeyword("break"):
 		return p.consumeJumpStatement("break", NodeTypeBreakStatement, NodeBreakStatementLabel), true
@@ -1473,6 +1477,20 @@ func (p *sourceParser) consumeIfStatement() AstNode {
 	}
 
 	return conditionalNode
+}
+
+// consumeRejectStatement consumes a reject statement.
+//
+// Forms:
+// reject someExpr
+func (p *sourceParser) consumeRejectStatement() AstNode {
+	rejectNode := p.startNode(NodeTypeRejectStatement)
+	defer p.finishNode()
+
+	// reject
+	p.consumeKeyword("reject")
+	rejectNode.Connect(NodeRejectStatementValue, p.consumeExpression(consumeExpressionAllowMaps))
+	return rejectNode
 }
 
 // consumeReturnStatement consumes a return statement.
