@@ -38,7 +38,7 @@ $module('arrow', function () {
       });
       return $promise.build($state);
     };
-    $instance.Catch = function (reject) {
+    $instance.Catch = function (rejection) {
       var $this = this;
       var $state = $t.sm(function ($callback) {
         while (true) {

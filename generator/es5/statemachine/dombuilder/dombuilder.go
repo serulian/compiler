@@ -260,6 +260,10 @@ func (db *domBuilder) buildStatements(node compilergraph.GraphNode) (codedom.Sta
 		stm := db.buildReturnStatement(node)
 		return stm, stm
 
+	case parser.NodeTypeRejectStatement:
+		stm := db.buildRejectStatement(node)
+		return stm, stm
+
 	case parser.NodeTypeConditionalStatement:
 		return db.buildConditionalStatement(node)
 

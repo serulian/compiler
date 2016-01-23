@@ -64,6 +64,12 @@ func (db *domBuilder) buildReturnStatement(node compilergraph.GraphNode) codedom
 	return codedom.Resolution(returnExpr, node)
 }
 
+// buildRejectStatement builds the CodeDOM for a reject statement.
+func (db *domBuilder) buildRejectStatement(node compilergraph.GraphNode) codedom.Statement {
+	rejectExpr := db.getExpression(node, parser.NodeRejectStatementValue)
+	return codedom.Rejection(rejectExpr, node)
+}
+
 // buildConditionalStatement builds the CodeDOM for a conditional statement.
 func (db *domBuilder) buildConditionalStatement(node compilergraph.GraphNode) (codedom.Statement, codedom.Statement) {
 	conditionalExpr := db.getExpression(node, parser.NodeConditionalStatementConditional)
