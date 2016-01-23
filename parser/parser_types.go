@@ -381,7 +381,8 @@ const (
 	//
 	// NodeTypeArrowExpression
 	//
-	NodeArrowExpressionDestination = "arrow-expression-left"
+	NodeArrowExpressionDestination = "arrow-expression-destination"
+	NodeArrowExpressionRejection   = "arrow-expression-rejection"
 	NodeArrowExpressionSource      = "arrow-expression-right"
 
 	//

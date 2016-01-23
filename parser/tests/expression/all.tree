@@ -38,7 +38,7 @@ NodeTypeFile
                   end-rune = 44
                   input-source = all expr test
                   start-rune = 39
-                  arrow-expression-left =>
+                  arrow-expression-destination =>
                     NodeTypeIdentifierExpression
                       end-rune = 39
                       identexpr-name = a

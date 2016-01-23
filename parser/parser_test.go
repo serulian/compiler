@@ -239,7 +239,7 @@ func TestParser(t *testing.T) {
 		}
 
 		rootNode := Parse(createAstNode, reportImport, compilercommon.InputSource(test.name), test.input())
-		parseTree := getParseTree((rootNode).(*testNode), 0)
+		parseTree := getParseTree(t, (rootNode).(*testNode), 0)
 		assert := assert.New(t)
 
 		expected := strings.TrimSpace(test.tree())
@@ -255,7 +255,7 @@ func TestParser(t *testing.T) {
 	}
 }
 
-func getParseTree(currentNode *testNode, indentation int) string {
+func getParseTree(t *testing.T, currentNode *testNode, indentation int) string {
 	parseTree := ""
 	parseTree = parseTree + strings.Repeat(" ", indentation)
 	parseTree = parseTree + fmt.Sprintf("%v", currentNode.nodeType)
@@ -289,7 +289,11 @@ func getParseTree(currentNode *testNode, indentation int) string {
 		parseTree = parseTree + "\n"
 
 		for e := value.Front(); e != nil; e = e.Next() {
-			parseTree = parseTree + getParseTree(e.Value.(*testNode), indentation+4)
+			if !assert.NotNil(t, e.Value, "Got nil value for predicate %v", key) {
+				continue
+			}
+
+			parseTree = parseTree + getParseTree(t, e.Value.(*testNode), indentation+4)
 		}
 	}
 
