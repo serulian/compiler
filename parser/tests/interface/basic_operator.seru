@@ -1,3 +1,4 @@
 interface ISomeInterface {
 	operator Plus(left ISomeInterface, right ISomeInterface) {}
+	operator Index(index any)
 }

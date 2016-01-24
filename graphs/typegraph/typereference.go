@@ -475,7 +475,7 @@ func buildSubtypeMismatchError(left TypeReference, right TypeReference, memberNa
 		namePredicate = NodePredicateOperatorName
 	}
 
-	_, leftExists := left.referredTypeNode().
+	leftNode, leftExists := left.referredTypeNode().
 		StartQuery().
 		Out(NodePredicateMember, NodePredicateTypeOperator).
 		Has(namePredicate, memberName).
@@ -484,6 +484,11 @@ func buildSubtypeMismatchError(left TypeReference, right TypeReference, memberNa
 	if !leftExists {
 		return fmt.Errorf("Type '%v' does not define or export %s '%s', which is required by type '%v'", left, memberKind, memberName, right)
 	} else {
+		member := TGMember{leftNode, left.tdg}
+		if !member.IsExported() {
+			return fmt.Errorf("Type '%v' does not export %s '%s', which is required by type '%v'", left, memberKind, memberName, right)
+		}
+
 		// TODO(jschorr): Be nice to have specific errors here, but it'll require a lot of manual checking.
 		return fmt.Errorf("%s '%s' under type '%v' does not match that defined in type '%v'", memberKind, memberName, left, right)
 	}

@@ -565,7 +565,14 @@ func (p *sourceParser) consumeOperator(option typeMemberOption) AstNode {
 		return operatorNode
 	}
 
-	// Operators always need bodies.
+	// Operators always need bodies in classes and sometimes in interfaces.
+	if option == typeMemberDeclaration {
+		if !p.isToken(tokenTypeLeftBrace) {
+			p.consumeStatementTerminator()
+			return operatorNode
+		}
+	}
+
 	operatorNode.Connect(NodePredicateBody, p.consumeStatementBlock(statementBlockWithTerminator))
 	return operatorNode
 }
