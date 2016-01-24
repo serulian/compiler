@@ -374,16 +374,16 @@ const (
 	NodeExpressionStatementExpression = "expr-statement-expr"
 
 	//
+	// NodeTypeArrowStatement
+	//
+	NodeArrowStatementDestination = "arrow-statement-destination"
+	NodeArrowStatementRejection   = "arrow-statement-rejection"
+	NodeArrowStatementSource      = "arrow-statement-right"
+
+	//
 	// NodeTypeAwaitExpression
 	//
 	NodeAwaitExpressionSource = "await-expression-source"
-
-	//
-	// NodeTypeArrowExpression
-	//
-	NodeArrowExpressionDestination = "arrow-expression-destination"
-	NodeArrowExpressionRejection   = "arrow-expression-rejection"
-	NodeArrowExpressionSource      = "arrow-expression-right"
 
 	//
 	// NodeTypeLambdaExpression

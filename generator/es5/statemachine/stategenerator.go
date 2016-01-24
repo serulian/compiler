@@ -175,7 +175,6 @@ func (sg *stateGenerator) addVariable(name string) string {
 func (sg *stateGenerator) jumpTo(targetState *state) string {
 	return fmt.Sprintf(`
 		$state.current = %v;
-		continue;
 	`, targetState.ID)
 }
 
@@ -250,6 +249,7 @@ func (sg *stateGenerator) generateStates(statement codedom.Statement, option gen
 		newState := sg.newState()
 		if statement.IsReferenceable() {
 			currentState.pushSource(sg.jumpTo(newState))
+			currentState.pushSource("continue;")
 		}
 	}
 
@@ -281,6 +281,9 @@ func (sg *stateGenerator) generateStates(statement codedom.Statement, option gen
 
 	case *codedom.UnconditionalJumpNode:
 		sg.generateUnconditionalJump(e)
+
+	case *codedom.ArrowPromiseNode:
+		sg.generateArrowPromise(e)
 
 	default:
 		panic(fmt.Sprintf("Unknown CodeDOM statement: %T", statement))

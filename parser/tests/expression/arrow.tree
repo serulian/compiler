@@ -18,13 +18,13 @@ NodeTypeFile
               end-rune = 57
               input-source = arrow expr test
               start-rune = 33
-              arrow-expression-destination =>
+              arrow-statement-destination =>
                 NodeTypeIdentifierExpression
                   end-rune = 40
                   identexpr-name = someExpr
                   input-source = arrow expr test
                   start-rune = 33
-              arrow-expression-right =>
+              arrow-statement-right =>
                 NodeTypeIdentifierExpression
                   end-rune = 57
                   identexpr-name = someOtherExpr
@@ -34,19 +34,19 @@ NodeTypeFile
               end-rune = 78
               input-source = arrow expr test
               start-rune = 60
-              arrow-expression-destination =>
+              arrow-statement-destination =>
                 NodeTypeIdentifierExpression
                   end-rune = 60
                   identexpr-name = a
                   input-source = arrow expr test
                   start-rune = 60
-              arrow-expression-rejection =>
+              arrow-statement-rejection =>
                 NodeTypeIdentifierExpression
                   end-rune = 63
                   identexpr-name = b
                   input-source = arrow expr test
                   start-rune = 63
-              arrow-expression-right =>
+              arrow-statement-right =>
                 NodeTypeIdentifierExpression
                   end-rune = 78
                   identexpr-name = somePromise

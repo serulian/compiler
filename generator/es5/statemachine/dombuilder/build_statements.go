@@ -129,18 +129,9 @@ func (db *domBuilder) buildLoopStatement(node compilergraph.GraphNode) (codedom.
 
 // buildAssignStatement builds the CodeDOM for an assignment statement.
 func (db *domBuilder) buildAssignStatement(node compilergraph.GraphNode) codedom.Statement {
-	// TODO: handle multiple assignment.
-	nameScope, _ := db.scopegraph.GetScope(node.GetNode(parser.NodeAssignStatementName))
-	namedReference, _ := db.scopegraph.GetReferencedName(nameScope)
-
+	targetNode := node.GetNode(parser.NodeAssignStatementName)
 	exprValue := db.getExpression(node, parser.NodeAssignStatementValue)
-	if namedReference.IsLocal() {
-		return codedom.ExpressionStatement(codedom.LocalAssignment(namedReference.Name(), exprValue, node), node)
-	} else {
-		member, _ := namedReference.Member()
-		nameExpr := db.getExpression(node, parser.NodeAssignStatementName)
-		return codedom.ExpressionStatement(codedom.MemberAssignment(member, nameExpr, exprValue, node), node)
-	}
+	return codedom.ExpressionStatement(db.buildAssignmentExpression(targetNode, exprValue, node), node)
 }
 
 // buildVarStatement builds the CodeDOM for a variable statement.
@@ -237,4 +228,49 @@ func (db *domBuilder) buildMatchStatement(node compilergraph.GraphNode) (codedom
 	}
 
 	return startStatement, finalStatement
+}
+
+// buildAssignmentExpression builds an assignment expression for assigning the given value to the target node.
+func (db *domBuilder) buildAssignmentExpression(targetNode compilergraph.GraphNode, value codedom.Expression, basisNode compilergraph.GraphNode) codedom.Expression {
+	targetScope, _ := db.scopegraph.GetScope(targetNode)
+	namedReference, _ := db.scopegraph.GetReferencedName(targetScope)
+
+	if namedReference.IsLocal() {
+		return codedom.LocalAssignment(namedReference.Name(), value, basisNode)
+	} else {
+		member, _ := namedReference.Member()
+		return codedom.MemberAssignment(member, db.buildExpression(targetNode), value, basisNode)
+	}
+}
+
+// buildArrowStatement builds the CodeDOM for an arrow statement.
+func (db *domBuilder) buildArrowStatement(node compilergraph.GraphNode) (codedom.Statement, codedom.Statement) {
+	sourceExpr := codedom.RuntimeFunctionCall(
+		codedom.TranslatePromiseFunction,
+		[]codedom.Expression{db.getExpression(node, parser.NodeArrowStatementSource)},
+		node)
+
+	destinationNode := node.GetNode(parser.NodeArrowStatementDestination)
+	destinationScope, _ := db.scopegraph.GetScope(destinationNode)
+
+	var destinationTarget codedom.Expression = nil
+	var rejectionTarget codedom.Expression = nil
+
+	// Retrieve the expression of the destination variable.
+	if !destinationScope.GetIsAnonymousReference() {
+		destinationTarget = db.buildAssignmentExpression(destinationNode, codedom.LocalReference("resolved", node), node)
+	}
+
+	// Retrieve the expression of the rejection variable.
+	rejectionNode, hasRejection := node.TryGetNode(parser.NodeArrowStatementRejection)
+	if hasRejection {
+		rejectionScope, _ := db.scopegraph.GetScope(rejectionNode)
+		if !rejectionScope.GetIsAnonymousReference() {
+			rejectionTarget = db.buildAssignmentExpression(rejectionNode, codedom.LocalReference("rejected", node), node)
+		}
+	}
+
+	empty := codedom.EmptyStatement(node)
+	promise := codedom.ArrowPromise(sourceExpr, destinationTarget, rejectionTarget, empty, node)
+	return promise, empty
 }

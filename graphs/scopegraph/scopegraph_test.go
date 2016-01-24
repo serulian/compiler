@@ -377,12 +377,11 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
-	/////////// Arrow operator expression ///////////
+	/////////// Arrow operator ///////////
 
 	scopegraphTest{"arrow operator success test", "arrowops", "success",
 		[]expectedScopeEntry{
 			expectedScopeEntry{"await", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
-			expectedScopeEntry{"arrow", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
 		},
 		"", ""},
 
@@ -392,11 +391,11 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"arrow operator invalid destination test", "arrowops", "invaliddestination",
 		[]expectedScopeEntry{},
-		"Destination of arrow expression must accept type Boolean: 'Boolean' cannot be used in place of non-interface 'Integer'", ""},
+		"Destination of arrow statement must accept type Boolean: 'Boolean' cannot be used in place of non-interface 'Integer'", ""},
 
 	scopegraphTest{"arrow operator invalid rejection test", "arrowops", "invalidrejection",
 		[]expectedScopeEntry{},
-		"Rejection of arrow expression must accept type Error: 'Error' cannot be used in place of non-interface 'Boolean'", ""},
+		"Rejection of arrow statement must accept type Error: 'Error' cannot be used in place of non-interface 'Boolean'", ""},
 
 	/////////// List literal expression ///////////
 

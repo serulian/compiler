@@ -142,3 +142,25 @@ func UnconditionalJump(target Statement, basis compilergraph.GraphNode) Statemen
 		target,
 	}
 }
+
+// ArrowPromiseNode represents a wait on a promise expression and assignment to a
+// resolution expression and/or rejection expression once the promise returns.
+type ArrowPromiseNode struct {
+	statementBase
+	ChildExpression      Expression // The child expression containing the promise.
+	ResolutionAssignment Expression // Expression assigning the resolution value, if any.
+	RejectionAssignment  Expression // Expression assigning the rejection value, if any.
+	Target               Statement  // The statement to which the await will jump.
+}
+
+func ArrowPromise(childExpr Expression, resolution Expression, rejection Expression, targetState Statement, basis compilergraph.GraphNode) Statement {
+	return &ArrowPromiseNode{
+		statementBase{domBase{basis}, false},
+		childExpr,
+		resolution,
+		rejection,
+		targetState,
+	}
+}
+
+func (j *ArrowPromiseNode) IsJump() bool { return true }

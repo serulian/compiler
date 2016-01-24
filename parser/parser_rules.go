@@ -1841,14 +1841,14 @@ func (p *sourceParser) tryConsumeArrowStatement() (AstNode, bool) {
 	arrowNode := p.startNode(NodeTypeArrowStatement)
 	defer p.finishNode()
 
-	arrowNode.Connect(NodeArrowExpressionDestination, p.consumeAssignableExpression())
+	arrowNode.Connect(NodeArrowStatementDestination, p.consumeAssignableExpression())
 
 	if _, ok := p.tryConsume(tokenTypeComma); ok {
-		arrowNode.Connect(NodeArrowExpressionRejection, p.consumeAssignableExpression())
+		arrowNode.Connect(NodeArrowStatementRejection, p.consumeAssignableExpression())
 	}
 
 	p.consume(tokenTypeArrowPortOperator)
-	arrowNode.Connect(NodeArrowExpressionSource, p.consumeNonArrowExpression())
+	arrowNode.Connect(NodeArrowStatementSource, p.consumeNonArrowExpression())
 	return arrowNode, true
 }
 

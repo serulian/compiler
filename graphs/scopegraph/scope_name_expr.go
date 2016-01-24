@@ -16,7 +16,7 @@ var _ = fmt.Printf
 
 const ANONYMOUS_REFERENCE = "_"
 
-var ALLOWED_ANONYMOUS = []string{parser.NodeArrowExpressionDestination, parser.NodeArrowExpressionRejection}
+var ALLOWED_ANONYMOUS = []string{parser.NodeArrowStatementDestination, parser.NodeArrowStatementRejection}
 
 // scopeIdentifierExpression scopes an identifier expression in the SRG.
 func (sb *scopeBuilder) scopeIdentifierExpression(node compilergraph.GraphNode) proto.ScopeInfo {

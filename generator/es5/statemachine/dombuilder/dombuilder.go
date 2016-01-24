@@ -130,10 +130,7 @@ func (db *domBuilder) buildExpression(node compilergraph.GraphNode) codedom.Expr
 	case parser.NodeStreamMemberAccessExpression:
 		return db.buildStreamMemberAccessExpression(node)
 
-	// Arrow Expressions.
-	case parser.NodeTypeArrowExpression:
-		return db.buildArrowExpression(node)
-
+	// Await Expression.
 	case parser.NodeTypeAwaitExpression:
 		return db.buildAwaitExpression(node)
 
@@ -296,6 +293,9 @@ func (db *domBuilder) buildStatements(node compilergraph.GraphNode) (codedom.Sta
 
 	case parser.NodeTypeMatchStatement:
 		return db.buildMatchStatement(node)
+
+	case parser.NodeTypeArrowStatement:
+		return db.buildArrowStatement(node)
 
 	default:
 		panic(fmt.Sprintf("Unknown SRG statement node: %s", node.Kind))

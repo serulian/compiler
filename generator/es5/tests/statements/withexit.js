@@ -70,7 +70,7 @@ $module('withexit', function () {
             }).catch(function (err) {
               $state.reject(err);
             });
-            return;
+            continue;
 
           case 5:
             012;
