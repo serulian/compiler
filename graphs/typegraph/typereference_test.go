@@ -590,6 +590,42 @@ func TestSubtypes(t *testing.T) {
 						[]testParam{testParam{"someparam", "T"}}},
 				},
 			},
+
+			// interface IWithInstanceOperator<T> {
+			//    operator<T> Index(index any) {}
+			// }
+			testType{"interface", "IWithInstanceOperator", []testGeneric{testGeneric{"T", ""}},
+				[]testMember{
+					testMember{"operator", "Index", "T", []testGeneric{},
+						[]testParam{
+							testParam{"index", "any"},
+						}},
+				},
+			},
+
+			// class IntInstanceOperator {
+			//    operator<int> Index(index any) {}
+			// }
+			testType{"class", "IntInstanceOperator", []testGeneric{},
+				[]testMember{
+					testMember{"operator", "Index", "int", []testGeneric{},
+						[]testParam{
+							testParam{"index", "any"},
+						}},
+				},
+			},
+
+			// class BoolInstanceOperator {
+			//    operator<bool> Index(index any) {}
+			// }
+			testType{"class", "BoolInstanceOperator", []testGeneric{},
+				[]testMember{
+					testMember{"operator", "Index", "bool", []testGeneric{},
+						[]testParam{
+							testParam{"index", "any"},
+						}},
+				},
+			},
 		},
 	)
 
@@ -652,9 +688,17 @@ func TestSubtypes(t *testing.T) {
 
 		// Nullable.
 		subtypeCheckTest{"AnotherClass subtype of AnotherClass?", "AnotherClass", "AnotherClass?", ""},
+		subtypeCheckTest{"AnotherClass? subtype of AnotherClass?", "AnotherClass?", "AnotherClass?", ""},
 
 		subtypeCheckTest{"AnotherClass not subtype of SomeClass?", "AnotherClass", "SomeClass?",
 			"'AnotherClass' cannot be used in place of non-interface 'SomeClass?'"},
+
+		// Instance operator indexer check.
+		subtypeCheckTest{"IntInstanceOperator subtype of IWithInstanceOperator<int>", "IntInstanceOperator", "IWithInstanceOperator<int>", ""},
+		subtypeCheckTest{"BoolInstanceOperator subtype of IWithInstanceOperator<bool>", "BoolInstanceOperator", "IWithInstanceOperator<bool>", ""},
+
+		subtypeCheckTest{"IntInstanceOperator not subtype of IWithInstanceOperator<bool>", "IntInstanceOperator", "IWithInstanceOperator<bool>",
+			"operator 'index' under type 'IntInstanceOperator' does not match that defined in type 'IWithInstanceOperator<bool>'"},
 	}
 
 	for _, test := range tests {

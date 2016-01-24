@@ -649,7 +649,11 @@ func (mb *dependentMemberBuilder) checkAndComputeOperator(memberNode compilergra
 	memberNode.DecorateWithTagged(NodePredicateMemberType, memberType)
 
 	// Decorate the member with its signature.
-	mb.decorateWithSig(memberNode, mb.tdg.AnyTypeReference())
+	if definition.IsStatic {
+		mb.decorateWithSig(memberNode, mb.tdg.AnyTypeReference())
+	} else {
+		mb.decorateWithSig(memberNode, memberType)
+	}
 }
 
 // decorateWithSig decorates the given member node with a unique signature for fast subtype checking.

@@ -467,15 +467,18 @@ func buildSubtypeMismatchError(left TypeReference, right TypeReference, memberNa
 	}
 
 	var memberKind = "member"
+	var namePredicate = NodePredicateMemberName
+
 	if rightMember.Kind == NodeTypeOperator {
 		memberKind = "operator"
 		memberName = rightMember.Get(NodePredicateOperatorName)
+		namePredicate = NodePredicateOperatorName
 	}
 
 	_, leftExists := left.referredTypeNode().
 		StartQuery().
 		Out(NodePredicateMember, NodePredicateTypeOperator).
-		Has(NodePredicateMemberName, memberName).
+		Has(namePredicate, memberName).
 		TryGetNode()
 
 	if !leftExists {
