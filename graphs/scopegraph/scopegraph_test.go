@@ -72,6 +72,20 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"empty block int test", "empty", "missingreturn", []expectedScopeEntry{},
 		"Expected return value of type 'Integer' but not all paths return a value", ""},
 
+	/////////// Settling (return and reject) ///////////
+
+	// Success test.
+	scopegraphTest{"settlement statements success test", "settlement", "success", []expectedScopeEntry{},
+		"", ""},
+
+	// Missing branch test.
+	scopegraphTest{"settlement missing branch test", "settlement", "missingbranch", []expectedScopeEntry{},
+		"Expected return value of type 'Integer' but not all paths return a value", ""},
+
+	// Invalid reject value test.
+	scopegraphTest{"settlement invalid reject test", "settlement", "invalidreject", []expectedScopeEntry{},
+		"'reject' statement value must be an Error: Type 'String' does not define or export member 'Message', which is required by type 'Error'", ""},
+
 	/////////// Break ///////////
 
 	// Normal break statement.
@@ -297,6 +311,9 @@ var scopeGraphTests = []scopegraphTest{
 
 	/////////// Identifier expression ///////////
 
+	scopegraphTest{"identifier expr invalid anonymous test", "identexpr", "anonymous", []expectedScopeEntry{},
+		"Anonymous identifier '_' cannot be used as a value", ""},
+
 	scopegraphTest{"identifier expr unknown name test", "identexpr", "unknown", []expectedScopeEntry{},
 		"The name 'unknown' could not be found in this context", ""},
 
@@ -360,12 +377,11 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
-	/////////// Arrow operator expression ///////////
+	/////////// Arrow operator ///////////
 
 	scopegraphTest{"arrow operator success test", "arrowops", "success",
 		[]expectedScopeEntry{
 			expectedScopeEntry{"await", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
-			expectedScopeEntry{"arrow", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
 		},
 		"", ""},
 
@@ -375,7 +391,11 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"arrow operator invalid destination test", "arrowops", "invaliddestination",
 		[]expectedScopeEntry{},
-		"Left hand side of arrow expression must accept type Boolean: 'Boolean' cannot be used in place of non-interface 'Integer'", ""},
+		"Destination of arrow statement must accept type Boolean: 'Boolean' cannot be used in place of non-interface 'Integer'", ""},
+
+	scopegraphTest{"arrow operator invalid rejection test", "arrowops", "invalidrejection",
+		[]expectedScopeEntry{},
+		"Rejection of arrow statement must accept type Error: 'Error' cannot be used in place of non-interface 'Boolean'", ""},
 
 	/////////// List literal expression ///////////
 

@@ -1119,6 +1119,10 @@ func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
 	case p.isKeyword("return"):
 		return p.consumeReturnStatement(), true
 
+	// Reject statement.
+	case p.isKeyword("reject"):
+		return p.consumeRejectStatement(), true
+
 	// Break statement.
 	case p.isKeyword("break"):
 		return p.consumeJumpStatement("break", NodeTypeBreakStatement, NodeBreakStatementLabel), true
@@ -1128,6 +1132,11 @@ func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
 		return p.consumeJumpStatement("continue", NodeTypeContinueStatement, NodeContinueStatementLabel), true
 
 	default:
+		// Look for an arrow statement.
+		if arrowNode, ok := p.tryConsumeArrowStatement(); ok {
+			return arrowNode, true
+		}
+
 		// Look for an assignment statement.
 		if assignNode, ok := p.tryConsumeAssignStatement(); ok {
 			return assignNode, true
@@ -1149,11 +1158,19 @@ func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
 	}
 }
 
+// consumeAssignableExpression consume an expression which is assignable.
+func (p *sourceParser) consumeAssignableExpression() AstNode {
+	if memberAccess, ok := p.tryConsumeCallAccessExpression(); ok {
+		return memberAccess
+	} else {
+		return p.consumeIdentifierExpression()
+	}
+}
+
 // tryConsumeAssignStatement attempts to consume an assignment statement.
 //
 // Forms:
 // a = expression
-// a, b = expression
 // a.b = expression
 func (p *sourceParser) tryConsumeAssignStatement() (AstNode, bool) {
 	// To determine if we have an assignment statement, we need to perform
@@ -1166,18 +1183,8 @@ func (p *sourceParser) tryConsumeAssignStatement() (AstNode, bool) {
 	assignNode := p.startNode(NodeTypeAssignStatement)
 	defer p.finishNode()
 
-	// Consume the identifiers or member access.
-	for {
-		if memberAccess, ok := p.tryConsumeCallAccessExpression(); ok {
-			assignNode.Connect(NodeAssignStatementName, memberAccess)
-		} else {
-			assignNode.Connect(NodeAssignStatementName, p.consumeIdentifierExpression())
-		}
-
-		if _, ok := p.tryConsume(tokenTypeComma); !ok {
-			break
-		}
-	}
+	// Consume the identifier or member access.
+	assignNode.Connect(NodeAssignStatementName, p.consumeAssignableExpression())
 
 	p.consume(tokenTypeEquals)
 	assignNode.Connect(NodeAssignStatementValue, p.consumeExpression(consumeExpressionAllowMaps))
@@ -1475,6 +1482,20 @@ func (p *sourceParser) consumeIfStatement() AstNode {
 	return conditionalNode
 }
 
+// consumeRejectStatement consumes a reject statement.
+//
+// Forms:
+// reject someExpr
+func (p *sourceParser) consumeRejectStatement() AstNode {
+	rejectNode := p.startNode(NodeTypeRejectStatement)
+	defer p.finishNode()
+
+	// reject
+	p.consumeKeyword("reject")
+	rejectNode.Connect(NodeRejectStatementValue, p.consumeExpression(consumeExpressionAllowMaps))
+	return rejectNode
+}
+
 // consumeReturnStatement consumes a return statement.
 //
 // Forms:
@@ -1540,7 +1561,7 @@ func (p *sourceParser) tryConsumeExpression(option consumeExpressionOption) (Ast
 	if option == consumeExpressionAllowMaps {
 		startToken := p.currentToken
 
-		node, found := p.oneOf(p.tryConsumeMapExpression, p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, p.tryConsumeArrowExpression)
+		node, found := p.oneOf(p.tryConsumeMapExpression, p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, p.tryConsumeNonArrowExpression)
 		if !found {
 			return node, false
 		}
@@ -1558,7 +1579,7 @@ func (p *sourceParser) tryConsumeExpression(option consumeExpressionOption) (Ast
 		}
 		return node, true
 	} else {
-		return p.oneOf(p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, p.tryConsumeArrowExpression)
+		return p.oneOf(p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, p.tryConsumeNonArrowExpression)
 	}
 }
 
@@ -1755,8 +1776,7 @@ func (p *sourceParser) consumeNonArrowExpression() AstNode {
 		return node
 	}
 
-	p.emitError("Expected expression, found: %s", p.currentToken.kind)
-	return nil
+	return p.createErrorNode("Expected expression, found: %s", p.currentToken.kind)
 }
 
 // tryConsumeAwaitExpression tries to consume an await expression.
@@ -1774,29 +1794,62 @@ func (p *sourceParser) tryConsumeAwaitExpression() (AstNode, bool) {
 	return exprNode, true
 }
 
-// tryConsumeArrowExpression tries to consumes an arrow expression.
-//
-// Form: a <- b
-func (p *sourceParser) tryConsumeArrowExpression() (AstNode, bool) {
-	currentToken := p.currentToken
+// lookaheadArrowStatement determines whether there is an arrow statement
+// at the current head of the lexer stream.
+func (p *sourceParser) lookaheadArrowStatement() bool {
+	t := p.newLookaheadTracker()
 
-	destinationNode, ok := p.tryConsumeNonArrowExpression()
-	if !ok {
+	for {
+		// Match the opening identifier or keyword (this).
+		if _, ok := t.matchToken(tokenTypeIdentifer, tokenTypeKeyword); !ok {
+			return false
+		}
+
+		// Match member access (optional).
+		for {
+			if _, ok := t.matchToken(tokenTypeDotAccessOperator); !ok {
+				break
+			}
+
+			if _, ok := t.matchToken(tokenTypeIdentifer); !ok {
+				return false
+			}
+		}
+
+		if _, ok := t.matchToken(tokenTypeComma); !ok {
+			break
+		}
+	}
+
+	if _, ok := t.matchToken(tokenTypeArrowPortOperator); !ok {
+		return false
+	}
+
+	return true
+}
+
+// tryConsumeArrowStatement tries to consumes an arrow statement.
+//
+// Forms:
+// a <- b
+// a, b <- c
+func (p *sourceParser) tryConsumeArrowStatement() (AstNode, bool) {
+	if !p.lookaheadArrowStatement() {
 		return nil, false
 	}
 
-	if _, ok := p.tryConsume(tokenTypeArrowPortOperator); !ok {
-		return destinationNode, true
-	}
-
-	exprNode := p.createNode(NodeTypeArrowExpression)
-	p.nodes.push(exprNode)
-	p.decorateStartRuneAndComments(exprNode, currentToken)
+	arrowNode := p.startNode(NodeTypeArrowStatement)
 	defer p.finishNode()
 
-	exprNode.Connect(NodeArrowExpressionDestination, destinationNode)
-	exprNode.Connect(NodeArrowExpressionSource, p.consumeNonArrowExpression())
-	return exprNode, true
+	arrowNode.Connect(NodeArrowStatementDestination, p.consumeAssignableExpression())
+
+	if _, ok := p.tryConsume(tokenTypeComma); ok {
+		arrowNode.Connect(NodeArrowStatementRejection, p.consumeAssignableExpression())
+	}
+
+	p.consume(tokenTypeArrowPortOperator)
+	arrowNode.Connect(NodeArrowStatementSource, p.consumeNonArrowExpression())
+	return arrowNode, true
 }
 
 // boe represents information a binary operator token and its associated node type.

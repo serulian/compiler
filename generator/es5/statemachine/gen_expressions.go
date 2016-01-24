@@ -302,6 +302,23 @@ func (eg *expressionGenerator) generateRuntineFunctionCall(runtimeCall *codedom.
 	return eg.templater.Execute("runtimecall", templateStr, data)
 }
 
+// generateNativeAccess generates the expression source for a native assign.
+func (eg *expressionGenerator) generateNativeAssign(nativeAssign *codedom.NativeAssignNode) string {
+	target := eg.generateExpression(nativeAssign.TargetExpression)
+	value := eg.generateExpression(nativeAssign.ValueExpression)
+
+	data := struct {
+		TargetExpression string
+		ValueExpression  string
+	}{target, value}
+
+	templateStr := `
+		{{ .TargetExpression }} = {{ .ValueExpression }}
+	`
+
+	return eg.templater.Execute("nativeassign", templateStr, data)
+}
+
 // generateNativeAccess generates the expression source for a native access to a member.
 func (eg *expressionGenerator) generateNativeAccess(nativeAccess *codedom.NativeAccessNode) string {
 	childExpr := eg.generateExpression(nativeAccess.ChildExpression)

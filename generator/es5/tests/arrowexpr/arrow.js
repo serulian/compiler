@@ -38,7 +38,7 @@ $module('arrow', function () {
       });
       return $promise.build($state);
     };
-    $instance.Catch = function (reject) {
+    $instance.Catch = function (rejection) {
       var $this = this;
       var $state = $t.sm(function ($callback) {
         while (true) {
@@ -63,17 +63,16 @@ $module('arrow', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            $promise.translate(p).then(function ($result0) {
-              $result = somebool = $result0;
+            $promise.translate(p).then(function (resolved) {
+              somebool = resolved;
               $state.current = 1;
               $callback($state);
-            }).catch(function (err) {
-              $state.reject(err);
+            }).catch(function (rejected) {
+              $state.reject(rejected);
             });
             return;
 
           case 1:
-            $result;
             $state.resolve(somebool);
             return;
 

@@ -172,6 +172,7 @@ var keywords = map[string]bool{
 	"if":       true,
 	"else":     true,
 	"return":   true,
+	"reject":   true,
 	"break":    true,
 	"continue": true,
 	"with":     true,

@@ -174,6 +174,9 @@ func (eg *expressionGenerator) generateExpression(expression codedom.Expression)
 	case *codedom.NativeAccessNode:
 		return eg.generateNativeAccess(e)
 
+	case *codedom.NativeAssignNode:
+		return eg.generateNativeAssign(e)
+
 	default:
 		panic(fmt.Sprintf("Unknown CodeDOM expression: %T", expression))
 	}

@@ -1,6 +1,5 @@
 function<void> SomeFunction() {
 	<- a
-	a <- b
 	a + b
 	a - b
 	a * b

@@ -1,0 +1,23 @@
+class SomeError {
+	property<string> Message {
+		get {
+			return 'hello'
+		}
+	}	
+}
+
+function<void> DoSomething() {
+	if true {
+		return
+	} else {
+		reject SomeError.new()
+	}
+}
+
+function<int> SomeValue() {
+	if true {
+		return 2
+	} else {
+		reject SomeError.new()
+	}
+}

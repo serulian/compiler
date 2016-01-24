@@ -5,8 +5,12 @@
 package statemachine
 
 import (
+	"fmt"
+
 	"github.com/serulian/compiler/generator/es5/codedom"
 )
+
+var _ = fmt.Printf
 
 // generateExpressionStatement generates the code for an expression statement.
 func (sg *stateGenerator) generateExpressionStatement(exprst *codedom.ExpressionStatementNode) {
@@ -26,7 +30,7 @@ func (sg *stateGenerator) generateUnconditionalJump(jump *codedom.UnconditionalJ
 
 	templateStr := `
 		{{ .Generator.JumpToStatement .Item.Target }}
-		return;
+		continue;
 	`
 
 	currentState.pushSource(sg.templater.Execute("unconditionaljump", templateStr, generatingItem{data, sg}))
@@ -49,8 +53,10 @@ func (sg *stateGenerator) generateConditionalJump(jump *codedom.ConditionalJumpN
 	templateStr := `
 		if ({{ .Item.ExpressionRef }}) {
 			{{ .Generator.JumpToStatement .Item.True }}
+			continue;
 		} else {
 			{{ .Generator.JumpToStatement .Item.False }}
+			continue;
 		}
 	`
 
@@ -116,4 +122,32 @@ func (sg *stateGenerator) generateRejection(rejection *codedom.RejectionNode) {
 	`
 
 	sg.pushSource(sg.templater.Execute("rejection", templateStr, generatingItem{rejection, sg}))
+}
+
+// generateArrowPromise generates the code for an arrow promise.
+func (sg *stateGenerator) generateArrowPromise(arrowPromise *codedom.ArrowPromiseNode) {
+	currentState := sg.currentState
+	sg.generateStates(arrowPromise.Target, generateNewState)
+
+	templateStr := `
+		({{ .Generator.AddTopLevelExpression .Item.ChildExpression }}).then(function(resolved) {
+			{{ if .Item.ResolutionAssignment }}
+				{{ .Generator.AddTopLevelExpression .Item.ResolutionAssignment }}
+			{{ end }}
+
+			{{ .Generator.JumpToStatement .Item.Target }}
+			$callback($state);
+		}).catch(function(rejected) {
+			{{ if .Item.RejectionAssignment }}
+				{{ .Generator.AddTopLevelExpression .Item.RejectionAssignment }}
+				{{ .Generator.JumpToStatement .Item.Target }}
+				$callback($state);
+			{{ else }}
+				$state.reject(rejected);
+			{{ end }}
+		});
+		return;
+	`
+
+	currentState.pushSource(sg.templater.Execute("arrowpromise", templateStr, generatingItem{arrowPromise, sg}))
 }

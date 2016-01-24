@@ -1,3 +1,4 @@
 function<void> SomeFunction() {
 	someExpr <- someOtherExpr
+	a, b <- somePromise
 }

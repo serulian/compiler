@@ -10,8 +10,8 @@ interface Stream<T> {
 
 @•typealias('error')
 interface Error {
+	property<string> Message { get }
 }
-
 
 @•typealias('promise')
 interface Promise<T> {

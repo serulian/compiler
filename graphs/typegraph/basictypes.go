@@ -62,6 +62,11 @@ func (t *TypeGraph) ReleasableTypeReference() TypeReference {
 	return t.NewTypeReference(t.ReleasableType())
 }
 
+// ErrorTypeReference returns a reference to the error type.
+func (t *TypeGraph) ErrorTypeReference() TypeReference {
+	return t.NewTypeReference(t.ErrorType())
+}
+
 // StringableTypeReference returns a reference to the stringable type.
 func (t *TypeGraph) StringableTypeReference() TypeReference {
 	return t.NewTypeReference(t.StringableType())
@@ -120,6 +125,11 @@ func (t *TypeGraph) MapType() TGTypeDecl {
 // ReleasableType returns the releasable type.
 func (t *TypeGraph) ReleasableType() TGTypeDecl {
 	return t.getAliasedType("releasable")
+}
+
+// ErrorType returns the error type.
+func (t *TypeGraph) ErrorType() TGTypeDecl {
+	return t.getAliasedType("error")
 }
 
 // getAliasedType returns the type defined for the given alias.

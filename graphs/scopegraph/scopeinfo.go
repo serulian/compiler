@@ -77,21 +77,35 @@ func (sib *scopeInfoBuilder) AssignableResolvedTypeOf(scope *proto.ScopeInfo) *s
 // ReturningTypeOf marks the scope as returning the return type of the given scope.
 func (sib *scopeInfoBuilder) ReturningTypeOf(scope *proto.ScopeInfo) *scopeInfoBuilder {
 	returnedValue := scope.GetReturnedType()
+	settlesValue := scope.GetIsSettlingScope()
+
 	sib.info.ReturnedType = &returnedValue
+	sib.info.IsSettlingScope = &settlesValue
 	return sib
 }
 
 // ReturningResolvedTypeOf marks the scope as returning the *resolved* type of the given scope.
 func (sib *scopeInfoBuilder) ReturningResolvedTypeOf(scope *proto.ScopeInfo) *scopeInfoBuilder {
 	resolvedValue := scope.GetResolvedType()
+	settlesScope := true
+
 	sib.info.ReturnedType = &resolvedValue
+	sib.info.IsSettlingScope = &settlesScope
 	return sib
 }
 
 // Returning marks the scope as returning a value of the given type.
-func (sib *scopeInfoBuilder) Returning(returning typegraph.TypeReference) *scopeInfoBuilder {
+func (sib *scopeInfoBuilder) Returning(returning typegraph.TypeReference, settlesScope bool) *scopeInfoBuilder {
 	returnedValue := returning.Value()
 	sib.info.ReturnedType = &returnedValue
+	sib.info.IsSettlingScope = &settlesScope
+	return sib
+}
+
+// IsSettlingScope marks the scope as settling the function.
+func (sib *scopeInfoBuilder) IsSettlingScope() *scopeInfoBuilder {
+	trueValue := true
+	sib.info.IsSettlingScope = &trueValue
 	return sib
 }
 
@@ -116,6 +130,13 @@ func (sib *scopeInfoBuilder) ForNamedScopeUnderModifiedType(info namedScopeInfo,
 func (sib *scopeInfoBuilder) ForNamedScopeUnderType(info namedScopeInfo, parentType typegraph.TypeReference) *scopeInfoBuilder {
 	transformedValueType := info.ValueType().TransformUnder(parentType)
 	return sib.ForNamedScope(info).Resolving(transformedValueType)
+}
+
+// ForAnonymousScope points the scope to an anonymously scope.
+func (sib *scopeInfoBuilder) ForAnonymousScope(typegraph *typegraph.TypeGraph) *scopeInfoBuilder {
+	trueValue := true
+	sib.info.IsAnonymousReference = &trueValue
+	return sib.Resolving(typegraph.VoidTypeReference()).Valid()
 }
 
 // CallsOperator marks the scope as being the result of a call to the specified operator.

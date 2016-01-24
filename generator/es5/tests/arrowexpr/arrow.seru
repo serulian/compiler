@@ -4,7 +4,7 @@ class SomePromise {
 		return this
 	}
 
-	function<promise<bool>> Catch(reject function<void>(error)) {
+	function<promise<bool>> Catch(rejection function<void>(error)) {
 		return this
 	}
 }

@@ -54,10 +54,12 @@ const (
 	NodeTypeParameter     // A parameter under a type member (function, iterator, etc)
 
 	// Statements
+	NodeTypeArrowStatement       // An arrow statement: a <- b
 	NodeTypeStatementBlock       // A block of statements
 	NodeTypeLoopStatement        // A for statement
 	NodeTypeConditionalStatement // An if statement
 	NodeTypeReturnStatement      // A return statement
+	NodeTypeRejectStatement      // A reject statement
 	NodeTypeBreakStatement       // A break statement
 	NodeTypeContinueStatement    // A continue statement
 	NodeTypeVariableStatement    // A variable statement
@@ -72,7 +74,6 @@ const (
 
 	// Expressions
 	NodeTypeAwaitExpression // An await expression: <- a
-	NodeTypeArrowExpression // An arrow expression: a <- b
 
 	NodeTypeLambdaExpression // A lambda expression
 
@@ -335,6 +336,11 @@ const (
 	NodeReturnStatementValue = "return-expr"
 
 	//
+	// NodeTypeRejectStatement
+	//
+	NodeRejectStatementValue = "reject-expr"
+
+	//
 	// NodeTypeBreakStatement
 	//
 	NodeBreakStatementLabel = "statement-label-destination"
@@ -368,15 +374,16 @@ const (
 	NodeExpressionStatementExpression = "expr-statement-expr"
 
 	//
+	// NodeTypeArrowStatement
+	//
+	NodeArrowStatementDestination = "arrow-statement-destination"
+	NodeArrowStatementRejection   = "arrow-statement-rejection"
+	NodeArrowStatementSource      = "arrow-statement-right"
+
+	//
 	// NodeTypeAwaitExpression
 	//
 	NodeAwaitExpressionSource = "await-expression-source"
-
-	//
-	// NodeTypeArrowExpression
-	//
-	NodeArrowExpressionDestination = "arrow-expression-left"
-	NodeArrowExpressionSource      = "arrow-expression-right"
 
 	//
 	// NodeTypeLambdaExpression

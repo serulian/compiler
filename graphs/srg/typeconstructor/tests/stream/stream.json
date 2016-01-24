@@ -32,7 +32,28 @@
     "03fda74fe7e2faf48ac4a276daa14ce9": {
         "Key": "03fda74fe7e2faf48ac4a276daa14ce9",
         "Kind": 2,
-        "Children": {},
+        "Children": {
+            "d7c2f96844f45c1f8c70b86006e900c7": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "d7c2f96844f45c1f8c70b86006e900c7",
+                    "Kind": 6,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-implicitly-called": "true",
+                        "tdg-member-name": "Message",
+                        "tdg-member-promising": "true",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "String",
+                        "tdg-member-signature": "\n\u0007Message\u0010\u0003\u0018\u0000 \u0001*\u0006String",
+                        "tdg-node-kind": "6|NodeType|tdg",
+                        "tdg-source-module": "tests/testlib/basictypes.seru",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            }
+        },
         "Predicates": {
             "tdg-node-kind": "2|NodeType|tdg",
             "tdg-source-module": "tests/testlib/basictypes.seru",

@@ -271,3 +271,18 @@ func NativeAccess(childExpr Expression, name string, basis compilergraph.GraphNo
 		name,
 	}
 }
+
+// NativeAssignNode is the assignment of one expression to another expression.
+type NativeAssignNode struct {
+	expressionBase
+	TargetExpression Expression // The target expression.
+	ValueExpression  Expression // The value expression.
+}
+
+func NativeAssign(target Expression, value Expression, basis compilergraph.GraphNode) Expression {
+	return &NativeAssignNode{
+		expressionBase{domBase{basis}},
+		target,
+		value,
+	}
+}

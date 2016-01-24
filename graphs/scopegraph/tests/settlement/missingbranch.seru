@@ -1,0 +1,6 @@
+function<int> SomeValue() {
+	if true {
+		return 2
+	} else {
+	}
+}

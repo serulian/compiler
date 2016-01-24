@@ -1,16 +1,16 @@
 NodeTypeFile
-  end-rune = 68
+  end-rune = 46
   input-source = assignment statement test
   start-rune = 0
   child-node =>
     NodeTypeFunction
-      end-rune = 68
+      end-rune = 46
       input-source = assignment statement test
       named = SomeFunction
       start-rune = 0
       definition-body =>
         NodeTypeStatementBlock
-          end-rune = 68
+          end-rune = 46
           input-source = assignment statement test
           start-rune = 30
           block-child =>
@@ -30,27 +30,6 @@ NodeTypeFile
                   identexpr-name = a
                   input-source = assignment statement test
                   start-rune = 33
-            NodeTypeAssignStatement
-              end-rune = 66
-              input-source = assignment statement test
-              start-rune = 47
-              assign-statement-expr =>
-                NodeTypeIdentifierExpression
-                  end-rune = 66
-                  identexpr-name = someOtherExpr
-                  input-source = assignment statement test
-                  start-rune = 54
-              assign-statement-name =>
-                NodeTypeIdentifierExpression
-                  end-rune = 47
-                  identexpr-name = b
-                  input-source = assignment statement test
-                  start-rune = 47
-                NodeTypeIdentifierExpression
-                  end-rune = 50
-                  identexpr-name = c
-                  input-source = assignment statement test
-                  start-rune = 50
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 12
