@@ -1132,6 +1132,11 @@ func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
 		return p.consumeJumpStatement("continue", NodeTypeContinueStatement, NodeContinueStatementLabel), true
 
 	default:
+		// Look for an arrow statement.
+		if arrowNode, ok := p.tryConsumeArrowStatement(); ok {
+			return arrowNode, true
+		}
+
 		// Look for an assignment statement.
 		if assignNode, ok := p.tryConsumeAssignStatement(); ok {
 			return assignNode, true
@@ -1556,7 +1561,7 @@ func (p *sourceParser) tryConsumeExpression(option consumeExpressionOption) (Ast
 	if option == consumeExpressionAllowMaps {
 		startToken := p.currentToken
 
-		node, found := p.oneOf(p.tryConsumeMapExpression, p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, p.tryConsumeArrowExpression, p.tryConsumeNonArrowExpression)
+		node, found := p.oneOf(p.tryConsumeMapExpression, p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, p.tryConsumeNonArrowExpression)
 		if !found {
 			return node, false
 		}
@@ -1574,7 +1579,7 @@ func (p *sourceParser) tryConsumeExpression(option consumeExpressionOption) (Ast
 		}
 		return node, true
 	} else {
-		return p.oneOf(p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, p.tryConsumeArrowExpression, p.tryConsumeNonArrowExpression)
+		return p.oneOf(p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, p.tryConsumeNonArrowExpression)
 	}
 }
 
@@ -1789,9 +1794,9 @@ func (p *sourceParser) tryConsumeAwaitExpression() (AstNode, bool) {
 	return exprNode, true
 }
 
-// lookaheadArrowExpression determines whether there is an arrow expression
+// lookaheadArrowStatement determines whether there is an arrow statement
 // at the current head of the lexer stream.
-func (p *sourceParser) lookaheadArrowExpression() bool {
+func (p *sourceParser) lookaheadArrowStatement() bool {
 	t := p.newLookaheadTracker()
 
 	for {
@@ -1823,28 +1828,28 @@ func (p *sourceParser) lookaheadArrowExpression() bool {
 	return true
 }
 
-// tryConsumeArrowExpression tries to consumes an arrow expression.
+// tryConsumeArrowStatement tries to consumes an arrow statement.
 //
 // Forms:
 // a <- b
 // a, b <- c
-func (p *sourceParser) tryConsumeArrowExpression() (AstNode, bool) {
-	if !p.lookaheadArrowExpression() {
+func (p *sourceParser) tryConsumeArrowStatement() (AstNode, bool) {
+	if !p.lookaheadArrowStatement() {
 		return nil, false
 	}
 
-	exprNode := p.startNode(NodeTypeArrowExpression)
+	arrowNode := p.startNode(NodeTypeArrowStatement)
 	defer p.finishNode()
 
-	exprNode.Connect(NodeArrowExpressionDestination, p.consumeAssignableExpression())
+	arrowNode.Connect(NodeArrowExpressionDestination, p.consumeAssignableExpression())
 
 	if _, ok := p.tryConsume(tokenTypeComma); ok {
-		exprNode.Connect(NodeArrowExpressionRejection, p.consumeAssignableExpression())
+		arrowNode.Connect(NodeArrowExpressionRejection, p.consumeAssignableExpression())
 	}
 
 	p.consume(tokenTypeArrowPortOperator)
-	exprNode.Connect(NodeArrowExpressionSource, p.consumeNonArrowExpression())
-	return exprNode, true
+	arrowNode.Connect(NodeArrowExpressionSource, p.consumeNonArrowExpression())
+	return arrowNode, true
 }
 
 // boe represents information a binary operator token and its associated node type.

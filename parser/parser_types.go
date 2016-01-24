@@ -54,6 +54,7 @@ const (
 	NodeTypeParameter     // A parameter under a type member (function, iterator, etc)
 
 	// Statements
+	NodeTypeArrowStatement       // An arrow statement: a <- b
 	NodeTypeStatementBlock       // A block of statements
 	NodeTypeLoopStatement        // A for statement
 	NodeTypeConditionalStatement // An if statement
@@ -73,7 +74,6 @@ const (
 
 	// Expressions
 	NodeTypeAwaitExpression // An await expression: <- a
-	NodeTypeArrowExpression // An arrow expression: a <- b
 
 	NodeTypeLambdaExpression // A lambda expression
 

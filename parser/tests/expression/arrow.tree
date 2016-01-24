@@ -14,54 +14,44 @@ NodeTypeFile
           input-source = arrow expr test
           start-rune = 30
           block-child =>
-            NodeTypeExpressionStatement
-              end-rune = 58
+            NodeTypeArrowStatement
+              end-rune = 57
               input-source = arrow expr test
               start-rune = 33
-              expr-statement-expr =>
-                NodeTypeArrowExpression
-                  end-rune = 57
+              arrow-expression-destination =>
+                NodeTypeIdentifierExpression
+                  end-rune = 40
+                  identexpr-name = someExpr
                   input-source = arrow expr test
                   start-rune = 33
-                  arrow-expression-destination =>
-                    NodeTypeIdentifierExpression
-                      end-rune = 40
-                      identexpr-name = someExpr
-                      input-source = arrow expr test
-                      start-rune = 33
-                  arrow-expression-right =>
-                    NodeTypeIdentifierExpression
-                      end-rune = 57
-                      identexpr-name = someOtherExpr
-                      input-source = arrow expr test
-                      start-rune = 45
-            NodeTypeExpressionStatement
-              end-rune = 79
+              arrow-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 57
+                  identexpr-name = someOtherExpr
+                  input-source = arrow expr test
+                  start-rune = 45
+            NodeTypeArrowStatement
+              end-rune = 78
               input-source = arrow expr test
               start-rune = 60
-              expr-statement-expr =>
-                NodeTypeArrowExpression
-                  end-rune = 78
+              arrow-expression-destination =>
+                NodeTypeIdentifierExpression
+                  end-rune = 60
+                  identexpr-name = a
                   input-source = arrow expr test
                   start-rune = 60
-                  arrow-expression-destination =>
-                    NodeTypeIdentifierExpression
-                      end-rune = 60
-                      identexpr-name = a
-                      input-source = arrow expr test
-                      start-rune = 60
-                  arrow-expression-rejection =>
-                    NodeTypeIdentifierExpression
-                      end-rune = 63
-                      identexpr-name = b
-                      input-source = arrow expr test
-                      start-rune = 63
-                  arrow-expression-right =>
-                    NodeTypeIdentifierExpression
-                      end-rune = 78
-                      identexpr-name = somePromise
-                      input-source = arrow expr test
-                      start-rune = 68
+              arrow-expression-rejection =>
+                NodeTypeIdentifierExpression
+                  end-rune = 63
+                  identexpr-name = b
+                  input-source = arrow expr test
+                  start-rune = 63
+              arrow-expression-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 78
+                  identexpr-name = somePromise
+                  input-source = arrow expr test
+                  start-rune = 68
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 12
