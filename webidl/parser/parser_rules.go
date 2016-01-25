@@ -127,6 +127,14 @@ func (p *sourceParser) consumeMember() AstNode {
 	// annotations
 	p.tryConsumeAnnotations(memberNode, NodePredicateMemberAnnotation)
 
+	// getter/setter
+	var specialization = ""
+	if p.isKeyword("getter") || p.isKeyword("setter") {
+		consumed, _ := p.consume(tokenTypeKeyword)
+		specialization = consumed.value
+		memberNode.Decorate(NodePredicateMemberSpecialization, specialization)
+	}
+
 	// static readonly attribute
 	if p.tryConsumeKeyword("static") {
 		memberNode.Decorate(NodePredicateMemberStatic, "true")
@@ -145,7 +153,9 @@ func (p *sourceParser) consumeMember() AstNode {
 	memberNode.Decorate(NodePredicateMemberType, p.consumeType())
 
 	// Consume the member's name.
-	memberNode.Decorate(NodePredicateMemberName, p.consumeIdentifier())
+	if specialization == "" {
+		memberNode.Decorate(NodePredicateMemberName, p.consumeIdentifier())
+	}
 
 	// If not an attribute, consume the parameters of the member.
 	if !isAttribute {

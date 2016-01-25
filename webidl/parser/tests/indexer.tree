@@ -1,0 +1,46 @@
+NodeTypeGlobalModule
+  child-node =>
+    NodeTypeFile
+      end-rune = 131
+      input-source = indexer test
+      start-rune = 0
+      child-node =>
+        NodeTypeDeclaration
+          declaration-kind = interface
+          declaration-name = MyInterface
+          end-rune = 131
+          input-source = indexer test
+          start-rune = 0
+          declaration-member =>
+            NodeTypeMember
+              end-rune = 65
+              input-source = indexer test
+              member-specialization = getter
+              member-type = double
+              start-rune = 27
+              member-parameter =>
+                NodeTypeParameter
+                  end-rune = 63
+                  input-source = indexer test
+                  parameter-name = propertyName
+                  parameter-type = DOMString
+                  start-rune = 42
+            NodeTypeMember
+              end-rune = 128
+              input-source = indexer test
+              member-specialization = setter
+              member-type = void
+              start-rune = 70
+              member-parameter =>
+                NodeTypeParameter
+                  end-rune = 104
+                  input-source = indexer test
+                  parameter-name = propertyName
+                  parameter-type = DOMString
+                  start-rune = 83
+                NodeTypeParameter
+                  end-rune = 126
+                  input-source = indexer test
+                  parameter-name = propertyValue
+                  parameter-type = double
+                  start-rune = 107
