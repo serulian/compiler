@@ -24,6 +24,12 @@ func (g *TypeGraph) GetMemberForSourceNode(node compilergraph.GraphNode) (TGMemb
 	return TGMember{memberNode, g}, true
 }
 
+// ChildName returns the unique name of the underlying member. For operators, this will
+// return the name prepended with the operator character.
+func (tn TGMember) ChildName() string {
+	return tn.GraphNode.Get(NodePredicateMemberName)
+}
+
 // Name returns the name of the underlying member.
 func (tn TGMember) Name() string {
 	if tn.IsOperator() {

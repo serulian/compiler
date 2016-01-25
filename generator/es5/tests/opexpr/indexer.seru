@@ -1,10 +1,17 @@
 class SomeClass {
+	var<bool> result = false
+
 	operator<bool> index(someParam bool) {
-		return !someParam
+		return this.result && !someParam
+	}
+
+	operator setindex(index int, value bool) {
+		this.result = value
 	}
 }
 
 function<any> TEST() {
 	var sc = SomeClass.new()
+	sc[1] = true
 	return sc[false]
 }
