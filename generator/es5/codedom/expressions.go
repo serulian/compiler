@@ -286,3 +286,18 @@ func NativeAssign(target Expression, value Expression, basis compilergraph.Graph
 		value,
 	}
 }
+
+// NativeIndexingNode is the indexing of one expression by another expression.
+type NativeIndexingNode struct {
+	expressionBase
+	ChildExpression Expression // The child expression.
+	IndexExpression Expression // The index expression.
+}
+
+func NativeIndexing(childExpression Expression, index Expression, basis compilergraph.GraphNode) Expression {
+	return &NativeIndexingNode{
+		expressionBase{domBase{basis}},
+		childExpression,
+		index,
+	}
+}

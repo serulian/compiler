@@ -147,13 +147,24 @@ func (eg *expressionGenerator) generateMemberAssignment(memberAssign *codedom.Me
 		childCall := memberAssign.NameExpression.(*codedom.MemberCallNode)
 		memberRef := childCall.ChildExpression.(*codedom.MemberReferenceNode)
 
-		memberCall := codedom.MemberCall(
-			codedom.NativeAccess(memberRef.ChildExpression, eg.pather.GetMemberName(memberAssign.Target), memberRef.BasisNode()),
-			memberAssign.Target,
-			[]codedom.Expression{childCall.Arguments[0], memberAssign.Value},
-			basisNode)
+		// If this is a native operator, change it into a native indexing and assignment.
+		if memberAssign.Target.IsNative() {
+			nativeAssign := codedom.NativeAssign(
+				codedom.NativeIndexing(memberRef.ChildExpression,
+					childCall.Arguments[0], basisNode),
+				memberAssign.Value,
+				basisNode)
 
-		return eg.generateExpression(memberCall)
+			return eg.generateExpression(nativeAssign)
+		} else {
+			memberCall := codedom.MemberCall(
+				codedom.NativeAccess(memberRef.ChildExpression, eg.pather.GetMemberName(memberAssign.Target), memberRef.BasisNode()),
+				memberAssign.Target,
+				[]codedom.Expression{childCall.Arguments[0], memberAssign.Value},
+				basisNode)
+
+			return eg.generateExpression(memberCall)
+		}
 	}
 
 	// If the target member is implicitly called, then this is a property that needs to be assigned via a call.
@@ -355,6 +366,23 @@ func (eg *expressionGenerator) generateNativeAccess(nativeAccess *codedom.Native
 	return eg.templater.Execute("nativeaccess", templateStr, data)
 }
 
+// generateNativeIndexing generates the expression source for a native index on an expression.
+func (eg *expressionGenerator) generateNativeIndexing(nativeIndex *codedom.NativeIndexingNode) string {
+	childExpr := eg.generateExpression(nativeIndex.ChildExpression)
+	indexExpr := eg.generateExpression(nativeIndex.IndexExpression)
+
+	data := struct {
+		ChildExpression string
+		IndexExpression string
+	}{childExpr, indexExpr}
+
+	templateStr := `
+		({{ .ChildExpression }})[{{ .IndexExpression }}]
+	`
+
+	return eg.templater.Execute("nativeindexing", templateStr, data)
+}
+
 // generateMemberCall generates the expression source for a call to a module or type member.
 func (eg *expressionGenerator) generateMemberCall(memberCall *codedom.MemberCallNode) string {
 	basisNode := memberCall.BasisNode()
@@ -372,6 +400,14 @@ func (eg *expressionGenerator) generateMemberCall(memberCall *codedom.MemberCall
 
 		callPath = codedom.LocalReference(staticMemberPath, basisNode)
 		arguments = append([]codedom.Expression{childExpr}, memberCall.Arguments...)
+	} else if memberCall.Member.IsOperator() && memberCall.Member.IsNative() {
+		// This is a call to a native operator.
+		if memberCall.Member.Name() != "index" {
+			panic("Native call to non-index operator")
+		}
+
+		refExpr := memberCall.ChildExpression.(*codedom.MemberReferenceNode).ChildExpression
+		return eg.generateExpression(codedom.NativeIndexing(refExpr, memberCall.Arguments[0], basisNode))
 	} else {
 		// Otherwise this is a normal function call over a child expression.
 		callPath = memberCall.ChildExpression

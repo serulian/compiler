@@ -18,6 +18,9 @@ function<void> DoSomething() {
 	var first = SomeBrowserThing.new('foo')
 	var second = SomeBrowserThing.new('bar')
 	first + second
+
+	first['hello']
+	first['hello'] = second
 }
 
 function<any> TEST() {
