@@ -26,6 +26,12 @@ const CONSTRUCTOR_ANNOTATION = "Constructor"
 // specified operator natively (i.e. not a custom defined operator).
 const NATIVE_OPERATOR_ANNOTATION = "NativeOperator"
 
+// SPECIALIZATION_NAMES maps WebIDL member specializations into Serulian typegraph names.
+var SPECIALIZATION_NAMES = map[webidl.MemberSpecialization]string{
+	webidl.GetterSpecialization: "index",
+	webidl.SetterSpecialization: "setindex",
+}
+
 // GetConstructor returns a TypeGraph constructor for the given IRG.
 func GetConstructor(irg *webidl.WebIRG) *irgTypeConstructor {
 	return &irgTypeConstructor{
@@ -163,8 +169,19 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 
 		// Add the declared members.
 		for _, member := range declaration.Members() {
-			ibuilder := builder(parentNode, false).
-				Name(member.Name()).
+			var ibuilder *typegraph.MemberBuilder = nil
+
+			name, hasName := member.Name()
+			if hasName {
+				ibuilder = builder(parentNode, false).Name(name)
+			} else {
+				// This is a specialization.
+				specialization, _ := member.Specialization()
+				ibuilder = builder(parentNode, true).
+					Name(SPECIALIZATION_NAMES[specialization])
+			}
+
+			builder := ibuilder.
 				SourceNode(member.GraphNode).
 				InitialDefine()
 
@@ -213,7 +230,11 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 				panic("Unknown WebIDL member kind")
 			}
 
-			ibuilder.Exported(true).
+			if !hasName {
+				builder.Native(true)
+			}
+
+			builder.Exported(true).
 				Static(member.IsStatic()).
 				ReadOnly(isReadonly).
 				MemberKind(uint64(member.Kind())).

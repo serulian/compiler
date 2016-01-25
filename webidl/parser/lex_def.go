@@ -53,6 +53,8 @@ var keywords = map[string]bool{
 	"any":        true,
 	"optional":   true,
 	"implements": true,
+	"getter":     true,
+	"setter":     true,
 }
 
 func isWhitespaceToken(kind tokenType) bool {

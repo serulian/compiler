@@ -128,6 +128,9 @@ const (
 	// Connects a member to an annotation.
 	NodePredicateMemberAnnotation = "member-annotation"
 
+	// Decorates an anonymous member with its specialized type.
+	NodePredicateMemberSpecialization = "member-specialization"
+
 	//
 	// NodeTypeImplementation
 	//

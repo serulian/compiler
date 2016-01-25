@@ -31,6 +31,8 @@ $module('basic', function () {
             first = $t.nativenew($global.SomeBrowserThing)('foo');
             second = $t.nativenew($global.SomeBrowserThing)('bar');
             first + second;
+            first['hello'];
+            first['hello'] = second;
             $state.current = -1;
             return;
 

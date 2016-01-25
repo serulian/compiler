@@ -48,11 +48,13 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"optional parameter test", "optionalparam", ""},
 	typegraphTest{"constructors test", "constructors", ""},
 	typegraphTest{"native operators test", "operator", ""},
+	typegraphTest{"indexer test", "indexer", ""},
 
 	// Failure tests.
 	typegraphTest{"redeclaration test", "redeclare", "Type 'Foo' is already defined in the module"},
 	typegraphTest{"same member test", "redefine", "Member 'Foo' is already defined on external interface 'SomeInterface'"},
 	typegraphTest{"unknown type test", "unknowntype", "Could not find WebIDL type Bar"},
+	typegraphTest{"invalid indexer test", "invalidindexer", "Operator 'index' defined on type 'MyInterface' expects 1 parameters; found 2"},
 }
 
 func TestGraphs(t *testing.T) {

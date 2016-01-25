@@ -9,6 +9,13 @@ import (
 	"github.com/serulian/compiler/webidl/parser"
 )
 
+type MemberSpecialization string
+
+const (
+	GetterSpecialization MemberSpecialization = "getter"
+	SetterSpecialization MemberSpecialization = "setter"
+)
+
 type MemberKind int
 
 const (
@@ -24,9 +31,19 @@ type IRGMember struct {
 	irg *WebIRG // The parent IRG.
 }
 
-// Name returns the name of the member.
-func (i *IRGMember) Name() string {
-	return i.GraphNode.Get(parser.NodePredicateMemberName)
+// Name returns the name of the member, if any. Specializations won't have names.
+func (i *IRGMember) Name() (string, bool) {
+	return i.GraphNode.TryGet(parser.NodePredicateMemberName)
+}
+
+// Specialization returns the specialization of the member, if any.
+func (i *IRGMember) Specialization() (MemberSpecialization, bool) {
+	specialization, ok := i.GraphNode.TryGet(parser.NodePredicateMemberSpecialization)
+	if !ok {
+		return GetterSpecialization, false
+	}
+
+	return MemberSpecialization(specialization), true
 }
 
 // Kind returns the kind of the member.
