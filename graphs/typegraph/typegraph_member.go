@@ -16,7 +16,7 @@ type TGMember struct {
 
 // GetMemberForSRGNode returns the TypeGraph member for the given source member node, if any.
 func (g *TypeGraph) GetMemberForSourceNode(node compilergraph.GraphNode) (TGMember, bool) {
-	memberNode, found := g.tryGetMatchingTypeGraphNode(node, NodeTypeMember)
+	memberNode, found := g.tryGetMatchingTypeGraphNode(node, NodeTypeMember, NodeTypeOperator)
 	if !found {
 		return TGMember{}, false
 	}
@@ -24,8 +24,18 @@ func (g *TypeGraph) GetMemberForSourceNode(node compilergraph.GraphNode) (TGMemb
 	return TGMember{memberNode, g}, true
 }
 
+// ChildName returns the unique name of the underlying member. For operators, this will
+// return the name prepended with the operator character.
+func (tn TGMember) ChildName() string {
+	return tn.GraphNode.Get(NodePredicateMemberName)
+}
+
 // Name returns the name of the underlying member.
 func (tn TGMember) Name() string {
+	if tn.IsOperator() {
+		return tn.GraphNode.Get(NodePredicateOperatorName)
+	}
+
 	return tn.GraphNode.Get(NodePredicateMemberName)
 }
 
@@ -33,7 +43,11 @@ func (tn TGMember) Name() string {
 func (tn TGMember) Title() string {
 	_, underType := tn.ParentType()
 	if underType {
-		return "type member"
+		if tn.IsOperator() {
+			return "operator"
+		} else {
+			return "type member"
+		}
 	} else {
 		return "module member"
 	}
@@ -115,6 +129,11 @@ func (tn TGMember) IsType() bool {
 	return false
 }
 
+// IsOperator returns whether this is an operator.
+func (tn TGMember) IsOperator() bool {
+	return tn.GraphNode.Kind == NodeTypeOperator
+}
+
 // IsExtension returns whether this member is an extension member, declared under a nominal type.
 func (tn TGMember) IsExtension() bool {
 	parentType, hasParentType := tn.ParentType()
@@ -188,6 +207,32 @@ func (tn TGMember) ReturnType() (TypeReference, bool) {
 	}
 
 	return returnNode.GetTagged(NodePredicateReturnType, tn.tdg.AnyTypeReference()).(TypeReference), true
+}
+
+// AssignableType returns the type of values that can be assigned to this member. Returns void for
+// readonly members.
+func (tn TGMember) AssignableType() TypeReference {
+	if tn.IsReadOnly() {
+		return tn.tdg.VoidTypeReference()
+	}
+
+	// If this is an assignable operator, the assignable type is the "value" parameter.
+	if tn.IsOperator() {
+		operatorDef := tn.tdg.operators[tn.Get(NodePredicateOperatorName)]
+		if !operatorDef.IsAssignable {
+			panic("Non-assignable read-write operator")
+		}
+
+		for index, param := range operatorDef.Parameters {
+			if param.Name == ASSIGNABLE_OP_VALUE {
+				return tn.ParameterTypes()[index]
+			}
+		}
+
+		panic("No value parameter found")
+	}
+
+	return tn.MemberType()
 }
 
 // ParameterTypes returns the types of the parameters defined on this member, if any.

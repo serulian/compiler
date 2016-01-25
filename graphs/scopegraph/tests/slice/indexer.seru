@@ -5,13 +5,7 @@ class SomeClass {
 		return this.result && !someParam
 	}
 
-	operator setindex(index int, value bool) {
+	operator setindex(index bool, value bool) {
 		this.result = value
 	}
-}
-
-function<any> TEST() {
-	var sc = SomeClass.new()
-	sc[1] = true
-	return sc[false]
 }

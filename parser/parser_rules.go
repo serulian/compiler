@@ -565,7 +565,14 @@ func (p *sourceParser) consumeOperator(option typeMemberOption) AstNode {
 		return operatorNode
 	}
 
-	// Operators always need bodies.
+	// Operators always need bodies in classes and sometimes in interfaces.
+	if option == typeMemberDeclaration {
+		if !p.isToken(tokenTypeLeftBrace) {
+			p.consumeStatementTerminator()
+			return operatorNode
+		}
+	}
+
 	operatorNode.Connect(NodePredicateBody, p.consumeStatementBlock(statementBlockWithTerminator))
 	return operatorNode
 }
@@ -1201,8 +1208,27 @@ func (p *sourceParser) lookaheadAssignStatement() bool {
 		return false
 	}
 
-	// Match member access (optional).
+	// Match member access or indexing (optional).
 	for {
+		if _, ok := t.matchToken(tokenTypeLeftBracket); ok {
+			for {
+
+				if t.currentToken.kind == tokenTypeSyntheticSemicolon || t.currentToken.kind == tokenTypeError {
+					return false
+				}
+
+				if t.currentToken.kind == tokenTypeRightBracket {
+					break
+				}
+
+				t.nextToken()
+			}
+
+			if _, ok := t.matchToken(tokenTypeRightBracket); !ok {
+				return false
+			}
+		}
+
 		if _, ok := t.matchToken(tokenTypeDotAccessOperator); !ok {
 			break
 		}

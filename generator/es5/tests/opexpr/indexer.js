@@ -6,6 +6,9 @@ $module('indexer', function () {
     $static.new = function () {
       var instance = new $static();
       var init = [];
+      init.push($promise.resolve(false).then(function (result) {
+        instance.result = result;
+      }));
       return $promise.all(init).then(function () {
         return instance;
       });
@@ -16,7 +19,25 @@ $module('indexer', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              $state.resolve(!someParam);
+              $state.resolve($this.result && !someParam);
+              return;
+
+            default:
+              $state.current = -1;
+              return;
+          }
+        }
+      });
+      return $promise.build($state);
+    };
+    $instance.$setindex = function (index, value) {
+      var $this = this;
+      var $state = $t.sm(function ($callback) {
+        while (true) {
+          switch ($state.current) {
+            case 0:
+              $this.result = value;
+              $state.current = -1;
               return;
 
             default:
@@ -46,7 +67,7 @@ $module('indexer', function () {
 
           case 1:
             sc = $result;
-            sc.$index(false).then(function ($result0) {
+            sc.$setindex(1, true).then(function ($result0) {
               $result = $result0;
               $state.current = 2;
               $callback($state);
@@ -56,6 +77,17 @@ $module('indexer', function () {
             return;
 
           case 2:
+            $result;
+            sc.$index(false).then(function ($result0) {
+              $result = $result0;
+              $state.current = 3;
+              $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
+            });
+            return;
+
+          case 3:
             $state.resolve($result);
             return;
 

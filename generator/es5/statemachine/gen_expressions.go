@@ -5,8 +5,12 @@
 package statemachine
 
 import (
+	"fmt"
+
 	"github.com/serulian/compiler/generator/es5/codedom"
 )
+
+var _ = fmt.Printf
 
 // generateFunctionDefinition generates the code for a function.
 func (eg *expressionGenerator) generateFunctionDefinition(function *codedom.FunctionDefinitionNode) string {
@@ -136,12 +140,28 @@ func (eg *expressionGenerator) generateMemberAssignment(memberAssign *codedom.Me
 		return eg.generateExpression(codedom.WrapIfPromising(memberCall, memberAssign.Target, basisNode))
 	}
 
+	// If the target member is an operator, then we need to invoke it as a function call, with the first
+	// argument being the argument to the child call, and the second argument being the assigned child
+	// expression.
+	if memberAssign.Target.IsOperator() {
+		childCall := memberAssign.NameExpression.(*codedom.MemberCallNode)
+		memberRef := childCall.ChildExpression.(*codedom.MemberReferenceNode)
+
+		memberCall := codedom.MemberCall(
+			codedom.NativeAccess(memberRef.ChildExpression, eg.pather.GetMemberName(memberAssign.Target), memberRef.BasisNode()),
+			memberAssign.Target,
+			[]codedom.Expression{childCall.Arguments[0], memberAssign.Value},
+			basisNode)
+
+		return eg.generateExpression(memberCall)
+	}
+
 	// If the target member is implicitly called, then this is a property that needs to be assigned via a call.
 	if memberAssign.Target.IsImplicitlyCalled() {
 		memberRef := memberAssign.NameExpression.(*codedom.MemberReferenceNode)
 
 		memberCall := codedom.MemberCall(
-			codedom.NativeAccess(memberRef.ChildExpression, memberRef.Member.Name(), memberRef.BasisNode()),
+			codedom.NativeAccess(memberRef.ChildExpression, eg.pather.GetMemberName(memberRef.Member), memberRef.BasisNode()),
 			memberAssign.Target,
 			[]codedom.Expression{memberAssign.Value},
 			basisNode)

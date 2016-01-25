@@ -161,7 +161,7 @@ func (tn TGTypeDecl) ParentModule() TGModule {
 	return TGModule{tn.GraphNode.GetNode(NodePredicateTypeModule), tn.tdg}
 }
 
-// IsReadOnly returns whether the type is read-only (which is always)
+// IsReadOnly returns whether the type is read-only (which is always true)
 func (tn TGTypeDecl) IsReadOnly() bool {
 	return true
 }

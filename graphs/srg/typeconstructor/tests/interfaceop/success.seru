@@ -1,0 +1,4 @@
+interface Foo {
+	operator Plus(left Foo, right Foo) {}
+	operator Index(index any)
+}

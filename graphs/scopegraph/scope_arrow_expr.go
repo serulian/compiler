@@ -15,7 +15,7 @@ import (
 var _ = fmt.Printf
 
 // scopeAwaitExpression scopes an await expression in the SRG.
-func (sb *scopeBuilder) scopeAwaitExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeAwaitExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	// Scope the source node.
 	sourceNode := node.GetNode(parser.NodeAwaitExpressionSource)
 	sourceScope := sb.getScope(sourceNode)

@@ -63,6 +63,7 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"module-level test", "modulelevel", "module", ""},
 	typegraphTest{"void return type test", "voidreturn", "void", ""},
 	typegraphTest{"nominal type test", "nominal", "success", ""},
+	typegraphTest{"interface op test", "interfaceop", "success", ""},
 
 	// Failure tests.
 	typegraphTest{"type redeclaration test", "redeclare", "redeclare", "Type 'SomeClass' is already defined in the module"},
@@ -81,8 +82,10 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"generic interface constraint invalid test", "interfaceconstraint", "genericinterfaceinvalid", "Generic 'T' (#1) on type 'SomeClass' has constraint 'ISomeInterface<Integer>'. Specified type 'ThirdClass' does not match: member 'DoSomething' under type 'ThirdClass' does not match that defined in type 'ISomeInterface<Integer>'"},
 	typegraphTest{"function generic interface constraint invalid test", "interfaceconstraint", "invalidfunctiongeneric", "Generic 'T' (#1) on type 'AnotherClass' has constraint 'ISomeInterface'. Specified type 'SomeClass' does not match: member 'DoSomething' under type 'SomeClass' does not match that defined in type 'ISomeInterface'"},
 	typegraphTest{"nullable constraint invalid test", "interfaceconstraint", "invalidnullable", "Generic 'T' (#1) on type 'SomeClass' has constraint 'ISomeInterface<Integer>'. Specified type 'ThirdClass?' does not match: Nullable type 'ThirdClass?' cannot be used in place of non-nullable type 'ISomeInterface<Integer>'"},
-	typegraphTest{"unexported interface operator test", "interfaceconstraint", "unexportedoperator", "Generic 'T' (#1) on type 'SomeClass' has constraint 'ISomeInterface'. Specified type 'ThirdClass' does not match: Type 'ThirdClass' does not define or export operator 'plus', which is required by type 'ISomeInterface'"},
+	typegraphTest{"unexported interface operator test", "interfaceconstraint", "unexportedoperator", "Generic 'T' (#1) on type 'SomeClass' has constraint 'ISomeInterface'. Specified type 'ThirdClass' does not match: Type 'ThirdClass' does not export operator 'plus', which is required by type 'ISomeInterface'"},
 	typegraphTest{"operator return type mismatch test", "operatorreturnmismatch", "operator", "Operator 'mod' defined on type 'SomeClass' expects a return type of 'SomeClass'; found Integer"},
+	typegraphTest{"interface instance operator with impl test", "interfaceop", "instanceimpl", "Instance operator Index under interface Foo cannot have an implementation"},
+	typegraphTest{"interface static operator without impl test", "interfaceop", "staticnoimpl", "Static operator Plus under interface Foo must have an implementation"},
 }
 
 func TestGraphs(t *testing.T) {

@@ -220,6 +220,25 @@ func (stc *srgTypeConstructor) defineMember(member srg.SRGMember, parent typegra
 		functionType := graph.NewTypeReference(graph.FunctionType(), returnType)
 		memberType, _ = stc.addSRGParameterTypes(member, functionType, graph, reporter)
 
+		// Make sure instance members under interfaces do not have bodies (and static members do).
+		if parent.IsType() {
+			parentType := parent.AsType()
+			if parentType.TypeKind() == typegraph.ImplicitInterfaceType {
+				opDef, found := graph.GetOperatorDefinition(member.Name())
+
+				// Note: If not found, the type graph will emit an error.
+				if found {
+					if member.HasImplementation() != opDef.IsStatic {
+						if opDef.IsStatic {
+							reporter.ReportError(member.GraphNode, "Static operator %v under %v %v must have an implementation", member.Name(), parentType.Title(), parentType.Name())
+						} else {
+							reporter.ReportError(member.GraphNode, "Instance operator %v under %v %v cannot have an implementation", member.Name(), parentType.Title(), parentType.Name())
+						}
+					}
+				}
+			}
+		}
+
 		// Note: Operators get decorated with a returnable by the construction system automatically.
 
 	case srg.FunctionMember:

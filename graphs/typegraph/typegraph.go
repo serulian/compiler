@@ -9,6 +9,7 @@ package typegraph
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
@@ -295,6 +296,12 @@ func (g *TypeGraph) LookupTypeOrMember(name string, module compilercommon.InputS
 	}
 
 	return TGTypeDecl{}, false
+}
+
+// GetOperatorDefinition returns the operator definition for the operator with the given name (if any)
+func (g *TypeGraph) GetOperatorDefinition(operatorName string) (operatorDefinition, bool) {
+	def, found := g.operators[strings.ToLower(operatorName)]
+	return def, found
 }
 
 // LookupMember looks up the member with the given name in the given module and returns it (if any).

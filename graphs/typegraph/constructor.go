@@ -591,9 +591,6 @@ func (mb *dependentMemberBuilder) Define() {
 func (mb *dependentMemberBuilder) checkAndComputeOperator(memberNode compilergraph.GraphNode, name string) {
 	name = strings.ToLower(name)
 
-	// Operators are by definition read-only and can be static.
-	mb.readonly = true
-
 	// Verify that the operator matches a known operator.
 	definition, ok := mb.tdg.operators[name]
 	if !ok {
@@ -601,7 +598,9 @@ func (mb *dependentMemberBuilder) checkAndComputeOperator(memberNode compilergra
 		return
 	}
 
+	// Some operators are static and some are assignable.
 	mb.static = definition.IsStatic
+	mb.readonly = !definition.IsAssignable
 
 	// Ensure that the declared return type is equal to that expected.
 	declaredReturnType := mb.memberType.Generics()[0]
@@ -649,7 +648,11 @@ func (mb *dependentMemberBuilder) checkAndComputeOperator(memberNode compilergra
 	memberNode.DecorateWithTagged(NodePredicateMemberType, memberType)
 
 	// Decorate the member with its signature.
-	mb.decorateWithSig(memberNode, mb.tdg.AnyTypeReference())
+	if definition.IsStatic {
+		mb.decorateWithSig(memberNode, mb.tdg.AnyTypeReference())
+	} else {
+		mb.decorateWithSig(memberNode, memberType)
+	}
 }
 
 // decorateWithSig decorates the given member node with a unique signature for fast subtype checking.
