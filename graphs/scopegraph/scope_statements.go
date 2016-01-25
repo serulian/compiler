@@ -15,7 +15,7 @@ import (
 var _ = fmt.Printf
 
 // scopeExpressionStatement scopes an expression statement in the SRG.
-func (sb *scopeBuilder) scopeExpressionStatement(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeExpressionStatement(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	scope := sb.getScope(node.GetNode(parser.NodeExpressionStatementExpression))
 	if !scope.GetIsValid() {
 		return newScope().Invalid().GetScope()
@@ -25,11 +25,11 @@ func (sb *scopeBuilder) scopeExpressionStatement(node compilergraph.GraphNode) p
 }
 
 // scopeAssignStatement scopes a assign statement in the SRG.
-func (sb *scopeBuilder) scopeAssignStatement(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeAssignStatement(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	// TODO: Handle tuple assignment once we figure out tuple types
 
 	// Scope the name.
-	nameScope := sb.getScope(node.GetNode(parser.NodeAssignStatementName))
+	nameScope := sb.getScopeWithAccess(node.GetNode(parser.NodeAssignStatementName), scopeSetAccess)
 
 	// Scope the expression value.
 	exprScope := sb.getScope(node.GetNode(parser.NodeAssignStatementValue))
@@ -52,7 +52,7 @@ func (sb *scopeBuilder) scopeAssignStatement(node compilergraph.GraphNode) proto
 	}
 
 	// Ensure that we can assign the expr value to the named scope.
-	if serr := exprScope.ResolvedTypeRef(sb.sg.tdg).CheckSubTypeOf(namedScopedRef.ValueType()); serr != nil {
+	if serr := exprScope.ResolvedTypeRef(sb.sg.tdg).CheckSubTypeOf(namedScopedRef.AssignableType()); serr != nil {
 		sb.decorateWithError(node, "Cannot assign value to %v %v: %v", namedScopedRef.Title(), namedScopedRef.Name(), serr)
 		return newScope().Invalid().GetScope()
 	}
@@ -61,7 +61,7 @@ func (sb *scopeBuilder) scopeAssignStatement(node compilergraph.GraphNode) proto
 }
 
 // scopeMatchStatement scopes a match statement in the SRG.
-func (sb *scopeBuilder) scopeMatchStatement(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeMatchStatement(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	// Check for an expression. If a match has an expression, then all cases must match against it.
 	var isValid = true
 	var matchValueType = sb.sg.tdg.BoolTypeReference()
@@ -124,7 +124,7 @@ func (sb *scopeBuilder) scopeMatchStatement(node compilergraph.GraphNode) proto.
 }
 
 // scopeNamedValue scopes a named value exported by a with or loop statement into context.
-func (sb *scopeBuilder) scopeNamedValue(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeNamedValue(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	// Find the parent node creating this named value.
 	parentNode := node.GetIncomingNode(parser.NodeStatementNamedValue)
 
@@ -162,7 +162,7 @@ func (sb *scopeBuilder) scopeNamedValue(node compilergraph.GraphNode) proto.Scop
 }
 
 // scopeWithStatement scopes a with statement in the SRG.
-func (sb *scopeBuilder) scopeWithStatement(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeWithStatement(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	// Scope the child block.
 	var valid = true
 
@@ -188,7 +188,7 @@ func (sb *scopeBuilder) scopeWithStatement(node compilergraph.GraphNode) proto.S
 }
 
 // scopeLoopStatement scopes a loop statement in the SRG.
-func (sb *scopeBuilder) scopeLoopStatement(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeLoopStatement(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	// Scope the underlying block.
 	blockNode := node.GetNode(parser.NodeLoopStatementBlock)
 	blockScope := sb.getScope(blockNode)
@@ -237,7 +237,7 @@ func (sb *scopeBuilder) scopeLoopStatement(node compilergraph.GraphNode) proto.S
 }
 
 // scopeConditionalStatement scopes a conditional statement in the SRG.
-func (sb *scopeBuilder) scopeConditionalStatement(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeConditionalStatement(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	var returningType = sb.sg.tdg.VoidTypeReference()
 	var valid = true
 
@@ -280,7 +280,7 @@ func (sb *scopeBuilder) scopeConditionalStatement(node compilergraph.GraphNode) 
 }
 
 // scopeContinueStatement scopes a continue statement in the SRG.
-func (sb *scopeBuilder) scopeContinueStatement(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeContinueStatement(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	// Ensure that the node is under a loop.
 	if !sb.sg.srg.HasContainingNode(node, parser.NodeTypeLoopStatement) {
 		sb.decorateWithError(node, "'continue' statement must be a under a loop statement")
@@ -297,7 +297,7 @@ func (sb *scopeBuilder) scopeContinueStatement(node compilergraph.GraphNode) pro
 }
 
 // scopeBreakStatement scopes a break statement in the SRG.
-func (sb *scopeBuilder) scopeBreakStatement(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeBreakStatement(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	// Ensure that the node is under a loop or match.
 	if !sb.sg.srg.HasContainingNode(node, parser.NodeTypeLoopStatement, parser.NodeTypeMatchStatement) {
 		sb.decorateWithError(node, "'break' statement must be a under a loop or match statement")
@@ -314,7 +314,7 @@ func (sb *scopeBuilder) scopeBreakStatement(node compilergraph.GraphNode) proto.
 }
 
 // scopeRejectStatement scopes a reject statement in the SRG.
-func (sb *scopeBuilder) scopeRejectStatement(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeRejectStatement(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	exprNode := node.GetNode(parser.NodeRejectStatementValue)
 	exprScope := sb.getScope(exprNode)
 
@@ -336,7 +336,7 @@ func (sb *scopeBuilder) scopeRejectStatement(node compilergraph.GraphNode) proto
 }
 
 // scopeReturnStatement scopes a return statement in the SRG.
-func (sb *scopeBuilder) scopeReturnStatement(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeReturnStatement(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	exprNode, found := node.TryGetNode(parser.NodeReturnStatementValue)
 	if !found {
 		return newScope().
@@ -354,7 +354,7 @@ func (sb *scopeBuilder) scopeReturnStatement(node compilergraph.GraphNode) proto
 }
 
 // scopeStatementBlock scopes a block of statements in the SRG.
-func (sb *scopeBuilder) scopeStatementBlock(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeStatementBlock(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	sit := node.StartQuery().
 		Out(parser.NodeStatementBlockStatement).
 		BuildNodeIterator()
@@ -425,7 +425,7 @@ func (sb *scopeBuilder) scopeStatementBlock(node compilergraph.GraphNode) proto.
 }
 
 // scopeArrowStatement scopes an arrow statement in the SRG.
-func (sb *scopeBuilder) scopeArrowStatement(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeArrowStatement(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	// Scope the source node.
 	sourceNode := node.GetNode(parser.NodeArrowStatementSource)
 	sourceScope := sb.getScope(sourceNode)
@@ -463,7 +463,7 @@ func (sb *scopeBuilder) scopeArrowStatement(node compilergraph.GraphNode) proto.
 		}
 
 		// The destination must match the received type.
-		destinationType := destinationName.ValueType()
+		destinationType := destinationName.AssignableType()
 		if serr := receivedType.CheckSubTypeOf(destinationType); serr != nil {
 			sb.decorateWithError(node, "Destination of arrow statement must accept type %v: %v", receivedType, serr)
 			return newScope().Invalid().GetScope()
@@ -487,7 +487,7 @@ func (sb *scopeBuilder) scopeArrowStatement(node compilergraph.GraphNode) proto.
 			}
 
 			// The rejection must match the error type.
-			rejectionType := rejectionName.ValueType()
+			rejectionType := rejectionName.AssignableType()
 			if serr := sb.sg.tdg.ErrorTypeReference().CheckSubTypeOf(rejectionType); serr != nil {
 				sb.decorateWithError(node, "Rejection of arrow statement must accept type Error: %v", serr)
 				return newScope().Invalid().GetScope()

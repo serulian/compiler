@@ -15,8 +15,15 @@ import (
 	"github.com/streamrail/concurrent-map"
 )
 
+type scopeAccessOption int
+
+const (
+	scopeGetAccess scopeAccessOption = iota
+	scopeSetAccess
+)
+
 // scopeHandler is a handler function for scoping an SRG node of a particular kind.
-type scopeHandler func(node compilergraph.GraphNode) proto.ScopeInfo
+type scopeHandler func(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo
 
 // scopeBuilder defines a type for easy scoping of the SRG.
 type scopeBuilder struct {
@@ -226,6 +233,11 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 
 // getScope returns the scope for the given node, building (and waiting) if necessary.
 func (sb *scopeBuilder) getScope(node compilergraph.GraphNode) *proto.ScopeInfo {
+	return sb.getScopeWithAccess(node, scopeGetAccess)
+}
+
+// getScopeWithAccess returns the scope for the given node, building (and waiting) if necessary.
+func (sb *scopeBuilder) getScopeWithAccess(node compilergraph.GraphNode, option scopeAccessOption) *proto.ScopeInfo {
 	// Check the map cache for the scope.
 	found, ok := sb.nodeMap.Get(string(node.NodeId))
 	if ok {
@@ -233,18 +245,18 @@ func (sb *scopeBuilder) getScope(node compilergraph.GraphNode) *proto.ScopeInfo 
 		return &result
 	}
 
-	built := <-sb.buildScope(node)
+	built := <-sb.buildScope(node, option)
 	return &built
 }
 
 // buildScope builds the scope for the given node, returning a channel
 // that can be watched for the result.
-func (sb *scopeBuilder) buildScope(node compilergraph.GraphNode) chan proto.ScopeInfo {
+func (sb *scopeBuilder) buildScope(node compilergraph.GraphNode, option scopeAccessOption) chan proto.ScopeInfo {
 	// Execute the handler in a gorountine and return the result channel.
 	handler := sb.getScopeHandler(node)
 	resultChan := make(chan proto.ScopeInfo)
 	go (func() {
-		result := handler(node)
+		result := handler(node, option)
 		if !result.GetIsValid() {
 			sb.Status = false
 		}

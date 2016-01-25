@@ -16,16 +16,16 @@ import (
 var _ = fmt.Printf
 
 // scopeLambdaExpression scopes a lambda expression in the SRG.
-func (sb *scopeBuilder) scopeLambdaExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeLambdaExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	if _, ok := node.TryGet(parser.NodeLambdaExpressionBlock); ok {
-		return sb.scopeFullLambaExpression(node)
+		return sb.scopeFullLambaExpression(node, option)
 	} else {
-		return sb.scopeInlineLambaExpression(node)
+		return sb.scopeInlineLambaExpression(node, option)
 	}
 }
 
 // scopeInlineLambaExpression scopes an inline lambda expression node in the SRG.
-func (sb *scopeBuilder) scopeInlineLambaExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeInlineLambaExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	var returnType = sb.sg.tdg.AnyTypeReference()
 
 	// Scope the lambda's internal expression.
@@ -51,7 +51,7 @@ func (sb *scopeBuilder) scopeInlineLambaExpression(node compilergraph.GraphNode)
 }
 
 // scopeFullLambaExpression scopes a fully defined lambda expression node in the SRG.
-func (sb *scopeBuilder) scopeFullLambaExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeFullLambaExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	var returnType = sb.sg.tdg.AnyTypeReference()
 
 	// Check for a defined return type for the lambda expression.

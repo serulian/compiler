@@ -17,7 +17,7 @@ import (
 var _ = fmt.Printf
 
 // scopeTypeConversionExpression scopes a conversion from a nominal type to a base type.
-func (sb *scopeBuilder) scopeTypeConversionExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeTypeConversionExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	childScope := sb.getScope(node.GetNode(parser.NodeFunctionCallExpressionChildExpr))
 	conversionType := childScope.StaticTypeRef(sb.sg.tdg)
 
@@ -64,7 +64,7 @@ func (sb *scopeBuilder) scopeTypeConversionExpression(node compilergraph.GraphNo
 }
 
 // scopeFunctionCallExpression scopes a function call expression in the SRG.
-func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	// Scope the child expression.
 	childScope := sb.getScope(node.GetNode(parser.NodeFunctionCallExpressionChildExpr))
 	if !childScope.GetIsValid() {
@@ -74,7 +74,7 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 	// Check if the child expression has a static scope. If so, this is a type conversion between
 	// a nominal type and a base type.
 	if childScope.GetKind() == proto.ScopeKind_STATIC {
-		return sb.scopeTypeConversionExpression(node)
+		return sb.scopeTypeConversionExpression(node, option)
 	}
 
 	// Ensure the child expression has type function.
@@ -134,13 +134,13 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 }
 
 // scopeSliceExpression scopes a slice expression in the SRG.
-func (sb *scopeBuilder) scopeSliceExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeSliceExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	// Check if this is a slice vs an index.
 	_, isIndexer := node.TryGet(parser.NodeSliceExpressionIndex)
 	if isIndexer {
-		return sb.scopeIndexerExpression(node)
+		return sb.scopeIndexerExpression(node, option)
 	} else {
-		return sb.scopeSlicerExpression(node)
+		return sb.scopeSlicerExpression(node, option)
 	}
 }
 
@@ -165,7 +165,7 @@ func (sb *scopeBuilder) scopeSliceChildExpression(node compilergraph.GraphNode, 
 }
 
 // scopeSlicerExpression scopes a slice expression (one with left and/or right expressions) in the SRG.
-func (sb *scopeBuilder) scopeSlicerExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeSlicerExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	var isValid = true
 
 	// Lookup the slice operator.
@@ -210,9 +210,14 @@ func (sb *scopeBuilder) scopeSlicerExpression(node compilergraph.GraphNode) prot
 }
 
 // scopeIndexerExpression scopes an indexer expression (slice with single numerical index) in the SRG.
-func (sb *scopeBuilder) scopeIndexerExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeIndexerExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	// Lookup the indexing operator.
-	operator, found := sb.scopeSliceChildExpression(node, "index")
+	var opName = "index"
+	if option == scopeSetAccess {
+		opName = "setindex"
+	}
+
+	operator, found := sb.scopeSliceChildExpression(node, opName)
 	if !found {
 		return newScope().Invalid().GetScope()
 	}
@@ -232,12 +237,16 @@ func (sb *scopeBuilder) scopeIndexerExpression(node compilergraph.GraphNode) pro
 		return newScope().Invalid().GetScope()
 	}
 
-	returnType, _ := operator.ReturnType()
-	return newScope().Valid().CallsOperator(operator).Resolving(returnType).GetScope()
+	if option == scopeSetAccess {
+		return newScope().Valid().ForNamedScope(sb.getNamedScopeForMember(operator)).GetScope()
+	} else {
+		returnType, _ := operator.ReturnType()
+		return newScope().Valid().CallsOperator(operator).Resolving(returnType).GetScope()
+	}
 }
 
 // scopeNullComparisonExpression scopes a nullable comparison expression in the SRG.
-func (sb *scopeBuilder) scopeNullComparisonExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeNullComparisonExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	// Get the scope of the left and right expressions.
 	leftScope := sb.getScope(node.GetNode(parser.NodeBinaryExpressionLeftExpr))
 	rightScope := sb.getScope(node.GetNode(parser.NodeBinaryExpressionRightExpr))
@@ -278,17 +287,17 @@ func (sb *scopeBuilder) scopeNullComparisonExpression(node compilergraph.GraphNo
 }
 
 // scopeComparisonExpression scopes a comparison expression (<, >, <=, >=) in the SRG.
-func (sb *scopeBuilder) scopeComparisonExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeComparisonExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	return sb.scopeBinaryExpression(node, "compare").Resolving(sb.sg.tdg.BoolTypeReference()).GetScope()
 }
 
 // scopeEqualsExpression scopes an equality expression (== or !=) in the SRG.
-func (sb *scopeBuilder) scopeEqualsExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeEqualsExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	return sb.scopeBinaryExpression(node, "equals").Resolving(sb.sg.tdg.BoolTypeReference()).GetScope()
 }
 
 // scopeBooleanUnaryExpression scopes a boolean unary operator expression in the SRG.
-func (sb *scopeBuilder) scopeBooleanUnaryExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeBooleanUnaryExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	// Get the scope of the child expression.
 	childScope := sb.getScope(node.GetNode(parser.NodeUnaryExpressionChildExpr))
 
@@ -310,7 +319,7 @@ func (sb *scopeBuilder) scopeBooleanUnaryExpression(node compilergraph.GraphNode
 }
 
 // scopeBooleanBinaryExpression scopes a boolean binary operator expression in the SRG.
-func (sb *scopeBuilder) scopeBooleanBinaryExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeBooleanBinaryExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	// Get the scope of the left and right expressions.
 	leftScope := sb.getScope(node.GetNode(parser.NodeBinaryExpressionLeftExpr))
 	rightScope := sb.getScope(node.GetNode(parser.NodeBinaryExpressionRightExpr))
@@ -339,62 +348,62 @@ func (sb *scopeBuilder) scopeBooleanBinaryExpression(node compilergraph.GraphNod
 }
 
 // scopeDefineRangeExpression scopes a define range expression in the SRG.
-func (sb *scopeBuilder) scopeDefineRangeExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeDefineRangeExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	return sb.scopeBinaryExpression(node, "range").GetScope()
 }
 
 // scopeBitwiseXorExpression scopes a bitwise xor operator expression in the SRG.
-func (sb *scopeBuilder) scopeBitwiseXorExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeBitwiseXorExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	return sb.scopeBinaryExpression(node, "xor").GetScope()
 }
 
 // scopeBitwiseOrExpression scopes a bitwise or operator expression in the SRG.
-func (sb *scopeBuilder) scopeBitwiseOrExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeBitwiseOrExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	return sb.scopeBinaryExpression(node, "or").GetScope()
 }
 
 // scopeBitwiseAndExpression scopes a bitwise and operator expression in the SRG.
-func (sb *scopeBuilder) scopeBitwiseAndExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeBitwiseAndExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	return sb.scopeBinaryExpression(node, "and").GetScope()
 }
 
 // scopeBitwiseShiftLeftExpression scopes a bitwise shift left operator expression in the SRG.
-func (sb *scopeBuilder) scopeBitwiseShiftLeftExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeBitwiseShiftLeftExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	return sb.scopeBinaryExpression(node, "leftshift").GetScope()
 }
 
 // scopeBitwiseShiftRightExpression scopes a bitwise or operator expression in the SRG.
-func (sb *scopeBuilder) scopeBitwiseShiftRightExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeBitwiseShiftRightExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	return sb.scopeBinaryExpression(node, "rightshift").GetScope()
 }
 
 // scopeBitwiseNotExpression scopes a bitwise not operator expression in the SRG.
-func (sb *scopeBuilder) scopeBitwiseNotExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeBitwiseNotExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	return sb.scopeUnaryExpression(node, "not", parser.NodeUnaryExpressionChildExpr).GetScope()
 }
 
 // scopeBinaryAddExpression scopes an add operator expression in the SRG.
-func (sb *scopeBuilder) scopeBinaryAddExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeBinaryAddExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	return sb.scopeBinaryExpression(node, "plus").GetScope()
 }
 
 // scopeBinarySubtractExpression scopes a minus operator expression in the SRG.
-func (sb *scopeBuilder) scopeBinarySubtractExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeBinarySubtractExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	return sb.scopeBinaryExpression(node, "minus").GetScope()
 }
 
 // scopeBinaryMultiplyExpression scopes a multiply xor operator expression in the SRG.
-func (sb *scopeBuilder) scopeBinaryMultiplyExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeBinaryMultiplyExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	return sb.scopeBinaryExpression(node, "times").GetScope()
 }
 
 // scopeBinaryDivideExpression scopes a divide xor operator expression in the SRG.
-func (sb *scopeBuilder) scopeBinaryDivideExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeBinaryDivideExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	return sb.scopeBinaryExpression(node, "div").GetScope()
 }
 
 // scopeBinaryModuloExpression scopes a modulo xor operator expression in the SRG.
-func (sb *scopeBuilder) scopeBinaryModuloExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeBinaryModuloExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	return sb.scopeBinaryExpression(node, "mod").GetScope()
 }
 

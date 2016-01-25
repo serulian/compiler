@@ -16,17 +16,17 @@ import (
 var _ = fmt.Printf
 
 // scopeField scopes a field member in the SRG.
-func (sb *scopeBuilder) scopeField(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeField(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	return sb.scopeDeclaredValue(node, "Field")
 }
 
 // scopeVariable scopes a variable module member in the SRG.
-func (sb *scopeBuilder) scopeVariable(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeVariable(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	return sb.scopeDeclaredValue(node, "Variable")
 }
 
 // scopeVariableStatement scopes a variable statement in the SRG.
-func (sb *scopeBuilder) scopeVariableStatement(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeVariableStatement(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	return sb.scopeDeclaredValue(node, "Variable")
 }
 

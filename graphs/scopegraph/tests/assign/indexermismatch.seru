@@ -1,0 +1,9 @@
+class SomeClass {
+	operator SetIndex(index int, value int) {
+
+	}
+}
+
+function<void> DoSomething(sc SomeClass) {
+	sc[1] = true
+}

@@ -135,7 +135,7 @@ func BuildScopeGraph(srg *srg.SRG, irg *webidl.WebIRG, tdg *typegraph.TypeGraph)
 	for sit.Next() {
 		wg.Add(1)
 		go (func(node compilergraph.GraphNode) {
-			<-builder.buildScope(node)
+			<-builder.buildScope(node, scopeGetAccess)
 			wg.Done()
 		})(sit.Node())
 	}
@@ -144,7 +144,7 @@ func BuildScopeGraph(srg *srg.SRG, irg *webidl.WebIRG, tdg *typegraph.TypeGraph)
 	for mit.Next() {
 		wg.Add(1)
 		go (func(node compilergraph.GraphNode) {
-			<-builder.buildScope(node)
+			<-builder.buildScope(node, scopeGetAccess)
 			wg.Done()
 		})(mit.Node())
 	}

@@ -16,7 +16,7 @@ import (
 var _ = fmt.Printf
 
 // scopeTaggedTemplateString scopes a tagged template string expression in the SRG.
-func (sb *scopeBuilder) scopeTaggedTemplateString(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeTaggedTemplateString(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	var isValid = true
 
 	// Scope the tagging expression.
@@ -49,7 +49,7 @@ func (sb *scopeBuilder) scopeTaggedTemplateString(node compilergraph.GraphNode) 
 }
 
 // scopeTemplateStringExpression scopes a template string expression in the SRG.
-func (sb *scopeBuilder) scopeTemplateStringExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeTemplateStringExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	// Scope each of the pieces of the template string. All pieces must be strings or Stringable.
 	pit := node.StartQuery().
 		Out(parser.NodeTemplateStringPiece).
@@ -75,7 +75,7 @@ func (sb *scopeBuilder) scopeTemplateStringExpression(node compilergraph.GraphNo
 }
 
 // scopeMapLiteralExpression scopes a map literal expression in the SRG.
-func (sb *scopeBuilder) scopeMapLiteralExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeMapLiteralExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	var isValid = true
 	var keyType = sb.sg.tdg.VoidTypeReference()
 	var valueType = sb.sg.tdg.VoidTypeReference()
@@ -115,7 +115,7 @@ func (sb *scopeBuilder) scopeMapLiteralExpression(node compilergraph.GraphNode) 
 }
 
 // scopeListLiteralExpression scopes a list literal expression in the SRG.
-func (sb *scopeBuilder) scopeListLiteralExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeListLiteralExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	var isValid = true
 	var valueType = sb.sg.tdg.VoidTypeReference()
 
@@ -142,7 +142,7 @@ func (sb *scopeBuilder) scopeListLiteralExpression(node compilergraph.GraphNode)
 }
 
 // scopeStringLiteralExpression scopes a string literal expression in the SRG.
-func (sb *scopeBuilder) scopeStringLiteralExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeStringLiteralExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	return newScope().
 		Valid().
 		Resolving(sb.sg.tdg.StringTypeReference()).
@@ -150,7 +150,7 @@ func (sb *scopeBuilder) scopeStringLiteralExpression(node compilergraph.GraphNod
 }
 
 // scopeBooleanLiteralExpression scopes a boolean literal expression in the SRG.
-func (sb *scopeBuilder) scopeBooleanLiteralExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeBooleanLiteralExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	return newScope().
 		Valid().
 		Resolving(sb.sg.tdg.BoolTypeReference()).
@@ -158,7 +158,7 @@ func (sb *scopeBuilder) scopeBooleanLiteralExpression(node compilergraph.GraphNo
 }
 
 // scopeNumericLiteralExpression scopes a numeric literal expression in the SRG.
-func (sb *scopeBuilder) scopeNumericLiteralExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeNumericLiteralExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	numericValueStr := node.Get(parser.NodeNumericLiteralExpressionValue)
 
 	_, isNotInt := strconv.ParseInt(numericValueStr, 10, 64)
@@ -176,7 +176,7 @@ func (sb *scopeBuilder) scopeNumericLiteralExpression(node compilergraph.GraphNo
 }
 
 // scopeNullLiteralExpression scopes a null literal expression in the SRG.
-func (sb *scopeBuilder) scopeNullLiteralExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeNullLiteralExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	return newScope().
 		Valid().
 		Resolving(sb.sg.tdg.NullTypeReference()).
@@ -184,7 +184,7 @@ func (sb *scopeBuilder) scopeNullLiteralExpression(node compilergraph.GraphNode)
 }
 
 // scopeThisLiteralExpression scopes a this literal expression in the SRG.
-func (sb *scopeBuilder) scopeThisLiteralExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeThisLiteralExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	srgMember, found := sb.sg.srg.TryGetContainingMember(node)
 	if !found {
 		sb.decorateWithError(node, "The 'this' keyword can only be used under non-static type members")
@@ -215,7 +215,7 @@ func (sb *scopeBuilder) scopeThisLiteralExpression(node compilergraph.GraphNode)
 }
 
 // scopeValLiteralExpression scopes a val literal expression in the SRG.
-func (sb *scopeBuilder) scopeValLiteralExpression(node compilergraph.GraphNode) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeValLiteralExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	_, found := sb.sg.srg.TryGetContainingPropertySetter(node)
 	if !found {
 		sb.decorateWithError(node, "The 'val' keyword can only be used under property setters")

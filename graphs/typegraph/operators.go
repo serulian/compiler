@@ -4,6 +4,8 @@
 
 package typegraph
 
+const ASSIGNABLE_OP_VALUE = "value"
+
 type typerefGetter func(containingType TypeReference) TypeReference
 
 // operatorParameter represents a single expected parameter on an operator.
@@ -21,6 +23,7 @@ func (op *operatorParameter) ExpectedType(containingType TypeReference) TypeRefe
 type operatorDefinition struct {
 	Name          string              // The name of the operator.
 	IsStatic      bool                // Whether the operator is static.
+	IsAssignable  bool                // Whether the operator is assignable.
 	getReturnType typerefGetter       // The expected return type.
 	Parameters    []operatorParameter // The expected parameters.
 }
@@ -71,6 +74,10 @@ func (t *TypeGraph) buildOperatorDefinitions() {
 		return t.AnyTypeReference()
 	}
 
+	voidTypeGetter := func(containingType TypeReference) TypeReference {
+		return t.VoidTypeReference()
+	}
+
 	unaryParameters := []operatorParameter{
 		operatorParameter{"value", containingTypeGetter},
 	}
@@ -82,39 +89,45 @@ func (t *TypeGraph) buildOperatorDefinitions() {
 
 	operators := []operatorDefinition{
 		// Binary operators: +, -, *, /, %
-		operatorDefinition{"plus", true, containingTypeGetter, binaryParameters},
-		operatorDefinition{"minus", true, containingTypeGetter, binaryParameters},
-		operatorDefinition{"times", true, containingTypeGetter, binaryParameters},
-		operatorDefinition{"div", true, containingTypeGetter, binaryParameters},
-		operatorDefinition{"mod", true, containingTypeGetter, binaryParameters},
+		operatorDefinition{"plus", true, false, containingTypeGetter, binaryParameters},
+		operatorDefinition{"minus", true, false, containingTypeGetter, binaryParameters},
+		operatorDefinition{"times", true, false, containingTypeGetter, binaryParameters},
+		operatorDefinition{"div", true, false, containingTypeGetter, binaryParameters},
+		operatorDefinition{"mod", true, false, containingTypeGetter, binaryParameters},
 
 		// Bitwise operators: ^, |, &, <<, >>, ~
-		operatorDefinition{"xor", true, containingTypeGetter, binaryParameters},
-		operatorDefinition{"or", true, containingTypeGetter, binaryParameters},
-		operatorDefinition{"and", true, containingTypeGetter, binaryParameters},
-		operatorDefinition{"leftshift", true, containingTypeGetter, binaryParameters},
-		operatorDefinition{"rightshift", true, containingTypeGetter, binaryParameters},
+		operatorDefinition{"xor", true, false, containingTypeGetter, binaryParameters},
+		operatorDefinition{"or", true, false, containingTypeGetter, binaryParameters},
+		operatorDefinition{"and", true, false, containingTypeGetter, binaryParameters},
+		operatorDefinition{"leftshift", true, false, containingTypeGetter, binaryParameters},
+		operatorDefinition{"rightshift", true, false, containingTypeGetter, binaryParameters},
 
-		operatorDefinition{"not", true, containingTypeGetter, unaryParameters},
+		operatorDefinition{"not", true, false, containingTypeGetter, unaryParameters},
 
 		// Equality.
-		operatorDefinition{"equals", true, staticTypeGetter(t.BoolType()), binaryParameters},
+		operatorDefinition{"equals", true, false, staticTypeGetter(t.BoolType()), binaryParameters},
 
 		// Comparison.
-		operatorDefinition{"compare", true, staticTypeGetter(t.IntType()), binaryParameters},
+		operatorDefinition{"compare", true, false, staticTypeGetter(t.IntType()), binaryParameters},
 
 		// Range.
-		operatorDefinition{"range", true, streamContainingTypeGetter, binaryParameters},
+		operatorDefinition{"range", true, false, streamContainingTypeGetter, binaryParameters},
 
 		// Slice.
-		operatorDefinition{"slice", false, anyTypeGetter, []operatorParameter{
+		operatorDefinition{"slice", false, false, anyTypeGetter, []operatorParameter{
 			operatorParameter{"startindex", staticNullableTypeGetter(t.IntType())},
 			operatorParameter{"endindex", staticNullableTypeGetter(t.IntType())},
 		}},
 
 		// Index.
-		operatorDefinition{"index", false, anyTypeGetter, []operatorParameter{
+		operatorDefinition{"index", false, false, anyTypeGetter, []operatorParameter{
 			operatorParameter{"index", anyTypeGetter},
+		}},
+
+		// SetIndex.
+		operatorDefinition{"setindex", false, true, voidTypeGetter, []operatorParameter{
+			operatorParameter{"index", anyTypeGetter},
+			operatorParameter{ASSIGNABLE_OP_VALUE, anyTypeGetter},
 		}},
 	}
 

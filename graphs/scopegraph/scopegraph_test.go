@@ -247,6 +247,14 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"assign success test", "assign", "success", []expectedScopeEntry{},
 		"", ""},
 
+	scopegraphTest{"assign indexer test", "assign", "indexer",
+		[]expectedScopeEntry{},
+		"", ""},
+
+	scopegraphTest{"assign indexer value type mismatch test", "assign", "indexermismatch",
+		[]expectedScopeEntry{},
+		"Cannot assign value to operator setindex: 'Boolean' cannot be used in place of non-interface 'Integer'", ""},
+
 	/////////// Comparison operator expressions ///////////
 
 	scopegraphTest{"comparison op success test", "compareops", "success",
@@ -438,6 +446,10 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"slice invalid param test", "slice", "invalidslice",
 		[]expectedScopeEntry{},
 		"Slice index must be of type Integer, found: Boolean", ""},
+
+	scopegraphTest{"indexer success tests", "slice", "indexer",
+		[]expectedScopeEntry{},
+		"", ""},
 
 	/////////// Cast expression ///////////
 

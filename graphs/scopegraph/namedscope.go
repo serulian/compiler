@@ -182,6 +182,20 @@ func (nsi *namedScopeInfo) ValueType() typegraph.TypeReference {
 	return nsi.ValueOrGenericType()
 }
 
+// AssignableType returns the type of values that can be assigned to this named scope. For
+// non-assignable scopes, returns void.
+func (nsi *namedScopeInfo) AssignableType() typegraph.TypeReference {
+	if !nsi.IsAssignable() {
+		return nsi.sb.sg.tdg.VoidTypeReference()
+	}
+
+	if nsi.typeInfo != nil {
+		return nsi.typeInfo.(typegraph.TGMember).AssignableType()
+	}
+
+	return nsi.ValueType()
+}
+
 // ValueOrGenericType returns the value type of the named scope. For scopes without types,
 // this method will return void.
 func (nsi *namedScopeInfo) ValueOrGenericType() typegraph.TypeReference {

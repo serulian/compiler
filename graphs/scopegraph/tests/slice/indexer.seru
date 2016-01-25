@@ -1,0 +1,11 @@
+class SomeClass {
+	var<bool> result = false
+
+	operator<bool> index(someParam bool) {
+		return this.result && !someParam
+	}
+
+	operator setindex(index bool, value bool) {
+		this.result = value
+	}
+}
