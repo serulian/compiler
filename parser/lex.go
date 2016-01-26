@@ -198,8 +198,6 @@ var syntheticPredecessors = map[tokenType]bool{
 	tokenTypeRightParen:   true,
 	tokenTypeRightBracket: true,
 	tokenTypeGreaterThan:  true,
-
-	tokenTypeMultilineComment: true,
 }
 
 // stateFn represents the state of the scanner as a function that returns the next state.
@@ -207,16 +205,16 @@ type stateFn func(*lexer) stateFn
 
 // lexer holds the state of the scanner.
 type lexer struct {
-	source                 compilercommon.InputSource // the name of the input; used only for error reports
-	input                  string                     // the string being scanned
-	state                  stateFn                    // the next lexing function to enter
-	pos                    bytePosition               // current position in the input
-	start                  bytePosition               // start position of this token
-	width                  bytePosition               // width of last rune read from input
-	lastPos                bytePosition               // position of most recent token returned by nextToken
-	tokens                 chan lexeme                // channel of scanned lexemes
-	currentToken           lexeme                     // The current token if any
-	lastNonWhitespaceToken lexeme                     // The last token returned that is non-whitespace
+	source              compilercommon.InputSource // the name of the input; used only for error reports
+	input               string                     // the string being scanned
+	state               stateFn                    // the next lexing function to enter
+	pos                 bytePosition               // current position in the input
+	start               bytePosition               // start position of this token
+	width               bytePosition               // width of last rune read from input
+	lastPos             bytePosition               // position of most recent token returned by nextToken
+	tokens              chan lexeme                // channel of scanned lexemes
+	currentToken        lexeme                     // The current token if any
+	lastNonIgnoredToken lexeme                     // The last token returned that is non-whitespace and non-comment
 }
 
 // nextToken returns the next token from the input.
@@ -278,8 +276,8 @@ func (l *lexer) value() string {
 func (l *lexer) emit(t tokenType) {
 	currentToken := lexeme{t, l.start, l.value()}
 
-	if t != tokenTypeWhitespace {
-		l.lastNonWhitespaceToken = currentToken
+	if t != tokenTypeWhitespace && t != tokenTypeMultilineComment && t != tokenTypeSinglelineComment {
+		l.lastNonIgnoredToken = currentToken
 	}
 
 	l.tokens <- currentToken
@@ -343,7 +341,7 @@ Loop:
 		case isNewline(r):
 			// If the previous token matches the synthetic semicolon list,
 			// we emit a synthetic semicolon instead of a simple newline.
-			if _, ok := syntheticPredecessors[l.lastNonWhitespaceToken.kind]; ok {
+			if _, ok := syntheticPredecessors[l.lastNonIgnoredToken.kind]; ok {
 				l.emit(tokenTypeSyntheticSemicolon)
 			} else {
 				l.emit(tokenTypeNewline)

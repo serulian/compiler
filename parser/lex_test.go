@@ -199,7 +199,7 @@ var lexerTests = []lexerTest{
 	{"dot expression comment newline test", "this//.foo\nbar", []lexeme{
 		lexeme{tokenTypeKeyword, 0, "this"},
 		lexeme{tokenTypeSinglelineComment, 0, "//.foo"},
-		lexeme{tokenTypeNewline, 0, "\n"},
+		lexeme{tokenTypeSyntheticSemicolon, 0, "\n"},
 		lexeme{tokenTypeIdentifer, 0, "bar"},
 		tEOF}},
 
@@ -254,7 +254,7 @@ class SomeClass`
 	checkNext(t, l, text, lexeme{tokenTypeWhitespace, 8, " "}, 0, 8)
 	checkNext(t, l, text, lexeme{tokenTypeSinglelineComment, 9, "// some comment"}, 0, 9)
 
-	checkNext(t, l, text, lexeme{tokenTypeNewline, 24, "\n"}, 0, 24)
+	checkNext(t, l, text, lexeme{tokenTypeSyntheticSemicolon, 24, "\n"}, 0, 24)
 
 	checkNext(t, l, text, lexeme{tokenTypeKeyword, 25, "class"}, 1, 0)
 	checkNext(t, l, text, lexeme{tokenTypeWhitespace, 30, " "}, 1, 5)

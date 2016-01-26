@@ -1,0 +1,8 @@
+/**
+ * Foo
+ */
+interface Test {}
+
+function<void> DoSomething() {
+	/** foo */this
+}
