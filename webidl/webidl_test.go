@@ -53,7 +53,8 @@ func TestBasicLoading(t *testing.T) {
 		return
 	}
 
-	if !assert.Equal(t, "CoolThing", coolthing.Name()) {
+	coolName, _ := coolthing.Name()
+	if !assert.Equal(t, "CoolThing", coolName) {
 		return
 	}
 
@@ -78,7 +79,8 @@ func TestBasicLoading(t *testing.T) {
 		return
 	}
 
-	if !assert.Equal(t, "AnotherThing", anotherthing.Name()) {
+	anotherName, _ := anotherthing.Name()
+	if !assert.Equal(t, "AnotherThing", anotherName) {
 		return
 	}
 
