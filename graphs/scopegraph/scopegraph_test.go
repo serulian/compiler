@@ -529,6 +529,10 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"Cannot attempt member access of 'someMember' under module member GenericFunc, as it is generic without specification", ""},
 
+	scopegraphTest{"member access literal test", "memberaccess", "literalaccess",
+		[]expectedScopeEntry{},
+		"Could not find instance name 'UnknownProp' under type Integer", ""},
+
 	/////////// Nullable member access expression ///////////
 
 	scopegraphTest{"nullable member access success test", "nullablememberaccess", "success",
