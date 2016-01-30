@@ -1,0 +1,105 @@
+NodeTypeFile
+  end-rune = 61
+  input-source = range expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 61
+      input-source = range expr test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 61
+          input-source = range expr test
+          start-rune = 29
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 36
+              input-source = range expr test
+              start-rune = 32
+              expr-statement-expr =>
+                NodeDefineRangeExpression
+                  end-rune = 35
+                  input-source = range expr test
+                  start-rune = 32
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 32
+                      identexpr-name = a
+                      input-source = range expr test
+                      start-rune = 32
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 35
+                      identexpr-name = b
+                      input-source = range expr test
+                      start-rune = 35
+            NodeTypeExpressionStatement
+              end-rune = 42
+              input-source = range expr test
+              start-rune = 38
+              expr-statement-expr =>
+                NodeDefineRangeExpression
+                  end-rune = 41
+                  input-source = range expr test
+                  start-rune = 38
+                  binary-expression-left =>
+                    NodeNumericLiteralExpression
+                      end-rune = 38
+                      input-source = range expr test
+                      literal-value = 0
+                      start-rune = 38
+                  binary-expression-right =>
+                    NodeNumericLiteralExpression
+                      end-rune = 41
+                      input-source = range expr test
+                      literal-value = 1
+                      start-rune = 41
+            NodeTypeExpressionStatement
+              end-rune = 49
+              input-source = range expr test
+              start-rune = 44
+              expr-statement-expr =>
+                NodeDefineRangeExpression
+                  end-rune = 48
+                  input-source = range expr test
+                  start-rune = 44
+                  binary-expression-left =>
+                    NodeNumericLiteralExpression
+                      end-rune = 45
+                      input-source = range expr test
+                      literal-value = -1
+                      start-rune = 44
+                  binary-expression-right =>
+                    NodeNumericLiteralExpression
+                      end-rune = 48
+                      input-source = range expr test
+                      literal-value = 1
+                      start-rune = 48
+            NodeTypeExpressionStatement
+              end-rune = 60
+              input-source = range expr test
+              start-rune = 51
+              expr-statement-expr =>
+                NodeDefineRangeExpression
+                  end-rune = 59
+                  input-source = range expr test
+                  start-rune = 51
+                  binary-expression-left =>
+                    NodeNumericLiteralExpression
+                      end-rune = 54
+                      input-source = range expr test
+                      literal-value = -1.1
+                      start-rune = 51
+                  binary-expression-right =>
+                    NodeNumericLiteralExpression
+                      end-rune = 59
+                      input-source = range expr test
+                      literal-value = 5.6
+                      start-rune = 57
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 12
+          input-source = range expr test
+          start-rune = 9
