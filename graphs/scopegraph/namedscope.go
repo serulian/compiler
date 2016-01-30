@@ -29,6 +29,12 @@ type namedScopeInfo struct {
 func (sb *scopeBuilder) lookupNamedScope(name string, node compilergraph.GraphNode) (namedScopeInfo, bool) {
 	srgInfo, found := sb.sg.srg.FindNameInScope(name, node)
 	if !found {
+		// Try resolving the name as a global type alias.
+		aliasedType, typeFound := sb.sg.tdg.LookupAliasedType(name)
+		if typeFound {
+			return namedScopeInfo{srg.SRGNamedScope{}, aliasedType, sb}, true
+		}
+
 		return namedScopeInfo{}, false
 	}
 

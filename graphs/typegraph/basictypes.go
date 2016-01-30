@@ -134,14 +134,10 @@ func (t *TypeGraph) ErrorType() TGTypeDecl {
 
 // getAliasedType returns the type defined for the given alias.
 func (t *TypeGraph) getAliasedType(alias string) TGTypeDecl {
-	typeNode, found := t.layer.StartQuery(alias).
-		In(NodePredicateTypeAlias).
-		IsKind(TYPE_NODE_TYPES_TAGGED...).
-		TryGetNode()
-
+	typeDecl, found := t.LookupAliasedType(alias)
 	if !found {
 		panic(fmt.Sprintf("%s type not found", alias))
 	}
 
-	return TGTypeDecl{typeNode, t}
+	return typeDecl
 }
