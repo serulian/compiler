@@ -72,6 +72,11 @@ func (t *TypeGraph) StringableTypeReference() TypeReference {
 	return t.NewTypeReference(t.StringableType())
 }
 
+// StreamableType returns the streamable type.
+func (t *TypeGraph) StreamableType() TGTypeDecl {
+	return t.getAliasedType("streamable")
+}
+
 // StreamType returns the stream type.
 func (t *TypeGraph) StreamType() TGTypeDecl {
 	return t.getAliasedType("stream")

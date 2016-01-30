@@ -147,13 +147,20 @@ func (sb *scopeBuilder) scopeNamedValue(node compilergraph.GraphNode, option sco
 		}
 
 		loopExprType := exprScope.ResolvedTypeRef(sb.sg.tdg)
-		generics, serr := loopExprType.CheckConcreteSubtypeOf(sb.sg.tdg.StreamType())
-		if serr != nil {
-			sb.decorateWithError(parentNode, "Loop iterable expression must implement type 'stream': %v", serr)
-			return newScope().Invalid().GetScope()
-		}
 
-		return newScope().Valid().Assignable(generics[0]).GetScope()
+		// Check for a Streamable.
+		generics, lerr := loopExprType.CheckConcreteSubtypeOf(sb.sg.tdg.StreamableType())
+		if lerr == nil {
+			return newScope().Valid().Assignable(generics[0]).GetScope()
+		} else {
+			generics, serr := loopExprType.CheckConcreteSubtypeOf(sb.sg.tdg.StreamType())
+			if serr != nil {
+				sb.decorateWithError(parentNode, "Loop iterable expression must implement type 'stream' or 'streamable': %v", serr)
+				return newScope().Invalid().GetScope()
+			}
+
+			return newScope().Valid().Assignable(generics[0]).GetScope()
+		}
 
 	default:
 		panic(fmt.Sprintf("Unknown node exporting a named value: %v", parentNode.Kind))
@@ -215,7 +222,7 @@ func (sb *scopeBuilder) scopeLoopStatement(node compilergraph.GraphNode, option 
 
 	loopExprType := loopExprScope.ResolvedTypeRef(sb.sg.tdg)
 
-	// If the loop has a variable defined, ensure the loop expression is a Stream. Otherwise,
+	// If the loop has a variable defined, we'll check above that the loop expression is a Stream or Streamable. Otherwise,
 	// it must be a boolean value.
 	varNode, hasVar := node.TryGetNode(parser.NodeStatementNamedValue)
 	if hasVar {

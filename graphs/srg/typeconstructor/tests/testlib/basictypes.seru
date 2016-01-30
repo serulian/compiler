@@ -8,6 +8,11 @@ interface Stream<T> {
 	property<T> CurrentValue { get }
 }
 
+@•typealias('streamable')
+interface Streamable<T> {
+	function<Stream<T>> Stream()
+}
+
 @•typealias('error')
 interface Error {
 	property<string> Message { get }
