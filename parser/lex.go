@@ -243,6 +243,19 @@ func (l *lexer) peek() rune {
 	return r
 }
 
+func (l *lexer) peekForward(count int) rune {
+	var r = '\n'
+	for i := 0; i < count; i++ {
+		r = l.next()
+	}
+
+	for i := 0; i < count; i++ {
+		l.backup()
+	}
+
+	return r
+}
+
 // peekValue looks forward for the given value string. If found, returns true.
 func (l *lexer) peekValue(value string) bool {
 	for index, runeValue := range value {
@@ -697,7 +710,7 @@ func (l *lexer) scanNumber() bool {
 		digits = "0123456789abcdefABCDEF"
 	}
 	l.acceptRun(digits)
-	if l.accept(".") {
+	if l.peek() == '.' && unicode.IsDigit(l.peekForward(2)) && l.accept(".") {
 		l.acceptRun(digits)
 	}
 	if l.accept("eE") {

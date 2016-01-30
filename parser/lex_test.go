@@ -232,6 +232,24 @@ var lexerTests = []lexerTest{
 		lexeme{tokenTypeWhitespace, 0, "\t"},
 		lexeme{tokenTypeSyntheticSemicolon, 0, "\n"},
 		tEOF}},
+
+	{"numeric range test", "2..3", []lexeme{
+		lexeme{tokenTypeNumericLiteral, 0, "2"},
+		lexeme{tokenTypeEllipsis, 0, ".."},
+		lexeme{tokenTypeNumericLiteral, 0, "3"},
+		tEOF}},
+
+	{"numeric range start float test", "2.7..3", []lexeme{
+		lexeme{tokenTypeNumericLiteral, 0, "2.7"},
+		lexeme{tokenTypeEllipsis, 0, ".."},
+		lexeme{tokenTypeNumericLiteral, 0, "3"},
+		tEOF}},
+
+	{"numeric range end float test", "2..3.6", []lexeme{
+		lexeme{tokenTypeNumericLiteral, 0, "2"},
+		lexeme{tokenTypeEllipsis, 0, ".."},
+		lexeme{tokenTypeNumericLiteral, 0, "3.6"},
+		tEOF}},
 }
 
 func TestLexer(t *testing.T) {

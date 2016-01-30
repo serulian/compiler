@@ -195,6 +195,7 @@ var parserTests = []parserTest{
 	{"generic specifier expr test", "expression/generic_specifier"},
 	{"less than and generic specifier expr test", "expression/ltandgeneric"},
 	{"template string expr test", "expression/templatestring"},
+	{"range expr test", "expression/range"},
 
 	{"all expr test", "expression/all"},
 	{"complex expr test", "expression/complex"},
