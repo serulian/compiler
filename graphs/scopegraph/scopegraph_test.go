@@ -355,6 +355,12 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	scopegraphTest{"identifier expr aliased type test", "identexpr", "alias",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"typeref", expectedScope{true, proto.ScopeKind_STATIC, "void", "void"}},
+		},
+		"", ""},
+
 	scopegraphTest{"identifier expr generic type test", "identexpr", "generictype",
 		[]expectedScopeEntry{
 			expectedScopeEntry{"typeref", expectedScope{true, proto.ScopeKind_GENERIC, "void", "void"}},

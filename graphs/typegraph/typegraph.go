@@ -346,3 +346,17 @@ func (g *TypeGraph) LookupReturnType(sourceNode compilergraph.GraphNode) (TypeRe
 
 	return resolvedNode.GetTagged(NodePredicateReturnType, g.AnyTypeReference()).(TypeReference), true
 }
+
+// LookupAliasedType looks up the type with the given alias and returns it, if any.
+func (t *TypeGraph) LookupAliasedType(alias string) (TGTypeDecl, bool) {
+	typeNode, found := t.layer.StartQuery(alias).
+		In(NodePredicateTypeAlias).
+		IsKind(TYPE_NODE_TYPES_TAGGED...).
+		TryGetNode()
+
+	if !found {
+		return TGTypeDecl{}, false
+	}
+
+	return TGTypeDecl{typeNode, t}, true
+}
