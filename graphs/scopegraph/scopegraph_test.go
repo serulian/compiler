@@ -156,6 +156,13 @@ var scopeGraphTests = []scopegraphTest{
 	// Stream loop test.
 	scopegraphTest{"stream loop test", "loop", "streamloop", []expectedScopeEntry{
 		expectedScopeEntry{"loop", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
+		expectedScopeEntry{"a", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+	}, "", ""},
+
+	// Streamable loop test.
+	scopegraphTest{"streamable loop test", "loop", "streamableloop", []expectedScopeEntry{
+		expectedScopeEntry{"loop", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
+		expectedScopeEntry{"a", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
 	}, "", ""},
 
 	// Expected bool loop test.
@@ -164,7 +171,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	// Expected stream loop test.
 	scopegraphTest{"expected stream loop test", "loop", "expectedstreamloop", []expectedScopeEntry{},
-		"Loop iterable expression must implement type 'stream': Type Integer cannot be used in place of type Stream as it does not implement member CurrentValue", ""},
+		"Loop iterable expression must implement type 'stream' or 'streamable': Type Integer cannot be used in place of type Stream as it does not implement member CurrentValue", ""},
 
 	/////////// With ///////////
 

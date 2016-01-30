@@ -822,5 +822,67 @@
             "tdg-type-alias": "string",
             "tdg-type-name": "String"
         }
+    },
+    "f3e0f00e5bc7ebb0f07237c9551956a0": {
+        "Key": "f3e0f00e5bc7ebb0f07237c9551956a0",
+        "Kind": 2,
+        "Children": {
+            "23a9521be051eb46e9aab1ebec04cc1b": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "23a9521be051eb46e9aab1ebec04cc1b",
+                    "Kind": 6,
+                    "Children": {
+                        "b798f8800327559db0c860e837651500": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "b798f8800327559db0c860e837651500",
+                                "Kind": 8,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "8|NodeType|tdg",
+                                    "tdg-return-type": "Stream\u003cT\u003e",
+                                    "tdg-source-node": "(NodeRef)"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "Stream",
+                        "tdg-member-promising": "true",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "Function\u003cStream\u003cT\u003e\u003e",
+                        "tdg-member-signature": "\n\u0006Stream\u0010\u0002\u0018\u0000 \u0001*\u0013Function\u003cStream\u003cT\u003e\u003e",
+                        "tdg-node-kind": "6|NodeType|tdg",
+                        "tdg-source-module": "tests/testlib/basictypes.seru",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "99e1186e6a9bdcb4d1efa579db3606f3": {
+                "Predicate": "tdg-declaration-generic",
+                "Child": {
+                    "Key": "99e1186e6a9bdcb4d1efa579db3606f3",
+                    "Kind": 9,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-generic-index": "0",
+                        "tdg-generic-kind": "0",
+                        "tdg-generic-name": "T",
+                        "tdg-generic-subtype": "any",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-node-kind": "2|NodeType|tdg",
+            "tdg-source-module": "tests/testlib/basictypes.seru",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-alias": "streamable",
+            "tdg-type-name": "Streamable"
+        }
     }
 }
