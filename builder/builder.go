@@ -32,7 +32,7 @@ func outputWarnings(warnings []compilercommon.SourceWarning) {
 
 	for _, warning := range warnings {
 		highlight.Print("WARNING: ")
-		location.Printf("At %v:%v:%v: ", warning.SourceAndLocation().Source(), warning.SourceAndLocation().Location().LineNumber(), warning.SourceAndLocation().Location().ColumnPosition())
+		location.Printf("At %v:%v:%v: ", warning.SourceAndLocation().Source(), warning.SourceAndLocation().Location().LineNumber()+1, warning.SourceAndLocation().Location().ColumnPosition()+1)
 		message.Printf("%s\n", warning.String())
 	}
 }
@@ -44,7 +44,7 @@ func outputErrors(errors []compilercommon.SourceError) {
 
 	for _, err := range errors {
 		highlight.Print("ERROR: ")
-		location.Printf("At %v:%v:%v: ", err.SourceAndLocation().Source(), err.SourceAndLocation().Location().LineNumber(), err.SourceAndLocation().Location().ColumnPosition())
+		location.Printf("At %v:%v:%v: ", err.SourceAndLocation().Source(), err.SourceAndLocation().Location().LineNumber()+1, err.SourceAndLocation().Location().ColumnPosition()+1)
 		message.Printf("%s\n", err.Error())
 	}
 }
