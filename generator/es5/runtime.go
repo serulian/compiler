@@ -117,13 +117,17 @@ window.Serulian = (function($global) {
   					return;
   				}
 
-  				statemachine.next(continueFunc);				
+  				statemachine.next(callFunc);				
 			  };
-        
-  			continueFunc();
-        if (statemachine.current < 0) {
-          statemachine.resolve(null);
-        }
+
+        var callFunc = function() {
+    			continueFunc();
+          if (statemachine.current < 0) {
+            statemachine.resolve(null);
+          }
+        };
+
+        callFunc();
   		});
   	},
 
