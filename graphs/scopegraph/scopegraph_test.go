@@ -400,6 +400,13 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	scopegraphTest{"identifier expr nested test", "identexpr", "nested",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"first", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+			expectedScopeEntry{"second", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+		},
+		"", ""},
+
 	/////////// Arrow operator ///////////
 
 	scopegraphTest{"arrow operator success test", "arrowops", "success",
