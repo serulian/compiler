@@ -46,6 +46,16 @@ func (tn TGTypeDecl) Name() string {
 	return tn.GraphNode.Get(NodePredicateTypeName)
 }
 
+// DescriptiveName returns a nice human-readable name for the type.
+func (tn TGTypeDecl) DescriptiveName() string {
+	if tn.GraphNode.Kind == NodeTypeGeneric {
+		containingType, _ := tn.ContainingType()
+		return containingType.DescriptiveName() + "::" + tn.Name()
+	}
+
+	return tn.Name()
+}
+
 // Title returns a nice title for the type.
 func (tn TGTypeDecl) Title() string {
 	nodeType := tn.Kind.(NodeType)
@@ -75,6 +85,16 @@ func (tn TGTypeDecl) Title() string {
 // Node returns the underlying node in this declaration.
 func (tn TGTypeDecl) Node() compilergraph.GraphNode {
 	return tn.GraphNode
+}
+
+// Returns the containing type. Will only return a type for generics.
+func (tn TGTypeDecl) ContainingType() (TGTypeDecl, bool) {
+	containingTypeNode, hasContainingType := tn.GraphNode.TryGetIncomingNode(NodePredicateTypeGeneric)
+	if !hasContainingType {
+		return TGTypeDecl{}, false
+	}
+
+	return TGTypeDecl{containingTypeNode, tn.tdg}, true
 }
 
 // HasGenerics returns whether this type has generics defined.

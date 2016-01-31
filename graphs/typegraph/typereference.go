@@ -77,7 +77,7 @@ func (tr TypeReference) Verify() error {
 
 	// Check generics count.
 	if len(typeGenerics) != len(refGenerics) {
-		return fmt.Errorf("Expected %v generics on type '%s', found: %v", len(typeGenerics), referredType.Name(), len(refGenerics))
+		return fmt.Errorf("Expected %v generics on type '%s', found: %v", len(typeGenerics), referredType.DescriptiveName(), len(refGenerics))
 	}
 
 	// Check generics constraints.
@@ -86,7 +86,7 @@ func (tr TypeReference) Verify() error {
 			refGeneric := refGenerics[index]
 			err := refGeneric.CheckSubTypeOf(typeGeneric.Constraint())
 			if err != nil {
-				return fmt.Errorf("Generic '%s' (#%v) on type '%s' has constraint '%v'. Specified type '%v' does not match: %v", typeGeneric.Name(), index+1, referredType.Name(), typeGeneric.Constraint(), refGeneric, err)
+				return fmt.Errorf("Generic '%s' (#%v) on type '%s' has constraint '%v'. Specified type '%v' does not match: %v", typeGeneric.DescriptiveName(), index+1, referredType.DescriptiveName(), typeGeneric.Constraint(), refGeneric, err)
 			}
 		}
 	}
@@ -262,19 +262,19 @@ func (tr TypeReference) CheckConcreteSubtypeOf(otherType TGTypeDecl) ([]TypeRefe
 
 	if !tr.isNormal() {
 		if tr.IsAny() {
-			return nil, fmt.Errorf("Any type %v does not implement type %v", tr, otherType.Name())
+			return nil, fmt.Errorf("Any type %v does not implement type %v", tr, otherType.DescriptiveName())
 		}
 
 		if tr.IsVoid() {
-			return nil, fmt.Errorf("Void type %v does not implement type %v", tr, otherType.Name())
+			return nil, fmt.Errorf("Void type %v does not implement type %v", tr, otherType.DescriptiveName())
 		}
 
 		if tr.IsNullable() {
-			return nil, fmt.Errorf("Nullable type %v cannot match type %v", tr, otherType.Name())
+			return nil, fmt.Errorf("Nullable type %v cannot match type %v", tr, otherType.DescriptiveName())
 		}
 
 		if tr.IsNull() {
-			return nil, fmt.Errorf("null %v cannot match type %v", tr, otherType.Name())
+			return nil, fmt.Errorf("null %v cannot match type %v", tr, otherType.DescriptiveName())
 		}
 	}
 
@@ -321,7 +321,7 @@ func (tr TypeReference) CheckConcreteSubtypeOf(otherType TGTypeDecl) ([]TypeRefe
 		localMember, found := localType.GetMember(matchingMember.Name())
 		if !found {
 			// If not found, this is not a matching type.
-			return nil, fmt.Errorf("Type %v cannot be used in place of type %v as it does not implement member %v", tr, otherType.Name(), matchingMember.Name())
+			return nil, fmt.Errorf("Type %v cannot be used in place of type %v as it does not implement member %v", tr, otherType.DescriptiveName(), matchingMember.Name())
 		}
 
 		// Now that we have a matching member in the local type, attempt to extract the concrete type
@@ -329,7 +329,7 @@ func (tr TypeReference) CheckConcreteSubtypeOf(otherType TGTypeDecl) ([]TypeRefe
 		concreteType, found := localMember.MemberType().ExtractTypeDiff(matchingMember.MemberType(), typeGeneric.AsType())
 		if !found {
 			// If not found, this is not a matching type.
-			return nil, fmt.Errorf("Type %v cannot be used in place of type %v as member %v does not have the same signature", tr, otherType.Name(), matchingMember.Name())
+			return nil, fmt.Errorf("Type %v cannot be used in place of type %v as member %v does not have the same signature", tr, otherType.DescriptiveName(), matchingMember.Name())
 		}
 
 		// Replace any generics from the local type reference with those of the type.

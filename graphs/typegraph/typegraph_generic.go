@@ -19,6 +19,11 @@ func (tn TGGeneric) Name() string {
 	return tn.GraphNode.Get(NodePredicateGenericName)
 }
 
+// DescriptiveName returns a nice human-readable name for the generic.
+func (tn TGGeneric) DescriptiveName() string {
+	return tn.AsType().DescriptiveName()
+}
+
 // Node returns the underlying node in this declaration.
 func (tn TGGeneric) Node() compilergraph.GraphNode {
 	return tn.GraphNode

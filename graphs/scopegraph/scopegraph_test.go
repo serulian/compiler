@@ -485,6 +485,10 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"", ""},
 
+	scopegraphTest{"invalid generic indexer tests", "slice", "invalidgenericindexer",
+		[]expectedScopeEntry{},
+		"Cannot assign value to operator setindex: 'T' cannot be used in place of non-interface 'Boolean'", ""},
+
 	/////////// Cast expression ///////////
 
 	scopegraphTest{"cast interface success test", "castexpr", "success",
