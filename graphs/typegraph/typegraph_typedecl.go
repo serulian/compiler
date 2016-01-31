@@ -151,6 +151,21 @@ func (tn TGTypeDecl) GetMember(name string) (TGMember, bool) {
 	return TGMember{node, tn.tdg}, true
 }
 
+// LookupGeneric looks up the generic under this type with the given name and returns it, if any.
+func (tn TGTypeDecl) LookupGeneric(name string) (TGGeneric, bool) {
+	node, found := tn.GraphNode.
+		StartQuery().
+		Out(NodePredicateTypeGeneric).
+		Has(NodePredicateGenericName, name).
+		TryGetNode()
+
+	if !found {
+		return TGGeneric{}, false
+	}
+
+	return TGGeneric{node, tn.tdg}, true
+}
+
 // Members returns the type graph members for this type node.
 func (tn TGTypeDecl) Members() []TGMember {
 	it := tn.GraphNode.StartQuery().
@@ -194,6 +209,15 @@ func (tn TGTypeDecl) IsType() bool {
 // AsType returns this type.
 func (tn TGTypeDecl) AsType() TGTypeDecl {
 	return tn
+}
+
+// AsGeneric returns this type as a generic. Will panic if this is not a generic.
+func (tn TGTypeDecl) AsGeneric() TGGeneric {
+	if tn.TypeKind() != GenericType {
+		panic("AsGeneric called on non-generic")
+	}
+
+	return TGGeneric{tn.Node(), tn.tdg}
 }
 
 // IsStatic returns whether this type is static (always true).

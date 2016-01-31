@@ -8,8 +8,20 @@ class SomeClass<T> {
 	}
 }
 
+class AnotherClass<T> {
+	operator<int> index(index T) {
+		return 2
+	}
+}
+
 function<void> DoSomething() {
 	var sc = SomeClass<bool>.new()
 	/* getter */(sc[2])
 	sc[1] = true
+
+	var acs = AnotherClass<string>.new()
+	acs['hello']
+
+	var acb = AnotherClass<bool>.new()
+	acb[true]
 }

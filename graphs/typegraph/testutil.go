@@ -42,6 +42,18 @@ func parseTypeReferenceForTesting(humanString string, graph *TypeGraph, refSourc
 		return graph.VoidTypeReference()
 	}
 
+	if strings.Contains(humanString, "::") {
+		genericParts := strings.Split(humanString, "::")
+		mainType := parseTypeReferenceForTesting(genericParts[0], graph, refSourceNodes...)
+		generic, _ := mainType.ReferredType().LookupGeneric(genericParts[1])
+		ref := graph.NewTypeReference(generic.AsType())
+		if isNullable {
+			return ref.AsNullable()
+		} else {
+			return ref
+		}
+	}
+
 	parts := strings.Split(humanString, "<")
 
 	// Find the type by name.

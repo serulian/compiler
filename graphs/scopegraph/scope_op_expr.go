@@ -230,7 +230,7 @@ func (sb *scopeBuilder) scopeIndexerExpression(node compilergraph.GraphNode, opt
 
 	// Ensure the index expression type matches that expected.
 	exprType := exprScope.ResolvedTypeRef(sb.sg.tdg)
-	parameterType := operator.ParameterTypes()[0]
+	parameterType := operator.ParameterTypes()[0].TransformUnder(childType)
 
 	if serr := exprType.CheckSubTypeOf(parameterType); serr != nil {
 		sb.decorateWithError(node, "Indexer parameter must be type %v: %v", parameterType, serr)
@@ -263,7 +263,7 @@ func (sb *scopeBuilder) scopeIsComparisonExpression(node compilergraph.GraphNode
 	}
 
 	// Ensure the left hand side can be nullable.
-	if !leftScope.ResolvedTypeRef(sb.sg.tdg).IsNullable() {
+	if !leftScope.ResolvedTypeRef(sb.sg.tdg).IsNullable() && !leftScope.ResolvedTypeRef(sb.sg.tdg).IsAny() {
 		sb.decorateWithError(node, "Left side of 'is' operator must be a nullable type. Found: %v", leftScope.ResolvedTypeRef(sb.sg.tdg))
 		return newScope().Invalid().Resolving(sb.sg.tdg.BoolTypeReference()).GetScope()
 	}

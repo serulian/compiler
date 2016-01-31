@@ -656,6 +656,18 @@ func TestSubtypes(t *testing.T) {
 						}},
 				},
 			},
+
+			// class ConstrainedGeneric<T : IWithMethod> {
+			// }
+			testType{"class", "ConstrainedGeneric",
+				[]testGeneric{
+					testGeneric{"T", "IWithMethod"},
+					testGeneric{"Q", "IWithOperator"},
+					testGeneric{"R", "any"},
+					testGeneric{"S", "any"},
+				},
+				[]testMember{},
+			},
 		},
 	)
 
@@ -729,6 +741,52 @@ func TestSubtypes(t *testing.T) {
 
 		subtypeCheckTest{"IntInstanceOperator not subtype of IWithInstanceOperator<bool>", "IntInstanceOperator", "IWithInstanceOperator<bool>",
 			"operator 'index' under type 'IntInstanceOperator' does not match that defined in type 'IWithInstanceOperator<bool>'"},
+
+		// T : IWithMethod of ConstrainedGeneric is a subtype of T
+		subtypeCheckTest{"T : IWithMethod subtype of T", "ConstrainedGeneric::T", "ConstrainedGeneric::T", ""},
+
+		// T : IWithMethod of ConstrainedGeneric is a subtype of T?
+		subtypeCheckTest{"T : IWithMethod subtype of T?", "ConstrainedGeneric::T", "ConstrainedGeneric::T?", ""},
+
+		// S of ConstrainedGeneric is a subtype of S?
+		subtypeCheckTest{"S subtype of S?", "ConstrainedGeneric::S", "ConstrainedGeneric::S?", ""},
+
+		// T? of ConstrainedGeneric is not a subtype of T
+		subtypeCheckTest{"T? not subtype of T", "ConstrainedGeneric::T?", "ConstrainedGeneric::T",
+			"Nullable type 'T?' cannot be used in place of non-nullable type 'T'"},
+
+		// Q : IWithOperator of ConstrainedGeneric is a subtype of Q
+		subtypeCheckTest{"Q : IWithOperator subtype of Q", "ConstrainedGeneric::Q", "ConstrainedGeneric::Q", ""},
+
+		// T : IWithMethod of ConstrainedGeneric is a subtype of IWithMethod
+		subtypeCheckTest{"T : IWithMethod subtype of IWithMethod", "ConstrainedGeneric::T", "IWithMethod", ""},
+
+		// Q : IWithOperator of ConstrainedGeneric is a subtype of IWithOperator
+		subtypeCheckTest{"Q : IWithOperator subtype of IWithOperator", "ConstrainedGeneric::Q", "IWithOperator", ""},
+
+		// Q : IWithOperator of ConstrainedGeneric is not a subtype of IWithMethod
+		subtypeCheckTest{"Q : IWithOperator not subtype of IWithMethod", "ConstrainedGeneric::Q", "IWithMethod",
+			"Type 'Q' does not define or export member 'SomeMethod', which is required by type 'IWithMethod'"},
+
+		//  SomeClass is not a subtype of T : IWithMethod
+		subtypeCheckTest{"SomeClass not subtype of T : IWithMethod", "SomeClass", "ConstrainedGeneric::T",
+			"'SomeClass' cannot be used in place of non-interface 'T'"},
+
+		// R of ConstrainedGeneric is not a subtype of IWithOperator
+		subtypeCheckTest{"R not subtype of IWithOperator", "ConstrainedGeneric::R", "IWithOperator",
+			"Cannot use type 'R' in place of type 'IWithOperator'"},
+
+		// R of ConstrainedGeneric is not a subtype of T
+		subtypeCheckTest{"R not subtype of T", "ConstrainedGeneric::R", "ConstrainedGeneric::T",
+			"Cannot use type 'R' in place of type 'T'"},
+
+		// T of ConstrainedGeneric is not a subtype of R
+		subtypeCheckTest{"T not subtype of R", "ConstrainedGeneric::T", "ConstrainedGeneric::R",
+			"'T' cannot be used in place of non-interface 'R'"},
+
+		// S of ConstrainedGeneric is not a subtype of R
+		subtypeCheckTest{"S not subtype of R", "ConstrainedGeneric::S", "ConstrainedGeneric::R",
+			"Cannot use type 'S' in place of type 'R'"},
 	}
 
 	for _, test := range tests {
@@ -769,7 +827,7 @@ func TestResolveMembers(t *testing.T) {
 			// class SomeClass {
 			//	function<void> ExportedFunction() {}
 			//	function<void> notExported() {}
-			//}
+			// }
 			testType{"class", "SomeClass", []testGeneric{},
 				[]testMember{
 					testMember{"function", "ExportedFunction", "void", []testGeneric{}, []testParam{}},
@@ -785,7 +843,7 @@ func TestResolveMembers(t *testing.T) {
 			// class OtherClass {
 			//	function<void> OtherExportedFunction() {}
 			//	function<void> otherNotExported() {}
-			//}
+			// }
 			testType{"class", "OtherClass", []testGeneric{},
 				[]testMember{
 					testMember{"function", "OtherExportedFunction", "void", []testGeneric{}, []testParam{}},
