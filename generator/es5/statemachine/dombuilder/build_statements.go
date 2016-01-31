@@ -7,6 +7,7 @@ package dombuilder
 import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/codedom"
+	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/parser"
 )
 
@@ -109,13 +110,93 @@ func (db *domBuilder) buildLoopStatement(node compilergraph.GraphNode) (codedom.
 	// A loop statement is buildd as a start statement which conditionally jumps to either the loop body
 	// (on true) or, on false, jumps to a final state after the loop.
 	if loopExpr, hasLoopExpr := db.tryGetExpression(node, parser.NodeLoopStatementExpression); hasLoopExpr {
-		initialJump := codedom.ConditionalJump(loopExpr, bodyStart, finalStatement, node)
-		directJump := codedom.UnconditionalJump(initialJump, node)
+		// Check for a named value under the loop. If found, this is a loop over a stream or streamable.
+		namedValue, hasNamedValue := node.TryGetNode(parser.NodeStatementNamedValue)
+		if hasNamedValue {
+			namedValueName := namedValue.Get(parser.NodeNamedValueName)
+			resultVarName := db.buildScopeVarName(node)
 
-		codedom.AssignNextStatement(bodyEnd, directJump)
-		codedom.AssignNextStatement(startStatement, initialJump)
+			namedValueScope, _ := db.scopegraph.GetScope(namedValue)
 
-		return startStatement, finalStatement
+			// Create the stream variable.
+			streamVarName := db.buildScopeVarName(node)
+			var streamVariable = codedom.VarDefinitionWithInit(streamVarName, loopExpr, node)
+
+			// If the expression is Streamable, first call .Stream() on the expression to get the stream
+			// for the variable.
+			if namedValueScope.HasLabel(proto.ScopeLabel_STREAMABLE_LOOP) {
+				// Call .Stream() on the expression.
+				streamableMember, _ := db.scopegraph.TypeGraph().StreamableType().GetMember("Stream")
+				streamExpr := codedom.MemberCall(
+					codedom.MemberReference(loopExpr, streamableMember, namedValue),
+					streamableMember,
+					[]codedom.Expression{},
+					namedValue)
+
+				streamVariable = codedom.VarDefinitionWithInit(streamVarName, streamExpr, node)
+			}
+
+			// Create variables to hold the named value (as requested in the SRG) and the loop result.
+			namedVariable := codedom.VarDefinition(namedValueName, node)
+			resultVariable := codedom.VarDefinition(resultVarName, node)
+
+			// Create an expression statement to set the result variable to a call to Next().
+			streamMember, _ := db.scopegraph.TypeGraph().StreamType().GetMember("Next")
+			nextCallExpr := codedom.MemberCall(
+				codedom.MemberReference(codedom.LocalReference(streamVarName, node), streamMember, node),
+				streamMember,
+				[]codedom.Expression{},
+				namedValue)
+
+			resultExpressionStatement := codedom.ExpressionStatement(codedom.LocalAssignment(resultVarName, nextCallExpr, namedValue), namedValue)
+			resultExpressionStatement.MarkReferenceable()
+
+			// Create an expression statement to set the named variable to the first part of the tuple.
+			namedExpressionStatement := codedom.ExpressionStatement(
+				codedom.LocalAssignment(namedValueName,
+					codedom.NativeAccess(
+						codedom.LocalReference(resultVarName, namedValue), "First", namedValue),
+					namedValue),
+				namedValue)
+
+			// Jump to the body state if the second part of the tuple in the result variable is true.
+			checkJump := codedom.ConditionalJump(
+				codedom.NativeAccess(codedom.LocalReference(resultVarName, node), "Second", node),
+				bodyStart,
+				finalStatement,
+				node)
+
+			// Steps:
+			// 1) Empty statement
+			// 2) Create the stream's variable (with no value)
+			// 3) Create the named value variable (with no value)
+			// 4) Create the result variable (with no value)
+			// 5) (loop starts here) Pull the Next() result out of the stream
+			// 6) Pull the true/false bool out of the result
+			// 7) Pull the named value out of the result
+			// 8) Jump based on the true/false boolean value
+			codedom.AssignNextStatement(startStatement, streamVariable)
+			codedom.AssignNextStatement(streamVariable, namedVariable)
+			codedom.AssignNextStatement(namedVariable, resultVariable)
+			codedom.AssignNextStatement(resultVariable, resultExpressionStatement)
+			codedom.AssignNextStatement(resultExpressionStatement, namedExpressionStatement)
+			codedom.AssignNextStatement(namedExpressionStatement, checkJump)
+
+			// Jump to the result checking expression once the loop body completes.
+			directJump := codedom.UnconditionalJump(resultExpressionStatement, node)
+			codedom.AssignNextStatement(bodyEnd, directJump)
+
+			return startStatement, finalStatement
+		} else {
+			// Loop over a direct boolean expression which is evaluated on each iteration.
+			initialJump := codedom.ConditionalJump(loopExpr, bodyStart, finalStatement, node)
+			directJump := codedom.UnconditionalJump(initialJump, node)
+
+			codedom.AssignNextStatement(bodyEnd, directJump)
+			codedom.AssignNextStatement(startStatement, initialJump)
+
+			return startStatement, finalStatement
+		}
 	} else {
 		// A loop without an expression just loops infinitely over the body.
 		directJump := codedom.UnconditionalJump(bodyStart, node)

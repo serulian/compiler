@@ -533,17 +533,14 @@ func (tr TypeReference) adjustedMemberSignature(node compilergraph.GraphNode) st
 	generics := tr.Generics()
 
 	var index = 0
+	var memberType = tr.Build(memberSig.GetMemberType()).(TypeReference)
 	for pgit.Next() {
 		genericNode := pgit.Node()
 		genericRef := generics[index]
 		genericType := TGTypeDecl{genericNode, tr.tdg}
 
 		// Replace the generic in the member type.
-		adjustedType := tr.Build(memberSig.GetMemberType()).(TypeReference).
-			ReplaceType(genericType, genericRef).
-			Value()
-
-		memberSig.MemberType = &adjustedType
+		memberType = memberType.ReplaceType(genericType, genericRef)
 
 		// Replace the generic in any generic constraints.
 		for cindex, constraint := range memberSig.GetGenericConstraints() {
@@ -555,7 +552,8 @@ func (tr TypeReference) adjustedMemberSignature(node compilergraph.GraphNode) st
 		index = index + 1
 	}
 
-	// Reserialize the member signature.
+	adjustedType := memberType.Value()
+	memberSig.MemberType = &adjustedType
 	return memberSig.Value()
 }
 

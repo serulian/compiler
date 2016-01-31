@@ -24,7 +24,7 @@ $module('genericspecifier', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            $g.genericspecifier.SomeFunction($g.____graphs.srg.typeconstructor.tests.testlib.basictypes.Integer, $g.____graphs.srg.typeconstructor.tests.testlib.basictypes.String)().then(function ($result0) {
+            $g.genericspecifier.SomeFunction($g.____testlib.basictypes.Integer, $g.____testlib.basictypes.String)().then(function ($result0) {
               $result = $result0;
               $state.current = 1;
               $callback($state);

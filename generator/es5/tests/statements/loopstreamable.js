@@ -1,5 +1,44 @@
-$module('loopvar', function () {
+$module('loopstreamable', function () {
   var $static = this;
+  this.$class('SomeStreamable', false, function () {
+    var $static = this;
+    var $instance = this.prototype;
+    $static.new = function () {
+      var instance = new $static();
+      var init = [];
+      return $promise.all(init).then(function () {
+        return instance;
+      });
+    };
+    $instance.Stream = function () {
+      var $this = this;
+      var $state = $t.sm(function ($callback) {
+        while (true) {
+          switch ($state.current) {
+            case 0:
+              $g.loopstreamable.SomeStream.new().then(function ($result0) {
+                $result = $result0;
+                $state.current = 1;
+                $callback($state);
+              }).catch(function (err) {
+                $state.reject(err);
+              });
+              return;
+
+            case 1:
+              $state.resolve($result);
+              return;
+
+            default:
+              $state.current = -1;
+              return;
+          }
+        }
+      });
+      return $promise.build($state);
+    };
+  });
+
   this.$class('SomeStream', false, function () {
     var $static = this;
     var $instance = this.prototype;
@@ -58,38 +97,48 @@ $module('loopvar', function () {
             continue;
 
           case 1:
-            $temp1 = somethingElse;
-            $state.current = 2;
-            continue;
-
-          case 2:
-            $temp1.Next().then(function ($result0) {
-              $result = $temp0 = $result0;
-              $state.current = 3;
+            somethingElse.Stream().then(function ($result0) {
+              $result = $result0;
+              $state.current = 2;
               $callback($state);
             }).catch(function (err) {
               $state.reject(err);
             });
             return;
 
+          case 2:
+            $temp1 = $result;
+            $state.current = 3;
+            continue;
+
           case 3:
+            $temp1.Next().then(function ($result0) {
+              $result = $temp0 = $result0;
+              $state.current = 4;
+              $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
+            });
+            return;
+
+          case 4:
             $result;
             something = $temp0.First;
             if ($temp0.Second) {
-              $state.current = 4;
+              $state.current = 5;
               continue;
             } else {
-              $state.current = 5;
+              $state.current = 6;
               continue;
             }
             break;
 
-          case 4:
+          case 5:
             7654;
-            $state.current = 2;
+            $state.current = 3;
             continue;
 
-          case 5:
+          case 6:
             5678;
             $state.current = -1;
             return;
@@ -113,7 +162,7 @@ $module('loopvar', function () {
         switch ($state.current) {
           case 0:
             result = '';
-            $g.loopvar.SomeStream.new().then(function ($result0) {
+            $g.loopstreamable.SomeStreamable.new().then(function ($result0) {
               $result = $result0;
               $state.current = 1;
               $callback($state);
@@ -128,38 +177,48 @@ $module('loopvar', function () {
             continue;
 
           case 2:
-            $temp1 = s;
-            $state.current = 3;
-            continue;
-
-          case 3:
-            $temp1.Next().then(function ($result0) {
-              $result = $temp0 = $result0;
-              $state.current = 4;
+            s.Stream().then(function ($result0) {
+              $result = $result0;
+              $state.current = 3;
               $callback($state);
             }).catch(function (err) {
               $state.reject(err);
             });
             return;
 
+          case 3:
+            $temp1 = $result;
+            $state.current = 4;
+            continue;
+
           case 4:
+            $temp1.Next().then(function ($result0) {
+              $result = $temp0 = $result0;
+              $state.current = 5;
+              $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
+            });
+            return;
+
+          case 5:
             $result;
             i = $temp0.First;
             if ($temp0.Second) {
-              $state.current = 5;
+              $state.current = 6;
               continue;
             } else {
-              $state.current = 6;
+              $state.current = 7;
               continue;
             }
             break;
 
-          case 5:
+          case 6:
             result = i;
-            $state.current = 3;
+            $state.current = 4;
             continue;
 
-          case 6:
+          case 7:
             $state.resolve(result);
             return;
 

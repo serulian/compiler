@@ -1,3 +1,17 @@
+@•typealias('tuple')
+class Tuple<T, Q> {
+	var<T?> First = null
+	var<Q?> Second = null
+
+	constructor Build(first T, second Q) {
+		var tuple = Tuple<T, Q>.new()
+		tuple.First = first
+		tuple.Second = second
+		return tuple
+	}
+}
+
+
 @•typealias('stringable')
 interface Stringable {
 	function<string> String()
@@ -5,7 +19,7 @@ interface Stringable {
 
 @•typealias('stream')
 interface Stream<T> {
-	function<T> Next()
+	function<Tuple<T, bool>> Next()
 }
 
 @•typealias('streamable')
@@ -33,8 +47,8 @@ interface Releasable {
 class Function<T> {}
 
 class FakeIntStream {
-	function<int> Next() {
-	  return 2
+	function<Tuple<int, bool>> Next() {
+	  return Tuple<int, bool>.Build(2, true)
 	}
 }
 

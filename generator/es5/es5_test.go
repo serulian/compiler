@@ -20,6 +20,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const TESTLIB_PATH = "../../testlib"
+
 type generationTest struct {
 	name            string
 	input           string
@@ -83,7 +85,8 @@ var tests = []generationTest{
 	generationTest{"chained conditional statement", "statements", "chainedconditional", true},
 	generationTest{"loop statement", "statements", "loop", false},
 	generationTest{"loop expr statement", "statements", "loopexpr", false},
-	generationTest{"loop var statement", "statements", "loopvar", false},
+	generationTest{"loop var statement", "statements", "loopvar", true},
+	generationTest{"loop streamable statement", "statements", "loopstreamable", true},
 	generationTest{"continue statement", "statements", "continue", false},
 	generationTest{"break statement", "statements", "break", false},
 	generationTest{"var and assign statements", "statements", "varassign", false},
@@ -136,7 +139,7 @@ func TestGenerator(t *testing.T) {
 			continue
 		}
 
-		result := scopegraph.ParseAndBuildScopeGraph(entrypointFile, packageloader.Library{"../../graphs/srg/typeconstructor/tests/testlib", false, ""})
+		result := scopegraph.ParseAndBuildScopeGraph(entrypointFile, packageloader.Library{TESTLIB_PATH, false, ""})
 		if !assert.True(t, result.Status, "Got error for ScopeGraph construction %v: %s", test.name, result.Errors) {
 			continue
 		}

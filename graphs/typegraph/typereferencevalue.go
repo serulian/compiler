@@ -20,7 +20,8 @@ import (
 //										  ^ Nullable
 //                                         ^ 0001 = 1 generic
 //                                             ^ 0000 = 0 parameters
-//                                                 ^ G000039 = generic with 39 chars in length for subreference
+//                                                 ^ G = generic
+//													 ^ 000039 = with 39 chars in length for subreference
 // represents
 //
 // SomeType<SomeGeneric>?

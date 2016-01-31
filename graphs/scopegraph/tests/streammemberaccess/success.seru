@@ -3,8 +3,8 @@ class SomeClass<T> {
 }
 
 class SomeStream<T> {
-	function<SomeClass<T>> Next() {
-		return SomeClass<T>.new()
+	function<tuple<SomeClass<T>, bool>> Next() {
+		return tuple<SomeClass<T>, bool>.Build(SomeClass<T>.new(), true)
 	}
 }
 
