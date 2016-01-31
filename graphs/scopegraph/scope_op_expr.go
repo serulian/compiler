@@ -245,6 +245,32 @@ func (sb *scopeBuilder) scopeIndexerExpression(node compilergraph.GraphNode, opt
 	}
 }
 
+// scopeIsComparisonExpression scopes an 'is' comparison expression in the SRG.
+func (sb *scopeBuilder) scopeIsComparisonExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+	// Get the scope of the left and right expressions.
+	leftScope := sb.getScope(node.GetNode(parser.NodeBinaryExpressionLeftExpr))
+	rightScope := sb.getScope(node.GetNode(parser.NodeBinaryExpressionRightExpr))
+
+	// Ensure that both scopes are valid.
+	if !leftScope.GetIsValid() || !rightScope.GetIsValid() {
+		return newScope().Invalid().GetScope()
+	}
+
+	// Ensure the right hand side is null.
+	if !rightScope.ResolvedTypeRef(sb.sg.tdg).IsNull() {
+		sb.decorateWithError(node, "Right side of 'is' operator must be 'null'")
+		return newScope().Invalid().Resolving(sb.sg.tdg.BoolTypeReference()).GetScope()
+	}
+
+	// Ensure the left hand side can be nullable.
+	if !leftScope.ResolvedTypeRef(sb.sg.tdg).IsNullable() {
+		sb.decorateWithError(node, "Left side of 'is' operator must be a nullable type. Found: %v", leftScope.ResolvedTypeRef(sb.sg.tdg))
+		return newScope().Invalid().Resolving(sb.sg.tdg.BoolTypeReference()).GetScope()
+	}
+
+	return newScope().Valid().Resolving(sb.sg.tdg.BoolTypeReference()).GetScope()
+}
+
 // scopeNullComparisonExpression scopes a nullable comparison expression in the SRG.
 func (sb *scopeBuilder) scopeNullComparisonExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	// Get the scope of the left and right expressions.
