@@ -186,7 +186,7 @@ window.Serulian = (function($global) {
             return tpe;
           };
         } else {
-          var tpe = function() {};
+          var tpe = new Function("return function " + name + "() {};")();
           creator.call(tpe);
           module[name] = tpe;
         }

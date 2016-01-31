@@ -1758,8 +1758,9 @@ func (p *sourceParser) consumeFullLambdaExpression() AstNode {
 func (p *sourceParser) tryConsumeNonArrowExpression() (AstNode, bool) {
 	// TODO(jschorr): Cache this!
 	binaryParser := p.buildBinaryOperatorExpressionFnTree(
-		// Nullable operators.
-		boe{tokenTypeNullOrValueOperator, NodeNullComparisonExpression},
+		// Boolean operators.
+		boe{tokenTypeBooleanOr, NodeBooleanOrExpression},
+		boe{tokenTypeBooleanAnd, NodeBooleanAndExpression},
 
 		// Comparison operators.
 		boe{tokenTypeEqualsEquals, NodeComparisonEqualsExpression},
@@ -1771,9 +1772,8 @@ func (p *sourceParser) tryConsumeNonArrowExpression() (AstNode, bool) {
 		boe{tokenTypeLessThan, NodeComparisonLTExpression},
 		boe{tokenTypeGreaterThan, NodeComparisonGTExpression},
 
-		// Boolean operators.
-		boe{tokenTypeBooleanOr, NodeBooleanOrExpression},
-		boe{tokenTypeBooleanAnd, NodeBooleanAndExpression},
+		// Nullable operators.
+		boe{tokenTypeNullOrValueOperator, NodeNullComparisonExpression},
 
 		// Bitwise operators.
 		boe{tokenTypePipe, NodeBitwiseOrExpression},

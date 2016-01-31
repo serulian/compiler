@@ -400,6 +400,13 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	scopegraphTest{"identifier expr nested test", "identexpr", "nested",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"first", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+			expectedScopeEntry{"second", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+		},
+		"", ""},
+
 	/////////// Arrow operator ///////////
 
 	scopegraphTest{"arrow operator success test", "arrowops", "success",
@@ -461,6 +468,18 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"slice invalid param test", "slice", "invalidslice",
 		[]expectedScopeEntry{},
 		"Slice index must be of type Integer, found: Boolean", ""},
+
+	scopegraphTest{"generic indexer success tests", "slice", "genericindexer",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"getter", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"generic slice success tests", "slice", "genericslice",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"getter", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+		},
+		"", ""},
 
 	scopegraphTest{"indexer success tests", "slice", "indexer",
 		[]expectedScopeEntry{},

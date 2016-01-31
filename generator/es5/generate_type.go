@@ -144,6 +144,8 @@ this.$interface('{{ .Type.Name }}', function({{ .Generics }}) {
 const nominalTemplateStr = `
 this.$type('{{ .Type.Name }}', function() {
 	var $instance = this;
+	var $static = this;
+	
 	{{range $idx, $kv := .GenerateImplementedMembers.Iter }}
   	  {{ $kv.Value }}
   	{{end}}

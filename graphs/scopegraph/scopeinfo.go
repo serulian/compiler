@@ -122,14 +122,24 @@ type typeModifier func(typeRef typegraph.TypeReference) typegraph.TypeReference
 // type being transformed under the given parent type and then transformed by the modifier.
 func (sib *scopeInfoBuilder) ForNamedScopeUnderModifiedType(info namedScopeInfo, parentType typegraph.TypeReference, modifier typeModifier) *scopeInfoBuilder {
 	transformedValueType := info.ValueType().TransformUnder(parentType)
-	return sib.ForNamedScope(info).Resolving(modifier(transformedValueType))
+	sib.ForNamedScope(info).Resolving(modifier(transformedValueType))
+
+	if info.IsAssignable() {
+		transformedAssignableType := info.AssignableType().TransformUnder(parentType)
+		sib.Assignable(modifier(transformedAssignableType))
+	}
+
+	return sib
 }
 
 // ForNamedScopeUnderType points the scope to the referred named scope, with its value
 // type being transformed under the given parent type.
 func (sib *scopeInfoBuilder) ForNamedScopeUnderType(info namedScopeInfo, parentType typegraph.TypeReference) *scopeInfoBuilder {
-	transformedValueType := info.ValueType().TransformUnder(parentType)
-	return sib.ForNamedScope(info).Resolving(transformedValueType)
+	modifier := func(typeRef typegraph.TypeReference) typegraph.TypeReference {
+		return typeRef
+	}
+
+	return sib.ForNamedScopeUnderModifiedType(info, parentType, modifier)
 }
 
 // ForAnonymousScope points the scope to an anonymously scope.
@@ -173,6 +183,10 @@ func (sib *scopeInfoBuilder) ForNamedScope(info namedScopeInfo) *scopeInfoBuilde
 		namedId := string(info.srgInfo.GraphNode.NodeId)
 		sib.info.NamedReference.ReferencedNode = &namedId
 		sib.info.NamedReference.IsSRGNode = &trueValue
+	}
+
+	if info.IsAssignable() {
+		sib.Assignable(info.AssignableType())
 	}
 
 	return sib.Resolving(info.ValueType()).Valid()

@@ -1,0 +1,11 @@
+class SomeClass {
+	operator compare(first SomeClass, second SomeClass) {
+		return 1
+	}
+}
+
+function<void> DoSomething() {
+	var someIndex = SomeClass.new()
+
+	if (/* first */someIndex) < someIndex && (/* second */someIndex) >= someIndex {}
+}
