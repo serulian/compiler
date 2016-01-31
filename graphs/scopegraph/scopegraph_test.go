@@ -278,6 +278,22 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	/////////// Is operator expression ///////////
+
+	scopegraphTest{"is op success test", "isop", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"isresult", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"is op not null failure test", "isop", "notnull",
+		[]expectedScopeEntry{},
+		"Right side of 'is' operator must be 'null'", ""},
+
+	scopegraphTest{"is op not nullable failure test", "isop", "notnullable",
+		[]expectedScopeEntry{},
+		"Left side of 'is' operator must be a nullable type. Found: Integer", ""},
+
 	/////////// Nullable operator expression ///////////
 
 	scopegraphTest{"nullable ops success test", "nullableops", "success",

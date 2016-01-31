@@ -1,0 +1,56 @@
+NodeTypeFile
+  end-rune = 68
+  input-source = is null conditional expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 68
+      input-source = is null conditional expr test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 68
+          input-source = is null conditional expr test
+          start-rune = 29
+          block-child =>
+            NodeTypeConditionalStatement
+              end-rune = 66
+              input-source = is null conditional expr test
+              start-rune = 32
+              conditional-block =>
+                NodeTypeStatementBlock
+                  end-rune = 66
+                  input-source = is null conditional expr test
+                  start-rune = 49
+                  block-child =>
+                    NodeTypeReturnStatement
+                      end-rune = 63
+                      input-source = is null conditional expr test
+                      start-rune = 53
+                      return-expr =>
+                        NodeNullLiteralExpression
+                          end-rune = 63
+                          input-source = is null conditional expr test
+                          start-rune = 60
+              conditional-expr =>
+                NodeIsComparisonExpression
+                  end-rune = 47
+                  input-source = is null conditional expr test
+                  start-rune = 35
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 39
+                      identexpr-name = value
+                      input-source = is null conditional expr test
+                      start-rune = 35
+                  binary-expression-right =>
+                    NodeNullLiteralExpression
+                      end-rune = 47
+                      input-source = is null conditional expr test
+                      start-rune = 44
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 12
+          input-source = is null conditional expr test
+          start-rune = 9

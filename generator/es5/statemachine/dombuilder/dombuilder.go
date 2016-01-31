@@ -148,6 +148,9 @@ func (db *domBuilder) buildExpression(node compilergraph.GraphNode) codedom.Expr
 	case parser.NodeNullComparisonExpression:
 		return db.buildNullComparisonExpression(node)
 
+	case parser.NodeIsComparisonExpression:
+		return db.buildIsComparisonExpression(node)
+
 	case parser.NodeBitwiseNotExpression:
 		return db.buildUnaryOperatorExpression(node, nil)
 

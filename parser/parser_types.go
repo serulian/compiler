@@ -97,6 +97,7 @@ const (
 	NodeComparisonGTExpression  // a > b
 
 	NodeNullComparisonExpression // a ?? b
+	NodeIsComparisonExpression   // a is b
 
 	NodeDefineRangeExpression // a .. b
 
