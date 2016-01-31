@@ -1,0 +1,9 @@
+class SomeClass<T> {
+	operator setindex(index int, value T) {
+	}
+}
+
+function<void> DoSomething<T>(param T) {
+	var sc = SomeClass<bool>.new()
+	sc[1] = param
+}
