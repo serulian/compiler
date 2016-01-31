@@ -109,6 +109,8 @@ const (
 	tokenTypeEqualsEquals // ==
 	tokenTypeNotEquals    // !=
 
+	tokenTypeIsOperator // is
+
 	// Stream Operators
 	tokenTypeEllipsis // ..
 
@@ -670,6 +672,9 @@ func lexIdentifierOrKeyword(l *lexer) stateFn {
 
 	case l.value() == "false":
 		l.emit(tokenTypeBooleanLiteral)
+
+	case l.value() == "is":
+		l.emit(tokenTypeIsOperator)
 
 	case is_keyword:
 		l.emit(tokenTypeKeyword)

@@ -1087,7 +1087,9 @@ func (p *sourceParser) consumeStatementBlock(option statementBlockOption) AstNod
 			break
 		}
 
-		p.consumeStatementTerminator()
+		if _, ok := p.consumeStatementTerminator(); !ok {
+			break
+		}
 	}
 
 	// Consume the end of the block: }
@@ -1792,7 +1794,10 @@ func (p *sourceParser) tryConsumeNonArrowExpression() (AstNode, bool) {
 		boe{tokenTypeDiv, NodeBinaryDivideExpression},
 
 		// Stream operator.
-		boe{tokenTypeEllipsis, NodeDefineRangeExpression})
+		boe{tokenTypeEllipsis, NodeDefineRangeExpression},
+
+		// 'is' operator.
+		boe{tokenTypeIsOperator, NodeIsComparisonExpression})
 
 	return binaryParser()
 }

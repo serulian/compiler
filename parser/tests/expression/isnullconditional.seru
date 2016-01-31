@@ -1,0 +1,5 @@
+function<void> DoSomething() {
+	if value is null {
+		return null
+	}
+}
