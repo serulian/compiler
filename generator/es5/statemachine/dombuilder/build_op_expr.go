@@ -109,6 +109,13 @@ func (db *domBuilder) buildNullComparisonExpression(node compilergraph.GraphNode
 	return codedom.RuntimeFunctionCall(codedom.NullableComparisonFunction, []codedom.Expression{leftExpr, rightExpr}, node)
 }
 
+// buildIsComparisonExpression builds the CodeDOM for an is comparison operator.
+func (db *domBuilder) buildIsComparisonExpression(node compilergraph.GraphNode) codedom.Expression {
+	leftExpr := db.getExpression(node, parser.NodeBinaryExpressionLeftExpr)
+	rightExpr := db.getExpression(node, parser.NodeBinaryExpressionRightExpr)
+	return codedom.BinaryOperation(leftExpr, "==", rightExpr, node)
+}
+
 // buildNativeBinaryExpression builds the CodeDOM for a native unary operator.
 func (db *domBuilder) buildNativeBinaryExpression(node compilergraph.GraphNode, op string) codedom.Expression {
 	leftExpr := db.getExpression(node, parser.NodeBinaryExpressionLeftExpr)

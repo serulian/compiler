@@ -1,0 +1,3 @@
+function<bool> DoSomething(a int?) {
+	return a is null
+}
