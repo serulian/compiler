@@ -18,6 +18,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const TESTLIB_PATH = "../../../testlib"
+
 var _ = fmt.Printf
 
 type typegraphTest struct {
@@ -97,7 +99,7 @@ func TestGraphs(t *testing.T) {
 
 		testSRG := srg.NewSRG(graph)
 		loader := packageloader.NewPackageLoader(graph.RootSourceFilePath, testSRG.PackageLoaderHandler())
-		srgResult := loader.Load(packageloader.Library{"tests/testlib", false, ""})
+		srgResult := loader.Load(packageloader.Library{TESTLIB_PATH, false, ""})
 
 		// Make sure we had no errors during construction.
 		assert.True(t, srgResult.Status, "Got error for SRG construction %v: %s", test.name, srgResult.Errors)
@@ -141,7 +143,7 @@ func TestLookupReturnType(t *testing.T) {
 
 	testSRG := srg.NewSRG(graph)
 	loader := packageloader.NewPackageLoader(graph.RootSourceFilePath, testSRG.PackageLoaderHandler())
-	srgResult := loader.Load(packageloader.Library{"tests/testlib", false, ""})
+	srgResult := loader.Load(packageloader.Library{TESTLIB_PATH, false, ""})
 	if !assert.True(t, srgResult.Status, "Got error for SRG construction: %v", srgResult.Errors) {
 		return
 	}

@@ -1,3 +1,17 @@
+@•typealias('tuple')
+class Tuple<T, Q> {
+	var<T?> First = null
+	var<Q?> Second = null
+
+	constructor Build(first T, second Q) {
+		var tuple = Tuple<T, Q>.new()
+		tuple.First = first
+		tuple.Second = second
+		return tuple
+	}
+}
+
+
 @•typealias('stringable')
 interface Stringable {
 	function<string> String()
@@ -5,7 +19,7 @@ interface Stringable {
 
 @•typealias('stream')
 interface Stream<T> {
-	property<T> CurrentValue { get }
+	function<Tuple<T, bool>> Next()
 }
 
 @•typealias('streamable')
@@ -33,10 +47,8 @@ interface Releasable {
 class Function<T> {}
 
 class FakeIntStream {
-	property<int> CurrentValue {
-		get {
-			return 2
-		}
+	function<Tuple<int, bool>> Next() {
+	  return Tuple<int, bool>.Build(2, true)
 	}
 }
 
@@ -46,7 +58,6 @@ class Integer {
 		return FakeIntStream.new()
 	}
 
-	// TODO: remove once we scope constructors
 	function<void> Release() {}
 }
 

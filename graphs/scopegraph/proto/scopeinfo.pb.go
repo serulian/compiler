@@ -61,6 +61,39 @@ func (x *ScopeKind) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+type ScopeLabel int32
+
+const (
+	ScopeLabel_STREAM_LOOP     ScopeLabel = 1
+	ScopeLabel_STREAMABLE_LOOP ScopeLabel = 2
+)
+
+var ScopeLabel_name = map[int32]string{
+	1: "STREAM_LOOP",
+	2: "STREAMABLE_LOOP",
+}
+var ScopeLabel_value = map[string]int32{
+	"STREAM_LOOP":     1,
+	"STREAMABLE_LOOP": 2,
+}
+
+func (x ScopeLabel) Enum() *ScopeLabel {
+	p := new(ScopeLabel)
+	*p = x
+	return p
+}
+func (x ScopeLabel) String() string {
+	return proto1.EnumName(ScopeLabel_name, int32(x))
+}
+func (x *ScopeLabel) UnmarshalJSON(data []byte) error {
+	value, err := proto1.UnmarshalJSONEnum(ScopeLabel_value, data, "ScopeLabel")
+	if err != nil {
+		return err
+	}
+	*x = ScopeLabel(value)
+	return nil
+}
+
 type ScopeInfo struct {
 	IsValid                *bool           `protobuf:"varint,1,opt,name=IsValid" json:"IsValid,omitempty"`
 	Kind                   *ScopeKind      `protobuf:"varint,2,opt,name=Kind,enum=proto.ScopeKind,def=0" json:"Kind,omitempty"`
@@ -73,6 +106,7 @@ type ScopeInfo struct {
 	IsTerminatingStatement *bool           `protobuf:"varint,7,opt,name=IsTerminatingStatement" json:"IsTerminatingStatement,omitempty"`
 	IsSettlingScope        *bool           `protobuf:"varint,10,opt,name=IsSettlingScope" json:"IsSettlingScope,omitempty"`
 	IsAnonymousReference   *bool           `protobuf:"varint,11,opt,name=IsAnonymousReference" json:"IsAnonymousReference,omitempty"`
+	Labels                 []ScopeLabel    `protobuf:"varint,12,rep,name=Labels,enum=proto.ScopeLabel" json:"Labels,omitempty"`
 	XXX_unrecognized       []byte          `json:"-"`
 }
 
@@ -159,6 +193,13 @@ func (m *ScopeInfo) GetIsAnonymousReference() bool {
 	return false
 }
 
+func (m *ScopeInfo) GetLabels() []ScopeLabel {
+	if m != nil {
+		return m.Labels
+	}
+	return nil
+}
+
 type ScopeReference struct {
 	ReferencedNode   *string `protobuf:"bytes,1,opt,name=ReferencedNode" json:"ReferencedNode,omitempty"`
 	IsSRGNode        *bool   `protobuf:"varint,2,opt,name=IsSRGNode" json:"IsSRGNode,omitempty"`
@@ -185,6 +226,7 @@ func (m *ScopeReference) GetIsSRGNode() bool {
 
 func init() {
 	proto1.RegisterEnum("proto.ScopeKind", ScopeKind_name, ScopeKind_value)
+	proto1.RegisterEnum("proto.ScopeLabel", ScopeLabel_name, ScopeLabel_value)
 }
 func (m *ScopeInfo) Marshal() (data []byte, err error) {
 	size := m.Size()
@@ -289,6 +331,13 @@ func (m *ScopeInfo) MarshalTo(data []byte) (int, error) {
 			data[i] = 0
 		}
 		i++
+	}
+	if len(m.Labels) > 0 {
+		for _, num := range m.Labels {
+			data[i] = 0x60
+			i++
+			i = encodeVarintScopeinfo(data, i, uint64(num))
+		}
 	}
 	if m.XXX_unrecognized != nil {
 		i += copy(data[i:], m.XXX_unrecognized)
@@ -401,6 +450,11 @@ func (m *ScopeInfo) Size() (n int) {
 	}
 	if m.IsAnonymousReference != nil {
 		n += 2
+	}
+	if len(m.Labels) > 0 {
+		for _, e := range m.Labels {
+			n += 1 + sovScopeinfo(uint64(e))
+		}
 	}
 	if m.XXX_unrecognized != nil {
 		n += len(m.XXX_unrecognized)
@@ -756,6 +810,26 @@ func (m *ScopeInfo) Unmarshal(data []byte) error {
 			}
 			b := bool(v != 0)
 			m.IsAnonymousReference = &b
+		case 12:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Labels", wireType)
+			}
+			var v ScopeLabel
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowScopeinfo
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := data[iNdEx]
+				iNdEx++
+				v |= (ScopeLabel(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Labels = append(m.Labels, v)
 		default:
 			iNdEx = preIndex
 			skippy, err := skipScopeinfo(data[iNdEx:])

@@ -35,7 +35,7 @@ $module('structuralcast', function () {
     $static.new = function () {
       var instance = new $static();
       var init = [];
-      init.push($g.structuralcast.BaseClass($g.____graphs.srg.typeconstructor.tests.testlib.basictypes.Integer).new().then(function (value) {
+      init.push($g.structuralcast.BaseClass($g.____testlib.basictypes.Integer).new().then(function (value) {
         instance.BaseClass$Integer = value;
       }));
       return $promise.all(init).then(function () {

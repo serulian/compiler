@@ -3,10 +3,8 @@ class SomeClass<T> {
 }
 
 class SomeStream<T> {
-	property<SomeClass<T>> CurrentValue {
-		get {
-			return SomeClass<T>.new()
-		}
+	function<tuple<SomeClass<T>, bool>> Next() {
+		return tuple<SomeClass<T>, bool>.Build(SomeClass<T>.new(), true)
 	}
 }
 

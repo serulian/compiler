@@ -184,6 +184,12 @@ func (sib *scopeInfoBuilder) WithKind(kind proto.ScopeKind) *scopeInfoBuilder {
 	return sib
 }
 
+// WithLabel adds the label to this scope.
+func (sib *scopeInfoBuilder) WithLabel(label proto.ScopeLabel) *scopeInfoBuilder {
+	sib.info.Labels = append(sib.info.Labels, label)
+	return sib
+}
+
 // GetScope returns the scope constructed.
 func (sib *scopeInfoBuilder) GetScope() proto.ScopeInfo {
 	return *sib.info
