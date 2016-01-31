@@ -31,6 +31,7 @@ $module('basic', function () {
 
   this.$type('MyType', function () {
     var $instance = this;
+    var $static = this;
     $instance.AnotherThing = function ($this) {
       var $state = $t.sm(function ($callback) {
         while (true) {
