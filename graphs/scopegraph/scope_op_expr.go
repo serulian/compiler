@@ -146,11 +146,11 @@ func (sb *scopeBuilder) scopeSliceExpression(node compilergraph.GraphNode, optio
 
 // scopeSliceChildExpression scopes the child expression of a slice expression, returning whether it
 // is valid and the associated operator found, if any.
-func (sb *scopeBuilder) scopeSliceChildExpression(node compilergraph.GraphNode, opName string) (typegraph.TGMember, bool) {
+func (sb *scopeBuilder) scopeSliceChildExpression(node compilergraph.GraphNode, opName string) (typegraph.TGMember, typegraph.TypeReference, bool) {
 	// Scope the child expression of the slice.
 	childScope := sb.getScope(node.GetNode(parser.NodeSliceExpressionChildExpr))
 	if !childScope.GetIsValid() {
-		return typegraph.TGMember{}, false
+		return typegraph.TGMember{}, sb.sg.tdg.AnyTypeReference(), false
 	}
 
 	childType := childScope.ResolvedTypeRef(sb.sg.tdg)
@@ -158,10 +158,10 @@ func (sb *scopeBuilder) scopeSliceChildExpression(node compilergraph.GraphNode, 
 	operator, found := childType.ResolveMember(opName, module, typegraph.MemberResolutionOperator)
 	if !found {
 		sb.decorateWithError(node, "Operator '%v' is not defined on type '%v'", opName, childType)
-		return typegraph.TGMember{}, false
+		return typegraph.TGMember{}, childType, false
 	}
 
-	return operator, true
+	return operator, childType, true
 }
 
 // scopeSlicerExpression scopes a slice expression (one with left and/or right expressions) in the SRG.
@@ -169,7 +169,7 @@ func (sb *scopeBuilder) scopeSlicerExpression(node compilergraph.GraphNode, opti
 	var isValid = true
 
 	// Lookup the slice operator.
-	operator, found := sb.scopeSliceChildExpression(node, "slice")
+	operator, childType, found := sb.scopeSliceChildExpression(node, "slice")
 	if !found {
 		isValid = false
 	}
@@ -206,7 +206,7 @@ func (sb *scopeBuilder) scopeSlicerExpression(node compilergraph.GraphNode, opti
 	}
 
 	returnType, _ := operator.ReturnType()
-	return newScope().IsValid(isValid).CallsOperator(operator).Resolving(returnType).GetScope()
+	return newScope().IsValid(isValid).CallsOperator(operator).Resolving(returnType.TransformUnder(childType)).GetScope()
 }
 
 // scopeIndexerExpression scopes an indexer expression (slice with single numerical index) in the SRG.
@@ -217,7 +217,7 @@ func (sb *scopeBuilder) scopeIndexerExpression(node compilergraph.GraphNode, opt
 		opName = "setindex"
 	}
 
-	operator, found := sb.scopeSliceChildExpression(node, opName)
+	operator, childType, found := sb.scopeSliceChildExpression(node, opName)
 	if !found {
 		return newScope().Invalid().GetScope()
 	}
@@ -238,10 +238,10 @@ func (sb *scopeBuilder) scopeIndexerExpression(node compilergraph.GraphNode, opt
 	}
 
 	if option == scopeSetAccess {
-		return newScope().Valid().ForNamedScope(sb.getNamedScopeForMember(operator)).GetScope()
+		return newScope().Valid().ForNamedScopeUnderType(sb.getNamedScopeForMember(operator), childType).GetScope()
 	} else {
 		returnType, _ := operator.ReturnType()
-		return newScope().Valid().CallsOperator(operator).Resolving(returnType).GetScope()
+		return newScope().Valid().CallsOperator(operator).Resolving(returnType.TransformUnder(childType)).GetScope()
 	}
 }
 

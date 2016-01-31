@@ -52,7 +52,7 @@ func (sb *scopeBuilder) scopeAssignStatement(node compilergraph.GraphNode, optio
 	}
 
 	// Ensure that we can assign the expr value to the named scope.
-	if serr := exprScope.ResolvedTypeRef(sb.sg.tdg).CheckSubTypeOf(namedScopedRef.AssignableType()); serr != nil {
+	if serr := exprScope.ResolvedTypeRef(sb.sg.tdg).CheckSubTypeOf(nameScope.AssignableTypeRef(sb.sg.tdg)); serr != nil {
 		sb.decorateWithError(node, "Cannot assign value to %v %v: %v", namedScopedRef.Title(), namedScopedRef.Name(), serr)
 		return newScope().Invalid().GetScope()
 	}

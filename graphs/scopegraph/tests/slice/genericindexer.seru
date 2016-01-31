@@ -1,0 +1,15 @@
+class SomeClass<T> {
+	operator setindex(index int, value T) {
+	}
+
+	operator<T> index(index int) {
+		var<any> someValue = ''
+		return someValue.(T)
+	}
+}
+
+function<void> DoSomething() {
+	var sc = SomeClass<bool>.new()
+	/* getter */(sc[2])
+	sc[1] = true
+}

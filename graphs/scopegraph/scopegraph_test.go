@@ -469,6 +469,18 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"Slice index must be of type Integer, found: Boolean", ""},
 
+	scopegraphTest{"generic indexer success tests", "slice", "genericindexer",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"getter", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"generic slice success tests", "slice", "genericslice",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"getter", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+		},
+		"", ""},
+
 	scopegraphTest{"indexer success tests", "slice", "indexer",
 		[]expectedScopeEntry{},
 		"", ""},
