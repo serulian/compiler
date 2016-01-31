@@ -346,6 +346,20 @@ func (tr TypeReference) CheckConcreteSubtypeOf(otherType TGTypeDecl) ([]TypeRefe
 	return resolvedGenerics, tr.CheckSubTypeOf(tr.tdg.NewTypeReference(otherType, resolvedGenerics...))
 }
 
+// referenceOrConstraint returns the given type reference or, if it refers to a generic type, its constraint.
+func (tr TypeReference) referenceOrConstraint() TypeReference {
+	if !tr.isNormal() {
+		return tr
+	}
+
+	referredType := tr.ReferredType()
+	if referredType.TypeKind() == GenericType {
+		return referredType.AsGeneric().Constraint()
+	}
+
+	return tr
+}
+
 // CheckSubTypeOf returns whether the type pointed to by this type reference is a subtype
 // of the other type reference: tr <: other
 //
@@ -355,25 +369,34 @@ func (tr TypeReference) CheckConcreteSubtypeOf(otherType TGTypeDecl) ([]TypeRefe
 //   - A non-nullable type is a subtype of a nullable type (but not vice versa).
 //   - A class is a subtype of itself (and no other class) and only if generics and parameters match.
 //   - A class (or interface) is a subtype of an interface if it defines that interface's full signature.
+//   - A generic is checked by its constraint.
 func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
+	// If either reference is void, then they cannot be subtypes, as voids are technically 'unique'.
 	if tr.IsVoid() || other.IsVoid() {
 		return fmt.Errorf("Void types cannot be used interchangeably")
 	}
 
+	// If this reference is to the null type, ensure that the other type is nullable or the 'any' type.
 	if tr.IsNull() {
-		if !other.IsAny() && !other.IsNullable() {
-			return fmt.Errorf("null cannot be used in place of non-nullable type %v", other)
+		if other.IsAny() || other.IsNullable() {
+			return nil
 		}
 
-		return nil
+		return fmt.Errorf("null cannot be used in place of non-nullable type %v", other)
 	}
 
+	// If the other type is null, then it cannot be a subtype.
 	if other.IsNull() {
 		return fmt.Errorf("null cannot be supertype of any other type")
 	}
 
 	// If the other is the any type, then we know this to be a subtype.
 	if other.IsAny() {
+		return nil
+	}
+
+	// If the two references refer to the same type, then we know we have a subtype.
+	if tr == other {
 		return nil
 	}
 
@@ -387,23 +410,26 @@ func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
 		return fmt.Errorf("Nullable type '%v' cannot be used in place of non-nullable type '%v'", tr, other)
 	}
 
-	// Directly the same = subtype.
-	if other == tr {
-		return nil
-	}
-
 	// Strip out the nullability from the other type.
 	originalOther := other
 	if other.IsNullable() {
 		other = other.AsNonNullable()
 	}
 
-	// Directly the same = subtype.
-	if other == tr {
+	// If this is a reference to a generic type, we compare against its constraint.
+	left := tr.referenceOrConstraint()
+
+	// Check again for equality now that we've removed the nullability.
+	if tr == other || left == other {
 		return nil
 	}
 
-	localType := tr.ReferredType()
+	// If the constraint is 'any', then we know the generic cannot be used.
+	if left.IsAny() {
+		return fmt.Errorf("Cannot use type '%v' in place of type '%v'", tr, other)
+	}
+
+	localType := left.ReferredType()
 	otherType := other.ReferredType()
 
 	// If the other reference's type node is not an interface, then this reference cannot be a subtype.
@@ -429,7 +455,7 @@ func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
 				TryGetNode()
 
 			if !exists {
-				return buildSubtypeMismatchError(tr, originalOther, oit.Values()[NodePredicateMemberName])
+				return buildSubtypeMismatchError(tr, left, originalOther, oit.Values()[NodePredicateMemberName])
 			}
 		}
 
@@ -439,13 +465,13 @@ func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
 	// Otherwise, build the list of member signatures to compare. We'll have to deserialize them
 	// and replace the generic types in order to properly compare.
 	otherSigs := other.buildMemberSignaturesMap()
-	localSigs := tr.buildMemberSignaturesMap()
+	localSigs := left.buildMemberSignaturesMap()
 
 	// Ensure that every signature in otherSigs is under localSigs.
 	for memberName, memberSig := range otherSigs {
 		localSig, exists := localSigs[memberName]
 		if !exists || localSig != memberSig {
-			return buildSubtypeMismatchError(tr, originalOther, memberName)
+			return buildSubtypeMismatchError(tr, left, originalOther, memberName)
 		}
 	}
 
@@ -454,7 +480,7 @@ func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
 
 // buildSubtypeMismatchError returns an error describing the mismatch between the two types for the given
 // member name.
-func buildSubtypeMismatchError(left TypeReference, right TypeReference, memberName string) error {
+func buildSubtypeMismatchError(tr TypeReference, left TypeReference, right TypeReference, memberName string) error {
 	rightMember, rightExists := right.referredTypeNode().
 		StartQuery().
 		Out(NodePredicateMember, NodePredicateTypeOperator).
@@ -482,15 +508,15 @@ func buildSubtypeMismatchError(left TypeReference, right TypeReference, memberNa
 		TryGetNode()
 
 	if !leftExists {
-		return fmt.Errorf("Type '%v' does not define or export %s '%s', which is required by type '%v'", left, memberKind, memberName, right)
+		return fmt.Errorf("Type '%v' does not define or export %s '%s', which is required by type '%v'", tr, memberKind, memberName, right)
 	} else {
 		member := TGMember{leftNode, left.tdg}
 		if !member.IsExported() {
-			return fmt.Errorf("Type '%v' does not export %s '%s', which is required by type '%v'", left, memberKind, memberName, right)
+			return fmt.Errorf("Type '%v' does not export %s '%s', which is required by type '%v'", tr, memberKind, memberName, right)
 		}
 
 		// TODO(jschorr): Be nice to have specific errors here, but it'll require a lot of manual checking.
-		return fmt.Errorf("%s '%s' under type '%v' does not match that defined in type '%v'", memberKind, memberName, left, right)
+		return fmt.Errorf("%s '%s' under type '%v' does not match that defined in type '%v'", memberKind, memberName, tr, right)
 	}
 }
 
@@ -656,6 +682,9 @@ func (tr TypeReference) ResolveMember(memberName string, module compilercommon.I
 		return TGMember{}, false
 	}
 
+	// If this reference is a generic, we resolve under its constraint type.
+	resolutionType := tr.referenceOrConstraint()
+
 	var connectingPredicate = NodePredicateMember
 	var namePredicate = NodePredicateMemberName
 
@@ -664,7 +693,7 @@ func (tr TypeReference) ResolveMember(memberName string, module compilercommon.I
 		namePredicate = NodePredicateOperatorName
 	}
 
-	memberNode, found := tr.referredTypeNode().
+	memberNode, found := resolutionType.referredTypeNode().
 		StartQuery().
 		Out(connectingPredicate).
 		Has(namePredicate, memberName).
