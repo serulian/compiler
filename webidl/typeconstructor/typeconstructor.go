@@ -6,7 +6,6 @@ package typeconstructor
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
@@ -145,23 +144,29 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 				continue
 			}
 
-			typeDecl, _ := graph.GetTypeForSourceNode(declaration.GraphNode)
-
-			var operatorType = graph.FunctionTypeReference(typeDecl.GetTypeReference())
-			operatorType = operatorType.WithParameter(typeDecl.GetTypeReference())
-
-			if strings.ToLower(opName) != "not" {
-				operatorType = operatorType.WithParameter(typeDecl.GetTypeReference())
+			// Lookup the operator under the type graph.
+			opDefinition, found := graph.GetOperatorDefinition(opName)
+			if !found || !opDefinition.IsStatic {
+				reporter.ReportError(nativeOp.GraphNode, "Unknown native operator '%v'", opName)
+				continue
 			}
 
+			// Define the operator's member type based on the definition.
+			typeDecl, _ := graph.GetTypeForSourceNode(declaration.GraphNode)
+
+			var operatorType = graph.FunctionTypeReference(opDefinition.ExpectedReturnType(typeDecl.GetTypeReference()))
+			for _, parameter := range opDefinition.Parameters {
+				operatorType = operatorType.WithParameter(parameter.ExpectedType(typeDecl.GetTypeReference()))
+
+			}
+
+			// Add the operator to the type.
 			builder(parentNode, true).
 				Name(opName).
 				SourceNode(nativeOp.GraphNode).
 				InitialDefine().
 				Native(true).
 				Exported(true).
-				Static(true).
-				ReadOnly(true).
 				MemberType(operatorType).
 				MemberKind(uint64(webidl.OperatorMember)).
 				Define()
