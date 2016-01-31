@@ -1,0 +1,3 @@
+function<void> DoSomething() {
+	someIndex < 2 && someIndex >= 6
+}
