@@ -19,6 +19,8 @@ import (
 
 var _ = fmt.Printf
 
+const TESTLIB_PATH = "../../testlib"
+
 type expectedScope struct {
 	IsValid      bool
 	ScopeKind    proto.ScopeKind
@@ -171,7 +173,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	// Expected stream loop test.
 	scopegraphTest{"expected stream loop test", "loop", "expectedstreamloop", []expectedScopeEntry{},
-		"Loop iterable expression must implement type 'stream' or 'streamable': Type Integer cannot be used in place of type Stream as it does not implement member CurrentValue", ""},
+		"Loop iterable expression must implement type 'stream' or 'streamable': Type Integer cannot be used in place of type Stream as it does not implement member Next", ""},
 
 	/////////// With ///////////
 
@@ -606,7 +608,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"stream member access non-stream failure test", "streammemberaccess", "nonstream",
 		[]expectedScopeEntry{},
-		"Cannot attempt stream access of name 'something' under non-stream type 'Integer': Type Integer cannot be used in place of type Stream as it does not implement member CurrentValue", ""},
+		"Cannot attempt stream access of name 'something' under non-stream type 'Integer': Type Integer cannot be used in place of type Stream as it does not implement member Next", ""},
 
 	scopegraphTest{"stream member access generic failure test", "streammemberaccess", "generic",
 		[]expectedScopeEntry{},
@@ -811,7 +813,7 @@ func TestGraphs(t *testing.T) {
 		}
 
 		entrypointFile := "tests/" + test.input + "/" + test.entrypoint + ".seru"
-		result := ParseAndBuildScopeGraph(entrypointFile, packageloader.Library{"../srg/typeconstructor/tests/testlib", false, ""})
+		result := ParseAndBuildScopeGraph(entrypointFile, packageloader.Library{TESTLIB_PATH, false, ""})
 
 		if test.expectedError != "" {
 			if !assert.False(t, result.Status, "Expected failure in scoping on test : %v", test.name) {

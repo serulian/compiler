@@ -10,6 +10,11 @@ enum ScopeKind {
     STATIC = 2;    
 }
 
+enum ScopeLabel {
+	STREAM_LOOP = 1; // Marks the loop as iterating over a stream.
+	STREAMABLE_LOOP = 2; // Marks the loop as iterating over a streamable object.
+}
+
 message ScopeInfo {
 	optional bool IsValid = 1;        // Whether this scope is valid.
 	optional ScopeKind Kind = 2 [default = VALUE];
@@ -25,6 +30,8 @@ message ScopeInfo {
 	optional bool IsTerminatingStatement = 7; // If true, the statement terminates execution in the block.
 	optional bool IsSettlingScope = 10; // If true, the scope settles the function in some way.
 	optional bool IsAnonymousReference = 11; // If true, reference points to an anonymous value (i.e. _).
+
+	repeated ScopeLabel Labels = 12;
 }
 
 message ScopeReference {

@@ -151,7 +151,7 @@ func (sb *scopeBuilder) scopeNamedValue(node compilergraph.GraphNode, option sco
 		// Check for a Streamable.
 		generics, lerr := loopExprType.CheckConcreteSubtypeOf(sb.sg.tdg.StreamableType())
 		if lerr == nil {
-			return newScope().Valid().Assignable(generics[0]).GetScope()
+			return newScope().Valid().WithLabel(proto.ScopeLabel_STREAMABLE_LOOP).Assignable(generics[0]).GetScope()
 		} else {
 			generics, serr := loopExprType.CheckConcreteSubtypeOf(sb.sg.tdg.StreamType())
 			if serr != nil {
@@ -159,7 +159,7 @@ func (sb *scopeBuilder) scopeNamedValue(node compilergraph.GraphNode, option sco
 				return newScope().Invalid().GetScope()
 			}
 
-			return newScope().Valid().Assignable(generics[0]).GetScope()
+			return newScope().WithLabel(proto.ScopeLabel_STREAM_LOOP).Valid().Assignable(generics[0]).GetScope()
 		}
 
 	default:

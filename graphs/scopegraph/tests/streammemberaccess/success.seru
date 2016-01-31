@@ -3,10 +3,8 @@ class SomeClass<T> {
 }
 
 class SomeStream<T> {
-	property<SomeClass<T>> CurrentValue {
-		get {
-			return SomeClass<T>.new()
-		}
+	function<SomeClass<T>> Next() {
+		return SomeClass<T>.new()
 	}
 }
 

@@ -87,3 +87,17 @@ func (t *ScopeInfo) ReturnedTypeRef(tg *typegraph.TypeGraph) typegraph.TypeRefer
 
 	return tg.DeserializieTypeRef(t.GetReturnedType())
 }
+
+func (t *ScopeInfo) HasLabel(label ScopeLabel) bool {
+	if t.GetLabels() == nil {
+		return false
+	}
+
+	for _, labelFound := range t.GetLabels() {
+		if labelFound == label {
+			return true
+		}
+	}
+
+	return false
+}
