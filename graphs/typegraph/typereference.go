@@ -850,19 +850,37 @@ func (tr TypeReference) ReplaceType(typeDecl TGTypeDecl, replacement TypeReferen
 		return replacement.AsNullable()
 	}
 
+	tnNullable := typeNodeRef.AsNullable()
+	replacementNullable := replacement.AsNullable()
+
 	// Otherwise, search for the type string (with length prefix) in the subreferences and replace it there.
 	searchString := typeNodeRef.lengthPrefixedValue()
 	replacementStr := replacement.lengthPrefixedValue()
 
-	updatedStr := strings.Replace(tr.value, searchString, replacementStr, -1)
-
-	// Also replace the nullable version.
-	tnNullable := typeNodeRef.AsNullable()
-	replacementNullable := replacement.AsNullable()
-
 	nullableSearchString := tnNullable.lengthPrefixedValue()
 	nullableReplacementStr := replacementNullable.lengthPrefixedValue()
 
+	// If the length of the replacement string is not the same as that of the search string, then we cannot
+	// use a simple find-and-replace, since nested references will have the wrong lengths. Instead, we take
+	// a slow path and rebuild the reference entirely (if necessary).
+	if len(searchString) != len(replacementStr) {
+		// Check if we need to perform the slow path at all.
+		if !strings.Contains(tr.value, searchString) && !strings.Contains(tr.value, nullableSearchString) {
+			return tr
+		}
+
+		var newRef = tr.tdg.NewTypeReference(tr.ReferredType())
+		for _, generic := range tr.Generics() {
+			newRef = newRef.WithGeneric(generic.ReplaceType(typeDecl, replacement))
+		}
+		for _, parameter := range tr.Parameters() {
+			newRef = newRef.WithParameter(parameter.ReplaceType(typeDecl, replacement))
+		}
+		return newRef
+	}
+
+	// Fast Path: Do a direct string replacement.
+	updatedStr := strings.Replace(tr.value, searchString, replacementStr, -1)
 	nullableUpdatedStr := strings.Replace(updatedStr, nullableSearchString, nullableReplacementStr, -1)
 
 	return TypeReference{

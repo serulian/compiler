@@ -146,6 +146,36 @@ func TestReplaceTypeNullable(t *testing.T) {
 	assert.Equal(t, "First<Third?>", newRef.String())
 }
 
+func TestReplaceTypeNested(t *testing.T) {
+	g, _ := compilergraph.NewGraph("-")
+	testTG := newTestTypeGraph(g)
+
+	firstTypeNode := testTG.layer.CreateNode(NodeTypeClass)
+	secondTypeNode := testTG.layer.CreateNode(NodeTypeClass)
+	thirdTypeNode := testTG.layer.CreateNode(NodeTypeClass)
+	fourthTypeNode := testTG.layer.CreateNode(NodeTypeClass)
+
+	firstTypeNode.Decorate(NodePredicateTypeName, "First")
+	secondTypeNode.Decorate(NodePredicateTypeName, "Second")
+	thirdTypeNode.Decorate(NodePredicateTypeName, "Third")
+	fourthTypeNode.Decorate(NodePredicateTypeName, "Fourth")
+
+	firstType := toType(testTG, firstTypeNode)
+	secondType := toType(testTG, secondTypeNode)
+	thirdType := toType(testTG, thirdTypeNode)
+	fourthType := toType(testTG, fourthTypeNode)
+
+	secondRef := testTG.NewTypeReference(secondType)
+	firstRef := testTG.NewTypeReference(firstType, testTG.NewTypeReference(firstType, secondRef))
+	assert.Equal(t, "First<First<Second>>", firstRef.String())
+
+	newRef := firstRef.ReplaceType(secondType, testTG.NewTypeReference(thirdType))
+	assert.Equal(t, "First<First<Third>>", newRef.String())
+
+	newRef2 := firstRef.ReplaceType(secondType, testTG.NewTypeReference(fourthType, secondRef))
+	assert.Equal(t, "First<First<Fourth<Second>>>", newRef2.String())
+}
+
 func TestSpecialReferenceOperations(t *testing.T) {
 	g, _ := compilergraph.NewGraph("-")
 	testTG := newTestTypeGraph(g)
