@@ -146,7 +146,7 @@ func (nsi *namedScopeInfo) ResolveStaticMember(name string, module compilercommo
 	}
 
 	if nsi.typeInfo != nil {
-		typeMember, found := staticType.ResolveMember(name, module, typegraph.MemberResolutionStatic)
+		typeMember, found := staticType.ResolveAccessibleMember(name, module, typegraph.MemberResolutionStatic)
 		if !found {
 			return namedScopeInfo{}, false
 		}
