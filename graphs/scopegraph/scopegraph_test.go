@@ -860,6 +860,12 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"nominal call base type member", "nominal", "basetypecall",
 		[]expectedScopeEntry{},
 		"Could not find instance name 'DoSomething' under type MyType", ""},
+
+	/////////// known issue tests /////////////////
+
+	scopegraphTest{"known issue panic test", "knownissues", "knownissue1",
+		[]expectedScopeEntry{},
+		"Operator 'equals' is not defined on type 'T'", ""},
 }
 
 func TestGraphs(t *testing.T) {

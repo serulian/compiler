@@ -1,0 +1,9 @@
+class SomeClass<T> {
+	function<bool> DoSomething(element T) {
+		return this[element] == element
+	}
+
+	operator<T> Index(index T) {
+		return index
+	}
+}
