@@ -154,7 +154,12 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 			// Define the operator's member type based on the definition.
 			typeDecl, _ := graph.GetTypeForSourceNode(declaration.GraphNode)
 
-			var operatorType = graph.FunctionTypeReference(opDefinition.ExpectedReturnType(typeDecl.GetTypeReference()))
+			var expectedReturnType = opDefinition.ExpectedReturnType(typeDecl.GetTypeReference())
+			if expectedReturnType.HasReferredType(graph.BoolType()) {
+				expectedReturnType, _ = itc.ResolveType("Boolean", graph)
+			}
+
+			var operatorType = graph.FunctionTypeReference(expectedReturnType)
 			for _, parameter := range opDefinition.Parameters {
 				operatorType = operatorType.WithParameter(parameter.ExpectedType(typeDecl.GetTypeReference()))
 
@@ -167,6 +172,7 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 				InitialDefine().
 				Native(true).
 				Exported(true).
+				SkipOperatorChecking(true).
 				MemberType(operatorType).
 				MemberKind(uint64(webidl.OperatorMember)).
 				Define()

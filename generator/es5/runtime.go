@@ -25,10 +25,17 @@ window.Serulian = (function($global) {
       };
     },
 
-    'property': function(isExtension, getter, opt_setter) {
-      var count = isExtension ? 2 : 1;
+    'nominalwrap': function(instance, type) {
+      return type.new(instance)
+    },
+
+    'nominalunwrap': function(instance) {
+      return instance.$wrapped;
+    },
+
+    'property': function(getter, opt_setter) {
       var f = function() {
-        if (arguments.length == count) {
+        if (arguments.length == 1) {
           return opt_setter.apply(this, arguments);
         } else {
           return getter.apply(this, arguments);
@@ -199,12 +206,7 @@ window.Serulian = (function($global) {
 
   	module.$class = module.$newtypebuilder('class');
   	module.$interface = module.$newtypebuilder('interface');
-
-    module.$type = function(name, creator) {
-      var cls = function() {};
-      creator.call(cls);
-      module[name] = cls;
-    };
+    module.$type = module.$newtypebuilder('type');
 
   	creator.call(module)
   };

@@ -6,7 +6,7 @@ $module('genericspecifier', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              $state.resolve(true);
+              $state.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
               return;
 
             default:

@@ -6,10 +6,65 @@ $module('matchexpr', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            123;
+            $t.nominalwrap(123, $g.____testlib.basictypes.Integer);
             $temp0 = someVar;
-            if ($temp0 == 1) {
+            $g.____testlib.basictypes.Integer.$equals($temp0, $t.nominalwrap(1, $g.____testlib.basictypes.Integer)).then(function ($result0) {
+              $result = $t.nominalunwrap($result0);
               $state.current = 1;
+              $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
+            });
+            return;
+
+          case 1:
+            if ($result) {
+              $state.current = 2;
+              continue;
+            } else {
+              $state.current = 4;
+              continue;
+            }
+            break;
+
+          case 2:
+            $t.nominalwrap(1234, $g.____testlib.basictypes.Integer);
+            $state.current = 3;
+            continue;
+
+          case 3:
+            $t.nominalwrap(789, $g.____testlib.basictypes.Integer);
+            $state.current = -1;
+            return;
+
+          case 4:
+            $g.____testlib.basictypes.Integer.$equals($temp0, $t.nominalwrap(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
+              $result = $t.nominalunwrap($result0);
+              $state.current = 5;
+              $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
+            });
+            return;
+
+          case 5:
+            if ($result) {
+              $state.current = 6;
+              continue;
+            } else {
+              $state.current = 7;
+              continue;
+            }
+            break;
+
+          case 6:
+            $t.nominalwrap(2345, $g.____testlib.basictypes.Integer);
+            $state.current = 3;
+            continue;
+
+          case 7:
+            if (true) {
+              $state.current = 8;
               continue;
             } else {
               $state.current = 3;
@@ -17,44 +72,9 @@ $module('matchexpr', function () {
             }
             break;
 
-          case 1:
-            1234;
-            $state.current = 2;
-            continue;
-
-          case 2:
-            789;
-            $state.current = -1;
-            return;
-
-          case 3:
-            if ($temp0 == 2) {
-              $state.current = 4;
-              continue;
-            } else {
-              $state.current = 5;
-              continue;
-            }
-            break;
-
-          case 4:
-            2345;
-            $state.current = 2;
-            continue;
-
-          case 5:
-            if (true) {
-              $state.current = 6;
-              continue;
-            } else {
-              $state.current = 2;
-              continue;
-            }
-            break;
-
-          case 6:
-            3456;
-            $state.current = 2;
+          case 8:
+            $t.nominalwrap(3456, $g.____testlib.basictypes.Integer);
+            $state.current = 3;
             continue;
 
           default:

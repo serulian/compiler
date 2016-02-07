@@ -6,10 +6,10 @@ $module('withas', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            123;
+            $t.nominalwrap(123, $g.____testlib.basictypes.Integer);
             someName = someExpr;
             $state.pushr(someName, 'someName');
-            456;
+            $t.nominalwrap(456, $g.____testlib.basictypes.Integer);
             $state.popr('someName').then(function ($result0) {
               $result = $result0;
               $state.current = 1;
@@ -21,7 +21,7 @@ $module('withas', function () {
 
           case 1:
             $result;
-            789;
+            $t.nominalwrap(789, $g.____testlib.basictypes.Integer);
             $state.current = -1;
             return;
 

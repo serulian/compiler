@@ -155,7 +155,7 @@ func (sb *scopeBuilder) scopeSliceChildExpression(node compilergraph.GraphNode, 
 
 	childType := childScope.ResolvedTypeRef(sb.sg.tdg)
 	module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
-	operator, found := childType.ResolveMember(opName, module, typegraph.MemberResolutionOperator)
+	operator, found := childType.ResolveAccessibleMember(opName, module, typegraph.MemberResolutionOperator)
 	if !found {
 		sb.decorateWithError(node, "Operator '%v' is not defined on type '%v'", opName, childType)
 		return typegraph.TGMember{}, childType, false
@@ -455,7 +455,7 @@ func (sb *scopeBuilder) scopeBinaryExpression(node compilergraph.GraphNode, opNa
 
 	// Ensure that the operator exists under the resolved type.
 	module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
-	operator, found := leftType.ResolveMember(opName, module, typegraph.MemberResolutionOperator)
+	operator, found := leftType.ResolveAccessibleMember(opName, module, typegraph.MemberResolutionOperator)
 	if !found {
 		sb.decorateWithError(node, "Operator '%v' is not defined on type '%v'", opName, leftType)
 		return newScope().Invalid()
@@ -478,7 +478,7 @@ func (sb *scopeBuilder) scopeUnaryExpression(node compilergraph.GraphNode, opNam
 	// Ensure that the operator exists under the resolved type.
 	childType := childScope.ResolvedTypeRef(sb.sg.tdg)
 	module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
-	operator, found := childType.ResolveMember(opName, module, typegraph.MemberResolutionOperator)
+	operator, found := childType.ResolveAccessibleMember(opName, module, typegraph.MemberResolutionOperator)
 	if !found {
 		sb.decorateWithError(node, "Operator '%v' is not defined on type '%v'", opName, childType)
 		return newScope().Invalid()

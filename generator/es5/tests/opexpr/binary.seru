@@ -44,3 +44,7 @@ function<void> DoSomething(first SomeClass, second SomeClass) {
 	first + second
 	first - second
 }
+
+function<any> TEST() {
+	return (1 + 2) == 3
+}

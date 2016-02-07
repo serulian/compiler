@@ -5,12 +5,12 @@ $module('string', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            'hello world';
-            "hi world";
-            'single quote with "quoted"';
-            "double quote with 'quoted'";
-            "escaped \" quote";
-            'escaped \' quote';
+            $t.nominalwrap('hello world', $g.____testlib.basictypes.String);
+            $t.nominalwrap("hi world", $g.____testlib.basictypes.String);
+            $t.nominalwrap('single quote with "quoted"', $g.____testlib.basictypes.String);
+            $t.nominalwrap("double quote with 'quoted'", $g.____testlib.basictypes.String);
+            $t.nominalwrap("escaped \" quote", $g.____testlib.basictypes.String);
+            $t.nominalwrap('escaped \' quote', $g.____testlib.basictypes.String);
             $state.current = -1;
             return;
 

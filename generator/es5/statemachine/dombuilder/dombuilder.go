@@ -192,38 +192,58 @@ func (db *domBuilder) buildExpression(node compilergraph.GraphNode) codedom.Expr
 
 	case parser.NodeComparisonNotEqualsExpression:
 		return db.buildBinaryOperatorExpression(node, func(expr codedom.Expression) codedom.Expression {
-			return codedom.UnaryOperation("!", expr, node)
+			childExpr := codedom.UnaryOperation("!", codedom.NominalUnwrapping(expr, node), node)
+			return codedom.NominalWrapping(
+				childExpr,
+				db.scopegraph.TypeGraph().BoolType(),
+				node)
 		})
 
 	case parser.NodeComparisonLTEExpression:
 		return db.buildBinaryOperatorExpression(node, func(expr codedom.Expression) codedom.Expression {
-			return codedom.BinaryOperation(expr, "<=", codedom.LiteralValue("0", node), node)
+			childExpr := codedom.BinaryOperation(codedom.NominalUnwrapping(expr, node), "<=", codedom.LiteralValue("0", node), node)
+			return codedom.NominalWrapping(
+				childExpr,
+				db.scopegraph.TypeGraph().BoolType(),
+				node)
 		})
 
 	case parser.NodeComparisonLTExpression:
 		return db.buildBinaryOperatorExpression(node, func(expr codedom.Expression) codedom.Expression {
-			return codedom.BinaryOperation(expr, "<", codedom.LiteralValue("0", node), node)
+			childExpr := codedom.BinaryOperation(codedom.NominalUnwrapping(expr, node), "<", codedom.LiteralValue("0", node), node)
+			return codedom.NominalWrapping(
+				childExpr,
+				db.scopegraph.TypeGraph().BoolType(),
+				node)
 		})
 
 	case parser.NodeComparisonGTEExpression:
 		return db.buildBinaryOperatorExpression(node, func(expr codedom.Expression) codedom.Expression {
-			return codedom.BinaryOperation(expr, ">=", codedom.LiteralValue("0", node), node)
+			childExpr := codedom.BinaryOperation(codedom.NominalUnwrapping(expr, node), ">=", codedom.LiteralValue("0", node), node)
+			return codedom.NominalWrapping(
+				childExpr,
+				db.scopegraph.TypeGraph().BoolType(),
+				node)
 		})
 
 	case parser.NodeComparisonGTExpression:
 		return db.buildBinaryOperatorExpression(node, func(expr codedom.Expression) codedom.Expression {
-			return codedom.BinaryOperation(expr, ">", codedom.LiteralValue("0", node), node)
+			childExpr := codedom.BinaryOperation(codedom.NominalUnwrapping(expr, node), ">", codedom.LiteralValue("0", node), node)
+			return codedom.NominalWrapping(
+				childExpr,
+				db.scopegraph.TypeGraph().BoolType(),
+				node)
 		})
 
 	// Boolean operators.
 	case parser.NodeBooleanAndExpression:
-		return db.buildNativeBinaryExpression(node, "&&")
+		return db.buildBooleanBinaryExpression(node, "&&")
 
 	case parser.NodeBooleanOrExpression:
-		return db.buildNativeBinaryExpression(node, "||")
+		return db.buildBooleanBinaryExpression(node, "||")
 
 	case parser.NodeBooleanNotExpression:
-		return db.buildNativeUnaryExpression(node, "!")
+		return db.buildBooleanUnaryExpression(node, "!")
 
 	// Literals.
 	case parser.NodeNumericLiteralExpression:

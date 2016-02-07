@@ -11,7 +11,7 @@ $module('mini', function () {
                 while (true) {
                   switch ($state.current) {
                     case 0:
-                      $state.resolve(!someParam);
+                      $state.resolve($t.nominalwrap(!$t.nominalunwrap(someParam), $g.____testlib.basictypes.Boolean));
                       return;
 
                     default:
@@ -22,7 +22,7 @@ $module('mini', function () {
               });
               return $promise.build($state);
             };
-            lambda(false).then(function ($result0) {
+            lambda($t.nominalwrap(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $state.current = 1;
               $callback($state);

@@ -10,13 +10,13 @@ $module('cast', function () {
         return instance;
       });
     };
-    $instance.Result = $t.property(false, function () {
+    $instance.Result = $t.property(function () {
       var $this = this;
       var $state = $t.sm(function ($callback) {
         while (true) {
           switch ($state.current) {
             case 0:
-              $state.resolve(true);
+              $state.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
               return;
 
             default:
@@ -29,7 +29,7 @@ $module('cast', function () {
     });
   });
 
-  this.$interface('ISomeInterface', function () {
+  this.$interface('ISomeInterface', false, function () {
   });
 
   $static.DoSomething = function (i) {

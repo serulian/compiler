@@ -7,7 +7,7 @@ $module('nullcompare', function () {
         switch ($state.current) {
           case 0:
             someBool = null;
-            $state.resolve($t.nullcompare(someBool, true));
+            $state.resolve($t.nullcompare(someBool, $t.nominalwrap(true, $g.____testlib.basictypes.Boolean)));
             return;
 
           default:

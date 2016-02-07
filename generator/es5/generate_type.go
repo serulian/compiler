@@ -133,7 +133,7 @@ this.$class('{{ .Type.Name }}', {{ .HasGenerics }}, function({{ .Generics }}) {
 
 // interfaceTemplateStr defines the template for generating an interface type.
 const interfaceTemplateStr = `
-this.$interface('{{ .Type.Name }}', function({{ .Generics }}) {
+this.$interface('{{ .Type.Name }}', {{ .HasGenerics }}, function({{ .Generics }}) {
 	{{range $idx, $kv := .GenerateImplementedMembers.Iter }}
   	  {{ $kv.Value }}
   	{{end}}
@@ -142,9 +142,15 @@ this.$interface('{{ .Type.Name }}', function({{ .Generics }}) {
 
 // nominalTemplateStr defines the template for generating a nominal type.
 const nominalTemplateStr = `
-this.$type('{{ .Type.Name }}', function() {
-	var $instance = this;
+this.$type('{{ .Type.Name }}', false, function() {
+	var $instance = this.prototype;
 	var $static = this;
+
+	this.new = function($wrapped) {
+		var instance = new this();
+		instance.$wrapped = $wrapped;
+		return instance;
+	};
 	
 	{{range $idx, $kv := .GenerateImplementedMembers.Iter }}
   	  {{ $kv.Value }}

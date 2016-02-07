@@ -7,8 +7,10 @@ package scopegraph
 import (
 	"fmt"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
+	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/parser"
 )
 
@@ -72,6 +74,16 @@ func (sb *scopeBuilder) scopeMatchStatement(node compilergraph.GraphNode, option
 		if exprScope.GetIsValid() {
 			matchValueType = exprScope.ResolvedTypeRef(sb.sg.tdg)
 		} else {
+			isValid = false
+		}
+	}
+
+	// Ensure that the match type has a defined accessible comparison operator.
+	if isValid {
+		module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
+		_, found := matchValueType.ResolveAccessibleMember("equals", module, typegraph.MemberResolutionOperator)
+		if !found {
+			sb.decorateWithError(node, "Cannot match over instance of type '%v', as it does not define or export an 'equals' operator", matchValueType)
 			isValid = false
 		}
 	}

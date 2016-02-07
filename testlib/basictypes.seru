@@ -1,3 +1,7 @@
+from webidl`basic` import Number
+from webidl`basic` import String as NativeString
+from webidl`basic` import Boolean as NativeBoolean
+
 @•typealias('tuple')
 class Tuple<T, Q> {
 	var<T?> First = null
@@ -53,22 +57,46 @@ class FakeIntStream {
 }
 
 @•typealias('int')
-class Integer {
+type Integer : Number {
 	operator Range(start int, end int) {
 		return FakeIntStream.new()
+	}
+
+	operator Compare(left int, right int) {
+		return Integer(Number(left) - Number(right))
+	}
+
+	operator Equals(left int, right int) {
+		return Boolean(Number(left) == Number(right))
+	}
+
+	operator Plus(left int, right int) {
+		return Integer(Number(left) + Number(right))
 	}
 
 	function<void> Release() {}
 }
 
 @•typealias('bool')
-class Boolean {}
+type Boolean : NativeBoolean {
+	operator Compare(left bool, right bool) {
+		if left == right {
+			return 0
+		}
+
+		return -1
+	}
+
+	operator Equals(left bool, right bool) {
+		return NativeBoolean(left) == NativeBoolean(right)
+	}
+}
 
 @•typealias('float64')
 class Float64 {}
 
 @•typealias('string')
-class String {
+type String : NativeString {
 	function<string> String() {
 		return ''
 	}

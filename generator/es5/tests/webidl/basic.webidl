@@ -11,5 +11,5 @@ interface SomeBrowserThing {
 
 [GlobalContext]
 interface WindowContext {
-	static readonly attribute any boolValue;
+	static readonly attribute Boolean boolValue;
 }

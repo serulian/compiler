@@ -5,8 +5,8 @@ $module('boolean', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            true;
-            false;
+            $t.nominalwrap(true, $g.____testlib.basictypes.Boolean);
+            $t.nominalwrap(false, $g.____testlib.basictypes.Boolean);
             $state.current = -1;
             return;
 

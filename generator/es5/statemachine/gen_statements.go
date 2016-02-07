@@ -38,8 +38,10 @@ func (sg *stateGenerator) generateUnconditionalJump(jump *codedom.UnconditionalJ
 
 // generateConditionalJump generates the code for a conditional jump.
 func (sg *stateGenerator) generateConditionalJump(jump *codedom.ConditionalJumpNode) {
-	// Add the expression to the state machine.
-	expressionRef := sg.AddTopLevelExpression(jump.BranchExpression)
+	// Add the expression to the state machine. The type will be a nominally-wrapped Boolean, so we need to unwrap it
+	// here.
+	expressionRef := sg.AddTopLevelExpression(
+		codedom.NominalUnwrapping(jump.BranchExpression, jump.BasisNode()))
 
 	currentState := sg.currentState
 

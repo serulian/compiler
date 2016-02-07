@@ -230,11 +230,6 @@ func (tn TGTypeDecl) IsPromising() bool {
 	return false
 }
 
-// IsExtension returns whether this type is an extension member (always false).
-func (tn TGTypeDecl) IsExtension() bool {
-	return false
-}
-
 // TypeKind returns the kind of the type node.
 func (tn TGTypeDecl) TypeKind() TypeKind {
 	nodeType := tn.Kind.(NodeType)

@@ -8,6 +8,7 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/codedom"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
+	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/parser"
 )
 
@@ -41,10 +42,17 @@ func (db *domBuilder) buildFunctionCall(node compilergraph.GraphNode) codedom.Ex
 	childScope, _ := db.scopegraph.GetScope(childExprNode)
 
 	// Check if the child expression has a static scope. If so, this is a type conversion between
-	// a nominal type and a base type. Type conversions are always compile-time checked, so this
-	// becomes a noop and we just place the first argument in the call.
+	// a nominal type and a base type.
 	if childScope.GetKind() == proto.ScopeKind_STATIC {
-		return db.getExpression(node, parser.NodeFunctionCallArgument)
+		wrappedExpr := db.getExpression(node, parser.NodeFunctionCallArgument)
+		childType := childScope.StaticTypeRef(db.scopegraph.TypeGraph())
+		referredType := childType.ReferredType()
+
+		if referredType.TypeKind() == typegraph.NominalType {
+			return codedom.NominalWrapping(wrappedExpr, referredType, node)
+		} else {
+			return codedom.NominalUnwrapping(wrappedExpr, node)
+		}
 	}
 
 	// Collect the expressions for the arguments.
@@ -116,6 +124,25 @@ func (db *domBuilder) buildIsComparisonExpression(node compilergraph.GraphNode) 
 	return codedom.BinaryOperation(leftExpr, "==", rightExpr, node)
 }
 
+// buildBooleanBinaryExpression builds the CodeDOM for a boolean unary operator.
+func (db *domBuilder) buildBooleanBinaryExpression(node compilergraph.GraphNode, op string) codedom.Expression {
+	leftExpr := codedom.NominalUnwrapping(db.getExpression(node, parser.NodeBinaryExpressionLeftExpr), node)
+	rightExpr := codedom.NominalUnwrapping(db.getExpression(node, parser.NodeBinaryExpressionRightExpr), node)
+	return codedom.NominalWrapping(
+		codedom.BinaryOperation(leftExpr, op, rightExpr, node),
+		db.scopegraph.TypeGraph().BoolType(),
+		node)
+}
+
+// buildBooleanUnaryExpression builds the CodeDOM for a native unary operator.
+func (db *domBuilder) buildBooleanUnaryExpression(node compilergraph.GraphNode, op string) codedom.Expression {
+	childExpr := codedom.NominalUnwrapping(db.getExpression(node, parser.NodeUnaryExpressionChildExpr), node)
+	return codedom.NominalWrapping(
+		codedom.UnaryOperation(op, childExpr, node),
+		db.scopegraph.TypeGraph().BoolType(),
+		node)
+}
+
 // buildNativeBinaryExpression builds the CodeDOM for a native unary operator.
 func (db *domBuilder) buildNativeBinaryExpression(node compilergraph.GraphNode, op string) codedom.Expression {
 	leftExpr := db.getExpression(node, parser.NodeBinaryExpressionLeftExpr)
@@ -125,7 +152,8 @@ func (db *domBuilder) buildNativeBinaryExpression(node compilergraph.GraphNode, 
 
 // buildNativeUnaryExpression builds the CodeDOM for a native unary operator.
 func (db *domBuilder) buildNativeUnaryExpression(node compilergraph.GraphNode, op string) codedom.Expression {
-	return codedom.UnaryOperation(op, db.getExpression(node, parser.NodeUnaryExpressionChildExpr), node)
+	childExpr := db.getExpression(node, parser.NodeUnaryExpressionChildExpr)
+	return codedom.UnaryOperation(op, childExpr, node)
 }
 
 // buildUnaryOperatorExpression builds the CodeDOM for a unary operator.

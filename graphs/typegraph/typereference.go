@@ -677,7 +677,7 @@ const (
 )
 
 // ResolveMember looks for an member with the given name under the referred type and returns it (if any).
-func (tr TypeReference) ResolveMember(memberName string, module compilercommon.InputSource, kind MemberResolutionKind) (TGMember, bool) {
+func (tr TypeReference) ResolveMember(memberName string, kind MemberResolutionKind) (TGMember, bool) {
 	if tr.getSlot(trhSlotFlagSpecial)[0] != specialFlagNormal {
 		return TGMember{}, false
 	}
@@ -705,19 +705,29 @@ func (tr TypeReference) ResolveMember(memberName string, module compilercommon.I
 
 	member := TGMember{memberNode, tr.tdg}
 
-	// If the member is exported, then always return it. Otherwise, only return it if the asking module
-	// is the same as the declaring module.
-	if !member.IsExported() {
-		memberModule := memberNode.Get(NodePredicateModulePath)
-		if memberModule != string(module) {
-			return TGMember{}, false
-		}
-	}
-
 	// Check that the member being static matches the resolution option.
 	if (kind == MemberResolutionInstance && member.IsStatic()) ||
 		(kind == MemberResolutionStatic && !member.IsStatic()) {
 		return TGMember{}, false
+	}
+
+	return member, true
+}
+
+// ResolveAccessibleMember looks for an member with the given name under the referred type and returns it (if any).
+func (tr TypeReference) ResolveAccessibleMember(memberName string, module compilercommon.InputSource, kind MemberResolutionKind) (TGMember, bool) {
+	member, found := tr.ResolveMember(memberName, kind)
+	if !found {
+		return TGMember{}, false
+	}
+
+	// If the member is exported, then always return it. Otherwise, only return it if the asking module
+	// is the same as the declaring module.
+	if !member.IsExported() {
+		memberModule := member.Node().Get(NodePredicateModulePath)
+		if memberModule != string(module) {
+			return TGMember{}, false
+		}
 	}
 
 	return member, true

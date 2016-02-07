@@ -16,7 +16,7 @@ $module('await', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              resolve(true).then(function ($result0) {
+              resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
                 $result = $result0;
                 $state.current = 1;
                 $callback($state);

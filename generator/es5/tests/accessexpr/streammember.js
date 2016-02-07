@@ -6,7 +6,7 @@ $module('streammember', function () {
     $static.new = function () {
       var instance = new $static();
       var init = [];
-      init.push($promise.resolve(2).then(function (result) {
+      init.push($promise.resolve($t.nominalwrap(2, $g.____testlib.basictypes.Integer)).then(function (result) {
         instance.SomeInt = result;
       }));
       return $promise.all(init).then(function () {

@@ -16,7 +16,7 @@ $module('basic', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              $state.resolve(true);
+              $state.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
               return;
 
             default:
@@ -29,15 +29,21 @@ $module('basic', function () {
     };
   });
 
-  this.$type('MyType', function () {
-    var $instance = this;
+  this.$type('MyType', false, function () {
+    var $instance = this.prototype;
     var $static = this;
-    $instance.AnotherThing = function ($this) {
+    this.new = function ($wrapped) {
+      var instance = new this();
+      instance.$wrapped = $wrapped;
+      return instance;
+    };
+    $instance.AnotherThing = function () {
+      var $this = this;
       var $state = $t.sm(function ($callback) {
         while (true) {
           switch ($state.current) {
             case 0:
-              $this.DoSomething().then(function ($result0) {
+              $t.nominalunwrap($this).DoSomething().then(function ($result0) {
                 $result = $result0;
                 $state.current = 1;
                 $callback($state);
@@ -58,12 +64,13 @@ $module('basic', function () {
       });
       return $promise.build($state);
     };
-    $instance.SomeProp = $t.property(true, function ($this) {
+    $instance.SomeProp = $t.property(function () {
+      var $this = this;
       var $state = $t.sm(function ($callback) {
         while (true) {
           switch ($state.current) {
             case 0:
-              $state.resolve(true);
+              $state.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
               return;
 
             default:
@@ -94,10 +101,10 @@ $module('basic', function () {
 
           case 1:
             sc = $result;
-            m = sc;
-            $g.basic.MyType.SomeProp(m).then(function ($result0) {
-              return $g.basic.MyType.AnotherThing(m).then(function ($result1) {
-                $result = $result0 && $result1;
+            m = $t.nominalwrap(sc, $g.basic.MyType);
+            m.SomeProp().then(function ($result0) {
+              return m.AnotherThing().then(function ($result1) {
+                $result = $t.nominalwrap($t.nominalunwrap($result0) && $t.nominalunwrap($result1), $g.____testlib.basictypes.Boolean);
                 $state.current = 2;
                 $callback($state);
               });

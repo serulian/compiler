@@ -5,9 +5,9 @@ $module('numeric', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            2;
-            2.0;
-            3.14159;
+            $t.nominalwrap(2, $g.____testlib.basictypes.Integer);
+            $t.nominalwrap(2.0, $g.____testlib.basictypes.Float64);
+            $t.nominalwrap(3.14159, $g.____testlib.basictypes.Float64);
             $state.current = -1;
             return;
 

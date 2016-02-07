@@ -26,13 +26,13 @@ $module('basic', function () {
             $t.dynamicaccess($global.SomeBrowserThing, 'SomeStaticFunction');
             $global.SomeBrowserThing.SomeStaticAttribute.SomeInterfaceFunction();
             $t.dynamicaccess($global.SomeBrowserThing.SomeStaticAttribute, 'SomeInterfaceFunction');
-            $t.nativenew($global.SomeBrowserThing)('foo');
+            $t.nativenew($global.SomeBrowserThing)($t.nominalwrap('foo', $g.____testlib.basictypes.String));
             $global.SomeBrowserThing.SomeStaticAttribute.SomeInterfaceFunction().InstanceAttr;
-            first = $t.nativenew($global.SomeBrowserThing)('foo');
-            second = $t.nativenew($global.SomeBrowserThing)('bar');
+            first = $t.nativenew($global.SomeBrowserThing)($t.nominalwrap('foo', $g.____testlib.basictypes.String));
+            second = $t.nativenew($global.SomeBrowserThing)($t.nominalwrap('bar', $g.____testlib.basictypes.String));
             first + second;
-            first['hello'];
-            first['hello'] = second;
+            first[$t.nominalwrap('hello', $g.____testlib.basictypes.String)];
+            first[$t.nominalwrap('hello', $g.____testlib.basictypes.String)] = second;
             $state.current = -1;
             return;
 
@@ -49,7 +49,7 @@ $module('basic', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            $state.resolve($global.boolValue);
+            $state.resolve($t.nominalwrap($global.boolValue, $g.____testlib.basictypes.Boolean));
             return;
 
           default:

@@ -6,9 +6,9 @@ $module('varassign', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            i = 2;
-            i = 3;
-            1234;
+            i = $t.nominalwrap(2, $g.____testlib.basictypes.Integer);
+            i = $t.nominalwrap(3, $g.____testlib.basictypes.Integer);
+            $t.nominalwrap(1234, $g.____testlib.basictypes.Integer);
             $state.current = -1;
             return;
 

@@ -20,7 +20,6 @@ type FunctionDef interface {
 	Generics() []string                // Returns the names of the generics on the function, if any.
 	Parameters() []string              // Returns the names of the parameters on the function, if any.
 	RequiresThis() bool                // Returns if this function is requires the "this" var to be added.
-	IsExtension() bool                 // Returns true if this function is an extension function.
 	BodyNode() compilergraph.GraphNode // The parser root node for the function body.
 }
 
@@ -31,14 +30,8 @@ func GenerateFunctionSource(functionDef FunctionDef, templater *templater.Templa
 		panic("Nil function body result")
 	}
 
-	var parameters = functionDef.Parameters()
-	if functionDef.IsExtension() {
-		parameters = append([]string{dombuilder.DEFINED_THIS_PARAMETER}, parameters...)
-	}
-
-	domDefinition := codedom.FunctionDefinition(functionDef.Generics(), parameters, funcBody,
-		functionDef.RequiresThis() && !functionDef.IsExtension(), functionDef.BodyNode())
-
+	domDefinition := codedom.FunctionDefinition(functionDef.Generics(), functionDef.Parameters(), funcBody,
+		functionDef.RequiresThis(), functionDef.BodyNode())
 	result := GenerateExpression(domDefinition, templater, pather, scopegraph)
 	return result.Source("")
 }

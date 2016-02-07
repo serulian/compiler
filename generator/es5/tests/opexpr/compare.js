@@ -15,7 +15,7 @@ $module('compare', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              $state.resolve(true);
+              $state.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
               return;
 
             default:
@@ -31,7 +31,7 @@ $module('compare', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              $state.resolve(1);
+              $state.resolve($t.nominalwrap(1, $g.____testlib.basictypes.Integer));
               return;
 
             default:
@@ -85,7 +85,7 @@ $module('compare', function () {
           case 3:
             $result;
             $g.compare.SomeClass.$equals(first, second).then(function ($result0) {
-              $result = !$result0;
+              $result = $t.nominalwrap(!$t.nominalunwrap($result0), $g.____testlib.basictypes.Boolean);
               $state.current = 4;
               $callback($state);
             }).catch(function (err) {
@@ -96,7 +96,7 @@ $module('compare', function () {
           case 4:
             $result;
             $g.compare.SomeClass.$compare(first, second).then(function ($result0) {
-              $result = $result0 < 0;
+              $result = $t.nominalwrap($t.nominalunwrap($result0) < 0, $g.____testlib.basictypes.Boolean);
               $state.current = 5;
               $callback($state);
             }).catch(function (err) {
@@ -107,7 +107,7 @@ $module('compare', function () {
           case 5:
             $result;
             $g.compare.SomeClass.$compare(first, second).then(function ($result0) {
-              $result = $result0 > 0;
+              $result = $t.nominalwrap($t.nominalunwrap($result0) > 0, $g.____testlib.basictypes.Boolean);
               $state.current = 6;
               $callback($state);
             }).catch(function (err) {
@@ -118,7 +118,7 @@ $module('compare', function () {
           case 6:
             $result;
             $g.compare.SomeClass.$compare(first, second).then(function ($result0) {
-              $result = $result0 <= 0;
+              $result = $t.nominalwrap($t.nominalunwrap($result0) <= 0, $g.____testlib.basictypes.Boolean);
               $state.current = 7;
               $callback($state);
             }).catch(function (err) {
@@ -129,7 +129,7 @@ $module('compare', function () {
           case 7:
             $result;
             $g.compare.SomeClass.$compare(first, second).then(function ($result0) {
-              $result = $result0 >= 0;
+              $result = $t.nominalwrap($t.nominalunwrap($result0) >= 0, $g.____testlib.basictypes.Boolean);
               $state.current = 8;
               $callback($state);
             }).catch(function (err) {
