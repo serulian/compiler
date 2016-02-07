@@ -121,7 +121,10 @@ func (db *domBuilder) buildNullComparisonExpression(node compilergraph.GraphNode
 func (db *domBuilder) buildIsComparisonExpression(node compilergraph.GraphNode) codedom.Expression {
 	leftExpr := db.getExpression(node, parser.NodeBinaryExpressionLeftExpr)
 	rightExpr := db.getExpression(node, parser.NodeBinaryExpressionRightExpr)
-	return codedom.BinaryOperation(leftExpr, "==", rightExpr, node)
+	return codedom.NominalWrapping(
+		codedom.BinaryOperation(leftExpr, "==", rightExpr, node),
+		db.scopegraph.TypeGraph().BoolType(),
+		node)
 }
 
 // buildBooleanBinaryExpression builds the CodeDOM for a boolean unary operator.
