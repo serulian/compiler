@@ -172,6 +172,7 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 				InitialDefine().
 				Native(true).
 				Exported(true).
+				SkipOperatorChecking(true).
 				MemberType(operatorType).
 				MemberKind(uint64(webidl.OperatorMember)).
 				Define()
