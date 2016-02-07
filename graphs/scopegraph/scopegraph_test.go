@@ -217,6 +217,9 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"invalid non-bool match test", "match", "typedinvalid", []expectedScopeEntry{},
 		"Match cases must have values matching type 'Integer': 'Boolean' cannot be used in place of non-interface 'Integer'", ""},
 
+	scopegraphTest{"match no compare operator test", "match", "nocompare", []expectedScopeEntry{},
+		"Cannot match over instance of type 'SomeClass', as it does not define or export a 'compare' operator", ""},
+
 	/////////// Var ///////////
 
 	scopegraphTest{"basic var test", "var", "basic",

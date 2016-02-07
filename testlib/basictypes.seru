@@ -58,11 +58,19 @@ class Integer {
 		return FakeIntStream.new()
 	}
 
+	operator Compare(left int, right int) {
+		return 0
+	}
+
 	function<void> Release() {}
 }
 
 @•typealias('bool')
-class Boolean {}
+class Boolean {
+	operator Compare(left bool, right bool) {
+		return 0
+	}
+}
 
 @•typealias('float64')
 class Float64 {}

@@ -1,0 +1,8 @@
+class SomeClass {}
+
+function<void> DoSomething(sc SomeClass) {
+	match sc {
+		case sc:
+			break
+	}
+}
