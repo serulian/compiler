@@ -15,6 +15,8 @@ import (
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/packageloader"
+	"github.com/serulian/compiler/webidl"
+	webidltc "github.com/serulian/compiler/webidl/typeconstructor"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -78,13 +80,13 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"inheritance cycle failure test", "inheritscycle", "inheritscycle", "A cycle was detected in the inheritance of types: [ThirdClass SecondClass FirstClass]"},
 	typegraphTest{"invalid parents test", "invalidparent", "generic", "Type 'DerivesFromGeneric' cannot derive from a generic ('T')"},
 	typegraphTest{"invalid parents test", "invalidparent", "interface", "Type 'DerivesFromInterface' cannot derive from an interface ('SomeInterface')"},
-	typegraphTest{"interface constraint failure missing func test", "interfaceconstraint", "missingfunc", "Generic 'T' (#1) on type 'SomeClass' has constraint 'ISomeInterface'. Specified type 'ThirdClass' does not match: Type 'ThirdClass' does not define or export member 'DoSomething', which is required by type 'ISomeInterface'"},
-	typegraphTest{"interface constraint failure misdefined func test", "interfaceconstraint", "notmatchingfunc", "Generic 'T' (#1) on type 'SomeClass' has constraint 'ISomeInterface'. Specified type 'ThirdClass' does not match: Type 'ThirdClass' does not define or export member 'DoSomething', which is required by type 'ISomeInterface'"},
-	typegraphTest{"generic interface constraint missing test", "interfaceconstraint", "genericinterfacemissing", "Generic 'T' (#1) on type 'SomeClass' has constraint 'ISomeInterface<Integer>'. Specified type 'ThirdClass' does not match: Type 'ThirdClass' does not define or export member 'DoSomething', which is required by type 'ISomeInterface<Integer>'"},
-	typegraphTest{"generic interface constraint invalid test", "interfaceconstraint", "genericinterfaceinvalid", "Generic 'T' (#1) on type 'SomeClass' has constraint 'ISomeInterface<Integer>'. Specified type 'ThirdClass' does not match: member 'DoSomething' under type 'ThirdClass' does not match that defined in type 'ISomeInterface<Integer>'"},
-	typegraphTest{"function generic interface constraint invalid test", "interfaceconstraint", "invalidfunctiongeneric", "Generic 'T' (#1) on type 'AnotherClass' has constraint 'ISomeInterface'. Specified type 'SomeClass' does not match: member 'DoSomething' under type 'SomeClass' does not match that defined in type 'ISomeInterface'"},
-	typegraphTest{"nullable constraint invalid test", "interfaceconstraint", "invalidnullable", "Generic 'T' (#1) on type 'SomeClass' has constraint 'ISomeInterface<Integer>'. Specified type 'ThirdClass?' does not match: Nullable type 'ThirdClass?' cannot be used in place of non-nullable type 'ISomeInterface<Integer>'"},
-	typegraphTest{"unexported interface operator test", "interfaceconstraint", "unexportedoperator", "Generic 'T' (#1) on type 'SomeClass' has constraint 'ISomeInterface'. Specified type 'ThirdClass' does not match: Type 'ThirdClass' does not export operator 'plus', which is required by type 'ISomeInterface'"},
+	typegraphTest{"interface constraint failure missing func test", "interfaceconstraint", "missingfunc", "Generic 'SomeClass::T' (#1) on type 'SomeClass' has constraint 'ISomeInterface'. Specified type 'ThirdClass' does not match: Type 'ThirdClass' does not define or export member 'DoSomething', which is required by type 'ISomeInterface'"},
+	typegraphTest{"interface constraint failure misdefined func test", "interfaceconstraint", "notmatchingfunc", "Generic 'SomeClass::T' (#1) on type 'SomeClass' has constraint 'ISomeInterface'. Specified type 'ThirdClass' does not match: Type 'ThirdClass' does not define or export member 'DoSomething', which is required by type 'ISomeInterface'"},
+	typegraphTest{"generic interface constraint missing test", "interfaceconstraint", "genericinterfacemissing", "Generic 'SomeClass::T' (#1) on type 'SomeClass' has constraint 'ISomeInterface<Integer>'. Specified type 'ThirdClass' does not match: Type 'ThirdClass' does not define or export member 'DoSomething', which is required by type 'ISomeInterface<Integer>'"},
+	typegraphTest{"generic interface constraint invalid test", "interfaceconstraint", "genericinterfaceinvalid", "Generic 'SomeClass::T' (#1) on type 'SomeClass' has constraint 'ISomeInterface<Integer>'. Specified type 'ThirdClass' does not match: member 'DoSomething' under type 'ThirdClass' does not match that defined in type 'ISomeInterface<Integer>'"},
+	typegraphTest{"function generic interface constraint invalid test", "interfaceconstraint", "invalidfunctiongeneric", "Generic 'AnotherClass::T' (#1) on type 'AnotherClass' has constraint 'ISomeInterface'. Specified type 'SomeClass' does not match: member 'DoSomething' under type 'SomeClass' does not match that defined in type 'ISomeInterface'"},
+	typegraphTest{"nullable constraint invalid test", "interfaceconstraint", "invalidnullable", "Generic 'SomeClass::T' (#1) on type 'SomeClass' has constraint 'ISomeInterface<Integer>'. Specified type 'ThirdClass?' does not match: Nullable type 'ThirdClass?' cannot be used in place of non-nullable type 'ISomeInterface<Integer>'"},
+	typegraphTest{"unexported interface operator test", "interfaceconstraint", "unexportedoperator", "Generic 'SomeClass::T' (#1) on type 'SomeClass' has constraint 'ISomeInterface'. Specified type 'ThirdClass' does not match: Type 'ThirdClass' does not export operator 'plus', which is required by type 'ISomeInterface'"},
 	typegraphTest{"operator return type mismatch test", "operatorreturnmismatch", "operator", "Operator 'mod' defined on type 'SomeClass' expects a return type of 'SomeClass'; found Integer"},
 	typegraphTest{"interface instance operator with impl test", "interfaceop", "instanceimpl", "Instance operator Index under interface Foo cannot have an implementation"},
 	typegraphTest{"interface static operator without impl test", "interfaceop", "staticnoimpl", "Static operator Plus under interface Foo must have an implementation"},
@@ -98,14 +100,18 @@ func TestGraphs(t *testing.T) {
 		}
 
 		testSRG := srg.NewSRG(graph)
-		loader := packageloader.NewPackageLoader(graph.RootSourceFilePath, testSRG.PackageLoaderHandler())
+		testIDL := webidl.NewIRG(graph)
+
+		loader := packageloader.NewPackageLoader(graph.RootSourceFilePath, testSRG.PackageLoaderHandler(), testIDL.PackageLoaderHandler())
 		srgResult := loader.Load(packageloader.Library{TESTLIB_PATH, false, ""})
 
 		// Make sure we had no errors during construction.
-		assert.True(t, srgResult.Status, "Got error for SRG construction %v: %s", test.name, srgResult.Errors)
+		if !assert.True(t, srgResult.Status, "Got error for SRG construction %v: %s", test.name, srgResult.Errors) {
+			continue
+		}
 
 		// Construct the type graph.
-		result := typegraph.BuildTypeGraph(testSRG.Graph, GetConstructor(testSRG))
+		result := typegraph.BuildTypeGraph(testSRG.Graph, GetConstructor(testSRG), webidltc.GetConstructor(testIDL))
 
 		if test.expectedError == "" {
 			// Make sure we had no errors during construction.
@@ -113,7 +119,7 @@ func TestGraphs(t *testing.T) {
 				continue
 			}
 
-			currentLayerView := result.Graph.GetJSONForm()
+			currentLayerView := result.Graph.GetFilteredJSONForm(graph.RootSourceFilePath)
 
 			if os.Getenv("REGEN") == "true" {
 				test.writeJson(currentLayerView)
@@ -142,14 +148,17 @@ func TestLookupReturnType(t *testing.T) {
 	}
 
 	testSRG := srg.NewSRG(graph)
-	loader := packageloader.NewPackageLoader(graph.RootSourceFilePath, testSRG.PackageLoaderHandler())
+	testIDL := webidl.NewIRG(graph)
+
+	loader := packageloader.NewPackageLoader(graph.RootSourceFilePath, testSRG.PackageLoaderHandler(), testIDL.PackageLoaderHandler())
+
 	srgResult := loader.Load(packageloader.Library{TESTLIB_PATH, false, ""})
 	if !assert.True(t, srgResult.Status, "Got error for SRG construction: %v", srgResult.Errors) {
 		return
 	}
 
 	// Construct the type graph.
-	result := typegraph.BuildTypeGraph(testSRG.Graph, GetConstructor(testSRG))
+	result := typegraph.BuildTypeGraph(testSRG.Graph, GetConstructor(testSRG), webidltc.GetConstructor(testIDL))
 	if !assert.True(t, result.Status, "Got error for TypeGraph construction: %v", result.Errors) {
 		return
 	}

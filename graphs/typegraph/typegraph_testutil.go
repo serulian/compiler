@@ -31,16 +31,29 @@ type graphNodeRep struct {
 
 // GetJSONForm returns this type graph serialized to JSON. *For testing purposes only*.
 func (tg *TypeGraph) GetJSONForm() string {
-	repMap := map[compilergraph.GraphNodeId]*graphNodeRep{}
+	return tg.GetFilteredJSONForm()
+}
 
-	// Start the walk at the type declarations.
-	startingNodes := make([]compilergraph.GraphNode, len(tg.TypeDecls())+len(tg.ModulesWithMembers()))
-	for index, typeDecl := range tg.TypeDecls() {
-		startingNodes[index] = typeDecl.Node()
+// GetFilteredJSONForm returns the filtered type graph serialized to JSON. *For testing purposes only*.
+func (tg *TypeGraph) GetFilteredJSONForm(filterPaths ...string) string {
+	repMap := map[compilergraph.GraphNodeId]*graphNodeRep{}
+	filterMap := map[string]bool{}
+	for _, path := range filterPaths {
+		filterMap[path] = true
 	}
 
-	for index, module := range tg.ModulesWithMembers() {
-		startingNodes[len(tg.TypeDecls())+index] = module.Node()
+	// Start the walk at the type declarations.
+	var startingNodes = make([]compilergraph.GraphNode, 0)
+	for _, typeDecl := range tg.TypeDecls() {
+		if len(filterPaths) == 0 || filterMap[typeDecl.ParentModule().Path()] {
+			startingNodes = append(startingNodes, typeDecl.Node())
+		}
+	}
+
+	for _, module := range tg.ModulesWithMembers() {
+		if len(filterPaths) == 0 || filterMap[module.Path()] {
+			startingNodes = append(startingNodes, module.Node())
+		}
 	}
 
 	// Walk the graph outward from the type declaration nodes, building an in-memory tree
@@ -112,11 +125,15 @@ func (tg *TypeGraph) GetJSONForm() string {
 
 	rootReps := map[string]*graphNodeRep{}
 	for _, typeDecl := range tg.TypeDecls() {
-		rootReps[repMap[typeDecl.Node().NodeId].Key] = repMap[typeDecl.Node().NodeId]
+		if len(filterPaths) == 0 || filterMap[typeDecl.ParentModule().Path()] {
+			rootReps[repMap[typeDecl.Node().NodeId].Key] = repMap[typeDecl.Node().NodeId]
+		}
 	}
 
 	for _, module := range tg.ModulesWithMembers() {
-		rootReps[repMap[module.Node().NodeId].Key] = repMap[module.Node().NodeId]
+		if len(filterPaths) == 0 || filterMap[module.Path()] {
+			rootReps[repMap[module.Node().NodeId].Key] = repMap[module.Node().NodeId]
+		}
 	}
 
 	// Marshal the tree to JSON.

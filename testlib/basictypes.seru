@@ -1,7 +1,6 @@
 from webidl`basic` import Number
 from webidl`basic` import String as NativeString
 from webidl`basic` import Boolean as NativeBoolean
-from webidl`basic` import performComparison
 
 @•typealias('tuple')
 class Tuple<T, Q> {
