@@ -5,9 +5,25 @@
 package codedom
 
 import (
+	"fmt"
+
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/typegraph"
 )
+
+// AreEqual returns a call to the comparison operator between the two expressions.
+func AreEqual(leftExpr Expression, rightExpr Expression, comparisonType typegraph.TypeReference, tdg *typegraph.TypeGraph, basis compilergraph.GraphNode) Expression {
+	operator, found := comparisonType.ResolveMember("equals", typegraph.MemberResolutionOperator)
+	if !found {
+		panic(fmt.Sprintf("Unknown equals operator under type %v", comparisonType))
+	}
+
+	return MemberCall(
+		StaticMemberReference(operator, basis),
+		operator,
+		[]Expression{leftExpr, rightExpr},
+		basis)
+}
 
 // LiteralValueNode refers to a literal value to be emitted.
 type LiteralValueNode struct {
@@ -299,5 +315,33 @@ func NativeIndexing(childExpression Expression, index Expression, basis compiler
 		expressionBase{domBase{basis}},
 		childExpression,
 		index,
+	}
+}
+
+// NominalWrappingNode is the wrapping of an instance in a nominal type.
+type NominalWrappingNode struct {
+	expressionBase
+	ChildExpression Expression
+	NominalType     typegraph.TGTypeDecl
+}
+
+func NominalWrapping(childExpression Expression, nominalType typegraph.TGTypeDecl, basis compilergraph.GraphNode) Expression {
+	return &NominalWrappingNode{
+		expressionBase{domBase{basis}},
+		childExpression,
+		nominalType,
+	}
+}
+
+// NominalUnwrappingNode is the unwrapping of an instance of a nominal type back to its original type.
+type NominalUnwrappingNode struct {
+	expressionBase
+	ChildExpression Expression
+}
+
+func NominalUnwrapping(childExpression Expression, basis compilergraph.GraphNode) Expression {
+	return &NominalUnwrappingNode{
+		expressionBase{domBase{basis}},
+		childExpression,
 	}
 }

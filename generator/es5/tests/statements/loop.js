@@ -5,12 +5,12 @@ $module('loop', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            1234;
+            $t.nominalwrap(1234, $g.____testlib.basictypes.Integer);
             $state.current = 1;
             continue;
 
           case 1:
-            1357;
+            $t.nominalwrap(1357, $g.____testlib.basictypes.Integer);
             $state.current = 1;
             continue;
 

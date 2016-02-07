@@ -113,12 +113,13 @@ var tests = []generationTest{
 	generationTest{"null comparison", "opexpr", "nullcompare", true},
 	generationTest{"function call", "opexpr", "functioncall", true},
 	generationTest{"boolean operators", "opexpr", "boolean", true},
-	generationTest{"binary op expressions", "opexpr", "binary", false},
+	generationTest{"binary op expressions", "opexpr", "binary", true},
 	generationTest{"unary op expressions", "opexpr", "unary", false},
 	generationTest{"comparison op expressions", "opexpr", "compare", true},
 	generationTest{"indexer op expressions", "opexpr", "indexer", true},
 	generationTest{"slice op expressions", "opexpr", "slice", true},
 	generationTest{"is null op expression", "opexpr", "isnull", false},
+	generationTest{"mixed op expressions", "opexpr", "mixed", true},
 
 	generationTest{"identifier expressions", "literals", "identifier", false},
 
@@ -202,9 +203,13 @@ func TestGenerator(t *testing.T) {
 
 					window.boolValue = true;
 
+					window.performComparison = function(a, b) {
+						return (a == b) ? 0 : -1;
+					}
+
 					window.Serulian.then(function(g) {
 						g.` + test.entrypoint + `.TEST().then(function(r) {
-							$resolved = r;
+							$resolved = r.$wrapped;
 						}).catch(function(err) {
 							$rejected = err;
 						});

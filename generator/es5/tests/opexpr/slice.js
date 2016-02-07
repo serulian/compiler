@@ -16,7 +16,7 @@ $module('slice', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              $state.resolve(true);
+              $state.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
               return;
 
             default:
@@ -46,7 +46,7 @@ $module('slice', function () {
 
           case 1:
             c = $result;
-            c.$slice(1, 2).then(function ($result0) {
+            c.$slice($t.nominalwrap(1, $g.____testlib.basictypes.Integer), $t.nominalwrap(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $result = $result0;
               $state.current = 2;
               $callback($state);
@@ -57,7 +57,7 @@ $module('slice', function () {
 
           case 2:
             $result;
-            c.$slice(null, 1).then(function ($result0) {
+            c.$slice(null, $t.nominalwrap(1, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $result = $result0;
               $state.current = 3;
               $callback($state);
@@ -68,7 +68,7 @@ $module('slice', function () {
 
           case 3:
             $result;
-            c.$slice(1, null).then(function ($result0) {
+            c.$slice($t.nominalwrap(1, $g.____testlib.basictypes.Integer), null).then(function ($result0) {
               $result = $result0;
               $state.current = 4;
               $callback($state);
@@ -79,7 +79,7 @@ $module('slice', function () {
 
           case 4:
             $result;
-            c.$slice(1, 7).then(function ($result0) {
+            c.$slice($t.nominalwrap(1, $g.____testlib.basictypes.Integer), $t.nominalwrap(7, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $result = $result0;
               $state.current = 5;
               $callback($state);

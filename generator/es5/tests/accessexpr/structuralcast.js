@@ -10,13 +10,13 @@ $module('structuralcast', function () {
         return instance;
       });
     };
-    $instance.Result = $t.property(false, function () {
+    $instance.Result = $t.property(function () {
       var $this = this;
       var $state = $t.sm(function ($callback) {
         while (true) {
           switch ($state.current) {
             case 0:
-              $state.resolve(true);
+              $state.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
               return;
 
             default:
@@ -42,13 +42,13 @@ $module('structuralcast', function () {
         return instance;
       });
     };
-    $instance.Result = $t.property(false, function () {
+    $instance.Result = $t.property(function () {
       var $this = this;
       var $state = $t.sm(function ($callback) {
         while (true) {
           switch ($state.current) {
             case 0:
-              $state.resolve(false);
+              $state.resolve($t.nominalwrap(false, $g.____testlib.basictypes.Boolean));
               return;
 
             default:

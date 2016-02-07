@@ -45,7 +45,7 @@ $module('loopstreamable', function () {
     $static.new = function () {
       var instance = new $static();
       var init = [];
-      init.push($promise.resolve(false).then(function (result) {
+      init.push($promise.resolve($t.nominalwrap(false, $g.____testlib.basictypes.Boolean)).then(function (result) {
         instance.wasChecked = result;
       }));
       return $promise.all(init).then(function () {
@@ -60,8 +60,8 @@ $module('loopstreamable', function () {
           switch ($state.current) {
             case 0:
               r = $this.wasChecked;
-              $this.wasChecked = true;
-              $g.____testlib.basictypes.Tuple($g.____testlib.basictypes.Boolean, $g.____testlib.basictypes.Boolean).Build(true, !r).then(function ($result0) {
+              $this.wasChecked = $t.nominalwrap(true, $g.____testlib.basictypes.Boolean);
+              $g.____testlib.basictypes.Tuple($g.____testlib.basictypes.Boolean, $g.____testlib.basictypes.Boolean).Build($t.nominalwrap(true, $g.____testlib.basictypes.Boolean), $t.nominalwrap(!$t.nominalunwrap(r), $g.____testlib.basictypes.Boolean)).then(function ($result0) {
                 $result = $result0;
                 $state.current = 1;
                 $callback($state);
@@ -92,7 +92,7 @@ $module('loopstreamable', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            1234;
+            $t.nominalwrap(1234, $g.____testlib.basictypes.Integer);
             $state.current = 1;
             continue;
 
@@ -124,7 +124,7 @@ $module('loopstreamable', function () {
           case 4:
             $result;
             something = $temp0.First;
-            if ($temp0.Second) {
+            if ($t.nominalunwrap($temp0.Second)) {
               $state.current = 5;
               continue;
             } else {
@@ -134,12 +134,12 @@ $module('loopstreamable', function () {
             break;
 
           case 5:
-            7654;
+            $t.nominalwrap(7654, $g.____testlib.basictypes.Integer);
             $state.current = 3;
             continue;
 
           case 6:
-            5678;
+            $t.nominalwrap(5678, $g.____testlib.basictypes.Integer);
             $state.current = -1;
             return;
 
@@ -161,7 +161,7 @@ $module('loopstreamable', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            result = '';
+            result = $t.nominalwrap('noloop', $g.____testlib.basictypes.String);
             $g.loopstreamable.SomeStreamable.new().then(function ($result0) {
               $result = $result0;
               $state.current = 1;
@@ -204,7 +204,7 @@ $module('loopstreamable', function () {
           case 5:
             $result;
             i = $temp0.First;
-            if ($temp0.Second) {
+            if ($t.nominalunwrap($temp0.Second)) {
               $state.current = 6;
               continue;
             } else {

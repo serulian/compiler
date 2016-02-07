@@ -248,12 +248,16 @@ func (db *domBuilder) buildMatchStatement(node compilergraph.GraphNode) (codedom
 	var startStatement codedom.Statement = codedom.EmptyStatement(node)
 	var matchVarName = ""
 	var matchVarNode = node
+	var matchType = db.scopegraph.TypeGraph().BoolTypeReference()
 
 	matchExpr, hasMatchExpr := db.tryGetExpression(node, parser.NodeMatchStatementExpression)
 	if hasMatchExpr {
 		matchVarName = db.buildScopeVarName(node)
 		matchVarNode = node.GetNode(parser.NodeMatchStatementExpression)
 		startStatement = codedom.VarDefinitionWithInit(matchVarName, matchExpr, node)
+
+		matchScope, _ := db.scopegraph.GetScope(matchVarNode)
+		matchType = matchScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
 	}
 
 	finalStatement := codedom.EmptyStatement(node)
@@ -273,7 +277,11 @@ func (db *domBuilder) buildMatchStatement(node compilergraph.GraphNode) (codedom
 
 		// If the branch has no check expression, then it is a `default` branch, and we compare
 		// against `true`.
-		var checkExpression codedom.Expression = codedom.LiteralValue("true", branchNode)
+		var checkExpression codedom.Expression = codedom.NominalWrapping(
+			codedom.LiteralValue("true", branchNode),
+			db.scopegraph.TypeGraph().BoolType(),
+			branchNode)
+
 		if hasBranchCheckExpression {
 			checkExpression = branchCheckExpression
 		}
@@ -281,8 +289,12 @@ func (db *domBuilder) buildMatchStatement(node compilergraph.GraphNode) (codedom
 		// If there is a match-level check expression, then we need to compare its value against the
 		// branch's expression.
 		if hasMatchExpr && hasBranchCheckExpression {
-			checkExpression = codedom.BinaryOperation(
-				codedom.LiteralValue(matchVarName, matchVarNode), "==", checkExpression, branchNode)
+			checkExpression = codedom.AreEqual(
+				codedom.LiteralValue(matchVarName, matchVarNode),
+				checkExpression,
+				matchType,
+				db.scopegraph.TypeGraph(),
+				branchNode)
 		}
 
 		branchJump := codedom.BranchOn(checkExpression, branchNode)

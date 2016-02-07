@@ -6,7 +6,7 @@ $module('indexer', function () {
     $static.new = function () {
       var instance = new $static();
       var init = [];
-      init.push($promise.resolve(false).then(function (result) {
+      init.push($promise.resolve($t.nominalwrap(false, $g.____testlib.basictypes.Boolean)).then(function (result) {
         instance.result = result;
       }));
       return $promise.all(init).then(function () {
@@ -19,7 +19,7 @@ $module('indexer', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              $state.resolve($this.result && !someParam);
+              $state.resolve($t.nominalwrap($t.nominalunwrap($this.result) && !$t.nominalunwrap(someParam), $g.____testlib.basictypes.Boolean));
               return;
 
             default:
@@ -67,7 +67,7 @@ $module('indexer', function () {
 
           case 1:
             sc = $result;
-            sc.$setindex(1, true).then(function ($result0) {
+            sc.$setindex($t.nominalwrap(1, $g.____testlib.basictypes.Integer), $t.nominalwrap(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $state.current = 2;
               $callback($state);
@@ -78,7 +78,7 @@ $module('indexer', function () {
 
           case 2:
             $result;
-            sc.$index(false).then(function ($result0) {
+            sc.$index($t.nominalwrap(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $state.current = 3;
               $callback($state);

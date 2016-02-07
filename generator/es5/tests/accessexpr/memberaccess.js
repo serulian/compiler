@@ -6,10 +6,10 @@ $module('memberaccess', function () {
     $static.new = function () {
       var instance = new $static();
       var init = [];
-      init.push($promise.resolve(2).then(function (result) {
+      init.push($promise.resolve($t.nominalwrap(2, $g.____testlib.basictypes.Integer)).then(function (result) {
         instance.someInt = result;
       }));
-      init.push($promise.resolve(true).then(function (result) {
+      init.push($promise.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean)).then(function (result) {
         instance.someBool = result;
       }));
       return $promise.all(init).then(function () {
@@ -46,7 +46,7 @@ $module('memberaccess', function () {
       var $this = this;
       return $promise.empty();
     };
-    $instance.SomeProp = $t.property(false, function () {
+    $instance.SomeProp = $t.property(function () {
       var $this = this;
       var $state = $t.sm(function ($callback) {
         while (true) {
@@ -151,7 +151,7 @@ $module('memberaccess', function () {
 
           case 1:
             sc = $result;
-            $state.resolve(sc.someBool && sc.someBool);
+            $state.resolve($t.nominalwrap($t.nominalunwrap(sc.someBool) && $t.nominalunwrap(sc.someBool), $g.____testlib.basictypes.Boolean));
             return;
 
           default:

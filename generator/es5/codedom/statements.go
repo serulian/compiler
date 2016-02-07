@@ -105,7 +105,7 @@ type ConditionalJumpNode struct {
 	statementBase
 	True             Statement  // The statement executed if the branch is true.
 	False            Statement  // The statement executed if the branch is false.
-	BranchExpression Expression // The expression for branching.
+	BranchExpression Expression // The expression for branching. Must be a Boolean expression.
 }
 
 func (j *ConditionalJumpNode) IsJump() bool { return true }

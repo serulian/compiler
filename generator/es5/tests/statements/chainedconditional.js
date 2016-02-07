@@ -15,8 +15,8 @@ $module('chainedconditional', function () {
             break;
 
           case 1:
-            123;
-            $state.resolve(false);
+            $t.nominalwrap(123, $g.____testlib.basictypes.Integer);
+            $state.resolve($t.nominalwrap(false, $g.____testlib.basictypes.Boolean));
             return;
 
           case 2:
@@ -30,13 +30,13 @@ $module('chainedconditional', function () {
             break;
 
           case 3:
-            456;
-            $state.resolve(false);
+            $t.nominalwrap(456, $g.____testlib.basictypes.Integer);
+            $state.resolve($t.nominalwrap(false, $g.____testlib.basictypes.Boolean));
             return;
 
           case 4:
-            789;
-            $state.resolve(true);
+            $t.nominalwrap(789, $g.____testlib.basictypes.Integer);
+            $state.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
             return;
 
           default:

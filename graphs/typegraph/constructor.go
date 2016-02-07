@@ -607,10 +607,12 @@ func (mb *dependentMemberBuilder) checkAndComputeOperator(memberNode compilergra
 	containingType := mb.tdg.NewInstanceTypeReference(mb.parent.AsType())
 	expectedReturnType := definition.ExpectedReturnType(containingType)
 
-	if !expectedReturnType.IsAny() && !declaredReturnType.IsAny() && declaredReturnType != expectedReturnType {
-		mb.tdg.decorateWithError(memberNode, "Operator '%s' defined on type '%s' expects a return type of '%v'; found %v",
-			name, mb.parent.Name(), expectedReturnType, declaredReturnType)
-		return
+	if !mb.native {
+		if !expectedReturnType.IsAny() && !declaredReturnType.IsAny() && declaredReturnType != expectedReturnType {
+			mb.tdg.decorateWithError(memberNode, "Operator '%s' defined on type '%s' expects a return type of '%v'; found %v",
+				name, mb.parent.Name(), expectedReturnType, declaredReturnType)
+			return
+		}
 	}
 
 	// Decorate the operator with its return type.
@@ -623,10 +625,12 @@ func (mb *dependentMemberBuilder) checkAndComputeOperator(memberNode compilergra
 
 	// Ensure we have the expected number of parameters.
 	parametersExpected := definition.Parameters
-	if mb.memberType.ParameterCount() != len(parametersExpected) {
-		mb.tdg.decorateWithError(memberNode, "Operator '%s' defined on type '%s' expects %v parameters; found %v",
-			name, mb.parent.Name(), len(parametersExpected), mb.memberType.ParameterCount())
-		return
+	if !mb.native {
+		if mb.memberType.ParameterCount() != len(parametersExpected) {
+			mb.tdg.decorateWithError(memberNode, "Operator '%s' defined on type '%s' expects %v parameters; found %v",
+				name, mb.parent.Name(), len(parametersExpected), mb.memberType.ParameterCount())
+			return
+		}
 	}
 
 	var memberType = mb.tdg.NewTypeReference(mb.tdg.FunctionType(), actualReturnType)
@@ -634,11 +638,13 @@ func (mb *dependentMemberBuilder) checkAndComputeOperator(memberNode compilergra
 	// Ensure the parameters expected on the operator match those specified.
 	parameterTypes := mb.memberType.Parameters()
 	for index, parameterType := range parameterTypes {
-		expectedType := parametersExpected[index].ExpectedType(containingType)
-		if !expectedType.IsAny() && expectedType != parameterType {
-			mb.tdg.decorateWithError(memberNode, "Parameter '%s' (#%v) for operator '%s' defined on type '%s' expects type %v; found %v",
-				parametersExpected[index].Name, index, name, mb.parent.Name(),
-				expectedType, parameterType)
+		if !mb.native {
+			expectedType := parametersExpected[index].ExpectedType(containingType)
+			if !expectedType.IsAny() && expectedType != parameterType {
+				mb.tdg.decorateWithError(memberNode, "Parameter '%s' (#%v) for operator '%s' defined on type '%s' expects type %v; found %v",
+					parametersExpected[index].Name, index, name, mb.parent.Name(),
+					expectedType, parameterType)
+			}
 		}
 
 		memberType = memberType.WithParameter(parameterType)

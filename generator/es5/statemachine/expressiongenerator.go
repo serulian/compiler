@@ -180,6 +180,12 @@ func (eg *expressionGenerator) generateExpression(expression codedom.Expression)
 	case *codedom.NativeIndexingNode:
 		return eg.generateNativeIndexing(e)
 
+	case *codedom.NominalWrappingNode:
+		return eg.generateNominalWrapping(e)
+
+	case *codedom.NominalUnwrappingNode:
+		return eg.generateNominalUnwrapping(e)
+
 	default:
 		panic(fmt.Sprintf("Unknown CodeDOM expression: %T", expression))
 	}

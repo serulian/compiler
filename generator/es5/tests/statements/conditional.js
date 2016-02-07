@@ -15,11 +15,11 @@ $module('conditional', function () {
             break;
 
           case 1:
-            $state.resolve(true);
+            $state.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
             return;
 
           case 2:
-            $state.resolve(false);
+            $state.resolve($t.nominalwrap(false, $g.____testlib.basictypes.Boolean));
             return;
 
           default:

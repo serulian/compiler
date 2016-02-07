@@ -16,6 +16,8 @@ const (
 	DynamicAccessFunction      RuntimeFunction = "$t.dynamicaccess"
 	NullableComparisonFunction RuntimeFunction = "$t.nullcompare"
 	StreamMemberAccessFunction RuntimeFunction = "$t.streamaccess"
+	NominalWrapFunction        RuntimeFunction = "$t.nominalwrap"
+	NominalUnwrapFunction      RuntimeFunction = "$t.nominalunwrap"
 
 	TranslatePromiseFunction RuntimeFunction = "$promise.translate"
 

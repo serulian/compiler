@@ -21,19 +21,21 @@ func (db *domBuilder) buildNullLiteral(node compilergraph.GraphNode) codedom.Exp
 // buildNumericLiteral builds the CodeDOM for a numeric literal.
 func (db *domBuilder) buildNumericLiteral(node compilergraph.GraphNode) codedom.Expression {
 	numericValueStr := node.Get(parser.NodeNumericLiteralExpressionValue)
-	return codedom.LiteralValue(numericValueStr, node)
+	exprScope, _ := db.scopegraph.GetScope(node)
+	numericType := exprScope.ResolvedTypeRef(db.scopegraph.TypeGraph()).ReferredType()
+	return codedom.NominalWrapping(codedom.LiteralValue(numericValueStr, node), numericType, node)
 }
 
 // buildBooleanLiteral builds the CodeDOM for a boolean literal.
 func (db *domBuilder) buildBooleanLiteral(node compilergraph.GraphNode) codedom.Expression {
 	booleanValueStr := node.Get(parser.NodeBooleanLiteralExpressionValue)
-	return codedom.LiteralValue(booleanValueStr, node)
+	return codedom.NominalWrapping(codedom.LiteralValue(booleanValueStr, node), db.scopegraph.TypeGraph().BoolType(), node)
 }
 
 // buildStringLiteral builds the CodeDOM for a string literal.
 func (db *domBuilder) buildStringLiteral(node compilergraph.GraphNode) codedom.Expression {
 	stringValueStr := node.Get(parser.NodeStringLiteralExpressionValue)
-	return codedom.LiteralValue(stringValueStr, node)
+	return codedom.NominalWrapping(codedom.LiteralValue(stringValueStr, node), db.scopegraph.TypeGraph().StringType(), node)
 }
 
 // buildValLiteral builds the CodeDOM for the val literal.

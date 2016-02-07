@@ -32,7 +32,7 @@ $module('basic', function () {
     });
     return $promise.build($state);
   };
-  this.$init($promise.resolve(true).then(function (result) {
+  this.$init($promise.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean)).then(function (result) {
     $static.someInt = result;
   }));
   this.$init($g.basic.AnotherFunction().then(function ($result0) {

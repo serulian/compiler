@@ -6,14 +6,14 @@ $module('property', function () {
     $static.new = function () {
       var instance = new $static();
       var init = [];
-      init.push($promise.resolve(false).then(function (result) {
+      init.push($promise.resolve($t.nominalwrap(false, $g.____testlib.basictypes.Boolean)).then(function (result) {
         instance.SomeBool = result;
       }));
       return $promise.all(init).then(function () {
         return instance;
       });
     };
-    $instance.SomeProp = $t.property(false, function () {
+    $instance.SomeProp = $t.property(function () {
       var $this = this;
       var $state = $t.sm(function ($callback) {
         while (true) {
@@ -66,7 +66,7 @@ $module('property', function () {
 
           case 1:
             $result;
-            sc.SomeProp(true).then(function ($result0) {
+            sc.SomeProp($t.nominalwrap(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $state.current = 2;
               $callback($state);

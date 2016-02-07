@@ -1,0 +1,4 @@
+function<any> TEST() {
+	var finalIndex = -2
+	return finalIndex >= 10 || finalIndex < 0 
+}

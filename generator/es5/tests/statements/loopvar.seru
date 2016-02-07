@@ -17,7 +17,7 @@ class SomeStream {
 }
 
 function<any> TEST() {
-	var<any> result = ''
+	var<any> result = 'noloop'
 
 	var s = SomeStream.new()
 	for i in s {

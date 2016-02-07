@@ -79,11 +79,6 @@ func (gm generatingMember) IsStatic() bool {
 	return gm.Member.IsStatic()
 }
 
-// IsExtension returns whether the generating member is an extension member.
-func (gm generatingMember) IsExtension() bool {
-	return gm.Member.IsExtension()
-}
-
 // RequiresThis returns whether the generating member is requires the "this" var.
 func (gm generatingMember) RequiresThis() bool {
 	return !gm.Member.IsStatic()
@@ -171,10 +166,6 @@ func (pbi propertyBodyInfo) Generics() []string {
 	return []string{}
 }
 
-func (pbi propertyBodyInfo) IsExtension() bool {
-	return pbi.propertyMember.IsExtension()
-}
-
 func (pbi propertyBodyInfo) RequiresThis() bool {
 	return true
 }
@@ -203,8 +194,8 @@ const functionTemplateStr = `
 const propertyTemplateStr = `
 {{ if .Member.IsStatic }}$static{{ else }}$instance{{ end }}.{{ .MemberName }} = 
   {{ if .Member.IsReadOnly }}
-  	$t.property({{ .Member.IsExtension }}, {{ .GetterSource }})
+  	$t.property({{ .GetterSource }})
   {{ else }}
-  	$t.property({{ .Member.IsExtension }}, {{ .GetterSource }}, {{ .SetterSource }});
+  	$t.property({{ .GetterSource }}, {{ .SetterSource }});
   {{ end }}
 `

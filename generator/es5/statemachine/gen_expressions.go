@@ -127,19 +127,6 @@ func (eg *expressionGenerator) generateFunctionCall(functionCall *codedom.Functi
 func (eg *expressionGenerator) generateMemberAssignment(memberAssign *codedom.MemberAssignmentNode) string {
 	basisNode := memberAssign.BasisNode()
 
-	// If the member is an extension member, then we have to invoke it like a function call with the instance
-	// being given as the first parameter and the value as the second.
-	if memberAssign.Target.IsExtension() {
-		childExpr := memberAssign.NameExpression.(*codedom.MemberReferenceNode).ChildExpression
-		memberCall := codedom.MemberCall(
-			childExpr,
-			memberAssign.Target,
-			[]codedom.Expression{memberAssign.Value},
-			basisNode)
-
-		return eg.generateExpression(codedom.WrapIfPromising(memberCall, memberAssign.Target, basisNode))
-	}
-
 	// If the target member is an operator, then we need to invoke it as a function call, with the first
 	// argument being the argument to the child call, and the second argument being the assigned child
 	// expression.
@@ -268,16 +255,8 @@ func (eg *expressionGenerator) generateMemberReference(memberReference *codedom.
 	// If the target member is implicitly called, then this is a property that needs to be accessed via a call.
 	if memberReference.Member.IsImplicitlyCalled() {
 		basisNode := memberReference.BasisNode()
-
-		// Note: If the member is an extension member, then we don't add the property name, as it'll be done
-		// for us in the MemberCall transformation.
-		var memberAccess = codedom.NativeAccess(memberReference.ChildExpression, memberReference.Member.Name(), basisNode)
-		if memberReference.Member.IsExtension() {
-			memberAccess = memberReference.ChildExpression
-		}
-
 		memberCall := codedom.MemberCall(
-			memberAccess,
+			codedom.NativeAccess(memberReference.ChildExpression, memberReference.Member.Name(), basisNode),
 			memberReference.Member,
 			[]codedom.Expression{},
 			basisNode)
@@ -383,37 +362,57 @@ func (eg *expressionGenerator) generateNativeIndexing(nativeIndex *codedom.Nativ
 	return eg.templater.Execute("nativeindexing", templateStr, data)
 }
 
+// generateNominalWrapping generates the expression source for the nominal wrapping of an instance of a base type.
+func (eg *expressionGenerator) generateNominalWrapping(nominalWrapping *codedom.NominalWrappingNode) string {
+	// If this is a wrap is of an  unwrap, then cancel both operations.
+	if nested, ok := nominalWrapping.ChildExpression.(*codedom.NominalUnwrappingNode); ok {
+		return eg.generateExpression(nested.ChildExpression)
+	}
+
+	call := codedom.RuntimeFunctionCall(
+		codedom.NominalWrapFunction,
+		[]codedom.Expression{
+			nominalWrapping.ChildExpression,
+			codedom.TypeLiteral(nominalWrapping.NominalType.GetTypeReference(), nominalWrapping.BasisNode())},
+		nominalWrapping.BasisNode())
+	return eg.generateExpression(call)
+}
+
+// generateNominalUnwrapping generates the expression source for the unwrapping of a nominal instance of a base type.
+func (eg *expressionGenerator) generateNominalUnwrapping(nominalUnwrapping *codedom.NominalUnwrappingNode) string {
+	// If this is an unwrap is of a wrap, then cancel both operations.
+	if nested, ok := nominalUnwrapping.ChildExpression.(*codedom.NominalWrappingNode); ok {
+		return eg.generateExpression(nested.ChildExpression)
+	}
+
+	call := codedom.RuntimeFunctionCall(
+		codedom.NominalUnwrapFunction,
+		[]codedom.Expression{
+			nominalUnwrapping.ChildExpression,
+		},
+		nominalUnwrapping.BasisNode())
+	return eg.generateExpression(call)
+}
+
 // generateMemberCall generates the expression source for a call to a module or type member.
 func (eg *expressionGenerator) generateMemberCall(memberCall *codedom.MemberCallNode) string {
-	basisNode := memberCall.BasisNode()
-	staticMemberPath := eg.pather.GetStaticMemberPath(memberCall.Member, eg.scopegraph.TypeGraph().AnyTypeReference())
-
 	var callPath codedom.Expression = nil
 	var arguments []codedom.Expression = []codedom.Expression{}
 
-	if memberCall.Member.IsExtension() {
-		// If the member is an extension member, we call it statically, with the instance as the first param.
-		var childExpr = memberCall.ChildExpression
-		if refNode, ok := childExpr.(*codedom.MemberReferenceNode); ok {
-			childExpr = refNode.ChildExpression
-		}
-
-		callPath = codedom.LocalReference(staticMemberPath, basisNode)
-		arguments = append([]codedom.Expression{childExpr}, memberCall.Arguments...)
-	} else if memberCall.Member.IsOperator() && memberCall.Member.IsNative() {
+	if memberCall.Member.IsOperator() && memberCall.Member.IsNative() {
 		// This is a call to a native operator.
 		if memberCall.Member.Name() != "index" {
 			panic("Native call to non-index operator")
 		}
 
 		refExpr := memberCall.ChildExpression.(*codedom.MemberReferenceNode).ChildExpression
-		return eg.generateExpression(codedom.NativeIndexing(refExpr, memberCall.Arguments[0], basisNode))
+		return eg.generateExpression(codedom.NativeIndexing(refExpr, memberCall.Arguments[0], memberCall.BasisNode()))
 	} else {
 		// Otherwise this is a normal function call over a child expression.
 		callPath = memberCall.ChildExpression
 		arguments = memberCall.Arguments
 	}
 
-	functionCall := codedom.FunctionCall(callPath, arguments, basisNode)
-	return eg.generateExpression(codedom.WrapIfPromising(functionCall, memberCall.Member, basisNode))
+	functionCall := codedom.FunctionCall(callPath, arguments, memberCall.BasisNode())
+	return eg.generateExpression(codedom.WrapIfPromising(functionCall, memberCall.Member, memberCall.BasisNode()))
 }

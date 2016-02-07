@@ -6,7 +6,7 @@ $module('basic', function () {
     $static.new = function () {
       var instance = new $static();
       var init = [];
-      init.push($promise.resolve(2).then(function (result) {
+      init.push($promise.resolve($t.nominalwrap(2, $g.____testlib.basictypes.Integer)).then(function (result) {
         instance.SomeInt = result;
       }));
       init.push($g.basic.CoolFunction().then(function ($result0) {
@@ -29,7 +29,7 @@ $module('basic', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            $state.resolve(true);
+            $state.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
             return;
 
           default:
