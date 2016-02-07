@@ -77,6 +77,11 @@ func (t *TypeGraph) StreamableType() TGTypeDecl {
 	return t.getAliasedType("streamable")
 }
 
+// SliceType returns the slice type.
+func (t *TypeGraph) SliceType() TGTypeDecl {
+	return t.getAliasedType("slice")
+}
+
 // StreamType returns the stream type.
 func (t *TypeGraph) StreamType() TGTypeDecl {
 	return t.getAliasedType("stream")

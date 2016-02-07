@@ -3,6 +3,7 @@ class SomeClass {
 	var<AnotherClass> SomeVar
 	constructor BuildMe<C>(param C) {}
 	operator Plus (left SomeClass, right SomeClass) {}
+	function<[]int> SomeSlice() {}
 }
 
 class ThirdClass {}
