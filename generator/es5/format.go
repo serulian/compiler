@@ -123,11 +123,15 @@ func (sf *sourceFormatter) FormatExpression(expression ast.Expression) {
 
 	// BinaryExpression
 	case *ast.BinaryExpression:
+		sf.appendOptionalOpenParen(e.Left)
 		sf.FormatExpression(e.Left)
+		sf.appendOptionalCloseParen(e.Left)
 		sf.append(" ")
 		sf.append(e.Operator.String())
 		sf.append(" ")
+		sf.appendOptionalOpenParen(e.Right)
 		sf.FormatExpression(e.Right)
+		sf.appendOptionalCloseParen(e.Right)
 
 	// BooleanLiteral
 	case *ast.BooleanLiteral:
@@ -231,9 +235,9 @@ func (sf *sourceFormatter) FormatExpression(expression ast.Expression) {
 	case *ast.UnaryExpression:
 		if e.Postfix {
 			sf.FormatExpression(e.Operand)
-			sf.append("(")
+			sf.appendOptionalOpenParen(e.Operand)
 			sf.append(e.Operator.String())
-			sf.append(")")
+			sf.appendOptionalCloseParen(e.Operand)
 		} else {
 			if e.Operator.String() == "delete" {
 				sf.append(e.Operator.String())
@@ -241,9 +245,9 @@ func (sf *sourceFormatter) FormatExpression(expression ast.Expression) {
 				sf.FormatExpression(e.Operand)
 			} else {
 				sf.append(e.Operator.String())
-				sf.append("(")
+				sf.appendOptionalOpenParen(e.Operand)
 				sf.FormatExpression(e.Operand)
-				sf.append(")")
+				sf.appendOptionalCloseParen(e.Operand)
 			}
 		}
 
@@ -258,6 +262,27 @@ func (sf *sourceFormatter) FormatExpression(expression ast.Expression) {
 
 	default:
 		panic(fmt.Sprintf("Unknown expression AST node: %T", e))
+	}
+}
+
+// requiresParen returns true if the given expression requires parenthesis for ensuring
+// operation ordering.
+func (sf *sourceFormatter) requiresParen(expr ast.Expression) bool {
+	_, ok := expr.(*ast.BinaryExpression)
+	return ok
+}
+
+// appendOptionalOpenParen will append an open parenthesis iff the expression requires it.
+func (sf *sourceFormatter) appendOptionalOpenParen(expr ast.Expression) {
+	if sf.requiresParen(expr) {
+		sf.append("(")
+	}
+}
+
+// appendOptionalCloseParen will append a close parenthesis iff the expression requires it.
+func (sf *sourceFormatter) appendOptionalCloseParen(expr ast.Expression) {
+	if sf.requiresParen(expr) {
+		sf.append(")")
 	}
 }
 
