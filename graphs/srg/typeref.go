@@ -26,6 +26,7 @@ const (
 	typeRefUnknown  TypeRefKind = iota // An unknown type.
 	TypeRefNullable                    // A nullable type.
 	TypeRefStream                      // A stream type.
+	TypeRefSlice                       // A slice type.
 	TypeRefPath                        // A normal path type. May have generics.
 	TypeRefVoid                        // A void type reference.
 	TypeRefAny                         // An any type reference.
@@ -186,6 +187,9 @@ func (t SRGTypeRef) RefKind() TypeRefKind {
 
 	case parser.NodeTypeStream:
 		return TypeRefStream
+
+	case parser.NodeTypeSlice:
+		return TypeRefSlice
 
 	case parser.NodeTypeNullable:
 		return TypeRefNullable

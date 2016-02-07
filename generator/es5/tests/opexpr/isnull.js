@@ -5,7 +5,7 @@ $module('isnull', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            $state.resolve(a == null);
+            $state.resolve($t.nominalwrap(a == null, $g.____testlib.basictypes.Boolean));
             return;
 
           default:

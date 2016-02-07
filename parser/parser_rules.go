@@ -842,6 +842,16 @@ func (p *sourceParser) consumeTypeReference(option typeReferenceOption) AstNode 
 		return anyNode
 	}
 
+	// Check for a slice.
+	if p.isToken(tokenTypeLeftBracket) {
+		sliceNode := p.startNode(NodeTypeSlice)
+		p.consume(tokenTypeLeftBracket)
+		p.consume(tokenTypeRightBracket)
+		sliceNode.Connect(NodeTypeReferenceInnerType, p.consumeTypeReference(typeReferenceNoVoid))
+		p.finishNode()
+		return sliceNode
+	}
+
 	// Otherwise, left recursively build a type reference.
 	rightNodeBuilder := func(leftNode AstNode, operatorToken lexeme) (AstNode, bool) {
 		nodeType, ok := typeReferenceMap[operatorToken.kind]

@@ -9,7 +9,7 @@ $module('mixed', function () {
             finalIndex = $t.nominalwrap(-2, $g.____testlib.basictypes.Integer);
             $g.____testlib.basictypes.Integer.$compare(finalIndex, $t.nominalwrap(10, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               return $g.____testlib.basictypes.Integer.$compare(finalIndex, $t.nominalwrap(0, $g.____testlib.basictypes.Integer)).then(function ($result1) {
-                $result = $t.nominalwrap($t.nominalunwrap($result0) >= 0 || $t.nominalunwrap($result1) < 0, $g.____testlib.basictypes.Boolean);
+                $result = $t.nominalwrap(($t.nominalunwrap($result0) >= 0) || ($t.nominalunwrap($result1) < 0), $g.____testlib.basictypes.Boolean);
                 $state.current = 1;
                 $callback($state);
               });
