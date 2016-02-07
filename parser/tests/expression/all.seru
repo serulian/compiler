@@ -29,6 +29,8 @@ function<void> SomeFunction() {
 	a[b:]
 	a[:b]
 	a[b:c]
+	!a
+	&a
 	(a + b)
 	1234
 	1.245

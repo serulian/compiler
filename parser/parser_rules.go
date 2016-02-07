@@ -2166,6 +2166,15 @@ func (p *sourceParser) tryConsumeBaseExpression() (AstNode, bool) {
 	case p.isToken(tokenTypeLeftBracket):
 		return p.consumeListExpression(), true
 
+	// Unary: &
+	case p.isToken(tokenTypeAnd):
+		p.consume(tokenTypeAnd)
+
+		valueNode := p.startNode(NodeRootTypeExpression)
+		defer p.finishNode()
+		valueNode.Connect(NodeUnaryExpressionChildExpr, p.consumeExpression(consumeExpressionNoMaps))
+		return valueNode, true
+
 	// Unary: ~
 	case p.isToken(tokenTypeTilde):
 		p.consume(tokenTypeTilde)
