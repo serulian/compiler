@@ -9,7 +9,7 @@ $module('boolean', function () {
           case 0:
             first = $t.nominalwrap(true, $g.____testlib.basictypes.Boolean);
             second = $t.nominalwrap(false, $g.____testlib.basictypes.Boolean);
-            $state.resolve($t.nominalwrap($t.nominalunwrap(first) && $t.nominalunwrap(second) || $t.nominalunwrap(first) || !$t.nominalunwrap(second), $g.____testlib.basictypes.Boolean));
+            $state.resolve($t.nominalwrap((($t.nominalunwrap(first) && $t.nominalunwrap(second)) || $t.nominalunwrap(first)) || !$t.nominalunwrap(second), $g.____testlib.basictypes.Boolean));
             return;
 
           default:
