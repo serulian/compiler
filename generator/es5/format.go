@@ -116,7 +116,9 @@ func (sf *sourceFormatter) FormatExpression(expression ast.Expression) {
 	// AssignExpression
 	case *ast.AssignExpression:
 		sf.FormatExpression(e.Left)
-		sf.append(" = ")
+		sf.append(" ")
+		sf.append(e.Operator.String())
+		sf.append(" ")
 		sf.FormatExpression(e.Right)
 
 	// BinaryExpression
@@ -229,13 +231,20 @@ func (sf *sourceFormatter) FormatExpression(expression ast.Expression) {
 	case *ast.UnaryExpression:
 		if e.Postfix {
 			sf.FormatExpression(e.Operand)
+			sf.append("(")
 			sf.append(e.Operator.String())
+			sf.append(")")
 		} else {
-			sf.append(e.Operator.String())
 			if e.Operator.String() == "delete" {
+				sf.append(e.Operator.String())
 				sf.append(" ")
+				sf.FormatExpression(e.Operand)
+			} else {
+				sf.append(e.Operator.String())
+				sf.append("(")
+				sf.FormatExpression(e.Operand)
+				sf.append(")")
 			}
-			sf.FormatExpression(e.Operand)
 		}
 
 	// VariableExpression
