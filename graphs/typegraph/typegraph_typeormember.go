@@ -19,5 +19,4 @@ type TGTypeOrMember interface {
 	IsType() bool
 	IsStatic() bool
 	IsPromising() bool
-	IsExtension() bool
 }
