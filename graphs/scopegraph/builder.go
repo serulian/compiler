@@ -190,6 +190,9 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 	case parser.NodeGenericSpecifierExpression:
 		return sb.scopeGenericSpecifierExpression
 
+	case parser.NodeRootTypeExpression:
+		return sb.scopeRootTypeExpression
+
 	// Literal expressions.
 	case parser.NodeBooleanLiteralExpression:
 		return sb.scopeBooleanLiteralExpression

@@ -88,6 +88,8 @@ const (
 	NodeBooleanAndExpression // a && b
 	NodeBooleanNotExpression // !a
 
+	NodeRootTypeExpression // &a
+
 	NodeComparisonEqualsExpression    // a == b
 	NodeComparisonNotEqualsExpression // a != b
 

@@ -281,6 +281,20 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	/////////// Root type operator expression ///////////
+
+	scopegraphTest{"root type op success test", "rootop", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"someclass", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+			expectedScopeEntry{"generic", expectedScope{true, proto.ScopeKind_VALUE, "any", "void"}},
+			expectedScopeEntry{"interface", expectedScope{true, proto.ScopeKind_VALUE, "any", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"root type op class failure test", "rootop", "classfail",
+		[]expectedScopeEntry{},
+		"Root type operator (&) cannot be applied to value of type SomeClass", ""},
+
 	/////////// Is operator expression ///////////
 
 	scopegraphTest{"is op success test", "isop", "success",

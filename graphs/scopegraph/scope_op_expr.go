@@ -487,3 +487,39 @@ func (sb *scopeBuilder) scopeUnaryExpression(node compilergraph.GraphNode, opNam
 	returnType, _ := operator.ReturnType()
 	return newScope().Valid().CallsOperator(operator).Resolving(returnType)
 }
+
+// scopeRootTypeExpression scopes a root-type expression in the SRG.
+func (sb *scopeBuilder) scopeRootTypeExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+	// Get the scope of the sub expression.
+	childScope := sb.getScope(node.GetNode(parser.NodeUnaryExpressionChildExpr))
+
+	// Ensure that the child scope is valid.
+	if !childScope.GetIsValid() {
+		return newScope().Invalid().GetScope()
+	}
+
+	childType := childScope.ResolvedTypeRef(sb.sg.tdg)
+
+	// Ensure the child type is not void.
+	if childType.IsVoid() || childType.IsNull() {
+		sb.decorateWithError(node, "Root type operator (&) cannot be applied to value of type %v", childType)
+		return newScope().Invalid().GetScope()
+	}
+
+	// Ensure the child type is nominal, interface or any.
+	if !childType.IsAny() {
+		referredType := childType.ReferredType()
+		if referredType.TypeKind() == typegraph.NominalType {
+			// The result of the operator is the nominal type's parent type.
+			return newScope().Valid().Resolving(referredType.ParentTypes()[0]).GetScope()
+		}
+
+		if referredType.TypeKind() == typegraph.ClassType || referredType.TypeKind() == typegraph.ExternalInternalType {
+			sb.decorateWithError(node, "Root type operator (&) cannot be applied to value of type %v", childType)
+			return newScope().Invalid().GetScope()
+		}
+	}
+
+	// The result of the operator is a value of any type.
+	return newScope().Valid().Resolving(sb.sg.tdg.AnyTypeReference()).GetScope()
+}

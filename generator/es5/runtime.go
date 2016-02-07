@@ -25,6 +25,14 @@ window.Serulian = (function($global) {
       };
     },
 
+    'nominalroot': function(instance) {
+      if (instance.$wrapped) {
+        return instance.$wrapped;
+      }
+
+      return instance;
+    },
+
     'nominalwrap': function(instance, type) {
       return type.new(instance)
     },
@@ -191,8 +199,13 @@ window.Serulian = (function($global) {
     module.$newtypebuilder = function(kind) {
       return function(name, hasGenerics, creator) {
         if (hasGenerics) {
-          module[name] = function(genericargs) {
-            var tpe = function() {};
+          module[name] = function(__genericargs) {
+            var fullName = name;
+            for (var i = 0; i < arguments.length; ++i) {
+              fullName = fullName + '_' + arguments[i].name;
+            }
+
+            var tpe = new Function("return function " + fullName + "() {};")();
             creator.apply(tpe, arguments);
             return tpe;
           };

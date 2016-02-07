@@ -36,6 +36,12 @@ var operatorMap = map[compilergraph.TaggedValue]string{
 	parser.NodeComparisonLTExpression:        "<",
 }
 
+// buildRootTypeExpression builds the CodeDOM for a root type expression.
+func (db *domBuilder) buildRootTypeExpression(node compilergraph.GraphNode) codedom.Expression {
+	childExpr := db.getExpression(node, parser.NodeUnaryExpressionChildExpr)
+	return codedom.RuntimeFunctionCall(codedom.NominalRootFunction, []codedom.Expression{childExpr}, node)
+}
+
 // buildFunctionCall builds the CodeDOM for a function call.
 func (db *domBuilder) buildFunctionCall(node compilergraph.GraphNode) codedom.Expression {
 	childExprNode := node.GetNode(parser.NodeFunctionCallExpressionChildExpr)
@@ -121,7 +127,10 @@ func (db *domBuilder) buildNullComparisonExpression(node compilergraph.GraphNode
 func (db *domBuilder) buildIsComparisonExpression(node compilergraph.GraphNode) codedom.Expression {
 	leftExpr := db.getExpression(node, parser.NodeBinaryExpressionLeftExpr)
 	rightExpr := db.getExpression(node, parser.NodeBinaryExpressionRightExpr)
-	return codedom.BinaryOperation(leftExpr, "==", rightExpr, node)
+	return codedom.NominalWrapping(
+		codedom.BinaryOperation(leftExpr, "==", rightExpr, node),
+		db.scopegraph.TypeGraph().BoolType(),
+		node)
 }
 
 // buildBooleanBinaryExpression builds the CodeDOM for a boolean unary operator.
