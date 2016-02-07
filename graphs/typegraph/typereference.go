@@ -646,7 +646,7 @@ func (tr TypeReference) IsNullable() bool {
 
 // HasReferredType returns whether this type references refers to the given type.
 func (tr TypeReference) HasReferredType(typeDecl TGTypeDecl) bool {
-	if tr.getSlot(trhSlotFlagSpecial)[0] != specialFlagNormal {
+	if !tr.isNormal() || tr.IsAny() {
 		return false
 	}
 
@@ -678,12 +678,15 @@ const (
 
 // ResolveMember looks for an member with the given name under the referred type and returns it (if any).
 func (tr TypeReference) ResolveMember(memberName string, kind MemberResolutionKind) (TGMember, bool) {
-	if tr.getSlot(trhSlotFlagSpecial)[0] != specialFlagNormal {
+	if !tr.isNormal() || tr.IsAny() {
 		return TGMember{}, false
 	}
 
 	// If this reference is a generic, we resolve under its constraint type.
 	resolutionType := tr.referenceOrConstraint()
+	if !resolutionType.isNormal() || resolutionType.IsAny() {
+		return TGMember{}, false
+	}
 
 	var connectingPredicate = NodePredicateMember
 	var namePredicate = NodePredicateMemberName
