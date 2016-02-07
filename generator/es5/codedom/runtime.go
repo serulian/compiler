@@ -18,6 +18,7 @@ const (
 	StreamMemberAccessFunction RuntimeFunction = "$t.streamaccess"
 	NominalWrapFunction        RuntimeFunction = "$t.nominalwrap"
 	NominalUnwrapFunction      RuntimeFunction = "$t.nominalunwrap"
+	NominalRootFunction        RuntimeFunction = "$t.nominalroot"
 
 	TranslatePromiseFunction RuntimeFunction = "$promise.translate"
 

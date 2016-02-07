@@ -25,6 +25,14 @@ window.Serulian = (function($global) {
       };
     },
 
+    'nominalroot': function(instance) {
+      if (instance.$wrapped) {
+        return instance.$wrapped;
+      }
+
+      return instance;
+    },
+
     'nominalwrap': function(instance, type) {
       return type.new(instance)
     },
