@@ -1,5 +1,5 @@
 NodeTypeFile
-  end-rune = 550
+  end-rune = 576
   input-source = all type reference test
   start-rune = 0
   child-node =>
@@ -696,3 +696,29 @@ NodeTypeFile
                   identifieraccess-name = SomeClass
                   input-source = all type reference test
                   start-rune = 524
+    NodeTypeVariable
+      end-rune = 576
+      input-source = all type reference test
+      named = sliceref
+      start-rune = 552
+      typemember-declared-type =>
+        NodeTypeSlice
+          end-rune = 566
+          input-source = all type reference test
+          start-rune = 556
+          typereference-inner-type =>
+            NodeTypeTypeReference
+              end-rune = 566
+              input-source = all type reference test
+              start-rune = 558
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 566
+                  input-source = all type reference test
+                  start-rune = 558
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 566
+                      identifieraccess-name = SomeClass
+                      input-source = all type reference test
+                      start-rune = 558
