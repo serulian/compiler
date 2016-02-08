@@ -68,7 +68,7 @@ func assertNoOttoError(t *testing.T, testName string, source string, err error) 
 			}
 		}
 
-		fmt.Printf("%v\n", ottoErr.String())
+		t.Errorf("In test %v: %v\n", testName, ottoErr.String())
 		return false
 	}
 	return true
@@ -123,6 +123,7 @@ var tests = []generationTest{
 
 	generationTest{"identifier expressions", "literals", "identifier", false},
 
+	generationTest{"list literal", "literals", "list", true},
 	generationTest{"boolean literal", "literals", "boolean", false},
 	generationTest{"numeric literal", "literals", "numeric", false},
 	generationTest{"string literal", "literals", "string", false},
@@ -170,6 +171,13 @@ func TestGenerator(t *testing.T) {
 					continue
 				}
 
+				if os.Getenv("DEBUGLINE") != "" {
+					lines := strings.Split(fullSource, "\n")
+					lineNumber, _ := strconv.Atoi(os.Getenv("DEBUGLINE"))
+					t.Errorf("Line %v: %v", lineNumber, lines[lineNumber-1])
+					continue
+				}
+
 				vm := otto.New()
 				vm.Run(`window = {};
 
@@ -182,13 +190,22 @@ func TestGenerator(t *testing.T) {
 				defer promiseFile.Close()
 
 				promiseSource, _ := ioutil.ReadAll(promiseFile)
+				promiseScript, cerr := vm.Compile("promise", promiseSource)
+				if !assert.Nil(t, cerr, "Error compiling promise: %v", cerr) {
+					continue
+				}
 
-				_, perr := vm.Run(promiseSource)
+				_, perr := vm.Run(promiseScript)
 				if !assertNoOttoError(t, test.name, string(promiseSource), perr) {
 					continue
 				}
 
-				_, verr := vm.Run(fullSource)
+				generatedScript, cgerr := vm.Compile("generated", fullSource)
+				if !assert.Nil(t, cgerr, "Error compiling generated code for test %v: %v", test.name, cgerr) {
+					continue
+				}
+
+				_, verr := vm.Run(generatedScript)
 				if !assertNoOttoError(t, test.name, fullSource, verr) {
 					continue
 				}
@@ -202,10 +219,7 @@ func TestGenerator(t *testing.T) {
 					$rejected = undefined;
 
 					window.boolValue = true;
-
-					window.performComparison = function(a, b) {
-						return (a == b) ? 0 : -1;
-					}
+					window.Array = Array;
 
 					window.Serulian.then(function(g) {
 						g.` + test.entrypoint + `.TEST().then(function(r) {
@@ -221,7 +235,12 @@ func TestGenerator(t *testing.T) {
 
 					$resolved`
 
-				rresult, rerr := vm.Run(testCall)
+				testScript, cterr := vm.Compile("test", testCall)
+				if !assert.Nil(t, cterr, "Error compiling test call: %v", cterr) {
+					continue
+				}
+
+				rresult, rerr := vm.Run(testScript)
 				if !assertNoOttoError(t, test.name, testCall, rerr) {
 					continue
 				}

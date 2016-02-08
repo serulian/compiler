@@ -1,6 +1,7 @@
 from webidl`basic` import Number
 from webidl`basic` import String as NativeString
 from webidl`basic` import Boolean as NativeBoolean
+from webidl`basic` import Array
 
 @•typealias('tuple')
 class Tuple<T, Q> {
@@ -105,7 +106,21 @@ type String : NativeString {
 }
 
 @•typealias('list')
-class List<T> {}
+class List<T> {
+	var<Array> items = Array.new()
+	
+	constructor forArray(arr Array) {
+		var l = List<T>.new()
+		l.items = arr
+		return l
+	}
+
+	property<int> Count {
+		get {
+			return int(this.items.length)
+		}
+	}
+}
 
 @•typealias('map')
 class Map<T, Q> {}

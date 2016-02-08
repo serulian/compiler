@@ -267,6 +267,9 @@ func (db *domBuilder) buildExpression(node compilergraph.GraphNode) codedom.Expr
 	case parser.NodeValLiteralExpression:
 		return db.buildValLiteral(node)
 
+	case parser.NodeListExpression:
+		return db.buildListExpression(node)
+
 	default:
 		panic(fmt.Sprintf("Unknown SRG expression node: %s", node.Kind))
 		return nil

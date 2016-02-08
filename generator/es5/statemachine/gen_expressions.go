@@ -198,6 +198,21 @@ func (eg *expressionGenerator) generateLocalAssignment(localAssign *codedom.Loca
 	return eg.templater.Execute("localassignment", templateStr, data)
 }
 
+// generateArrayLiteral generates the expression source for a literal array value.
+func (eg *expressionGenerator) generateArrayLiteral(arrayLiteral *codedom.ArrayLiteralNode) string {
+	values := eg.generateExpressions(arrayLiteral.Values)
+
+	data := struct {
+		Values []string
+	}{values}
+
+	templateStr := `
+		[{{ range $index, $arg := .Values }}{{ if $index }}, {{ end }}{{ $arg }}{{ end }}]
+	`
+
+	return eg.templater.Execute("arrayliteral", templateStr, data)
+}
+
 // generateLiteralValue generates the expression source for a literal value.
 func (eg *expressionGenerator) generateLiteralValue(literalValue *codedom.LiteralValueNode) string {
 	return literalValue.Value

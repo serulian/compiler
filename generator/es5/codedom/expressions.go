@@ -25,6 +25,19 @@ func AreEqual(leftExpr Expression, rightExpr Expression, comparisonType typegrap
 		basis)
 }
 
+// ArrayLiteralNode represents a literal array definition.
+type ArrayLiteralNode struct {
+	expressionBase
+	Values []Expression
+}
+
+func ArrayLiteral(values []Expression, basis compilergraph.GraphNode) Expression {
+	return &ArrayLiteralNode{
+		expressionBase{domBase{basis}},
+		values,
+	}
+}
+
 // LiteralValueNode refers to a literal value to be emitted.
 type LiteralValueNode struct {
 	expressionBase

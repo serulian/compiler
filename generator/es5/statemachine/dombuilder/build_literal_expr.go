@@ -7,6 +7,7 @@ package dombuilder
 import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/codedom"
+	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/parser"
 )
 
@@ -46,4 +47,24 @@ func (db *domBuilder) buildValLiteral(node compilergraph.GraphNode) codedom.Expr
 // buildThisLiteral builds the CodeDOM for the this literal.
 func (db *domBuilder) buildThisLiteral(node compilergraph.GraphNode) codedom.Expression {
 	return codedom.LocalReference(DEFINED_THIS_PARAMETER, node)
+}
+
+// buildListExpression builds the CodeDOM for a list expression.
+func (db *domBuilder) buildListExpression(node compilergraph.GraphNode) codedom.Expression {
+	listScope, _ := db.scopegraph.GetScope(node)
+	listType := listScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
+
+	vit := node.StartQuery().
+		Out(parser.NodeListExpressionValue).
+		BuildNodeIterator()
+
+	valueExprs := db.buildExpressions(vit)
+	arrayExpr := codedom.ArrayLiteral(valueExprs, node)
+
+	constructor, _ := listType.ResolveMember("forArray", typegraph.MemberResolutionStatic)
+	return codedom.MemberCall(
+		codedom.MemberReference(codedom.TypeLiteral(listType, node), constructor, node),
+		constructor,
+		[]codedom.Expression{arrayExpr},
+		node)
 }
