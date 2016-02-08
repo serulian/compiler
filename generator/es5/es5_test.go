@@ -123,6 +123,7 @@ var tests = []generationTest{
 
 	generationTest{"identifier expressions", "literals", "identifier", false},
 
+	generationTest{"map literal", "literals", "map", true},
 	generationTest{"list literal", "literals", "list", true},
 	generationTest{"boolean literal", "literals", "boolean", false},
 	generationTest{"numeric literal", "literals", "numeric", false},
@@ -179,7 +180,13 @@ func TestGenerator(t *testing.T) {
 				}
 
 				vm := otto.New()
+				vm.Set("debugprint", func(call otto.FunctionCall) otto.Value {
+					t.Errorf("DEBUG: %v\n", call.Argument(0).String())
+					return otto.Value{}
+				})
+
 				vm.Run(`window = {};
+				window.debugprint = debugprint;
 
 				function setTimeout(f, t) {
 					f()
@@ -220,6 +227,7 @@ func TestGenerator(t *testing.T) {
 
 					window.boolValue = true;
 					window.Array = Array;
+					window.Object = Object;
 
 					window.Serulian.then(function(g) {
 						g.` + test.entrypoint + `.TEST().then(function(r) {
@@ -250,7 +258,7 @@ func TestGenerator(t *testing.T) {
 				}
 
 				boolValue, _ := rresult.ToBoolean()
-				if !assert.True(t, boolValue, "Non-true boolean result for running test case %s", test.name) {
+				if !assert.True(t, boolValue, "Non-true boolean result for running test case %s: %v", test.name, boolValue) {
 					continue
 				}
 			}

@@ -2,6 +2,8 @@ from webidl`basic` import Number
 from webidl`basic` import String as NativeString
 from webidl`basic` import Boolean as NativeBoolean
 from webidl`basic` import Array
+from webidl`basic` import Object
+from webidl`basic` import debugprint
 
 @•typealias('tuple')
 class Tuple<T, Q> {
@@ -53,16 +55,34 @@ interface Releasable {
 @•typealias('function')
 class Function<T> {}
 
-class FakeIntStream {
+class IntStream {
+	var<int> start = 0
+	var<int> end = -1
+	var<int> current = 0
+
+	constructor OverRange(start int, end int) {
+		var s = IntStream.new()
+		s.start = start
+		s.end = end
+		s.current = start
+		return s
+	}
+
 	function<Tuple<int, bool>> Next() {
-	  return Tuple<int, bool>.Build(2, true)
+		if this.current <= this.end {
+			var t = Tuple<int, bool>.Build(this.current, true)
+			this.current = this.current + 1
+			return t
+		}
+
+		return Tuple<int, bool>.Build(this.current, false)
 	}
 }
 
 @•typealias('int')
 type Integer : Number {
 	operator Range(start int, end int) {
-		return FakeIntStream.new()
+		return IntStream.OverRange(start, end)
 	}
 
 	operator Compare(left int, right int) {
@@ -75,6 +95,10 @@ type Integer : Number {
 
 	operator Plus(left int, right int) {
 		return Integer(Number(left) + Number(right))
+	}
+
+	operator Minus(left int, right int) {
+		return Integer(Number(left) - Number(right))
 	}
 
 	function<void> Release() {}
@@ -117,7 +141,7 @@ class Float64 {}
 @•typealias('string')
 type String : NativeString {
 	function<string> String() {
-		return ''
+		return this
 	}
 
 	property<Stringable> MapKey {
@@ -148,4 +172,31 @@ class List<T> {
 }
 
 @•typealias('map')
-class Map<T, Q> {}
+class Map<T : Mappable, Q> {
+	var<Object> internalObject = Object.new()
+
+	constructor forArrays(keys Array, values Array) {
+		var map = Map<T, Q>.new()
+		var len = int(keys.length)
+		for i in 0..(len - 1) {
+			var tKey = keys[Number(i)].(T)
+			map[tKey] = values[Number(i)].(Q)
+		}
+		return map
+	}
+
+	operator<Q?> Index(key T) {
+		var keyString = key.MapKey.String()
+		var value = this.internalObject[NativeString(keyString)]
+		if value is null {
+			return null
+		}
+
+		return value.(Q)
+	}
+
+	operator SetIndex(key T, value Q) {
+		var keyString = key.MapKey.String()
+		this.internalObject[NativeString(keyString)] = value
+	}
+}

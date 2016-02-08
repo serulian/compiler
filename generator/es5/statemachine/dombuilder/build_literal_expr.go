@@ -68,3 +68,30 @@ func (db *domBuilder) buildListExpression(node compilergraph.GraphNode) codedom.
 		[]codedom.Expression{arrayExpr},
 		node)
 }
+
+// buildMapExpression builds the CodeDOM for a map expression.
+func (db *domBuilder) buildMapExpression(node compilergraph.GraphNode) codedom.Expression {
+	mapScope, _ := db.scopegraph.GetScope(node)
+	mapType := mapScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
+
+	eit := node.StartQuery().
+		Out(parser.NodeMapExpressionChildEntry).
+		BuildNodeIterator()
+
+	var keyExprs = make([]codedom.Expression, 0)
+	var valueExprs = make([]codedom.Expression, 0)
+
+	for eit.Next() {
+		entryNode := eit.Node()
+
+		keyExprs = append(keyExprs, db.getExpression(entryNode, parser.NodeMapExpressionEntryKey))
+		valueExprs = append(valueExprs, db.getExpression(entryNode, parser.NodeMapExpressionEntryValue))
+	}
+
+	constructor, _ := mapType.ResolveMember("forArrays", typegraph.MemberResolutionStatic)
+	return codedom.MemberCall(
+		codedom.MemberReference(codedom.TypeLiteral(mapType, node), constructor, node),
+		constructor,
+		[]codedom.Expression{codedom.ArrayLiteral(keyExprs, node), codedom.ArrayLiteral(valueExprs, node)},
+		node)
+}

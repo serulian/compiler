@@ -1,0 +1,8 @@
+function<any> TEST() {
+	var map = {
+		'hello': true,
+		'hi': false,
+	}
+
+	return (map['hello'] ?? false) && !(map['hi'] ?? true)
+}
