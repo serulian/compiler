@@ -59,6 +59,16 @@ func (db *domBuilder) buildListExpression(node compilergraph.GraphNode) codedom.
 		BuildNodeIterator()
 
 	valueExprs := db.buildExpressions(vit)
+	if len(valueExprs) == 0 {
+		// Empty list. Call the new() constructor directly.
+		constructor, _ := listType.ResolveMember("new", typegraph.MemberResolutionStatic)
+		return codedom.MemberCall(
+			codedom.MemberReference(codedom.TypeLiteral(listType, node), constructor, node),
+			constructor,
+			[]codedom.Expression{},
+			node)
+	}
+
 	arrayExpr := codedom.ArrayLiteral(valueExprs, node)
 
 	constructor, _ := listType.ResolveMember("forArray", typegraph.MemberResolutionStatic)
@@ -86,6 +96,16 @@ func (db *domBuilder) buildMapExpression(node compilergraph.GraphNode) codedom.E
 
 		keyExprs = append(keyExprs, db.getExpression(entryNode, parser.NodeMapExpressionEntryKey))
 		valueExprs = append(valueExprs, db.getExpression(entryNode, parser.NodeMapExpressionEntryValue))
+	}
+
+	if len(valueExprs) == 0 {
+		// Empty map. Call the new() constructor directly.
+		constructor, _ := mapType.ResolveMember("new", typegraph.MemberResolutionStatic)
+		return codedom.MemberCall(
+			codedom.MemberReference(codedom.TypeLiteral(mapType, node), constructor, node),
+			constructor,
+			[]codedom.Expression{},
+			node)
 	}
 
 	constructor, _ := mapType.ResolveMember("forArrays", typegraph.MemberResolutionStatic)
