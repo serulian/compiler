@@ -806,6 +806,7 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"tagged template string success", "templatestr", "taggedsuccess",
 		[]expectedScopeEntry{
 			expectedScopeEntry{"templatestr", expectedScope{true, proto.ScopeKind_VALUE, "String", "void"}},
+			expectedScopeEntry{"nonstrtemplatestr", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
 		},
 		"", ""},
 
@@ -815,7 +816,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"tagged template failure success", "templatestr", "taggedfailure",
 		[]expectedScopeEntry{},
-		"Tagging expression for template string must have type Function<String>(Slice<String>, Slice<Stringable>). Found: Function<void>", ""},
+		"Tagging expression for template string must be function with parameters ([]string, []stringable). Found: Function<void>", ""},
 
 	/////////// webidl tests /////////////////
 
