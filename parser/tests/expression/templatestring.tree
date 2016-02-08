@@ -1,5 +1,5 @@
 NodeTypeFile
-  end-rune = 140
+  end-rune = 177
   input-source = template string expr test
   start-rune = 0
   child-node =>
@@ -55,13 +55,13 @@ NodeTypeFile
           input-source = template string expr test
           start-rune = 9
     NodeTypeFunction
-      end-rune = 140
+      end-rune = 177
       input-source = template string expr test
       named = AnotherFunction
       start-rune = 64
       definition-body =>
         NodeTypeStatementBlock
-          end-rune = 140
+          end-rune = 177
           input-source = template string expr test
           start-rune = 97
           block-child =>
@@ -95,6 +95,42 @@ NodeTypeFile
                       identexpr-name = suffix
                       input-source = template string expr test
                       start-rune = 131
+            NodeTypeExpressionStatement
+              end-rune = 161
+              input-source = template string expr test
+              start-rune = 141
+              expr-statement-expr =>
+                NodeTypeTemplateString
+                  end-rune = 160
+                  input-source = template string expr test
+                  start-rune = 141
+                  template-string-piece =>
+                    NodeStringLiteralExpression
+                      literal-value = ``
+                    NodeTypeIdentifierExpression
+                      end-rune = 155
+                      identexpr-name = startingexpr
+                      input-source = template string expr test
+                      start-rune = 144
+                    NodeStringLiteralExpression
+                      literal-value = `foo`
+            NodeTypeExpressionStatement
+              end-rune = 176
+              input-source = template string expr test
+              start-rune = 163
+              expr-statement-expr =>
+                NodeTypeTemplateString
+                  end-rune = 175
+                  input-source = template string expr test
+                  start-rune = 163
+                  template-string-piece =>
+                    NodeStringLiteralExpression
+                      literal-value = ``
+                    NodeTypeIdentifierExpression
+                      end-rune = 173
+                      identexpr-name = onlyexpr
+                      input-source = template string expr test
+                      start-rune = 166
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 76

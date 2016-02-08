@@ -2429,13 +2429,13 @@ func (p *sourceParser) consumeTemplateString() AstNode {
 		var prefix = tokenValue
 		if startIndex > 0 {
 			prefix = tokenValue[0:startIndex]
+		} else if startIndex == 0 {
+			prefix = ""
 		}
 
-		if len(prefix) > 0 {
-			literalNode := p.createNode(NodeStringLiteralExpression)
-			literalNode.Decorate(NodeStringLiteralExpressionValue, "`"+prefix+"`")
-			templateNode.Connect(NodeTemplateStringPiece, literalNode)
-		}
+		literalNode := p.createNode(NodeStringLiteralExpression)
+		literalNode.Decorate(NodeStringLiteralExpressionValue, "`"+prefix+"`")
+		templateNode.Connect(NodeTemplateStringPiece, literalNode)
 
 		// If there is no expression after the literal text, nothing more to do.
 		if startIndex < 0 {
