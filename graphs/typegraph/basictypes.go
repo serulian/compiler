@@ -72,6 +72,11 @@ func (t *TypeGraph) StringableTypeReference() TypeReference {
 	return t.NewTypeReference(t.StringableType())
 }
 
+// MappableTypeReference returns a reference to the mappable type.
+func (t *TypeGraph) MappableTypeReference() TypeReference {
+	return t.NewTypeReference(t.MappableType())
+}
+
 // StreamableType returns the streamable type.
 func (t *TypeGraph) StreamableType() TGTypeDecl {
 	return t.getAliasedType("streamable")
@@ -95,6 +100,11 @@ func (t *TypeGraph) PromiseType() TGTypeDecl {
 // FunctionType returns the function type.
 func (t *TypeGraph) FunctionType() TGTypeDecl {
 	return t.getAliasedType("function")
+}
+
+// MappableType returns the mappable type.
+func (t *TypeGraph) MappableType() TGTypeDecl {
+	return t.getAliasedType("mappable")
 }
 
 // StringableType returns the string type.

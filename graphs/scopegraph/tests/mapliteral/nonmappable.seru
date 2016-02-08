@@ -1,0 +1,7 @@
+class SomeClass {}
+
+function<void> DoSomething(sc SomeClass) {
+	var a = {
+		sc: 'foo',
+	}
+}

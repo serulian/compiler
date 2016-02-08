@@ -78,6 +78,14 @@ type Integer : Number {
 	}
 
 	function<void> Release() {}
+
+	property<Stringable> MapKey {
+		get { return this }
+	}
+
+	function<string> String() {
+		return String(Number(this).toString())
+	}
 }
 
 @•typealias('bool')
@@ -93,6 +101,14 @@ type Boolean : NativeBoolean {
 	operator Equals(left bool, right bool) {
 		return NativeBoolean(left) == NativeBoolean(right)
 	}
+
+	function<string> String() {
+		return String(NativeBoolean(this).toString())
+	}
+
+	property<Stringable> MapKey {
+		get { return this }
+	}
 }
 
 @•typealias('float64')
@@ -103,6 +119,15 @@ type String : NativeString {
 	function<string> String() {
 		return ''
 	}
+
+	property<Stringable> MapKey {
+		get { return this }
+	}
+}
+
+@•typealias('mappable')
+interface Mappable {
+	property<Stringable> MapKey { get }
 }
 
 @•typealias('list')

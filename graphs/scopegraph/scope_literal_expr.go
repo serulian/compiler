@@ -99,12 +99,20 @@ func (sb *scopeBuilder) scopeMapLiteralExpression(node compilergraph.GraphNode, 
 			continue
 		}
 
-		keyType = keyType.Intersect(keyScope.ResolvedTypeRef(sb.sg.tdg))
-		valueType = valueType.Intersect(valueScope.ResolvedTypeRef(sb.sg.tdg))
+		localKeyType := keyScope.ResolvedTypeRef(sb.sg.tdg)
+		localValueType := valueScope.ResolvedTypeRef(sb.sg.tdg)
+
+		if serr := localKeyType.CheckSubTypeOf(sb.sg.tdg.MappableTypeReference()); serr != nil {
+			sb.decorateWithError(keyNode, "Map literal keys must be of type Mappable: %v", serr)
+			isValid = false
+		}
+
+		keyType = keyType.Intersect(localKeyType)
+		valueType = valueType.Intersect(localValueType)
 	}
 
-	if keyType.IsVoid() {
-		keyType = sb.sg.tdg.AnyTypeReference()
+	if keyType.IsVoid() || keyType.IsAny() {
+		keyType = sb.sg.tdg.MappableTypeReference()
 	}
 
 	if valueType.IsVoid() {

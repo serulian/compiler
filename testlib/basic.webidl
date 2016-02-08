@@ -2,11 +2,15 @@
 interface String {};
 
 [Constructor(any value), NativeOperator=Equals]
-interface Boolean {};
+interface Boolean {
+	String toString();
+};
 
 [Constructor(optional any value),
  NativeOperator=Plus, NativeOperator=Minus, NativeOperator=Equals]
-interface Number {};
+interface Number {
+	String toString();
+};
 
 [Constructor]
 interface Array {
