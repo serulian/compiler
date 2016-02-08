@@ -815,7 +815,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"tagged template failure success", "templatestr", "taggedfailure",
 		[]expectedScopeEntry{},
-		"Tagging expression for template string must have type Function<String>(List<String>, List<Stringable>). Found: Function<void>", ""},
+		"Tagging expression for template string must have type Function<String>(Slice<String>, Slice<Stringable>). Found: Function<void>", ""},
 
 	/////////// webidl tests /////////////////
 

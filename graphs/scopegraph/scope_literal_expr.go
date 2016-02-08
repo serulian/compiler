@@ -31,12 +31,12 @@ func (sb *scopeBuilder) scopeTaggedTemplateString(node compilergraph.GraphNode, 
 		isValid = false
 	}
 
-	// Ensure that the tagging expression is a function of type function<string>(list<string>, list<stringable>).
+	// Ensure that the tagging expression is a function of type function<string>(slice<string>, slice<stringable>).
 	if tagScope.GetIsValid() {
 		expectedType := sb.sg.tdg.
 			FunctionTypeReference(sb.sg.tdg.StringTypeReference()).
-			WithParameter(sb.sg.tdg.ListTypeReference(sb.sg.tdg.StringTypeReference())).
-			WithParameter(sb.sg.tdg.ListTypeReference(sb.sg.tdg.StringableTypeReference()))
+			WithParameter(sb.sg.tdg.SliceTypeReference(sb.sg.tdg.StringTypeReference())).
+			WithParameter(sb.sg.tdg.SliceTypeReference(sb.sg.tdg.StringableTypeReference()))
 
 		tagType := tagScope.ResolvedTypeRef(sb.sg.tdg)
 		if tagType != expectedType {

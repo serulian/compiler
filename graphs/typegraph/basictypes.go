@@ -47,6 +47,11 @@ func (t *TypeGraph) FunctionTypeReference(generic TypeReference) TypeReference {
 	return t.NewTypeReference(t.FunctionType(), generic)
 }
 
+// SliceTypeReference returns a new reference to the slice type, with the given generic.
+func (t *TypeGraph) SliceTypeReference(generic TypeReference) TypeReference {
+	return t.NewTypeReference(t.SliceType(), generic)
+}
+
 // ListTypeReference returns a new reference to the list type, with the given generic.
 func (t *TypeGraph) ListTypeReference(generic TypeReference) TypeReference {
 	return t.NewTypeReference(t.ListType(), generic)
