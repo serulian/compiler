@@ -130,17 +130,17 @@ func (db *domBuilder) buildTemplateStringExpression(node compilergraph.GraphNode
 		panic("Missing formatTemplateString under String's module")
 	}
 
-	return db.buildTemplateStringCall(node, codedom.StaticMemberReference(member, node))
+	return db.buildTemplateStringCall(node, codedom.StaticMemberReference(member, node), false)
 }
 
 // buildTaggedTemplateString builds the CodeDOM for a tagged template string expression.
 func (db *domBuilder) buildTaggedTemplateString(node compilergraph.GraphNode) codedom.Expression {
 	childExpr := db.getExpression(node, parser.NodeTaggedTemplateCallExpression)
-	return db.buildTemplateStringCall(node.GetNode(parser.NodeTaggedTemplateParsed), childExpr)
+	return db.buildTemplateStringCall(node.GetNode(parser.NodeTaggedTemplateParsed), childExpr, true)
 }
 
 // buildTemplateStringCall builds the CodeDOM representing the call to a template string function.
-func (db *domBuilder) buildTemplateStringCall(node compilergraph.GraphNode, funcExpr codedom.Expression) codedom.Expression {
+func (db *domBuilder) buildTemplateStringCall(node compilergraph.GraphNode, funcExpr codedom.Expression, isTagged bool) codedom.Expression {
 	pit := node.StartQuery().
 		Out(parser.NodeTemplateStringPiece).
 		BuildNodeIterator()
@@ -157,6 +157,11 @@ func (db *domBuilder) buildTemplateStringCall(node compilergraph.GraphNode, func
 		}
 
 		isPiece = !isPiece
+	}
+
+	// Handle common case: A single literal string piece with no values.
+	if len(pieceExprs) == 1 && len(valueExprs) == 0 {
+		return pieceExprs[0]
 	}
 
 	pieceSliceType := db.scopegraph.TypeGraph().SliceTypeReference(db.scopegraph.TypeGraph().StringTypeReference())
