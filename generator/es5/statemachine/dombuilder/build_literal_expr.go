@@ -9,6 +9,8 @@ import (
 	"github.com/serulian/compiler/generator/es5/codedom"
 	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/parser"
+
+	"strconv"
 )
 
 const DEFINED_VAL_PARAMETER = "val"
@@ -37,8 +39,8 @@ func (db *domBuilder) buildBooleanLiteral(node compilergraph.GraphNode) codedom.
 func (db *domBuilder) buildStringLiteral(node compilergraph.GraphNode) codedom.Expression {
 	stringValueStr := node.Get(parser.NodeStringLiteralExpressionValue)
 	if stringValueStr[0] == '`' {
-		// TODO: escape string for ' and newlines.
-		stringValueStr = "'" + stringValueStr[1:len(stringValueStr)-1] + "'"
+		unquoted := stringValueStr[1 : len(stringValueStr)-1]
+		stringValueStr = strconv.Quote(unquoted)
 	}
 
 	return codedom.NominalWrapping(codedom.LiteralValue(stringValueStr, node), db.scopegraph.TypeGraph().StringType(), node)

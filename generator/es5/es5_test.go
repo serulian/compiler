@@ -133,6 +133,7 @@ var tests = []generationTest{
 
 	generationTest{"template string literal", "literals", "templatestr", true},
 	generationTest{"tagged template string literal", "literals", "taggedtemplatestr", true},
+	generationTest{"escaped template string literal", "literals", "escapedtemplatestr", false},
 
 	generationTest{"basic webidl", "webidl", "basic", true},
 	generationTest{"basic nominal type", "nominal", "basic", true},
