@@ -1,6 +1,20 @@
 from webidl`basic` import Number
 from webidl`basic` import String as NativeString
 from webidl`basic` import Boolean as NativeBoolean
+from webidl`basic` import Array
+from webidl`basic` import Object
+from webidl`basic` import debugprint
+
+function<string> formatTemplateString(pieces []string, values []stringable) {
+	var result = ''
+	for i in 0 .. (pieces.Length - 1) {
+		result = result + pieces[i]
+		if i < values.Length {
+			result = result + values[i].String()
+		}
+	}
+	return result
+}
 
 @•typealias('tuple')
 class Tuple<T, Q> {
@@ -16,7 +30,29 @@ class Tuple<T, Q> {
 }
 
 @•typealias('slice')
-class Slice<T> {}
+class Slice<T> {
+	var<Array> items = Array.new()
+
+	constructor Empty() {
+		return Slice<T>.new()
+	}
+
+	constructor overArray(arr Array) {
+		var s = Slice<T>.new()
+		s.items = arr
+		return s
+	}
+
+	operator<T> Index(index int) {
+		return this.items[Number(index)].(T)
+	}
+
+	property<int> Length {
+		get {
+			return int(this.items.length)
+		}
+	}
+}
 
 @•typealias('stringable')
 interface Stringable {
@@ -52,16 +88,34 @@ interface Releasable {
 @•typealias('function')
 class Function<T> {}
 
-class FakeIntStream {
+class IntStream {
+	var<int> start = 0
+	var<int> end = -1
+	var<int> current = 0
+
+	constructor OverRange(start int, end int) {
+		var s = IntStream.new()
+		s.start = start
+		s.end = end
+		s.current = start
+		return s
+	}
+
 	function<Tuple<int, bool>> Next() {
-	  return Tuple<int, bool>.Build(2, true)
+		if this.current <= this.end {
+			var t = Tuple<int, bool>.Build(this.current, true)
+			this.current = this.current + 1
+			return t
+		}
+
+		return Tuple<int, bool>.Build(this.current, false)
 	}
 }
 
 @•typealias('int')
 type Integer : Number {
 	operator Range(start int, end int) {
-		return FakeIntStream.new()
+		return IntStream.OverRange(start, end)
 	}
 
 	operator Compare(left int, right int) {
@@ -76,7 +130,19 @@ type Integer : Number {
 		return Integer(Number(left) + Number(right))
 	}
 
+	operator Minus(left int, right int) {
+		return Integer(Number(left) - Number(right))
+	}
+
 	function<void> Release() {}
+
+	property<Stringable> MapKey {
+		get { return this }
+	}
+
+	function<string> String() {
+		return String(Number(this).toString())
+	}
 }
 
 @•typealias('bool')
@@ -90,7 +156,15 @@ type Boolean : NativeBoolean {
 	}
 
 	operator Equals(left bool, right bool) {
-		return NativeBoolean(left) == NativeBoolean(right)
+		return Boolean(NativeBoolean(left) == NativeBoolean(right))
+	}
+
+	function<string> String() {
+		return String(NativeBoolean(this).toString())
+	}
+
+	property<Stringable> MapKey {
+		get { return this }
 	}
 }
 
@@ -100,12 +174,70 @@ class Float64 {}
 @•typealias('string')
 type String : NativeString {
 	function<string> String() {
-		return ''
+		return this
+	}
+
+	operator Equals(first string, second string) {
+		return Boolean(NativeString(first) == NativeString(second))
+	}
+
+	operator Plus(first string, second string) {
+		return String(NativeString(first) + NativeString(second))
+	}
+
+	property<Stringable> MapKey {
+		get { return this }
 	}
 }
 
+@•typealias('mappable')
+interface Mappable {
+	property<Stringable> MapKey { get }
+}
+
 @•typealias('list')
-class List<T> {}
+class List<T> {
+	var<Array> items = Array.new()
+	
+	constructor forArray(arr Array) {
+		var l = List<T>.new()
+		l.items = arr
+		return l
+	}
+
+	property<int> Count {
+		get {
+			return int(this.items.length)
+		}
+	}
+}
 
 @•typealias('map')
-class Map<T, Q> {}
+class Map<T : Mappable, Q> {
+	var<Object> internalObject = Object.new()
+
+	constructor forArrays(keys Array, values Array) {
+		var map = Map<T, Q>.new()
+		var len = int(keys.length)
+		for i in 0..(len - 1) {
+			var tKey = keys[Number(i)].(T)
+			map[tKey] = values[Number(i)].(Q)
+		}
+		return map
+	}
+
+	operator<Q?> Index(key T) {
+		var keyString = key.MapKey.String()
+		var value = this.internalObject[NativeString(keyString)]
+		if value is null {
+			return null
+		}
+
+		return value.(Q)
+	}
+
+	operator SetIndex(key T, value Q) {
+		var keyString = key.MapKey.String()
+		this.internalObject[NativeString(keyString)] = value
+	}
+}

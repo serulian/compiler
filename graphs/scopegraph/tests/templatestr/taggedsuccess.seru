@@ -4,11 +4,18 @@ class SomeClass {
 	}	
 }
 
-function<string> tagged(strings list<string>, values list<stringable>) {
+function<string> tagged(strings []string, values []stringable) {
 	return ''
+}
+
+function<bool> anothertagged(strings []string, values []stringable) {
+	return true
 }
 
 function<void> DoSomething(first string, sc SomeClass) {
 	/* templatestr */(tagged`${sc}: This is a cool
+	${first} string`)
+
+	/* nonstrtemplatestr */(anothertagged`${sc}: This is a cool
 	${first} string`)
 }

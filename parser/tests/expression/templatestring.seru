@@ -4,4 +4,6 @@ function<void> DoSomething() {
 
 function<void> AnotherFunction() {
 	`Hello ${adj.modifier} world ${suffix}`
+	`${startingexpr}foo`
+	`${onlyexpr}`
 }

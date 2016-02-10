@@ -474,14 +474,22 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"map literal success test", "mapliteral", "success",
 		[]expectedScopeEntry{
-			expectedScopeEntry{"emptymap", expectedScope{true, proto.ScopeKind_VALUE, "Map<any, any>", "void"}},
+			expectedScopeEntry{"emptymap", expectedScope{true, proto.ScopeKind_VALUE, "Map<Mappable, any>", "void"}},
 			expectedScopeEntry{"intmap", expectedScope{true, proto.ScopeKind_VALUE, "Map<String, Integer>", "void"}},
 			expectedScopeEntry{"mixedmap", expectedScope{true, proto.ScopeKind_VALUE, "Map<String, any>", "void"}},
 
 			expectedScopeEntry{"intkeymap", expectedScope{true, proto.ScopeKind_VALUE, "Map<Integer, Integer>", "void"}},
-			expectedScopeEntry{"mixedkeymap", expectedScope{true, proto.ScopeKind_VALUE, "Map<any, Integer>", "void"}},
+			expectedScopeEntry{"mixedkeymap", expectedScope{true, proto.ScopeKind_VALUE, "Map<Mappable, Integer>", "void"}},
 		},
 		"", ""},
+
+	scopegraphTest{"map literal nonmappable fail test", "mapliteral", "nonmappable",
+		[]expectedScopeEntry{},
+		"Map literal keys must be of type Mappable: Type 'SomeClass' does not define or export member 'MapKey', which is required by type 'Mappable'", ""},
+
+	scopegraphTest{"map literal null key fail test", "mapliteral", "nullkey",
+		[]expectedScopeEntry{},
+		"Map literal keys must be of type Mappable: null cannot be used in place of non-nullable type Mappable", ""},
 
 	/////////// Slice expression ///////////
 
@@ -798,6 +806,7 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"tagged template string success", "templatestr", "taggedsuccess",
 		[]expectedScopeEntry{
 			expectedScopeEntry{"templatestr", expectedScope{true, proto.ScopeKind_VALUE, "String", "void"}},
+			expectedScopeEntry{"nonstrtemplatestr", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
 		},
 		"", ""},
 
@@ -807,7 +816,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"tagged template failure success", "templatestr", "taggedfailure",
 		[]expectedScopeEntry{},
-		"Tagging expression for template string must have type Function<String>(List<String>, List<Stringable>). Found: Function<void>", ""},
+		"Tagging expression for template string must be function with parameters ([]string, []stringable). Found: Function<void>", ""},
 
 	/////////// webidl tests /////////////////
 

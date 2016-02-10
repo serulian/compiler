@@ -12,6 +12,8 @@ const runtimeTemplate = `
 window.Serulian = (function($global) {
   var $g = {};
   var $t = {
+    'any': new Function("return function any() {};")(),
+
     'cast': function(value, type) {
       // TODO: implement cast checking.
       return value

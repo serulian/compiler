@@ -31,21 +31,23 @@ func (sb *scopeBuilder) scopeTaggedTemplateString(node compilergraph.GraphNode, 
 		isValid = false
 	}
 
-	// Ensure that the tagging expression is a function of type function<string>(list<string>, list<stringable>).
+	// Ensure that the tagging expression is a function of type function<(any here)>(slice<string>, slice<stringable>).
 	if tagScope.GetIsValid() {
-		expectedType := sb.sg.tdg.
-			FunctionTypeReference(sb.sg.tdg.StringTypeReference()).
-			WithParameter(sb.sg.tdg.ListTypeReference(sb.sg.tdg.StringTypeReference())).
-			WithParameter(sb.sg.tdg.ListTypeReference(sb.sg.tdg.StringableTypeReference()))
-
 		tagType := tagScope.ResolvedTypeRef(sb.sg.tdg)
-		if tagType != expectedType {
-			isValid = false
-			sb.decorateWithError(node, "Tagging expression for template string must have type %v. Found: %v", expectedType, tagType)
-		}
-	}
+		if tagType.IsNullable() ||
+			!tagType.HasReferredType(sb.sg.tdg.FunctionType()) ||
+			tagType.ParameterCount() != 2 ||
+			tagType.Parameters()[0] != sb.sg.tdg.SliceTypeReference(sb.sg.tdg.StringTypeReference()) ||
+			tagType.Parameters()[1] != sb.sg.tdg.SliceTypeReference(sb.sg.tdg.StringableTypeReference()) {
 
-	return newScope().IsValid(isValid).Resolving(sb.sg.tdg.StringTypeReference()).GetScope()
+			isValid = false
+			sb.decorateWithError(node, "Tagging expression for template string must be function with parameters ([]string, []stringable). Found: %v", tagType)
+		}
+
+		return newScope().IsValid(isValid).Resolving(tagType.Generics()[0]).GetScope()
+	} else {
+		return newScope().IsValid(isValid).Resolving(sb.sg.tdg.AnyTypeReference()).GetScope()
+	}
 }
 
 // scopeTemplateStringExpression scopes a template string expression in the SRG.
@@ -99,12 +101,20 @@ func (sb *scopeBuilder) scopeMapLiteralExpression(node compilergraph.GraphNode, 
 			continue
 		}
 
-		keyType = keyType.Intersect(keyScope.ResolvedTypeRef(sb.sg.tdg))
-		valueType = valueType.Intersect(valueScope.ResolvedTypeRef(sb.sg.tdg))
+		localKeyType := keyScope.ResolvedTypeRef(sb.sg.tdg)
+		localValueType := valueScope.ResolvedTypeRef(sb.sg.tdg)
+
+		if serr := localKeyType.CheckSubTypeOf(sb.sg.tdg.MappableTypeReference()); serr != nil {
+			sb.decorateWithError(keyNode, "Map literal keys must be of type Mappable: %v", serr)
+			isValid = false
+		}
+
+		keyType = keyType.Intersect(localKeyType)
+		valueType = valueType.Intersect(localValueType)
 	}
 
-	if keyType.IsVoid() {
-		keyType = sb.sg.tdg.AnyTypeReference()
+	if keyType.IsVoid() || keyType.IsAny() {
+		keyType = sb.sg.tdg.MappableTypeReference()
 	}
 
 	if valueType.IsVoid() {
