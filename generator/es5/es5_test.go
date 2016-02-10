@@ -131,6 +131,9 @@ var tests = []generationTest{
 	generationTest{"null literal", "literals", "null", false},
 	generationTest{"this literal", "literals", "this", false},
 
+	generationTest{"template string literal", "literals", "templatestr", true},
+	generationTest{"tagged template string literal", "literals", "taggedtemplatestr", true},
+
 	generationTest{"basic webidl", "webidl", "basic", true},
 	generationTest{"basic nominal type", "nominal", "basic", true},
 }

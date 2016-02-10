@@ -273,6 +273,12 @@ func (db *domBuilder) buildExpression(node compilergraph.GraphNode) codedom.Expr
 	case parser.NodeMapExpression:
 		return db.buildMapExpression(node)
 
+	case parser.NodeTypeTemplateString:
+		return db.buildTemplateStringExpression(node)
+
+	case parser.NodeTaggedTemplateLiteralString:
+		return db.buildTaggedTemplateString(node)
+
 	default:
 		panic(fmt.Sprintf("Unknown SRG expression node: %s", node.Kind))
 		return nil

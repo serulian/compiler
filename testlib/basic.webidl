@@ -3,7 +3,7 @@ interface Window {
 	static void debugprint(any value);
 }
 
-[Constructor]
+[Constructor, NativeOperator=Plus, NativeOperator=Equals]
 interface String {};
 
 [Constructor(any value), NativeOperator=Equals]

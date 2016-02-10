@@ -1,0 +1,6 @@
+function<any> TEST() {
+	var a = 1
+	var b = true
+	var result = `This function is #${a}! It is ${b}!`
+	return result == 'This function is #1! It is true!'
+}

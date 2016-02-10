@@ -5,6 +5,17 @@ from webidl`basic` import Array
 from webidl`basic` import Object
 from webidl`basic` import debugprint
 
+function<string> formatTemplateString(pieces []string, values []stringable) {
+	var result = ''
+	for i in 0 .. (pieces.Length - 1) {
+		result = result + pieces[i]
+		if i < values.Length {
+			result = result + values[i].String()
+		}
+	}
+	return result
+}
+
 @•typealias('tuple')
 class Tuple<T, Q> {
 	var<T?> First = null
@@ -19,7 +30,29 @@ class Tuple<T, Q> {
 }
 
 @•typealias('slice')
-class Slice<T> {}
+class Slice<T> {
+	var<Array> items = Array.new()
+
+	constructor Empty() {
+		return Slice<T>.new()
+	}
+
+	constructor overArray(arr Array) {
+		var s = Slice<T>.new()
+		s.items = arr
+		return s
+	}
+
+	operator<T> Index(index int) {
+		return this.items[Number(index)].(T)
+	}
+
+	property<int> Length {
+		get {
+			return int(this.items.length)
+		}
+	}
+}
 
 @•typealias('stringable')
 interface Stringable {
@@ -123,7 +156,7 @@ type Boolean : NativeBoolean {
 	}
 
 	operator Equals(left bool, right bool) {
-		return NativeBoolean(left) == NativeBoolean(right)
+		return Boolean(NativeBoolean(left) == NativeBoolean(right))
 	}
 
 	function<string> String() {
@@ -142,6 +175,14 @@ class Float64 {}
 type String : NativeString {
 	function<string> String() {
 		return this
+	}
+
+	operator Equals(first string, second string) {
+		return Boolean(NativeString(first) == NativeString(second))
+	}
+
+	operator Plus(first string, second string) {
+		return String(NativeString(first) + NativeString(second))
 	}
 
 	property<Stringable> MapKey {

@@ -48,6 +48,20 @@ func (tn TGModule) Members() []TGMember {
 	return members
 }
 
+// FindMember finds the member under this module with the given name, if any.
+func (tn TGModule) FindMember(name string) (TGMember, bool) {
+	node, found := tn.GraphNode.StartQuery().
+		Out(NodePredicateMember).
+		Has(NodePredicateMemberName, name).
+		TryGetNode()
+
+	if !found {
+		return TGMember{}, false
+	}
+
+	return TGMember{node, tn.tdg}, true
+}
+
 // IsType returns whether this module is a type (always false).
 func (tn TGModule) IsType() bool {
 	return false

@@ -36,6 +36,11 @@ func (db *domBuilder) buildBooleanLiteral(node compilergraph.GraphNode) codedom.
 // buildStringLiteral builds the CodeDOM for a string literal.
 func (db *domBuilder) buildStringLiteral(node compilergraph.GraphNode) codedom.Expression {
 	stringValueStr := node.Get(parser.NodeStringLiteralExpressionValue)
+	if stringValueStr[0] == '`' {
+		// TODO: escape string for ' and newlines.
+		stringValueStr = "'" + stringValueStr[1:len(stringValueStr)-1] + "'"
+	}
+
 	return codedom.NominalWrapping(codedom.LiteralValue(stringValueStr, node), db.scopegraph.TypeGraph().StringType(), node)
 }
 
@@ -114,4 +119,62 @@ func (db *domBuilder) buildMapExpression(node compilergraph.GraphNode) codedom.E
 		constructor,
 		[]codedom.Expression{codedom.ArrayLiteral(keyExprs, node), codedom.ArrayLiteral(valueExprs, node)},
 		node)
+}
+
+// buildTemplateStringExpression builds the CodeDOM for a template string expression.
+func (db *domBuilder) buildTemplateStringExpression(node compilergraph.GraphNode) codedom.Expression {
+	member, found := db.scopegraph.TypeGraph().StringType().ParentModule().FindMember("formatTemplateString")
+	if !found {
+		panic("Missing formatTemplateString under String's module")
+	}
+
+	return db.buildTemplateStringCall(node, codedom.StaticMemberReference(member, node))
+}
+
+// buildTaggedTemplateString builds the CodeDOM for a tagged template string expression.
+func (db *domBuilder) buildTaggedTemplateString(node compilergraph.GraphNode) codedom.Expression {
+	childExpr := db.getExpression(node, parser.NodeTaggedTemplateCallExpression)
+	return db.buildTemplateStringCall(node.GetNode(parser.NodeTaggedTemplateParsed), childExpr)
+}
+
+// buildTemplateStringCall builds the CodeDOM representing the call to a template string function.
+func (db *domBuilder) buildTemplateStringCall(node compilergraph.GraphNode, funcExpr codedom.Expression) codedom.Expression {
+	pit := node.StartQuery().
+		Out(parser.NodeTemplateStringPiece).
+		BuildNodeIterator()
+
+	var pieceExprs = make([]codedom.Expression, 0)
+	var valueExprs = make([]codedom.Expression, 0)
+
+	var isPiece = true
+	for pit.Next() {
+		if isPiece {
+			pieceExprs = append(pieceExprs, db.buildExpression(pit.Node()))
+		} else {
+			valueExprs = append(valueExprs, db.buildExpression(pit.Node()))
+		}
+
+		isPiece = !isPiece
+	}
+
+	pieceSliceType := db.scopegraph.TypeGraph().SliceTypeReference(db.scopegraph.TypeGraph().StringTypeReference())
+	valueSliceType := db.scopegraph.TypeGraph().SliceTypeReference(db.scopegraph.TypeGraph().StringableTypeReference())
+
+	constructor, _ := pieceSliceType.ResolveMember("overArray", typegraph.MemberResolutionStatic)
+
+	pieceSliceExpr := codedom.MemberCall(
+		codedom.MemberReference(
+			codedom.TypeLiteral(pieceSliceType, node), constructor, node),
+		constructor,
+		[]codedom.Expression{codedom.ArrayLiteral(pieceExprs, node)},
+		node)
+
+	valueSliceExpr := codedom.MemberCall(
+		codedom.MemberReference(
+			codedom.TypeLiteral(valueSliceType, node), constructor, node),
+		constructor,
+		[]codedom.Expression{codedom.ArrayLiteral(valueExprs, node)},
+		node)
+
+	return codedom.AwaitPromise(codedom.FunctionCall(funcExpr, []codedom.Expression{pieceSliceExpr, valueSliceExpr}, node), node)
 }
