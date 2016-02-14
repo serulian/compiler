@@ -34,8 +34,7 @@ func (sb *scopeBuilder) scopeTaggedTemplateString(node compilergraph.GraphNode, 
 	// Ensure that the tagging expression is a function of type function<(any here)>(slice<string>, slice<stringable>).
 	if tagScope.GetIsValid() {
 		tagType := tagScope.ResolvedTypeRef(sb.sg.tdg)
-		if tagType.IsNullable() ||
-			!tagType.HasReferredType(sb.sg.tdg.FunctionType()) ||
+		if !tagType.IsDirectReferenceTo(sb.sg.tdg.FunctionType()) ||
 			tagType.ParameterCount() != 2 ||
 			tagType.Parameters()[0] != sb.sg.tdg.SliceTypeReference(sb.sg.tdg.StringTypeReference()) ||
 			tagType.Parameters()[1] != sb.sg.tdg.SliceTypeReference(sb.sg.tdg.StringableTypeReference()) {

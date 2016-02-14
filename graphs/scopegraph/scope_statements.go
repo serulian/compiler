@@ -244,7 +244,7 @@ func (sb *scopeBuilder) scopeLoopStatement(node compilergraph.GraphNode, option 
 
 		return newScope().Valid().GetScope()
 	} else {
-		if !loopExprType.HasReferredType(sb.sg.tdg.BoolType()) {
+		if !loopExprType.IsDirectReferenceTo(sb.sg.tdg.BoolType()) {
 			sb.decorateWithError(node, "Loop conditional expression must be of type 'bool', found: %v", loopExprType)
 			return newScope().
 				Invalid().
@@ -290,7 +290,7 @@ func (sb *scopeBuilder) scopeConditionalStatement(node compilergraph.GraphNode, 
 	}
 
 	conditionalExprType := conditionalExprScope.ResolvedTypeRef(sb.sg.tdg)
-	if !conditionalExprType.HasReferredType(sb.sg.tdg.BoolType()) {
+	if !conditionalExprType.IsDirectReferenceTo(sb.sg.tdg.BoolType()) {
 		sb.decorateWithError(node, "Conditional expression must be of type 'bool', found: %v", conditionalExprType)
 		return newScope().Invalid().Returning(returningType, isSettlingScope).GetScope()
 	}

@@ -879,6 +879,8 @@ var scopeGraphTests = []scopegraphTest{
 
 func TestGraphs(t *testing.T) {
 	for _, test := range scopeGraphTests {
+		fmt.Printf("Running test: %v\n", test.name)
+
 		if os.Getenv("FILTER") != "" && !strings.Contains(test.name, os.Getenv("FILTER")) {
 			continue
 		}
