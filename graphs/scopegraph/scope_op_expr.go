@@ -79,7 +79,7 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 
 	// Ensure the child expression has type function.
 	childType := childScope.ResolvedTypeRef(sb.sg.tdg)
-	if !childType.HasReferredType(sb.sg.tdg.FunctionType()) {
+	if !childType.IsDirectReferenceTo(sb.sg.tdg.FunctionType()) {
 		sb.decorateWithError(node, "Cannot invoke function call on non-function '%v'.", childType)
 		return newScope().Invalid().GetScope()
 	}
@@ -181,7 +181,7 @@ func (sb *scopeBuilder) scopeSlicerExpression(node compilergraph.GraphNode, opti
 		}
 
 		exprType := exprScope.ResolvedTypeRef(sb.sg.tdg)
-		if !exprType.HasReferredType(sb.sg.tdg.IntType()) {
+		if !exprType.IsDirectReferenceTo(sb.sg.tdg.IntType()) {
 			sb.decorateWithError(node, "Slice index must be of type Integer, found: %v", exprType)
 			return false
 		}
@@ -336,7 +336,7 @@ func (sb *scopeBuilder) scopeBooleanUnaryExpression(node compilergraph.GraphNode
 	var isValid = true
 
 	childType := childScope.ResolvedTypeRef(sb.sg.tdg)
-	if !childType.HasReferredType(sb.sg.tdg.BoolType()) {
+	if !childType.IsDirectReferenceTo(sb.sg.tdg.BoolType()) {
 		sb.decorateWithError(node, "Boolean operator requires type Boolean for operand. Operand has type: %v", childType)
 		isValid = false
 	}
@@ -360,12 +360,12 @@ func (sb *scopeBuilder) scopeBooleanBinaryExpression(node compilergraph.GraphNod
 	leftType := leftScope.ResolvedTypeRef(sb.sg.tdg)
 	rightType := rightScope.ResolvedTypeRef(sb.sg.tdg)
 
-	if !leftType.HasReferredType(sb.sg.tdg.BoolType()) {
+	if !leftType.IsDirectReferenceTo(sb.sg.tdg.BoolType()) {
 		sb.decorateWithError(node, "Boolean operator requires type Boolean for operands. Left hand operand has type: %v", leftType)
 		isValid = false
 	}
 
-	if !rightType.HasReferredType(sb.sg.tdg.BoolType()) {
+	if !rightType.IsDirectReferenceTo(sb.sg.tdg.BoolType()) {
 		sb.decorateWithError(node, "Boolean operator requires type Boolean for operands. Right hand operand has type: %v", rightType)
 		isValid = false
 	}

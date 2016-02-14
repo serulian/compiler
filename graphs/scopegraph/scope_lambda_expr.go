@@ -137,7 +137,7 @@ func (sb *scopeBuilder) inferLambdaParameterTypes(node compilergraph.GraphNode) 
 		// Check if the parent variable has a declared type of function. If so, then we simply
 		// use the declared parameter types.
 		declaredType, hasDeclaredType := sb.getDeclaredVariableType(parentVariable)
-		if hasDeclaredType && declaredType.HasReferredType(sb.sg.tdg.FunctionType()) {
+		if hasDeclaredType && declaredType.IsDirectReferenceTo(sb.sg.tdg.FunctionType()) {
 			return declaredType.Parameters(), true
 		}
 

@@ -644,7 +644,18 @@ func (tr TypeReference) IsNullable() bool {
 	return tr.getSlot(trhSlotFlagNullable)[0] == nullableFlagTrue
 }
 
-// HasReferredType returns whether this type references refers to the given type.
+// IsDirectReferenceTo returns whether this type references refers to the given type. Note that the
+// type reference cannot be nullable.
+func (tr TypeReference) IsDirectReferenceTo(typeDecl TGTypeDecl) bool {
+	if !tr.HasReferredType(typeDecl) {
+		return false
+	}
+
+	return !tr.IsNullable()
+}
+
+// HasReferredType returns whether this type references refers to the given type. Note that the
+// type reference can be nullable.
 func (tr TypeReference) HasReferredType(typeDecl TGTypeDecl) bool {
 	if !tr.isNormal() || tr.IsAny() {
 		return false
