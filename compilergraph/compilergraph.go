@@ -7,6 +7,7 @@ package compilergraph
 
 import (
 	"fmt"
+	"runtime"
 
 	"github.com/google/cayley"
 )
@@ -28,6 +29,10 @@ type SerulianGraph struct {
 
 // NewGraph creates and returns a SerulianGraph rooted at the specified root source file.
 func NewGraph(rootSourceFilePath string) (*SerulianGraph, error) {
+	// Note: until we write a wrapper that allows for concurrent reading and writing over the
+	// in-memory graph, set the max procs to 1.
+	runtime.GOMAXPROCS(1)
+
 	// TODO(jschorr): Uncomment bolt support once we have a cohesive partial replacement story.
 	//graphStoragePath := path.Join(path.Dir(rootSourceFilePath), serulianGraphStoragePath)
 
