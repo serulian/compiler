@@ -79,7 +79,7 @@ func (stc *srgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 	}
 }
 
-func (stc *srgTypeConstructor) DefineDependencies(annotator *typegraph.Annotator, graph *typegraph.TypeGraph) {
+func (stc *srgTypeConstructor) DefineDependencies(annotator typegraph.Annotator, graph *typegraph.TypeGraph) {
 	for _, srgType := range stc.srg.GetTypes() {
 		// Decorate all types with their inheritance.
 		if srgType.TypeKind() != srg.InterfaceType {
@@ -151,6 +151,32 @@ func (stc *srgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 	workqueue.Run()
 }
 
+func (stc *srgTypeConstructor) DecorateMembers(decorater typegraph.GetMemberDecorator, reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {
+	// Decorate all module members.
+	for _, module := range stc.srg.GetModules() {
+		for _, member := range module.GetMembers() {
+			parent, _ := graph.GetTypeOrModuleForSourceNode(module.Node())
+			stc.decorateMember(member, parent, decorater(member.GraphNode), reporter, graph)
+		}
+	}
+
+	// Decorate all type members.
+	buildTypeMembers := func(key interface{}, value interface{}) bool {
+		data := value.(typeMemberWork)
+		for _, member := range data.srgType.GetMembers() {
+			parent, _ := graph.GetTypeOrModuleForSourceNode(data.srgType.Node())
+			stc.decorateMember(member, parent, decorater(member.GraphNode), reporter, graph)
+		}
+		return true
+	}
+
+	workqueue := compilerutil.Queue()
+	for _, srgType := range stc.srg.GetTypes() {
+		workqueue.Enqueue(srgType.Node(), typeMemberWork{srgType}, buildTypeMembers)
+	}
+	workqueue.Run()
+}
+
 // defineMember defines a single type member under a type or module.
 func (stc *srgTypeConstructor) defineMember(member srg.SRGMember, parent typegraph.TGTypeOrModule, builder *typegraph.MemberBuilder, reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {
 	// Define the member's name and source node.
@@ -162,15 +188,16 @@ func (stc *srgTypeConstructor) defineMember(member srg.SRGMember, parent typegra
 		builder.WithGeneric(generic.Name(), generic.Node())
 	}
 
-	// Define the member and its generics. We then populate the remainder of its attributes
-	// that depend on having the generics and member present.
-	dependentBuilder := builder.InitialDefine()
+	builder.Define()
+}
 
+// decorateMember decorates a single type member.
+func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typegraph.TGTypeOrModule, decorator *typegraph.MemberDecorator, reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {
 	// Add the generic's constraints.
 	for _, generic := range member.Generics() {
 		// Note: If the constraint is not valid, the resolve method will report the error and return Any, which is the correct type.
 		constraintType, _ := stc.resolvePossibleType(generic.Node(), generic.GetConstraint, graph, reporter)
-		dependentBuilder.DefineGenericConstraint(generic.Node(), constraintType)
+		decorator.DefineGenericConstraint(generic.Node(), constraintType)
 	}
 
 	// Build all member-specific information.
@@ -196,7 +223,7 @@ func (stc *srgTypeConstructor) defineMember(member srg.SRGMember, parent typegra
 		// Decorate the property *getter* with its return type.
 		getter, found := member.Getter()
 		if found {
-			dependentBuilder.CreateReturnable(getter.GraphNode, memberType)
+			decorator.CreateReturnable(getter.GraphNode, memberType)
 		}
 
 	case srg.ConstructorMember:
@@ -209,7 +236,7 @@ func (stc *srgTypeConstructor) defineMember(member srg.SRGMember, parent typegra
 		memberType, _ = stc.addSRGParameterTypes(member, functionType, graph, reporter)
 
 		// Decorate the constructor with its return type.
-		dependentBuilder.CreateReturnable(member.Node(), returnType)
+		decorator.CreateReturnable(member.Node(), returnType)
 
 	case srg.OperatorMember:
 		// Operators are read-only.
@@ -249,35 +276,35 @@ func (stc *srgTypeConstructor) defineMember(member srg.SRGMember, parent typegra
 		returnType, _ := stc.resolvePossibleType(member.Node(), member.ReturnType, graph, reporter)
 
 		// Decorate the function with its return type.
-		dependentBuilder.CreateReturnable(member.Node(), returnType)
+		decorator.CreateReturnable(member.Node(), returnType)
 
 		functionType := graph.NewTypeReference(graph.FunctionType(), returnType)
 		memberType, _ = stc.addSRGParameterTypes(member, functionType, graph, reporter)
 	}
 
 	// Decorate the member with whether it is exported.
-	dependentBuilder.Exported(member.IsExported())
+	decorator.Exported(member.IsExported())
 
 	// If the member is under a module, then it is static.
-	dependentBuilder.Static(isStatic || !parent.IsType())
+	decorator.Static(isStatic || !parent.IsType())
 
 	// Decorate the member with whether it is promising.
-	dependentBuilder.Promising(isPromising)
+	decorator.Promising(isPromising)
 
 	// Decorate the member with whether it is implicitly called.
-	dependentBuilder.ImplicitlyCalled(isImplicitlyCalled)
+	decorator.ImplicitlyCalled(isImplicitlyCalled)
 
 	// Decorate the member with whether it is read-only.
-	dependentBuilder.ReadOnly(isReadOnly)
+	decorator.ReadOnly(isReadOnly)
 
 	// Decorate the member with its type.
-	dependentBuilder.MemberType(memberType)
+	decorator.MemberType(memberType)
 
 	// Decorate the member with its kind.
-	dependentBuilder.MemberKind(uint64(member.MemberKind()))
+	decorator.MemberKind(uint64(member.MemberKind()))
 
 	// Finalize the member.
-	dependentBuilder.Define()
+	decorator.Decorate()
 }
 
 func (stc *srgTypeConstructor) Validate(reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {

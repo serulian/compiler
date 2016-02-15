@@ -112,10 +112,10 @@
                     }
                 }
             },
-            "dcf59f9bc5fed892f103ad2befe5bae1": {
+            "50a1204551a4c176b0e37179c20c2509": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "dcf59f9bc5fed892f103ad2befe5bae1",
+                    "Key": "50a1204551a4c176b0e37179c20c2509",
                     "Kind": 6,
                     "Children": {
                         "89bfdde4769332f561fc28a0801f8bd6": {
@@ -138,7 +138,7 @@
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "Function\u003cInteger\u003e(Integer, Integer)",
-                        "tdg-member-signature": "\n\u000bDoSomething\u0010\u0002\u0018\u0000 \u0001*#Function\u003cInteger\u003e(Integer, Integer)",
+                        "tdg-member-signature": "\n\u000bdosomething\u0010\u0002\u0018\u0000 \u0001*#Function\u003cInteger\u003e(Integer, Integer)",
                         "tdg-node-kind": "6|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/genericinterface.seru",
                         "tdg-source-node": "(NodeRef)"
@@ -157,10 +157,10 @@
         "Key": "e8bcc60433738e948eb232641ac9f0cd",
         "Kind": 2,
         "Children": {
-            "63afa6a6535a132f3b66aba2400a61a8": {
+            "545744e241207c36bb6af2cbc7f6989d": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "63afa6a6535a132f3b66aba2400a61a8",
+                    "Key": "545744e241207c36bb6af2cbc7f6989d",
                     "Kind": 6,
                     "Children": {
                         "5ada5955e751fdb6a91c8dffd7c05d0e": {
@@ -183,7 +183,7 @@
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "Function\u003cT\u003e(T, T)",
-                        "tdg-member-signature": "\n\u000bDoSomething\u0010\u0002\u0018\u0000 \u0001*\u0011Function\u003cT\u003e(T, T)",
+                        "tdg-member-signature": "\n\u000bdosomething\u0010\u0002\u0018\u0000 \u0001*\u0011Function\u003cT\u003e(T, T)",
                         "tdg-node-kind": "6|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/genericinterface.seru",
                         "tdg-source-node": "(NodeRef)"

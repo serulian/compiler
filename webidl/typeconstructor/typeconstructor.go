@@ -69,8 +69,7 @@ func (itc *irgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 	}
 }
 
-func (itc *irgTypeConstructor) DefineDependencies(annotator *typegraph.Annotator, graph *typegraph.TypeGraph) {
-
+func (itc *irgTypeConstructor) DefineDependencies(annotator typegraph.Annotator, graph *typegraph.TypeGraph) {
 }
 
 func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder, reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {
@@ -82,6 +81,63 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 		}
 
 		// If the declaration has one (or more) constructors, add then as a "new".
+		if declaration.HasAnnotation(CONSTRUCTOR_ANNOTATION) {
+			// Declare a "new" member which returns an instance of this type.
+			builder(parentNode, false).
+				Name("new").
+				SourceNode(declaration.GetAnnotations(CONSTRUCTOR_ANNOTATION)[0].GraphNode).
+				Define()
+		}
+
+		// Add support for any native operators.
+		if declaration.HasAnnotation(GLOBAL_CONTEXT_ANNOTATION) && declaration.HasAnnotation(NATIVE_OPERATOR_ANNOTATION) {
+			reporter.ReportError(declaration.GraphNode, "[NativeOperator] not supported on declarations marked with [GlobalContext]")
+			return
+		}
+
+		for _, nativeOp := range declaration.GetAnnotations(NATIVE_OPERATOR_ANNOTATION) {
+			opName, hasOpName := nativeOp.Value()
+			if !hasOpName {
+				reporter.ReportError(nativeOp.GraphNode, "Missing operator name on [NativeOperator] annotation")
+				continue
+			}
+
+			// Lookup the operator under the type graph.
+			opDefinition, found := graph.GetOperatorDefinition(opName)
+			if !found || !opDefinition.IsStatic {
+				reporter.ReportError(nativeOp.GraphNode, "Unknown native operator '%v'", opName)
+				continue
+			}
+
+			// Add the operator to the type.
+			builder(parentNode, true).
+				Name(opName).
+				SourceNode(nativeOp.GraphNode).
+				Define()
+		}
+
+		// Add the declared members and specializations.
+		for _, member := range declaration.Members() {
+			name, hasName := member.Name()
+			if hasName {
+				builder(parentNode, false).
+					Name(name).
+					SourceNode(member.GraphNode).
+					Define()
+			} else {
+				// This is a specialization.
+				specialization, _ := member.Specialization()
+				builder(parentNode, true).
+					Name(SPECIALIZATION_NAMES[specialization]).
+					SourceNode(member.GraphNode).
+					Define()
+			}
+		}
+	}
+}
+
+func (itc *irgTypeConstructor) DecorateMembers(decorator typegraph.GetMemberDecorator, reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {
+	for _, declaration := range itc.irg.Declarations() {
 		if declaration.HasAnnotation(CONSTRUCTOR_ANNOTATION) {
 			// For each constructor defined, create the intersection of their parameters.
 			var parameters = make([]typegraph.TypeReference, 0)
@@ -119,35 +175,23 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 				constructorFunction = constructorFunction.WithParameter(parameterType)
 			}
 
-			// Declare a "new" member which returns an instance of this type.
-			builder(parentNode, false).
-				Name("new").
-				InitialDefine().
+			decorator(declaration.GetAnnotations(CONSTRUCTOR_ANNOTATION)[0].GraphNode).
 				Exported(true).
 				Static(true).
 				ReadOnly(true).
 				MemberKind(uint64(webidl.ConstructorMember)).
 				MemberType(constructorFunction).
-				Define()
-		}
-
-		// Add support for any native operators.
-		if declaration.HasAnnotation(GLOBAL_CONTEXT_ANNOTATION) && declaration.HasAnnotation(NATIVE_OPERATOR_ANNOTATION) {
-			reporter.ReportError(declaration.GraphNode, "[NativeOperator] not supported on declarations marked with [GlobalContext]")
-			return
+				Decorate()
 		}
 
 		for _, nativeOp := range declaration.GetAnnotations(NATIVE_OPERATOR_ANNOTATION) {
 			opName, hasOpName := nativeOp.Value()
 			if !hasOpName {
-				reporter.ReportError(nativeOp.GraphNode, "Missing operator name on [NativeOperator] annotation")
 				continue
 			}
 
-			// Lookup the operator under the type graph.
 			opDefinition, found := graph.GetOperatorDefinition(opName)
-			if !found || !opDefinition.IsStatic {
-				reporter.ReportError(nativeOp.GraphNode, "Unknown native operator '%v'", opName)
+			if !found {
 				continue
 			}
 
@@ -162,40 +206,20 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 			var operatorType = graph.FunctionTypeReference(expectedReturnType)
 			for _, parameter := range opDefinition.Parameters {
 				operatorType = operatorType.WithParameter(parameter.ExpectedType(typeDecl.GetTypeReference()))
-
 			}
 
 			// Add the operator to the type.
-			builder(parentNode, true).
-				Name(opName).
-				SourceNode(nativeOp.GraphNode).
-				InitialDefine().
+			decorator(nativeOp.GraphNode).
 				Native(true).
 				Exported(true).
 				SkipOperatorChecking(true).
 				MemberType(operatorType).
 				MemberKind(uint64(webidl.OperatorMember)).
-				Define()
+				Decorate()
 		}
 
 		// Add the declared members.
 		for _, member := range declaration.Members() {
-			var ibuilder *typegraph.MemberBuilder = nil
-
-			name, hasName := member.Name()
-			if hasName {
-				ibuilder = builder(parentNode, false).Name(name)
-			} else {
-				// This is a specialization.
-				specialization, _ := member.Specialization()
-				ibuilder = builder(parentNode, true).
-					Name(SPECIALIZATION_NAMES[specialization])
-			}
-
-			builder := ibuilder.
-				SourceNode(member.GraphNode).
-				InitialDefine()
-
 			declaredType, err := itc.ResolveType(member.DeclaredType(), graph)
 			if err != nil {
 				reporter.ReportError(member.GraphNode, "%v", err)
@@ -241,16 +265,17 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 				panic("Unknown WebIDL member kind")
 			}
 
-			if !hasName {
-				builder.Native(true)
+			decorator := decorator(member.GraphNode)
+			if _, hasName := member.Name(); !hasName {
+				decorator.Native(true)
 			}
 
-			builder.Exported(true).
+			decorator.Exported(true).
 				Static(member.IsStatic()).
 				ReadOnly(isReadonly).
 				MemberKind(uint64(member.Kind())).
 				MemberType(memberType).
-				Define()
+				Decorate()
 		}
 	}
 }

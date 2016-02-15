@@ -24,15 +24,17 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 		memberType := g.FunctionTypeReference(g.NewInstanceTypeReference(typeDecl))
 
 		builder := &MemberBuilder{tdg: g, parent: typeDecl}
-		builder.Name("new").
-			InitialDefine().
+		member := builder.Name("new").Define()
+
+		decorator := &MemberDecorator{tdg: g, member: member}
+		decorator.
 			Static(true).
 			Promising(true).
 			Exported(false).
 			ReadOnly(true).
 			MemberType(memberType).
 			MemberKind(0).
-			Define()
+			Decorate()
 	}
 }
 

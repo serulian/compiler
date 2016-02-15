@@ -28,10 +28,14 @@ type TypeGraphConstructor interface {
 	DefineTypes(builder GetTypeBuilder)
 
 	// Defines the constraints on generics, inheritance, and other type-dependent info.
-	DefineDependencies(annotator *Annotator, graph *TypeGraph)
+	DefineDependencies(annotator Annotator, graph *TypeGraph)
 
 	// Defines the members under the modules and types.
 	DefineMembers(builder GetMemberBuilder, reporter IssueReporter, graph *TypeGraph)
+
+	// Decorates all members with their generics and other attributes. Occurs as a second step after
+	// DefineMembers to ensure member-level generics are available for resolution.
+	DecorateMembers(decorator GetMemberDecorator, reporter IssueReporter, graph *TypeGraph)
 
 	// Performs final validation of the type graph after full definition.
 	Validate(reporter IssueReporter, graph *TypeGraph)
@@ -44,6 +48,7 @@ type TypeGraphConstructor interface {
 type GetModuleBuilder func() *moduleBuilder
 type GetTypeBuilder func(moduleSourceNode compilergraph.GraphNode) *typeBuilder
 type GetMemberBuilder func(moduleOrTypeSourceNode compilergraph.GraphNode, isOperator bool) *MemberBuilder
+type GetMemberDecorator func(memberSourceNode compilergraph.GraphNode) *MemberDecorator
 
 type getGenericBuilder func() *genericBuilder
 
@@ -59,7 +64,7 @@ type issueReporterImpl struct {
 }
 
 // ReportError adds an error to the type graph, starting from the given source node.
-func (ir *issueReporterImpl) ReportError(sourceNode compilergraph.GraphNode, message string, params ...interface{}) {
+func (ir issueReporterImpl) ReportError(sourceNode compilergraph.GraphNode, message string, params ...interface{}) {
 	issueNode := ir.tdg.layer.CreateNode(NodeTypeReportedIssue)
 	issueNode.Connect(NodePredicateSource, sourceNode)
 	ir.tdg.decorateWithError(issueNode, message, params...)
@@ -74,14 +79,14 @@ type Annotator struct {
 }
 
 // DefineGenericConstraint defines the constraint on a type or type member generic to be that specified.
-func (an *Annotator) DefineGenericConstraint(genericSourceNode compilergraph.GraphNode, constraint TypeReference) {
+func (an Annotator) DefineGenericConstraint(genericSourceNode compilergraph.GraphNode, constraint TypeReference) {
 	genericNode := an.tdg.getMatchingTypeGraphNode(genericSourceNode, NodeTypeGeneric)
 	genericNode.DecorateWithTagged(NodePredicateGenericSubtype, constraint)
 }
 
 // DefineParentType defines that the given type inherits from the given parent type. For classes, the parent
 // is structurally inherited and for nominal types, it describes conversion.
-func (an *Annotator) DefineParentType(typeSourceNode compilergraph.GraphNode, inherits TypeReference) {
+func (an Annotator) DefineParentType(typeSourceNode compilergraph.GraphNode, inherits TypeReference) {
 	typeNode := an.tdg.getMatchingTypeGraphNode(typeSourceNode, NodeTypeClass, NodeTypeNominalType)
 	typeNode.DecorateWithTagged(NodePredicateParentType, inherits)
 }
@@ -309,18 +314,6 @@ func (gb *genericBuilder) defineGeneric() TGGeneric {
 
 // MemberBuilder ////////////////////////////////////////////////////////////////////////////////////
 
-// memberGeneric holds information about a member's generic.
-type memberGeneric struct {
-	name       string
-	sourceNode compilergraph.GraphNode
-}
-
-// memberReturnable holds information about a returnable under a member.
-type memberReturnable struct {
-	sourceNode compilergraph.GraphNode
-	returnType TypeReference
-}
-
 // MemberBuilder defines a helper type for easy construction of module and type members.
 type MemberBuilder struct {
 	tdg            *TypeGraph              // The underlying type graph.
@@ -332,36 +325,10 @@ type MemberBuilder struct {
 	memberGenerics []memberGeneric         // The generics on the member.
 }
 
-// MemberBuilder defines a helper type for easy annotation of module and type members's dependent
-// information.
-type dependentMemberBuilder struct {
-	tdg        *TypeGraph              // The underlying type graph.
-	parent     TGTypeOrModule          // The parent type or module node.
-	isOperator bool                    // Whether the member being defined is an operator.
-	sourceNode compilergraph.GraphNode // The node for the generic in the source graph.
-
-	memberNode compilergraph.GraphNode // The constructed member node.
-	name       string                  // The name of the member.
-	generics   []TGGeneric             // The member's generics.
-
-	issueReporter IssueReporter // The underlying issue reporter.
-
-	exists bool // Whether a member with the same name already exists under the parent
-
-	exported  bool // Whether the member is exported publicly.
-	readonly  bool // Whether the member is readonly.
-	static    bool // Whether the member is static.
-	promising bool // Whether the member is promising.
-	implicit  bool // Whether the member is implicitly called.
-	native    bool // Whether this operator is native to ES.
-
-	skipOperatorChecking bool // Whether to skip operator checking.
-
-	memberType TypeReference // The defined type of the member.
-	memberKind uint64        // The kind of the member.
-
-	memberIssues []string           // Issues added on the member source node.
-	returnables  []memberReturnable // The defined returnables.
+// memberGeneric holds information about a member's generic.
+type memberGeneric struct {
+	name       string
+	sourceNode compilergraph.GraphNode
 }
 
 // Name sets the name of the member.
@@ -386,10 +353,8 @@ func (mb *MemberBuilder) WithGeneric(name string, sourceNode compilergraph.Graph
 	return mb
 }
 
-// Define defines the member under the type or module in the type graph. Returns another builder to finish
-// construction of the member. A two-step process is required because type member generics must be in the
-// type graph before member types can be resolved.
-func (mb *MemberBuilder) InitialDefine() *dependentMemberBuilder {
+// Define defines the member under the type or module in the type graph.
+func (mb *MemberBuilder) Define() TGMember {
 	// Ensure that there exists no other member with this name under the parent type or module.
 	var exists = false
 	var name = mb.name
@@ -427,7 +392,6 @@ func (mb *MemberBuilder) InitialDefine() *dependentMemberBuilder {
 	memberNode.Decorate(NodePredicateModulePath, mb.parent.ParentModule().Get(NodePredicateModulePath))
 
 	// Decorate the member with its generics.
-	generics := make([]TGGeneric, len(mb.memberGenerics))
 	for index, genericInfo := range mb.memberGenerics {
 		genericBuilder := genericBuilder{
 			tdg:             mb.tdg,
@@ -438,25 +402,72 @@ func (mb *MemberBuilder) InitialDefine() *dependentMemberBuilder {
 		}
 
 		genericBuilder.Name(genericInfo.name).SourceNode(genericInfo.sourceNode)
-		generics[index] = genericBuilder.defineGeneric()
+		genericBuilder.defineGeneric()
 	}
 
-	return &dependentMemberBuilder{
-		tdg:        mb.tdg,
-		parent:     mb.parent,
-		isOperator: mb.isOperator,
-		sourceNode: mb.sourceNode,
+	// Mark the member with an error if it is repeated.
+	if exists {
+		var kindTitle = "Member"
+		if mb.isOperator {
+			kindTitle = "Operator"
+		}
 
-		memberNode: memberNode,
-		name:       mb.name,
-		generics:   generics,
-		exists:     exists,
+		mb.tdg.decorateWithError(memberNode, "%s '%s' is already defined on %s '%s'", kindTitle, mb.name, mb.parent.Title(), mb.parent.Name())
 	}
+
+	// Add the member to the parent node.
+	parentNode := mb.parent.Node()
+
+	if mb.isOperator {
+		parentNode.Connect(NodePredicateTypeOperator, memberNode)
+	} else {
+		parentNode.Connect(NodePredicateMember, memberNode)
+	}
+
+	return TGMember{memberNode, mb.tdg}
+}
+
+// MemberDecorator ////////////////////////////////////////////////////////////////////////////////////
+
+// MemberDecorator defines a helper type for easy annotation of module and type members's dependent
+// information.
+type MemberDecorator struct {
+	tdg        *TypeGraph              // The parent type graph.
+	sourceNode compilergraph.GraphNode // The node for the generic in the source graph.
+	member     TGMember                // The member being decorated.
+
+	issueReporter IssueReporter // The underlying issue reporter.
+
+	exported  bool // Whether the member is exported publicly.
+	readonly  bool // Whether the member is readonly.
+	static    bool // Whether the member is static.
+	promising bool // Whether the member is promising.
+	implicit  bool // Whether the member is implicitly called.
+	native    bool // Whether this operator is native to ES.
+
+	skipOperatorChecking bool // Whether to skip operator checking.
+
+	memberType TypeReference // The defined type of the member.
+	memberKind uint64        // The kind of the member.
+
+	memberIssues []string           // Issues added on the member source node.
+	returnables  []memberReturnable // The defined returnables.
+}
+
+// memberReturnable holds information about a returnable under a member.
+type memberReturnable struct {
+	sourceNode compilergraph.GraphNode
+	returnType TypeReference
+}
+
+// isOperator returns whether the member being decorated is an operator.
+func (mb *MemberDecorator) isOperator() bool {
+	return mb.member.IsOperator()
 }
 
 // SkipOperatorChecking sets whether to skip operator checking for native operators.
-func (mb *dependentMemberBuilder) SkipOperatorChecking(skip bool) *dependentMemberBuilder {
-	if !mb.isOperator {
+func (mb *MemberDecorator) SkipOperatorChecking(skip bool) *MemberDecorator {
+	if !mb.isOperator() {
 		panic("SkipOperatorChecking can only be called for operators")
 	}
 
@@ -469,8 +480,8 @@ func (mb *dependentMemberBuilder) SkipOperatorChecking(skip bool) *dependentMemb
 }
 
 // Native sets whether the member is native.
-func (mb *dependentMemberBuilder) Native(native bool) *dependentMemberBuilder {
-	if !mb.isOperator {
+func (mb *MemberDecorator) Native(native bool) *MemberDecorator {
+	if !mb.isOperator() {
 		panic("Native can only be called for operators")
 	}
 
@@ -479,50 +490,50 @@ func (mb *dependentMemberBuilder) Native(native bool) *dependentMemberBuilder {
 }
 
 // ImplicitlyCalled sets whether the member is implicitly called on access or assignment.
-func (mb *dependentMemberBuilder) ImplicitlyCalled(implicit bool) *dependentMemberBuilder {
+func (mb *MemberDecorator) ImplicitlyCalled(implicit bool) *MemberDecorator {
 	mb.implicit = implicit
 	return mb
 }
 
 // Exported sets whether the member is exported publicly.
-func (mb *dependentMemberBuilder) Exported(exported bool) *dependentMemberBuilder {
+func (mb *MemberDecorator) Exported(exported bool) *MemberDecorator {
 	mb.exported = exported
 	return mb
 }
 
 // ReadOnly sets whether the member is read only.
-func (mb *dependentMemberBuilder) ReadOnly(readonly bool) *dependentMemberBuilder {
+func (mb *MemberDecorator) ReadOnly(readonly bool) *MemberDecorator {
 	mb.readonly = readonly
 	return mb
 }
 
 // Static sets whether the member is static.
-func (mb *dependentMemberBuilder) Static(static bool) *dependentMemberBuilder {
+func (mb *MemberDecorator) Static(static bool) *MemberDecorator {
 	mb.static = static
 	return mb
 }
 
 // Promising sets whether the member is promising.
-func (mb *dependentMemberBuilder) Promising(promising bool) *dependentMemberBuilder {
+func (mb *MemberDecorator) Promising(promising bool) *MemberDecorator {
 	mb.promising = promising
 	return mb
 }
 
 // MemberType sets the type of the member.
-func (mb *dependentMemberBuilder) MemberType(memberType TypeReference) *dependentMemberBuilder {
+func (mb *MemberDecorator) MemberType(memberType TypeReference) *MemberDecorator {
 	mb.memberType = memberType
 	return mb
 }
 
 // MemberKind sets a unique int representing the kind of the member. Used for signature calculation.
-func (mb *dependentMemberBuilder) MemberKind(memberKind uint64) *dependentMemberBuilder {
+func (mb *MemberDecorator) MemberKind(memberKind uint64) *MemberDecorator {
 	mb.memberKind = memberKind
 	return mb
 }
 
 // CreateReturnable adds a returnable definition to the type graph, indicating that the given source node returns
 // a value of the given type.
-func (mb *dependentMemberBuilder) CreateReturnable(sourceNode compilergraph.GraphNode, returnType TypeReference) *dependentMemberBuilder {
+func (mb *MemberDecorator) CreateReturnable(sourceNode compilergraph.GraphNode, returnType TypeReference) *MemberDecorator {
 	mb.returnables = append(mb.returnables, memberReturnable{
 		sourceNode, returnType,
 	})
@@ -530,34 +541,24 @@ func (mb *dependentMemberBuilder) CreateReturnable(sourceNode compilergraph.Grap
 }
 
 // DefineGenericConstraint defines the constraint on the type member generic to be that specified.
-func (mb *dependentMemberBuilder) DefineGenericConstraint(genericSourceNode compilergraph.GraphNode, constraint TypeReference) {
+func (mb *MemberDecorator) DefineGenericConstraint(genericSourceNode compilergraph.GraphNode, constraint TypeReference) {
 	genericNode := mb.tdg.getMatchingTypeGraphNode(genericSourceNode, NodeTypeGeneric)
 	genericNode.DecorateWithTagged(NodePredicateGenericSubtype, constraint)
 }
 
-// Define completes the definition of the member.
-func (mb *dependentMemberBuilder) Define() {
-	memberNode := mb.memberNode
-
-	// Mark the member with an error if it is repeated.
-	if mb.exists {
-		var kindTitle = "Member"
-		if mb.isOperator {
-			kindTitle = "Operator"
-		}
-
-		mb.tdg.decorateWithError(memberNode, "%s '%s' is already defined on %s '%s'", kindTitle, mb.name, mb.parent.Title(), mb.parent.Name())
-	}
+// Decorate completes the decoration of the member.
+func (mb *MemberDecorator) Decorate() {
+	memberNode := mb.member.GraphNode
 
 	// If this is an operator, type check and compute member type.
-	if mb.isOperator {
-		mb.checkAndComputeOperator(memberNode, mb.name)
+	if mb.isOperator() {
+		mb.checkAndComputeOperator(memberNode, mb.member.Name())
 	} else {
 		// Decorate the member with its type.
 		memberNode.DecorateWithTagged(NodePredicateMemberType, mb.memberType)
 
 		// Decorate the member with its signature.
-		mb.decorateWithSig(memberNode, mb.memberType, mb.generics...)
+		mb.decorateWithSig(memberNode, mb.memberType, mb.member.Generics()...)
 	}
 
 	if mb.promising {
@@ -592,25 +593,21 @@ func (mb *dependentMemberBuilder) Define() {
 
 		memberNode.Connect(NodePredicateReturnable, returnNode)
 	}
+}
 
-	// Add the member to the parent node.
-	parentNode := mb.parent.Node()
-
-	if mb.isOperator {
-		parentNode.Connect(NodePredicateTypeOperator, memberNode)
-	} else {
-		parentNode.Connect(NodePredicateMember, memberNode)
-	}
+// parent returns the parent type or module.
+func (mb *MemberDecorator) parent() TGTypeOrModule {
+	return mb.member.Parent()
 }
 
 // checkAndComputeOperator handles specialized logic for operator members.
-func (mb *dependentMemberBuilder) checkAndComputeOperator(memberNode compilergraph.GraphNode, name string) {
+func (mb *MemberDecorator) checkAndComputeOperator(memberNode compilergraph.GraphNode, name string) {
 	name = strings.ToLower(name)
 
 	// Verify that the operator matches a known operator.
 	definition, ok := mb.tdg.operators[name]
 	if !ok {
-		mb.tdg.decorateWithError(memberNode, "Unknown operator '%s' defined on type '%s'", name, mb.parent.Name())
+		mb.tdg.decorateWithError(memberNode, "Unknown operator '%s' defined on type '%s'", name, mb.parent().Name())
 		return
 	}
 
@@ -620,13 +617,13 @@ func (mb *dependentMemberBuilder) checkAndComputeOperator(memberNode compilergra
 
 	// Ensure that the declared return type is equal to that expected.
 	declaredReturnType := mb.memberType.Generics()[0]
-	containingType := mb.tdg.NewInstanceTypeReference(mb.parent.AsType())
+	containingType := mb.tdg.NewInstanceTypeReference(mb.parent().AsType())
 	expectedReturnType := definition.ExpectedReturnType(containingType)
 
 	if !mb.skipOperatorChecking {
 		if !expectedReturnType.IsAny() && !declaredReturnType.IsAny() && declaredReturnType != expectedReturnType {
 			mb.tdg.decorateWithError(memberNode, "Operator '%s' defined on type '%s' expects a return type of '%v'; found %v",
-				name, mb.parent.Name(), expectedReturnType, declaredReturnType)
+				name, mb.parent().Name(), expectedReturnType, declaredReturnType)
 			return
 		}
 	}
@@ -644,7 +641,7 @@ func (mb *dependentMemberBuilder) checkAndComputeOperator(memberNode compilergra
 	if !mb.skipOperatorChecking {
 		if mb.memberType.ParameterCount() != len(parametersExpected) {
 			mb.tdg.decorateWithError(memberNode, "Operator '%s' defined on type '%s' expects %v parameters; found %v",
-				name, mb.parent.Name(), len(parametersExpected), mb.memberType.ParameterCount())
+				name, mb.parent().Name(), len(parametersExpected), mb.memberType.ParameterCount())
 			return
 		}
 	}
@@ -658,7 +655,7 @@ func (mb *dependentMemberBuilder) checkAndComputeOperator(memberNode compilergra
 			expectedType := parametersExpected[index].ExpectedType(containingType)
 			if !expectedType.IsAny() && expectedType != parameterType {
 				mb.tdg.decorateWithError(memberNode, "Parameter '%s' (#%v) for operator '%s' defined on type '%s' expects type %v; found %v",
-					parametersExpected[index].Name, index, name, mb.parent.Name(),
+					parametersExpected[index].Name, index, name, mb.parent().Name(),
 					expectedType, parameterType)
 			}
 		}
@@ -678,7 +675,7 @@ func (mb *dependentMemberBuilder) checkAndComputeOperator(memberNode compilergra
 }
 
 // decorateWithSig decorates the given member node with a unique signature for fast subtype checking.
-func (mb *dependentMemberBuilder) decorateWithSig(memberNode compilergraph.GraphNode, sigMemberType TypeReference, generics ...TGGeneric) {
+func (mb *MemberDecorator) decorateWithSig(memberNode compilergraph.GraphNode, sigMemberType TypeReference, generics ...TGGeneric) {
 	// Build type reference value strings for the member type and any generic constraints (which
 	// handles generic count as well). The call to Localize replaces the type node IDs in the
 	// type references with a local ID (#1, #2, etc), to allow for positional comparison between
@@ -691,9 +688,10 @@ func (mb *dependentMemberBuilder) decorateWithSig(memberNode compilergraph.Graph
 	}
 
 	isWritable := !mb.readonly
+	name := strings.ToLower(mb.member.Name())
 
 	signature := &proto.MemberSig{
-		MemberName:         &mb.name,
+		MemberName:         &name,
 		MemberKind:         &mb.memberKind,
 		IsExported:         &mb.exported,
 		IsWritable:         &isWritable,

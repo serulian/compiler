@@ -106,10 +106,10 @@
         "Key": "9e5e541b117f5979f4908a344eb9a9ce",
         "Kind": 3,
         "Children": {
-            "0f4e37d7007b689a55d6d998ccdcb2bb": {
+            "f7e48f9388810a30783d6ca71a4eb1ed": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "0f4e37d7007b689a55d6d998ccdcb2bb",
+                    "Key": "f7e48f9388810a30783d6ca71a4eb1ed",
                     "Kind": 6,
                     "Children": {},
                     "Predicates": {
@@ -117,7 +117,7 @@
                         "tdg-member-name": "SomeFunction",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cvoid\u003e(Foo, Foo, Foo?, Foo?)",
-                        "tdg-member-signature": "\n\u000cSomeFunction\u0010\u0002\u0018\u0000 \u0001*$function\u003cvoid\u003e(Foo, Foo, Foo?, Foo?)",
+                        "tdg-member-signature": "\n\u000csomefunction\u0010\u0002\u0018\u0000 \u0001*$function\u003cvoid\u003e(Foo, Foo, Foo?, Foo?)",
                         "tdg-node-kind": "6|NodeType|tdg",
                         "tdg-source-module": "tests/optionalparam.webidl",
                         "tdg-source-node": "(NodeRef)"

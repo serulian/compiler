@@ -16,14 +16,12 @@ import (
 	"github.com/serulian/compiler/packageloader"
 )
 
-// TYPE_NODE_TYPES defines the NodeTypes that represent defined types in the graph.
 var TYPE_NODE_TYPES = []NodeType{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType}
 var TYPE_NODE_TYPES_TAGGED = []compilergraph.TaggedValue{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType}
 
-// TYPE_NODE_TYPES defines the NodeTypes that represent defined types or a module in the graph.
 var TYPEORMODULE_NODE_TYPES = []NodeType{NodeTypeModule, NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType}
-
 var TYPEORGENERIC_NODE_TYPES = []NodeType{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType, NodeTypeGeneric}
+var MEMBER_NODE_TYPES = []NodeType{NodeTypeMember, NodeTypeOperator}
 
 // TypeGraph represents the TypeGraph layer and all its associated helper methods.
 type TypeGraph struct {
@@ -78,7 +76,7 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 
 	// Annotate all dependencies.
 	for _, constructor := range constructors {
-		annotator := &Annotator{
+		annotator := Annotator{
 			issueReporterImpl{typeGraph},
 		}
 
@@ -88,26 +86,37 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 	// Load the operators map. Requires the types loaded as it performs lookups of certain types (int, etc).
 	typeGraph.buildOperatorDefinitions()
 
-	// Build all members.
+	// Build all initial definitions for members.
 	for _, constructor := range constructors {
 		constructor.DefineMembers(func(moduleOrTypeSourceNode compilergraph.GraphNode, isOperator bool) *MemberBuilder {
 			typegraphNode := typeGraph.getMatchingTypeGraphNode(moduleOrTypeSourceNode, TYPEORMODULE_NODE_TYPES...)
 
+			var parent TGTypeOrModule = nil
 			if typegraphNode.Kind == NodeTypeModule {
-				return &MemberBuilder{
-					parent:     TGModule{typegraphNode, typeGraph},
-					tdg:        typeGraph,
-					isOperator: isOperator,
-				}
+				parent = TGModule{typegraphNode, typeGraph}
 			} else {
-				return &MemberBuilder{
-					parent:     TGTypeDecl{typegraphNode, typeGraph},
-					tdg:        typeGraph,
-					isOperator: isOperator,
-				}
+				parent = TGTypeDecl{typegraphNode, typeGraph}
 			}
 
-		}, &issueReporterImpl{typeGraph}, typeGraph)
+			return &MemberBuilder{
+				parent:     parent,
+				tdg:        typeGraph,
+				isOperator: isOperator,
+			}
+		}, issueReporterImpl{typeGraph}, typeGraph)
+	}
+
+	// Decorate all the members.
+	for _, constructor := range constructors {
+		constructor.DecorateMembers(func(memberSourceNode compilergraph.GraphNode) *MemberDecorator {
+			typegraphNode := typeGraph.getMatchingTypeGraphNode(memberSourceNode, MEMBER_NODE_TYPES...)
+
+			return &MemberDecorator{
+				sourceNode: memberSourceNode,
+				member:     TGMember{typegraphNode, typeGraph},
+				tdg:        typeGraph,
+			}
+		}, issueReporterImpl{typeGraph}, typeGraph)
 	}
 
 	// Handle inheritance checking and member cloning.
@@ -119,7 +128,7 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 	// If there are no errors yet, validate everything.
 	if _, hasError := typeGraph.layer.StartQuery().In(NodePredicateError).TryGetNode(); !hasError {
 		for _, constructor := range constructors {
-			reporter := &issueReporterImpl{typeGraph}
+			reporter := issueReporterImpl{typeGraph}
 			constructor.Validate(reporter, typeGraph)
 		}
 	}

@@ -81,10 +81,10 @@
                     }
                 }
             },
-            "ccf0f5e364c31bb891629819e04bb28c": {
+            "c50b135f5290066449c1c9633a3ec733": {
                 "Predicate": "tdg-declaration-operator",
                 "Child": {
-                    "Key": "ccf0f5e364c31bb891629819e04bb28c",
+                    "Key": "c50b135f5290066449c1c9633a3ec733",
                     "Kind": 7,
                     "Children": {
                         "4cfa5bf9473cf7e379180733ae9dc9ee": {
@@ -107,7 +107,7 @@
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "Function\u003cThirdClass\u003e(ThirdClass, ThirdClass)",
-                        "tdg-member-signature": "\n\u0004Plus\u0010\u0004\u0018\u0000 \u0001*\u0003any",
+                        "tdg-member-signature": "\n\u0004plus\u0010\u0004\u0018\u0000 \u0001*\u0003any",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-operator-name": "plus",
@@ -128,10 +128,10 @@
         "Key": "b6c6a90b75f2dae50189e5f471a2d536",
         "Kind": 2,
         "Children": {
-            "8ccc2bddf9c400fdfd4a41b0e1898a9c": {
+            "1eb0a531f071285e1772400c5e0dc611": {
                 "Predicate": "tdg-declaration-operator",
                 "Child": {
-                    "Key": "8ccc2bddf9c400fdfd4a41b0e1898a9c",
+                    "Key": "1eb0a531f071285e1772400c5e0dc611",
                     "Kind": 7,
                     "Children": {
                         "acd64185762d1284a080b68c31635f5b": {
@@ -154,7 +154,7 @@
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "Function\u003cISomeInterface\u003e(ISomeInterface, ISomeInterface)",
-                        "tdg-member-signature": "\n\u0004Plus\u0010\u0004\u0018\u0000 \u0001*\u0003any",
+                        "tdg-member-signature": "\n\u0004plus\u0010\u0004\u0018\u0000 \u0001*\u0003any",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-operator-name": "plus",

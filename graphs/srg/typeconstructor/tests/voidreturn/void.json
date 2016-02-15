@@ -3,10 +3,10 @@
         "Key": "4704ed9c6e4759df3de2a6e9f5ca3314",
         "Kind": 5,
         "Children": {
-            "34c0d3e658e1d85a0d443dcf0755db82": {
+            "5bdbf99586a82ebe44229b187e2221d6": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "34c0d3e658e1d85a0d443dcf0755db82",
+                    "Key": "5bdbf99586a82ebe44229b187e2221d6",
                     "Kind": 6,
                     "Children": {
                         "8b4fec458387eb96b56825e02609df75": {
@@ -29,7 +29,7 @@
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "Function\u003cvoid\u003e",
-                        "tdg-member-signature": "\n\u0010SomeVoidFunction\u0010\u0002\u0018\u0000 \u0001*\u000eFunction\u003cvoid\u003e",
+                        "tdg-member-signature": "\n\u0010somevoidfunction\u0010\u0002\u0018\u0000 \u0001*\u000eFunction\u003cvoid\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "6|NodeType|tdg",
                         "tdg-source-module": "tests/voidreturn/void.seru",
