@@ -5,14 +5,13 @@
 package srg
 
 import (
-	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/parser"
 )
 
 // srgASTNode represents a parser-compatible AST node, backed by an SRG node.
 type srgASTNode struct {
-	graphNode compilergraph.GraphNode // The backing graph node.
+	graphNode compilergraph.ModifiableGraphNode // The backing graph node.
 }
 
 // Connect connects an SRG AST node to another SRG AST node.
@@ -25,12 +24,4 @@ func (ast *srgASTNode) Connect(predicate string, other parser.AstNode) parser.As
 func (ast *srgASTNode) Decorate(predicate string, value string) parser.AstNode {
 	ast.graphNode.Decorate(predicate, value)
 	return ast
-}
-
-// buildASTNode constructs a new node in the SRG.
-func (g *SRG) buildASTNode(source compilercommon.InputSource, kind parser.NodeType) parser.AstNode {
-	graphNode := g.layer.CreateNode(kind)
-	return &srgASTNode{
-		graphNode: graphNode,
-	}
 }

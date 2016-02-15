@@ -31,13 +31,16 @@ func NewIRG(graph *compilergraph.SerulianGraph) *WebIRG {
 		graph: graph,
 		layer: graph.NewGraphLayer("webirg", parser.NodeTypeTagged),
 	}
-	irg.rootModuleNode = irg.layer.CreateNode(parser.NodeTypeGlobalModule)
+
+	modifier := irg.layer.NewModifier()
+	irg.rootModuleNode = modifier.CreateNode(parser.NodeTypeGlobalModule).AsNode()
+	modifier.Apply()
 	return irg
 }
 
 // PackageLoaderHandler returns a SourceHandler for populating the IRG via a package loader.
 func (g *WebIRG) PackageLoaderHandler() packageloader.SourceHandler {
-	return &irgSourceHandler{g}
+	return &irgSourceHandler{g, g.layer.NewModifier()}
 }
 
 // RootModuleNode returns the node that represents the root global module for all WebIDL.
@@ -46,7 +49,7 @@ func (g *WebIRG) RootModuleNode() compilergraph.GraphNode {
 }
 
 // findAllNodes starts a new query over the IRG from nodes of the given type.
-func (g *WebIRG) findAllNodes(nodeTypes ...parser.NodeType) *compilergraph.GraphQuery {
+func (g *WebIRG) findAllNodes(nodeTypes ...parser.NodeType) compilergraph.GraphQuery {
 	var nodeTypesTagged []compilergraph.TaggedValue = make([]compilergraph.TaggedValue, len(nodeTypes))
 	for index, nodeType := range nodeTypes {
 		nodeTypesTagged[index] = nodeType

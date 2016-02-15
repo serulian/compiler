@@ -35,6 +35,7 @@ func TestSyntaxError(t *testing.T) {
 	_, result := loadSRG(t, "tests/syntaxerror/start.seru")
 	if result.Status {
 		t.Errorf("Expected failed parse")
+		return
 	}
 
 	// Ensure the syntax error was reported.
@@ -47,6 +48,7 @@ func TestImportError(t *testing.T) {
 	_, result := loadSRG(t, "tests/syntaxerror/start.seru")
 	if result.Status {
 		t.Errorf("Expected failed parse")
+		return
 	}
 
 	// Ensure the parse error was reported.

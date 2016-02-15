@@ -18,7 +18,7 @@ func (g *SRG) HasContainingNode(node compilergraph.GraphNode, nodeTypes ...parse
 
 // TryGetContainingNode returns the containing node of the given node that is one of the given types, if any.
 func (g *SRG) TryGetContainingNode(node compilergraph.GraphNode, nodeTypes ...parser.NodeType) (compilergraph.GraphNode, bool) {
-	containingFilter := func(q *compilergraph.GraphQuery) compilergraph.Query {
+	containingFilter := func(q compilergraph.GraphQuery) compilergraph.Query {
 		startRune := node.Get(parser.NodePredicateStartRune)
 		endRune := node.Get(parser.NodePredicateEndRune)
 
@@ -34,7 +34,7 @@ func (g *SRG) TryGetContainingNode(node compilergraph.GraphNode, nodeTypes ...pa
 }
 
 // findAllNodes starts a new query over the SRG from nodes of the given type.
-func (g *SRG) findAllNodes(nodeTypes ...parser.NodeType) *compilergraph.GraphQuery {
+func (g *SRG) findAllNodes(nodeTypes ...parser.NodeType) compilergraph.GraphQuery {
 	var nodeTypesTagged []compilergraph.TaggedValue = make([]compilergraph.TaggedValue, len(nodeTypes))
 	for index, nodeType := range nodeTypes {
 		nodeTypesTagged[index] = nodeType

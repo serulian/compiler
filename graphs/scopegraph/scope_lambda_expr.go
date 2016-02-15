@@ -24,32 +24,6 @@ func (sb *scopeBuilder) scopeLambdaExpression(node compilergraph.GraphNode, opti
 	}
 }
 
-// scopeInlineLambaExpression scopes an inline lambda expression node in the SRG.
-func (sb *scopeBuilder) scopeInlineLambaExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
-	var returnType = sb.sg.tdg.AnyTypeReference()
-
-	// Scope the lambda's internal expression.
-	exprScope := sb.getScope(node.GetNode(parser.NodeLambdaExpressionChildExpr))
-	if exprScope.GetIsValid() {
-		returnType = exprScope.ResolvedTypeRef(sb.sg.tdg)
-	}
-
-	// Build the function type.
-	var functionType = sb.sg.tdg.FunctionTypeReference(returnType)
-
-	// Add the parameter types.
-	pit := node.StartQuery().
-		Out(parser.NodeLambdaExpressionInferredParameter).
-		BuildNodeIterator(NodePredicateInferredType)
-
-	for pit.Next() {
-		parameterType := pit.TaggedValue(NodePredicateInferredType, sb.sg.tdg.AnyTypeReference()).(typegraph.TypeReference)
-		functionType = functionType.WithParameter(parameterType)
-	}
-
-	return newScope().IsValid(exprScope.GetIsValid()).Resolving(functionType).GetScope()
-}
-
 // scopeFullLambaExpression scopes a fully defined lambda expression node in the SRG.
 func (sb *scopeBuilder) scopeFullLambaExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	var returnType = sb.sg.tdg.AnyTypeReference()
@@ -90,6 +64,36 @@ func (sb *scopeBuilder) scopeFullLambaExpression(node compilergraph.GraphNode, o
 	}
 
 	return newScope().IsValid(blockScope.GetIsValid()).Resolving(functionType).GetScope()
+}
+
+// scopeInlineLambaExpression scopes an inline lambda expression node in the SRG.
+func (sb *scopeBuilder) scopeInlineLambaExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+	var returnType = sb.sg.tdg.AnyTypeReference()
+
+	// Scope the lambda's internal expression.
+	exprScope := sb.getScope(node.GetNode(parser.NodeLambdaExpressionChildExpr))
+	if exprScope.GetIsValid() {
+		returnType = exprScope.ResolvedTypeRef(sb.sg.tdg)
+	}
+
+	// Build the function type.
+	var functionType = sb.sg.tdg.FunctionTypeReference(returnType)
+
+	// Add the parameter types.
+	pit := node.StartQuery().
+		Out(parser.NodeLambdaExpressionInferredParameter).
+		BuildNodeIterator()
+
+	for pit.Next() {
+		parameterType, hasParameterType := sb.inferredParameterTypes.Get(string(pit.Node().NodeId))
+		if hasParameterType {
+			functionType = functionType.WithParameter(parameterType.(typegraph.TypeReference))
+		} else {
+			functionType = functionType.WithParameter(sb.sg.tdg.AnyTypeReference())
+		}
+	}
+
+	return newScope().IsValid(exprScope.GetIsValid()).Resolving(functionType).GetScope()
 }
 
 // inferLambdaParameterTypes performs type inference to determine the types of the parameters of the
@@ -174,11 +178,13 @@ func (sb *scopeBuilder) inferLambdaParameterTypes(node compilergraph.GraphNode) 
 				}
 			}
 
-			inferenceParameter.DecorateWithTagged(NodePredicateInferredType, inferredType)
+			sb.inferredParameterTypes.Set(string(inferenceParameter.NodeId), inferredType)
+			sb.modifier.Modify(inferenceParameter).DecorateWithTagged(NodePredicateInferredType, inferredType)
 		}
 	} else {
 		for _, inferenceParameter := range inferenceParameters {
-			inferenceParameter.DecorateWithTagged(NodePredicateInferredType, sb.sg.tdg.AnyTypeReference())
+			sb.inferredParameterTypes.Set(string(inferenceParameter.NodeId), sb.sg.tdg.AnyTypeReference())
+			sb.modifier.Modify(inferenceParameter).DecorateWithTagged(NodePredicateInferredType, sb.sg.tdg.AnyTypeReference())
 		}
 	}
 }

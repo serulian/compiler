@@ -51,8 +51,8 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"indexer test", "indexer", ""},
 
 	// Failure tests.
-	typegraphTest{"redeclaration test", "redeclare", "Type 'Foo' is already defined in the module"},
-	typegraphTest{"same member test", "redefine", "Member 'Foo' is already defined on external interface 'SomeInterface'"},
+	typegraphTest{"redeclaration test", "redeclare", "external interface 'Foo' redefines name 'Foo' under Module 'redeclare.webidl'"},
+	typegraphTest{"same member test", "redefine", "type member 'Foo' redefines name 'Foo' under external interface 'SomeInterface'"},
 	typegraphTest{"unknown type test", "unknowntype", "Could not find WebIDL type Bar"},
 	typegraphTest{"invalid indexer test", "invalidindexer", "Operator 'index' defined on type 'MyInterface' expects 1 parameters; found 2"},
 }

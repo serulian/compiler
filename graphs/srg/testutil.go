@@ -23,8 +23,9 @@ func loadSRG(t *testing.T, path string, libPaths ...string) (*SRG, packageloader
 		libraries[index] = packageloader.Library{libPath, false, ""}
 	}
 
-	testLoader := &testTypePackageLoader{graph}
 	testSRG := NewSRG(graph)
+	testLoader := &testTypePackageLoader{graph}
+
 	loader := packageloader.NewPackageLoader(graph.RootSourceFilePath, testSRG.PackageLoaderHandler(), testLoader)
 	result := loader.Load(libraries...)
 	return testSRG, result
@@ -56,6 +57,10 @@ func (t testTypePackageLoader) Parse(source compilercommon.InputSource, input st
 
 }
 
-func (t testTypePackageLoader) Verify(packageMap map[string]packageloader.PackageInfo, errorReporter packageloader.ErrorReporter, warningReporter packageloader.WarningReporter) {
+func (t testTypePackageLoader) Apply(packageMap map[string]packageloader.PackageInfo) {
+
+}
+
+func (t testTypePackageLoader) Verify(errorReporter packageloader.ErrorReporter, warningReporter packageloader.WarningReporter) {
 
 }

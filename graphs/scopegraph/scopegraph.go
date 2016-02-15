@@ -116,9 +116,9 @@ func BuildScopeGraph(srg *srg.SRG, irg *webidl.WebIRG, tdg *typegraph.TypeGraph)
 
 	builder := newScopeBuilder(scopeGraph)
 
-	// Find all lambda expressions and infer their argument types.
+	// Find all implicit lambda expressions and infer their argument types.
 	var lwg sync.WaitGroup
-	lit := srg.LambdaExpressions()
+	lit := srg.ImplicitLambdaExpressions()
 	for lit.Next() {
 		lwg.Add(1)
 		go (func(node compilergraph.GraphNode) {
@@ -128,6 +128,7 @@ func BuildScopeGraph(srg *srg.SRG, irg *webidl.WebIRG, tdg *typegraph.TypeGraph)
 	}
 
 	lwg.Wait()
+	builder.saveScopes()
 
 	// Scope all the entrypoint statements and members in the SRG. These will recursively scope downward.
 	var wg sync.WaitGroup
@@ -150,6 +151,7 @@ func BuildScopeGraph(srg *srg.SRG, irg *webidl.WebIRG, tdg *typegraph.TypeGraph)
 	}
 
 	wg.Wait()
+	builder.saveScopes()
 
 	// Collect any errors or warnings that were added.
 	return Result{

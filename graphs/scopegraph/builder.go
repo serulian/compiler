@@ -27,15 +27,29 @@ type scopeHandler func(node compilergraph.GraphNode, option scopeAccessOption) p
 
 // scopeBuilder defines a type for easy scoping of the SRG.
 type scopeBuilder struct {
-	sg      *ScopeGraph
-	nodeMap cmap.ConcurrentMap
+	sg                     *ScopeGraph
+	nodeMap                cmap.ConcurrentMap
+	modifier               compilergraph.GraphLayerModifier
+	inferredParameterTypes cmap.ConcurrentMap
 
 	Status bool
 }
 
 // newScopeBuilder returns a new scope builder for the given scope graph.
 func newScopeBuilder(sg *ScopeGraph) *scopeBuilder {
-	return &scopeBuilder{sg, cmap.New(), true}
+	return &scopeBuilder{
+		sg:                     sg,
+		nodeMap:                cmap.New(),
+		modifier:               sg.layer.NewModifier(),
+		inferredParameterTypes: cmap.New(),
+		Status:                 true,
+	}
+}
+
+// saveScopes saves all the created scopes to the graph.
+func (sb *scopeBuilder) saveScopes() {
+	sb.modifier.Apply()
+	sb.modifier = sb.sg.layer.NewModifier()
 }
 
 // getScopeHandler returns the scope building handler for nodes of the given type.
@@ -270,7 +284,7 @@ func (sb *scopeBuilder) buildScope(node compilergraph.GraphNode, option scopeAcc
 		// Add the scope to the map and on the node.
 		sb.nodeMap.Set(string(node.NodeId), result)
 
-		scopeNode := sb.sg.layer.CreateNode(NodeTypeResolvedScope)
+		scopeNode := sb.modifier.CreateNode(NodeTypeResolvedScope)
 		scopeNode.DecorateWithTagged(NodePredicateScopeInfo, &result)
 		scopeNode.Connect(NodePredicateSource, node)
 
@@ -282,14 +296,14 @@ func (sb *scopeBuilder) buildScope(node compilergraph.GraphNode, option scopeAcc
 
 // decorateWithError decorates an *SRG* node with the specified scope warning.
 func (sb *scopeBuilder) decorateWithWarning(node compilergraph.GraphNode, message string, args ...interface{}) {
-	warningNode := sb.sg.layer.CreateNode(NodeTypeWarning)
+	warningNode := sb.modifier.CreateNode(NodeTypeWarning)
 	warningNode.Decorate(NodePredicateNoticeMessage, fmt.Sprintf(message, args...))
 	warningNode.Connect(NodePredicateNoticeSource, node)
 }
 
 // decorateWithError decorates an *SRG* node with the specified scope error.
 func (sb *scopeBuilder) decorateWithError(node compilergraph.GraphNode, message string, args ...interface{}) {
-	errorNode := sb.sg.layer.CreateNode(NodeTypeError)
+	errorNode := sb.modifier.CreateNode(NodeTypeError)
 	errorNode.Decorate(NodePredicateNoticeMessage, fmt.Sprintf(message, args...))
 	errorNode.Connect(NodePredicateNoticeSource, node)
 }

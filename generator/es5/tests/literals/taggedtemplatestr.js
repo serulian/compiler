@@ -40,7 +40,7 @@ $module('taggedtemplatestr', function () {
           case 0:
             a = $t.nominalwrap(10, $g.____testlib.basictypes.Integer);
             b = $t.nominalwrap(true, $g.____testlib.basictypes.Boolean);
-            $g.____testlib.basictypes.Slice($g.____testlib.basictypes.String).overArray([$t.nominalwrap('This function is #', $g.____testlib.basictypes.String), $t.nominalwrap('! It is ', $g.____testlib.basictypes.String), $t.nominalwrap('!', $g.____testlib.basictypes.String)]).then(function ($result0) {
+            $g.____testlib.basictypes.Slice($g.____testlib.basictypes.String).overArray([$t.nominalwrap("This function is #", $g.____testlib.basictypes.String), $t.nominalwrap("! It is ", $g.____testlib.basictypes.String), $t.nominalwrap("!", $g.____testlib.basictypes.String)]).then(function ($result0) {
               return $g.____testlib.basictypes.Slice($g.____testlib.basictypes.Stringable).overArray([a, b]).then(function ($result1) {
                 return $g.taggedtemplatestr.myFunction($result0, $result1).then(function ($result2) {
                   $result = $result2;

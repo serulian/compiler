@@ -26,11 +26,13 @@ func createClientQueryTestLayer(t *testing.T) *GraphLayer {
 		nodeKindEnum:      TestNodeTypeTagged,
 	}
 
+	gm := gl.NewModifier()
+
 	// Add some nodes.
-	firstNode := gl.CreateNode(TestNodeTypeFirst)
-	secondNode := gl.CreateNode(TestNodeTypeFirst)
-	thirdNode := gl.CreateNode(TestNodeTypeFirst)
-	fourthNode := gl.CreateNode(TestNodeTypeFirst)
+	firstNode := gm.CreateNode(TestNodeTypeFirst)
+	secondNode := gm.CreateNode(TestNodeTypeFirst)
+	thirdNode := gm.CreateNode(TestNodeTypeFirst)
+	fourthNode := gm.CreateNode(TestNodeTypeFirst)
 
 	firstNode.Decorate("test-id", "first")
 	secondNode.Decorate("test-id", "second")
@@ -46,6 +48,8 @@ func createClientQueryTestLayer(t *testing.T) *GraphLayer {
 	secondNode.Decorate("calories", "100")
 	thirdNode.Decorate("calories", "120")
 	fourthNode.Decorate("calories", "200")
+
+	gm.Apply()
 
 	return gl
 }
@@ -83,32 +87,35 @@ func TestBasicClientQuery2(t *testing.T) {
 
 func TestFilteredClientQuery(t *testing.T) {
 	gl := createClientQueryTestLayer(t)
+	gm := gl.NewModifier()
 
-	veganNode := gl.CreateNode(TestNodeTypeSecond)
+	veganNode := gm.CreateNode(TestNodeTypeSecond)
 	veganNode.Decorate("diet-type", "vegan")
 
-	kosherNode := gl.CreateNode(TestNodeTypeSecond)
+	kosherNode := gm.CreateNode(TestNodeTypeSecond)
 	kosherNode.Decorate("diet-type", "kosher")
 
 	// Find the node that likes pie with calories greater than 150 and is vegan.
-	fifthNode := gl.CreateNode(TestNodeTypeFirst)
+	fifthNode := gm.CreateNode(TestNodeTypeFirst)
 	fifthNode.Decorate("loves", "pie")
 	fifthNode.Connect("has-diet", veganNode)
 	fifthNode.Decorate("calories", "200")
 
-	firstNode := getTestNode(gl, "first")
+	firstNode := gm.Modify(getTestNode(gl, "first"))
 	firstNode.Connect("has-diet", veganNode)
 
-	secondNode := getTestNode(gl, "second")
+	secondNode := gm.Modify(getTestNode(gl, "second"))
 	secondNode.Connect("has-diet", kosherNode)
 
-	thirdNode := getTestNode(gl, "third")
+	thirdNode := gm.Modify(getTestNode(gl, "third"))
 	thirdNode.Connect("has-diet", veganNode)
 
-	fourthNode := getTestNode(gl, "fourth")
+	fourthNode := gm.Modify(getTestNode(gl, "fourth"))
 	fourthNode.Connect("has-diet", kosherNode)
 
-	filter := func(q *GraphQuery) Query {
+	gm.Apply()
+
+	filter := func(q GraphQuery) Query {
 		return q.Out("has-diet").Has("diet-type", "vegan")
 	}
 
@@ -119,5 +126,5 @@ func TestFilteredClientQuery(t *testing.T) {
 		TryGetNode()
 
 	assert.True(t, found, "Missing expected node")
-	assert.Equal(t, fifthNode, node, "Expected fifth node")
+	assert.Equal(t, fifthNode.NodeId, node.NodeId, "Expected fifth node")
 }

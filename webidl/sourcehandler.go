@@ -6,6 +6,7 @@ package webidl
 
 import (
 	"github.com/serulian/compiler/compilercommon"
+	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/webidl/parser"
 )
@@ -13,7 +14,8 @@ import (
 // irgSourceHandler implements the SourceHandler interface from the packageloader for
 // populating the WebIDL IRG from webidl files.
 type irgSourceHandler struct {
-	irg *WebIRG // The IRG being populated.
+	irg      *WebIRG                          // The IRG being populated.
+	modifier compilergraph.GraphLayerModifier // Modifier used to write the parsed AST.
 }
 
 func (sh *irgSourceHandler) Kind() string {
@@ -25,9 +27,23 @@ func (sh *irgSourceHandler) PackageFileExtension() string {
 }
 
 func (sh *irgSourceHandler) Parse(source compilercommon.InputSource, input string, importHandler packageloader.ImportHandler) {
-	parser.Parse(&irgASTNode{sh.irg.rootModuleNode}, sh.irg.buildASTNode, source, input)
+	rootNode := sh.modifier.Modify(sh.irg.rootModuleNode)
+	parser.Parse(&irgASTNode{rootNode}, sh.buildASTNode, source, input)
 }
 
-func (sh *irgSourceHandler) Verify(packageMap map[string]packageloader.PackageInfo, errorReporter packageloader.ErrorReporter, warningReporter packageloader.WarningReporter) {
+func (sh *irgSourceHandler) Apply(packageMap map[string]packageloader.PackageInfo) {
+	// Apply the changes to the graph.
+	sh.modifier.Apply()
+}
 
+func (sh *irgSourceHandler) Verify(errorReporter packageloader.ErrorReporter, warningReporter packageloader.WarningReporter) {
+
+}
+
+// buildASTNode constructs a new node in the IRG.
+func (sh *irgSourceHandler) buildASTNode(source compilercommon.InputSource, kind parser.NodeType) parser.AstNode {
+	graphNode := sh.modifier.CreateNode(kind)
+	return &irgASTNode{
+		graphNode: graphNode,
+	}
 }

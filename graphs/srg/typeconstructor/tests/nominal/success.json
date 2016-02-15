@@ -47,10 +47,10 @@
         "Key": "941da2a8749f4b9e26d612767a605b9c",
         "Kind": 4,
         "Children": {
-            "9a487e24f29b0a0b26615741127757e0": {
+            "a74d6b6478897467550a546da92bf853": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "9a487e24f29b0a0b26615741127757e0",
+                    "Key": "a74d6b6478897467550a546da92bf853",
                     "Kind": 6,
                     "Children": {
                         "8b4fec458387eb96b56825e02609df75": {
@@ -73,7 +73,7 @@
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "Function\u003cvoid\u003e",
-                        "tdg-member-signature": "\n\u000bDoSomething\u0010\u0002\u0018\u0000 \u0001*\u000eFunction\u003cvoid\u003e",
+                        "tdg-member-signature": "\n\u000bdosomething\u0010\u0002\u0018\u0000 \u0001*\u000eFunction\u003cvoid\u003e",
                         "tdg-node-kind": "6|NodeType|tdg",
                         "tdg-source-module": "tests/nominal/success.seru",
                         "tdg-source-node": "(NodeRef)"

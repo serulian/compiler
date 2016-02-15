@@ -16,14 +16,12 @@ import (
 	"github.com/serulian/compiler/packageloader"
 )
 
-// TYPE_NODE_TYPES defines the NodeTypes that represent defined types in the graph.
 var TYPE_NODE_TYPES = []NodeType{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType}
 var TYPE_NODE_TYPES_TAGGED = []compilergraph.TaggedValue{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType}
 
-// TYPE_NODE_TYPES defines the NodeTypes that represent defined types or a module in the graph.
 var TYPEORMODULE_NODE_TYPES = []NodeType{NodeTypeModule, NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType}
-
 var TYPEORGENERIC_NODE_TYPES = []NodeType{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType, NodeTypeGeneric}
+var MEMBER_NODE_TYPES = []NodeType{NodeTypeMember, NodeTypeOperator}
 
 // TypeGraph represents the TypeGraph layer and all its associated helper methods.
 type TypeGraph struct {
@@ -59,69 +57,102 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 
 	// Build all modules.
 	for _, constructor := range constructors {
+		modifier := typeGraph.layer.NewModifier()
 		constructor.DefineModules(func() *moduleBuilder {
 			return &moduleBuilder{
-				tdg: typeGraph,
+				tdg:      typeGraph,
+				modifier: modifier,
 			}
 		})
+		modifier.Apply()
 	}
 
 	// Build all types.
 	for _, constructor := range constructors {
+		modifier := typeGraph.layer.NewModifier()
 		constructor.DefineTypes(func(moduleSourceNode compilergraph.GraphNode) *typeBuilder {
 			moduleNode := typeGraph.getMatchingTypeGraphNode(moduleSourceNode, NodeTypeModule)
 			return &typeBuilder{
-				module: TGModule{moduleNode, typeGraph},
+				module:   TGModule{moduleNode, typeGraph},
+				modifier: modifier,
 			}
 		})
+		modifier.Apply()
 	}
 
 	// Annotate all dependencies.
 	for _, constructor := range constructors {
-		annotator := &Annotator{
-			issueReporterImpl{typeGraph},
+		modifier := typeGraph.layer.NewModifier()
+		annotator := Annotator{
+			issueReporterImpl{typeGraph, modifier},
 		}
 
 		constructor.DefineDependencies(annotator, typeGraph)
+		modifier.Apply()
 	}
 
 	// Load the operators map. Requires the types loaded as it performs lookups of certain types (int, etc).
 	typeGraph.buildOperatorDefinitions()
 
-	// Build all members.
+	// Build all initial definitions for members.
 	for _, constructor := range constructors {
+		modifier := typeGraph.layer.NewModifier()
 		constructor.DefineMembers(func(moduleOrTypeSourceNode compilergraph.GraphNode, isOperator bool) *MemberBuilder {
 			typegraphNode := typeGraph.getMatchingTypeGraphNode(moduleOrTypeSourceNode, TYPEORMODULE_NODE_TYPES...)
 
+			var parent TGTypeOrModule = nil
 			if typegraphNode.Kind == NodeTypeModule {
-				return &MemberBuilder{
-					parent:     TGModule{typegraphNode, typeGraph},
-					tdg:        typeGraph,
-					isOperator: isOperator,
-				}
+				parent = TGModule{typegraphNode, typeGraph}
 			} else {
-				return &MemberBuilder{
-					parent:     TGTypeDecl{typegraphNode, typeGraph},
-					tdg:        typeGraph,
-					isOperator: isOperator,
-				}
+				parent = TGTypeDecl{typegraphNode, typeGraph}
 			}
 
-		}, &issueReporterImpl{typeGraph}, typeGraph)
+			return &MemberBuilder{
+				modifier:   modifier,
+				parent:     parent,
+				tdg:        typeGraph,
+				isOperator: isOperator,
+			}
+		}, issueReporterImpl{typeGraph, modifier}, typeGraph)
+		modifier.Apply()
 	}
 
+	// Decorate all the members.
+	for _, constructor := range constructors {
+		modifier := typeGraph.layer.NewModifier()
+		constructor.DecorateMembers(func(memberSourceNode compilergraph.GraphNode) *MemberDecorator {
+			typegraphNode := typeGraph.getMatchingTypeGraphNode(memberSourceNode, MEMBER_NODE_TYPES...)
+
+			return &MemberDecorator{
+				modifier:           modifier,
+				sourceNode:         memberSourceNode,
+				member:             TGMember{typegraphNode, typeGraph},
+				tdg:                typeGraph,
+				genericConstraints: map[compilergraph.GraphNode]TypeReference{},
+			}
+		}, issueReporterImpl{typeGraph, modifier}, typeGraph)
+		modifier.Apply()
+	}
+
+	// Check for duplicate types, members and generics.
+	typeGraph.checkForDuplicateNames()
+
 	// Handle inheritance checking and member cloning.
-	typeGraph.defineFullInheritance()
+	inheritsModifier := typeGraph.layer.NewModifier()
+	typeGraph.defineFullInheritance(inheritsModifier)
+	inheritsModifier.Apply()
 
 	// Define implicit members.
 	typeGraph.defineAllImplicitMembers()
 
 	// If there are no errors yet, validate everything.
 	if _, hasError := typeGraph.layer.StartQuery().In(NodePredicateError).TryGetNode(); !hasError {
+		modifier := typeGraph.layer.NewModifier()
 		for _, constructor := range constructors {
-			reporter := &issueReporterImpl{typeGraph}
+			reporter := issueReporterImpl{typeGraph, modifier}
 			constructor.Validate(reporter, typeGraph)
 		}
+		modifier.Apply()
 	}
 
 	// Collect any errors generated during construction.

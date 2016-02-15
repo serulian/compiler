@@ -26,11 +26,13 @@ func TestBasicFiltering(t *testing.T) {
 		nodeKindEnum:      TestNodeTypeTagged,
 	}
 
+	gm := gl.NewModifier()
+
 	// Add some nodes.
-	rootNodeOne := gl.CreateNode(TestNodeTypeFirst)
-	rootNodeTwo := gl.CreateNode(TestNodeTypeFirst)
-	childNodeOne := gl.CreateNode(TestNodeTypeSecond)
-	childNodeTwo := gl.CreateNode(TestNodeTypeSecond)
+	rootNodeOne := gm.CreateNode(TestNodeTypeFirst)
+	rootNodeTwo := gm.CreateNode(TestNodeTypeFirst)
+	childNodeOne := gm.CreateNode(TestNodeTypeSecond)
+	childNodeTwo := gm.CreateNode(TestNodeTypeSecond)
 
 	rootNodeOne.Decorate("is-root", "true")
 	rootNodeTwo.Decorate("is-root", "true")
@@ -41,14 +43,16 @@ func TestBasicFiltering(t *testing.T) {
 	rootNodeOne.Connect("has-child", childNodeOne)
 	rootNodeTwo.Connect("has-child", childNodeTwo)
 
+	gm.Apply()
+
 	// Find the root node whose child has an ID of 1.
-	filter := func(q *GraphQuery) Query {
+	filter := func(q GraphQuery) Query {
 		return q.Out("has-child").Has("child-id", "1")
 	}
 
 	result, found := gl.StartQuery().Has("is-root", "true").FilterBy(filter).TryGetNode()
 	assert.True(t, found, "Expected node")
-	assert.Equal(t, rootNodeOne, result, "Expected first node")
+	assert.Equal(t, rootNodeOne.NodeId, result.NodeId, "Expected first node")
 }
 
 func TestEmptyFiltering(t *testing.T) {
@@ -63,11 +67,13 @@ func TestEmptyFiltering(t *testing.T) {
 		nodeKindEnum:      TestNodeTypeTagged,
 	}
 
+	gm := gl.NewModifier()
+
 	// Add some nodes.
-	rootNodeOne := gl.CreateNode(TestNodeTypeFirst)
-	rootNodeTwo := gl.CreateNode(TestNodeTypeFirst)
-	childNodeOne := gl.CreateNode(TestNodeTypeSecond)
-	childNodeTwo := gl.CreateNode(TestNodeTypeSecond)
+	rootNodeOne := gm.CreateNode(TestNodeTypeFirst)
+	rootNodeTwo := gm.CreateNode(TestNodeTypeFirst)
+	childNodeOne := gm.CreateNode(TestNodeTypeSecond)
+	childNodeTwo := gm.CreateNode(TestNodeTypeSecond)
 
 	rootNodeOne.Decorate("is-root", "true")
 	rootNodeTwo.Decorate("is-root", "true")
@@ -78,8 +84,10 @@ func TestEmptyFiltering(t *testing.T) {
 	rootNodeOne.Connect("has-child", childNodeOne)
 	rootNodeTwo.Connect("has-child", childNodeTwo)
 
+	gm.Apply()
+
 	// Find the root node whose child has an ID of 3 (i.e. none).
-	filter := func(q *GraphQuery) Query {
+	filter := func(q GraphQuery) Query {
 		return q.Out("has-child").Has("child-id", "3")
 	}
 
@@ -99,11 +107,13 @@ func TestFilteringViaClientQuery(t *testing.T) {
 		nodeKindEnum:      TestNodeTypeTagged,
 	}
 
+	gm := gl.NewModifier()
+
 	// Add some nodes.
-	rootNodeOne := gl.CreateNode(TestNodeTypeFirst)
-	rootNodeTwo := gl.CreateNode(TestNodeTypeFirst)
-	childNodeOne := gl.CreateNode(TestNodeTypeSecond)
-	childNodeTwo := gl.CreateNode(TestNodeTypeSecond)
+	rootNodeOne := gm.CreateNode(TestNodeTypeFirst)
+	rootNodeTwo := gm.CreateNode(TestNodeTypeFirst)
+	childNodeOne := gm.CreateNode(TestNodeTypeSecond)
+	childNodeTwo := gm.CreateNode(TestNodeTypeSecond)
 
 	rootNodeOne.Decorate("is-root", "true")
 	rootNodeTwo.Decorate("is-root", "true")
@@ -114,12 +124,14 @@ func TestFilteringViaClientQuery(t *testing.T) {
 	rootNodeOne.Connect("has-child", childNodeOne)
 	rootNodeTwo.Connect("has-child", childNodeTwo)
 
+	gm.Apply()
+
 	// Find the root node whose child has an ID of 2.
-	filter := func(q *GraphQuery) Query {
+	filter := func(q GraphQuery) Query {
 		return q.Out("has-child").HasWhere("child-id", WhereGTE, "2")
 	}
 
 	result, found := gl.StartQuery().Has("is-root", "true").FilterBy(filter).TryGetNode()
 	assert.True(t, found, "Expected node")
-	assert.Equal(t, rootNodeTwo, result, "Expected second node")
+	assert.Equal(t, rootNodeTwo.NodeId, result.NodeId, "Expected second node")
 }

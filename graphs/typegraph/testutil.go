@@ -171,6 +171,7 @@ func newTestTypeGraphConstructor(graph *compilergraph.SerulianGraph, moduleName 
 		layer:      graph.NewGraphLayer(moduleName, fakeNodeTypeTagged),
 
 		typeMap:    map[string]compilergraph.GraphNode{},
+		memberMap:  map[string]compilergraph.GraphNode{},
 		genericMap: map[string]compilergraph.GraphNode{},
 	}
 }
@@ -197,11 +198,15 @@ func (t fakeNodeType) Build(value string) interface{} {
 
 type emptyTypeConstructor struct{}
 
-func (t *emptyTypeConstructor) DefineModules(builder GetModuleBuilder)                    {}
-func (t *emptyTypeConstructor) DefineTypes(builder GetTypeBuilder)                        {}
-func (t *emptyTypeConstructor) DefineDependencies(annotator *Annotator, graph *TypeGraph) {}
+func (t *emptyTypeConstructor) DefineModules(builder GetModuleBuilder)                   {}
+func (t *emptyTypeConstructor) DefineTypes(builder GetTypeBuilder)                       {}
+func (t *emptyTypeConstructor) DefineDependencies(annotator Annotator, graph *TypeGraph) {}
 func (t *emptyTypeConstructor) DefineMembers(builder GetMemberBuilder, reporter IssueReporter, graph *TypeGraph) {
 }
+
+func (t *emptyTypeConstructor) DecorateMembers(decorator GetMemberDecorator, reporter IssueReporter, graph *TypeGraph) {
+}
+
 func (t *emptyTypeConstructor) Validate(reporter IssueReporter, graph *TypeGraph) {}
 func (t *emptyTypeConstructor) GetLocation(sourceNodeId compilergraph.GraphNodeId) (compilercommon.SourceAndLocation, bool) {
 	return compilercommon.SourceAndLocation{}, false
@@ -219,8 +224,15 @@ type testBasicTypesConstructor struct {
 	moduleNode *compilergraph.GraphNode
 }
 
+func (t *testBasicTypesConstructor) CreateNode(kind compilergraph.TaggedValue) compilergraph.GraphNode {
+	modifier := t.layer.NewModifier()
+	node := modifier.CreateNode(kind).AsNode()
+	modifier.Apply()
+	return node
+}
+
 func (t *testBasicTypesConstructor) DefineModules(builder GetModuleBuilder) {
-	moduleNode := t.layer.CreateNode(fakeNodeTypeTagged)
+	moduleNode := t.CreateNode(fakeNodeTypeTagged)
 	builder().Name("stdlib").SourceNode(moduleNode).Path("stdlib").Define()
 	t.moduleNode = &moduleNode
 }
@@ -228,42 +240,49 @@ func (t *testBasicTypesConstructor) DefineModules(builder GetModuleBuilder) {
 func (t *testBasicTypesConstructor) DefineTypes(builder GetTypeBuilder) {
 	builder(*t.moduleNode).
 		Name("bool").
-		SourceNode(t.layer.CreateNode(fakeNodeTypeTagged)).
+		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
 		Alias("bool").
 		Define()
 
 	builder(*t.moduleNode).
 		Name("int").
-		SourceNode(t.layer.CreateNode(fakeNodeTypeTagged)).
+		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
 		Alias("int").
 		Define()
 
 	funcGenBuilder := builder(*t.moduleNode).
 		Name("function").
-		SourceNode(t.layer.CreateNode(fakeNodeTypeTagged)).
+		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
 		Alias("function").
 		Define()
 
-	funcGenBuilder().Name("T").SourceNode(t.layer.CreateNode(fakeNodeTypeTagged)).Define()
+	funcGenBuilder().Name("T").SourceNode(t.CreateNode(fakeNodeTypeTagged)).Define()
 
 	streamGenBuilder := builder(*t.moduleNode).
 		Name("stream").
-		SourceNode(t.layer.CreateNode(fakeNodeTypeTagged)).
+		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
 		Alias("stream").
 		Define()
 
-	streamGenBuilder().Name("T").SourceNode(t.layer.CreateNode(fakeNodeTypeTagged)).Define()
+	streamGenBuilder().Name("T").SourceNode(t.CreateNode(fakeNodeTypeTagged)).Define()
+}
+
+func (t *testTypeGraphConstructor) CreateNode(kind compilergraph.TaggedValue) compilergraph.GraphNode {
+	modifier := t.layer.NewModifier()
+	node := modifier.CreateNode(kind).AsNode()
+	modifier.Apply()
+	return node
 }
 
 func (t *testTypeGraphConstructor) DefineModules(builder GetModuleBuilder) {
-	moduleNode := t.layer.CreateNode(fakeNodeTypeTagged)
+	moduleNode := t.CreateNode(fakeNodeTypeTagged)
 	builder().Name(t.moduleName).SourceNode(moduleNode).Path(t.moduleName).Define()
 	t.moduleNode = &moduleNode
 }
 
 func (t *testTypeGraphConstructor) DefineTypes(builder GetTypeBuilder) {
 	for _, typeInfo := range t.testTypes {
-		typeNode := t.layer.CreateNode(fakeNodeTypeTagged)
+		typeNode := t.CreateNode(fakeNodeTypeTagged)
 		t.typeMap[typeInfo.name] = typeNode
 
 		var typeKind TypeKind = ClassType
@@ -278,14 +297,14 @@ func (t *testTypeGraphConstructor) DefineTypes(builder GetTypeBuilder) {
 			Define()
 
 		for _, genericInfo := range typeInfo.generics {
-			genericNode := t.layer.CreateNode(fakeNodeTypeTagged)
+			genericNode := t.CreateNode(fakeNodeTypeTagged)
 			t.genericMap[typeInfo.name+"::"+genericInfo.name] = genericNode
 			genericBuilder().Name(genericInfo.name).SourceNode(genericNode).Define()
 		}
 	}
 }
 
-func (t *testTypeGraphConstructor) DefineDependencies(annotator *Annotator, graph *TypeGraph) {
+func (t *testTypeGraphConstructor) DefineDependencies(annotator Annotator, graph *TypeGraph) {
 	for _, typeInfo := range t.testTypes {
 		typeNode := t.typeMap[typeInfo.name]
 		for _, genericInfo := range typeInfo.generics {
@@ -306,19 +325,31 @@ func (t *testTypeGraphConstructor) DefineMembers(builder GetMemberBuilder, repor
 	for _, typeInfo := range t.testTypes {
 		typeNode, _ := t.typeMap[typeInfo.name]
 		for _, memberInfo := range typeInfo.members {
-			memberNode := t.layer.CreateNode(fakeNodeTypeTagged)
+			memberNode := t.CreateNode(fakeNodeTypeTagged)
+			t.memberMap[typeInfo.name+"."+memberInfo.name] = memberNode
 
 			ib := builder(typeNode, memberInfo.kind == "operator").
 				Name(memberInfo.name).
 				SourceNode(memberNode)
 
 			for _, genericInfo := range memberInfo.generics {
-				genericNode := t.layer.CreateNode(fakeNodeTypeTagged)
+				genericNode := t.CreateNode(fakeNodeTypeTagged)
 				t.genericMap[typeInfo.name+"."+memberInfo.name+"::"+genericInfo.name] = genericNode
 				ib.WithGeneric(genericInfo.name, genericNode)
 			}
 
-			builder := ib.InitialDefine()
+			ib.Define()
+		}
+	}
+}
+
+func (t *testTypeGraphConstructor) DecorateMembers(decorator GetMemberDecorator, reporter IssueReporter, graph *TypeGraph) {
+	for _, typeInfo := range t.testTypes {
+		typeNode, _ := t.typeMap[typeInfo.name]
+		for _, memberInfo := range typeInfo.members {
+			memberNode := t.memberMap[typeInfo.name+"."+memberInfo.name]
+
+			builder := decorator(memberNode)
 
 			for _, genericInfo := range memberInfo.generics {
 				if genericInfo.constraint != "" {
@@ -336,7 +367,7 @@ func (t *testTypeGraphConstructor) DefineMembers(builder GetMemberBuilder, repor
 				ReadOnly(false).
 				MemberType(memberType).
 				MemberKind(1).
-				Define()
+				Decorate()
 		}
 	}
 }
@@ -350,6 +381,7 @@ type testTypeGraphConstructor struct {
 	testTypes  []testType
 
 	typeMap    map[string]compilergraph.GraphNode
+	memberMap  map[string]compilergraph.GraphNode
 	genericMap map[string]compilergraph.GraphNode
 }
 

@@ -11,7 +11,7 @@ import (
 )
 
 // findAllNodes starts a new query over the TypeGraph from nodes of the given type.
-func (g *TypeGraph) findAllNodes(nodeTypes ...NodeType) *compilergraph.GraphQuery {
+func (g *TypeGraph) findAllNodes(nodeTypes ...NodeType) compilergraph.GraphQuery {
 	var nodeTypesTagged []compilergraph.TaggedValue = make([]compilergraph.TaggedValue, len(nodeTypes))
 	for index, nodeType := range nodeTypes {
 		nodeTypesTagged[index] = nodeType

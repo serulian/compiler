@@ -879,11 +879,11 @@ var scopeGraphTests = []scopegraphTest{
 
 func TestGraphs(t *testing.T) {
 	for _, test := range scopeGraphTests {
-		fmt.Printf("Running test: %v\n", test.name)
-
 		if os.Getenv("FILTER") != "" && !strings.Contains(test.name, os.Getenv("FILTER")) {
 			continue
 		}
+
+		fmt.Printf("Running test: %v\n", test.name)
 
 		entrypointFile := "tests/" + test.input + "/" + test.entrypoint + ".seru"
 		result := ParseAndBuildScopeGraph(entrypointFile, packageloader.Library{TESTLIB_PATH, false, ""})

@@ -293,7 +293,7 @@ func (ns SRGNamedScope) ResolveNameUnderScope(name string) (SRGScopeOrImport, bo
 func (g *SRG) FindReferencesInScope(name string, node compilergraph.GraphNode) compilergraph.NodeIterator {
 	// Note: This filter ensures that the name is accessible in the scope of the given node by checking that
 	// the node referencing the name is contained by the given node.
-	containingFilter := func(q *compilergraph.GraphQuery) compilergraph.Query {
+	containingFilter := func(q compilergraph.GraphQuery) compilergraph.Query {
 		startRune := node.Get(parser.NodePredicateStartRune)
 		endRune := node.Get(parser.NodePredicateEndRune)
 
@@ -388,7 +388,7 @@ func (g *SRG) findAddedNameInScope(name string, node compilergraph.GraphNode) (c
 	// Note: This filter ensures that the name is accessible in the scope of the given node by checking that
 	// the node adding the name contains the given node. We use LT because we checking the node adding
 	// the name, instead of the name itself.
-	containingFilter := func(q *compilergraph.GraphQuery) compilergraph.Query {
+	containingFilter := func(q compilergraph.GraphQuery) compilergraph.Query {
 		startRune := node.Get(parser.NodePredicateStartRune)
 		endRune := node.Get(parser.NodePredicateEndRune)
 
