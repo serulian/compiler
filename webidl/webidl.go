@@ -46,7 +46,7 @@ func (g *WebIRG) RootModuleNode() compilergraph.GraphNode {
 }
 
 // findAllNodes starts a new query over the IRG from nodes of the given type.
-func (g *WebIRG) findAllNodes(nodeTypes ...parser.NodeType) *compilergraph.GraphQuery {
+func (g *WebIRG) findAllNodes(nodeTypes ...parser.NodeType) compilergraph.GraphQuery {
 	var nodeTypesTagged []compilergraph.TaggedValue = make([]compilergraph.TaggedValue, len(nodeTypes))
 	for index, nodeType := range nodeTypes {
 		nodeTypesTagged[index] = nodeType

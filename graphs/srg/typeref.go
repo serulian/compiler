@@ -106,7 +106,7 @@ func (t SRGTypeRef) ResolveType() (TypeResolutionResult, bool) {
 		return TypeResolutionResult{}, false
 	}
 
-	containingFilter := func(q *compilergraph.GraphQuery) compilergraph.Query {
+	containingFilter := func(q compilergraph.GraphQuery) compilergraph.Query {
 		// For this filter, we check if the defining type (or type member) if the
 		// generic is the same type (or type member) containing the typeref. To do so,
 		// we perform a check that the start rune and end rune of the definition

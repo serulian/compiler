@@ -108,7 +108,7 @@ func TestFilteredClientQuery(t *testing.T) {
 	fourthNode := getTestNode(gl, "fourth")
 	fourthNode.Connect("has-diet", kosherNode)
 
-	filter := func(q *GraphQuery) Query {
+	filter := func(q GraphQuery) Query {
 		return q.Out("has-diet").Has("diet-type", "vegan")
 	}
 

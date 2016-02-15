@@ -42,7 +42,7 @@ func TestBasicFiltering(t *testing.T) {
 	rootNodeTwo.Connect("has-child", childNodeTwo)
 
 	// Find the root node whose child has an ID of 1.
-	filter := func(q *GraphQuery) Query {
+	filter := func(q GraphQuery) Query {
 		return q.Out("has-child").Has("child-id", "1")
 	}
 
@@ -79,7 +79,7 @@ func TestEmptyFiltering(t *testing.T) {
 	rootNodeTwo.Connect("has-child", childNodeTwo)
 
 	// Find the root node whose child has an ID of 3 (i.e. none).
-	filter := func(q *GraphQuery) Query {
+	filter := func(q GraphQuery) Query {
 		return q.Out("has-child").Has("child-id", "3")
 	}
 
@@ -115,7 +115,7 @@ func TestFilteringViaClientQuery(t *testing.T) {
 	rootNodeTwo.Connect("has-child", childNodeTwo)
 
 	// Find the root node whose child has an ID of 2.
-	filter := func(q *GraphQuery) Query {
+	filter := func(q GraphQuery) Query {
 		return q.Out("has-child").HasWhere("child-id", WhereGTE, "2")
 	}
 

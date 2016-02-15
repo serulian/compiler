@@ -9,11 +9,11 @@ import (
 )
 
 // nodeFilter is a filtering function for a graph query.
-type nodeFilter func(q *GraphQuery) Query
+type nodeFilter func(q GraphQuery) Query
 
 // FilteredQuery is a type which wraps a GraphQuery and executes additional filtering.
 type FilteredQuery struct {
-	query  *GraphQuery
+	query  GraphQuery
 	filter nodeFilter
 }
 
