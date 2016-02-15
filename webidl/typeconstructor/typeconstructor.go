@@ -281,16 +281,6 @@ func (itc *irgTypeConstructor) DecorateMembers(decorator typegraph.GetMemberDeco
 }
 
 func (itc *irgTypeConstructor) Validate(reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {
-	seen := map[string]bool{}
-
-	for _, module := range itc.irg.GetModules() {
-		for _, declaration := range module.Declarations() {
-			if _, ok := seen[declaration.Name()]; ok {
-				reporter.ReportError(declaration.GraphNode, "'%s' is already declared in WebIDL", declaration.Name())
-			}
-			seen[declaration.Name()] = true
-		}
-	}
 }
 
 func (itc *irgTypeConstructor) GetLocation(sourceNodeId compilergraph.GraphNodeId) (compilercommon.SourceAndLocation, bool) {

@@ -7,10 +7,6 @@ package compilergraph
 import (
 	"fmt"
 	"strconv"
-
-	"github.com/google/cayley"
-	"github.com/google/cayley/graph"
-	"github.com/google/cayley/quad"
 )
 
 // GraphNodeId represents an ID for a node in the graph.
@@ -31,54 +27,18 @@ type TaggedValue interface {
 }
 
 // Clone returns a clone of this graph node, with all *outgoing* predicates copied.
-func (gn *GraphNode) Clone() GraphNode {
-	return gn.CloneExcept()
+func (gn GraphNode) Clone(modifier GraphLayerModifier) ModifiableGraphNode {
+	return gn.CloneExcept(modifier)
 }
 
 // CloneExcept returns a clone of this graph node, with all *outgoing* predicates copied except those specified.
-func (gn *GraphNode) CloneExcept(predicates ...string) GraphNode {
-	predicateBlacklist := map[string]bool{}
-
-	if len(predicates) > 0 {
-		for _, predicate := range gn.layer.getPrefixedPredicates(predicates...) {
-			predicateBlacklist[predicate.(string)] = true
-		}
-	}
-
-	cloneNode := gn.layer.CreateNode(gn.Kind)
-	store := gn.layer.cayleyStore
-
-	it := store.QuadIterator(quad.Subject, store.ValueOf(string(gn.NodeId)))
-	for graph.Next(it) {
-		quad := store.Quad(it.Result())
-
-		if len(predicates) > 0 {
-			if _, ok := predicateBlacklist[quad.Predicate]; ok {
-				continue
-			}
-		}
-
-		store.AddQuad(cayley.Quad(string(cloneNode.NodeId), quad.Predicate, quad.Object, quad.Label))
-	}
-
-	return cloneNode
+func (gn GraphNode) CloneExcept(modifier GraphLayerModifier, predicates ...string) ModifiableGraphNode {
+	return modifier.Modify(gn).CloneExcept(predicates...)
 }
 
-// Connect decorates the given graph node with a predicate pointing at the given target node.
-func (gn *GraphNode) Connect(predicate string, target GraphNode) {
-	gn.Decorate(predicate, string(target.NodeId))
-}
-
-// Decorate decorates the given graph node with a predicate pointing at the given target.
-func (gn *GraphNode) Decorate(predicate string, target string) {
-	fullPredicate := gn.layer.prefix + "-" + predicate
-	gn.layer.cayleyStore.AddQuad(cayley.Quad(string(gn.NodeId), fullPredicate, target, gn.layer.prefix))
-}
-
-// DecorateWithTagged decorates the given graph node with a predicate pointing to a tagged value.
-// Tagged values are typically used for values that would otherwise not be unique (such as enums).
-func (gn *GraphNode) DecorateWithTagged(predicate string, value TaggedValue) {
-	gn.Decorate(predicate, gn.layer.getTaggedKey(value))
+// GetNodeId returns the node's ID.
+func (gn GraphNode) GetNodeId() GraphNodeId {
+	return gn.NodeId
 }
 
 // StartQuery starts a new query on the graph layer, with its origin being the current node.

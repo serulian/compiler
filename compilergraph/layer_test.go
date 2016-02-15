@@ -53,22 +53,25 @@ func TestBasicLayer(t *testing.T) {
 	}
 
 	// Add some nodes and verify we can get them back.
-	firstNode := gl.CreateNode(TestNodeTypeFirst)
-	secondNode := gl.CreateNode(TestNodeTypeSecond)
+	gm := gl.NewModifier()
 
-	firstNodeAgain := gl.CreateNode(TestNodeTypeFirst)
+	firstNode := gm.CreateNode(TestNodeTypeFirst)
+	secondNode := gm.CreateNode(TestNodeTypeSecond)
 
-	assert.Equal(t, firstNode, gl.GetNode(string(firstNode.NodeId)))
-	assert.Equal(t, secondNode, gl.GetNode(string(secondNode.NodeId)))
-	assert.Equal(t, firstNodeAgain, gl.GetNode(string(firstNodeAgain.NodeId)))
+	firstNodeAgain := gm.CreateNode(TestNodeTypeFirst)
 
 	// Decorate the nodes with some predicates.
 	firstNode.Decorate("coolpredicate", "is cool")
-
 	secondNode.Decorate("coolpredicate", "is hot!")
 	secondNode.Decorate("anotherpredicate", "is cool")
 
+	gm.Apply()
+
+	assert.Equal(t, firstNode.NodeId, gl.GetNode(string(firstNode.NodeId)).NodeId)
+	assert.Equal(t, secondNode.NodeId, gl.GetNode(string(secondNode.NodeId)).NodeId)
+	assert.Equal(t, firstNodeAgain.NodeId, gl.GetNode(string(firstNodeAgain.NodeId)).NodeId)
+
 	// Search for some nodes via some simple queries.
-	assert.Equal(t, firstNode, gl.StartQuery().Has("coolpredicate", "is cool").GetNode())
-	assert.Equal(t, secondNode, gl.StartQuery().Has("coolpredicate", "is hot!").GetNode())
+	assert.Equal(t, firstNode.NodeId, gl.StartQuery().Has("coolpredicate", "is cool").GetNode().NodeId)
+	assert.Equal(t, secondNode.NodeId, gl.StartQuery().Has("coolpredicate", "is hot!").GetNode().NodeId)
 }

@@ -15,6 +15,8 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/vcs"
+
+	"github.com/streamrail/concurrent-map"
 )
 
 // PackageInfo holds information about a loaded package.
@@ -75,9 +77,9 @@ type PackageLoader struct {
 
 	handlers map[string]SourceHandler // The handlers for each of the supported package kinds.
 
-	pathsToLoad      chan pathInformation   // The paths to load
-	pathsEncountered map[string]bool        // The paths processed by the loader goroutine
-	packageMap       map[string]PackageInfo // The package map
+	pathsToLoad      chan pathInformation // The paths to load
+	pathsEncountered cmap.ConcurrentMap   // The paths processed by the loader goroutine
+	packageMap       cmap.ConcurrentMap   // The package map
 
 	workTracker sync.WaitGroup // WaitGroup used to wait until all loading is complete
 	finished    chan bool      // Channel used to tell background goroutines to quit
@@ -115,8 +117,8 @@ func NewPackageLoader(rootSourceFile string, handlers ...SourceHandler) *Package
 
 		handlers: handlersMap,
 
-		pathsEncountered: map[string]bool{},
-		packageMap:       map[string]PackageInfo{},
+		pathsEncountered: cmap.New(),
+		packageMap:       cmap.New(),
 		pathsToLoad:      make(chan pathInformation),
 
 		finished: make(chan bool, 2),
@@ -173,7 +175,17 @@ func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 	p.finished <- true
 
 	// Save the package map.
-	result.PackageMap = p.packageMap
+	packageMap := map[string]PackageInfo{}
+	for entry := range p.packageMap.Iter() {
+		packageMap[entry.Key] = entry.Val.(PackageInfo)
+	}
+
+	result.PackageMap = packageMap
+
+	// Apply all handler changes.
+	for _, handler := range p.handlers {
+		handler.Apply(packageMap)
+	}
 
 	// Perform verification in all handlers.
 	if len(result.Errors) == 0 {
@@ -187,7 +199,7 @@ func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 		}
 
 		for _, handler := range p.handlers {
-			handler.Verify(p.packageMap, errorReporter, warningReporter)
+			handler.Verify(errorReporter, warningReporter)
 		}
 	}
 
@@ -244,11 +256,9 @@ func (p *PackageLoader) loadAndParsePath(currentPath pathInformation) {
 
 	// Ensure we have not already seen this path.
 	pathKey := currentPath.String()
-	if _, ok := p.pathsEncountered[pathKey]; ok {
+	if !p.pathsEncountered.SetIfAbsent(pathKey, true) {
 		return
 	}
-
-	p.pathsEncountered[pathKey] = true
 
 	// Perform parsing/loading.
 	switch currentPath.kind {
@@ -324,8 +334,7 @@ func (p *PackageLoader) loadLocalPackage(packagePath pathInformation) {
 		}
 	}
 
-	p.packageMap[packagePath.referenceId] = *packageInfo
-
+	p.packageMap.Set(packagePath.referenceId, *packageInfo)
 	if !fileFound {
 		p.warnings <- compilercommon.SourceWarningf(packagePath.sal, "Package '%s' has no source files", packagePath.path)
 		return
@@ -337,11 +346,11 @@ func (p *PackageLoader) conductParsing(sourceFile pathInformation) {
 	inputSource := compilercommon.InputSource(sourceFile.path)
 
 	// Add the file to the package map as a package of one file.
-	p.packageMap[sourceFile.referenceId] = PackageInfo{
+	p.packageMap.Set(sourceFile.referenceId, PackageInfo{
 		kind:        sourceFile.sourceKind,
 		referenceId: sourceFile.referenceId,
 		modulePaths: []compilercommon.InputSource{inputSource},
-	}
+	})
 
 	// Ensure the file exists.
 	if ok, _ := exists(sourceFile.path); !ok {

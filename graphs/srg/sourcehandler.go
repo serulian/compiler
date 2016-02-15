@@ -6,6 +6,7 @@ package srg
 
 import (
 	"github.com/serulian/compiler/compilercommon"
+	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/parser"
 )
@@ -13,7 +14,8 @@ import (
 // srgSourceHandler implements the SourceHandler interface from the packageloader for
 // populating the SRG from source files and packages.
 type srgSourceHandler struct {
-	srg *SRG // The SRG being populated.
+	srg      *SRG                             // The SRG being populated.
+	modifier compilergraph.GraphLayerModifier // Modifier used to write the parsed AST.
 }
 
 func (sh *srgSourceHandler) Kind() string {
@@ -24,15 +26,28 @@ func (sh *srgSourceHandler) PackageFileExtension() string {
 	return ".seru"
 }
 
-func (sh *srgSourceHandler) Parse(source compilercommon.InputSource, input string, importHandler packageloader.ImportHandler) {
-	parser.Parse(sh.srg.buildASTNode, importHandler, source, input)
+// buildASTNode constructs a new node in the SRG.
+func (h *srgSourceHandler) buildASTNode(source compilercommon.InputSource, kind parser.NodeType) parser.AstNode {
+	graphNode := h.modifier.CreateNode(kind)
+	return &srgASTNode{
+		graphNode: graphNode,
+	}
 }
 
-func (sh *srgSourceHandler) Verify(packageMap map[string]packageloader.PackageInfo, errorReporter packageloader.ErrorReporter, warningReporter packageloader.WarningReporter) {
-	g := sh.srg
+func (sh *srgSourceHandler) Parse(source compilercommon.InputSource, input string, importHandler packageloader.ImportHandler) {
+	parser.Parse(sh.buildASTNode, importHandler, source, input)
+}
 
+func (sh *srgSourceHandler) Apply(packageMap map[string]packageloader.PackageInfo) {
 	// Save the package map for later resolution.
-	g.packageMap = packageMap
+	sh.srg.packageMap = packageMap
+
+	// Apply the changes to the graph.
+	sh.modifier.Apply()
+}
+
+func (sh *srgSourceHandler) Verify(errorReporter packageloader.ErrorReporter, warningReporter packageloader.WarningReporter) {
+	g := sh.srg
 
 	// Collect any parse errors found and add them to the result.
 	eit := g.findAllNodes(parser.NodeTypeError).BuildNodeIterator(

@@ -5,6 +5,7 @@
 package typegraph
 
 import (
+	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/compilerutil"
 )
 
@@ -23,10 +24,13 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 		// The new constructor returns an instance of the type.
 		memberType := g.FunctionTypeReference(g.NewInstanceTypeReference(typeDecl))
 
-		builder := &MemberBuilder{tdg: g, parent: typeDecl}
+		modifier := g.layer.NewModifier()
+		builder := &MemberBuilder{tdg: g, modifier: modifier, parent: typeDecl}
 		member := builder.Name("new").Define()
+		modifier.Apply()
 
-		decorator := &MemberDecorator{tdg: g, member: member}
+		dmodifier := g.layer.NewModifier()
+		decorator := &MemberDecorator{tdg: g, modifier: dmodifier, member: member}
 		decorator.
 			Static(true).
 			Promising(true).
@@ -35,16 +39,17 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 			MemberType(memberType).
 			MemberKind(0).
 			Decorate()
+		dmodifier.Apply()
 	}
 }
 
 // defineFullInheritance copies any inherited members over to types, as well as type checking
 // for inheritance cycles.
-func (g *TypeGraph) defineFullInheritance() {
+func (g *TypeGraph) defineFullInheritance(modifier compilergraph.GraphLayerModifier) {
 	buildInheritance := func(key interface{}, value interface{}) bool {
 		typeDecl := value.(TGTypeDecl)
-		g.buildInheritedMembership(typeDecl, NodePredicateMember)
-		g.buildInheritedMembership(typeDecl, NodePredicateTypeOperator)
+		g.buildInheritedMembership(typeDecl, NodePredicateMember, modifier)
+		g.buildInheritedMembership(typeDecl, NodePredicateTypeOperator, modifier)
 		return true
 	}
 
@@ -76,12 +81,12 @@ func (g *TypeGraph) defineFullInheritance() {
 		}
 
 		typeNode := result.Cycle[0].(TGTypeDecl).GraphNode
-		g.decorateWithError(typeNode, "A cycle was detected in the inheritance of types: %v", types)
+		g.decorateWithError(modifier.Modify(typeNode), "A cycle was detected in the inheritance of types: %v", types)
 	}
 }
 
 // buildInheritedMembership copies any applicable type members from the inherited type references to the given type.
-func (t *TypeGraph) buildInheritedMembership(typeDecl TGTypeDecl, childPredicate string) {
+func (t *TypeGraph) buildInheritedMembership(typeDecl TGTypeDecl, childPredicate string, modifier compilergraph.GraphLayerModifier) {
 	// Build a map of all the existing names.
 	names := map[string]bool{}
 	it := typeDecl.GraphNode.StartQuery().
@@ -113,11 +118,11 @@ func (t *TypeGraph) buildInheritedMembership(typeDecl TGTypeDecl, childPredicate
 
 			// Create a new node of the same kind and copy over any predicates except the type.
 			parentMemberNode := pit.Node()
-			memberNode := parentMemberNode.CloneExcept(NodePredicateMemberType)
+			memberNode := parentMemberNode.CloneExcept(modifier, NodePredicateMemberType)
 			memberNode.Connect(NodePredicateMemberBaseMember, parentMemberNode)
 			memberNode.DecorateWithTagged(NodePredicateMemberBaseSource, inherit)
 
-			typeNode.Connect(childPredicate, memberNode)
+			modifier.Modify(typeNode).Connect(childPredicate, memberNode)
 
 			// If the node is an operator, nothing more to do.
 			if memberNode.Kind == NodeTypeOperator {
@@ -138,4 +143,73 @@ func (t *TypeGraph) buildInheritedMembership(typeDecl TGTypeDecl, childPredicate
 			memberNode.DecorateWithTagged(NodePredicateMemberType, memberType)
 		}
 	}
+}
+
+// checkForDuplicateNames ensures that there are not duplicate names defined in the graph.
+func (t *TypeGraph) checkForDuplicateNames() bool {
+	var hasError = false
+
+	modifier := t.layer.NewModifier()
+	ensureUniqueName := func(typeOrMember TGTypeOrMember, parent TGTypeOrModule, nameMap map[string]bool) {
+		name := typeOrMember.Name()
+		if _, ok := nameMap[name]; ok {
+			t.decorateWithError(modifier.Modify(typeOrMember.Node()), "%s '%s' redefines name '%s' under %s '%s'", typeOrMember.Title(), name, name, parent.Title(), parent.Name())
+			hasError = true
+			return
+		}
+
+		nameMap[name] = true
+	}
+
+	ensureUniqueGenerics := func(typeOrMember TGTypeOrMember) {
+		if !typeOrMember.HasGenerics() {
+			return
+		}
+
+		genericMap := map[string]bool{}
+		for _, generic := range typeOrMember.Generics() {
+			name := generic.Name()
+			if _, ok := genericMap[name]; ok {
+				t.decorateWithError(modifier.Modify(generic.GraphNode), "Generic '%s' is already defined under %s '%s'", name, typeOrMember.Title(), typeOrMember.Name())
+				hasError = true
+				continue
+			}
+
+			genericMap[name] = true
+		}
+	}
+
+	// Check all module members.
+	for _, module := range t.Modules() {
+		moduleMembers := map[string]bool{}
+
+		for _, member := range module.Members() {
+			// Ensure the member name is unique.
+			ensureUniqueName(member, module, moduleMembers)
+
+			// Ensure that the member's generics are unique.
+			ensureUniqueGenerics(member)
+		}
+
+		for _, typeDecl := range module.Types() {
+			// Ensure the type name is unique.
+			ensureUniqueName(typeDecl, module, moduleMembers)
+
+			// Ensure that the type's generics are unique.
+			ensureUniqueGenerics(typeDecl)
+
+			// Check the members of the type.
+			typeMembers := map[string]bool{}
+			for _, typeMember := range typeDecl.Members() {
+				// Ensure the member name is unique.
+				ensureUniqueName(typeMember, typeDecl, typeMembers)
+
+				// Ensure that the members's generics are unique.
+				ensureUniqueGenerics(typeMember)
+			}
+		}
+	}
+
+	modifier.Apply()
+	return hasError
 }

@@ -218,7 +218,7 @@ func (nsi *namedScopeInfo) ValueOrGenericType() typegraph.TypeReference {
 	switch nsi.srgInfo.ScopeKind() {
 	case srg.NamedScopeParameter:
 		// Check for an inferred type.
-		inferredType, hasInferredType := nsi.srgInfo.GraphNode.TryGetTagged(NodePredicateInferredType, nsi.sb.sg.tdg.AnyTypeReference())
+		inferredType, hasInferredType := nsi.sb.inferredParameterTypes.Get(string(nsi.srgInfo.GraphNode.NodeId))
 		if hasInferredType {
 			return inferredType.(typegraph.TypeReference)
 		}

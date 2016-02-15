@@ -15,15 +15,22 @@ import (
 
 var _ = fmt.Printf
 
-func toType(tdg *TypeGraph, typeNode compilergraph.GraphNode) TGTypeDecl {
-	return TGTypeDecl{typeNode, tdg}
+func toType(tdg *TypeGraph, typeNode compilergraph.ModifiableGraphNode) TGTypeDecl {
+	return TGTypeDecl{typeNode.AsNode(), tdg}
 }
 
 func TestBasicReferenceOperations(t *testing.T) {
 	g, _ := compilergraph.NewGraph("-")
 	testTG := newTestTypeGraph(g)
 
-	newNode := testTG.layer.CreateNode(NodeTypeClass)
+	modifier := testTG.layer.NewModifier()
+
+	newNode := modifier.CreateNode(NodeTypeClass)
+	anotherNode := modifier.CreateNode(NodeTypeClass)
+	thirdNode := modifier.CreateNode(NodeTypeClass)
+	replacementNode := modifier.CreateNode(NodeTypeClass)
+	modifier.Apply()
+
 	testRef := testTG.NewTypeReference(toType(testTG, newNode))
 
 	// ReferredType returns the node.
@@ -50,7 +57,6 @@ func TestBasicReferenceOperations(t *testing.T) {
 	assert.True(t, testRef.ContainsType(toType(testTG, newNode)))
 
 	// Ensure that the reference does not contain a reference to anotherNode.
-	anotherNode := testTG.layer.CreateNode(NodeTypeClass)
 	anotherRef := testTG.NewTypeReference(toType(testTG, anotherNode))
 
 	assert.False(t, testRef.ContainsType(toType(testTG, anotherNode)))
@@ -77,9 +83,7 @@ func TestBasicReferenceOperations(t *testing.T) {
 	assert.Equal(t, anotherRef, withGenericAndParameter.Parameters()[0], "Expected parameter to be equal to anotherRef")
 
 	// Add another generic.
-	thirdNode := testTG.layer.CreateNode(NodeTypeClass)
 	thirdRef := testTG.NewTypeReference(toType(testTG, thirdNode))
-
 	withMultipleGenerics := withGenericAndParameter.WithGeneric(thirdRef)
 
 	assert.True(t, withMultipleGenerics.HasGenerics(), "Expected 2 generics")
@@ -97,9 +101,7 @@ func TestBasicReferenceOperations(t *testing.T) {
 	assert.True(t, withMultipleGenerics.ContainsType(toType(testTG, thirdNode)))
 
 	// Replace the "anotherRef" with a completely new type.
-	replacementNode := testTG.layer.CreateNode(NodeTypeClass)
 	replacementRef := testTG.NewTypeReference(toType(testTG, replacementNode))
-
 	replaced := withMultipleGenerics.ReplaceType(toType(testTG, anotherNode), replacementRef)
 
 	assert.True(t, replaced.HasGenerics(), "Expected 2 generics")
@@ -122,15 +124,19 @@ func TestReplaceTypeNullable(t *testing.T) {
 	g, _ := compilergraph.NewGraph("-")
 	testTG := newTestTypeGraph(g)
 
-	firstTypeNode := testTG.layer.CreateNode(NodeTypeClass)
-	secondTypeNode := testTG.layer.CreateNode(NodeTypeClass)
-	thirdTypeNode := testTG.layer.CreateNode(NodeTypeClass)
-	fourthTypeNode := testTG.layer.CreateNode(NodeTypeClass)
+	modifier := testTG.layer.NewModifier()
+
+	firstTypeNode := modifier.CreateNode(NodeTypeClass)
+	secondTypeNode := modifier.CreateNode(NodeTypeClass)
+	thirdTypeNode := modifier.CreateNode(NodeTypeClass)
+	fourthTypeNode := modifier.CreateNode(NodeTypeClass)
 
 	firstTypeNode.Decorate(NodePredicateTypeName, "First")
 	secondTypeNode.Decorate(NodePredicateTypeName, "Second")
 	thirdTypeNode.Decorate(NodePredicateTypeName, "Third")
 	fourthTypeNode.Decorate(NodePredicateTypeName, "Fourth")
+
+	modifier.Apply()
 
 	firstType := toType(testTG, firstTypeNode)
 	secondType := toType(testTG, secondTypeNode)
@@ -150,15 +156,19 @@ func TestReplaceTypeNested(t *testing.T) {
 	g, _ := compilergraph.NewGraph("-")
 	testTG := newTestTypeGraph(g)
 
-	firstTypeNode := testTG.layer.CreateNode(NodeTypeClass)
-	secondTypeNode := testTG.layer.CreateNode(NodeTypeClass)
-	thirdTypeNode := testTG.layer.CreateNode(NodeTypeClass)
-	fourthTypeNode := testTG.layer.CreateNode(NodeTypeClass)
+	modifier := testTG.layer.NewModifier()
+
+	firstTypeNode := modifier.CreateNode(NodeTypeClass)
+	secondTypeNode := modifier.CreateNode(NodeTypeClass)
+	thirdTypeNode := modifier.CreateNode(NodeTypeClass)
+	fourthTypeNode := modifier.CreateNode(NodeTypeClass)
 
 	firstTypeNode.Decorate(NodePredicateTypeName, "First")
 	secondTypeNode.Decorate(NodePredicateTypeName, "Second")
 	thirdTypeNode.Decorate(NodePredicateTypeName, "Third")
 	fourthTypeNode.Decorate(NodePredicateTypeName, "Fourth")
+
+	modifier.Apply()
 
 	firstType := toType(testTG, firstTypeNode)
 	secondType := toType(testTG, secondTypeNode)
@@ -208,22 +218,25 @@ type extractTypeDiff struct {
 func TestExtractTypeDiff(t *testing.T) {
 	g, _ := compilergraph.NewGraph("-")
 	testTG := newTestTypeGraph(g)
+	modifier := testTG.layer.NewModifier()
 
-	firstTypeNode := testTG.layer.CreateNode(NodeTypeClass)
-	secondTypeNode := testTG.layer.CreateNode(NodeTypeClass)
-	thirdTypeNode := testTG.layer.CreateNode(NodeTypeClass)
-	fourthTypeNode := testTG.layer.CreateNode(NodeTypeClass)
+	firstTypeNode := modifier.CreateNode(NodeTypeClass)
+	secondTypeNode := modifier.CreateNode(NodeTypeClass)
+	thirdTypeNode := modifier.CreateNode(NodeTypeClass)
+	fourthTypeNode := modifier.CreateNode(NodeTypeClass)
 
 	firstTypeNode.Decorate(NodePredicateTypeName, "First")
 	secondTypeNode.Decorate(NodePredicateTypeName, "Second")
 	thirdTypeNode.Decorate(NodePredicateTypeName, "Third")
 	fourthTypeNode.Decorate(NodePredicateTypeName, "Fourth")
 
-	tGenericNode := testTG.layer.CreateNode(NodeTypeGeneric)
-	qGenericNode := testTG.layer.CreateNode(NodeTypeGeneric)
+	tGenericNode := modifier.CreateNode(NodeTypeGeneric)
+	qGenericNode := modifier.CreateNode(NodeTypeGeneric)
 
 	tGenericNode.Decorate(NodePredicateGenericName, "T")
 	qGenericNode.Decorate(NodePredicateGenericName, "Q")
+
+	modifier.Apply()
 
 	firstType := toType(testTG, firstTypeNode)
 	secondType := toType(testTG, secondTypeNode)

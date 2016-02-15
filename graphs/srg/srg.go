@@ -63,7 +63,7 @@ func (g *SRG) NodeLocation(node compilergraph.GraphNode) compilercommon.SourceAn
 
 // PackageLoaderHandler returns a SourceHandler for populating the SRG via a package loader.
 func (g *SRG) PackageLoaderHandler() packageloader.SourceHandler {
-	return &srgSourceHandler{g}
+	return &srgSourceHandler{g, g.layer.NewModifier()}
 }
 
 // findVariableTypeWithName returns the SRGTypeRef for the declared type of the

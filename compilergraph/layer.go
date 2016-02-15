@@ -41,6 +41,13 @@ func (sg *SerulianGraph) NewGraphLayer(uniqueId string, nodeKindEnum TaggedValue
 	}
 }
 
+// NewModifier returns a new layer modifier for modifying the graph.
+func (gl *GraphLayer) NewModifier() GraphLayerModifier {
+	return &graphLayerModifierStruct{
+		layer: gl,
+	}
+}
+
 // GetNode returns a node found in the graph layer.
 func (gl *GraphLayer) GetNode(nodeId string) GraphNode {
 	result, found := gl.TryGetNode(nodeId)
@@ -53,25 +60,6 @@ func (gl *GraphLayer) GetNode(nodeId string) GraphNode {
 // TryGetNode tries to return a node found in the graph layer.
 func (gl *GraphLayer) TryGetNode(nodeId string) (GraphNode, bool) {
 	return gl.StartQuery(nodeId).TryGetNode()
-}
-
-// CreateNode creates a new node in the graph layer.
-func (gl *GraphLayer) CreateNode(nodeKind TaggedValue) GraphNode {
-	// Add the node as a member of the layer.
-	nodeId := compilerutil.NewUniqueId()
-	compilerutil.DCHECK(func() bool { return len(nodeId) == NodeIDLength }, "Unexpected node ID length")
-
-	gl.cayleyStore.AddQuad(cayley.Quad(nodeId, nodeMemberPredicate, gl.id, gl.prefix))
-
-	node := GraphNode{
-		NodeId: GraphNodeId(nodeId),
-		Kind:   nodeKind,
-		layer:  gl,
-	}
-
-	// Decorate the node with its kind.
-	node.DecorateWithTagged(gl.nodeKindPredicate, nodeKind)
-	return node
 }
 
 // WalkResult is a result for each step of a walk.

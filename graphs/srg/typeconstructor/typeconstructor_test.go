@@ -70,11 +70,11 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"interface op test", "interfaceop", "success", ""},
 
 	// Failure tests.
-	typegraphTest{"type redeclaration test", "redeclare", "redeclare", "Type 'SomeClass' is already defined in the module"},
-	typegraphTest{"generic redeclaration test", "genericredeclare", "redeclare", "Generic 'T' is already defined"},
+	typegraphTest{"type redeclaration test", "redeclare", "redeclare", "interface 'SomeClass' redefines name 'SomeClass' under Module 'redeclare.seru'"},
+	typegraphTest{"generic redeclaration test", "genericredeclare", "redeclare", "Generic 'T' is already defined under class 'SomeClass'"},
 	typegraphTest{"generic constraint resolve failure test", "genericconstraint", "notfound", "Type 'UnknownType' could not be found"},
 	typegraphTest{"unknown operator failure test", "operatorfail", "unknown", "Unknown operator 'notvalid' defined on type 'SomeType'"},
-	typegraphTest{"operator redefine failure test", "operatorfail", "redefine", "Operator 'plus' is already defined on class 'SomeType'"},
+	typegraphTest{"operator redefine failure test", "operatorfail", "redefine", "operator 'plus' redefines name 'plus' under class 'SomeType'"},
 	typegraphTest{"operator param count mismatch failure test", "operatorfail", "paramcount", "Operator 'plus' defined on type 'SomeType' expects 2 parameters; found 1"},
 	typegraphTest{"operator param type mismatch failure test", "operatorfail", "paramtype", "Parameter 'right' (#1) for operator 'plus' defined on type 'SomeType' expects type SomeType; found Integer"},
 	typegraphTest{"inheritance cycle failure test", "inheritscycle", "inheritscycle", "A cycle was detected in the inheritance of types: [ThirdClass SecondClass FirstClass]"},

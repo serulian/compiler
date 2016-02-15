@@ -60,12 +60,13 @@ type IssueReporter interface {
 }
 
 type issueReporterImpl struct {
-	tdg *TypeGraph // The underlying type graph.
+	tdg      *TypeGraph                       // The underlying type graph.
+	modifier compilergraph.GraphLayerModifier // The modifier being used.
 }
 
 // ReportError adds an error to the type graph, starting from the given source node.
 func (ir issueReporterImpl) ReportError(sourceNode compilergraph.GraphNode, message string, params ...interface{}) {
-	issueNode := ir.tdg.layer.CreateNode(NodeTypeReportedIssue)
+	issueNode := ir.modifier.CreateNode(NodeTypeReportedIssue)
 	issueNode.Connect(NodePredicateSource, sourceNode)
 	ir.tdg.decorateWithError(issueNode, message, params...)
 }
@@ -81,24 +82,25 @@ type Annotator struct {
 // DefineGenericConstraint defines the constraint on a type or type member generic to be that specified.
 func (an Annotator) DefineGenericConstraint(genericSourceNode compilergraph.GraphNode, constraint TypeReference) {
 	genericNode := an.tdg.getMatchingTypeGraphNode(genericSourceNode, NodeTypeGeneric)
-	genericNode.DecorateWithTagged(NodePredicateGenericSubtype, constraint)
+	an.modifier.Modify(genericNode).DecorateWithTagged(NodePredicateGenericSubtype, constraint)
 }
 
 // DefineParentType defines that the given type inherits from the given parent type. For classes, the parent
 // is structurally inherited and for nominal types, it describes conversion.
 func (an Annotator) DefineParentType(typeSourceNode compilergraph.GraphNode, inherits TypeReference) {
 	typeNode := an.tdg.getMatchingTypeGraphNode(typeSourceNode, NodeTypeClass, NodeTypeNominalType)
-	typeNode.DecorateWithTagged(NodePredicateParentType, inherits)
+	an.modifier.Modify(typeNode).DecorateWithTagged(NodePredicateParentType, inherits)
 }
 
 // moduleBuilder ////////////////////////////////////////////////////////////////////////////////////
 
 // moduleBuilder defines a helper type for easy construction of module definitions in the type graph.
 type moduleBuilder struct {
-	tdg        *TypeGraph              // The underlying type graph.
-	name       string                  // The name of the module.
-	path       string                  // The defined path for the module.
-	sourceNode compilergraph.GraphNode // The node for the module in the source graph.
+	tdg        *TypeGraph                       // The underlying type graph.
+	modifier   compilergraph.GraphLayerModifier // The modifier being used for the construction.
+	name       string                           // The name of the module.
+	path       string                           // The defined path for the module.
+	sourceNode compilergraph.GraphNode          // The node for the module in the source graph.
 }
 
 // Name sets the name of the module.
@@ -133,7 +135,7 @@ func (mb *moduleBuilder) Define() {
 		panic(fmt.Sprintf("Missing source node on defined module %v", mb.name))
 	}
 
-	moduleNode := mb.tdg.layer.CreateNode(NodeTypeModule)
+	moduleNode := mb.modifier.CreateNode(NodeTypeModule)
 	moduleNode.Connect(NodePredicateSource, mb.sourceNode)
 	moduleNode.Decorate(NodePredicateModuleName, mb.name)
 	moduleNode.Decorate(NodePredicateModulePath, mb.path)
@@ -143,11 +145,12 @@ func (mb *moduleBuilder) Define() {
 
 // typeBuilder defines a helper type for easy construction of type definitions in the type graph.
 type typeBuilder struct {
-	module     TGModule                // The parent module.
-	name       string                  // The name of the type.
-	alias      string                  // The alias of the type.
-	sourceNode compilergraph.GraphNode // The node for the type in the source graph.
-	typeKind   TypeKind                // The kind of this type.
+	modifier   compilergraph.GraphLayerModifier // The modifier being used.
+	module     TGModule                         // The parent module.
+	name       string                           // The name of the type.
+	alias      string                           // The alias of the type.
+	sourceNode compilergraph.GraphNode          // The node for the type in the source graph.
+	typeKind   TypeKind                         // The kind of this type.
 }
 
 // Name sets the name of the type.
@@ -191,7 +194,7 @@ func (tb *typeBuilder) Define() getGenericBuilder {
 		TryGetNode()
 
 	// Create the type node.
-	typeNode := tb.module.tdg.layer.CreateNode(getTypeNodeType(tb.typeKind))
+	typeNode := tb.modifier.CreateNode(getTypeNodeType(tb.typeKind))
 	typeNode.Connect(NodePredicateTypeModule, tb.module.GraphNode)
 	typeNode.Connect(NodePredicateSource, tb.sourceNode)
 	typeNode.Decorate(NodePredicateTypeName, tb.name)
@@ -211,6 +214,7 @@ func (tb *typeBuilder) Define() getGenericBuilder {
 	return func() *genericBuilder {
 		genericIndex = genericIndex + 1
 		return &genericBuilder{
+			modifier:        tb.modifier,
 			tdg:             tb.module.tdg,
 			parentNode:      typeNode,
 			genericKind:     typeDeclGeneric,
@@ -252,11 +256,12 @@ const (
 
 // genericBuilder defines a helper type for easy construction of generic definitions on types or type members.
 type genericBuilder struct {
-	tdg             *TypeGraph              // The underlying type graph.
-	parentNode      compilergraph.GraphNode // The parent type or member node.
-	genericKind     genericKind             // The kind of generic being built.
-	index           int                     // The 0-based index of the generic under the type or member.
-	parentPredicate string                  // The predicate for connecting the type or member to the generic.
+	modifier        compilergraph.GraphLayerModifier  // The parent modifier.
+	tdg             *TypeGraph                        // The underlying type graph.
+	parentNode      compilergraph.ModifiableGraphNode // The parent type or member node.
+	genericKind     genericKind                       // The kind of generic being built.
+	index           int                               // The 0-based index of the generic under the type or member.
+	parentPredicate string                            // The predicate for connecting the type or member to the generic.
 
 	name       string                  // The name of the generic.
 	sourceNode compilergraph.GraphNode // The node for the generic in the source graph.
@@ -288,14 +293,8 @@ func (gb *genericBuilder) defineGeneric() TGGeneric {
 		panic(fmt.Sprintf("Missing source node on defined generic %v", gb.name))
 	}
 
-	// Ensure that there exists no other generic with this name under the parent node.
-	_, exists := gb.parentNode.StartQuery().
-		Out(gb.parentPredicate).
-		Has(NodePredicateGenericName, gb.name).
-		TryGetNode()
-
 	// Create the generic node.
-	genericNode := gb.tdg.layer.CreateNode(NodeTypeGeneric)
+	genericNode := gb.modifier.CreateNode(NodeTypeGeneric)
 	genericNode.Decorate(NodePredicateGenericName, gb.name)
 	genericNode.Decorate(NodePredicateGenericIndex, strconv.Itoa(gb.index))
 	genericNode.Decorate(NodePredicateGenericKind, strconv.Itoa(int(gb.genericKind)))
@@ -304,25 +303,21 @@ func (gb *genericBuilder) defineGeneric() TGGeneric {
 	// Add the generic to the parent node.
 	gb.parentNode.Connect(gb.parentPredicate, genericNode)
 
-	// Mark the generic with an error if it is repeated.
-	if exists {
-		gb.tdg.decorateWithError(genericNode, "Generic '%s' is already defined", gb.name)
-	}
-
-	return TGGeneric{genericNode, gb.tdg}
+	return TGGeneric{genericNode.AsNode(), gb.tdg}
 }
 
 // MemberBuilder ////////////////////////////////////////////////////////////////////////////////////
 
 // MemberBuilder defines a helper type for easy construction of module and type members.
 type MemberBuilder struct {
-	tdg            *TypeGraph              // The underlying type graph.
-	parent         TGTypeOrModule          // The parent type or module node.
-	isOperator     bool                    // Whether the member being defined is an operator.
-	name           string                  // The name of the member.
-	sourceNode     compilergraph.GraphNode // The node for the generic in the source graph.
-	hasSourceNode  bool                    // Whether there is a source node.
-	memberGenerics []memberGeneric         // The generics on the member.
+	modifier       compilergraph.GraphLayerModifier // The modifier being used.
+	tdg            *TypeGraph                       // The underlying type graph.
+	parent         TGTypeOrModule                   // The parent type or module node.
+	isOperator     bool                             // Whether the member being defined is an operator.
+	name           string                           // The name of the member.
+	sourceNode     compilergraph.GraphNode          // The node for the generic in the source graph.
+	hasSourceNode  bool                             // Whether there is a source node.
+	memberGenerics []memberGeneric                  // The generics on the member.
 }
 
 // memberGeneric holds information about a member's generic.
@@ -355,33 +350,20 @@ func (mb *MemberBuilder) WithGeneric(name string, sourceNode compilergraph.Graph
 
 // Define defines the member under the type or module in the type graph.
 func (mb *MemberBuilder) Define() TGMember {
-	// Ensure that there exists no other member with this name under the parent type or module.
-	var exists = false
 	var name = mb.name
-
 	if mb.isOperator {
 		// Normalize the name by lowercasing it.
 		name = strings.ToLower(mb.name)
-
-		_, exists = mb.parent.Node().StartQuery().
-			Out(NodePredicateTypeOperator).
-			Has(NodePredicateOperatorName, name).
-			TryGetNode()
-	} else {
-		_, exists = mb.parent.Node().StartQuery().
-			Out(NodePredicateMember).
-			Has(NodePredicateMemberName, mb.name).
-			TryGetNode()
 	}
 
 	// Create the member node.
-	var memberNode compilergraph.GraphNode
+	var memberNode compilergraph.ModifiableGraphNode
 	if mb.isOperator {
-		memberNode = mb.tdg.layer.CreateNode(NodeTypeOperator)
+		memberNode = mb.modifier.CreateNode(NodeTypeOperator)
 		memberNode.Decorate(NodePredicateOperatorName, name)
 		memberNode.Decorate(NodePredicateMemberName, operatorMemberNamePrefix+name)
 	} else {
-		memberNode = mb.tdg.layer.CreateNode(NodeTypeMember)
+		memberNode = mb.modifier.CreateNode(NodeTypeMember)
 		memberNode.Decorate(NodePredicateMemberName, name)
 	}
 
@@ -394,6 +376,7 @@ func (mb *MemberBuilder) Define() TGMember {
 	// Decorate the member with its generics.
 	for index, genericInfo := range mb.memberGenerics {
 		genericBuilder := genericBuilder{
+			modifier:        mb.modifier,
 			tdg:             mb.tdg,
 			parentNode:      memberNode,
 			genericKind:     typeMemberGeneric,
@@ -405,18 +388,8 @@ func (mb *MemberBuilder) Define() TGMember {
 		genericBuilder.defineGeneric()
 	}
 
-	// Mark the member with an error if it is repeated.
-	if exists {
-		var kindTitle = "Member"
-		if mb.isOperator {
-			kindTitle = "Operator"
-		}
-
-		mb.tdg.decorateWithError(memberNode, "%s '%s' is already defined on %s '%s'", kindTitle, mb.name, mb.parent.Title(), mb.parent.Name())
-	}
-
 	// Add the member to the parent node.
-	parentNode := mb.parent.Node()
+	parentNode := mb.modifier.Modify(mb.parent.Node())
 
 	if mb.isOperator {
 		parentNode.Connect(NodePredicateTypeOperator, memberNode)
@@ -424,7 +397,7 @@ func (mb *MemberBuilder) Define() TGMember {
 		parentNode.Connect(NodePredicateMember, memberNode)
 	}
 
-	return TGMember{memberNode, mb.tdg}
+	return TGMember{memberNode.AsNode(), mb.tdg}
 }
 
 // MemberDecorator ////////////////////////////////////////////////////////////////////////////////////
@@ -432,9 +405,10 @@ func (mb *MemberBuilder) Define() TGMember {
 // MemberDecorator defines a helper type for easy annotation of module and type members's dependent
 // information.
 type MemberDecorator struct {
-	tdg        *TypeGraph              // The parent type graph.
-	sourceNode compilergraph.GraphNode // The node for the generic in the source graph.
-	member     TGMember                // The member being decorated.
+	modifier   compilergraph.GraphLayerModifier // The modifier being used.
+	tdg        *TypeGraph                       // The parent type graph.
+	sourceNode compilergraph.GraphNode          // The node for the generic in the source graph.
+	member     TGMember                         // The member being decorated.
 
 	issueReporter IssueReporter // The underlying issue reporter.
 
@@ -450,8 +424,9 @@ type MemberDecorator struct {
 	memberType TypeReference // The defined type of the member.
 	memberKind uint64        // The kind of the member.
 
-	memberIssues []string           // Issues added on the member source node.
-	returnables  []memberReturnable // The defined returnables.
+	genericConstraints map[compilergraph.GraphNode]TypeReference // The defined generic constraints.
+	memberIssues       []string                                  // Issues added on the member source node.
+	returnables        []memberReturnable                        // The defined returnables.
 }
 
 // memberReturnable holds information about a returnable under a member.
@@ -543,12 +518,13 @@ func (mb *MemberDecorator) CreateReturnable(sourceNode compilergraph.GraphNode, 
 // DefineGenericConstraint defines the constraint on the type member generic to be that specified.
 func (mb *MemberDecorator) DefineGenericConstraint(genericSourceNode compilergraph.GraphNode, constraint TypeReference) {
 	genericNode := mb.tdg.getMatchingTypeGraphNode(genericSourceNode, NodeTypeGeneric)
-	genericNode.DecorateWithTagged(NodePredicateGenericSubtype, constraint)
+	mb.genericConstraints[genericNode] = constraint
+	mb.modifier.Modify(genericNode).DecorateWithTagged(NodePredicateGenericSubtype, constraint)
 }
 
 // Decorate completes the decoration of the member.
 func (mb *MemberDecorator) Decorate() {
-	memberNode := mb.member.GraphNode
+	memberNode := mb.modifier.Modify(mb.member.GraphNode)
 
 	// If this is an operator, type check and compute member type.
 	if mb.isOperator() {
@@ -558,7 +534,7 @@ func (mb *MemberDecorator) Decorate() {
 		memberNode.DecorateWithTagged(NodePredicateMemberType, mb.memberType)
 
 		// Decorate the member with its signature.
-		mb.decorateWithSig(memberNode, mb.memberType, mb.member.Generics()...)
+		mb.decorateWithSig(mb.memberType, mb.member.Generics()...)
 	}
 
 	if mb.promising {
@@ -587,7 +563,7 @@ func (mb *MemberDecorator) Decorate() {
 
 	// Add the returnables to the member (if any).
 	for _, returnableInfo := range mb.returnables {
-		returnNode := mb.tdg.layer.CreateNode(NodeTypeReturnable)
+		returnNode := mb.modifier.CreateNode(NodeTypeReturnable)
 		returnNode.Connect(NodePredicateSource, returnableInfo.sourceNode)
 		returnNode.DecorateWithTagged(NodePredicateReturnType, returnableInfo.returnType)
 
@@ -601,7 +577,7 @@ func (mb *MemberDecorator) parent() TGTypeOrModule {
 }
 
 // checkAndComputeOperator handles specialized logic for operator members.
-func (mb *MemberDecorator) checkAndComputeOperator(memberNode compilergraph.GraphNode, name string) {
+func (mb *MemberDecorator) checkAndComputeOperator(memberNode compilergraph.ModifiableGraphNode, name string) {
 	name = strings.ToLower(name)
 
 	// Verify that the operator matches a known operator.
@@ -668,14 +644,14 @@ func (mb *MemberDecorator) checkAndComputeOperator(memberNode compilergraph.Grap
 
 	// Decorate the member with its signature.
 	if definition.IsStatic {
-		mb.decorateWithSig(memberNode, mb.tdg.AnyTypeReference())
+		mb.decorateWithSig(mb.tdg.AnyTypeReference())
 	} else {
-		mb.decorateWithSig(memberNode, memberType)
+		mb.decorateWithSig(memberType)
 	}
 }
 
 // decorateWithSig decorates the given member node with a unique signature for fast subtype checking.
-func (mb *MemberDecorator) decorateWithSig(memberNode compilergraph.GraphNode, sigMemberType TypeReference, generics ...TGGeneric) {
+func (mb *MemberDecorator) decorateWithSig(sigMemberType TypeReference, generics ...TGGeneric) {
 	// Build type reference value strings for the member type and any generic constraints (which
 	// handles generic count as well). The call to Localize replaces the type node IDs in the
 	// type references with a local ID (#1, #2, etc), to allow for positional comparison between
@@ -683,7 +659,7 @@ func (mb *MemberDecorator) decorateWithSig(memberNode compilergraph.GraphNode, s
 	memberTypeStr := sigMemberType.Localize(generics...).Value()
 	constraintStr := make([]string, len(generics))
 	for index, generic := range generics {
-		genericConstraint := generic.GetTagged(NodePredicateGenericSubtype, mb.tdg.AnyTypeReference()).(TypeReference)
+		genericConstraint := mb.genericConstraints[generic.GraphNode]
 		constraintStr[index] = genericConstraint.Localize(generics...).Value()
 	}
 
@@ -699,14 +675,14 @@ func (mb *MemberDecorator) decorateWithSig(memberNode compilergraph.GraphNode, s
 		GenericConstraints: constraintStr,
 	}
 
-	memberNode.DecorateWithTagged(NodePredicateMemberSignature, signature)
+	mb.modifier.Modify(mb.member.GraphNode).DecorateWithTagged(NodePredicateMemberSignature, signature)
 }
 
 // Other stuff ////////////////////////////////////////////////////////////////////////////////////
 
 // decorateWithError decorates the given node with an associated error node.
-func (t *TypeGraph) decorateWithError(node compilergraph.GraphNode, message string, args ...interface{}) {
-	errorNode := t.layer.CreateNode(NodeTypeError)
+func (t *TypeGraph) decorateWithError(node compilergraph.ModifiableGraphNode, message string, args ...interface{}) {
+	errorNode := node.Modifier().CreateNode(NodeTypeError)
 	errorNode.Decorate(NodePredicateErrorMessage, fmt.Sprintf(message, args...))
 	node.Connect(NodePredicateError, errorNode)
 }

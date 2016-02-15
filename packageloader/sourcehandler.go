@@ -21,8 +21,12 @@ type SourceHandler interface {
 	// Parse parses the given source file.
 	Parse(source compilercommon.InputSource, input string, importHandler ImportHandler)
 
+	// Apply performs final application of all changes in the source handler. This method is called
+	// synchronously, and is typically used to apply the parsed structure to the underlying graph.
+	Apply(packageMap map[string]PackageInfo)
+
 	// Verify performs verification of the loaded source.
-	Verify(packageMap map[string]PackageInfo, errorReporter ErrorReporter, warningReporter WarningReporter)
+	Verify(errorReporter ErrorReporter, warningReporter WarningReporter)
 }
 
 // PackageImportType identifies the types of imports.
