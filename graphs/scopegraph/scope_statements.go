@@ -411,30 +411,32 @@ func (sb *scopeBuilder) scopeStatementBlock(node compilergraph.GraphNode, option
 
 	// If this statement block is the implementation of a member or property getter, check its return
 	// type.
-	parentDef, hasParent := node.StartQuery().In(parser.NodePredicateBody).TryGetNode()
-	if hasParent {
-		returnTypeExpected, hasReturnType := sb.sg.tdg.LookupReturnType(parentDef)
+	if isValid {
+		parentDef, hasParent := node.StartQuery().In(parser.NodePredicateBody).TryGetNode()
+		if hasParent {
+			returnTypeExpected, hasReturnType := sb.sg.tdg.LookupReturnType(parentDef)
 
-		if hasReturnType {
-			// If the return type expected is void, ensure no branch returned any values.
-			if returnTypeExpected.IsVoid() {
-				if !returnedType.IsVoid() {
-					sb.decorateWithError(node, "No return value expected here, found value of type '%v'", returnedType)
+			if hasReturnType {
+				// If the return type expected is void, ensure no branch returned any values.
+				if returnTypeExpected.IsVoid() {
+					if !returnedType.IsVoid() {
+						sb.decorateWithError(node, "No return value expected here, found value of type '%v'", returnedType)
+					}
+
+					return newScope().IsValid(isValid).Returning(returnedType, isSettlingScope).GetScope()
 				}
 
-				return newScope().IsValid(isValid).Returning(returnedType, isSettlingScope).GetScope()
-			}
+				if !isSettlingScope {
+					sb.decorateWithError(node, "Expected return value of type '%v' but not all paths return a value", returnTypeExpected)
+					return newScope().Invalid().Returning(returnedType, isSettlingScope).GetScope()
+				}
 
-			if !isSettlingScope {
-				sb.decorateWithError(node, "Expected return value of type '%v' but not all paths return a value", returnTypeExpected)
-				return newScope().Invalid().Returning(returnedType, isSettlingScope).GetScope()
-			}
-
-			// Otherwise, check that the returned type matches that expected.
-			rerr := returnedType.CheckSubTypeOf(returnTypeExpected)
-			if rerr != nil {
-				sb.decorateWithError(node, "Expected return value of type '%v': %v", returnTypeExpected, rerr)
-				return newScope().Invalid().Returning(returnedType, isSettlingScope).GetScope()
+				// Otherwise, check that the returned type matches that expected.
+				rerr := returnedType.CheckSubTypeOf(returnTypeExpected)
+				if rerr != nil {
+					sb.decorateWithError(node, "Expected return value of type '%v': %v", returnTypeExpected, rerr)
+					return newScope().Invalid().Returning(returnedType, isSettlingScope).GetScope()
+				}
 			}
 		}
 	}
