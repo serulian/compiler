@@ -43,9 +43,7 @@ func (sg *SerulianGraph) NewGraphLayer(uniqueId string, nodeKindEnum TaggedValue
 
 // NewModifier returns a new layer modifier for modifying the graph.
 func (gl *GraphLayer) NewModifier() GraphLayerModifier {
-	return &graphLayerModifierStruct{
-		layer: gl,
-	}
+	return gl.createNewModifier()
 }
 
 // GetNode returns a node found in the graph layer.

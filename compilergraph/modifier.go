@@ -24,12 +24,28 @@ type GraphLayerModifier interface {
 	Apply()
 }
 
+func (gl *GraphLayer) createNewModifier() GraphLayerModifier {
+	modifier := &graphLayerModifierStruct{
+		layer:        gl,
+		deltas:       make([]graph.Delta, 0, 100),
+		wg:           sync.WaitGroup{},
+		deltaChannel: make(chan graph.Delta, 25),
+		closeChannel: make(chan bool),
+	}
+
+	go modifier.runCollector()
+	return modifier
+}
+
 // graphLayerModifier defines a small helper type for constructing deltas to be applied
 // safely to a graph layer.
 type graphLayerModifierStruct struct {
-	layer  *GraphLayer   // The layer being modified.
-	deltas []graph.Delta // The deltas to apply to the graph.
-	mutex  sync.Mutex    // Mutex to ensure synchronous writes.
+	layer        *GraphLayer   // The layer being modified.
+	deltas       []graph.Delta // The deltas to apply to the graph.
+	wg           sync.WaitGroup
+	deltaChannel chan graph.Delta
+	closeChannel chan bool
+	counter      uint64
 }
 
 // ModifiableGraphNode represents a graph node that will be added to the graph once the modifier
@@ -38,6 +54,19 @@ type ModifiableGraphNode struct {
 	NodeId   GraphNodeId // Unique ID for the node.
 	Kind     TaggedValue // The kind of the node.
 	modifier *graphLayerModifierStruct
+}
+
+func (gl *graphLayerModifierStruct) runCollector() {
+	for {
+		select {
+		case delta := <-gl.deltaChannel:
+			gl.deltas = append(gl.deltas, delta)
+			gl.wg.Done()
+
+		case <-gl.closeChannel:
+			return
+		}
+	}
 }
 
 func (gl *graphLayerModifierStruct) Modify(node GraphNode) ModifiableGraphNode {
@@ -67,28 +96,23 @@ func (gl *graphLayerModifierStruct) CreateNode(nodeKind TaggedValue) ModifiableG
 
 // addQuad adds a delta to add a quad to the graph.
 func (gl *graphLayerModifierStruct) addQuad(quad quad.Quad) {
-	gl.mutex.Lock()
-	defer gl.mutex.Unlock()
-
 	ad := graph.Delta{
 		Quad:   quad,
 		Action: graph.Add,
 	}
 
-	gl.deltas = append(gl.deltas, ad)
+	gl.wg.Add(1)
+	gl.deltaChannel <- ad
 }
 
 // Apply applies all changes in the modification transaction to the graph.
 func (gl *graphLayerModifierStruct) Apply() {
-	gl.mutex.Lock()
-	defer gl.mutex.Unlock()
-
+	gl.wg.Wait()
+	gl.closeChannel <- true
 	err := gl.layer.cayleyStore.ApplyDeltas(gl.deltas, graph.IgnoreOpts{true, true})
 	if err != nil {
 		panic(err)
 	}
-
-	gl.deltas = make([]graph.Delta, 0)
 }
 
 // AsNode returns the ModifiableGraphNode as a GraphNode. Note that the node will not
