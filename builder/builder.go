@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"path"
+	"sort"
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/generator/es5"
@@ -25,7 +26,40 @@ var CORE_LIBRARY = packageloader.Library{
 	IsSCM:     true,
 }
 
+type WarningsSlice []compilercommon.SourceWarning
+type ErrorsSlice []compilercommon.SourceError
+
+func (s WarningsSlice) Len() int {
+	return len(s)
+}
+func (s WarningsSlice) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+func (s WarningsSlice) Less(i, j int) bool {
+	if s[i].SourceAndLocation().Location().LineNumber() == s[j].SourceAndLocation().Location().LineNumber() {
+		return s[i].SourceAndLocation().Location().ColumnPosition() < s[j].SourceAndLocation().Location().ColumnPosition()
+	}
+
+	return s[i].SourceAndLocation().Location().LineNumber() < s[j].SourceAndLocation().Location().LineNumber()
+}
+
+func (s ErrorsSlice) Len() int {
+	return len(s)
+}
+func (s ErrorsSlice) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+func (s ErrorsSlice) Less(i, j int) bool {
+	if s[i].SourceAndLocation().Location().LineNumber() == s[j].SourceAndLocation().Location().LineNumber() {
+		return s[i].SourceAndLocation().Location().ColumnPosition() < s[j].SourceAndLocation().Location().ColumnPosition()
+	}
+
+	return s[i].SourceAndLocation().Location().LineNumber() < s[j].SourceAndLocation().Location().LineNumber()
+}
+
 func outputWarnings(warnings []compilercommon.SourceWarning) {
+	sort.Sort(WarningsSlice(warnings))
+
 	highlight := color.New(color.FgYellow, color.Bold)
 	location := color.New(color.FgWhite)
 	message := color.New(color.FgHiWhite)
@@ -38,6 +72,8 @@ func outputWarnings(warnings []compilercommon.SourceWarning) {
 }
 
 func outputErrors(errors []compilercommon.SourceError) {
+	sort.Sort(ErrorsSlice(errors))
+
 	highlight := color.New(color.FgRed, color.Bold)
 	location := color.New(color.FgWhite)
 	message := color.New(color.FgHiWhite)
