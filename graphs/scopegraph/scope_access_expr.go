@@ -132,7 +132,7 @@ func (sb *scopeBuilder) scopeCastExpression(node compilergraph.GraphNode, option
 
 	if serr := castType.CheckSubTypeOf(childType); serr != nil {
 		sb.decorateWithError(node, "Cannot cast value of type '%v' to type '%v': %v", childType, castType, serr)
-		return newScope().Invalid().GetScope()
+		return newScope().Invalid().Resolving(castType).GetScope()
 	}
 
 	return newScope().Valid().Resolving(castType).GetScope()
