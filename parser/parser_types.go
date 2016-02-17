@@ -37,6 +37,7 @@ const (
 	NodeTypeClass     // A class
 	NodeTypeInterface // An interface
 	NodeTypeNominal   // A nominal type
+	NodeTypeStruct    // A structural type
 	NodeTypeGeneric   // A generic definition on a type
 
 	// Module and Type Members
@@ -128,7 +129,11 @@ const (
 	NodeNullLiteralExpression    // null
 	NodeValLiteralExpression     // val
 
-	NodeListExpression     // [1, 2, 3]
+	NodeListExpression // [1, 2, 3]
+
+	NodeStructuralNewExpression      // SomeName{a: 1, b: 2}
+	NodeStructuralNewExpressionEntry // a: 1
+
 	NodeMapExpression      // {a: 1, b: 2}
 	NodeMapExpressionEntry // a: 1
 
@@ -444,6 +449,18 @@ const (
 	// NodeListExpression
 	//
 	NodeListExpressionValue = "list-expr-value"
+
+	//
+	// NodeStructuralNewExpression
+	//
+	NodeStructuralNewTypeExpression       = "structural-new-type-expr"
+	NodeStructuralNewExpressionChildEntry = "structural-new-entry"
+
+	//
+	// NodeStructuralNewExpressionEntry
+	//
+	NodeStructuralNewEntryKey   = "structural-new-entry-key"
+	NodeStructuralNewEntryValue = "structural-new-entry-value"
 
 	//
 	// NodeMapExpression

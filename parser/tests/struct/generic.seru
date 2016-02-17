@@ -1,0 +1,2 @@
+struct SomeStruct<T, Q : Something> {
+}

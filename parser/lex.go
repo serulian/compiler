@@ -151,6 +151,7 @@ var keywords = map[string]bool{
 	"class":     true,
 	"interface": true,
 	"type":      true,
+	"struct":    true,
 	"default":   true,
 
 	"function":    true,

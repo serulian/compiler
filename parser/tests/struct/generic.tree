@@ -1,0 +1,37 @@
+NodeTypeFile
+  end-rune = 38
+  input-source = generic struct test
+  start-rune = 0
+  child-node =>
+    NodeTypeStruct
+      end-rune = 38
+      input-source = generic struct test
+      named = SomeStruct
+      start-rune = 0
+      type-generic =>
+        NodeTypeGeneric
+          end-rune = 18
+          input-source = generic struct test
+          named = T
+          start-rune = 18
+        NodeTypeGeneric
+          end-rune = 33
+          input-source = generic struct test
+          named = Q
+          start-rune = 21
+          generic-subtype =>
+            NodeTypeTypeReference
+              end-rune = 33
+              input-source = generic struct test
+              start-rune = 25
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 33
+                  input-source = generic struct test
+                  start-rune = 25
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 33
+                      identifieraccess-name = Something
+                      input-source = generic struct test
+                      start-rune = 25
