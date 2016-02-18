@@ -80,6 +80,24 @@
         "Key": "78fb433025a22aa38fb98e3bf8cfc6df",
         "Kind": 5,
         "Children": {
+            "44148a602634c147fdb1c3c77289e972": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "44148a602634c147fdb1c3c77289e972",
+                    "Kind": 6,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "foobar",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cvoid\u003e",
+                        "tdg-member-signature": "\n\u0006foobar\u0010\u0002\u0018\u0000 \u0001*\u000efunction\u003cvoid\u003e",
+                        "tdg-node-kind": "6|NodeType|tdg",
+                        "tdg-source-module": "tests/global.webidl",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
             "84a45623dc7aebcc18b420183f182f50": {
                 "Predicate": "tdg-node-member",
                 "Child": {

@@ -109,6 +109,16 @@ func (i *IRGDeclaration) HasAnnotation(name string) bool {
 	return hasNode
 }
 
+// HasOneAnnotation returns true if the declaration is decorated with one of the given annotations.
+func (i *IRGDeclaration) HasOneAnnotation(names ...string) bool {
+	_, hasNode := i.GraphNode.StartQuery().
+		Out(parser.NodePredicateDeclarationAnnotation).
+		Has(parser.NodePredicateAnnotationName, names...).
+		TryGetNode()
+
+	return hasNode
+}
+
 // GetAnnotations returns all the annotations with the given name declared on the declaration.
 func (i *IRGDeclaration) GetAnnotations(name string) []IRGAnnotation {
 	ait := i.GraphNode.StartQuery().

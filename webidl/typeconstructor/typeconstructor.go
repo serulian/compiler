@@ -13,9 +13,9 @@ import (
 	"github.com/serulian/compiler/webidl"
 )
 
-// GLOBAL_CONTEXT_ANNOTATION is the annotation that marks an interface as being the global context
+// GLOBAL_CONTEXT_ANNOTATIONS are the annotations that mark an interface as being a global context
 // (e.g. Window) in WebIDL.
-const GLOBAL_CONTEXT_ANNOTATION = "GlobalContext"
+var GLOBAL_CONTEXT_ANNOTATIONS = []string{"Global", "PrimaryGlobal"}
 
 // CONSTRUCTOR_ANNOTATION is an annotation that describes support for a constructor on a WebIDL
 // type. This translates to being able to do "new Type(...)" in ECMAScript.
@@ -56,7 +56,7 @@ func (itc *irgTypeConstructor) DefineModules(builder typegraph.GetModuleBuilder)
 func (itc *irgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 	for _, module := range itc.irg.GetModules() {
 		for _, declaration := range module.Declarations() {
-			if declaration.HasAnnotation(GLOBAL_CONTEXT_ANNOTATION) {
+			if declaration.HasOneAnnotation(GLOBAL_CONTEXT_ANNOTATIONS...) {
 				continue
 			}
 
@@ -74,9 +74,9 @@ func (itc *irgTypeConstructor) DefineDependencies(annotator typegraph.Annotator,
 
 func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder, reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {
 	for _, declaration := range itc.irg.Declarations() {
-		// GlobalContext members get defined under their module, not their declaration.
+		// Global members get defined under their module, not their declaration.
 		var parentNode = declaration.GraphNode
-		if declaration.HasAnnotation(GLOBAL_CONTEXT_ANNOTATION) {
+		if declaration.HasOneAnnotation(GLOBAL_CONTEXT_ANNOTATIONS...) {
 			parentNode = declaration.Module().GraphNode
 		}
 
@@ -90,7 +90,7 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 		}
 
 		// Add support for any native operators.
-		if declaration.HasAnnotation(GLOBAL_CONTEXT_ANNOTATION) && declaration.HasAnnotation(NATIVE_OPERATOR_ANNOTATION) {
+		if declaration.HasOneAnnotation(GLOBAL_CONTEXT_ANNOTATIONS...) && declaration.HasAnnotation(NATIVE_OPERATOR_ANNOTATION) {
 			reporter.ReportError(declaration.GraphNode, "[NativeOperator] not supported on declarations marked with [GlobalContext]")
 			return
 		}
