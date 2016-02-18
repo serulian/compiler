@@ -1,4 +1,4 @@
-[GlobalContext]
+[PrimaryGlobal]
 interface Window {
 	static void debugprint(any value);
 }

@@ -19,6 +19,7 @@ const (
 	NodeTypeFile                         // The file root node
 	NodeTypeComment                      // A single or multiline comment
 
+	NodeTypeCustomOp    // A custom operation (serializer, etc)
 	NodeTypeAnnotation  // [Constructor]
 	NodeTypeParameter   // optional any SomeArg
 	NodeTypeDeclaration // interface Foo { ... }
@@ -102,6 +103,14 @@ const (
 
 	// Connects a declaration to one of its member definitions.
 	NodePredicateDeclarationMember = "declaration-member"
+
+	// Connects a declaration with a custom operation (serializer, jsonifier, etc).
+	NodePredicateDeclarationCustomOperation = "declaration-custom-operation"
+
+	//
+	// NodeTypeCustomOp
+	//
+	NodePredicateCustomOpName = "custom-op-name"
 
 	//
 	// NodeTypeMember

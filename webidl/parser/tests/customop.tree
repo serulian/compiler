@@ -1,0 +1,31 @@
+NodeTypeGlobalModule
+  child-node =>
+    NodeTypeFile
+      end-rune = 68
+      input-source = custom operation test
+      start-rune = 0
+      child-node =>
+        NodeTypeDeclaration
+          declaration-kind = interface
+          declaration-name = SomeInterface
+          end-rune = 68
+          input-source = custom operation test
+          start-rune = 0
+          declaration-custom-operation =>
+            NodeTypeCustomOp
+              custom-op-name = serializer
+              end-rune = 37
+              input-source = custom operation test
+              start-rune = 27
+            NodeTypeCustomOp
+              custom-op-name = jsonifier
+              end-rune = 49
+              input-source = custom operation test
+              start-rune = 40
+          declaration-member =>
+            NodeTypeMember
+              end-rune = 65
+              input-source = custom operation test
+              member-name = someOp
+              member-type = void
+              start-rune = 52

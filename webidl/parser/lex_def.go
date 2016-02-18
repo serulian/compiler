@@ -55,6 +55,8 @@ var keywords = map[string]bool{
 	"implements": true,
 	"getter":     true,
 	"setter":     true,
+	"serializer": true,
+	"jsonifier":  true,
 }
 
 func isWhitespaceToken(kind tokenType) bool {

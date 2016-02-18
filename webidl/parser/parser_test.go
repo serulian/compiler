@@ -90,6 +90,7 @@ var parserTests = []parserTest{
 	parserTest{"members test", "members"},
 	parserTest{"annotation value test", "annotationvalue"},
 	parserTest{"indexer test", "indexer"},
+	parserTest{"custom operation test", "customop"},
 
 	parserTest{"full file test", "fullfile"},
 }

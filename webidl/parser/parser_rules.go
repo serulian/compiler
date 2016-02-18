@@ -102,10 +102,27 @@ func (p *sourceParser) consumeDeclaration() AstNode {
 	// {
 	p.consume(tokenTypeLeftBrace)
 
-	// Members (if any).
+	// Members and custom operations (if any).
 	for {
 		if p.isToken(tokenTypeRightBrace) {
 			break
+		}
+
+		if p.isKeyword("serializer") || p.isKeyword("jsonifier") {
+			customOpNode := p.startNode(NodeTypeCustomOp)
+			customOpNode.Decorate(NodePredicateCustomOpName, p.currentToken.value)
+
+			p.consume(tokenTypeKeyword)
+			_, ok := p.consume(tokenTypeSemicolon)
+			p.finishNode()
+
+			declNode.Connect(NodePredicateDeclarationCustomOperation, customOpNode)
+
+			if !ok {
+				break
+			}
+
+			continue
 		}
 
 		declNode.Connect(NodePredicateDeclarationMember, p.consumeMember())
