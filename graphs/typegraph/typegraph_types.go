@@ -32,6 +32,9 @@ const (
 	// Generics.
 	NodeTypeGeneric // A defined generic on a type or type member.
 
+	// Custom attribute.
+	NodeTypeAttribute
+
 	// An issue reported by a source graph.
 	NodeTypeReportedIssue
 
@@ -69,7 +72,7 @@ const (
 	NodePredicateModuleName = "module-name"
 
 	//
-	// NodeTypeClass/NodeTypeInterface
+	// NodeTypeClass/NodeTypeInterface/NodeTypeExternalInterface/NodeTypeNominal
 	//
 
 	// Connects a type declaration to its parent module.
@@ -89,6 +92,9 @@ const (
 
 	// Marks a type with its alias.
 	NodePredicateTypeAlias = "type-alias"
+
+	// Connects a type declaration to a custom attribute.
+	NodePredicateTypeAttribute = "type-attribute"
 
 	//
 	// NodeTypeGeneric
@@ -157,6 +163,13 @@ const (
 
 	// Marks an operator as being a call to a native (ES) operator.
 	NodePredicateOperatorNative = "operator-native"
+
+	//
+	// NodeTypeAttribute
+	//
+
+	// Marks an attribute with its name.
+	NodePredicateAttributeName = "attribute-name"
 
 	//
 	// NodeTypeReturnable

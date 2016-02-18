@@ -151,11 +151,18 @@ type typeBuilder struct {
 	alias      string                           // The alias of the type.
 	sourceNode compilergraph.GraphNode          // The node for the type in the source graph.
 	typeKind   TypeKind                         // The kind of this type.
+	attributes []string                         // The custom attributes on the type, if any.
 }
 
 // Name sets the name of the type.
 func (tb *typeBuilder) Name(name string) *typeBuilder {
 	tb.name = name
+	return tb
+}
+
+// WithAttribute adds the attribute with the given name to the type.
+func (tb *typeBuilder) WithAttribute(name string) *typeBuilder {
+	tb.attributes = append(tb.attributes, name)
 	return tb
 }
 
@@ -187,12 +194,6 @@ func (tb *typeBuilder) Define() getGenericBuilder {
 		panic(fmt.Sprintf("Missing source node on defined type %v", tb.name))
 	}
 
-	// Ensure that there exists no other type with this name under the parent module.
-	_, exists := tb.module.StartQuery().
-		In(NodePredicateTypeModule).
-		Has(NodePredicateTypeName, tb.name).
-		TryGetNode()
-
 	// Create the type node.
 	typeNode := tb.modifier.CreateNode(getTypeNodeType(tb.typeKind))
 	typeNode.Connect(NodePredicateTypeModule, tb.module.GraphNode)
@@ -204,9 +205,10 @@ func (tb *typeBuilder) Define() getGenericBuilder {
 		typeNode.Decorate(NodePredicateTypeAlias, tb.alias)
 	}
 
-	// If another type with the same name exists under the module, decorate with an error.
-	if exists {
-		tb.module.tdg.decorateWithError(typeNode, "Type '%s' is already defined in the module", tb.name)
+	for _, attribute := range tb.attributes {
+		attrNode := tb.modifier.CreateNode(NodeTypeAttribute)
+		attrNode.Decorate(NodePredicateAttributeName, attribute)
+		typeNode.Connect(NodePredicateTypeAttribute, attrNode)
 	}
 
 	var genericIndex = -1
