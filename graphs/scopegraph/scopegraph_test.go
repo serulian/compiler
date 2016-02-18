@@ -750,9 +750,9 @@ var scopeGraphTests = []scopegraphTest{
 
 	/////////// class field ///////////
 
-	scopegraphTest{"class field uninitialized failure test", "var", "uninitializedfield",
+	scopegraphTest{"class field uninitialized test", "var", "uninitializedfield",
 		[]expectedScopeEntry{},
-		"Field 'someVar' must have explicit initializer as its type 'Integer' is non-nullable", ""},
+		"", ""},
 
 	/////////// lambda expression ///////////
 
