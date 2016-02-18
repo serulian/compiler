@@ -61,6 +61,11 @@ func (itc *irgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 			}
 
 			typeBuilder := builder(module.Node())
+
+			for _, customop := range declaration.CustomOperations() {
+				typeBuilder.WithAttribute(customop)
+			}
+
 			typeBuilder.Name(declaration.Name()).
 				SourceNode(declaration.GraphNode).
 				TypeKind(typegraph.ExternalInternalType).
