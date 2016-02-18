@@ -151,6 +151,9 @@ const (
 	// functions and properties in SRG-created types.
 	NodePredicateMemberPromising = "member-promising"
 
+	// Decorates a member as being automatically initialized with a default value.
+	NodePredicateMemberHasDefaultValue = "member-hasdefault"
+
 	// Decorates a member as being implicitly called on access or assignment. Used for
 	// properties that are backed by functions.
 	NodePredicateMemberImplicitlyCalled = "member-implicitly-called"

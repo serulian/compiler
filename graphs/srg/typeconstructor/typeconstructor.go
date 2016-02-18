@@ -12,6 +12,7 @@ import (
 	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/typegraph"
+	"github.com/serulian/compiler/parser"
 )
 
 // GetConstructor returns a TypeGraph constructor for the given SRG.
@@ -206,6 +207,7 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 	var isStatic bool = false
 	var isPromising bool = true
 	var isImplicitlyCalled bool = false
+	var hasDefaultValue bool = false
 
 	switch member.MemberKind() {
 	case srg.VarMember:
@@ -213,6 +215,7 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 		memberType, _ = stc.resolvePossibleType(member.Node(), member.DeclaredType, graph, reporter)
 		isReadOnly = false
 		isPromising = false
+		_, hasDefaultValue = member.Node().TryGet(parser.NodeVariableStatementExpression)
 
 	case srg.PropertyMember:
 		// Properties have their declared type.
@@ -290,6 +293,9 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 
 	// Decorate the member with whether it is promising.
 	decorator.Promising(isPromising)
+
+	// Decorate the member with whether it has a default value.
+	decorator.HasDefaultValue(hasDefaultValue)
 
 	// Decorate the member with whether it is implicitly called.
 	decorator.ImplicitlyCalled(isImplicitlyCalled)

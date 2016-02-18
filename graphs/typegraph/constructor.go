@@ -417,12 +417,13 @@ type MemberDecorator struct {
 
 	issueReporter IssueReporter // The underlying issue reporter.
 
-	exported  bool // Whether the member is exported publicly.
-	readonly  bool // Whether the member is readonly.
-	static    bool // Whether the member is static.
-	promising bool // Whether the member is promising.
-	implicit  bool // Whether the member is implicitly called.
-	native    bool // Whether this operator is native to ES.
+	exported   bool // Whether the member is exported publicly.
+	readonly   bool // Whether the member is readonly.
+	static     bool // Whether the member is static.
+	promising  bool // Whether the member is promising.
+	implicit   bool // Whether the member is implicitly called.
+	native     bool // Whether this operator is native to ES.
+	hasdefault bool // Whether the member has a default value.
 
 	skipOperatorChecking bool // Whether to skip operator checking.
 
@@ -466,6 +467,12 @@ func (mb *MemberDecorator) Native(native bool) *MemberDecorator {
 	}
 
 	mb.native = native
+	return mb
+}
+
+// HasDefaultValue sets whether the member has a default value.
+func (mb *MemberDecorator) HasDefaultValue(hasdefault bool) *MemberDecorator {
+	mb.hasdefault = hasdefault
 	return mb
 }
 
@@ -556,6 +563,10 @@ func (mb *MemberDecorator) Decorate() {
 
 	if mb.readonly {
 		memberNode.Decorate(NodePredicateMemberReadOnly, "true")
+	}
+
+	if mb.hasdefault {
+		memberNode.Decorate(NodePredicateMemberHasDefaultValue, "true")
 	}
 
 	if mb.implicit {

@@ -234,6 +234,38 @@ func (tn TGTypeDecl) IsPromising() bool {
 	return false
 }
 
+// isConstructable returns whether this type is constructable.
+func (tn TGTypeDecl) isConstructable() bool {
+	typeKind := tn.TypeKind()
+	return typeKind == ClassType || typeKind == StructType
+}
+
+// RequiredFields returns the fields under this type that must be specified when
+// constructing an instance of the type, as they are non-nullable and do not have
+// a specified default value.
+func (tn TGTypeDecl) RequiredFields() []TGMember {
+	var fields = make([]TGMember, 0)
+	for _, member := range tn.Members() {
+		// If the member is not an instance assignable, nothing more to do.
+		if member.IsReadOnly() || member.IsStatic() || member.IsOperator() {
+			continue
+		}
+
+		// Ensure the member does not have a default value.
+		if member.HasDefaultValue() {
+			continue
+		}
+
+		// If the member can be assigned a null value, then it isn't required.
+		if member.AssignableType().NullValueAllowed() {
+			continue
+		}
+
+		fields = append(fields, member)
+	}
+	return fields
+}
+
 // TypeKind returns the kind of the type node.
 func (tn TGTypeDecl) TypeKind() TypeKind {
 	nodeType := tn.Kind.(NodeType)

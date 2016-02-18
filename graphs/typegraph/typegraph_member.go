@@ -112,6 +112,13 @@ func (tn TGMember) IsPromising() bool {
 	return isPromising
 }
 
+// HasDefaultValue returns whether the member is automatically initialized with a default
+// value.
+func (tn TGMember) HasDefaultValue() bool {
+	_, hasDefaultValue := tn.GraphNode.TryGet(NodePredicateMemberHasDefaultValue)
+	return hasDefaultValue
+}
+
 // IsImplicitlyCalled returns whether the member is implicitly called on access or assignment.
 func (tn TGMember) IsImplicitlyCalled() bool {
 	_, isImplicit := tn.GraphNode.TryGet(NodePredicateMemberImplicitlyCalled)

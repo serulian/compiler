@@ -3,11 +3,25 @@
         "Key": "99f3a3b20af62411497dae36ae15b04d",
         "Kind": 1,
         "Children": {
-            "3e3fa9b0b2b06f49ac9caaeddd3ae43d": {
+            "a99a5f1e4031428ab95c178b6ff0c56f": {
+                "Predicate": "tdg-declaration-module",
+                "Child": {
+                    "Key": "a99a5f1e4031428ab95c178b6ff0c56f",
+                    "Kind": 6,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-module-name": "simple.seru",
+                        "tdg-node-kind": "6|NodeType|tdg",
+                        "tdg-source-module": "tests/simple/simple.seru",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "ad08000d461bd023c7afa5b1bfd55c4a": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "3e3fa9b0b2b06f49ac9caaeddd3ae43d",
-                    "Kind": 6,
+                    "Key": "ad08000d461bd023c7afa5b1bfd55c4a",
+                    "Kind": 7,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
@@ -16,22 +30,8 @@
                         "tdg-member-resolved-type": "Function\u003cSomeClass\u003e",
                         "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0013Function\u003cSomeClass\u003e",
                         "tdg-member-static": "true",
-                        "tdg-node-kind": "6|NodeType|tdg",
+                        "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/simple/simple.seru"
-                    }
-                }
-            },
-            "fa7461a999c51063d8c0109d6d426b5e": {
-                "Predicate": "tdg-declaration-module",
-                "Child": {
-                    "Key": "fa7461a999c51063d8c0109d6d426b5e",
-                    "Kind": 5,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-module-name": "simple.seru",
-                        "tdg-node-kind": "5|NodeType|tdg",
-                        "tdg-source-module": "tests/simple/simple.seru",
-                        "tdg-source-node": "(NodeRef)"
                     }
                 }
             }

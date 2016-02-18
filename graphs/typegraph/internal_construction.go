@@ -19,10 +19,15 @@ func (g *TypeGraph) defineAllImplicitMembers() {
 
 // defineImplicitMembers defines the implicit members (new() constructor, etc) on a type.
 func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
-	// Classes have an implicit "new" constructor.
-	if typeDecl.TypeKind() == ClassType {
+	// Constructable types have an implicit "new" constructor.
+	if typeDecl.isConstructable() {
 		// The new constructor returns an instance of the type.
-		memberType := g.FunctionTypeReference(g.NewInstanceTypeReference(typeDecl))
+		var memberType = g.FunctionTypeReference(g.NewInstanceTypeReference(typeDecl))
+
+		// The new constructor must take the types of all required members.
+		for _, requiredMember := range typeDecl.RequiredFields() {
+			memberType = memberType.WithParameter(requiredMember.AssignableType())
+		}
 
 		modifier := g.layer.NewModifier()
 		builder := &MemberBuilder{tdg: g, modifier: modifier, parent: typeDecl}

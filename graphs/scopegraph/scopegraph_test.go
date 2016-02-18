@@ -751,7 +751,9 @@ var scopeGraphTests = []scopegraphTest{
 	/////////// class field ///////////
 
 	scopegraphTest{"class field uninitialized test", "var", "uninitializedfield",
-		[]expectedScopeEntry{},
+		[]expectedScopeEntry{
+			expectedScopeEntry{"new", expectedScope{true, proto.ScopeKind_VALUE, "Function<SomeClass>(Integer, Boolean)", "void"}},
+		},
 		"", ""},
 
 	/////////// lambda expression ///////////

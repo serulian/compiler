@@ -3,11 +3,11 @@
         "Key": "03224da8e59f200a227961eeeba0dddc",
         "Kind": 1,
         "Children": {
-            "049cb0a58e7ece0fff0bc0a52e926bd5": {
+            "b94f5b1b809bf6931c5bbf4d843c98ed": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "049cb0a58e7ece0fff0bc0a52e926bd5",
-                    "Kind": 6,
+                    "Key": "b94f5b1b809bf6931c5bbf4d843c98ed",
+                    "Kind": 7,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
@@ -16,7 +16,7 @@
                         "tdg-member-resolved-type": "Function\u003cAnotherClass\u003e",
                         "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0016Function\u003cAnotherClass\u003e",
                         "tdg-member-static": "true",
-                        "tdg-node-kind": "6|NodeType|tdg",
+                        "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/stream/stream.seru"
                     }
                 }
@@ -33,11 +33,27 @@
         "Key": "6bbadde7a052f59156fc3195d2e24847",
         "Kind": 1,
         "Children": {
-            "91f710546df4de3e3d6301bfe16354ac": {
+            "4aa59a8045a04794bbd5d2a0a63d3de3": {
+                "Predicate": "tdg-declaration-generic",
+                "Child": {
+                    "Key": "4aa59a8045a04794bbd5d2a0a63d3de3",
+                    "Kind": 10,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-generic-index": "0",
+                        "tdg-generic-kind": "0",
+                        "tdg-generic-name": "T",
+                        "tdg-generic-subtype": "Stream\u003cAnotherClass\u003e",
+                        "tdg-node-kind": "10|NodeType|tdg",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "90a49b535ec19f7ec7a947a23286fa00": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "91f710546df4de3e3d6301bfe16354ac",
-                    "Kind": 6,
+                    "Key": "90a49b535ec19f7ec7a947a23286fa00",
+                    "Kind": 7,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
@@ -46,37 +62,21 @@
                         "tdg-member-resolved-type": "Function\u003cSomeClass\u003cT\u003e\u003e",
                         "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0016Function\u003cSomeClass\u003cT\u003e\u003e",
                         "tdg-member-static": "true",
-                        "tdg-node-kind": "6|NodeType|tdg",
+                        "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/stream/stream.seru"
                     }
                 }
             },
-            "941bddac4e132bb89f79dfcc3dd6b948": {
+            "b011f0a334f674ac446b8fd45cd534c3": {
                 "Predicate": "tdg-declaration-module",
                 "Child": {
-                    "Key": "941bddac4e132bb89f79dfcc3dd6b948",
-                    "Kind": 5,
+                    "Key": "b011f0a334f674ac446b8fd45cd534c3",
+                    "Kind": 6,
                     "Children": {},
                     "Predicates": {
                         "tdg-module-name": "stream.seru",
-                        "tdg-node-kind": "5|NodeType|tdg",
+                        "tdg-node-kind": "6|NodeType|tdg",
                         "tdg-source-module": "tests/stream/stream.seru",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
-            "aa7cb5678a70fb6f05673720793b4c64": {
-                "Predicate": "tdg-declaration-generic",
-                "Child": {
-                    "Key": "aa7cb5678a70fb6f05673720793b4c64",
-                    "Kind": 9,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-generic-index": "0",
-                        "tdg-generic-kind": "0",
-                        "tdg-generic-name": "T",
-                        "tdg-generic-subtype": "Stream\u003cAnotherClass\u003e",
-                        "tdg-node-kind": "9|NodeType|tdg",
                         "tdg-source-node": "(NodeRef)"
                     }
                 }

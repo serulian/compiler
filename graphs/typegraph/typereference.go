@@ -604,6 +604,11 @@ func (tr TypeReference) IsNull() bool {
 	return tr.getSlot(trhSlotFlagSpecial)[0] == specialFlagNull
 }
 
+// NullValueAllowed returns whether a null value can be assigned to a field of this type.
+func (tr TypeReference) NullValueAllowed() bool {
+	return tr.IsNull() || tr.IsNullable() || tr.IsAny()
+}
+
 // IsLocalRef returns whether this type reference is a localized reference.
 func (tr TypeReference) IsLocalRef() bool {
 	return tr.getSlot(trhSlotFlagSpecial)[0] == specialFlagLocal
