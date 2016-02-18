@@ -456,8 +456,7 @@ func TestConcreteSubtypes(t *testing.T) {
 					testMember{"function", "AwaitNext", "void", []testGeneric{},
 						[]testParam{testParam{"callback", "function<void>(int)"}}},
 				},
-			},
-		},
+			}},
 	)
 
 	graph := newTestTypeGraph(g, testConstruction)
@@ -681,6 +680,15 @@ func TestSubtypes(t *testing.T) {
 				},
 				[]testMember{},
 			},
+
+			// struct SomeStruct {
+			//	  SomeField int
+			// }
+			testType{"struct", "SomeStruct", []testGeneric{},
+				[]testMember{
+					testMember{"field", "SomeField", "int", []testGeneric{}, []testParam{}},
+				},
+			},
 		},
 	)
 
@@ -694,6 +702,7 @@ func TestSubtypes(t *testing.T) {
 		subtypeCheckTest{"ThirdClass subtype of IEmpty", "ThirdClass", "IEmpty", ""},
 		subtypeCheckTest{"FourthClass<int, bool> subtype of IEmpty", "FourthClass<int, bool>", "IEmpty", ""},
 		subtypeCheckTest{"FourthClass<bool, int> subtype of IEmpty", "FourthClass<bool, int>", "IEmpty", ""},
+		subtypeCheckTest{"SomeStruct subtype of IEmpty", "SomeStruct", "IEmpty", ""},
 
 		// SomeClass and AnotherClass
 		subtypeCheckTest{"AnotherClass not a subtype of SomeClass", "AnotherClass", "SomeClass",
@@ -707,6 +716,9 @@ func TestSubtypes(t *testing.T) {
 
 		subtypeCheckTest{"AnotherClass not a subtype of IWithMethod", "AnotherClass", "IWithMethod",
 			"Type 'AnotherClass' does not define or export member 'SomeMethod', which is required by type 'IWithMethod'"},
+
+		subtypeCheckTest{"SomeStruct not a subtype of IWithMethod", "SomeStruct", "IWithMethod",
+			"Type 'SomeStruct' does not define or export member 'SomeMethod', which is required by type 'IWithMethod'"},
 
 		// IGeneric
 		subtypeCheckTest{"AnotherClass not a subtype of IGeneric<int, bool>", "AnotherClass", "IGeneric<int, bool>",

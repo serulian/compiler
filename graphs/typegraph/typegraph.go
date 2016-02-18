@@ -16,11 +16,11 @@ import (
 	"github.com/serulian/compiler/packageloader"
 )
 
-var TYPE_NODE_TYPES = []NodeType{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType}
-var TYPE_NODE_TYPES_TAGGED = []compilergraph.TaggedValue{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType}
+var TYPE_NODE_TYPES = []NodeType{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType, NodeTypeStruct}
+var TYPE_NODE_TYPES_TAGGED = []compilergraph.TaggedValue{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType, NodeTypeStruct}
 
-var TYPEORMODULE_NODE_TYPES = []NodeType{NodeTypeModule, NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType}
-var TYPEORGENERIC_NODE_TYPES = []NodeType{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType, NodeTypeGeneric}
+var TYPEORMODULE_NODE_TYPES = []NodeType{NodeTypeModule, NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType, NodeTypeStruct}
+var TYPEORGENERIC_NODE_TYPES = []NodeType{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType, NodeTypeStruct, NodeTypeGeneric}
 var MEMBER_NODE_TYPES = []NodeType{NodeTypeMember, NodeTypeOperator}
 
 // TypeGraph represents the TypeGraph layer and all its associated helper methods.

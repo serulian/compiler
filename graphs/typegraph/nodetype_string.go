@@ -4,9 +4,9 @@ package typegraph
 
 import "fmt"
 
-const _NodeType_name = "NodeTypeErrorNodeTypeClassNodeTypeInterfaceNodeTypeExternalInterfaceNodeTypeNominalTypeNodeTypeModuleNodeTypeMemberNodeTypeOperatorNodeTypeReturnableNodeTypeGenericNodeTypeAttributeNodeTypeReportedIssueNodeTypeTagged"
+const _NodeType_name = "NodeTypeErrorNodeTypeClassNodeTypeInterfaceNodeTypeExternalInterfaceNodeTypeNominalTypeNodeTypeStructNodeTypeModuleNodeTypeMemberNodeTypeOperatorNodeTypeReturnableNodeTypeGenericNodeTypeAttributeNodeTypeReportedIssueNodeTypeTagged"
 
-var _NodeType_index = [...]uint8{0, 13, 26, 43, 68, 87, 101, 115, 131, 149, 164, 181, 202, 216}
+var _NodeType_index = [...]uint8{0, 13, 26, 43, 68, 87, 101, 115, 129, 145, 163, 178, 195, 216, 230}
 
 func (i NodeType) String() string {
 	if i < 0 || i >= NodeType(len(_NodeType_index)-1) {

@@ -289,6 +289,9 @@ func (t *testTypeGraphConstructor) DefineTypes(builder GetTypeBuilder) {
 		if typeInfo.kind == "interface" {
 			typeKind = ImplicitInterfaceType
 		}
+		if typeInfo.kind == "struct" {
+			typeKind = StructType
+		}
 
 		genericBuilder := builder(*t.moduleNode).
 			Name(typeInfo.name).
@@ -358,15 +361,19 @@ func (t *testTypeGraphConstructor) DecorateMembers(decorator GetMemberDecorator,
 				}
 			}
 
-			var memberType = graph.FunctionTypeReference(parseTypeReferenceForTesting(memberInfo.returnType, graph, memberNode, typeNode))
-			for _, paramInfo := range memberInfo.parameters {
-				memberType = memberType.WithParameter(parseTypeReferenceForTesting(paramInfo.paramType, graph, memberNode, typeNode))
+			var memberType = parseTypeReferenceForTesting(memberInfo.returnType, graph, memberNode, typeNode)
+
+			if memberInfo.kind != "var" {
+				memberType = graph.FunctionTypeReference(memberType)
+				for _, paramInfo := range memberInfo.parameters {
+					memberType = memberType.WithParameter(parseTypeReferenceForTesting(paramInfo.paramType, graph, memberNode, typeNode))
+				}
 			}
 
 			builder.Exported(isExportedName(memberInfo.name)).
 				ReadOnly(false).
 				MemberType(memberType).
-				MemberKind(1).
+				MemberKind(uint64(len(memberInfo.kind))).
 				Decorate()
 		}
 	}

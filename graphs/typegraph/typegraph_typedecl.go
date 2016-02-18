@@ -18,6 +18,7 @@ const (
 	ImplicitInterfaceType
 	ExternalInternalType
 	NominalType
+	StructType
 	GenericType
 )
 
@@ -75,6 +76,9 @@ func (tn TGTypeDecl) Title() string {
 
 	case NodeTypeNominalType:
 		return "nominal type"
+
+	case NodeTypeStruct:
+		return "struct"
 
 	default:
 		panic(fmt.Sprintf("Unknown kind of type %s for node %s", nodeType, tn.NodeId))
@@ -246,6 +250,9 @@ func (tn TGTypeDecl) TypeKind() TypeKind {
 
 	case NodeTypeNominalType:
 		return NominalType
+
+	case NodeTypeStruct:
+		return StructType
 
 	case NodeTypeGeneric:
 		return GenericType

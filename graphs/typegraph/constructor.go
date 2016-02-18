@@ -241,6 +241,9 @@ func getTypeNodeType(kind TypeKind) NodeType {
 	case NominalType:
 		return NodeTypeNominalType
 
+	case StructType:
+		return NodeTypeStruct
+
 	default:
 		panic(fmt.Sprintf("Unknown kind of type declaration: %v", kind))
 		return NodeTypeClass
