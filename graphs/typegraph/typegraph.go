@@ -137,6 +137,9 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 	// Check for duplicate types, members and generics.
 	typeGraph.checkForDuplicateNames()
 
+	// Perform global validation, including checking fields in structs.
+	typeGraph.globallyValidate()
+
 	// Handle inheritance checking and member cloning.
 	inheritsModifier := typeGraph.layer.NewModifier()
 	typeGraph.defineFullInheritance(inheritsModifier)
@@ -233,7 +236,12 @@ func (g *TypeGraph) ModulesWithMembers() []TGModule {
 
 // TypeDecls returns all types defined in the type graph.
 func (g *TypeGraph) TypeDecls() []TGTypeDecl {
-	it := g.findAllNodes(TYPE_NODE_TYPES...).
+	return g.GetTypeDecls(TYPE_NODE_TYPES...)
+}
+
+// GetTypeDecls returns all types defined in the type graph of the given types.
+func (g *TypeGraph) GetTypeDecls(typeKinds ...NodeType) []TGTypeDecl {
+	it := g.findAllNodes(typeKinds...).
 		BuildNodeIterator()
 
 	var types []TGTypeDecl

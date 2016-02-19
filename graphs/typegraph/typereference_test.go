@@ -357,7 +357,7 @@ func TestConcreteSubtypes(t *testing.T) {
 			// interface IBasicInterface<T> {
 			//	 function<T> DoSomething()
 			// }
-			testType{"interface", "IBasicInterface", []testGeneric{testGeneric{"T", ""}},
+			testType{"interface", "IBasicInterface", "", []testGeneric{testGeneric{"T", ""}},
 				[]testMember{
 					testMember{"function", "DoSomething", "T", []testGeneric{}, []testParam{}},
 				},
@@ -366,7 +366,7 @@ func TestConcreteSubtypes(t *testing.T) {
 			// class SomeClass {
 			//   function<int> DoSomething() {}
 			// }
-			testType{"class", "SomeClass", []testGeneric{},
+			testType{"class", "SomeClass", "", []testGeneric{},
 				[]testMember{
 					testMember{"function", "DoSomething", "int", []testGeneric{}, []testParam{}},
 				},
@@ -375,19 +375,19 @@ func TestConcreteSubtypes(t *testing.T) {
 			// class AnotherClass {
 			//   function<bool> DoSomething() {}
 			// }
-			testType{"class", "AnotherClass", []testGeneric{},
+			testType{"class", "AnotherClass", "", []testGeneric{},
 				[]testMember{
 					testMember{"function", "DoSomething", "bool", []testGeneric{}, []testParam{}},
 				},
 			},
 
 			// class ThirdClass {}
-			testType{"class", "ThirdClass", []testGeneric{}, []testMember{}},
+			testType{"class", "ThirdClass", "", []testGeneric{}, []testMember{}},
 
 			// class FourthClass {
 			//   function<int> DoSomething(someparam int) {}
 			// }
-			testType{"class", "FourthClass", []testGeneric{},
+			testType{"class", "FourthClass", "", []testGeneric{},
 				[]testMember{
 					testMember{"function", "DoSomething", "int", []testGeneric{},
 						[]testParam{testParam{"someparam", "int"}}},
@@ -397,7 +397,7 @@ func TestConcreteSubtypes(t *testing.T) {
 			// interface IMultiGeneric<T, Q> {
 			//    function<T> DoSomething(someparam Q)
 			// }
-			testType{"interface", "IMultiGeneric", []testGeneric{testGeneric{"T", ""}, testGeneric{"Q", ""}},
+			testType{"interface", "IMultiGeneric", "", []testGeneric{testGeneric{"T", ""}, testGeneric{"Q", ""}},
 				[]testMember{
 					testMember{"function", "DoSomething", "T", []testGeneric{},
 						[]testParam{testParam{"someparam", "Q"}}},
@@ -407,7 +407,7 @@ func TestConcreteSubtypes(t *testing.T) {
 			// class FifthClass<T, Q> {
 			//   function<Q> DoSomething(someparam T) {}
 			// }
-			testType{"class", "FifthClass", []testGeneric{testGeneric{"T", ""}, testGeneric{"Q", ""}},
+			testType{"class", "FifthClass", "", []testGeneric{testGeneric{"T", ""}, testGeneric{"Q", ""}},
 				[]testMember{
 					testMember{"function", "DoSomething", "Q", []testGeneric{},
 						[]testParam{testParam{"someparam", "T"}}},
@@ -418,7 +418,7 @@ func TestConcreteSubtypes(t *testing.T) {
 			//    function<T> TFunc()
 			//    function<void> QFunc(someparam Q)
 			// }
-			testType{"interface", "IMultiMember", []testGeneric{testGeneric{"T", ""}, testGeneric{"Q", ""}},
+			testType{"interface", "IMultiMember", "", []testGeneric{testGeneric{"T", ""}, testGeneric{"Q", ""}},
 				[]testMember{
 					testMember{"function", "TFunc", "T", []testGeneric{}, []testParam{}},
 					testMember{"function", "QFunc", "void", []testGeneric{},
@@ -430,7 +430,7 @@ func TestConcreteSubtypes(t *testing.T) {
 			//	function<int> TFunc() {}
 			//	function<void> QFunc(someparam bool) {}
 			// }
-			testType{"class", "MultiClass", []testGeneric{},
+			testType{"class", "MultiClass", "", []testGeneric{},
 				[]testMember{
 					testMember{"function", "TFunc", "int", []testGeneric{}, []testParam{}},
 					testMember{"function", "QFunc", "void", []testGeneric{},
@@ -441,7 +441,7 @@ func TestConcreteSubtypes(t *testing.T) {
 			// interface Port<T> {
 			//   function<void> AwaitNext(callback function<void>(T))
 			// }
-			testType{"interface", "Port", []testGeneric{testGeneric{"T", ""}},
+			testType{"interface", "Port", "", []testGeneric{testGeneric{"T", ""}},
 				[]testMember{
 					testMember{"function", "AwaitNext", "void", []testGeneric{},
 						[]testParam{testParam{"callback", "function<void>(T)"}}},
@@ -451,7 +451,7 @@ func TestConcreteSubtypes(t *testing.T) {
 			// class SomePort {
 			//   function<void> AwaitNext(callback function<void>(int))
 			// }
-			testType{"class", "SomePort", []testGeneric{},
+			testType{"class", "SomePort", "", []testGeneric{},
 				[]testMember{
 					testMember{"function", "AwaitNext", "void", []testGeneric{},
 						[]testParam{testParam{"callback", "function<void>(int)"}}},
@@ -555,14 +555,14 @@ func TestSubtypes(t *testing.T) {
 		"subtype",
 		[]testType{
 			// interface IEmpty {}
-			testType{"interface", "IEmpty", []testGeneric{},
+			testType{"interface", "IEmpty", "", []testGeneric{},
 				[]testMember{},
 			},
 
 			// interface IWithMethod {
 			//    function<void> SomeMethod()
 			// }
-			testType{"interface", "IWithMethod", []testGeneric{},
+			testType{"interface", "IWithMethod", "", []testGeneric{},
 				[]testMember{
 					testMember{"function", "SomeMethod", "void", []testGeneric{}, []testParam{}},
 				},
@@ -571,7 +571,7 @@ func TestSubtypes(t *testing.T) {
 			// interface IWithOperator {
 			//    operator Range(left IWithOperator, right IWithOperator) {}
 			// }
-			testType{"interface", "IWithOperator", []testGeneric{},
+			testType{"interface", "IWithOperator", "", []testGeneric{},
 				[]testMember{
 					testMember{"operator", "Range", "any", []testGeneric{},
 						[]testParam{
@@ -584,7 +584,7 @@ func TestSubtypes(t *testing.T) {
 			// class SomeClass {
 			//   function<void> SomeMethod() {}
 			// }
-			testType{"class", "SomeClass", []testGeneric{},
+			testType{"class", "SomeClass", "", []testGeneric{},
 				[]testMember{
 					testMember{"function", "SomeMethod", "void", []testGeneric{}, []testParam{}},
 				},
@@ -593,7 +593,7 @@ func TestSubtypes(t *testing.T) {
 			// class AnotherClass {
 			//   operator Range(left AnotherClass, right AnotherClass) {}
 			// }
-			testType{"class", "AnotherClass", []testGeneric{},
+			testType{"class", "AnotherClass", "", []testGeneric{},
 				[]testMember{
 					testMember{"operator", "Range", "any", []testGeneric{},
 						[]testParam{
@@ -606,7 +606,7 @@ func TestSubtypes(t *testing.T) {
 			// interface IGeneric<T, Q> {
 			//    function<T> SomeMethod(someparam Q)
 			// }
-			testType{"interface", "IGeneric", []testGeneric{testGeneric{"T", ""}, testGeneric{"Q", ""}},
+			testType{"interface", "IGeneric", "", []testGeneric{testGeneric{"T", ""}, testGeneric{"Q", ""}},
 				[]testMember{
 					testMember{"function", "SomeMethod", "T", []testGeneric{},
 						[]testParam{testParam{"someparam", "Q"}}},
@@ -616,7 +616,7 @@ func TestSubtypes(t *testing.T) {
 			// class ThirdClass {
 			//   function<int> SomeMethod(someparam bool) {}
 			// }
-			testType{"class", "ThirdClass", []testGeneric{},
+			testType{"class", "ThirdClass", "", []testGeneric{},
 				[]testMember{
 					testMember{"function", "SomeMethod", "int", []testGeneric{},
 						[]testParam{testParam{"someparam", "bool"}}},
@@ -626,7 +626,7 @@ func TestSubtypes(t *testing.T) {
 			// class FourthClass<T, Q> {
 			//   function<Q> SomeMethod(someparam T) {}
 			// }
-			testType{"class", "FourthClass", []testGeneric{testGeneric{"T", ""}, testGeneric{"Q", ""}},
+			testType{"class", "FourthClass", "", []testGeneric{testGeneric{"T", ""}, testGeneric{"Q", ""}},
 				[]testMember{
 					testMember{"function", "SomeMethod", "Q", []testGeneric{},
 						[]testParam{testParam{"someparam", "T"}}},
@@ -636,7 +636,7 @@ func TestSubtypes(t *testing.T) {
 			// interface IWithInstanceOperator<T> {
 			//    operator<T> Index(index any) {}
 			// }
-			testType{"interface", "IWithInstanceOperator", []testGeneric{testGeneric{"T", ""}},
+			testType{"interface", "IWithInstanceOperator", "", []testGeneric{testGeneric{"T", ""}},
 				[]testMember{
 					testMember{"operator", "Index", "T", []testGeneric{},
 						[]testParam{
@@ -648,7 +648,7 @@ func TestSubtypes(t *testing.T) {
 			// class IntInstanceOperator {
 			//    operator<int> Index(index any) {}
 			// }
-			testType{"class", "IntInstanceOperator", []testGeneric{},
+			testType{"class", "IntInstanceOperator", "", []testGeneric{},
 				[]testMember{
 					testMember{"operator", "Index", "int", []testGeneric{},
 						[]testParam{
@@ -660,7 +660,7 @@ func TestSubtypes(t *testing.T) {
 			// class BoolInstanceOperator {
 			//    operator<bool> Index(index any) {}
 			// }
-			testType{"class", "BoolInstanceOperator", []testGeneric{},
+			testType{"class", "BoolInstanceOperator", "", []testGeneric{},
 				[]testMember{
 					testMember{"operator", "Index", "bool", []testGeneric{},
 						[]testParam{
@@ -671,7 +671,7 @@ func TestSubtypes(t *testing.T) {
 
 			// class ConstrainedGeneric<T : IWithMethod> {
 			// }
-			testType{"class", "ConstrainedGeneric",
+			testType{"class", "ConstrainedGeneric", "",
 				[]testGeneric{
 					testGeneric{"T", "IWithMethod"},
 					testGeneric{"Q", "IWithOperator"},
@@ -684,7 +684,7 @@ func TestSubtypes(t *testing.T) {
 			// struct SomeStruct {
 			//	  SomeField int
 			// }
-			testType{"struct", "SomeStruct", []testGeneric{},
+			testType{"struct", "SomeStruct", "", []testGeneric{},
 				[]testMember{
 					testMember{"field", "SomeField", "int", []testGeneric{}, []testParam{}},
 				},
@@ -853,7 +853,7 @@ func TestResolveMembers(t *testing.T) {
 			//	function<void> ExportedFunction() {}
 			//	function<void> notExported() {}
 			// }
-			testType{"class", "SomeClass", []testGeneric{},
+			testType{"class", "SomeClass", "", []testGeneric{},
 				[]testMember{
 					testMember{"function", "ExportedFunction", "void", []testGeneric{}, []testParam{}},
 					testMember{"function", "notExported", "void", []testGeneric{}, []testParam{}},
@@ -869,7 +869,7 @@ func TestResolveMembers(t *testing.T) {
 			//	function<void> OtherExportedFunction() {}
 			//	function<void> otherNotExported() {}
 			// }
-			testType{"class", "OtherClass", []testGeneric{},
+			testType{"class", "OtherClass", "", []testGeneric{},
 				[]testMember{
 					testMember{"function", "OtherExportedFunction", "void", []testGeneric{}, []testParam{}},
 					testMember{"function", "otherNotExported", "void", []testGeneric{}, []testParam{}},
@@ -917,6 +917,129 @@ func TestResolveMembers(t *testing.T) {
 
 		if !assert.Equal(t, test.memberName, memberNode.Name(), "Member name mismatch on %s", test.name) {
 			continue
+		}
+	}
+}
+
+type ensureStructuralTest struct {
+	name          string
+	typename      string
+	expectedError string
+}
+
+func TestEnsureStructural(t *testing.T) {
+	g, _ := compilergraph.NewGraph("-")
+	testConstruction := newTestTypeGraphConstructor(g,
+		"ensurestruct",
+		[]testType{
+			// struct SomeStruct {
+			//	  SomeField int
+			// }
+			testType{"struct", "SomeStruct", "", []testGeneric{},
+				[]testMember{
+					testMember{"field", "SomeField", "int", []testGeneric{}, []testParam{}},
+				},
+			},
+
+			// class SomeClass {}
+			testType{"class", "SomeClass", "",
+				[]testGeneric{},
+				[]testMember{},
+			},
+
+			// struct GenericStruct<T> {}
+			testType{"struct", "GenericStruct", "",
+				[]testGeneric{
+					testGeneric{"T", "any"},
+				},
+				[]testMember{},
+			},
+
+			// class GenericClass<T> {
+			// }
+			testType{"class", "GenericClass", "",
+				[]testGeneric{
+					testGeneric{"T", "any"},
+				},
+				[]testMember{},
+			},
+
+			// type StructuralNominal : SomeStruct {}
+			testType{"nominal", "StructuralNominal", "SomeStruct",
+				[]testGeneric{},
+				[]testMember{},
+			},
+
+			// type NonStructuralNominal : SomeClass {}
+			testType{"nominal", "NonStructuralNominal", "SomeClass",
+				[]testGeneric{},
+				[]testMember{},
+			},
+
+			// type GenericNominalOverStruct : GenericStruct<SomeStruct> {}
+			testType{"nominal", "GenericNominalOverStruct", "GenericStruct<SomeStruct>",
+				[]testGeneric{},
+				[]testMember{},
+			},
+
+			// type GenericNominalOverNonStruct : GenericClass<any> {}
+			testType{"nominal", "GenericNominalOverNonStruct", "GenericStruct<any>",
+				[]testGeneric{},
+				[]testMember{},
+			},
+		},
+	)
+
+	graph := newTestTypeGraph(g, testConstruction)
+	moduleSourceNode := *testConstruction.moduleNode
+
+	tests := []ensureStructuralTest{
+		// SomeStruct
+		ensureStructuralTest{"SomeStruct is structural", "SomeStruct", ""},
+
+		// GenericStruct<SomeStruct>
+		ensureStructuralTest{"GenericStruct<SomeStruct> is structural", "GenericStruct<SomeStruct>", ""},
+
+		// GenericStruct<any>
+		ensureStructuralTest{"GenericStruct<any> is not structural", "GenericStruct<any>", "GenericStruct<any> has non-structural generic type any: Type any is not guarenteed to be structural"},
+
+		// GenericStruct<SomeClass>
+		ensureStructuralTest{"GenericStruct<SomeClass> is not structural", "GenericStruct<SomeClass>", "GenericStruct<SomeClass> has non-structural generic type SomeClass: SomeClass is not structural nor serializable"},
+
+		// GenericClass
+		ensureStructuralTest{"GenericClass is not structural", "GenericClass", "GenericClass is not structural nor serializable"},
+
+		// GenericClass::T
+		ensureStructuralTest{"GenericClass::T is skipped for structural", "GenericClass::T", ""},
+
+		// StructuralNominal
+		ensureStructuralTest{"StructuralNominal is structural", "StructuralNominal", ""},
+
+		// NonStructuralNominal
+		ensureStructuralTest{"NonStructuralNominal is not structural", "NonStructuralNominal", "Nominal type NonStructuralNominal wraps non-structural type SomeClass: SomeClass is not structural nor serializable"},
+
+		// GenericNominalOverStruct
+		ensureStructuralTest{"GenericNominalOverStruct is structural", "GenericNominalOverStruct", ""},
+
+		// GenericNominalOverNonStruct
+		ensureStructuralTest{"GenericNominalOverNonStruct is not structural", "GenericNominalOverNonStruct", "Nominal type GenericNominalOverNonStruct wraps non-structural type GenericStruct<any>: GenericStruct<any> has non-structural generic type any: Type any is not guarenteed to be structural"},
+	}
+
+	for _, test := range tests {
+		ref := parseTypeReferenceForTesting(test.typename, graph, moduleSourceNode)
+		sterr := ref.EnsureStructural()
+		if test.expectedError != "" {
+			if !assert.NotNil(t, sterr, "Expected ensure struct error for test %v", test.name) {
+				continue
+			}
+
+			if !assert.Equal(t, test.expectedError, sterr.Error(), "Expected matching ensure struct error for test %v", test.name) {
+				continue
+			}
+		} else {
+			if !assert.Nil(t, sterr, "Expected no ensure struct error for test %v", test.name) {
+				continue
+			}
 		}
 	}
 }

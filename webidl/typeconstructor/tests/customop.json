@@ -24,7 +24,7 @@
                     "Kind": 10,
                     "Children": {},
                     "Predicates": {
-                        "tdg-attribute-name": "serializer",
+                        "tdg-attribute-name": "serializable",
                         "tdg-node-kind": "10|NodeType|tdg"
                     }
                 }

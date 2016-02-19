@@ -10,6 +10,15 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 )
 
+// TypeAttribute defines the set of custom attributes allowed on type declarations.
+type TypeAttribute string
+
+const (
+	// SERIALIZABLE_ATTRIBUTE marks a type as being serializable in the native
+	// runtime.
+	SERIALIZABLE_ATTRIBUTE TypeAttribute = "serializable"
+)
+
 // TypeKind defines the various supported kinds of types in the TypeGraph.
 type TypeKind int
 
@@ -264,6 +273,15 @@ func (tn TGTypeDecl) RequiredFields() []TGMember {
 		fields = append(fields, member)
 	}
 	return fields
+}
+
+// HasAttribute returns whether this type has the given attribute.
+func (tn TGTypeDecl) HasAttribute(attribute TypeAttribute) bool {
+	_, found := tn.StartQuery().
+		Out(NodePredicateTypeAttribute).
+		Has(NodePredicateAttributeName, string(attribute)).
+		TryGetNode()
+	return found
 }
 
 // TypeKind returns the kind of the type node.

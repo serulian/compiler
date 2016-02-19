@@ -31,6 +31,12 @@ var SPECIALIZATION_NAMES = map[webidl.MemberSpecialization]string{
 	webidl.SetterSpecialization: "setindex",
 }
 
+// SERIALIZABLE_OPS defines the WebIDL custom ops that mark a type as serializable.
+var SERIALIZABLE_OPS = map[string]bool{
+	"jsonifier":  true,
+	"serializer": true,
+}
+
 // GetConstructor returns a TypeGraph constructor for the given IRG.
 func GetConstructor(irg *webidl.WebIRG) *irgTypeConstructor {
 	return &irgTypeConstructor{
@@ -63,7 +69,9 @@ func (itc *irgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 			typeBuilder := builder(module.Node())
 
 			for _, customop := range declaration.CustomOperations() {
-				typeBuilder.WithAttribute(customop)
+				if _, ok := SERIALIZABLE_OPS[customop]; ok {
+					typeBuilder.WithAttribute(typegraph.SERIALIZABLE_ATTRIBUTE)
+				}
 			}
 
 			typeBuilder.Name(declaration.Name()).

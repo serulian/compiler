@@ -151,7 +151,7 @@ type typeBuilder struct {
 	alias      string                           // The alias of the type.
 	sourceNode compilergraph.GraphNode          // The node for the type in the source graph.
 	typeKind   TypeKind                         // The kind of this type.
-	attributes []string                         // The custom attributes on the type, if any.
+	attributes []TypeAttribute                  // The custom attributes on the type, if any.
 }
 
 // Name sets the name of the type.
@@ -161,7 +161,7 @@ func (tb *typeBuilder) Name(name string) *typeBuilder {
 }
 
 // WithAttribute adds the attribute with the given name to the type.
-func (tb *typeBuilder) WithAttribute(name string) *typeBuilder {
+func (tb *typeBuilder) WithAttribute(name TypeAttribute) *typeBuilder {
 	tb.attributes = append(tb.attributes, name)
 	return tb
 }
@@ -207,7 +207,7 @@ func (tb *typeBuilder) Define() getGenericBuilder {
 
 	for _, attribute := range tb.attributes {
 		attrNode := tb.modifier.CreateNode(NodeTypeAttribute)
-		attrNode.Decorate(NodePredicateAttributeName, attribute)
+		attrNode.Decorate(NodePredicateAttributeName, string(attribute))
 		typeNode.Connect(NodePredicateTypeAttribute, attrNode)
 	}
 

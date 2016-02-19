@@ -133,7 +133,9 @@ func resolveTestingTypeRef(name string, refNode compilergraph.GraphNode, graph *
 	}
 
 	// Check for type generics.
-	if currentNode.Kind == NodeTypeClass || currentNode.Kind == NodeTypeInterface {
+	if currentNode.Kind == NodeTypeClass || currentNode.Kind == NodeTypeInterface ||
+		currentNode.Kind == NodeTypeNominalType ||
+		currentNode.Kind == NodeTypeStruct {
 		typeInfo := TGTypeDecl{currentNode, graph}
 		for _, generic := range typeInfo.Generics() {
 			if generic.Name() == name {
@@ -156,7 +158,6 @@ func resolveTestingTypeRef(name string, refNode compilergraph.GraphNode, graph *
 				return graph.NewTypeReference(typeDecl), true
 			}
 		}
-
 	}
 
 	return TypeReference{}, false
@@ -289,8 +290,13 @@ func (t *testTypeGraphConstructor) DefineTypes(builder GetTypeBuilder) {
 		if typeInfo.kind == "interface" {
 			typeKind = ImplicitInterfaceType
 		}
+
 		if typeInfo.kind == "struct" {
 			typeKind = StructType
+		}
+
+		if typeInfo.kind == "nominal" {
+			typeKind = NominalType
 		}
 
 		genericBuilder := builder(*t.moduleNode).
@@ -315,6 +321,10 @@ func (t *testTypeGraphConstructor) DefineDependencies(annotator Annotator, graph
 				genericNode, _ := t.genericMap[typeInfo.name+"::"+genericInfo.name]
 				annotator.DefineGenericConstraint(genericNode, parseTypeReferenceForTesting(genericInfo.constraint, graph, typeNode))
 			}
+		}
+
+		if typeInfo.parentType != "" {
+			annotator.DefineParentType(typeNode, parseTypeReferenceForTesting(typeInfo.parentType, graph, typeNode))
 		}
 	}
 }
@@ -393,10 +403,11 @@ type testTypeGraphConstructor struct {
 }
 
 type testType struct {
-	kind     string
-	name     string
-	generics []testGeneric
-	members  []testMember
+	kind       string
+	name       string
+	parentType string
+	generics   []testGeneric
+	members    []testMember
 }
 
 type testGeneric struct {

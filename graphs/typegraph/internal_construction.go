@@ -9,6 +9,37 @@ import (
 	"github.com/serulian/compiler/compilerutil"
 )
 
+// globallyValidate validates the typegraph for global constraints (i.e. those shared by all
+// types constructed, regardless of source)
+func (g *TypeGraph) globallyValidate() bool {
+	var status = true
+	for _, typeDecl := range g.GetTypeDecls(NodeTypeStruct) {
+		// Ensure structures do not reference non-struct, non-serializable types.
+		if !g.checkStructuralType(typeDecl) {
+			status = false
+		}
+	}
+	return status
+}
+
+// checkStructuralType ensures that a structural type does not reference non-structural,
+// non-serializable types.
+func (g *TypeGraph) checkStructuralType(structType TGTypeDecl) bool {
+	var status = true
+
+	modifier := g.layer.NewModifier()
+	for _, member := range structType.Members() {
+		serr := member.MemberType().EnsureStructural()
+		if serr != nil {
+			g.decorateWithError(modifier.Modify(member.GraphNode),
+				"Structural type '%v' requires all inner types to be structural: %v", structType.Name(), serr)
+			status = false
+		}
+	}
+	modifier.Apply()
+	return status
+}
+
 // defineAllImplicitMembers defines the implicit members (new() constructor, etc) on all
 // applicable types.
 func (g *TypeGraph) defineAllImplicitMembers() {
