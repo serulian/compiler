@@ -1,0 +1,7 @@
+class SomeClass {}
+
+function<void> DoSomething() {
+	SomeClass{
+		SomeField: 2,
+	}
+}

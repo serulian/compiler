@@ -1,0 +1,5 @@
+from anotherfile import SomeClass
+
+function<void> DoSomething() {
+	SomeClass{}
+}

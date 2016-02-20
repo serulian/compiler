@@ -1,0 +1,39 @@
+from anotherfile import SomeStruct
+
+class EmptyClass {}
+
+class NonRequiredClass {
+	var<int?> SomeField
+	var<bool> AnotherField = false
+}
+
+class RequiredClass {
+	var<int> SomeField
+}
+
+struct GenericStruct<T> {
+	SomeThing T
+}
+
+function<void> DoSomething() {
+	/* empty */ (EmptyClass{})
+	/* nonempty */(NonRequiredClass{})
+
+	/* nonesome */(NonRequiredClass{
+		SomeField: 2,
+	})
+
+	/* noneanother */(NonRequiredClass{
+		AnotherField: true,
+	})
+
+	/* somestruct */(SomeStruct{})
+
+	/* required */(RequiredClass{
+		SomeField: 6,
+	})
+
+	/* generic */(GenericStruct<int>{
+		SomeThing: 42,
+	})
+}

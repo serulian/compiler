@@ -1,0 +1,13 @@
+class SomeClass {
+	property<int> SomeField {
+	   get {
+  	   	  return 1
+	   }
+	}
+}
+
+function<void> DoSomething() {
+	SomeClass{
+		SomeField: 2,
+	}
+}
