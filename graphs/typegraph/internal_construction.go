@@ -13,12 +13,14 @@ import (
 // types constructed, regardless of source)
 func (g *TypeGraph) globallyValidate() bool {
 	var status = true
+
+	// Ensure structures do not reference non-struct, non-serializable types.
 	for _, typeDecl := range g.GetTypeDecls(NodeTypeStruct) {
-		// Ensure structures do not reference non-struct, non-serializable types.
 		if !g.checkStructuralType(typeDecl) {
 			status = false
 		}
 	}
+
 	return status
 }
 
@@ -136,7 +138,7 @@ func (t *TypeGraph) buildInheritedMembership(typeDecl TGTypeDecl, childPredicate
 	// Add members defined on the type's inheritance, skipping those already defined.
 	typeNode := typeDecl.GraphNode
 	for _, inherit := range typeDecl.ParentTypes() {
-		parentType := inherit.referredTypeNode()
+		parentType := inherit.ReferredType()
 
 		pit := parentType.StartQuery().
 			Out(childPredicate).
@@ -146,6 +148,20 @@ func (t *TypeGraph) buildInheritedMembership(typeDecl TGTypeDecl, childPredicate
 			// Skip this member if already defined.
 			name := pit.Values()[NodePredicateMemberName]
 			if _, exists := names[name]; exists {
+				// Ensure that the parent member is not a required field. If so, then we cannot
+				// shadow the field.
+				parentMember := TGMember{pit.Node(), t}
+				if parentMember.IsRequiredField() {
+					t.decorateWithError(modifier.Modify(typeDecl.GraphNode),
+						"%v %v cannot compose %v %v as it shadows %v '%v' which requires initialization",
+						typeDecl.Title(),
+						typeDecl.Name(),
+						parentType.Title(),
+						parentType.Name(),
+						parentMember.Title(),
+						parentMember.Name())
+				}
+
 				continue
 			}
 
@@ -169,7 +185,7 @@ func (t *TypeGraph) buildInheritedMembership(typeDecl TGTypeDecl, childPredicate
 
 			// If the parent type has generics, then replace the generics in the member type with those
 			// specified in the inheritance type reference.
-			if _, ok := parentType.TryGet(NodePredicateTypeGeneric); !ok {
+			if _, ok := parentType.GraphNode.TryGet(NodePredicateTypeGeneric); !ok {
 				// Parent type has no generics, so just decorate with the type directly.
 				memberNode.DecorateWithTagged(NodePredicateMemberType, parentMemberType)
 				continue

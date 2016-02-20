@@ -147,6 +147,28 @@ func (tn TGMember) IsField() bool {
 	return isField
 }
 
+// IsRequiredField returns whether this member is a field requiring initialization on
+// construction of an instance of the parent type.
+func (tn TGMember) IsRequiredField() bool {
+	// If this member is not an instance assignable field, nothing more to do.
+	if !tn.IsField() || tn.IsReadOnly() || tn.IsStatic() {
+		return false
+	}
+
+	// Ensure this member does not have a default value.
+	if tn.HasDefaultValue() {
+		return false
+
+	}
+
+	// If this member can be assigned a null value, then it isn't required.
+	if tn.AssignableType().NullValueAllowed() {
+		return false
+	}
+
+	return true
+}
+
 // MemberType returns the type for this member.
 func (tn TGMember) MemberType() TypeReference {
 	return tn.GraphNode.GetTagged(NodePredicateMemberType, tn.tdg.AnyTypeReference()).(TypeReference)
