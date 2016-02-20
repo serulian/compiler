@@ -1,0 +1,9 @@
+class SomeClass {
+	var<int> SomeField
+	var<bool> AnotherField = true
+}
+
+function<any> TEST() {
+	var sc = SomeClass.new(2)
+	return (sc.SomeField == 2) && sc.AnotherField
+}

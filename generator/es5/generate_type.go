@@ -71,6 +71,11 @@ func (gt generatingType) GenerateVariables() *ordered_map.OrderedMap {
 	return gt.Generator.generateVariables(gt.Type)
 }
 
+// RequiredFields returns the fields required to be initialized by this type.
+func (gt generatingType) RequiredFields() []typegraph.TGMember {
+	return gt.Type.RequiredFields()
+}
+
 // GenerateComposition generates the source for all the composed types structurually inherited by the type.
 func (gt generatingType) GenerateComposition() *ordered_map.OrderedMap {
 	typeMap := ordered_map.NewOrderedMap()
@@ -109,11 +114,13 @@ this.$class('{{ .Type.Name }}', {{ .HasGenerics }}, function({{ .Generics }}) {
 
     {{ $vars := .GenerateVariables }}
     {{ $composed := .GenerateComposition }}
-    {{ if or $vars.Iter $composed.Iter }}
-	$static.new = function() {
+	$static.new = function({{ range $ridx, $field := .RequiredFields }}{{ if $ridx }}, {{ end }}{{ $field.Name }}{{ end }}) {
 		var instance = new $static();
 		var init = [];
-		{{range $idx, $kv := $composed.Iter }}
+		{{ range $idx, $field := .RequiredFields }}
+			instance.{{ $field.Name }} = {{ $field.Name }};
+		{{ end }}
+		{{ range $idx, $kv := $composed.Iter }}
 			init.push({{ $kv.Value }});
   		{{ end }}
 		{{ range $idx, $kv := $vars.Iter }}
@@ -123,7 +130,6 @@ this.$class('{{ .Type.Name }}', {{ .HasGenerics }}, function({{ .Generics }}) {
 			return instance;
 		});
 	};
-	{{ end }}
 
 	{{range $idx, $kv := .GenerateImplementedMembers.Iter }}
   	  {{ $kv.Value }}
