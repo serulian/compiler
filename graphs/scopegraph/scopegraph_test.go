@@ -724,6 +724,9 @@ var scopeGraphTests = []scopegraphTest{
 			expectedScopeEntry{"someclassint", expectedScope{true, proto.ScopeKind_STATIC, "void", "void"}},
 			expectedScopeEntry{"someclassbool", expectedScope{true, proto.ScopeKind_STATIC, "void", "void"}},
 
+			expectedScopeEntry{"somestructint", expectedScope{true, proto.ScopeKind_STATIC, "void", "void"}},
+			expectedScopeEntry{"somestructbool", expectedScope{true, proto.ScopeKind_STATIC, "void", "void"}},
+
 			expectedScopeEntry{"someclassintbuild", expectedScope{true, proto.ScopeKind_VALUE, "Function<SomeClass<Integer>>(Integer)", "void"}},
 			expectedScopeEntry{"someclassboolbuild", expectedScope{true, proto.ScopeKind_VALUE, "Function<SomeClass<Boolean>>(Boolean)", "void"}},
 
@@ -747,6 +750,10 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"generic specifier constraint failure test", "genericspecifier", "constraintfail",
 		[]expectedScopeEntry{},
 		"Cannot use type Boolean as generic T (#1) over class SomeClass: Type 'Boolean' does not define or export member 'DoSomething', which is required by type 'ISomeInterface'", ""},
+
+	scopegraphTest{"generic specifier non-structural test", "genericspecifier", "structfail",
+		[]expectedScopeEntry{},
+		"Cannot use type SomeClass as generic T (#1) over struct SomeStruct: SomeClass is not structural nor serializable", ""},
 
 	/////////// class field ///////////
 

@@ -307,6 +307,9 @@ func (g *TypeGraph) GetTypeOrMember(nodeId compilergraph.GraphNodeId) TGTypeOrMe
 	case NodeTypeNominalType:
 		fallthrough
 
+	case NodeTypeStruct:
+		fallthrough
+
 	case NodeTypeGeneric:
 		return TGTypeDecl{node, g}
 

@@ -1,0 +1,7 @@
+struct SomeStruct<T> {}
+
+class SomeClass {}
+
+function<void> DoSomething() {
+	SomeStruct<SomeClass>	
+}

@@ -4,6 +4,8 @@ class SomeClass<T> {
 	}
 }
 
+struct SomeStruct<T> {}
+
 function<T?> SomeFunction<T, Q>(someparam Q) {
 	return null
 }
@@ -11,6 +13,9 @@ function<T?> SomeFunction<T, Q>(someparam Q) {
 function<void> DoSomething() {
 	/* someclassint */(SomeClass<int>)
 	/* someclassintbuild */(SomeClass<int>.Build)
+
+	/* somestructint */(SomeStruct<int>)
+	/* somestructbool */(SomeStruct<bool>)
 
 	/* someclassbool */(SomeClass<bool>)
 	/* someclassboolbuild */(SomeClass<bool>.Build)

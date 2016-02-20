@@ -298,6 +298,11 @@ func (tr TypeReference) EnsureStructural() error {
 	return nil
 }
 
+// IsStruct returns whether the referenced type is a struct.
+func (tr TypeReference) IsStruct() bool {
+	return tr.isNormal() && tr.ReferredType().TypeKind() == StructType
+}
+
 // CheckStructuralSubtypeOf checks that the current type reference refers to a type that is structurally deriving
 // from the given type reference's type.
 func (tr TypeReference) CheckStructuralSubtypeOf(other TypeReference) bool {
