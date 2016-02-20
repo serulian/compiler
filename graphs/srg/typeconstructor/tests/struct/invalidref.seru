@@ -1,0 +1,11 @@
+struct SomeStruct<T> {
+	CoolField int
+	AnotherField string
+	GenericField T
+}
+
+class SomeClass {}
+
+function<void> DoSomething() {
+	var<SomeStruct<SomeClass>?> s
+}

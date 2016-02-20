@@ -68,8 +68,10 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"void return type test", "voidreturn", "void", ""},
 	typegraphTest{"nominal type test", "nominal", "success", ""},
 	typegraphTest{"interface op test", "interfaceop", "success", ""},
+	typegraphTest{"struct type test", "struct", "success", ""},
 
 	// Failure tests.
+	typegraphTest{"struct invalid ref test", "struct", "invalidref", "SomeStruct<SomeClass> has non-structural generic type SomeClass: SomeClass is not structural nor serializable"},
 	typegraphTest{"type redeclaration test", "redeclare", "redeclare", "interface 'SomeClass' redefines name 'SomeClass' under Module 'redeclare.seru'"},
 	typegraphTest{"generic redeclaration test", "genericredeclare", "redeclare", "Generic 'T' is already defined under class 'SomeClass'"},
 	typegraphTest{"generic constraint resolve failure test", "genericconstraint", "notfound", "Type 'UnknownType' could not be found"},

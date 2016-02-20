@@ -71,8 +71,16 @@ func (tr TypeReference) Verify() error {
 		return nil
 	}
 
-	refGenerics := tr.Generics()
+	// If the type is structurally, then ensure the reference is valid.
 	referredType := tr.ReferredType()
+	if referredType.TypeKind() == StructType {
+		serr := tr.EnsureStructural()
+		if serr != nil {
+			return serr
+		}
+	}
+
+	refGenerics := tr.Generics()
 	typeGenerics := referredType.Generics()
 
 	// Check generics count.
@@ -271,15 +279,19 @@ func (tr TypeReference) EnsureStructural() error {
 	}
 
 	// Check all subreferences.
-	for _, generic := range tr.Generics() {
-		if gerr := generic.EnsureStructural(); gerr != nil {
-			return fmt.Errorf("%v has non-structural generic type %v: %v", tr, generic, gerr)
+	if tr.HasGenerics() {
+		for _, generic := range tr.Generics() {
+			if gerr := generic.EnsureStructural(); gerr != nil {
+				return fmt.Errorf("%v has non-structural generic type %v: %v", tr, generic, gerr)
+			}
 		}
 	}
 
-	for _, parameter := range tr.Parameters() {
-		if perr := parameter.EnsureStructural(); perr != nil {
-			return fmt.Errorf("%v has non-structural parameter type %v: %v", tr, parameter, perr)
+	if tr.HasParameters() {
+		for _, parameter := range tr.Parameters() {
+			if perr := parameter.EnsureStructural(); perr != nil {
+				return fmt.Errorf("%v has non-structural parameter type %v: %v", tr, parameter, perr)
+			}
 		}
 	}
 

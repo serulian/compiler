@@ -181,6 +181,9 @@ func (ns SRGNamedScope) ScopeKind() NamedScopeKind {
 	case parser.NodeTypeNominal:
 		return NamedScopeType
 
+	case parser.NodeTypeStruct:
+		return NamedScopeType
+
 	/* Import */
 	case parser.NodeTypeImport:
 		return NamedScopeImport
@@ -232,6 +235,9 @@ func (ns SRGNamedScope) Name() string {
 		return ns.Get(parser.NodeTypeDefinitionName)
 
 	case parser.NodeTypeNominal:
+		return ns.Get(parser.NodeTypeDefinitionName)
+
+	case parser.NodeTypeStruct:
 		return ns.Get(parser.NodeTypeDefinitionName)
 
 	case parser.NodeTypeImport:

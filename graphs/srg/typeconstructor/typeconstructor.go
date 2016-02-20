@@ -59,6 +59,10 @@ func (stc *srgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 		case srg.NominalType:
 			typeBuilder.TypeKind(typegraph.NominalType)
 			break
+
+		case srg.StructType:
+			typeBuilder.TypeKind(typegraph.StructType)
+			break
 		}
 
 		// Add the global alias (if any).
@@ -400,7 +404,7 @@ func (stc *srgTypeConstructor) BuildTypeRef(typeref srg.SRGTypeRef, tdg *typegra
 			// Get the type in the type graph.
 			resolvedType, hasResolvedType := tdg.GetTypeForSourceNode(resolvedTypeInfo.ResolvedType.Node())
 			if !hasResolvedType {
-				panic("Could not find typegraph type for SRG type")
+				panic(fmt.Sprintf("Could not find typegraph type for SRG type %v", resolvedTypeInfo.ResolvedType.Name()))
 			}
 
 			constructedRef = tdg.NewTypeReference(resolvedType)
