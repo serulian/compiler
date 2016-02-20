@@ -182,23 +182,6 @@
                     }
                 }
             },
-            "7b8c10a7f13bbeb640b2200fc4512a2f": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "7b8c10a7f13bbeb640b2200fc4512a2f",
-                    "Kind": 7,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-exported": "true",
-                        "tdg-member-name": "SomeVar",
-                        "tdg-member-resolved-type": "AnotherClass",
-                        "tdg-member-signature": "\n\u0007somevar\u0010\u0001\u0018\u0001 \u0001*\u000cAnotherClass",
-                        "tdg-node-kind": "7|NodeType|tdg",
-                        "tdg-source-module": "tests/members/class.seru",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
             "8ecbe16a095a2723fbbb0aa12bb60a8b": {
                 "Predicate": "tdg-node-member",
                 "Child": {
@@ -243,6 +226,24 @@
                         "tdg-member-resolved-type": "Function\u003cSomeClass\u003e(C)",
                         "tdg-member-signature": "\n\u0007buildme\u0010\u0000\u0018\u0000 \u0001*9Function\u003cSomeClass\u003e(local:1:0                           )2\u0003any",
                         "tdg-member-static": "true",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/members/class.seru",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "d9cf0f6e30a2b06f6d49e8f012126d04": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "d9cf0f6e30a2b06f6d49e8f012126d04",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-field": "true",
+                        "tdg-member-name": "SomeVar",
+                        "tdg-member-resolved-type": "AnotherClass",
+                        "tdg-member-signature": "\n\u0007somevar\u0010\u0001\u0018\u0001 \u0001*\u000cAnotherClass",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/members/class.seru",
                         "tdg-source-node": "(NodeRef)"

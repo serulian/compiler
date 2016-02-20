@@ -212,6 +212,7 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 	var isPromising bool = true
 	var isImplicitlyCalled bool = false
 	var hasDefaultValue bool = false
+	var isField = false
 
 	switch member.MemberKind() {
 	case srg.VarMember:
@@ -219,6 +220,7 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 		memberType, _ = stc.resolvePossibleType(member.Node(), member.DeclaredType, graph, reporter)
 		isReadOnly = false
 		isPromising = false
+		isField = true
 		_, hasDefaultValue = member.Node().TryGet(parser.NodeVariableStatementExpression)
 
 	case srg.PropertyMember:
@@ -300,6 +302,9 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 
 	// Decorate the member with whether it has a default value.
 	decorator.HasDefaultValue(hasDefaultValue)
+
+	// Decorate the member with whether it is a field.
+	decorator.Field(isField)
 
 	// Decorate the member with whether it is implicitly called.
 	decorator.ImplicitlyCalled(isImplicitlyCalled)

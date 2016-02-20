@@ -255,8 +255,8 @@ func (tn TGTypeDecl) isConstructable() bool {
 func (tn TGTypeDecl) RequiredFields() []TGMember {
 	var fields = make([]TGMember, 0)
 	for _, member := range tn.Members() {
-		// If the member is not an instance assignable, nothing more to do.
-		if member.IsReadOnly() || member.IsStatic() || member.IsOperator() {
+		// If the member is not an instance assignable field, nothing more to do.
+		if !member.IsField() || member.IsReadOnly() || member.IsStatic() {
 			continue
 		}
 

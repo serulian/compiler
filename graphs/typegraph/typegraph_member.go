@@ -141,6 +141,12 @@ func (tn TGMember) IsOperator() bool {
 	return tn.GraphNode.Kind == NodeTypeOperator
 }
 
+// IsField returns whether the member is a field.
+func (tn TGMember) IsField() bool {
+	_, isField := tn.GraphNode.TryGet(NodePredicateMemberField)
+	return isField
+}
+
 // MemberType returns the type for this member.
 func (tn TGMember) MemberType() TypeReference {
 	return tn.GraphNode.GetTagged(NodePredicateMemberType, tn.tdg.AnyTypeReference()).(TypeReference)

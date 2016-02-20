@@ -424,6 +424,7 @@ type MemberDecorator struct {
 	implicit   bool // Whether the member is implicitly called.
 	native     bool // Whether this operator is native to ES.
 	hasdefault bool // Whether the member has a default value.
+	field      bool // Whether the member is a field holding data.
 
 	skipOperatorChecking bool // Whether to skip operator checking.
 
@@ -491,6 +492,12 @@ func (mb *MemberDecorator) Exported(exported bool) *MemberDecorator {
 // ReadOnly sets whether the member is read only.
 func (mb *MemberDecorator) ReadOnly(readonly bool) *MemberDecorator {
 	mb.readonly = readonly
+	return mb
+}
+
+// Field sets whether the member is a field.
+func (mb *MemberDecorator) Field(field bool) *MemberDecorator {
+	mb.field = field
 	return mb
 }
 
@@ -567,6 +574,10 @@ func (mb *MemberDecorator) Decorate() {
 
 	if mb.hasdefault {
 		memberNode.Decorate(NodePredicateMemberHasDefaultValue, "true")
+	}
+
+	if mb.field {
+		memberNode.Decorate(NodePredicateMemberField, "true")
 	}
 
 	if mb.implicit {

@@ -141,6 +141,9 @@ const (
 	// Connects a member to a returnable definition, itself connected to an SRG node.
 	NodePredicateReturnable = "member-returnable"
 
+	// Decorates a member as being a field holding data in the type.
+	NodePredicateMemberField = "member-field"
+
 	// Connects a member to the member in the parent type from which it was cloned.
 	NodePredicateMemberBaseMember = "member-base-member"
 
