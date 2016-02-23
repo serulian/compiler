@@ -59,7 +59,7 @@ $module('structnew', function () {
             $g.structnew.SomeClass.new($t.nominalwrap(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $temp0 = $result0;
               return $temp0.AnotherField($t.nominalwrap(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
-                $result = $temp0, $result1, $temp0;
+                $result = ($temp0, $result1, $temp0);
                 $state.current = 1;
                 $callback($state);
               });
