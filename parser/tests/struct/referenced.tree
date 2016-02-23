@@ -1,0 +1,184 @@
+NodeTypeFile
+  end-rune = 282
+  input-source = referenced struct test
+  start-rune = 0
+  child-node =>
+    NodeTypeStruct
+      end-rune = 41
+      input-source = referenced struct test
+      named = AnotherStruct
+      start-rune = 0
+      type-member =>
+        NodeTypeField
+          end-rune = 39
+          input-source = referenced struct test
+          named = AnotherBool
+          start-rune = 24
+          typemember-declared-type =>
+            NodeTypeTypeReference
+              end-rune = 39
+              input-source = referenced struct test
+              start-rune = 36
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 39
+                  input-source = referenced struct test
+                  start-rune = 36
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 39
+                      identifieraccess-name = bool
+                      input-source = referenced struct test
+                      start-rune = 36
+    NodeTypeStruct
+      end-rune = 126
+      input-source = referenced struct test
+      named = SomeStruct
+      start-rune = 44
+      type-member =>
+        NodeTypeField
+          end-rune = 77
+          input-source = referenced struct test
+          named = SomeField
+          start-rune = 65
+          typemember-declared-type =>
+            NodeTypeTypeReference
+              end-rune = 77
+              input-source = referenced struct test
+              start-rune = 75
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 77
+                  input-source = referenced struct test
+                  start-rune = 75
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 77
+                      identifieraccess-name = int
+                      input-source = referenced struct test
+                      start-rune = 75
+        NodeTypeField
+          end-rune = 96
+          input-source = referenced struct test
+          named = AnotherField
+          start-rune = 80
+          typemember-declared-type =>
+            NodeTypeTypeReference
+              end-rune = 96
+              input-source = referenced struct test
+              start-rune = 93
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 96
+                  input-source = referenced struct test
+                  start-rune = 93
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 96
+                      identifieraccess-name = bool
+                      input-source = referenced struct test
+                      start-rune = 93
+        NodeTypeField
+          end-rune = 124
+          input-source = referenced struct test
+          named = SomeInstance
+          start-rune = 99
+          typemember-declared-type =>
+            NodeTypeTypeReference
+              end-rune = 124
+              input-source = referenced struct test
+              start-rune = 112
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 124
+                  input-source = referenced struct test
+                  start-rune = 112
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 124
+                      identifieraccess-name = AnotherStruct
+                      input-source = referenced struct test
+                      start-rune = 112
+    NodeTypeFunction
+      end-rune = 282
+      input-source = referenced struct test
+      named = DoSomething
+      start-rune = 129
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 282
+          input-source = referenced struct test
+          start-rune = 158
+          block-child =>
+            NodeTypeVariableStatement
+              end-rune = 280
+              input-source = referenced struct test
+              named = ss
+              start-rune = 161
+              var-expr =>
+                NodeStructuralNewExpression
+                  end-rune = 281
+                  input-source = referenced struct test
+                  start-rune = 170
+                  structural-new-entry =>
+                    NodeStructuralNewExpressionEntry
+                      end-rune = 197
+                      input-source = referenced struct test
+                      start-rune = 184
+                      structural-new-entry-key = SomeField
+                      structural-new-entry-value =>
+                        NodeNumericLiteralExpression
+                          end-rune = 196
+                          input-source = referenced struct test
+                          literal-value = 42
+                          start-rune = 195
+                    NodeStructuralNewExpressionEntry
+                      end-rune = 219
+                      input-source = referenced struct test
+                      start-rune = 201
+                      structural-new-entry-key = AnotherField
+                      structural-new-entry-value =>
+                        NodeBooleanLiteralExpression
+                          end-rune = 218
+                          input-source = referenced struct test
+                          literal-value = true
+                          start-rune = 215
+                    NodeStructuralNewExpressionEntry
+                      end-rune = 277
+                      input-source = referenced struct test
+                      start-rune = 223
+                      structural-new-entry-key = SomeInstance
+                      structural-new-entry-value =>
+                        NodeStructuralNewExpression
+                          end-rune = 277
+                          input-source = referenced struct test
+                          start-rune = 237
+                          structural-new-entry =>
+                            NodeStructuralNewExpressionEntry
+                              end-rune = 272
+                              input-source = referenced struct test
+                              start-rune = 255
+                              structural-new-entry-key = AnotherBool
+                              structural-new-entry-value =>
+                                NodeBooleanLiteralExpression
+                                  end-rune = 271
+                                  input-source = referenced struct test
+                                  literal-value = true
+                                  start-rune = 268
+                          structural-new-type-expr =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 249
+                              identexpr-name = AnotherStruct
+                              input-source = referenced struct test
+                              start-rune = 237
+                  structural-new-type-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 179
+                      identexpr-name = SomeStruct
+                      input-source = referenced struct test
+                      start-rune = 170
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 141
+          input-source = referenced struct test
+          start-rune = 138

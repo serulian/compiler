@@ -99,11 +99,35 @@ func (i *IRGDeclaration) Members() []IRGMember {
 	return members
 }
 
+// CustomOperations returns all the custom operations defined on the declaration.
+func (i *IRGDeclaration) CustomOperations() []string {
+	mit := i.GraphNode.StartQuery().
+		Out(parser.NodePredicateDeclarationCustomOperation).
+		BuildNodeIterator(parser.NodePredicateCustomOpName)
+
+	var customOps = make([]string, 0)
+	for mit.Next() {
+		customOps = append(customOps, mit.Values()[parser.NodePredicateCustomOpName])
+	}
+
+	return customOps
+}
+
 // HasAnnotation returns true if the declaration is decorated with the given annotation.
 func (i *IRGDeclaration) HasAnnotation(name string) bool {
 	_, hasNode := i.GraphNode.StartQuery().
 		Out(parser.NodePredicateDeclarationAnnotation).
 		Has(parser.NodePredicateAnnotationName, name).
+		TryGetNode()
+
+	return hasNode
+}
+
+// HasOneAnnotation returns true if the declaration is decorated with one of the given annotations.
+func (i *IRGDeclaration) HasOneAnnotation(names ...string) bool {
+	_, hasNode := i.GraphNode.StartQuery().
+		Out(parser.NodePredicateDeclarationAnnotation).
+		Has(parser.NodePredicateAnnotationName, names...).
 		TryGetNode()
 
 	return hasNode

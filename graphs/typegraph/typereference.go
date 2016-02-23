@@ -71,8 +71,16 @@ func (tr TypeReference) Verify() error {
 		return nil
 	}
 
-	refGenerics := tr.Generics()
+	// If the type is structurally, then ensure the reference is valid.
 	referredType := tr.ReferredType()
+	if referredType.TypeKind() == StructType {
+		serr := tr.EnsureStructural()
+		if serr != nil {
+			return serr
+		}
+	}
+
+	refGenerics := tr.Generics()
 	typeGenerics := referredType.Generics()
 
 	// Check generics count.
@@ -230,6 +238,74 @@ func (tr TypeReference) checkNominalParent(other TypeReference) bool {
 	}
 
 	return false
+}
+
+// EnsureStructural ensures that the type reference and all sub-references are structural
+// in nature. A "structural" type, as allowed by this pass, must meet the following rules:
+//
+// 1) The type is marked with a 'serializable' annotation OR
+// 2) The type is a `struct` OR
+// 3) The type refers to a generic OR
+// 4) The type is a nominal type around #1, #2 or #3 AND
+// 5) All subreferences (generics and parameters) must meet the above rules.
+func (tr TypeReference) EnsureStructural() error {
+	if !tr.isNormal() {
+		return fmt.Errorf("Type %v is not guarenteed to be structural", tr)
+	}
+
+	// Check the type itself.
+	referredType := tr.ReferredType()
+	switch referredType.TypeKind() {
+	case GenericType:
+		// GenericType's are allowed (the generic specifiers check them).
+		return nil
+
+	case StructType:
+		// StructType's are allowed.
+		break
+
+	case NominalType:
+		// NominalType's are allowed if they are wrapping a structural type.
+		parentType := referredType.ParentTypes()[0]
+		if perr := parentType.EnsureStructural(); perr != nil {
+			return fmt.Errorf("Nominal type %v wraps non-structural type %v: %v", tr, parentType, perr)
+		}
+
+	default:
+		// Otherwise, the type must have a 'serializable' annotation.
+		if !referredType.HasAttribute(SERIALIZABLE_ATTRIBUTE) {
+			return fmt.Errorf("%v is not structural nor serializable", tr)
+		}
+	}
+
+	// Check all subreferences.
+	if tr.HasGenerics() {
+		for _, generic := range tr.Generics() {
+			if gerr := generic.EnsureStructural(); gerr != nil {
+				return fmt.Errorf("%v has non-structural generic type %v: %v", tr, generic, gerr)
+			}
+		}
+	}
+
+	if tr.HasParameters() {
+		for _, parameter := range tr.Parameters() {
+			if perr := parameter.EnsureStructural(); perr != nil {
+				return fmt.Errorf("%v has non-structural parameter type %v: %v", tr, parameter, perr)
+			}
+		}
+	}
+
+	return nil
+}
+
+// IsStruct returns whether the referenced type is a struct.
+func (tr TypeReference) IsStruct() bool {
+	return tr.isNormal() && tr.ReferredType().TypeKind() == StructType
+}
+
+// IsNominal returns whether the referenced type is a nominal type.
+func (tr TypeReference) IsNominal() bool {
+	return tr.isNormal() && tr.ReferredType().TypeKind() == NominalType
 }
 
 // CheckStructuralSubtypeOf checks that the current type reference refers to a type that is structurally deriving
@@ -602,6 +678,11 @@ func (tr TypeReference) IsVoid() bool {
 // (which is distinct from a nullable type).
 func (tr TypeReference) IsNull() bool {
 	return tr.getSlot(trhSlotFlagSpecial)[0] == specialFlagNull
+}
+
+// NullValueAllowed returns whether a null value can be assigned to a field of this type.
+func (tr TypeReference) NullValueAllowed() bool {
+	return tr.IsNull() || tr.IsNullable() || tr.IsAny()
 }
 
 // IsLocalRef returns whether this type reference is a localized reference.

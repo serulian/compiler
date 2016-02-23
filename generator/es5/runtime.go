@@ -219,6 +219,7 @@ window.Serulian = (function($global) {
       };
     };
 
+    module.$struct = module.$newtypebuilder('struct');
   	module.$class = module.$newtypebuilder('class');
   	module.$interface = module.$newtypebuilder('interface');
     module.$type = module.$newtypebuilder('type');

@@ -3,25 +3,11 @@
         "Key": "153d0f552d3a96a0559bcfbea4a3f76c",
         "Kind": 1,
         "Children": {
-            "2ae5f0ab3b5fb1f5b7b9e94affbf1b09": {
-                "Predicate": "tdg-declaration-module",
-                "Child": {
-                    "Key": "2ae5f0ab3b5fb1f5b7b9e94affbf1b09",
-                    "Kind": 5,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-module-name": "success.seru",
-                        "tdg-node-kind": "5|NodeType|tdg",
-                        "tdg-source-module": "tests/nominal/success.seru",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
-            "2cf6a38251de9f0ad86e054dcaa5f13b": {
+            "66d2c151f4a1a3ceac789b78ee769099": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "2cf6a38251de9f0ad86e054dcaa5f13b",
-                    "Kind": 6,
+                    "Key": "66d2c151f4a1a3ceac789b78ee769099",
+                    "Kind": 7,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
@@ -30,8 +16,22 @@
                         "tdg-member-resolved-type": "Function\u003cSomeClass\u003e",
                         "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0013Function\u003cSomeClass\u003e",
                         "tdg-member-static": "true",
-                        "tdg-node-kind": "6|NodeType|tdg",
+                        "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/nominal/success.seru"
+                    }
+                }
+            },
+            "6f9d1a1252399eea645b97a1265c0e31": {
+                "Predicate": "tdg-declaration-module",
+                "Child": {
+                    "Key": "6f9d1a1252399eea645b97a1265c0e31",
+                    "Kind": 6,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-module-name": "success.seru",
+                        "tdg-node-kind": "6|NodeType|tdg",
+                        "tdg-source-module": "tests/nominal/success.seru",
+                        "tdg-source-node": "(NodeRef)"
                     }
                 }
             }
@@ -47,20 +47,20 @@
         "Key": "941da2a8749f4b9e26d612767a605b9c",
         "Kind": 4,
         "Children": {
-            "a74d6b6478897467550a546da92bf853": {
+            "f26703f3506fab14b1044bc6a95fd185": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "a74d6b6478897467550a546da92bf853",
-                    "Kind": 6,
+                    "Key": "f26703f3506fab14b1044bc6a95fd185",
+                    "Kind": 7,
                     "Children": {
-                        "8b4fec458387eb96b56825e02609df75": {
+                        "a624ac45fee266d9a6a9fed5d9beb10f": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "8b4fec458387eb96b56825e02609df75",
-                                "Kind": 8,
+                                "Key": "a624ac45fee266d9a6a9fed5d9beb10f",
+                                "Kind": 9,
                                 "Children": {},
                                 "Predicates": {
-                                    "tdg-node-kind": "8|NodeType|tdg",
+                                    "tdg-node-kind": "9|NodeType|tdg",
                                     "tdg-return-type": "void",
                                     "tdg-source-node": "(NodeRef)"
                                 }
@@ -74,7 +74,7 @@
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "Function\u003cvoid\u003e",
                         "tdg-member-signature": "\n\u000bdosomething\u0010\u0002\u0018\u0000 \u0001*\u000eFunction\u003cvoid\u003e",
-                        "tdg-node-kind": "6|NodeType|tdg",
+                        "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/nominal/success.seru",
                         "tdg-source-node": "(NodeRef)"
                     }

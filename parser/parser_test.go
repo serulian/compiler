@@ -102,6 +102,12 @@ var parserTests = []parserTest{
 	{"module variable test", "module/module_var"},
 	{"module function test", "module/module_function"},
 
+	// Struct success tests.
+	{"basic struct test", "struct/basic"},
+	{"generic struct test", "struct/generic"},
+	{"construct struct test", "struct/construct"},
+	{"referenced struct test", "struct/referenced"},
+
 	// Class success tests.
 	{"empty class test", "class/empty"},
 	{"basic formatted class test", "class/basic_formatted"},

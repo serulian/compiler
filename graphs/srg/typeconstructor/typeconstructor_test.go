@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/serulian/compiler/compilercommon"
@@ -68,8 +69,12 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"void return type test", "voidreturn", "void", ""},
 	typegraphTest{"nominal type test", "nominal", "success", ""},
 	typegraphTest{"interface op test", "interfaceop", "success", ""},
+	typegraphTest{"struct type test", "struct", "success", ""},
+	typegraphTest{"referenced struct type test", "struct", "referenced", ""},
 
 	// Failure tests.
+	typegraphTest{"class required composition test", "class", "requiredcomposition", "class AnotherClass cannot compose class SomeClass as it shadows type member 'SomeField' which requires initialization"},
+	typegraphTest{"struct invalid ref test", "struct", "invalidref", "SomeStruct<SomeClass> has non-structural generic type SomeClass: SomeClass is not structural nor serializable"},
 	typegraphTest{"type redeclaration test", "redeclare", "redeclare", "interface 'SomeClass' redefines name 'SomeClass' under Module 'redeclare.seru'"},
 	typegraphTest{"generic redeclaration test", "genericredeclare", "redeclare", "Generic 'T' is already defined under class 'SomeClass'"},
 	typegraphTest{"generic constraint resolve failure test", "genericconstraint", "notfound", "Type 'UnknownType' could not be found"},
@@ -94,6 +99,12 @@ var typeGraphTests = []typegraphTest{
 
 func TestGraphs(t *testing.T) {
 	for _, test := range typeGraphTests {
+		if os.Getenv("FILTER") != "" && !strings.Contains(test.name, os.Getenv("FILTER")) {
+			continue
+		}
+
+		fmt.Printf("Running test: %v\n", test.name)
+
 		graph, err := compilergraph.NewGraph("tests/" + test.input + "/" + test.entrypoint + ".seru")
 		if err != nil {
 			t.Errorf("Got error on test %s: %v", test.name, err)

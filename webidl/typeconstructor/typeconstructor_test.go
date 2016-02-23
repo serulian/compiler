@@ -49,6 +49,7 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"constructors test", "constructors", ""},
 	typegraphTest{"native operators test", "operator", ""},
 	typegraphTest{"indexer test", "indexer", ""},
+	typegraphTest{"custom op test", "customop", ""},
 
 	// Failure tests.
 	typegraphTest{"redeclaration test", "redeclare", "external interface 'Foo' redefines name 'Foo' under Module 'redeclare.webidl'"},
@@ -81,7 +82,7 @@ func TestGraphs(t *testing.T) {
 				continue
 			}
 
-			currentLayerView := result.Graph.GetJSONForm()
+			currentLayerView := result.Graph.GetFilteredJSONForm("tests/" + test.entrypoint + ".webidl")
 
 			if os.Getenv("REGEN") == "true" {
 				test.writeJson(currentLayerView)

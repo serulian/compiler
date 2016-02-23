@@ -14,8 +14,10 @@ import (
 	"github.com/serulian/compiler/parser"
 )
 
-var TYPE_KINDS = []parser.NodeType{parser.NodeTypeClass, parser.NodeTypeInterface, parser.NodeTypeNominal}
-var TYPE_KINDS_TAGGED = []compilergraph.TaggedValue{parser.NodeTypeClass, parser.NodeTypeInterface, parser.NodeTypeNominal}
+var TYPE_KINDS = []parser.NodeType{parser.NodeTypeClass, parser.NodeTypeInterface, parser.NodeTypeNominal, parser.NodeTypeStruct}
+var TYPE_KINDS_TAGGED = []compilergraph.TaggedValue{parser.NodeTypeClass, parser.NodeTypeInterface, parser.NodeTypeNominal, parser.NodeTypeStruct}
+
+var MEMBER_KINDS_TAGGED = []compilergraph.TaggedValue{parser.NodeTypeClass, parser.NodeTypeInterface, parser.NodeTypeNominal, parser.NodeTypeStruct, parser.NodeTypeVariable, parser.NodeTypeFunction}
 
 // SRGType wraps a type declaration or definition in the SRG.
 type SRGType struct {
@@ -30,6 +32,7 @@ const (
 	ClassType TypeKind = iota
 	InterfaceType
 	NominalType
+	StructType
 )
 
 // GetTypes returns all the types defined in the SRG.
@@ -109,6 +112,9 @@ func (t SRGType) TypeKind() TypeKind {
 	case parser.NodeTypeNominal:
 		return NominalType
 
+	case parser.NodeTypeStruct:
+		return StructType
+
 	default:
 		panic(fmt.Sprintf("Unknown kind of type %s", t.GraphNode.Kind))
 		return ClassType
@@ -159,6 +165,9 @@ func (t SRGType) Inheritance() []SRGTypeRef {
 		return inherits
 
 	case InterfaceType:
+		return make([]SRGTypeRef, 0)
+
+	case StructType:
 		return make([]SRGTypeRef, 0)
 
 	case NominalType:

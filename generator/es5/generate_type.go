@@ -35,6 +35,9 @@ func (gen *es5generator) generateType(typedef typegraph.TGTypeDecl) string {
 	case typegraph.NominalType:
 		return gen.templater.Execute("nominal", nominalTemplateStr, generating)
 
+	case typegraph.StructType:
+		return gen.templater.Execute("struct", structTemplateStr, generating)
+
 	case typegraph.ExternalInternalType:
 		return ""
 
@@ -69,6 +72,21 @@ func (gt generatingType) GenerateImplementedMembers() *ordered_map.OrderedMap {
 // GenerateVariables generates the source for all the variables defined under the type.
 func (gt generatingType) GenerateVariables() *ordered_map.OrderedMap {
 	return gt.Generator.generateVariables(gt.Type)
+}
+
+// RequiredFields returns the fields required to be initialized by this type.
+func (gt generatingType) RequiredFields() []typegraph.TGMember {
+	return gt.Type.RequiredFields()
+}
+
+// Fields returns the all the fields on this type.
+func (gt generatingType) Fields() []typegraph.TGMember {
+	return gt.Type.Fields()
+}
+
+// TypeReferenceCall returns the expression for calling a type ref.
+func (gt generatingType) TypeReferenceCall(typeref typegraph.TypeReference) string {
+	return gt.Generator.pather.TypeReferenceCall(typeref)
 }
 
 // GenerateComposition generates the source for all the composed types structurually inherited by the type.
@@ -109,11 +127,13 @@ this.$class('{{ .Type.Name }}', {{ .HasGenerics }}, function({{ .Generics }}) {
 
     {{ $vars := .GenerateVariables }}
     {{ $composed := .GenerateComposition }}
-    {{ if or $vars.Iter $composed.Iter }}
-	$static.new = function() {
+	$static.new = function({{ range $ridx, $field := .RequiredFields }}{{ if $ridx }}, {{ end }}{{ $field.Name }}{{ end }}) {
 		var instance = new $static();
 		var init = [];
-		{{range $idx, $kv := $composed.Iter }}
+		{{ range $idx, $field := .RequiredFields }}
+			instance.{{ $field.Name }} = {{ $field.Name }};
+		{{ end }}
+		{{ range $idx, $kv := $composed.Iter }}
 			init.push({{ $kv.Value }});
   		{{ end }}
 		{{ range $idx, $kv := $vars.Iter }}
@@ -123,11 +143,49 @@ this.$class('{{ .Type.Name }}', {{ .HasGenerics }}, function({{ .Generics }}) {
 			return instance;
 		});
 	};
-	{{ end }}
 
 	{{range $idx, $kv := .GenerateImplementedMembers.Iter }}
   	  {{ $kv.Value }}
   	{{end}}
+});
+`
+
+// structTemplateStr defines the template for generating a struct type.
+const structTemplateStr = `
+this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, function({{ .Generics }}) {
+	var $static = this;
+	var $instance = this.prototype;
+
+	$static.new = function({{ range $ridx, $field := .RequiredFields }}{{ if $ridx }}, {{ end }}{{ $field.Name }}{{ end }}) {
+		var instance = new $static();
+		instance.data = {};
+		{{ range $idx, $field := .RequiredFields }}
+			instance.{{ $field.Name }} = {{ $field.Name }};
+		{{ end }}
+		return $promise.resolve(instance);
+	};
+
+	{{ $parent := . }}
+	{{ range $idx, $field := .Fields }}
+	  {{ $isNominal := $field.MemberType.IsNominal }}
+	  Object.defineProperty($instance, '{{ $field.Name }}', {
+	    get: function() {
+	    	{{ if $isNominal }}
+	    	return $t.nominalwrap(this.data.{{ $field.Name }}, {{ $parent.TypeReferenceCall $field.MemberType }});
+	    	{{ else }}
+	    	return this.data.{{ $field.Name }};
+	    	{{ end }}
+	    },
+
+	    set: function(val) {
+	    	{{ if $isNominal }}
+	    	this.data.{{ $field.Name }} = $t.nominalunwrap(val);
+	    	{{ else }}
+	    	this.data.{{ $field.Name }} = val;
+	    	{{ end }}
+	    }
+	  });
+	{{ end }}
 });
 `
 

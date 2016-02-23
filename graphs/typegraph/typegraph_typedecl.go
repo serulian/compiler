@@ -10,6 +10,15 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 )
 
+// TypeAttribute defines the set of custom attributes allowed on type declarations.
+type TypeAttribute string
+
+const (
+	// SERIALIZABLE_ATTRIBUTE marks a type as being serializable in the native
+	// runtime.
+	SERIALIZABLE_ATTRIBUTE TypeAttribute = "serializable"
+)
+
 // TypeKind defines the various supported kinds of types in the TypeGraph.
 type TypeKind int
 
@@ -18,6 +27,7 @@ const (
 	ImplicitInterfaceType
 	ExternalInternalType
 	NominalType
+	StructType
 	GenericType
 )
 
@@ -75,6 +85,9 @@ func (tn TGTypeDecl) Title() string {
 
 	case NodeTypeNominalType:
 		return "nominal type"
+
+	case NodeTypeStruct:
+		return "struct"
 
 	default:
 		panic(fmt.Sprintf("Unknown kind of type %s for node %s", nodeType, tn.NodeId))
@@ -230,6 +243,45 @@ func (tn TGTypeDecl) IsPromising() bool {
 	return false
 }
 
+// isConstructable returns whether this type is constructable.
+func (tn TGTypeDecl) isConstructable() bool {
+	typeKind := tn.TypeKind()
+	return typeKind == ClassType || typeKind == StructType
+}
+
+// Fields returns the fields under this type.
+func (tn TGTypeDecl) Fields() []TGMember {
+	var fields = make([]TGMember, 0)
+	for _, member := range tn.Members() {
+		if member.IsField() {
+			fields = append(fields, member)
+		}
+	}
+	return fields
+}
+
+// RequiredFields returns the fields under this type that must be specified when
+// constructing an instance of the type, as they are non-nullable and do not have
+// a specified default value.
+func (tn TGTypeDecl) RequiredFields() []TGMember {
+	var fields = make([]TGMember, 0)
+	for _, member := range tn.Members() {
+		if member.IsRequiredField() {
+			fields = append(fields, member)
+		}
+	}
+	return fields
+}
+
+// HasAttribute returns whether this type has the given attribute.
+func (tn TGTypeDecl) HasAttribute(attribute TypeAttribute) bool {
+	_, found := tn.StartQuery().
+		Out(NodePredicateTypeAttribute).
+		Has(NodePredicateAttributeName, string(attribute)).
+		TryGetNode()
+	return found
+}
+
 // TypeKind returns the kind of the type node.
 func (tn TGTypeDecl) TypeKind() TypeKind {
 	nodeType := tn.Kind.(NodeType)
@@ -246,6 +298,9 @@ func (tn TGTypeDecl) TypeKind() TypeKind {
 
 	case NodeTypeNominalType:
 		return NominalType
+
+	case NodeTypeStruct:
+		return StructType
 
 	case NodeTypeGeneric:
 		return GenericType

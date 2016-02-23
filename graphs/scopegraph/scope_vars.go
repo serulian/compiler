@@ -15,19 +15,26 @@ import (
 
 var _ = fmt.Printf
 
+type requiresInitializerOption int
+
+const (
+	requiresInitializer requiresInitializerOption = iota
+	noRequiredInitializer
+)
+
 // scopeField scopes a field member in the SRG.
 func (sb *scopeBuilder) scopeField(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
-	return sb.scopeDeclaredValue(node, "Field")
+	return sb.scopeDeclaredValue(node, "Field", noRequiredInitializer)
 }
 
 // scopeVariable scopes a variable module member in the SRG.
 func (sb *scopeBuilder) scopeVariable(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
-	return sb.scopeDeclaredValue(node, "Variable")
+	return sb.scopeDeclaredValue(node, "Variable", requiresInitializer)
 }
 
 // scopeVariableStatement scopes a variable statement in the SRG.
 func (sb *scopeBuilder) scopeVariableStatement(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
-	return sb.scopeDeclaredValue(node, "Variable")
+	return sb.scopeDeclaredValue(node, "Variable", requiresInitializer)
 }
 
 // getDeclaredVariableType returns the declared type of a variable statement, member or type field (if any).
@@ -51,7 +58,7 @@ func (sb *scopeBuilder) getDeclaredVariableType(node compilergraph.GraphNode) (t
 }
 
 // scopeDeclaredValue scopes a declared value (variable statement, variable member, type field).
-func (sb *scopeBuilder) scopeDeclaredValue(node compilergraph.GraphNode, title string) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeDeclaredValue(node compilergraph.GraphNode, title string, option requiresInitializerOption) proto.ScopeInfo {
 	var exprScope *proto.ScopeInfo = nil
 
 	exprNode, hasExpression := node.TryGetNode(parser.NodeVariableStatementExpression)
@@ -80,7 +87,7 @@ func (sb *scopeBuilder) scopeDeclaredValue(node compilergraph.GraphNode, title s
 			sb.decorateWithError(node, "%s '%s' has declared type '%v': %v", title, node.Get(parser.NodeVariableStatementName), declaredType, serr)
 			return newScope().Invalid().GetScope()
 		}
-	} else {
+	} else if option == requiresInitializer {
 		// Make sure if the type is non-nullable that there is an expression.
 		if !declaredType.IsNullable() {
 			sb.decorateWithError(node, "%s '%s' must have explicit initializer as its type '%v' is non-nullable", title, node.Get(parser.NodeVariableStatementName), declaredType)

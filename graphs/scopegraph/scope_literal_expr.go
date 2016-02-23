@@ -8,12 +8,128 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
+	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/parser"
 )
 
 var _ = fmt.Printf
+
+// scopeStructuralNewExpression scopes a structural new-type expressions.
+func (sb *scopeBuilder) scopeStructuralNewExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+	// Scope the child expression and ensure it refers to a type.
+	childScope := sb.getScope(node.GetNode(parser.NodeStructuralNewTypeExpression))
+	if !childScope.GetIsValid() {
+		return newScope().Invalid().GetScope()
+	}
+
+	if childScope.GetKind() != proto.ScopeKind_STATIC {
+		sb.decorateWithError(node, "Cannot construct non-type expression")
+		return newScope().Invalid().GetScope()
+	}
+
+	// Retrieve the static type.
+	staticTypeRef := childScope.StaticTypeRef(sb.sg.tdg)
+
+	// Ensure that the static type is a struct OR it is a class with an accessible 'new'.
+	staticType := staticTypeRef.ReferredType()
+	switch staticType.TypeKind() {
+	case typegraph.ClassType:
+		// Classes can only be constructed structurally if they are in the same module as this call.
+		// Otherwise, an exported constructor must be used.
+		module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
+		_, found := staticTypeRef.ResolveAccessibleMember("new", module, typegraph.MemberResolutionStatic)
+		if !found {
+			sb.decorateWithError(node, "Cannot structurally construct type %v, as it is imported from another module", staticTypeRef)
+			return newScope().Invalid().Resolving(staticTypeRef).GetScope()
+		}
+
+	case typegraph.StructType:
+		// Structs can be constructed by anyone, assuming that their members are all exported.
+		// That check occurs below.
+		break
+
+	default:
+		sb.decorateWithError(node, "Cannot structurally construct type %v", staticTypeRef)
+		return newScope().Invalid().Resolving(staticTypeRef).GetScope()
+	}
+
+	// Scope the defined entries. We also build a list here to ensure all required entries are
+	// added.
+	encountered := map[string]bool{}
+	eit := node.StartQuery().
+		Out(parser.NodeStructuralNewExpressionChildEntry).
+		BuildNodeIterator(parser.NodeStructuralNewEntryKey)
+
+	var isValid = true
+	for eit.Next() {
+		// Scope the entry.
+		entryName := eit.Values()[parser.NodeStructuralNewEntryKey]
+		entryScope := sb.getScope(eit.Node())
+		if !entryScope.GetIsValid() {
+			isValid = false
+		}
+
+		encountered[entryName] = true
+	}
+
+	if !isValid {
+		return newScope().Invalid().Resolving(staticTypeRef).GetScope()
+	}
+
+	// Ensure that all required entries are present.
+	for _, field := range staticType.RequiredFields() {
+		if _, ok := encountered[field.Name()]; !ok {
+			isValid = false
+			sb.decorateWithError(node, "Non-nullable %v '%v' is required to construct type %v", field.Title(), field.Name(), staticTypeRef)
+		}
+	}
+
+	return newScope().IsValid(isValid).Resolving(staticTypeRef).GetScope()
+}
+
+// scopeStructuralNewExpressionEntry scopes a single entry in a structural new expression.
+func (sb *scopeBuilder) scopeStructuralNewExpressionEntry(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+	parentNode := node.GetIncomingNode(parser.NodeStructuralNewExpressionChildEntry)
+	parentExprScope := sb.getScope(parentNode.GetNode(parser.NodeStructuralNewTypeExpression))
+	parentType := parentExprScope.StaticTypeRef(sb.sg.tdg)
+
+	entryName := node.Get(parser.NodeStructuralNewEntryKey)
+
+	// Get the scope for the value.
+	valueScope := sb.getScope(node.GetNode(parser.NodeStructuralNewEntryValue))
+	if !valueScope.GetIsValid() {
+		return newScope().Invalid().GetScope()
+	}
+
+	// Lookup the member associated with the entry name.
+	module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
+	member, ok := parentType.ResolveAccessibleMember(entryName, module, typegraph.MemberResolutionInstance)
+	if !ok {
+		sb.decorateWithError(node, "Name '%v' could not be found under type %v", entryName, parentType)
+		return newScope().Invalid().GetScope()
+	}
+
+	// Ensure the member is assignable.
+	if member.IsReadOnly() {
+		sb.decorateWithError(node, "%v %v under type %v is read-only", member.Title(), member.Name(), parentType)
+		return newScope().Invalid().GetScope()
+	}
+
+	// Get the member's assignable type, transformed under the parent type, and ensure it is assignable
+	// from the type of the value.
+	assignableType := member.AssignableType().TransformUnder(parentType)
+	valueType := valueScope.ResolvedTypeRef(sb.sg.tdg)
+
+	if aerr := valueType.CheckSubTypeOf(assignableType); aerr != nil {
+		sb.decorateWithError(node, "Cannot assign value of type %v to %v %v: %v", valueType, member.Title(), member.Name(), aerr)
+		return newScope().Invalid().GetScope()
+	}
+
+	return newScope().ForNamedScope(sb.getNamedScopeForMember(member)).Valid().GetScope()
+}
 
 // scopeTaggedTemplateString scopes a tagged template string expression in the SRG.
 func (sb *scopeBuilder) scopeTaggedTemplateString(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {

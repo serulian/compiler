@@ -77,8 +77,10 @@ func assertNoOttoError(t *testing.T, testName string, source string, err error) 
 var tests = []generationTest{
 	generationTest{"basic module test", "module", "basic", true},
 	generationTest{"basic class test", "class", "basic", true},
+	generationTest{"basic struct test", "struct", "basic", true},
 	generationTest{"class property test", "class", "property", true},
 	generationTest{"class inheritance test", "class", "inheritance", true},
+	generationTest{"class required fields test", "class", "requiredfields", true},
 
 	generationTest{"conditional statement", "statements", "conditional", true},
 	generationTest{"conditional else statement", "statements", "conditionalelse", true},
@@ -123,6 +125,7 @@ var tests = []generationTest{
 
 	generationTest{"identifier expressions", "literals", "identifier", false},
 
+	generationTest{"structural new literal", "literals", "structnew", true},
 	generationTest{"map literal", "literals", "map", true},
 	generationTest{"list literal", "literals", "list", true},
 	generationTest{"boolean literal", "literals", "boolean", false},

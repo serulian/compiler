@@ -27,7 +27,7 @@ func GenerateExpression(expression codedom.Expression, templater *templater.Temp
 		templater:  templater,
 		scopegraph: scopegraph,
 
-		wrappers: make([]expressionWrapper, 0),
+		wrappers: make([]*expressionWrapper, 0),
 	}
 
 	// Determine whether the expression is a promise.
@@ -66,10 +66,11 @@ func (er ExpressionResult) Source(innerTemplateStr string) string {
 		wrapper := er.generator.wrappers[index]
 
 		data := struct {
-			Item              interface{}
-			WrappedExpression string
-			WrappedNested     bool
-		}{wrapper.data, expressionResult, rindex > 0}
+			Item                    interface{}
+			WrappedExpression       string
+			WrappedNested           bool
+			IntermediateExpressions []string
+		}{wrapper.data, expressionResult, rindex > 0, wrapper.intermediateExpressions}
 
 		expressionResult = er.generator.templater.Execute("expressionwrap", wrapper.templateStr, data)
 	}
@@ -83,15 +84,16 @@ type expressionGenerator struct {
 	templater  *templater.Templater   // The templater to use.
 	scopegraph *scopegraph.ScopeGraph // The scope graph being generated.
 
-	wrappers []expressionWrapper // The expression wrappers to be applied once generation is complete.
-	counter  int                 // Counter for unique names.
+	wrappers []*expressionWrapper // The expression wrappers to be applied once generation is complete.
+	counter  int                  // Counter for unique names.
 }
 
 // expressionWrapper defines a type representing the wrapping of a *parent* expression
 // by this wrapping template.
 type expressionWrapper struct {
-	data        interface{} // The data for the template.
-	templateStr string      // The template string to wrap the parent expression.
+	data                    interface{} // The data for the template.
+	templateStr             string      // The template string to wrap the parent expression.
+	intermediateExpressions []string    // Expressions to execute under the wrapper before returning.
 }
 
 // generateUniqueName generates a unique name.
@@ -188,6 +190,9 @@ func (eg *expressionGenerator) generateExpression(expression codedom.Expression)
 
 	case *codedom.NominalUnwrappingNode:
 		return eg.generateNominalUnwrapping(e)
+
+	case *codedom.CompoundExpressionNode:
+		return eg.generateCompoundExpression(e)
 
 	default:
 		panic(fmt.Sprintf("Unknown CodeDOM expression: %T", expression))

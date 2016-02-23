@@ -65,7 +65,7 @@ func (m SRGModule) Node() compilergraph.GraphNode {
 func (m SRGModule) GetTypes() []SRGType {
 	it := m.GraphNode.StartQuery().
 		Out(parser.NodePredicateChild).
-		IsKind(parser.NodeTypeClass, parser.NodeTypeInterface).
+		IsKind(TYPE_KINDS_TAGGED...).
 		BuildNodeIterator()
 
 	var types []SRGType
@@ -124,7 +124,7 @@ func (m SRGModule) FindTypeOrMemberByName(name string, option ModuleResolutionOp
 	nodeFound, found := m.StartQuery().
 		Out(parser.NodePredicateChild).
 		Has("named", name).
-		IsKind(parser.NodeTypeClass, parser.NodeTypeInterface, parser.NodeTypeNominal, parser.NodeTypeVariable, parser.NodeTypeFunction).
+		IsKind(MEMBER_KINDS_TAGGED...).
 		TryGetNode()
 
 	if !found {

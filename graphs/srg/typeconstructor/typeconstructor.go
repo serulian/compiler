@@ -12,6 +12,7 @@ import (
 	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/typegraph"
+	"github.com/serulian/compiler/parser"
 )
 
 // GetConstructor returns a TypeGraph constructor for the given SRG.
@@ -57,6 +58,10 @@ func (stc *srgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 
 		case srg.NominalType:
 			typeBuilder.TypeKind(typegraph.NominalType)
+			break
+
+		case srg.StructType:
+			typeBuilder.TypeKind(typegraph.StructType)
 			break
 		}
 
@@ -206,6 +211,8 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 	var isStatic bool = false
 	var isPromising bool = true
 	var isImplicitlyCalled bool = false
+	var hasDefaultValue bool = false
+	var isField = false
 
 	switch member.MemberKind() {
 	case srg.VarMember:
@@ -213,6 +220,8 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 		memberType, _ = stc.resolvePossibleType(member.Node(), member.DeclaredType, graph, reporter)
 		isReadOnly = false
 		isPromising = false
+		isField = true
+		_, hasDefaultValue = member.Node().TryGet(parser.NodeVariableStatementExpression)
 
 	case srg.PropertyMember:
 		// Properties have their declared type.
@@ -290,6 +299,12 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 
 	// Decorate the member with whether it is promising.
 	decorator.Promising(isPromising)
+
+	// Decorate the member with whether it has a default value.
+	decorator.HasDefaultValue(hasDefaultValue)
+
+	// Decorate the member with whether it is a field.
+	decorator.Field(isField)
 
 	// Decorate the member with whether it is implicitly called.
 	decorator.ImplicitlyCalled(isImplicitlyCalled)
@@ -394,7 +409,7 @@ func (stc *srgTypeConstructor) BuildTypeRef(typeref srg.SRGTypeRef, tdg *typegra
 			// Get the type in the type graph.
 			resolvedType, hasResolvedType := tdg.GetTypeForSourceNode(resolvedTypeInfo.ResolvedType.Node())
 			if !hasResolvedType {
-				panic("Could not find typegraph type for SRG type")
+				panic(fmt.Sprintf("Could not find typegraph type for SRG type %v", resolvedTypeInfo.ResolvedType.Name()))
 			}
 
 			constructedRef = tdg.NewTypeReference(resolvedType)

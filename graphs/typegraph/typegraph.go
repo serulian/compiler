@@ -16,11 +16,11 @@ import (
 	"github.com/serulian/compiler/packageloader"
 )
 
-var TYPE_NODE_TYPES = []NodeType{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType}
-var TYPE_NODE_TYPES_TAGGED = []compilergraph.TaggedValue{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType}
+var TYPE_NODE_TYPES = []NodeType{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType, NodeTypeStruct}
+var TYPE_NODE_TYPES_TAGGED = []compilergraph.TaggedValue{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType, NodeTypeStruct}
 
-var TYPEORMODULE_NODE_TYPES = []NodeType{NodeTypeModule, NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType}
-var TYPEORGENERIC_NODE_TYPES = []NodeType{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType, NodeTypeGeneric}
+var TYPEORMODULE_NODE_TYPES = []NodeType{NodeTypeModule, NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType, NodeTypeStruct}
+var TYPEORGENERIC_NODE_TYPES = []NodeType{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType, NodeTypeStruct, NodeTypeGeneric}
 var MEMBER_NODE_TYPES = []NodeType{NodeTypeMember, NodeTypeOperator}
 
 // TypeGraph represents the TypeGraph layer and all its associated helper methods.
@@ -137,6 +137,9 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 	// Check for duplicate types, members and generics.
 	typeGraph.checkForDuplicateNames()
 
+	// Perform global validation, including checking fields in structs.
+	typeGraph.globallyValidate()
+
 	// Handle inheritance checking and member cloning.
 	inheritsModifier := typeGraph.layer.NewModifier()
 	typeGraph.defineFullInheritance(inheritsModifier)
@@ -233,7 +236,12 @@ func (g *TypeGraph) ModulesWithMembers() []TGModule {
 
 // TypeDecls returns all types defined in the type graph.
 func (g *TypeGraph) TypeDecls() []TGTypeDecl {
-	it := g.findAllNodes(TYPE_NODE_TYPES...).
+	return g.GetTypeDecls(TYPE_NODE_TYPES...)
+}
+
+// GetTypeDecls returns all types defined in the type graph of the given types.
+func (g *TypeGraph) GetTypeDecls(typeKinds ...NodeType) []TGTypeDecl {
+	it := g.findAllNodes(typeKinds...).
 		BuildNodeIterator()
 
 	var types []TGTypeDecl
@@ -297,6 +305,9 @@ func (g *TypeGraph) GetTypeOrMember(nodeId compilergraph.GraphNodeId) TGTypeOrMe
 		fallthrough
 
 	case NodeTypeNominalType:
+		fallthrough
+
+	case NodeTypeStruct:
 		fallthrough
 
 	case NodeTypeGeneric:

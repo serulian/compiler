@@ -133,7 +133,9 @@ func resolveTestingTypeRef(name string, refNode compilergraph.GraphNode, graph *
 	}
 
 	// Check for type generics.
-	if currentNode.Kind == NodeTypeClass || currentNode.Kind == NodeTypeInterface {
+	if currentNode.Kind == NodeTypeClass || currentNode.Kind == NodeTypeInterface ||
+		currentNode.Kind == NodeTypeNominalType ||
+		currentNode.Kind == NodeTypeStruct {
 		typeInfo := TGTypeDecl{currentNode, graph}
 		for _, generic := range typeInfo.Generics() {
 			if generic.Name() == name {
@@ -156,7 +158,6 @@ func resolveTestingTypeRef(name string, refNode compilergraph.GraphNode, graph *
 				return graph.NewTypeReference(typeDecl), true
 			}
 		}
-
 	}
 
 	return TypeReference{}, false
@@ -290,6 +291,14 @@ func (t *testTypeGraphConstructor) DefineTypes(builder GetTypeBuilder) {
 			typeKind = ImplicitInterfaceType
 		}
 
+		if typeInfo.kind == "struct" {
+			typeKind = StructType
+		}
+
+		if typeInfo.kind == "nominal" {
+			typeKind = NominalType
+		}
+
 		genericBuilder := builder(*t.moduleNode).
 			Name(typeInfo.name).
 			SourceNode(typeNode).
@@ -312,6 +321,10 @@ func (t *testTypeGraphConstructor) DefineDependencies(annotator Annotator, graph
 				genericNode, _ := t.genericMap[typeInfo.name+"::"+genericInfo.name]
 				annotator.DefineGenericConstraint(genericNode, parseTypeReferenceForTesting(genericInfo.constraint, graph, typeNode))
 			}
+		}
+
+		if typeInfo.parentType != "" {
+			annotator.DefineParentType(typeNode, parseTypeReferenceForTesting(typeInfo.parentType, graph, typeNode))
 		}
 	}
 }
@@ -358,15 +371,19 @@ func (t *testTypeGraphConstructor) DecorateMembers(decorator GetMemberDecorator,
 				}
 			}
 
-			var memberType = graph.FunctionTypeReference(parseTypeReferenceForTesting(memberInfo.returnType, graph, memberNode, typeNode))
-			for _, paramInfo := range memberInfo.parameters {
-				memberType = memberType.WithParameter(parseTypeReferenceForTesting(paramInfo.paramType, graph, memberNode, typeNode))
+			var memberType = parseTypeReferenceForTesting(memberInfo.returnType, graph, memberNode, typeNode)
+
+			if memberInfo.kind != "var" {
+				memberType = graph.FunctionTypeReference(memberType)
+				for _, paramInfo := range memberInfo.parameters {
+					memberType = memberType.WithParameter(parseTypeReferenceForTesting(paramInfo.paramType, graph, memberNode, typeNode))
+				}
 			}
 
 			builder.Exported(isExportedName(memberInfo.name)).
 				ReadOnly(false).
 				MemberType(memberType).
-				MemberKind(1).
+				MemberKind(uint64(len(memberInfo.kind))).
 				Decorate()
 		}
 	}
@@ -386,10 +403,11 @@ type testTypeGraphConstructor struct {
 }
 
 type testType struct {
-	kind     string
-	name     string
-	generics []testGeneric
-	members  []testMember
+	kind       string
+	name       string
+	parentType string
+	generics   []testGeneric
+	members    []testMember
 }
 
 type testGeneric struct {

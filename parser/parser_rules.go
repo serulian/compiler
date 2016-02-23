@@ -71,7 +71,7 @@ Loop:
 			p.currentNode().Connect(NodePredicateChild, p.consumeImport())
 
 		// type definitions.
-		case p.isToken(tokenTypeAtSign) || p.isKeyword("class") || p.isKeyword("interface") || p.isKeyword("type"):
+		case p.isToken(tokenTypeAtSign) || p.isKeyword("class") || p.isKeyword("interface") || p.isKeyword("type") || p.isKeyword("struct"):
 			seenNonImport = true
 			p.currentNode().Connect(NodePredicateChild, p.consumeTypeDefinition())
 			p.tryConsumeStatementTerminator()
@@ -295,8 +295,10 @@ func (p *sourceParser) consumeTypeDefinition() AstNode {
 		typeDef = p.consumeInterfaceDefinition()
 	} else if p.isKeyword("type") {
 		typeDef = p.consumeNominalDefinition()
+	} else if p.isKeyword("struct") {
+		typeDef = p.consumeStructuralDefinition()
 	} else {
-		return p.createErrorNode("Expected 'class', 'interface' or 'type', Found: %s", p.currentToken.value)
+		return p.createErrorNode("Expected 'class', 'interface', 'type' or 'struct', Found: %s", p.currentToken.value)
 	}
 
 	if ok {
@@ -305,6 +307,41 @@ func (p *sourceParser) consumeTypeDefinition() AstNode {
 	}
 
 	return typeDef
+}
+
+// consumeStructuralDefinition consumes a structural type definition.
+//
+// struct Identifer<T> { ... }
+func (p *sourceParser) consumeStructuralDefinition() AstNode {
+	structuralNode := p.startNode(NodeTypeStruct)
+	defer p.finishNode()
+
+	// struct ...
+	p.consumeKeyword("struct")
+
+	// Identifier
+	typeName, ok := p.consumeIdentifier()
+	if !ok {
+		return structuralNode
+	}
+
+	structuralNode.Decorate(NodeTypeDefinitionName, typeName)
+
+	// Generics (optional).
+	p.consumeGenerics(structuralNode, NodeTypeDefinitionGeneric)
+
+	// Open bracket.
+	if _, ok := p.consume(tokenTypeLeftBrace); !ok {
+		return structuralNode
+	}
+
+	// Consume type members.
+	p.consumeStructuralTypeMembers(structuralNode)
+
+	// Close bracket.
+	p.consume(tokenTypeRightBrace)
+
+	return structuralNode
 }
 
 // consumeNominalDefinition consumes a nominal type definition.
@@ -429,6 +466,43 @@ func (p *sourceParser) consumeInterfaceDefinition() AstNode {
 	// Close bracket.
 	p.consume(tokenTypeRightBrace)
 	return interfaceNode
+}
+
+// consumeStructuralTypeMembers consumes the member definitions of a structural type.
+func (p *sourceParser) consumeStructuralTypeMembers(typeNode AstNode) {
+	for {
+		// Check for a close token.
+		if p.isToken(tokenTypeRightBrace) {
+			return
+		}
+
+		// Otherwise, consume the structural type member.
+		typeNode.Connect(NodeTypeDefinitionMember, p.consumeStructField())
+
+		if _, ok := p.consumeStatementTerminator(); !ok {
+			return
+		}
+	}
+}
+
+// consumeStructField consumes a field of a struct.
+//
+// FieldName TypeName
+func (p *sourceParser) consumeStructField() AstNode {
+	fieldNode := p.startNode(NodeTypeField)
+	defer p.finishNode()
+
+	// FieldName.
+	identifier, ok := p.consumeIdentifier()
+	if !ok {
+		return fieldNode
+	}
+
+	// TypeName
+	fieldNode.Connect(NodePredicateTypeMemberDeclaredType, p.consumeTypeReference(typeReferenceNoVoid))
+
+	fieldNode.Decorate(NodePredicateTypeMemberName, identifier)
+	return fieldNode
 }
 
 // consumeNominalTypeMembers consumes the member definitions of a nominal type.
@@ -1615,6 +1689,33 @@ func (p *sourceParser) tryConsumeExpression(option consumeExpressionOption) (Ast
 
 			return templateNode, true
 		}
+
+		// Check for an open brace. If found, this is a new structural expression.
+		if p.isToken(tokenTypeLeftBrace) {
+			structuralNode := p.createNode(NodeStructuralNewExpression)
+			structuralNode.Connect(NodeStructuralNewTypeExpression, node)
+
+			p.consume(tokenTypeLeftBrace)
+
+			for {
+				if p.isToken(tokenTypeRightBrace) {
+					break
+				}
+
+				structuralNode.Connect(NodeStructuralNewExpressionChildEntry, p.consumeStructuralNewExpressionEntry())
+				if p.isToken(tokenTypeRightBrace) || p.isStatementTerminator() {
+					break
+				}
+			}
+
+			p.consume(tokenTypeRightBrace)
+
+			p.decorateStartRuneAndComments(structuralNode, startToken)
+			p.decorateEndRune(structuralNode, p.currentToken)
+
+			return structuralNode, true
+		}
+
 		return node, true
 	} else {
 		return p.oneOf(p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, p.tryConsumeNonArrowExpression)
@@ -2323,6 +2424,31 @@ func (p *sourceParser) lookaheadTypeReference(t *lookaheadTracker) bool {
 	// Match any nullable or streams.
 	t.matchToken(tokenTypeTimes, tokenTypeQuestionMark)
 	return true
+}
+
+// consumeStructuralNewExpressionEntry consumes an entry of an inline map expression.
+func (p *sourceParser) consumeStructuralNewExpressionEntry() AstNode {
+	entryNode := p.startNode(NodeStructuralNewExpressionEntry)
+	defer p.finishNode()
+
+	// Consume an identifier.
+	identifier, ok := p.consumeIdentifier()
+	if !ok {
+		return entryNode
+	}
+
+	entryNode.Decorate(NodeStructuralNewEntryKey, identifier)
+
+	// Consume a colon.
+	p.consume(tokenTypeColon)
+
+	// Consume an expression.
+	entryNode.Connect(NodeStructuralNewEntryValue, p.consumeExpression(consumeExpressionAllowMaps))
+
+	// Consume a comma.
+	p.consume(tokenTypeComma)
+
+	return entryNode
 }
 
 // tryConsumeMapExpression tries to consume an inline map expression.

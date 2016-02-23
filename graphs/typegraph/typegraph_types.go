@@ -20,6 +20,7 @@ const (
 	NodeTypeInterface                         // An implicitly-defined interface
 	NodeTypeExternalInterface                 // An externally defined interface
 	NodeTypeNominalType                       // A nominal type
+	NodeTypeStruct                            // A structural type
 	NodeTypeModule                            // A module
 
 	// Member-level
@@ -31,6 +32,9 @@ const (
 
 	// Generics.
 	NodeTypeGeneric // A defined generic on a type or type member.
+
+	// Custom attribute.
+	NodeTypeAttribute
 
 	// An issue reported by a source graph.
 	NodeTypeReportedIssue
@@ -57,7 +61,7 @@ const (
 	NodePredicateErrorMessage = "error-message"
 
 	//
-	// NodeTypeModule/NodeTypeClass/NodeTypeInterface/NodeTypeExternalInterface/NodeTypeNominal
+	// NodeTypeModule/NodeTypeClass/NodeTypeInterface/NodeTypeExternalInterface/NodeTypeNominal/NodeTypeStruct
 	//
 
 	// Connects a type or module to a member (function, var, etc).
@@ -69,7 +73,7 @@ const (
 	NodePredicateModuleName = "module-name"
 
 	//
-	// NodeTypeClass/NodeTypeInterface
+	// NodeTypeClass/NodeTypeInterface/NodeTypeExternalInterface/NodeTypeNominal/NodeTypeStruct
 	//
 
 	// Connects a type declaration to its parent module.
@@ -89,6 +93,9 @@ const (
 
 	// Marks a type with its alias.
 	NodePredicateTypeAlias = "type-alias"
+
+	// Connects a type declaration to a custom attribute.
+	NodePredicateTypeAttribute = "type-attribute"
 
 	//
 	// NodeTypeGeneric
@@ -134,6 +141,9 @@ const (
 	// Connects a member to a returnable definition, itself connected to an SRG node.
 	NodePredicateReturnable = "member-returnable"
 
+	// Decorates a member as being a field holding data in the type.
+	NodePredicateMemberField = "member-field"
+
 	// Connects a member to the member in the parent type from which it was cloned.
 	NodePredicateMemberBaseMember = "member-base-member"
 
@@ -143,6 +153,9 @@ const (
 	// Decorates a member returning a promise of the member or return type. Used for
 	// functions and properties in SRG-created types.
 	NodePredicateMemberPromising = "member-promising"
+
+	// Decorates a member as being automatically initialized with a default value.
+	NodePredicateMemberHasDefaultValue = "member-hasdefault"
 
 	// Decorates a member as being implicitly called on access or assignment. Used for
 	// properties that are backed by functions.
@@ -157,6 +170,13 @@ const (
 
 	// Marks an operator as being a call to a native (ES) operator.
 	NodePredicateOperatorNative = "operator-native"
+
+	//
+	// NodeTypeAttribute
+	//
+
+	// Marks an attribute with its name.
+	NodePredicateAttributeName = "attribute-name"
 
 	//
 	// NodeTypeReturnable

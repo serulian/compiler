@@ -10,11 +10,84 @@ import (
 	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/parser"
 
+	"fmt"
 	"strconv"
 )
 
 const DEFINED_VAL_PARAMETER = "val"
 const DEFINED_THIS_PARAMETER = "$this"
+
+type initializer struct {
+	member     typegraph.TGMember
+	expression codedom.Expression
+}
+
+// buildStructuralNewExpression builds the CodeDOM for a structural new expression.
+func (db *domBuilder) buildStructuralNewExpression(node compilergraph.GraphNode) codedom.Expression {
+	// Collect the full set of initializers, by member.
+	initializers := map[string]initializer{}
+	eit := node.StartQuery().
+		Out(parser.NodeStructuralNewExpressionChildEntry).
+		BuildNodeIterator()
+
+	for eit.Next() {
+		entryScope, _ := db.scopegraph.GetScope(eit.Node())
+		entryName, _ := db.scopegraph.GetReferencedName(entryScope)
+		entryMember, _ := entryName.Member()
+
+		initializers[entryMember.Name()] =
+			initializer{entryMember, db.getExpression(eit.Node(), parser.NodeStructuralNewEntryValue)}
+	}
+
+	// Build a call to the new() constructor of the type with the required field expressions.
+	childScope, _ := db.scopegraph.GetScope(node.GetNode(parser.NodeStructuralNewTypeExpression))
+	staticTypeRef := childScope.StaticTypeRef(db.scopegraph.TypeGraph())
+	staticType := staticTypeRef.ReferredType()
+
+	var arguments = make([]codedom.Expression, 0)
+	for _, field := range staticType.RequiredFields() {
+		arguments = append(arguments, initializers[field.Name()].expression)
+		delete(initializers, field.Name())
+	}
+
+	constructor, found := staticTypeRef.ResolveMember("new", typegraph.MemberResolutionStatic)
+	if !found {
+		panic(fmt.Sprintf("Missing new constructor on type %v", staticTypeRef))
+	}
+
+	newCall := codedom.MemberCall(
+		codedom.MemberReference(
+			codedom.TypeLiteral(staticTypeRef, node),
+			constructor,
+			node),
+		constructor,
+		arguments,
+		node)
+
+	// Create a variable to hold the new instance
+	newInstanceVarName := db.buildScopeVarName(node)
+
+	// Build the expressions. The first will be creation of the instance, followed by each of the
+	// assignments (field or property).
+	var expressions = []codedom.Expression{
+		codedom.LocalAssignment(newInstanceVarName, newCall, node),
+	}
+
+	for _, initializer := range initializers {
+		assignExpr :=
+			codedom.MemberAssignment(initializer.member,
+				codedom.MemberReference(
+					codedom.LocalReference(newInstanceVarName, node),
+					initializer.member,
+					node),
+				initializer.expression,
+				node)
+
+		expressions = append(expressions, assignExpr)
+	}
+
+	return codedom.CompoundExpression(expressions, codedom.LocalReference(newInstanceVarName, node), node)
+}
 
 // buildNullLiteral builds the CodeDOM for a null literal.
 func (db *domBuilder) buildNullLiteral(node compilergraph.GraphNode) codedom.Expression {

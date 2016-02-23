@@ -1,0 +1,9 @@
+class SomeClass {
+	var<bool> SomeField
+}
+
+function<void> DoSomething() {
+	SomeClass{
+		SomeField: 2,
+	}
+}

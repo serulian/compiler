@@ -1,3 +1,9 @@
 class SomeClass {
 	var<int> someVar
+	var<string?> anotherVar
+	var<bool> coolVar
+}
+
+function<void> DoSomething() {
+	/* new */(SomeClass.new)
 }

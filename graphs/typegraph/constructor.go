@@ -151,11 +151,18 @@ type typeBuilder struct {
 	alias      string                           // The alias of the type.
 	sourceNode compilergraph.GraphNode          // The node for the type in the source graph.
 	typeKind   TypeKind                         // The kind of this type.
+	attributes []TypeAttribute                  // The custom attributes on the type, if any.
 }
 
 // Name sets the name of the type.
 func (tb *typeBuilder) Name(name string) *typeBuilder {
 	tb.name = name
+	return tb
+}
+
+// WithAttribute adds the attribute with the given name to the type.
+func (tb *typeBuilder) WithAttribute(name TypeAttribute) *typeBuilder {
+	tb.attributes = append(tb.attributes, name)
 	return tb
 }
 
@@ -187,12 +194,6 @@ func (tb *typeBuilder) Define() getGenericBuilder {
 		panic(fmt.Sprintf("Missing source node on defined type %v", tb.name))
 	}
 
-	// Ensure that there exists no other type with this name under the parent module.
-	_, exists := tb.module.StartQuery().
-		In(NodePredicateTypeModule).
-		Has(NodePredicateTypeName, tb.name).
-		TryGetNode()
-
 	// Create the type node.
 	typeNode := tb.modifier.CreateNode(getTypeNodeType(tb.typeKind))
 	typeNode.Connect(NodePredicateTypeModule, tb.module.GraphNode)
@@ -204,9 +205,10 @@ func (tb *typeBuilder) Define() getGenericBuilder {
 		typeNode.Decorate(NodePredicateTypeAlias, tb.alias)
 	}
 
-	// If another type with the same name exists under the module, decorate with an error.
-	if exists {
-		tb.module.tdg.decorateWithError(typeNode, "Type '%s' is already defined in the module", tb.name)
+	for _, attribute := range tb.attributes {
+		attrNode := tb.modifier.CreateNode(NodeTypeAttribute)
+		attrNode.Decorate(NodePredicateAttributeName, string(attribute))
+		typeNode.Connect(NodePredicateTypeAttribute, attrNode)
 	}
 
 	var genericIndex = -1
@@ -238,6 +240,9 @@ func getTypeNodeType(kind TypeKind) NodeType {
 
 	case NominalType:
 		return NodeTypeNominalType
+
+	case StructType:
+		return NodeTypeStruct
 
 	default:
 		panic(fmt.Sprintf("Unknown kind of type declaration: %v", kind))
@@ -412,12 +417,14 @@ type MemberDecorator struct {
 
 	issueReporter IssueReporter // The underlying issue reporter.
 
-	exported  bool // Whether the member is exported publicly.
-	readonly  bool // Whether the member is readonly.
-	static    bool // Whether the member is static.
-	promising bool // Whether the member is promising.
-	implicit  bool // Whether the member is implicitly called.
-	native    bool // Whether this operator is native to ES.
+	exported   bool // Whether the member is exported publicly.
+	readonly   bool // Whether the member is readonly.
+	static     bool // Whether the member is static.
+	promising  bool // Whether the member is promising.
+	implicit   bool // Whether the member is implicitly called.
+	native     bool // Whether this operator is native to ES.
+	hasdefault bool // Whether the member has a default value.
+	field      bool // Whether the member is a field holding data.
 
 	skipOperatorChecking bool // Whether to skip operator checking.
 
@@ -464,6 +471,12 @@ func (mb *MemberDecorator) Native(native bool) *MemberDecorator {
 	return mb
 }
 
+// HasDefaultValue sets whether the member has a default value.
+func (mb *MemberDecorator) HasDefaultValue(hasdefault bool) *MemberDecorator {
+	mb.hasdefault = hasdefault
+	return mb
+}
+
 // ImplicitlyCalled sets whether the member is implicitly called on access or assignment.
 func (mb *MemberDecorator) ImplicitlyCalled(implicit bool) *MemberDecorator {
 	mb.implicit = implicit
@@ -479,6 +492,12 @@ func (mb *MemberDecorator) Exported(exported bool) *MemberDecorator {
 // ReadOnly sets whether the member is read only.
 func (mb *MemberDecorator) ReadOnly(readonly bool) *MemberDecorator {
 	mb.readonly = readonly
+	return mb
+}
+
+// Field sets whether the member is a field.
+func (mb *MemberDecorator) Field(field bool) *MemberDecorator {
+	mb.field = field
 	return mb
 }
 
@@ -551,6 +570,14 @@ func (mb *MemberDecorator) Decorate() {
 
 	if mb.readonly {
 		memberNode.Decorate(NodePredicateMemberReadOnly, "true")
+	}
+
+	if mb.hasdefault {
+		memberNode.Decorate(NodePredicateMemberHasDefaultValue, "true")
+	}
+
+	if mb.field {
+		memberNode.Decorate(NodePredicateMemberField, "true")
 	}
 
 	if mb.implicit {

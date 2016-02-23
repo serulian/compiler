@@ -1,0 +1,7 @@
+struct SomeStruct<T> {
+	CoolField int
+	AnotherField string
+	GenericField T
+}
+
+function<void> DoSomething(s SomeStruct<int>) {}

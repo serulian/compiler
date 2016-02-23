@@ -724,6 +724,9 @@ var scopeGraphTests = []scopegraphTest{
 			expectedScopeEntry{"someclassint", expectedScope{true, proto.ScopeKind_STATIC, "void", "void"}},
 			expectedScopeEntry{"someclassbool", expectedScope{true, proto.ScopeKind_STATIC, "void", "void"}},
 
+			expectedScopeEntry{"somestructint", expectedScope{true, proto.ScopeKind_STATIC, "void", "void"}},
+			expectedScopeEntry{"somestructbool", expectedScope{true, proto.ScopeKind_STATIC, "void", "void"}},
+
 			expectedScopeEntry{"someclassintbuild", expectedScope{true, proto.ScopeKind_VALUE, "Function<SomeClass<Integer>>(Integer)", "void"}},
 			expectedScopeEntry{"someclassboolbuild", expectedScope{true, proto.ScopeKind_VALUE, "Function<SomeClass<Boolean>>(Boolean)", "void"}},
 
@@ -748,11 +751,17 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"Cannot use type Boolean as generic T (#1) over class SomeClass: Type 'Boolean' does not define or export member 'DoSomething', which is required by type 'ISomeInterface'", ""},
 
+	scopegraphTest{"generic specifier non-structural test", "genericspecifier", "structfail",
+		[]expectedScopeEntry{},
+		"Cannot use type SomeClass as generic T (#1) over struct SomeStruct: SomeClass is not structural nor serializable", ""},
+
 	/////////// class field ///////////
 
-	scopegraphTest{"class field uninitialized failure test", "var", "uninitializedfield",
-		[]expectedScopeEntry{},
-		"Field 'someVar' must have explicit initializer as its type 'Integer' is non-nullable", ""},
+	scopegraphTest{"class field uninitialized test", "var", "uninitializedfield",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"new", expectedScope{true, proto.ScopeKind_VALUE, "Function<SomeClass>(Integer, Boolean)", "void"}},
+		},
+		"", ""},
 
 	/////////// lambda expression ///////////
 
@@ -869,6 +878,52 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"nominal call base type member", "nominal", "basetypecall",
 		[]expectedScopeEntry{},
 		"Could not find instance name 'DoSomething' under type MyType", ""},
+
+	/////////// structural new expression tests /////////////////
+
+	scopegraphTest{"structural new success tests", "structnew", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"empty", expectedScope{true, proto.ScopeKind_VALUE, "EmptyClass", "void"}},
+			expectedScopeEntry{"nonempty", expectedScope{true, proto.ScopeKind_VALUE, "NonRequiredClass", "void"}},
+			expectedScopeEntry{"nonesome", expectedScope{true, proto.ScopeKind_VALUE, "NonRequiredClass", "void"}},
+			expectedScopeEntry{"noneanother", expectedScope{true, proto.ScopeKind_VALUE, "NonRequiredClass", "void"}},
+			expectedScopeEntry{"somestruct", expectedScope{true, proto.ScopeKind_VALUE, "SomeStruct", "void"}},
+			expectedScopeEntry{"required", expectedScope{true, proto.ScopeKind_VALUE, "RequiredClass", "void"}},
+			expectedScopeEntry{"generic", expectedScope{true, proto.ScopeKind_VALUE, "GenericStruct<Integer>", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"structural new unconstructable type test", "structnew", "unconstructable",
+		[]expectedScopeEntry{},
+		"Cannot structurally construct type SomeInterface", ""},
+
+	scopegraphTest{"structural new non-type test", "structnew", "nontype",
+		[]expectedScopeEntry{},
+		"Cannot construct non-type expression", ""},
+
+	scopegraphTest{"structural new imported class test", "structnew", "importedclass",
+		[]expectedScopeEntry{},
+		"Cannot structurally construct type SomeClass, as it is imported from another module", ""},
+
+	scopegraphTest{"structural new invalid name test", "structnew", "invalidname",
+		[]expectedScopeEntry{},
+		"Name 'SomeField' could not be found under type SomeClass", ""},
+
+	scopegraphTest{"structural new invalid value test", "structnew", "invalidvalue",
+		[]expectedScopeEntry{},
+		"The name 'foo' could not be found in this context", ""},
+
+	scopegraphTest{"structural new read-only field test", "structnew", "readonlyname",
+		[]expectedScopeEntry{},
+		"type member SomeField under type SomeClass is read-only", ""},
+
+	scopegraphTest{"structural new value type mismatch test", "structnew", "valuetypemismatch",
+		[]expectedScopeEntry{},
+		"Cannot assign value of type Integer to type member SomeField: 'Integer' cannot be used in place of non-interface 'Boolean'", ""},
+
+	scopegraphTest{"structural new value missing required field test", "structnew", "missingrequired",
+		[]expectedScopeEntry{},
+		"Non-nullable type member 'SomeField' is required to construct type SomeClass", ""},
 
 	/////////// known issue tests /////////////////
 

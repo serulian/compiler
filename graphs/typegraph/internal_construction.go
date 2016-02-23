@@ -9,6 +9,39 @@ import (
 	"github.com/serulian/compiler/compilerutil"
 )
 
+// globallyValidate validates the typegraph for global constraints (i.e. those shared by all
+// types constructed, regardless of source)
+func (g *TypeGraph) globallyValidate() bool {
+	var status = true
+
+	// Ensure structures do not reference non-struct, non-serializable types.
+	for _, typeDecl := range g.GetTypeDecls(NodeTypeStruct) {
+		if !g.checkStructuralType(typeDecl) {
+			status = false
+		}
+	}
+
+	return status
+}
+
+// checkStructuralType ensures that a structural type does not reference non-structural,
+// non-serializable types.
+func (g *TypeGraph) checkStructuralType(structType TGTypeDecl) bool {
+	var status = true
+
+	modifier := g.layer.NewModifier()
+	for _, member := range structType.Members() {
+		serr := member.MemberType().EnsureStructural()
+		if serr != nil {
+			g.decorateWithError(modifier.Modify(member.GraphNode),
+				"Structural type '%v' requires all inner types to be structural: %v", structType.Name(), serr)
+			status = false
+		}
+	}
+	modifier.Apply()
+	return status
+}
+
 // defineAllImplicitMembers defines the implicit members (new() constructor, etc) on all
 // applicable types.
 func (g *TypeGraph) defineAllImplicitMembers() {
@@ -19,10 +52,15 @@ func (g *TypeGraph) defineAllImplicitMembers() {
 
 // defineImplicitMembers defines the implicit members (new() constructor, etc) on a type.
 func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
-	// Classes have an implicit "new" constructor.
-	if typeDecl.TypeKind() == ClassType {
+	// Constructable types have an implicit "new" constructor.
+	if typeDecl.isConstructable() {
 		// The new constructor returns an instance of the type.
-		memberType := g.FunctionTypeReference(g.NewInstanceTypeReference(typeDecl))
+		var memberType = g.FunctionTypeReference(g.NewInstanceTypeReference(typeDecl))
+
+		// The new constructor must take the types of all required members.
+		for _, requiredMember := range typeDecl.RequiredFields() {
+			memberType = memberType.WithParameter(requiredMember.AssignableType())
+		}
 
 		modifier := g.layer.NewModifier()
 		builder := &MemberBuilder{tdg: g, modifier: modifier, parent: typeDecl}
@@ -100,7 +138,7 @@ func (t *TypeGraph) buildInheritedMembership(typeDecl TGTypeDecl, childPredicate
 	// Add members defined on the type's inheritance, skipping those already defined.
 	typeNode := typeDecl.GraphNode
 	for _, inherit := range typeDecl.ParentTypes() {
-		parentType := inherit.referredTypeNode()
+		parentType := inherit.ReferredType()
 
 		pit := parentType.StartQuery().
 			Out(childPredicate).
@@ -110,6 +148,20 @@ func (t *TypeGraph) buildInheritedMembership(typeDecl TGTypeDecl, childPredicate
 			// Skip this member if already defined.
 			name := pit.Values()[NodePredicateMemberName]
 			if _, exists := names[name]; exists {
+				// Ensure that the parent member is not a required field. If so, then we cannot
+				// shadow the field.
+				parentMember := TGMember{pit.Node(), t}
+				if parentMember.IsRequiredField() {
+					t.decorateWithError(modifier.Modify(typeDecl.GraphNode),
+						"%v %v cannot compose %v %v as it shadows %v '%v' which requires initialization",
+						typeDecl.Title(),
+						typeDecl.Name(),
+						parentType.Title(),
+						parentType.Name(),
+						parentMember.Title(),
+						parentMember.Name())
+				}
+
 				continue
 			}
 
@@ -133,7 +185,7 @@ func (t *TypeGraph) buildInheritedMembership(typeDecl TGTypeDecl, childPredicate
 
 			// If the parent type has generics, then replace the generics in the member type with those
 			// specified in the inheritance type reference.
-			if _, ok := parentType.TryGet(NodePredicateTypeGeneric); !ok {
+			if _, ok := parentType.GraphNode.TryGet(NodePredicateTypeGeneric); !ok {
 				// Parent type has no generics, so just decorate with the type directly.
 				memberNode.DecorateWithTagged(NodePredicateMemberType, parentMemberType)
 				continue

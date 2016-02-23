@@ -112,6 +112,13 @@ func (tn TGMember) IsPromising() bool {
 	return isPromising
 }
 
+// HasDefaultValue returns whether the member is automatically initialized with a default
+// value.
+func (tn TGMember) HasDefaultValue() bool {
+	_, hasDefaultValue := tn.GraphNode.TryGet(NodePredicateMemberHasDefaultValue)
+	return hasDefaultValue
+}
+
 // IsImplicitlyCalled returns whether the member is implicitly called on access or assignment.
 func (tn TGMember) IsImplicitlyCalled() bool {
 	_, isImplicit := tn.GraphNode.TryGet(NodePredicateMemberImplicitlyCalled)
@@ -132,6 +139,34 @@ func (tn TGMember) IsType() bool {
 // IsOperator returns whether this is an operator.
 func (tn TGMember) IsOperator() bool {
 	return tn.GraphNode.Kind == NodeTypeOperator
+}
+
+// IsField returns whether the member is a field.
+func (tn TGMember) IsField() bool {
+	_, isField := tn.GraphNode.TryGet(NodePredicateMemberField)
+	return isField
+}
+
+// IsRequiredField returns whether this member is a field requiring initialization on
+// construction of an instance of the parent type.
+func (tn TGMember) IsRequiredField() bool {
+	// If this member is not an instance assignable field, nothing more to do.
+	if !tn.IsField() || tn.IsReadOnly() || tn.IsStatic() {
+		return false
+	}
+
+	// Ensure this member does not have a default value.
+	if tn.HasDefaultValue() {
+		return false
+
+	}
+
+	// If this member can be assigned a null value, then it isn't required.
+	if tn.AssignableType().NullValueAllowed() {
+		return false
+	}
+
+	return true
 }
 
 // MemberType returns the type for this member.
