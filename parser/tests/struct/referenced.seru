@@ -1,0 +1,19 @@
+struct AnotherStruct {
+	AnotherBool bool
+}
+
+struct SomeStruct {
+	SomeField int
+	AnotherField bool
+	SomeInstance AnotherStruct
+}
+
+function<void> DoSomething() {
+	var ss = SomeStruct{
+		SomeField: 42,
+		AnotherField: true,
+		SomeInstance: AnotherStruct{
+			AnotherBool: true,
+		},
+	}
+}

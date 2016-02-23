@@ -106,6 +106,7 @@ var parserTests = []parserTest{
 	{"basic struct test", "struct/basic"},
 	{"generic struct test", "struct/generic"},
 	{"construct struct test", "struct/construct"},
+	{"referenced struct test", "struct/referenced"},
 
 	// Class success tests.
 	{"empty class test", "class/empty"},

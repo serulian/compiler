@@ -70,6 +70,7 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"nominal type test", "nominal", "success", ""},
 	typegraphTest{"interface op test", "interfaceop", "success", ""},
 	typegraphTest{"struct type test", "struct", "success", ""},
+	typegraphTest{"referenced struct type test", "struct", "referenced", ""},
 
 	// Failure tests.
 	typegraphTest{"class required composition test", "class", "requiredcomposition", "class AnotherClass cannot compose class SomeClass as it shadows type member 'SomeField' which requires initialization"},

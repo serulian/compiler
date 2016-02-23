@@ -1,0 +1,9 @@
+struct AnotherStruct {
+	AnotherBool bool
+}
+
+struct SomeStruct {
+	SomeField int
+	AnotherField bool
+	SomeInstance AnotherStruct
+}

@@ -229,7 +229,15 @@ func (sf *sourceFormatter) FormatExpression(expression ast.Expression) {
 
 	// SequenceExpression:
 	case *ast.SequenceExpression:
+		if len(e.Sequence) > 1 {
+			sf.append("(")
+		}
+
 		sf.FormatExpressionList(e.Sequence)
+
+		if len(e.Sequence) > 1 {
+			sf.append(")")
+		}
 
 	// UnaryExpression
 	case *ast.UnaryExpression:

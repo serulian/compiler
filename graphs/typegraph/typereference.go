@@ -303,6 +303,11 @@ func (tr TypeReference) IsStruct() bool {
 	return tr.isNormal() && tr.ReferredType().TypeKind() == StructType
 }
 
+// IsNominal returns whether the referenced type is a nominal type.
+func (tr TypeReference) IsNominal() bool {
+	return tr.isNormal() && tr.ReferredType().TypeKind() == NominalType
+}
+
 // CheckStructuralSubtypeOf checks that the current type reference refers to a type that is structurally deriving
 // from the given type reference's type.
 func (tr TypeReference) CheckStructuralSubtypeOf(other TypeReference) bool {

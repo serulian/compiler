@@ -249,6 +249,17 @@ func (tn TGTypeDecl) isConstructable() bool {
 	return typeKind == ClassType || typeKind == StructType
 }
 
+// Fields returns the fields under this type.
+func (tn TGTypeDecl) Fields() []TGMember {
+	var fields = make([]TGMember, 0)
+	for _, member := range tn.Members() {
+		if member.IsField() {
+			fields = append(fields, member)
+		}
+	}
+	return fields
+}
+
 // RequiredFields returns the fields under this type that must be specified when
 // constructing an instance of the type, as they are non-nullable and do not have
 // a specified default value.
