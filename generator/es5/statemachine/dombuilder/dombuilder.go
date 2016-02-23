@@ -249,6 +249,9 @@ func (db *domBuilder) buildExpression(node compilergraph.GraphNode) codedom.Expr
 		return db.buildBooleanUnaryExpression(node, "!")
 
 	// Literals.
+	case parser.NodeStructuralNewExpression:
+		return db.buildStructuralNewExpression(node)
+
 	case parser.NodeNumericLiteralExpression:
 		return db.buildNumericLiteral(node)
 

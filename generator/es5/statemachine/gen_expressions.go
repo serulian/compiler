@@ -45,7 +45,7 @@ func (eg *expressionGenerator) generateFunctionDefinition(function *codedom.Func
 }
 
 // generateAwaitPromise generates the expression source for waiting for a promise.
-func (eg *expressionGenerator) generateAwaitPromise(awaitPromise *codedom.AwaitPromiseNode) (string, expressionWrapper) {
+func (eg *expressionGenerator) generateAwaitPromise(awaitPromise *codedom.AwaitPromiseNode) (string, *expressionWrapper) {
 	childExpr := eg.generateExpression(awaitPromise.ChildExpression)
 	resultName := eg.generateUniqueName("$result")
 
@@ -56,6 +56,9 @@ func (eg *expressionGenerator) generateAwaitPromise(awaitPromise *codedom.AwaitP
 
 	templateStr := `
 		({{ .Item.ChildExpression }}).then(function({{ .Item.ResultName }}) {
+			{{ range $idx, $expr := .IntermediateExpressions }}
+				{{ $expr }};
+			{{ end }}
 			{{ if .WrappedNested }}
 				return ({{ .WrappedExpression }});
 			{{ else }}
@@ -66,10 +69,28 @@ func (eg *expressionGenerator) generateAwaitPromise(awaitPromise *codedom.AwaitP
 
 	// An await expression is a reference to the "result" after waiting on the child expression
 	// and then executing the parent expression inside the await callback.
-	return resultName, expressionWrapper{
-		data:        data,
-		templateStr: templateStr,
+	return resultName, &expressionWrapper{
+		data:                    data,
+		templateStr:             templateStr,
+		intermediateExpressions: []string{},
 	}
+}
+
+// generateCompoundExpression generates the expression source for a compound expression.
+func (eg *expressionGenerator) generateCompoundExpression(compound *codedom.CompoundExpressionNode) string {
+	expressions := eg.generateExpressions(compound.Expressions)
+	valueExpression := eg.generateExpression(compound.ValueExpression)
+
+	data := struct {
+		Expressions     []string
+		ValueExpression string
+	}{expressions, valueExpression}
+
+	templateStr := `
+		({{ range $idx, $expr := .Expressions }}{{ $expr }},{{ end }}{{ .ValueExpression }})
+	`
+
+	return eg.templater.Execute("compound", templateStr, data)
 }
 
 // generateUnaryOperation generates the expression source for a unary operator.
@@ -194,6 +215,12 @@ func (eg *expressionGenerator) generateLocalAssignment(localAssign *codedom.Loca
 	templateStr := `
 		({{ .TargetName }} = ({{ .ValueExpression }}))
 	`
+
+	if len(eg.wrappers) > 0 {
+		lastWrapper := eg.wrappers[len(eg.wrappers)-1]
+		lastWrapper.intermediateExpressions = append(lastWrapper.intermediateExpressions, eg.templater.Execute("localassignment", templateStr, data))
+		return localAssign.Target
+	}
 
 	return eg.templater.Execute("localassignment", templateStr, data)
 }

@@ -64,7 +64,8 @@ $module('loopvar', function () {
 
           case 2:
             $temp1.Next().then(function ($result0) {
-              $result = $temp0 = $result0;
+              $temp0 = $result0;
+              $result = $temp0;
               $state.current = 3;
               $callback($state);
             }).catch(function (err) {
@@ -134,7 +135,8 @@ $module('loopvar', function () {
 
           case 3:
             $temp1.Next().then(function ($result0) {
-              $result = $temp0 = $result0;
+              $temp0 = $result0;
+              $result = $temp0;
               $state.current = 4;
               $callback($state);
             }).catch(function (err) {

@@ -124,6 +124,7 @@ var tests = []generationTest{
 
 	generationTest{"identifier expressions", "literals", "identifier", false},
 
+	generationTest{"structural new literal", "literals", "structnew", true},
 	generationTest{"map literal", "literals", "map", true},
 	generationTest{"list literal", "literals", "list", true},
 	generationTest{"boolean literal", "literals", "boolean", false},

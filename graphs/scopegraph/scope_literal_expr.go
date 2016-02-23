@@ -67,7 +67,7 @@ func (sb *scopeBuilder) scopeStructuralNewExpression(node compilergraph.GraphNod
 	for eit.Next() {
 		// Scope the entry.
 		entryName := eit.Values()[parser.NodeStructuralNewEntryKey]
-		entryScope := sb.scopeStructuralNewExpressionEntry(eit.Node(), entryName, staticTypeRef)
+		entryScope := sb.getScope(eit.Node())
 		if !entryScope.GetIsValid() {
 			isValid = false
 		}
@@ -91,7 +91,13 @@ func (sb *scopeBuilder) scopeStructuralNewExpression(node compilergraph.GraphNod
 }
 
 // scopeStructuralNewExpressionEntry scopes a single entry in a structural new expression.
-func (sb *scopeBuilder) scopeStructuralNewExpressionEntry(node compilergraph.GraphNode, entryName string, parentType typegraph.TypeReference) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeStructuralNewExpressionEntry(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+	parentNode := node.GetIncomingNode(parser.NodeStructuralNewExpressionChildEntry)
+	parentExprScope := sb.getScope(parentNode.GetNode(parser.NodeStructuralNewTypeExpression))
+	parentType := parentExprScope.StaticTypeRef(sb.sg.tdg)
+
+	entryName := node.Get(parser.NodeStructuralNewEntryKey)
+
 	// Get the scope for the value.
 	valueScope := sb.getScope(node.GetNode(parser.NodeStructuralNewEntryValue))
 	if !valueScope.GetIsValid() {
@@ -122,7 +128,7 @@ func (sb *scopeBuilder) scopeStructuralNewExpressionEntry(node compilergraph.Gra
 		return newScope().Invalid().GetScope()
 	}
 
-	return newScope().Valid().GetScope()
+	return newScope().ForNamedScope(sb.getNamedScopeForMember(member)).Valid().GetScope()
 }
 
 // scopeTaggedTemplateString scopes a tagged template string expression in the SRG.

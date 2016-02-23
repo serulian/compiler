@@ -25,6 +25,22 @@ func AreEqual(leftExpr Expression, rightExpr Expression, comparisonType typegrap
 		basis)
 }
 
+// CompoundExpressionNode represents an expression that executes multiple sub-expressions
+// with the value expression being returned as the value.
+type CompoundExpressionNode struct {
+	expressionBase
+	Expressions     []Expression
+	ValueExpression Expression
+}
+
+func CompoundExpression(expressions []Expression, value Expression, basis compilergraph.GraphNode) Expression {
+	return &CompoundExpressionNode{
+		expressionBase{domBase{basis}},
+		expressions,
+		value,
+	}
+}
+
 // ArrayLiteralNode represents a literal array definition.
 type ArrayLiteralNode struct {
 	expressionBase

@@ -238,6 +238,9 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 	case parser.NodeStructuralNewExpression:
 		return sb.scopeStructuralNewExpression
 
+	case parser.NodeStructuralNewExpressionEntry:
+		return sb.scopeStructuralNewExpressionEntry
+
 	// Template string.
 	case parser.NodeTaggedTemplateLiteralString:
 		return sb.scopeTaggedTemplateString

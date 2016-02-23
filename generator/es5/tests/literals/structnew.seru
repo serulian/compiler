@@ -1,0 +1,20 @@
+class SomeClass {
+	var<int> SomeField
+	var<bool> anotherField = false
+
+	property<bool> AnotherField {
+		get { return this.anotherField }
+		set {
+			this.anotherField = val
+		}
+	}
+}
+
+function<any> TEST() {
+	var sc = SomeClass{
+		SomeField: 2,
+		AnotherField: true,
+	}
+
+	return (sc.SomeField == 2) && sc.anotherField
+}
