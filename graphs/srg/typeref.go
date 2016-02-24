@@ -32,7 +32,7 @@ const (
 	TypeRefAny                         // An any type reference.
 )
 
-// GetTypeRef returns an SRGTypeRef wrapper for the given type reference now.
+// GetTypeRef returns an SRGTypeRef wrapper for the given type reference node.
 func (g *SRG) GetTypeRef(node compilergraph.GraphNode) SRGTypeRef {
 	return SRGTypeRef{node, g}
 }
