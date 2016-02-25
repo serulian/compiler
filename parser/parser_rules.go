@@ -362,6 +362,9 @@ func (p *sourceParser) consumeNominalDefinition() AstNode {
 
 	nominalNode.Decorate(NodeTypeDefinitionName, typeName)
 
+	// Generics (optional).
+	p.consumeGenerics(nominalNode, NodeTypeDefinitionGeneric)
+
 	// :
 	if _, ok := p.consume(tokenTypeColon); !ok {
 		return nominalNode

@@ -130,6 +130,7 @@ var parserTests = []parserTest{
 
 	// Nominal type tests.
 	{"basic nominal type test", "nominal/basic"},
+	{"generic nominal type test", "nominal/generic"},
 	{"missing subtype nominal type test", "nominal/missingsubtype"},
 
 	// Class member success tests.
