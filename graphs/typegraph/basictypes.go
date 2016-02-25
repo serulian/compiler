@@ -92,6 +92,11 @@ func (t *TypeGraph) SliceType() TGTypeDecl {
 	return t.getAliasedType("slice")
 }
 
+// MappingType returns the mapping type.
+func (t *TypeGraph) MappingType() TGTypeDecl {
+	return t.getAliasedType("mapping")
+}
+
 // StreamType returns the stream type.
 func (t *TypeGraph) StreamType() TGTypeDecl {
 	return t.getAliasedType("stream")

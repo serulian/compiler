@@ -1,0 +1,70 @@
+NodeTypeFile
+  end-rune = 78
+  input-source = generic nominal type test
+  start-rune = 0
+  child-node =>
+    NodeTypeNominal
+      end-rune = 78
+      input-source = generic nominal type test
+      named = SomeType
+      start-rune = 0
+      nominal-basetypepath =>
+        NodeTypeTypeReference
+          end-rune = 39
+          input-source = generic nominal type test
+          start-rune = 19
+          typereference-generic =>
+            NodeTypeTypeReference
+              end-rune = 38
+              input-source = generic nominal type test
+              start-rune = 38
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 38
+                  input-source = generic nominal type test
+                  start-rune = 38
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 38
+                      identifieraccess-name = Q
+                      input-source = generic nominal type test
+                      start-rune = 38
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 36
+              input-source = generic nominal type test
+              start-rune = 19
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 36
+                  identifieraccess-name = TypeHere
+                  input-source = generic nominal type test
+                  start-rune = 29
+                  identifieraccess-source =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 27
+                      identifieraccess-name = SomeOther
+                      input-source = generic nominal type test
+                      start-rune = 19
+      type-generic =>
+        NodeTypeGeneric
+          end-rune = 14
+          input-source = generic nominal type test
+          named = T
+          start-rune = 14
+      type-member =>
+        NodeTypeFunction
+          end-rune = 77
+          input-source = generic nominal type test
+          named = DoSomething
+          start-rune = 44
+          definition-body =>
+            NodeTypeStatementBlock
+              end-rune = 77
+              input-source = generic nominal type test
+              start-rune = 73
+          typemember-return-type =>
+            NodeTypeVoid
+              end-rune = 56
+              input-source = generic nominal type test
+              start-rune = 53

@@ -1,0 +1,4 @@
+type SomeType<T> : SomeOther.TypeHere<Q> {
+	function<void> DoSomething() {
+	}
+}

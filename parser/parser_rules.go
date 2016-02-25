@@ -362,6 +362,9 @@ func (p *sourceParser) consumeNominalDefinition() AstNode {
 
 	nominalNode.Decorate(NodeTypeDefinitionName, typeName)
 
+	// Generics (optional).
+	p.consumeGenerics(nominalNode, NodeTypeDefinitionGeneric)
+
 	// :
 	if _, ok := p.consume(tokenTypeColon); !ok {
 		return nominalNode
@@ -916,14 +919,30 @@ func (p *sourceParser) consumeTypeReference(option typeReferenceOption) AstNode 
 		return anyNode
 	}
 
-	// Check for a slice.
+	// Check for a slice or mapping.
 	if p.isToken(tokenTypeLeftBracket) {
-		sliceNode := p.startNode(NodeTypeSlice)
-		p.consume(tokenTypeLeftBracket)
-		p.consume(tokenTypeRightBracket)
-		sliceNode.Connect(NodeTypeReferenceInnerType, p.consumeTypeReference(typeReferenceNoVoid))
-		p.finishNode()
-		return sliceNode
+		t := p.newLookaheadTracker()
+		t.matchToken(tokenTypeLeftBracket)
+		t.matchToken(tokenTypeRightBracket)
+		if _, ok := t.matchToken(tokenTypeLeftBrace); ok {
+			// Mapping.
+			mappingNode := p.startNode(NodeTypeMapping)
+			p.consume(tokenTypeLeftBracket)
+			p.consume(tokenTypeRightBracket)
+			p.consume(tokenTypeLeftBrace)
+			mappingNode.Connect(NodeTypeReferenceInnerType, p.consumeTypeReference(typeReferenceNoVoid))
+			p.consume(tokenTypeRightBrace)
+			p.finishNode()
+			return mappingNode
+		} else {
+			// Slice.
+			sliceNode := p.startNode(NodeTypeSlice)
+			p.consume(tokenTypeLeftBracket)
+			p.consume(tokenTypeRightBracket)
+			sliceNode.Connect(NodeTypeReferenceInnerType, p.consumeTypeReference(typeReferenceNoVoid))
+			p.finishNode()
+			return sliceNode
+		}
 	}
 
 	// Otherwise, left recursively build a type reference.

@@ -55,7 +55,7 @@ func (db *domBuilder) buildFunctionCall(node compilergraph.GraphNode) codedom.Ex
 		referredType := childType.ReferredType()
 
 		if referredType.TypeKind() == typegraph.NominalType {
-			return codedom.NominalWrapping(wrappedExpr, referredType, node)
+			return codedom.NominalRefWrapping(wrappedExpr, childType, node)
 		} else {
 			return codedom.NominalUnwrapping(wrappedExpr, node)
 		}

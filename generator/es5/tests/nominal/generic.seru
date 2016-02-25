@@ -1,0 +1,21 @@
+class SomeClass {
+	function<bool> DoSomething() {
+		return true
+	}
+}
+
+type MyType<T> : SomeClass {
+	function<bool> AnotherThing() {
+		return SomeClass(this).DoSomething()
+	}
+
+	property<bool> SomeProp {
+		get { return true }
+	}
+}
+
+function<any> TEST() {
+	var sc = SomeClass.new()
+	var m = MyType<int>(sc)
+	return m.SomeProp && m.AnotherThing()
+}

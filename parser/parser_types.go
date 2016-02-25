@@ -146,6 +146,7 @@ const (
 	NodeTypeTypeReference // A type reference
 	NodeTypeStream
 	NodeTypeSlice
+	NodeTypeMapping
 	NodeTypeNullable
 	NodeTypeVoid
 	NodeTypeAny

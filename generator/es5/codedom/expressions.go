@@ -351,14 +351,22 @@ func NativeIndexing(childExpression Expression, index Expression, basis compiler
 type NominalWrappingNode struct {
 	expressionBase
 	ChildExpression Expression
-	NominalType     typegraph.TGTypeDecl
+	NominalTypeRef  typegraph.TypeReference
+}
+
+func NominalRefWrapping(childExpression Expression, nominalTypeRef typegraph.TypeReference, basis compilergraph.GraphNode) Expression {
+	return &NominalWrappingNode{
+		expressionBase{domBase{basis}},
+		childExpression,
+		nominalTypeRef,
+	}
 }
 
 func NominalWrapping(childExpression Expression, nominalType typegraph.TGTypeDecl, basis compilergraph.GraphNode) Expression {
 	return &NominalWrappingNode{
 		expressionBase{domBase{basis}},
 		childExpression,
-		nominalType,
+		nominalType.GetTypeReference(),
 	}
 }
 

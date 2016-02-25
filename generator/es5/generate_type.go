@@ -200,7 +200,7 @@ this.$interface('{{ .Type.Name }}', {{ .HasGenerics }}, function({{ .Generics }}
 
 // nominalTemplateStr defines the template for generating a nominal type.
 const nominalTemplateStr = `
-this.$type('{{ .Type.Name }}', false, function() {
+this.$type('{{ .Type.Name }}', {{ .HasGenerics }}, function({{ .Generics }}) {
 	var $instance = this.prototype;
 	var $static = this;
 

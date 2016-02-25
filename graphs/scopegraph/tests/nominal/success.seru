@@ -17,8 +17,16 @@ type AnotherType : MyType {
 	}
 }
 
+type GenericType<T> : MyType {
+	function<T> DoSomething(someParam T) {
+		return someParam
+	}
+}
+
 function<void> CoolFunction(m MyType) {
 	/* m */m
 	m.AnotherFunction()
 
+	/* at */(AnotherType(m))
+	/* gt */(GenericType<int>(m))
 }

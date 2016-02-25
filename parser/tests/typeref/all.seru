@@ -17,3 +17,4 @@ var<function<void>(int)> functypewithparam
 var<any> anyref
 var<SomeClass<any>> anyinnerref
 var<[]SomeClass> sliceref
+var<[]{SomeClass}> mappingref

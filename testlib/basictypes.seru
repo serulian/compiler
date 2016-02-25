@@ -29,27 +29,49 @@ class Tuple<T, Q> {
 	}
 }
 
-@•typealias('slice')
-class Slice<T> {
-	var<Array> items = Array.new()
-
+@•typealias('mapping')
+type Mapping<T> : Object {
 	constructor Empty() {
-		return Slice<T>.new()
+	    return Mapping<T>(Object.new())
+	}
+
+	constructor overObject(obj Object) {
+		return Mapping<T>(obj)
+	}
+
+	property<[]string> Keys {
+		get {
+			return Slice<string>.overArray(Object.keys(Object(this)))
+		}
+	}
+
+	operator<T?> Index(key string) {
+		var value = Object(this)[NativeString(key)]
+		if value is null {
+			return null
+		}
+
+		return value.(T)
+	}	
+}
+
+@•typealias('slice')
+type Slice<T> : Array {
+	constructor Empty() {
+		return Slice<T>(Array.new())
 	}
 
 	constructor overArray(arr Array) {
-		var s = Slice<T>.new()
-		s.items = arr
-		return s
+		return Slice<T>(arr)
 	}
 
 	operator<T> Index(index int) {
-		return this.items[Number(index)].(T)
+		return Array(this)[Number(index)].(T)
 	}
 
 	property<int> Length {
 		get {
-			return int(this.items.length)
+			return int(Array(this).length)
 		}
 	}
 }

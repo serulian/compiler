@@ -415,7 +415,7 @@ func (eg *expressionGenerator) generateNominalWrapping(nominalWrapping *codedom.
 		codedom.NominalWrapFunction,
 		[]codedom.Expression{
 			nominalWrapping.ChildExpression,
-			codedom.TypeLiteral(nominalWrapping.NominalType.GetTypeReference(), nominalWrapping.BasisNode())},
+			codedom.TypeLiteral(nominalWrapping.NominalTypeRef, nominalWrapping.BasisNode())},
 		nominalWrapping.BasisNode())
 	return eg.generateExpression(call)
 }
