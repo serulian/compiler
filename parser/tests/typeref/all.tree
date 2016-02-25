@@ -1,5 +1,5 @@
 NodeTypeFile
-  end-rune = 576
+  end-rune = 606
   input-source = all type reference test
   start-rune = 0
   child-node =>
@@ -722,3 +722,29 @@ NodeTypeFile
                       identifieraccess-name = SomeClass
                       input-source = all type reference test
                       start-rune = 558
+    NodeTypeVariable
+      end-rune = 606
+      input-source = all type reference test
+      named = mappingref
+      start-rune = 578
+      typemember-declared-type =>
+        NodeTypeMapping
+          end-rune = 594
+          input-source = all type reference test
+          start-rune = 582
+          typereference-inner-type =>
+            NodeTypeTypeReference
+              end-rune = 593
+              input-source = all type reference test
+              start-rune = 585
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 593
+                  input-source = all type reference test
+                  start-rune = 585
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 593
+                      identifieraccess-name = SomeClass
+                      input-source = all type reference test
+                      start-rune = 585
