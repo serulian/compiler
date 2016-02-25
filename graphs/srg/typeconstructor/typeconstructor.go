@@ -367,6 +367,14 @@ func (stc *srgTypeConstructor) BuildTypeRef(typeref srg.SRGTypeRef, tdg *typegra
 	case srg.TypeRefAny:
 		return tdg.AnyTypeReference(), nil
 
+	case srg.TypeRefMapping:
+		innerType, err := stc.BuildTypeRef(typeref.InnerReference(), tdg)
+		if err != nil {
+			return tdg.AnyTypeReference(), err
+		}
+
+		return tdg.NewTypeReference(tdg.MappingType(), innerType), nil
+
 	case srg.TypeRefSlice:
 		innerType, err := stc.BuildTypeRef(typeref.InnerReference(), tdg)
 		if err != nil {

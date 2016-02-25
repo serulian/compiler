@@ -29,6 +29,11 @@ class Tuple<T, Q> {
 	}
 }
 
+@•typealias('mapping')
+class Mapping<T> {
+
+}
+
 @•typealias('slice')
 class Slice<T> {
 	var<Array> items = Array.new()

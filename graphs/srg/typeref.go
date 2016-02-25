@@ -27,6 +27,7 @@ const (
 	TypeRefNullable                    // A nullable type.
 	TypeRefStream                      // A stream type.
 	TypeRefSlice                       // A slice type.
+	TypeRefMapping                     // A mapping type.
 	TypeRefPath                        // A normal path type. May have generics.
 	TypeRefVoid                        // A void type reference.
 	TypeRefAny                         // An any type reference.
@@ -190,6 +191,9 @@ func (t SRGTypeRef) RefKind() TypeRefKind {
 
 	case parser.NodeTypeSlice:
 		return TypeRefSlice
+
+	case parser.NodeTypeMapping:
+		return TypeRefMapping
 
 	case parser.NodeTypeNullable:
 		return TypeRefNullable
