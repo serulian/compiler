@@ -202,6 +202,7 @@ this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{
 // interfaceTemplateStr defines the template for generating an interface type.
 const interfaceTemplateStr = `
 this.$interface('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .Generics }}) {
+	var $static = this;
 	{{range $idx, $kv := .GenerateImplementedMembers.Iter }}
   	  {{ $kv.Value }}
   	{{end}}

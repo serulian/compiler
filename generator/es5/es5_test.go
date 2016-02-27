@@ -81,6 +81,7 @@ var tests = []generationTest{
 	generationTest{"class property test", "class", "property", true},
 	generationTest{"class inheritance test", "class", "inheritance", true},
 	generationTest{"class required fields test", "class", "requiredfields", true},
+	generationTest{"constructable interface test", "interface", "constructable", true},
 
 	generationTest{"conditional statement", "statements", "conditional", true},
 	generationTest{"conditional else statement", "statements", "conditionalelse", true},
