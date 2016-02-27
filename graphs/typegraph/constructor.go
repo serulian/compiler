@@ -268,8 +268,9 @@ type genericBuilder struct {
 	index           int                               // The 0-based index of the generic under the type or member.
 	parentPredicate string                            // The predicate for connecting the type or member to the generic.
 
-	name       string                  // The name of the generic.
-	sourceNode compilergraph.GraphNode // The node for the generic in the source graph.
+	name          string                  // The name of the generic.
+	sourceNode    compilergraph.GraphNode // The node for the generic in the source graph.
+	hasSourceNode bool                    // Whether this generic has a source node.
 }
 
 // Name sets the name of the generic.
@@ -281,6 +282,7 @@ func (gb *genericBuilder) Name(name string) *genericBuilder {
 // SourceNode sets the source node for the generic in the source graph.
 func (gb *genericBuilder) SourceNode(sourceNode compilergraph.GraphNode) *genericBuilder {
 	gb.sourceNode = sourceNode
+	gb.hasSourceNode = true
 	return gb
 }
 
@@ -303,7 +305,10 @@ func (gb *genericBuilder) defineGeneric() TGGeneric {
 	genericNode.Decorate(NodePredicateGenericName, gb.name)
 	genericNode.Decorate(NodePredicateGenericIndex, strconv.Itoa(gb.index))
 	genericNode.Decorate(NodePredicateGenericKind, strconv.Itoa(int(gb.genericKind)))
-	genericNode.Connect(NodePredicateSource, gb.sourceNode)
+
+	if gb.hasSourceNode {
+		genericNode.Connect(NodePredicateSource, gb.sourceNode)
+	}
 
 	// Add the generic to the parent node.
 	gb.parentNode.Connect(gb.parentPredicate, genericNode)
@@ -327,8 +332,9 @@ type MemberBuilder struct {
 
 // memberGeneric holds information about a member's generic.
 type memberGeneric struct {
-	name       string
-	sourceNode compilergraph.GraphNode
+	name          string
+	sourceNode    compilergraph.GraphNode
+	hasSourceNode bool
 }
 
 // Name sets the name of the member.
@@ -347,7 +353,16 @@ func (mb *MemberBuilder) SourceNode(sourceNode compilergraph.GraphNode) *MemberB
 // WithGeneric adds a generic to this member.
 func (mb *MemberBuilder) WithGeneric(name string, sourceNode compilergraph.GraphNode) *MemberBuilder {
 	mb.memberGenerics = append(mb.memberGenerics, memberGeneric{
-		name, sourceNode,
+		name, sourceNode, true,
+	})
+
+	return mb
+}
+
+// withGeneric adds a generic to this member.
+func (mb *MemberBuilder) withGeneric(name string) *MemberBuilder {
+	mb.memberGenerics = append(mb.memberGenerics, memberGeneric{
+		name, compilergraph.GraphNode{}, false,
 	})
 
 	return mb
@@ -389,7 +404,10 @@ func (mb *MemberBuilder) Define() TGMember {
 			parentPredicate: NodePredicateMemberGeneric,
 		}
 
-		genericBuilder.Name(genericInfo.name).SourceNode(genericInfo.sourceNode)
+		genericBuilder.Name(genericInfo.name)
+		if genericInfo.hasSourceNode {
+			genericBuilder.SourceNode(genericInfo.sourceNode)
+		}
 		genericBuilder.defineGeneric()
 	}
 
@@ -554,6 +572,11 @@ func (mb *MemberDecorator) CreateReturnable(sourceNode compilergraph.GraphNode, 
 // DefineGenericConstraint defines the constraint on the type member generic to be that specified.
 func (mb *MemberDecorator) DefineGenericConstraint(genericSourceNode compilergraph.GraphNode, constraint TypeReference) {
 	genericNode := mb.tdg.getMatchingTypeGraphNode(genericSourceNode, NodeTypeGeneric)
+	mb.defineGenericConstraint(genericNode, constraint)
+}
+
+// defineGenericConstraint defines the constraint on the type member generic to be that specified.
+func (mb *MemberDecorator) defineGenericConstraint(genericNode compilergraph.GraphNode, constraint TypeReference) {
 	mb.genericConstraints[genericNode] = constraint
 	mb.modifier.Modify(genericNode).DecorateWithTagged(NodePredicateGenericSubtype, constraint)
 }

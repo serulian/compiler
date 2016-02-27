@@ -50,34 +50,49 @@ func (g *TypeGraph) defineAllImplicitMembers() {
 	}
 }
 
+type decorateHandler func(decorator *MemberDecorator, generics map[string]TGGeneric)
+
+func (g *TypeGraph) defineMember(typeDecl TGTypeDecl, name string, generics []string, handler decorateHandler) {
+	modifier := g.layer.NewModifier()
+	builder := &MemberBuilder{tdg: g, modifier: modifier, parent: typeDecl}
+	for _, generic := range generics {
+		builder.withGeneric(generic)
+	}
+
+	member := builder.Name(name).Define()
+	modifier.Apply()
+
+	genericMap := map[string]TGGeneric{}
+	memberGenerics := member.Generics()
+	for index, generic := range generics {
+		genericMap[generic] = memberGenerics[index]
+	}
+
+	dmodifier := g.layer.NewModifier()
+	decorator := &MemberDecorator{tdg: g, modifier: dmodifier, member: member}
+	handler(decorator, genericMap)
+	dmodifier.Apply()
+}
+
 // defineImplicitMembers defines the implicit members (new() constructor, etc) on a type.
 func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 	// Constructable types have an implicit "new" constructor.
 	if typeDecl.isConstructable() {
 		// The new constructor returns an instance of the type.
 		var memberType = g.FunctionTypeReference(g.NewInstanceTypeReference(typeDecl))
-
-		// The new constructor must take the types of all required members.
 		for _, requiredMember := range typeDecl.RequiredFields() {
 			memberType = memberType.WithParameter(requiredMember.AssignableType())
 		}
 
-		modifier := g.layer.NewModifier()
-		builder := &MemberBuilder{tdg: g, modifier: modifier, parent: typeDecl}
-		member := builder.Name("new").Define()
-		modifier.Apply()
-
-		dmodifier := g.layer.NewModifier()
-		decorator := &MemberDecorator{tdg: g, modifier: dmodifier, member: member}
-		decorator.
-			Static(true).
-			Promising(true).
-			Exported(false).
-			ReadOnly(true).
-			MemberType(memberType).
-			MemberKind(0).
-			Decorate()
-		dmodifier.Apply()
+		g.defineMember(typeDecl, "new", []string{}, func(decorator *MemberDecorator, generics map[string]TGGeneric) {
+			decorator.Static(true).
+				Promising(true).
+				Exported(false).
+				ReadOnly(true).
+				MemberType(memberType).
+				MemberKind(0).
+				Decorate()
+		})
 	}
 }
 
