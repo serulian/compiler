@@ -182,10 +182,10 @@
                     }
                 }
             },
-            "8ecbe16a095a2723fbbb0aa12bb60a8b": {
+            "b441d4a176f37f6fda72fe773059164a": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "8ecbe16a095a2723fbbb0aa12bb60a8b",
+                    "Key": "b441d4a176f37f6fda72fe773059164a",
                     "Kind": 7,
                     "Children": {
                         "1c15e48cf70dcd6059de49d067123837": {
@@ -224,7 +224,7 @@
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "Function\u003cSomeClass\u003e(C)",
-                        "tdg-member-signature": "\n\u0007buildme\u0010\u0000\u0018\u0000 \u0001*9Function\u003cSomeClass\u003e(local:1:0                           )2\u0003any",
+                        "tdg-member-signature": "\n\u0007buildme\u0010\u0000\u0018\u0000 \u0001*3Function\u003cany\u003e(local:1:0                           )2\u0003any",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/members/class.seru",

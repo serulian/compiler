@@ -380,9 +380,18 @@ func (t *testTypeGraphConstructor) DecorateMembers(decorator GetMemberDecorator,
 				}
 			}
 
+			var signatureType = memberType
+			if memberInfo.kind == "constructor" {
+				signatureType = graph.FunctionTypeReference(graph.AnyTypeReference())
+				for _, paramInfo := range memberInfo.parameters {
+					signatureType = signatureType.WithParameter(parseTypeReferenceForTesting(paramInfo.paramType, graph, memberNode, typeNode))
+				}
+			}
+
 			builder.Exported(isExportedName(memberInfo.name)).
 				ReadOnly(false).
 				MemberType(memberType).
+				SignatureType(signatureType).
 				MemberKind(uint64(len(memberInfo.kind))).
 				Decorate()
 		}

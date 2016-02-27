@@ -755,6 +755,12 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"Cannot use type SomeClass as generic T (#1) over struct SomeStruct: SomeClass is not structural nor serializable", ""},
 
+	/////////// constructable interface ///////////
+
+	scopegraphTest{"constructable interface test", "types", "constructableinterface",
+		[]expectedScopeEntry{},
+		"", ""},
+
 	/////////// class field ///////////
 
 	scopegraphTest{"class field uninitialized test", "var", "uninitializedfield",

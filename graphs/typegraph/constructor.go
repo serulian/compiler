@@ -429,7 +429,11 @@ type MemberDecorator struct {
 	skipOperatorChecking bool // Whether to skip operator checking.
 
 	memberType TypeReference // The defined type of the member.
-	memberKind uint64        // The kind of the member.
+
+	signatureType    TypeReference // The defined signature type.
+	hasSignatureType bool          // Whether there is a custom signature type.
+
+	memberKind uint64 // The kind of the member.
 
 	genericConstraints map[compilergraph.GraphNode]TypeReference // The defined generic constraints.
 	memberIssues       []string                                  // Issues added on the member source node.
@@ -513,9 +517,22 @@ func (mb *MemberDecorator) Promising(promising bool) *MemberDecorator {
 	return mb
 }
 
-// MemberType sets the type of the member.
+// MemberType sets the type of the member, as well as the signature type. Call SignatureType
+// to override.
 func (mb *MemberDecorator) MemberType(memberType TypeReference) *MemberDecorator {
 	mb.memberType = memberType
+
+	if !mb.hasSignatureType {
+		mb.signatureType = memberType
+	}
+
+	return mb
+}
+
+// SignatureType sets the type of the member for interface signature calculation.
+func (mb *MemberDecorator) SignatureType(signatureType TypeReference) *MemberDecorator {
+	mb.signatureType = signatureType
+	mb.hasSignatureType = true
 	return mb
 }
 
@@ -553,7 +570,7 @@ func (mb *MemberDecorator) Decorate() {
 		memberNode.DecorateWithTagged(NodePredicateMemberType, mb.memberType)
 
 		// Decorate the member with its signature.
-		mb.decorateWithSig(mb.memberType, mb.member.Generics()...)
+		mb.decorateWithSig(mb.signatureType, mb.member.Generics()...)
 	}
 
 	if mb.promising {
