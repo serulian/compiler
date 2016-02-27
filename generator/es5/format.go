@@ -247,7 +247,7 @@ func (sf *sourceFormatter) FormatExpression(expression ast.Expression) {
 			sf.append(e.Operator.String())
 			sf.appendOptionalCloseParen(e.Operand)
 		} else {
-			if e.Operator.String() == "delete" {
+			if e.Operator.String() == "delete" || e.Operator.String() == "typeof" {
 				sf.append(e.Operator.String())
 				sf.append(" ")
 				sf.FormatExpression(e.Operand)

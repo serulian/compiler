@@ -84,6 +84,16 @@ func (gt generatingType) Fields() []typegraph.TGMember {
 	return gt.Type.Fields()
 }
 
+// Alias returns the alias for this type, if any.
+func (gt generatingType) Alias() string {
+	alias, hasAlias := gt.Type.Alias()
+	if !hasAlias {
+		return ""
+	}
+
+	return alias
+}
+
 // TypeReferenceCall returns the expression for calling a type ref.
 func (gt generatingType) TypeReferenceCall(typeref typegraph.TypeReference) string {
 	return gt.Generator.pather.TypeReferenceCall(typeref)
@@ -121,7 +131,7 @@ const genericsTemplateStr = `{{ range $index, $generic := .Generics }}{{ if $ind
 
 // classTemplateStr defines the template for generating a class type.
 const classTemplateStr = `
-this.$class('{{ .Type.Name }}', {{ .HasGenerics }}, function({{ .Generics }}) {
+this.$class('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .Generics }}) {
 	var $static = this;
     var $instance = this.prototype;
 
@@ -152,7 +162,7 @@ this.$class('{{ .Type.Name }}', {{ .HasGenerics }}, function({{ .Generics }}) {
 
 // structTemplateStr defines the template for generating a struct type.
 const structTemplateStr = `
-this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, function({{ .Generics }}) {
+this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .Generics }}) {
 	var $static = this;
 	var $instance = this.prototype;
 
@@ -191,7 +201,7 @@ this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, function({{ .Generics }}) {
 
 // interfaceTemplateStr defines the template for generating an interface type.
 const interfaceTemplateStr = `
-this.$interface('{{ .Type.Name }}', {{ .HasGenerics }}, function({{ .Generics }}) {
+this.$interface('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .Generics }}) {
 	{{range $idx, $kv := .GenerateImplementedMembers.Iter }}
   	  {{ $kv.Value }}
   	{{end}}
@@ -200,7 +210,7 @@ this.$interface('{{ .Type.Name }}', {{ .HasGenerics }}, function({{ .Generics }}
 
 // nominalTemplateStr defines the template for generating a nominal type.
 const nominalTemplateStr = `
-this.$type('{{ .Type.Name }}', {{ .HasGenerics }}, function({{ .Generics }}) {
+this.$type('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .Generics }}) {
 	var $instance = this.prototype;
 	var $static = this;
 
