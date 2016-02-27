@@ -19,6 +19,12 @@ window.Serulian = (function($global) {
 
       var typeName = $t.toType(v);
       switch (typeName) {
+        case 'object':
+          if (k != '') {
+            return $t.nominalwrap(v, $a.mapping($t.any));
+          }
+          break;
+
         case 'array':
           return $t.nominalwrap(v, $a.slice($t.any));
 
