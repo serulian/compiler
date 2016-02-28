@@ -2378,7 +2378,7 @@ func (p *sourceParser) lookaheadGenericSpecifier(t *lookaheadTracker) bool {
 func (p *sourceParser) lookaheadTypeReference(t *lookaheadTracker) bool {
 	for {
 		// Type name or path.
-		if _, ok := t.matchToken(tokenTypeIdentifer); !ok {
+		if _, ok := t.matchToken(tokenTypeIdentifer, tokenTypeKeyword); !ok {
 			return false
 		}
 

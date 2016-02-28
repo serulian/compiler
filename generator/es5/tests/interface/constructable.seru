@@ -1,0 +1,26 @@
+
+class SomeClass {
+	constructor Get() {
+		return SomeClass.new()
+	}
+
+	property<bool> SomeBool {
+		get { return true }
+	}
+}
+
+interface SomeInterface {
+	constructor Get() {
+		return SomeClass.new()
+	}
+
+	property<bool> SomeBool { get }
+}
+
+function<SomeInterface> DoSomething<T : SomeInterface>() {
+	return T.Get()
+}
+
+function<any> TEST() {
+	return DoSomething<SomeInterface>().SomeBool	
+}

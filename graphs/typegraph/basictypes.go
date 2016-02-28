@@ -162,6 +162,21 @@ func (t *TypeGraph) ErrorType() TGTypeDecl {
 	return t.getAliasedType("error")
 }
 
+// SerializationJSONType returns the $json type.
+func (t *TypeGraph) SerializationJSONType() TGTypeDecl {
+	return t.getAliasedType("$json")
+}
+
+// SerializationParserType returns the $parser type.
+func (t *TypeGraph) SerializationParserType() TGTypeDecl {
+	return t.getAliasedType("$parser")
+}
+
+// SerializationStringifierType returns the $stringifier type.
+func (t *TypeGraph) SerializationStringifier() TGTypeDecl {
+	return t.getAliasedType("$stringifier")
+}
+
 // getAliasedType returns the type defined for the given alias.
 func (t *TypeGraph) getAliasedType(alias string) TGTypeDecl {
 	typeDecl, found := t.LookupAliasedType(alias)

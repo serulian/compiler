@@ -689,6 +689,24 @@ func TestSubtypes(t *testing.T) {
 					testMember{"field", "SomeField", "int", []testGeneric{}, []testParam{}},
 				},
 			},
+
+			// interface Constructable {
+			//	  constructor BuildMe()
+			// }
+			testType{"interface", "Constructable", "", []testGeneric{},
+				[]testMember{
+					testMember{"constructor", "BuildMe", "Constructable", []testGeneric{}, []testParam{}},
+				},
+			},
+
+			// class ConstructableClass {
+			//	  constructor BuildMe()
+			// }
+			testType{"class", "ConstructableClass", "", []testGeneric{},
+				[]testMember{
+					testMember{"constructor", "BuildMe", "ConstructableClass", []testGeneric{}, []testParam{}},
+				},
+			},
 		},
 	)
 
@@ -812,6 +830,10 @@ func TestSubtypes(t *testing.T) {
 		// S of ConstrainedGeneric is not a subtype of R
 		subtypeCheckTest{"S not subtype of R", "ConstrainedGeneric::S", "ConstrainedGeneric::R",
 			"Cannot use type 'S' in place of type 'R'"},
+
+		// ConstructableClass is a subtype of Constructable
+		subtypeCheckTest{"ConstructableClass subtype of Constructable", "ConstructableClass", "Constructable",
+			""},
 	}
 
 	for _, test := range tests {

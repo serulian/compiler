@@ -247,6 +247,12 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 		// Decorate the constructor with its return type.
 		decorator.CreateReturnable(member.Node(), returnType)
 
+		// Constructors have custom signature types that return 'any' to allow them to match
+		// interfaces.
+		var signatureType = graph.FunctionTypeReference(graph.AnyTypeReference())
+		signatureType, _ = stc.addSRGParameterTypes(member, signatureType, graph, reporter)
+		decorator.SignatureType(signatureType)
+
 	case srg.OperatorMember:
 		// Operators are read-only.
 		isReadOnly = true

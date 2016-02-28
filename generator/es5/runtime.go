@@ -5,13 +5,55 @@
 package es5
 
 // Note: nativenew is based on http://www.bennadel.com/blog/2291-invoking-a-native-javascript-constructor-using-call-or-apply.htm
+// Note: toType is based on https://javascriptweblog.wordpress.com/2011/08/08/fixing-the-javascript-typeof-operator/
 
 // runtimeTemplate contains all the necessary code for wrapping generated modules into a complete Serulian
 // runtime bundle.
 const runtimeTemplate = `
 window.Serulian = (function($global) {
+  $global.__serulian_internal = {
+    'autoNominalWrap': function(k, v) {
+      if (v == null) {
+        return v;
+      }
+
+      var typeName = $t.toType(v);
+      switch (typeName) {
+        case 'object':
+          if (k != '') {
+            return $t.nominalwrap(v, $a.mapping($t.any));
+          }
+          break;
+
+        case 'array':
+          return $t.nominalwrap(v, $a.slice($t.any));
+
+        case 'boolean':
+          return $t.nominalwrap(v, $a.bool);
+
+        case 'string':
+          return $t.nominalwrap(v, $a.string);
+
+        case 'number':
+          if (Math.ceil(v) == v) {
+            return $t.nominalwrap(v, $a.int);
+          }
+
+          return $t.nominalwrap(v, $a.float64);
+      }
+
+      return v;
+    }
+  };
+
   var $g = {};
+  var $a = {};
+
   var $t = {
+    'toType': function(obj) {
+      return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()
+    },
+
     'any': new Function("return function any() {};")(),
 
     'cast': function(value, type) {
@@ -199,7 +241,58 @@ window.Serulian = (function($global) {
   	};
 
     module.$newtypebuilder = function(kind) {
-      return function(name, hasGenerics, creator) {
+      return function(name, hasGenerics, alias, creator) {
+        var buildType = function(n) {
+          var tpe = new Function("return function " + n + "() {};")();
+          creator.apply(tpe, arguments);
+
+          if (kind == 'type') {
+            tpe.prototype.toJSON = function() {
+              return $t.nominalunwrap(this);
+            };
+          } else if (kind == 'struct') {
+            // Stringify.
+            tpe.prototype.Stringify = function(T) {
+              var $this = this;
+              return function() {
+                // Special case JSON, as it uses an internal method.
+                if (T == $a['$json']) {
+                  return $promise.resolve(JSON.stringify($this.data));
+                }
+
+                return T.Get().then(function(resolved) {
+                  return resolved.Stringify($t.any)($this.data);
+                });
+              };
+            };
+
+            // Parse.
+            tpe.Parse = function(T) {
+              return function(value) {
+                // TODO: Validate the struct.
+
+                // Special case JSON for performance, as it uses an internal method.
+                if (T == $a['$json']) {
+                  var created = new tpe();
+                  created.data = JSON.parse($t.nominalunwrap(value));
+                  return $promise.resolve(created);
+                }
+
+                return T.Get().then(function(resolved) {
+                  return (resolved.Parse($t.any)(value)).then(function(parsed) {
+                    var created = new tpe();
+                    // TODO: *efficiently* unwrap internal nominal types.
+                    created.data = JSON.parse(JSON.stringify($t.nominalunwrap(parsed)));
+                    return $promise.resolve(created);
+                  });
+                });
+              };
+            };
+          }
+
+          return tpe;
+        };
+
         if (hasGenerics) {
           module[name] = function(__genericargs) {
             var fullName = name;
@@ -207,14 +300,14 @@ window.Serulian = (function($global) {
               fullName = fullName + '_' + arguments[i].name;
             }
 
-            var tpe = new Function("return function " + fullName + "() {};")();
-            creator.apply(tpe, arguments);
-            return tpe;
+            return buildType(fullName);
           };
         } else {
-          var tpe = new Function("return function " + name + "() {};")();
-          creator.call(tpe);
-          module[name] = tpe;
+          module[name] = buildType(name);
+        }
+
+        if (alias) {
+          $a[alias] = module[name];
         }
       };
     };

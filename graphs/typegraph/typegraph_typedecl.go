@@ -95,6 +95,11 @@ func (tn TGTypeDecl) Title() string {
 	}
 }
 
+// Alias returns the alias for this type, if any.
+func (tn TGTypeDecl) Alias() (string, bool) {
+	return tn.TryGet(NodePredicateTypeAlias)
+}
+
 // Node returns the underlying node in this declaration.
 func (tn TGTypeDecl) Node() compilergraph.GraphNode {
 	return tn.GraphNode

@@ -755,6 +755,18 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"Cannot use type SomeClass as generic T (#1) over struct SomeStruct: SomeClass is not structural nor serializable", ""},
 
+	/////////// constructable types ///////////
+
+	scopegraphTest{"constructable interface test", "types", "constructableinterface",
+		[]expectedScopeEntry{},
+		"", ""},
+
+	scopegraphTest{"constructable generic test", "types", "constructablegeneric",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"get", expectedScope{true, proto.ScopeKind_VALUE, "SomeInterface", "void"}},
+		},
+		"", ""},
+
 	/////////// class field ///////////
 
 	scopegraphTest{"class field uninitialized test", "var", "uninitializedfield",
