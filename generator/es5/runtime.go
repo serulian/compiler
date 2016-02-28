@@ -250,6 +250,44 @@ window.Serulian = (function($global) {
             tpe.prototype.toJSON = function() {
               return $t.nominalunwrap(this);
             };
+          } else if (kind == 'struct') {
+            // Stringify.
+            tpe.prototype.Stringify = function(T) {
+              var $this = this;
+              return function() {
+                // Special case JSON, as it uses an internal method.
+                if (T == $a['$json']) {
+                  return $promise.resolve(JSON.stringify($this.data));
+                }
+
+                return T.Get().then(function(resolved) {
+                  return resolved.Stringify($t.any)($this.data);
+                });
+              };
+            };
+
+            // Parse.
+            tpe.Parse = function(T) {
+              return function(value) {
+                // TODO: Validate the struct.
+
+                // Special case JSON for performance, as it uses an internal method.
+                if (T == $a['$json']) {
+                  var created = new tpe();
+                  created.data = JSON.parse($t.nominalunwrap(value));
+                  return $promise.resolve(created);
+                }
+
+                return T.Get().then(function(resolved) {
+                  return (resolved.Parse($t.any)(value)).then(function(parsed) {
+                    var created = new tpe();
+                    // TODO: *efficiently* unwrap internal nominal types.
+                    created.data = JSON.parse(JSON.stringify($t.nominalunwrap(parsed)));
+                    return $promise.resolve(created);
+                  });
+                });
+              };
+            };
           }
 
           return tpe;

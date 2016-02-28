@@ -49,6 +49,40 @@
         "Key": "7433c2ff9ac253e0b98f7a4aba36c016",
         "Kind": 5,
         "Children": {
+            "33a54927def836504ad3cdd2416ec1c4": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "33a54927def836504ad3cdd2416ec1c4",
+                    "Kind": 7,
+                    "Children": {
+                        "8de21382411d1095d019cbeb1b3b53b5": {
+                            "Predicate": "tdg-member-generic",
+                            "Child": {
+                                "Key": "8de21382411d1095d019cbeb1b3b53b5",
+                                "Kind": 10,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-generic-index": "0",
+                                    "tdg-generic-kind": "1",
+                                    "tdg-generic-name": "T",
+                                    "tdg-generic-subtype": "Stringifier",
+                                    "tdg-node-kind": "10|NodeType|tdg"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "Stringify",
+                        "tdg-member-promising": "true",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "Function\u003cString\u003e",
+                        "tdg-member-signature": "\n\tstringify\u0010\u0001\u0018\u0000 \u0001*\u0010Function\u003cString\u003e2\u000bStringifier",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/struct/success.seru"
+                    }
+                }
+            },
             "4f08a8df54f77d625cc930a9f123c5a7": {
                 "Predicate": "tdg-declaration-generic",
                 "Child": {
@@ -62,6 +96,41 @@
                         "tdg-generic-subtype": "any",
                         "tdg-node-kind": "10|NodeType|tdg",
                         "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "96fd6a8e3a2a7f88c5dfa771a7b4181f": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "96fd6a8e3a2a7f88c5dfa771a7b4181f",
+                    "Kind": 7,
+                    "Children": {
+                        "0c69ebd9fc86fcc78059552f4de874f8": {
+                            "Predicate": "tdg-member-generic",
+                            "Child": {
+                                "Key": "0c69ebd9fc86fcc78059552f4de874f8",
+                                "Kind": 10,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-generic-index": "0",
+                                    "tdg-generic-kind": "1",
+                                    "tdg-generic-name": "T",
+                                    "tdg-generic-subtype": "Parser",
+                                    "tdg-node-kind": "10|NodeType|tdg"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "Parse",
+                        "tdg-member-promising": "true",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "Function\u003cSomeStruct\u003cT\u003e\u003e(String)",
+                        "tdg-member-signature": "\n\u0005parse\u0010\u0000\u0018\u0000 \u0001*\u001fFunction\u003cSomeStruct\u003cT\u003e\u003e(String)2\u0006Parser",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/struct/success.seru"
                     }
                 }
             },

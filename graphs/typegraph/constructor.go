@@ -296,7 +296,7 @@ func (gb *genericBuilder) defineGeneric() TGGeneric {
 		panic("Missing name on defined generic")
 	}
 
-	if string(gb.sourceNode.NodeId) == "" {
+	if gb.hasSourceNode && string(gb.sourceNode.NodeId) == "" {
 		panic(fmt.Sprintf("Missing source node on defined generic %v", gb.name))
 	}
 
@@ -576,9 +576,10 @@ func (mb *MemberDecorator) DefineGenericConstraint(genericSourceNode compilergra
 }
 
 // defineGenericConstraint defines the constraint on the type member generic to be that specified.
-func (mb *MemberDecorator) defineGenericConstraint(genericNode compilergraph.GraphNode, constraint TypeReference) {
+func (mb *MemberDecorator) defineGenericConstraint(genericNode compilergraph.GraphNode, constraint TypeReference) *MemberDecorator {
 	mb.genericConstraints[genericNode] = constraint
 	mb.modifier.Modify(genericNode).DecorateWithTagged(NodePredicateGenericSubtype, constraint)
+	return mb
 }
 
 // Decorate completes the decoration of the member.

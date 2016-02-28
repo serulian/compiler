@@ -263,3 +263,36 @@ class Map<T : Mappable, Q> {
 		this.internalObject[NativeString(keyString)] = value
 	}
 }
+
+@•typealias('$json')
+class JSON {
+	constructor Get() {
+		return JSON.new()
+	}
+
+	function<string> Stringify<T>(value mapping<T>) {
+		return ''
+	}
+
+	function<mapping<T>> Parse<T>(value string) {
+		return mapping<T>.Empty()
+	}
+}
+
+@•typealias('$stringifier')
+interface Stringifier {
+	constructor Get() {
+		return JSON.new()
+	}
+
+	function<string> Stringify<T>(value mapping<T>)
+}
+
+@•typealias('$parser')
+interface Parser {
+	constructor Get() {
+		return JSON.new()
+	}
+
+	function<mapping<T>> Parse<T>(value string)
+}

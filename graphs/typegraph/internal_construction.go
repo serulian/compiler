@@ -69,7 +69,7 @@ func (g *TypeGraph) defineMember(typeDecl TGTypeDecl, name string, generics []st
 	}
 
 	dmodifier := g.layer.NewModifier()
-	decorator := &MemberDecorator{tdg: g, modifier: dmodifier, member: member}
+	decorator := &MemberDecorator{tdg: g, modifier: dmodifier, member: member, genericConstraints: map[compilergraph.GraphNode]TypeReference{}}
 	handler(decorator, genericMap)
 	dmodifier.Apply()
 }
@@ -78,19 +78,52 @@ func (g *TypeGraph) defineMember(typeDecl TGTypeDecl, name string, generics []st
 func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 	// Constructable types have an implicit "new" constructor.
 	if typeDecl.isConstructable() {
-		// The new constructor returns an instance of the type.
-		var memberType = g.FunctionTypeReference(g.NewInstanceTypeReference(typeDecl))
-		for _, requiredMember := range typeDecl.RequiredFields() {
-			memberType = memberType.WithParameter(requiredMember.AssignableType())
-		}
-
 		g.defineMember(typeDecl, "new", []string{}, func(decorator *MemberDecorator, generics map[string]TGGeneric) {
+			// The new constructor returns an instance of the type.
+			var memberType = g.FunctionTypeReference(g.NewInstanceTypeReference(typeDecl))
+			for _, requiredMember := range typeDecl.RequiredFields() {
+				memberType = memberType.WithParameter(requiredMember.AssignableType())
+			}
+
 			decorator.Static(true).
 				Promising(true).
 				Exported(false).
 				ReadOnly(true).
 				MemberType(memberType).
 				MemberKind(0).
+				Decorate()
+		})
+	}
+
+	// Structs define Parse and Stringify methods.
+	if typeDecl.TypeKind() == StructType {
+		// constructor Parse<T : $parser>(value string)
+		g.defineMember(typeDecl, "Parse", []string{"T"}, func(decorator *MemberDecorator, generics map[string]TGGeneric) {
+			var memberType = g.FunctionTypeReference(g.NewInstanceTypeReference(typeDecl))
+			memberType = memberType.WithParameter(g.StringTypeReference())
+
+			decorator.
+				defineGenericConstraint(generics["T"].GraphNode, g.SerializationParserType().GetTypeReference()).
+				Static(true).
+				Promising(true).
+				Exported(true).
+				ReadOnly(true).
+				MemberType(memberType).
+				MemberKind(0).
+				Decorate()
+		})
+
+		// function<string> Stringify<T : $stringifier>()
+		g.defineMember(typeDecl, "Stringify", []string{"T"}, func(decorator *MemberDecorator, generics map[string]TGGeneric) {
+			var memberType = g.FunctionTypeReference(g.StringTypeReference())
+			decorator.
+				defineGenericConstraint(generics["T"].GraphNode, g.SerializationStringifier().GetTypeReference()).
+				Static(false).
+				Promising(true).
+				Exported(true).
+				ReadOnly(true).
+				MemberType(memberType).
+				MemberKind(1).
 				Decorate()
 		})
 	}
