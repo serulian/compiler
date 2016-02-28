@@ -10,7 +10,7 @@ package es5
 // runtimeTemplate contains all the necessary code for wrapping generated modules into a complete Serulian
 // runtime bundle.
 const runtimeTemplate = `
-window.Serulian = (function($global) {
+this.Serulian = (function($global) {
   $global.__serulian_internal = {
     'autoNominalWrap': function(k, v) {
       if (v == null) {
@@ -327,5 +327,5 @@ window.Serulian = (function($global) {
   return $promise.all(moduleInits).then(function() {
   	return $g;
   });
-})(window)
+})(this)
 `
