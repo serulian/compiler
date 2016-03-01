@@ -249,6 +249,10 @@ func (tr TypeReference) checkNominalParent(other TypeReference) bool {
 // 4) The type is a nominal type around #1, #2 or #3 AND
 // 5) All subreferences (generics and parameters) must meet the above rules.
 func (tr TypeReference) EnsureStructural() error {
+	if tr.IsVoid() {
+		return nil
+	}
+
 	if !tr.isNormal() {
 		return fmt.Errorf("Type %v is not guarenteed to be structural", tr)
 	}

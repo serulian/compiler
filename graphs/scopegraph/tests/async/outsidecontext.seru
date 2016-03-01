@@ -1,0 +1,5 @@
+var outside = 2
+
+function<void> DoSomethingAsync() {
+	outside	
+}

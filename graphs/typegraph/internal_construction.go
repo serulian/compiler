@@ -12,6 +12,7 @@ import (
 // globallyValidate validates the typegraph for global constraints (i.e. those shared by all
 // types constructed, regardless of source)
 func (g *TypeGraph) globallyValidate() bool {
+	// TODO(jschorr): Make concurrent for better performance.
 	var status = true
 
 	// Ensure structures do not reference non-struct, non-serializable types.
@@ -19,6 +20,48 @@ func (g *TypeGraph) globallyValidate() bool {
 		if !g.checkStructuralType(typeDecl) {
 			status = false
 		}
+	}
+
+	// Ensure that async functions are under modules and have fully structural types.
+	modifier := g.layer.NewModifier()
+	for _, member := range g.AsyncMembers() {
+		if !member.IsStatic() || member.Parent().IsType() {
+			status = false
+			g.decorateWithError(
+				modifier.Modify(member.GraphNode),
+				"Asynchronous functions must be declared under modules: '%v' defined under %v %v",
+				member.Name(), member.Parent().Title(), member.Parent().Name())
+		}
+
+		// Ensure the member's type is fully structural.
+		memberType := member.MemberType()
+		if !memberType.IsDirectReferenceTo(g.FunctionType()) {
+			panic("Async marked non-function")
+		}
+
+		// Check the function's return type.
+		if serr := memberType.Generics()[0].EnsureStructural(); serr != nil {
+			status = false
+			g.decorateWithError(
+				modifier.Modify(member.GraphNode),
+				"Asynchronous function %v must return a structural type: %v",
+				member.Name(), serr)
+		}
+
+		// Check the function's paramters.
+		for _, parameterType := range memberType.Parameters() {
+			if serr := parameterType.EnsureStructural(); serr != nil {
+				status = false
+				g.decorateWithError(
+					modifier.Modify(member.GraphNode),
+					"Parameters of asynchronous function %v must be structural: %v",
+					member.Name(), serr)
+			}
+		}
+	}
+
+	if !status {
+		modifier.Apply()
 	}
 
 	return status

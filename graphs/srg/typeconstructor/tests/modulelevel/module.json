@@ -3,6 +3,41 @@
         "Key": "17ee1bc13f69d7543aa89579358f3fbb",
         "Kind": 6,
         "Children": {
+            "432e3a22c5cfb1efdceae10189bffb14": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "432e3a22c5cfb1efdceae10189bffb14",
+                    "Kind": 7,
+                    "Children": {
+                        "a624ac45fee266d9a6a9fed5d9beb10f": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "a624ac45fee266d9a6a9fed5d9beb10f",
+                                "Kind": 9,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "9|NodeType|tdg",
+                                    "tdg-return-type": "void",
+                                    "tdg-source-node": "(NodeRef)"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-invokes-async": "true",
+                        "tdg-member-name": "DoSomethingAsync",
+                        "tdg-member-promising": "true",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "Function\u003cvoid\u003e",
+                        "tdg-member-signature": "\n\u0010dosomethingasync\u0010\u0002\u0018\u0000 \u0001*\u000eFunction\u003cvoid\u003e",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/modulelevel/module.seru",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
             "8452e8c79e3600a74c308d36820a58ad": {
                 "Predicate": "tdg-node-member",
                 "Child": {

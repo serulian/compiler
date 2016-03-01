@@ -277,6 +277,15 @@ func (nsi *namedScopeInfo) IsStatic() bool {
 	}
 }
 
+// UnderModule returns whether the named scope is defined under a module.
+func (nsi *namedScopeInfo) UnderModule() bool {
+	if nsi.typeInfo != nil {
+		return !nsi.typeInfo.Parent().IsType()
+	} else {
+		return false
+	}
+}
+
 // Generics returns the generics defined on the named scope, if any.
 func (nsi *namedScopeInfo) Generics() []typegraph.TGGeneric {
 	if !nsi.IsGeneric() {

@@ -161,6 +161,9 @@ const (
 	// properties that are backed by functions.
 	NodePredicateMemberImplicitlyCalled = "member-implicitly-called"
 
+	// Decorates a member as being executed under an asynchronously invoked worker.
+	NodePredicateMemberInvokesAsync = "member-invokes-async"
+
 	//
 	// NodeTypeOperator
 	//

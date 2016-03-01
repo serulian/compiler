@@ -300,6 +300,9 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 	// Decorate the member with whether it is exported.
 	decorator.Exported(member.IsExported())
 
+	// Decorate the member with whether it is an async function.
+	decorator.InvokesAsync(member.IsAsyncFunction())
+
 	// If the member is under a module, then it is static.
 	decorator.Static(isStatic || !parent.IsType())
 
