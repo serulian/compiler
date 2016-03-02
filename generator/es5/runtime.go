@@ -116,7 +116,10 @@ this.Serulian = (function($global) {
          var promise = new Promise(function(resolve, reject) {
            var worker = new Worker($__currentScriptSrc + "?__serulian_async_token=" + token);
            worker.onmessage = function(e) {
-              if (!e.isTrusted) { return; }
+              if (!e.isTrusted) {
+                worker.terminate();
+                return;
+              }
 
               var data = e.data;
               if (data['token'] != token) {
@@ -128,6 +131,8 @@ this.Serulian = (function($global) {
               } else {
                 reject(data['reject']);
               }
+
+              worker.terminate();
            };
 
            worker.postMessage({
@@ -382,11 +387,15 @@ this.Serulian = (function($global) {
 
   $g.executeWorkerMethod = function(token) {
     $global.onmessage = function(e) {
-      if (!e.isTrusted) { return; }
+      if (!e.isTrusted) {
+        close();
+        return;
+      }
 
       var data = e.data;
       if (data['token'] != token) {
         throw Error('Invalid token')
+        close();
       }
 
       switch (data['action']) {
@@ -441,6 +450,7 @@ if (typeof importScripts === 'function') {
       }
     }
 
+    close();
   };
   runWorker();
 }
