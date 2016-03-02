@@ -1,6 +1,6 @@
 $module('cast', function () {
   var $static = this;
-  this.$class('SomeClass', false, function () {
+  this.$class('SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -29,7 +29,8 @@ $module('cast', function () {
     });
   });
 
-  this.$interface('ISomeInterface', false, function () {
+  this.$interface('ISomeInterface', false, '', function () {
+    var $static = this;
   });
 
   $static.DoSomething = function (i) {

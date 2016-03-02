@@ -1,6 +1,6 @@
 $module('with', function () {
   var $static = this;
-  this.$class('SomeReleasable', false, function () {
+  this.$class('SomeReleasable', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {

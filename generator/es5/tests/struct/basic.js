@@ -1,6 +1,6 @@
 $module('basic', function () {
   var $static = this;
-  this.$struct('AnotherStruct', false, function () {
+  this.$struct('AnotherStruct', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function (AnotherBool) {
@@ -20,7 +20,7 @@ $module('basic', function () {
     });
   });
 
-  this.$struct('SomeStruct', false, function () {
+  this.$struct('SomeStruct', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function (SomeField, AnotherField, SomeInstance) {

@@ -84,6 +84,12 @@ func (gm generatingMember) RequiresThis() bool {
 	return !gm.Member.IsStatic()
 }
 
+// WorkerExecutes returns whether the generating member should be generated to execute under
+// a web worker.
+func (gm generatingMember) WorkerExecutes() bool {
+	return gm.Member.InvokesAsync()
+}
+
 // Generics returns the names of the generics for this member, if any.
 func (gm generatingMember) Generics() []string {
 	generics := gm.Member.Generics()
@@ -168,6 +174,10 @@ func (pbi propertyBodyInfo) Generics() []string {
 
 func (pbi propertyBodyInfo) RequiresThis() bool {
 	return true
+}
+
+func (pbi propertyBodyInfo) WorkerExecutes() bool {
+	return false
 }
 
 // aliasedMemberTemplateStr defines the template for generating an aliased member.

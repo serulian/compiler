@@ -1,6 +1,6 @@
 $module('compare', function () {
   var $static = this;
-  this.$class('SomeClass', false, function () {
+  this.$class('SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {

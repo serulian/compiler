@@ -1,6 +1,6 @@
 $module('structuralcast', function () {
   var $static = this;
-  this.$class('BaseClass', true, function (T) {
+  this.$class('BaseClass', true, '', function (T) {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -29,7 +29,7 @@ $module('structuralcast', function () {
     });
   });
 
-  this.$class('SomeClass', false, function () {
+  this.$class('SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {

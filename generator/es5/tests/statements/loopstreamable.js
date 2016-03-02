@@ -1,6 +1,6 @@
 $module('loopstreamable', function () {
   var $static = this;
-  this.$class('SomeStreamable', false, function () {
+  this.$class('SomeStreamable', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -39,7 +39,7 @@ $module('loopstreamable', function () {
     };
   });
 
-  this.$class('SomeStream', false, function () {
+  this.$class('SomeStream', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {

@@ -161,6 +161,12 @@ func (tn TGMember) IsField() bool {
 	return isField
 }
 
+// InvokesAsync returns whether the member invokes asynchronously.
+func (tn TGMember) InvokesAsync() bool {
+	_, invokesAsync := tn.GraphNode.TryGet(NodePredicateMemberInvokesAsync)
+	return invokesAsync
+}
+
 // IsRequiredField returns whether this member is a field requiring initialization on
 // construction of an instance of the parent type.
 func (tn TGMember) IsRequiredField() bool {

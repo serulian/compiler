@@ -1,6 +1,6 @@
 $module('basic', function () {
   var $static = this;
-  this.$class('SomeClass', false, function () {
+  this.$class('SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -29,7 +29,7 @@ $module('basic', function () {
     };
   });
 
-  this.$type('MyType', false, function () {
+  this.$type('MyType', false, '', function () {
     var $instance = this.prototype;
     var $static = this;
     this.new = function ($wrapped) {
