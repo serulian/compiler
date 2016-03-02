@@ -388,14 +388,14 @@ this.Serulian = (function($global) {
   $g.executeWorkerMethod = function(token) {
     $global.onmessage = function(e) {
       if (!e.isTrusted) {
-        close();
+        $global.close();
         return;
       }
 
       var data = e.data;
       if (data['token'] != token) {
         throw Error('Invalid token')
-        close();
+        $global.close();
       }
 
       switch (data['action']) {
@@ -409,13 +409,13 @@ this.Serulian = (function($global) {
               'result': result,
               'token': token
             });
-            close();
+            $global.close();
           }).catch(function(reject) {
             $global.postMessage({
               'reject': reject,
               'token': token
             });
-            close();
+            $global.close();
           });
           break
       }
