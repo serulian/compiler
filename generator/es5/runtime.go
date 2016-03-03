@@ -431,10 +431,15 @@ this.Serulian = (function($global) {
             });
             $global.close();
           }).catch(function(reject) {
-            $global.postMessage({
-              'reject': reject,
-              'token': token
-            });
+            try {
+              $global.postMessage({
+                'reject': reject,
+                'token': token
+              });
+            } catch (e) {
+              throw reject;
+            }
+
             $global.close();
           });
           break
