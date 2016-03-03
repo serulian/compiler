@@ -286,6 +286,10 @@ this.Serulian = (function($global) {
   	},
 
     'translate': function(prom) {
+       if (!prom.Then) {
+         return prom;
+       }
+
        return {
           'then': function() {
              return prom.Then.apply(prom, arguments);
