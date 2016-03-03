@@ -98,7 +98,7 @@ this.Serulian = (function($global) {
     },
 
     'nominalwrap': function(instance, type) {
-      return type.new(instance)
+      return type.new($t.nominalroot(instance))
     },
 
     'nominalunwrap': function(instance) {
