@@ -24,6 +24,20 @@ func (g *TypeGraph) GetMemberForSourceNode(node compilergraph.GraphNode) (TGMemb
 	return TGMember{memberNode, g}, true
 }
 
+// AsyncMembers returns all defined async members.
+func (g *TypeGraph) AsyncMembers() []TGMember {
+	mit := g.findAllNodes(NodeTypeMember).
+		Has(NodePredicateMemberInvokesAsync, "true").
+		BuildNodeIterator()
+
+	var members = make([]TGMember, 0)
+	for mit.Next() {
+		members = append(members, TGMember{mit.Node(), g})
+	}
+
+	return members
+}
+
 // ChildName returns the unique name of the underlying member. For operators, this will
 // return the name prepended with the operator character.
 func (tn TGMember) ChildName() string {
@@ -145,6 +159,12 @@ func (tn TGMember) IsOperator() bool {
 func (tn TGMember) IsField() bool {
 	_, isField := tn.GraphNode.TryGet(NodePredicateMemberField)
 	return isField
+}
+
+// InvokesAsync returns whether the member invokes asynchronously.
+func (tn TGMember) InvokesAsync() bool {
+	_, invokesAsync := tn.GraphNode.TryGet(NodePredicateMemberInvokesAsync)
+	return invokesAsync
 }
 
 // IsRequiredField returns whether this member is a field requiring initialization on

@@ -24,7 +24,9 @@ type Statement interface {
 }
 
 // StatementOrExpression represents a statement or expression.
-type StatementOrExpression interface{}
+type StatementOrExpression interface {
+	BasisNode() compilergraph.GraphNode
+}
 
 // HasNextStatement marks a statement as having a next statement in a linked
 // chain of statements.

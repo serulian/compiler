@@ -45,5 +45,12 @@ func (sb *scopeBuilder) scopeIdentifierExpression(node compilergraph.GraphNode, 
 		return newScope().Invalid().GetScope()
 	}
 
+	if namedScope.IsAssignable() && namedScope.UnderModule() {
+		containing, found := sb.sg.srg.TryGetContainingMember(node)
+		if found && containing.IsAsyncFunction() {
+			sb.decorateWithWarning(node, "%v '%v' is defined outside the async function and will therefore be unique for each call to this function", namedScope.Title(), name)
+		}
+	}
+
 	return newScope().ForNamedScope(namedScope).GetScope()
 }

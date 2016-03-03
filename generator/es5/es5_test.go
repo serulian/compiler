@@ -83,6 +83,8 @@ var tests = []generationTest{
 	generationTest{"class required fields test", "class", "requiredfields", true},
 	generationTest{"constructable interface test", "interface", "constructable", true},
 
+	generationTest{"basic async test", "async", "async", false},
+
 	generationTest{"conditional statement", "statements", "conditional", true},
 	generationTest{"conditional else statement", "statements", "conditionalelse", true},
 	generationTest{"chained conditional statement", "statements", "chainedconditional", true},
@@ -236,11 +238,11 @@ func TestGenerator(t *testing.T) {
 					$resolved = undefined;
 					$rejected = undefined;
 
-					window.boolValue = true;
-					window.Array = Array;
-					window.Object = Object;
+					this.boolValue = true;
+					this.Array = Array;
+					this.Object = Object;
 
-					window.Serulian.then(function(g) {
+					this.Serulian.then(function(g) {
 						g.` + test.entrypoint + `.TEST().then(function(r) {
 							$resolved = r.$wrapped;
 						}).catch(function(err) {

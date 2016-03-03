@@ -1,6 +1,6 @@
 $module('await', function () {
   var $static = this;
-  this.$class('SomePromise', false, function () {
+  this.$class('SomePromise', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {

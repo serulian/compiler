@@ -19,6 +19,9 @@ func (eg *expressionGenerator) generateFunctionDefinition(function *codedom.Func
 	}
 
 	templateStr := `
+		{{ if .Item.WorkerExecute }}
+			$t.workerwrap('{{ .Item.UniqueId }}',
+		{{ end }}
 		({{ if .Item.Generics }}
 		  function({{ range $index, $generic := .Item.Generics }}{{ if $index }}, {{ end }}{{ $generic }}{{ end }}) {
 			{{ if .Item.RequiresThis }}var $this = this;{{ end }}
@@ -38,6 +41,9 @@ func (eg *expressionGenerator) generateFunctionDefinition(function *codedom.Func
 			return $f;
 		  }
 		{{ end }})
+		{{ if .Item.WorkerExecute }}
+			)
+   	    {{ end }}
 	`
 
 	stateGenerator := buildGenerator(eg.templater, eg.pather, eg.scopegraph)

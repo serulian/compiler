@@ -3,3 +3,7 @@ var<int> SomeVar
 function<int> DoSomething() {
 	
 }
+
+function<void> DoSomethingAsync() {
+	
+}

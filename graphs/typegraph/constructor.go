@@ -435,14 +435,15 @@ type MemberDecorator struct {
 
 	issueReporter IssueReporter // The underlying issue reporter.
 
-	exported   bool // Whether the member is exported publicly.
-	readonly   bool // Whether the member is readonly.
-	static     bool // Whether the member is static.
-	promising  bool // Whether the member is promising.
-	implicit   bool // Whether the member is implicitly called.
-	native     bool // Whether this operator is native to ES.
-	hasdefault bool // Whether the member has a default value.
-	field      bool // Whether the member is a field holding data.
+	exported     bool // Whether the member is exported publicly.
+	readonly     bool // Whether the member is readonly.
+	static       bool // Whether the member is static.
+	promising    bool // Whether the member is promising.
+	implicit     bool // Whether the member is implicitly called.
+	native       bool // Whether this operator is native to ES.
+	hasdefault   bool // Whether the member has a default value.
+	field        bool // Whether the member is a field holding data.
+	invokesasync bool // Whether the member invokes an async worker.
 
 	skipOperatorChecking bool // Whether to skip operator checking.
 
@@ -514,6 +515,12 @@ func (mb *MemberDecorator) Exported(exported bool) *MemberDecorator {
 // ReadOnly sets whether the member is read only.
 func (mb *MemberDecorator) ReadOnly(readonly bool) *MemberDecorator {
 	mb.readonly = readonly
+	return mb
+}
+
+// InvokesAsync sets whether the member invokes asynchronously.
+func (mb *MemberDecorator) InvokesAsync(invokesasync bool) *MemberDecorator {
+	mb.invokesasync = invokesasync
 	return mb
 }
 
@@ -627,6 +634,10 @@ func (mb *MemberDecorator) Decorate() {
 
 	if mb.native {
 		memberNode.Decorate(NodePredicateOperatorNative, "true")
+	}
+
+	if mb.invokesasync {
+		memberNode.Decorate(NodePredicateMemberInvokesAsync, "true")
 	}
 
 	// Add the returnables to the member (if any).

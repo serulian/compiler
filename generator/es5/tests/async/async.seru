@@ -1,0 +1,7 @@
+function<int> DoSomethingAsync(a int) {
+  return a
+}
+
+function<void> AnotherFunction() {
+	DoSomethingAsync(3)
+}

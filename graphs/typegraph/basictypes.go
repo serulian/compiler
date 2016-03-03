@@ -47,6 +47,11 @@ func (t *TypeGraph) FunctionTypeReference(generic TypeReference) TypeReference {
 	return t.NewTypeReference(t.FunctionType(), generic)
 }
 
+// PromiseTypeReference returns a new reference to the promise type, with the given generic.
+func (t *TypeGraph) PromiseTypeReference(generic TypeReference) TypeReference {
+	return t.NewTypeReference(t.PromiseType(), generic)
+}
+
 // SliceTypeReference returns a new reference to the slice type, with the given generic.
 func (t *TypeGraph) SliceTypeReference(generic TypeReference) TypeReference {
 	return t.NewTypeReference(t.SliceType(), generic)

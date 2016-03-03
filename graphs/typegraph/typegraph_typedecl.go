@@ -209,6 +209,11 @@ func (tn TGTypeDecl) ParentTypes() []TypeReference {
 	return typerefs
 }
 
+// Parent returns themodule containing this type.
+func (tn TGTypeDecl) Parent() TGTypeOrModule {
+	return tn.ParentModule()
+}
+
 // ParentModule returns the module containing this type.
 func (tn TGTypeDecl) ParentModule() TGModule {
 	return TGModule{tn.GraphNode.GetNode(NodePredicateTypeModule), tn.tdg}

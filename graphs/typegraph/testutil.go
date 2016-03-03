@@ -251,6 +251,24 @@ func (t *testBasicTypesConstructor) DefineTypes(builder GetTypeBuilder) {
 		Alias("int").
 		Define()
 
+	builder(*t.moduleNode).
+		Name("string").
+		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
+		Alias("string").
+		Define()
+
+	builder(*t.moduleNode).
+		Name("$parser").
+		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
+		Alias("$parser").
+		Define()
+
+	builder(*t.moduleNode).
+		Name("$stringifier").
+		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
+		Alias("$stringifier").
+		Define()
+
 	funcGenBuilder := builder(*t.moduleNode).
 		Name("function").
 		SourceNode(t.CreateNode(fakeNodeTypeTagged)).

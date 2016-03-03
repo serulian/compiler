@@ -216,6 +216,11 @@ func (m SRGMember) IsExported() bool {
 	return isExportedName(m.Name())
 }
 
+// IsAsync returns whether the given member is an async function.
+func (m SRGMember) IsAsyncFunction() bool {
+	return m.MemberKind() == FunctionMember && isAsyncFunction(m.Name())
+}
+
 // IsOperator returns whether the given member is an operator.
 func (m SRGMember) IsOperator() bool {
 	return m.MemberKind() == OperatorMember

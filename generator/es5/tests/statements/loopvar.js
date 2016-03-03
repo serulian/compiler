@@ -1,6 +1,6 @@
 $module('loopvar', function () {
   var $static = this;
-  this.$class('SomeStream', false, function () {
+  this.$class('SomeStream', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {

@@ -939,6 +939,32 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"Non-nullable type member 'SomeField' is required to construct type SomeClass", ""},
 
+	/////////// async function tests /////////////////
+
+	scopegraphTest{"async under class test", "async", "underclass",
+		[]expectedScopeEntry{},
+		"Asynchronous functions must be declared under modules: 'DoSomethingAsync' defined under class SomeClass", ""},
+
+	scopegraphTest{"async invalid return type test", "async", "invalidreturn",
+		[]expectedScopeEntry{},
+		"Asynchronous function DoSomethingAsync must return a structural type: SomeClass is not structural nor serializable", ""},
+
+	scopegraphTest{"async invalid parameter test", "async", "invalidparam",
+		[]expectedScopeEntry{},
+		"Parameters of asynchronous function DoSomethingAsync must be structural: SomeClass is not structural nor serializable", ""},
+
+	scopegraphTest{"async outside context test", "async", "outsidecontext",
+		[]expectedScopeEntry{},
+		"", "module member 'outside' is defined outside the async function and will therefore be unique for each call to this function"},
+
+	scopegraphTest{"async non-void warning test", "async", "nonvoidwarn",
+		[]expectedScopeEntry{},
+		"", "Returned Promise resolves a value of type Integer which is not handled"},
+
+	scopegraphTest{"async success test", "async", "success",
+		[]expectedScopeEntry{},
+		"", ""},
+
 	/////////// known issue tests /////////////////
 
 	scopegraphTest{"known issue panic test", "knownissues", "knownissue1",

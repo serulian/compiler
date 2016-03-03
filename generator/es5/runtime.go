@@ -6,11 +6,17 @@ package es5
 
 // Note: nativenew is based on http://www.bennadel.com/blog/2291-invoking-a-native-javascript-constructor-using-call-or-apply.htm
 // Note: toType is based on https://javascriptweblog.wordpress.com/2011/08/08/fixing-the-javascript-typeof-operator/
+// Note: uuid generation from https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
 
 // runtimeTemplate contains all the necessary code for wrapping generated modules into a complete Serulian
 // runtime bundle.
 const runtimeTemplate = `
-window.Serulian = (function($global) {
+this.Serulian = (function($global) {
+  var $__currentScriptSrc = null;
+  if (typeof document === 'object') {
+    $__currentScriptSrc = document.currentScript.src;
+  }
+
   $global.__serulian_internal = {
     'autoNominalWrap': function(k, v) {
       if (v == null) {
@@ -48,6 +54,7 @@ window.Serulian = (function($global) {
 
   var $g = {};
   var $a = {};
+  var $w = {};
 
   var $t = {
     'toType': function(obj) {
@@ -59,6 +66,19 @@ window.Serulian = (function($global) {
     'cast': function(value, type) {
       // TODO: implement cast checking.
       return value
+    },
+
+    'uuid': function() {
+        var buf = new Uint16Array(8);
+        crypto.getRandomValues(buf);
+        var S4 = function(num) {
+            var ret = num.toString(16);
+            while(ret.length < 4){
+                ret = "0"+ret;
+            }
+            return ret;
+        };
+        return (S4(buf[0])+S4(buf[1])+"-"+S4(buf[2])+"-"+S4(buf[3])+"-"+S4(buf[4])+"-"+S4(buf[5])+S4(buf[6])+S4(buf[7]));
     },
 
     'nativenew': function(type) {
@@ -83,6 +103,63 @@ window.Serulian = (function($global) {
 
     'nominalunwrap': function(instance) {
       return instance.$wrapped;
+    },
+
+    'workerwrap': function(methodId, f) {
+      $w[methodId] = f;
+
+      // If already inside a worker, return a function to execute asynchronously locally.
+      if (!$__currentScriptSrc) {
+        return function() {
+          var promise = new Promise(function(resolve, reject) {
+            $global.setTimeout(function() {
+              f().then(function(value) {
+                resolve(value);
+              }).catch(function(value) {
+                reject(value);
+              });
+            }, 0);
+          });
+          return promise;
+        };
+      }
+
+      // Otherwise return a function to execute via a worker.
+      return function() {
+         var args = Array.prototype.slice.call(arguments);
+         var token = $t.uuid();
+
+         var promise = new Promise(function(resolve, reject) {
+           var worker = new Worker($__currentScriptSrc + "?__serulian_async_token=" + token);
+           worker.onmessage = function(e) {
+              if (!e.isTrusted) {
+                worker.terminate();
+                return;
+              }
+
+              var data = e.data;
+              if (data['token'] != token) {
+                return;
+              }
+
+              if (data['result']) {
+                resolve(data['result']);
+              } else {
+                reject(data['reject']);
+              }
+
+              worker.terminate();
+           };
+
+           worker.postMessage({
+            'action': 'invoke',
+            'arguments': args,
+            'method': methodId,
+            'token': token
+           });           
+         });
+         return promise;
+      };
     },
 
     'property': function(getter, opt_setter) {
@@ -209,6 +286,10 @@ window.Serulian = (function($global) {
   	},
 
     'translate': function(prom) {
+       if (!prom.Then) {
+         return prom;
+       }
+
        return {
           'then': function() {
              return prom.Then.apply(prom, arguments);
@@ -242,9 +323,9 @@ window.Serulian = (function($global) {
 
     module.$newtypebuilder = function(kind) {
       return function(name, hasGenerics, alias, creator) {
-        var buildType = function(n) {
+        var buildType = function(n, args) {
           var tpe = new Function("return function " + n + "() {};")();
-          creator.apply(tpe, arguments);
+          creator.apply(tpe, args || []);
 
           if (kind == 'type') {
             tpe.prototype.toJSON = function() {
@@ -300,7 +381,7 @@ window.Serulian = (function($global) {
               fullName = fullName + '_' + arguments[i].name;
             }
 
-            return buildType(fullName);
+            return buildType(fullName, arguments);
           };
         } else {
           module[name] = buildType(name);
@@ -324,8 +405,73 @@ window.Serulian = (function($global) {
   	{{ $kv.Value }}
   {{ end }}
 
+  $g.executeWorkerMethod = function(token) {
+    $global.onmessage = function(e) {
+      if (!e.isTrusted) {
+        $global.close();
+        return;
+      }
+
+      var data = e.data;
+      if (data['token'] != token) {
+        throw Error('Invalid token')
+        $global.close();
+      }
+
+      switch (data['action']) {
+        case 'invoke':
+          var methodId = data['method'];
+          var arguments = data['arguments'];
+          var method = $w[methodId];
+
+          method.apply(null, arguments).then(function(result) {
+            $global.postMessage({
+              'result': result,
+              'token': token
+            });
+            $global.close();
+          }).catch(function(reject) {
+            $global.postMessage({
+              'reject': reject,
+              'token': token
+            });
+            $global.close();
+          });
+          break
+      }
+    };
+  };
+
   return $promise.all(moduleInits).then(function() {
   	return $g;
   });
-})(window)
+})(this)
+
+// Handle web-worker calls.
+if (typeof importScripts === 'function') {
+  var runWorker = function() {
+    var search = location.search;
+    if (!search || search[0] != '?') {
+      return;
+    }
+
+    var searchPairs = search.substr(1).split('&')
+    if (searchPairs.length < 1) {
+      return;
+    }
+
+    for (var i = 0; i < searchPairs.length; ++i) {
+      var pair = searchPairs[i].split('=');
+      if (pair[0] == '__serulian_async_token') {
+        this.Serulian.then(function(global) {
+          global.executeWorkerMethod(pair[1]);
+        });
+        return;
+      }
+    }
+
+    close();
+  };
+  runWorker();
+}
 `
