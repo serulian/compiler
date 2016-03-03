@@ -1,0 +1,7 @@
+function<int> DoSomethingAsync() {
+  return 42
+}
+
+function<void> DoSomething() {
+	DoSomethingAsync()
+}

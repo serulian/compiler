@@ -957,6 +957,10 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"", "module member 'outside' is defined outside the async function and will therefore be unique for each call to this function"},
 
+	scopegraphTest{"async non-void warning test", "async", "nonvoidwarn",
+		[]expectedScopeEntry{},
+		"", "Returned Promise resolves a value of type Integer which is not handled"},
+
 	scopegraphTest{"async success test", "async", "success",
 		[]expectedScopeEntry{},
 		"", ""},
