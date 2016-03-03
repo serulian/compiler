@@ -293,6 +293,12 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 		// Decorate the function with its return type.
 		decorator.CreateReturnable(member.Node(), returnType)
 
+		// If the function is an async function, make it non-promising and return a Promise instead.
+		if member.IsAsyncFunction() {
+			isPromising = false
+			returnType = graph.PromiseTypeReference(returnType)
+		}
+
 		functionType := graph.NewTypeReference(graph.FunctionType(), returnType)
 		memberType, _ = stc.addSRGParameterTypes(member, functionType, graph, reporter)
 	}

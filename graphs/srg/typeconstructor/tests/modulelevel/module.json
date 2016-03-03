@@ -3,10 +3,10 @@
         "Key": "17ee1bc13f69d7543aa89579358f3fbb",
         "Kind": 6,
         "Children": {
-            "432e3a22c5cfb1efdceae10189bffb14": {
+            "342eb3f90ca6938aefee805161dfae8e": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "432e3a22c5cfb1efdceae10189bffb14",
+                    "Key": "342eb3f90ca6938aefee805161dfae8e",
                     "Kind": 7,
                     "Children": {
                         "a624ac45fee266d9a6a9fed5d9beb10f": {
@@ -27,10 +27,9 @@
                         "tdg-member-exported": "true",
                         "tdg-member-invokes-async": "true",
                         "tdg-member-name": "DoSomethingAsync",
-                        "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "Function\u003cvoid\u003e",
-                        "tdg-member-signature": "\n\u0010dosomethingasync\u0010\u0002\u0018\u0000 \u0001*\u000eFunction\u003cvoid\u003e",
+                        "tdg-member-resolved-type": "Function\u003cPromise\u003cvoid\u003e\u003e",
+                        "tdg-member-signature": "\n\u0010dosomethingasync\u0010\u0002\u0018\u0000 \u0001*\u0017Function\u003cPromise\u003cvoid\u003e\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/modulelevel/module.seru",
