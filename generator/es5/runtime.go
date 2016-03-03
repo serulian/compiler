@@ -12,11 +12,9 @@ package es5
 // runtime bundle.
 const runtimeTemplate = `
 this.Serulian = (function($global) {
-  var $__currentScriptSrc = '';
+  var $__currentScriptSrc = null;
   if (typeof document === 'object') {
     $__currentScriptSrc = document.currentScript.src;
-  } else {
-    // TODO: fix for nested calls to workers by workers.
   }
 
   $global.__serulian_internal = {
@@ -109,6 +107,24 @@ this.Serulian = (function($global) {
 
     'workerwrap': function(methodId, f) {
       $w[methodId] = f;
+
+      // If already inside a worker, return a function to execute asynchronously locally.
+      if (!$__currentScriptSrc) {
+        return function() {
+          var promise = new Promise(function(resolve, reject) {
+            $global.setTimeout(function() {
+              f().then(function(value) {
+                resolve(value);
+              }).catch(function(value) {
+                reject(value);
+              });
+            }, 0);
+          });
+          return promise;
+        };
+      }
+
+      // Otherwise return a function to execute via a worker.
       return function() {
          var args = Array.prototype.slice.call(arguments);
          var token = $t.uuid();
