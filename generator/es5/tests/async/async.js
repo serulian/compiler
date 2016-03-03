@@ -21,17 +21,7 @@ $module('async', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            $g.async.DoSomethingAsync($t.nominalwrap(3, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-              $result = $result0;
-              $state.current = 1;
-              $callback($state);
-            }).catch(function (err) {
-              $state.reject(err);
-            });
-            return;
-
-          case 1:
-            $result;
+            $g.async.DoSomethingAsync($t.nominalwrap(3, $g.____testlib.basictypes.Integer));
             $state.current = -1;
             return;
 
