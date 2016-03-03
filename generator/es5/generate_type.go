@@ -99,6 +99,15 @@ func (gt generatingType) TypeReferenceCall(typeref typegraph.TypeReference) stri
 	return gt.Generator.pather.TypeReferenceCall(typeref)
 }
 
+// WrappedType returns the type wrapped by this nominal type.
+func (gt generatingType) WrappedType() typegraph.TypeReference {
+	if gt.Type.TypeKind() != typegraph.NominalType {
+		panic("Cannot call WrappedType on non-nominal type")
+	}
+
+	return gt.Type.ParentTypes()[0]
+}
+
 // GenerateComposition generates the source for all the composed types structurually inherited by the type.
 func (gt generatingType) GenerateComposition() *ordered_map.OrderedMap {
 	typeMap := ordered_map.NewOrderedMap()
@@ -168,7 +177,7 @@ this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{
 
 	$static.new = function({{ range $ridx, $field := .RequiredFields }}{{ if $ridx }}, {{ end }}{{ $field.Name }}{{ end }}) {
 		var instance = new $static();
-		instance.data = {};
+		instance.$data = {};
 		{{ range $idx, $field := .RequiredFields }}
 			instance.{{ $field.Name }} = {{ $field.Name }};
 		{{ end }}
@@ -176,23 +185,33 @@ this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{
 	};
 
 	{{ $parent := . }}
+
+	$static.$apply = function(toplevel) {
+		var data = toplevel.$data;
+		var instance = new $static();
+		instance.$data = {};
+
+		{{ range $idx, $field := .Fields }}
+		  {{ $requiresApply := $field.MemberType.IsNominalOrStruct }}
+		  {{ if or $requiresApply }}
+		  instance.{{ $field.Name }} = {{ $parent.TypeReferenceCall $field.MemberType }}.$apply(data['{{ $field.Name }}']);
+		  {{ else }}
+		  instance.{{ $field.Name }} = data['{{ $field.Name }}'];
+		  {{ end }}
+		{{ end }}
+
+		return instance;
+	};
+
 	{{ range $idx, $field := .Fields }}
 	  {{ $isNominal := $field.MemberType.IsNominal }}
 	  Object.defineProperty($instance, '{{ $field.Name }}', {
 	    get: function() {
-	    	{{ if $isNominal }}
-	    	return $t.nominalwrap(this.data.{{ $field.Name }}, {{ $parent.TypeReferenceCall $field.MemberType }});
-	    	{{ else }}
-	    	return this.data.{{ $field.Name }};
-	    	{{ end }}
+	    	return this.$data.{{ $field.Name }};
 	    },
 
 	    set: function(val) {
-	    	{{ if $isNominal }}
-	    	this.data.{{ $field.Name }} = $t.nominalunwrap(val);
-	    	{{ else }}
-	    	this.data.{{ $field.Name }} = val;
-	    	{{ end }}
+	    	this.$data.{{ $field.Name }} = val;
 	    }
 	  });
 	{{ end }}
@@ -218,6 +237,16 @@ this.$type('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .
 	this.new = function($wrapped) {
 		var instance = new this();
 		instance.$wrapped = $wrapped;
+		return instance;
+	};
+
+	this.$apply = function(data) {
+		var instance = new this();
+		{{ if .WrappedType.IsNominalOrStruct }}
+		instance.$wrapped = {{ .TypeReferenceCall .WrappedType }}.$apply(data.$wrapped);
+		{{ else }}
+		instance.$wrapped = data.$wrapped;
+		{{ end }}
 		return instance;
 	};
 	

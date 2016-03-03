@@ -42,5 +42,5 @@ func (db *domBuilder) buildLambdaExpressionInternal(node compilergraph.GraphNode
 		parameters = append(parameters, pit.Values()[parser.NodeLambdaExpressionParameterName])
 	}
 
-	return codedom.FunctionDefinition(generics, parameters, body, false, false, node)
+	return codedom.FunctionDefinition(generics, parameters, body, false, false, db.scopegraph.TypeGraph().AnyTypeReference(), node)
 }

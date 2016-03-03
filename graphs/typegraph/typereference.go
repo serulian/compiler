@@ -302,6 +302,11 @@ func (tr TypeReference) EnsureStructural() error {
 	return nil
 }
 
+// IsNominalOrStruct returns whether the referenced type is a struct or nominal type.
+func (tr TypeReference) IsNominalOrStruct() bool {
+	return tr.IsNominal() || tr.IsStruct()
+}
+
 // IsStruct returns whether the referenced type is a struct.
 func (tr TypeReference) IsStruct() bool {
 	return tr.isNormal() && tr.ReferredType().TypeKind() == StructType

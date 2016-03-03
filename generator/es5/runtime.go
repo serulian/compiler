@@ -63,6 +63,8 @@ this.Serulian = (function($global) {
 
     'any': new Function("return function any() {};")(),
 
+    'void': new Function("return function _void() {};")(),
+
     'cast': function(value, type) {
       // TODO: implement cast checking.
       return value
@@ -105,7 +107,7 @@ this.Serulian = (function($global) {
       return instance.$wrapped;
     },
 
-    'workerwrap': function(methodId, f) {
+    'workerwrap': function(methodId, getReturnType, f) {
       $w[methodId] = f;
 
       // If already inside a worker, return a function to execute asynchronously locally.
@@ -143,7 +145,14 @@ this.Serulian = (function($global) {
               }
 
               if (data['result']) {
-                resolve(data['result']);
+                // Re-apply the structural/nominal type (if any).
+                var result = data['result'];
+                var returnType = getReturnType();
+                if (returnType != $t.void) {
+                  result = returnType.$apply(data['result']);
+                }
+
+                resolve(result);
               } else {
                 reject(data['reject']);
               }

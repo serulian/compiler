@@ -13,15 +13,17 @@ import (
 	"github.com/serulian/compiler/generator/es5/statemachine/dombuilder"
 	"github.com/serulian/compiler/generator/es5/templater"
 	"github.com/serulian/compiler/graphs/scopegraph"
+	"github.com/serulian/compiler/graphs/typegraph"
 )
 
 // FunctionDef defines the interface for a function accepted by GenerateFunctionSource.
 type FunctionDef interface {
-	Generics() []string                // Returns the names of the generics on the function, if any.
-	Parameters() []string              // Returns the names of the parameters on the function, if any.
-	RequiresThis() bool                // Returns if this function is requires the "this" var to be added.
-	WorkerExecutes() bool              // Returns true if this function should be executed by a web worker.
-	BodyNode() compilergraph.GraphNode // The parser root node for the function body.
+	Generics() []string                  // Returns the names of the generics on the function, if any.
+	Parameters() []string                // Returns the names of the parameters on the function, if any.
+	RequiresThis() bool                  // Returns if this function is requires the "this" var to be added.
+	WorkerExecutes() bool                // Returns true if this function should be executed by a web worker.
+	ReturnType() typegraph.TypeReference // Returns the return type of the function. Only used for web-worker wrapped functions.
+	BodyNode() compilergraph.GraphNode   // The parser root node for the function body.
 }
 
 // GenerateFunctionSource generates the source code for a function, including its internal state machine.
@@ -32,7 +34,7 @@ func GenerateFunctionSource(functionDef FunctionDef, templater *templater.Templa
 	}
 
 	domDefinition := codedom.FunctionDefinition(functionDef.Generics(), functionDef.Parameters(), funcBody,
-		functionDef.RequiresThis(), functionDef.WorkerExecutes(), functionDef.BodyNode())
+		functionDef.RequiresThis(), functionDef.WorkerExecutes(), functionDef.ReturnType(), functionDef.BodyNode())
 	result := GenerateExpression(domDefinition, templater, pather, scopegraph)
 	return result.Source("")
 }

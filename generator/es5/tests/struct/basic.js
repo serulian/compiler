@@ -5,17 +5,25 @@ $module('basic', function () {
     var $instance = this.prototype;
     $static.new = function (AnotherBool) {
       var instance = new $static();
-      instance.data = {
+      instance.$data = {
       };
       instance.AnotherBool = AnotherBool;
       return $promise.resolve(instance);
     };
+    $static.$apply = function (toplevel) {
+      var data = toplevel.$data;
+      var instance = new $static();
+      instance.$data = {
+      };
+      instance.AnotherBool = $g.____testlib.basictypes.Boolean.$apply(data['AnotherBool']);
+      return instance;
+    };
     Object.defineProperty($instance, 'AnotherBool', {
       get: function () {
-        return $t.nominalwrap(this.data.AnotherBool, $g.____testlib.basictypes.Boolean);
+        return this.$data.AnotherBool;
       },
       set: function (val) {
-        this.data.AnotherBool = $t.nominalunwrap(val);
+        this.$data.AnotherBool = val;
       },
     });
   });
@@ -25,35 +33,45 @@ $module('basic', function () {
     var $instance = this.prototype;
     $static.new = function (SomeField, AnotherField, SomeInstance) {
       var instance = new $static();
-      instance.data = {
+      instance.$data = {
       };
       instance.SomeField = SomeField;
       instance.AnotherField = AnotherField;
       instance.SomeInstance = SomeInstance;
       return $promise.resolve(instance);
     };
+    $static.$apply = function (toplevel) {
+      var data = toplevel.$data;
+      var instance = new $static();
+      instance.$data = {
+      };
+      instance.SomeField = $g.____testlib.basictypes.Integer.$apply(data['SomeField']);
+      instance.AnotherField = $g.____testlib.basictypes.Boolean.$apply(data['AnotherField']);
+      instance.SomeInstance = $g.basic.AnotherStruct.$apply(data['SomeInstance']);
+      return instance;
+    };
     Object.defineProperty($instance, 'SomeField', {
       get: function () {
-        return $t.nominalwrap(this.data.SomeField, $g.____testlib.basictypes.Integer);
+        return this.$data.SomeField;
       },
       set: function (val) {
-        this.data.SomeField = $t.nominalunwrap(val);
+        this.$data.SomeField = val;
       },
     });
     Object.defineProperty($instance, 'AnotherField', {
       get: function () {
-        return $t.nominalwrap(this.data.AnotherField, $g.____testlib.basictypes.Boolean);
+        return this.$data.AnotherField;
       },
       set: function (val) {
-        this.data.AnotherField = $t.nominalunwrap(val);
+        this.$data.AnotherField = val;
       },
     });
     Object.defineProperty($instance, 'SomeInstance', {
       get: function () {
-        return this.data.SomeInstance;
+        return this.$data.SomeInstance;
       },
       set: function (val) {
-        this.data.SomeInstance = val;
+        this.$data.SomeInstance = val;
       },
     });
   });

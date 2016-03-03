@@ -13,6 +13,7 @@ import (
 	"github.com/serulian/compiler/generator/es5/es5pather"
 	"github.com/serulian/compiler/generator/es5/templater"
 	"github.com/serulian/compiler/graphs/scopegraph"
+	"github.com/serulian/compiler/graphs/typegraph"
 )
 
 // generatingItem wraps some data with an additional Generator field.
@@ -204,6 +205,10 @@ func (sg *stateGenerator) JumpToStatement(target codedom.Statement) string {
 	}{codedom.StatePopResourceFunction, resources, targetState}
 
 	return sg.templater.Execute("popjump", popTemplateStr, data)
+}
+
+func (sg *stateGenerator) TypeReferenceCall(typeRef typegraph.TypeReference) string {
+	return sg.pather.TypeReferenceCall(typeRef)
 }
 
 func (sg *stateGenerator) AddTopLevelExpression(expression codedom.Expression) string {
