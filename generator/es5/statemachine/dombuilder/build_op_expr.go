@@ -61,10 +61,10 @@ func (db *domBuilder) buildFunctionCall(node compilergraph.GraphNode) codedom.Ex
 			argumentScope, _ := db.scopegraph.GetScope(node.GetNode(parser.NodeFunctionCallArgument))
 			argumentType := argumentScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
 
-			if argumentType.IsNominal() && argumentType.ReferredType().ParentTypes()[0] == childTypeRef {
-				return codedom.NominalUnwrapping(wrappedExpr, node)
-			} else {
+			if childTypeRef.IsNominalWrapOf(argumentType) {
 				return codedom.NominalRefWrapping(wrappedExpr, childTypeRef, node)
+			} else {
+				return codedom.NominalUnwrapping(wrappedExpr, node)
 			}
 		}
 	}
