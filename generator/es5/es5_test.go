@@ -153,6 +153,7 @@ var tests = []generationTest{
 	generationTest{"interface nominal type", "nominal", "interface", true},
 
 	generationTest{"basic json test", "serialization", "json", true},
+	generationTest{"nominal json test", "serialization", "nominaljson", true},
 }
 
 func TestGenerator(t *testing.T) {

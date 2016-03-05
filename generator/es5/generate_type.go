@@ -237,14 +237,22 @@ this.$type('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .
 		return instance;
 	};
 
-	this.$apply = function(data) {
+	this.$box = function(data) {
 		var instance = new this();
-		{{ if .WrappedType.IsNominalOrStruct }}
-		instance.$wrapped = {{ .TypeReferenceCall .WrappedType }}.$apply(data.$wrapped);
+		{{ if .WrappedType.IsStruct }}
+		instance.$wrapped = $t.box(data, {{ .TypeReferenceCall .WrappedType }});
 		{{ else }}
-		instance.$wrapped = data.$wrapped;
+		instance.$wrapped = data;
 		{{ end }}
 		return instance;
+	};
+
+	this.$unbox = function(instance) {
+		{{ if .WrappedType.IsStruct }}
+		return $t.unbox(instance.$wrapped, {{ .TypeReferenceCall .WrappedType }});
+		{{ else }}
+		return instance.$wrapped;
+		{{ end }}
 	};
 	
 	{{range $idx, $kv := .GenerateImplementedMembers.Iter }}

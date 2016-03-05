@@ -360,16 +360,6 @@ this.Serulian = (function($global) {
             tpe.prototype.toJSON = function() {
               return $t.nominalroot(this);
             };
-
-            tpe.$box = function(data) {
-              var instance = new tpe();
-              instance.$wrapped = data;
-              return instance;
-            };
-
-            tpe.$unbox = function(boxed) {
-              return $t.nominalroot(boxed);
-            };
           } else if (kind == 'struct') {
             tpe.$box = function(data) {
               var instance = new tpe();
