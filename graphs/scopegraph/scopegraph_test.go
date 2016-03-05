@@ -877,9 +877,19 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	scopegraphTest{"nominal type over interface success", "nominal", "overinterface",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"sn", expectedScope{true, proto.ScopeKind_VALUE, "SomeNominal", "void"}},
+		},
+		"", ""},
+
 	scopegraphTest{"nominal conversion failure", "nominal", "cannotconvert",
 		[]expectedScopeEntry{},
 		"Cannot perform type conversion: Type 'MyType' cannot be converted to or from type 'SomeType'", ""},
+
+	scopegraphTest{"nominal interface conversion failure", "nominal", "invalidinterface",
+		[]expectedScopeEntry{},
+		"Cannot perform type conversion: Type 'SomeClass' cannot be converted to or from type 'SomeNominal'", ""},
 
 	scopegraphTest{"nominal conversion argument count mismatch", "nominal", "convertargcount",
 		[]expectedScopeEntry{},
