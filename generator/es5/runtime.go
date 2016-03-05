@@ -83,6 +83,26 @@ this.Serulian = (function($global) {
         return (S4(buf[0])+S4(buf[1])+"-"+S4(buf[2])+"-"+S4(buf[3])+"-"+S4(buf[4])+"-"+S4(buf[5])+S4(buf[6])+S4(buf[7]));
     },
 
+    'box': function(data, type) {
+      if (type.$box) {
+        return type.$box(data);
+      }
+
+      return data;
+    },
+
+    'unbox': function(data, type) {
+      if (type.$unbox) {
+        return type.$unbox(data);
+      }
+
+      return data;
+    },
+
+    'ensurevalue': function() {
+      // TODO: this.
+    },
+
     'nativenew': function(type) {
       return function () {
         var newInstance = Object.create(type.prototype);
@@ -340,7 +360,28 @@ this.Serulian = (function($global) {
             tpe.prototype.toJSON = function() {
               return $t.nominalroot(this);
             };
+
+            tpe.$box = function(data) {
+              var instance = new tpe();
+              instance.$wrapped = data;
+              return instance;
+            };
+
+            tpe.$unbox = function(boxed) {
+              return $t.nominalroot(boxed);
+            };
           } else if (kind == 'struct') {
+            tpe.$box = function(data) {
+              var instance = new tpe();
+              instance.$data = data;
+              instance.$lazycheck = true;
+              return instance;
+            };
+
+            tpe.$unbox = function(boxed) {
+              return boxed.$data;
+            };
+
             tpe.prototype.toJSON = function() {
               return this.$data;
             };
@@ -354,9 +395,10 @@ this.Serulian = (function($global) {
                   return $promise.resolve($t.nominalwrap(JSON.stringify($this), $a['string']));
                 }
 
-                return T.Get().then(function(resolved) {
-                  // TODO: Wrap data in a Mapping nominal.
-                  return resolved.Stringify($t.any)($this.$data);
+                return $this.Mapping().then(function(mapped) {
+                  return T.Get().then(function(resolved) {
+                    return resolved.Stringify($t.any)(mapped);
+                  });
                 });
               };
             };
@@ -367,15 +409,14 @@ this.Serulian = (function($global) {
                 // Special case JSON for performance, as it uses an internal method.
                 if (T == $a['json']) {
                   var parsed = JSON.parse($t.nominalunwrap(value));
-                  return $promise.resolve(tpe.$apply(parsed));
+                  return $promise.resolve(tpe.$box(parsed));
                 }
 
                 return T.Get().then(function(resolved) {
                   return (resolved.Parse($t.any)(value)).then(function(parsed) {
-                    var created = new tpe();
                     // TODO: *efficiently* unwrap internal nominal types.
-                    created.$data = JSON.parse(JSON.stringify($t.nominalunwrap(parsed)));
-                    return $promise.resolve(created);
+                    var data = JSON.parse(JSON.stringify($t.nominalunwrap(parsed)));
+                    return $promise.resolve(tpe.$box(data));
                   });
                 });
               };

@@ -61,6 +61,10 @@ func assertNoOttoError(t *testing.T, testName string, source string, err error) 
 
 		sourceLines := strings.Split(source, "\n")
 		for index, line := range sourceLines {
+			if index < (lineNumber-10) || index > (lineNumber+10) {
+				continue
+			}
+
 			fmt.Println(line)
 			if index+1 == lineNumber {
 				fmt.Print(strings.Repeat("~", columnPos-1))

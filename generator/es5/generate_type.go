@@ -178,6 +178,8 @@ this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{
 	$static.new = function({{ range $ridx, $field := .RequiredFields }}{{ if $ridx }}, {{ end }}{{ $field.Name }}{{ end }}) {
 		var instance = new $static();
 		instance.$data = {};
+		instance.$lazycheck = false;
+
 		{{ range $idx, $field := .RequiredFields }}
 			instance.{{ $field.Name }} = {{ $field.Name }};
 		{{ end }}
@@ -186,32 +188,27 @@ this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{
 
 	{{ $parent := . }}
 
-	$static.$apply = function(toplevel) {
-		var data = toplevel.$data;
-		var instance = new $static();
-		instance.$data = {};
-
-		{{ range $idx, $field := .Fields }}
-		  {{ $requiresApply := $field.MemberType.IsNominalOrStruct }}
-		  {{ if or $requiresApply }}
-		  instance.{{ $field.Name }} = {{ $parent.TypeReferenceCall $field.MemberType }}.$apply(data['{{ $field.Name }}']);
-		  {{ else }}
-		  instance.{{ $field.Name }} = data['{{ $field.Name }}'];
-		  {{ end }}
-		{{ end }}
-
-		return instance;
-	};
-
 	{{ range $idx, $field := .Fields }}
-	  {{ $isNominal := $field.MemberType.IsNominal }}
+	  {{ $boxed := $field.MemberType.IsNominalOrStruct }}
 	  Object.defineProperty($instance, '{{ $field.Name }}', {
 	    get: function() {
+	    	if (this.$lazycheck) {
+	    		$t.ensurevalue(this.$data.{{ $field.Name }}, {{ $parent.TypeReferenceCall $field.MemberType }});
+	    	}
+
+	    	{{ if $boxed }}
+	    	return $t.box(this.$data.{{ $field.Name }}, {{ $parent.TypeReferenceCall $field.MemberType }});
+	    	{{ else }}
 	    	return this.$data.{{ $field.Name }};
+	    	{{ end }}
 	    },
 
 	    set: function(val) {
+	    	{{ if $boxed }}
+	    	this.$data.{{ $field.Name }} = $t.unbox(val, {{ $parent.TypeReferenceCall $field.MemberType }});
+	    	{{ else }}
 	    	this.$data.{{ $field.Name }} = val;
+	    	{{ end }}
 	    }
 	  });
 	{{ end }}
