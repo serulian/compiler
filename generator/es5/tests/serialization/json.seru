@@ -1,0 +1,26 @@
+struct AnotherStruct {
+	AnotherBool bool
+}
+
+struct SomeStruct {
+	SomeField int
+	AnotherField bool
+	SomeInstance AnotherStruct
+}
+
+function<any> TEST() {
+	var s = SomeStruct{
+		SomeField: 2,
+		AnotherField: false,
+		SomeInstance: AnotherStruct{
+			AnotherBool: true,
+		},
+	}
+
+	var jsonString = '{"AnotherField":false,"SomeField":2,"SomeInstance":{"AnotherBool":true}}'
+	var correct = (s.Stringify<json>() == jsonString)
+
+	var parsed = SomeStruct.Parse<json>(jsonString)
+
+	return correct && (parsed.SomeField == 2) && (!parsed.AnotherField) && (parsed.SomeInstance.AnotherBool)
+}

@@ -1,0 +1,23 @@
+class SomeClass {
+	var<bool> SomeField = true
+}
+
+type FirstNominal : SomeClass {
+	property<bool> SomeProp {
+		get {
+			return !(SomeClass(this).SomeField)
+		}
+	}
+}
+
+type SecondNominal : FirstNominal {
+	function<bool> GetValue() {
+		return !(FirstNominal(this).SomeProp)
+	}
+}
+
+function<any> TEST() {
+	var sc = SomeClass.new()
+	var sn = SecondNominal(FirstNominal(sc))
+	return sn.GetValue()
+}

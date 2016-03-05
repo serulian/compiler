@@ -169,7 +169,7 @@ func (t *TypeGraph) ErrorType() TGTypeDecl {
 
 // SerializationJSONType returns the $json type.
 func (t *TypeGraph) SerializationJSONType() TGTypeDecl {
-	return t.getAliasedType("$json")
+	return t.getAliasedType("json")
 }
 
 // SerializationParserType returns the $parser type.

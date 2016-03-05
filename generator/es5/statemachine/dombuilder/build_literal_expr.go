@@ -232,6 +232,11 @@ func (db *domBuilder) buildTemplateStringCall(node compilergraph.GraphNode, func
 		isPiece = !isPiece
 	}
 
+	// Handle common case: No literal string piece at all.
+	if len(pieceExprs) == 0 {
+		return codedom.NominalWrapping(codedom.LiteralValue("''", node), db.scopegraph.TypeGraph().StringType(), node)
+	}
+
 	// Handle common case: A single literal string piece with no values.
 	if len(pieceExprs) == 1 && len(valueExprs) == 0 {
 		return pieceExprs[0]

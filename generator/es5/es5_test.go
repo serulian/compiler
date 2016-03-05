@@ -142,8 +142,13 @@ var tests = []generationTest{
 	generationTest{"escaped template string literal", "literals", "escapedtemplatestr", false},
 
 	generationTest{"basic webidl", "webidl", "basic", true},
+
 	generationTest{"basic nominal type", "nominal", "basic", true},
 	generationTest{"generic nominal type", "nominal", "generic", true},
+	generationTest{"base nominal type", "nominal", "nominalbase", true},
+	generationTest{"interface nominal type", "nominal", "interface", true},
+
+	generationTest{"basic json test", "serialization", "json", true},
 }
 
 func TestGenerator(t *testing.T) {
@@ -197,9 +202,13 @@ func TestGenerator(t *testing.T) {
 					t.Errorf("DEBUG: %v\n", call.Argument(0).String())
 					return otto.Value{}
 				})
+				vm.Set("testprint", func(call otto.FunctionCall) otto.Value {
+					t.Errorf("TEST: %v\n", call.Argument(0).String())
+					return otto.Value{}
+				})
 
-				vm.Run(`window = {};
-				window.debugprint = debugprint;
+				vm.Run(`this.debugprint = debugprint;
+						this.testprint = testprint;
 
 				function setTimeout(f, t) {
 					f()
@@ -239,8 +248,6 @@ func TestGenerator(t *testing.T) {
 					$rejected = undefined;
 
 					this.boolValue = true;
-					this.Array = Array;
-					this.Object = Object;
 
 					this.Serulian.then(function(g) {
 						g.` + test.entrypoint + `.TEST().then(function(r) {

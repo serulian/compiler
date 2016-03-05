@@ -264,7 +264,7 @@ class Map<T : Mappable, Q> {
 	}
 }
 
-@•typealias('$json')
+@•typealias('json')
 class JSON {
 	constructor Get() {
 		return JSON.new()

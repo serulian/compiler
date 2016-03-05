@@ -1,0 +1,24 @@
+class SomeClass {
+	property<int> SomeValue {
+		get {
+			return 42
+		}
+	}
+}
+
+interface Valuable {
+	property<int> SomeValue { get }
+}
+
+type Valued : Valuable {
+	function<int> GetValue() {
+		return Valuable(this).SomeValue
+	}
+}
+
+function<any> TEST() {
+	var sc = SomeClass.new()
+	var<Valuable> v = sc
+
+	return Valued(v).GetValue() == 42
+}
