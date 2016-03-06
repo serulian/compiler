@@ -2,6 +2,6 @@ function<int> DoSomethingAsync(a int) {
   return a
 }
 
-function<void> AnotherFunction() {
-	DoSomethingAsync(3)
+function<any> TEST() {
+	return (<- DoSomethingAsync(3)) == 3
 }

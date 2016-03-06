@@ -15,8 +15,8 @@ this.Serulian = (function($global) {
   // Save the current script URL. This is used below when spawning web workers, as we need this
   // script URL in order to run itself.
   var $__currentScriptSrc = null;
-  if (typeof document === 'object') {
-    $__currentScriptSrc = document.currentScript.src;
+  if (typeof $global.document === 'object') {
+    $__currentScriptSrc = $global.document.currentScript.src;
   }
 
   // $g is defines the root of the type paths in Serulian. All modules will be placed somewhere
@@ -174,9 +174,12 @@ this.Serulian = (function($global) {
       // feature checking here.
       if (!$__currentScriptSrc) {
         return function() {
+          var $this = this;
+          var args = arguments;
+
           var promise = new Promise(function(resolve, reject) {
             $global.setTimeout(function() {
-              f().then(function(value) {
+              f.apply($this, args).then(function(value) {
                 resolve(value);
               }).catch(function(value) {
                 reject(value);

@@ -87,7 +87,7 @@ var tests = []generationTest{
 	generationTest{"class required fields test", "class", "requiredfields", true},
 	generationTest{"constructable interface test", "interface", "constructable", true},
 
-	generationTest{"basic async test", "async", "async", false},
+	generationTest{"basic async test", "async", "async", true},
 
 	generationTest{"conditional statement", "statements", "conditional", true},
 	generationTest{"conditional else statement", "statements", "conditionalelse", true},
@@ -214,7 +214,7 @@ func TestGenerator(t *testing.T) {
 
 				vm.Run(`this.debugprint = debugprint;
 						this.testprint = testprint;
-
+						
 				function setTimeout(f, t) {
 					f()
 				}
