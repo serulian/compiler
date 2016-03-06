@@ -69,6 +69,15 @@ func (g *TypeGraph) globallyValidate() bool {
 					member.Name(), serr)
 			}
 		}
+
+		// Ensure the function has no generics.
+		if member.HasGenerics() {
+			status = false
+			g.decorateWithError(
+				modifier.Modify(member.GraphNode),
+				"Asynchronous function %v cannot have generics",
+				member.Name())
+		}
 	}
 
 	if !status {

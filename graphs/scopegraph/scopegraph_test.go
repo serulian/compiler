@@ -955,6 +955,10 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"Asynchronous functions must be declared under modules: 'DoSomethingAsync' defined under class SomeClass", ""},
 
+	scopegraphTest{"async generic invalid test", "async", "genericinvalid",
+		[]expectedScopeEntry{},
+		"Asynchronous function DoSomethingAsync cannot have generics", ""},
+
 	scopegraphTest{"async invalid return type test", "async", "invalidreturn",
 		[]expectedScopeEntry{},
 		"Asynchronous function DoSomethingAsync must return a structural type: SomeClass is not structural nor serializable", ""},
