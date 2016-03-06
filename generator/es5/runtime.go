@@ -19,6 +19,39 @@ this.Serulian = (function($global) {
     $__currentScriptSrc = $global.document.currentScript.src;
   }
 
+  // __serulian_internal defines methods used by the core library that require to work around
+  // and with the type system.
+  $global.__serulian_internal = {
+
+    // autoNominalWrap automatically wraps (boxes) ES primitives into their associated
+    // normal Serulian nominal types.
+    'autoNominalWrap': function(k, v) {
+      if (v == null) {
+        return v;
+      }
+      var typeName = $t.toESType(v);
+      switch (typeName) {
+        case 'object':
+          if (k != '') {
+            return $t.nominalwrap(v, $a.mapping($t.any));
+          }
+          break;
+        case 'array':
+          return $t.nominalwrap(v, $a.slice($t.any));
+        case 'boolean':
+          return $t.nominalwrap(v, $a.bool);
+        case 'string':
+          return $t.nominalwrap(v, $a.string);
+        case 'number':
+          if (Math.ceil(v) == v) {
+            return $t.nominalwrap(v, $a.int);
+          }
+          return $t.nominalwrap(v, $a.float64);
+      }
+      return v;
+    }
+  };
+
   // $g is defines the root of the type paths in Serulian. All modules will be placed somewhere
   // in a tree starting at $g.
   var $g = {};
@@ -474,7 +507,7 @@ this.Serulian = (function($global) {
 
                 return $this.Mapping().then(function(mapped) {
                   return T.Get().then(function(resolved) {
-                    return resolved.Stringify($t.any)(mapped);
+                    return resolved.Stringify(mapped);
                   });
                 });
               };
@@ -490,7 +523,7 @@ this.Serulian = (function($global) {
                 }
 
                 return T.Get().then(function(resolved) {
-                  return (resolved.Parse($t.any)(value)).then(function(parsed) {
+                  return (resolved.Parse(value)).then(function(parsed) {
                     // TODO: *efficiently* unwrap internal nominal types.
                     var data = JSON.parse(JSON.stringify($t.nominalunwrap(parsed)));
                     return $promise.resolve(tpe.$box(data));

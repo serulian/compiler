@@ -1,7 +1,12 @@
 [PrimaryGlobal]
 interface Window {
 	static void debugprint(any value);
-}
+};
+
+[NoInterfaceObject]
+interface __serulian_internal {
+  static any autoNominalWrap(any value);
+};
 
 [Constructor, NativeOperator=Plus, NativeOperator=Equals]
 interface String {
@@ -35,4 +40,10 @@ interface Object {
   setter void (String propertyName, any value);
   static Array keys(Object o);
   serializer;
+};
+
+[NoInterfaceObject]
+interface JSON {
+  static Object parse(any text, optional any reviver);
+  static String stringify(any value, optional any replacer, optional any space);
 };
