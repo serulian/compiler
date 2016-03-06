@@ -9,22 +9,20 @@ import (
 	"encoding/hex"
 
 	"github.com/serulian/compiler/compilergraph"
-	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/parser"
 )
 
 // FunctionDefinitionNode represents the definition of a function.
 type FunctionDefinitionNode struct {
 	expressionBase
-	Generics      []string                // The names of the generics of the function, if any.
-	Parameters    []string                // The names of the parameters of the function, if any.
-	Body          StatementOrExpression   // The body for the function.
-	RequiresThis  bool                    // Whether the function needs '$this' defined.
-	WorkerExecute bool                    // Whether the function should be executed via a worker.
-	ReturnType    typegraph.TypeReference // Return type of the function.
+	Generics      []string              // The names of the generics of the function, if any.
+	Parameters    []string              // The names of the parameters of the function, if any.
+	Body          StatementOrExpression // The body for the function.
+	RequiresThis  bool                  // Whether the function needs '$this' defined.
+	WorkerExecute bool                  // Whether the function should be executed via a worker.
 }
 
-func FunctionDefinition(generics []string, parameters []string, body StatementOrExpression, requiresThis bool, workerExecute bool, returnType typegraph.TypeReference, basisNode compilergraph.GraphNode) *FunctionDefinitionNode {
+func FunctionDefinition(generics []string, parameters []string, body StatementOrExpression, requiresThis bool, workerExecute bool, basisNode compilergraph.GraphNode) *FunctionDefinitionNode {
 	return &FunctionDefinitionNode{
 		expressionBase{domBase{basisNode}},
 		generics,
@@ -32,7 +30,6 @@ func FunctionDefinition(generics []string, parameters []string, body StatementOr
 		body,
 		requiresThis,
 		workerExecute,
-		returnType,
 	}
 }
 

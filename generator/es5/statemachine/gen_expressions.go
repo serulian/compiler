@@ -20,7 +20,7 @@ func (eg *expressionGenerator) generateFunctionDefinition(function *codedom.Func
 
 	templateStr := `
 		{{ if .Item.WorkerExecute }}
-			$t.workerwrap('{{ .Item.UniqueId }}', function() { return {{ .Generator.TypeReferenceCall .Item.ReturnType }}; },
+			$t.workerwrap('{{ .Item.UniqueId }}',
 		{{ end }}
 		({{ if .Item.Generics }}
 		  function({{ range $index, $generic := .Item.Generics }}{{ if $index }}, {{ end }}{{ $generic }}{{ end }}) {
