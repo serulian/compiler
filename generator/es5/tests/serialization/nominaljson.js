@@ -46,6 +46,12 @@ $module('nominaljson', function () {
       instance.AnotherBool = AnotherBool;
       return $promise.resolve(instance);
     };
+    $instance.Mapping = function () {
+      var mappedData = {
+      };
+      mappedData['AnotherBool'] = this.AnotherBool;
+      return $promise.resolve($t.nominalwrap(mappedData, $g.____testlib.basictypes.Mapping($t.any)));
+    };
     Object.defineProperty($instance, 'AnotherBool', {
       get: function () {
         if (this.$lazycheck) {
@@ -69,6 +75,12 @@ $module('nominaljson', function () {
       instance.$lazycheck = false;
       instance.Nested = Nested;
       return $promise.resolve(instance);
+    };
+    $instance.Mapping = function () {
+      var mappedData = {
+      };
+      mappedData['Nested'] = this.Nested;
+      return $promise.resolve($t.nominalwrap(mappedData, $g.____testlib.basictypes.Mapping($t.any)));
     };
     Object.defineProperty($instance, 'Nested', {
       get: function () {

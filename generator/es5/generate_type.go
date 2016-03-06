@@ -108,6 +108,10 @@ func (gt generatingType) WrappedType() typegraph.TypeReference {
 	return gt.Type.ParentTypes()[0]
 }
 
+func (gt generatingType) MappingAnyType() typegraph.TypeReference {
+	return gt.Generator.scopegraph.TypeGraph().MappingTypeReference(gt.Generator.scopegraph.TypeGraph().AnyTypeReference())
+}
+
 // GenerateComposition generates the source for all the composed types structurually inherited by the type.
 func (gt generatingType) GenerateComposition() *ordered_map.OrderedMap {
 	typeMap := ordered_map.NewOrderedMap()
@@ -187,6 +191,16 @@ this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{
 	};
 
 	{{ $parent := . }}
+
+	$instance.Mapping = function() {
+		var mappedData = {};
+
+		{{ range $idx, $field := .Fields }}
+		mappedData['{{ $field.Name }}'] = this.{{ $field.Name }};
+		{{ end }}
+
+		return $promise.resolve($t.nominalwrap(mappedData, {{ .TypeReferenceCall .MappingAnyType }}));
+	};
 
 	{{ range $idx, $field := .Fields }}
 	  {{ $boxed := $field.MemberType.IsNominalOrStruct }}

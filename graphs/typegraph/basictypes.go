@@ -67,6 +67,11 @@ func (t *TypeGraph) MapTypeReference(key TypeReference, value TypeReference) Typ
 	return t.NewTypeReference(t.MapType(), key, value)
 }
 
+// MappingTypeReference returns a new reference to the mapoing type, with the given generic.
+func (t *TypeGraph) MappingTypeReference(value TypeReference) TypeReference {
+	return t.NewTypeReference(t.MappingType(), value)
+}
+
 // ReleasableTypeReference returns a reference to the releasable type.
 func (t *TypeGraph) ReleasableTypeReference() TypeReference {
 	return t.NewTypeReference(t.ReleasableType())

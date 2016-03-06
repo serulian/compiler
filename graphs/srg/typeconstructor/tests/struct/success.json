@@ -170,6 +170,24 @@
                     }
                 }
             },
+            "c590a6304be06fc12c0dd75a37b15e9e": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "c590a6304be06fc12c0dd75a37b15e9e",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "Mapping",
+                        "tdg-member-promising": "true",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "Function\u003cMapping\u003cany\u003e\u003e",
+                        "tdg-member-signature": "\n\u0007mapping\u0010\u0001\u0018\u0000 \u0001*\u0016Function\u003cMapping\u003cany\u003e\u003e",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/struct/success.seru"
+                    }
+                }
+            },
             "d6ce21d42280ca792557be88fbd5d553": {
                 "Predicate": "tdg-node-member",
                 "Child": {

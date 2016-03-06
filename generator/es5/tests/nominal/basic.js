@@ -37,10 +37,13 @@ $module('basic', function () {
       instance.$wrapped = $wrapped;
       return instance;
     };
-    this.$apply = function (data) {
+    this.$box = function (data) {
       var instance = new this();
-      instance.$wrapped = data.$wrapped;
+      instance.$wrapped = data;
       return instance;
+    };
+    this.$unbox = function (instance) {
+      return instance.$wrapped;
     };
     $instance.AnotherThing = function () {
       var $this = this;

@@ -7,23 +7,25 @@ $module('basic', function () {
       var instance = new $static();
       instance.$data = {
       };
+      instance.$lazycheck = false;
       instance.AnotherBool = AnotherBool;
       return $promise.resolve(instance);
     };
-    $static.$apply = function (toplevel) {
-      var data = toplevel.$data;
-      var instance = new $static();
-      instance.$data = {
+    $instance.Mapping = function () {
+      var mappedData = {
       };
-      instance.AnotherBool = $g.____testlib.basictypes.Boolean.$apply(data['AnotherBool']);
-      return instance;
+      mappedData['AnotherBool'] = this.AnotherBool;
+      return $promise.resolve($t.nominalwrap(mappedData, $g.____testlib.basictypes.Mapping($t.any)));
     };
     Object.defineProperty($instance, 'AnotherBool', {
       get: function () {
-        return this.$data.AnotherBool;
+        if (this.$lazycheck) {
+          $t.ensurevalue(this.$data.AnotherBool, $g.____testlib.basictypes.Boolean);
+        }
+        return $t.box(this.$data.AnotherBool, $g.____testlib.basictypes.Boolean);
       },
       set: function (val) {
-        this.$data.AnotherBool = val;
+        this.$data.AnotherBool = $t.unbox(val, $g.____testlib.basictypes.Boolean);
       },
     });
   });
@@ -35,43 +37,51 @@ $module('basic', function () {
       var instance = new $static();
       instance.$data = {
       };
+      instance.$lazycheck = false;
       instance.SomeField = SomeField;
       instance.AnotherField = AnotherField;
       instance.SomeInstance = SomeInstance;
       return $promise.resolve(instance);
     };
-    $static.$apply = function (toplevel) {
-      var data = toplevel.$data;
-      var instance = new $static();
-      instance.$data = {
+    $instance.Mapping = function () {
+      var mappedData = {
       };
-      instance.SomeField = $g.____testlib.basictypes.Integer.$apply(data['SomeField']);
-      instance.AnotherField = $g.____testlib.basictypes.Boolean.$apply(data['AnotherField']);
-      instance.SomeInstance = $g.basic.AnotherStruct.$apply(data['SomeInstance']);
-      return instance;
+      mappedData['SomeField'] = this.SomeField;
+      mappedData['AnotherField'] = this.AnotherField;
+      mappedData['SomeInstance'] = this.SomeInstance;
+      return $promise.resolve($t.nominalwrap(mappedData, $g.____testlib.basictypes.Mapping($t.any)));
     };
     Object.defineProperty($instance, 'SomeField', {
       get: function () {
-        return this.$data.SomeField;
+        if (this.$lazycheck) {
+          $t.ensurevalue(this.$data.SomeField, $g.____testlib.basictypes.Integer);
+        }
+        return $t.box(this.$data.SomeField, $g.____testlib.basictypes.Integer);
       },
       set: function (val) {
-        this.$data.SomeField = val;
+        this.$data.SomeField = $t.unbox(val, $g.____testlib.basictypes.Integer);
       },
     });
     Object.defineProperty($instance, 'AnotherField', {
       get: function () {
-        return this.$data.AnotherField;
+        if (this.$lazycheck) {
+          $t.ensurevalue(this.$data.AnotherField, $g.____testlib.basictypes.Boolean);
+        }
+        return $t.box(this.$data.AnotherField, $g.____testlib.basictypes.Boolean);
       },
       set: function (val) {
-        this.$data.AnotherField = val;
+        this.$data.AnotherField = $t.unbox(val, $g.____testlib.basictypes.Boolean);
       },
     });
     Object.defineProperty($instance, 'SomeInstance', {
       get: function () {
-        return this.$data.SomeInstance;
+        if (this.$lazycheck) {
+          $t.ensurevalue(this.$data.SomeInstance, $g.basic.AnotherStruct);
+        }
+        return $t.box(this.$data.SomeInstance, $g.basic.AnotherStruct);
       },
       set: function (val) {
-        this.$data.SomeInstance = val;
+        this.$data.SomeInstance = $t.unbox(val, $g.basic.AnotherStruct);
       },
     });
   });

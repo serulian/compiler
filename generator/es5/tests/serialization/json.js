@@ -11,6 +11,12 @@ $module('json', function () {
       instance.AnotherBool = AnotherBool;
       return $promise.resolve(instance);
     };
+    $instance.Mapping = function () {
+      var mappedData = {
+      };
+      mappedData['AnotherBool'] = this.AnotherBool;
+      return $promise.resolve($t.nominalwrap(mappedData, $g.____testlib.basictypes.Mapping($t.any)));
+    };
     Object.defineProperty($instance, 'AnotherBool', {
       get: function () {
         if (this.$lazycheck) {
@@ -36,6 +42,14 @@ $module('json', function () {
       instance.AnotherField = AnotherField;
       instance.SomeInstance = SomeInstance;
       return $promise.resolve(instance);
+    };
+    $instance.Mapping = function () {
+      var mappedData = {
+      };
+      mappedData['SomeField'] = this.SomeField;
+      mappedData['AnotherField'] = this.AnotherField;
+      mappedData['SomeInstance'] = this.SomeInstance;
+      return $promise.resolve($t.nominalwrap(mappedData, $g.____testlib.basictypes.Mapping($t.any)));
     };
     Object.defineProperty($instance, 'SomeField', {
       get: function () {

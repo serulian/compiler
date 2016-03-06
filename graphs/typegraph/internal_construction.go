@@ -149,7 +149,7 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 		})
 	}
 
-	// Structs define Parse and Stringify methods.
+	// Structs define Parse, Stringify and Mapping methods.
 	if typeDecl.TypeKind() == StructType {
 		// constructor Parse<T : $parser>(value string)
 		g.defineMember(typeDecl, "Parse", []string{"T"}, func(decorator *MemberDecorator, generics map[string]TGGeneric) {
@@ -172,6 +172,19 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 			var memberType = g.FunctionTypeReference(g.StringTypeReference())
 			decorator.
 				defineGenericConstraint(generics["T"].GraphNode, g.SerializationStringifier().GetTypeReference()).
+				Static(false).
+				Promising(true).
+				Exported(true).
+				ReadOnly(true).
+				MemberType(memberType).
+				MemberKind(1).
+				Decorate()
+		})
+
+		// function<Mapping<any>> Mapping()
+		g.defineMember(typeDecl, "Mapping", []string{}, func(decorator *MemberDecorator, generics map[string]TGGeneric) {
+			var memberType = g.FunctionTypeReference(g.MappingTypeReference(g.AnyTypeReference()))
+			decorator.
 				Static(false).
 				Promising(true).
 				Exported(true).
