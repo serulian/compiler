@@ -55,12 +55,19 @@ $module('nominaljson', function () {
     Object.defineProperty($instance, 'AnotherBool', {
       get: function () {
         if (this.$lazycheck) {
-          $t.ensurevalue(this.$data.AnotherBool, $g.____testlib.basictypes.Boolean);
+          $t.ensurevalue(this.$data.AnotherBool, $g.____testlib.basictypes.Boolean, false, 'AnotherBool');
         }
-        return $t.box(this.$data.AnotherBool, $g.____testlib.basictypes.Boolean);
+        if (this.$data.AnotherBool != null) {
+          return $t.box(this.$data.AnotherBool, $g.____testlib.basictypes.Boolean);
+        }
+        return this.$data.AnotherBool;
       },
       set: function (val) {
-        this.$data.AnotherBool = $t.unbox(val, $g.____testlib.basictypes.Boolean);
+        if (val != null) {
+          this.$data.AnotherBool = $t.unbox(val, $g.____testlib.basictypes.Boolean);
+          return;
+        }
+        this.$data.AnotherBool = val;
       },
     });
   });
@@ -85,12 +92,19 @@ $module('nominaljson', function () {
     Object.defineProperty($instance, 'Nested', {
       get: function () {
         if (this.$lazycheck) {
-          $t.ensurevalue(this.$data.Nested, $g.nominaljson.SomeNominal);
+          $t.ensurevalue(this.$data.Nested, $g.nominaljson.SomeNominal, false, 'Nested');
         }
-        return $t.box(this.$data.Nested, $g.nominaljson.SomeNominal);
+        if (this.$data.Nested != null) {
+          return $t.box(this.$data.Nested, $g.nominaljson.SomeNominal);
+        }
+        return this.$data.Nested;
       },
       set: function (val) {
-        this.$data.Nested = $t.unbox(val, $g.nominaljson.SomeNominal);
+        if (val != null) {
+          this.$data.Nested = $t.unbox(val, $g.nominaljson.SomeNominal);
+          return;
+        }
+        this.$data.Nested = val;
       },
     });
   });

@@ -134,8 +134,34 @@ this.Serulian = (function($global) {
 
     // ensurevalue ensures that the given value is of the given type. If not,
     // raises an exception.
-    'ensurevalue': function() {
-      // TODO: this.
+    'ensurevalue': function(value, type, canBeNull, name) {
+      if (value == null) {
+        if (!canBeNull) {
+          throw Error('Missing value for non-nullable field ' + name)
+        }
+        return;
+      }
+
+      var check = function(estype, serutype) {
+        if (type == $a[serutype]) {
+          if ($t.toESType(value) != estype) {
+            throw Error('Expected ' + serutype + ' for field ' + name + ', found: ' + $t.toESType(value))
+          }
+          return true;
+        }
+
+        return false;
+      };
+
+      if (check('string', 'string')) { return; }
+      if (check('number', 'float64')) { return; }
+      if (check('number', 'int')) { return; }
+      if (check('boolean', 'bool')) { return; }
+      if (check('array', 'array')) { return; }
+
+      if ($t.toESType(value) != 'object') {
+        throw Error('Expected object for field ' + name + ', found: ' + $t.toESType(value))        
+      }
     },
 
     // nativenew creates a new instance of the *ECMAScript* type specified (e.g. Number, String).
@@ -479,10 +505,10 @@ this.Serulian = (function($global) {
             };
           } else if (kind == 'struct') {
             // $box.
-            tpe.$box = function(data) {
+            tpe.$box = function(data, opt_lazycheck) {
               var instance = new tpe();
               instance.$data = data;
-              instance.$lazycheck = true;
+              instance.$lazycheck = opt_lazycheck;
               return instance;
             };
 
@@ -524,7 +550,13 @@ this.Serulian = (function($global) {
                 // Special case JSON for performance, as it uses an internal method.
                 if (T == $a['json']) {
                   var parsed = JSON.parse($t.nominalunwrap(value));
-                  return $promise.resolve(tpe.$box(parsed));
+                  var boxed = tpe.$box(parsed, true);
+
+                  // Call Mapping to ensure every field is checked.
+                  return boxed.Mapping().then(function() {
+                    boxed.$lazycheck = false;
+                    return $promise.resolve(boxed);
+                  });
                 }
 
                 return T.Get().then(function(resolved) {

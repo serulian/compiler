@@ -207,22 +207,27 @@ this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{
 	  Object.defineProperty($instance, '{{ $field.Name }}', {
 	    get: function() {
 	    	if (this.$lazycheck) {
-	    		$t.ensurevalue(this.$data.{{ $field.Name }}, {{ $parent.TypeReferenceCall $field.MemberType }});
+	    		$t.ensurevalue(this.$data.{{ $field.Name }}, {{ $parent.TypeReferenceCall $field.MemberType }}, {{ $field.MemberType.NullValueAllowed }}, '{{ $field.Name }}');
 	    	}
 
 	    	{{ if $boxed }}
-	    	return $t.box(this.$data.{{ $field.Name }}, {{ $parent.TypeReferenceCall $field.MemberType }});
-	    	{{ else }}
-	    	return this.$data.{{ $field.Name }};
+	    	if (this.$data.{{ $field.Name }} != null) {
+		    	return $t.box(this.$data.{{ $field.Name }}, {{ $parent.TypeReferenceCall $field.MemberType }});
+	    	}
 	    	{{ end }}
+
+	    	return this.$data.{{ $field.Name }};
 	    },
 
 	    set: function(val) {
 	    	{{ if $boxed }}
-	    	this.$data.{{ $field.Name }} = $t.unbox(val, {{ $parent.TypeReferenceCall $field.MemberType }});
-	    	{{ else }}
-	    	this.$data.{{ $field.Name }} = val;
+	    	if (val != null) {
+		    	this.$data.{{ $field.Name }} = $t.unbox(val, {{ $parent.TypeReferenceCall $field.MemberType }});
+		    	return;
+	    	}
 	    	{{ end }}
+
+	    	this.$data.{{ $field.Name }} = val;
 	    }
 	  });
 	{{ end }}

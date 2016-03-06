@@ -482,6 +482,17 @@ func (p *sourceParser) consumeStructuralTypeMembers(typeNode AstNode) {
 		// Otherwise, consume the structural type member.
 		typeNode.Connect(NodeTypeDefinitionMember, p.consumeStructField())
 
+		// If we have another identifer, immediate continue. This case will occur
+		// if the type did not end in an identifier (like 'int?').
+		if p.isToken(tokenTypeIdentifer) {
+			continue
+		}
+
+		// Check for a close token.
+		if p.isToken(tokenTypeRightBrace) {
+			return
+		}
+
 		if _, ok := p.consumeStatementTerminator(); !ok {
 			return
 		}
