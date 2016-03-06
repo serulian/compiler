@@ -496,6 +496,11 @@ this.Serulian = (function($global) {
               return this.$data;
             };
 
+            // String.
+            tpe.prototype.String = function() {
+              return $promise.resolve($t.nominalwrap(JSON.stringify(this, null, ' '), $a['string']));
+            };
+
             // Stringify.
             tpe.prototype.Stringify = function(T) {
               var $this = this;

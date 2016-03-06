@@ -99,6 +99,24 @@
                     }
                 }
             },
+            "600102669f5d9805ca59a17f491f6b6b": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "600102669f5d9805ca59a17f491f6b6b",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "String",
+                        "tdg-member-promising": "true",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "Function\u003cString\u003e",
+                        "tdg-member-signature": "\n\u0006string\u0010\u0001\u0018\u0000 \u0001*\u0010Function\u003cString\u003e",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/struct/success.seru"
+                    }
+                }
+            },
             "96fd6a8e3a2a7f88c5dfa771a7b4181f": {
                 "Predicate": "tdg-node-member",
                 "Child": {

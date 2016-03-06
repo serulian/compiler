@@ -3,6 +3,24 @@
         "Key": "08a9f7109d309b314cb2c0d17671cb86",
         "Kind": 5,
         "Children": {
+            "0f84e6575efad273cc63dd8b74a8a1dd": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "0f84e6575efad273cc63dd8b74a8a1dd",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "String",
+                        "tdg-member-promising": "true",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "Function\u003cString\u003e",
+                        "tdg-member-signature": "\n\u0006string\u0010\u0001\u0018\u0000 \u0001*\u0010Function\u003cString\u003e",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/struct/referenced.seru"
+                    }
+                }
+            },
             "15c8fb0eab716caef80778877cd17320": {
                 "Predicate": "tdg-node-member",
                 "Child": {
@@ -152,6 +170,24 @@
         "Key": "b536dc596e34ac70bd5e2ed2221a5d4c",
         "Kind": 5,
         "Children": {
+            "0f84e6575efad273cc63dd8b74a8a1dd": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "0f84e6575efad273cc63dd8b74a8a1dd",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "String",
+                        "tdg-member-promising": "true",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "Function\u003cString\u003e",
+                        "tdg-member-signature": "\n\u0006string\u0010\u0001\u0018\u0000 \u0001*\u0010Function\u003cString\u003e",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/struct/referenced.seru"
+                    }
+                }
+            },
             "35456a26ee4a8ad07f7ffe1585544dd3": {
                 "Predicate": "tdg-node-member",
                 "Child": {
