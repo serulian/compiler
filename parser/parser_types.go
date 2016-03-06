@@ -53,6 +53,7 @@ const (
 	// Type member blocks
 	NodeTypePropertyBlock // A child block (get or set) of a property definition
 	NodeTypeParameter     // A parameter under a type member (function, iterator, etc)
+	NodeTypeMemberTag     // A tag on a type member.
 
 	// Statements
 	NodeTypeArrowStatement       // An arrow statement: a <- b
@@ -260,6 +261,13 @@ const (
 	NodePredicateTypeMemberReturnType   = "typemember-return-type"
 	NodePredicateTypeMemberGeneric      = "typemember-generic"
 	NodePredicateTypeMemberParameter    = "typemember-parameter"
+	NodePredicateTypeMemberTag          = "typemember-tag"
+
+	//
+	// NodeTypeMemberTag
+	//
+	NodePredicateTypeMemberTagName  = "typemembertag-name"
+	NodePredicateTypeMemberTagValue = "typemembertag-value"
 
 	//
 	// NodeTypeOperator

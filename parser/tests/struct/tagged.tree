@@ -1,0 +1,110 @@
+NodeTypeFile
+  end-rune = 150
+  input-source = tagged struct test
+  start-rune = 0
+  child-node =>
+    NodeTypeStruct
+      end-rune = 150
+      input-source = tagged struct test
+      named = SomeStruct
+      start-rune = 0
+      type-member =>
+        NodeTypeField
+          end-rune = 56
+          input-source = tagged struct test
+          named = SomeField
+          start-rune = 21
+          typemember-declared-type =>
+            NodeTypeTypeReference
+              end-rune = 33
+              input-source = tagged struct test
+              start-rune = 31
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 33
+                  input-source = tagged struct test
+                  start-rune = 31
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 33
+                      identifieraccess-name = int
+                      input-source = tagged struct test
+                      start-rune = 31
+          typemember-tag =>
+            NodeTypeMemberTag
+              end-rune = 55
+              input-source = tagged struct test
+              start-rune = 40
+              typemembertag-name = name
+              typemembertag-value = somefield
+        NodeTypeField
+          end-rune = 117
+          input-source = tagged struct test
+          named = AnotherField
+          start-rune = 59
+          typemember-declared-type =>
+            NodeTypeTypeReference
+              end-rune = 77
+              input-source = tagged struct test
+              start-rune = 72
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 77
+                  input-source = tagged struct test
+                  start-rune = 72
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 77
+                      identifieraccess-name = string
+                      input-source = tagged struct test
+                      start-rune = 72
+          typemember-tag =>
+            NodeTypeMemberTag
+              end-rune = 100
+              input-source = tagged struct test
+              start-rune = 83
+              typemembertag-name = foo
+              typemembertag-value = anotherfield
+            NodeTypeMemberTag
+              end-rune = 116
+              input-source = tagged struct test
+              start-rune = 102
+              typemembertag-name = bar
+              typemembertag-value = something
+        NodeTypeField
+          end-rune = 148
+          input-source = tagged struct test
+          named = ThirdField
+          start-rune = 120
+          typemember-declared-type =>
+            NodeTypeTypeReference
+              end-rune = 148
+              input-source = tagged struct test
+              start-rune = 131
+              typereference-generic =>
+                NodeTypeTypeReference
+                  end-rune = 147
+                  input-source = tagged struct test
+                  start-rune = 145
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 147
+                      input-source = tagged struct test
+                      start-rune = 145
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 147
+                          identifieraccess-name = int
+                          input-source = tagged struct test
+                          start-rune = 145
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 143
+                  input-source = tagged struct test
+                  start-rune = 131
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 143
+                      identifieraccess-name = AnotherStruct
+                      input-source = tagged struct test
+                      start-rune = 131
