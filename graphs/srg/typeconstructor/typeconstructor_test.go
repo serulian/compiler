@@ -70,6 +70,7 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"nominal type test", "nominal", "success", ""},
 	typegraphTest{"interface op test", "interfaceop", "success", ""},
 	typegraphTest{"struct type test", "struct", "success", ""},
+	typegraphTest{"tagged struct type test", "struct", "tagged", ""},
 	typegraphTest{"referenced struct type test", "struct", "referenced", ""},
 
 	// Failure tests.

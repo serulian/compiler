@@ -132,7 +132,7 @@ func (g *TypeGraph) defineMember(typeDecl TGTypeDecl, name string, generics []st
 	}
 
 	dmodifier := g.layer.NewModifier()
-	decorator := &MemberDecorator{tdg: g, modifier: dmodifier, member: member, genericConstraints: map[compilergraph.GraphNode]TypeReference{}}
+	decorator := &MemberDecorator{tdg: g, modifier: dmodifier, member: member, genericConstraints: map[compilergraph.GraphNode]TypeReference{}, tags: map[string]string{}}
 	handler(decorator, genericMap)
 	dmodifier.Apply()
 }

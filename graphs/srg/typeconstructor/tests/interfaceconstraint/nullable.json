@@ -40,14 +40,14 @@
                     "Key": "8eb1443b21552b0d22a2f4ec8d7cb2bf",
                     "Kind": 7,
                     "Children": {
-                        "ef07ad5e0d1fdfd7701b3be7dccfd1e8": {
+                        "02ef448f77e3c36a2b7b1142ee6e860a": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "ef07ad5e0d1fdfd7701b3be7dccfd1e8",
-                                "Kind": 9,
+                                "Key": "02ef448f77e3c36a2b7b1142ee6e860a",
+                                "Kind": 10,
                                 "Children": {},
                                 "Predicates": {
-                                    "tdg-node-kind": "9|NodeType|tdg",
+                                    "tdg-node-kind": "10|NodeType|tdg",
                                     "tdg-return-type": "Integer",
                                     "tdg-source-node": "(NodeRef)"
                                 }
@@ -97,18 +97,18 @@
         "Key": "41ca0c4c59dee187ee84906a5f4a8e92",
         "Kind": 2,
         "Children": {
-            "4f08a8df54f77d625cc930a9f123c5a7": {
+            "693d012856864506391cde569a54dd3c": {
                 "Predicate": "tdg-declaration-generic",
                 "Child": {
-                    "Key": "4f08a8df54f77d625cc930a9f123c5a7",
-                    "Kind": 10,
+                    "Key": "693d012856864506391cde569a54dd3c",
+                    "Kind": 11,
                     "Children": {},
                     "Predicates": {
                         "tdg-generic-index": "0",
                         "tdg-generic-kind": "0",
                         "tdg-generic-name": "T",
                         "tdg-generic-subtype": "any",
-                        "tdg-node-kind": "10|NodeType|tdg",
+                        "tdg-node-kind": "11|NodeType|tdg",
                         "tdg-source-node": "(NodeRef)"
                     }
                 }
@@ -119,14 +119,14 @@
                     "Key": "e51be59991a83cb50ba61a7afbd7d440",
                     "Kind": 7,
                     "Children": {
-                        "27634f4196ecb4372a39030d4bf6051b": {
+                        "9516550ec6a30ac5ab017e1c64399451": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "27634f4196ecb4372a39030d4bf6051b",
-                                "Kind": 9,
+                                "Key": "9516550ec6a30ac5ab017e1c64399451",
+                                "Kind": 10,
                                 "Children": {},
                                 "Predicates": {
-                                    "tdg-node-kind": "9|NodeType|tdg",
+                                    "tdg-node-kind": "10|NodeType|tdg",
                                     "tdg-return-type": "T",
                                     "tdg-source-node": "(NodeRef)"
                                 }
@@ -158,18 +158,18 @@
         "Key": "4cfa83dce8f3facea9020f238845765a",
         "Kind": 1,
         "Children": {
-            "79b7e27e50b8b18181f838c1ce20f0f1": {
+            "23f4a67b9feec572e43e1ec6ad9c8044": {
                 "Predicate": "tdg-declaration-generic",
                 "Child": {
-                    "Key": "79b7e27e50b8b18181f838c1ce20f0f1",
-                    "Kind": 10,
+                    "Key": "23f4a67b9feec572e43e1ec6ad9c8044",
+                    "Kind": 11,
                     "Children": {},
                     "Predicates": {
                         "tdg-generic-index": "0",
                         "tdg-generic-kind": "0",
                         "tdg-generic-name": "T",
                         "tdg-generic-subtype": "ISomeInterface\u003cInteger\u003e?",
-                        "tdg-node-kind": "10|NodeType|tdg",
+                        "tdg-node-kind": "11|NodeType|tdg",
                         "tdg-source-node": "(NodeRef)"
                     }
                 }

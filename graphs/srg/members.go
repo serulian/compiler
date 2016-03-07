@@ -283,3 +283,18 @@ func (m SRGMember) Parameters() []SRGParameter {
 
 	return parameters
 }
+
+// Tags returns the tags defined on this member, if any.
+func (m SRGMember) Tags() map[string]string {
+	tags := map[string]string{}
+
+	it := m.GraphNode.StartQuery().
+		Out(parser.NodePredicateTypeMemberTag).
+		BuildNodeIterator(parser.NodePredicateTypeMemberTagName, parser.NodePredicateTypeMemberTagValue)
+
+	for it.Next() {
+		tags[it.Values()[parser.NodePredicateTypeMemberTagName]] = it.Values()[parser.NodePredicateTypeMemberTagValue]
+	}
+
+	return tags
+}

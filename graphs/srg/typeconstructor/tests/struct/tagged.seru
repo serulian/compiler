@@ -1,0 +1,3 @@
+struct SomeStruct {
+	SomeField int? `sometag:"somevalue" anothertag:"anothervalue"`
+}

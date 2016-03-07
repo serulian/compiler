@@ -129,6 +129,7 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 				member:             TGMember{typegraphNode, typeGraph},
 				tdg:                typeGraph,
 				genericConstraints: map[compilergraph.GraphNode]TypeReference{},
+				tags:               map[string]string{},
 			}
 		}, issueReporterImpl{typeGraph, modifier}, typeGraph)
 		modifier.Apply()
