@@ -8,6 +8,15 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 )
 
+// TypeMemberTag defines the set of custom tags on type members.
+type TypeMemberTag string
+
+const (
+	// STRUCT_SERIALIZED_NAME_TAG marks a type member under a struct with its name when
+	// serialized.
+	STRUCT_SERIALIZED_NAME_TAG TypeMemberTag = "name"
+)
+
 // TGMember represents a type or module member.
 type TGMember struct {
 	compilergraph.GraphNode
@@ -278,6 +287,35 @@ func (tn TGMember) AssignableType() TypeReference {
 	}
 
 	return tn.MemberType()
+}
+
+// GetTag returns the value of the given tag, if any.
+func (tn TGMember) GetTag(tag TypeMemberTag) (string, bool) {
+	node, found := tn.GraphNode.StartQuery().
+		Out(NodePredicateMemberTag).
+		Has(NodePredicateMemberTagName, string(tag)).
+		TryGetNode()
+
+	if !found {
+		return "", false
+	}
+
+	return node.Get(NodePredicateMemberTagValue), true
+}
+
+// GetTagOrDefault returns the value of the given tag or the default value if no such tag is defined.
+func (tn TGMember) GetTagOrDefault(tag TypeMemberTag, defaultValue string) string {
+	value, found := tn.GetTag(tag)
+	if !found {
+		return defaultValue
+	}
+
+	return value
+}
+
+// SerializableName returns the defined serializable name for this field.
+func (tn TGMember) SerializableName() string {
+	return tn.GetTagOrDefault(STRUCT_SERIALIZED_NAME_TAG, tn.Name())
 }
 
 // ParameterTypes returns the types of the parameters defined on this member, if any.

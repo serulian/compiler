@@ -196,7 +196,7 @@ this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{
 		var mappedData = {};
 
 		{{ range $idx, $field := .Fields }}
-		mappedData['{{ $field.Name }}'] = this.{{ $field.Name }};
+		mappedData['{{ $field.SerializableName }}'] = this.{{ $field.Name }};
 		{{ end }}
 
 		return $promise.resolve($t.nominalwrap(mappedData, {{ .TypeReferenceCall .MappingAnyType }}));
@@ -207,27 +207,27 @@ this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{
 	  Object.defineProperty($instance, '{{ $field.Name }}', {
 	    get: function() {
 	    	if (this.$lazycheck) {
-	    		$t.ensurevalue(this.$data.{{ $field.Name }}, {{ $parent.TypeReferenceCall $field.MemberType }}, {{ $field.MemberType.NullValueAllowed }}, '{{ $field.Name }}');
+	    		$t.ensurevalue(this.$data['{{ $field.SerializableName }}'], {{ $parent.TypeReferenceCall $field.MemberType }}, {{ $field.MemberType.NullValueAllowed }}, '{{ $field.Name }}');
 	    	}
 
 	    	{{ if $boxed }}
-	    	if (this.$data.{{ $field.Name }} != null) {
-		    	return $t.box(this.$data.{{ $field.Name }}, {{ $parent.TypeReferenceCall $field.MemberType }});
+	    	if (this.$data['{{ $field.SerializableName }}'] != null) {
+		    	return $t.box(this.$data['{{ $field.SerializableName }}'], {{ $parent.TypeReferenceCall $field.MemberType }});
 	    	}
 	    	{{ end }}
 
-	    	return this.$data.{{ $field.Name }};
+	    	return this.$data['{{ $field.SerializableName }}'];
 	    },
 
 	    set: function(val) {
 	    	{{ if $boxed }}
 	    	if (val != null) {
-		    	this.$data.{{ $field.Name }} = $t.unbox(val, {{ $parent.TypeReferenceCall $field.MemberType }});
+		    	this.$data['{{ $field.SerializableName }}'] = $t.unbox(val, {{ $parent.TypeReferenceCall $field.MemberType }});
 		    	return;
 	    	}
 	    	{{ end }}
 
-	    	this.$data.{{ $field.Name }} = val;
+	    	this.$data['{{ $field.SerializableName }}'] = val;
 	    }
 	  });
 	{{ end }}

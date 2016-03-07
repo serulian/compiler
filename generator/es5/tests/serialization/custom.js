@@ -116,19 +116,19 @@ $module('custom', function () {
     Object.defineProperty($instance, 'AnotherBool', {
       get: function () {
         if (this.$lazycheck) {
-          $t.ensurevalue(this.$data.AnotherBool, $g.____testlib.basictypes.Boolean, false, 'AnotherBool');
+          $t.ensurevalue(this.$data['AnotherBool'], $g.____testlib.basictypes.Boolean, false, 'AnotherBool');
         }
-        if (this.$data.AnotherBool != null) {
-          return $t.box(this.$data.AnotherBool, $g.____testlib.basictypes.Boolean);
+        if (this.$data['AnotherBool'] != null) {
+          return $t.box(this.$data['AnotherBool'], $g.____testlib.basictypes.Boolean);
         }
-        return this.$data.AnotherBool;
+        return this.$data['AnotherBool'];
       },
       set: function (val) {
         if (val != null) {
-          this.$data.AnotherBool = $t.unbox(val, $g.____testlib.basictypes.Boolean);
+          this.$data['AnotherBool'] = $t.unbox(val, $g.____testlib.basictypes.Boolean);
           return;
         }
-        this.$data.AnotherBool = val;
+        this.$data['AnotherBool'] = val;
       },
     });
   });
@@ -157,55 +157,55 @@ $module('custom', function () {
     Object.defineProperty($instance, 'SomeField', {
       get: function () {
         if (this.$lazycheck) {
-          $t.ensurevalue(this.$data.SomeField, $g.____testlib.basictypes.Integer, false, 'SomeField');
+          $t.ensurevalue(this.$data['SomeField'], $g.____testlib.basictypes.Integer, false, 'SomeField');
         }
-        if (this.$data.SomeField != null) {
-          return $t.box(this.$data.SomeField, $g.____testlib.basictypes.Integer);
+        if (this.$data['SomeField'] != null) {
+          return $t.box(this.$data['SomeField'], $g.____testlib.basictypes.Integer);
         }
-        return this.$data.SomeField;
+        return this.$data['SomeField'];
       },
       set: function (val) {
         if (val != null) {
-          this.$data.SomeField = $t.unbox(val, $g.____testlib.basictypes.Integer);
+          this.$data['SomeField'] = $t.unbox(val, $g.____testlib.basictypes.Integer);
           return;
         }
-        this.$data.SomeField = val;
+        this.$data['SomeField'] = val;
       },
     });
     Object.defineProperty($instance, 'AnotherField', {
       get: function () {
         if (this.$lazycheck) {
-          $t.ensurevalue(this.$data.AnotherField, $g.____testlib.basictypes.Boolean, false, 'AnotherField');
+          $t.ensurevalue(this.$data['AnotherField'], $g.____testlib.basictypes.Boolean, false, 'AnotherField');
         }
-        if (this.$data.AnotherField != null) {
-          return $t.box(this.$data.AnotherField, $g.____testlib.basictypes.Boolean);
+        if (this.$data['AnotherField'] != null) {
+          return $t.box(this.$data['AnotherField'], $g.____testlib.basictypes.Boolean);
         }
-        return this.$data.AnotherField;
+        return this.$data['AnotherField'];
       },
       set: function (val) {
         if (val != null) {
-          this.$data.AnotherField = $t.unbox(val, $g.____testlib.basictypes.Boolean);
+          this.$data['AnotherField'] = $t.unbox(val, $g.____testlib.basictypes.Boolean);
           return;
         }
-        this.$data.AnotherField = val;
+        this.$data['AnotherField'] = val;
       },
     });
     Object.defineProperty($instance, 'SomeInstance', {
       get: function () {
         if (this.$lazycheck) {
-          $t.ensurevalue(this.$data.SomeInstance, $g.custom.AnotherStruct, false, 'SomeInstance');
+          $t.ensurevalue(this.$data['SomeInstance'], $g.custom.AnotherStruct, false, 'SomeInstance');
         }
-        if (this.$data.SomeInstance != null) {
-          return $t.box(this.$data.SomeInstance, $g.custom.AnotherStruct);
+        if (this.$data['SomeInstance'] != null) {
+          return $t.box(this.$data['SomeInstance'], $g.custom.AnotherStruct);
         }
-        return this.$data.SomeInstance;
+        return this.$data['SomeInstance'];
       },
       set: function (val) {
         if (val != null) {
-          this.$data.SomeInstance = $t.unbox(val, $g.custom.AnotherStruct);
+          this.$data['SomeInstance'] = $t.unbox(val, $g.custom.AnotherStruct);
           return;
         }
-        this.$data.SomeInstance = val;
+        this.$data['SomeInstance'] = val;
       },
     });
   });
