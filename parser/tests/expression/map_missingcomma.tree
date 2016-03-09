@@ -26,6 +26,11 @@ NodeTypeFile
                   child-node =>
                     NodeTypeError
                       end-rune = 42
+                      error-message = Expected one of: [tokenTypeComma], found: tokenTypeSyntheticSemicolon
+                      input-source = map missing comma expr test
+                      start-rune = 43
+                    NodeTypeError
+                      end-rune = 42
                       error-message = Expected one of: [tokenTypeRightBrace], found: tokenTypeSyntheticSemicolon
                       input-source = map missing comma expr test
                       start-rune = 43
@@ -34,12 +39,6 @@ NodeTypeFile
                       end-rune = 42
                       input-source = map missing comma expr test
                       start-rune = 37
-                      child-node =>
-                        NodeTypeError
-                          end-rune = 42
-                          error-message = Expected one of: [tokenTypeComma], found: tokenTypeSyntheticSemicolon
-                          input-source = map missing comma expr test
-                          start-rune = 43
                       map-entry-key =>
                         NodeStringLiteralExpression
                           end-rune = 39

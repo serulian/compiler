@@ -635,6 +635,7 @@ func (p *sourceParser) consumeClassMembers(typeNode AstNode) {
 
 		default:
 			p.emitError("Expected class member, found %s", p.currentToken.value)
+			p.consumeUntil(tokenTypeNewline, tokenTypeSyntheticSemicolon, tokenTypeEOF)
 			return
 		}
 	}
@@ -1391,7 +1392,6 @@ func (p *sourceParser) lookaheadAssignStatement() bool {
 	for {
 		if _, ok := t.matchToken(tokenTypeLeftBracket); ok {
 			for {
-
 				if t.currentToken.kind == tokenTypeSyntheticSemicolon || t.currentToken.kind == tokenTypeError {
 					return false
 				}
@@ -1400,7 +1400,9 @@ func (p *sourceParser) lookaheadAssignStatement() bool {
 					break
 				}
 
-				t.nextToken()
+				if t.nextToken().kind == tokenTypeEOF {
+					return false
+				}
 			}
 
 			if _, ok := t.matchToken(tokenTypeRightBracket); !ok {
@@ -1429,6 +1431,10 @@ func (p *sourceParser) lookaheadAssignStatement() bool {
 
 			if _, ok := t.matchToken(tokenTypeEquals); ok {
 				break
+			}
+
+			if t.currentToken.kind == tokenTypeEOF {
+				return false
 			}
 		}
 	}
@@ -2561,6 +2567,11 @@ func (p *sourceParser) tryConsumeMapExpression() (AstNode, bool) {
 	if !p.isToken(tokenTypeRightBrace) {
 		for {
 			mapNode.Connect(NodeMapExpressionChildEntry, p.consumeMapExpressionEntry())
+
+			if _, ok := p.consume(tokenTypeComma); !ok {
+				break
+			}
+
 			if p.isToken(tokenTypeRightBrace) || p.isStatementTerminator() {
 				break
 			}
@@ -2585,9 +2596,6 @@ func (p *sourceParser) consumeMapExpressionEntry() AstNode {
 
 	// Consume an expression.
 	entryNode.Connect(NodeMapExpressionEntryValue, p.consumeExpression(consumeExpressionAllowMaps))
-
-	// Consume a comma.
-	p.consume(tokenTypeComma)
 
 	return entryNode
 }

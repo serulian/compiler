@@ -950,7 +950,7 @@ NodeTypeFile
                   start-rune = 454
                   map-expr-entry =>
                     NodeMapExpressionEntry
-                      end-rune = 464
+                      end-rune = 463
                       input-source = all expr test
                       start-rune = 458
                       map-entry-key =>
@@ -976,7 +976,7 @@ NodeTypeFile
                   start-rune = 470
                   map-expr-entry =>
                     NodeMapExpressionEntry
-                      end-rune = 478
+                      end-rune = 477
                       input-source = all expr test
                       start-rune = 474
                       map-entry-key =>
