@@ -31,6 +31,7 @@ interface Array {
 	readonly attribute Number length;
 	getter any (Number propertyName);
 	setter void (Number propertyName, any value);
+	Array slice(any start, any end);
 	serializer;
 };
 

@@ -125,7 +125,7 @@ $module('custom', function () {
       },
       set: function (val) {
         if (val != null) {
-          this.$data['AnotherBool'] = $t.unbox(val, $g.____testlib.basictypes.Boolean);
+          this.$data['AnotherBool'] = $t.unbox(val);
           return;
         }
         this.$data['AnotherBool'] = val;
@@ -166,7 +166,7 @@ $module('custom', function () {
       },
       set: function (val) {
         if (val != null) {
-          this.$data['SomeField'] = $t.unbox(val, $g.____testlib.basictypes.Integer);
+          this.$data['SomeField'] = $t.unbox(val);
           return;
         }
         this.$data['SomeField'] = val;
@@ -184,7 +184,7 @@ $module('custom', function () {
       },
       set: function (val) {
         if (val != null) {
-          this.$data['AnotherField'] = $t.unbox(val, $g.____testlib.basictypes.Boolean);
+          this.$data['AnotherField'] = $t.unbox(val);
           return;
         }
         this.$data['AnotherField'] = val;
@@ -202,7 +202,7 @@ $module('custom', function () {
       },
       set: function (val) {
         if (val != null) {
-          this.$data['SomeInstance'] = $t.unbox(val, $g.custom.AnotherStruct);
+          this.$data['SomeInstance'] = $t.unbox(val);
           return;
         }
         this.$data['SomeInstance'] = val;

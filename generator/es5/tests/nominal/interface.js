@@ -46,9 +46,6 @@ $module('interface', function () {
       instance.$wrapped = data;
       return instance;
     };
-    this.$unbox = function (instance) {
-      return instance.$wrapped;
-    };
     $instance.GetValue = function () {
       var $this = this;
       var $state = $t.sm(function ($callback) {

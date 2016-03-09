@@ -42,9 +42,6 @@ $module('generic', function () {
       instance.$wrapped = data;
       return instance;
     };
-    this.$unbox = function (instance) {
-      return instance.$wrapped;
-    };
     $instance.AnotherThing = function () {
       var $this = this;
       var $state = $t.sm(function ($callback) {

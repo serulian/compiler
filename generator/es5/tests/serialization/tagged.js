@@ -29,7 +29,7 @@ $module('tagged', function () {
       },
       set: function (val) {
         if (val != null) {
-          this.$data['somefield'] = $t.unbox(val, $g.____testlib.basictypes.Integer);
+          this.$data['somefield'] = $t.unbox(val);
           return;
         }
         this.$data['somefield'] = val;

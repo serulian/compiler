@@ -28,9 +28,6 @@ $module('nominalbase', function () {
       instance.$wrapped = data;
       return instance;
     };
-    this.$unbox = function (instance) {
-      return instance.$wrapped;
-    };
     $instance.SomeProp = $t.property(function () {
       var $this = this;
       var $state = $t.sm(function ($callback) {
@@ -62,9 +59,6 @@ $module('nominalbase', function () {
       var instance = new this();
       instance.$wrapped = data;
       return instance;
-    };
-    this.$unbox = function (instance) {
-      return instance.$wrapped;
     };
     $instance.GetValue = function () {
       var $this = this;

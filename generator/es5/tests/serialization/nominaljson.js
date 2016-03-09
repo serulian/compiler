@@ -13,9 +13,6 @@ $module('nominaljson', function () {
       instance.$wrapped = $t.box(data, $g.nominaljson.AnotherStruct);
       return instance;
     };
-    this.$unbox = function (instance) {
-      return $t.unbox(instance.$wrapped, $g.nominaljson.AnotherStruct);
-    };
     $instance.GetValue = function () {
       var $this = this;
       var $state = $t.sm(function ($callback) {
@@ -64,7 +61,7 @@ $module('nominaljson', function () {
       },
       set: function (val) {
         if (val != null) {
-          this.$data['AnotherBool'] = $t.unbox(val, $g.____testlib.basictypes.Boolean);
+          this.$data['AnotherBool'] = $t.unbox(val);
           return;
         }
         this.$data['AnotherBool'] = val;
@@ -101,7 +98,7 @@ $module('nominaljson', function () {
       },
       set: function (val) {
         if (val != null) {
-          this.$data['Nested'] = $t.unbox(val, $g.nominaljson.SomeNominal);
+          this.$data['Nested'] = $t.unbox(val);
           return;
         }
         this.$data['Nested'] = val;

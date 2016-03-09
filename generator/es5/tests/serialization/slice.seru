@@ -1,0 +1,32 @@
+struct AnotherStruct {
+	AnotherInt int
+}
+
+struct SomeStruct {
+	Values []AnotherStruct
+}
+
+function<any> TEST() {
+	var values = [
+		AnotherStruct{
+			AnotherInt: 1,
+		},
+		AnotherStruct{
+			AnotherInt: 2,
+		},
+		AnotherStruct{
+			AnotherInt: 3,
+		},
+	]
+
+	var s = SomeStruct{
+		Values: values[0:],
+	}
+
+	var jsonString = '{"Values":[{"AnotherInt":1},{"AnotherInt":2},{"AnotherInt":3}]}'
+	var correct = (s.Stringify<json>() == jsonString)
+
+	var parsed = SomeStruct.Parse<json>(jsonString)
+
+	return correct && s.Values.Length == 3 && s.Values[0].AnotherInt == 1
+}

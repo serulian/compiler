@@ -222,7 +222,7 @@ this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{
 	    set: function(val) {
 	    	{{ if $boxed }}
 	    	if (val != null) {
-		    	this.$data['{{ $field.SerializableName }}'] = $t.unbox(val, {{ $parent.TypeReferenceCall $field.MemberType }});
+		    	this.$data['{{ $field.SerializableName }}'] = $t.unbox(val);
 		    	return;
 	    	}
 	    	{{ end }}
@@ -264,14 +264,6 @@ this.$type('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .
 		instance.$wrapped = data;
 		{{ end }}
 		return instance;
-	};
-
-	this.$unbox = function(instance) {
-		{{ if .WrappedType.IsStruct }}
-		return $t.unbox(instance.$wrapped, {{ .TypeReferenceCall .WrappedType }});
-		{{ else }}
-		return instance.$wrapped;
-		{{ end }}
 	};
 	
 	{{range $idx, $kv := .GenerateImplementedMembers.Iter }}

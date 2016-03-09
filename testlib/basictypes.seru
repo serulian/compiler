@@ -234,6 +234,25 @@ class List<T> {
 			return int(this.items.length)
 		}
 	}
+
+	operator<Slice<T>> Slice(startindex int?, endindex int?) {
+		var start = startindex ?? 0
+		var end = endindex ?? this.Count
+
+		if start < 0 {
+			start = start + this.Count
+		}
+
+		if end < 0 {
+			end = end + this.Count
+		}
+
+		if start >= end {
+			return Slice<T>.Empty()
+		}
+
+		return Slice<T>.overArray(this.items.slice(Number(start), Number(end)))
+	}
 }
 
 @•typealias('map')

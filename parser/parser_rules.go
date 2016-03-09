@@ -1757,7 +1757,7 @@ func (p *sourceParser) consumeExpression(option consumeExpressionOption) AstNode
 		return exprNode
 	}
 
-	return p.createErrorNode("Unsupported expression type!")
+	return p.createErrorNode("Could not parse expected expression")
 }
 
 // tryConsumeExpression attempts to consume an expression. If an expression
@@ -2605,6 +2605,10 @@ func (p *sourceParser) consumeListExpression() AstNode {
 	if !p.isToken(tokenTypeRightBracket) {
 		// Consume one (or more) values.
 		for {
+			if p.isToken(tokenTypeRightBracket) {
+				break
+			}
+
 			listNode.Connect(NodeListExpressionValue, p.consumeExpression(consumeExpressionAllowMaps))
 
 			if p.isToken(tokenTypeRightBracket) {

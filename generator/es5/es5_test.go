@@ -156,6 +156,7 @@ var tests = []generationTest{
 	generationTest{"nominal json test", "serialization", "nominaljson", true},
 	generationTest{"custom json test", "serialization", "custom", true},
 	generationTest{"tagged json test", "serialization", "tagged", true},
+	generationTest{"slice json test", "serialization", "slice", true},
 }
 
 func TestGenerator(t *testing.T) {

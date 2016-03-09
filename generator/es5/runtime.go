@@ -96,6 +96,12 @@ this.Serulian = (function($global) {
     // failure.
     'cast': function(value, type) {
       // TODO: implement cast checking.
+      
+      // Automatically box if necessary.
+      if (type.$box) {
+        return type.$box($t.unbox(value))
+      }
+
       return value
     },
 
@@ -123,13 +129,10 @@ this.Serulian = (function($global) {
       return data;
     },
 
-    // unbox unboxes the given type, returning the raw underlying data.
-    'unbox': function(data, type) {
-      if (type.$unbox) {
-        return type.$unbox(data);
-      }
-
-      return data;
+    // unbox unboxes the given instance, returning the raw underlying data.
+    'unbox': function(instance) {
+      // TODO: make this efficient.
+      return JSON.parse(JSON.stringify(instance));
     },
 
     // ensurevalue ensures that the given value is of the given type. If not,
@@ -142,8 +145,8 @@ this.Serulian = (function($global) {
         return;
       }
 
-      var check = function(estype, serutype) {
-        if (type == $a[serutype]) {
+      var check = function(serutype, estype) {
+        if (type == $a[serutype] || type.$generic == $a[serutype]) {
           if ($t.toESType(value) != estype) {
             throw Error('Expected ' + serutype + ' for field ' + name + ', found: ' + $t.toESType(value))
           }
@@ -154,10 +157,10 @@ this.Serulian = (function($global) {
       };
 
       if (check('string', 'string')) { return; }
-      if (check('number', 'float64')) { return; }
-      if (check('number', 'int')) { return; }
-      if (check('boolean', 'bool')) { return; }
-      if (check('array', 'array')) { return; }
+      if (check('float64', 'number')) { return; }
+      if (check('int', 'number')) { return; }
+      if (check('bool', 'boolean')) { return; }
+      if (check('slice', 'array')) { return; }
 
       if ($t.toESType(value) != 'object') {
         throw Error('Expected object for field ' + name + ', found: ' + $t.toESType(value))        
@@ -501,20 +504,20 @@ this.Serulian = (function($global) {
           if (kind == 'type') {
             // toJSON.
             tpe.prototype.toJSON = function() {
-              return $t.nominalroot(this);
+              var root = $t.nominalroot(this);
+              if (root.toJSON) {
+                return root.toJSON()
+              }
+
+              return root;
             };
           } else if (kind == 'struct') {
             // $box.
             tpe.$box = function(data, opt_lazycheck) {
               var instance = new tpe();
               instance.$data = data;
-              instance.$lazycheck = opt_lazycheck;
+              instance.$lazycheck = opt_lazycheck || true;
               return instance;
-            };
-
-            // $unbox.
-            tpe.$unbox = function(boxed) {
-              return boxed.$data;
             };
 
             // toJSON.
@@ -581,7 +584,9 @@ this.Serulian = (function($global) {
               fullName = fullName + '_' + arguments[i].name;
             }
 
-            return buildType(fullName, arguments);
+            var tpe = buildType(name, arguments);
+            tpe.$generic = arguments.callee;
+            return tpe;
           };
         } else {
           module[name] = buildType(name);
@@ -647,7 +652,7 @@ this.Serulian = (function($global) {
               // If the object is a Serulian object, then add its type ref.
               if (value != null && value.constructor.$typeref) {
                 message['typeref'] = value.constructor.$typeref();
-                message['value'] = value.constructor.$unbox(value);
+                message['value'] = $t.unbox(value);
               }
 
               // Try to send the message to the other process. If it fails, then
