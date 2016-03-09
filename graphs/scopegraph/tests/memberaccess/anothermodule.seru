@@ -1,4 +1,5 @@
 var<int> SomeInt = 2
+var<int> someUnexportedThing = 4
 
 function<void> SomeFunction() {
 }

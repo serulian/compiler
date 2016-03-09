@@ -1,0 +1,5 @@
+import anothermodule
+
+function<void> DoSomething() {
+	anothermodule.someUnexportedThing
+}

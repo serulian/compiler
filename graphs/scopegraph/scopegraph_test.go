@@ -612,6 +612,10 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"Could not find instance name 'UnknownProp' under type Integer", ""},
 
+	scopegraphTest{"member access unexported test", "memberaccess", "unexported",
+		[]expectedScopeEntry{},
+		"Could not find static name 'someUnexportedThing' under import anothermodule", ""},
+
 	/////////// Nullable member access expression ///////////
 
 	scopegraphTest{"nullable member access success test", "nullablememberaccess", "success",
