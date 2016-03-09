@@ -1,0 +1,12 @@
+struct SomeStruct {
+	SomeField int `name:"somefield"`
+}
+
+function<any> TEST() {
+	var s = SomeStruct{
+		SomeField: 2,
+	}
+
+	var jsonString = '{"somefield":2}'
+	return s.Stringify<json>() == jsonString
+}

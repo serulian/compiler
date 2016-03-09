@@ -526,7 +526,7 @@ func (sb *scopeBuilder) scopeRootTypeExpression(node compilergraph.GraphNode, op
 			return newScope().Valid().Resolving(referredType.ParentTypes()[0]).GetScope()
 		}
 
-		if referredType.TypeKind() == typegraph.ClassType || referredType.TypeKind() == typegraph.ExternalInternalType {
+		if referredType.TypeKind() != typegraph.ImplicitInterfaceType && referredType.TypeKind() != typegraph.GenericType {
 			sb.decorateWithError(node, "Root type operator (&) cannot be applied to value of type %v", childType)
 			return newScope().Invalid().GetScope()
 		}

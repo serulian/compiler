@@ -21,3 +21,7 @@ function<int> SomeValue() {
 		reject SomeError.new()
 	}
 }
+
+function<int> AnotherFunction() {
+	reject SomeError.new()
+}

@@ -23,14 +23,14 @@
                     "Key": "364e6c51f36858f14823242e9dce1a96",
                     "Kind": 7,
                     "Children": {
-                        "ef07ad5e0d1fdfd7701b3be7dccfd1e8": {
+                        "02ef448f77e3c36a2b7b1142ee6e860a": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "ef07ad5e0d1fdfd7701b3be7dccfd1e8",
-                                "Kind": 9,
+                                "Key": "02ef448f77e3c36a2b7b1142ee6e860a",
+                                "Kind": 10,
                                 "Children": {},
                                 "Predicates": {
-                                    "tdg-node-kind": "9|NodeType|tdg",
+                                    "tdg-node-kind": "10|NodeType|tdg",
                                     "tdg-return-type": "Integer",
                                     "tdg-source-node": "(NodeRef)"
                                 }
@@ -97,18 +97,18 @@
                     }
                 }
             },
-            "eb6e1b4dee9612f1ea8349949d4fcacd": {
+            "c172044448d91b9448501032aba4c726": {
                 "Predicate": "tdg-declaration-generic",
                 "Child": {
-                    "Key": "eb6e1b4dee9612f1ea8349949d4fcacd",
-                    "Kind": 10,
+                    "Key": "c172044448d91b9448501032aba4c726",
+                    "Kind": 11,
                     "Children": {},
                     "Predicates": {
                         "tdg-generic-index": "0",
                         "tdg-generic-kind": "0",
                         "tdg-generic-name": "T",
                         "tdg-generic-subtype": "ISomething",
-                        "tdg-node-kind": "10|NodeType|tdg",
+                        "tdg-node-kind": "11|NodeType|tdg",
                         "tdg-source-node": "(NodeRef)"
                     }
                 }
@@ -131,14 +131,14 @@
                     "Key": "364e6c51f36858f14823242e9dce1a96",
                     "Kind": 7,
                     "Children": {
-                        "ef07ad5e0d1fdfd7701b3be7dccfd1e8": {
+                        "02ef448f77e3c36a2b7b1142ee6e860a": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "ef07ad5e0d1fdfd7701b3be7dccfd1e8",
-                                "Kind": 9,
+                                "Key": "02ef448f77e3c36a2b7b1142ee6e860a",
+                                "Kind": 10,
                                 "Children": {},
                                 "Predicates": {
-                                    "tdg-node-kind": "9|NodeType|tdg",
+                                    "tdg-node-kind": "10|NodeType|tdg",
                                     "tdg-return-type": "Integer",
                                     "tdg-source-node": "(NodeRef)"
                                 }

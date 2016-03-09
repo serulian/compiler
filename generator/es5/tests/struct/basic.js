@@ -5,17 +5,34 @@ $module('basic', function () {
     var $instance = this.prototype;
     $static.new = function (AnotherBool) {
       var instance = new $static();
-      instance.data = {
+      instance.$data = {
       };
+      instance.$lazycheck = false;
       instance.AnotherBool = AnotherBool;
       return $promise.resolve(instance);
     };
+    $instance.Mapping = function () {
+      var mappedData = {
+      };
+      mappedData['AnotherBool'] = this.AnotherBool;
+      return $promise.resolve($t.nominalwrap(mappedData, $g.____testlib.basictypes.Mapping($t.any)));
+    };
     Object.defineProperty($instance, 'AnotherBool', {
       get: function () {
-        return $t.nominalwrap(this.data.AnotherBool, $g.____testlib.basictypes.Boolean);
+        if (this.$lazycheck) {
+          $t.ensurevalue(this.$data['AnotherBool'], $g.____testlib.basictypes.Boolean, false, 'AnotherBool');
+        }
+        if (this.$data['AnotherBool'] != null) {
+          return $t.box(this.$data['AnotherBool'], $g.____testlib.basictypes.Boolean);
+        }
+        return this.$data['AnotherBool'];
       },
       set: function (val) {
-        this.data.AnotherBool = $t.nominalunwrap(val);
+        if (val != null) {
+          this.$data['AnotherBool'] = $t.unbox(val);
+          return;
+        }
+        this.$data['AnotherBool'] = val;
       },
     });
   });
@@ -25,35 +42,74 @@ $module('basic', function () {
     var $instance = this.prototype;
     $static.new = function (SomeField, AnotherField, SomeInstance) {
       var instance = new $static();
-      instance.data = {
+      instance.$data = {
       };
+      instance.$lazycheck = false;
       instance.SomeField = SomeField;
       instance.AnotherField = AnotherField;
       instance.SomeInstance = SomeInstance;
       return $promise.resolve(instance);
     };
+    $instance.Mapping = function () {
+      var mappedData = {
+      };
+      mappedData['SomeField'] = this.SomeField;
+      mappedData['AnotherField'] = this.AnotherField;
+      mappedData['SomeInstance'] = this.SomeInstance;
+      return $promise.resolve($t.nominalwrap(mappedData, $g.____testlib.basictypes.Mapping($t.any)));
+    };
     Object.defineProperty($instance, 'SomeField', {
       get: function () {
-        return $t.nominalwrap(this.data.SomeField, $g.____testlib.basictypes.Integer);
+        if (this.$lazycheck) {
+          $t.ensurevalue(this.$data['SomeField'], $g.____testlib.basictypes.Integer, false, 'SomeField');
+        }
+        if (this.$data['SomeField'] != null) {
+          return $t.box(this.$data['SomeField'], $g.____testlib.basictypes.Integer);
+        }
+        return this.$data['SomeField'];
       },
       set: function (val) {
-        this.data.SomeField = $t.nominalunwrap(val);
+        if (val != null) {
+          this.$data['SomeField'] = $t.unbox(val);
+          return;
+        }
+        this.$data['SomeField'] = val;
       },
     });
     Object.defineProperty($instance, 'AnotherField', {
       get: function () {
-        return $t.nominalwrap(this.data.AnotherField, $g.____testlib.basictypes.Boolean);
+        if (this.$lazycheck) {
+          $t.ensurevalue(this.$data['AnotherField'], $g.____testlib.basictypes.Boolean, false, 'AnotherField');
+        }
+        if (this.$data['AnotherField'] != null) {
+          return $t.box(this.$data['AnotherField'], $g.____testlib.basictypes.Boolean);
+        }
+        return this.$data['AnotherField'];
       },
       set: function (val) {
-        this.data.AnotherField = $t.nominalunwrap(val);
+        if (val != null) {
+          this.$data['AnotherField'] = $t.unbox(val);
+          return;
+        }
+        this.$data['AnotherField'] = val;
       },
     });
     Object.defineProperty($instance, 'SomeInstance', {
       get: function () {
-        return this.data.SomeInstance;
+        if (this.$lazycheck) {
+          $t.ensurevalue(this.$data['SomeInstance'], $g.basic.AnotherStruct, false, 'SomeInstance');
+        }
+        if (this.$data['SomeInstance'] != null) {
+          return $t.box(this.$data['SomeInstance'], $g.basic.AnotherStruct);
+        }
+        return this.$data['SomeInstance'];
       },
       set: function (val) {
-        this.data.SomeInstance = val;
+        if (val != null) {
+          this.$data['SomeInstance'] = $t.unbox(val);
+          return;
+        }
+        this.$data['SomeInstance'] = val;
       },
     });
   });

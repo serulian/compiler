@@ -8,16 +8,18 @@ package templater
 import (
 	"bytes"
 	"text/template"
+
+	"github.com/streamrail/concurrent-map"
 )
 
 // Templater is a helper type for running go templates.
 type Templater struct {
-	templateCache map[string]*template.Template
+	templateCache cmap.ConcurrentMap
 }
 
 func New() *Templater {
 	return &Templater{
-		templateCache: map[string]*template.Template{},
+		templateCache: cmap.New(),
 	}
 }
 
@@ -26,7 +28,7 @@ func (temp *Templater) Execute(name string, templateStr string, context interfac
 	var parsed *template.Template = nil
 
 	// Check the cache.
-	cached, isCached := temp.templateCache[templateStr]
+	cached, isCached := temp.templateCache.Get(templateStr)
 	if !isCached {
 		t := template.New(name)
 		parsedTemplate, err := t.Parse(templateStr)
@@ -34,10 +36,10 @@ func (temp *Templater) Execute(name string, templateStr string, context interfac
 			panic(err)
 		}
 
-		temp.templateCache[templateStr] = parsedTemplate
+		temp.templateCache.Set(templateStr, parsedTemplate)
 		parsed = parsedTemplate
 	} else {
-		parsed = cached
+		parsed = cached.(*template.Template)
 	}
 
 	// Execute the template.

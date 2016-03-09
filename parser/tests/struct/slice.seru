@@ -1,0 +1,23 @@
+struct AnotherStruct {
+	AnotherInt int
+}
+
+struct SomeStruct {
+	Values []AnotherStruct
+}
+
+function<any> TEST() {
+	var s = SomeStruct{
+		Values: [
+			AnotherStruct{
+				AnotherInt: 1,
+			},
+			AnotherStruct{
+				AnotherInt: 2,
+			},
+			AnotherStruct{
+				AnotherInt: 3,
+			},
+		],
+	}
+}

@@ -8,7 +8,6 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/codedom"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
-	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/parser"
 )
 
@@ -51,13 +50,22 @@ func (db *domBuilder) buildFunctionCall(node compilergraph.GraphNode) codedom.Ex
 	// a nominal type and a base type.
 	if childScope.GetKind() == proto.ScopeKind_STATIC {
 		wrappedExpr := db.getExpression(node, parser.NodeFunctionCallArgument)
-		childType := childScope.StaticTypeRef(db.scopegraph.TypeGraph())
-		referredType := childType.ReferredType()
+		childTypeRef := childScope.StaticTypeRef(db.scopegraph.TypeGraph())
 
-		if referredType.TypeKind() == typegraph.NominalType {
-			return codedom.NominalRefWrapping(wrappedExpr, childType, node)
-		} else {
+		// If the childTypeRef is not nominal, then we know we are unwrapping.
+		if !childTypeRef.IsNominal() {
 			return codedom.NominalUnwrapping(wrappedExpr, node)
+		} else {
+			// Otherwise, we need to determine whether this is a wrapping or an unwrapping. To do
+			// so, we compare the child type to the parent type of the argument.
+			argumentScope, _ := db.scopegraph.GetScope(node.GetNode(parser.NodeFunctionCallArgument))
+			argumentType := argumentScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
+
+			if childTypeRef.IsNominalWrapOf(argumentType) {
+				return codedom.NominalRefWrapping(wrappedExpr, childTypeRef, node)
+			} else {
+				return codedom.NominalUnwrapping(wrappedExpr, node)
+			}
 		}
 	}
 

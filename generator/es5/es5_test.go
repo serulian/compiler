@@ -61,6 +61,10 @@ func assertNoOttoError(t *testing.T, testName string, source string, err error) 
 
 		sourceLines := strings.Split(source, "\n")
 		for index, line := range sourceLines {
+			if index < (lineNumber-10) || index > (lineNumber+10) {
+				continue
+			}
+
 			fmt.Println(line)
 			if index+1 == lineNumber {
 				fmt.Print(strings.Repeat("~", columnPos-1))
@@ -83,7 +87,7 @@ var tests = []generationTest{
 	generationTest{"class required fields test", "class", "requiredfields", true},
 	generationTest{"constructable interface test", "interface", "constructable", true},
 
-	generationTest{"basic async test", "async", "async", false},
+	generationTest{"basic async test", "async", "async", true},
 
 	generationTest{"conditional statement", "statements", "conditional", true},
 	generationTest{"conditional else statement", "statements", "conditionalelse", true},
@@ -142,8 +146,17 @@ var tests = []generationTest{
 	generationTest{"escaped template string literal", "literals", "escapedtemplatestr", false},
 
 	generationTest{"basic webidl", "webidl", "basic", true},
+
 	generationTest{"basic nominal type", "nominal", "basic", true},
 	generationTest{"generic nominal type", "nominal", "generic", true},
+	generationTest{"base nominal type", "nominal", "nominalbase", true},
+	generationTest{"interface nominal type", "nominal", "interface", true},
+
+	generationTest{"basic json test", "serialization", "json", true},
+	generationTest{"nominal json test", "serialization", "nominaljson", true},
+	generationTest{"custom json test", "serialization", "custom", true},
+	generationTest{"tagged json test", "serialization", "tagged", true},
+	generationTest{"slice json test", "serialization", "slice", true},
 }
 
 func TestGenerator(t *testing.T) {
@@ -197,10 +210,14 @@ func TestGenerator(t *testing.T) {
 					t.Errorf("DEBUG: %v\n", call.Argument(0).String())
 					return otto.Value{}
 				})
+				vm.Set("testprint", func(call otto.FunctionCall) otto.Value {
+					t.Errorf("TEST: %v\n", call.Argument(0).String())
+					return otto.Value{}
+				})
 
-				vm.Run(`window = {};
-				window.debugprint = debugprint;
-
+				vm.Run(`this.debugprint = debugprint;
+						this.testprint = testprint;
+						
 				function setTimeout(f, t) {
 					f()
 				}
@@ -239,8 +256,6 @@ func TestGenerator(t *testing.T) {
 					$rejected = undefined;
 
 					this.boolValue = true;
-					this.Array = Array;
-					this.Object = Object;
 
 					this.Serulian.then(function(g) {
 						g.` + test.entrypoint + `.TEST().then(function(r) {

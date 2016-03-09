@@ -457,6 +457,7 @@ type MemberDecorator struct {
 	genericConstraints map[compilergraph.GraphNode]TypeReference // The defined generic constraints.
 	memberIssues       []string                                  // Issues added on the member source node.
 	returnables        []memberReturnable                        // The defined returnables.
+	tags               map[string]string                         // The defined member tags.
 }
 
 // memberReturnable holds information about a returnable under a member.
@@ -468,6 +469,12 @@ type memberReturnable struct {
 // isOperator returns whether the member being decorated is an operator.
 func (mb *MemberDecorator) isOperator() bool {
 	return mb.member.IsOperator()
+}
+
+// WithTag adds a tag onto the member.
+func (mb *MemberDecorator) WithTag(name string, value string) *MemberDecorator {
+	mb.tags[name] = value
+	return mb
 }
 
 // SkipOperatorChecking sets whether to skip operator checking for native operators.
@@ -638,6 +645,15 @@ func (mb *MemberDecorator) Decorate() {
 
 	if mb.invokesasync {
 		memberNode.Decorate(NodePredicateMemberInvokesAsync, "true")
+	}
+
+	// Add the tags to the member (if any).
+	for name, value := range mb.tags {
+		tagNode := mb.modifier.CreateNode(NodeTypeMemberTag)
+		tagNode.Decorate(NodePredicateMemberTagName, name)
+		tagNode.Decorate(NodePredicateMemberTagValue, value)
+
+		memberNode.Connect(NodePredicateMemberTag, tagNode)
 	}
 
 	// Add the returnables to the member (if any).

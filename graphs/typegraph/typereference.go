@@ -201,43 +201,37 @@ func (tr TypeReference) CheckNominalConvertable(other TypeReference) error {
 		return fmt.Errorf("Type '%v' cannot be converted to or from type '%v'", tr, other)
 	}
 
-	if !tr.checkNominalParent(other) && !other.checkNominalParent(tr) {
-		return fmt.Errorf("Type '%v' cannot be converted to or from type '%v'", tr, other)
+	if tr.IsNominalWrapOf(other) || other.IsNominalWrapOf(tr) {
+		return nil
 	}
 
-	return nil
+	return fmt.Errorf("Type '%v' cannot be converted to or from type '%v'", tr, other)
 }
 
-func (tr TypeReference) checkNominalParent(other TypeReference) bool {
+// IsNominalWrapOf returns whether the type referenced is a nominal wrapping of the other type.
+func (tr TypeReference) IsNominalWrapOf(other TypeReference) bool {
 	if tr == other {
 		return true
 	}
 
-	// Walk the parent types, comparing as we go along.
-	referredType := tr.ReferredType()
-	if referredType.TypeKind() != NominalType {
+	if !tr.IsNominal() {
 		return false
 	}
 
-	var parentType = referredType.ParentTypes()[0]
+	referredType := tr.ReferredType()
+
+	var currentParent = referredType.ParentTypes()[0].TransformUnder(tr)
 	for {
-		if parentType == other {
+		if serr := other.CheckSubTypeOf(currentParent); serr == nil {
 			return true
 		}
 
-		if !parentType.isNormal() {
+		if !currentParent.IsNominal() {
 			return false
 		}
 
-		parentTypeRef := parentType.ReferredType()
-		if parentTypeRef.TypeKind() != NominalType {
-			return false
-		}
-
-		parentType = parentTypeRef.ParentTypes()[0]
+		currentParent = currentParent.ReferredType().ParentTypes()[0].TransformUnder(tr)
 	}
-
-	return false
 }
 
 // EnsureStructural ensures that the type reference and all sub-references are structural
@@ -300,6 +294,11 @@ func (tr TypeReference) EnsureStructural() error {
 	}
 
 	return nil
+}
+
+// IsNominalOrStruct returns whether the referenced type is a struct or nominal type.
+func (tr TypeReference) IsNominalOrStruct() bool {
+	return tr.IsNominal() || tr.IsStruct()
 }
 
 // IsStruct returns whether the referenced type is a struct.

@@ -9,14 +9,14 @@
                     "Key": "5e74dc0423daf48e1943183efb3c2579",
                     "Kind": 8,
                     "Children": {
-                        "c937f1c11b440c3fe20c2c9be129bbc4": {
+                        "62d986fb1d754491327b16309085d140": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "c937f1c11b440c3fe20c2c9be129bbc4",
-                                "Kind": 9,
+                                "Key": "62d986fb1d754491327b16309085d140",
+                                "Kind": 10,
                                 "Children": {},
                                 "Predicates": {
-                                    "tdg-node-kind": "9|NodeType|tdg",
+                                    "tdg-node-kind": "10|NodeType|tdg",
                                     "tdg-return-type": "any",
                                     "tdg-source-node": "(NodeRef)"
                                 }
@@ -43,14 +43,14 @@
                     "Key": "6944741dd277a3abc6a22523313eba72",
                     "Kind": 8,
                     "Children": {
-                        "9cb7d638364adeff11a57a97894cb572": {
+                        "4a5622c2c3c66df058031fec93176dc9": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "9cb7d638364adeff11a57a97894cb572",
-                                "Kind": 9,
+                                "Key": "4a5622c2c3c66df058031fec93176dc9",
+                                "Kind": 10,
                                 "Children": {},
                                 "Predicates": {
-                                    "tdg-node-kind": "9|NodeType|tdg",
+                                    "tdg-node-kind": "10|NodeType|tdg",
                                     "tdg-return-type": "Foo",
                                     "tdg-source-node": "(NodeRef)"
                                 }

@@ -482,6 +482,17 @@ func (p *sourceParser) consumeStructuralTypeMembers(typeNode AstNode) {
 		// Otherwise, consume the structural type member.
 		typeNode.Connect(NodeTypeDefinitionMember, p.consumeStructField())
 
+		// If we have another identifer, immediate continue. This case will occur
+		// if the type did not end in an identifier (like 'int?').
+		if p.isToken(tokenTypeIdentifer) {
+			continue
+		}
+
+		// Check for a close token.
+		if p.isToken(tokenTypeRightBrace) {
+			return
+		}
+
 		if _, ok := p.consumeStatementTerminator(); !ok {
 			return
 		}
@@ -501,11 +512,74 @@ func (p *sourceParser) consumeStructField() AstNode {
 		return fieldNode
 	}
 
+	fieldNode.Decorate(NodePredicateTypeMemberName, identifier)
+
 	// TypeName
 	fieldNode.Connect(NodePredicateTypeMemberDeclaredType, p.consumeTypeReference(typeReferenceNoVoid))
 
-	fieldNode.Decorate(NodePredicateTypeMemberName, identifier)
+	// Optional tag.
+	p.consumeOptionalMemberTags(fieldNode)
+
 	return fieldNode
+}
+
+// consumeOptionalMemberTags consumes any member tags defined on a member.
+func (p *sourceParser) consumeOptionalMemberTags(memberNode AstNode) {
+	if !p.isToken(tokenTypeTemplateStringLiteral) {
+		return
+	}
+
+	// Consume the template string.
+	token, _ := p.consume(tokenTypeTemplateStringLiteral)
+
+	// We drop the tick marks (`) on either side of the expression string and lex it.
+	l := lex(p.source, token.value[1:len(token.value)-1])
+	offset := int(token.position) + 1
+
+	for {
+		// Tag name.
+		name := l.nextToken()
+		if name.kind != tokenTypeIdentifer {
+			p.emitError("Expected identifier in tag, found: %v", name.kind)
+			return
+		}
+
+		// :
+		colon := l.nextToken()
+		if colon.kind != tokenTypeColon {
+			p.emitError("Expected colon in tag, found: %v", name.kind)
+			return
+		}
+
+		// String literal.
+		value := l.nextToken()
+		if value.kind != tokenTypeStringLiteral {
+			p.emitError("Expected string literal value in tag, found: %v", name.kind)
+			return
+		}
+
+		// Add the tag to the member.
+		startRune := commentedLexeme{lexeme{name.kind, bytePosition(int(name.position) + offset), name.value}, []string{}}
+		endRune := commentedLexeme{lexeme{value.kind, bytePosition(int(value.position) + offset), value.value}, []string{}}
+
+		tagNode := p.createNode(NodeTypeMemberTag)
+		tagNode.Decorate(NodePredicateTypeMemberTagName, name.value)
+		tagNode.Decorate(NodePredicateTypeMemberTagValue, value.value[1:len(value.value)-1])
+
+		p.decorateStartRuneAndComments(tagNode, startRune)
+		p.decorateEndRune(tagNode, endRune)
+		memberNode.Connect(NodePredicateTypeMemberTag, tagNode)
+
+		next := l.nextToken()
+		if next.kind == tokenTypeEOF {
+			break
+		}
+
+		if next.kind != tokenTypeWhitespace {
+			p.emitError("Expected space between tags, found: %v", name.kind)
+			return
+		}
+	}
 }
 
 // consumeNominalTypeMembers consumes the member definitions of a nominal type.
@@ -1683,7 +1757,7 @@ func (p *sourceParser) consumeExpression(option consumeExpressionOption) AstNode
 		return exprNode
 	}
 
-	return p.createErrorNode("Unsupported expression type!")
+	return p.createErrorNode("Could not parse expected expression")
 }
 
 // tryConsumeExpression attempts to consume an expression. If an expression
@@ -2531,6 +2605,10 @@ func (p *sourceParser) consumeListExpression() AstNode {
 	if !p.isToken(tokenTypeRightBracket) {
 		// Consume one (or more) values.
 		for {
+			if p.isToken(tokenTypeRightBracket) {
+				break
+			}
+
 			listNode.Connect(NodeListExpressionValue, p.consumeExpression(consumeExpressionAllowMaps))
 
 			if p.isToken(tokenTypeRightBracket) {

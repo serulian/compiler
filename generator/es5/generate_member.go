@@ -149,6 +149,11 @@ func (gm generatingMember) SetterSource() string {
 	return statemachine.GenerateFunctionSource(setterBody, gm.Generator.templater, gm.Generator.pather, gm.Generator.scopegraph)
 }
 
+func (gm generatingMember) ReturnType() typegraph.TypeReference {
+	returnType, _ := gm.Member.ReturnType()
+	return returnType
+}
+
 // AliasRequiresSet returns whether a member (which is being aliased) requires a 'set' block.
 func (gm generatingMember) AliasRequiresSet() bool {
 	return gm.SRGMember.MemberKind() == srg.VarMember
@@ -178,6 +183,11 @@ func (pbi propertyBodyInfo) RequiresThis() bool {
 
 func (pbi propertyBodyInfo) WorkerExecutes() bool {
 	return false
+}
+
+func (pbi propertyBodyInfo) ReturnType() typegraph.TypeReference {
+	returnType, _ := pbi.propertyMember.ReturnType()
+	return returnType
 }
 
 // aliasedMemberTemplateStr defines the template for generating an aliased member.

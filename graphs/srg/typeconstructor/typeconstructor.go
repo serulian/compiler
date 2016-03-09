@@ -333,6 +333,11 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 	// Decorate the member with its kind.
 	decorator.MemberKind(uint64(member.MemberKind()))
 
+	// Decorate the member with its tags, if any.
+	for name, value := range member.Tags() {
+		decorator.WithTag(name, value)
+	}
+
 	// Finalize the member.
 	decorator.Decorate()
 }

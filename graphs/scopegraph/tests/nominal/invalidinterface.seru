@@ -1,0 +1,11 @@
+class SomeClass {}
+
+interface SomeInterface {
+	property<bool> SomeValue { get }
+}
+
+type SomeNominal : SomeInterface {}
+
+function<void> DoSomething(sc SomeClass) {
+  SomeNominal(sc)
+}

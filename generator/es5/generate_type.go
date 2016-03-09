@@ -99,6 +99,19 @@ func (gt generatingType) TypeReferenceCall(typeref typegraph.TypeReference) stri
 	return gt.Generator.pather.TypeReferenceCall(typeref)
 }
 
+// WrappedType returns the type wrapped by this nominal type.
+func (gt generatingType) WrappedType() typegraph.TypeReference {
+	if gt.Type.TypeKind() != typegraph.NominalType {
+		panic("Cannot call WrappedType on non-nominal type")
+	}
+
+	return gt.Type.ParentTypes()[0]
+}
+
+func (gt generatingType) MappingAnyType() typegraph.TypeReference {
+	return gt.Generator.scopegraph.TypeGraph().MappingTypeReference(gt.Generator.scopegraph.TypeGraph().AnyTypeReference())
+}
+
 // GenerateComposition generates the source for all the composed types structurually inherited by the type.
 func (gt generatingType) GenerateComposition() *ordered_map.OrderedMap {
 	typeMap := ordered_map.NewOrderedMap()
@@ -168,7 +181,9 @@ this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{
 
 	$static.new = function({{ range $ridx, $field := .RequiredFields }}{{ if $ridx }}, {{ end }}{{ $field.Name }}{{ end }}) {
 		var instance = new $static();
-		instance.data = {};
+		instance.$data = {};
+		instance.$lazycheck = false;
+
 		{{ range $idx, $field := .RequiredFields }}
 			instance.{{ $field.Name }} = {{ $field.Name }};
 		{{ end }}
@@ -176,23 +191,43 @@ this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{
 	};
 
 	{{ $parent := . }}
+
+	$instance.Mapping = function() {
+		var mappedData = {};
+
+		{{ range $idx, $field := .Fields }}
+		mappedData['{{ $field.SerializableName }}'] = this.{{ $field.Name }};
+		{{ end }}
+
+		return $promise.resolve($t.nominalwrap(mappedData, {{ .TypeReferenceCall .MappingAnyType }}));
+	};
+
 	{{ range $idx, $field := .Fields }}
-	  {{ $isNominal := $field.MemberType.IsNominal }}
+	  {{ $boxed := $field.MemberType.IsNominalOrStruct }}
 	  Object.defineProperty($instance, '{{ $field.Name }}', {
 	    get: function() {
-	    	{{ if $isNominal }}
-	    	return $t.nominalwrap(this.data.{{ $field.Name }}, {{ $parent.TypeReferenceCall $field.MemberType }});
-	    	{{ else }}
-	    	return this.data.{{ $field.Name }};
+	    	if (this.$lazycheck) {
+	    		$t.ensurevalue(this.$data['{{ $field.SerializableName }}'], {{ $parent.TypeReferenceCall $field.MemberType }}, {{ $field.MemberType.NullValueAllowed }}, '{{ $field.Name }}');
+	    	}
+
+	    	{{ if $boxed }}
+	    	if (this.$data['{{ $field.SerializableName }}'] != null) {
+		    	return $t.box(this.$data['{{ $field.SerializableName }}'], {{ $parent.TypeReferenceCall $field.MemberType }});
+	    	}
 	    	{{ end }}
+
+	    	return this.$data['{{ $field.SerializableName }}'];
 	    },
 
 	    set: function(val) {
-	    	{{ if $isNominal }}
-	    	this.data.{{ $field.Name }} = $t.nominalunwrap(val);
-	    	{{ else }}
-	    	this.data.{{ $field.Name }} = val;
+	    	{{ if $boxed }}
+	    	if (val != null) {
+		    	this.$data['{{ $field.SerializableName }}'] = $t.unbox(val);
+		    	return;
+	    	}
 	    	{{ end }}
+
+	    	this.$data['{{ $field.SerializableName }}'] = val;
 	    }
 	  });
 	{{ end }}
@@ -218,6 +253,16 @@ this.$type('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .
 	this.new = function($wrapped) {
 		var instance = new this();
 		instance.$wrapped = $wrapped;
+		return instance;
+	};
+
+	this.$box = function(data) {
+		var instance = new this();
+		{{ if .WrappedType.IsStruct }}
+		instance.$wrapped = $t.box(data, {{ .TypeReferenceCall .WrappedType }});
+		{{ else }}
+		instance.$wrapped = data;
+		{{ end }}
 		return instance;
 	};
 	

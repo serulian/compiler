@@ -252,6 +252,12 @@ func (t *testBasicTypesConstructor) DefineTypes(builder GetTypeBuilder) {
 		Define()
 
 	builder(*t.moduleNode).
+		Name("mapping").
+		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
+		Alias("mapping").
+		Define()
+
+	builder(*t.moduleNode).
 		Name("string").
 		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
 		Alias("string").

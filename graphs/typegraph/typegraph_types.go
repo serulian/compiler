@@ -27,6 +27,9 @@ const (
 	NodeTypeMember   // A member of a type or module.
 	NodeTypeOperator // An operator defined on a type.
 
+	// Member tags.
+	NodeTypeMemberTag
+
 	// Body-level
 	NodeTypeReturnable // A returnable member or property getter.
 
@@ -164,6 +167,9 @@ const (
 	// Decorates a member as being executed under an asynchronously invoked worker.
 	NodePredicateMemberInvokesAsync = "member-invokes-async"
 
+	// Connects a member to a member tag.
+	NodePredicateMemberTag = "member-tag"
+
 	//
 	// NodeTypeOperator
 	//
@@ -175,10 +181,20 @@ const (
 	NodePredicateOperatorNative = "operator-native"
 
 	//
+	// NodeTypeMemberTag
+	//
+
+	// Decorates a member tag with its name.
+	NodePredicateMemberTagName = "membertag-name"
+
+	// Decorates a member tag with its value.
+	NodePredicateMemberTagValue = "membertag-value"
+
+	//
 	// NodeTypeAttribute
 	//
 
-	// Marks an attribute with its name.
+	// Decorates an attribute with its name.
 	NodePredicateAttributeName = "attribute-name"
 
 	//

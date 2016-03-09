@@ -37,6 +37,11 @@ $module('generic', function () {
       instance.$wrapped = $wrapped;
       return instance;
     };
+    this.$box = function (data) {
+      var instance = new this();
+      instance.$wrapped = data;
+      return instance;
+    };
     $instance.AnotherThing = function () {
       var $this = this;
       var $state = $t.sm(function ($callback) {

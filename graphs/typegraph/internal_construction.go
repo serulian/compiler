@@ -69,6 +69,15 @@ func (g *TypeGraph) globallyValidate() bool {
 					member.Name(), serr)
 			}
 		}
+
+		// Ensure the function has no generics.
+		if member.HasGenerics() {
+			status = false
+			g.decorateWithError(
+				modifier.Modify(member.GraphNode),
+				"Asynchronous function %v cannot have generics",
+				member.Name())
+		}
 	}
 
 	if !status {
@@ -123,7 +132,7 @@ func (g *TypeGraph) defineMember(typeDecl TGTypeDecl, name string, generics []st
 	}
 
 	dmodifier := g.layer.NewModifier()
-	decorator := &MemberDecorator{tdg: g, modifier: dmodifier, member: member, genericConstraints: map[compilergraph.GraphNode]TypeReference{}}
+	decorator := &MemberDecorator{tdg: g, modifier: dmodifier, member: member, genericConstraints: map[compilergraph.GraphNode]TypeReference{}, tags: map[string]string{}}
 	handler(decorator, genericMap)
 	dmodifier.Apply()
 }
@@ -149,7 +158,7 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 		})
 	}
 
-	// Structs define Parse and Stringify methods.
+	// Structs define Parse, Stringify, Mapping and String methods.
 	if typeDecl.TypeKind() == StructType {
 		// constructor Parse<T : $parser>(value string)
 		g.defineMember(typeDecl, "Parse", []string{"T"}, func(decorator *MemberDecorator, generics map[string]TGGeneric) {
@@ -172,6 +181,32 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 			var memberType = g.FunctionTypeReference(g.StringTypeReference())
 			decorator.
 				defineGenericConstraint(generics["T"].GraphNode, g.SerializationStringifier().GetTypeReference()).
+				Static(false).
+				Promising(true).
+				Exported(true).
+				ReadOnly(true).
+				MemberType(memberType).
+				MemberKind(1).
+				Decorate()
+		})
+
+		// function<Mapping<any>> Mapping()
+		g.defineMember(typeDecl, "Mapping", []string{}, func(decorator *MemberDecorator, generics map[string]TGGeneric) {
+			var memberType = g.FunctionTypeReference(g.MappingTypeReference(g.AnyTypeReference()))
+			decorator.
+				Static(false).
+				Promising(true).
+				Exported(true).
+				ReadOnly(true).
+				MemberType(memberType).
+				MemberKind(1).
+				Decorate()
+		})
+
+		// function<string> String()
+		g.defineMember(typeDecl, "String", []string{}, func(decorator *MemberDecorator, generics map[string]TGGeneric) {
+			var memberType = g.FunctionTypeReference(g.StringTypeReference())
+			decorator.
 				Static(false).
 				Promising(true).
 				Exported(true).

@@ -432,10 +432,12 @@ func (sb *scopeBuilder) scopeStatementBlock(node compilergraph.GraphNode, option
 				}
 
 				// Otherwise, check that the returned type matches that expected.
-				rerr := returnedType.CheckSubTypeOf(returnTypeExpected)
-				if rerr != nil {
-					sb.decorateWithError(node, "Expected return value of type '%v': %v", returnTypeExpected, rerr)
-					return newScope().Invalid().Returning(returnedType, isSettlingScope).GetScope()
+				if !returnedType.IsVoid() {
+					rerr := returnedType.CheckSubTypeOf(returnTypeExpected)
+					if rerr != nil {
+						sb.decorateWithError(node, "Expected return value of type '%v': %v", returnTypeExpected, rerr)
+						return newScope().Invalid().Returning(returnedType, isSettlingScope).GetScope()
+					}
 				}
 			}
 		}

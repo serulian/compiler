@@ -4,6 +4,8 @@ from webidl`basic` import Boolean as NativeBoolean
 from webidl`basic` import Array
 from webidl`basic` import Object
 from webidl`basic` import debugprint
+from webidl`basic` import JSON as NativeJSON
+from webidl`basic` import __serulian_internal as Internal
 
 function<string> formatTemplateString(pieces []string, values []stringable) {
 	var result = ''
@@ -232,6 +234,25 @@ class List<T> {
 			return int(this.items.length)
 		}
 	}
+
+	operator<Slice<T>> Slice(startindex int?, endindex int?) {
+		var start = startindex ?? 0
+		var end = endindex ?? this.Count
+
+		if start < 0 {
+			start = start + this.Count
+		}
+
+		if end < 0 {
+			end = end + this.Count
+		}
+
+		if start >= end {
+			return Slice<T>.Empty()
+		}
+
+		return Slice<T>.overArray(this.items.slice(Number(start), Number(end)))
+	}
 }
 
 @•typealias('map')
@@ -264,18 +285,18 @@ class Map<T : Mappable, Q> {
 	}
 }
 
-@•typealias('$json')
+@•typealias('json')
 class JSON {
 	constructor Get() {
 		return JSON.new()
 	}
 
-	function<string> Stringify<T>(value mapping<T>) {
-		return ''
+	function<string> Stringify(value mapping<any>) {
+		return string(NativeJSON.stringify(Object(value)))
 	}
 
-	function<mapping<T>> Parse<T>(value string) {
-		return mapping<T>.Empty()
+	function<mapping<any>> Parse(value string) {
+		return mapping<any>(NativeJSON.parse(NativeString(value), Internal.autoNominalWrap))
 	}
 }
 
@@ -285,7 +306,7 @@ interface Stringifier {
 		return JSON.new()
 	}
 
-	function<string> Stringify<T>(value mapping<T>)
+	function<string> Stringify(value mapping<any>)
 }
 
 @•typealias('$parser')
@@ -294,5 +315,5 @@ interface Parser {
 		return JSON.new()
 	}
 
-	function<mapping<T>> Parse<T>(value string)
+	function<mapping<any>> Parse(value string)
 }

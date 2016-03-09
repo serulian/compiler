@@ -1,0 +1,39 @@
+class CustomJSON {
+	constructor Get() {
+		return CustomJSON.new()
+	}
+
+	function<string> Stringify(value mapping<any>) {
+		return json.Get().Stringify(value)
+	}
+
+	function<mapping<any>> Parse(value string) {
+		return json.Get().Parse(value)
+	}
+}
+
+struct AnotherStruct {
+	AnotherBool bool
+}
+
+struct SomeStruct {
+	SomeField int
+	AnotherField bool
+	SomeInstance AnotherStruct
+}
+
+function<any> TEST() {
+	var s = SomeStruct{
+		SomeField: 2,
+		AnotherField: false,
+		SomeInstance: AnotherStruct{
+			AnotherBool: true,
+		},
+	}
+
+	var jsonString = '{"AnotherField":false,"SomeField":2,"SomeInstance":{"AnotherBool":true}}'
+	var correct = (s.Stringify<CustomJSON>() == jsonString)
+	var parsed = SomeStruct.Parse<CustomJSON>(jsonString)
+
+	return correct && (parsed.SomeField == 2) && (!parsed.AnotherField) && (parsed.SomeInstance.AnotherBool)
+}

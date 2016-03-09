@@ -877,9 +877,19 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	scopegraphTest{"nominal type over interface success", "nominal", "overinterface",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"sn", expectedScope{true, proto.ScopeKind_VALUE, "SomeNominal", "void"}},
+		},
+		"", ""},
+
 	scopegraphTest{"nominal conversion failure", "nominal", "cannotconvert",
 		[]expectedScopeEntry{},
 		"Cannot perform type conversion: Type 'MyType' cannot be converted to or from type 'SomeType'", ""},
+
+	scopegraphTest{"nominal interface conversion failure", "nominal", "invalidinterface",
+		[]expectedScopeEntry{},
+		"Cannot perform type conversion: Type 'SomeClass' cannot be converted to or from type 'SomeNominal'", ""},
 
 	scopegraphTest{"nominal conversion argument count mismatch", "nominal", "convertargcount",
 		[]expectedScopeEntry{},
@@ -944,6 +954,10 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"async under class test", "async", "underclass",
 		[]expectedScopeEntry{},
 		"Asynchronous functions must be declared under modules: 'DoSomethingAsync' defined under class SomeClass", ""},
+
+	scopegraphTest{"async generic invalid test", "async", "genericinvalid",
+		[]expectedScopeEntry{},
+		"Asynchronous function DoSomethingAsync cannot have generics", ""},
 
 	scopegraphTest{"async invalid return type test", "async", "invalidreturn",
 		[]expectedScopeEntry{},
