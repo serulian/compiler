@@ -1,16 +1,16 @@
 NodeTypeFile
-  end-rune = 511
+  end-rune = 531
   input-source = all expr test
   start-rune = 0
   child-node =>
     NodeTypeFunction
-      end-rune = 511
+      end-rune = 531
       input-source = all expr test
       named = SomeFunction
       start-rune = 0
       definition-body =>
         NodeTypeStatementBlock
-          end-rune = 511
+          end-rune = 531
           input-source = all expr test
           start-rune = 30
           block-child =>
@@ -1092,6 +1092,54 @@ NodeTypeFile
                                   identifieraccess-name = b
                                   input-source = all expr test
                                   start-rune = 504
+            NodeTypeExpressionStatement
+              end-rune = 518
+              input-source = all expr test
+              start-rune = 512
+              expr-statement-expr =>
+                NodeInCollectionExpression
+                  end-rune = 517
+                  input-source = all expr test
+                  start-rune = 512
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 512
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 512
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 517
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 517
+            NodeTypeExpressionStatement
+              end-rune = 530
+              input-source = all expr test
+              start-rune = 520
+              expr-statement-expr =>
+                NodeInCollectionExpression
+                  end-rune = 529
+                  input-source = all expr test
+                  start-rune = 520
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 520
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 520
+                  binary-expression-right =>
+                    NodeMemberAccessExpression
+                      end-rune = 529
+                      input-source = all expr test
+                      member-access-identifier = foo
+                      start-rune = 525
+                      member-access-expr =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 525
+                          identexpr-name = b
+                          input-source = all expr test
+                          start-rune = 525
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 12

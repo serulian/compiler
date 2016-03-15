@@ -110,6 +110,7 @@ const (
 	tokenTypeNotEquals    // !=
 
 	tokenTypeIsOperator // is
+	tokenTypeInOperator // in
 
 	// Stream Operators
 	tokenTypeEllipsis // ..
@@ -181,8 +182,6 @@ var keywords = map[string]bool{
 	"with":     true,
 	"match":    true,
 	"case":     true,
-
-	"in": true,
 }
 
 // syntheticPredecessors contains the full set of token types after which, if a newline is found,
@@ -676,6 +675,9 @@ func lexIdentifierOrKeyword(l *lexer) stateFn {
 
 	case l.value() == "is":
 		l.emit(tokenTypeIsOperator)
+
+	case l.value() == "in":
+		l.emit(tokenTypeInOperator)
 
 	case is_keyword:
 		l.emit(tokenTypeKeyword)
