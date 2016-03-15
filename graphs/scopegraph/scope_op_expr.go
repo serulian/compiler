@@ -173,6 +173,12 @@ func (sb *scopeBuilder) scopeSliceChildExpression(node compilergraph.GraphNode, 
 		return typegraph.TGMember{}, childType, false
 	}
 
+	// Ensure that the child expression is not nullable.
+	if childType.NullValueAllowed() {
+		sb.decorateWithError(node, "Operator '%v' cannot be called on nullable type '%v'", opName, childType)
+		return typegraph.TGMember{}, childType, false
+	}
+
 	return operator, childType, true
 }
 
