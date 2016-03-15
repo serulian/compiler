@@ -522,6 +522,10 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	scopegraphTest{"indexer nullable test", "slice", "indexernullable",
+		[]expectedScopeEntry{},
+		"Operator 'index' cannot be called on nullable type 'SomeClass?'", ""},
+
 	scopegraphTest{"indexer invalid param test", "slice", "invalidindex",
 		[]expectedScopeEntry{},
 		"Indexer parameter must be type Boolean: 'Integer' cannot be used in place of non-interface 'Boolean'", ""},

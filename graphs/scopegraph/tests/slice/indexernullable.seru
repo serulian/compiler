@@ -1,0 +1,9 @@
+class SomeClass {
+	operator<int> index(value int) {
+		return value
+	}
+}
+
+function<void> DoSomething(sc SomeClass?) {
+	sc[4]
+}
