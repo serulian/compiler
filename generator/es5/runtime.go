@@ -188,7 +188,7 @@ this.Serulian = (function($global) {
 
     // nominalwrap wraps an object with a nominal type.
     'nominalwrap': function(instance, type) {
-      return type.new(instance)
+      return type.new($t.nominalroot(instance))
     },
 
     // nominalwrap unwraps a nominal type one level. Unlike nominal root, the resulting

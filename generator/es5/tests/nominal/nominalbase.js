@@ -66,7 +66,7 @@ $module('nominalbase', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              $t.nominalunwrap($this).SomeProp().then(function ($result0) {
+              $t.nominalwrap($this, $g.nominalbase.FirstNominal).SomeProp().then(function ($result0) {
                 $result = $t.nominalwrap(!$t.nominalunwrap($result0), $g.____testlib.basictypes.Boolean);
                 $state.current = 1;
                 $callback($state);

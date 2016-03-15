@@ -56,16 +56,7 @@ func (db *domBuilder) buildFunctionCall(node compilergraph.GraphNode) codedom.Ex
 		if !childTypeRef.IsNominal() {
 			return codedom.NominalUnwrapping(wrappedExpr, node)
 		} else {
-			// Otherwise, we need to determine whether this is a wrapping or an unwrapping. To do
-			// so, we compare the child type to the parent type of the argument.
-			argumentScope, _ := db.scopegraph.GetScope(node.GetNode(parser.NodeFunctionCallArgument))
-			argumentType := argumentScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
-
-			if childTypeRef.IsNominalWrapOf(argumentType) {
-				return codedom.NominalRefWrapping(wrappedExpr, childTypeRef, node)
-			} else {
-				return codedom.NominalUnwrapping(wrappedExpr, node)
-			}
+			return codedom.NominalRefWrapping(wrappedExpr, childTypeRef, node)
 		}
 	}
 
