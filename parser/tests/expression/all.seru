@@ -58,4 +58,6 @@ function<void> SomeFunction() {
 	this
 	a<b>
 	a<b<c>?>
+	a in b
+	a in b.foo
 }

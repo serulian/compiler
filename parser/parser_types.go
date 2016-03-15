@@ -103,6 +103,8 @@ const (
 	NodeNullComparisonExpression // a ?? b
 	NodeIsComparisonExpression   // a is b
 
+	NodeInCollectionExpression // a in b
+
 	NodeDefineRangeExpression // a .. b
 
 	NodeBinaryAddExpression      // A plus expression: +

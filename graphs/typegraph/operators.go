@@ -113,6 +113,11 @@ func (t *TypeGraph) buildOperatorDefinitions() {
 		// Range.
 		operatorDefinition{"range", true, false, streamContainingTypeGetter, binaryParameters},
 
+		// Contains.
+		operatorDefinition{"contains", false, false, staticTypeGetter(t.BoolType()), []operatorParameter{
+			operatorParameter{"item", anyTypeGetter},
+		}},
+
 		// Slice.
 		operatorDefinition{"slice", false, false, anyTypeGetter, []operatorParameter{
 			operatorParameter{"startindex", staticNullableTypeGetter(t.IntType())},

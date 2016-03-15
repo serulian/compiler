@@ -129,6 +129,7 @@ var tests = []generationTest{
 	generationTest{"slice op expressions", "opexpr", "slice", true},
 	generationTest{"is null op expression", "opexpr", "isnull", false},
 	generationTest{"mixed op expressions", "opexpr", "mixed", true},
+	generationTest{"in collection op expression", "opexpr", "in", true},
 
 	generationTest{"identifier expressions", "literals", "identifier", false},
 

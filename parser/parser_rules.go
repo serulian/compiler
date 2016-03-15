@@ -1581,11 +1581,11 @@ func (p *sourceParser) consumeForStatement() AstNode {
 	// for
 	p.consumeKeyword("for")
 
-	// If the next two tokens are an identifier and the keyword "in",
+	// If the next two tokens are an identifier and the operator "in",
 	// then we have a variable declaration of the for loop.
-	if p.isToken(tokenTypeIdentifer) && p.isNextKeyword("in") {
+	if p.isToken(tokenTypeIdentifer) && p.isNextToken(tokenTypeInOperator) {
 		forNode.Connect(NodeStatementNamedValue, p.consumeNamedValue())
-		p.consumeKeyword("in")
+		p.consume(tokenTypeInOperator)
 	}
 
 	// Consume the expression (if any).
@@ -2007,7 +2007,10 @@ func (p *sourceParser) tryConsumeNonArrowExpression() (AstNode, bool) {
 		boe{tokenTypeEllipsis, NodeDefineRangeExpression},
 
 		// 'is' operator.
-		boe{tokenTypeIsOperator, NodeIsComparisonExpression})
+		boe{tokenTypeIsOperator, NodeIsComparisonExpression},
+
+		// 'in' operator.
+		boe{tokenTypeInOperator, NodeInCollectionExpression})
 
 	return binaryParser()
 }

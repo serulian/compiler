@@ -257,6 +257,43 @@ func (sb *scopeBuilder) scopeIndexerExpression(node compilergraph.GraphNode, opt
 	}
 }
 
+// scopeInCollectionExpression scopes an 'in' collection expression in the SRG.
+func (sb *scopeBuilder) scopeInCollectionExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+	// Get the scope of the left and right expressions.
+	leftScope := sb.getScope(node.GetNode(parser.NodeBinaryExpressionLeftExpr))
+	rightScope := sb.getScope(node.GetNode(parser.NodeBinaryExpressionRightExpr))
+
+	// Ensure that both scopes are valid.
+	if !leftScope.GetIsValid() || !rightScope.GetIsValid() {
+		return newScope().Invalid().GetScope()
+	}
+
+	// Ensure that the right side has a 'contains' operator defined.
+	rightType := rightScope.ResolvedTypeRef(sb.sg.tdg)
+	module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
+	operator, found := rightType.ResolveAccessibleMember("contains", module, typegraph.MemberResolutionOperator)
+	if !found {
+		sb.decorateWithError(node, "Operator 'contains' is not defined on type '%v'", rightType)
+		return newScope().Invalid().GetScope()
+	}
+
+	// Ensure the right side is not nullable.
+	if rightType.NullValueAllowed() {
+		sb.decorateWithError(node, "Cannot invoke operator 'in' on nullable value of type '%v'", rightType)
+		return newScope().Invalid().GetScope()
+	}
+
+	// Ensure that the left side can be used as the operator's parameter.
+	parameterType := operator.ParameterTypes()[0].TransformUnder(rightType)
+	leftType := leftScope.ResolvedTypeRef(sb.sg.tdg)
+	if serr := leftType.CheckSubTypeOf(parameterType); serr != nil {
+		sb.decorateWithError(node, "Cannot invoke operator 'in' with value of type '%v': %v", leftType, serr)
+		return newScope().Invalid().GetScope()
+	}
+
+	return newScope().Valid().CallsOperator(operator).Resolving(sb.sg.tdg.BoolTypeReference()).GetScope()
+}
+
 // scopeIsComparisonExpression scopes an 'is' comparison expression in the SRG.
 func (sb *scopeBuilder) scopeIsComparisonExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	// Get the scope of the left and right expressions.
