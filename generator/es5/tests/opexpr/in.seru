@@ -1,0 +1,10 @@
+class SomeClass {
+	operator contains(value bool) {
+		return !value
+	}
+}
+
+function<any> TEST() {
+	var sc = SomeClass.new()
+	return false in sc
+}

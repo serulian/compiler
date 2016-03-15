@@ -122,6 +122,17 @@ func (db *domBuilder) buildNullComparisonExpression(node compilergraph.GraphNode
 	return codedom.RuntimeFunctionCall(codedom.NullableComparisonFunction, []codedom.Expression{leftExpr, rightExpr}, node)
 }
 
+// buildInCollectionExpression builds the CodeDOM for an in collection operator.
+func (db *domBuilder) buildInCollectionExpression(node compilergraph.GraphNode) codedom.Expression {
+	valueExpr := db.getExpression(node, parser.NodeBinaryExpressionLeftExpr)
+	childExpr := db.getExpression(node, parser.NodeBinaryExpressionRightExpr)
+
+	scope, _ := db.scopegraph.GetScope(node)
+	operator, _ := scope.CalledOperator(db.scopegraph.TypeGraph())
+
+	return codedom.MemberCall(codedom.MemberReference(childExpr, operator, node), operator, []codedom.Expression{valueExpr}, node)
+}
+
 // buildIsComparisonExpression builds the CodeDOM for an is comparison operator.
 func (db *domBuilder) buildIsComparisonExpression(node compilergraph.GraphNode) codedom.Expression {
 	leftExpr := db.getExpression(node, parser.NodeBinaryExpressionLeftExpr)
@@ -200,5 +211,4 @@ func (db *domBuilder) buildBinaryOperatorExpression(node compilergraph.GraphNode
 	}
 
 	return callExpr
-
 }
