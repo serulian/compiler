@@ -1,0 +1,9 @@
+class SomeClass {
+	operator contains(someValue int) {
+		return true
+	}
+}
+
+function<void> DoSomething(sc SomeClass) {
+	true in sc
+}

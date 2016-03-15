@@ -295,6 +295,26 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"Root type operator (&) cannot be applied to value of type SomeClass", ""},
 
+	/////////// In operator expression ///////////
+
+	scopegraphTest{"in op success test", "inop", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"in", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"in op nullable test", "inop", "nullable",
+		[]expectedScopeEntry{},
+		"Cannot invoke operator 'in' on nullable value of type 'SomeClass?'", ""},
+
+	scopegraphTest{"in op no contains test", "inop", "nocontains",
+		[]expectedScopeEntry{},
+		"Operator 'contains' is not defined on type 'SomeClass'", ""},
+
+	scopegraphTest{"in op invalid arg test", "inop", "invalidarg",
+		[]expectedScopeEntry{},
+		"Cannot invoke operator 'in' with value of type 'Boolean': 'Boolean' cannot be used in place of non-interface 'Integer'", ""},
+
 	/////////// Is operator expression ///////////
 
 	scopegraphTest{"is op success test", "isop", "success",
