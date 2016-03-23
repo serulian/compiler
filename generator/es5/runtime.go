@@ -424,6 +424,10 @@ this.Serulian = (function($global) {
   		return Promise.all(promises);
   	},
 
+    'new': function(f) {
+      return new Promise(f);
+    },
+
   	'empty': function() {
   		return new Promise(function() {
   			resolve();

@@ -91,6 +91,12 @@ func (tn TGMember) SourceNodeId() (compilergraph.GraphNodeId, bool) {
 	return compilergraph.GraphNodeId(idFound), true
 }
 
+// HasBaseMember returns true if this member was cloned/inherited.
+func (tn TGMember) HasBaseMember() bool {
+	_, hasBaseMember := tn.BaseMember()
+	return hasBaseMember
+}
+
 // BaseMember returns the member in a parent type from which this member was cloned/inherited, if any.
 func (tn TGMember) BaseMember() (TGMember, bool) {
 	parentMember, hasParentMember := tn.GraphNode.TryGetNode(NodePredicateMemberBaseMember)

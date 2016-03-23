@@ -120,9 +120,11 @@ func (gt generatingType) GenerateComposition() *ordered_map.OrderedMap {
 		data := struct {
 			ComposedTypeLocation string
 			InnerInstanceName    string
+			RequiredFields       []typegraph.TGMember
 		}{
 			gt.Generator.pather.TypeReferenceCall(parentTypeRef),
 			gt.Generator.pather.InnerInstanceName(parentTypeRef),
+			parentTypeRef.ReferredType().RequiredFields(),
 		}
 
 		source := gt.Generator.templater.Execute("composition", compositionTemplateStr, data)
@@ -134,7 +136,7 @@ func (gt generatingType) GenerateComposition() *ordered_map.OrderedMap {
 
 // compositionTemplateStr defines a template for instantiating a composed type.
 const compositionTemplateStr = `
-	({{ .ComposedTypeLocation }}).new().then(function(value) {
+	({{ .ComposedTypeLocation }}).new({{ range $ridx, $field := .RequiredFields }}{{ if $ridx }}, {{ end }}{{ $field.Name }}{{ end }}).then(function(value) {
 	  instance.{{ .InnerInstanceName }} = value;
 	})
 `
@@ -153,12 +155,17 @@ this.$class('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ 
 	$static.new = function({{ range $ridx, $field := .RequiredFields }}{{ if $ridx }}, {{ end }}{{ $field.Name }}{{ end }}) {
 		var instance = new $static();
 		var init = [];
-		{{ range $idx, $field := .RequiredFields }}
-			instance.{{ $field.Name }} = {{ $field.Name }};
-		{{ end }}
 		{{ range $idx, $kv := $composed.Iter }}
 			init.push({{ $kv.Value }});
   		{{ end }}
+		{{ range $idx, $field := .RequiredFields }}
+		{{ if not $field.HasBaseMember }}
+			init.push($promise.new(function(resolve) {
+				instance.{{ $field.Name }} = {{ $field.Name }};
+				resolve();
+			}));
+		{{ end }}
+		{{ end }}
 		{{ range $idx, $kv := $vars.Iter }}
 			init.push({{ $kv.Value }});
 		{{ end }}
