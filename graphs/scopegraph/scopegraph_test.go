@@ -939,6 +939,14 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"Could not find instance name 'DoSomething' under nominal type MyType", ""},
 
+	/////////// structural tests /////////////////
+
+	scopegraphTest{"structural equality test", "structnew", "equality",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"eq", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+		},
+		"", ""},
+
 	/////////// structural new expression tests /////////////////
 
 	scopegraphTest{"structural new success tests", "structnew", "success",

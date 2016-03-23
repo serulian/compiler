@@ -39,6 +39,39 @@
                     }
                 }
             },
+            "31c04a607dcadf4def40558239902c1b": {
+                "Predicate": "tdg-declaration-operator",
+                "Child": {
+                    "Key": "31c04a607dcadf4def40558239902c1b",
+                    "Kind": 8,
+                    "Children": {
+                        "27055d86d44ce3f5b3524db4dbebd4c7": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "27055d86d44ce3f5b3524db4dbebd4c7",
+                                "Kind": 10,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "10|NodeType|tdg",
+                                    "tdg-return-type": "Boolean",
+                                    "tdg-source-node": ""
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "•equals",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "Function\u003cBoolean\u003e(AnotherStruct, AnotherStruct)",
+                        "tdg-member-signature": "\n\u0006equals\u0010\u0002\u0018\u0000 \u0001*\u0003any",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "8|NodeType|tdg",
+                        "tdg-operator-name": "equals",
+                        "tdg-source-module": "tests/struct/referenced.seru"
+                    }
+                }
+            },
             "460ad0dd2d0957e635cc4ca2861867f6": {
                 "Predicate": "tdg-declaration-module",
                 "Child": {
@@ -343,6 +376,39 @@
                         "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*5Function\u003cSomeStruct\u003e(Integer, Boolean, AnotherStruct)",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/struct/referenced.seru"
+                    }
+                }
+            },
+            "fc9d7922c3206de81a7e6bda47ba6a9f": {
+                "Predicate": "tdg-declaration-operator",
+                "Child": {
+                    "Key": "fc9d7922c3206de81a7e6bda47ba6a9f",
+                    "Kind": 8,
+                    "Children": {
+                        "27055d86d44ce3f5b3524db4dbebd4c7": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "27055d86d44ce3f5b3524db4dbebd4c7",
+                                "Kind": 10,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "10|NodeType|tdg",
+                                    "tdg-return-type": "Boolean",
+                                    "tdg-source-node": ""
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "•equals",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "Function\u003cBoolean\u003e(SomeStruct, SomeStruct)",
+                        "tdg-member-signature": "\n\u0006equals\u0010\u0002\u0018\u0000 \u0001*\u0003any",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "8|NodeType|tdg",
+                        "tdg-operator-name": "equals",
                         "tdg-source-module": "tests/struct/referenced.seru"
                     }
                 }

@@ -115,9 +115,21 @@ func (g *TypeGraph) defineAllImplicitMembers() {
 
 type decorateHandler func(decorator *MemberDecorator, generics map[string]TGGeneric)
 
+func (g *TypeGraph) defineOperator(typeDecl TGTypeDecl, operator operatorDefinition, handler decorateHandler) {
+	g.defineMemberInternal(typeDecl, operator.Name, []string{}, true, func(decorator *MemberDecorator, generics map[string]TGGeneric) {
+		decorator.Static(operator.IsStatic)
+		decorator.ReadOnly(!operator.IsAssignable)
+		handler(decorator, generics)
+	})
+}
+
 func (g *TypeGraph) defineMember(typeDecl TGTypeDecl, name string, generics []string, handler decorateHandler) {
+	g.defineMemberInternal(typeDecl, name, generics, false, handler)
+}
+
+func (g *TypeGraph) defineMemberInternal(typeDecl TGTypeDecl, name string, generics []string, isOperator bool, handler decorateHandler) {
 	modifier := g.layer.NewModifier()
-	builder := &MemberBuilder{tdg: g, modifier: modifier, parent: typeDecl}
+	builder := &MemberBuilder{tdg: g, modifier: modifier, parent: typeDecl, isOperator: isOperator}
 	for _, generic := range generics {
 		builder.withGeneric(generic)
 	}
@@ -158,7 +170,7 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 		})
 	}
 
-	// Structs define Parse, Stringify, Mapping and String methods.
+	// Structs define Parse, Stringify, Mapping and String methods, as well as an Equals operator.
 	if typeDecl.TypeKind() == StructType {
 		// constructor Parse<T : $parser>(value string)
 		g.defineMember(typeDecl, "Parse", []string{"T"}, func(decorator *MemberDecorator, generics map[string]TGGeneric) {
@@ -173,6 +185,20 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 				ReadOnly(true).
 				MemberType(memberType).
 				MemberKind(0).
+				Decorate()
+		})
+
+		// operator Equals(left ThisType, right ThisType)
+		equals, _ := g.GetOperatorDefinition("equals")
+		g.defineOperator(typeDecl, equals, func(decorator *MemberDecorator, generics map[string]TGGeneric) {
+			var memberType = g.FunctionTypeReference(g.BoolTypeReference())
+			memberType = memberType.WithParameter(g.NewInstanceTypeReference(typeDecl))
+			memberType = memberType.WithParameter(g.NewInstanceTypeReference(typeDecl))
+
+			decorator.
+				MemberType(memberType).
+				Exported(true).
+				MemberKind(2).
 				Decorate()
 		})
 
