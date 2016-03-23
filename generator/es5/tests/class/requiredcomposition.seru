@@ -1,0 +1,16 @@
+class First {
+	var<int> FirstValue
+}
+
+class Second {
+	var<string> SecondValue
+}
+
+class SomeClass : First + Second {
+	
+}
+
+function<any> TEST() {
+	var sc = SomeClass.new(42, 'hello')
+	return sc.FirstValue == 42 && sc.SecondValue == 'hello'
+}
