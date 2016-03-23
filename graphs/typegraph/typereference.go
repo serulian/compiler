@@ -771,6 +771,26 @@ const (
 	MemberResolutionInstanceOrStatic
 )
 
+// Title returns a human-readable title for the kind of resolution occurring.
+func (mrk MemberResolutionKind) Title() string {
+	switch mrk {
+	case MemberResolutionOperator:
+		return "operator"
+
+	case MemberResolutionStatic:
+		return "static"
+
+	case MemberResolutionInstance:
+		return "instance"
+
+	case MemberResolutionInstanceOrStatic:
+		return "member"
+
+	default:
+		panic("Unknown MemberResolutionKind")
+	}
+}
+
 // ResolveMember looks for an member with the given name under the referred type and returns it (if any).
 func (tr TypeReference) ResolveMember(memberName string, kind MemberResolutionKind) (TGMember, bool) {
 	if !tr.isNormal() || tr.IsAny() {
@@ -813,10 +833,16 @@ func (tr TypeReference) ResolveMember(memberName string, kind MemberResolutionKi
 }
 
 // ResolveAccessibleMember looks for an member with the given name under the referred type and returns it (if any).
-func (tr TypeReference) ResolveAccessibleMember(memberName string, module compilercommon.InputSource, kind MemberResolutionKind) (TGMember, bool) {
+func (tr TypeReference) ResolveAccessibleMember(memberName string, module compilercommon.InputSource, kind MemberResolutionKind) (TGMember, error) {
 	member, found := tr.ResolveMember(memberName, kind)
 	if !found {
-		return TGMember{}, false
+		adjusted := tr.tdg.adjustedName(memberName)
+		_, otherSpellingFound := tr.ResolveMember(adjusted, kind)
+		if otherSpellingFound {
+			return TGMember{}, fmt.Errorf("Could not find %v name '%v' under %v; Did you mean '%v'?", kind.Title(), memberName, tr.TitledString(), adjusted)
+		}
+
+		return TGMember{}, fmt.Errorf("Could not find %v name '%v' under %v", kind.Title(), memberName, tr.TitledString())
 	}
 
 	// If the member is exported, then always return it. Otherwise, only return it if the asking module
@@ -824,11 +850,11 @@ func (tr TypeReference) ResolveAccessibleMember(memberName string, module compil
 	if !member.IsExported() {
 		memberModule := member.Node().Get(NodePredicateModulePath)
 		if memberModule != string(module) {
-			return TGMember{}, false
+			return TGMember{}, fmt.Errorf("%v %v is not exported under %v", member.Title(), member.Name(), tr.TitledString())
 		}
 	}
 
-	return member, true
+	return member, nil
 }
 
 // WithGeneric returns a copy of this type reference with the given generic added.
@@ -1024,16 +1050,23 @@ func (tr TypeReference) ReplaceType(typeDecl TGTypeDecl, replacement TypeReferen
 	}
 }
 
+// TitledString returns a human-friendly string which includes the title of the type referenced.
+func (tr TypeReference) TitledString() string {
+	var buffer bytes.Buffer
+	tr.appendHumanString(&buffer, true)
+	return buffer.String()
+}
+
 // String returns a human-friendly string.
 func (tr TypeReference) String() string {
 	var buffer bytes.Buffer
-	tr.appendHumanString(&buffer)
+	tr.appendHumanString(&buffer, false)
 	return buffer.String()
 }
 
 // appendHumanString appends the human-readable version of this type reference to
 // the given buffer.
-func (tr TypeReference) appendHumanString(buffer *bytes.Buffer) {
+func (tr TypeReference) appendHumanString(buffer *bytes.Buffer, titled bool) {
 	if tr.IsAny() {
 		buffer.WriteString("any")
 		return
@@ -1059,6 +1092,11 @@ func (tr TypeReference) appendHumanString(buffer *bytes.Buffer) {
 	if typeNode.Kind == NodeTypeGeneric {
 		buffer.WriteString(typeNode.Get(NodePredicateGenericName))
 	} else {
+		if titled {
+			buffer.WriteString(tr.ReferredType().Title())
+			buffer.WriteRune(' ')
+		}
+
 		buffer.WriteString(typeNode.Get(NodePredicateTypeName))
 	}
 
@@ -1069,7 +1107,7 @@ func (tr TypeReference) appendHumanString(buffer *bytes.Buffer) {
 				buffer.WriteString(", ")
 			}
 
-			generic.appendHumanString(buffer)
+			generic.appendHumanString(buffer, false)
 		}
 
 		buffer.WriteByte('>')
@@ -1082,7 +1120,7 @@ func (tr TypeReference) appendHumanString(buffer *bytes.Buffer) {
 				buffer.WriteString(", ")
 			}
 
-			parameter.appendHumanString(buffer)
+			parameter.appendHumanString(buffer, false)
 		}
 
 		buffer.WriteByte(')')

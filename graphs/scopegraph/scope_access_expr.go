@@ -169,9 +169,9 @@ func (sb *scopeBuilder) scopeStreamMemberAccessExpression(node compilergraph.Gra
 		}
 
 		valueType := generics[0]
-		typeMember, found := valueType.ResolveAccessibleMember(memberName, module, typegraph.MemberResolutionInstance)
-		if !found {
-			sb.decorateWithError(node, "Could not find instance name '%v' under stream value type %v", memberName, valueType)
+		typeMember, rerr := valueType.ResolveAccessibleMember(memberName, module, typegraph.MemberResolutionInstance)
+		if rerr != nil {
+			sb.decorateWithError(node, "%v", rerr)
 			return newScope().Invalid().GetScope()
 		}
 
@@ -219,8 +219,8 @@ func (sb *scopeBuilder) scopeDynamicMemberAccessExpression(node compilergraph.Gr
 
 		// Look for the matching type member, either instance or static. If not found, then the access
 		// returns an "any" type.
-		typeMember, found := lookupType.ResolveAccessibleMember(memberName, module, typegraph.MemberResolutionInstanceOrStatic)
-		if !found {
+		typeMember, rerr := lookupType.ResolveAccessibleMember(memberName, module, typegraph.MemberResolutionInstanceOrStatic)
+		if rerr != nil {
 			sb.decorateWithWarning(node, "Member '%v' is unknown under known type %v. This call will return null.", memberName, childType)
 			return newScope().Valid().Resolving(sb.sg.tdg.AnyTypeReference()).GetScope()
 		}
@@ -295,9 +295,9 @@ func (sb *scopeBuilder) scopeNullableMemberAccessExpression(node compilergraph.G
 		}
 
 		childNonNullableType := childType.AsNonNullable()
-		typeMember, found := childNonNullableType.ResolveAccessibleMember(memberName, module, typegraph.MemberResolutionInstance)
-		if !found {
-			sb.decorateWithError(node, "Could not find instance name '%v' under type %v", memberName, childNonNullableType)
+		typeMember, rerr := childNonNullableType.ResolveAccessibleMember(memberName, module, typegraph.MemberResolutionInstance)
+		if rerr != nil {
+			sb.decorateWithError(node, "%v", rerr)
 			return newScope().Invalid().GetScope()
 		}
 
@@ -341,9 +341,9 @@ func (sb *scopeBuilder) scopeMemberAccessExpression(node compilergraph.GraphNode
 			return newScope().Invalid().GetScope()
 		}
 
-		typeMember, found := childType.ResolveAccessibleMember(memberName, module, typegraph.MemberResolutionInstance)
-		if !found {
-			sb.decorateWithError(node, "Could not find instance name '%v' under type %v", memberName, childType)
+		typeMember, rerr := childType.ResolveAccessibleMember(memberName, module, typegraph.MemberResolutionInstance)
+		if rerr != nil {
+			sb.decorateWithError(node, "%v", rerr)
 			return newScope().Invalid().GetScope()
 		}
 
@@ -358,9 +358,9 @@ func (sb *scopeBuilder) scopeMemberAccessExpression(node compilergraph.GraphNode
 	case proto.ScopeKind_STATIC:
 		staticType := childScope.StaticTypeRef(sb.sg.tdg)
 		namedScope, _ := sb.getNamedScopeForScope(childScope)
-		memberScope, found := namedScope.ResolveStaticMember(memberName, module, staticType)
-		if !found {
-			sb.decorateWithError(node, "Could not find static name '%v' under %v %v", memberName, namedScope.Title(), namedScope.Name())
+		memberScope, rerr := namedScope.ResolveStaticMember(memberName, module, staticType)
+		if rerr != nil {
+			sb.decorateWithError(node, "%v", rerr)
 			return newScope().Invalid().GetScope()
 		}
 

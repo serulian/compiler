@@ -4,6 +4,12 @@
 
 package typegraph
 
+import (
+	"fmt"
+	"unicode"
+	"unicode/utf8"
+)
+
 // IntersectTypes performs type reference intersection on both slices, returning a new slices.
 func (g *TypeGraph) IntersectTypes(first []TypeReference, second []TypeReference) []TypeReference {
 	var newSlice = make([]TypeReference, len(first))
@@ -24,4 +30,14 @@ func (g *TypeGraph) IntersectTypes(first []TypeReference, second []TypeReference
 	}
 
 	return newSlice
+}
+
+// adjustedName returns the given name with the first letter being adjusted from lower->upper or upper->lower.
+func (g *TypeGraph) adjustedName(name string) string {
+	r, size := utf8.DecodeRuneInString(name)
+	if unicode.IsLower(r) {
+		return fmt.Sprintf("%c%s", unicode.ToUpper(r), name[size:])
+	} else {
+		return fmt.Sprintf("%c%s", unicode.ToLower(r), name[size:])
+	}
 }

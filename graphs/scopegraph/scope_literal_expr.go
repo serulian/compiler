@@ -40,8 +40,8 @@ func (sb *scopeBuilder) scopeStructuralNewExpression(node compilergraph.GraphNod
 		// Classes can only be constructed structurally if they are in the same module as this call.
 		// Otherwise, an exported constructor must be used.
 		module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
-		_, found := staticTypeRef.ResolveAccessibleMember("new", module, typegraph.MemberResolutionStatic)
-		if !found {
+		_, rerr := staticTypeRef.ResolveAccessibleMember("new", module, typegraph.MemberResolutionStatic)
+		if rerr != nil {
 			sb.decorateWithError(node, "Cannot structurally construct type %v, as it is imported from another module", staticTypeRef)
 			return newScope().Invalid().Resolving(staticTypeRef).GetScope()
 		}
@@ -106,9 +106,9 @@ func (sb *scopeBuilder) scopeStructuralNewExpressionEntry(node compilergraph.Gra
 
 	// Lookup the member associated with the entry name.
 	module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
-	member, ok := parentType.ResolveAccessibleMember(entryName, module, typegraph.MemberResolutionInstance)
-	if !ok {
-		sb.decorateWithError(node, "Name '%v' could not be found under type %v", entryName, parentType)
+	member, rerr := parentType.ResolveAccessibleMember(entryName, module, typegraph.MemberResolutionInstance)
+	if rerr != nil {
+		sb.decorateWithError(node, "%v", rerr)
 		return newScope().Invalid().GetScope()
 	}
 

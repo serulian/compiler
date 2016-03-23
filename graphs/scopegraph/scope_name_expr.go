@@ -39,9 +39,9 @@ func (sb *scopeBuilder) scopeIdentifierExpression(node compilergraph.GraphNode, 
 		return newScope().ForAnonymousScope(sb.sg.tdg).GetScope()
 	}
 
-	namedScope, found := sb.lookupNamedScope(name, node)
-	if !found {
-		sb.decorateWithError(node, "The name '%v' could not be found in this context", name)
+	namedScope, rerr := sb.lookupNamedScope(name, node)
+	if rerr != nil {
+		sb.decorateWithError(node, "%v", rerr)
 		return newScope().Invalid().GetScope()
 	}
 
