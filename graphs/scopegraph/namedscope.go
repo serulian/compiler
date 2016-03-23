@@ -26,16 +26,16 @@ type namedScopeInfo struct {
 // lookupNamedScope looks up the given name at the given node's context, returning the referenced scope for
 // the named item, if any. For example, giving the name of a parameter (name) under a function's body (node),
 // will return information referencing that parameter, its type, etc.
-func (sb *scopeBuilder) lookupNamedScope(name string, node compilergraph.GraphNode) (namedScopeInfo, bool) {
+func (sb *scopeBuilder) lookupNamedScope(name string, node compilergraph.GraphNode) (namedScopeInfo, error) {
 	srgInfo, found := sb.sg.srg.FindNameInScope(name, node)
 	if !found {
 		// Try resolving the name as a global type alias.
 		aliasedType, typeFound := sb.sg.tdg.LookupAliasedType(name)
 		if typeFound {
-			return namedScopeInfo{srg.SRGNamedScope{}, aliasedType, sb}, true
+			return namedScopeInfo{srg.SRGNamedScope{}, aliasedType, sb}, nil
 		}
 
-		return namedScopeInfo{}, false
+		return namedScopeInfo{}, fmt.Errorf("The name '%v' could not be found in this context", name)
 	}
 
 	return sb.processSRGNameOrInfo(srgInfo)
@@ -43,10 +43,10 @@ func (sb *scopeBuilder) lookupNamedScope(name string, node compilergraph.GraphNo
 
 // processSRGNameOrInfo handles an SRGScopeOrImport, either translating an SRGNamedScope into a namedScopeInfo
 // or performing the actual lookup under the typegraph for non-SRG names.
-func (sb *scopeBuilder) processSRGNameOrInfo(srgInfo srg.SRGScopeOrImport) (namedScopeInfo, bool) {
+func (sb *scopeBuilder) processSRGNameOrInfo(srgInfo srg.SRGScopeOrImport) (namedScopeInfo, error) {
 	// If the SRG info refers to an SRG named scope, build the info for it.
 	if srgInfo.IsNamedScope() {
-		return sb.buildNamedScopeForSRGInfo(srgInfo.AsNamedScope()), true
+		return sb.buildNamedScopeForSRGInfo(srgInfo.AsNamedScope()), nil
 	}
 
 	// Otherwise, the SRG info refers to a member of an external package, which we need to resolve
@@ -54,10 +54,10 @@ func (sb *scopeBuilder) processSRGNameOrInfo(srgInfo srg.SRGScopeOrImport) (name
 	packageImportInfo := srgInfo.AsPackageImport()
 	typeOrMember, found := sb.sg.tdg.ResolveTypeOrMemberUnderPackage(packageImportInfo.ImportedName(), packageImportInfo.Package())
 	if !found {
-		return namedScopeInfo{}, false
+		return namedScopeInfo{}, fmt.Errorf("Could not find type or member '%v' under package %v", packageImportInfo.ImportedName(), packageImportInfo.Package())
 	}
 
-	return namedScopeInfo{srg.SRGNamedScope{}, typeOrMember, sb}, true
+	return namedScopeInfo{srg.SRGNamedScope{}, typeOrMember, sb}, nil
 }
 
 // buildNamedScopeForSRGInfo builds a namedScopeInfo for the given SRG scope info.
@@ -140,22 +140,22 @@ func (nsi *namedScopeInfo) Name() string {
 
 // ResolveStaticMember attempts to resolve a member (child) with the given name under this named scope, which
 // must be Static.
-func (nsi *namedScopeInfo) ResolveStaticMember(name string, module compilercommon.InputSource, staticType typegraph.TypeReference) (namedScopeInfo, bool) {
+func (nsi *namedScopeInfo) ResolveStaticMember(name string, module compilercommon.InputSource, staticType typegraph.TypeReference) (namedScopeInfo, error) {
 	if !nsi.IsStatic() {
-		return namedScopeInfo{}, false
+		return namedScopeInfo{}, fmt.Errorf("Could not find static name '%v' under non-static scope", name)
 	}
 
 	if nsi.typeInfo != nil {
-		typeMember, found := staticType.ResolveAccessibleMember(name, module, typegraph.MemberResolutionStatic)
-		if !found {
-			return namedScopeInfo{}, false
+		typeMember, rerr := staticType.ResolveAccessibleMember(name, module, typegraph.MemberResolutionStatic)
+		if rerr != nil {
+			return namedScopeInfo{}, rerr
 		}
 
-		return namedScopeInfo{srg.SRGNamedScope{}, typeMember, nsi.sb}, true
+		return namedScopeInfo{srg.SRGNamedScope{}, typeMember, nsi.sb}, nil
 	} else {
 		namedScopeOrImport, found := nsi.srgInfo.ResolveNameUnderScope(name)
 		if !found {
-			return namedScopeInfo{}, false
+			return namedScopeInfo{}, fmt.Errorf("Could not find static name '%v' under %v %v", name, nsi.srgInfo.Title(), nsi.srgInfo.Name())
 		}
 
 		return nsi.sb.processSRGNameOrInfo(namedScopeOrImport)

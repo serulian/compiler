@@ -1,0 +1,7 @@
+class SomeClass {
+	function<void> DoSomething() {}
+}
+
+function<void> DoSomething(sc SomeClass) {
+	sc.doSomething()
+}

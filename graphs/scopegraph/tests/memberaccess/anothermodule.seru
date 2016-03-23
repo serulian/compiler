@@ -6,3 +6,7 @@ function<void> SomeFunction() {
 
 class AnotherClass {}
 class GenericType<T> {}
+
+class ThirdClass {
+	function<void> doSomething() {}
+}

@@ -167,8 +167,8 @@ func (sb *scopeBuilder) scopeSliceChildExpression(node compilergraph.GraphNode, 
 
 	childType := childScope.ResolvedTypeRef(sb.sg.tdg)
 	module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
-	operator, found := childType.ResolveAccessibleMember(opName, module, typegraph.MemberResolutionOperator)
-	if !found {
+	operator, rerr := childType.ResolveAccessibleMember(opName, module, typegraph.MemberResolutionOperator)
+	if rerr != nil {
 		sb.decorateWithError(node, "Operator '%v' is not defined on type '%v'", opName, childType)
 		return typegraph.TGMember{}, childType, false
 	}
@@ -277,8 +277,8 @@ func (sb *scopeBuilder) scopeInCollectionExpression(node compilergraph.GraphNode
 	// Ensure that the right side has a 'contains' operator defined.
 	rightType := rightScope.ResolvedTypeRef(sb.sg.tdg)
 	module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
-	operator, found := rightType.ResolveAccessibleMember("contains", module, typegraph.MemberResolutionOperator)
-	if !found {
+	operator, rerr := rightType.ResolveAccessibleMember("contains", module, typegraph.MemberResolutionOperator)
+	if rerr != nil {
 		sb.decorateWithError(node, "Operator 'contains' is not defined on type '%v'", rightType)
 		return newScope().Invalid().GetScope()
 	}
@@ -510,8 +510,8 @@ func (sb *scopeBuilder) scopeBinaryExpression(node compilergraph.GraphNode, opNa
 
 	// Ensure that the operator exists under the resolved type.
 	module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
-	operator, found := leftType.ResolveAccessibleMember(opName, module, typegraph.MemberResolutionOperator)
-	if !found {
+	operator, rerr := leftType.ResolveAccessibleMember(opName, module, typegraph.MemberResolutionOperator)
+	if rerr != nil {
 		sb.decorateWithError(node, "Operator '%v' is not defined on type '%v'", opName, leftType)
 		return newScope().Invalid()
 	}
@@ -533,8 +533,8 @@ func (sb *scopeBuilder) scopeUnaryExpression(node compilergraph.GraphNode, opNam
 	// Ensure that the operator exists under the resolved type.
 	childType := childScope.ResolvedTypeRef(sb.sg.tdg)
 	module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
-	operator, found := childType.ResolveAccessibleMember(opName, module, typegraph.MemberResolutionOperator)
-	if !found {
+	operator, rerr := childType.ResolveAccessibleMember(opName, module, typegraph.MemberResolutionOperator)
+	if rerr != nil {
 		sb.decorateWithError(node, "Operator '%v' is not defined on type '%v'", opName, childType)
 		return newScope().Invalid()
 	}

@@ -614,7 +614,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"member access static under instance failure test", "memberaccess", "staticunderinstance",
 		[]expectedScopeEntry{},
-		"Could not find instance name 'Build' under type SomeClass", ""},
+		"Could not find instance name 'Build' under class SomeClass", ""},
 
 	scopegraphTest{"member access instance under static failure test", "memberaccess", "instanceunderstatic",
 		[]expectedScopeEntry{},
@@ -634,11 +634,19 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"member access literal test", "memberaccess", "literalaccess",
 		[]expectedScopeEntry{},
-		"Could not find instance name 'UnknownProp' under type Integer", ""},
+		"Could not find instance name 'UnknownProp' under nominal type Integer", ""},
 
-	scopegraphTest{"member access unexported test", "memberaccess", "unexported",
+	scopegraphTest{"member access unexported static test", "memberaccess", "unexported",
 		[]expectedScopeEntry{},
 		"Could not find static name 'someUnexportedThing' under import anothermodule", ""},
+
+	scopegraphTest{"member access unexported instance test", "memberaccess", "unexportedinstance",
+		[]expectedScopeEntry{},
+		"type member doSomething is not exported under class ThirdClass", ""},
+
+	scopegraphTest{"member access miscapitalized test", "memberaccess", "miscapitalized",
+		[]expectedScopeEntry{},
+		"Could not find instance name 'doSomething' under class SomeClass; Did you mean 'DoSomething'?", ""},
 
 	/////////// Nullable member access expression ///////////
 
@@ -929,7 +937,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"nominal call base type member", "nominal", "basetypecall",
 		[]expectedScopeEntry{},
-		"Could not find instance name 'DoSomething' under type MyType", ""},
+		"Could not find instance name 'DoSomething' under nominal type MyType", ""},
 
 	/////////// structural new expression tests /////////////////
 
@@ -959,7 +967,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"structural new invalid name test", "structnew", "invalidname",
 		[]expectedScopeEntry{},
-		"Name 'SomeField' could not be found under type SomeClass", ""},
+		"Could not find instance name 'SomeField' under class SomeClass", ""},
 
 	scopegraphTest{"structural new invalid value test", "structnew", "invalidvalue",
 		[]expectedScopeEntry{},

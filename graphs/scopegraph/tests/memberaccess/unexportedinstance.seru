@@ -1,0 +1,5 @@
+from anothermodule import ThirdClass
+
+function<void> DoSomething(tc ThirdClass) {
+	tc.doSomething()
+}

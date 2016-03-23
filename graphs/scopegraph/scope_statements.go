@@ -81,8 +81,8 @@ func (sb *scopeBuilder) scopeMatchStatement(node compilergraph.GraphNode, option
 	// Ensure that the match type has a defined accessible comparison operator.
 	if isValid {
 		module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
-		_, found := matchValueType.ResolveAccessibleMember("equals", module, typegraph.MemberResolutionOperator)
-		if !found {
+		_, rerr := matchValueType.ResolveAccessibleMember("equals", module, typegraph.MemberResolutionOperator)
+		if rerr != nil {
 			sb.decorateWithError(node, "Cannot match over instance of type '%v', as it does not define or export an 'equals' operator", matchValueType)
 			isValid = false
 		}
