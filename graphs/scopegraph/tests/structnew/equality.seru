@@ -1,0 +1,5 @@
+struct Foo {}
+
+function<void> DoSomething(first Foo, second Foo) {
+	/* eq */(first == second)
+}

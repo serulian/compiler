@@ -1,0 +1,34 @@
+struct Foo {
+	SomeValue int
+	AnotherValue Bar
+}
+
+struct Bar {
+	StringValue string
+}
+
+function<any> TEST() {
+	var first = Foo{
+		SomeValue: 42,
+		AnotherValue: Bar{
+			StringValue: 'hello world',
+		},
+	}
+
+	var second = first
+	var copy = Foo{
+		SomeValue: 42,
+		AnotherValue: Bar{
+			StringValue: 'hello world',
+		},
+	}
+
+	var different = Foo{
+		SomeValue: 42,
+		AnotherValue: Bar{
+			StringValue: 'hello worlds!',
+		},
+	}
+
+	return first == second && first == copy && first != different && copy != different
+}

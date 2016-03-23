@@ -135,6 +135,25 @@ this.Serulian = (function($global) {
       return JSON.parse(JSON.stringify(instance));
     },
 
+    // equals performs a comparison of the two values by calling the $equals operator on the
+    // values, if any. Otherwise, uses a simple reference comparison.
+    'equals': function(left, right, type) {
+      if (left === right) {
+        return $promise.resolve($t.box(true, $a['bool']));
+      }
+
+      // If we have a nominal wrapped native value, compare directly.
+      if ($t.toESType(left) != 'object') {
+        return $promise.resolve($t.box(left === right, $a['bool']));
+      }
+
+      if (type.$equals) {
+        return type.$equals($t.box(left, type), $t.box(right, type));
+      }
+
+      return $promise.resolve($t.box(false, $a['bool']));
+    },
+
     // ensurevalue ensures that the given value is of the given type. If not,
     // raises an exception.
     'ensurevalue': function(value, type, canBeNull, name) {
@@ -423,6 +442,10 @@ this.Serulian = (function($global) {
   	'all': function(promises) {
   		return Promise.all(promises);
   	},
+
+    'new': function(f) {
+      return new Promise(f);
+    },
 
   	'empty': function() {
   		return new Promise(function() {
