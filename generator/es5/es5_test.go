@@ -88,6 +88,8 @@ var tests = []generationTest{
 	generationTest{"class composition required fields test", "class", "requiredcomposition", true},
 	generationTest{"constructable interface test", "interface", "constructable", true},
 
+	generationTest{"struct equality test", "struct", "equals", true},
+
 	generationTest{"basic async test", "async", "async", true},
 
 	generationTest{"conditional statement", "statements", "conditional", true},

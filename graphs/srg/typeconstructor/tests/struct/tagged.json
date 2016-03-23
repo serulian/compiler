@@ -21,39 +21,6 @@
                     }
                 }
             },
-            "317fd363a6330d351ae246a4421f583d": {
-                "Predicate": "tdg-declaration-operator",
-                "Child": {
-                    "Key": "317fd363a6330d351ae246a4421f583d",
-                    "Kind": 8,
-                    "Children": {
-                        "27055d86d44ce3f5b3524db4dbebd4c7": {
-                            "Predicate": "tdg-member-returnable",
-                            "Child": {
-                                "Key": "27055d86d44ce3f5b3524db4dbebd4c7",
-                                "Kind": 10,
-                                "Children": {},
-                                "Predicates": {
-                                    "tdg-node-kind": "10|NodeType|tdg",
-                                    "tdg-return-type": "Boolean",
-                                    "tdg-source-node": ""
-                                }
-                            }
-                        }
-                    },
-                    "Predicates": {
-                        "tdg-member-exported": "true",
-                        "tdg-member-name": "•equals",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "Function\u003cBoolean\u003e(SomeStruct, SomeStruct)",
-                        "tdg-member-signature": "\n\u0006equals\u0010\u0002\u0018\u0000 \u0001*\u0003any",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "8|NodeType|tdg",
-                        "tdg-operator-name": "equals",
-                        "tdg-source-module": "tests/struct/tagged.seru"
-                    }
-                }
-            },
             "348b2a04c640573487a97ecbef614819": {
                 "Predicate": "tdg-node-member",
                 "Child": {
@@ -166,6 +133,40 @@
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/struct/tagged.seru",
                         "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "b655a16cf5783a1fcdcb998ea6f72388": {
+                "Predicate": "tdg-declaration-operator",
+                "Child": {
+                    "Key": "b655a16cf5783a1fcdcb998ea6f72388",
+                    "Kind": 8,
+                    "Children": {
+                        "27055d86d44ce3f5b3524db4dbebd4c7": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "27055d86d44ce3f5b3524db4dbebd4c7",
+                                "Kind": 10,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "10|NodeType|tdg",
+                                    "tdg-return-type": "Boolean",
+                                    "tdg-source-node": ""
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "•equals",
+                        "tdg-member-promising": "true",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "Function\u003cBoolean\u003e(SomeStruct, SomeStruct)",
+                        "tdg-member-signature": "\n\u0006equals\u0010\u0002\u0018\u0000 \u0001*\u0003any",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "8|NodeType|tdg",
+                        "tdg-operator-name": "equals",
+                        "tdg-source-module": "tests/struct/tagged.seru"
                     }
                 }
             },

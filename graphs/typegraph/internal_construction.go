@@ -197,6 +197,7 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 
 			decorator.
 				MemberType(memberType).
+				Promising(true).
 				Exported(true).
 				MemberKind(2).
 				Decorate()

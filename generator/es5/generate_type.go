@@ -108,6 +108,10 @@ func (gt generatingType) WrappedType() typegraph.TypeReference {
 	return gt.Type.ParentTypes()[0]
 }
 
+func (gt generatingType) BoolType() typegraph.TypeReference {
+	return gt.Generator.scopegraph.TypeGraph().BoolTypeReference()
+}
+
 func (gt generatingType) MappingAnyType() typegraph.TypeReference {
 	return gt.Generator.scopegraph.TypeGraph().MappingTypeReference(gt.Generator.scopegraph.TypeGraph().AnyTypeReference())
 }
@@ -207,6 +211,30 @@ this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{
 		{{ end }}
 
 		return $promise.resolve($t.nominalwrap(mappedData, {{ .TypeReferenceCall .MappingAnyType }}));
+	};
+
+	$static.$equals = function(left, right) {
+		if (left === right) {
+			return $promise.resolve($t.nominalwrap(true, {{ .TypeReferenceCall .BoolType }}));
+		}
+
+		// TODO: find a way to do this without checking *all* fields.
+		var promises = [];
+		{{ range $idx, $field := .Fields }}
+		promises.push($t.equals(left.$data['{{ $field.SerializableName }}'], 
+		 					    right.$data['{{ $field.SerializableName }}'],
+		 					    {{ $parent.TypeReferenceCall $field.MemberType }}));
+		{{ end }}
+
+		return Promise.all(promises).then(function(values) {
+		  for (var i = 0; i < values.length; i++) {
+		  	if (!$t.unbox(values[i])) {
+	   		  return $t.nominalwrap(false, {{ .TypeReferenceCall .BoolType }});
+		  	}
+		  }
+
+   		  return $t.nominalwrap(true, {{ .TypeReferenceCall .BoolType }});
+		});
 	};
 
 	{{ range $idx, $field := .Fields }}
