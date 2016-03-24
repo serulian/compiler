@@ -17,6 +17,21 @@ $module('slice', function () {
       mappedData['AnotherInt'] = this.AnotherInt;
       return $promise.resolve($t.nominalwrap(mappedData, $g.____testlib.basictypes.Mapping($t.any)));
     };
+    $static.$equals = function (left, right) {
+      if (left === right) {
+        return $promise.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
+      }
+      var promises = [];
+      promises.push($t.equals(left.$data['AnotherInt'], right.$data['AnotherInt'], $g.____testlib.basictypes.Integer));
+      return Promise.all(promises).then(function (values) {
+        for (var i = 0; i < values.length; i++) {
+          if (!$t.unbox(values[i])) {
+            return $t.nominalwrap(false, $g.____testlib.basictypes.Boolean);
+          }
+        }
+        return $t.nominalwrap(true, $g.____testlib.basictypes.Boolean);
+      });
+    };
     Object.defineProperty($instance, 'AnotherInt', {
       get: function () {
         if (this.$lazycheck) {
@@ -53,6 +68,21 @@ $module('slice', function () {
       };
       mappedData['Values'] = this.Values;
       return $promise.resolve($t.nominalwrap(mappedData, $g.____testlib.basictypes.Mapping($t.any)));
+    };
+    $static.$equals = function (left, right) {
+      if (left === right) {
+        return $promise.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
+      }
+      var promises = [];
+      promises.push($t.equals(left.$data['Values'], right.$data['Values'], $g.____testlib.basictypes.Slice($g.slice.AnotherStruct)));
+      return Promise.all(promises).then(function (values) {
+        for (var i = 0; i < values.length; i++) {
+          if (!$t.unbox(values[i])) {
+            return $t.nominalwrap(false, $g.____testlib.basictypes.Boolean);
+          }
+        }
+        return $t.nominalwrap(true, $g.____testlib.basictypes.Boolean);
+      });
     };
     Object.defineProperty($instance, 'Values', {
       get: function () {

@@ -6,7 +6,10 @@ $module('requiredfields', function () {
     $static.new = function (SomeField) {
       var instance = new $static();
       var init = [];
-      instance.SomeField = SomeField;
+      init.push($promise.new(function (resolve) {
+        instance.SomeField = SomeField;
+        resolve();
+      }));
       init.push($promise.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean)).then(function (result) {
         instance.AnotherField = result;
       }));

@@ -49,6 +49,21 @@ $module('nominaljson', function () {
       mappedData['AnotherBool'] = this.AnotherBool;
       return $promise.resolve($t.nominalwrap(mappedData, $g.____testlib.basictypes.Mapping($t.any)));
     };
+    $static.$equals = function (left, right) {
+      if (left === right) {
+        return $promise.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
+      }
+      var promises = [];
+      promises.push($t.equals(left.$data['AnotherBool'], right.$data['AnotherBool'], $g.____testlib.basictypes.Boolean));
+      return Promise.all(promises).then(function (values) {
+        for (var i = 0; i < values.length; i++) {
+          if (!$t.unbox(values[i])) {
+            return $t.nominalwrap(false, $g.____testlib.basictypes.Boolean);
+          }
+        }
+        return $t.nominalwrap(true, $g.____testlib.basictypes.Boolean);
+      });
+    };
     Object.defineProperty($instance, 'AnotherBool', {
       get: function () {
         if (this.$lazycheck) {
@@ -85,6 +100,21 @@ $module('nominaljson', function () {
       };
       mappedData['Nested'] = this.Nested;
       return $promise.resolve($t.nominalwrap(mappedData, $g.____testlib.basictypes.Mapping($t.any)));
+    };
+    $static.$equals = function (left, right) {
+      if (left === right) {
+        return $promise.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
+      }
+      var promises = [];
+      promises.push($t.equals(left.$data['Nested'], right.$data['Nested'], $g.nominaljson.SomeNominal));
+      return Promise.all(promises).then(function (values) {
+        for (var i = 0; i < values.length; i++) {
+          if (!$t.unbox(values[i])) {
+            return $t.nominalwrap(false, $g.____testlib.basictypes.Boolean);
+          }
+        }
+        return $t.nominalwrap(true, $g.____testlib.basictypes.Boolean);
+      });
     };
     Object.defineProperty($instance, 'Nested', {
       get: function () {

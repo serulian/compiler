@@ -113,6 +113,21 @@ $module('custom', function () {
       mappedData['AnotherBool'] = this.AnotherBool;
       return $promise.resolve($t.nominalwrap(mappedData, $g.____testlib.basictypes.Mapping($t.any)));
     };
+    $static.$equals = function (left, right) {
+      if (left === right) {
+        return $promise.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
+      }
+      var promises = [];
+      promises.push($t.equals(left.$data['AnotherBool'], right.$data['AnotherBool'], $g.____testlib.basictypes.Boolean));
+      return Promise.all(promises).then(function (values) {
+        for (var i = 0; i < values.length; i++) {
+          if (!$t.unbox(values[i])) {
+            return $t.nominalwrap(false, $g.____testlib.basictypes.Boolean);
+          }
+        }
+        return $t.nominalwrap(true, $g.____testlib.basictypes.Boolean);
+      });
+    };
     Object.defineProperty($instance, 'AnotherBool', {
       get: function () {
         if (this.$lazycheck) {
@@ -153,6 +168,23 @@ $module('custom', function () {
       mappedData['AnotherField'] = this.AnotherField;
       mappedData['SomeInstance'] = this.SomeInstance;
       return $promise.resolve($t.nominalwrap(mappedData, $g.____testlib.basictypes.Mapping($t.any)));
+    };
+    $static.$equals = function (left, right) {
+      if (left === right) {
+        return $promise.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
+      }
+      var promises = [];
+      promises.push($t.equals(left.$data['SomeField'], right.$data['SomeField'], $g.____testlib.basictypes.Integer));
+      promises.push($t.equals(left.$data['AnotherField'], right.$data['AnotherField'], $g.____testlib.basictypes.Boolean));
+      promises.push($t.equals(left.$data['SomeInstance'], right.$data['SomeInstance'], $g.custom.AnotherStruct));
+      return Promise.all(promises).then(function (values) {
+        for (var i = 0; i < values.length; i++) {
+          if (!$t.unbox(values[i])) {
+            return $t.nominalwrap(false, $g.____testlib.basictypes.Boolean);
+          }
+        }
+        return $t.nominalwrap(true, $g.____testlib.basictypes.Boolean);
+      });
     };
     Object.defineProperty($instance, 'SomeField', {
       get: function () {
