@@ -42,7 +42,7 @@ type Result struct {
 
 // ParseAndBuildScopeGraph conducts full parsing and type graph construction for the project
 // starting at the given root source file.
-func ParseAndBuildScopeGraph(rootSourceFilePath string, libraries ...packageloader.Library) Result {
+func ParseAndBuildScopeGraph(rootSourceFilePath string, vcsDevelopmentDirectories []string, libraries ...packageloader.Library) Result {
 	graph, err := compilergraph.NewGraph(rootSourceFilePath)
 	if err != nil {
 		log.Fatalf("Could not instantiate graph: %v", err)
@@ -52,7 +52,7 @@ func ParseAndBuildScopeGraph(rootSourceFilePath string, libraries ...packageload
 	sourcegraph := srg.NewSRG(graph)
 	webidlgraph := webidl.NewIRG(graph)
 
-	loader := packageloader.NewPackageLoader(rootSourceFilePath, sourcegraph.PackageLoaderHandler(), webidlgraph.PackageLoaderHandler())
+	loader := packageloader.NewPackageLoader(rootSourceFilePath, vcsDevelopmentDirectories, sourcegraph.PackageLoaderHandler(), webidlgraph.PackageLoaderHandler())
 	loaderResult := loader.Load(libraries...)
 	if !loaderResult.Status {
 		return Result{

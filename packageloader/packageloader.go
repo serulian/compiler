@@ -70,7 +70,8 @@ func (p *pathInformation) String() string {
 // PackageLoader helps to fully and recursively load a Serulian package and its dependencies
 // from a directory or set of directories.
 type PackageLoader struct {
-	rootSourceFile string // The root source file location.
+	rootSourceFile            string   // The root source file location.
+	vcsDevelopmentDirectories []string // Directories to check for VCS packages before VCS checkout.
 
 	errors   chan compilercommon.SourceError   // Errors are reported on this channel
 	warnings chan compilercommon.SourceWarning // Warnings are reported on this channel
@@ -103,14 +104,15 @@ type LoadResult struct {
 }
 
 // NewPackageLoader creates and returns a new package loader for the given path.
-func NewPackageLoader(rootSourceFile string, handlers ...SourceHandler) *PackageLoader {
+func NewPackageLoader(rootSourceFile string, vcsDevelopmentDirectories []string, handlers ...SourceHandler) *PackageLoader {
 	handlersMap := map[string]SourceHandler{}
 	for _, handler := range handlers {
 		handlersMap[handler.Kind()] = handler
 	}
 
 	return &PackageLoader{
-		rootSourceFile: rootSourceFile,
+		rootSourceFile:            rootSourceFile,
+		vcsDevelopmentDirectories: vcsDevelopmentDirectories,
 
 		errors:   make(chan compilercommon.SourceError),
 		warnings: make(chan compilercommon.SourceWarning),
@@ -279,7 +281,7 @@ func (p *PackageLoader) loadVCSPackage(packagePath pathInformation) {
 	pkgDirectory := path.Join(rootDirectory, serulianPackageDirectory)
 
 	// Perform the checkout of the VCS package.
-	checkoutDirectory, err, warning := vcs.PerformVCSCheckout(packagePath.path, pkgDirectory)
+	checkoutDirectory, err, warning := vcs.PerformVCSCheckout(packagePath.path, pkgDirectory, p.vcsDevelopmentDirectories...)
 	if err != nil {
 		p.errors <- compilercommon.SourceErrorf(packagePath.sal, "Error loading VCS package '%s'", packagePath.path)
 		return

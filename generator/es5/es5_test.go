@@ -173,7 +173,7 @@ func TestGenerator(t *testing.T) {
 
 		fmt.Printf("Running test %v...\n", test.name)
 
-		result := scopegraph.ParseAndBuildScopeGraph(entrypointFile, packageloader.Library{TESTLIB_PATH, false, ""})
+		result := scopegraph.ParseAndBuildScopeGraph(entrypointFile, []string{}, packageloader.Library{TESTLIB_PATH, false, ""})
 		if !assert.True(t, result.Status, "Got error for ScopeGraph construction %v: %s", test.name, result.Errors) {
 			continue
 		}

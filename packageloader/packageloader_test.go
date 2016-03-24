@@ -63,7 +63,7 @@ func TestBasicLoading(t *testing.T) {
 		pathsImported: map[string]bool{},
 	}
 
-	loader := NewPackageLoader("tests/basic/somefile.json", tt.createHandler())
+	loader := NewPackageLoader("tests/basic/somefile.json", []string{}, tt.createHandler())
 	result := loader.Load()
 	if !result.Status || len(result.Errors) > 0 {
 		t.Errorf("Expected success, found: %v", result.Errors)
@@ -86,7 +86,7 @@ func TestUnknownPath(t *testing.T) {
 		pathsImported: map[string]bool{},
 	}
 
-	loader := NewPackageLoader("tests/unknownimport/importsunknown.json", tt.createHandler())
+	loader := NewPackageLoader("tests/unknownimport/importsunknown.json", []string{}, tt.createHandler())
 	result := loader.Load()
 	if result.Status || len(result.Errors) != 1 {
 		t.Errorf("Expected error")
@@ -104,7 +104,7 @@ func TestLibraryPath(t *testing.T) {
 		pathsImported: map[string]bool{},
 	}
 
-	loader := NewPackageLoader("tests/basic/somefile.json", tt.createHandler())
+	loader := NewPackageLoader("tests/basic/somefile.json", []string{}, tt.createHandler())
 	result := loader.Load(Library{"tests/libtest", false, ""})
 	if !result.Status || len(result.Errors) > 0 {
 		t.Errorf("Expected success, found: %v", result.Errors)

@@ -72,9 +72,14 @@ func (pp *vcsPackagePath) String() string {
 	}
 }
 
-// isHEAD returns whether this VCS package is pointed to HEAD.
+// isHEAD returns whether this VCS package is pointed to HEAD of a branch.
 func (pp *vcsPackagePath) isHEAD() bool {
 	return pp.tag == ""
+}
+
+// isRepoOnlyReference returns true if this VCS package does not specify its tag, branch or commit.
+func (pp *vcsPackagePath) isRepoOnlyReference() bool {
+	return pp.tag == "" && pp.branchOrCommit == ""
 }
 
 // cacheDirectory returns a relative directory path at which the VCS package should be placed

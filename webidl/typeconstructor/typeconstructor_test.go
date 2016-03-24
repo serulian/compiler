@@ -67,7 +67,7 @@ func TestGraphs(t *testing.T) {
 
 		testIRG := webidl.NewIRG(graph)
 
-		loader := packageloader.NewPackageLoader(graph.RootSourceFilePath, testIRG.PackageLoaderHandler())
+		loader := packageloader.NewPackageLoader(graph.RootSourceFilePath, []string{}, testIRG.PackageLoaderHandler())
 		irgResult := loader.Load()
 
 		// Make sure we had no errors during construction.
