@@ -1039,7 +1039,7 @@ func TestGraphs(t *testing.T) {
 		fmt.Printf("Running test: %v\n", test.name)
 
 		entrypointFile := "tests/" + test.input + "/" + test.entrypoint + ".seru"
-		result := ParseAndBuildScopeGraph(entrypointFile, packageloader.Library{TESTLIB_PATH, false, ""})
+		result := ParseAndBuildScopeGraph(entrypointFile, []string{}, packageloader.Library{TESTLIB_PATH, false, ""})
 
 		if test.expectedError != "" {
 			if !assert.False(t, result.Status, "Expected failure in scoping on test : %v", test.name) {

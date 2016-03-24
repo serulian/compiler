@@ -3,15 +3,15 @@
         "Key": "5081b1fd9250d182827633669821218c",
         "Kind": 3,
         "Children": {
-            "2e6d41a38e2912d98ce0eeb31fbc2d50": {
+            "0884367d090ad9c17b19d77fd1863e91": {
                 "Predicate": "tdg-declaration-module",
                 "Child": {
-                    "Key": "2e6d41a38e2912d98ce0eeb31fbc2d50",
-                    "Kind": 5,
+                    "Key": "0884367d090ad9c17b19d77fd1863e91",
+                    "Kind": 6,
                     "Children": {},
                     "Predicates": {
                         "tdg-module-name": "optionalparam.webidl",
-                        "tdg-node-kind": "5|NodeType|tdg",
+                        "tdg-node-kind": "6|NodeType|tdg",
                         "tdg-source-module": "tests/optionalparam.webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -29,11 +29,11 @@
         "Key": "9e5e541b117f5979f4908a344eb9a9ce",
         "Kind": 3,
         "Children": {
-            "f7e48f9388810a30783d6ca71a4eb1ed": {
+            "9152881292a59bf55c3e1b18f40f59af": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "f7e48f9388810a30783d6ca71a4eb1ed",
-                    "Kind": 6,
+                    "Key": "9152881292a59bf55c3e1b18f40f59af",
+                    "Kind": 7,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-exported": "true",
@@ -41,7 +41,7 @@
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cvoid\u003e(Foo, Foo, Foo?, Foo?)",
                         "tdg-member-signature": "\n\u000csomefunction\u0010\u0002\u0018\u0000 \u0001*$function\u003cvoid\u003e(Foo, Foo, Foo?, Foo?)",
-                        "tdg-node-kind": "6|NodeType|tdg",
+                        "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/optionalparam.webidl",
                         "tdg-source-node": "(NodeRef)"
                     }

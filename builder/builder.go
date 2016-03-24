@@ -11,6 +11,7 @@ import (
 	"path"
 	"sort"
 
+	"github.com/kr/text"
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/generator/es5"
 	"github.com/serulian/compiler/graphs/scopegraph"
@@ -66,8 +67,8 @@ func outputWarnings(warnings []compilercommon.SourceWarning) {
 
 	for _, warning := range warnings {
 		highlight.Print("WARNING: ")
-		location.Printf("At %v:%v:%v: ", warning.SourceAndLocation().Source(), warning.SourceAndLocation().Location().LineNumber()+1, warning.SourceAndLocation().Location().ColumnPosition()+1)
-		message.Printf("%s\n", warning.String())
+		location.Printf("At %v:%v:%v:\n", warning.SourceAndLocation().Source(), warning.SourceAndLocation().Location().LineNumber()+1, warning.SourceAndLocation().Location().ColumnPosition()+1)
+		message.Printf("%s\n\n", text.Indent(text.Wrap(warning.String(), 80), "  "))
 	}
 }
 
@@ -80,13 +81,13 @@ func outputErrors(errors []compilercommon.SourceError) {
 
 	for _, err := range errors {
 		highlight.Print("ERROR: ")
-		location.Printf("At %v:%v:%v: ", err.SourceAndLocation().Source(), err.SourceAndLocation().Location().LineNumber()+1, err.SourceAndLocation().Location().ColumnPosition()+1)
-		message.Printf("%s\n", err.Error())
+		location.Printf("At %v:%v:%v:\n", err.SourceAndLocation().Source(), err.SourceAndLocation().Location().LineNumber()+1, err.SourceAndLocation().Location().ColumnPosition()+1)
+		message.Printf("%s\n\n", text.Indent(text.Wrap(err.Error(), 80), "  "))
 	}
 }
 
 // BuildSource invokes the compiler starting at the given root source file path.
-func BuildSource(rootSourceFilePath string, debug bool) bool {
+func BuildSource(rootSourceFilePath string, debug bool, vcsDevelopmentDirectories ...string) bool {
 	// Disable logging unless the debug flag is on.
 	if !debug {
 		log.SetOutput(ioutil.Discard)
@@ -94,7 +95,7 @@ func BuildSource(rootSourceFilePath string, debug bool) bool {
 
 	// Build a scope graph for the project. This will conduct parsing and type graph
 	// construction on our behalf.
-	scopeResult := scopegraph.ParseAndBuildScopeGraph(rootSourceFilePath, CORE_LIBRARY)
+	scopeResult := scopegraph.ParseAndBuildScopeGraph(rootSourceFilePath, vcsDevelopmentDirectories, CORE_LIBRARY)
 
 	outputWarnings(scopeResult.Warnings)
 	if !scopeResult.Status {

@@ -17,6 +17,21 @@ $module('tagged', function () {
       mappedData['somefield'] = this.SomeField;
       return $promise.resolve($t.nominalwrap(mappedData, $g.____testlib.basictypes.Mapping($t.any)));
     };
+    $static.$equals = function (left, right) {
+      if (left === right) {
+        return $promise.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
+      }
+      var promises = [];
+      promises.push($t.equals(left.$data['somefield'], right.$data['somefield'], $g.____testlib.basictypes.Integer));
+      return Promise.all(promises).then(function (values) {
+        for (var i = 0; i < values.length; i++) {
+          if (!$t.unbox(values[i])) {
+            return $t.nominalwrap(false, $g.____testlib.basictypes.Boolean);
+          }
+        }
+        return $t.nominalwrap(true, $g.____testlib.basictypes.Boolean);
+      });
+    };
     Object.defineProperty($instance, 'SomeField', {
       get: function () {
         if (this.$lazycheck) {

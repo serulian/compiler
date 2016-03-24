@@ -1,31 +1,13 @@
 {
-    "78fb433025a22aa38fb98e3bf8cfc6df": {
-        "Key": "78fb433025a22aa38fb98e3bf8cfc6df",
-        "Kind": 5,
+    "66dcce0c26936e50b4a01bd24103b06c": {
+        "Key": "66dcce0c26936e50b4a01bd24103b06c",
+        "Kind": 6,
         "Children": {
-            "44148a602634c147fdb1c3c77289e972": {
+            "767a5c87e619d8f07263efc1798677f7": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "44148a602634c147fdb1c3c77289e972",
-                    "Kind": 6,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-exported": "true",
-                        "tdg-member-name": "foobar",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cvoid\u003e",
-                        "tdg-member-signature": "\n\u0006foobar\u0010\u0002\u0018\u0000 \u0001*\u000efunction\u003cvoid\u003e",
-                        "tdg-node-kind": "6|NodeType|tdg",
-                        "tdg-source-module": "tests/global.webidl",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
-            "84a45623dc7aebcc18b420183f182f50": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "84a45623dc7aebcc18b420183f182f50",
-                    "Kind": 6,
+                    "Key": "767a5c87e619d8f07263efc1798677f7",
+                    "Kind": 7,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-exported": "true",
@@ -33,7 +15,25 @@
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cvoid\u003e(any)",
                         "tdg-member-signature": "\n\u0005alert\u0010\u0002\u0018\u0000 \u0001*\u0013function\u003cvoid\u003e(any)",
-                        "tdg-node-kind": "6|NodeType|tdg",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/global.webidl",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "acf26e687cd3b788a2cac71c3de52c26": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "acf26e687cd3b788a2cac71c3de52c26",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "foobar",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cvoid\u003e",
+                        "tdg-member-signature": "\n\u0006foobar\u0010\u0002\u0018\u0000 \u0001*\u000efunction\u003cvoid\u003e",
+                        "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/global.webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -42,7 +42,7 @@
         },
         "Predicates": {
             "tdg-module-name": "global.webidl",
-            "tdg-node-kind": "5|NodeType|tdg",
+            "tdg-node-kind": "6|NodeType|tdg",
             "tdg-source-module": "tests/global.webidl",
             "tdg-source-node": "(NodeRef)"
         }

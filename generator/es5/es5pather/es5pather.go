@@ -139,15 +139,18 @@ func (p *Pather) GetRelativeModulePath(module typegraph.TGModule) string {
 	basePath := filepath.Dir(p.graph.RootSourceFilePath)
 	rel, err := filepath.Rel(basePath, module.Path())
 	if err != nil {
-		panic(err)
+		rel = module.Path()
 	}
 
 	rel = strings.Replace(rel, "../", "_", -1)
 	rel = strings.Replace(rel, "/", ".", -1)
-	rel = rel[0 : len(rel)-5]
 
 	if rel[0] == '.' {
-		rel = rel[1 : len(rel)-1]
+		rel = rel[1:len(rel)]
+	}
+
+	if strings.HasSuffix(rel, ".seru") {
+		rel = rel[0 : len(rel)-5]
 	}
 
 	return rel

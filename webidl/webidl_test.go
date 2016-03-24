@@ -22,7 +22,7 @@ func getIRG(t *testing.T, path string) *WebIRG {
 	}
 
 	testIRG := NewIRG(graph)
-	loader := packageloader.NewPackageLoader(graph.RootSourceFilePath, testIRG.PackageLoaderHandler())
+	loader := packageloader.NewPackageLoader(graph.RootSourceFilePath, []string{}, testIRG.PackageLoaderHandler())
 	result := loader.Load()
 	if !result.Status {
 		t.Errorf("Failed to load IRG: %v", result.Errors)

@@ -6,7 +6,10 @@ $module('structnew', function () {
     $static.new = function (SomeField) {
       var instance = new $static();
       var init = [];
-      instance.SomeField = SomeField;
+      init.push($promise.new(function (resolve) {
+        instance.SomeField = SomeField;
+        resolve();
+      }));
       init.push($promise.resolve($t.nominalwrap(false, $g.____testlib.basictypes.Boolean)).then(function (result) {
         instance.anotherField = result;
       }));

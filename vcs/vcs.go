@@ -24,7 +24,10 @@ import (
 // the local system directory at which the package was checked out.
 //
 // pkgCacheRootPath holds the path of the root directory that forms the package cache.
-func PerformVCSCheckout(vcsPath string, pkgCacheRootPath string) (string, error, string) {
+//
+// vcsDevelopmentDirectories specifies optional directories to check for branchless and tagless copies
+// of the repository first. If found, the copy will be used in lieu of a normal checkout.
+func PerformVCSCheckout(vcsPath string, pkgCacheRootPath string, vcsDevelopmentDirectories ...string) (string, error, string) {
 	// Parse the VCS path.
 	parsedPath, perr := parseVCSPath(vcsPath)
 	if perr != nil {
@@ -33,6 +36,20 @@ func PerformVCSCheckout(vcsPath string, pkgCacheRootPath string) (string, error,
 
 	var err error
 	var warning string
+
+	// Check for a local development cache.
+	if parsedPath.isRepoOnlyReference() {
+		for _, directoryPath := range vcsDevelopmentDirectories {
+			fullCheckDirectory := path.Join(directoryPath, parsedPath.url)
+			if _, err := os.Stat(fullCheckDirectory); err == nil {
+				// Found a local copy. Returning it.
+				log.Printf("Found a local HEAD copy of package %s under development directory %s", parsedPath.url, directoryPath)
+				warning = fmt.Sprintf(
+					`Package '%s' does not specify a tag, commit or branch and a local copy was found under development directory '%s'. VCS checkout will be skipped and the local copy used instead. To return to normal VCS behavior for this package, remove the --vcs-dev-dir flag or specify the package's tag, commit or branch.`, parsedPath.String(), directoryPath)
+				return fullCheckDirectory, nil, warning
+			}
+		}
+	}
 
 	// Conduct the checkout or pull.
 	fullCacheDirectory := path.Join(pkgCacheRootPath, parsedPath.cacheDirectory())

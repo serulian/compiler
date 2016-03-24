@@ -13,6 +13,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	vcsDevelopmentDirectories []string
+	debug                     bool
+)
+
 func main() {
 	var cmdBuild = &cobra.Command{
 		Use:   "build [entrypoint source file]",
@@ -24,11 +29,15 @@ func main() {
 				os.Exit(-1)
 			}
 
-			if !builder.BuildSource(args[0], false) {
+			if !builder.BuildSource(args[0], debug, vcsDevelopmentDirectories...) {
 				os.Exit(-1)
 			}
 		},
 	}
+
+	cmdBuild.PersistentFlags().BoolVar(&debug, "debug", false, "If set to true, Serulian will print debug logs during compilation")
+	cmdBuild.PersistentFlags().StringSliceVar(&vcsDevelopmentDirectories, "vcs-dev-dir", []string{},
+		"If specified, VCS packages without specification will be first checked against this path")
 
 	var rootCmd = &cobra.Command{Use: "serulian"}
 	rootCmd.AddCommand(cmdBuild)
