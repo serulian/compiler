@@ -3,34 +3,34 @@
         "Key": "6209115a03329a4693c6a5fbb8ae7b6a",
         "Kind": 3,
         "Children": {
-            "0e460f1aca98839dbb83f3f468f2e292": {
+            "83a1c136c7adbe61b03ea96daf1d8949": {
                 "Predicate": "tdg-declaration-module",
                 "Child": {
-                    "Key": "0e460f1aca98839dbb83f3f468f2e292",
-                    "Kind": 5,
+                    "Key": "83a1c136c7adbe61b03ea96daf1d8949",
+                    "Kind": 6,
                     "Children": {},
                     "Predicates": {
                         "tdg-module-name": "operator.webidl",
-                        "tdg-node-kind": "5|NodeType|tdg",
+                        "tdg-node-kind": "6|NodeType|tdg",
                         "tdg-source-module": "tests/operator.webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
                 }
             },
-            "54a78f794710a07762873a56901e687f": {
+            "9e9a53b9f2c93c56c39298254dafeb85": {
                 "Predicate": "tdg-declaration-operator",
                 "Child": {
-                    "Key": "54a78f794710a07762873a56901e687f",
-                    "Kind": 7,
+                    "Key": "9e9a53b9f2c93c56c39298254dafeb85",
+                    "Kind": 8,
                     "Children": {
-                        "6ab59b662361f56e0a0e9d691c3c33ed": {
+                        "f9603789a6c6e4afeeef9629d4b35f70": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "6ab59b662361f56e0a0e9d691c3c33ed",
-                                "Kind": 8,
+                                "Key": "f9603789a6c6e4afeeef9629d4b35f70",
+                                "Kind": 10,
                                 "Children": {},
                                 "Predicates": {
-                                    "tdg-node-kind": "8|NodeType|tdg",
+                                    "tdg-node-kind": "10|NodeType|tdg",
                                     "tdg-return-type": "SomeInterface",
                                     "tdg-source-node": "(NodeRef)"
                                 }
@@ -44,7 +44,7 @@
                         "tdg-member-resolved-type": "function\u003cSomeInterface\u003e(SomeInterface, SomeInterface)",
                         "tdg-member-signature": "\n\u0004plus\u0010\u0001\u0018\u0000 \u0001*\u0003any",
                         "tdg-member-static": "true",
-                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-node-kind": "8|NodeType|tdg",
                         "tdg-operator-name": "plus",
                         "tdg-operator-native": "true",
                         "tdg-source-module": "tests/operator.webidl",
@@ -52,20 +52,20 @@
                     }
                 }
             },
-            "bc95748dc08c0a7ca34b5b47136a6d3d": {
+            "cca6d65fade7b26951bd1284e90f62c1": {
                 "Predicate": "tdg-declaration-operator",
                 "Child": {
-                    "Key": "bc95748dc08c0a7ca34b5b47136a6d3d",
-                    "Kind": 7,
+                    "Key": "cca6d65fade7b26951bd1284e90f62c1",
+                    "Kind": 8,
                     "Children": {
-                        "6ab59b662361f56e0a0e9d691c3c33ed": {
+                        "f9603789a6c6e4afeeef9629d4b35f70": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "6ab59b662361f56e0a0e9d691c3c33ed",
-                                "Kind": 8,
+                                "Key": "f9603789a6c6e4afeeef9629d4b35f70",
+                                "Kind": 10,
                                 "Children": {},
                                 "Predicates": {
-                                    "tdg-node-kind": "8|NodeType|tdg",
+                                    "tdg-node-kind": "10|NodeType|tdg",
                                     "tdg-return-type": "SomeInterface",
                                     "tdg-source-node": "(NodeRef)"
                                 }
@@ -79,7 +79,7 @@
                         "tdg-member-resolved-type": "function\u003cSomeInterface\u003e(SomeInterface, SomeInterface)",
                         "tdg-member-signature": "\n\u0005minus\u0010\u0001\u0018\u0000 \u0001*\u0003any",
                         "tdg-member-static": "true",
-                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-node-kind": "8|NodeType|tdg",
                         "tdg-operator-name": "minus",
                         "tdg-operator-native": "true",
                         "tdg-source-module": "tests/operator.webidl",

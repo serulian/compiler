@@ -3,29 +3,29 @@
         "Key": "71aa1ac2fc43cc5482687e3ff948b82a",
         "Kind": 3,
         "Children": {
-            "30c55379f9aca287c8d98bd65af98586": {
+            "132c04d8f6f28302f5a8c114bb8377a3": {
                 "Predicate": "tdg-declaration-module",
                 "Child": {
-                    "Key": "30c55379f9aca287c8d98bd65af98586",
-                    "Kind": 5,
+                    "Key": "132c04d8f6f28302f5a8c114bb8377a3",
+                    "Kind": 6,
                     "Children": {},
                     "Predicates": {
                         "tdg-module-name": "customop.webidl",
-                        "tdg-node-kind": "5|NodeType|tdg",
+                        "tdg-node-kind": "6|NodeType|tdg",
                         "tdg-source-module": "tests/customop.webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
                 }
             },
-            "aa712fef050fd27d2572a88365929f5a": {
+            "9645c7ade228d24b444031b1e0ad4f6c": {
                 "Predicate": "tdg-type-attribute",
                 "Child": {
-                    "Key": "aa712fef050fd27d2572a88365929f5a",
-                    "Kind": 10,
+                    "Key": "9645c7ade228d24b444031b1e0ad4f6c",
+                    "Kind": 12,
                     "Children": {},
                     "Predicates": {
                         "tdg-attribute-name": "serializable",
-                        "tdg-node-kind": "10|NodeType|tdg"
+                        "tdg-node-kind": "12|NodeType|tdg"
                     }
                 }
             }
