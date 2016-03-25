@@ -34,6 +34,8 @@ function<void> SomeFunction() {
 	(a + b)
 	1234
 	1.245
+	42f
+	42.5f
 	true
 	false
 	'hello world'

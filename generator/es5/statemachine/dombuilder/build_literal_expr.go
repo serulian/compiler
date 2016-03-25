@@ -5,6 +5,8 @@
 package dombuilder
 
 import (
+	"strings"
+
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/codedom"
 	"github.com/serulian/compiler/graphs/typegraph"
@@ -97,6 +99,16 @@ func (db *domBuilder) buildNullLiteral(node compilergraph.GraphNode) codedom.Exp
 // buildNumericLiteral builds the CodeDOM for a numeric literal.
 func (db *domBuilder) buildNumericLiteral(node compilergraph.GraphNode) codedom.Expression {
 	numericValueStr := node.Get(parser.NodeNumericLiteralExpressionValue)
+	if strings.HasSuffix(numericValueStr, "f") {
+		numericValueStr = numericValueStr[0 : len(numericValueStr)-1]
+	}
+
+	// Note: Handles Hex.
+	intValue, isNotInt := strconv.ParseInt(numericValueStr, 0, 64)
+	if isNotInt == nil {
+		numericValueStr = strconv.Itoa(int(intValue))
+	}
+
 	exprScope, _ := db.scopegraph.GetScope(node)
 	numericType := exprScope.ResolvedTypeRef(db.scopegraph.TypeGraph()).ReferredType()
 	return codedom.NominalWrapping(codedom.LiteralValue(numericValueStr, node), numericType, node)

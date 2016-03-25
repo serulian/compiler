@@ -130,6 +130,8 @@ var lexerTests = []lexerTest{
 	{"numeric literal 5", "123e56", []lexeme{lexeme{tokenTypeNumericLiteral, 0, "123e56"}, tEOF}},
 	{"numeric literal 6", "123e-56", []lexeme{lexeme{tokenTypeNumericLiteral, 0, "123e-56"}, tEOF}},
 	{"numeric literal 7", "0xfe", []lexeme{lexeme{tokenTypeNumericLiteral, 0, "0xfe"}, tEOF}},
+	{"numeric literal 8", "42f", []lexeme{lexeme{tokenTypeNumericLiteral, 0, "42f"}, tEOF}},
+	{"numeric literal 9", "42.7f", []lexeme{lexeme{tokenTypeNumericLiteral, 0, "42.7f"}, tEOF}},
 
 	// Complex tests.
 	{"dot expression test", "this.foo", []lexeme{
