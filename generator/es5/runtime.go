@@ -142,6 +142,10 @@ this.Serulian = (function($global) {
         return $promise.resolve($t.box(true, $a['bool']));
       }
 
+      if (left == null || right == null) {
+        return $promise.resolve($t.box(false, $a['bool']));
+      }
+
       // If we have a nominal wrapped native value, compare directly.
       if ($t.toESType(left) != 'object') {
         return $promise.resolve($t.box(left === right, $a['bool']));
