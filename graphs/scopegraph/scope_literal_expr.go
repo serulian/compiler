@@ -285,8 +285,7 @@ func (sb *scopeBuilder) scopeBooleanLiteralExpression(node compilergraph.GraphNo
 // scopeNumericLiteralExpression scopes a numeric literal expression in the SRG.
 func (sb *scopeBuilder) scopeNumericLiteralExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	numericValueStr := node.Get(parser.NodeNumericLiteralExpressionValue)
-
-	_, isNotInt := strconv.ParseInt(numericValueStr, 10, 64)
+	_, isNotInt := strconv.ParseInt(numericValueStr, 0, 64)
 	if isNotInt == nil {
 		return newScope().
 			Valid().

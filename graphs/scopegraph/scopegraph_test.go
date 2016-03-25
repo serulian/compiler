@@ -242,6 +242,19 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	/////////// Numeric literals ///////////
+
+	scopegraphTest{"numeric literals test", "literals", "numeric",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"int1", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+			expectedScopeEntry{"int2", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+			expectedScopeEntry{"int3", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+			expectedScopeEntry{"float1", expectedScope{true, proto.ScopeKind_VALUE, "Float64", "void"}},
+			expectedScopeEntry{"float2", expectedScope{true, proto.ScopeKind_VALUE, "Float64", "void"}},
+			expectedScopeEntry{"float3", expectedScope{true, proto.ScopeKind_VALUE, "Float64", "void"}},
+		},
+		"", ""},
+
 	/////////// Assign ///////////
 
 	scopegraphTest{"assign unknown name test", "assign", "unknown", []expectedScopeEntry{},

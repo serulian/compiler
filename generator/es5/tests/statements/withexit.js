@@ -73,7 +73,7 @@ $module('withexit', function () {
             continue;
 
           case 5:
-            $t.nominalwrap(012, $g.____testlib.basictypes.Integer);
+            $t.nominalwrap(12, $g.____testlib.basictypes.Integer);
             $state.popr('$temp0').then(function ($result0) {
               $result = $result0;
               $state.current = 6;
