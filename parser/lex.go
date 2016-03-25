@@ -725,13 +725,15 @@ func (l *lexer) scanNumber() bool {
 		l.accept("+-")
 		l.acceptRun("0123456789")
 	}
-	// Is it imaginary?
-	l.accept("i")
+
+	l.accept("f")
+
 	// Next thing mustn't be alphanumeric.
 	if isAlphaNumeric(l.peek()) {
 		l.next()
 		return false
 	}
+
 	return true
 }
 
