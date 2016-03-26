@@ -139,6 +139,7 @@ var tests = []generationTest{
 	generationTest{"structural new literal", "literals", "structnew", true},
 	generationTest{"map literal", "literals", "map", true},
 	generationTest{"list literal", "literals", "list", true},
+	generationTest{"slice literal", "literals", "sliceexpr", true},
 	generationTest{"boolean literal", "literals", "boolean", false},
 	generationTest{"numeric literal", "literals", "numeric", false},
 	generationTest{"string literal", "literals", "string", false},

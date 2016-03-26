@@ -143,19 +143,24 @@ func (db *domBuilder) buildThisLiteral(node compilergraph.GraphNode) codedom.Exp
 
 // buildListExpression builds the CodeDOM for a list expression.
 func (db *domBuilder) buildListExpression(node compilergraph.GraphNode) codedom.Expression {
-	listScope, _ := db.scopegraph.GetScope(node)
-	listType := listScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
+	return db.buildCollectionLiteralExpression(node, parser.NodeListExpressionValue, "new", "forArray")
+}
+
+// buildCollectionLiteralExpression builds a literal collection expression.
+func (db *domBuilder) buildCollectionLiteralExpression(node compilergraph.GraphNode, valuePredicate string, emptyConstructorName string, arrayConstructorName string) codedom.Expression {
+	collectionScope, _ := db.scopegraph.GetScope(node)
+	collectionType := collectionScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
 
 	vit := node.StartQuery().
-		Out(parser.NodeListExpressionValue).
+		Out(valuePredicate).
 		BuildNodeIterator()
 
 	valueExprs := db.buildExpressions(vit)
 	if len(valueExprs) == 0 {
-		// Empty list. Call the new() constructor directly.
-		constructor, _ := listType.ResolveMember("new", typegraph.MemberResolutionStatic)
+		// Empty collection. Call the empty constructor directly.
+		constructor, _ := collectionType.ResolveMember(emptyConstructorName, typegraph.MemberResolutionStatic)
 		return codedom.MemberCall(
-			codedom.MemberReference(codedom.TypeLiteral(listType, node), constructor, node),
+			codedom.MemberReference(codedom.TypeLiteral(collectionType, node), constructor, node),
 			constructor,
 			[]codedom.Expression{},
 			node)
@@ -163,12 +168,17 @@ func (db *domBuilder) buildListExpression(node compilergraph.GraphNode) codedom.
 
 	arrayExpr := codedom.ArrayLiteral(valueExprs, node)
 
-	constructor, _ := listType.ResolveMember("forArray", typegraph.MemberResolutionStatic)
+	constructor, _ := collectionType.ResolveMember(arrayConstructorName, typegraph.MemberResolutionStatic)
 	return codedom.MemberCall(
-		codedom.MemberReference(codedom.TypeLiteral(listType, node), constructor, node),
+		codedom.MemberReference(codedom.TypeLiteral(collectionType, node), constructor, node),
 		constructor,
 		[]codedom.Expression{arrayExpr},
 		node)
+}
+
+// buildSliceLiteralExpression builds the CodeDOM for a slice literal expression.
+func (db *domBuilder) buildSliceLiteralExpression(node compilergraph.GraphNode) codedom.Expression {
+	return db.buildCollectionLiteralExpression(node, parser.NodeSliceLiteralExpressionValue, "Empty", "overArray")
 }
 
 // buildMapExpression builds the CodeDOM for a map expression.

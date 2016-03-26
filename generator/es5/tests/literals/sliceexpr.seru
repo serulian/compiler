@@ -1,0 +1,3 @@
+function<any> TEST() {
+	return []bool{false, true, false}[1]
+}
