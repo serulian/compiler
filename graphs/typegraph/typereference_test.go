@@ -707,6 +707,18 @@ func TestSubtypes(t *testing.T) {
 					testMember{"constructor", "BuildMe", "ConstructableClass", []testGeneric{}, []testParam{}},
 				},
 			},
+
+			// external-interface ISomeExternalType {}
+			testType{"external-interface", "ISomeExternalType", "", []testGeneric{}, []testMember{}},
+
+			// external-interface IAnotherExternalType {}
+			testType{"external-interface", "IAnotherExternalType", "", []testGeneric{}, []testMember{}},
+
+			// external-interface IChildExternalType : ISomeExternalType {}
+			testType{"external-interface", "IChildExternalType", "ISomeExternalType", []testGeneric{}, []testMember{}},
+
+			// external-interface IGrandchildExternalType : IChildExternalType {}
+			testType{"external-interface", "IGrandchildExternalType", "IChildExternalType", []testGeneric{}, []testMember{}},
 		},
 	)
 
@@ -714,6 +726,22 @@ func TestSubtypes(t *testing.T) {
 	moduleSourceNode := *testConstruction.moduleNode
 
 	tests := []subtypeCheckTest{
+		// External interfaces.
+		subtypeCheckTest{"IEmpty not subtype of ISomeExternalType", "IEmpty", "ISomeExternalType",
+			"'IEmpty' cannot be used in place of external interface 'ISomeExternalType'"},
+
+		subtypeCheckTest{"SomeClass not subtype of ISomeExternalType", "SomeClass", "ISomeExternalType",
+			"'SomeClass' cannot be used in place of external interface 'ISomeExternalType'"},
+
+		subtypeCheckTest{"IAnotherExternalType not subtype of ISomeExternalType", "IAnotherExternalType", "ISomeExternalType",
+			"'IAnotherExternalType' cannot be used in place of external interface 'ISomeExternalType'"},
+
+		subtypeCheckTest{"IChildExternalType subtype of ISomeExternalType", "IChildExternalType", "ISomeExternalType",
+			""},
+
+		subtypeCheckTest{"IGrandchildExternalType subtype of ISomeExternalType", "IGrandchildExternalType", "ISomeExternalType",
+			""},
+
 		// IEmpty
 		subtypeCheckTest{"SomeClass subtype of IEmpty", "SomeClass", "IEmpty", ""},
 		subtypeCheckTest{"AnotherClass subtype of IEmpty", "AnotherClass", "IEmpty", ""},
