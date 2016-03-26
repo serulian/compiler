@@ -98,6 +98,11 @@ func (p *sourceParser) consumeDeclaration() AstNode {
 	// Consume the name of the declaration.
 	declNode.Decorate(NodePredicateDeclarationName, p.consumeIdentifier())
 
+	// Check for (optional) inheritance.
+	if _, ok := p.tryConsume(tokenTypeColon); ok {
+		declNode.Decorate(NodePredicateDeclarationParentType, p.consumeIdentifier())
+	}
+
 	// {
 	p.consume(tokenTypeLeftBrace)
 
