@@ -909,6 +909,21 @@ func TestResolveMembers(t *testing.T) {
 					testMember{"function", "notExported", "void", []testGeneric{}, []testParam{}},
 				},
 			},
+
+			// external-interface ISomeBaseInterface {
+			//   function<void> SomeFunction() {}
+			// }
+			testType{"external-interface", "ISomeBaseInterface", "", []testGeneric{},
+				[]testMember{
+					testMember{"function", "SomeFunction", "void", []testGeneric{}, []testParam{}},
+				},
+			},
+
+			// external-interface IAnotherInterface : ISomeBaseInterface {
+			// }
+			testType{"external-interface", "IAnotherInterface", "ISomeBaseInterface", []testGeneric{},
+				[]testMember{},
+			},
 		},
 	)
 
@@ -941,8 +956,21 @@ func TestResolveMembers(t *testing.T) {
 		return
 	}
 
+	someBaseInterface, someBaseInterfaceFound := graph.LookupType("ISomeBaseInterface", compilercommon.InputSource("entrypoint"))
+	if !assert.True(t, someBaseInterfaceFound, "Could not find 'ISomeBaseInterface'") {
+		return
+	}
+
+	anotherInterface, anotherInterfaceFound := graph.LookupType("IAnotherInterface", compilercommon.InputSource("entrypoint"))
+	if !assert.True(t, anotherInterfaceFound, "Could not find 'IAnotherInterface'") {
+		return
+	}
+
 	tests := []resolveMemberTest{
-		resolveMemberTest{"Exported function from SomeClass via Entrpoint", someClass, "ExportedFunction", "entrypoint", true},
+		resolveMemberTest{"Some function from ISomeBaseInterface via Entrypoint", someBaseInterface, "SomeFunction", "entrypoint", true},
+		resolveMemberTest{"Some function from IANotherInterface via Entrypoint", anotherInterface, "SomeFunction", "entrypoint", true},
+
+		resolveMemberTest{"Exported function from SomeClass via Entrypoint", someClass, "ExportedFunction", "entrypoint", true},
 		resolveMemberTest{"Unexported function from SomeClass via Entrypoint", someClass, "notExported", "entrypoint", true},
 		resolveMemberTest{"Exported function from SomeClass via otherfile", someClass, "ExportedFunction", "otherfile", true},
 		resolveMemberTest{"Unexported function from SomeClass via otherfile", someClass, "notExported", "otherfile", false},

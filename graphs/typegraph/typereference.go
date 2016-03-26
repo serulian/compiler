@@ -835,6 +835,17 @@ func (tr TypeReference) ResolveMember(memberName string, kind MemberResolutionKi
 		TryGetNode()
 
 	if !found {
+		referredType := resolutionType.ReferredType()
+		if referredType.TypeKind() == ExternalInternalType {
+			// Check the parent types, if any.
+			for _, parentType := range referredType.ParentTypes() {
+				member, found := parentType.ResolveMember(memberName, kind)
+				if found {
+					return member, found
+				}
+			}
+		}
+
 		return TGMember{}, false
 	}
 
