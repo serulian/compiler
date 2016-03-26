@@ -24,7 +24,7 @@ NodeTypeGlobalModule
               start-rune = 40
           declaration-member =>
             NodeTypeMember
-              end-rune = 65
+              end-rune = 64
               input-source = custom operation test
               member-name = someOp
               member-type = void

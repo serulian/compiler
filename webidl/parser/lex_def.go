@@ -39,9 +39,10 @@ const (
 	tokenTypeLeftBracket  // [
 	tokenTypeRightBracket // ]
 
-	tokenTypeEquals    // =
-	tokenTypeSemicolon // ;
-	tokenTypeComma     // ,
+	tokenTypeEquals       // =
+	tokenTypeSemicolon    // ;
+	tokenTypeComma        // ,
+	tokenTypeQuestionMark // ?
 )
 
 // keywords contains the full set of keywords supported.
@@ -97,6 +98,9 @@ Loop:
 
 		case r == '=':
 			l.emit(tokenTypeEquals)
+
+		case r == '?':
+			l.emit(tokenTypeQuestionMark)
 
 		case isSpace(r) || isNewline(r):
 			l.emit(tokenTypeWhitespace)

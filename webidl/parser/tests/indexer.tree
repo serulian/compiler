@@ -13,7 +13,7 @@ NodeTypeGlobalModule
           start-rune = 0
           declaration-member =>
             NodeTypeMember
-              end-rune = 65
+              end-rune = 64
               input-source = indexer test
               member-specialization = getter
               member-type = double
@@ -26,7 +26,7 @@ NodeTypeGlobalModule
                   parameter-type = DOMString
                   start-rune = 42
             NodeTypeMember
-              end-rune = 128
+              end-rune = 127
               input-source = indexer test
               member-specialization = setter
               member-type = void

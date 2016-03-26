@@ -70,7 +70,6 @@ Loop:
 		default:
 			p.emitError("Unexpected token at root level: %v", p.currentToken.kind)
 			break Loop
-
 		}
 
 		if p.isToken(tokenTypeEOF) {
@@ -103,6 +102,7 @@ func (p *sourceParser) consumeDeclaration() AstNode {
 	p.consume(tokenTypeLeftBrace)
 
 	// Members and custom operations (if any).
+loop:
 	for {
 		if p.isToken(tokenTypeRightBrace) {
 			break
@@ -119,13 +119,17 @@ func (p *sourceParser) consumeDeclaration() AstNode {
 			declNode.Connect(NodePredicateDeclarationCustomOperation, customOpNode)
 
 			if !ok {
-				break
+				break loop
 			}
 
 			continue
 		}
 
 		declNode.Connect(NodePredicateDeclarationMember, p.consumeMember())
+
+		if _, ok := p.consume(tokenTypeSemicolon); !ok {
+			break
+		}
 	}
 
 	// };
@@ -179,9 +183,6 @@ func (p *sourceParser) consumeMember() AstNode {
 		p.consumeParameters(memberNode, NodePredicateMemberParameter)
 	}
 
-	// ;
-	p.consume(tokenTypeSemicolon)
-
 	return memberNode
 }
 
@@ -198,7 +199,9 @@ func (p *sourceParser) tryConsumeAnnotations(parentNode AstNode, predicate strin
 			return
 		}
 
-		p.consume(tokenTypeComma)
+		if _, ok := p.consume(tokenTypeComma); !ok {
+			break
+		}
 	}
 }
 
@@ -223,13 +226,18 @@ func (p *sourceParser) consumeAnnotation() AstNode {
 	return annotationNode
 }
 
-// consumeType attempts to consume a type (identifier or 'any').
+// consumeType attempts to consume a type (identifier (with optional ?) or 'any').
 func (p *sourceParser) consumeType() string {
 	if p.tryConsumeKeyword("any") {
 		return "any"
 	}
 
-	return p.consumeIdentifier()
+	identifier := p.consumeIdentifier()
+	if _, ok := p.tryConsume(tokenTypeQuestionMark); ok {
+		return identifier + "?"
+	} else {
+		return identifier
+	}
 }
 
 // consumeParameter attempts to consume a parameter.
@@ -263,7 +271,9 @@ func (p *sourceParser) consumeParameters(parentNode AstNode, predicate string) {
 			return
 		}
 
-		p.consume(tokenTypeComma)
+		if _, ok := p.consume(tokenTypeComma); !ok {
+			return
+		}
 	}
 }
 
