@@ -135,7 +135,7 @@ func resolveTestingTypeRef(name string, refNode compilergraph.GraphNode, graph *
 	// Check for type generics.
 	if currentNode.Kind == NodeTypeClass || currentNode.Kind == NodeTypeInterface ||
 		currentNode.Kind == NodeTypeNominalType ||
-		currentNode.Kind == NodeTypeStruct {
+		currentNode.Kind == NodeTypeStruct || currentNode.Kind == NodeTypeExternalInterface {
 		typeInfo := TGTypeDecl{currentNode, graph}
 		for _, generic := range typeInfo.Generics() {
 			if generic.Name() == name {
@@ -321,6 +321,10 @@ func (t *testTypeGraphConstructor) DefineTypes(builder GetTypeBuilder) {
 
 		if typeInfo.kind == "nominal" {
 			typeKind = NominalType
+		}
+
+		if typeInfo.kind == "external-interface" {
+			typeKind = ExternalInternalType
 		}
 
 		genericBuilder := builder(*t.moduleNode).

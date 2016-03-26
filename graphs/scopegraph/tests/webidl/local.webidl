@@ -13,3 +13,5 @@ interface First {};
 interface Second {};
 interface Third {};
 interface Fourth {};
+
+interface AnotherFirst : First {};

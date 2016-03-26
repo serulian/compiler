@@ -1802,6 +1802,10 @@ func (p *sourceParser) tryConsumeExpression(option consumeExpressionOption) (Ast
 				}
 
 				structuralNode.Connect(NodeStructuralNewExpressionChildEntry, p.consumeStructuralNewExpressionEntry())
+				if _, ok := p.tryConsume(tokenTypeComma); !ok {
+					break
+				}
+
 				if p.isToken(tokenTypeRightBrace) || p.isStatementTerminator() {
 					break
 				}
@@ -2375,9 +2379,9 @@ func (p *sourceParser) tryConsumeLiteralValue() (AstNode, bool) {
 func (p *sourceParser) tryConsumeBaseExpression() (AstNode, bool) {
 	switch {
 
-	// List expression.
+	// List expression or slice literal expression.
 	case p.isToken(tokenTypeLeftBracket):
-		return p.consumeListExpression(), true
+		return p.consumeListOrSliceLiteralExpression(), true
 
 	// Unary: &
 	case p.isToken(tokenTypeAnd):
@@ -2547,9 +2551,6 @@ func (p *sourceParser) consumeStructuralNewExpressionEntry() AstNode {
 	// Consume an expression.
 	entryNode.Connect(NodeStructuralNewEntryValue, p.consumeExpression(consumeExpressionAllowMaps))
 
-	// Consume a comma.
-	p.consume(tokenTypeComma)
-
 	return entryNode
 }
 
@@ -2601,6 +2602,73 @@ func (p *sourceParser) consumeMapExpressionEntry() AstNode {
 	entryNode.Connect(NodeMapExpressionEntryValue, p.consumeExpression(consumeExpressionAllowMaps))
 
 	return entryNode
+}
+
+// consumeListOrSliceLiteralExpression consumes an inline list or slice literal expression.
+func (p *sourceParser) consumeListOrSliceLiteralExpression() AstNode {
+	// Lookahead for a slice literal by searching for []identifier or []keyword.
+	t := p.newLookaheadTracker()
+	t.matchToken(tokenTypeLeftBracket)
+
+	if _, ok := t.matchToken(tokenTypeRightBracket); !ok {
+		return p.consumeListExpression()
+	}
+
+	if _, ok := t.matchToken(tokenTypeIdentifer, tokenTypeKeyword); !ok {
+		return p.consumeListExpression()
+	}
+
+	return p.consumeSliceLiteralExpression()
+}
+
+// consumeSliceLiteralExpression consumes a slice literal expression.
+func (p *sourceParser) consumeSliceLiteralExpression() AstNode {
+	sliceNode := p.startNode(NodeSliceLiteralExpression)
+
+	// [
+	p.consume(tokenTypeLeftBracket)
+
+	// ]
+	p.consume(tokenTypeRightBracket)
+
+	// Type Reference.
+	sliceNode.Connect(NodeSliceLiteralExpressionType, p.consumeTypeReference(typeReferenceNoSpecialTypes))
+
+	// {
+	if _, ok := p.consume(tokenTypeLeftBrace); !ok {
+		return sliceNode
+	}
+
+	if !p.isToken(tokenTypeLeftBrace) {
+		// Consume one (or more) values.
+		for {
+			if p.isToken(tokenTypeRightBrace) {
+				break
+			}
+
+			e := p.consumeExpression(consumeExpressionAllowMaps)
+			sliceNode.Connect(NodeSliceLiteralExpressionValue, e)
+
+			if p.isToken(tokenTypeRightBrace) {
+				break
+			}
+
+			if _, ok := p.tryConsume(tokenTypeSyntheticSemicolon); ok {
+				break
+			}
+
+			if _, ok := p.consume(tokenTypeComma); !ok {
+				break
+			}
+		}
+	}
+
+	// }
+	if _, ok := p.consume(tokenTypeRightBrace); !ok {
+		return sliceNode
+	}
+
+	return sliceNode
 }
 
 // consumeListExpression consumes an inline list expression.

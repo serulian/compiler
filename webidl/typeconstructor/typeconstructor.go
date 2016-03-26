@@ -6,6 +6,7 @@ package typeconstructor
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
@@ -83,6 +84,26 @@ func (itc *irgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 }
 
 func (itc *irgTypeConstructor) DefineDependencies(annotator typegraph.Annotator, graph *typegraph.TypeGraph) {
+	for _, module := range itc.irg.GetModules() {
+		for _, declaration := range module.Declarations() {
+			if declaration.HasOneAnnotation(GLOBAL_CONTEXT_ANNOTATIONS...) {
+				continue
+			}
+
+			parentTypeString, hasParentType := declaration.ParentType()
+			if !hasParentType {
+				continue
+			}
+
+			parentType, err := itc.ResolveType(parentTypeString, graph)
+			if err != nil {
+				annotator.ReportError(declaration.GraphNode, "%v", err)
+				continue
+			}
+
+			annotator.DefineParentType(declaration.GraphNode, parentType)
+		}
+	}
 }
 
 func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder, reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {
@@ -315,6 +336,12 @@ func (itc *irgTypeConstructor) ResolveType(typeString string, graph *typegraph.T
 		return graph.VoidTypeReference(), nil
 	}
 
+	var nullable = false
+	if strings.HasSuffix(typeString, "?") {
+		nullable = true
+		typeString = typeString[0 : len(typeString)-1]
+	}
+
 	declaration, hasDeclaration := itc.irg.FindDeclaration(typeString)
 	if !hasDeclaration {
 		return graph.AnyTypeReference(), fmt.Errorf("Could not find WebIDL type %v", typeString)
@@ -325,5 +352,10 @@ func (itc *irgTypeConstructor) ResolveType(typeString string, graph *typegraph.T
 		panic("Type not found for WebIDL type declaration")
 	}
 
-	return typeDecl.GetTypeReference(), nil
+	typeRef := typeDecl.GetTypeReference()
+	if nullable {
+		return typeRef.AsNullable(), nil
+	}
+
+	return typeRef, nil
 }

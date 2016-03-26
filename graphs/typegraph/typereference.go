@@ -449,6 +449,7 @@ func (tr TypeReference) referenceOrConstraint() TypeReference {
 //   - A class is a subtype of itself (and no other class) and only if generics and parameters match.
 //   - A class (or interface) is a subtype of an interface if it defines that interface's full signature.
 //   - A generic is checked by its constraint.
+//   - An external interface is a subtype of another external interface if explicitly declared so.
 func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
 	// If either reference is void, then they cannot be subtypes, as voids are technically 'unique'.
 	if tr.IsVoid() || other.IsVoid() {
@@ -510,6 +511,22 @@ func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
 
 	localType := left.ReferredType()
 	otherType := other.ReferredType()
+
+	// If the other type is an external interface, then this type is a subtype if and only if
+	// it is an external interface and explicitly a subtype of the other type or one of its children.
+	if otherType.TypeKind() == ExternalInternalType {
+		if localType.TypeKind() != ExternalInternalType {
+			return fmt.Errorf("'%v' cannot be used in place of external interface '%v'", tr, originalOther)
+		}
+
+		for _, declaredParentType := range localType.ParentTypes() {
+			if perr := declaredParentType.CheckSubTypeOf(other); perr == nil {
+				return nil
+			}
+		}
+
+		return fmt.Errorf("'%v' cannot be used in place of external interface '%v'", tr, originalOther)
+	}
 
 	// If the other reference's type node is not an interface, then this reference cannot be a subtype.
 	if otherType.TypeKind() != ImplicitInterfaceType {
@@ -818,6 +835,17 @@ func (tr TypeReference) ResolveMember(memberName string, kind MemberResolutionKi
 		TryGetNode()
 
 	if !found {
+		referredType := resolutionType.ReferredType()
+		if referredType.TypeKind() == ExternalInternalType {
+			// Check the parent types, if any.
+			for _, parentType := range referredType.ParentTypes() {
+				member, found := parentType.ResolveMember(memberName, kind)
+				if found {
+					return member, found
+				}
+			}
+		}
+
 		return TGMember{}, false
 	}
 

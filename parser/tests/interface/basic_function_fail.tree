@@ -8,12 +8,6 @@ NodeTypeFile
       input-source = basic interface function failure test
       named = ISomeInterface
       start-rune = 0
-      child-node =>
-        NodeTypeError
-          end-rune = 70
-          error-message = Expected interface member, found {
-          input-source = basic interface function failure test
-          start-rune = 72
       type-member =>
         NodeTypeFunction
           end-rune = 70

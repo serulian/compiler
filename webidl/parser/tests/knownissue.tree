@@ -1,0 +1,135 @@
+NodeTypeGlobalModule
+  child-node =>
+    NodeTypeFile
+      end-rune = 411
+      input-source = known issue test
+      start-rune = 0
+      child-node =>
+        NodeTypeDeclaration
+          declaration-kind = interface
+          declaration-name = Element
+          end-rune = 227
+          input-source = known issue test
+          start-rune = 0
+          declaration-member =>
+            NodeTypeMember
+              end-rune = 53
+              input-source = known issue test
+              member-attribute = true
+              member-name = tagName
+              member-readonly = true
+              member-type = String
+              start-rune = 21
+            NodeTypeMember
+              end-rune = 75
+              input-source = known issue test
+              member-attribute = true
+              member-name = id
+              member-type = String
+              start-rune = 57
+            NodeTypeMember
+              end-rune = 104
+              input-source = known issue test
+              member-attribute = true
+              member-name = className
+              member-type = String
+              start-rune = 79
+            NodeTypeMember
+              end-rune = 140
+              input-source = known issue test
+              member-name = getAttribute
+              member-type = String?
+              start-rune = 108
+              member-parameter =>
+                NodeTypeParameter
+                  end-rune = 139
+                  input-source = known issue test
+                  parameter-name = name
+                  parameter-type = String
+                  start-rune = 129
+            NodeTypeMember
+              end-rune = 187
+              input-source = known issue test
+              member-name = setAttribute
+              member-type = void
+              start-rune = 144
+              member-parameter =>
+                NodeTypeParameter
+                  end-rune = 172
+                  input-source = known issue test
+                  parameter-name = name
+                  parameter-type = String
+                  start-rune = 162
+                NodeTypeParameter
+                  end-rune = 186
+                  input-source = known issue test
+                  parameter-name = value
+                  parameter-type = String
+                  start-rune = 175
+            NodeTypeMember
+              end-rune = 223
+              input-source = known issue test
+              member-name = hasAttribute
+              member-type = boolean
+              start-rune = 191
+              member-parameter =>
+                NodeTypeParameter
+                  end-rune = 222
+                  input-source = known issue test
+                  parameter-name = name
+                  parameter-type = String
+                  start-rune = 212
+        NodeTypeDeclaration
+          declaration-kind = interface
+          declaration-name = Document
+          end-rune = 331
+          input-source = known issue test
+          start-rune = 230
+          declaration-member =>
+            NodeTypeMember
+              end-rune = 291
+              input-source = known issue test
+              member-name = createElement
+              member-type = Element
+              start-rune = 253
+              member-parameter =>
+                NodeTypeParameter
+                  end-rune = 290
+                  input-source = known issue test
+                  parameter-name = localName
+                  parameter-type = String
+                  start-rune = 275
+            NodeTypeMember
+              end-rune = 327
+              input-source = known issue test
+              member-name = createTextNode
+              member-type = Text
+              start-rune = 296
+              member-parameter =>
+                NodeTypeParameter
+                  end-rune = 326
+                  input-source = known issue test
+                  parameter-name = data
+                  parameter-type = String
+                  start-rune = 316
+        NodeTypeDeclaration
+          declaration-kind = interface
+          declaration-name = Window
+          end-rune = 411
+          input-source = known issue test
+          start-rune = 334
+          declaration-annotation =>
+            NodeTypeAnnotation
+              annotation-name = GlobalContext
+              end-rune = 347
+              input-source = known issue test
+              start-rune = 335
+          declaration-member =>
+            NodeTypeMember
+              end-rune = 407
+              input-source = known issue test
+              member-attribute = true
+              member-name = document
+              member-readonly = true
+              member-type = Document
+              start-rune = 372

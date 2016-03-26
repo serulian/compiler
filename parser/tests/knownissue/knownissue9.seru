@@ -1,0 +1,7 @@
+function<void> DoSomething() {
+	Foo{
+	  Bar: Meh[
+	  	Thing,
+	  ],
+	}
+}

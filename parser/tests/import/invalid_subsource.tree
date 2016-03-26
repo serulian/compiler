@@ -15,8 +15,3 @@ NodeTypeFile
           error-message = Expected identifier, found token tokenTypeStringLiteral
           input-source = invalid subsource
           start-rune = 18
-    NodeTypeError
-      end-rune = 16
-      error-message = Unexpected token at root level: tokenTypeStringLiteral
-      input-source = invalid subsource
-      start-rune = 18

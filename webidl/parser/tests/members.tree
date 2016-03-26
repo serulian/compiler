@@ -13,7 +13,7 @@ NodeTypeGlobalModule
           start-rune = 0
           declaration-member =>
             NodeTypeMember
-              end-rune = 56
+              end-rune = 55
               input-source = members test
               member-attribute = true
               member-name = NaN
@@ -21,7 +21,7 @@ NodeTypeGlobalModule
               member-type = Number
               start-rune = 27
             NodeTypeMember
-              end-rune = 101
+              end-rune = 100
               input-source = members test
               member-attribute = true
               member-name = prototype
@@ -30,7 +30,7 @@ NodeTypeGlobalModule
               member-type = Object
               start-rune = 59
             NodeTypeMember
-              end-rune = 136
+              end-rune = 135
               input-source = members test
               member-name = keys
               member-static = true
@@ -44,7 +44,7 @@ NodeTypeGlobalModule
                   parameter-type = Object
                   start-rune = 122
             NodeTypeMember
-              end-rune = 192
+              end-rune = 191
               input-source = members test
               member-name = create
               member-type = Object

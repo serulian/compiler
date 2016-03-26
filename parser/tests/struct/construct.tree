@@ -25,7 +25,7 @@ NodeTypeFile
                   start-rune = 32
                   structural-new-entry =>
                     NodeStructuralNewExpressionEntry
-                      end-rune = 58
+                      end-rune = 57
                       input-source = construct struct test
                       start-rune = 46
                       structural-new-entry-key = SomeField
@@ -36,7 +36,7 @@ NodeTypeFile
                           literal-value = 2
                           start-rune = 57
                     NodeStructuralNewExpressionEntry
-                      end-rune = 83
+                      end-rune = 82
                       input-source = construct struct test
                       start-rune = 62
                       structural-new-entry-key = AnotherField
@@ -47,7 +47,7 @@ NodeTypeFile
                           literal-value = 'hello'
                           start-rune = 76
                     NodeStructuralNewExpressionEntry
-                      end-rune = 123
+                      end-rune = 122
                       input-source = construct struct test
                       start-rune = 87
                       structural-new-entry-key = ThirdField

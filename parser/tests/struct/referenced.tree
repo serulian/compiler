@@ -122,7 +122,7 @@ NodeTypeFile
                   start-rune = 170
                   structural-new-entry =>
                     NodeStructuralNewExpressionEntry
-                      end-rune = 197
+                      end-rune = 196
                       input-source = referenced struct test
                       start-rune = 184
                       structural-new-entry-key = SomeField
@@ -133,7 +133,7 @@ NodeTypeFile
                           literal-value = 42
                           start-rune = 195
                     NodeStructuralNewExpressionEntry
-                      end-rune = 219
+                      end-rune = 218
                       input-source = referenced struct test
                       start-rune = 201
                       structural-new-entry-key = AnotherField
@@ -144,7 +144,7 @@ NodeTypeFile
                           literal-value = true
                           start-rune = 215
                     NodeStructuralNewExpressionEntry
-                      end-rune = 277
+                      end-rune = 276
                       input-source = referenced struct test
                       start-rune = 223
                       structural-new-entry-key = SomeInstance
@@ -155,7 +155,7 @@ NodeTypeFile
                           start-rune = 237
                           structural-new-entry =>
                             NodeStructuralNewExpressionEntry
-                              end-rune = 272
+                              end-rune = 271
                               input-source = referenced struct test
                               start-rune = 255
                               structural-new-entry-key = AnotherBool

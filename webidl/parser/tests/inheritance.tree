@@ -1,0 +1,14 @@
+NodeTypeGlobalModule
+  child-node =>
+    NodeTypeFile
+      end-rune = 49
+      input-source = inheritance test
+      start-rune = 0
+      child-node =>
+        NodeTypeDeclaration
+          declaration-kind = interface
+          declaration-name = SomeInterface
+          declaration-parent-type = AnotherInterface
+          end-rune = 49
+          input-source = inheritance test
+          start-rune = 0

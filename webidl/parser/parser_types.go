@@ -95,6 +95,9 @@ const (
 	// Decorates a declaration with its kind (interface, etc)
 	NodePredicateDeclarationKind = "declaration-kind"
 
+	// Decorates a declaration with its parent type.
+	NodePredicateDeclarationParentType = "declaration-parent-type"
+
 	// Decorates a declaration with its name.
 	NodePredicateDeclarationName = "declaration-name"
 

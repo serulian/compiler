@@ -707,6 +707,18 @@ func TestSubtypes(t *testing.T) {
 					testMember{"constructor", "BuildMe", "ConstructableClass", []testGeneric{}, []testParam{}},
 				},
 			},
+
+			// external-interface ISomeExternalType {}
+			testType{"external-interface", "ISomeExternalType", "", []testGeneric{}, []testMember{}},
+
+			// external-interface IAnotherExternalType {}
+			testType{"external-interface", "IAnotherExternalType", "", []testGeneric{}, []testMember{}},
+
+			// external-interface IChildExternalType : ISomeExternalType {}
+			testType{"external-interface", "IChildExternalType", "ISomeExternalType", []testGeneric{}, []testMember{}},
+
+			// external-interface IGrandchildExternalType : IChildExternalType {}
+			testType{"external-interface", "IGrandchildExternalType", "IChildExternalType", []testGeneric{}, []testMember{}},
 		},
 	)
 
@@ -714,6 +726,22 @@ func TestSubtypes(t *testing.T) {
 	moduleSourceNode := *testConstruction.moduleNode
 
 	tests := []subtypeCheckTest{
+		// External interfaces.
+		subtypeCheckTest{"IEmpty not subtype of ISomeExternalType", "IEmpty", "ISomeExternalType",
+			"'IEmpty' cannot be used in place of external interface 'ISomeExternalType'"},
+
+		subtypeCheckTest{"SomeClass not subtype of ISomeExternalType", "SomeClass", "ISomeExternalType",
+			"'SomeClass' cannot be used in place of external interface 'ISomeExternalType'"},
+
+		subtypeCheckTest{"IAnotherExternalType not subtype of ISomeExternalType", "IAnotherExternalType", "ISomeExternalType",
+			"'IAnotherExternalType' cannot be used in place of external interface 'ISomeExternalType'"},
+
+		subtypeCheckTest{"IChildExternalType subtype of ISomeExternalType", "IChildExternalType", "ISomeExternalType",
+			""},
+
+		subtypeCheckTest{"IGrandchildExternalType subtype of ISomeExternalType", "IGrandchildExternalType", "ISomeExternalType",
+			""},
+
 		// IEmpty
 		subtypeCheckTest{"SomeClass subtype of IEmpty", "SomeClass", "IEmpty", ""},
 		subtypeCheckTest{"AnotherClass subtype of IEmpty", "AnotherClass", "IEmpty", ""},
@@ -881,6 +909,21 @@ func TestResolveMembers(t *testing.T) {
 					testMember{"function", "notExported", "void", []testGeneric{}, []testParam{}},
 				},
 			},
+
+			// external-interface ISomeBaseInterface {
+			//   function<void> SomeFunction() {}
+			// }
+			testType{"external-interface", "ISomeBaseInterface", "", []testGeneric{},
+				[]testMember{
+					testMember{"function", "SomeFunction", "void", []testGeneric{}, []testParam{}},
+				},
+			},
+
+			// external-interface IAnotherInterface : ISomeBaseInterface {
+			// }
+			testType{"external-interface", "IAnotherInterface", "ISomeBaseInterface", []testGeneric{},
+				[]testMember{},
+			},
 		},
 	)
 
@@ -913,8 +956,21 @@ func TestResolveMembers(t *testing.T) {
 		return
 	}
 
+	someBaseInterface, someBaseInterfaceFound := graph.LookupType("ISomeBaseInterface", compilercommon.InputSource("entrypoint"))
+	if !assert.True(t, someBaseInterfaceFound, "Could not find 'ISomeBaseInterface'") {
+		return
+	}
+
+	anotherInterface, anotherInterfaceFound := graph.LookupType("IAnotherInterface", compilercommon.InputSource("entrypoint"))
+	if !assert.True(t, anotherInterfaceFound, "Could not find 'IAnotherInterface'") {
+		return
+	}
+
 	tests := []resolveMemberTest{
-		resolveMemberTest{"Exported function from SomeClass via Entrpoint", someClass, "ExportedFunction", "entrypoint", true},
+		resolveMemberTest{"Some function from ISomeBaseInterface via Entrypoint", someBaseInterface, "SomeFunction", "entrypoint", true},
+		resolveMemberTest{"Some function from IANotherInterface via Entrypoint", anotherInterface, "SomeFunction", "entrypoint", true},
+
+		resolveMemberTest{"Exported function from SomeClass via Entrypoint", someClass, "ExportedFunction", "entrypoint", true},
 		resolveMemberTest{"Unexported function from SomeClass via Entrypoint", someClass, "notExported", "entrypoint", true},
 		resolveMemberTest{"Exported function from SomeClass via otherfile", someClass, "ExportedFunction", "otherfile", true},
 		resolveMemberTest{"Unexported function from SomeClass via otherfile", someClass, "notExported", "otherfile", false},

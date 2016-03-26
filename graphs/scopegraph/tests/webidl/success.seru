@@ -1,6 +1,6 @@
 import webidl`local` as global
 
-function<void> DoSomething(someParam global.SomeType, first global.First, third global.Third, fourth global.Fourth) {
+function<void> DoSomething(someParam global.SomeType, first global.First, third global.Third, fourth global.Fourth, anotherFirst global.AnotherFirst) {
 	global.SomeType.StaticFunction()
 
 	/* sometype */(global.SomeType)
@@ -14,4 +14,5 @@ function<void> DoSomething(someParam global.SomeType, first global.First, third 
 
 	/* getindex */(someParam[first])
 	someParam[third] = fourth
+	someParam[anotherFirst]
 }

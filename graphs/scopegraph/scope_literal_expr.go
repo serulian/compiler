@@ -266,6 +266,38 @@ func (sb *scopeBuilder) scopeListLiteralExpression(node compilergraph.GraphNode,
 	return newScope().IsValid(isValid).Resolving(sb.sg.tdg.ListTypeReference(valueType)).GetScope()
 }
 
+// scopeSliceLiteralExpression scopes a slice literal expression in the SRG.
+func (sb *scopeBuilder) scopeSliceLiteralExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+	var isValid = true
+
+	declaredTypeNode := node.GetNode(parser.NodeSliceLiteralExpressionType)
+	declaredType, rerr := sb.sg.ResolveSRGTypeRef(sb.sg.srg.GetTypeRef(declaredTypeNode))
+	if rerr != nil {
+		sb.decorateWithError(node, "%v", rerr)
+		return newScope().Invalid().Resolving(sb.sg.tdg.SliceTypeReference(sb.sg.tdg.AnyTypeReference())).GetScope()
+	}
+
+	// Scope each of the expressions and ensure they match the slice type.
+	vit := node.StartQuery().
+		Out(parser.NodeSliceLiteralExpressionValue).
+		BuildNodeIterator()
+
+	for vit.Next() {
+		valueNode := vit.Node()
+		valueScope := sb.getScope(valueNode)
+		if !valueScope.GetIsValid() {
+			isValid = false
+		} else {
+			if serr := valueScope.ResolvedTypeRef(sb.sg.tdg).CheckSubTypeOf(declaredType); serr != nil {
+				isValid = false
+				sb.decorateWithError(node, "Invalid slice literal value: %v", serr)
+			}
+		}
+	}
+
+	return newScope().IsValid(isValid).Resolving(sb.sg.tdg.SliceTypeReference(declaredType)).GetScope()
+}
+
 // scopeStringLiteralExpression scopes a string literal expression in the SRG.
 func (sb *scopeBuilder) scopeStringLiteralExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	return newScope().

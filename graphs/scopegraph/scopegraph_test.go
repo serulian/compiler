@@ -503,6 +503,18 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	/////////// Slice literal expression ///////////
+
+	scopegraphTest{"slice literal success test", "sliceliteral", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"slice", expectedScope{true, proto.ScopeKind_VALUE, "Slice<String>", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"slice literal invalid value", "sliceliteral", "invalidvalue",
+		[]expectedScopeEntry{},
+		"Invalid slice literal value: 'String' cannot be used in place of non-interface 'SomeClass'", ""},
+
 	/////////// Map literal expression ///////////
 
 	scopegraphTest{"map literal success test", "mapliteral", "success",

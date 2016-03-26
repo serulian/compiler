@@ -208,6 +208,7 @@ var parserTests = []parserTest{
 	{"range expr test", "expression/range"},
 	{"is null expr test", "expression/isnull"},
 	{"is null conditional expr test", "expression/isnullconditional"},
+	{"slice literal expr test", "expression/sliceliteral"},
 
 	{"all expr test", "expression/all"},
 	{"complex expr test", "expression/complex"},
@@ -231,6 +232,7 @@ var parserTests = []parserTest{
 	{"known issue 6 test", "knownissue/knownissue6"},
 	{"known issue 7 test", "knownissue/knownissue7"},
 	{"known issue 8 test", "knownissue/knownissue8"},
+	{"known issue 9 test", "knownissue/knownissue9"},
 
 	// Comment tests.
 	{"comment function test", "comment/function"},

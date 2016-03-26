@@ -132,7 +132,8 @@ const (
 	NodeNullLiteralExpression    // null
 	NodeValLiteralExpression     // val
 
-	NodeListExpression // [1, 2, 3]
+	NodeListExpression         // [1, 2, 3]
+	NodeSliceLiteralExpression // []int{1, 2, 3}
 
 	NodeStructuralNewExpression      // SomeName{a: 1, b: 2}
 	NodeStructuralNewExpressionEntry // a: 1
@@ -460,6 +461,12 @@ const (
 	// NodeListExpression
 	//
 	NodeListExpressionValue = "list-expr-value"
+
+	//
+	// NodeSliceLiteralExpression
+	//
+	NodeSliceLiteralExpressionValue = "slice-literal-expr-value"
+	NodeSliceLiteralExpressionType  = "slice-literal-expr-type"
 
 	//
 	// NodeStructuralNewExpression

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/serulian/compiler/compilergraph"
@@ -50,16 +51,26 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"native operators test", "operator", ""},
 	typegraphTest{"indexer test", "indexer", ""},
 	typegraphTest{"custom op test", "customop", ""},
+	typegraphTest{"inheritance test", "inheritance", ""},
 
 	// Failure tests.
 	typegraphTest{"redeclaration test", "redeclare", "external interface 'Foo' redefines name 'Foo' under Module 'redeclare.webidl'"},
 	typegraphTest{"same member test", "redefine", "type member 'Foo' redefines name 'Foo' under external interface 'SomeInterface'"},
 	typegraphTest{"unknown type test", "unknowntype", "Could not find WebIDL type Bar"},
 	typegraphTest{"invalid indexer test", "invalidindexer", "Operator 'index' defined on type 'MyInterface' expects 1 parameters; found 2"},
+	typegraphTest{"invalid parent test", "invalidparent", "Could not find WebIDL type Node"},
 }
 
 func TestGraphs(t *testing.T) {
 	for _, test := range typeGraphTests {
+		if os.Getenv("FILTER") != "" {
+			if !strings.Contains(test.name, os.Getenv("FILTER")) {
+				continue
+			} else {
+				fmt.Printf("Matched Test: %v\n", test.name)
+			}
+		}
+
 		graph, err := compilergraph.NewGraph("tests/" + test.entrypoint + ".webidl")
 		if err != nil {
 			t.Errorf("Got error on test %s: %v", test.name, err)

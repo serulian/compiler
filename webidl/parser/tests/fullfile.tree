@@ -22,7 +22,7 @@ NodeTypeGlobalModule
               start-rune = 88
           declaration-member =>
             NodeTypeMember
-              end-rune = 165
+              end-rune = 164
               input-source = full file test
               member-attribute = true
               member-name = NaN
@@ -30,7 +30,7 @@ NodeTypeGlobalModule
               member-type = Number
               start-rune = 136
             NodeTypeMember
-              end-rune = 203
+              end-rune = 202
               input-source = full file test
               member-attribute = true
               member-name = Infinity
@@ -38,7 +38,7 @@ NodeTypeGlobalModule
               member-type = Number
               start-rune = 169
             NodeTypeMember
-              end-rune = 242
+              end-rune = 241
               input-source = full file test
               member-attribute = true
               member-name = undefined
@@ -46,7 +46,7 @@ NodeTypeGlobalModule
               member-type = Object
               start-rune = 207
             NodeTypeMember
-              end-rune = 262
+              end-rune = 261
               input-source = full file test
               member-name = eval
               member-type = any
@@ -59,7 +59,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 256
             NodeTypeMember
-              end-rune = 304
+              end-rune = 303
               input-source = full file test
               member-name = parseInt
               member-type = int
@@ -78,7 +78,7 @@ NodeTypeGlobalModule
                   parameter-type = int
                   start-rune = 294
             NodeTypeMember
-              end-rune = 340
+              end-rune = 339
               input-source = full file test
               member-name = parseFloat
               member-type = Number
@@ -91,7 +91,7 @@ NodeTypeGlobalModule
                   parameter-type = String
                   start-rune = 326
             NodeTypeMember
-              end-rune = 372
+              end-rune = 371
               input-source = full file test
               member-name = isNaN
               member-type = boolean
@@ -104,7 +104,7 @@ NodeTypeGlobalModule
                   parameter-type = Number
                   start-rune = 358
             NodeTypeMember
-              end-rune = 407
+              end-rune = 406
               input-source = full file test
               member-name = isFinite
               member-type = boolean
@@ -117,7 +117,7 @@ NodeTypeGlobalModule
                   parameter-type = Number
                   start-rune = 393
             NodeTypeMember
-              end-rune = 443
+              end-rune = 442
               input-source = full file test
               member-name = decodeURI
               member-type = String
@@ -130,7 +130,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 428
             NodeTypeMember
-              end-rune = 488
+              end-rune = 487
               input-source = full file test
               member-name = decodeURIComponent
               member-type = String
@@ -143,7 +143,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 473
             NodeTypeMember
-              end-rune = 517
+              end-rune = 516
               input-source = full file test
               member-name = encodeURI
               member-type = String
@@ -156,7 +156,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 509
             NodeTypeMember
-              end-rune = 555
+              end-rune = 554
               input-source = full file test
               member-name = encodeURIComponent
               member-type = String
@@ -188,7 +188,7 @@ NodeTypeGlobalModule
               start-rune = 597
           declaration-member =>
             NodeTypeMember
-              end-rune = 673
+              end-rune = 672
               input-source = full file test
               member-attribute = true
               member-name = prototype
@@ -197,7 +197,7 @@ NodeTypeGlobalModule
               member-type = Object
               start-rune = 631
             NodeTypeMember
-              end-rune = 720
+              end-rune = 719
               input-source = full file test
               member-name = getPrototypeOf
               member-static = true
@@ -211,7 +211,7 @@ NodeTypeGlobalModule
                   parameter-type = Object
                   start-rune = 706
             NodeTypeMember
-              end-rune = 787
+              end-rune = 786
               input-source = full file test
               member-name = getOwnPropertyDescriptor
               member-static = true
@@ -231,7 +231,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 778
             NodeTypeMember
-              end-rune = 838
+              end-rune = 837
               input-source = full file test
               member-name = getOwnPropertyNames
               member-static = true
@@ -245,7 +245,7 @@ NodeTypeGlobalModule
                   parameter-type = Object
                   start-rune = 824
             NodeTypeMember
-              end-rune = 902
+              end-rune = 901
               input-source = full file test
               member-name = create
               member-static = true
@@ -266,7 +266,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 878
             NodeTypeMember
-              end-rune = 978
+              end-rune = 977
               input-source = full file test
               member-name = defineProperty
               member-static = true
@@ -292,7 +292,7 @@ NodeTypeGlobalModule
                   parameter-type = Object
                   start-rune = 960
             NodeTypeMember
-              end-rune = 1046
+              end-rune = 1045
               input-source = full file test
               member-name = defineProperties
               member-static = true
@@ -312,7 +312,7 @@ NodeTypeGlobalModule
                   parameter-type = Object
                   start-rune = 1028
             NodeTypeMember
-              end-rune = 1083
+              end-rune = 1082
               input-source = full file test
               member-name = seal
               member-static = true
@@ -326,7 +326,7 @@ NodeTypeGlobalModule
                   parameter-type = Object
                   start-rune = 1069
             NodeTypeMember
-              end-rune = 1122
+              end-rune = 1121
               input-source = full file test
               member-name = freeze
               member-static = true
@@ -340,7 +340,7 @@ NodeTypeGlobalModule
                   parameter-type = Object
                   start-rune = 1108
             NodeTypeMember
-              end-rune = 1172
+              end-rune = 1171
               input-source = full file test
               member-name = preventExtensions
               member-static = true
@@ -354,7 +354,7 @@ NodeTypeGlobalModule
                   parameter-type = Object
                   start-rune = 1158
             NodeTypeMember
-              end-rune = 1214
+              end-rune = 1213
               input-source = full file test
               member-name = isSealed
               member-static = true
@@ -368,7 +368,7 @@ NodeTypeGlobalModule
                   parameter-type = Object
                   start-rune = 1200
             NodeTypeMember
-              end-rune = 1256
+              end-rune = 1255
               input-source = full file test
               member-name = isFrozen
               member-static = true
@@ -382,7 +382,7 @@ NodeTypeGlobalModule
                   parameter-type = Object
                   start-rune = 1242
             NodeTypeMember
-              end-rune = 1302
+              end-rune = 1301
               input-source = full file test
               member-name = isExtensible
               member-static = true
@@ -396,7 +396,7 @@ NodeTypeGlobalModule
                   parameter-type = Object
                   start-rune = 1288
             NodeTypeMember
-              end-rune = 1338
+              end-rune = 1337
               input-source = full file test
               member-name = keys
               member-static = true
@@ -410,25 +410,25 @@ NodeTypeGlobalModule
                   parameter-type = Object
                   start-rune = 1324
             NodeTypeMember
-              end-rune = 1359
+              end-rune = 1358
               input-source = full file test
               member-name = toString
               member-type = String
               start-rune = 1342
             NodeTypeMember
-              end-rune = 1386
+              end-rune = 1385
               input-source = full file test
               member-name = toLocaleString
               member-type = String
               start-rune = 1363
             NodeTypeMember
-              end-rune = 1406
+              end-rune = 1405
               input-source = full file test
               member-name = valueOf
               member-type = Object
               start-rune = 1390
             NodeTypeMember
-              end-rune = 1443
+              end-rune = 1442
               input-source = full file test
               member-name = hasOwnProperty
               member-type = boolean
@@ -441,7 +441,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 1433
             NodeTypeMember
-              end-rune = 1479
+              end-rune = 1478
               input-source = full file test
               member-name = isPrototypeOf
               member-type = boolean
@@ -454,7 +454,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 1469
             NodeTypeMember
-              end-rune = 1522
+              end-rune = 1521
               input-source = full file test
               member-name = propertyIsEnumerable
               member-type = boolean
@@ -480,7 +480,7 @@ NodeTypeGlobalModule
               start-rune = 1529
           declaration-member =>
             NodeTypeMember
-              end-rune = 1607
+              end-rune = 1606
               input-source = full file test
               member-attribute = true
               member-name = prototype
@@ -489,7 +489,7 @@ NodeTypeGlobalModule
               member-type = Object
               start-rune = 1565
             NodeTypeMember
-              end-rune = 1647
+              end-rune = 1646
               input-source = full file test
               member-attribute = true
               member-name = length
@@ -498,13 +498,13 @@ NodeTypeGlobalModule
               member-type = int
               start-rune = 1611
             NodeTypeMember
-              end-rune = 1668
+              end-rune = 1667
               input-source = full file test
               member-name = toString
               member-type = String
               start-rune = 1651
             NodeTypeMember
-              end-rune = 1711
+              end-rune = 1710
               input-source = full file test
               member-name = apply
               member-type = any
@@ -523,7 +523,7 @@ NodeTypeGlobalModule
                   parameter-type = Array
                   start-rune = 1695
             NodeTypeMember
-              end-rune = 1756
+              end-rune = 1755
               input-source = full file test
               member-name = call
               member-type = any
@@ -543,7 +543,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 1737
             NodeTypeMember
-              end-rune = 1801
+              end-rune = 1800
               input-source = full file test
               member-name = bind
               member-type = any
@@ -563,7 +563,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 1782
             NodeTypeMember
-              end-rune = 1840
+              end-rune = 1839
               input-source = full file test
               member-attribute = true
               member-name = prototype
@@ -571,7 +571,7 @@ NodeTypeGlobalModule
               member-type = Object
               start-rune = 1805
             NodeTypeMember
-              end-rune = 1873
+              end-rune = 1872
               input-source = full file test
               member-attribute = true
               member-name = length
@@ -592,7 +592,7 @@ NodeTypeGlobalModule
               start-rune = 1880
           declaration-member =>
             NodeTypeMember
-              end-rune = 1955
+              end-rune = 1954
               input-source = full file test
               member-attribute = true
               member-name = prototype
@@ -601,7 +601,7 @@ NodeTypeGlobalModule
               member-type = Object
               start-rune = 1913
             NodeTypeMember
-              end-rune = 1988
+              end-rune = 1987
               input-source = full file test
               member-name = isArray
               member-static = true
@@ -615,19 +615,19 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 1982
             NodeTypeMember
-              end-rune = 2009
+              end-rune = 2008
               input-source = full file test
               member-name = toString
               member-type = String
               start-rune = 1992
             NodeTypeMember
-              end-rune = 2036
+              end-rune = 2035
               input-source = full file test
               member-name = toLocaleString
               member-type = String
               start-rune = 2013
             NodeTypeMember
-              end-rune = 2072
+              end-rune = 2071
               input-source = full file test
               member-name = concat
               member-type = Array
@@ -641,7 +641,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 2053
             NodeTypeMember
-              end-rune = 2102
+              end-rune = 2101
               input-source = full file test
               member-name = join
               member-type = String
@@ -654,13 +654,13 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 2088
             NodeTypeMember
-              end-rune = 2117
+              end-rune = 2116
               input-source = full file test
               member-name = pop
               member-type = Array
               start-rune = 2106
             NodeTypeMember
-              end-rune = 2151
+              end-rune = 2150
               input-source = full file test
               member-name = push
               member-type = Array
@@ -674,19 +674,19 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 2132
             NodeTypeMember
-              end-rune = 2170
+              end-rune = 2169
               input-source = full file test
               member-name = reverse
               member-type = Array
               start-rune = 2155
             NodeTypeMember
-              end-rune = 2185
+              end-rune = 2184
               input-source = full file test
               member-name = shift
               member-type = any
               start-rune = 2174
             NodeTypeMember
-              end-rune = 2220
+              end-rune = 2219
               input-source = full file test
               member-name = slice
               member-type = Array
@@ -705,7 +705,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 2212
             NodeTypeMember
-              end-rune = 2250
+              end-rune = 2249
               input-source = full file test
               member-name = sort
               member-type = Array
@@ -718,7 +718,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 2235
             NodeTypeMember
-              end-rune = 2314
+              end-rune = 2313
               input-source = full file test
               member-name = splice
               member-type = Array
@@ -744,7 +744,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 2295
             NodeTypeMember
-              end-rune = 2349
+              end-rune = 2348
               input-source = full file test
               member-name = unshift
               member-type = int
@@ -758,7 +758,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 2330
             NodeTypeMember
-              end-rune = 2407
+              end-rune = 2406
               input-source = full file test
               member-name = indexOf
               member-type = int
@@ -778,7 +778,7 @@ NodeTypeGlobalModule
                   parameter-type = int
                   start-rune = 2384
             NodeTypeMember
-              end-rune = 2469
+              end-rune = 2468
               input-source = full file test
               member-name = lastIndexOf
               member-type = int
@@ -798,7 +798,7 @@ NodeTypeGlobalModule
                   parameter-type = int
                   start-rune = 2446
             NodeTypeMember
-              end-rune = 2515
+              end-rune = 2514
               input-source = full file test
               member-name = every
               member-type = boolean
@@ -817,7 +817,7 @@ NodeTypeGlobalModule
                   parameter-type = Object
                   start-rune = 2503
             NodeTypeMember
-              end-rune = 2560
+              end-rune = 2559
               input-source = full file test
               member-name = some
               member-type = boolean
@@ -836,7 +836,7 @@ NodeTypeGlobalModule
                   parameter-type = Object
                   start-rune = 2548
             NodeTypeMember
-              end-rune = 2603
+              end-rune = 2602
               input-source = full file test
               member-name = forEach
               member-type = void
@@ -855,7 +855,7 @@ NodeTypeGlobalModule
                   parameter-type = Object
                   start-rune = 2591
             NodeTypeMember
-              end-rune = 2643
+              end-rune = 2642
               input-source = full file test
               member-name = map
               member-type = Array
@@ -874,7 +874,7 @@ NodeTypeGlobalModule
                   parameter-type = Object
                   start-rune = 2631
             NodeTypeMember
-              end-rune = 2688
+              end-rune = 2687
               input-source = full file test
               member-name = filter
               member-type = Array
@@ -893,7 +893,7 @@ NodeTypeGlobalModule
                   parameter-type = Object
                   start-rune = 2676
             NodeTypeMember
-              end-rune = 2738
+              end-rune = 2737
               input-source = full file test
               member-name = reduce
               member-type = any
@@ -913,7 +913,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 2717
             NodeTypeMember
-              end-rune = 2793
+              end-rune = 2792
               input-source = full file test
               member-name = reduceRight
               member-type = any
@@ -933,7 +933,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 2772
             NodeTypeMember
-              end-rune = 2817
+              end-rune = 2816
               input-source = full file test
               member-attribute = true
               member-name = length
@@ -953,7 +953,7 @@ NodeTypeGlobalModule
               start-rune = 2824
           declaration-member =>
             NodeTypeMember
-              end-rune = 2900
+              end-rune = 2899
               input-source = full file test
               member-attribute = true
               member-name = prototype
@@ -962,7 +962,7 @@ NodeTypeGlobalModule
               member-type = Object
               start-rune = 2858
             NodeTypeMember
-              end-rune = 2953
+              end-rune = 2952
               input-source = full file test
               member-name = fromCharCode
               member-static = true
@@ -977,19 +977,19 @@ NodeTypeGlobalModule
                   parameter-type = Number
                   start-rune = 2931
             NodeTypeMember
-              end-rune = 2974
+              end-rune = 2973
               input-source = full file test
               member-name = toString
               member-type = String
               start-rune = 2957
             NodeTypeMember
-              end-rune = 2994
+              end-rune = 2993
               input-source = full file test
               member-name = valueOf
               member-type = String
               start-rune = 2978
             NodeTypeMember
-              end-rune = 3025
+              end-rune = 3024
               input-source = full file test
               member-name = charAt
               member-type = String
@@ -1002,7 +1002,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 3012
             NodeTypeMember
-              end-rune = 3060
+              end-rune = 3059
               input-source = full file test
               member-name = charCodeAt
               member-type = Number
@@ -1015,7 +1015,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 3047
             NodeTypeMember
-              end-rune = 3099
+              end-rune = 3098
               input-source = full file test
               member-name = concat
               member-type = String
@@ -1029,7 +1029,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 3078
             NodeTypeMember
-              end-rune = 3164
+              end-rune = 3163
               input-source = full file test
               member-name = indexOf
               member-type = int
@@ -1050,7 +1050,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 3142
             NodeTypeMember
-              end-rune = 3233
+              end-rune = 3232
               input-source = full file test
               member-name = lastIndexOf
               member-type = int
@@ -1071,7 +1071,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 3211
             NodeTypeMember
-              end-rune = 3267
+              end-rune = 3266
               input-source = full file test
               member-name = localeCompare
               member-type = Number
@@ -1084,7 +1084,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 3258
             NodeTypeMember
-              end-rune = 3298
+              end-rune = 3297
               input-source = full file test
               member-name = match
               member-type = Array
@@ -1097,7 +1097,7 @@ NodeTypeGlobalModule
                   parameter-type = RegExp
                   start-rune = 3283
             NodeTypeMember
-              end-rune = 3346
+              end-rune = 3345
               input-source = full file test
               member-name = replace
               member-type = String
@@ -1116,7 +1116,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 3330
             NodeTypeMember
-              end-rune = 3379
+              end-rune = 3378
               input-source = full file test
               member-name = search
               member-type = Number
@@ -1129,7 +1129,7 @@ NodeTypeGlobalModule
                   parameter-type = RegExp
                   start-rune = 3364
             NodeTypeMember
-              end-rune = 3415
+              end-rune = 3414
               input-source = full file test
               member-name = slice
               member-type = String
@@ -1148,7 +1148,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 3407
             NodeTypeMember
-              end-rune = 3468
+              end-rune = 3467
               input-source = full file test
               member-name = split
               member-type = Array
@@ -1168,7 +1168,7 @@ NodeTypeGlobalModule
                   parameter-type = Number
                   start-rune = 3446
             NodeTypeMember
-              end-rune = 3508
+              end-rune = 3507
               input-source = full file test
               member-name = substring
               member-type = String
@@ -1187,37 +1187,37 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 3500
             NodeTypeMember
-              end-rune = 3532
+              end-rune = 3531
               input-source = full file test
               member-name = toLowerCase
               member-type = String
               start-rune = 3512
             NodeTypeMember
-              end-rune = 3562
+              end-rune = 3561
               input-source = full file test
               member-name = toLocaleLowerCase
               member-type = String
               start-rune = 3536
             NodeTypeMember
-              end-rune = 3586
+              end-rune = 3585
               input-source = full file test
               member-name = toUpperCase
               member-type = String
               start-rune = 3566
             NodeTypeMember
-              end-rune = 3616
+              end-rune = 3615
               input-source = full file test
               member-name = toLocaleUpperCase
               member-type = String
               start-rune = 3590
             NodeTypeMember
-              end-rune = 3633
+              end-rune = 3632
               input-source = full file test
               member-name = trim
               member-type = String
               start-rune = 3620
             NodeTypeMember
-              end-rune = 3657
+              end-rune = 3656
               input-source = full file test
               member-attribute = true
               member-name = length
@@ -1244,7 +1244,7 @@ NodeTypeGlobalModule
                   start-rune = 3676
           declaration-member =>
             NodeTypeMember
-              end-rune = 3752
+              end-rune = 3751
               input-source = full file test
               member-attribute = true
               member-name = prototype
@@ -1253,13 +1253,13 @@ NodeTypeGlobalModule
               member-type = Object
               start-rune = 3710
             NodeTypeMember
-              end-rune = 3773
+              end-rune = 3772
               input-source = full file test
               member-name = toString
               member-type = String
               start-rune = 3756
             NodeTypeMember
-              end-rune = 3794
+              end-rune = 3793
               input-source = full file test
               member-name = valueOf
               member-type = Boolean
@@ -1286,7 +1286,7 @@ NodeTypeGlobalModule
                   start-rune = 3813
           declaration-member =>
             NodeTypeMember
-              end-rune = 3897
+              end-rune = 3896
               input-source = full file test
               member-attribute = true
               member-name = prototype
@@ -1295,7 +1295,7 @@ NodeTypeGlobalModule
               member-type = Object
               start-rune = 3855
             NodeTypeMember
-              end-rune = 3943
+              end-rune = 3942
               input-source = full file test
               member-attribute = true
               member-name = MAX_VALUE
@@ -1304,7 +1304,7 @@ NodeTypeGlobalModule
               member-type = Number
               start-rune = 3901
             NodeTypeMember
-              end-rune = 3989
+              end-rune = 3988
               input-source = full file test
               member-attribute = true
               member-name = MIN_VALUE
@@ -1313,7 +1313,7 @@ NodeTypeGlobalModule
               member-type = Number
               start-rune = 3947
             NodeTypeMember
-              end-rune = 4029
+              end-rune = 4028
               input-source = full file test
               member-attribute = true
               member-name = NaN
@@ -1322,7 +1322,7 @@ NodeTypeGlobalModule
               member-type = Number
               start-rune = 3993
             NodeTypeMember
-              end-rune = 4083
+              end-rune = 4082
               input-source = full file test
               member-attribute = true
               member-name = NEGATIVE_INFINITY
@@ -1331,7 +1331,7 @@ NodeTypeGlobalModule
               member-type = Number
               start-rune = 4033
             NodeTypeMember
-              end-rune = 4137
+              end-rune = 4136
               input-source = full file test
               member-attribute = true
               member-name = POSITIVE_INFINITY
@@ -1340,7 +1340,7 @@ NodeTypeGlobalModule
               member-type = Number
               start-rune = 4087
             NodeTypeMember
-              end-rune = 4176
+              end-rune = 4175
               input-source = full file test
               member-name = toString
               member-type = String
@@ -1354,19 +1354,19 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 4157
             NodeTypeMember
-              end-rune = 4203
+              end-rune = 4202
               input-source = full file test
               member-name = toLocaleString
               member-type = String
               start-rune = 4180
             NodeTypeMember
-              end-rune = 4223
+              end-rune = 4222
               input-source = full file test
               member-name = valueOf
               member-type = Number
               start-rune = 4207
             NodeTypeMember
-              end-rune = 4261
+              end-rune = 4260
               input-source = full file test
               member-name = toFixed
               member-type = String
@@ -1379,7 +1379,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 4242
             NodeTypeMember
-              end-rune = 4305
+              end-rune = 4304
               input-source = full file test
               member-name = toExponential
               member-type = String
@@ -1392,7 +1392,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 4286
             NodeTypeMember
-              end-rune = 4342
+              end-rune = 4341
               input-source = full file test
               member-name = toPrecision
               member-type = String
@@ -1418,7 +1418,7 @@ NodeTypeGlobalModule
               start-rune = 4349
           declaration-member =>
             NodeTypeMember
-              end-rune = 4414
+              end-rune = 4413
               input-source = full file test
               member-attribute = true
               member-name = E
@@ -1426,7 +1426,7 @@ NodeTypeGlobalModule
               member-type = Number
               start-rune = 4387
             NodeTypeMember
-              end-rune = 4448
+              end-rune = 4447
               input-source = full file test
               member-attribute = true
               member-name = LN10
@@ -1434,7 +1434,7 @@ NodeTypeGlobalModule
               member-type = Number
               start-rune = 4418
             NodeTypeMember
-              end-rune = 4481
+              end-rune = 4480
               input-source = full file test
               member-attribute = true
               member-name = LN2
@@ -1442,7 +1442,7 @@ NodeTypeGlobalModule
               member-type = Number
               start-rune = 4452
             NodeTypeMember
-              end-rune = 4516
+              end-rune = 4515
               input-source = full file test
               member-attribute = true
               member-name = LOG2E
@@ -1450,7 +1450,7 @@ NodeTypeGlobalModule
               member-type = Number
               start-rune = 4485
             NodeTypeMember
-              end-rune = 4552
+              end-rune = 4551
               input-source = full file test
               member-attribute = true
               member-name = LOG10E
@@ -1458,7 +1458,7 @@ NodeTypeGlobalModule
               member-type = Number
               start-rune = 4520
             NodeTypeMember
-              end-rune = 4584
+              end-rune = 4583
               input-source = full file test
               member-attribute = true
               member-name = PI
@@ -1466,7 +1466,7 @@ NodeTypeGlobalModule
               member-type = Number
               start-rune = 4556
             NodeTypeMember
-              end-rune = 4621
+              end-rune = 4620
               input-source = full file test
               member-attribute = true
               member-name = SQRT1_2
@@ -1474,7 +1474,7 @@ NodeTypeGlobalModule
               member-type = Number
               start-rune = 4588
             NodeTypeMember
-              end-rune = 4656
+              end-rune = 4655
               input-source = full file test
               member-attribute = true
               member-name = SQRT2
@@ -1482,7 +1482,7 @@ NodeTypeGlobalModule
               member-type = Number
               start-rune = 4625
             NodeTypeMember
-              end-rune = 4680
+              end-rune = 4679
               input-source = full file test
               member-name = abs
               member-type = Number
@@ -1495,7 +1495,7 @@ NodeTypeGlobalModule
                   parameter-type = Number
                   start-rune = 4671
             NodeTypeMember
-              end-rune = 4705
+              end-rune = 4704
               input-source = full file test
               member-name = acos
               member-type = Number
@@ -1508,7 +1508,7 @@ NodeTypeGlobalModule
                   parameter-type = Number
                   start-rune = 4696
             NodeTypeMember
-              end-rune = 4730
+              end-rune = 4729
               input-source = full file test
               member-name = asin
               member-type = Number
@@ -1521,7 +1521,7 @@ NodeTypeGlobalModule
                   parameter-type = Number
                   start-rune = 4721
             NodeTypeMember
-              end-rune = 4755
+              end-rune = 4754
               input-source = full file test
               member-name = atan
               member-type = Number
@@ -1534,7 +1534,7 @@ NodeTypeGlobalModule
                   parameter-type = Number
                   start-rune = 4746
             NodeTypeMember
-              end-rune = 4791
+              end-rune = 4790
               input-source = full file test
               member-name = atan2
               member-type = Number
@@ -1553,7 +1553,7 @@ NodeTypeGlobalModule
                   parameter-type = Number
                   start-rune = 4782
             NodeTypeMember
-              end-rune = 4816
+              end-rune = 4815
               input-source = full file test
               member-name = ceil
               member-type = Number
@@ -1566,7 +1566,7 @@ NodeTypeGlobalModule
                   parameter-type = Number
                   start-rune = 4807
             NodeTypeMember
-              end-rune = 4840
+              end-rune = 4839
               input-source = full file test
               member-name = cos
               member-type = Number
@@ -1579,7 +1579,7 @@ NodeTypeGlobalModule
                   parameter-type = Number
                   start-rune = 4831
             NodeTypeMember
-              end-rune = 4864
+              end-rune = 4863
               input-source = full file test
               member-name = exp
               member-type = Number
@@ -1592,7 +1592,7 @@ NodeTypeGlobalModule
                   parameter-type = Number
                   start-rune = 4855
             NodeTypeMember
-              end-rune = 4890
+              end-rune = 4889
               input-source = full file test
               member-name = floor
               member-type = Number
@@ -1605,7 +1605,7 @@ NodeTypeGlobalModule
                   parameter-type = Number
                   start-rune = 4881
             NodeTypeMember
-              end-rune = 4914
+              end-rune = 4913
               input-source = full file test
               member-name = log
               member-type = Number
@@ -1618,7 +1618,7 @@ NodeTypeGlobalModule
                   parameter-type = Number
                   start-rune = 4905
             NodeTypeMember
-              end-rune = 4952
+              end-rune = 4951
               input-source = full file test
               member-name = max
               member-type = Number
@@ -1632,7 +1632,7 @@ NodeTypeGlobalModule
                   parameter-type = Number
                   start-rune = 4929
             NodeTypeMember
-              end-rune = 4990
+              end-rune = 4989
               input-source = full file test
               member-name = min
               member-type = Number
@@ -1646,7 +1646,7 @@ NodeTypeGlobalModule
                   parameter-type = Number
                   start-rune = 4967
             NodeTypeMember
-              end-rune = 5024
+              end-rune = 5023
               input-source = full file test
               member-name = pow
               member-type = Number
@@ -1665,13 +1665,13 @@ NodeTypeGlobalModule
                   parameter-type = Number
                   start-rune = 5015
             NodeTypeMember
-              end-rune = 5043
+              end-rune = 5042
               input-source = full file test
               member-name = random
               member-type = Number
               start-rune = 5028
             NodeTypeMember
-              end-rune = 5069
+              end-rune = 5068
               input-source = full file test
               member-name = round
               member-type = Number
@@ -1684,7 +1684,7 @@ NodeTypeGlobalModule
                   parameter-type = Number
                   start-rune = 5060
             NodeTypeMember
-              end-rune = 5093
+              end-rune = 5092
               input-source = full file test
               member-name = sin
               member-type = Number
@@ -1697,7 +1697,7 @@ NodeTypeGlobalModule
                   parameter-type = Number
                   start-rune = 5084
             NodeTypeMember
-              end-rune = 5118
+              end-rune = 5117
               input-source = full file test
               member-name = sqrt
               member-type = Number
@@ -1710,7 +1710,7 @@ NodeTypeGlobalModule
                   parameter-type = Number
                   start-rune = 5109
             NodeTypeMember
-              end-rune = 5142
+              end-rune = 5141
               input-source = full file test
               member-name = tan
               member-type = Number
@@ -1801,7 +1801,7 @@ NodeTypeGlobalModule
                   start-rune = 5303
           declaration-member =>
             NodeTypeMember
-              end-rune = 5383
+              end-rune = 5382
               input-source = full file test
               member-attribute = true
               member-name = prototype
@@ -1810,7 +1810,7 @@ NodeTypeGlobalModule
               member-type = Object
               start-rune = 5341
             NodeTypeMember
-              end-rune = 5418
+              end-rune = 5417
               input-source = full file test
               member-name = parse
               member-static = true
@@ -1824,7 +1824,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 5407
             NodeTypeMember
-              end-rune = 5557
+              end-rune = 5556
               input-source = full file test
               member-name = UTC
               member-static = true
@@ -1879,164 +1879,164 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 5541
             NodeTypeMember
-              end-rune = 5580
+              end-rune = 5579
               input-source = full file test
               member-name = now
               member-static = true
               member-type = Number
               start-rune = 5561
             NodeTypeMember
-              end-rune = 5601
+              end-rune = 5600
               input-source = full file test
               member-name = toString
               member-type = String
               start-rune = 5584
             NodeTypeMember
-              end-rune = 5626
+              end-rune = 5625
               input-source = full file test
               member-name = toDateString
               member-type = String
               start-rune = 5605
             NodeTypeMember
-              end-rune = 5651
+              end-rune = 5650
               input-source = full file test
               member-name = toTimeString
               member-type = String
               start-rune = 5630
             NodeTypeMember
-              end-rune = 5678
+              end-rune = 5677
               input-source = full file test
               member-name = toLocaleString
               member-type = String
               start-rune = 5655
             NodeTypeMember
-              end-rune = 5709
+              end-rune = 5708
               input-source = full file test
               member-name = toLocaleDateString
               member-type = String
               start-rune = 5682
             NodeTypeMember
-              end-rune = 5740
+              end-rune = 5739
               input-source = full file test
               member-name = toLocaleTimeString
               member-type = String
               start-rune = 5713
             NodeTypeMember
-              end-rune = 5760
+              end-rune = 5759
               input-source = full file test
               member-name = valueOf
               member-type = Number
               start-rune = 5744
             NodeTypeMember
-              end-rune = 5780
+              end-rune = 5779
               input-source = full file test
               member-name = getTime
               member-type = Number
               start-rune = 5764
             NodeTypeMember
-              end-rune = 5804
+              end-rune = 5803
               input-source = full file test
               member-name = getFullYear
               member-type = Number
               start-rune = 5784
             NodeTypeMember
-              end-rune = 5831
+              end-rune = 5830
               input-source = full file test
               member-name = getUTCFullYear
               member-type = Number
               start-rune = 5808
             NodeTypeMember
-              end-rune = 5852
+              end-rune = 5851
               input-source = full file test
               member-name = getMonth
               member-type = Number
               start-rune = 5835
             NodeTypeMember
-              end-rune = 5876
+              end-rune = 5875
               input-source = full file test
               member-name = getUTCMonth
               member-type = Number
               start-rune = 5856
             NodeTypeMember
-              end-rune = 5896
+              end-rune = 5895
               input-source = full file test
               member-name = getDate
               member-type = Number
               start-rune = 5880
             NodeTypeMember
-              end-rune = 5919
+              end-rune = 5918
               input-source = full file test
               member-name = getUTCDate
               member-type = Number
               start-rune = 5900
             NodeTypeMember
-              end-rune = 5938
+              end-rune = 5937
               input-source = full file test
               member-name = getDay
               member-type = Number
               start-rune = 5923
             NodeTypeMember
-              end-rune = 5960
+              end-rune = 5959
               input-source = full file test
               member-name = getUTCDay
               member-type = Number
               start-rune = 5942
             NodeTypeMember
-              end-rune = 5981
+              end-rune = 5980
               input-source = full file test
               member-name = getHours
               member-type = Number
               start-rune = 5964
             NodeTypeMember
-              end-rune = 6005
+              end-rune = 6004
               input-source = full file test
               member-name = getUTCHours
               member-type = Number
               start-rune = 5985
             NodeTypeMember
-              end-rune = 6028
+              end-rune = 6027
               input-source = full file test
               member-name = getMinutes
               member-type = Number
               start-rune = 6009
             NodeTypeMember
-              end-rune = 6054
+              end-rune = 6053
               input-source = full file test
               member-name = getUTCMinutes
               member-type = Number
               start-rune = 6032
             NodeTypeMember
-              end-rune = 6077
+              end-rune = 6076
               input-source = full file test
               member-name = getSeconds
               member-type = Number
               start-rune = 6058
             NodeTypeMember
-              end-rune = 6103
+              end-rune = 6102
               input-source = full file test
               member-name = getUTCSeconds
               member-type = Number
               start-rune = 6081
             NodeTypeMember
-              end-rune = 6131
+              end-rune = 6130
               input-source = full file test
               member-name = getMilliseconds
               member-type = Number
               start-rune = 6107
             NodeTypeMember
-              end-rune = 6162
+              end-rune = 6161
               input-source = full file test
               member-name = getUTCMilliseconds
               member-type = Number
               start-rune = 6135
             NodeTypeMember
-              end-rune = 6192
+              end-rune = 6191
               input-source = full file test
               member-name = getTimezoneOffset
               member-type = Number
               start-rune = 6166
             NodeTypeMember
-              end-rune = 6220
+              end-rune = 6219
               input-source = full file test
               member-name = setTime
               member-type = Number
@@ -2049,7 +2049,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 6211
             NodeTypeMember
-              end-rune = 6254
+              end-rune = 6253
               input-source = full file test
               member-name = setMilliseconds
               member-type = Number
@@ -2062,7 +2062,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 6247
             NodeTypeMember
-              end-rune = 6291
+              end-rune = 6290
               input-source = full file test
               member-name = setUTCMilliseconds
               member-type = Number
@@ -2075,7 +2075,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 6284
             NodeTypeMember
-              end-rune = 6342
+              end-rune = 6341
               input-source = full file test
               member-name = setSeconds
               member-type = Number
@@ -2095,7 +2095,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 6326
             NodeTypeMember
-              end-rune = 6396
+              end-rune = 6395
               input-source = full file test
               member-name = setUTCSeconds
               member-type = Number
@@ -2115,7 +2115,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 6380
             NodeTypeMember
-              end-rune = 6469
+              end-rune = 6468
               input-source = full file test
               member-name = setMinutes
               member-type = Number
@@ -2142,7 +2142,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 6453
             NodeTypeMember
-              end-rune = 6545
+              end-rune = 6544
               input-source = full file test
               member-name = setUTCMinutes
               member-type = Number
@@ -2169,7 +2169,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 6529
             NodeTypeMember
-              end-rune = 6636
+              end-rune = 6635
               input-source = full file test
               member-name = setHours
               member-type = Number
@@ -2203,7 +2203,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 6620
             NodeTypeMember
-              end-rune = 6730
+              end-rune = 6729
               input-source = full file test
               member-name = setUTCHours
               member-type = Number
@@ -2237,7 +2237,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 6714
             NodeTypeMember
-              end-rune = 6758
+              end-rune = 6757
               input-source = full file test
               member-name = setDate
               member-type = Number
@@ -2250,7 +2250,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 6749
             NodeTypeMember
-              end-rune = 6789
+              end-rune = 6788
               input-source = full file test
               member-name = setUTCDate
               member-type = Number
@@ -2263,7 +2263,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 6780
             NodeTypeMember
-              end-rune = 6838
+              end-rune = 6837
               input-source = full file test
               member-name = setMonth
               member-type = Number
@@ -2283,7 +2283,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 6820
             NodeTypeMember
-              end-rune = 6890
+              end-rune = 6889
               input-source = full file test
               member-name = setUTCMonth
               member-type = Number
@@ -2303,7 +2303,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 6872
             NodeTypeMember
-              end-rune = 6961
+              end-rune = 6960
               input-source = full file test
               member-name = setFullYear
               member-type = Number
@@ -2330,7 +2330,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 6943
             NodeTypeMember
-              end-rune = 7036
+              end-rune = 7035
               input-source = full file test
               member-name = setUTCFullYear
               member-type = Number
@@ -2357,19 +2357,19 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 7018
             NodeTypeMember
-              end-rune = 7060
+              end-rune = 7059
               input-source = full file test
               member-name = toUTCString
               member-type = String
               start-rune = 7040
             NodeTypeMember
-              end-rune = 7084
+              end-rune = 7083
               input-source = full file test
               member-name = toISOString
               member-type = String
               start-rune = 7064
             NodeTypeMember
-              end-rune = 7110
+              end-rune = 7109
               input-source = full file test
               member-name = toJSON
               member-type = String
@@ -2408,7 +2408,7 @@ NodeTypeGlobalModule
                   start-rune = 7142
           declaration-member =>
             NodeTypeMember
-              end-rune = 7217
+              end-rune = 7216
               input-source = full file test
               member-attribute = true
               member-name = prototype
@@ -2417,7 +2417,7 @@ NodeTypeGlobalModule
               member-type = Object
               start-rune = 7175
             NodeTypeMember
-              end-rune = 7253
+              end-rune = 7252
               input-source = full file test
               member-attribute = true
               member-name = source
@@ -2425,7 +2425,7 @@ NodeTypeGlobalModule
               member-type = String
               start-rune = 7221
             NodeTypeMember
-              end-rune = 7290
+              end-rune = 7289
               input-source = full file test
               member-attribute = true
               member-name = global
@@ -2433,7 +2433,7 @@ NodeTypeGlobalModule
               member-type = Boolean
               start-rune = 7257
             NodeTypeMember
-              end-rune = 7331
+              end-rune = 7330
               input-source = full file test
               member-attribute = true
               member-name = ignoreCase
@@ -2441,7 +2441,7 @@ NodeTypeGlobalModule
               member-type = Boolean
               start-rune = 7294
             NodeTypeMember
-              end-rune = 7371
+              end-rune = 7370
               input-source = full file test
               member-attribute = true
               member-name = multiline
@@ -2449,14 +2449,14 @@ NodeTypeGlobalModule
               member-type = Boolean
               start-rune = 7335
             NodeTypeMember
-              end-rune = 7401
+              end-rune = 7400
               input-source = full file test
               member-attribute = true
               member-name = lastIndex
               member-type = Number
               start-rune = 7375
             NodeTypeMember
-              end-rune = 7427
+              end-rune = 7426
               input-source = full file test
               member-name = exec
               member-type = Array
@@ -2469,7 +2469,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 7416
             NodeTypeMember
-              end-rune = 7455
+              end-rune = 7454
               input-source = full file test
               member-name = test
               member-type = boolean
@@ -2482,7 +2482,7 @@ NodeTypeGlobalModule
                   parameter-type = any
                   start-rune = 7444
             NodeTypeMember
-              end-rune = 7476
+              end-rune = 7475
               input-source = full file test
               member-name = toString
               member-type = String
@@ -2508,7 +2508,7 @@ NodeTypeGlobalModule
                   start-rune = 7495
           declaration-member =>
             NodeTypeMember
-              end-rune = 7571
+              end-rune = 7570
               input-source = full file test
               member-attribute = true
               member-name = prototype
@@ -2517,7 +2517,7 @@ NodeTypeGlobalModule
               member-type = Object
               start-rune = 7529
             NodeTypeMember
-              end-rune = 7605
+              end-rune = 7604
               input-source = full file test
               member-attribute = true
               member-name = name
@@ -2525,7 +2525,7 @@ NodeTypeGlobalModule
               member-type = String
               start-rune = 7575
             NodeTypeMember
-              end-rune = 7642
+              end-rune = 7641
               input-source = full file test
               member-attribute = true
               member-name = message
@@ -2533,7 +2533,7 @@ NodeTypeGlobalModule
               member-type = String
               start-rune = 7609
             NodeTypeMember
-              end-rune = 7663
+              end-rune = 7662
               input-source = full file test
               member-name = toString
               member-type = String
@@ -2559,7 +2559,7 @@ NodeTypeGlobalModule
                   start-rune = 7682
           declaration-member =>
             NodeTypeMember
-              end-rune = 7762
+              end-rune = 7761
               input-source = full file test
               member-attribute = true
               member-name = prototype
@@ -2568,7 +2568,7 @@ NodeTypeGlobalModule
               member-type = Object
               start-rune = 7720
             NodeTypeMember
-              end-rune = 7796
+              end-rune = 7795
               input-source = full file test
               member-attribute = true
               member-name = name
@@ -2576,7 +2576,7 @@ NodeTypeGlobalModule
               member-type = String
               start-rune = 7766
             NodeTypeMember
-              end-rune = 7833
+              end-rune = 7832
               input-source = full file test
               member-attribute = true
               member-name = message
@@ -2584,7 +2584,7 @@ NodeTypeGlobalModule
               member-type = String
               start-rune = 7800
             NodeTypeMember
-              end-rune = 7854
+              end-rune = 7853
               input-source = full file test
               member-name = toString
               member-type = String
@@ -2610,7 +2610,7 @@ NodeTypeGlobalModule
                   start-rune = 7873
           declaration-member =>
             NodeTypeMember
-              end-rune = 7954
+              end-rune = 7953
               input-source = full file test
               member-attribute = true
               member-name = prototype
@@ -2619,7 +2619,7 @@ NodeTypeGlobalModule
               member-type = Object
               start-rune = 7912
             NodeTypeMember
-              end-rune = 7988
+              end-rune = 7987
               input-source = full file test
               member-attribute = true
               member-name = name
@@ -2627,7 +2627,7 @@ NodeTypeGlobalModule
               member-type = String
               start-rune = 7958
             NodeTypeMember
-              end-rune = 8025
+              end-rune = 8024
               input-source = full file test
               member-attribute = true
               member-name = message
@@ -2635,7 +2635,7 @@ NodeTypeGlobalModule
               member-type = String
               start-rune = 7992
             NodeTypeMember
-              end-rune = 8046
+              end-rune = 8045
               input-source = full file test
               member-name = toString
               member-type = String
@@ -2661,7 +2661,7 @@ NodeTypeGlobalModule
                   start-rune = 8065
           declaration-member =>
             NodeTypeMember
-              end-rune = 8150
+              end-rune = 8149
               input-source = full file test
               member-attribute = true
               member-name = prototype
@@ -2670,7 +2670,7 @@ NodeTypeGlobalModule
               member-type = Object
               start-rune = 8108
             NodeTypeMember
-              end-rune = 8184
+              end-rune = 8183
               input-source = full file test
               member-attribute = true
               member-name = name
@@ -2678,7 +2678,7 @@ NodeTypeGlobalModule
               member-type = String
               start-rune = 8154
             NodeTypeMember
-              end-rune = 8221
+              end-rune = 8220
               input-source = full file test
               member-attribute = true
               member-name = message
@@ -2686,7 +2686,7 @@ NodeTypeGlobalModule
               member-type = String
               start-rune = 8188
             NodeTypeMember
-              end-rune = 8242
+              end-rune = 8241
               input-source = full file test
               member-name = toString
               member-type = String
@@ -2712,7 +2712,7 @@ NodeTypeGlobalModule
                   start-rune = 8261
           declaration-member =>
             NodeTypeMember
-              end-rune = 8343
+              end-rune = 8342
               input-source = full file test
               member-attribute = true
               member-name = prototype
@@ -2721,7 +2721,7 @@ NodeTypeGlobalModule
               member-type = Object
               start-rune = 8301
             NodeTypeMember
-              end-rune = 8377
+              end-rune = 8376
               input-source = full file test
               member-attribute = true
               member-name = name
@@ -2729,7 +2729,7 @@ NodeTypeGlobalModule
               member-type = String
               start-rune = 8347
             NodeTypeMember
-              end-rune = 8414
+              end-rune = 8413
               input-source = full file test
               member-attribute = true
               member-name = message
@@ -2737,7 +2737,7 @@ NodeTypeGlobalModule
               member-type = String
               start-rune = 8381
             NodeTypeMember
-              end-rune = 8435
+              end-rune = 8434
               input-source = full file test
               member-name = toString
               member-type = String
@@ -2763,7 +2763,7 @@ NodeTypeGlobalModule
                   start-rune = 8454
           declaration-member =>
             NodeTypeMember
-              end-rune = 8534
+              end-rune = 8533
               input-source = full file test
               member-attribute = true
               member-name = prototype
@@ -2772,7 +2772,7 @@ NodeTypeGlobalModule
               member-type = Object
               start-rune = 8492
             NodeTypeMember
-              end-rune = 8568
+              end-rune = 8567
               input-source = full file test
               member-attribute = true
               member-name = name
@@ -2780,7 +2780,7 @@ NodeTypeGlobalModule
               member-type = String
               start-rune = 8538
             NodeTypeMember
-              end-rune = 8605
+              end-rune = 8604
               input-source = full file test
               member-attribute = true
               member-name = message
@@ -2788,7 +2788,7 @@ NodeTypeGlobalModule
               member-type = String
               start-rune = 8572
             NodeTypeMember
-              end-rune = 8626
+              end-rune = 8625
               input-source = full file test
               member-name = toString
               member-type = String
@@ -2814,7 +2814,7 @@ NodeTypeGlobalModule
                   start-rune = 8645
           declaration-member =>
             NodeTypeMember
-              end-rune = 8724
+              end-rune = 8723
               input-source = full file test
               member-attribute = true
               member-name = prototype
@@ -2823,7 +2823,7 @@ NodeTypeGlobalModule
               member-type = Object
               start-rune = 8682
             NodeTypeMember
-              end-rune = 8758
+              end-rune = 8757
               input-source = full file test
               member-attribute = true
               member-name = name
@@ -2831,7 +2831,7 @@ NodeTypeGlobalModule
               member-type = String
               start-rune = 8728
             NodeTypeMember
-              end-rune = 8795
+              end-rune = 8794
               input-source = full file test
               member-attribute = true
               member-name = message
@@ -2839,7 +2839,7 @@ NodeTypeGlobalModule
               member-type = String
               start-rune = 8762
             NodeTypeMember
-              end-rune = 8816
+              end-rune = 8815
               input-source = full file test
               member-name = toString
               member-type = String
@@ -2858,7 +2858,7 @@ NodeTypeGlobalModule
               start-rune = 8823
           declaration-member =>
             NodeTypeMember
-              end-rune = 8910
+              end-rune = 8909
               input-source = full file test
               member-name = parse
               member-type = Object
@@ -2878,7 +2878,7 @@ NodeTypeGlobalModule
                   parameter-type = Function
                   start-rune = 8884
             NodeTypeMember
-              end-rune = 8984
+              end-rune = 8983
               input-source = full file test
               member-name = stringify
               member-type = String

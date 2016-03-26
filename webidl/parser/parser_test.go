@@ -86,12 +86,14 @@ func (tn *testNode) Decorate(property string, value string) AstNode {
 var parserTests = []parserTest{
 	parserTest{"empty interface test", "interface"},
 	parserTest{"implements test", "implements"},
+	parserTest{"inheritance test", "inheritance"},
 	parserTest{"annotated interface test", "annotatedinterface"},
 	parserTest{"members test", "members"},
 	parserTest{"annotation value test", "annotationvalue"},
 	parserTest{"indexer test", "indexer"},
 	parserTest{"custom operation test", "customop"},
 
+	parserTest{"known issue test", "knownissue"},
 	parserTest{"full file test", "fullfile"},
 }
 

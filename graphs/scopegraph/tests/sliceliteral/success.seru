@@ -1,0 +1,5 @@
+function<void> DoSomething(s string) {
+	/* slice */([]string{
+		'hello world', 'hi there!', s
+	})
+}
