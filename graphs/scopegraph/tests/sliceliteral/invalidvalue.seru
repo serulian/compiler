@@ -1,0 +1,7 @@
+class SomeClass {
+	function<void> SomeFunction() {}
+}
+
+function<void> DoSomething() {
+	[]SomeClass{'hello world'}
+}
