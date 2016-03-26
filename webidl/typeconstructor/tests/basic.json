@@ -20,25 +20,6 @@
                     }
                 }
             },
-            "31f686dfd073f642becc468b1a032e1c": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "31f686dfd073f642becc468b1a032e1c",
-                    "Kind": 7,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-exported": "true",
-                        "tdg-member-name": "AnotherMember",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cAnotherType\u003e(Object)",
-                        "tdg-member-signature": "\n\ranothermember\u0010\u0002\u0018\u0000 \u0001*\u001dfunction\u003cAnotherType\u003e(Object)",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "7|NodeType|tdg",
-                        "tdg-source-module": "tests/basic.webidl",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
             "92588582a13d095a9be440c17d7e15bd": {
                 "Predicate": "tdg-node-member",
                 "Child": {
@@ -51,6 +32,25 @@
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "Object",
                         "tdg-member-signature": "\n\tcoolthing\u0010\u0003\u0018\u0000 \u0001*\u0006Object",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/basic.webidl",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "dc4185e4f8e85258a0149f6ba7229be6": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "dc4185e4f8e85258a0149f6ba7229be6",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "AnotherMember",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cAnotherType?\u003e(Object)",
+                        "tdg-member-signature": "\n\ranothermember\u0010\u0002\u0018\u0000 \u0001*\u001efunction\u003cAnotherType?\u003e(Object)",
+                        "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/basic.webidl",
                         "tdg-source-node": "(NodeRef)"

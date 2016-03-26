@@ -6,6 +6,7 @@ package typeconstructor
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
@@ -315,6 +316,12 @@ func (itc *irgTypeConstructor) ResolveType(typeString string, graph *typegraph.T
 		return graph.VoidTypeReference(), nil
 	}
 
+	var nullable = false
+	if strings.HasSuffix(typeString, "?") {
+		nullable = true
+		typeString = typeString[0 : len(typeString)-1]
+	}
+
 	declaration, hasDeclaration := itc.irg.FindDeclaration(typeString)
 	if !hasDeclaration {
 		return graph.AnyTypeReference(), fmt.Errorf("Could not find WebIDL type %v", typeString)
@@ -325,5 +332,10 @@ func (itc *irgTypeConstructor) ResolveType(typeString string, graph *typegraph.T
 		panic("Type not found for WebIDL type declaration")
 	}
 
-	return typeDecl.GetTypeReference(), nil
+	typeRef := typeDecl.GetTypeReference()
+	if nullable {
+		return typeRef.AsNullable(), nil
+	}
+
+	return typeRef, nil
 }

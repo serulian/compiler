@@ -4,6 +4,6 @@ interface AnotherType {};
 
 interface SomeInterface {
 	readonly attribute Object CoolThing;
-	static AnotherType AnotherMember(Object someparam);
+	static AnotherType? AnotherMember(Object someparam);
 	attribute any AnyThing;
 };
