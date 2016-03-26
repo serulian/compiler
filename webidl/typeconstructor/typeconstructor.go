@@ -84,6 +84,26 @@ func (itc *irgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 }
 
 func (itc *irgTypeConstructor) DefineDependencies(annotator typegraph.Annotator, graph *typegraph.TypeGraph) {
+	for _, module := range itc.irg.GetModules() {
+		for _, declaration := range module.Declarations() {
+			if declaration.HasOneAnnotation(GLOBAL_CONTEXT_ANNOTATIONS...) {
+				continue
+			}
+
+			parentTypeString, hasParentType := declaration.ParentType()
+			if !hasParentType {
+				continue
+			}
+
+			parentType, err := itc.ResolveType(parentTypeString, graph)
+			if err != nil {
+				annotator.ReportError(declaration.GraphNode, "%v", err)
+				continue
+			}
+
+			annotator.DefineParentType(declaration.GraphNode, parentType)
+		}
+	}
 }
 
 func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder, reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {

@@ -1,0 +1,40 @@
+{
+    "7d16fa1940f2a27a40afe71d0870b841": {
+        "Key": "7d16fa1940f2a27a40afe71d0870b841",
+        "Kind": 3,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-parent-type": "Node",
+            "tdg-source-module": "tests/inheritance.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-name": "Element"
+        }
+    },
+    "80844bfb422a6bbb88f46d30432d3c86": {
+        "Key": "80844bfb422a6bbb88f46d30432d3c86",
+        "Kind": 3,
+        "Children": {
+            "a641bf34794c18dfb9d1d4bb65b830ba": {
+                "Predicate": "tdg-declaration-module",
+                "Child": {
+                    "Key": "a641bf34794c18dfb9d1d4bb65b830ba",
+                    "Kind": 6,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-module-name": "inheritance.webidl",
+                        "tdg-node-kind": "6|NodeType|tdg",
+                        "tdg-source-module": "tests/inheritance.webidl",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-source-module": "tests/inheritance.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-name": "Node"
+        }
+    }
+}

@@ -70,6 +70,11 @@ func (i *IRGDeclaration) Module() IRGModule {
 	return IRGModule{moduleNode, i.irg}
 }
 
+// ParentType returns the declared parent type of the declaration, if any.
+func (i *IRGDeclaration) ParentType() (string, bool) {
+	return i.GraphNode.TryGet(parser.NodePredicateDeclarationParentType)
+}
+
 // FindMember finds the member under this declaration with the given name, if any.
 func (i *IRGDeclaration) FindMember(name string) (IRGMember, bool) {
 	memberNode, hasMember := i.GraphNode.StartQuery().
