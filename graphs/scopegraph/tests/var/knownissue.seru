@@ -1,0 +1,17 @@
+class Thing {
+	
+}
+
+class SomeClass {
+	constructor ForThings(things []Thing) {
+		return SomeClass.new()
+	}
+
+	function<void> Apply() {}
+}
+
+function<any> TEST() {
+	var someclass = SomeClass.ForThings([]Thing{})
+	someclass.Apply()
+	return null
+}

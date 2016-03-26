@@ -2624,6 +2624,7 @@ func (p *sourceParser) consumeListOrSliceLiteralExpression() AstNode {
 // consumeSliceLiteralExpression consumes a slice literal expression.
 func (p *sourceParser) consumeSliceLiteralExpression() AstNode {
 	sliceNode := p.startNode(NodeSliceLiteralExpression)
+	defer p.finishNode()
 
 	// [
 	p.consume(tokenTypeLeftBracket)
