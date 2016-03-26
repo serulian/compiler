@@ -1,13 +1,16 @@
 NodeTypeFile
+  end-rune = 122
   input-source = slice literal expr test
   start-rune = 0
   child-node =>
     NodeTypeFunction
+      end-rune = 122
       input-source = slice literal expr test
       named = DoSomething
       start-rune = 0
       definition-body =>
         NodeTypeStatementBlock
+          end-rune = 122
           input-source = slice literal expr test
           start-rune = 29
           block-child =>
@@ -17,7 +20,7 @@ NodeTypeFile
               start-rune = 33
               expr-statement-expr =>
                 NodeSliceLiteralExpression
-                  end-rune = 122
+                  end-rune = 51
                   input-source = slice literal expr test
                   start-rune = 33
                   slice-literal-expr-type =>
@@ -58,7 +61,7 @@ NodeTypeFile
               start-rune = 55
               expr-statement-expr =>
                 NodeSliceLiteralExpression
-                  end-rune = 122
+                  end-rune = 86
                   input-source = slice literal expr test
                   start-rune = 55
                   slice-literal-expr-type =>
@@ -115,7 +118,7 @@ NodeTypeFile
               start-rune = 90
               expr-statement-expr =>
                 NodeSliceLiteralExpression
-                  end-rune = 122
+                  end-rune = 120
                   input-source = slice literal expr test
                   start-rune = 90
                   slice-literal-expr-type =>

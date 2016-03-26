@@ -228,6 +228,10 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	scopegraphTest{"var known issue test", "var", "knownissue",
+		[]expectedScopeEntry{},
+		"", ""},
+
 	scopegraphTest{"no declared type var test", "var", "notype",
 		[]expectedScopeEntry{
 			expectedScopeEntry{"var", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
