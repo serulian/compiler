@@ -14,8 +14,3 @@ NodeTypeFile
           error-message = Expected one of: [tokenTypeColon], found: tokenTypeLeftBrace
           input-source = missing subtype nominal type test
           start-rune = 14
-    NodeTypeError
-      end-rune = 12
-      error-message = Unexpected token at root level: tokenTypeLeftBrace
-      input-source = missing subtype nominal type test
-      start-rune = 14

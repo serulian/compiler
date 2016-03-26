@@ -13,8 +13,3 @@ NodeTypeFile
           error-message = Expected identifier, found token tokenTypeLeftBrace
           input-source = missing name class test
           start-rune = 6
-    NodeTypeError
-      end-rune = 4
-      error-message = Unexpected token at root level: tokenTypeLeftBrace
-      input-source = missing name class test
-      start-rune = 6

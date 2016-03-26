@@ -85,7 +85,7 @@ NodeTypeFile
                   start-rune = 121
                   structural-new-entry =>
                     NodeStructuralNewExpressionEntry
-                      end-rune = 277
+                      end-rune = 276
                       input-source = slice struct test
                       start-rune = 135
                       structural-new-entry-key = Values
@@ -101,7 +101,7 @@ NodeTypeFile
                               start-rune = 148
                               structural-new-entry =>
                                 NodeStructuralNewExpressionEntry
-                                  end-rune = 180
+                                  end-rune = 179
                                   input-source = slice struct test
                                   start-rune = 167
                                   structural-new-entry-key = AnotherInt
@@ -123,7 +123,7 @@ NodeTypeFile
                               start-rune = 191
                               structural-new-entry =>
                                 NodeStructuralNewExpressionEntry
-                                  end-rune = 223
+                                  end-rune = 222
                                   input-source = slice struct test
                                   start-rune = 210
                                   structural-new-entry-key = AnotherInt
@@ -145,7 +145,7 @@ NodeTypeFile
                               start-rune = 234
                               structural-new-entry =>
                                 NodeStructuralNewExpressionEntry
-                                  end-rune = 266
+                                  end-rune = 265
                                   input-source = slice struct test
                                   start-rune = 253
                                   structural-new-entry-key = AnotherInt

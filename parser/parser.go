@@ -37,14 +37,15 @@ type commentedLexeme struct {
 
 // sourceParser holds the state of the parser.
 type sourceParser struct {
-	startIndex     bytePosition                // The start index for position decoration on nodes.
-	source         compilercommon.InputSource  // the name of the input; used only for error reports
-	lex            *peekableLexer              // a reference to the lexer used for tokenization
-	builder        NodeBuilder                 // the builder function for creating AstNode instances
-	nodes          *nodeStack                  // the stack of the current nodes
-	currentToken   commentedLexeme             // the current token
-	previousToken  commentedLexeme             // the previous token
-	importReporter packageloader.ImportHandler // callback invoked when an import is found
+	startIndex        bytePosition                // The start index for position decoration on nodes.
+	source            compilercommon.InputSource  // the name of the input; used only for error reports
+	lex               *peekableLexer              // a reference to the lexer used for tokenization
+	builder           NodeBuilder                 // the builder function for creating AstNode instances
+	nodes             *nodeStack                  // the stack of the current nodes
+	currentToken      commentedLexeme             // the current token
+	previousToken     commentedLexeme             // the previous token
+	importReporter    packageloader.ImportHandler // callback invoked when an import is found
+	lastErrorPosition int                         // The position of the last error, if any.
 }
 
 // lookaheadTracker holds state when conducting a multi-token lookahead in the parser.
@@ -80,14 +81,15 @@ func parseExpression(builder NodeBuilder, importReporter packageloader.ImportHan
 func buildParser(builder NodeBuilder, importReporter packageloader.ImportHandler, source compilercommon.InputSource, startIndex bytePosition, input string) *sourceParser {
 	l := peekable_lex(lex(source, input))
 	return &sourceParser{
-		startIndex:     startIndex,
-		source:         source,
-		lex:            l,
-		builder:        builder,
-		nodes:          &nodeStack{},
-		currentToken:   commentedLexeme{lexeme{tokenTypeEOF, 0, ""}, make([]string, 0)},
-		previousToken:  commentedLexeme{lexeme{tokenTypeEOF, 0, ""}, make([]string, 0)},
-		importReporter: importReporter,
+		startIndex:        startIndex,
+		source:            source,
+		lex:               l,
+		builder:           builder,
+		nodes:             &nodeStack{},
+		currentToken:      commentedLexeme{lexeme{tokenTypeEOF, 0, ""}, make([]string, 0)},
+		previousToken:     commentedLexeme{lexeme{tokenTypeEOF, 0, ""}, make([]string, 0)},
+		importReporter:    importReporter,
+		lastErrorPosition: -1,
 	}
 }
 
@@ -130,11 +132,16 @@ func (p *sourceParser) startNode(kind NodeType) AstNode {
 	return node
 }
 
+// bytePosition returns the  byte position in the parsing input of the token.
+func (p *sourceParser) bytePosition(token commentedLexeme) int {
+	return int(token.position) + int(p.startIndex)
+}
+
 // decorateStartRuneAndComments decorates the given node with the location of the given token as its
 // starting rune, as well as any comments attached to the token.
 func (p *sourceParser) decorateStartRuneAndComments(node AstNode, token commentedLexeme) {
 	node.Decorate(NodePredicateSource, string(p.source))
-	node.Decorate(NodePredicateStartRune, strconv.Itoa(int(token.position)+int(p.startIndex)))
+	node.Decorate(NodePredicateStartRune, strconv.Itoa(p.bytePosition(token)))
 	p.decorateComments(node, token.comments)
 }
 
@@ -241,8 +248,14 @@ func (p *sourceParser) isNextKeyword(keyword string) bool {
 // emitError creates a new error node and attachs it as a child of the current
 // node.
 func (p *sourceParser) emitError(format string, args ...interface{}) {
+	if p.lastErrorPosition == p.bytePosition(p.currentToken) {
+		// Skip this error.
+		return
+	}
+
 	errorNode := p.createErrorNode(format, args...)
 	p.currentNode().Connect(NodePredicateChild, errorNode)
+	p.lastErrorPosition = p.bytePosition(p.currentToken)
 }
 
 // consumeKeyword consumes an expected keyword token or adds an error node.

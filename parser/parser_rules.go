@@ -1802,6 +1802,10 @@ func (p *sourceParser) tryConsumeExpression(option consumeExpressionOption) (Ast
 				}
 
 				structuralNode.Connect(NodeStructuralNewExpressionChildEntry, p.consumeStructuralNewExpressionEntry())
+				if _, ok := p.tryConsume(tokenTypeComma); !ok {
+					break
+				}
+
 				if p.isToken(tokenTypeRightBrace) || p.isStatementTerminator() {
 					break
 				}
@@ -2546,9 +2550,6 @@ func (p *sourceParser) consumeStructuralNewExpressionEntry() AstNode {
 
 	// Consume an expression.
 	entryNode.Connect(NodeStructuralNewEntryValue, p.consumeExpression(consumeExpressionAllowMaps))
-
-	// Consume a comma.
-	p.consume(tokenTypeComma)
 
 	return entryNode
 }
