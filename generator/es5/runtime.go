@@ -202,6 +202,10 @@ this.Serulian = (function($global) {
     // nominalroot returns the root object behind a nominal type. The returned instance is
     // guarenteed to not be a nominal type instance.
     'nominalroot': function(instance) {
+      if (instance == null) {
+          return null;
+      }
+
       if (instance.hasOwnProperty('$wrapped')) {
         return $t.nominalroot(instance.$wrapped);
       }

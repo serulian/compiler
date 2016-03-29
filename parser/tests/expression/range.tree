@@ -1,16 +1,16 @@
 NodeTypeFile
-  end-rune = 61
+  end-rune = 81
   input-source = range expr test
   start-rune = 0
   child-node =>
     NodeTypeFunction
-      end-rune = 61
+      end-rune = 81
       input-source = range expr test
       named = DoSomething
       start-rune = 0
       definition-body =>
         NodeTypeStatementBlock
-          end-rune = 61
+          end-rune = 81
           input-source = range expr test
           start-rune = 29
           block-child =>
@@ -98,6 +98,70 @@ NodeTypeFile
                       input-source = range expr test
                       literal-value = 5.6
                       start-rune = 57
+            NodeTypeExpressionStatement
+              end-rune = 70
+              input-source = range expr test
+              start-rune = 62
+              expr-statement-expr =>
+                NodeDefineRangeExpression
+                  end-rune = 69
+                  input-source = range expr test
+                  start-rune = 62
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 62
+                      identexpr-name = a
+                      input-source = range expr test
+                      start-rune = 62
+                  binary-expression-right =>
+                    NodeBinaryAddExpression
+                      end-rune = 69
+                      input-source = range expr test
+                      start-rune = 65
+                      binary-expression-left =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 65
+                          identexpr-name = b
+                          input-source = range expr test
+                          start-rune = 65
+                      binary-expression-right =>
+                        NodeNumericLiteralExpression
+                          end-rune = 69
+                          input-source = range expr test
+                          literal-value = 1
+                          start-rune = 69
+            NodeTypeExpressionStatement
+              end-rune = 80
+              input-source = range expr test
+              start-rune = 72
+              expr-statement-expr =>
+                NodeDefineRangeExpression
+                  end-rune = 79
+                  input-source = range expr test
+                  start-rune = 72
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 72
+                      identexpr-name = a
+                      input-source = range expr test
+                      start-rune = 72
+                  binary-expression-right =>
+                    NodeBinarySubtractExpression
+                      end-rune = 79
+                      input-source = range expr test
+                      start-rune = 75
+                      binary-expression-left =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 75
+                          identexpr-name = b
+                          input-source = range expr test
+                          start-rune = 75
+                      binary-expression-right =>
+                        NodeNumericLiteralExpression
+                          end-rune = 79
+                          input-source = range expr test
+                          literal-value = 1
+                          start-rune = 79
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 12
