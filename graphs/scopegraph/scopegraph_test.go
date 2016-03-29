@@ -955,6 +955,7 @@ var scopeGraphTests = []scopegraphTest{
 			expectedScopeEntry{"m", expectedScope{true, proto.ScopeKind_VALUE, "MyType", "void"}},
 			expectedScopeEntry{"at", expectedScope{true, proto.ScopeKind_VALUE, "AnotherType", "void"}},
 			expectedScopeEntry{"gt", expectedScope{true, proto.ScopeKind_VALUE, "GenericType<Integer>", "void"}},
+			expectedScopeEntry{"nat", expectedScope{true, proto.ScopeKind_VALUE, "AnotherType?", "void"}},
 		},
 		"", ""},
 

@@ -52,6 +52,10 @@ func (sb *scopeBuilder) scopeTypeConversionExpression(node compilergraph.GraphNo
 			isValid = false
 			break
 		}
+
+		if argumentType.IsNullable() {
+			conversionType = conversionType.AsNullable()
+		}
 	}
 
 	if index == 0 {
