@@ -1,0 +1,53 @@
+NodeTypeFile
+  end-rune = 65
+  input-source = binary unary expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 65
+      input-source = binary unary expr test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 65
+          input-source = binary unary expr test
+          start-rune = 29
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 64
+              input-source = binary unary expr test
+              start-rune = 32
+              expr-statement-expr =>
+                NodeBooleanAndExpression
+                  end-rune = 63
+                  input-source = binary unary expr test
+                  start-rune = 32
+                  binary-expression-left =>
+                    NodeBooleanNotExpression
+                      end-rune = 50
+                      input-source = binary unary expr test
+                      start-rune = 33
+                      unary-expression-child =>
+                        NodeMemberAccessExpression
+                          end-rune = 50
+                          input-source = binary unary expr test
+                          member-access-identifier = IsElement
+                          start-rune = 33
+                          member-access-expr =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 40
+                              identexpr-name = existing
+                              input-source = binary unary expr test
+                              start-rune = 33
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 63
+                      identexpr-name = something
+                      input-source = binary unary expr test
+                      start-rune = 55
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 12
+          input-source = binary unary expr test
+          start-rune = 9

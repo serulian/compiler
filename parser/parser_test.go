@@ -193,6 +193,7 @@ var parserTests = []parserTest{
 	{"arrow expr test", "expression/arrow"},
 	{"await expr test", "expression/await"},
 	{"basic binary expr test", "expression/binary_basic"},
+	{"binary unary expr test", "expression/binary_unary"},
 	{"subtract binary expr test", "expression/binary_subtract"},
 	{"multiple binary expr test", "expression/binary_multiple"},
 	{"basic access expr test", "expression/access_basic"},

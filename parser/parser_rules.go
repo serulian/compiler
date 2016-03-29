@@ -2389,7 +2389,7 @@ func (p *sourceParser) tryConsumeBaseExpression() (AstNode, bool) {
 
 		valueNode := p.startNode(NodeRootTypeExpression)
 		defer p.finishNode()
-		valueNode.Connect(NodeUnaryExpressionChildExpr, p.consumeExpression(consumeExpressionNoMaps))
+		valueNode.Connect(NodeUnaryExpressionChildExpr, p.consumeAssignableExpression())
 		return valueNode, true
 
 	// Unary: ~
@@ -2398,7 +2398,7 @@ func (p *sourceParser) tryConsumeBaseExpression() (AstNode, bool) {
 
 		bitNode := p.startNode(NodeBitwiseNotExpression)
 		defer p.finishNode()
-		bitNode.Connect(NodeUnaryExpressionChildExpr, p.consumeExpression(consumeExpressionNoMaps))
+		bitNode.Connect(NodeUnaryExpressionChildExpr, p.consumeAssignableExpression())
 		return bitNode, true
 
 	// Unary: !
@@ -2407,7 +2407,7 @@ func (p *sourceParser) tryConsumeBaseExpression() (AstNode, bool) {
 
 		notNode := p.startNode(NodeBooleanNotExpression)
 		defer p.finishNode()
-		notNode.Connect(NodeUnaryExpressionChildExpr, p.consumeExpression(consumeExpressionNoMaps))
+		notNode.Connect(NodeUnaryExpressionChildExpr, p.consumeAssignableExpression())
 		return notNode, true
 
 	// Nested expression.
