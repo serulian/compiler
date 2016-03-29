@@ -372,6 +372,18 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"Left and right hand sides of a nullable operator must have common subtype. None found between 'Integer' and 'Boolean'", ""},
 
+	/////////// Unary operator expressions ///////////
+
+	scopegraphTest{"unary ops success test", "unaryops", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"not", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"unary ops nullable fail test", "unaryops", "nullable",
+		[]expectedScopeEntry{},
+		"Cannot invoke operator 'not' on nullable type 'SomeClass?'", ""},
+
 	/////////// Binary operator expressions ///////////
 
 	scopegraphTest{"binary ops success test", "binaryops", "success",
@@ -395,6 +407,10 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"boolean ops fail test", "binaryops", "boolfail",
 		[]expectedScopeEntry{},
 		"Boolean operator requires type Boolean for operands. Left hand operand has type: Integer", ""},
+
+	scopegraphTest{"boolean ops nullable fail test", "binaryops", "nullable",
+		[]expectedScopeEntry{},
+		"Cannot invoke operator 'plus' on nullable type 'SomeClass?'", ""},
 
 	/////////// Identifier expression ///////////
 

@@ -517,6 +517,18 @@ func (sb *scopeBuilder) scopeBinaryExpression(node compilergraph.GraphNode, opNa
 	}
 
 	returnType, _ := operator.ReturnType()
+
+	// Check for nullable values.
+	if leftType.NullValueAllowed() {
+		sb.decorateWithError(node, "Cannot invoke operator '%v' on nullable type '%v'", opName, leftType)
+		return newScope().Invalid().CallsOperator(operator).Resolving(returnType)
+	}
+
+	if rightType.NullValueAllowed() {
+		sb.decorateWithError(node, "Cannot invoke operator '%v' on nullable type '%v'", opName, rightType)
+		return newScope().Invalid().CallsOperator(operator).Resolving(returnType)
+	}
+
 	return newScope().Valid().CallsOperator(operator).Resolving(returnType)
 }
 
@@ -540,6 +552,13 @@ func (sb *scopeBuilder) scopeUnaryExpression(node compilergraph.GraphNode, opNam
 	}
 
 	returnType, _ := operator.ReturnType()
+
+	// Check for nullable values.
+	if childType.NullValueAllowed() {
+		sb.decorateWithError(node, "Cannot invoke operator '%v' on nullable type '%v'", opName, childType)
+		return newScope().Invalid().CallsOperator(operator).Resolving(returnType)
+	}
+
 	return newScope().Valid().CallsOperator(operator).Resolving(returnType)
 }
 
