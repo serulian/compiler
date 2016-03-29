@@ -200,6 +200,8 @@ var syntheticPredecessors = map[tokenType]bool{
 	tokenTypeRightParen:   true,
 	tokenTypeRightBracket: true,
 	tokenTypeGreaterThan:  true,
+
+	tokenTypeNot: true,
 }
 
 // stateFn represents the state of the scanner as a function that returns the next state.

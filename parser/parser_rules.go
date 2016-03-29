@@ -2114,7 +2114,7 @@ type boe struct {
 func (p *sourceParser) buildBinaryOperatorExpressionFnTree(operators ...boe) tryParserFn {
 	// Start with a base expression function.
 	var currentParseFn tryParserFn
-	currentParseFn = p.tryConsumeCallAccessExpression
+	currentParseFn = p.tryConsumeValueExpression
 
 	for i := range operators {
 		// Note: We have to reverse this to ensure we have proper precedence.
@@ -2153,6 +2153,28 @@ var memberAccessExprMap = map[tokenType]NodeType{
 	tokenTypeArrowAccessOperator:   NodeDynamicMemberAccessExpression,
 	tokenTypeNullDotAccessOperator: NodeNullableMemberAccessExpression,
 	tokenTypeStreamAccessOperator:  NodeStreamMemberAccessExpression,
+}
+
+// tryConsumeValueExpression consumes an expression which forms a value under a binary operator.
+func (p *sourceParser) tryConsumeValueExpression() (AstNode, bool) {
+	currentToken := p.currentToken
+	consumed, ok := p.tryConsumeCallAccessExpression()
+	if !ok {
+		return consumed, false
+	}
+
+	// Check for a null assert.
+	if p.isToken(tokenTypeNot) {
+		assertNode := p.createNode(NodeAssertNotNullExpression)
+		assertNode.Connect(NodeUnaryExpressionChildExpr, consumed)
+		p.consume(tokenTypeNot)
+
+		p.decorateStartRuneAndComments(assertNode, currentToken)
+		p.decorateEndRune(assertNode, p.currentToken)
+		return assertNode, true
+	}
+
+	return consumed, true
 }
 
 // tryConsumeCallAccessExpression attempts to consume call expressions (function calls, slices, generic specifier)

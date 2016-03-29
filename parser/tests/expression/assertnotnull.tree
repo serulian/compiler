@@ -1,0 +1,98 @@
+NodeTypeFile
+  end-rune = 55
+  input-source = assert not null expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 55
+      input-source = assert not null expr test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 55
+          input-source = assert not null expr test
+          start-rune = 29
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 34
+              input-source = assert not null expr test
+              start-rune = 32
+              expr-statement-expr =>
+                NodeAssertNotNullExpression
+                  end-rune = 34
+                  input-source = assert not null expr test
+                  start-rune = 32
+                  unary-expression-child =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 32
+                      identexpr-name = a
+                      input-source = assert not null expr test
+                      start-rune = 32
+            NodeTypeExpressionStatement
+              end-rune = 40
+              input-source = assert not null expr test
+              start-rune = 36
+              expr-statement-expr =>
+                NodeAssertNotNullExpression
+                  end-rune = 40
+                  input-source = assert not null expr test
+                  start-rune = 36
+                  unary-expression-child =>
+                    NodeMemberAccessExpression
+                      end-rune = 38
+                      input-source = assert not null expr test
+                      member-access-identifier = b
+                      start-rune = 36
+                      member-access-expr =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 36
+                          identexpr-name = a
+                          input-source = assert not null expr test
+                          start-rune = 36
+            NodeTypeExpressionStatement
+              end-rune = 46
+              input-source = assert not null expr test
+              start-rune = 42
+              expr-statement-expr =>
+                NodeAssertNotNullExpression
+                  end-rune = 46
+                  input-source = assert not null expr test
+                  start-rune = 42
+                  unary-expression-child =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 43
+                      identexpr-name = a
+                      input-source = assert not null expr test
+                      start-rune = 43
+            NodeTypeExpressionStatement
+              end-rune = 54
+              input-source = assert not null expr test
+              start-rune = 48
+              expr-statement-expr =>
+                NodeBinaryAddExpression
+                  end-rune = 53
+                  input-source = assert not null expr test
+                  start-rune = 48
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 48
+                      identexpr-name = a
+                      input-source = assert not null expr test
+                      start-rune = 48
+                  binary-expression-right =>
+                    NodeAssertNotNullExpression
+                      end-rune = 54
+                      input-source = assert not null expr test
+                      start-rune = 52
+                      unary-expression-child =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 52
+                          identexpr-name = b
+                          input-source = assert not null expr test
+                          start-rune = 52
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 12
+          input-source = assert not null expr test
+          start-rune = 9
