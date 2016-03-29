@@ -195,6 +195,9 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 	case parser.NodeNullComparisonExpression:
 		return sb.scopeNullComparisonExpression
 
+	case parser.NodeAssertNotNullExpression:
+		return sb.scopeAssertNotNullExpression
+
 	case parser.NodeIsComparisonExpression:
 		return sb.scopeIsComparisonExpression
 

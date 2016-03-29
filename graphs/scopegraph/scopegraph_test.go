@@ -360,6 +360,16 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	scopegraphTest{"nullable ops assert success test", "nullableops", "assert",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"sc", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"nullable ops assert non-nullable child test", "nullableops", "assertnonnull",
+		[]expectedScopeEntry{},
+		"Child expression of an assert not nullable operator must be nullable. Found: SomeClass", ""},
+
 	scopegraphTest{"nullable ops non-nullable left test", "nullableops", "nonnullable",
 		[]expectedScopeEntry{},
 		"Left hand side of a nullable operator must be nullable. Found: SomeClass", ""},

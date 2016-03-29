@@ -330,6 +330,25 @@ func (sb *scopeBuilder) scopeIsComparisonExpression(node compilergraph.GraphNode
 	return newScope().Valid().Resolving(sb.sg.tdg.BoolTypeReference()).GetScope()
 }
 
+// scopeAssertNotNullExpression scopes an assert-not-null operator expression in the SRG.
+func (sb *scopeBuilder) scopeAssertNotNullExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+	// Get the scope of the child expression.
+	childScope := sb.getScope(node.GetNode(parser.NodeUnaryExpressionChildExpr))
+	if !childScope.GetIsValid() {
+		return newScope().Invalid().GetScope()
+	}
+
+	nullableType := childScope.ResolvedTypeRef(sb.sg.tdg)
+
+	// Ensure that the nullable type is nullable.
+	if !nullableType.IsNullable() {
+		sb.decorateWithError(node, "Child expression of an assert not nullable operator must be nullable. Found: %v", nullableType)
+		return newScope().Invalid().GetScope()
+	}
+
+	return newScope().Valid().Resolving(nullableType.AsNonNullable()).GetScope()
+}
+
 // scopeNullComparisonExpression scopes a nullable comparison expression in the SRG.
 func (sb *scopeBuilder) scopeNullComparisonExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	// Get the scope of the left and right expressions.
