@@ -364,6 +364,16 @@ this.Serulian = (function($global) {
       return value
     },
 
+    // assertnotnull checks if the value is null and, if so, raises an error. Otherwise,
+    // returns the value.
+    'assertnotnull': function(value) {
+      if (value == null) {
+        throw Error('Value should not be null')
+      }
+
+      return value;
+    },
+
     // nullcompare checks if the value is null and, if not, returns the value. Otherwise,
     // returns 'otherwise'.
     'nullcompare': function(value, otherwise) {

@@ -1,0 +1,4 @@
+function<any> TEST() {
+	var<bool?> someValue = true
+	return someValue!
+}

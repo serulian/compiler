@@ -151,6 +151,9 @@ func (db *domBuilder) buildExpression(node compilergraph.GraphNode) codedom.Expr
 	case parser.NodeNullComparisonExpression:
 		return db.buildNullComparisonExpression(node)
 
+	case parser.NodeAssertNotNullExpression:
+		return db.buildAssertNotNullExpression(node)
+
 	case parser.NodeIsComparisonExpression:
 		return db.buildIsComparisonExpression(node)
 
