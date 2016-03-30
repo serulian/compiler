@@ -188,6 +188,7 @@ var parserTests = []parserTest{
 
 	{"match statement basic test", "statement/match"},
 	{"match statement no expr test", "statement/match_noexpr"},
+	{"match statement multi statement test", "statement/match_multi"},
 
 	// Expression tests.
 	{"arrow expr test", "expression/arrow"},

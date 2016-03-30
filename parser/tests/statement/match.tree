@@ -30,10 +30,15 @@ NodeTypeFile
                       input-source = match statement basic test
                       start-rune = 57
                   match-case-statement =>
-                    NodeTypeReturnStatement
-                      end-rune = 73
+                    NodeTypeStatementBlock
+                      end-rune = 74
                       input-source = match statement basic test
                       start-rune = 68
+                      block-child =>
+                        NodeTypeReturnStatement
+                          end-rune = 73
+                          input-source = match statement basic test
+                          start-rune = 68
                 NodeTypeMatchStatementCase
                   end-rune = 102
                   input-source = match statement basic test
@@ -45,25 +50,35 @@ NodeTypeFile
                       input-source = match statement basic test
                       start-rune = 83
                   match-case-statement =>
-                    NodeTypeExpressionStatement
+                    NodeTypeStatementBlock
                       end-rune = 102
                       input-source = match statement basic test
                       start-rune = 94
-                      expr-statement-expr =>
-                        NodeTypeIdentifierExpression
-                          end-rune = 101
-                          identexpr-name = someExpr
+                      block-child =>
+                        NodeTypeExpressionStatement
+                          end-rune = 102
                           input-source = match statement basic test
                           start-rune = 94
+                          expr-statement-expr =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 101
+                              identexpr-name = someExpr
+                              input-source = match statement basic test
+                              start-rune = 94
                 NodeTypeMatchStatementCase
                   end-rune = 123
                   input-source = match statement basic test
                   start-rune = 113
                   match-case-statement =>
-                    NodeTypeBreakStatement
-                      end-rune = 122
+                    NodeTypeStatementBlock
+                      end-rune = 123
                       input-source = match statement basic test
                       start-rune = 118
+                      block-child =>
+                        NodeTypeBreakStatement
+                          end-rune = 122
+                          input-source = match statement basic test
+                          start-rune = 118
               match-expression =>
                 NodeTypeIdentifierExpression
                   end-rune = 46

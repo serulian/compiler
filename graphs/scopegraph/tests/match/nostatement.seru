@@ -1,0 +1,9 @@
+function<int> DoSomething() {
+	/* match */match {
+		case true:
+		case false:
+			return true
+	}
+
+	return 4
+}

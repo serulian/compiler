@@ -1449,7 +1449,7 @@ func (p *sourceParser) lookaheadAssignStatement() bool {
 //   case someExpr:
 //      statements
 //
-//   case anotherExpr, secondExpr:
+//   case anotherExpr:
 //      statements
 //
 //   default:
@@ -1527,18 +1527,24 @@ func (p *sourceParser) tryConsumeMatchCase(keyword string, option matchCaseOptio
 	}
 
 	// Consume one (or more) statements, followed by statement terminators.
+	blockNode := p.startNode(NodeTypeStatementBlock)
+
+	caseNode.Connect(NodeMatchStatementCaseStatement, blockNode)
+
 	for {
 		statementNode, ok := p.tryConsumeStatement()
 		if !ok {
 			break
 		}
 
-		caseNode.Connect(NodeMatchStatementCaseStatement, statementNode)
+		blockNode.Connect(NodeStatementBlockStatement, statementNode)
 
 		if _, ok := p.consumeStatementTerminator(); !ok {
 			return caseNode, true
 		}
 	}
+
+	p.finishNode()
 
 	return caseNode, true
 }

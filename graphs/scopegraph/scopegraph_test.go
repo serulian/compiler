@@ -193,6 +193,18 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	scopegraphTest{"match no statement test", "match", "nostatement",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"match", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"match multi statement test", "match", "multistatement",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"match", expectedScope{true, proto.ScopeKind_VALUE, "void", "Integer"}},
+		},
+		"", ""},
+
 	scopegraphTest{"bool default match test", "match", "booldefault",
 		[]expectedScopeEntry{
 			expectedScopeEntry{"match", expectedScope{true, proto.ScopeKind_VALUE, "void", "Integer"}},
