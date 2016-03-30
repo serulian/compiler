@@ -19,17 +19,22 @@ type domBuilder struct {
 
 	counter int // Counter for scope var names.
 
-	startStatements map[compilergraph.GraphNodeId]codedom.Statement
-	endStatements   map[compilergraph.GraphNodeId]codedom.Statement
+	// continueStatementMap contains a map from a statement node by graph ID to the CodeDOM statement
+	// to which any child `continue` statement should jump.
+	continueStatementMap map[compilergraph.GraphNodeId]codedom.Statement
+
+	// breakStatementMap contains a map from a statement node by graph ID to the CodeDOM statement
+	// to which any child `break` statement should jump.
+	breakStatementMap map[compilergraph.GraphNodeId]codedom.Statement
 }
 
 // BuildStatement builds the CodeDOM for the given SRG statement node, downward.
 func BuildStatement(scopegraph *scopegraph.ScopeGraph, rootNode compilergraph.GraphNode) codedom.Statement {
 	builder := &domBuilder{
-		scopegraph:      scopegraph,
-		counter:         0,
-		startStatements: map[compilergraph.GraphNodeId]codedom.Statement{},
-		endStatements:   map[compilergraph.GraphNodeId]codedom.Statement{},
+		scopegraph:           scopegraph,
+		counter:              0,
+		continueStatementMap: map[compilergraph.GraphNodeId]codedom.Statement{},
+		breakStatementMap:    map[compilergraph.GraphNodeId]codedom.Statement{},
 	}
 
 	start, _ := builder.buildStatements(rootNode)

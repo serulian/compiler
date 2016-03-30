@@ -28,6 +28,7 @@ function<any> TEST() {
 	var s = SomeStreamable.new()
 	for i in s {
 		result = i
+		continue
 	}
 
 	return result

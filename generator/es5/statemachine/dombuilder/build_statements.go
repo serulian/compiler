@@ -46,8 +46,8 @@ func (db *domBuilder) buildBreakStatement(node compilergraph.GraphNode) codedom.
 	// Find the parent statement (guarenteed to be there due to scope graph constraints).
 	parentNode, _ := db.scopegraph.SourceGraph().TryGetContainingNode(node, parser.NodeTypeLoopStatement, parser.NodeTypeMatchStatement)
 
-	// Add a jump to the end state for the parent.
-	return codedom.UnconditionalJump(db.endStatements[parentNode.NodeId], node)
+	// Add a jump to the break state for the parent.
+	return codedom.UnconditionalJump(db.breakStatementMap[parentNode.NodeId], node)
 }
 
 // buildContinueStatement builds the CodeDOM for a continue statement.
@@ -55,8 +55,8 @@ func (db *domBuilder) buildContinueStatement(node compilergraph.GraphNode) coded
 	// Find the parent loop statement (guarenteed to be there due to scope graph constraints).
 	loopNode, _ := db.scopegraph.SourceGraph().TryGetContainingNode(node, parser.NodeTypeLoopStatement)
 
-	// Add a jump to the start state for the parent.
-	return codedom.UnconditionalJump(db.startStatements[loopNode.NodeId], node)
+	// Add a jump to the continue state for the parent.
+	return codedom.UnconditionalJump(db.continueStatementMap[loopNode.NodeId], node)
 }
 
 // buildReturnStatement builds the CodeDOM for a return statement.
@@ -102,10 +102,9 @@ func (db *domBuilder) buildLoopStatement(node compilergraph.GraphNode) (codedom.
 
 	finalStatement := codedom.EmptyStatement(node)
 
-	db.startStatements[node.NodeId] = startStatement
-	db.endStatements[node.NodeId] = finalStatement
-
-	bodyStart, bodyEnd := db.getStatements(node, parser.NodeLoopStatementBlock)
+	// Save initial continue and break statements for the loop.
+	db.continueStatementMap[node.NodeId] = startStatement
+	db.breakStatementMap[node.NodeId] = finalStatement
 
 	// A loop statement is buildd as a start statement which conditionally jumps to either the loop body
 	// (on true) or, on false, jumps to a final state after the loop.
@@ -151,6 +150,9 @@ func (db *domBuilder) buildLoopStatement(node compilergraph.GraphNode) (codedom.
 			resultExpressionStatement := codedom.ExpressionStatement(codedom.LocalAssignment(resultVarName, nextCallExpr, namedValue), namedValue)
 			resultExpressionStatement.MarkReferenceable()
 
+			// Set the continue statement to call Next() again.
+			db.continueStatementMap[node.NodeId] = resultExpressionStatement
+
 			// Create an expression statement to set the named variable to the first part of the tuple.
 			namedExpressionStatement := codedom.ExpressionStatement(
 				codedom.LocalAssignment(namedValueName,
@@ -160,6 +162,8 @@ func (db *domBuilder) buildLoopStatement(node compilergraph.GraphNode) (codedom.
 				namedValue)
 
 			// Jump to the body state if the second part of the tuple in the result variable is true.
+			bodyStart, bodyEnd := db.getStatements(node, parser.NodeLoopStatementBlock)
+
 			checkJump := codedom.ConditionalJump(
 				codedom.NativeAccess(codedom.LocalReference(resultVarName, node), "Second", node),
 				bodyStart,
@@ -188,6 +192,8 @@ func (db *domBuilder) buildLoopStatement(node compilergraph.GraphNode) (codedom.
 
 			return startStatement, finalStatement
 		} else {
+			bodyStart, bodyEnd := db.getStatements(node, parser.NodeLoopStatementBlock)
+
 			// Loop over a direct boolean expression which is evaluated on each iteration.
 			initialJump := codedom.ConditionalJump(loopExpr, bodyStart, finalStatement, node)
 			directJump := codedom.UnconditionalJump(initialJump, node)
@@ -198,6 +204,8 @@ func (db *domBuilder) buildLoopStatement(node compilergraph.GraphNode) (codedom.
 			return startStatement, finalStatement
 		}
 	} else {
+		bodyStart, bodyEnd := db.getStatements(node, parser.NodeLoopStatementBlock)
+
 		// A loop without an expression just loops infinitely over the body.
 		directJump := codedom.UnconditionalJump(bodyStart, node)
 
@@ -261,7 +269,9 @@ func (db *domBuilder) buildMatchStatement(node compilergraph.GraphNode) (codedom
 	}
 
 	finalStatement := codedom.EmptyStatement(node)
-	db.endStatements[node.NodeId] = finalStatement
+
+	// Save a break statement reference for the match.
+	db.breakStatementMap[node.NodeId] = finalStatement
 
 	// Generate the statements and check expressions for each of the branches.
 	var branchJumps = make([]*codedom.ConditionalJumpNode, 0)
