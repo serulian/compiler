@@ -221,6 +221,10 @@ this.Serulian = (function($global) {
     // nominalwrap unwraps a nominal type one level. Unlike nominal root, the resulting
     // instance can be another nominal type.
     'nominalunwrap': function(instance) {
+      if (instance == null) {
+          return null;
+      }
+
       return instance.$wrapped;
     },
 
@@ -496,7 +500,8 @@ this.Serulian = (function($global) {
     }
   };
 
-  // moduleInits defines a collection of all promises to initialize the various modules.
+  // moduleInits defines a collection of functions that, when called, return promises to initialize the
+  // various modules.
   var moduleInits = [];
 
   // $module defines a module in the type system.
@@ -641,8 +646,8 @@ this.Serulian = (function($global) {
     };
 
     // $init adds a promise to the module inits array.
-    module.$init = function(cpromise) {
-      moduleInits.push(cpromise);
+    module.$init = function(callback) {
+      moduleInits.push(callback);
     };
 
     module.$struct = $newtypebuilder('struct');
@@ -720,9 +725,14 @@ this.Serulian = (function($global) {
     };
   };
 
+  // Perform the deferred creation of the init promises.
+  var moduleInitPromises = moduleInits.map(function(callback) {
+    return callback();
+  });
+
   // Return a promise which initializes all modules and, once complete, returns the global
   // namespace map.
-  return $promise.all(moduleInits).then(function() {
+  return $promise.all(moduleInitPromises).then(function() {
   	return $g;
   });
 })(this)

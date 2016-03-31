@@ -83,7 +83,9 @@ $module('{{ .ExportedPath }}', function() {
   {{end}}
 
   {{range $idx, $kv := .GenerateVariables.Iter }}
-  	this.$init({{ $kv.Value }});
+  	this.$init(function() {
+		return ({{ $kv.Value }});
+	});
   {{end}}
 });
 `

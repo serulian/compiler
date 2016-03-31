@@ -32,12 +32,16 @@ $module('basic', function () {
     });
     return $promise.build($state);
   };
-  this.$init($promise.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean)).then(function (result) {
-    $static.someInt = result;
-  }));
-  this.$init($g.basic.AnotherFunction().then(function ($result0) {
-    return $promise.resolve($result0);
-  }).then(function (result) {
-    $static.anotherBool = result;
-  }));
+  this.$init(function () {
+    return $promise.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean)).then(function (result) {
+      $static.someInt = result;
+    });
+  });
+  this.$init(function () {
+    return $g.basic.AnotherFunction().then(function ($result0) {
+      return $promise.resolve($result0);
+    }).then(function (result) {
+      $static.anotherBool = result;
+    });
+  });
 });
