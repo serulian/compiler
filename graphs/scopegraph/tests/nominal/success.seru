@@ -29,4 +29,7 @@ function<void> CoolFunction(m MyType) {
 
 	/* at */(AnotherType(m))
 	/* gt */(GenericType<int>(m))
+
+	var<MyType?> nm = m
+	/* nat */(AnotherType(nm))
 }

@@ -201,7 +201,10 @@ func (tr TypeReference) CheckNominalConvertable(other TypeReference) error {
 		return fmt.Errorf("Type '%v' cannot be converted to or from type '%v'", tr, other)
 	}
 
-	if tr.IsNominalWrapOf(other) || other.IsNominalWrapOf(tr) {
+	nonNullableTr := tr.AsNonNullable()
+	nonNullableOther := other.AsNonNullable()
+
+	if nonNullableTr.IsNominalWrapOf(nonNullableOther) || nonNullableOther.IsNominalWrapOf(nonNullableTr) {
 		return nil
 	}
 

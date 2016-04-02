@@ -15,6 +15,7 @@ const (
 	CastFunction               RuntimeFunction = "$t.cast"
 	DynamicAccessFunction      RuntimeFunction = "$t.dynamicaccess"
 	NullableComparisonFunction RuntimeFunction = "$t.nullcompare"
+	AssertNotNullFunction      RuntimeFunction = "$t.assertnotnull"
 	StreamMemberAccessFunction RuntimeFunction = "$t.streamaccess"
 	NominalWrapFunction        RuntimeFunction = "$t.nominalwrap"
 	NominalUnwrapFunction      RuntimeFunction = "$t.nominalunwrap"

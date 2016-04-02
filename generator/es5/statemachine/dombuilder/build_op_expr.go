@@ -115,6 +115,12 @@ func (db *domBuilder) buildSlicerExpression(node compilergraph.GraphNode) codedo
 	return codedom.MemberCall(opExpr, operator, []codedom.Expression{leftExpr, rightExpr}, node)
 }
 
+// buildAssertNotNullExpression builds the CodeDOM for an assert not null (expr!) operator.
+func (db *domBuilder) buildAssertNotNullExpression(node compilergraph.GraphNode) codedom.Expression {
+	childExpr := db.getExpression(node, parser.NodeUnaryExpressionChildExpr)
+	return codedom.RuntimeFunctionCall(codedom.AssertNotNullFunction, []codedom.Expression{childExpr}, node)
+}
+
 // buildNullComparisonExpression builds the CodeDOM for a null comparison (??) operator.
 func (db *domBuilder) buildNullComparisonExpression(node compilergraph.GraphNode) codedom.Expression {
 	leftExpr := db.getExpression(node, parser.NodeBinaryExpressionLeftExpr)

@@ -161,7 +161,10 @@ func (sf *sourceFormatter) FormatExpression(expression ast.Expression) {
 
 	// DotExpression
 	case *ast.DotExpression:
+		sf.appendOptionalOpenParen(e.Left)
 		sf.FormatExpression(e.Left)
+		sf.appendOptionalCloseParen(e.Left)
+
 		sf.append(".")
 		sf.append(e.Identifier.Name)
 

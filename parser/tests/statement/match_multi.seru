@@ -1,0 +1,15 @@
+function<void> SomeFunction() {
+	match someExpr {
+		case foo:
+			// No statement here
+
+		case bar:
+			first
+			second
+			third
+
+		case meh:
+			fourth
+			fifth
+	}
+}

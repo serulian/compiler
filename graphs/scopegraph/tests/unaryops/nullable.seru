@@ -1,0 +1,9 @@
+class SomeClass {
+	operator not(left SomeClass) {
+		return left
+	}
+}
+
+function<void> DoSomething(sc SomeClass?) {
+	~sc
+}

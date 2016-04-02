@@ -291,10 +291,16 @@ $module('custom', function () {
 
           case 3:
             parsed = $result;
-            $g.____testlib.basictypes.Integer.$equals(parsed.SomeField, $t.nominalwrap(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-              $result = $t.nominalwrap((($t.nominalunwrap(correct) && $t.nominalunwrap($result0)) && !$t.nominalunwrap(parsed.AnotherField)) && $t.nominalunwrap(parsed.SomeInstance.AnotherBool), $g.____testlib.basictypes.Boolean);
-              $state.current = 4;
-              $callback($state);
+            $promise.resolve($t.nominalunwrap(correct)).then(function ($result2) {
+              return ($promise.shortcircuit($result2, false) || $g.____testlib.basictypes.Integer.$equals(parsed.SomeField, $t.nominalwrap(2, $g.____testlib.basictypes.Integer))).then(function ($result3) {
+                return $promise.resolve($result2 && $t.nominalunwrap($result3)).then(function ($result1) {
+                  return $promise.resolve($result1 && !$t.nominalunwrap(parsed.AnotherField)).then(function ($result0) {
+                    $result = $t.nominalwrap($result0 && $t.nominalunwrap(parsed.SomeInstance.AnotherBool), $g.____testlib.basictypes.Boolean);
+                    $state.current = 4;
+                    $callback($state);
+                  });
+                });
+              });
             }).catch(function (err) {
               $state.reject(err);
             });

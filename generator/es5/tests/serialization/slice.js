@@ -173,13 +173,17 @@ $module('slice', function () {
 
           case 4:
             parsed = $result;
-            s.Values.Length().then(function ($result0) {
-              return $g.____testlib.basictypes.Integer.$equals($result0, $t.nominalwrap(3, $g.____testlib.basictypes.Integer)).then(function ($result1) {
-                return s.Values.$index($t.nominalwrap(0, $g.____testlib.basictypes.Integer)).then(function ($result2) {
-                  return $g.____testlib.basictypes.Integer.$equals($result2.AnotherInt, $t.nominalwrap(1, $g.____testlib.basictypes.Integer)).then(function ($result3) {
-                    $result = $t.nominalwrap(($t.nominalunwrap(correct) && $t.nominalunwrap($result1)) && $t.nominalunwrap($result3), $g.____testlib.basictypes.Boolean);
-                    $state.current = 5;
-                    $callback($state);
+            $promise.resolve($t.nominalunwrap(correct)).then(function ($result1) {
+              return ($promise.shortcircuit($result1, false) || s.Values.Length()).then(function ($result2) {
+                return ($promise.shortcircuit($result1, false) || $g.____testlib.basictypes.Integer.$equals($result2, $t.nominalwrap(3, $g.____testlib.basictypes.Integer))).then(function ($result3) {
+                  return $promise.resolve($result1 && $t.nominalunwrap($result3)).then(function ($result0) {
+                    return ($promise.shortcircuit($result0, false) || s.Values.$index($t.nominalwrap(0, $g.____testlib.basictypes.Integer))).then(function ($result4) {
+                      return ($promise.shortcircuit($result0, false) || $g.____testlib.basictypes.Integer.$equals($result4.AnotherInt, $t.nominalwrap(1, $g.____testlib.basictypes.Integer))).then(function ($result5) {
+                        $result = $t.nominalwrap($result0 && $t.nominalunwrap($result5), $g.____testlib.basictypes.Boolean);
+                        $state.current = 5;
+                        $callback($state);
+                      });
+                    });
                   });
                 });
               });

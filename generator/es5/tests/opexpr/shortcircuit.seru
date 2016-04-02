@@ -1,0 +1,17 @@
+class someError {
+	property<string> Message {
+		get { return 'WHY CALLED? '}
+	}
+}
+
+function<bool> neverCalled() {
+	reject someError.new()
+}
+
+function<bool> anotherNeverCalled() {
+	reject someError.new()
+}
+
+function<any> TEST() {
+	return (!(false && neverCalled()) || anotherNeverCalled())
+}

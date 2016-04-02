@@ -73,7 +73,9 @@ $module('with', function () {
     });
     return $promise.build($state);
   };
-  this.$init($promise.resolve($t.nominalwrap(false, $g.____testlib.basictypes.Boolean)).then(function (result) {
-    $static.someBool = result;
-  }));
+  this.$init(function () {
+    return $promise.resolve($t.nominalwrap(false, $g.____testlib.basictypes.Boolean)).then(function (result) {
+      $static.someBool = result;
+    });
+  });
 });

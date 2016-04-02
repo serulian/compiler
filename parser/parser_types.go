@@ -102,6 +102,7 @@ const (
 
 	NodeNullComparisonExpression // a ?? b
 	NodeIsComparisonExpression   // a is b
+	NodeAssertNotNullExpression  // a!
 
 	NodeInCollectionExpression // a in b
 

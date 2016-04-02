@@ -27,7 +27,8 @@ func GenerateExpression(expression codedom.Expression, templater *templater.Temp
 		templater:  templater,
 		scopegraph: scopegraph,
 
-		wrappers: make([]*expressionWrapper, 0),
+		wrappers:        make([]*expressionWrapper, 0),
+		shortCircuiters: make([]string, 0),
 	}
 
 	// Determine whether the expression is a promise.
@@ -84,8 +85,9 @@ type expressionGenerator struct {
 	templater  *templater.Templater   // The templater to use.
 	scopegraph *scopegraph.ScopeGraph // The scope graph being generated.
 
-	wrappers []*expressionWrapper // The expression wrappers to be applied once generation is complete.
-	counter  int                  // Counter for unique names.
+	wrappers        []*expressionWrapper // The expression wrappers to be applied once generation is complete.
+	shortCircuiters []string             // Wrapper for the child expression of awaits that short circuits (if any defined).
+	counter         int                  // Counter for unique names.
 }
 
 // expressionWrapper defines a type representing the wrapping of a *parent* expression
@@ -94,6 +96,14 @@ type expressionWrapper struct {
 	data                    interface{} // The data for the template.
 	templateStr             string      // The template string to wrap the parent expression.
 	intermediateExpressions []string    // Expressions to execute under the wrapper before returning.
+}
+
+func (eg *expressionGenerator) pushShortCircuiter(name string) {
+	eg.shortCircuiters = append(eg.shortCircuiters, name)
+}
+
+func (eg *expressionGenerator) popShortCircuiter() {
+	eg.shortCircuiters = eg.shortCircuiters[0 : len(eg.shortCircuiters)-1]
 }
 
 // generateUniqueName generates a unique name.

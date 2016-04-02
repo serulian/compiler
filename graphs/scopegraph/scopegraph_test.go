@@ -193,6 +193,18 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	scopegraphTest{"match no statement test", "match", "nostatement",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"match", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"match multi statement test", "match", "multistatement",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"match", expectedScope{true, proto.ScopeKind_VALUE, "void", "Integer"}},
+		},
+		"", ""},
+
 	scopegraphTest{"bool default match test", "match", "booldefault",
 		[]expectedScopeEntry{
 			expectedScopeEntry{"match", expectedScope{true, proto.ScopeKind_VALUE, "void", "Integer"}},
@@ -360,6 +372,16 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	scopegraphTest{"nullable ops assert success test", "nullableops", "assert",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"sc", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"nullable ops assert non-nullable child test", "nullableops", "assertnonnull",
+		[]expectedScopeEntry{},
+		"Child expression of an assert not nullable operator must be nullable. Found: SomeClass", ""},
+
 	scopegraphTest{"nullable ops non-nullable left test", "nullableops", "nonnullable",
 		[]expectedScopeEntry{},
 		"Left hand side of a nullable operator must be nullable. Found: SomeClass", ""},
@@ -371,6 +393,18 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"nullable ops non-subtype test", "nullableops", "subtypemismatch",
 		[]expectedScopeEntry{},
 		"Left and right hand sides of a nullable operator must have common subtype. None found between 'Integer' and 'Boolean'", ""},
+
+	/////////// Unary operator expressions ///////////
+
+	scopegraphTest{"unary ops success test", "unaryops", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"not", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"unary ops nullable fail test", "unaryops", "nullable",
+		[]expectedScopeEntry{},
+		"Cannot invoke operator 'not' on nullable type 'SomeClass?'", ""},
 
 	/////////// Binary operator expressions ///////////
 
@@ -395,6 +429,10 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"boolean ops fail test", "binaryops", "boolfail",
 		[]expectedScopeEntry{},
 		"Boolean operator requires type Boolean for operands. Left hand operand has type: Integer", ""},
+
+	scopegraphTest{"boolean ops nullable fail test", "binaryops", "nullable",
+		[]expectedScopeEntry{},
+		"Cannot invoke operator 'plus' on nullable type 'SomeClass?'", ""},
 
 	/////////// Identifier expression ///////////
 
@@ -939,6 +977,7 @@ var scopeGraphTests = []scopegraphTest{
 			expectedScopeEntry{"m", expectedScope{true, proto.ScopeKind_VALUE, "MyType", "void"}},
 			expectedScopeEntry{"at", expectedScope{true, proto.ScopeKind_VALUE, "AnotherType", "void"}},
 			expectedScopeEntry{"gt", expectedScope{true, proto.ScopeKind_VALUE, "GenericType<Integer>", "void"}},
+			expectedScopeEntry{"nat", expectedScope{true, proto.ScopeKind_VALUE, "AnotherType?", "void"}},
 		},
 		"", ""},
 

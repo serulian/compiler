@@ -55,13 +55,19 @@ func (eg *expressionGenerator) generateAwaitPromise(awaitPromise *codedom.AwaitP
 	childExpr := eg.generateExpression(awaitPromise.ChildExpression)
 	resultName := eg.generateUniqueName("$result")
 
+	shortCircuit := ""
+	if len(eg.shortCircuiters) > 0 {
+		shortCircuit = eg.shortCircuiters[len(eg.shortCircuiters)-1]
+	}
+
 	data := struct {
 		ChildExpression string
 		ResultName      string
-	}{childExpr, resultName}
+		ShortCircuit    string
+	}{childExpr, resultName, shortCircuit}
 
 	templateStr := `
-		({{ .Item.ChildExpression }}).then(function({{ .Item.ResultName }}) {
+		({{ .Item.ShortCircuit }}{{ .Item.ChildExpression }}).then(function({{ .Item.ResultName }}) {
 			{{ range $idx, $expr := .IntermediateExpressions }}
 				{{ $expr }};
 			{{ end }}
@@ -117,18 +123,74 @@ func (eg *expressionGenerator) generateUnaryOperation(unaryOp *codedom.UnaryOper
 
 // generateBinaryOperation generates the expression source for a binary operator.
 func (eg *expressionGenerator) generateBinaryOperation(binaryOp *codedom.BinaryOperationNode) string {
-	leftExpr := eg.generateExpression(binaryOp.LeftExpr)
-	rightExpr := eg.generateExpression(binaryOp.RightExpr)
+	var binaryLeftExpr = ""
+	var binaryRightExpr = ""
+	var hasShortCircuiter = false
+
+	// If the binary expression's operator short circuits, then we need to generate
+	// specialized wrappers and expressions to ensure that only the necessary functions get called.
+	//
+	// TODO: There is probably a cleaner way of doing this.
+	if binaryOp.Operator == "&&" || binaryOp.Operator == "||" {
+		// Note: generation order is very important here, as we add a wrapper and push/pop
+		// a short-circuiter.
+
+		// Generate a specialized wrapper which resolves the left side value.
+		binaryLeftExpr = eg.generateUniqueName("$result")
+
+		wrapper := &expressionWrapper{
+			data: struct {
+				LeftExpr   string
+				ResultName string
+			}{eg.generateExpression(binaryOp.LeftExpr), binaryLeftExpr},
+
+			templateStr: `
+				$promise.resolve({{ .Item.LeftExpr }}).then(function({{ .Item.ResultName }}) {
+					{{ range $idx, $expr := .IntermediateExpressions }}
+						{{ $expr }};
+					{{ end }}
+					{{ if .WrappedNested }}
+						return ({{ .WrappedExpression }});
+					{{ else }}
+						{{ .WrappedExpression }}
+					{{ end }}
+				})
+			`,
+
+			intermediateExpressions: []string{},
+		}
+
+		eg.wrappers = append(eg.wrappers, wrapper)
+
+		// Push a wrapper expression nesting to short circuit if the value is set.
+		hasShortCircuiter = true
+
+		if binaryOp.Operator == "&&" {
+			eg.pushShortCircuiter(fmt.Sprintf("$promise.shortcircuit(%s, %v) || ", binaryLeftExpr, false))
+		} else {
+			eg.pushShortCircuiter(fmt.Sprintf("$promise.shortcircuit(%s, %v) || ", binaryLeftExpr, true))
+		}
+
+		// Generate the right side of the expression.
+		binaryRightExpr = eg.generateExpression(binaryOp.RightExpr)
+	} else {
+		binaryLeftExpr = eg.generateExpression(binaryOp.LeftExpr)
+		binaryRightExpr = eg.generateExpression(binaryOp.RightExpr)
+	}
 
 	data := struct {
 		LeftExpression  string
 		RightExpression string
 		Operator        string
-	}{leftExpr, rightExpr, binaryOp.Operator}
+	}{binaryLeftExpr, binaryRightExpr, binaryOp.Operator}
 
 	templateStr := `
 		(({{ .LeftExpression }}) {{ .Operator }} ({{ .RightExpression }}))
 	`
+
+	if hasShortCircuiter {
+		eg.popShortCircuiter()
+	}
 
 	return eg.templater.Execute("binaryop", templateStr, data)
 }

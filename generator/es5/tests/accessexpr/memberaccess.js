@@ -151,7 +151,17 @@ $module('memberaccess', function () {
 
           case 1:
             sc = $result;
-            $state.resolve($t.nominalwrap($t.nominalunwrap(sc.someBool) && $t.nominalunwrap(sc.someBool), $g.____testlib.basictypes.Boolean));
+            $promise.resolve($t.nominalunwrap(sc.someBool)).then(function ($result0) {
+              $result = $t.nominalwrap($result0 && $t.nominalunwrap(sc.someBool), $g.____testlib.basictypes.Boolean);
+              $state.current = 2;
+              $callback($state);
+            }).catch(function (err) {
+              $state.reject(err);
+            });
+            return;
+
+          case 2:
+            $state.resolve($result);
             return;
 
           default:

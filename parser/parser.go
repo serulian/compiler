@@ -73,7 +73,7 @@ func Parse(builder NodeBuilder, importReporter packageloader.ImportHandler, sour
 func parseExpression(builder NodeBuilder, importReporter packageloader.ImportHandler, source compilercommon.InputSource, startIndex bytePosition, input string) (AstNode, commentedLexeme, bool) {
 	p := buildParser(builder, importReporter, source, startIndex, input)
 	p.consumeToken()
-	node, ok := p.tryConsumeExpression(consumeExpressionNoMaps)
+	node, ok := p.tryConsumeExpression(consumeExpressionNoBraces)
 	return node, p.previousToken, ok
 }
 

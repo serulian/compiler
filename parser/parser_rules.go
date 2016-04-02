@@ -12,6 +12,7 @@ import (
 // Useful for debugging.
 var _ = fmt.Printf
 
+// typeMemberOption defines an option for parsing type members of either a declaration or a definition.
 type typeMemberOption int
 
 const (
@@ -19,14 +20,21 @@ const (
 	typeMemberDefinition
 )
 
+// typeReferenceOption defines an option on the kind of type references allowed to be parsed.
 type typeReferenceOption int
 
 const (
+	// typeReferenceAllowAll allows all forms of type reference to be parsed.
 	typeReferenceAllowAll typeReferenceOption = iota
+
+	// typeReferenceNoVoid disallows void type references, but allows all others.
 	typeReferenceNoVoid
+
+	// typeReferenceNoSpecialTypes disallows all special forms of type reference: void, all, etc.
 	typeReferenceNoSpecialTypes
 )
 
+// statementBlockOption defines an option for how to parse statement block.
 type statementBlockOption int
 
 const (
@@ -34,11 +42,25 @@ const (
 	statementBlockWithoutTerminator
 )
 
+// matchCaseOption defines an option for how to parse match cases.
 type matchCaseOption int
 
 const (
 	matchCaseWithExpression matchCaseOption = iota
 	matchCaseWithoutExpression
+)
+
+// consumeExpressionOption defines an option for the forms of expressions allowed.
+type consumeExpressionOption int
+
+const (
+	// consumeExpressionNoBraces specifies that expressions with braces (map literals, new struct literals)
+	// are disallowed. consumeExpressionNoBraces is used when expressions will immediatelly be followed by
+	// a statement block (such as `for` or `with` blocks).
+	consumeExpressionNoBraces consumeExpressionOption = iota
+
+	// consumeExpressionAllowBraces specifies that all expressions are allowed.
+	consumeExpressionAllowBraces
 )
 
 // consumeTopLevel attempts to consume the top-level constructs of a Serulian source file.
@@ -1332,7 +1354,7 @@ func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
 		// Look for an expression as a statement.
 		exprToken := p.currentToken
 
-		if exprNode, ok := p.tryConsumeExpression(consumeExpressionAllowMaps); ok {
+		if exprNode, ok := p.tryConsumeExpression(consumeExpressionAllowBraces); ok {
 			exprStatementNode := p.createNode(NodeTypeExpressionStatement)
 			exprStatementNode.Connect(NodeExpressionStatementExpression, exprNode)
 			p.decorateStartRuneAndComments(exprStatementNode, exprToken)
@@ -1374,7 +1396,7 @@ func (p *sourceParser) tryConsumeAssignStatement() (AstNode, bool) {
 	assignNode.Connect(NodeAssignStatementName, p.consumeAssignableExpression())
 
 	p.consume(tokenTypeEquals)
-	assignNode.Connect(NodeAssignStatementValue, p.consumeExpression(consumeExpressionAllowMaps))
+	assignNode.Connect(NodeAssignStatementValue, p.consumeExpression(consumeExpressionAllowBraces))
 	return assignNode, true
 }
 
@@ -1449,7 +1471,7 @@ func (p *sourceParser) lookaheadAssignStatement() bool {
 //   case someExpr:
 //      statements
 //
-//   case anotherExpr, secondExpr:
+//   case anotherExpr:
 //      statements
 //
 //   default:
@@ -1474,7 +1496,7 @@ func (p *sourceParser) consumeMatchStatement() AstNode {
 	p.consumeKeyword("match")
 
 	// Consume a match expression (if any).
-	if expression, ok := p.tryConsumeExpression(consumeExpressionNoMaps); ok {
+	if expression, ok := p.tryConsumeExpression(consumeExpressionNoBraces); ok {
 		matchNode.Connect(NodeMatchStatementExpression, expression)
 	}
 
@@ -1518,7 +1540,7 @@ func (p *sourceParser) tryConsumeMatchCase(keyword string, option matchCaseOptio
 	defer p.finishNode()
 
 	if option == matchCaseWithExpression {
-		caseNode.Connect(NodeMatchStatementCaseExpression, p.consumeExpression(consumeExpressionNoMaps))
+		caseNode.Connect(NodeMatchStatementCaseExpression, p.consumeExpression(consumeExpressionNoBraces))
 	}
 
 	// Colon after the expression or keyword.
@@ -1527,18 +1549,24 @@ func (p *sourceParser) tryConsumeMatchCase(keyword string, option matchCaseOptio
 	}
 
 	// Consume one (or more) statements, followed by statement terminators.
+	blockNode := p.startNode(NodeTypeStatementBlock)
+
+	caseNode.Connect(NodeMatchStatementCaseStatement, blockNode)
+
 	for {
 		statementNode, ok := p.tryConsumeStatement()
 		if !ok {
 			break
 		}
 
-		caseNode.Connect(NodeMatchStatementCaseStatement, statementNode)
+		blockNode.Connect(NodeStatementBlockStatement, statementNode)
 
 		if _, ok := p.consumeStatementTerminator(); !ok {
 			return caseNode, true
 		}
 	}
+
+	p.finishNode()
 
 	return caseNode, true
 }
@@ -1556,7 +1584,7 @@ func (p *sourceParser) consumeWithStatement() AstNode {
 	p.consumeKeyword("with")
 
 	// Scoped expression.
-	withNode.Connect(NodeWithStatementExpression, p.consumeExpression(consumeExpressionNoMaps))
+	withNode.Connect(NodeWithStatementExpression, p.consumeExpression(consumeExpressionNoBraces))
 
 	// Optional: 'as' and then an identifier.
 	if p.tryConsumeKeyword("as") {
@@ -1589,7 +1617,7 @@ func (p *sourceParser) consumeForStatement() AstNode {
 	}
 
 	// Consume the expression (if any).
-	if expression, ok := p.tryConsumeExpression(consumeExpressionNoMaps); ok {
+	if expression, ok := p.tryConsumeExpression(consumeExpressionNoBraces); ok {
 		forNode.Connect(NodeLoopStatementExpression, expression)
 	}
 
@@ -1653,7 +1681,7 @@ func (p *sourceParser) consumeVar(nodeType NodeType, namePredicate string, typeP
 	}
 
 	if _, ok := p.tryConsume(tokenTypeEquals); ok {
-		variableNode.Connect(NodeVariableStatementExpression, p.consumeExpression(consumeExpressionAllowMaps))
+		variableNode.Connect(NodeVariableStatementExpression, p.consumeExpression(consumeExpressionAllowBraces))
 	}
 
 	return variableNode
@@ -1673,7 +1701,7 @@ func (p *sourceParser) consumeIfStatement() AstNode {
 	p.consumeKeyword("if")
 
 	// Expression.
-	conditionalNode.Connect(NodeConditionalStatementConditional, p.consumeExpression(consumeExpressionNoMaps))
+	conditionalNode.Connect(NodeConditionalStatementConditional, p.consumeExpression(consumeExpressionNoBraces))
 
 	// Statement block.
 	conditionalNode.Connect(NodeConditionalStatementBlock, p.consumeStatementBlock(statementBlockWithoutTerminator))
@@ -1703,7 +1731,7 @@ func (p *sourceParser) consumeRejectStatement() AstNode {
 
 	// reject
 	p.consumeKeyword("reject")
-	rejectNode.Connect(NodeRejectStatementValue, p.consumeExpression(consumeExpressionAllowMaps))
+	rejectNode.Connect(NodeRejectStatementValue, p.consumeExpression(consumeExpressionAllowBraces))
 	return rejectNode
 }
 
@@ -1724,7 +1752,7 @@ func (p *sourceParser) consumeReturnStatement() AstNode {
 		return returnNode
 	}
 
-	returnNode.Connect(NodeReturnStatementValue, p.consumeExpression(consumeExpressionAllowMaps))
+	returnNode.Connect(NodeReturnStatementValue, p.consumeExpression(consumeExpressionAllowBraces))
 	return returnNode
 }
 
@@ -1750,13 +1778,6 @@ func (p *sourceParser) consumeJumpStatement(keyword string, nodeType NodeType, l
 	return jumpNode
 }
 
-type consumeExpressionOption int
-
-const (
-	consumeExpressionNoMaps consumeExpressionOption = iota
-	consumeExpressionAllowMaps
-)
-
 // consumeExpression consumes an expression.
 func (p *sourceParser) consumeExpression(option consumeExpressionOption) AstNode {
 	if exprNode, ok := p.tryConsumeExpression(option); ok {
@@ -1769,10 +1790,14 @@ func (p *sourceParser) consumeExpression(option consumeExpressionOption) AstNode
 // tryConsumeExpression attempts to consume an expression. If an expression
 // could not be found, returns false.
 func (p *sourceParser) tryConsumeExpression(option consumeExpressionOption) (AstNode, bool) {
-	if option == consumeExpressionAllowMaps {
+	nonArrow := func() (AstNode, bool) {
+		return p.tryConsumeNonArrowExpression(option)
+	}
+
+	if option == consumeExpressionAllowBraces {
 		startToken := p.currentToken
 
-		node, found := p.oneOf(p.tryConsumeMapExpression, p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, p.tryConsumeNonArrowExpression)
+		node, found := p.oneOf(p.tryConsumeMapExpression, p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, nonArrow)
 		if !found {
 			return node, false
 		}
@@ -1789,39 +1814,9 @@ func (p *sourceParser) tryConsumeExpression(option consumeExpressionOption) (Ast
 			return templateNode, true
 		}
 
-		// Check for an open brace. If found, this is a new structural expression.
-		if p.isToken(tokenTypeLeftBrace) {
-			structuralNode := p.createNode(NodeStructuralNewExpression)
-			structuralNode.Connect(NodeStructuralNewTypeExpression, node)
-
-			p.consume(tokenTypeLeftBrace)
-
-			for {
-				if p.isToken(tokenTypeRightBrace) {
-					break
-				}
-
-				structuralNode.Connect(NodeStructuralNewExpressionChildEntry, p.consumeStructuralNewExpressionEntry())
-				if _, ok := p.tryConsume(tokenTypeComma); !ok {
-					break
-				}
-
-				if p.isToken(tokenTypeRightBrace) || p.isStatementTerminator() {
-					break
-				}
-			}
-
-			p.consume(tokenTypeRightBrace)
-
-			p.decorateStartRuneAndComments(structuralNode, startToken)
-			p.decorateEndRune(structuralNode, p.currentToken)
-
-			return structuralNode, true
-		}
-
 		return node, true
 	} else {
-		return p.oneOf(p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, p.tryConsumeNonArrowExpression)
+		return p.oneOf(p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, nonArrow)
 	}
 }
 
@@ -1871,7 +1866,7 @@ func (p *sourceParser) tryConsumeLambdaExpression() (AstNode, bool) {
 	p.consume(tokenTypeLambdaArrowOperator)
 
 	// expression.
-	lambdaNode.Connect(NodeLambdaExpressionChildExpr, p.consumeExpression(consumeExpressionAllowMaps))
+	lambdaNode.Connect(NodeLambdaExpressionChildExpr, p.consumeExpression(consumeExpressionAllowBraces))
 	return lambdaNode, true
 }
 
@@ -1970,57 +1965,8 @@ func (p *sourceParser) consumeFullLambdaExpression() AstNode {
 	return funcNode
 }
 
-// tryConsumeNonArrowExpression tries to consume an expression that is found under an arrow.
-func (p *sourceParser) tryConsumeNonArrowExpression() (AstNode, bool) {
-	// TODO(jschorr): Cache this!
-	binaryParser := p.buildBinaryOperatorExpressionFnTree(
-		// Boolean operators.
-		boe{tokenTypeBooleanOr, NodeBooleanOrExpression},
-		boe{tokenTypeBooleanAnd, NodeBooleanAndExpression},
-
-		// Comparison operators.
-		boe{tokenTypeEqualsEquals, NodeComparisonEqualsExpression},
-		boe{tokenTypeNotEquals, NodeComparisonNotEqualsExpression},
-
-		boe{tokenTypeLTE, NodeComparisonLTEExpression},
-		boe{tokenTypeGTE, NodeComparisonGTEExpression},
-
-		boe{tokenTypeLessThan, NodeComparisonLTExpression},
-		boe{tokenTypeGreaterThan, NodeComparisonGTExpression},
-
-		// Nullable operators.
-		boe{tokenTypeNullOrValueOperator, NodeNullComparisonExpression},
-
-		// Bitwise operators.
-		boe{tokenTypePipe, NodeBitwiseOrExpression},
-		boe{tokenTypeAnd, NodeBitwiseAndExpression},
-		boe{tokenTypeXor, NodeBitwiseXorExpression},
-		boe{tokenTypeBitwiseShiftLeft, NodeBitwiseShiftLeftExpression},
-
-		// TODO(jschorr): Find a solution for the >> issue.
-		//boe{tokenTypeGreaterThan, NodeBitwiseShiftRightExpression},
-
-		// Numeric operators.
-		boe{tokenTypePlus, NodeBinaryAddExpression},
-		boe{tokenTypeMinus, NodeBinarySubtractExpression},
-		boe{tokenTypeModulo, NodeBinaryModuloExpression},
-		boe{tokenTypeTimes, NodeBinaryMultiplyExpression},
-		boe{tokenTypeDiv, NodeBinaryDivideExpression},
-
-		// Stream operator.
-		boe{tokenTypeEllipsis, NodeDefineRangeExpression},
-
-		// 'is' operator.
-		boe{tokenTypeIsOperator, NodeIsComparisonExpression},
-
-		// 'in' operator.
-		boe{tokenTypeInOperator, NodeInCollectionExpression})
-
-	return binaryParser()
-}
-
 func (p *sourceParser) consumeNonArrowExpression() AstNode {
-	if node, ok := p.tryConsumeNonArrowExpression(); ok {
+	if node, ok := p.tryConsumeNonArrowExpression(consumeExpressionAllowBraces); ok {
 		return node
 	}
 
@@ -2100,6 +2046,55 @@ func (p *sourceParser) tryConsumeArrowStatement() (AstNode, bool) {
 	return arrowNode, true
 }
 
+// tryConsumeNonArrowExpression tries to consume an expression that cannot contain an arrow.
+func (p *sourceParser) tryConsumeNonArrowExpression(option consumeExpressionOption) (AstNode, bool) {
+	// TODO(jschorr): Cache this!
+	binaryParser := p.buildBinaryOperatorExpressionFnTree(option,
+		// Stream operator.
+		boe{tokenTypeEllipsis, NodeDefineRangeExpression},
+
+		// Boolean operators.
+		boe{tokenTypeBooleanOr, NodeBooleanOrExpression},
+		boe{tokenTypeBooleanAnd, NodeBooleanAndExpression},
+
+		// Comparison operators.
+		boe{tokenTypeEqualsEquals, NodeComparisonEqualsExpression},
+		boe{tokenTypeNotEquals, NodeComparisonNotEqualsExpression},
+
+		boe{tokenTypeLTE, NodeComparisonLTEExpression},
+		boe{tokenTypeGTE, NodeComparisonGTEExpression},
+
+		boe{tokenTypeLessThan, NodeComparisonLTExpression},
+		boe{tokenTypeGreaterThan, NodeComparisonGTExpression},
+
+		// Nullable operators.
+		boe{tokenTypeNullOrValueOperator, NodeNullComparisonExpression},
+
+		// Bitwise operators.
+		boe{tokenTypePipe, NodeBitwiseOrExpression},
+		boe{tokenTypeAnd, NodeBitwiseAndExpression},
+		boe{tokenTypeXor, NodeBitwiseXorExpression},
+		boe{tokenTypeBitwiseShiftLeft, NodeBitwiseShiftLeftExpression},
+
+		// TODO(jschorr): Find a solution for the >> issue.
+		//boe{tokenTypeGreaterThan, NodeBitwiseShiftRightExpression},
+
+		// Numeric operators.
+		boe{tokenTypePlus, NodeBinaryAddExpression},
+		boe{tokenTypeMinus, NodeBinarySubtractExpression},
+		boe{tokenTypeModulo, NodeBinaryModuloExpression},
+		boe{tokenTypeTimes, NodeBinaryMultiplyExpression},
+		boe{tokenTypeDiv, NodeBinaryDivideExpression},
+
+		// 'is' operator.
+		boe{tokenTypeIsOperator, NodeIsComparisonExpression},
+
+		// 'in' operator.
+		boe{tokenTypeInOperator, NodeInCollectionExpression})
+
+	return binaryParser()
+}
+
 // boe represents information a binary operator token and its associated node type.
 type boe struct {
 	// The token representing the binary expression's operator.
@@ -2111,10 +2106,12 @@ type boe struct {
 
 // buildBinaryOperatorExpressionFnTree builds a tree of functions to try to consume a set of binary
 // operator expressions.
-func (p *sourceParser) buildBinaryOperatorExpressionFnTree(operators ...boe) tryParserFn {
+func (p *sourceParser) buildBinaryOperatorExpressionFnTree(option consumeExpressionOption, operators ...boe) tryParserFn {
 	// Start with a base expression function.
 	var currentParseFn tryParserFn
-	currentParseFn = p.tryConsumeCallAccessExpression
+	currentParseFn = func() (AstNode, bool) {
+		return p.tryConsumeValueExpression(option)
+	}
 
 	for i := range operators {
 		// Note: We have to reverse this to ensure we have proper precedence.
@@ -2153,6 +2150,58 @@ var memberAccessExprMap = map[tokenType]NodeType{
 	tokenTypeArrowAccessOperator:   NodeDynamicMemberAccessExpression,
 	tokenTypeNullDotAccessOperator: NodeNullableMemberAccessExpression,
 	tokenTypeStreamAccessOperator:  NodeStreamMemberAccessExpression,
+}
+
+// tryConsumeValueExpression consumes an expression which forms a value under a binary operator.
+func (p *sourceParser) tryConsumeValueExpression(option consumeExpressionOption) (AstNode, bool) {
+	startToken := p.currentToken
+	consumed, ok := p.tryConsumeCallAccessExpression()
+	if !ok {
+		return consumed, false
+	}
+
+	// Check for a null assert.
+	if p.isToken(tokenTypeNot) {
+		assertNode := p.createNode(NodeAssertNotNullExpression)
+		assertNode.Connect(NodeUnaryExpressionChildExpr, consumed)
+		p.consume(tokenTypeNot)
+
+		p.decorateStartRuneAndComments(assertNode, startToken)
+		p.decorateEndRune(assertNode, p.currentToken)
+		return assertNode, true
+	}
+
+	// Check for an open brace. If found, this is a new structural expression.
+	if option == consumeExpressionAllowBraces && p.isToken(tokenTypeLeftBrace) {
+		structuralNode := p.createNode(NodeStructuralNewExpression)
+		structuralNode.Connect(NodeStructuralNewTypeExpression, consumed)
+
+		p.consume(tokenTypeLeftBrace)
+
+		for {
+			if p.isToken(tokenTypeRightBrace) {
+				break
+			}
+
+			structuralNode.Connect(NodeStructuralNewExpressionChildEntry, p.consumeStructuralNewExpressionEntry())
+			if _, ok := p.tryConsume(tokenTypeComma); !ok {
+				break
+			}
+
+			if p.isToken(tokenTypeRightBrace) || p.isStatementTerminator() {
+				break
+			}
+		}
+
+		p.consume(tokenTypeRightBrace)
+
+		p.decorateStartRuneAndComments(structuralNode, startToken)
+		p.decorateEndRune(structuralNode, p.currentToken)
+
+		return structuralNode, true
+	}
+
+	return consumed, true
 }
 
 // tryConsumeCallAccessExpression attempts to consume call expressions (function calls, slices, generic specifier)
@@ -2197,7 +2246,7 @@ func (p *sourceParser) tryConsumeCallAccessExpression() (AstNode, bool) {
 			if !p.isToken(tokenTypeRightParen) {
 				for {
 					// Consume an expression.
-					exprNode.Connect(NodeFunctionCallArgument, p.consumeExpression(consumeExpressionAllowMaps))
+					exprNode.Connect(NodeFunctionCallArgument, p.consumeExpression(consumeExpressionAllowBraces))
 
 					// Consume an (optional) comma.
 					if _, ok := p.tryConsume(tokenTypeComma); !ok {
@@ -2244,13 +2293,13 @@ func (p *sourceParser) tryConsumeCallAccessExpression() (AstNode, bool) {
 			// Check for a colon token. If found, this is a right-side-only
 			// slice.
 			if _, ok := p.tryConsume(tokenTypeColon); ok {
-				exprNode.Connect(NodeSliceExpressionRightIndex, p.consumeExpression(consumeExpressionNoMaps))
+				exprNode.Connect(NodeSliceExpressionRightIndex, p.consumeExpression(consumeExpressionNoBraces))
 				p.consume(tokenTypeRightBracket)
 				return exprNode, true
 			}
 
 			// Otherwise, look for the left or index expression.
-			indexNode := p.consumeExpression(consumeExpressionNoMaps)
+			indexNode := p.consumeExpression(consumeExpressionNoBraces)
 
 			// If we find a right bracket after the expression, then we're done.
 			if _, ok := p.tryConsume(tokenTypeRightBracket); ok {
@@ -2271,7 +2320,7 @@ func (p *sourceParser) tryConsumeCallAccessExpression() (AstNode, bool) {
 			}
 
 			exprNode.Connect(NodeSliceExpressionLeftIndex, indexNode)
-			exprNode.Connect(NodeSliceExpressionRightIndex, p.consumeExpression(consumeExpressionNoMaps))
+			exprNode.Connect(NodeSliceExpressionRightIndex, p.consumeExpression(consumeExpressionNoBraces))
 			p.consume(tokenTypeRightBracket)
 			return exprNode, true
 		}
@@ -2389,7 +2438,7 @@ func (p *sourceParser) tryConsumeBaseExpression() (AstNode, bool) {
 
 		valueNode := p.startNode(NodeRootTypeExpression)
 		defer p.finishNode()
-		valueNode.Connect(NodeUnaryExpressionChildExpr, p.consumeExpression(consumeExpressionNoMaps))
+		valueNode.Connect(NodeUnaryExpressionChildExpr, p.consumeAssignableExpression())
 		return valueNode, true
 
 	// Unary: ~
@@ -2398,7 +2447,7 @@ func (p *sourceParser) tryConsumeBaseExpression() (AstNode, bool) {
 
 		bitNode := p.startNode(NodeBitwiseNotExpression)
 		defer p.finishNode()
-		bitNode.Connect(NodeUnaryExpressionChildExpr, p.consumeExpression(consumeExpressionNoMaps))
+		bitNode.Connect(NodeUnaryExpressionChildExpr, p.consumeAssignableExpression())
 		return bitNode, true
 
 	// Unary: !
@@ -2407,7 +2456,7 @@ func (p *sourceParser) tryConsumeBaseExpression() (AstNode, bool) {
 
 		notNode := p.startNode(NodeBooleanNotExpression)
 		defer p.finishNode()
-		notNode.Connect(NodeUnaryExpressionChildExpr, p.consumeExpression(consumeExpressionNoMaps))
+		notNode.Connect(NodeUnaryExpressionChildExpr, p.consumeAssignableExpression())
 		return notNode, true
 
 	// Nested expression.
@@ -2415,7 +2464,7 @@ func (p *sourceParser) tryConsumeBaseExpression() (AstNode, bool) {
 		comments := p.currentToken.comments
 
 		p.consume(tokenTypeLeftParen)
-		exprNode := p.consumeExpression(consumeExpressionAllowMaps)
+		exprNode := p.consumeExpression(consumeExpressionAllowBraces)
 		p.consume(tokenTypeRightParen)
 
 		// Attach any comments found to the consumed expression.
@@ -2549,7 +2598,7 @@ func (p *sourceParser) consumeStructuralNewExpressionEntry() AstNode {
 	p.consume(tokenTypeColon)
 
 	// Consume an expression.
-	entryNode.Connect(NodeStructuralNewEntryValue, p.consumeExpression(consumeExpressionAllowMaps))
+	entryNode.Connect(NodeStructuralNewEntryValue, p.consumeExpression(consumeExpressionAllowBraces))
 
 	return entryNode
 }
@@ -2593,13 +2642,13 @@ func (p *sourceParser) consumeMapExpressionEntry() AstNode {
 	defer p.finishNode()
 
 	// Consume an expression.
-	entryNode.Connect(NodeMapExpressionEntryKey, p.consumeExpression(consumeExpressionNoMaps))
+	entryNode.Connect(NodeMapExpressionEntryKey, p.consumeExpression(consumeExpressionNoBraces))
 
 	// Consume a colon.
 	p.consume(tokenTypeColon)
 
 	// Consume an expression.
-	entryNode.Connect(NodeMapExpressionEntryValue, p.consumeExpression(consumeExpressionAllowMaps))
+	entryNode.Connect(NodeMapExpressionEntryValue, p.consumeExpression(consumeExpressionAllowBraces))
 
 	return entryNode
 }
@@ -2647,7 +2696,7 @@ func (p *sourceParser) consumeSliceLiteralExpression() AstNode {
 				break
 			}
 
-			e := p.consumeExpression(consumeExpressionAllowMaps)
+			e := p.consumeExpression(consumeExpressionAllowBraces)
 			sliceNode.Connect(NodeSliceLiteralExpressionValue, e)
 
 			if p.isToken(tokenTypeRightBrace) {
@@ -2689,7 +2738,7 @@ func (p *sourceParser) consumeListExpression() AstNode {
 				break
 			}
 
-			listNode.Connect(NodeListExpressionValue, p.consumeExpression(consumeExpressionAllowMaps))
+			listNode.Connect(NodeListExpressionValue, p.consumeExpression(consumeExpressionAllowBraces))
 
 			if p.isToken(tokenTypeRightBracket) {
 				break

@@ -30,20 +30,25 @@ NodeTypeFile
                       input-source = match statement no expr test
                       start-rune = 48
                   match-case-statement =>
-                    NodeTypeExpressionStatement
-                      end-rune = 72
+                    NodeTypeStatementBlock
+                      end-rune = 82
                       input-source = match statement no expr test
                       start-rune = 59
-                      expr-statement-expr =>
-                        NodeTypeIdentifierExpression
-                          end-rune = 71
-                          identexpr-name = someOtherExpr
+                      block-child =>
+                        NodeTypeExpressionStatement
+                          end-rune = 72
                           input-source = match statement no expr test
                           start-rune = 59
-                    NodeTypeReturnStatement
-                      end-rune = 81
-                      input-source = match statement no expr test
-                      start-rune = 76
+                          expr-statement-expr =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 71
+                              identexpr-name = someOtherExpr
+                              input-source = match statement no expr test
+                              start-rune = 59
+                        NodeTypeReturnStatement
+                          end-rune = 81
+                          input-source = match statement no expr test
+                          start-rune = 76
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 12

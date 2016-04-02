@@ -52,6 +52,10 @@ func (sb *scopeBuilder) scopeTypeConversionExpression(node compilergraph.GraphNo
 			isValid = false
 			break
 		}
+
+		if argumentType.IsNullable() {
+			conversionType = conversionType.AsNullable()
+		}
 	}
 
 	if index == 0 {
@@ -326,6 +330,25 @@ func (sb *scopeBuilder) scopeIsComparisonExpression(node compilergraph.GraphNode
 	return newScope().Valid().Resolving(sb.sg.tdg.BoolTypeReference()).GetScope()
 }
 
+// scopeAssertNotNullExpression scopes an assert-not-null operator expression in the SRG.
+func (sb *scopeBuilder) scopeAssertNotNullExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+	// Get the scope of the child expression.
+	childScope := sb.getScope(node.GetNode(parser.NodeUnaryExpressionChildExpr))
+	if !childScope.GetIsValid() {
+		return newScope().Invalid().GetScope()
+	}
+
+	nullableType := childScope.ResolvedTypeRef(sb.sg.tdg)
+
+	// Ensure that the nullable type is nullable.
+	if !nullableType.IsNullable() {
+		sb.decorateWithError(node, "Child expression of an assert not nullable operator must be nullable. Found: %v", nullableType)
+		return newScope().Invalid().GetScope()
+	}
+
+	return newScope().Valid().Resolving(nullableType.AsNonNullable()).GetScope()
+}
+
 // scopeNullComparisonExpression scopes a nullable comparison expression in the SRG.
 func (sb *scopeBuilder) scopeNullComparisonExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	// Get the scope of the left and right expressions.
@@ -517,6 +540,18 @@ func (sb *scopeBuilder) scopeBinaryExpression(node compilergraph.GraphNode, opNa
 	}
 
 	returnType, _ := operator.ReturnType()
+
+	// Check for nullable values.
+	if leftType.NullValueAllowed() {
+		sb.decorateWithError(node, "Cannot invoke operator '%v' on nullable type '%v'", opName, leftType)
+		return newScope().Invalid().CallsOperator(operator).Resolving(returnType)
+	}
+
+	if rightType.NullValueAllowed() {
+		sb.decorateWithError(node, "Cannot invoke operator '%v' on nullable type '%v'", opName, rightType)
+		return newScope().Invalid().CallsOperator(operator).Resolving(returnType)
+	}
+
 	return newScope().Valid().CallsOperator(operator).Resolving(returnType)
 }
 
@@ -540,6 +575,13 @@ func (sb *scopeBuilder) scopeUnaryExpression(node compilergraph.GraphNode, opNam
 	}
 
 	returnType, _ := operator.ReturnType()
+
+	// Check for nullable values.
+	if childType.NullValueAllowed() {
+		sb.decorateWithError(node, "Cannot invoke operator '%v' on nullable type '%v'", opName, childType)
+		return newScope().Invalid().CallsOperator(operator).Resolving(returnType)
+	}
+
 	return newScope().Valid().CallsOperator(operator).Resolving(returnType)
 }
 

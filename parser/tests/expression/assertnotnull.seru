@@ -1,0 +1,6 @@
+function<void> DoSomething() {
+	a!
+	a.b!
+	(a)!
+	a + b!
+}
