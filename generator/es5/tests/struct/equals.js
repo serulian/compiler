@@ -180,13 +180,19 @@ $module('equals', function () {
 
           case 3:
             different = $result;
-            $g.equals.Foo.$equals(first, second).then(function ($result0) {
-              return $g.equals.Foo.$equals(first, copy).then(function ($result1) {
-                return $g.equals.Foo.$equals(first, different).then(function ($result2) {
-                  return $g.equals.Foo.$equals(copy, different).then(function ($result3) {
-                    $result = $t.nominalwrap((($t.nominalunwrap($result0) && $t.nominalunwrap($result1)) && !$t.nominalunwrap($result2)) && !$t.nominalunwrap($result3), $g.____testlib.basictypes.Boolean);
-                    $state.current = 4;
-                    $callback($state);
+            $g.equals.Foo.$equals(first, second).then(function ($result3) {
+              return $promise.resolve($t.nominalunwrap($result3)).then(function ($result2) {
+                return ($promise.shortcircuit($result2, false) || $g.equals.Foo.$equals(first, copy)).then(function ($result4) {
+                  return $promise.resolve($result2 && $t.nominalunwrap($result4)).then(function ($result1) {
+                    return ($promise.shortcircuit($result1, false) || $g.equals.Foo.$equals(first, different)).then(function ($result5) {
+                      return $promise.resolve($result1 && !$t.nominalunwrap($result5)).then(function ($result0) {
+                        return ($promise.shortcircuit($result0, false) || $g.equals.Foo.$equals(copy, different)).then(function ($result6) {
+                          $result = $t.nominalwrap($result0 && !$t.nominalunwrap($result6), $g.____testlib.basictypes.Boolean);
+                          $state.current = 4;
+                          $callback($state);
+                        });
+                      });
+                    });
                   });
                 });
               });

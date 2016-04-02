@@ -483,6 +483,14 @@ this.Serulian = (function($global) {
   		return Promise.resolve(func());
   	},
 
+    // shortcircuit returns a promise that resolves the given boolean value if and only if
+    // it is equal to the short value. Returns null otherwise.
+    'shortcircuit': function(value, short) {
+      if (value == short) {
+        return $promise.resolve(value);
+      }
+    },
+
     // translate translates a Serulian Promise into an ES promise.
     'translate': function(prom) {
        if (!prom.Then) {

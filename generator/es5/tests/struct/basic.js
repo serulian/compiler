@@ -167,10 +167,14 @@ $module('basic', function () {
 
           case 1:
             ss = $result;
-            $g.____testlib.basictypes.Integer.$equals(ss.SomeField, $t.nominalwrap(42, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-              $result = $t.nominalwrap(($t.nominalunwrap($result0) && $t.nominalunwrap(ss.AnotherField)) && $t.nominalunwrap(ss.SomeInstance.AnotherBool), $g.____testlib.basictypes.Boolean);
-              $state.current = 2;
-              $callback($state);
+            $g.____testlib.basictypes.Integer.$equals(ss.SomeField, $t.nominalwrap(42, $g.____testlib.basictypes.Integer)).then(function ($result2) {
+              return $promise.resolve($t.nominalunwrap($result2)).then(function ($result1) {
+                return $promise.resolve($result1 && $t.nominalunwrap(ss.AnotherField)).then(function ($result0) {
+                  $result = $t.nominalwrap($result0 && $t.nominalunwrap(ss.SomeInstance.AnotherBool), $g.____testlib.basictypes.Boolean);
+                  $state.current = 2;
+                  $callback($state);
+                });
+              });
             }).catch(function (err) {
               $state.reject(err);
             });

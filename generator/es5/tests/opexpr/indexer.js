@@ -19,7 +19,17 @@ $module('indexer', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              $state.resolve($t.nominalwrap($t.nominalunwrap($this.result) && !$t.nominalunwrap(someParam), $g.____testlib.basictypes.Boolean));
+              $promise.resolve($t.nominalunwrap($this.result)).then(function ($result0) {
+                $result = $t.nominalwrap($result0 && !$t.nominalunwrap(someParam), $g.____testlib.basictypes.Boolean);
+                $state.current = 1;
+                $callback($state);
+              }).catch(function (err) {
+                $state.reject(err);
+              });
+              return;
+
+            case 1:
+              $state.resolve($result);
               return;
 
             default:

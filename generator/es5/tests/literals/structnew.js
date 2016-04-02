@@ -73,10 +73,12 @@ $module('structnew', function () {
 
           case 1:
             sc = $result;
-            $g.____testlib.basictypes.Integer.$equals(sc.SomeField, $t.nominalwrap(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-              $result = $t.nominalwrap($t.nominalunwrap($result0) && $t.nominalunwrap(sc.anotherField), $g.____testlib.basictypes.Boolean);
-              $state.current = 2;
-              $callback($state);
+            $g.____testlib.basictypes.Integer.$equals(sc.SomeField, $t.nominalwrap(2, $g.____testlib.basictypes.Integer)).then(function ($result1) {
+              return $promise.resolve($t.nominalunwrap($result1)).then(function ($result0) {
+                $result = $t.nominalwrap($result0 && $t.nominalunwrap(sc.anotherField), $g.____testlib.basictypes.Boolean);
+                $state.current = 2;
+                $callback($state);
+              });
             }).catch(function (err) {
               $state.reject(err);
             });

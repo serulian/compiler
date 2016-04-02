@@ -185,10 +185,12 @@ $module('nominaljson', function () {
 
           case 3:
             parsed = $result;
-            parsed.Nested.GetValue().then(function ($result0) {
-              $result = $t.nominalwrap($t.nominalunwrap(correct) && $t.nominalunwrap($result0), $g.____testlib.basictypes.Boolean);
-              $state.current = 4;
-              $callback($state);
+            $promise.resolve($t.nominalunwrap(correct)).then(function ($result0) {
+              return ($promise.shortcircuit($result0, false) || parsed.Nested.GetValue()).then(function ($result1) {
+                $result = $t.nominalwrap($result0 && $t.nominalunwrap($result1), $g.____testlib.basictypes.Boolean);
+                $state.current = 4;
+                $callback($state);
+              });
             }).catch(function (err) {
               $state.reject(err);
             });
