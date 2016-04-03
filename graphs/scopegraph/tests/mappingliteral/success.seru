@@ -1,0 +1,6 @@
+function<void> DoSomething(someString string) {
+	/* mapping */([]{int}{
+		someString: 1,
+		'anotherString': 2,
+	})
+}

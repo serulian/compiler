@@ -1,0 +1,5 @@
+function<void> DoSomething() {
+	[]{int}{
+		'someString': true,
+	}
+}
