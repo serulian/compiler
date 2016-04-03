@@ -283,7 +283,7 @@ func (p *PackageLoader) loadVCSPackage(packagePath pathInformation) {
 	// Perform the checkout of the VCS package.
 	checkoutDirectory, err, warning := vcs.PerformVCSCheckout(packagePath.path, pkgDirectory, p.vcsDevelopmentDirectories...)
 	if err != nil {
-		p.errors <- compilercommon.SourceErrorf(packagePath.sal, "Error loading VCS package '%s'", packagePath.path)
+		p.errors <- compilercommon.SourceErrorf(packagePath.sal, "Error loading VCS package '%s': %v", packagePath.path, err)
 		return
 	}
 
