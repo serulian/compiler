@@ -229,6 +229,9 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 	case parser.NodeSliceLiteralExpression:
 		return sb.scopeSliceLiteralExpression
 
+	case parser.NodeMappingLiteralExpression:
+		return sb.scopeMappingLiteralExpression
+
 	case parser.NodeMapExpression:
 		return sb.scopeMapLiteralExpression
 

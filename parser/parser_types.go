@@ -133,8 +133,10 @@ const (
 	NodeNullLiteralExpression    // null
 	NodeValLiteralExpression     // val
 
-	NodeListExpression         // [1, 2, 3]
-	NodeSliceLiteralExpression // []int{1, 2, 3}
+	NodeListExpression                // [1, 2, 3]
+	NodeSliceLiteralExpression        // []int{1, 2, 3}
+	NodeMappingLiteralExpression      // []{string}{a: 1, b: 2}
+	NodeMappingLiteralExpressionEntry // a: 1
 
 	NodeStructuralNewExpression      // SomeName{a: 1, b: 2}
 	NodeStructuralNewExpressionEntry // a: 1
@@ -468,6 +470,18 @@ const (
 	//
 	NodeSliceLiteralExpressionValue = "slice-literal-expr-value"
 	NodeSliceLiteralExpressionType  = "slice-literal-expr-type"
+
+	//
+	// NodeMappingLiteralExpression
+	//
+	NodeMappingLiteralExpressionEntryRef = "mapping-literal-expr-entry"
+	NodeMappingLiteralExpressionType     = "mapping-literal-expr-type"
+
+	//
+	// NodeMappingLiteralExpressionEntry
+	//
+	NodeMappingLiteralExpressionEntryKey   = "mapping-literal-entry-key"
+	NodeMappingLiteralExpressionEntryValue = "mapping-literal-entry-value"
 
 	//
 	// NodeStructuralNewExpression

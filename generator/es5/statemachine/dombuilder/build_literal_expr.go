@@ -181,6 +181,60 @@ func (db *domBuilder) buildSliceLiteralExpression(node compilergraph.GraphNode) 
 	return db.buildCollectionLiteralExpression(node, parser.NodeSliceLiteralExpressionValue, "Empty", "overArray")
 }
 
+// buildMappingLiteralExpression builds the CodeDOM for a mapping literal expression.
+func (db *domBuilder) buildMappingLiteralExpression(node compilergraph.GraphNode) codedom.Expression {
+	mappingScope, _ := db.scopegraph.GetScope(node)
+	mappingType := mappingScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
+
+	eit := node.StartQuery().
+		Out(parser.NodeMappingLiteralExpressionEntryRef).
+		BuildNodeIterator()
+
+	var entries = make([]codedom.ObjectLiteralEntryNode, 0)
+
+	for eit.Next() {
+		entryNode := eit.Node()
+
+		// The key expression must be a string when produced. We either reference it directly (if a string)
+		// or call .String() (if a Stringable).
+		keyNode := entryNode.GetNode(parser.NodeMappingLiteralExpressionEntryKey)
+		keyScope, _ := db.scopegraph.GetScope(keyNode)
+		keyType := keyScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
+
+		var keyExpr = db.buildExpression(keyNode)
+		if !keyType.HasReferredType(db.scopegraph.TypeGraph().StringType()) {
+			stringMethod, _ := keyType.ResolveMember("String", typegraph.MemberResolutionInstance)
+
+			keyExpr = codedom.MemberCall(
+				codedom.MemberReference(db.buildExpression(keyNode), stringMethod, node),
+				stringMethod,
+				[]codedom.Expression{},
+				keyNode)
+		}
+
+		valueExpr := db.getExpression(entryNode, parser.NodeMappingLiteralExpressionEntryValue)
+
+		entries = append(entries, codedom.ObjectLiteralEntryNode{codedom.NominalUnwrapping(keyExpr, keyNode), valueExpr, entryNode})
+	}
+
+	if len(entries) == 0 {
+		// Empty mapping. Call the Empty() constructor directly.
+		constructor, _ := mappingType.ResolveMember("Empty", typegraph.MemberResolutionStatic)
+		return codedom.MemberCall(
+			codedom.MemberReference(codedom.TypeLiteral(mappingType, node), constructor, node),
+			constructor,
+			[]codedom.Expression{},
+			node)
+	}
+
+	constructor, _ := mappingType.ResolveMember("overObject", typegraph.MemberResolutionStatic)
+	return codedom.MemberCall(
+		codedom.MemberReference(codedom.TypeLiteral(mappingType, node), constructor, node),
+		constructor,
+		[]codedom.Expression{codedom.ObjectLiteral(entries, node)},
+		node)
+}
+
 // buildMapExpression builds the CodeDOM for a map expression.
 func (db *domBuilder) buildMapExpression(node compilergraph.GraphNode) codedom.Expression {
 	mapScope, _ := db.scopegraph.GetScope(node)

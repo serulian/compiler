@@ -298,6 +298,55 @@ func (sb *scopeBuilder) scopeSliceLiteralExpression(node compilergraph.GraphNode
 	return newScope().IsValid(isValid).Resolving(sb.sg.tdg.SliceTypeReference(declaredType)).GetScope()
 }
 
+// scopeMappingLiteralExpression scopes a mapping literal expression in the SRG.
+func (sb *scopeBuilder) scopeMappingLiteralExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+	var isValid = true
+
+	declaredTypeNode := node.GetNode(parser.NodeMappingLiteralExpressionType)
+	declaredType, rerr := sb.sg.ResolveSRGTypeRef(sb.sg.srg.GetTypeRef(declaredTypeNode))
+	if rerr != nil {
+		sb.decorateWithError(node, "%v", rerr)
+		return newScope().Invalid().Resolving(sb.sg.tdg.MappingTypeReference(sb.sg.tdg.AnyTypeReference())).GetScope()
+	}
+
+	// Scope each of the entries and ensure they match the mapping value type.
+	eit := node.StartQuery().
+		Out(parser.NodeMappingLiteralExpressionEntryRef).
+		BuildNodeIterator()
+
+	for eit.Next() {
+		entryNode := eit.Node()
+
+		keyNode := entryNode.GetNode(parser.NodeMappingLiteralExpressionEntryKey)
+		valueNode := entryNode.GetNode(parser.NodeMappingLiteralExpressionEntryValue)
+
+		keyScope := sb.getScope(keyNode)
+		valueScope := sb.getScope(valueNode)
+
+		if keyScope.GetIsValid() {
+			localKeyType := keyScope.ResolvedTypeRef(sb.sg.tdg)
+			if serr := localKeyType.CheckSubTypeOf(sb.sg.tdg.StringableTypeReference()); serr != nil {
+				sb.decorateWithError(keyNode, "Mapping literal keys must be of type Stringable: %v", serr)
+				isValid = false
+			}
+		} else {
+			isValid = false
+		}
+
+		if valueScope.GetIsValid() {
+			localValueType := valueScope.ResolvedTypeRef(sb.sg.tdg)
+			if serr := localValueType.CheckSubTypeOf(declaredType); serr != nil {
+				sb.decorateWithError(keyNode, "Expected mapping values of type %v: %v", declaredType, serr)
+				isValid = false
+			}
+		} else {
+			isValid = false
+		}
+	}
+
+	return newScope().IsValid(isValid).Resolving(sb.sg.tdg.MappingTypeReference(declaredType)).GetScope()
+}
+
 // scopeStringLiteralExpression scopes a string literal expression in the SRG.
 func (sb *scopeBuilder) scopeStringLiteralExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	return newScope().

@@ -1,0 +1,7 @@
+class SomeClass {}
+
+function<void> DoSomething(s SomeClass) {
+	[]{int}{
+		s: 1,
+	}
+}

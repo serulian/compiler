@@ -159,6 +159,9 @@ func (eg *expressionGenerator) generateExpression(expression codedom.Expression)
 	case *codedom.ArrayLiteralNode:
 		return eg.generateArrayLiteral(e)
 
+	case *codedom.ObjectLiteralNode:
+		return eg.generateObjectLiteral(e)
+
 	case *codedom.StaticTypeReferenceNode:
 		return eg.generateStaticTypeReference(e)
 

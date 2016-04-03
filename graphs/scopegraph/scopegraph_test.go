@@ -557,6 +557,22 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"Invalid slice literal value: 'String' cannot be used in place of non-interface 'SomeClass'", ""},
 
+	/////////// Mapping literal expression ///////////
+
+	scopegraphTest{"mapping literal success test", "mappingliteral", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"mapping", expectedScope{true, proto.ScopeKind_VALUE, "Mapping<Integer>", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"mapping literal invalid key", "mappingliteral", "invalidkey",
+		[]expectedScopeEntry{},
+		"Mapping literal keys must be of type Stringable: Type 'SomeClass' does not define or export member 'String', which is required by type 'Stringable'", ""},
+
+	scopegraphTest{"mapping literal invalid value", "mappingliteral", "invalidvalue",
+		[]expectedScopeEntry{},
+		"Expected mapping values of type Integer: 'Boolean' cannot be used in place of non-interface 'Integer'", ""},
+
 	/////////// Map literal expression ///////////
 
 	scopegraphTest{"map literal success test", "mapliteral", "success",
