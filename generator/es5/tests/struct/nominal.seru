@@ -1,0 +1,15 @@
+type CoolBool : bool {}
+
+struct SomeStruct {
+	someField CoolBool
+}
+
+function<any> TEST() {
+	var c = CoolBool(true)
+	var s = SomeStruct{
+		someField: c,
+	}
+
+	var s2 = SomeStruct.Parse<json>('{"someField": true}')
+	return bool(s2.someField) && bool(s.someField)
+}

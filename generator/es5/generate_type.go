@@ -242,7 +242,7 @@ this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{
 	  Object.defineProperty($instance, '{{ $field.Name }}', {
 	    get: function() {
 	    	if (this.$lazycheck) {
-	    		$t.ensurevalue(this.$data['{{ $field.SerializableName }}'], {{ $parent.TypeReferenceCall $field.MemberType }}, {{ $field.MemberType.NullValueAllowed }}, '{{ $field.Name }}');
+	    		$t.ensurevalue(this.$data['{{ $field.SerializableName }}'], {{ $parent.TypeReferenceCall $field.MemberType.NominalRootType }}, {{ $field.MemberType.NullValueAllowed }}, '{{ $field.Name }}');
 	    	}
 
 	    	{{ if $boxed }}
