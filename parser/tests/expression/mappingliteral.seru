@@ -1,0 +1,11 @@
+function<void> DoSomething() {
+	[]{string}{
+		'styleName': 'color: blue',
+	}
+
+	SomeType{
+		SomeMapping: []{sometype}{
+			someKey: someValue,
+		},
+	}
+}

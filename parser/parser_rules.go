@@ -2428,9 +2428,9 @@ func (p *sourceParser) tryConsumeLiteralValue() (AstNode, bool) {
 func (p *sourceParser) tryConsumeBaseExpression() (AstNode, bool) {
 	switch {
 
-	// List expression or slice literal expression.
+	// List expression, slice literal expression or mapping literal expression.
 	case p.isToken(tokenTypeLeftBracket):
-		return p.consumeListOrSliceLiteralExpression(), true
+		return p.consumeBracketedLiteralExpression(), true
 
 	// Unary: &
 	case p.isToken(tokenTypeAnd):
@@ -2653,21 +2653,105 @@ func (p *sourceParser) consumeMapExpressionEntry() AstNode {
 	return entryNode
 }
 
-// consumeListOrSliceLiteralExpression consumes an inline list or slice literal expression.
-func (p *sourceParser) consumeListOrSliceLiteralExpression() AstNode {
+// consumeBracketedLiteralExpression consumes an inline list, slice literal expression or mapping literal
+// expression.
+func (p *sourceParser) consumeBracketedLiteralExpression() AstNode {
 	// Lookahead for a slice literal by searching for []identifier or []keyword.
+	// Lookahead for a mapping literal by searching for []{identifier or []{keyword
 	t := p.newLookaheadTracker()
 	t.matchToken(tokenTypeLeftBracket)
 
+	// ]
 	if _, ok := t.matchToken(tokenTypeRightBracket); !ok {
 		return p.consumeListExpression()
 	}
 
-	if _, ok := t.matchToken(tokenTypeIdentifer, tokenTypeKeyword); !ok {
+	// {
+	if _, ok := t.matchToken(tokenTypeLeftBrace); ok {
+		// identifier or keyword.
+		if _, ok := t.matchToken(tokenTypeIdentifer, tokenTypeKeyword); ok {
+			return p.consumeMappingLiteralExpression()
+		}
+	} else if _, ok := t.matchToken(tokenTypeIdentifer, tokenTypeKeyword); !ok {
 		return p.consumeListExpression()
 	}
 
 	return p.consumeSliceLiteralExpression()
+}
+
+// consumeMappingLiteralExpression consumes a mapping literal expression.
+func (p *sourceParser) consumeMappingLiteralExpression() AstNode {
+	mappingNode := p.startNode(NodeMappingLiteralExpression)
+	defer p.finishNode()
+
+	// [
+	p.consume(tokenTypeLeftBracket)
+
+	// ]
+	p.consume(tokenTypeRightBracket)
+
+	// {
+	p.consume(tokenTypeLeftBrace)
+
+	// Type Reference.
+	mappingNode.Connect(NodeMappingLiteralExpressionType, p.consumeTypeReference(typeReferenceNoSpecialTypes))
+
+	// }
+	if _, ok := p.consume(tokenTypeRightBrace); !ok {
+		return mappingNode
+	}
+
+	// {
+	if _, ok := p.consume(tokenTypeLeftBrace); !ok {
+		return mappingNode
+	}
+
+	if !p.isToken(tokenTypeLeftBrace) {
+		// Consume one (or more) values.
+		for {
+			if p.isToken(tokenTypeRightBrace) {
+				break
+			}
+
+			mappingNode.Connect(NodeMappingLiteralExpressionEntryRef, p.consumeMappingLiteralEntry())
+
+			if p.isToken(tokenTypeRightBrace) {
+				break
+			}
+
+			if _, ok := p.tryConsume(tokenTypeSyntheticSemicolon); ok {
+				break
+			}
+
+			if _, ok := p.consume(tokenTypeComma); !ok {
+				break
+			}
+		}
+	}
+
+	// }
+	if _, ok := p.consume(tokenTypeRightBrace); !ok {
+		return mappingNode
+	}
+
+	return mappingNode
+}
+
+// consumeMappingLiteralEntry consumes a mapping literal entry.
+func (p *sourceParser) consumeMappingLiteralEntry() AstNode {
+	entryNode := p.startNode(NodeMappingLiteralExpressionEntry)
+	defer p.finishNode()
+
+	// Consume an expression.
+	entryNode.Connect(NodeMappingLiteralExpressionEntryKey, p.consumeExpression(consumeExpressionNoBraces))
+
+	// Consume a colon.
+	p.consume(tokenTypeColon)
+
+	// Consume an expression.
+	entryNode.Connect(NodeMappingLiteralExpressionEntryValue, p.consumeExpression(consumeExpressionAllowBraces))
+
+	return entryNode
 }
 
 // consumeSliceLiteralExpression consumes a slice literal expression.
