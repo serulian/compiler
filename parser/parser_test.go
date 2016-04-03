@@ -100,6 +100,7 @@ var parserTests = []parserTest{
 
 	// Module success tests.
 	{"module variable test", "module/module_var"},
+	{"module variable no declared type test", "module/module_var_nodeclare"},
 	{"module function test", "module/module_function"},
 
 	// Struct success tests.

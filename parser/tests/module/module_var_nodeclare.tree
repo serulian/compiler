@@ -1,0 +1,22 @@
+NodeTypeFile
+  end-rune = 10
+  input-source = module variable no declared type test
+  start-rune = 0
+  child-node =>
+    NodeTypeVariable
+      end-rune = 10
+      input-source = module variable no declared type test
+      named = foo
+      start-rune = 0
+      child-node =>
+        NodeTypeError
+          end-rune = 6
+          error-message = Member or class-level variable foo requires an explicitly declared type
+          input-source = module variable no declared type test
+          start-rune = 8
+      var-expr =>
+        NodeNumericLiteralExpression
+          end-rune = 10
+          input-source = module variable no declared type test
+          literal-value = 2
+          start-rune = 10
