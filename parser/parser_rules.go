@@ -63,6 +63,18 @@ const (
 	consumeExpressionAllowBraces
 )
 
+// consumeVarOption defines an option for consuming variables.
+type consumeVarOption int
+
+const (
+	// consumeVarAllowInferredType allows for variable declarations without types, which will
+	// be inferred at scoping time.
+	consumeVarAllowInferredType consumeVarOption = iota
+
+	// consumeVarRequireExplicitType requires that the variable have a declared type.
+	consumeVarRequireExplicitType
+)
+
 // consumeTopLevel attempts to consume the top-level constructs of a Serulian source file.
 func (p *sourceParser) consumeTopLevel() AstNode {
 	rootNode := p.startNode(NodeTypeFile)
@@ -107,7 +119,7 @@ Loop:
 		// variables.
 		case p.isKeyword("var"):
 			seenNonImport = true
-			p.currentNode().Connect(NodePredicateChild, p.consumeVar(NodeTypeVariable, NodePredicateTypeMemberName, NodePredicateTypeMemberDeclaredType))
+			p.currentNode().Connect(NodePredicateChild, p.consumeVar(NodeTypeVariable, NodePredicateTypeMemberName, NodePredicateTypeMemberDeclaredType, consumeVarRequireExplicitType))
 			p.tryConsumeStatementTerminator()
 
 		// EOF.
@@ -636,7 +648,7 @@ func (p *sourceParser) consumeClassMembers(typeNode AstNode) {
 	for {
 		switch {
 		case p.isKeyword("var"):
-			typeNode.Connect(NodeTypeDefinitionMember, p.consumeVar(NodeTypeField, NodePredicateTypeMemberName, NodePredicateTypeMemberDeclaredType))
+			typeNode.Connect(NodeTypeDefinitionMember, p.consumeVar(NodeTypeField, NodePredicateTypeMemberName, NodePredicateTypeMemberDeclaredType, consumeVarRequireExplicitType))
 			p.consumeStatementTerminator()
 
 		case p.isKeyword("function"):
@@ -1318,7 +1330,7 @@ func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
 
 	// Var statement.
 	case p.isKeyword("var"):
-		return p.consumeVar(NodeTypeVariableStatement, NodeVariableStatementName, NodeVariableStatementDeclaredType), true
+		return p.consumeVar(NodeTypeVariableStatement, NodeVariableStatementName, NodeVariableStatementDeclaredType, consumeVarAllowInferredType), true
 
 	// If statement.
 	case p.isKeyword("if"):
@@ -1648,14 +1660,14 @@ func (p *sourceParser) consumeNamedValue() AstNode {
 // var<SomeType> someName
 // var<SomeType> someName = someExpr
 // var someName = someExpr
-func (p *sourceParser) consumeVar(nodeType NodeType, namePredicate string, typePredicate string) AstNode {
+func (p *sourceParser) consumeVar(nodeType NodeType, namePredicate string, typePredicate string, option consumeVarOption) AstNode {
 	variableNode := p.startNode(nodeType)
 	defer p.finishNode()
 
 	// var
 	p.consumeKeyword("var")
 
-	// Type declaration (optional if there is an init expression)
+	// Type declaration (only optional if there is an init expression and the option allowos it)
 	var hasType bool
 	if _, ok := p.tryConsume(tokenTypeLessThan); ok {
 		variableNode.Connect(typePredicate, p.consumeTypeReference(typeReferenceNoVoid))
@@ -1674,6 +1686,10 @@ func (p *sourceParser) consumeVar(nodeType NodeType, namePredicate string, typeP
 	}
 
 	variableNode.Decorate(namePredicate, identifier)
+
+	if !hasType && option == consumeVarRequireExplicitType {
+		p.emitError("Member or class-level variable %s requires an explicitly declared type", identifier)
+	}
 
 	// Initializer expression. Optional if a type given, otherwise required.
 	if !hasType && !p.isToken(tokenTypeEquals) {
