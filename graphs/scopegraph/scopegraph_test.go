@@ -402,6 +402,12 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	scopegraphTest{"unary ops generic test", "unaryops", "generic",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"not", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass<Integer>", "void"}},
+		},
+		"", ""},
+
 	scopegraphTest{"unary ops nullable fail test", "unaryops", "nullable",
 		[]expectedScopeEntry{},
 		"Cannot invoke operator 'not' on nullable type 'SomeClass?'", ""},
@@ -426,13 +432,19 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	scopegraphTest{"binary ops generic test", "binaryops", "generic",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"result", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass<Integer>", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"binary ops nullable fail test", "binaryops", "nullable",
+		[]expectedScopeEntry{},
+		"Cannot invoke operator 'plus' on nullable type 'SomeClass?'", ""},
+
 	scopegraphTest{"boolean ops fail test", "binaryops", "boolfail",
 		[]expectedScopeEntry{},
 		"Boolean operator requires type Boolean for operands. Left hand operand has type: Integer", ""},
-
-	scopegraphTest{"boolean ops nullable fail test", "binaryops", "nullable",
-		[]expectedScopeEntry{},
-		"Cannot invoke operator 'plus' on nullable type 'SomeClass?'", ""},
 
 	/////////// Identifier expression ///////////
 
