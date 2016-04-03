@@ -1,0 +1,10 @@
+class SomeClass<T> {
+	operator plus(left SomeClass<T>, right SomeClass<T>) {
+		return left
+	}
+}
+
+function<void> DoSomething() {
+	var sc = SomeClass<int>.new()
+	/* result */(sc + sc)
+}

@@ -544,15 +544,15 @@ func (sb *scopeBuilder) scopeBinaryExpression(node compilergraph.GraphNode, opNa
 	// Check for nullable values.
 	if leftType.NullValueAllowed() {
 		sb.decorateWithError(node, "Cannot invoke operator '%v' on nullable type '%v'", opName, leftType)
-		return newScope().Invalid().CallsOperator(operator).Resolving(returnType)
+		return newScope().Invalid().CallsOperator(operator).Resolving(returnType.TransformUnder(leftType))
 	}
 
 	if rightType.NullValueAllowed() {
 		sb.decorateWithError(node, "Cannot invoke operator '%v' on nullable type '%v'", opName, rightType)
-		return newScope().Invalid().CallsOperator(operator).Resolving(returnType)
+		return newScope().Invalid().CallsOperator(operator).Resolving(returnType.TransformUnder(leftType))
 	}
 
-	return newScope().Valid().CallsOperator(operator).Resolving(returnType)
+	return newScope().Valid().CallsOperator(operator).Resolving(returnType.TransformUnder(leftType))
 }
 
 // scopeUnaryExpression scopes a unary expression in the SRG.
@@ -579,10 +579,10 @@ func (sb *scopeBuilder) scopeUnaryExpression(node compilergraph.GraphNode, opNam
 	// Check for nullable values.
 	if childType.NullValueAllowed() {
 		sb.decorateWithError(node, "Cannot invoke operator '%v' on nullable type '%v'", opName, childType)
-		return newScope().Invalid().CallsOperator(operator).Resolving(returnType)
+		return newScope().Invalid().CallsOperator(operator).Resolving(returnType.TransformUnder(childType))
 	}
 
-	return newScope().Valid().CallsOperator(operator).Resolving(returnType)
+	return newScope().Valid().CallsOperator(operator).Resolving(returnType.TransformUnder(childType))
 }
 
 // scopeRootTypeExpression scopes a root-type expression in the SRG.

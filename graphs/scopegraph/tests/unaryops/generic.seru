@@ -1,0 +1,9 @@
+class SomeClass<T> {
+	operator not(left SomeClass<T>) {
+		return left
+	}
+}
+
+function<void> DoSomething(sc SomeClass<int>) {
+	/* not */(~sc)
+}
