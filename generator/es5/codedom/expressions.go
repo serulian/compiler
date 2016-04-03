@@ -41,6 +41,26 @@ func CompoundExpression(expressions []Expression, value Expression, basis compil
 	}
 }
 
+// ObjectLiteralEntryNode represents an entry in an object literal.
+type ObjectLiteralEntryNode struct {
+	KeyExpression   Expression
+	ValueExpression Expression
+	BasisNode       compilergraph.GraphNode
+}
+
+// ObjectLiteralNode represents a literal object definition.
+type ObjectLiteralNode struct {
+	expressionBase
+	Entries []ObjectLiteralEntryNode
+}
+
+func ObjectLiteral(entries []ObjectLiteralEntryNode, basis compilergraph.GraphNode) Expression {
+	return &ObjectLiteralNode{
+		expressionBase{domBase{basis}},
+		entries,
+	}
+}
+
 // ArrayLiteralNode represents a literal array definition.
 type ArrayLiteralNode struct {
 	expressionBase

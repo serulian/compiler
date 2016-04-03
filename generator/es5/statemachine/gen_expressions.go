@@ -293,6 +293,33 @@ func (eg *expressionGenerator) generateLocalAssignment(localAssign *codedom.Loca
 	return eg.templater.Execute("localassignment", templateStr, data)
 }
 
+// generateObjectLiteral generates the expression source for a literal object value.
+func (eg *expressionGenerator) generateObjectLiteral(objectLiteral *codedom.ObjectLiteralNode) string {
+	entries := make([]interface{}, len(objectLiteral.Entries))
+	for index, entry := range objectLiteral.Entries {
+		entries[index] = struct {
+			Key   string
+			Value string
+		}{eg.generateExpression(entry.KeyExpression), eg.generateExpression(entry.ValueExpression)}
+	}
+
+	data := struct {
+		Entries []interface{}
+	}{entries}
+
+	templateStr := `
+		((function() {
+			var obj = {};
+			{{ range $idx, $entry := .Entries }}
+				obj[{{ $entry.Key }}] = {{ $entry.Value }};
+			{{ end }}
+			return obj;
+		})())
+	`
+
+	return eg.templater.Execute("objectliteral", templateStr, data)
+}
+
 // generateArrayLiteral generates the expression source for a literal array value.
 func (eg *expressionGenerator) generateArrayLiteral(arrayLiteral *codedom.ArrayLiteralNode) string {
 	values := eg.generateExpressions(arrayLiteral.Values)

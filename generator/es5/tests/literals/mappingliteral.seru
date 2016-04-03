@@ -1,0 +1,6 @@
+function<any> TEST() {
+	return ([]{bool}{
+		'somekey': true,
+		'anotherkey': false,
+	})['somekey']
+}
