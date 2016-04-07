@@ -10,12 +10,14 @@ import (
 	"os"
 
 	"github.com/serulian/compiler/builder"
+	"github.com/serulian/compiler/developer"
 	"github.com/spf13/cobra"
 )
 
 var (
 	vcsDevelopmentDirectories []string
 	debug                     bool
+	addr                      string
 )
 
 func main() {
@@ -35,11 +37,33 @@ func main() {
 		},
 	}
 
+	var cmdDevelop = &cobra.Command{
+		Use:   "develop [entrypoint source file]",
+		Short: "Starts development mode of a Serulian project",
+		Long:  `Starts a webserver that automatically compiles on refresh, starting at the given root source file`,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) != 1 {
+				fmt.Println("Expected entrypoint source file")
+				os.Exit(-1)
+			}
+
+			if !developer.Run(addr, args[0], debug, vcsDevelopmentDirectories) {
+				os.Exit(-1)
+			}
+		},
+	}
+
 	cmdBuild.PersistentFlags().BoolVar(&debug, "debug", false, "If set to true, Serulian will print debug logs during compilation")
 	cmdBuild.PersistentFlags().StringSliceVar(&vcsDevelopmentDirectories, "vcs-dev-dir", []string{},
 		"If specified, VCS packages without specification will be first checked against this path")
 
+	cmdDevelop.PersistentFlags().BoolVar(&debug, "debug", false, "If set to true, Serulian will print debug logs during compilation")
+	cmdDevelop.PersistentFlags().StringSliceVar(&vcsDevelopmentDirectories, "vcs-dev-dir", []string{},
+		"If specified, VCS packages without specification will be first checked against this path")
+	cmdDevelop.PersistentFlags().StringVar(&addr, "addr", ":8080", "The address at which the development code will be served")
+
 	var rootCmd = &cobra.Command{Use: "serulian"}
 	rootCmd.AddCommand(cmdBuild)
+	rootCmd.AddCommand(cmdDevelop)
 	rootCmd.Execute()
 }
