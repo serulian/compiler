@@ -105,7 +105,8 @@ func (db *domBuilder) buildNumericLiteral(node compilergraph.GraphNode) codedom.
 
 	// Handle binary.
 	if strings.HasPrefix(numericValueStr, "0b") || strings.HasPrefix(numericValueStr, "0B") {
-		numericValueStr = strconv.Itoa(strconv.ParseInt(numericValueStr[2:], 2, 64))
+		parsed, _ := strconv.ParseInt(numericValueStr[2:], 2, 64)
+		numericValueStr = strconv.Itoa(int(parsed))
 	}
 
 	// Note: Handles Hex.
