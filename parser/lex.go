@@ -716,9 +716,14 @@ func (l *lexer) scanNumber() bool {
 	l.accept("+-")
 	// Is it hex?
 	digits := "0123456789"
-	if l.accept("0") && l.accept("xX") {
-		digits = "0123456789abcdefABCDEF"
+	if l.accept("0") {
+		if l.accept("xX") {
+			digits = "0123456789abcdefABCDEF"
+		} else if l.accept("bB") {
+			digits = "01"
+		}
 	}
+
 	l.acceptRun(digits)
 	if l.peek() == '.' && unicode.IsDigit(l.peekForward(2)) && l.accept(".") {
 		l.acceptRun(digits)
