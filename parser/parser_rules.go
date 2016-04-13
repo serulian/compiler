@@ -2578,18 +2578,25 @@ func (p *sourceParser) lookaheadTypeReference(t *lookaheadTracker) bool {
 
 	// Start parameters.
 	for {
+		// Check for immediate closing of parameters.
+		if _, ok := t.matchToken(tokenTypeRightParen); ok {
+			break
+		}
+
+		// Otherwise, we need to find another type reference.
 		if !p.lookaheadTypeReference(t) {
 			return false
 		}
 
+		// Followed by an optional comma.
 		if _, ok := t.matchToken(tokenTypeComma); !ok {
+			// End parameters.
+			if _, ok := t.matchToken(tokenTypeRightParen); !ok {
+				return false
+			}
+
 			break
 		}
-	}
-
-	// End parameters.
-	if _, ok := t.matchToken(tokenTypeRightParen); !ok {
-		return false
 	}
 
 	// Match any nullable or streams.
