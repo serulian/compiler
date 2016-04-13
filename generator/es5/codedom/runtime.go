@@ -20,6 +20,7 @@ const (
 	NominalWrapFunction        RuntimeFunction = "$t.nominalwrap"
 	NominalUnwrapFunction      RuntimeFunction = "$t.nominalunwrap"
 	NominalRootFunction        RuntimeFunction = "$t.nominalroot"
+	NullableInvokeFunction     RuntimeFunction = "$t.nullableinvoke"
 
 	TranslatePromiseFunction RuntimeFunction = "$promise.translate"
 

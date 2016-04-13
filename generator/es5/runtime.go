@@ -351,6 +351,17 @@ this.Serulian = (function($global) {
       return f;
     },
 
+    // nullableinvoke invokes the function found at the given name on the object, but
+    // only if the object is not null.
+    'nullableinvoke': function(obj, name, promising, args) {
+      var found = $t.dynamicaccess(obj, name);
+      if (found == null) {
+        return promising ? $promise.resolve(null) : null;
+      }
+
+      return found.apply(obj, args);
+    },
+
     // dynamicaccess looks for the given name under the given object and returns it. If the
     // name was not found *OR* the object is null, returns null.
     'dynamicaccess': function(obj, name) {
@@ -359,10 +370,16 @@ this.Serulian = (function($global) {
       }
 
       var value = obj[name];
-      if (typeof value == 'function' && value.$property) {
-        return $promise.wrap(function() {
-          return value.apply(obj, arguments);
-        });
+      if (typeof value == 'function') {
+        if (value.$property) {
+          return $promise.wrap(function() {
+            return value.apply(obj, arguments);
+          });
+        } else {
+          return function() {
+            return value.apply(obj, arguments);
+          };         
+        }
       }
 
       return value

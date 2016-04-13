@@ -1141,7 +1141,6 @@ func (tr TypeReference) appendHumanString(buffer *bytes.Buffer, titled bool) {
 	}
 
 	typeNode := tr.referredTypeNode()
-
 	if typeNode.Kind == NodeTypeGeneric {
 		buffer.WriteString(typeNode.Get(NodePredicateGenericName))
 	} else {
@@ -1150,7 +1149,7 @@ func (tr TypeReference) appendHumanString(buffer *bytes.Buffer, titled bool) {
 			buffer.WriteRune(' ')
 		}
 
-		buffer.WriteString(typeNode.Get(NodePredicateTypeName))
+		buffer.WriteString(tr.ReferredType().DescriptiveName())
 	}
 
 	if tr.HasGenerics() {

@@ -1,0 +1,18 @@
+class SomeClass {
+	function<bool> SomeMethod() {
+		return true
+	}	
+}
+
+class AnotherClass {
+	function<bool> AnotherMethod() {
+		return false
+	}	
+}
+
+function<any> TEST() {
+	var<SomeClass?> sc = SomeClass.new()
+	var<AnotherClass?> ac = null
+
+	return (sc?.SomeMethod() ?? false) && (ac?.AnotherMethod() ?? true)
+}

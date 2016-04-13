@@ -504,7 +504,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"identifier expr member func test", "identexpr", "memberfunc",
 		[]expectedScopeEntry{
-			expectedScopeEntry{"memberref", expectedScope{true, proto.ScopeKind_VALUE, "Function<void>", "void"}},
+			expectedScopeEntry{"memberref", expectedScope{true, proto.ScopeKind_VALUE, "function<void>", "void"}},
 		},
 		"", ""},
 
@@ -678,6 +678,12 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	scopegraphTest{"function call nullable access success test", "funccall", "nullaccess",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"sm", expectedScope{true, proto.ScopeKind_VALUE, "Integer?", "void"}},
+		},
+		"", ""},
+
 	scopegraphTest{"function call not function failure test", "funccall", "notfunc",
 		[]expectedScopeEntry{},
 		"Cannot invoke function call on non-function 'SomeClass'.", ""},
@@ -690,15 +696,19 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"Parameter #1 expects type Integer: 'Boolean' cannot be used in place of non-interface 'Integer'", ""},
 
+	scopegraphTest{"function call nullable function failure test", "funccall", "nullablevar",
+		[]expectedScopeEntry{},
+		"Cannot invoke function call on non-function 'function<void>?'.", ""},
+
 	/////////// Member access expression ///////////
 
 	scopegraphTest{"member access success test", "memberaccess", "success",
 		[]expectedScopeEntry{
 			expectedScopeEntry{"varmember", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
-			expectedScopeEntry{"constructor", expectedScope{true, proto.ScopeKind_VALUE, "Function<SomeClass>(Integer)", "void"}},
+			expectedScopeEntry{"constructor", expectedScope{true, proto.ScopeKind_VALUE, "function<SomeClass>(Integer)", "void"}},
 			expectedScopeEntry{"modtype", expectedScope{true, proto.ScopeKind_STATIC, "void", "void"}},
 			expectedScopeEntry{"modint", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
-			expectedScopeEntry{"modfunc", expectedScope{true, proto.ScopeKind_VALUE, "Function<void>", "void"}},
+			expectedScopeEntry{"modfunc", expectedScope{true, proto.ScopeKind_VALUE, "function<void>", "void"}},
 			expectedScopeEntry{"generictype", expectedScope{true, proto.ScopeKind_GENERIC, "void", "void"}},
 			expectedScopeEntry{"prop", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
 
@@ -858,11 +868,11 @@ var scopeGraphTests = []scopegraphTest{
 			expectedScopeEntry{"somestructint", expectedScope{true, proto.ScopeKind_STATIC, "void", "void"}},
 			expectedScopeEntry{"somestructbool", expectedScope{true, proto.ScopeKind_STATIC, "void", "void"}},
 
-			expectedScopeEntry{"someclassintbuild", expectedScope{true, proto.ScopeKind_VALUE, "Function<SomeClass<Integer>>(Integer)", "void"}},
-			expectedScopeEntry{"someclassboolbuild", expectedScope{true, proto.ScopeKind_VALUE, "Function<SomeClass<Boolean>>(Boolean)", "void"}},
+			expectedScopeEntry{"someclassintbuild", expectedScope{true, proto.ScopeKind_VALUE, "function<SomeClass<Integer>>(Integer)", "void"}},
+			expectedScopeEntry{"someclassboolbuild", expectedScope{true, proto.ScopeKind_VALUE, "function<SomeClass<Boolean>>(Boolean)", "void"}},
 
-			expectedScopeEntry{"somefuncintbool", expectedScope{true, proto.ScopeKind_VALUE, "Function<Integer?>(Boolean)", "void"}},
-			expectedScopeEntry{"somefuncboolint", expectedScope{true, proto.ScopeKind_VALUE, "Function<Boolean?>(Integer)", "void"}},
+			expectedScopeEntry{"somefuncintbool", expectedScope{true, proto.ScopeKind_VALUE, "function<Integer?>(Boolean)", "void"}},
+			expectedScopeEntry{"somefuncboolint", expectedScope{true, proto.ScopeKind_VALUE, "function<Boolean?>(Integer)", "void"}},
 		},
 		"", ""},
 
@@ -902,7 +912,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"class field uninitialized test", "var", "uninitializedfield",
 		[]expectedScopeEntry{
-			expectedScopeEntry{"new", expectedScope{true, proto.ScopeKind_VALUE, "Function<SomeClass>(Integer, Boolean)", "void"}},
+			expectedScopeEntry{"new", expectedScope{true, proto.ScopeKind_VALUE, "function<SomeClass>(Integer, Boolean)", "void"}},
 		},
 		"", ""},
 
@@ -910,19 +920,19 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"lambda expression basic inference test", "lambda", "basicinference",
 		[]expectedScopeEntry{
-			expectedScopeEntry{"varref", expectedScope{true, proto.ScopeKind_VALUE, "Function<Boolean>(Integer, String)", "void"}},
-			expectedScopeEntry{"vardeclare", expectedScope{true, proto.ScopeKind_VALUE, "Function<Boolean>(Boolean, Boolean)", "void"}},
-			expectedScopeEntry{"callref", expectedScope{true, proto.ScopeKind_VALUE, "Function<Boolean>(String, String)", "void"}},
-			expectedScopeEntry{"nonref", expectedScope{true, proto.ScopeKind_VALUE, "Function<Boolean>(any, any)", "void"}},
-			expectedScopeEntry{"ripref", expectedScope{true, proto.ScopeKind_VALUE, "Function<Integer>(Integer)", "void"}},
-			expectedScopeEntry{"multiripref", expectedScope{true, proto.ScopeKind_VALUE, "Function<any>(any)", "void"}},
+			expectedScopeEntry{"varref", expectedScope{true, proto.ScopeKind_VALUE, "function<Boolean>(Integer, String)", "void"}},
+			expectedScopeEntry{"vardeclare", expectedScope{true, proto.ScopeKind_VALUE, "function<Boolean>(Boolean, Boolean)", "void"}},
+			expectedScopeEntry{"callref", expectedScope{true, proto.ScopeKind_VALUE, "function<Boolean>(String, String)", "void"}},
+			expectedScopeEntry{"nonref", expectedScope{true, proto.ScopeKind_VALUE, "function<Boolean>(any, any)", "void"}},
+			expectedScopeEntry{"ripref", expectedScope{true, proto.ScopeKind_VALUE, "function<Integer>(Integer)", "void"}},
+			expectedScopeEntry{"multiripref", expectedScope{true, proto.ScopeKind_VALUE, "function<any>(any)", "void"}},
 		},
 		"", ""},
 
 	scopegraphTest{"lambda expression full definition test", "lambda", "full",
 		[]expectedScopeEntry{
-			expectedScopeEntry{"implicitreturn", expectedScope{true, proto.ScopeKind_VALUE, "Function<Integer>(Integer, Boolean)", "void"}},
-			expectedScopeEntry{"explicitreturn", expectedScope{true, proto.ScopeKind_VALUE, "Function<String>(Integer, Boolean)", "void"}},
+			expectedScopeEntry{"implicitreturn", expectedScope{true, proto.ScopeKind_VALUE, "function<Integer>(Integer, Boolean)", "void"}},
+			expectedScopeEntry{"explicitreturn", expectedScope{true, proto.ScopeKind_VALUE, "function<String>(Integer, Boolean)", "void"}},
 		},
 		"", ""},
 
@@ -930,8 +940,8 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"chained inference test", "chained", "success",
 		[]expectedScopeEntry{
-			expectedScopeEntry{"someVar", expectedScope{true, proto.ScopeKind_VALUE, "Function<void>(Integer, Boolean)", "void"}},
-			expectedScopeEntry{"anotherVar", expectedScope{true, proto.ScopeKind_VALUE, "Function<void>(Integer, Boolean)", "void"}},
+			expectedScopeEntry{"someVar", expectedScope{true, proto.ScopeKind_VALUE, "function<void>(Integer, Boolean)", "void"}},
+			expectedScopeEntry{"anotherVar", expectedScope{true, proto.ScopeKind_VALUE, "function<void>(Integer, Boolean)", "void"}},
 		},
 		"", ""},
 
@@ -968,7 +978,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"tagged template failure success", "templatestr", "taggedfailure",
 		[]expectedScopeEntry{},
-		"Tagging expression for template string must be function with parameters ([]string, []stringable). Found: Function<void>", ""},
+		"Tagging expression for template string must be function with parameters ([]string, []stringable). Found: function<void>", ""},
 
 	/////////// webidl tests /////////////////
 

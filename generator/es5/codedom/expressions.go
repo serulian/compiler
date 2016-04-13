@@ -160,6 +160,7 @@ type MemberCallNode struct {
 	ChildExpression Expression         // The child expression.
 	Member          typegraph.TGMember // The member being accessed.
 	Arguments       []Expression       // The arguments to the function call.
+	Nullable        bool               // Whether the call is on a nullable access.
 }
 
 func (mc *MemberCallNode) IsPromise() bool {
@@ -176,6 +177,21 @@ func MemberCall(childExpression Expression, member typegraph.TGMember, arguments
 		childExpression,
 		member,
 		arguments,
+		false,
+	}
+}
+
+func NullableMemberCall(childExpression Expression, member typegraph.TGMember, arguments []Expression, basis compilergraph.GraphNode) Expression {
+	if childExpression == nil {
+		panic("Nil child expression")
+	}
+
+	return &MemberCallNode{
+		expressionBase{domBase{basis}},
+		childExpression,
+		member,
+		arguments,
+		true,
 	}
 }
 

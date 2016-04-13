@@ -533,9 +533,6 @@ func (eg *expressionGenerator) generateNominalUnwrapping(nominalUnwrapping *code
 
 // generateMemberCall generates the expression source for a call to a module or type member.
 func (eg *expressionGenerator) generateMemberCall(memberCall *codedom.MemberCallNode) string {
-	var callPath codedom.Expression = nil
-	var arguments []codedom.Expression = []codedom.Expression{}
-
 	if memberCall.Member.IsOperator() && memberCall.Member.IsNative() {
 		// This is a call to a native operator.
 		if memberCall.Member.Name() != "index" {
@@ -544,12 +541,30 @@ func (eg *expressionGenerator) generateMemberCall(memberCall *codedom.MemberCall
 
 		refExpr := memberCall.ChildExpression.(*codedom.MemberReferenceNode).ChildExpression
 		return eg.generateExpression(codedom.NativeIndexing(refExpr, memberCall.Arguments[0], memberCall.BasisNode()))
-	} else {
-		// Otherwise this is a normal function call over a child expression.
-		callPath = memberCall.ChildExpression
-		arguments = memberCall.Arguments
 	}
 
-	functionCall := codedom.FunctionCall(callPath, arguments, memberCall.BasisNode())
+	callPath := memberCall.ChildExpression
+	arguments := memberCall.Arguments
+
+	var functionCall = codedom.FunctionCall(callPath, arguments, memberCall.BasisNode())
+	if memberCall.Nullable {
+		// Invoke the function with a specialized nullable-invoke.
+		refExpr := callPath.(*codedom.MemberReferenceNode).ChildExpression
+
+		var isPromising = "false"
+		if memberCall.Member.IsPromising() {
+			isPromising = "true"
+		}
+
+		localArguments := []codedom.Expression{
+			refExpr,
+			codedom.LiteralValue("'"+memberCall.Member.Name()+"'", refExpr.BasisNode()),
+			codedom.LiteralValue(isPromising, memberCall.BasisNode()),
+			codedom.ArrayLiteral(arguments, memberCall.BasisNode()),
+		}
+
+		functionCall = codedom.RuntimeFunctionCall(codedom.NullableInvokeFunction, localArguments, memberCall.BasisNode())
+	}
+
 	return eg.generateExpression(codedom.WrapIfPromising(functionCall, memberCall.Member, memberCall.BasisNode()))
 }
