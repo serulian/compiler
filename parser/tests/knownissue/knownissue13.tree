@@ -1,0 +1,64 @@
+NodeTypeFile
+  end-rune = 68
+  input-source = known issue 13 test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 68
+      input-source = known issue 13 test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 68
+          input-source = known issue 13 test
+          start-rune = 29
+          block-child =>
+            NodeTypeAssignStatement
+              end-rune = 66
+              input-source = known issue 13 test
+              start-rune = 32
+              assign-statement-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 66
+                  identexpr-name = newBranch
+                  input-source = known issue 13 test
+                  start-rune = 58
+              assign-statement-name =>
+                NodeSliceExpression
+                  end-rune = 54
+                  input-source = known issue 13 test
+                  start-rune = 36
+                  slice-expr-expr =>
+                    NodeMemberAccessExpression
+                      end-rune = 44
+                      input-source = known issue 13 test
+                      member-access-identifier = children
+                      start-rune = 32
+                      member-access-expr =>
+                        NodeThisLiteralExpression
+                          end-rune = 35
+                          input-source = known issue 13 test
+                          start-rune = 32
+                  slice-expr-index =>
+                    NodeSliceExpression
+                      end-rune = 53
+                      input-source = known issue 13 test
+                      start-rune = 46
+                      slice-expr-expr =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 50
+                          identexpr-name = parts
+                          input-source = known issue 13 test
+                          start-rune = 46
+                      slice-expr-index =>
+                        NodeNumericLiteralExpression
+                          end-rune = 52
+                          input-source = known issue 13 test
+                          literal-value = 0
+                          start-rune = 52
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 12
+          input-source = known issue 13 test
+          start-rune = 9
