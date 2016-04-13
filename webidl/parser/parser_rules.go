@@ -231,17 +231,41 @@ func (p *sourceParser) consumeAnnotation() AstNode {
 	return annotationNode
 }
 
+// expandedTypeKeywords defines the keywords that form the prefixes for expanded types:
+// two-identifier type names.
+var expandedTypeKeywords = map[string][]string{
+	"unsigned":     []string{"short", "long"},
+	"long":         []string{"long"},
+	"unrestricted": []string{"float", "double"},
+}
+
 // consumeType attempts to consume a type (identifier (with optional ?) or 'any').
 func (p *sourceParser) consumeType() string {
 	if p.tryConsumeKeyword("any") {
 		return "any"
 	}
 
+	var typeName = ""
+
 	identifier := p.consumeIdentifier()
+	typeName += identifier
+
+	// If the identifier is the beginning of a possible expanded type name, check for the
+	// secondary portion.
+	if secondaries, ok := expandedTypeKeywords[identifier]; ok {
+		for _, secondary := range secondaries {
+			if p.isToken(tokenTypeIdentifier) && p.currentToken.value == secondary {
+				typeName += " " + secondary
+				p.consume(tokenTypeIdentifier)
+				break
+			}
+		}
+	}
+
 	if _, ok := p.tryConsume(tokenTypeQuestionMark); ok {
-		return identifier + "?"
+		return typeName + "?"
 	} else {
-		return identifier
+		return typeName
 	}
 }
 
