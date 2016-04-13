@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/streamrail/concurrent-map"
+
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/typegraph"
@@ -60,13 +62,15 @@ var NATIVE_TYPES = map[string]string{
 // GetConstructor returns a TypeGraph constructor for the given IRG.
 func GetConstructor(irg *webidl.WebIRG) *irgTypeConstructor {
 	return &irgTypeConstructor{
-		irg: irg,
+		irg:              irg,
+		typesEncountered: cmap.New(),
 	}
 }
 
 // irgTypeConstructor defines a type for populating a type graph from the IRG.
 type irgTypeConstructor struct {
-	irg *webidl.WebIRG // The IRG being transformed.
+	irg              *webidl.WebIRG     // The IRG being transformed.
+	typesEncountered cmap.ConcurrentMap // The types already encountered.
 }
 
 func (itc *irgTypeConstructor) DefineModules(builder typegraph.GetModuleBuilder) {
@@ -109,6 +113,16 @@ func (itc *irgTypeConstructor) DefineDependencies(annotator typegraph.Annotator,
 				continue
 			}
 
+			// Ensure that we don't have duplicate types across modules. Intra-module is handled by the type
+			// graph.
+			existingModule, found := itc.typesEncountered.Get(declaration.Name())
+			if found && existingModule != module {
+				annotator.ReportError(declaration.GraphNode, "Redeclaration of WebIDL interface %v is not supported", declaration.Name())
+			}
+
+			itc.typesEncountered.Set(declaration.Name(), module)
+
+			// Determine whether we have a parent type for inheritance.
 			parentTypeString, hasParentType := declaration.ParentType()
 			if !hasParentType {
 				continue
