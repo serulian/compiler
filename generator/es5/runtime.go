@@ -470,7 +470,7 @@ this.Serulian = (function($global) {
     },
 
   	'empty': function() {
-  		return new Promise(function() {
+  		return new Promise(function(resolve, reject) {
   			resolve();
   		});
   	},
