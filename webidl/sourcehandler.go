@@ -31,7 +31,7 @@ func (sh *irgSourceHandler) Parse(source compilercommon.InputSource, input strin
 	parser.Parse(&irgASTNode{rootNode}, sh.buildASTNode, source, input)
 }
 
-func (sh *irgSourceHandler) Apply(packageMap map[string]packageloader.PackageInfo) {
+func (sh *irgSourceHandler) Apply(packageMap packageloader.LoadedPackageMap) {
 	// Apply the changes to the graph.
 	sh.modifier.Apply()
 }

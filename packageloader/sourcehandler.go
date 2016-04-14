@@ -23,7 +23,7 @@ type SourceHandler interface {
 
 	// Apply performs final application of all changes in the source handler. This method is called
 	// synchronously, and is typically used to apply the parsed structure to the underlying graph.
-	Apply(packageMap map[string]PackageInfo)
+	Apply(packageMap LoadedPackageMap)
 
 	// Verify performs verification of the loaded source.
 	Verify(errorReporter ErrorReporter, warningReporter WarningReporter)

@@ -57,7 +57,7 @@ func (t testTypePackageLoader) Parse(source compilercommon.InputSource, input st
 
 }
 
-func (t testTypePackageLoader) Apply(packageMap map[string]packageloader.PackageInfo) {
+func (t testTypePackageLoader) Apply(packageMap packageloader.LoadedPackageMap) {
 
 }
 
