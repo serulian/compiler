@@ -17,18 +17,18 @@
                     }
                 }
             },
-            "ad08000d461bd023c7afa5b1bfd55c4a": {
+            "afb852e3d6cd7397a5b6c4faca254e11": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "ad08000d461bd023c7afa5b1bfd55c4a",
+                    "Key": "afb852e3d6cd7397a5b6c4faca254e11",
                     "Kind": 7,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "Function\u003cSomeClass\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0013Function\u003cSomeClass\u003e",
+                        "tdg-member-resolved-type": "function\u003cSomeClass\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0013function\u003cSomeClass\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/simple/simple.seru"
