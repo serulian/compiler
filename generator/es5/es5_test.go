@@ -119,6 +119,7 @@ var tests = []generationTest{
 	generationTest{"structural cast expression", "accessexpr", "structuralcast", true},
 	generationTest{"stream member access expression", "accessexpr", "streammember", false},
 	generationTest{"member access expressions", "accessexpr", "memberaccess", true},
+	generationTest{"function reference access expression", "accessexpr", "funcref", true},
 
 	generationTest{"full lambda expression", "lambdaexpr", "full", true},
 	generationTest{"mini lambda expression", "lambdaexpr", "mini", true},
