@@ -3,18 +3,18 @@
         "Key": "03224da8e59f200a227961eeeba0dddc",
         "Kind": 1,
         "Children": {
-            "b94f5b1b809bf6931c5bbf4d843c98ed": {
+            "378d28488aa608e20bb0046a3cfd4069": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "b94f5b1b809bf6931c5bbf4d843c98ed",
+                    "Key": "378d28488aa608e20bb0046a3cfd4069",
                     "Kind": 7,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "Function\u003cAnotherClass\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0016Function\u003cAnotherClass\u003e",
+                        "tdg-member-resolved-type": "function\u003cAnotherClass\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0016function\u003cAnotherClass\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/stream/stream.seru"
@@ -33,18 +33,18 @@
         "Key": "6bbadde7a052f59156fc3195d2e24847",
         "Kind": 1,
         "Children": {
-            "90a49b535ec19f7ec7a947a23286fa00": {
+            "367e45311f2d7db2de69afd37ebdce53": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "90a49b535ec19f7ec7a947a23286fa00",
+                    "Key": "367e45311f2d7db2de69afd37ebdce53",
                     "Kind": 7,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "Function\u003cSomeClass\u003cT\u003e\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0016Function\u003cSomeClass\u003cT\u003e\u003e",
+                        "tdg-member-resolved-type": "function\u003cSomeClass\u003cT\u003e\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0016function\u003cSomeClass\u003cT\u003e\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/stream/stream.seru"

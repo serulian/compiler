@@ -64,7 +64,7 @@ type pathInformation struct {
 
 // Returns the string representation of the given path.
 func (p *pathInformation) String() string {
-	return fmt.Sprintf("%s://%s", p.kind, p.path)
+	return fmt.Sprintf("%v::%s::%s", int(p.kind), p.sourceKind, p.path)
 }
 
 // PackageLoader helps to fully and recursively load a Serulian package and its dependencies
@@ -78,9 +78,11 @@ type PackageLoader struct {
 
 	handlers map[string]SourceHandler // The handlers for each of the supported package kinds.
 
-	pathsToLoad      chan pathInformation // The paths to load
-	pathsEncountered cmap.ConcurrentMap   // The paths processed by the loader goroutine
-	packageMap       cmap.ConcurrentMap   // The package map
+	pathsToLoad          chan pathInformation // The paths to load
+	pathKindsEncountered cmap.ConcurrentMap   // The path+kinds processed by the loader goroutine
+	vcsPathsLoaded       cmap.ConcurrentMap   // The VCS paths that have been loaded, mapping to their checkout dir
+	vcsLockMap           LockMap              // LockMap for ensuring single loads of all VCS paths.
+	packageMap           *mutablePackageMap   // The package map
 
 	workTracker sync.WaitGroup // WaitGroup used to wait until all loading is complete
 	finished    chan bool      // Channel used to tell background goroutines to quit
@@ -100,7 +102,7 @@ type LoadResult struct {
 	Status     bool                           // True on success, false otherwise
 	Errors     []compilercommon.SourceError   // The errors encountered, if any
 	Warnings   []compilercommon.SourceWarning // The warnings encountered, if any
-	PackageMap map[string]PackageInfo         // Map of packages loaded
+	PackageMap LoadedPackageMap               // Map of packages loaded
 }
 
 // NewPackageLoader creates and returns a new package loader for the given path.
@@ -119,9 +121,12 @@ func NewPackageLoader(rootSourceFile string, vcsDevelopmentDirectories []string,
 
 		handlers: handlersMap,
 
-		pathsEncountered: cmap.New(),
-		packageMap:       cmap.New(),
-		pathsToLoad:      make(chan pathInformation),
+		pathKindsEncountered: cmap.New(),
+		packageMap:           newMutablePackageMap(),
+		pathsToLoad:          make(chan pathInformation),
+
+		vcsPathsLoaded: cmap.New(),
+		vcsLockMap:     CreateLockMap(),
 
 		finished: make(chan bool, 2),
 	}
@@ -177,16 +182,11 @@ func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 	p.finished <- true
 
 	// Save the package map.
-	packageMap := map[string]PackageInfo{}
-	for entry := range p.packageMap.Iter() {
-		packageMap[entry.Key] = entry.Val.(PackageInfo)
-	}
-
-	result.PackageMap = packageMap
+	result.PackageMap = p.packageMap.Build()
 
 	// Apply all handler changes.
 	for _, handler := range p.handlers {
-		handler.Apply(packageMap)
+		handler.Apply(result.PackageMap)
 	}
 
 	// Perform verification in all handlers.
@@ -256,9 +256,9 @@ func (p *PackageLoader) loadAndParse() {
 func (p *PackageLoader) loadAndParsePath(currentPath pathInformation) {
 	defer p.workTracker.Done()
 
-	// Ensure we have not already seen this path.
+	// Ensure we have not already seen this path and kind.
 	pathKey := currentPath.String()
-	if !p.pathsEncountered.SetIfAbsent(pathKey, true) {
+	if !p.pathKindsEncountered.SetIfAbsent(pathKey, true) {
 		return
 	}
 
@@ -277,16 +277,33 @@ func (p *PackageLoader) loadAndParsePath(currentPath pathInformation) {
 
 // loadVCSPackage loads the package found at the given VCS path.
 func (p *PackageLoader) loadVCSPackage(packagePath pathInformation) {
+	// Lock on the package path to ensure no other checkouts occur for this path.
+	pathLock := p.vcsLockMap.GetLock(packagePath.path)
+	pathLock.Lock()
+	defer pathLock.Unlock()
+
+	existingCheckoutDir, exists := p.vcsPathsLoaded.Get(packagePath.path)
+	if exists {
+		// Note: existingCheckoutDir will be empty if there was an error loading the VCS.
+		if existingCheckoutDir != "" {
+			// Push the now-local directory onto the package loading channel.
+			p.pushPathWithId(packagePath.referenceId, packagePath.sourceKind, pathLocalPackage, existingCheckoutDir.(string), packagePath.sal)
+			return
+		}
+	}
+
 	rootDirectory := path.Dir(p.rootSourceFile)
 	pkgDirectory := path.Join(rootDirectory, serulianPackageDirectory)
 
 	// Perform the checkout of the VCS package.
 	checkoutDirectory, err, warning := vcs.PerformVCSCheckout(packagePath.path, pkgDirectory, p.vcsDevelopmentDirectories...)
 	if err != nil {
+		p.vcsPathsLoaded.Set(packagePath.path, "")
 		p.errors <- compilercommon.SourceErrorf(packagePath.sal, "Error loading VCS package '%s': %v", packagePath.path, err)
 		return
 	}
 
+	p.vcsPathsLoaded.Set(packagePath.path, checkoutDirectory)
 	if warning != "" {
 		p.warnings <- compilercommon.NewSourceWarning(packagePath.sal, warning)
 	}
@@ -336,7 +353,7 @@ func (p *PackageLoader) loadLocalPackage(packagePath pathInformation) {
 		}
 	}
 
-	p.packageMap.Set(packagePath.referenceId, *packageInfo)
+	p.packageMap.Add(packagePath.sourceKind, packagePath.referenceId, *packageInfo)
 	if !fileFound {
 		p.warnings <- compilercommon.SourceWarningf(packagePath.sal, "Package '%s' has no source files", packagePath.path)
 		return
@@ -348,7 +365,7 @@ func (p *PackageLoader) conductParsing(sourceFile pathInformation) {
 	inputSource := compilercommon.InputSource(sourceFile.path)
 
 	// Add the file to the package map as a package of one file.
-	p.packageMap.Set(sourceFile.referenceId, PackageInfo{
+	p.packageMap.Add(sourceFile.sourceKind, sourceFile.referenceId, PackageInfo{
 		kind:        sourceFile.sourceKind,
 		referenceId: sourceFile.referenceId,
 		modulePaths: []compilercommon.InputSource{inputSource},

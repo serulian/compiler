@@ -63,6 +63,11 @@ func (tn TGTypeDecl) DescriptiveName() string {
 		return containingType.DescriptiveName() + "::" + tn.Name()
 	}
 
+	alias, hasAlias := tn.Alias()
+	if hasAlias && alias == "function" {
+		return "function"
+	}
+
 	return tn.Name()
 }
 

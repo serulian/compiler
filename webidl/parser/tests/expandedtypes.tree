@@ -1,0 +1,35 @@
+NodeTypeGlobalModule
+  child-node =>
+    NodeTypeFile
+      end-rune = 110
+      input-source = expanded types test
+      start-rune = 0
+      child-node =>
+        NodeTypeDeclaration
+          declaration-kind = interface
+          declaration-name = SomeInterface
+          end-rune = 110
+          input-source = expanded types test
+          start-rune = 0
+          declaration-member =>
+            NodeTypeMember
+              end-rune = 62
+              input-source = expanded types test
+              member-attribute = true
+              member-name = NaN
+              member-readonly = true
+              member-type = unsigned long
+              start-rune = 27
+            NodeTypeMember
+              end-rune = 106
+              input-source = expanded types test
+              member-name = create
+              member-type = unrestricted double
+              start-rune = 66
+              member-parameter =>
+                NodeTypeParameter
+                  end-rune = 105
+                  input-source = expanded types test
+                  parameter-name = foo
+                  parameter-type = long long
+                  start-rune = 93

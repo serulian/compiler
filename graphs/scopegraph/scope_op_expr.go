@@ -70,7 +70,8 @@ func (sb *scopeBuilder) scopeTypeConversionExpression(node compilergraph.GraphNo
 // scopeFunctionCallExpression scopes a function call expression in the SRG.
 func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	// Scope the child expression.
-	childScope := sb.getScope(node.GetNode(parser.NodeFunctionCallExpressionChildExpr))
+	childExpr := node.GetNode(parser.NodeFunctionCallExpressionChildExpr)
+	childScope := sb.getScope(childExpr)
 	if !childScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
@@ -84,8 +85,18 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 	// Ensure the child expression has type function.
 	childType := childScope.ResolvedTypeRef(sb.sg.tdg)
 	if !childType.IsDirectReferenceTo(sb.sg.tdg.FunctionType()) {
-		sb.decorateWithError(node, "Cannot invoke function call on non-function '%v'.", childType)
-		return newScope().Invalid().GetScope()
+		// If the child type is a function, but nullable, only allow it to be called if the type
+		// is a result of a null access expression. This is a special case to allow writing code
+		// such as `foo?.bar()` easier, without allowing for random `someNullableFunc()` to be
+		// called.
+		//
+		// TODO: It might be a good idea to revisit this decision if we find `someNullableFunc()` to
+		// be a useful pattern as well.
+		if !childType.HasReferredType(sb.sg.tdg.FunctionType()) ||
+			childExpr.Kind != parser.NodeNullableMemberAccessExpression {
+			sb.decorateWithError(node, "Cannot invoke function call on non-function '%v'.", childType)
+			return newScope().Invalid().GetScope()
+		}
 	}
 
 	// Ensure that the parameters of the function call match those of the child type.
@@ -133,7 +144,10 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 		return newScope().Invalid().GetScope()
 	}
 
-	returnType := childType.Generics()[0]
+	var returnType = childType.Generics()[0]
+	if childType.IsNullable() {
+		returnType = returnType.AsNullable()
+	}
 
 	// Check for a promise return type. If found and this call is not under an assignment or
 	// arrow, warn.

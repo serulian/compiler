@@ -3,10 +3,10 @@
         "Key": "1e50c715a29f03dd69228bf642022cb0",
         "Kind": 6,
         "Children": {
-            "77482b5a3f10a322a303c4ab1d46b84e": {
+            "8eb20d38c8981ec64780dc4cf732f13a": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "77482b5a3f10a322a303c4ab1d46b84e",
+                    "Key": "8eb20d38c8981ec64780dc4cf732f13a",
                     "Kind": 7,
                     "Children": {
                         "ed96df037d4bbe6586d8149cfab9ac80": {
@@ -28,8 +28,8 @@
                         "tdg-member-name": "SomeVoidFunction",
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "Function\u003cvoid\u003e",
-                        "tdg-member-signature": "\n\u0010somevoidfunction\u0010\u0002\u0018\u0000 \u0001*\u000eFunction\u003cvoid\u003e",
+                        "tdg-member-resolved-type": "function\u003cvoid\u003e",
+                        "tdg-member-signature": "\n\u0010somevoidfunction\u0010\u0002\u0018\u0000 \u0001*\u000efunction\u003cvoid\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/voidreturn/void.seru",

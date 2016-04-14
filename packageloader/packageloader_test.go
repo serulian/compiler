@@ -35,7 +35,7 @@ func (tt *testTracker) createHandler() SourceHandler {
 	return tt
 }
 
-func (tt *testTracker) Apply(packageMap map[string]PackageInfo) {
+func (tt *testTracker) Apply(packageMap LoadedPackageMap) {
 
 }
 
@@ -75,7 +75,7 @@ func TestBasicLoading(t *testing.T) {
 
 	// Ensure that the PATH map contains an entry for package imported.
 	for key := range tt.pathsImported {
-		if _, ok := result.PackageMap[key]; !ok {
+		if _, ok := result.PackageMap.Get("", key); !ok {
 			t.Errorf("Expected package %s in packages map", key)
 		}
 	}

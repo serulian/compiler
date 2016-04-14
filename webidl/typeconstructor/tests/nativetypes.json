@@ -1,0 +1,87 @@
+{
+    "0fb9f51e5d24263dbc82417c33826558": {
+        "Key": "0fb9f51e5d24263dbc82417c33826558",
+        "Kind": 3,
+        "Children": {
+            "abcae4d53c908628f88965d86cd70169": {
+                "Predicate": "tdg-declaration-module",
+                "Child": {
+                    "Key": "abcae4d53c908628f88965d86cd70169",
+                    "Kind": 6,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-module-name": "nativetypes.webidl",
+                        "tdg-node-kind": "6|NodeType|tdg",
+                        "tdg-source-module": "tests/nativetypes.webidl",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-source-module": "tests/nativetypes.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-name": "Boolean"
+        }
+    },
+    "137447688ef687b05053bbce6bc4b3b4": {
+        "Key": "137447688ef687b05053bbce6bc4b3b4",
+        "Kind": 3,
+        "Children": {
+            "29aeac662b6460adffc5638cd838fda7": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "29aeac662b6460adffc5638cd838fda7",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "SomeBoolean",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "Boolean",
+                        "tdg-member-signature": "\n\u000bsomeboolean\u0010\u0003\u0018\u0000 \u0001*\u0007Boolean",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/nativetypes.webidl",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "bc28b6185d97fd064f4e1b219ce6e545": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "bc28b6185d97fd064f4e1b219ce6e545",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "SomeFunction",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cNumber\u003e(Number)",
+                        "tdg-member-signature": "\n\u000csomefunction\u0010\u0002\u0018\u0000 \u0001*\u0018function\u003cNumber\u003e(Number)",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/nativetypes.webidl",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-source-module": "tests/nativetypes.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-name": "ISomeInterface"
+        }
+    },
+    "541aee93b80c8a47760a65336184d78f": {
+        "Key": "541aee93b80c8a47760a65336184d78f",
+        "Kind": 3,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-source-module": "tests/nativetypes.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-name": "Number"
+        }
+    }
+}

@@ -3,10 +3,10 @@
         "Key": "8055942e1f7ad13fecc5a31ca474ec0b",
         "Kind": 2,
         "Children": {
-            "5e74dc0423daf48e1943183efb3c2579": {
+            "36f894b4789c136d09212a17eed6dfd5": {
                 "Predicate": "tdg-declaration-operator",
                 "Child": {
-                    "Key": "5e74dc0423daf48e1943183efb3c2579",
+                    "Key": "36f894b4789c136d09212a17eed6dfd5",
                     "Kind": 8,
                     "Children": {
                         "62d986fb1d754491327b16309085d140": {
@@ -28,8 +28,8 @@
                         "tdg-member-name": "•index",
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "Function\u003cany\u003e(any)",
-                        "tdg-member-signature": "\n\u0005index\u0010\u0004\u0018\u0000 \u0001*\u0012Function\u003cany\u003e(any)",
+                        "tdg-member-resolved-type": "function\u003cany\u003e(any)",
+                        "tdg-member-signature": "\n\u0005index\u0010\u0004\u0018\u0000 \u0001*\u0012function\u003cany\u003e(any)",
                         "tdg-node-kind": "8|NodeType|tdg",
                         "tdg-operator-name": "index",
                         "tdg-source-module": "tests/interfaceop/success.seru",
@@ -37,10 +37,10 @@
                     }
                 }
             },
-            "6944741dd277a3abc6a22523313eba72": {
+            "be2009ca1b4e68ccecaa04f63398960a": {
                 "Predicate": "tdg-declaration-operator",
                 "Child": {
-                    "Key": "6944741dd277a3abc6a22523313eba72",
+                    "Key": "be2009ca1b4e68ccecaa04f63398960a",
                     "Kind": 8,
                     "Children": {
                         "4a5622c2c3c66df058031fec93176dc9": {
@@ -62,7 +62,7 @@
                         "tdg-member-name": "•plus",
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "Function\u003cFoo\u003e(Foo, Foo)",
+                        "tdg-member-resolved-type": "function\u003cFoo\u003e(Foo, Foo)",
                         "tdg-member-signature": "\n\u0004plus\u0010\u0004\u0018\u0000 \u0001*\u0003any",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "8|NodeType|tdg",

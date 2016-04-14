@@ -1417,63 +1417,87 @@ func (p *sourceParser) tryConsumeAssignStatement() (AstNode, bool) {
 func (p *sourceParser) lookaheadAssignStatement() bool {
 	t := p.newLookaheadTracker()
 
+	for {
+		// Look for an assignable expression.
+		if !p.lookaheadAssignableExpr(t) {
+			return false
+		}
+
+		// If we find an equals, then we're done.
+		if _, ok := t.matchToken(tokenTypeEquals); ok {
+			return true
+		}
+
+		// Otherwise, we need a comma to continue.
+		if _, ok := t.matchToken(tokenTypeComma); !ok {
+			return false
+		}
+	}
+}
+
+// lookaheadAssignableExpr returns true if the given tracker contains an assignable
+// expression.
+func (p *sourceParser) lookaheadAssignableExpr(t *lookaheadTracker) bool {
 	// Match the opening identifier or keyword (this).
 	if _, ok := t.matchToken(tokenTypeIdentifer, tokenTypeKeyword); !ok {
 		return false
 	}
 
 	// Match member access or indexing (optional).
+TopLoop:
 	for {
-		if _, ok := t.matchToken(tokenTypeLeftBracket); ok {
-			for {
-				if t.currentToken.kind == tokenTypeSyntheticSemicolon || t.currentToken.kind == tokenTypeError {
-					return false
-				}
-
-				if t.currentToken.kind == tokenTypeRightBracket {
-					break
-				}
-
-				if t.nextToken().kind == tokenTypeEOF {
-					return false
-				}
-			}
-
-			if _, ok := t.matchToken(tokenTypeRightBracket); !ok {
-				return false
-			}
+		// If we find an equals or comma, then we are done the assignable expr.
+		if t.currentToken.kind == tokenTypeEquals || t.currentToken.kind == tokenTypeComma {
+			return true
 		}
 
-		if _, ok := t.matchToken(tokenTypeDotAccessOperator); !ok {
-			break
-		}
-
-		if _, ok := t.matchToken(tokenTypeIdentifer); !ok {
-			return false
-		}
-	}
-
-	if _, ok := t.matchToken(tokenTypeEquals); !ok {
-		for {
-			if _, ok := t.matchToken(tokenTypeComma); !ok {
-				return false
-			}
-
+		// Check for member access.
+		if _, ok := t.matchToken(tokenTypeDotAccessOperator); ok {
+			// Member access must be followed by an identifier.
 			if _, ok := t.matchToken(tokenTypeIdentifer); !ok {
 				return false
 			}
 
-			if _, ok := t.matchToken(tokenTypeEquals); ok {
-				break
-			}
+			continue
+		}
 
-			if t.currentToken.kind == tokenTypeEOF {
-				return false
+		// Check for indexer access.
+		if _, ok := t.matchToken(tokenTypeLeftBracket); ok {
+			var bracketCounter = 1
+			for {
+				// If we hit EOF, semicolon or error, nothing more to do.
+				switch t.currentToken.kind {
+				case tokenTypeSemicolon:
+					fallthrough
+
+				case tokenTypeSyntheticSemicolon:
+					fallthrough
+
+				case tokenTypeError:
+					fallthrough
+
+				case tokenTypeEOF:
+					return false
+
+				case tokenTypeLeftBracket:
+					bracketCounter++
+
+				case tokenTypeRightBracket:
+					bracketCounter--
+					if bracketCounter == 0 {
+						t.nextToken()
+						continue TopLoop
+					}
+				}
+
+				// Move forward.
+				t.nextToken()
 			}
 		}
-	}
 
-	return true
+		// Otherwise, not an assignable.
+		return false
+	}
 }
 
 // consumeMatchStatement consumes a match statement.
@@ -1485,7 +1509,7 @@ func (p *sourceParser) lookaheadAssignStatement() bool {
 //
 //   case anotherExpr:
 //      statements
-//
+//s
 //   default:
 //      statements
 // }
@@ -2578,18 +2602,25 @@ func (p *sourceParser) lookaheadTypeReference(t *lookaheadTracker) bool {
 
 	// Start parameters.
 	for {
+		// Check for immediate closing of parameters.
+		if _, ok := t.matchToken(tokenTypeRightParen); ok {
+			break
+		}
+
+		// Otherwise, we need to find another type reference.
 		if !p.lookaheadTypeReference(t) {
 			return false
 		}
 
+		// Followed by an optional comma.
 		if _, ok := t.matchToken(tokenTypeComma); !ok {
+			// End parameters.
+			if _, ok := t.matchToken(tokenTypeRightParen); !ok {
+				return false
+			}
+
 			break
 		}
-	}
-
-	// End parameters.
-	if _, ok := t.matchToken(tokenTypeRightParen); !ok {
-		return false
 	}
 
 	// Match any nullable or streams.

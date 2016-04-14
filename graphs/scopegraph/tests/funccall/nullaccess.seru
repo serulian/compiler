@@ -1,0 +1,9 @@
+class SomeClass {
+	function<int> SomeMethod() {
+		return 2
+	}	
+}
+
+function<void> DoSomething(sc SomeClass?) {
+	/* sm */(sc?.SomeMethod())
+}

@@ -4,7 +4,10 @@
 
 package packageloader
 
-import "os"
+import (
+	"os"
+	"sync"
+)
 
 // From: http://stackoverflow.com/questions/10510691/how-to-check-whether-a-file-or-directory-denoted-by-a-path-exists-in-golang
 // exists returns whether the given file or directory exists or not.
@@ -17,4 +20,34 @@ func exists(path string) (bool, error) {
 		return false, nil
 	}
 	return true, err
+}
+
+// LockMap defines a concurrent-safe map that returns a sync Mutex for each key. This is useful
+// when multiple resources are being loaded concurrently and locking is needed, but only on a
+// per-resource basis.
+type LockMap struct {
+	locks      map[string]*sync.Mutex
+	globalLock *sync.Mutex
+}
+
+// CreateLockMap returns a new LockMap.
+func CreateLockMap() LockMap {
+	return LockMap{
+		locks:      map[string]*sync.Mutex{},
+		globalLock: &sync.Mutex{},
+	}
+}
+
+// GetLock returns a lock for the given key.
+func (lm LockMap) GetLock(key string) *sync.Mutex {
+	lm.globalLock.Lock()
+	defer lm.globalLock.Unlock()
+
+	if lock, ok := lm.locks[key]; ok {
+		return lock
+	}
+
+	lock := &sync.Mutex{}
+	lm.locks[key] = lock
+	return lock
 }

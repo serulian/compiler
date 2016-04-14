@@ -17,10 +17,10 @@
                     }
                 }
             },
-            "364e6c51f36858f14823242e9dce1a96": {
+            "75d0c3e0088fd6fba335f9c6f2eafd33": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "364e6c51f36858f14823242e9dce1a96",
+                    "Key": "75d0c3e0088fd6fba335f9c6f2eafd33",
                     "Kind": 7,
                     "Children": {
                         "02ef448f77e3c36a2b7b1142ee6e860a": {
@@ -41,26 +41,26 @@
                         "tdg-member-name": "privateFunc",
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "Function\u003cInteger\u003e",
-                        "tdg-member-signature": "\n\u000bprivatefunc\u0010\u0002\u0018\u0000 \u0000*\u0011Function\u003cInteger\u003e",
+                        "tdg-member-resolved-type": "function\u003cInteger\u003e",
+                        "tdg-member-signature": "\n\u000bprivatefunc\u0010\u0002\u0018\u0000 \u0000*\u0011function\u003cInteger\u003e",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceunexported/unexported.seru",
                         "tdg-source-node": "(NodeRef)"
                     }
                 }
             },
-            "f0d7446201b8aca884a47027acce7085": {
+            "7dd8a8ef94fd6c9181e54843ef37e4f7": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "f0d7446201b8aca884a47027acce7085",
+                    "Key": "7dd8a8ef94fd6c9181e54843ef37e4f7",
                     "Kind": 7,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "Function\u003cSomeClass\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0013Function\u003cSomeClass\u003e",
+                        "tdg-member-resolved-type": "function\u003cSomeClass\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0013function\u003cSomeClass\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceunexported/unexported.seru"
@@ -79,24 +79,6 @@
         "Key": "c0a6851f7beb62eeb500ddd6a9734dc2",
         "Kind": 1,
         "Children": {
-            "a354e75d2ac4adaa479c332fd494c062": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "a354e75d2ac4adaa479c332fd494c062",
-                    "Kind": 7,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-name": "new",
-                        "tdg-member-promising": "true",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "Function\u003cGenericClass\u003cT\u003e\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0019Function\u003cGenericClass\u003cT\u003e\u003e",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "7|NodeType|tdg",
-                        "tdg-source-module": "tests/interfaceunexported/unexported.seru"
-                    }
-                }
-            },
             "c172044448d91b9448501032aba4c726": {
                 "Predicate": "tdg-declaration-generic",
                 "Child": {
@@ -112,6 +94,24 @@
                         "tdg-source-node": "(NodeRef)"
                     }
                 }
+            },
+            "f886362eadc26821d5071caf7b9fad17": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "f886362eadc26821d5071caf7b9fad17",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-name": "new",
+                        "tdg-member-promising": "true",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cGenericClass\u003cT\u003e\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0019function\u003cGenericClass\u003cT\u003e\u003e",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/interfaceunexported/unexported.seru"
+                    }
+                }
             }
         },
         "Predicates": {
@@ -125,10 +125,10 @@
         "Key": "d1d906d92d73acc5395e3ee403631570",
         "Kind": 2,
         "Children": {
-            "364e6c51f36858f14823242e9dce1a96": {
+            "75d0c3e0088fd6fba335f9c6f2eafd33": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "364e6c51f36858f14823242e9dce1a96",
+                    "Key": "75d0c3e0088fd6fba335f9c6f2eafd33",
                     "Kind": 7,
                     "Children": {
                         "02ef448f77e3c36a2b7b1142ee6e860a": {
@@ -149,8 +149,8 @@
                         "tdg-member-name": "privateFunc",
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "Function\u003cInteger\u003e",
-                        "tdg-member-signature": "\n\u000bprivatefunc\u0010\u0002\u0018\u0000 \u0000*\u0011Function\u003cInteger\u003e",
+                        "tdg-member-resolved-type": "function\u003cInteger\u003e",
+                        "tdg-member-signature": "\n\u000bprivatefunc\u0010\u0002\u0018\u0000 \u0000*\u0011function\u003cInteger\u003e",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceunexported/unexported.seru",
                         "tdg-source-node": "(NodeRef)"
@@ -169,18 +169,18 @@
         "Key": "f80f3c201845d23b1969d3b7e6965d77",
         "Kind": 1,
         "Children": {
-            "bb5f53f3e429981b0665082bbe040779": {
+            "986b58376997857287b05886c3e2301b": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "bb5f53f3e429981b0665082bbe040779",
+                    "Key": "986b58376997857287b05886c3e2301b",
                     "Kind": 7,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "Function\u003cAnotherClass\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0016Function\u003cAnotherClass\u003e",
+                        "tdg-member-resolved-type": "function\u003cAnotherClass\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0016function\u003cAnotherClass\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceunexported/unexported.seru"

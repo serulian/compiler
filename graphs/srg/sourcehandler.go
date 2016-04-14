@@ -38,7 +38,7 @@ func (sh *srgSourceHandler) Parse(source compilercommon.InputSource, input strin
 	parser.Parse(sh.buildASTNode, importHandler, source, input)
 }
 
-func (sh *srgSourceHandler) Apply(packageMap map[string]packageloader.PackageInfo) {
+func (sh *srgSourceHandler) Apply(packageMap packageloader.LoadedPackageMap) {
 	// Save the package map for later resolution.
 	sh.srg.packageMap = packageMap
 

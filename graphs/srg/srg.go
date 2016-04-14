@@ -26,9 +26,9 @@ const srgSourceKind = ""
 type SRG struct {
 	Graph *compilergraph.SerulianGraph // The root graph.
 
-	layer      *compilergraph.GraphLayer            // The SRG layer in the graph.
-	packageMap map[string]packageloader.PackageInfo // Map from package internal ID to info.
-	aliasMap   map[string]SRGType                   // Map of aliased types.
+	layer      *compilergraph.GraphLayer      // The SRG layer in the graph.
+	packageMap packageloader.LoadedPackageMap // Map from package kind and path to info.
+	aliasMap   map[string]SRGType             // Map of aliased types.
 }
 
 // NewSRG returns a new SRG for populating the graph with parsed source.

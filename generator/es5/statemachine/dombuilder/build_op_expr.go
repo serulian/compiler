@@ -72,6 +72,11 @@ func (db *domBuilder) buildFunctionCall(node compilergraph.GraphNode) codedom.Ex
 	namedRef, isNamed := db.scopegraph.GetReferencedName(childScope)
 	if isNamed && !namedRef.IsLocal() {
 		member, _ := namedRef.Member()
+
+		if childExprNode.Kind == parser.NodeNullableMemberAccessExpression {
+			return codedom.NullableMemberCall(childExpr, member, arguments, node)
+		}
+
 		return codedom.MemberCall(childExpr, member, arguments, node)
 	}
 

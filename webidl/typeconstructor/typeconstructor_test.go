@@ -52,6 +52,7 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"indexer test", "indexer", ""},
 	typegraphTest{"custom op test", "customop", ""},
 	typegraphTest{"inheritance test", "inheritance", ""},
+	typegraphTest{"native types test", "nativetypes", ""},
 
 	// Failure tests.
 	typegraphTest{"redeclaration test", "redeclare", "external interface 'Foo' redefines name 'Foo' under Module 'redeclare.webidl'"},

@@ -33,24 +33,6 @@
                     }
                 }
             },
-            "d2c7078a41b5bb905a245ea45c34da3f": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "d2c7078a41b5bb905a245ea45c34da3f",
-                    "Kind": 7,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-name": "new",
-                        "tdg-member-promising": "true",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "Function\u003cSomeClass\u003cT, Q\u003e\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0019Function\u003cSomeClass\u003cT, Q\u003e\u003e",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "7|NodeType|tdg",
-                        "tdg-source-module": "tests/genericlocalconstraint/example.seru"
-                    }
-                }
-            },
             "e388206b3b2cda38f18591d509a8c0f6": {
                 "Predicate": "tdg-declaration-generic",
                 "Child": {
@@ -64,6 +46,24 @@
                         "tdg-generic-subtype": "Q",
                         "tdg-node-kind": "11|NodeType|tdg",
                         "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "fc881067dc1719d61eaa19e32ab00b00": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "fc881067dc1719d61eaa19e32ab00b00",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-name": "new",
+                        "tdg-member-promising": "true",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cSomeClass\u003cT, Q\u003e\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0019function\u003cSomeClass\u003cT, Q\u003e\u003e",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/genericlocalconstraint/example.seru"
                     }
                 }
             }

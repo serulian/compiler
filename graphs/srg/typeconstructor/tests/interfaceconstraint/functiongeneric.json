@@ -3,18 +3,18 @@
         "Key": "005a11a8399486c74388ca2ba241e436",
         "Kind": 1,
         "Children": {
-            "4cf3a65f4bbabcd6c8db1cf9ac15031a": {
+            "8b72deb5538810814372a193bc992e81": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "4cf3a65f4bbabcd6c8db1cf9ac15031a",
+                    "Key": "8b72deb5538810814372a193bc992e81",
                     "Kind": 7,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "Function\u003cAnotherClass\u003cT\u003e\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0019Function\u003cAnotherClass\u003cT\u003e\u003e",
+                        "tdg-member-resolved-type": "function\u003cAnotherClass\u003cT\u003e\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0019function\u003cAnotherClass\u003cT\u003e\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/functiongeneric.seru"
@@ -49,10 +49,10 @@
         "Key": "0264fb7e095c08e24ba15a186fa019ec",
         "Kind": 2,
         "Children": {
-            "b042466436f52665e39bbcdb8c0cf21c": {
+            "1d3a3b3ffb4be7d8571e21028688301c": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "b042466436f52665e39bbcdb8c0cf21c",
+                    "Key": "1d3a3b3ffb4be7d8571e21028688301c",
                     "Kind": 7,
                     "Children": {
                         "02ef448f77e3c36a2b7b1142ee6e860a": {
@@ -90,8 +90,8 @@
                         "tdg-member-name": "DoSomething",
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "Function\u003cInteger\u003e(T)",
-                        "tdg-member-signature": "\n\u000bdosomething\u0010\u0002\u0018\u0000 \u0001*7Function\u003cInteger\u003e(local:1:0                           )2\u0007Integer",
+                        "tdg-member-resolved-type": "function\u003cInteger\u003e(T)",
+                        "tdg-member-signature": "\n\u000bdosomething\u0010\u0002\u0018\u0000 \u0001*7function\u003cInteger\u003e(local:1:0                           )2\u0007Integer",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/functiongeneric.seru",
                         "tdg-source-node": "(NodeRef)"
@@ -110,18 +110,18 @@
         "Key": "0f9f1c220a9f8e4e351c76b25d5c5388",
         "Kind": 1,
         "Children": {
-            "7275823d2e093f7c82f85311382b4ef6": {
+            "9dd8647944adf9725f4353adec314321": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "7275823d2e093f7c82f85311382b4ef6",
+                    "Key": "9dd8647944adf9725f4353adec314321",
                     "Kind": 7,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "Function\u003cTester\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0010Function\u003cTester\u003e",
+                        "tdg-member-resolved-type": "function\u003cTester\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0010function\u003cTester\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/functiongeneric.seru"
@@ -155,28 +155,10 @@
                     }
                 }
             },
-            "32e4e3d82c99f391883fbbf9cddb6a37": {
+            "1d3a3b3ffb4be7d8571e21028688301c": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "32e4e3d82c99f391883fbbf9cddb6a37",
-                    "Kind": 7,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-name": "new",
-                        "tdg-member-promising": "true",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "Function\u003cSomeClass\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0013Function\u003cSomeClass\u003e",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "7|NodeType|tdg",
-                        "tdg-source-module": "tests/interfaceconstraint/functiongeneric.seru"
-                    }
-                }
-            },
-            "b042466436f52665e39bbcdb8c0cf21c": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "b042466436f52665e39bbcdb8c0cf21c",
+                    "Key": "1d3a3b3ffb4be7d8571e21028688301c",
                     "Kind": 7,
                     "Children": {
                         "02ef448f77e3c36a2b7b1142ee6e860a": {
@@ -214,11 +196,29 @@
                         "tdg-member-name": "DoSomething",
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "Function\u003cInteger\u003e(T)",
-                        "tdg-member-signature": "\n\u000bdosomething\u0010\u0002\u0018\u0000 \u0001*7Function\u003cInteger\u003e(local:1:0                           )2\u0007Integer",
+                        "tdg-member-resolved-type": "function\u003cInteger\u003e(T)",
+                        "tdg-member-signature": "\n\u000bdosomething\u0010\u0002\u0018\u0000 \u0001*7function\u003cInteger\u003e(local:1:0                           )2\u0007Integer",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/functiongeneric.seru",
                         "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "bf91695ffc888b9a33b5a4efb0342cbf": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "bf91695ffc888b9a33b5a4efb0342cbf",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-name": "new",
+                        "tdg-member-promising": "true",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cSomeClass\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0013function\u003cSomeClass\u003e",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/interfaceconstraint/functiongeneric.seru"
                     }
                 }
             }
