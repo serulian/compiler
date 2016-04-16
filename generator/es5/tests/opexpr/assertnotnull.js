@@ -6,7 +6,7 @@ $module('assertnotnull', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            someValue = $t.nominalwrap(true, $g.____testlib.basictypes.Boolean);
+            someValue = $t.box(true, $g.____testlib.basictypes.Boolean);
             $state.resolve($t.assertnotnull(someValue));
             return;
 

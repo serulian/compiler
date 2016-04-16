@@ -5,8 +5,8 @@ $module('sliceexpr', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            $g.____testlib.basictypes.Slice($g.____testlib.basictypes.Boolean).overArray([$t.nominalwrap(false, $g.____testlib.basictypes.Boolean), $t.nominalwrap(true, $g.____testlib.basictypes.Boolean), $t.nominalwrap(false, $g.____testlib.basictypes.Boolean)]).then(function ($result0) {
-              return $result0.$index($t.nominalwrap(1, $g.____testlib.basictypes.Integer)).then(function ($result1) {
+            $g.____testlib.basictypes.Slice($g.____testlib.basictypes.Boolean).overArray([$t.box(false, $g.____testlib.basictypes.Boolean), $t.box(true, $g.____testlib.basictypes.Boolean), $t.box(false, $g.____testlib.basictypes.Boolean)]).then(function ($result0) {
+              return $result0.$index($t.box(1, $g.____testlib.basictypes.Integer)).then(function ($result1) {
                 $result = $result1;
                 $state.current = 1;
                 $callback($state);

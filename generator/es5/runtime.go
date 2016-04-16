@@ -12,6 +12,8 @@ package es5
 // runtime bundle.
 const runtimeTemplate = `
 this.Serulian = (function($global) {
+  var BOXED_DATA_PROPERTY = '$wrapped';
+
   // Save the current script URL. This is used below when spawning web workers, as we need this
   // script URL in order to run itself.
   var $__currentScriptSrc = null;
@@ -22,10 +24,17 @@ this.Serulian = (function($global) {
   // __serulian_internal defines methods used by the core library that require to work around
   // and with the type system.
   $global.__serulian_internal = {
+    // autoUnbox automatically unboxes ES primitives into their raw data.
+    'autoUnbox': function(k, v) {
+        if (v != null) {
+          return $t.unbox(v);
+        }
 
-    // autoNominalWrap automatically wraps (boxes) ES primitives into their associated
-    // normal Serulian nominal types.
-    'autoNominalWrap': function(k, v) {
+        return v;
+    },
+
+    // autoBox automatically boxes ES primitives into their associated normal Serulian nominal types.
+    'autoBox': function(k, v) {
       if (v == null) {
         return v;
       }
@@ -33,20 +42,24 @@ this.Serulian = (function($global) {
       switch (typeName) {
         case 'object':
           if (k != '') {
-            return $t.nominalwrap(v, $a.mapping($t.any));
+            return $t.box(v, $a.mapping($t.any));
           }
           break;
+
         case 'array':
-          return $t.nominalwrap(v, $a.slice($t.any));
+          return $t.box(v, $a.slice($t.any));
+
         case 'boolean':
-          return $t.nominalwrap(v, $a.bool);
+          return $t.box(v, $a.bool);
+
         case 'string':
-          return $t.nominalwrap(v, $a.string);
+          return $t.box(v, $a.string);
+
         case 'number':
           if (Math.ceil(v) == v) {
-            return $t.nominalwrap(v, $a.int);
+            return $t.box(v, $a.int);
           }
-          return $t.nominalwrap(v, $a.float64);
+          return $t.box(v, $a.float64);
       }
       return v;
     }
@@ -65,11 +78,11 @@ this.Serulian = (function($global) {
 
   // $it defines an internal type with a name. An internal type is any type that doesn't have
   // real implementation (such as 'any', 'void', 'null', etc).
-  var $it = function(name, index) {
+  var $it = function(name, typeIndex) {
       var tpe = new Function("return function " + name + "() {};")();
       tpe.$typeref = function() {
         return {
-          'i': index
+          'i': typeIndex
         };
       };
 
@@ -92,47 +105,35 @@ this.Serulian = (function($global) {
       return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()
     },
 
+    // unbox returns the root object behind a nominal or structural instance.
+    'unbox': function(instance) {
+      if (instance != null && instance.hasOwnProperty(BOXED_DATA_PROPERTY)) {
+        return instance[BOXED_DATA_PROPERTY];
+      }
+
+      return instance;
+    },
+
+    // box wraps an object with a nominal or structural type.
+    'box': function(instance, type, opt_external) {
+      return type.$box($t.unbox(instance), opt_external)
+    },
+
     // cast performs a cast of the given value to the given type, throwing on
     // failure.
     'cast': function(value, type) {
       // TODO: implement cast checking.
+      // Quick check to see if cast checking is necessary.
+      if (value == null || type == null || value.constructor == type) {
+        return value;
+      }
       
       // Automatically box if necessary.
       if (type.$box) {
-        return type.$box($t.unbox(value))
+        return $t.box(value, type);
       }
 
       return value
-    },
-
-    // uuid returns a new *cryptographically secure* UUID.
-    'uuid': function() {
-        var buf = new Uint16Array(8);
-        crypto.getRandomValues(buf);
-        var S4 = function(num) {
-            var ret = num.toString(16);
-            while(ret.length < 4){
-                ret = "0"+ret;
-            }
-            return ret;
-        };
-        return (S4(buf[0])+S4(buf[1])+"-"+S4(buf[2])+"-"+S4(buf[3])+"-"+S4(buf[4])+"-"+S4(buf[5])+S4(buf[6])+S4(buf[7]));
-    },
-
-    // box boxes the given raw data, wrapping it in the necessary structure
-    // for the given type.
-    'box': function(data, type) {
-      if (type.$box) {
-        return type.$box(data);
-      }
-
-      return data;
-    },
-
-    // unbox unboxes the given instance, returning the raw underlying data.
-    'unbox': function(instance) {
-      // TODO: make this efficient.
-      return JSON.parse(JSON.stringify(instance));
     },
 
     // equals performs a comparison of the two values by calling the $equals operator on the
@@ -146,7 +147,7 @@ this.Serulian = (function($global) {
         return $promise.resolve($t.box(false, $a['bool']));
       }
 
-      // If we have a nominal wrapped native value, compare directly.
+      // If we have a native value, compare directly.
       if ($t.toESType(left) != 'object') {
         return $promise.resolve($t.box(left === right, $a['bool']));
       }
@@ -199,35 +200,6 @@ this.Serulian = (function($global) {
       };
     },
 
-    // nominalroot returns the root object behind a nominal type. The returned instance is
-    // guarenteed to not be a nominal type instance.
-    'nominalroot': function(instance) {
-      if (instance == null) {
-          return null;
-      }
-
-      if (instance.hasOwnProperty('$wrapped')) {
-        return $t.nominalroot(instance.$wrapped);
-      }
-
-      return instance;
-    },
-
-    // nominalwrap wraps an object with a nominal type.
-    'nominalwrap': function(instance, type) {
-      return type.new($t.nominalroot(instance))
-    },
-
-    // nominalwrap unwraps a nominal type one level. Unlike nominal root, the resulting
-    // instance can be another nominal type.
-    'nominalunwrap': function(instance) {
-      if (instance == null) {
-          return null;
-      }
-
-      return instance.$wrapped;
-    },
-
     // typeforref deserializes a typeref into a local type.
     'typeforref': function(typeref) {
       if (typeref['i']) {
@@ -252,6 +224,20 @@ this.Serulian = (function($global) {
 
       // Apply the generics to the type.
       return current.apply(current, generics);
+    },
+
+    // uuid returns a new *cryptographically secure* UUID.
+    'uuid': function() {
+        var buf = new Uint16Array(8);
+        crypto.getRandomValues(buf);
+        var S4 = function(num) {
+            var ret = num.toString(16);
+            while(ret.length < 4){
+                ret = "0"+ret;
+            }
+            return ret;
+        };
+        return (S4(buf[0])+S4(buf[1])+"-"+S4(buf[2])+"-"+S4(buf[3])+"-"+S4(buf[4])+"-"+S4(buf[5])+S4(buf[6])+S4(buf[7]));
     },
 
     // workerwrap wraps a function definition to be executed via a web worker. When the function
@@ -487,9 +473,7 @@ this.Serulian = (function($global) {
     },
 
   	'empty': function() {
-  		return new Promise(function(resolve, reject) {
-  			resolve();
-  		});
+  		return Promise.resolve(null);
   	},
 
     'resolve': function(value) {
@@ -572,33 +556,10 @@ this.Serulian = (function($global) {
           creator.apply(tpe, args);
 
           // Add default type-system members.
-          if (kind == 'type') {
-            // toJSON.
-            tpe.prototype.toJSON = function() {
-              var root = $t.nominalroot(this);
-              if (root.toJSON) {
-                return root.toJSON()
-              }
-
-              return root;
-            };
-          } else if (kind == 'struct') {
-            // $box.
-            tpe.$box = function(data, opt_lazycheck) {
-              var instance = new tpe();
-              instance.$data = data;
-              instance.$lazycheck = opt_lazycheck || true;
-              return instance;
-            };
-
-            // toJSON.
-            tpe.prototype.toJSON = function() {
-              return this.$data;
-            };
-
+          if (kind == 'struct') {
             // String.
             tpe.prototype.String = function() {
-              return $promise.resolve($t.nominalwrap(JSON.stringify(this, null, ' '), $a['string']));
+              return $promise.resolve($t.box(JSON.stringify(this, $global.__serulian_internal.autoUnbox, ' '), $a['string']));
             };
 
             // Stringify.
@@ -607,7 +568,7 @@ this.Serulian = (function($global) {
               return function() {
                 // Special case JSON, as it uses an internal method.
                 if (T == $a['json']) {
-                  return $promise.resolve($t.nominalwrap(JSON.stringify($this), $a['string']));
+                  return $promise.resolve($t.box(JSON.stringify($this, $global.__serulian_internal.autoUnbox), $a['string']));
                 }
 
                 return $this.Mapping().then(function(mapped) {
@@ -623,21 +584,18 @@ this.Serulian = (function($global) {
               return function(value) {
                 // Special case JSON for performance, as it uses an internal method.
                 if (T == $a['json']) {
-                  var parsed = JSON.parse($t.nominalunwrap(value));
-                  var boxed = tpe.$box(parsed, true);
+                  var parsed = JSON.parse($t.unbox(value));
+                  var boxed = $t.box(parsed, tpe, /* external */ true);
 
                   // Call Mapping to ensure every field is checked.
                   return boxed.Mapping().then(function() {
-                    boxed.$lazycheck = false;
                     return $promise.resolve(boxed);
                   });
                 }
 
                 return T.Get().then(function(resolved) {
                   return (resolved.Parse(value)).then(function(parsed) {
-                    // TODO: *efficiently* unwrap internal nominal types.
-                    var data = JSON.parse(JSON.stringify($t.nominalunwrap(parsed)));
-                    return $promise.resolve(tpe.$box(data));
+                    return $promise.resolve($t.box(parsed, tpe, /* external */ true));
                   });
                 });
               };

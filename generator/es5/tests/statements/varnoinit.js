@@ -6,7 +6,7 @@ $module('varnoinit', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            $t.nominalwrap(1234, $g.____testlib.basictypes.Integer);
+            $t.box(1234, $g.____testlib.basictypes.Integer);
             $state.current = -1;
             return;
 

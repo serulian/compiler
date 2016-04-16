@@ -21,7 +21,7 @@ $module('identifier', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            someVar = $t.nominalwrap(2, $g.____testlib.basictypes.Integer);
+            someVar = $t.box(2, $g.____testlib.basictypes.Integer);
             $g.identifier.SomeClass;
             $g.identifier.AnotherFunction;
             someParam;

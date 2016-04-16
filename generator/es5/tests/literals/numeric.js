@@ -5,12 +5,12 @@ $module('numeric', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            $t.nominalwrap(2, $g.____testlib.basictypes.Integer);
-            $t.nominalwrap(2.0, $g.____testlib.basictypes.Float64);
-            $t.nominalwrap(3.14159, $g.____testlib.basictypes.Float64);
-            $t.nominalwrap(20, $g.____testlib.basictypes.Integer);
-            $t.nominalwrap(42, $g.____testlib.basictypes.Float64);
-            $t.nominalwrap(42.5, $g.____testlib.basictypes.Float64);
+            $t.box(2, $g.____testlib.basictypes.Integer);
+            $t.box(2.0, $g.____testlib.basictypes.Float64);
+            $t.box(3.14159, $g.____testlib.basictypes.Float64);
+            $t.box(20, $g.____testlib.basictypes.Integer);
+            $t.box(42, $g.____testlib.basictypes.Float64);
+            $t.box(42.5, $g.____testlib.basictypes.Float64);
             $state.current = -1;
             return;
 

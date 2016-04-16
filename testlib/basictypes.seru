@@ -292,11 +292,11 @@ class JSON {
 	}
 
 	function<string> Stringify(value mapping<any>) {
-		return string(NativeJSON.stringify(Object(value)))
+		return string(NativeJSON.stringify(Object(value), Internal.autoUnbox))
 	}
 
 	function<mapping<any>> Parse(value string) {
-		return mapping<any>(NativeJSON.parse(NativeString(value), Internal.autoNominalWrap))
+		return mapping<any>(NativeJSON.parse(NativeString(value), Internal.autoBox))
 	}
 }
 

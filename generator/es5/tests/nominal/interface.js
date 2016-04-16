@@ -16,7 +16,7 @@ $module('interface', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              $state.resolve($t.nominalwrap(42, $g.____testlib.basictypes.Integer));
+              $state.resolve($t.box(42, $g.____testlib.basictypes.Integer));
               return;
 
             default:
@@ -36,14 +36,9 @@ $module('interface', function () {
   this.$type('Valued', false, '', function () {
     var $instance = this.prototype;
     var $static = this;
-    this.new = function ($wrapped) {
+    this.$box = function ($wrapped) {
       var instance = new this();
-      instance.$wrapped = $wrapped;
-      return instance;
-    };
-    this.$box = function (data) {
-      var instance = new this();
-      instance.$wrapped = data;
+      instance[BOXED_DATA_PROPERTY] = $wrapped;
       return instance;
     };
     $instance.GetValue = function () {
@@ -52,7 +47,7 @@ $module('interface', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              $t.nominalunwrap($this).SomeValue().then(function ($result0) {
+              $t.unbox($this).SomeValue().then(function ($result0) {
                 $result = $result0;
                 $state.current = 1;
                 $callback($state);
@@ -94,8 +89,8 @@ $module('interface', function () {
           case 1:
             sc = $result;
             v = sc;
-            $t.nominalwrap(v, $g.interface.Valued).GetValue().then(function ($result0) {
-              return $g.____testlib.basictypes.Integer.$equals($result0, $t.nominalwrap(42, $g.____testlib.basictypes.Integer)).then(function ($result1) {
+            $t.box(v, $g.interface.Valued).GetValue().then(function ($result0) {
+              return $g.____testlib.basictypes.Integer.$equals($result0, $t.box(42, $g.____testlib.basictypes.Integer)).then(function ($result1) {
                 $result = $result1;
                 $state.current = 2;
                 $callback($state);

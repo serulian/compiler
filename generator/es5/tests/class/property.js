@@ -6,7 +6,7 @@ $module('property', function () {
     $static.new = function () {
       var instance = new $static();
       var init = [];
-      init.push($promise.resolve($t.nominalwrap(false, $g.____testlib.basictypes.Boolean)).then(function (result) {
+      init.push($promise.resolve($t.box(false, $g.____testlib.basictypes.Boolean)).then(function (result) {
         instance.SomeBool = result;
       }));
       return $promise.all(init).then(function () {
@@ -66,7 +66,7 @@ $module('property', function () {
 
           case 1:
             $result;
-            sc.SomeProp($t.nominalwrap(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
+            sc.SomeProp($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $state.current = 2;
               $callback($state);

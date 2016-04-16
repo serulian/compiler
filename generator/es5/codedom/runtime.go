@@ -17,9 +17,8 @@ const (
 	NullableComparisonFunction RuntimeFunction = "$t.nullcompare"
 	AssertNotNullFunction      RuntimeFunction = "$t.assertnotnull"
 	StreamMemberAccessFunction RuntimeFunction = "$t.streamaccess"
-	NominalWrapFunction        RuntimeFunction = "$t.nominalwrap"
-	NominalUnwrapFunction      RuntimeFunction = "$t.nominalunwrap"
-	NominalRootFunction        RuntimeFunction = "$t.nominalroot"
+	BoxFunction                RuntimeFunction = "$t.box"
+	UnboxFunction              RuntimeFunction = "$t.unbox"
 	NullableInvokeFunction     RuntimeFunction = "$t.nullableinvoke"
 
 	TranslatePromiseFunction RuntimeFunction = "$promise.translate"

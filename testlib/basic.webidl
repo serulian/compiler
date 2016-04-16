@@ -5,7 +5,8 @@ interface Window {
 
 [NoInterfaceObject]
 interface __serulian_internal {
-  static any autoNominalWrap(any value);
+  static any autoBox(any value);
+  static any autoUnbox();
 };
 
 [Constructor, NativeOperator=Plus, NativeOperator=Equals]

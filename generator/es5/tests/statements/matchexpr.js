@@ -6,10 +6,10 @@ $module('matchexpr', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            $t.nominalwrap(123, $g.____testlib.basictypes.Integer);
+            $t.box(123, $g.____testlib.basictypes.Integer);
             $temp0 = someVar;
-            $g.____testlib.basictypes.Integer.$equals($temp0, $t.nominalwrap(1, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-              $result = $t.nominalunwrap($result0);
+            $g.____testlib.basictypes.Integer.$equals($temp0, $t.box(1, $g.____testlib.basictypes.Integer)).then(function ($result0) {
+              $result = $t.unbox($result0);
               $state.current = 1;
               $callback($state);
             }).catch(function (err) {
@@ -28,18 +28,18 @@ $module('matchexpr', function () {
             break;
 
           case 2:
-            $t.nominalwrap(1234, $g.____testlib.basictypes.Integer);
+            $t.box(1234, $g.____testlib.basictypes.Integer);
             $state.current = 3;
             continue;
 
           case 3:
-            $t.nominalwrap(789, $g.____testlib.basictypes.Integer);
+            $t.box(789, $g.____testlib.basictypes.Integer);
             $state.current = -1;
             return;
 
           case 4:
-            $g.____testlib.basictypes.Integer.$equals($temp0, $t.nominalwrap(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-              $result = $t.nominalunwrap($result0);
+            $g.____testlib.basictypes.Integer.$equals($temp0, $t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
+              $result = $t.unbox($result0);
               $state.current = 5;
               $callback($state);
             }).catch(function (err) {
@@ -58,7 +58,7 @@ $module('matchexpr', function () {
             break;
 
           case 6:
-            $t.nominalwrap(2345, $g.____testlib.basictypes.Integer);
+            $t.box(2345, $g.____testlib.basictypes.Integer);
             $state.current = 3;
             continue;
 
@@ -73,7 +73,7 @@ $module('matchexpr', function () {
             break;
 
           case 8:
-            $t.nominalwrap(3456, $g.____testlib.basictypes.Integer);
+            $t.box(3456, $g.____testlib.basictypes.Integer);
             $state.current = 3;
             continue;
 

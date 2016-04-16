@@ -5,7 +5,7 @@ $module('functioncall', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            $g.functioncall.AnotherFunction($t.nominalwrap(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
+            $g.functioncall.AnotherFunction($t.box(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $state.current = 1;
               $callback($state);
@@ -31,7 +31,7 @@ $module('functioncall', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            $state.resolve($t.nominalwrap(!$t.nominalunwrap(param), $g.____testlib.basictypes.Boolean));
+            $state.resolve($t.box(!$t.unbox(param), $g.____testlib.basictypes.Boolean));
             return;
 
           default:

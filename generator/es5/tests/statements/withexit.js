@@ -16,7 +16,7 @@ $module('withexit', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              $g.withexit.someBool = $t.nominalwrap(true, $g.____testlib.basictypes.Boolean);
+              $g.withexit.someBool = $t.box(true, $g.____testlib.basictypes.Boolean);
               $state.current = -1;
               return;
 
@@ -36,7 +36,7 @@ $module('withexit', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            $t.nominalwrap(123, $g.____testlib.basictypes.Integer);
+            $t.box(123, $g.____testlib.basictypes.Integer);
             $state.current = 1;
             continue;
 
@@ -53,7 +53,7 @@ $module('withexit', function () {
           case 2:
             $temp0 = $result;
             $state.pushr($temp0, '$temp0');
-            $t.nominalwrap(456, $g.____testlib.basictypes.Integer);
+            $t.box(456, $g.____testlib.basictypes.Integer);
             if (false) {
               $state.current = 3;
               continue;
@@ -73,7 +73,7 @@ $module('withexit', function () {
             continue;
 
           case 5:
-            $t.nominalwrap(12, $g.____testlib.basictypes.Integer);
+            $t.box(12, $g.____testlib.basictypes.Integer);
             $state.popr('$temp0').then(function ($result0) {
               $result = $result0;
               $state.current = 6;
@@ -97,7 +97,7 @@ $module('withexit', function () {
     return $promise.build($state);
   };
   this.$init(function () {
-    return $promise.resolve($t.nominalwrap(false, $g.____testlib.basictypes.Boolean)).then(function (result) {
+    return $promise.resolve($t.box(false, $g.____testlib.basictypes.Boolean)).then(function (result) {
       $static.someBool = result;
     });
   });

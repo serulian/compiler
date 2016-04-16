@@ -5,49 +5,57 @@ $module('tagged', function () {
     var $instance = this.prototype;
     $static.new = function (SomeField) {
       var instance = new $static();
-      instance.$data = {
+      instance[BOXED_DATA_PROPERTY] = {
+        somefield: SomeField,
       };
-      instance.$lazycheck = false;
-      instance.SomeField = SomeField;
       return $promise.resolve(instance);
     };
-    $instance.Mapping = function () {
-      var mappedData = {
+    $static.$box = function (data) {
+      var instance = new $static();
+      instance[BOXED_DATA_PROPERTY] = data;
+      instance.$lazychecked = {
       };
-      mappedData['somefield'] = this.SomeField;
-      return $promise.resolve($t.nominalwrap(mappedData, $g.____testlib.basictypes.Mapping($t.any)));
+      Object.defineProperty(instance, 'SomeField', {
+        get: function () {
+          if (this.$lazychecked['somefield']) {
+            $t.ensurevalue(this[BOXED_DATA_PROPERTY]['somefield'], $g.____testlib.basictypes.Integer, false, 'SomeField');
+            this.$lazychecked['somefield'] = true;
+          }
+          return $t.box(this[BOXED_DATA_PROPERTY]['somefield'], $g.____testlib.basictypes.Integer);
+        },
+      });
+      instance.Mapping = function () {
+        var mapped = {
+        };
+        mapped['somefield'] = this.SomeField;
+        return $promise.resolve($t.box(mapped, $g.____testlib.basictypes.Mapping($t.any)));
+      };
+      return instance;
+    };
+    $instance.Mapping = function () {
+      return $promise.resolve($t.box(this[BOXED_DATA_PROPERTY], $g.____testlib.basictypes.Mapping($t.any)));
     };
     $static.$equals = function (left, right) {
       if (left === right) {
-        return $promise.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
+        return $promise.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
       }
       var promises = [];
-      promises.push($t.equals(left.$data['somefield'], right.$data['somefield'], $g.____testlib.basictypes.Integer));
+      promises.push($t.equals(left[BOXED_DATA_PROPERTY]['somefield'], right[BOXED_DATA_PROPERTY]['somefield'], $g.____testlib.basictypes.Integer));
       return Promise.all(promises).then(function (values) {
         for (var i = 0; i < values.length; i++) {
           if (!$t.unbox(values[i])) {
-            return $t.nominalwrap(false, $g.____testlib.basictypes.Boolean);
+            return values[i];
           }
         }
-        return $t.nominalwrap(true, $g.____testlib.basictypes.Boolean);
+        return $t.box(true, $g.____testlib.basictypes.Boolean);
       });
     };
     Object.defineProperty($instance, 'SomeField', {
       get: function () {
-        if (this.$lazycheck) {
-          $t.ensurevalue(this.$data['somefield'], $g.____testlib.basictypes.Integer, false, 'SomeField');
-        }
-        if (this.$data['somefield'] != null) {
-          return $t.box(this.$data['somefield'], $g.____testlib.basictypes.Integer);
-        }
-        return this.$data['somefield'];
+        return this[BOXED_DATA_PROPERTY]['somefield'];
       },
-      set: function (val) {
-        if (val != null) {
-          this.$data['somefield'] = $t.unbox(val);
-          return;
-        }
-        this.$data['somefield'] = val;
+      set: function (value) {
+        this[BOXED_DATA_PROPERTY]['somefield'] = value;
       },
     });
   });
@@ -59,7 +67,7 @@ $module('tagged', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            $g.tagged.SomeStruct.new($t.nominalwrap(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
+            $g.tagged.SomeStruct.new($t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $temp0 = $result0;
               $result = ($temp0, $temp0);
               $state.current = 1;
@@ -71,7 +79,7 @@ $module('tagged', function () {
 
           case 1:
             s = $result;
-            jsonString = $t.nominalwrap('{"somefield":2}', $g.____testlib.basictypes.String);
+            jsonString = $t.box('{"somefield":2}', $g.____testlib.basictypes.String);
             s.Stringify($g.____testlib.basictypes.JSON)().then(function ($result0) {
               return $g.____testlib.basictypes.String.$equals($result0, jsonString).then(function ($result1) {
                 $result = $result1;

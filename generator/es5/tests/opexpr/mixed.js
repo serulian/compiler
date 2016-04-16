@@ -6,11 +6,11 @@ $module('mixed', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            finalIndex = $t.nominalwrap(-2, $g.____testlib.basictypes.Integer);
-            $g.____testlib.basictypes.Integer.$compare(finalIndex, $t.nominalwrap(10, $g.____testlib.basictypes.Integer)).then(function ($result1) {
-              return $promise.resolve($t.nominalunwrap($result1) >= 0).then(function ($result0) {
-                return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.Integer.$compare(finalIndex, $t.nominalwrap(0, $g.____testlib.basictypes.Integer))).then(function ($result2) {
-                  $result = $t.nominalwrap($result0 || ($t.nominalunwrap($result2) < 0), $g.____testlib.basictypes.Boolean);
+            finalIndex = $t.box(-2, $g.____testlib.basictypes.Integer);
+            $g.____testlib.basictypes.Integer.$compare(finalIndex, $t.box(10, $g.____testlib.basictypes.Integer)).then(function ($result1) {
+              return $promise.resolve($t.unbox($result1) >= 0).then(function ($result0) {
+                return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.Integer.$compare(finalIndex, $t.box(0, $g.____testlib.basictypes.Integer))).then(function ($result2) {
+                  $result = $t.box($result0 || ($t.unbox($result2) < 0), $g.____testlib.basictypes.Boolean);
                   $state.current = 1;
                   $callback($state);
                 });
