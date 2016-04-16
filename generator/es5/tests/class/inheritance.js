@@ -6,7 +6,7 @@ $module('inheritance', function () {
     $static.new = function () {
       var instance = new $static();
       var init = [];
-      init.push($promise.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean)).then(function (result) {
+      init.push($promise.resolve($t.box(true, $g.____testlib.basictypes.Boolean)).then(function (result) {
         instance.SomeBool = result;
       }));
       return $promise.all(init).then(function () {
@@ -25,7 +25,7 @@ $module('inheritance', function () {
     $static.new = function () {
       var instance = new $static();
       var init = [];
-      init.push($promise.resolve($t.nominalwrap(false, $g.____testlib.basictypes.Boolean)).then(function (result) {
+      init.push($promise.resolve($t.box(false, $g.____testlib.basictypes.Boolean)).then(function (result) {
         instance.SomeBool = result;
       }));
       return $promise.all(init).then(function () {

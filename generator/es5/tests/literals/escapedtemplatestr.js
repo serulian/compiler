@@ -5,7 +5,7 @@ $module('escapedtemplatestr', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            $t.nominalwrap("hello 'world'! \"This is a\n\tlong quote!\"", $g.____testlib.basictypes.String);
+            $t.box("hello 'world'! \"This is a\n\tlong quote!\"", $g.____testlib.basictypes.String);
             $state.current = -1;
             return;
 

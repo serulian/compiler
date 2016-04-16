@@ -16,7 +16,7 @@ $module('in', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              $state.resolve($t.nominalwrap(!$t.nominalunwrap(value), $g.____testlib.basictypes.Boolean));
+              $state.resolve($t.box(!$t.unbox(value), $g.____testlib.basictypes.Boolean));
               return;
 
             default:
@@ -46,7 +46,7 @@ $module('in', function () {
 
           case 1:
             sc = $result;
-            sc.$contains($t.nominalwrap(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
+            sc.$contains($t.box(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $state.current = 2;
               $callback($state);

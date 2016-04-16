@@ -6,7 +6,7 @@ $module('nominalbase', function () {
     $static.new = function () {
       var instance = new $static();
       var init = [];
-      init.push($promise.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean)).then(function (result) {
+      init.push($promise.resolve($t.box(true, $g.____testlib.basictypes.Boolean)).then(function (result) {
         instance.SomeField = result;
       }));
       return $promise.all(init).then(function () {
@@ -18,14 +18,9 @@ $module('nominalbase', function () {
   this.$type('FirstNominal', false, '', function () {
     var $instance = this.prototype;
     var $static = this;
-    this.new = function ($wrapped) {
+    this.$box = function ($wrapped) {
       var instance = new this();
-      instance.$wrapped = $wrapped;
-      return instance;
-    };
-    this.$box = function (data) {
-      var instance = new this();
-      instance.$wrapped = data;
+      instance[BOXED_DATA_PROPERTY] = $wrapped;
       return instance;
     };
     $instance.SomeProp = $t.property(function () {
@@ -34,7 +29,7 @@ $module('nominalbase', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              $state.resolve($t.nominalwrap(!$t.nominalunwrap($t.nominalunwrap($this).SomeField), $g.____testlib.basictypes.Boolean));
+              $state.resolve($t.box(!$t.unbox($t.unbox($this).SomeField), $g.____testlib.basictypes.Boolean));
               return;
 
             default:
@@ -50,14 +45,9 @@ $module('nominalbase', function () {
   this.$type('SecondNominal', false, '', function () {
     var $instance = this.prototype;
     var $static = this;
-    this.new = function ($wrapped) {
+    this.$box = function ($wrapped) {
       var instance = new this();
-      instance.$wrapped = $wrapped;
-      return instance;
-    };
-    this.$box = function (data) {
-      var instance = new this();
-      instance.$wrapped = data;
+      instance[BOXED_DATA_PROPERTY] = $wrapped;
       return instance;
     };
     $instance.GetValue = function () {
@@ -66,8 +56,8 @@ $module('nominalbase', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              $t.nominalwrap($this, $g.nominalbase.FirstNominal).SomeProp().then(function ($result0) {
-                $result = $t.nominalwrap(!$t.nominalunwrap($result0), $g.____testlib.basictypes.Boolean);
+              $t.box($this, $g.nominalbase.FirstNominal).SomeProp().then(function ($result0) {
+                $result = $t.box(!$t.unbox($result0), $g.____testlib.basictypes.Boolean);
                 $state.current = 1;
                 $callback($state);
               }).catch(function (err) {
@@ -107,7 +97,7 @@ $module('nominalbase', function () {
 
           case 1:
             sc = $result;
-            sn = $t.nominalwrap($t.nominalwrap(sc, $g.nominalbase.FirstNominal), $g.nominalbase.SecondNominal);
+            sn = $t.box($t.box(sc, $g.nominalbase.FirstNominal), $g.nominalbase.SecondNominal);
             sn.GetValue().then(function ($result0) {
               $result = $result0;
               $state.current = 2;

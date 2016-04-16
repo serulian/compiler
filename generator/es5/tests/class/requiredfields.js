@@ -10,7 +10,7 @@ $module('requiredfields', function () {
         instance.SomeField = SomeField;
         resolve();
       }));
-      init.push($promise.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean)).then(function (result) {
+      init.push($promise.resolve($t.box(true, $g.____testlib.basictypes.Boolean)).then(function (result) {
         instance.AnotherField = result;
       }));
       return $promise.all(init).then(function () {
@@ -25,7 +25,7 @@ $module('requiredfields', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            $g.requiredfields.SomeClass.new($t.nominalwrap(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
+            $g.requiredfields.SomeClass.new($t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $result = $result0;
               $state.current = 1;
               $callback($state);
@@ -36,9 +36,9 @@ $module('requiredfields', function () {
 
           case 1:
             sc = $result;
-            $g.____testlib.basictypes.Integer.$equals(sc.SomeField, $t.nominalwrap(2, $g.____testlib.basictypes.Integer)).then(function ($result1) {
-              return $promise.resolve($t.nominalunwrap($result1)).then(function ($result0) {
-                $result = $t.nominalwrap($result0 && $t.nominalunwrap(sc.AnotherField), $g.____testlib.basictypes.Boolean);
+            $g.____testlib.basictypes.Integer.$equals(sc.SomeField, $t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result1) {
+              return $promise.resolve($t.unbox($result1)).then(function ($result0) {
+                $result = $t.box($result0 && $t.unbox(sc.AnotherField), $g.____testlib.basictypes.Boolean);
                 $state.current = 2;
                 $callback($state);
               });

@@ -33,7 +33,7 @@ $module('basic', function () {
     return $promise.build($state);
   };
   this.$init(function () {
-    return $promise.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean)).then(function (result) {
+    return $promise.resolve($t.box(true, $g.____testlib.basictypes.Boolean)).then(function (result) {
       $static.someInt = result;
     });
   });

@@ -16,7 +16,7 @@ $module('functioncallnullable', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              $state.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
+              $state.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
               return;
 
             default:
@@ -45,7 +45,7 @@ $module('functioncallnullable', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              $state.resolve($t.nominalwrap(false, $g.____testlib.basictypes.Boolean));
+              $state.resolve($t.box(false, $g.____testlib.basictypes.Boolean));
               return;
 
             default:
@@ -78,9 +78,9 @@ $module('functioncallnullable', function () {
             sc = $result;
             ac = null;
             $t.nullableinvoke(sc, 'SomeMethod', true, []).then(function ($result1) {
-              return $promise.resolve($t.nominalunwrap($t.nullcompare($result1, $t.nominalwrap(false, $g.____testlib.basictypes.Boolean)))).then(function ($result0) {
+              return $promise.resolve($t.unbox($t.nullcompare($result1, $t.box(false, $g.____testlib.basictypes.Boolean)))).then(function ($result0) {
                 return ($promise.shortcircuit($result0, false) || $t.nullableinvoke(ac, 'AnotherMethod', true, [])).then(function ($result2) {
-                  $result = $t.nominalwrap($result0 && $t.nominalunwrap($t.nullcompare($result2, $t.nominalwrap(true, $g.____testlib.basictypes.Boolean))), $g.____testlib.basictypes.Boolean);
+                  $result = $t.box($result0 && $t.unbox($t.nullcompare($result2, $t.box(true, $g.____testlib.basictypes.Boolean))), $g.____testlib.basictypes.Boolean);
                   $state.current = 2;
                   $callback($state);
                 });

@@ -16,7 +16,7 @@ $module('shortcircuit', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              $state.resolve($t.nominalwrap('WHY CALLED? ', $g.____testlib.basictypes.String));
+              $state.resolve($t.box('WHY CALLED? ', $g.____testlib.basictypes.String));
               return;
 
             default:
@@ -88,9 +88,9 @@ $module('shortcircuit', function () {
           case 0:
             $promise.resolve(false).then(function ($result1) {
               return ($promise.shortcircuit($result1, false) || $g.shortcircuit.neverCalled()).then(function ($result2) {
-                return $promise.resolve(!($result1 && $t.nominalunwrap($result2))).then(function ($result0) {
+                return $promise.resolve(!($result1 && $t.unbox($result2))).then(function ($result0) {
                   return ($promise.shortcircuit($result0, true) || $g.shortcircuit.anotherNeverCalled()).then(function ($result3) {
-                    $result = $t.nominalwrap($result0 || $t.nominalunwrap($result3), $g.____testlib.basictypes.Boolean);
+                    $result = $t.box($result0 || $t.unbox($result3), $g.____testlib.basictypes.Boolean);
                     $state.current = 1;
                     $callback($state);
                   });

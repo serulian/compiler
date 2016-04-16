@@ -16,7 +16,7 @@ $module('structuralcast', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              $state.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
+              $state.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
               return;
 
             default:
@@ -48,7 +48,7 @@ $module('structuralcast', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              $state.resolve($t.nominalwrap(false, $g.____testlib.basictypes.Boolean));
+              $state.resolve($t.box(false, $g.____testlib.basictypes.Boolean));
               return;
 
             default:

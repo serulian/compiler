@@ -5,49 +5,57 @@ $module('slice', function () {
     var $instance = this.prototype;
     $static.new = function (AnotherInt) {
       var instance = new $static();
-      instance.$data = {
+      instance[BOXED_DATA_PROPERTY] = {
+        AnotherInt: AnotherInt,
       };
-      instance.$lazycheck = false;
-      instance.AnotherInt = AnotherInt;
       return $promise.resolve(instance);
     };
-    $instance.Mapping = function () {
-      var mappedData = {
+    $static.$box = function (data) {
+      var instance = new $static();
+      instance[BOXED_DATA_PROPERTY] = data;
+      instance.$lazychecked = {
       };
-      mappedData['AnotherInt'] = this.AnotherInt;
-      return $promise.resolve($t.nominalwrap(mappedData, $g.____testlib.basictypes.Mapping($t.any)));
+      Object.defineProperty(instance, 'AnotherInt', {
+        get: function () {
+          if (this.$lazychecked['AnotherInt']) {
+            $t.ensurevalue(this[BOXED_DATA_PROPERTY]['AnotherInt'], $g.____testlib.basictypes.Integer, false, 'AnotherInt');
+            this.$lazychecked['AnotherInt'] = true;
+          }
+          return $t.box(this[BOXED_DATA_PROPERTY]['AnotherInt'], $g.____testlib.basictypes.Integer);
+        },
+      });
+      instance.Mapping = function () {
+        var mapped = {
+        };
+        mapped['AnotherInt'] = this.AnotherInt;
+        return $promise.resolve($t.box(mapped, $g.____testlib.basictypes.Mapping($t.any)));
+      };
+      return instance;
+    };
+    $instance.Mapping = function () {
+      return $promise.resolve($t.box(this[BOXED_DATA_PROPERTY], $g.____testlib.basictypes.Mapping($t.any)));
     };
     $static.$equals = function (left, right) {
       if (left === right) {
-        return $promise.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
+        return $promise.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
       }
       var promises = [];
-      promises.push($t.equals(left.$data['AnotherInt'], right.$data['AnotherInt'], $g.____testlib.basictypes.Integer));
+      promises.push($t.equals(left[BOXED_DATA_PROPERTY]['AnotherInt'], right[BOXED_DATA_PROPERTY]['AnotherInt'], $g.____testlib.basictypes.Integer));
       return Promise.all(promises).then(function (values) {
         for (var i = 0; i < values.length; i++) {
           if (!$t.unbox(values[i])) {
-            return $t.nominalwrap(false, $g.____testlib.basictypes.Boolean);
+            return values[i];
           }
         }
-        return $t.nominalwrap(true, $g.____testlib.basictypes.Boolean);
+        return $t.box(true, $g.____testlib.basictypes.Boolean);
       });
     };
     Object.defineProperty($instance, 'AnotherInt', {
       get: function () {
-        if (this.$lazycheck) {
-          $t.ensurevalue(this.$data['AnotherInt'], $g.____testlib.basictypes.Integer, false, 'AnotherInt');
-        }
-        if (this.$data['AnotherInt'] != null) {
-          return $t.box(this.$data['AnotherInt'], $g.____testlib.basictypes.Integer);
-        }
-        return this.$data['AnotherInt'];
+        return this[BOXED_DATA_PROPERTY]['AnotherInt'];
       },
-      set: function (val) {
-        if (val != null) {
-          this.$data['AnotherInt'] = $t.unbox(val);
-          return;
-        }
-        this.$data['AnotherInt'] = val;
+      set: function (value) {
+        this[BOXED_DATA_PROPERTY]['AnotherInt'] = value;
       },
     });
   });
@@ -57,49 +65,57 @@ $module('slice', function () {
     var $instance = this.prototype;
     $static.new = function (Values) {
       var instance = new $static();
-      instance.$data = {
+      instance[BOXED_DATA_PROPERTY] = {
+        Values: Values,
       };
-      instance.$lazycheck = false;
-      instance.Values = Values;
       return $promise.resolve(instance);
     };
-    $instance.Mapping = function () {
-      var mappedData = {
+    $static.$box = function (data) {
+      var instance = new $static();
+      instance[BOXED_DATA_PROPERTY] = data;
+      instance.$lazychecked = {
       };
-      mappedData['Values'] = this.Values;
-      return $promise.resolve($t.nominalwrap(mappedData, $g.____testlib.basictypes.Mapping($t.any)));
+      Object.defineProperty(instance, 'Values', {
+        get: function () {
+          if (this.$lazychecked['Values']) {
+            $t.ensurevalue(this[BOXED_DATA_PROPERTY]['Values'], $g.____testlib.basictypes.Slice($g.slice.AnotherStruct), false, 'Values');
+            this.$lazychecked['Values'] = true;
+          }
+          return $t.box(this[BOXED_DATA_PROPERTY]['Values'], $g.____testlib.basictypes.Slice($g.slice.AnotherStruct));
+        },
+      });
+      instance.Mapping = function () {
+        var mapped = {
+        };
+        mapped['Values'] = this.Values;
+        return $promise.resolve($t.box(mapped, $g.____testlib.basictypes.Mapping($t.any)));
+      };
+      return instance;
+    };
+    $instance.Mapping = function () {
+      return $promise.resolve($t.box(this[BOXED_DATA_PROPERTY], $g.____testlib.basictypes.Mapping($t.any)));
     };
     $static.$equals = function (left, right) {
       if (left === right) {
-        return $promise.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
+        return $promise.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
       }
       var promises = [];
-      promises.push($t.equals(left.$data['Values'], right.$data['Values'], $g.____testlib.basictypes.Slice($g.slice.AnotherStruct)));
+      promises.push($t.equals(left[BOXED_DATA_PROPERTY]['Values'], right[BOXED_DATA_PROPERTY]['Values'], $g.____testlib.basictypes.Slice($g.slice.AnotherStruct)));
       return Promise.all(promises).then(function (values) {
         for (var i = 0; i < values.length; i++) {
           if (!$t.unbox(values[i])) {
-            return $t.nominalwrap(false, $g.____testlib.basictypes.Boolean);
+            return values[i];
           }
         }
-        return $t.nominalwrap(true, $g.____testlib.basictypes.Boolean);
+        return $t.box(true, $g.____testlib.basictypes.Boolean);
       });
     };
     Object.defineProperty($instance, 'Values', {
       get: function () {
-        if (this.$lazycheck) {
-          $t.ensurevalue(this.$data['Values'], $g.____testlib.basictypes.Slice($g.slice.AnotherStruct), false, 'Values');
-        }
-        if (this.$data['Values'] != null) {
-          return $t.box(this.$data['Values'], $g.____testlib.basictypes.Slice($g.slice.AnotherStruct));
-        }
-        return this.$data['Values'];
+        return this[BOXED_DATA_PROPERTY]['Values'];
       },
-      set: function (val) {
-        if (val != null) {
-          this.$data['Values'] = $t.unbox(val);
-          return;
-        }
-        this.$data['Values'] = val;
+      set: function (value) {
+        this[BOXED_DATA_PROPERTY]['Values'] = value;
       },
     });
   });
@@ -114,11 +130,11 @@ $module('slice', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            $g.slice.AnotherStruct.new($t.nominalwrap(1, $g.____testlib.basictypes.Integer)).then(function ($result0) {
+            $g.slice.AnotherStruct.new($t.box(1, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $temp0 = $result0;
-              return $g.slice.AnotherStruct.new($t.nominalwrap(2, $g.____testlib.basictypes.Integer)).then(function ($result1) {
+              return $g.slice.AnotherStruct.new($t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result1) {
                 $temp1 = $result1;
-                return $g.slice.AnotherStruct.new($t.nominalwrap(3, $g.____testlib.basictypes.Integer)).then(function ($result2) {
+                return $g.slice.AnotherStruct.new($t.box(3, $g.____testlib.basictypes.Integer)).then(function ($result2) {
                   $temp2 = $result2;
                   return $g.____testlib.basictypes.List($g.slice.AnotherStruct).forArray([($temp0, $temp0), ($temp1, $temp1), ($temp2, $temp2)]).then(function ($result3) {
                     $result = $result3;
@@ -134,7 +150,7 @@ $module('slice', function () {
 
           case 1:
             values = $result;
-            values.$slice($t.nominalwrap(0, $g.____testlib.basictypes.Integer), null).then(function ($result0) {
+            values.$slice($t.box(0, $g.____testlib.basictypes.Integer), null).then(function ($result0) {
               return $g.slice.SomeStruct.new($result0).then(function ($result1) {
                 $temp3 = $result1;
                 $result = ($temp3, $temp3);
@@ -148,7 +164,7 @@ $module('slice', function () {
 
           case 2:
             s = $result;
-            jsonString = $t.nominalwrap('{"Values":[{"AnotherInt":1},{"AnotherInt":2},{"AnotherInt":3}]}', $g.____testlib.basictypes.String);
+            jsonString = $t.box('{"Values":[{"AnotherInt":1},{"AnotherInt":2},{"AnotherInt":3}]}', $g.____testlib.basictypes.String);
             s.Stringify($g.____testlib.basictypes.JSON)().then(function ($result0) {
               return $g.____testlib.basictypes.String.$equals($result0, jsonString).then(function ($result1) {
                 $result = $result1;
@@ -173,13 +189,13 @@ $module('slice', function () {
 
           case 4:
             parsed = $result;
-            $promise.resolve($t.nominalunwrap(correct)).then(function ($result1) {
+            $promise.resolve($t.unbox(correct)).then(function ($result1) {
               return ($promise.shortcircuit($result1, false) || s.Values.Length()).then(function ($result2) {
-                return ($promise.shortcircuit($result1, false) || $g.____testlib.basictypes.Integer.$equals($result2, $t.nominalwrap(3, $g.____testlib.basictypes.Integer))).then(function ($result3) {
-                  return $promise.resolve($result1 && $t.nominalunwrap($result3)).then(function ($result0) {
-                    return ($promise.shortcircuit($result0, false) || s.Values.$index($t.nominalwrap(0, $g.____testlib.basictypes.Integer))).then(function ($result4) {
-                      return ($promise.shortcircuit($result0, false) || $g.____testlib.basictypes.Integer.$equals($result4.AnotherInt, $t.nominalwrap(1, $g.____testlib.basictypes.Integer))).then(function ($result5) {
-                        $result = $t.nominalwrap($result0 && $t.nominalunwrap($result5), $g.____testlib.basictypes.Boolean);
+                return ($promise.shortcircuit($result1, false) || $g.____testlib.basictypes.Integer.$equals($result2, $t.box(3, $g.____testlib.basictypes.Integer))).then(function ($result3) {
+                  return $promise.resolve($result1 && $t.unbox($result3)).then(function ($result0) {
+                    return ($promise.shortcircuit($result0, false) || s.Values.$index($t.box(0, $g.____testlib.basictypes.Integer))).then(function ($result4) {
+                      return ($promise.shortcircuit($result0, false) || $g.____testlib.basictypes.Integer.$equals($result4.AnotherInt, $t.box(1, $g.____testlib.basictypes.Integer))).then(function ($result5) {
+                        $result = $t.box($result0 && $t.unbox($result5), $g.____testlib.basictypes.Boolean);
                         $state.current = 5;
                         $callback($state);
                       });

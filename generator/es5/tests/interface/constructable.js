@@ -42,7 +42,7 @@ $module('constructable', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              $state.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
+              $state.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
               return;
 
             default:

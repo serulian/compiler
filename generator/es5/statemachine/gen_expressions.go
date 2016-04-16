@@ -507,7 +507,7 @@ func (eg *expressionGenerator) generateNominalWrapping(nominalWrapping *codedom.
 	}
 
 	call := codedom.RuntimeFunctionCall(
-		codedom.NominalWrapFunction,
+		codedom.BoxFunction,
 		[]codedom.Expression{
 			nominalWrapping.ChildExpression,
 			codedom.TypeLiteral(nominalWrapping.NominalTypeRef, nominalWrapping.BasisNode())},
@@ -523,7 +523,7 @@ func (eg *expressionGenerator) generateNominalUnwrapping(nominalUnwrapping *code
 	}
 
 	call := codedom.RuntimeFunctionCall(
-		codedom.NominalUnwrapFunction,
+		codedom.UnboxFunction,
 		[]codedom.Expression{
 			nominalUnwrapping.ChildExpression,
 		},

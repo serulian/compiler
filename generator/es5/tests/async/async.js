@@ -21,8 +21,8 @@ $module('async', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            $promise.translate($g.async.DoSomethingAsync($t.nominalwrap(3, $g.____testlib.basictypes.Integer))).then(function ($result0) {
-              return $g.____testlib.basictypes.Integer.$equals($result0, $t.nominalwrap(3, $g.____testlib.basictypes.Integer)).then(function ($result1) {
+            $promise.translate($g.async.DoSomethingAsync($t.box(3, $g.____testlib.basictypes.Integer))).then(function ($result0) {
+              return $g.____testlib.basictypes.Integer.$equals($result0, $t.box(3, $g.____testlib.basictypes.Integer)).then(function ($result1) {
                 $result = $result1;
                 $state.current = 1;
                 $callback($state);

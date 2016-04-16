@@ -5,7 +5,7 @@ $module('matchnoexpr', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            $t.nominalwrap(123, $g.____testlib.basictypes.Integer);
+            $t.box(123, $g.____testlib.basictypes.Integer);
             if (false) {
               $state.current = 1;
               continue;
@@ -16,12 +16,12 @@ $module('matchnoexpr', function () {
             break;
 
           case 1:
-            $t.nominalwrap(1234, $g.____testlib.basictypes.Integer);
+            $t.box(1234, $g.____testlib.basictypes.Integer);
             $state.current = 2;
             continue;
 
           case 2:
-            $t.nominalwrap(789, $g.____testlib.basictypes.Integer);
+            $t.box(789, $g.____testlib.basictypes.Integer);
             $state.current = -1;
             return;
 
@@ -36,7 +36,7 @@ $module('matchnoexpr', function () {
             break;
 
           case 4:
-            $t.nominalwrap(2345, $g.____testlib.basictypes.Integer);
+            $t.box(2345, $g.____testlib.basictypes.Integer);
             $state.current = 2;
             continue;
 
@@ -51,7 +51,7 @@ $module('matchnoexpr', function () {
             break;
 
           case 6:
-            $t.nominalwrap(3456, $g.____testlib.basictypes.Integer);
+            $t.box(3456, $g.____testlib.basictypes.Integer);
             $state.current = 2;
             continue;
 

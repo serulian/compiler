@@ -8,11 +8,11 @@ $module('mappingliteral', function () {
             $g.____testlib.basictypes.Mapping($g.____testlib.basictypes.Boolean).overObject(function () {
               var obj = {
               };
-              obj['somekey'] = $t.nominalwrap(true, $g.____testlib.basictypes.Boolean);
-              obj['anotherkey'] = $t.nominalwrap(false, $g.____testlib.basictypes.Boolean);
+              obj['somekey'] = $t.box(true, $g.____testlib.basictypes.Boolean);
+              obj['anotherkey'] = $t.box(false, $g.____testlib.basictypes.Boolean);
               return obj;
             }()).then(function ($result0) {
-              return $result0.$index($t.nominalwrap('somekey', $g.____testlib.basictypes.String)).then(function ($result1) {
+              return $result0.$index($t.box('somekey', $g.____testlib.basictypes.String)).then(function ($result1) {
                 $result = $result1;
                 $state.current = 1;
                 $callback($state);

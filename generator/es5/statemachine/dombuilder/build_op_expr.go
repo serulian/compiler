@@ -38,7 +38,7 @@ var operatorMap = map[compilergraph.TaggedValue]string{
 // buildRootTypeExpression builds the CodeDOM for a root type expression.
 func (db *domBuilder) buildRootTypeExpression(node compilergraph.GraphNode) codedom.Expression {
 	childExpr := db.getExpression(node, parser.NodeUnaryExpressionChildExpr)
-	return codedom.RuntimeFunctionCall(codedom.NominalRootFunction, []codedom.Expression{childExpr}, node)
+	return codedom.RuntimeFunctionCall(codedom.UnboxFunction, []codedom.Expression{childExpr}, node)
 }
 
 // buildFunctionCall builds the CodeDOM for a function call.
@@ -52,8 +52,8 @@ func (db *domBuilder) buildFunctionCall(node compilergraph.GraphNode) codedom.Ex
 		wrappedExpr := db.getExpression(node, parser.NodeFunctionCallArgument)
 		childTypeRef := childScope.StaticTypeRef(db.scopegraph.TypeGraph())
 
-		// If the childTypeRef is not nominal, then we know we are unwrapping.
-		if !childTypeRef.IsNominal() {
+		// If the childTypeRef is not nominal or structural, then we know we are unwrapping.
+		if !childTypeRef.IsNominalOrStruct() {
 			return codedom.NominalUnwrapping(wrappedExpr, node)
 		} else {
 			return codedom.NominalRefWrapping(wrappedExpr, childTypeRef, node)

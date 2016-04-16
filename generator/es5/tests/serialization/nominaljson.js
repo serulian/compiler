@@ -3,14 +3,9 @@ $module('nominaljson', function () {
   this.$type('SomeNominal', false, '', function () {
     var $instance = this.prototype;
     var $static = this;
-    this.new = function ($wrapped) {
+    this.$box = function ($wrapped) {
       var instance = new this();
-      instance.$wrapped = $wrapped;
-      return instance;
-    };
-    this.$box = function (data) {
-      var instance = new this();
-      instance.$wrapped = $t.box(data, $g.nominaljson.AnotherStruct);
+      instance[BOXED_DATA_PROPERTY] = $wrapped;
       return instance;
     };
     $instance.GetValue = function () {
@@ -19,7 +14,7 @@ $module('nominaljson', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              $state.resolve($t.nominalunwrap($this).AnotherBool);
+              $state.resolve($t.box($this, $g.nominaljson.AnotherStruct).AnotherBool);
               return;
 
             default:
@@ -37,49 +32,57 @@ $module('nominaljson', function () {
     var $instance = this.prototype;
     $static.new = function (AnotherBool) {
       var instance = new $static();
-      instance.$data = {
+      instance[BOXED_DATA_PROPERTY] = {
+        AnotherBool: AnotherBool,
       };
-      instance.$lazycheck = false;
-      instance.AnotherBool = AnotherBool;
       return $promise.resolve(instance);
     };
-    $instance.Mapping = function () {
-      var mappedData = {
+    $static.$box = function (data) {
+      var instance = new $static();
+      instance[BOXED_DATA_PROPERTY] = data;
+      instance.$lazychecked = {
       };
-      mappedData['AnotherBool'] = this.AnotherBool;
-      return $promise.resolve($t.nominalwrap(mappedData, $g.____testlib.basictypes.Mapping($t.any)));
+      Object.defineProperty(instance, 'AnotherBool', {
+        get: function () {
+          if (this.$lazychecked['AnotherBool']) {
+            $t.ensurevalue(this[BOXED_DATA_PROPERTY]['AnotherBool'], $g.____testlib.basictypes.Boolean, false, 'AnotherBool');
+            this.$lazychecked['AnotherBool'] = true;
+          }
+          return $t.box(this[BOXED_DATA_PROPERTY]['AnotherBool'], $g.____testlib.basictypes.Boolean);
+        },
+      });
+      instance.Mapping = function () {
+        var mapped = {
+        };
+        mapped['AnotherBool'] = this.AnotherBool;
+        return $promise.resolve($t.box(mapped, $g.____testlib.basictypes.Mapping($t.any)));
+      };
+      return instance;
+    };
+    $instance.Mapping = function () {
+      return $promise.resolve($t.box(this[BOXED_DATA_PROPERTY], $g.____testlib.basictypes.Mapping($t.any)));
     };
     $static.$equals = function (left, right) {
       if (left === right) {
-        return $promise.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
+        return $promise.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
       }
       var promises = [];
-      promises.push($t.equals(left.$data['AnotherBool'], right.$data['AnotherBool'], $g.____testlib.basictypes.Boolean));
+      promises.push($t.equals(left[BOXED_DATA_PROPERTY]['AnotherBool'], right[BOXED_DATA_PROPERTY]['AnotherBool'], $g.____testlib.basictypes.Boolean));
       return Promise.all(promises).then(function (values) {
         for (var i = 0; i < values.length; i++) {
           if (!$t.unbox(values[i])) {
-            return $t.nominalwrap(false, $g.____testlib.basictypes.Boolean);
+            return values[i];
           }
         }
-        return $t.nominalwrap(true, $g.____testlib.basictypes.Boolean);
+        return $t.box(true, $g.____testlib.basictypes.Boolean);
       });
     };
     Object.defineProperty($instance, 'AnotherBool', {
       get: function () {
-        if (this.$lazycheck) {
-          $t.ensurevalue(this.$data['AnotherBool'], $g.____testlib.basictypes.Boolean, false, 'AnotherBool');
-        }
-        if (this.$data['AnotherBool'] != null) {
-          return $t.box(this.$data['AnotherBool'], $g.____testlib.basictypes.Boolean);
-        }
-        return this.$data['AnotherBool'];
+        return this[BOXED_DATA_PROPERTY]['AnotherBool'];
       },
-      set: function (val) {
-        if (val != null) {
-          this.$data['AnotherBool'] = $t.unbox(val);
-          return;
-        }
-        this.$data['AnotherBool'] = val;
+      set: function (value) {
+        this[BOXED_DATA_PROPERTY]['AnotherBool'] = value;
       },
     });
   });
@@ -89,49 +92,57 @@ $module('nominaljson', function () {
     var $instance = this.prototype;
     $static.new = function (Nested) {
       var instance = new $static();
-      instance.$data = {
+      instance[BOXED_DATA_PROPERTY] = {
+        Nested: Nested,
       };
-      instance.$lazycheck = false;
-      instance.Nested = Nested;
       return $promise.resolve(instance);
     };
-    $instance.Mapping = function () {
-      var mappedData = {
+    $static.$box = function (data) {
+      var instance = new $static();
+      instance[BOXED_DATA_PROPERTY] = data;
+      instance.$lazychecked = {
       };
-      mappedData['Nested'] = this.Nested;
-      return $promise.resolve($t.nominalwrap(mappedData, $g.____testlib.basictypes.Mapping($t.any)));
+      Object.defineProperty(instance, 'Nested', {
+        get: function () {
+          if (this.$lazychecked['Nested']) {
+            $t.ensurevalue(this[BOXED_DATA_PROPERTY]['Nested'], $g.nominaljson.SomeNominal, false, 'Nested');
+            this.$lazychecked['Nested'] = true;
+          }
+          return $t.box(this[BOXED_DATA_PROPERTY]['Nested'], $g.nominaljson.SomeNominal);
+        },
+      });
+      instance.Mapping = function () {
+        var mapped = {
+        };
+        mapped['Nested'] = this.Nested;
+        return $promise.resolve($t.box(mapped, $g.____testlib.basictypes.Mapping($t.any)));
+      };
+      return instance;
+    };
+    $instance.Mapping = function () {
+      return $promise.resolve($t.box(this[BOXED_DATA_PROPERTY], $g.____testlib.basictypes.Mapping($t.any)));
     };
     $static.$equals = function (left, right) {
       if (left === right) {
-        return $promise.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
+        return $promise.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
       }
       var promises = [];
-      promises.push($t.equals(left.$data['Nested'], right.$data['Nested'], $g.nominaljson.SomeNominal));
+      promises.push($t.equals(left[BOXED_DATA_PROPERTY]['Nested'], right[BOXED_DATA_PROPERTY]['Nested'], $g.nominaljson.SomeNominal));
       return Promise.all(promises).then(function (values) {
         for (var i = 0; i < values.length; i++) {
           if (!$t.unbox(values[i])) {
-            return $t.nominalwrap(false, $g.____testlib.basictypes.Boolean);
+            return values[i];
           }
         }
-        return $t.nominalwrap(true, $g.____testlib.basictypes.Boolean);
+        return $t.box(true, $g.____testlib.basictypes.Boolean);
       });
     };
     Object.defineProperty($instance, 'Nested', {
       get: function () {
-        if (this.$lazycheck) {
-          $t.ensurevalue(this.$data['Nested'], $g.nominaljson.SomeNominal, false, 'Nested');
-        }
-        if (this.$data['Nested'] != null) {
-          return $t.box(this.$data['Nested'], $g.nominaljson.SomeNominal);
-        }
-        return this.$data['Nested'];
+        return this[BOXED_DATA_PROPERTY]['Nested'];
       },
-      set: function (val) {
-        if (val != null) {
-          this.$data['Nested'] = $t.unbox(val);
-          return;
-        }
-        this.$data['Nested'] = val;
+      set: function (value) {
+        this[BOXED_DATA_PROPERTY]['Nested'] = value;
       },
     });
   });
@@ -145,9 +156,9 @@ $module('nominaljson', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            $g.nominaljson.AnotherStruct.new($t.nominalwrap(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
+            $g.nominaljson.AnotherStruct.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $temp0 = $result0;
-              return $g.nominaljson.SomeStruct.new($t.nominalwrap(($temp0, $temp0), $g.nominaljson.SomeNominal)).then(function ($result1) {
+              return $g.nominaljson.SomeStruct.new($t.box(($temp0, $temp0), $g.nominaljson.SomeNominal)).then(function ($result1) {
                 $temp1 = $result1;
                 $result = ($temp1, $temp1);
                 $state.current = 1;
@@ -160,7 +171,7 @@ $module('nominaljson', function () {
 
           case 1:
             s = $result;
-            jsonString = $t.nominalwrap('{"Nested":{"AnotherBool":true}}', $g.____testlib.basictypes.String);
+            jsonString = $t.box('{"Nested":{"AnotherBool":true}}', $g.____testlib.basictypes.String);
             s.Stringify($g.____testlib.basictypes.JSON)().then(function ($result0) {
               return $g.____testlib.basictypes.String.$equals($result0, jsonString).then(function ($result1) {
                 $result = $result1;
@@ -185,9 +196,9 @@ $module('nominaljson', function () {
 
           case 3:
             parsed = $result;
-            $promise.resolve($t.nominalunwrap(correct)).then(function ($result0) {
+            $promise.resolve($t.unbox(correct)).then(function ($result0) {
               return ($promise.shortcircuit($result0, false) || parsed.Nested.GetValue()).then(function ($result1) {
-                $result = $t.nominalwrap($result0 && $t.nominalunwrap($result1), $g.____testlib.basictypes.Boolean);
+                $result = $t.box($result0 && $t.unbox($result1), $g.____testlib.basictypes.Boolean);
                 $state.current = 4;
                 $callback($state);
               });

@@ -215,8 +215,8 @@ $module('binary', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            $g.____testlib.basictypes.Integer.$plus($t.nominalwrap(1, $g.____testlib.basictypes.Integer), $t.nominalwrap(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-              return $g.____testlib.basictypes.Integer.$equals($result0, $t.nominalwrap(3, $g.____testlib.basictypes.Integer)).then(function ($result1) {
+            $g.____testlib.basictypes.Integer.$plus($t.box(1, $g.____testlib.basictypes.Integer), $t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
+              return $g.____testlib.basictypes.Integer.$equals($result0, $t.box(3, $g.____testlib.basictypes.Integer)).then(function ($result1) {
                 $result = $result1;
                 $state.current = 1;
                 $callback($state);

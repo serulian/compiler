@@ -65,7 +65,7 @@ $module('funcref', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            $g.funcref.SomeClass.new($t.nominalwrap(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
+            $g.funcref.SomeClass.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $temp0 = $result0;
               $result = ($temp0, $temp0);
               $state.current = 1;

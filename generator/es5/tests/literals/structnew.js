@@ -10,7 +10,7 @@ $module('structnew', function () {
         instance.SomeField = SomeField;
         resolve();
       }));
-      init.push($promise.resolve($t.nominalwrap(false, $g.____testlib.basictypes.Boolean)).then(function (result) {
+      init.push($promise.resolve($t.box(false, $g.____testlib.basictypes.Boolean)).then(function (result) {
         instance.anotherField = result;
       }));
       return $promise.all(init).then(function () {
@@ -59,9 +59,9 @@ $module('structnew', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            $g.structnew.SomeClass.new($t.nominalwrap(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
+            $g.structnew.SomeClass.new($t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $temp0 = $result0;
-              return $temp0.AnotherField($t.nominalwrap(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
+              return $temp0.AnotherField($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
                 $result = ($temp0, $result1, $temp0);
                 $state.current = 1;
                 $callback($state);
@@ -73,9 +73,9 @@ $module('structnew', function () {
 
           case 1:
             sc = $result;
-            $g.____testlib.basictypes.Integer.$equals(sc.SomeField, $t.nominalwrap(2, $g.____testlib.basictypes.Integer)).then(function ($result1) {
-              return $promise.resolve($t.nominalunwrap($result1)).then(function ($result0) {
-                $result = $t.nominalwrap($result0 && $t.nominalunwrap(sc.anotherField), $g.____testlib.basictypes.Boolean);
+            $g.____testlib.basictypes.Integer.$equals(sc.SomeField, $t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result1) {
+              return $promise.resolve($t.unbox($result1)).then(function ($result0) {
+                $result = $t.box($result0 && $t.unbox(sc.anotherField), $g.____testlib.basictypes.Boolean);
                 $state.current = 2;
                 $callback($state);
               });

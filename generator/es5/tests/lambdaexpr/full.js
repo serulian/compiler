@@ -22,7 +22,7 @@ $module('full', function () {
               });
               return $promise.build($state);
             };
-            lambda($t.nominalwrap(123, $g.____testlib.basictypes.Integer), $t.nominalwrap(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
+            lambda($t.box(123, $g.____testlib.basictypes.Integer), $t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $state.current = 1;
               $callback($state);

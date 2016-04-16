@@ -3,14 +3,9 @@ $module('nominal', function () {
   this.$type('CoolBool', false, '', function () {
     var $instance = this.prototype;
     var $static = this;
-    this.new = function ($wrapped) {
+    this.$box = function ($wrapped) {
       var instance = new this();
-      instance.$wrapped = $wrapped;
-      return instance;
-    };
-    this.$box = function (data) {
-      var instance = new this();
-      instance.$wrapped = data;
+      instance[BOXED_DATA_PROPERTY] = $wrapped;
       return instance;
     };
   });
@@ -20,49 +15,57 @@ $module('nominal', function () {
     var $instance = this.prototype;
     $static.new = function (someField) {
       var instance = new $static();
-      instance.$data = {
+      instance[BOXED_DATA_PROPERTY] = {
+        someField: someField,
       };
-      instance.$lazycheck = false;
-      instance.someField = someField;
       return $promise.resolve(instance);
     };
-    $instance.Mapping = function () {
-      var mappedData = {
+    $static.$box = function (data) {
+      var instance = new $static();
+      instance[BOXED_DATA_PROPERTY] = data;
+      instance.$lazychecked = {
       };
-      mappedData['someField'] = this.someField;
-      return $promise.resolve($t.nominalwrap(mappedData, $g.____testlib.basictypes.Mapping($t.any)));
+      Object.defineProperty(instance, 'someField', {
+        get: function () {
+          if (this.$lazychecked['someField']) {
+            $t.ensurevalue(this[BOXED_DATA_PROPERTY]['someField'], $g.____testlib.basictypes.Boolean, false, 'someField');
+            this.$lazychecked['someField'] = true;
+          }
+          return $t.box(this[BOXED_DATA_PROPERTY]['someField'], $g.nominal.CoolBool);
+        },
+      });
+      instance.Mapping = function () {
+        var mapped = {
+        };
+        mapped['someField'] = this.someField;
+        return $promise.resolve($t.box(mapped, $g.____testlib.basictypes.Mapping($t.any)));
+      };
+      return instance;
+    };
+    $instance.Mapping = function () {
+      return $promise.resolve($t.box(this[BOXED_DATA_PROPERTY], $g.____testlib.basictypes.Mapping($t.any)));
     };
     $static.$equals = function (left, right) {
       if (left === right) {
-        return $promise.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
+        return $promise.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
       }
       var promises = [];
-      promises.push($t.equals(left.$data['someField'], right.$data['someField'], $g.nominal.CoolBool));
+      promises.push($t.equals(left[BOXED_DATA_PROPERTY]['someField'], right[BOXED_DATA_PROPERTY]['someField'], $g.nominal.CoolBool));
       return Promise.all(promises).then(function (values) {
         for (var i = 0; i < values.length; i++) {
           if (!$t.unbox(values[i])) {
-            return $t.nominalwrap(false, $g.____testlib.basictypes.Boolean);
+            return values[i];
           }
         }
-        return $t.nominalwrap(true, $g.____testlib.basictypes.Boolean);
+        return $t.box(true, $g.____testlib.basictypes.Boolean);
       });
     };
     Object.defineProperty($instance, 'someField', {
       get: function () {
-        if (this.$lazycheck) {
-          $t.ensurevalue(this.$data['someField'], $g.____testlib.basictypes.Boolean, false, 'someField');
-        }
-        if (this.$data['someField'] != null) {
-          return $t.box(this.$data['someField'], $g.nominal.CoolBool);
-        }
-        return this.$data['someField'];
+        return this[BOXED_DATA_PROPERTY]['someField'];
       },
-      set: function (val) {
-        if (val != null) {
-          this.$data['someField'] = $t.unbox(val);
-          return;
-        }
-        this.$data['someField'] = val;
+      set: function (value) {
+        this[BOXED_DATA_PROPERTY]['someField'] = value;
       },
     });
   });
@@ -75,7 +78,7 @@ $module('nominal', function () {
       while (true) {
         switch ($state.current) {
           case 0:
-            c = $t.nominalwrap($t.nominalwrap(true, $g.____testlib.basictypes.Boolean), $g.nominal.CoolBool);
+            c = $t.box($t.box(true, $g.____testlib.basictypes.Boolean), $g.nominal.CoolBool);
             $g.nominal.SomeStruct.new(c).then(function ($result0) {
               $temp0 = $result0;
               $result = ($temp0, $temp0);
@@ -88,7 +91,7 @@ $module('nominal', function () {
 
           case 1:
             s = $result;
-            $g.nominal.SomeStruct.Parse($g.____testlib.basictypes.JSON)($t.nominalwrap('{"someField": true}', $g.____testlib.basictypes.String)).then(function ($result0) {
+            $g.nominal.SomeStruct.Parse($g.____testlib.basictypes.JSON)($t.box('{"someField": true}', $g.____testlib.basictypes.String)).then(function ($result0) {
               $result = $result0;
               $state.current = 2;
               $callback($state);
@@ -100,7 +103,7 @@ $module('nominal', function () {
           case 2:
             s2 = $result;
             $promise.resolve(s2.someField).then(function ($result0) {
-              $result = $t.nominalwrap($result0 && s.someField, $g.____testlib.basictypes.Boolean);
+              $result = $t.box($result0 && s.someField, $g.____testlib.basictypes.Boolean);
               $state.current = 3;
               $callback($state);
             }).catch(function (err) {

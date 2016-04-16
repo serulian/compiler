@@ -16,7 +16,7 @@ $module('generic', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              $state.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
+              $state.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
               return;
 
             default:
@@ -32,14 +32,9 @@ $module('generic', function () {
   this.$type('MyType', true, '', function (T) {
     var $instance = this.prototype;
     var $static = this;
-    this.new = function ($wrapped) {
+    this.$box = function ($wrapped) {
       var instance = new this();
-      instance.$wrapped = $wrapped;
-      return instance;
-    };
-    this.$box = function (data) {
-      var instance = new this();
-      instance.$wrapped = data;
+      instance[BOXED_DATA_PROPERTY] = $wrapped;
       return instance;
     };
     $instance.AnotherThing = function () {
@@ -48,7 +43,7 @@ $module('generic', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              $t.nominalunwrap($this).DoSomething().then(function ($result0) {
+              $t.unbox($this).DoSomething().then(function ($result0) {
                 $result = $result0;
                 $state.current = 1;
                 $callback($state);
@@ -75,7 +70,7 @@ $module('generic', function () {
         while (true) {
           switch ($state.current) {
             case 0:
-              $state.resolve($t.nominalwrap(true, $g.____testlib.basictypes.Boolean));
+              $state.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
               return;
 
             default:
@@ -106,11 +101,11 @@ $module('generic', function () {
 
           case 1:
             sc = $result;
-            m = $t.nominalwrap(sc, $g.generic.MyType($g.____testlib.basictypes.Integer));
+            m = $t.box(sc, $g.generic.MyType($g.____testlib.basictypes.Integer));
             m.SomeProp().then(function ($result1) {
-              return $promise.resolve($t.nominalunwrap($result1)).then(function ($result0) {
+              return $promise.resolve($t.unbox($result1)).then(function ($result0) {
                 return ($promise.shortcircuit($result0, false) || m.AnotherThing()).then(function ($result2) {
-                  $result = $t.nominalwrap($result0 && $t.nominalunwrap($result2), $g.____testlib.basictypes.Boolean);
+                  $result = $t.box($result0 && $t.unbox($result2), $g.____testlib.basictypes.Boolean);
                   $state.current = 2;
                   $callback($state);
                 });

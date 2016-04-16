@@ -148,6 +148,16 @@ const compositionTemplateStr = `
 // genericsTemplateStr defines a template for generating generics.
 const genericsTemplateStr = `{{ range $index, $generic := .Generics }}{{ if $index }}, {{ end }}{{ $generic.Name }}{{ end }}`
 
+// interfaceTemplateStr defines the template for generating an interface type.
+const interfaceTemplateStr = `
+this.$interface('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .Generics }}) {
+	var $static = this;
+	{{range $idx, $kv := .GenerateImplementedMembers.Iter }}
+  	  {{ $kv.Value }}
+  	{{end}}
+});
+`
+
 // classTemplateStr defines the template for generating a class type.
 const classTemplateStr = `
 this.$class('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .Generics }}) {
@@ -190,92 +200,98 @@ this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{
 	var $static = this;
 	var $instance = this.prototype;
 
+	// new is the constructor called from Serulian code to construct the struct instance.
 	$static.new = function({{ range $ridx, $field := .RequiredFields }}{{ if $ridx }}, {{ end }}{{ $field.Name }}{{ end }}) {
 		var instance = new $static();
-		instance.$data = {};
-		instance.$lazycheck = false;
+		instance[BOXED_DATA_PROPERTY] = {
+			{{ range $idx, $field := .RequiredFields }}
+			'{{ $field.SerializableName }}': {{ $field.Name }},
+			{{ end }}
+		};
 
-		{{ range $idx, $field := .RequiredFields }}
-			instance.{{ $field.Name }} = {{ $field.Name }};
-		{{ end }}
 		return $promise.resolve(instance);
 	};
 
 	{{ $parent := . }}
 
-	$instance.Mapping = function() {
-		var mappedData = {};
+	// $box is the constructor called when deserializing a struct from JSON or another form of Mapping.
+	$static.$box = function(data) {		
+		var instance = new $static();
+		instance[BOXED_DATA_PROPERTY] = data;
+		instance.$lazychecked = {};
 
+		// Override the properties to ensure we box as necessary.
 		{{ range $idx, $field := .Fields }}
-		mappedData['{{ $field.SerializableName }}'] = this.{{ $field.Name }};
+	 	{{ $boxed := $field.MemberType.IsNominalOrStruct }}
+		  Object.defineProperty(instance, '{{ $field.Name }}', {
+		    get: function() {
+		    	if (this.$lazychecked['{{ $field.SerializableName }}']) {
+		    		$t.ensurevalue(this[BOXED_DATA_PROPERTY]['{{ $field.SerializableName }}'], {{ $parent.TypeReferenceCall $field.MemberType.NominalRootType }}, {{ $field.MemberType.NullValueAllowed }}, '{{ $field.Name }}');
+		    		this.$lazychecked['{{ $field.SerializableName }}'] = true;
+		    	}
+
+		    	{{ if $boxed }}
+		    	return $t.box(this[BOXED_DATA_PROPERTY]['{{ $field.SerializableName }}'], {{ $parent.TypeReferenceCall $field.MemberType }});
+	    		{{ else }}
+		    	return this[BOXED_DATA_PROPERTY]['{{ $field.SerializableName }}'];
+		    	{{ end }}
+		    }
+		  });
 		{{ end }}
 
-		return $promise.resolve($t.nominalwrap(mappedData, {{ .TypeReferenceCall .MappingAnyType }}));
+		// Override Mapping to make sure it returns boxed values.
+		instance.Mapping = function() {
+			var mapped = {};
+
+			{{ range $idx, $field := .Fields }}
+				mapped['{{ $field.SerializableName }}'] = this.{{ $field.Name }};
+			{{ end }}
+
+			return $promise.resolve($t.box(mapped, {{ .TypeReferenceCall .MappingAnyType }}));
+		};
+
+		return instance;
+	};
+
+	$instance.Mapping = function() {
+		return $promise.resolve($t.box(this[BOXED_DATA_PROPERTY], {{ .TypeReferenceCall .MappingAnyType }}));
 	};
 
 	$static.$equals = function(left, right) {
 		if (left === right) {
-			return $promise.resolve($t.nominalwrap(true, {{ .TypeReferenceCall .BoolType }}));
+			return $promise.resolve($t.box(true, {{ .TypeReferenceCall .BoolType }}));
 		}
 
 		// TODO: find a way to do this without checking *all* fields.
 		var promises = [];
 		{{ range $idx, $field := .Fields }}
-		promises.push($t.equals(left.$data['{{ $field.SerializableName }}'], 
-		 					    right.$data['{{ $field.SerializableName }}'],
+		promises.push($t.equals(left[BOXED_DATA_PROPERTY]['{{ $field.SerializableName }}'], 
+		 					    right[BOXED_DATA_PROPERTY]['{{ $field.SerializableName }}'],
 		 					    {{ $parent.TypeReferenceCall $field.MemberType }}));
 		{{ end }}
 
 		return Promise.all(promises).then(function(values) {
 		  for (var i = 0; i < values.length; i++) {
 		  	if (!$t.unbox(values[i])) {
-	   		  return $t.nominalwrap(false, {{ .TypeReferenceCall .BoolType }});
+	   		  return values[i];
 		  	}
 		  }
 
-   		  return $t.nominalwrap(true, {{ .TypeReferenceCall .BoolType }});
+   		  return $t.box(true, {{ .TypeReferenceCall .BoolType }});
 		});
 	};
 
 	{{ range $idx, $field := .Fields }}
-	  {{ $boxed := $field.MemberType.IsNominalOrStruct }}
 	  Object.defineProperty($instance, '{{ $field.Name }}', {
 	    get: function() {
-	    	if (this.$lazycheck) {
-	    		$t.ensurevalue(this.$data['{{ $field.SerializableName }}'], {{ $parent.TypeReferenceCall $field.MemberType.NominalRootType }}, {{ $field.MemberType.NullValueAllowed }}, '{{ $field.Name }}');
-	    	}
-
-	    	{{ if $boxed }}
-	    	if (this.$data['{{ $field.SerializableName }}'] != null) {
-		    	return $t.box(this.$data['{{ $field.SerializableName }}'], {{ $parent.TypeReferenceCall $field.MemberType }});
-	    	}
-	    	{{ end }}
-
-	    	return this.$data['{{ $field.SerializableName }}'];
+	    	return this[BOXED_DATA_PROPERTY]['{{ $field.SerializableName }}'];
 	    },
 
-	    set: function(val) {
-	    	{{ if $boxed }}
-	    	if (val != null) {
-		    	this.$data['{{ $field.SerializableName }}'] = $t.unbox(val);
-		    	return;
-	    	}
-	    	{{ end }}
-
-	    	this.$data['{{ $field.SerializableName }}'] = val;
+	    set: function(value) {
+	    	this[BOXED_DATA_PROPERTY]['{{ $field.SerializableName }}'] = value;
 	    }
 	  });
 	{{ end }}
-});
-`
-
-// interfaceTemplateStr defines the template for generating an interface type.
-const interfaceTemplateStr = `
-this.$interface('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .Generics }}) {
-	var $static = this;
-	{{range $idx, $kv := .GenerateImplementedMembers.Iter }}
-  	  {{ $kv.Value }}
-  	{{end}}
 });
 `
 
@@ -285,22 +301,12 @@ this.$type('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .
 	var $instance = this.prototype;
 	var $static = this;
 
-	this.new = function($wrapped) {
+	this.$box = function($wrapped) {
 		var instance = new this();
-		instance.$wrapped = $wrapped;
+		instance[BOXED_DATA_PROPERTY] = $wrapped;
 		return instance;
 	};
 
-	this.$box = function(data) {
-		var instance = new this();
-		{{ if .WrappedType.IsStruct }}
-		instance.$wrapped = $t.box(data, {{ .TypeReferenceCall .WrappedType }});
-		{{ else }}
-		instance.$wrapped = data;
-		{{ end }}
-		return instance;
-	};
-	
 	{{range $idx, $kv := .GenerateImplementedMembers.Iter }}
   	  {{ $kv.Value }}
   	{{end}}
