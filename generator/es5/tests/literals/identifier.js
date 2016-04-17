@@ -17,14 +17,16 @@ $module('identifier', function () {
   };
   $static.DoSomething = function (someParam) {
     var someVar;
-    var $state = $t.sm(function ($continue) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       someVar = $t.box(2, $g.____testlib.basictypes.Integer);
       $g.identifier.SomeClass;
       $g.identifier.AnotherFunction;
       someParam;
       someVar;
-      $state.resolve();
-    });
-    return $promise.build($state);
+      $resolve();
+      return;
+    };
+    return $promise.new($continue);
   };
 });

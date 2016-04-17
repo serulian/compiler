@@ -2,35 +2,41 @@ $module('withas', function () {
   var $static = this;
   $static.DoSomething = function (someExpr) {
     var someName;
-    var $state = $t.sm(function ($continue) {
+    var $current = 0;
+    var $resources = $t.resourcehandler();
+    var $continue = function ($resolve, $reject) {
+      $resolve = $resources.bind($resolve);
+      $reject = $resources.bind($reject);
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $t.box(123, $g.____testlib.basictypes.Integer);
             someName = someExpr;
-            $state.pushr(someName, 'someName');
+            $resources.pushr(someName, 'someName');
             $t.box(456, $g.____testlib.basictypes.Integer);
-            $state.popr('someName').then(function ($result0) {
+            $resources.popr('someName').then(function ($result0) {
               $result = $result0;
-              $state.current = 1;
-              $continue($state);
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 1:
             $result;
             $t.box(789, $g.____testlib.basictypes.Integer);
-            $state.current = -1;
+            $resolve();
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

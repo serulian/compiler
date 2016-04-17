@@ -12,79 +12,91 @@ $module('withexit', function () {
     };
     $instance.Release = function () {
       var $this = this;
-      var $state = $t.sm(function ($continue) {
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
         $g.withexit.someBool = $t.box(true, $g.____testlib.basictypes.Boolean);
-        $state.resolve();
-      });
-      return $promise.build($state);
+        $resolve();
+        return;
+      };
+      return $promise.new($continue);
     };
   });
 
   $static.TEST = function () {
     var $temp0;
-    var $state = $t.sm(function ($continue) {
+    var $current = 0;
+    var $resources = $t.resourcehandler();
+    var $continue = function ($resolve, $reject) {
+      $resolve = $resources.bind($resolve);
+      $reject = $resources.bind($reject);
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $t.box(123, $g.____testlib.basictypes.Integer);
-            $state.current = 1;
+            $current = 1;
             continue;
 
           case 1:
             $g.withexit.SomeReleasable.new().then(function ($result0) {
               $result = $result0;
-              $state.current = 2;
-              $continue($state);
+              $current = 2;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 2:
             $temp0 = $result;
-            $state.pushr($temp0, '$temp0');
+            $resources.pushr($temp0, '$temp0');
             $t.box(456, $g.____testlib.basictypes.Integer);
             if (false) {
-              $state.current = 3;
+              $current = 3;
               continue;
             } else {
-              $state.current = 5;
+              $current = 5;
               continue;
             }
             break;
 
           case 3:
-            $state.popr('$temp0').then(function () {
-              $state.current = 4;
-              $continue($state);
+            $resources.popr('$temp0').then(function () {
+              $current = 4;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             continue;
 
           case 5:
             $t.box(12, $g.____testlib.basictypes.Integer);
-            $state.popr('$temp0').then(function ($result0) {
+            $resources.popr('$temp0').then(function ($result0) {
               $result = $result0;
-              $state.current = 6;
-              $continue($state);
+              $current = 6;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 6:
             $result;
-            $state.resolve($g.withexit.someBool);
+            $resolve($g.withexit.someBool);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
   this.$init(function () {
     return $promise.resolve($t.box(false, $g.____testlib.basictypes.Boolean)).then(function (result) {

@@ -3,9 +3,10 @@ $module('boolean', function () {
   $static.TEST = function () {
     var first;
     var second;
-    var $state = $t.sm(function ($continue) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             first = $t.box(true, $g.____testlib.basictypes.Boolean);
             second = $t.box(false, $g.____testlib.basictypes.Boolean);
@@ -13,25 +14,27 @@ $module('boolean', function () {
               return $promise.resolve($result2 && $t.unbox(second)).then(function ($result1) {
                 return $promise.resolve($result1 || $t.unbox(first)).then(function ($result0) {
                   $result = $t.box($result0 || !$t.unbox(second), $g.____testlib.basictypes.Boolean);
-                  $state.current = 1;
-                  $continue($state);
+                  $current = 1;
+                  $continue($resolve, $reject);
+                  return;
                 });
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 1:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

@@ -12,95 +12,105 @@ $module('arrow', function () {
     };
     $instance.Then = function (resolve) {
       var $this = this;
-      var $state = $t.sm(function ($continue) {
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
         while (true) {
-          switch ($state.current) {
+          switch ($current) {
             case 0:
               resolve($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
                 $result = $result0;
-                $state.current = 1;
-                $continue($state);
+                $current = 1;
+                $continue($resolve, $reject);
+                return;
               }).catch(function (err) {
-                $state.reject(err);
+                $reject(err);
+                return;
               });
               return;
 
             case 1:
               $result;
-              $state.resolve($this);
+              $resolve($this);
               return;
 
             default:
-              $state.current = -1;
+              $resolve();
               return;
           }
         }
-      });
-      return $promise.build($state);
+      };
+      return $promise.new($continue);
     };
     $instance.Catch = function (rejection) {
       var $this = this;
-      var $state = $t.sm(function ($continue) {
-        $state.resolve($this);
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve($this);
         return;
-      });
-      return $promise.build($state);
+      };
+      return $promise.new($continue);
     };
   });
 
   $static.DoSomething = function (p) {
     var somebool;
-    var $state = $t.sm(function ($continue) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $promise.translate(p).then(function (resolved) {
               somebool = resolved;
-              $state.current = 1;
-              $continue($state);
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (rejected) {
-              $state.reject(rejected);
+              $reject(rejected);
+              return;
             });
             return;
 
           case 1:
-            $state.resolve(somebool);
+            $resolve(somebool);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
   $static.TEST = function () {
-    var $state = $t.sm(function ($continue) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $g.arrow.SomePromise.new().then(function ($result0) {
               return $g.arrow.DoSomething($result0).then(function ($result1) {
                 $result = $result1;
-                $state.current = 1;
-                $continue($state);
+                $current = 1;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 1:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

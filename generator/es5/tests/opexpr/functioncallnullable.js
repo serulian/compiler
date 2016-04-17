@@ -12,11 +12,12 @@ $module('functioncallnullable', function () {
     };
     $instance.SomeMethod = function () {
       var $this = this;
-      var $state = $t.sm(function ($continue) {
-        $state.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
         return;
-      });
-      return $promise.build($state);
+      };
+      return $promise.new($continue);
     };
   });
 
@@ -32,27 +33,31 @@ $module('functioncallnullable', function () {
     };
     $instance.AnotherMethod = function () {
       var $this = this;
-      var $state = $t.sm(function ($continue) {
-        $state.resolve($t.box(false, $g.____testlib.basictypes.Boolean));
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve($t.box(false, $g.____testlib.basictypes.Boolean));
         return;
-      });
-      return $promise.build($state);
+      };
+      return $promise.new($continue);
     };
   });
 
   $static.TEST = function () {
     var ac;
     var sc;
-    var $state = $t.sm(function ($continue) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $g.functioncallnullable.SomeClass.new().then(function ($result0) {
               $result = $result0;
-              $state.current = 1;
-              $continue($state);
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -63,25 +68,27 @@ $module('functioncallnullable', function () {
               return $promise.resolve($t.unbox($t.nullcompare($result1, $t.box(false, $g.____testlib.basictypes.Boolean)))).then(function ($result0) {
                 return ($promise.shortcircuit($result0, false) || $t.nullableinvoke(ac, 'AnotherMethod', true, [])).then(function ($result2) {
                   $result = $t.box($result0 && $t.unbox($t.nullcompare($result2, $t.box(true, $g.____testlib.basictypes.Boolean))), $g.____testlib.basictypes.Boolean);
-                  $state.current = 2;
-                  $continue($state);
+                  $current = 2;
+                  $continue($resolve, $reject);
+                  return;
                 });
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 2:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

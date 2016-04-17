@@ -11,43 +11,47 @@ $module('multiawait', function () {
       });
     };
     $static.$plus = function (first, second) {
-      var $state = $t.sm(function ($continue) {
-        $state.resolve(first);
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve(first);
         return;
-      });
-      return $promise.build($state);
+      };
+      return $promise.new($continue);
     };
   });
 
   $static.DoSomething = function (p, q) {
-    var $state = $t.sm(function ($continue) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $promise.translate(p).then(function ($result0) {
               return $promise.translate(q).then(function ($result1) {
                 return $g.multiawait.SomeClass.$plus($result0, $result1).then(function ($result2) {
                   $result = $result2;
-                  $state.current = 1;
-                  $continue($state);
+                  $current = 1;
+                  $continue($resolve, $reject);
+                  return;
                 });
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 1:
             $result;
-            $state.current = -1;
+            $resolve();
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

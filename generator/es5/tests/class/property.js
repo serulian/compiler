@@ -15,33 +15,39 @@ $module('property', function () {
     };
     $instance.SomeProp = $t.property(function () {
       var $this = this;
-      var $state = $t.sm(function ($continue) {
-        $state.resolve($this.SomeBool);
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve($this.SomeBool);
         return;
-      });
-      return $promise.build($state);
+      };
+      return $promise.new($continue);
     }, function (val) {
       var $this = this;
-      var $state = $t.sm(function ($continue) {
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
         $this.SomeBool = val;
-        $state.resolve();
-      });
-      return $promise.build($state);
+        $resolve();
+        return;
+      };
+      return $promise.new($continue);
     });
   });
 
   $static.AnotherFunction = function (sc) {
-    var $state = $t.sm(function ($continue) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             sc.SomeBool;
             sc.SomeProp().then(function ($result0) {
               $result = $result0;
-              $state.current = 1;
-              $continue($state);
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -49,10 +55,12 @@ $module('property', function () {
             $result;
             sc.SomeProp($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
-              $state.current = 2;
-              $continue($state);
+              $current = 2;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -60,51 +68,56 @@ $module('property', function () {
             $result;
             sc.SomeProp().then(function ($result0) {
               $result = $result0;
-              $state.current = 3;
-              $continue($state);
+              $current = 3;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 3:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
   $static.TEST = function () {
-    var $state = $t.sm(function ($continue) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $g.property.SomeClass.new().then(function ($result0) {
               return $g.property.AnotherFunction($result0).then(function ($result1) {
                 $result = $result1;
-                $state.current = 1;
-                $continue($state);
+                $current = 1;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 1:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

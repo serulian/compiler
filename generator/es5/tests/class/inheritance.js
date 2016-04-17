@@ -56,11 +56,12 @@ $module('inheritance', function () {
     };
     $instance.DoSomething = function () {
       var $this = this;
-      var $state = $t.sm(function ($continue) {
-        $state.resolve($this.SomeBool);
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve($this.SomeBool);
         return;
-      });
-      return $promise.build($state);
+      };
+      return $promise.new($continue);
     };
     Object.defineProperty($instance, 'SomeBool', {
       get: function () {
@@ -78,31 +79,34 @@ $module('inheritance', function () {
   });
 
   $static.TEST = function () {
-    var $state = $t.sm(function ($continue) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $g.inheritance.MainClass.new().then(function ($result0) {
               return $result0.DoSomething().then(function ($result1) {
                 $result = $result1;
-                $state.current = 1;
-                $continue($state);
+                $current = 1;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 1:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

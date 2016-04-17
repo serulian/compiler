@@ -12,11 +12,12 @@ $module('cast', function () {
     };
     $instance.Result = $t.property(function () {
       var $this = this;
-      var $state = $t.sm(function ($continue) {
-        $state.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
         return;
-      });
-      return $promise.build($state);
+      };
+      return $promise.new($continue);
     });
   });
 
@@ -25,57 +26,63 @@ $module('cast', function () {
   });
 
   $static.DoSomething = function (i) {
-    var $state = $t.sm(function ($continue) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $t.cast(i, $g.cast.SomeClass).Result().then(function ($result0) {
               $result = $result0;
-              $state.current = 1;
-              $continue($state);
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 1:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
   $static.TEST = function () {
-    var $state = $t.sm(function ($continue) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $g.cast.SomeClass.new().then(function ($result0) {
               return $g.cast.DoSomething($result0).then(function ($result1) {
                 $result = $result1;
-                $state.current = 1;
-                $continue($state);
+                $current = 1;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 1:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

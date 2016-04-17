@@ -11,88 +11,97 @@ $module('custom', function () {
       });
     };
     $static.Get = function () {
-      var $state = $t.sm(function ($continue) {
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
         while (true) {
-          switch ($state.current) {
+          switch ($current) {
             case 0:
               $g.custom.CustomJSON.new().then(function ($result0) {
                 $result = $result0;
-                $state.current = 1;
-                $continue($state);
+                $current = 1;
+                $continue($resolve, $reject);
+                return;
               }).catch(function (err) {
-                $state.reject(err);
+                $reject(err);
+                return;
               });
               return;
 
             case 1:
-              $state.resolve($result);
+              $resolve($result);
               return;
 
             default:
-              $state.current = -1;
+              $resolve();
               return;
           }
         }
-      });
-      return $promise.build($state);
+      };
+      return $promise.new($continue);
     };
     $instance.Stringify = function (value) {
       var $this = this;
-      var $state = $t.sm(function ($continue) {
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
         while (true) {
-          switch ($state.current) {
+          switch ($current) {
             case 0:
               $g.____testlib.basictypes.JSON.Get().then(function ($result0) {
                 return $result0.Stringify(value).then(function ($result1) {
                   $result = $result1;
-                  $state.current = 1;
-                  $continue($state);
+                  $current = 1;
+                  $continue($resolve, $reject);
+                  return;
                 });
               }).catch(function (err) {
-                $state.reject(err);
+                $reject(err);
+                return;
               });
               return;
 
             case 1:
-              $state.resolve($result);
+              $resolve($result);
               return;
 
             default:
-              $state.current = -1;
+              $resolve();
               return;
           }
         }
-      });
-      return $promise.build($state);
+      };
+      return $promise.new($continue);
     };
     $instance.Parse = function (value) {
       var $this = this;
-      var $state = $t.sm(function ($continue) {
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
         while (true) {
-          switch ($state.current) {
+          switch ($current) {
             case 0:
               $g.____testlib.basictypes.JSON.Get().then(function ($result0) {
                 return $result0.Parse(value).then(function ($result1) {
                   $result = $result1;
-                  $state.current = 1;
-                  $continue($state);
+                  $current = 1;
+                  $continue($resolve, $reject);
+                  return;
                 });
               }).catch(function (err) {
-                $state.reject(err);
+                $reject(err);
+                return;
               });
               return;
 
             case 1:
-              $state.resolve($result);
+              $resolve($result);
               return;
 
             default:
-              $state.current = -1;
+              $resolve();
               return;
           }
         }
-      });
-      return $promise.build($state);
+      };
+      return $promise.new($continue);
     };
   });
 
@@ -260,20 +269,23 @@ $module('custom', function () {
     var jsonString;
     var parsed;
     var s;
-    var $state = $t.sm(function ($continue) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $g.custom.AnotherStruct.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $temp0 = $result0;
               return $g.custom.SomeStruct.new($t.box(2, $g.____testlib.basictypes.Integer), $t.box(false, $g.____testlib.basictypes.Boolean), ($temp0, $temp0)).then(function ($result1) {
                 $temp1 = $result1;
                 $result = ($temp1, $temp1);
-                $state.current = 1;
-                $continue($state);
+                $current = 1;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -282,10 +294,12 @@ $module('custom', function () {
             jsonString = $t.box('{"AnotherField":false,"SomeField":2,"SomeInstance":{"AnotherBool":true}}', $g.____testlib.basictypes.String);
             $g.custom.SomeStruct.Parse($g.custom.CustomJSON)(jsonString).then(function ($result0) {
               $result = $result0;
-              $state.current = 2;
-              $continue($state);
+              $current = 2;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -295,25 +309,27 @@ $module('custom', function () {
               return $promise.resolve($t.unbox($result2)).then(function ($result1) {
                 return $promise.resolve($result1 && !$t.unbox(parsed.AnotherField)).then(function ($result0) {
                   $result = $t.box($result0 && $t.unbox(parsed.SomeInstance.AnotherBool), $g.____testlib.basictypes.Boolean);
-                  $state.current = 3;
-                  $continue($state);
+                  $current = 3;
+                  $continue($resolve, $reject);
+                  return;
                 });
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 3:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

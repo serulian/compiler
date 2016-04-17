@@ -1,10 +1,12 @@
 $module('null', function () {
   var $static = this;
   $static.DoSomething = function () {
-    var $state = $t.sm(function ($continue) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       null;
-      $state.resolve();
-    });
-    return $promise.build($state);
+      $resolve();
+      return;
+    };
+    return $promise.new($continue);
   };
 });

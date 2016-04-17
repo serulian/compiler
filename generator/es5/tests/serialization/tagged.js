@@ -63,17 +63,20 @@ $module('tagged', function () {
   $static.TEST = function () {
     var jsonString;
     var s;
-    var $state = $t.sm(function ($continue) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $g.tagged.SomeStruct.new($t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $temp0 = $result0;
               $result = ($temp0, $temp0);
-              $state.current = 1;
-              $continue($state);
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -83,24 +86,26 @@ $module('tagged', function () {
             s.Stringify($g.____testlib.basictypes.JSON)().then(function ($result0) {
               return $g.____testlib.basictypes.String.$equals($result0, jsonString).then(function ($result1) {
                 $result = $result1;
-                $state.current = 2;
-                $continue($state);
+                $current = 2;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 2:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

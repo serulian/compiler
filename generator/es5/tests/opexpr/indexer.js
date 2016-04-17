@@ -15,53 +15,61 @@ $module('indexer', function () {
     };
     $instance.$index = function (someParam) {
       var $this = this;
-      var $state = $t.sm(function ($continue) {
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
         while (true) {
-          switch ($state.current) {
+          switch ($current) {
             case 0:
               $promise.resolve($t.unbox($this.result)).then(function ($result0) {
                 $result = $t.box($result0 && !$t.unbox(someParam), $g.____testlib.basictypes.Boolean);
-                $state.current = 1;
-                $continue($state);
+                $current = 1;
+                $continue($resolve, $reject);
+                return;
               }).catch(function (err) {
-                $state.reject(err);
+                $reject(err);
+                return;
               });
               return;
 
             case 1:
-              $state.resolve($result);
+              $resolve($result);
               return;
 
             default:
-              $state.current = -1;
+              $resolve();
               return;
           }
         }
-      });
-      return $promise.build($state);
+      };
+      return $promise.new($continue);
     };
     $instance.$setindex = function (index, value) {
       var $this = this;
-      var $state = $t.sm(function ($continue) {
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
         $this.result = value;
-        $state.resolve();
-      });
-      return $promise.build($state);
+        $resolve();
+        return;
+      };
+      return $promise.new($continue);
     };
   });
 
   $static.TEST = function () {
     var sc;
-    var $state = $t.sm(function ($continue) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $g.indexer.SomeClass.new().then(function ($result0) {
               $result = $result0;
-              $state.current = 1;
-              $continue($state);
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -69,10 +77,12 @@ $module('indexer', function () {
             sc = $result;
             sc.$setindex($t.box(1, $g.____testlib.basictypes.Integer), $t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
-              $state.current = 2;
-              $continue($state);
+              $current = 2;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -80,23 +90,25 @@ $module('indexer', function () {
             $result;
             sc.$index($t.box(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
-              $state.current = 3;
-              $continue($state);
+              $current = 3;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 3:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

@@ -11,39 +11,43 @@ $module('unary', function () {
       });
     };
     $static.$not = function (instance) {
-      var $state = $t.sm(function ($continue) {
-        $state.resolve(instance);
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve(instance);
         return;
-      });
-      return $promise.build($state);
+      };
+      return $promise.new($continue);
     };
   });
 
   $static.DoSomething = function (first) {
-    var $state = $t.sm(function ($continue) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $g.unary.SomeClass.$not(first).then(function ($result0) {
               $result = $result0;
-              $state.current = 1;
-              $continue($state);
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 1:
             $result;
-            $state.current = -1;
+            $resolve();
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

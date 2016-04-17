@@ -19,36 +19,42 @@ $module('structnew', function () {
     };
     $instance.AnotherField = $t.property(function () {
       var $this = this;
-      var $state = $t.sm(function ($continue) {
-        $state.resolve($this.anotherField);
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve($this.anotherField);
         return;
-      });
-      return $promise.build($state);
+      };
+      return $promise.new($continue);
     }, function (val) {
       var $this = this;
-      var $state = $t.sm(function ($continue) {
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
         $this.anotherField = val;
-        $state.resolve();
-      });
-      return $promise.build($state);
+        $resolve();
+        return;
+      };
+      return $promise.new($continue);
     });
   });
 
   $static.TEST = function () {
     var sc;
-    var $state = $t.sm(function ($continue) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $g.structnew.SomeClass.new($t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $temp0 = $result0;
               return $temp0.AnotherField($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
                 $result = ($temp0, $result1, $temp0);
-                $state.current = 1;
-                $continue($state);
+                $current = 1;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -57,24 +63,26 @@ $module('structnew', function () {
             $g.____testlib.basictypes.Integer.$equals(sc.SomeField, $t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result1) {
               return $promise.resolve($t.unbox($result1)).then(function ($result0) {
                 $result = $t.box($result0 && $t.unbox(sc.anotherField), $g.____testlib.basictypes.Boolean);
-                $state.current = 2;
-                $continue($state);
+                $current = 2;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 2:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

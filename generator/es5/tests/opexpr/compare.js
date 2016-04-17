@@ -11,34 +11,39 @@ $module('compare', function () {
       });
     };
     $static.$equals = function (first, second) {
-      var $state = $t.sm(function ($continue) {
-        $state.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
         return;
-      });
-      return $promise.build($state);
+      };
+      return $promise.new($continue);
     };
     $static.$compare = function (first, second) {
-      var $state = $t.sm(function ($continue) {
-        $state.resolve($t.box(1, $g.____testlib.basictypes.Integer));
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve($t.box(1, $g.____testlib.basictypes.Integer));
         return;
-      });
-      return $promise.build($state);
+      };
+      return $promise.new($continue);
     };
   });
 
   $static.TEST = function () {
     var first;
     var second;
-    var $state = $t.sm(function ($continue) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $g.compare.SomeClass.new().then(function ($result0) {
               $result = $result0;
-              $state.current = 1;
-              $continue($state);
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -46,10 +51,12 @@ $module('compare', function () {
             first = $result;
             $g.compare.SomeClass.new().then(function ($result0) {
               $result = $result0;
-              $state.current = 2;
-              $continue($state);
+              $current = 2;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -57,10 +64,12 @@ $module('compare', function () {
             second = $result;
             $g.compare.SomeClass.$equals(first, second).then(function ($result0) {
               $result = $result0;
-              $state.current = 3;
-              $continue($state);
+              $current = 3;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -68,10 +77,12 @@ $module('compare', function () {
             $result;
             $g.compare.SomeClass.$equals(first, second).then(function ($result0) {
               $result = $t.box(!$t.unbox($result0), $g.____testlib.basictypes.Boolean);
-              $state.current = 4;
-              $continue($state);
+              $current = 4;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -79,10 +90,12 @@ $module('compare', function () {
             $result;
             $g.compare.SomeClass.$compare(first, second).then(function ($result0) {
               $result = $t.box($t.unbox($result0) < 0, $g.____testlib.basictypes.Boolean);
-              $state.current = 5;
-              $continue($state);
+              $current = 5;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -90,10 +103,12 @@ $module('compare', function () {
             $result;
             $g.compare.SomeClass.$compare(first, second).then(function ($result0) {
               $result = $t.box($t.unbox($result0) > 0, $g.____testlib.basictypes.Boolean);
-              $state.current = 6;
-              $continue($state);
+              $current = 6;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -101,10 +116,12 @@ $module('compare', function () {
             $result;
             $g.compare.SomeClass.$compare(first, second).then(function ($result0) {
               $result = $t.box($t.unbox($result0) <= 0, $g.____testlib.basictypes.Boolean);
-              $state.current = 7;
-              $continue($state);
+              $current = 7;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -112,10 +129,12 @@ $module('compare', function () {
             $result;
             $g.compare.SomeClass.$compare(first, second).then(function ($result0) {
               $result = $t.box($t.unbox($result0) >= 0, $g.____testlib.basictypes.Boolean);
-              $state.current = 8;
-              $continue($state);
+              $current = 8;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -123,23 +142,25 @@ $module('compare', function () {
             $result;
             $g.compare.SomeClass.$equals(first, second).then(function ($result0) {
               $result = $result0;
-              $state.current = 9;
-              $continue($state);
+              $current = 9;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 9:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

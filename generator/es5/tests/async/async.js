@@ -1,38 +1,42 @@
 $module('async', function () {
   var $static = this;
   $static.DoSomethingAsync = $t.workerwrap('0af00909efba2d45fc361ddb814e958e2524c086479947e7b6b5f090c793a4a7', function (a) {
-    var $state = $t.sm(function ($continue) {
-      $state.resolve(a);
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
+      $resolve(a);
       return;
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   });
   $static.TEST = function () {
-    var $state = $t.sm(function ($continue) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $promise.translate($g.async.DoSomethingAsync($t.box(3, $g.____testlib.basictypes.Integer))).then(function ($result0) {
               return $g.____testlib.basictypes.Integer.$equals($result0, $t.box(3, $g.____testlib.basictypes.Integer)).then(function ($result1) {
                 $result = $result1;
-                $state.current = 1;
-                $continue($state);
+                $current = 1;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 1:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });
