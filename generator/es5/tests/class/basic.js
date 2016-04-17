@@ -25,45 +25,40 @@ $module('basic', function () {
   });
 
   $static.CoolFunction = function () {
-    var $state = $t.sm(function ($callback) {
-      while (true) {
-        switch ($state.current) {
-          case 0:
-            $state.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
-            return;
-
-          default:
-            $state.current = -1;
-            return;
-        }
-      }
-    });
-    return $promise.build($state);
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
+      $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+      return;
+    };
+    return $promise.new($continue);
   };
   $static.TEST = function () {
-    var $state = $t.sm(function ($callback) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $g.basic.SomeClass.new().then(function ($result0) {
               $result = $result0.AnotherBool;
-              $state.current = 1;
-              $callback($state);
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 1:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

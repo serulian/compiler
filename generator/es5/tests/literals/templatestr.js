@@ -4,9 +4,10 @@ $module('templatestr', function () {
     var a;
     var b;
     var result;
-    var $state = $t.sm(function ($callback) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             a = $t.box(1, $g.____testlib.basictypes.Integer);
             b = $t.box(true, $g.____testlib.basictypes.Boolean);
@@ -14,12 +15,14 @@ $module('templatestr', function () {
               return $g.____testlib.basictypes.Slice($g.____testlib.basictypes.Stringable).overArray([a, b]).then(function ($result1) {
                 return $g.____testlib.basictypes.formatTemplateString($result0, $result1).then(function ($result2) {
                   $result = $result2;
-                  $state.current = 1;
-                  $callback($state);
+                  $current = 1;
+                  $continue($resolve, $reject);
+                  return;
                 });
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -27,23 +30,25 @@ $module('templatestr', function () {
             result = $result;
             $g.____testlib.basictypes.String.$equals(result, $t.box('This function is #1! It is true!', $g.____testlib.basictypes.String)).then(function ($result0) {
               $result = $result0;
-              $state.current = 2;
-              $callback($state);
+              $current = 2;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 2:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

@@ -11,178 +11,101 @@ $module('binary', function () {
       });
     };
     $static.$xor = function (left, right) {
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve(left);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
-      });
-      return $promise.build($state);
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve(left);
+        return;
+      };
+      return $promise.new($continue);
     };
     $static.$or = function (left, right) {
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve(left);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
-      });
-      return $promise.build($state);
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve(left);
+        return;
+      };
+      return $promise.new($continue);
     };
     $static.$and = function (left, right) {
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve(left);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
-      });
-      return $promise.build($state);
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve(left);
+        return;
+      };
+      return $promise.new($continue);
     };
     $static.$leftshift = function (left, right) {
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve(left);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
-      });
-      return $promise.build($state);
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve(left);
+        return;
+      };
+      return $promise.new($continue);
     };
     $static.$not = function (value) {
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve(value);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
-      });
-      return $promise.build($state);
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve(value);
+        return;
+      };
+      return $promise.new($continue);
     };
     $static.$plus = function (left, right) {
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve(left);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
-      });
-      return $promise.build($state);
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve(left);
+        return;
+      };
+      return $promise.new($continue);
     };
     $static.$minus = function (left, right) {
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve(right);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
-      });
-      return $promise.build($state);
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve(right);
+        return;
+      };
+      return $promise.new($continue);
     };
     $static.$times = function (left, right) {
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve(left);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
-      });
-      return $promise.build($state);
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve(left);
+        return;
+      };
+      return $promise.new($continue);
     };
     $static.$div = function (left, right) {
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve(left);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
-      });
-      return $promise.build($state);
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve(left);
+        return;
+      };
+      return $promise.new($continue);
     };
     $static.$mod = function (left, right) {
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve(left);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
-      });
-      return $promise.build($state);
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve(left);
+        return;
+      };
+      return $promise.new($continue);
     };
   });
 
   $static.DoSomething = function (first, second) {
-    var $state = $t.sm(function ($callback) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $g.binary.SomeClass.$plus(first, second).then(function ($result0) {
               $result = $result0;
-              $state.current = 1;
-              $callback($state);
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -190,52 +113,57 @@ $module('binary', function () {
             $result;
             $g.binary.SomeClass.$minus(first, second).then(function ($result0) {
               $result = $result0;
-              $state.current = 2;
-              $callback($state);
+              $current = 2;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 2:
             $result;
-            $state.current = -1;
+            $resolve();
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
   $static.TEST = function () {
-    var $state = $t.sm(function ($callback) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $g.____testlib.basictypes.Integer.$plus($t.box(1, $g.____testlib.basictypes.Integer), $t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               return $g.____testlib.basictypes.Integer.$equals($result0, $t.box(3, $g.____testlib.basictypes.Integer)).then(function ($result1) {
                 $result = $result1;
-                $state.current = 1;
-                $callback($state);
+                $current = 1;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 1:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

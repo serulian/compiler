@@ -1,25 +1,26 @@
 $module('loop', function () {
   var $static = this;
   $static.DoSomething = function () {
-    var $state = $t.sm(function ($callback) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $t.box(1234, $g.____testlib.basictypes.Integer);
-            $state.current = 1;
+            $current = 1;
             continue;
 
           case 1:
             $t.box(1357, $g.____testlib.basictypes.Integer);
-            $state.current = 1;
+            $current = 1;
             continue;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

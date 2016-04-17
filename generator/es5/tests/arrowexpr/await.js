@@ -12,103 +12,104 @@ $module('await', function () {
     };
     $instance.Then = function (resolve) {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
         while (true) {
-          switch ($state.current) {
+          switch ($current) {
             case 0:
               resolve($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
                 $result = $result0;
-                $state.current = 1;
-                $callback($state);
+                $current = 1;
+                $continue($resolve, $reject);
+                return;
               }).catch(function (err) {
-                $state.reject(err);
+                $reject(err);
+                return;
               });
               return;
 
             case 1:
               $result;
-              $state.resolve($this);
+              $resolve($this);
               return;
 
             default:
-              $state.current = -1;
+              $resolve();
               return;
           }
         }
-      });
-      return $promise.build($state);
+      };
+      return $promise.new($continue);
     };
     $instance.Catch = function (rejection) {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve($this);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
-      });
-      return $promise.build($state);
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve($this);
+        return;
+      };
+      return $promise.new($continue);
     };
   });
 
   $static.DoSomething = function (p) {
-    var $state = $t.sm(function ($callback) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $promise.translate(p).then(function ($result0) {
               $result = $result0;
-              $state.current = 1;
-              $callback($state);
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 1:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
   $static.TEST = function () {
-    var $state = $t.sm(function ($callback) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $g.await.SomePromise.new().then(function ($result0) {
               return $g.await.DoSomething($result0).then(function ($result1) {
                 $result = $result1;
-                $state.current = 1;
-                $callback($state);
+                $current = 1;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 1:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

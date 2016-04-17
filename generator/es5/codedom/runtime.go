@@ -23,8 +23,8 @@ const (
 
 	TranslatePromiseFunction RuntimeFunction = "$promise.translate"
 
-	StatePushResourceFunction RuntimeFunction = "$state.pushr"
-	StatePopResourceFunction  RuntimeFunction = "$state.popr"
+	StatePushResourceFunction RuntimeFunction = "$resources.pushr"
+	StatePopResourceFunction  RuntimeFunction = "$resources.popr"
 )
 
 // RuntimeFunctionCallNode represents a call to an internal runtime function defined

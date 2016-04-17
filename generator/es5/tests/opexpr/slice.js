@@ -12,35 +12,30 @@ $module('slice', function () {
     };
     $instance.$slice = function (start, end) {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
-      });
-      return $promise.build($state);
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+        return;
+      };
+      return $promise.new($continue);
     };
   });
 
   $static.TEST = function () {
     var c;
-    var $state = $t.sm(function ($callback) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $g.slice.SomeClass.new().then(function ($result0) {
               $result = $result0;
-              $state.current = 1;
-              $callback($state);
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -48,10 +43,12 @@ $module('slice', function () {
             c = $result;
             c.$slice($t.box(1, $g.____testlib.basictypes.Integer), $t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $result = $result0;
-              $state.current = 2;
-              $callback($state);
+              $current = 2;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -59,10 +56,12 @@ $module('slice', function () {
             $result;
             c.$slice(null, $t.box(1, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $result = $result0;
-              $state.current = 3;
-              $callback($state);
+              $current = 3;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -70,10 +69,12 @@ $module('slice', function () {
             $result;
             c.$slice($t.box(1, $g.____testlib.basictypes.Integer), null).then(function ($result0) {
               $result = $result0;
-              $state.current = 4;
-              $callback($state);
+              $current = 4;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -81,23 +82,25 @@ $module('slice', function () {
             $result;
             c.$slice($t.box(1, $g.____testlib.basictypes.Integer), $t.box(7, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $result = $result0;
-              $state.current = 5;
-              $callback($state);
+              $current = 5;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 5:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

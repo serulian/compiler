@@ -21,16 +21,19 @@ $module('requiredfields', function () {
 
   $static.TEST = function () {
     var sc;
-    var $state = $t.sm(function ($callback) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $g.requiredfields.SomeClass.new($t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $result = $result0;
-              $state.current = 1;
-              $callback($state);
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -39,24 +42,26 @@ $module('requiredfields', function () {
             $g.____testlib.basictypes.Integer.$equals(sc.SomeField, $t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result1) {
               return $promise.resolve($t.unbox($result1)).then(function ($result0) {
                 $result = $t.box($result0 && $t.unbox(sc.AnotherField), $g.____testlib.basictypes.Boolean);
-                $state.current = 2;
-                $callback($state);
+                $current = 2;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 2:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

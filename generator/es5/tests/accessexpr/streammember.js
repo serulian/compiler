@@ -16,20 +16,12 @@ $module('streammember', function () {
   });
 
   $static.AnotherThing = function (somestream) {
-    var $state = $t.sm(function ($callback) {
-      while (true) {
-        switch ($state.current) {
-          case 0:
-            $t.streamaccess(somestream, 'SomeInt');
-            $state.current = -1;
-            return;
-
-          default:
-            $state.current = -1;
-            return;
-        }
-      }
-    });
-    return $promise.build($state);
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
+      $t.streamaccess(somestream, 'SomeInt');
+      $resolve();
+      return;
+    };
+    return $promise.new($continue);
   };
 });

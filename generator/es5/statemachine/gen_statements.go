@@ -15,7 +15,7 @@ var _ = fmt.Printf
 // generateExpressionStatement generates the code for an expression statement.
 func (sg *stateGenerator) generateExpressionStatement(exprst *codedom.ExpressionStatementNode) {
 	templateStr := `
-	  {{ .Generator.AddTopLevelExpression .Item.Expression }};
+	  {{ .AddTopLevelExpression .Item.Expression }};
 	`
 	sg.pushSource(sg.templater.Execute("exprstatement", templateStr, generatingItem{exprst, sg}))
 }
@@ -29,7 +29,7 @@ func (sg *stateGenerator) generateUnconditionalJump(jump *codedom.UnconditionalJ
 	}{jump.Target}
 
 	templateStr := `
-		{{ .Generator.JumpToStatement .Item.Target }}
+		{{ .JumpToStatement .Item.Target }}
 		continue;
 	`
 
@@ -40,7 +40,7 @@ func (sg *stateGenerator) generateUnconditionalJump(jump *codedom.UnconditionalJ
 func (sg *stateGenerator) generateConditionalJump(jump *codedom.ConditionalJumpNode) {
 	// Add the expression to the state machine. The type will be a nominally-wrapped Boolean, so we need to unwrap it
 	// here.
-	expressionRef := sg.AddTopLevelExpression(
+	expressionRef := sg.addTopLevelExpression(
 		codedom.NominalUnwrapping(jump.BranchExpression, jump.BasisNode()))
 
 	currentState := sg.currentState
@@ -54,10 +54,10 @@ func (sg *stateGenerator) generateConditionalJump(jump *codedom.ConditionalJumpN
 
 	templateStr := `
 		if ({{ .Item.ExpressionRef }}) {
-			{{ .Generator.JumpToStatement .Item.True }}
+			{{ .JumpToStatement .Item.True }}
 			continue;
 		} else {
-			{{ .Generator.JumpToStatement .Item.False }}
+			{{ .JumpToStatement .Item.False }}
 			continue;
 		}
 	`
@@ -89,7 +89,7 @@ func (sg *stateGenerator) generateVarDefinition(vardef *codedom.VarDefinitionNod
 
 	if vardef.Initializer != nil {
 		templateStr := `
-			{{ .Item.Name }} = {{ .Generator.AddTopLevelExpression .Item.Initializer }};
+			{{ .Item.Name }} = {{ .AddTopLevelExpression .Item.Initializer }};
 		`
 
 		sg.pushSource(sg.templater.Execute("vardefinit", templateStr, generatingItem{vardef, sg}))
@@ -100,11 +100,9 @@ func (sg *stateGenerator) generateVarDefinition(vardef *codedom.VarDefinitionNod
 func (sg *stateGenerator) generateResolution(resolution *codedom.ResolutionNode) {
 	templateStr := `
 		{{ if .Item.Value }}
-		$state.resolve({{ .Generator.AddTopLevelExpression .Item.Value }});
-		return;
+		{{ .Snippets.Resolve (.AddTopLevelExpression .Item.Value) }}
 		{{ else }}
-		$state.resolve()
-		return;
+		{{ .Snippets.Resolve "" }}
 		{{ end }}
 	`
 
@@ -115,11 +113,9 @@ func (sg *stateGenerator) generateResolution(resolution *codedom.ResolutionNode)
 func (sg *stateGenerator) generateRejection(rejection *codedom.RejectionNode) {
 	templateStr := `
 		{{ if .Item.Value }}
-		$state.reject({{ .Generator.AddTopLevelExpression .Item.Value }});
-		return;
+		{{ .Snippets.Reject (.AddTopLevelExpression .Item.Value) }}
 		{{ else }}
-		$state.reject()
-		return;
+		{{ .Snippets.Reject "" }}
 		{{ end }}
 	`
 
@@ -132,20 +128,20 @@ func (sg *stateGenerator) generateArrowPromise(arrowPromise *codedom.ArrowPromis
 	sg.generateStates(arrowPromise.Target, generateNewState)
 
 	templateStr := `
-		({{ .Generator.AddTopLevelExpression .Item.ChildExpression }}).then(function(resolved) {
+		({{ .AddTopLevelExpression .Item.ChildExpression }}).then(function(resolved) {
 			{{ if .Item.ResolutionAssignment }}
-				{{ .Generator.AddTopLevelExpression .Item.ResolutionAssignment }}
+				{{ .AddTopLevelExpression .Item.ResolutionAssignment }}
 			{{ end }}
 
-			{{ .Generator.JumpToStatement .Item.Target }}
-			$callback($state);
+			{{ .JumpToStatement .Item.Target }}
+			{{ .Snippets.Continue }}
 		}).catch(function(rejected) {
 			{{ if .Item.RejectionAssignment }}
-				{{ .Generator.AddTopLevelExpression .Item.RejectionAssignment }}
-				{{ .Generator.JumpToStatement .Item.Target }}
-				$callback($state);
+				{{ .AddTopLevelExpression .Item.RejectionAssignment }}
+				{{ .JumpToStatement .Item.Target }}
+				{{ .Snippets.Continue }}
 			{{ else }}
-				$state.reject(rejected);
+				{{ .Snippets.Reject "rejected" }}
 			{{ end }}
 		});
 		return;

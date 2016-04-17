@@ -1,20 +1,12 @@
 $module('escapedtemplatestr', function () {
   var $static = this;
   $static.DoSomething = function () {
-    var $state = $t.sm(function ($callback) {
-      while (true) {
-        switch ($state.current) {
-          case 0:
-            $t.box("hello 'world'! \"This is a\n\tlong quote!\"", $g.____testlib.basictypes.String);
-            $state.current = -1;
-            return;
-
-          default:
-            $state.current = -1;
-            return;
-        }
-      }
-    });
-    return $promise.build($state);
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
+      $t.box("hello 'world'! \"This is a\n\tlong quote!\"", $g.____testlib.basictypes.String);
+      $resolve();
+      return;
+    };
+    return $promise.new($continue);
   };
 });

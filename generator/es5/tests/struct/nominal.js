@@ -74,18 +74,21 @@ $module('nominal', function () {
     var c;
     var s;
     var s2;
-    var $state = $t.sm(function ($callback) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             c = $t.box($t.box(true, $g.____testlib.basictypes.Boolean), $g.nominal.CoolBool);
             $g.nominal.SomeStruct.new(c).then(function ($result0) {
               $temp0 = $result0;
               $result = ($temp0, $temp0);
-              $state.current = 1;
-              $callback($state);
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -93,10 +96,12 @@ $module('nominal', function () {
             s = $result;
             $g.nominal.SomeStruct.Parse($g.____testlib.basictypes.JSON)($t.box('{"someField": true}', $g.____testlib.basictypes.String)).then(function ($result0) {
               $result = $result0;
-              $state.current = 2;
-              $callback($state);
+              $current = 2;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -104,23 +109,25 @@ $module('nominal', function () {
             s2 = $result;
             $promise.resolve(s2.someField).then(function ($result0) {
               $result = $t.box($result0 && s.someField, $g.____testlib.basictypes.Boolean);
-              $state.current = 3;
-              $callback($state);
+              $current = 3;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 3:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

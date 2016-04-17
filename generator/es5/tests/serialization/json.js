@@ -165,20 +165,23 @@ $module('json', function () {
     var jsonString;
     var parsed;
     var s;
-    var $state = $t.sm(function ($callback) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $g.json.AnotherStruct.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $temp0 = $result0;
               return $g.json.SomeStruct.new($t.box(2, $g.____testlib.basictypes.Integer), $t.box(false, $g.____testlib.basictypes.Boolean), ($temp0, $temp0)).then(function ($result1) {
                 $temp1 = $result1;
                 $result = ($temp1, $temp1);
-                $state.current = 1;
-                $callback($state);
+                $current = 1;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -188,11 +191,13 @@ $module('json', function () {
             s.Stringify($g.____testlib.basictypes.JSON)().then(function ($result0) {
               return $g.____testlib.basictypes.String.$equals($result0, jsonString).then(function ($result1) {
                 $result = $result1;
-                $state.current = 2;
-                $callback($state);
+                $current = 2;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -200,10 +205,12 @@ $module('json', function () {
             correct = $result;
             $g.json.SomeStruct.Parse($g.____testlib.basictypes.JSON)(jsonString).then(function ($result0) {
               $result = $result0;
-              $state.current = 3;
-              $callback($state);
+              $current = 3;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -214,26 +221,28 @@ $module('json', function () {
                 return $promise.resolve($result2 && $t.unbox($result3)).then(function ($result1) {
                   return $promise.resolve($result1 && !$t.unbox(parsed.AnotherField)).then(function ($result0) {
                     $result = $t.box($result0 && $t.unbox(parsed.SomeInstance.AnotherBool), $g.____testlib.basictypes.Boolean);
-                    $state.current = 4;
-                    $callback($state);
+                    $current = 4;
+                    $continue($resolve, $reject);
+                    return;
                   });
                 });
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 4:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

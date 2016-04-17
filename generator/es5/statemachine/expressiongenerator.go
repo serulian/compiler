@@ -13,13 +13,6 @@ import (
 	"github.com/serulian/compiler/graphs/scopegraph"
 )
 
-// ExpressionResult represents the result of generating an expression.
-type ExpressionResult struct {
-	resultExpression string               // The expression source representing the final value.
-	generator        *expressionGenerator // The underlying generator.
-	isPromise        bool                 // Whether the result is a promise.
-}
-
 // GenerateExpression generates the full ES5 expression for the given CodeDOM expression representation.
 func GenerateExpression(expression codedom.Expression, templater *templater.Templater, pather *es5pather.Pather, scopegraph *scopegraph.ScopeGraph) ExpressionResult {
 	generator := &expressionGenerator{
@@ -41,42 +34,6 @@ func GenerateExpression(expression codedom.Expression, templater *templater.Temp
 	result := generator.generateExpression(expression)
 
 	return ExpressionResult{result, generator, isPromise}
-}
-
-// IsPromise returns true if the generated expression is a promise.
-func (er ExpressionResult) IsPromise() bool {
-	return er.isPromise
-}
-
-// IsAsync returns true if the generated expression is asynchronous.
-func (er ExpressionResult) IsAsync() bool {
-	return len(er.generator.wrappers) > 0
-}
-
-// Source returns the source for this expression.
-func (er ExpressionResult) Source(innerTemplateStr string) string {
-	var expressionResult = er.resultExpression
-
-	if innerTemplateStr != "" {
-		expressionResult = er.generator.templater.Execute("parentwrap", innerTemplateStr, expressionResult)
-	}
-
-	// For each expression wrapper (in *reverse order*), wrap the result expression.
-	for rindex, _ := range er.generator.wrappers {
-		index := len(er.generator.wrappers) - rindex - 1
-		wrapper := er.generator.wrappers[index]
-
-		data := struct {
-			Item                    interface{}
-			WrappedExpression       string
-			WrappedNested           bool
-			IntermediateExpressions []string
-		}{wrapper.data, expressionResult, rindex > 0, wrapper.intermediateExpressions}
-
-		expressionResult = er.generator.templater.Execute("expressionwrap", wrapper.templateStr, data)
-	}
-
-	return expressionResult
 }
 
 // expressionGenerator defines a type that converts CodeDOM expressions into ES5 source code.

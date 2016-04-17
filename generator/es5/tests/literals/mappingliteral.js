@@ -1,9 +1,10 @@
 $module('mappingliteral', function () {
   var $static = this;
   $static.TEST = function () {
-    var $state = $t.sm(function ($callback) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $g.____testlib.basictypes.Mapping($g.____testlib.basictypes.Boolean).overObject(function () {
               var obj = {
@@ -14,24 +15,26 @@ $module('mappingliteral', function () {
             }()).then(function ($result0) {
               return $result0.$index($t.box('somekey', $g.____testlib.basictypes.String)).then(function ($result1) {
                 $result = $result1;
-                $state.current = 1;
-                $callback($state);
+                $current = 1;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 1:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

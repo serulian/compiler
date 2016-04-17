@@ -126,9 +126,10 @@ $module('slice', function () {
     var parsed;
     var s;
     var values;
-    var $state = $t.sm(function ($callback) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $g.slice.AnotherStruct.new($t.box(1, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $temp0 = $result0;
@@ -138,13 +139,15 @@ $module('slice', function () {
                   $temp2 = $result2;
                   return $g.____testlib.basictypes.List($g.slice.AnotherStruct).forArray([($temp0, $temp0), ($temp1, $temp1), ($temp2, $temp2)]).then(function ($result3) {
                     $result = $result3;
-                    $state.current = 1;
-                    $callback($state);
+                    $current = 1;
+                    $continue($resolve, $reject);
+                    return;
                   });
                 });
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -154,11 +157,13 @@ $module('slice', function () {
               return $g.slice.SomeStruct.new($result0).then(function ($result1) {
                 $temp3 = $result1;
                 $result = ($temp3, $temp3);
-                $state.current = 2;
-                $callback($state);
+                $current = 2;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -168,11 +173,13 @@ $module('slice', function () {
             s.Stringify($g.____testlib.basictypes.JSON)().then(function ($result0) {
               return $g.____testlib.basictypes.String.$equals($result0, jsonString).then(function ($result1) {
                 $result = $result1;
-                $state.current = 3;
-                $callback($state);
+                $current = 3;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -180,10 +187,12 @@ $module('slice', function () {
             correct = $result;
             $g.slice.SomeStruct.Parse($g.____testlib.basictypes.JSON)(jsonString).then(function ($result0) {
               $result = $result0;
-              $state.current = 4;
-              $callback($state);
+              $current = 4;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -196,28 +205,30 @@ $module('slice', function () {
                     return ($promise.shortcircuit($result0, false) || s.Values.$index($t.box(0, $g.____testlib.basictypes.Integer))).then(function ($result4) {
                       return ($promise.shortcircuit($result0, false) || $g.____testlib.basictypes.Integer.$equals($result4.AnotherInt, $t.box(1, $g.____testlib.basictypes.Integer))).then(function ($result5) {
                         $result = $t.box($result0 && $t.unbox($result5), $g.____testlib.basictypes.Boolean);
-                        $state.current = 5;
-                        $callback($state);
+                        $current = 5;
+                        $continue($resolve, $reject);
+                        return;
                       });
                     });
                   });
                 });
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 5:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

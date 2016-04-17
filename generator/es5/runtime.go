@@ -387,12 +387,24 @@ this.Serulian = (function($global) {
       return value == null ? otherwise : value;
     },
 
-    // sm wraps a state machine handler function into a state machine object.
-  	'sm': function(caller) {
+    // resourcehandler returns a function for handling resources in a function.
+  	'resourcehandler': function() {
   		return {
         resources: {},
-  			current: 0,
-  			next: caller,
+        bind: function(func) {
+          if (func.$__resourcebound) {
+            return func;
+          }
+
+          var r = this;
+          var f = function() {
+            r.popall();
+            return func.apply(this, arguments);
+          };
+
+          f.$__resourcebound = true;
+          return f;
+        },
 
         pushr: function(value, name) {
           this.resources[name] = value;
@@ -429,41 +441,6 @@ this.Serulian = (function($global) {
 
   // $promise defines helper methods around constructing and managing ES promises.
   var $promise = {
-
-    // build returns a Promise that invokes the given state machine.
-  	'build': function(statemachine) {
-  		return new Promise(function(resolve, reject) {
-        statemachine.resolve = function(value) {
-          statemachine.popall();
-          statemachine.current = -1;
-          resolve(value);
-        };
-
-        statemachine.reject = function(value) {
-          statemachine.popall();
-          statemachine.current = -1;
-          reject(value);
-        };
-
-  			var continueFunc = function() {
-  				if (statemachine.current < 0) {
-  					return;
-  				}
-
-  				statemachine.next(callFunc);				
-			  };
-
-        var callFunc = function() {
-    			continueFunc();
-          if (statemachine.current < 0) {
-            statemachine.resolve(null);
-          }
-        };
-
-        callFunc();
-  		});
-  	},
-
   	'all': function(promises) {
   		return Promise.all(promises);
   	},

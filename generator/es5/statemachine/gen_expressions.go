@@ -29,10 +29,10 @@ func (eg *expressionGenerator) generateFunctionDefinition(function *codedom.Func
 		{{ end }}
 				function({{ range $index, $parameter := .Item.Parameters }}{{ if $index }}, {{ end }}{{ $parameter }}{{ end }}) {
 					{{ if not .Item.Generics }}{{ if .Item.RequiresThis }}var $this = this;{{ end }}{{ end }}
-					{{ $body := .Generator.GenerateMachine .Item.Body }}
+					{{ $body := .GenerateMachine .Item.Body }}
 					{{ if $body }}
 						{{ $body }}
-						return $promise.build($state);
+						return $promise.new($continue);
 					{{ else }}
 						return $promise.empty();
 					{{ end }}

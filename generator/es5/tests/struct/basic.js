@@ -162,20 +162,23 @@ $module('basic', function () {
 
   $static.TEST = function () {
     var ss;
-    var $state = $t.sm(function ($callback) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $g.basic.AnotherStruct.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $temp0 = $result0;
               return $g.basic.SomeStruct.new($t.box(42, $g.____testlib.basictypes.Integer), $t.box(true, $g.____testlib.basictypes.Boolean), ($temp0, $temp0)).then(function ($result1) {
                 $temp1 = $result1;
                 $result = ($temp1, $temp1);
-                $state.current = 1;
-                $callback($state);
+                $current = 1;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -185,25 +188,27 @@ $module('basic', function () {
               return $promise.resolve($t.unbox($result2)).then(function ($result1) {
                 return $promise.resolve($result1 && $t.unbox(ss.AnotherField)).then(function ($result0) {
                   $result = $t.box($result0 && $t.unbox(ss.SomeInstance.AnotherBool), $g.____testlib.basictypes.Boolean);
-                  $state.current = 2;
-                  $callback($state);
+                  $current = 2;
+                  $continue($resolve, $reject);
+                  return;
                 });
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 2:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

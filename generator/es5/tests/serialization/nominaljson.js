@@ -10,20 +10,12 @@ $module('nominaljson', function () {
     };
     $instance.GetValue = function () {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve($t.box($this, $g.nominaljson.AnotherStruct).AnotherBool);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
-      });
-      return $promise.build($state);
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve($t.box($this, $g.nominaljson.AnotherStruct).AnotherBool);
+        return;
+      };
+      return $promise.new($continue);
     };
   });
 
@@ -152,20 +144,23 @@ $module('nominaljson', function () {
     var jsonString;
     var parsed;
     var s;
-    var $state = $t.sm(function ($callback) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $g.nominaljson.AnotherStruct.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $temp0 = $result0;
               return $g.nominaljson.SomeStruct.new($t.box(($temp0, $temp0), $g.nominaljson.SomeNominal)).then(function ($result1) {
                 $temp1 = $result1;
                 $result = ($temp1, $temp1);
-                $state.current = 1;
-                $callback($state);
+                $current = 1;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -175,11 +170,13 @@ $module('nominaljson', function () {
             s.Stringify($g.____testlib.basictypes.JSON)().then(function ($result0) {
               return $g.____testlib.basictypes.String.$equals($result0, jsonString).then(function ($result1) {
                 $result = $result1;
-                $state.current = 2;
-                $callback($state);
+                $current = 2;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -187,10 +184,12 @@ $module('nominaljson', function () {
             correct = $result;
             $g.nominaljson.SomeStruct.Parse($g.____testlib.basictypes.JSON)(jsonString).then(function ($result0) {
               $result = $result0;
-              $state.current = 3;
-              $callback($state);
+              $current = 3;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -199,24 +198,26 @@ $module('nominaljson', function () {
             $promise.resolve($t.unbox(correct)).then(function ($result0) {
               return ($promise.shortcircuit($result0, false) || parsed.Nested.GetValue()).then(function ($result1) {
                 $result = $t.box($result0 && $t.unbox($result1), $g.____testlib.basictypes.Boolean);
-                $state.current = 4;
-                $callback($state);
+                $current = 4;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 4:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

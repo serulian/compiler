@@ -34,7 +34,7 @@ func GenerateFunctionSource(functionDef FunctionDef, templater *templater.Templa
 	domDefinition := codedom.FunctionDefinition(functionDef.Generics(), functionDef.Parameters(), funcBody,
 		functionDef.RequiresThis(), functionDef.WorkerExecutes(), functionDef.BodyNode())
 	result := GenerateExpression(domDefinition, templater, pather, scopegraph)
-	return result.Source("")
+	return result.ExprSource("", nil)
 }
 
 // GenerateExpressionResult generates the expression result for an expression.

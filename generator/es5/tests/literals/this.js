@@ -12,21 +12,13 @@ $module('this', function () {
     };
     $instance.DoSomething = function () {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $this;
-              $state.current = -1;
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
-      });
-      return $promise.build($state);
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $this;
+        $resolve();
+        return;
+      };
+      return $promise.new($continue);
     };
   });
 

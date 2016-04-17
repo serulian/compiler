@@ -145,20 +145,23 @@ $module('equals', function () {
     var different;
     var first;
     var second;
-    var $state = $t.sm(function ($callback) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $g.equals.Bar.new($t.box('hello world', $g.____testlib.basictypes.String)).then(function ($result0) {
               $temp0 = $result0;
               return $g.equals.Foo.new($t.box(42, $g.____testlib.basictypes.Integer), ($temp0, $temp0)).then(function ($result1) {
                 $temp1 = $result1;
                 $result = ($temp1, $temp1);
-                $state.current = 1;
-                $callback($state);
+                $current = 1;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -170,11 +173,13 @@ $module('equals', function () {
               return $g.equals.Foo.new($t.box(42, $g.____testlib.basictypes.Integer), ($temp2, $temp2)).then(function ($result1) {
                 $temp3 = $result1;
                 $result = ($temp3, $temp3);
-                $state.current = 2;
-                $callback($state);
+                $current = 2;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -185,11 +190,13 @@ $module('equals', function () {
               return $g.equals.Foo.new($t.box(42, $g.____testlib.basictypes.Integer), ($temp4, $temp4)).then(function ($result1) {
                 $temp5 = $result1;
                 $result = ($temp5, $temp5);
-                $state.current = 3;
-                $callback($state);
+                $current = 3;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -203,8 +210,9 @@ $module('equals', function () {
                       return $promise.resolve($result1 && !$t.unbox($result5)).then(function ($result0) {
                         return ($promise.shortcircuit($result0, false) || $g.equals.Foo.$equals(copy, different)).then(function ($result6) {
                           $result = $t.box($result0 && !$t.unbox($result6), $g.____testlib.basictypes.Boolean);
-                          $state.current = 4;
-                          $callback($state);
+                          $current = 4;
+                          $continue($resolve, $reject);
+                          return;
                         });
                       });
                     });
@@ -212,20 +220,21 @@ $module('equals', function () {
                 });
               });
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
           case 4:
-            $state.resolve($result);
+            $resolve($result);
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });

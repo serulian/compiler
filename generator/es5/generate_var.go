@@ -75,9 +75,9 @@ func (gm generatingMember) Prefix() string {
 const variableTemplateStr = `
 	({{ $result := .Initializer }}
 	{{ if $result.IsPromise }}
-	({{ $result.Source "return $promise.resolve({{ . }})" }})
+	({{ $result.ExprSource "return $promise.resolve({{ .ResultExpr }})" nil }})
 	{{ else }}
-	$promise.resolve({{ $result.Source "" }})
+	$promise.resolve({{ $result.ExprSource "" nil }})
 	{{ end }}).then(function(result) {
 		{{ .Prefix }}.{{ .Member.Name }} = result;
 	})

@@ -6,16 +6,19 @@ $module('basic', function () {
   $static.DoSomething = function () {
     var first;
     var second;
-    var $state = $t.sm(function ($callback) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $g.basic.AnotherFunction().then(function ($result0) {
               $result = $result0;
-              $state.current = 1;
-              $callback($state);
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
-              $state.reject(err);
+              $reject(err);
+              return;
             });
             return;
 
@@ -33,31 +36,23 @@ $module('basic', function () {
             first + second;
             first[$t.box('hello', $g.____testlib.basictypes.String)];
             first[$t.box('hello', $g.____testlib.basictypes.String)] = second;
-            $state.current = -1;
+            $resolve();
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
   $static.TEST = function () {
-    var $state = $t.sm(function ($callback) {
-      while (true) {
-        switch ($state.current) {
-          case 0:
-            $state.resolve($t.box($global.boolValue, $g.____testlib.basictypes.Boolean));
-            return;
-
-          default:
-            $state.current = -1;
-            return;
-        }
-      }
-    });
-    return $promise.build($state);
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
+      $resolve($t.box($global.boolValue, $g.____testlib.basictypes.Boolean));
+      return;
+    };
+    return $promise.new($continue);
   };
 });

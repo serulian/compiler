@@ -1,40 +1,41 @@
 $module('break', function () {
   var $static = this;
   $static.DoSomething = function () {
-    var $state = $t.sm(function ($callback) {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
       while (true) {
-        switch ($state.current) {
+        switch ($current) {
           case 0:
             $t.box(1234, $g.____testlib.basictypes.Integer);
-            $state.current = 1;
+            $current = 1;
             continue;
 
           case 1:
             if (true) {
-              $state.current = 2;
+              $current = 2;
               continue;
             } else {
-              $state.current = 3;
+              $current = 3;
               continue;
             }
             break;
 
           case 2:
             $t.box(4567, $g.____testlib.basictypes.Integer);
-            $state.current = 3;
+            $current = 3;
             continue;
 
           case 3:
             $t.box(2567, $g.____testlib.basictypes.Integer);
-            $state.current = -1;
+            $resolve();
             return;
 
           default:
-            $state.current = -1;
+            $resolve();
             return;
         }
       }
-    });
-    return $promise.build($state);
+    };
+    return $promise.new($continue);
   };
 });
