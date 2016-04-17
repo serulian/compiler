@@ -17,14 +17,14 @@ $module('memberaccess', function () {
       });
     };
     $static.Build = function () {
-      var $state = $t.sm(function ($callback) {
+      var $state = $t.sm(function ($continue) {
         while (true) {
           switch ($state.current) {
             case 0:
               $g.memberaccess.SomeClass.new().then(function ($result0) {
                 $result = $result0;
                 $state.current = 1;
-                $callback($state);
+                $continue($state);
               }).catch(function (err) {
                 $state.reject(err);
               });
@@ -48,25 +48,16 @@ $module('memberaccess', function () {
     };
     $instance.SomeProp = $t.property(function () {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve($this.someInt);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve($this.someInt);
+        return;
       });
       return $promise.build($state);
     });
   });
 
   $static.DoSomething = function (sc, scn) {
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -81,7 +72,7 @@ $module('memberaccess', function () {
             sc.InstanceFunc().then(function ($result0) {
               $result = $result0;
               $state.current = 1;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -93,7 +84,7 @@ $module('memberaccess', function () {
             sc.SomeProp().then(function ($result0) {
               $result = $result0;
               $state.current = 2;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -104,7 +95,7 @@ $module('memberaccess', function () {
             sc.SomeProp().then(function ($result0) {
               $result = $result0;
               $state.current = 3;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -115,7 +106,7 @@ $module('memberaccess', function () {
             scn.SomeProp().then(function ($result0) {
               $result = $result0;
               $state.current = 4;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -136,14 +127,14 @@ $module('memberaccess', function () {
   };
   $static.TEST = function () {
     var sc;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
             $g.memberaccess.SomeClass.new().then(function ($result0) {
               $result = $result0;
               $state.current = 1;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -154,7 +145,7 @@ $module('memberaccess', function () {
             $promise.resolve($t.unbox(sc.someBool)).then(function ($result0) {
               $result = $t.box($result0 && $t.unbox(sc.someBool), $g.____testlib.basictypes.Boolean);
               $state.current = 2;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });

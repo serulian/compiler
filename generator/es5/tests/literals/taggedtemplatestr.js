@@ -1,7 +1,7 @@
 $module('taggedtemplatestr', function () {
   var $static = this;
   $static.myFunction = function (pieces, values) {
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -10,7 +10,7 @@ $module('taggedtemplatestr', function () {
                 return $g.____testlib.basictypes.Integer.$plus($t.cast($result0, $g.____testlib.basictypes.Integer), $result1).then(function ($result2) {
                   $result = $result2;
                   $state.current = 1;
-                  $callback($state);
+                  $continue($state);
                 });
               });
             }).catch(function (err) {
@@ -34,7 +34,7 @@ $module('taggedtemplatestr', function () {
     var a;
     var b;
     var result;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -45,7 +45,7 @@ $module('taggedtemplatestr', function () {
                 return $g.taggedtemplatestr.myFunction($result0, $result1).then(function ($result2) {
                   $result = $result2;
                   $state.current = 1;
-                  $callback($state);
+                  $continue($state);
                 });
               });
             }).catch(function (err) {
@@ -58,7 +58,7 @@ $module('taggedtemplatestr', function () {
             $g.____testlib.basictypes.Integer.$equals(result, $t.box(12, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $result = $result0;
               $state.current = 2;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });

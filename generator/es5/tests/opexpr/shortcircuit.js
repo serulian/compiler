@@ -12,32 +12,23 @@ $module('shortcircuit', function () {
     };
     $instance.Message = $t.property(function () {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve($t.box('WHY CALLED? ', $g.____testlib.basictypes.String));
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve($t.box('WHY CALLED? ', $g.____testlib.basictypes.String));
+        return;
       });
       return $promise.build($state);
     });
   });
 
   $static.neverCalled = function () {
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
             $g.shortcircuit.someError.new().then(function ($result0) {
               $result = $result0;
               $state.current = 1;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -56,14 +47,14 @@ $module('shortcircuit', function () {
     return $promise.build($state);
   };
   $static.anotherNeverCalled = function () {
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
             $g.shortcircuit.someError.new().then(function ($result0) {
               $result = $result0;
               $state.current = 1;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -82,7 +73,7 @@ $module('shortcircuit', function () {
     return $promise.build($state);
   };
   $static.TEST = function () {
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -92,7 +83,7 @@ $module('shortcircuit', function () {
                   return ($promise.shortcircuit($result0, true) || $g.shortcircuit.anotherNeverCalled()).then(function ($result3) {
                     $result = $t.box($result0 || $t.unbox($result3), $g.____testlib.basictypes.Boolean);
                     $state.current = 1;
-                    $callback($state);
+                    $continue($state);
                   });
                 });
               });

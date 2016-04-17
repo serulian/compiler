@@ -145,7 +145,7 @@ $module('equals', function () {
     var different;
     var first;
     var second;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -155,7 +155,7 @@ $module('equals', function () {
                 $temp1 = $result1;
                 $result = ($temp1, $temp1);
                 $state.current = 1;
-                $callback($state);
+                $continue($state);
               });
             }).catch(function (err) {
               $state.reject(err);
@@ -171,7 +171,7 @@ $module('equals', function () {
                 $temp3 = $result1;
                 $result = ($temp3, $temp3);
                 $state.current = 2;
-                $callback($state);
+                $continue($state);
               });
             }).catch(function (err) {
               $state.reject(err);
@@ -186,7 +186,7 @@ $module('equals', function () {
                 $temp5 = $result1;
                 $result = ($temp5, $temp5);
                 $state.current = 3;
-                $callback($state);
+                $continue($state);
               });
             }).catch(function (err) {
               $state.reject(err);
@@ -204,7 +204,7 @@ $module('equals', function () {
                         return ($promise.shortcircuit($result0, false) || $g.equals.Foo.$equals(copy, different)).then(function ($result6) {
                           $result = $t.box($result0 && !$t.unbox($result6), $g.____testlib.basictypes.Boolean);
                           $state.current = 4;
-                          $callback($state);
+                          $continue($state);
                         });
                       });
                     });

@@ -25,18 +25,9 @@ $module('nominalbase', function () {
     };
     $instance.SomeProp = $t.property(function () {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve($t.box(!$t.unbox($t.unbox($this).SomeField), $g.____testlib.basictypes.Boolean));
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve($t.box(!$t.unbox($t.unbox($this).SomeField), $g.____testlib.basictypes.Boolean));
+        return;
       });
       return $promise.build($state);
     });
@@ -52,14 +43,14 @@ $module('nominalbase', function () {
     };
     $instance.GetValue = function () {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
+      var $state = $t.sm(function ($continue) {
         while (true) {
           switch ($state.current) {
             case 0:
               $t.box($this, $g.nominalbase.FirstNominal).SomeProp().then(function ($result0) {
                 $result = $t.box(!$t.unbox($result0), $g.____testlib.basictypes.Boolean);
                 $state.current = 1;
-                $callback($state);
+                $continue($state);
               }).catch(function (err) {
                 $state.reject(err);
               });
@@ -82,14 +73,14 @@ $module('nominalbase', function () {
   $static.TEST = function () {
     var sc;
     var sn;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
             $g.nominalbase.SomeClass.new().then(function ($result0) {
               $result = $result0;
               $state.current = 1;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -101,7 +92,7 @@ $module('nominalbase', function () {
             sn.GetValue().then(function ($result0) {
               $result = $result0;
               $state.current = 2;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });

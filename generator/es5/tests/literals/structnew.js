@@ -19,35 +19,16 @@ $module('structnew', function () {
     };
     $instance.AnotherField = $t.property(function () {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve($this.anotherField);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve($this.anotherField);
+        return;
       });
       return $promise.build($state);
     }, function (val) {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $this.anotherField = val;
-              $state.current = -1;
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $this.anotherField = val;
+        $state.resolve();
       });
       return $promise.build($state);
     });
@@ -55,7 +36,7 @@ $module('structnew', function () {
 
   $static.TEST = function () {
     var sc;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -64,7 +45,7 @@ $module('structnew', function () {
               return $temp0.AnotherField($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
                 $result = ($temp0, $result1, $temp0);
                 $state.current = 1;
-                $callback($state);
+                $continue($state);
               });
             }).catch(function (err) {
               $state.reject(err);
@@ -77,7 +58,7 @@ $module('structnew', function () {
               return $promise.resolve($t.unbox($result1)).then(function ($result0) {
                 $result = $t.box($result0 && $t.unbox(sc.anotherField), $g.____testlib.basictypes.Boolean);
                 $state.current = 2;
-                $callback($state);
+                $continue($state);
               });
             }).catch(function (err) {
               $state.reject(err);

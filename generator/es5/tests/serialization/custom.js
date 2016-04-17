@@ -11,14 +11,14 @@ $module('custom', function () {
       });
     };
     $static.Get = function () {
-      var $state = $t.sm(function ($callback) {
+      var $state = $t.sm(function ($continue) {
         while (true) {
           switch ($state.current) {
             case 0:
               $g.custom.CustomJSON.new().then(function ($result0) {
                 $result = $result0;
                 $state.current = 1;
-                $callback($state);
+                $continue($state);
               }).catch(function (err) {
                 $state.reject(err);
               });
@@ -38,7 +38,7 @@ $module('custom', function () {
     };
     $instance.Stringify = function (value) {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
+      var $state = $t.sm(function ($continue) {
         while (true) {
           switch ($state.current) {
             case 0:
@@ -46,7 +46,7 @@ $module('custom', function () {
                 return $result0.Stringify(value).then(function ($result1) {
                   $result = $result1;
                   $state.current = 1;
-                  $callback($state);
+                  $continue($state);
                 });
               }).catch(function (err) {
                 $state.reject(err);
@@ -67,7 +67,7 @@ $module('custom', function () {
     };
     $instance.Parse = function (value) {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
+      var $state = $t.sm(function ($continue) {
         while (true) {
           switch ($state.current) {
             case 0:
@@ -75,7 +75,7 @@ $module('custom', function () {
                 return $result0.Parse(value).then(function ($result1) {
                   $result = $result1;
                   $state.current = 1;
-                  $callback($state);
+                  $continue($state);
                 });
               }).catch(function (err) {
                 $state.reject(err);
@@ -260,7 +260,7 @@ $module('custom', function () {
     var jsonString;
     var parsed;
     var s;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -270,7 +270,7 @@ $module('custom', function () {
                 $temp1 = $result1;
                 $result = ($temp1, $temp1);
                 $state.current = 1;
-                $callback($state);
+                $continue($state);
               });
             }).catch(function (err) {
               $state.reject(err);
@@ -283,7 +283,7 @@ $module('custom', function () {
             $g.custom.SomeStruct.Parse($g.custom.CustomJSON)(jsonString).then(function ($result0) {
               $result = $result0;
               $state.current = 2;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -296,7 +296,7 @@ $module('custom', function () {
                 return $promise.resolve($result1 && !$t.unbox(parsed.AnotherField)).then(function ($result0) {
                   $result = $t.box($result0 && $t.unbox(parsed.SomeInstance.AnotherBool), $g.____testlib.basictypes.Boolean);
                   $state.current = 3;
-                  $callback($state);
+                  $continue($state);
                 });
               });
             }).catch(function (err) {

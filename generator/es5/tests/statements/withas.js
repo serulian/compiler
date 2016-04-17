@@ -2,7 +2,7 @@ $module('withas', function () {
   var $static = this;
   $static.DoSomething = function (someExpr) {
     var someName;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -13,7 +13,7 @@ $module('withas', function () {
             $state.popr('someName').then(function ($result0) {
               $result = $result0;
               $state.current = 1;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });

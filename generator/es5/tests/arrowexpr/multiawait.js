@@ -11,25 +11,16 @@ $module('multiawait', function () {
       });
     };
     $static.$plus = function (first, second) {
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve(first);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve(first);
+        return;
       });
       return $promise.build($state);
     };
   });
 
   $static.DoSomething = function (p, q) {
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -38,7 +29,7 @@ $module('multiawait', function () {
                 return $g.multiawait.SomeClass.$plus($result0, $result1).then(function ($result2) {
                   $result = $result2;
                   $state.current = 1;
-                  $callback($state);
+                  $continue($state);
                 });
               });
             }).catch(function (err) {

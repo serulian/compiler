@@ -11,176 +11,86 @@ $module('binary', function () {
       });
     };
     $static.$xor = function (left, right) {
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve(left);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve(left);
+        return;
       });
       return $promise.build($state);
     };
     $static.$or = function (left, right) {
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve(left);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve(left);
+        return;
       });
       return $promise.build($state);
     };
     $static.$and = function (left, right) {
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve(left);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve(left);
+        return;
       });
       return $promise.build($state);
     };
     $static.$leftshift = function (left, right) {
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve(left);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve(left);
+        return;
       });
       return $promise.build($state);
     };
     $static.$not = function (value) {
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve(value);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve(value);
+        return;
       });
       return $promise.build($state);
     };
     $static.$plus = function (left, right) {
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve(left);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve(left);
+        return;
       });
       return $promise.build($state);
     };
     $static.$minus = function (left, right) {
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve(right);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve(right);
+        return;
       });
       return $promise.build($state);
     };
     $static.$times = function (left, right) {
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve(left);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve(left);
+        return;
       });
       return $promise.build($state);
     };
     $static.$div = function (left, right) {
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve(left);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve(left);
+        return;
       });
       return $promise.build($state);
     };
     $static.$mod = function (left, right) {
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve(left);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve(left);
+        return;
       });
       return $promise.build($state);
     };
   });
 
   $static.DoSomething = function (first, second) {
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
             $g.binary.SomeClass.$plus(first, second).then(function ($result0) {
               $result = $result0;
               $state.current = 1;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -191,7 +101,7 @@ $module('binary', function () {
             $g.binary.SomeClass.$minus(first, second).then(function ($result0) {
               $result = $result0;
               $state.current = 2;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -211,7 +121,7 @@ $module('binary', function () {
     return $promise.build($state);
   };
   $static.TEST = function () {
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -219,7 +129,7 @@ $module('binary', function () {
               return $g.____testlib.basictypes.Integer.$equals($result0, $t.box(3, $g.____testlib.basictypes.Integer)).then(function ($result1) {
                 $result = $result1;
                 $state.current = 1;
-                $callback($state);
+                $continue($state);
               });
             }).catch(function (err) {
               $state.reject(err);

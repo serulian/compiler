@@ -4,7 +4,7 @@ $module('templatestr', function () {
     var a;
     var b;
     var result;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -15,7 +15,7 @@ $module('templatestr', function () {
                 return $g.____testlib.basictypes.formatTemplateString($result0, $result1).then(function ($result2) {
                   $result = $result2;
                   $state.current = 1;
-                  $callback($state);
+                  $continue($state);
                 });
               });
             }).catch(function (err) {
@@ -28,7 +28,7 @@ $module('templatestr', function () {
             $g.____testlib.basictypes.String.$equals(result, $t.box('This function is #1! It is true!', $g.____testlib.basictypes.String)).then(function ($result0) {
               $result = $result0;
               $state.current = 2;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });

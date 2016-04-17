@@ -126,7 +126,7 @@ $module('slice', function () {
     var parsed;
     var s;
     var values;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -139,7 +139,7 @@ $module('slice', function () {
                   return $g.____testlib.basictypes.List($g.slice.AnotherStruct).forArray([($temp0, $temp0), ($temp1, $temp1), ($temp2, $temp2)]).then(function ($result3) {
                     $result = $result3;
                     $state.current = 1;
-                    $callback($state);
+                    $continue($state);
                   });
                 });
               });
@@ -155,7 +155,7 @@ $module('slice', function () {
                 $temp3 = $result1;
                 $result = ($temp3, $temp3);
                 $state.current = 2;
-                $callback($state);
+                $continue($state);
               });
             }).catch(function (err) {
               $state.reject(err);
@@ -169,7 +169,7 @@ $module('slice', function () {
               return $g.____testlib.basictypes.String.$equals($result0, jsonString).then(function ($result1) {
                 $result = $result1;
                 $state.current = 3;
-                $callback($state);
+                $continue($state);
               });
             }).catch(function (err) {
               $state.reject(err);
@@ -181,7 +181,7 @@ $module('slice', function () {
             $g.slice.SomeStruct.Parse($g.____testlib.basictypes.JSON)(jsonString).then(function ($result0) {
               $result = $result0;
               $state.current = 4;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -197,7 +197,7 @@ $module('slice', function () {
                       return ($promise.shortcircuit($result0, false) || $g.____testlib.basictypes.Integer.$equals($result4.AnotherInt, $t.box(1, $g.____testlib.basictypes.Integer))).then(function ($result5) {
                         $result = $t.box($result0 && $t.unbox($result5), $g.____testlib.basictypes.Boolean);
                         $state.current = 5;
-                        $callback($state);
+                        $continue($state);
                       });
                     });
                   });

@@ -162,7 +162,7 @@ $module('basic', function () {
 
   $static.TEST = function () {
     var ss;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -172,7 +172,7 @@ $module('basic', function () {
                 $temp1 = $result1;
                 $result = ($temp1, $temp1);
                 $state.current = 1;
-                $callback($state);
+                $continue($state);
               });
             }).catch(function (err) {
               $state.reject(err);
@@ -186,7 +186,7 @@ $module('basic', function () {
                 return $promise.resolve($result1 && $t.unbox(ss.AnotherField)).then(function ($result0) {
                   $result = $t.box($result0 && $t.unbox(ss.SomeInstance.AnotherBool), $g.____testlib.basictypes.Boolean);
                   $state.current = 2;
-                  $callback($state);
+                  $continue($state);
                 });
               });
             }).catch(function (err) {

@@ -11,32 +11,23 @@ $module('unary', function () {
       });
     };
     $static.$not = function (instance) {
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve(instance);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve(instance);
+        return;
       });
       return $promise.build($state);
     };
   });
 
   $static.DoSomething = function (first) {
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
             $g.unary.SomeClass.$not(first).then(function ($result0) {
               $result = $result0;
               $state.current = 1;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });

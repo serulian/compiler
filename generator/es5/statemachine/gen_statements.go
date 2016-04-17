@@ -138,12 +138,12 @@ func (sg *stateGenerator) generateArrowPromise(arrowPromise *codedom.ArrowPromis
 			{{ end }}
 
 			{{ .Generator.JumpToStatement .Item.Target }}
-			$callback($state);
+			$continue($state);
 		}).catch(function(rejected) {
 			{{ if .Item.RejectionAssignment }}
 				{{ .Generator.AddTopLevelExpression .Item.RejectionAssignment }}
 				{{ .Generator.JumpToStatement .Item.Target }}
-				$callback($state);
+				$continue($state);
 			{{ else }}
 				$state.reject(rejected);
 			{{ end }}

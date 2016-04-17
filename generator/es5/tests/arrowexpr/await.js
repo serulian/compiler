@@ -12,14 +12,14 @@ $module('await', function () {
     };
     $instance.Then = function (resolve) {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
+      var $state = $t.sm(function ($continue) {
         while (true) {
           switch ($state.current) {
             case 0:
               resolve($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
                 $result = $result0;
                 $state.current = 1;
-                $callback($state);
+                $continue($state);
               }).catch(function (err) {
                 $state.reject(err);
               });
@@ -40,32 +40,23 @@ $module('await', function () {
     };
     $instance.Catch = function (rejection) {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve($this);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve($this);
+        return;
       });
       return $promise.build($state);
     };
   });
 
   $static.DoSomething = function (p) {
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
             $promise.translate(p).then(function ($result0) {
               $result = $result0;
               $state.current = 1;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -84,7 +75,7 @@ $module('await', function () {
     return $promise.build($state);
   };
   $static.TEST = function () {
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -92,7 +83,7 @@ $module('await', function () {
               return $g.await.DoSomething($result0).then(function ($result1) {
                 $result = $result1;
                 $state.current = 1;
-                $callback($state);
+                $continue($state);
               });
             }).catch(function (err) {
               $state.reject(err);

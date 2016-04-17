@@ -10,18 +10,9 @@ $module('nominaljson', function () {
     };
     $instance.GetValue = function () {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve($t.box($this, $g.nominaljson.AnotherStruct).AnotherBool);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve($t.box($this, $g.nominaljson.AnotherStruct).AnotherBool);
+        return;
       });
       return $promise.build($state);
     };
@@ -152,7 +143,7 @@ $module('nominaljson', function () {
     var jsonString;
     var parsed;
     var s;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -162,7 +153,7 @@ $module('nominaljson', function () {
                 $temp1 = $result1;
                 $result = ($temp1, $temp1);
                 $state.current = 1;
-                $callback($state);
+                $continue($state);
               });
             }).catch(function (err) {
               $state.reject(err);
@@ -176,7 +167,7 @@ $module('nominaljson', function () {
               return $g.____testlib.basictypes.String.$equals($result0, jsonString).then(function ($result1) {
                 $result = $result1;
                 $state.current = 2;
-                $callback($state);
+                $continue($state);
               });
             }).catch(function (err) {
               $state.reject(err);
@@ -188,7 +179,7 @@ $module('nominaljson', function () {
             $g.nominaljson.SomeStruct.Parse($g.____testlib.basictypes.JSON)(jsonString).then(function ($result0) {
               $result = $result0;
               $state.current = 3;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -200,7 +191,7 @@ $module('nominaljson', function () {
               return ($promise.shortcircuit($result0, false) || parsed.Nested.GetValue()).then(function ($result1) {
                 $result = $t.box($result0 && $t.unbox($result1), $g.____testlib.basictypes.Boolean);
                 $state.current = 4;
-                $callback($state);
+                $continue($state);
               });
             }).catch(function (err) {
               $state.reject(err);

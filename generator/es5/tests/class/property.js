@@ -15,42 +15,23 @@ $module('property', function () {
     };
     $instance.SomeProp = $t.property(function () {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve($this.SomeBool);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve($this.SomeBool);
+        return;
       });
       return $promise.build($state);
     }, function (val) {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $this.SomeBool = val;
-              $state.current = -1;
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $this.SomeBool = val;
+        $state.resolve();
       });
       return $promise.build($state);
     });
   });
 
   $static.AnotherFunction = function (sc) {
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -58,7 +39,7 @@ $module('property', function () {
             sc.SomeProp().then(function ($result0) {
               $result = $result0;
               $state.current = 1;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -69,7 +50,7 @@ $module('property', function () {
             sc.SomeProp($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $state.current = 2;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -80,7 +61,7 @@ $module('property', function () {
             sc.SomeProp().then(function ($result0) {
               $result = $result0;
               $state.current = 3;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -99,7 +80,7 @@ $module('property', function () {
     return $promise.build($state);
   };
   $static.TEST = function () {
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -107,7 +88,7 @@ $module('property', function () {
               return $g.property.AnotherFunction($result0).then(function ($result1) {
                 $result = $result1;
                 $state.current = 1;
-                $callback($state);
+                $continue($state);
               });
             }).catch(function (err) {
               $state.reject(err);

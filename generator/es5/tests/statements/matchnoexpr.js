@@ -1,7 +1,7 @@
 $module('matchnoexpr', function () {
   var $static = this;
   $static.DoSomething = function () {
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:

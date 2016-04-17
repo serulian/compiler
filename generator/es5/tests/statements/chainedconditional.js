@@ -1,7 +1,7 @@
 $module('chainedconditional', function () {
   var $static = this;
   $static.TEST = function () {
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:

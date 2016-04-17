@@ -56,18 +56,9 @@ $module('inheritance', function () {
     };
     $instance.DoSomething = function () {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve($this.SomeBool);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve($this.SomeBool);
+        return;
       });
       return $promise.build($state);
     };
@@ -87,7 +78,7 @@ $module('inheritance', function () {
   });
 
   $static.TEST = function () {
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -95,7 +86,7 @@ $module('inheritance', function () {
               return $result0.DoSomething().then(function ($result1) {
                 $result = $result1;
                 $state.current = 1;
-                $callback($state);
+                $continue($state);
               });
             }).catch(function (err) {
               $state.reject(err);

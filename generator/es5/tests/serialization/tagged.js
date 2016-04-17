@@ -63,7 +63,7 @@ $module('tagged', function () {
   $static.TEST = function () {
     var jsonString;
     var s;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -71,7 +71,7 @@ $module('tagged', function () {
               $temp0 = $result0;
               $result = ($temp0, $temp0);
               $state.current = 1;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -84,7 +84,7 @@ $module('tagged', function () {
               return $g.____testlib.basictypes.String.$equals($result0, jsonString).then(function ($result1) {
                 $result = $result1;
                 $state.current = 2;
-                $callback($state);
+                $continue($state);
               });
             }).catch(function (err) {
               $state.reject(err);

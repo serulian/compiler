@@ -165,7 +165,7 @@ $module('json', function () {
     var jsonString;
     var parsed;
     var s;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -175,7 +175,7 @@ $module('json', function () {
                 $temp1 = $result1;
                 $result = ($temp1, $temp1);
                 $state.current = 1;
-                $callback($state);
+                $continue($state);
               });
             }).catch(function (err) {
               $state.reject(err);
@@ -189,7 +189,7 @@ $module('json', function () {
               return $g.____testlib.basictypes.String.$equals($result0, jsonString).then(function ($result1) {
                 $result = $result1;
                 $state.current = 2;
-                $callback($state);
+                $continue($state);
               });
             }).catch(function (err) {
               $state.reject(err);
@@ -201,7 +201,7 @@ $module('json', function () {
             $g.json.SomeStruct.Parse($g.____testlib.basictypes.JSON)(jsonString).then(function ($result0) {
               $result = $result0;
               $state.current = 3;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -215,7 +215,7 @@ $module('json', function () {
                   return $promise.resolve($result1 && !$t.unbox(parsed.AnotherField)).then(function ($result0) {
                     $result = $t.box($result0 && $t.unbox(parsed.SomeInstance.AnotherBool), $g.____testlib.basictypes.Boolean);
                     $state.current = 4;
-                    $callback($state);
+                    $continue($state);
                   });
                 });
               });

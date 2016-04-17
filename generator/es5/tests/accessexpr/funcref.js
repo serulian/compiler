@@ -16,32 +16,23 @@ $module('funcref', function () {
     };
     $instance.SomeFunction = function () {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve($this.value);
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve($this.value);
+        return;
       });
       return $promise.build($state);
     };
   });
 
   $static.AnotherFunction = function (toCall) {
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
             toCall().then(function ($result0) {
               $result = $result0;
               $state.current = 1;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -61,7 +52,7 @@ $module('funcref', function () {
   };
   $static.TEST = function () {
     var sc;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -69,7 +60,7 @@ $module('funcref', function () {
               $temp0 = $result0;
               $result = ($temp0, $temp0);
               $state.current = 1;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -80,7 +71,7 @@ $module('funcref', function () {
             $g.funcref.AnotherFunction($t.dynamicaccess(sc, 'SomeFunction')).then(function ($result0) {
               $result = $result0;
               $state.current = 2;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });

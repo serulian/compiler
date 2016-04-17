@@ -12,19 +12,9 @@ $module('with', function () {
     };
     $instance.Release = function () {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $g.with.someBool = $t.box(true, $g.____testlib.basictypes.Boolean);
-              $state.current = -1;
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $g.with.someBool = $t.box(true, $g.____testlib.basictypes.Boolean);
+        $state.resolve();
       });
       return $promise.build($state);
     };
@@ -32,7 +22,7 @@ $module('with', function () {
 
   $static.TEST = function () {
     var $temp0;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -40,7 +30,7 @@ $module('with', function () {
             $g.with.SomeReleasable.new().then(function ($result0) {
               $result = $result0;
               $state.current = 1;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -53,7 +43,7 @@ $module('with', function () {
             $state.popr('$temp0').then(function ($result0) {
               $result = $result0;
               $state.current = 2;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });

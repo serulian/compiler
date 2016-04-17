@@ -2,7 +2,7 @@ $module('mixed', function () {
   var $static = this;
   $static.TEST = function () {
     var finalIndex;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -12,7 +12,7 @@ $module('mixed', function () {
                 return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.Integer.$compare(finalIndex, $t.box(0, $g.____testlib.basictypes.Integer))).then(function ($result2) {
                   $result = $t.box($result0 || ($t.unbox($result2) < 0), $g.____testlib.basictypes.Boolean);
                   $state.current = 1;
-                  $callback($state);
+                  $continue($state);
                 });
               });
             }).catch(function (err) {

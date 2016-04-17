@@ -17,23 +17,13 @@ $module('identifier', function () {
   };
   $static.DoSomething = function (someParam) {
     var someVar;
-    var $state = $t.sm(function ($callback) {
-      while (true) {
-        switch ($state.current) {
-          case 0:
-            someVar = $t.box(2, $g.____testlib.basictypes.Integer);
-            $g.identifier.SomeClass;
-            $g.identifier.AnotherFunction;
-            someParam;
-            someVar;
-            $state.current = -1;
-            return;
-
-          default:
-            $state.current = -1;
-            return;
-        }
-      }
+    var $state = $t.sm(function ($continue) {
+      someVar = $t.box(2, $g.____testlib.basictypes.Integer);
+      $g.identifier.SomeClass;
+      $g.identifier.AnotherFunction;
+      someParam;
+      someVar;
+      $state.resolve();
     });
     return $promise.build($state);
   };

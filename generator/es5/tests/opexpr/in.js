@@ -12,18 +12,9 @@ $module('in', function () {
     };
     $instance.$contains = function (value) {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve($t.box(!$t.unbox(value), $g.____testlib.basictypes.Boolean));
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve($t.box(!$t.unbox(value), $g.____testlib.basictypes.Boolean));
+        return;
       });
       return $promise.build($state);
     };
@@ -31,14 +22,14 @@ $module('in', function () {
 
   $static.TEST = function () {
     var sc;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
             $g.in.SomeClass.new().then(function ($result0) {
               $result = $result0;
               $state.current = 1;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -49,7 +40,7 @@ $module('in', function () {
             sc.$contains($t.box(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $state.current = 2;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });

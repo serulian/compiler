@@ -3,7 +3,7 @@ $module('boolean', function () {
   $static.TEST = function () {
     var first;
     var second;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -14,7 +14,7 @@ $module('boolean', function () {
                 return $promise.resolve($result1 || $t.unbox(first)).then(function ($result0) {
                   $result = $t.box($result0 || !$t.unbox(second), $g.____testlib.basictypes.Boolean);
                   $state.current = 1;
-                  $callback($state);
+                  $continue($state);
                 });
               });
             }).catch(function (err) {

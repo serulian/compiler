@@ -12,18 +12,9 @@ $module('basic', function () {
     };
     $instance.DoSomething = function () {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+        return;
       });
       return $promise.build($state);
     };
@@ -39,14 +30,14 @@ $module('basic', function () {
     };
     $instance.AnotherThing = function () {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
+      var $state = $t.sm(function ($continue) {
         while (true) {
           switch ($state.current) {
             case 0:
               $t.unbox($this).DoSomething().then(function ($result0) {
                 $result = $result0;
                 $state.current = 1;
-                $callback($state);
+                $continue($state);
               }).catch(function (err) {
                 $state.reject(err);
               });
@@ -66,18 +57,9 @@ $module('basic', function () {
     };
     $instance.SomeProp = $t.property(function () {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+        return;
       });
       return $promise.build($state);
     });
@@ -86,14 +68,14 @@ $module('basic', function () {
   $static.TEST = function () {
     var m;
     var sc;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
             $g.basic.SomeClass.new().then(function ($result0) {
               $result = $result0;
               $state.current = 1;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -107,7 +89,7 @@ $module('basic', function () {
                 return ($promise.shortcircuit($result0, false) || m.AnotherThing()).then(function ($result2) {
                   $result = $t.box($result0 && $t.unbox($result2), $g.____testlib.basictypes.Boolean);
                   $state.current = 2;
-                  $callback($state);
+                  $continue($state);
                 });
               });
             }).catch(function (err) {

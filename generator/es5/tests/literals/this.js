@@ -12,19 +12,9 @@ $module('this', function () {
     };
     $instance.DoSomething = function () {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $this;
-              $state.current = -1;
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $this;
+        $state.resolve();
       });
       return $promise.build($state);
     };

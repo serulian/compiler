@@ -12,18 +12,9 @@ $module('structuralcast', function () {
     };
     $instance.Result = $t.property(function () {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+        return;
       });
       return $promise.build($state);
     });
@@ -44,50 +35,31 @@ $module('structuralcast', function () {
     };
     $instance.Result = $t.property(function () {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve($t.box(false, $g.____testlib.basictypes.Boolean));
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve($t.box(false, $g.____testlib.basictypes.Boolean));
+        return;
       });
       return $promise.build($state);
     });
   });
 
   $static.DoSomething = function (sc) {
-    var $state = $t.sm(function ($callback) {
-      while (true) {
-        switch ($state.current) {
-          case 0:
-            sc.BaseClass$Integer;
-            $state.current = -1;
-            return;
-
-          default:
-            $state.current = -1;
-            return;
-        }
-      }
+    var $state = $t.sm(function ($continue) {
+      sc.BaseClass$Integer;
+      $state.resolve();
     });
     return $promise.build($state);
   };
   $static.TEST = function () {
     var sc;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
             $g.structuralcast.SomeClass.new().then(function ($result0) {
               $result = $result0;
               $state.current = 1;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -98,7 +70,7 @@ $module('structuralcast', function () {
             sc.BaseClass$Integer.Result().then(function ($result0) {
               $result = $result0;
               $state.current = 2;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });

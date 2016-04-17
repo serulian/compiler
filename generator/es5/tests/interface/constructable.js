@@ -11,14 +11,14 @@ $module('constructable', function () {
       });
     };
     $static.Get = function () {
-      var $state = $t.sm(function ($callback) {
+      var $state = $t.sm(function ($continue) {
         while (true) {
           switch ($state.current) {
             case 0:
               $g.constructable.SomeClass.new().then(function ($result0) {
                 $result = $result0;
                 $state.current = 1;
-                $callback($state);
+                $continue($state);
               }).catch(function (err) {
                 $state.reject(err);
               });
@@ -38,18 +38,9 @@ $module('constructable', function () {
     };
     $instance.SomeBool = $t.property(function () {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+        return;
       });
       return $promise.build($state);
     });
@@ -58,14 +49,14 @@ $module('constructable', function () {
   this.$interface('SomeInterface', false, '', function () {
     var $static = this;
     $static.Get = function () {
-      var $state = $t.sm(function ($callback) {
+      var $state = $t.sm(function ($continue) {
         while (true) {
           switch ($state.current) {
             case 0:
               $g.constructable.SomeClass.new().then(function ($result0) {
                 $result = $result0;
                 $state.current = 1;
-                $callback($state);
+                $continue($state);
               }).catch(function (err) {
                 $state.reject(err);
               });
@@ -87,14 +78,14 @@ $module('constructable', function () {
 
   $static.DoSomething = function (T) {
     var $f = function () {
-      var $state = $t.sm(function ($callback) {
+      var $state = $t.sm(function ($continue) {
         while (true) {
           switch ($state.current) {
             case 0:
               T.Get().then(function ($result0) {
                 $result = $result0;
                 $state.current = 1;
-                $callback($state);
+                $continue($state);
               }).catch(function (err) {
                 $state.reject(err);
               });
@@ -115,7 +106,7 @@ $module('constructable', function () {
     return $f;
   };
   $static.TEST = function () {
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -123,7 +114,7 @@ $module('constructable', function () {
               return $result0.SomeBool().then(function ($result1) {
                 $result = $result1;
                 $state.current = 1;
-                $callback($state);
+                $continue($state);
               });
             }).catch(function (err) {
               $state.reject(err);

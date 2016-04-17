@@ -2,7 +2,7 @@ $module('matchexpr', function () {
   var $static = this;
   $static.DoSomething = function (someVar) {
     var $temp0;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -11,7 +11,7 @@ $module('matchexpr', function () {
             $g.____testlib.basictypes.Integer.$equals($temp0, $t.box(1, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $result = $t.unbox($result0);
               $state.current = 1;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -41,7 +41,7 @@ $module('matchexpr', function () {
             $g.____testlib.basictypes.Integer.$equals($temp0, $t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $result = $t.unbox($result0);
               $state.current = 5;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });

@@ -1,7 +1,7 @@
 $module('mappingliteral', function () {
   var $static = this;
   $static.TEST = function () {
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -15,7 +15,7 @@ $module('mappingliteral', function () {
               return $result0.$index($t.box('somekey', $g.____testlib.basictypes.String)).then(function ($result1) {
                 $result = $result1;
                 $state.current = 1;
-                $callback($state);
+                $continue($state);
               });
             }).catch(function (err) {
               $state.reject(err);

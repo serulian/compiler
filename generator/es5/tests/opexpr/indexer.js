@@ -15,14 +15,14 @@ $module('indexer', function () {
     };
     $instance.$index = function (someParam) {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
+      var $state = $t.sm(function ($continue) {
         while (true) {
           switch ($state.current) {
             case 0:
               $promise.resolve($t.unbox($this.result)).then(function ($result0) {
                 $result = $t.box($result0 && !$t.unbox(someParam), $g.____testlib.basictypes.Boolean);
                 $state.current = 1;
-                $callback($state);
+                $continue($state);
               }).catch(function (err) {
                 $state.reject(err);
               });
@@ -42,19 +42,9 @@ $module('indexer', function () {
     };
     $instance.$setindex = function (index, value) {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $this.result = value;
-              $state.current = -1;
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $this.result = value;
+        $state.resolve();
       });
       return $promise.build($state);
     };
@@ -62,14 +52,14 @@ $module('indexer', function () {
 
   $static.TEST = function () {
     var sc;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
             $g.indexer.SomeClass.new().then(function ($result0) {
               $result = $result0;
               $state.current = 1;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -80,7 +70,7 @@ $module('indexer', function () {
             sc.$setindex($t.box(1, $g.____testlib.basictypes.Integer), $t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $state.current = 2;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -91,7 +81,7 @@ $module('indexer', function () {
             sc.$index($t.box(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $state.current = 3;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });

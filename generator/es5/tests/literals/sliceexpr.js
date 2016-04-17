@@ -1,7 +1,7 @@
 $module('sliceexpr', function () {
   var $static = this;
   $static.TEST = function () {
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -9,7 +9,7 @@ $module('sliceexpr', function () {
               return $result0.$index($t.box(1, $g.____testlib.basictypes.Integer)).then(function ($result1) {
                 $result = $result1;
                 $state.current = 1;
-                $callback($state);
+                $continue($state);
               });
             }).catch(function (err) {
               $state.reject(err);

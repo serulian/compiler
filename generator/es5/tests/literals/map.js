@@ -2,14 +2,14 @@ $module('map', function () {
   var $static = this;
   $static.TEST = function () {
     var map;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
             $g.____testlib.basictypes.Map($g.____testlib.basictypes.String, $g.____testlib.basictypes.Boolean).forArrays([$t.box('hello', $g.____testlib.basictypes.String), $t.box('hi', $g.____testlib.basictypes.String)], [$t.box(true, $g.____testlib.basictypes.Boolean), $t.box(false, $g.____testlib.basictypes.Boolean)]).then(function ($result0) {
               $result = $result0;
               $state.current = 1;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -22,7 +22,7 @@ $module('map', function () {
                 return ($promise.shortcircuit($result0, false) || map.$index($t.box('hi', $g.____testlib.basictypes.String))).then(function ($result2) {
                   $result = $t.box($result0 && !$t.unbox($t.nullcompare($result2, $t.box(true, $g.____testlib.basictypes.Boolean))), $g.____testlib.basictypes.Boolean);
                   $state.current = 2;
-                  $callback($state);
+                  $continue($state);
                 });
               });
             }).catch(function (err) {

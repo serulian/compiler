@@ -12,18 +12,9 @@ $module('interface', function () {
     };
     $instance.SomeValue = $t.property(function () {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $state.resolve($t.box(42, $g.____testlib.basictypes.Integer));
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $state.resolve($t.box(42, $g.____testlib.basictypes.Integer));
+        return;
       });
       return $promise.build($state);
     });
@@ -43,14 +34,14 @@ $module('interface', function () {
     };
     $instance.GetValue = function () {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
+      var $state = $t.sm(function ($continue) {
         while (true) {
           switch ($state.current) {
             case 0:
               $t.unbox($this).SomeValue().then(function ($result0) {
                 $result = $result0;
                 $state.current = 1;
-                $callback($state);
+                $continue($state);
               }).catch(function (err) {
                 $state.reject(err);
               });
@@ -73,14 +64,14 @@ $module('interface', function () {
   $static.TEST = function () {
     var sc;
     var v;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
             $g.interface.SomeClass.new().then(function ($result0) {
               $result = $result0;
               $state.current = 1;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -93,7 +84,7 @@ $module('interface', function () {
               return $g.____testlib.basictypes.Integer.$equals($result0, $t.box(42, $g.____testlib.basictypes.Integer)).then(function ($result1) {
                 $result = $result1;
                 $state.current = 2;
-                $callback($state);
+                $continue($state);
               });
             }).catch(function (err) {
               $state.reject(err);

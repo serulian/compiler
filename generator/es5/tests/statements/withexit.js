@@ -12,19 +12,9 @@ $module('withexit', function () {
     };
     $instance.Release = function () {
       var $this = this;
-      var $state = $t.sm(function ($callback) {
-        while (true) {
-          switch ($state.current) {
-            case 0:
-              $g.withexit.someBool = $t.box(true, $g.____testlib.basictypes.Boolean);
-              $state.current = -1;
-              return;
-
-            default:
-              $state.current = -1;
-              return;
-          }
-        }
+      var $state = $t.sm(function ($continue) {
+        $g.withexit.someBool = $t.box(true, $g.____testlib.basictypes.Boolean);
+        $state.resolve();
       });
       return $promise.build($state);
     };
@@ -32,7 +22,7 @@ $module('withexit', function () {
 
   $static.TEST = function () {
     var $temp0;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -44,7 +34,7 @@ $module('withexit', function () {
             $g.withexit.SomeReleasable.new().then(function ($result0) {
               $result = $result0;
               $state.current = 2;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -66,7 +56,7 @@ $module('withexit', function () {
           case 3:
             $state.popr('$temp0').then(function () {
               $state.current = 4;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -77,7 +67,7 @@ $module('withexit', function () {
             $state.popr('$temp0').then(function ($result0) {
               $result = $result0;
               $state.current = 6;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });

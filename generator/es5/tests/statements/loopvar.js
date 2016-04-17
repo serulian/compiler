@@ -16,7 +16,7 @@ $module('loopvar', function () {
     $instance.Next = function () {
       var $this = this;
       var r;
-      var $state = $t.sm(function ($callback) {
+      var $state = $t.sm(function ($continue) {
         while (true) {
           switch ($state.current) {
             case 0:
@@ -25,7 +25,7 @@ $module('loopvar', function () {
               $g.____testlib.basictypes.Tuple($g.____testlib.basictypes.Boolean, $g.____testlib.basictypes.Boolean).Build($t.box(true, $g.____testlib.basictypes.Boolean), $t.box(!$t.unbox(r), $g.____testlib.basictypes.Boolean)).then(function ($result0) {
                 $result = $result0;
                 $state.current = 1;
-                $callback($state);
+                $continue($state);
               }).catch(function (err) {
                 $state.reject(err);
               });
@@ -49,7 +49,7 @@ $module('loopvar', function () {
     var $temp0;
     var $temp1;
     var something;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -67,7 +67,7 @@ $module('loopvar', function () {
               $temp0 = $result0;
               $result = $temp0;
               $state.current = 3;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -109,7 +109,7 @@ $module('loopvar', function () {
     var i;
     var result;
     var s;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -117,7 +117,7 @@ $module('loopvar', function () {
             $g.loopvar.SomeStream.new().then(function ($result0) {
               $result = $result0;
               $state.current = 1;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -138,7 +138,7 @@ $module('loopvar', function () {
               $temp0 = $result0;
               $result = $temp0;
               $state.current = 4;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });

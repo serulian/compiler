@@ -112,10 +112,16 @@ func (sg *stateGenerator) source(states []*state) (string, bool) {
 		return "", false
 	}
 
+	var singleState *state = nil
+	if len(states) == 1 {
+		singleState = states[0]
+	}
+
 	data := struct {
-		States    []*state
-		Variables map[string]bool
-	}{states, sg.variables}
+		States      []*state
+		SingleState *state
+		Variables   map[string]bool
+	}{states, singleState, sg.variables}
 
 	return sg.templater.Execute("statemachine", stateMachineTemplateStr, data), true
 }
@@ -191,7 +197,7 @@ func (sg *stateGenerator) JumpToStatement(target codedom.Statement) string {
 	popTemplateStr := `
 		{{ .PopFunction }}({{ range $index, $resource := .Resources }}{{ if $index }}, {{ end }} '{{ $resource.Name }}' {{ end }}).then(function() {
 			$state.current = {{ .TargetState.ID }};
-			$callback($state);
+			$continue($state);
 		}).catch(function(err) {
 			$state.reject(err);
 		});
@@ -220,7 +226,7 @@ func (sg *stateGenerator) AddTopLevelExpression(expression codedom.Expression) s
 		innerTemplateStr := fmt.Sprintf(`
 			$result = {{ . }};
 			$state.current = %v;
-			$callback($state);
+			$continue($state);
 		`, targetState.ID)
 
 		source := result.Source(innerTemplateStr)
@@ -309,7 +315,11 @@ const stateMachineTemplateStr = `
 	{{ range $name, $true := .Variables }}
 	   var {{ $name }};
 	{{ end }}
-	var $state = $t.sm(function($callback) {
+	var $state = $t.sm(function($continue) {
+		{{ if .SingleState }}
+			{{ .SingleState.Source }}
+			$state.resolve();
+		{{ else }}
 		while (true) {
 			switch ($state.current) {
 				{{range .States }}
@@ -328,5 +338,6 @@ const stateMachineTemplateStr = `
 					return;
 			}
 		}
+		{{ end }}
 	});
 `

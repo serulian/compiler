@@ -74,7 +74,7 @@ $module('nominal', function () {
     var c;
     var s;
     var s2;
-    var $state = $t.sm(function ($callback) {
+    var $state = $t.sm(function ($continue) {
       while (true) {
         switch ($state.current) {
           case 0:
@@ -83,7 +83,7 @@ $module('nominal', function () {
               $temp0 = $result0;
               $result = ($temp0, $temp0);
               $state.current = 1;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -94,7 +94,7 @@ $module('nominal', function () {
             $g.nominal.SomeStruct.Parse($g.____testlib.basictypes.JSON)($t.box('{"someField": true}', $g.____testlib.basictypes.String)).then(function ($result0) {
               $result = $result0;
               $state.current = 2;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
@@ -105,7 +105,7 @@ $module('nominal', function () {
             $promise.resolve(s2.someField).then(function ($result0) {
               $result = $t.box($result0 && s.someField, $g.____testlib.basictypes.Boolean);
               $state.current = 3;
-              $callback($state);
+              $continue($state);
             }).catch(function (err) {
               $state.reject(err);
             });
