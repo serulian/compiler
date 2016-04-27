@@ -1,0 +1,4 @@
+function<void> DoSomething() {
+	// Some comment
+	foo = bar
+}

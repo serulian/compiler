@@ -11,6 +11,7 @@ import (
 
 	"github.com/serulian/compiler/builder"
 	"github.com/serulian/compiler/developer"
+	"github.com/serulian/compiler/formatter"
 	"github.com/spf13/cobra"
 )
 
@@ -24,7 +25,7 @@ func main() {
 	var cmdBuild = &cobra.Command{
 		Use:   "build [entrypoint source file]",
 		Short: "Builds a Serulian project",
-		Long:  `Builds a Serulian project, starting at the given root source file`,
+		Long:  `Builds a Serulian project, starting at the given root source file.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) != 1 {
 				fmt.Println("Expected entrypoint source file")
@@ -40,7 +41,7 @@ func main() {
 	var cmdDevelop = &cobra.Command{
 		Use:   "develop [entrypoint source file]",
 		Short: "Starts development mode of a Serulian project",
-		Long:  `Starts a webserver that automatically compiles on refresh, starting at the given root source file`,
+		Long:  `Starts a webserver that automatically compiles on refresh, starting at the given root source file.`,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) != 1 {
 				fmt.Println("Expected entrypoint source file")
@@ -52,6 +53,24 @@ func main() {
 			}
 		},
 	}
+
+	var cmdFormat = &cobra.Command{
+		Use:   "format [source path]",
+		Short: "Formats all Serulian files at the given path",
+		Long:  `Formats all Serulian files (.seru) found at the given path to the defined formatting.`,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) != 1 {
+				fmt.Println("Expected source path")
+				os.Exit(-1)
+			}
+
+			if !formatter.Format(args[0], debug) {
+				os.Exit(-1)
+			}
+		},
+	}
+
+	cmdFormat.PersistentFlags().BoolVar(&debug, "debug", false, "If set to true, Serulian will print debug logs during formatting")
 
 	cmdBuild.PersistentFlags().BoolVar(&debug, "debug", false, "If set to true, Serulian will print debug logs during compilation")
 	cmdBuild.PersistentFlags().StringSliceVar(&vcsDevelopmentDirectories, "vcs-dev-dir", []string{},
@@ -65,5 +84,6 @@ func main() {
 	var rootCmd = &cobra.Command{Use: "serulian"}
 	rootCmd.AddCommand(cmdBuild)
 	rootCmd.AddCommand(cmdDevelop)
+	rootCmd.AddCommand(cmdFormat)
 	rootCmd.Execute()
 }

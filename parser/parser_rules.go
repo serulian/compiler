@@ -2086,51 +2086,55 @@ func (p *sourceParser) tryConsumeArrowStatement() (AstNode, bool) {
 	return arrowNode, true
 }
 
+// BinaryOperators defines the binary operators in precedence order.
+var BinaryOperators = []boe{
+	// Stream operator.
+	boe{tokenTypeEllipsis, NodeDefineRangeExpression},
+
+	// Boolean operators.
+	boe{tokenTypeBooleanOr, NodeBooleanOrExpression},
+	boe{tokenTypeBooleanAnd, NodeBooleanAndExpression},
+
+	// Comparison operators.
+	boe{tokenTypeEqualsEquals, NodeComparisonEqualsExpression},
+	boe{tokenTypeNotEquals, NodeComparisonNotEqualsExpression},
+
+	boe{tokenTypeLTE, NodeComparisonLTEExpression},
+	boe{tokenTypeGTE, NodeComparisonGTEExpression},
+
+	boe{tokenTypeLessThan, NodeComparisonLTExpression},
+	boe{tokenTypeGreaterThan, NodeComparisonGTExpression},
+
+	// Nullable operators.
+	boe{tokenTypeNullOrValueOperator, NodeNullComparisonExpression},
+
+	// Bitwise operators.
+	boe{tokenTypePipe, NodeBitwiseOrExpression},
+	boe{tokenTypeAnd, NodeBitwiseAndExpression},
+	boe{tokenTypeXor, NodeBitwiseXorExpression},
+	boe{tokenTypeBitwiseShiftLeft, NodeBitwiseShiftLeftExpression},
+
+	// TODO(jschorr): Find a solution for the >> issue.
+	//boe{tokenTypeGreaterThan, NodeBitwiseShiftRightExpression},
+
+	// Numeric operators.
+	boe{tokenTypePlus, NodeBinaryAddExpression},
+	boe{tokenTypeMinus, NodeBinarySubtractExpression},
+	boe{tokenTypeModulo, NodeBinaryModuloExpression},
+	boe{tokenTypeTimes, NodeBinaryMultiplyExpression},
+	boe{tokenTypeDiv, NodeBinaryDivideExpression},
+
+	// 'is' operator.
+	boe{tokenTypeIsOperator, NodeIsComparisonExpression},
+
+	// 'in' operator.
+	boe{tokenTypeInOperator, NodeInCollectionExpression},
+}
+
 // tryConsumeNonArrowExpression tries to consume an expression that cannot contain an arrow.
 func (p *sourceParser) tryConsumeNonArrowExpression(option consumeExpressionOption) (AstNode, bool) {
 	// TODO(jschorr): Cache this!
-	binaryParser := p.buildBinaryOperatorExpressionFnTree(option,
-		// Stream operator.
-		boe{tokenTypeEllipsis, NodeDefineRangeExpression},
-
-		// Boolean operators.
-		boe{tokenTypeBooleanOr, NodeBooleanOrExpression},
-		boe{tokenTypeBooleanAnd, NodeBooleanAndExpression},
-
-		// Comparison operators.
-		boe{tokenTypeEqualsEquals, NodeComparisonEqualsExpression},
-		boe{tokenTypeNotEquals, NodeComparisonNotEqualsExpression},
-
-		boe{tokenTypeLTE, NodeComparisonLTEExpression},
-		boe{tokenTypeGTE, NodeComparisonGTEExpression},
-
-		boe{tokenTypeLessThan, NodeComparisonLTExpression},
-		boe{tokenTypeGreaterThan, NodeComparisonGTExpression},
-
-		// Nullable operators.
-		boe{tokenTypeNullOrValueOperator, NodeNullComparisonExpression},
-
-		// Bitwise operators.
-		boe{tokenTypePipe, NodeBitwiseOrExpression},
-		boe{tokenTypeAnd, NodeBitwiseAndExpression},
-		boe{tokenTypeXor, NodeBitwiseXorExpression},
-		boe{tokenTypeBitwiseShiftLeft, NodeBitwiseShiftLeftExpression},
-
-		// TODO(jschorr): Find a solution for the >> issue.
-		//boe{tokenTypeGreaterThan, NodeBitwiseShiftRightExpression},
-
-		// Numeric operators.
-		boe{tokenTypePlus, NodeBinaryAddExpression},
-		boe{tokenTypeMinus, NodeBinarySubtractExpression},
-		boe{tokenTypeModulo, NodeBinaryModuloExpression},
-		boe{tokenTypeTimes, NodeBinaryMultiplyExpression},
-		boe{tokenTypeDiv, NodeBinaryDivideExpression},
-
-		// 'is' operator.
-		boe{tokenTypeIsOperator, NodeIsComparisonExpression},
-
-		// 'in' operator.
-		boe{tokenTypeInOperator, NodeInCollectionExpression})
+	binaryParser := p.buildBinaryOperatorExpressionFnTree(option, BinaryOperators...)
 
 	return binaryParser()
 }
@@ -2138,10 +2142,10 @@ func (p *sourceParser) tryConsumeNonArrowExpression(option consumeExpressionOpti
 // boe represents information a binary operator token and its associated node type.
 type boe struct {
 	// The token representing the binary expression's operator.
-	binaryOperatorToken tokenType
+	BinaryOperatorToken tokenType
 
 	// The type of node to create for this expression.
-	binaryExpressionNodeType NodeType
+	BinaryExpressionNodeType NodeType
 }
 
 // buildBinaryOperatorExpressionFnTree builds a tree of functions to try to consume a set of binary
@@ -2157,7 +2161,7 @@ func (p *sourceParser) buildBinaryOperatorExpressionFnTree(option consumeExpress
 		// Note: We have to reverse this to ensure we have proper precedence.
 		currentParseFn = func(operatorInfo boe, currentFn tryParserFn) tryParserFn {
 			return (func() (AstNode, bool) {
-				return p.tryConsumeBinaryExpression(currentFn, operatorInfo.binaryOperatorToken, operatorInfo.binaryExpressionNodeType)
+				return p.tryConsumeBinaryExpression(currentFn, operatorInfo.BinaryOperatorToken, operatorInfo.BinaryExpressionNodeType)
 			})
 		}(operators[len(operators)-i-1], currentParseFn)
 	}

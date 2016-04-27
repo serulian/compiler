@@ -250,6 +250,7 @@ var parserTests = []parserTest{
 	{"comment literal test", "comment/literal"},
 	{"comment line test", "comment/line"},
 	{"comment parens test", "comment/parens"},
+	{"comment assign statement test", "comment/assignstatement"},
 }
 
 func reportImport(path packageloader.PackageImport) string {

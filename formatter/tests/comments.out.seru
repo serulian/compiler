@@ -1,0 +1,25 @@
+/**
+ * Some doc comment
+ */
+function<void> DoSomething(/* someparam */a int) /* someblock */{
+	// First comment
+	// Another cool comment
+	this.foo = bar
+
+	// Some cool line
+	return
+}
+
+/**
+ * Another doc comment
+ */
+function<void> AnotherFunction() {
+	if /* someexpr */true {
+		dosomething
+	} else if /* anotherexpr */anotherexpr { return }
+}
+
+/*
+ another cool thing
+ */
+var<string> foo = bar

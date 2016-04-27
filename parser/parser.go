@@ -15,6 +15,9 @@ import (
 	"github.com/serulian/compiler/packageloader"
 )
 
+// SERULIAN_FILE_EXTENSION defines the file extension for Serulian files.
+const SERULIAN_FILE_EXTENSION = ".seru"
+
 // NodeBuilder is a function for building AST nodes.
 type NodeBuilder func(source compilercommon.InputSource, kind NodeType) AstNode
 
@@ -95,6 +98,10 @@ func buildParser(builder NodeBuilder, importReporter packageloader.ImportHandler
 
 // reportImport reports an import of the given token value as a path.
 func (p *sourceParser) reportImport(value string, kind string) string {
+	if p.importReporter == nil {
+		return ""
+	}
+
 	sal := compilercommon.NewSourceAndLocation(p.source, int(p.currentToken.position))
 
 	if strings.HasPrefix(value, "\"") {
