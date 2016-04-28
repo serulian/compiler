@@ -11,6 +11,9 @@ NodeTypeFile
       child-node =>
         NodeTypeComment
           comment-value = /* somefunction */
+          end-rune = 17
+          input-source = comment function test
+          start-rune = 0
       definition-body =>
         NodeTypeStatementBlock
           end-rune = 49

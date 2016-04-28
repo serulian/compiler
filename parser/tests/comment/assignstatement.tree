@@ -33,9 +33,15 @@ NodeTypeFile
                   child-node =>
                     NodeTypeComment
                       comment-value = // Some comment
+                      end-rune = 46
+                      input-source = comment assign statement test
+                      start-rune = 32
               child-node =>
                 NodeTypeComment
                   comment-value = // Some comment
+                  end-rune = 46
+                  input-source = comment assign statement test
+                  start-rune = 32
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 12

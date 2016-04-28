@@ -35,7 +35,7 @@ type rightNodeConstructor func(AstNode, lexeme) (AstNode, bool)
 // commentedLexeme is a lexeme with comments attached.
 type commentedLexeme struct {
 	lexeme
-	comments []string
+	comments []lexeme
 }
 
 // sourceParser holds the state of the parser.
@@ -89,8 +89,8 @@ func buildParser(builder NodeBuilder, importReporter packageloader.ImportHandler
 		lex:               l,
 		builder:           builder,
 		nodes:             &nodeStack{},
-		currentToken:      commentedLexeme{lexeme{tokenTypeEOF, 0, ""}, make([]string, 0)},
-		previousToken:     commentedLexeme{lexeme{tokenTypeEOF, 0, ""}, make([]string, 0)},
+		currentToken:      commentedLexeme{lexeme{tokenTypeEOF, 0, ""}, make([]lexeme, 0)},
+		previousToken:     commentedLexeme{lexeme{tokenTypeEOF, 0, ""}, make([]lexeme, 0)},
 		importReporter:    importReporter,
 		lastErrorPosition: -1,
 	}
@@ -140,30 +140,38 @@ func (p *sourceParser) startNode(kind NodeType) AstNode {
 }
 
 // bytePosition returns the  byte position in the parsing input of the token.
-func (p *sourceParser) bytePosition(token commentedLexeme) int {
+func (p *sourceParser) bytePosition(token lexeme) int {
 	return int(token.position) + int(p.startIndex)
 }
 
 // decorateStartRuneAndComments decorates the given node with the location of the given token as its
 // starting rune, as well as any comments attached to the token.
 func (p *sourceParser) decorateStartRuneAndComments(node AstNode, token commentedLexeme) {
-	node.Decorate(NodePredicateSource, string(p.source))
-	node.Decorate(NodePredicateStartRune, strconv.Itoa(p.bytePosition(token)))
+	p.decorateStartRune(node, token.lexeme)
 	p.decorateComments(node, token.comments)
 }
 
 // decorateComments decorates the given node with the specified comments.
-func (p *sourceParser) decorateComments(node AstNode, comments []string) {
-	for _, comment := range comments {
+func (p *sourceParser) decorateComments(node AstNode, comments []lexeme) {
+	for _, commentLexeme := range comments {
 		commentNode := p.createNode(NodeTypeComment)
-		commentNode.Decorate(NodeCommentPredicateValue, comment)
+		commentNode.Decorate(NodeCommentPredicateValue, commentLexeme.value)
+		p.decorateStartRune(commentNode, commentLexeme)
+		p.decorateEndRune(commentNode, commentLexeme)
 		node.Connect(NodePredicateChild, commentNode)
 	}
 }
 
+// decorateStartRune decorates the given node with the location of the given token as its
+// start rune, as well as its source.
+func (p *sourceParser) decorateStartRune(node AstNode, token lexeme) {
+	node.Decorate(NodePredicateSource, string(p.source))
+	node.Decorate(NodePredicateStartRune, strconv.Itoa(p.bytePosition(token)))
+}
+
 // decorateEndRune decorates the given node with the location of the given token as its
 // ending rune.
-func (p *sourceParser) decorateEndRune(node AstNode, token commentedLexeme) {
+func (p *sourceParser) decorateEndRune(node AstNode, token lexeme) {
 	position := int(token.position) + len(token.value) - 1 + int(p.startIndex)
 	node.Decorate(NodePredicateEndRune, strconv.Itoa(position))
 }
@@ -180,19 +188,19 @@ func (p *sourceParser) finishNode() {
 		panic(fmt.Sprintf("No current node on stack. Token: %s", p.currentToken.value))
 	}
 
-	p.decorateEndRune(p.currentNode(), p.previousToken)
+	p.decorateEndRune(p.currentNode(), p.previousToken.lexeme)
 	p.nodes.pop()
 }
 
 // consumeToken advances the lexer forward, returning the next token.
 func (p *sourceParser) consumeToken() commentedLexeme {
-	var comments = make([]string, 0)
+	var comments = make([]lexeme, 0)
 
 	for {
 		token := p.lex.nextToken()
 
 		if token.kind == tokenTypeSinglelineComment || token.kind == tokenTypeMultilineComment {
-			comments = append(comments, token.value)
+			comments = append(comments, token)
 		}
 
 		if _, ok := ignoredTokenTypes[token.kind]; !ok {
@@ -255,14 +263,14 @@ func (p *sourceParser) isNextKeyword(keyword string) bool {
 // emitError creates a new error node and attachs it as a child of the current
 // node.
 func (p *sourceParser) emitError(format string, args ...interface{}) {
-	if p.lastErrorPosition == p.bytePosition(p.currentToken) {
+	if p.lastErrorPosition == p.bytePosition(p.currentToken.lexeme) {
 		// Skip this error.
 		return
 	}
 
 	errorNode := p.createErrorNode(format, args...)
 	p.currentNode().Connect(NodePredicateChild, errorNode)
-	p.lastErrorPosition = p.bytePosition(p.currentToken)
+	p.lastErrorPosition = p.bytePosition(p.currentToken.lexeme)
 }
 
 // consumeKeyword consumes an expected keyword token or adds an error node.
@@ -331,7 +339,7 @@ func (p *sourceParser) tryConsumeWithComments(types ...tokenType) (commentedLexe
 		return token, true
 	}
 
-	return commentedLexeme{lexeme{tokenTypeError, -1, ""}, make([]string, 0)}, false
+	return commentedLexeme{lexeme{tokenTypeError, -1, ""}, make([]lexeme, 0)}, false
 }
 
 // isStatementTerminator returns whether the current token is a statement terminator
@@ -432,7 +440,7 @@ func (p *sourceParser) performLeftRecursiveParsing(subTryExprFn tryParserFn, rig
 		}
 
 		p.decorateStartRuneAndComments(exprNode, currentLeftToken)
-		p.decorateEndRune(exprNode, p.previousToken)
+		p.decorateEndRune(exprNode, p.previousToken.lexeme)
 
 		currentLeftNode = exprNode
 		currentLeftToken = operatorToken

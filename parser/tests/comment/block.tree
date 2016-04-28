@@ -16,6 +16,9 @@ NodeTypeFile
           child-node =>
             NodeTypeComment
               comment-value = /* someblock */
+              end-rune = 44
+              input-source = comment block test
+              start-rune = 30
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 12

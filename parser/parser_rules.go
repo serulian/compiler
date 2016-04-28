@@ -593,15 +593,15 @@ func (p *sourceParser) consumeOptionalMemberTags(memberNode AstNode) {
 		}
 
 		// Add the tag to the member.
-		startRune := commentedLexeme{lexeme{name.kind, bytePosition(int(name.position) + offset), name.value}, []string{}}
-		endRune := commentedLexeme{lexeme{value.kind, bytePosition(int(value.position) + offset), value.value}, []string{}}
+		startRune := commentedLexeme{lexeme{name.kind, bytePosition(int(name.position) + offset), name.value}, []lexeme{}}
+		endRune := commentedLexeme{lexeme{value.kind, bytePosition(int(value.position) + offset), value.value}, []lexeme{}}
 
 		tagNode := p.createNode(NodeTypeMemberTag)
 		tagNode.Decorate(NodePredicateTypeMemberTagName, name.value)
 		tagNode.Decorate(NodePredicateTypeMemberTagValue, value.value[1:len(value.value)-1])
 
 		p.decorateStartRuneAndComments(tagNode, startRune)
-		p.decorateEndRune(tagNode, endRune)
+		p.decorateEndRune(tagNode, endRune.lexeme)
 		memberNode.Connect(NodePredicateTypeMemberTag, tagNode)
 
 		next := l.nextToken()
@@ -1370,7 +1370,7 @@ func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
 			exprStatementNode := p.createNode(NodeTypeExpressionStatement)
 			exprStatementNode.Connect(NodeExpressionStatementExpression, exprNode)
 			p.decorateStartRuneAndComments(exprStatementNode, exprToken)
-			p.decorateEndRune(exprStatementNode, p.currentToken)
+			p.decorateEndRune(exprStatementNode, p.currentToken.lexeme)
 
 			return exprStatementNode, true
 		}
@@ -1849,7 +1849,7 @@ func (p *sourceParser) tryConsumeExpression(option consumeExpressionOption) (Ast
 			templateNode.Connect(NodeTaggedTemplateParsed, p.consumeTemplateString())
 
 			p.decorateStartRuneAndComments(templateNode, startToken)
-			p.decorateEndRune(templateNode, p.currentToken)
+			p.decorateEndRune(templateNode, p.currentToken.lexeme)
 
 			return templateNode, true
 		}
@@ -2211,7 +2211,7 @@ func (p *sourceParser) tryConsumeValueExpression(option consumeExpressionOption)
 		p.consume(tokenTypeNot)
 
 		p.decorateStartRuneAndComments(assertNode, startToken)
-		p.decorateEndRune(assertNode, p.currentToken)
+		p.decorateEndRune(assertNode, p.currentToken.lexeme)
 		return assertNode, true
 	}
 
@@ -2240,7 +2240,7 @@ func (p *sourceParser) tryConsumeValueExpression(option consumeExpressionOption)
 		p.consume(tokenTypeRightBrace)
 
 		p.decorateStartRuneAndComments(structuralNode, startToken)
-		p.decorateEndRune(structuralNode, p.currentToken)
+		p.decorateEndRune(structuralNode, p.currentToken.lexeme)
 
 		return structuralNode, true
 	}
