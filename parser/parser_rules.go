@@ -593,15 +593,15 @@ func (p *sourceParser) consumeOptionalMemberTags(memberNode AstNode) {
 		}
 
 		// Add the tag to the member.
-		startRune := commentedLexeme{lexeme{name.kind, bytePosition(int(name.position) + offset), name.value}, []string{}}
-		endRune := commentedLexeme{lexeme{value.kind, bytePosition(int(value.position) + offset), value.value}, []string{}}
+		startRune := commentedLexeme{lexeme{name.kind, bytePosition(int(name.position) + offset), name.value}, []lexeme{}}
+		endRune := commentedLexeme{lexeme{value.kind, bytePosition(int(value.position) + offset), value.value}, []lexeme{}}
 
 		tagNode := p.createNode(NodeTypeMemberTag)
 		tagNode.Decorate(NodePredicateTypeMemberTagName, name.value)
 		tagNode.Decorate(NodePredicateTypeMemberTagValue, value.value[1:len(value.value)-1])
 
 		p.decorateStartRuneAndComments(tagNode, startRune)
-		p.decorateEndRune(tagNode, endRune)
+		p.decorateEndRune(tagNode, endRune.lexeme)
 		memberNode.Connect(NodePredicateTypeMemberTag, tagNode)
 
 		next := l.nextToken()
@@ -1370,7 +1370,7 @@ func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
 			exprStatementNode := p.createNode(NodeTypeExpressionStatement)
 			exprStatementNode.Connect(NodeExpressionStatementExpression, exprNode)
 			p.decorateStartRuneAndComments(exprStatementNode, exprToken)
-			p.decorateEndRune(exprStatementNode, p.currentToken)
+			p.decorateEndRune(exprStatementNode, p.currentToken.lexeme)
 
 			return exprStatementNode, true
 		}
@@ -1788,7 +1788,7 @@ func (p *sourceParser) consumeReturnStatement() AstNode {
 	p.consumeKeyword("return")
 
 	// Check for an expression following the return.
-	if p.isStatementTerminator() {
+	if p.isStatementTerminator() || p.isToken(tokenTypeRightBrace) {
 		return returnNode
 	}
 
@@ -1849,7 +1849,7 @@ func (p *sourceParser) tryConsumeExpression(option consumeExpressionOption) (Ast
 			templateNode.Connect(NodeTaggedTemplateParsed, p.consumeTemplateString())
 
 			p.decorateStartRuneAndComments(templateNode, startToken)
-			p.decorateEndRune(templateNode, p.currentToken)
+			p.decorateEndRune(templateNode, p.currentToken.lexeme)
 
 			return templateNode, true
 		}
@@ -2086,51 +2086,55 @@ func (p *sourceParser) tryConsumeArrowStatement() (AstNode, bool) {
 	return arrowNode, true
 }
 
+// BinaryOperators defines the binary operators in precedence order.
+var BinaryOperators = []boe{
+	// Stream operator.
+	boe{tokenTypeEllipsis, NodeDefineRangeExpression},
+
+	// Boolean operators.
+	boe{tokenTypeBooleanOr, NodeBooleanOrExpression},
+	boe{tokenTypeBooleanAnd, NodeBooleanAndExpression},
+
+	// Comparison operators.
+	boe{tokenTypeEqualsEquals, NodeComparisonEqualsExpression},
+	boe{tokenTypeNotEquals, NodeComparisonNotEqualsExpression},
+
+	boe{tokenTypeLTE, NodeComparisonLTEExpression},
+	boe{tokenTypeGTE, NodeComparisonGTEExpression},
+
+	boe{tokenTypeLessThan, NodeComparisonLTExpression},
+	boe{tokenTypeGreaterThan, NodeComparisonGTExpression},
+
+	// Nullable operators.
+	boe{tokenTypeNullOrValueOperator, NodeNullComparisonExpression},
+
+	// Bitwise operators.
+	boe{tokenTypePipe, NodeBitwiseOrExpression},
+	boe{tokenTypeAnd, NodeBitwiseAndExpression},
+	boe{tokenTypeXor, NodeBitwiseXorExpression},
+	boe{tokenTypeBitwiseShiftLeft, NodeBitwiseShiftLeftExpression},
+
+	// TODO(jschorr): Find a solution for the >> issue.
+	//boe{tokenTypeGreaterThan, NodeBitwiseShiftRightExpression},
+
+	// Numeric operators.
+	boe{tokenTypePlus, NodeBinaryAddExpression},
+	boe{tokenTypeMinus, NodeBinarySubtractExpression},
+	boe{tokenTypeModulo, NodeBinaryModuloExpression},
+	boe{tokenTypeTimes, NodeBinaryMultiplyExpression},
+	boe{tokenTypeDiv, NodeBinaryDivideExpression},
+
+	// 'is' operator.
+	boe{tokenTypeIsOperator, NodeIsComparisonExpression},
+
+	// 'in' operator.
+	boe{tokenTypeInOperator, NodeInCollectionExpression},
+}
+
 // tryConsumeNonArrowExpression tries to consume an expression that cannot contain an arrow.
 func (p *sourceParser) tryConsumeNonArrowExpression(option consumeExpressionOption) (AstNode, bool) {
 	// TODO(jschorr): Cache this!
-	binaryParser := p.buildBinaryOperatorExpressionFnTree(option,
-		// Stream operator.
-		boe{tokenTypeEllipsis, NodeDefineRangeExpression},
-
-		// Boolean operators.
-		boe{tokenTypeBooleanOr, NodeBooleanOrExpression},
-		boe{tokenTypeBooleanAnd, NodeBooleanAndExpression},
-
-		// Comparison operators.
-		boe{tokenTypeEqualsEquals, NodeComparisonEqualsExpression},
-		boe{tokenTypeNotEquals, NodeComparisonNotEqualsExpression},
-
-		boe{tokenTypeLTE, NodeComparisonLTEExpression},
-		boe{tokenTypeGTE, NodeComparisonGTEExpression},
-
-		boe{tokenTypeLessThan, NodeComparisonLTExpression},
-		boe{tokenTypeGreaterThan, NodeComparisonGTExpression},
-
-		// Nullable operators.
-		boe{tokenTypeNullOrValueOperator, NodeNullComparisonExpression},
-
-		// Bitwise operators.
-		boe{tokenTypePipe, NodeBitwiseOrExpression},
-		boe{tokenTypeAnd, NodeBitwiseAndExpression},
-		boe{tokenTypeXor, NodeBitwiseXorExpression},
-		boe{tokenTypeBitwiseShiftLeft, NodeBitwiseShiftLeftExpression},
-
-		// TODO(jschorr): Find a solution for the >> issue.
-		//boe{tokenTypeGreaterThan, NodeBitwiseShiftRightExpression},
-
-		// Numeric operators.
-		boe{tokenTypePlus, NodeBinaryAddExpression},
-		boe{tokenTypeMinus, NodeBinarySubtractExpression},
-		boe{tokenTypeModulo, NodeBinaryModuloExpression},
-		boe{tokenTypeTimes, NodeBinaryMultiplyExpression},
-		boe{tokenTypeDiv, NodeBinaryDivideExpression},
-
-		// 'is' operator.
-		boe{tokenTypeIsOperator, NodeIsComparisonExpression},
-
-		// 'in' operator.
-		boe{tokenTypeInOperator, NodeInCollectionExpression})
+	binaryParser := p.buildBinaryOperatorExpressionFnTree(option, BinaryOperators...)
 
 	return binaryParser()
 }
@@ -2138,10 +2142,10 @@ func (p *sourceParser) tryConsumeNonArrowExpression(option consumeExpressionOpti
 // boe represents information a binary operator token and its associated node type.
 type boe struct {
 	// The token representing the binary expression's operator.
-	binaryOperatorToken tokenType
+	BinaryOperatorToken tokenType
 
 	// The type of node to create for this expression.
-	binaryExpressionNodeType NodeType
+	BinaryExpressionNodeType NodeType
 }
 
 // buildBinaryOperatorExpressionFnTree builds a tree of functions to try to consume a set of binary
@@ -2157,7 +2161,7 @@ func (p *sourceParser) buildBinaryOperatorExpressionFnTree(option consumeExpress
 		// Note: We have to reverse this to ensure we have proper precedence.
 		currentParseFn = func(operatorInfo boe, currentFn tryParserFn) tryParserFn {
 			return (func() (AstNode, bool) {
-				return p.tryConsumeBinaryExpression(currentFn, operatorInfo.binaryOperatorToken, operatorInfo.binaryExpressionNodeType)
+				return p.tryConsumeBinaryExpression(currentFn, operatorInfo.BinaryOperatorToken, operatorInfo.BinaryExpressionNodeType)
 			})
 		}(operators[len(operators)-i-1], currentParseFn)
 	}
@@ -2207,7 +2211,7 @@ func (p *sourceParser) tryConsumeValueExpression(option consumeExpressionOption)
 		p.consume(tokenTypeNot)
 
 		p.decorateStartRuneAndComments(assertNode, startToken)
-		p.decorateEndRune(assertNode, p.currentToken)
+		p.decorateEndRune(assertNode, p.currentToken.lexeme)
 		return assertNode, true
 	}
 
@@ -2236,7 +2240,7 @@ func (p *sourceParser) tryConsumeValueExpression(option consumeExpressionOption)
 		p.consume(tokenTypeRightBrace)
 
 		p.decorateStartRuneAndComments(structuralNode, startToken)
-		p.decorateEndRune(structuralNode, p.currentToken)
+		p.decorateEndRune(structuralNode, p.currentToken.lexeme)
 
 		return structuralNode, true
 	}
@@ -2668,7 +2672,7 @@ func (p *sourceParser) tryConsumeMapExpression() (AstNode, bool) {
 		for {
 			mapNode.Connect(NodeMapExpressionChildEntry, p.consumeMapExpressionEntry())
 
-			if _, ok := p.consume(tokenTypeComma); !ok {
+			if _, ok := p.tryConsume(tokenTypeComma); !ok {
 				break
 			}
 

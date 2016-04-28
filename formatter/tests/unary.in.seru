@@ -1,0 +1,14 @@
+function<void> DoSomething() {
+	!a
+	!a.b
+	!true
+	~'hello world'
+	~(a + b)
+	~`hello world`
+	~this.foo.bar
+	~this?.foo
+	~this*.foo
+	~this.foo['hello']
+	!(this is null)
+	~[]
+}

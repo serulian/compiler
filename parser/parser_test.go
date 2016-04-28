@@ -160,6 +160,8 @@ var parserTests = []parserTest{
 	{"readonly interface property test", "interface/readonly_property"},
 
 	// Statement tests.
+	{"compressed statement test", "statement/compressed"},
+
 	{"labeled statement test", "statement/labeled"},
 
 	{"assignment statement test", "statement/assign"},
@@ -214,6 +216,9 @@ var parserTests = []parserTest{
 	{"is null conditional expr test", "expression/isnullconditional"},
 	{"slice literal expr test", "expression/sliceliteral"},
 	{"mapping literal expr test", "expression/mappingliteral"},
+	{"map literal expr test", "expression/mapliteral"},
+
+	{"slice literal slice expr test", "expression/sliceliteralslice"},
 
 	{"all expr test", "expression/all"},
 	{"complex expr test", "expression/complex"},
@@ -250,6 +255,7 @@ var parserTests = []parserTest{
 	{"comment literal test", "comment/literal"},
 	{"comment line test", "comment/line"},
 	{"comment parens test", "comment/parens"},
+	{"comment assign statement test", "comment/assignstatement"},
 }
 
 func reportImport(path packageloader.PackageImport) string {

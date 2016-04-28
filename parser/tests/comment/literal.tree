@@ -21,6 +21,9 @@ NodeTypeFile
               child-node =>
                 NodeTypeComment
                   comment-value = /* someliteral */
+                  end-rune = 49
+                  input-source = comment literal test
+                  start-rune = 33
               expr-statement-expr =>
                 NodeBooleanLiteralExpression
                   end-rune = 53
@@ -30,6 +33,9 @@ NodeTypeFile
                   child-node =>
                     NodeTypeComment
                       comment-value = /* someliteral */
+                      end-rune = 49
+                      input-source = comment literal test
+                      start-rune = 33
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 12

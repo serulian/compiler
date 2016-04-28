@@ -21,6 +21,9 @@ NodeTypeFile
               child-node =>
                 NodeTypeComment
                   comment-value = /* loop */
+                  end-rune = 38
+                  input-source = comment loop test
+                  start-rune = 29
               loop-block =>
                 NodeTypeStatementBlock
                   end-rune = 67
@@ -35,6 +38,9 @@ NodeTypeFile
                   child-node =>
                     NodeTypeComment
                       comment-value = /* loopexpr */
+                      end-rune = 57
+                      input-source = comment loop test
+                      start-rune = 44
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 12

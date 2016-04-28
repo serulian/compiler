@@ -37,6 +37,9 @@ NodeTypeFile
                       child-node =>
                         NodeTypeComment
                           comment-value = // No statement here
+                          end-rune = 84
+                          input-source = match statement multi statement test
+                          start-rune = 65
                 NodeTypeMatchStatementCase
                   end-rune = 126
                   input-source = match statement multi statement test

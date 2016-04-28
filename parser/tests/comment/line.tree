@@ -27,6 +27,9 @@ NodeTypeFile
                   child-node =>
                     NodeTypeComment
                       comment-value = // TODO: fix this once we can actually create a stream
+                      end-rune = 109
+                      input-source = comment line test
+                      start-rune = 56
                   return-expr =>
                     NodeNumericLiteralExpression
                       end-rune = 120
