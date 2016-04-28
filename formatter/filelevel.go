@@ -5,6 +5,7 @@
 package formatter
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 
@@ -29,7 +30,8 @@ type importInfo struct {
 	name      string
 	kind      string
 
-	sortKey string
+	comparisonKey string
+	sortKey       string
 
 	isVCS      bool
 	isSerulian bool
@@ -51,21 +53,45 @@ func (s byImportSortKey) Less(i, j int) bool {
 
 // emitImports emits the import statements for the source file.
 func (sf *sourceFormatter) emitImports(node formatterNode) {
-	// Load the imports for the node, categorized by VCS vs local and Serulian vs non-serulian.
-	var vcsNonSerulian = make([]importInfo, 0)
-	var vcsSerulian = make([]importInfo, 0)
-	var localNonSerulian = make([]importInfo, 0)
-	var localSerulian = make([]importInfo, 0)
-
+	var sortedImports = make([]importInfo, 0)
 	for _, importNode := range node.getChildrenOfType(parser.NodePredicateChild, parser.NodeTypeImport) {
+		// Remove any padding around the source name for VCS or non-Serulian imports.
 		var source = importNode.getProperty(parser.NodeImportPredicateSource)
 		if strings.HasPrefix(source, "`") || strings.HasPrefix(source, "\"") {
 			source = source[1 : len(source)-1]
 		}
 
+		// Pull out the various pieces of the import.
 		subsource := importNode.getProperty(parser.NodeImportPredicateSubsource)
 		kind := importNode.getProperty(parser.NodeImportPredicateKind)
 		name := importNode.getProperty(parser.NodeImportPredicateName)
+
+		// If the import has no subsource, then check for a distinct name.
+		if subsource == "" {
+			packageName := importNode.getProperty(parser.NodeImportPredicatePackageName)
+			if packageName != source || kind != "" {
+				name = packageName
+			}
+		}
+
+		isVCS := strings.Contains(importNode.getProperty(parser.NodeImportPredicateSource), "/")
+		isSerulian := kind == ""
+
+		// Determine the various runes for the sorting key.
+		var subsourceRune = 'z'
+		if subsource != "" {
+			subsourceRune = 'a'
+		}
+
+		var vcsRune = 'a'
+		if isVCS {
+			vcsRune = 'z'
+		}
+
+		var serulianRune = 'z'
+		if isSerulian {
+			serulianRune = 'a'
+		}
 
 		info := importInfo{
 			node: importNode,
@@ -75,52 +101,37 @@ func (sf *sourceFormatter) emitImports(node formatterNode) {
 			kind:      kind,
 			name:      name,
 
-			sortKey: kind + "://" + source + "/" + subsource + "/" + name,
+			sortKey:       fmt.Sprintf("%s/%s/%s/%s/%s/%s", vcsRune, serulianRune, kind, subsourceRune, source, name),
+			comparisonKey: kind,
 
-			isVCS:      strings.Contains(importNode.getProperty(parser.NodeImportPredicateSource), "/"),
-			isSerulian: kind == "",
+			isVCS:      isVCS,
+			isSerulian: isSerulian,
 		}
 
-		if info.isSerulian {
-			if info.isVCS {
-				vcsSerulian = append(vcsSerulian, info)
-			} else {
-				localSerulian = append(localSerulian, info)
-			}
-		} else {
-			if info.isVCS {
-				vcsNonSerulian = append(vcsNonSerulian, info)
-			} else {
-				localNonSerulian = append(localNonSerulian, info)
-			}
-		}
+		sortedImports = append(sortedImports, info)
 	}
 
-	// Sort the imports.
-	sort.Sort(byImportSortKey(vcsNonSerulian))
-	sort.Sort(byImportSortKey(vcsSerulian))
-	sort.Sort(byImportSortKey(localNonSerulian))
-	sort.Sort(byImportSortKey(localSerulian))
-
-	// Emit the imports in the following order:
+	// Sort the imports:
 	// - VCS imports (non-Serulian)
 	// - VCS imports (Serulian)
 	// - Local imports (non-Serulian)
 	// - Local imports (Serulian)
-	sf.emitImportInfos(vcsNonSerulian)
-	sf.emitImportInfos(vcsSerulian)
-	sf.emitImportInfos(localNonSerulian)
-	sf.emitImportInfos(localSerulian)
+	sort.Sort(byImportSortKey(sortedImports))
+
+	// Emit the imports.
+	sf.emitImportInfos(sortedImports)
 }
 
 // emitImportInfos emits the importInfo structs as imports.
 func (sf *sourceFormatter) emitImportInfos(infos []importInfo) {
-	for _, info := range infos {
-		sf.emitImport(info)
-	}
+	var lastKey = ""
+	for index, info := range infos {
+		if index > 0 && info.comparisonKey != lastKey {
+			sf.appendLine()
+		}
 
-	if len(infos) > 0 {
-		sf.appendLine()
+		sf.emitImport(info)
+		lastKey = info.comparisonKey
 	}
 }
 
