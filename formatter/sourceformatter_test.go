@@ -52,7 +52,7 @@ var goldenTests = []goldenTest{
 	{"unary precedence test", "unary"},
 	{"binary precedence test", "binary"},
 	{"imports test", "imports"},
-	//{"template strings test", "templatestrings"},
+	{"template strings test", "templatestrings"},
 }
 
 func TestGolden(t *testing.T) {

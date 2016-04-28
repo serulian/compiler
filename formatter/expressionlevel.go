@@ -275,9 +275,20 @@ func (sf *sourceFormatter) emitTaggedTemplateString(node formatterNode) {
 // emitTemplateString emits a template string literal.
 func (sf *sourceFormatter) emitTemplateString(node formatterNode) {
 	pieces := node.getChildren(parser.NodeTemplateStringPiece)
+	sf.append("`")
+
 	for _, piece := range pieces {
-		sf.emitNode(piece)
+		if piece.GetType() == parser.NodeStringLiteralExpression {
+			value := piece.getProperty(parser.NodeStringLiteralExpressionValue)
+			sf.append(value[1 : len(value)-1]) // Remove the ``
+		} else {
+			sf.append("${")
+			sf.emitNode(piece)
+			sf.append("}")
+		}
 	}
+
+	sf.append("`")
 }
 
 // emitListExpression emits a list literal expression.
