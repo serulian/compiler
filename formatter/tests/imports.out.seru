@@ -1,0 +1,18 @@
+import webidl`github.com/Serulian/corelib:master` as someWebIDLLib
+from webidl`github.com/Serulian/anotherlib:master` import String as DOMString
+from webidl`github.com/Serulian/anotherlib:master` import something as SomethingElse
+from webidl`github.com/Serulian/corelib:master` import somethingelse
+
+import "github.com/Serulian/corelib:master" as somelib
+from "github.com/Serulian/anotherlib:master" import Set2 as Something
+from "github.com/Serulian/corelib:master" import Map
+from "github.com/Serulian/corelib:master" import Set
+
+from anotherthing`foobar` import SomeOtherThing
+
+import webidl`nicething` as nicething
+from webidl`console` import console as CoolConsole
+
+import anotherfile
+import localpackage
+
