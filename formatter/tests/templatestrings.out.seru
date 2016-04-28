@@ -1,0 +1,5 @@
+function<void> DoSomething() {
+	`foo ${bar} baz ${cool.thing}`
+
+	tagged`foo ${bar} baz ${cool.thing}`
+}
