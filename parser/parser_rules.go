@@ -1788,7 +1788,7 @@ func (p *sourceParser) consumeReturnStatement() AstNode {
 	p.consumeKeyword("return")
 
 	// Check for an expression following the return.
-	if p.isStatementTerminator() {
+	if p.isStatementTerminator() || p.isToken(tokenTypeRightBrace) {
 		return returnNode
 	}
 
@@ -2672,7 +2672,7 @@ func (p *sourceParser) tryConsumeMapExpression() (AstNode, bool) {
 		for {
 			mapNode.Connect(NodeMapExpressionChildEntry, p.consumeMapExpressionEntry())
 
-			if _, ok := p.consume(tokenTypeComma); !ok {
+			if _, ok := p.tryConsume(tokenTypeComma); !ok {
 				break
 			}
 

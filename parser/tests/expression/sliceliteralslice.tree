@@ -1,0 +1,73 @@
+NodeTypeFile
+  end-rune = 51
+  input-source = slice literal slice expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 51
+      input-source = slice literal slice expr test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 51
+          input-source = slice literal slice expr test
+          start-rune = 29
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 50
+              input-source = slice literal slice expr test
+              start-rune = 32
+              expr-statement-expr =>
+                NodeSliceExpression
+                  end-rune = 49
+                  input-source = slice literal slice expr test
+                  start-rune = 32
+                  slice-expr-expr =>
+                    NodeSliceLiteralExpression
+                      end-rune = 45
+                      input-source = slice literal slice expr test
+                      start-rune = 32
+                      slice-literal-expr-type =>
+                        NodeTypeTypeReference
+                          end-rune = 36
+                          input-source = slice literal slice expr test
+                          start-rune = 34
+                          typereference-path =>
+                            NodeTypeIdentifierPath
+                              end-rune = 36
+                              input-source = slice literal slice expr test
+                              start-rune = 34
+                              identifierpath-root =>
+                                NodeTypeIdentifierAccess
+                                  end-rune = 36
+                                  identifieraccess-name = int
+                                  input-source = slice literal slice expr test
+                                  start-rune = 34
+                      slice-literal-expr-value =>
+                        NodeNumericLiteralExpression
+                          end-rune = 38
+                          input-source = slice literal slice expr test
+                          literal-value = 1
+                          start-rune = 38
+                        NodeNumericLiteralExpression
+                          end-rune = 41
+                          input-source = slice literal slice expr test
+                          literal-value = 2
+                          start-rune = 41
+                        NodeNumericLiteralExpression
+                          end-rune = 44
+                          input-source = slice literal slice expr test
+                          literal-value = 3
+                          start-rune = 44
+                  slice-expr-left-index =>
+                    NodeNumericLiteralExpression
+                      end-rune = 47
+                      input-source = slice literal slice expr test
+                      literal-value = 1
+                      start-rune = 47
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 12
+          input-source = slice literal slice expr test
+          start-rune = 9

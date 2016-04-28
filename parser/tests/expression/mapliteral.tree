@@ -1,0 +1,105 @@
+NodeTypeFile
+  end-rune = 68
+  input-source = map literal expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 68
+      input-source = map literal expr test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 68
+          input-source = map literal expr test
+          start-rune = 29
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 52
+              input-source = map literal expr test
+              start-rune = 32
+              expr-statement-expr =>
+                NodeMapExpression
+                  end-rune = 51
+                  input-source = map literal expr test
+                  start-rune = 32
+                  map-expr-entry =>
+                    NodeMapExpressionEntry
+                      end-rune = 39
+                      input-source = map literal expr test
+                      start-rune = 36
+                      map-entry-key =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 36
+                          identexpr-name = a
+                          input-source = map literal expr test
+                          start-rune = 36
+                      map-entry-value =>
+                        NodeNumericLiteralExpression
+                          end-rune = 39
+                          input-source = map literal expr test
+                          literal-value = 1
+                          start-rune = 39
+                    NodeMapExpressionEntry
+                      end-rune = 47
+                      input-source = map literal expr test
+                      start-rune = 44
+                      map-entry-key =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 44
+                          identexpr-name = b
+                          input-source = map literal expr test
+                          start-rune = 44
+                      map-entry-value =>
+                        NodeNumericLiteralExpression
+                          end-rune = 47
+                          input-source = map literal expr test
+                          literal-value = 2
+                          start-rune = 47
+            NodeTypeExpressionStatement
+              end-rune = 67
+              input-source = map literal expr test
+              start-rune = 55
+              expr-statement-expr =>
+                NodeMapExpression
+                  end-rune = 66
+                  input-source = map literal expr test
+                  start-rune = 55
+                  map-expr-entry =>
+                    NodeMapExpressionEntry
+                      end-rune = 59
+                      input-source = map literal expr test
+                      start-rune = 56
+                      map-entry-key =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 56
+                          identexpr-name = a
+                          input-source = map literal expr test
+                          start-rune = 56
+                      map-entry-value =>
+                        NodeNumericLiteralExpression
+                          end-rune = 59
+                          input-source = map literal expr test
+                          literal-value = 1
+                          start-rune = 59
+                    NodeMapExpressionEntry
+                      end-rune = 65
+                      input-source = map literal expr test
+                      start-rune = 62
+                      map-entry-key =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 62
+                          identexpr-name = b
+                          input-source = map literal expr test
+                          start-rune = 62
+                      map-entry-value =>
+                        NodeNumericLiteralExpression
+                          end-rune = 65
+                          input-source = map literal expr test
+                          literal-value = 2
+                          start-rune = 65
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 12
+          input-source = map literal expr test
+          start-rune = 9

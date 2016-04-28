@@ -1,0 +1,41 @@
+NodeTypeFile
+  end-rune = 51
+  input-source = compressed statement test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 51
+      input-source = compressed statement test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 51
+          input-source = compressed statement test
+          start-rune = 29
+          block-child =>
+            NodeTypeConditionalStatement
+              end-rune = 49
+              input-source = compressed statement test
+              start-rune = 32
+              conditional-block =>
+                NodeTypeStatementBlock
+                  end-rune = 49
+                  input-source = compressed statement test
+                  start-rune = 40
+                  block-child =>
+                    NodeTypeReturnStatement
+                      end-rune = 47
+                      input-source = compressed statement test
+                      start-rune = 42
+              conditional-expr =>
+                NodeBooleanLiteralExpression
+                  end-rune = 38
+                  input-source = compressed statement test
+                  literal-value = true
+                  start-rune = 35
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 12
+          input-source = compressed statement test
+          start-rune = 9
