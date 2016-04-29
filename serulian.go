@@ -70,20 +70,75 @@ func main() {
 		},
 	}
 
-	cmdFormat.PersistentFlags().BoolVar(&debug, "debug", false, "If set to true, Serulian will print debug logs during formatting")
+	var cmdFreeze = &cobra.Command{
+		Use:   "freeze [source path] [vcs import]",
+		Short: "Freezes the specified VCS imports in all Serulian files at the given path",
+		Long:  `Modifies all imports of the given VCS libraries to refer to the SHA of the current HEAD commit`,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) < 1 {
+				fmt.Println("Expected source path")
+				os.Exit(-1)
+			}
 
-	cmdBuild.PersistentFlags().BoolVar(&debug, "debug", false, "If set to true, Serulian will print debug logs during compilation")
+			if len(args) < 2 {
+				fmt.Println("Expected one or more VCS imports")
+				os.Exit(-1)
+			}
+
+			if !formatter.Freeze(args[0], args[1:len(args)], vcsDevelopmentDirectories, debug) {
+				os.Exit(-1)
+			}
+		},
+	}
+
+	var cmdUnfreeze = &cobra.Command{
+		Use:   "unfreeze [source path] [vcs import]",
+		Short: "Unfreezes the specified VCS imports in all Serulian files at the given path",
+		Long:  `Modifies all imports of the given VCS libraries to refer to HEAD`,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) < 1 {
+				fmt.Println("Expected source path")
+				os.Exit(-1)
+			}
+
+			if len(args) < 2 {
+				fmt.Println("Expected one or more VCS imports")
+				os.Exit(-1)
+			}
+
+			if !formatter.Unfreeze(args[0], args[1:len(args)], vcsDevelopmentDirectories, debug) {
+				os.Exit(-1)
+			}
+		},
+	}
+
+	var cmdImports = &cobra.Command{
+		Use:   "imports",
+		Short: "Commands for modifying imports",
+		Long:  "Commands for modifying imports",
+		Run: func(cmd *cobra.Command, args []string) {
+			cmd.Usage()
+			os.Exit(1)
+		},
+	}
+
 	cmdBuild.PersistentFlags().StringSliceVar(&vcsDevelopmentDirectories, "vcs-dev-dir", []string{},
 		"If specified, VCS packages without specification will be first checked against this path")
 
-	cmdDevelop.PersistentFlags().BoolVar(&debug, "debug", false, "If set to true, Serulian will print debug logs during compilation")
 	cmdDevelop.PersistentFlags().StringSliceVar(&vcsDevelopmentDirectories, "vcs-dev-dir", []string{},
 		"If specified, VCS packages without specification will be first checked against this path")
 	cmdDevelop.PersistentFlags().StringVar(&addr, "addr", ":8080", "The address at which the development code will be served")
+
+	cmdImports.AddCommand(cmdFreeze)
+	cmdImports.AddCommand(cmdUnfreeze)
+	cmdImports.PersistentFlags().StringSliceVar(&vcsDevelopmentDirectories, "vcs-dev-dir", []string{},
+		"If specified, VCS packages without specification will be first checked against this path")
 
 	var rootCmd = &cobra.Command{Use: "serulian"}
 	rootCmd.AddCommand(cmdBuild)
 	rootCmd.AddCommand(cmdDevelop)
 	rootCmd.AddCommand(cmdFormat)
+	rootCmd.AddCommand(cmdImports)
+	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "If set to true, Serulian will print debug logs")
 	rootCmd.Execute()
 }

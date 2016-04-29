@@ -37,7 +37,7 @@ var failTests = []string{
 
 func TestVCSParsingFailure(t *testing.T) {
 	for _, test := range failTests {
-		result, err := parseVCSPath(test)
+		result, err := ParseVCSPath(test)
 		if err == nil {
 			t.Errorf("Expected error, found: %v", result)
 		}
@@ -46,7 +46,7 @@ func TestVCSParsingFailure(t *testing.T) {
 
 func TestVCSParsingSuccess(t *testing.T) {
 	for _, test := range successTests {
-		result, err := parseVCSPath(test.path)
+		result, err := ParseVCSPath(test.path)
 
 		if err != nil {
 			t.Errorf("Expected no error, found: %v", err)

@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"strings"
 )
 
 // VCSKind identifies the supported kinds of VCS.
@@ -33,12 +34,16 @@ type vcsHasChangesFn func(checkoutDir string) bool
 // vcsUpdateFn is a function for performing a pull/update of a checked out directory.
 type vcsUpdateFn func(checkoutDir string) error
 
+// vcsInspectFn is a function for inspecting a checked out directory.
+type vcsInspectFn func(checkoutDir string) (string, error)
+
 // vcsHandler represents the defined handler information for a specific kind of VCS.
 type vcsHandler struct {
 	kind     VCSKind         // The kind of the VCS being handled.
 	checkout vcsCheckoutFn   // Function to checkout a package.
 	detect   vcsDetectFn     // Function to detect if this handler matches a package.
 	update   vcsUpdateFn     // Function to update a checkout.
+	inspect  vcsInspectFn    // Function to inspect a checkout for its commit SHA.
 	check    vcsHasChangesFn // Function to detect for code changes.
 }
 
@@ -99,6 +104,21 @@ var vcsById = map[string]vcsHandler{
 			}
 
 			return "", nil
+		},
+
+		inspect: func(checkoutDir string) (string, error) {
+			var out bytes.Buffer
+
+			cmd := exec.Command("git", "rev-parse", "HEAD")
+			cmd.Dir = checkoutDir
+			cmd.Stdout = &out
+			err := cmd.Run()
+			if err != nil {
+				return "", err
+			}
+
+			trimmed := strings.TrimSpace(out.String())
+			return trimmed[0:7], nil
 		},
 
 		detect: func(checkoutDir string) bool {

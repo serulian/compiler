@@ -29,7 +29,7 @@ import (
 // of the repository first. If found, the copy will be used in lieu of a normal checkout.
 func PerformVCSCheckout(vcsPath string, pkgCacheRootPath string, vcsDevelopmentDirectories ...string) (string, error, string) {
 	// Parse the VCS path.
-	parsedPath, perr := parseVCSPath(vcsPath)
+	parsedPath, perr := ParseVCSPath(vcsPath)
 	if perr != nil {
 		return "", perr, ""
 	}
@@ -70,6 +70,28 @@ func PerformVCSCheckout(vcsPath string, pkgCacheRootPath string, vcsDevelopmentD
 	}
 
 	return fullCacheDirectory, err, warning
+}
+
+// PerformVCSCheckoutAndInspect performs the checkout and updating of the given VCS path and returns
+// the commit SHA of the package.
+//
+// pkgCacheRootPath holds the path of the root directory that forms the package cache.
+//
+// vcsDevelopmentDirectories specifies optional directories to check for branchless and tagless copies
+// of the repository first. If found, the copy will be used in lieu of a normal checkout.
+func PerformVCSCheckoutAndInspect(vcsPath string, pkgCacheRootPath string, vcsDevelopmentDirectories ...string) (string, error, string) {
+	directory, err, warning := PerformVCSCheckout(vcsPath, pkgCacheRootPath, vcsDevelopmentDirectories...)
+	if err != nil {
+		return "", err, warning
+	}
+
+	handler, _ := detectHandler(directory)
+	sha, err := handler.inspect(directory)
+	if err != nil {
+		return "", err, warning
+	}
+
+	return sha, nil, warning
 }
 
 // checkCacheAndPull conducts the cache check and necessary pulls.

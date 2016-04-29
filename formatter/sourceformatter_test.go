@@ -73,7 +73,7 @@ func TestGolden(t *testing.T) {
 			continue
 		}
 
-		formatted := buildFormattedSource(parseTree, rootNode.(formatterNode))
+		formatted := buildFormattedSource(parseTree, rootNode.(formatterNode), importHandlingInfo{})
 
 		if os.Getenv("REGEN") == "true" {
 			test.writeFormatted(formatted)

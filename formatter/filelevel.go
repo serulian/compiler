@@ -6,10 +6,13 @@ package formatter
 
 import (
 	"fmt"
+	"log"
 	"sort"
 	"strings"
 
+	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/vcs"
 )
 
 // emitFile emits the source code for a file.
@@ -135,6 +138,57 @@ func (sf *sourceFormatter) emitImportInfos(infos []importInfo) {
 	}
 }
 
+// emitModifiedImportSource emits the source for the import,
+// modified per the freezing/unfreezing options.
+func (sf *sourceFormatter) emitModifiedImportSource(info importInfo) bool {
+	parsed, err := vcs.ParseVCSPath(info.source)
+	if err != nil {
+		log.Printf("Could not parse VCS path '%v': %v", info.source, err)
+		return false
+	}
+
+	// Check if the import's URL was specified to be modified.
+	if !sf.importHandling.hasImport(parsed.URL()) {
+		return false
+	}
+
+	switch sf.importHandling.option {
+	case importHandlingUnfreeze:
+		// For unfreezing, append the HEAD form of the VCS path.
+		sf.append(parsed.AsHEAD().String())
+		return true
+
+	case importHandlingFreeze:
+		// For freezing, perform VCS checkout and append the commit of
+		// the checked out info.
+		if commitSha, exists := sf.vcsCommitCache[parsed.URL()]; exists {
+			sf.append(parsed.WithCommit(commitSha).String())
+			return true
+		}
+
+		log.Printf("Performing checkout and inspection of '%v'", parsed.URL())
+		commitSha, err, _ := vcs.PerformVCSCheckoutAndInspect(
+			info.source, packageloader.SerulianPackageDirectory,
+			sf.importHandling.vcsDevelopmentDirectories...)
+
+		if err != nil {
+			log.Printf("Could not checkout and inspect %v: %v", parsed.URL(), err)
+			return false
+		}
+
+		sf.vcsCommitCache[parsed.URL()] = commitSha
+		sf.append(parsed.WithCommit(commitSha).String())
+		return true
+
+	case importHandlingNone:
+		// No changes needed.
+		return false
+	}
+
+	panic("Unknown import handling option")
+	return false
+}
+
 // emitImport emits the formatted form of the import.
 func (sf *sourceFormatter) emitImport(info importInfo) {
 	sf.emitCommentsForNode(info.node)
@@ -152,7 +206,14 @@ func (sf *sourceFormatter) emitImport(info importInfo) {
 		sf.append("\"")
 	}
 
-	sf.append(info.source)
+	// Handle freezing, unfreezing of VCS.
+	if info.isVCS {
+		if !sf.emitModifiedImportSource(info) {
+			sf.append(info.source)
+		}
+	} else {
+		sf.append(info.source)
+	}
 
 	if !info.isSerulian {
 		sf.append("`")

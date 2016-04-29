@@ -1,4 +1,4 @@
-from webidl`github.com/Serulian/anotherlib:master` import String as DOMString
+from webidl`github.com/Serulian/anotherlib:1fd83ac` import String as DOMString
 
 import localpackage
 import webidl`nicething` as nicething
@@ -12,10 +12,10 @@ from "github.com/Serulian/anotherlib:master" import Set2 as Something
 
 from webidl`console` import console as CoolConsole
 
-from webidl`github.com/Serulian/corelib:master` import somethingelse
+from webidl`github.com/Serulian/corelib` import somethingelse
 
 
-from webidl`github.com/Serulian/anotherlib:master` import something as SomethingElse
+from webidl`github.com/Serulian/anotherlib@sometag` import something as SomethingElse
 
 import anotherfile
 
