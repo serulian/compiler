@@ -16,27 +16,31 @@ import (
 
 // sourceFormatter formats a Serulian parse tree.
 type sourceFormatter struct {
-	tree               *parseTree      // The parse tree being formatted.
-	buf                bytes.Buffer    // The buffer for the new source code.
-	indentationLevel   int             // The current indentation level.
-	hasNewline         bool            // Whether there is a newline at the end of the buffer.
-	hasBlankline       bool            // Whether there is a blank line at the end of the buffer.
-	hasNewScope        bool            // Whether new scope has been started as the last text added.
-	existingLineLength int             // Length of the existing line.
-	nodeList           *list.List      // List of the current nodes being formatted.
-	commentMap         map[string]bool // Map of the start runes of comments already emitted.
+	importHandling     importHandlingInfo // Information for handling import freezing/unfreezing.
+	tree               *parseTree         // The parse tree being formatted.
+	buf                bytes.Buffer       // The buffer for the new source code.
+	indentationLevel   int                // The current indentation level.
+	hasNewline         bool               // Whether there is a newline at the end of the buffer.
+	hasBlankline       bool               // Whether there is a blank line at the end of the buffer.
+	hasNewScope        bool               // Whether new scope has been started as the last text added.
+	existingLineLength int                // Length of the existing line.
+	nodeList           *list.List         // List of the current nodes being formatted.
+	commentMap         map[string]bool    // Map of the start runes of comments already emitted.
+	vcsCommitCache     map[string]string  // Cache of VCS path to its commit SHA.
 }
 
 // buildFormattedSource builds the fully formatted source for the parse tree starting at the given
 // node.
-func buildFormattedSource(tree *parseTree, rootNode formatterNode) []byte {
+func buildFormattedSource(tree *parseTree, rootNode formatterNode, importHandling importHandlingInfo) []byte {
 	formatter := &sourceFormatter{
+		importHandling:   importHandling,
 		indentationLevel: 0,
 		hasNewline:       true,
 		hasNewScope:      true,
 		tree:             tree,
 		nodeList:         list.New(),
 		commentMap:       map[string]bool{},
+		vcsCommitCache:   map[string]string{},
 	}
 
 	formatter.emitNode(rootNode)

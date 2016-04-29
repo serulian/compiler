@@ -1,7 +1,7 @@
 import webidl`github.com/Serulian/corelib:master` as someWebIDLLib
-from webidl`github.com/Serulian/anotherlib:master` import String as DOMString
-from webidl`github.com/Serulian/anotherlib:master` import something as SomethingElse
-from webidl`github.com/Serulian/corelib:master` import somethingelse
+from webidl`github.com/Serulian/anotherlib:1fd83ac` import String as DOMString
+from webidl`github.com/Serulian/anotherlib@sometag` import something as SomethingElse
+from webidl`github.com/Serulian/corelib` import somethingelse
 
 import "github.com/Serulian/corelib:master" as somelib
 from "github.com/Serulian/anotherlib:master" import Set2 as Something

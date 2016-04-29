@@ -19,6 +19,9 @@ import (
 	"github.com/streamrail/concurrent-map"
 )
 
+// SerulianPackageDirectory is the directory under the root directory holding cached packages.
+const SerulianPackageDirectory = ".pkg"
+
 // PackageInfo holds information about a loaded package.
 type PackageInfo struct {
 	kind        string                       // The kind of the package.
@@ -49,9 +52,6 @@ const (
 	pathLocalPackage
 	pathVCSPackage
 )
-
-// serulianPackageDirectory is the directory under the root directory holding cached packages.
-const serulianPackageDirectory = ".pkg"
 
 // pathInformation holds information about a path to load.
 type pathInformation struct {
@@ -293,7 +293,7 @@ func (p *PackageLoader) loadVCSPackage(packagePath pathInformation) {
 	}
 
 	rootDirectory := path.Dir(p.rootSourceFile)
-	pkgDirectory := path.Join(rootDirectory, serulianPackageDirectory)
+	pkgDirectory := path.Join(rootDirectory, SerulianPackageDirectory)
 
 	// Perform the checkout of the VCS package.
 	checkoutDirectory, err, warning := vcs.PerformVCSCheckout(packagePath.path, pkgDirectory, p.vcsDevelopmentDirectories...)

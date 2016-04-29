@@ -27,8 +27,8 @@ type vcsPackagePath struct {
 	subpackage     string // The path of the subpackage, if any.
 }
 
-// parseVCSPath parses a path/url to a VCS package into its components.
-func parseVCSPath(vcsPath string) (vcsPackagePath, error) {
+// ParseVCSPath parses a path/url to a VCS package into its components.
+func ParseVCSPath(vcsPath string) (vcsPackagePath, error) {
 	regex := regexp.MustCompile(vcsPackagePathRegex)
 	matches := regex.FindStringSubmatch(vcsPath)
 	if matches == nil {
@@ -52,8 +52,37 @@ func parseVCSPath(vcsPath string) (vcsPackagePath, error) {
 	return vcsPackagePath{cleaned, branchOrComment, tag, matches[6]}, nil
 }
 
+// URL returns the URL of the VCS package.
+func (pp vcsPackagePath) URL() string {
+	return pp.url
+}
+
+// WithCommit returns the VCS package path with the given commit.
+func (pp vcsPackagePath) WithCommit(commitSha string) vcsPackagePath {
+	return vcsPackagePath{
+		url:            pp.url,
+		branchOrCommit: commitSha,
+		tag:            "",
+		subpackage:     pp.subpackage,
+	}
+}
+
+// AsHEAD returns the VCS package path pointing to HEAD.
+func (pp vcsPackagePath) AsHEAD() vcsPackagePath {
+	if pp.isHEAD() {
+		return pp
+	}
+
+	return vcsPackagePath{
+		url:            pp.url,
+		branchOrCommit: "",
+		tag:            "",
+		subpackage:     pp.subpackage,
+	}
+}
+
 // String returns the string representation of this path.
-func (pp *vcsPackagePath) String() string {
+func (pp vcsPackagePath) String() string {
 	var strRep string = pp.url
 
 	if pp.subpackage != "" {
@@ -73,18 +102,18 @@ func (pp *vcsPackagePath) String() string {
 }
 
 // isHEAD returns whether this VCS package is pointed to HEAD of a branch.
-func (pp *vcsPackagePath) isHEAD() bool {
+func (pp vcsPackagePath) isHEAD() bool {
 	return pp.tag == ""
 }
 
 // isRepoOnlyReference returns true if this VCS package does not specify its tag, branch or commit.
-func (pp *vcsPackagePath) isRepoOnlyReference() bool {
+func (pp vcsPackagePath) isRepoOnlyReference() bool {
 	return pp.tag == "" && pp.branchOrCommit == ""
 }
 
 // cacheDirectory returns a relative directory path at which the VCS package should be placed
 // for caching.
-func (pp *vcsPackagePath) cacheDirectory() string {
+func (pp vcsPackagePath) cacheDirectory() string {
 	var suffix string
 	switch {
 	case pp.branchOrCommit != "":

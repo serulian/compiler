@@ -14,13 +14,56 @@ import (
 	"strings"
 
 	"github.com/serulian/compiler/compilercommon"
+	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/parser"
 )
 
 const RECURSIVE_PATTERN = "/..."
 
-// Format formats the source file at the given path.
+type importHandlingOption int
+
+const (
+	importHandlingNone importHandlingOption = iota
+	importHandlingFreeze
+	importHandlingUnfreeze
+)
+
+// importHandlingInfo defines the information for handling (freezing or unfreezing)
+// VCS imports.
+type importHandlingInfo struct {
+	option                    importHandlingOption
+	imports                   []string
+	vcsDevelopmentDirectories []string
+}
+
+func (ih importHandlingInfo) hasImport(url string) bool {
+	for _, importUrl := range ih.imports {
+		if importUrl == url {
+			return true
+		}
+	}
+
+	return false
+}
+
+// Freeze formats the source files at the given path and freezes the specified
+// VCS imports.
+func Freeze(path string, imports []string, vcsDevelopmentDirectories []string, debug bool) bool {
+	return formatFiles(path, importHandlingInfo{importHandlingFreeze, imports, vcsDevelopmentDirectories}, debug)
+}
+
+// Unfreeze formats the source files at the given path and unfreezes the specified
+// VCS imports.
+func Unfreeze(path string, imports []string, vcsDevelopmentDirectories []string, debug bool) bool {
+	return formatFiles(path, importHandlingInfo{importHandlingUnfreeze, imports, vcsDevelopmentDirectories}, debug)
+}
+
+// Format formats the source files at the given path.
 func Format(path string, debug bool) bool {
+	return formatFiles(path, importHandlingInfo{importHandlingNone, []string{}, []string{}}, debug)
+}
+
+func formatFiles(path string, importHandling importHandlingInfo, debug bool) bool {
 	originalPath := path
 	isRecursive := strings.HasSuffix(path, RECURSIVE_PATTERN)
 	if isRecursive {
@@ -35,7 +78,7 @@ func Format(path string, debug bool) bool {
 				return filepath.SkipDir
 			}
 
-			if info.Name() == ".pkg" {
+			if info.Name() == packageloader.SerulianPackageDirectory {
 				return filepath.SkipDir
 			}
 
@@ -47,7 +90,7 @@ func Format(path string, debug bool) bool {
 		}
 
 		filesFound++
-		return parseAndFormatSourceFile(currentPath, info)
+		return parseAndFormatSourceFile(currentPath, info, importHandling)
 	}
 
 	err := filepath.Walk(path, walkFn)
@@ -65,7 +108,7 @@ func Format(path string, debug bool) bool {
 
 // parseAndFormatSourceFile parses the source file at the given path (with associated file info),
 // formats it and, if changed, writes it back to that path.
-func parseAndFormatSourceFile(sourceFilePath string, info os.FileInfo) error {
+func parseAndFormatSourceFile(sourceFilePath string, info os.FileInfo, importHandling importHandlingInfo) error {
 	// Load the source from the file.
 	source, err := ioutil.ReadFile(sourceFilePath)
 	if err != nil {
@@ -95,7 +138,7 @@ func parseAndFormatSourceFile(sourceFilePath string, info os.FileInfo) error {
 	}
 
 	// Create the formatted source.
-	formattedSource := buildFormattedSource(parseTree, rootNode.(formatterNode))
+	formattedSource := buildFormattedSource(parseTree, rootNode.(formatterNode), importHandling)
 	if string(formattedSource) == string(source) {
 		// Nothing changed.
 		return nil
