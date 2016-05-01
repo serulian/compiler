@@ -32,7 +32,6 @@ func GenerateExpression(expression codedom.Expression, templater *templater.Temp
 
 	// Generate the expression into code.
 	result := generator.generateExpression(expression)
-
 	return ExpressionResult{result, generator, isPromise}
 }
 
@@ -85,6 +84,16 @@ func (eg *expressionGenerator) generateExpression(expression codedom.Expression)
 		panic("Nil expression")
 	}
 
+	sourceMappingComment := getSourceMappingComment(expression)
+	if sourceMappingComment == "" {
+		return eg.generateExpressionDirect(expression)
+	} else {
+		return sourceMappingComment + "(" + eg.generateExpressionDirect(expression) + ")"
+	}
+}
+
+// generateExpressionDirect generates the ES5 states for the given CodeDOM expression.
+func (eg *expressionGenerator) generateExpressionDirect(expression codedom.Expression) string {
 	switch e := expression.(type) {
 
 	case *codedom.AwaitPromiseNode:

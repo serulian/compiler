@@ -8,12 +8,14 @@ package es5
 import (
 	"sort"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/es5pather"
 	"github.com/serulian/compiler/generator/es5/templater"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/typegraph"
+	"github.com/serulian/compiler/sourcemap"
 
 	"github.com/cevaris/ordered_map"
 )
@@ -43,7 +45,12 @@ func generateModules(sg *scopegraph.ScopeGraph, format bool) map[typegraph.TGMod
 
 	formatted := map[typegraph.TGModule]string{}
 	for module, source := range generated {
-		formatted[module] = formatSource(source)
+		formattedSource, err := FormatECMASource(source, nil)
+		if err != nil {
+			panic(err)
+		}
+
+		formatted[module] = formattedSource
 	}
 
 	return formatted
@@ -51,6 +58,11 @@ func generateModules(sg *scopegraph.ScopeGraph, format bool) map[typegraph.TGMod
 
 // GenerateES5 produces ES5 code from the given scope graph.
 func GenerateES5(sg *scopegraph.ScopeGraph) (string, error) {
+	return GenerateES5AndSourceMap(sg, nil)
+}
+
+// GenerateES5AndSourceMap produces ES5 code from the given scope graph.
+func GenerateES5AndSourceMap(sg *scopegraph.ScopeGraph, sourceMap *sourcemap.SourceMap) (string, error) {
 	generated := generateModules(sg, false)
 
 	// Order the modules by their paths.
@@ -74,7 +86,29 @@ func GenerateES5(sg *scopegraph.ScopeGraph) (string, error) {
 		ordered.Set(modulePath, modulePathMap[modulePath])
 	}
 
-	return formatSource(templater.Execute("es5", runtimeTemplate, ordered)), nil
+	// Format the generated source, including building the source map (if requested).
+	positionMapper := compilercommon.NewPositionMapper()
+	handler := func(generatedLine int, generatedCol int, path string, startRune int, endRune int, name string) {
+		lineNumber, colPosition, err := positionMapper.Map(compilercommon.InputSource(path), startRune)
+		if err != nil {
+			panic(err)
+		}
+
+		mapping := sourcemap.SourceMapping{
+			SourcePath:     path,
+			LineNumber:     lineNumber,
+			ColumnPosition: colPosition,
+			Name:           name,
+		}
+
+		sourceMap.AddMapping(generatedLine, generatedCol, mapping)
+	}
+
+	if sourceMap == nil {
+		handler = nil
+	}
+
+	return FormatECMASource(templater.Execute("es5", runtimeTemplate, ordered), handler)
 }
 
 // getSRGMember returns the SRG member type for the given type graph member, if any.

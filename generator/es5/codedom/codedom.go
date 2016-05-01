@@ -51,6 +51,11 @@ type Promising interface {
 	IsPromise() bool
 }
 
+// Named marks an expression with a source mapping name.
+type Named interface {
+	ExprName() string
+}
+
 // domBase defines the base struct for all CodeDOM structs.
 type domBase struct {
 	// The basis node that created this DOM node. Used for jump targeting and source mapping.
