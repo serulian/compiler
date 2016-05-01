@@ -11,13 +11,14 @@ import (
 	"path"
 	"sort"
 
-	"github.com/kr/text"
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/generator/es5"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/packageloader"
+	"github.com/serulian/compiler/sourcemap"
 
 	"github.com/fatih/color"
+	"github.com/kr/text"
 )
 
 // CORE_LIBRARY contains the location of the Serulian core library.
@@ -104,13 +105,24 @@ func BuildSource(rootSourceFilePath string, debug bool, vcsDevelopmentDirectorie
 	}
 
 	// Generate the program's source.
-	generated, err := es5.GenerateES5(scopeResult.Graph)
+	filename := path.Base(rootSourceFilePath) + ".js"
+	mapname := filename + ".map"
+
+	sourceMap := sourcemap.NewSourceMap(mapname, "")
+	generated, err := es5.GenerateES5AndSourceMap(scopeResult.Graph, sourceMap)
 	if err != nil {
 		panic(err)
 	}
 
-	// Write the source.
-	filename := path.Base(rootSourceFilePath) + ".js"
+	marshalledMap, err := sourceMap.Build().Marshal()
+	if err != nil {
+		panic(err)
+	}
+
+	generated += "\n//# sourceMappingURL=" + mapname
+
+	// Write the source and its map.
 	ioutil.WriteFile(filename, []byte(generated), 0644)
+	ioutil.WriteFile(mapname, marshalledMap, 0644)
 	return true
 }

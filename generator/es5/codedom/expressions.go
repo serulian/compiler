@@ -93,6 +93,10 @@ type TypeLiteralNode struct {
 	TypeRef typegraph.TypeReference // The type reference.
 }
 
+func (n TypeLiteralNode) ExprName() string {
+	return n.TypeRef.Name()
+}
+
 func TypeLiteral(typeRef typegraph.TypeReference, basis compilergraph.GraphNode) Expression {
 	return &TypeLiteralNode{
 		expressionBase{domBase{basis}},
@@ -113,6 +117,10 @@ func StaticMemberReference(member typegraph.TGMember, basis compilergraph.GraphN
 	}
 }
 
+func (n StaticMemberReferenceNode) ExprName() string {
+	return n.Member.Name()
+}
+
 // StaticTypeReferenceNode refers statically to a type path.
 type StaticTypeReferenceNode struct {
 	expressionBase
@@ -126,10 +134,18 @@ func StaticTypeReference(typeDecl typegraph.TGTypeDecl, basis compilergraph.Grap
 	}
 }
 
+func (n StaticTypeReferenceNode) ExprName() string {
+	return n.Type.Name()
+}
+
 // LocalReferenceNode is a named reference to a local variable or parameter.
 type LocalReferenceNode struct {
 	expressionBase
 	Name string // The name of the variable or parameter.
+}
+
+func (n LocalReferenceNode) ExprName() string {
+	return n.Name
 }
 
 func LocalReference(name string, basis compilergraph.GraphNode) Expression {
@@ -214,11 +230,19 @@ func MemberReference(childExpression Expression, member typegraph.TGMember, basi
 	}
 }
 
+func (n MemberReferenceNode) ExprName() string {
+	return n.Member.Name()
+}
+
 // DynamicAccessNode is the access of an unknown named member under a child expression.
 type DynamicAccessNode struct {
 	expressionBase
 	ChildExpression Expression // The child expression.
 	Name            string     // The name of the member being accessed.
+}
+
+func (n DynamicAccessNode) ExprName() string {
+	return n.Name
 }
 
 func DynamicAccess(childExpression Expression, name string, basis compilergraph.GraphNode) Expression {
@@ -351,6 +375,10 @@ func NativeAccess(childExpr Expression, name string, basis compilergraph.GraphNo
 		childExpr,
 		name,
 	}
+}
+
+func (n NativeAccessNode) ExprName() string {
+	return n.Name
 }
 
 // NativeAssignNode is the assignment of one expression to another expression.

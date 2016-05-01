@@ -80,33 +80,41 @@ func (sg *stateGenerator) generateStates(statement codedom.Statement, option gen
 	startState := sg.currentState
 	sg.stateStartMap[statement] = startState
 
+	// Add the mapping comment for the statement.
 	switch e := statement.(type) {
 	case *codedom.EmptyStatementNode:
 		// Nothing to do.
 		break
 
 	case *codedom.ResolutionNode:
+		sg.pushSource(getSourceMappingComment(statement))
 		sg.generateResolution(e)
 
 	case *codedom.RejectionNode:
+		sg.pushSource(getSourceMappingComment(statement))
 		sg.generateRejection(e)
 
 	case *codedom.ExpressionStatementNode:
 		sg.generateExpressionStatement(e)
 
 	case *codedom.VarDefinitionNode:
+		sg.pushSource(getSourceMappingComment(statement))
 		sg.generateVarDefinition(e)
 
 	case *codedom.ResourceBlockNode:
+		sg.pushSource(getSourceMappingComment(statement))
 		sg.generateResourceBlock(e)
 
 	case *codedom.ConditionalJumpNode:
+		sg.pushSource(getSourceMappingComment(statement))
 		sg.generateConditionalJump(e)
 
 	case *codedom.UnconditionalJumpNode:
+		sg.pushSource(getSourceMappingComment(statement))
 		sg.generateUnconditionalJump(e)
 
 	case *codedom.ArrowPromiseNode:
+		sg.pushSource(getSourceMappingComment(statement))
 		sg.generateArrowPromise(e)
 
 	default:

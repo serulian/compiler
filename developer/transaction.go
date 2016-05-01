@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/serulian/compiler/builder"
@@ -25,6 +26,7 @@ import (
 // UI when running the developer tool.
 const developerRuntimeTemplateStr = `
 	console.group('Compilation of project {{ .Name }}');
+	console.info('Compilation has begun');
 	document.write('<script src="http://localhost{{ .Addr }}/{{ .Name }}.develop.js"></script>');
 `
 
@@ -85,11 +87,11 @@ func (dt *developTransaction) Build(w http.ResponseWriter, r *http.Request) {
 
 	dt.sourceMap = sourcemap.NewSourceMap(dt.name+".develop.js", "source/")
 
-	for _, warning := range scopeResult.Warnings {
-		dt.emitWarning(w, warning)
-	}
-
 	if !scopeResult.Status {
+		for _, warning := range scopeResult.Warnings {
+			dt.emitWarning(w, warning)
+		}
+
 		for _, err := range scopeResult.Errors {
 			dt.emitError(w, err)
 		}
@@ -98,7 +100,7 @@ func (dt *developTransaction) Build(w http.ResponseWriter, r *http.Request) {
 		dt.closeGroup(w)
 	} else {
 		// Generate the program's source.
-		generated, err := es5.GenerateES5(scopeResult.Graph)
+		generated, err := es5.GenerateES5AndSourceMap(scopeResult.Graph, dt.sourceMap)
 		if err != nil {
 			panic(err)
 		}
@@ -106,6 +108,12 @@ func (dt *developTransaction) Build(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, generated)
 		dt.emitInfo(w, "Build completed successfully")
 		dt.closeGroup(w)
+
+		dt.offsetCount = len(strings.Split(string(generated), "\n"))
+
+		for _, warning := range scopeResult.Warnings {
+			dt.emitWarning(w, warning)
+		}
 	}
 
 	fmt.Fprintf(w, "//# sourceMappingURL=/%s.develop.js.map\n", dt.name)
