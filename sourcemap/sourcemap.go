@@ -118,6 +118,10 @@ func (sm *SourceMap) AddMapping(lineNumber int, colPosition int, mapping SourceM
 		sm.lineMappings[lineNumber] = map[int]SourceMapping{}
 	}
 
+	if _, ok := sm.lineMappings[lineNumber][colPosition]; ok {
+		return
+	}
+
 	sm.lineMappings[lineNumber][colPosition] = mapping
 
 	if mapping.Name != "" {
