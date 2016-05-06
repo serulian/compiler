@@ -12,7 +12,10 @@ import (
 	"github.com/serulian/compiler/builder"
 	"github.com/serulian/compiler/developer"
 	"github.com/serulian/compiler/formatter"
+	"github.com/serulian/compiler/tester"
 	"github.com/spf13/cobra"
+
+	_ "github.com/serulian/compiler/tester/karma"
 )
 
 var (
@@ -51,6 +54,16 @@ func main() {
 			if !developer.Run(addr, args[0], debug, vcsDevelopmentDirectories) {
 				os.Exit(-1)
 			}
+		},
+	}
+
+	var cmdTest = &cobra.Command{
+		Use:   "test",
+		Short: "Runs the tests defined at the given source path",
+		Long:  "Runs the tests found in any *_test.seru files at the given source path",
+		Run: func(cmd *cobra.Command, args []string) {
+			cmd.Usage()
+			os.Exit(1)
 		},
 	}
 
@@ -122,6 +135,7 @@ func main() {
 		},
 	}
 
+	// Register command-specific flags.
 	cmdBuild.PersistentFlags().StringSliceVar(&vcsDevelopmentDirectories, "vcs-dev-dir", []string{},
 		"If specified, VCS packages without specification will be first checked against this path")
 
@@ -134,11 +148,16 @@ func main() {
 	cmdImports.PersistentFlags().StringSliceVar(&vcsDevelopmentDirectories, "vcs-dev-dir", []string{},
 		"If specified, VCS packages without specification will be first checked against this path")
 
+	// Decorate the test commands.
+	tester.DecorateRunners(cmdTest)
+
+	// Register the root command.
 	var rootCmd = &cobra.Command{Use: "serulian"}
 	rootCmd.AddCommand(cmdBuild)
 	rootCmd.AddCommand(cmdDevelop)
 	rootCmd.AddCommand(cmdFormat)
 	rootCmd.AddCommand(cmdImports)
+	rootCmd.AddCommand(cmdTest)
 	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "If set to true, Serulian will print debug logs")
 	rootCmd.Execute()
 }
