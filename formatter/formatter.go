@@ -9,16 +9,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 
 	"github.com/serulian/compiler/compilercommon"
-	"github.com/serulian/compiler/packageloader"
+	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/parser"
 )
-
-const RECURSIVE_PATTERN = "/..."
 
 type importHandlingOption int
 
@@ -63,47 +60,15 @@ func Format(path string, debug bool) bool {
 	return formatFiles(path, importHandlingInfo{importHandlingNone, []string{}, []string{}}, debug)
 }
 
+// formatFiles runs formatting of all matching source files found at the given source path.
 func formatFiles(path string, importHandling importHandlingInfo, debug bool) bool {
-	originalPath := path
-	isRecursive := strings.HasSuffix(path, RECURSIVE_PATTERN)
-	if isRecursive {
-		path = path[0 : len(path)-len(RECURSIVE_PATTERN)]
-	}
-
-	var filesFound = 0
-	walkFn := func(currentPath string, info os.FileInfo, err error) error {
-		// Handle directories and whether to recursively format.
-		if info.IsDir() {
-			if currentPath != path && !isRecursive {
-				return filepath.SkipDir
-			}
-
-			if info.Name() == packageloader.SerulianPackageDirectory {
-				return filepath.SkipDir
-			}
-
-			return nil
-		}
-
+	return compilerutil.WalkSourcePath(path, func(currentPath string, info os.FileInfo) (bool, error) {
 		if !strings.HasSuffix(info.Name(), parser.SERULIAN_FILE_EXTENSION) {
-			return nil
+			return false, nil
 		}
 
-		filesFound++
-		return parseAndFormatSourceFile(currentPath, info, importHandling)
-	}
-
-	err := filepath.Walk(path, walkFn)
-	if err != nil {
-		fmt.Printf("%v\n", err)
-		return false
-	}
-
-	if filesFound == 0 {
-		fmt.Printf("No Serulian source files found under path %s\n", originalPath)
-	}
-
-	return true
+		return true, parseAndFormatSourceFile(currentPath, info, importHandling)
+	})
 }
 
 // parseAndFormatSourceFile parses the source file at the given path (with associated file info),
