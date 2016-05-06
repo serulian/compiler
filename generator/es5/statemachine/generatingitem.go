@@ -76,3 +76,9 @@ func (gi generatingItem) JumpToStatement(target codedom.Statement) string {
 func (gi generatingItem) AddTopLevelExpression(expression codedom.Expression) string {
 	return gi.generator.addTopLevelExpression(expression)
 }
+
+// SourceMappingComment returns the source mapping magic comment for the given CodeDOM statement
+// or expression.
+func (gi generatingItem) SourceMappingComment(dom codedom.StatementOrExpression) string {
+	return getSourceMappingComment(dom)
+}

@@ -6,6 +6,7 @@ package statemachine
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/serulian/compiler/generator/es5/codedom"
 	"github.com/serulian/compiler/generator/es5/es5pather"
@@ -88,7 +89,7 @@ func (eg *expressionGenerator) generateExpression(expression codedom.Expression)
 	if sourceMappingComment == "" {
 		return eg.generateExpressionDirect(expression)
 	} else {
-		return sourceMappingComment + "(" + eg.generateExpressionDirect(expression) + ")"
+		return "(" + strings.TrimSpace(eg.generateExpressionDirect(expression)) + ")" + sourceMappingComment
 	}
 }
 

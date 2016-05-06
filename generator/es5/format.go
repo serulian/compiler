@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/robertkrimen/otto/ast"
 	"github.com/robertkrimen/otto/parser"
@@ -91,7 +92,12 @@ func (sf *sourceFormatter) handleMappingComments(node ast.Node) {
 			panic(err)
 		}
 
-		sf.mappingHandler(sf.newlineCount, sf.charactersOnLine, pieces[0], startRune, endRune, pieces[3])
+		startingCol := sf.charactersOnLine
+		if sf.hasNewline {
+			startingCol += sf.indentationLevel * 2
+		}
+
+		sf.mappingHandler(sf.newlineCount, startingCol, pieces[0], startRune, endRune, pieces[3])
 	}
 }
 
@@ -123,7 +129,7 @@ func (sf *sourceFormatter) append(value string) {
 		}
 
 		sf.buf.WriteRune(currentRune)
-		sf.charactersOnLine++
+		sf.charactersOnLine += utf8.RuneLen(currentRune)
 	}
 }
 

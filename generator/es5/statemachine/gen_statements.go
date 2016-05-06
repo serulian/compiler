@@ -25,11 +25,13 @@ func (sg *stateGenerator) generateUnconditionalJump(jump *codedom.UnconditionalJ
 	currentState := sg.currentState
 
 	data := struct {
+		This   codedom.Statement
 		Target codedom.Statement
-	}{jump.Target}
+	}{jump, jump.Target}
 
 	templateStr := `
 		{{ .JumpToStatement .Item.Target }}
+		{{ .SourceMappingComment .Item.This }}
 		continue;
 	`
 
@@ -47,10 +49,11 @@ func (sg *stateGenerator) generateConditionalJump(jump *codedom.ConditionalJumpN
 
 	// Based on the expression value, jump to one state or another.
 	data := struct {
+		This          codedom.Statement
 		True          codedom.Statement
 		False         codedom.Statement
 		ExpressionRef string
-	}{jump.True, jump.False, expressionRef}
+	}{jump, jump.True, jump.False, expressionRef}
 
 	templateStr := `
 		if ({{ .Item.ExpressionRef }}) {
@@ -60,6 +63,7 @@ func (sg *stateGenerator) generateConditionalJump(jump *codedom.ConditionalJumpN
 			{{ .JumpToStatement .Item.False }}
 			continue;
 		}
+  	    {{ .SourceMappingComment .Item.This }}
 	`
 
 	currentState.pushSource(sg.templater.Execute("conditionaljump", templateStr, generatingItem{data, sg}))
@@ -69,6 +73,7 @@ func (sg *stateGenerator) generateConditionalJump(jump *codedom.ConditionalJumpN
 func (sg *stateGenerator) generateResourceBlock(resourceBlock *codedom.ResourceBlockNode) {
 	// Generate a variable holding the resource.
 	basisNode := resourceBlock.BasisNode()
+	sg.pushSource(getSourceMappingComment(resourceBlock))
 	sg.generateStates(
 		codedom.VarDefinitionWithInit(resourceBlock.ResourceName, resourceBlock.Resource, basisNode),
 		generateImplicitState)
@@ -90,6 +95,7 @@ func (sg *stateGenerator) generateVarDefinition(vardef *codedom.VarDefinitionNod
 	if vardef.Initializer != nil {
 		templateStr := `
 			{{ .Item.Name }} = {{ .AddTopLevelExpression .Item.Initializer }};
+  	        {{ .SourceMappingComment .Item }}
 		`
 
 		sg.pushSource(sg.templater.Execute("vardefinit", templateStr, generatingItem{vardef, sg}))
@@ -101,8 +107,10 @@ func (sg *stateGenerator) generateResolution(resolution *codedom.ResolutionNode)
 	templateStr := `
 		{{ if .Item.Value }}
 		{{ .Snippets.Resolve (.AddTopLevelExpression .Item.Value) }}
+	    {{ .SourceMappingComment .Item }}
 		{{ else }}
 		{{ .Snippets.Resolve "" }}
+	    {{ .SourceMappingComment .Item }}
 		{{ end }}
 	`
 
@@ -114,8 +122,10 @@ func (sg *stateGenerator) generateRejection(rejection *codedom.RejectionNode) {
 	templateStr := `
 		{{ if .Item.Value }}
 		{{ .Snippets.Reject (.AddTopLevelExpression .Item.Value) }}
+	    {{ .SourceMappingComment .Item }}
 		{{ else }}
 		{{ .Snippets.Reject "" }}
+	    {{ .SourceMappingComment .Item }}
 		{{ end }}
 	`
 
