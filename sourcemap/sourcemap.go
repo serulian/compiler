@@ -133,6 +133,35 @@ func (sm *SourceMap) AddMapping(lineNumber int, colPosition int, mapping SourceM
 	}
 }
 
+// OffsetBy returns a source map containing the mappings of this source map offset by the given string.
+func (sm *SourceMap) OffsetBy(value string) *SourceMap {
+	lines := strings.Split(value, "\n")
+
+	om := NewSourceMap(sm.generatedFilePath, sm.sourceRoot)
+	for lineNumber, mappings := range sm.lineMappings {
+		for colPosition, mapping := range mappings {
+			var updatedLineNumber = lineNumber + len(lines) - 1
+			var updatedColPosition = colPosition
+			if lineNumber == 0 {
+				updatedColPosition = colPosition + len(lines[len(lines)-1])
+			}
+
+			om.AddMapping(updatedLineNumber, updatedColPosition, mapping)
+		}
+	}
+
+	return om
+}
+
+// AppendMap adds all the mappings found in the other source map to this source map.
+func (sm *SourceMap) AppendMap(other *SourceMap) {
+	for lineNumber, mappings := range other.lineMappings {
+		for colPosition, mapping := range mappings {
+			sm.AddMapping(lineNumber, colPosition, mapping)
+		}
+	}
+}
+
 // Build returns the built source map.
 func (sm *SourceMap) Build() *ParsedSourceMap {
 	// Sort both sets to ensure consistent source map production.
