@@ -60,9 +60,9 @@ $module('cast', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.cast.SomeClass.new().then(function ($result0) {
-              return $g.cast.DoSomething($result0).then(function ($result1) {
-                $result = $result1;
+            $g.cast.SomeClass.new().then(function ($result1) {
+              return $g.cast.DoSomething($result1).then(function ($result0) {
+                $result = $result0;
                 $current = 1;
                 $continue($resolve, $reject);
                 return;

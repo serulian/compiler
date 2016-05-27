@@ -167,10 +167,10 @@ $module('basic', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.basic.AnotherStruct.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
-              $temp0 = $result0;
-              return $g.basic.SomeStruct.new($t.box(42, $g.____testlib.basictypes.Integer), $t.box(true, $g.____testlib.basictypes.Boolean), ($temp0, $temp0)).then(function ($result1) {
-                $temp1 = $result1;
+            $g.basic.AnotherStruct.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
+              $temp0 = $result1;
+              return $g.basic.SomeStruct.new($t.box(42, $g.____testlib.basictypes.Integer), $t.box(true, $g.____testlib.basictypes.Boolean), ($temp0, $temp0)).then(function ($result0) {
+                $temp1 = $result0;
                 $result = ($temp1, $temp1);
                 $current = 1;
                 $continue($resolve, $reject);

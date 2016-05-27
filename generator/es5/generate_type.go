@@ -5,6 +5,7 @@
 package es5
 
 import (
+	"github.com/serulian/compiler/generator/escommon/esbuilder"
 	"github.com/serulian/compiler/graphs/typegraph"
 
 	"github.com/cevaris/ordered_map"
@@ -22,28 +23,27 @@ func (gen *es5generator) generateTypes(module typegraph.TGModule) *ordered_map.O
 }
 
 // generateType generates the given type into ES5.
-func (gen *es5generator) generateType(typedef typegraph.TGTypeDecl) string {
+func (gen *es5generator) generateType(typedef typegraph.TGTypeDecl) esbuilder.SourceBuilder {
 	generating := generatingType{typedef, gen}
 
 	switch typedef.TypeKind() {
 	case typegraph.ClassType:
-		return gen.templater.Execute("class", classTemplateStr, generating)
+		return esbuilder.Template("class", classTemplateStr, generating)
 
 	case typegraph.ImplicitInterfaceType:
-		return gen.templater.Execute("interface", interfaceTemplateStr, generating)
+		return esbuilder.Template("interface", interfaceTemplateStr, generating)
 
 	case typegraph.NominalType:
-		return gen.templater.Execute("nominal", nominalTemplateStr, generating)
+		return esbuilder.Template("nominal", nominalTemplateStr, generating)
 
 	case typegraph.StructType:
-		return gen.templater.Execute("struct", structTemplateStr, generating)
+		return esbuilder.Template("struct", structTemplateStr, generating)
 
 	case typegraph.ExternalInternalType:
-		return ""
+		return esbuilder.Snippet("")
 
 	default:
 		panic("Unknown typedef kind")
-		return ""
 	}
 }
 
@@ -131,7 +131,7 @@ func (gt generatingType) GenerateComposition() *ordered_map.OrderedMap {
 			parentTypeRef.ReferredType().RequiredFields(),
 		}
 
-		source := gt.Generator.templater.Execute("composition", compositionTemplateStr, data)
+		source := esbuilder.Template("composition", compositionTemplateStr, data)
 		typeMap.Set(parentTypeRef, source)
 	}
 
@@ -153,7 +153,7 @@ const interfaceTemplateStr = `
 this.$interface('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .Generics }}) {
 	var $static = this;
 	{{range $idx, $kv := .GenerateImplementedMembers.Iter }}
-  	  {{ $kv.Value }}
+  	  {{ emit $kv.Value }}
   	{{end}}
 });
 `
@@ -170,7 +170,7 @@ this.$class('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ 
 		var instance = new $static();
 		var init = [];
 		{{ range $idx, $kv := $composed.Iter }}
-			init.push({{ $kv.Value }});
+			init.push({{ emit $kv.Value }});
   		{{ end }}
 		{{ range $idx, $field := .RequiredFields }}
 		{{ if not $field.HasBaseMember }}
@@ -181,7 +181,7 @@ this.$class('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ 
 		{{ end }}
 		{{ end }}
 		{{ range $idx, $kv := $vars.Iter }}
-			init.push({{ $kv.Value }});
+			init.push({{ emit $kv.Value }});
 		{{ end }}
 		return $promise.all(init).then(function() {
 			return instance;
@@ -189,7 +189,7 @@ this.$class('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ 
 	};
 
 	{{range $idx, $kv := .GenerateImplementedMembers.Iter }}
-  	  {{ $kv.Value }}
+  	  {{ emit $kv.Value }}
   	{{end}}
 });
 `
@@ -308,7 +308,7 @@ this.$type('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .
 	};
 
 	{{range $idx, $kv := .GenerateImplementedMembers.Iter }}
-  	  {{ $kv.Value }}
+  	  {{ emit $kv.Value }}
   	{{end}}
 });
 `

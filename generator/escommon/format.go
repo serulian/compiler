@@ -2,103 +2,71 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package es5
+// escommon defines common packages and methods for generating ECMAScript.
+package escommon
 
 import (
 	"bytes"
 	"fmt"
-	"strconv"
 	"strings"
 	"unicode/utf8"
 
+	"github.com/serulian/compiler/compilercommon"
+	"github.com/serulian/compiler/sourcemap"
+
 	"github.com/robertkrimen/otto/ast"
+	"github.com/robertkrimen/otto/file"
 	"github.com/robertkrimen/otto/parser"
-	"github.com/serulian/compiler/generator/es5/templater"
 )
 
-// MappingHandler is a function called for each source mapping magic comment found in the unformatted source.
-// Mapping comments are of the form:
-// /*@{path,startRune,endRune,name}*/
-type MappingHandler func(generatedLine int, generatedCol int, path string, startRune int, endRune int, name string)
-
 // FormatECMASource parses and formats the given ECMAScript source code.
-func FormatECMASource(source string, mappingHandler MappingHandler) (string, error) {
-	// Parse the ES source.
-	var mode = parser.StoreComments
-	if mappingHandler == nil {
-		mode = 0
-	}
+func FormatECMASource(source string) (string, error) {
+	formatted, _, err := FormatMappedECMASource(source, sourcemap.NewSourceMap("", ""))
+	return formatted, err
+}
 
-	program, err := parser.ParseFile(nil, "", source, mode)
+// FormatMappedECMASource parses and formats the given ECMAScript source code.
+func FormatMappedECMASource(source string, sm *sourcemap.SourceMap) (string, *sourcemap.SourceMap, error) {
+	// Parse the ES source.
+	program, err := parser.ParseFile(nil, "", source, 0)
 	if err != nil {
-		return "", err
+		return "", nil, err
 	}
 
 	// Reformat nicely.
 	formatter := &sourceFormatter{
-		templater:        templater.New(),
+		file: program.File,
+
 		indentationLevel: 0,
 		hasNewline:       true,
-		comments:         program.Comments,
-		mappingHandler:   mappingHandler,
 
 		newlineCount:     0,
 		charactersOnLine: 0,
+
+		existingSourceMap:  sm,
+		formattedSourceMap: sourcemap.NewSourceMap(sm.GeneratedFilePath(), sm.SourceRoot()),
+
+		positionMapper: compilercommon.CreateSourcePositionMapper([]byte(source)),
 	}
 
 	formatter.formatProgram(program)
-	return formatter.buf.String(), nil
+	return formatter.buf.String(), formatter.formattedSourceMap, nil
 }
 
 // sourceFormatter formats an ES parse tree.
 type sourceFormatter struct {
-	templater        *templater.Templater // The templater.
-	buf              bytes.Buffer         // The buffer for the new source code.
-	indentationLevel int                  // The current indentation level.
+	file             *file.File   // The file being formatted.
+	buf              bytes.Buffer // The buffer for the new source code.
+	indentationLevel int          // The current indentation level.
 
 	hasNewline       bool // Whether there is a newline at the end of the buffer.
 	newlineCount     int  // The number of lines in the buffer.
 	charactersOnLine int  // The number of characters on the current line in the buffer.
 
-	comments       ast.CommentMap // The comment map for the unformatted source.
-	mappingHandler MappingHandler // Callback invoked for each mapping comment, if any.
-}
+	positionMapper compilercommon.SourcePositionMapper // Mapper for mapping from the input source.
 
-// handleMappingComments checks the comment map for comments on the given node matching
-// the mapping form and, if found, emits source mapping entries.
-func (sf *sourceFormatter) handleMappingComments(node ast.Node) {
-	if sf.mappingHandler == nil {
-		return
-	}
-
-	comments, hasComments := sf.comments[node]
-	if !hasComments {
-		return
-	}
-
-	for _, comment := range comments {
-		if !strings.HasPrefix(comment.Text, "@{") {
-			continue
-		}
-
-		pieces := strings.Split(comment.Text[2:len(comment.Text)-1], ",")
-		startRune, err := strconv.Atoi(pieces[1])
-		if err != nil {
-			panic(err)
-		}
-
-		endRune, err := strconv.Atoi(pieces[2])
-		if err != nil {
-			panic(err)
-		}
-
-		startingCol := sf.charactersOnLine
-		if sf.hasNewline {
-			startingCol += sf.indentationLevel * 2
-		}
-
-		sf.mappingHandler(sf.newlineCount, startingCol, pieces[0], startRune, endRune, pieces[3])
-	}
+	existingSourceMap  *sourcemap.SourceMap // The source map for the input code.
+	formattedSourceMap *sourcemap.SourceMap // The source map for the formatted code.
 }
 
 // indent increases the current indentation.
@@ -165,9 +133,28 @@ func (sf *sourceFormatter) formatIdentifierList(identifiers []*ast.Identifier) {
 	}
 }
 
+// addMapping adds a source mapping between the specified byte position and the current formatted
+// location.
+func (sf *sourceFormatter) addMapping(bytePosition file.Idx) {
+	// Note: We use a position mapper here rather than the built-in .Position as the built-in
+	// is incredibly slow and does not do any form of caching.
+	ufLineNumber, ufColPosition, err := sf.positionMapper.Map(int(bytePosition))
+	if err != nil {
+		panic(err)
+	}
+
+	mapping, hasMapping := sf.existingSourceMap.GetMapping(ufLineNumber, ufColPosition)
+	if !hasMapping {
+		return
+	}
+
+	sf.formattedSourceMap.AddMapping(sf.newlineCount, sf.charactersOnLine, mapping)
+}
+
 // formatExpression formats an ES expression.
 func (sf *sourceFormatter) formatExpression(expression ast.Expression) {
-	sf.handleMappingComments(expression)
+	// Add the mapping for the expression.
+	sf.addMapping(expression.Idx0())
 
 	switch e := expression.(type) {
 
@@ -381,7 +368,8 @@ loop:
 
 // formatStatement formats an ES statement.
 func (sf *sourceFormatter) formatStatement(statement ast.Statement) {
-	sf.handleMappingComments(statement)
+	// Add the mapping for the statement.
+	sf.addMapping(statement.Idx0())
 
 	switch s := statement.(type) {
 

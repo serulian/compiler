@@ -4,10 +4,11 @@
 
 package esbuilder
 
-import (
-	"fmt"
-	"strconv"
-)
+// snippetNode defines a snippet of code as an expression.
+type snippetNode struct {
+	// code is the code to emit.
+	code string
+}
 
 // identifierNode defines a named identifier in the AST.
 type identifierNode struct {
@@ -33,12 +34,6 @@ type exprMemberNode struct {
 	memberName ExpressionBuilder
 }
 
-// literalNode defines a literal value.
-type literalNode struct {
-	// value is the literal value.
-	value string
-}
-
 // callNode defines a function call on an expression.
 type callNode struct {
 	// childExpr is the child expression on which the call is invoked.
@@ -46,6 +41,25 @@ type callNode struct {
 
 	// arguments are the arguments to the function call.
 	arguments []ExpressionBuilder
+}
+
+// exprListNode defines an expression list.
+type exprListNode struct {
+	// valueExpr is the last expression in the list, defining its value.
+	valueExpr ExpressionBuilder
+
+	// exprs are the other expressions in the list.
+	exprs []ExpressionBuilder
+}
+
+// wrappedTemplateNode defines a wrapper for templates that are expressions.
+type wrappedTemplateNode struct {
+	// template is the wrapped template.
+	template TemplateSourceBuilder
+}
+
+func (node snippetNode) emit(sb *sourceBuilder) {
+	sb.append(node.code)
 }
 
 func (node identifierNode) emit(sb *sourceBuilder) {
@@ -65,15 +79,31 @@ func (node exprMemberNode) emit(sb *sourceBuilder) {
 	sb.append("]")
 }
 
-func (node literalNode) emit(sb *sourceBuilder) {
-	sb.append(node.value)
-}
-
 func (node callNode) emit(sb *sourceBuilder) {
 	sb.emitWrapped(node.childExpr)
 	sb.append("(")
 	sb.emitSeparated(node.arguments, ",")
 	sb.append(")")
+}
+
+func (node exprListNode) emit(sb *sourceBuilder) {
+	sb.append("(")
+	sb.emitSeparated(node.exprs, ",")
+	if len(node.exprs) > 0 {
+		sb.append(",")
+	}
+
+	sb.emit(node.valueExpr)
+	sb.append(")")
+}
+
+func (node wrappedTemplateNode) emit(sb *sourceBuilder) {
+	sb.emit(node.template)
+}
+
+// Snippet returns a new snippet.
+func Snippet(code string) ExpressionBuilder {
+	return expressionBuilder{snippetNode{code}, nil}
 }
 
 // Identifier returns a new identifier.
@@ -91,36 +121,12 @@ func ExprMember(expression ExpressionBuilder, name ExpressionBuilder) Expression
 	return expressionBuilder{exprMemberNode{expression, name}, nil}
 }
 
-// LiteralValue returns a literal value.
-func LiteralValue(value string) ExpressionBuilder {
-	return expressionBuilder{literalNode{value}, nil}
-}
-
 // Call returns a function call.
 func Call(expression ExpressionBuilder, arguments ...ExpressionBuilder) ExpressionBuilder {
 	return expressionBuilder{callNode{expression, arguments}, nil}
 }
 
-// Value returns a literal value.
-func Value(value interface{}) ExpressionBuilder {
-	switch t := value.(type) {
-	case bool:
-		if t {
-			return LiteralValue("true")
-		} else {
-			return LiteralValue("false")
-		}
-
-	case int:
-		return LiteralValue(strconv.Itoa(t))
-
-	case float64:
-		return LiteralValue(strconv.FormatFloat(t, 'E', -1, 32))
-
-	case string:
-		return LiteralValue(strconv.Quote(t))
-
-	default:
-		panic(fmt.Sprintf("unexpected value type %T\n", t))
-	}
+// ExpressionList returns an expression list.
+func ExpressionList(valueExpr ExpressionBuilder, exprs ...ExpressionBuilder) ExpressionBuilder {
+	return expressionBuilder{exprListNode{valueExpr, exprs}, nil}
 }

@@ -84,9 +84,9 @@ $module('inheritance', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.inheritance.MainClass.new().then(function ($result0) {
-              return $result0.DoSomething().then(function ($result1) {
-                $result = $result1;
+            $g.inheritance.MainClass.new().then(function ($result1) {
+              return $result1.DoSomething().then(function ($result0) {
+                $result = $result0;
                 $current = 1;
                 $continue($resolve, $reject);
                 return;

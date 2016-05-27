@@ -86,9 +86,9 @@ $module('shortcircuit', function () {
         switch ($current) {
           case 0:
             $promise.resolve(false).then(function ($result1) {
-              return ($promise.shortcircuit($result1, false) || $g.shortcircuit.neverCalled()).then(function ($result2) {
+              return ($promise.shortcircuit(!$result1) || $g.shortcircuit.neverCalled()).then(function ($result2) {
                 return $promise.resolve(!($result1 && $t.unbox($result2))).then(function ($result0) {
-                  return ($promise.shortcircuit($result0, true) || $g.shortcircuit.anotherNeverCalled()).then(function ($result3) {
+                  return ($promise.shortcircuit($result0) || $g.shortcircuit.anotherNeverCalled()).then(function ($result3) {
                     $result = $t.box($result0 || $t.unbox($result3), $g.____testlib.basictypes.Boolean);
                     $current = 1;
                     $continue($resolve, $reject);

@@ -20,9 +20,9 @@ $module('list', function () {
 
           case 1:
             l = $result;
-            l.Count().then(function ($result0) {
-              return $g.____testlib.basictypes.Integer.$equals($result0, $t.box(4, $g.____testlib.basictypes.Integer)).then(function ($result1) {
-                $result = $result1;
+            l.Count().then(function ($result1) {
+              return $g.____testlib.basictypes.Integer.$equals($result1, $t.box(4, $g.____testlib.basictypes.Integer)).then(function ($result0) {
+                $result = $result0;
                 $current = 2;
                 $continue($resolve, $reject);
                 return;

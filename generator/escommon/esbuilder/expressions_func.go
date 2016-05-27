@@ -13,7 +13,7 @@ type functionNode struct {
 	parameters []string
 
 	// body is the body of the function.
-	body ExpressionOrStatementBuilder
+	body SourceBuilder
 }
 
 func (node functionNode) emit(sb *sourceBuilder) {
@@ -52,11 +52,11 @@ func (node functionNode) emit(sb *sourceBuilder) {
 }
 
 // Closure returns an anonymous closure.
-func Closure(body ExpressionOrStatementBuilder, parameters ...string) ExpressionBuilder {
+func Closure(body SourceBuilder, parameters ...string) ExpressionBuilder {
 	return expressionBuilder{functionNode{"", parameters, body}, nil}
 }
 
 // Function returns a named function.
-func Function(name string, body ExpressionOrStatementBuilder, parameters ...string) ExpressionBuilder {
+func Function(name string, body SourceBuilder, parameters ...string) ExpressionBuilder {
 	return expressionBuilder{functionNode{name, parameters, body}, nil}
 }

@@ -18,7 +18,6 @@ import (
 	"github.com/serulian/compiler/generator/es5"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/parser"
-	"github.com/serulian/compiler/sourcemap"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
@@ -97,8 +96,7 @@ func buildAndRunTests(filePath string, runner TestRunner) (bool, error) {
 	}
 
 	// Generate the source.
-	sourceMap := sourcemap.NewSourceMap(filename+".js", "")
-	generated, err := es5.GenerateES5AndSourceMap(scopeResult.Graph, sourceMap)
+	generated, sourceMap, err := es5.GenerateES5(scopeResult.Graph, filename+".js", "")
 	if err != nil {
 		log.Fatal(err)
 	}

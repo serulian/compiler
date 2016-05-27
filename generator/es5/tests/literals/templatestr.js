@@ -11,10 +11,10 @@ $module('templatestr', function () {
           case 0:
             a = $t.box(1, $g.____testlib.basictypes.Integer);
             b = $t.box(true, $g.____testlib.basictypes.Boolean);
-            $g.____testlib.basictypes.Slice($g.____testlib.basictypes.String).overArray([$t.box("This function is #", $g.____testlib.basictypes.String), $t.box("! It is ", $g.____testlib.basictypes.String), $t.box("!", $g.____testlib.basictypes.String)]).then(function ($result0) {
-              return $g.____testlib.basictypes.Slice($g.____testlib.basictypes.Stringable).overArray([a, b]).then(function ($result1) {
-                return $g.____testlib.basictypes.formatTemplateString($result0, $result1).then(function ($result2) {
-                  $result = $result2;
+            $g.____testlib.basictypes.Slice($g.____testlib.basictypes.String).overArray([$t.box("This function is #", $g.____testlib.basictypes.String), $t.box("! It is ", $g.____testlib.basictypes.String), $t.box("!", $g.____testlib.basictypes.String)]).then(function ($result1) {
+              return $g.____testlib.basictypes.Slice($g.____testlib.basictypes.Stringable).overArray([a, b]).then(function ($result2) {
+                return $g.____testlib.basictypes.formatTemplateString($result1, $result2).then(function ($result0) {
+                  $result = $result0;
                   $current = 1;
                   $continue($resolve, $reject);
                   return;

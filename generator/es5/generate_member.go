@@ -9,6 +9,7 @@ import (
 
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/statemachine"
+	"github.com/serulian/compiler/generator/escommon/esbuilder"
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/typegraph"
 
@@ -20,12 +21,14 @@ func (gen *es5generator) generateImplementedMembers(typeOrModule typegraph.TGTyp
 	memberMap := ordered_map.NewOrderedMap()
 	members := typeOrModule.Members()
 	for _, member := range members {
+		// Check for a base member. If one exists, generate the member has an aliased member.
 		_, hasBaseMember := member.BaseMember()
 		if hasBaseMember {
 			memberMap.Set(member, gen.generateImplementedAliasedMember(member))
 			continue
 		}
 
+		// Otherwise, generate the member if it has an implementation.
 		srgMember, hasSRGMember := gen.getSRGMember(member)
 		if !hasSRGMember || !srgMember.HasImplementation() {
 			continue
@@ -38,14 +41,14 @@ func (gen *es5generator) generateImplementedMembers(typeOrModule typegraph.TGTyp
 }
 
 // generateImplementedAliasedMember generates the given member into an alias in ES5.
-func (gen *es5generator) generateImplementedAliasedMember(member typegraph.TGMember) string {
+func (gen *es5generator) generateImplementedAliasedMember(member typegraph.TGMember) esbuilder.SourceBuilder {
 	srgMember, _ := gen.getSRGMember(member)
 	generating := generatingMember{member, srgMember, gen}
-	return gen.templater.Execute("aliasedmember", aliasedMemberTemplateStr, generating)
+	return esbuilder.Template("aliasedmember", aliasedMemberTemplateStr, generating)
 }
 
 // generateImplementedMember generates the given member into ES5.
-func (gen *es5generator) generateImplementedMember(member typegraph.TGMember) string {
+func (gen *es5generator) generateImplementedMember(member typegraph.TGMember) esbuilder.SourceBuilder {
 	srgMember, _ := gen.getSRGMember(member)
 	generating := generatingMember{member, srgMember, gen}
 
@@ -57,10 +60,10 @@ func (gen *es5generator) generateImplementedMember(member typegraph.TGMember) st
 		fallthrough
 
 	case srg.OperatorMember:
-		return gen.templater.Execute("function", functionTemplateStr, generating)
+		return esbuilder.Template("function", functionTemplateStr, generating)
 
 	case srg.PropertyMember:
-		return gen.templater.Execute("property", propertyTemplateStr, generating)
+		return esbuilder.Template("property", propertyTemplateStr, generating)
 
 	default:
 		panic(fmt.Sprintf("Unknown kind of member %s", srgMember.MemberKind()))
@@ -129,24 +132,24 @@ func (gm generatingMember) InnerInstanceName() string {
 }
 
 // FunctionSource returns the generated code for the implementation for this member.
-func (gm generatingMember) FunctionSource() string {
-	return statemachine.GenerateFunctionSource(gm, gm.Generator.templater, gm.Generator.pather, gm.Generator.scopegraph)
+func (gm generatingMember) FunctionSource() esbuilder.SourceBuilder {
+	return statemachine.GenerateFunctionSource(gm, gm.Generator.scopegraph, gm.Generator.positionMapper)
 }
 
 // GetterSource returns the generated code for the getter for this member.
-func (gm generatingMember) GetterSource() string {
+func (gm generatingMember) GetterSource() esbuilder.SourceBuilder {
 	getterNode, _ := gm.SRGMember.Getter()
 	getterBodyNode, _ := getterNode.Body()
 	getterBody := propertyBodyInfo{gm.Member, getterBodyNode, []string{""}}
-	return statemachine.GenerateFunctionSource(getterBody, gm.Generator.templater, gm.Generator.pather, gm.Generator.scopegraph)
+	return statemachine.GenerateFunctionSource(getterBody, gm.Generator.scopegraph, gm.Generator.positionMapper)
 }
 
 // SetterSource returns the generated code for the setter for this member.
-func (gm generatingMember) SetterSource() string {
+func (gm generatingMember) SetterSource() esbuilder.SourceBuilder {
 	setterNode, _ := gm.SRGMember.Setter()
 	setterBodyNode, _ := setterNode.Body()
 	setterBody := propertyBodyInfo{gm.Member, setterBodyNode, []string{"val"}}
-	return statemachine.GenerateFunctionSource(setterBody, gm.Generator.templater, gm.Generator.pather, gm.Generator.scopegraph)
+	return statemachine.GenerateFunctionSource(setterBody, gm.Generator.scopegraph, gm.Generator.positionMapper)
 }
 
 func (gm generatingMember) ReturnType() typegraph.TypeReference {
@@ -208,14 +211,14 @@ const aliasedMemberTemplateStr = `
 
 // functionTemplateStr defines the template for generating function members.
 const functionTemplateStr = `
-{{ if .Member.IsStatic }}$static{{ else }}$instance{{ end }}.{{ .MemberName }} = {{ .FunctionSource }}`
+{{ if .Member.IsStatic }}$static{{ else }}$instance{{ end }}.{{ .MemberName }} = {{ emit .FunctionSource }}`
 
 // propertyTemplateStr defines the template for generating properties.
 const propertyTemplateStr = `
 {{ if .Member.IsStatic }}$static{{ else }}$instance{{ end }}.{{ .MemberName }} = 
   {{ if .Member.IsReadOnly }}
-  	$t.property({{ .GetterSource }})
+  	$t.property({{ emit .GetterSource }})
   {{ else }}
-  	$t.property({{ .GetterSource }}, {{ .SetterSource }});
+  	$t.property({{ emit .GetterSource }}, {{ emit .SetterSource }});
   {{ end }}
 `

@@ -28,6 +28,12 @@ type conditionalNode struct {
 	elseStatement StatementBuilder
 }
 
+// exprStatementNode is a statement that contains a single expression.
+type exprStatementNode struct {
+	// childExpr is the expression of the statement.
+	childExpr ExpressionBuilder
+}
+
 func (node blockNode) emit(sb *sourceBuilder) {
 	sb.append("{")
 	sb.indent()
@@ -65,6 +71,11 @@ func (node conditionalNode) emit(sb *sourceBuilder) {
 	}
 }
 
+func (node exprStatementNode) emit(sb *sourceBuilder) {
+	sb.emit(node.childExpr)
+	sb.append(";")
+}
+
 // Return returns a new return statement.
 func Return() StatementBuilder {
 	return statementBuilder{returnNode{nil}, nil}
@@ -88,4 +99,9 @@ func IfElse(condition ExpressionBuilder, thenStatement StatementBuilder, elseSta
 // Statements returns a block of statements.
 func Statements(statements ...StatementBuilder) StatementBuilder {
 	return statementBuilder{blockNode{statements}, nil}
+}
+
+// ExprStatement returns an expression as a statement.
+func ExprStatement(expr ExpressionBuilder) StatementBuilder {
+	return statementBuilder{exprStatementNode{expr}, nil}
 }

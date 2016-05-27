@@ -13,6 +13,8 @@ import (
 	"testing"
 
 	"github.com/serulian/compiler/compilercommon"
+	"github.com/serulian/compiler/generator/escommon"
+	"github.com/serulian/compiler/generator/escommon/esbuilder"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/packageloader"
 
@@ -47,11 +49,14 @@ func (gt *generationTest) writeExpected(value string) {
 
 func assertNoOttoError(t *testing.T, testName string, source string, err error) bool {
 	if err != nil {
-		ottoErr := err.(*otto.Error)
-
 		// TODO: stop parsing if we can get otto to export this information.
-		errorString := ottoErr.String()
+		errorString := err.Error()
 		lines := strings.Split(errorString, "\n")
+
+		if len(lines) == 1 {
+			t.Errorf("In test %v: %v\n", testName, err.Error())
+			return false
+		}
 
 		atLine := lines[1]
 		atParts := strings.Split(atLine, ":")
@@ -72,7 +77,7 @@ func assertNoOttoError(t *testing.T, testName string, source string, err error) 
 			}
 		}
 
-		t.Errorf("In test %v: %v\n", testName, ottoErr.String())
+		t.Errorf("In test %v: %v\n", testName, err.Error())
 		return false
 	}
 	return true
@@ -190,9 +195,15 @@ func TestGenerator(t *testing.T) {
 			continue
 		}
 
-		moduleMap := generateModules(result.Graph, true)
-		source, hasSource := moduleMap[module]
-		if !assert.True(t, hasSource, "Could not find source for module %s for test: %s", entrypointFile, test.name) {
+		moduleMap := generateModules(result.Graph)
+		builder, hasBuilder := moduleMap[module]
+		if !assert.True(t, hasBuilder, "Could not find builder for module %s for test: %s", entrypointFile, test.name) {
+			continue
+		}
+
+		buf := esbuilder.BuildSource(builder)
+		source, err := escommon.FormatECMASource(buf.String())
+		if !assert.Nil(t, err, "Could not format module source") {
 			continue
 		}
 
@@ -204,7 +215,7 @@ func TestGenerator(t *testing.T) {
 			assert.Equal(t, expectedSource, source, "Source mismatch on test %s\nExpected: %v\nActual: %v\n\n", test.name, expectedSource, source)
 
 			if test.integrationTest {
-				fullSource, err := GenerateES5(result.Graph)
+				fullSource, _, err := GenerateES5(result.Graph, "", "")
 				if !assert.Nil(t, err, "Error generating full source for test %s: %v", test.name, err) {
 					continue
 				}

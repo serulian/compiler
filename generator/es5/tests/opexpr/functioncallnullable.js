@@ -66,7 +66,7 @@ $module('functioncallnullable', function () {
             ac = null;
             $t.nullableinvoke(sc, 'SomeMethod', true, []).then(function ($result1) {
               return $promise.resolve($t.unbox($t.nullcompare($result1, $t.box(false, $g.____testlib.basictypes.Boolean)))).then(function ($result0) {
-                return ($promise.shortcircuit($result0, false) || $t.nullableinvoke(ac, 'AnotherMethod', true, [])).then(function ($result2) {
+                return ($promise.shortcircuit(!$result0) || $t.nullableinvoke(ac, 'AnotherMethod', true, [])).then(function ($result2) {
                   $result = $t.box($result0 && $t.unbox($t.nullcompare($result2, $t.box(true, $g.____testlib.basictypes.Boolean))), $g.____testlib.basictypes.Boolean);
                   $current = 2;
                   $continue($resolve, $reject);

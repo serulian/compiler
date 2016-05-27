@@ -170,10 +170,10 @@ $module('json', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.json.AnotherStruct.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
-              $temp0 = $result0;
-              return $g.json.SomeStruct.new($t.box(2, $g.____testlib.basictypes.Integer), $t.box(false, $g.____testlib.basictypes.Boolean), ($temp0, $temp0)).then(function ($result1) {
-                $temp1 = $result1;
+            $g.json.AnotherStruct.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
+              $temp0 = $result1;
+              return $g.json.SomeStruct.new($t.box(2, $g.____testlib.basictypes.Integer), $t.box(false, $g.____testlib.basictypes.Boolean), ($temp0, $temp0)).then(function ($result0) {
+                $temp1 = $result0;
                 $result = ($temp1, $temp1);
                 $current = 1;
                 $continue($resolve, $reject);
@@ -188,9 +188,9 @@ $module('json', function () {
           case 1:
             s = $result;
             jsonString = $t.box('{"AnotherField":false,"SomeField":2,"SomeInstance":{"AnotherBool":true}}', $g.____testlib.basictypes.String);
-            s.Stringify($g.____testlib.basictypes.JSON)().then(function ($result0) {
-              return $g.____testlib.basictypes.String.$equals($result0, jsonString).then(function ($result1) {
-                $result = $result1;
+            s.Stringify($g.____testlib.basictypes.JSON)().then(function ($result1) {
+              return $g.____testlib.basictypes.String.$equals($result1, jsonString).then(function ($result0) {
+                $result = $result0;
                 $current = 2;
                 $continue($resolve, $reject);
                 return;
@@ -217,7 +217,7 @@ $module('json', function () {
           case 3:
             parsed = $result;
             $promise.resolve($t.unbox(correct)).then(function ($result2) {
-              return ($promise.shortcircuit($result2, false) || $g.____testlib.basictypes.Integer.$equals(parsed.SomeField, $t.box(2, $g.____testlib.basictypes.Integer))).then(function ($result3) {
+              return ($promise.shortcircuit(!$result2) || $g.____testlib.basictypes.Integer.$equals(parsed.SomeField, $t.box(2, $g.____testlib.basictypes.Integer))).then(function ($result3) {
                 return $promise.resolve($result2 && $t.unbox($result3)).then(function ($result1) {
                   return $promise.resolve($result1 && !$t.unbox(parsed.AnotherField)).then(function ($result0) {
                     $result = $t.box($result0 && $t.unbox(parsed.SomeInstance.AnotherBool), $g.____testlib.basictypes.Boolean);

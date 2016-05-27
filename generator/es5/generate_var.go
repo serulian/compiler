@@ -5,7 +5,9 @@
 package es5
 
 import (
+	"github.com/serulian/compiler/generator/es5/expressiongenerator"
 	"github.com/serulian/compiler/generator/es5/statemachine"
+	"github.com/serulian/compiler/generator/escommon/esbuilder"
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/typegraph"
 
@@ -16,17 +18,22 @@ import (
 func (gen *es5generator) generateVariables(typeOrModule typegraph.TGTypeOrModule) *ordered_map.OrderedMap {
 	memberMap := ordered_map.NewOrderedMap()
 	members := typeOrModule.Members()
+
+	// Find all variables defined under the type or module.
 	for _, member := range members {
 		srgMember, hasSRGMember := gen.getSRGMember(member)
 		if !hasSRGMember || srgMember.MemberKind() != srg.VarMember {
 			continue
 		}
 
+		// If the variable has a base member (i.e. it shadows another variable),
+		// nothing more to do.
 		_, hasBaseMember := member.BaseMember()
 		if hasBaseMember {
 			continue
 		}
 
+		// We only need to generate variables that have initializers.
 		_, hasInitializer := srgMember.Initializer()
 		if !hasInitializer {
 			continue
@@ -39,26 +46,20 @@ func (gen *es5generator) generateVariables(typeOrModule typegraph.TGTypeOrModule
 }
 
 // generateVariable generates the given variable into ES5.
-func (gen *es5generator) generateVariable(member typegraph.TGMember) string {
+func (gen *es5generator) generateVariable(member typegraph.TGMember) esbuilder.SourceBuilder {
 	srgMember, _ := gen.getSRGMember(member)
-	_, hasInitializer := srgMember.Initializer()
-	if !hasInitializer {
-		// Skip variables with no initializers, as they'll just default to null under ES5 anyway.
-		return ""
-	}
-
 	generating := generatingMember{member, srgMember, gen}
-	return gen.templater.Execute("variable", variableTemplateStr, generating)
+	return esbuilder.Template("variable", variableTemplateStr, generating)
 }
 
 // Initializer returns the initializer expression for the member.
-func (gm generatingMember) Initializer() statemachine.ExpressionResult {
+func (gm generatingMember) Initializer() expressiongenerator.ExpressionResult {
 	initializer, hasInitializer := gm.SRGMember.Initializer()
 	if !hasInitializer {
 		panic("Member must have an initializer")
 	}
 
-	return statemachine.GenerateExpressionResult(initializer, gm.Generator.templater, gm.Generator.pather, gm.Generator.scopegraph)
+	return statemachine.GenerateExpressionResult(initializer, gm.Generator.scopegraph, gm.Generator.positionMapper)
 }
 
 // Prefix returns "$this" or "$static", depending on whether the member is an instance member or
@@ -75,9 +76,9 @@ func (gm generatingMember) Prefix() string {
 const variableTemplateStr = `
 	({{ $result := .Initializer }}
 	{{ if $result.IsPromise }}
-	({{ $result.ExprSource "return $promise.resolve({{ .ResultExpr }})" nil }})
+	({{ emit ($result.BuildWrapped "return $promise.resolve({{ emit .ResultExpr }})" nil) }})
 	{{ else }}
-	$promise.resolve({{ $result.ExprSource "" nil }})
+	$promise.resolve({{ emit $result.Build }})
 	{{ end }}).then(function(result) {
 		{{ .Prefix }}.{{ .Member.Name }} = result;
 	})

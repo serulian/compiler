@@ -13,7 +13,10 @@ import (
 // ExpressionBuilder defines an interface for all expressions.
 type ExpressionBuilder interface {
 	// WithMapping adds a source mapping to the expression being built.
-	WithMapping(mapping sourcemap.SourceMapping) ExpressionBuilder
+	WithMapping(mapping sourcemap.SourceMapping) SourceBuilder
+
+	// WithMappingAsExpr adds a source mapping to the expression being built.
+	WithMappingAsExpr(mapping sourcemap.SourceMapping) ExpressionBuilder
 
 	// Member returns an expression builder of an expression of a member under
 	// this expression.
@@ -22,11 +25,8 @@ type ExpressionBuilder interface {
 	// Call returns an expression builder of an expression calling this expression.
 	Call(arguments ...interface{}) ExpressionBuilder
 
-	// Mapping returns the source mapping for the expression being built.
-	Mapping() (sourcemap.SourceMapping, bool)
-
-	// Code returns the code of the expression being built.
-	Code() string
+	// mapping returns the source mapping for the expression being built.
+	mapping() (sourcemap.SourceMapping, bool)
 
 	emitSource(sb *sourceBuilder)
 }
@@ -43,29 +43,17 @@ type expressionBuilder struct {
 	expression expressionNode
 
 	// The source mapping for this expression, if any.
-	mapping *sourcemap.SourceMapping
+	sourceMapping *sourcemap.SourceMapping
 }
 
-func (builder expressionBuilder) emitSource(sb *sourceBuilder) {
-	builder.expression.emit(sb)
-}
-
-func (builder expressionBuilder) Mapping() (sourcemap.SourceMapping, bool) {
-	if builder.mapping == nil {
-		return sourcemap.SourceMapping{}, false
-	}
-
-	return *builder.mapping, true
-}
-
-// Code returns the generated code for the expression being built.
-func (builder expressionBuilder) Code() string {
-	return buildSource(builder).buf.String()
+// WithMappingAsExpr adds a source mapping to a builder.
+func (builder expressionBuilder) WithMappingAsExpr(mapping sourcemap.SourceMapping) ExpressionBuilder {
+	return builder.WithMapping(mapping).(ExpressionBuilder)
 }
 
 // WithMapping adds a source mapping to a builder.
-func (builder expressionBuilder) WithMapping(mapping sourcemap.SourceMapping) ExpressionBuilder {
-	builder.mapping = &mapping
+func (builder expressionBuilder) WithMapping(mapping sourcemap.SourceMapping) SourceBuilder {
+	builder.sourceMapping = &mapping
 	return builder
 }
 
@@ -94,4 +82,16 @@ func (builder expressionBuilder) Call(arguments ...interface{}) ExpressionBuilde
 	}
 
 	return Call(builder, args...)
+}
+
+func (builder expressionBuilder) emitSource(sb *sourceBuilder) {
+	builder.expression.emit(sb)
+}
+
+func (builder expressionBuilder) mapping() (sourcemap.SourceMapping, bool) {
+	if builder.sourceMapping == nil {
+		return sourcemap.SourceMapping{}, false
+	}
+
+	return *builder.sourceMapping, true
 }

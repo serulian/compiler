@@ -121,9 +121,9 @@ $module('constructable', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.constructable.DoSomething($g.constructable.SomeInterface)().then(function ($result0) {
-              return $result0.SomeBool().then(function ($result1) {
-                $result = $result1;
+            $g.constructable.DoSomething($g.constructable.SomeInterface)().then(function ($result1) {
+              return $result1.SomeBool().then(function ($result0) {
+                $result = $result0;
                 $current = 1;
                 $continue($resolve, $reject);
                 return;

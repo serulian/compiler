@@ -26,10 +26,10 @@ $module('multiawait', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $promise.translate(p).then(function ($result0) {
-              return $promise.translate(q).then(function ($result1) {
-                return $g.multiawait.SomeClass.$plus($result0, $result1).then(function ($result2) {
-                  $result = $result2;
+            $promise.translate(p).then(function ($result1) {
+              return $promise.translate(q).then(function ($result2) {
+                return $g.multiawait.SomeClass.$plus($result1, $result2).then(function ($result0) {
+                  $result = $result0;
                   $current = 1;
                   $continue($resolve, $reject);
                   return;

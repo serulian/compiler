@@ -88,9 +88,9 @@ $module('arrow', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.arrow.SomePromise.new().then(function ($result0) {
-              return $g.arrow.DoSomething($result0).then(function ($result1) {
-                $result = $result1;
+            $g.arrow.SomePromise.new().then(function ($result1) {
+              return $g.arrow.DoSomething($result1).then(function ($result0) {
+                $result = $result0;
                 $current = 1;
                 $continue($resolve, $reject);
                 return;

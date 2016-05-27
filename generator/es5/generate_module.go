@@ -6,15 +6,16 @@ package es5
 
 import (
 	"github.com/serulian/compiler/compilerutil"
+	"github.com/serulian/compiler/generator/escommon/esbuilder"
 	"github.com/serulian/compiler/graphs/typegraph"
 
 	"github.com/cevaris/ordered_map"
 )
 
 // generateModules generates all the given modules into ES5.
-func (gen *es5generator) generateModules(modules []typegraph.TGModule) map[typegraph.TGModule]string {
+func (gen *es5generator) generateModules(modules []typegraph.TGModule) map[typegraph.TGModule]esbuilder.SourceBuilder {
 	// Queue all the modules to be generated.
-	generatedSource := make([]string, len(modules))
+	generatedSource := make([]esbuilder.SourceBuilder, len(modules))
 	queue := compilerutil.Queue()
 	for index, module := range modules {
 		fn := func(key interface{}, value interface{}) bool {
@@ -29,7 +30,7 @@ func (gen *es5generator) generateModules(modules []typegraph.TGModule) map[typeg
 	queue.Run()
 
 	// Build a map from module to source tree.
-	moduleMap := map[typegraph.TGModule]string{}
+	moduleMap := map[typegraph.TGModule]esbuilder.SourceBuilder{}
 	for index, module := range modules {
 		moduleMap[module] = generatedSource[index]
 	}
@@ -38,9 +39,9 @@ func (gen *es5generator) generateModules(modules []typegraph.TGModule) map[typeg
 }
 
 // generateModule generates the given module into ES5.
-func (gen *es5generator) generateModule(module typegraph.TGModule) string {
+func (gen *es5generator) generateModule(module typegraph.TGModule) esbuilder.SourceBuilder {
 	generating := generatingModule{module, gen}
-	return gen.templater.Execute("module", moduleTemplateStr, generating)
+	return esbuilder.Template("module", moduleTemplateStr, generating)
 }
 
 // generatingModule represents a module being generated.
@@ -75,16 +76,16 @@ $module('{{ .ExportedPath }}', function() {
   var $static = this;
 
   {{range $idx, $kv := .GenerateTypes.Iter }}
-  	{{ $kv.Value }};
+  	{{ emit $kv.Value }};
   {{end}}
   
   {{range $idx, $kv := .GenerateMembers.Iter }}
-  	{{ $kv.Value }};
+  	{{ emit $kv.Value }};
   {{end}}
 
   {{range $idx, $kv := .GenerateVariables.Iter }}
   	this.$init(function() {
-		return ({{ $kv.Value }});
+		return ({{ emit $kv.Value }});
 	});
   {{end}}
 });

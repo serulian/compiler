@@ -141,9 +141,9 @@ $module('binary', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.____testlib.basictypes.Integer.$plus($t.box(1, $g.____testlib.basictypes.Integer), $t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-              return $g.____testlib.basictypes.Integer.$equals($result0, $t.box(3, $g.____testlib.basictypes.Integer)).then(function ($result1) {
-                $result = $result1;
+            $g.____testlib.basictypes.Integer.$plus($t.box(1, $g.____testlib.basictypes.Integer), $t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result1) {
+              return $g.____testlib.basictypes.Integer.$equals($result1, $t.box(3, $g.____testlib.basictypes.Integer)).then(function ($result0) {
+                $result = $result0;
                 $current = 1;
                 $continue($resolve, $reject);
                 return;

@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// codedom package contains helpers for easier construction of ES5 state and code primitives.
+// codedom package contains types representing a lower-level IR for easier construction
+// of ES5. Expressions and Statements found in the codedom represent a set of primitives
+// to which the SRG can be translated while not losing semantic meaning.
 package codedom
 
 import (

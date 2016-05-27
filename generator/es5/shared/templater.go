@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// The templater package implements helper methods for working with go templates.
-package templater
+package shared
 
 import (
 	"bytes"
@@ -17,7 +16,7 @@ type Templater struct {
 	templateCache cmap.ConcurrentMap
 }
 
-func New() *Templater {
+func NewTemplater() *Templater {
 	return &Templater{
 		templateCache: cmap.New(),
 	}

@@ -94,7 +94,7 @@ $module('basic', function () {
             m = $t.box(sc, $g.basic.MyType);
             m.SomeProp().then(function ($result1) {
               return $promise.resolve($t.unbox($result1)).then(function ($result0) {
-                return ($promise.shortcircuit($result0, false) || m.AnotherThing()).then(function ($result2) {
+                return ($promise.shortcircuit(!$result0) || m.AnotherThing()).then(function ($result2) {
                   $result = $t.box($result0 && $t.unbox($result2), $g.____testlib.basictypes.Boolean);
                   $current = 2;
                   $continue($resolve, $reject);
