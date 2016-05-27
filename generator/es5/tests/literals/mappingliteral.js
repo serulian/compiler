@@ -12,9 +12,9 @@ $module('mappingliteral', function () {
               obj['somekey'] = $t.box(true, $g.____testlib.basictypes.Boolean);
               obj['anotherkey'] = $t.box(false, $g.____testlib.basictypes.Boolean);
               return obj;
-            }()).then(function ($result0) {
-              return $result0.$index($t.box('somekey', $g.____testlib.basictypes.String)).then(function ($result1) {
-                $result = $result1;
+            }()).then(function ($result1) {
+              return $result1.$index($t.box('somekey', $g.____testlib.basictypes.String)).then(function ($result0) {
+                $result = $result0;
                 $current = 1;
                 $continue($resolve, $reject);
                 return;

@@ -14,13 +14,13 @@ import (
 	"github.com/serulian/compiler/sourcemap"
 )
 
-// ExpressionOrStatementBuilder defines an interface for all expressions or statements.
-type ExpressionOrStatementBuilder interface {
-	// Code returns the code of the expression or statement being built.
-	Code() string
+// SourceBuilder defines an interface for all expressions, statements and templates.
+type SourceBuilder interface {
+	// WithMapping adds a source mapping to the item being built.
+	WithMapping(mapping sourcemap.SourceMapping) SourceBuilder
 
-	// Mapping returns the source mapping for the expression or statement being built.
-	Mapping() (sourcemap.SourceMapping, bool)
+	// mapping returns the source mapping for the item being built.
+	mapping() (sourcemap.SourceMapping, bool)
 
 	emitSource(sb *sourceBuilder)
 }
@@ -36,17 +36,23 @@ type sourceBuilder struct {
 	sourcemap        *sourcemap.SourceMap // The source map being constructed
 }
 
-func buildSource(builder ExpressionOrStatementBuilder) *sourceBuilder {
+// BuildSource builds the full source for the given builder.
+func BuildSource(builder SourceBuilder) bytes.Buffer {
+	return BuildSourceAndMap(builder, nil)
+}
+
+// BuildSourceAndMap builds the full source and sourcemap for the given builder.
+func BuildSourceAndMap(builder SourceBuilder, sm *sourcemap.SourceMap) bytes.Buffer {
 	sb := &sourceBuilder{
 		indentationLevel: 0,
 		hasNewline:       true,
 		newlineCount:     0,
 		charactersOnLine: 0,
-		sourcemap:        sourcemap.NewSourceMap("", ""),
+		sourcemap:        sm,
 	}
 
 	sb.emit(builder)
-	return sb
+	return sb.buf
 }
 
 // emitSeparated emits the source for each of the given builders.
@@ -69,11 +75,13 @@ func (sb *sourceBuilder) emitWrapped(builder ExpressionBuilder) {
 }
 
 // emit emits the given builder node's source at the current location.
-func (sb *sourceBuilder) emit(builder ExpressionOrStatementBuilder) {
-	// Add the builder's mapping, if any.
-	mapping, hasMapping := builder.Mapping()
-	if hasMapping {
-		sb.sourcemap.AddMapping(sb.newlineCount, sb.charactersOnLine, mapping)
+func (sb *sourceBuilder) emit(builder SourceBuilder) {
+	if sb.sourcemap != nil {
+		// Add the builder's mapping, if any.
+		mapping, hasMapping := builder.mapping()
+		if hasMapping {
+			sb.sourcemap.AddMapping(sb.newlineCount, sb.charactersOnLine, mapping)
+		}
 	}
 
 	// Generate the code for the builder.

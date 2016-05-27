@@ -5,20 +5,24 @@
 package statemachine
 
 import (
-	"bytes"
 	"fmt"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/codedom"
-	"github.com/serulian/compiler/generator/es5/es5pather"
-	"github.com/serulian/compiler/generator/es5/templater"
+	"github.com/serulian/compiler/generator/es5/expressiongenerator"
+	"github.com/serulian/compiler/generator/es5/shared"
+	"github.com/serulian/compiler/generator/escommon/esbuilder"
 	"github.com/serulian/compiler/graphs/scopegraph"
 )
 
 // stateGenerator defines a type that converts CodeDOM statements into ES5 source code.
 type stateGenerator struct {
-	pather     *es5pather.Pather      // The pather to use.
-	templater  *templater.Templater   // The templater to use.
+	pather    shared.Pather     // The pather to use.
+	templater *shared.Templater // The templater to use.
+
+	positionMapper *compilercommon.PositionMapper // The position mapper for fast source mapping.
+
 	scopegraph *scopegraph.ScopeGraph // The scope graph being generated.
 
 	states           []*state                     // The list of states.
@@ -39,12 +43,14 @@ const (
 	generateImplicitState
 )
 
-// buildGenerator builds a new DOM generator.
-func buildGenerator(templater *templater.Templater, pather *es5pather.Pather, scopegraph *scopegraph.ScopeGraph) *stateGenerator {
+// buildGenerator builds a new state machine generator.
+func buildGenerator(scopegraph *scopegraph.ScopeGraph, positionMapper *compilercommon.PositionMapper, templater *shared.Templater) *stateGenerator {
 	generator := &stateGenerator{
-		pather:     pather,
-		templater:  templater,
-		scopegraph: scopegraph,
+		pather:    shared.NewPather(scopegraph.SourceGraph().Graph),
+		templater: templater,
+
+		positionMapper: positionMapper,
+		scopegraph:     scopegraph,
 
 		states:        make([]*state, 0),
 		stateStartMap: map[codedom.Statement]*state{},
@@ -58,25 +64,54 @@ func buildGenerator(templater *templater.Templater, pather *es5pather.Pather, sc
 	return generator
 }
 
-// generateStates generates the ES5 states for the given CodeDOM statement.
-func (sg *stateGenerator) generateStates(statement codedom.Statement, option generateStatesOption) *state {
-	if statement == nil {
-		panic("Nil statement")
+// generateMachine generates state machine source for a CodeDOM statement or expression.
+func (sg *stateGenerator) generateMachine(element codedom.StatementOrExpression) esbuilder.SourceBuilder {
+	// Build a state generator for the new machine.
+	generator := buildGenerator(sg.scopegraph, sg.positionMapper, sg.templater)
+
+	// Generate the statement or expression that forms the definition of the state machine.
+	if statement, ok := element.(codedom.Statement); ok {
+		generator.generateStates(statement, generateNewState)
+	} else if expression, ok := element.(codedom.Expression); ok {
+		basisNode := expression.BasisNode()
+		generator.generateStates(codedom.Resolution(expression, basisNode), generateNewState)
+	} else {
+		panic("Unknown element at root")
 	}
 
+	// Filter out any empty states.
+	states := generator.filterStates()
+
+	// Finally, generate the source of the machine.
+	return generator.source(states)
+}
+
+// generateStates generates the ES5 states for the given CodeDOM statement.
+func (sg *stateGenerator) generateStates(statement codedom.Statement, option generateStatesOption) *state {
+	// If already constructed, just return the same state. This handles states that callback to
+	// earlier states.
 	if startState, ok := sg.stateStartMap[statement]; ok {
 		return startState
 	}
 
+	// Determine whether we have to create a new state for this statement. A new state is required if the
+	// statement is marked as referencable (which means another state will need to jump to it) or if
+	// a new state was explicitly requested.
 	currentState := sg.currentState
 	if option == generateNewState || statement.IsReferenceable() {
+		// Add the new state.
 		newState := sg.newState()
+
+		// If the statement is referencable, then the reason we added the new state was to allow
+		// for jumping "in between" and otherwise single state. Therefore, control flow must immediately
+		// go from the existing state to the new state (as it would normally naturally flow)
 		if statement.IsReferenceable() {
-			currentState.pushSource(sg.snippets().SetState(newState.ID))
-			currentState.pushSource("continue;")
+			currentState.pushSnippet(sg.snippets().SetState(newState.ID))
+			currentState.pushSnippet("continue;")
 		}
 	}
 
+	// Cache the state for the statement.
 	startState := sg.currentState
 	sg.stateStartMap[statement] = startState
 
@@ -124,11 +159,16 @@ func (sg *stateGenerator) generateStates(statement codedom.Statement, option gen
 	return startState
 }
 
+// addMapping adds the source mapping information to the given builder for the given CodeDOM.
+func (sg *stateGenerator) addMapping(builder esbuilder.SourceBuilder, dom codedom.StatementOrExpression) esbuilder.SourceBuilder {
+	return shared.SourceMapWrap(builder, dom, sg.positionMapper)
+}
+
 // newState adds and returns a new state in the state machine.
 func (sg *stateGenerator) newState() *state {
 	newState := &state{
 		ID:     stateId(len(sg.states)),
-		source: &bytes.Buffer{},
+		pieces: make([]esbuilder.SourceBuilder, 0),
 	}
 
 	sg.currentState = newState
@@ -186,16 +226,6 @@ func (sg *stateGenerator) popResource(name string, basis compilergraph.GraphNode
 		generateImplicitState)
 }
 
-// pushExpression adds the given expression to the current state.
-func (sg *stateGenerator) pushExpression(expressionSource string) {
-	sg.currentState.pushExpression(expressionSource)
-}
-
-// pushSource adds source code to the current state.
-func (sg *stateGenerator) pushSource(source string) {
-	sg.currentState.pushSource(source)
-}
-
 // addVariable adds a variable with the given name to the current state machine.
 func (sg *stateGenerator) addVariable(name string) string {
 	sg.variables[name] = true
@@ -207,9 +237,11 @@ func (sg *stateGenerator) snippets() snippets {
 	return snippets{sg.templater}
 }
 
-func (sg *stateGenerator) addTopLevelExpression(expression codedom.Expression) string {
+// addTopLevelExpression generates the source for the given expression and adds it to the
+// state machine.
+func (sg *stateGenerator) addTopLevelExpression(expression codedom.Expression) esbuilder.SourceBuilder {
 	// Generate the expression.
-	result := GenerateExpression(expression, sg.templater, sg.pather, sg.scopegraph)
+	result := expressiongenerator.GenerateExpression(expression, sg.scopegraph, sg.positionMapper, sg.generateMachine)
 
 	// If the expression generated is asynchronous, then it will have at least one
 	// promise callback. In order to ensure continued execution, we have to wrap
@@ -220,7 +252,7 @@ func (sg *stateGenerator) addTopLevelExpression(expression codedom.Expression) s
 		currentState := sg.currentState
 		targetState := sg.newState()
 
-		// Wrap the expression's promise result expression to be stored in a $result,
+		// Wrap the expression's promise result expression to be stored in $result,
 		// followed by a jump to the new state.
 		data := struct {
 			ResolutionStateId stateId
@@ -228,33 +260,33 @@ func (sg *stateGenerator) addTopLevelExpression(expression codedom.Expression) s
 		}{targetState.ID, sg.snippets()}
 
 		wrappingTemplateStr := `
-			$result = {{ .ResultExpr }};
+			$result = {{ emit .ResultExpr }};
 			{{ .Data.Snippets.SetState .Data.ResolutionStateId }}
 			{{ .Data.Snippets.Continue }}
 		`
-
-		promise := result.ExprSource(wrappingTemplateStr, data)
+		promise := result.BuildWrapped(wrappingTemplateStr, data)
 
 		// Wrap the expression's promise with a catch, in case it fails.
 		catchTemplateStr := `
-			({{ .Item }}).catch(function(err) {
+			({{ emit .Item }}).catch(function(err) {
 				{{ .Snippets.Reject "err" }}
 			});
 			return;
 		`
 
-		currentState.pushSource(sg.templater.Execute("promisecatch", catchTemplateStr, generatingItem{promise, sg}))
-		return "$result"
+		currentState.pushBuilt(esbuilder.Template("tlecatch", catchTemplateStr, generatingItem{promise, sg}))
+		return esbuilder.Identifier("$result")
 	} else {
 		// Otherwise, the expression is synchronous and we can just invoke it.
-		return result.ExprSource("", nil)
+		return result.Build()
 	}
 }
 
 // source returns the full source for the generated state machine.
-func (sg *stateGenerator) source(states []*state) (string, bool) {
+func (sg *stateGenerator) source(states []*state) esbuilder.SourceBuilder {
 	if len(states) == 0 {
-		return "", false
+		// If there are no states, this is an empty state machine.
+		return esbuilder.Returns(esbuilder.Identifier("$promise").Member("empty").Call())
 	}
 
 	var singleState *state = nil
@@ -270,7 +302,7 @@ func (sg *stateGenerator) source(states []*state) (string, bool) {
 		Variables        map[string]bool
 	}{states, singleState, sg.snippets(), sg.managesResources, sg.variables}
 
-	return sg.templater.Execute("statemachine", stateMachineTemplateStr, data), true
+	return esbuilder.Template("statemachine", stateMachineTemplateStr, data)
 }
 
 // stateMachineTemplateStr is a template for the generated state machine.
@@ -291,7 +323,7 @@ const stateMachineTemplateStr = `
 		{{ end }}
 
 		{{ if .SingleState }}
-			{{ .SingleState.Source }}
+			{{ emit .SingleState.SourceTemplate }}
 			{{ .Snippets.Resolve "" }}
 		{{ else }}
 		{{ $parent := . }}
@@ -299,7 +331,7 @@ const stateMachineTemplateStr = `
 			switch ($current) {
 				{{range .States }}
 				case {{ .ID }}:
-					{{ .Source }}
+					{{ emit .SourceTemplate }}
 
 					{{ if .IsLeafState }}
 						{{ $parent.Snippets.Resolve "" }}

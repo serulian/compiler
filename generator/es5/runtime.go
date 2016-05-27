@@ -462,9 +462,9 @@ this.Serulian = (function($global) {
   	},
 
     // shortcircuit returns a promise that resolves the given boolean value if and only if
-    // it is equal to the short value. Returns null otherwise.
-    'shortcircuit': function(value, short) {
-      if (value == short) {
+    // it is true. Returns null otherwise.
+    'shortcircuit': function(value) {
+      if (value) {
         return $promise.resolve(value);
       }
     },
@@ -619,7 +619,7 @@ this.Serulian = (function($global) {
   };
 
   {{ range $idx, $kv := .Iter }}
-  	{{ $kv.Value }}
+  	{{ emit $kv.Value }}
   {{ end }}
 
   // $executeWorkerMethod executes an async called function in this web worker. When invoked with

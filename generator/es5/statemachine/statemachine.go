@@ -7,11 +7,13 @@
 package statemachine
 
 import (
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/codedom"
-	"github.com/serulian/compiler/generator/es5/es5pather"
-	"github.com/serulian/compiler/generator/es5/statemachine/dombuilder"
-	"github.com/serulian/compiler/generator/es5/templater"
+	"github.com/serulian/compiler/generator/es5/dombuilder"
+	"github.com/serulian/compiler/generator/es5/expressiongenerator"
+	"github.com/serulian/compiler/generator/es5/shared"
+	"github.com/serulian/compiler/generator/escommon/esbuilder"
 	"github.com/serulian/compiler/graphs/scopegraph"
 )
 
@@ -25,20 +27,28 @@ type FunctionDef interface {
 }
 
 // GenerateFunctionSource generates the source code for a function, including its internal state machine.
-func GenerateFunctionSource(functionDef FunctionDef, templater *templater.Templater, pather *es5pather.Pather, scopegraph *scopegraph.ScopeGraph) string {
+func GenerateFunctionSource(functionDef FunctionDef, scopegraph *scopegraph.ScopeGraph, positionMapper *compilercommon.PositionMapper) esbuilder.SourceBuilder {
+	// Build the body via CodeDOM.
 	funcBody := dombuilder.BuildStatement(scopegraph, functionDef.BodyNode())
-	if funcBody == nil {
-		panic("Nil function body result")
-	}
 
-	domDefinition := codedom.FunctionDefinition(functionDef.Generics(), functionDef.Parameters(), funcBody,
-		functionDef.RequiresThis(), functionDef.WorkerExecutes(), functionDef.BodyNode())
-	result := GenerateExpression(domDefinition, templater, pather, scopegraph)
-	return result.ExprSource("", nil)
+	// Instantiate a new state machine generator and use it to generate the function.
+	sg := buildGenerator(scopegraph, positionMapper, shared.NewTemplater())
+	domDefinition := codedom.FunctionDefinition(
+		functionDef.Generics(),
+		functionDef.Parameters(),
+		funcBody,
+		functionDef.RequiresThis(),
+		functionDef.WorkerExecutes(),
+		functionDef.BodyNode())
+
+	result := expressiongenerator.GenerateExpression(domDefinition, scopegraph, positionMapper, sg.generateMachine)
+	return result.Build()
 }
 
 // GenerateExpressionResult generates the expression result for an expression.
-func GenerateExpressionResult(expressionNode compilergraph.GraphNode, templater *templater.Templater, pather *es5pather.Pather, scopegraph *scopegraph.ScopeGraph) ExpressionResult {
-	expression := dombuilder.BuildExpression(scopegraph, expressionNode)
-	return GenerateExpression(expression, templater, pather, scopegraph)
+func GenerateExpressionResult(expressionNode compilergraph.GraphNode, scopegraph *scopegraph.ScopeGraph, positionMapper *compilercommon.PositionMapper) expressiongenerator.ExpressionResult {
+	// Build the CodeDOM for the expression.
+	domDefinition := dombuilder.BuildExpression(scopegraph, expressionNode)
+	sg := buildGenerator(scopegraph, positionMapper, shared.NewTemplater())
+	return expressiongenerator.GenerateExpression(domDefinition, scopegraph, positionMapper, sg.generateMachine)
 }

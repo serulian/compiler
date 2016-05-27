@@ -85,9 +85,9 @@ func (dt *developTransaction) Build(w http.ResponseWriter, r *http.Request) {
 		dt.vcsDevelopmentDirectories,
 		builder.CORE_LIBRARY)
 
-	dt.sourceMap = sourcemap.NewSourceMap(dt.name+".develop.js", "source/")
-
 	if !scopeResult.Status {
+		dt.sourceMap = sourcemap.NewSourceMap(dt.name+".develop.js", "source/")
+
 		for _, warning := range scopeResult.Warnings {
 			dt.emitWarning(w, warning)
 		}
@@ -100,10 +100,12 @@ func (dt *developTransaction) Build(w http.ResponseWriter, r *http.Request) {
 		dt.closeGroup(w)
 	} else {
 		// Generate the program's source.
-		generated, err := es5.GenerateES5AndSourceMap(scopeResult.Graph, dt.sourceMap)
+		generated, sourceMap, err := es5.GenerateES5(scopeResult.Graph, dt.name+".develop.js", "source/")
 		if err != nil {
 			panic(err)
 		}
+
+		dt.sourceMap = sourceMap
 
 		fmt.Fprint(w, generated)
 		dt.emitInfo(w, "Build completed successfully")

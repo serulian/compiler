@@ -11,13 +11,16 @@ import (
 	"github.com/serulian/compiler/sourcemap"
 )
 
-// TemplateBasedBuilder defines an interface for a templated code block.
-type TemplateBasedBuilder interface {
-	// Mapping returns the source mapping for the block being built.
-	Mapping() (sourcemap.SourceMapping, bool)
+// TemplateSourceBuilder defines an interface for a templated code block.
+type TemplateSourceBuilder interface {
+	// WithMapping adds a source mapping to the block being built.
+	WithMapping(mapping sourcemap.SourceMapping) SourceBuilder
 
-	// Code returns the code of the block being built.
-	Code() string
+	// AsExpression returns the template as an expression.
+	AsExpression() ExpressionBuilder
+
+	// mapping returns the source mapping for the block being built.
+	mapping() (sourcemap.SourceMapping, bool)
 
 	emitSource(sb *sourceBuilder)
 }
@@ -29,7 +32,7 @@ type templateBuilder struct {
 	data           interface{}
 
 	// The source mapping for the template as a whole, if any.
-	mapping *sourcemap.SourceMapping
+	sourceMapping *sourcemap.SourceMapping
 }
 
 // offsetedSourceMap represents a source map offseted by some index
@@ -42,12 +45,23 @@ type offsetedSourceMap struct {
 	sourcemap *sourcemap.SourceMap
 }
 
-func (builder templateBuilder) Mapping() (sourcemap.SourceMapping, bool) {
-	if builder.mapping == nil {
+// WithMapping adds a source mapping to a builder.
+func (builder templateBuilder) WithMapping(mapping sourcemap.SourceMapping) SourceBuilder {
+	builder.sourceMapping = &mapping
+	return builder
+}
+
+// AsExpression returns the template as an expression.
+func (builder templateBuilder) AsExpression() ExpressionBuilder {
+	return expressionBuilder{wrappedTemplateNode{builder}, nil}
+}
+
+func (builder templateBuilder) mapping() (sourcemap.SourceMapping, bool) {
+	if builder.sourceMapping == nil {
 		return sourcemap.SourceMapping{}, false
 	}
 
-	return *builder.mapping, true
+	return *builder.sourceMapping, true
 }
 
 func (builder templateBuilder) emitSource(sb *sourceBuilder) {
@@ -58,11 +72,21 @@ func (builder templateBuilder) emitSource(sb *sourceBuilder) {
 	//
 	// 1) Builds and emits the source for the node at the place the function is called
 	// 2) Saves the node's source map at the current template location for later appending
-	emitNode := func(node ExpressionOrStatementBuilder) string {
-		currentIndex := source.Len()
-		nsb := buildSource(node)
-		maps = append(maps, offsetedSourceMap{currentIndex, nsb.sourcemap})
-		return nsb.buf.String()
+	emitNode := func(node SourceBuilder) string {
+		if node == nil {
+			return ""
+		}
+
+		if sb.sourcemap != nil {
+			currentIndex := source.Len()
+			sm := sourcemap.NewSourceMap("", "")
+			buf := BuildSourceAndMap(node, sm)
+			maps = append(maps, offsetedSourceMap{currentIndex, sm})
+			return buf.String()
+		} else {
+			buf := BuildSource(node)
+			return buf.String()
+		}
 	}
 
 	funcMap := template.FuncMap{
@@ -86,23 +110,14 @@ func (builder templateBuilder) emitSource(sb *sourceBuilder) {
 	sb.append(generatedSource)
 
 	// Append any offsetted source mappings.
-	for _, osm := range maps {
-		sb.sourcemap.AppendMap(osm.sourcemap.OffsetBy(generatedSource[0:osm.offset]))
+	if sb.sourcemap != nil {
+		for _, osm := range maps {
+			sb.sourcemap.AppendMap(osm.sourcemap.OffsetBy(generatedSource[0:osm.offset]))
+		}
 	}
 }
 
-// Code returns the generated code for the expression being built.
-func (builder templateBuilder) Code() string {
-	return buildSource(builder).buf.String()
-}
-
-// WithMapping adds a source mapping to a builder.
-func (builder templateBuilder) WithMapping(mapping sourcemap.SourceMapping) TemplateBasedBuilder {
-	builder.mapping = &mapping
-	return builder
-}
-
 // Template returns an inline templated code block.
-func Template(name string, template string, data interface{}) TemplateBasedBuilder {
+func Template(name string, template string, data interface{}) TemplateSourceBuilder {
 	return templateBuilder{name, template, data, nil}
 }

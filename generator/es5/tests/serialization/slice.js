@@ -131,14 +131,14 @@ $module('slice', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.slice.AnotherStruct.new($t.box(1, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-              $temp0 = $result0;
-              return $g.slice.AnotherStruct.new($t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result1) {
-                $temp1 = $result1;
-                return $g.slice.AnotherStruct.new($t.box(3, $g.____testlib.basictypes.Integer)).then(function ($result2) {
-                  $temp2 = $result2;
-                  return $g.____testlib.basictypes.List($g.slice.AnotherStruct).forArray([($temp0, $temp0), ($temp1, $temp1), ($temp2, $temp2)]).then(function ($result3) {
-                    $result = $result3;
+            $g.slice.AnotherStruct.new($t.box(1, $g.____testlib.basictypes.Integer)).then(function ($result1) {
+              $temp0 = $result1;
+              return $g.slice.AnotherStruct.new($t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result2) {
+                $temp1 = $result2;
+                return $g.slice.AnotherStruct.new($t.box(3, $g.____testlib.basictypes.Integer)).then(function ($result3) {
+                  $temp2 = $result3;
+                  return $g.____testlib.basictypes.List($g.slice.AnotherStruct).forArray([($temp0, $temp0), ($temp1, $temp1), ($temp2, $temp2)]).then(function ($result0) {
+                    $result = $result0;
                     $current = 1;
                     $continue($resolve, $reject);
                     return;
@@ -153,9 +153,9 @@ $module('slice', function () {
 
           case 1:
             values = $result;
-            values.$slice($t.box(0, $g.____testlib.basictypes.Integer), null).then(function ($result0) {
-              return $g.slice.SomeStruct.new($result0).then(function ($result1) {
-                $temp3 = $result1;
+            values.$slice($t.box(0, $g.____testlib.basictypes.Integer), null).then(function ($result1) {
+              return $g.slice.SomeStruct.new($result1).then(function ($result0) {
+                $temp3 = $result0;
                 $result = ($temp3, $temp3);
                 $current = 2;
                 $continue($resolve, $reject);
@@ -170,9 +170,9 @@ $module('slice', function () {
           case 2:
             s = $result;
             jsonString = $t.box('{"Values":[{"AnotherInt":1},{"AnotherInt":2},{"AnotherInt":3}]}', $g.____testlib.basictypes.String);
-            s.Stringify($g.____testlib.basictypes.JSON)().then(function ($result0) {
-              return $g.____testlib.basictypes.String.$equals($result0, jsonString).then(function ($result1) {
-                $result = $result1;
+            s.Stringify($g.____testlib.basictypes.JSON)().then(function ($result1) {
+              return $g.____testlib.basictypes.String.$equals($result1, jsonString).then(function ($result0) {
+                $result = $result0;
                 $current = 3;
                 $continue($resolve, $reject);
                 return;
@@ -199,12 +199,12 @@ $module('slice', function () {
           case 4:
             parsed = $result;
             $promise.resolve($t.unbox(correct)).then(function ($result1) {
-              return ($promise.shortcircuit($result1, false) || s.Values.Length()).then(function ($result2) {
-                return ($promise.shortcircuit($result1, false) || $g.____testlib.basictypes.Integer.$equals($result2, $t.box(3, $g.____testlib.basictypes.Integer))).then(function ($result3) {
-                  return $promise.resolve($result1 && $t.unbox($result3)).then(function ($result0) {
-                    return ($promise.shortcircuit($result0, false) || s.Values.$index($t.box(0, $g.____testlib.basictypes.Integer))).then(function ($result4) {
-                      return ($promise.shortcircuit($result0, false) || $g.____testlib.basictypes.Integer.$equals($result4.AnotherInt, $t.box(1, $g.____testlib.basictypes.Integer))).then(function ($result5) {
-                        $result = $t.box($result0 && $t.unbox($result5), $g.____testlib.basictypes.Boolean);
+              return ($promise.shortcircuit(!$result1) || s.Values.Length()).then(function ($result3) {
+                return ($promise.shortcircuit(!$result1) || $g.____testlib.basictypes.Integer.$equals($result3, $t.box(3, $g.____testlib.basictypes.Integer))).then(function ($result2) {
+                  return $promise.resolve($result1 && $t.unbox($result2)).then(function ($result0) {
+                    return ($promise.shortcircuit(!$result0) || s.Values.$index($t.box(0, $g.____testlib.basictypes.Integer))).then(function ($result5) {
+                      return ($promise.shortcircuit(!$result0) || $g.____testlib.basictypes.Integer.$equals($result5.AnotherInt, $t.box(1, $g.____testlib.basictypes.Integer))).then(function ($result4) {
+                        $result = $t.box($result0 && $t.unbox($result4), $g.____testlib.basictypes.Boolean);
                         $current = 5;
                         $continue($resolve, $reject);
                         return;

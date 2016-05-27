@@ -83,9 +83,9 @@ $module('tagged', function () {
           case 1:
             s = $result;
             jsonString = $t.box('{"somefield":2}', $g.____testlib.basictypes.String);
-            s.Stringify($g.____testlib.basictypes.JSON)().then(function ($result0) {
-              return $g.____testlib.basictypes.String.$equals($result0, jsonString).then(function ($result1) {
-                $result = $result1;
+            s.Stringify($g.____testlib.basictypes.JSON)().then(function ($result1) {
+              return $g.____testlib.basictypes.String.$equals($result1, jsonString).then(function ($result0) {
+                $result = $result0;
                 $current = 2;
                 $continue($resolve, $reject);
                 return;

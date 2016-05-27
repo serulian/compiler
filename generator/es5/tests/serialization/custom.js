@@ -46,9 +46,9 @@ $module('custom', function () {
         while (true) {
           switch ($current) {
             case 0:
-              $g.____testlib.basictypes.JSON.Get().then(function ($result0) {
-                return $result0.Stringify(value).then(function ($result1) {
-                  $result = $result1;
+              $g.____testlib.basictypes.JSON.Get().then(function ($result1) {
+                return $result1.Stringify(value).then(function ($result0) {
+                  $result = $result0;
                   $current = 1;
                   $continue($resolve, $reject);
                   return;
@@ -78,9 +78,9 @@ $module('custom', function () {
         while (true) {
           switch ($current) {
             case 0:
-              $g.____testlib.basictypes.JSON.Get().then(function ($result0) {
-                return $result0.Parse(value).then(function ($result1) {
-                  $result = $result1;
+              $g.____testlib.basictypes.JSON.Get().then(function ($result1) {
+                return $result1.Parse(value).then(function ($result0) {
+                  $result = $result0;
                   $current = 1;
                   $continue($resolve, $reject);
                   return;
@@ -274,10 +274,10 @@ $module('custom', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.custom.AnotherStruct.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
-              $temp0 = $result0;
-              return $g.custom.SomeStruct.new($t.box(2, $g.____testlib.basictypes.Integer), $t.box(false, $g.____testlib.basictypes.Boolean), ($temp0, $temp0)).then(function ($result1) {
-                $temp1 = $result1;
+            $g.custom.AnotherStruct.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
+              $temp0 = $result1;
+              return $g.custom.SomeStruct.new($t.box(2, $g.____testlib.basictypes.Integer), $t.box(false, $g.____testlib.basictypes.Boolean), ($temp0, $temp0)).then(function ($result0) {
+                $temp1 = $result0;
                 $result = ($temp1, $temp1);
                 $current = 1;
                 $continue($resolve, $reject);

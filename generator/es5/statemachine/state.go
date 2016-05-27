@@ -5,7 +5,7 @@
 package statemachine
 
 import (
-	"bytes"
+	"github.com/serulian/compiler/generator/escommon/esbuilder"
 )
 
 // stateId represents a unique ID for a state.
@@ -13,25 +13,28 @@ type stateId int
 
 // state represents a single state in the state machine.
 type state struct {
-	ID         stateId       // The ID of the current state.
-	source     *bytes.Buffer // The source for this state.
-	expression string        // The last expression value, if any.
-	leafState  bool          // Whether this is a leaf state.
-}
-
-// Expression returns the expression value for this state, if any.
-func (s *state) Expression() string {
-	return s.expression
+	ID        stateId                   // The ID of the current state.
+	pieces    []esbuilder.SourceBuilder // The pieces of the generated source for the state.
+	leafState bool                      // Whether this is a leaf state.
 }
 
 // Source returns the full source for this state.
-func (s *state) Source() string {
-	return s.source.String()
+func (s *state) SourceTemplate() esbuilder.SourceBuilder {
+	templateStr := `{{ range $piece := .Pieces }}
+{{ emit $piece }}
+{{ end }}`
+
+	return esbuilder.Template("state", templateStr, s)
+}
+
+// Pieces returns the builder pieces add to this state.
+func (s *state) Pieces() []esbuilder.SourceBuilder {
+	return s.pieces
 }
 
 // HasSource returns true if the state has any source.
 func (s *state) HasSource() bool {
-	return s.source.Len() > 0
+	return len(s.pieces) > 0
 }
 
 // IsLeafState returns true if the state is a leaf state in the state graph.
@@ -39,14 +42,12 @@ func (s *state) IsLeafState() bool {
 	return s.leafState
 }
 
-// pushExpression adds the given expression to the current state.
-func (s *state) pushExpression(expressionSource string) {
-	s.expression = expressionSource
+// pushSnippet adds source code to the current state.
+func (s *state) pushSnippet(source string) {
+	s.pushBuilt(esbuilder.Snippet(source))
 }
 
-// pushSource adds source code to the current state.
-func (s *state) pushSource(source string) {
-	buf := s.source
-	buf.WriteString(source)
-	buf.WriteByte('\n')
+// pushBuilt adds builder to the current state.
+func (s *state) pushBuilt(builder esbuilder.SourceBuilder) {
+	s.pieces = append(s.pieces, builder)
 }

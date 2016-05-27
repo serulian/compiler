@@ -10,8 +10,9 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
-	"github.com/serulian/compiler/generator/es5/es5pather"
-	"github.com/serulian/compiler/generator/es5/templater"
+	"github.com/serulian/compiler/generator/es5/shared"
+	"github.com/serulian/compiler/generator/escommon"
+	"github.com/serulian/compiler/generator/escommon/esbuilder"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/typegraph"
@@ -22,56 +23,36 @@ import (
 
 // es5generator defines a generator for producing ECMAScript 5 code.
 type es5generator struct {
-	graph      *compilergraph.SerulianGraph // The root graph.
-	scopegraph *scopegraph.ScopeGraph       // The scope graph.
-	templater  *templater.Templater         // The cached templater.
-	pather     *es5pather.Pather            // The pather.
+	graph          *compilergraph.SerulianGraph   // The root graph.
+	scopegraph     *scopegraph.ScopeGraph         // The scope graph.
+	positionMapper *compilercommon.PositionMapper // The position mapper.
+	templater      *shared.Templater              // The caching templater.
+	pather         shared.Pather                  // The pather being used.
 }
 
 // generateModules generates all the modules found in the given scope graph into source.
-func generateModules(sg *scopegraph.ScopeGraph, format bool) map[typegraph.TGModule]string {
+func generateModules(sg *scopegraph.ScopeGraph) map[typegraph.TGModule]esbuilder.SourceBuilder {
 	generator := es5generator{
-		graph:      sg.SourceGraph().Graph,
-		scopegraph: sg,
-		templater:  templater.New(),
-		pather:     es5pather.New(sg.SourceGraph().Graph),
+		graph:          sg.SourceGraph().Graph,
+		scopegraph:     sg,
+		positionMapper: compilercommon.NewPositionMapper(),
+		templater:      shared.NewTemplater(),
+		pather:         shared.NewPather(sg.SourceGraph().Graph),
 	}
 
-	// Generate the code for each of the modules.
-	generated := generator.generateModules(sg.TypeGraph().Modules())
-	if !format {
-		return generated
-	}
-
-	formatted := map[typegraph.TGModule]string{}
-	for module, source := range generated {
-		formattedSource, err := FormatECMASource(source, nil)
-		if err != nil {
-			panic(err)
-		}
-
-		formatted[module] = formattedSource
-	}
-
-	return formatted
+	// Generate the builder for each of the modules.
+	return generator.generateModules(sg.TypeGraph().Modules())
 }
 
 // GenerateES5 produces ES5 code from the given scope graph.
-func GenerateES5(sg *scopegraph.ScopeGraph) (string, error) {
-	return GenerateES5AndSourceMap(sg, nil)
-}
-
-// GenerateES5AndSourceMap produces ES5 code from the given scope graph.
-func GenerateES5AndSourceMap(sg *scopegraph.ScopeGraph, sourceMap *sourcemap.SourceMap) (string, error) {
-	generated := generateModules(sg, false)
+func GenerateES5(sg *scopegraph.ScopeGraph, generatedFilePath string, sourceRoot string) (string, *sourcemap.SourceMap, error) {
+	generated := generateModules(sg)
 
 	// Order the modules by their paths.
-	pather := es5pather.New(sg.SourceGraph().Graph)
-	templater := templater.New()
+	pather := shared.NewPather(sg.SourceGraph().Graph)
+	modulePathMap := map[string]esbuilder.SourceBuilder{}
 
 	var modulePathList = make([]string, 0)
-	modulePathMap := map[string]string{}
-
 	for module, _ := range generated {
 		path := pather.GetModulePath(module)
 		modulePathList = append(modulePathList, path)
@@ -86,29 +67,14 @@ func GenerateES5AndSourceMap(sg *scopegraph.ScopeGraph, sourceMap *sourcemap.Sou
 		ordered.Set(modulePath, modulePathMap[modulePath])
 	}
 
-	// Format the generated source, including building the source map (if requested).
-	positionMapper := compilercommon.NewPositionMapper()
-	handler := func(generatedLine int, generatedCol int, path string, startRune int, endRune int, name string) {
-		lineNumber, colPosition, err := positionMapper.Map(compilercommon.InputSource(path), startRune)
-		if err != nil {
-			panic(err)
-		}
+	// Generate the unformatted code and source map.
+	template := esbuilder.Template("es5", runtimeTemplate, ordered)
 
-		mapping := sourcemap.SourceMapping{
-			SourcePath:     path,
-			LineNumber:     lineNumber,
-			ColumnPosition: colPosition,
-			Name:           name,
-		}
+	sm := sourcemap.NewSourceMap(generatedFilePath, sourceRoot)
+	unformatted := esbuilder.BuildSourceAndMap(template, sm)
 
-		sourceMap.AddMapping(generatedLine, generatedCol, mapping)
-	}
-
-	if sourceMap == nil {
-		handler = nil
-	}
-
-	return FormatECMASource(templater.Execute("es5", runtimeTemplate, ordered), handler)
+	// Format the code.
+	return escommon.FormatMappedECMASource(unformatted.String(), sm)
 }
 
 // getSRGMember returns the SRG member type for the given type graph member, if any.

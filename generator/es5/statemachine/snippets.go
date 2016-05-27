@@ -5,11 +5,11 @@
 package statemachine
 
 import (
-	"github.com/serulian/compiler/generator/es5/templater"
+	"github.com/serulian/compiler/generator/es5/shared"
 )
 
 type snippets struct {
-	templater *templater.Templater
+	templater *shared.Templater
 }
 
 func (s snippets) Resolve(value string) string {

@@ -112,6 +112,27 @@ func NewSourceMap(generatedFilePath string, sourceRoot string) *SourceMap {
 	return &SourceMap{generatedFilePath, sourceRoot, map[int]map[int]SourceMapping{}, newOrderedStringSet(), newOrderedStringSet()}
 }
 
+// GetMapping returns the source mapping entry for the given generated line number and column position,
+// if any.
+func (sm *SourceMap) GetMapping(lineNumber int, colPosition int) (SourceMapping, bool) {
+	if lineMappings, ok := sm.lineMappings[lineNumber]; ok {
+		mapping, exists := lineMappings[colPosition]
+		return mapping, exists
+	}
+
+	return SourceMapping{}, false
+}
+
+// GeneratedFilePath returns the generated file path for the source map.
+func (sm *SourceMap) GeneratedFilePath() string {
+	return sm.generatedFilePath
+}
+
+// SourceRoot returns the source root for the source map, if any.
+func (sm *SourceMap) SourceRoot() string {
+	return sm.sourceRoot
+}
+
 // AddMapping adds a new mapping for the given generated line number and column position to this map.
 func (sm *SourceMap) AddMapping(lineNumber int, colPosition int, mapping SourceMapping) {
 	if _, ok := sm.lineMappings[lineNumber]; !ok {
@@ -255,6 +276,16 @@ func (sm *SourceMap) Build() *ParsedSourceMap {
 		lineMappings:      lineMappings,
 		computedMappings:  nil,
 	}
+}
+
+// GeneratedFilePath returns the generated file path for the source map.
+func (psm *ParsedSourceMap) GeneratedFilePath() string {
+	return psm.generatedFilePath
+}
+
+// SourceRoot returns the source root for the source map, if any.
+func (psm *ParsedSourceMap) SourceRoot() string {
+	return psm.sourceRoot
 }
 
 // Marshal turns the parsed source map into its JSON form.

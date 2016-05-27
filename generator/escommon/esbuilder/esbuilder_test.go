@@ -19,13 +19,16 @@ type expectedMapping struct {
 
 type builderTest struct {
 	name             string
-	node             ExpressionOrStatementBuilder
+	node             SourceBuilder
 	expectedCode     string
 	expectedMappings []expectedMapping
 }
 
 var generationTests = []builderTest{
 	builderTest{"identfier", Identifier("something"), "something", []expectedMapping{}},
+
+	builderTest{"snippet", Snippet("foo.bar.baz"), "foo.bar.baz", []expectedMapping{}},
+
 	builderTest{"access",
 		Identifier("something").
 			Member("somemember"),
@@ -36,9 +39,18 @@ var generationTests = []builderTest{
 			Member(Value("somemember")),
 		"(something)[\"somemember\"]", []expectedMapping{}},
 
+	builderTest{"basic array", Array(Identifier("something"), Identifier("somethingelse")), "[something,somethingelse]", []expectedMapping{}},
+	builderTest{"basic object", Object(ObjectEntry("foo", Value(1)), ObjectEntry("bar", Value(2))), "{\"foo\":(1),\"bar\":(2)}", []expectedMapping{}},
+
 	builderTest{"basic call", Identifier("something").Call(), "(something)()", []expectedMapping{}},
 	builderTest{"basic call with args", Identifier("something").Call(1, 2, 3), "(something)(1,2,3)", []expectedMapping{}},
 	builderTest{"basic call with expr args", Identifier("something").Call(Identifier("foo")), "(something)(foo)", []expectedMapping{}},
+
+	builderTest{"assign expr",
+		Assignment(Identifier("something"), Identifier("foo")), "(something=(foo))", []expectedMapping{}},
+
+	builderTest{"expr list",
+		ExpressionList(Value(1), Value(2), Value(3)), "(2,3,1)", []expectedMapping{}},
 
 	builderTest{"prefix expr",
 		Prefix("!", Identifier("something")),
@@ -120,7 +132,7 @@ var generationTests = []builderTest{
 
 	builderTest{"prefix expr with mapping",
 		Prefix("!",
-			Identifier("something").WithMapping(sourcemap.SourceMapping{"foo.js", 10, 5, ""})).
+			Identifier("something").WithMappingAsExpr(sourcemap.SourceMapping{"foo.js", 10, 5, ""})).
 			WithMapping(sourcemap.SourceMapping{"bar.js", 10, 2, ""}),
 
 		"!(something)",
@@ -179,12 +191,13 @@ var generationTests = []builderTest{
 
 func TestGeneration(t *testing.T) {
 	for _, test := range generationTests {
-		generated := buildSource(test.node)
-		if !assert.Equal(t, generated.buf.String(), test.expectedCode, "Mismatch on generation test %s", test.name) {
+		sm := sourcemap.NewSourceMap("", "")
+		buf := BuildSourceAndMap(test.node, sm)
+		if !assert.Equal(t, buf.String(), test.expectedCode, "Mismatch on generation test %s", test.name) {
 			continue
 		}
 
-		built := generated.sourcemap.Build()
+		built := sm.Build()
 		for _, expectedMapping := range test.expectedMappings {
 			mapping, ok := built.LookupMapping(expectedMapping.lineNumber, expectedMapping.colPosition)
 			if !assert.True(t, ok, "Expected mapping %v on test %s", expectedMapping, test.name) {

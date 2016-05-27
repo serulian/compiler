@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+// dombuilder package defines methods for translating the Serulian SRG into the codedom IR.
 package dombuilder
 
 import (

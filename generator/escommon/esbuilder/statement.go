@@ -8,11 +8,11 @@ import "github.com/serulian/compiler/sourcemap"
 
 // StatementBuilder defines an interface for all statements.
 type StatementBuilder interface {
-	// Mapping returns the source mapping for the statement being built.
-	Mapping() (sourcemap.SourceMapping, bool)
+	// WithMapping adds a source mapping to the statement being built.
+	WithMapping(mapping sourcemap.SourceMapping) SourceBuilder
 
-	// Code returns the code of the statement being built.
-	Code() string
+	// mapping returns the source mapping for the statement being built.
+	mapping() (sourcemap.SourceMapping, bool)
 
 	emitSource(sb *sourceBuilder)
 }
@@ -29,28 +29,23 @@ type statementBuilder struct {
 	statement statementNode
 
 	// The source mapping for this statement, if any.
-	mapping *sourcemap.SourceMapping
+	sourceMapping *sourcemap.SourceMapping
 }
 
-func (builder statementBuilder) Mapping() (sourcemap.SourceMapping, bool) {
-	if builder.mapping == nil {
+func (builder statementBuilder) mapping() (sourcemap.SourceMapping, bool) {
+	if builder.sourceMapping == nil {
 		return sourcemap.SourceMapping{}, false
 	}
 
-	return *builder.mapping, true
+	return *builder.sourceMapping, true
 }
 
 func (builder statementBuilder) emitSource(sb *sourceBuilder) {
 	builder.statement.emit(sb)
 }
 
-// Code returns the generated code for the expression being built.
-func (builder statementBuilder) Code() string {
-	return buildSource(builder).buf.String()
-}
-
 // WithMapping adds a source mapping to a builder.
-func (builder statementBuilder) WithMapping(mapping sourcemap.SourceMapping) StatementBuilder {
-	builder.mapping = &mapping
+func (builder statementBuilder) WithMapping(mapping sourcemap.SourceMapping) SourceBuilder {
+	builder.sourceMapping = &mapping
 	return builder
 }

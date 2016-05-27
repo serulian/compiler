@@ -34,6 +34,15 @@ type binaryNode struct {
 	right ExpressionBuilder
 }
 
+// assignmentNode defines an assignment operator.
+type assignmentNode struct {
+	// target is the target of the assignment.
+	target ExpressionBuilder
+
+	// value is the value being assigned.
+	value ExpressionBuilder
+}
+
 func (node prefixNode) emit(sb *sourceBuilder) {
 	sb.append(node.operator)
 	sb.emitWrapped(node.child)
@@ -52,6 +61,14 @@ func (node binaryNode) emit(sb *sourceBuilder) {
 	sb.append(")")
 }
 
+func (node assignmentNode) emit(sb *sourceBuilder) {
+	sb.append("(")
+	sb.emit(node.target)
+	sb.append("=")
+	sb.emitWrapped(node.value)
+	sb.append(")")
+}
+
 // Prefix returns a new prefixed operator on an expression.
 func Prefix(op string, child ExpressionBuilder) ExpressionBuilder {
 	return expressionBuilder{prefixNode{op, child}, nil}
@@ -65,4 +82,9 @@ func Postfix(child ExpressionBuilder, op string) ExpressionBuilder {
 // Binary returns a new binary operator on left and right child expressions.
 func Binary(left ExpressionBuilder, op string, right ExpressionBuilder) ExpressionBuilder {
 	return expressionBuilder{binaryNode{left, op, right}, nil}
+}
+
+// Assignment returns a new assignment operator.
+func Assignment(target ExpressionBuilder, value ExpressionBuilder) ExpressionBuilder {
+	return expressionBuilder{assignmentNode{target, value}, nil}
 }
