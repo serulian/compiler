@@ -152,7 +152,12 @@ func main() {
 	tester.DecorateRunners(cmdTest)
 
 	// Register the root command.
-	var rootCmd = &cobra.Command{Use: "serulian"}
+	var rootCmd = &cobra.Command{
+		Use:   "serulian",
+		Short: "Serulian",
+		Long:  "Serulian: A web and mobile development language",
+	}
+
 	rootCmd.AddCommand(cmdBuild)
 	rootCmd.AddCommand(cmdDevelop)
 	rootCmd.AddCommand(cmdFormat)
