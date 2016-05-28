@@ -93,7 +93,6 @@ func (eg *expressionGenerator) generateBinaryOperation(binaryOp *codedom.BinaryO
 	} else {
 		return eg.generateNormalBinaryOperator(binaryOp, context)
 	}
-
 }
 
 // generateNormalBinaryOperator generates the expression source for a non-short circuiting binary operator.
