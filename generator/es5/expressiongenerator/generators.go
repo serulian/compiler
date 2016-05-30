@@ -307,8 +307,8 @@ func (eg *expressionGenerator) generateStaticMemberReference(memberReference *co
 	return esbuilder.Snippet(staticPath)
 }
 
-// generateRuntineFunctionCall generates the expression source for a call to a runtime function.
-func (eg *expressionGenerator) generateRuntineFunctionCall(runtimeCall *codedom.RuntimeFunctionCallNode, context generationContext) esbuilder.ExpressionBuilder {
+// generateRuntimeFunctionCall generates the expression source for a call to a runtime function.
+func (eg *expressionGenerator) generateRuntimeFunctionCall(runtimeCall *codedom.RuntimeFunctionCallNode, context generationContext) esbuilder.ExpressionBuilder {
 	arguments := eg.generateExpressions(runtimeCall.Arguments, context)
 	return esbuilder.Call(esbuilder.Snippet(string(runtimeCall.Function)), arguments...)
 }
@@ -335,7 +335,7 @@ func (eg *expressionGenerator) generateNativeIndexing(nativeIndex *codedom.Nativ
 
 // generateNominalWrapping generates the expression source for the nominal wrapping of an instance of a base type.
 func (eg *expressionGenerator) generateNominalWrapping(nominalWrapping *codedom.NominalWrappingNode, context generationContext) esbuilder.ExpressionBuilder {
-	// If this is a wrap is of an  unwrap, then cancel both operations.
+	// If this is a wrap is of an unwrap, then cancel both operations.
 	if nested, ok := nominalWrapping.ChildExpression.(*codedom.NominalUnwrappingNode); ok {
 		return eg.generateExpression(nested.ChildExpression, context)
 	}

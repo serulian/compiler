@@ -1,0 +1,3 @@
+function<any> TEST() {
+	return bool(&('foo') == &('foo'))
+}
