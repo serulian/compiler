@@ -166,7 +166,7 @@ func (eg *expressionGenerator) generateExpressionWithoutMapping(expression coded
 		return eg.generateMemberCall(e, context)
 
 	case *codedom.RuntimeFunctionCallNode:
-		return eg.generateRuntineFunctionCall(e, context)
+		return eg.generateRuntimeFunctionCall(e, context)
 
 	case *codedom.FunctionDefinitionNode:
 		return eg.generateFunctionDefinition(e, context)

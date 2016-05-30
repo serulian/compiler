@@ -38,7 +38,7 @@ var operatorMap = map[compilergraph.TaggedValue]string{
 // buildRootTypeExpression builds the CodeDOM for a root type expression.
 func (db *domBuilder) buildRootTypeExpression(node compilergraph.GraphNode) codedom.Expression {
 	childExpr := db.getExpression(node, parser.NodeUnaryExpressionChildExpr)
-	return codedom.RuntimeFunctionCall(codedom.UnboxFunction, []codedom.Expression{childExpr}, node)
+	return codedom.NominalUnwrapping(childExpr, node)
 }
 
 // buildFunctionCall builds the CodeDOM for a function call.

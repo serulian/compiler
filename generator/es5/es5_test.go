@@ -167,6 +167,7 @@ var tests = []generationTest{
 	generationTest{"generic nominal type", "nominal", "generic", true},
 	generationTest{"base nominal type", "nominal", "nominalbase", true},
 	generationTest{"interface nominal type", "nominal", "interface", true},
+	generationTest{"literal nominal type", "nominal", "literal", true},
 
 	generationTest{"basic json test", "serialization", "json", true},
 	generationTest{"nominal json test", "serialization", "nominaljson", true},
