@@ -53,7 +53,7 @@ func Run(addr string, rootSourceFilePath string, debug bool, vcsDevelopmentDirec
 	http.Handle("/", rtr)
 
 	highlight := color.New(color.FgHiWhite, color.Underline).SprintFunc()
-	fmt.Printf("Serving development server for project %v on %v at %v\n", highlight(rootSourceFilePath), addr, highlight("/"+name))
+	fmt.Printf("Serving development server for project %v on %v at %v\n", highlight(rootSourceFilePath), addr, highlight("/"+name+".js"))
 
 	err := http.ListenAndServe(addr, nil)
 	if err != nil {
