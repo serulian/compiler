@@ -97,6 +97,7 @@ var tests = []generationTest{
 	generationTest{"struct nominal field test", "struct", "nominal", true},
 
 	generationTest{"basic async test", "async", "async", true},
+	generationTest{"async struct param test", "async", "asyncstruct", true},
 
 	generationTest{"conditional statement", "statements", "conditional", true},
 	generationTest{"conditional else statement", "statements", "conditionalelse", true},

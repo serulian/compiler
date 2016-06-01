@@ -1,0 +1,13 @@
+struct SomeStruct {
+	Foo int
+	Bar int
+}
+
+function<string> DoSomethingAsync(s SomeStruct) {
+	return s.Foo.String() + s.Bar.String()
+}
+
+function<any> TEST() {
+	var vle = <- DoSomethingAsync(SomeStruct{Foo: 1, Bar: 2})
+	return vle == "12"
+}

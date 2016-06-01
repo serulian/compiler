@@ -105,6 +105,37 @@ this.Serulian = (function($global) {
       return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()
     },
 
+    // buildDataForValue builds an object containing the given value in its unboxed form,
+    // as well as its Serulian type reference information (if any).
+    'buildDataForValue': function(value) {
+      if (value == null) {
+        return {
+          'v': null
+        }
+      }
+
+      if (value.constructor.$typeref) {
+        return {
+          'v': $t.unbox(value),
+          't': value.constructor.$typeref()
+        }
+      } else {
+        return {
+          'v': value
+        }
+      }
+    },
+
+    // buildValueFromData builds a Serulian value from its unboxed form and optional
+    // type reference information.
+    'buildValueFromData': function(data) {
+      if (!data['t']) {
+        return data['v'];
+      }
+
+      return $t.box(data['v'], $t.typeforref(data['t']));
+    },
+
     // unbox returns the root object behind a nominal or structural instance.
     'unbox': function(instance) {
       if (instance != null && instance.hasOwnProperty(BOXED_DATA_PROPERTY)) {
@@ -272,7 +303,7 @@ this.Serulian = (function($global) {
       // Otherwise return a function to execute via a worker.
       return function() {
         var token = $t.uuid();
-        var args = Array.prototype.slice.call(arguments);
+        var args = Array.prototype.map.call(arguments, $t.buildDataForValue);
 
         var promise = new Promise(function(resolve, reject) {
           // Start a new worker on the current script with the token.
@@ -292,11 +323,7 @@ this.Serulian = (function($global) {
             }
 
             // Box the value if necessary.
-            var value = data['value'];
-            var typeref = data['typeref'];
-            if (typeref) {
-              value = $t.box(value, $t.typeforref(typeref))
-            }
+            var value = $t.buildValueFromData(data['value']);
 
             // Report the result.
             var kind = data['kind'];
@@ -644,22 +671,16 @@ this.Serulian = (function($global) {
       switch (data['action']) {
         case 'invoke':
           var methodId = data['method'];
-          var arguments = data['arguments'];
           var method = $w[methodId];
 
+          var arguments = data['arguments'].map($t.buildValueFromData);
           var send = function(kind) {
             return function(value) {
               var message = {
                 'token': token,
-                'value': value,
+                'value': $t.buildDataForValue(value),
                 'kind': kind
               };
-
-              // If the object is a Serulian object, then add its type ref.
-              if (value != null && value.constructor.$typeref) {
-                message['typeref'] = value.constructor.$typeref();
-                message['value'] = $t.unbox(value);
-              }
 
               // Try to send the message to the other process. If it fails, then
               // the rejected value is most likely some sort of local exception,
