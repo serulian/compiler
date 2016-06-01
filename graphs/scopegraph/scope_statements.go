@@ -415,15 +415,15 @@ func (sb *scopeBuilder) scopeStatementBlock(node compilergraph.GraphNode, option
 		parentDef, hasParent := node.StartQuery().In(parser.NodePredicateBody).TryGetNode()
 		if hasParent {
 			returnTypeExpected, hasReturnType := sb.sg.tdg.LookupReturnType(parentDef)
-
 			if hasReturnType {
 				// If the return type expected is void, ensure no branch returned any values.
 				if returnTypeExpected.IsVoid() {
-					if !returnedType.IsVoid() {
+					if returnedType.IsVoid() {
+						return newScope().Valid().Returning(returnedType, isSettlingScope).GetScope()
+					} else {
 						sb.decorateWithError(node, "No return value expected here, found value of type '%v'", returnedType)
+						return newScope().Invalid().Returning(returnedType, isSettlingScope).GetScope()
 					}
-
-					return newScope().IsValid(isValid).Returning(returnedType, isSettlingScope).GetScope()
 				}
 
 				if !isSettlingScope {

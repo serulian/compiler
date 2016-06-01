@@ -88,6 +88,10 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"settlement invalid reject test", "settlement", "invalidreject", []expectedScopeEntry{},
 		"'reject' statement value must be an Error: Type 'String' does not define or export member 'Message', which is required by type 'Error'", ""},
 
+	// Value returned by void function.
+	scopegraphTest{"settlement void return value test", "settlement", "voidreturn", []expectedScopeEntry{},
+		"No return value expected here, found value of type 'Integer'", ""},
+
 	/////////// Break ///////////
 
 	// Normal break statement.
