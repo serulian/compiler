@@ -152,7 +152,7 @@ const genericsTemplateStr = `{{ range $index, $generic := .Generics }}{{ if $ind
 const interfaceTemplateStr = `
 this.$interface('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .Generics }}) {
 	var $static = this;
-	{{range $idx, $kv := .GenerateImplementedMembers.Iter }}
+	{{range $idx, $kv := .GenerateImplementedMembers.UnsafeIter }}
   	  {{ emit $kv.Value }}
   	{{end}}
 });
@@ -169,7 +169,7 @@ this.$class('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ 
 	$static.new = function({{ range $ridx, $field := .RequiredFields }}{{ if $ridx }}, {{ end }}{{ $field.Name }}{{ end }}) {
 		var instance = new $static();
 		var init = [];
-		{{ range $idx, $kv := $composed.Iter }}
+		{{ range $idx, $kv := $composed.UnsafeIter }}
 			init.push({{ emit $kv.Value }});
   		{{ end }}
 		{{ range $idx, $field := .RequiredFields }}
@@ -180,7 +180,7 @@ this.$class('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ 
 			}));
 		{{ end }}
 		{{ end }}
-		{{ range $idx, $kv := $vars.Iter }}
+		{{ range $idx, $kv := $vars.UnsafeIter }}
 			init.push({{ emit $kv.Value }});
 		{{ end }}
 		return $promise.all(init).then(function() {
@@ -188,7 +188,7 @@ this.$class('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ 
 		});
 	};
 
-	{{range $idx, $kv := .GenerateImplementedMembers.Iter }}
+	{{range $idx, $kv := .GenerateImplementedMembers.UnsafeIter }}
   	  {{ emit $kv.Value }}
   	{{end}}
 });
@@ -307,7 +307,7 @@ this.$type('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .
 		return instance;
 	};
 
-	{{range $idx, $kv := .GenerateImplementedMembers.Iter }}
+	{{range $idx, $kv := .GenerateImplementedMembers.UnsafeIter }}
   	  {{ emit $kv.Value }}
   	{{end}}
 });

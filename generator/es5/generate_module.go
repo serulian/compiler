@@ -75,15 +75,15 @@ const moduleTemplateStr = `
 $module('{{ .ExportedPath }}', function() {
   var $static = this;
 
-  {{range $idx, $kv := .GenerateTypes.Iter }}
+  {{range $idx, $kv := .GenerateTypes.UnsafeIter }}
   	{{ emit $kv.Value }};
   {{end}}
   
-  {{range $idx, $kv := .GenerateMembers.Iter }}
+  {{range $idx, $kv := .GenerateMembers.UnsafeIter }}
   	{{ emit $kv.Value }};
   {{end}}
 
-  {{range $idx, $kv := .GenerateVariables.Iter }}
+  {{range $idx, $kv := .GenerateVariables.UnsafeIter }}
   	this.$init(function() {
 		return ({{ emit $kv.Value }});
 	});
