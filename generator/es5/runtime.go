@@ -649,7 +649,7 @@ this.Serulian = (function($global) {
   	creator.call(module)
   };
 
-  {{ range $idx, $kv := .Iter }}
+  {{ range $idx, $kv := .UnsafeIter }}
   	{{ emit $kv.Value }}
   {{ end }}
 
