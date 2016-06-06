@@ -147,6 +147,10 @@ this.Serulian = (function($global) {
 
     // box wraps an object with a nominal or structural type.
     'box': function(instance, type, opt_external) {
+      if (instance == null) {
+        return null;
+      }
+      
       return type.$box($t.unbox(instance), opt_external)
     },
 
