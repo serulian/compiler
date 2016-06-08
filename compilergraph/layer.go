@@ -27,10 +27,6 @@ type GraphLayer struct {
 	nodeKindEnum      TaggedValue    // Tagged value type that is the enum of possible node kinds.
 }
 
-// nodeMemberPredicate is a predicate reserved for marking nodes as being
-// members of layers.
-const nodeMemberPredicate = "is-member"
-
 // NewGraphLayer returns a new graph layer of the given kind.
 func (sg *SerulianGraph) NewGraphLayer(uniqueId string, nodeKindEnum TaggedValue) *GraphLayer {
 	return &GraphLayer{

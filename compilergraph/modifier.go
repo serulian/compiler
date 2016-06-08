@@ -79,9 +79,8 @@ func (gl *graphLayerModifierStruct) Modify(node GraphNode) ModifiableGraphNode {
 
 // CreateNode will create a new node in the graph layer.
 func (gl *graphLayerModifierStruct) CreateNode(nodeKind TaggedValue) ModifiableGraphNode {
-	// Add the node as a member of the layer.
+	// Create the new node.
 	nodeId := compilerutil.NewUniqueId()
-	gl.addQuad(cayley.Quad(nodeId, nodeMemberPredicate, gl.layer.id, gl.layer.prefix))
 
 	node := ModifiableGraphNode{
 		NodeId:   GraphNodeId(nodeId),
