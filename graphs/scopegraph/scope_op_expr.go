@@ -93,7 +93,7 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 		// TODO: It might be a good idea to revisit this decision if we find `someNullableFunc()` to
 		// be a useful pattern as well.
 		if !childType.HasReferredType(sb.sg.tdg.FunctionType()) ||
-			childExpr.Kind != parser.NodeNullableMemberAccessExpression {
+			childExpr.Kind() != parser.NodeNullableMemberAccessExpression {
 			sb.decorateWithError(node, "Cannot invoke function call on non-function '%v'.", childType)
 			return newScope().Invalid().GetScope()
 		}

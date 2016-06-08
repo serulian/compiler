@@ -197,7 +197,7 @@ func TestNameScoping(t *testing.T) {
 				continue
 			}
 
-			if !assert.Equal(t, test.result.expectedNodeType, resolved.Kind, "Test %v expected node of kind %v", test.name, test.result.expectedNodeType) {
+			if !assert.Equal(t, test.result.expectedNodeType, resolved.Kind(), "Test %v expected node of kind %v", test.name, test.result.expectedNodeType) {
 				continue
 			}
 

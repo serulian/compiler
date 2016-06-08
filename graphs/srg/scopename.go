@@ -148,7 +148,7 @@ func (ns SRGNamedScope) IsStatic() bool {
 		return true
 
 	case NamedScopeMember:
-		return ns.Kind == parser.NodeTypeConstructor
+		return ns.Kind() == parser.NodeTypeConstructor
 
 	case NamedScopeImport:
 		return true
@@ -169,7 +169,7 @@ func (ns SRGNamedScope) IsStatic() bool {
 
 // ScopeKind returns the kind of the scoped node.
 func (ns SRGNamedScope) ScopeKind() NamedScopeKind {
-	switch ns.Kind {
+	switch ns.Kind() {
 
 	/* Types */
 	case parser.NodeTypeClass:
@@ -224,13 +224,13 @@ func (ns SRGNamedScope) ScopeKind() NamedScopeKind {
 		return NamedScopeVariable
 
 	default:
-		panic(fmt.Sprintf("Unknown scoped name %v", ns.Kind))
+		panic(fmt.Sprintf("Unknown scoped name %v", ns.Kind()))
 	}
 }
 
 // Name returns the name of the scoped node.
 func (ns SRGNamedScope) Name() string {
-	switch ns.Kind {
+	switch ns.Kind() {
 
 	case parser.NodeTypeClass:
 		return ns.Get(parser.NodeTypeDefinitionName)
@@ -275,13 +275,13 @@ func (ns SRGNamedScope) Name() string {
 		return ns.Get(parser.NodeNamedValueName)
 
 	default:
-		panic(fmt.Sprintf("Unknown scoped name %v", ns.Kind))
+		panic(fmt.Sprintf("Unknown scoped name %v", ns.Kind()))
 	}
 }
 
 // ResolveNameUnderScope attempts to resolve the given name under this scope. Only applies to imports.
 func (ns SRGNamedScope) ResolveNameUnderScope(name string) (SRGScopeOrImport, bool) {
-	if ns.Kind != parser.NodeTypeImport {
+	if ns.Kind() != parser.NodeTypeImport {
 		return SRGNamedScope{}, false
 	}
 
@@ -431,7 +431,7 @@ func (g *SRG) findAddedNameInScope(name string, node compilergraph.GraphNode) (c
 		}
 
 		// If the node is a variable statement, we have do to additional checks (since it isn't block scoped.)
-		if node.Kind == parser.NodeTypeVariableStatement {
+		if node.Kind() == parser.NodeTypeVariableStatement {
 			endIndex, err := strconv.ParseInt(nit.Values()[parser.NodePredicateEndRune], 10, 64)
 			if err != nil {
 				panic(err)

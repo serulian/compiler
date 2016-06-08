@@ -17,9 +17,9 @@ type GraphNodeId string
 
 // GraphNode represents a single node in a graph layer.
 type GraphNode struct {
-	NodeId GraphNodeId // Unique ID for the node.
-	Kind   TaggedValue // The kind of the node.
-	layer  *GraphLayer // The layer that owns the node.
+	NodeId     GraphNodeId // Unique ID for the node.
+	kindString string      // The kind of the node.
+	layer      *GraphLayer // The layer that owns the node.
 }
 
 // taggedValue defines an interface for storing uniquely tagged string data in the graph.
@@ -27,6 +27,11 @@ type TaggedValue interface {
 	Name() string                   // The unique name for this kind of value.
 	Value() string                  // The string value.
 	Build(value string) interface{} // Builds a new tagged value from the given value string.
+}
+
+// Kind returns the kind of this node.
+func (gn GraphNode) Kind() TaggedValue {
+	return gn.layer.parseTaggedKey(gn.kindString, gn.layer.nodeKindEnum).(TaggedValue)
 }
 
 // Clone returns a clone of this graph node, with all *outgoing* predicates copied.
@@ -86,7 +91,7 @@ func (gn GraphNode) GetTagged(predicateName string, example TaggedValue) interfa
 func (gn GraphNode) GetNode(predicateName string) GraphNode {
 	result, found := gn.TryGetNode(predicateName)
 	if !found {
-		panic(fmt.Sprintf("Could not find node for predicate %s on node %s (%v)", predicateName, gn.NodeId, gn.Kind))
+		panic(fmt.Sprintf("Could not find node for predicate %s on node %s (%v)", predicateName, gn.NodeId, gn.Kind()))
 	}
 
 	return result
@@ -106,7 +111,7 @@ func (gn GraphNode) TryGetNode(predicateName string) (GraphNode, bool) {
 func (gn GraphNode) GetNodeInLayer(predicateName string, layer *GraphLayer) GraphNode {
 	result, found := gn.TryGetNodeInLayer(predicateName, layer)
 	if !found {
-		panic(fmt.Sprintf("Could not find node for predicate %s on node %s (%v)", predicateName, gn.NodeId, gn.Kind))
+		panic(fmt.Sprintf("Could not find node for predicate %s on node %s (%v)", predicateName, gn.NodeId, gn.Kind()))
 	}
 
 	return result
@@ -180,13 +185,12 @@ func (gn GraphNode) TryGet(predicateName string) (string, bool) {
 	nodeIdValue := gn.layer.cayleyStore.ValueOf(string(gn.NodeId))
 
 	// Search for all quads starting with this node's ID as the subject.
-	it := gn.layer.cayleyStore.QuadIterator(quad.Subject, nodeIdValue).(*memstore.Iterator)
-	defer it.Close()
-
-	for it.Next() {
-		quad := gn.layer.cayleyStore.Quad(it.Result())
-		if quad.Predicate == prefixedPredicate {
-			return quad.Object, true
+	if it, ok := gn.layer.cayleyStore.QuadIterator(quad.Subject, nodeIdValue).(*memstore.Iterator); ok {
+		for it.Next() {
+			quad := gn.layer.cayleyStore.Quad(it.Result())
+			if quad.Predicate == prefixedPredicate {
+				return quad.Object, true
+			}
 		}
 	}
 
@@ -204,13 +208,12 @@ func (gn GraphNode) TryGetIncoming(predicateName string) (string, bool) {
 	nodeIdValue := gn.layer.cayleyStore.ValueOf(string(gn.NodeId))
 
 	// Search for all quads starting with this node's ID as the object.
-	it := gn.layer.cayleyStore.QuadIterator(quad.Object, nodeIdValue).(*memstore.Iterator)
-	defer it.Close()
-
-	for it.Next() {
-		quad := gn.layer.cayleyStore.Quad(it.Result())
-		if quad.Predicate == prefixedPredicate {
-			return quad.Subject, true
+	if it, ok := gn.layer.cayleyStore.QuadIterator(quad.Object, nodeIdValue).(*memstore.Iterator); ok {
+		for it.Next() {
+			quad := gn.layer.cayleyStore.Quad(it.Result())
+			if quad.Predicate == prefixedPredicate {
+				return quad.Subject, true
+			}
 		}
 	}
 

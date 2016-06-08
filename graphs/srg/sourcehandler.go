@@ -95,7 +95,7 @@ func (sh *srgSourceHandler) Verify(errorReporter packageloader.ErrorReporter, wa
 		// Find the name of the alias.
 		decorator := ait.Node()
 		parameter, ok := decorator.TryGetNode(parser.NodeDecoratorPredicateParameter)
-		if !ok || parameter.Kind != parser.NodeStringLiteralExpression {
+		if !ok || parameter.Kind() != parser.NodeStringLiteralExpression {
 			sal := salForNode(decorator)
 			errorReporter(compilercommon.SourceErrorf(sal, "Alias decorator requires a single string literal parameter"))
 			continue

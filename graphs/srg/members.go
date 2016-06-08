@@ -84,7 +84,7 @@ func (m SRGMember) Module() SRGModule {
 
 // Name returns the name of this member.
 func (m SRGMember) Name() string {
-	if m.GraphNode.Kind == parser.NodeTypeOperator {
+	if m.GraphNode.Kind() == parser.NodeTypeOperator {
 		return m.GraphNode.Get(parser.NodeOperatorName)
 	}
 
@@ -103,7 +103,7 @@ func (m SRGMember) Location() compilercommon.SourceAndLocation {
 
 // MemberKind returns the kind matching the member definition/declaration node type.
 func (m SRGMember) MemberKind() MemberKind {
-	switch m.GraphNode.Kind {
+	switch m.GraphNode.Kind() {
 	case parser.NodeTypeConstructor:
 		return ConstructorMember
 
@@ -123,7 +123,7 @@ func (m SRGMember) MemberKind() MemberKind {
 		return VarMember
 
 	default:
-		panic(fmt.Sprintf("Unknown kind of member %s", m.GraphNode.Kind))
+		panic(fmt.Sprintf("Unknown kind of member %s", m.GraphNode.Kind()))
 		return ConstructorMember
 	}
 }
@@ -252,7 +252,7 @@ func (m SRGMember) HasImplementation() bool {
 		return hasBody
 	}
 
-	panic(fmt.Sprintf("Unknown kind of member %s", m.GraphNode.Kind))
+	panic(fmt.Sprintf("Unknown kind of member %s", m.GraphNode.Kind()))
 	return false
 }
 

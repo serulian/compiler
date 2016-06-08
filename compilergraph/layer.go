@@ -60,17 +60,16 @@ func (gl *GraphLayer) TryGetNode(nodeId string) (GraphNode, bool) {
 	//	return gl.StartQuery(nodeId).TryGetNode()
 
 	// Lookup an iterator of all quads with the node's ID as a subject.
-	it := gl.cayleyStore.QuadIterator(quad.Subject, gl.cayleyStore.ValueOf(nodeId)).(*memstore.Iterator)
-	defer it.Close()
+	if it, ok := gl.cayleyStore.QuadIterator(quad.Subject, gl.cayleyStore.ValueOf(nodeId)).(*memstore.Iterator); ok {
+		// Find a node with a predicate matching the prefixed "kind" predicate for the layer, which
+		// indicates this is a node in this layer.
+		fullKindPredicate := gl.getPrefixedPredicate(gl.nodeKindPredicate)
 
-	// Find a node with a predicate matching the prefixed "kind" predicate for the layer, which
-	// indicates this is a node in this layer.
-	fullKindPredicate := gl.getPrefixedPredicate(gl.nodeKindPredicate)
-
-	for it.Next() {
-		quad := gl.cayleyStore.Quad(it.Result())
-		if quad.Predicate == fullKindPredicate {
-			return GraphNode{GraphNodeId(nodeId), gl.parseTaggedKey(quad.Object, gl.nodeKindEnum).(TaggedValue), gl}, true
+		for it.Next() {
+			quad := gl.cayleyStore.Quad(it.Result())
+			if quad.Predicate == fullKindPredicate {
+				return GraphNode{GraphNodeId(nodeId), quad.Object, gl}, true
+			}
 		}
 	}
 

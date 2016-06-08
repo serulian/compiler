@@ -57,7 +57,7 @@ func (tg *TypeGraph) GetFilteredJSONForm(filterPaths ...string) string {
 	}
 
 	// Walk the graph outward from the type declaration nodes, building an in-memory tree
-	// representation along the waya.
+	// representation along the way.
 	tg.layer.WalkOutward(startingNodes, func(result *compilergraph.WalkResult) bool {
 		// Filter any predicates that match UUIDs, as they attach to other graph layers
 		// and will have rotating IDs.
@@ -105,7 +105,7 @@ func (tg *TypeGraph) GetFilteredJSONForm(filterPaths ...string) string {
 		repKey := fmt.Sprintf("%x", h.Sum(nil))
 		repMap[result.Node.NodeId] = &graphNodeRep{
 			Key:        repKey,
-			Kind:       result.Node.Kind,
+			Kind:       result.Node.Kind(),
 			Children:   map[string]graphChildRep{},
 			Predicates: filteredPredicates,
 		}

@@ -140,7 +140,7 @@ func (sb *scopeBuilder) scopeNamedValue(node compilergraph.GraphNode, option sco
 	// Find the parent node creating this named value.
 	parentNode := node.GetIncomingNode(parser.NodeStatementNamedValue)
 
-	switch parentNode.Kind {
+	switch parentNode.Kind() {
 	case parser.NodeTypeWithStatement:
 		// The named value exported by a with statement has the type of its expression.
 		exprScope := sb.getScope(parentNode.GetNode(parser.NodeWithStatementExpression))
@@ -175,7 +175,7 @@ func (sb *scopeBuilder) scopeNamedValue(node compilergraph.GraphNode, option sco
 		}
 
 	default:
-		panic(fmt.Sprintf("Unknown node exporting a named value: %v", parentNode.Kind))
+		panic(fmt.Sprintf("Unknown node exporting a named value: %v", parentNode.Kind()))
 		return newScope().Invalid().GetScope()
 	}
 }

@@ -109,7 +109,7 @@ func resolveTestingTypeRefFromSourceNodes(name string, graph *TypeGraph, refSour
 func resolveTestingTypeRef(name string, refNode compilergraph.GraphNode, graph *TypeGraph) (TypeReference, bool) {
 	// Check for member generics.
 	var currentNode = refNode
-	if currentNode.Kind == NodeTypeMember {
+	if currentNode.Kind() == NodeTypeMember {
 		memberInfo := TGMember{currentNode, graph}
 		for _, generic := range memberInfo.Generics() {
 			if generic.Name() == name {
@@ -124,7 +124,7 @@ func resolveTestingTypeRef(name string, refNode compilergraph.GraphNode, graph *
 		currentNode = currentNode.GetIncomingNode(NodePredicateMember)
 	}
 
-	if currentNode.Kind == NodeTypeOperator {
+	if currentNode.Kind() == NodeTypeOperator {
 		if _, ok := currentNode.TryGetIncoming(NodePredicateTypeOperator); !ok {
 			return TypeReference{}, false
 		}
@@ -133,9 +133,9 @@ func resolveTestingTypeRef(name string, refNode compilergraph.GraphNode, graph *
 	}
 
 	// Check for type generics.
-	if currentNode.Kind == NodeTypeClass || currentNode.Kind == NodeTypeInterface ||
-		currentNode.Kind == NodeTypeNominalType ||
-		currentNode.Kind == NodeTypeStruct || currentNode.Kind == NodeTypeExternalInterface {
+	if currentNode.Kind() == NodeTypeClass || currentNode.Kind() == NodeTypeInterface ||
+		currentNode.Kind() == NodeTypeNominalType ||
+		currentNode.Kind() == NodeTypeStruct || currentNode.Kind() == NodeTypeExternalInterface {
 		typeInfo := TGTypeDecl{currentNode, graph}
 		for _, generic := range typeInfo.Generics() {
 			if generic.Name() == name {
@@ -151,7 +151,7 @@ func resolveTestingTypeRef(name string, refNode compilergraph.GraphNode, graph *
 	}
 
 	// Check the module for the type.
-	if currentNode.Kind == NodeTypeModule {
+	if currentNode.Kind() == NodeTypeModule {
 		moduleInfo := TGModule{currentNode, graph}
 		for _, typeDecl := range moduleInfo.Types() {
 			if typeDecl.Name() == name {

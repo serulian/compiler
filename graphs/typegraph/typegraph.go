@@ -101,7 +101,7 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 			typegraphNode := typeGraph.getMatchingTypeGraphNode(moduleOrTypeSourceNode, TYPEORMODULE_NODE_TYPES...)
 
 			var parent TGTypeOrModule = nil
-			if typegraphNode.Kind == NodeTypeModule {
+			if typegraphNode.Kind() == NodeTypeModule {
 				parent = TGModule{typegraphNode, typeGraph}
 			} else {
 				parent = TGTypeDecl{typegraphNode, typeGraph}
@@ -259,7 +259,7 @@ func (g *TypeGraph) GetTypeOrModuleForSourceNode(sourceNode compilergraph.GraphN
 		return TGTypeDecl{}, false
 	}
 
-	if node.Kind == NodeTypeModule {
+	if node.Kind() == NodeTypeModule {
 		return TGModule{node, g}, true
 	} else {
 		return TGTypeDecl{node, g}, true
@@ -295,7 +295,7 @@ func (g *TypeGraph) ResolveTypeUnderPackage(name string, packageInfo packageload
 // GetTypeOrMember returns the type or member matching the given node ID.
 func (g *TypeGraph) GetTypeOrMember(nodeId compilergraph.GraphNodeId) TGTypeOrMember {
 	node := g.layer.GetNode(string(nodeId))
-	switch node.Kind {
+	switch node.Kind() {
 	case NodeTypeClass:
 		fallthrough
 

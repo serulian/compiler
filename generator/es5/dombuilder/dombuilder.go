@@ -112,7 +112,7 @@ func (db *domBuilder) buildExpressions(iterator compilergraph.NodeIterator) []co
 // buildExpression builds the CodeDOM for the given SRG node and returns it as an expression. Will
 // panic if the returned DOM type is not an expression.
 func (db *domBuilder) buildExpression(node compilergraph.GraphNode) codedom.Expression {
-	switch node.Kind {
+	switch node.Kind() {
 
 	// Access Expressions.
 	case parser.NodeMemberAccessExpression:
@@ -301,14 +301,14 @@ func (db *domBuilder) buildExpression(node compilergraph.GraphNode) codedom.Expr
 		return db.buildTaggedTemplateString(node)
 
 	default:
-		panic(fmt.Sprintf("Unknown SRG expression node: %s", node.Kind))
+		panic(fmt.Sprintf("Unknown SRG expression node: %s", node.Kind()))
 		return nil
 	}
 }
 
 // buildStatements builds the CodeDOM for the given SRG node and returns it as start and end statements.
 func (db *domBuilder) buildStatements(node compilergraph.GraphNode) (codedom.Statement, codedom.Statement) {
-	switch node.Kind {
+	switch node.Kind() {
 	case parser.NodeTypeStatementBlock:
 		return db.buildStatementBlock(node)
 
@@ -357,7 +357,7 @@ func (db *domBuilder) buildStatements(node compilergraph.GraphNode) (codedom.Sta
 		return db.buildArrowStatement(node)
 
 	default:
-		panic(fmt.Sprintf("Unknown SRG statement node: %s", node.Kind))
+		panic(fmt.Sprintf("Unknown SRG statement node: %s", node.Kind()))
 		return nil, nil
 	}
 }

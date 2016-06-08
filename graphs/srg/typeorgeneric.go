@@ -27,7 +27,7 @@ func (t SRGTypeOrGeneric) Name() string {
 
 // IsGeneric returns whether this represents a reference to a generic.
 func (t SRGTypeOrGeneric) IsGeneric() bool {
-	return t.Kind == parser.NodeTypeGeneric
+	return t.Kind() == parser.NodeTypeGeneric
 }
 
 // Node returns the underlying node.

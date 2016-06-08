@@ -72,7 +72,7 @@ func (gl *graphLayerModifierStruct) runCollector() {
 func (gl *graphLayerModifierStruct) Modify(node GraphNode) ModifiableGraphNode {
 	return ModifiableGraphNode{
 		NodeId:   node.NodeId,
-		Kind:     node.Kind,
+		Kind:     node.Kind(),
 		modifier: gl,
 	}
 }
@@ -119,9 +119,9 @@ func (gl *graphLayerModifierStruct) Apply() {
 // are undefined.
 func (gn ModifiableGraphNode) AsNode() GraphNode {
 	return GraphNode{
-		NodeId: gn.NodeId,
-		Kind:   gn.Kind,
-		layer:  gn.modifier.layer,
+		NodeId:     gn.NodeId,
+		kindString: gn.modifier.layer.getTaggedKey(gn.Kind),
+		layer:      gn.modifier.layer,
 	}
 }
 
