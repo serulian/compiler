@@ -7,6 +7,9 @@ package compilergraph
 import (
 	"fmt"
 	"strconv"
+
+	"github.com/google/cayley/graph/memstore"
+	"github.com/google/cayley/quad"
 )
 
 // GraphNodeId represents an ID for a node in the graph.
@@ -146,16 +149,6 @@ func (gn GraphNode) Get(predicateName string) string {
 	return value
 }
 
-// TryGet returns the value of the given predicate found on this node (if any).
-func (gn GraphNode) TryGet(predicateName string) (string, bool) {
-	return gn.StartQuery().Out(predicateName).GetValue()
-}
-
-// TryGetIncoming returns the value of the given predicate coming into this node (if any).
-func (gn GraphNode) TryGetIncoming(predicateName string) (string, bool) {
-	return gn.StartQuery().In(predicateName).GetValue()
-}
-
 // GetIncomingNode returns the node in this layer found off of the given predicate coming into this node and panics otherwise.
 func (gn GraphNode) GetIncomingNode(predicateName string) GraphNode {
 	result, found := gn.TryGetIncomingNode(predicateName)
@@ -174,4 +167,52 @@ func (gn GraphNode) TryGetIncomingNode(predicateName string) (GraphNode, bool) {
 	}
 
 	return gn.layer.GetNode(result), true
+}
+
+// TryGet returns the value of the given predicate found on this node (if any).
+func (gn GraphNode) TryGet(predicateName string) (string, bool) {
+	// Note: For efficiency reasons related to the overhead of constructing Cayley iterators,
+	// we instead perform the lookup of the predicate directly off of the memstore's QuadIterator.
+	// This code was originally:
+	//	return gn.StartQuery().Out(predicateName).GetValue()
+
+	prefixedPredicate := gn.layer.getPrefixedPredicate(predicateName)
+	nodeIdValue := gn.layer.cayleyStore.ValueOf(string(gn.NodeId))
+
+	// Search for all quads starting with this node's ID as the subject.
+	it := gn.layer.cayleyStore.QuadIterator(quad.Subject, nodeIdValue).(*memstore.Iterator)
+	defer it.Close()
+
+	for it.Next() {
+		quad := gn.layer.cayleyStore.Quad(it.Result())
+		if quad.Predicate == prefixedPredicate {
+			return quad.Object, true
+		}
+	}
+
+	return "", false
+}
+
+// TryGetIncoming returns the value of the given predicate coming into this node (if any).
+func (gn GraphNode) TryGetIncoming(predicateName string) (string, bool) {
+	// Note: For efficiency reasons related to the overhead of constructing Cayley iterators,
+	// we instead perform the lookup of the predicate directly off of the memstore's QuadIterator.
+	// This code was originally:
+	//	return gn.StartQuery().In(predicateName).GetValue()
+
+	prefixedPredicate := gn.layer.getPrefixedPredicate(predicateName)
+	nodeIdValue := gn.layer.cayleyStore.ValueOf(string(gn.NodeId))
+
+	// Search for all quads starting with this node's ID as the object.
+	it := gn.layer.cayleyStore.QuadIterator(quad.Object, nodeIdValue).(*memstore.Iterator)
+	defer it.Close()
+
+	for it.Next() {
+		quad := gn.layer.cayleyStore.Quad(it.Result())
+		if quad.Predicate == prefixedPredicate {
+			return quad.Subject, true
+		}
+	}
+
+	return "", false
 }

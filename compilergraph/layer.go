@@ -14,6 +14,7 @@ import (
 
 	"github.com/google/cayley"
 	"github.com/google/cayley/graph"
+	"github.com/google/cayley/graph/memstore"
 	"github.com/google/cayley/quad"
 )
 
@@ -57,7 +58,27 @@ func (gl *GraphLayer) GetNode(nodeId string) GraphNode {
 
 // TryGetNode tries to return a node found in the graph layer.
 func (gl *GraphLayer) TryGetNode(nodeId string) (GraphNode, bool) {
-	return gl.StartQuery(nodeId).TryGetNode()
+	// Note: For efficiency reasons related to the overhead of constructing Cayley iterators,
+	// we instead perform the lookup of the node directly off of the memstore's QuadIterator.
+	// This code was originally:
+	//	return gl.StartQuery(nodeId).TryGetNode()
+
+	// Lookup an iterator of all quads with the node's ID as a subject.
+	it := gl.cayleyStore.QuadIterator(quad.Subject, gl.cayleyStore.ValueOf(nodeId)).(*memstore.Iterator)
+	defer it.Close()
+
+	// Find a node with a predicate matching the prefixed "kind" predicate for the layer, which
+	// indicates this is a node in this layer.
+	fullKindPredicate := gl.getPrefixedPredicate(gl.nodeKindPredicate)
+
+	for it.Next() {
+		quad := gl.cayleyStore.Quad(it.Result())
+		if quad.Predicate == fullKindPredicate {
+			return GraphNode{GraphNodeId(nodeId), gl.parseTaggedKey(quad.Object, gl.nodeKindEnum).(TaggedValue), gl}, true
+		}
+	}
+
+	return GraphNode{}, false
 }
 
 // WalkResult is a result for each step of a walk.
@@ -158,12 +179,17 @@ func (gl *GraphLayer) parseTaggedKey(strValue string, example TaggedValue) inter
 	return example.Build(pieces[0])
 }
 
+// getPrefixedPredicate returns the given predicate prefixed with the layer prefix.
+func (gl *GraphLayer) getPrefixedPredicate(predicate string) string {
+	return gl.prefix + "-" + predicate
+}
+
 // getPrefixedPredicates returns the given predicates prefixed with the layer prefix.
 func (gl *GraphLayer) getPrefixedPredicates(predicates ...string) []interface{} {
 	adjusted := make([]interface{}, 0, len(predicates))
 
 	for _, predicate := range predicates {
-		fullPredicate := gl.prefix + "-" + predicate
+		fullPredicate := gl.getPrefixedPredicate(predicate)
 		adjusted = append(adjusted, fullPredicate)
 	}
 	return adjusted
