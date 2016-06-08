@@ -167,7 +167,7 @@ func (tn TGMember) IsType() bool {
 
 // IsOperator returns whether this is an operator.
 func (tn TGMember) IsOperator() bool {
-	return tn.GraphNode.Kind == NodeTypeOperator
+	return tn.GraphNode.Kind() == NodeTypeOperator
 }
 
 // IsField returns whether the member is a field.
@@ -235,7 +235,7 @@ func (tn TGMember) Parent() TGTypeOrModule {
 		In(NodePredicateMember, NodePredicateTypeOperator).
 		GetNode()
 
-	if parentNode.Kind == NodeTypeModule {
+	if parentNode.Kind() == NodeTypeModule {
 		return TGModule{parentNode, tn.tdg}
 	} else {
 		return TGTypeDecl{parentNode, tn.tdg}

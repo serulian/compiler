@@ -43,7 +43,7 @@ func (t *TypeGraph) NewInstanceTypeReference(typeDecl TGTypeDecl) TypeReference 
 	typeNode := typeDecl.GraphNode
 
 	// Fast path for generics.
-	if typeNode.Kind == NodeTypeGeneric {
+	if typeNode.Kind() == NodeTypeGeneric {
 		return TypeReference{
 			tdg:   t,
 			value: buildTypeReferenceValue(typeNode, false),
@@ -616,7 +616,7 @@ func buildSubtypeMismatchError(tr TypeReference, left TypeReference, right TypeR
 	var memberKind = "member"
 	var namePredicate = NodePredicateMemberName
 
-	if rightMember.Kind == NodeTypeOperator {
+	if rightMember.Kind() == NodeTypeOperator {
 		memberKind = "operator"
 		memberName = rightMember.Get(NodePredicateOperatorName)
 		namePredicate = NodePredicateOperatorName
@@ -1026,7 +1026,7 @@ func (tr TypeReference) TransformUnder(other TypeReference) TypeReference {
 
 	// Make sure we have the same number of generics.
 	otherType := other.ReferredType()
-	if otherType.GraphNode.Kind == NodeTypeGeneric {
+	if otherType.GraphNode.Kind() == NodeTypeGeneric {
 		panic(fmt.Sprintf("Cannot transform a reference to a generic: %v", other))
 	}
 
@@ -1141,7 +1141,7 @@ func (tr TypeReference) appendHumanString(buffer *bytes.Buffer, titled bool) {
 	}
 
 	typeNode := tr.referredTypeNode()
-	if typeNode.Kind == NodeTypeGeneric {
+	if typeNode.Kind() == NodeTypeGeneric {
 		buffer.WriteString(typeNode.Get(NodePredicateGenericName))
 	} else {
 		if titled {

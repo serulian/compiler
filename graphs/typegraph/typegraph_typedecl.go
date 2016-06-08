@@ -49,7 +49,7 @@ func (g *TypeGraph) GetTypeForSourceNode(node compilergraph.GraphNode) (TGTypeDe
 
 // Name returns the name of the underlying type.
 func (tn TGTypeDecl) Name() string {
-	if tn.GraphNode.Kind == NodeTypeGeneric {
+	if tn.GraphNode.Kind() == NodeTypeGeneric {
 		return tn.GraphNode.Get(NodePredicateGenericName)
 	}
 
@@ -58,7 +58,7 @@ func (tn TGTypeDecl) Name() string {
 
 // DescriptiveName returns a nice human-readable name for the type.
 func (tn TGTypeDecl) DescriptiveName() string {
-	if tn.GraphNode.Kind == NodeTypeGeneric {
+	if tn.GraphNode.Kind() == NodeTypeGeneric {
 		containingType, _ := tn.ContainingType()
 		return containingType.DescriptiveName() + "::" + tn.Name()
 	}
@@ -73,7 +73,7 @@ func (tn TGTypeDecl) DescriptiveName() string {
 
 // Title returns a nice title for the type.
 func (tn TGTypeDecl) Title() string {
-	nodeType := tn.Kind.(NodeType)
+	nodeType := tn.GraphNode.Kind().(NodeType)
 
 	switch nodeType {
 	case NodeTypeClass:
@@ -128,7 +128,7 @@ func (tn TGTypeDecl) HasGenerics() bool {
 
 // Generics returns the generics on this type.
 func (tn TGTypeDecl) Generics() []TGGeneric {
-	if tn.GraphNode.Kind == NodeTypeGeneric {
+	if tn.GraphNode.Kind() == NodeTypeGeneric {
 		return make([]TGGeneric, 0)
 	}
 
@@ -299,7 +299,7 @@ func (tn TGTypeDecl) HasAttribute(attribute TypeAttribute) bool {
 
 // TypeKind returns the kind of the type node.
 func (tn TGTypeDecl) TypeKind() TypeKind {
-	nodeType := tn.Kind.(NodeType)
+	nodeType := tn.GraphNode.Kind().(NodeType)
 
 	switch nodeType {
 	case NodeTypeClass:

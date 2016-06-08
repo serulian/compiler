@@ -26,8 +26,9 @@ func (t SRGTypeOrMember) Name() string {
 
 // IsType returns whether this represents a reference to a type.
 func (t SRGTypeOrMember) IsType() bool {
+	nodeKind := t.Kind()
 	for _, kind := range TYPE_KINDS {
-		if t.Kind == kind {
+		if nodeKind == kind {
 			return true
 		}
 	}

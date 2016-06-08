@@ -54,7 +54,7 @@ func (sb *scopeBuilder) saveScopes() {
 
 // getScopeHandler returns the scope building handler for nodes of the given type.
 func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandler {
-	switch node.Kind {
+	switch node.Kind() {
 	// Members.
 	case parser.NodeTypeVariable:
 		return sb.scopeVariable
@@ -265,7 +265,7 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 		return sb.scopeIdentifierExpression
 
 	default:
-		panic(fmt.Sprintf("Unknown SRG node in scoping: %v", node.Kind))
+		panic(fmt.Sprintf("Unknown SRG node in scoping: %v", node.Kind()))
 	}
 }
 

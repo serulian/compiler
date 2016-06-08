@@ -178,7 +178,7 @@ func (t SRGTypeRef) subReferences(predicate string) []SRGTypeRef {
 
 // RefKind returns the kind of this type reference.
 func (t SRGTypeRef) RefKind() TypeRefKind {
-	nodeKind := t.GraphNode.Kind.(parser.NodeType)
+	nodeKind := t.GraphNode.Kind().(parser.NodeType)
 	switch nodeKind {
 	case parser.NodeTypeVoid:
 		return TypeRefVoid

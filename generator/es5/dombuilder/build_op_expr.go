@@ -73,7 +73,7 @@ func (db *domBuilder) buildFunctionCall(node compilergraph.GraphNode) codedom.Ex
 	if isNamed && !namedRef.IsLocal() {
 		member, _ := namedRef.Member()
 
-		if childExprNode.Kind == parser.NodeNullableMemberAccessExpression {
+		if childExprNode.Kind() == parser.NodeNullableMemberAccessExpression {
 			return codedom.NullableMemberCall(childExpr, member, arguments, node)
 		}
 
@@ -192,7 +192,7 @@ func (db *domBuilder) buildUnaryOperatorExpression(node compilergraph.GraphNode,
 	operator, _ := scope.CalledOperator(db.scopegraph.TypeGraph())
 
 	if operator.IsNative() {
-		return db.buildNativeUnaryExpression(node, operatorMap[node.Kind])
+		return db.buildNativeUnaryExpression(node, operatorMap[node.Kind()])
 	}
 
 	childExpr := db.getExpression(node, parser.NodeUnaryExpressionChildExpr)
@@ -210,7 +210,7 @@ func (db *domBuilder) buildBinaryOperatorExpression(node compilergraph.GraphNode
 	operator, _ := scope.CalledOperator(db.scopegraph.TypeGraph())
 
 	if operator.IsNative() {
-		return db.buildNativeBinaryExpression(node, operatorMap[node.Kind])
+		return db.buildNativeBinaryExpression(node, operatorMap[node.Kind()])
 	}
 
 	leftExpr := db.getExpression(node, parser.NodeBinaryExpressionLeftExpr)

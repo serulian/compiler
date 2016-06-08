@@ -102,7 +102,7 @@ func (t SRGType) Location() compilercommon.SourceAndLocation {
 
 // GetTypeKind returns the kind matching the type definition/declaration node type.
 func (t SRGType) TypeKind() TypeKind {
-	switch t.GraphNode.Kind {
+	switch t.GraphNode.Kind() {
 	case parser.NodeTypeClass:
 		return ClassType
 
@@ -116,7 +116,7 @@ func (t SRGType) TypeKind() TypeKind {
 		return StructType
 
 	default:
-		panic(fmt.Sprintf("Unknown kind of type %s", t.GraphNode.Kind))
+		panic(fmt.Sprintf("Unknown kind of type %s", t.GraphNode.Kind()))
 		return ClassType
 	}
 }
@@ -218,7 +218,7 @@ func (t SRGType) Alias() (string, bool) {
 	for dit.Next() {
 		decorator := dit.Node()
 		parameter, ok := decorator.TryGetNode(parser.NodeDecoratorPredicateParameter)
-		if !ok || parameter.Kind != parser.NodeStringLiteralExpression {
+		if !ok || parameter.Kind() != parser.NodeStringLiteralExpression {
 			continue
 		}
 

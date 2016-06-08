@@ -30,15 +30,6 @@ func (gl *GraphLayer) StartQuery(nodeNames ...string) GraphQuery {
 	}
 }
 
-// AllNodesQuery returns a query starting from all the nodes in the layer.
-func (gl *GraphLayer) AllNodesQuery() GraphQuery {
-	return GraphQuery{
-		path:  cayley.StartPath(gl.cayleyStore, gl.id).In(nodeMemberPredicate),
-		layer: gl,
-		tags:  make([]string, 0),
-	}
-}
-
 // FindNodesOfKind returns a new query starting at the nodes who have the given kind in this layer.
 func (gl *GraphLayer) FindNodesOfKind(kinds ...TaggedValue) GraphQuery {
 	return gl.FindNodesWithTaggedType(gl.nodeKindPredicate, kinds...)

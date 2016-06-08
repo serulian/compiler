@@ -72,9 +72,9 @@ func (gni *graphNodeIterator) Next() bool {
 	kindString := gni.layer.cayleyStore.NameOf(tags[fullKindPredicate])
 
 	node := GraphNode{
-		NodeId: GraphNodeId(gni.layer.cayleyStore.NameOf(gni.iterator.Result())),
-		Kind:   gni.layer.parseTaggedKey(kindString, gni.layer.nodeKindEnum).(TaggedValue),
-		layer:  gni.layer,
+		NodeId:     GraphNodeId(gni.layer.cayleyStore.NameOf(gni.iterator.Result())),
+		kindString: kindString,
+		layer:      gni.layer,
 	}
 
 	gni.node = node

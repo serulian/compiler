@@ -72,16 +72,15 @@ func (gl *graphLayerModifierStruct) runCollector() {
 func (gl *graphLayerModifierStruct) Modify(node GraphNode) ModifiableGraphNode {
 	return ModifiableGraphNode{
 		NodeId:   node.NodeId,
-		Kind:     node.Kind,
+		Kind:     node.Kind(),
 		modifier: gl,
 	}
 }
 
 // CreateNode will create a new node in the graph layer.
 func (gl *graphLayerModifierStruct) CreateNode(nodeKind TaggedValue) ModifiableGraphNode {
-	// Add the node as a member of the layer.
+	// Create the new node.
 	nodeId := compilerutil.NewUniqueId()
-	gl.addQuad(cayley.Quad(nodeId, nodeMemberPredicate, gl.layer.id, gl.layer.prefix))
 
 	node := ModifiableGraphNode{
 		NodeId:   GraphNodeId(nodeId),
@@ -120,9 +119,9 @@ func (gl *graphLayerModifierStruct) Apply() {
 // are undefined.
 func (gn ModifiableGraphNode) AsNode() GraphNode {
 	return GraphNode{
-		NodeId: gn.NodeId,
-		Kind:   gn.Kind,
-		layer:  gn.modifier.layer,
+		NodeId:     gn.NodeId,
+		kindString: gn.modifier.layer.getTaggedKey(gn.Kind),
+		layer:      gn.modifier.layer,
 	}
 }
 
