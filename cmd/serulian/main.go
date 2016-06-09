@@ -8,6 +8,7 @@ package main
 import (
 	"fmt"
 	"os"
+	runtime "runtime/debug"
 
 	"github.com/serulian/compiler/builder"
 	"github.com/serulian/compiler/developer"
@@ -24,6 +25,11 @@ var (
 	addr                      string
 )
 
+func disableGC() {
+	// Disables GC.
+	runtime.SetGCPercent(-1)
+}
+
 func main() {
 	var cmdBuild = &cobra.Command{
 		Use:   "build [entrypoint source file]",
@@ -35,6 +41,7 @@ func main() {
 				os.Exit(-1)
 			}
 
+			disableGC()
 			if !builder.BuildSource(args[0], debug, vcsDevelopmentDirectories...) {
 				os.Exit(-1)
 			}
