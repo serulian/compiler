@@ -48,7 +48,7 @@ func (gni *graphNodeIterator) Next() bool {
 		return false
 	}
 
-	tags := make(map[string]graph.Value, len(gni.predicates)+len(gni.tags))
+	tags := make(map[string]graph.Value, len(gni.predicates)+len(gni.tags)+1) // +1 for kind.
 	gni.iterator.TagResults(tags)
 
 	// Copy the values over, making sure to update the predicates to reflect
@@ -56,7 +56,7 @@ func (gni *graphNodeIterator) Next() bool {
 	if len(gni.predicates)+len(gni.tags) > 0 {
 		updatedTags := make(map[string]string, len(gni.predicates)+len(gni.tags))
 		for _, predicate := range gni.predicates {
-			fullPredicate := gni.layer.prefix + "-" + predicate
+			fullPredicate := gni.layer.getPrefixedPredicate(predicate)
 			updatedTags[predicate] = gni.layer.cayleyStore.NameOf(tags[fullPredicate])
 		}
 
@@ -68,7 +68,7 @@ func (gni *graphNodeIterator) Next() bool {
 	}
 
 	// Load the kind of the node.
-	fullKindPredicate := gni.layer.prefix + "-" + gni.layer.nodeKindPredicate
+	fullKindPredicate := gni.layer.getPrefixedPredicate(gni.layer.nodeKindPredicate)
 	kindString := gni.layer.cayleyStore.NameOf(tags[fullKindPredicate])
 
 	node := GraphNode{
