@@ -88,7 +88,7 @@ func (an Annotator) DefineGenericConstraint(genericSourceNode compilergraph.Grap
 // DefineParentType defines that the given type inherits from the given parent type. For classes, the parent
 // is structurally inherited and for nominal types, it describes conversion.
 func (an Annotator) DefineParentType(typeSourceNode compilergraph.GraphNode, inherits TypeReference) {
-	typeNode := an.tdg.getMatchingTypeGraphNode(typeSourceNode, TYPE_NODE_TYPES...)
+	typeNode := an.tdg.getMatchingTypeGraphNode(typeSourceNode, TYPE_NODE_TYPES_TAGGED...)
 	an.modifier.Modify(typeNode).DecorateWithTagged(NodePredicateParentType, inherits)
 }
 

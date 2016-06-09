@@ -69,7 +69,7 @@ func (gq GraphQuery) FilterBy(filter nodeFilter) *FilteredQuery {
 func (gq GraphQuery) With(predicate string) GraphQuery {
 	// Note: This relies on a quirk of Cayley: If you specifiy a 'Save' of a predicate
 	// that does not exist, the node is removed from the query.
-	adjustedPredicate := gq.layer.getPrefixedPredicates(predicate)[0]
+	adjustedPredicate := gq.layer.getPrefixedPredicate(predicate)
 	return GraphQuery{
 		path:  gq.path.Save(adjustedPredicate, "-"),
 		layer: gq.layer,
@@ -114,7 +114,7 @@ func (gq GraphQuery) HasTagged(via string, taggedValues ...TaggedValue) GraphQue
 // Has filters this Query to represent the nodes that have some linkage
 // to some known node.
 func (gq GraphQuery) Has(via string, nodes ...string) GraphQuery {
-	adjustedVia := gq.layer.getPrefixedPredicates(via)[0]
+	adjustedVia := gq.layer.getPrefixedPredicate(via)
 	return GraphQuery{
 		path:  gq.path.Has(adjustedVia, nodes...),
 		layer: gq.layer,
@@ -185,12 +185,12 @@ func (gq GraphQuery) BuildNodeIterator(predicates ...string) NodeIterator {
 
 	// Save the predicates the user requested.
 	for _, predicate := range predicates {
-		fullPredicate := gq.layer.prefix + "-" + predicate
+		fullPredicate := gq.layer.getPrefixedPredicate(predicate)
 		updatedPath = updatedPath.Save(fullPredicate, fullPredicate)
 	}
 
 	// Save the predicate for the kind of the node as well.
-	fullKindPredicate := gq.layer.prefix + "-" + gq.layer.nodeKindPredicate
+	fullKindPredicate := gq.layer.getPrefixedPredicate(gq.layer.nodeKindPredicate)
 	updatedPath = updatedPath.Save(fullKindPredicate, fullKindPredicate)
 
 	it := updatedPath.BuildIterator()

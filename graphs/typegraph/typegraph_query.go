@@ -21,20 +21,16 @@ func (g *TypeGraph) findAllNodes(nodeTypes ...NodeType) compilergraph.GraphQuery
 }
 
 // tryGetMatchingTypeGraphNode attempts to find the type node defined for the given source node, if any.
-func (g *TypeGraph) tryGetMatchingTypeGraphNode(sourceNode compilergraph.GraphNode, allowedKinds ...NodeType) (compilergraph.GraphNode, bool) {
-	// TODO(jschorr): Should we reverse this query for better performance? If we start
-	// at the SRG node by ID, it should immediately filter, but we'll have to cross the
-	// layers to do it.
-	return g.findAllNodes(allowedKinds...).
-		Has(NodePredicateSource, string(sourceNode.NodeId)).
+func (g *TypeGraph) tryGetMatchingTypeGraphNode(sourceNode compilergraph.GraphNode, allowedKinds ...compilergraph.TaggedValue) (compilergraph.GraphNode, bool) {
+	return g.layer.
+		StartQuery(string(sourceNode.NodeId)).
+		In(NodePredicateSource).
+		IsKind(allowedKinds...).
 		TryGetNode()
 }
 
 // getMatchingTypeGraphNode finds the type node defined for the given source node or panics.
-func (g *TypeGraph) getMatchingTypeGraphNode(sourceNode compilergraph.GraphNode, allowedKinds ...NodeType) compilergraph.GraphNode {
-	// TODO(jschorr): Should we reverse this query for better performance? If we start
-	// at the SRG node by ID, it should immediately filter, but we'll have to cross the
-	// layers to do it.
+func (g *TypeGraph) getMatchingTypeGraphNode(sourceNode compilergraph.GraphNode, allowedKinds ...compilergraph.TaggedValue) compilergraph.GraphNode {
 	resolvedNode, found := g.tryGetMatchingTypeGraphNode(sourceNode, allowedKinds...)
 	if !found {
 		panic(fmt.Sprintf("Type graph node not found in type graph for source node: %v", sourceNode))
