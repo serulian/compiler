@@ -12,6 +12,7 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/graphs/srg/typerefresolver"
 
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/srg"
@@ -29,6 +30,8 @@ type ScopeGraph struct {
 	irg   *webidl.WebIRG               // The IRG for WebIDL behind this scope graph.
 	graph *compilergraph.SerulianGraph // The root graph.
 
+	srgRefResolver *typerefresolver.TypeReferenceResolver // The resolver to use for SRG type refs.
+
 	layer *compilergraph.GraphLayer // The ScopeGraph layer in the graph.
 }
 
@@ -43,7 +46,6 @@ type Result struct {
 // ParseAndBuildScopeGraph conducts full parsing and type graph construction for the project
 // starting at the given root source file.
 func ParseAndBuildScopeGraph(rootSourceFilePath string, vcsDevelopmentDirectories []string, libraries ...packageloader.Library) Result {
-	log.Println("Creating graph")
 	graph, err := compilergraph.NewGraph(rootSourceFilePath)
 	if err != nil {
 		log.Fatalf("Could not instantiate graph: %v", err)
@@ -53,7 +55,6 @@ func ParseAndBuildScopeGraph(rootSourceFilePath string, vcsDevelopmentDirectorie
 	sourcegraph := srg.NewSRG(graph)
 	webidlgraph := webidl.NewIRG(graph)
 
-	log.Println("Loading source files")
 	loader := packageloader.NewPackageLoader(rootSourceFilePath, vcsDevelopmentDirectories, sourcegraph.PackageLoaderHandler(), webidlgraph.PackageLoaderHandler())
 	loaderResult := loader.Load(libraries...)
 	if !loaderResult.Status {
@@ -65,8 +66,9 @@ func ParseAndBuildScopeGraph(rootSourceFilePath string, vcsDevelopmentDirectorie
 	}
 
 	// Construct the type graph.
-	log.Println("Constructing type graph")
-	typeResult := typegraph.BuildTypeGraph(sourcegraph.Graph, srgtc.GetConstructor(sourcegraph), webidltc.GetConstructor(webidlgraph))
+	resolver := typerefresolver.NewResolver(sourcegraph)
+	srgConstructor := srgtc.GetConstructorWithResolver(sourcegraph, resolver)
+	typeResult := typegraph.BuildTypeGraph(sourcegraph.Graph, srgConstructor, webidltc.GetConstructor(webidlgraph))
 	if !typeResult.Status {
 		return Result{
 			Status:   false,
@@ -75,9 +77,11 @@ func ParseAndBuildScopeGraph(rootSourceFilePath string, vcsDevelopmentDirectorie
 		}
 	}
 
+	// Freeze the resolver's cache.
+	resolver.FreezeCache()
+
 	// Construct the scope graph.
-	log.Println("Constructing scope graph")
-	scopeResult := BuildScopeGraph(sourcegraph, webidlgraph, typeResult.Graph)
+	scopeResult := buildScopeGraphWithResolver(sourcegraph, webidlgraph, typeResult.Graph, resolver)
 	return Result{
 		Status:   scopeResult.Status,
 		Errors:   scopeResult.Errors,
@@ -110,12 +114,17 @@ func combineWarnings(warnings ...[]compilercommon.SourceWarning) []compilercommo
 // BuildScopeGraph returns a new ScopeGraph that is populated from the given SRG and TypeGraph,
 // computing scope for all statements and expressions and semantic checking along the way.
 func BuildScopeGraph(srg *srg.SRG, irg *webidl.WebIRG, tdg *typegraph.TypeGraph) Result {
+	return buildScopeGraphWithResolver(srg, irg, tdg, typerefresolver.NewResolver(srg))
+}
+
+func buildScopeGraphWithResolver(srg *srg.SRG, irg *webidl.WebIRG, tdg *typegraph.TypeGraph, resolver *typerefresolver.TypeReferenceResolver) Result {
 	scopeGraph := &ScopeGraph{
-		srg:   srg,
-		tdg:   tdg,
-		irg:   irg,
-		graph: srg.Graph,
-		layer: srg.Graph.NewGraphLayer("sig", NodeTypeTagged),
+		srg:            srg,
+		tdg:            tdg,
+		irg:            irg,
+		graph:          srg.Graph,
+		srgRefResolver: resolver,
+		layer:          srg.Graph.NewGraphLayer("sig", NodeTypeTagged),
 	}
 
 	builder := newScopeBuilder(scopeGraph)
@@ -183,6 +192,5 @@ func (sg *ScopeGraph) GetScope(srgNode compilergraph.GraphNode) (proto.ScopeInfo
 
 // resolveSRGTypeRef builds an SRG type reference into a resolved type reference.
 func (sg *ScopeGraph) ResolveSRGTypeRef(srgTypeRef srg.SRGTypeRef) (typegraph.TypeReference, error) {
-	constructor := srgtc.GetConstructor(sg.srg)
-	return constructor.BuildTypeRef(srgTypeRef, sg.tdg)
+	return sg.srgRefResolver.ResolveTypeRef(srgTypeRef, sg.tdg)
 }
