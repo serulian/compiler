@@ -5,26 +5,33 @@
 package typeconstructor
 
 import (
-	"fmt"
-
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/graphs/srg"
+	"github.com/serulian/compiler/graphs/srg/typerefresolver"
 	"github.com/serulian/compiler/graphs/typegraph"
+
 	"github.com/serulian/compiler/parser"
 )
 
 // GetConstructor returns a TypeGraph constructor for the given SRG.
 func GetConstructor(srg *srg.SRG) *srgTypeConstructor {
+	return GetConstructorWithResolver(srg, typerefresolver.NewResolver(srg))
+}
+
+// GetConstructorWithResolver returns a TypeGraph constructor for the given SRG.
+func GetConstructorWithResolver(srg *srg.SRG, resolver *typerefresolver.TypeReferenceResolver) *srgTypeConstructor {
 	return &srgTypeConstructor{
-		srg: srg,
+		srg:      srg,
+		resolver: resolver,
 	}
 }
 
 // srgTypeConstructor defines a type for populating a type graph from the SRG.
 type srgTypeConstructor struct {
-	srg *srg.SRG // The SRG being transformed.
+	srg      *srg.SRG                               // The SRG being transformed.
+	resolver *typerefresolver.TypeReferenceResolver // The resolver for type references.
 }
 
 func (stc *srgTypeConstructor) DefineModules(builder typegraph.GetModuleBuilder) {
@@ -380,111 +387,7 @@ func (stc *srgTypeConstructor) GetLocation(sourceNodeId compilergraph.GraphNodeI
 // BuildTypeRef builds a type graph type reference from the SRG type reference. This also fully
 // resolves the type reference.
 func (stc *srgTypeConstructor) BuildTypeRef(typeref srg.SRGTypeRef, tdg *typegraph.TypeGraph) (typegraph.TypeReference, error) {
-	switch typeref.RefKind() {
-	case srg.TypeRefVoid:
-		return tdg.VoidTypeReference(), nil
-
-	case srg.TypeRefAny:
-		return tdg.AnyTypeReference(), nil
-
-	case srg.TypeRefMapping:
-		innerType, err := stc.BuildTypeRef(typeref.InnerReference(), tdg)
-		if err != nil {
-			return tdg.AnyTypeReference(), err
-		}
-
-		return tdg.NewTypeReference(tdg.MappingType(), innerType), nil
-
-	case srg.TypeRefSlice:
-		innerType, err := stc.BuildTypeRef(typeref.InnerReference(), tdg)
-		if err != nil {
-			return tdg.AnyTypeReference(), err
-		}
-
-		return tdg.NewTypeReference(tdg.SliceType(), innerType), nil
-
-	case srg.TypeRefStream:
-		innerType, err := stc.BuildTypeRef(typeref.InnerReference(), tdg)
-		if err != nil {
-			return tdg.AnyTypeReference(), err
-		}
-
-		return tdg.NewTypeReference(tdg.StreamType(), innerType), nil
-
-	case srg.TypeRefNullable:
-		innerType, err := stc.BuildTypeRef(typeref.InnerReference(), tdg)
-		if err != nil {
-			return tdg.AnyTypeReference(), err
-		}
-
-		return innerType.AsNullable(), nil
-
-	case srg.TypeRefPath:
-		// Resolve the package type for the type ref.
-		resolvedTypeInfo, found := typeref.ResolveType()
-		if !found {
-			sourceError := compilercommon.SourceErrorf(typeref.Location(),
-				"Type '%s' could not be found",
-				typeref.ResolutionPath())
-
-			return tdg.AnyTypeReference(), sourceError
-		}
-
-		// If the type information refers to an SRG type or generic, find the node directly
-		// in the type graph.
-		var constructedRef = tdg.AnyTypeReference()
-		if !resolvedTypeInfo.IsExternalPackage {
-			// Get the type in the type graph.
-			resolvedType, hasResolvedType := tdg.GetTypeForSourceNode(resolvedTypeInfo.ResolvedType.Node())
-			if !hasResolvedType {
-				panic(fmt.Sprintf("Could not find typegraph type for SRG type %v", resolvedTypeInfo.ResolvedType.Name()))
-			}
-
-			constructedRef = tdg.NewTypeReference(resolvedType)
-		} else {
-			// Otherwise, we search for the type in the type graph based on the package from which it
-			// was imported.
-			resolvedType, hasResolvedType := tdg.ResolveTypeUnderPackage(resolvedTypeInfo.ExternalPackageTypePath, resolvedTypeInfo.ExternalPackage)
-			if !hasResolvedType {
-				sourceError := compilercommon.SourceErrorf(typeref.Location(),
-					"Type '%s' could not be found",
-					typeref.ResolutionPath())
-
-				return tdg.AnyTypeReference(), sourceError
-			}
-
-			constructedRef = tdg.NewTypeReference(resolvedType)
-		}
-
-		// Add the generics.
-		if typeref.HasGenerics() {
-			for _, srgGeneric := range typeref.Generics() {
-				genericTypeRef, err := stc.BuildTypeRef(srgGeneric, tdg)
-				if err != nil {
-					return tdg.AnyTypeReference(), err
-				}
-
-				constructedRef = constructedRef.WithGeneric(genericTypeRef)
-			}
-		}
-
-		// Add the parameters.
-		if typeref.HasParameters() {
-			for _, srgParameter := range typeref.Parameters() {
-				parameterTypeRef, err := stc.BuildTypeRef(srgParameter, tdg)
-				if err != nil {
-					return tdg.AnyTypeReference(), err
-				}
-				constructedRef = constructedRef.WithParameter(parameterTypeRef)
-			}
-		}
-
-		return constructedRef, nil
-
-	default:
-		panic(fmt.Sprintf("Unknown kind of SRG type ref: %v", typeref.RefKind()))
-		return tdg.AnyTypeReference(), nil
-	}
+	return stc.resolver.ResolveTypeRef(typeref, tdg)
 }
 
 type typeGetter func() (srg.SRGTypeRef, bool)
