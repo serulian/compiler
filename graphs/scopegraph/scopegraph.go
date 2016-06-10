@@ -43,6 +43,7 @@ type Result struct {
 // ParseAndBuildScopeGraph conducts full parsing and type graph construction for the project
 // starting at the given root source file.
 func ParseAndBuildScopeGraph(rootSourceFilePath string, vcsDevelopmentDirectories []string, libraries ...packageloader.Library) Result {
+	log.Println("Creating graph")
 	graph, err := compilergraph.NewGraph(rootSourceFilePath)
 	if err != nil {
 		log.Fatalf("Could not instantiate graph: %v", err)
@@ -52,6 +53,7 @@ func ParseAndBuildScopeGraph(rootSourceFilePath string, vcsDevelopmentDirectorie
 	sourcegraph := srg.NewSRG(graph)
 	webidlgraph := webidl.NewIRG(graph)
 
+	log.Println("Loading source files")
 	loader := packageloader.NewPackageLoader(rootSourceFilePath, vcsDevelopmentDirectories, sourcegraph.PackageLoaderHandler(), webidlgraph.PackageLoaderHandler())
 	loaderResult := loader.Load(libraries...)
 	if !loaderResult.Status {
@@ -63,6 +65,7 @@ func ParseAndBuildScopeGraph(rootSourceFilePath string, vcsDevelopmentDirectorie
 	}
 
 	// Construct the type graph.
+	log.Println("Constructing type graph")
 	typeResult := typegraph.BuildTypeGraph(sourcegraph.Graph, srgtc.GetConstructor(sourcegraph), webidltc.GetConstructor(webidlgraph))
 	if !typeResult.Status {
 		return Result{
@@ -73,6 +76,7 @@ func ParseAndBuildScopeGraph(rootSourceFilePath string, vcsDevelopmentDirectorie
 	}
 
 	// Construct the scope graph.
+	log.Println("Constructing scope graph")
 	scopeResult := BuildScopeGraph(sourcegraph, webidlgraph, typeResult.Graph)
 	return Result{
 		Status:   scopeResult.Status,

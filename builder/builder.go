@@ -95,6 +95,7 @@ func BuildSource(rootSourceFilePath string, debug bool, vcsDevelopmentDirectorie
 
 	// Build a scope graph for the project. This will conduct parsing and type graph
 	// construction on our behalf.
+	log.Println("Starting build")
 	scopeResult := scopegraph.ParseAndBuildScopeGraph(rootSourceFilePath, vcsDevelopmentDirectories, CORE_LIBRARY)
 
 	outputWarnings(scopeResult.Warnings)
@@ -107,6 +108,7 @@ func BuildSource(rootSourceFilePath string, debug bool, vcsDevelopmentDirectorie
 	filename := path.Base(rootSourceFilePath) + ".js"
 	mapname := filename + ".map"
 
+	log.Println("Generating ES5")
 	generated, sourceMap, err := es5.GenerateES5(scopeResult.Graph, mapname, "")
 	if err != nil {
 		panic(err)
@@ -120,7 +122,10 @@ func BuildSource(rootSourceFilePath string, debug bool, vcsDevelopmentDirectorie
 	generated += "\n//# sourceMappingURL=" + mapname
 
 	// Write the source and its map.
+	log.Println("Writing generated source")
 	ioutil.WriteFile(filename, []byte(generated), 0644)
 	ioutil.WriteFile(mapname, marshalledMap, 0644)
+
+	log.Println("Work completed")
 	return true
 }
