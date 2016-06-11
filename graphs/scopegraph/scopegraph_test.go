@@ -541,7 +541,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"arrow operator invalid source test", "arrowops", "invalidsource",
 		[]expectedScopeEntry{},
-		"Right hand side of an arrow expression must be of type Promise: Type Integer cannot be used in place of type Promise as it does not implement member Then", ""},
+		"Right hand side of an arrow expression must be of type Awaitable: Type Integer cannot be used in place of type Awaitable as it does not implement member Then", ""},
 
 	scopegraphTest{"arrow operator invalid destination test", "arrowops", "invaliddestination",
 		[]expectedScopeEntry{},
@@ -1127,7 +1127,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"async non-void warning test", "async", "nonvoidwarn",
 		[]expectedScopeEntry{},
-		"", "Returned Promise resolves a value of type Integer which is not handled"},
+		"", "Returned Awaitable resolves a value of type Integer which is not handled"},
 
 	scopegraphTest{"async success test", "async", "success",
 		[]expectedScopeEntry{},

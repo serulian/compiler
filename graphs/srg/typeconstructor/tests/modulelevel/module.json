@@ -3,6 +3,40 @@
         "Key": "17ee1bc13f69d7543aa89579358f3fbb",
         "Kind": 6,
         "Children": {
+            "00ec5c097cd9ad54114bdad5527f857c": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "00ec5c097cd9ad54114bdad5527f857c",
+                    "Kind": 7,
+                    "Children": {
+                        "ed96df037d4bbe6586d8149cfab9ac80": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "ed96df037d4bbe6586d8149cfab9ac80",
+                                "Kind": 10,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "10|NodeType|tdg",
+                                    "tdg-return-type": "void",
+                                    "tdg-source-node": "(NodeRef)"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-invokes-async": "true",
+                        "tdg-member-name": "DoSomethingAsync",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cAwaitable\u003cvoid\u003e\u003e",
+                        "tdg-member-signature": "\n\u0010dosomethingasync\u0010\u0002\u0018\u0000 \u0001*\u0019function\u003cAwaitable\u003cvoid\u003e\u003e",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/modulelevel/module.seru",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
             "8452e8c79e3600a74c308d36820a58ad": {
                 "Predicate": "tdg-node-member",
                 "Child": {
@@ -49,40 +83,6 @@
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cInteger\u003e",
                         "tdg-member-signature": "\n\u000bdosomething\u0010\u0002\u0018\u0000 \u0001*\u0011function\u003cInteger\u003e",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "7|NodeType|tdg",
-                        "tdg-source-module": "tests/modulelevel/module.seru",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
-            "d47fab5055878700fb3aa4387dddf4b3": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "d47fab5055878700fb3aa4387dddf4b3",
-                    "Kind": 7,
-                    "Children": {
-                        "ed96df037d4bbe6586d8149cfab9ac80": {
-                            "Predicate": "tdg-member-returnable",
-                            "Child": {
-                                "Key": "ed96df037d4bbe6586d8149cfab9ac80",
-                                "Kind": 10,
-                                "Children": {},
-                                "Predicates": {
-                                    "tdg-node-kind": "10|NodeType|tdg",
-                                    "tdg-return-type": "void",
-                                    "tdg-source-node": "(NodeRef)"
-                                }
-                            }
-                        }
-                    },
-                    "Predicates": {
-                        "tdg-member-exported": "true",
-                        "tdg-member-invokes-async": "true",
-                        "tdg-member-name": "DoSomethingAsync",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cPromise\u003cvoid\u003e\u003e",
-                        "tdg-member-signature": "\n\u0010dosomethingasync\u0010\u0002\u0018\u0000 \u0001*\u0017function\u003cPromise\u003cvoid\u003e\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/modulelevel/module.seru",

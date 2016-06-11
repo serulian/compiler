@@ -1,15 +1,15 @@
 class SomePromise {
-	function<promise<bool>> Then(resolve function<void>(bool)) {
+	function<awaitable<bool>> Then(resolve function<void>(bool)) {
 		resolve(true)
 		return this
 	}
 
-	function<promise<bool>> Catch(rejection function<void>(error)) {
+	function<awaitable<bool>> Catch(rejection function<void>(error)) {
 		return this
 	}
 }
 
-function<bool?> DoSomething(p promise<bool>) {
+function<bool?> DoSomething(p awaitable<bool>) {
    var<bool?> somebool
    somebool <- p
    return somebool

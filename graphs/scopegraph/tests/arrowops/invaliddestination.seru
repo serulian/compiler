@@ -1,9 +1,9 @@
 class SomePromise {
-	function<promise<bool>> Then(callback function<void>(bool)) {
+	function<awaitable<bool>> Then(callback function<void>(bool)) {
 		return this
 	}
 
-	function<promise<bool>> Catch(callback function<void>(error)) {
+	function<awaitable<bool>> Catch(callback function<void>(error)) {
 		return this	
 	}
 }

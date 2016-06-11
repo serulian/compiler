@@ -149,12 +149,12 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 		returnType = returnType.AsNullable()
 	}
 
-	// Check for a promise return type. If found and this call is not under an assignment or
+	// Check for an awaitable return type. If found and this call is not under an assignment or
 	// arrow, warn.
-	if isValid && returnType.IsDirectReferenceTo(sb.sg.tdg.PromiseType()) {
+	if isValid && returnType.IsDirectReferenceTo(sb.sg.tdg.AwaitableType()) {
 		if !returnType.Generics()[0].IsVoid() {
 			if _, underStatement := node.TryGetIncoming(parser.NodeExpressionStatementExpression); underStatement {
-				sb.decorateWithWarning(node, "Returned Promise resolves a value of type %v which is not handled", returnType.Generics()[0])
+				sb.decorateWithWarning(node, "Returned Awaitable resolves a value of type %v which is not handled", returnType.Generics()[0])
 			}
 		}
 	}

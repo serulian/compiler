@@ -42,10 +42,10 @@ func (g *TypeGraph) globallyValidate() bool {
 		// Check the function's return type.
 		var returnType = memberType.Generics()[0]
 
-		// If the function is *not* promising then strip off the Promise<T>.
+		// If the function is *not* promising then strip off the Awaitable<T>.
 		if !member.IsPromising() {
-			if !returnType.IsDirectReferenceTo(g.PromiseType()) {
-				panic("Non-promising Non-Promise<T> async function")
+			if !returnType.IsDirectReferenceTo(g.AwaitableType()) {
+				panic("Non-promising Non-Awaitable<T> async function")
 			}
 
 			returnType = returnType.Generics()[0]
