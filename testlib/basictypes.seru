@@ -98,10 +98,10 @@ interface Error {
 	property<string> Message { get }
 }
 
-@•typealias('promise')
-interface Promise<T> {
-	function<Promise<T>> Then(callback function<void>(T))
-	function<Promise<T>> Catch(callback function<void>(error))
+@•typealias('awaitable')
+interface Awaitable<T> {
+	function<Awaitable<T>> Then(callback function<void>(T))
+	function<Awaitable<T>> Catch(callback function<void>(error))
 }
 
 @•typealias('releasable')

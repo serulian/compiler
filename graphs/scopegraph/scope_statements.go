@@ -456,11 +456,11 @@ func (sb *scopeBuilder) scopeArrowStatement(node compilergraph.GraphNode, option
 		return newScope().Invalid().GetScope()
 	}
 
-	// Ensure the source node is a Promise<T>.
+	// Ensure the source node is a Awaitable<T>.
 	sourceType := sourceScope.ResolvedTypeRef(sb.sg.tdg)
-	generics, err := sourceType.CheckConcreteSubtypeOf(sb.sg.tdg.PromiseType())
+	generics, err := sourceType.CheckConcreteSubtypeOf(sb.sg.tdg.AwaitableType())
 	if err != nil {
-		sb.decorateWithError(sourceNode, "Right hand side of an arrow statement must be of type Promise: %v", err)
+		sb.decorateWithError(sourceNode, "Right hand side of an arrow statement must be of type Awaitable: %v", err)
 		return newScope().Invalid().GetScope()
 	}
 

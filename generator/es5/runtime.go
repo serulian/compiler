@@ -229,6 +229,14 @@ this.Serulian = (function($global) {
     // nativenew creates a new instance of the *ECMAScript* type specified (e.g. Number, String).
     'nativenew': function(type) {
       return function () {
+        if (arguments.length == 0) {
+          return new type();
+        }
+
+        if (type == $global.Promise) {
+          return new Promise(arguments[0]);
+        }
+
         var newInstance = Object.create(type.prototype);
         newInstance = type.apply(newInstance, arguments) || newInstance;
         return newInstance;

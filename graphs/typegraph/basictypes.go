@@ -47,9 +47,9 @@ func (t *TypeGraph) FunctionTypeReference(generic TypeReference) TypeReference {
 	return t.NewTypeReference(t.FunctionType(), generic)
 }
 
-// PromiseTypeReference returns a new reference to the promise type, with the given generic.
-func (t *TypeGraph) PromiseTypeReference(generic TypeReference) TypeReference {
-	return t.NewTypeReference(t.PromiseType(), generic)
+// AwaitableTypeReference returns a new reference to the awaitable type, with the given generic.
+func (t *TypeGraph) AwaitableTypeReference(generic TypeReference) TypeReference {
+	return t.NewTypeReference(t.AwaitableType(), generic)
 }
 
 // SliceTypeReference returns a new reference to the slice type, with the given generic.
@@ -112,9 +112,9 @@ func (t *TypeGraph) StreamType() TGTypeDecl {
 	return t.getAliasedType("stream")
 }
 
-// PromiseType returns the promise type.
-func (t *TypeGraph) PromiseType() TGTypeDecl {
-	return t.getAliasedType("promise")
+// AwaitableType returns the awaitable type.
+func (t *TypeGraph) AwaitableType() TGTypeDecl {
+	return t.getAliasedType("awaitable")
 }
 
 // FunctionType returns the function type.

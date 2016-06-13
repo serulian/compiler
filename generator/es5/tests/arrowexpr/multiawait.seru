@@ -4,6 +4,6 @@ class SomeClass {
 	}	
 }
 
-function<void> DoSomething(p promise<SomeClass>, q promise<SomeClass>) {
+function<void> DoSomething(p awaitable<SomeClass>, q awaitable<SomeClass>) {
    (<- p) + (<- q)
 }
