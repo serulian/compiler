@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/parser"
 )
@@ -81,14 +82,14 @@ func (m SRGModule) ResolveType(path string) (TypeResolutionResult, bool) {
 		}
 
 		// Check for an imported item by name.
-		importNode, found := m.findImportWithLocalName(path)
+		importPackageNode, found := m.findImportWithLocalName(path)
 		if !found {
 			return TypeResolutionResult{}, false
 		}
 
 		// Resolve the name as the subsource under the import's package.
-		packageInfo := m.srg.getPackageForImport(importNode)
-		return packageInfo.ResolveExportedType(importNode.Get(parser.NodeImportPredicateSubsource))
+		packageInfo := m.srg.getPackageForImport(importPackageNode)
+		return packageInfo.ResolveExportedType(importPackageNode.Get(parser.NodeImportPredicateSubsource))
 	}
 
 	// Otherwise, we first need to find a type container.
@@ -101,16 +102,31 @@ func (m SRGModule) ResolveType(path string) (TypeResolutionResult, bool) {
 	return container.ResolveExportedType(pieces[1])
 }
 
+// findImportPackageNode searches for the import package node under this module with the given
+// matching name found on the given predicate.
+func (m SRGModule) findImportPackageNode(name string, predicate string) (compilergraph.GraphNode, bool) {
+	return m.srg.layer.StartQuery(name).
+		In(predicate).
+		IsKind(parser.NodeTypeImportPackage).
+		Has(parser.NodePredicateSource, string(m.InputSource())).
+		TryGetNode()
+}
+
+// findImportWithLocalName attempts to find an import package in this module with the given local name.
+func (m SRGModule) findImportWithLocalName(name string) (compilergraph.GraphNode, bool) {
+	return m.findImportPackageNode(name, parser.NodeImportPredicateName)
+}
+
+// findImportByPackageName searches for the import package with the given package name and returns it, if any.
+func (m SRGModule) findImportByPackageName(packageName string) (compilergraph.GraphNode, bool) {
+	return m.findImportPackageNode(packageName, parser.NodeImportPredicatePackageName)
+}
+
 // ResolveImportedPackage attempts to find a package imported by this module under the given
 // packageName.
 func (m SRGModule) ResolveImportedPackage(packageName string) (importedPackage, bool) {
-	// Search for the import under the module with the given package name.
-	node, found := m.StartQuery().
-		Out(parser.NodePredicateChild).
-		IsKind(parser.NodeTypeImport).
-		Has(parser.NodeImportPredicatePackageName, packageName).
-		TryGetNode()
-
+	// Search for the imported package under the module with the given package name.
+	node, found := m.findImportByPackageName(packageName)
 	if !found {
 		return importedPackage{}, false
 	}

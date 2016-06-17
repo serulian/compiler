@@ -189,7 +189,7 @@ func (ns SRGNamedScope) ScopeKind() NamedScopeKind {
 		return NamedScopeType
 
 	/* Import */
-	case parser.NodeTypeImport:
+	case parser.NodeTypeImportPackage:
 		return NamedScopeImport
 
 	/* Members */
@@ -244,7 +244,7 @@ func (ns SRGNamedScope) Name() string {
 	case parser.NodeTypeStruct:
 		return ns.Get(parser.NodeTypeDefinitionName)
 
-	case parser.NodeTypeImport:
+	case parser.NodeTypeImportPackage:
 		return ns.Get(parser.NodeImportPredicatePackageName)
 
 	case parser.NodeTypeProperty:
@@ -281,7 +281,7 @@ func (ns SRGNamedScope) Name() string {
 
 // ResolveNameUnderScope attempts to resolve the given name under this scope. Only applies to imports.
 func (ns SRGNamedScope) ResolveNameUnderScope(name string) (SRGScopeOrImport, bool) {
-	if ns.Kind() != parser.NodeTypeImport {
+	if ns.Kind() != parser.NodeTypeImportPackage {
 		return SRGNamedScope{}, false
 	}
 
