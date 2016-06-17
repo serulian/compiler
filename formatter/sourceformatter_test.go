@@ -55,6 +55,17 @@ var goldenTests = []goldenTest{
 	{"template strings test", "templatestrings"},
 }
 
+func conductParsing(t *testing.T, test goldenTest, source []byte) (*parseTree, formatterNode) {
+	parseTree := newParseTree(source)
+	inputSource := compilercommon.InputSource(test.filename)
+	rootNode := parser.Parse(parseTree.createAstNode, nil, inputSource, string(source))
+	if !assert.Empty(t, parseTree.errors, "Expected no parse errors for test %s", test.name) {
+		return nil, formatterNode{}
+	}
+
+	return parseTree, rootNode.(formatterNode)
+}
+
 func TestGolden(t *testing.T) {
 	for _, test := range goldenTests {
 		if os.Getenv("FILTER") != "" {
@@ -65,23 +76,31 @@ func TestGolden(t *testing.T) {
 			}
 		}
 
-		parseTree := newParseTree(test.input())
-		inputSource := compilercommon.InputSource(test.filename)
-		rootNode := parser.Parse(parseTree.createAstNode, nil, inputSource, string(test.input()))
-
-		if !assert.Empty(t, parseTree.errors, "Expected no parse errors for test %s", test.name) {
+		parseTree, rootNode := conductParsing(t, test, test.input())
+		if parseTree == nil {
 			continue
 		}
 
-		formatted := buildFormattedSource(parseTree, rootNode.(formatterNode), importHandlingInfo{})
-
+		formatted := buildFormattedSource(parseTree, rootNode, importHandlingInfo{})
 		if os.Getenv("REGEN") == "true" {
 			test.writeFormatted(formatted)
 		} else {
 			expected := string(test.output())
 
+			// Make sure the output is equal to that expected.
 			if !assert.Equal(t, expected, string(formatted), test.name) {
 				t.Log(string(formatted))
+			}
+
+			// Process the formatted source again and ensure it doesn't change.
+			reparsedTree, reparsedRootNode := conductParsing(t, test, formatted)
+			if reparsedTree == nil {
+				continue
+			}
+
+			formattedAgain := buildFormattedSource(reparsedTree, reparsedRootNode, importHandlingInfo{})
+			if !assert.Equal(t, string(formatted), string(formattedAgain), test.name) {
+				t.Log(string(formattedAgain))
 			}
 		}
 	}

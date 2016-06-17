@@ -28,16 +28,21 @@ func (sf *sourceFormatter) emitFile(node formatterNode) {
 type importInfo struct {
 	node formatterNode
 
-	source    string
-	subsource string
-	name      string
-	kind      string
+	source   string
+	kind     string
+	packages []importPackageInfo
 
 	comparisonKey string
 	sortKey       string
 
 	isVCS      bool
 	isSerulian bool
+}
+
+type importPackageInfo struct {
+	subsource   string
+	name        string
+	packageName string
 }
 
 type byImportSortKey []importInfo
@@ -65,27 +70,26 @@ func (sf *sourceFormatter) emitImports(node formatterNode) {
 		}
 
 		// Pull out the various pieces of the import.
-		subsource := importNode.getProperty(parser.NodeImportPredicateSubsource)
 		kind := importNode.getProperty(parser.NodeImportPredicateKind)
-		name := importNode.getProperty(parser.NodeImportPredicateName)
 
-		// If the import has no subsource, then check for a distinct name.
-		if subsource == "" {
-			packageName := importNode.getProperty(parser.NodeImportPredicatePackageName)
-			if packageName != source || kind != "" {
-				name = packageName
-			}
+		// Pull out the package name(s).
+		var packages = make([]importPackageInfo, 0)
+		var packagesKey = ""
+		for _, packageNode := range importNode.getChildren(parser.NodeImportPredicatePackageRef) {
+			subsource := packageNode.getProperty(parser.NodeImportPredicateSubsource)
+			name := packageNode.getProperty(parser.NodeImportPredicateName)
+			packageName := packageNode.getProperty(parser.NodeImportPredicatePackageName)
+
+			packagesKey += ":" + subsource + ":" + name + ":" + packageName
+
+			packages = append(packages, importPackageInfo{subsource, name, packageName})
 		}
 
-		isVCS := strings.Contains(importNode.getProperty(parser.NodeImportPredicateSource), "/")
+		// Check for VCS and Serulian imports.
+		isVCS := strings.Contains(source, "/")
 		isSerulian := kind == ""
 
 		// Determine the various runes for the sorting key.
-		var subsourceRune = 'z'
-		if subsource != "" {
-			subsourceRune = 'a'
-		}
-
 		var vcsRune = 'a'
 		if isVCS {
 			vcsRune = 'z'
@@ -96,15 +100,19 @@ func (sf *sourceFormatter) emitImports(node formatterNode) {
 			serulianRune = 'a'
 		}
 
+		var directRune = 'a'
+		if len(packages) == 1 && packages[0].subsource == "" {
+			directRune = 'z'
+		}
+
 		info := importInfo{
 			node: importNode,
 
-			source:    source,
-			subsource: subsource,
-			kind:      kind,
-			name:      name,
+			source:   source,
+			kind:     kind,
+			packages: packages,
 
-			sortKey:       fmt.Sprintf("%s/%s/%s/%s/%s/%s", vcsRune, serulianRune, kind, subsourceRune, source, name),
+			sortKey:       fmt.Sprintf("%s/%s/%s/%s/%s/%s/%s", vcsRune, serulianRune, kind, directRune, source, packagesKey),
 			comparisonKey: kind,
 
 			isVCS:      isVCS,
@@ -193,11 +201,57 @@ func (sf *sourceFormatter) emitModifiedImportSource(info importInfo) bool {
 func (sf *sourceFormatter) emitImport(info importInfo) {
 	sf.emitCommentsForNode(info.node)
 
-	if info.subsource != "" {
-		sf.append("from ")
+	if len(info.packages) == 1 && info.packages[0].subsource == "" {
+		sf.emitDirectImport(info)
 	} else {
-		sf.append("import ")
+		sf.emitSourcedImported(info)
 	}
+}
+
+func (sf *sourceFormatter) emitDirectImport(info importInfo) {
+	// import somepackage
+	// import somepackage as somethingelse
+	// import somekind`somepackage` as something
+
+	sf.append("import ")
+	if !info.isSerulian {
+		sf.append(info.kind)
+		sf.append("`")
+	} else if info.isVCS {
+		sf.append("\"")
+	}
+
+	// Handle freezing, unfreezing of VCS.
+	if info.isVCS {
+		if !sf.emitModifiedImportSource(info) {
+			sf.append(info.source)
+		}
+	} else {
+		sf.append(info.source)
+	}
+
+	if !info.isSerulian {
+		sf.append("`")
+	} else if info.isVCS {
+		sf.append("\"")
+	}
+
+	packageInfo := info.packages[0]
+	if packageInfo.packageName != info.source || !info.isSerulian {
+		sf.append(" as ")
+		sf.append(packageInfo.packageName)
+	}
+
+	sf.appendLine()
+}
+
+func (sf *sourceFormatter) emitSourcedImported(info importInfo) {
+	// from "something" import something
+	// from something import something
+	// from somekind`something` import something
+	// from somekind`something` import something as somethingelse
+
+	sf.append("from ")
 
 	if !info.isSerulian {
 		sf.append(info.kind)
@@ -221,14 +275,21 @@ func (sf *sourceFormatter) emitImport(info importInfo) {
 		sf.append("\"")
 	}
 
-	if info.subsource != "" {
-		sf.append(" import ")
-		sf.append(info.subsource)
-	}
+	sf.append(" import ")
 
-	if info.name != info.subsource {
-		sf.append(" as ")
-		sf.append(info.name)
+	for index, packageInfo := range info.packages {
+		if index > 0 {
+			sf.append(", ")
+		}
+
+		if packageInfo.subsource != "" {
+			sf.append(packageInfo.subsource)
+		}
+
+		if packageInfo.name != packageInfo.subsource {
+			sf.append(" as ")
+			sf.append(packageInfo.name)
+		}
 	}
 
 	sf.appendLine()
