@@ -93,24 +93,6 @@ func (m SRGModule) GetMembers() []SRGMember {
 	return members
 }
 
-// findImportByName searches for the import with the given package name and returns it, if any.
-func (m SRGModule) findImportByPackageName(name string) (compilergraph.GraphNode, bool) {
-	return m.StartQuery().
-		Out(parser.NodePredicateChild).
-		IsKind(parser.NodeTypeImport).
-		Has(parser.NodeImportPredicatePackageName, name).
-		TryGetNode()
-}
-
-// findImportWithLocalName attempts to find an import in this module with the given local name.
-func (m SRGModule) findImportWithLocalName(name string) (compilergraph.GraphNode, bool) {
-	return m.GraphNode.StartQuery().
-		Out(parser.NodePredicateChild).
-		IsKind(parser.NodeTypeImport).
-		Has(parser.NodeImportPredicateName, name).
-		TryGetNode()
-}
-
 // FindTypeOrMemberByName searches for the type definition, declaration or module member with the given
 // name under this module and returns it (if found). Note that this method does not handle imports.
 func (m SRGModule) FindTypeOrMemberByName(name string, option ModuleResolutionOption) (SRGTypeOrMember, bool) {

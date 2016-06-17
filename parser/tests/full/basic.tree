@@ -7,10 +7,15 @@ NodeTypeFile
       end-rune = 31
       import-location-ref = location:SomeLibrary
       import-source = SomeLibrary
-      import-subsource = Console
       input-source = basic full example test
-      named = Console
       start-rune = 0
+      import-package =>
+        NodeTypeImportPackage
+          end-rune = 30
+          import-subsource = Console
+          input-source = basic full example test
+          named = Console
+          start-rune = 24
     NodeTypeClass
       end-rune = 124
       input-source = basic full example test

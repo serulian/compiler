@@ -61,10 +61,9 @@ func (sh *srgSourceHandler) Verify(errorReporter packageloader.ErrorReporter, wa
 	}
 
 	// Verify all 'from ... import ...' are valid.
-	fit := g.findAllNodes(parser.NodeTypeImport).
+	fit := g.findAllNodes(parser.NodeTypeImportPackage).
 		Has(parser.NodeImportPredicateSubsource).
 		BuildNodeIterator(parser.NodeImportPredicateSubsource,
-		parser.NodeImportPredicateSource,
 		parser.NodePredicateSource,
 		parser.NodePredicateStartRune)
 
@@ -77,10 +76,9 @@ func (sh *srgSourceHandler) Verify(errorReporter packageloader.ErrorReporter, wa
 
 		// Search for the subsource.
 		subsource := fit.Values()[parser.NodeImportPredicateSubsource]
-		source := fit.Values()[parser.NodeImportPredicateSource]
-
 		_, found := packageInfo.FindTypeOrMemberByName(subsource, ModuleResolveExportedOnly)
 		if !found {
+			source := fit.Node().GetIncomingNode(parser.NodeImportPredicatePackageRef).Get(parser.NodeImportPredicateSource)
 			sal := salForPredicates(fit.Values())
 			errorReporter(compilercommon.SourceErrorf(sal, "Import '%s' not found under package '%s'", subsource, source))
 		}

@@ -206,6 +206,9 @@ func (p *sourceParser) tryConsumeDecorator() (AstNode, bool) {
 // from "something" import foobar as barbaz
 // from somekind`somestring` import foobar
 // from somekind`somestring` import foobar as barbaz
+// from something import foobar, barbaz as meh
+// from "something" import foobar, barbaz as meh
+// from somekind`somestring` import foobar, barbaz as meh
 //
 // import something
 // import something as foobar
@@ -228,14 +231,28 @@ func (p *sourceParser) consumeImport() AstNode {
 			return importNode
 		}
 
-		// Consume the subsource for the import.
-		sourceName, subvalid := p.consumeImportSubsource(importNode)
-		if !subvalid {
-			return importNode
+		for {
+			// Create the import package node.
+			packageNode := p.startNode(NodeTypeImportPackage)
+			importNode.Connect(NodeImportPredicatePackageRef, packageNode)
+
+			// Consume the subsource for the import.
+			sourceName, subvalid := p.consumeImportSubsource(packageNode)
+			if !subvalid {
+				p.finishNode()
+				return importNode
+			}
+
+			// ... as ...
+			p.consumeImportAlias(packageNode, sourceName, NodeImportPredicateName)
+			p.finishNode()
+
+			if _, ok := p.tryConsume(tokenTypeComma); !ok {
+				break
+			}
 		}
 
-		// ... as ...
-		p.consumeImportAlias(importNode, sourceName, NodeImportPredicateName)
+		p.consumeStatementTerminator()
 		return importNode
 	} else {
 		// import ...
@@ -245,8 +262,14 @@ func (p *sourceParser) consumeImport() AstNode {
 			return importNode
 		}
 
+		// Create the import package node.
+		packageNode := p.startNode(NodeTypeImportPackage)
+		importNode.Connect(NodeImportPredicatePackageRef, packageNode)
+
 		// ... as ...
-		p.consumeImportAlias(importNode, sourceName, NodeImportPredicatePackageName)
+		p.consumeImportAlias(packageNode, sourceName, NodeImportPredicatePackageName)
+		p.consumeStatementTerminator()
+		p.finishNode()
 	}
 
 	return importNode
@@ -282,18 +305,18 @@ func (p *sourceParser) consumeImportSource(importNode AstNode) (string, bool) {
 	}
 }
 
-func (p *sourceParser) consumeImportSubsource(importNode AstNode) (string, bool) {
+func (p *sourceParser) consumeImportSubsource(importPackageNode AstNode) (string, bool) {
 	// something
 	value, ok := p.consumeIdentifier()
 	if !ok {
 		return "", false
 	}
 
-	importNode.Decorate(NodeImportPredicateSubsource, value)
+	importPackageNode.Decorate(NodeImportPredicateSubsource, value)
 	return value, true
 }
 
-func (p *sourceParser) consumeImportAlias(importNode AstNode, sourceName string, namePredicate string) bool {
+func (p *sourceParser) consumeImportAlias(importPackageNode AstNode, sourceName string, namePredicate string) bool {
 	// as something (sometimes optional)
 	if p.tryConsumeKeyword("as") {
 		named, ok := p.consumeIdentifier()
@@ -301,18 +324,16 @@ func (p *sourceParser) consumeImportAlias(importNode AstNode, sourceName string,
 			return false
 		}
 
-		importNode.Decorate(namePredicate, named)
+		importPackageNode.Decorate(namePredicate, named)
 	} else {
 		if sourceName == "" {
 			p.emitError("Remote package import requires an 'as' clause")
 			return false
 		} else {
-			importNode.Decorate(namePredicate, sourceName)
+			importPackageNode.Decorate(namePredicate, sourceName)
 		}
 	}
 
-	// end of the statement
-	p.consumeStatementTerminator()
 	return true
 }
 

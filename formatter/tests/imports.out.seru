@@ -4,9 +4,9 @@ from webidl`github.com/Serulian/anotherlib@sometag` import something as Somethin
 from webidl`github.com/Serulian/corelib` import somethingelse
 
 import "github.com/Serulian/corelib:master" as somelib
-from "github.com/Serulian/anotherlib:master" import Set2 as Something
+from "github.com/Serulian/anotherlib:master" import Set2 as Something, Set3
 from "github.com/Serulian/corelib:master" import Map
-from "github.com/Serulian/corelib:master" import Set
+from "github.com/Serulian/corelib:master" import Set, List as Listy
 
 from anotherthing`foobar` import SomeOtherThing
 

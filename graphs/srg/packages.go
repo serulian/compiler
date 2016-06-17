@@ -14,15 +14,19 @@ import (
 )
 
 // getPackageForImport returns the package information for the package imported by the given import
-// node.
-func (g *SRG) getPackageForImport(importNode compilergraph.GraphNode) importedPackage {
-	packageLocation := importNode.Get(parser.NodeImportPredicateLocation)
+// package node.
+func (g *SRG) getPackageForImport(importPackageNode compilergraph.GraphNode) importedPackage {
+	importNode := importPackageNode.GetIncomingNode(parser.NodeImportPredicatePackageRef)
+
+	// Note: There may not be a kind, in which case this will return empty string, which is the
+	// default kind.
 	packageKind, _ := importNode.TryGet(parser.NodeImportPredicateKind)
+	packageLocation := importNode.Get(parser.NodeImportPredicateLocation)
 
 	packageInfo, ok := g.packageMap.Get(packageKind, packageLocation)
 	if !ok {
 		source := importNode.Get(parser.NodeImportPredicateSource)
-		subsource, _ := importNode.TryGet(parser.NodeImportPredicateSubsource)
+		subsource, _ := importPackageNode.TryGet(parser.NodeImportPredicateSubsource)
 		panic(fmt.Sprintf("Missing package info for import %s %s (reference %v) (node %v)\nPackage Map: %v",
 			source, subsource, packageLocation, importNode, g.packageMap))
 	}

@@ -7,7 +7,12 @@ NodeTypeFile
       end-rune = 24
       import-location-ref = location:foobar
       import-source = foobar
-      import-subsource = barbaz
       input-source = from import test
-      named = barbaz
       start-rune = 0
+      import-package =>
+        NodeTypeImportPackage
+          end-rune = 24
+          import-subsource = barbaz
+          input-source = from import test
+          named = barbaz
+          start-rune = 19

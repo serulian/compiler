@@ -51,12 +51,12 @@ var nameScopeTests = []nameScopeTest{
 
 	// Resolve "anotherfile" under function "DoSomething"
 	nameScopeTest{"import module scoping", "basic", "dosomething", "anotherfile",
-		expectedScopeResult{true, false, parser.NodeTypeImport, "anotherfile", NamedScopeImport},
+		expectedScopeResult{true, false, parser.NodeTypeImportPackage, "anotherfile", NamedScopeImport},
 	},
 
 	// Resolve "somepackage" under function "DoSomething"
 	nameScopeTest{"import package scoping", "basic", "dosomething", "somepackage",
-		expectedScopeResult{true, false, parser.NodeTypeImport, "somepackage", NamedScopeImport},
+		expectedScopeResult{true, false, parser.NodeTypeImportPackage, "somepackage", NamedScopeImport},
 	},
 
 	// Resolve "someparam" under function "DoSomething"
@@ -146,7 +146,7 @@ var nameScopeTests = []nameScopeTest{
 
 	// Resolve "externalpackage" under the function.
 	nameScopeTest{"external package test", "external", "somefunction", "externalpackage",
-		expectedScopeResult{true, false, parser.NodeTypeImport, "externalpackage", NamedScopeImport},
+		expectedScopeResult{true, false, parser.NodeTypeImportPackage, "externalpackage", NamedScopeImport},
 	},
 
 	// Resolve "ExternalMember" under the function.

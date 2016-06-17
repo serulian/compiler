@@ -6,9 +6,9 @@ import webidl`nicething` as nicething
 import "github.com/Serulian/corelib:master" as somelib
 
 from "github.com/Serulian/corelib:master" import Map
-from "github.com/Serulian/corelib:master" import Set
+from "github.com/Serulian/corelib:master" import Set, List as Listy
 
-from "github.com/Serulian/anotherlib:master" import Set2 as Something
+from "github.com/Serulian/anotherlib:master" import Set2 as Something, Set3
 
 from webidl`console` import console as CoolConsole
 
