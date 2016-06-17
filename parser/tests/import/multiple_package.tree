@@ -1,0 +1,62 @@
+NodeTypeFile
+  end-rune = 134
+  input-source = multiple imports under package test
+  start-rune = 0
+  child-node =>
+    NodeTypeImport
+      end-rune = 32
+      import-location-ref = location:foo
+      import-source = foo
+      input-source = multiple imports under package test
+      start-rune = 0
+      import-package =>
+        NodeTypeImportPackage
+          end-rune = 26
+          import-subsource = bar
+          input-source = multiple imports under package test
+          named = blah
+          start-rune = 16
+        NodeTypeImportPackage
+          end-rune = 31
+          import-subsource = baz
+          input-source = multiple imports under package test
+          named = baz
+          start-rune = 29
+    NodeTypeImport
+      end-rune = 87
+      import-location-ref = location:github.com/some/thing
+      import-source = "github.com/some/thing"
+      input-source = multiple imports under package test
+      start-rune = 33
+      import-package =>
+        NodeTypeImportPackage
+          end-rune = 71
+          import-subsource = meh
+          input-source = multiple imports under package test
+          named = meh
+          start-rune = 69
+        NodeTypeImportPackage
+          end-rune = 86
+          import-subsource = yarg
+          input-source = multiple imports under package test
+          named = blarg
+          start-rune = 74
+    NodeTypeImport
+      end-rune = 134
+      import-location-ref = location:subpackage
+      import-source = subpackage
+      input-source = multiple imports under package test
+      start-rune = 88
+      import-package =>
+        NodeTypeImportPackage
+          end-rune = 120
+          import-subsource = FirstClass
+          input-source = multiple imports under package test
+          named = FirstClass
+          start-rune = 111
+        NodeTypeImportPackage
+          end-rune = 133
+          import-subsource = SecondClass
+          input-source = multiple imports under package test
+          named = SecondClass
+          start-rune = 123

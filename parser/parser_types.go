@@ -33,7 +33,9 @@ const (
 	NodeTypeDecorator
 
 	// Module-level
-	NodeTypeImport    // An import
+	NodeTypeImport        // An import
+	NodeTypeImportPackage // A package imported under an import statement.
+
 	NodeTypeClass     // A class
 	NodeTypeInterface // An interface
 	NodeTypeNominal   // A nominal type
@@ -222,13 +224,14 @@ const (
 	//
 	// NodeTypeImport
 	//
-	NodeImportPredicateKind        = "import-kind"
-	NodeImportPredicateSource      = "import-source"
+	NodeImportPredicateKind       = "import-kind"
+	NodeImportPredicateSource     = "import-source"
+	NodeImportPredicatePackageRef = "import-package"
+
 	NodeImportPredicateSubsource   = "import-subsource"
 	NodeImportPredicateName        = "named"
 	NodeImportPredicatePackageName = "import-package-name"
-
-	NodeImportPredicateLocation = "import-location-ref"
+	NodeImportPredicateLocation    = "import-location-ref"
 
 	//
 	// NodeTypeClass + NodeTypeInterface

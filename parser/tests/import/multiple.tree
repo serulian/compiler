@@ -6,29 +6,49 @@ NodeTypeFile
     NodeTypeImport
       end-rune = 13
       import-location-ref = location:FooBar
-      import-package-name = FooBar
       import-source = FooBar
       input-source = multiple imports test
       start-rune = 0
+      import-package =>
+        NodeTypeImportPackage
+          end-rune = 13
+          import-package-name = FooBar
+          input-source = multiple imports test
+          start-rune = 13
     NodeTypeImport
       end-rune = 27
       import-location-ref = location:BarBaz
-      import-package-name = BarBaz
       import-source = BarBaz
       input-source = multiple imports test
       start-rune = 14
+      import-package =>
+        NodeTypeImportPackage
+          end-rune = 27
+          import-package-name = BarBaz
+          input-source = multiple imports test
+          start-rune = 27
     NodeTypeImport
       end-rune = 59
       import-location-ref = location:ThirdThing
-      import-package-name = FirstThing
       import-source = ThirdThing
       input-source = multiple imports test
       start-rune = 28
+      import-package =>
+        NodeTypeImportPackage
+          end-rune = 59
+          import-package-name = FirstThing
+          input-source = multiple imports test
+          start-rune = 46
     NodeTypeImport
       end-rune = 94
       import-location-ref = location:Something
       import-source = Something
-      import-subsource = SomethingElse
       input-source = multiple imports test
-      named = SomethingElse
       start-rune = 60
+      import-package =>
+        NodeTypeImportPackage
+          end-rune = 94
+          import-subsource = SomethingElse
+          input-source = multiple imports test
+          named = SomethingElse
+          start-rune = 82
