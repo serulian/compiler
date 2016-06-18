@@ -8,6 +8,9 @@ $module('nominaljson', function () {
       instance[BOXED_DATA_PROPERTY] = $wrapped;
       return instance;
     };
+    this.$roottype = function () {
+      return $g.nominaljson.AnotherStruct;
+    };
     $instance.GetValue = function () {
       var $this = this;
       var $current = 0;

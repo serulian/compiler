@@ -154,15 +154,51 @@ this.Serulian = (function($global) {
       return type.$box($t.unbox(instance), opt_external)
     },
 
+    // roottype returns the root type of the given type. If the type is a nominal
+    // type, then its root is returned. Otherwise, the type itself is returned.
+    'roottype': function(type) {
+      if (type.$roottype) {
+        return type.$roottype();
+      }
+
+      return type;
+    },
+
     // cast performs a cast of the given value to the given type, throwing on
     // failure.
     'cast': function(value, type) {
-      // TODO: implement cast checking.
       // Quick check to see if cast checking is necessary.
       if (value == null || type == null || value.constructor == type) {
         return value;
       }
       
+      var castKind = type.$typekind;
+      var valueKind = value.constructor.$typekind;
+
+      if (!valueKind && castKind != 'type') {
+        // Native type.
+        throw Error('Cannot cast native type to non-nominal type')
+      }
+
+      switch (castKind) {
+        case 'class':
+        case 'struct':
+          // Value type must be a struct or class. Since we check for equality above,
+          // this must fail.
+          throw Error('Cannot cast ' + value.constructor.toString() + ' to ' + type.toString())
+
+        case 'type':
+          // Casting only is allowed if the nominal and the existing value's
+          // type have the same root type.
+          if ($t.roottype(value.constructor) != $t.roottype(type)) {
+            throw Error('Cannot auto-box ' + value.constructor.toString() + ' to ' + type.toString())
+          }
+
+        case 'interface':
+          // Check if the other type implements the interface.
+          // TODO: check this.
+      }
+
       // Automatically box if necessary.
       if (type.$box) {
         return $t.box(value, type);
@@ -567,6 +603,8 @@ this.Serulian = (function($global) {
               'g': generics
             };
           };
+
+          tpe.$typekind = kind;
 
           // Build the type's static and prototype.
           creator.apply(tpe, args);

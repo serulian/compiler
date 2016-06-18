@@ -108,6 +108,15 @@ func (gt generatingType) WrappedType() typegraph.TypeReference {
 	return gt.Type.ParentTypes()[0]
 }
 
+// NominalDataType returns the root data type behind this nominal type.
+func (gt generatingType) NominalDataType() typegraph.TypeReference {
+	if gt.Type.TypeKind() != typegraph.NominalType {
+		panic("Cannot call WrappedType on non-nominal type")
+	}
+
+	return gt.Type.GetTypeReference().NominalDataType()
+}
+
 func (gt generatingType) BoolType() typegraph.TypeReference {
 	return gt.Generator.scopegraph.TypeGraph().BoolTypeReference()
 }
@@ -305,6 +314,10 @@ this.$type('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .
 		var instance = new this();
 		instance[BOXED_DATA_PROPERTY] = $wrapped;
 		return instance;
+	};
+
+	this.$roottype = function() {
+		return {{ .TypeReferenceCall .NominalDataType }};
 	};
 
 	{{range $idx, $kv := .GenerateImplementedMembers.UnsafeIter }}

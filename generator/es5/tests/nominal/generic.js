@@ -29,6 +29,9 @@ $module('generic', function () {
       instance[BOXED_DATA_PROPERTY] = $wrapped;
       return instance;
     };
+    this.$roottype = function () {
+      return $g.generic.SomeClass;
+    };
     $instance.AnotherThing = function () {
       var $this = this;
       var $current = 0;

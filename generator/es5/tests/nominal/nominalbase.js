@@ -23,6 +23,9 @@ $module('nominalbase', function () {
       instance[BOXED_DATA_PROPERTY] = $wrapped;
       return instance;
     };
+    this.$roottype = function () {
+      return $g.nominalbase.SomeClass;
+    };
     $instance.SomeProp = $t.property(function () {
       var $this = this;
       var $current = 0;
@@ -41,6 +44,9 @@ $module('nominalbase', function () {
       var instance = new this();
       instance[BOXED_DATA_PROPERTY] = $wrapped;
       return instance;
+    };
+    this.$roottype = function () {
+      return $g.nominalbase.SomeClass;
     };
     $instance.GetValue = function () {
       var $this = this;

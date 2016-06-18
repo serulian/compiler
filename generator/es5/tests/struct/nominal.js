@@ -8,6 +8,9 @@ $module('nominal', function () {
       instance[BOXED_DATA_PROPERTY] = $wrapped;
       return instance;
     };
+    this.$roottype = function () {
+      return $global.Boolean;
+    };
   });
 
   this.$struct('SomeStruct', false, '', function () {
