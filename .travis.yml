@@ -1,4 +1,26 @@
 language: go
+
 go:
   - 1.6
+  - 1.5
   - tip
+
+sudo: false
+
+before_install:
+  - RepoName=`basename $PWD`; SrcDir=`dirname $PWD`; DestDir="`dirname $SrcDir`/Serulian"
+  - if [[ "$SrcDir" != "$DestDir" ]]; then mv "$SrcDir" "$DestDir"; cd ../../Serulian/$RepoName; export TRAVIS_BUILD_DIR=`dirname $TRAVIS_BUILD_DIR`/$RepoName; fi
+
+
+install:
+  - echo 'nop'
+
+script:
+  - go test -v $(go list ./... | grep -v /vendor/)
+
+notifications:
+  email: false
+
+matrix:
+  allow_failures:
+    - go: tip
