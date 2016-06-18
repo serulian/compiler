@@ -17,10 +17,10 @@
                     }
                 }
             },
-            "80aaefc090b20ea03d7f374898997864": {
+            "59e1aa89628f1c28c3add6258ae796a1": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "80aaefc090b20ea03d7f374898997864",
+                    "Key": "59e1aa89628f1c28c3add6258ae796a1",
                     "Kind": 7,
                     "Children": {},
                     "Predicates": {
@@ -28,7 +28,7 @@
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cSomeClass\u003cT\u003e\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0016function\u003cSomeClass\u003cT\u003e\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0016function\u003cSomeClass\u003cT\u003e\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/interface.seru"
@@ -96,24 +96,6 @@
                     }
                 }
             },
-            "233c9e2644086b3d636a13b9873835fe": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "233c9e2644086b3d636a13b9873835fe",
-                    "Kind": 7,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-name": "new",
-                        "tdg-member-promising": "true",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cThirdClass\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0014function\u003cThirdClass\u003e",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "7|NodeType|tdg",
-                        "tdg-source-module": "tests/interfaceconstraint/interface.seru"
-                    }
-                }
-            },
             "ac67f36560bbd55048deba79eb221da4": {
                 "Predicate": "tdg-node-member",
                 "Child": {
@@ -144,6 +126,24 @@
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/interface.seru",
                         "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "c37b3480ceca4ffb6fdbc14f55241912": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "c37b3480ceca4ffb6fdbc14f55241912",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-name": "new",
+                        "tdg-member-promising": "true",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cThirdClass\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0014function\u003cThirdClass\u003e",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/interfaceconstraint/interface.seru"
                     }
                 }
             }
@@ -204,10 +204,10 @@
         "Key": "db711137d87443ffd7e0cd5f2a5c0f6d",
         "Kind": 1,
         "Children": {
-            "2a366812623b5dc67b5bb92241d3e751": {
+            "85b3ffede0960e09e89d84dbf64887ac": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "2a366812623b5dc67b5bb92241d3e751",
+                    "Key": "85b3ffede0960e09e89d84dbf64887ac",
                     "Kind": 7,
                     "Children": {},
                     "Predicates": {
@@ -215,7 +215,7 @@
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cAnotherClass\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0016function\u003cAnotherClass\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0016function\u003cAnotherClass\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/interface.seru"

@@ -3,10 +3,10 @@
         "Key": "11b7d3d9e6106126ebc4793905a263a2",
         "Kind": 1,
         "Children": {
-            "bf44aeb01c660925b3b3af8361446a26": {
+            "c05d3ea5232b9bfb1738656c3b168aa0": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "bf44aeb01c660925b3b3af8361446a26",
+                    "Key": "c05d3ea5232b9bfb1738656c3b168aa0",
                     "Kind": 7,
                     "Children": {},
                     "Predicates": {
@@ -14,7 +14,7 @@
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cAnotherClass\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0016function\u003cAnotherClass\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0016function\u003cAnotherClass\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/nullable.seru"
@@ -34,6 +34,24 @@
         "Key": "260308ec2045cce545ba321e275386a6",
         "Kind": 1,
         "Children": {
+            "13d387d6dc5eb996864d3a35e541909c": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "13d387d6dc5eb996864d3a35e541909c",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-name": "new",
+                        "tdg-member-promising": "true",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cThirdClass\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0014function\u003cThirdClass\u003e",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/interfaceconstraint/nullable.seru"
+                    }
+                }
+            },
             "16d4ed30943c97ef27a8622706a16ab1": {
                 "Predicate": "tdg-node-member",
                 "Child": {
@@ -64,24 +82,6 @@
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/nullable.seru",
                         "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
-            "ba0805f41c1c5897da5ed22b3ddf8dda": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "ba0805f41c1c5897da5ed22b3ddf8dda",
-                    "Kind": 7,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-name": "new",
-                        "tdg-member-promising": "true",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cThirdClass\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0014function\u003cThirdClass\u003e",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "7|NodeType|tdg",
-                        "tdg-source-module": "tests/interfaceconstraint/nullable.seru"
                     }
                 }
             }
@@ -174,10 +174,10 @@
                     }
                 }
             },
-            "56732cab315d141d604e0d40b9b978be": {
+            "44de0daff05d5eec9ab63a68e01412db": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "56732cab315d141d604e0d40b9b978be",
+                    "Key": "44de0daff05d5eec9ab63a68e01412db",
                     "Kind": 7,
                     "Children": {},
                     "Predicates": {
@@ -185,7 +185,7 @@
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cSomeClass\u003cT\u003e\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0016function\u003cSomeClass\u003cT\u003e\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0016function\u003cSomeClass\u003cT\u003e\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/nullable.seru"

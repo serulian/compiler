@@ -246,7 +246,7 @@ func (itc *irgTypeConstructor) DecorateMembers(decorator typegraph.GetMemberDeco
 				Exported(true).
 				Static(true).
 				ReadOnly(true).
-				MemberKind(uint64(webidl.ConstructorMember)).
+				MemberKind(typegraph.NativeConstructorMemberSignature).
 				MemberType(constructorFunction).
 				Decorate()
 		}
@@ -281,7 +281,7 @@ func (itc *irgTypeConstructor) DecorateMembers(decorator typegraph.GetMemberDeco
 				Exported(true).
 				SkipOperatorChecking(true).
 				MemberType(operatorType).
-				MemberKind(uint64(webidl.OperatorMember)).
+				MemberKind(typegraph.NativeOperatorMemberSignature).
 				Decorate()
 		}
 
@@ -294,11 +294,13 @@ func (itc *irgTypeConstructor) DecorateMembers(decorator typegraph.GetMemberDeco
 			}
 
 			var memberType = declaredType
+			var memberKind = typegraph.CustomMemberSignature
 			var isReadonly = member.IsReadonly()
 
 			switch member.Kind() {
 			case webidl.FunctionMember:
 				isReadonly = true
+				memberKind = typegraph.NativeFunctionMemberSignature
 				memberType = graph.FunctionTypeReference(memberType)
 
 				// Add the parameter types.
@@ -324,6 +326,8 @@ func (itc *irgTypeConstructor) DecorateMembers(decorator typegraph.GetMemberDeco
 				}
 
 			case webidl.AttributeMember:
+				memberKind = typegraph.NativePropertyMemberSignature
+
 				if len(member.Parameters()) > 0 {
 					reporter.ReportError(member.GraphNode, "Attributes cannot have parameters")
 				}
@@ -340,7 +344,7 @@ func (itc *irgTypeConstructor) DecorateMembers(decorator typegraph.GetMemberDeco
 			decorator.Exported(true).
 				Static(member.IsStatic()).
 				ReadOnly(isReadonly).
-				MemberKind(uint64(member.Kind())).
+				MemberKind(memberKind).
 				MemberType(memberType).
 				Decorate()
 		}

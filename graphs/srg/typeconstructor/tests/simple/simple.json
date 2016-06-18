@@ -3,6 +3,24 @@
         "Key": "99f3a3b20af62411497dae36ae15b04d",
         "Kind": 1,
         "Children": {
+            "7b1a56aecc153defc9d57dbf4375bc03": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "7b1a56aecc153defc9d57dbf4375bc03",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-name": "new",
+                        "tdg-member-promising": "true",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cSomeClass\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0013function\u003cSomeClass\u003e",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/simple/simple.seru"
+                    }
+                }
+            },
             "a99a5f1e4031428ab95c178b6ff0c56f": {
                 "Predicate": "tdg-declaration-module",
                 "Child": {
@@ -14,24 +32,6 @@
                         "tdg-node-kind": "6|NodeType|tdg",
                         "tdg-source-module": "tests/simple/simple.seru",
                         "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
-            "afb852e3d6cd7397a5b6c4faca254e11": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "afb852e3d6cd7397a5b6c4faca254e11",
-                    "Kind": 7,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-name": "new",
-                        "tdg-member-promising": "true",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cSomeClass\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0013function\u003cSomeClass\u003e",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "7|NodeType|tdg",
-                        "tdg-source-module": "tests/simple/simple.seru"
                     }
                 }
             }

@@ -165,7 +165,7 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 				Exported(false).
 				ReadOnly(true).
 				MemberType(memberType).
-				MemberKind(0).
+				MemberKind(ConstructorMemberSignature).
 				Decorate()
 		})
 	}
@@ -184,7 +184,7 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 				Exported(true).
 				ReadOnly(true).
 				MemberType(memberType).
-				MemberKind(0).
+				MemberKind(ConstructorMemberSignature).
 				Decorate()
 		})
 
@@ -199,7 +199,7 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 				MemberType(memberType).
 				Promising(true).
 				Exported(true).
-				MemberKind(2).
+				MemberKind(OperatorMemberSignature).
 				Decorate()
 		})
 
@@ -213,7 +213,7 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 				Exported(true).
 				ReadOnly(true).
 				MemberType(memberType).
-				MemberKind(1).
+				MemberKind(FunctionMemberSignature).
 				Decorate()
 		})
 
@@ -226,7 +226,7 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 				Exported(true).
 				ReadOnly(true).
 				MemberType(memberType).
-				MemberKind(1).
+				MemberKind(FunctionMemberSignature).
 				Decorate()
 		})
 
@@ -239,7 +239,7 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 				Exported(true).
 				ReadOnly(true).
 				MemberType(memberType).
-				MemberKind(1).
+				MemberKind(FunctionMemberSignature).
 				Decorate()
 		})
 	}

@@ -17,10 +17,10 @@
                     }
                 }
             },
-            "9e9a53b9f2c93c56c39298254dafeb85": {
+            "b8cc6fc83b718d9d50edb9a5cce33177": {
                 "Predicate": "tdg-declaration-operator",
                 "Child": {
-                    "Key": "9e9a53b9f2c93c56c39298254dafeb85",
+                    "Key": "b8cc6fc83b718d9d50edb9a5cce33177",
                     "Kind": 8,
                     "Children": {
                         "f9603789a6c6e4afeeef9629d4b35f70": {
@@ -42,7 +42,7 @@
                         "tdg-member-name": "•plus",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cSomeInterface\u003e(SomeInterface, SomeInterface)",
-                        "tdg-member-signature": "\n\u0004plus\u0010\u0001\u0018\u0000 \u0001*\u0003any",
+                        "tdg-member-signature": "\n\u0004plus\u0010\u0008\u0018\u0000 \u0001*\u0003any",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "8|NodeType|tdg",
                         "tdg-operator-name": "plus",
@@ -52,10 +52,10 @@
                     }
                 }
             },
-            "cca6d65fade7b26951bd1284e90f62c1": {
+            "ec5ed677fa2e647c5b69ba0fdde38fb7": {
                 "Predicate": "tdg-declaration-operator",
                 "Child": {
-                    "Key": "cca6d65fade7b26951bd1284e90f62c1",
+                    "Key": "ec5ed677fa2e647c5b69ba0fdde38fb7",
                     "Kind": 8,
                     "Children": {
                         "f9603789a6c6e4afeeef9629d4b35f70": {
@@ -77,7 +77,7 @@
                         "tdg-member-name": "•minus",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cSomeInterface\u003e(SomeInterface, SomeInterface)",
-                        "tdg-member-signature": "\n\u0005minus\u0010\u0001\u0018\u0000 \u0001*\u0003any",
+                        "tdg-member-signature": "\n\u0005minus\u0010\u0008\u0018\u0000 \u0001*\u0003any",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "8|NodeType|tdg",
                         "tdg-operator-name": "minus",

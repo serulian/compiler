@@ -37,25 +37,6 @@
                     }
                 }
             },
-            "8452e8c79e3600a74c308d36820a58ad": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "8452e8c79e3600a74c308d36820a58ad",
-                    "Kind": 7,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-exported": "true",
-                        "tdg-member-field": "true",
-                        "tdg-member-name": "SomeVar",
-                        "tdg-member-resolved-type": "Integer",
-                        "tdg-member-signature": "\n\u0007somevar\u0010\u0001\u0018\u0001 \u0001*\u0007Integer",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "7|NodeType|tdg",
-                        "tdg-source-module": "tests/modulelevel/module.seru",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
             "af6ce9623fec41f16a486cad78d39604": {
                 "Predicate": "tdg-node-member",
                 "Child": {
@@ -83,6 +64,25 @@
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cInteger\u003e",
                         "tdg-member-signature": "\n\u000bdosomething\u0010\u0002\u0018\u0000 \u0001*\u0011function\u003cInteger\u003e",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/modulelevel/module.seru",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "bbd279a7c03599735c966afa1c2ff400": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "bbd279a7c03599735c966afa1c2ff400",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-field": "true",
+                        "tdg-member-name": "SomeVar",
+                        "tdg-member-resolved-type": "Integer",
+                        "tdg-member-signature": "\n\u0007somevar\u0010\u0005\u0018\u0001 \u0001*\u0007Integer",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/modulelevel/module.seru",

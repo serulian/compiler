@@ -3,10 +3,10 @@
         "Key": "292ef3d465da1e85428d9927008fffff",
         "Kind": 3,
         "Children": {
-            "00054d161cda1f6aea5edbbc3f6c5d5e": {
+            "3b9a304e91f51ce940c3bbc27fdb7f67": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "00054d161cda1f6aea5edbbc3f6c5d5e",
+                    "Key": "3b9a304e91f51ce940c3bbc27fdb7f67",
                     "Kind": 7,
                     "Children": {},
                     "Predicates": {
@@ -14,7 +14,7 @@
                         "tdg-member-name": "new",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cFourthInterface\u003e(any)",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0001*\u001efunction\u003cFourthInterface\u003e(any)",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0006\u0018\u0000 \u0001*\u001efunction\u003cFourthInterface\u003e(any)",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/constructors.webidl",
@@ -34,10 +34,10 @@
         "Key": "a91059f47ea1eced3507cd124556c192",
         "Kind": 3,
         "Children": {
-            "366407dfd809fbb74f683604020a843a": {
+            "3a83a87b2899807b30a4f2d9d0e81dc9": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "366407dfd809fbb74f683604020a843a",
+                    "Key": "3a83a87b2899807b30a4f2d9d0e81dc9",
                     "Kind": 7,
                     "Children": {},
                     "Predicates": {
@@ -45,7 +45,7 @@
                         "tdg-member-name": "new",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cThirdInterface\u003e(SomeInterface, AnotherInterface?)",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0001*:function\u003cThirdInterface\u003e(SomeInterface, AnotherInterface?)",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0006\u0018\u0000 \u0001*:function\u003cThirdInterface\u003e(SomeInterface, AnotherInterface?)",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/constructors.webidl",
@@ -65,10 +65,10 @@
         "Key": "c3e48b032516805ecc48807d37e94b5f",
         "Kind": 3,
         "Children": {
-            "e570f1d67c30e18e9f5875b8a2bdf031": {
+            "8fb55062dfde35da9d2e0a0cb7d1cbf5": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "e570f1d67c30e18e9f5875b8a2bdf031",
+                    "Key": "8fb55062dfde35da9d2e0a0cb7d1cbf5",
                     "Kind": 7,
                     "Children": {},
                     "Predicates": {
@@ -76,7 +76,7 @@
                         "tdg-member-name": "new",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cAnotherInterface\u003e(SomeInterface)",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0001*)function\u003cAnotherInterface\u003e(SomeInterface)",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0006\u0018\u0000 \u0001*)function\u003cAnotherInterface\u003e(SomeInterface)",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/constructors.webidl",
@@ -110,10 +110,10 @@
                     }
                 }
             },
-            "da4a7c34113f422816e46dbaba0423ab": {
+            "d17286f138f7fe7d4757cd000061c13f": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "da4a7c34113f422816e46dbaba0423ab",
+                    "Key": "d17286f138f7fe7d4757cd000061c13f",
                     "Kind": 7,
                     "Children": {},
                     "Predicates": {
@@ -121,7 +121,7 @@
                         "tdg-member-name": "new",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cSomeInterface\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0001*\u0017function\u003cSomeInterface\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0006\u0018\u0000 \u0001*\u0017function\u003cSomeInterface\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/constructors.webidl",
