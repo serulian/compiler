@@ -147,6 +147,24 @@ func (gt generatingType) GenerateComposition() *ordered_map.OrderedMap {
 	return typeMap
 }
 
+// TypeSignatureMethod generates the $typesig method on a type definition.
+func (gt generatingType) TypeSignatureMethod() string {
+	return gt.Generator.templater.Execute("typesig", typeSignatureTemplateStr, gt)
+}
+
+// typeSignatureTemplateStr defines a template for generating the signature for a type.
+const typeSignatureTemplateStr = `
+	this.$typesig = function() {
+		return $t.createtypesig(
+		{{ $parent := . }}
+		{{ range $midx, $member := .Type.Members }}
+			{{ if $midx }},{{ end }}
+			['{{ $member.Name }}', {{ $member.Signature.MemberKind }}, ({{ $parent.TypeReferenceCall $member.MemberType }}).$typeref()]
+		{{ end }}
+		);
+	};
+`
+
 // compositionTemplateStr defines a template for instantiating a composed type.
 const compositionTemplateStr = `
 	({{ .ComposedTypeLocation }}).new({{ range $ridx, $field := .RequiredFields }}{{ if $ridx }}, {{ end }}{{ $field.Name }}{{ end }}).then(function(value) {
@@ -164,6 +182,8 @@ this.$interface('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function
 	{{range $idx, $kv := .GenerateImplementedMembers.UnsafeIter }}
   	  {{ emit $kv.Value }}
   	{{end}}
+
+  	{{ .TypeSignatureMethod }}
 });
 `
 
@@ -200,6 +220,8 @@ this.$class('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ 
 	{{range $idx, $kv := .GenerateImplementedMembers.UnsafeIter }}
   	  {{ emit $kv.Value }}
   	{{end}}
+
+  	{{ .TypeSignatureMethod }}
 });
 `
 
@@ -301,6 +323,8 @@ this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{
 	    }
 	  });
 	{{ end }}
+
+  	{{ .TypeSignatureMethod }}
 });
 `
 
@@ -323,5 +347,7 @@ this.$type('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .
 	{{range $idx, $kv := .GenerateImplementedMembers.UnsafeIter }}
   	  {{ emit $kv.Value }}
   	{{end}}
+
+  	{{ .TypeSignatureMethod }}
 });
 `

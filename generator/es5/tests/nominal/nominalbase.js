@@ -13,6 +13,9 @@ $module('nominalbase', function () {
         return instance;
       });
     };
+    this.$typesig = function () {
+      return $t.createtypesig(['SomeField', 5, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.nominalbase.SomeClass).$typeref()]);
+    };
   });
 
   this.$type('FirstNominal', false, '', function () {
@@ -35,6 +38,9 @@ $module('nominalbase', function () {
       };
       return $promise.new($continue);
     });
+    this.$typesig = function () {
+      return $t.createtypesig(['SomeProp', 3, $g.____testlib.basictypes.Boolean.$typeref()]);
+    };
   });
 
   this.$type('SecondNominal', false, '', function () {
@@ -77,6 +83,9 @@ $module('nominalbase', function () {
         }
       };
       return $promise.new($continue);
+    };
+    this.$typesig = function () {
+      return $t.createtypesig(['GetValue', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()]);
     };
   });
 

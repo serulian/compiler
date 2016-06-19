@@ -17,6 +17,9 @@ $module('inheritance', function () {
       var $this = this;
       return $promise.empty();
     };
+    this.$typesig = function () {
+      return $t.createtypesig(['SomeBool', 5, $g.____testlib.basictypes.Boolean.$typeref()], ['DoSomething', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.inheritance.FirstClass).$typeref()]);
+    };
   });
 
   this.$class('SecondClass', false, '', function () {
@@ -35,6 +38,9 @@ $module('inheritance', function () {
     $instance.AnotherThing = function () {
       var $this = this;
       return $promise.empty();
+    };
+    this.$typesig = function () {
+      return $t.createtypesig(['SomeBool', 5, $g.____testlib.basictypes.Boolean.$typeref()], ['AnotherThing', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.inheritance.SecondClass).$typeref()]);
     };
   });
 
@@ -76,6 +82,9 @@ $module('inheritance', function () {
         return this.SecondClass.AnotherThing;
       },
     });
+    this.$typesig = function () {
+      return $t.createtypesig(['DoSomething', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['SomeBool', 5, $g.____testlib.basictypes.Boolean.$typeref()], ['AnotherThing', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.inheritance.MainClass).$typeref()]);
+    };
   });
 
   $static.TEST = function () {

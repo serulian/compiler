@@ -10,6 +10,9 @@ $module('identifier', function () {
         return instance;
       });
     };
+    this.$typesig = function () {
+      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.identifier.SomeClass).$typeref()]);
+    };
   });
 
   $static.AnotherFunction = function () {

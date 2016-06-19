@@ -90,6 +90,9 @@ $module('binary', function () {
       };
       return $promise.new($continue);
     };
+    this.$typesig = function () {
+      return $t.createtypesig(['xor', 4, $g.____testlib.basictypes.Function($g.binary.SomeClass).$typeref()], ['or', 4, $g.____testlib.basictypes.Function($g.binary.SomeClass).$typeref()], ['and', 4, $g.____testlib.basictypes.Function($g.binary.SomeClass).$typeref()], ['leftshift', 4, $g.____testlib.basictypes.Function($g.binary.SomeClass).$typeref()], ['not', 4, $g.____testlib.basictypes.Function($g.binary.SomeClass).$typeref()], ['plus', 4, $g.____testlib.basictypes.Function($g.binary.SomeClass).$typeref()], ['minus', 4, $g.____testlib.basictypes.Function($g.binary.SomeClass).$typeref()], ['times', 4, $g.____testlib.basictypes.Function($g.binary.SomeClass).$typeref()], ['div', 4, $g.____testlib.basictypes.Function($g.binary.SomeClass).$typeref()], ['mod', 4, $g.____testlib.basictypes.Function($g.binary.SomeClass).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.binary.SomeClass).$typeref()]);
+    };
   });
 
   $static.DoSomething = function (first, second) {

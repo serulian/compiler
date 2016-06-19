@@ -19,10 +19,16 @@ $module('interface', function () {
       };
       return $promise.new($continue);
     });
+    this.$typesig = function () {
+      return $t.createtypesig(['SomeValue', 3, $g.____testlib.basictypes.Integer.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.interface.SomeClass).$typeref()]);
+    };
   });
 
   this.$interface('Valuable', false, '', function () {
     var $static = this;
+    this.$typesig = function () {
+      return $t.createtypesig(['SomeValue', 3, $g.____testlib.basictypes.Integer.$typeref()]);
+    };
   });
 
   this.$type('Valued', false, '', function () {
@@ -65,6 +71,9 @@ $module('interface', function () {
         }
       };
       return $promise.new($continue);
+    };
+    this.$typesig = function () {
+      return $t.createtypesig(['GetValue', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Integer).$typeref()]);
     };
   });
 

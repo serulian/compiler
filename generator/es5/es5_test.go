@@ -192,7 +192,12 @@ var tests = []generationTest{
 	generationTest{"nominal cast failure test", "cast", "nominalcastfail", integrationTestFailureExpected,
 		"Error: Cannot auto-box function AnotherClass() {} to function SomeNominal() {}"},
 
+	generationTest{"interface cast failure test", "cast", "interfacecastfail", integrationTestFailureExpected,
+		"Error: Cannot cast function SomeClass() {} to function SomeInterface() {}"},
+
 	generationTest{"nominal cast autobox success test", "cast", "nominalautobox", integrationTestSuccessExpected, ""},
+	generationTest{"interface cast success test", "cast", "interfacecast", integrationTestSuccessExpected, ""},
+	generationTest{"generic interface cast success test", "cast", "genericinterfacecast", integrationTestSuccessExpected, ""},
 }
 
 func TestGenerator(t *testing.T) {

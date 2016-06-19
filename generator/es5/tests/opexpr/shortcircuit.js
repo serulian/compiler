@@ -19,6 +19,9 @@ $module('shortcircuit', function () {
       };
       return $promise.new($continue);
     });
+    this.$typesig = function () {
+      return $t.createtypesig(['Message', 3, $g.____testlib.basictypes.String.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.shortcircuit.someError).$typeref()]);
+    };
   });
 
   $static.neverCalled = function () {

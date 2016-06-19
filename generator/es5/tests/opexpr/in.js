@@ -19,6 +19,9 @@ $module('in', function () {
       };
       return $promise.new($continue);
     };
+    this.$typesig = function () {
+      return $t.createtypesig(['contains', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.in.SomeClass).$typeref()]);
+    };
   });
 
   $static.TEST = function () {

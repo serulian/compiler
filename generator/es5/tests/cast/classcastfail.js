@@ -10,6 +10,9 @@ $module('classcastfail', function () {
         return instance;
       });
     };
+    this.$typesig = function () {
+      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.classcastfail.SomeClass).$typeref()]);
+    };
   });
 
   this.$class('AnotherClass', false, '', function () {
@@ -21,6 +24,9 @@ $module('classcastfail', function () {
       return $promise.all(init).then(function () {
         return instance;
       });
+    };
+    this.$typesig = function () {
+      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.classcastfail.AnotherClass).$typeref()]);
     };
   });
 

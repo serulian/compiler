@@ -58,6 +58,9 @@ $module('json', function () {
         this[BOXED_DATA_PROPERTY]['AnotherBool'] = value;
       },
     });
+    this.$typesig = function () {
+      return $t.createtypesig(['AnotherBool', 5, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.json.AnotherStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.json.AnotherStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
+    };
   });
 
   this.$struct('SomeStruct', false, '', function () {
@@ -158,6 +161,9 @@ $module('json', function () {
         this[BOXED_DATA_PROPERTY]['SomeInstance'] = value;
       },
     });
+    this.$typesig = function () {
+      return $t.createtypesig(['SomeField', 5, $g.____testlib.basictypes.Integer.$typeref()], ['AnotherField', 5, $g.____testlib.basictypes.Boolean.$typeref()], ['SomeInstance', 5, $g.json.AnotherStruct.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.json.SomeStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.json.SomeStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
+    };
   });
 
   $static.TEST = function () {

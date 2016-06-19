@@ -10,6 +10,9 @@ $module('nominalcastfail', function () {
         return instance;
       });
     };
+    this.$typesig = function () {
+      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.nominalcastfail.SomeClass).$typeref()]);
+    };
   });
 
   this.$class('AnotherClass', false, '', function () {
@@ -21,6 +24,9 @@ $module('nominalcastfail', function () {
       return $promise.all(init).then(function () {
         return instance;
       });
+    };
+    this.$typesig = function () {
+      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.nominalcastfail.AnotherClass).$typeref()]);
     };
   });
 
@@ -34,6 +40,9 @@ $module('nominalcastfail', function () {
     };
     this.$roottype = function () {
       return $g.nominalcastfail.SomeClass;
+    };
+    this.$typesig = function () {
+      return $t.createtypesig();
     };
   });
 

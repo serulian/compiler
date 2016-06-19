@@ -78,6 +78,9 @@ $module('asyncstruct', function () {
         this[BOXED_DATA_PROPERTY]['Bar'] = value;
       },
     });
+    this.$typesig = function () {
+      return $t.createtypesig(['Foo', 5, $g.____testlib.basictypes.Integer.$typeref()], ['Bar', 5, $g.____testlib.basictypes.Integer.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.asyncstruct.SomeStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.asyncstruct.SomeStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
+    };
   });
 
   $static.DoSomethingAsync = $t.workerwrap('dd7aa26ec2db6858f13a458fe077b54060448d2e8a2998b7445a87f974ab256b', function (s) {

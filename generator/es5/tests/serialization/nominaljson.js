@@ -20,6 +20,9 @@ $module('nominaljson', function () {
       };
       return $promise.new($continue);
     };
+    this.$typesig = function () {
+      return $t.createtypesig(['GetValue', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()]);
+    };
   });
 
   this.$struct('AnotherStruct', false, '', function () {
@@ -80,6 +83,9 @@ $module('nominaljson', function () {
         this[BOXED_DATA_PROPERTY]['AnotherBool'] = value;
       },
     });
+    this.$typesig = function () {
+      return $t.createtypesig(['AnotherBool', 5, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.nominaljson.AnotherStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.nominaljson.AnotherStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
+    };
   });
 
   this.$struct('SomeStruct', false, '', function () {
@@ -140,6 +146,9 @@ $module('nominaljson', function () {
         this[BOXED_DATA_PROPERTY]['Nested'] = value;
       },
     });
+    this.$typesig = function () {
+      return $t.createtypesig(['Nested', 5, $g.nominaljson.SomeNominal.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.nominaljson.SomeStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.nominaljson.SomeStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
+    };
   });
 
   $static.TEST = function () {

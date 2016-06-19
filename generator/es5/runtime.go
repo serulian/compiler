@@ -193,10 +193,21 @@ this.Serulian = (function($global) {
           if ($t.roottype(value.constructor) != $t.roottype(type)) {
             throw Error('Cannot auto-box ' + value.constructor.toString() + ' to ' + type.toString())
           }
+          break;
 
         case 'interface':
-          // Check if the other type implements the interface.
-          // TODO: check this.
+          // Check if the other type implements the interface by comparing type signatures.
+          var castSignature = type.$typesig();
+          var valueSignature = value.constructor.$typesig();
+
+          var expectedKeys = Object.keys(castSignature);
+          for (var i = 0; i < expectedKeys.length; ++i) {
+            var expectedKey = expectedKeys[i];
+            if (valueSignature[expectedKey] !== true) {
+              throw Error('Cannot cast ' + value.constructor.toString() + ' to ' + type.toString())              
+            }
+          }
+          break;
       }
 
       // Automatically box if necessary.
@@ -205,6 +216,19 @@ this.Serulian = (function($global) {
       }
 
       return value
+    },
+
+    // createtypesig returns an object with the type signature strings for the given
+    // piece entries (as arguments) as defined by the $typesig method on a type.
+    'createtypesig': function() {
+      var sig = {};
+      for (var i = 0; i < arguments.length; ++i) {
+        var entry = arguments[i];
+        var key = entry[0] + ':' + entry[1] + ':' + JSON.stringify(entry[2]);
+        sig[key] = true;
+      }
+
+      return sig;
     },
 
     // equals performs a comparison of the two values by calling the $equals operator on the

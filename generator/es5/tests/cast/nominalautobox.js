@@ -10,6 +10,9 @@ $module('nominalautobox', function () {
         return instance;
       });
     };
+    this.$typesig = function () {
+      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.nominalautobox.SomeClass).$typeref()]);
+    };
   });
 
   this.$type('SomeNominal', false, '', function () {
@@ -32,6 +35,9 @@ $module('nominalautobox', function () {
       };
       return $promise.new($continue);
     });
+    this.$typesig = function () {
+      return $t.createtypesig(['SomeValue', 3, $g.____testlib.basictypes.Boolean.$typeref()]);
+    };
   });
 
   $static.TEST = function () {

@@ -1,4 +1,4 @@
-$module('unary', function () {
+$module('interfacecastfail', function () {
   var $static = this;
   this.$class('SomeClass', false, '', function () {
     var $static = this;
@@ -10,26 +10,35 @@ $module('unary', function () {
         return instance;
       });
     };
-    $static.$not = function (instance) {
+    $instance.SomeValue = $t.property(function () {
+      var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve(instance);
+        $resolve($t.box(2, $g.____testlib.basictypes.Integer));
         return;
       };
       return $promise.new($continue);
-    };
+    });
     this.$typesig = function () {
-      return $t.createtypesig(['not', 4, $g.____testlib.basictypes.Function($g.unary.SomeClass).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.unary.SomeClass).$typeref()]);
+      return $t.createtypesig(['SomeValue', 3, $g.____testlib.basictypes.Integer.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.interfacecastfail.SomeClass).$typeref()]);
     };
   });
 
-  $static.DoSomething = function (first) {
+  this.$interface('SomeInterface', false, '', function () {
+    var $static = this;
+    this.$typesig = function () {
+      return $t.createtypesig(['SomeValue', 3, $g.____testlib.basictypes.Boolean.$typeref()]);
+    };
+  });
+
+  $static.TEST = function () {
+    var sc;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
         switch ($current) {
           case 0:
-            $g.unary.SomeClass.$not(first).then(function ($result0) {
+            $g.interfacecastfail.SomeClass.new().then(function ($result0) {
               $result = $result0;
               $current = 1;
               $continue($resolve, $reject);
@@ -41,7 +50,8 @@ $module('unary', function () {
             return;
 
           case 1:
-            $result;
+            sc = $result;
+            $t.cast(sc, $g.interfacecastfail.SomeInterface);
             $resolve();
             return;
 

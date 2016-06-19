@@ -50,6 +50,9 @@ $module('arrow', function () {
       };
       return $promise.new($continue);
     };
+    this.$typesig = function () {
+      return $t.createtypesig(['Then', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Awaitable($g.____testlib.basictypes.Boolean)).$typeref()], ['Catch', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Awaitable($g.____testlib.basictypes.Boolean)).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.arrow.SomePromise).$typeref()]);
+    };
   });
 
   $static.DoSomething = function (p) {

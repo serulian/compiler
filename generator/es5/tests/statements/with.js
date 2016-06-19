@@ -20,6 +20,9 @@ $module('with', function () {
       };
       return $promise.new($continue);
     };
+    this.$typesig = function () {
+      return $t.createtypesig(['Release', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.with.SomeReleasable).$typeref()]);
+    };
   });
 
   $static.TEST = function () {

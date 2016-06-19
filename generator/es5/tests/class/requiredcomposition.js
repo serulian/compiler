@@ -14,6 +14,9 @@ $module('requiredcomposition', function () {
         return instance;
       });
     };
+    this.$typesig = function () {
+      return $t.createtypesig(['FirstValue', 5, $g.____testlib.basictypes.Integer.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.requiredcomposition.First).$typeref()]);
+    };
   });
 
   this.$class('Second', false, '', function () {
@@ -29,6 +32,9 @@ $module('requiredcomposition', function () {
       return $promise.all(init).then(function () {
         return instance;
       });
+    };
+    this.$typesig = function () {
+      return $t.createtypesig(['SecondValue', 5, $g.____testlib.basictypes.String.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.requiredcomposition.Second).$typeref()]);
     };
   });
 
@@ -64,6 +70,9 @@ $module('requiredcomposition', function () {
         this.Second.SecondValue = val;
       },
     });
+    this.$typesig = function () {
+      return $t.createtypesig(['FirstValue', 5, $g.____testlib.basictypes.Integer.$typeref()], ['SecondValue', 5, $g.____testlib.basictypes.String.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.requiredcomposition.SomeClass).$typeref()]);
+    };
   });
 
   $static.TEST = function () {
