@@ -13,6 +13,9 @@ $module('nominalbase', function () {
         return instance;
       });
     };
+    this.$typesig = function () {
+      return $t.createtypesig(['SomeField', 5, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.nominalbase.SomeClass).$typeref()]);
+    };
   });
 
   this.$type('FirstNominal', false, '', function () {
@@ -23,6 +26,9 @@ $module('nominalbase', function () {
       instance[BOXED_DATA_PROPERTY] = $wrapped;
       return instance;
     };
+    this.$roottype = function () {
+      return $g.nominalbase.SomeClass;
+    };
     $instance.SomeProp = $t.property(function () {
       var $this = this;
       var $current = 0;
@@ -32,6 +38,9 @@ $module('nominalbase', function () {
       };
       return $promise.new($continue);
     });
+    this.$typesig = function () {
+      return $t.createtypesig(['SomeProp', 3, $g.____testlib.basictypes.Boolean.$typeref()]);
+    };
   });
 
   this.$type('SecondNominal', false, '', function () {
@@ -41,6 +50,9 @@ $module('nominalbase', function () {
       var instance = new this();
       instance[BOXED_DATA_PROPERTY] = $wrapped;
       return instance;
+    };
+    this.$roottype = function () {
+      return $g.nominalbase.SomeClass;
     };
     $instance.GetValue = function () {
       var $this = this;
@@ -71,6 +83,9 @@ $module('nominalbase', function () {
         }
       };
       return $promise.new($continue);
+    };
+    this.$typesig = function () {
+      return $t.createtypesig(['GetValue', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()]);
     };
   });
 

@@ -14,6 +14,25 @@ import (
 	"github.com/serulian/compiler/graphs/typegraph/proto"
 )
 
+// MemberSignatureKind defines the various kinds of members, for calculating signatures
+// for interface comparisons.
+type MemberSignatureKind int
+
+const (
+	CustomMemberSignature MemberSignatureKind = iota
+
+	ConstructorMemberSignature
+	FunctionMemberSignature
+	PropertyMemberSignature
+	OperatorMemberSignature
+	FieldMemberSignature
+
+	NativeConstructorMemberSignature
+	NativeFunctionMemberSignature
+	NativeOperatorMemberSignature
+	NativePropertyMemberSignature
+)
+
 // operatorMemberNamePrefix defines a unicode character for prefixing the "member name" of operators. Allows
 // for easier comparison of all members under a type.
 var operatorMemberNamePrefix = "•"
@@ -452,7 +471,7 @@ type MemberDecorator struct {
 	signatureType    TypeReference // The defined signature type.
 	hasSignatureType bool          // Whether there is a custom signature type.
 
-	memberKind uint64 // The kind of the member.
+	memberKind MemberSignatureKind // The kind of the member.
 
 	genericConstraints map[compilergraph.GraphNode]TypeReference // The defined generic constraints.
 	memberIssues       []string                                  // Issues added on the member source node.
@@ -568,8 +587,8 @@ func (mb *MemberDecorator) SignatureType(signatureType TypeReference) *MemberDec
 	return mb
 }
 
-// MemberKind sets a unique int representing the kind of the member. Used for signature calculation.
-func (mb *MemberDecorator) MemberKind(memberKind uint64) *MemberDecorator {
+// MemberKind sets the kind of the member. Used for signature calculation.
+func (mb *MemberDecorator) MemberKind(memberKind MemberSignatureKind) *MemberDecorator {
 	mb.memberKind = memberKind
 	return mb
 }
@@ -760,10 +779,11 @@ func (mb *MemberDecorator) decorateWithSig(sigMemberType TypeReference, generics
 
 	isWritable := !mb.readonly
 	name := strings.ToLower(mb.member.Name())
+	memberKind := uint64(mb.memberKind)
 
 	signature := &proto.MemberSig{
 		MemberName:         &name,
-		MemberKind:         &mb.memberKind,
+		MemberKind:         &memberKind,
 		IsExported:         &mb.exported,
 		IsWritable:         &isWritable,
 		MemberType:         &memberTypeStr,

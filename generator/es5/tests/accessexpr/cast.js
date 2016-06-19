@@ -19,10 +19,16 @@ $module('cast', function () {
       };
       return $promise.new($continue);
     });
+    this.$typesig = function () {
+      return $t.createtypesig(['Result', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.cast.SomeClass).$typeref()]);
+    };
   });
 
   this.$interface('ISomeInterface', false, '', function () {
     var $static = this;
+    this.$typesig = function () {
+      return $t.createtypesig();
+    };
   });
 
   $static.DoSomething = function (i) {

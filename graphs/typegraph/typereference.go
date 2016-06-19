@@ -211,6 +211,16 @@ func (tr TypeReference) CheckNominalConvertable(other TypeReference) error {
 	return fmt.Errorf("Type '%v' cannot be converted to or from type '%v'", tr, other)
 }
 
+// NominalDataType returns the root data type of the nominal type, or the type itself if not nominal.
+func (tr TypeReference) NominalDataType() TypeReference {
+	root := tr.NominalRootType()
+	if root.IsNominal() {
+		return root.ReferredType().ParentTypes()[0].TransformUnder(tr)
+	}
+
+	return root
+}
+
 // NominalRootType returns the root nominal type of the nominal type, or the type itself if not nominal.
 func (tr TypeReference) NominalRootType() TypeReference {
 	if !tr.IsNominal() {

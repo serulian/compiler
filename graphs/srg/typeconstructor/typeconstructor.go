@@ -214,6 +214,8 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 
 	// Build all member-specific information.
 	var memberType typegraph.TypeReference = graph.AnyTypeReference()
+	var memberKind typegraph.MemberSignatureKind = typegraph.CustomMemberSignature
+
 	var isReadOnly bool = true
 	var isStatic bool = false
 	var isPromising bool = true
@@ -225,6 +227,8 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 	case srg.VarMember:
 		// Variables have their declared type.
 		memberType, _ = stc.resolvePossibleType(member.Node(), member.DeclaredType, graph, reporter)
+		memberKind = typegraph.FieldMemberSignature
+
 		isReadOnly = false
 		isPromising = false
 		isField = true
@@ -233,6 +237,8 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 	case srg.PropertyMember:
 		// Properties have their declared type.
 		memberType, _ = stc.resolvePossibleType(member.Node(), member.DeclaredType, graph, reporter)
+		memberKind = typegraph.PropertyMemberSignature
+
 		isReadOnly = !member.HasSetter()
 		isImplicitlyCalled = true
 
@@ -243,6 +249,8 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 		}
 
 	case srg.ConstructorMember:
+		memberKind = typegraph.ConstructorMemberSignature
+
 		// Constructors are static.
 		isStatic = true
 
@@ -261,6 +269,8 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 		decorator.SignatureType(signatureType)
 
 	case srg.OperatorMember:
+		memberKind = typegraph.OperatorMemberSignature
+
 		// Operators are read-only.
 		isReadOnly = true
 
@@ -291,6 +301,8 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 		// Note: Operators get decorated with a returnable by the construction system automatically.
 
 	case srg.FunctionMember:
+		memberKind = typegraph.FunctionMemberSignature
+
 		// Functions are read-only.
 		isReadOnly = true
 
@@ -338,7 +350,7 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 	decorator.MemberType(memberType)
 
 	// Decorate the member with its kind.
-	decorator.MemberKind(uint64(member.MemberKind()))
+	decorator.MemberKind(memberKind)
 
 	// Decorate the member with its tags, if any.
 	for name, value := range member.Tags() {

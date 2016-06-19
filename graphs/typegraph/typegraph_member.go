@@ -6,6 +6,7 @@ package typegraph
 
 import (
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/graphs/typegraph/proto"
 )
 
 // TypeMemberTag defines the set of custom tags on type members.
@@ -327,4 +328,10 @@ func (tn TGMember) SerializableName() string {
 // ParameterTypes returns the types of the parameters defined on this member, if any.
 func (tn TGMember) ParameterTypes() []TypeReference {
 	return tn.MemberType().Parameters()
+}
+
+// Signature returns the signature of this member.
+func (tn TGMember) Signature() *proto.MemberSig {
+	esig := &proto.MemberSig{}
+	return tn.GetTagged(NodePredicateMemberSignature, esig).(*proto.MemberSig)
 }

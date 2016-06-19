@@ -3,10 +3,10 @@
         "Key": "870e98ed097b14c9695ae78dc3f8b8eb",
         "Kind": 1,
         "Children": {
-            "d1ce679a80470293f54dddb2720e42ec": {
+            "5182a5fbc082d37745d5ae823d98dead": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "d1ce679a80470293f54dddb2720e42ec",
+                    "Key": "5182a5fbc082d37745d5ae823d98dead",
                     "Kind": 7,
                     "Children": {},
                     "Predicates": {
@@ -14,7 +14,7 @@
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cAnotherClass\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0016function\u003cAnotherClass\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0016function\u003cAnotherClass\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/generic/generic.seru"
@@ -63,10 +63,10 @@
                     }
                 }
             },
-            "542aefeca15b00af917d6a250e8bfdc6": {
+            "31713b5396232dd09dfc14dbcbdda896": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "542aefeca15b00af917d6a250e8bfdc6",
+                    "Key": "31713b5396232dd09dfc14dbcbdda896",
                     "Kind": 7,
                     "Children": {},
                     "Predicates": {
@@ -74,7 +74,7 @@
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cSomeClass\u003cT, Q\u003e\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0019function\u003cSomeClass\u003cT, Q\u003e\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0019function\u003cSomeClass\u003cT, Q\u003e\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/generic/generic.seru"

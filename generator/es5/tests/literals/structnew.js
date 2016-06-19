@@ -35,6 +35,9 @@ $module('structnew', function () {
       };
       return $promise.new($continue);
     });
+    this.$typesig = function () {
+      return $t.createtypesig(['SomeField', 5, $g.____testlib.basictypes.Integer.$typeref()], ['anotherField', 5, $g.____testlib.basictypes.Boolean.$typeref()], ['AnotherField', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.structnew.SomeClass).$typeref()]);
+    };
   });
 
   $static.TEST = function () {

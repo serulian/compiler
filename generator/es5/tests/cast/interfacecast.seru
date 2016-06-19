@@ -1,0 +1,14 @@
+interface SomeInterface {
+	property<bool> SomeValue { get }
+}
+
+class SomeClass {
+	property<bool> SomeValue {
+		get { return true }
+	}
+}
+
+function<bool> TEST() {
+	var<any> sc = SomeClass.new()
+	return sc.(SomeInterface).SomeValue
+}

@@ -103,6 +103,9 @@ $module('custom', function () {
       };
       return $promise.new($continue);
     };
+    this.$typesig = function () {
+      return $t.createtypesig(['Get', 1, $g.____testlib.basictypes.Function($g.custom.CustomJSON).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Parse', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.custom.CustomJSON).$typeref()]);
+    };
   });
 
   this.$struct('AnotherStruct', false, '', function () {
@@ -163,6 +166,9 @@ $module('custom', function () {
         this[BOXED_DATA_PROPERTY]['AnotherBool'] = value;
       },
     });
+    this.$typesig = function () {
+      return $t.createtypesig(['AnotherBool', 5, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.custom.AnotherStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.custom.AnotherStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
+    };
   });
 
   this.$struct('SomeStruct', false, '', function () {
@@ -263,6 +269,9 @@ $module('custom', function () {
         this[BOXED_DATA_PROPERTY]['SomeInstance'] = value;
       },
     });
+    this.$typesig = function () {
+      return $t.createtypesig(['SomeField', 5, $g.____testlib.basictypes.Integer.$typeref()], ['AnotherField', 5, $g.____testlib.basictypes.Boolean.$typeref()], ['SomeInstance', 5, $g.custom.AnotherStruct.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.custom.SomeStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.custom.SomeStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
+    };
   });
 
   $static.TEST = function () {

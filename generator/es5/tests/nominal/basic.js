@@ -19,6 +19,9 @@ $module('basic', function () {
       };
       return $promise.new($continue);
     };
+    this.$typesig = function () {
+      return $t.createtypesig(['DoSomething', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.basic.SomeClass).$typeref()]);
+    };
   });
 
   this.$type('MyType', false, '', function () {
@@ -28,6 +31,9 @@ $module('basic', function () {
       var instance = new this();
       instance[BOXED_DATA_PROPERTY] = $wrapped;
       return instance;
+    };
+    this.$roottype = function () {
+      return $g.basic.SomeClass;
     };
     $instance.AnotherThing = function () {
       var $this = this;
@@ -68,6 +74,9 @@ $module('basic', function () {
       };
       return $promise.new($continue);
     });
+    this.$typesig = function () {
+      return $t.createtypesig(['AnotherThing', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['SomeProp', 3, $g.____testlib.basictypes.Boolean.$typeref()]);
+    };
   });
 
   $static.TEST = function () {

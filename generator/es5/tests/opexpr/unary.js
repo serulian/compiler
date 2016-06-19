@@ -18,6 +18,9 @@ $module('unary', function () {
       };
       return $promise.new($continue);
     };
+    this.$typesig = function () {
+      return $t.createtypesig(['not', 4, $g.____testlib.basictypes.Function($g.unary.SomeClass).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.unary.SomeClass).$typeref()]);
+    };
   });
 
   $static.DoSomething = function (first) {

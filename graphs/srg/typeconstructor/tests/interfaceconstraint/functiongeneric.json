@@ -3,10 +3,10 @@
         "Key": "005a11a8399486c74388ca2ba241e436",
         "Kind": 1,
         "Children": {
-            "8b72deb5538810814372a193bc992e81": {
+            "a038c7aaeebe9b60883298b8a5b826b1": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "8b72deb5538810814372a193bc992e81",
+                    "Key": "a038c7aaeebe9b60883298b8a5b826b1",
                     "Kind": 7,
                     "Children": {},
                     "Predicates": {
@@ -14,7 +14,7 @@
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cAnotherClass\u003cT\u003e\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0019function\u003cAnotherClass\u003cT\u003e\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0019function\u003cAnotherClass\u003cT\u003e\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/functiongeneric.seru"
@@ -110,10 +110,10 @@
         "Key": "0f9f1c220a9f8e4e351c76b25d5c5388",
         "Kind": 1,
         "Children": {
-            "9dd8647944adf9725f4353adec314321": {
+            "a00235b03866175ecd63527cd37d8277": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "9dd8647944adf9725f4353adec314321",
+                    "Key": "a00235b03866175ecd63527cd37d8277",
                     "Kind": 7,
                     "Children": {},
                     "Predicates": {
@@ -121,7 +121,7 @@
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cTester\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0010function\u003cTester\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0010function\u003cTester\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/functiongeneric.seru"
@@ -204,10 +204,10 @@
                     }
                 }
             },
-            "bf91695ffc888b9a33b5a4efb0342cbf": {
+            "e2f6e01f496931e19ccf8a63d084c41d": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "bf91695ffc888b9a33b5a4efb0342cbf",
+                    "Key": "e2f6e01f496931e19ccf8a63d084c41d",
                     "Kind": 7,
                     "Children": {},
                     "Predicates": {
@@ -215,7 +215,7 @@
                         "tdg-member-promising": "true",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cSomeClass\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0013function\u003cSomeClass\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0013function\u003cSomeClass\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/functiongeneric.seru"

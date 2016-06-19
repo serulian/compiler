@@ -19,6 +19,9 @@ $module('functioncallnullable', function () {
       };
       return $promise.new($continue);
     };
+    this.$typesig = function () {
+      return $t.createtypesig(['SomeMethod', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.functioncallnullable.SomeClass).$typeref()]);
+    };
   });
 
   this.$class('AnotherClass', false, '', function () {
@@ -39,6 +42,9 @@ $module('functioncallnullable', function () {
         return;
       };
       return $promise.new($continue);
+    };
+    this.$typesig = function () {
+      return $t.createtypesig(['AnotherMethod', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.functioncallnullable.AnotherClass).$typeref()]);
     };
   });
 

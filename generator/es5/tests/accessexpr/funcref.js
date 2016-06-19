@@ -23,6 +23,9 @@ $module('funcref', function () {
       };
       return $promise.new($continue);
     };
+    this.$typesig = function () {
+      return $t.createtypesig(['value', 5, $g.____testlib.basictypes.Boolean.$typeref()], ['SomeFunction', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.funcref.SomeClass).$typeref()]);
+    };
   });
 
   $static.AnotherFunction = function (toCall) {

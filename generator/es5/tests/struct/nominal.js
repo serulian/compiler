@@ -8,6 +8,12 @@ $module('nominal', function () {
       instance[BOXED_DATA_PROPERTY] = $wrapped;
       return instance;
     };
+    this.$roottype = function () {
+      return $global.Boolean;
+    };
+    this.$typesig = function () {
+      return $t.createtypesig();
+    };
   });
 
   this.$struct('SomeStruct', false, '', function () {
@@ -68,6 +74,9 @@ $module('nominal', function () {
         this[BOXED_DATA_PROPERTY]['someField'] = value;
       },
     });
+    this.$typesig = function () {
+      return $t.createtypesig(['someField', 5, $g.nominal.CoolBool.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.nominal.SomeStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.nominal.SomeStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
+    };
   });
 
   $static.TEST = function () {

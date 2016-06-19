@@ -22,6 +22,9 @@ $module('basic', function () {
       var $this = this;
       return $promise.empty();
     };
+    this.$typesig = function () {
+      return $t.createtypesig(['SomeInt', 5, $g.____testlib.basictypes.Integer.$typeref()], ['AnotherBool', 5, $g.____testlib.basictypes.Boolean.$typeref()], ['NullableInt', 5, $g.____testlib.basictypes.Integer.$typeref()], ['AnotherFunction', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.basic.SomeClass).$typeref()]);
+    };
   });
 
   $static.CoolFunction = function () {

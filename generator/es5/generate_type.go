@@ -108,6 +108,15 @@ func (gt generatingType) WrappedType() typegraph.TypeReference {
 	return gt.Type.ParentTypes()[0]
 }
 
+// NominalDataType returns the root data type behind this nominal type.
+func (gt generatingType) NominalDataType() typegraph.TypeReference {
+	if gt.Type.TypeKind() != typegraph.NominalType {
+		panic("Cannot call WrappedType on non-nominal type")
+	}
+
+	return gt.Type.GetTypeReference().NominalDataType()
+}
+
 func (gt generatingType) BoolType() typegraph.TypeReference {
 	return gt.Generator.scopegraph.TypeGraph().BoolTypeReference()
 }
@@ -138,6 +147,24 @@ func (gt generatingType) GenerateComposition() *ordered_map.OrderedMap {
 	return typeMap
 }
 
+// TypeSignatureMethod generates the $typesig method on a type definition.
+func (gt generatingType) TypeSignatureMethod() string {
+	return gt.Generator.templater.Execute("typesig", typeSignatureTemplateStr, gt)
+}
+
+// typeSignatureTemplateStr defines a template for generating the signature for a type.
+const typeSignatureTemplateStr = `
+	this.$typesig = function() {
+		return $t.createtypesig(
+		{{ $parent := . }}
+		{{ range $midx, $member := .Type.Members }}
+			{{ if $midx }},{{ end }}
+			['{{ $member.Name }}', {{ $member.Signature.MemberKind }}, ({{ $parent.TypeReferenceCall $member.MemberType }}).$typeref()]
+		{{ end }}
+		);
+	};
+`
+
 // compositionTemplateStr defines a template for instantiating a composed type.
 const compositionTemplateStr = `
 	({{ .ComposedTypeLocation }}).new({{ range $ridx, $field := .RequiredFields }}{{ if $ridx }}, {{ end }}{{ $field.Name }}{{ end }}).then(function(value) {
@@ -155,6 +182,8 @@ this.$interface('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function
 	{{range $idx, $kv := .GenerateImplementedMembers.UnsafeIter }}
   	  {{ emit $kv.Value }}
   	{{end}}
+
+  	{{ .TypeSignatureMethod }}
 });
 `
 
@@ -191,6 +220,8 @@ this.$class('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ 
 	{{range $idx, $kv := .GenerateImplementedMembers.UnsafeIter }}
   	  {{ emit $kv.Value }}
   	{{end}}
+
+  	{{ .TypeSignatureMethod }}
 });
 `
 
@@ -292,6 +323,8 @@ this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{
 	    }
 	  });
 	{{ end }}
+
+  	{{ .TypeSignatureMethod }}
 });
 `
 
@@ -307,8 +340,14 @@ this.$type('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .
 		return instance;
 	};
 
+	this.$roottype = function() {
+		return {{ .TypeReferenceCall .NominalDataType }};
+	};
+
 	{{range $idx, $kv := .GenerateImplementedMembers.UnsafeIter }}
   	  {{ emit $kv.Value }}
   	{{end}}
+
+  	{{ .TypeSignatureMethod }}
 });
 `

@@ -369,7 +369,7 @@ func (t *testTypeGraphConstructor) DefineMembers(builder GetMemberBuilder, repor
 			memberNode := t.CreateNode(fakeNodeTypeTagged)
 			t.memberMap[typeInfo.name+"."+memberInfo.name] = memberNode
 
-			ib := builder(typeNode, memberInfo.kind == "operator").
+			ib := builder(typeNode, memberInfo.kind == OperatorMemberSignature).
 				Name(memberInfo.name).
 				SourceNode(memberNode)
 
@@ -401,7 +401,7 @@ func (t *testTypeGraphConstructor) DecorateMembers(decorator GetMemberDecorator,
 
 			var memberType = parseTypeReferenceForTesting(memberInfo.returnType, graph, memberNode, typeNode)
 
-			if memberInfo.kind != "var" {
+			if memberInfo.kind != FieldMemberSignature {
 				memberType = graph.FunctionTypeReference(memberType)
 				for _, paramInfo := range memberInfo.parameters {
 					memberType = memberType.WithParameter(parseTypeReferenceForTesting(paramInfo.paramType, graph, memberNode, typeNode))
@@ -409,7 +409,7 @@ func (t *testTypeGraphConstructor) DecorateMembers(decorator GetMemberDecorator,
 			}
 
 			var signatureType = memberType
-			if memberInfo.kind == "constructor" {
+			if memberInfo.kind == ConstructorMemberSignature {
 				signatureType = graph.FunctionTypeReference(graph.AnyTypeReference())
 				for _, paramInfo := range memberInfo.parameters {
 					signatureType = signatureType.WithParameter(parseTypeReferenceForTesting(paramInfo.paramType, graph, memberNode, typeNode))
@@ -420,7 +420,7 @@ func (t *testTypeGraphConstructor) DecorateMembers(decorator GetMemberDecorator,
 				ReadOnly(false).
 				MemberType(memberType).
 				SignatureType(signatureType).
-				MemberKind(uint64(len(memberInfo.kind))).
+				MemberKind(memberInfo.kind).
 				Decorate()
 		}
 	}
@@ -453,7 +453,7 @@ type testGeneric struct {
 }
 
 type testMember struct {
-	kind       string
+	kind       MemberSignatureKind
 	name       string
 	returnType string
 	generics   []testGeneric

@@ -17,6 +17,24 @@
                     }
                 }
             },
+            "56c7bee3950e5f696ffb0fb4c6354a64": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "56c7bee3950e5f696ffb0fb4c6354a64",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-name": "new",
+                        "tdg-member-promising": "true",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cSomeClass\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0013function\u003cSomeClass\u003e",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/genericfunctionconstraint/example.seru"
+                    }
+                }
+            },
             "95f64f625c5169cd3dd49c7e8f24f7e2": {
                 "Predicate": "tdg-node-member",
                 "Child": {
@@ -79,24 +97,6 @@
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/genericfunctionconstraint/example.seru",
                         "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
-            "b0e91c9ef1511b8fa92674b4b7e9be0c": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "b0e91c9ef1511b8fa92674b4b7e9be0c",
-                    "Kind": 7,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-name": "new",
-                        "tdg-member-promising": "true",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cSomeClass\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0000\u0018\u0000 \u0000*\u0013function\u003cSomeClass\u003e",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "7|NodeType|tdg",
-                        "tdg-source-module": "tests/genericfunctionconstraint/example.seru"
                     }
                 }
             }

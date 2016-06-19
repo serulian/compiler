@@ -24,11 +24,20 @@ import (
 
 const TESTLIB_PATH = "../../testlib"
 
+type integrationTestKind int
+
+const (
+	integrationTestNone integrationTestKind = iota
+	integrationTestSuccessExpected
+	integrationTestFailureExpected
+)
+
 type generationTest struct {
-	name            string
-	input           string
-	entrypoint      string
-	integrationTest bool
+	name                 string
+	input                string
+	entrypoint           string
+	integrationTest      integrationTestKind
+	expectedErrorMessage string
 }
 
 func (gt *generationTest) expected() string {
@@ -84,98 +93,111 @@ func assertNoOttoError(t *testing.T, testName string, source string, err error) 
 }
 
 var tests = []generationTest{
-	generationTest{"basic module test", "module", "basic", true},
-	generationTest{"basic class test", "class", "basic", true},
-	generationTest{"class property test", "class", "property", true},
-	generationTest{"class inheritance test", "class", "inheritance", true},
-	generationTest{"class required fields test", "class", "requiredfields", true},
-	generationTest{"class composition required fields test", "class", "requiredcomposition", true},
-	generationTest{"constructable interface test", "interface", "constructable", true},
+	generationTest{"basic module test", "module", "basic", integrationTestSuccessExpected, ""},
+	generationTest{"basic class test", "class", "basic", integrationTestSuccessExpected, ""},
+	generationTest{"class property test", "class", "property", integrationTestSuccessExpected, ""},
+	generationTest{"class inheritance test", "class", "inheritance", integrationTestSuccessExpected, ""},
+	generationTest{"class required fields test", "class", "requiredfields", integrationTestSuccessExpected, ""},
+	generationTest{"class composition required fields test", "class", "requiredcomposition", integrationTestSuccessExpected, ""},
+	generationTest{"constructable interface test", "interface", "constructable", integrationTestSuccessExpected, ""},
 
-	generationTest{"basic struct test", "struct", "basic", true},
-	generationTest{"struct equality test", "struct", "equals", true},
-	generationTest{"struct nominal field test", "struct", "nominal", true},
-	generationTest{"struct null boxing test", "struct", "nullbox", true},
+	generationTest{"basic struct test", "struct", "basic", integrationTestSuccessExpected, ""},
+	generationTest{"struct equality test", "struct", "equals", integrationTestSuccessExpected, ""},
+	generationTest{"struct nominal field test", "struct", "nominal", integrationTestSuccessExpected, ""},
+	generationTest{"struct null boxing test", "struct", "nullbox", integrationTestSuccessExpected, ""},
 
-	generationTest{"basic async test", "async", "async", true},
-	generationTest{"async struct param test", "async", "asyncstruct", true},
+	generationTest{"basic async test", "async", "async", integrationTestSuccessExpected, ""},
+	generationTest{"async struct param test", "async", "asyncstruct", integrationTestSuccessExpected, ""},
 
-	generationTest{"conditional statement", "statements", "conditional", true},
-	generationTest{"conditional else statement", "statements", "conditionalelse", true},
-	generationTest{"chained conditional statement", "statements", "chainedconditional", true},
-	generationTest{"loop statement", "statements", "loop", false},
-	generationTest{"loop expr statement", "statements", "loopexpr", false},
-	generationTest{"loop var statement", "statements", "loopvar", true},
-	generationTest{"loop streamable statement", "statements", "loopstreamable", true},
-	generationTest{"continue statement", "statements", "continue", false},
-	generationTest{"break statement", "statements", "break", false},
-	generationTest{"var and assign statements", "statements", "varassign", false},
-	generationTest{"var no init statement", "statements", "varnoinit", false},
-	generationTest{"match no expr statement", "statements", "matchnoexpr", false},
-	generationTest{"match expr statement", "statements", "matchexpr", false},
-	generationTest{"with statement", "statements", "with", true},
-	generationTest{"with as statement", "statements", "withas", false},
-	generationTest{"with exit scope statement", "statements", "withexit", true},
+	generationTest{"conditional statement", "statements", "conditional", integrationTestSuccessExpected, ""},
+	generationTest{"conditional else statement", "statements", "conditionalelse", integrationTestSuccessExpected, ""},
+	generationTest{"chained conditional statement", "statements", "chainedconditional", integrationTestSuccessExpected, ""},
+	generationTest{"loop statement", "statements", "loop", integrationTestNone, ""},
+	generationTest{"loop expr statement", "statements", "loopexpr", integrationTestNone, ""},
+	generationTest{"loop var statement", "statements", "loopvar", integrationTestSuccessExpected, ""},
+	generationTest{"loop streamable statement", "statements", "loopstreamable", integrationTestSuccessExpected, ""},
+	generationTest{"continue statement", "statements", "continue", integrationTestNone, ""},
+	generationTest{"break statement", "statements", "break", integrationTestNone, ""},
+	generationTest{"var and assign statements", "statements", "varassign", integrationTestNone, ""},
+	generationTest{"var no init statement", "statements", "varnoinit", integrationTestNone, ""},
+	generationTest{"match no expr statement", "statements", "matchnoexpr", integrationTestNone, ""},
+	generationTest{"match expr statement", "statements", "matchexpr", integrationTestNone, ""},
+	generationTest{"with statement", "statements", "with", integrationTestSuccessExpected, ""},
+	generationTest{"with as statement", "statements", "withas", integrationTestNone, ""},
+	generationTest{"with exit scope statement", "statements", "withexit", integrationTestSuccessExpected, ""},
 
-	generationTest{"await expression", "arrowexpr", "await", true},
-	generationTest{"multiawait expression", "arrowexpr", "multiawait", false},
-	generationTest{"arrow expression", "arrowexpr", "arrow", true},
+	generationTest{"await expression", "arrowexpr", "await", integrationTestSuccessExpected, ""},
+	generationTest{"multiawait expression", "arrowexpr", "multiawait", integrationTestNone, ""},
+	generationTest{"arrow expression", "arrowexpr", "arrow", integrationTestSuccessExpected, ""},
 
-	generationTest{"generic specifier expression", "accessexpr", "genericspecifier", true},
-	generationTest{"cast expression", "accessexpr", "cast", true},
-	generationTest{"structural cast expression", "accessexpr", "structuralcast", true},
-	generationTest{"stream member access expression", "accessexpr", "streammember", false},
-	generationTest{"member access expressions", "accessexpr", "memberaccess", true},
-	generationTest{"function reference access expression", "accessexpr", "funcref", true},
+	generationTest{"generic specifier expression", "accessexpr", "genericspecifier", integrationTestSuccessExpected, ""},
+	generationTest{"cast expression", "accessexpr", "cast", integrationTestSuccessExpected, ""},
+	generationTest{"structural cast expression", "accessexpr", "structuralcast", integrationTestSuccessExpected, ""},
+	generationTest{"stream member access expression", "accessexpr", "streammember", integrationTestNone, ""},
+	generationTest{"member access expressions", "accessexpr", "memberaccess", integrationTestSuccessExpected, ""},
+	generationTest{"function reference access expression", "accessexpr", "funcref", integrationTestSuccessExpected, ""},
 
-	generationTest{"full lambda expression", "lambdaexpr", "full", true},
-	generationTest{"mini lambda expression", "lambdaexpr", "mini", true},
+	generationTest{"full lambda expression", "lambdaexpr", "full", integrationTestSuccessExpected, ""},
+	generationTest{"mini lambda expression", "lambdaexpr", "mini", integrationTestSuccessExpected, ""},
 
-	generationTest{"null comparison", "opexpr", "nullcompare", true},
-	generationTest{"function call", "opexpr", "functioncall", true},
-	generationTest{"function call nullable", "opexpr", "functioncallnullable", true},
-	generationTest{"boolean operators", "opexpr", "boolean", true},
-	generationTest{"binary op expressions", "opexpr", "binary", true},
-	generationTest{"unary op expressions", "opexpr", "unary", false},
-	generationTest{"comparison op expressions", "opexpr", "compare", true},
-	generationTest{"indexer op expressions", "opexpr", "indexer", true},
-	generationTest{"slice op expressions", "opexpr", "slice", true},
-	generationTest{"is null op expression", "opexpr", "isnull", false},
-	generationTest{"mixed op expressions", "opexpr", "mixed", true},
-	generationTest{"in collection op expression", "opexpr", "in", true},
-	generationTest{"assert not null op expression", "opexpr", "assertnotnull", true},
-	generationTest{"short circuit expression", "opexpr", "shortcircuit", true},
+	generationTest{"null comparison", "opexpr", "nullcompare", integrationTestSuccessExpected, ""},
+	generationTest{"function call", "opexpr", "functioncall", integrationTestSuccessExpected, ""},
+	generationTest{"function call nullable", "opexpr", "functioncallnullable", integrationTestSuccessExpected, ""},
+	generationTest{"boolean operators", "opexpr", "boolean", integrationTestSuccessExpected, ""},
+	generationTest{"binary op expressions", "opexpr", "binary", integrationTestSuccessExpected, ""},
+	generationTest{"unary op expressions", "opexpr", "unary", integrationTestNone, ""},
+	generationTest{"comparison op expressions", "opexpr", "compare", integrationTestSuccessExpected, ""},
+	generationTest{"indexer op expressions", "opexpr", "indexer", integrationTestSuccessExpected, ""},
+	generationTest{"slice op expressions", "opexpr", "slice", integrationTestSuccessExpected, ""},
+	generationTest{"is null op expression", "opexpr", "isnull", integrationTestNone, ""},
+	generationTest{"mixed op expressions", "opexpr", "mixed", integrationTestSuccessExpected, ""},
+	generationTest{"in collection op expression", "opexpr", "in", integrationTestSuccessExpected, ""},
+	generationTest{"assert not null op expression", "opexpr", "assertnotnull", integrationTestSuccessExpected, ""},
+	generationTest{"short circuit expression", "opexpr", "shortcircuit", integrationTestSuccessExpected, ""},
 
-	generationTest{"identifier expressions", "literals", "identifier", false},
+	generationTest{"identifier expressions", "literals", "identifier", integrationTestNone, ""},
 
-	generationTest{"structural new literal", "literals", "structnew", true},
-	generationTest{"map literal", "literals", "map", true},
-	generationTest{"list literal", "literals", "list", true},
-	generationTest{"slice literal", "literals", "sliceexpr", true},
-	generationTest{"mapping literal", "literals", "mappingliteral", true},
-	generationTest{"boolean literal", "literals", "boolean", false},
-	generationTest{"numeric literal", "literals", "numeric", false},
-	generationTest{"string literal", "literals", "string", false},
-	generationTest{"null literal", "literals", "null", false},
-	generationTest{"this literal", "literals", "this", false},
+	generationTest{"structural new literal", "literals", "structnew", integrationTestSuccessExpected, ""},
+	generationTest{"map literal", "literals", "map", integrationTestSuccessExpected, ""},
+	generationTest{"list literal", "literals", "list", integrationTestSuccessExpected, ""},
+	generationTest{"slice literal", "literals", "sliceexpr", integrationTestSuccessExpected, ""},
+	generationTest{"mapping literal", "literals", "mappingliteral", integrationTestSuccessExpected, ""},
+	generationTest{"boolean literal", "literals", "boolean", integrationTestNone, ""},
+	generationTest{"numeric literal", "literals", "numeric", integrationTestNone, ""},
+	generationTest{"string literal", "literals", "string", integrationTestNone, ""},
+	generationTest{"null literal", "literals", "null", integrationTestNone, ""},
+	generationTest{"this literal", "literals", "this", integrationTestNone, ""},
 
-	generationTest{"template string literal", "literals", "templatestr", true},
-	generationTest{"tagged template string literal", "literals", "taggedtemplatestr", true},
-	generationTest{"escaped template string literal", "literals", "escapedtemplatestr", false},
+	generationTest{"template string literal", "literals", "templatestr", integrationTestSuccessExpected, ""},
+	generationTest{"tagged template string literal", "literals", "taggedtemplatestr", integrationTestSuccessExpected, ""},
+	generationTest{"escaped template string literal", "literals", "escapedtemplatestr", integrationTestNone, ""},
 
-	generationTest{"basic webidl", "webidl", "basic", true},
+	generationTest{"basic webidl", "webidl", "basic", integrationTestSuccessExpected, ""},
 
-	generationTest{"basic nominal type", "nominal", "basic", true},
-	generationTest{"generic nominal type", "nominal", "generic", true},
-	generationTest{"base nominal type", "nominal", "nominalbase", true},
-	generationTest{"interface nominal type", "nominal", "interface", true},
-	generationTest{"literal nominal type", "nominal", "literal", true},
+	generationTest{"basic nominal type", "nominal", "basic", integrationTestSuccessExpected, ""},
+	generationTest{"generic nominal type", "nominal", "generic", integrationTestSuccessExpected, ""},
+	generationTest{"base nominal type", "nominal", "nominalbase", integrationTestSuccessExpected, ""},
+	generationTest{"interface nominal type", "nominal", "interface", integrationTestSuccessExpected, ""},
+	generationTest{"literal nominal type", "nominal", "literal", integrationTestSuccessExpected, ""},
 
-	generationTest{"basic json test", "serialization", "json", true},
-	generationTest{"nominal json test", "serialization", "nominaljson", true},
-	generationTest{"custom json test", "serialization", "custom", true},
-	generationTest{"tagged json test", "serialization", "tagged", true},
-	generationTest{"slice json test", "serialization", "slice", true},
+	generationTest{"basic json test", "serialization", "json", integrationTestSuccessExpected, ""},
+	generationTest{"nominal json test", "serialization", "nominaljson", integrationTestSuccessExpected, ""},
+	generationTest{"custom json test", "serialization", "custom", integrationTestSuccessExpected, ""},
+	generationTest{"tagged json test", "serialization", "tagged", integrationTestSuccessExpected, ""},
+	generationTest{"slice json test", "serialization", "slice", integrationTestSuccessExpected, ""},
+
+	generationTest{"class cast failure test", "cast", "classcastfail", integrationTestFailureExpected,
+		"Error: Cannot cast function AnotherClass() {} to function SomeClass() {}"},
+
+	generationTest{"nominal cast failure test", "cast", "nominalcastfail", integrationTestFailureExpected,
+		"Error: Cannot auto-box function AnotherClass() {} to function SomeNominal() {}"},
+
+	generationTest{"interface cast failure test", "cast", "interfacecastfail", integrationTestFailureExpected,
+		"Error: Cannot cast function SomeClass() {} to function SomeInterface() {}"},
+
+	generationTest{"nominal cast autobox success test", "cast", "nominalautobox", integrationTestSuccessExpected, ""},
+	generationTest{"interface cast success test", "cast", "interfacecast", integrationTestSuccessExpected, ""},
+	generationTest{"generic interface cast success test", "cast", "genericinterfacecast", integrationTestSuccessExpected, ""},
 }
 
 func TestGenerator(t *testing.T) {
@@ -217,7 +239,7 @@ func TestGenerator(t *testing.T) {
 			expectedSource := test.expected()
 			assert.Equal(t, expectedSource, source, "Source mismatch on test %s\nExpected: %v\nActual: %v\n\n", test.name, expectedSource, source)
 
-			if test.integrationTest {
+			if test.integrationTest != integrationTestNone {
 				fullSource, _, err := GenerateES5(result.Graph, "", "")
 				if !assert.Nil(t, err, "Error generating full source for test %s: %v", test.name, err) {
 					continue
@@ -302,17 +324,24 @@ func TestGenerator(t *testing.T) {
 				}
 
 				rresult, rerr := vm.Run(testScript)
-				if !assertNoOttoError(t, test.name, testCall, rerr) {
-					continue
-				}
 
-				if !assert.True(t, rresult.IsBoolean(), "Non-boolean result for running test case %s: %v", test.name, rresult) {
-					continue
-				}
+				if test.integrationTest == integrationTestSuccessExpected {
+					if !assertNoOttoError(t, test.name, testCall, rerr) {
+						continue
+					}
 
-				boolValue, _ := rresult.ToBoolean()
-				if !assert.True(t, boolValue, "Non-true boolean result for running test case %s: %v", test.name, boolValue) {
-					continue
+					if !assert.True(t, rresult.IsBoolean(), "Non-boolean result for running test case %s: %v", test.name, rresult) {
+						continue
+					}
+
+					boolValue, _ := rresult.ToBoolean()
+					if !assert.True(t, boolValue, "Non-true boolean result for running test case %s: %v", test.name, boolValue) {
+						continue
+					}
+				} else {
+					if !assert.Equal(t, test.expectedErrorMessage, rerr.Error(), "Error message mismatch for test case %v: %v", test.name, rerr) {
+						continue
+					}
 				}
 			}
 		}

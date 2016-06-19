@@ -19,6 +19,9 @@ $module('slice', function () {
       };
       return $promise.new($continue);
     };
+    this.$typesig = function () {
+      return $t.createtypesig(['slice', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.slice.SomeClass).$typeref()]);
+    };
   });
 
   $static.TEST = function () {

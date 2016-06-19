@@ -359,7 +359,7 @@ func TestConcreteSubtypes(t *testing.T) {
 			// }
 			testType{"interface", "IBasicInterface", "", []testGeneric{testGeneric{"T", ""}},
 				[]testMember{
-					testMember{"function", "DoSomething", "T", []testGeneric{}, []testParam{}},
+					testMember{FunctionMemberSignature, "DoSomething", "T", []testGeneric{}, []testParam{}},
 				},
 			},
 
@@ -368,7 +368,7 @@ func TestConcreteSubtypes(t *testing.T) {
 			// }
 			testType{"class", "SomeClass", "", []testGeneric{},
 				[]testMember{
-					testMember{"function", "DoSomething", "int", []testGeneric{}, []testParam{}},
+					testMember{FunctionMemberSignature, "DoSomething", "int", []testGeneric{}, []testParam{}},
 				},
 			},
 
@@ -377,7 +377,7 @@ func TestConcreteSubtypes(t *testing.T) {
 			// }
 			testType{"class", "AnotherClass", "", []testGeneric{},
 				[]testMember{
-					testMember{"function", "DoSomething", "bool", []testGeneric{}, []testParam{}},
+					testMember{FunctionMemberSignature, "DoSomething", "bool", []testGeneric{}, []testParam{}},
 				},
 			},
 
@@ -389,7 +389,7 @@ func TestConcreteSubtypes(t *testing.T) {
 			// }
 			testType{"class", "FourthClass", "", []testGeneric{},
 				[]testMember{
-					testMember{"function", "DoSomething", "int", []testGeneric{},
+					testMember{FunctionMemberSignature, "DoSomething", "int", []testGeneric{},
 						[]testParam{testParam{"someparam", "int"}}},
 				},
 			},
@@ -399,7 +399,7 @@ func TestConcreteSubtypes(t *testing.T) {
 			// }
 			testType{"interface", "IMultiGeneric", "", []testGeneric{testGeneric{"T", ""}, testGeneric{"Q", ""}},
 				[]testMember{
-					testMember{"function", "DoSomething", "T", []testGeneric{},
+					testMember{FunctionMemberSignature, "DoSomething", "T", []testGeneric{},
 						[]testParam{testParam{"someparam", "Q"}}},
 				},
 			},
@@ -409,7 +409,7 @@ func TestConcreteSubtypes(t *testing.T) {
 			// }
 			testType{"class", "FifthClass", "", []testGeneric{testGeneric{"T", ""}, testGeneric{"Q", ""}},
 				[]testMember{
-					testMember{"function", "DoSomething", "Q", []testGeneric{},
+					testMember{FunctionMemberSignature, "DoSomething", "Q", []testGeneric{},
 						[]testParam{testParam{"someparam", "T"}}},
 				},
 			},
@@ -420,8 +420,8 @@ func TestConcreteSubtypes(t *testing.T) {
 			// }
 			testType{"interface", "IMultiMember", "", []testGeneric{testGeneric{"T", ""}, testGeneric{"Q", ""}},
 				[]testMember{
-					testMember{"function", "TFunc", "T", []testGeneric{}, []testParam{}},
-					testMember{"function", "QFunc", "void", []testGeneric{},
+					testMember{FunctionMemberSignature, "TFunc", "T", []testGeneric{}, []testParam{}},
+					testMember{FunctionMemberSignature, "QFunc", "void", []testGeneric{},
 						[]testParam{testParam{"someparam", "Q"}}},
 				},
 			},
@@ -432,8 +432,8 @@ func TestConcreteSubtypes(t *testing.T) {
 			// }
 			testType{"class", "MultiClass", "", []testGeneric{},
 				[]testMember{
-					testMember{"function", "TFunc", "int", []testGeneric{}, []testParam{}},
-					testMember{"function", "QFunc", "void", []testGeneric{},
+					testMember{FunctionMemberSignature, "TFunc", "int", []testGeneric{}, []testParam{}},
+					testMember{FunctionMemberSignature, "QFunc", "void", []testGeneric{},
 						[]testParam{testParam{"someparam", "bool"}}},
 				},
 			},
@@ -443,7 +443,7 @@ func TestConcreteSubtypes(t *testing.T) {
 			// }
 			testType{"interface", "Port", "", []testGeneric{testGeneric{"T", ""}},
 				[]testMember{
-					testMember{"function", "AwaitNext", "void", []testGeneric{},
+					testMember{FunctionMemberSignature, "AwaitNext", "void", []testGeneric{},
 						[]testParam{testParam{"callback", "function<void>(T)"}}},
 				},
 			},
@@ -453,7 +453,7 @@ func TestConcreteSubtypes(t *testing.T) {
 			// }
 			testType{"class", "SomePort", "", []testGeneric{},
 				[]testMember{
-					testMember{"function", "AwaitNext", "void", []testGeneric{},
+					testMember{FunctionMemberSignature, "AwaitNext", "void", []testGeneric{},
 						[]testParam{testParam{"callback", "function<void>(int)"}}},
 				},
 			}},
@@ -564,7 +564,7 @@ func TestSubtypes(t *testing.T) {
 			// }
 			testType{"interface", "IWithMethod", "", []testGeneric{},
 				[]testMember{
-					testMember{"function", "SomeMethod", "void", []testGeneric{}, []testParam{}},
+					testMember{FunctionMemberSignature, "SomeMethod", "void", []testGeneric{}, []testParam{}},
 				},
 			},
 
@@ -573,7 +573,7 @@ func TestSubtypes(t *testing.T) {
 			// }
 			testType{"interface", "IWithOperator", "", []testGeneric{},
 				[]testMember{
-					testMember{"operator", "Range", "any", []testGeneric{},
+					testMember{OperatorMemberSignature, "Range", "any", []testGeneric{},
 						[]testParam{
 							testParam{"left", "IWithOperator"},
 							testParam{"right", "IWithOperator"},
@@ -586,7 +586,7 @@ func TestSubtypes(t *testing.T) {
 			// }
 			testType{"class", "SomeClass", "", []testGeneric{},
 				[]testMember{
-					testMember{"function", "SomeMethod", "void", []testGeneric{}, []testParam{}},
+					testMember{FunctionMemberSignature, "SomeMethod", "void", []testGeneric{}, []testParam{}},
 				},
 			},
 
@@ -595,7 +595,7 @@ func TestSubtypes(t *testing.T) {
 			// }
 			testType{"class", "AnotherClass", "", []testGeneric{},
 				[]testMember{
-					testMember{"operator", "Range", "any", []testGeneric{},
+					testMember{OperatorMemberSignature, "Range", "any", []testGeneric{},
 						[]testParam{
 							testParam{"left", "AnotherClass"},
 							testParam{"right", "AnotherClass"},
@@ -608,7 +608,7 @@ func TestSubtypes(t *testing.T) {
 			// }
 			testType{"interface", "IGeneric", "", []testGeneric{testGeneric{"T", ""}, testGeneric{"Q", ""}},
 				[]testMember{
-					testMember{"function", "SomeMethod", "T", []testGeneric{},
+					testMember{FunctionMemberSignature, "SomeMethod", "T", []testGeneric{},
 						[]testParam{testParam{"someparam", "Q"}}},
 				},
 			},
@@ -618,7 +618,7 @@ func TestSubtypes(t *testing.T) {
 			// }
 			testType{"class", "ThirdClass", "", []testGeneric{},
 				[]testMember{
-					testMember{"function", "SomeMethod", "int", []testGeneric{},
+					testMember{FunctionMemberSignature, "SomeMethod", "int", []testGeneric{},
 						[]testParam{testParam{"someparam", "bool"}}},
 				},
 			},
@@ -628,7 +628,7 @@ func TestSubtypes(t *testing.T) {
 			// }
 			testType{"class", "FourthClass", "", []testGeneric{testGeneric{"T", ""}, testGeneric{"Q", ""}},
 				[]testMember{
-					testMember{"function", "SomeMethod", "Q", []testGeneric{},
+					testMember{FunctionMemberSignature, "SomeMethod", "Q", []testGeneric{},
 						[]testParam{testParam{"someparam", "T"}}},
 				},
 			},
@@ -638,7 +638,7 @@ func TestSubtypes(t *testing.T) {
 			// }
 			testType{"interface", "IWithInstanceOperator", "", []testGeneric{testGeneric{"T", ""}},
 				[]testMember{
-					testMember{"operator", "Index", "T", []testGeneric{},
+					testMember{OperatorMemberSignature, "Index", "T", []testGeneric{},
 						[]testParam{
 							testParam{"index", "any"},
 						}},
@@ -650,7 +650,7 @@ func TestSubtypes(t *testing.T) {
 			// }
 			testType{"class", "IntInstanceOperator", "", []testGeneric{},
 				[]testMember{
-					testMember{"operator", "Index", "int", []testGeneric{},
+					testMember{OperatorMemberSignature, "Index", "int", []testGeneric{},
 						[]testParam{
 							testParam{"index", "any"},
 						}},
@@ -662,7 +662,7 @@ func TestSubtypes(t *testing.T) {
 			// }
 			testType{"class", "BoolInstanceOperator", "", []testGeneric{},
 				[]testMember{
-					testMember{"operator", "Index", "bool", []testGeneric{},
+					testMember{OperatorMemberSignature, "Index", "bool", []testGeneric{},
 						[]testParam{
 							testParam{"index", "any"},
 						}},
@@ -686,7 +686,7 @@ func TestSubtypes(t *testing.T) {
 			// }
 			testType{"struct", "SomeStruct", "", []testGeneric{},
 				[]testMember{
-					testMember{"field", "SomeField", "int", []testGeneric{}, []testParam{}},
+					testMember{FieldMemberSignature, "SomeField", "int", []testGeneric{}, []testParam{}},
 				},
 			},
 
@@ -695,7 +695,7 @@ func TestSubtypes(t *testing.T) {
 			// }
 			testType{"interface", "Constructable", "", []testGeneric{},
 				[]testMember{
-					testMember{"constructor", "BuildMe", "Constructable", []testGeneric{}, []testParam{}},
+					testMember{ConstructorMemberSignature, "BuildMe", "Constructable", []testGeneric{}, []testParam{}},
 				},
 			},
 
@@ -704,7 +704,7 @@ func TestSubtypes(t *testing.T) {
 			// }
 			testType{"class", "ConstructableClass", "", []testGeneric{},
 				[]testMember{
-					testMember{"constructor", "BuildMe", "ConstructableClass", []testGeneric{}, []testParam{}},
+					testMember{ConstructorMemberSignature, "BuildMe", "ConstructableClass", []testGeneric{}, []testParam{}},
 				},
 			},
 
@@ -905,8 +905,8 @@ func TestResolveMembers(t *testing.T) {
 			// }
 			testType{"class", "SomeClass", "", []testGeneric{},
 				[]testMember{
-					testMember{"function", "ExportedFunction", "void", []testGeneric{}, []testParam{}},
-					testMember{"function", "notExported", "void", []testGeneric{}, []testParam{}},
+					testMember{FunctionMemberSignature, "ExportedFunction", "void", []testGeneric{}, []testParam{}},
+					testMember{FunctionMemberSignature, "notExported", "void", []testGeneric{}, []testParam{}},
 				},
 			},
 
@@ -915,7 +915,7 @@ func TestResolveMembers(t *testing.T) {
 			// }
 			testType{"external-interface", "ISomeBaseInterface", "", []testGeneric{},
 				[]testMember{
-					testMember{"function", "SomeFunction", "void", []testGeneric{}, []testParam{}},
+					testMember{FunctionMemberSignature, "SomeFunction", "void", []testGeneric{}, []testParam{}},
 				},
 			},
 
@@ -936,8 +936,8 @@ func TestResolveMembers(t *testing.T) {
 			// }
 			testType{"class", "OtherClass", "", []testGeneric{},
 				[]testMember{
-					testMember{"function", "OtherExportedFunction", "void", []testGeneric{}, []testParam{}},
-					testMember{"function", "otherNotExported", "void", []testGeneric{}, []testParam{}},
+					testMember{FunctionMemberSignature, "OtherExportedFunction", "void", []testGeneric{}, []testParam{}},
+					testMember{FunctionMemberSignature, "otherNotExported", "void", []testGeneric{}, []testParam{}},
 				},
 			},
 		},
@@ -1015,7 +1015,7 @@ func TestEnsureStructural(t *testing.T) {
 			// }
 			testType{"struct", "SomeStruct", "", []testGeneric{},
 				[]testMember{
-					testMember{"field", "SomeField", "int", []testGeneric{}, []testParam{}},
+					testMember{FieldMemberSignature, "SomeField", "int", []testGeneric{}, []testParam{}},
 				},
 			},
 
