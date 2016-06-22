@@ -130,7 +130,7 @@ func (db *domBuilder) buildAssertNotNullExpression(node compilergraph.GraphNode)
 func (db *domBuilder) buildNullComparisonExpression(node compilergraph.GraphNode) codedom.Expression {
 	leftExpr := db.getExpression(node, parser.NodeBinaryExpressionLeftExpr)
 	rightExpr := db.getExpression(node, parser.NodeBinaryExpressionRightExpr)
-	return codedom.RuntimeFunctionCall(codedom.NullableComparisonFunction, []codedom.Expression{leftExpr, rightExpr}, node)
+	return codedom.BinaryOperation(leftExpr, "??", rightExpr, node)
 }
 
 // buildInCollectionExpression builds the CodeDOM for an in collection operator.

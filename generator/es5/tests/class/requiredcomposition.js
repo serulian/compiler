@@ -97,7 +97,7 @@ $module('requiredcomposition', function () {
             sc = $result;
             $g.____testlib.basictypes.Integer.$equals(sc.FirstValue, $t.box(42, $g.____testlib.basictypes.Integer)).then(function ($result1) {
               return $promise.resolve($t.unbox($result1)).then(function ($result0) {
-                return ($promise.shortcircuit(!$result0) || $g.____testlib.basictypes.String.$equals(sc.SecondValue, $t.box('hello', $g.____testlib.basictypes.String))).then(function ($result2) {
+                return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.String.$equals(sc.SecondValue, $t.box('hello', $g.____testlib.basictypes.String))).then(function ($result2) {
                   $result = $t.box($result0 && $t.unbox($result2), $g.____testlib.basictypes.Boolean);
                   $current = 2;
                   $continue($resolve, $reject);

@@ -140,6 +140,7 @@ var tests = []generationTest{
 	generationTest{"full lambda expression", "lambdaexpr", "full", integrationTestSuccessExpected, ""},
 	generationTest{"mini lambda expression", "lambdaexpr", "mini", integrationTestSuccessExpected, ""},
 
+	generationTest{"null comparison short circuit", "opexpr", "nullcomparecall", integrationTestSuccessExpected, ""},
 	generationTest{"null comparison", "opexpr", "nullcompare", integrationTestSuccessExpected, ""},
 	generationTest{"function call", "opexpr", "functioncall", integrationTestSuccessExpected, ""},
 	generationTest{"function call nullable", "opexpr", "functioncallnullable", integrationTestSuccessExpected, ""},

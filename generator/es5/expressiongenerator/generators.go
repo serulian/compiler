@@ -90,6 +90,8 @@ func (eg *expressionGenerator) generateBinaryOperation(binaryOp *codedom.BinaryO
 	// TODO: There is probably a cleaner way of doing this.
 	if binaryOp.Operator == "&&" || binaryOp.Operator == "||" {
 		return eg.generateShortCircuitedBinaryOperator(binaryOp, context)
+	} else if binaryOp.Operator == "??" {
+		return eg.generateNullComparisonOperator(binaryOp, context)
 	} else {
 		return eg.generateNormalBinaryOperator(binaryOp, context)
 	}
@@ -103,32 +105,61 @@ func (eg *expressionGenerator) generateNormalBinaryOperator(binaryOp *codedom.Bi
 	return esbuilder.Binary(binaryLeftExpr, binaryOp.Operator, binaryRightExpr)
 }
 
+// generateNullComparisonOperator generates the expression for a null comparison operator.
+func (eg *expressionGenerator) generateNullComparisonOperator(compareOp *codedom.BinaryOperationNode, context generationContext) esbuilder.ExpressionBuilder {
+	return eg.generateShortCircuiter(
+		compareOp.LeftExpr,
+		codedom.LiteralValue("null", compareOp.BasisNode()),
+		compareOp.RightExpr,
+		context,
+
+		func(resultName string, rightSide esbuilder.ExpressionBuilder) esbuilder.ExpressionBuilder {
+			return esbuilder.Call(esbuilder.Snippet(string(codedom.NullableComparisonFunction)), esbuilder.Identifier(resultName), rightSide)
+		})
+}
+
 // generateShortCircuitedBinaryOperator generates the expression source for a short circuiting binary operator.
 func (eg *expressionGenerator) generateShortCircuitedBinaryOperator(binaryOp *codedom.BinaryOperationNode, context generationContext) esbuilder.ExpressionBuilder {
+	compareValue := codedom.LiteralValue("false", binaryOp.BasisNode())
+	if binaryOp.Operator == "&&" {
+		compareValue = codedom.LiteralValue("true", binaryOp.BasisNode())
+	}
+
+	return eg.generateShortCircuiter(
+		binaryOp.LeftExpr,
+		compareValue,
+		binaryOp.RightExpr,
+		context,
+
+		func(resultName string, rightSide esbuilder.ExpressionBuilder) esbuilder.ExpressionBuilder {
+			return esbuilder.Binary(esbuilder.Identifier(resultName), binaryOp.Operator, rightSide)
+		})
+}
+
+type shortCircuitHandler func(string, esbuilder.ExpressionBuilder) esbuilder.ExpressionBuilder
+
+func (eg *expressionGenerator) generateShortCircuiter(compareExpr codedom.Expression,
+	compareValue codedom.Expression,
+	childExpr codedom.Expression,
+	context generationContext,
+	handler shortCircuitHandler) esbuilder.ExpressionBuilder {
+
 	// Generate a specialized wrapper which resolves the left side value and places it into the result.
 	resultName := eg.generateUniqueName("$result")
-	resolvedLeftValue := codedom.RuntimeFunctionCall(codedom.ResolvePromiseFunction,
-		[]codedom.Expression{binaryOp.LeftExpr},
-		binaryOp.LeftExpr.BasisNode())
+	resolveCompareValue := codedom.RuntimeFunctionCall(codedom.ResolvePromiseFunction,
+		[]codedom.Expression{compareExpr},
+		compareExpr.BasisNode())
 
-	eg.addAsyncWrapper(eg.generateExpression(resolvedLeftValue, context), resultName)
-
-	// Generate the right hand side with a short circuiter. The short circuiter will return an empty
-	// promise (instead of the normal promise for async) if and only if the value specified is true for
-	// || or false for && operators.
-	booleanValue := codedom.LocalReference(resultName, binaryOp.BasisNode())
-	if binaryOp.Operator == "&&" {
-		booleanValue = codedom.UnaryOperation("!", booleanValue, binaryOp.BasisNode())
-	}
+	eg.addAsyncWrapper(eg.generateExpression(resolveCompareValue, context), resultName)
 
 	shortCircuiter := eg.generateExpression(
 		codedom.RuntimeFunctionCall(codedom.ShortCircuitPromiseFunction,
-			[]codedom.Expression{booleanValue},
-			binaryOp.BasisNode()),
+			[]codedom.Expression{codedom.LocalReference(resultName, compareExpr.BasisNode()), compareValue},
+			compareExpr.BasisNode()),
 		context)
 
-	rightHandSide := eg.generateExpression(binaryOp.RightExpr, generationContext{shortCircuiter})
-	return esbuilder.Binary(esbuilder.Identifier(resultName), binaryOp.Operator, rightHandSide)
+	shortedChildExpr := eg.generateExpression(childExpr, generationContext{shortCircuiter})
+	return handler(resultName, shortedChildExpr)
 }
 
 // generateFunctionCall generates the expression soruce for a function call.
