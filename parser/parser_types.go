@@ -81,6 +81,8 @@ const (
 
 	NodeTypeLambdaExpression // A lambda expression
 
+	NodeTypeConditionalExpression // a if b else c
+
 	NodeBitwiseXorExpression        // a ^ b
 	NodeBitwiseOrExpression         // a | b
 	NodeBitwiseAndExpression        // a & b
@@ -406,6 +408,13 @@ const (
 	NodeArrowStatementDestination = "arrow-statement-destination"
 	NodeArrowStatementRejection   = "arrow-statement-rejection"
 	NodeArrowStatementSource      = "arrow-statement-right"
+
+	//
+	// NodeTypeConditionalExpression
+	//
+	NodeConditionalExpressionCheckExpression = "comparison-expr-check"
+	NodeConditionalExpressionThenExpression  = "comparison-expr-then"
+	NodeConditionalExpressionElseExpression  = "comparison-expr-else"
 
 	//
 	// NodeTypeAwaitExpression

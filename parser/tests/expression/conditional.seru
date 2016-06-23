@@ -1,0 +1,4 @@
+function<void> DoSomething() {
+	foo if bar else baz
+	foo.bar.baz() if someValue['something'] else 1245
+}
