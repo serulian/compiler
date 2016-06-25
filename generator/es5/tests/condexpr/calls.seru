@@ -1,0 +1,21 @@
+class SomeError {
+	property<string> Message {
+		get { return 'huh?' }
+	}
+}
+
+function<bool> getValue() {
+	return true
+}
+
+function<bool> failValue() {
+	reject SomeError.new()
+}
+
+function<int> getIntValue() {
+	return 45
+}
+
+function<bool> TEST() {
+	return failValue() if getIntValue() == 2 else getValue()	
+}

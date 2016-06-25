@@ -1,0 +1,4 @@
+function<void> DoSomething() {
+	/* condexpr */(32 if true else 46)
+	/* condexpr2 */(32 if true else 'hello')
+}

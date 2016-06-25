@@ -223,7 +223,7 @@ $module('json', function () {
           case 3:
             parsed = $result;
             $promise.resolve($t.unbox(correct)).then(function ($result2) {
-              return ($promise.shortcircuit(!$result2) || $g.____testlib.basictypes.Integer.$equals(parsed.SomeField, $t.box(2, $g.____testlib.basictypes.Integer))).then(function ($result3) {
+              return ($promise.shortcircuit($result2, true) || $g.____testlib.basictypes.Integer.$equals(parsed.SomeField, $t.box(2, $g.____testlib.basictypes.Integer))).then(function ($result3) {
                 return $promise.resolve($result2 && $t.unbox($result3)).then(function ($result1) {
                   return $promise.resolve($result1 && !$t.unbox(parsed.AnotherField)).then(function ($result0) {
                     $result = $t.box($result0 && $t.unbox(parsed.SomeInstance.AnotherBool), $g.____testlib.basictypes.Boolean);

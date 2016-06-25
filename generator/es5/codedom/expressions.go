@@ -330,6 +330,23 @@ func FunctionCall(childExpression Expression, arguments []Expression, basis comp
 	}
 }
 
+// TernaryNode wraps a call to a ternary expr.
+type TernaryNode struct {
+	expressionBase
+	CheckExpr Expression // The check expression.
+	ThenExpr  Expression // The then expression.
+	ElseExpr  Expression // The else expression.
+}
+
+func Ternary(checkExpr Expression, thenExpr Expression, elseExpr Expression, basis compilergraph.GraphNode) Expression {
+	return &TernaryNode{
+		expressionBase{domBase{basis}},
+		checkExpr,
+		thenExpr,
+		elseExpr,
+	}
+}
+
 // BinaryOperationNode wraps a call to a binary operator.
 type BinaryOperationNode struct {
 	expressionBase

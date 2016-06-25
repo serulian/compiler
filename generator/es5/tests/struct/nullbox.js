@@ -84,8 +84,8 @@ $module('nullbox', function () {
           case 1:
             s = $result;
             $promise.resolve(s.Value == null).then(function ($result0) {
-              return ($promise.shortcircuit(!$result0) || s.Mapping()).then(function ($result2) {
-                return ($promise.shortcircuit(!$result0) || $result2.$index($t.box('Value', $g.____testlib.basictypes.String))).then(function ($result1) {
+              return ($promise.shortcircuit($result0, true) || s.Mapping()).then(function ($result2) {
+                return ($promise.shortcircuit($result0, true) || $result2.$index($t.box('Value', $g.____testlib.basictypes.String))).then(function ($result1) {
                   $result = $t.box($result0 && ($result1 == null), $g.____testlib.basictypes.Boolean);
                   $current = 2;
                   $continue($resolve, $reject);

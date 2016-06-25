@@ -70,13 +70,17 @@ $module('functioncallnullable', function () {
           case 1:
             sc = $result;
             ac = null;
-            $t.nullableinvoke(sc, 'SomeMethod', true, []).then(function ($result1) {
-              return $promise.resolve($t.unbox($t.nullcompare($result1, $t.box(false, $g.____testlib.basictypes.Boolean)))).then(function ($result0) {
-                return ($promise.shortcircuit(!$result0) || $t.nullableinvoke(ac, 'AnotherMethod', true, [])).then(function ($result2) {
-                  $result = $t.box($result0 && $t.unbox($t.nullcompare($result2, $t.box(true, $g.____testlib.basictypes.Boolean))), $g.____testlib.basictypes.Boolean);
-                  $current = 2;
-                  $continue($resolve, $reject);
-                  return;
+            $t.nullableinvoke(sc, 'SomeMethod', true, []).then(function ($result2) {
+              return $promise.resolve($result2).then(function ($result1) {
+                return $promise.resolve($t.unbox($t.nullcompare($result1, $t.box(false, $g.____testlib.basictypes.Boolean)))).then(function ($result0) {
+                  return ($promise.shortcircuit($result0, true) || $t.nullableinvoke(ac, 'AnotherMethod', true, [])).then(function ($result4) {
+                    return $promise.resolve($result4).then(function ($result3) {
+                      $result = $t.box($result0 && $t.unbox($t.nullcompare($result3, $t.box(true, $g.____testlib.basictypes.Boolean))), $g.____testlib.basictypes.Boolean);
+                      $current = 2;
+                      $continue($resolve, $reject);
+                      return;
+                    });
+                  });
                 });
               });
             }).catch(function (err) {

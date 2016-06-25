@@ -1875,6 +1875,22 @@ func (p *sourceParser) tryConsumeExpression(option consumeExpressionOption) (Ast
 			return templateNode, true
 		}
 
+		// Check for an if keyword. If found, then the expression starts a conditional expression.
+		if p.isKeyword("if") {
+			conditionalNode := p.createNode(NodeTypeConditionalExpression)
+			conditionalNode.Connect(NodeConditionalExpressionThenExpression, node)
+
+			p.consumeKeyword("if")
+			conditionalNode.Connect(NodeConditionalExpressionCheckExpression, p.consumeExpression(option))
+			p.consumeKeyword("else")
+			conditionalNode.Connect(NodeConditionalExpressionElseExpression, p.consumeExpression(option))
+
+			p.decorateStartRuneAndComments(conditionalNode, startToken)
+			p.decorateEndRune(conditionalNode, p.currentToken.lexeme)
+
+			return conditionalNode, true
+		}
+
 		return node, true
 	} else {
 		return p.oneOf(p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, nonArrow)

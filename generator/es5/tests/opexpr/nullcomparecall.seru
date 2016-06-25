@@ -1,0 +1,14 @@
+class SomeError {
+	property<string> Message {
+		get { return 'huh?' }
+	}
+}
+
+function<bool> RejectNow() {
+	reject SomeError.new()
+}
+
+function<any> TEST() {
+	var<bool?> thing = true
+	return thing ?? RejectNow() 
+}

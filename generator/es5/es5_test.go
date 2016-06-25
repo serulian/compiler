@@ -130,6 +130,9 @@ var tests = []generationTest{
 	generationTest{"multiawait expression", "arrowexpr", "multiawait", integrationTestNone, ""},
 	generationTest{"arrow expression", "arrowexpr", "arrow", integrationTestSuccessExpected, ""},
 
+	generationTest{"conditional expression", "condexpr", "basic", integrationTestSuccessExpected, ""},
+	generationTest{"called conditional expression", "condexpr", "calls", integrationTestSuccessExpected, ""},
+
 	generationTest{"generic specifier expression", "accessexpr", "genericspecifier", integrationTestSuccessExpected, ""},
 	generationTest{"cast expression", "accessexpr", "cast", integrationTestSuccessExpected, ""},
 	generationTest{"structural cast expression", "accessexpr", "structuralcast", integrationTestSuccessExpected, ""},
@@ -140,6 +143,7 @@ var tests = []generationTest{
 	generationTest{"full lambda expression", "lambdaexpr", "full", integrationTestSuccessExpected, ""},
 	generationTest{"mini lambda expression", "lambdaexpr", "mini", integrationTestSuccessExpected, ""},
 
+	generationTest{"null comparison short circuit", "opexpr", "nullcomparecall", integrationTestSuccessExpected, ""},
 	generationTest{"null comparison", "opexpr", "nullcompare", integrationTestSuccessExpected, ""},
 	generationTest{"function call", "opexpr", "functioncall", integrationTestSuccessExpected, ""},
 	generationTest{"function call nullable", "opexpr", "functioncallnullable", integrationTestSuccessExpected, ""},

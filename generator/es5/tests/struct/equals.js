@@ -210,11 +210,11 @@ $module('equals', function () {
             different = $result;
             $g.equals.Foo.$equals(first, second).then(function ($result3) {
               return $promise.resolve($t.unbox($result3)).then(function ($result2) {
-                return ($promise.shortcircuit(!$result2) || $g.equals.Foo.$equals(first, copy)).then(function ($result4) {
+                return ($promise.shortcircuit($result2, true) || $g.equals.Foo.$equals(first, copy)).then(function ($result4) {
                   return $promise.resolve($result2 && $t.unbox($result4)).then(function ($result1) {
-                    return ($promise.shortcircuit(!$result1) || $g.equals.Foo.$equals(first, different)).then(function ($result5) {
+                    return ($promise.shortcircuit($result1, true) || $g.equals.Foo.$equals(first, different)).then(function ($result5) {
                       return $promise.resolve($result1 && !$t.unbox($result5)).then(function ($result0) {
-                        return ($promise.shortcircuit(!$result0) || $g.equals.Foo.$equals(copy, different)).then(function ($result6) {
+                        return ($promise.shortcircuit($result0, true) || $g.equals.Foo.$equals(copy, different)).then(function ($result6) {
                           $result = $t.box($result0 && !$t.unbox($result6), $g.____testlib.basictypes.Boolean);
                           $current = 4;
                           $continue($resolve, $reject);

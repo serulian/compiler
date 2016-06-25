@@ -561,10 +561,10 @@ this.Serulian = (function($global) {
   	},
 
     // shortcircuit returns a promise that resolves the given boolean value if and only if
-    // it is true. Returns null otherwise.
-    'shortcircuit': function(value) {
-      if (value) {
-        return $promise.resolve(value);
+    // it is not equal to the right value. Returns null otherwise.
+    'shortcircuit': function(left, right) {
+      if (left != right) {
+        return $promise.resolve(left);
       }
     },
 

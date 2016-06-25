@@ -1,6 +1,6 @@
-$module('shortcircuit', function () {
+$module('calls', function () {
   var $static = this;
-  this.$class('someError', false, '', function () {
+  this.$class('SomeError', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -14,23 +14,31 @@ $module('shortcircuit', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box('WHY CALLED? ', $g.____testlib.basictypes.String));
+        $resolve($t.box('huh?', $g.____testlib.basictypes.String));
         return;
       };
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      return $t.createtypesig(['Message', 3, $g.____testlib.basictypes.String.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.shortcircuit.someError).$typeref()]);
+      return $t.createtypesig(['Message', 3, $g.____testlib.basictypes.String.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.calls.SomeError).$typeref()]);
     };
   });
 
-  $static.neverCalled = function () {
+  $static.getValue = function () {
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
+      $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+      return;
+    };
+    return $promise.new($continue);
+  };
+  $static.failValue = function () {
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
         switch ($current) {
           case 0:
-            $g.shortcircuit.someError.new().then(function ($result0) {
+            $g.calls.SomeError.new().then(function ($result0) {
               $result = $result0;
               $current = 1;
               $continue($resolve, $reject);
@@ -53,32 +61,11 @@ $module('shortcircuit', function () {
     };
     return $promise.new($continue);
   };
-  $static.anotherNeverCalled = function () {
+  $static.getIntValue = function () {
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            $g.shortcircuit.someError.new().then(function ($result0) {
-              $result = $result0;
-              $current = 1;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            $reject($result);
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
+      $resolve($t.box(45, $g.____testlib.basictypes.Integer));
+      return;
     };
     return $promise.new($continue);
   };
@@ -88,14 +75,16 @@ $module('shortcircuit', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $promise.resolve(false).then(function ($result1) {
-              return ($promise.shortcircuit($result1, true) || $g.shortcircuit.neverCalled()).then(function ($result2) {
-                return $promise.resolve(!($result1 && $t.unbox($result2))).then(function ($result0) {
-                  return ($promise.shortcircuit($result0, false) || $g.shortcircuit.anotherNeverCalled()).then(function ($result3) {
-                    $result = $t.box($result0 || $t.unbox($result3), $g.____testlib.basictypes.Boolean);
-                    $current = 1;
-                    $continue($resolve, $reject);
-                    return;
+            $g.calls.getIntValue().then(function ($result2) {
+              return $g.____testlib.basictypes.Integer.$equals($result2, $t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result1) {
+                return $promise.resolve($t.unbox($result1)).then(function ($result0) {
+                  return ($promise.shortcircuit($result0, true) || $g.calls.failValue()).then(function ($result3) {
+                    return ($promise.shortcircuit($result0, false) || $g.calls.getValue()).then(function ($result4) {
+                      $result = $result0 ? $result3 : $result4;
+                      $current = 1;
+                      $continue($resolve, $reject);
+                      return;
+                    });
                   });
                 });
               });

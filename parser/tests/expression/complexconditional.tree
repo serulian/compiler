@@ -1,0 +1,81 @@
+NodeTypeFile
+  end-rune = 79
+  input-source = complex conditional expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 79
+      input-source = complex conditional expr test
+      named = TEST
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 79
+          input-source = complex conditional expr test
+          start-rune = 22
+          block-child =>
+            NodeTypeVariableStatement
+              end-rune = 37
+              input-source = complex conditional expr test
+              named = value
+              start-rune = 25
+              var-expr =>
+                NodeNumericLiteralExpression
+                  end-rune = 37
+                  input-source = complex conditional expr test
+                  literal-value = 2
+                  start-rune = 37
+            NodeTypeReturnStatement
+              end-rune = 76
+              input-source = complex conditional expr test
+              start-rune = 41
+              return-expr =>
+                NodeTypeConditionalExpression
+                  end-rune = 78
+                  input-source = complex conditional expr test
+                  start-rune = 48
+                  comparison-expr-check =>
+                    NodeComparisonEqualsExpression
+                      end-rune = 65
+                      input-source = complex conditional expr test
+                      start-rune = 56
+                      binary-expression-left =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 60
+                          identexpr-name = value
+                          input-source = complex conditional expr test
+                          start-rune = 56
+                      binary-expression-right =>
+                        NodeNumericLiteralExpression
+                          end-rune = 65
+                          input-source = complex conditional expr test
+                          literal-value = 2
+                          start-rune = 65
+                  comparison-expr-else =>
+                    NodeBooleanLiteralExpression
+                      end-rune = 76
+                      input-source = complex conditional expr test
+                      literal-value = false
+                      start-rune = 72
+                  comparison-expr-then =>
+                    NodeBooleanLiteralExpression
+                      end-rune = 51
+                      input-source = complex conditional expr test
+                      literal-value = true
+                      start-rune = 48
+      typemember-return-type =>
+        NodeTypeTypeReference
+          end-rune = 12
+          input-source = complex conditional expr test
+          start-rune = 9
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 12
+              input-source = complex conditional expr test
+              start-rune = 9
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 12
+                  identifieraccess-name = bool
+                  input-source = complex conditional expr test
+                  start-rune = 9

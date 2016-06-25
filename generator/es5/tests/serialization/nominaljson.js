@@ -208,7 +208,7 @@ $module('nominaljson', function () {
           case 3:
             parsed = $result;
             $promise.resolve($t.unbox(correct)).then(function ($result0) {
-              return ($promise.shortcircuit(!$result0) || parsed.Nested.GetValue()).then(function ($result1) {
+              return ($promise.shortcircuit($result0, true) || parsed.Nested.GetValue()).then(function ($result1) {
                 $result = $t.box($result0 && $t.unbox($result1), $g.____testlib.basictypes.Boolean);
                 $current = 4;
                 $continue($resolve, $reject);

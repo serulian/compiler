@@ -205,11 +205,11 @@ $module('slice', function () {
           case 4:
             parsed = $result;
             $promise.resolve($t.unbox(correct)).then(function ($result1) {
-              return ($promise.shortcircuit(!$result1) || s.Values.Length()).then(function ($result3) {
-                return ($promise.shortcircuit(!$result1) || $g.____testlib.basictypes.Integer.$equals($result3, $t.box(3, $g.____testlib.basictypes.Integer))).then(function ($result2) {
+              return ($promise.shortcircuit($result1, true) || s.Values.Length()).then(function ($result3) {
+                return ($promise.shortcircuit($result1, true) || $g.____testlib.basictypes.Integer.$equals($result3, $t.box(3, $g.____testlib.basictypes.Integer))).then(function ($result2) {
                   return $promise.resolve($result1 && $t.unbox($result2)).then(function ($result0) {
-                    return ($promise.shortcircuit(!$result0) || s.Values.$index($t.box(0, $g.____testlib.basictypes.Integer))).then(function ($result5) {
-                      return ($promise.shortcircuit(!$result0) || $g.____testlib.basictypes.Integer.$equals($result5.AnotherInt, $t.box(1, $g.____testlib.basictypes.Integer))).then(function ($result4) {
+                    return ($promise.shortcircuit($result0, true) || s.Values.$index($t.box(0, $g.____testlib.basictypes.Integer))).then(function ($result5) {
+                      return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.Integer.$equals($result5.AnotherInt, $t.box(1, $g.____testlib.basictypes.Integer))).then(function ($result4) {
                         $result = $t.box($result0 && $t.unbox($result4), $g.____testlib.basictypes.Boolean);
                         $current = 5;
                         $continue($resolve, $reject);
