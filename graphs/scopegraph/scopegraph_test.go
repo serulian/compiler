@@ -300,6 +300,19 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"Cannot assign value to operator setindex: 'Boolean' cannot be used in place of non-interface 'Integer'", ""},
 
+	/////////// Conditional expression ///////////
+
+	scopegraphTest{"conditional expression success test", "condexpr", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"condexpr", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+			expectedScopeEntry{"condexpr2", expectedScope{true, proto.ScopeKind_VALUE, "any", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"conditional expression non-bool test", "condexpr", "nonbool",
+		[]expectedScopeEntry{},
+		"Conditional expression check must be of type 'bool', found: Integer", ""},
+
 	/////////// Comparison operator expressions ///////////
 
 	scopegraphTest{"comparison op success test", "compareops", "success",
