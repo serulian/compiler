@@ -130,6 +130,9 @@ var tests = []generationTest{
 	generationTest{"multiawait expression", "arrowexpr", "multiawait", integrationTestNone, ""},
 	generationTest{"arrow expression", "arrowexpr", "arrow", integrationTestSuccessExpected, ""},
 
+	generationTest{"conditional expression", "condexpr", "basic", integrationTestSuccessExpected, ""},
+	generationTest{"called conditional expression", "condexpr", "calls", integrationTestSuccessExpected, ""},
+
 	generationTest{"generic specifier expression", "accessexpr", "genericspecifier", integrationTestSuccessExpected, ""},
 	generationTest{"cast expression", "accessexpr", "cast", integrationTestSuccessExpected, ""},
 	generationTest{"structural cast expression", "accessexpr", "structuralcast", integrationTestSuccessExpected, ""},

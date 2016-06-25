@@ -189,6 +189,9 @@ func (eg *expressionGenerator) generateExpressionWithoutMapping(expression coded
 	case *codedom.CompoundExpressionNode:
 		return eg.generateCompoundExpression(e, context)
 
+	case *codedom.TernaryNode:
+		return eg.generateTernary(e, context)
+
 	default:
 		panic(fmt.Sprintf("Unknown CodeDOM expression: %T", expression))
 	}

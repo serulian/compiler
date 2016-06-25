@@ -144,6 +144,10 @@ func (db *domBuilder) buildExpression(node compilergraph.GraphNode) codedom.Expr
 	case parser.NodeTypeLambdaExpression:
 		return db.buildLambdaExpression(node)
 
+	// Flow Expressions.
+	case parser.NodeTypeConditionalExpression:
+		return db.buildConditionalExpression(node)
+
 	// Op Expressions.
 	case parser.NodeRootTypeExpression:
 		return db.buildRootTypeExpression(node)

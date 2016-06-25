@@ -43,6 +43,18 @@ type assignmentNode struct {
 	value ExpressionBuilder
 }
 
+// ternaryNode defines a ternary operator.
+type ternaryNode struct {
+	// check is the switch expression.
+	check ExpressionBuilder
+
+	// left is the left-then value.
+	left ExpressionBuilder
+
+	// right is the right-else value.
+	right ExpressionBuilder
+}
+
 func (node prefixNode) emit(sb *sourceBuilder) {
 	sb.append(node.operator)
 	sb.emitWrapped(node.child)
@@ -69,6 +81,16 @@ func (node assignmentNode) emit(sb *sourceBuilder) {
 	sb.append(")")
 }
 
+func (node ternaryNode) emit(sb *sourceBuilder) {
+	sb.append("(")
+	sb.emit(node.check)
+	sb.append("?")
+	sb.emitWrapped(node.left)
+	sb.append(":")
+	sb.emitWrapped(node.right)
+	sb.append(")")
+}
+
 // Prefix returns a new prefixed operator on an expression.
 func Prefix(op string, child ExpressionBuilder) ExpressionBuilder {
 	return expressionBuilder{prefixNode{op, child}, nil}
@@ -87,4 +109,9 @@ func Binary(left ExpressionBuilder, op string, right ExpressionBuilder) Expressi
 // Assignment returns a new assignment operator.
 func Assignment(target ExpressionBuilder, value ExpressionBuilder) ExpressionBuilder {
 	return expressionBuilder{assignmentNode{target, value}, nil}
+}
+
+// Ternary returns a new ternary operator on the check, left and right child expressions.
+func Ternary(check ExpressionBuilder, left ExpressionBuilder, right ExpressionBuilder) ExpressionBuilder {
+	return expressionBuilder{ternaryNode{check, left, right}, nil}
 }

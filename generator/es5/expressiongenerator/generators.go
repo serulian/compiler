@@ -105,6 +105,37 @@ func (eg *expressionGenerator) generateNormalBinaryOperator(binaryOp *codedom.Bi
 	return esbuilder.Binary(binaryLeftExpr, binaryOp.Operator, binaryRightExpr)
 }
 
+// generateTernary generates the expression for a ternary expression.
+func (eg *expressionGenerator) generateTernary(ternary *codedom.TernaryNode, context generationContext) esbuilder.ExpressionBuilder {
+	// Generate a specialized wrapper which resolves the conditional value of the ternary and
+	// places it into the result.
+	resultName := eg.generateUniqueName("$result")
+	resolveConditionalValue := codedom.RuntimeFunctionCall(codedom.ResolvePromiseFunction,
+		[]codedom.Expression{codedom.NominalUnwrapping(ternary.CheckExpr, ternary.CheckExpr.BasisNode())},
+		ternary.BasisNode())
+
+	eg.addAsyncWrapper(eg.generateExpression(resolveConditionalValue, context), resultName)
+
+	// Generate the then and else expressions as short circuited by the value.
+	thenExpr := eg.generateWithShortCircuiting(ternary.ThenExpr, resultName, codedom.LiteralValue("true", ternary.BasisNode()), context)
+	elseExpr := eg.generateWithShortCircuiting(ternary.ElseExpr, resultName, codedom.LiteralValue("false", ternary.BasisNode()), context)
+
+	// Return an expression which compares the value and either return the then or else values.
+	return esbuilder.Ternary(esbuilder.Identifier(resultName), thenExpr, elseExpr)
+}
+
+// generateWithShortCircuiting generates an expression with automatic short circuiting based on the value found
+// in the resultName variable and compared to the given compare value.
+func (eg *expressionGenerator) generateWithShortCircuiting(expr codedom.Expression, resultName string, compareValue codedom.Expression, context generationContext) esbuilder.ExpressionBuilder {
+	shortCircuiter := eg.generateExpression(
+		codedom.RuntimeFunctionCall(codedom.ShortCircuitPromiseFunction,
+			[]codedom.Expression{codedom.LocalReference(resultName, expr.BasisNode()), compareValue},
+			expr.BasisNode()),
+		context)
+
+	return eg.generateExpression(expr, generationContext{shortCircuiter})
+}
+
 // generateNullComparisonOperator generates the expression for a null comparison operator.
 func (eg *expressionGenerator) generateNullComparisonOperator(compareOp *codedom.BinaryOperationNode, context generationContext) esbuilder.ExpressionBuilder {
 	return eg.generateShortCircuiter(
@@ -152,13 +183,7 @@ func (eg *expressionGenerator) generateShortCircuiter(compareExpr codedom.Expres
 
 	eg.addAsyncWrapper(eg.generateExpression(resolveCompareValue, context), resultName)
 
-	shortCircuiter := eg.generateExpression(
-		codedom.RuntimeFunctionCall(codedom.ShortCircuitPromiseFunction,
-			[]codedom.Expression{codedom.LocalReference(resultName, compareExpr.BasisNode()), compareValue},
-			compareExpr.BasisNode()),
-		context)
-
-	shortedChildExpr := eg.generateExpression(childExpr, generationContext{shortCircuiter})
+	shortedChildExpr := eg.generateWithShortCircuiting(childExpr, resultName, compareValue, context)
 	return handler(resultName, shortedChildExpr)
 }
 
