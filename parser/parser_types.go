@@ -63,6 +63,7 @@ const (
 	NodeTypeLoopStatement        // A for statement
 	NodeTypeConditionalStatement // An if statement
 	NodeTypeReturnStatement      // A return statement
+	NodeTypeYieldStatement       // A yield statement
 	NodeTypeRejectStatement      // A reject statement
 	NodeTypeBreakStatement       // A break statement
 	NodeTypeContinueStatement    // A continue statement
@@ -358,6 +359,13 @@ const (
 	NodeConditionalStatementConditional = "conditional-expr"
 	NodeConditionalStatementBlock       = "conditional-block"
 	NodeConditionalStatementElseClause  = "conditional-else"
+
+	//
+	// NodeTypeYieldStatement
+	//
+	NodeYieldStatementValue       = "yield-value"
+	NodeYieldStatementStreamValue = "yield-stream-value"
+	NodeYieldStatementBreak       = "yield-break"
 
 	//
 	// NodeTypeReturnStatement

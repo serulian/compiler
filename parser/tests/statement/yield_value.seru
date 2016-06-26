@@ -1,0 +1,3 @@
+function<int*> DoSomething() {
+	yield 2
+}

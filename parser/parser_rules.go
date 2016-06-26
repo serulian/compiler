@@ -1357,6 +1357,10 @@ func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
 	case p.isKeyword("if"):
 		return p.consumeIfStatement(), true
 
+	// Yield statement.
+	case p.isKeyword("yield"):
+		return p.consumeYieldStatement(), true
+
 	// Return statement.
 	case p.isKeyword("return"):
 		return p.consumeReturnStatement(), true
@@ -1780,6 +1784,31 @@ func (p *sourceParser) consumeIfStatement() AstNode {
 	}
 
 	return conditionalNode
+}
+
+// consumeYieldStatement consumes a yield statement.
+//
+// Forms:
+// yield someExpression
+// yield in someExpression
+// yield break
+func (p *sourceParser) consumeYieldStatement() AstNode {
+	yieldNode := p.startNode(NodeTypeYieldStatement)
+	defer p.finishNode()
+
+	// yield
+	p.consumeKeyword("yield")
+
+	// Check for the "in" operator or the "break" keyword.
+	if _, ok := p.tryConsume(tokenTypeInOperator); ok {
+		yieldNode.Connect(NodeYieldStatementStreamValue, p.consumeExpression(consumeExpressionAllowBraces))
+	} else if p.tryConsumeKeyword("break") {
+		yieldNode.Decorate(NodeYieldStatementBreak, "true")
+	} else {
+		yieldNode.Connect(NodeYieldStatementValue, p.consumeExpression(consumeExpressionAllowBraces))
+	}
+
+	return yieldNode
 }
 
 // consumeRejectStatement consumes a reject statement.
