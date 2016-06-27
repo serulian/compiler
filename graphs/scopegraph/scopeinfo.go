@@ -204,6 +204,18 @@ func (sib *scopeInfoBuilder) WithLabel(label proto.ScopeLabel) *scopeInfoBuilder
 	return sib
 }
 
+// WithLabelSet adds all the labels found in the given set to this scope.
+func (sib *scopeInfoBuilder) WithLabelSet(labelSet *statementLabelSet) *scopeInfoBuilder {
+	sib.info.Labels = labelSet.GetLabels()
+	return sib
+}
+
+// LabelSetOf sets the label set for this scope to the set found on the other scope.
+func (sib *scopeInfoBuilder) LabelSetOf(scope *proto.ScopeInfo) *scopeInfoBuilder {
+	sib.info.Labels = scope.Labels
+	return sib
+}
+
 // GetScope returns the scope constructed.
 func (sib *scopeInfoBuilder) GetScope() proto.ScopeInfo {
 	return *sib.info

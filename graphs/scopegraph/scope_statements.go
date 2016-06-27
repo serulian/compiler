@@ -92,6 +92,7 @@ func (sb *scopeBuilder) scopeMatchStatement(node compilergraph.GraphNode, option
 	var returnedType = sb.sg.tdg.VoidTypeReference()
 	var settlesScope = true
 	var hasDefault = false
+	var labelSet = newLabelSet()
 
 	sit := node.StartQuery().
 		Out(parser.NodeMatchStatementCase).
@@ -104,6 +105,8 @@ func (sb *scopeBuilder) scopeMatchStatement(node compilergraph.GraphNode, option
 		if !statementBlockScope.GetIsValid() {
 			isValid = false
 		}
+
+		labelSet.AppendLabelsOf(statementBlockScope)
 
 		returnedType = returnedType.Intersect(statementBlockScope.ReturnedTypeRef(sb.sg.tdg))
 		settlesScope = settlesScope && statementBlockScope.GetIsSettlingScope()
@@ -132,7 +135,7 @@ func (sb *scopeBuilder) scopeMatchStatement(node compilergraph.GraphNode, option
 		settlesScope = false
 	}
 
-	return newScope().IsValid(isValid).Returning(returnedType, settlesScope).GetScope()
+	return newScope().IsValid(isValid).Returning(returnedType, settlesScope).WithLabelSet(labelSet).GetScope()
 }
 
 // scopeNamedValue scopes a named value exported by a with or loop statement into context.
@@ -193,17 +196,17 @@ func (sb *scopeBuilder) scopeWithStatement(node compilergraph.GraphNode, option 
 	// Scope the with expression, ensuring that it is a releasable value.
 	exprScope := sb.getScope(node.GetNode(parser.NodeWithStatementExpression))
 	if !exprScope.GetIsValid() {
-		return newScope().Invalid().ReturningTypeOf(statementBlockScope).GetScope()
+		return newScope().Invalid().ReturningTypeOf(statementBlockScope).LabelSetOf(statementBlockScope).GetScope()
 	}
 
 	exprType := exprScope.ResolvedTypeRef(sb.sg.tdg)
 	serr := exprType.CheckSubTypeOf(sb.sg.tdg.ReleasableTypeReference())
 	if serr != nil {
 		sb.decorateWithError(node, "With expression must implement the Releasable interface: %v", serr)
-		return newScope().Invalid().ReturningTypeOf(statementBlockScope).GetScope()
+		return newScope().Invalid().ReturningTypeOf(statementBlockScope).LabelSetOf(statementBlockScope).GetScope()
 	}
 
-	return newScope().IsValid(valid).ReturningTypeOf(statementBlockScope).GetScope()
+	return newScope().IsValid(valid).ReturningTypeOf(statementBlockScope).LabelSetOf(statementBlockScope).GetScope()
 }
 
 // scopeLoopStatement scopes a loop statement in the SRG.
@@ -221,6 +224,7 @@ func (sb *scopeBuilder) scopeLoopStatement(node compilergraph.GraphNode, option 
 			IsTerminatingStatement().
 			IsValid(blockScope.GetIsValid()).
 			ReturningTypeOf(blockScope).
+			LabelSetOf(blockScope).
 			GetScope()
 	}
 
@@ -242,7 +246,7 @@ func (sb *scopeBuilder) scopeLoopStatement(node compilergraph.GraphNode, option 
 			return newScope().Invalid().GetScope()
 		}
 
-		return newScope().Valid().GetScope()
+		return newScope().Valid().LabelSetOf(blockScope).GetScope()
 	} else {
 		if !loopExprType.IsDirectReferenceTo(sb.sg.tdg.BoolType()) {
 			sb.decorateWithError(node, "Loop conditional expression must be of type 'bool', found: %v", loopExprType)
@@ -251,7 +255,7 @@ func (sb *scopeBuilder) scopeLoopStatement(node compilergraph.GraphNode, option 
 				GetScope()
 		}
 
-		return newScope().Valid().GetScope()
+		return newScope().Valid().LabelSetOf(blockScope).GetScope()
 	}
 }
 
@@ -259,9 +263,11 @@ func (sb *scopeBuilder) scopeLoopStatement(node compilergraph.GraphNode, option 
 func (sb *scopeBuilder) scopeConditionalStatement(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	var returningType = sb.sg.tdg.VoidTypeReference()
 	var valid = true
+	var labelSet = newLabelSet()
 
 	// Scope the child block(s).
 	statementBlockScope := sb.getScope(node.GetNode(parser.NodeConditionalStatementBlock))
+	labelSet.AppendLabelsOf(statementBlockScope)
 	if !statementBlockScope.GetIsValid() {
 		valid = false
 	}
@@ -271,6 +277,8 @@ func (sb *scopeBuilder) scopeConditionalStatement(node compilergraph.GraphNode, 
 	elseClauseNode, hasElseClause := node.TryGetNode(parser.NodeConditionalStatementElseClause)
 	if hasElseClause {
 		elseClauseScope := sb.getScope(elseClauseNode)
+		labelSet.AppendLabelsOf(elseClauseScope)
+
 		if !elseClauseScope.GetIsValid() {
 			valid = false
 		}
@@ -286,16 +294,16 @@ func (sb *scopeBuilder) scopeConditionalStatement(node compilergraph.GraphNode, 
 	conditionalExprNode := node.GetNode(parser.NodeConditionalStatementConditional)
 	conditionalExprScope := sb.getScope(conditionalExprNode)
 	if !conditionalExprScope.GetIsValid() {
-		return newScope().Invalid().Returning(returningType, isSettlingScope).GetScope()
+		return newScope().Invalid().Returning(returningType, isSettlingScope).WithLabelSet(labelSet).GetScope()
 	}
 
 	conditionalExprType := conditionalExprScope.ResolvedTypeRef(sb.sg.tdg)
 	if !conditionalExprType.IsDirectReferenceTo(sb.sg.tdg.BoolType()) {
 		sb.decorateWithError(node, "Conditional expression must be of type 'bool', found: %v", conditionalExprType)
-		return newScope().Invalid().Returning(returningType, isSettlingScope).GetScope()
+		return newScope().Invalid().Returning(returningType, isSettlingScope).WithLabelSet(labelSet).GetScope()
 	}
 
-	return newScope().IsValid(valid).Returning(returningType, isSettlingScope).GetScope()
+	return newScope().IsValid(valid).Returning(returningType, isSettlingScope).WithLabelSet(labelSet).GetScope()
 }
 
 // scopeContinueStatement scopes a continue statement in the SRG.
@@ -372,6 +380,84 @@ func (sb *scopeBuilder) scopeReturnStatement(node compilergraph.GraphNode, optio
 		GetScope()
 }
 
+// scopeYieldStatement scopes a yield statement in the SRG.
+func (sb *scopeBuilder) scopeYieldStatement(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+	// Find the parent member/property.
+	parentImpl, found := sb.sg.srg.TryGetContainingImplemented(node)
+	if !found {
+		sb.decorateWithError(node, "'yield' statement must be under a function or property")
+		return newScope().
+			Invalid().
+			GetScope()
+	}
+
+	// Ensure it returns a stream.
+	returnType, ok := sb.sg.tdg.LookupReturnType(parentImpl)
+	if !ok || !returnType.IsDirectReferenceTo(sb.sg.tdg.StreamType()) {
+		sb.decorateWithError(node, "'yield' statement must be under a function or property returning a Stream. Found: %v", returnType)
+		return newScope().
+			Invalid().
+			GetScope()
+	}
+
+	// Handle the three kinds of yield statement:
+	// - yield break
+	if _, isBreak := node.TryGet(parser.NodeYieldStatementBreak); isBreak {
+		return newScope().
+			Valid().
+			WithLabel(proto.ScopeLabel_GENERATOR_STATEMENT).
+			IsTerminatingStatement().
+			GetScope()
+	}
+
+	// - yield in {someStreamExpr}
+	if streamExpr, hasStreamExpr := node.TryGetNode(parser.NodeYieldStatementStreamValue); hasStreamExpr {
+		// Scope the stream expression.
+		streamExprScope := sb.getScope(streamExpr)
+		if !streamExprScope.GetIsValid() {
+			return newScope().
+				Invalid().
+				GetScope()
+		}
+
+		// Ensure it is is a subtype of the parent stream type.
+		if serr := streamExprScope.ResolvedTypeRef(sb.sg.tdg).CheckSubTypeOf(returnType); serr != nil {
+			sb.decorateWithError(node, "'yield in' expression must have subtype of %v: %v", returnType, serr)
+			return newScope().
+				Invalid().
+				GetScope()
+		}
+
+		return newScope().
+			Valid().
+			WithLabel(proto.ScopeLabel_GENERATOR_STATEMENT).
+			GetScope()
+	}
+
+	// - yield {someExpr}
+	// Scope the value expression.
+	valueExprScope := sb.getScope(node.GetNode(parser.NodeYieldStatementValue))
+	if !valueExprScope.GetIsValid() {
+		return newScope().
+			Invalid().
+			GetScope()
+	}
+
+	// Ensure it is is a subtype of the parent stream value type.
+	streamValueType := returnType.Generics()[0]
+	if serr := valueExprScope.ResolvedTypeRef(sb.sg.tdg).CheckSubTypeOf(streamValueType); serr != nil {
+		sb.decorateWithError(node, "'yield' expression must have subtype of %v: %v", streamValueType, serr)
+		return newScope().
+			Invalid().
+			GetScope()
+	}
+
+	return newScope().
+		Valid().
+		WithLabel(proto.ScopeLabel_GENERATOR_STATEMENT).
+		GetScope()
+}
+
 // scopeStatementBlock scopes a block of statements in the SRG.
 func (sb *scopeBuilder) scopeStatementBlock(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	sit := node.StartQuery().
@@ -384,9 +470,11 @@ func (sb *scopeBuilder) scopeStatementBlock(node compilergraph.GraphNode, option
 	var isValid = true
 	var skipRemaining = false
 	var unreachableWarned = false
+	var labelSet = newLabelSet()
 
 	for sit.Next() {
 		statementScope := sb.getScope(sit.Node())
+		labelSet.AppendLabelsOf(statementScope)
 
 		if skipRemaining {
 			if !unreachableWarned {
@@ -412,31 +500,38 @@ func (sb *scopeBuilder) scopeStatementBlock(node compilergraph.GraphNode, option
 	// If this statement block is the implementation of a member or property getter, check its return
 	// type.
 	if isValid {
-		parentDef, hasParent := node.StartQuery().In(parser.NodePredicateBody).TryGetNode()
-		if hasParent {
-			returnTypeExpected, hasReturnType := sb.sg.tdg.LookupReturnType(parentDef)
-			if hasReturnType {
-				// If the return type expected is void, ensure no branch returned any values.
-				if returnTypeExpected.IsVoid() {
-					if returnedType.IsVoid() {
-						return newScope().Valid().Returning(returnedType, isSettlingScope).GetScope()
-					} else {
-						sb.decorateWithError(node, "No return value expected here, found value of type '%v'", returnedType)
-						return newScope().Invalid().Returning(returnedType, isSettlingScope).GetScope()
+		if labelSet.HasLabel(proto.ScopeLabel_GENERATOR_STATEMENT) {
+			if !returnedType.IsVoid() {
+				sb.decorateWithError(node, "Cannot return a type under a generator")
+				return newScope().Invalid().WithLabelSet(labelSet).GetScope()
+			}
+		} else {
+			parentDef, hasParent := node.StartQuery().In(parser.NodePredicateBody).TryGetNode()
+			if hasParent {
+				returnTypeExpected, hasReturnType := sb.sg.tdg.LookupReturnType(parentDef)
+				if hasReturnType {
+					// If the return type expected is void, ensure no branch returned any values.
+					if returnTypeExpected.IsVoid() {
+						if returnedType.IsVoid() {
+							return newScope().Valid().Returning(returnedType, isSettlingScope).WithLabelSet(labelSet).GetScope()
+						} else {
+							sb.decorateWithError(node, "No return value expected here, found value of type '%v'", returnedType)
+							return newScope().Invalid().Returning(returnedType, isSettlingScope).WithLabelSet(labelSet).GetScope()
+						}
 					}
-				}
 
-				if !isSettlingScope {
-					sb.decorateWithError(node, "Expected return value of type '%v' but not all paths return a value", returnTypeExpected)
-					return newScope().Invalid().Returning(returnedType, isSettlingScope).GetScope()
-				}
+					if !isSettlingScope {
+						sb.decorateWithError(node, "Expected return value of type '%v' but not all paths return a value", returnTypeExpected)
+						return newScope().Invalid().Returning(returnedType, isSettlingScope).WithLabelSet(labelSet).GetScope()
+					}
 
-				// Otherwise, check that the returned type matches that expected.
-				if !returnedType.IsVoid() {
-					rerr := returnedType.CheckSubTypeOf(returnTypeExpected)
-					if rerr != nil {
-						sb.decorateWithError(node, "Expected return value of type '%v': %v", returnTypeExpected, rerr)
-						return newScope().Invalid().Returning(returnedType, isSettlingScope).GetScope()
+					// Otherwise, check that the returned type matches that expected.
+					if !returnedType.IsVoid() {
+						rerr := returnedType.CheckSubTypeOf(returnTypeExpected)
+						if rerr != nil {
+							sb.decorateWithError(node, "Expected return value of type '%v': %v", returnTypeExpected, rerr)
+							return newScope().Invalid().Returning(returnedType, isSettlingScope).WithLabelSet(labelSet).GetScope()
+						}
 					}
 				}
 			}
@@ -444,7 +539,7 @@ func (sb *scopeBuilder) scopeStatementBlock(node compilergraph.GraphNode, option
 	}
 
 	// No valid return type expected.
-	return newScope().IsValid(isValid).Returning(returnedType, isSettlingScope).GetScope()
+	return newScope().IsValid(isValid).Returning(returnedType, isSettlingScope).WithLabelSet(labelSet).GetScope()
 }
 
 // scopeArrowStatement scopes an arrow statement in the SRG.

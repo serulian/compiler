@@ -1,0 +1,3 @@
+function<bool*> DoSomething(s int*) {
+	yield in s
+}

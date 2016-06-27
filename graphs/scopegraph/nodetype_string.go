@@ -4,9 +4,9 @@ package scopegraph
 
 import "fmt"
 
-const _NodeType_name = "NodeTypeErrorNodeTypeTagged"
+const _NodeType_name = "NodeTypeErrorNodeTypeWarningNodeTypeResolvedScopeNodeTypeTagged"
 
-var _NodeType_index = [...]uint8{0, 13, 27}
+var _NodeType_index = [...]uint8{0, 13, 28, 49, 63}
 
 func (i NodeType) String() string {
 	if i < 0 || i >= NodeType(len(_NodeType_index)-1) {

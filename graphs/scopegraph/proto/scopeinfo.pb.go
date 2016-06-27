@@ -64,17 +64,20 @@ func (x *ScopeKind) UnmarshalJSON(data []byte) error {
 type ScopeLabel int32
 
 const (
-	ScopeLabel_STREAM_LOOP     ScopeLabel = 1
-	ScopeLabel_STREAMABLE_LOOP ScopeLabel = 2
+	ScopeLabel_STREAM_LOOP         ScopeLabel = 1
+	ScopeLabel_STREAMABLE_LOOP     ScopeLabel = 2
+	ScopeLabel_GENERATOR_STATEMENT ScopeLabel = 3
 )
 
 var ScopeLabel_name = map[int32]string{
 	1: "STREAM_LOOP",
 	2: "STREAMABLE_LOOP",
+	3: "GENERATOR_STATEMENT",
 }
 var ScopeLabel_value = map[string]int32{
-	"STREAM_LOOP":     1,
-	"STREAMABLE_LOOP": 2,
+	"STREAM_LOOP":         1,
+	"STREAMABLE_LOOP":     2,
+	"GENERATOR_STATEMENT": 3,
 }
 
 func (x ScopeLabel) Enum() *ScopeLabel {

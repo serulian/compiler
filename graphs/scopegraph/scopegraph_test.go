@@ -74,6 +74,32 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"empty block int test", "empty", "missingreturn", []expectedScopeEntry{},
 		"Expected return value of type 'Integer' but not all paths return a value", ""},
 
+	/////////// Generator ///////////
+
+	// Success test.
+	scopegraphTest{"generator success test", "generator", "success", []expectedScopeEntry{},
+		"", ""},
+
+	// Nested success test.
+	scopegraphTest{"generator nested success test", "generator", "nestedsuccess", []expectedScopeEntry{},
+		"", ""},
+
+	// Non-stream.
+	scopegraphTest{"yield non-stream test", "generator", "nonstream", []expectedScopeEntry{},
+		"'yield' statement must be under a function or property returning a Stream. Found: void", ""},
+
+	// Value mismatch.
+	scopegraphTest{"yield value mismatch test", "generator", "valuemismatch", []expectedScopeEntry{},
+		"'yield' expression must have subtype of Boolean: 'Integer' cannot be used in place of non-interface 'Boolean'", ""},
+
+	// Subgenerator mismatch.
+	scopegraphTest{"yield in mismatch test", "generator", "inmismatch", []expectedScopeEntry{},
+		"'yield in' expression must have subtype of Stream<Boolean>: member 'Next' under type 'Stream<Integer>' does not match that defined in type 'Stream<Boolean>'", ""},
+
+	// Async not allowed.
+	scopegraphTest{"async generator test", "generator", "async", []expectedScopeEntry{},
+		"Asynchronous function DoSomethingAsync must return a structural type: Stream<Integer> is not structural nor serializable", ""},
+
 	/////////// Settling (return and reject) ///////////
 
 	// Success test.
