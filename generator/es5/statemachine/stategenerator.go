@@ -32,6 +32,8 @@ type stateGenerator struct {
 	variables    map[string]bool // The variables added into the scope.
 	resources    *ResourceStack  // The current resources in the scope.
 	currentState *state          // The current state.
+
+	isGeneratorFunction bool // Whether the function being generated is a generator function.
 }
 
 // generateStatesOption defines options for the generateStates call.
@@ -44,7 +46,7 @@ const (
 )
 
 // buildGenerator builds a new state machine generator.
-func buildGenerator(scopegraph *scopegraph.ScopeGraph, positionMapper *compilercommon.PositionMapper, templater *shared.Templater) *stateGenerator {
+func buildGenerator(scopegraph *scopegraph.ScopeGraph, positionMapper *compilercommon.PositionMapper, templater *shared.Templater, isGeneratorFunction bool) *stateGenerator {
 	generator := &stateGenerator{
 		pather:    shared.NewPather(scopegraph.SourceGraph().Graph),
 		templater: templater,
@@ -58,16 +60,17 @@ func buildGenerator(scopegraph *scopegraph.ScopeGraph, positionMapper *compilerc
 		variables: map[string]bool{},
 		resources: &ResourceStack{},
 
-		managesResources: false,
+		managesResources:    false,
+		isGeneratorFunction: isGeneratorFunction,
 	}
 
 	return generator
 }
 
 // generateMachine generates state machine source for a CodeDOM statement or expression.
-func (sg *stateGenerator) generateMachine(element codedom.StatementOrExpression) esbuilder.SourceBuilder {
+func (sg *stateGenerator) generateMachine(element codedom.StatementOrExpression, isGeneratorFunction bool) esbuilder.SourceBuilder {
 	// Build a state generator for the new machine.
-	generator := buildGenerator(sg.scopegraph, sg.positionMapper, sg.templater)
+	generator := buildGenerator(sg.scopegraph, sg.positionMapper, sg.templater, isGeneratorFunction)
 
 	// Generate the statement or expression that forms the definition of the state machine.
 	if statement, ok := element.(codedom.Statement); ok {
@@ -95,8 +98,8 @@ func (sg *stateGenerator) generateStates(statement codedom.Statement, option gen
 	}
 
 	// Determine whether we have to create a new state for this statement. A new state is required if the
-	// statement is marked as referencable (which means another state will need to jump to it) or if
-	// a new state was explicitly requested.
+	// statement is marked as referencable (which means another state will need to jump to it) or if a new
+	// state was explicitly requested.
 	currentState := sg.currentState
 	if option == generateNewState || statement.IsReferenceable() {
 		// Add the new state.
@@ -127,6 +130,9 @@ func (sg *stateGenerator) generateStates(statement codedom.Statement, option gen
 	case *codedom.RejectionNode:
 		sg.generateRejection(e)
 
+	case *codedom.YieldNode:
+		sg.generateYield(e)
+
 	case *codedom.ExpressionStatementNode:
 		sg.generateExpressionStatement(e)
 
@@ -149,9 +155,19 @@ func (sg *stateGenerator) generateStates(statement codedom.Statement, option gen
 		panic(fmt.Sprintf("Unknown CodeDOM statement: %T", statement))
 	}
 
+	// If the statement releases flow, then we immediately add a new state and jump to it
+	// before returning.
+	if statement.ReleasesFlow() {
+		endState := sg.currentState
+		newState := sg.newState()
+		endState.pushSnippet(sg.snippets().SetState(newState.ID))
+		endState.pushSnippet("return;")
+	}
+
 	// Handle generation of chained statements.
 	if n, ok := statement.(codedom.HasNextStatement); ok && n.GetNext() != nil {
-		sg.generateStates(n.GetNext(), generateNextState)
+		next := n.GetNext()
+		sg.generateStates(next, generateNextState)
 	} else if option != generateImplicitState {
 		sg.currentState.leafState = true
 	}
@@ -257,12 +273,13 @@ func (sg *stateGenerator) addTopLevelExpression(expression codedom.Expression) e
 		data := struct {
 			ResolutionStateId stateId
 			Snippets          snippets
-		}{targetState.ID, sg.snippets()}
+			IsGenerator       bool
+		}{targetState.ID, sg.snippets(), sg.isGeneratorFunction}
 
 		wrappingTemplateStr := `
 			$result = {{ emit .ResultExpr }};
 			{{ .Data.Snippets.SetState .Data.ResolutionStateId }}
-			{{ .Data.Snippets.Continue }}
+			{{ .Data.Snippets.Continue .Data.IsGenerator }}
 		`
 		promise := result.BuildWrapped(wrappingTemplateStr, data)
 
@@ -285,6 +302,10 @@ func (sg *stateGenerator) addTopLevelExpression(expression codedom.Expression) e
 // source returns the full source for the generated state machine.
 func (sg *stateGenerator) source(states []*state) esbuilder.SourceBuilder {
 	if len(states) == 0 {
+		if sg.isGeneratorFunction {
+			return esbuilder.Returns(esbuilder.Identifier("$generator").Member("empty").Call())
+		}
+
 		// If there are no states, this is an empty state machine.
 		return esbuilder.Returns(esbuilder.Identifier("$promise").Member("empty").Call())
 	}
@@ -302,10 +323,55 @@ func (sg *stateGenerator) source(states []*state) esbuilder.SourceBuilder {
 		Variables        map[string]bool
 	}{states, singleState, sg.snippets(), sg.managesResources, sg.variables}
 
+	if sg.isGeneratorFunction {
+		return esbuilder.Template("generatorstatemachine", generatorStateMachineTemplateStr, data)
+	}
+
 	return esbuilder.Template("statemachine", stateMachineTemplateStr, data)
 }
 
-// stateMachineTemplateStr is a template for the generated state machine.
+// generatorStateMachineTemplateStr is the template for the generated state machine for a generator
+// function.
+const generatorStateMachineTemplateStr = `
+	{{ range $name, $true := .Variables }}
+	   var {{ $name }};
+	{{ end }}
+	var $current = 0;
+
+	{{ if .ManagesResources }}
+		var $resources = $t.resourcehandler();
+	{{ end }}
+
+	var $continue = (function($yield, $yieldin, $reject, $done) {
+		{{ if .ManagesResources }}
+			$done = $resources.bind($done);
+			$reject = $resources.bind($reject);
+		{{ end }}
+
+		{{ $parent := . }}
+		while (true) {
+			switch ($current) {
+				{{range .States }}
+				case {{ .ID }}:
+					{{ emit .SourceTemplate }}
+
+					{{ if .IsLeafState }}
+						{{ $parent.Snippets.GeneratorDone }}
+						return;
+					{{ else }}
+						break;
+					{{ end }}
+				{{end}}
+
+				default:
+					{{ $parent.Snippets.GeneratorDone }}
+					return;
+			}
+		}
+	});
+`
+
+// stateMachineTemplateStr is the template for the generated state machine for a normal function.
 const stateMachineTemplateStr = `
 	{{ range $name, $true := .Variables }}
 	   var {{ $name }};

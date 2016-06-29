@@ -142,6 +142,41 @@ func (sg *stateGenerator) generateRejection(rejection *codedom.RejectionNode) {
 	sg.currentState.pushBuilt(sg.addMapping(template, rejection))
 }
 
+// generateYield generates the code for a generator yield.
+func (sg *stateGenerator) generateYield(yield *codedom.YieldNode) {
+	if yield.Value != nil {
+		value := sg.addTopLevelExpression(yield.Value)
+
+		templateStr := `
+			$yield({{ emit .Item }});
+		`
+
+		template := esbuilder.Template("yieldvalue", templateStr, generatingItem{value, sg})
+		sg.currentState.pushBuilt(sg.addMapping(template, yield))
+		return
+	}
+
+	if yield.StreamValue != nil {
+		value := sg.addTopLevelExpression(yield.StreamValue)
+
+		templateStr := `
+			$yieldin({{ emit .Item }});
+		`
+
+		template := esbuilder.Template("yieldin", templateStr, generatingItem{value, sg})
+		sg.currentState.pushBuilt(sg.addMapping(template, yield))
+		return
+	}
+
+	templateStr := `
+		$done();
+		return;
+	`
+
+	template := esbuilder.Template("yieldbreak", templateStr, generatingItem{yield, sg})
+	sg.currentState.pushBuilt(sg.addMapping(template, yield))
+}
+
 // generateArrowPromise generates the code for an arrow promise.
 func (sg *stateGenerator) generateArrowPromise(arrowPromise *codedom.ArrowPromiseNode) {
 	currentState := sg.currentState
@@ -174,12 +209,12 @@ func (sg *stateGenerator) generateArrowPromise(arrowPromise *codedom.ArrowPromis
 			{{ end }}
 
 			{{ .Item.JumpToTarget }}
-			{{ .Snippets.Continue }}
+			{{ .Snippets.Continue .IsGenerator }}
 		}).catch(function(rejected) {
 			{{ if .Item.RejectionAssignment }}
 				{{ emit .Item.RejectionAssignment }}
 				{{ .Item.JumpToTarget }}
-				{{ .Snippets.Continue }}
+				{{ .Snippets.Continue .IsGenerator }}
 			{{ else }}
 				{{ .Snippets.Reject "rejected" }}
 			{{ end }}
@@ -207,12 +242,13 @@ func (sg *stateGenerator) jumpToStatement(target codedom.Statement) string {
 		Resources   []resource
 		Snippets    snippets
 		TargetState *state
-	}{codedom.StatePopResourceFunction, resources, sg.snippets(), sg.generateStates(target, generateNewState)}
+		IsGenerator bool
+	}{codedom.StatePopResourceFunction, resources, sg.snippets(), sg.generateStates(target, generateNewState), sg.isGeneratorFunction}
 
 	popTemplateStr := `
 		{{ .PopFunction }}({{ range $index, $resource := .Resources }}{{ if $index }}, {{ end }} '{{ $resource.Name }}' {{ end }}).then(function() {
 			{{ .Snippets.SetState .TargetState.ID }}
-			{{ .Snippets.Continue }}
+			{{ .Snippets.Continue .IsGenerator }}
 		}).catch(function(err) {
 			{{ .Snippets.Reject "err" }}
 		});

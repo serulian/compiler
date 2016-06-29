@@ -8,6 +8,39 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 )
 
+// YieldNode represents a yield of some sort under a generator function.
+type YieldNode struct {
+	nextStatementBase
+	Value       Expression // The value yielded, if any.
+	StreamValue Expression // The stream yielded, if any.
+}
+
+func YieldValue(value Expression, basis compilergraph.GraphNode) Statement {
+	return &YieldNode{
+		nextStatementBase{statementBase{domBase{basis}, false}, nil},
+		value,
+		nil,
+	}
+}
+
+func YieldStream(streamValue Expression, basis compilergraph.GraphNode) Statement {
+	return &YieldNode{
+		nextStatementBase{statementBase{domBase{basis}, false}, nil},
+		nil,
+		streamValue,
+	}
+}
+
+func YieldBreak(basis compilergraph.GraphNode) Statement {
+	return &YieldNode{
+		nextStatementBase{statementBase{domBase{basis}, false}, nil},
+		nil,
+		nil,
+	}
+}
+
+func (yn *YieldNode) ReleasesFlow() bool { return true }
+
 // ResolutionNode represents the resolution of a function.
 type ResolutionNode struct {
 	statementBase

@@ -14,3 +14,8 @@ type generatingItem struct {
 func (gi generatingItem) Snippets() snippets {
 	return gi.generator.snippets()
 }
+
+// IsGenerator returns whether the function being generated is a generator.
+func (gi generatingItem) IsGenerator() bool {
+	return gi.generator.isGeneratorFunction
+}

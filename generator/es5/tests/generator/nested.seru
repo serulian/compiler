@@ -1,0 +1,25 @@
+function<int*> AnotherGenerator() {
+	yield 1
+
+	if true {
+		yield 2
+	} else {
+		yield 3
+	}
+
+	yield 4
+}
+
+function<int*> SomeGenerator() {
+	yield in AnotherGenerator()
+	yield 5
+}
+
+function<bool?> TEST() {
+	var<int> v = 0
+	for value in SomeGenerator() {
+		v = v + value
+	}
+
+	return v == 12
+}

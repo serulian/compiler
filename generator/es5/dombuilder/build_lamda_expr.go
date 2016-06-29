@@ -7,6 +7,7 @@ package dombuilder
 import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/codedom"
+	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/parser"
 )
 
@@ -14,14 +15,16 @@ import (
 func (db *domBuilder) buildLambdaExpression(node compilergraph.GraphNode) codedom.Expression {
 	if blockNode, ok := node.TryGetNode(parser.NodeLambdaExpressionBlock); ok {
 		blockStatement, _ := db.buildStatements(blockNode)
-		return db.buildLambdaExpressionInternal(node, parser.NodeLambdaExpressionParameter, blockStatement)
+		bodyScope, _ := db.scopegraph.GetScope(blockNode)
+		isGenerator := bodyScope.HasLabel(proto.ScopeLabel_GENERATOR_STATEMENT)
+		return db.buildLambdaExpressionInternal(node, parser.NodeLambdaExpressionParameter, blockStatement, isGenerator)
 	} else {
 		bodyExpr := db.getExpression(node, parser.NodeLambdaExpressionChildExpr)
-		return db.buildLambdaExpressionInternal(node, parser.NodeLambdaExpressionInferredParameter, bodyExpr)
+		return db.buildLambdaExpressionInternal(node, parser.NodeLambdaExpressionInferredParameter, bodyExpr, false)
 	}
 }
 
-func (db *domBuilder) buildLambdaExpressionInternal(node compilergraph.GraphNode, paramPredicate string, body codedom.StatementOrExpression) codedom.Expression {
+func (db *domBuilder) buildLambdaExpressionInternal(node compilergraph.GraphNode, paramPredicate string, body codedom.StatementOrExpression, isGenerator bool) codedom.Expression {
 	// Collect the generic names and parameter names of the lambda expression.
 	var generics = make([]string, 0)
 	var parameters = make([]string, 0)
@@ -42,5 +45,11 @@ func (db *domBuilder) buildLambdaExpressionInternal(node compilergraph.GraphNode
 		parameters = append(parameters, pit.Values()[parser.NodeLambdaExpressionParameterName])
 	}
 
-	return codedom.FunctionDefinition(generics, parameters, body, false, false, node)
+	// Check for a generator.
+	specialization := codedom.NormalFunction
+	if isGenerator {
+		specialization = codedom.GeneratorFunction
+	}
+
+	return codedom.FunctionDefinition(generics, parameters, body, false, specialization, node)
 }
