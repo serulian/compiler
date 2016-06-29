@@ -538,6 +538,48 @@ this.Serulian = (function($global) {
   	}
   };
 
+  // $generator defines helper methods around constructing generators for Streams.
+  var $generator = {
+    'new': function (f) {
+      var stream = {
+        '$is': null,
+        'Next': function () {
+          return $promise.new(function (resolve, reject) {
+            if (stream.$is != null) {
+              stream.$is.Next().then(function (tuple) {
+                if ($t.unbox(tuple.Second)) {
+                  resolve(tuple);
+                } else {
+                  stream.$is = null;
+                  stream.Next().then(resolve, reject);
+                }
+              }).catch(function (rejected) {
+                reject(rejected);
+              });
+              return;
+            }
+
+            var $yield = function (value) {
+              $a['tuple']($t.any, $a['bool']).Build(value, true).then(resolve);
+            };
+
+            var $done = function () {
+              $a['tuple']($t.any, $a['bool']).Build(null, false).then(resolve);
+            };
+
+            var $yieldin = function (ins) {
+              stream.$is = ins;
+              stream.Next().then(resolve, reject);
+            };
+            
+            f($yield, $yieldin, reject, $done);
+          });
+        },
+      };
+      return $promise.resolve(stream);
+    }
+  };
+
   // $promise defines helper methods around constructing and managing ES promises.
   var $promise = {
   	'all': function(promises) {

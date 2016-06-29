@@ -27,11 +27,20 @@ func (eg *expressionGenerator) generateFunctionDefinition(function *codedom.Func
 				function({{ range $index, $parameter := .Item.Parameters }}{{ if $index }}, {{ end }}{{ $parameter }}{{ end }}) {
 					{{ if not .Item.Generics }}{{ if .Item.RequiresThis }}var $this = this;{{ end }}{{ end }}
 					{{ $body := .GeneratedBody }}
-					{{ if $body }}
-						{{ emit $body }}
-						return $promise.new($continue);
+					{{ if .Item.IsGenerator }}
+						{{ if $body }}
+							{{ emit $body }}
+							return $generator.new($continue);
+						{{ else }}
+							return $generator.empty();
+						{{ end }}						
 					{{ else }}
-						return $promise.empty();
+						{{ if $body }}
+							{{ emit $body }}
+							return $promise.new($continue);
+						{{ else }}
+							return $promise.empty();
+						{{ end }}
 					{{ end }}
 				}
 		{{ if .Item.Generics }}
@@ -46,7 +55,7 @@ func (eg *expressionGenerator) generateFunctionDefinition(function *codedom.Func
 	data := struct {
 		Item          *codedom.FunctionDefinitionNode
 		GeneratedBody esbuilder.SourceBuilder
-	}{function, eg.machineBuilder(function.Body)}
+	}{function, eg.machineBuilder(function.Body, function.IsGenerator())}
 
 	return esbuilder.Template("functiondef", templateStr, data).AsExpression()
 }

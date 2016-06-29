@@ -71,6 +71,19 @@ func (db *domBuilder) buildRejectStatement(node compilergraph.GraphNode) codedom
 	return codedom.Rejection(rejectExpr, node)
 }
 
+// buildYieldStatement builds the CodeDOM for a yield statement.
+func (db *domBuilder) buildYieldStatement(node compilergraph.GraphNode) codedom.Statement {
+	if _, isBreak := node.TryGet(parser.NodeYieldStatementBreak); isBreak {
+		return codedom.YieldBreak(node)
+	}
+
+	if streamExpr, hasStreamExpr := db.tryGetExpression(node, parser.NodeYieldStatementStreamValue); hasStreamExpr {
+		return codedom.YieldStream(streamExpr, node)
+	}
+
+	return codedom.YieldValue(db.getExpression(node, parser.NodeYieldStatementValue), node)
+}
+
 // buildConditionalStatement builds the CodeDOM for a conditional statement.
 func (db *domBuilder) buildConditionalStatement(node compilergraph.GraphNode) (codedom.Statement, codedom.Statement) {
 	conditionalExpr := db.getExpression(node, parser.NodeConditionalStatementConditional)

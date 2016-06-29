@@ -12,6 +12,15 @@ type snippets struct {
 	templater *shared.Templater
 }
 
+func (s snippets) GeneratorDone() string {
+	template := `
+		$done();
+		return;
+	`
+
+	return s.templater.Execute("generatordone", template, nil)
+}
+
 func (s snippets) Resolve(value string) string {
 	template := `
 		$resolve({{ . }});
@@ -30,11 +39,20 @@ func (s snippets) Reject(value string) string {
 	return s.templater.Execute("reject", template, value)
 }
 
-func (s snippets) Continue() string {
-	template := `
+func (s snippets) Continue(isGenerator bool) string {
+	var template string = ""
+
+	if isGenerator {
+		template = `
+		$continue($yield, $yieldin, $reject, $done);
+		return;
+	`
+	} else {
+		template = `
 		$continue($resolve, $reject);
 		return;
 	`
+	}
 
 	return s.templater.Execute("continue", template, nil)
 }

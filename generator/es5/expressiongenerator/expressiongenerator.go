@@ -17,7 +17,7 @@ import (
 	"github.com/serulian/compiler/graphs/scopegraph"
 )
 
-type StateMachineBuilder func(body codedom.StatementOrExpression) esbuilder.SourceBuilder
+type StateMachineBuilder func(body codedom.StatementOrExpression, isGenerator bool) esbuilder.SourceBuilder
 
 // GenerateExpression generates the full ES5 expression for the given CodeDOM expression representation.
 func GenerateExpression(expression codedom.Expression, scopegraph *scopegraph.ScopeGraph,

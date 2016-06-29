@@ -1,0 +1,19 @@
+class SomeClass {
+	function<void> Release() {}
+}
+
+function<int*> DoSomething(anotherStream int*, something SomeClass) {
+	if (true) {
+		for {
+			match {
+				case true:
+					with something as somethingElse {
+						yield 1
+						yield 2
+						yield in anotherStream
+						yield break
+					}
+			}
+		}
+	}
+}

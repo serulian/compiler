@@ -19,10 +19,22 @@ type Expression interface {
 
 // Statement represents a statement.
 type Statement interface {
+	// BasisNode is the node that is the basis of the statement for source mapping.
 	BasisNode() compilergraph.GraphNode
+
+	// IsJump returns whether this statement is a jump of some kind.
 	IsJump() bool
+
+	// IsReferencable returns whether this statement must be referenceable and therefore
+	// generated as its own statement.
 	IsReferenceable() bool
+
+	// MarkReferenceable marks as statement as being referencable.
 	MarkReferenceable()
+
+	// ReleasesFlow returns whether the statement releases the flow of the current
+	// state machine. Statements which yield will release flow.
+	ReleasesFlow() bool
 }
 
 // StatementOrExpression represents a statement or expression.
@@ -80,6 +92,8 @@ type statementBase struct {
 	domBase
 	referenceable bool // Whether the statement must be referenceable, distinct from other statements.
 }
+
+func (sb *statementBase) ReleasesFlow() bool { return false }
 
 func (sb *statementBase) IsJump() bool { return false }
 

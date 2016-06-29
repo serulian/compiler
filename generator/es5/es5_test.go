@@ -202,6 +202,9 @@ var tests = []generationTest{
 	generationTest{"nominal cast autobox success test", "cast", "nominalautobox", integrationTestSuccessExpected, ""},
 	generationTest{"interface cast success test", "cast", "interfacecast", integrationTestSuccessExpected, ""},
 	generationTest{"generic interface cast success test", "cast", "genericinterfacecast", integrationTestSuccessExpected, ""},
+
+	generationTest{"simple generator success test", "generator", "simple", integrationTestSuccessExpected, ""},
+	generationTest{"nested generator success test", "generator", "nested", integrationTestSuccessExpected, ""},
 }
 
 func TestGenerator(t *testing.T) {

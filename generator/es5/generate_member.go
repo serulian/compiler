@@ -10,6 +10,7 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/statemachine"
 	"github.com/serulian/compiler/generator/escommon/esbuilder"
+	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/typegraph"
 
@@ -93,6 +94,12 @@ func (gm generatingMember) WorkerExecutes() bool {
 	return gm.Member.InvokesAsync()
 }
 
+// IsGenerator returns whether the generating member is a generator function.
+func (gm generatingMember) IsGenerator() bool {
+	bodyScope, _ := gm.Generator.scopegraph.GetScope(gm.BodyNode())
+	return bodyScope.HasLabel(proto.ScopeLabel_GENERATOR_STATEMENT)
+}
+
 // Generics returns the names of the generics for this member, if any.
 func (gm generatingMember) Generics() []string {
 	generics := gm.Member.Generics()
@@ -140,7 +147,7 @@ func (gm generatingMember) FunctionSource() esbuilder.SourceBuilder {
 func (gm generatingMember) GetterSource() esbuilder.SourceBuilder {
 	getterNode, _ := gm.SRGMember.Getter()
 	getterBodyNode, _ := getterNode.Body()
-	getterBody := propertyBodyInfo{gm.Member, getterBodyNode, []string{""}}
+	getterBody := propertyBodyInfo{gm.Member, getterBodyNode, []string{""}, gm.Generator}
 	return statemachine.GenerateFunctionSource(getterBody, gm.Generator.scopegraph, gm.Generator.positionMapper)
 }
 
@@ -148,7 +155,7 @@ func (gm generatingMember) GetterSource() esbuilder.SourceBuilder {
 func (gm generatingMember) SetterSource() esbuilder.SourceBuilder {
 	setterNode, _ := gm.SRGMember.Setter()
 	setterBodyNode, _ := setterNode.Body()
-	setterBody := propertyBodyInfo{gm.Member, setterBodyNode, []string{"val"}}
+	setterBody := propertyBodyInfo{gm.Member, setterBodyNode, []string{"val"}, gm.Generator}
 	return statemachine.GenerateFunctionSource(setterBody, gm.Generator.scopegraph, gm.Generator.positionMapper)
 }
 
@@ -166,6 +173,7 @@ type propertyBodyInfo struct {
 	propertyMember typegraph.TGMember
 	bodyNode       compilergraph.GraphNode
 	parameterNames []string
+	generator      *es5generator // The parent generator.
 }
 
 func (pbi propertyBodyInfo) BodyNode() compilergraph.GraphNode {
@@ -186,6 +194,11 @@ func (pbi propertyBodyInfo) RequiresThis() bool {
 
 func (pbi propertyBodyInfo) WorkerExecutes() bool {
 	return false
+}
+
+func (pbi propertyBodyInfo) IsGenerator() bool {
+	bodyScope, _ := pbi.generator.scopegraph.GetScope(pbi.BodyNode())
+	return bodyScope.HasLabel(proto.ScopeLabel_GENERATOR_STATEMENT)
 }
 
 func (pbi propertyBodyInfo) ReturnType() typegraph.TypeReference {

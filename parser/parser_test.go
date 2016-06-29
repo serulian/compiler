@@ -175,6 +175,10 @@ var parserTests = []parserTest{
 	{"else conditional statement test", "statement/else_conditional"},
 	{"chained conditional statement test", "statement/chained_conditional"},
 
+	{"yield value statement test", "statement/yield_value"},
+	{"yield in statement test", "statement/yield_in"},
+	{"yield break statement test", "statement/yield_break"},
+
 	{"return no value statement test", "statement/return"},
 	{"return value statement test", "statement/return_value"},
 	{"reject value statement test", "statement/reject"},

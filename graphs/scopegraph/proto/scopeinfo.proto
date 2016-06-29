@@ -13,6 +13,7 @@ enum ScopeKind {
 enum ScopeLabel {
 	STREAM_LOOP = 1; // Marks the loop as iterating over a stream.
 	STREAMABLE_LOOP = 2; // Marks the loop as iterating over a streamable object.
+	GENERATOR_STATEMENT = 3; // Marks a statement as being part of a generator.
 }
 
 message ScopeInfo {

@@ -23,6 +23,7 @@ type FunctionDef interface {
 	Parameters() []string              // Returns the names of the parameters on the function, if any.
 	RequiresThis() bool                // Returns if this function is requires the "this" var to be added.
 	WorkerExecutes() bool              // Returns true if this function should be executed by a web worker.
+	IsGenerator() bool                 // Returns true if this function is a generator.
 	BodyNode() compilergraph.GraphNode // The parser root node for the function body.
 }
 
@@ -32,13 +33,23 @@ func GenerateFunctionSource(functionDef FunctionDef, scopegraph *scopegraph.Scop
 	funcBody := dombuilder.BuildStatement(scopegraph, functionDef.BodyNode())
 
 	// Instantiate a new state machine generator and use it to generate the function.
-	sg := buildGenerator(scopegraph, positionMapper, shared.NewTemplater())
+	sg := buildGenerator(scopegraph, positionMapper, shared.NewTemplater(), functionDef.IsGenerator())
+	specialization := codedom.NormalFunction
+
+	switch {
+	case functionDef.WorkerExecutes():
+		specialization = codedom.AsynchronousWorkerFunction
+
+	case functionDef.IsGenerator():
+		specialization = codedom.GeneratorFunction
+	}
+
 	domDefinition := codedom.FunctionDefinition(
 		functionDef.Generics(),
 		functionDef.Parameters(),
 		funcBody,
 		functionDef.RequiresThis(),
-		functionDef.WorkerExecutes(),
+		specialization,
 		functionDef.BodyNode())
 
 	result := expressiongenerator.GenerateExpression(domDefinition, scopegraph, positionMapper, sg.generateMachine)
@@ -49,6 +60,6 @@ func GenerateFunctionSource(functionDef FunctionDef, scopegraph *scopegraph.Scop
 func GenerateExpressionResult(expressionNode compilergraph.GraphNode, scopegraph *scopegraph.ScopeGraph, positionMapper *compilercommon.PositionMapper) expressiongenerator.ExpressionResult {
 	// Build the CodeDOM for the expression.
 	domDefinition := dombuilder.BuildExpression(scopegraph, expressionNode)
-	sg := buildGenerator(scopegraph, positionMapper, shared.NewTemplater())
+	sg := buildGenerator(scopegraph, positionMapper, shared.NewTemplater(), false)
 	return expressiongenerator.GenerateExpression(domDefinition, scopegraph, positionMapper, sg.generateMachine)
 }

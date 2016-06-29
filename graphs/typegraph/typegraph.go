@@ -379,8 +379,9 @@ func (g *TypeGraph) LookupType(typeName string, module compilercommon.InputSourc
 
 // LookupReturnType looks up the return type for an source member or property getter.
 func (g *TypeGraph) LookupReturnType(sourceNode compilergraph.GraphNode) (TypeReference, bool) {
-	resolvedNode, found := g.findAllNodes(NodeTypeReturnable).
-		Has(NodePredicateSource, string(sourceNode.NodeId)).
+	resolvedNode, found := g.layer.StartQuery(string(sourceNode.NodeId)).
+		In(NodePredicateSource).
+		IsKind(NodeTypeReturnable).
 		TryGetNode()
 
 	if !found {

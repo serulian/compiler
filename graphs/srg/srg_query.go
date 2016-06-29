@@ -42,3 +42,22 @@ func (g *SRG) findAllNodes(nodeTypes ...parser.NodeType) compilergraph.GraphQuer
 
 	return g.layer.FindNodesOfKind(nodeTypesTagged...)
 }
+
+// TryGetContainingImplemented returns the member or property node that has an
+// outgoing NodePredicateBody pointing to a statement block containing this specified node.
+func (g *SRG) TryGetContainingImplemented(node compilergraph.GraphNode) (compilergraph.GraphNode, bool) {
+	containingFilter := func(q compilergraph.GraphQuery) compilergraph.Query {
+		startRune := node.Get(parser.NodePredicateStartRune)
+		endRune := node.Get(parser.NodePredicateEndRune)
+
+		return q.
+			HasWhere(parser.NodePredicateStartRune, compilergraph.WhereLTE, startRune).
+			HasWhere(parser.NodePredicateEndRune, compilergraph.WhereGTE, endRune)
+	}
+
+	return g.findAllNodes(parser.NodeTypeStatementBlock).
+		Has(parser.NodePredicateSource, node.Get(parser.NodePredicateSource)).
+		In(parser.NodePredicateBody).
+		FilterBy(containingFilter).
+		TryGetNode()
+}
