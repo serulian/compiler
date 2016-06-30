@@ -1,0 +1,25 @@
+class SomeResource {
+	var<bool> released = false
+	function<void> Release() {
+		this.released = true
+	}
+}
+
+function<int*> SomeGenerator(sr SomeResource) {
+	with sr {
+		yield 2
+	}
+
+	yield 40
+}
+
+function<any> TEST() {
+	var sr = SomeResource.new()
+	var counter = 0
+
+	for i in SomeGenerator(sr) {
+		counter = counter + i
+	}
+
+	return sr.released && counter == 42
+}
