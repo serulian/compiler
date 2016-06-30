@@ -153,10 +153,18 @@ func (sb *scopeBuilder) scopeNamedValue(node compilergraph.GraphNode, option sco
 
 		return newScope().Valid().AssignableResolvedTypeOf(exprScope).GetScope()
 
+	case parser.NodeTypeLoopExpression:
+		fallthrough
+
 	case parser.NodeTypeLoopStatement:
-		// The named value exported by a loop statement has the type of the generic of the
+		// The named value exported by a loop statement or expression has the type of the generic of the
 		// Stream<T> interface implemented.
-		exprScope := sb.getScope(parentNode.GetNode(parser.NodeLoopStatementExpression))
+		var predicate = parser.NodeLoopStatementExpression
+		if parentNode.Kind() == parser.NodeTypeLoopExpression {
+			predicate = parser.NodeLoopExpressionStreamExpression
+		}
+
+		exprScope := sb.getScope(parentNode.GetNode(predicate))
 		if !exprScope.GetIsValid() {
 			return newScope().Invalid().GetScope()
 		}

@@ -326,6 +326,22 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"Cannot assign value to operator setindex: 'Boolean' cannot be used in place of non-interface 'Integer'", ""},
 
+	/////////// Loop expression ///////////
+
+	scopegraphTest{"loop expression success test", "loopexpr", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"loopexpr", expectedScope{true, proto.ScopeKind_VALUE, "Stream<String>", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"loop expression non-stream test", "loopexpr", "nonstream",
+		[]expectedScopeEntry{},
+		"Loop iterable expression must implement type 'stream' or 'streamable': Type Integer cannot be used in place of type Stream as it does not implement member Next", ""},
+
+	scopegraphTest{"loop expression invalid var test", "loopexpr", "invalidvar",
+		[]expectedScopeEntry{},
+		"The name 'les' could not be found in this context", ""},
+
 	/////////// Conditional expression ///////////
 
 	scopegraphTest{"conditional expression success test", "condexpr", "success",

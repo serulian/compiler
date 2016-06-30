@@ -396,8 +396,7 @@ func (g *SRG) findAddedNameInScope(name string, node compilergraph.GraphNode) (c
 	nodeStartIndex := node.GetInt(parser.NodePredicateStartRune)
 
 	// Note: This filter ensures that the name is accessible in the scope of the given node by checking that
-	// the node adding the name contains the given node. We use LT because we checking the node adding
-	// the name, instead of the name itself.
+	// the node adding the name contains the given node.
 	containingFilter := func(q compilergraph.GraphQuery) compilergraph.Query {
 		startRune := node.Get(parser.NodePredicateStartRune)
 		endRune := node.Get(parser.NodePredicateEndRune)
@@ -410,7 +409,7 @@ func (g *SRG) findAddedNameInScope(name string, node compilergraph.GraphNode) (c
 			parser.NodeStatementNamedValue,
 			parser.NodePredicateChild,
 			parser.NodeStatementBlockStatement).
-			HasWhere(parser.NodePredicateStartRune, compilergraph.WhereLT, startRune).
+			HasWhere(parser.NodePredicateStartRune, compilergraph.WhereLTE, startRune).
 			HasWhere(parser.NodePredicateEndRune, compilergraph.WhereGTE, endRune)
 	}
 

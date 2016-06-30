@@ -57,6 +57,11 @@ func (t *TypeGraph) SliceTypeReference(generic TypeReference) TypeReference {
 	return t.NewTypeReference(t.SliceType(), generic)
 }
 
+// StreamTypeReference returns a new reference to the stream type, with the given generic.
+func (t *TypeGraph) StreamTypeReference(generic TypeReference) TypeReference {
+	return t.NewTypeReference(t.StreamType(), generic)
+}
+
 // ListTypeReference returns a new reference to the list type, with the given generic.
 func (t *TypeGraph) ListTypeReference(generic TypeReference) TypeReference {
 	return t.NewTypeReference(t.ListType(), generic)
