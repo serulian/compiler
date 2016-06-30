@@ -205,6 +205,7 @@ var tests = []generationTest{
 
 	generationTest{"simple generator success test", "generator", "simple", integrationTestSuccessExpected, ""},
 	generationTest{"nested generator success test", "generator", "nested", integrationTestSuccessExpected, ""},
+	generationTest{"resource generator success test", "generator", "resource", integrationTestSuccessExpected, ""},
 }
 
 func TestGenerator(t *testing.T) {
