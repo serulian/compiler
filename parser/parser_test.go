@@ -224,6 +224,7 @@ var parserTests = []parserTest{
 	{"map literal expr test", "expression/mapliteral"},
 	{"conditional expr test", "expression/conditional"},
 	{"complex conditional expr test", "expression/complexconditional"},
+	{"loop expr test", "expression/loop"},
 
 	{"slice literal slice expr test", "expression/sliceliteralslice"},
 

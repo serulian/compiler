@@ -1,0 +1,54 @@
+NodeTypeFile
+  end-rune = 83
+  input-source = loop expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 83
+      input-source = loop expr test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 83
+          input-source = loop expr test
+          start-rune = 29
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 82
+              input-source = loop expr test
+              start-rune = 32
+              expr-statement-expr =>
+                NodeTypeLoopExpression
+                  end-rune = 82
+                  input-source = loop expr test
+                  start-rune = 32
+                  loop-expr-map-expr =>
+                    NodeMemberAccessExpression
+                      end-rune = 51
+                      input-source = loop expr test
+                      member-access-identifier = doSomething
+                      start-rune = 32
+                      member-access-expr =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 39
+                          identexpr-name = someExpr
+                          input-source = loop expr test
+                          start-rune = 32
+                  loop-expr-stream-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 81
+                      identexpr-name = someOtherExpr
+                      input-source = loop expr test
+                      start-rune = 69
+                  named-value =>
+                    NodeTypeNamedValue
+                      end-rune = 64
+                      input-source = loop expr test
+                      named = someExpr
+                      start-rune = 57
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 12
+          input-source = loop expr test
+          start-rune = 9

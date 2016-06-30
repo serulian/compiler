@@ -83,6 +83,7 @@ const (
 	NodeTypeLambdaExpression // A lambda expression
 
 	NodeTypeConditionalExpression // a if b else c
+	NodeTypeLoopExpression        // a for a in c
 
 	NodeBitwiseXorExpression        // a ^ b
 	NodeBitwiseOrExpression         // a | b
@@ -416,6 +417,13 @@ const (
 	NodeArrowStatementDestination = "arrow-statement-destination"
 	NodeArrowStatementRejection   = "arrow-statement-rejection"
 	NodeArrowStatementSource      = "arrow-statement-right"
+
+	//
+	// NodeTypeLoopExpression
+	//
+	NodeLoopExpressionStreamExpression = "loop-expr-stream-expr"
+	NodeLoopExpressionNamedValue       = "named-value"
+	NodeLoopExpressionMapExpression    = "loop-expr-map-expr"
 
 	//
 	// NodeTypeConditionalExpression
