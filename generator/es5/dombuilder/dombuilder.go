@@ -148,6 +148,9 @@ func (db *domBuilder) buildExpression(node compilergraph.GraphNode) codedom.Expr
 	case parser.NodeTypeConditionalExpression:
 		return db.buildConditionalExpression(node)
 
+	case parser.NodeTypeLoopExpression:
+		return db.buildLoopExpression(node)
+
 	// Op Expressions.
 	case parser.NodeRootTypeExpression:
 		return db.buildRootTypeExpression(node)

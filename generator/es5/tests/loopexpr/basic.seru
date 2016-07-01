@@ -1,0 +1,15 @@
+function<int*> SomeGenerator() {
+	yield 1
+	yield 2
+	yield 3
+}
+
+function<any> TEST() {
+	var s = s + 1 for s in SomeGenerator()
+	var counter = 0
+	for entry in s {
+		counter = counter + entry
+	}
+
+	return counter == 9
+}

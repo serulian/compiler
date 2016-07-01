@@ -133,6 +133,8 @@ var tests = []generationTest{
 	generationTest{"conditional expression", "condexpr", "basic", integrationTestSuccessExpected, ""},
 	generationTest{"called conditional expression", "condexpr", "calls", integrationTestSuccessExpected, ""},
 
+	generationTest{"loop expression", "loopexpr", "basic", integrationTestSuccessExpected, ""},
+
 	generationTest{"generic specifier expression", "accessexpr", "genericspecifier", integrationTestSuccessExpected, ""},
 	generationTest{"cast expression", "accessexpr", "cast", integrationTestSuccessExpected, ""},
 	generationTest{"structural cast expression", "accessexpr", "structuralcast", integrationTestSuccessExpected, ""},

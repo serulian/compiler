@@ -17,3 +17,50 @@ func (db *domBuilder) buildConditionalExpression(node compilergraph.GraphNode) c
 	elseExpr := db.getExpression(node, parser.NodeConditionalExpressionElseExpression)
 	return codedom.Ternary(checkExpr, thenExpr, elseExpr, node)
 }
+
+// buildLoopExpression builds the CodeDOM for a loop expression.
+func (db *domBuilder) buildLoopExpression(node compilergraph.GraphNode) codedom.Expression {
+	member, found := db.scopegraph.TypeGraph().StreamType().ParentModule().FindMember("MapStream")
+	if !found {
+		panic("Missing MapStream function under Stream's module")
+	}
+
+	// Retrieve the item type for the members of the stream and the mapped values.
+	mapExpr := node.GetNode(parser.NodeLoopExpressionMapExpression)
+	namedValue := node.GetNode(parser.NodeLoopExpressionNamedValue)
+
+	namedScope, _ := db.scopegraph.GetScope(namedValue)
+	namedItemType := namedScope.AssignableTypeRef(db.scopegraph.TypeGraph())
+
+	mapScope, _ := db.scopegraph.GetScope(mapExpr)
+	mappedItemType := mapScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
+
+	// Build a reference to the Map function.
+	mapFunctionReference := codedom.FunctionCall(
+		codedom.StaticMemberReference(member, node),
+		[]codedom.Expression{
+			codedom.TypeLiteral(namedItemType, node),
+			codedom.TypeLiteral(mappedItemType, node),
+		},
+		node)
+
+	// A loop expression is replaced with a call to the Map function, with the stream as the first parameter
+	// and a mapper function which resolves the mapped value as the second.
+	builtMapExpr := db.buildExpression(mapExpr)
+	builtStreamExpr := db.getExpression(node, parser.NodeLoopExpressionStreamExpression)
+
+	loopValueName := namedValue.Get(parser.NodeNamedValueName)
+	mapperFunction := codedom.FunctionDefinition(
+		[]string{},
+		[]string{loopValueName},
+		codedom.Resolution(builtMapExpr, builtMapExpr.BasisNode()),
+		false,
+		codedom.NormalFunction,
+		builtMapExpr.BasisNode())
+
+	return codedom.AwaitPromise(
+		codedom.FunctionCall(mapFunctionReference,
+			[]codedom.Expression{builtStreamExpr, mapperFunction},
+			node),
+		node)
+}
