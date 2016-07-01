@@ -116,6 +116,9 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 	case parser.NodeTypeConditionalExpression:
 		return sb.scopeConditionalExpression
 
+	case parser.NodeTypeLoopExpression:
+		return sb.scopeLoopExpression
+
 	// Access expressions.
 	case parser.NodeCastExpression:
 		return sb.scopeCastExpression

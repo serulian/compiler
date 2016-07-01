@@ -18,6 +18,12 @@ function<string> formatTemplateString(pieces []string, values []stringable) {
 	return result
 }
 
+function<Q*> MapStream<T, Q>(stream T*, mapper function<Q>(T)) {
+	for item in stream {
+		yield mapper(item)
+	}
+}
+
 @•typealias('tuple')
 class Tuple<T, Q> {
 	var<T?> First = null

@@ -1904,6 +1904,23 @@ func (p *sourceParser) tryConsumeExpression(option consumeExpressionOption) (Ast
 			return templateNode, true
 		}
 
+		// Check for a for keyword. If found, then the expression starts a loop expression.
+		if p.isKeyword("for") {
+			loopNode := p.createNode(NodeTypeLoopExpression)
+			loopNode.Connect(NodeLoopExpressionMapExpression, node)
+
+			p.consumeKeyword("for")
+			loopNode.Connect(NodeLoopExpressionNamedValue, p.consumeNamedValue())
+
+			p.consume(tokenTypeInOperator)
+			loopNode.Connect(NodeLoopExpressionStreamExpression, p.consumeExpression(option))
+
+			p.decorateStartRuneAndComments(loopNode, startToken)
+			p.decorateEndRune(loopNode, p.currentToken.lexeme)
+
+			return loopNode, true
+		}
+
 		// Check for an if keyword. If found, then the expression starts a conditional expression.
 		if p.isKeyword("if") {
 			conditionalNode := p.createNode(NodeTypeConditionalExpression)
