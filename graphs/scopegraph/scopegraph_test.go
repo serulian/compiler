@@ -288,6 +288,133 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	/////////// SML expression ///////////
+
+	scopegraphTest{"sml expression success test", "sml", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"simple", expectedScope{true, proto.ScopeKind_VALUE, "SimpleClass", "void"}},
+			expectedScopeEntry{"classwithprops", expectedScope{true, proto.ScopeKind_VALUE, "ClassWithProps", "void"}},
+			expectedScopeEntry{"funcwithprops", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+
+			expectedScopeEntry{"propsstruct", expectedScope{true, proto.ScopeKind_VALUE, "SomePropsStruct", "void"}},
+
+			expectedScopeEntry{"optionalchild", expectedScope{true, proto.ScopeKind_VALUE, "String", "void"}},
+			expectedScopeEntry{"optionalchild2", expectedScope{true, proto.ScopeKind_VALUE, "String", "void"}},
+
+			expectedScopeEntry{"requiredchild", expectedScope{true, proto.ScopeKind_VALUE, "String", "void"}},
+
+			expectedScopeEntry{"childstream1", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+			expectedScopeEntry{"childstream2", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+			expectedScopeEntry{"childstream3", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+			expectedScopeEntry{"childstream4", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+
+			expectedScopeEntry{"decorator", expectedScope{true, proto.ScopeKind_VALUE, "AnotherClass", "void"}},
+			expectedScopeEntry{"decorator2", expectedScope{true, proto.ScopeKind_VALUE, "AnotherClass", "void"}},
+
+			expectedScopeEntry{"chaineddecorator", expectedScope{true, proto.ScopeKind_VALUE, "ThirdClass", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"sml expression unknown ref test", "sml", "unknownref",
+		[]expectedScopeEntry{},
+		"The name 'something' could not be found in this context", ""},
+
+	scopegraphTest{"sml expression unknown ref 2 test", "sml", "unknownref2",
+		[]expectedScopeEntry{},
+		"Could not find static name 'something' under class SomeClass", ""},
+
+	scopegraphTest{"sml expression missing constructor test", "sml", "missingconstructor",
+		[]expectedScopeEntry{},
+		"A type used in a SML declaration tag must have a 'Declare' constructor: Could not find static name 'Declare' under class SomeClass", ""},
+
+	scopegraphTest{"sml expression generic type test", "sml", "generic",
+		[]expectedScopeEntry{},
+		"A generic type cannot be used in a SML declaration tag", ""},
+
+	scopegraphTest{"sml expression non-function type test", "sml", "nonfunction",
+		[]expectedScopeEntry{},
+		"Declared reference in an SML declaration tag must be a function. Found: Integer", ""},
+
+	scopegraphTest{"sml expression invalid param count test", "sml", "invalidparamcount",
+		[]expectedScopeEntry{},
+		"Declarable function or constructor used in an SML declaration tag with attributes must have a 'props' parameter. Found: function<SomeClass>", ""},
+
+	scopegraphTest{"sml expression void function test", "sml", "voidfunction",
+		[]expectedScopeEntry{},
+		"Declarable function used in an SML declaration tag cannot return void", ""},
+
+	scopegraphTest{"sml expression invalid props type test", "sml", "invalidprops",
+		[]expectedScopeEntry{},
+		"First parameter of a declarable function or constructor used in an SML declaration tag must be structural or a Mapping. Found: Integer", ""},
+
+	scopegraphTest{"sml expression invalid attribute name test", "sml", "invalidattributename",
+		[]expectedScopeEntry{},
+		"Could not find instance name 'unknownattr' under struct SomeType", ""},
+
+	scopegraphTest{"sml expression invalid attribute value test", "sml", "invalidattributevalue",
+		[]expectedScopeEntry{},
+		"Cannot assign value of type String for attribute SomeAttribute: 'String' cannot be used in place of non-interface 'Integer'", ""},
+
+	scopegraphTest{"sml expression invalid attribute value 2 test", "sml", "invalidattributevalue2",
+		[]expectedScopeEntry{},
+		"Cannot assign value of type Boolean for attribute SomeAttribute: 'Boolean' cannot be used in place of non-interface 'Integer'", ""},
+
+	scopegraphTest{"sml expression missing required attribute test", "sml", "missingrequiredattribute",
+		[]expectedScopeEntry{},
+		"Required attribute 'SomeAttribute' is missing for SML declaration props type SomeType", ""},
+
+	scopegraphTest{"sml expression unknown decorator test", "sml", "unknowndecorator",
+		[]expectedScopeEntry{},
+		"The name 'SomeDecorator' could not be found in this context", ""},
+
+	scopegraphTest{"sml expression non-function decorator test", "sml", "nonfunctiondecorator",
+		[]expectedScopeEntry{},
+		"SML declaration decorator 'sd' must refer to a function. Found: Integer", ""},
+
+	scopegraphTest{"sml expression void function decorator test", "sml", "voidfunctiondecorator",
+		[]expectedScopeEntry{},
+		"SML declaration decorator 'sd' cannot return void", ""},
+
+	scopegraphTest{"sml expression parameter count decorator test", "sml", "invalidparamcountdecorator",
+		[]expectedScopeEntry{},
+		"SML declaration decorator 'sd' must refer to a function with two parameters. Found: function<Integer>", ""},
+
+	scopegraphTest{"sml expression decorator decorated mismatch test", "sml", "decoratedmismatch",
+		[]expectedScopeEntry{},
+		"SML declaration decorator 'sd' must decorator a value of type Integer: 'String' cannot be used in place of non-interface 'Integer'", ""},
+
+	scopegraphTest{"sml expression decorator value mismatch test", "sml", "decoratorvaluemismatch",
+		[]expectedScopeEntry{},
+		"Cannot assign value of type String for decorator 'sd': 'String' cannot be used in place of non-interface 'Boolean'", ""},
+
+	scopegraphTest{"sml expression decorator value mismatch 2 test", "sml", "decoratorvaluemismatch2",
+		[]expectedScopeEntry{},
+		"Cannot assign value of type Boolean for decorator 'sd': 'Boolean' cannot be used in place of non-interface 'String'", ""},
+
+	scopegraphTest{"sml expression decorator chained decorated mismatch test", "sml", "chaineddecoratedmismatch",
+		[]expectedScopeEntry{},
+		"SML declaration decorator 'second' must decorator a value of type AnotherType: 'AnotherTypeEntirely' cannot be used in place of non-interface 'AnotherType'", ""},
+
+	scopegraphTest{"sml expression child parameter count mismatch test", "sml", "childparamcountmismatch",
+		[]expectedScopeEntry{},
+		"Declarable function or constructor used in an SML declaration tag with children must have a 'children' parameter. Found: function<SomeClass>", ""},
+
+	scopegraphTest{"sml expression child required test", "sml", "childrequired",
+		[]expectedScopeEntry{},
+		"SML declaration tag requires a single child. Found: 0", ""},
+
+	scopegraphTest{"sml expression too many children test", "sml", "toomanychildren",
+		[]expectedScopeEntry{},
+		"SML declaration tag allows at most a single child. Found: 2", ""},
+
+	scopegraphTest{"sml expression child type mismatch test", "sml", "childtypemismatch",
+		[]expectedScopeEntry{},
+		"SML declaration tag requires a child of type Integer: 'String' cannot be used in place of non-interface 'Integer'", ""},
+
+	scopegraphTest{"sml expression child stream mismatch test", "sml", "childstreammismatch",
+		[]expectedScopeEntry{},
+		"Child #1 under SML declaration must be subtype of Integer: 'String' cannot be used in place of non-interface 'Integer'", ""},
+
 	/////////// Numeric literals ///////////
 
 	scopegraphTest{"numeric literals test", "literals", "numeric",

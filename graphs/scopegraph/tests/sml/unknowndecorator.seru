@@ -1,0 +1,9 @@
+struct SomeType {}
+
+function<int> SomeFunction(props SomeType, child any) {
+	return 2
+}
+
+function<void> DoSomething() {
+	<SomeFunction @SomeDecorator="something"/>
+}

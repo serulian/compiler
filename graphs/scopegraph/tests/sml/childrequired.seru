@@ -1,0 +1,9 @@
+class SomeClass {
+	constructor Declare(props []{string}, child string) {
+		return SomeClass.new()
+	}
+}
+
+function<void> DoSomething() {
+	<SomeClass/>
+}
