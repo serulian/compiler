@@ -34,13 +34,14 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, option 
 	}
 
 	var functionType = sb.sg.tdg.AnyTypeReference()
-	var label = proto.ScopeLabel_SML_FUNCTION
+	var declarationLabel = proto.ScopeLabel_SML_FUNCTION
+	var childrenLabel = proto.ScopeLabel_SML_NO_CHILDREN
 
 	switch typeOrFuncScope.GetKind() {
 	case proto.ScopeKind_VALUE:
 		// Function.
 		functionType = typeOrFuncScope.ResolvedTypeRef(sb.sg.tdg)
-		label = proto.ScopeLabel_SML_FUNCTION
+		declarationLabel = proto.ScopeLabel_SML_FUNCTION
 
 	case proto.ScopeKind_STATIC:
 		// Type. Ensure it has a Declare constructor.
@@ -54,7 +55,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, option 
 		}
 
 		functionType = declareConstructor.MemberType()
-		label = proto.ScopeLabel_SML_CONSTRUCTOR
+		declarationLabel = proto.ScopeLabel_SML_CONSTRUCTOR
 
 	case proto.ScopeKind_GENERIC:
 		sb.decorateWithError(node, "A generic type cannot be used in a SML declaration tag")
@@ -162,7 +163,10 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, option 
 		// we check if the child matches the value expected.
 		if childsType.IsDirectReferenceTo(sb.sg.tdg.StreamType()) {
 			// If there is a single child that is also a matching stream, then we allow it.
-			if !(len(childrenTypes) == 1 && childrenTypes[0] == childsType) {
+			if len(childrenTypes) == 1 && childrenTypes[0] == childsType {
+				childrenLabel = proto.ScopeLabel_SML_STREAM_CHILD
+			} else {
+				childrenLabel = proto.ScopeLabel_SML_CHILDREN
 				streamValueType := childsType.Generics()[0]
 
 				// Ensure the child types match.
@@ -178,6 +182,8 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, option 
 			sb.decorateWithError(node, "SML declaration tag allows at most a single child. Found: %v", len(childrenTypes))
 			return newScope().Invalid().Resolving(resolvedType).GetScope()
 		} else {
+			childrenLabel = proto.ScopeLabel_SML_SINGLE_CHILD
+
 			// If the child type is not nullable, then we need to make sure a value was specified.
 			if !childsType.NullValueAllowed() && len(childrenTypes) < 1 {
 				sb.decorateWithError(node, "SML declaration tag requires a single child. Found: %v", len(childrenTypes))
@@ -194,7 +200,12 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, option 
 		}
 	}
 
-	return newScope().IsValid(isValid).Resolving(resolvedType).WithLabel(label).GetScope()
+	return newScope().
+		IsValid(isValid).
+		Resolving(resolvedType).
+		WithLabel(declarationLabel).
+		WithLabel(childrenLabel).
+		GetScope()
 }
 
 // scopeSmlDecoratorAttribute scopes a decorator SML expression attribute under a declaration.

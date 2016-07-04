@@ -1,0 +1,11 @@
+function<bool> SimpleFunction(props []{string}, children int*) {
+	var counter = 0
+	for value in children {
+		counter = counter + value
+	}
+	return counter == 6
+}
+
+function<any> TEST() {
+	return <SimpleFunction>{ 1 }{ 2 }{ 3 }</SimpleFunction>
+}

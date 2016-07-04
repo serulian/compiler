@@ -1,0 +1,7 @@
+function<bool> SimpleFunction(props []{string}, child int?) {
+	return child is null
+}
+
+function<any> TEST() {
+	return <SimpleFunction />
+}

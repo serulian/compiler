@@ -1,0 +1,14 @@
+class SimpleClass {
+	constructor Declare() {
+		return SimpleClass.new()
+	}
+
+	property<bool> Value {
+		get { return true }
+	}
+}
+
+function<any> TEST() {
+	var s = <SimpleClass />
+	return s.Value
+}

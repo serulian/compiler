@@ -69,6 +69,10 @@ const (
 	ScopeLabel_GENERATOR_STATEMENT ScopeLabel = 3
 	ScopeLabel_SML_FUNCTION        ScopeLabel = 4
 	ScopeLabel_SML_CONSTRUCTOR     ScopeLabel = 5
+	ScopeLabel_SML_SINGLE_CHILD    ScopeLabel = 6
+	ScopeLabel_SML_STREAM_CHILD    ScopeLabel = 7
+	ScopeLabel_SML_NO_CHILDREN     ScopeLabel = 8
+	ScopeLabel_SML_CHILDREN        ScopeLabel = 9
 )
 
 var ScopeLabel_name = map[int32]string{
@@ -77,6 +81,10 @@ var ScopeLabel_name = map[int32]string{
 	3: "GENERATOR_STATEMENT",
 	4: "SML_FUNCTION",
 	5: "SML_CONSTRUCTOR",
+	6: "SML_SINGLE_CHILD",
+	7: "SML_STREAM_CHILD",
+	8: "SML_NO_CHILDREN",
+	9: "SML_CHILDREN",
 }
 var ScopeLabel_value = map[string]int32{
 	"STREAM_LOOP":         1,
@@ -84,6 +92,10 @@ var ScopeLabel_value = map[string]int32{
 	"GENERATOR_STATEMENT": 3,
 	"SML_FUNCTION":        4,
 	"SML_CONSTRUCTOR":     5,
+	"SML_SINGLE_CHILD":    6,
+	"SML_STREAM_CHILD":    7,
+	"SML_NO_CHILDREN":     8,
+	"SML_CHILDREN":        9,
 }
 
 func (x ScopeLabel) Enum() *ScopeLabel {

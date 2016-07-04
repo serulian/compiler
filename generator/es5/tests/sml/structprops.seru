@@ -1,0 +1,13 @@
+struct SomeProps {
+	BoolValue bool
+	StringValue string
+	OptionalValue int?
+}
+
+function<bool> SimpleFunction(props SomeProps) {
+	return props.StringValue == "hello world" && props.BoolValue && !(props.OptionalValue is null)
+}
+
+function<any> TEST() {
+	return <SimpleFunction StringValue="hello world" OptionalValue={42} BoolValue />
+}

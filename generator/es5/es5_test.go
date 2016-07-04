@@ -208,6 +208,16 @@ var tests = []generationTest{
 	generationTest{"simple generator success test", "generator", "simple", integrationTestSuccessExpected, ""},
 	generationTest{"nested generator success test", "generator", "nested", integrationTestSuccessExpected, ""},
 	generationTest{"resource generator success test", "generator", "resource", integrationTestSuccessExpected, ""},
+
+	generationTest{"sml simple function test", "sml", "simplefunc", integrationTestSuccessExpected, ""},
+	generationTest{"sml simple class test", "sml", "simpleclass", integrationTestSuccessExpected, ""},
+	generationTest{"sml struct props test", "sml", "structprops", integrationTestSuccessExpected, ""},
+	generationTest{"sml mapping props test", "sml", "mappingprops", integrationTestSuccessExpected, ""},
+	generationTest{"sml single child test", "sml", "singlechild", integrationTestSuccessExpected, ""},
+	generationTest{"sml optional child test", "sml", "optionalchild", integrationTestSuccessExpected, ""},
+	generationTest{"sml stream child test", "sml", "streamchild", integrationTestSuccessExpected, ""},
+	generationTest{"sml children test", "sml", "children", integrationTestSuccessExpected, ""},
+	generationTest{"sml decorator test", "sml", "decorator", integrationTestSuccessExpected, ""},
 }
 
 func TestGenerator(t *testing.T) {
