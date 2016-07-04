@@ -1,0 +1,57 @@
+NodeTypeFile
+  end-rune = 65
+  input-source = open and close sml test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 65
+      input-source = open and close sml test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 65
+          input-source = open and close sml test
+          start-rune = 29
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 43
+              input-source = open and close sml test
+              start-rune = 32
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 42
+                  input-source = open and close sml test
+                  start-rune = 32
+                  sml-expression-typefunc =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 35
+                      identexpr-name = foo
+                      input-source = open and close sml test
+                      start-rune = 33
+            NodeTypeExpressionStatement
+              end-rune = 64
+              input-source = open and close sml test
+              start-rune = 45
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 63
+                  input-source = open and close sml test
+                  start-rune = 45
+                  sml-expression-typefunc =>
+                    NodeMemberAccessExpression
+                      end-rune = 53
+                      input-source = open and close sml test
+                      member-access-identifier = bar
+                      start-rune = 46
+                      member-access-expr =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 48
+                          identexpr-name = foo
+                          input-source = open and close sml test
+                          start-rune = 46
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 12
+          input-source = open and close sml test
+          start-rune = 9

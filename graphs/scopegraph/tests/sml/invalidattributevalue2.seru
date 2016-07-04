@@ -1,0 +1,11 @@
+struct SomeType {
+	SomeAttribute int
+}
+
+function<int> SomeFunction(props SomeType, child any) {
+	return 2
+}
+
+function<void> DoSomething() {
+	<SomeFunction SomeAttribute/>
+}

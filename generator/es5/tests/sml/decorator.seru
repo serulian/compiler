@@ -1,0 +1,19 @@
+function<int> SimpleFunction() {
+	return 10
+}
+
+function<int> First(decorated int, value int) {
+	return decorated + value
+}
+
+function<int> Second(decorated int, value int) {
+	return decorated - value
+}
+
+function<bool> Check(decorated int, value bool) {
+	return value && decorated == 15
+}
+
+function<any> TEST() {
+	return <SimpleFunction @First={10} @Second={5} @Check />
+}

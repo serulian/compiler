@@ -112,6 +112,13 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 	case parser.NodeTypeAwaitExpression:
 		return sb.scopeAwaitExpression
 
+	// SML expression.
+	case parser.NodeTypeSmlExpression:
+		return sb.scopeSmlExpression
+
+	case parser.NodeTypeSmlText:
+		return sb.scopeSmlText
+
 	// Flow expressions.
 	case parser.NodeTypeConditionalExpression:
 		return sb.scopeConditionalExpression

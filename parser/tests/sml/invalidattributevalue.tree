@@ -1,0 +1,54 @@
+NodeTypeFile
+  end-rune = 40
+  input-source = invalid attribute value sml test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 40
+      input-source = invalid attribute value sml test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 40
+          input-source = invalid attribute value sml test
+          start-rune = 29
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 41
+              input-source = invalid attribute value sml test
+              start-rune = 32
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 40
+                  input-source = invalid attribute value sml test
+                  start-rune = 32
+                  sml-expression-attribute =>
+                    NodeTypeSmlAttribute
+                      end-rune = 40
+                      input-source = invalid attribute value sml test
+                      sml-attribute-name = bar
+                      start-rune = 37
+                      sml-attribute-value =>
+                        NodeStringLiteralExpression
+                          end-rune = 40
+                          input-source = invalid attribute value sml test
+                          literal-value = 
+                          start-rune = 41
+                          child-node =>
+                            NodeTypeError
+                              end-rune = 40
+                              error-message = Expected one of: [tokenTypeStringLiteral], found: tokenTypeNumericLiteral
+                              input-source = invalid attribute value sml test
+                              start-rune = 41
+                  sml-expression-typefunc =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 35
+                      identexpr-name = foo
+                      input-source = invalid attribute value sml test
+                      start-rune = 33
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 12
+          input-source = invalid attribute value sml test
+          start-rune = 9

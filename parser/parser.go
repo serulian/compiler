@@ -7,6 +7,7 @@
 package parser
 
 import (
+	"bytes"
 	"fmt"
 	"strconv"
 	"strings"
@@ -190,6 +191,35 @@ func (p *sourceParser) finishNode() {
 
 	p.decorateEndRune(p.currentNode(), p.previousToken.lexeme)
 	p.nodes.pop()
+}
+
+// textOf returns the textual representation of the given tokens.
+func (p *sourceParser) textOf(tokens []lexeme) string {
+	var buffer bytes.Buffer
+	for _, token := range tokens {
+		buffer.WriteString(token.value)
+	}
+
+	return buffer.String()
+}
+
+// consumeIncludingIgnoredUntil consumes all tokens (including ignored tokens)
+// until one of the given token types is found.
+func (p *sourceParser) consumeIncludingIgnoredUntil(types ...tokenType) []lexeme {
+	var tokens = make([]lexeme, 0)
+
+	for {
+		if p.isToken(types...) {
+			break
+		}
+
+		tokens = append(tokens, p.currentToken.lexeme)
+		token := p.lex.nextToken()
+		p.previousToken = p.currentToken
+		p.currentToken = commentedLexeme{token, make([]lexeme, 0)}
+	}
+
+	return tokens
 }
 
 // consumeToken advances the lexer forward, returning the next token.

@@ -1,0 +1,4 @@
+function<void> DoSomething() {
+	<foo bar="baz" @decorator="foo" bar={true} @some.other={1 + 2 + 3} disabled @enabled />
+	<sometag data-whatever="blarg" />
+}

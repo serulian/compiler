@@ -14,6 +14,14 @@ enum ScopeLabel {
 	STREAM_LOOP = 1; // Marks the loop as iterating over a stream.
 	STREAMABLE_LOOP = 2; // Marks the loop as iterating over a streamable object.
 	GENERATOR_STATEMENT = 3; // Marks a statement as being part of a generator.
+
+	SML_FUNCTION = 4; // Marks a SML declaration as calling a function.
+	SML_CONSTRUCTOR = 5; // Marks a SML declaration as calling a constructor.
+
+	SML_SINGLE_CHILD = 6; // Marks a SML declaration as having a single value as a child.
+	SML_STREAM_CHILD = 7; // Marks a SML declaration as having a single stream as a child.
+	SML_NO_CHILDREN = 8; // Mark a SML declaration as having no children.
+	SML_CHILDREN = 9; // Mark a SML declaration as having a set of children.
 }
 
 message ScopeInfo {

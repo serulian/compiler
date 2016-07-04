@@ -5,6 +5,7 @@
 package dombuilder
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/serulian/compiler/compilergraph"
@@ -12,22 +13,16 @@ import (
 	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/parser"
 
-	"fmt"
 	"strconv"
 )
 
 const DEFINED_VAL_PARAMETER = "val"
 const DEFINED_THIS_PARAMETER = "$this"
 
-type initializer struct {
-	member     typegraph.TGMember
-	expression codedom.Expression
-}
-
 // buildStructuralNewExpression builds the CodeDOM for a structural new expression.
 func (db *domBuilder) buildStructuralNewExpression(node compilergraph.GraphNode) codedom.Expression {
 	// Collect the full set of initializers, by member.
-	initializers := map[string]initializer{}
+	initializers := map[string]codedom.Expression{}
 	eit := node.StartQuery().
 		Out(parser.NodeStructuralNewExpressionChildEntry).
 		BuildNodeIterator()
@@ -37,29 +32,33 @@ func (db *domBuilder) buildStructuralNewExpression(node compilergraph.GraphNode)
 		entryName, _ := db.scopegraph.GetReferencedName(entryScope)
 		entryMember, _ := entryName.Member()
 
-		initializers[entryMember.Name()] =
-			initializer{entryMember, db.getExpression(eit.Node(), parser.NodeStructuralNewEntryValue)}
+		initializers[entryMember.Name()] = db.getExpression(eit.Node(), parser.NodeStructuralNewEntryValue)
 	}
 
 	// Build a call to the new() constructor of the type with the required field expressions.
 	childScope, _ := db.scopegraph.GetScope(node.GetNode(parser.NodeStructuralNewTypeExpression))
 	staticTypeRef := childScope.StaticTypeRef(db.scopegraph.TypeGraph())
-	staticType := staticTypeRef.ReferredType()
+	return db.buildStructInitializerExpression(staticTypeRef, initializers, node)
+}
+
+// buildStructInitializerExpression builds an initializer expression for a struct type.
+func (db *domBuilder) buildStructInitializerExpression(structType typegraph.TypeReference, initializers map[string]codedom.Expression, node compilergraph.GraphNode) codedom.Expression {
+	staticType := structType.ReferredType()
 
 	var arguments = make([]codedom.Expression, 0)
 	for _, field := range staticType.RequiredFields() {
-		arguments = append(arguments, initializers[field.Name()].expression)
+		arguments = append(arguments, initializers[field.Name()])
 		delete(initializers, field.Name())
 	}
 
-	constructor, found := staticTypeRef.ResolveMember("new", typegraph.MemberResolutionStatic)
+	constructor, found := structType.ResolveMember("new", typegraph.MemberResolutionStatic)
 	if !found {
-		panic(fmt.Sprintf("Missing new constructor on type %v", staticTypeRef))
+		panic(fmt.Sprintf("Missing new constructor on type %v", structType))
 	}
 
 	newCall := codedom.MemberCall(
 		codedom.MemberReference(
-			codedom.TypeLiteral(staticTypeRef, node),
+			codedom.TypeLiteral(structType, node),
 			constructor,
 			node),
 		constructor,
@@ -75,14 +74,19 @@ func (db *domBuilder) buildStructuralNewExpression(node compilergraph.GraphNode)
 		codedom.LocalAssignment(newInstanceVarName, newCall, node),
 	}
 
-	for _, initializer := range initializers {
+	for fieldName, initializer := range initializers {
+		member, found := structType.ResolveMember(fieldName, typegraph.MemberResolutionInstance)
+		if !found {
+			panic("Member not found in struct initializer construction")
+		}
+
 		assignExpr :=
-			codedom.MemberAssignment(initializer.member,
+			codedom.MemberAssignment(member,
 				codedom.MemberReference(
 					codedom.LocalReference(newInstanceVarName, node),
-					initializer.member,
+					member,
 					node),
-				initializer.expression,
+				initializer,
 				node)
 
 		expressions = append(expressions, assignExpr)
@@ -162,6 +166,11 @@ func (db *domBuilder) buildCollectionLiteralExpression(node compilergraph.GraphN
 		BuildNodeIterator()
 
 	valueExprs := db.buildExpressions(vit)
+	return db.buildCollectionInitializerExpression(collectionType, valueExprs, emptyConstructorName, arrayConstructorName, node)
+}
+
+// buildCollectionInitializerExpression builds a literal collection expression.
+func (db *domBuilder) buildCollectionInitializerExpression(collectionType typegraph.TypeReference, valueExprs []codedom.Expression, emptyConstructorName string, arrayConstructorName string, node compilergraph.GraphNode) codedom.Expression {
 	if len(valueExprs) == 0 {
 		// Empty collection. Call the empty constructor directly.
 		constructor, _ := collectionType.ResolveMember(emptyConstructorName, typegraph.MemberResolutionStatic)
@@ -185,6 +194,36 @@ func (db *domBuilder) buildCollectionLiteralExpression(node compilergraph.GraphN
 // buildSliceLiteralExpression builds the CodeDOM for a slice literal expression.
 func (db *domBuilder) buildSliceLiteralExpression(node compilergraph.GraphNode) codedom.Expression {
 	return db.buildCollectionLiteralExpression(node, parser.NodeSliceLiteralExpressionValue, "Empty", "overArray")
+}
+
+// buildMappingInitializerExpression builds the CodeDOM for initializing a mapping literal expression.
+func (db *domBuilder) buildMappingInitializerExpression(mappingType typegraph.TypeReference, initializers map[string]codedom.Expression, node compilergraph.GraphNode) codedom.Expression {
+	var entries = make([]codedom.ObjectLiteralEntryNode, 0)
+	for name, expr := range initializers {
+		entries = append(entries,
+			codedom.ObjectLiteralEntryNode{
+				codedom.LiteralValue(strconv.Quote(name), expr.BasisNode()),
+				expr,
+				expr.BasisNode(),
+			})
+	}
+
+	if len(entries) == 0 {
+		// Empty mapping. Call the Empty() constructor directly.
+		constructor, _ := mappingType.ResolveMember("Empty", typegraph.MemberResolutionStatic)
+		return codedom.MemberCall(
+			codedom.MemberReference(codedom.TypeLiteral(mappingType, node), constructor, node),
+			constructor,
+			[]codedom.Expression{},
+			node)
+	}
+
+	constructor, _ := mappingType.ResolveMember("overObject", typegraph.MemberResolutionStatic)
+	return codedom.MemberCall(
+		codedom.MemberReference(codedom.TypeLiteral(mappingType, node), constructor, node),
+		constructor,
+		[]codedom.Expression{codedom.ObjectLiteral(entries, node)},
+		node)
 }
 
 // buildMappingLiteralExpression builds the CodeDOM for a mapping literal expression.

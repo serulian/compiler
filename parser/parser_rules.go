@@ -1278,6 +1278,32 @@ func (p *sourceParser) consumeIdentifierAccess(option identifierAccessOption) As
 	return identifierAccessNode
 }
 
+// consumeSimpleAccessPath consumes a simple member access path under an identifier.
+// This is different from consumeIdentifierPath in that it returns actual identifier and
+// member access expresssions, as well as the string value of path found.
+func (p *sourceParser) consumeSimpleAccessPath() (AstNode, string) {
+	startToken := p.currentToken
+
+	identifierNode := p.startNode(NodeTypeIdentifierExpression)
+	identifier, _ := p.consumeIdentifier()
+	identifierNode.Decorate(NodeIdentifierExpressionName, identifier)
+	p.finishNode()
+
+	if _, ok := p.tryConsume(tokenTypeDotAccessOperator); !ok {
+		return identifierNode, identifier
+	}
+
+	memberAccessNode := p.createNode(NodeMemberAccessExpression)
+	p.decorateStartRuneAndComments(memberAccessNode, startToken)
+	memberAccessNode.Connect(NodeMemberAccessChildExpr, identifierNode)
+
+	member, _ := p.consumeIdentifier()
+	memberAccessNode.Decorate(NodeMemberAccessIdentifier, member)
+
+	p.decorateEndRune(memberAccessNode, p.currentToken.lexeme)
+	return memberAccessNode, identifier + "." + member
+}
+
 // consumeStatementBlock consumes a block of statements
 //
 // Form:
@@ -1887,7 +1913,7 @@ func (p *sourceParser) tryConsumeExpression(option consumeExpressionOption) (Ast
 	if option == consumeExpressionAllowBraces {
 		startToken := p.currentToken
 
-		node, found := p.oneOf(p.tryConsumeMapExpression, p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, nonArrow)
+		node, found := p.oneOf(p.tryConsumeMapExpression, p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, p.tryConsumeMarkupExpression, nonArrow)
 		if !found {
 			return node, false
 		}
@@ -1939,8 +1965,187 @@ func (p *sourceParser) tryConsumeExpression(option consumeExpressionOption) (Ast
 
 		return node, true
 	} else {
-		return p.oneOf(p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, nonArrow)
+		return p.oneOf(p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, p.tryConsumeMarkupExpression, nonArrow)
 	}
+}
+
+// tryConsumeMarkupExpression tries to consume a markup expression of the following form:
+// <somepath attr="value" attr={value} />
+// <somepath attr="value" attr={value}>...</somepath>
+func (p *sourceParser) tryConsumeMarkupExpression() (AstNode, bool) {
+	if !p.isToken(tokenTypeLessThan) {
+		return nil, false
+	}
+
+	return p.consumeMarkupExpression(), true
+}
+
+// consumeMarkupExpression consumes a markup expression.
+func (p *sourceParser) consumeMarkupExpression() AstNode {
+	markupNode := p.startNode(NodeTypeSmlExpression)
+	defer p.finishNode()
+
+	// Consume the markup tag:
+	// <identifier
+	if _, ok := p.consume(tokenTypeLessThan); !ok {
+		return markupNode
+	}
+
+	// Consume the identifier path.
+	access, path := p.consumeSimpleAccessPath()
+	markupNode.Connect(NodeSmlExpressionTypeOrFunction, access)
+
+	// Consume one (or more attributes)
+	for {
+		// Attributes must start with an identifier or an at sign.
+		if p.isToken(tokenTypeAtSign) {
+			markupNode.Connect(NodeSmlExpressionDecorator, p.consumeMarkupAttribute(NodeTypeSmlDecorator, NodeSmlDecoratorValue))
+		} else if p.isToken(tokenTypeIdentifer) {
+			markupNode.Connect(NodeSmlExpressionAttribute, p.consumeMarkupAttribute(NodeTypeSmlAttribute, NodeSmlAttributeValue))
+		} else {
+			break
+		}
+	}
+
+	// Consume the closing of the tag, with an optional immediate closer.
+	_, isImmediatelyClosed := p.tryConsume(tokenTypeDiv)
+
+	// >
+	if _, ok := p.consume(tokenTypeGreaterThan); !ok {
+		return markupNode
+	}
+
+	// If not immediately closed, check for children and then ensure that we have a matching tag.
+	if isImmediatelyClosed {
+		return markupNode
+	}
+
+	// Consume any children.
+	for {
+		// If we see </, then it is the beginning of a close tag.
+		if p.isToken(tokenTypeLessThan) && p.isNextToken(tokenTypeDiv) {
+			break
+		}
+
+		// If we've reached the end of the file or an error, then just break out.
+		if p.isToken(tokenTypeEOF) || p.isToken(tokenTypeError) {
+			break
+		}
+
+		// Otherwise, consume a child.
+		child, valid := p.consumeMarkupChild()
+		if valid {
+			markupNode.Connect(NodeSmlExpressionChild, child)
+		}
+	}
+
+	// </identifier.path>
+	if _, ok := p.consume(tokenTypeLessThan); !ok {
+		return markupNode
+	}
+
+	if _, ok := p.consume(tokenTypeDiv); !ok {
+		return markupNode
+	}
+
+	_, pathAgain := p.consumeSimpleAccessPath()
+	if pathAgain != path {
+		p.emitError("Expected closing tag for <%s>, found </%s>", path, pathAgain)
+	}
+
+	if _, ok := p.consume(tokenTypeGreaterThan); !ok {
+		return markupNode
+	}
+
+	return markupNode
+}
+
+// consumeMarkupChild consumes a markup child.
+//
+// Forms:
+// <nested mark="up"/>
+// { nestedExpression }
+// some text
+func (p *sourceParser) consumeMarkupChild() (AstNode, bool) {
+	// Check for the beginning of a nested markup tag.
+	if p.isToken(tokenTypeLessThan) {
+		return p.consumeMarkupExpression(), true
+	}
+
+	// Check for a nested expression.
+	if _, ok := p.tryConsume(tokenTypeLeftBrace); ok {
+		expr := p.consumeExpression(consumeExpressionAllowBraces)
+		p.consume(tokenTypeRightBrace)
+		return expr, true
+	}
+
+	// Otherwise, we consume as text until we see a closing tag.
+	textNode := p.startNode(NodeTypeSmlText)
+	defer p.finishNode()
+
+	tokens := p.consumeIncludingIgnoredUntil(tokenTypeLessThan, tokenTypeLeftBrace, tokenTypeEOF, tokenTypeError)
+	text := p.textOf(tokens)
+	if len(strings.TrimSpace(text)) == 0 {
+		return nil, false
+	}
+
+	textNode.Decorate(NodeSmlTextValue, text)
+	return textNode, true
+}
+
+// consumeMarkupAttribute consumes a markup attribute.
+//
+// Forms:
+// someattribute
+// someattribute="somevalue"
+// someattribute={someexpression}
+// some-attribute
+// some-attribute="somevalue"
+// some-attribute={someexpression}
+// @some-attribute
+// @some-attribute="somevalue"
+// @some-attribute={someexpression}
+func (p *sourceParser) consumeMarkupAttribute(kind NodeType, valuePredicate string) AstNode {
+	attributeNode := p.startNode(kind)
+	defer p.finishNode()
+
+	if _, ok := p.tryConsume(tokenTypeAtSign); ok {
+		// Attribute path.
+		access, _ := p.consumeSimpleAccessPath()
+		attributeNode.Connect(NodeSmlDecoratorPath, access)
+	} else {
+		// Attribute name. Can have dashes.
+		var name = ""
+		for {
+			namePiece, _ := p.consumeIdentifier()
+			name = name + namePiece
+
+			if _, ok := p.tryConsume(tokenTypeMinus); !ok {
+				break
+			}
+
+			name = name + "-"
+		}
+
+		attributeNode.Decorate(NodeSmlAttributeName, name)
+	}
+
+	// Check for value after an equals sign, which is optional.
+	if _, ok := p.tryConsume(tokenTypeEquals); !ok {
+		return attributeNode
+	}
+
+	// Check for an expression value, which is either a string literal or an expression value
+	// in curly braces.
+	if _, ok := p.tryConsume(tokenTypeLeftBrace); ok {
+		// Expression value.
+		attributeNode.Connect(valuePredicate, p.consumeExpression(consumeExpressionNoBraces))
+		p.consume(tokenTypeRightBrace)
+	} else {
+		attributeNode.Connect(valuePredicate, p.consumeStringLiteral())
+	}
+
+	return attributeNode
 }
 
 // tryConsumeLambdaExpression tries to consume a lambda expression of one of the following forms:
@@ -2511,13 +2716,7 @@ func (p *sourceParser) tryConsumeLiteralValue() (AstNode, bool) {
 
 	// String literal.
 	case p.isToken(tokenTypeStringLiteral):
-		literalNode := p.startNode(NodeStringLiteralExpression)
-		defer p.finishNode()
-
-		token, _ := p.consume(tokenTypeStringLiteral)
-		literalNode.Decorate(NodeStringLiteralExpressionValue, token.value)
-
-		return literalNode, true
+		return p.consumeStringLiteral(), true
 
 	// Template string literal.
 	case p.isToken(tokenTypeTemplateStringLiteral):
@@ -2549,6 +2748,17 @@ func (p *sourceParser) tryConsumeLiteralValue() (AstNode, bool) {
 	}
 
 	return nil, false
+}
+
+// consumeStringLiteral consumes a string literal.
+func (p *sourceParser) consumeStringLiteral() AstNode {
+	literalNode := p.startNode(NodeStringLiteralExpression)
+	defer p.finishNode()
+
+	token, _ := p.consume(tokenTypeStringLiteral)
+	literalNode.Decorate(NodeStringLiteralExpressionValue, token.value)
+
+	return literalNode
 }
 
 // tryConsumeBaseExpression attempts to consume base expressions (literals, identifiers, parenthesis).

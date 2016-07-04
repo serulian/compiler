@@ -1,0 +1,71 @@
+class SimpleClass {
+	constructor Declare() {
+		return SimpleClass.new()
+	}
+}
+
+class ClassWithProps {
+	constructor Declare(props []{string}) {
+		return ClassWithProps.new()
+	}
+}
+
+function<int> FuncWithProps(props []{any}) {
+	return 42
+}
+
+struct SomePropsStruct {
+	PropA int
+	PropB string
+	PropC bool?
+}
+
+function<SomePropsStruct> WithPropsStruct(props SomePropsStruct) {
+	return props
+}
+
+function<string> WithOptionalChild(props []{any}, child string?) {
+	return child ?? 'default!'
+}
+
+function<string> WithRequiredChild(props []{any}, child string) {
+	return child
+}
+
+function<bool> ChildStream(props []{any}, child int*) {
+	return true
+}
+
+class AnotherClass {}
+class ThirdClass {}
+
+function<AnotherClass> SomeCoolDecorator(decorated SimpleClass, value bool) {
+	return AnotherClass.new()
+}
+
+function<ThirdClass> ChainedDecorator(decorated AnotherClass, value string) {
+	return ThirdClass.new()
+}
+
+function<void> DoSomething(someStream int*) {
+	/* simple */(<SimpleClass />)
+	/* classwithprops */(<ClassWithProps a="hello" b="wassup" />)
+	/* funcwithprops */(<FuncWithProps a="hello" b="wassup" />)
+
+	/* propsstruct */(<WithPropsStruct PropA={123} PropB="hello" PropC />)
+
+	/* optionalchild */(<WithOptionalChild />)
+	/* optionalchild2 */(<WithOptionalChild>hello world!</WithOptionalChild>)
+
+	/* requiredchild */(<WithRequiredChild>hello world!</WithRequiredChild>)
+
+	/* childstream1 */(<ChildStream />)
+	/* childstream2 */(<ChildStream></ChildStream>)
+	/* childstream3 */(<ChildStream>{ 1 }{ 2 }{ 3 }</ChildStream>)
+	/* childstream4 */(<ChildStream>{ value for value in someStream }</ChildStream>)
+
+	/* decorator */(<SimpleClass @SomeCoolDecorator={false} />)
+	/* decorator2 */(<SimpleClass @SomeCoolDecorator />)
+
+	/* chaineddecorator */(<SimpleClass @SomeCoolDecorator @ChainedDecorator="somevalue" />)
+}

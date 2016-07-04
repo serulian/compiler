@@ -1,0 +1,55 @@
+NodeTypeFile
+  end-rune = 38
+  input-source = missing close sml test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 38
+      input-source = missing close sml test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 38
+          input-source = missing close sml test
+          start-rune = 29
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 38
+              input-source = missing close sml test
+              start-rune = 32
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 38
+                  input-source = missing close sml test
+                  start-rune = 32
+                  child-node =>
+                    NodeTypeError
+                      end-rune = 38
+                      error-message = Expected one of: [tokenTypeLessThan], found: tokenTypeEOF
+                      input-source = missing close sml test
+                      start-rune = 39
+                  sml-expression-child =>
+                    NodeTypeSmlText
+                      end-rune = 38
+                      input-source = missing close sml test
+                      sml-text-value = 
+}
+                      start-rune = 37
+                  sml-expression-typefunc =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 35
+                      identexpr-name = foo
+                      input-source = missing close sml test
+                      start-rune = 33
+          child-node =>
+            NodeTypeError
+              end-rune = 38
+              error-message = Expected one of: [tokenTypeRightBrace], found: tokenTypeError
+              input-source = missing close sml test
+              start-rune = 0
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 12
+          input-source = missing close sml test
+          start-rune = 9

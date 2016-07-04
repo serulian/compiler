@@ -225,8 +225,17 @@ var parserTests = []parserTest{
 	{"conditional expr test", "expression/conditional"},
 	{"complex conditional expr test", "expression/complexconditional"},
 	{"loop expr test", "expression/loop"},
-
 	{"slice literal slice expr test", "expression/sliceliteralslice"},
+
+	// Serulian Markup Language expression tests.
+	{"tag only sml test", "sml/tagonly"},
+	{"open and close sml test", "sml/openclose"},
+	{"missing close sml test", "sml/missingclose"},
+	{"mismatch sml test", "sml/mismatch"},
+	{"attributes sml test", "sml/attributes"},
+	{"invalid attribute value sml test", "sml/invalidattributevalue"},
+	{"children sml test", "sml/children"},
+	{"multiple children sml test", "sml/multichild"},
 
 	{"all expr test", "expression/all"},
 	{"complex expr test", "expression/complex"},

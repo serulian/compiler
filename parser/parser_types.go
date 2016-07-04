@@ -82,6 +82,11 @@ const (
 
 	NodeTypeLambdaExpression // A lambda expression
 
+	NodeTypeSmlExpression // <sometag />
+	NodeTypeSmlAttribute  // a="somevalue"
+	NodeTypeSmlDecorator  // @a="somevalue"
+	NodeTypeSmlText       // some text
+
 	NodeTypeConditionalExpression // a if b else c
 	NodeTypeLoopExpression        // a for a in c
 
@@ -353,6 +358,31 @@ const (
 	NodeVariableStatementDeclaredType = "var-declared-type"
 	NodeVariableStatementName         = "named"
 	NodeVariableStatementExpression   = "var-expr"
+
+	//
+	// NodeTypeSmlExpression
+	//
+	NodeSmlExpressionTypeOrFunction = "sml-expression-typefunc"
+	NodeSmlExpressionAttribute      = "sml-expression-attribute"
+	NodeSmlExpressionDecorator      = "sml-expression-decorator"
+	NodeSmlExpressionChild          = "sml-expression-child"
+
+	//
+	// NodeTypeSmlAttribute
+	//
+	NodeSmlAttributeName  = "sml-attribute-name"
+	NodeSmlAttributeValue = "sml-attribute-value"
+
+	//
+	// NodeTypeSmlDecorator
+	//
+	NodeSmlDecoratorPath  = "sml-decorator-path"
+	NodeSmlDecoratorValue = "sml-decorator-value"
+
+	//
+	// NodeTypeSmlText
+	//
+	NodeSmlTextValue = "sml-text-value"
 
 	//
 	// NodeTypeConditionalStatement
