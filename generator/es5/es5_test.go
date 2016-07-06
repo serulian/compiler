@@ -205,6 +205,8 @@ var tests = []generationTest{
 	generationTest{"interface cast success test", "cast", "interfacecast", integrationTestSuccessExpected, ""},
 	generationTest{"generic interface cast success test", "cast", "genericinterfacecast", integrationTestSuccessExpected, ""},
 
+	generationTest{"native value to any cast test", "cast", "nativetoany", integrationTestSuccessExpected, ""},
+
 	generationTest{"simple generator success test", "generator", "simple", integrationTestSuccessExpected, ""},
 	generationTest{"nested generator success test", "generator", "nested", integrationTestSuccessExpected, ""},
 	generationTest{"resource generator success test", "generator", "resource", integrationTestSuccessExpected, ""},
