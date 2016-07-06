@@ -270,8 +270,16 @@ func (eg *expressionGenerator) generateLocalAssignment(localAssign *codedom.Loca
 
 // generateObjectLiteral generates the expression source for a literal object value.
 func (eg *expressionGenerator) generateObjectLiteral(objectLiteral *codedom.ObjectLiteralNode, context generationContext) esbuilder.ExpressionBuilder {
+	// Determine whether we can use the compact form of object literals. The compact form is only
+	// possible if all the keys are string literals.
+	var compactFormAllowed = true
 	entries := make([]interface{}, len(objectLiteral.Entries))
+
 	for index, entry := range objectLiteral.Entries {
+		if _, ok := entry.KeyExpression.(*codedom.LiteralValueNode); !ok {
+			compactFormAllowed = false
+		}
+
 		entries[index] = struct {
 			Key   esbuilder.ExpressionBuilder
 			Value esbuilder.ExpressionBuilder
@@ -283,17 +291,29 @@ func (eg *expressionGenerator) generateObjectLiteral(objectLiteral *codedom.Obje
 		Entries []interface{}
 	}{entries}
 
-	templateStr := `
-		((function() {
-			var obj = {};
-			{{ range $idx, $entry := .Entries }}
-				obj[{{ emit $entry.Key }}] = {{ emit $entry.Value }};
-			{{ end }}
-			return obj;
-		})())
-	`
+	if compactFormAllowed {
+		templateStr := `
+			({
+				{{ range $idx, $entry := .Entries }}
+					{{ emit $entry.Key }}: {{ emit $entry.Value }},
+				{{ end }}
+			})
+		`
 
-	return esbuilder.Template("objectliteral", templateStr, data).AsExpression()
+		return esbuilder.Template("compapctobjectliteral", templateStr, data).AsExpression()
+	} else {
+		templateStr := `
+			((function() {
+				var obj = {};
+				{{ range $idx, $entry := .Entries }}
+					obj[{{ emit $entry.Key }}] = {{ emit $entry.Value }};
+				{{ end }}
+				return obj;
+			})())
+		`
+
+		return esbuilder.Template("expandedobjectliteral", templateStr, data).AsExpression()
+	}
 }
 
 // generateArrayLiteral generates the expression source for a literal array value.

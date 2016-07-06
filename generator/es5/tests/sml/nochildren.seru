@@ -1,0 +1,11 @@
+function<bool> SimpleFunction(props []{string}, children int*) {
+	var found = true
+	for value in children {
+		found = false
+	}
+	return found
+}
+
+function<any> TEST() {
+	return <SimpleFunction />
+}

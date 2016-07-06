@@ -11,7 +11,8 @@ interface __serulian_internal {
 
 [Constructor, NativeOperator=Plus, NativeOperator=Equals]
 interface String {
-	serializer;	
+	serializer;
+	readonly attribute Number length;
 };
 
 [Constructor(any value), NativeOperator=Equals]

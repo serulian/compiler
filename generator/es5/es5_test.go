@@ -205,6 +205,8 @@ var tests = []generationTest{
 	generationTest{"interface cast success test", "cast", "interfacecast", integrationTestSuccessExpected, ""},
 	generationTest{"generic interface cast success test", "cast", "genericinterfacecast", integrationTestSuccessExpected, ""},
 
+	generationTest{"native value to any cast test", "cast", "nativetoany", integrationTestSuccessExpected, ""},
+
 	generationTest{"simple generator success test", "generator", "simple", integrationTestSuccessExpected, ""},
 	generationTest{"nested generator success test", "generator", "nested", integrationTestSuccessExpected, ""},
 	generationTest{"resource generator success test", "generator", "resource", integrationTestSuccessExpected, ""},
@@ -214,9 +216,11 @@ var tests = []generationTest{
 	generationTest{"sml struct props test", "sml", "structprops", integrationTestSuccessExpected, ""},
 	generationTest{"sml mapping props test", "sml", "mappingprops", integrationTestSuccessExpected, ""},
 	generationTest{"sml single child test", "sml", "singlechild", integrationTestSuccessExpected, ""},
+	generationTest{"sml string child test", "sml", "stringchild", integrationTestSuccessExpected, ""},
 	generationTest{"sml optional child test", "sml", "optionalchild", integrationTestSuccessExpected, ""},
 	generationTest{"sml stream child test", "sml", "streamchild", integrationTestSuccessExpected, ""},
 	generationTest{"sml children test", "sml", "children", integrationTestSuccessExpected, ""},
+	generationTest{"sml no children test", "sml", "nochildren", integrationTestSuccessExpected, ""},
 	generationTest{"sml decorator test", "sml", "decorator", integrationTestSuccessExpected, ""},
 }
 

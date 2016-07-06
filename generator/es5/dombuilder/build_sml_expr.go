@@ -81,17 +81,23 @@ func (db *domBuilder) buildSmlExpression(node compilergraph.GraphNode) codedom.E
 
 		case smlScope.HasLabel(proto.ScopeLabel_SML_CHILDREN):
 			// The argument is a stream of the child expressions. Build it as a generator.
-			yielders := make([]codedom.Statement, len(children))
-			for index, child := range children {
-				yielders[index] = codedom.YieldValue(child, child.BasisNode())
-				if index > 0 {
-					yielders[index-1].(codedom.HasNextStatement).SetNext(yielders[index])
+			if len(children) == 0 {
+				// Add an empty generator.
+				declarationArguments = append(declarationArguments,
+					codedom.RuntimeFunctionCall(codedom.EmptyGeneratorDirect, []codedom.Expression{}, node))
+			} else {
+				yielders := make([]codedom.Statement, len(children))
+				for index, child := range children {
+					yielders[index] = codedom.YieldValue(child, child.BasisNode())
+					if index > 0 {
+						yielders[index-1].(codedom.HasNextStatement).SetNext(yielders[index])
+					}
 				}
-			}
 
-			generatorFunc := codedom.FunctionDefinition([]string{}, []string{}, yielders[0], false, codedom.GeneratorFunction, node)
-			generatorExpr := codedom.FunctionCall(generatorFunc, []codedom.Expression{}, node)
-			declarationArguments = append(declarationArguments, codedom.AwaitPromise(generatorExpr, node))
+				generatorFunc := codedom.FunctionDefinition([]string{}, []string{}, yielders[0], false, codedom.GeneratorFunction, node)
+				generatorExpr := codedom.FunctionCall(generatorFunc, []codedom.Expression{}, node)
+				declarationArguments = append(declarationArguments, codedom.AwaitPromise(generatorExpr, node))
+			}
 		default:
 			panic("Unknown SML children scope label")
 		}
@@ -129,5 +135,6 @@ func (db *domBuilder) buildSmlExpression(node compilergraph.GraphNode) codedom.E
 
 // buildSmlText builds the CodeDOM for a SML text literal.
 func (db *domBuilder) buildSmlText(node compilergraph.GraphNode) codedom.Expression {
-	return codedom.LiteralValue(strconv.Quote(node.Get(parser.NodeSmlTextValue)), node)
+	stringValueStr := strconv.Quote(node.Get(parser.NodeSmlTextValue))
+	return codedom.NominalWrapping(codedom.LiteralValue(stringValueStr, node), db.scopegraph.TypeGraph().StringType(), node)
 }
