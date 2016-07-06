@@ -217,6 +217,7 @@ var tests = []generationTest{
 	generationTest{"sml optional child test", "sml", "optionalchild", integrationTestSuccessExpected, ""},
 	generationTest{"sml stream child test", "sml", "streamchild", integrationTestSuccessExpected, ""},
 	generationTest{"sml children test", "sml", "children", integrationTestSuccessExpected, ""},
+	generationTest{"sml no children test", "sml", "nochildren", integrationTestSuccessExpected, ""},
 	generationTest{"sml decorator test", "sml", "decorator", integrationTestSuccessExpected, ""},
 }
 

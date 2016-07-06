@@ -27,6 +27,8 @@ const (
 
 	StatePushResourceFunction RuntimeFunction = "$resources.pushr"
 	StatePopResourceFunction  RuntimeFunction = "$resources.popr"
+
+	EmptyGeneratorDirect RuntimeFunction = "$generator.directempty"
 )
 
 // RuntimeFunctionCallNode represents a call to an internal runtime function defined

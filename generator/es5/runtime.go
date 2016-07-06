@@ -167,6 +167,11 @@ this.Serulian = (function($global) {
     // cast performs a cast of the given value to the given type, throwing on
     // failure.
     'cast': function(value, type) {
+      // Quick check for any.
+      if (type == $t.any) {
+        return value;
+      }
+
       // Quick check to see if cast checking is necessary.
       if (value == null || type == null || value.constructor == type) {
         return value;
@@ -540,6 +545,24 @@ this.Serulian = (function($global) {
 
   // $generator defines helper methods around constructing generators for Streams.
   var $generator = {
+    // directempty returns a new empty generator.
+    'directempty': function() {
+      var stream = {
+        'Next': function() {
+           return $promise.new(function (resolve, reject) {
+             $a['tuple']($t.any, $a['bool']).Build(null, false).then(resolve);
+           });
+        },
+      };
+      return stream;
+    },
+
+    // empty returns a new empty stream via a promise.
+    'empty': function() {
+      return $promise.resolve($generator.directempty());
+    },
+
+    // new returns a stream wrapping the given generator function.
     'new': function (f) {
       var stream = {
         '$is': null,
