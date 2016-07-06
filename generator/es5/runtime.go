@@ -173,7 +173,7 @@ this.Serulian = (function($global) {
       }
 
       // Quick check to see if cast checking is necessary.
-      if (value == null || type == null || value.constructor == type) {
+      if (value == null || type == null || value instanceof type) {
         return value;
       }
       
