@@ -135,5 +135,6 @@ func (db *domBuilder) buildSmlExpression(node compilergraph.GraphNode) codedom.E
 
 // buildSmlText builds the CodeDOM for a SML text literal.
 func (db *domBuilder) buildSmlText(node compilergraph.GraphNode) codedom.Expression {
-	return codedom.LiteralValue(strconv.Quote(node.Get(parser.NodeSmlTextValue)), node)
+	stringValueStr := strconv.Quote(node.Get(parser.NodeSmlTextValue))
+	return codedom.NominalWrapping(codedom.LiteralValue(stringValueStr, node), db.scopegraph.TypeGraph().StringType(), node)
 }

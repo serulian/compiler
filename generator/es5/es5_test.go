@@ -214,6 +214,7 @@ var tests = []generationTest{
 	generationTest{"sml struct props test", "sml", "structprops", integrationTestSuccessExpected, ""},
 	generationTest{"sml mapping props test", "sml", "mappingprops", integrationTestSuccessExpected, ""},
 	generationTest{"sml single child test", "sml", "singlechild", integrationTestSuccessExpected, ""},
+	generationTest{"sml string child test", "sml", "stringchild", integrationTestSuccessExpected, ""},
 	generationTest{"sml optional child test", "sml", "optionalchild", integrationTestSuccessExpected, ""},
 	generationTest{"sml stream child test", "sml", "streamchild", integrationTestSuccessExpected, ""},
 	generationTest{"sml children test", "sml", "children", integrationTestSuccessExpected, ""},

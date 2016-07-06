@@ -218,6 +218,12 @@ type String : NativeString {
 	property<Stringable> MapKey {
 		get { return this }
 	}
+
+	property<int> Length {
+		get {
+			return Integer(NativeString(this).length)
+		}
+	}
 }
 
 @•typealias('mappable')
