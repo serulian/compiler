@@ -1236,6 +1236,10 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"Could not find instance name 'DoSomething' under nominal type MyType", ""},
 
+	scopegraphTest{"nominal shortcut (wrapped in place of base)", "nominal", "wrappedinplaceofbase",
+		[]expectedScopeEntry{},
+		"", ""},
+
 	/////////// structural tests /////////////////
 
 	scopegraphTest{"structural equality test", "structnew", "equality",

@@ -123,9 +123,16 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 		if index < len(childParameters) {
 			// Ensure the type of the argument matches the parameter.
 			argumentType := argumentScope.ResolvedTypeRef(sb.sg.tdg)
-			if serr := argumentType.CheckSubTypeOf(childParameters[index]); serr != nil {
+			serr, exception := argumentType.CheckSubTypeOfWithExceptions(childParameters[index], typegraph.AllowNominalWrappedForData)
+			if serr != nil {
 				sb.decorateWithError(ait.Node(), "Parameter #%v expects type %v: %v", index+1, childParameters[index], serr)
 				isValid = false
+			}
+
+			// If a nominally-wrapped value was used in place of an argument that expects its data type, then
+			// mark the expression as being a shortcut that needs unwrapping during generation.
+			if exception == typegraph.AllowNominalWrappedForData {
+				sb.decorateWithSecondaryLabel(ait.Node(), proto.ScopeLabel_NOMINALLY_SHORTCUT_EXPR)
 			}
 
 			if !childParameters[index].IsNullable() {

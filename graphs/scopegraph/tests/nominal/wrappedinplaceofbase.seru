@@ -1,0 +1,9 @@
+class SomeClass {}
+
+type SomeType : SomeClass {}
+
+function<void> AnotherFunction(sc SomeClass) {}
+
+function<void> DoSomething(st SomeType) {
+	AnotherFunction(st)
+}

@@ -22,6 +22,10 @@ enum ScopeLabel {
 	SML_STREAM_CHILD = 7; // Marks a SML declaration as having a single stream as a child.
 	SML_NO_CHILDREN = 8; // Mark a SML declaration as having no children.
 	SML_CHILDREN = 9; // Mark a SML declaration as having a set of children.
+
+	NOMINALLY_SHORTCUT_EXPR = 10; // Marks an expression of a nominal type being used 
+					 		      // where its root data is expected. This is a special
+							      // allowance as a shortcut for easier working with native APIs.s
 }
 
 message ScopeInfo {

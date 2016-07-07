@@ -64,38 +64,41 @@ func (x *ScopeKind) UnmarshalJSON(data []byte) error {
 type ScopeLabel int32
 
 const (
-	ScopeLabel_STREAM_LOOP         ScopeLabel = 1
-	ScopeLabel_STREAMABLE_LOOP     ScopeLabel = 2
-	ScopeLabel_GENERATOR_STATEMENT ScopeLabel = 3
-	ScopeLabel_SML_FUNCTION        ScopeLabel = 4
-	ScopeLabel_SML_CONSTRUCTOR     ScopeLabel = 5
-	ScopeLabel_SML_SINGLE_CHILD    ScopeLabel = 6
-	ScopeLabel_SML_STREAM_CHILD    ScopeLabel = 7
-	ScopeLabel_SML_NO_CHILDREN     ScopeLabel = 8
-	ScopeLabel_SML_CHILDREN        ScopeLabel = 9
+	ScopeLabel_STREAM_LOOP             ScopeLabel = 1
+	ScopeLabel_STREAMABLE_LOOP         ScopeLabel = 2
+	ScopeLabel_GENERATOR_STATEMENT     ScopeLabel = 3
+	ScopeLabel_SML_FUNCTION            ScopeLabel = 4
+	ScopeLabel_SML_CONSTRUCTOR         ScopeLabel = 5
+	ScopeLabel_SML_SINGLE_CHILD        ScopeLabel = 6
+	ScopeLabel_SML_STREAM_CHILD        ScopeLabel = 7
+	ScopeLabel_SML_NO_CHILDREN         ScopeLabel = 8
+	ScopeLabel_SML_CHILDREN            ScopeLabel = 9
+	ScopeLabel_NOMINALLY_SHORTCUT_EXPR ScopeLabel = 10
 )
 
 var ScopeLabel_name = map[int32]string{
-	1: "STREAM_LOOP",
-	2: "STREAMABLE_LOOP",
-	3: "GENERATOR_STATEMENT",
-	4: "SML_FUNCTION",
-	5: "SML_CONSTRUCTOR",
-	6: "SML_SINGLE_CHILD",
-	7: "SML_STREAM_CHILD",
-	8: "SML_NO_CHILDREN",
-	9: "SML_CHILDREN",
+	1:  "STREAM_LOOP",
+	2:  "STREAMABLE_LOOP",
+	3:  "GENERATOR_STATEMENT",
+	4:  "SML_FUNCTION",
+	5:  "SML_CONSTRUCTOR",
+	6:  "SML_SINGLE_CHILD",
+	7:  "SML_STREAM_CHILD",
+	8:  "SML_NO_CHILDREN",
+	9:  "SML_CHILDREN",
+	10: "NOMINALLY_SHORTCUT_EXPR",
 }
 var ScopeLabel_value = map[string]int32{
-	"STREAM_LOOP":         1,
-	"STREAMABLE_LOOP":     2,
-	"GENERATOR_STATEMENT": 3,
-	"SML_FUNCTION":        4,
-	"SML_CONSTRUCTOR":     5,
-	"SML_SINGLE_CHILD":    6,
-	"SML_STREAM_CHILD":    7,
-	"SML_NO_CHILDREN":     8,
-	"SML_CHILDREN":        9,
+	"STREAM_LOOP":             1,
+	"STREAMABLE_LOOP":         2,
+	"GENERATOR_STATEMENT":     3,
+	"SML_FUNCTION":            4,
+	"SML_CONSTRUCTOR":         5,
+	"SML_SINGLE_CHILD":        6,
+	"SML_STREAM_CHILD":        7,
+	"SML_NO_CHILDREN":         8,
+	"SML_CHILDREN":            9,
+	"NOMINALLY_SHORTCUT_EXPR": 10,
 }
 
 func (x ScopeLabel) Enum() *ScopeLabel {
