@@ -1,5 +1,5 @@
 NodeTypeFile
-  end-rune = 606
+  end-rune = 627
   input-source = all type reference test
   start-rune = 0
   child-node =>
@@ -748,3 +748,18 @@ NodeTypeFile
                       identifieraccess-name = SomeClass
                       input-source = all type reference test
                       start-rune = 585
+    NodeTypeVariable
+      end-rune = 626
+      input-source = all type reference test
+      named = anystream
+      start-rune = 608
+      typemember-declared-type =>
+        NodeTypeStream
+          end-rune = 615
+          input-source = all type reference test
+          start-rune = 612
+          typereference-inner-type =>
+            NodeTypeAny
+              end-rune = 614
+              input-source = all type reference test
+              start-rune = 612

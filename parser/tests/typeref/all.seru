@@ -18,3 +18,4 @@ var<any> anyref
 var<SomeClass<any>> anyinnerref
 var<[]SomeClass> sliceref
 var<[]{SomeClass}> mappingref
+var<any*> anystream
