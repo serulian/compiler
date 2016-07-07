@@ -132,6 +132,11 @@ func (sb *scopeBuilder) scopeCastExpression(node compilergraph.GraphNode, option
 		return newScope().Invalid().GetScope()
 	}
 
+	// Can always cast to any.
+	if castType.IsAny() {
+		return newScope().Valid().Resolving(castType).GetScope()
+	}
+
 	// Ensure the child expression is a subtype of the cast expression OR is a structural subtype.
 	childType := childScope.ResolvedTypeRef(sb.sg.tdg)
 	if childType.CheckStructuralSubtypeOf(castType) {

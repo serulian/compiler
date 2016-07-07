@@ -30,7 +30,7 @@ const (
 	// typeReferenceNoVoid disallows void type references, but allows all others.
 	typeReferenceNoVoid
 
-	// typeReferenceNoSpecialTypes disallows all special forms of type reference: void, all, etc.
+	// typeReferenceNoSpecialTypes disallows all special forms of type reference: void, streams, etc.
 	typeReferenceNoSpecialTypes
 )
 
@@ -1041,14 +1041,6 @@ func (p *sourceParser) consumeTypeReference(option typeReferenceOption) AstNode 
 		return voidNode
 	}
 
-	// Check for the "any" keyword.
-	if p.isKeyword("any") {
-		anyNode := p.startNode(NodeTypeAny)
-		p.consumeKeyword("any")
-		p.finishNode()
-		return anyNode
-	}
-
 	// Check for a slice or mapping.
 	if p.isToken(tokenTypeLeftBracket) {
 		t := p.newLookaheadTracker()
@@ -1088,13 +1080,27 @@ func (p *sourceParser) consumeTypeReference(option typeReferenceOption) AstNode 
 		return parentNode, true
 	}
 
-	found, _ := p.performLeftRecursiveParsing(p.consumeSimpleTypeReference, rightNodeBuilder, nil,
+	found, _ := p.performLeftRecursiveParsing(p.consumeSimpleOrAnyTypeReference, rightNodeBuilder, nil,
 		tokenTypeTimes, tokenTypeQuestionMark)
 	return found
 }
 
-// consumeSimpleTypeReference consumes a type reference that cannot be void, nullable
+// consumeSimpleOrAnyTypeReference consumes a type reference that cannot be void, nullable
 // or streamable.
+func (p *sourceParser) consumeSimpleOrAnyTypeReference() (AstNode, bool) {
+	// Check for the "any" keyword.
+	if p.isKeyword("any") {
+		anyNode := p.startNode(NodeTypeAny)
+		p.consumeKeyword("any")
+		p.finishNode()
+		return anyNode, true
+	}
+
+	return p.consumeSimpleTypeReference()
+}
+
+// consumeSimpleTypeReference consumes a type reference that cannot be void, nullable
+// or streamable or any.
 func (p *sourceParser) consumeSimpleTypeReference() (AstNode, bool) {
 	// Check for 'function'. If found, we consume via a custom path.
 	if p.isKeyword("function") {

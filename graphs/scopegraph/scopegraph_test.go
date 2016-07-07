@@ -270,6 +270,10 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	scopegraphTest{"assign any var test", "var", "assignany",
+		[]expectedScopeEntry{},
+		"", ""},
+
 	scopegraphTest{"var known issue test", "var", "knownissue",
 		[]expectedScopeEntry{},
 		"", ""},
@@ -840,6 +844,7 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"cast interface success test", "castexpr", "success",
 		[]expectedScopeEntry{
 			expectedScopeEntry{"cast", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
+			expectedScopeEntry{"anycast", expectedScope{true, proto.ScopeKind_VALUE, "any", "void"}},
 		},
 		"", ""},
 

@@ -9,4 +9,5 @@ interface ISomeInterface {
 function<void> DoSomething() {
 	var<ISomeInterface> isi = SomeClass.new()
 	/* cast */(isi.(SomeClass))
+	/* anycast */(isi.(any))
 }
