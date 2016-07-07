@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/google/cayley/graph/memstore"
-	"github.com/google/cayley/quad"
+	"github.com/cayleygraph/cayley/graph/memstore"
+	"github.com/cayleygraph/cayley/quad"
 )
 
 // GraphNodeId represents an ID for a node in the graph.

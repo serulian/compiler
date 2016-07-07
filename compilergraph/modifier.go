@@ -9,9 +9,9 @@ import (
 
 	"github.com/serulian/compiler/compilerutil"
 
-	"github.com/google/cayley"
-	"github.com/google/cayley/graph"
-	"github.com/google/cayley/quad"
+	"github.com/cayleygraph/cayley"
+	"github.com/cayleygraph/cayley/graph"
+	"github.com/cayleygraph/cayley/quad"
 )
 
 type GraphNodeInterface interface {

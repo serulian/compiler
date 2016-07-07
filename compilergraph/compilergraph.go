@@ -8,10 +8,10 @@ package compilergraph
 import (
 	"fmt"
 
-	"github.com/google/cayley"
+	"github.com/cayleygraph/cayley"
 )
 
-import _ "github.com/google/cayley/graph/bolt"
+import _ "github.com/cayleygraph/cayley/graph/bolt"
 
 // The length of node IDs in characters.
 const NodeIDLength = 36
