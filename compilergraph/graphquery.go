@@ -7,8 +7,8 @@ package compilergraph
 import (
 	"fmt"
 
-	"github.com/google/cayley"
-	"github.com/google/cayley/graph/path"
+	"github.com/cayleygraph/cayley"
+	"github.com/cayleygraph/cayley/graph/path"
 )
 
 var _ = fmt.Printf

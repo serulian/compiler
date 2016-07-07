@@ -12,10 +12,10 @@ import (
 
 	"github.com/serulian/compiler/compilerutil"
 
-	"github.com/google/cayley"
-	"github.com/google/cayley/graph"
-	"github.com/google/cayley/graph/memstore"
-	"github.com/google/cayley/quad"
+	"github.com/cayleygraph/cayley"
+	"github.com/cayleygraph/cayley/graph"
+	"github.com/cayleygraph/cayley/graph/memstore"
+	"github.com/cayleygraph/cayley/quad"
 )
 
 // GraphLayer represents a single layer in the overall project graph.

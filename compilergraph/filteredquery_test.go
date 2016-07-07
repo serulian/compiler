@@ -9,7 +9,7 @@ package compilergraph
 import (
 	"testing"
 
-	"github.com/google/cayley"
+	"github.com/cayleygraph/cayley"
 	"github.com/serulian/compiler/compilerutil"
 	"github.com/stretchr/testify/assert"
 )
