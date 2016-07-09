@@ -25,9 +25,10 @@ var MEMBER_NODE_TYPES = []compilergraph.TaggedValue{NodeTypeMember, NodeTypeOper
 
 // TypeGraph represents the TypeGraph layer and all its associated helper methods.
 type TypeGraph struct {
-	graph     *compilergraph.SerulianGraph  // The root graph.
-	layer     *compilergraph.GraphLayer     // The TypeGraph layer in the graph.
-	operators map[string]operatorDefinition // The supported operators.
+	graph        *compilergraph.SerulianGraph  // The root graph.
+	layer        *compilergraph.GraphLayer     // The TypeGraph layer in the graph.
+	operators    map[string]operatorDefinition // The supported operators.
+	aliasedTypes map[string]TGTypeDecl         // The aliased types.
 }
 
 // Results represents the results of building a type graph.
@@ -42,9 +43,10 @@ type Result struct {
 func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGraphConstructor) *Result {
 	// Create the type graph.
 	typeGraph := &TypeGraph{
-		graph:     graph,
-		layer:     graph.NewGraphLayer("tdg", NodeTypeTagged),
-		operators: map[string]operatorDefinition{},
+		graph:        graph,
+		layer:        graph.NewGraphLayer("tdg", NodeTypeTagged),
+		operators:    map[string]operatorDefinition{},
+		aliasedTypes: map[string]TGTypeDecl{},
 	}
 
 	// Create a struct to hold the results of the construction.
@@ -78,6 +80,18 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 			}
 		})
 		modifier.Apply()
+	}
+
+	// Built the aliased types map.
+	ait := typeGraph.layer.
+		StartQuery().
+		In(NodePredicateTypeAlias).
+		BuildNodeIterator()
+
+	for ait.Next() {
+		typeDecl := TGTypeDecl{ait.Node(), typeGraph}
+		alias, _ := typeDecl.Alias()
+		typeGraph.aliasedTypes[alias] = typeDecl
 	}
 
 	// Annotate all dependencies.
@@ -393,14 +407,6 @@ func (g *TypeGraph) LookupReturnType(sourceNode compilergraph.GraphNode) (TypeRe
 
 // LookupAliasedType looks up the type with the given alias and returns it, if any.
 func (t *TypeGraph) LookupAliasedType(alias string) (TGTypeDecl, bool) {
-	typeNode, found := t.layer.StartQuery(alias).
-		In(NodePredicateTypeAlias).
-		IsKind(TYPE_NODE_TYPES_TAGGED...).
-		TryGetNode()
-
-	if !found {
-		return TGTypeDecl{}, false
-	}
-
-	return TGTypeDecl{typeNode, t}, true
+	typeDecl, found := t.aliasedTypes[alias]
+	return typeDecl, found
 }
