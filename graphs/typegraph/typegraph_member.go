@@ -26,7 +26,7 @@ type TGMember struct {
 
 // GetMemberForSRGNode returns the TypeGraph member for the given source member node, if any.
 func (g *TypeGraph) GetMemberForSourceNode(node compilergraph.GraphNode) (TGMember, bool) {
-	memberNode, found := g.tryGetMatchingTypeGraphNode(node, NodeTypeMember, NodeTypeOperator)
+	memberNode, found := g.tryGetMatchingTypeGraphNode(node)
 	if !found {
 		return TGMember{}, false
 	}

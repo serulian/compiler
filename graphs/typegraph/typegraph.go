@@ -25,9 +25,10 @@ var MEMBER_NODE_TYPES = []compilergraph.TaggedValue{NodeTypeMember, NodeTypeOper
 
 // TypeGraph represents the TypeGraph layer and all its associated helper methods.
 type TypeGraph struct {
-	graph     *compilergraph.SerulianGraph  // The root graph.
-	layer     *compilergraph.GraphLayer     // The TypeGraph layer in the graph.
-	operators map[string]operatorDefinition // The supported operators.
+	graph        *compilergraph.SerulianGraph  // The root graph.
+	layer        *compilergraph.GraphLayer     // The TypeGraph layer in the graph.
+	operators    map[string]operatorDefinition // The supported operators.
+	aliasedTypes map[string]TGTypeDecl         // The aliased types.
 }
 
 // Results represents the results of building a type graph.
@@ -42,9 +43,10 @@ type Result struct {
 func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGraphConstructor) *Result {
 	// Create the type graph.
 	typeGraph := &TypeGraph{
-		graph:     graph,
-		layer:     graph.NewGraphLayer("tdg", NodeTypeTagged),
-		operators: map[string]operatorDefinition{},
+		graph:        graph,
+		layer:        graph.NewGraphLayer("tdg", NodeTypeTagged),
+		operators:    map[string]operatorDefinition{},
+		aliasedTypes: map[string]TGTypeDecl{},
 	}
 
 	// Create a struct to hold the results of the construction.
@@ -71,13 +73,25 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 	for _, constructor := range constructors {
 		modifier := typeGraph.layer.NewModifier()
 		constructor.DefineTypes(func(moduleSourceNode compilergraph.GraphNode) *typeBuilder {
-			moduleNode := typeGraph.getMatchingTypeGraphNode(moduleSourceNode, NodeTypeModule)
+			moduleNode := typeGraph.getMatchingTypeGraphNode(moduleSourceNode)
 			return &typeBuilder{
 				module:   TGModule{moduleNode, typeGraph},
 				modifier: modifier,
 			}
 		})
 		modifier.Apply()
+	}
+
+	// Built the aliased types map.
+	ait := typeGraph.layer.
+		StartQuery().
+		In(NodePredicateTypeAlias).
+		BuildNodeIterator()
+
+	for ait.Next() {
+		typeDecl := TGTypeDecl{ait.Node(), typeGraph}
+		alias, _ := typeDecl.Alias()
+		typeGraph.aliasedTypes[alias] = typeDecl
 	}
 
 	// Annotate all dependencies.
@@ -98,7 +112,7 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 	for _, constructor := range constructors {
 		modifier := typeGraph.layer.NewModifier()
 		constructor.DefineMembers(func(moduleOrTypeSourceNode compilergraph.GraphNode, isOperator bool) *MemberBuilder {
-			typegraphNode := typeGraph.getMatchingTypeGraphNode(moduleOrTypeSourceNode, TYPEORMODULE_NODE_TYPES...)
+			typegraphNode := typeGraph.getMatchingTypeGraphNode(moduleOrTypeSourceNode)
 
 			var parent TGTypeOrModule = nil
 			if typegraphNode.Kind() == NodeTypeModule {
@@ -121,7 +135,7 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 	for _, constructor := range constructors {
 		modifier := typeGraph.layer.NewModifier()
 		constructor.DecorateMembers(func(memberSourceNode compilergraph.GraphNode) *MemberDecorator {
-			typegraphNode := typeGraph.getMatchingTypeGraphNode(memberSourceNode, MEMBER_NODE_TYPES...)
+			typegraphNode := typeGraph.getMatchingTypeGraphNode(memberSourceNode)
 
 			return &MemberDecorator{
 				modifier:           modifier,
@@ -254,7 +268,7 @@ func (g *TypeGraph) GetTypeDecls(typeKinds ...NodeType) []TGTypeDecl {
 
 // GetTypeOrModuleForSourceNode returns the type or module for the given source node, if any.
 func (g *TypeGraph) GetTypeOrModuleForSourceNode(sourceNode compilergraph.GraphNode) (TGTypeOrModule, bool) {
-	node, found := g.tryGetMatchingTypeGraphNode(sourceNode, TYPEORMODULE_NODE_TYPES...)
+	node, found := g.tryGetMatchingTypeGraphNode(sourceNode)
 	if !found {
 		return TGTypeDecl{}, false
 	}
@@ -393,14 +407,6 @@ func (g *TypeGraph) LookupReturnType(sourceNode compilergraph.GraphNode) (TypeRe
 
 // LookupAliasedType looks up the type with the given alias and returns it, if any.
 func (t *TypeGraph) LookupAliasedType(alias string) (TGTypeDecl, bool) {
-	typeNode, found := t.layer.StartQuery(alias).
-		In(NodePredicateTypeAlias).
-		IsKind(TYPE_NODE_TYPES_TAGGED...).
-		TryGetNode()
-
-	if !found {
-		return TGTypeDecl{}, false
-	}
-
-	return TGTypeDecl{typeNode, t}, true
+	typeDecl, found := t.aliasedTypes[alias]
+	return typeDecl, found
 }
