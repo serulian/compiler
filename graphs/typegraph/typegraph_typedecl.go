@@ -39,7 +39,7 @@ type TGTypeDecl struct {
 
 // GetTypeForSourceNode returns the TypeGraph type decl for the given source type node, if any.
 func (g *TypeGraph) GetTypeForSourceNode(node compilergraph.GraphNode) (TGTypeDecl, bool) {
-	typeNode, found := g.tryGetMatchingTypeGraphNode(node, TYPEORGENERIC_NODE_TYPES...)
+	typeNode, found := g.tryGetMatchingTypeGraphNode(node)
 	if !found {
 		return TGTypeDecl{}, false
 	}

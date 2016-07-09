@@ -73,7 +73,7 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 	for _, constructor := range constructors {
 		modifier := typeGraph.layer.NewModifier()
 		constructor.DefineTypes(func(moduleSourceNode compilergraph.GraphNode) *typeBuilder {
-			moduleNode := typeGraph.getMatchingTypeGraphNode(moduleSourceNode, NodeTypeModule)
+			moduleNode := typeGraph.getMatchingTypeGraphNode(moduleSourceNode)
 			return &typeBuilder{
 				module:   TGModule{moduleNode, typeGraph},
 				modifier: modifier,
@@ -112,7 +112,7 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 	for _, constructor := range constructors {
 		modifier := typeGraph.layer.NewModifier()
 		constructor.DefineMembers(func(moduleOrTypeSourceNode compilergraph.GraphNode, isOperator bool) *MemberBuilder {
-			typegraphNode := typeGraph.getMatchingTypeGraphNode(moduleOrTypeSourceNode, TYPEORMODULE_NODE_TYPES...)
+			typegraphNode := typeGraph.getMatchingTypeGraphNode(moduleOrTypeSourceNode)
 
 			var parent TGTypeOrModule = nil
 			if typegraphNode.Kind() == NodeTypeModule {
@@ -135,7 +135,7 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 	for _, constructor := range constructors {
 		modifier := typeGraph.layer.NewModifier()
 		constructor.DecorateMembers(func(memberSourceNode compilergraph.GraphNode) *MemberDecorator {
-			typegraphNode := typeGraph.getMatchingTypeGraphNode(memberSourceNode, MEMBER_NODE_TYPES...)
+			typegraphNode := typeGraph.getMatchingTypeGraphNode(memberSourceNode)
 
 			return &MemberDecorator{
 				modifier:           modifier,
@@ -268,7 +268,7 @@ func (g *TypeGraph) GetTypeDecls(typeKinds ...NodeType) []TGTypeDecl {
 
 // GetTypeOrModuleForSourceNode returns the type or module for the given source node, if any.
 func (g *TypeGraph) GetTypeOrModuleForSourceNode(sourceNode compilergraph.GraphNode) (TGTypeOrModule, bool) {
-	node, found := g.tryGetMatchingTypeGraphNode(sourceNode, TYPEORMODULE_NODE_TYPES...)
+	node, found := g.tryGetMatchingTypeGraphNode(sourceNode)
 	if !found {
 		return TGTypeDecl{}, false
 	}

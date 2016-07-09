@@ -21,17 +21,16 @@ func (g *TypeGraph) findAllNodes(nodeTypes ...NodeType) compilergraph.GraphQuery
 }
 
 // tryGetMatchingTypeGraphNode attempts to find the type node defined for the given source node, if any.
-func (g *TypeGraph) tryGetMatchingTypeGraphNode(sourceNode compilergraph.GraphNode, allowedKinds ...compilergraph.TaggedValue) (compilergraph.GraphNode, bool) {
+func (g *TypeGraph) tryGetMatchingTypeGraphNode(sourceNode compilergraph.GraphNode) (compilergraph.GraphNode, bool) {
 	return g.layer.
 		StartQuery(string(sourceNode.NodeId)).
 		In(NodePredicateSource).
-		IsKind(allowedKinds...).
 		TryGetNode()
 }
 
 // getMatchingTypeGraphNode finds the type node defined for the given source node or panics.
-func (g *TypeGraph) getMatchingTypeGraphNode(sourceNode compilergraph.GraphNode, allowedKinds ...compilergraph.TaggedValue) compilergraph.GraphNode {
-	resolvedNode, found := g.tryGetMatchingTypeGraphNode(sourceNode, allowedKinds...)
+func (g *TypeGraph) getMatchingTypeGraphNode(sourceNode compilergraph.GraphNode) compilergraph.GraphNode {
+	resolvedNode, found := g.tryGetMatchingTypeGraphNode(sourceNode)
 	if !found {
 		panic(fmt.Sprintf("Type graph node not found in type graph for source node: %v", sourceNode))
 	}

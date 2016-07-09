@@ -100,14 +100,14 @@ type Annotator struct {
 
 // DefineGenericConstraint defines the constraint on a type or type member generic to be that specified.
 func (an Annotator) DefineGenericConstraint(genericSourceNode compilergraph.GraphNode, constraint TypeReference) {
-	genericNode := an.tdg.getMatchingTypeGraphNode(genericSourceNode, NodeTypeGeneric)
+	genericNode := an.tdg.getMatchingTypeGraphNode(genericSourceNode)
 	an.modifier.Modify(genericNode).DecorateWithTagged(NodePredicateGenericSubtype, constraint)
 }
 
 // DefineParentType defines that the given type inherits from the given parent type. For classes, the parent
 // is structurally inherited and for nominal types, it describes conversion.
 func (an Annotator) DefineParentType(typeSourceNode compilergraph.GraphNode, inherits TypeReference) {
-	typeNode := an.tdg.getMatchingTypeGraphNode(typeSourceNode, TYPE_NODE_TYPES_TAGGED...)
+	typeNode := an.tdg.getMatchingTypeGraphNode(typeSourceNode)
 	an.modifier.Modify(typeNode).DecorateWithTagged(NodePredicateParentType, inherits)
 }
 
@@ -604,7 +604,7 @@ func (mb *MemberDecorator) CreateReturnable(sourceNode compilergraph.GraphNode, 
 
 // DefineGenericConstraint defines the constraint on the type member generic to be that specified.
 func (mb *MemberDecorator) DefineGenericConstraint(genericSourceNode compilergraph.GraphNode, constraint TypeReference) {
-	genericNode := mb.tdg.getMatchingTypeGraphNode(genericSourceNode, NodeTypeGeneric)
+	genericNode := mb.tdg.getMatchingTypeGraphNode(genericSourceNode)
 	mb.defineGenericConstraint(genericNode, constraint)
 }
 
