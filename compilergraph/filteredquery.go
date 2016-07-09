@@ -29,7 +29,7 @@ func (fq *FilteredQuery) BuildNodeIterator(predicates ...string) NodeIterator {
 
 	// If there are no nodes found, nothing more to do.
 	if len(nodeIds) == 0 {
-		return &EmptyIterator{}
+		return EmptyIterator{}
 	}
 
 	// Otherwise, create a new query starting from the nodes found and send it
@@ -47,7 +47,7 @@ func (fq *FilteredQuery) BuildNodeIterator(predicates ...string) NodeIterator {
 
 	// If there are no nodes found, nothing more to do.
 	if len(filteredIds) == 0 {
-		return &EmptyIterator{}
+		return EmptyIterator{}
 	}
 
 	// Return a query at just those nodes.

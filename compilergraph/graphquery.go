@@ -19,14 +19,27 @@ type GraphQuery struct {
 	path  *path.Path  // The wrapped Cayley Path.
 	layer *GraphLayer // The layer under which this query was created.
 	tags  []string    // The Cayley tags added.
+
+	singleStartingName string // The single starting name, if any.
+	singlePredicate    string // The single predicate, if any.
+	singleDirection    int    // The single direction (1 for out, -1 for in).
 }
 
 // StartQuery returns a new query starting at the nodes with the given names.
 func (gl *GraphLayer) StartQuery(nodeNames ...string) GraphQuery {
+	singleStartingName := ""
+	if len(nodeNames) == 1 {
+		singleStartingName = nodeNames[0]
+	}
+
 	return GraphQuery{
 		path:  cayley.StartPath(gl.cayleyStore, nodeNames...),
 		layer: gl,
 		tags:  make([]string, 0),
+
+		singleStartingName: singleStartingName,
+		singlePredicate:    "",
+		singleDirection:    0,
 	}
 }
 
@@ -82,10 +95,19 @@ func (gq GraphQuery) With(predicate string) GraphQuery {
 func (gq GraphQuery) In(via ...string) GraphQuery {
 	adjustedVia := gq.layer.getPrefixedPredicates(via...)
 
+	singlePredicate := ""
+	if len(via) == 1 {
+		singlePredicate = adjustedVia[0].(string)
+	}
+
 	return GraphQuery{
 		path:  gq.path.In(adjustedVia...),
 		layer: gq.layer,
 		tags:  gq.tags,
+
+		singleStartingName: gq.singleStartingName,
+		singlePredicate:    singlePredicate,
+		singleDirection:    gq.singleDirection - 1,
 	}
 }
 
@@ -93,10 +115,20 @@ func (gq GraphQuery) In(via ...string) GraphQuery {
 // current nodes, via the given outbound predicate.
 func (gq GraphQuery) Out(via ...string) GraphQuery {
 	adjustedVia := gq.layer.getPrefixedPredicates(via...)
+
+	singlePredicate := ""
+	if len(via) == 1 {
+		singlePredicate = adjustedVia[0].(string)
+	}
+
 	return GraphQuery{
 		path:  gq.path.Out(adjustedVia...),
 		layer: gq.layer,
 		tags:  gq.tags,
+
+		singleStartingName: gq.singleStartingName,
+		singlePredicate:    singlePredicate,
+		singleDirection:    gq.singleDirection + 1,
 	}
 }
 
@@ -181,6 +213,13 @@ func (gq GraphQuery) HasWhere(predicate string, op clientQueryOperation, value s
 // each result being a struct representing the node and the values found outgoing at the
 // given predicates.
 func (gq GraphQuery) BuildNodeIterator(predicates ...string) NodeIterator {
+	if (gq.singleDirection == 1 || gq.singleDirection == -1) && gq.singleStartingName != "" &&
+		gq.singlePredicate != "" && len(predicates) == 0 {
+		// Special case: An iterator from a single starting node in a single direction over
+		// a single predicate with no custom values.
+		return newSimpleDirectionalIterator(gq.layer, gq.singleStartingName, gq.singlePredicate, gq.singleDirection)
+	}
+
 	var updatedPath *path.Path = gq.path
 
 	// Save the predicates the user requested.

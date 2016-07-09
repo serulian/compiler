@@ -34,19 +34,19 @@ type Query interface {
 	TryGetNode() (GraphNode, bool)
 }
 
-func (ei *EmptyIterator) Next() bool {
+func (ei EmptyIterator) Next() bool {
 	return false
 }
 
-func (ei *EmptyIterator) Node() GraphNode {
+func (ei EmptyIterator) Node() GraphNode {
 	return GraphNode{}
 }
 
-func (ei *EmptyIterator) Values() map[string]string {
+func (ei EmptyIterator) Values() map[string]string {
 	return map[string]string{}
 }
 
-func (ei *EmptyIterator) TaggedValue(predicate string, example TaggedValue) interface{} {
+func (ei EmptyIterator) TaggedValue(predicate string, example TaggedValue) interface{} {
 	return nil
 }
 
