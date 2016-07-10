@@ -65,7 +65,7 @@ func (db *domBuilder) buildSmlExpression(node compilergraph.GraphNode) codedom.E
 			Out(parser.NodeSmlExpressionChild).
 			BuildNodeIterator()
 
-		children := db.buildExpressions(cit)
+		children := db.buildExpressions(cit, buildExprNormally)
 
 		switch {
 		case smlScope.HasLabel(proto.ScopeLabel_SML_SINGLE_CHILD):

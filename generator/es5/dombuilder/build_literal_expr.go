@@ -165,7 +165,7 @@ func (db *domBuilder) buildCollectionLiteralExpression(node compilergraph.GraphN
 		Out(valuePredicate).
 		BuildNodeIterator()
 
-	valueExprs := db.buildExpressions(vit)
+	valueExprs := db.buildExpressions(vit, buildExprNormally)
 	return db.buildCollectionInitializerExpression(collectionType, valueExprs, emptyConstructorName, arrayConstructorName, node)
 }
 

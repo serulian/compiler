@@ -15,9 +15,10 @@ type NodeType int
 
 const (
 	// Top-level
-	NodeTypeError         NodeType = iota // A scope error
-	NodeTypeWarning                       // A scope warning
-	NodeTypeResolvedScope                 // Resolved scope for an SRG node
+	NodeTypeError          NodeType = iota // A scope error
+	NodeTypeWarning                        // A scope warning
+	NodeTypeResolvedScope                  // Resolved scope for an SRG node
+	NodeTypeSecondaryLabel                 // A secondary label on an SRG node
 
 	// NodeType is a tagged type.
 	NodeTypeTagged
@@ -29,6 +30,12 @@ const (
 
 	// Decorates a scope node with its scope info.
 	NodePredicateScopeInfo = "scope-info"
+
+	// Connects a secondary label to its SRG source.
+	NodePredicateLabelSource = "secondary-label-source"
+
+	// Decorates a secondary label node with its label value.
+	NodePredicateSecondaryLabelValue = "secondary-label-value"
 
 	// Connects an error or warning to its SRG source.
 	NodePredicateNoticeSource = "scope-notice"

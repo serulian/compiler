@@ -474,6 +474,18 @@ func (tr TypeReference) referenceOrConstraint() TypeReference {
 	return tr
 }
 
+// SubTypingException defines the various exceptions allowed on CheckSubTypeOf
+type SubTypingException int
+
+const (
+	// NoSubTypingExceptions indicates that all the normal subtyping rules apply.
+	NoSubTypingExceptions SubTypingException = iota
+
+	// AllowNominalWrappedForData indicates that a nominally deriving type can be used
+	// in place of its data type.
+	AllowNominalWrappedForData
+)
+
 // CheckSubTypeOf returns whether the type pointed to by this type reference is a subtype
 // of the other type reference: tr <: other
 //
@@ -486,43 +498,50 @@ func (tr TypeReference) referenceOrConstraint() TypeReference {
 //   - A generic is checked by its constraint.
 //   - An external interface is a subtype of another external interface if explicitly declared so.
 func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
+	rerr, _ := tr.CheckSubTypeOfWithExceptions(other, NoSubTypingExceptions)
+	return rerr
+}
+
+// CheckSubTypeOfWithExceptions returns whether the type pointed to by this type reference is a subtype
+// of the other type reference: tr <: other
+func (tr TypeReference) CheckSubTypeOfWithExceptions(other TypeReference, exception SubTypingException) (error, SubTypingException) {
 	// If either reference is void, then they cannot be subtypes, as voids are technically 'unique'.
 	if tr.IsVoid() || other.IsVoid() {
-		return fmt.Errorf("Void types cannot be used interchangeably")
+		return fmt.Errorf("Void types cannot be used interchangeably"), NoSubTypingExceptions
 	}
 
 	// If this reference is to the null type, ensure that the other type is nullable or the 'any' type.
 	if tr.IsNull() {
 		if other.IsAny() || other.IsNullable() {
-			return nil
+			return nil, NoSubTypingExceptions
 		}
 
-		return fmt.Errorf("null cannot be used in place of non-nullable type %v", other)
+		return fmt.Errorf("null cannot be used in place of non-nullable type %v", other), NoSubTypingExceptions
 	}
 
 	// If the other type is null, then it cannot be a subtype.
 	if other.IsNull() {
-		return fmt.Errorf("null cannot be supertype of any other type")
+		return fmt.Errorf("null cannot be supertype of any other type"), NoSubTypingExceptions
 	}
 
 	// If the other is the any type, then we know this to be a subtype.
 	if other.IsAny() {
-		return nil
+		return nil, NoSubTypingExceptions
 	}
 
 	// If the two references refer to the same type, then we know we have a subtype.
 	if tr == other {
-		return nil
+		return nil, NoSubTypingExceptions
 	}
 
 	// If this type is the any type, then it cannot be a subtype.
 	if tr.IsAny() {
-		return fmt.Errorf("Cannot use type 'any' in place of type '%v'", other)
+		return fmt.Errorf("Cannot use type 'any' in place of type '%v'", other), NoSubTypingExceptions
 	}
 
 	// Check nullability.
 	if !other.IsNullable() && tr.IsNullable() {
-		return fmt.Errorf("Nullable type '%v' cannot be used in place of non-nullable type '%v'", tr, other)
+		return fmt.Errorf("Nullable type '%v' cannot be used in place of non-nullable type '%v'", tr, other), NoSubTypingExceptions
 	}
 
 	// Strip out the nullability from the other type.
@@ -536,36 +555,48 @@ func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
 
 	// Check again for equality now that we've removed the nullability.
 	if tr == other || left == other {
-		return nil
+		return nil, NoSubTypingExceptions
 	}
 
 	// If the constraint is 'any', then we know the generic cannot be used.
 	if left.IsAny() {
-		return fmt.Errorf("Cannot use type '%v' in place of type '%v'", tr, other)
+		return fmt.Errorf("Cannot use type '%v' in place of type '%v'", tr, other), NoSubTypingExceptions
 	}
 
 	localType := left.ReferredType()
 	otherType := other.ReferredType()
 
+	localTypeKind := localType.TypeKind()
+	otherTypeKind := otherType.TypeKind()
+
+	// If nominal data subtyping exception is enabled, then special check that this type is
+	// a wrap of the data type.
+	if exception == AllowNominalWrappedForData && localTypeKind == NominalType &&
+		otherTypeKind != NominalType {
+		if left.NominalDataType() == other {
+			return nil, AllowNominalWrappedForData
+		}
+	}
+
 	// If the other type is an external interface, then this type is a subtype if and only if
 	// it is an external interface and explicitly a subtype of the other type or one of its children.
-	if otherType.TypeKind() == ExternalInternalType {
-		if localType.TypeKind() != ExternalInternalType {
-			return fmt.Errorf("'%v' cannot be used in place of external interface '%v'", tr, originalOther)
+	if otherTypeKind == ExternalInternalType {
+		if localTypeKind != ExternalInternalType {
+			return fmt.Errorf("'%v' cannot be used in place of external interface '%v'", tr, originalOther), NoSubTypingExceptions
 		}
 
 		for _, declaredParentType := range localType.ParentTypes() {
 			if perr := declaredParentType.CheckSubTypeOf(other); perr == nil {
-				return nil
+				return nil, NoSubTypingExceptions
 			}
 		}
 
-		return fmt.Errorf("'%v' cannot be used in place of external interface '%v'", tr, originalOther)
+		return fmt.Errorf("'%v' cannot be used in place of external interface '%v'", tr, originalOther), NoSubTypingExceptions
 	}
 
 	// If the other reference's type node is not an interface, then this reference cannot be a subtype.
-	if otherType.TypeKind() != ImplicitInterfaceType {
-		return fmt.Errorf("'%v' cannot be used in place of non-interface '%v'", tr, originalOther)
+	if otherTypeKind != ImplicitInterfaceType {
+		return fmt.Errorf("'%v' cannot be used in place of non-interface '%v'", tr, originalOther), NoSubTypingExceptions
 	}
 
 	localGenerics := tr.Generics()
@@ -586,11 +617,11 @@ func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
 				TryGetNode()
 
 			if !exists {
-				return buildSubtypeMismatchError(tr, left, originalOther, oit.Values()[NodePredicateMemberName])
+				return buildSubtypeMismatchError(tr, left, originalOther, oit.Values()[NodePredicateMemberName]), NoSubTypingExceptions
 			}
 		}
 
-		return nil
+		return nil, NoSubTypingExceptions
 	}
 
 	// Otherwise, build the list of member signatures to compare. We'll have to deserialize them
@@ -602,11 +633,11 @@ func (tr TypeReference) CheckSubTypeOf(other TypeReference) error {
 	for memberName, memberSig := range otherSigs {
 		localSig, exists := localSigs[memberName]
 		if !exists || localSig != memberSig {
-			return buildSubtypeMismatchError(tr, left, originalOther, memberName)
+			return buildSubtypeMismatchError(tr, left, originalOther, memberName), NoSubTypingExceptions
 		}
 	}
 
-	return nil
+	return nil, NoSubTypingExceptions
 }
 
 // buildSubtypeMismatchError returns an error describing the mismatch between the two types for the given

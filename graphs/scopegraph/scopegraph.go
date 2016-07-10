@@ -8,6 +8,7 @@ package scopegraph
 
 import (
 	"log"
+	"strconv"
 	"sync"
 
 	"github.com/serulian/compiler/compilercommon"
@@ -188,6 +189,17 @@ func (sg *ScopeGraph) GetScope(srgNode compilergraph.GraphNode) (proto.ScopeInfo
 
 	scopeInfo := scopeNode.GetTagged(NodePredicateScopeInfo, &proto.ScopeInfo{}).(*proto.ScopeInfo)
 	return *scopeInfo, true
+}
+
+// HasSecondaryLabel returns whether the given SRG node has a secondary scope label of the given kind.
+func (sg *ScopeGraph) HasSecondaryLabel(srgNode compilergraph.GraphNode, label proto.ScopeLabel) bool {
+	_, found := sg.layer.
+		StartQuery(string(srgNode.NodeId)).
+		In(NodePredicateLabelSource).
+		Has(NodePredicateSecondaryLabelValue, strconv.Itoa(int(label))).
+		TryGetNode()
+
+	return found
 }
 
 // resolveSRGTypeRef builds an SRG type reference into a resolved type reference.

@@ -11,6 +11,7 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/codedom"
 	"github.com/serulian/compiler/graphs/scopegraph"
+	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/parser"
 )
 
@@ -100,11 +101,28 @@ func (db *domBuilder) tryGetExpression(node compilergraph.GraphNode, predicate s
 	return db.buildExpression(childNode), true
 }
 
+type buildExprOption int
+
+const (
+	buildExprNormally buildExprOption = iota
+	buildExprCheckNominalShortcutting
+)
+
 // buildExpressions builds expressions for each of the nodes found in the iterator.
-func (db *domBuilder) buildExpressions(iterator compilergraph.NodeIterator) []codedom.Expression {
+func (db *domBuilder) buildExpressions(iterator compilergraph.NodeIterator, option buildExprOption) []codedom.Expression {
 	var expressions = make([]codedom.Expression, 0)
 	for iterator.Next() {
-		expressions = append(expressions, db.buildExpression(iterator.Node()))
+		expr := db.buildExpression(iterator.Node())
+
+		// If requested, check to see if the expression was used under a special exception where
+		// a nominal type is used in place of its root data type. If so, we need to unwrap the
+		// expression value.
+		if option == buildExprCheckNominalShortcutting &&
+			db.scopegraph.HasSecondaryLabel(iterator.Node(), proto.ScopeLabel_NOMINALLY_SHORTCUT_EXPR) {
+			expr = codedom.NominalUnwrapping(expr, iterator.Node())
+		}
+
+		expressions = append(expressions, expr)
 	}
 	return expressions
 }

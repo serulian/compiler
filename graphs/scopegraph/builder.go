@@ -6,6 +6,7 @@ package scopegraph
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
@@ -341,6 +342,13 @@ func (sb *scopeBuilder) decorateWithError(node compilergraph.GraphNode, message 
 	errorNode := sb.modifier.CreateNode(NodeTypeError)
 	errorNode.Decorate(NodePredicateNoticeMessage, fmt.Sprintf(message, args...))
 	errorNode.Connect(NodePredicateNoticeSource, node)
+}
+
+// decorateWithSecondaryLabel decorates an *SRG* node with a secondary scope label.
+func (sb *scopeBuilder) decorateWithSecondaryLabel(node compilergraph.GraphNode, label proto.ScopeLabel) {
+	labelNode := sb.modifier.CreateNode(NodeTypeSecondaryLabel)
+	labelNode.Decorate(NodePredicateSecondaryLabelValue, strconv.Itoa(int(label)))
+	labelNode.Connect(NodePredicateLabelSource, node)
 }
 
 // GetWarnings returns the warnings created during the build pass.
