@@ -1,0 +1,16 @@
+class SomeClass {
+	property<bool> Value {
+		get { return true }
+	}
+}
+
+type SomeNominalType : SomeClass {}
+
+function<bool> DoSomething(sc SomeClass) {
+	return sc.Value
+}
+
+function<any> TEST() {
+	var st = SomeNominalType(SomeClass.new())
+	return DoSomething(st)
+}

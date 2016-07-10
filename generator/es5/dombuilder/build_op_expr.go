@@ -65,7 +65,7 @@ func (db *domBuilder) buildFunctionCall(node compilergraph.GraphNode) codedom.Ex
 		Out(parser.NodeFunctionCallArgument).
 		BuildNodeIterator()
 
-	arguments := db.buildExpressions(ait)
+	arguments := db.buildExpressions(ait, buildExprCheckNominalShortcutting)
 	childExpr := db.buildExpression(childExprNode)
 
 	// If the function call is to a member, then we return a MemberCall.
