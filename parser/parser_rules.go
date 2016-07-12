@@ -1327,10 +1327,12 @@ func (p *sourceParser) consumeStatementBlock(option statementBlockOption) AstNod
 	for {
 		// Check for a label on the statement.
 		var statementLabel string
-
 		if p.isToken(tokenTypeIdentifer) && p.isNextToken(tokenTypeColon) {
-			statementLabel, _ = p.consumeIdentifier()
-			p.consume(tokenTypeColon)
+			// Ensure we don't have a resolve statement.
+			if !p.lookaheadResolveStatement() {
+				statementLabel, _ = p.consumeIdentifier()
+				p.consume(tokenTypeColon)
+			}
 		}
 
 		// Try to consume a statement.
@@ -1415,6 +1417,11 @@ func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
 			return arrowNode, true
 		}
 
+		// Look for a resolve statement.
+		if resolveNode, ok := p.tryConsumeResolveStatement(); ok {
+			return resolveNode, true
+		}
+
 		// Look for an assignment statement.
 		if assignNode, ok := p.tryConsumeAssignStatement(); ok {
 			return assignNode, true
@@ -1443,6 +1450,65 @@ func (p *sourceParser) consumeAssignableExpression() AstNode {
 	} else {
 		return p.consumeIdentifierExpression()
 	}
+}
+
+// tryConsumeResolveStatement attempts to consume a resolve statement.
+//
+// Forms:
+// a := expression
+// a, b := expression
+func (p *sourceParser) tryConsumeResolveStatement() (AstNode, bool) {
+	// To determine if we have a resolve statement, we need to perform some
+	// lookahead, as there can be multiple forms.
+	if !p.lookaheadResolveStatement() {
+		return nil, false
+	}
+
+	resolveNode := p.startNode(NodeTypeResolveStatement)
+	defer p.finishNode()
+
+	resolveNode.Connect(NodeAssignedDestination, p.consumeAssignedValue())
+
+	if _, ok := p.tryConsume(tokenTypeComma); ok {
+		resolveNode.Connect(NodeAssignedRejection, p.consumeAssignedValue())
+	}
+
+	// :=
+	p.consume(tokenTypeColon)
+	p.consume(tokenTypeEquals)
+
+	resolveNode.Connect(NodeResolveStatementSource, p.consumeExpression(consumeExpressionAllowBraces))
+	return resolveNode, true
+}
+
+// lookaheadResolveStatement determines whether there is a resolve statement
+// at the current head of the lexer stream.
+func (p *sourceParser) lookaheadResolveStatement() bool {
+	t := p.newLookaheadTracker()
+
+	// Look for an identifier.
+	if _, ok := t.matchToken(tokenTypeIdentifer); !ok {
+		return false
+	}
+
+	// Check for a comma. If present, we need another identifier.
+	if _, ok := t.matchToken(tokenTypeComma); ok {
+		if _, ok := t.matchToken(tokenTypeIdentifer); !ok {
+			return false
+		}
+	}
+
+	// Find colon and equals.
+	if _, ok := t.matchToken(tokenTypeColon); !ok {
+		return false
+	}
+
+	if _, ok := t.matchToken(tokenTypeEquals); !ok {
+		return false
+	}
+
+	// Found a resolve statement.
+	return true
 }
 
 // tryConsumeAssignStatement attempts to consume an assignment statement.
@@ -1716,6 +1782,23 @@ func (p *sourceParser) consumeForStatement() AstNode {
 
 	forNode.Connect(NodeLoopStatementBlock, p.consumeStatementBlock(statementBlockWithoutTerminator))
 	return forNode
+}
+
+// consumeAssignedValue consumes an identifier as an assigned value.
+//
+// Forms:
+// someName
+func (p *sourceParser) consumeAssignedValue() AstNode {
+	valueNode := p.startNode(NodeTypeAssignedValue)
+	defer p.finishNode()
+
+	name, found := p.consumeIdentifier()
+	if !found {
+		p.emitError("An identifier was expected here for the name of the value assigned")
+	}
+
+	valueNode.Decorate(NodeNamedValueName, name)
+	return valueNode
 }
 
 // consumeNamedValue consumes an identifier as a named value.

@@ -166,6 +166,7 @@ var parserTests = []parserTest{
 	{"labeled statement test", "statement/labeled"},
 
 	{"assignment statement test", "statement/assign"},
+	{"resolve statement test", "statement/resolve"},
 
 	{"no expr loop statement test", "statement/loop_noexpr"},
 	{"expr loop statement test", "statement/loop_expr"},

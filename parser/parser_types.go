@@ -70,12 +70,14 @@ const (
 	NodeTypeVariableStatement    // A variable statement
 	NodeTypeWithStatement        // A with statement
 	NodeTypeMatchStatement       // A match statement
-	NodeTypeAssignStatement      // An assignment state: a = b
+	NodeTypeAssignStatement      // An assignment statement: a = b
+	NodeTypeResolveStatement     // A resolve assignment statement: a := b
 	NodeTypeExpressionStatement  // A statement containing a single expression
 
 	NodeTypeMatchStatementCase // A case of a match statement.
 
-	NodeTypeNamedValue // A named value added to the scope of the parent statement.
+	NodeTypeNamedValue    // A named value added to the scope of the parent statement.
+	NodeTypeAssignedValue // A named value assigned to the scope by a parent statement.
 
 	// Expressions
 	NodeTypeAwaitExpression // An await expression: <- a
@@ -353,6 +355,14 @@ const (
 	NodeAssignStatementValue = "assign-statement-expr"
 
 	//
+	// NodeTypeResolveStatement
+	//
+	NodeResolveStatementSource = "resolve-statement-expr"
+
+	NodeAssignedDestination = "assigned-value-destination"
+	NodeAssignedRejection   = "assigned-value-rejection"
+
+	//
 	// NodeTypeField/NodeTypeVariable/NodeTypeVariableStatement
 	//
 	NodeVariableStatementDeclaredType = "var-declared-type"
@@ -592,7 +602,7 @@ const (
 	NodeIdentifierExpressionName = "identexpr-name"
 
 	//
-	// NodeTypeNamedValue
+	// NodeTypeNamedValue/NodeTypeAssignedValue
 	//
 	NodeNamedValueName = "named"
 )
