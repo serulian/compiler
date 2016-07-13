@@ -1,0 +1,21 @@
+function<int> SomeFunction() {
+	return 2
+}
+
+function<void> DoSomething() {
+	first := 2
+	/* firstref */(first)
+
+	second := SomeFunction()
+	/* secondref */(second)
+
+	thirdresolve, thirdreject := SomeFunction()
+	/* thirdresolveref */(thirdresolve)
+	/* thirdrejectref */(thirdreject)
+
+	fourthresolve, _ := SomeFunction()
+	/* fourthresolveref */(fourthresolve)
+
+	_, fifthreject := SomeFunction()
+	/* fifthrejectref */(fifthreject)
+}

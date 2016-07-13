@@ -106,8 +106,14 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 	case parser.NodeTypeNamedValue:
 		return sb.scopeNamedValue
 
+	case parser.NodeTypeAssignedValue:
+		return sb.scopeAssignedValue
+
 	case parser.NodeTypeArrowStatement:
 		return sb.scopeArrowStatement
+
+	case parser.NodeTypeResolveStatement:
+		return sb.scopeResolveStatement
 
 	// Await expression.
 	case parser.NodeTypeAwaitExpression:

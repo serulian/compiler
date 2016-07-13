@@ -138,8 +138,50 @@ func (sb *scopeBuilder) scopeMatchStatement(node compilergraph.GraphNode, option
 	return newScope().IsValid(isValid).Returning(returnedType, settlesScope).WithLabelSet(labelSet).GetScope()
 }
 
+// scopeAssignedValue scopes a named assigned value exported into the context.
+func (sb *scopeBuilder) scopeAssignedValue(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+	// If the assigned value's name is _, then it is anonymous scope.
+	if node.Get(parser.NodeNamedValueName) == ANONYMOUS_REFERENCE {
+		return newScope().ForAnonymousScope(sb.sg.tdg).GetScope()
+	}
+
+	// If the assigned value is under a rejection, then it is always an error (but nullable, as it
+	// may not be present always).
+	if _, ok := node.TryGetIncoming(parser.NodeAssignedRejection); ok {
+		return newScope().Valid().Assignable(sb.sg.tdg.ErrorTypeReference().AsNullable()).GetScope()
+	}
+
+	// Otherwise, the value is the assignment of the parent statement's expression.
+	parentNode := node.GetIncomingNode(parser.NodeAssignedDestination)
+	switch parentNode.Kind() {
+	case parser.NodeTypeResolveStatement:
+		// The assigned value exported by a resolve statement has the type of its expression.
+		exprScope := sb.getScope(parentNode.GetNode(parser.NodeResolveStatementSource))
+		if !exprScope.GetIsValid() {
+			return newScope().Invalid().GetScope()
+		}
+
+		// If the parent node has a rejection, then the expression may be null.
+		exprType := exprScope.ResolvedTypeRef(sb.sg.tdg)
+		if _, ok := parentNode.TryGet(parser.NodeAssignedRejection); ok {
+			exprType = exprType.AsNullable()
+		}
+
+		return newScope().Valid().Assignable(exprType).GetScope()
+
+	default:
+		panic(fmt.Sprintf("Unknown node exporting an assigned value: %v", parentNode.Kind()))
+		return newScope().Invalid().GetScope()
+	}
+}
+
 // scopeNamedValue scopes a named value exported by a with or loop statement into context.
 func (sb *scopeBuilder) scopeNamedValue(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+	// If the value's name is _, then it is anonymous scope.
+	if node.Get(parser.NodeNamedValueName) == ANONYMOUS_REFERENCE {
+		return newScope().ForAnonymousScope(sb.sg.tdg).GetScope()
+	}
+
 	// Find the parent node creating this named value.
 	parentNode := node.GetIncomingNode(parser.NodeStatementNamedValue)
 
@@ -622,4 +664,19 @@ func (sb *scopeBuilder) scopeArrowStatement(node compilergraph.GraphNode, option
 	}
 
 	return newScope().Valid().GetScope()
+}
+
+// scopeResolveStatement scopes a resolve statement in the SRG.
+func (sb *scopeBuilder) scopeResolveStatement(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+	destinationScope := sb.getScope(node.GetNode(parser.NodeAssignedDestination))
+	sourceScope := sb.getScope(node.GetNode(parser.NodeResolveStatementSource))
+
+	isValid := sourceScope.GetIsValid() && destinationScope.GetIsValid()
+
+	if rejection, ok := node.TryGetNode(parser.NodeAssignedRejection); ok {
+		rejectionScope := sb.getScope(rejection)
+		isValid = isValid && rejectionScope.GetIsValid()
+	}
+
+	return newScope().IsValid(isValid).GetScope()
 }
