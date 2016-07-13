@@ -90,6 +90,16 @@ func (gq GraphQuery) With(predicate string) GraphQuery {
 	}
 }
 
+// InIfKind returns a query that follows the given inbound predicate, but only if the
+// current node has the given kind.
+func (gq GraphQuery) InIfKind(predicate string, kind TaggedValue) GraphQuery {
+	return GraphQuery{
+		path:  gq.path.Clone().Or(gq.IsKind(kind).In(predicate).path),
+		layer: gq.layer,
+		tags:  gq.tags,
+	}
+}
+
 // In updates this Query to represent the nodes that are adjacent to the
 // current nodes, via the given inbound predicate.
 func (gq GraphQuery) In(via ...string) GraphQuery {

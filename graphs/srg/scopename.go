@@ -219,6 +219,9 @@ func (ns SRGNamedScope) ScopeKind() NamedScopeKind {
 	case parser.NodeTypeNamedValue:
 		return NamedScopeValue
 
+	case parser.NodeTypeAssignedValue:
+		return NamedScopeValue
+
 	/* Variable */
 	case parser.NodeTypeVariableStatement:
 		return NamedScopeVariable
@@ -272,6 +275,9 @@ func (ns SRGNamedScope) Name() string {
 		return ns.Get(parser.NodeVariableStatementName)
 
 	case parser.NodeTypeNamedValue:
+		return ns.Get(parser.NodeNamedValueName)
+
+	case parser.NodeTypeAssignedValue:
 		return ns.Get(parser.NodeNamedValueName)
 
 	default:
@@ -407,8 +413,11 @@ func (g *SRG) findAddedNameInScope(name string, node compilergraph.GraphNode) (c
 			parser.NodeLambdaExpressionParameter,
 			parser.NodePredicateTypeMemberGeneric,
 			parser.NodeStatementNamedValue,
+			parser.NodeAssignedDestination,
+			parser.NodeAssignedRejection,
 			parser.NodePredicateChild,
 			parser.NodeStatementBlockStatement).
+			InIfKind(parser.NodeStatementBlockStatement, parser.NodeTypeResolveStatement).
 			HasWhere(parser.NodePredicateStartRune, compilergraph.WhereLTE, startRune).
 			HasWhere(parser.NodePredicateEndRune, compilergraph.WhereGTE, endRune)
 	}
@@ -416,7 +425,8 @@ func (g *SRG) findAddedNameInScope(name string, node compilergraph.GraphNode) (c
 	nit := g.layer.StartQuery(name).
 		In("named").
 		Has(parser.NodePredicateSource, nodeSource).
-		IsKind(parser.NodeTypeParameter, parser.NodeTypeNamedValue, parser.NodeTypeVariableStatement, parser.NodeTypeLambdaParameter, parser.NodeTypeGeneric).
+		IsKind(parser.NodeTypeParameter, parser.NodeTypeNamedValue, parser.NodeTypeAssignedValue,
+		parser.NodeTypeVariableStatement, parser.NodeTypeLambdaParameter, parser.NodeTypeGeneric).
 		FilterBy(containingFilter).
 		BuildNodeIterator(parser.NodePredicateStartRune, parser.NodePredicateEndRune)
 
@@ -429,9 +439,21 @@ func (g *SRG) findAddedNameInScope(name string, node compilergraph.GraphNode) (c
 			panic(err)
 		}
 
-		// If the node is a variable statement, we have do to additional checks (since it isn't block scoped.)
-		if node.Kind() == parser.NodeTypeVariableStatement {
-			endIndex, err := strconv.ParseInt(nit.Values()[parser.NodePredicateEndRune], 10, 64)
+		// If the node is a variable statement or assigned value, we have do to additional checks
+		// (since they are not block scoped but rather statement scoped).
+		if node.Kind() == parser.NodeTypeVariableStatement || node.Kind() == parser.NodeTypeAssignedValue {
+			endRune := nit.Values()[parser.NodePredicateEndRune]
+			if node.Kind() == parser.NodeTypeAssignedValue {
+				if parentNode, ok := node.TryGetIncomingNode(parser.NodeAssignedDestination); ok {
+					endRune = parentNode.Get(parser.NodePredicateEndRune)
+				} else if parentNode, ok := node.TryGetIncomingNode(parser.NodeAssignedRejection); ok {
+					endRune = parentNode.Get(parser.NodePredicateEndRune)
+				} else {
+					panic("Missing assigned parent")
+				}
+			}
+
+			endIndex, err := strconv.ParseInt(endRune, 10, 64)
 			if err != nil {
 				panic(err)
 			}
