@@ -13,6 +13,19 @@ import (
 
 var _ = fmt.Printf
 
+// wrapSynchronousExpression wraps the given synchronous expression and turns it into a promise.
+func (eg *expressionGenerator) wrapSynchronousExpression(syncExpr esbuilder.ExpressionBuilder) esbuilder.ExpressionBuilder {
+	// Wrap the expression in a resolve of a promise. We need the function wrapping to ensure
+	// that if the expression raises an exception, we can handle that case as well.
+	promiseExpr := esbuilder.Snippet(string(codedom.NewPromiseFunction)).Call(
+		esbuilder.Function("",
+			esbuilder.Identifier("$resolve").Call(syncExpr), "$resolve"))
+
+	resultName := eg.generateUniqueName("$result")
+	eg.addAsyncWrapper(promiseExpr, resultName)
+	return esbuilder.Identifier(resultName)
+}
+
 // generateFunctionDefinition generates the code for a function.
 func (eg *expressionGenerator) generateFunctionDefinition(function *codedom.FunctionDefinitionNode, context generationContext) esbuilder.ExpressionBuilder {
 	templateStr := `

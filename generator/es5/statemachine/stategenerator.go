@@ -151,6 +151,9 @@ func (sg *stateGenerator) generateStates(statement codedom.Statement, option gen
 	case *codedom.ArrowPromiseNode:
 		sg.generateArrowPromise(e)
 
+	case *codedom.ResolveExpressionNode:
+		sg.generateResolveExpression(e)
+
 	default:
 		panic(fmt.Sprintf("Unknown CodeDOM statement: %T", statement))
 	}
@@ -257,7 +260,9 @@ func (sg *stateGenerator) snippets() snippets {
 // state machine.
 func (sg *stateGenerator) addTopLevelExpression(expression codedom.Expression) esbuilder.SourceBuilder {
 	// Generate the expression.
-	result := expressiongenerator.GenerateExpression(expression, sg.scopegraph, sg.positionMapper, sg.generateMachine)
+	result := expressiongenerator.GenerateExpression(expression, expressiongenerator.AllowedSync,
+		sg.scopegraph, sg.positionMapper,
+		sg.generateMachine)
 
 	// If the expression generated is asynchronous, then it will have at least one
 	// promise callback. In order to ensure continued execution, we have to wrap

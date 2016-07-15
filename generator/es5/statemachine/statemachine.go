@@ -52,7 +52,7 @@ func GenerateFunctionSource(functionDef FunctionDef, scopegraph *scopegraph.Scop
 		specialization,
 		functionDef.BodyNode())
 
-	result := expressiongenerator.GenerateExpression(domDefinition, scopegraph, positionMapper, sg.generateMachine)
+	result := expressiongenerator.GenerateExpression(domDefinition, expressiongenerator.AllowedSync, scopegraph, positionMapper, sg.generateMachine)
 	return result.Build()
 }
 
@@ -61,5 +61,5 @@ func GenerateExpressionResult(expressionNode compilergraph.GraphNode, scopegraph
 	// Build the CodeDOM for the expression.
 	domDefinition := dombuilder.BuildExpression(scopegraph, expressionNode)
 	sg := buildGenerator(scopegraph, positionMapper, shared.NewTemplater(), false)
-	return expressiongenerator.GenerateExpression(domDefinition, scopegraph, positionMapper, sg.generateMachine)
+	return expressiongenerator.GenerateExpression(domDefinition, expressiongenerator.AllowedSync, scopegraph, positionMapper, sg.generateMachine)
 }

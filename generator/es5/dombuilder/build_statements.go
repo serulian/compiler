@@ -390,3 +390,38 @@ func (db *domBuilder) buildArrowStatement(node compilergraph.GraphNode) (codedom
 	promise := codedom.ArrowPromise(sourceExpr, destinationTarget, rejectionTarget, empty, node)
 	return promise, empty
 }
+
+// buildResolveStatement builds the CodeDOM for a resolve statement.
+func (db *domBuilder) buildResolveStatement(node compilergraph.GraphNode) (codedom.Statement, codedom.Statement) {
+	sourceExpr := db.getExpression(node, parser.NodeResolveStatementSource)
+
+	destinationNode := node.GetNode(parser.NodeAssignedDestination)
+	destinationScope, _ := db.scopegraph.GetScope(destinationNode)
+	destinationName := destinationNode.Get(parser.NodeNamedValueName)
+
+	var destinationStatement codedom.Statement = nil
+	if !destinationScope.GetIsAnonymousReference() {
+		destinationStatement = codedom.ExpressionStatement(codedom.LocalAssignment(destinationName, sourceExpr, node), node)
+	} else {
+		destinationStatement = codedom.ExpressionStatement(sourceExpr, node)
+		destinationName = ""
+	}
+
+	// If the resolve statement has a rejection value, then we need to wrap the source expression
+	// call to catch any rejections *or* exceptions.
+	rejectionNode, hasRejection := node.TryGetNode(parser.NodeAssignedRejection)
+	if hasRejection {
+		rejectionName := rejectionNode.Get(parser.NodeNamedValueName)
+		rejectionScope, _ := db.scopegraph.GetScope(rejectionNode)
+		if rejectionScope.GetIsAnonymousReference() {
+			rejectionName = ""
+		}
+
+		empty := codedom.EmptyStatement(node)
+		return codedom.ResolveExpression(sourceExpr, destinationName, rejectionName, empty, node), empty
+	} else {
+		// Otherwise, we simply execute the expression, optionally assigning it to the
+		// destination variable.
+		return destinationStatement, destinationStatement
+	}
+}
