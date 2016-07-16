@@ -19,8 +19,20 @@ import (
 
 type StateMachineBuilder func(body codedom.StatementOrExpression, isGenerator bool) esbuilder.SourceBuilder
 
+// AsyncOption defines the various options around asynchrounous expression generation.
+type AsyncOption int
+
+const (
+	// AllowedSync indicates that GenerateExpression can return a synchronous expression.
+	AllowedSync AsyncOption = iota
+
+	// EnsureAsync indicates that GenerateExpression must return an asynchronous expression.
+	// If the provided expression is synchronous, it will be wrapped in a new promise.
+	EnsureAsync
+)
+
 // GenerateExpression generates the full ES5 expression for the given CodeDOM expression representation.
-func GenerateExpression(expression codedom.Expression, scopegraph *scopegraph.ScopeGraph,
+func GenerateExpression(expression codedom.Expression, asyncOption AsyncOption, scopegraph *scopegraph.ScopeGraph,
 	positionMapper *compilercommon.PositionMapper, machineBuilder StateMachineBuilder) ExpressionResult {
 
 	generator := &expressionGenerator{
@@ -39,6 +51,13 @@ func GenerateExpression(expression codedom.Expression, scopegraph *scopegraph.Sc
 
 	// Generate the expression into code.
 	generated := generator.generateExpression(expression, generationContext{})
+
+	// Check to see if async is required. If so and the expression is not async,
+	// wrap it in a new promise.
+	if asyncOption == EnsureAsync && len(generator.wrappers) == 0 {
+		generated = generator.wrapSynchronousExpression(generated)
+	}
+
 	return ExpressionResult{generated, generator.wrappers, isPromise}
 }
 

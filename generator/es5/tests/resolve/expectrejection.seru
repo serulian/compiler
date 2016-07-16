@@ -1,0 +1,16 @@
+class SimpleError {
+	property<string> Message {
+		get {
+			return 'yo!'
+		}
+	}
+}
+
+function<bool> DoSomething() {
+	reject SimpleError.new()
+}
+
+function<any> TEST() {
+	a, b := DoSomething()
+	return (a is null) && ((b!).Message == 'yo!')
+}

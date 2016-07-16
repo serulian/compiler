@@ -1,0 +1,8 @@
+function<bool> DoSomething() {
+	return true
+}
+
+function<any> TEST() {
+	a, b := DoSomething()
+	return a
+}

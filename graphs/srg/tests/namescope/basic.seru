@@ -51,3 +51,10 @@ function<void> VarReference() {
 	var someVar = /* somevarexpr */2
 	var anotherVar = function () /* funcclosure */{}
 }
+
+function<void> ResolveReference() {
+	a, b := /* resolvesource */ 1234
+	if true /* afterresolve */{
+
+	}
+}

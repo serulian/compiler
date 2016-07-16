@@ -8,6 +8,7 @@ import (
 	"fmt"
 
 	"github.com/serulian/compiler/generator/es5/codedom"
+	"github.com/serulian/compiler/generator/es5/expressiongenerator"
 	"github.com/serulian/compiler/generator/escommon/esbuilder"
 )
 
@@ -224,6 +225,77 @@ func (sg *stateGenerator) generateArrowPromise(arrowPromise *codedom.ArrowPromis
 
 	template := esbuilder.Template("arrowpromise", templateStr, generatingItem{data, sg})
 	currentState.pushBuilt(sg.addMapping(template, arrowPromise))
+}
+
+// generateResolveExpression generates the code for an expression resolution.
+func (sg *stateGenerator) generateResolveExpression(resolveExpression *codedom.ResolveExpressionNode) {
+	// Generate the resolved expression, ensuring that it is asynchronous to ensure it becomes
+	// a Prommise.
+	result := expressiongenerator.GenerateExpression(resolveExpression.ChildExpression,
+		expressiongenerator.EnsureAsync,
+		sg.scopegraph, sg.positionMapper,
+		sg.generateMachine)
+
+	var resolutionName = ""
+	var rejectionName = ""
+
+	if resolveExpression.ResolutionName != "" {
+		resolutionName = sg.addVariable(resolveExpression.ResolutionName)
+	}
+
+	if resolveExpression.RejectionName != "" {
+		rejectionName = sg.addVariable(resolveExpression.RejectionName)
+	}
+
+	// Save the current state and create a new state to jump to once the expression's
+	// promise has resolved or rejected.
+	currentState := sg.currentState
+	sg.generateStates(resolveExpression.Target, generateNewState)
+
+	// Build the expression with an assignment of the resolved expression value assigned to
+	// the resolution variable (if any) and then a jump to the post-resolution state.
+	jumpToTarget := sg.jumpToStatement(resolveExpression.Target)
+	resolveData := struct {
+		ResolutionName string
+		JumpToTarget   string
+		Snippets       snippets
+		IsGenerator    bool
+	}{resolutionName, jumpToTarget, sg.snippets(), sg.isGeneratorFunction}
+
+	wrappingTemplateStr := `
+		{{ if .Data.ResolutionName }}
+		{{ .Data.ResolutionName }} = {{ emit .ResultExpr }};
+		{{ end }}
+
+		{{ .Data.JumpToTarget }}
+		{{ .Data.Snippets.Continue .Data.IsGenerator }}
+	`
+
+	promise := result.BuildWrapped(wrappingTemplateStr, resolveData)
+
+	// Similarly, add a .catch onto the Promise with an assignment of the rejected error (if any)
+	// to the rejection variable (if any) and then a jump to the post-rejection state.
+	rejectData := struct {
+		Promise       esbuilder.SourceBuilder
+		RejectionName string
+		JumpToTarget  string
+		Snippets      snippets
+		IsGenerator   bool
+	}{promise, rejectionName, jumpToTarget, sg.snippets(), sg.isGeneratorFunction}
+
+	catchTemplateStr := `
+		({{ emit .Promise }}).catch(function($rejected) {
+			{{ if .RejectionName }}
+			{{ .RejectionName }} = $rejected;
+			{{ end }}
+
+			{{ .JumpToTarget }}
+			{{ .Snippets.Continue .IsGenerator }}
+		});
+		return;
+	`
+
+	currentState.pushBuilt(esbuilder.Template("resolvecatch", catchTemplateStr, rejectData))
 }
 
 // jumpToStatement generates an unconditional jump to the target statement.

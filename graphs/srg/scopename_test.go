@@ -158,6 +158,31 @@ var nameScopeTests = []nameScopeTest{
 	nameScopeTest{"aliased external member test", "external", "somefunction", "CoolMember",
 		expectedScopeResult{true, true, parser.NodeTypeTagged, "AnotherMember", NamedScopeValue},
 	},
+
+	// Resolve "CoolMember" under the function.
+	nameScopeTest{"aliased external member test", "external", "somefunction", "CoolMember",
+		expectedScopeResult{true, true, parser.NodeTypeTagged, "AnotherMember", NamedScopeValue},
+	},
+
+	// Attempt to resolve "a" under the resolve statement.
+	nameScopeTest{"resolved value under source test", "basic", "resolvesource", "a",
+		expectedScopeResult{false, false, parser.NodeTypeTagged, "", NamedScopeVariable},
+	},
+
+	// Attempt to resolve "b" under the resolve statement.
+	nameScopeTest{"resolved rejection under source test", "basic", "resolvesource", "b",
+		expectedScopeResult{false, false, parser.NodeTypeTagged, "", NamedScopeVariable},
+	},
+
+	// Resolve "a" under a statement after the resolve statement.
+	nameScopeTest{"resolved value after source test", "basic", "afterresolve", "a",
+		expectedScopeResult{true, false, parser.NodeTypeAssignedValue, "a", NamedScopeValue},
+	},
+
+	// Attempt to resolve "b" under the resolve statement.
+	nameScopeTest{"resolved rejection after source test", "basic", "afterresolve", "b",
+		expectedScopeResult{true, false, parser.NodeTypeAssignedValue, "b", NamedScopeValue},
+	},
 }
 
 func TestNameScoping(t *testing.T) {

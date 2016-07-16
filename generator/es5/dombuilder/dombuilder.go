@@ -392,6 +392,9 @@ func (db *domBuilder) buildStatements(node compilergraph.GraphNode) (codedom.Sta
 	case parser.NodeTypeArrowStatement:
 		return db.buildArrowStatement(node)
 
+	case parser.NodeTypeResolveStatement:
+		return db.buildResolveStatement(node)
+
 	default:
 		panic(fmt.Sprintf("Unknown SRG statement node: %s", node.Kind()))
 		return nil, nil

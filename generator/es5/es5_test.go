@@ -212,6 +212,12 @@ var tests = []generationTest{
 	generationTest{"nested generator success test", "generator", "nested", integrationTestSuccessExpected, ""},
 	generationTest{"resource generator success test", "generator", "resource", integrationTestSuccessExpected, ""},
 
+	generationTest{"simple resolve statement test", "resolve", "simple", integrationTestSuccessExpected, ""},
+	generationTest{"handle rejection resolve statement test", "resolve", "resolvereject", integrationTestSuccessExpected, ""},
+	generationTest{"async resolve statement test", "resolve", "async", integrationTestSuccessExpected, ""},
+	generationTest{"expect rejection resolve statement test", "resolve", "expectrejection", integrationTestSuccessExpected, ""},
+	generationTest{"cast rejection resolve statement test", "resolve", "castrejection", integrationTestSuccessExpected, ""},
+
 	generationTest{"sml simple function test", "sml", "simplefunc", integrationTestSuccessExpected, ""},
 	generationTest{"sml simple class test", "sml", "simpleclass", integrationTestSuccessExpected, ""},
 	generationTest{"sml struct props test", "sml", "structprops", integrationTestSuccessExpected, ""},

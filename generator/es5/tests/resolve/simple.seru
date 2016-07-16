@@ -1,0 +1,4 @@
+function<any> TEST() {
+	a := true
+	return a
+}

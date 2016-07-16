@@ -432,6 +432,22 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	/////////// Resolve ///////////
+
+	scopegraphTest{"resolve statement success test", "resolve", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"firstref", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+			expectedScopeEntry{"secondref", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+
+			expectedScopeEntry{"thirdresolveref", expectedScope{true, proto.ScopeKind_VALUE, "Integer?", "void"}},
+			expectedScopeEntry{"thirdrejectref", expectedScope{true, proto.ScopeKind_VALUE, "Error?", "void"}},
+
+			expectedScopeEntry{"fourthresolveref", expectedScope{true, proto.ScopeKind_VALUE, "Integer?", "void"}},
+
+			expectedScopeEntry{"fifthrejectref", expectedScope{true, proto.ScopeKind_VALUE, "Error?", "void"}},
+		},
+		"", ""},
+
 	/////////// Assign ///////////
 
 	scopegraphTest{"assign unknown name test", "assign", "unknown", []expectedScopeEntry{},

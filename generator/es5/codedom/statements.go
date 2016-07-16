@@ -197,3 +197,25 @@ func ArrowPromise(childExpr Expression, resolution Expression, rejection Express
 }
 
 func (j *ArrowPromiseNode) IsJump() bool { return true }
+
+// ResolveExpressionNode represents a resolution of an arbitrary expression, with assignment
+// to either a resolved value or a rejected value.
+type ResolveExpressionNode struct {
+	statementBase
+	ChildExpression Expression // The child expression to be executed.
+	ResolutionName  string     // Variable to which the resolution value is assigned, if any.
+	RejectionName   string     // Variable to which the rejection value is assigned, if any.
+	Target          Statement  // The statement to which the await will jump.
+}
+
+func ResolveExpression(childExpr Expression, resolutionName string, rejectionName string, targetState Statement, basis compilergraph.GraphNode) Statement {
+	return &ResolveExpressionNode{
+		statementBase{domBase{basis}, false},
+		childExpr,
+		resolutionName,
+		rejectionName,
+		targetState,
+	}
+}
+
+func (j *ResolveExpressionNode) IsJump() bool { return true }

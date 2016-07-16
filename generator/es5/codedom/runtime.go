@@ -21,6 +21,7 @@ const (
 	UnboxFunction              RuntimeFunction = "$t.unbox"
 	NullableInvokeFunction     RuntimeFunction = "$t.nullableinvoke"
 
+	NewPromiseFunction          RuntimeFunction = "$promise.new"
 	ResolvePromiseFunction      RuntimeFunction = "$promise.resolve"
 	TranslatePromiseFunction    RuntimeFunction = "$promise.translate"
 	ShortCircuitPromiseFunction RuntimeFunction = "$promise.shortcircuit"
