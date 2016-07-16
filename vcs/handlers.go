@@ -20,6 +20,8 @@ type VCSKind int
 const (
 	VCSKindUnknown VCSKind = iota // an unknown kind of VCS
 	VCSKindGit                    // Git
+
+	VCSKindFakeGit // Fake git for testing only
 )
 
 // vcsCheckoutFn is a function for performing a full checkout.
@@ -149,10 +151,38 @@ var vcsById = map[string]vcsHandler{
 			return len(out.String()) > 0
 		},
 	},
+
+	"___fake__git___": vcsHandler{
+		kind: VCSKindFakeGit,
+
+		checkout: func(vcsPath vcsPackagePath, discovery VCSUrlInformation, checkoutDir string) (string, error) {
+			panic("Fake git!")
+		},
+
+		inspect: func(checkoutDir string) (string, error) {
+			panic("Fake git!")
+		},
+
+		detect: func(checkoutDir string) bool {
+			gitDirectory := path.Join(checkoutDir, "_dot_git")
+			_, err := os.Stat(gitDirectory)
+			return !os.IsNotExist(err)
+		},
+
+		update: func(checkoutDir string) error {
+			panic("Fake git!")
+		},
+
+		check: func(checkoutDir string) bool {
+			panic("Fake git!")
+		},
+	},
 }
 
 var vcsByKind = map[VCSKind]vcsHandler{
 	VCSKindGit: vcsById["git"],
+
+	VCSKindFakeGit: vcsById["___fake__git___"],
 }
 
 // detectHandler attempts to detect which VCS handler is applicable to the given checkout

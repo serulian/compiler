@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/serulian/compiler/compilercommon"
+	"github.com/stretchr/testify/assert"
 )
 
 var _ = fmt.Printf
@@ -79,6 +80,65 @@ func TestBasicLoading(t *testing.T) {
 			t.Errorf("Expected package %s in packages map", key)
 		}
 	}
+}
+
+func TestRelativeImportSuccess(t *testing.T) {
+	tt := &testTracker{
+		pathsImported: map[string]bool{},
+	}
+
+	loader := NewPackageLoader("tests/relative/entrypoint.json", []string{}, tt.createHandler())
+	result := loader.Load()
+	if !result.Status || len(result.Errors) > 0 {
+		t.Errorf("Expected success, found: %v", result.Errors)
+	}
+
+	assertFileImported(t, tt, "tests/relative/entrypoint.json")
+	assertFileImported(t, tt, "tests/relative/subdir/subfile.json")
+	assertFileImported(t, tt, "tests/relative/relativelyimported.json")
+
+	// Ensure that the PATH map contains an entry for package imported.
+	for key := range tt.pathsImported {
+		if _, ok := result.PackageMap.Get("", key); !ok {
+			t.Errorf("Expected package %s in packages map", key)
+		}
+	}
+}
+
+func TestRelativeImportFailureAboveVCS(t *testing.T) {
+	tt := &testTracker{
+		pathsImported: map[string]bool{},
+	}
+
+	loader := NewPackageLoader("tests/vcsabove/fail.json", []string{}, tt.createHandler())
+	result := loader.Load()
+	if !assert.False(t, result.Status, "Expected failure for relative import VCS above") {
+		return
+	}
+
+	if !assert.Equal(t, 1, len(result.Errors), "Expected one error for relative import VCS above") {
+		return
+	}
+
+	assert.Equal(t, "Import of package '../basic/foo' crosses VCS boundary at package 'tests/vcsabove'", result.Errors[0].Error(), "Error message mismatch")
+}
+
+func TestRelativeImportFailureBelowVCS(t *testing.T) {
+	tt := &testTracker{
+		pathsImported: map[string]bool{},
+	}
+
+	loader := NewPackageLoader("tests/vcsbelow/fail.json", []string{}, tt.createHandler())
+	result := loader.Load()
+	if !assert.False(t, result.Status, "Expected failure for relative import VCS below") {
+		return
+	}
+
+	if !assert.Equal(t, 1, len(result.Errors), "Expected one error for relative import VCS below") {
+		return
+	}
+
+	assert.Equal(t, "Import of package 'somesubdir' crosses VCS boundary at package 'tests/vcsbelow/somesubdir'", result.Errors[0].Error(), "Error message mismatch")
 }
 
 func TestUnknownPath(t *testing.T) {
