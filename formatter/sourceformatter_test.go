@@ -52,6 +52,7 @@ var goldenTests = []goldenTest{
 	{"unary precedence test", "unary"},
 	{"binary precedence test", "binary"},
 	{"imports test", "imports"},
+	{"relative imports test", "relative"},
 	{"template strings test", "templatestrings"},
 }
 

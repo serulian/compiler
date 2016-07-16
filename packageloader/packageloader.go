@@ -393,6 +393,31 @@ func (p *PackageLoader) conductParsing(sourceFile pathInformation) {
 	handler.Parse(inputSource, string(contents), p.handleImport)
 }
 
+// verifyNoVCSBoundaryCross does a check to ensure that walking from the given start path
+// to the given end path does not cross a VCS boundary. If it does, an error is returned.
+func (p *PackageLoader) verifyNoVCSBoundaryCross(startPath string, endPath string, title string, importInformation PackageImport) *compilercommon.SourceError {
+	var checkPath = startPath
+	for {
+		if checkPath == endPath {
+			return nil
+		}
+
+		if vcs.IsVCSRootDirectory(checkPath) {
+			err := compilercommon.SourceErrorf(importInformation.SourceLocation,
+				"Import of %s '%s' crosses VCS boundary at package '%s'", title,
+				importInformation.Path, checkPath)
+			return &err
+		}
+
+		nextPath := path.Dir(checkPath)
+		if checkPath == nextPath {
+			return nil
+		}
+
+		checkPath = nextPath
+	}
+}
+
 // handleImport queues an import found in a source file.
 func (p *PackageLoader) handleImport(importInformation PackageImport) string {
 	handler, hasHandler := p.handlers[importInformation.Kind]
@@ -407,12 +432,44 @@ func (p *PackageLoader) handleImport(importInformation PackageImport) string {
 		// VCS paths get added directly.
 		return p.pushPath(pathVCSPackage, importInformation.Kind, importInformation.Path, importInformation.SourceLocation)
 	} else {
-		// Otherwise, check the path to see if it exists as a single source file. If so, we add it
+		// Check the path to see if it exists as a single source file. If so, we add it
 		// as a source file instead of a local package.
-		dirPath := path.Join(path.Dir(sourcePath), importInformation.Path)
+		currentDirectory := path.Dir(sourcePath)
+		dirPath := path.Join(currentDirectory, importInformation.Path)
 		filePath := dirPath + handler.PackageFileExtension()
 
-		if ok, _ := exists(filePath); ok {
+		var importedDirectoryPath = dirPath
+		var title = "package"
+
+		// Determine if path refers to a single source file. If so, it is imported rather than
+		// the entire directory.
+		isSourceFile, _ := exists(filePath)
+		if isSourceFile {
+			title = "module"
+			importedDirectoryPath = path.Dir(filePath)
+		}
+
+		// Check to ensure we are not crossing a VCS boundary.
+		if currentDirectory != importedDirectoryPath {
+			// If the imported directory is underneath the current directory, we need to walk upward.
+			if strings.HasPrefix(importedDirectoryPath, currentDirectory) {
+				err := p.verifyNoVCSBoundaryCross(importedDirectoryPath, currentDirectory, title, importInformation)
+				if err != nil {
+					p.errors <- *err
+					return ""
+				}
+			} else {
+				// Otherwise, we walk upward from the current directory to the imported directory.
+				err := p.verifyNoVCSBoundaryCross(currentDirectory, importedDirectoryPath, title, importInformation)
+				if err != nil {
+					p.errors <- *err
+					return ""
+				}
+			}
+		}
+
+		// Push the imported path.
+		if isSourceFile {
 			return p.pushPath(pathSourceFile, handler.Kind(), filePath, importInformation.SourceLocation)
 		} else {
 			return p.pushPath(pathLocalPackage, handler.Kind(), dirPath, importInformation.SourceLocation)

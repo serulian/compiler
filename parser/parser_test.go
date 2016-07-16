@@ -92,6 +92,10 @@ var parserTests = []parserTest{
 	{"multiple imports test", "import/multiple"},
 	{"complex imports test", "import/complex"},
 	{"multiple imports under package test", "import/multiple_package"},
+	{"relative import test", "import/relative"},
+	{"relative import test 2", "import/relative2"},
+	{"absolute import test", "import/absolute"},
+	{"empty import test", "import/empty"},
 
 	// Import failure tests.
 	{"missing source import test", "import/missing_source"},

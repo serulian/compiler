@@ -10,7 +10,6 @@ import (
 	"bytes"
 	"fmt"
 	"strconv"
-	"strings"
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/packageloader"
@@ -98,24 +97,24 @@ func buildParser(builder NodeBuilder, importReporter packageloader.ImportHandler
 }
 
 // reportImport reports an import of the given token value as a path.
-func (p *sourceParser) reportImport(value string, kind string) string {
+func (p *sourceParser) reportImport(value string, kind string) (string, error) {
 	if p.importReporter == nil {
-		return ""
+		return "", nil
 	}
 
 	sal := compilercommon.NewSourceAndLocation(p.source, int(p.currentToken.position))
 
-	if strings.HasPrefix(value, "\"") {
-		return p.importReporter(packageloader.PackageImport{kind, value[1 : len(value)-1], packageloader.ImportTypeVCS, sal})
-	} else if strings.HasPrefix(value, "`") {
-		if strings.Contains(value, "/") {
-			return p.importReporter(packageloader.PackageImport{kind, value[1 : len(value)-1], packageloader.ImportTypeVCS, sal})
-		} else {
-			return p.importReporter(packageloader.PackageImport{kind, value[1 : len(value)-1], packageloader.ImportTypeLocal, sal})
-		}
-	} else {
-		return p.importReporter(packageloader.PackageImport{kind, value, packageloader.ImportTypeLocal, sal})
+	importPath, importType, err := ParseImportValue(value)
+	if err != nil {
+		return "", err
 	}
+
+	var packageImportType = packageloader.ImportTypeLocal
+	if importType == ParsedImportTypeVCS {
+		packageImportType = packageloader.ImportTypeVCS
+	}
+
+	return p.importReporter(packageloader.PackageImport{kind, importPath, packageImportType, sal}), nil
 }
 
 // createNode creates a new AstNode and returns it.

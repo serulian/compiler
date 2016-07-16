@@ -20,6 +20,13 @@ import (
 	"path"
 )
 
+// IsVCSRootDirectory returns true if the given local file system path is a VCS root directory.
+// Note that this method will return false if the path does not exist locally.
+func IsVCSRootDirectory(localPath string) bool {
+	_, hasHandler := detectHandler(localPath)
+	return hasHandler
+}
+
 // PerformVCSCheckout performs the checkout and updating of the given VCS path and returns
 // the local system directory at which the package was checked out.
 //
