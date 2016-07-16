@@ -287,16 +287,26 @@ func (p *sourceParser) consumeImportSource(importNode AstNode) (string, bool) {
 	if token.kind == tokenTypeIdentifer && p.isToken(tokenTypeTemplateStringLiteral) {
 		sourceToken, _ := p.consume(tokenTypeTemplateStringLiteral)
 
-		importNode.Decorate(NodeImportPredicateKind, token.value)
-		importNode.Decorate(NodeImportPredicateLocation, p.reportImport(sourceToken.value, token.value))
-		importNode.Decorate(NodeImportPredicateSource, sourceToken.value)
+		importLocation, err := p.reportImport(sourceToken.value, token.value)
+		if err != nil {
+			p.emitError("%s", err)
+		} else {
+			importNode.Decorate(NodeImportPredicateKind, token.value)
+			importNode.Decorate(NodeImportPredicateLocation, importLocation)
+			importNode.Decorate(NodeImportPredicateSource, sourceToken.value)
+		}
 
 		return "", true
 	}
 
 	// Otherwise, decorate the node with its source.
-	importNode.Decorate(NodeImportPredicateLocation, p.reportImport(token.value, ""))
-	importNode.Decorate(NodeImportPredicateSource, token.value)
+	importLocation, err := p.reportImport(token.value, "")
+	if err != nil {
+		p.emitError("%s", err)
+	} else {
+		importNode.Decorate(NodeImportPredicateLocation, importLocation)
+		importNode.Decorate(NodeImportPredicateSource, token.value)
+	}
 
 	if token.kind == tokenTypeIdentifer {
 		return token.value, true
@@ -327,7 +337,7 @@ func (p *sourceParser) consumeImportAlias(importPackageNode AstNode, sourceName 
 		importPackageNode.Decorate(namePredicate, named)
 	} else {
 		if sourceName == "" {
-			p.emitError("Remote package import requires an 'as' clause")
+			p.emitError("Path package import requires an 'as' clause")
 			return false
 		} else {
 			importPackageNode.Decorate(namePredicate, sourceName)
