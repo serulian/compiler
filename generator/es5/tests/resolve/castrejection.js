@@ -11,7 +11,7 @@ $module('castrejection', function () {
           case 0:
             somevalue = $t.box('hello', $g.____testlib.basictypes.String);
             $promise.new(function ($resolve) {
-              $resolve($t.cast(somevalue, $g.____testlib.basictypes.Integer));
+              $resolve($t.cast(somevalue, $g.____testlib.basictypes.Integer, false));
             }).then(function ($result0) {
               a = $result0;
               $current = 1;

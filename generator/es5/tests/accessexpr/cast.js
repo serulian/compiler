@@ -37,7 +37,7 @@ $module('cast', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $t.cast(i, $g.cast.SomeClass).Result().then(function ($result0) {
+            $t.cast(i, $g.cast.SomeClass, false).Result().then(function ($result0) {
               $result = $result0;
               $current = 1;
               $continue($resolve, $reject);

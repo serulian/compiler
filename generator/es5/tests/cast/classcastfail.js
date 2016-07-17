@@ -64,7 +64,7 @@ $module('classcastfail', function () {
 
           case 2:
             ac = $result;
-            $t.cast(ac, $g.classcastfail.SomeClass);
+            $t.cast(ac, $g.classcastfail.SomeClass, false);
             $resolve();
             return;
 

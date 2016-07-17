@@ -60,7 +60,7 @@ $module('nominalautobox', function () {
 
           case 1:
             sc = $result;
-            $t.cast(sc, $g.nominalautobox.SomeNominal).SomeValue().then(function ($result0) {
+            $t.cast(sc, $g.nominalautobox.SomeNominal, false).SomeValue().then(function ($result0) {
               $result = $result0;
               $current = 2;
               $continue($resolve, $reject);

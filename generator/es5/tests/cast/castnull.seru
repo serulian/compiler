@@ -1,0 +1,4 @@
+function<any> TEST() {
+	var<any> value = null
+	return value.(bool)
+}
