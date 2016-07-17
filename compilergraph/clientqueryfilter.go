@@ -13,7 +13,7 @@ import (
 // clientQueryFilter represents a single filter applied on the client side to a set of nodes.
 type clientQueryFilter struct {
 	operation clientQueryOperation // The operation to perform.
-	predicate string               // The predicate to lookup.
+	predicate Predicate            // The predicate to lookup.
 	value     string               // The value to compare.
 }
 
@@ -29,19 +29,21 @@ const (
 
 // apply applies this filter to the given node, returning true if the node meets the criteria and false
 // otherwise. Note: All predicates needed by this filter must be in the values map.
-func (cqf clientQueryFilter) apply(node GraphNode, values map[string]string) bool {
+func (cqf clientQueryFilter) apply(it NodeIterator) bool {
+	strValue := valueToOriginalString(it.getRequestedPredicate(cqf.predicate))
+
 	switch cqf.operation {
 	case WhereGTE:
-		return compilerutil.ParseFloat(values[cqf.predicate]) >= compilerutil.ParseFloat(cqf.value)
+		return compilerutil.ParseFloat(strValue) >= compilerutil.ParseFloat(cqf.value)
 
 	case WhereLTE:
-		return compilerutil.ParseFloat(values[cqf.predicate]) <= compilerutil.ParseFloat(cqf.value)
+		return compilerutil.ParseFloat(strValue) <= compilerutil.ParseFloat(cqf.value)
 
 	case WhereGT:
-		return compilerutil.ParseFloat(values[cqf.predicate]) > compilerutil.ParseFloat(cqf.value)
+		return compilerutil.ParseFloat(strValue) > compilerutil.ParseFloat(cqf.value)
 
 	case WhereLT:
-		return compilerutil.ParseFloat(values[cqf.predicate]) < compilerutil.ParseFloat(cqf.value)
+		return compilerutil.ParseFloat(strValue) < compilerutil.ParseFloat(cqf.value)
 
 	default:
 		panic(fmt.Sprintf("Unknown client filter operation kind: %v", cqf.operation))

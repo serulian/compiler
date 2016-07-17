@@ -9,7 +9,6 @@ import (
 
 	"github.com/serulian/compiler/compilerutil"
 
-	"github.com/cayleygraph/cayley"
 	"github.com/cayleygraph/cayley/graph"
 	"github.com/cayleygraph/cayley/quad"
 )
@@ -119,9 +118,9 @@ func (gl *graphLayerModifierStruct) Apply() {
 // are undefined.
 func (gn ModifiableGraphNode) AsNode() GraphNode {
 	return GraphNode{
-		NodeId:     gn.NodeId,
-		kindString: gn.modifier.layer.getTaggedKey(gn.Kind),
-		layer:      gn.modifier.layer,
+		NodeId:    gn.NodeId,
+		kindValue: gn.modifier.layer.getTaggedKey(gn.Kind),
+		layer:     gn.modifier.layer,
 	}
 }
 
@@ -135,46 +134,66 @@ func (gn ModifiableGraphNode) GetNodeId() GraphNodeId {
 }
 
 // Connect decorates the given graph node with a predicate pointing at the given target node.
-func (gn ModifiableGraphNode) Connect(predicate string, target GraphNodeInterface) {
-	gn.Decorate(predicate, string(target.GetNodeId()))
+func (gn ModifiableGraphNode) Connect(predicate Predicate, target GraphNodeInterface) {
+	gn.modifier.addQuad(quad.Quad{
+		nodeIdToValue(gn.NodeId),
+		gn.modifier.layer.getPrefixedPredicate(predicate),
+		nodeIdToValue(target.GetNodeId()),
+		nil,
+	})
 }
 
-// Decorate decorates the given graph node with a predicate pointing at the given target.
-func (gn ModifiableGraphNode) Decorate(predicate string, target string) {
-	fullPredicate := gn.modifier.layer.prefix + "-" + predicate
-	gn.modifier.addQuad(cayley.Quad(string(gn.NodeId), fullPredicate, target, gn.modifier.layer.prefix))
+// Decorate decorates the given graph node with a predicate with the given value.
+func (gn ModifiableGraphNode) Decorate(predicate Predicate, value string) {
+	// TODO(jschorr): Allow for other values, using ValueOf and fast-path strings.
+	gn.modifier.addQuad(quad.Quad{
+		nodeIdToValue(gn.NodeId),
+		gn.modifier.layer.getPrefixedPredicate(predicate),
+		quad.String(value),
+		nil,
+	})
 }
 
 // DecorateWithTagged decorates the given graph node with a predicate pointing to a tagged value.
 // Tagged values are typically used for values that would otherwise not be unique (such as enums).
-func (gn ModifiableGraphNode) DecorateWithTagged(predicate string, value TaggedValue) {
-	gn.Decorate(predicate, gn.modifier.layer.getTaggedKey(value))
+func (gn ModifiableGraphNode) DecorateWithTagged(predicate Predicate, value TaggedValue) {
+	gn.modifier.addQuad(quad.Quad{
+		nodeIdToValue(gn.NodeId),
+		gn.modifier.layer.getPrefixedPredicate(predicate),
+		gn.modifier.layer.getTaggedKey(value),
+		nil,
+	})
 }
 
 // CloneExcept returns a clone of this graph node, with all *outgoing* predicates copied except those specified.
-func (gn ModifiableGraphNode) CloneExcept(predicates ...string) ModifiableGraphNode {
-	predicateBlacklist := map[string]bool{}
+func (gn ModifiableGraphNode) CloneExcept(predicates ...Predicate) ModifiableGraphNode {
+	predicateBlacklist := map[quad.Value]bool{}
 
 	if len(predicates) > 0 {
 		for _, predicate := range gn.modifier.layer.getPrefixedPredicates(predicates...) {
-			predicateBlacklist[predicate.(string)] = true
+			predicateBlacklist[predicate.(quad.Value)] = true
 		}
 	}
 
 	cloneNode := gn.modifier.CreateNode(gn.Kind)
 	store := gn.modifier.layer.cayleyStore
 
-	it := store.QuadIterator(quad.Subject, store.ValueOf(string(gn.NodeId)))
+	it := store.QuadIterator(quad.Subject, store.ValueOf(nodeIdToValue(gn.NodeId)))
 	for graph.Next(it) {
-		quad := store.Quad(it.Result())
+		currentQuad := store.Quad(it.Result())
 
 		if len(predicates) > 0 {
-			if _, ok := predicateBlacklist[quad.Predicate]; ok {
+			if _, ok := predicateBlacklist[currentQuad.Predicate]; ok {
 				continue
 			}
 		}
 
-		gn.modifier.addQuad(cayley.Quad(string(cloneNode.NodeId), quad.Predicate, quad.Object, quad.Label))
+		gn.modifier.addQuad(quad.Quad{
+			nodeIdToValue(cloneNode.NodeId),
+			currentQuad.Subject,
+			currentQuad.Object,
+			currentQuad.Label,
+		})
 	}
 
 	return cloneNode

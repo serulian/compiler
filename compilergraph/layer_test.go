@@ -68,13 +68,13 @@ func TestBasicLayer(t *testing.T) {
 
 	gm.Apply()
 
-	assert.Equal(t, firstNode.NodeId, gl.GetNode(string(firstNode.NodeId)).NodeId)
-	assert.Equal(t, secondNode.NodeId, gl.GetNode(string(secondNode.NodeId)).NodeId)
-	assert.Equal(t, firstNodeAgain.NodeId, gl.GetNode(string(firstNodeAgain.NodeId)).NodeId)
+	assert.Equal(t, firstNode.NodeId, gl.GetNode(firstNode.NodeId).NodeId)
+	assert.Equal(t, secondNode.NodeId, gl.GetNode(secondNode.NodeId).NodeId)
+	assert.Equal(t, firstNodeAgain.NodeId, gl.GetNode(firstNodeAgain.NodeId).NodeId)
 
-	assert.Equal(t, "is cool", gl.GetNode(string(firstNode.NodeId)).Get("coolpredicate"))
-	assert.Equal(t, "is hot!", gl.GetNode(string(secondNode.NodeId)).Get("coolpredicate"))
-	assert.Equal(t, "is cool", gl.GetNode(string(secondNode.NodeId)).Get("anotherpredicate"))
+	assert.Equal(t, "is cool", gl.GetNode(firstNode.NodeId).Get("coolpredicate"))
+	assert.Equal(t, "is hot!", gl.GetNode(secondNode.NodeId).Get("coolpredicate"))
+	assert.Equal(t, "is cool", gl.GetNode(secondNode.NodeId).Get("anotherpredicate"))
 
 	// Search for some nodes via some simple queries.
 	assert.Equal(t, firstNode.NodeId, gl.StartQuery().Has("coolpredicate", "is cool").GetNode().NodeId)
