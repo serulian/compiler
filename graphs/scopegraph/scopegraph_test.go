@@ -875,6 +875,10 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"Cannot cast value of type 'ISomeInterface' to type 'SomeClass': Type 'SomeClass' does not define or export member 'DoSomething', which is required by type 'ISomeInterface'", ""},
 
+	scopegraphTest{"cast nullable failure test", "castexpr", "castnull",
+		[]expectedScopeEntry{},
+		"Cannot cast value of type 'ISomeInterface?' to type 'SomeClass': Value may be null", ""},
+
 	/////////// Function call expression ///////////
 
 	scopegraphTest{"function call success test", "funccall", "success",

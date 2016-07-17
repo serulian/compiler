@@ -137,8 +137,14 @@ func (sb *scopeBuilder) scopeCastExpression(node compilergraph.GraphNode, option
 		return newScope().Valid().Resolving(castType).GetScope()
 	}
 
-	// Ensure the child expression is a subtype of the cast expression OR is a structural subtype.
+	// Ensure that the expr type, if nullable, is not cast to a non-nullable.
 	childType := childScope.ResolvedTypeRef(sb.sg.tdg)
+	if !childType.IsAny() && childType.NullValueAllowed() && !castType.NullValueAllowed() {
+		sb.decorateWithError(node, "Cannot cast value of type '%v' to type '%v': Value may be null", childType, castType)
+		return newScope().Invalid().Resolving(castType).GetScope()
+	}
+
+	// Ensure the child expression is a subtype of the cast expression OR is a structural subtype.
 	if childType.CheckStructuralSubtypeOf(castType) {
 		return newScope().Valid().Resolving(castType).GetScope()
 	}
