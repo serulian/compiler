@@ -80,7 +80,7 @@ $module('nominalcastfail', function () {
 
           case 2:
             ac = $result;
-            $t.cast(ac, $g.nominalcastfail.SomeNominal);
+            $t.cast(ac, $g.nominalcastfail.SomeNominal, false);
             $resolve();
             return;
 

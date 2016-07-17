@@ -202,6 +202,9 @@ var tests = []generationTest{
 	generationTest{"interface cast failure test", "cast", "interfacecastfail", integrationTestFailureExpected,
 		"Error: Cannot cast function SomeClass() {} to function SomeInterface() {}"},
 
+	generationTest{"null cast failure test", "cast", "castnull", integrationTestFailureExpected,
+		"Error: Cannot cast null value to function Boolean() {}"},
+
 	generationTest{"nominal cast autobox success test", "cast", "nominalautobox", integrationTestSuccessExpected, ""},
 	generationTest{"interface cast success test", "cast", "interfacecast", integrationTestSuccessExpected, ""},
 	generationTest{"generic interface cast success test", "cast", "genericinterfacecast", integrationTestSuccessExpected, ""},

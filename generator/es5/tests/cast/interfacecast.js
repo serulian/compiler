@@ -51,7 +51,7 @@ $module('interfacecast', function () {
 
           case 1:
             sc = $result;
-            $t.cast(sc, $g.interfacecast.SomeInterface).SomeValue().then(function ($result0) {
+            $t.cast(sc, $g.interfacecast.SomeInterface, false).SomeValue().then(function ($result0) {
               $result = $result0;
               $current = 2;
               $continue($resolve, $reject);

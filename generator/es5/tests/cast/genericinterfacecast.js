@@ -51,7 +51,7 @@ $module('genericinterfacecast', function () {
 
           case 1:
             sc = $result;
-            $t.cast(sc, $g.genericinterfacecast.SomeInterface($g.____testlib.basictypes.Boolean)).SomeValue().then(function ($result0) {
+            $t.cast(sc, $g.genericinterfacecast.SomeInterface($g.____testlib.basictypes.Boolean), false).SomeValue().then(function ($result0) {
               $result = $result0;
               $current = 2;
               $continue($resolve, $reject);

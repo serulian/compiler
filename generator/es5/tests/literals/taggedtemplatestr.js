@@ -8,7 +8,7 @@ $module('taggedtemplatestr', function () {
           case 0:
             values.$index($t.box(0, $g.____testlib.basictypes.Integer)).then(function ($result1) {
               return values.Length().then(function ($result2) {
-                return $g.____testlib.basictypes.Integer.$plus($t.cast($result1, $g.____testlib.basictypes.Integer), $result2).then(function ($result0) {
+                return $g.____testlib.basictypes.Integer.$plus($t.cast($result1, $g.____testlib.basictypes.Integer, false), $result2).then(function ($result0) {
                   $result = $result0;
                   $current = 1;
                   $continue($resolve, $reject);

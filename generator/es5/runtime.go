@@ -166,20 +166,24 @@ this.Serulian = (function($global) {
 
     // cast performs a cast of the given value to the given type, throwing on
     // failure.
-    'cast': function(value, type) {
+    'cast': function(value, type, opt_allownull) {
       // Quick check for any.
       if (type == $t.any) {
         return value;
       }
 
       // Quick check to see if cast checking is necessary.
-      if (value == null || type == null || value instanceof type) {
+      if (type == null || value instanceof type) {
         return value;
       }
       
+      // Handle the null to non-nullable case.
       var castKind = type.$typekind;
-      var valueKind = value.constructor.$typekind;
+      if (value == null && !opt_allownull) {
+        throw Error('Cannot cast null value to ' + type.toString())        
+      }
 
+      var valueKind = value.constructor.$typekind;
       if (!valueKind && castKind != 'type') {
         // Native type.
         throw Error('Cannot cast native type to non-nominal type')

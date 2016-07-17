@@ -51,7 +51,7 @@ $module('interfacecastfail', function () {
 
           case 1:
             sc = $result;
-            $t.cast(sc, $g.interfacecastfail.SomeInterface);
+            $t.cast(sc, $g.interfacecastfail.SomeInterface, false);
             $resolve();
             return;
 

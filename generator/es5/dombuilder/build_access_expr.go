@@ -95,7 +95,12 @@ func (db *domBuilder) buildCastExpression(node compilergraph.GraphNode) codedom.
 
 	// Otherwise, add a cast call with the cast type.
 	typeLiteral := codedom.TypeLiteral(resultingType, node)
-	return codedom.RuntimeFunctionCall(codedom.CastFunction, []codedom.Expression{childExpr, typeLiteral}, node)
+	allowNull := codedom.LiteralValue("false", node)
+	if resultingType.NullValueAllowed() {
+		allowNull = codedom.LiteralValue("true", node)
+	}
+
+	return codedom.RuntimeFunctionCall(codedom.CastFunction, []codedom.Expression{childExpr, typeLiteral, allowNull}, node)
 }
 
 // buildGenericSpecifierExpression builds the CodeDOM for a generic specification of a function or type.
