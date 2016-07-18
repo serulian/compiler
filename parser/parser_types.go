@@ -18,6 +18,10 @@ type AstNode interface {
 	// Decorate decorates this AstNode with the given property and string value,
 	// and returns the same AstNode.
 	Decorate(property string, value string) AstNode
+
+	// DecorateWithInt decorates this AstNode with the given property and int value,
+	// and returns the same AstNode.
+	DecorateWithInt(property string, value int) AstNode
 }
 
 // NodeType identifies the type of AST node.

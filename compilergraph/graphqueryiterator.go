@@ -36,6 +36,11 @@ func (gni *graphNodeIterator) Node() GraphNode {
 	return gni.node
 }
 
+// GetPredicate returns the value of the predicate.
+func (gni *graphNodeIterator) GetPredicate(predicate Predicate) GraphValue {
+	return buildGraphValueForValue(gni.getRequestedPredicate(predicate))
+}
+
 // getRequestedPredicate returns a predicate requested in the BuildNodeIterator call.
 func (gni *graphNodeIterator) getRequestedPredicate(predicate Predicate) quad.Value {
 	fullPredicate := gni.layer.getPrefixedPredicate(predicate)

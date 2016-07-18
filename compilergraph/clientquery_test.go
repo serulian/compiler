@@ -44,10 +44,10 @@ func createClientQueryTestLayer(t *testing.T) *GraphLayer {
 	thirdNode.Decorate("loves", "pie")
 	fourthNode.Decorate("loves", "pie")
 
-	firstNode.Decorate("calories", "10")
-	secondNode.Decorate("calories", "100")
-	thirdNode.Decorate("calories", "120")
-	fourthNode.Decorate("calories", "200")
+	firstNode.DecorateWith("calories", 10)
+	secondNode.DecorateWith("calories", 100)
+	thirdNode.DecorateWith("calories", 120)
+	fourthNode.DecorateWith("calories", 200)
 
 	gm.Apply()
 
@@ -64,8 +64,8 @@ func TestBasicClientQuery(t *testing.T) {
 	// Find the node that likes pie and has calories between 100 and 150.
 	node, found := gl.StartQuery().
 		Has("loves", "pie").
-		HasWhere("calories", WhereGTE, "100").
-		HasWhere("calories", WhereLTE, "150").
+		HasWhere("calories", WhereGTE, 100).
+		HasWhere("calories", WhereLTE, 150).
 		TryGetNode()
 
 	assert.True(t, found, "Missing expected node")
@@ -78,7 +78,7 @@ func TestBasicClientQuery2(t *testing.T) {
 	// Find the node that likes pie and has calories greater than 150.
 	node, found := gl.StartQuery().
 		Has("loves", "pie").
-		HasWhere("calories", WhereGTE, "150").
+		HasWhere("calories", WhereGTE, 150).
 		TryGetNode()
 
 	assert.True(t, found, "Missing expected node")
@@ -99,7 +99,7 @@ func TestFilteredClientQuery(t *testing.T) {
 	fifthNode := gm.CreateNode(TestNodeTypeFirst)
 	fifthNode.Decorate("loves", "pie")
 	fifthNode.Connect("has-diet", veganNode)
-	fifthNode.Decorate("calories", "200")
+	fifthNode.DecorateWith("calories", 200)
 
 	firstNode := gm.Modify(getTestNode(gl, "first"))
 	firstNode.Connect("has-diet", veganNode)
@@ -122,7 +122,7 @@ func TestFilteredClientQuery(t *testing.T) {
 	node, found := gl.StartQuery().
 		Has("loves", "pie").
 		FilterBy(filter).
-		HasWhere("calories", WhereGTE, "150").
+		HasWhere("calories", WhereGTE, 150).
 		TryGetNode()
 
 	assert.True(t, found, "Missing expected node")

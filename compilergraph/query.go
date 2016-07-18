@@ -19,6 +19,11 @@ type NodeIterator interface {
 	// TaggedValue returns the tagged value at the predicate in the Values list.
 	TaggedValue(predicate Predicate, example TaggedValue) interface{}
 
+	// Get returns the GraphValue for the given predicate on the current node. Note
+	// that the predicate must have been requested in the call to BuildNodeIterator
+	// or this call will panic.
+	GetPredicate(predicate Predicate) GraphValue
+
 	// getRequestedPredicate returns the value of the pre-requested predicate on the current
 	// node, if any.
 	getRequestedPredicate(predicate Predicate) quad.Value
@@ -34,7 +39,7 @@ type EmptyIterator struct{}
 // Query represents all the different types of queries supported.
 type Query interface {
 	// HasWhere starts a new client-side query from the current query.
-	HasWhere(predicate Predicate, op clientQueryOperation, value string) *ClientQuery
+	HasWhere(predicate Predicate, op clientQueryOperation, value interface{}) *ClientQuery
 
 	// BuildNodeIterator returns a NodeIterator over the query.
 	BuildNodeIterator(predicates ...Predicate) NodeIterator
@@ -52,6 +57,10 @@ func (ei EmptyIterator) Node() GraphNode {
 }
 
 func (ei EmptyIterator) TaggedValue(predicate Predicate, example TaggedValue) interface{} {
+	panic("Should never be called")
+}
+
+func (ei EmptyIterator) GetPredicate(predicate Predicate) GraphValue {
 	panic("Should never be called")
 }
 

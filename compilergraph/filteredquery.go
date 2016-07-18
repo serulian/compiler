@@ -57,7 +57,7 @@ func (fq *FilteredQuery) BuildNodeIterator(predicates ...Predicate) NodeIterator
 }
 
 // HasWhere starts a new client query.
-func (fq *FilteredQuery) HasWhere(predicate Predicate, op clientQueryOperation, value string) *ClientQuery {
+func (fq *FilteredQuery) HasWhere(predicate Predicate, op clientQueryOperation, value interface{}) *ClientQuery {
 	return getClientQuery(fq.query.layer, fq, predicate, op, value)
 }
 

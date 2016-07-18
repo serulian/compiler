@@ -60,6 +60,11 @@ func (sdi simpleDirectionalIterator) Node() GraphNode {
 	return sdi.layer.GetNode(valueToNodeId(quad.Get(sdi.direction)))
 }
 
+func (sdi simpleDirectionalIterator) GetPredicate(predicate Predicate) GraphValue {
+	// Note: No values in simple iterators.
+	return GraphValue{}
+}
+
 func (sdi simpleDirectionalIterator) getRequestedPredicate(predicate Predicate) quad.Value {
 	// Note: No values in simple iterators.
 	return nil

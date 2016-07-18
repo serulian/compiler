@@ -13,7 +13,7 @@ type ClientQuery struct {
 }
 
 // HasWhere starts a new client-side query from the current query.
-func (cq *ClientQuery) HasWhere(predicate Predicate, op clientQueryOperation, value string) *ClientQuery {
+func (cq *ClientQuery) HasWhere(predicate Predicate, op clientQueryOperation, value interface{}) *ClientQuery {
 	cq.filters = append(cq.filters, clientQueryFilter{op, predicate, value})
 	return cq
 }
@@ -54,7 +54,7 @@ func (cq *ClientQuery) TryGetNode() (GraphNode, bool) {
 }
 
 // getClientQuery returns a new ClientQuery wrapping another Query.
-func getClientQuery(layer *GraphLayer, query Query, predicate Predicate, op clientQueryOperation, value string) *ClientQuery {
+func getClientQuery(layer *GraphLayer, query Query, predicate Predicate, op clientQueryOperation, value interface{}) *ClientQuery {
 	return &ClientQuery{
 		layer:   layer,
 		query:   query,

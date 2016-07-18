@@ -45,7 +45,24 @@ func (gn GraphNode) StartQuery() GraphQuery {
 
 // StartQueryToLayer starts a new query on the specified graph layer, with its origin being the current node.
 func (gn GraphNode) StartQueryToLayer(layer *GraphLayer) GraphQuery {
-	return layer.StartQuery(string(gn.NodeId))
+	return layer.StartQueryFromNodes(gn.NodeId)
+}
+
+// GetAllTagged returns the tagged values of the given predicate found on this node.
+func (gn GraphNode) GetAllTagged(predicate Predicate, example TaggedValue) []interface{} {
+	data := gn.getAll(predicate)
+	tagged := make([]interface{}, len(data))
+
+	for index, value := range data {
+		tagged[index] = gn.layer.parseTaggedKey(value, example)
+	}
+
+	return tagged
+}
+
+// getAll returns the values of the given predicate found on this node.
+func (gn GraphNode) getAll(predicate Predicate) []quad.Value {
+	return gn.StartQuery().Out(predicate).getValues()
 }
 
 // GetTagged returns the value of the given predicate found on this node, "cast" to the type of the
@@ -129,7 +146,7 @@ func (gn GraphNode) TryGetTagged(predicate Predicate, example TaggedValue) (inte
 	return gn.layer.parseTaggedKey(value, example), true
 }
 
-// Get returns the value of the given predicate found on this node and panics otherwise.
+// Get returns the stringvalue of the given predicate found on this node and panics otherwise.
 func (gn GraphNode) Get(predicate Predicate) string {
 	value, found := gn.TryGet(predicate)
 	if !found {
@@ -139,7 +156,7 @@ func (gn GraphNode) Get(predicate Predicate) string {
 	return value
 }
 
-// TryGet returns the value of the given predicate found on this node (if any).
+// TryGet returns the string value of the given predicate found on this node (if any).
 func (gn GraphNode) TryGet(predicate Predicate) (string, bool) {
 	value, found := gn.tryGet(predicate)
 	if !found {
@@ -149,7 +166,7 @@ func (gn GraphNode) TryGet(predicate Predicate) (string, bool) {
 	return valueToOriginalString(value), true
 }
 
-// TryGetIncoming returns the value of the given predicate coming into this node (if any).
+// TryGetIncoming returns the string value of the given predicate coming into this node (if any).
 func (gn GraphNode) TryGetIncoming(predicate Predicate) (string, bool) {
 	value, found := gn.tryGetIncoming(predicate)
 	if !found {
@@ -157,6 +174,36 @@ func (gn GraphNode) TryGetIncoming(predicate Predicate) (string, bool) {
 	}
 
 	return valueToOriginalString(value), true
+}
+
+// GetValue returns the value of the given predicate found on this node and panics otherwise.
+func (gn GraphNode) GetValue(predicate Predicate) GraphValue {
+	value, found := gn.TryGetValue(predicate)
+	if !found {
+		panic(fmt.Sprintf("Could not find value for predicate %s on node %s", predicate, gn.NodeId))
+	}
+
+	return value
+}
+
+// TryGetValue returns the value of the given predicate found on this node (if any).
+func (gn GraphNode) TryGetValue(predicate Predicate) (GraphValue, bool) {
+	value, found := gn.tryGet(predicate)
+	if !found {
+		return GraphValue{}, false
+	}
+
+	return buildGraphValueForValue(value), true
+}
+
+// TryGetIncomingValue returns the value of the given predicate coming into this node (if any).
+func (gn GraphNode) TryGetIncomingValue(predicate Predicate) (GraphValue, bool) {
+	value, found := gn.tryGetIncoming(predicate)
+	if !found {
+		return GraphValue{}, false
+	}
+
+	return buildGraphValueForValue(value), true
 }
 
 // tryGet returns the value of the given predicate found on this node (if any).

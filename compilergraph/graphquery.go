@@ -130,7 +130,7 @@ func (gq GraphQuery) In(via ...Predicate) GraphQuery {
 	adjustedVia := gq.layer.getPrefixedPredicates(via...)
 
 	var singlePredicate quad.Value = nil
-	if len(via) == 1 {
+	if len(adjustedVia) == 1 {
 		singlePredicate = adjustedVia[0].(quad.Value)
 	}
 
@@ -151,7 +151,7 @@ func (gq GraphQuery) Out(via ...Predicate) GraphQuery {
 	adjustedVia := gq.layer.getPrefixedPredicates(via...)
 
 	var singlePredicate quad.Value = nil
-	if len(via) == 1 {
+	if len(adjustedVia) == 1 {
 		singlePredicate = adjustedVia[0].(quad.Value)
 	}
 
@@ -199,21 +199,9 @@ func (gq GraphQuery) mark(name string) GraphQuery {
 	}
 }
 
-// GetValue executes the query and returns the name of the node found, as a value.
-func (gq GraphQuery) GetValue() (string, bool) {
-	it := gq.path.BuildIterator()
-	result := cayley.RawNext(it)
-	if !result {
-		return "", false
-	}
-
-	// TODO(jschorr): Fix for non-string values
-	return gq.layer.cayleyStore.NameOf(it.Result()).String(), true
-}
-
-// GetValues executes the query and returns the names of the nodes found.
-func (gq GraphQuery) GetValues() []string {
-	var values = make([]string, 0)
+// getValues executes the query and returns the names of the nodes found.
+func (gq GraphQuery) getValues() []quad.Value {
+	var values = make([]quad.Value, 0)
 	it := gq.path.BuildIterator()
 
 	for {
@@ -222,8 +210,7 @@ func (gq GraphQuery) GetValues() []string {
 			return values
 		}
 
-		// TODO(jschorr): Fix for non-string values
-		values = append(values, gq.layer.cayleyStore.NameOf(it.Result()).String())
+		values = append(values, gq.layer.cayleyStore.NameOf(it.Result()))
 	}
 }
 
@@ -231,7 +218,7 @@ func (gq GraphQuery) GetValues() []string {
 func (gq GraphQuery) GetNode() GraphNode {
 	node, found := gq.TryGetNode()
 	if !found {
-		panic(fmt.Sprintf("Could not return node for query: %v", gq))
+		panic(fmt.Sprintf("Could not return node for query: %+v", gq))
 	}
 	return node
 }
@@ -243,7 +230,7 @@ func (gq GraphQuery) TryGetNode() (GraphNode, bool) {
 }
 
 // HasWhere starts a new client query.
-func (gq GraphQuery) HasWhere(predicate Predicate, op clientQueryOperation, value string) *ClientQuery {
+func (gq GraphQuery) HasWhere(predicate Predicate, op clientQueryOperation, value interface{}) *ClientQuery {
 	return getClientQuery(gq.layer, gq, predicate, op, value)
 }
 
@@ -252,7 +239,8 @@ func (gq GraphQuery) HasWhere(predicate Predicate, op clientQueryOperation, valu
 // given predicates.
 func (gq GraphQuery) BuildNodeIterator(predicates ...Predicate) NodeIterator {
 	if (gq.singleDirection == 1 || gq.singleDirection == -1) && gq.singleStartingValue != nil &&
-		gq.singleStartingValue != nil && len(predicates) == 0 {
+		gq.singleStartingValue != nil && len(predicates) == 0 && gq.singlePredicate != nil {
+
 		// Special case: An iterator from a single starting node in a single direction over
 		// a single predicate with no custom values.
 		return newSimpleDirectionalIterator(gq.layer, gq.singleStartingValue, gq.singlePredicate, gq.singleDirection)

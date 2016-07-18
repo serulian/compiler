@@ -61,10 +61,16 @@ func TestBasicLayer(t *testing.T) {
 
 	firstNodeAgain := gm.CreateNode(TestNodeTypeFirst)
 
+	thirdNode := gm.CreateNode(TestNodeTypeThird)
+
 	// Decorate the nodes with some predicates.
 	firstNode.Decorate("coolpredicate", "is cool")
 	secondNode.Decorate("coolpredicate", "is hot!")
 	secondNode.Decorate("anotherpredicate", "is cool")
+
+	firstNode.DecorateWith("numericpredicate", 1234)
+
+	firstNodeAgain.Connect("thirdpredicate", thirdNode)
 
 	gm.Apply()
 
@@ -76,7 +82,18 @@ func TestBasicLayer(t *testing.T) {
 	assert.Equal(t, "is hot!", gl.GetNode(secondNode.NodeId).Get("coolpredicate"))
 	assert.Equal(t, "is cool", gl.GetNode(secondNode.NodeId).Get("anotherpredicate"))
 
+	assert.Equal(t, 1234, gl.GetNode(firstNode.NodeId).GetValue("numericpredicate").Int())
+
 	// Search for some nodes via some simple queries.
 	assert.Equal(t, firstNode.NodeId, gl.StartQuery().Has("coolpredicate", "is cool").GetNode().NodeId)
 	assert.Equal(t, secondNode.NodeId, gl.StartQuery().Has("coolpredicate", "is hot!").GetNode().NodeId)
+
+	// Search for nodes via kind.
+	assert.Equal(t, 2, len(getNodes(gl.FindNodesOfKind(TestNodeTypeFirst).BuildNodeIterator())), "Expected 2 first nodes")
+	assert.Equal(t, 1, len(getNodes(gl.FindNodesOfKind(TestNodeTypeSecond).BuildNodeIterator())), "Expected 1 second node")
+	assert.Equal(t, 3, len(getNodes(gl.FindNodesOfKind(TestNodeTypeFirst, TestNodeTypeSecond).BuildNodeIterator())), "Expected 3 nodes in total")
+
+	// Search outward from a node.
+	firstNodeAgainReal := gl.GetNode(firstNodeAgain.NodeId)
+	assert.Equal(t, thirdNode.NodeId, firstNodeAgainReal.StartQuery().Out("thirdpredicate").GetNode().NodeId)
 }

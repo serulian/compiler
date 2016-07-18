@@ -8,6 +8,7 @@ package compilergraph
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/serulian/compiler/compilerutil"
@@ -122,22 +123,41 @@ func (gl *GraphLayer) WalkOutward(startingNodes []GraphNode, callback WalkCallba
 		it := gl.cayleyStore.QuadIterator(quad.Subject, subjectValue)
 
 		for graph.Next(it) {
-			quad := gl.cayleyStore.Quad(it.Result())
+			currentQuad := gl.cayleyStore.Quad(it.Result())
 
 			// Note: We skip any predicates that are not part of this graph layer.
-			predicate := valueToPredicateString(quad.Predicate)
+			predicate := valueToPredicateString(currentQuad.Predicate)
 			if !strings.HasPrefix(predicate, gl.prefix+"-") {
 				continue
 			}
 
 			// Try to retrieve the object as a node. If found, then we have another step in the walk.
 			// Otherwise, we have a string predicate value.
-			targetNode, found := gl.TryGetNode(valueToNodeId(quad.Object))
-			if found {
+			_, isPossibleNodeId := currentQuad.Object.(quad.Raw)
+			found := false
+			targetNode := GraphNode{}
+
+			if isPossibleNodeId {
+				targetNode, found = gl.TryGetNode(valueToNodeId(currentQuad.Object))
+			}
+
+			if isPossibleNodeId && found {
 				workList = append(workList, &WalkResult{&currentResult.Node, predicate, targetNode, map[string]string{}})
 			} else {
 				// This is a value predicate.
-				currentResult.Predicates[predicate] = valueToPredicateString(quad.Object)
+				switch objectValue := currentQuad.Object.(type) {
+				case quad.String:
+					currentResult.Predicates[predicate] = string(objectValue)
+
+				case quad.Raw:
+					currentResult.Predicates[predicate] = string(objectValue)
+
+				case quad.Int:
+					currentResult.Predicates[predicate] = strconv.Itoa(int(objectValue))
+
+				default:
+					panic("Unknown object value type")
+				}
 			}
 		}
 
@@ -179,10 +199,10 @@ func (gl *GraphLayer) getPrefixedPredicate(predicate Predicate) quad.Value {
 
 // getPrefixedPredicates returns the given predicates prefixed with the layer prefix.
 func (gl *GraphLayer) getPrefixedPredicates(predicates ...Predicate) []interface{} {
-	adjusted := make([]interface{}, 0, len(predicates))
-	for _, predicate := range predicates {
+	adjusted := make([]interface{}, len(predicates))
+	for index, predicate := range predicates {
 		fullPredicate := gl.getPrefixedPredicate(predicate)
-		adjusted = append(adjusted, fullPredicate)
+		adjusted[index] = fullPredicate
 	}
 	return adjusted
 }

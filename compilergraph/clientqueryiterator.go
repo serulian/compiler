@@ -49,6 +49,11 @@ func (cqi *clientQueryIterator) TaggedValue(predicate Predicate, example TaggedV
 	return cqi.it.TaggedValue(predicate, example)
 }
 
+// GetPredicate returns the value of the predicate.
+func (cqi *clientQueryIterator) GetPredicate(predicate Predicate) GraphValue {
+	return cqi.it.GetPredicate(predicate)
+}
+
 // applyFilters returns whether the full set of filters applies to the given node.
 func (cqi *clientQueryIterator) applyFilters() bool {
 	for _, filter := range cqi.query.filters {

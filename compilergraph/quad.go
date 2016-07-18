@@ -68,6 +68,11 @@ func valueToOriginalString(value quad.Value) string {
 	return string(value.(quad.String))
 }
 
+// buildGraphValueForValue returns the GraphValue for a Cayley value.
+func buildGraphValueForValue(value quad.Value) GraphValue {
+	return GraphValue{value}
+}
+
 // taggedToQuadValues converts a slice of TaggedValue's under a layer into their
 // Cayley values.
 func taggedToQuadValues(values []TaggedValue, gl *GraphLayer) []quad.Value {

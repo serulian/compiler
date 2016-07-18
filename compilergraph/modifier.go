@@ -143,13 +143,27 @@ func (gn ModifiableGraphNode) Connect(predicate Predicate, target GraphNodeInter
 	})
 }
 
-// Decorate decorates the given graph node with a predicate with the given value.
+// Decorate decorates the given graph node with a predicate with the given string value.
 func (gn ModifiableGraphNode) Decorate(predicate Predicate, value string) {
-	// TODO(jschorr): Allow for other values, using ValueOf and fast-path strings.
+	gn.DecorateWithValue(predicate, GraphValue{quad.String(value)})
+}
+
+// DecorateWith decorates the given graph node with a predicate with the given Go value.
+func (gn ModifiableGraphNode) DecorateWith(predicate Predicate, value interface{}) {
+	quadValue, ok := quad.AsValue(value)
+	if !ok {
+		panic("Unsupported golang type")
+	}
+
+	gn.DecorateWithValue(predicate, GraphValue{quadValue})
+}
+
+// DecorateWithValue decorates the given graph node with a predicate with the given value.
+func (gn ModifiableGraphNode) DecorateWithValue(predicate Predicate, value GraphValue) {
 	gn.modifier.addQuad(quad.Quad{
 		nodeIdToValue(gn.NodeId),
 		gn.modifier.layer.getPrefixedPredicate(predicate),
-		quad.String(value),
+		value.Value,
 		nil,
 	})
 }
@@ -190,7 +204,7 @@ func (gn ModifiableGraphNode) CloneExcept(predicates ...Predicate) ModifiableGra
 
 		gn.modifier.addQuad(quad.Quad{
 			nodeIdToValue(cloneNode.NodeId),
-			currentQuad.Subject,
+			currentQuad.Predicate,
 			currentQuad.Object,
 			currentQuad.Label,
 		})
