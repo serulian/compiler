@@ -18,7 +18,7 @@ import (
 
 // GLOBAL_CONTEXT_ANNOTATIONS are the annotations that mark an interface as being a global context
 // (e.g. Window) in WebIDL.
-var GLOBAL_CONTEXT_ANNOTATIONS = []string{"Global", "PrimaryGlobal"}
+var GLOBAL_CONTEXT_ANNOTATIONS = []interface{}{"Global", "PrimaryGlobal"}
 
 // CONSTRUCTOR_ANNOTATION is an annotation that describes support for a constructor on a WebIDL
 // type. This translates to being able to do "new Type(...)" in ECMAScript.
