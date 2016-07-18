@@ -122,7 +122,7 @@ func (gl *GraphLayer) WalkOutward(startingNodes []GraphNode, callback WalkCallba
 		subjectValue := gl.cayleyStore.ValueOf(nodeIdToValue(currentId))
 		it := gl.cayleyStore.QuadIterator(quad.Subject, subjectValue)
 
-		for graph.Next(it) {
+		for nxt := graph.AsNexter(it); nxt.Next(); {
 			currentQuad := gl.cayleyStore.Quad(it.Result())
 
 			// Note: We skip any predicates that are not part of this graph layer.
@@ -214,13 +214,13 @@ func (gl *GraphLayer) getPredicatesListForDebugging(graphNode GraphNode) []strin
 
 	nodeIdValue := gl.cayleyStore.ValueOf(nodeIdToValue(graphNode.NodeId))
 	iit := gl.cayleyStore.QuadIterator(quad.Subject, nodeIdValue)
-	for graph.Next(iit) {
+	for nxt := graph.AsNexter(iit); nxt.Next(); {
 		quad := gl.cayleyStore.Quad(iit.Result())
 		predicates = append(predicates, fmt.Sprintf("Outgoing predicate: %v => %v", quad.Predicate, quad.Object))
 	}
 
 	oit := gl.cayleyStore.QuadIterator(quad.Object, nodeIdValue)
-	for graph.Next(oit) {
+	for nxt := graph.AsNexter(oit); nxt.Next(); {
 		quad := gl.cayleyStore.Quad(oit.Result())
 		predicates = append(predicates, fmt.Sprintf("Incoming predicate: %v <= %v", quad.Predicate, quad.Subject))
 	}

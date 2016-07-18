@@ -193,7 +193,7 @@ func (gn ModifiableGraphNode) CloneExcept(predicates ...Predicate) ModifiableGra
 	store := gn.modifier.layer.cayleyStore
 
 	it := store.QuadIterator(quad.Subject, store.ValueOf(nodeIdToValue(gn.NodeId)))
-	for graph.Next(it) {
+	for nxt := graph.AsNexter(it); nxt.Next(); {
 		currentQuad := store.Quad(it.Result())
 
 		if len(predicates) > 0 {
