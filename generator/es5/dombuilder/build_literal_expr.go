@@ -157,7 +157,7 @@ func (db *domBuilder) buildListExpression(node compilergraph.GraphNode) codedom.
 }
 
 // buildCollectionLiteralExpression builds a literal collection expression.
-func (db *domBuilder) buildCollectionLiteralExpression(node compilergraph.GraphNode, valuePredicate string, emptyConstructorName string, arrayConstructorName string) codedom.Expression {
+func (db *domBuilder) buildCollectionLiteralExpression(node compilergraph.GraphNode, valuePredicate compilergraph.Predicate, emptyConstructorName string, arrayConstructorName string) codedom.Expression {
 	collectionScope, _ := db.scopegraph.GetScope(node)
 	collectionType := collectionScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
 

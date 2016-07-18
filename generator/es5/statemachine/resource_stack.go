@@ -60,16 +60,16 @@ func (s *ResourceStack) OutOfScope(referenceNode compilergraph.GraphNode) []reso
 	resources := make([]resource, 0)
 
 	// Find the start and end location for the reference node.
-	referenceStart := referenceNode.GetInt(parser.NodePredicateStartRune)
-	referenceEnd := referenceNode.GetInt(parser.NodePredicateEndRune)
+	referenceStart := referenceNode.GetValue(parser.NodePredicateStartRune).Int()
+	referenceEnd := referenceNode.GetValue(parser.NodePredicateEndRune).Int()
 
 	var current = s.top
 	for index := 0; index < s.size; index++ {
 		currentResource := current.value
 
 		// Find the start and end location for the resource node.
-		resourceStart := currentResource.basis.GetInt(parser.NodePredicateStartRune)
-		resourceEnd := currentResource.basis.GetInt(parser.NodePredicateEndRune)
+		resourceStart := currentResource.basis.GetValue(parser.NodePredicateStartRune).Int()
+		resourceEnd := currentResource.basis.GetValue(parser.NodePredicateEndRune).Int()
 
 		if !(referenceStart >= resourceStart && referenceEnd <= resourceEnd) {
 			resources = append(resources, currentResource)

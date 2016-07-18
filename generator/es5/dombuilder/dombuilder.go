@@ -59,17 +59,17 @@ func (db *domBuilder) buildScopeVarName(basisNode compilergraph.GraphNode) strin
 }
 
 // getStatements retrieves the predicate on the given node and builds it as start and end statements.
-func (db *domBuilder) getStatements(node compilergraph.GraphNode, predicate string) (codedom.Statement, codedom.Statement) {
+func (db *domBuilder) getStatements(node compilergraph.GraphNode, predicate compilergraph.Predicate) (codedom.Statement, codedom.Statement) {
 	return db.buildStatements(node.GetNode(predicate))
 }
 
 // getExpression retrieves the predicate on the given node and builds it as an expression.
-func (db *domBuilder) getExpression(node compilergraph.GraphNode, predicate string) codedom.Expression {
+func (db *domBuilder) getExpression(node compilergraph.GraphNode, predicate compilergraph.Predicate) codedom.Expression {
 	return db.buildExpression(node.GetNode(predicate))
 }
 
 // getExpressionOrDefault returns the expression found off of the given predice on the node or the default value if none.
-func (db *domBuilder) getExpressionOrDefault(node compilergraph.GraphNode, predicate string, defaultValue codedom.Expression) codedom.Expression {
+func (db *domBuilder) getExpressionOrDefault(node compilergraph.GraphNode, predicate compilergraph.Predicate, defaultValue codedom.Expression) codedom.Expression {
 	expr, ok := db.tryGetExpression(node, predicate)
 	if ok {
 		return expr
@@ -80,7 +80,7 @@ func (db *domBuilder) getExpressionOrDefault(node compilergraph.GraphNode, predi
 
 // tryGetStatements attempts to retrieve the predicate on the given node and, if found, build it as
 // start and end statements.
-func (db *domBuilder) tryGetStatements(node compilergraph.GraphNode, predicate string) (codedom.Statement, codedom.Statement, bool) {
+func (db *domBuilder) tryGetStatements(node compilergraph.GraphNode, predicate compilergraph.Predicate) (codedom.Statement, codedom.Statement, bool) {
 	childNode, hasChild := node.TryGetNode(predicate)
 	if !hasChild {
 		return nil, nil, false
@@ -92,7 +92,7 @@ func (db *domBuilder) tryGetStatements(node compilergraph.GraphNode, predicate s
 
 // tryGetExpression attempts to retrieve the predicate on the given node and, if found, build it as an
 // expression.
-func (db *domBuilder) tryGetExpression(node compilergraph.GraphNode, predicate string) (codedom.Expression, bool) {
+func (db *domBuilder) tryGetExpression(node compilergraph.GraphNode, predicate compilergraph.Predicate) (codedom.Expression, bool) {
 	childNode, hasChild := node.TryGetNode(predicate)
 	if !hasChild {
 		return nil, false

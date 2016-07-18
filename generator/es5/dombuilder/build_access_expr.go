@@ -47,7 +47,7 @@ func (db *domBuilder) buildNamedAccess(node compilergraph.GraphNode, name string
 		if childExprNode != nil {
 			childExpr := db.buildExpression(*childExprNode)
 
-			_, underFuncCall := node.TryGetIncoming(parser.NodeFunctionCallExpressionChildExpr)
+			_, underFuncCall := node.TryGetIncomingNode(parser.NodeFunctionCallExpressionChildExpr)
 			isAliasedFunctionReference := scope.ResolvedTypeRef(db.scopegraph.TypeGraph()).HasReferredType(db.scopegraph.TypeGraph().FunctionType())
 
 			if isAliasedFunctionReference && !underFuncCall {
