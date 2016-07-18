@@ -239,7 +239,7 @@ func (gq GraphQuery) HasWhere(predicate Predicate, op clientQueryOperation, valu
 // given predicates.
 func (gq GraphQuery) BuildNodeIterator(predicates ...Predicate) NodeIterator {
 	if (gq.singleDirection == 1 || gq.singleDirection == -1) && gq.singleStartingValue != nil &&
-		gq.singleStartingValue != nil && len(predicates) == 0 && gq.singlePredicate != nil {
+		gq.singlePredicate != nil && len(predicates) == 0 {
 
 		// Special case: An iterator from a single starting node in a single direction over
 		// a single predicate with no custom values.
