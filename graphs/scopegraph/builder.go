@@ -369,7 +369,7 @@ func (sb *scopeBuilder) GetWarnings() []compilercommon.SourceWarning {
 		warningNode := it.Node()
 
 		// Lookup the location of the SRG source node.
-		warningSource := sb.sg.srg.GetNode(compilergraph.GraphNodeId(warningNode.Get(NodePredicateNoticeSource)))
+		warningSource := sb.sg.srg.GetNode(warningNode.GetValue(NodePredicateNoticeSource).NodeId())
 		location := sb.sg.srg.NodeLocation(warningSource)
 
 		// Add the error.
@@ -392,7 +392,7 @@ func (sb *scopeBuilder) GetErrors() []compilercommon.SourceError {
 		errNode := it.Node()
 
 		// Lookup the location of the SRG source node.
-		errorSource := sb.sg.srg.GetNode(compilergraph.GraphNodeId(errNode.Get(NodePredicateNoticeSource)))
+		errorSource := sb.sg.srg.GetNode(errNode.GetValue(NodePredicateNoticeSource).NodeId())
 		location := sb.sg.srg.NodeLocation(errorSource)
 
 		// Add the error.

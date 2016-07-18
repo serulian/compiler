@@ -160,7 +160,7 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 	// arrow, warn.
 	if isValid && returnType.IsDirectReferenceTo(sb.sg.tdg.AwaitableType()) {
 		if !returnType.Generics()[0].IsVoid() {
-			if _, underStatement := node.TryGetIncoming(parser.NodeExpressionStatementExpression); underStatement {
+			if _, underStatement := node.TryGetIncomingNode(parser.NodeExpressionStatementExpression); underStatement {
 				sb.decorateWithWarning(node, "Returned Awaitable resolves a value of type %v which is not handled", returnType.Generics()[0])
 			}
 		}
@@ -173,7 +173,7 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 // scopeSliceExpression scopes a slice expression in the SRG.
 func (sb *scopeBuilder) scopeSliceExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	// Check if this is a slice vs an index.
-	_, isIndexer := node.TryGet(parser.NodeSliceExpressionIndex)
+	_, isIndexer := node.TryGetNode(parser.NodeSliceExpressionIndex)
 	if isIndexer {
 		return sb.scopeIndexerExpression(node, option)
 	} else {
@@ -577,9 +577,9 @@ func (sb *scopeBuilder) scopeBinaryExpression(node compilergraph.GraphNode, opNa
 }
 
 // scopeUnaryExpression scopes a unary expression in the SRG.
-func (sb *scopeBuilder) scopeUnaryExpression(node compilergraph.GraphNode, opName string, predicateName string) *scopeInfoBuilder {
+func (sb *scopeBuilder) scopeUnaryExpression(node compilergraph.GraphNode, opName string, predicate compilergraph.Predicate) *scopeInfoBuilder {
 	// Get the scope of the sub expression.
-	childScope := sb.getScope(node.GetNode(predicateName))
+	childScope := sb.getScope(node.GetNode(predicate))
 
 	// Ensure that the child scope is valid.
 	if !childScope.GetIsValid() {

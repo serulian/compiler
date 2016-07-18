@@ -147,7 +147,7 @@ func (sb *scopeBuilder) scopeAssignedValue(node compilergraph.GraphNode, option 
 
 	// If the assigned value is under a rejection, then it is always an error (but nullable, as it
 	// may not be present always).
-	if _, ok := node.TryGetIncoming(parser.NodeAssignedRejection); ok {
+	if _, ok := node.TryGetIncomingNode(parser.NodeAssignedRejection); ok {
 		return newScope().Valid().Assignable(sb.sg.tdg.ErrorTypeReference().AsNullable()).GetScope()
 	}
 
@@ -163,7 +163,7 @@ func (sb *scopeBuilder) scopeAssignedValue(node compilergraph.GraphNode, option 
 
 		// If the parent node has a rejection, then the expression may be null.
 		exprType := exprScope.ResolvedTypeRef(sb.sg.tdg)
-		if _, ok := parentNode.TryGet(parser.NodeAssignedRejection); ok {
+		if _, ok := parentNode.TryGetNode(parser.NodeAssignedRejection); ok {
 			exprType = exprType.AsNullable()
 		}
 
@@ -201,7 +201,7 @@ func (sb *scopeBuilder) scopeNamedValue(node compilergraph.GraphNode, option sco
 	case parser.NodeTypeLoopStatement:
 		// The named value exported by a loop statement or expression has the type of the generic of the
 		// Stream<T> interface implemented.
-		var predicate = parser.NodeLoopStatementExpression
+		var predicate compilergraph.Predicate = parser.NodeLoopStatementExpression
 		if parentNode.Kind() == parser.NodeTypeLoopExpression {
 			predicate = parser.NodeLoopExpressionStreamExpression
 		}

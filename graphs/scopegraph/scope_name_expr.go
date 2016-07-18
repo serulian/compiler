@@ -16,7 +16,7 @@ var _ = fmt.Printf
 
 const ANONYMOUS_REFERENCE = "_"
 
-var ALLOWED_ANONYMOUS = []string{parser.NodeArrowStatementDestination, parser.NodeArrowStatementRejection}
+var ALLOWED_ANONYMOUS = []compilergraph.Predicate{parser.NodeArrowStatementDestination, parser.NodeArrowStatementRejection}
 
 // scopeIdentifierExpression scopes an identifier expression in the SRG.
 func (sb *scopeBuilder) scopeIdentifierExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
@@ -25,7 +25,7 @@ func (sb *scopeBuilder) scopeIdentifierExpression(node compilergraph.GraphNode, 
 		// Make sure this node is under an assignment of some kind.
 		var found = false
 		for _, predicate := range ALLOWED_ANONYMOUS {
-			if _, ok := node.TryGetIncoming(predicate); ok {
+			if _, ok := node.TryGetIncomingNode(predicate); ok {
 				found = true
 				break
 			}

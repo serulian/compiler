@@ -66,7 +66,7 @@ func (sb *scopeBuilder) scopeStructuralNewExpression(node compilergraph.GraphNod
 	var isValid = true
 	for eit.Next() {
 		// Scope the entry.
-		entryName := eit.Values()[parser.NodeStructuralNewEntryKey]
+		entryName := eit.GetPredicate(parser.NodeStructuralNewEntryKey).String()
 		entryScope := sb.getScope(eit.Node())
 		if !entryScope.GetIsValid() {
 			isValid = false
