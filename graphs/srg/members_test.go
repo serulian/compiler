@@ -109,7 +109,10 @@ func TestModuleMembers(t *testing.T) {
 	module, _ := testSRG.FindModuleBySource(compilercommon.InputSource("tests/members/module.seru"))
 	members := module.GetMembers()
 
-	assert.Equal(t, 2, len(members), "Expected 2 members found")
+	if !assert.Equal(t, 2, len(members), "Expected 2 members found") {
+		return
+	}
+
 	assert.Equal(t, members[0].MemberKind(), VarMember)
 	assert.Equal(t, members[1].MemberKind(), FunctionMember)
 }

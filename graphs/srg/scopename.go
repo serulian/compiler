@@ -9,7 +9,6 @@ package srg
 import (
 	"fmt"
 	"sort"
-	"strconv"
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
@@ -62,7 +61,7 @@ type SRGNamedScope struct {
 
 // GetNamedScope returns SRGNamedScope for the given SRG node. Panics on failure to lookup.
 func (g *SRG) GetNamedScope(nodeId compilergraph.GraphNodeId) SRGNamedScope {
-	return SRGNamedScope{g.layer.GetNode(string(nodeId)), g}
+	return SRGNamedScope{g.layer.GetNode(nodeId), g}
 }
 
 type NamedScopeKind int
@@ -310,8 +309,8 @@ func (g *SRG) FindReferencesInScope(name string, node compilergraph.GraphNode) c
 	// Note: This filter ensures that the name is accessible in the scope of the given node by checking that
 	// the node referencing the name is contained by the given node.
 	containingFilter := func(q compilergraph.GraphQuery) compilergraph.Query {
-		startRune := node.Get(parser.NodePredicateStartRune)
-		endRune := node.Get(parser.NodePredicateEndRune)
+		startRune := node.GetValue(parser.NodePredicateStartRune).Int()
+		endRune := node.GetValue(parser.NodePredicateEndRune).Int()
 
 		return q.
 			HasWhere(parser.NodePredicateStartRune, compilergraph.WhereGT, startRune).
@@ -379,7 +378,7 @@ func (g *SRG) FindNameInScope(name string, node compilergraph.GraphNode) (SRGSco
 // scopeResultNode is a sorted result of a named scope lookup.
 type scopeResultNode struct {
 	node       compilergraph.GraphNode
-	startIndex int64
+	startIndex int
 }
 
 type scopeResultNodes []scopeResultNode
@@ -399,13 +398,13 @@ func (slice scopeResultNodes) Swap(i, j int) {
 // findAddedNameInScope finds the {parameter, with, loop, var} node exposing the given name, if any.
 func (g *SRG) findAddedNameInScope(name string, node compilergraph.GraphNode) (compilergraph.GraphNode, bool) {
 	nodeSource := node.Get(parser.NodePredicateSource)
-	nodeStartIndex := node.GetInt(parser.NodePredicateStartRune)
+	nodeStartIndex := node.GetValue(parser.NodePredicateStartRune).Int()
 
 	// Note: This filter ensures that the name is accessible in the scope of the given node by checking that
 	// the node adding the name contains the given node.
 	containingFilter := func(q compilergraph.GraphQuery) compilergraph.Query {
-		startRune := node.Get(parser.NodePredicateStartRune)
-		endRune := node.Get(parser.NodePredicateEndRune)
+		startRune := node.GetValue(parser.NodePredicateStartRune).Int()
+		endRune := node.GetValue(parser.NodePredicateEndRune).Int()
 
 		return q.
 			In(parser.NodePredicateTypeMemberParameter,
@@ -434,28 +433,20 @@ func (g *SRG) findAddedNameInScope(name string, node compilergraph.GraphNode) (c
 	var results = make(scopeResultNodes, 0)
 	for nit.Next() {
 		node := nit.Node()
-		startIndex, err := strconv.ParseInt(nit.Values()[parser.NodePredicateStartRune], 10, 64)
-		if err != nil {
-			panic(err)
-		}
+		startIndex := nit.GetPredicate(parser.NodePredicateStartRune).Int()
 
 		// If the node is a variable statement or assigned value, we have do to additional checks
 		// (since they are not block scoped but rather statement scoped).
 		if node.Kind() == parser.NodeTypeVariableStatement || node.Kind() == parser.NodeTypeAssignedValue {
-			endRune := nit.Values()[parser.NodePredicateEndRune]
+			endIndex := nit.GetPredicate(parser.NodePredicateEndRune).Int()
 			if node.Kind() == parser.NodeTypeAssignedValue {
 				if parentNode, ok := node.TryGetIncomingNode(parser.NodeAssignedDestination); ok {
-					endRune = parentNode.Get(parser.NodePredicateEndRune)
+					endIndex = parentNode.GetValue(parser.NodePredicateEndRune).Int()
 				} else if parentNode, ok := node.TryGetIncomingNode(parser.NodeAssignedRejection); ok {
-					endRune = parentNode.Get(parser.NodePredicateEndRune)
+					endIndex = parentNode.GetValue(parser.NodePredicateEndRune).Int()
 				} else {
 					panic("Missing assigned parent")
 				}
-			}
-
-			endIndex, err := strconv.ParseInt(endRune, 10, 64)
-			if err != nil {
-				panic(err)
 			}
 
 			// Check that the startIndex of the variable statement is <= the startIndex of the parent node

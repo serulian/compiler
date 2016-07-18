@@ -16,12 +16,18 @@ type srgASTNode struct {
 
 // Connect connects an SRG AST node to another SRG AST node.
 func (ast *srgASTNode) Connect(predicate string, other parser.AstNode) parser.AstNode {
-	ast.graphNode.Connect(predicate, other.(*srgASTNode).graphNode)
+	ast.graphNode.Connect(compilergraph.Predicate(predicate), other.(*srgASTNode).graphNode)
 	return ast
 }
 
 // Decorate decorates an SRG AST node with the given value.
 func (ast *srgASTNode) Decorate(predicate string, value string) parser.AstNode {
-	ast.graphNode.Decorate(predicate, value)
+	ast.graphNode.Decorate(compilergraph.Predicate(predicate), value)
+	return ast
+}
+
+// DecorateWithInt decorates an SRG AST node with the given int value.
+func (ast *srgASTNode) DecorateWithInt(predicate string, value int) parser.AstNode {
+	ast.graphNode.DecorateWith(compilergraph.Predicate(predicate), value)
 	return ast
 }

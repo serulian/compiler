@@ -41,7 +41,7 @@ func (g *SRG) TryGetContainingPropertySetter(node compilergraph.GraphNode) (SRGI
 		return SRGImplementable{}, false
 	}
 
-	_, underSetter := containingNode.TryGetIncoming(parser.NodePropertySetter)
+	_, underSetter := containingNode.TryGetIncomingNode(parser.NodePropertySetter)
 	if !underSetter {
 		return SRGImplementable{}, false
 	}
@@ -238,7 +238,7 @@ func (m SRGMember) HasImplementation() bool {
 			return false
 		}
 
-		_, hasGetterBody := getter.TryGet(parser.NodePredicateBody)
+		_, hasGetterBody := getter.TryGetNode(parser.NodePredicateBody)
 		return hasGetterBody
 
 	case ConstructorMember:
@@ -293,7 +293,9 @@ func (m SRGMember) Tags() map[string]string {
 		BuildNodeIterator(parser.NodePredicateTypeMemberTagName, parser.NodePredicateTypeMemberTagValue)
 
 	for it.Next() {
-		tags[it.Values()[parser.NodePredicateTypeMemberTagName]] = it.Values()[parser.NodePredicateTypeMemberTagValue]
+		tagName := it.GetPredicate(parser.NodePredicateTypeMemberTagName).String()
+		tagValue := it.GetPredicate(parser.NodePredicateTypeMemberTagValue).String()
+		tags[tagName] = tagValue
 	}
 
 	return tags

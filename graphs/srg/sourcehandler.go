@@ -56,8 +56,8 @@ func (sh *srgSourceHandler) Verify(errorReporter packageloader.ErrorReporter, wa
 		parser.NodePredicateStartRune)
 
 	for eit.Next() {
-		sal := salForPredicates(eit.Values())
-		errorReporter(compilercommon.NewSourceError(sal, eit.Values()[parser.NodePredicateErrorMessage]))
+		sal := salForIterator(eit)
+		errorReporter(compilercommon.NewSourceError(sal, eit.GetPredicate(parser.NodePredicateErrorMessage).String()))
 	}
 
 	// Verify all 'from ... import ...' are valid.
@@ -75,11 +75,11 @@ func (sh *srgSourceHandler) Verify(errorReporter packageloader.ErrorReporter, wa
 		}
 
 		// Search for the subsource.
-		subsource := fit.Values()[parser.NodeImportPredicateSubsource]
+		subsource := fit.GetPredicate(parser.NodeImportPredicateSubsource).String()
 		_, found := packageInfo.FindTypeOrMemberByName(subsource, ModuleResolveExportedOnly)
 		if !found {
 			source := fit.Node().GetIncomingNode(parser.NodeImportPredicatePackageRef).Get(parser.NodeImportPredicateSource)
-			sal := salForPredicates(fit.Values())
+			sal := salForIterator(fit)
 			errorReporter(compilercommon.SourceErrorf(sal, "Import '%s' not found under package '%s'", subsource, source))
 		}
 	}

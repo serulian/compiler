@@ -48,12 +48,12 @@ func (g *SRG) ResolveAliasedType(name string) (SRGType, bool) {
 
 // GetNode returns the node with the given ID in this layer or panics.
 func (g *SRG) GetNode(nodeId compilergraph.GraphNodeId) compilergraph.GraphNode {
-	return g.layer.GetNode(string(nodeId))
+	return g.layer.GetNode(nodeId)
 }
 
 // TryGetNode attempts to return the node with the given ID in this layer, if any.
 func (g *SRG) TryGetNode(nodeId compilergraph.GraphNodeId) (compilergraph.GraphNode, bool) {
-	return g.layer.TryGetNode(string(nodeId))
+	return g.layer.TryGetNode(nodeId)
 }
 
 // NodeLocation returns the location of the given SRG node.
