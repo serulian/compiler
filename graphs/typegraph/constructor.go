@@ -285,7 +285,7 @@ type genericBuilder struct {
 	parentNode      compilergraph.ModifiableGraphNode // The parent type or member node.
 	genericKind     genericKind                       // The kind of generic being built.
 	index           int                               // The 0-based index of the generic under the type or member.
-	parentPredicate string                            // The predicate for connecting the type or member to the generic.
+	parentPredicate compilergraph.Predicate           // The predicate for connecting the type or member to the generic.
 
 	name          string                  // The name of the generic.
 	sourceNode    compilergraph.GraphNode // The node for the generic in the source graph.

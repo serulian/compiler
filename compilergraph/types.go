@@ -28,6 +28,11 @@ type GraphValue struct {
 	quad.Value
 }
 
+// Tagged returns the GraphValue as a TaggedValue.
+func (gv GraphValue) Tagged(graphLayer *GraphLayer, example TaggedValue) interface{} {
+	return graphLayer.parseTaggedKey(gv.Value, example)
+}
+
 // String returns the GraphValue as a string.
 func (gv GraphValue) String() string {
 	asString, ok := gv.Value.(quad.String)

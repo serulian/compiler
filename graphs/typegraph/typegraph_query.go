@@ -23,7 +23,7 @@ func (g *TypeGraph) findAllNodes(nodeTypes ...NodeType) compilergraph.GraphQuery
 // tryGetMatchingTypeGraphNode attempts to find the type node defined for the given source node, if any.
 func (g *TypeGraph) tryGetMatchingTypeGraphNode(sourceNode compilergraph.GraphNode) (compilergraph.GraphNode, bool) {
 	return g.layer.
-		StartQuery(string(sourceNode.NodeId)).
+		StartQuery(sourceNode.NodeId).
 		In(NodePredicateSource).
 		TryGetNode()
 }

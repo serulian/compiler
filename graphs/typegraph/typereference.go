@@ -610,14 +610,15 @@ func (tr TypeReference) CheckSubTypeOfWithExceptions(other TypeReference, except
 			BuildNodeIterator(NodePredicateMemberSignature, NodePredicateMemberName)
 
 		for oit.Next() {
-			signature := oit.Values()[NodePredicateMemberSignature]
+			signature := oit.GetPredicate(NodePredicateMemberSignature).Tagged(tr.tdg.layer, &proto.MemberSig{})
 			_, exists := localType.StartQuery().
 				Out(NodePredicateMember, NodePredicateTypeOperator).
 				Has(NodePredicateMemberSignature, signature).
 				TryGetNode()
 
 			if !exists {
-				return buildSubtypeMismatchError(tr, left, originalOther, oit.Values()[NodePredicateMemberName]), NoSubTypingExceptions
+				memberName := oit.GetPredicate(NodePredicateMemberName).String()
+				return buildSubtypeMismatchError(tr, left, originalOther, memberName), NoSubTypingExceptions
 			}
 		}
 
@@ -655,7 +656,7 @@ func buildSubtypeMismatchError(tr TypeReference, left TypeReference, right TypeR
 	}
 
 	var memberKind = "member"
-	var namePredicate = NodePredicateMemberName
+	var namePredicate compilergraph.Predicate = NodePredicateMemberName
 
 	if rightMember.Kind() == NodeTypeOperator {
 		memberKind = "operator"
@@ -695,7 +696,8 @@ func (tr TypeReference) buildMemberSignaturesMap() map[string]string {
 	for mit.Next() {
 		// Get the current member's signature, adjusted for the type's generics.
 		adjustedMemberSig := tr.adjustedMemberSignature(mit.Node())
-		membersMap[mit.Values()[NodePredicateMemberName]] = adjustedMemberSig
+		memberName := mit.GetPredicate(NodePredicateMemberName).String()
+		membersMap[memberName] = adjustedMemberSig
 	}
 
 	return membersMap
@@ -842,7 +844,7 @@ func (tr TypeReference) referredTypeNode() compilergraph.GraphNode {
 		panic(fmt.Sprintf("Cannot get referred type for special type references of type %s", tr.getSlot(trhSlotFlagSpecial)))
 	}
 
-	return tr.tdg.layer.GetNode(tr.getSlot(trhSlotTypeId))
+	return tr.tdg.layer.GetNode(compilergraph.GraphNodeId(tr.getSlot(trhSlotTypeId)))
 }
 
 type MemberResolutionKind int
@@ -886,8 +888,8 @@ func (tr TypeReference) ResolveMember(memberName string, kind MemberResolutionKi
 		return TGMember{}, false
 	}
 
-	var connectingPredicate = NodePredicateMember
-	var namePredicate = NodePredicateMemberName
+	var connectingPredicate compilergraph.Predicate = NodePredicateMember
+	var namePredicate compilergraph.Predicate = NodePredicateMemberName
 
 	if kind == MemberResolutionOperator {
 		connectingPredicate = NodePredicateTypeOperator
