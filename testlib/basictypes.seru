@@ -247,6 +247,10 @@ class List<T> {
 		}
 	}
 
+	operator<T> Index(index int) {
+		return this.items[&index].(T)
+	}
+
 	operator<Slice<T>> Slice(startindex int?, endindex int?) {
 		var start = startindex ?? 0
 		var end = endindex ?? this.Count

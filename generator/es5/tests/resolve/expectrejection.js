@@ -63,11 +63,13 @@ $module('expectrejection', function () {
           case 0:
             $g.expectrejection.DoSomething().then(function ($result0) {
               a = $result0;
+              b = null;
               $current = 1;
               $continue($resolve, $reject);
               return;
             }).catch(function ($rejected) {
               b = $rejected;
+              a = null;
               $current = 1;
               $continue($resolve, $reject);
               return;

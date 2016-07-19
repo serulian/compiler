@@ -14,11 +14,13 @@ $module('castrejection', function () {
               $resolve($t.cast(somevalue, $g.____testlib.basictypes.Integer, false));
             }).then(function ($result0) {
               a = $result0;
+              b = null;
               $current = 1;
               $continue($resolve, $reject);
               return;
             }).catch(function ($rejected) {
               b = $rejected;
+              a = null;
               $current = 1;
               $continue($resolve, $reject);
               return;
