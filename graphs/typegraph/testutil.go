@@ -95,7 +95,7 @@ func parseTypeReferenceForTesting(humanString string, graph *TypeGraph, refSourc
 
 func resolveTestingTypeRefFromSourceNodes(name string, graph *TypeGraph, refSourceNodes []compilergraph.GraphNode) TypeReference {
 	for _, refSourceNode := range refSourceNodes {
-		refNode := graph.layer.StartQuery(string(refSourceNode.NodeId)).In(NodePredicateSource).GetNode()
+		refNode := graph.layer.StartQuery(refSourceNode.NodeId).In(NodePredicateSource).GetNode()
 		ref, found := resolveTestingTypeRef(name, refNode, graph)
 		if found {
 			return ref
@@ -117,7 +117,7 @@ func resolveTestingTypeRef(name string, refNode compilergraph.GraphNode, graph *
 			}
 		}
 
-		if _, ok := currentNode.TryGetIncoming(NodePredicateMember); !ok {
+		if _, ok := currentNode.TryGetIncomingNode(NodePredicateMember); !ok {
 			return TypeReference{}, false
 		}
 
@@ -125,7 +125,7 @@ func resolveTestingTypeRef(name string, refNode compilergraph.GraphNode, graph *
 	}
 
 	if currentNode.Kind() == NodeTypeOperator {
-		if _, ok := currentNode.TryGetIncoming(NodePredicateTypeOperator); !ok {
+		if _, ok := currentNode.TryGetIncomingNode(NodePredicateTypeOperator); !ok {
 			return TypeReference{}, false
 		}
 
@@ -143,7 +143,7 @@ func resolveTestingTypeRef(name string, refNode compilergraph.GraphNode, graph *
 			}
 		}
 
-		if _, ok := currentNode.TryGet(NodePredicateTypeModule); !ok {
+		if _, ok := currentNode.TryGetNode(NodePredicateTypeModule); !ok {
 			return TypeReference{}, false
 		}
 

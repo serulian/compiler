@@ -112,7 +112,7 @@ func (i *IRGDeclaration) CustomOperations() []string {
 
 	var customOps = make([]string, 0)
 	for mit.Next() {
-		customOps = append(customOps, mit.Values()[parser.NodePredicateCustomOpName])
+		customOps = append(customOps, mit.GetPredicate(parser.NodePredicateCustomOpName).String())
 	}
 
 	return customOps
@@ -129,7 +129,7 @@ func (i *IRGDeclaration) HasAnnotation(name string) bool {
 }
 
 // HasOneAnnotation returns true if the declaration is decorated with one of the given annotations.
-func (i *IRGDeclaration) HasOneAnnotation(names ...string) bool {
+func (i *IRGDeclaration) HasOneAnnotation(names ...interface{}) bool {
 	_, hasNode := i.GraphNode.StartQuery().
 		Out(parser.NodePredicateDeclarationAnnotation).
 		Has(parser.NodePredicateAnnotationName, names...).

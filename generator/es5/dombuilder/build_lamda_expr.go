@@ -24,7 +24,7 @@ func (db *domBuilder) buildLambdaExpression(node compilergraph.GraphNode) codedo
 	}
 }
 
-func (db *domBuilder) buildLambdaExpressionInternal(node compilergraph.GraphNode, paramPredicate string, body codedom.StatementOrExpression, isGenerator bool) codedom.Expression {
+func (db *domBuilder) buildLambdaExpressionInternal(node compilergraph.GraphNode, paramPredicate compilergraph.Predicate, body codedom.StatementOrExpression, isGenerator bool) codedom.Expression {
 	// Collect the generic names and parameter names of the lambda expression.
 	var generics = make([]string, 0)
 	var parameters = make([]string, 0)
@@ -34,7 +34,7 @@ func (db *domBuilder) buildLambdaExpressionInternal(node compilergraph.GraphNode
 		BuildNodeIterator(parser.NodeGenericPredicateName)
 
 	for git.Next() {
-		generics = append(generics, git.Values()[parser.NodeGenericPredicateName])
+		generics = append(generics, git.GetPredicate(parser.NodeGenericPredicateName).String())
 	}
 
 	pit := node.StartQuery().
@@ -42,7 +42,7 @@ func (db *domBuilder) buildLambdaExpressionInternal(node compilergraph.GraphNode
 		BuildNodeIterator(parser.NodeLambdaExpressionParameterName)
 
 	for pit.Next() {
-		parameters = append(parameters, pit.Values()[parser.NodeLambdaExpressionParameterName])
+		parameters = append(parameters, pit.GetPredicate(parser.NodeLambdaExpressionParameterName).String())
 	}
 
 	// Check for a generator.

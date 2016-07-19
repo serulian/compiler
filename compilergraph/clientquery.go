@@ -13,17 +13,17 @@ type ClientQuery struct {
 }
 
 // HasWhere starts a new client-side query from the current query.
-func (cq *ClientQuery) HasWhere(predicate string, op clientQueryOperation, value string) *ClientQuery {
+func (cq *ClientQuery) HasWhere(predicate Predicate, op clientQueryOperation, value interface{}) *ClientQuery {
 	cq.filters = append(cq.filters, clientQueryFilter{op, predicate, value})
 	return cq
 }
 
 // BuildNodeIterator returns a NodeIterator over the query.
-func (cq *ClientQuery) BuildNodeIterator(predicates ...string) NodeIterator {
-	predicateMap := map[string]bool{}
+func (cq *ClientQuery) BuildNodeIterator(predicates ...Predicate) NodeIterator {
+	var allPredicates = make([]Predicate, 0, len(predicates)+len(cq.filters))
+	predicateMap := make(map[Predicate]bool, len(predicates)+len(cq.filters))
 
 	// Add all the predicates requested.
-	var allPredicates = make([]string, 0)
 	for _, predicate := range predicates {
 		if _, ok := predicateMap[predicate]; ok {
 			continue
@@ -45,7 +45,7 @@ func (cq *ClientQuery) BuildNodeIterator(predicates ...string) NodeIterator {
 
 	// Build the inner query iterator.
 	it := cq.query.BuildNodeIterator(allPredicates...)
-	return &clientQueryIterator{cq, it, GraphNode{}, map[string]string{}}
+	return &clientQueryIterator{cq, it}
 }
 
 // TryGetNode attempts to return the node found.
@@ -54,7 +54,7 @@ func (cq *ClientQuery) TryGetNode() (GraphNode, bool) {
 }
 
 // getClientQuery returns a new ClientQuery wrapping another Query.
-func getClientQuery(layer *GraphLayer, query Query, predicate string, op clientQueryOperation, value string) *ClientQuery {
+func getClientQuery(layer *GraphLayer, query Query, predicate Predicate, op clientQueryOperation, value interface{}) *ClientQuery {
 	return &ClientQuery{
 		layer:   layer,
 		query:   query,

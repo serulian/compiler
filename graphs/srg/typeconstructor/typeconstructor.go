@@ -232,7 +232,7 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 		isReadOnly = false
 		isPromising = false
 		isField = true
-		_, hasDefaultValue = member.Node().TryGet(parser.NodeVariableStatementExpression)
+		_, hasDefaultValue = member.Node().TryGetNode(parser.NodeVariableStatementExpression)
 
 	case srg.PropertyMember:
 		// Properties have their declared type.

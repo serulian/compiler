@@ -179,7 +179,7 @@ func buildScopeGraphWithResolver(srg *srg.SRG, irg *webidl.WebIRG, tdg *typegrap
 // GetScope returns the scope for the given SRG node, if any.
 func (sg *ScopeGraph) GetScope(srgNode compilergraph.GraphNode) (proto.ScopeInfo, bool) {
 	scopeNode, found := sg.layer.
-		StartQuery(string(srgNode.NodeId)).
+		StartQuery(srgNode.NodeId).
 		In(NodePredicateSource).
 		TryGetNode()
 
@@ -194,7 +194,7 @@ func (sg *ScopeGraph) GetScope(srgNode compilergraph.GraphNode) (proto.ScopeInfo
 // HasSecondaryLabel returns whether the given SRG node has a secondary scope label of the given kind.
 func (sg *ScopeGraph) HasSecondaryLabel(srgNode compilergraph.GraphNode, label proto.ScopeLabel) bool {
 	_, found := sg.layer.
-		StartQuery(string(srgNode.NodeId)).
+		StartQuery(srgNode.NodeId).
 		In(NodePredicateLabelSource).
 		Has(NodePredicateSecondaryLabelValue, strconv.Itoa(int(label))).
 		TryGetNode()

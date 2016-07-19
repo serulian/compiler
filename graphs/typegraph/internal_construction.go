@@ -288,7 +288,7 @@ func (g *TypeGraph) defineFullInheritance(modifier compilergraph.GraphLayerModif
 }
 
 // buildInheritedMembership copies any applicable type members from the inherited type references to the given type.
-func (t *TypeGraph) buildInheritedMembership(typeDecl TGTypeDecl, childPredicate string, modifier compilergraph.GraphLayerModifier) {
+func (t *TypeGraph) buildInheritedMembership(typeDecl TGTypeDecl, childPredicate compilergraph.Predicate, modifier compilergraph.GraphLayerModifier) {
 	// Build a map of all the existing names.
 	names := map[string]bool{}
 	it := typeDecl.GraphNode.StartQuery().
@@ -296,7 +296,7 @@ func (t *TypeGraph) buildInheritedMembership(typeDecl TGTypeDecl, childPredicate
 		BuildNodeIterator(NodePredicateMemberName)
 
 	for it.Next() {
-		names[it.Values()[NodePredicateMemberName]] = true
+		names[it.GetPredicate(NodePredicateMemberName).String()] = true
 	}
 
 	// Add members defined on the type's inheritance, skipping those already defined.
@@ -310,7 +310,7 @@ func (t *TypeGraph) buildInheritedMembership(typeDecl TGTypeDecl, childPredicate
 
 		for pit.Next() {
 			// Skip this member if already defined.
-			name := pit.Values()[NodePredicateMemberName]
+			name := pit.GetPredicate(NodePredicateMemberName).String()
 			if _, exists := names[name]; exists {
 				// Ensure that the parent member is not a required field. If so, then we cannot
 				// shadow the field.
@@ -349,7 +349,7 @@ func (t *TypeGraph) buildInheritedMembership(typeDecl TGTypeDecl, childPredicate
 
 			// If the parent type has generics, then replace the generics in the member type with those
 			// specified in the inheritance type reference.
-			if _, ok := parentType.GraphNode.TryGet(NodePredicateTypeGeneric); !ok {
+			if _, ok := parentType.GraphNode.TryGetNode(NodePredicateTypeGeneric); !ok {
 				// Parent type has no generics, so just decorate with the type directly.
 				memberNode.DecorateWithTagged(NodePredicateMemberType, parentMemberType)
 				continue

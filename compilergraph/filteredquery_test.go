@@ -37,8 +37,8 @@ func TestBasicFiltering(t *testing.T) {
 	rootNodeOne.Decorate("is-root", "true")
 	rootNodeTwo.Decorate("is-root", "true")
 
-	childNodeOne.Decorate("child-id", "1")
-	childNodeTwo.Decorate("child-id", "2")
+	childNodeOne.DecorateWith("child-id", 1)
+	childNodeTwo.DecorateWith("child-id", 2)
 
 	rootNodeOne.Connect("has-child", childNodeOne)
 	rootNodeTwo.Connect("has-child", childNodeTwo)
@@ -47,7 +47,7 @@ func TestBasicFiltering(t *testing.T) {
 
 	// Find the root node whose child has an ID of 1.
 	filter := func(q GraphQuery) Query {
-		return q.Out("has-child").Has("child-id", "1")
+		return q.Out("has-child").Has("child-id", 1)
 	}
 
 	result, found := gl.StartQuery().Has("is-root", "true").FilterBy(filter).TryGetNode()
@@ -78,8 +78,8 @@ func TestEmptyFiltering(t *testing.T) {
 	rootNodeOne.Decorate("is-root", "true")
 	rootNodeTwo.Decorate("is-root", "true")
 
-	childNodeOne.Decorate("child-id", "1")
-	childNodeTwo.Decorate("child-id", "2")
+	childNodeOne.DecorateWith("child-id", 1)
+	childNodeTwo.DecorateWith("child-id", 2)
 
 	rootNodeOne.Connect("has-child", childNodeOne)
 	rootNodeTwo.Connect("has-child", childNodeTwo)
@@ -88,7 +88,7 @@ func TestEmptyFiltering(t *testing.T) {
 
 	// Find the root node whose child has an ID of 3 (i.e. none).
 	filter := func(q GraphQuery) Query {
-		return q.Out("has-child").Has("child-id", "3")
+		return q.Out("has-child").Has("child-id", 3)
 	}
 
 	_, found := gl.StartQuery().Has("is-root", "true").FilterBy(filter).TryGetNode()
@@ -118,8 +118,8 @@ func TestFilteringViaClientQuery(t *testing.T) {
 	rootNodeOne.Decorate("is-root", "true")
 	rootNodeTwo.Decorate("is-root", "true")
 
-	childNodeOne.Decorate("child-id", "1")
-	childNodeTwo.Decorate("child-id", "2")
+	childNodeOne.DecorateWith("child-id", 1)
+	childNodeTwo.DecorateWith("child-id", 2)
 
 	rootNodeOne.Connect("has-child", childNodeOne)
 	rootNodeTwo.Connect("has-child", childNodeTwo)
@@ -128,7 +128,7 @@ func TestFilteringViaClientQuery(t *testing.T) {
 
 	// Find the root node whose child has an ID of 2.
 	filter := func(q GraphQuery) Query {
-		return q.Out("has-child").HasWhere("child-id", WhereGTE, "2")
+		return q.Out("has-child").HasWhere("child-id", WhereGTE, 2)
 	}
 
 	result, found := gl.StartQuery().Has("is-root", "true").FilterBy(filter).TryGetNode()

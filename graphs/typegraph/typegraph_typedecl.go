@@ -122,7 +122,7 @@ func (tn TGTypeDecl) ContainingType() (TGTypeDecl, bool) {
 
 // HasGenerics returns whether this type has generics defined.
 func (tn TGTypeDecl) HasGenerics() bool {
-	_, isGeneric := tn.GraphNode.TryGet(NodePredicateTypeGeneric)
+	_, isGeneric := tn.GraphNode.TryGetValue(NodePredicateTypeGeneric)
 	return isGeneric
 }
 

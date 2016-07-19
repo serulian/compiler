@@ -83,7 +83,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, option 
 	// Check for attributes.
 	var isValid = true
 	var resolvedType = declaredType
-	if _, ok := node.TryGet(parser.NodeSmlExpressionAttribute); ok || len(parameters) >= 1 {
+	if _, ok := node.TryGetNode(parser.NodeSmlExpressionAttribute); ok || len(parameters) >= 1 {
 		if len(parameters) < 1 {
 			sb.decorateWithError(node, "Declarable function or constructor used in an SML declaration tag with attributes must have a 'props' parameter. Found: %v", functionType)
 			return newScope().Invalid().Resolving(declaredType).GetScope()
@@ -134,7 +134,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, option 
 	}
 
 	// Scope the children to match the childs type.
-	if _, ok := node.TryGet(parser.NodeSmlExpressionChild); ok || len(parameters) >= 2 {
+	if _, ok := node.TryGetNode(parser.NodeSmlExpressionChild); ok || len(parameters) >= 2 {
 		if len(parameters) < 2 {
 			sb.decorateWithError(node, "Declarable function or constructor used in an SML declaration tag with children must have a 'children' parameter. Found: %v", functionType)
 			return newScope().Invalid().Resolving(resolvedType).GetScope()

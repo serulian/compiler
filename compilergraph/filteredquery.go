@@ -18,13 +18,13 @@ type FilteredQuery struct {
 }
 
 // BuildNodeIterator returns an iterator over the filtered query.
-func (fq *FilteredQuery) BuildNodeIterator(predicates ...string) NodeIterator {
+func (fq *FilteredQuery) BuildNodeIterator(predicates ...Predicate) NodeIterator {
 	// Build an iterator to collect the IDs matching the inner query.
 	it := fq.query.BuildNodeIterator()
 
-	var nodeIds = make([]string, 0)
+	var nodeIds = make([]GraphNodeId, 0)
 	for it.Next() {
-		nodeIds = append(nodeIds, string(it.Node().NodeId))
+		nodeIds = append(nodeIds, it.Node().NodeId)
 	}
 
 	// If there are no nodes found, nothing more to do.
@@ -35,14 +35,14 @@ func (fq *FilteredQuery) BuildNodeIterator(predicates ...string) NodeIterator {
 	// Otherwise, create a new query starting from the nodes found and send it
 	// to the filtering function.
 	markId := compilerutil.NewUniqueId()
-	subQuery := fq.query.layer.StartQuery(nodeIds...).mark(markId)
+	subQuery := fq.query.layer.StartQueryFromNodes(nodeIds...).mark(markId)
 	filteredQuery := fq.filter(subQuery)
 	fit := filteredQuery.BuildNodeIterator()
 
 	// Collect the IDs of the filtered nodes.
-	var filteredIds = make([]string, 0)
+	var filteredIds = make([]GraphNodeId, 0)
 	for fit.Next() {
-		filteredIds = append(filteredIds, fit.Values()[markId])
+		filteredIds = append(filteredIds, valueToNodeId(fit.getMarked(markId)))
 	}
 
 	// If there are no nodes found, nothing more to do.
@@ -50,12 +50,14 @@ func (fq *FilteredQuery) BuildNodeIterator(predicates ...string) NodeIterator {
 		return EmptyIterator{}
 	}
 
-	// Return a query at just those nodes.
-	return fq.query.layer.StartQuery(filteredIds...).BuildNodeIterator(predicates...)
+	// Return an iterator containing just those nodes.
+	// TODO: Maybe we can optimize this by looking up the kind above as well if the predicates
+	// list is empty?
+	return fq.query.layer.StartQueryFromNodes(filteredIds...).BuildNodeIterator(predicates...)
 }
 
 // HasWhere starts a new client query.
-func (fq *FilteredQuery) HasWhere(predicate string, op clientQueryOperation, value string) *ClientQuery {
+func (fq *FilteredQuery) HasWhere(predicate Predicate, op clientQueryOperation, value interface{}) *ClientQuery {
 	return getClientQuery(fq.query.layer, fq, predicate, op, value)
 }
 

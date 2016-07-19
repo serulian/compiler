@@ -7,6 +7,7 @@ package formatter
 import (
 	"container/list"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/serulian/compiler/compilercommon"
@@ -173,4 +174,8 @@ func (fn formatterNode) Decorate(property string, value string) parser.AstNode {
 
 	fn.properties[property] = value
 	return fn
+}
+
+func (fn formatterNode) DecorateWithInt(property string, value int) parser.AstNode {
+	return fn.Decorate(property, strconv.Itoa(value))
 }

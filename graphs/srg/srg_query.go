@@ -19,8 +19,8 @@ func (g *SRG) HasContainingNode(node compilergraph.GraphNode, nodeTypes ...parse
 // TryGetContainingNode returns the containing node of the given node that is one of the given types, if any.
 func (g *SRG) TryGetContainingNode(node compilergraph.GraphNode, nodeTypes ...parser.NodeType) (compilergraph.GraphNode, bool) {
 	containingFilter := func(q compilergraph.GraphQuery) compilergraph.Query {
-		startRune := node.Get(parser.NodePredicateStartRune)
-		endRune := node.Get(parser.NodePredicateEndRune)
+		startRune := node.GetValue(parser.NodePredicateStartRune).Int()
+		endRune := node.GetValue(parser.NodePredicateEndRune).Int()
 
 		return q.
 			HasWhere(parser.NodePredicateStartRune, compilergraph.WhereLTE, startRune).
@@ -47,8 +47,8 @@ func (g *SRG) findAllNodes(nodeTypes ...parser.NodeType) compilergraph.GraphQuer
 // outgoing NodePredicateBody pointing to a statement block containing this specified node.
 func (g *SRG) TryGetContainingImplemented(node compilergraph.GraphNode) (compilergraph.GraphNode, bool) {
 	containingFilter := func(q compilergraph.GraphQuery) compilergraph.Query {
-		startRune := node.Get(parser.NodePredicateStartRune)
-		endRune := node.Get(parser.NodePredicateEndRune)
+		startRune := node.GetValue(parser.NodePredicateStartRune).Int()
+		endRune := node.GetValue(parser.NodePredicateEndRune).Int()
 
 		return q.
 			HasWhere(parser.NodePredicateStartRune, compilergraph.WhereLTE, startRune).

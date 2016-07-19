@@ -60,12 +60,12 @@ func (g *WebIRG) findAllNodes(nodeTypes ...parser.NodeType) compilergraph.GraphQ
 
 // GetNode returns the node with the given ID in this layer or panics.
 func (g *WebIRG) GetNode(nodeId compilergraph.GraphNodeId) compilergraph.GraphNode {
-	return g.layer.GetNode(string(nodeId))
+	return g.layer.GetNode(nodeId)
 }
 
 // TryGetNode attempts to return the node with the given ID in this layer, if any.
 func (g *WebIRG) TryGetNode(nodeId compilergraph.GraphNodeId) (compilergraph.GraphNode, bool) {
-	return g.layer.TryGetNode(string(nodeId))
+	return g.layer.TryGetNode(nodeId)
 }
 
 // NodeLocation returns the location of the given SRG node.

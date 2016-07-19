@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"os"
 	"sort"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -82,6 +83,10 @@ func (tn *testNode) Decorate(property string, value string) AstNode {
 
 	tn.properties[property] = value
 	return tn
+}
+
+func (tn *testNode) DecorateWithInt(property string, value int) AstNode {
+	return tn.Decorate(property, strconv.Itoa(value))
 }
 
 var parserTests = []parserTest{

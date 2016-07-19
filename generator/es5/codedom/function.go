@@ -7,6 +7,7 @@ package codedom
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"strconv"
 
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/parser"
@@ -60,7 +61,7 @@ func (f FunctionDefinitionNode) WorkerExecute() bool {
 // UniqueId returns a unique ID for this function definition. Note that this is intended to be stable
 // across compilations if the input source has not changed.
 func (f FunctionDefinitionNode) UniqueId() string {
-	hashBytes := []byte(f.Body.BasisNode().Get(parser.NodePredicateSource) + ":" + f.Body.BasisNode().Get(parser.NodePredicateStartRune))
+	hashBytes := []byte(f.Body.BasisNode().Get(parser.NodePredicateSource) + ":" + strconv.Itoa(f.Body.BasisNode().GetValue(parser.NodePredicateStartRune).Int()))
 	sha256bytes := sha256.Sum256(hashBytes)
 	return hex.EncodeToString(sha256bytes[:])
 }

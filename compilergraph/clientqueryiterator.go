@@ -4,12 +4,14 @@
 
 package compilergraph
 
+import (
+	"github.com/cayleygraph/cayley/quad"
+)
+
 // clientQueryIterator represents an iterator that filters node on the client side.
 type clientQueryIterator struct {
-	query  *ClientQuery      // The parent client query.
-	it     NodeIterator      // The iterator from the wrapped query.
-	node   GraphNode         // The current graph node.
-	values map[string]string // The current predicate values (if any).
+	query *ClientQuery // The parent client query.
+	it    NodeIterator // The iterator from the wrapped query.
 }
 
 // Next move the iterator forward to the next node and returns whether a node is available.
@@ -21,36 +23,41 @@ func (cqi *clientQueryIterator) Next() bool {
 		}
 
 		// If found, apply the full client side filters.
-		if !cqi.applyFilters(cqi.it.Node(), cqi.it.Values(), cqi.query.filters) {
+		if !cqi.applyFilters() {
 			continue
 		}
 
-		cqi.node = cqi.it.Node()
-		cqi.values = cqi.it.Values()
 		return true
 	}
 }
 
-// Node returns the current node.
-func (cqi *clientQueryIterator) Node() GraphNode {
-	return cqi.node
+func (cqi *clientQueryIterator) getRequestedPredicate(predicate Predicate) quad.Value {
+	return cqi.it.getRequestedPredicate(predicate)
 }
 
-// Values returns the current predicate values (specified to BuildNodeIterator), if any.
-func (cqi *clientQueryIterator) Values() map[string]string {
-	return cqi.values
+func (cqi *clientQueryIterator) getMarked(name string) quad.Value {
+	return cqi.it.getMarked(name)
+}
+
+// Node returns the current node.
+func (cqi *clientQueryIterator) Node() GraphNode {
+	return cqi.it.Node()
 }
 
 // TaggedValue returns the tagged value at the predicate in the Values list.
-func (cqi *clientQueryIterator) TaggedValue(predicate string, example TaggedValue) interface{} {
-	strValue := cqi.values[predicate]
-	return cqi.query.layer.parseTaggedKey(strValue, example)
+func (cqi *clientQueryIterator) TaggedValue(predicate Predicate, example TaggedValue) interface{} {
+	return cqi.it.TaggedValue(predicate, example)
+}
+
+// GetPredicate returns the value of the predicate.
+func (cqi *clientQueryIterator) GetPredicate(predicate Predicate) GraphValue {
+	return cqi.it.GetPredicate(predicate)
 }
 
 // applyFilters returns whether the full set of filters applies to the given node.
-func (cqi *clientQueryIterator) applyFilters(node GraphNode, values map[string]string, filters []clientQueryFilter) bool {
-	for _, filter := range filters {
-		if !filter.apply(node, values) {
+func (cqi *clientQueryIterator) applyFilters() bool {
+	for _, filter := range cqi.query.filters {
+		if !filter.apply(cqi.it) {
 			return false
 		}
 	}

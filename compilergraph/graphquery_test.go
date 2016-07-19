@@ -55,40 +55,38 @@ func TestBasicQuery(t *testing.T) {
 
 	gm.Apply()
 
-	// Run some basic queries.
-
 	// Second nodes from first (expected 2)
-	r := getNodes(gl.StartQuery(string(firstNode.NodeId)).Out("first-to-second").BuildNodeIterator())
+	r := getNodes(gl.StartQuery(firstNode.NodeId).Out("first-to-second").BuildNodeIterator())
 	if !assert.Equal(t, 2, len(r), "Expected 2 nodes in iterator") {
 		return
 	}
 
 	// Third nodes from first (expected 1)
-	r = getNodes(gl.StartQuery(string(firstNode.NodeId)).Out("first-to-third").BuildNodeIterator())
+	r = getNodes(gl.StartQuery(firstNode.NodeId).Out("first-to-third").BuildNodeIterator())
 	if !assert.Equal(t, 1, len(r), "Expected 1 node in iterator") {
 		return
 	}
 
 	// Second nodes from first as type third (expected 0)
-	r = getNodes(gl.StartQuery(string(firstNode.NodeId)).Out("first-to-second").IsKind(TestNodeTypeThird).BuildNodeIterator())
+	r = getNodes(gl.StartQuery(firstNode.NodeId).Out("first-to-second").IsKind(TestNodeTypeThird).BuildNodeIterator())
 	if !assert.Equal(t, 0, len(r), "Expected no nodes in iterator") {
 		return
 	}
 
 	// Second nodes from first (expected 2)
-	r = getNodes(gl.StartQuery(string(firstNode.NodeId)).Out("first-to-second").IsKind(TestNodeTypeSecond).BuildNodeIterator())
+	r = getNodes(gl.StartQuery(firstNode.NodeId).Out("first-to-second").IsKind(TestNodeTypeSecond).BuildNodeIterator())
 	if !assert.Equal(t, 2, len(r), "Expected 2 nodes in iterator") {
 		return
 	}
 
 	// Third node into first.
-	r = getNodes(gl.StartQuery(string(thirdNode.NodeId)).In("first-to-third").BuildNodeIterator())
+	r = getNodes(gl.StartQuery(thirdNode.NodeId).In("first-to-third").BuildNodeIterator())
 	if !assert.Equal(t, 1, len(r), "Expected 1 node in iterator") {
 		return
 	}
 
 	// Third node into second into first.
-	r = getNodes(gl.StartQuery(string(thirdNode.NodeId)).In("second-to-third").In("first-to-second").BuildNodeIterator())
+	r = getNodes(gl.StartQuery(thirdNode.NodeId).In("second-to-third").In("first-to-second").BuildNodeIterator())
 	if !assert.Equal(t, 1, len(r), "Expected 1 node in iterator") {
 		return
 	}
@@ -101,6 +99,30 @@ func TestBasicQuery(t *testing.T) {
 
 	// Second-by-name to second to first (will return the first node twice).
 	r = getNodes(gl.StartQuery("second").In("name").In("first-to-second").BuildNodeIterator())
+	if !assert.Equal(t, 2, len(r), "Expected 2 nodes in iterator") {
+		return
+	}
+
+	// Two outgoing paths.
+	r = getNodes(gl.StartQuery("first").In("name").Out("first-to-second", "first-to-third").BuildNodeIterator())
+	if !assert.Equal(t, 3, len(r), "Expected 3 nodes in iterator") {
+		return
+	}
+
+	firstNodeReal := firstNode.AsNode()
+	r = getNodes(firstNodeReal.StartQuery().Out("first-to-second", "first-to-third").BuildNodeIterator())
+	if !assert.Equal(t, 3, len(r), "Expected 3 nodes in iterator") {
+		return
+	}
+
+	// Two incoming paths.
+	r = getNodes(gl.StartQuery("third").In("name").In("first-to-third", "second-to-third").BuildNodeIterator())
+	if !assert.Equal(t, 2, len(r), "Expected 2 nodes in iterator") {
+		return
+	}
+
+	thirdNodeReal := thirdNode.AsNode()
+	r = getNodes(thirdNodeReal.StartQuery().In("first-to-third", "second-to-third").BuildNodeIterator())
 	if !assert.Equal(t, 2, len(r), "Expected 2 nodes in iterator") {
 		return
 	}

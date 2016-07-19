@@ -9,7 +9,6 @@ package parser
 import (
 	"bytes"
 	"fmt"
-	"strconv"
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/packageloader"
@@ -166,14 +165,14 @@ func (p *sourceParser) decorateComments(node AstNode, comments []lexeme) {
 // start rune, as well as its source.
 func (p *sourceParser) decorateStartRune(node AstNode, token lexeme) {
 	node.Decorate(NodePredicateSource, string(p.source))
-	node.Decorate(NodePredicateStartRune, strconv.Itoa(p.bytePosition(token)))
+	node.DecorateWithInt(NodePredicateStartRune, p.bytePosition(token))
 }
 
 // decorateEndRune decorates the given node with the location of the given token as its
 // ending rune.
 func (p *sourceParser) decorateEndRune(node AstNode, token lexeme) {
 	position := int(token.position) + len(token.value) - 1 + int(p.startIndex)
-	node.Decorate(NodePredicateEndRune, strconv.Itoa(position))
+	node.DecorateWithInt(NodePredicateEndRune, position)
 }
 
 // currentNode returns the node at the top of the stack.

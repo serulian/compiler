@@ -28,19 +28,7 @@ type SerulianGraph struct {
 
 // NewGraph creates and returns a SerulianGraph rooted at the specified root source file.
 func NewGraph(rootSourceFilePath string) (*SerulianGraph, error) {
-	// TODO(jschorr): Uncomment bolt support once we have a cohesive partial replacement story.
-	//graphStoragePath := path.Join(path.Dir(rootSourceFilePath), serulianGraphStoragePath)
-
-	// Initialize the database backing this project if necessary.
-	/*if _, serr := os.Stat(graphStoragePath); os.IsNotExist(serr) {
-		err := graph.InitQuadStore("bolt", graphStoragePath, nil)
-		if err != nil {
-			return nil, fmt.Errorf("Could not initialize compiler graph: %v", err)
-		}
-	}*/
-
 	// Load the graph database.
-	//store, err := cayley.NewGraph("bolt", graphStoragePath, nil)
 	store, err := cayley.NewMemoryGraph()
 	if err != nil {
 		return nil, fmt.Errorf("Could not load compiler graph: %v", err)

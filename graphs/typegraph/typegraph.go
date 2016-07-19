@@ -182,15 +182,12 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 		node := it.Node()
 		result.Status = false
 
-		sourceNodeId, ok := it.Values()[NodePredicateSource]
-		if !ok {
-			panic(fmt.Sprintf("Error on non-sourced node: %v", it.Node()))
-		}
+		sourceNodeId := it.GetPredicate(NodePredicateSource).NodeId()
 
 		// Lookup the location of the source node.
 		var location = compilercommon.SourceAndLocation{}
 		for _, constructor := range constructors {
-			constructorLocation, found := constructor.GetLocation(compilergraph.GraphNodeId(sourceNodeId))
+			constructorLocation, found := constructor.GetLocation(sourceNodeId)
 			if found {
 				location = constructorLocation
 			}
@@ -207,7 +204,7 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 
 // GetNode returns the node with the given ID in this layer or panics.
 func (g *TypeGraph) GetNode(nodeId compilergraph.GraphNodeId) compilergraph.GraphNode {
-	return g.layer.GetNode(string(nodeId))
+	return g.layer.GetNode(nodeId)
 }
 
 // Modules returns all modules defined in the type graph.
@@ -308,7 +305,7 @@ func (g *TypeGraph) ResolveTypeUnderPackage(name string, packageInfo packageload
 
 // GetTypeOrMember returns the type or member matching the given node ID.
 func (g *TypeGraph) GetTypeOrMember(nodeId compilergraph.GraphNodeId) TGTypeOrMember {
-	node := g.layer.GetNode(string(nodeId))
+	node := g.layer.GetNode(nodeId)
 	switch node.Kind() {
 	case NodeTypeClass:
 		fallthrough
@@ -393,7 +390,7 @@ func (g *TypeGraph) LookupType(typeName string, module compilercommon.InputSourc
 
 // LookupReturnType looks up the return type for an source member or property getter.
 func (g *TypeGraph) LookupReturnType(sourceNode compilergraph.GraphNode) (TypeReference, bool) {
-	resolvedNode, found := g.layer.StartQuery(string(sourceNode.NodeId)).
+	resolvedNode, found := g.layer.StartQuery(sourceNode.NodeId).
 		In(NodePredicateSource).
 		IsKind(NodeTypeReturnable).
 		TryGetNode()

@@ -16,12 +16,18 @@ type irgASTNode struct {
 
 // Connect connects an IRG AST node to another IRG AST node.
 func (ast *irgASTNode) Connect(predicate string, other parser.AstNode) parser.AstNode {
-	ast.graphNode.Connect(predicate, other.(*irgASTNode).graphNode)
+	ast.graphNode.Connect(compilergraph.Predicate(predicate), other.(*irgASTNode).graphNode)
 	return ast
 }
 
-// Decorate decorates an IRG AST node with the given value.
+// Decorate decorates an IRG AST node with the given string value.
 func (ast *irgASTNode) Decorate(predicate string, value string) parser.AstNode {
-	ast.graphNode.Decorate(predicate, value)
+	ast.graphNode.Decorate(compilergraph.Predicate(predicate), value)
+	return ast
+}
+
+// DecorateWith decorates an IRG AST node with the given int value.
+func (ast *irgASTNode) DecorateWithInt(predicate string, value int) parser.AstNode {
+	ast.graphNode.DecorateWith(compilergraph.Predicate(predicate), value)
 	return ast
 }

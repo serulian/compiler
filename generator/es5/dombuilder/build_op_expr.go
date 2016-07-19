@@ -87,7 +87,7 @@ func (db *domBuilder) buildFunctionCall(node compilergraph.GraphNode) codedom.Ex
 // buildSliceExpression builds the CodeDOM for a slicer or indexer expression.
 func (db *domBuilder) buildSliceExpression(node compilergraph.GraphNode) codedom.Expression {
 	// Check if this is a slice vs an index.
-	_, isIndexer := node.TryGet(parser.NodeSliceExpressionIndex)
+	_, isIndexer := node.TryGetNode(parser.NodeSliceExpressionIndex)
 	if isIndexer {
 		return db.buildIndexerExpression(node)
 	} else {

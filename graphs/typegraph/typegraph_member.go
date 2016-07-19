@@ -84,12 +84,12 @@ func (tn TGMember) Node() compilergraph.GraphNode {
 
 // SourceNodeId returns the ID of the source node for this member, if any.
 func (tn TGMember) SourceNodeId() (compilergraph.GraphNodeId, bool) {
-	idFound, hasId := tn.GraphNode.TryGet(NodePredicateSource)
+	idFound, hasId := tn.GraphNode.TryGetValue(NodePredicateSource)
 	if !hasId {
 		return compilergraph.GraphNodeId(""), false
 	}
 
-	return compilergraph.GraphNodeId(idFound), true
+	return idFound.NodeId(), true
 }
 
 // HasBaseMember returns true if this member was cloned/inherited.
@@ -212,7 +212,7 @@ func (tn TGMember) MemberType() TypeReference {
 
 // HasGenerics returns whether this member has generics defined.
 func (tn TGMember) HasGenerics() bool {
-	_, isGeneric := tn.GraphNode.TryGet(NodePredicateMemberGeneric)
+	_, isGeneric := tn.GraphNode.TryGetNode(NodePredicateMemberGeneric)
 	return isGeneric
 }
 

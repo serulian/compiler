@@ -104,7 +104,7 @@ func (m SRGModule) ResolveType(path string) (TypeResolutionResult, bool) {
 
 // findImportPackageNode searches for the import package node under this module with the given
 // matching name found on the given predicate.
-func (m SRGModule) findImportPackageNode(name string, predicate string) (compilergraph.GraphNode, bool) {
+func (m SRGModule) findImportPackageNode(name string, predicate compilergraph.Predicate) (compilergraph.GraphNode, bool) {
 	return m.srg.layer.StartQuery(name).
 		In(predicate).
 		IsKind(parser.NodeTypeImportPackage).

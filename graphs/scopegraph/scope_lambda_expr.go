@@ -17,7 +17,7 @@ var _ = fmt.Printf
 
 // scopeLambdaExpression scopes a lambda expression in the SRG.
 func (sb *scopeBuilder) scopeLambdaExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
-	if _, ok := node.TryGet(parser.NodeLambdaExpressionBlock); ok {
+	if _, ok := node.TryGetNode(parser.NodeLambdaExpressionBlock); ok {
 		return sb.scopeFullLambaExpression(node, option)
 	} else {
 		return sb.scopeInlineLambaExpression(node, option)
@@ -109,7 +109,7 @@ func (sb *scopeBuilder) scopeInlineLambaExpression(node compilergraph.GraphNode,
 // ((a, b) => someExpr)(1, 2)
 func (sb *scopeBuilder) inferLambdaParameterTypes(node compilergraph.GraphNode) {
 	// If the lambda has no inferred parameters, nothing more to do.
-	if _, ok := node.TryGet(parser.NodeLambdaExpressionInferredParameter); !ok {
+	if _, ok := node.TryGetNode(parser.NodeLambdaExpressionInferredParameter); !ok {
 		return
 	}
 

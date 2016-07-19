@@ -5,8 +5,6 @@
 package shared
 
 import (
-	"strconv"
-
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/generator/es5/codedom"
 	"github.com/serulian/compiler/generator/escommon/esbuilder"
@@ -41,7 +39,7 @@ func getMapping(dom codedom.StatementOrExpression, positionMapper *compilercommo
 		return sourcemap.SourceMapping{}, false
 	}
 
-	startRune, _ := strconv.Atoi(basisNode.Get(parser.NodePredicateStartRune))
+	startRune := basisNode.GetValue(parser.NodePredicateStartRune).Int()
 	originalLine, originalCol, err := positionMapper.Map(compilercommon.InputSource(inputSource), startRune)
 	if err != nil {
 		panic(err)

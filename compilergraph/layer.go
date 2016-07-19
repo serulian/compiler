@@ -8,6 +8,7 @@ package compilergraph
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/serulian/compiler/compilerutil"
@@ -23,7 +24,7 @@ type GraphLayer struct {
 	id                string         // Unique ID for the layer.
 	prefix            string         // The predicate prefix
 	cayleyStore       *cayley.Handle // Handle to the cayley store.
-	nodeKindPredicate string         // Name of the predicate for representing the kind of a node in this layer.
+	nodeKindPredicate Predicate      // Name of the predicate for representing the kind of a node in this layer.
 	nodeKindEnum      TaggedValue    // Tagged value type that is the enum of possible node kinds.
 }
 
@@ -44,7 +45,7 @@ func (gl *GraphLayer) NewModifier() GraphLayerModifier {
 }
 
 // GetNode returns a node found in the graph layer.
-func (gl *GraphLayer) GetNode(nodeId string) GraphNode {
+func (gl *GraphLayer) GetNode(nodeId GraphNodeId) GraphNode {
 	result, found := gl.TryGetNode(nodeId)
 	if !found {
 		panic(fmt.Sprintf("Unknown node %s in layer %s (%s)", nodeId, gl.prefix, gl.id))
@@ -53,14 +54,15 @@ func (gl *GraphLayer) GetNode(nodeId string) GraphNode {
 }
 
 // TryGetNode tries to return a node found in the graph layer.
-func (gl *GraphLayer) TryGetNode(nodeId string) (GraphNode, bool) {
+func (gl *GraphLayer) TryGetNode(nodeId GraphNodeId) (GraphNode, bool) {
 	// Note: For efficiency reasons related to the overhead of constructing Cayley iterators,
 	// we instead perform the lookup of the node directly off of the memstore's QuadIterator.
 	// This code was originally:
 	//	return gl.StartQuery(nodeId).TryGetNode()
 
 	// Lookup an iterator of all quads with the node's ID as a subject.
-	if it, ok := gl.cayleyStore.QuadIterator(quad.Subject, gl.cayleyStore.ValueOf(nodeId)).(*memstore.Iterator); ok {
+	subjectValue := gl.cayleyStore.ValueOf(nodeIdToValue(nodeId))
+	if it, ok := gl.cayleyStore.QuadIterator(quad.Subject, subjectValue).(*memstore.Iterator); ok {
 		// Find a node with a predicate matching the prefixed "kind" predicate for the layer, which
 		// indicates this is a node in this layer.
 		fullKindPredicate := gl.getPrefixedPredicate(gl.nodeKindPredicate)
@@ -117,30 +119,45 @@ func (gl *GraphLayer) WalkOutward(startingNodes []GraphNode, callback WalkCallba
 		encountered[currentId] = true
 
 		// Lookup all quads in the system from the current node, outward.
-		it := gl.cayleyStore.QuadIterator(quad.Subject, gl.cayleyStore.ValueOf(string(currentId)))
+		subjectValue := gl.cayleyStore.ValueOf(nodeIdToValue(currentId))
+		it := gl.cayleyStore.QuadIterator(quad.Subject, subjectValue)
 
-		for graph.Next(it) {
-			quad := gl.cayleyStore.Quad(it.Result())
+		for nxt := graph.AsNexter(it); nxt.Next(); {
+			currentQuad := gl.cayleyStore.Quad(it.Result())
 
 			// Note: We skip any predicates that are not part of this graph layer.
-			predicate := quad.Predicate
+			predicate := valueToPredicateString(currentQuad.Predicate)
 			if !strings.HasPrefix(predicate, gl.prefix+"-") {
 				continue
 			}
 
 			// Try to retrieve the object as a node. If found, then we have another step in the walk.
 			// Otherwise, we have a string predicate value.
+			_, isPossibleNodeId := currentQuad.Object.(quad.Raw)
+			found := false
+			targetNode := GraphNode{}
 
-			// TODO(jschorr): Should we make graph node IDs tagged and then filter here rather than
-			// this check?
-			object := quad.Object
-			targetNode, found := gl.TryGetNode(object)
+			if isPossibleNodeId {
+				targetNode, found = gl.TryGetNode(valueToNodeId(currentQuad.Object))
+			}
 
-			if found {
+			if isPossibleNodeId && found {
 				workList = append(workList, &WalkResult{&currentResult.Node, predicate, targetNode, map[string]string{}})
 			} else {
 				// This is a value predicate.
-				currentResult.Predicates[predicate] = object
+				switch objectValue := currentQuad.Object.(type) {
+				case quad.String:
+					currentResult.Predicates[predicate] = string(objectValue)
+
+				case quad.Raw:
+					currentResult.Predicates[predicate] = string(objectValue)
+
+				case quad.Int:
+					currentResult.Predicates[predicate] = strconv.Itoa(int(objectValue))
+
+				default:
+					panic("Unknown object value type")
+				}
 			}
 		}
 
@@ -150,14 +167,15 @@ func (gl *GraphLayer) WalkOutward(startingNodes []GraphNode, callback WalkCallba
 	}
 }
 
-// getTaggedKey returns a unique string representing the tagged name and associated value, such
+// getTaggedKey returns a unique Quad value representing the tagged name and associated value, such
 // that it doesn't conflict with other tagged values in the system with the same data.
-func (gl *GraphLayer) getTaggedKey(value TaggedValue) string {
-	return value.Value() + "|" + value.Name() + "|" + gl.prefix
+func (gl *GraphLayer) getTaggedKey(value TaggedValue) quad.Value {
+	return taggedValueDataToValue(value.Value() + "|" + value.Name() + "|" + gl.prefix)
 }
 
 // parseTaggedKey parses an tagged value key (as returned by getTaggedKey) and returns the underlying value.
-func (gl *GraphLayer) parseTaggedKey(strValue string, example TaggedValue) interface{} {
+func (gl *GraphLayer) parseTaggedKey(value quad.Value, example TaggedValue) interface{} {
+	strValue := valueToTaggedValueData(value)
 	pieces := strings.SplitN(strValue, "|", 3)
 	if len(pieces) != 3 {
 		panic(fmt.Sprintf("Expected 3 pieces in tagged key, found: %v for value '%s'", pieces, strValue))
@@ -175,17 +193,16 @@ func (gl *GraphLayer) parseTaggedKey(strValue string, example TaggedValue) inter
 }
 
 // getPrefixedPredicate returns the given predicate prefixed with the layer prefix.
-func (gl *GraphLayer) getPrefixedPredicate(predicate string) string {
-	return gl.prefix + "-" + predicate
+func (gl *GraphLayer) getPrefixedPredicate(predicate Predicate) quad.Value {
+	return predicateToValue(Predicate(gl.prefix + "-" + string(predicate)))
 }
 
 // getPrefixedPredicates returns the given predicates prefixed with the layer prefix.
-func (gl *GraphLayer) getPrefixedPredicates(predicates ...string) []interface{} {
-	adjusted := make([]interface{}, 0, len(predicates))
-
-	for _, predicate := range predicates {
+func (gl *GraphLayer) getPrefixedPredicates(predicates ...Predicate) []interface{} {
+	adjusted := make([]interface{}, len(predicates))
+	for index, predicate := range predicates {
 		fullPredicate := gl.getPrefixedPredicate(predicate)
-		adjusted = append(adjusted, fullPredicate)
+		adjusted[index] = fullPredicate
 	}
 	return adjusted
 }
@@ -195,15 +212,15 @@ func (gl *GraphLayer) getPrefixedPredicates(predicates ...string) []interface{} 
 func (gl *GraphLayer) getPredicatesListForDebugging(graphNode GraphNode) []string {
 	var predicates = make([]string, 0)
 
-	nodeIdValue := gl.cayleyStore.ValueOf(string(graphNode.NodeId))
+	nodeIdValue := gl.cayleyStore.ValueOf(nodeIdToValue(graphNode.NodeId))
 	iit := gl.cayleyStore.QuadIterator(quad.Subject, nodeIdValue)
-	for graph.Next(iit) {
+	for nxt := graph.AsNexter(iit); nxt.Next(); {
 		quad := gl.cayleyStore.Quad(iit.Result())
 		predicates = append(predicates, fmt.Sprintf("Outgoing predicate: %v => %v", quad.Predicate, quad.Object))
 	}
 
 	oit := gl.cayleyStore.QuadIterator(quad.Object, nodeIdValue)
-	for graph.Next(oit) {
+	for nxt := graph.AsNexter(oit); nxt.Next(); {
 		quad := gl.cayleyStore.Quad(oit.Result())
 		predicates = append(predicates, fmt.Sprintf("Incoming predicate: %v <= %v", quad.Predicate, quad.Subject))
 	}

@@ -5,32 +5,22 @@
 package srg
 
 import (
-	"fmt"
-	"strconv"
-
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/parser"
 )
 
-// salForPredicates returns a SourceAndLocation for the loaded predicate map. Note that
-// the map *must* contain the NodePredicateSource and NodePredicateStartRune predicates.
-func salForPredicates(predicateValues map[string]string) compilercommon.SourceAndLocation {
-	return salForValues(predicateValues[parser.NodePredicateSource], predicateValues[parser.NodePredicateStartRune])
+// salForIterator returns a SourceAndLocation for the given iterator. Note that
+// the iterator *must* contain the NodePredicateSource and NodePredicateStartRune predicates.
+func salForIterator(iterator compilergraph.NodeIterator) compilercommon.SourceAndLocation {
+	return compilercommon.NewSourceAndLocation(
+		compilercommon.InputSource(iterator.GetPredicate(parser.NodePredicateSource).String()),
+		iterator.GetPredicate(parser.NodePredicateStartRune).Int())
 }
 
 // salForNode returns a SourceAndLocation for the given graph node.
 func salForNode(node compilergraph.GraphNode) compilercommon.SourceAndLocation {
-	return salForValues(node.Get(parser.NodePredicateSource), node.Get(parser.NodePredicateStartRune))
-}
-
-// salForValues returns a SourceAndLocation for the given string predicate values.
-func salForValues(sourceStr string, bytePositionStr string) compilercommon.SourceAndLocation {
-	source := compilercommon.InputSource(sourceStr)
-	bytePosition, err := strconv.Atoi(bytePositionStr)
-	if err != nil {
-		panic(fmt.Sprintf("Expected int value for byte position, found: %v", bytePositionStr))
-	}
-
-	return compilercommon.NewSourceAndLocation(source, bytePosition)
+	return compilercommon.NewSourceAndLocation(
+		compilercommon.InputSource(node.Get(parser.NodePredicateSource)),
+		node.GetValue(parser.NodePredicateStartRune).Int())
 }

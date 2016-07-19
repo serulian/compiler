@@ -114,8 +114,8 @@ func (t SRGTypeRef) ResolveType() (TypeResolutionResult, bool) {
 		// contains the range of the start and end rune, respectively, of the typeref. Since
 		// we know both nodes are in the same module, and the SRG is a tree, this validates
 		// that we are in the correct scope without having to walk the tree upward.
-		startRune := t.GraphNode.Get(parser.NodePredicateStartRune)
-		endRune := t.GraphNode.Get(parser.NodePredicateEndRune)
+		startRune := t.GraphNode.GetValue(parser.NodePredicateStartRune).Int()
+		endRune := t.GraphNode.GetValue(parser.NodePredicateEndRune).Int()
 
 		return q.
 			In(parser.NodeTypeDefinitionGeneric, parser.NodePredicateTypeMemberGeneric).
@@ -149,7 +149,7 @@ func (t SRGTypeRef) Generics() []SRGTypeRef {
 
 // HasGenerics returns whether this type reference has generics.
 func (t SRGTypeRef) HasGenerics() bool {
-	_, found := t.GraphNode.TryGet(parser.NodeTypeReferenceGeneric)
+	_, found := t.GraphNode.TryGetNode(parser.NodeTypeReferenceGeneric)
 	return found
 }
 
@@ -162,12 +162,12 @@ func (t SRGTypeRef) Parameters() []SRGTypeRef {
 
 // HasParameters returns whether this type reference has parameters.
 func (t SRGTypeRef) HasParameters() bool {
-	_, found := t.GraphNode.TryGet(parser.NodeTypeReferenceParameter)
+	_, found := t.GraphNode.TryGetNode(parser.NodeTypeReferenceParameter)
 	return found
 }
 
 // subReferences returns the subreferences found off of the given predicate, if any.
-func (t SRGTypeRef) subReferences(predicate string) []SRGTypeRef {
+func (t SRGTypeRef) subReferences(predicate compilergraph.Predicate) []SRGTypeRef {
 	subRefs := make([]SRGTypeRef, 0)
 	it := t.GraphNode.StartQuery().Out(predicate).BuildNodeIterator()
 	for it.Next() {
