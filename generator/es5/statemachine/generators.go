@@ -257,14 +257,19 @@ func (sg *stateGenerator) generateResolveExpression(resolveExpression *codedom.R
 	jumpToTarget := sg.jumpToStatement(resolveExpression.Target)
 	resolveData := struct {
 		ResolutionName string
+		RejectionName  string
 		JumpToTarget   string
 		Snippets       snippets
 		IsGenerator    bool
-	}{resolutionName, jumpToTarget, sg.snippets(), sg.isGeneratorFunction}
+	}{resolutionName, rejectionName, jumpToTarget, sg.snippets(), sg.isGeneratorFunction}
 
 	wrappingTemplateStr := `
 		{{ if .Data.ResolutionName }}
 		{{ .Data.ResolutionName }} = {{ emit .ResultExpr }};
+		{{ end }}
+
+		{{ if .Data.RejectionName }}
+		{{ .Data.RejectionName }} = null;
 		{{ end }}
 
 		{{ .Data.JumpToTarget }}
@@ -276,17 +281,21 @@ func (sg *stateGenerator) generateResolveExpression(resolveExpression *codedom.R
 	// Similarly, add a .catch onto the Promise with an assignment of the rejected error (if any)
 	// to the rejection variable (if any) and then a jump to the post-rejection state.
 	rejectData := struct {
-		Promise       esbuilder.SourceBuilder
-		RejectionName string
-		JumpToTarget  string
-		Snippets      snippets
-		IsGenerator   bool
-	}{promise, rejectionName, jumpToTarget, sg.snippets(), sg.isGeneratorFunction}
+		Promise        esbuilder.SourceBuilder
+		ResolutionName string
+		RejectionName  string
+		JumpToTarget   string
+		Snippets       snippets
+		IsGenerator    bool
+	}{promise, resolutionName, rejectionName, jumpToTarget, sg.snippets(), sg.isGeneratorFunction}
 
 	catchTemplateStr := `
 		({{ emit .Promise }}).catch(function($rejected) {
 			{{ if .RejectionName }}
 			{{ .RejectionName }} = $rejected;
+			{{ end }}
+			{{ if .ResolutionName }}
+			{{ .ResolutionName }} = null;
 			{{ end }}
 
 			{{ .JumpToTarget }}

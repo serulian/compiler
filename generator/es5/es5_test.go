@@ -216,6 +216,7 @@ var tests = []generationTest{
 	generationTest{"resource generator success test", "generator", "resource", integrationTestSuccessExpected, ""},
 
 	generationTest{"simple resolve statement test", "resolve", "simple", integrationTestSuccessExpected, ""},
+	generationTest{"looped resolve statement test", "resolve", "looped", integrationTestSuccessExpected, ""},
 	generationTest{"handle rejection resolve statement test", "resolve", "resolvereject", integrationTestSuccessExpected, ""},
 	generationTest{"async resolve statement test", "resolve", "async", integrationTestSuccessExpected, ""},
 	generationTest{"expect rejection resolve statement test", "resolve", "expectrejection", integrationTestSuccessExpected, ""},
