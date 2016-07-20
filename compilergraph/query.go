@@ -39,7 +39,7 @@ type EmptyIterator struct{}
 // Query represents all the different types of queries supported.
 type Query interface {
 	// HasWhere starts a new client-side query from the current query.
-	HasWhere(predicate Predicate, op clientQueryOperation, value interface{}) *ClientQuery
+	HasWhere(predicate Predicate, op clientQueryOperation, value interface{}) Query
 
 	// BuildNodeIterator returns a NodeIterator over the query.
 	BuildNodeIterator(predicates ...Predicate) NodeIterator

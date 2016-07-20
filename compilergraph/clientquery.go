@@ -13,7 +13,7 @@ type ClientQuery struct {
 }
 
 // HasWhere starts a new client-side query from the current query.
-func (cq *ClientQuery) HasWhere(predicate Predicate, op clientQueryOperation, value interface{}) *ClientQuery {
+func (cq *ClientQuery) HasWhere(predicate Predicate, op clientQueryOperation, value interface{}) Query {
 	cq.filters = append(cq.filters, clientQueryFilter{op, predicate, value})
 	return cq
 }

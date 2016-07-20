@@ -17,10 +17,9 @@ var _ = fmt.Printf
 // graphNodeIterator represents an iterator over a GraphQuery, with each call to Next()
 // updating the iterator with a node ID and a map of values found off of the specified predicates.
 type graphNodeIterator struct {
-	layer      *GraphLayer    // The parent graph layer.
-	iterator   graph.Iterator // The wrapped Cayley Iterator.
-	predicates []Predicate    // The set of predicates to retrieve.
-	marks      []string       // The marks added to the query.
+	layer    *GraphLayer    // The parent graph layer.
+	iterator graph.Iterator // The wrapped Cayley Iterator.
+	tagCount int            // The number of tags expected in tagResults.
 
 	node       GraphNode              // The current node (if any).
 	tagResults map[string]graph.Value // The current tag results, if any.
@@ -54,7 +53,7 @@ func (gni *graphNodeIterator) getRequestedPredicate(predicate Predicate) quad.Va
 
 // getMarked returns a value custom marked in the iterator.
 func (gni *graphNodeIterator) getMarked(name string) quad.Value {
-	value, ok := gni.tagResults[nameToMarkingName(name)]
+	value, ok := gni.tagResults[name]
 	if !ok {
 		panic(fmt.Sprintf("Marking name %s not found in tag results", name))
 	}
@@ -69,7 +68,7 @@ func (gni *graphNodeIterator) Next() bool {
 		return false
 	}
 
-	gni.tagResults = make(map[string]graph.Value, len(gni.predicates)+len(gni.marks)+1) // +1 for kind.
+	gni.tagResults = make(map[string]graph.Value, gni.tagCount)
 	gni.iterator.TagResults(gni.tagResults)
 
 	node := GraphNode{

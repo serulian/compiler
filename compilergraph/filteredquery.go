@@ -6,6 +6,8 @@ package compilergraph
 
 import (
 	"github.com/serulian/compiler/compilerutil"
+
+	"github.com/cayleygraph/cayley/quad"
 )
 
 // nodeFilter is a filtering function for a graph query.
@@ -34,30 +36,32 @@ func (fq *FilteredQuery) BuildNodeIterator(predicates ...Predicate) NodeIterator
 
 	// Otherwise, create a new query starting from the nodes found and send it
 	// to the filtering function.
+	fullKindPredicate := fq.query.layer.getPrefixedPredicate(fq.query.layer.nodeKindPredicate)
+
 	markId := compilerutil.NewUniqueId()
-	subQuery := fq.query.layer.StartQueryFromNodes(nodeIds...).mark(markId)
+	subQuery := fq.query.layer.StartQueryFromNodes(nodeIds...).mark(markId).save(fullKindPredicate, markId+"-kind")
 	filteredQuery := fq.filter(subQuery)
 	fit := filteredQuery.BuildNodeIterator()
 
-	// Collect the IDs of the filtered nodes.
-	var filteredIds = make([]GraphNodeId, 0)
+	// Collect the filtered nodes.
+	var filtered = make([]GraphNode, 0)
 	for fit.Next() {
-		filteredIds = append(filteredIds, valueToNodeId(fit.getMarked(markId)))
+		nodeId := valueToNodeId(fit.getMarked(markId))
+		kindValue := fit.getMarked(markId + "-kind")
+
+		filtered = append(filtered, GraphNode{nodeId, kindValue, fq.query.layer})
 	}
 
 	// If there are no nodes found, nothing more to do.
-	if len(filteredIds) == 0 {
+	if len(filtered) == 0 {
 		return EmptyIterator{}
 	}
 
-	// Return an iterator containing just those nodes.
-	// TODO: Maybe we can optimize this by looking up the kind above as well if the predicates
-	// list is empty?
-	return fq.query.layer.StartQueryFromNodes(filteredIds...).BuildNodeIterator(predicates...)
+	return &nodeReturnIterator{fq.query.layer, filtered, -1}
 }
 
 // HasWhere starts a new client query.
-func (fq *FilteredQuery) HasWhere(predicate Predicate, op clientQueryOperation, value interface{}) *ClientQuery {
+func (fq *FilteredQuery) HasWhere(predicate Predicate, op clientQueryOperation, value interface{}) Query {
 	return getClientQuery(fq.query.layer, fq, predicate, op, value)
 }
 
@@ -65,4 +69,38 @@ func (fq *FilteredQuery) HasWhere(predicate Predicate, op clientQueryOperation, 
 // more than a single node as a result of the query, the first node is returned.
 func (fq *FilteredQuery) TryGetNode() (GraphNode, bool) {
 	return tryGetNode(fq.BuildNodeIterator())
+}
+
+// nodeReturnIterator is an iterator that just returns a preset list of nodes.
+type nodeReturnIterator struct {
+	layer    *GraphLayer
+	filtered []GraphNode
+	index    int
+}
+
+func (nri *nodeReturnIterator) Next() bool {
+	nri.index++
+	return nri.index < len(nri.filtered)
+}
+
+func (nri *nodeReturnIterator) Node() GraphNode {
+	return nri.filtered[nri.index]
+}
+
+func (nri *nodeReturnIterator) GetPredicate(predicate Predicate) GraphValue {
+	// Note: This is a slightly slower path, but most filtered queries don't need extra
+	// predicates.
+	return nri.Node().GetValue(predicate)
+}
+
+func (nri *nodeReturnIterator) TaggedValue(predicate Predicate, example TaggedValue) interface{} {
+	return nri.Node().GetTagged(predicate, example)
+}
+
+func (nri *nodeReturnIterator) getRequestedPredicate(predicate Predicate) quad.Value {
+	panic("Should not be called")
+}
+
+func (nri *nodeReturnIterator) getMarked(name string) quad.Value {
+	panic("Should not be called")
 }
