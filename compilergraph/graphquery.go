@@ -17,9 +17,9 @@ var _ = fmt.Printf
 // GraphQuery is a type which wraps a Cayley Path and provides nice accessors for querying
 // the graph layer.
 type GraphQuery struct {
-	path  *path.Path  // The wrapped Cayley Path.
-	layer *GraphLayer // The layer under which this query was created.
-	marks []string    // The Cayley tags added.
+	path     *path.Path  // The wrapped Cayley Path.
+	layer    *GraphLayer // The layer under which this query was created.
+	tagCount int         // The number of tags.
 
 	singleStartingValue quad.Value // The single starting value, if any.
 	singlePredicate     quad.Value // The single predicate, if any.
@@ -37,9 +37,9 @@ func (gl *GraphLayer) StartQuery(values ...interface{}) GraphQuery {
 	}
 
 	return GraphQuery{
-		path:  cayley.StartPath(gl.cayleyStore, quadValues...),
-		layer: gl,
-		marks: make([]string, 0),
+		path:     cayley.StartPath(gl.cayleyStore, quadValues...),
+		layer:    gl,
+		tagCount: 0,
 
 		singleStartingValue: singleStartingValue,
 		singlePredicate:     nil,
@@ -57,9 +57,9 @@ func (gl *GraphLayer) StartQueryFromNodes(nodeIds ...GraphNodeId) GraphQuery {
 	}
 
 	return GraphQuery{
-		path:  cayley.StartPath(gl.cayleyStore, quadValues...),
-		layer: gl,
-		marks: make([]string, 0),
+		path:     cayley.StartPath(gl.cayleyStore, quadValues...),
+		layer:    gl,
+		tagCount: 0,
 
 		singleStartingValue: singleStartingValue,
 		singlePredicate:     nil,
@@ -108,9 +108,9 @@ func (gq GraphQuery) With(predicate Predicate) GraphQuery {
 	// that does not exist, the node is removed from the query.
 	adjustedPredicate := gq.layer.getPrefixedPredicate(predicate)
 	return GraphQuery{
-		path:  gq.path.Save(adjustedPredicate, "-"),
-		layer: gq.layer,
-		marks: gq.marks,
+		path:     gq.path.Save(adjustedPredicate, "-"),
+		layer:    gq.layer,
+		tagCount: gq.tagCount,
 	}
 }
 
@@ -118,9 +118,9 @@ func (gq GraphQuery) With(predicate Predicate) GraphQuery {
 // current node has the given kind.
 func (gq GraphQuery) InIfKind(predicate Predicate, kind TaggedValue) GraphQuery {
 	return GraphQuery{
-		path:  gq.path.Clone().Or(gq.IsKind(kind).In(predicate).path),
-		layer: gq.layer,
-		marks: gq.marks,
+		path:     gq.path.Clone().Or(gq.IsKind(kind).In(predicate).path),
+		layer:    gq.layer,
+		tagCount: gq.tagCount,
 	}
 }
 
@@ -135,9 +135,9 @@ func (gq GraphQuery) In(via ...Predicate) GraphQuery {
 	}
 
 	return GraphQuery{
-		path:  gq.path.In(adjustedVia...),
-		layer: gq.layer,
-		marks: gq.marks,
+		path:     gq.path.In(adjustedVia...),
+		layer:    gq.layer,
+		tagCount: gq.tagCount,
 
 		singleStartingValue: gq.singleStartingValue,
 		singlePredicate:     singlePredicate,
@@ -156,9 +156,9 @@ func (gq GraphQuery) Out(via ...Predicate) GraphQuery {
 	}
 
 	return GraphQuery{
-		path:  gq.path.Out(adjustedVia...),
-		layer: gq.layer,
-		marks: gq.marks,
+		path:     gq.path.Out(adjustedVia...),
+		layer:    gq.layer,
+		tagCount: gq.tagCount,
 
 		singleStartingValue: gq.singleStartingValue,
 		singlePredicate:     singlePredicate,
@@ -172,9 +172,9 @@ func (gq GraphQuery) HasTagged(via Predicate, values ...TaggedValue) GraphQuery 
 	adjustedVia := gq.layer.getPrefixedPredicate(via)
 	nodeValues := taggedToQuadValues(values, gq.layer)
 	return GraphQuery{
-		path:  gq.path.Has(adjustedVia, nodeValues...),
-		layer: gq.layer,
-		marks: gq.marks,
+		path:     gq.path.Has(adjustedVia, nodeValues...),
+		layer:    gq.layer,
+		tagCount: gq.tagCount,
 	}
 }
 
@@ -184,18 +184,29 @@ func (gq GraphQuery) Has(via Predicate, values ...interface{}) GraphQuery {
 	adjustedVia := gq.layer.getPrefixedPredicate(via)
 	nodeValues := toQuadValues(values, gq.layer)
 	return GraphQuery{
-		path:  gq.path.Has(adjustedVia, nodeValues...),
-		layer: gq.layer,
-		marks: gq.marks,
+		path:     gq.path.Has(adjustedVia, nodeValues...),
+		layer:    gq.layer,
+		tagCount: gq.tagCount,
 	}
 }
 
-// mark marks the current node(s) with a name that will appear in the Values map.
+// mark marks the current node(s) with a name that can be accessed
+// via getMarked.
 func (gq GraphQuery) mark(name string) GraphQuery {
 	return GraphQuery{
-		path:  gq.path.Tag(nameToMarkingName(name)),
-		layer: gq.layer,
-		marks: append(gq.marks, name),
+		path:     gq.path.Tag(name),
+		layer:    gq.layer,
+		tagCount: gq.tagCount + 1,
+	}
+}
+
+// save marks saves a predicate on the current node(s) with a name that can be accessed
+// via getMarked.
+func (gq GraphQuery) save(via interface{}, name string) GraphQuery {
+	return GraphQuery{
+		path:     gq.path.Save(via, name),
+		layer:    gq.layer,
+		tagCount: gq.tagCount,
 	}
 }
 
@@ -230,7 +241,7 @@ func (gq GraphQuery) TryGetNode() (GraphNode, bool) {
 }
 
 // HasWhere starts a new client query.
-func (gq GraphQuery) HasWhere(predicate Predicate, op clientQueryOperation, value interface{}) *ClientQuery {
+func (gq GraphQuery) HasWhere(predicate Predicate, op clientQueryOperation, value interface{}) Query {
 	return getClientQuery(gq.layer, gq, predicate, op, value)
 }
 
@@ -262,9 +273,8 @@ func (gq GraphQuery) BuildNodeIterator(predicates ...Predicate) NodeIterator {
 	oit, _ := it.Optimize()
 
 	return &graphNodeIterator{
-		layer:      gq.layer,
-		iterator:   oit,
-		predicates: predicates,
-		marks:      gq.marks,
+		layer:    gq.layer,
+		iterator: oit,
+		tagCount: gq.tagCount + 1 + len(predicates), // +1 for kind.
 	}
 }

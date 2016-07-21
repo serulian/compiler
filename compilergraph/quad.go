@@ -16,11 +16,6 @@ import (
 //   TaggedValue <-> quad.Raw
 //   Other values <-> quad.Value
 
-// nameToMarkingName returns the Cayley tag name for a mark call.
-func nameToMarkingName(name string) string {
-	return "marking|" + name
-}
-
 // nodeIdToValue returns a Cayley value for a Graph Node ID.
 func nodeIdToValue(nodeId GraphNodeId) quad.Value {
 	return quad.Raw(nodeId)
