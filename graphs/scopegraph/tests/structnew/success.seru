@@ -33,7 +33,11 @@ function<void> DoSomething() {
 		SomeField: 6,
 	})
 
-	/* generic */(GenericStruct<int>{
+	var generic = /* generic */(GenericStruct<int>{
 		SomeThing: 42,
+	})
+
+	/* genericmodified */(generic{
+		SomeThing: 43,
 	})
 }

@@ -25,7 +25,9 @@ enum ScopeLabel {
 
 	NOMINALLY_SHORTCUT_EXPR = 10; // Marks an expression of a nominal type being used 
 					 		      // where its root data is expected. This is a special
-							      // allowance as a shortcut for easier working with native APIs.s
+							      // allowance as a shortcut for easier working with native APIs.
+
+	STRUCTURAL_UPDATE_EXPR = 11; // Marks a structural new expression as updating an existing struct.
 }
 
 message ScopeInfo {
