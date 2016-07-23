@@ -105,6 +105,7 @@ var tests = []generationTest{
 	generationTest{"struct equality test", "struct", "equals", integrationTestSuccessExpected, ""},
 	generationTest{"struct nominal field test", "struct", "nominal", integrationTestSuccessExpected, ""},
 	generationTest{"struct null boxing test", "struct", "nullbox", integrationTestSuccessExpected, ""},
+	generationTest{"struct cloning test", "struct", "clone", integrationTestSuccessExpected, ""},
 
 	generationTest{"basic async test", "async", "async", integrationTestSuccessExpected, ""},
 	generationTest{"async struct param test", "async", "asyncstruct", integrationTestSuccessExpected, ""},

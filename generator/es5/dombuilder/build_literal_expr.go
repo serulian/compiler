@@ -10,6 +10,7 @@ import (
 
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/codedom"
+	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/parser"
 
@@ -35,10 +36,64 @@ func (db *domBuilder) buildStructuralNewExpression(node compilergraph.GraphNode)
 		initializers[entryMember.Name()] = db.getExpression(eit.Node(), parser.NodeStructuralNewEntryValue)
 	}
 
-	// Build a call to the new() constructor of the type with the required field expressions.
 	childScope, _ := db.scopegraph.GetScope(node.GetNode(parser.NodeStructuralNewTypeExpression))
-	staticTypeRef := childScope.StaticTypeRef(db.scopegraph.TypeGraph())
-	return db.buildStructInitializerExpression(staticTypeRef, initializers, node)
+
+	nodeScope, _ := db.scopegraph.GetScope(node)
+	if nodeScope.HasLabel(proto.ScopeLabel_STRUCTURAL_UPDATE_EXPR) {
+		// Build a call to the Clone() method followed by assignments.
+		resolvedTypeRef := childScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
+		return db.buildStructCloneExpression(resolvedTypeRef, initializers, node)
+	} else {
+		// Build a call to the new() constructor of the type with the required field expressions.
+		staticTypeRef := childScope.StaticTypeRef(db.scopegraph.TypeGraph())
+		return db.buildStructInitializerExpression(staticTypeRef, initializers, node)
+	}
+}
+
+// buildStructCloneExpression builds a clone expression for a struct type.
+func (db *domBuilder) buildStructCloneExpression(structType typegraph.TypeReference, initializers map[string]codedom.Expression, node compilergraph.GraphNode) codedom.Expression {
+	cloneMethod, found := structType.ResolveMember("Clone", typegraph.MemberResolutionInstance)
+	if !found {
+		panic(fmt.Sprintf("Missing Clone() method on type %v", structType))
+	}
+
+	cloneCall := codedom.MemberCall(
+		codedom.MemberReference(
+			db.getExpression(node, parser.NodeStructuralNewTypeExpression),
+			cloneMethod,
+			node),
+		cloneMethod,
+		[]codedom.Expression{},
+		node)
+
+	// Create a variable to hold the new instance.
+	clonedInstanceVarName := db.buildScopeVarName(node)
+
+	// Build the expressions. The first will be creation of the instance, followed by each of the
+	// assignments (field or property).
+	var expressions = []codedom.Expression{
+		codedom.LocalAssignment(clonedInstanceVarName, cloneCall, node),
+	}
+
+	for fieldName, initializer := range initializers {
+		member, found := structType.ResolveMember(fieldName, typegraph.MemberResolutionInstance)
+		if !found {
+			panic("Member not found in struct initializer construction")
+		}
+
+		assignExpr :=
+			codedom.MemberAssignment(member,
+				codedom.MemberReference(
+					codedom.LocalReference(clonedInstanceVarName, node),
+					member,
+					node),
+				initializer,
+				node)
+
+		expressions = append(expressions, assignExpr)
+	}
+
+	return codedom.CompoundExpression(expressions, codedom.LocalReference(clonedInstanceVarName, node), node)
 }
 
 // buildStructInitializerExpression builds an initializer expression for a struct type.
