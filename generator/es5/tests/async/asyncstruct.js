@@ -79,7 +79,7 @@ $module('asyncstruct', function () {
       },
     });
     this.$typesig = function () {
-      return $t.createtypesig(['Foo', 5, $g.____testlib.basictypes.Integer.$typeref()], ['Bar', 5, $g.____testlib.basictypes.Integer.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.asyncstruct.SomeStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.asyncstruct.SomeStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
+      return $t.createtypesig(['Foo', 5, $g.____testlib.basictypes.Integer.$typeref()], ['Bar', 5, $g.____testlib.basictypes.Integer.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.asyncstruct.SomeStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.asyncstruct.SomeStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['Clone', 2, $g.____testlib.basictypes.Function($g.asyncstruct.SomeStruct).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
     };
   });
 

@@ -275,6 +275,24 @@
                         "tdg-source-module": "tests/struct/success.seru"
                     }
                 }
+            },
+            "f56d6988384a1df66f06461f42df8324": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "f56d6988384a1df66f06461f42df8324",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "Clone",
+                        "tdg-member-promising": "true",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cSomeStruct\u003cT\u003e\u003e",
+                        "tdg-member-signature": "\n\u0005clone\u0010\u0002\u0018\u0000 \u0001*\u0017function\u003cSomeStruct\u003cT\u003e\u003e",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/struct/success.seru"
+                    }
+                }
             }
         },
         "Predicates": {

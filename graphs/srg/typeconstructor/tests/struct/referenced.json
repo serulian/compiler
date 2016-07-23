@@ -70,6 +70,24 @@
                     }
                 }
             },
+            "6b5240103d0cea708d1d0563e31a513e": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "6b5240103d0cea708d1d0563e31a513e",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "Clone",
+                        "tdg-member-promising": "true",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cAnotherStruct\u003e",
+                        "tdg-member-signature": "\n\u0005clone\u0010\u0002\u0018\u0000 \u0001*\u0017function\u003cAnotherStruct\u003e",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/struct/referenced.seru"
+                    }
+                }
+            },
             "7fc598e486119b6c41da8405f31005cf": {
                 "Predicate": "tdg-node-member",
                 "Child": {
@@ -341,6 +359,24 @@
                         "tdg-member-static": "true",
                         "tdg-node-kind": "8|NodeType|tdg",
                         "tdg-operator-name": "equals",
+                        "tdg-source-module": "tests/struct/referenced.seru"
+                    }
+                }
+            },
+            "73dbe3a4128400ce1d8508a2a6f2b719": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "73dbe3a4128400ce1d8508a2a6f2b719",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "Clone",
+                        "tdg-member-promising": "true",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cSomeStruct\u003e",
+                        "tdg-member-signature": "\n\u0005clone\u0010\u0002\u0018\u0000 \u0001*\u0014function\u003cSomeStruct\u003e",
+                        "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/struct/referenced.seru"
                     }
                 }

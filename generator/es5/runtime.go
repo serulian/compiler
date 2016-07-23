@@ -709,6 +709,22 @@ this.Serulian = (function($global) {
               return $promise.resolve($t.box(JSON.stringify(this, $global.__serulian_internal.autoUnbox, ' '), $a['string']));
             };
 
+            // Clone.
+            tpe.prototype.Clone = function() {
+              var instance = new tpe();
+              if (Object.assign) {
+                instance[BOXED_DATA_PROPERTY] = Object.assign({}, this[BOXED_DATA_PROPERTY]);
+              } else {
+                instance[BOXED_DATA_PROPERTY] = {};
+                for (var key in this[BOXED_DATA_PROPERTY]) {
+                  if (this[BOXED_DATA_PROPERTY].hasOwnProperty(key)) {
+                    instance[BOXED_DATA_PROPERTY][key] = this[BOXED_DATA_PROPERTY][key];
+                  }
+                }
+              }
+              return $promise.resolve(instance);
+            };
+
             // Stringify.
             tpe.prototype.Stringify = function(T) {
               var $this = this;

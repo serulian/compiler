@@ -1279,6 +1279,7 @@ var scopeGraphTests = []scopegraphTest{
 			expectedScopeEntry{"somestruct", expectedScope{true, proto.ScopeKind_VALUE, "SomeStruct", "void"}},
 			expectedScopeEntry{"required", expectedScope{true, proto.ScopeKind_VALUE, "RequiredClass", "void"}},
 			expectedScopeEntry{"generic", expectedScope{true, proto.ScopeKind_VALUE, "GenericStruct<Integer>", "void"}},
+			expectedScopeEntry{"genericmodified", expectedScope{true, proto.ScopeKind_VALUE, "GenericStruct<Integer>", "void"}},
 		},
 		"", ""},
 
@@ -1288,7 +1289,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"structural new non-type test", "structnew", "nontype",
 		[]expectedScopeEntry{},
-		"Cannot construct non-type expression", ""},
+		"Cannot clone and modify non-structural type function<void>", ""},
 
 	scopegraphTest{"structural new imported class test", "structnew", "importedclass",
 		[]expectedScopeEntry{},

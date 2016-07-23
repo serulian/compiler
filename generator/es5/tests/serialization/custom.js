@@ -167,7 +167,7 @@ $module('custom', function () {
       },
     });
     this.$typesig = function () {
-      return $t.createtypesig(['AnotherBool', 5, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.custom.AnotherStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.custom.AnotherStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
+      return $t.createtypesig(['AnotherBool', 5, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.custom.AnotherStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.custom.AnotherStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['Clone', 2, $g.____testlib.basictypes.Function($g.custom.AnotherStruct).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
     };
   });
 
@@ -270,7 +270,7 @@ $module('custom', function () {
       },
     });
     this.$typesig = function () {
-      return $t.createtypesig(['SomeField', 5, $g.____testlib.basictypes.Integer.$typeref()], ['AnotherField', 5, $g.____testlib.basictypes.Boolean.$typeref()], ['SomeInstance', 5, $g.custom.AnotherStruct.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.custom.SomeStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.custom.SomeStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
+      return $t.createtypesig(['SomeField', 5, $g.____testlib.basictypes.Integer.$typeref()], ['AnotherField', 5, $g.____testlib.basictypes.Boolean.$typeref()], ['SomeInstance', 5, $g.custom.AnotherStruct.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.custom.SomeStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.custom.SomeStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['Clone', 2, $g.____testlib.basictypes.Function($g.custom.SomeStruct).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
     };
   });
 

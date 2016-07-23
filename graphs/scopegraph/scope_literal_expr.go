@@ -19,17 +19,68 @@ var _ = fmt.Printf
 
 // scopeStructuralNewExpression scopes a structural new-type expressions.
 func (sb *scopeBuilder) scopeStructuralNewExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
-	// Scope the child expression and ensure it refers to a type.
+	// Scope the child expression and ensure it refers to a type or an existing struct.
 	childScope := sb.getScope(node.GetNode(parser.NodeStructuralNewTypeExpression))
 	if !childScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
 
-	if childScope.GetKind() != proto.ScopeKind_STATIC {
-		sb.decorateWithError(node, "Cannot construct non-type expression")
+	// If the child scope refers to a static type, then we are constructing a new instance of that
+	// type. Otherwise, we are "modifying" an existing structural instance via a clone.
+	if childScope.GetKind() == proto.ScopeKind_STATIC {
+		return sb.scopeStructuralNewTypeExpression(node, childScope)
+	} else if childScope.GetKind() == proto.ScopeKind_VALUE {
+		return sb.scopeStructuralNewCloneExpression(node, childScope)
+	} else {
+		sb.decorateWithError(node, "Cannot construct non-type, non-struct expression")
+		return newScope().Invalid().GetScope()
+	}
+}
+
+// scopeStructuralNewEntries scopes all the entries of a structural new expression.
+func (sb *scopeBuilder) scopeStructuralNewEntries(node compilergraph.GraphNode) (map[string]bool, bool) {
+	// Scope the defined entries. We also build a list here to ensure all required entries are
+	// added.
+	encountered := map[string]bool{}
+	eit := node.StartQuery().
+		Out(parser.NodeStructuralNewExpressionChildEntry).
+		BuildNodeIterator(parser.NodeStructuralNewEntryKey)
+
+	var isValid = true
+	for eit.Next() {
+		// Scope the entry.
+		entryName := eit.GetPredicate(parser.NodeStructuralNewEntryKey).String()
+		entryScope := sb.getScope(eit.Node())
+		if !entryScope.GetIsValid() {
+			isValid = false
+		}
+
+		encountered[entryName] = true
+	}
+
+	return encountered, isValid
+}
+
+// scopeStructuralNewCloneExpression scopes a structural new expression for constructing a new instance
+// of a structural type by cloning and modifying an existing one.
+func (sb *scopeBuilder) scopeStructuralNewCloneExpression(node compilergraph.GraphNode, childScope *proto.ScopeInfo) proto.ScopeInfo {
+	resolvedTypeRef := childScope.ResolvedTypeRef(sb.sg.tdg)
+	if !resolvedTypeRef.IsStruct() {
+		sb.decorateWithError(node, "Cannot clone and modify non-structural type %s", resolvedTypeRef)
 		return newScope().Invalid().GetScope()
 	}
 
+	_, isValid := sb.scopeStructuralNewEntries(node)
+	return newScope().
+		IsValid(isValid).
+		Resolving(resolvedTypeRef).
+		WithLabel(proto.ScopeLabel_STRUCTURAL_UPDATE_EXPR).
+		GetScope()
+}
+
+// scopeStructuralNewTypeExpression scopes a structural new expression for constructing a new instance
+// of a structural or class type.
+func (sb *scopeBuilder) scopeStructuralNewTypeExpression(node compilergraph.GraphNode, childScope *proto.ScopeInfo) proto.ScopeInfo {
 	// Retrieve the static type.
 	staticTypeRef := childScope.StaticTypeRef(sb.sg.tdg)
 
@@ -56,25 +107,7 @@ func (sb *scopeBuilder) scopeStructuralNewExpression(node compilergraph.GraphNod
 		return newScope().Invalid().Resolving(staticTypeRef).GetScope()
 	}
 
-	// Scope the defined entries. We also build a list here to ensure all required entries are
-	// added.
-	encountered := map[string]bool{}
-	eit := node.StartQuery().
-		Out(parser.NodeStructuralNewExpressionChildEntry).
-		BuildNodeIterator(parser.NodeStructuralNewEntryKey)
-
-	var isValid = true
-	for eit.Next() {
-		// Scope the entry.
-		entryName := eit.GetPredicate(parser.NodeStructuralNewEntryKey).String()
-		entryScope := sb.getScope(eit.Node())
-		if !entryScope.GetIsValid() {
-			isValid = false
-		}
-
-		encountered[entryName] = true
-	}
-
+	encountered, isValid := sb.scopeStructuralNewEntries(node)
 	if !isValid {
 		return newScope().Invalid().Resolving(staticTypeRef).GetScope()
 	}
@@ -94,7 +127,11 @@ func (sb *scopeBuilder) scopeStructuralNewExpression(node compilergraph.GraphNod
 func (sb *scopeBuilder) scopeStructuralNewExpressionEntry(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
 	parentNode := node.GetIncomingNode(parser.NodeStructuralNewExpressionChildEntry)
 	parentExprScope := sb.getScope(parentNode.GetNode(parser.NodeStructuralNewTypeExpression))
+
 	parentType := parentExprScope.StaticTypeRef(sb.sg.tdg)
+	if parentExprScope.GetKind() == proto.ScopeKind_VALUE {
+		parentType = parentExprScope.ResolvedTypeRef(sb.sg.tdg)
+	}
 
 	entryName := node.Get(parser.NodeStructuralNewEntryKey)
 

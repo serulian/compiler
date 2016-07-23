@@ -230,6 +230,19 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 				Decorate()
 		})
 
+		// function<ThisType> Clone()
+		g.defineMember(typeDecl, "Clone", []string{}, func(decorator *MemberDecorator, generics map[string]TGGeneric) {
+			var memberType = g.FunctionTypeReference(g.NewInstanceTypeReference(typeDecl))
+			decorator.
+				Static(false).
+				Promising(true).
+				Exported(true).
+				ReadOnly(true).
+				MemberType(memberType).
+				MemberKind(FunctionMemberSignature).
+				Decorate()
+		})
+
 		// function<string> String()
 		g.defineMember(typeDecl, "String", []string{}, func(decorator *MemberDecorator, generics map[string]TGGeneric) {
 			var memberType = g.FunctionTypeReference(g.StringTypeReference())
