@@ -38,6 +38,24 @@
                     }
                 }
             },
+            "434baadc53f7af77a0c9360fad91554e": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "434baadc53f7af77a0c9360fad91554e",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "Clone",
+                        "tdg-member-promising": "true",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cSomeStruct\u003e",
+                        "tdg-member-signature": "\n\u0005clone\u0010\u0002\u0018\u0000 \u0001*\u0014function\u003cSomeStruct\u003e",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/struct/tagged.seru"
+                    }
+                }
+            },
             "467c560d415ada0c0d3d9b4b554d1168": {
                 "Predicate": "tdg-node-member",
                 "Child": {
