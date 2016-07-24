@@ -24,7 +24,7 @@ $module('resource', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['released', 5, $g.____testlib.basictypes.Boolean.$typeref()], ['Release', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.resource.SomeResource).$typeref()]);
+      return $t.createtypesig(['Release', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.resource.SomeResource).$typeref()]);
     };
   });
 

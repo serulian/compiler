@@ -352,6 +352,28 @@ this.Serulian = (function($global) {
         return (S4(buf[0])+S4(buf[1])+"-"+S4(buf[2])+"-"+S4(buf[3])+"-"+S4(buf[4])+"-"+S4(buf[5])+S4(buf[6])+S4(buf[7]));
     },
 
+    // defineStructField defines a new field on a structural type.
+    'defineStructField': function(structType, name, serializableName, typeref, isBoxed, opt_nominalRootType, opt_nullAllowed) {
+      structType.$fields.push({
+        'name': name,
+        'serializableName': serializableName,
+        'typeref': typeref,
+        'nominalRootTyperef': opt_nominalRootType || typeref,
+        'isBoxed': isBoxed,
+        'nullAllowed': opt_nullAllowed
+      });
+
+      Object.defineProperty(structType.prototype, name, {
+        get: function() {
+          return this[BOXED_DATA_PROPERTY][name];
+        },
+
+        set: function(value) {
+          this[BOXED_DATA_PROPERTY][name] = value;
+        }
+      });
+    },
+
     // workerwrap wraps a function definition to be executed via a web worker. When the function
     // is invoked a new web worker will be spawned on this script. The method ID and all arguments
     // will be serialized and sent to the web worker, which will lookup the function, invoke it,
@@ -704,6 +726,34 @@ this.Serulian = (function($global) {
 
           // Add default type-system members.
           if (kind == 'struct') {
+            // $box.
+            tpe.$box = function(data) {    
+              var instance = new tpe();
+              instance[BOXED_DATA_PROPERTY] = data;
+              instance.$lazychecked = {};
+              instance.$unboxed = true;
+
+              // Override the getters to lazy check and auto-box where necessary.
+              tpe.$fields.forEach(function(field) {
+                Object.defineProperty(instance, field.name, {
+                  get: function() {
+                    if (!this.$lazychecked[field.name]) {
+                      $t.ensurevalue($t.unbox(this[BOXED_DATA_PROPERTY][field.serializableName]), field.nominalRootTyperef(), field.nullAllowed, field.name);
+                      this.$lazychecked[field.name] = true;
+                    }
+
+                    if (field.isBoxed) {
+                      return $t.box(this[BOXED_DATA_PROPERTY][field.serializableName], field.typeref());
+                    } else {
+                      return this[BOXED_DATA_PROPERTY][field.serializableName];
+                    }
+                  }
+                });
+              });
+
+              return instance;
+            };
+
             // String.
             tpe.prototype.String = function() {
               return $promise.resolve($t.box(JSON.stringify(this, $global.__serulian_internal.autoUnbox, ' '), $a['string']));
@@ -763,7 +813,52 @@ this.Serulian = (function($global) {
                 });
               };
             };
-          }
+
+            // Equals.
+            tpe.$equals = function(left, right) {
+              if (left === right) {
+                return $promise.resolve($t.box(true, $a['bool']));
+              }
+
+              // TODO: find a way to do this without checking *all* fields.
+              var promises = [];
+              tpe.$fields.forEach(function(field) {
+                promises.push(
+                  $t.equals(left[BOXED_DATA_PROPERTY][field.serializableName], 
+                            right[BOXED_DATA_PROPERTY][field.serializableName],
+                            field.typeref()));
+              });
+
+              return Promise.all(promises).then(function(values) {
+                for (var i = 0; i < values.length; i++) {
+                  if (!$t.unbox(values[i])) {
+                    return values[i];
+                  }
+                }
+
+                return $t.box(true, $a['bool']);
+              });
+            };
+
+            // Mapping.
+            tpe.prototype.Mapping = function() {
+              if (this.$unboxed) {
+                // Slower path for instances unboxed from native data. We call the properties
+                // to make sure we have the boxed forms.
+                var $this = this;
+                var mapped = {};
+                tpe.$fields.forEach(function(field) {
+                  mapped[field.serializableName] = $this[field.name];
+                });
+
+                return $promise.resolve($t.box(mapped, $a['mapping']($t.any)));
+              } else {
+                // Fast-path for compiler-constructed instances. All data is guarenteed to already
+                // be boxed.
+                return $promise.resolve($t.box(this[BOXED_DATA_PROPERTY], $a['mapping']($t.any)));
+              }
+            };
+          } // end struct
 
           return tpe;
         };

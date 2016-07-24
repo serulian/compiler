@@ -189,6 +189,23 @@ func (tn TGTypeDecl) LookupGeneric(name string) (TGGeneric, bool) {
 	return TGGeneric{node, tn.tdg}, true
 }
 
+// NonFieldMembers returns the type graph members for this type node that are not fields.
+func (tn TGTypeDecl) NonFieldMembers() []TGMember {
+	it := tn.GraphNode.StartQuery().
+		Out(NodePredicateMember, NodePredicateTypeOperator).
+		BuildNodeIterator()
+
+	var members = make([]TGMember, 0)
+	for it.Next() {
+		member := TGMember{it.Node(), tn.tdg}
+		if !member.IsField() {
+			members = append(members, member)
+		}
+	}
+
+	return members
+}
+
 // Members returns the type graph members for this type node.
 func (tn TGTypeDecl) Members() []TGMember {
 	it := tn.GraphNode.StartQuery().

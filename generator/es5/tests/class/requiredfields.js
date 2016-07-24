@@ -18,7 +18,7 @@ $module('requiredfields', function () {
       });
     };
     this.$typesig = function () {
-      return $t.createtypesig(['SomeField', 5, $g.____testlib.basictypes.Integer.$typeref()], ['AnotherField', 5, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.requiredfields.SomeClass).$typeref()]);
+      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.requiredfields.SomeClass).$typeref()]);
     };
   });
 

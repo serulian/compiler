@@ -54,7 +54,7 @@ $module('indexer', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['result', 5, $g.____testlib.basictypes.Boolean.$typeref()], ['index', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['setindex', 4, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.indexer.SomeClass).$typeref()]);
+      return $t.createtypesig(['index', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['setindex', 4, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.indexer.SomeClass).$typeref()]);
     };
   });
 

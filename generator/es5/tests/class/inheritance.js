@@ -18,7 +18,7 @@ $module('inheritance', function () {
       return $promise.empty();
     };
     this.$typesig = function () {
-      return $t.createtypesig(['SomeBool', 5, $g.____testlib.basictypes.Boolean.$typeref()], ['DoSomething', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.inheritance.FirstClass).$typeref()]);
+      return $t.createtypesig(['DoSomething', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.inheritance.FirstClass).$typeref()]);
     };
   });
 
@@ -40,7 +40,7 @@ $module('inheritance', function () {
       return $promise.empty();
     };
     this.$typesig = function () {
-      return $t.createtypesig(['SomeBool', 5, $g.____testlib.basictypes.Boolean.$typeref()], ['AnotherThing', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.inheritance.SecondClass).$typeref()]);
+      return $t.createtypesig(['AnotherThing', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.inheritance.SecondClass).$typeref()]);
     };
   });
 
@@ -83,7 +83,7 @@ $module('inheritance', function () {
       },
     });
     this.$typesig = function () {
-      return $t.createtypesig(['DoSomething', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['SomeBool', 5, $g.____testlib.basictypes.Boolean.$typeref()], ['AnotherThing', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.inheritance.MainClass).$typeref()]);
+      return $t.createtypesig(['DoSomething', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['AnotherThing', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.inheritance.MainClass).$typeref()]);
     };
   });
 
