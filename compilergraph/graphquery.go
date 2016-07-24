@@ -214,15 +214,10 @@ func (gq GraphQuery) save(via interface{}, name string) GraphQuery {
 func (gq GraphQuery) getValues() []quad.Value {
 	var values = make([]quad.Value, 0)
 	it := gq.path.BuildIterator()
-
-	for {
-		result := cayley.RawNext(it)
-		if !result {
-			return values
-		}
-
+	for it.Next() {
 		values = append(values, gq.layer.cayleyStore.NameOf(it.Result()))
 	}
+	return values
 }
 
 // GetNode executes the query and returns the single node found or panics.

@@ -7,7 +7,6 @@ package compilergraph
 import (
 	"fmt"
 
-	"github.com/cayleygraph/cayley"
 	"github.com/cayleygraph/cayley/graph"
 	"github.com/cayleygraph/cayley/quad"
 )
@@ -63,8 +62,7 @@ func (gni *graphNodeIterator) getMarked(name string) quad.Value {
 
 // Next move the iterator forward.
 func (gni *graphNodeIterator) Next() bool {
-	result := cayley.RawNext(gni.iterator)
-	if !result {
+	if !gni.iterator.Next() {
 		return false
 	}
 
