@@ -32,7 +32,7 @@ $module('property', function () {
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      return $t.createtypesig(['SomeBool', 5, $g.____testlib.basictypes.Boolean.$typeref()], ['SomeProp', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.property.SomeClass).$typeref()]);
+      return $t.createtypesig(['SomeProp', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.property.SomeClass).$typeref()]);
     };
   });
 

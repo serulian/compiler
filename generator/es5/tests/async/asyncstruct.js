@@ -5,81 +5,26 @@ $module('asyncstruct', function () {
     var $instance = this.prototype;
     $static.new = function (Foo, Bar) {
       var instance = new $static();
+      instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         Foo: Foo,
         Bar: Bar,
       };
       return $promise.resolve(instance);
     };
-    $static.$box = function (data) {
-      var instance = new $static();
-      instance[BOXED_DATA_PROPERTY] = data;
-      instance.$lazychecked = {
-      };
-      Object.defineProperty(instance, 'Foo', {
-        get: function () {
-          if (this.$lazychecked['Foo']) {
-            $t.ensurevalue(this[BOXED_DATA_PROPERTY]['Foo'], $g.____testlib.basictypes.Integer, false, 'Foo');
-            this.$lazychecked['Foo'] = true;
-          }
-          return $t.box(this[BOXED_DATA_PROPERTY]['Foo'], $g.____testlib.basictypes.Integer);
-        },
-      });
-      Object.defineProperty(instance, 'Bar', {
-        get: function () {
-          if (this.$lazychecked['Bar']) {
-            $t.ensurevalue(this[BOXED_DATA_PROPERTY]['Bar'], $g.____testlib.basictypes.Integer, false, 'Bar');
-            this.$lazychecked['Bar'] = true;
-          }
-          return $t.box(this[BOXED_DATA_PROPERTY]['Bar'], $g.____testlib.basictypes.Integer);
-        },
-      });
-      instance.Mapping = function () {
-        var mapped = {
-        };
-        mapped['Foo'] = this.Foo;
-        mapped['Bar'] = this.Bar;
-        return $promise.resolve($t.box(mapped, $g.____testlib.basictypes.Mapping($t.any)));
-      };
-      return instance;
-    };
-    $instance.Mapping = function () {
-      return $promise.resolve($t.box(this[BOXED_DATA_PROPERTY], $g.____testlib.basictypes.Mapping($t.any)));
-    };
-    $static.$equals = function (left, right) {
-      if (left === right) {
-        return $promise.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
-      }
-      var promises = [];
-      promises.push($t.equals(left[BOXED_DATA_PROPERTY]['Foo'], right[BOXED_DATA_PROPERTY]['Foo'], $g.____testlib.basictypes.Integer));
-      promises.push($t.equals(left[BOXED_DATA_PROPERTY]['Bar'], right[BOXED_DATA_PROPERTY]['Bar'], $g.____testlib.basictypes.Integer));
-      return Promise.all(promises).then(function (values) {
-        for (var i = 0; i < values.length; i++) {
-          if (!$t.unbox(values[i])) {
-            return values[i];
-          }
-        }
-        return $t.box(true, $g.____testlib.basictypes.Boolean);
-      });
-    };
-    Object.defineProperty($instance, 'Foo', {
-      get: function () {
-        return this[BOXED_DATA_PROPERTY]['Foo'];
-      },
-      set: function (value) {
-        this[BOXED_DATA_PROPERTY]['Foo'] = value;
-      },
-    });
-    Object.defineProperty($instance, 'Bar', {
-      get: function () {
-        return this[BOXED_DATA_PROPERTY]['Bar'];
-      },
-      set: function (value) {
-        this[BOXED_DATA_PROPERTY]['Bar'] = value;
-      },
-    });
+    $static.$fields = [];
+    $t.defineStructField($static, 'Foo', 'Foo', function () {
+      return $g.____testlib.basictypes.Integer;
+    }, true, function () {
+      return $g.____testlib.basictypes.Integer;
+    }, false);
+    $t.defineStructField($static, 'Bar', 'Bar', function () {
+      return $g.____testlib.basictypes.Integer;
+    }, true, function () {
+      return $g.____testlib.basictypes.Integer;
+    }, false);
     this.$typesig = function () {
-      return $t.createtypesig(['Foo', 5, $g.____testlib.basictypes.Integer.$typeref()], ['Bar', 5, $g.____testlib.basictypes.Integer.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.asyncstruct.SomeStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.asyncstruct.SomeStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['Clone', 2, $g.____testlib.basictypes.Function($g.asyncstruct.SomeStruct).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
+      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.asyncstruct.SomeStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.asyncstruct.SomeStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['Clone', 2, $g.____testlib.basictypes.Function($g.asyncstruct.SomeStruct).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
     };
   });
 

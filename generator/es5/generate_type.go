@@ -157,9 +157,10 @@ const typeSignatureTemplateStr = `
 	this.$typesig = function() {
 		return $t.createtypesig(
 		{{ $parent := . }}
-		{{ range $midx, $member := .Type.Members }}
-			{{ if $midx }},{{ end }}
-			['{{ $member.Name }}', {{ $member.Signature.MemberKind }}, ({{ $parent.TypeReferenceCall $member.MemberType }}).$typeref()]
+		{{ $counter := 0 }}
+		{{ range $midx, $member := .Type.NonFieldMembers }}
+  		  {{ if $midx }},{{ end }}
+		  ['{{ $member.Name }}', {{ $member.Signature.MemberKind }}, ({{ $parent.TypeReferenceCall $member.MemberType }}).$typeref()]
 		{{ end }}
 		);
 	};
@@ -234,6 +235,8 @@ this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{
 	// new is the constructor called from Serulian code to construct the struct instance.
 	$static.new = function({{ range $ridx, $field := .RequiredFields }}{{ if $ridx }}, {{ end }}{{ $field.Name }}{{ end }}) {
 		var instance = new $static();
+		instance.$unboxed = false;
+
 		instance[BOXED_DATA_PROPERTY] = {
 			{{ range $idx, $field := .RequiredFields }}
 			'{{ $field.SerializableName }}': {{ $field.Name }},
@@ -243,85 +246,19 @@ this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{
 		return $promise.resolve(instance);
 	};
 
+	$static.$fields = [];
+
 	{{ $parent := . }}
 
-	// $box is the constructor called when deserializing a struct from JSON or another form of Mapping.
-	$static.$box = function(data) {		
-		var instance = new $static();
-		instance[BOXED_DATA_PROPERTY] = data;
-		instance.$lazychecked = {};
-
-		// Override the properties to ensure we box as necessary.
-		{{ range $idx, $field := .Fields }}
-	 	{{ $boxed := $field.MemberType.IsNominalOrStruct }}
-		  Object.defineProperty(instance, '{{ $field.Name }}', {
-		    get: function() {
-		    	if (this.$lazychecked['{{ $field.SerializableName }}']) {
-		    		$t.ensurevalue(this[BOXED_DATA_PROPERTY]['{{ $field.SerializableName }}'], {{ $parent.TypeReferenceCall $field.MemberType.NominalRootType }}, {{ $field.MemberType.NullValueAllowed }}, '{{ $field.Name }}');
-		    		this.$lazychecked['{{ $field.SerializableName }}'] = true;
-		    	}
-
-		    	{{ if $boxed }}
-		    	return $t.box(this[BOXED_DATA_PROPERTY]['{{ $field.SerializableName }}'], {{ $parent.TypeReferenceCall $field.MemberType }});
-	    		{{ else }}
-		    	return this[BOXED_DATA_PROPERTY]['{{ $field.SerializableName }}'];
-		    	{{ end }}
-		    }
-		  });
-		{{ end }}
-
-		// Override Mapping to make sure it returns boxed values.
-		instance.Mapping = function() {
-			var mapped = {};
-
-			{{ range $idx, $field := .Fields }}
-				mapped['{{ $field.SerializableName }}'] = this.{{ $field.Name }};
-			{{ end }}
-
-			return $promise.resolve($t.box(mapped, {{ .TypeReferenceCall .MappingAnyType }}));
-		};
-
-		return instance;
-	};
-
-	$instance.Mapping = function() {
-		return $promise.resolve($t.box(this[BOXED_DATA_PROPERTY], {{ .TypeReferenceCall .MappingAnyType }}));
-	};
-
-	$static.$equals = function(left, right) {
-		if (left === right) {
-			return $promise.resolve($t.box(true, {{ .TypeReferenceCall .BoolType }}));
-		}
-
-		// TODO: find a way to do this without checking *all* fields.
-		var promises = [];
-		{{ range $idx, $field := .Fields }}
-		promises.push($t.equals(left[BOXED_DATA_PROPERTY]['{{ $field.SerializableName }}'], 
-		 					    right[BOXED_DATA_PROPERTY]['{{ $field.SerializableName }}'],
-		 					    {{ $parent.TypeReferenceCall $field.MemberType }}));
-		{{ end }}
-
-		return Promise.all(promises).then(function(values) {
-		  for (var i = 0; i < values.length; i++) {
-		  	if (!$t.unbox(values[i])) {
-	   		  return values[i];
-		  	}
-		  }
-
-   		  return $t.box(true, {{ .TypeReferenceCall .BoolType }});
-		});
-	};
-
 	{{ range $idx, $field := .Fields }}
-	  Object.defineProperty($instance, '{{ $field.Name }}', {
-	    get: function() {
-	    	return this[BOXED_DATA_PROPERTY]['{{ $field.SerializableName }}'];
-	    },
-
-	    set: function(value) {
-	    	this[BOXED_DATA_PROPERTY]['{{ $field.SerializableName }}'] = value;
-	    }
-	  });
+	 	{{ $boxed := $field.MemberType.IsNominalOrStruct }}
+		$t.defineStructField($static,
+							 '{{ $field.Name }}',
+							 '{{ $field.SerializableName }}',
+							 function() { return {{ $parent.TypeReferenceCall $field.MemberType }} },
+							 {{ $boxed }},
+							 function() { return {{ $parent.TypeReferenceCall $field.MemberType.NominalRootType }} },
+							 {{ $field.MemberType.NullValueAllowed }});
 	{{ end }}
 
   	{{ .TypeSignatureMethod }}
@@ -344,9 +281,9 @@ this.$type('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .
 		return {{ .TypeReferenceCall .NominalDataType }};
 	};
 
-	{{range $idx, $kv := .GenerateImplementedMembers.UnsafeIter }}
+	{{ range $idx, $kv := .GenerateImplementedMembers.UnsafeIter }}
   	  {{ emit $kv.Value }}
-  	{{end}}
+  	{{ end }}
 
   	{{ .TypeSignatureMethod }}
 });

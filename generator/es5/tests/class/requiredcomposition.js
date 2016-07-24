@@ -15,7 +15,7 @@ $module('requiredcomposition', function () {
       });
     };
     this.$typesig = function () {
-      return $t.createtypesig(['FirstValue', 5, $g.____testlib.basictypes.Integer.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.requiredcomposition.First).$typeref()]);
+      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.requiredcomposition.First).$typeref()]);
     };
   });
 
@@ -34,7 +34,7 @@ $module('requiredcomposition', function () {
       });
     };
     this.$typesig = function () {
-      return $t.createtypesig(['SecondValue', 5, $g.____testlib.basictypes.String.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.requiredcomposition.Second).$typeref()]);
+      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.requiredcomposition.Second).$typeref()]);
     };
   });
 
@@ -71,7 +71,7 @@ $module('requiredcomposition', function () {
       },
     });
     this.$typesig = function () {
-      return $t.createtypesig(['FirstValue', 5, $g.____testlib.basictypes.Integer.$typeref()], ['SecondValue', 5, $g.____testlib.basictypes.String.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.requiredcomposition.SomeClass).$typeref()]);
+      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.requiredcomposition.SomeClass).$typeref()]);
     };
   });
 

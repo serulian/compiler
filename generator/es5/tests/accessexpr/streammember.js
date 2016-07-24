@@ -14,7 +14,7 @@ $module('streammember', function () {
       });
     };
     this.$typesig = function () {
-      return $t.createtypesig(['SomeInt', 5, $g.____testlib.basictypes.Integer.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.streammember.SomeClass).$typeref()]);
+      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.streammember.SomeClass).$typeref()]);
     };
   });
 

@@ -59,7 +59,7 @@ $module('memberaccess', function () {
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      return $t.createtypesig(['someInt', 5, $g.____testlib.basictypes.Integer.$typeref()], ['someBool', 5, $g.____testlib.basictypes.Boolean.$typeref()], ['Build', 1, $g.____testlib.basictypes.Function($g.memberaccess.SomeClass).$typeref()], ['InstanceFunc', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['SomeProp', 3, $g.____testlib.basictypes.Integer.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.memberaccess.SomeClass).$typeref()]);
+      return $t.createtypesig(['Build', 1, $g.____testlib.basictypes.Function($g.memberaccess.SomeClass).$typeref()], ['InstanceFunc', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['SomeProp', 3, $g.____testlib.basictypes.Integer.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.memberaccess.SomeClass).$typeref()]);
     };
   });
 

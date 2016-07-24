@@ -5,81 +5,26 @@ $module('equals', function () {
     var $instance = this.prototype;
     $static.new = function (SomeValue, AnotherValue) {
       var instance = new $static();
+      instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         SomeValue: SomeValue,
         AnotherValue: AnotherValue,
       };
       return $promise.resolve(instance);
     };
-    $static.$box = function (data) {
-      var instance = new $static();
-      instance[BOXED_DATA_PROPERTY] = data;
-      instance.$lazychecked = {
-      };
-      Object.defineProperty(instance, 'SomeValue', {
-        get: function () {
-          if (this.$lazychecked['SomeValue']) {
-            $t.ensurevalue(this[BOXED_DATA_PROPERTY]['SomeValue'], $g.____testlib.basictypes.Integer, false, 'SomeValue');
-            this.$lazychecked['SomeValue'] = true;
-          }
-          return $t.box(this[BOXED_DATA_PROPERTY]['SomeValue'], $g.____testlib.basictypes.Integer);
-        },
-      });
-      Object.defineProperty(instance, 'AnotherValue', {
-        get: function () {
-          if (this.$lazychecked['AnotherValue']) {
-            $t.ensurevalue(this[BOXED_DATA_PROPERTY]['AnotherValue'], $g.equals.Bar, false, 'AnotherValue');
-            this.$lazychecked['AnotherValue'] = true;
-          }
-          return $t.box(this[BOXED_DATA_PROPERTY]['AnotherValue'], $g.equals.Bar);
-        },
-      });
-      instance.Mapping = function () {
-        var mapped = {
-        };
-        mapped['SomeValue'] = this.SomeValue;
-        mapped['AnotherValue'] = this.AnotherValue;
-        return $promise.resolve($t.box(mapped, $g.____testlib.basictypes.Mapping($t.any)));
-      };
-      return instance;
-    };
-    $instance.Mapping = function () {
-      return $promise.resolve($t.box(this[BOXED_DATA_PROPERTY], $g.____testlib.basictypes.Mapping($t.any)));
-    };
-    $static.$equals = function (left, right) {
-      if (left === right) {
-        return $promise.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
-      }
-      var promises = [];
-      promises.push($t.equals(left[BOXED_DATA_PROPERTY]['SomeValue'], right[BOXED_DATA_PROPERTY]['SomeValue'], $g.____testlib.basictypes.Integer));
-      promises.push($t.equals(left[BOXED_DATA_PROPERTY]['AnotherValue'], right[BOXED_DATA_PROPERTY]['AnotherValue'], $g.equals.Bar));
-      return Promise.all(promises).then(function (values) {
-        for (var i = 0; i < values.length; i++) {
-          if (!$t.unbox(values[i])) {
-            return values[i];
-          }
-        }
-        return $t.box(true, $g.____testlib.basictypes.Boolean);
-      });
-    };
-    Object.defineProperty($instance, 'SomeValue', {
-      get: function () {
-        return this[BOXED_DATA_PROPERTY]['SomeValue'];
-      },
-      set: function (value) {
-        this[BOXED_DATA_PROPERTY]['SomeValue'] = value;
-      },
-    });
-    Object.defineProperty($instance, 'AnotherValue', {
-      get: function () {
-        return this[BOXED_DATA_PROPERTY]['AnotherValue'];
-      },
-      set: function (value) {
-        this[BOXED_DATA_PROPERTY]['AnotherValue'] = value;
-      },
-    });
+    $static.$fields = [];
+    $t.defineStructField($static, 'SomeValue', 'SomeValue', function () {
+      return $g.____testlib.basictypes.Integer;
+    }, true, function () {
+      return $g.____testlib.basictypes.Integer;
+    }, false);
+    $t.defineStructField($static, 'AnotherValue', 'AnotherValue', function () {
+      return $g.equals.Bar;
+    }, true, function () {
+      return $g.equals.Bar;
+    }, false);
     this.$typesig = function () {
-      return $t.createtypesig(['SomeValue', 5, $g.____testlib.basictypes.Integer.$typeref()], ['AnotherValue', 5, $g.equals.Bar.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.equals.Foo).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.equals.Foo).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['Clone', 2, $g.____testlib.basictypes.Function($g.equals.Foo).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
+      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.equals.Foo).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.equals.Foo).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['Clone', 2, $g.____testlib.basictypes.Function($g.equals.Foo).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
     };
   });
 
@@ -88,61 +33,20 @@ $module('equals', function () {
     var $instance = this.prototype;
     $static.new = function (StringValue) {
       var instance = new $static();
+      instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         StringValue: StringValue,
       };
       return $promise.resolve(instance);
     };
-    $static.$box = function (data) {
-      var instance = new $static();
-      instance[BOXED_DATA_PROPERTY] = data;
-      instance.$lazychecked = {
-      };
-      Object.defineProperty(instance, 'StringValue', {
-        get: function () {
-          if (this.$lazychecked['StringValue']) {
-            $t.ensurevalue(this[BOXED_DATA_PROPERTY]['StringValue'], $g.____testlib.basictypes.String, false, 'StringValue');
-            this.$lazychecked['StringValue'] = true;
-          }
-          return $t.box(this[BOXED_DATA_PROPERTY]['StringValue'], $g.____testlib.basictypes.String);
-        },
-      });
-      instance.Mapping = function () {
-        var mapped = {
-        };
-        mapped['StringValue'] = this.StringValue;
-        return $promise.resolve($t.box(mapped, $g.____testlib.basictypes.Mapping($t.any)));
-      };
-      return instance;
-    };
-    $instance.Mapping = function () {
-      return $promise.resolve($t.box(this[BOXED_DATA_PROPERTY], $g.____testlib.basictypes.Mapping($t.any)));
-    };
-    $static.$equals = function (left, right) {
-      if (left === right) {
-        return $promise.resolve($t.box(true, $g.____testlib.basictypes.Boolean));
-      }
-      var promises = [];
-      promises.push($t.equals(left[BOXED_DATA_PROPERTY]['StringValue'], right[BOXED_DATA_PROPERTY]['StringValue'], $g.____testlib.basictypes.String));
-      return Promise.all(promises).then(function (values) {
-        for (var i = 0; i < values.length; i++) {
-          if (!$t.unbox(values[i])) {
-            return values[i];
-          }
-        }
-        return $t.box(true, $g.____testlib.basictypes.Boolean);
-      });
-    };
-    Object.defineProperty($instance, 'StringValue', {
-      get: function () {
-        return this[BOXED_DATA_PROPERTY]['StringValue'];
-      },
-      set: function (value) {
-        this[BOXED_DATA_PROPERTY]['StringValue'] = value;
-      },
-    });
+    $static.$fields = [];
+    $t.defineStructField($static, 'StringValue', 'StringValue', function () {
+      return $g.____testlib.basictypes.String;
+    }, true, function () {
+      return $g.____testlib.basictypes.String;
+    }, false);
     this.$typesig = function () {
-      return $t.createtypesig(['StringValue', 5, $g.____testlib.basictypes.String.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.equals.Bar).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.equals.Bar).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['Clone', 2, $g.____testlib.basictypes.Function($g.equals.Bar).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
+      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.equals.Bar).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.equals.Bar).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['Clone', 2, $g.____testlib.basictypes.Function($g.equals.Bar).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
     };
   });
 
