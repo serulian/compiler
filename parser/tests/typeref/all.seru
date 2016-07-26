@@ -19,3 +19,6 @@ var<SomeClass<any>> anyinnerref
 var<[]SomeClass> sliceref
 var<[]{SomeClass}> mappingref
 var<any*> anystream
+var<?[]SomeClass> nullableslice
+var<?int> nullableprefix
+var<*int> streamableprefix

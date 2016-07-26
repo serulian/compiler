@@ -1,5 +1,5 @@
 NodeTypeFile
-  end-rune = 627
+  end-rune = 711
   input-source = all type reference test
   start-rune = 0
   child-node =>
@@ -763,3 +763,86 @@ NodeTypeFile
               end-rune = 614
               input-source = all type reference test
               start-rune = 612
+    NodeTypeVariable
+      end-rune = 658
+      input-source = all type reference test
+      named = nullableslice
+      start-rune = 628
+      typemember-declared-type =>
+        NodeTypeNullable
+          end-rune = 643
+          input-source = all type reference test
+          start-rune = 633
+          typereference-inner-type =>
+            NodeTypeSlice
+              end-rune = 643
+              input-source = all type reference test
+              start-rune = 633
+              typereference-inner-type =>
+                NodeTypeTypeReference
+                  end-rune = 643
+                  input-source = all type reference test
+                  start-rune = 635
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 643
+                      input-source = all type reference test
+                      start-rune = 635
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 643
+                          identifieraccess-name = SomeClass
+                          input-source = all type reference test
+                          start-rune = 635
+    NodeTypeVariable
+      end-rune = 683
+      input-source = all type reference test
+      named = nullableprefix
+      start-rune = 660
+      typemember-declared-type =>
+        NodeTypeNullable
+          end-rune = 667
+          input-source = all type reference test
+          start-rune = 665
+          typereference-inner-type =>
+            NodeTypeTypeReference
+              end-rune = 667
+              input-source = all type reference test
+              start-rune = 665
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 667
+                  input-source = all type reference test
+                  start-rune = 665
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 667
+                      identifieraccess-name = int
+                      input-source = all type reference test
+                      start-rune = 665
+    NodeTypeVariable
+      end-rune = 710
+      input-source = all type reference test
+      named = streamableprefix
+      start-rune = 685
+      typemember-declared-type =>
+        NodeTypeStream
+          end-rune = 692
+          input-source = all type reference test
+          start-rune = 690
+          typereference-inner-type =>
+            NodeTypeTypeReference
+              end-rune = 692
+              input-source = all type reference test
+              start-rune = 690
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 692
+                  input-source = all type reference test
+                  start-rune = 690
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 692
+                      identifieraccess-name = int
+                      input-source = all type reference test
+                      start-rune = 690
