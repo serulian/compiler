@@ -1051,6 +1051,21 @@ func (p *sourceParser) consumeTypeReference(option typeReferenceOption) AstNode 
 		return voidNode
 	}
 
+	// Check for a prefixed slice or nullable.
+	if _, ok := p.tryConsume(tokenTypeTimes); ok {
+		streamNode := p.startNode(NodeTypeStream)
+		streamNode.Connect(NodeTypeReferenceInnerType, p.consumeTypeReference(typeReferenceNoVoid))
+		p.finishNode()
+		return streamNode
+	}
+
+	if _, ok := p.tryConsume(tokenTypeQuestionMark); ok {
+		nullableNode := p.startNode(NodeTypeNullable)
+		nullableNode.Connect(NodeTypeReferenceInnerType, p.consumeTypeReference(typeReferenceNoVoid))
+		p.finishNode()
+		return nullableNode
+	}
+
 	// Check for a slice or mapping.
 	if p.isToken(tokenTypeLeftBracket) {
 		t := p.newLookaheadTracker()
@@ -2948,6 +2963,9 @@ func (p *sourceParser) lookaheadGenericSpecifier(t *lookaheadTracker) bool {
 // lookaheadTypeReference performs lookahead via the given tracker, attempting to
 // match a type reference.
 func (p *sourceParser) lookaheadTypeReference(t *lookaheadTracker) bool {
+	// Match any nullable or streams.
+	t.matchToken(tokenTypeTimes, tokenTypeQuestionMark)
+
 	for {
 		// Type name or path.
 		if _, ok := t.matchToken(tokenTypeIdentifer, tokenTypeKeyword); !ok {
