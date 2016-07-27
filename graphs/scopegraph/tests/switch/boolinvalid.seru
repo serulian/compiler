@@ -1,5 +1,5 @@
 function<int> DoSomething() {
-	/* match */match {
+	/* switch */switch {
 		case 2:
 		   return 2
 

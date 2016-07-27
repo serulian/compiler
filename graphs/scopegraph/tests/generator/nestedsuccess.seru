@@ -5,7 +5,7 @@ class SomeClass {
 function<int*> DoSomething(anotherStream int*, something SomeClass) {
 	if (true) {
 		for {
-			match {
+			switch {
 				case true:
 					with something as somethingElse {
 						yield 1

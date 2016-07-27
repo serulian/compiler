@@ -1,7 +1,7 @@
 class SomeClass {}
 
 function<void> DoSomething(sc SomeClass) {
-	match sc {
+	switch sc {
 		case sc:
 			break
 	}
