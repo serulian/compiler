@@ -1,0 +1,56 @@
+NodeTypeFile
+  end-rune = 87
+  input-source = switch statement no expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 87
+      input-source = switch statement no expr test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 87
+          input-source = switch statement no expr test
+          start-rune = 30
+          block-child =>
+            NodeTypeSwitchStatement
+              end-rune = 85
+              input-source = switch statement no expr test
+              start-rune = 33
+              switch-case =>
+                NodeTypeSwitchStatementCase
+                  end-rune = 83
+                  input-source = switch statement no expr test
+                  start-rune = 49
+                  switch-case-expression =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 54
+                      identexpr-name = foobar
+                      input-source = switch statement no expr test
+                      start-rune = 49
+                  switch-case-statement =>
+                    NodeTypeStatementBlock
+                      end-rune = 83
+                      input-source = switch statement no expr test
+                      start-rune = 60
+                      block-child =>
+                        NodeTypeExpressionStatement
+                          end-rune = 73
+                          input-source = switch statement no expr test
+                          start-rune = 60
+                          expr-statement-expr =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 72
+                              identexpr-name = someOtherExpr
+                              input-source = switch statement no expr test
+                              start-rune = 60
+                        NodeTypeReturnStatement
+                          end-rune = 82
+                          input-source = switch statement no expr test
+                          start-rune = 77
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 12
+          input-source = switch statement no expr test
+          start-rune = 9

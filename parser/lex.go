@@ -183,6 +183,7 @@ var keywords = map[string]bool{
 	"with":     true,
 	"match":    true,
 	"case":     true,
+	"switch":   true,
 }
 
 // syntheticPredecessors contains the full set of token types after which, if a newline is found,

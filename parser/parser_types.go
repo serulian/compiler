@@ -73,12 +73,12 @@ const (
 	NodeTypeContinueStatement    // A continue statement
 	NodeTypeVariableStatement    // A variable statement
 	NodeTypeWithStatement        // A with statement
-	NodeTypeMatchStatement       // A match statement
+	NodeTypeSwitchStatement      // A switch statement
 	NodeTypeAssignStatement      // An assignment statement: a = b
 	NodeTypeResolveStatement     // A resolve assignment statement: a := b
 	NodeTypeExpressionStatement  // A statement containing a single expression
 
-	NodeTypeMatchStatementCase // A case of a match statement.
+	NodeTypeSwitchStatementCase // A case of a switch statement.
 
 	NodeTypeNamedValue    // A named value added to the scope of the parent statement.
 	NodeTypeAssignedValue // A named value assigned to the scope by a parent statement.
@@ -439,16 +439,16 @@ const (
 	NodeWithStatementBlock      = "with-block"
 
 	//
-	// NodeTypeMatchStatement
+	// NodeTypeSwitchStatement
 	//
-	NodeMatchStatementExpression = "match-expression"
-	NodeMatchStatementCase       = "match-case"
+	NodeSwitchStatementExpression = "switch-expression"
+	NodeSwitchStatementCase       = "switch-case"
 
 	//
-	// NodeTypeMatchStatementCase
+	// NodeTypeSwitchStatementCase
 	//
-	NodeMatchStatementCaseExpression = "match-case-expression"
-	NodeMatchStatementCaseStatement  = "match-case-statement"
+	NodeSwitchStatementCaseExpression = "switch-case-expression"
+	NodeSwitchStatementCaseStatement  = "switch-case-statement"
 
 	//
 	// NodeTypeExpressionStatement

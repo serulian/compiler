@@ -1,5 +1,5 @@
 function<void> SomeFunction() {
-	match someExpr {
+	switch someExpr {
 		case foobar:
 			return
 
