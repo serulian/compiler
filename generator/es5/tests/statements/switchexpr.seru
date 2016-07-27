@@ -1,6 +1,6 @@
 function<void> DoSomething(someVar int) {
 	123
-	match someVar {
+	switch someVar {
 		case 1:
 			1234
 

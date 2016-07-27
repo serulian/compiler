@@ -1,13 +1,10 @@
 function<int> DoSomething() {
-	/* match */match 2 {
-		case 2:
+	/* switch */switch 2 {
+		case true:
 		   return 2
 
 		case 3:
 			return 3
-
-		default:
-			return 4
 	}
 
 	return 4

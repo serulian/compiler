@@ -62,45 +62,45 @@ func (sb *scopeBuilder) scopeAssignStatement(node compilergraph.GraphNode, optio
 	return newScope().Valid().GetScope()
 }
 
-// scopeMatchStatement scopes a match statement in the SRG.
-func (sb *scopeBuilder) scopeMatchStatement(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
-	// Check for an expression. If a match has an expression, then all cases must match against it.
+// scopeSwitchStatement scopes a switch statement in the SRG.
+func (sb *scopeBuilder) scopeSwitchStatement(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+	// Check for an expression. If a switch has an expression, then all cases must match against it.
 	var isValid = true
-	var matchValueType = sb.sg.tdg.BoolTypeReference()
+	var switchValueType = sb.sg.tdg.BoolTypeReference()
 
-	exprNode, hasExpression := node.TryGetNode(parser.NodeMatchStatementExpression)
+	exprNode, hasExpression := node.TryGetNode(parser.NodeSwitchStatementExpression)
 	if hasExpression {
 		exprScope := sb.getScope(exprNode)
 		if exprScope.GetIsValid() {
-			matchValueType = exprScope.ResolvedTypeRef(sb.sg.tdg)
+			switchValueType = exprScope.ResolvedTypeRef(sb.sg.tdg)
 		} else {
 			isValid = false
 		}
 	}
 
-	// Ensure that the match type has a defined accessible comparison operator.
+	// Ensure that the switch type has a defined accessible comparison operator.
 	if isValid {
 		module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
-		_, rerr := matchValueType.ResolveAccessibleMember("equals", module, typegraph.MemberResolutionOperator)
+		_, rerr := switchValueType.ResolveAccessibleMember("equals", module, typegraph.MemberResolutionOperator)
 		if rerr != nil {
-			sb.decorateWithError(node, "Cannot match over instance of type '%v', as it does not define or export an 'equals' operator", matchValueType)
+			sb.decorateWithError(node, "Cannot switch over instance of type '%v', as it does not define or export an 'equals' operator", switchValueType)
 			isValid = false
 		}
 	}
 
-	// Scope each of the case statements under the match.
+	// Scope each of the case statements under the switch.
 	var returnedType = sb.sg.tdg.VoidTypeReference()
 	var settlesScope = true
 	var hasDefault = false
 	var labelSet = newLabelSet()
 
 	sit := node.StartQuery().
-		Out(parser.NodeMatchStatementCase).
+		Out(parser.NodeSwitchStatementCase).
 		BuildNodeIterator()
 
 	for sit.Next() {
 		// Scope the statement block under the case.
-		statementBlockNode := sit.Node().GetNode(parser.NodeMatchStatementCaseStatement)
+		statementBlockNode := sit.Node().GetNode(parser.NodeSwitchStatementCaseStatement)
 		statementBlockScope := sb.getScope(statementBlockNode)
 		if !statementBlockScope.GetIsValid() {
 			isValid = false
@@ -112,13 +112,13 @@ func (sb *scopeBuilder) scopeMatchStatement(node compilergraph.GraphNode, option
 		settlesScope = settlesScope && statementBlockScope.GetIsSettlingScope()
 
 		// Check the case's expression (if any) against the type expected.
-		caseExprNode, hasCaseExpression := sit.Node().TryGetNode(parser.NodeMatchStatementCaseExpression)
+		caseExprNode, hasCaseExpression := sit.Node().TryGetNode(parser.NodeSwitchStatementCaseExpression)
 		if hasCaseExpression {
 			caseExprScope := sb.getScope(caseExprNode)
 			if caseExprScope.GetIsValid() {
 				caseExprType := caseExprScope.ResolvedTypeRef(sb.sg.tdg)
-				if serr := caseExprType.CheckSubTypeOf(matchValueType); serr != nil {
-					sb.decorateWithError(node, "Match cases must have values matching type '%v': %v", matchValueType, serr)
+				if serr := caseExprType.CheckSubTypeOf(switchValueType); serr != nil {
+					sb.decorateWithError(node, "Switch cases must have values matching type '%v': %v", switchValueType, serr)
 					isValid = false
 				}
 			} else {
@@ -129,7 +129,7 @@ func (sb *scopeBuilder) scopeMatchStatement(node compilergraph.GraphNode, option
 		}
 	}
 
-	// If there isn't a default case, then the match cannot be known to return in all cases.
+	// If there isn't a default case, then the switch cannot be known to return in all cases.
 	if !hasDefault {
 		returnedType = sb.sg.tdg.VoidTypeReference()
 		settlesScope = false
@@ -375,9 +375,9 @@ func (sb *scopeBuilder) scopeContinueStatement(node compilergraph.GraphNode, opt
 
 // scopeBreakStatement scopes a break statement in the SRG.
 func (sb *scopeBuilder) scopeBreakStatement(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
-	// Ensure that the node is under a loop or match.
-	if !sb.sg.srg.HasContainingNode(node, parser.NodeTypeLoopStatement, parser.NodeTypeMatchStatement) {
-		sb.decorateWithError(node, "'break' statement must be a under a loop or match statement")
+	// Ensure that the node is under a loop or switch.
+	if !sb.sg.srg.HasContainingNode(node, parser.NodeTypeLoopStatement, parser.NodeTypeSwitchStatement) {
+		sb.decorateWithError(node, "'break' statement must be a under a loop or switch statement")
 		return newScope().
 			IsTerminatingStatement().
 			Invalid().

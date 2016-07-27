@@ -42,12 +42,12 @@ const (
 	statementBlockWithoutTerminator
 )
 
-// matchCaseOption defines an option for how to parse match cases.
-type matchCaseOption int
+// switchCaseOption defines an option for how to parse switch cases.
+type switchCaseOption int
 
 const (
-	matchCaseWithExpression matchCaseOption = iota
-	matchCaseWithoutExpression
+	switchCaseWithExpression switchCaseOption = iota
+	switchCaseWithoutExpression
 )
 
 // consumeExpressionOption defines an option for the forms of expressions allowed.
@@ -1396,9 +1396,9 @@ func (p *sourceParser) consumeStatementBlock(option statementBlockOption) AstNod
 // tryConsumeStatement attempts to consume a statement.
 func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
 	switch {
-	// Match statement.
-	case p.isKeyword("match"):
-		return p.consumeMatchStatement(), true
+	// Switch statement.
+	case p.isKeyword("switch"):
+		return p.consumeSwitchStatement(), true
 
 	// With statement.
 	case p.isKeyword("with"):
@@ -1648,21 +1648,10 @@ TopLoop:
 	}
 }
 
-// consumeMatchStatement consumes a match statement.
+// consumeSwitchStatement consumes a switch statement.
 //
 // Forms:
-// match somExpr {
-//   case someExpr:
-//      statements
-//
-//   case anotherExpr:
-//      statements
-//s
-//   default:
-//      statements
-// }
-//
-// match {
+// switch somExpr {
 //   case someExpr:
 //      statements
 //
@@ -1672,59 +1661,70 @@ TopLoop:
 //   default:
 //      statements
 // }
-func (p *sourceParser) consumeMatchStatement() AstNode {
-	matchNode := p.startNode(NodeTypeMatchStatement)
+//
+// switch {
+//   case someExpr:
+//      statements
+//
+//   case anotherExpr:
+//      statements
+//
+//   default:
+//      statements
+// }
+func (p *sourceParser) consumeSwitchStatement() AstNode {
+	switchNode := p.startNode(NodeTypeSwitchStatement)
 	defer p.finishNode()
 
-	// match
-	p.consumeKeyword("match")
+	// switch
+	p.consumeKeyword("switch")
 
-	// Consume a match expression (if any).
+	// Consume a switch expression (if any).
 	if expression, ok := p.tryConsumeExpression(consumeExpressionNoBraces); ok {
-		matchNode.Connect(NodeMatchStatementExpression, expression)
+		switchNode.Connect(NodeSwitchStatementExpression, expression)
 	}
 
 	// Consume the opening of the block.
 	if _, ok := p.consume(tokenTypeLeftBrace); !ok {
-		return matchNode
+		return switchNode
 	}
 
 	// Consume one (or more) case statements.
 	for {
-		caseNode, ok := p.tryConsumeMatchCase("case", matchCaseWithExpression)
+		caseNode, ok := p.tryConsumeSwitchCase("case", switchCaseWithExpression)
 		if !ok {
 			break
 		}
-		matchNode.Connect(NodeMatchStatementCase, caseNode)
+		switchNode.Connect(NodeSwitchStatementCase, caseNode)
 	}
 
 	// Consume a default statement.
-	if defaultCaseNode, ok := p.tryConsumeMatchCase("default", matchCaseWithoutExpression); ok {
-		matchNode.Connect(NodeMatchStatementCase, defaultCaseNode)
+	if defaultCaseNode, ok := p.tryConsumeSwitchCase("default", switchCaseWithoutExpression); ok {
+		switchNode.Connect(NodeSwitchStatementCase, defaultCaseNode)
 	}
 
 	// Consume the closing of the block.
 	if _, ok := p.consume(tokenTypeRightBrace); !ok {
-		return matchNode
+		return switchNode
 	}
 
-	return matchNode
+	return switchNode
 }
 
-// tryConsumeMatchCase tries to consume a case block under a match node
+// tryConsumeSwitchCase tries to consume a case block under a switch node
 // with the given keyword.
-func (p *sourceParser) tryConsumeMatchCase(keyword string, option matchCaseOption) (AstNode, bool) {
+func (p *sourceParser) tryConsumeSwitchCase(keyword string, option switchCaseOption) (AstNode, bool) {
 	// keyword
 	if !p.tryConsumeKeyword(keyword) {
 		return nil, false
 	}
 
 	// Create the case node.
-	caseNode := p.startNode(NodeTypeMatchStatementCase)
+	caseNode := p.startNode(NodeTypeSwitchStatementCase)
 	defer p.finishNode()
 
-	if option == matchCaseWithExpression {
-		caseNode.Connect(NodeMatchStatementCaseExpression, p.consumeExpression(consumeExpressionNoBraces))
+	if option == switchCaseWithExpression {
+		caseNode.Connect(NodeSwitchStatementCaseExpression, p.consumeExpression(consumeExpressionNoBraces))
 	}
 
 	// Colon after the expression or keyword.
@@ -1735,7 +1735,7 @@ func (p *sourceParser) tryConsumeMatchCase(keyword string, option matchCaseOptio
 	// Consume one (or more) statements, followed by statement terminators.
 	blockNode := p.startNode(NodeTypeStatementBlock)
 
-	caseNode.Connect(NodeMatchStatementCaseStatement, blockNode)
+	caseNode.Connect(NodeSwitchStatementCaseStatement, blockNode)
 
 	for {
 		statementNode, ok := p.tryConsumeStatement()

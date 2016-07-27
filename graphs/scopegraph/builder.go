@@ -94,8 +94,8 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 	case parser.NodeTypeVariableStatement:
 		return sb.scopeVariableStatement
 
-	case parser.NodeTypeMatchStatement:
-		return sb.scopeMatchStatement
+	case parser.NodeTypeSwitchStatement:
+		return sb.scopeSwitchStatement
 
 	case parser.NodeTypeAssignStatement:
 		return sb.scopeAssignStatement

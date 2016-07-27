@@ -1,6 +1,6 @@
 function<int> DoSomething() {
-	/* match */match 2 {
-		case true:
+	/* switch */switch 2 {
+		case 2:
 		   return 2
 
 		case 3:

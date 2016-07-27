@@ -126,7 +126,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	// break statement not under a breakable node.
 	scopegraphTest{"break statement error test", "break", "badparent", []expectedScopeEntry{},
-		"'break' statement must be a under a loop or match statement", ""},
+		"'break' statement must be a under a loop or switch statement", ""},
 
 	/////////// Continue ///////////
 
@@ -215,52 +215,52 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"invalid with expr test", "with", "nonreleasable", []expectedScopeEntry{},
 		"With expression must implement the Releasable interface: Type 'Boolean' does not define or export member 'Release', which is required by type 'Releasable'", ""},
 
-	/////////// Match ///////////
+	/////////// Switch ///////////
 
-	scopegraphTest{"basic bool match test", "match", "bool",
+	scopegraphTest{"basic bool switch test", "switch", "bool",
 		[]expectedScopeEntry{
-			expectedScopeEntry{"match", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
+			expectedScopeEntry{"switch", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
 		},
 		"", ""},
 
-	scopegraphTest{"match no statement test", "match", "nostatement",
+	scopegraphTest{"switch no statement test", "switch", "nostatement",
 		[]expectedScopeEntry{
-			expectedScopeEntry{"match", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
+			expectedScopeEntry{"switch", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
 		},
 		"", ""},
 
-	scopegraphTest{"match multi statement test", "match", "multistatement",
+	scopegraphTest{"switch multi statement test", "switch", "multistatement",
 		[]expectedScopeEntry{
-			expectedScopeEntry{"match", expectedScope{true, proto.ScopeKind_VALUE, "void", "Integer"}},
+			expectedScopeEntry{"switch", expectedScope{true, proto.ScopeKind_VALUE, "void", "Integer"}},
 		},
 		"", ""},
 
-	scopegraphTest{"bool default match test", "match", "booldefault",
+	scopegraphTest{"bool default switch test", "switch", "booldefault",
 		[]expectedScopeEntry{
-			expectedScopeEntry{"match", expectedScope{true, proto.ScopeKind_VALUE, "void", "Integer"}},
+			expectedScopeEntry{"switch", expectedScope{true, proto.ScopeKind_VALUE, "void", "Integer"}},
 		},
 		"", ""},
 
-	scopegraphTest{"basic non-bool match test", "match", "typed",
+	scopegraphTest{"basic non-bool switch test", "switch", "typed",
 		[]expectedScopeEntry{
-			expectedScopeEntry{"match", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
+			expectedScopeEntry{"switch", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
 		},
 		"", ""},
 
-	scopegraphTest{"non-bool default match test", "match", "typeddefault",
+	scopegraphTest{"non-bool default switch test", "switch", "typeddefault",
 		[]expectedScopeEntry{
-			expectedScopeEntry{"match", expectedScope{true, proto.ScopeKind_VALUE, "void", "Integer"}},
+			expectedScopeEntry{"switch", expectedScope{true, proto.ScopeKind_VALUE, "void", "Integer"}},
 		},
 		"", ""},
 
-	scopegraphTest{"invalid bool match test", "match", "boolinvalid", []expectedScopeEntry{},
-		"Match cases must have values matching type 'Boolean': 'Integer' cannot be used in place of non-interface 'Boolean'", ""},
+	scopegraphTest{"invalid bool switch test", "switch", "boolinvalid", []expectedScopeEntry{},
+		"Switch cases must have values matching type 'Boolean': 'Integer' cannot be used in place of non-interface 'Boolean'", ""},
 
-	scopegraphTest{"invalid non-bool match test", "match", "typedinvalid", []expectedScopeEntry{},
-		"Match cases must have values matching type 'Integer': 'Boolean' cannot be used in place of non-interface 'Integer'", ""},
+	scopegraphTest{"invalid non-bool switch test", "switch", "typedinvalid", []expectedScopeEntry{},
+		"Switch cases must have values matching type 'Integer': 'Boolean' cannot be used in place of non-interface 'Integer'", ""},
 
-	scopegraphTest{"match no equals operator test", "match", "nocompare", []expectedScopeEntry{},
-		"Cannot match over instance of type 'SomeClass', as it does not define or export an 'equals' operator", ""},
+	scopegraphTest{"switch no equals operator test", "switch", "nocompare", []expectedScopeEntry{},
+		"Cannot switch over instance of type 'SomeClass', as it does not define or export an 'equals' operator", ""},
 
 	/////////// Var ///////////
 
