@@ -1,4 +1,4 @@
-$module('matchexpr', function () {
+$module('switchexpr', function () {
   var $static = this;
   $static.DoSomething = function (someVar) {
     var $temp0;

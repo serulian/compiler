@@ -1,6 +1,6 @@
 function<void> DoSomething() {
 	123
-	match {
+	switch {
 		case false:
 			1234
 

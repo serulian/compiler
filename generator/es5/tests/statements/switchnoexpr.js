@@ -1,4 +1,4 @@
-$module('matchnoexpr', function () {
+$module('switchnoexpr', function () {
   var $static = this;
   $static.DoSomething = function () {
     var $current = 0;
