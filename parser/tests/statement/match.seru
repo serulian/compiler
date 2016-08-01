@@ -1,0 +1,18 @@
+function<void> DoSomething() {
+	match someExpr {
+		case Foo:
+			1
+			2
+			3
+
+		case Bar:
+			4
+			5
+			6
+
+		case []{Something}:
+			7
+			8
+			9
+	}
+}
