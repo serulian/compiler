@@ -164,7 +164,7 @@ func (nsi *namedScopeInfo) ResolveStaticMember(name string, module compilercommo
 
 // StaticType returns the static type of the named scope. For scopes that are not static,
 // will panic.
-func (nsi *namedScopeInfo) StaticType() typegraph.TypeReference {
+func (nsi *namedScopeInfo) StaticType(context scopeContext) typegraph.TypeReference {
 	if !nsi.IsStatic() {
 		panic("Cannot call StaticType on non-static scope")
 	}
@@ -180,17 +180,17 @@ func (nsi *namedScopeInfo) StaticType() typegraph.TypeReference {
 
 // ValueType returns the value type of the named scope. For scopes without types,
 // this method will return void.
-func (nsi *namedScopeInfo) ValueType() typegraph.TypeReference {
+func (nsi *namedScopeInfo) ValueType(context scopeContext) typegraph.TypeReference {
 	if nsi.IsStatic() || nsi.IsGeneric() {
 		return nsi.sb.sg.tdg.VoidTypeReference()
 	}
 
-	return nsi.ValueOrGenericType()
+	return nsi.ValueOrGenericType(context)
 }
 
 // AssignableType returns the type of values that can be assigned to this named scope. For
 // non-assignable scopes, returns void.
-func (nsi *namedScopeInfo) AssignableType() typegraph.TypeReference {
+func (nsi *namedScopeInfo) AssignableType(context scopeContext) typegraph.TypeReference {
 	if !nsi.IsAssignable() {
 		return nsi.sb.sg.tdg.VoidTypeReference()
 	}
@@ -199,12 +199,12 @@ func (nsi *namedScopeInfo) AssignableType() typegraph.TypeReference {
 		return nsi.typeInfo.(typegraph.TGMember).AssignableType()
 	}
 
-	return nsi.ValueType()
+	return nsi.ValueType(context)
 }
 
 // ValueOrGenericType returns the value type of the named scope. For scopes without types,
 // this method will return void.
-func (nsi *namedScopeInfo) ValueOrGenericType() typegraph.TypeReference {
+func (nsi *namedScopeInfo) ValueOrGenericType(context scopeContext) typegraph.TypeReference {
 	if nsi.IsStatic() {
 		return nsi.sb.sg.tdg.VoidTypeReference()
 	}
@@ -212,6 +212,11 @@ func (nsi *namedScopeInfo) ValueOrGenericType() typegraph.TypeReference {
 	// The value type of a member is its member type.
 	if nsi.typeInfo != nil {
 		return nsi.typeInfo.(typegraph.TGMember).MemberType()
+	}
+
+	// Check for an explicit override.
+	if typeOverride, hasTypeOverride := context.getTypeOverride(nsi.srgInfo.GraphNode); hasTypeOverride {
+		return typeOverride
 	}
 
 	// Otherwise, we need custom logic to retrieve the type.
@@ -232,7 +237,7 @@ func (nsi *namedScopeInfo) ValueOrGenericType() typegraph.TypeReference {
 	case srg.NamedScopeValue:
 		// The value type of a named value is found by scoping the node creating the named value
 		// and then checking its scope info.
-		creatingScope := nsi.sb.getScope(nsi.srgInfo.GraphNode)
+		creatingScope := nsi.sb.getScope(nsi.srgInfo.GraphNode, context)
 		if !creatingScope.GetIsValid() {
 			return nsi.sb.sg.tdg.AnyTypeReference()
 		}
@@ -242,7 +247,7 @@ func (nsi *namedScopeInfo) ValueOrGenericType() typegraph.TypeReference {
 	case srg.NamedScopeVariable:
 		// The value type of a variable is found by scoping the variable
 		// and then checking its scope info.
-		variableScope := nsi.sb.getScope(nsi.srgInfo.GraphNode)
+		variableScope := nsi.sb.getScope(nsi.srgInfo.GraphNode, context)
 		if !variableScope.GetIsValid() {
 			return nsi.sb.sg.tdg.AnyTypeReference()
 		}

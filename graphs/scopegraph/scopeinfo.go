@@ -120,12 +120,12 @@ type typeModifier func(typeRef typegraph.TypeReference) typegraph.TypeReference
 
 // ForNamedScopeUnderModifiedType points the scope to the referred named scope, with its value
 // type being transformed under the given parent type and then transformed by the modifier.
-func (sib *scopeInfoBuilder) ForNamedScopeUnderModifiedType(info namedScopeInfo, parentType typegraph.TypeReference, modifier typeModifier) *scopeInfoBuilder {
-	transformedValueType := info.ValueType().TransformUnder(parentType)
-	sib.ForNamedScope(info).Resolving(modifier(transformedValueType))
+func (sib *scopeInfoBuilder) ForNamedScopeUnderModifiedType(info namedScopeInfo, parentType typegraph.TypeReference, modifier typeModifier, context scopeContext) *scopeInfoBuilder {
+	transformedValueType := info.ValueType(context).TransformUnder(parentType)
+	sib.ForNamedScope(info, context).Resolving(modifier(transformedValueType))
 
 	if info.IsAssignable() {
-		transformedAssignableType := info.AssignableType().TransformUnder(parentType)
+		transformedAssignableType := info.AssignableType(context).TransformUnder(parentType)
 		sib.Assignable(modifier(transformedAssignableType))
 	}
 
@@ -134,12 +134,12 @@ func (sib *scopeInfoBuilder) ForNamedScopeUnderModifiedType(info namedScopeInfo,
 
 // ForNamedScopeUnderType points the scope to the referred named scope, with its value
 // type being transformed under the given parent type.
-func (sib *scopeInfoBuilder) ForNamedScopeUnderType(info namedScopeInfo, parentType typegraph.TypeReference) *scopeInfoBuilder {
+func (sib *scopeInfoBuilder) ForNamedScopeUnderType(info namedScopeInfo, parentType typegraph.TypeReference, context scopeContext) *scopeInfoBuilder {
 	modifier := func(typeRef typegraph.TypeReference) typegraph.TypeReference {
 		return typeRef
 	}
 
-	return sib.ForNamedScopeUnderModifiedType(info, parentType, modifier)
+	return sib.ForNamedScopeUnderModifiedType(info, parentType, modifier, context)
 }
 
 // ForAnonymousScope points the scope to an anonymously scope.
@@ -161,14 +161,14 @@ func (sib *scopeInfoBuilder) CallsOperator(op typegraph.TGMember) *scopeInfoBuil
 }
 
 // ForNamedScope points the scope to the referred named scope.
-func (sib *scopeInfoBuilder) ForNamedScope(info namedScopeInfo) *scopeInfoBuilder {
+func (sib *scopeInfoBuilder) ForNamedScope(info namedScopeInfo, context scopeContext) *scopeInfoBuilder {
 	if info.IsGeneric() {
 		genericKind := proto.ScopeKind_GENERIC
 		sib.info.Kind = &genericKind
 	} else if info.IsStatic() {
 		staticKind := proto.ScopeKind_STATIC
 		sib.info.Kind = &staticKind
-		sib.WithStaticType(info.StaticType())
+		sib.WithStaticType(info.StaticType(context))
 	}
 
 	sib.info.NamedReference = &proto.ScopeReference{}
@@ -186,10 +186,10 @@ func (sib *scopeInfoBuilder) ForNamedScope(info namedScopeInfo) *scopeInfoBuilde
 	}
 
 	if info.IsAssignable() {
-		sib.Assignable(info.AssignableType())
+		sib.Assignable(info.AssignableType(context))
 	}
 
-	return sib.Resolving(info.ValueType()).Valid()
+	return sib.Resolving(info.ValueType(context)).Valid()
 }
 
 // WithKind sets the kind of this scope to the given kind.

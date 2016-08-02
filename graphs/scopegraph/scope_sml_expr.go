@@ -17,7 +17,7 @@ import (
 var _ = fmt.Printf
 
 // scopeSmlExpression scopes an SML expression in the SRG.
-func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Scope the type or function and ensure it refers to a "declarable" type or function.
 	// A type is "declarable" if it has a constructor named Declare with a "declarable" function type signature.
 	//
@@ -28,7 +28,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, option 
 	//     b) A mapping
 	//
 	//  - Parameter #2 (optional) represents the children (contents).
-	typeOrFuncScope := sb.getScope(node.GetNode(parser.NodeSmlExpressionTypeOrFunction))
+	typeOrFuncScope := sb.getScope(node.GetNode(parser.NodeSmlExpressionTypeOrFunction), context)
 	if !typeOrFuncScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
@@ -106,7 +106,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, option 
 		attributesEncountered := map[string]bool{}
 
 		for ait.Next() {
-			attributeName, ok := sb.scopeSmlAttribute(ait.Node(), propsType)
+			attributeName, ok := sb.scopeSmlAttribute(ait.Node(), propsType, context)
 			attributesEncountered[attributeName] = true
 			isValid = isValid && ok
 		}
@@ -128,7 +128,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, option 
 		BuildNodeIterator()
 
 	for dit.Next() {
-		decoratorReturnType, ok := sb.scopeSmlDecorator(dit.Node(), resolvedType)
+		decoratorReturnType, ok := sb.scopeSmlDecorator(dit.Node(), resolvedType, context)
 		resolvedType = decoratorReturnType
 		isValid = isValid && ok
 	}
@@ -151,7 +151,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, option 
 
 		for cit.Next() {
 			childNode := cit.Node()
-			childScope := sb.getScope(childNode)
+			childScope := sb.getScope(childNode, context)
 			if !childScope.GetIsValid() {
 				isValid = false
 			}
@@ -209,9 +209,9 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, option 
 }
 
 // scopeSmlDecoratorAttribute scopes a decorator SML expression attribute under a declaration.
-func (sb *scopeBuilder) scopeSmlDecorator(node compilergraph.GraphNode, declaredType typegraph.TypeReference) (typegraph.TypeReference, bool) {
+func (sb *scopeBuilder) scopeSmlDecorator(node compilergraph.GraphNode, declaredType typegraph.TypeReference, context scopeContext) (typegraph.TypeReference, bool) {
 	// Resolve the scope of the decorator.
-	decoratorScope := sb.getScope(node.GetNode(parser.NodeSmlDecoratorPath))
+	decoratorScope := sb.getScope(node.GetNode(parser.NodeSmlDecoratorPath), context)
 	if !decoratorScope.GetIsValid() {
 		return declaredType, false
 	}
@@ -238,7 +238,7 @@ func (sb *scopeBuilder) scopeSmlDecorator(node compilergraph.GraphNode, declared
 
 	valueNode, hasValueNode := node.TryGetNode(parser.NodeSmlDecoratorValue)
 	if hasValueNode {
-		attributeValueScope := sb.getScope(valueNode)
+		attributeValueScope := sb.getScope(valueNode, context)
 		if !attributeValueScope.GetIsValid() {
 			return returnType, false
 		}
@@ -272,7 +272,7 @@ func (sb *scopeBuilder) scopeSmlDecorator(node compilergraph.GraphNode, declared
 }
 
 // scopeSmlNormalAttribute scopes an SML expression attribute under a declaration.
-func (sb *scopeBuilder) scopeSmlAttribute(node compilergraph.GraphNode, propsType typegraph.TypeReference) (string, bool) {
+func (sb *scopeBuilder) scopeSmlAttribute(node compilergraph.GraphNode, propsType typegraph.TypeReference, context scopeContext) (string, bool) {
 	attributeName := node.Get(parser.NodeSmlAttributeName)
 
 	// If the props type is a struct, ensure that the attribute name exists.
@@ -296,7 +296,7 @@ func (sb *scopeBuilder) scopeSmlAttribute(node compilergraph.GraphNode, propsTyp
 
 	valueNode, hasValueNode := node.TryGetNode(parser.NodeSmlAttributeValue)
 	if hasValueNode {
-		attributeValueScope := sb.getScope(valueNode)
+		attributeValueScope := sb.getScope(valueNode, context)
 		if !attributeValueScope.GetIsValid() {
 			return attributeName, false
 		}
@@ -314,6 +314,6 @@ func (sb *scopeBuilder) scopeSmlAttribute(node compilergraph.GraphNode, propsTyp
 }
 
 // scopeSmlText scopes a text block under an SML expression in the SRG.
-func (sb *scopeBuilder) scopeSmlText(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeSmlText(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	return newScope().Valid().Resolving(sb.sg.tdg.StringTypeReference()).GetScope()
 }

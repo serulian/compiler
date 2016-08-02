@@ -1,0 +1,15 @@
+function<void> DoSomething(someExpr any) {
+	match someExpr->someValue as someValue {
+		case int:
+			(/* int */(someValue))
+
+		case bool:
+			(/* bool */(someValue))
+
+		case string:
+			(/* string */(someValue))
+
+		default:
+			(/* default */(someValue))
+	}
+}

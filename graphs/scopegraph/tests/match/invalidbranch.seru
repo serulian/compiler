@@ -1,0 +1,6 @@
+function<void> DoSomething(someValue int) {
+	match someValue {
+		case string:
+			return
+	}
+}
