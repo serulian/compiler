@@ -174,7 +174,12 @@ func (sb *scopeBuilder) scopeMatchStatement(node compilergraph.GraphNode, contex
 				panic(rerr)
 			}
 
-			if serr := matchTypeRef.CheckSubTypeOf(matchExprType); serr != nil {
+			// Ensure that the type is not nullable, as then a null could match anything.
+			if matchTypeRef.IsNullable() {
+				sb.decorateWithError(node, "Match cases cannot be nullable. Found: %v", matchTypeRef)
+				isValid = false
+			} else if serr := matchTypeRef.CheckSubTypeOf(matchExprType); serr != nil {
+				// Ensure that the type is a subtype of the expression type.
 				sb.decorateWithError(node, "Match cases must be subtype of values of type '%v': %v", matchExprType, serr)
 				isValid = false
 			} else {
