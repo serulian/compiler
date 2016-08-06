@@ -1,0 +1,50 @@
+class SomeClass {
+	property<bool> Value {
+		get { return true }
+	}
+}
+
+function<any> TEST() {
+	var firstBool = false
+	var secondBool = false
+	var thirdBool = false
+
+	var<any> firstValue = SomeClass.new()
+	var<any> secondValue = 1234
+	var<any> thirdValue = 'hello world'
+
+	match firstValue as firstThing {
+		case SomeClass:
+			firstBool = firstThing.Value
+
+		case int:
+			firstBool = firstThing == 4567
+
+		default:
+			firstBool = false
+	}
+
+	match secondValue as secondThing {
+		case SomeClass:
+			secondBool = !secondThing.Value
+
+		case int:
+			secondBool = secondThing == 1234
+
+		default:
+			secondBool = false
+	}
+
+	match thirdValue as thirdThing {
+		case SomeClass:
+			thirdBool = !thirdThing.Value
+
+		case int:
+			thirdBool = thirdThing == 1234
+
+		default:
+			thirdBool = true
+	}
+
+	return firstBool && secondBool && thirdBool
+}

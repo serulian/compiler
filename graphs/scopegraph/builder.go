@@ -11,11 +11,14 @@ import (
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
+	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/parser"
 
 	"github.com/streamrail/concurrent-map"
 )
 
+// scopeAccessOption defines the kind of access under which the scope
+// exists.
 type scopeAccessOption int
 
 const (
@@ -23,8 +26,58 @@ const (
 	scopeSetAccess
 )
 
+// scopeContext represents the currently operating context for scoping, allowing for
+// scope-specific overrides of such items as types of expressions.
+type scopeContext struct {
+	// The access option for the current scope.
+	accessOption scopeAccessOption
+
+	// overrideTypes is (if not nil) the map of the overridden type for an expression
+	// under this context.
+	overrideTypes *map[compilergraph.GraphNodeId]typegraph.TypeReference
+}
+
+// getTypeOverride returns the type override for the given expression node, if any.
+func (sc scopeContext) getTypeOverride(exprNode compilergraph.GraphNode) (typegraph.TypeReference, bool) {
+	if sc.overrideTypes == nil {
+		return typegraph.TypeReference{}, false
+	}
+
+	ot := *sc.overrideTypes
+	value, found := ot[exprNode.NodeId]
+	return value, found
+}
+
+// withAccess returns the scope context with the access option set to that given.
+func (sc scopeContext) withAccess(access scopeAccessOption) scopeContext {
+	return scopeContext{
+		accessOption:  access,
+		overrideTypes: sc.overrideTypes,
+	}
+}
+
+// withTypeOverride returns the scope context with the type of the given expression node
+// overridden.
+func (sc scopeContext) withTypeOverride(exprNode compilergraph.GraphNode, typeref typegraph.TypeReference) scopeContext {
+	overrideTypes := map[compilergraph.GraphNodeId]typegraph.TypeReference{}
+
+	if sc.overrideTypes != nil {
+		existing := *sc.overrideTypes
+		for key, value := range existing {
+			overrideTypes[key] = value
+		}
+	}
+
+	overrideTypes[exprNode.NodeId] = typeref
+
+	return scopeContext{
+		accessOption:  sc.accessOption,
+		overrideTypes: &overrideTypes,
+	}
+}
+
 // scopeHandler is a handler function for scoping an SRG node of a particular kind.
-type scopeHandler func(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo
+type scopeHandler func(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo
 
 // scopeBuilder defines a type for easy scoping of the SRG.
 type scopeBuilder struct {
@@ -96,6 +149,9 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 
 	case parser.NodeTypeSwitchStatement:
 		return sb.scopeSwitchStatement
+
+	case parser.NodeTypeMatchStatement:
+		return sb.scopeMatchStatement
 
 	case parser.NodeTypeAssignStatement:
 		return sb.scopeAssignStatement
@@ -294,12 +350,7 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 }
 
 // getScope returns the scope for the given node, building (and waiting) if necessary.
-func (sb *scopeBuilder) getScope(node compilergraph.GraphNode) *proto.ScopeInfo {
-	return sb.getScopeWithAccess(node, scopeGetAccess)
-}
-
-// getScopeWithAccess returns the scope for the given node, building (and waiting) if necessary.
-func (sb *scopeBuilder) getScopeWithAccess(node compilergraph.GraphNode, option scopeAccessOption) *proto.ScopeInfo {
+func (sb *scopeBuilder) getScope(node compilergraph.GraphNode, context scopeContext) *proto.ScopeInfo {
 	// Check the map cache for the scope.
 	found, ok := sb.nodeMap.Get(string(node.NodeId))
 	if ok {
@@ -307,18 +358,18 @@ func (sb *scopeBuilder) getScopeWithAccess(node compilergraph.GraphNode, option 
 		return &result
 	}
 
-	built := <-sb.buildScope(node, option)
+	built := <-sb.buildScope(node, context)
 	return &built
 }
 
 // buildScope builds the scope for the given node, returning a channel
 // that can be watched for the result.
-func (sb *scopeBuilder) buildScope(node compilergraph.GraphNode, option scopeAccessOption) chan proto.ScopeInfo {
+func (sb *scopeBuilder) buildScope(node compilergraph.GraphNode, context scopeContext) chan proto.ScopeInfo {
 	// Execute the handler in a gorountine and return the result channel.
 	handler := sb.getScopeHandler(node)
 	resultChan := make(chan proto.ScopeInfo)
 	go (func() {
-		result := handler(node, option)
+		result := handler(node, context)
 		if !result.GetIsValid() {
 			sb.Status = false
 		}

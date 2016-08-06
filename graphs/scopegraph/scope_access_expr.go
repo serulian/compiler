@@ -25,9 +25,9 @@ var makeStream = func(tr typegraph.TypeReference) typegraph.TypeReference {
 }
 
 // scopeGenericSpecifierExpression scopes a generic specifier in the SRG.
-func (sb *scopeBuilder) scopeGenericSpecifierExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeGenericSpecifierExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Scope the child expression.
-	childScope := sb.getScope(node.GetNode(parser.NodeGenericSpecifierChildExpr))
+	childScope := sb.getScope(node.GetNode(parser.NodeGenericSpecifierChildExpr), context)
 	if !childScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
@@ -43,9 +43,9 @@ func (sb *scopeBuilder) scopeGenericSpecifierExpression(node compilergraph.Graph
 		panic("Generic non-named scope")
 	}
 
-	var genericType = namedScope.ValueOrGenericType()
+	var genericType = namedScope.ValueOrGenericType(context)
 	if namedScope.IsStatic() {
-		genericType = namedScope.StaticType()
+		genericType = namedScope.StaticType(context)
 	}
 
 	genericsToReplace := namedScope.Generics()
@@ -102,14 +102,14 @@ func (sb *scopeBuilder) scopeGenericSpecifierExpression(node compilergraph.Graph
 	if namedScope.IsStatic() {
 		return newScope().
 			Valid().
-			ForNamedScope(namedScope).
+			ForNamedScope(namedScope, context).
 			WithStaticType(genericType).
 			WithKind(proto.ScopeKind_STATIC).
 			GetScope()
 	} else {
 		return newScope().
 			Valid().
-			ForNamedScope(namedScope).
+			ForNamedScope(namedScope, context).
 			Resolving(genericType).
 			WithKind(proto.ScopeKind_VALUE).
 			GetScope()
@@ -117,9 +117,9 @@ func (sb *scopeBuilder) scopeGenericSpecifierExpression(node compilergraph.Graph
 }
 
 // scopeCastExpression scopes a cast expression in the SRG.
-func (sb *scopeBuilder) scopeCastExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeCastExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Scope the child expression.
-	childScope := sb.getScope(node.GetNode(parser.NodeCastExpressionChildExpr))
+	childScope := sb.getScope(node.GetNode(parser.NodeCastExpressionChildExpr), context)
 	if !childScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
@@ -158,9 +158,9 @@ func (sb *scopeBuilder) scopeCastExpression(node compilergraph.GraphNode, option
 }
 
 // scopeStreamMemberAccessExpression scopes a stream member access expression in the SRG.
-func (sb *scopeBuilder) scopeStreamMemberAccessExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeStreamMemberAccessExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Get the scope of the child expression.
-	childScope := sb.getScope(node.GetNode(parser.NodeMemberAccessChildExpr))
+	childScope := sb.getScope(node.GetNode(parser.NodeMemberAccessChildExpr), context)
 	if !childScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
@@ -187,7 +187,7 @@ func (sb *scopeBuilder) scopeStreamMemberAccessExpression(node compilergraph.Gra
 		}
 
 		memberScope := sb.getNamedScopeForMember(typeMember)
-		return newScope().ForNamedScopeUnderModifiedType(memberScope, valueType, makeStream).GetScope()
+		return newScope().ForNamedScopeUnderModifiedType(memberScope, valueType, makeStream, context).GetScope()
 
 	case proto.ScopeKind_GENERIC:
 		namedScope, _ := sb.getNamedScopeForScope(childScope)
@@ -207,9 +207,9 @@ func (sb *scopeBuilder) scopeStreamMemberAccessExpression(node compilergraph.Gra
 }
 
 // scopeDynamicMemberAccessExpression scopes a dynamic member access expression in the SRG.
-func (sb *scopeBuilder) scopeDynamicMemberAccessExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeDynamicMemberAccessExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Get the scope of the child expression.
-	childScope := sb.getScope(node.GetNode(parser.NodeMemberAccessChildExpr))
+	childScope := sb.getScope(node.GetNode(parser.NodeMemberAccessChildExpr), context)
 	if !childScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
@@ -252,10 +252,10 @@ func (sb *scopeBuilder) scopeDynamicMemberAccessExpression(node compilergraph.Gr
 
 		if childType.IsNullable() {
 			sb.decorateWithWarning(node, "Dynamic access of known member '%v' under type %v. The ?. operator is suggested.", typeMember.Name(), childType)
-			return newScope().ForNamedScopeUnderModifiedType(memberScope, lookupType, makeNullable).GetScope()
+			return newScope().ForNamedScopeUnderModifiedType(memberScope, lookupType, makeNullable, context).GetScope()
 		} else {
 			sb.decorateWithWarning(node, "Dynamic access of known member '%v' under type %v. The . operator is suggested.", typeMember.Name(), childType)
-			return newScope().ForNamedScopeUnderType(memberScope, lookupType).GetScope()
+			return newScope().ForNamedScopeUnderType(memberScope, lookupType, context).GetScope()
 		}
 	}
 
@@ -271,7 +271,7 @@ func (sb *scopeBuilder) scopeDynamicMemberAccessExpression(node compilergraph.Gr
 			return newScope().Invalid().GetScope()
 		}
 
-		childType := namedScope.StaticType()
+		childType := namedScope.StaticType(context)
 		return scopeMemberAccess(childType, true)
 
 	case proto.ScopeKind_GENERIC:
@@ -287,9 +287,9 @@ func (sb *scopeBuilder) scopeDynamicMemberAccessExpression(node compilergraph.Gr
 }
 
 // scopeNullableMemberAccessExpression scopes a nullable member access expression in the SRG.
-func (sb *scopeBuilder) scopeNullableMemberAccessExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeNullableMemberAccessExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Get the scope of the child expression.
-	childScope := sb.getScope(node.GetNode(parser.NodeMemberAccessChildExpr))
+	childScope := sb.getScope(node.GetNode(parser.NodeMemberAccessChildExpr), context)
 	if !childScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
@@ -313,7 +313,7 @@ func (sb *scopeBuilder) scopeNullableMemberAccessExpression(node compilergraph.G
 		}
 
 		memberScope := sb.getNamedScopeForMember(typeMember)
-		return newScope().ForNamedScopeUnderModifiedType(memberScope, childNonNullableType, makeNullable).GetScope()
+		return newScope().ForNamedScopeUnderModifiedType(memberScope, childNonNullableType, makeNullable, context).GetScope()
 
 	case proto.ScopeKind_GENERIC:
 		namedScope, _ := sb.getNamedScopeForScope(childScope)
@@ -333,9 +333,9 @@ func (sb *scopeBuilder) scopeNullableMemberAccessExpression(node compilergraph.G
 }
 
 // scopeMemberAccessExpression scopes a member access expression in the SRG.
-func (sb *scopeBuilder) scopeMemberAccessExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeMemberAccessExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Get the scope of the child expression.
-	childScope := sb.getScope(node.GetNode(parser.NodeMemberAccessChildExpr))
+	childScope := sb.getScope(node.GetNode(parser.NodeMemberAccessChildExpr), context)
 	if !childScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
@@ -359,7 +359,7 @@ func (sb *scopeBuilder) scopeMemberAccessExpression(node compilergraph.GraphNode
 		}
 
 		memberScope := sb.getNamedScopeForMember(typeMember)
-		return newScope().ForNamedScopeUnderType(memberScope, childType).GetScope()
+		return newScope().ForNamedScopeUnderType(memberScope, childType, context).GetScope()
 
 	case proto.ScopeKind_GENERIC:
 		namedScope, _ := sb.getNamedScopeForScope(childScope)
@@ -375,7 +375,7 @@ func (sb *scopeBuilder) scopeMemberAccessExpression(node compilergraph.GraphNode
 			return newScope().Invalid().GetScope()
 		}
 
-		return newScope().ForNamedScopeUnderType(memberScope, staticType).GetScope()
+		return newScope().ForNamedScopeUnderType(memberScope, staticType, context).GetScope()
 
 	default:
 		panic("Unknown scope kind")

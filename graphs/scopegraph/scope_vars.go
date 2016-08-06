@@ -23,18 +23,18 @@ const (
 )
 
 // scopeField scopes a field member in the SRG.
-func (sb *scopeBuilder) scopeField(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
-	return sb.scopeDeclaredValue(node, "Field", noRequiredInitializer)
+func (sb *scopeBuilder) scopeField(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
+	return sb.scopeDeclaredValue(node, "Field", noRequiredInitializer, context)
 }
 
 // scopeVariable scopes a variable module member in the SRG.
-func (sb *scopeBuilder) scopeVariable(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
-	return sb.scopeDeclaredValue(node, "Variable", requiresInitializer)
+func (sb *scopeBuilder) scopeVariable(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
+	return sb.scopeDeclaredValue(node, "Variable", requiresInitializer, context)
 }
 
 // scopeVariableStatement scopes a variable statement in the SRG.
-func (sb *scopeBuilder) scopeVariableStatement(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
-	return sb.scopeDeclaredValue(node, "Variable", requiresInitializer)
+func (sb *scopeBuilder) scopeVariableStatement(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
+	return sb.scopeDeclaredValue(node, "Variable", requiresInitializer, context)
 }
 
 // getDeclaredVariableType returns the declared type of a variable statement, member or type field (if any).
@@ -58,13 +58,13 @@ func (sb *scopeBuilder) getDeclaredVariableType(node compilergraph.GraphNode) (t
 }
 
 // scopeDeclaredValue scopes a declared value (variable statement, variable member, type field).
-func (sb *scopeBuilder) scopeDeclaredValue(node compilergraph.GraphNode, title string, option requiresInitializerOption) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeDeclaredValue(node compilergraph.GraphNode, title string, option requiresInitializerOption, context scopeContext) proto.ScopeInfo {
 	var exprScope *proto.ScopeInfo = nil
 
 	exprNode, hasExpression := node.TryGetNode(parser.NodeVariableStatementExpression)
 	if hasExpression {
 		// Scope the expression.
-		exprScope = sb.getScope(exprNode)
+		exprScope = sb.getScope(exprNode, context)
 		if !exprScope.GetIsValid() {
 			return newScope().Invalid().GetScope()
 		}

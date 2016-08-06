@@ -164,6 +164,17 @@ this.Serulian = (function($global) {
       return type;
     },
 
+    // istype returns true if the specified value can be cast to the given type.
+    'istype': function(value, type) {
+      // TODO: optimize this.
+      try {
+        $t.cast(value, type, false);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    },
+
     // cast performs a cast of the given value to the given type, throwing on
     // failure.
     'cast': function(value, type, opt_allownull) {

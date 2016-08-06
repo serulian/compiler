@@ -1,0 +1,12 @@
+function<void> DoSomething() {
+	match someExpr as bar {
+		case Foo:
+			1
+
+		case Bar:
+			2
+
+		default:
+			3
+	}
+}

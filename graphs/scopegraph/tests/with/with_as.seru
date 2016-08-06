@@ -1,0 +1,7 @@
+class SomeOtherClass {
+	function<int> DoSomething() {
+		with 2 as someInt {
+			return /* someInt */(someInt)
+		}
+	}	
+}

@@ -212,8 +212,27 @@ var scopeGraphTests = []scopegraphTest{
 		expectedScopeEntry{"with", expectedScope{true, proto.ScopeKind_VALUE, "void", "Integer"}},
 	}, "", ""},
 
+	scopegraphTest{"with as test", "with", "with_as", []expectedScopeEntry{
+		expectedScopeEntry{"someInt", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+	}, "", ""},
+
 	scopegraphTest{"invalid with expr test", "with", "nonreleasable", []expectedScopeEntry{},
 		"With expression must implement the Releasable interface: Type 'Boolean' does not define or export member 'Release', which is required by type 'Releasable'", ""},
+
+	/////////// Match ///////////
+
+	scopegraphTest{"basic match switch test", "match", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"int", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+			expectedScopeEntry{"bool", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+			expectedScopeEntry{"string", expectedScope{true, proto.ScopeKind_VALUE, "String", "void"}},
+			expectedScopeEntry{"default", expectedScope{true, proto.ScopeKind_VALUE, "any", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"match invalid branch test", "match", "invalidbranch",
+		[]expectedScopeEntry{},
+		"Match cases must be subtype of values of type 'Integer': 'String' cannot be used in place of non-interface 'Integer'", ""},
 
 	/////////// Switch ///////////
 

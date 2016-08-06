@@ -42,6 +42,14 @@ const (
 	statementBlockWithoutTerminator
 )
 
+// matchCaseOption defines an option for how to parse match cases.
+type matchCaseOption int
+
+const (
+	matchCaseWithType matchCaseOption = iota
+	matchCaseWithoutType
+)
+
 // switchCaseOption defines an option for how to parse switch cases.
 type switchCaseOption int
 
@@ -1400,6 +1408,10 @@ func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
 	case p.isKeyword("switch"):
 		return p.consumeSwitchStatement(), true
 
+		// Match statement.
+	case p.isKeyword("match"):
+		return p.consumeMatchStatement(), true
+
 	// With statement.
 	case p.isKeyword("with"):
 		return p.consumeWithStatement(), true
@@ -1646,6 +1658,111 @@ TopLoop:
 		// Otherwise, not an assignable.
 		return false
 	}
+}
+
+// consumeMatchStatement consumes a match statement.
+//
+// Forms:
+// match someExpr {
+//   case SomeType:
+//      statements
+//
+//   case AnotherType:
+//      statements
+// }
+//
+// match someExpr as someVar {
+//   case SomeType:
+//      statements
+//
+//   case AnotherType:
+//      statements
+//
+//   default:
+//		statements
+// }
+func (p *sourceParser) consumeMatchStatement() AstNode {
+	matchNode := p.startNode(NodeTypeMatchStatement)
+	defer p.finishNode()
+
+	// match
+	p.consumeKeyword("match")
+
+	// match expression
+	matchNode.Connect(NodeMatchStatementExpression, p.consumeExpression(consumeExpressionNoBraces))
+
+	// Optional: 'as' and then an identifier.
+	if p.tryConsumeKeyword("as") {
+		matchNode.Connect(NodeStatementNamedValue, p.consumeNamedValue())
+	}
+
+	// Consume the opening of the block.
+	if _, ok := p.consume(tokenTypeLeftBrace); !ok {
+		return matchNode
+	}
+
+	// Consume one (or more) case statements.
+	for {
+		caseNode, ok := p.tryConsumeMatchCase("case", matchCaseWithType)
+		if !ok {
+			break
+		}
+		matchNode.Connect(NodeMatchStatementCase, caseNode)
+	}
+
+	// Consume a default statement.
+	if defaultCaseNode, ok := p.tryConsumeMatchCase("default", matchCaseWithoutType); ok {
+		matchNode.Connect(NodeMatchStatementCase, defaultCaseNode)
+	}
+
+	// Consume the closing of the block.
+	if _, ok := p.consume(tokenTypeRightBrace); !ok {
+		return matchNode
+	}
+
+	return matchNode
+}
+
+// tryConsumeMatchCase tries to consume a case block under a match node.
+func (p *sourceParser) tryConsumeMatchCase(keyword string, option matchCaseOption) (AstNode, bool) {
+	if !p.tryConsumeKeyword(keyword) {
+		return nil, false
+	}
+
+	// Create the case node.
+	caseNode := p.startNode(NodeTypeMatchStatementCase)
+	defer p.finishNode()
+
+	// Consume the type reference.
+	if option == matchCaseWithType {
+		caseNode.Connect(NodeMatchStatementCaseTypeReference, p.consumeTypeReference(typeReferenceNoVoid))
+	}
+
+	// Colon after the type reference.
+	if _, ok := p.consume(tokenTypeColon); !ok {
+		return caseNode, true
+	}
+
+	// Consume one (or more) statements, followed by statement terminators.
+	blockNode := p.startNode(NodeTypeStatementBlock)
+
+	caseNode.Connect(NodeMatchStatementCaseStatement, blockNode)
+
+	for {
+		statementNode, ok := p.tryConsumeStatement()
+		if !ok {
+			break
+		}
+
+		blockNode.Connect(NodeStatementBlockStatement, statementNode)
+
+		if _, ok := p.consumeStatementTerminator(); !ok {
+			return caseNode, true
+		}
+	}
+
+	p.finishNode()
+	return caseNode, true
 }
 
 // consumeSwitchStatement consumes a switch statement.

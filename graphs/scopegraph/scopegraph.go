@@ -136,7 +136,7 @@ func buildScopeGraphWithResolver(srg *srg.SRG, irg *webidl.WebIRG, tdg *typegrap
 	for lit.Next() {
 		lwg.Add(1)
 		go (func(node compilergraph.GraphNode) {
-			builder.inferLambdaParameterTypes(node)
+			builder.inferLambdaParameterTypes(node, scopeContext{})
 			lwg.Done()
 		})(lit.Node())
 	}
@@ -150,7 +150,7 @@ func buildScopeGraphWithResolver(srg *srg.SRG, irg *webidl.WebIRG, tdg *typegrap
 	for sit.Next() {
 		wg.Add(1)
 		go (func(node compilergraph.GraphNode) {
-			<-builder.buildScope(node, scopeGetAccess)
+			<-builder.buildScope(node, scopeContext{})
 			wg.Done()
 		})(sit.Node())
 	}
@@ -159,7 +159,7 @@ func buildScopeGraphWithResolver(srg *srg.SRG, irg *webidl.WebIRG, tdg *typegrap
 	for mit.Next() {
 		wg.Add(1)
 		go (func(node compilergraph.GraphNode) {
-			<-builder.buildScope(node, scopeGetAccess)
+			<-builder.buildScope(node, scopeContext{})
 			wg.Done()
 		})(mit.Node())
 	}

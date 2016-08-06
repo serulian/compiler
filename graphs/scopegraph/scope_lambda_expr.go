@@ -16,16 +16,16 @@ import (
 var _ = fmt.Printf
 
 // scopeLambdaExpression scopes a lambda expression in the SRG.
-func (sb *scopeBuilder) scopeLambdaExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeLambdaExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	if _, ok := node.TryGetNode(parser.NodeLambdaExpressionBlock); ok {
-		return sb.scopeFullLambaExpression(node, option)
+		return sb.scopeFullLambaExpression(node, context)
 	} else {
-		return sb.scopeInlineLambaExpression(node, option)
+		return sb.scopeInlineLambaExpression(node, context)
 	}
 }
 
 // scopeFullLambaExpression scopes a fully defined lambda expression node in the SRG.
-func (sb *scopeBuilder) scopeFullLambaExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeFullLambaExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	var returnType = sb.sg.tdg.AnyTypeReference()
 
 	// Check for a defined return type for the lambda expression.
@@ -40,7 +40,7 @@ func (sb *scopeBuilder) scopeFullLambaExpression(node compilergraph.GraphNode, o
 	}
 
 	// Scope the block. If the function has no defined return type, we use the return type of the block.
-	blockScope := sb.getScope(node.GetNode(parser.NodeLambdaExpressionBlock))
+	blockScope := sb.getScope(node.GetNode(parser.NodeLambdaExpressionBlock), context)
 	if !hasReturnType && blockScope.GetIsValid() {
 		returnType = blockScope.ReturnedTypeRef(sb.sg.tdg)
 	}
@@ -67,11 +67,11 @@ func (sb *scopeBuilder) scopeFullLambaExpression(node compilergraph.GraphNode, o
 }
 
 // scopeInlineLambaExpression scopes an inline lambda expression node in the SRG.
-func (sb *scopeBuilder) scopeInlineLambaExpression(node compilergraph.GraphNode, option scopeAccessOption) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeInlineLambaExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	var returnType = sb.sg.tdg.AnyTypeReference()
 
 	// Scope the lambda's internal expression.
-	exprScope := sb.getScope(node.GetNode(parser.NodeLambdaExpressionChildExpr))
+	exprScope := sb.getScope(node.GetNode(parser.NodeLambdaExpressionChildExpr), context)
 	if exprScope.GetIsValid() {
 		returnType = exprScope.ResolvedTypeRef(sb.sg.tdg)
 	}
@@ -107,7 +107,7 @@ func (sb *scopeBuilder) scopeInlineLambaExpression(node compilergraph.GraphNode,
 // var<function<void>(...)> = (a, b) => someExpr
 //
 // ((a, b) => someExpr)(1, 2)
-func (sb *scopeBuilder) inferLambdaParameterTypes(node compilergraph.GraphNode) {
+func (sb *scopeBuilder) inferLambdaParameterTypes(node compilergraph.GraphNode, context scopeContext) {
 	// If the lambda has no inferred parameters, nothing more to do.
 	if _, ok := node.TryGetNode(parser.NodeLambdaExpressionInferredParameter); !ok {
 		return
@@ -128,7 +128,7 @@ func (sb *scopeBuilder) inferLambdaParameterTypes(node compilergraph.GraphNode) 
 		// the parameters.
 		parentCall, hasParentCall := node.TryGetIncomingNode(parser.NodeFunctionCallExpressionChildExpr)
 		if hasParentCall {
-			return sb.getFunctionCallArgumentTypes(parentCall), true
+			return sb.getFunctionCallArgumentTypes(parentCall, context), true
 		}
 
 		// Check if the lambda expression is under a variable declaration. If so, we try to infer from
@@ -161,7 +161,7 @@ func (sb *scopeBuilder) inferLambdaParameterTypes(node compilergraph.GraphNode) 
 				continue
 			}
 
-			inferredTypes = sb.sg.tdg.IntersectTypes(inferredTypes, sb.getFunctionCallArgumentTypes(funcCall))
+			inferredTypes = sb.sg.tdg.IntersectTypes(inferredTypes, sb.getFunctionCallArgumentTypes(funcCall, context))
 		}
 
 		return inferredTypes, true
@@ -191,7 +191,7 @@ func (sb *scopeBuilder) inferLambdaParameterTypes(node compilergraph.GraphNode) 
 
 // getFunctionCallArgumentTypes returns the resolved types of the argument expressions to the given function
 // call.
-func (sb *scopeBuilder) getFunctionCallArgumentTypes(node compilergraph.GraphNode) []typegraph.TypeReference {
+func (sb *scopeBuilder) getFunctionCallArgumentTypes(node compilergraph.GraphNode, context scopeContext) []typegraph.TypeReference {
 	ait := node.StartQuery().
 		Out(parser.NodeFunctionCallArgument).
 		BuildNodeIterator()
@@ -199,7 +199,7 @@ func (sb *scopeBuilder) getFunctionCallArgumentTypes(node compilergraph.GraphNod
 	var types = make([]typegraph.TypeReference, 0)
 	for ait.Next() {
 		// Resolve the scope of the argument.
-		argumentScope := sb.getScope(ait.Node())
+		argumentScope := sb.getScope(ait.Node(), context)
 		if !argumentScope.GetIsValid() {
 			continue
 		}

@@ -13,6 +13,7 @@ type RuntimeFunction string
 
 const (
 	CastFunction               RuntimeFunction = "$t.cast"
+	IsTypeFunction             RuntimeFunction = "$t.istype"
 	DynamicAccessFunction      RuntimeFunction = "$t.dynamicaccess"
 	NullableComparisonFunction RuntimeFunction = "$t.nullcompare"
 	AssertNotNullFunction      RuntimeFunction = "$t.assertnotnull"
