@@ -201,6 +201,15 @@ func (db *domBuilder) buildExpression(node compilergraph.GraphNode) codedom.Expr
 	case parser.NodeBitwiseNotExpression:
 		return db.buildUnaryOperatorExpression(node, nil)
 
+	case parser.NodeKeywordNotExpression:
+		return db.buildUnaryOperatorExpression(node, func(expr codedom.Expression) codedom.Expression {
+			childExpr := codedom.UnaryOperation("!", codedom.NominalUnwrapping(expr, node), node)
+			return codedom.NominalWrapping(
+				childExpr,
+				db.scopegraph.TypeGraph().BoolType(),
+				node)
+		})
+
 	case parser.NodeDefineRangeExpression:
 		fallthrough
 

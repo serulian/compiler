@@ -1,4 +1,4 @@
-function<bool> DoSomething(a int?) {
+function<any> TEST(a int?) {
 	var<int?> b = 1234
 	return a is null && b is not null
 }
