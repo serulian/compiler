@@ -82,7 +82,6 @@ func (m SRGModule) GetTypes() []SRGType {
 		BuildNodeIterator()
 
 	var types []SRGType
-
 	for it.Next() {
 		types = append(types, SRGType{it.Node(), m.srg})
 	}
@@ -98,7 +97,6 @@ func (m SRGModule) GetMembers() []SRGMember {
 		BuildNodeIterator()
 
 	var members []SRGMember
-
 	for it.Next() {
 		members = append(members, SRGMember{it.Node(), m.srg})
 	}
