@@ -1,3 +1,4 @@
 function<bool> DoSomething(a int?) {
-	return a is null
+	var<int?> b = 1234
+	return a is null && b is not null
 }
