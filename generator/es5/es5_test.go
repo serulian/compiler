@@ -127,6 +127,8 @@ var tests = []generationTest{
 	generationTest{"with as statement", "statements", "withas", integrationTestNone, ""},
 	generationTest{"with exit scope statement", "statements", "withexit", integrationTestSuccessExpected, ""},
 
+	generationTest{"match statement", "statements", "match", integrationTestSuccessExpected, ""},
+
 	generationTest{"await expression", "arrowexpr", "await", integrationTestSuccessExpected, ""},
 	generationTest{"multiawait expression", "arrowexpr", "multiawait", integrationTestNone, ""},
 	generationTest{"arrow expression", "arrowexpr", "arrow", integrationTestSuccessExpected, ""},

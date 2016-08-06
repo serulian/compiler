@@ -389,6 +389,9 @@ func (db *domBuilder) buildStatements(node compilergraph.GraphNode) (codedom.Sta
 	case parser.NodeTypeSwitchStatement:
 		return db.buildSwitchStatement(node)
 
+	case parser.NodeTypeMatchStatement:
+		return db.buildMatchStatement(node)
+
 	case parser.NodeTypeArrowStatement:
 		return db.buildArrowStatement(node)
 

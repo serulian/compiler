@@ -260,17 +260,48 @@ func (db *domBuilder) buildWithStatement(node compilergraph.GraphNode) codedom.S
 	return codedom.ResourceBlock(resourceVar, resourceExpr, withStatement, node)
 }
 
+// buildMatchStatement builds the CodeDOM for a match statement.
+func (db *domBuilder) buildMatchStatement(node compilergraph.GraphNode) (codedom.Statement, codedom.Statement) {
+	// Retrieve (or generate) the name of a variable to hold the value being matched against.
+	var matchExprVarName = ""
+	if namedValue, hasNamedValue := node.TryGetNode(parser.NodeStatementNamedValue); hasNamedValue {
+		matchExprVarName = namedValue.Get(parser.NodeNamedValueName)
+	} else {
+		matchExprVarName = db.buildScopeVarName(node)
+	}
+
+	// Set the match expression's value into the variable.
+	startStatement := codedom.VarDefinitionWithInit(matchExprVarName, db.getExpression(node, parser.NodeMatchStatementExpression), node)
+
+	getCheckExpression := func(caseTypeRefNode compilergraph.GraphNode) codedom.Expression {
+		caseTypeLiteral, _ := db.scopegraph.ResolveSRGTypeRef(
+			db.scopegraph.SourceGraph().GetTypeRef(caseTypeRefNode))
+
+		return codedom.RuntimeFunctionCall(codedom.IsTypeFunction,
+			[]codedom.Expression{
+				codedom.LocalReference(matchExprVarName, caseTypeRefNode),
+				codedom.TypeLiteral(caseTypeLiteral, caseTypeRefNode),
+			},
+			caseTypeRefNode)
+	}
+
+	return db.buildJumpingCaseStatement(node, parser.NodeMatchStatementCase,
+		parser.NodeMatchStatementCaseStatement, parser.NodeMatchStatementCaseTypeReference,
+		startStatement, getCheckExpression)
+}
+
 // buildSwitchStatement builds the CodeDOM for a switch statement.
 func (db *domBuilder) buildSwitchStatement(node compilergraph.GraphNode) (codedom.Statement, codedom.Statement) {
-	// A switch statement is an extended version of a conditional statement. For each branch, we check if the
-	// branch's value matches the conditional (or "true" if there is no conditional expr). On true, the block
-	// under the case is executed, followed by a jump to the final statement. Otherwise, the next block
-	// in the chain is executed.
-	var startStatement codedom.Statement = codedom.EmptyStatement(node)
 	var switchVarName = ""
 	var switchVarNode = node
 	var switchType = db.scopegraph.TypeGraph().BoolTypeReference()
 
+	// Start with an empty statement. This will be replaced if we have a switch-level expression.
+	var startStatement codedom.Statement = codedom.EmptyStatement(node)
+
+	// Check for a switch-level expression. If not present, then the switch compares each case
+	// as a boolean value. If present, then we compare the case branches to this expression,
+	// which is placed into a new variable.
 	switchExpr, hasSwitchExpr := db.tryGetExpression(node, parser.NodeSwitchStatementExpression)
 	if hasSwitchExpr {
 		switchVarName = db.buildScopeVarName(node)
@@ -281,51 +312,82 @@ func (db *domBuilder) buildSwitchStatement(node compilergraph.GraphNode) (codedo
 		switchType = switchScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
 	}
 
+	getCheckExpression := func(caseExpressionNode compilergraph.GraphNode) codedom.Expression {
+		caseExpression := db.buildExpression(caseExpressionNode)
+
+		// If no switch-level expression, then the expression being checked is the case
+		// expression itself, which is guarenteed to be a boolean expression.
+		if !hasSwitchExpr {
+			return caseExpression
+		}
+
+		// Otherwise, we check if the case's expression is equal to the value of the switch-level
+		// expression, as found in the variable in which we placed it before the switch runs.
+		return codedom.AreEqual(
+			codedom.LiteralValue(switchVarName, caseExpressionNode),
+			caseExpression,
+			switchType,
+			db.scopegraph.TypeGraph(),
+			caseExpressionNode)
+	}
+
+	return db.buildJumpingCaseStatement(node, parser.NodeSwitchStatementCase,
+		parser.NodeSwitchStatementCaseStatement, parser.NodeSwitchStatementCaseExpression,
+		startStatement, getCheckExpression)
+}
+
+// checkExpressionGenerator defines a function for generating the expression for a case in a branch
+// statement.
+type checkExpressionGenerator func(caseExpressionNode compilergraph.GraphNode) codedom.Expression
+
+// buildJumpingCaseStatement builds the CodeDOM for a statement which jumps (branches) based on
+// various cases.
+func (db *domBuilder) buildJumpingCaseStatement(node compilergraph.GraphNode,
+	casePredicate compilergraph.Predicate,
+	caseStatementPredicate compilergraph.Predicate,
+	caseExpressionPredicate compilergraph.Predicate,
+	startStatement codedom.Statement,
+	getCheckExpression checkExpressionGenerator) (codedom.Statement, codedom.Statement) {
+
+	// A branching statement is an extended version of a conditional statement. For each branch, we check if the
+	// branch's value matches the conditional (or "true" if there is no conditional expr). On true, the block
+	// under the case is executed, followed by a jump to the final statement. Otherwise, the next block
+	// in the chain is executed.
 	finalStatement := codedom.EmptyStatement(node)
 
-	// Save a break statement reference for the switch.
+	// Save a break statement reference for the generated statement.
 	db.breakStatementMap[node.NodeId] = finalStatement
 
-	// Generate the statements and check expressions for each of the branches.
+	// Generate the statements and check expressions for each of the cases.
 	var branchJumps = make([]*codedom.ConditionalJumpNode, 0)
 
-	bit := node.StartQuery().
-		Out(parser.NodeSwitchStatementCase).
+	cit := node.StartQuery().
+		Out(casePredicate).
 		BuildNodeIterator()
 
-	for bit.Next() {
-		branchNode := bit.Node()
-		branchStart, branchEnd := db.getStatements(branchNode, parser.NodeSwitchStatementCaseStatement)
-		branchCheckExpression, hasBranchCheckExpression := db.tryGetExpression(branchNode, parser.NodeSwitchStatementCaseExpression)
+	for cit.Next() {
+		caseNode := cit.Node()
+		caseStart, caseEnd := db.getStatements(caseNode, caseStatementPredicate)
+		caseExpressionNode, hasCaseExpression := caseNode.TryGetNode(caseExpressionPredicate)
 
-		// If the branch has no check expression, then it is a `default` branch, and we compare
-		// against `true`.
-		var checkExpression codedom.Expression = codedom.NominalWrapping(
-			codedom.LiteralValue("true", branchNode),
-			db.scopegraph.TypeGraph().BoolType(),
-			branchNode)
-
-		if hasBranchCheckExpression {
-			checkExpression = branchCheckExpression
+		// Generate the expression against which we should check. If there is no expression on
+		// the case, then this is the default and we compare against "true".
+		var branchExpression codedom.Expression = nil
+		if hasCaseExpression {
+			branchExpression = getCheckExpression(caseExpressionNode)
+		} else {
+			branchExpression = codedom.NominalWrapping(
+				codedom.LiteralValue("true", caseNode),
+				db.scopegraph.TypeGraph().BoolType(),
+				caseNode)
 		}
 
-		// If there is a switch-level check expression, then we need to compare its value against the
-		// branch's expression.
-		if hasSwitchExpr && hasBranchCheckExpression {
-			checkExpression = codedom.AreEqual(
-				codedom.LiteralValue(switchVarName, switchVarNode),
-				checkExpression,
-				switchType,
-				db.scopegraph.TypeGraph(),
-				branchNode)
-		}
-
-		branchJump := codedom.BranchOn(checkExpression, branchNode)
-		branchJump.True = branchStart
+		branchJump := codedom.BranchOn(branchExpression, caseNode)
+		branchJump.True = caseStart
 		branchJumps = append(branchJumps, branchJump)
 
 		// Jump the end statement, once complete, to the final statement.
-		codedom.AssignNextStatement(branchEnd, codedom.UnconditionalJump(finalStatement, branchNode))
+		codedom.AssignNextStatement(caseEnd, codedom.UnconditionalJump(finalStatement, caseNode))
 	}
 
 	// Generate a "trampoline" that checks each case.
