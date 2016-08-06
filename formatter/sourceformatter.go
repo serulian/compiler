@@ -137,6 +137,12 @@ func (sf *sourceFormatter) emitNode(node formatterNode) {
 	case parser.NodeTypeMatchStatementCase:
 		sf.emitMatchStatementCase(node)
 
+	case parser.NodeTypeSwitchStatement:
+		sf.emitSwitchStatement(node)
+
+	case parser.NodeTypeSwitchStatementCase:
+		sf.emitSwitchStatementCase(node)
+
 	case parser.NodeTypeAssignStatement:
 		sf.emitAssignStatement(node)
 

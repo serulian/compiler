@@ -54,6 +54,8 @@ var goldenTests = []goldenTest{
 	{"imports test", "imports"},
 	{"relative imports test", "relative"},
 	{"template strings test", "templatestrings"},
+	{"match test", "match"},
+	{"switch test", "switch"},
 }
 
 func conductParsing(t *testing.T, test goldenTest, source []byte) (*parseTree, formatterNode) {

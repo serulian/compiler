@@ -163,13 +163,65 @@ func (sf *sourceFormatter) emitWithStatement(node formatterNode) {
 	sf.emitNode(node.getChild(parser.NodeWithStatementBlock))
 }
 
+// emitSwitchStatement emits the source for a switch statement.
+func (sf *sourceFormatter) emitSwitchStatement(node formatterNode) {
+	sf.append("switch")
+
+	if expr, ok := node.tryGetChild(parser.NodeSwitchStatementExpression); ok {
+		sf.append(" ")
+		sf.emitNode(expr)
+	}
+
+	cases := node.getChildren(parser.NodeSwitchStatementCase)
+	sf.append(" {")
+
+	if len(cases) > 0 {
+		sf.appendLine()
+		sf.indent()
+		sf.emitOrderedNodes(cases)
+		sf.dedent()
+	}
+
+	sf.append("}")
+}
+
+// emitSwitchStatementCase emits the source for a case under a switch statement.
+func (sf *sourceFormatter) emitSwitchStatementCase(node formatterNode) {
+	if expr, ok := node.tryGetChild(parser.NodeSwitchStatementCaseExpression); ok {
+		sf.append("case ")
+		sf.emitNode(expr)
+		sf.append(":")
+	} else {
+		sf.append("default:")
+	}
+
+	statements := node.getChild(parser.NodeSwitchStatementCaseStatement).getChildren(parser.NodeStatementBlockStatement)
+	sf.appendLine()
+	sf.indent()
+	sf.hasNewScope = true
+	sf.emitOrderedNodes(statements)
+	sf.dedent()
+	sf.appendLine()
+
+	// Ensure that there is a blank line iff this isn't the last match case.
+	parent, _ := sf.parentNode()
+	cases := parent.getChildren(parser.NodeSwitchStatementCase)
+	if cases[len(cases)-1].getProperty(parser.NodePredicateStartRune) != node.getProperty(parser.NodePredicateStartRune) {
+		sf.ensureBlankLine()
+	}
+}
+
 // emitMatchStatement emits the source for a match statement.
 func (sf *sourceFormatter) emitMatchStatement(node formatterNode) {
 	sf.append("match")
 
-	if expr, ok := node.tryGetChild(parser.NodeMatchStatementExpression); ok {
-		sf.append(" ")
-		sf.emitNode(expr)
+	expr := node.getChild(parser.NodeMatchStatementExpression)
+	sf.append(" ")
+	sf.emitNode(expr)
+
+	if namedValue, hasNamedValue := node.tryGetChild(parser.NodeStatementNamedValue); hasNamedValue {
+		sf.append(" as ")
+		sf.emitNode(namedValue)
 	}
 
 	cases := node.getChildren(parser.NodeMatchStatementCase)
@@ -187,7 +239,7 @@ func (sf *sourceFormatter) emitMatchStatement(node formatterNode) {
 
 // emitMatchStatementCase emits the source for a case under a match statement.
 func (sf *sourceFormatter) emitMatchStatementCase(node formatterNode) {
-	if expr, ok := node.tryGetChild(parser.NodeMatchStatementCaseExpression); ok {
+	if expr, ok := node.tryGetChild(parser.NodeMatchStatementCaseTypeReference); ok {
 		sf.append("case ")
 		sf.emitNode(expr)
 		sf.append(":")
