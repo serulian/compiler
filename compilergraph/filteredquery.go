@@ -23,38 +23,43 @@ type FilteredQuery struct {
 func (fq *FilteredQuery) BuildNodeIterator(predicates ...Predicate) NodeIterator {
 	// Build an iterator to collect the IDs matching the inner query.
 	it := fq.query.BuildNodeIterator()
-
-	var nodeIds = make([]GraphNodeId, 0)
-	for it.Next() {
-		nodeIds = append(nodeIds, it.Node().NodeId)
+	if !it.Next() {
+		return EmptyIterator{}
 	}
 
-	// If there are no nodes found, nothing more to do.
-	if len(nodeIds) == 0 {
-		return EmptyIterator{}
+	// Note that it.Next() is called in the check above, so we call it at the
+	// *end* of each of the loop iterations. This ensure that we don't allocate
+	// the slice unless absolutely necessary.
+	var nodeIds = make([]GraphNodeId, 0, 16)
+	for {
+		nodeIds = append(nodeIds, it.Node().NodeId)
+		if !it.Next() {
+			break
+		}
 	}
 
 	// Otherwise, create a new query starting from the nodes found and send it
 	// to the filtering function.
 	fullKindPredicate := fq.query.layer.getPrefixedPredicate(fq.query.layer.nodeKindPredicate)
-
 	markId := compilerutil.NewUniqueId()
 	subQuery := fq.query.layer.StartQueryFromNodes(nodeIds...).mark(markId).save(fullKindPredicate, markId+"-kind")
 	filteredQuery := fq.filter(subQuery)
+
+	// Build an iterator over the filtered query.
 	fit := filteredQuery.BuildNodeIterator()
-
-	// Collect the filtered nodes.
-	var filtered = make([]GraphNode, 0)
-	for fit.Next() {
-		nodeId := valueToNodeId(fit.getMarked(markId))
-		kindValue := fit.getMarked(markId + "-kind")
-
-		filtered = append(filtered, GraphNode{nodeId, kindValue, fq.query.layer})
+	if !fit.Next() {
+		return EmptyIterator{}
 	}
 
-	// If there are no nodes found, nothing more to do.
-	if len(filtered) == 0 {
-		return EmptyIterator{}
+	// Collect the filtered nodes.
+	var filtered = make([]GraphNode, 0, len(nodeIds))
+	for {
+		nodeId := valueToNodeId(fit.getMarked(markId))
+		kindValue := fit.getMarked(markId + "-kind")
+		filtered = append(filtered, GraphNode{nodeId, kindValue, fq.query.layer})
+		if !fit.Next() {
+			break
+		}
 	}
 
 	return &nodeReturnIterator{fq.query.layer, filtered, -1}

@@ -47,6 +47,20 @@ func (gl *GraphLayer) StartQuery(values ...interface{}) GraphQuery {
 	}
 }
 
+// StartQueryFromNods returns a new query starting at the node with the given IDs.
+func (gl *GraphLayer) StartQueryFromNode(nodeId GraphNodeId) GraphQuery {
+	singleStartingValue := nodeIdToValue(nodeId)
+	return GraphQuery{
+		path:     cayley.StartPath(gl.cayleyStore, singleStartingValue),
+		layer:    gl,
+		tagCount: 0,
+
+		singleStartingValue: singleStartingValue,
+		singlePredicate:     nil,
+		singleDirection:     0,
+	}
+}
+
 // StartQueryFromNodes returns a new query starting at the nodes with the given IDs.
 func (gl *GraphLayer) StartQueryFromNodes(nodeIds ...GraphNodeId) GraphQuery {
 	quadValues := graphIdsToQuadValues(nodeIds)

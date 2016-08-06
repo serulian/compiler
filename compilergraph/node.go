@@ -45,7 +45,7 @@ func (gn GraphNode) StartQuery() GraphQuery {
 
 // StartQueryToLayer starts a new query on the specified graph layer, with its origin being the current node.
 func (gn GraphNode) StartQueryToLayer(layer *GraphLayer) GraphQuery {
-	return layer.StartQueryFromNodes(gn.NodeId)
+	return layer.StartQueryFromNode(gn.NodeId)
 }
 
 // GetAllTagged returns the tagged values of the given predicate found on this node.
