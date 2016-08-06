@@ -574,6 +574,10 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"is op success test", "isop", "success",
 		[]expectedScopeEntry{
 			expectedScopeEntry{"isresult", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+
+			expectedScopeEntry{"aundercheck", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+			expectedScopeEntry{"aundercheck2", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+			expectedScopeEntry{"aundercheck3", expectedScope{true, proto.ScopeKind_VALUE, "null", "void"}},
 		},
 		"", ""},
 

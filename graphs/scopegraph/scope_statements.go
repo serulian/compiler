@@ -394,14 +394,90 @@ func (sb *scopeBuilder) scopeLoopStatement(node compilergraph.GraphNode, context
 	}
 }
 
+type inferrenceOption int
+
+const (
+	inferredDirect inferrenceOption = iota
+	inferredInverted
+)
+
+// inferTypesForConditionalExpressionContext returns a modified context for the then or else branches of
+// a conditional statement that contains a type override of a named identifer if the comparison has clarified
+// its type. For example a conditional expression of `a is null` will make the type of `a` be null under
+// the then branch while being non-null under the `else` branch.
+func (sb *scopeBuilder) inferTypesForConditionalExpressionContext(baseContext scopeContext,
+	conditionalExprNode compilergraph.GraphNode,
+	option inferrenceOption) scopeContext {
+
+	// Make sure the conditional expression is valid.
+	conditionalExprScope := sb.getScope(conditionalExprNode, baseContext)
+	if !conditionalExprScope.GetIsValid() {
+		return baseContext
+	}
+
+	checkIsExpression := func(isExpressionNode compilergraph.GraphNode, setToNull bool) scopeContext {
+		// Invert the null-set if requested.
+		if option == inferredInverted {
+			setToNull = !setToNull
+		}
+
+		// Ensure the left expression of the `is` has valid scope.
+		leftScope := sb.getScope(isExpressionNode.GetNode(parser.NodeBinaryExpressionLeftExpr), baseContext)
+		if !leftScope.GetIsValid() {
+			return baseContext
+		}
+
+		// Ensure that the left expression refers to a named scope.
+		leftNamed, isNamed := sb.getNamedScopeForScope(leftScope)
+		if !isNamed || leftNamed.ValueType(baseContext).IsVoid() {
+			return baseContext
+		}
+
+		// Lookup the right expression. If it is itself a `not`, then we invert the set to null..
+		rightExpr := isExpressionNode.GetNode(parser.NodeBinaryExpressionRightExpr)
+		if rightExpr.Kind() == parser.NodeKeywordNotExpression {
+			setToNull = !setToNull
+		}
+
+		// Add an override for the named node.
+		leftNamedNode, _ := leftScope.NamedReferenceNode(sb.sg.srg, sb.sg.tdg)
+		if setToNull {
+			return baseContext.withTypeOverride(leftNamedNode, sb.sg.tdg.NullTypeReference())
+		} else {
+			return baseContext.withTypeOverride(leftNamedNode, leftScope.ResolvedTypeRef(sb.sg.tdg).AsNonNullable())
+		}
+	}
+
+	// TODO: If we add more comparisons or forms here, change this into a more formal comparison
+	// system rather than hand-written checks.
+	exprKind := conditionalExprNode.Kind()
+	switch exprKind {
+	case parser.NodeIsComparisonExpression:
+		// Check the `is` expression itself to see if we can add the inferred type.
+		return checkIsExpression(conditionalExprNode, true)
+
+	case parser.NodeBooleanNotExpression:
+		// If the ! is in front of an `is` expression, then invert it.
+		childExpr := conditionalExprNode.GetNode(parser.NodeUnaryExpressionChildExpr)
+		if childExpr.Kind() == parser.NodeIsComparisonExpression {
+			return checkIsExpression(childExpr, false)
+		}
+	}
+
+	return baseContext
+}
+
 // scopeConditionalStatement scopes a conditional statement in the SRG.
 func (sb *scopeBuilder) scopeConditionalStatement(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	var returningType = sb.sg.tdg.VoidTypeReference()
 	var valid = true
 	var labelSet = newLabelSet()
 
+	conditionalExprNode := node.GetNode(parser.NodeConditionalStatementConditional)
+
 	// Scope the child block(s).
-	statementBlockScope := sb.getScope(node.GetNode(parser.NodeConditionalStatementBlock), context)
+	statementBlockContext := sb.inferTypesForConditionalExpressionContext(context, conditionalExprNode, inferredDirect)
+	statementBlockScope := sb.getScope(node.GetNode(parser.NodeConditionalStatementBlock), statementBlockContext)
 	labelSet.AppendLabelsOf(statementBlockScope)
 	if !statementBlockScope.GetIsValid() {
 		valid = false
@@ -411,7 +487,8 @@ func (sb *scopeBuilder) scopeConditionalStatement(node compilergraph.GraphNode, 
 
 	elseClauseNode, hasElseClause := node.TryGetNode(parser.NodeConditionalStatementElseClause)
 	if hasElseClause {
-		elseClauseScope := sb.getScope(elseClauseNode, context)
+		elseClauseContext := sb.inferTypesForConditionalExpressionContext(context, conditionalExprNode, inferredInverted)
+		elseClauseScope := sb.getScope(elseClauseNode, elseClauseContext)
 		labelSet.AppendLabelsOf(elseClauseScope)
 
 		if !elseClauseScope.GetIsValid() {
@@ -426,7 +503,6 @@ func (sb *scopeBuilder) scopeConditionalStatement(node compilergraph.GraphNode, 
 	}
 
 	// Scope the conditional expression and make sure it has type boolean.
-	conditionalExprNode := node.GetNode(parser.NodeConditionalStatementConditional)
 	conditionalExprScope := sb.getScope(conditionalExprNode, context)
 	if !conditionalExprScope.GetIsValid() {
 		return newScope().Invalid().Returning(returningType, isSettlingScope).WithLabelSet(labelSet).GetScope()
