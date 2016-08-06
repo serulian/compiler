@@ -763,7 +763,7 @@ func (p *sourceParser) consumeOperator(option typeMemberOption) AstNode {
 	}
 
 	// Operator Name.
-	identifier, ok := p.consumeIdentifier()
+	identifier, ok := p.consumeIdentifierOrKeyword("not")
 	if !ok {
 		return operatorNode
 	}
@@ -2999,6 +2999,15 @@ func (p *sourceParser) tryConsumeBaseExpression() (AstNode, bool) {
 	// List expression, slice literal expression or mapping literal expression.
 	case p.isToken(tokenTypeLeftBracket):
 		return p.consumeBracketedLiteralExpression(), true
+
+	// Unary: not
+	case p.isKeyword("not"):
+		p.consumeKeyword("not")
+
+		exprNode := p.startNode(NodeKeywordNotExpression)
+		defer p.finishNode()
+		exprNode.Connect(NodeUnaryExpressionChildExpr, p.consumeAssignableExpression())
+		return exprNode, true
 
 	// Unary: &
 	case p.isToken(tokenTypeAnd):

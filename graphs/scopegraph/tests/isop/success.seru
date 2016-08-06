@@ -1,3 +1,15 @@
 function<void> DoSomething(a int?) {
 	/* isresult */(a is null)
+
+	if a is not null {
+		/* aundercheck */(a)
+	}
+
+	if !(a is null) {
+		/* aundercheck2 */(a)	
+	}
+
+	if a is null {
+		/* aundercheck3 */(a)
+	}
 }

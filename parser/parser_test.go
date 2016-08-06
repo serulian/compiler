@@ -155,6 +155,7 @@ var parserTests = []parserTest{
 	{"readonly class property test", "class/readonly_property"},
 	{"class function no parameters test", "class/function_noparams"},
 	{"basic class operator test", "class/basic_operator"},
+	{"keyword class operator test", "class/keyword_operator"},
 	{"basic class field test", "class/basic_field"},
 	{"basic class operator with return type test", "class/operator_returns"},
 	{"class constructor no params stest", "class/constructor_noparams"},
@@ -286,6 +287,8 @@ var parserTests = []parserTest{
 	{"comment line test", "comment/line"},
 	{"comment parens test", "comment/parens"},
 	{"comment assign statement test", "comment/assignstatement"},
+	{"comment keywords test", "comment/keywords"},
+	{"comment keyword op test", "comment/keywordop"},
 }
 
 func reportImport(path packageloader.PackageImport) string {

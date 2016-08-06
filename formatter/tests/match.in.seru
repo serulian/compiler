@@ -1,0 +1,11 @@
+function<void> DoSomething() {
+	match someExpr as SomethingElse {
+		case List<int>:
+			1
+			2
+	case int:
+		foobar
+	default:
+return
+	}
+}

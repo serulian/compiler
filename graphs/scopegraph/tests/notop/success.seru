@@ -1,0 +1,10 @@
+class SomeClass {
+	operator bool(sc SomeClass) {
+		return true
+	}
+}
+
+function<void> DoSomething(value SomeClass?) {
+	/* isnot */(value is not null)
+	/* not */(not (value!))
+}

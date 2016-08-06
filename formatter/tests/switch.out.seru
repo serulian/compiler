@@ -1,0 +1,13 @@
+function<void> DoSomething() {
+	switch someExpr {
+		case foo:
+			1
+			2
+
+		case bar:
+			foobar
+
+		default:
+			return
+	}
+}

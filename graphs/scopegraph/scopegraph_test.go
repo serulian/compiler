@@ -574,16 +574,33 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"is op success test", "isop", "success",
 		[]expectedScopeEntry{
 			expectedScopeEntry{"isresult", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+
+			expectedScopeEntry{"aundercheck", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+			expectedScopeEntry{"aundercheck2", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+			expectedScopeEntry{"aundercheck3", expectedScope{true, proto.ScopeKind_VALUE, "null", "void"}},
 		},
 		"", ""},
 
 	scopegraphTest{"is op not null failure test", "isop", "notnull",
 		[]expectedScopeEntry{},
-		"Right side of 'is' operator must be 'null'", ""},
+		"Right side of 'is' operator must be 'null' or 'not null'", ""},
 
 	scopegraphTest{"is op not nullable failure test", "isop", "notnullable",
 		[]expectedScopeEntry{},
 		"Left side of 'is' operator must be a nullable type. Found: Integer", ""},
+
+	/////////// Not keyword operator expression ///////////
+
+	scopegraphTest{"not op success test", "notop", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"isnot", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+			expectedScopeEntry{"not", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"not op missing bool op failure test", "notop", "missingboolop",
+		[]expectedScopeEntry{},
+		"Operator 'bool' is not defined on type 'SomeClass'", ""},
 
 	/////////// Nullable operator expression ///////////
 

@@ -1,16 +1,16 @@
 NodeTypeFile
-  end-rune = 543
+  end-rune = 567
   input-source = all expr test
   start-rune = 0
   child-node =>
     NodeTypeFunction
-      end-rune = 543
+      end-rune = 567
       input-source = all expr test
       named = SomeFunction
       start-rune = 0
       definition-body =>
         NodeTypeStatementBlock
-          end-rune = 543
+          end-rune = 567
           input-source = all expr test
           start-rune = 30
           block-child =>
@@ -1160,6 +1160,53 @@ NodeTypeFile
                           identexpr-name = b
                           input-source = all expr test
                           start-rune = 537
+            NodeTypeExpressionStatement
+              end-rune = 552
+              input-source = all expr test
+              start-rune = 544
+              expr-statement-expr =>
+                NodeIsComparisonExpression
+                  end-rune = 551
+                  input-source = all expr test
+                  start-rune = 544
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 544
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 544
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 551
+                      identexpr-name = foo
+                      input-source = all expr test
+                      start-rune = 549
+            NodeTypeExpressionStatement
+              end-rune = 566
+              input-source = all expr test
+              start-rune = 554
+              expr-statement-expr =>
+                NodeIsComparisonExpression
+                  end-rune = 565
+                  input-source = all expr test
+                  start-rune = 554
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 554
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 554
+                  binary-expression-right =>
+                    NodeKeywordNotExpression
+                      end-rune = 565
+                      input-source = all expr test
+                      start-rune = 563
+                      unary-expression-child =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 565
+                          identexpr-name = foo
+                          input-source = all expr test
+                          start-rune = 563
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 12

@@ -108,6 +108,7 @@ const (
 	NodeBooleanOrExpression  // a || b
 	NodeBooleanAndExpression // a && b
 	NodeBooleanNotExpression // !a
+	NodeKeywordNotExpression // not a
 
 	NodeRootTypeExpression // &a
 

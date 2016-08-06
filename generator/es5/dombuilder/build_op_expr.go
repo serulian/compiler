@@ -146,10 +146,19 @@ func (db *domBuilder) buildInCollectionExpression(node compilergraph.GraphNode) 
 
 // buildIsComparisonExpression builds the CodeDOM for an is comparison operator.
 func (db *domBuilder) buildIsComparisonExpression(node compilergraph.GraphNode) codedom.Expression {
-	leftExpr := db.getExpression(node, parser.NodeBinaryExpressionLeftExpr)
-	rightExpr := db.getExpression(node, parser.NodeBinaryExpressionRightExpr)
+	generatedLeftExpr := db.getExpression(node, parser.NodeBinaryExpressionLeftExpr)
+
+	// Check for a `not` subexpression. If found, we invert the check.
+	op := "=="
+	rightExpr := node.GetNode(parser.NodeBinaryExpressionRightExpr)
+	if rightExpr.Kind() == parser.NodeKeywordNotExpression {
+		op = "!="
+		rightExpr = rightExpr.GetNode(parser.NodeUnaryExpressionChildExpr)
+	}
+
+	generatedRightExpr := db.buildExpression(rightExpr)
 	return codedom.NominalWrapping(
-		codedom.BinaryOperation(leftExpr, "==", rightExpr, node),
+		codedom.BinaryOperation(generatedLeftExpr, op, generatedRightExpr, node),
 		db.scopegraph.TypeGraph().BoolType(),
 		node)
 }
