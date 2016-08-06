@@ -62,4 +62,6 @@ function<void> SomeFunction() {
 	a<b<c>?>
 	a in b
 	a in b.foo
+	a is foo
+	a is not foo
 }

@@ -331,6 +331,21 @@ func (p *sourceParser) tryConsumeIdentifier() (string, bool) {
 	return value, true
 }
 
+// consumeIdentifierOrKeyword consumes an expected identifier or keyword.
+func (p *sourceParser) consumeIdentifierOrKeyword(keywords ...string) (string, bool) {
+	if p.isToken(tokenTypeIdentifer) {
+		return p.consumeIdentifier()
+	}
+
+	for _, keyword := range keywords {
+		if p.tryConsumeKeyword(keyword) {
+			return keyword, true
+		}
+	}
+
+	return "", false
+}
+
 // consumeIdentifier consumes an expected identifier token or adds an error node.
 func (p *sourceParser) consumeIdentifier() (string, bool) {
 	if identifier, ok := p.tryConsumeIdentifier(); ok {

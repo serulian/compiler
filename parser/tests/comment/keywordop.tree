@@ -1,0 +1,48 @@
+NodeTypeFile
+  end-rune = 48
+  input-source = comment keyword op test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 48
+      input-source = comment keyword op test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 48
+          input-source = comment keyword op test
+          start-rune = 29
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 47
+              input-source = comment keyword op test
+              start-rune = 41
+              child-node =>
+                NodeTypeComment
+                  comment-value = /* not */
+                  end-rune = 40
+                  input-source = comment keyword op test
+                  start-rune = 32
+              expr-statement-expr =>
+                NodeBitwiseNotExpression
+                  end-rune = 45
+                  input-source = comment keyword op test
+                  start-rune = 43
+                  child-node =>
+                    NodeTypeComment
+                      comment-value = /* not */
+                      end-rune = 40
+                      input-source = comment keyword op test
+                      start-rune = 32
+                  unary-expression-child =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 45
+                      identexpr-name = foo
+                      input-source = comment keyword op test
+                      start-rune = 43
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 12
+          input-source = comment keyword op test
+          start-rune = 9

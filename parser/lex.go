@@ -172,6 +172,9 @@ var keywords = map[string]bool{
 	"this": true,
 	"null": true,
 
+	"is":  true,
+	"not": true,
+
 	"for":      true,
 	"if":       true,
 	"else":     true,
