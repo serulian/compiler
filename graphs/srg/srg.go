@@ -28,15 +28,19 @@ type SRG struct {
 
 	layer      *compilergraph.GraphLayer      // The SRG layer in the graph.
 	packageMap packageloader.LoadedPackageMap // Map from package kind and path to info.
-	aliasMap   map[string]SRGType             // Map of aliased types.
+
+	aliasMap      map[string]SRGType                       // Map of aliased types.
+	modulePathMap map[compilercommon.InputSource]SRGModule // Map of modules by path.
 }
 
 // NewSRG returns a new SRG for populating the graph with parsed source.
 func NewSRG(graph *compilergraph.SerulianGraph) *SRG {
 	return &SRG{
-		Graph:    graph,
-		layer:    graph.NewGraphLayer("srg", parser.NodeTypeTagged),
-		aliasMap: map[string]SRGType{},
+		Graph: graph,
+		layer: graph.NewGraphLayer("srg", parser.NodeTypeTagged),
+
+		aliasMap:      map[string]SRGType{},
+		modulePathMap: nil,
 	}
 }
 

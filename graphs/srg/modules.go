@@ -25,25 +25,38 @@ type SRGModule struct {
 	srg *SRG // The parent SRG.
 }
 
-// GetModules returns all the modules defined in the SRG.
-func (g *SRG) GetModules() []SRGModule {
-	it := g.findAllNodes(parser.NodeTypeFile).BuildNodeIterator()
-	var modules []SRGModule
+// getModulesMap returns the modules map for the modules in the SRG.
+func (g *SRG) getModulesMap() map[compilercommon.InputSource]SRGModule {
+	if g.modulePathMap == nil {
+		moduleMap := map[compilercommon.InputSource]SRGModule{}
+		it := g.findAllNodes(parser.NodeTypeFile).BuildNodeIterator(parser.NodePredicateSource)
+		for it.Next() {
+			moduleMap[compilercommon.InputSource(it.GetPredicate(parser.NodePredicateSource).String())] = SRGModule{it.Node(), g}
+		}
 
-	for it.Next() {
-		modules = append(modules, SRGModule{it.Node(), g})
+		// Cache the map.
+		g.modulePathMap = moduleMap
+		return moduleMap
 	}
 
+	return g.modulePathMap
+}
+
+// GetModules returns all the modules defined in the SRG.
+func (g *SRG) GetModules() []SRGModule {
+	modules := make([]SRGModule, len(g.getModulesMap()))
+	var index = 0
+	for _, module := range g.getModulesMap() {
+		modules[index] = module
+		index++
+	}
 	return modules
 }
 
 // FindModuleBySource returns the module with the given input source, if any.
 func (g *SRG) FindModuleBySource(source compilercommon.InputSource) (SRGModule, bool) {
-	node, found := g.findAllNodes(parser.NodeTypeFile).
-		Has(parser.NodePredicateSource, string(source)).
-		TryGetNode()
-
-	return SRGModule{node, g}, found
+	module, found := g.getModulesMap()[source]
+	return module, found
 }
 
 // InputSource returns the input source for this module.
