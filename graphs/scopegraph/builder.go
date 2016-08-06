@@ -254,6 +254,9 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 	case parser.NodeBooleanNotExpression:
 		return sb.scopeBooleanUnaryExpression
 
+	case parser.NodeKeywordNotExpression:
+		return sb.scopeKeywordNotExpression
+
 	case parser.NodeComparisonEqualsExpression:
 		return sb.scopeEqualsExpression
 

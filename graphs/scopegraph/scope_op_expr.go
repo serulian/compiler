@@ -336,9 +336,11 @@ func (sb *scopeBuilder) scopeIsComparisonExpression(node compilergraph.GraphNode
 		return newScope().Invalid().GetScope()
 	}
 
-	// Ensure the right hand side is null.
-	if !rightScope.ResolvedTypeRef(sb.sg.tdg).IsNull() {
-		sb.decorateWithError(node, "Right side of 'is' operator must be 'null'")
+	// Ensure the right hand side is null or the 'not' keyword (which itself will make sure it
+	// has a null)
+	rightKind := node.GetNode(parser.NodeBinaryExpressionRightExpr).Kind()
+	if rightKind != parser.NodeKeywordNotExpression && rightKind != parser.NodeNullLiteralExpression {
+		sb.decorateWithError(node, "Right side of 'is' operator must be 'null' or 'not null'")
 		return newScope().Invalid().Resolving(sb.sg.tdg.BoolTypeReference()).GetScope()
 	}
 
@@ -640,4 +642,20 @@ func (sb *scopeBuilder) scopeRootTypeExpression(node compilergraph.GraphNode, co
 
 	// The result of the operator is a value of any type.
 	return newScope().Valid().Resolving(sb.sg.tdg.AnyTypeReference()).GetScope()
+}
+
+// scopeKeywordNotExpression scopes a keyword not expression in the SRG.
+func (sb *scopeBuilder) scopeKeywordNotExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
+	// Check for 'is not null' case.
+	parentExpr, hasParentExpr := node.TryGetIncomingNode(parser.NodeBinaryExpressionRightExpr)
+	if hasParentExpr && parentExpr.Kind() == parser.NodeIsComparisonExpression {
+		if node.GetNode(parser.NodeUnaryExpressionChildExpr).Kind() != parser.NodeNullLiteralExpression {
+			sb.decorateWithError(node, "Expression under an 'is not' must be 'null'")
+			return newScope().Invalid().GetScope()
+		}
+		return newScope().Valid().GetScope()
+	}
+
+	// Check for normal bool-eable.
+	return sb.scopeUnaryExpression(node, "bool", parser.NodeUnaryExpressionChildExpr, context).GetScope()
 }

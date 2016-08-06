@@ -104,10 +104,12 @@ func (t *TypeGraph) buildOperatorDefinitions() {
 
 		operatorDefinition{"not", true, false, containingTypeGetter, unaryParameters},
 
+		operatorDefinition{"bool", true, false, staticTypeGetter(t.BoolType()), unaryParameters},
+
 		// Equality.
 		operatorDefinition{"equals", true, false, staticTypeGetter(t.BoolType()), binaryParameters},
 
-		// Comparison.
+		// Comparison.s
 		operatorDefinition{"compare", true, false, staticTypeGetter(t.IntType()), binaryParameters},
 
 		// Range.
