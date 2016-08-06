@@ -234,6 +234,10 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"Match cases must be subtype of values of type 'Integer': 'String' cannot be used in place of non-interface 'Integer'", ""},
 
+	scopegraphTest{"match nullable branch test", "match", "nullable",
+		[]expectedScopeEntry{},
+		"Match cases cannot be nullable. Found: String?", ""},
+
 	/////////// Switch ///////////
 
 	scopegraphTest{"basic bool switch test", "switch", "bool",
