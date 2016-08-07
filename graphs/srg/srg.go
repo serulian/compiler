@@ -10,6 +10,7 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/parser"
 )
@@ -31,17 +32,23 @@ type SRG struct {
 
 	aliasMap      map[string]SRGType                       // Map of aliased types.
 	modulePathMap map[compilercommon.InputSource]SRGModule // Map of modules by path.
+
+	containingImplementedCache *compilerutil.RangeMapTree // Cache of containing implementeds
 }
 
 // NewSRG returns a new SRG for populating the graph with parsed source.
 func NewSRG(graph *compilergraph.SerulianGraph) *SRG {
-	return &SRG{
+	g := &SRG{
 		Graph: graph,
 		layer: graph.NewGraphLayer("srg", parser.NodeTypeTagged),
 
 		aliasMap:      map[string]SRGType{},
 		modulePathMap: nil,
 	}
+
+	// Setup the various caches.
+	g.containingImplementedCache = compilerutil.NewRangeMapTree(g.calculateContainingImplemented)
+	return g
 }
 
 // ResolveAliasedType returns the type with the global alias, if any.
