@@ -392,7 +392,7 @@ func (eg *expressionGenerator) generateMemberReference(memberReference *codedom.
 
 	// This handles the native new case for WebIDL. We should probably handle this directly.
 	if memberReference.Member.IsStatic() && !memberReference.Member.IsPromising() {
-		return eg.generateExpression(codedom.StaticMemberReference(memberReference.Member, memberReference.BasisNode()), context)
+		return eg.generateExpression(codedom.StaticMemberReference(memberReference.Member, eg.scopegraph.TypeGraph().AnyTypeReference(), memberReference.BasisNode()), context)
 	}
 
 	childExpr := eg.generateExpression(memberReference.ChildExpression, context)
@@ -401,7 +401,7 @@ func (eg *expressionGenerator) generateMemberReference(memberReference *codedom.
 
 // generateStaticMemberReference generates the expression for a static reference to a module or type member.
 func (eg *expressionGenerator) generateStaticMemberReference(memberReference *codedom.StaticMemberReferenceNode, context generationContext) esbuilder.ExpressionBuilder {
-	staticPath := eg.pather.GetStaticMemberPath(memberReference.Member, eg.scopegraph.TypeGraph().AnyTypeReference())
+	staticPath := eg.pather.GetStaticMemberPath(memberReference.Member, memberReference.ParentType)
 	return esbuilder.Snippet(staticPath)
 }
 

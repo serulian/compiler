@@ -204,8 +204,11 @@ func (db *domBuilder) buildUnaryOperatorExpression(node compilergraph.GraphNode,
 		return db.buildNativeUnaryExpression(node, operatorMap[node.Kind()])
 	}
 
+	childScope, _ := db.scopegraph.GetScope(node.GetNode(parser.NodeUnaryExpressionChildExpr))
+	parentType := childScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
+
 	childExpr := db.getExpression(node, parser.NodeUnaryExpressionChildExpr)
-	callExpr := codedom.MemberCall(codedom.StaticMemberReference(operator, node), operator, []codedom.Expression{childExpr}, node)
+	callExpr := codedom.MemberCall(codedom.StaticMemberReference(operator, parentType, node), operator, []codedom.Expression{childExpr}, node)
 	if modifier != nil {
 		return modifier(callExpr)
 	}
@@ -225,7 +228,10 @@ func (db *domBuilder) buildBinaryOperatorExpression(node compilergraph.GraphNode
 	leftExpr := db.getExpression(node, parser.NodeBinaryExpressionLeftExpr)
 	rightExpr := db.getExpression(node, parser.NodeBinaryExpressionRightExpr)
 
-	callExpr := codedom.MemberCall(codedom.StaticMemberReference(operator, node), operator, []codedom.Expression{leftExpr, rightExpr}, node)
+	leftScope, _ := db.scopegraph.GetScope(node.GetNode(parser.NodeBinaryExpressionLeftExpr))
+	parentType := leftScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
+
+	callExpr := codedom.MemberCall(codedom.StaticMemberReference(operator, parentType, node), operator, []codedom.Expression{leftExpr, rightExpr}, node)
 	if modifier != nil {
 		return modifier(callExpr)
 	}

@@ -19,7 +19,7 @@ func AreEqual(leftExpr Expression, rightExpr Expression, comparisonType typegrap
 	}
 
 	return MemberCall(
-		StaticMemberReference(operator, basis),
+		StaticMemberReference(operator, comparisonType, basis),
 		operator,
 		[]Expression{leftExpr, rightExpr},
 		basis)
@@ -107,13 +107,15 @@ func TypeLiteral(typeRef typegraph.TypeReference, basis compilergraph.GraphNode)
 // StaticMemberReferenceNode refers statically to a member path.
 type StaticMemberReferenceNode struct {
 	expressionBase
-	Member typegraph.TGMember // The member to which we are referring statically.
+	Member     typegraph.TGMember      // The member to which we are referring statically.
+	ParentType typegraph.TypeReference // The full parent type (including resolved generics) for the member.
 }
 
-func StaticMemberReference(member typegraph.TGMember, basis compilergraph.GraphNode) Expression {
+func StaticMemberReference(member typegraph.TGMember, parentType typegraph.TypeReference, basis compilergraph.GraphNode) Expression {
 	return &StaticMemberReferenceNode{
 		expressionBase{domBase{basis}},
 		member,
+		parentType,
 	}
 }
 
