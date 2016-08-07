@@ -37,7 +37,7 @@ func (db *domBuilder) buildLoopExpression(node compilergraph.GraphNode) codedom.
 
 	// Build a reference to the Map function.
 	mapFunctionReference := codedom.FunctionCall(
-		codedom.StaticMemberReference(member, node),
+		codedom.StaticMemberReference(member, db.scopegraph.TypeGraph().StreamTypeReference(mappedItemType), node),
 		[]codedom.Expression{
 			codedom.TypeLiteral(namedItemType, node),
 			codedom.TypeLiteral(mappedItemType, node),

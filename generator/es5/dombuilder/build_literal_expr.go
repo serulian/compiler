@@ -379,7 +379,7 @@ func (db *domBuilder) buildTemplateStringExpression(node compilergraph.GraphNode
 		panic("Missing formatTemplateString under String's module")
 	}
 
-	return db.buildTemplateStringCall(node, codedom.StaticMemberReference(member, node), false)
+	return db.buildTemplateStringCall(node, codedom.StaticMemberReference(member, db.scopegraph.TypeGraph().StringTypeReference(), node), false)
 }
 
 // buildTaggedTemplateString builds the CodeDOM for a tagged template string expression.

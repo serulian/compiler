@@ -56,8 +56,8 @@ func (db *domBuilder) buildNamedAccess(node compilergraph.GraphNode, name string
 				return codedom.MemberReference(childExpr, memberRef, node)
 			}
 		} else {
-			// This is access of a static member. Generate an access under the module or type.
-			return codedom.StaticMemberReference(memberRef, node)
+			// This is a direct access of a static member. Generate an access under the module.
+			return codedom.StaticMemberReference(memberRef, db.scopegraph.TypeGraph().AnyTypeReference(), node)
 		}
 	}
 

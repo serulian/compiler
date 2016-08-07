@@ -1,0 +1,14 @@
+class SomeClass<T> {
+	property<bool> BoolValue {
+		get { return false }
+	}
+
+	operator bool(value SomeClass<T>) {
+		return value.BoolValue
+	}
+}
+
+function<any> TEST() {
+	var sc = SomeClass<int>.new()
+	return not sc
+}
