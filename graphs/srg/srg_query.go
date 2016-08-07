@@ -6,6 +6,7 @@ package srg
 
 import (
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/parser"
 )
 
@@ -43,21 +44,45 @@ func (g *SRG) findAllNodes(nodeTypes ...parser.NodeType) compilergraph.GraphQuer
 	return g.layer.FindNodesOfKind(nodeTypesTagged...)
 }
 
-// TryGetContainingImplemented returns the member or property node that has an
-// outgoing NodePredicateBody pointing to a statement block containing this specified node.
-func (g *SRG) TryGetContainingImplemented(node compilergraph.GraphNode) (compilergraph.GraphNode, bool) {
+// calculateContainingImplemented calculates the containing implemented node for the given rune range under
+// the given source path.
+func (g *SRG) calculateContainingImplemented(sourcePath string, runeRange compilerutil.IntRange) (compilerutil.IntRange, interface{}) {
 	containingFilter := func(q compilergraph.GraphQuery) compilergraph.Query {
-		startRune := node.GetValue(parser.NodePredicateStartRune).Int()
-		endRune := node.GetValue(parser.NodePredicateEndRune).Int()
-
 		return q.
-			HasWhere(parser.NodePredicateStartRune, compilergraph.WhereLTE, startRune).
-			HasWhere(parser.NodePredicateEndRune, compilergraph.WhereGTE, endRune)
+			HasWhere(parser.NodePredicateStartRune, compilergraph.WhereLTE, runeRange.StartPosition).
+			HasWhere(parser.NodePredicateEndRune, compilergraph.WhereGTE, runeRange.EndPosition)
 	}
 
-	return g.findAllNodes(parser.NodeTypeStatementBlock).
-		Has(parser.NodePredicateSource, node.Get(parser.NodePredicateSource)).
+	node, found := g.findAllNodes(parser.NodeTypeStatementBlock).
+		Has(parser.NodePredicateSource, sourcePath).
 		In(parser.NodePredicateBody).
 		FilterBy(containingFilter).
 		TryGetNode()
+
+	if !found {
+		return runeRange, nil
+	}
+
+	startRune := node.GetValue(parser.NodePredicateStartRune).Int()
+	endRune := node.GetValue(parser.NodePredicateEndRune).Int()
+
+	return compilerutil.IntRange{startRune, endRune}, node
+}
+
+// TryGetContainingImplemented returns the member or property node that has an
+// outgoing NodePredicateBody pointing to a statement block containing this specified node.
+func (g *SRG) TryGetContainingImplemented(node compilergraph.GraphNode) (compilergraph.GraphNode, bool) {
+	startRune := node.GetValue(parser.NodePredicateStartRune).Int()
+	endRune := node.GetValue(parser.NodePredicateEndRune).Int()
+
+	source := node.Get(parser.NodePredicateSource)
+	runeRange := compilerutil.IntRange{startRune, endRune}
+
+	// Lookup the containing implemented via the cache.
+	nodeFound := g.containingImplementedCache.Get(source, runeRange)
+	if nodeFound == nil {
+		return compilergraph.GraphNode{}, false
+	}
+
+	return nodeFound.(compilergraph.GraphNode), true
 }
