@@ -1,4 +1,4 @@
-from anothermodule import ThirdClass
+from anotherpackage import ThirdClass
 
 function<void> DoSomething(tc ThirdClass) {
 	tc.doSomething()

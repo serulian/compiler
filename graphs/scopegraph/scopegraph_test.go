@@ -994,7 +994,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"member access unexported static test", "memberaccess", "unexported",
 		[]expectedScopeEntry{},
-		"Could not find static name 'someUnexportedThing' under import anothermodule", ""},
+		"Could not find static name 'someUnexportedThing' under import anotherpackage", ""},
 
 	scopegraphTest{"member access unexported instance test", "memberaccess", "unexportedinstance",
 		[]expectedScopeEntry{},

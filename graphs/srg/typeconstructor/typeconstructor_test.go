@@ -181,7 +181,7 @@ func TestLookupReturnType(t *testing.T) {
 		return
 	}
 
-	resolvedclass, foundClass := module.ResolveType("SomeClass")
+	resolvedclass, foundClass := module.ResolveTypePath("SomeClass")
 	if !assert.True(t, foundClass, "Could not find SomeClass") {
 		return
 	}

@@ -95,7 +95,7 @@ func (t SRGTypeRef) ResolveType() (TypeResolutionResult, bool) {
 
 	// Resolve the type path under the module.
 	resolutionPath := t.ResolutionPath()
-	resolvedType, typeFound := srgModule.ResolveType(resolutionPath)
+	resolvedType, typeFound := srgModule.ResolveTypePath(resolutionPath)
 	if typeFound {
 		return resolvedType, true
 	}

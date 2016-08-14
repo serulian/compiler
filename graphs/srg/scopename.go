@@ -295,7 +295,7 @@ func (ns SRGNamedScope) ResolveNameUnderScope(name string) (SRGScopeOrImport, bo
 		return SRGExternalPackageImport{packageInfo.packageInfo, name, ns.srg}, true
 	}
 
-	moduleOrType, found := packageInfo.FindTypeOrMemberByName(name, ModuleResolveExportedOnly)
+	moduleOrType, found := packageInfo.FindTypeOrMemberByName(name)
 	if !found {
 		return SRGNamedScope{}, false
 	}
@@ -357,7 +357,7 @@ func (g *SRG) FindNameInScope(name string, node compilergraph.GraphNode) (SRGSco
 		// we return a named scope that says that the name needs to be furthered
 		// resolved in the package by the type graph.
 		if packageInfo.IsSRGPackage() {
-			packageTypeOrMember, packagetypeOrMemberFound := packageInfo.FindTypeOrMemberByName(resolutionName, ModuleResolveExportedOnly)
+			packageTypeOrMember, packagetypeOrMemberFound := packageInfo.FindTypeOrMemberByName(resolutionName)
 			if packagetypeOrMemberFound {
 				return SRGNamedScope{packageTypeOrMember.GraphNode, g}, true
 			}

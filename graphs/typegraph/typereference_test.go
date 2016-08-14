@@ -943,7 +943,12 @@ func TestResolveMembers(t *testing.T) {
 		},
 	)
 
-	graph := newTestTypeGraph(g, entrypoint, otherfile)
+	otherPackageFile := newTestTypeGraphConstructor(g,
+		"otherpackage/sourcefile",
+		[]testType{},
+	)
+
+	graph := newTestTypeGraph(g, entrypoint, otherfile, otherPackageFile)
 
 	// Get a reference to SomeClass and attempt to resolve members from both modules.
 	someClass, someClassFound := graph.LookupType("SomeClass", compilercommon.InputSource("entrypoint"))
@@ -973,12 +978,16 @@ func TestResolveMembers(t *testing.T) {
 		resolveMemberTest{"Exported function from SomeClass via Entrypoint", someClass, "ExportedFunction", "entrypoint", true},
 		resolveMemberTest{"Unexported function from SomeClass via Entrypoint", someClass, "notExported", "entrypoint", true},
 		resolveMemberTest{"Exported function from SomeClass via otherfile", someClass, "ExportedFunction", "otherfile", true},
-		resolveMemberTest{"Unexported function from SomeClass via otherfile", someClass, "notExported", "otherfile", false},
+		resolveMemberTest{"Unexported function from SomeClass via otherfile", someClass, "notExported", "otherfile", true},
+		resolveMemberTest{"Exported function from SomeClass via otherPackageFile", someClass, "ExportedFunction", "otherpackage/sourcefile", true},
+		resolveMemberTest{"Unexported function from SomeClass via otherPackageFile", someClass, "notExported", "otherpackage/sourcefile", false},
 
-		resolveMemberTest{"Exported function from OtherClass via Entrpoint", otherClass, "OtherExportedFunction", "entrypoint", true},
-		resolveMemberTest{"Unexported function from OtherClass via Entrypoint", otherClass, "otherNotExported", "entrypoint", false},
+		resolveMemberTest{"Exported function from OtherClass via Entrypoint", otherClass, "OtherExportedFunction", "entrypoint", true},
+		resolveMemberTest{"Unexported function from OtherClass via Entrypoint", otherClass, "otherNotExported", "entrypoint", true},
 		resolveMemberTest{"Exported function from OtherClass via otherfile", otherClass, "OtherExportedFunction", "otherfile", true},
 		resolveMemberTest{"Unexported function from OtherClass via otherfile", otherClass, "otherNotExported", "otherfile", true},
+		resolveMemberTest{"Exported function from OtherClass via otherPackageFile", otherClass, "OtherExportedFunction", "otherpackage/sourcefile", true},
+		resolveMemberTest{"Unexported function from OtherClass via otherPackageFile", otherClass, "otherNotExported", "otherpackage/sourcefile", false},
 	}
 
 	for _, test := range tests {

@@ -123,7 +123,7 @@ func TestTypeMembers(t *testing.T) {
 
 		// Ensure that the type was loaded.
 		module, _ := testSRG.FindModuleBySource(compilercommon.InputSource(fmt.Sprintf("tests/members/%s.seru", test.input)))
-		resolvedType, typeFound := module.ResolveType(test.typeName)
+		resolvedType, typeFound := module.ResolveTypePath(test.typeName)
 		if !assert.True(t, typeFound, "Test type %s not found", test.typeName) {
 			continue
 		}

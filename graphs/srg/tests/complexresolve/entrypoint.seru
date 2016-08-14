@@ -3,6 +3,7 @@ from anothermodule import AThirdClass as BestClass
 
 import anothermodule
 import subpackage
+import anotherpackage
 
 from subpackage import FirstClass, SecondClass
 from subpackage import FirstClass as BusinessClass

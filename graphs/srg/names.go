@@ -12,8 +12,8 @@ import (
 
 const ASYNC_SUFFIX = "Async"
 
-// isExportedName returns whether the given name is exported by the module to
-// other modules.
+// isExportedName returns whether the given name is exported by the package to
+// other packages.
 func isExportedName(name string) bool {
 	r, _ := utf8.DecodeRuneInString(name)
 	return unicode.IsUpper(r)
