@@ -1,5 +1,5 @@
-import anothermodule
+import anotherpackage
 
 function<void> DoSomething() {
-	anothermodule.someUnexportedThing
+	anotherpackage.someUnexportedThing
 }

@@ -6,12 +6,19 @@ package srg
 
 import (
 	"fmt"
+	"path"
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/parser"
 )
+
+// IsSamePackage returns true if the given input source paths are found *directly* under the same
+// package (no subpackages).
+func InSamePackage(first compilercommon.InputSource, second compilercommon.InputSource) bool {
+	return first == second || path.Dir(string(first)) == path.Dir(string(second))
+}
 
 // getPackageForImport returns the package information for the package imported by the given import
 // package node.
@@ -32,16 +39,18 @@ func (g *SRG) getPackageForImport(importPackageNode compilergraph.GraphNode) imp
 	}
 
 	return importedPackage{
-		srg:         g,
-		packageInfo: packageInfo,
+		srg:          g,
+		packageInfo:  packageInfo,
+		importSource: compilercommon.InputSource(importPackageNode.Get(parser.NodePredicateSource)),
 	}
 }
 
 // srgPackage implements the typeContainer information for searching over a package of
 // modules.
 type importedPackage struct {
-	srg         *SRG                      // The parent SRG.
-	packageInfo packageloader.PackageInfo // The package info for this package.
+	srg          *SRG                       // The parent SRG.
+	packageInfo  packageloader.PackageInfo  // The package info for this package.
+	importSource compilercommon.InputSource // The input source for the import.
 }
 
 // IsSRGPackage returns true if the imported package is an SRG package.
@@ -54,25 +63,10 @@ func (p importedPackage) ModulePaths() []compilercommon.InputSource {
 	return p.packageInfo.ModulePaths()
 }
 
-// SingleModule returns the single module in this package, if any.
-func (p importedPackage) SingleModule() (SRGModule, bool) {
-	if p.IsSRGPackage() && len(p.packageInfo.ModulePaths()) == 1 {
-		modulePath := p.packageInfo.ModulePaths()[0]
-		module, ok := p.srg.FindModuleBySource(modulePath)
-		if !ok {
-			panic(fmt.Sprintf("Could not find module with path: %s", modulePath))
-		}
-
-		return module, true
-	}
-
-	return SRGModule{}, false
-}
-
-// ResolveType will attempt to resolve the given type path under all modules in this package.
-func (p importedPackage) ResolveExportedType(path string) (TypeResolutionResult, bool) {
+// ResolveType will attempt to resolve the given type name under all modules in this package.
+func (p importedPackage) ResolveType(name string) (TypeResolutionResult, bool) {
 	if !p.IsSRGPackage() {
-		return resultForExternalPackage(path, p.packageInfo), true
+		return resultForExternalPackage(name, p.packageInfo), true
 	}
 
 	for _, modulePath := range p.packageInfo.ModulePaths() {
@@ -81,7 +75,7 @@ func (p importedPackage) ResolveExportedType(path string) (TypeResolutionResult,
 			panic(fmt.Sprintf("Could not find module with path: %s", modulePath))
 		}
 
-		result, ok := module.ResolveExportedType(path)
+		result, ok := module.ResolveType(name, p.moduleResolutionOption(modulePath))
 		if ok {
 			return result, true
 		}
@@ -92,7 +86,7 @@ func (p importedPackage) ResolveExportedType(path string) (TypeResolutionResult,
 
 // FindTypeOrMemberByName searches all of the modules in this package for a type or member with the given name.
 // Will panic for non-SRG imported packages.
-func (p importedPackage) FindTypeOrMemberByName(name string, option ModuleResolutionOption) (SRGTypeOrMember, bool) {
+func (p importedPackage) FindTypeOrMemberByName(name string) (SRGTypeOrMember, bool) {
 	if !p.IsSRGPackage() {
 		panic("Cannot call FindTypeOrMemberByName on non-SRG package")
 	}
@@ -103,11 +97,22 @@ func (p importedPackage) FindTypeOrMemberByName(name string, option ModuleResolu
 			panic(fmt.Sprintf("Could not find module with path: %s", modulePath))
 		}
 
-		namedFound, ok := module.FindTypeOrMemberByName(name, option)
+		namedFound, ok := module.FindTypeOrMemberByName(name, p.moduleResolutionOption(modulePath))
 		if ok {
 			return namedFound, true
 		}
 	}
 
 	return SRGTypeOrMember{}, false
+}
+
+// moduleResolutionOption returns the resolution option to use when resolving under the given
+// module path. If the module is under the same package as the package that created this import,
+// then we allow resolution of otherwise "unexported" members and types.
+func (p importedPackage) moduleResolutionOption(modulePath compilercommon.InputSource) ModuleResolutionOption {
+	if InSamePackage(modulePath, p.importSource) {
+		return ModuleResolveAll
+	}
+
+	return ModuleResolveExportedOnly
 }

@@ -76,7 +76,7 @@ func (sh *srgSourceHandler) Verify(errorReporter packageloader.ErrorReporter, wa
 
 		// Search for the subsource.
 		subsource := fit.GetPredicate(parser.NodeImportPredicateSubsource).String()
-		_, found := packageInfo.FindTypeOrMemberByName(subsource, ModuleResolveExportedOnly)
+		_, found := packageInfo.FindTypeOrMemberByName(subsource)
 		if !found {
 			source := fit.Node().GetIncomingNode(parser.NodeImportPredicatePackageRef).Get(parser.NodeImportPredicateSource)
 			sal := salForIterator(fit)

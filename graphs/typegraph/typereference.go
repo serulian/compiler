@@ -13,6 +13,7 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/compilerutil"
 
+	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/typegraph/proto"
 )
 
@@ -929,7 +930,7 @@ func (tr TypeReference) ResolveMember(memberName string, kind MemberResolutionKi
 }
 
 // ResolveAccessibleMember looks for an member with the given name under the referred type and returns it (if any).
-func (tr TypeReference) ResolveAccessibleMember(memberName string, module compilercommon.InputSource, kind MemberResolutionKind) (TGMember, error) {
+func (tr TypeReference) ResolveAccessibleMember(memberName string, modulePath compilercommon.InputSource, kind MemberResolutionKind) (TGMember, error) {
 	member, found := tr.ResolveMember(memberName, kind)
 	if !found {
 		adjusted := tr.tdg.adjustedName(memberName)
@@ -941,11 +942,11 @@ func (tr TypeReference) ResolveAccessibleMember(memberName string, module compil
 		return TGMember{}, fmt.Errorf("Could not find %v name '%v' under %v", kind.Title(), memberName, tr.TitledString())
 	}
 
-	// If the member is exported, then always return it. Otherwise, only return it if the asking module
-	// is the same as the declaring module.
+	// If the member is exported, then always return it. Otherwise, only return it if the asking module's package
+	// is the same as the declaring module's package.
 	if !member.IsExported() {
-		memberModule := member.Node().Get(NodePredicateModulePath)
-		if memberModule != string(module) {
+		memberModulePath := compilercommon.InputSource(member.Node().Get(NodePredicateModulePath))
+		if !srg.InSamePackage(memberModulePath, modulePath) {
 			return TGMember{}, fmt.Errorf("%v %v is not exported under %v", member.Title(), member.Name(), tr.TitledString())
 		}
 	}

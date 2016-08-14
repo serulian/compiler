@@ -94,8 +94,18 @@ var nameScopeTests = []nameScopeTest{
 		expectedScopeResult{true, false, parser.NodeTypeVariableStatement, "aliased", NamedScopeVariable},
 	},
 
+	// Resolve "UEF" under the if statement under the function "AliasTest".
+	nameScopeTest{"unexported function under if", "basic", "aliasif", "UEF",
+		expectedScopeResult{true, false, parser.NodeTypeFunction, "unexportedFunction", NamedScopeMember},
+	},
+
 	// Resolve "EF" under the if statement under the function "AliasTest".
 	nameScopeTest{"exported function under if", "basic", "aliasif", "EF",
+		expectedScopeResult{true, false, parser.NodeTypeFunction, "ExportedFunction", NamedScopeMember},
+	},
+
+	// Resolve "SEF" under the if statement under the function "AliasTest".
+	nameScopeTest{"other exported function under if", "basic", "aliasif", "SEF",
 		expectedScopeResult{true, false, parser.NodeTypeFunction, "ExportedFunction", NamedScopeMember},
 	},
 

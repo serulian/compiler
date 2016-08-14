@@ -3,3 +3,4 @@ class ThirdClass {}
 class unexportedClass {}
 
 function<void> ExportedFunction() {}
+function<void> unexportedFunction() {}

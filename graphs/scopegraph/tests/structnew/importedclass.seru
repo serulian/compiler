@@ -1,4 +1,4 @@
-from anotherfile import SomeClass
+from anotherpackage import SomeClass
 
 function<void> DoSomething() {
 	SomeClass{}

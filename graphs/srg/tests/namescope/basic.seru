@@ -1,9 +1,12 @@
 from anotherfile import AnotherClass
 from anotherfile import ThirdClass as TC
 from anotherfile import ExportedFunction as EF
+from anotherfile import unexportedFunction as UEF
 
 import anotherfile
 import somepackage
+
+from somepackage import ExportedFunction as SEF
 
 class SomeClass {
 	

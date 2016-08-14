@@ -36,8 +36,8 @@ func TestBasicModules(t *testing.T) {
 	assert.Contains(t, modulePaths, "tests/basic/anotherfile.seru", "Missing anotherfile.seru module")
 }
 
-func assertResolveType(t *testing.T, module SRGModule, path string, expectedName string) {
-	typeDecl, found := module.ResolveType(path)
+func assertResolveTypePath(t *testing.T, module SRGModule, path string, expectedName string) {
+	typeDecl, found := module.ResolveTypePath(path)
 	if !assert.True(t, found, "Could not find %s under module %v", path, module.InputSource) {
 		return
 	}
@@ -45,7 +45,7 @@ func assertResolveType(t *testing.T, module SRGModule, path string, expectedName
 	assert.Equal(t, expectedName, typeDecl.ResolvedType.AsType().Name(), "Name mismatch on found type")
 }
 
-func TestBasicResolveType(t *testing.T) {
+func TestBasicResolveTypePath(t *testing.T) {
 	testSRG := getSRG(t, "tests/basic/basic.seru")
 
 	// Lookup the basic module.
@@ -53,11 +53,11 @@ func TestBasicResolveType(t *testing.T) {
 	assert.True(t, ok, "Could not find basic module")
 
 	// Lookup both expected types.
-	assertResolveType(t, basicModule, "SomeClass", "SomeClass")
-	assertResolveType(t, basicModule, "AnotherClass", "AnotherClass")
+	assertResolveTypePath(t, basicModule, "SomeClass", "SomeClass")
+	assertResolveTypePath(t, basicModule, "AnotherClass", "AnotherClass")
 }
 
-func TestComplexResolveType(t *testing.T) {
+func TestComplexResolveTypePath(t *testing.T) {
 	testSRG := getSRG(t, "tests/complexresolve/entrypoint.seru")
 
 	// Lookup the entrypoint module.
@@ -67,29 +67,35 @@ func TestComplexResolveType(t *testing.T) {
 	// Lookup all the expected types.
 
 	// In module.
-	assertResolveType(t, entrypointModule, "SomeClass", "SomeClass")
+	assertResolveTypePath(t, entrypointModule, "SomeClass", "SomeClass")
 
 	// from ... import ... on module
-	assertResolveType(t, entrypointModule, "AnotherClass", "AnotherClass")
-	assertResolveType(t, entrypointModule, "BestClass", "AThirdClass")
+	assertResolveTypePath(t, entrypointModule, "AnotherClass", "AnotherClass")
+	assertResolveTypePath(t, entrypointModule, "BestClass", "AThirdClass")
 
 	// from ... import ... on package
-	assertResolveType(t, entrypointModule, "FirstClass", "FirstClass")
-	assertResolveType(t, entrypointModule, "SecondClass", "SecondClass")
-	assertResolveType(t, entrypointModule, "BusinessClass", "FirstClass")
+	assertResolveTypePath(t, entrypointModule, "FirstClass", "FirstClass")
+	assertResolveTypePath(t, entrypointModule, "SecondClass", "SecondClass")
+	assertResolveTypePath(t, entrypointModule, "BusinessClass", "FirstClass")
 
 	// Direct imports.
-	assertResolveType(t, entrypointModule, "anothermodule.AnotherClass", "AnotherClass")
+	assertResolveTypePath(t, entrypointModule, "anothermodule.AnotherClass", "AnotherClass")
 
-	assertResolveType(t, entrypointModule, "subpackage.FirstClass", "FirstClass")
-	assertResolveType(t, entrypointModule, "subpackage.SecondClass", "SecondClass")
+	assertResolveTypePath(t, entrypointModule, "subpackage.FirstClass", "FirstClass")
+	assertResolveTypePath(t, entrypointModule, "subpackage.SecondClass", "SecondClass")
 
-	// Ensure that an non-exported type is only accessible inside the module.
-	_, found := entrypointModule.ResolveType("anothermodule.localClass")
-	assert.False(t, found, "Expected localClass to not be exported")
+	// Ensure that an non-exported type is still accessible inside the package..
+	assertResolveTypePath(t, entrypointModule, "anothermodule.localClass", "localClass")
+
+	// Other package.
+	assertResolveTypePath(t, entrypointModule, "anotherpackage.ExportedPackageClass", "ExportedPackageClass")
+
+	// Ensure that an non-exported type is not accessible from another package.
+	_, found := entrypointModule.ResolveTypePath("anotherpackage.otherPackageClass")
+	assert.False(t, found, "Expected otherPackageClass to not be exported")
 
 	// Lookup another module.
 	anotherModule, ok := testSRG.FindModuleBySource(compilercommon.InputSource("tests/complexresolve/anothermodule.seru"))
 	assert.True(t, ok, "Could not find another module")
-	assertResolveType(t, anotherModule, "localClass", "localClass")
+	assertResolveTypePath(t, anotherModule, "localClass", "localClass")
 }
