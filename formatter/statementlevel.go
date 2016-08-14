@@ -279,3 +279,16 @@ func (sf *sourceFormatter) emitExpressionStatement(node formatterNode) {
 func (sf *sourceFormatter) emitNamedValue(node formatterNode) {
 	sf.append(node.getProperty(parser.NodeNamedValueName))
 }
+
+// emitResolveStatement emits the source for a resolve statement.
+func (sf *sourceFormatter) emitResolveStatement(node formatterNode) {
+	sf.emitNode(node.getChild(parser.NodeAssignedDestination))
+
+	if rejection, ok := node.tryGetChild(parser.NodeAssignedRejection); ok {
+		sf.append(", ")
+		sf.emitNode(rejection)
+	}
+
+	sf.append(" := ")
+	sf.emitNode(node.getChild(parser.NodeResolveStatementSource))
+}

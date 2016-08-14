@@ -149,6 +149,12 @@ func (sf *sourceFormatter) emitNode(node formatterNode) {
 	case parser.NodeTypeExpressionStatement:
 		sf.emitExpressionStatement(node)
 
+	case parser.NodeTypeResolveStatement:
+		sf.emitResolveStatement(node)
+
+	case parser.NodeTypeAssignedValue:
+		sf.emitNamedValue(node)
+
 	case parser.NodeTypeNamedValue:
 		sf.emitNamedValue(node)
 
@@ -268,6 +274,9 @@ func (sf *sourceFormatter) emitNode(node formatterNode) {
 
 	case parser.NodeAssertNotNullExpression:
 		sf.emitNotNullExpression(node)
+
+	case parser.NodeKeywordNotExpression:
+		sf.emitKeywordNotExpression(node)
 
 	// Access
 	case parser.NodeMemberAccessExpression:
