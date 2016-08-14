@@ -116,8 +116,14 @@ func NewSourceMap(generatedFilePath string, sourceRoot string) *SourceMap {
 // if any.
 func (sm *SourceMap) GetMapping(lineNumber int, colPosition int) (SourceMapping, bool) {
 	if lineMappings, ok := sm.lineMappings[lineNumber]; ok {
-		mapping, exists := lineMappings[colPosition]
-		return mapping, exists
+		for colPosition >= 0 {
+			mapping, exists := lineMappings[colPosition]
+			if exists {
+				return mapping, exists
+			}
+
+			colPosition = colPosition - 1
+		}
 	}
 
 	return SourceMapping{}, false
@@ -372,5 +378,6 @@ func (psm *ParsedSourceMap) LookupMapping(lineNumber int, colPosition int) (Sour
 		return SourceMapping{}, false
 	}
 
-	return lineMappings[colPosition], true
+	result, exists := lineMappings[colPosition]
+	return result, exists
 }

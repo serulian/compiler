@@ -5,9 +5,11 @@
 package es5
 
 import (
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path"
 	"strconv"
 	"strings"
 	"testing"
@@ -92,7 +94,7 @@ func assertNoOttoError(t *testing.T, testName string, source string, err error) 
 	return true
 }
 
-var tests = []generationTest{
+var generationTests = []generationTest{
 	generationTest{"basic module test", "module", "basic", integrationTestSuccessExpected, ""},
 	generationTest{"basic class test", "class", "basic", integrationTestSuccessExpected, ""},
 	generationTest{"class property test", "class", "property", integrationTestSuccessExpected, ""},
@@ -242,7 +244,7 @@ var tests = []generationTest{
 }
 
 func TestGenerator(t *testing.T) {
-	for _, test := range tests {
+	for _, test := range generationTests {
 		entrypointFile := "tests/" + test.input + "/" + test.entrypoint + ".seru"
 
 		if os.Getenv("FILTER") != "" && !strings.Contains(test.name, os.Getenv("FILTER")) {
@@ -385,6 +387,114 @@ func TestGenerator(t *testing.T) {
 					}
 				}
 			}
+		}
+	}
+}
+
+type sourceMappingTest struct {
+	name string
+}
+
+func (gt *sourceMappingTest) expected() string {
+	b, err := ioutil.ReadFile(fmt.Sprintf("tests/sourcemapping/%s.js", gt.name))
+	if err != nil {
+		panic(err)
+	}
+
+	return string(b)
+}
+
+func (gt *sourceMappingTest) writeExpected(value string) {
+	err := ioutil.WriteFile(fmt.Sprintf("tests/sourcemapping/%s.js", gt.name), []byte(value), 0644)
+	if err != nil {
+		panic(err)
+	}
+}
+
+var sourceMappingTests = []sourceMappingTest{
+	sourceMappingTest{
+		name: "basic",
+	},
+}
+
+func getSnippet(path string, lineNumber int, colPosition int) (string, error) {
+	contents, err := ioutil.ReadFile(path)
+	if err != nil {
+		return "", err
+	}
+
+	lines := strings.Split(string(contents), "\n")
+	if lineNumber >= len(lines) {
+		return "", fmt.Errorf("Invalid line number %v", lineNumber)
+	}
+
+	line := lines[lineNumber]
+	if colPosition >= len(line) {
+		return "", fmt.Errorf("Invalid column position %v", colPosition)
+	}
+
+	return line[colPosition:], nil
+}
+
+func TestSourceMapping(t *testing.T) {
+	for _, test := range sourceMappingTests {
+		entrypointFile := "tests/sourcemapping/" + test.name + ".seru"
+
+		if os.Getenv("FILTER") != "" && !strings.Contains(test.name, os.Getenv("FILTER")) {
+			continue
+		}
+
+		// Parse and scope.
+		fmt.Printf("Running mapping test %v...\n", test.name)
+		scopeResult := scopegraph.ParseAndBuildScopeGraph(entrypointFile, []string{}, packageloader.Library{TESTLIB_PATH, false, ""})
+		if !assert.True(t, scopeResult.Status, "Got error for ScopeGraph construction %v: %s", test.name, scopeResult.Errors) {
+			continue
+		}
+
+		filename := path.Base(entrypointFile) + ".js"
+		mapname := filename + ".map"
+
+		// Generate the formatted ES5 code.
+		generated, sourceMap, err := GenerateES5(scopeResult.Graph, mapname, "")
+		if !assert.Nil(t, err, "Error when generating ES5 for mapping test %s", test.name) {
+			continue
+		}
+
+		builtMap := sourceMap.Build()
+
+		// Create a variant of the ES5 code, with inline comments to the original source.
+		var buf bytes.Buffer
+
+	outer:
+		for lineNumber, line := range strings.Split(generated, "\n") {
+			for colPosition, character := range line {
+				mapping, hasMapping := builtMap.LookupMapping(lineNumber, colPosition)
+				if hasMapping {
+					buf.WriteString("/*#")
+					sourcePath := mapping.SourcePath
+					snippet, err := getSnippet(sourcePath, mapping.LineNumber, mapping.ColumnPosition)
+					if !assert.Nil(t, err, "Error reading snippet from file %s", sourcePath) {
+						break outer
+					}
+
+					buf.WriteString(snippet)
+					buf.WriteString("#*/")
+				}
+
+				buf.WriteRune(character)
+			}
+
+			buf.WriteRune('\n')
+		}
+
+		source := buf.String()
+
+		if os.Getenv("REGEN") == "true" {
+			test.writeExpected(source)
+		} else {
+			// Compare the generated source to the expected.
+			expectedSource := test.expected()
+			assert.Equal(t, expectedSource, source, "Mapped mismatch on test %s\nExpected: %v\nActual: %v\n\n", test.name, expectedSource, source)
 		}
 	}
 }
