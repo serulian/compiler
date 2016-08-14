@@ -414,6 +414,12 @@ func (sf *sourceFormatter) emitInnerExpressions(exprs []formatterNode) {
 	}
 }
 
+// emitKeywordNotExpression emits a not keyword expression.
+func (sf *sourceFormatter) emitKeywordNotExpression(node formatterNode) {
+	sf.append("not ")
+	sf.emitNode(node.getChild(parser.NodeUnaryExpressionChildExpr))
+}
+
 // emitIdentifierExpression emits an identifier expression value.
 func (sf *sourceFormatter) emitIdentifierExpression(node formatterNode) {
 	sf.append(node.getProperty(parser.NodeIdentifierExpressionName))
