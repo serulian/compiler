@@ -143,6 +143,10 @@ func (sf *sourceFormatter) addMapping(bytePosition file.Idx) {
 		panic(err)
 	}
 
+	if ufLineNumber == 0 && ufColPosition == 0 {
+		return
+	}
+
 	mapping, hasMapping := sf.existingSourceMap.GetMapping(ufLineNumber, ufColPosition)
 	if !hasMapping {
 		return
