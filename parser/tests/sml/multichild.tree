@@ -73,7 +73,7 @@ NodeTypeFile
                                     NodeTypeSmlText
                                       end-rune = 106
                                       input-source = multiple children sml test
-                                      sml-text-value = text
+                                      sml-text-value =  text
                                       start-rune = 103
                                   sml-expression-typefunc =>
                                     NodeTypeIdentifierExpression

@@ -250,6 +250,7 @@ var parserTests = []parserTest{
 	{"invalid attribute value sml test", "sml/invalidattributevalue"},
 	{"children sml test", "sml/children"},
 	{"multiple children sml test", "sml/multichild"},
+	{"whitespace text sml test", "sml/whitespacetext"},
 
 	{"all expr test", "expression/all"},
 	{"complex expr test", "expression/complex"},

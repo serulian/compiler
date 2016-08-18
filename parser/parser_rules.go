@@ -2314,8 +2314,31 @@ func (p *sourceParser) consumeMarkupChild() (AstNode, bool) {
 	textNode := p.startNode(NodeTypeSmlText)
 	defer p.finishNode()
 
+	// Before consuming the text, save the previous token if it was a brace or tag close.
+	// This handles the case of text jutting up against an expression or another tag. Normally,
+	// consuming from the start of the text will lose any whitespace after the closing brace or
+	// tag, because the consume will consume the (normally ignored) whitespace. We special handle
+	// the case here.
+	var previousNonTextToken *commentedLexeme = nil
+	if p.previousToken.kind == tokenTypeRightBrace || p.previousToken.kind == tokenTypeGreaterThan {
+		previousToken := p.previousToken
+		previousNonTextToken = &previousToken
+	}
+
 	tokens := p.consumeIncludingIgnoredUntil(tokenTypeLessThan, tokenTypeLeftBrace, tokenTypeEOF, tokenTypeError)
+	if len(tokens) == 0 {
+		return nil, false
+	}
+
 	text := p.textOf(tokens)
+
+	// Add a space in front of the text if the previous token was not found directly before
+	// the tokens we consumed.
+	if previousNonTextToken != nil && previousNonTextToken.position != tokens[0].position-1 {
+		text = " " + text
+	}
+
+	// Empty text nodes are not
 	if len(strings.TrimSpace(text)) == 0 {
 		return nil, false
 	}
