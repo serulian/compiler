@@ -150,10 +150,12 @@ func TestUnknownPath(t *testing.T) {
 	result := loader.Load()
 	if result.Status || len(result.Errors) != 1 {
 		t.Errorf("Expected error")
+		return
 	}
 
 	if !strings.Contains(result.Errors[0].Error(), "someunknownpath") {
 		t.Errorf("Expected error referencing someunknownpath")
+		return
 	}
 
 	assertFileImported(t, tt, "tests/unknownimport/importsunknown.json")
@@ -168,6 +170,7 @@ func TestLibraryPath(t *testing.T) {
 	result := loader.Load(Library{"tests/libtest", false, ""})
 	if !result.Status || len(result.Errors) > 0 {
 		t.Errorf("Expected success, found: %v", result.Errors)
+		return
 	}
 
 	assertFileImported(t, tt, "tests/basic/somefile.json")
