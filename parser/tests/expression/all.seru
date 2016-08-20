@@ -64,4 +64,19 @@ function<void> SomeFunction() {
 	a in b.foo
 	a is foo
 	a is not foo
+	a if b else c
+	a for b in c
+	not a
+	a!
+	[]string{'hello', 'world'}
+	[]string{}
+	[]{int}{'foo': 2, 'bar': 3}
+	[]{int}{}
+	SomeStruct{
+		FirstField: 1,
+		SecondField: 2,
+		NestedField: AnotherStruct{
+			NestedField: 'hello!',
+		},
+	}
 }
