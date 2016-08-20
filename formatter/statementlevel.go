@@ -110,6 +110,18 @@ func (sf *sourceFormatter) emitConditionalStatement(node formatterNode) {
 	}
 }
 
+// emitYieldStatement emits the source of a yield statement.
+func (sf *sourceFormatter) emitYieldStatement(node formatterNode) {
+	sf.append("yield")
+
+	if _, ok := node.tryGetProperty(parser.NodeYieldStatementBreak); ok {
+		sf.append(" break")
+	} else {
+		sf.append(" ")
+		sf.emitNode(node.getChild(parser.NodeYieldStatementValue))
+	}
+}
+
 // emitBreakStatement emits the source of a break statement.
 func (sf *sourceFormatter) emitBreakStatement(node formatterNode) {
 	sf.append("break")

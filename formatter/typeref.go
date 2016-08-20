@@ -42,16 +42,31 @@ func (sf *sourceFormatter) emitIdentifierAccess(node formatterNode) {
 	sf.append(node.getProperty(parser.NodeIdentifierAccessName))
 }
 
+// isSliceOrMappingRef returns true if the given node is a mapping or slice reference.
+func (sf *sourceFormatter) isSliceOrMappingRef(node formatterNode) bool {
+	return node.GetType() == parser.NodeTypeSlice || node.GetType() == parser.NodeTypeMapping
+}
+
 // emitNullableTypeRef emits a nullable type reference.
 func (sf *sourceFormatter) emitNullableTypeRef(node formatterNode) {
-	sf.emitNode(node.getChild(parser.NodeTypeReferenceInnerType))
-	sf.append("?")
+	if sf.isSliceOrMappingRef(node.getChild(parser.NodeTypeReferenceInnerType)) {
+		sf.append("?")
+		sf.emitNode(node.getChild(parser.NodeTypeReferenceInnerType))
+	} else {
+		sf.emitNode(node.getChild(parser.NodeTypeReferenceInnerType))
+		sf.append("?")
+	}
 }
 
 // emitStreamTypeRef emits a stream type reference.
 func (sf *sourceFormatter) emitStreamTypeRef(node formatterNode) {
-	sf.emitNode(node.getChild(parser.NodeTypeReferenceInnerType))
-	sf.append("*")
+	if sf.isSliceOrMappingRef(node.getChild(parser.NodeTypeReferenceInnerType)) {
+		sf.append("*")
+		sf.emitNode(node.getChild(parser.NodeTypeReferenceInnerType))
+	} else {
+		sf.emitNode(node.getChild(parser.NodeTypeReferenceInnerType))
+		sf.append("*")
+	}
 }
 
 // emitAnyTypeRef emits an any type reference.

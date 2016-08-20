@@ -31,7 +31,7 @@ function<void> SomeFunction() {
 	a[b:c]
 	!a
 	&a
-	(a + b)
+	a + b
 	1234
 	1.245
 	42f
@@ -47,15 +47,12 @@ function<void> SomeFunction() {
 	[1, 2, 3]
 	~someName
 	!someName
-	function (first int, second bool) { return first }
+	function(first int, second bool) { return first }
 	() => someExpr
+	(someParam, anotherParam) => someExpr
 	{}
-	{
-		'a': 2,
-	}
-	{
-		a: 2,
-	}
+	{'a': 2}
+	{a: 2}
 	null
 	this
 	a<b>
@@ -75,8 +72,6 @@ function<void> SomeFunction() {
 	SomeStruct{
 		FirstField: 1,
 		SecondField: 2,
-		NestedField: AnotherStruct{
-			NestedField: 'hello!',
-		},
+		NestedField: AnotherStruct{NestedField: 'hello!'},
 	}
 }

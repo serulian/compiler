@@ -1,0 +1,14 @@
+/**
+ * SomeStruct is a cool struct
+ */
+struct SomeStruct {
+	ThirdField ?[]any
+	AnotherField []{SomeMapping}
+
+	/**
+	 * FirstField is a really cool field.
+	 */
+	FirstField int
+	SecondField []string
+	TaggedField int `name:"taggedField" anotherTag:"anotherTag"`
+}

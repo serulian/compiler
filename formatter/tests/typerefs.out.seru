@@ -1,0 +1,47 @@
+var<int> basic
+
+var<int?> nullable
+
+var<int*> streamable
+
+var<SomeGeneric<T>> generic
+
+var<SomeGeneric<T, Q>> multigeneric
+
+var<SomeGeneric<T?, Q>> nested
+
+var<SomeGeneric<T>?> nullablegeneric
+
+var<SomeGeneric<T>*> streamgeneric
+
+var<SomeGeneric<List<T?>, Map<T, Q>*>> multinested
+
+var<Some.Reference.To.Type> pathed
+
+var<Some.Type?> nullablepathed
+
+var<Some.Type*> streamablepathed
+
+var<Some.Type<T>> genercipathed
+
+var<int?*> nullablestream
+
+var<function<void>()> functype
+
+var<function<void>(int)> functypewithparam
+
+var<any> anyref
+
+var<SomeClass<any>> anyinnerref
+
+var<[]SomeClass> sliceref
+
+var<[]{SomeClass}> mappingref
+
+var<any*> anystream
+
+var<?[]SomeClass> nullableslice
+
+var<int?> nullableprefix
+
+var<int*> streamableprefix

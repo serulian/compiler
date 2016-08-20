@@ -280,7 +280,7 @@ func (sf *sourceFormatter) emitTemplateString(node formatterNode) {
 	for _, piece := range pieces {
 		if piece.GetType() == parser.NodeStringLiteralExpression {
 			value := piece.getProperty(parser.NodeStringLiteralExpressionValue)
-			sf.append(value[1 : len(value)-1]) // Remove the ``
+			sf.appendRaw(value[1 : len(value)-1]) // Remove the ``
 		} else {
 			sf.append("${")
 			sf.emitNode(piece)
@@ -414,10 +414,128 @@ func (sf *sourceFormatter) emitInnerExpressions(exprs []formatterNode) {
 	}
 }
 
+// emitLoopExpression emits a loop expression.
+func (sf *sourceFormatter) emitLoopExpression(node formatterNode) {
+	sf.emitNode(node.getChild(parser.NodeLoopExpressionMapExpression))
+	sf.append(" for ")
+	sf.emitNode(node.getChild(parser.NodeLoopExpressionNamedValue))
+	sf.append(" in ")
+	sf.emitNode(node.getChild(parser.NodeLoopExpressionStreamExpression))
+}
+
+// emitConditionalExpression emits a conditional expression.
+func (sf *sourceFormatter) emitConditionalExpression(node formatterNode) {
+	sf.emitNode(node.getChild(parser.NodeConditionalExpressionThenExpression))
+	sf.append(" if ")
+	sf.emitNode(node.getChild(parser.NodeConditionalExpressionCheckExpression))
+	sf.append(" else ")
+	sf.emitNode(node.getChild(parser.NodeConditionalExpressionElseExpression))
+}
+
 // emitKeywordNotExpression emits a not keyword expression.
 func (sf *sourceFormatter) emitKeywordNotExpression(node formatterNode) {
 	sf.append("not ")
 	sf.emitNode(node.getChild(parser.NodeUnaryExpressionChildExpr))
+}
+
+// emitSmlAttributes emits all the attributes/decorators under the given SML expression
+// node.
+func (sf *sourceFormatter) emitSmlAttributes(node formatterNode, predicate string) {
+	attributes := node.getChildren(predicate)
+	if len(attributes) == 0 {
+		return
+	}
+
+	for _, attribute := range attributes {
+		sf.append(" ")
+		sf.emitNode(attribute)
+	}
+}
+
+// emitSmlExpression emits an SML expression value.
+func (sf *sourceFormatter) emitSmlExpression(node formatterNode) {
+	sf.append("<")
+	sf.emitNode(node.getChild(parser.NodeSmlExpressionTypeOrFunction))
+
+	// Add attributes and decorators.
+	sf.emitSmlAttributes(node, parser.NodeSmlExpressionAttribute)
+	sf.emitSmlAttributes(node, parser.NodeSmlExpressionDecorator)
+
+	// Add children (if any).
+	children := node.getChildren(parser.NodeSmlExpressionChild)
+	if len(children) == 0 {
+		sf.append(" />")
+		return
+	} else {
+		sf.append(">")
+	}
+
+	// Note: We only indent and append a new line if the first child is itself
+	// a tag.
+	if children[0].GetType() == parser.NodeTypeSmlExpression {
+		sf.indent()
+		sf.appendLine()
+	}
+
+	for _, child := range children {
+		switch child.GetType() {
+		case parser.NodeTypeSmlText:
+			fallthrough
+
+		case parser.NodeTypeSmlExpression:
+			sf.emitNode(child)
+
+		default:
+			sf.append("{")
+			sf.emitNode(child)
+			sf.append("}")
+		}
+	}
+
+	if children[0].GetType() == parser.NodeTypeSmlExpression {
+		sf.dedent()
+		sf.appendLine()
+	}
+
+	sf.append("</")
+	sf.emitNode(node.getChild(parser.NodeSmlExpressionTypeOrFunction))
+	sf.append(">")
+}
+
+// emitSmlAttribute emits an SML attribute.
+func (sf *sourceFormatter) emitSmlAttribute(node formatterNode) {
+	sf.append(node.getProperty(parser.NodeSmlAttributeName))
+	sf.append("=")
+
+	value := node.getChild(parser.NodeSmlAttributeValue)
+	if value.GetType() == parser.NodeStringLiteralExpression {
+		sf.emitNode(value)
+	} else {
+		sf.append("{")
+		sf.emitNode(value)
+		sf.append("}")
+	}
+}
+
+// emitSmlDecorator emits an SML decorator.
+func (sf *sourceFormatter) emitSmlDecorator(node formatterNode) {
+	sf.append("@")
+	sf.emitNode(node.getChild(parser.NodeSmlDecoratorPath))
+	sf.append("=")
+
+	value := node.getChild(parser.NodeSmlDecoratorValue)
+	if value.GetType() == parser.NodeStringLiteralExpression {
+		sf.emitNode(value)
+	} else {
+		sf.append("{")
+		sf.emitNode(value)
+		sf.append("}")
+	}
+}
+
+// emitSmlText emits an SML text block.
+func (sf *sourceFormatter) emitSmlText(node formatterNode) {
+	sf.appendRaw(node.getProperty(parser.NodeSmlTextValue))
 }
 
 // emitIdentifierExpression emits an identifier expression value.

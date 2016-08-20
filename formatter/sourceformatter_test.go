@@ -16,6 +16,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// ignoredNodeTypes defines the list of node types that can be skipped in the formatting
+// tests.
+var ignoredNodeTypes = []parser.NodeType{
+	// SKIPPED: Parser currently cannot parse >>, as it conflicts with generic type refs.
+	parser.NodeBitwiseShiftRightExpression,
+}
+
 type goldenTest struct {
 	name     string
 	filename string
@@ -52,10 +59,18 @@ var goldenTests = []goldenTest{
 	{"unary precedence test", "unary"},
 	{"binary precedence test", "binary"},
 	{"imports test", "imports"},
+	{"class test", "class"},
+	{"interface test", "interface"},
+	{"struct test", "struct"},
+	{"nominal test", "nominal"},
 	{"relative imports test", "relative"},
 	{"template strings test", "templatestrings"},
 	{"match test", "match"},
 	{"switch test", "switch"},
+	{"typerefs test", "typerefs"},
+	{"statements test", "statements"},
+	{"expressions test", "expressions"},
+	{"sml test", "sml"},
 }
 
 func conductParsing(t *testing.T, test goldenTest, source []byte) (*parseTree, formatterNode) {
@@ -69,7 +84,16 @@ func conductParsing(t *testing.T, test goldenTest, source []byte) (*parseTree, f
 	return parseTree, rootNode.(formatterNode)
 }
 
+func addEncounteredNodeTypes(node formatterNode, encounteredNodeTypes map[parser.NodeType]bool) {
+	encounteredNodeTypes[node.GetType()] = true
+	for _, child := range node.getAllChildren() {
+		addEncounteredNodeTypes(child, encounteredNodeTypes)
+	}
+}
+
 func TestGolden(t *testing.T) {
+	encounteredNodeTypes := map[parser.NodeType]bool{}
+
 	for _, test := range goldenTests {
 		if os.Getenv("FILTER") != "" {
 			if !strings.Contains(test.name, os.Getenv("FILTER")) {
@@ -82,6 +106,10 @@ func TestGolden(t *testing.T) {
 		parseTree, rootNode := conductParsing(t, test, test.input())
 		if parseTree == nil {
 			continue
+		}
+
+		if os.Getenv("FILTER") == "" {
+			addEncounteredNodeTypes(rootNode, encounteredNodeTypes)
 		}
 
 		formatted := buildFormattedSource(parseTree, rootNode, importHandlingInfo{})
@@ -104,6 +132,25 @@ func TestGolden(t *testing.T) {
 			formattedAgain := buildFormattedSource(reparsedTree, reparsedRootNode, importHandlingInfo{})
 			if !assert.Equal(t, string(formatted), string(formattedAgain), test.name) {
 				t.Log(string(formattedAgain))
+			}
+		}
+	}
+
+	// Ensure that all parser node types were encountered. This makes sure that we have handled
+	// all formatting cases in our tests. Note that we only run this check if we are not filtering
+	// tests, as the filter will almost certainly skip node types we need.
+	if os.Getenv("FILTER") == "" {
+	outer:
+		for i := int(parser.NodeTypeError) + 1; i < int(parser.NodeTypeTagged); i++ {
+			current := parser.NodeType(i)
+			for _, skipped := range ignoredNodeTypes {
+				if current == skipped {
+					continue outer
+				}
+			}
+
+			if _, ok := encounteredNodeTypes[current]; !ok {
+				t.Errorf("Missing formatting of %v", current)
 			}
 		}
 	}

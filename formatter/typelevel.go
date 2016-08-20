@@ -12,9 +12,21 @@ func (sf *sourceFormatter) emitField(node formatterNode) {
 		sf.append(node.getProperty(parser.NodePredicateTypeMemberName))
 		sf.append(" ")
 		sf.emitNode(node.getChild(parser.NodePredicateTypeMemberDeclaredType))
-		sf.appendLine()
 
-		// TODO: handle fields.
+		// Handle any tags.
+		if node.hasChild(parser.NodePredicateTypeMemberTag) {
+			sf.append(" `")
+			for index, child := range node.getChildren(parser.NodePredicateTypeMemberTag) {
+				if index > 0 {
+					sf.append(" ")
+				}
+
+				sf.emitNode(child)
+			}
+			sf.append("`")
+		}
+
+		sf.appendLine()
 		return
 	}
 
@@ -29,6 +41,15 @@ func (sf *sourceFormatter) emitField(node formatterNode) {
 	}
 
 	sf.appendLine()
+}
+
+// emitMemberTag emits the source of a tag on a type member.
+func (sf *sourceFormatter) emitMemberTag(node formatterNode) {
+	sf.append(node.getProperty(parser.NodePredicateTypeMemberTagName))
+	sf.append(":")
+	sf.append("\"")
+	sf.append(node.getProperty(parser.NodePredicateTypeMemberTagValue))
+	sf.append("\"")
 }
 
 // emitConstructor emits the source of a declared constructor.

@@ -1,0 +1,32 @@
+function<void> SomeFunction() {
+	a <- foo
+	a, b <- foo
+	_, b <- foo
+	a, _ <- foo
+
+	a := foo
+	a, b := foo
+	_, b := foo
+	a, _ := foo
+
+	for a in b {
+		break
+		continue
+	}
+
+	for b {
+		break
+		continue
+	}
+
+	with a as b {
+		foo
+	}
+
+	with a {
+		foo
+	}
+
+	yield foo
+	yield break
+}

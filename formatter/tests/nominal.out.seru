@@ -1,0 +1,33 @@
+/**
+ * SomeNominal is some cool nominal
+ */
+type SomeNominal<T : int> : BaseClass {
+	constructor SecondConstructor() { return SomeClass<T>.new() }
+
+	constructor FirstConstructor(oneParam Here) { reject Because.ThatsWhy() }
+
+	function<void> DoSomething<Q : any>(firstParam int, secondParam string*) {
+		return
+	}
+
+	/**
+	 * SomeProp is some sort of prop.
+	 */
+	property<SomeType?> SomeProp {
+		get  { return null }
+
+		set  {
+			this.foo = val
+		}
+	}
+
+	property<bool> GetterProp {
+		get  { return true }
+	}
+
+	operator Range(first int, second int) { return someStream }
+
+	operator<someOpReturn> someOp(onlyOneParam here) { return someThing }
+
+	function<int> AnotherFunction() { return 33 }
+}
