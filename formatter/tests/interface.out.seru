@@ -1,0 +1,24 @@
+/**
+ * SomeInterface is some cool interface
+ */
+@•typealias('coolInterface')
+interface SomeInterface<T : int, R : arrrrr> {
+	constructor SecondConstructor() { return SomeClass<T>.new() }
+
+	constructor FirstConstructor(oneParam Here) { reject Because.ThatsWhy() }
+
+	function<void> DoSomething<Q : any>(firstParam int, secondParam string*)
+
+	/**
+	 * SomeProp is some sort of prop.
+	 */
+	property<SomeType?> SomeProp
+
+	property<bool> GetterProp { get }
+
+	operator Range(first int, second int)
+
+	operator<someOpReturn> someOp(onlyOneParam here)
+
+	function<int> AnotherFunction()
+}

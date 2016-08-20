@@ -81,6 +81,9 @@ func (sf *sourceFormatter) emitNode(node formatterNode) {
 	case parser.NodeTypeStruct:
 		sf.emitTypeDefinition(node, "struct")
 
+	case parser.NodeTypeDecorator:
+		sf.emitDecorator(node)
+
 	// Type definition
 	case parser.NodeTypeProperty:
 		sf.emitProperty(node)
@@ -99,6 +102,9 @@ func (sf *sourceFormatter) emitNode(node formatterNode) {
 
 	case parser.NodeTypeParameter:
 		sf.emitParameter(node)
+
+	case parser.NodeTypeMemberTag:
+		sf.emitMemberTag(node)
 
 	// Statements
 	case parser.NodeTypeStatementBlock:
@@ -124,6 +130,9 @@ func (sf *sourceFormatter) emitNode(node formatterNode) {
 
 	case parser.NodeTypeContinueStatement:
 		sf.emitContinueStatement(node)
+
+	case parser.NodeTypeYieldStatement:
+		sf.emitYieldStatement(node)
 
 	case parser.NodeTypeVariableStatement:
 		sf.emitVariableStatement(node)
@@ -195,6 +204,12 @@ func (sf *sourceFormatter) emitNode(node formatterNode) {
 
 	case parser.NodeTypeLambdaParameter:
 		sf.emitLambdaParameter(node)
+
+	case parser.NodeTypeConditionalExpression:
+		sf.emitConditionalExpression(node)
+
+	case parser.NodeTypeLoopExpression:
+		sf.emitLoopExpression(node)
 
 	// Operators
 	case parser.NodeBitwiseXorExpression:
@@ -302,6 +317,19 @@ func (sf *sourceFormatter) emitNode(node formatterNode) {
 
 	case parser.NodeGenericSpecifierExpression:
 		sf.emitGenericSpecifierExpression(node)
+
+	// SML
+	case parser.NodeTypeSmlExpression:
+		sf.emitSmlExpression(node)
+
+	case parser.NodeTypeSmlAttribute:
+		sf.emitSmlAttribute(node)
+
+	case parser.NodeTypeSmlDecorator:
+		sf.emitSmlDecorator(node)
+
+	case parser.NodeTypeSmlText:
+		sf.emitSmlText(node)
 
 	// Literals
 	case parser.NodeTaggedTemplateLiteralString:
@@ -481,6 +509,12 @@ func (sf *sourceFormatter) indent() {
 // dedent decreases the current indentation.
 func (sf *sourceFormatter) dedent() {
 	sf.indentationLevel = sf.indentationLevel - 1
+}
+
+// appendRaw adds the given value to the buffer without indenting.
+func (sf *sourceFormatter) appendRaw(value string) {
+	sf.hasNewScope = false
+	sf.buf.WriteString(value)
 }
 
 // append adds the given value to the buffer, indenting as necessary.

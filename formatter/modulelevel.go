@@ -27,9 +27,19 @@ func (sf *sourceFormatter) emitVariable(node formatterNode) {
 	sf.appendLine()
 }
 
+// emitDecorator emits the source for a decorator.
+func (sf *sourceFormatter) emitDecorator(node formatterNode) {
+	sf.append("@•")
+	sf.append(node.getProperty(parser.NodeDecoratorPredicateInternal))
+	sf.emitParameters(node, parser.NodeDecoratorPredicateParameter, parensRequired)
+	sf.appendLine()
+}
+
 // emitTypeDefinition emits the source of a declared interface.
-func (sf *sourceFormatter) emitTypeDefinition(node formatterNode, name string) {
-	sf.append(name)
+func (sf *sourceFormatter) emitTypeDefinition(node formatterNode, kind string) {
+	sf.emitOrderedNodes(node.getChildren(parser.NodeTypeDefinitionDecorator))
+
+	sf.append(kind)
 	sf.append(" ")
 	sf.append(node.getProperty(parser.NodeTypeDefinitionName))
 	sf.emitGenerics(node, parser.NodeTypeDefinitionGeneric)
