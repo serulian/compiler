@@ -75,6 +75,16 @@ func (fn formatterNode) hasType(types ...parser.NodeType) bool {
 	return false
 }
 
+func (fn formatterNode) getAllChildren() []formatterNode {
+	var children = make([]formatterNode, 0)
+	for _, childList := range fn.children {
+		for e := childList.Front(); e != nil; e = e.Next() {
+			children = append(children, e.Value.(formatterNode))
+		}
+	}
+	return children
+}
+
 func (fn formatterNode) hasProperty(name string) bool {
 	_, hasProp := fn.properties[name]
 	return hasProp

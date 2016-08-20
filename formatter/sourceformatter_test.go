@@ -69,7 +69,16 @@ func conductParsing(t *testing.T, test goldenTest, source []byte) (*parseTree, f
 	return parseTree, rootNode.(formatterNode)
 }
 
+func addEncounteredNodeTypes(node formatterNode, encounteredNodeTypes map[parser.NodeType]bool) {
+	encounteredNodeTypes[node.GetType()] = true
+	for _, child := range node.getAllChildren() {
+		addEncounteredNodeTypes(child, encounteredNodeTypes)
+	}
+}
+
 func TestGolden(t *testing.T) {
+	encounteredNodeTypes := map[parser.NodeType]bool{}
+
 	for _, test := range goldenTests {
 		if os.Getenv("FILTER") != "" {
 			if !strings.Contains(test.name, os.Getenv("FILTER")) {
@@ -82,6 +91,10 @@ func TestGolden(t *testing.T) {
 		parseTree, rootNode := conductParsing(t, test, test.input())
 		if parseTree == nil {
 			continue
+		}
+
+		if os.Getenv("FILTER") == "" {
+			addEncounteredNodeTypes(rootNode, encounteredNodeTypes)
 		}
 
 		formatted := buildFormattedSource(parseTree, rootNode, importHandlingInfo{})
@@ -104,6 +117,18 @@ func TestGolden(t *testing.T) {
 			formattedAgain := buildFormattedSource(reparsedTree, reparsedRootNode, importHandlingInfo{})
 			if !assert.Equal(t, string(formatted), string(formattedAgain), test.name) {
 				t.Log(string(formattedAgain))
+			}
+		}
+	}
+
+	// Ensure that all parser node types were encountered. This makes sure that we have handled
+	// all formatting cases in our tests. Note that we only run this check if we are not filtering
+	// tests, as the filter will almost certainly skip node types we need.
+	if os.Getenv("FILTER") == "" {
+		for i := int(parser.NodeTypeError); i < int(parser.NodeTypeTagged); i++ {
+			current := parser.NodeType(i)
+			if _, ok := encounteredNodeTypes[current]; !ok {
+				t.Errorf("Missing formatting of %v", current)
 			}
 		}
 	}
