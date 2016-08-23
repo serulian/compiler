@@ -2,6 +2,7 @@
 
 [![godoc](https://godoc.org/github.com/Serulian/compiler?status.svg)](http://godoc.org/github.com/Serulian/compiler)
 [![Build Status (Travis)](https://travis-ci.org/Serulian/compiler.svg?branch=master)](https://travis-ci.org/Serulian/compiler)
+[![Container Image on Quay](https://quay.io/repository/serulian/compiler/status "Container Image on Quay")](https://quay.io/repository/serulian/compiler)
 
 The Serulian toolkit and compiler provides tooling for developing, building, formatting and testing [Serulian](https://github.com/Serulian/spec) web/mobile applications.
 
