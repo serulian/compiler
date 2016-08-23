@@ -106,14 +106,14 @@ from webidl`jasmine` import expect
  */
 function<void> TEST() {
 	// Describe a single test group.
-	describe(&'Bool', function() {
+	describe('Bool', function() {
 
 		// Describe a single test.
-		describe(&'equal', function() {
+		describe('equal', function() {
 
 			// Add a requirement to be tested.
   		it(&'true should be equal to true', function(done function<void>()) {
-   			expect(&true).toBe(&true);
+   			expect(true).toBe(true);
 
    			// Mark the test's body as complete.
    			done()
@@ -132,3 +132,13 @@ To run tests, execute the `test` command with the proper runner and entrypoint:
 ```
 
 The test runner plugin (in this case Karma) will ensure the necessary packages are installed and then run the specified tests.
+
+## Running via container
+
+A pre-built container image is always available. For example, the following with build a project via Docker. Note the mounting of the directory containing the project.
+
+```sh
+docker pull quay.io/serulian/compiler:latest
+docker run -t -v /my/source/path:/ quay.io/serulian/compiler:latest build myfile.seru
+```
+
