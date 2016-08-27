@@ -122,9 +122,12 @@ func BuildSource(rootSourceFilePath string, debug bool, vcsDevelopmentDirectorie
 	generated += "\n//# sourceMappingURL=" + mapname
 
 	// Write the source and its map.
-	log.Println("Writing generated source")
-	ioutil.WriteFile(filename, []byte(generated), 0644)
-	ioutil.WriteFile(mapname, marshalledMap, 0644)
+	filepath := path.Join(path.Dir(rootSourceFilePath), filename)
+	mappath := path.Join(path.Dir(rootSourceFilePath), mapname)
+
+	log.Printf("Writing generated source to %s\n", filepath)
+	ioutil.WriteFile(filepath, []byte(generated), 0644)
+	ioutil.WriteFile(mappath, marshalledMap, 0644)
 
 	log.Println("Work completed")
 	return true

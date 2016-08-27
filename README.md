@@ -140,6 +140,6 @@ A pre-built container image is always available. For example, the following with
 
 ```sh
 docker pull quay.io/serulian/compiler:latest
-docker run -t -v /my/source/path:/ quay.io/serulian/compiler:latest build myfile.seru
+docker run -t -v /my/source/path:/project quay.io/serulian/compiler:latest build project/myfile.seru
 ```
 
