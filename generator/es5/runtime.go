@@ -188,6 +188,14 @@ this.Serulian = (function($global) {
         return value;
       }
       
+      // Quick check for function.
+      // TODO: this needs to properly check the function's parameter and return types
+      // once that information is added to the value. For now, we just make sure we have
+      // a function.
+      if (typeof value == 'function' && type.$generic == $a['function']) {
+        return value;
+      }
+
       // Handle the null to non-nullable case.
       var castKind = type.$typekind;
       if (value == null && !opt_allownull) {
