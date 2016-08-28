@@ -201,6 +201,8 @@ var generationTests = []generationTest{
 	generationTest{"tagged json test", "serialization", "tagged", integrationTestSuccessExpected, ""},
 	generationTest{"slice json test", "serialization", "slice", integrationTestSuccessExpected, ""},
 
+	generationTest{"cast function success test", "cast", "castfunction", integrationTestSuccessExpected, ""},
+
 	generationTest{"class cast failure test", "cast", "classcastfail", integrationTestFailureExpected,
 		"Error: Cannot cast function AnotherClass() {} to function SomeClass() {}"},
 

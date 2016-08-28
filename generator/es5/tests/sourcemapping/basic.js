@@ -120,6 +120,9 @@ this.Serulian = function ($global) {
       if ((type == null) || ((value != null) && ((value.constructor == type) || (value instanceof type)))) {
         return value;
       }
+      if ((typeof value == 'function') && (type.$generic == $a['function'])) {
+        return value;
+      }
       var castKind = type.$typekind;
       if ((value == null) && !opt_allownull) {
         throw Error('Cannot cast null value to ' + type.toString());

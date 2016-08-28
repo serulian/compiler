@@ -256,8 +256,8 @@ func (sb *scopeBuilder) scopeSmlDecorator(node compilergraph.GraphNode, declared
 	allowedDecoratedType := decoratorType.Parameters()[0]
 	allowedValueType := decoratorType.Parameters()[1]
 
-	if serr := allowedDecoratedType.CheckSubTypeOf(declaredType); serr != nil {
-		sb.decorateWithError(node, "SML declaration decorator '%v' must decorator a value of type %v: %v", decoratorName, declaredType, serr)
+	if serr := declaredType.CheckSubTypeOf(allowedDecoratedType); serr != nil {
+		sb.decorateWithError(node, "SML declaration decorator '%v' expects to decorate an instance of type %v: %v", decoratorName, allowedDecoratedType, serr)
 		return declaredType, false
 	}
 

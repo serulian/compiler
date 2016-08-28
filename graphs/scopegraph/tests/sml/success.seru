@@ -47,6 +47,10 @@ function<ThirdClass> ChainedDecorator(decorated AnotherClass, value string) {
 	return ThirdClass.new()
 }
 
+function<int> SubtypeDecorator(decorated any, value any) {
+	return 42
+}
+
 function<void> DoSomething(someStream int*) {
 	/* simple */(<SimpleClass />)
 	/* classwithprops */(<ClassWithProps a="hello" b="wassup" />)
@@ -68,4 +72,6 @@ function<void> DoSomething(someStream int*) {
 	/* decorator2 */(<SimpleClass @SomeCoolDecorator />)
 
 	/* chaineddecorator */(<SimpleClass @SomeCoolDecorator @ChainedDecorator="somevalue" />)
+
+	/* subtypedecorator */(<SimpleClass @SubtypeDecorator="foo" />)
 }

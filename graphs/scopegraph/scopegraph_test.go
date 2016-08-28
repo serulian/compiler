@@ -339,6 +339,8 @@ var scopeGraphTests = []scopegraphTest{
 			expectedScopeEntry{"decorator2", expectedScope{true, proto.ScopeKind_VALUE, "AnotherClass", "void"}},
 
 			expectedScopeEntry{"chaineddecorator", expectedScope{true, proto.ScopeKind_VALUE, "ThirdClass", "void"}},
+
+			expectedScopeEntry{"subtypedecorator", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
 		},
 		"", ""},
 
@@ -408,7 +410,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"sml expression decorator decorated mismatch test", "sml", "decoratedmismatch",
 		[]expectedScopeEntry{},
-		"SML declaration decorator 'sd' must decorator a value of type Integer: 'String' cannot be used in place of non-interface 'Integer'", ""},
+		"SML declaration decorator 'sd' expects to decorate an instance of type String: 'Integer' cannot be used in place of non-interface 'String'", ""},
 
 	scopegraphTest{"sml expression decorator value mismatch test", "sml", "decoratorvaluemismatch",
 		[]expectedScopeEntry{},
@@ -420,7 +422,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"sml expression decorator chained decorated mismatch test", "sml", "chaineddecoratedmismatch",
 		[]expectedScopeEntry{},
-		"SML declaration decorator 'second' must decorator a value of type AnotherType: 'AnotherTypeEntirely' cannot be used in place of non-interface 'AnotherType'", ""},
+		"SML declaration decorator 'second' expects to decorate an instance of type AnotherTypeEntirely: 'AnotherType' cannot be used in place of non-interface 'AnotherTypeEntirely'", ""},
 
 	scopegraphTest{"sml expression child parameter count mismatch test", "sml", "childparamcountmismatch",
 		[]expectedScopeEntry{},
@@ -518,6 +520,13 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{
 			expectedScopeEntry{"condexpr", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
 			expectedScopeEntry{"condexpr2", expectedScope{true, proto.ScopeKind_VALUE, "any", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"conditional expression nullable success test", "condexpr", "nullable",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"condexpr", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+			expectedScopeEntry{"condexpr2", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
 		},
 		"", ""},
 
