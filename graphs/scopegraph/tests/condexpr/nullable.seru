@@ -1,0 +1,4 @@
+function<void> DoSomething(foo int?) {
+	/* condexpr */(foo if foo is not null else 4)
+	/* condexpr2 */(42 if foo is null else foo)
+}

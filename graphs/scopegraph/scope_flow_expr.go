@@ -16,10 +16,15 @@ var _ = fmt.Printf
 
 // scopeConditionalExpression scopes a conditional expression in the SRG.
 func (sb *scopeBuilder) scopeConditionalExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
+	conditionalExprNode := node.GetNode(parser.NodeConditionalExpressionCheckExpression)
+
+	thenContext := sb.inferTypesForConditionalExpressionContext(context, conditionalExprNode, inferredDirect)
+	elseContext := sb.inferTypesForConditionalExpressionContext(context, conditionalExprNode, inferredInverted)
+
 	// Scope the child expressions.
-	checkScope := sb.getScope(node.GetNode(parser.NodeConditionalExpressionCheckExpression), context)
-	thenScope := sb.getScope(node.GetNode(parser.NodeConditionalExpressionThenExpression), context)
-	elseScope := sb.getScope(node.GetNode(parser.NodeConditionalExpressionElseExpression), context)
+	checkScope := sb.getScope(conditionalExprNode, context)
+	thenScope := sb.getScope(node.GetNode(parser.NodeConditionalExpressionThenExpression), thenContext)
+	elseScope := sb.getScope(node.GetNode(parser.NodeConditionalExpressionElseExpression), elseContext)
 
 	if !checkScope.GetIsValid() || !thenScope.GetIsValid() || !elseScope.GetIsValid() {
 		return newScope().Invalid().GetScope()

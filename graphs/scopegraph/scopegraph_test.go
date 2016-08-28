@@ -521,6 +521,13 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	scopegraphTest{"conditional expression nullable success test", "condexpr", "nullable",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"condexpr", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+			expectedScopeEntry{"condexpr2", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+		},
+		"", ""},
+
 	scopegraphTest{"conditional expression non-bool test", "condexpr", "nonbool",
 		[]expectedScopeEntry{},
 		"Conditional expression check must be of type 'bool', found: Integer", ""},
