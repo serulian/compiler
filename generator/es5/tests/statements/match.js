@@ -28,6 +28,9 @@ $module('match', function () {
     var firstBool;
     var firstThing;
     var firstValue;
+    var fourthBool;
+    var fourthThing;
+    var fourthValue;
     var secondBool;
     var secondThing;
     var secondValue;
@@ -42,6 +45,7 @@ $module('match', function () {
             firstBool = $t.box(false, $g.____testlib.basictypes.Boolean);
             secondBool = $t.box(false, $g.____testlib.basictypes.Boolean);
             thirdBool = $t.box(false, $g.____testlib.basictypes.Boolean);
+            fourthBool = $t.box(false, $g.____testlib.basictypes.Boolean);
             $g.match.SomeClass.new().then(function ($result0) {
               $result = $result0;
               $current = 1;
@@ -57,12 +61,13 @@ $module('match', function () {
             firstValue = $result;
             secondValue = $t.box(1234, $g.____testlib.basictypes.Integer);
             thirdValue = $t.box('hello world', $g.____testlib.basictypes.String);
+            fourthValue = null;
             firstThing = firstValue;
             if ($t.unbox($t.istype(firstThing, $g.match.SomeClass))) {
               $current = 2;
               continue;
             } else {
-              $current = 22;
+              $current = 30;
               continue;
             }
             break;
@@ -91,7 +96,7 @@ $module('match', function () {
               $current = 5;
               continue;
             } else {
-              $current = 17;
+              $current = 25;
               continue;
             }
             break;
@@ -120,7 +125,7 @@ $module('match', function () {
               $current = 8;
               continue;
             } else {
-              $current = 12;
+              $current = 20;
               continue;
             }
             break;
@@ -144,26 +149,9 @@ $module('match', function () {
             continue;
 
           case 10:
-            $promise.resolve($t.unbox(firstBool)).then(function ($result1) {
-              return $promise.resolve($result1 && $t.unbox(secondBool)).then(function ($result0) {
-                $result = $t.box($result0 && $t.unbox(thirdBool), $g.____testlib.basictypes.Boolean);
-                $current = 11;
-                $continue($resolve, $reject);
-                return;
-              });
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 11:
-            $resolve($result);
-            return;
-
-          case 12:
-            if ($t.unbox($t.istype(thirdThing, $g.____testlib.basictypes.Integer))) {
-              $current = 13;
+            fourthThing = fourthValue;
+            if ($t.unbox($t.istype(fourthThing, $g.match.SomeClass))) {
+              $current = 11;
               continue;
             } else {
               $current = 15;
@@ -171,13 +159,34 @@ $module('match', function () {
             }
             break;
 
-          case 13:
-            $g.____testlib.basictypes.Integer.$equals(thirdThing, $t.box(1234, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-              thirdBool = $result0;
-              $result = thirdBool;
-              $current = 14;
+          case 11:
+            fourthThing.Value().then(function ($result0) {
+              fourthBool = $t.box(!$t.unbox($result0), $g.____testlib.basictypes.Boolean);
+              $result = fourthBool;
+              $current = 12;
               $continue($resolve, $reject);
               return;
+            }).catch(function (err) {
+              $reject(err);
+              return;
+            });
+            return;
+
+          case 12:
+            $result;
+            $current = 13;
+            continue;
+
+          case 13:
+            $promise.resolve($t.unbox(firstBool)).then(function ($result2) {
+              return $promise.resolve($result2 && $t.unbox(secondBool)).then(function ($result1) {
+                return $promise.resolve($result1 && $t.unbox(thirdBool)).then(function ($result0) {
+                  $result = $t.box($result0 && $t.unbox(fourthBool), $g.____testlib.basictypes.Boolean);
+                  $current = 14;
+                  $continue($resolve, $reject);
+                  return;
+                });
+              });
             }).catch(function (err) {
               $reject(err);
               return;
@@ -185,13 +194,83 @@ $module('match', function () {
             return;
 
           case 14:
+            $resolve($result);
+            return;
+
+          case 15:
+            if ($t.unbox($t.istype(fourthThing, $g.____testlib.basictypes.Integer))) {
+              $current = 16;
+              continue;
+            } else {
+              $current = 18;
+              continue;
+            }
+            break;
+
+          case 16:
+            $g.____testlib.basictypes.Integer.$equals(fourthThing, $t.box(1234, $g.____testlib.basictypes.Integer)).then(function ($result0) {
+              fourthBool = $result0;
+              $result = fourthBool;
+              $current = 17;
+              $continue($resolve, $reject);
+              return;
+            }).catch(function (err) {
+              $reject(err);
+              return;
+            });
+            return;
+
+          case 17:
+            $result;
+            $current = 13;
+            continue;
+
+          case 18:
+            if (true) {
+              $current = 19;
+              continue;
+            } else {
+              $current = 13;
+              continue;
+            }
+            break;
+
+          case 19:
+            fourthBool = $t.box(true, $g.____testlib.basictypes.Boolean);
+            $current = 13;
+            continue;
+
+          case 20:
+            if ($t.unbox($t.istype(thirdThing, $g.____testlib.basictypes.Integer))) {
+              $current = 21;
+              continue;
+            } else {
+              $current = 23;
+              continue;
+            }
+            break;
+
+          case 21:
+            $g.____testlib.basictypes.Integer.$equals(thirdThing, $t.box(1234, $g.____testlib.basictypes.Integer)).then(function ($result0) {
+              thirdBool = $result0;
+              $result = thirdBool;
+              $current = 22;
+              $continue($resolve, $reject);
+              return;
+            }).catch(function (err) {
+              $reject(err);
+              return;
+            });
+            return;
+
+          case 22:
             $result;
             $current = 10;
             continue;
 
-          case 15:
+          case 23:
             if (true) {
-              $current = 16;
+              $current = 24;
               continue;
             } else {
               $current = 10;
@@ -199,26 +278,26 @@ $module('match', function () {
             }
             break;
 
-          case 16:
+          case 24:
             thirdBool = $t.box(true, $g.____testlib.basictypes.Boolean);
             $current = 10;
             continue;
 
-          case 17:
+          case 25:
             if ($t.unbox($t.istype(secondThing, $g.____testlib.basictypes.Integer))) {
-              $current = 18;
+              $current = 26;
               continue;
             } else {
-              $current = 20;
+              $current = 28;
               continue;
             }
             break;
 
-          case 18:
+          case 26:
             $g.____testlib.basictypes.Integer.$equals(secondThing, $t.box(1234, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               secondBool = $result0;
               $result = secondBool;
-              $current = 19;
+              $current = 27;
               $continue($resolve, $reject);
               return;
             }).catch(function (err) {
@@ -227,14 +306,14 @@ $module('match', function () {
             });
             return;
 
-          case 19:
+          case 27:
             $result;
             $current = 7;
             continue;
 
-          case 20:
+          case 28:
             if (true) {
-              $current = 21;
+              $current = 29;
               continue;
             } else {
               $current = 7;
@@ -242,26 +321,26 @@ $module('match', function () {
             }
             break;
 
-          case 21:
+          case 29:
             secondBool = $t.box(false, $g.____testlib.basictypes.Boolean);
             $current = 7;
             continue;
 
-          case 22:
+          case 30:
             if ($t.unbox($t.istype(firstThing, $g.____testlib.basictypes.Integer))) {
-              $current = 23;
+              $current = 31;
               continue;
             } else {
-              $current = 25;
+              $current = 33;
               continue;
             }
             break;
 
-          case 23:
+          case 31:
             $g.____testlib.basictypes.Integer.$equals(firstThing, $t.box(4567, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               firstBool = $result0;
               $result = firstBool;
-              $current = 24;
+              $current = 32;
               $continue($resolve, $reject);
               return;
             }).catch(function (err) {
@@ -270,14 +349,14 @@ $module('match', function () {
             });
             return;
 
-          case 24:
+          case 32:
             $result;
             $current = 4;
             continue;
 
-          case 25:
+          case 33:
             if (true) {
-              $current = 26;
+              $current = 34;
               continue;
             } else {
               $current = 4;
@@ -285,7 +364,7 @@ $module('match', function () {
             }
             break;
 
-          case 26:
+          case 34:
             firstBool = $t.box(false, $g.____testlib.basictypes.Boolean);
             $current = 4;
             continue;

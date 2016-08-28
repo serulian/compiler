@@ -8,10 +8,12 @@ function<any> TEST() {
 	var firstBool = false
 	var secondBool = false
 	var thirdBool = false
+	var fourthBool = false
 
 	var<any> firstValue = SomeClass.new()
 	var<any> secondValue = 1234
 	var<any> thirdValue = 'hello world'
+	var<any> fourthValue = null
 
 	match firstValue as firstThing {
 		case SomeClass:
@@ -46,5 +48,16 @@ function<any> TEST() {
 			thirdBool = true
 	}
 
-	return firstBool && secondBool && thirdBool
+	match fourthValue as fourthThing {
+		case SomeClass:
+			fourthBool = !fourthThing.Value
+
+		case int:
+			fourthBool = fourthThing == 1234
+
+		default:
+			fourthBool = true
+	}
+
+	return firstBool && secondBool && thirdBool && fourthBool
 }
