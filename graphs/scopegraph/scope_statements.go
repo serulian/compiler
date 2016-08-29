@@ -355,17 +355,23 @@ func (sb *scopeBuilder) scopeLoopStatement(node compilergraph.GraphNode, context
 	blockNode := node.GetNode(parser.NodeLoopStatementBlock)
 	blockScope := sb.getScope(blockNode, context)
 
-	// If the loop has no expression, it is an infinite loop, so we know it is valid and
+	// If the loop has no expression, it is most likely an infinite loop, so we know it is valid and
 	// returns whatever the internal type is.
 	loopExprNode, hasExpr := node.TryGetNode(parser.NodeLoopStatementExpression)
 	if !hasExpr {
-		// for { ... }
-		return newScope().
-			IsTerminatingStatement().
+		loopScopeBuilder := newScope().
 			IsValid(blockScope.GetIsValid()).
 			ReturningTypeOf(blockScope).
-			LabelSetOf(blockScope).
-			GetScope()
+			LabelSetOfExcept(blockScope, proto.ScopeLabel_BROKEN_FLOW)
+
+		// If the loop contains a break statement somewhere, then it isn't an infinite
+		// loop.
+		if !blockScope.HasLabel(proto.ScopeLabel_BROKEN_FLOW) {
+			loopScopeBuilder.IsTerminatingStatement()
+		}
+
+		// for { ... }
+		return loopScopeBuilder.GetScope()
 	}
 
 	// Otherwise, scope the expression.
@@ -395,7 +401,7 @@ func (sb *scopeBuilder) scopeLoopStatement(node compilergraph.GraphNode, context
 				GetScope()
 		}
 
-		return newScope().Valid().LabelSetOf(blockScope).GetScope()
+		return newScope().Valid().LabelSetOfExcept(blockScope, proto.ScopeLabel_BROKEN_FLOW).GetScope()
 	}
 }
 
@@ -438,7 +444,7 @@ func (sb *scopeBuilder) inferTypesForConditionalExpressionContext(baseContext sc
 			return baseContext
 		}
 
-		// Lookup the right expression. If it is itself a `not`, then we invert the set to null..
+		// Lookup the right expression. If it is itself a `not`, then we invert the set to null.
 		rightExpr := isExpressionNode.GetNode(parser.NodeBinaryExpressionRightExpr)
 		if rightExpr.Kind() == parser.NodeKeywordNotExpression {
 			setToNull = !setToNull
@@ -547,12 +553,14 @@ func (sb *scopeBuilder) scopeBreakStatement(node compilergraph.GraphNode, contex
 		return newScope().
 			IsTerminatingStatement().
 			Invalid().
+			WithLabel(proto.ScopeLabel_BROKEN_FLOW).
 			GetScope()
 	}
 
 	return newScope().
 		IsTerminatingStatement().
 		Valid().
+		WithLabel(proto.ScopeLabel_BROKEN_FLOW).
 		GetScope()
 }
 

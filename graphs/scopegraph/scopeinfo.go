@@ -216,6 +216,15 @@ func (sib *scopeInfoBuilder) LabelSetOf(scope *proto.ScopeInfo) *scopeInfoBuilde
 	return sib
 }
 
+// LabelSetOf sets the label set for this scope to the set found on the other scope, except those
+// labels specified.
+func (sib *scopeInfoBuilder) LabelSetOfExcept(scope *proto.ScopeInfo, except ...proto.ScopeLabel) *scopeInfoBuilder {
+	labelSet := newLabelSet()
+	labelSet.AppendLabelsOf(scope)
+	labelSet.RemoveLabels(except...)
+	return sib.WithLabelSet(labelSet)
+}
+
 // GetScope returns the scope constructed.
 func (sib *scopeInfoBuilder) GetScope() proto.ScopeInfo {
 	return *sib.info

@@ -1,0 +1,11 @@
+function<int> DoSomething(someValue any) {
+	/* emptyloop */for {		
+		match someValue as typedValue {
+			case int:
+				return typedValue
+
+			default:
+				return -1
+		}
+	}
+}

@@ -1,0 +1,7 @@
+function<bool> SimpleFunction(props []{any}) {
+	return props["data-foo"].(string) == "bar" && props["an-attr-here"].(bool)
+}
+
+function<any> TEST() {
+	return <SimpleFunction data-foo="bar" an-attr-here={true} />
+}

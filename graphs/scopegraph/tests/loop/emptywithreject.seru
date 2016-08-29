@@ -1,0 +1,9 @@
+class SomeError {
+	property<string> Message { return '' }
+}
+
+function<int> SomeFunc() {
+	/* emptyloop */ for {
+		reject SomeError.new()
+	}
+}

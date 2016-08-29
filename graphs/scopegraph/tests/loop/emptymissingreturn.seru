@@ -1,0 +1,6 @@
+function<int> SomeFunc() {
+	/* emptyloop */ for {
+		break
+	}
+	return 2
+}

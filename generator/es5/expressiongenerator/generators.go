@@ -308,7 +308,7 @@ func (eg *expressionGenerator) generateObjectLiteral(objectLiteral *codedom.Obje
 		templateStr := `
 			({
 				{{ range $idx, $entry := .Entries }}
-					{{ emit $entry.Key }}: {{ emit $entry.Value }},
+					'{{ emit $entry.Key }}': {{ emit $entry.Value }},
 				{{ end }}
 			})
 		`
