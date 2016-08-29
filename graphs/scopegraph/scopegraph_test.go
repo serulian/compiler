@@ -1060,7 +1060,7 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{
 			expectedScopeEntry{"dynaccess", expectedScope{true, proto.ScopeKind_VALUE, "any", "void"}},
 		},
-		"", "Member 'someValue' is unknown under known type Integer. This call will return null."},
+		"", ""},
 
 	scopegraphTest{"dynamic member access success known test", "dynamicmemberaccess", "successknown",
 		[]expectedScopeEntry{
