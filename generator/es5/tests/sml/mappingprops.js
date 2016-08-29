@@ -40,7 +40,7 @@ $module('mappingprops', function () {
         switch ($current) {
           case 0:
             $g.____testlib.basictypes.Mapping($g.____testlib.basictypes.String).overObject({
-              SomeProp: $t.box("hello world", $g.____testlib.basictypes.String),
+              "SomeProp": $t.box("hello world", $g.____testlib.basictypes.String),
             }).then(function ($result1) {
               return $g.mappingprops.SimpleFunction($result1).then(function ($result0) {
                 $result = $result0;
