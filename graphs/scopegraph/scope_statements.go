@@ -444,7 +444,7 @@ func (sb *scopeBuilder) inferTypesForConditionalExpressionContext(baseContext sc
 			return baseContext
 		}
 
-		// Lookup the right expression. If it is itself a `not`, then we invert the set to null..
+		// Lookup the right expression. If it is itself a `not`, then we invert the set to null.
 		rightExpr := isExpressionNode.GetNode(parser.NodeBinaryExpressionRightExpr)
 		if rightExpr.Kind() == parser.NodeKeywordNotExpression {
 			setToNull = !setToNull
