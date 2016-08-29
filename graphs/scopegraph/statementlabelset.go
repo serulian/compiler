@@ -8,14 +8,14 @@ import "github.com/serulian/compiler/graphs/scopegraph/proto"
 
 // statementLabelSet defines a set of labels on a statement.
 type statementLabelSet struct {
-	labelsMap map[proto.ScopeLabel]bool
+	labelsMap map[proto.ScopeLabel]int
 	labels    []proto.ScopeLabel
 }
 
 // newLabelSet returns a new statement label set.
 func newLabelSet() *statementLabelSet {
 	return &statementLabelSet{
-		labelsMap: map[proto.ScopeLabel]bool{},
+		labelsMap: map[proto.ScopeLabel]int{},
 		labels:    make([]proto.ScopeLabel, 0),
 	}
 }
@@ -30,7 +30,7 @@ func (sls *statementLabelSet) AppendLabelsOf(scope *proto.ScopeInfo) {
 // Append appends the given label to the set.
 func (sls *statementLabelSet) Append(label proto.ScopeLabel) {
 	if _, found := sls.labelsMap[label]; !found {
-		sls.labelsMap[label] = true
+		sls.labelsMap[label] = len(sls.labels)
 		sls.labels = append(sls.labels, label)
 	}
 }
@@ -44,4 +44,17 @@ func (sls *statementLabelSet) HasLabel(expected proto.ScopeLabel) bool {
 // GetLabels returns all the labels in this set.
 func (sls *statementLabelSet) GetLabels() []proto.ScopeLabel {
 	return sls.labels
+}
+
+// RemoveLabels removes the given labels from the set.
+func (sls *statementLabelSet) RemoveLabels(labels ...proto.ScopeLabel) {
+	for _, label := range labels {
+		index, ok := sls.labelsMap[label]
+		if !ok {
+			continue
+		}
+
+		sls.labels = append(sls.labels[:index], sls.labels[index+1:]...)
+		delete(sls.labelsMap, label)
+	}
 }

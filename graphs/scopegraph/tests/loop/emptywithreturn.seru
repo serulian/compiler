@@ -1,0 +1,5 @@
+function<int> SomeFunc() {
+	/* emptyloop */ for {
+		return 2
+	}
+}

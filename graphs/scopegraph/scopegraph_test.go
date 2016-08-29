@@ -179,6 +179,26 @@ var scopeGraphTests = []scopegraphTest{
 		expectedScopeEntry{"emptyloop", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
 	}, "", "Unreachable statement found"},
 
+	// Empty with return loop test.
+	scopegraphTest{"empty with return loop test", "loop", "emptywithreturn", []expectedScopeEntry{
+		expectedScopeEntry{"emptyloop", expectedScope{true, proto.ScopeKind_VALUE, "void", "Integer"}},
+	}, "", ""},
+
+	// Empty missing return test..
+	scopegraphTest{"empty missing return loop test", "loop", "emptymissingreturn", []expectedScopeEntry{
+		expectedScopeEntry{"emptyloop", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
+	}, "", ""},
+
+	// Empty with reject loop test.
+	scopegraphTest{"empty with reject loop test", "loop", "emptywithreturn", []expectedScopeEntry{
+		expectedScopeEntry{"emptyloop", expectedScope{true, proto.ScopeKind_VALUE, "void", "Integer"}},
+	}, "", ""},
+
+	// Empty with match that returns loop test.
+	scopegraphTest{"empty with match return loop test", "loop", "emptywithmatch", []expectedScopeEntry{
+		expectedScopeEntry{"emptyloop", expectedScope{true, proto.ScopeKind_VALUE, "void", "Integer"}},
+	}, "", ""},
+
 	// Boolean loop test.
 	scopegraphTest{"bool loop test", "loop", "boolloop", []expectedScopeEntry{
 		expectedScopeEntry{"loopexpr", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
