@@ -243,6 +243,7 @@ var generationTests = []generationTest{
 	generationTest{"sml children test", "sml", "children", integrationTestSuccessExpected, ""},
 	generationTest{"sml no children test", "sml", "nochildren", integrationTestSuccessExpected, ""},
 	generationTest{"sml decorator test", "sml", "decorator", integrationTestSuccessExpected, ""},
+	generationTest{"sml attributes test", "sml", "attributes", integrationTestSuccessExpected, ""},
 }
 
 func TestGenerator(t *testing.T) {
