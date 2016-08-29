@@ -232,7 +232,6 @@ func (sb *scopeBuilder) scopeDynamicMemberAccessExpression(node compilergraph.Gr
 		// returns an "any" type.
 		typeMember, rerr := lookupType.ResolveAccessibleMember(memberName, module, typegraph.MemberResolutionInstanceOrStatic)
 		if rerr != nil {
-			sb.decorateWithWarning(node, "Member '%v' is unknown under known type %v. This call will return null.", memberName, childType)
 			return newScope().Valid().Resolving(sb.sg.tdg.AnyTypeReference()).GetScope()
 		}
 
