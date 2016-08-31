@@ -126,12 +126,12 @@ func (db *domBuilder) buildLoopStatement(node compilergraph.GraphNode) (codedom.
 		namedValue, hasNamedValue := node.TryGetNode(parser.NodeStatementNamedValue)
 		if hasNamedValue {
 			namedValueName := namedValue.Get(parser.NodeNamedValueName)
-			resultVarName := db.buildScopeVarName(node)
+			resultVarName := db.generateScopeVarName(node)
 
 			namedValueScope, _ := db.scopegraph.GetScope(namedValue)
 
 			// Create the stream variable.
-			streamVarName := db.buildScopeVarName(node)
+			streamVarName := db.generateScopeVarName(node)
 			var streamVariable = codedom.VarDefinitionWithInit(streamVarName, loopExpr, node)
 
 			// If the expression is Streamable, first call .Stream() on the expression to get the stream
@@ -240,6 +240,11 @@ func (db *domBuilder) buildAssignStatement(node compilergraph.GraphNode) codedom
 func (db *domBuilder) buildVarStatement(node compilergraph.GraphNode) codedom.Statement {
 	name := node.Get(parser.NodeVariableStatementName)
 	initExpr, _ := db.tryGetExpression(node, parser.NodeVariableStatementExpression)
+	if initExpr == nil {
+		// If no init expression was specified, then the variable is initialized to null.
+		initExpr = codedom.LiteralValue("null", node)
+	}
+
 	return codedom.VarDefinitionWithInit(name, initExpr, node)
 }
 
@@ -251,7 +256,7 @@ func (db *domBuilder) buildWithStatement(node compilergraph.GraphNode) codedom.S
 	if hasNamed {
 		resourceVar = namedVar.Get(parser.NodeNamedValueName)
 	} else {
-		resourceVar = db.buildScopeVarName(node)
+		resourceVar = db.generateScopeVarName(node)
 	}
 
 	resourceExpr := db.getExpression(node, parser.NodeWithStatementExpression)
@@ -267,7 +272,7 @@ func (db *domBuilder) buildMatchStatement(node compilergraph.GraphNode) (codedom
 	if namedValue, hasNamedValue := node.TryGetNode(parser.NodeStatementNamedValue); hasNamedValue {
 		matchExprVarName = namedValue.Get(parser.NodeNamedValueName)
 	} else {
-		matchExprVarName = db.buildScopeVarName(node)
+		matchExprVarName = db.generateScopeVarName(node)
 	}
 
 	// Set the match expression's value into the variable.
@@ -304,7 +309,7 @@ func (db *domBuilder) buildSwitchStatement(node compilergraph.GraphNode) (codedo
 	// which is placed into a new variable.
 	switchExpr, hasSwitchExpr := db.tryGetExpression(node, parser.NodeSwitchStatementExpression)
 	if hasSwitchExpr {
-		switchVarName = db.buildScopeVarName(node)
+		switchVarName = db.generateScopeVarName(node)
 		switchVarNode = node.GetNode(parser.NodeSwitchStatementExpression)
 		startStatement = codedom.VarDefinitionWithInit(switchVarName, switchExpr, node)
 
@@ -463,7 +468,7 @@ func (db *domBuilder) buildResolveStatement(node compilergraph.GraphNode) (coded
 
 	var destinationStatement codedom.Statement = nil
 	if !destinationScope.GetIsAnonymousReference() {
-		destinationStatement = codedom.ExpressionStatement(codedom.LocalAssignment(destinationName, sourceExpr, node), node)
+		destinationStatement = codedom.VarDefinitionWithInit(destinationName, sourceExpr, node)
 	} else {
 		destinationStatement = codedom.ExpressionStatement(sourceExpr, node)
 		destinationName = ""

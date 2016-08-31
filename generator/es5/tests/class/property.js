@@ -37,12 +37,12 @@ $module('property', function () {
   });
 
   $static.AnotherFunction = function (sc) {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
         switch ($current) {
           case 0:
-            sc.SomeBool;
             sc.SomeProp().then(function ($result0) {
               $result = $result0;
               $current = 1;
@@ -55,7 +55,6 @@ $module('property', function () {
             return;
 
           case 1:
-            $result;
             sc.SomeProp($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $current = 2;
@@ -68,7 +67,6 @@ $module('property', function () {
             return;
 
           case 2:
-            $result;
             sc.SomeProp().then(function ($result0) {
               $result = $result0;
               $current = 3;
@@ -93,6 +91,7 @@ $module('property', function () {
     return $promise.new($continue);
   };
   $static.TEST = function () {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {

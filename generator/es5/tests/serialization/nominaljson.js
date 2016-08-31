@@ -70,6 +70,7 @@ $module('nominaljson', function () {
   });
 
   $static.TEST = function () {
+    var $result;
     var correct;
     var jsonString;
     var parsed;
@@ -80,10 +81,8 @@ $module('nominaljson', function () {
         switch ($current) {
           case 0:
             $g.nominaljson.AnotherStruct.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
-              $temp0 = $result1;
-              return $g.nominaljson.SomeStruct.new($t.box(($temp0, $temp0), $g.nominaljson.SomeNominal)).then(function ($result0) {
-                $temp1 = $result0;
-                $result = ($temp1, $temp1);
+              return $g.nominaljson.SomeStruct.new($t.box($result1, $g.nominaljson.SomeNominal)).then(function ($result0) {
+                $result = $result0;
                 $current = 1;
                 $continue($resolve, $reject);
                 return;

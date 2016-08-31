@@ -26,6 +26,7 @@ $module('with', function () {
   });
 
   $static.TEST = function () {
+    var $result;
     var $temp0;
     var $current = 0;
     var $resources = $t.resourcehandler();
@@ -63,7 +64,6 @@ $module('with', function () {
             return;
 
           case 2:
-            $result;
             $t.box(789, $g.____testlib.basictypes.Integer);
             $resolve($g.with.someBool);
             return;

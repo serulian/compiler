@@ -15,6 +15,7 @@ $module('loopvar', function () {
     };
     $instance.Next = function () {
       var $this = this;
+      var $result;
       var r;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
@@ -52,6 +53,7 @@ $module('loopvar', function () {
   });
 
   $static.DoSomething = function (somethingElse) {
+    var $result;
     var $temp0;
     var $temp1;
     var something;
@@ -83,7 +85,6 @@ $module('loopvar', function () {
             return;
 
           case 3:
-            $result;
             something = $temp0.First;
             if ($t.unbox($temp0.Second)) {
               $current = 4;
@@ -113,6 +114,7 @@ $module('loopvar', function () {
     return $promise.new($continue);
   };
   $static.TEST = function () {
+    var $result;
     var $temp0;
     var $temp1;
     var i;
@@ -159,7 +161,6 @@ $module('loopvar', function () {
             return;
 
           case 4:
-            $result;
             i = $temp0.First;
             if ($t.unbox($temp0.Second)) {
               $current = 5;

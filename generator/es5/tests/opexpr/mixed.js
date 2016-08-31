@@ -1,6 +1,7 @@
 $module('mixed', function () {
   var $static = this;
   $static.TEST = function () {
+    var $result;
     var finalIndex;
     var $current = 0;
     var $continue = function ($resolve, $reject) {

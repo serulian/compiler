@@ -1,6 +1,7 @@
 $module('children', function () {
   var $static = this;
   $static.SimpleFunction = function (props, children) {
+    var $result;
     var $temp0;
     var $temp1;
     var counter;
@@ -33,7 +34,6 @@ $module('children', function () {
             return;
 
           case 3:
-            $result;
             value = $temp0.First;
             if ($t.unbox($temp0.Second)) {
               $current = 4;
@@ -58,7 +58,6 @@ $module('children', function () {
             return;
 
           case 5:
-            $result;
             $current = 2;
             continue;
 
@@ -87,6 +86,7 @@ $module('children', function () {
     return $promise.new($continue);
   };
   $static.TEST = function () {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {

@@ -25,6 +25,7 @@ $module('slice', function () {
   });
 
   $static.TEST = function () {
+    var $result;
     var c;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
@@ -56,7 +57,6 @@ $module('slice', function () {
             return;
 
           case 2:
-            $result;
             c.$slice(null, $t.box(1, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $result = $result0;
               $current = 3;
@@ -69,7 +69,6 @@ $module('slice', function () {
             return;
 
           case 3:
-            $result;
             c.$slice($t.box(1, $g.____testlib.basictypes.Integer), null).then(function ($result0) {
               $result = $result0;
               $current = 4;
@@ -82,7 +81,6 @@ $module('slice', function () {
             return;
 
           case 4:
-            $result;
             c.$slice($t.box(1, $g.____testlib.basictypes.Integer), $t.box(7, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $result = $result0;
               $current = 5;

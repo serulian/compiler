@@ -1,6 +1,7 @@
 $module('boolean', function () {
   var $static = this;
   $static.TEST = function () {
+    var $result;
     var first;
     var second;
     var $current = 0;

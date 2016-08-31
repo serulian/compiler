@@ -1,6 +1,7 @@
 $module('withas', function () {
   var $static = this;
   $static.DoSomething = function (someExpr) {
+    var $result;
     var someName;
     var $current = 0;
     var $resources = $t.resourcehandler();
@@ -26,7 +27,6 @@ $module('withas', function () {
             return;
 
           case 1:
-            $result;
             $t.box(789, $g.____testlib.basictypes.Integer);
             $resolve();
             return;

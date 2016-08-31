@@ -96,6 +96,7 @@ $module('binary', function () {
   });
 
   $static.DoSomething = function (first, second) {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
@@ -113,7 +114,6 @@ $module('binary', function () {
             return;
 
           case 1:
-            $result;
             $g.binary.SomeClass.$minus(first, second).then(function ($result0) {
               $result = $result0;
               $current = 2;
@@ -125,11 +125,6 @@ $module('binary', function () {
             });
             return;
 
-          case 2:
-            $result;
-            $resolve();
-            return;
-
           default:
             $resolve();
             return;
@@ -139,6 +134,7 @@ $module('binary', function () {
     return $promise.new($continue);
   };
   $static.TEST = function () {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {

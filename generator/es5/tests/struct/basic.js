@@ -57,6 +57,7 @@ $module('basic', function () {
   });
 
   $static.TEST = function () {
+    var $result;
     var ss;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
@@ -64,10 +65,8 @@ $module('basic', function () {
         switch ($current) {
           case 0:
             $g.basic.AnotherStruct.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
-              $temp0 = $result1;
-              return $g.basic.SomeStruct.new($t.box(42, $g.____testlib.basictypes.Integer), $t.box(true, $g.____testlib.basictypes.Boolean), ($temp0, $temp0)).then(function ($result0) {
-                $temp1 = $result0;
-                $result = ($temp1, $temp1);
+              return $g.basic.SomeStruct.new($t.box(42, $g.____testlib.basictypes.Integer), $t.box(true, $g.____testlib.basictypes.Boolean), $result1).then(function ($result0) {
+                $result = $result0;
                 $current = 1;
                 $continue($resolve, $reject);
                 return;

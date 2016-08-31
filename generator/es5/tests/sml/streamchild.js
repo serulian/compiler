@@ -1,6 +1,7 @@
 $module('streamchild', function () {
   var $static = this;
   $static.SimpleFunction = function (props, children) {
+    var $result;
     var $temp0;
     var $temp1;
     var counter;
@@ -33,7 +34,6 @@ $module('streamchild', function () {
             return;
 
           case 3:
-            $result;
             value = $temp0.First;
             if ($t.unbox($temp0.Second)) {
               $current = 4;
@@ -58,7 +58,6 @@ $module('streamchild', function () {
             return;
 
           case 5:
-            $result;
             $current = 2;
             continue;
 
@@ -115,6 +114,7 @@ $module('streamchild', function () {
     return $generator.new($continue);
   };
   $static.TEST = function () {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
@@ -123,6 +123,7 @@ $module('streamchild', function () {
             $g.____testlib.basictypes.Mapping($g.____testlib.basictypes.String).Empty().then(function ($result1) {
               return $g.streamchild.GetValues().then(function ($result3) {
                 return $g.____testlib.basictypes.MapStream($g.____testlib.basictypes.Integer, $g.____testlib.basictypes.Integer)($result3, function (value) {
+                  var $result;
                   var $current = 0;
                   var $continue = function ($resolve, $reject) {
                     while (true) {

@@ -1,6 +1,7 @@
 $module('mappingprops', function () {
   var $static = this;
   $static.SimpleFunction = function (props) {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
@@ -34,6 +35,7 @@ $module('mappingprops', function () {
     return $promise.new($continue);
   };
   $static.TEST = function () {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {

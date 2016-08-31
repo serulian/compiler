@@ -34,6 +34,7 @@ $module('structprops', function () {
   });
 
   $static.SimpleFunction = function (props) {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
@@ -67,6 +68,8 @@ $module('structprops', function () {
     return $promise.new($continue);
   };
   $static.TEST = function () {
+    var $result;
+    var $temp0;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {

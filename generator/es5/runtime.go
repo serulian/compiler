@@ -11,6 +11,7 @@ package es5
 // runtimeTemplate contains all the necessary code for wrapping the generated modules into a complete Serulian
 // runtime bundle.
 const runtimeTemplate = `
+"use strict";
 this.Serulian = (function($global) {
   var BOXED_DATA_PROPERTY = '$wrapped';
 
@@ -884,14 +885,14 @@ this.Serulian = (function($global) {
 
         // Define the type on the module.
         if (hasGenerics) {
-          module[name] = function(__genericargs) {
+          module[name] = function genericType(__genericargs) {
             var fullName = name;
             for (var i = 0; i < arguments.length; ++i) {
               fullName = fullName + '_' + arguments[i].name;
             }
 
             var tpe = buildType(name, arguments);
-            tpe.$generic = arguments.callee;
+            tpe.$generic = genericType;
             return tpe;
           };
         } else {
@@ -946,7 +947,7 @@ this.Serulian = (function($global) {
           var methodId = data['method'];
           var method = $w[methodId];
 
-          var arguments = data['arguments'].map($t.buildValueFromData);
+          var args = data['arguments'].map($t.buildValueFromData);
           var send = function(kind) {
             return function(value) {
               var message = {
@@ -973,7 +974,7 @@ this.Serulian = (function($global) {
             };
           };
 
-          method.apply(null, arguments).then(send('resolve')).catch(send('reject'));
+          method.apply(null, args).then(send('resolve')).catch(send('reject'));
           break;
       }
     };

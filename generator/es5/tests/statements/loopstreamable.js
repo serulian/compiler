@@ -12,6 +12,7 @@ $module('loopstreamable', function () {
     };
     $instance.Stream = function () {
       var $this = this;
+      var $result;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
         while (true) {
@@ -60,6 +61,7 @@ $module('loopstreamable', function () {
     };
     $instance.Next = function () {
       var $this = this;
+      var $result;
       var r;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
@@ -97,6 +99,7 @@ $module('loopstreamable', function () {
   });
 
   $static.DoSomething = function (somethingElse) {
+    var $result;
     var $temp0;
     var $temp1;
     var something;
@@ -140,7 +143,6 @@ $module('loopstreamable', function () {
             return;
 
           case 4:
-            $result;
             something = $temp0.First;
             if ($t.unbox($temp0.Second)) {
               $current = 5;
@@ -170,6 +172,7 @@ $module('loopstreamable', function () {
     return $promise.new($continue);
   };
   $static.TEST = function () {
+    var $result;
     var $temp0;
     var $temp1;
     var i;
@@ -228,7 +231,6 @@ $module('loopstreamable', function () {
             return;
 
           case 5:
-            $result;
             i = $temp0.First;
             if ($t.unbox($temp0.Second)) {
               $current = 6;

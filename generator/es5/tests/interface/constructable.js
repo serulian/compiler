@@ -11,6 +11,7 @@ $module('constructable', function () {
       });
     };
     $static.Get = function () {
+      var $result;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
         while (true) {
@@ -56,6 +57,7 @@ $module('constructable', function () {
   this.$interface('SomeInterface', false, '', function () {
     var $static = this;
     $static.Get = function () {
+      var $result;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
         while (true) {
@@ -91,6 +93,7 @@ $module('constructable', function () {
 
   $static.DoSomething = function (T) {
     var $f = function () {
+      var $result;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
         while (true) {
@@ -122,6 +125,7 @@ $module('constructable', function () {
     return $f;
   };
   $static.TEST = function () {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {

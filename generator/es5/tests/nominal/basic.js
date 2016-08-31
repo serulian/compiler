@@ -37,6 +37,7 @@ $module('basic', function () {
     };
     $instance.AnotherThing = function () {
       var $this = this;
+      var $result;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
         while (true) {
@@ -80,6 +81,7 @@ $module('basic', function () {
   });
 
   $static.TEST = function () {
+    var $result;
     var m;
     var sc;
     var $current = 0;

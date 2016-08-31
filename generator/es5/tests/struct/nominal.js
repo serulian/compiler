@@ -39,6 +39,7 @@ $module('nominal', function () {
   });
 
   $static.TEST = function () {
+    var $result;
     var c;
     var s;
     var s2;
@@ -49,8 +50,7 @@ $module('nominal', function () {
           case 0:
             c = $t.box($t.box(true, $g.____testlib.basictypes.Boolean), $g.nominal.CoolBool);
             $g.nominal.SomeStruct.new(c).then(function ($result0) {
-              $temp0 = $result0;
-              $result = ($temp0, $temp0);
+              $result = $result0;
               $current = 1;
               $continue($resolve, $reject);
               return;

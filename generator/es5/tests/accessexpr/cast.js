@@ -32,6 +32,7 @@ $module('cast', function () {
   });
 
   $static.DoSomething = function (i) {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
@@ -61,6 +62,7 @@ $module('cast', function () {
     return $promise.new($continue);
   };
   $static.TEST = function () {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {

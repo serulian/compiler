@@ -52,6 +52,7 @@ $module('nested', function () {
     return $generator.new($continue);
   };
   $static.SomeGenerator = function () {
+    var $result;
     var $current = 0;
     var $continue = function ($yield, $yieldin, $reject, $done) {
       while (true) {
@@ -87,6 +88,7 @@ $module('nested', function () {
     return $generator.new($continue);
   };
   $static.TEST = function () {
+    var $result;
     var $temp0;
     var $temp1;
     var v;
@@ -131,7 +133,6 @@ $module('nested', function () {
             return;
 
           case 4:
-            $result;
             value = $temp0.First;
             if ($t.unbox($temp0.Second)) {
               $current = 5;
@@ -156,7 +157,6 @@ $module('nested', function () {
             return;
 
           case 6:
-            $result;
             $current = 3;
             continue;
 

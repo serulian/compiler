@@ -51,6 +51,10 @@ func (node functionNode) emit(sb *sourceBuilder) {
 	}
 }
 
+func (node functionNode) isStateless() bool {
+	return node.name == ""
+}
+
 // Closure returns an anonymous closure.
 func Closure(body SourceBuilder, parameters ...string) ExpressionBuilder {
 	return expressionBuilder{functionNode{"", parameters, body}, nil}

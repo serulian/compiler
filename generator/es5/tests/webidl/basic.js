@@ -4,6 +4,7 @@ $module('basic', function () {
     return $promise.empty();
   };
   $static.DoSomething = function () {
+    var $result;
     var first;
     var second;
     var $current = 0;
@@ -23,7 +24,6 @@ $module('basic', function () {
             return;
 
           case 1:
-            $result;
             $global.SomeBrowserThing.SomeStaticAttribute;
             $global.SomeBrowserThing.SomeStaticFunction();
             $t.dynamicaccess($global.SomeBrowserThing, 'SomeStaticFunction');
@@ -33,8 +33,6 @@ $module('basic', function () {
             $global.SomeBrowserThing.SomeStaticAttribute.SomeInterfaceFunction().InstanceAttr;
             first = $t.nativenew($global.SomeBrowserThing)($t.box('foo', $g.____testlib.basictypes.String));
             second = $t.nativenew($global.SomeBrowserThing)($t.box('bar', $g.____testlib.basictypes.String));
-            first + second;
-            first[$t.box('hello', $g.____testlib.basictypes.String)];
             first[$t.box('hello', $g.____testlib.basictypes.String)] = second;
             $resolve();
             return;

@@ -29,6 +29,7 @@ $module('basic', function () {
     return $generator.new($continue);
   };
   $static.TEST = function () {
+    var $result;
     var $temp0;
     var $temp1;
     var counter;
@@ -41,6 +42,7 @@ $module('basic', function () {
           case 0:
             $g.basic.SomeGenerator().then(function ($result1) {
               return $g.____testlib.basictypes.MapStream($g.____testlib.basictypes.Integer, $g.____testlib.basictypes.Integer)($result1, function (s) {
+                var $result;
                 var $current = 0;
                 var $continue = function ($resolve, $reject) {
                   while (true) {
@@ -105,7 +107,6 @@ $module('basic', function () {
             return;
 
           case 4:
-            $result;
             entry = $temp0.First;
             if ($t.unbox($temp0.Second)) {
               $current = 5;
@@ -130,7 +131,6 @@ $module('basic', function () {
             return;
 
           case 6:
-            $result;
             $current = 3;
             continue;
 

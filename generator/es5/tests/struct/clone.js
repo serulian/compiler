@@ -29,6 +29,8 @@ $module('clone', function () {
   });
 
   $static.TEST = function () {
+    var $result;
+    var $temp0;
     var first;
     var second;
     var $current = 0;
@@ -37,8 +39,7 @@ $module('clone', function () {
         switch ($current) {
           case 0:
             $g.clone.SomeStruct.new($t.box(42, $g.____testlib.basictypes.Integer), $t.box(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
-              $temp0 = $result0;
-              $result = ($temp0, $temp0);
+              $result = $result0;
               $current = 1;
               $continue($resolve, $reject);
               return;
@@ -51,8 +52,8 @@ $module('clone', function () {
           case 1:
             first = $result;
             first.Clone().then(function ($result0) {
-              $temp1 = $result0;
-              $result = ($temp1, $temp1.AnotherField = $t.box(true, $g.____testlib.basictypes.Boolean), $temp1);
+              $temp0 = $result0;
+              $result = ($temp0, $temp0.AnotherField = $t.box(true, $g.____testlib.basictypes.Boolean), $temp0);
               $current = 2;
               $continue($resolve, $reject);
               return;

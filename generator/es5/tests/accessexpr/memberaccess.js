@@ -17,6 +17,7 @@ $module('memberaccess', function () {
       });
     };
     $static.Build = function () {
+      var $result;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
         while (true) {
@@ -64,16 +65,14 @@ $module('memberaccess', function () {
   });
 
   $static.DoSomething = function (sc, scn) {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
         switch ($current) {
           case 0:
-            sc.someInt;
             $t.dynamicaccess($g.memberaccess.SomeClass, 'Build');
-            sc.someInt;
             $t.dynamicaccess($g.memberaccess.SomeClass, 'Build');
-            scn.someInt;
             $t.dynamicaccess(maimport, 'AnotherFunction');
             $g.maimport.AnotherFunction;
             $g.maimport.AnotherFunction;
@@ -89,7 +88,6 @@ $module('memberaccess', function () {
             return;
 
           case 1:
-            $result;
             $t.dynamicaccess(sc, 'InstanceFunc');
             sc.SomeProp().then(function ($result0) {
               $result = $result0;
@@ -103,7 +101,6 @@ $module('memberaccess', function () {
             return;
 
           case 2:
-            $result;
             sc.SomeProp().then(function ($result0) {
               $result = $result0;
               $current = 3;
@@ -116,7 +113,6 @@ $module('memberaccess', function () {
             return;
 
           case 3:
-            $result;
             scn.SomeProp().then(function ($result0) {
               $result = $result0;
               $current = 4;
@@ -128,11 +124,6 @@ $module('memberaccess', function () {
             });
             return;
 
-          case 4:
-            $result;
-            $resolve();
-            return;
-
           default:
             $resolve();
             return;
@@ -142,6 +133,7 @@ $module('memberaccess', function () {
     return $promise.new($continue);
   };
   $static.TEST = function () {
+    var $result;
     var sc;
     var $current = 0;
     var $continue = function ($resolve, $reject) {

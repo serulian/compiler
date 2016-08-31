@@ -24,6 +24,7 @@ $module('simple', function () {
     return $generator.new($continue);
   };
   $static.TEST = function () {
+    var $result;
     var $temp0;
     var $temp1;
     var v;
@@ -68,7 +69,6 @@ $module('simple', function () {
             return;
 
           case 4:
-            $result;
             value = $temp0.First;
             if ($t.unbox($temp0.Second)) {
               $current = 5;

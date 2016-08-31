@@ -41,6 +41,7 @@ func GenerateExpression(expression codedom.Expression, asyncOption AsyncOption, 
 		positionmapper: positionMapper,
 		pather:         shared.NewPather(scopegraph.SourceGraph().Graph),
 		wrappers:       make([]*expressionWrapper, 0),
+		variables:      make([]string, 0),
 	}
 
 	// Determine whether the expression is a promise.
@@ -58,7 +59,7 @@ func GenerateExpression(expression codedom.Expression, asyncOption AsyncOption, 
 		generated = generator.wrapSynchronousExpression(generated)
 	}
 
-	return ExpressionResult{generated, generator.wrappers, isPromise}
+	return ExpressionResult{generated, generator.wrappers, generator.variables, isPromise}
 }
 
 // expressionGenerator defines a type that converts CodeDOM expressions into ES5 source code.
@@ -68,6 +69,7 @@ type expressionGenerator struct {
 	positionmapper *compilercommon.PositionMapper // Mapper for fast position mapping.
 	pather         shared.Pather                  // The pather to use for generating references.
 	wrappers       []*expressionWrapper           // The async wrappers over the generated expression.
+	variables      []string                       // The variables that were generated.
 	counter        int                            // Counter for unique names.
 }
 
@@ -106,7 +108,7 @@ func (eg *expressionGenerator) addAsyncWrapper(promisingExpr esbuilder.Expressio
 	eg.wrappers = append(eg.wrappers, wrapper)
 }
 
-// generateUniqueName generates a unique name.
+// generateUniqueName generates a unique name for a variable.
 func (eg *expressionGenerator) generateUniqueName(prefix string) string {
 	name := prefix + strconv.Itoa(eg.counter)
 	eg.counter = eg.counter + 1

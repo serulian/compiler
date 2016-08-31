@@ -26,6 +26,7 @@ $module('withexit', function () {
   });
 
   $static.TEST = function () {
+    var $result;
     var $temp0;
     var $current = 0;
     var $resources = $t.resourcehandler();
@@ -89,7 +90,6 @@ $module('withexit', function () {
             return;
 
           case 6:
-            $result;
             $resolve($g.withexit.someBool);
             return;
 

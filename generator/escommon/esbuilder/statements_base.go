@@ -16,6 +16,15 @@ type returnNode struct {
 	value ExpressionBuilder
 }
 
+// varNode defines a variable statement in the AST.
+type varNode struct {
+	// name is the name of the variable being declared.
+	name string
+
+	// value is the optional value for the variable.
+	value ExpressionBuilder
+}
+
 // conditionalNode defines a conditional statement in the AST.
 type conditionalNode struct {
 	// condition is the expression over which the conditional operates.
@@ -46,6 +55,18 @@ func (node blockNode) emit(sb *sourceBuilder) {
 
 	sb.dedent()
 	sb.append("}")
+}
+
+func (node varNode) emit(sb *sourceBuilder) {
+	sb.append("var ")
+	sb.append(node.name)
+
+	if node.value != nil {
+		sb.append(" = ")
+		sb.emitWrapped(node.value)
+	}
+
+	sb.append(";")
 }
 
 func (node returnNode) emit(sb *sourceBuilder) {
@@ -104,4 +125,14 @@ func Statements(statements ...StatementBuilder) StatementBuilder {
 // ExprStatement returns an expression as a statement.
 func ExprStatement(expr ExpressionBuilder) StatementBuilder {
 	return statementBuilder{exprStatementNode{expr}, nil}
+}
+
+// Variable returns a variable declaration statement.
+func Variable(name string) StatementBuilder {
+	return statementBuilder{varNode{name, nil}, nil}
+}
+
+// VariableWithInit returns a variable declaration statement.
+func VariableWithInit(name string, value ExpressionBuilder) StatementBuilder {
+	return statementBuilder{varNode{name, value}, nil}
 }

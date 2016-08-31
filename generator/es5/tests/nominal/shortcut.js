@@ -41,6 +41,7 @@ $module('shortcut', function () {
   });
 
   $static.DoSomething = function (sc) {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
@@ -70,6 +71,7 @@ $module('shortcut', function () {
     return $promise.new($continue);
   };
   $static.TEST = function () {
+    var $result;
     var st;
     var $current = 0;
     var $continue = function ($resolve, $reject) {

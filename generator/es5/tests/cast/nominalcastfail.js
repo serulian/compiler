@@ -47,6 +47,7 @@ $module('nominalcastfail', function () {
   });
 
   $static.TEST = function () {
+    var $result;
     var ac;
     var sc;
     var $current = 0;

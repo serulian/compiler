@@ -29,6 +29,7 @@ $module('asyncstruct', function () {
   });
 
   $static.DoSomethingAsync = $t.workerwrap('dd7aa26ec2db6858f13a458fe077b54060448d2e8a2998b7445a87f974ab256b', function (s) {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
@@ -62,6 +63,7 @@ $module('asyncstruct', function () {
     return $promise.new($continue);
   });
   $static.TEST = function () {
+    var $result;
     var vle;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
@@ -69,8 +71,7 @@ $module('asyncstruct', function () {
         switch ($current) {
           case 0:
             $g.asyncstruct.SomeStruct.new($t.box(1, $g.____testlib.basictypes.Integer), $t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result1) {
-              $temp0 = $result1;
-              return $promise.translate($g.asyncstruct.DoSomethingAsync(($temp0, $temp0))).then(function ($result0) {
+              return $promise.translate($g.asyncstruct.DoSomethingAsync($result1)).then(function ($result0) {
                 $result = $result0;
                 $current = 1;
                 $continue($resolve, $reject);

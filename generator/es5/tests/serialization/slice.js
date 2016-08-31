@@ -45,6 +45,7 @@ $module('slice', function () {
   });
 
   $static.TEST = function () {
+    var $result;
     var correct;
     var jsonString;
     var parsed;
@@ -56,12 +57,9 @@ $module('slice', function () {
         switch ($current) {
           case 0:
             $g.slice.AnotherStruct.new($t.box(1, $g.____testlib.basictypes.Integer)).then(function ($result1) {
-              $temp0 = $result1;
               return $g.slice.AnotherStruct.new($t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result2) {
-                $temp1 = $result2;
                 return $g.slice.AnotherStruct.new($t.box(3, $g.____testlib.basictypes.Integer)).then(function ($result3) {
-                  $temp2 = $result3;
-                  return $g.____testlib.basictypes.List($g.slice.AnotherStruct).forArray([($temp0, $temp0), ($temp1, $temp1), ($temp2, $temp2)]).then(function ($result0) {
+                  return $g.____testlib.basictypes.List($g.slice.AnotherStruct).forArray([$result1, $result2, $result3]).then(function ($result0) {
                     $result = $result0;
                     $current = 1;
                     $continue($resolve, $reject);
@@ -79,8 +77,7 @@ $module('slice', function () {
             values = $result;
             values.$slice($t.box(0, $g.____testlib.basictypes.Integer), null).then(function ($result1) {
               return $g.slice.SomeStruct.new($result1).then(function ($result0) {
-                $temp3 = $result0;
-                $result = ($temp3, $temp3);
+                $result = $result0;
                 $current = 2;
                 $continue($resolve, $reject);
                 return;

@@ -19,6 +19,12 @@ func (sg *stateGenerator) generateExpressionStatement(exprst *codedom.Expression
 	topLevel := sg.addTopLevelExpression(exprst.Expression)
 
 	if exprBuilder, ok := topLevel.(esbuilder.ExpressionBuilder); ok {
+		// If the expression for the statement is stateless, then it isn't needed and we can
+		// safely skip this whole expression statement.
+		if exprBuilder.IsStateless() {
+			return
+		}
+
 		sg.currentState.pushBuilt(esbuilder.ExprStatement(exprBuilder))
 	} else {
 		sg.currentState.pushBuilt(topLevel)
@@ -229,8 +235,8 @@ func (sg *stateGenerator) generateArrowPromise(arrowPromise *codedom.ArrowPromis
 
 // generateResolveExpression generates the code for an expression resolution.
 func (sg *stateGenerator) generateResolveExpression(resolveExpression *codedom.ResolveExpressionNode) {
-	// Generate the resolved expression, ensuring that it is asynchronous to ensure it becomes
-	// a Prommise.
+	// Generate the resolved expression, requiring that it is asynchronous to ensure it becomes
+	// a Promise.
 	result := expressiongenerator.GenerateExpression(resolveExpression.ChildExpression,
 		expressiongenerator.EnsureAsync,
 		sg.scopegraph, sg.positionMapper,

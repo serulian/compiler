@@ -25,6 +25,7 @@ $module('nullcomparecall', function () {
   });
 
   $static.RejectNow = function () {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
@@ -54,6 +55,7 @@ $module('nullcomparecall', function () {
     return $promise.new($continue);
   };
   $static.TEST = function () {
+    var $result;
     var thing;
     var $current = 0;
     var $continue = function ($resolve, $reject) {

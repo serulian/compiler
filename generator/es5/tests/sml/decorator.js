@@ -9,6 +9,7 @@ $module('decorator', function () {
     return $promise.new($continue);
   };
   $static.First = function (decorated, value) {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
@@ -38,6 +39,7 @@ $module('decorator', function () {
     return $promise.new($continue);
   };
   $static.Second = function (decorated, value) {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
@@ -67,6 +69,7 @@ $module('decorator', function () {
     return $promise.new($continue);
   };
   $static.Check = function (decorated, value) {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
@@ -98,6 +101,7 @@ $module('decorator', function () {
     return $promise.new($continue);
   };
   $static.TEST = function () {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {

@@ -25,8 +25,6 @@ $module('identifier', function () {
       someVar = $t.box(2, $g.____testlib.basictypes.Integer);
       $g.identifier.SomeClass;
       $g.identifier.AnotherFunction;
-      someParam;
-      someVar;
       $resolve();
       return;
     };

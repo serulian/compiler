@@ -24,6 +24,7 @@ $module('multiawait', function () {
   });
 
   $static.DoSomething = function (p, q) {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
@@ -42,11 +43,6 @@ $module('multiawait', function () {
               $reject(err);
               return;
             });
-            return;
-
-          case 1:
-            $result;
-            $resolve();
             return;
 
           default:

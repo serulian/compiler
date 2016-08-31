@@ -1,6 +1,7 @@
 $module('functioncall', function () {
   var $static = this;
   $static.TEST = function () {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
