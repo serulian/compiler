@@ -29,6 +29,7 @@ $module('resource', function () {
   });
 
   $static.SomeGenerator = function (sr) {
+    var $result;
     var $temp0;
     var $current = 0;
     var $resources = $t.resourcehandler();
@@ -71,6 +72,7 @@ $module('resource', function () {
     return $generator.new($continue);
   };
   $static.TEST = function () {
+    var $result;
     var $temp0;
     var $temp1;
     var counter;

@@ -25,6 +25,7 @@ $module('slice', function () {
   });
 
   $static.TEST = function () {
+    var $result;
     var c;
     var $current = 0;
     var $continue = function ($resolve, $reject) {

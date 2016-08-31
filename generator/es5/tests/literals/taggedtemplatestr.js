@@ -1,6 +1,7 @@
 $module('taggedtemplatestr', function () {
   var $static = this;
   $static.myFunction = function (pieces, values) {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
@@ -34,6 +35,7 @@ $module('taggedtemplatestr', function () {
     return $promise.new($continue);
   };
   $static.TEST = function () {
+    var $result;
     var a;
     var b;
     var result;

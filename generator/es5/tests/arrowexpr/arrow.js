@@ -12,6 +12,7 @@ $module('arrow', function () {
     };
     $instance.Then = function (resolve) {
       var $this = this;
+      var $result;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
         while (true) {
@@ -62,6 +63,7 @@ $module('arrow', function () {
       while (true) {
         switch ($current) {
           case 0:
+            somebool = null;
             $promise.translate(p).then(function (resolved) {
               somebool = resolved;
               $current = 1;
@@ -86,6 +88,7 @@ $module('arrow', function () {
     return $promise.new($continue);
   };
   $static.TEST = function () {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {

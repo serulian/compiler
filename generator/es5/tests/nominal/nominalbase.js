@@ -56,6 +56,7 @@ $module('nominalbase', function () {
     };
     $instance.GetValue = function () {
       var $this = this;
+      var $result;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
         while (true) {
@@ -90,6 +91,7 @@ $module('nominalbase', function () {
   });
 
   $static.TEST = function () {
+    var $result;
     var sc;
     var sn;
     var $current = 0;

@@ -32,6 +32,7 @@ $module('compare', function () {
   });
 
   $static.TEST = function () {
+    var $result;
     var first;
     var second;
     var $current = 0;

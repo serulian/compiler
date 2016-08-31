@@ -1,6 +1,7 @@
 $module('isnull', function () {
   var $static = this;
   $static.TEST = function (a) {
+    var $result;
     var b;
     var $current = 0;
     var $continue = function ($resolve, $reject) {

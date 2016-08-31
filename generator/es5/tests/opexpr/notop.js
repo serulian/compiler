@@ -28,6 +28,7 @@ $module('notop', function () {
   });
 
   $static.TEST = function () {
+    var $result;
     var sc;
     var $current = 0;
     var $continue = function ($resolve, $reject) {

@@ -96,6 +96,7 @@ $module('binary', function () {
   });
 
   $static.DoSomething = function (first, second) {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
@@ -139,6 +140,7 @@ $module('binary', function () {
     return $promise.new($continue);
   };
   $static.TEST = function () {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {

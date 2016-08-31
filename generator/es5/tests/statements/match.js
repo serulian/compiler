@@ -25,6 +25,7 @@ $module('match', function () {
   });
 
   $static.TEST = function () {
+    var $result;
     var firstBool;
     var firstThing;
     var firstValue;

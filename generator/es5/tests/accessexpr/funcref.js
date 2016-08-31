@@ -29,6 +29,7 @@ $module('funcref', function () {
   });
 
   $static.AnotherFunction = function (toCall) {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
@@ -58,6 +59,7 @@ $module('funcref', function () {
     return $promise.new($continue);
   };
   $static.TEST = function () {
+    var $result;
     var sc;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
@@ -65,8 +67,7 @@ $module('funcref', function () {
         switch ($current) {
           case 0:
             $g.funcref.SomeClass.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
-              $temp0 = $result0;
-              $result = ($temp0, $temp0);
+              $result = $result0;
               $current = 1;
               $continue($resolve, $reject);
               return;

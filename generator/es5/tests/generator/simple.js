@@ -24,6 +24,7 @@ $module('simple', function () {
     return $generator.new($continue);
   };
   $static.TEST = function () {
+    var $result;
     var $temp0;
     var $temp1;
     var v;

@@ -25,6 +25,7 @@ $module('expectrejection', function () {
   });
 
   $static.DoSomething = function () {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
@@ -54,6 +55,7 @@ $module('expectrejection', function () {
     return $promise.new($continue);
   };
   $static.TEST = function () {
+    var $result;
     var a;
     var b;
     var $current = 0;

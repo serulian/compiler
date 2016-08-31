@@ -26,18 +26,22 @@ func AreEqual(leftExpr Expression, rightExpr Expression, comparisonType typegrap
 }
 
 // CompoundExpressionNode represents an expression that executes multiple sub-expressions
-// with the value expression being returned as the value.
+// with an input and output value expression.
 type CompoundExpressionNode struct {
 	expressionBase
-	Expressions     []Expression
-	ValueExpression Expression
+	InputVarName string
+	InputValue   Expression
+	Expressions  []Expression
+	OutputValue  Expression
 }
 
-func CompoundExpression(expressions []Expression, value Expression, basis compilergraph.GraphNode) Expression {
+func CompoundExpression(inputVarName string, inputValue Expression, expressions []Expression, outputValue Expression, basis compilergraph.GraphNode) Expression {
 	return &CompoundExpressionNode{
 		expressionBase{domBase{basis}},
+		inputVarName,
+		inputValue,
 		expressions,
-		value,
+		outputValue,
 	}
 }
 

@@ -15,6 +15,7 @@ $module('indexer', function () {
     };
     $instance.$index = function (someParam) {
       var $this = this;
+      var $result;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
         while (true) {
@@ -59,6 +60,7 @@ $module('indexer', function () {
   });
 
   $static.TEST = function () {
+    var $result;
     var sc;
     var $current = 0;
     var $continue = function ($resolve, $reject) {

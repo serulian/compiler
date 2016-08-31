@@ -44,6 +44,7 @@ $module('interface', function () {
     };
     $instance.GetValue = function () {
       var $this = this;
+      var $result;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
         while (true) {
@@ -78,6 +79,7 @@ $module('interface', function () {
   });
 
   $static.TEST = function () {
+    var $result;
     var sc;
     var v;
     var $current = 0;

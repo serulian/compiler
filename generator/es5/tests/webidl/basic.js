@@ -4,6 +4,7 @@ $module('basic', function () {
     return $promise.empty();
   };
   $static.DoSomething = function () {
+    var $result;
     var first;
     var second;
     var $current = 0;

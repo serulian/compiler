@@ -1,6 +1,7 @@
 $module('switchexpr', function () {
   var $static = this;
   $static.DoSomething = function (someVar) {
+    var $result;
     var $temp0;
     var $current = 0;
     var $continue = function ($resolve, $reject) {

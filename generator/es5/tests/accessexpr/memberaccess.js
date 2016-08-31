@@ -17,6 +17,7 @@ $module('memberaccess', function () {
       });
     };
     $static.Build = function () {
+      var $result;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
         while (true) {
@@ -64,6 +65,7 @@ $module('memberaccess', function () {
   });
 
   $static.DoSomething = function (sc, scn) {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
@@ -142,6 +144,7 @@ $module('memberaccess', function () {
     return $promise.new($continue);
   };
   $static.TEST = function () {
+    var $result;
     var sc;
     var $current = 0;
     var $continue = function ($resolve, $reject) {

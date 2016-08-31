@@ -61,6 +61,7 @@ $module('structuralcast', function () {
     return $promise.new($continue);
   };
   $static.TEST = function () {
+    var $result;
     var sc;
     var $current = 0;
     var $continue = function ($resolve, $reject) {

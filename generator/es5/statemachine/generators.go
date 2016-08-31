@@ -229,8 +229,8 @@ func (sg *stateGenerator) generateArrowPromise(arrowPromise *codedom.ArrowPromis
 
 // generateResolveExpression generates the code for an expression resolution.
 func (sg *stateGenerator) generateResolveExpression(resolveExpression *codedom.ResolveExpressionNode) {
-	// Generate the resolved expression, ensuring that it is asynchronous to ensure it becomes
-	// a Prommise.
+	// Generate the resolved expression, requiring that it is asynchronous to ensure it becomes
+	// a Promise.
 	result := expressiongenerator.GenerateExpression(resolveExpression.ChildExpression,
 		expressiongenerator.EnsureAsync,
 		sg.scopegraph, sg.positionMapper,

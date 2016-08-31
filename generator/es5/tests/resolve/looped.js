@@ -1,10 +1,12 @@
 $module('looped', function () {
   var $static = this;
   $static.TEST = function () {
+    var $result;
     var $temp0;
     var $temp1;
     var casted;
     var index;
+    var value;
     var values;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
@@ -71,8 +73,7 @@ $module('looped', function () {
 
           case 6:
             values.$index(index).then(function ($result0) {
-              value = $result0;
-              $result = value;
+              $result = $result0;
               $current = 7;
               $continue($resolve, $reject);
               return;
@@ -83,7 +84,7 @@ $module('looped', function () {
             return;
 
           case 7:
-            $result;
+            value = $result;
             $promise.new(function ($resolve) {
               $resolve($t.cast(value, $g.____testlib.basictypes.Boolean, false));
             }).then(function ($result0) {

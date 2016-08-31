@@ -52,7 +52,9 @@ func BuildExpression(scopegraph *scopegraph.ScopeGraph, rootNode compilergraph.G
 	return builder.buildExpression(rootNode)
 }
 
-func (db *domBuilder) buildScopeVarName(basisNode compilergraph.GraphNode) string {
+// generateScopeVarName generates a new, unique name for a variable in the scope. The caller *must*
+// declare a variable with this name if assigned any value.
+func (db *domBuilder) generateScopeVarName(basisNode compilergraph.GraphNode) string {
 	name := fmt.Sprintf("$temp%d", db.counter)
 	db.counter = db.counter + 1
 	return name

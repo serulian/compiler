@@ -66,34 +66,43 @@ func (db *domBuilder) buildStructCloneExpression(structType typegraph.TypeRefere
 		[]codedom.Expression{},
 		node)
 
-	// Create a variable to hold the new instance.
-	clonedInstanceVarName := db.buildScopeVarName(node)
-
-	// Build the expressions. The first will be creation of the instance, followed by each of the
-	// assignments (field or property).
-	var expressions = []codedom.Expression{
-		codedom.LocalAssignment(clonedInstanceVarName, cloneCall, node),
+	// If there are no initializers, then just return the cloned value directly.
+	if len(initializers) == 0 {
+		return cloneCall
 	}
 
+	return db.buildInitializationCompoundExpression(structType, initializers, cloneCall, node)
+}
+
+// buildInitializationCompoundExpression builds the compound expression for calling the specified initializers on a struct.
+func (db *domBuilder) buildInitializationCompoundExpression(structType typegraph.TypeReference, initializers map[string]codedom.Expression, structValue codedom.Expression, node compilergraph.GraphNode) codedom.Expression {
+	// Create a variable to hold the struct instance.
+	structInstanceVarName := db.generateScopeVarName(node)
+
+	// Build the assignment expressions.
+	assignmentExpressions := make([]codedom.Expression, len(initializers))
+	var index = 0
 	for fieldName, initializer := range initializers {
 		member, found := structType.ResolveMember(fieldName, typegraph.MemberResolutionInstance)
 		if !found {
 			panic("Member not found in struct initializer construction")
 		}
 
-		assignExpr :=
+		assignmentExpressions[index] =
 			codedom.MemberAssignment(member,
 				codedom.MemberReference(
-					codedom.LocalReference(clonedInstanceVarName, node),
+					codedom.LocalReference(structInstanceVarName, node),
 					member,
 					node),
 				initializer,
 				node)
 
-		expressions = append(expressions, assignExpr)
+		index = index + 1
 	}
 
-	return codedom.CompoundExpression(expressions, codedom.LocalReference(clonedInstanceVarName, node), node)
+	// Return a compound expression that takes in the struct value and the assignment expressions,
+	// executes them, and returns the struct value.
+	return codedom.CompoundExpression(structInstanceVarName, structValue, assignmentExpressions, codedom.LocalReference(structInstanceVarName, node), node)
 }
 
 // buildStructInitializerExpression builds an initializer expression for a struct type.
@@ -120,34 +129,12 @@ func (db *domBuilder) buildStructInitializerExpression(structType typegraph.Type
 		arguments,
 		node)
 
-	// Create a variable to hold the new instance
-	newInstanceVarName := db.buildScopeVarName(node)
-
-	// Build the expressions. The first will be creation of the instance, followed by each of the
-	// assignments (field or property).
-	var expressions = []codedom.Expression{
-		codedom.LocalAssignment(newInstanceVarName, newCall, node),
+	// If there are no initializers, then just return the new value directly.
+	if len(initializers) == 0 {
+		return newCall
 	}
 
-	for fieldName, initializer := range initializers {
-		member, found := structType.ResolveMember(fieldName, typegraph.MemberResolutionInstance)
-		if !found {
-			panic("Member not found in struct initializer construction")
-		}
-
-		assignExpr :=
-			codedom.MemberAssignment(member,
-				codedom.MemberReference(
-					codedom.LocalReference(newInstanceVarName, node),
-					member,
-					node),
-				initializer,
-				node)
-
-		expressions = append(expressions, assignExpr)
-	}
-
-	return codedom.CompoundExpression(expressions, codedom.LocalReference(newInstanceVarName, node), node)
+	return db.buildInitializationCompoundExpression(structType, initializers, newCall, node)
 }
 
 // buildNullLiteral builds the CodeDOM for a null literal.

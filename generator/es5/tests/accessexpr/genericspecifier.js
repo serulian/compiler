@@ -12,6 +12,7 @@ $module('genericspecifier', function () {
     return $f;
   };
   $static.TEST = function () {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {

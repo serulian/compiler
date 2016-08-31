@@ -24,6 +24,7 @@ $module('unary', function () {
   });
 
   $static.DoSomething = function (first) {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {

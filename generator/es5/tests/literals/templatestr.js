@@ -1,6 +1,7 @@
 $module('templatestr', function () {
   var $static = this;
   $static.TEST = function () {
+    var $result;
     var a;
     var b;
     var result;

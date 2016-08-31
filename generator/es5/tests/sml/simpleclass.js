@@ -11,6 +11,7 @@ $module('simpleclass', function () {
       });
     };
     $static.Declare = function () {
+      var $result;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
         while (true) {
@@ -54,6 +55,7 @@ $module('simpleclass', function () {
   });
 
   $static.TEST = function () {
+    var $result;
     var s;
     var $current = 0;
     var $continue = function ($resolve, $reject) {

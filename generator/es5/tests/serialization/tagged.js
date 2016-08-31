@@ -23,6 +23,7 @@ $module('tagged', function () {
   });
 
   $static.TEST = function () {
+    var $result;
     var jsonString;
     var s;
     var $current = 0;
@@ -31,8 +32,7 @@ $module('tagged', function () {
         switch ($current) {
           case 0:
             $g.tagged.SomeStruct.new($t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-              $temp0 = $result0;
-              $result = ($temp0, $temp0);
+              $result = $result0;
               $current = 1;
               $continue($resolve, $reject);
               return;

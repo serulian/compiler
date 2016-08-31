@@ -12,6 +12,7 @@ $module('await', function () {
     };
     $instance.Then = function (resolve) {
       var $this = this;
+      var $result;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
         while (true) {
@@ -56,6 +57,7 @@ $module('await', function () {
   });
 
   $static.DoSomething = function (p) {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
@@ -85,6 +87,7 @@ $module('await', function () {
     return $promise.new($continue);
   };
   $static.TEST = function () {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {

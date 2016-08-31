@@ -11,6 +11,7 @@ $module('custom', function () {
       });
     };
     $static.Get = function () {
+      var $result;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
         while (true) {
@@ -41,6 +42,7 @@ $module('custom', function () {
     };
     $instance.Stringify = function (value) {
       var $this = this;
+      var $result;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
         while (true) {
@@ -73,6 +75,7 @@ $module('custom', function () {
     };
     $instance.Parse = function (value) {
       var $this = this;
+      var $result;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
         while (true) {
@@ -165,6 +168,7 @@ $module('custom', function () {
   });
 
   $static.TEST = function () {
+    var $result;
     var jsonString;
     var parsed;
     var s;
@@ -174,10 +178,8 @@ $module('custom', function () {
         switch ($current) {
           case 0:
             $g.custom.AnotherStruct.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
-              $temp0 = $result1;
-              return $g.custom.SomeStruct.new($t.box(2, $g.____testlib.basictypes.Integer), $t.box(false, $g.____testlib.basictypes.Boolean), ($temp0, $temp0)).then(function ($result0) {
-                $temp1 = $result0;
-                $result = ($temp1, $temp1);
+              return $g.custom.SomeStruct.new($t.box(2, $g.____testlib.basictypes.Integer), $t.box(false, $g.____testlib.basictypes.Boolean), $result1).then(function ($result0) {
+                $result = $result0;
                 $current = 1;
                 $continue($resolve, $reject);
                 return;

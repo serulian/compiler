@@ -1,3 +1,4 @@
+"use strict";
 this.Serulian = function ($global) {
   var BOXED_DATA_PROPERTY = '$wrapped';
   var $__currentScriptSrc = null;
@@ -641,13 +642,13 @@ this.Serulian = function ($global) {
           return tpe;
         };
         if (hasGenerics) {
-          module[name] = function (__genericargs) {
+          module[name] = function genericType (__genericargs) {
             var fullName = name;
             for (var i = 0; i < arguments.length; ++i) {
               fullName = (fullName + '_') + arguments[i].name;
             }
             var tpe = buildType(name, arguments);
-            tpe.$generic = arguments.callee;
+            tpe.$generic = genericType;
             return tpe;
           };
         } else {
@@ -686,6 +687,7 @@ this.Serulian = function ($global) {
         });
       };
       $static.Build = function (first, second) {
+        var $result;
         var tuple;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
@@ -758,6 +760,7 @@ this.Serulian = function ($global) {
         });
       };
       $static.OverRange = function (start, end) {
+        var $result;
         var s;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
@@ -793,6 +796,7 @@ this.Serulian = function ($global) {
       };
       $instance.Next = function () {
         var $this = this;
+        var $result;
         var t;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
@@ -908,6 +912,7 @@ this.Serulian = function ($global) {
         });
       };
       $static.forArray = function (arr) {
+        var $result;
         var l;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
@@ -959,6 +964,7 @@ this.Serulian = function ($global) {
       };
       $instance.$slice = function (startindex, endindex) {
         var $this = this;
+        var $result;
         var end;
         var start;
         var $current = 0;
@@ -1158,6 +1164,7 @@ this.Serulian = function ($global) {
         });
       };
       $static.forArrays = function (keys, values) {
+        var $result;
         var $temp0;
         var $temp1;
         var i;
@@ -1262,6 +1269,7 @@ this.Serulian = function ($global) {
       };
       $instance.$index = function (key) {
         var $this = this;
+        var $result;
         var keyString;
         var value;
         var $current = 0;
@@ -1312,6 +1320,7 @@ this.Serulian = function ($global) {
       };
       $instance.$setindex = function (key, value) {
         var $this = this;
+        var $result;
         var keyString;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
@@ -1361,6 +1370,7 @@ this.Serulian = function ($global) {
         });
       };
       $static.Get = function () {
+        var $result;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
           while (true) {
@@ -1464,6 +1474,7 @@ this.Serulian = function ($global) {
     this.$interface('Stringifier', false, '$stringifier', function () {
       var $static = this;
       $static.Get = function () {
+        var $result;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
           while (true) {
@@ -1500,6 +1511,7 @@ this.Serulian = function ($global) {
     this.$interface('Parser', false, '$parser', function () {
       var $static = this;
       $static.Get = function () {
+        var $result;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
           while (true) {
@@ -1562,6 +1574,7 @@ this.Serulian = function ($global) {
       };
       $instance.Keys = $t.property(function () {
         var $this = this;
+        var $result;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
           while (true) {
@@ -1691,6 +1704,7 @@ this.Serulian = function ($global) {
         return $global.Number;
       };
       $static.$range = function (start, end) {
+        var $result;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
           while (true) {
@@ -1790,6 +1804,7 @@ this.Serulian = function ($global) {
         return $global.Boolean;
       };
       $static.$compare = function (left, right) {
+        var $result;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
           while (true) {
@@ -1923,6 +1938,7 @@ this.Serulian = function ($global) {
     });
 
     $static.formatTemplateString = function (pieces, values) {
+      var $result;
       var $temp0;
       var $temp1;
       var i;
@@ -2062,6 +2078,7 @@ this.Serulian = function ($global) {
     };
     $static.MapStream = function (T, Q) {
       var $f = function (stream, mapper) {
+        var $result;
         var $temp0;
         var $temp1;
         var item;
@@ -2138,6 +2155,7 @@ this.Serulian = function ($global) {
   $module('basic', function () {
     var $static = this;
     $static.DoSomething = function () {
+      var $result;
       var bar;
       var foo;
       var $current = 0;
@@ -2200,7 +2218,7 @@ this.Serulian = function ($global) {
         case 'invoke':
           var methodId = data['method'];
           var method = $w[methodId];
-          var arguments = data['arguments'].map($t.buildValueFromData);
+          var args = data['arguments'].map($t.buildValueFromData);
           var send = function (kind) {
             return function (value) {
               var message = {
@@ -2220,7 +2238,7 @@ this.Serulian = function ($global) {
               $global.close();
             };
           };
-          method.apply(null, arguments).then(send('resolve')).catch(send('reject'));
+          method.apply(null, args).then(send('resolve')).catch(send('reject'));
           break;
       }
     };

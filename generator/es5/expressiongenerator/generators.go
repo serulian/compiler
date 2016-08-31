@@ -93,9 +93,20 @@ func (eg *expressionGenerator) generateAwaitPromise(awaitPromise *codedom.AwaitP
 
 // generateCompoundExpression generates the expression source for a compound expression.
 func (eg *expressionGenerator) generateCompoundExpression(compound *codedom.CompoundExpressionNode, context generationContext) esbuilder.ExpressionBuilder {
-	expressions := eg.generateExpressions(compound.Expressions, context)
-	valueExpression := eg.generateExpression(compound.ValueExpression, context)
-	return esbuilder.ExpressionList(valueExpression, expressions...)
+	// Create a slice of expressions that includes an assignment to the value var
+	// of the input value. This ensures that the input var has its value before the rest of
+	// expressions are executed.
+	inputAssignment := codedom.LocalAssignment(compound.InputVarName, compound.InputValue, compound.InputValue.BasisNode())
+	fullExpressions := append([]codedom.Expression{inputAssignment}, compound.Expressions...)
+
+	allExpressions := eg.generateExpressions(fullExpressions, context)
+	outputValueExpression := eg.generateExpression(compound.OutputValue, context)
+
+	// Add the variable to the generator's result.
+	eg.variables = append(eg.variables, compound.InputVarName)
+
+	// Return an expression list for the expression.
+	return esbuilder.ExpressionList(outputValueExpression, allExpressions...)
 }
 
 // generateUnaryOperation generates the expression source for a unary operator.

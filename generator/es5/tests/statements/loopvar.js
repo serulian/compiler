@@ -15,6 +15,7 @@ $module('loopvar', function () {
     };
     $instance.Next = function () {
       var $this = this;
+      var $result;
       var r;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
@@ -52,6 +53,7 @@ $module('loopvar', function () {
   });
 
   $static.DoSomething = function (somethingElse) {
+    var $result;
     var $temp0;
     var $temp1;
     var something;
@@ -113,6 +115,7 @@ $module('loopvar', function () {
     return $promise.new($continue);
   };
   $static.TEST = function () {
+    var $result;
     var $temp0;
     var $temp1;
     var i;

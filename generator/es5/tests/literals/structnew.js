@@ -41,6 +41,8 @@ $module('structnew', function () {
   });
 
   $static.TEST = function () {
+    var $result;
+    var $temp0;
     var sc;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
