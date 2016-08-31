@@ -101,6 +101,40 @@ func (node wrappedTemplateNode) emit(sb *sourceBuilder) {
 	sb.emit(node.template)
 }
 
+func (node snippetNode) isStateless() bool {
+	return false
+}
+
+func (node identifierNode) isStateless() bool {
+	return true
+}
+
+func (node memberNode) isStateless() bool {
+	return node.expression.IsStateless()
+}
+
+func (node exprMemberNode) isStateless() bool {
+	return node.expression.IsStateless()
+}
+
+func (node callNode) isStateless() bool {
+	return false
+}
+
+func (node exprListNode) isStateless() bool {
+	for _, expr := range node.exprs {
+		if !expr.IsStateless() {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (node wrappedTemplateNode) isStateless() bool {
+	return false
+}
+
 // Snippet returns a new snippet.
 func Snippet(code string) ExpressionBuilder {
 	return expressionBuilder{snippetNode{code}, nil}

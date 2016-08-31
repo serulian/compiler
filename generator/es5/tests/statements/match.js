@@ -87,7 +87,6 @@ $module('match', function () {
             return;
 
           case 3:
-            $result;
             $current = 4;
             continue;
 
@@ -116,7 +115,6 @@ $module('match', function () {
             return;
 
           case 6:
-            $result;
             $current = 7;
             continue;
 
@@ -145,7 +143,6 @@ $module('match', function () {
             return;
 
           case 9:
-            $result;
             $current = 10;
             continue;
 
@@ -174,7 +171,6 @@ $module('match', function () {
             return;
 
           case 12:
-            $result;
             $current = 13;
             continue;
 
@@ -222,7 +218,6 @@ $module('match', function () {
             return;
 
           case 17:
-            $result;
             $current = 13;
             continue;
 
@@ -265,7 +260,6 @@ $module('match', function () {
             return;
 
           case 22:
-            $result;
             $current = 10;
             continue;
 
@@ -308,7 +302,6 @@ $module('match', function () {
             return;
 
           case 27:
-            $result;
             $current = 7;
             continue;
 
@@ -351,7 +344,6 @@ $module('match', function () {
             return;
 
           case 32:
-            $result;
             $current = 4;
             continue;
 

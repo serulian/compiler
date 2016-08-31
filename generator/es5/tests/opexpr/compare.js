@@ -78,7 +78,6 @@ $module('compare', function () {
             return;
 
           case 3:
-            $result;
             $g.compare.SomeClass.$equals(first, second).then(function ($result0) {
               $result = $t.box(!$t.unbox($result0), $g.____testlib.basictypes.Boolean);
               $current = 4;
@@ -91,7 +90,6 @@ $module('compare', function () {
             return;
 
           case 4:
-            $result;
             $g.compare.SomeClass.$compare(first, second).then(function ($result0) {
               $result = $t.box($t.unbox($result0) < 0, $g.____testlib.basictypes.Boolean);
               $current = 5;
@@ -104,7 +102,6 @@ $module('compare', function () {
             return;
 
           case 5:
-            $result;
             $g.compare.SomeClass.$compare(first, second).then(function ($result0) {
               $result = $t.box($t.unbox($result0) > 0, $g.____testlib.basictypes.Boolean);
               $current = 6;
@@ -117,7 +114,6 @@ $module('compare', function () {
             return;
 
           case 6:
-            $result;
             $g.compare.SomeClass.$compare(first, second).then(function ($result0) {
               $result = $t.box($t.unbox($result0) <= 0, $g.____testlib.basictypes.Boolean);
               $current = 7;
@@ -130,7 +126,6 @@ $module('compare', function () {
             return;
 
           case 7:
-            $result;
             $g.compare.SomeClass.$compare(first, second).then(function ($result0) {
               $result = $t.box($t.unbox($result0) >= 0, $g.____testlib.basictypes.Boolean);
               $current = 8;
@@ -143,7 +138,6 @@ $module('compare', function () {
             return;
 
           case 8:
-            $result;
             $g.compare.SomeClass.$equals(first, second).then(function ($result0) {
               $result = $result0;
               $current = 9;

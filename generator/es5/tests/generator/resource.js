@@ -58,7 +58,6 @@ $module('resource', function () {
             return;
 
           case 2:
-            $result;
             $yield($t.box(40, $g.____testlib.basictypes.Integer));
             $current = 3;
             return;
@@ -131,7 +130,6 @@ $module('resource', function () {
             return;
 
           case 5:
-            $result;
             i = $temp0.First;
             if ($t.unbox($temp0.Second)) {
               $current = 6;
@@ -156,7 +154,6 @@ $module('resource', function () {
             return;
 
           case 7:
-            $result;
             $current = 4;
             continue;
 

@@ -64,7 +64,6 @@ $module('with', function () {
             return;
 
           case 2:
-            $result;
             $t.box(789, $g.____testlib.basictypes.Integer);
             $resolve($g.with.someBool);
             return;

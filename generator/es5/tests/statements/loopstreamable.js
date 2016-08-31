@@ -143,7 +143,6 @@ $module('loopstreamable', function () {
             return;
 
           case 4:
-            $result;
             something = $temp0.First;
             if ($t.unbox($temp0.Second)) {
               $current = 5;
@@ -232,7 +231,6 @@ $module('loopstreamable', function () {
             return;
 
           case 5:
-            $result;
             i = $temp0.First;
             if ($t.unbox($temp0.Second)) {
               $current = 6;

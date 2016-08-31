@@ -60,7 +60,6 @@ $module('looped', function () {
             return;
 
           case 5:
-            $result;
             index = $temp0.First;
             if ($t.unbox($temp0.Second)) {
               $current = 6;

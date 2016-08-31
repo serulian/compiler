@@ -58,6 +58,32 @@ func (node objectNodeEntry) emit(sb *sourceBuilder) {
 	sb.emitWrapped(node.value)
 }
 
+func (node literalNode) isStateless() bool {
+	return true
+}
+
+func (node arrayNode) isStateless() bool {
+	for _, expr := range node.values {
+		if !expr.IsStateless() {
+			return false
+		}
+	}
+	return true
+}
+
+func (node objectNode) isStateless() bool {
+	for _, entry := range node.entries {
+		if !entry.IsStateless() {
+			return false
+		}
+	}
+	return true
+}
+
+func (node objectNodeEntry) isStateless() bool {
+	return node.value.IsStateless()
+}
+
 // ObjectEntry returns an object literal entry.
 func ObjectEntry(key string, value ExpressionBuilder) ExpressionBuilder {
 	return expressionBuilder{objectNodeEntry{key, value}, nil}

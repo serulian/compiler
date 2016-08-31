@@ -52,13 +52,7 @@ $module('structuralcast', function () {
   });
 
   $static.DoSomething = function (sc) {
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      sc.BaseClass$Integer;
-      $resolve();
-      return;
-    };
-    return $promise.new($continue);
+    return $promise.empty();
   };
   $static.TEST = function () {
     var $result;

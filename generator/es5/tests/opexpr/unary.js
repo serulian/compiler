@@ -41,11 +41,6 @@ $module('unary', function () {
             });
             return;
 
-          case 1:
-            $result;
-            $resolve();
-            return;
-
           default:
             $resolve();
             return;

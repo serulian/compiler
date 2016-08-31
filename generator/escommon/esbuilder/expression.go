@@ -25,6 +25,9 @@ type ExpressionBuilder interface {
 	// Call returns an expression builder of an expression calling this expression.
 	Call(arguments ...interface{}) ExpressionBuilder
 
+	// Returns true if the current expression is stateless.
+	IsStateless() bool
+
 	// mapping returns the source mapping for the expression being built.
 	mapping() (sourcemap.SourceMapping, bool)
 
@@ -35,6 +38,9 @@ type ExpressionBuilder interface {
 type expressionNode interface {
 	// emit emits the source for this node.
 	emit(sb *sourceBuilder)
+
+	// isStateless returns whether the expression is stateless.
+	isStateless() bool
 }
 
 // expressionBuilder defines a wrapper for all expressions.
@@ -44,6 +50,11 @@ type expressionBuilder struct {
 
 	// The source mapping for this expression, if any.
 	sourceMapping *sourcemap.SourceMapping
+}
+
+// IsStateless returns true if the expression being built has no affect on state.
+func (builder expressionBuilder) IsStateless() bool {
+	return builder.expression.isStateless()
 }
 
 // WithMappingAsExpr adds a source mapping to a builder.

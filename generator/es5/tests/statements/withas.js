@@ -27,7 +27,6 @@ $module('withas', function () {
             return;
 
           case 1:
-            $result;
             $t.box(789, $g.____testlib.basictypes.Integer);
             $resolve();
             return;

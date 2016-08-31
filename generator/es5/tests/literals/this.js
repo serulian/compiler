@@ -12,13 +12,7 @@ $module('this', function () {
     };
     $instance.DoSomething = function () {
       var $this = this;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        $this;
-        $resolve();
-        return;
-      };
-      return $promise.new($continue);
+      return $promise.empty();
     };
     this.$typesig = function () {
       return $t.createtypesig(['DoSomething', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.this.SomeClass).$typeref()]);

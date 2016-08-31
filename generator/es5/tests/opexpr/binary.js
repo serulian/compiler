@@ -114,7 +114,6 @@ $module('binary', function () {
             return;
 
           case 1:
-            $result;
             $g.binary.SomeClass.$minus(first, second).then(function ($result0) {
               $result = $result0;
               $current = 2;
@@ -124,11 +123,6 @@ $module('binary', function () {
               $reject(err);
               return;
             });
-            return;
-
-          case 2:
-            $result;
-            $resolve();
             return;
 
           default:

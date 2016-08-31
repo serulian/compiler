@@ -90,7 +90,6 @@ $module('withexit', function () {
             return;
 
           case 6:
-            $result;
             $resolve($g.withexit.someBool);
             return;
 

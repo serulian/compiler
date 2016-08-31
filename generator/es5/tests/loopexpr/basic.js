@@ -107,7 +107,6 @@ $module('basic', function () {
             return;
 
           case 4:
-            $result;
             entry = $temp0.First;
             if ($t.unbox($temp0.Second)) {
               $current = 5;
@@ -132,7 +131,6 @@ $module('basic', function () {
             return;
 
           case 6:
-            $result;
             $current = 3;
             continue;
 

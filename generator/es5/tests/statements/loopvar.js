@@ -85,7 +85,6 @@ $module('loopvar', function () {
             return;
 
           case 3:
-            $result;
             something = $temp0.First;
             if ($t.unbox($temp0.Second)) {
               $current = 4;
@@ -162,7 +161,6 @@ $module('loopvar', function () {
             return;
 
           case 4:
-            $result;
             i = $temp0.First;
             if ($t.unbox($temp0.Second)) {
               $current = 5;

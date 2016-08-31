@@ -92,7 +92,6 @@ $module('indexer', function () {
             return;
 
           case 2:
-            $result;
             sc.$index($t.box(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $current = 3;

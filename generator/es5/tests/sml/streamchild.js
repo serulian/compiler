@@ -34,7 +34,6 @@ $module('streamchild', function () {
             return;
 
           case 3:
-            $result;
             value = $temp0.First;
             if ($t.unbox($temp0.Second)) {
               $current = 4;
@@ -59,7 +58,6 @@ $module('streamchild', function () {
             return;
 
           case 5:
-            $result;
             $current = 2;
             continue;
 

@@ -29,6 +29,7 @@ type stateGenerator struct {
 	stateStartMap    map[codedom.Statement]*state // Map from statement to its start state.
 	managesResources bool                         // Whether the states manage resources.
 
+	hasAsyncJump bool            // Whether the state generator has any async jumps.
 	variables    map[string]bool // The variables added into the scope.
 	resources    *ResourceStack  // The current resources in the scope.
 	currentState *state          // The current state.
@@ -275,6 +276,7 @@ func (sg *stateGenerator) addTopLevelExpression(expression codedom.Expression) e
 	if result.IsAsync() {
 		// Add $result, as it is needed below.
 		sg.addVariable("$result")
+		sg.hasAsyncJump = true
 
 		// Save the current state and create a new state to jump to once the expression's
 		// promise has resolved.
@@ -323,8 +325,10 @@ func (sg *stateGenerator) source(states []*state) esbuilder.SourceBuilder {
 		return esbuilder.Returns(esbuilder.Identifier("$promise").Member("empty").Call())
 	}
 
+	// Check if this machine is in fact a single state with no jumps. If so, then we don't
+	// even need the loop and switch.
 	var singleState *state = nil
-	if len(states) == 1 {
+	if len(states) == 1 && !sg.hasAsyncJump {
 		singleState = states[0]
 	}
 

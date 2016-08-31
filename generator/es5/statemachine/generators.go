@@ -19,6 +19,12 @@ func (sg *stateGenerator) generateExpressionStatement(exprst *codedom.Expression
 	topLevel := sg.addTopLevelExpression(exprst.Expression)
 
 	if exprBuilder, ok := topLevel.(esbuilder.ExpressionBuilder); ok {
+		// If the expression for the statement is stateless, then it isn't needed and we can
+		// safely skip this whole expression statement.
+		if exprBuilder.IsStateless() {
+			return
+		}
+
 		sg.currentState.pushBuilt(esbuilder.ExprStatement(exprBuilder))
 	} else {
 		sg.currentState.pushBuilt(topLevel)

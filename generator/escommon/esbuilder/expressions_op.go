@@ -91,6 +91,29 @@ func (node ternaryNode) emit(sb *sourceBuilder) {
 	sb.append(")")
 }
 
+func (node prefixNode) isStateless() bool {
+	// Note: The op itself could be stateful, but that case is a corner case anyway.
+	return node.child.IsStateless()
+}
+
+func (node postfixNode) isStateless() bool {
+	// Note: The op itself could be stateful, but that case is a corner case anyway.
+	return node.child.IsStateless()
+}
+
+func (node binaryNode) isStateless() bool {
+	// Note: The op itself could be stateful, but that case is a corner case anyway.
+	return node.left.IsStateless() && node.right.IsStateless()
+}
+
+func (node assignmentNode) isStateless() bool {
+	return false
+}
+
+func (node ternaryNode) isStateless() bool {
+	return node.left.IsStateless() && node.right.IsStateless() && node.check.IsStateless()
+}
+
 // Prefix returns a new prefixed operator on an expression.
 func Prefix(op string, child ExpressionBuilder) ExpressionBuilder {
 	return expressionBuilder{prefixNode{op, child}, nil}

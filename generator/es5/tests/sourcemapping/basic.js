@@ -850,7 +850,6 @@ this.Serulian = function ($global) {
                 return;
 
               case 4:
-                $result;
                 $resolve(/*#t#*/t);
                 return;
 
@@ -1037,7 +1036,6 @@ this.Serulian = function ($global) {
                 return;
 
               case 5:
-                $result;
                 $current = 6;
                 continue;
 
@@ -1079,7 +1077,6 @@ this.Serulian = function ($global) {
                 return;
 
               case 9:
-                $result;
                 $current = 10;
                 continue;
 
@@ -1226,7 +1223,6 @@ this.Serulian = function ($global) {
                 return;
 
               case 5:
-                $result;
 /*#i in 0..(len - 1) {#*/                i = /*#i in 0..(len - 1) {#*/$temp0.First;
                 if (/*#for i in 0..(len - 1) {#*/$t.unbox(/*#for i in 0..(len - 1) {#*/$temp0.Second)) /*#for i in 0..(len - 1) {#*/{
                   $current = 6;
@@ -1251,7 +1247,6 @@ this.Serulian = function ($global) {
                 return;
 
               case 7:
-                $result;
                 $current = 4;
                 continue;
 
@@ -1987,7 +1982,6 @@ this.Serulian = function ($global) {
               return;
 
             case 4:
-              $result;
 /*#i in 0 .. (pieces.Length - 1) {#*/              i = /*#i in 0 .. (pieces.Length - 1) {#*/$temp0.First;
               if (/*#for i in 0 .. (pieces.Length - 1) {#*/$t.unbox(/*#for i in 0 .. (pieces.Length - 1) {#*/$temp0.Second)) /*#for i in 0 .. (pieces.Length - 1) {#*/{
                 $current = 5;
@@ -2014,7 +2008,6 @@ this.Serulian = function ($global) {
               return;
 
             case 6:
-              $result;
 /*#values.Length {#*/              values.Length().then(/*#values.Length {#*/function (/*#values.Length {#*/$result1) /*#values.Length {#*/{
                 return /*#i < values.Length {#*/$g.____testlib.basictypes.Integer.$compare(/*#i < values.Length {#*/i, /*#values.Length {#*/$result1).then(/*#values.Length {#*/function (/*#values.Length {#*/$result0) /*#values.Length {#*/{
                   $result = /*#i < values.Length {#*/$t.unbox(/*#i < values.Length {#*/$result0) < /*#i < values.Length {#*/0;
@@ -2056,7 +2049,6 @@ this.Serulian = function ($global) {
               return;
 
             case 9:
-              $result;
               $current = 10;
               continue;
 
@@ -2109,7 +2101,6 @@ this.Serulian = function ($global) {
                 return;
 
               case 3:
-                $result;
 /*#item in stream {#*/                item = /*#item in stream {#*/$temp0.First;
                 if (/*#for item in stream {#*/$t.unbox(/*#for item in stream {#*/$temp0.Second)) /*#for item in stream {#*/{
                   $current = 4;

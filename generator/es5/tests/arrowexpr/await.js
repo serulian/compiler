@@ -30,7 +30,6 @@ $module('await', function () {
               return;
 
             case 1:
-              $result;
               $resolve($this);
               return;
 
