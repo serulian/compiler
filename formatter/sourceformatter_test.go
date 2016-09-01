@@ -70,6 +70,7 @@ var goldenTests = []goldenTest{
 	{"typerefs test", "typerefs"},
 	{"statements test", "statements"},
 	{"expressions test", "expressions"},
+	{"nullable precedence test", "nullable"},
 	{"sml test", "sml"},
 }
 

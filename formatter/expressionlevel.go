@@ -105,6 +105,7 @@ func (sf *sourceFormatter) emitNotNullExpression(node formatterNode) {
 var binaryOrderingImportant = []parser.NodeType{
 	parser.NodeBinarySubtractExpression,
 	parser.NodeBinaryDivideExpression,
+	parser.NodeNullComparisonExpression,
 }
 
 // determineWrappingPrecedence determines whether due to precedence the given binary op child
@@ -131,8 +132,8 @@ func (sf *sourceFormatter) determineWrappingPrecedence(binaryExpr formatterNode,
 		return false
 	}
 
-	// If the child has higher precedence OR (the precedence is the same (indicating the same operator)
-	// and that operator's ordering is important AND we are on the right side), then wrapping is necessary.
+	// If the child has higher precedence OR the precedence is the same (indicating the same operator)
+	// and that operator's ordering is important AND we are on the right side, then wrapping is necessary.
 	return childIndex < binaryIndex ||
 		(!isLeft && childIndex == binaryIndex && childExpr.hasType(binaryOrderingImportant...))
 }
