@@ -419,7 +419,7 @@ func (p *sourceParser) consumeStructuralDefinition() AstNode {
 
 // consumeNominalDefinition consumes a nominal type definition.
 //
-// type Identifier : BaseType.Path { ... }
+// type Identifier<T> : BaseType.Path { ... }
 func (p *sourceParser) consumeNominalDefinition() AstNode {
 	nominalNode := p.startNode(NodeTypeNominal)
 	defer p.finishNode()
@@ -1127,6 +1127,14 @@ func (p *sourceParser) consumeSimpleOrAnyTypeReference() (AstNode, bool) {
 		p.consumeKeyword("any")
 		p.finishNode()
 		return anyNode, true
+	}
+
+	// Check for the "struct" keyword.
+	if p.isKeyword("struct") {
+		structNode := p.startNode(NodeTypeStructReference)
+		p.consumeKeyword("struct")
+		p.finishNode()
+		return structNode, true
 	}
 
 	return p.consumeSimpleTypeReference()
