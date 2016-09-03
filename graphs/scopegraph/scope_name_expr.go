@@ -39,12 +39,20 @@ func (sb *scopeBuilder) scopeIdentifierExpression(node compilergraph.GraphNode, 
 		return newScope().ForAnonymousScope(sb.sg.tdg).GetScope()
 	}
 
+	// Lookup the name given, starting at the location of the current node.
 	namedScope, rerr := sb.lookupNamedScope(name, node)
 	if rerr != nil {
 		sb.decorateWithError(node, "%v", rerr)
 		return newScope().Invalid().GetScope()
 	}
 
+	// Ensure that the named scope has a valid type.
+	if !namedScope.IsValid(context) {
+		return newScope().Invalid().GetScope()
+	}
+
+	// Warn if we are accessing an assignable value under an async function, as it will be executing
+	// in a different context.
 	if namedScope.IsAssignable() && namedScope.UnderModule() {
 		containing, found := sb.sg.srg.TryGetContainingMember(node)
 		if found && containing.IsAsyncFunction() {

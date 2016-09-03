@@ -133,14 +133,25 @@ func (sib *scopeInfoBuilder) ForNamedScopeUnderModifiedType(info namedScopeInfo,
 	// will resolve the first generic (e.g. `int` in this example) properly. Otherwise, we transform the value
 	// type.
 	if info.IsGeneric() {
-		transformedGenericType := info.ValueOrGenericType(context).TransformUnder(parentType)
+		genericType, isValid := info.ValueOrGenericType(context)
+		if !isValid {
+			panic("Expected valid scope")
+		}
+
+		transformedGenericType := genericType.TransformUnder(parentType)
 		sib.ForNamedScope(info, context).WithGenericType(transformedGenericType)
 	} else {
-		transformedValueType := info.ValueType(context).TransformUnder(parentType)
+		valueType, isValid := info.ValueType(context)
+		if !isValid {
+			panic("Expected valid scope")
+		}
+
+		transformedValueType := valueType.TransformUnder(parentType)
 		sib.ForNamedScope(info, context).Resolving(modifier(transformedValueType))
 
 		if info.IsAssignable() {
-			transformedAssignableType := info.AssignableType(context).TransformUnder(parentType)
+			assignableType, _ := info.AssignableType(context)
+			transformedAssignableType := assignableType.TransformUnder(parentType)
 			sib.Assignable(modifier(transformedAssignableType))
 		}
 	}
@@ -179,9 +190,10 @@ func (sib *scopeInfoBuilder) CallsOperator(op typegraph.TGMember) *scopeInfoBuil
 // ForNamedScope points the scope to the referred named scope.
 func (sib *scopeInfoBuilder) ForNamedScope(info namedScopeInfo, context scopeContext) *scopeInfoBuilder {
 	if info.IsGeneric() {
+		genericType, _ := info.ValueOrGenericType(context)
 		genericKind := proto.ScopeKind_GENERIC
 		sib.info.Kind = &genericKind
-		sib.WithGenericType(info.ValueOrGenericType(context))
+		sib.WithGenericType(genericType)
 	} else if info.IsStatic() {
 		staticKind := proto.ScopeKind_STATIC
 		sib.info.Kind = &staticKind
@@ -203,10 +215,12 @@ func (sib *scopeInfoBuilder) ForNamedScope(info namedScopeInfo, context scopeCon
 	}
 
 	if info.IsAssignable() {
-		sib.Assignable(info.AssignableType(context))
+		assignableType, _ := info.AssignableType(context)
+		sib.Assignable(assignableType)
 	}
 
-	return sib.Resolving(info.ValueType(context)).Valid()
+	valueType, _ := info.ValueType(context)
+	return sib.Resolving(valueType).Valid()
 }
 
 // WithKind sets the kind of this scope to the given kind.

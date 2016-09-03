@@ -180,9 +180,9 @@ func (nsi *namedScopeInfo) StaticType(context scopeContext) typegraph.TypeRefere
 
 // ValueType returns the value type of the named scope. For scopes without types,
 // this method will return void.
-func (nsi *namedScopeInfo) ValueType(context scopeContext) typegraph.TypeReference {
+func (nsi *namedScopeInfo) ValueType(context scopeContext) (typegraph.TypeReference, bool) {
 	if nsi.IsStatic() || nsi.IsGeneric() {
-		return nsi.sb.sg.tdg.VoidTypeReference()
+		return nsi.sb.sg.tdg.VoidTypeReference(), true
 	}
 
 	return nsi.ValueOrGenericType(context)
@@ -190,33 +190,34 @@ func (nsi *namedScopeInfo) ValueType(context scopeContext) typegraph.TypeReferen
 
 // AssignableType returns the type of values that can be assigned to this named scope. For
 // non-assignable scopes, returns void.
-func (nsi *namedScopeInfo) AssignableType(context scopeContext) typegraph.TypeReference {
+func (nsi *namedScopeInfo) AssignableType(context scopeContext) (typegraph.TypeReference, bool) {
 	if !nsi.IsAssignable() {
-		return nsi.sb.sg.tdg.VoidTypeReference()
+		return nsi.sb.sg.tdg.VoidTypeReference(), true
 	}
 
 	if nsi.typeInfo != nil {
-		return nsi.typeInfo.(typegraph.TGMember).AssignableType()
+		return nsi.typeInfo.(typegraph.TGMember).AssignableType(), true
 	}
 
 	return nsi.ValueType(context)
 }
 
-// ValueOrGenericType returns the value type of the named scope. For scopes without types,
-// this method will return void.
-func (nsi *namedScopeInfo) ValueOrGenericType(context scopeContext) typegraph.TypeReference {
+// ValueOrGenericType returns the value type of the named scope and whether that named scope was valid.
+// For scopes without types, this method will return void. If the named scope is not valid,
+// returns (any, false).
+func (nsi *namedScopeInfo) ValueOrGenericType(context scopeContext) (typegraph.TypeReference, bool) {
 	if nsi.IsStatic() {
-		return nsi.sb.sg.tdg.VoidTypeReference()
+		return nsi.sb.sg.tdg.VoidTypeReference(), true
 	}
 
 	// The value type of a member is its member type.
 	if nsi.typeInfo != nil {
-		return nsi.typeInfo.(typegraph.TGMember).MemberType()
+		return nsi.typeInfo.(typegraph.TGMember).MemberType(), true
 	}
 
 	// Check for an explicit override.
 	if typeOverride, hasTypeOverride := context.getTypeOverride(nsi.srgInfo.GraphNode); hasTypeOverride {
-		return typeOverride
+		return typeOverride, true
 	}
 
 	// Otherwise, we need custom logic to retrieve the type.
@@ -225,34 +226,56 @@ func (nsi *namedScopeInfo) ValueOrGenericType(context scopeContext) typegraph.Ty
 		// Check for an inferred type.
 		inferredType, hasInferredType := nsi.sb.inferredParameterTypes.Get(string(nsi.srgInfo.GraphNode.NodeId))
 		if hasInferredType {
-			return inferredType.(typegraph.TypeReference)
+			return inferredType.(typegraph.TypeReference), true
 		}
 
 		// TODO: We should probably cache this in the type graph instead of resolving here.
 		srg := nsi.sb.sg.srg
 		parameterTypeNode := nsi.srgInfo.GraphNode.GetNode(parser.NodeParameterType)
 		typeref, _ := nsi.sb.sg.ResolveSRGTypeRef(srg.GetTypeRef(parameterTypeNode))
-		return typeref
+		return typeref, true
 
 	case srg.NamedScopeValue:
 		// The value type of a named value is found by scoping the node creating the named value
 		// and then checking its scope info.
 		creatingScope := nsi.sb.getScope(nsi.srgInfo.GraphNode, context)
 		if !creatingScope.GetIsValid() {
-			return nsi.sb.sg.tdg.AnyTypeReference()
+			return nsi.sb.sg.tdg.AnyTypeReference(), false
 		}
 
-		return creatingScope.AssignableTypeRef(nsi.sb.sg.tdg)
+		return creatingScope.AssignableTypeRef(nsi.sb.sg.tdg), true
 
 	case srg.NamedScopeVariable:
 		// The value type of a variable is found by scoping the variable
 		// and then checking its scope info.
 		variableScope := nsi.sb.getScope(nsi.srgInfo.GraphNode, context)
 		if !variableScope.GetIsValid() {
-			return nsi.sb.sg.tdg.AnyTypeReference()
+			return nsi.sb.sg.tdg.AnyTypeReference(), false
 		}
 
-		return variableScope.AssignableTypeRef(nsi.sb.sg.tdg)
+		return variableScope.AssignableTypeRef(nsi.sb.sg.tdg), true
+
+	default:
+		panic(fmt.Sprintf("Unknown named scope type: %v", nsi.srgInfo.ScopeKind()))
+	}
+}
+
+// IsValid returns whether the named scope is valid.
+func (nsi *namedScopeInfo) IsValid(context scopeContext) bool {
+	if nsi.typeInfo != nil || nsi.IsStatic() {
+		return true
+	}
+
+	switch nsi.srgInfo.ScopeKind() {
+	case srg.NamedScopeParameter:
+		return true
+
+	case srg.NamedScopeValue:
+		fallthrough
+
+	case srg.NamedScopeVariable:
+		scope := nsi.sb.getScope(nsi.srgInfo.GraphNode, context)
+		return scope.GetIsValid()
 
 	default:
 		panic(fmt.Sprintf("Unknown named scope type: %v", nsi.srgInfo.ScopeKind()))

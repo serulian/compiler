@@ -440,7 +440,14 @@ func (sb *scopeBuilder) inferTypesForConditionalExpressionContext(baseContext sc
 
 		// Ensure that the left expression refers to a named scope.
 		leftNamed, isNamed := sb.getNamedScopeForScope(leftScope)
-		if !isNamed || leftNamed.ValueType(baseContext).IsVoid() {
+		if !isNamed {
+			return baseContext
+		}
+
+		// Ensure that the left expression does not have a void type. We know it is valid
+		// due to the check above.
+		valueType, _ := leftNamed.ValueType(baseContext)
+		if valueType.IsVoid() {
 			return baseContext
 		}
 
@@ -805,7 +812,11 @@ func (sb *scopeBuilder) scopeArrowStatement(node compilergraph.GraphNode, contex
 		}
 
 		// The destination must match the received type.
-		destinationType := destinationName.AssignableType(context)
+		destinationType, isValid := destinationName.AssignableType(context)
+		if !isValid {
+			return newScope().Invalid().GetScope()
+		}
+
 		if serr := receivedType.CheckSubTypeOf(destinationType); serr != nil {
 			sb.decorateWithError(node, "Destination of arrow statement must accept type %v: %v", receivedType, serr)
 			return newScope().Invalid().GetScope()
@@ -829,7 +840,11 @@ func (sb *scopeBuilder) scopeArrowStatement(node compilergraph.GraphNode, contex
 			}
 
 			// The rejection must match the error type.
-			rejectionType := rejectionName.AssignableType(context)
+			rejectionType, isValid := rejectionName.AssignableType(context)
+			if !isValid {
+				return newScope().Invalid().GetScope()
+			}
+
 			if serr := sb.sg.tdg.ErrorTypeReference().CheckSubTypeOf(rejectionType); serr != nil {
 				sb.decorateWithError(node, "Rejection of arrow statement must accept type Error: %v", serr)
 				return newScope().Invalid().GetScope()
