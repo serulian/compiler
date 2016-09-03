@@ -335,6 +335,10 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	scopegraphTest{"bad expression var test", "var", "badexpr",
+		[]expectedScopeEntry{},
+		"The name 'bar' could not be found in this context", ""},
+
 	/////////// SML expression ///////////
 
 	scopegraphTest{"sml expression success test", "sml", "success",
