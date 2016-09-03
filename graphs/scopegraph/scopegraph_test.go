@@ -1156,6 +1156,13 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	scopegraphTest{"generic specifier static test", "genericspecifier", "static",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"cons", expectedScope{true, proto.ScopeKind_VALUE, "function<SomeClass<Integer>>(Integer, Boolean)", "void"}},
+			expectedScopeEntry{"sc", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass<Integer>", "void"}},
+		},
+		"", ""},
+
 	scopegraphTest{"generic specifier non-generic test", "genericspecifier", "nongeneric",
 		[]expectedScopeEntry{},
 		"Cannot apply generics to non-generic scope", ""},

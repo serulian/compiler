@@ -1,0 +1,14 @@
+class SomeClass<T> {
+	var<T> value
+
+	constructor SomeConstructor<Q>(value T, otherValue Q) {
+		return SomeClass<T>{
+			value: value,
+		}
+	}
+}
+
+function<void> DoSomething() {
+	var cons = /* cons */(SomeClass<int>.SomeConstructor<bool>)
+	/* sc */(cons(123, false))
+}
