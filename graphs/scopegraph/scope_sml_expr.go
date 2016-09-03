@@ -92,7 +92,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 		propsType := parameters[0]
 
 		// Ensure that the first parameter is either structural or a Mapping.
-		if propsType.IsNullable() || (!propsType.IsStruct() && !propsType.IsDirectReferenceTo(sb.sg.tdg.MappingType())) {
+		if propsType.IsNullable() || (!propsType.IsRefToStruct() && !propsType.IsDirectReferenceTo(sb.sg.tdg.MappingType())) {
 			sb.decorateWithError(node, "First parameter of a declarable function or constructor used in an SML declaration tag must be structural or a Mapping. Found: %v", propsType)
 			return newScope().Invalid().Resolving(declaredType).GetScope()
 		}
@@ -112,7 +112,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 		}
 
 		// If the props type is a struct, ensure that all required fields were set.
-		if propsType.IsStruct() {
+		if propsType.IsRefToStruct() {
 			for _, requiredField := range propsType.ReferredType().RequiredFields() {
 				if _, ok := attributesEncountered[requiredField.Name()]; !ok {
 					sb.decorateWithError(node, "Required attribute '%v' is missing for SML declaration props type %v", requiredField.Name(), propsType)
@@ -277,7 +277,7 @@ func (sb *scopeBuilder) scopeSmlAttribute(node compilergraph.GraphNode, propsTyp
 
 	// If the props type is a struct, ensure that the attribute name exists.
 	var allowedValueType = sb.sg.tdg.AnyTypeReference()
-	if propsType.IsStruct() {
+	if propsType.IsRefToStruct() {
 		module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
 		resolvedMember, rerr := propsType.ResolveAccessibleMember(attributeName, module, typegraph.MemberResolutionInstance)
 		if rerr != nil {

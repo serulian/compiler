@@ -95,6 +95,9 @@ this.Serulian = (function($global) {
     // any special type.
     'any': $it('Any', 'any'),
 
+    // struct special type.
+    'struct': $it('Struct', 'struct'),
+
     // void special type.
     'void': $it('Void', 'void'),
 
@@ -203,6 +206,14 @@ this.Serulian = (function($global) {
         throw Error('Cannot cast null value to ' + type.toString())        
       }
 
+      // Handle the cast-Object-to-struct case
+      if (castKind == 'struct' && value.constructor == Object) {
+        // Note: This cast can result in us getting a struct over invalid data, but
+        // the struct will ensure it is correct anyway, so this is allowed.
+        return value;
+      }
+
+      // At this point, we can only cast native types to nominal types with auto-boxing.
       var valueKind = value.constructor.$typekind;
       if (!valueKind && castKind != 'type') {
         // Native type.

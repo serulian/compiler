@@ -1,3 +1,9 @@
+class SomeClass {
+	property<stringable> MapKey {
+		get { return 'hey '}
+	}
+}
+
 function<void> DoSomething() {
 	/* emptymap */{}
 	/* intmap */{
@@ -12,6 +18,7 @@ function<void> DoSomething() {
 
 	var<int> a = 2
 	var<bool> b = false
+	var<SomeClass> c = SomeClass.new()
 
 	/* intkeymap */{
 		a: 1,
@@ -20,5 +27,11 @@ function<void> DoSomething() {
 	/* mixedkeymap */{
 		a: 1,
 		b: 2,
+	}
+
+	/* mixedkeymap2 */{
+		a: 1,
+		b: 2,
+		c: 3,
 	}
 }

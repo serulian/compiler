@@ -183,6 +183,9 @@ func (sf *sourceFormatter) emitNode(node formatterNode) {
 	case parser.NodeTypeStream:
 		sf.emitStreamTypeRef(node)
 
+	case parser.NodeTypeStructReference:
+		sf.emitStructTypeRef(node)
+
 	case parser.NodeTypeAny:
 		sf.emitAnyTypeRef(node)
 

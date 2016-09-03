@@ -30,6 +30,7 @@ const (
 	TypeRefMapping                     // A mapping type.
 	TypeRefPath                        // A normal path type. May have generics.
 	TypeRefVoid                        // A void type reference.
+	TypeRefStruct                      // A struct type reference.
 	TypeRefAny                         // An any type reference.
 )
 
@@ -185,6 +186,9 @@ func (t SRGTypeRef) RefKind() TypeRefKind {
 
 	case parser.NodeTypeAny:
 		return TypeRefAny
+
+	case parser.NodeTypeStructReference:
+		return TypeRefStruct
 
 	case parser.NodeTypeStream:
 		return TypeRefStream

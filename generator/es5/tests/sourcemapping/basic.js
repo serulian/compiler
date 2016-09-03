@@ -59,6 +59,7 @@ this.Serulian = function ($global) {
   };
   var $t = {
     any: $it('Any', 'any'),
+    struct: $it('Struct', 'struct'),
     void: $it('Void', 'void'),
     null: $it('Null', 'null'),
     toESType: function (obj) {
@@ -127,6 +128,9 @@ this.Serulian = function ($global) {
       var castKind = type.$typekind;
       if ((value == null) && !opt_allownull) {
         throw Error('Cannot cast null value to ' + type.toString());
+      }
+      if ((castKind == 'struct') && (value.constructor == Object)) {
+        return value;
       }
       var valueKind = value.constructor.$typekind;
       if (!valueKind && (castKind != 'type')) {

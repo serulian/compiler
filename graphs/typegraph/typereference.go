@@ -279,7 +279,7 @@ func (tr TypeReference) IsNominalWrapOf(other TypeReference) bool {
 // 4) The type is a nominal type around #1, #2 or #3 AND
 // 5) All subreferences (generics and parameters) must meet the above rules.
 func (tr TypeReference) EnsureStructural() error {
-	if tr.IsVoid() {
+	if tr.IsVoid() || tr.IsStruct() {
 		return nil
 	}
 
@@ -291,8 +291,8 @@ func (tr TypeReference) EnsureStructural() error {
 	referredType := tr.ReferredType()
 	switch referredType.TypeKind() {
 	case GenericType:
-		// GenericType's are allowed (the generic specifiers check them).
-		return nil
+		// GenericType's are allowed if their constraints are structural.
+		return tr.referenceOrConstraint().EnsureStructural()
 
 	case StructType:
 		// StructType's are allowed.
@@ -332,13 +332,18 @@ func (tr TypeReference) EnsureStructural() error {
 	return nil
 }
 
-// IsNominalOrStruct returns whether the referenced type is a struct or nominal type.
-func (tr TypeReference) IsNominalOrStruct() bool {
-	return tr.IsNominal() || tr.IsStruct()
+// IsStructurual returns whether the reference type is *directly* structural.
+func (tr TypeReference) IsStructurual() bool {
+	return tr.IsRefToStruct() || tr.IsStruct()
 }
 
-// IsStruct returns whether the referenced type is a struct.
-func (tr TypeReference) IsStruct() bool {
+// IsNominalOrStruct returns whether the referenced type is a struct or nominal type.
+func (tr TypeReference) IsNominalOrStruct() bool {
+	return tr.IsNominal() || tr.IsRefToStruct() || tr.IsStruct()
+}
+
+// IsRefToStruct returns whether the referenced type is a struct.
+func (tr TypeReference) IsRefToStruct() bool {
 	return tr.isNormal() && tr.ReferredType().TypeKind() == StructType
 }
 
@@ -382,6 +387,10 @@ func (tr TypeReference) CheckConcreteSubtypeOf(otherType TGTypeDecl) ([]TypeRefe
 
 		if tr.IsVoid() {
 			return nil, fmt.Errorf("Void type %v does not implement type %v", tr, otherType.DescriptiveName())
+		}
+
+		if tr.IsStruct() {
+			return nil, fmt.Errorf("Abstract struct type %v cannot match type %v", tr, otherType.DescriptiveName())
 		}
 
 		if tr.IsNullable() {
@@ -492,6 +501,7 @@ const (
 //
 // Subtyping rules in Serulian are as follows:
 //   - All types are subtypes of 'any'.
+//   - Only structural types are subtypes of 'struct'.
 //   - The special "null" type is a subtype of any *nullable* type.
 //   - A non-nullable type is a subtype of a nullable type (but not vice versa).
 //   - A class is a subtype of itself (and no other class) and only if generics and parameters match.
@@ -525,6 +535,11 @@ func (tr TypeReference) CheckSubTypeOfWithExceptions(other TypeReference, except
 		return fmt.Errorf("null cannot be supertype of any other type"), NoSubTypingExceptions
 	}
 
+	// If the other type is a struct ref, then this is only a subtype if it is structural.
+	if other.IsStruct() {
+		return tr.EnsureStructural(), NoSubTypingExceptions
+	}
+
 	// If the other is the any type, then we know this to be a subtype.
 	if other.IsAny() {
 		return nil, NoSubTypingExceptions
@@ -538,6 +553,11 @@ func (tr TypeReference) CheckSubTypeOfWithExceptions(other TypeReference, except
 	// If this type is the any type, then it cannot be a subtype.
 	if tr.IsAny() {
 		return fmt.Errorf("Cannot use type 'any' in place of type '%v'", other), NoSubTypingExceptions
+	}
+
+	// If this type is the struct type, then it cannot be a subtype.
+	if tr.IsStruct() {
+		return fmt.Errorf("Cannot use type 'struct' in place of type '%v'", other), NoSubTypingExceptions
 	}
 
 	// Check nullability.
@@ -561,6 +581,11 @@ func (tr TypeReference) CheckSubTypeOfWithExceptions(other TypeReference, except
 
 	// If the constraint is 'any', then we know the generic cannot be used.
 	if left.IsAny() {
+		return fmt.Errorf("Cannot use type '%v' in place of type '%v'", tr, other), NoSubTypingExceptions
+	}
+
+	// If the constraint is 'struct', then we know the generic cannot be used.
+	if left.IsStruct() {
 		return fmt.Errorf("Cannot use type '%v' in place of type '%v'", tr, other), NoSubTypingExceptions
 	}
 
@@ -753,6 +778,11 @@ func (tr TypeReference) isNormal() bool {
 	return tr.getSlot(trhSlotFlagSpecial)[0] == specialFlagNormal
 }
 
+// IsStruct returns whether this type reference refers to the special 'struct' type.
+func (tr TypeReference) IsStruct() bool {
+	return tr.getSlot(trhSlotFlagSpecial)[0] == specialFlagStruct
+}
+
 // IsAny returns whether this type reference refers to the special 'any' type.
 func (tr TypeReference) IsAny() bool {
 	return tr.getSlot(trhSlotFlagSpecial)[0] == specialFlagAny
@@ -827,7 +857,7 @@ func (tr TypeReference) IsDirectReferenceTo(typeDecl TGTypeDecl) bool {
 // HasReferredType returns whether this type references refers to the given type. Note that the
 // type reference can be nullable.
 func (tr TypeReference) HasReferredType(typeDecl TGTypeDecl) bool {
-	if !tr.isNormal() || tr.IsAny() {
+	if !tr.isNormal() {
 		return false
 	}
 
@@ -879,13 +909,13 @@ func (mrk MemberResolutionKind) Title() string {
 
 // ResolveMember looks for an member with the given name under the referred type and returns it (if any).
 func (tr TypeReference) ResolveMember(memberName string, kind MemberResolutionKind) (TGMember, bool) {
-	if !tr.isNormal() || tr.IsAny() {
+	if !tr.isNormal() {
 		return TGMember{}, false
 	}
 
 	// If this reference is a generic, we resolve under its constraint type.
 	resolutionType := tr.referenceOrConstraint()
-	if !resolutionType.isNormal() || resolutionType.IsAny() {
+	if !resolutionType.isNormal() {
 		return TGMember{}, false
 	}
 
@@ -1009,16 +1039,28 @@ func (tr TypeReference) Intersect(other TypeReference) TypeReference {
 		trAdjusted = tr.AsNullable()
 	}
 
+	// If the same, return the same.
 	if trAdjusted == otherAdjusted {
 		return trAdjusted
 	}
 
+	// Check for one being the subtype of the other.
 	if trAdjusted.CheckSubTypeOf(otherAdjusted) == nil {
 		return otherAdjusted
 	}
 
 	if otherAdjusted.CheckSubTypeOf(trAdjusted) == nil {
 		return trAdjusted
+	}
+
+	// If either is structural or `struct`, then the intersection is `struct`.
+	if (trAdjusted.IsStruct() || trAdjusted.EnsureStructural() == nil) &&
+		(otherAdjusted.IsStruct() || otherAdjusted.EnsureStructural() == nil) {
+		if tr.IsNullable() || other.IsNullable() {
+			return tr.tdg.StructTypeReference().AsNullable()
+		} else {
+			return tr.tdg.StructTypeReference()
+		}
 	}
 
 	// TODO: support some sort of union types here if/when we need to?
@@ -1053,12 +1095,16 @@ func (tr TypeReference) Localize(generics ...TGGeneric) TypeReference {
 // For example, if this type reference is function<T> and the other is
 // SomeClass<int>, where T is the generic of 'SomeClass', this method will return function<int>.
 func (tr TypeReference) TransformUnder(other TypeReference) TypeReference {
-	// Skip 'any' and 'void' types.
+	// Skip 'any', 'void' and 'struct' types.
 	if tr.IsAny() || other.IsAny() {
 		return tr
 	}
 
 	if tr.IsVoid() || other.IsVoid() {
+		return tr
+	}
+
+	if tr.IsStruct() || other.IsStruct() {
 		return tr
 	}
 
@@ -1166,6 +1212,14 @@ func (tr TypeReference) String() string {
 func (tr TypeReference) appendHumanString(buffer *bytes.Buffer, titled bool) {
 	if tr.IsAny() {
 		buffer.WriteString("any")
+		return
+	}
+
+	if tr.IsStruct() {
+		buffer.WriteString("struct")
+		if tr.IsNullable() {
+			buffer.WriteRune('?')
+		}
 		return
 	}
 

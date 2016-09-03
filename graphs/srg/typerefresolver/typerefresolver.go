@@ -69,6 +69,9 @@ func (trr *TypeReferenceResolver) resolveTypeRef(typeref srg.SRGTypeRef, tdg *ty
 	case srg.TypeRefAny:
 		return tdg.AnyTypeReference(), nil
 
+	case srg.TypeRefStruct:
+		return tdg.StructTypeReference(), nil
+
 	case srg.TypeRefMapping:
 		innerType, err := trr.ResolveTypeRef(typeref.InnerReference(), tdg)
 		if err != nil {

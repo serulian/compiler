@@ -93,6 +93,8 @@ func (g *TypeGraph) checkStructuralType(structType TGTypeDecl) bool {
 	var status = true
 
 	modifier := g.layer.NewModifier()
+
+	// Check the inner types.
 	for _, member := range structType.Members() {
 		serr := member.MemberType().EnsureStructural()
 		if serr != nil {
@@ -101,6 +103,17 @@ func (g *TypeGraph) checkStructuralType(structType TGTypeDecl) bool {
 			status = false
 		}
 	}
+
+	// Check the generics.
+	for _, generic := range structType.Generics() {
+		serr := generic.Constraint().EnsureStructural()
+		if serr != nil {
+			g.decorateWithError(modifier.Modify(generic.GraphNode),
+				"Structural type '%v' requires all generic constraints to be structural: %v", structType.Name(), serr)
+			status = false
+		}
+	}
+
 	modifier.Apply()
 	return status
 }

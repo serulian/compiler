@@ -32,6 +32,14 @@ func (t *TypeGraph) AnyTypeReference() TypeReference {
 	}
 }
 
+// StructTypeReference returns a reference to the special 'struct' type.
+func (t *TypeGraph) StructTypeReference() TypeReference {
+	return TypeReference{
+		tdg:   t,
+		value: buildSpecialTypeReferenceValue(specialFlagStruct),
+	}
+}
+
 // BoolTypeReference returns a reference to the bool type.
 func (t *TypeGraph) BoolTypeReference() TypeReference {
 	return t.NewTypeReference(t.BoolType())

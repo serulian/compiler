@@ -74,6 +74,11 @@ func (sf *sourceFormatter) emitAnyTypeRef(node formatterNode) {
 	sf.append("any")
 }
 
+// emitStructTypeRef emits a struct type reference.
+func (sf *sourceFormatter) emitStructTypeRef(node formatterNode) {
+	sf.append("struct")
+}
+
 // emitVoidTypeRef emits a void type reference.
 func (sf *sourceFormatter) emitVoidTypeRef(node formatterNode) {
 	sf.append("void")

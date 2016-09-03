@@ -42,6 +42,10 @@ func parseTypeReferenceForTesting(humanString string, graph *TypeGraph, refSourc
 		return graph.VoidTypeReference()
 	}
 
+	if humanString == "struct" {
+		return graph.StructTypeReference()
+	}
+
 	if strings.Contains(humanString, "::") {
 		genericParts := strings.Split(humanString, "::")
 		mainType := parseTypeReferenceForTesting(genericParts[0], graph, refSourceNodes...)

@@ -1,0 +1,21 @@
+struct AnotherStruct {
+	BoolValue bool
+}
+
+struct SomeStruct<T> {
+	SomeField T
+}
+
+function<any> TEST() {
+	var ss = SomeStruct<struct>{
+		SomeField: AnotherStruct{
+			BoolValue: true,
+		},
+	}
+
+	var jsonString = ss.Stringify<json>()
+	var sscopy = SomeStruct<AnotherStruct>.Parse<json>(jsonString)
+	var iss = SomeStruct<struct>.Parse<json>(jsonString)
+
+	return ss.SomeField.(AnotherStruct).BoolValue && sscopy.SomeField.BoolValue && iss.SomeField.(AnotherStruct).BoolValue
+}

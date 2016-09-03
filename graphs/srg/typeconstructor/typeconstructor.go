@@ -127,6 +127,13 @@ func (stc *srgTypeConstructor) DefineDependencies(annotator typegraph.Annotator,
 		for _, srgGeneric := range srgType.Generics() {
 			// Note: If the constraint is not valid, the resolve method will report the error and return Any, which is the correct type.
 			constraintType, _ := stc.resolvePossibleType(srgGeneric.Node(), srgGeneric.GetConstraint, graph, annotator)
+
+			// If the constraint type is `any` and this is a generic on a struct, then
+			// change it to a structural any reference.
+			if srgType.TypeKind() == srg.StructType && constraintType.IsAny() {
+				constraintType = graph.StructTypeReference()
+			}
+
 			annotator.DefineGenericConstraint(srgGeneric.Node(), constraintType)
 		}
 	}

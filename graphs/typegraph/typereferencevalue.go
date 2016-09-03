@@ -68,6 +68,7 @@ const (
 	specialFlagVoid   = 'V' // The value of the trhSlotFlagSpecial for "void" tyoe refs.
 	specialFlagLocal  = 'L' // The value of the trhSlotFlagSpecial for localized type refs.
 	specialFlagNull   = 'N' // The value of the trhSlotFlagSpecial for "null" type refs.
+	specialFlagStruct = 'S' // The value of the trhSlotFlagSpecial for "struct" type refs.
 )
 
 // typeReferenceHeaderSlotCacheMap holds a cache for looking up the offset of a TRH.
