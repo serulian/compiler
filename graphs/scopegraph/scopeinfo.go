@@ -67,6 +67,13 @@ func (sib *scopeInfoBuilder) WithStaticType(static typegraph.TypeReference) *sco
 	return sib
 }
 
+// WithGenericType marks the scope as having the given generic type.
+func (sib *scopeInfoBuilder) WithGenericType(generic typegraph.TypeReference) *scopeInfoBuilder {
+	genericValue := generic.Value()
+	sib.info.GenericType = &genericValue
+	return sib
+}
+
 // AssignableResolvedTypeOf marks the scope as being assignable of the *resolved* type of the given scope.
 func (sib *scopeInfoBuilder) AssignableResolvedTypeOf(scope *proto.ScopeInfo) *scopeInfoBuilder {
 	resolvedValue := scope.GetResolvedType()
@@ -121,12 +128,21 @@ type typeModifier func(typeRef typegraph.TypeReference) typegraph.TypeReference
 // ForNamedScopeUnderModifiedType points the scope to the referred named scope, with its value
 // type being transformed under the given parent type and then transformed by the modifier.
 func (sib *scopeInfoBuilder) ForNamedScopeUnderModifiedType(info namedScopeInfo, parentType typegraph.TypeReference, modifier typeModifier, context scopeContext) *scopeInfoBuilder {
-	transformedValueType := info.ValueType(context).TransformUnder(parentType)
-	sib.ForNamedScope(info, context).Resolving(modifier(transformedValueType))
+	// If the named scope is generic, then mark the scope with the *generic* type transformed under
+	// the parent type. This ensures that chained, static generic calls (like SomeType<int>.SomeConstructor<bool>)
+	// will resolve the first generic (e.g. `int` in this example) properly. Otherwise, we transform the value
+	// type.
+	if info.IsGeneric() {
+		transformedGenericType := info.ValueOrGenericType(context).TransformUnder(parentType)
+		sib.ForNamedScope(info, context).WithGenericType(transformedGenericType)
+	} else {
+		transformedValueType := info.ValueType(context).TransformUnder(parentType)
+		sib.ForNamedScope(info, context).Resolving(modifier(transformedValueType))
 
-	if info.IsAssignable() {
-		transformedAssignableType := info.AssignableType(context).TransformUnder(parentType)
-		sib.Assignable(modifier(transformedAssignableType))
+		if info.IsAssignable() {
+			transformedAssignableType := info.AssignableType(context).TransformUnder(parentType)
+			sib.Assignable(modifier(transformedAssignableType))
+		}
 	}
 
 	return sib
@@ -165,6 +181,7 @@ func (sib *scopeInfoBuilder) ForNamedScope(info namedScopeInfo, context scopeCon
 	if info.IsGeneric() {
 		genericKind := proto.ScopeKind_GENERIC
 		sib.info.Kind = &genericKind
+		sib.WithGenericType(info.ValueOrGenericType(context))
 	} else if info.IsStatic() {
 		staticKind := proto.ScopeKind_STATIC
 		sib.info.Kind = &staticKind

@@ -43,9 +43,11 @@ func (sb *scopeBuilder) scopeGenericSpecifierExpression(node compilergraph.Graph
 		panic("Generic non-named scope")
 	}
 
-	var genericType = namedScope.ValueOrGenericType(context)
+	var genericType = sb.sg.tdg.VoidTypeReference()
 	if namedScope.IsStatic() {
 		genericType = namedScope.StaticType(context)
+	} else {
+		genericType = childScope.GenericTypeRef(sb.sg.tdg)
 	}
 
 	genericsToReplace := namedScope.Generics()
