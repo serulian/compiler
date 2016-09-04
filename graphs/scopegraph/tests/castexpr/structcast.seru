@@ -1,0 +1,19 @@
+struct AnotherStruct {
+	BoolValue bool
+}
+
+struct SomeStruct<T> {
+	SomeField T
+}
+
+function<void> DoSomething() {
+	var ss = SomeStruct<struct>{
+		SomeField: AnotherStruct{
+			BoolValue: true,
+		},
+	}
+
+	var sscopy = SomeStruct<AnotherStruct>.Parse<json>('')
+	/* someField */(sscopy.SomeField)
+	/* bool */(sscopy.SomeField.BoolValue)
+}

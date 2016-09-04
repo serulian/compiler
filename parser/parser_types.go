@@ -177,6 +177,7 @@ const (
 	NodeTypeNullable
 	NodeTypeVoid
 	NodeTypeAny
+	NodeTypeStructReference
 
 	// Misc
 	NodeTypeIdentifierPath   // An identifier path

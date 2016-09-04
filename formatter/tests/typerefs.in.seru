@@ -22,3 +22,5 @@ var<any*> anystream
 var<?[]SomeClass> nullableslice
 var<?int> nullableprefix
 var<*int> streamableprefix
+var<struct> structref
+var<struct?> nullablestructref

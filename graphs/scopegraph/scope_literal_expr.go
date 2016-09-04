@@ -65,7 +65,7 @@ func (sb *scopeBuilder) scopeStructuralNewEntries(node compilergraph.GraphNode, 
 // of a structural type by cloning and modifying an existing one.
 func (sb *scopeBuilder) scopeStructuralNewCloneExpression(node compilergraph.GraphNode, childScope *proto.ScopeInfo, context scopeContext) proto.ScopeInfo {
 	resolvedTypeRef := childScope.ResolvedTypeRef(sb.sg.tdg)
-	if !resolvedTypeRef.IsStruct() {
+	if !resolvedTypeRef.IsRefToStruct() {
 		sb.decorateWithError(node, "Cannot clone and modify non-structural type %s", resolvedTypeRef)
 		return newScope().Invalid().GetScope()
 	}

@@ -690,6 +690,16 @@ func TestSubtypes(t *testing.T) {
 				},
 			},
 
+			// struct SomeGenericStruct<T, Q:struct> {
+			// }
+			testType{"struct", "SomeGenericStruct", "",
+				[]testGeneric{
+					testGeneric{"T", "any"},
+					testGeneric{"Q", "struct"},
+				},
+				[]testMember{},
+			},
+
 			// interface Constructable {
 			//	  constructor BuildMe()
 			// }
@@ -860,8 +870,32 @@ func TestSubtypes(t *testing.T) {
 			"Cannot use type 'S' in place of type 'R'"},
 
 		// ConstructableClass is a subtype of Constructable
-		subtypeCheckTest{"ConstructableClass subtype of Constructable", "ConstructableClass", "Constructable",
-			""},
+		subtypeCheckTest{"ConstructableClass subtype of Constructable", "ConstructableClass", "Constructable", ""},
+
+		// struct is not a subtype of SomeStruct
+		subtypeCheckTest{"struct not subtype of SomeStruct", "struct", "SomeStruct",
+			"Cannot use type 'struct' in place of type 'SomeStruct'"},
+
+		// SomeStruct is a subtype of struct
+		subtypeCheckTest{"SomeStruct subtype of struct", "SomeStruct", "struct", ""},
+
+		// ConstructableClass is not a subtype of struct
+		subtypeCheckTest{"ConstructableClass not subtype of struct", "ConstructableClass", "struct",
+			"ConstructableClass is not structural nor serializable"},
+
+		// SomeGenericStruct<any, int> is not a subtype of struct
+		subtypeCheckTest{"SomeGenericStruct<any, int> not subtype of struct", "SomeGenericStruct<any, int>", "struct",
+			"SomeGenericStruct<any, int> has non-structural generic type any: Type any is not guarenteed to be structural"},
+
+		// SomeGenericStruct<struct, struct> is a subtype of struct
+		subtypeCheckTest{"SomeGenericStruct<struct, struct> subtype of struct", "SomeGenericStruct<struct, struct>", "struct", ""},
+
+		// T of SomeGenericStruct is not a subtype of struct
+		subtypeCheckTest{"SomeGenericStruct::T not subtype of struct", "SomeGenericStruct::T", "struct",
+			"Type any is not guarenteed to be structural"},
+
+		// Q of SomeGenericStruct is a subtype of struct
+		subtypeCheckTest{"SomeGenericStruct::Q subtype of struct", "SomeGenericStruct::Q", "struct", ""},
 	}
 
 	for _, test := range tests {
@@ -1042,6 +1076,14 @@ func TestEnsureStructural(t *testing.T) {
 				[]testMember{},
 			},
 
+			// struct StructGenericStruct<T> {}
+			testType{"struct", "StructGenericStruct", "",
+				[]testGeneric{
+					testGeneric{"T", "struct"},
+				},
+				[]testMember{},
+			},
+
 			// class GenericClass<T> {
 			// }
 			testType{"class", "GenericClass", "",
@@ -1093,11 +1135,14 @@ func TestEnsureStructural(t *testing.T) {
 		// GenericStruct<SomeClass>
 		ensureStructuralTest{"GenericStruct<SomeClass> is not structural", "GenericStruct<SomeClass>", "GenericStruct<SomeClass> has non-structural generic type SomeClass: SomeClass is not structural nor serializable"},
 
+		// StructGenericStruct::T
+		ensureStructuralTest{"StructGenericStruct::T is structural", "StructGenericStruct::T", ""},
+
 		// GenericClass
 		ensureStructuralTest{"GenericClass is not structural", "GenericClass", "GenericClass is not structural nor serializable"},
 
 		// GenericClass::T
-		ensureStructuralTest{"GenericClass::T is skipped for structural", "GenericClass::T", ""},
+		ensureStructuralTest{"GenericClass::T is not structural", "GenericClass::T", "Type any is not guarenteed to be structural"},
 
 		// StructuralNominal
 		ensureStructuralTest{"StructuralNominal is structural", "StructuralNominal", ""},
@@ -1127,6 +1172,176 @@ func TestEnsureStructural(t *testing.T) {
 			if !assert.Nil(t, sterr, "Expected no ensure struct error for test %v", test.name) {
 				continue
 			}
+		}
+	}
+}
+
+type intersectionTest struct {
+	first        string
+	second       string
+	expectedType string
+}
+
+func TestIntersection(t *testing.T) {
+	g, _ := compilergraph.NewGraph("-")
+	testConstruction := newTestTypeGraphConstructor(g,
+		"intersection",
+		[]testType{
+			// struct SomeStruct {}
+			testType{"struct", "SomeStruct", "", []testGeneric{},
+				[]testMember{},
+			},
+
+			// struct AnotherStruct {}
+			testType{"struct", "AnotherStruct", "", []testGeneric{},
+				[]testMember{},
+			},
+
+			// class SomeClass {
+			// 	 function<bool> DoSomething()
+			// }
+			testType{"class", "SomeClass", "",
+				[]testGeneric{},
+				[]testMember{
+					testMember{FunctionMemberSignature, "DoSomething", "bool", []testGeneric{}, []testParam{}},
+				},
+			},
+
+			// interface SomeInterface {
+			// 	 function<bool> DoSomething()
+			// }
+			testType{"interface", "SomeInterface", "",
+				[]testGeneric{},
+				[]testMember{
+					testMember{FunctionMemberSignature, "DoSomething", "bool", []testGeneric{}, []testParam{}},
+				},
+			},
+
+			// interface AnotherInterface {}
+			testType{"interface", "AnotherInterface", "",
+				[]testGeneric{},
+				[]testMember{},
+			},
+
+			// type StructuralNominal : SomeStruct {}
+			testType{"nominal", "StructuralNominal", "SomeStruct",
+				[]testGeneric{},
+				[]testMember{},
+			},
+
+			// type NonStructuralNominal : SomeClass {}
+			testType{"nominal", "NonStructuralNominal", "SomeClass",
+				[]testGeneric{},
+				[]testMember{},
+			},
+		},
+	)
+
+	graph := newTestTypeGraph(g, testConstruction)
+	moduleSourceNode := *testConstruction.moduleNode
+
+	tests := []intersectionTest{
+		// any & any = any
+		intersectionTest{"any", "any", "any"},
+
+		// any & struct = any
+		intersectionTest{"any", "struct", "any"},
+
+		// struct & any = any
+		intersectionTest{"struct", "any", "any"},
+
+		// SomeStruct & any = any
+		intersectionTest{"SomeStruct", "any", "any"},
+
+		// any & SomeStruct = any
+		intersectionTest{"any", "SomeStruct", "any"},
+
+		// SomeClass & any = any
+		intersectionTest{"SomeClass", "any", "any"},
+
+		// any & SomeClass = any
+		intersectionTest{"any", "SomeClass", "any"},
+
+		// SomeInterface & any = any
+		intersectionTest{"SomeInterface", "any", "any"},
+
+		// any & SomeInterface = any
+		intersectionTest{"any", "SomeInterface", "any"},
+
+		// SomeStruct & SomeStruct = SomeStruct
+		intersectionTest{"SomeStruct", "SomeStruct", "SomeStruct"},
+
+		// SomeClass & SomeClass = SomeClass
+		intersectionTest{"SomeClass", "SomeClass", "SomeClass"},
+
+		// SomeInterface & SomeInterface = SomeInterface
+		intersectionTest{"SomeInterface", "SomeInterface", "SomeInterface"},
+
+		// SomeStruct & SomeInterface = any
+		intersectionTest{"SomeStruct", "SomeInterface", "any"},
+
+		// SomeClass & SomeInterface = SomeInterface
+		intersectionTest{"SomeClass", "SomeInterface", "SomeInterface"},
+
+		// SomeStruct & AnotherInterface = AnotherInterface
+		intersectionTest{"SomeStruct", "AnotherInterface", "AnotherInterface"},
+
+		// SomeClass & AnotherInterface = AnotherInterface
+		intersectionTest{"SomeClass", "AnotherInterface", "AnotherInterface"},
+
+		// SomeStruct & SomeClass = any
+		intersectionTest{"SomeStruct", "SomeClass", "any"},
+
+		// SomeClass & SomeStruct = any
+		intersectionTest{"SomeClass", "SomeStruct", "any"},
+
+		// SomeClass & SomeClass? = SomeClass?
+		intersectionTest{"SomeClass", "SomeClass?", "SomeClass?"},
+
+		// SomeClass? & SomeClass = SomeClass?
+		intersectionTest{"SomeClass?", "SomeClass", "SomeClass?"},
+
+		// SomeClass? & SomeClass? = SomeClass?
+		intersectionTest{"SomeClass?", "SomeClass?", "SomeClass?"},
+
+		// SomeStruct & StructuralNominal = struct
+		intersectionTest{"SomeStruct", "StructuralNominal", "struct"},
+
+		// StructuralNominal & SomeStruct = struct
+		intersectionTest{"StructuralNominal", "SomeStruct", "struct"},
+
+		// SomeClass & NonStructuralNominal = any
+		intersectionTest{"SomeClass", "NonStructuralNominal", "any"},
+
+		// NonStructuralNominal & SomeClass = any
+		intersectionTest{"NonStructuralNominal", "SomeClass", "any"},
+
+		// StructuralNominal & SomeClass = any
+		intersectionTest{"StructuralNominal", "SomeClass", "any"},
+
+		// NonStructuralNominal & SomeStruct = any
+		intersectionTest{"NonStructuralNominal", "SomeStruct", "any"},
+
+		// SomeStruct & AnotherStruct = struct
+		intersectionTest{"SomeStruct", "AnotherStruct", "struct"},
+
+		// SomeStruct? & AnotherStruct = struct?
+		intersectionTest{"SomeStruct?", "AnotherStruct", "struct?"},
+
+		// SomeStruct & AnotherStruct? = struct?
+		intersectionTest{"SomeStruct", "AnotherStruct?", "struct?"},
+
+		// SomeStruct? & AnotherStruct? = struct?
+		intersectionTest{"SomeStruct?", "AnotherStruct?", "struct?"},
+	}
+
+	for _, test := range tests {
+		firstRef := parseTypeReferenceForTesting(test.first, graph, moduleSourceNode)
+		secondRef := parseTypeReferenceForTesting(test.second, graph, moduleSourceNode)
+
+		intersect := firstRef.Intersect(secondRef)
+		if !assert.Equal(t, test.expectedType, intersect.String(), "Expected %s for %s & %s", test.expectedType, firstRef.String(), secondRef.String()) {
+			continue
 		}
 	}
 }

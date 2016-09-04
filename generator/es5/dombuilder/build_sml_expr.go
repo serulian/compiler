@@ -52,7 +52,7 @@ func (db *domBuilder) buildSmlExpression(node compilergraph.GraphNode) codedom.E
 
 		// Construct the props object expression, either as a struct or as a mapping.
 		propsType := declFunctionParams[0]
-		if propsType.IsStruct() {
+		if propsType.IsRefToStruct() {
 			declarationArguments = append(declarationArguments, db.buildStructInitializerExpression(propsType, attributeExpressions, node))
 		} else {
 			declarationArguments = append(declarationArguments, db.buildMappingInitializerExpression(propsType, attributeExpressions, node))

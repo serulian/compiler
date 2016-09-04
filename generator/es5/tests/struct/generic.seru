@@ -1,0 +1,21 @@
+struct AnotherStruct {
+	BoolValue bool
+}
+
+struct SomeStruct<T> {
+	SomeField T
+}
+
+function<any> TEST() {
+	var ss = SomeStruct<AnotherStruct>{
+		SomeField: AnotherStruct{
+			BoolValue: true,
+		},
+	}
+
+	var ss2 = SomeStruct<bool>{
+		SomeField: true,
+	}
+
+	return ss.SomeField.BoolValue && ss2.SomeField
+}

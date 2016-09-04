@@ -170,7 +170,7 @@ var scopeGraphTests = []scopegraphTest{
 		"Expected return value of type 'Integer' but not all paths return a value", ""},
 
 	scopegraphTest{"conditional chained return intersect test", "conditional", "chainedintersect", []expectedScopeEntry{},
-		"Expected return value of type 'Integer': Cannot use type 'any' in place of type 'Integer'", ""},
+		"Expected return value of type 'Integer': Cannot use type 'struct' in place of type 'Integer'", ""},
 
 	/////////// Loops ///////////
 
@@ -543,7 +543,7 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"conditional expression success test", "condexpr", "success",
 		[]expectedScopeEntry{
 			expectedScopeEntry{"condexpr", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
-			expectedScopeEntry{"condexpr2", expectedScope{true, proto.ScopeKind_VALUE, "any", "void"}},
+			expectedScopeEntry{"condexpr2", expectedScope{true, proto.ScopeKind_VALUE, "struct", "void"}},
 		},
 		"", ""},
 
@@ -832,7 +832,7 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{
 			expectedScopeEntry{"emptylist", expectedScope{true, proto.ScopeKind_VALUE, "List<any>", "void"}},
 			expectedScopeEntry{"intlist", expectedScope{true, proto.ScopeKind_VALUE, "List<Integer>", "void"}},
-			expectedScopeEntry{"mixedlist", expectedScope{true, proto.ScopeKind_VALUE, "List<any>", "void"}},
+			expectedScopeEntry{"mixedlist", expectedScope{true, proto.ScopeKind_VALUE, "List<struct>", "void"}},
 		},
 		"", ""},
 
@@ -870,10 +870,11 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{
 			expectedScopeEntry{"emptymap", expectedScope{true, proto.ScopeKind_VALUE, "Map<Mappable, any>", "void"}},
 			expectedScopeEntry{"intmap", expectedScope{true, proto.ScopeKind_VALUE, "Map<String, Integer>", "void"}},
-			expectedScopeEntry{"mixedmap", expectedScope{true, proto.ScopeKind_VALUE, "Map<String, any>", "void"}},
+			expectedScopeEntry{"mixedmap", expectedScope{true, proto.ScopeKind_VALUE, "Map<String, struct>", "void"}},
 
 			expectedScopeEntry{"intkeymap", expectedScope{true, proto.ScopeKind_VALUE, "Map<Integer, Integer>", "void"}},
-			expectedScopeEntry{"mixedkeymap", expectedScope{true, proto.ScopeKind_VALUE, "Map<Mappable, Integer>", "void"}},
+			expectedScopeEntry{"mixedkeymap", expectedScope{true, proto.ScopeKind_VALUE, "Map<struct, Integer>", "void"}},
+			expectedScopeEntry{"mixedkeymap2", expectedScope{true, proto.ScopeKind_VALUE, "Map<Mappable, Integer>", "void"}},
 		},
 		"", ""},
 
@@ -934,6 +935,13 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{
 			expectedScopeEntry{"cast", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
 			expectedScopeEntry{"anycast", expectedScope{true, proto.ScopeKind_VALUE, "any", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"cast struct success test", "castexpr", "structcast",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"someField", expectedScope{true, proto.ScopeKind_VALUE, "AnotherStruct", "void"}},
+			expectedScopeEntry{"bool", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
 		},
 		"", ""},
 
@@ -1216,7 +1224,7 @@ var scopeGraphTests = []scopegraphTest{
 			expectedScopeEntry{"callref", expectedScope{true, proto.ScopeKind_VALUE, "function<Boolean>(String, String)", "void"}},
 			expectedScopeEntry{"nonref", expectedScope{true, proto.ScopeKind_VALUE, "function<Boolean>(any, any)", "void"}},
 			expectedScopeEntry{"ripref", expectedScope{true, proto.ScopeKind_VALUE, "function<Integer>(Integer)", "void"}},
-			expectedScopeEntry{"multiripref", expectedScope{true, proto.ScopeKind_VALUE, "function<any>(any)", "void"}},
+			expectedScopeEntry{"multiripref", expectedScope{true, proto.ScopeKind_VALUE, "function<struct>(struct)", "void"}},
 		},
 		"", ""},
 
@@ -1362,6 +1370,10 @@ var scopeGraphTests = []scopegraphTest{
 			expectedScopeEntry{"genericmodified", expectedScope{true, proto.ScopeKind_VALUE, "GenericStruct<Integer>", "void"}},
 		},
 		"", ""},
+
+	scopegraphTest{"structural new invalid generics test", "structnew", "invalidgenerics",
+		[]expectedScopeEntry{},
+		"SomeStruct<SomeClass> has non-structural generic type SomeClass: SomeClass is not structural nor serializable", ""},
 
 	scopegraphTest{"structural new unconstructable type test", "structnew", "unconstructable",
 		[]expectedScopeEntry{},

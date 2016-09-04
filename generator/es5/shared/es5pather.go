@@ -31,6 +31,10 @@ func (p Pather) TypeReferenceCall(typeRef typegraph.TypeReference) string {
 		return "$t.any"
 	}
 
+	if typeRef.IsStruct() {
+		return "$t.struct"
+	}
+
 	if typeRef.IsNull() {
 		return "$t.null"
 	}

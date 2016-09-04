@@ -80,6 +80,14 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 	// a nominal type and a base type.
 	if childScope.GetKind() == proto.ScopeKind_STATIC {
 		return sb.scopeTypeConversionExpression(node, context)
+	} else if childScope.GetKind() == proto.ScopeKind_GENERIC {
+		namedScopedRef, found := sb.getNamedScopeForScope(childScope)
+		if found {
+			sb.decorateWithError(node, "Cannot invoke function call on unclarified generic %s %s.", namedScopedRef.Title(), namedScopedRef.Name())
+		} else {
+			sb.decorateWithError(node, "Cannot invoke function call on unclarified generic scope.")
+		}
+		return newScope().Invalid().GetScope()
 	}
 
 	// Ensure the child expression has type function.

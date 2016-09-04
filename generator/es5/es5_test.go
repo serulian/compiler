@@ -108,6 +108,8 @@ var generationTests = []generationTest{
 	generationTest{"struct nominal field test", "struct", "nominal", integrationTestSuccessExpected, ""},
 	generationTest{"struct null boxing test", "struct", "nullbox", integrationTestSuccessExpected, ""},
 	generationTest{"struct cloning test", "struct", "clone", integrationTestSuccessExpected, ""},
+	generationTest{"struct generic test", "struct", "generic", integrationTestSuccessExpected, ""},
+	generationTest{"struct inner generic test", "struct", "innergeneric", integrationTestSuccessExpected, ""},
 
 	generationTest{"basic async test", "async", "async", integrationTestSuccessExpected, ""},
 	generationTest{"async struct param test", "async", "asyncstruct", integrationTestSuccessExpected, ""},

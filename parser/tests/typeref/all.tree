@@ -1,5 +1,5 @@
 NodeTypeFile
-  end-rune = 711
+  end-rune = 786
   input-source = all type reference test
   start-rune = 0
   child-node =>
@@ -846,3 +846,39 @@ NodeTypeFile
                       identifieraccess-name = int
                       input-source = all type reference test
                       start-rune = 690
+    NodeTypeVariable
+      end-rune = 742
+      input-source = all type reference test
+      named = structuralReference
+      start-rune = 712
+      typemember-declared-type =>
+        NodeTypeStructReference
+          end-rune = 721
+          input-source = all type reference test
+          start-rune = 716
+    NodeTypeVariable
+      end-rune = 785
+      input-source = all type reference test
+      named = structuralGeneric
+      start-rune = 744
+      typemember-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 766
+          input-source = all type reference test
+          start-rune = 748
+          typereference-generic =>
+            NodeTypeStructReference
+              end-rune = 765
+              input-source = all type reference test
+              start-rune = 760
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 758
+              input-source = all type reference test
+              start-rune = 748
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 758
+                  identifieraccess-name = SomeGeneric
+                  input-source = all type reference test
+                  start-rune = 748

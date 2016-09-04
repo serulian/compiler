@@ -83,7 +83,7 @@ func (sb *scopeBuilder) scopeGenericSpecifierExpression(node compilergraph.Graph
 		}
 
 		// If the parent type is structural, ensure the constraint is structural.
-		if genericType.IsStruct() {
+		if genericType.IsStructurual() {
 			if serr := replacementType.EnsureStructural(); serr != nil {
 				sb.decorateWithError(node, "Cannot use type %v as generic %v (#%v) over %v %v: %v", replacementType, toReplace.Name(), genericIndex+1, namedScope.Title(), namedScope.Name(), serr)
 				return newScope().Invalid().GetScope()
@@ -375,7 +375,6 @@ func (sb *scopeBuilder) scopeMemberAccessExpression(node compilergraph.GraphNode
 			sb.decorateWithError(node, "%v", rerr)
 			return newScope().Invalid().GetScope()
 		}
-
 		return newScope().ForNamedScopeUnderType(memberScope, staticType, context).GetScope()
 
 	default:
