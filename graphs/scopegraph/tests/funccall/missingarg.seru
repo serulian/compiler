@@ -1,0 +1,6 @@
+function<void> DoSomething(someParam string) {
+}
+
+function<void> DoSomethingElse() {
+	DoSomething()
+}

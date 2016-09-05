@@ -1,0 +1,7 @@
+function<bool> someFunction(first string, second bool) {
+	return true
+}
+
+function<void> DoSomething() {
+	someFunction('hello')
+}
