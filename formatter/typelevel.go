@@ -13,6 +13,12 @@ func (sf *sourceFormatter) emitField(node formatterNode) {
 		sf.append(" ")
 		sf.emitNode(node.getChild(parser.NodePredicateTypeMemberDeclaredType))
 
+		// Handle default value.
+		if node.hasChild(parser.NodePredicateTypeFieldDefaultValue) {
+			sf.append(" = ")
+			sf.emitNode(node.getChild(parser.NodePredicateTypeFieldDefaultValue))
+		}
+
 		// Handle any tags.
 		if node.hasChild(parser.NodePredicateTypeMemberTag) {
 			sf.append(" `")
@@ -35,9 +41,9 @@ func (sf *sourceFormatter) emitField(node formatterNode) {
 	sf.append(" ")
 	sf.append(node.getProperty(parser.NodePredicateTypeMemberName))
 
-	if node.hasChild(parser.NodeVariableStatementExpression) {
+	if node.hasChild(parser.NodePredicateTypeFieldDefaultValue) {
 		sf.append(" = ")
-		sf.emitNode(node.getChild(parser.NodeVariableStatementExpression))
+		sf.emitNode(node.getChild(parser.NodePredicateTypeFieldDefaultValue))
 	}
 
 	sf.appendLine()

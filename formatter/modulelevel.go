@@ -19,9 +19,9 @@ func (sf *sourceFormatter) emitVariable(node formatterNode) {
 	sf.append(" ")
 	sf.append(node.getProperty(parser.NodeVariableStatementName))
 
-	if node.hasChild(parser.NodeVariableStatementExpression) {
+	if node.hasChild(parser.NodePredicateTypeFieldDefaultValue) {
 		sf.append(" = ")
-		sf.emitNode(node.getChild(parser.NodeVariableStatementExpression))
+		sf.emitNode(node.getChild(parser.NodePredicateTypeFieldDefaultValue))
 	}
 
 	sf.appendLine()
@@ -57,11 +57,11 @@ func (sf *sourceFormatter) emitTypeDefinition(node formatterNode, kind string) {
 		// Variables (no default)
 		// Variables (defaults)
 		sf.emitTypeMembers(members, false, func(current formatterNode) bool {
-			return !current.hasChild(parser.NodeVariableStatementExpression)
+			return !current.hasChild(parser.NodePredicateTypeFieldDefaultValue)
 		}, parser.NodeTypeField)
 
 		sf.emitTypeMembers(members, false, func(current formatterNode) bool {
-			return current.hasChild(parser.NodeVariableStatementExpression)
+			return current.hasChild(parser.NodePredicateTypeFieldDefaultValue)
 		}, parser.NodeTypeField)
 
 		// Constructors
