@@ -24,7 +24,7 @@ NodeTypeFile
                   identifieraccess-name = int
                   input-source = module variable test
                   start-rune = 4
-      var-expr =>
+      typemember-field-default-value =>
         NodeNumericLiteralExpression
           end-rune = 21
           input-source = module variable test

@@ -1,0 +1,125 @@
+NodeTypeFile
+  end-rune = 146
+  input-source = struct default test
+  start-rune = 0
+  child-node =>
+    NodeTypeStruct
+      end-rune = 146
+      input-source = struct default test
+      named = SomeStruct
+      start-rune = 0
+      type-member =>
+        NodeTypeField
+          end-rune = 37
+          input-source = struct default test
+          named = SomeField
+          start-rune = 21
+          typemember-declared-type =>
+            NodeTypeTypeReference
+              end-rune = 33
+              input-source = struct default test
+              start-rune = 31
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 33
+                  input-source = struct default test
+                  start-rune = 31
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 33
+                      identifieraccess-name = int
+                      input-source = struct default test
+                      start-rune = 31
+          typemember-field-default-value =>
+            NodeNumericLiteralExpression
+              end-rune = 37
+              input-source = struct default test
+              literal-value = 2
+              start-rune = 37
+        NodeTypeField
+          end-rune = 74
+          input-source = struct default test
+          named = AnotherField
+          start-rune = 40
+          typemember-declared-type =>
+            NodeTypeTypeReference
+              end-rune = 58
+              input-source = struct default test
+              start-rune = 53
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 58
+                  input-source = struct default test
+                  start-rune = 53
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 58
+                      identifieraccess-name = string
+                      input-source = struct default test
+                      start-rune = 53
+          typemember-field-default-value =>
+            NodeStringLiteralExpression
+              end-rune = 74
+              input-source = struct default test
+              literal-value = 'hello world'
+              start-rune = 62
+        NodeTypeField
+          end-rune = 144
+          input-source = struct default test
+          named = ThirdField
+          start-rune = 77
+          typemember-declared-type =>
+            NodeTypeTypeReference
+              end-rune = 105
+              input-source = struct default test
+              start-rune = 88
+              typereference-generic =>
+                NodeTypeTypeReference
+                  end-rune = 104
+                  input-source = struct default test
+                  start-rune = 102
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 104
+                      input-source = struct default test
+                      start-rune = 102
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 104
+                          identifieraccess-name = int
+                          input-source = struct default test
+                          start-rune = 102
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 100
+                  input-source = struct default test
+                  start-rune = 88
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 100
+                      identifieraccess-name = AnotherStruct
+                      input-source = struct default test
+                      start-rune = 88
+          typemember-field-default-value =>
+            NodeStructuralNewExpression
+              end-rune = 145
+              input-source = struct default test
+              start-rune = 109
+              structural-new-entry =>
+                NodeStructuralNewExpressionEntry
+                  end-rune = 140
+                  input-source = struct default test
+                  start-rune = 126
+                  structural-new-entry-key = AnotherField
+                  structural-new-entry-value =>
+                    NodeNumericLiteralExpression
+                      end-rune = 140
+                      input-source = struct default test
+                      literal-value = 2
+                      start-rune = 140
+              structural-new-type-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 121
+                  identexpr-name = AnotherStruct
+                  input-source = struct default test
+                  start-rune = 109
