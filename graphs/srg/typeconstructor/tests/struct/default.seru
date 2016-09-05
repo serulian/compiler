@@ -1,0 +1,11 @@
+struct AnotherStruct {
+	AnotherField int	
+}
+
+struct SomeStruct {
+	SomeField int = 2
+	AnotherField string = 'hello world'
+	ThirdField AnotherStruct = AnotherStruct{
+		AnotherField: 2,
+	}
+}
