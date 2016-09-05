@@ -10,7 +10,7 @@ import (
 )
 
 // EntrypointStatements returns an iterator of all statements in the SRG that are entrypoints for
-// implementations of memebrs.
+// implementations of members.
 func (g *SRG) EntrypointStatements() compilergraph.NodeIterator {
 	return g.layer.StartQuery().Out(parser.NodePredicateBody).BuildNodeIterator()
 }

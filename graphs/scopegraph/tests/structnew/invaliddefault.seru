@@ -1,0 +1,3 @@
+struct WithDefaults {
+	SomeField int = 'hello world'
+}

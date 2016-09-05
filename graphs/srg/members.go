@@ -128,13 +128,21 @@ func (m SRGMember) MemberKind() MemberKind {
 	}
 }
 
-// Initializer returns the expression forming the initializer for this variable, if any.
+// Initializer returns the expression forming the initializer for this variable or field, if any.
 func (m SRGMember) Initializer() (compilergraph.GraphNode, bool) {
-	if m.MemberKind() != VarMember {
-		panic("Expected variable node")
-	}
+	switch m.GraphNode.Kind() {
+	case parser.NodeTypeVariable:
+		fallthrough
 
-	return m.TryGetNode(parser.NodeVariableStatementExpression)
+	case parser.NodeTypeField:
+		return m.TryGetNode(parser.NodePredicateTypeFieldDefaultValue)
+
+	case parser.NodeTypeVariableStatement:
+		return m.TryGetNode(parser.NodeVariableStatementExpression)
+
+	default:
+		panic("Expected variable or field node")
+	}
 }
 
 // Body returns the statement block forming the implementation body for this member, if any.

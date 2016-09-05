@@ -1380,8 +1380,14 @@ var scopeGraphTests = []scopegraphTest{
 			expectedScopeEntry{"required", expectedScope{true, proto.ScopeKind_VALUE, "RequiredClass", "void"}},
 			expectedScopeEntry{"generic", expectedScope{true, proto.ScopeKind_VALUE, "GenericStruct<Integer>", "void"}},
 			expectedScopeEntry{"genericmodified", expectedScope{true, proto.ScopeKind_VALUE, "GenericStruct<Integer>", "void"}},
+			expectedScopeEntry{"withdefaults", expectedScope{true, proto.ScopeKind_VALUE, "WithDefaults", "void"}},
+			expectedScopeEntry{"withdefaults2", expectedScope{true, proto.ScopeKind_VALUE, "WithDefaults", "void"}},
 		},
 		"", ""},
+
+	scopegraphTest{"structural new invalid default test", "structnew", "invaliddefault",
+		[]expectedScopeEntry{},
+		"Field 'SomeField' has declared type 'Integer': 'String' cannot be used in place of non-interface 'Integer'", ""},
 
 	scopegraphTest{"structural new invalid generics test", "structnew", "invalidgenerics",
 		[]expectedScopeEntry{},
