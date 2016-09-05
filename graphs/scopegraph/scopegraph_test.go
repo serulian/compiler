@@ -970,6 +970,14 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	scopegraphTest{"function call missing argument test", "funccall", "missingarg",
+		[]expectedScopeEntry{},
+		"Function call on module member DoSomething expects 1 non-optional arguments, found 0", ""},
+
+	scopegraphTest{"function call missing argument 2 test", "funccall", "missingarg2",
+		[]expectedScopeEntry{},
+		"Function call on module member someFunction expects 2 non-optional arguments, found 1", ""},
+
 	scopegraphTest{"function call nullable access success test", "funccall", "nullaccess",
 		[]expectedScopeEntry{
 			expectedScopeEntry{"sm", expectedScope{true, proto.ScopeKind_VALUE, "Integer?", "void"}},
@@ -982,11 +990,11 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"function call invalid count failure test", "funccall", "invalidcount",
 		[]expectedScopeEntry{},
-		"Function call expects 0 arguments, found 1", ""},
+		"Function call on module member EmptyFunc expects 0 arguments, found 1", ""},
 
 	scopegraphTest{"function call type mismatch failure test", "funccall", "typemismatch",
 		[]expectedScopeEntry{},
-		"Parameter #1 expects type Integer: 'Boolean' cannot be used in place of non-interface 'Integer'", ""},
+		"Parameter #1 on module member EmptyFunc expects type Integer: 'Boolean' cannot be used in place of non-interface 'Integer'", ""},
 
 	scopegraphTest{"function call nullable function failure test", "funccall", "nullablevar",
 		[]expectedScopeEntry{},

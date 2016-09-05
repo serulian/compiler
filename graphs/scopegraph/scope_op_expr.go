@@ -76,6 +76,15 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 		return newScope().Invalid().GetScope()
 	}
 
+	getDescription := func() string {
+		namedNode, hasNamedNode := sb.getNamedScopeForScope(childScope)
+		if !hasNamedNode {
+			return ""
+		}
+
+		return fmt.Sprintf("on %v %v ", namedNode.Title(), namedNode.Name())
+	}
+
 	// Check if the child expression has a static scope. If so, this is a type conversion between
 	// a nominal type and a base type.
 	if childScope.GetKind() == proto.ScopeKind_STATIC {
@@ -107,15 +116,22 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 		}
 	}
 
-	// Ensure that the parameters of the function call match those of the child type.
+	// Find the starting index of the nullable parameters. Once all parameters are nullable,
+	// they are considered optional.
+	var nonOptionalIndex = -1
 	childParameters := childType.Parameters()
+	for parameterIndex, parameterType := range childParameters {
+		if !parameterType.NullValueAllowed() {
+			nonOptionalIndex = parameterIndex
+		}
+	}
 
+	// Ensure that the parameters of the function call match those of the child type.
 	var index = -1
 	ait := node.StartQuery().
 		Out(parser.NodeFunctionCallArgument).
 		BuildNodeIterator()
 
-	var nonOptionalIndex = len(childParameters) - 1
 	var isValid = true
 	for ait.Next() {
 		index = index + 1
@@ -133,7 +149,7 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 			argumentType := argumentScope.ResolvedTypeRef(sb.sg.tdg)
 			serr, exception := argumentType.CheckSubTypeOfWithExceptions(childParameters[index], typegraph.AllowNominalWrappedForData)
 			if serr != nil {
-				sb.decorateWithError(ait.Node(), "Parameter #%v expects type %v: %v", index+1, childParameters[index], serr)
+				sb.decorateWithError(ait.Node(), "Parameter #%v %sexpects type %v: %v", index+1, getDescription(), childParameters[index], serr)
 				isValid = false
 			}
 
@@ -142,20 +158,16 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 			if exception == typegraph.AllowNominalWrappedForData {
 				sb.decorateWithSecondaryLabel(ait.Node(), proto.ScopeLabel_NOMINALLY_SHORTCUT_EXPR)
 			}
-
-			if !childParameters[index].IsNullable() {
-				nonOptionalIndex = index
-			}
 		}
 	}
 
 	if index < nonOptionalIndex {
-		sb.decorateWithError(node, "Function call expects %v non-optional arguments, found %v", nonOptionalIndex+1, index+1)
+		sb.decorateWithError(node, "Function call %sexpects %v non-optional arguments, found %v", getDescription(), nonOptionalIndex+1, index+1)
 		return newScope().Invalid().GetScope()
 	}
 
 	if index >= len(childParameters) {
-		sb.decorateWithError(node, "Function call expects %v arguments, found %v", len(childParameters), index+1)
+		sb.decorateWithError(node, "Function call %sexpects %v arguments, found %v", getDescription(), len(childParameters), index+1)
 		return newScope().Invalid().GetScope()
 	}
 

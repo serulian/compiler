@@ -10,6 +10,7 @@ import (
 	"html/template"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -135,6 +136,10 @@ func (dt *developTransaction) ServeSourceFile(w http.ResponseWriter, r *http.Req
 	path := params["path"]
 
 	fullPath := filepath.Join(filepath.Dir(dt.rootSourceFilePath), string(path))
+	if _, err := os.Stat(fullPath); err != nil {
+		fullPath = "/" + path
+	}
+
 	contents, err := ioutil.ReadFile(fullPath)
 	if err != nil {
 		fmt.Fprintf(w, "Error when trying to read source file %s: %v", fullPath, err)

@@ -1,16 +1,16 @@
 NodeTypeFile
-  end-rune = 155
+  end-rune = 197
   input-source = attributes sml test
   start-rune = 0
   child-node =>
     NodeTypeFunction
-      end-rune = 155
+      end-rune = 197
       input-source = attributes sml test
       named = DoSomething
       start-rune = 0
       definition-body =>
         NodeTypeStatementBlock
-          end-rune = 155
+          end-rune = 197
           input-source = attributes sml test
           start-rune = 29
           block-child =>
@@ -155,6 +155,49 @@ NodeTypeFile
                       identexpr-name = sometag
                       input-source = attributes sml test
                       start-rune = 122
+            NodeTypeExpressionStatement
+              end-rune = 196
+              input-source = attributes sml test
+              start-rune = 156
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 195
+                  input-source = attributes sml test
+                  start-rune = 156
+                  sml-expression-attribute =>
+                    NodeTypeSmlAttribute
+                      end-rune = 192
+                      input-source = attributes sml test
+                      sml-attribute-name = someAttr
+                      start-rune = 168
+                      sml-attribute-value =>
+                        NodeMapExpression
+                          end-rune = 191
+                          input-source = attributes sml test
+                          start-rune = 178
+                          map-expr-entry =>
+                            NodeMapExpressionEntry
+                              end-rune = 190
+                              input-source = attributes sml test
+                              start-rune = 179
+                              map-entry-key =>
+                                NodeStringLiteralExpression
+                                  end-rune = 183
+                                  input-source = attributes sml test
+                                  literal-value = 'foo'
+                                  start-rune = 179
+                              map-entry-value =>
+                                NodeStringLiteralExpression
+                                  end-rune = 190
+                                  input-source = attributes sml test
+                                  literal-value = 'bar'
+                                  start-rune = 186
+                  sml-expression-typefunc =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 166
+                      identexpr-name = anothertag
+                      input-source = attributes sml test
+                      start-rune = 157
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 12
