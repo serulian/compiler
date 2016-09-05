@@ -2401,7 +2401,7 @@ func (p *sourceParser) consumeMarkupAttribute(kind NodeType, valuePredicate stri
 	// in curly braces.
 	if _, ok := p.tryConsume(tokenTypeLeftBrace); ok {
 		// Expression value.
-		attributeNode.Connect(valuePredicate, p.consumeExpression(consumeExpressionNoBraces))
+		attributeNode.Connect(valuePredicate, p.consumeExpression(consumeExpressionAllowBraces))
 		p.consume(tokenTypeRightBrace)
 	} else {
 		attributeNode.Connect(valuePredicate, p.consumeStringLiteral())
