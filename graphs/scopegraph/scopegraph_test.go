@@ -390,7 +390,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"sml expression invalid param count test", "sml", "invalidparamcount",
 		[]expectedScopeEntry{},
-		"Declarable function or constructor used in an SML declaration tag with attributes must have a 'props' parameter. Found: function<SomeClass>", ""},
+		"Declarable function or constructor used in an SML declaration tag with attributes must have a 'props' parameter as parameter #1. Found: function<SomeClass>", ""},
 
 	scopegraphTest{"sml expression void function test", "sml", "voidfunction",
 		[]expectedScopeEntry{},
@@ -398,7 +398,11 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"sml expression invalid props type test", "sml", "invalidprops",
 		[]expectedScopeEntry{},
-		"First parameter of a declarable function or constructor used in an SML declaration tag must be structural or a Mapping. Found: Integer", ""},
+		"Props parameter (parameter #1) of a declarable function or constructor used in an SML declaration tag must be a struct, a class with a ForProps constructor or a Mapping. Found: Integer", ""},
+
+	scopegraphTest{"sml expression invalid props class test", "sml", "invalidpropsclass",
+		[]expectedScopeEntry{},
+		"Props parameter (parameter #1) of a declarable function or constructor used in an SML declaration tag has type SomeClass, which does not have any settable fields; use an empty `struct` instead if this is the intended behavior", ""},
 
 	scopegraphTest{"sml expression invalid attribute name test", "sml", "invalidattributename",
 		[]expectedScopeEntry{},

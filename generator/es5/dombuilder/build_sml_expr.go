@@ -36,7 +36,7 @@ func (db *domBuilder) buildSmlExpression(node compilergraph.GraphNode) codedom.E
 	var declarationArguments = make([]codedom.Expression, 0)
 	declFunctionParams := declarationFunctionType.Parameters()
 
-	// If the SML expression expects any attributes, then construct the props struct or mapping.
+	// If the SML expression expects any attributes, then construct the props struct, class or mapping.
 	if len(declFunctionParams) > 0 {
 		attributeExpressions := map[string]codedom.Expression{}
 
@@ -50,12 +50,12 @@ func (db *domBuilder) buildSmlExpression(node compilergraph.GraphNode) codedom.E
 			attributeExpressions[attributeName] = db.getExpressionOrDefault(attributeNode, parser.NodeSmlAttributeValue, codedom.LiteralValue("true", attributeNode))
 		}
 
-		// Construct the props object expression, either as a struct or as a mapping.
+		// Construct the props object expression, either as a struct, class or as a mapping.
 		propsType := declFunctionParams[0]
-		if propsType.IsRefToStruct() {
-			declarationArguments = append(declarationArguments, db.buildStructInitializerExpression(propsType, attributeExpressions, node))
-		} else {
+		if smlScope.HasLabel(proto.ScopeLabel_SML_PROPS_MAPPING) {
 			declarationArguments = append(declarationArguments, db.buildMappingInitializerExpression(propsType, attributeExpressions, node))
+		} else {
+			declarationArguments = append(declarationArguments, db.buildStructInitializerExpression(propsType, attributeExpressions, node))
 		}
 	}
 

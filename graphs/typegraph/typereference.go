@@ -347,6 +347,11 @@ func (tr TypeReference) IsRefToStruct() bool {
 	return tr.isNormal() && tr.ReferredType().TypeKind() == StructType
 }
 
+// IsRefToClass returns whether the referenced type is a class.
+func (tr TypeReference) IsRefToClass() bool {
+	return tr.isNormal() && tr.ReferredType().TypeKind() == ClassType
+}
+
 // IsNominal returns whether the referenced type is a nominal type.
 func (tr TypeReference) IsNominal() bool {
 	return tr.isNormal() && tr.ReferredType().TypeKind() == NominalType

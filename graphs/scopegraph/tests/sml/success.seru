@@ -4,6 +4,15 @@ class SimpleClass {
 	}
 }
 
+class PropsClass {
+	var<string> something
+	var<int> somethingElse = 2
+}
+
+function<string> FunctionWithPropsClass(props PropsClass) {
+	return props.something
+}
+
 class ClassWithProps {
 	constructor Declare(props []{string}) {
 		return ClassWithProps.new()
@@ -74,4 +83,7 @@ function<void> DoSomething(someStream int*) {
 	/* chaineddecorator */(<SimpleClass @SomeCoolDecorator @ChainedDecorator="somevalue" />)
 
 	/* subtypedecorator */(<SimpleClass @SubtypeDecorator="foo" />)
+
+	/* propsclass */(<FunctionWithPropsClass something="hello" />)
+	/* propsclass2 */(<FunctionWithPropsClass something="hello" somethingElse={42} />)
 }
