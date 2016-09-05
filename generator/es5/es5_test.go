@@ -238,6 +238,7 @@ var generationTests = []generationTest{
 	generationTest{"sml simple function test", "sml", "simplefunc", integrationTestSuccessExpected, ""},
 	generationTest{"sml simple class test", "sml", "simpleclass", integrationTestSuccessExpected, ""},
 	generationTest{"sml struct props test", "sml", "structprops", integrationTestSuccessExpected, ""},
+	generationTest{"sml class props test", "sml", "classprops", integrationTestSuccessExpected, ""},
 	generationTest{"sml mapping props test", "sml", "mappingprops", integrationTestSuccessExpected, ""},
 	generationTest{"sml single child test", "sml", "singlechild", integrationTestSuccessExpected, ""},
 	generationTest{"sml string child test", "sml", "stringchild", integrationTestSuccessExpected, ""},

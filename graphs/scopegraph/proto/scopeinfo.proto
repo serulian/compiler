@@ -23,6 +23,10 @@ enum ScopeLabel {
 	SML_NO_CHILDREN = 8; // Mark a SML declaration as having no children.
 	SML_CHILDREN = 9; // Mark a SML declaration as having a set of children.
 
+	SML_PROPS_MAPPING = 13;
+	SML_PROPS_CLASS = 14;
+	SML_PROPS_STRUCT = 15;
+
 	NOMINALLY_SHORTCUT_EXPR = 10; // Marks an expression of a nominal type being used 
 					 		      // where its root data is expected. This is a special
 							      // allowance as a shortcut for easier working with native APIs.

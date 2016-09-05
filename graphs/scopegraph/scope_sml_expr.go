@@ -24,8 +24,9 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 	// A function is "declarable" if it has the following properties:
 	//  - Must return a non-void type
 	//  - Parameter #1 represents the properties (attributes) and must be:
-	//     a) A struct
-	//     b) A mapping
+	//     1) A struct
+	//     2) A class with at least one field
+	//     3) A mapping
 	//
 	//  - Parameter #2 (optional) represents the children (contents).
 	typeOrFuncScope := sb.getScope(node.GetNode(parser.NodeSmlExpressionTypeOrFunction), context)
@@ -36,6 +37,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 	var functionType = sb.sg.tdg.AnyTypeReference()
 	var declarationLabel = proto.ScopeLabel_SML_FUNCTION
 	var childrenLabel = proto.ScopeLabel_SML_NO_CHILDREN
+	var propsLabel = proto.ScopeLabel_SML_PROPS_MAPPING
 
 	switch typeOrFuncScope.GetKind() {
 	case proto.ScopeKind_VALUE:
@@ -85,15 +87,39 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 	var resolvedType = declaredType
 	if _, ok := node.TryGetNode(parser.NodeSmlExpressionAttribute); ok || len(parameters) >= 1 {
 		if len(parameters) < 1 {
-			sb.decorateWithError(node, "Declarable function or constructor used in an SML declaration tag with attributes must have a 'props' parameter. Found: %v", functionType)
+			sb.decorateWithError(node, "Declarable function or constructor used in an SML declaration tag with attributes must have a 'props' parameter as parameter #1. Found: %v", functionType)
 			return newScope().Invalid().Resolving(declaredType).GetScope()
 		}
 
 		propsType := parameters[0]
 
-		// Ensure that the first parameter is either structural or a Mapping.
-		if propsType.IsNullable() || (!propsType.IsRefToStruct() && !propsType.IsDirectReferenceTo(sb.sg.tdg.MappingType())) {
-			sb.decorateWithError(node, "First parameter of a declarable function or constructor used in an SML declaration tag must be structural or a Mapping. Found: %v", propsType)
+		// Ensure that the first parameter is either structural, a class with ForProps or a Mapping.
+		if propsType.NullValueAllowed() {
+			sb.decorateWithError(node, "Props parameter (parameter #1) of a declarable function or constructor used in an SML declaration tag cannot allow null values. Found: %v", propsType)
+			return newScope().Invalid().Resolving(declaredType).GetScope()
+		}
+
+		switch {
+		case propsType.IsDirectReferenceTo(sb.sg.tdg.MappingType()):
+			// Mappings are always allowed.
+			propsLabel = proto.ScopeLabel_SML_PROPS_MAPPING
+
+		case propsType.IsRefToStruct():
+			// Structs are always allowed.
+			propsLabel = proto.ScopeLabel_SML_PROPS_STRUCT
+
+		case propsType.IsRefToClass():
+			// Classes are allowed if they have at least one field.
+			if len(propsType.ReferredType().Fields()) == 0 {
+				sb.decorateWithError(node, "Props parameter (parameter #1) of a declarable function or constructor used in an SML declaration tag has type %v, which does not have any settable fields; use an empty `struct` instead if this is the intended behavior", propsType)
+				return newScope().Invalid().Resolving(declaredType).GetScope()
+			}
+
+			propsLabel = proto.ScopeLabel_SML_PROPS_CLASS
+
+		default:
+			// Otherwise, the type is not valid.
+			sb.decorateWithError(node, "Props parameter (parameter #1) of a declarable function or constructor used in an SML declaration tag must be a struct, a class with a ForProps constructor or a Mapping. Found: %v", propsType)
 			return newScope().Invalid().Resolving(declaredType).GetScope()
 		}
 
@@ -111,8 +137,8 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 			isValid = isValid && ok
 		}
 
-		// If the props type is a struct, ensure that all required fields were set.
-		if propsType.IsRefToStruct() {
+		// If the props type is not a mapping, ensure that all required fields were set.
+		if !propsType.IsDirectReferenceTo(sb.sg.tdg.MappingType()) {
 			for _, requiredField := range propsType.ReferredType().RequiredFields() {
 				if _, ok := attributesEncountered[requiredField.Name()]; !ok {
 					sb.decorateWithError(node, "Required attribute '%v' is missing for SML declaration props type %v", requiredField.Name(), propsType)
@@ -204,6 +230,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 		IsValid(isValid).
 		Resolving(resolvedType).
 		WithLabel(declarationLabel).
+		WithLabel(propsLabel).
 		WithLabel(childrenLabel).
 		GetScope()
 }
@@ -275,9 +302,9 @@ func (sb *scopeBuilder) scopeSmlDecorator(node compilergraph.GraphNode, declared
 func (sb *scopeBuilder) scopeSmlAttribute(node compilergraph.GraphNode, propsType typegraph.TypeReference, context scopeContext) (string, bool) {
 	attributeName := node.Get(parser.NodeSmlAttributeName)
 
-	// If the props type is a struct, ensure that the attribute name exists.
+	// If the props type is a struct or class, ensure that the attribute name exists.
 	var allowedValueType = sb.sg.tdg.AnyTypeReference()
-	if propsType.IsRefToStruct() {
+	if propsType.IsRefToStruct() || propsType.IsRefToClass() {
 		module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
 		resolvedMember, rerr := propsType.ResolveAccessibleMember(attributeName, module, typegraph.MemberResolutionInstance)
 		if rerr != nil {
