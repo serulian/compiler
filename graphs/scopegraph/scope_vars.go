@@ -24,17 +24,17 @@ const (
 
 // scopeField scopes a field member in the SRG.
 func (sb *scopeBuilder) scopeField(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	return sb.scopeDeclaredValue(node, "Field", noRequiredInitializer, context)
+	return sb.scopeDeclaredValue(node, "Field", noRequiredInitializer, compilergraph.Predicate(parser.NodePredicateTypeFieldDefaultValue), context)
 }
 
 // scopeVariable scopes a variable module member in the SRG.
 func (sb *scopeBuilder) scopeVariable(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	return sb.scopeDeclaredValue(node, "Variable", requiresInitializer, context)
+	return sb.scopeDeclaredValue(node, "Variable", requiresInitializer, compilergraph.Predicate(parser.NodePredicateTypeFieldDefaultValue), context)
 }
 
 // scopeVariableStatement scopes a variable statement in the SRG.
 func (sb *scopeBuilder) scopeVariableStatement(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	return sb.scopeDeclaredValue(node, "Variable", requiresInitializer, context)
+	return sb.scopeDeclaredValue(node, "Variable", requiresInitializer, compilergraph.Predicate(parser.NodeVariableStatementExpression), context)
 }
 
 // getDeclaredVariableType returns the declared type of a variable statement, member or type field (if any).
@@ -58,10 +58,10 @@ func (sb *scopeBuilder) getDeclaredVariableType(node compilergraph.GraphNode) (t
 }
 
 // scopeDeclaredValue scopes a declared value (variable statement, variable member, type field).
-func (sb *scopeBuilder) scopeDeclaredValue(node compilergraph.GraphNode, title string, option requiresInitializerOption, context scopeContext) proto.ScopeInfo {
+func (sb *scopeBuilder) scopeDeclaredValue(node compilergraph.GraphNode, title string, option requiresInitializerOption, exprPredicate compilergraph.Predicate, context scopeContext) proto.ScopeInfo {
 	var exprScope *proto.ScopeInfo = nil
 
-	exprNode, hasExpression := node.TryGetNode(parser.NodeVariableStatementExpression)
+	exprNode, hasExpression := node.TryGetNode(exprPredicate)
 	if hasExpression {
 		// Scope the expression.
 		exprScope = sb.getScope(exprNode, context)

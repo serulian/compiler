@@ -1,4 +1,4 @@
-$module('basic', function () {
+$module('defaults', function () {
   var $static = this;
   this.$struct('AnotherStruct', false, '', function () {
     var $static = this;
@@ -21,22 +21,30 @@ $module('basic', function () {
       return $g.____testlib.basictypes.Boolean;
     }, false);
     this.$typesig = function () {
-      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.basic.AnotherStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.basic.AnotherStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['Clone', 2, $g.____testlib.basictypes.Function($g.basic.AnotherStruct).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
+      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.defaults.AnotherStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.defaults.AnotherStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['Clone', 2, $g.____testlib.basictypes.Function($g.defaults.AnotherStruct).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
     };
   });
 
   this.$struct('SomeStruct', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
-    $static.new = function (SomeField, AnotherField, SomeInstance) {
+    $static.new = function () {
       var instance = new $static();
       var init = [];
       instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
-        SomeField: SomeField,
-        AnotherField: AnotherField,
-        SomeInstance: SomeInstance,
       };
+      init.push($promise.resolve($t.box(42, $g.____testlib.basictypes.Integer)).then(function (result) {
+        instance.SomeField = result;
+      }));
+      init.push($promise.resolve($t.box(false, $g.____testlib.basictypes.Boolean)).then(function (result) {
+        instance.AnotherField = result;
+      }));
+      init.push($g.defaults.AnotherStruct.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
+        return $promise.resolve($result0);
+      }).then(function (result) {
+        instance.SomeInstance = result;
+      }));
       return $promise.all(init).then(function () {
         return instance;
       });
@@ -53,30 +61,30 @@ $module('basic', function () {
       return $g.____testlib.basictypes.Boolean;
     }, false);
     $t.defineStructField($static, 'SomeInstance', 'SomeInstance', function () {
-      return $g.basic.AnotherStruct;
+      return $g.defaults.AnotherStruct;
     }, true, function () {
-      return $g.basic.AnotherStruct;
+      return $g.defaults.AnotherStruct;
     }, false);
     this.$typesig = function () {
-      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.basic.SomeStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.basic.SomeStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['Clone', 2, $g.____testlib.basictypes.Function($g.basic.SomeStruct).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
+      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.defaults.SomeStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.defaults.SomeStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['Clone', 2, $g.____testlib.basictypes.Function($g.defaults.SomeStruct).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
     };
   });
 
   $static.TEST = function () {
     var $result;
+    var $temp0;
     var ss;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
         switch ($current) {
           case 0:
-            $g.basic.AnotherStruct.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
-              return $g.basic.SomeStruct.new($t.box(42, $g.____testlib.basictypes.Integer), $t.box(true, $g.____testlib.basictypes.Boolean), $result1).then(function ($result0) {
-                $result = $result0;
-                $current = 1;
-                $continue($resolve, $reject);
-                return;
-              });
+            $g.defaults.SomeStruct.new().then(function ($result0) {
+              $temp0 = $result0;
+              $result = ($temp0, $temp0.AnotherField = $t.box(true, $g.____testlib.basictypes.Boolean), $temp0);
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
               $reject(err);
               return;

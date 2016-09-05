@@ -127,7 +127,7 @@ Loop:
 		// variables.
 		case p.isKeyword("var"):
 			seenNonImport = true
-			p.currentNode().Connect(NodePredicateChild, p.consumeVar(NodeTypeVariable, NodePredicateTypeMemberName, NodePredicateTypeMemberDeclaredType, consumeVarRequireExplicitType))
+			p.currentNode().Connect(NodePredicateChild, p.consumeVar(NodeTypeVariable, NodePredicateTypeMemberName, NodePredicateTypeMemberDeclaredType, NodePredicateTypeFieldDefaultValue, consumeVarRequireExplicitType))
 			p.tryConsumeStatementTerminator()
 
 		// EOF.
@@ -590,6 +590,11 @@ func (p *sourceParser) consumeStructField() AstNode {
 	// TypeName
 	fieldNode.Connect(NodePredicateTypeMemberDeclaredType, p.consumeTypeReference(typeReferenceNoVoid))
 
+	// Optional default value.
+	if _, ok := p.tryConsume(tokenTypeEquals); ok {
+		fieldNode.Connect(NodePredicateTypeFieldDefaultValue, p.consumeExpression(consumeExpressionAllowBraces))
+	}
+
 	// Optional tag.
 	p.consumeOptionalMemberTags(fieldNode)
 
@@ -687,7 +692,7 @@ func (p *sourceParser) consumeClassMembers(typeNode AstNode) {
 	for {
 		switch {
 		case p.isKeyword("var"):
-			typeNode.Connect(NodeTypeDefinitionMember, p.consumeVar(NodeTypeField, NodePredicateTypeMemberName, NodePredicateTypeMemberDeclaredType, consumeVarRequireExplicitType))
+			typeNode.Connect(NodeTypeDefinitionMember, p.consumeVar(NodeTypeField, NodePredicateTypeMemberName, NodePredicateTypeMemberDeclaredType, NodePredicateTypeFieldDefaultValue, consumeVarRequireExplicitType))
 			p.consumeStatementTerminator()
 
 		case p.isKeyword("function"):
@@ -1430,7 +1435,7 @@ func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
 
 	// Var statement.
 	case p.isKeyword("var"):
-		return p.consumeVar(NodeTypeVariableStatement, NodeVariableStatementName, NodeVariableStatementDeclaredType, consumeVarAllowInferredType), true
+		return p.consumeVar(NodeTypeVariableStatement, NodeVariableStatementName, NodeVariableStatementDeclaredType, NodeVariableStatementExpression, consumeVarAllowInferredType), true
 
 	// If statement.
 	case p.isKeyword("if"):
@@ -1974,7 +1979,7 @@ func (p *sourceParser) consumeNamedValue() AstNode {
 // var<SomeType> someName
 // var<SomeType> someName = someExpr
 // var someName = someExpr
-func (p *sourceParser) consumeVar(nodeType NodeType, namePredicate string, typePredicate string, option consumeVarOption) AstNode {
+func (p *sourceParser) consumeVar(nodeType NodeType, namePredicate string, typePredicate string, exprPredicate string, option consumeVarOption) AstNode {
 	variableNode := p.startNode(nodeType)
 	defer p.finishNode()
 
@@ -2011,7 +2016,7 @@ func (p *sourceParser) consumeVar(nodeType NodeType, namePredicate string, typeP
 	}
 
 	if _, ok := p.tryConsume(tokenTypeEquals); ok {
-		variableNode.Connect(NodeVariableStatementExpression, p.consumeExpression(consumeExpressionAllowBraces))
+		variableNode.Connect(exprPredicate, p.consumeExpression(consumeExpressionAllowBraces))
 	}
 
 	return variableNode

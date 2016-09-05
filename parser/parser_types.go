@@ -292,6 +292,11 @@ const (
 	NodePredicateTypeMemberTag          = "typemember-tag"
 
 	//
+	// NodeTypeField
+	//
+	NodePredicateTypeFieldDefaultValue = "typemember-field-default-value"
+
+	//
 	// NodeTypeMemberTag
 	//
 	NodePredicateTypeMemberTagName  = "typemembertag-name"

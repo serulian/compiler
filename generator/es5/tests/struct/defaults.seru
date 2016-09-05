@@ -1,0 +1,19 @@
+struct AnotherStruct {
+	AnotherBool bool
+}
+
+struct SomeStruct {
+	SomeField int = 42
+	AnotherField bool = false
+	SomeInstance AnotherStruct = AnotherStruct{
+		AnotherBool: true,
+	}
+}
+
+function<any> TEST() {
+	var ss = SomeStruct{
+		AnotherField: true,
+	}
+
+	return (ss.SomeField == 42) && ss.AnotherField && ss.SomeInstance.AnotherBool
+}

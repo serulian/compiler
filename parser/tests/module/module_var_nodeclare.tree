@@ -14,7 +14,7 @@ NodeTypeFile
           error-message = Member or class-level variable foo requires an explicitly declared type
           input-source = module variable no declared type test
           start-rune = 8
-      var-expr =>
+      typemember-field-default-value =>
         NodeNumericLiteralExpression
           end-rune = 10
           input-source = module variable no declared type test

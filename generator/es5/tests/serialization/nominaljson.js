@@ -30,11 +30,14 @@ $module('nominaljson', function () {
     var $instance = this.prototype;
     $static.new = function (AnotherBool) {
       var instance = new $static();
+      var init = [];
       instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         AnotherBool: AnotherBool,
       };
-      return $promise.resolve(instance);
+      return $promise.all(init).then(function () {
+        return instance;
+      });
     };
     $static.$fields = [];
     $t.defineStructField($static, 'AnotherBool', 'AnotherBool', function () {
@@ -52,11 +55,14 @@ $module('nominaljson', function () {
     var $instance = this.prototype;
     $static.new = function (Nested) {
       var instance = new $static();
+      var init = [];
       instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         Nested: Nested,
       };
-      return $promise.resolve(instance);
+      return $promise.all(init).then(function () {
+        return instance;
+      });
     };
     $static.$fields = [];
     $t.defineStructField($static, 'Nested', 'Nested', function () {

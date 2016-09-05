@@ -5,10 +5,13 @@ $module('nullbox', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
+      var init = [];
       instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
       };
-      return $promise.resolve(instance);
+      return $promise.all(init).then(function () {
+        return instance;
+      });
     };
     $static.$fields = [];
     $t.defineStructField($static, 'Value', 'Value', function () {

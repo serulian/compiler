@@ -5,11 +5,14 @@ $module('slice', function () {
     var $instance = this.prototype;
     $static.new = function (AnotherInt) {
       var instance = new $static();
+      var init = [];
       instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         AnotherInt: AnotherInt,
       };
-      return $promise.resolve(instance);
+      return $promise.all(init).then(function () {
+        return instance;
+      });
     };
     $static.$fields = [];
     $t.defineStructField($static, 'AnotherInt', 'AnotherInt', function () {
@@ -27,11 +30,14 @@ $module('slice', function () {
     var $instance = this.prototype;
     $static.new = function (Values) {
       var instance = new $static();
+      var init = [];
       instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         Values: Values,
       };
-      return $promise.resolve(instance);
+      return $promise.all(init).then(function () {
+        return instance;
+      });
     };
     $static.$fields = [];
     $t.defineStructField($static, 'Values', 'Values', function () {

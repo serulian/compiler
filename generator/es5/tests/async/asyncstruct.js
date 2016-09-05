@@ -5,12 +5,15 @@ $module('asyncstruct', function () {
     var $instance = this.prototype;
     $static.new = function (Foo, Bar) {
       var instance = new $static();
+      var init = [];
       instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         Foo: Foo,
         Bar: Bar,
       };
-      return $promise.resolve(instance);
+      return $promise.all(init).then(function () {
+        return instance;
+      });
     };
     $static.$fields = [];
     $t.defineStructField($static, 'Foo', 'Foo', function () {

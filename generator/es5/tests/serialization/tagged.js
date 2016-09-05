@@ -5,11 +5,14 @@ $module('tagged', function () {
     var $instance = this.prototype;
     $static.new = function (SomeField) {
       var instance = new $static();
+      var init = [];
       instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         somefield: SomeField,
       };
-      return $promise.resolve(instance);
+      return $promise.all(init).then(function () {
+        return instance;
+      });
     };
     $static.$fields = [];
     $t.defineStructField($static, 'SomeField', 'somefield', function () {

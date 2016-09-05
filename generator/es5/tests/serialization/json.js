@@ -5,11 +5,14 @@ $module('json', function () {
     var $instance = this.prototype;
     $static.new = function (AnotherBool) {
       var instance = new $static();
+      var init = [];
       instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         AnotherBool: AnotherBool,
       };
-      return $promise.resolve(instance);
+      return $promise.all(init).then(function () {
+        return instance;
+      });
     };
     $static.$fields = [];
     $t.defineStructField($static, 'AnotherBool', 'AnotherBool', function () {
@@ -27,13 +30,16 @@ $module('json', function () {
     var $instance = this.prototype;
     $static.new = function (SomeField, AnotherField, SomeInstance) {
       var instance = new $static();
+      var init = [];
       instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         SomeField: SomeField,
         AnotherField: AnotherField,
         SomeInstance: SomeInstance,
       };
-      return $promise.resolve(instance);
+      return $promise.all(init).then(function () {
+        return instance;
+      });
     };
     $static.$fields = [];
     $t.defineStructField($static, 'SomeField', 'SomeField', function () {

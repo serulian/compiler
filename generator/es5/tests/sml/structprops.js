@@ -5,12 +5,15 @@ $module('structprops', function () {
     var $instance = this.prototype;
     $static.new = function (BoolValue, StringValue) {
       var instance = new $static();
+      var init = [];
       instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         BoolValue: BoolValue,
         StringValue: StringValue,
       };
-      return $promise.resolve(instance);
+      return $promise.all(init).then(function () {
+        return instance;
+      });
     };
     $static.$fields = [];
     $t.defineStructField($static, 'BoolValue', 'BoolValue', function () {
