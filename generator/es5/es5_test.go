@@ -105,6 +105,7 @@ var generationTests = []generationTest{
 
 	generationTest{"basic struct test", "struct", "basic", integrationTestSuccessExpected, ""},
 	generationTest{"struct equality test", "struct", "equals", integrationTestSuccessExpected, ""},
+	generationTest{"struct defaults test", "struct", "defaults", integrationTestSuccessExpected, ""},
 	generationTest{"struct nominal field test", "struct", "nominal", integrationTestSuccessExpected, ""},
 	generationTest{"struct null boxing test", "struct", "nullbox", integrationTestSuccessExpected, ""},
 	generationTest{"struct cloning test", "struct", "clone", integrationTestSuccessExpected, ""},

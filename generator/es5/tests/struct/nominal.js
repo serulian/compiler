@@ -21,11 +21,14 @@ $module('nominal', function () {
     var $instance = this.prototype;
     $static.new = function (someField) {
       var instance = new $static();
+      var init = [];
       instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         someField: someField,
       };
-      return $promise.resolve(instance);
+      return $promise.all(init).then(function () {
+        return instance;
+      });
     };
     $static.$fields = [];
     $t.defineStructField($static, 'someField', 'someField', function () {

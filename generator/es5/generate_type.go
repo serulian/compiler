@@ -233,8 +233,11 @@ this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{
 	var $instance = this.prototype;
 
 	// new is the constructor called from Serulian code to construct the struct instance.
+    {{ $vars := .GenerateVariables }}
 	$static.new = function({{ range $ridx, $field := .RequiredFields }}{{ if $ridx }}, {{ end }}{{ $field.Name }}{{ end }}) {
 		var instance = new $static();
+		var init = [];
+
 		instance.$unboxed = false;
 
 		instance[BOXED_DATA_PROPERTY] = {
@@ -243,7 +246,12 @@ this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{
 			{{ end }}
 		};
 
-		return $promise.resolve(instance);
+		{{ range $idx, $kv := $vars.UnsafeIter }}
+			init.push({{ emit $kv.Value }});
+		{{ end }}
+		return $promise.all(init).then(function() {
+			return instance;
+		});
 	};
 
 	$static.$fields = [];
