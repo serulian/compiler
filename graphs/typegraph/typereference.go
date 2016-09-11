@@ -352,6 +352,11 @@ func (tr TypeReference) IsRefToClass() bool {
 	return tr.isNormal() && tr.ReferredType().TypeKind() == ClassType
 }
 
+// IsRefToImplicitInterface returns whether the referenced type is an interface.
+func (tr TypeReference) IsRefToImplicitInterface() bool {
+	return tr.isNormal() && tr.ReferredType().TypeKind() == ImplicitInterfaceType
+}
+
 // IsNominal returns whether the referenced type is a nominal type.
 func (tr TypeReference) IsNominal() bool {
 	return tr.isNormal() && tr.ReferredType().TypeKind() == NominalType
@@ -487,6 +492,74 @@ func (tr TypeReference) referenceOrConstraint() TypeReference {
 	}
 
 	return tr
+}
+
+// CheckCastableFrom returns whether the type pointed to by this type reference is castable
+// from the source type reference.
+//
+// Rules:
+//   - All types can be cast to 'any'
+//   - Void is never allowed.
+//   - A null type cannot be casted.
+//   - `struct` can only be cast to a structural type.
+//   - Nullability must match.
+//   - If the destination is an interface, any interface type can be cast to it, as it'll be checked
+//     at runtime.
+//   - Otherwise, subtyping rules are in effect
+func (tr TypeReference) CheckCastableFrom(source TypeReference) error {
+	// Anything can be casted to any.
+	if tr.IsAny() {
+		return nil
+	}
+
+	// Void is not allowed.
+	if tr.IsVoid() || source.IsVoid() {
+		return fmt.Errorf("Void types cannot be casted")
+	}
+
+	// Null is not allowed.
+	if tr.IsNull() || source.IsNull() {
+		return fmt.Errorf("Null types cannot be casted")
+	}
+
+	// Ensure that if the source is nullable, so is the destination (but only if the source
+	// is not `any`).
+	if !source.IsAny() && source.NullValueAllowed() != tr.IsNullable() {
+		if source.NullValueAllowed() {
+			return fmt.Errorf("Cannot cast nullable %v to non-nullable %v", source, tr)
+		} else {
+			return fmt.Errorf("Cannot cast non-nullable %v to nullable %v", source, tr)
+		}
+	}
+
+	// Check for implicit interface.
+	if tr.isNormal() {
+		destinationType := tr.ReferredType()
+		if destinationType.TypeKind() == ImplicitInterfaceType {
+			if !source.isNormal() {
+				// Anything non-normal can be cast to an interface.
+				return nil
+			}
+
+			sourceType := tr.ReferredType()
+			if sourceType.TypeKind() == ImplicitInterfaceType {
+				// Anything can be cast to an implicit interface.
+				return nil
+			}
+		}
+	}
+
+	// Check struct.
+	if source.IsStruct() {
+		return tr.EnsureStructural()
+	}
+
+	if tr.IsStruct() {
+		return source.EnsureStructural()
+	}
+
+	// Otherwise, check subtype.
+	return tr.CheckSubTypeOf(source)
 }
 
 // SubTypingException defines the various exceptions allowed on CheckSubTypeOf

@@ -178,9 +178,9 @@ func (sb *scopeBuilder) scopeMatchStatement(node compilergraph.GraphNode, contex
 			if matchTypeRef.IsNullable() {
 				sb.decorateWithError(node, "Match cases cannot be nullable. Found: %v", matchTypeRef)
 				isValid = false
-			} else if serr := matchTypeRef.CheckSubTypeOf(matchExprType); serr != nil {
+			} else if serr := matchTypeRef.CheckCastableFrom(matchExprType); serr != nil {
 				// Ensure that the type is a subtype of the expression type.
-				sb.decorateWithError(node, "Match cases must be subtype of values of type '%v': %v", matchExprType, serr)
+				sb.decorateWithError(node, "Match cases must be castable from type '%v': %v", matchExprType, serr)
 				isValid = false
 			} else {
 				matchBranchType = matchTypeRef
