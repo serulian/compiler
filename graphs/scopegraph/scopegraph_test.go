@@ -146,6 +146,10 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	scopegraphTest{"conditional nullable assignment test", "conditional", "nullableassign",
+		[]expectedScopeEntry{},
+		"", ""},
+
 	scopegraphTest{"conditional with else test", "conditional", "else",
 		[]expectedScopeEntry{
 			expectedScopeEntry{"conditional", expectedScope{true, proto.ScopeKind_VALUE, "void", "Integer"}},
