@@ -1345,3 +1345,156 @@ func TestIntersection(t *testing.T) {
 		}
 	}
 }
+
+type castTest struct {
+	source        string
+	destination   string
+	expectedError string
+}
+
+func TestCasting(t *testing.T) {
+	g, _ := compilergraph.NewGraph("-")
+	testConstruction := newTestTypeGraphConstructor(g,
+		"casting",
+		[]testType{
+			// struct SomeStruct {}
+			testType{"struct", "SomeStruct", "", []testGeneric{},
+				[]testMember{},
+			},
+
+			// struct AnotherStruct {}
+			testType{"struct", "AnotherStruct", "", []testGeneric{},
+				[]testMember{},
+			},
+
+			// class SomeClass {
+			// 	 function<bool> DoSomething()
+			// }
+			testType{"class", "SomeClass", "",
+				[]testGeneric{},
+				[]testMember{
+					testMember{FunctionMemberSignature, "DoSomething", "bool", []testGeneric{}, []testParam{}},
+				},
+			},
+
+			// interface SomeInterface {
+			// 	 function<bool> DoSomething()
+			// }
+			testType{"interface", "SomeInterface", "",
+				[]testGeneric{},
+				[]testMember{
+					testMember{FunctionMemberSignature, "DoSomething", "bool", []testGeneric{}, []testParam{}},
+				},
+			},
+
+			// interface AnotherInterface {
+			// 	 function<string> DoSomethingElse()
+			// }
+			testType{"interface", "AnotherInterface", "",
+				[]testGeneric{},
+				[]testMember{
+					testMember{FunctionMemberSignature, "DoSomethingElse", "string", []testGeneric{}, []testParam{}},
+				},
+			},
+
+			// interface EmptyInterface {}
+			testType{"interface", "EmptyInterface", "",
+				[]testGeneric{},
+				[]testMember{},
+			},
+
+			// type StructuralNominal : SomeStruct {}
+			testType{"nominal", "StructuralNominal", "SomeStruct",
+				[]testGeneric{},
+				[]testMember{},
+			},
+
+			// type NonStructuralNominal : SomeClass {}
+			testType{"nominal", "NonStructuralNominal", "SomeClass",
+				[]testGeneric{},
+				[]testMember{},
+			},
+		},
+	)
+
+	graph := newTestTypeGraph(g, testConstruction)
+	moduleSourceNode := *testConstruction.moduleNode
+
+	tests := []castTest{
+		// Type -> Type
+		castTest{"SomeStruct", "SomeStruct", ""},
+		castTest{"SomeClass", "SomeClass", ""},
+		castTest{"SomeInterface", "SomeInterface", ""},
+
+		// Any -> Type
+		castTest{"any", "SomeStruct", ""},
+		castTest{"any", "SomeClass", ""},
+		castTest{"any", "SomeInterface", ""},
+
+		castTest{"any", "SomeStruct?", ""},
+		castTest{"any", "SomeClass?", ""},
+		castTest{"any", "SomeInterface?", ""},
+
+		// Type -> Any
+		castTest{"SomeStruct", "any", ""},
+		castTest{"SomeClass", "any", ""},
+		castTest{"SomeInterface", "any", ""},
+
+		castTest{"SomeStruct?", "any", ""},
+		castTest{"SomeClass?", "any", ""},
+		castTest{"SomeInterface?", "any", ""},
+
+		// Interface -> Interface
+		castTest{"SomeInterface", "AnotherInterface", ""},
+		castTest{"AnotherInterface", "SomeInterface", ""},
+
+		// struct -> Type
+		castTest{"SomeStruct", "struct", ""},
+		castTest{"struct", "SomeStruct", ""},
+
+		castTest{"struct", "SomeInterface", ""},
+		castTest{"SomeInterface", "struct", "SomeInterface is not structural nor serializable"},
+		castTest{"SomeClass", "struct", "SomeClass is not structural nor serializable"},
+
+		// Void
+		castTest{"void", "SomeStruct", "Void types cannot be casted"},
+		castTest{"SomeStruct", "void", "Void types cannot be casted"},
+
+		// SomeStruct <-> SomeClass
+		castTest{"SomeStruct", "SomeClass", "'SomeClass' cannot be used in place of non-interface 'SomeStruct'"},
+		castTest{"SomeClass", "SomeStruct", "'SomeStruct' cannot be used in place of non-interface 'SomeClass'"},
+
+		// SomeInterface <-> SomeClass
+		castTest{"SomeInterface", "SomeClass", ""},
+		castTest{"SomeClass", "SomeInterface", ""},
+
+		// AnotherInterface <-> SomeClass
+		castTest{"AnotherInterface", "SomeClass", "Type 'SomeClass' does not define or export member 'DoSomethingElse', which is required by type 'AnotherInterface'"},
+		castTest{"SomeClass", "AnotherInterface", ""},
+
+		// Nullable <-> non-nullable
+		castTest{"SomeClass", "SomeClass?", "Cannot cast non-nullable SomeClass to nullable SomeClass?"},
+		castTest{"SomeClass?", "SomeClass", "Cannot cast nullable SomeClass? to non-nullable SomeClass"},
+		castTest{"SomeClass?", "SomeClass?", ""},
+	}
+
+	for _, test := range tests {
+		sourceRef := parseTypeReferenceForTesting(test.source, graph, moduleSourceNode)
+		destinationRef := parseTypeReferenceForTesting(test.destination, graph, moduleSourceNode)
+
+		cerr := destinationRef.CheckCastableFrom(sourceRef)
+		if test.expectedError == "" {
+			if !assert.Nil(t, cerr, "Expected no error for cast from %v to %v", sourceRef.String(), destinationRef.String()) {
+				continue
+			}
+		} else {
+			if !assert.NotNil(t, cerr, "Expected error for cast from %v to %v", sourceRef.String(), destinationRef.String()) {
+				continue
+			}
+
+			if !assert.Equal(t, cerr.Error(), test.expectedError, "Error mismatch for cast from %v to %v", sourceRef.String(), destinationRef.String()) {
+				continue
+			}
+		}
+	}
+}

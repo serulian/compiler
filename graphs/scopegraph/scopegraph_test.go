@@ -256,7 +256,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"match invalid branch test", "match", "invalidbranch",
 		[]expectedScopeEntry{},
-		"Match cases must be subtype of values of type 'Integer': 'String' cannot be used in place of non-interface 'Integer'", ""},
+		"Match cases must be castable from type 'Integer': 'String' cannot be used in place of non-interface 'Integer'", ""},
 
 	scopegraphTest{"match nullable branch test", "match", "nullable",
 		[]expectedScopeEntry{},
@@ -942,11 +942,15 @@ var scopeGraphTests = []scopegraphTest{
 
 	/////////// Cast expression ///////////
 
-	scopegraphTest{"cast interface success test", "castexpr", "success",
+	scopegraphTest{"cast expr success test", "castexpr", "success",
 		[]expectedScopeEntry{
 			expectedScopeEntry{"cast", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass", "void"}},
 			expectedScopeEntry{"anycast", expectedScope{true, proto.ScopeKind_VALUE, "any", "void"}},
 		},
+		"", ""},
+
+	scopegraphTest{"cast interfaces test", "castexpr", "interfaces",
+		[]expectedScopeEntry{},
 		"", ""},
 
 	scopegraphTest{"cast struct success test", "castexpr", "structcast",
