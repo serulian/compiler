@@ -522,6 +522,9 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"assign success test", "assign", "success", []expectedScopeEntry{},
 		"", ""},
 
+	scopegraphTest{"assign interface property test", "assign", "interfaceprop", []expectedScopeEntry{},
+		"", ""},
+
 	scopegraphTest{"assign indexer test", "assign", "indexer",
 		[]expectedScopeEntry{},
 		"", ""},

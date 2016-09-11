@@ -202,6 +202,12 @@ func (m SRGMember) Setter() (SRGImplementable, bool) {
 	return SRGImplementable{node}, true
 }
 
+// IsReadOnly returns whether the member is marked as explicitly read-only.
+func (m SRGMember) IsReadOnly() bool {
+	_, exists := m.GraphNode.TryGet(parser.NodePropertyReadOnly)
+	return exists
+}
+
 // HasSetter returns true if the property has a setter defined. Will always return false
 // for non-properties.
 func (m SRGMember) HasSetter() bool {
