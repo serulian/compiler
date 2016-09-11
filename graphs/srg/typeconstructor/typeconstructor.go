@@ -246,7 +246,7 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 		memberType, _ = stc.resolvePossibleType(member.Node(), member.DeclaredType, graph, reporter)
 		memberKind = typegraph.PropertyMemberSignature
 
-		isReadOnly = !member.HasSetter()
+		isReadOnly = member.IsReadOnly()
 		isImplicitlyCalled = true
 
 		// Decorate the property *getter* with its return type.

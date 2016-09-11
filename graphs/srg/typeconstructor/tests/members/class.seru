@@ -4,6 +4,13 @@ class SomeClass {
 	constructor BuildMe<C>(param C) {}
 	operator Plus (left SomeClass, right SomeClass) {}
 	function<[]int> SomeSlice() {}
+	property<int> ReadOnlyProp {
+		get{ return 2 }
+	}
+	property<bool> ReadWriteProp {
+		get { return false }
+		set { }
+	}
 }
 
 class ThirdClass {}

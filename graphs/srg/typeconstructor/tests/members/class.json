@@ -63,6 +63,39 @@
         "Key": "f1338811534b132dcd7caa10329c4a9f",
         "Kind": 1,
         "Children": {
+            "04e3d0d30c55165817347ee2970ca60f": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "04e3d0d30c55165817347ee2970ca60f",
+                    "Kind": 7,
+                    "Children": {
+                        "9116619abcf3c3060c54841482a28dc3": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "9116619abcf3c3060c54841482a28dc3",
+                                "Kind": 10,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "10|NodeType|tdg",
+                                    "tdg-return-type": "Boolean",
+                                    "tdg-source-node": "(NodeRef)"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-implicitly-called": "true",
+                        "tdg-member-name": "ReadWriteProp",
+                        "tdg-member-promising": "true",
+                        "tdg-member-resolved-type": "Boolean",
+                        "tdg-member-signature": "\n\rreadwriteprop\u0010\u0003\u0018\u0001 \u0001*\u0007Boolean",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/members/class.seru",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
             "052ba892ce57da0c36a100ef90844d59": {
                 "Predicate": "tdg-node-member",
                 "Child": {
@@ -126,6 +159,40 @@
                         "tdg-member-name": "SomeVar",
                         "tdg-member-resolved-type": "AnotherClass",
                         "tdg-member-signature": "\n\u0007somevar\u0010\u0005\u0018\u0001 \u0001*\u000cAnotherClass",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/members/class.seru",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "7052330c229e7dc68a521addbf2466a4": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "7052330c229e7dc68a521addbf2466a4",
+                    "Kind": 7,
+                    "Children": {
+                        "02ef448f77e3c36a2b7b1142ee6e860a": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "02ef448f77e3c36a2b7b1142ee6e860a",
+                                "Kind": 10,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "10|NodeType|tdg",
+                                    "tdg-return-type": "Integer",
+                                    "tdg-source-node": "(NodeRef)"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-implicitly-called": "true",
+                        "tdg-member-name": "ReadOnlyProp",
+                        "tdg-member-promising": "true",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "Integer",
+                        "tdg-member-signature": "\n\u000creadonlyprop\u0010\u0003\u0018\u0000 \u0001*\u0007Integer",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/members/class.seru",
                         "tdg-source-node": "(NodeRef)"

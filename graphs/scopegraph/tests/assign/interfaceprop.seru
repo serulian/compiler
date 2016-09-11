@@ -1,0 +1,7 @@
+interface SomeInterface {
+	property<string> SomeProp
+}
+
+function<void> DoSomething(sp SomeInterface) {
+	sp.SomeProp = 'hello world!'
+}
