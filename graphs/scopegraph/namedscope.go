@@ -199,13 +199,27 @@ func (nsi *namedScopeInfo) AssignableType(context scopeContext) (typegraph.TypeR
 		return nsi.typeInfo.(typegraph.TGMember).AssignableType(), true
 	}
 
-	return nsi.ValueType(context)
+	return nsi.definedValueOrGenericType(context)
 }
 
 // ValueOrGenericType returns the value type of the named scope and whether that named scope was valid.
 // For scopes without types, this method will return void. If the named scope is not valid,
 // returns (any, false).
 func (nsi *namedScopeInfo) ValueOrGenericType(context scopeContext) (typegraph.TypeReference, bool) {
+	// Check for an explicit override.
+	if nsi.typeInfo == nil {
+		if typeOverride, hasTypeOverride := context.getTypeOverride(nsi.srgInfo.GraphNode); hasTypeOverride {
+			return typeOverride, true
+		}
+	}
+
+	return nsi.definedValueOrGenericType(context)
+}
+
+// definedValueOrGenericType returns the value type of the named scope and whether that named scope was valid.
+// For scopes without types, this method will return void. If the named scope is not valid,
+// returns (any, false).
+func (nsi *namedScopeInfo) definedValueOrGenericType(context scopeContext) (typegraph.TypeReference, bool) {
 	if nsi.IsStatic() {
 		return nsi.sb.sg.tdg.VoidTypeReference(), true
 	}
@@ -213,11 +227,6 @@ func (nsi *namedScopeInfo) ValueOrGenericType(context scopeContext) (typegraph.T
 	// The value type of a member is its member type.
 	if nsi.typeInfo != nil {
 		return nsi.typeInfo.(typegraph.TGMember).MemberType(), true
-	}
-
-	// Check for an explicit override.
-	if typeOverride, hasTypeOverride := context.getTypeOverride(nsi.srgInfo.GraphNode); hasTypeOverride {
-		return typeOverride, true
 	}
 
 	// Otherwise, we need custom logic to retrieve the type.

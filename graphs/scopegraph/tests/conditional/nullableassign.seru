@@ -1,0 +1,6 @@
+function<void> DoSomething() {
+	var<string?> someString = null
+	if someString is null {
+		someString = 'hello world'
+	}
+}
