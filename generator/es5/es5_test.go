@@ -152,6 +152,7 @@ var generationTests = []generationTest{
 	generationTest{"stream member access expression", "accessexpr", "streammember", integrationTestNone, ""},
 	generationTest{"member access expressions", "accessexpr", "memberaccess", integrationTestSuccessExpected, ""},
 	generationTest{"function reference access expression", "accessexpr", "funcref", integrationTestSuccessExpected, ""},
+	generationTest{"nullable member access expression", "accessexpr", "nullaccess", integrationTestSuccessExpected, ""},
 
 	generationTest{"full lambda expression", "lambdaexpr", "full", integrationTestSuccessExpected, ""},
 	generationTest{"mini lambda expression", "lambdaexpr", "mini", integrationTestSuccessExpected, ""},

@@ -1,0 +1,13 @@
+class SomeClass {
+	property<bool> SomeBool {
+		get { return true }
+	}
+}
+
+function<any> TEST() {
+	var sc = SomeClass.new()
+	var<SomeClass?> sc2 = SomeClass.new()
+	var<SomeClass?> sc3 = null
+
+	return sc.SomeBool && (sc2?.SomeBool ?? false) && (sc3?.SomeBool ?? true)
+}
