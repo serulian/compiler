@@ -492,7 +492,7 @@ func (eg *expressionGenerator) generateMemberCall(memberCall *codedom.MemberCall
 	var functionCall = codedom.FunctionCall(callPath, arguments, memberCall.BasisNode())
 	if memberCall.Nullable {
 		// Invoke the function with a specialized nullable-invoke.
-		refExpr := callPath.(*codedom.MemberReferenceNode).ChildExpression
+		refExpr := callPath.(*codedom.DynamicAccessNode).ChildExpression
 
 		var isPromising = "false"
 		if memberCall.Member.IsPromising() {

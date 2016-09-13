@@ -26,8 +26,8 @@ func (db *domBuilder) buildNamedAccess(node compilergraph.GraphNode, name string
 	scope, _ := db.scopegraph.GetScope(node)
 	namedReference, hasNamedReference := db.scopegraph.GetReferencedName(scope)
 
-	// Reference to an unknown name must be a dynamic access.
-	if !hasNamedReference {
+	// Reference to an unknown name or a nullable member access must be a dynamic access.
+	if !hasNamedReference || node.Kind() == parser.NodeNullableMemberAccessExpression {
 		return codedom.DynamicAccess(db.buildExpression(*childExprNode), name, node)
 	}
 

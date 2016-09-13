@@ -73,6 +73,7 @@ $module('memberaccess', function () {
           case 0:
             $t.dynamicaccess($g.memberaccess.SomeClass, 'Build');
             $t.dynamicaccess($g.memberaccess.SomeClass, 'Build');
+            $t.dynamicaccess(scn, 'someInt');
             $t.dynamicaccess(maimport, 'AnotherFunction');
             $g.maimport.AnotherFunction;
             $g.maimport.AnotherFunction;
