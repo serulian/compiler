@@ -53,14 +53,23 @@ func (g *SRG) calculateContainingImplemented(sourcePath string, runeRange compil
 			HasWhere(parser.NodePredicateEndRune, compilergraph.WhereGTE, runeRange.EndPosition)
 	}
 
+	// Check for a lambda first.
 	node, found := g.findAllNodes(parser.NodeTypeStatementBlock).
 		Has(parser.NodePredicateSource, sourcePath).
-		In(parser.NodePredicateBody).
+		In(parser.NodeLambdaExpressionBlock).
 		FilterBy(containingFilter).
 		TryGetNode()
 
 	if !found {
-		return runeRange, nil
+		node, found = g.findAllNodes(parser.NodeTypeStatementBlock).
+			Has(parser.NodePredicateSource, sourcePath).
+			In(parser.NodePredicateBody).
+			FilterBy(containingFilter).
+			TryGetNode()
+
+		if !found {
+			return runeRange, nil
+		}
 	}
 
 	startRune := node.GetValue(parser.NodePredicateStartRune).Int()
@@ -69,8 +78,8 @@ func (g *SRG) calculateContainingImplemented(sourcePath string, runeRange compil
 	return compilerutil.IntRange{startRune, endRune}, node
 }
 
-// TryGetContainingImplemented returns the member or property node that has an
-// outgoing NodePredicateBody pointing to a statement block containing this specified node.
+// TryGetContainingImplemented returns the member, property or function lambda node that
+// contains the given node.
 func (g *SRG) TryGetContainingImplemented(node compilergraph.GraphNode) (compilergraph.GraphNode, bool) {
 	startRune := node.GetValue(parser.NodePredicateStartRune).Int()
 	endRune := node.GetValue(parser.NodePredicateEndRune).Int()

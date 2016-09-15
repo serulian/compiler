@@ -595,19 +595,58 @@ func (sb *scopeBuilder) scopeRejectStatement(node compilergraph.GraphNode, conte
 
 // scopeReturnStatement scopes a return statement in the SRG.
 func (sb *scopeBuilder) scopeReturnStatement(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	exprNode, found := node.TryGetNode(parser.NodeReturnStatementValue)
+	// Find the parent member/property.
+	parentImpl, found := sb.sg.srg.TryGetContainingImplemented(node)
 	if !found {
+		sb.decorateWithError(node, "'return' statement must be under a function or property")
 		return newScope().
-			IsTerminatingStatement().
-			Valid().
+			Invalid().
 			GetScope()
 	}
 
-	exprScope := sb.getScope(exprNode, context)
+	var actualReturnType typegraph.TypeReference = sb.sg.tdg.VoidTypeReference()
+	exprNode, found := node.TryGetNode(parser.NodeReturnStatementValue)
+	if found {
+		exprScope := sb.getScope(exprNode, context)
+		if !exprScope.GetIsValid() {
+			return newScope().
+				Invalid().
+				GetScope()
+		}
+
+		actualReturnType = exprScope.ResolvedTypeRef(sb.sg.tdg)
+	}
+
+	// Ensure the return types match.
+	expectedReturnType, _ := sb.sg.tdg.LookupReturnType(parentImpl)
+	if expectedReturnType.IsVoid() {
+		if !actualReturnType.IsVoid() {
+			sb.decorateWithError(node, "No return value expected here, found value of type '%v'", actualReturnType)
+			return newScope().
+				Invalid().
+				Returning(actualReturnType, true).
+				GetScope()
+		}
+	} else if actualReturnType.IsVoid() {
+		sb.decorateWithError(node, "Expected non-void resolved value")
+		return newScope().
+			Invalid().
+			Returning(actualReturnType, true).
+			GetScope()
+	} else {
+		if serr := actualReturnType.CheckSubTypeOf(expectedReturnType); serr != nil {
+			sb.decorateWithError(node, "Expected return value of type '%v': %v", expectedReturnType, serr)
+			return newScope().
+				Invalid().
+				Returning(actualReturnType, true).
+				GetScope()
+		}
+	}
+
 	return newScope().
 		IsTerminatingStatement().
-		IsValid(exprScope.GetIsValid()).
-		ReturningResolvedTypeOf(exprScope).
+		Valid().
+		Returning(actualReturnType, true).
 		GetScope()
 }
 

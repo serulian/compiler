@@ -1,0 +1,5 @@
+function<void> DoSomething(someBool bool) {
+	if someBool {
+		return 123
+	}
+}

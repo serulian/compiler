@@ -118,6 +118,10 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"settlement void return value test", "settlement", "voidreturn", []expectedScopeEntry{},
 		"No return value expected here, found value of type 'Integer'", ""},
 
+	// Invalid value under conditional.
+	scopegraphTest{"conditional invalid return test", "settlement", "conditionalinvalidreturn", []expectedScopeEntry{},
+		"No return value expected here, found value of type 'Integer'", ""},
+
 	/////////// Break ///////////
 
 	// Normal break statement.
@@ -174,7 +178,7 @@ var scopeGraphTests = []scopegraphTest{
 		"Expected return value of type 'Integer' but not all paths return a value", ""},
 
 	scopegraphTest{"conditional chained return intersect test", "conditional", "chainedintersect", []expectedScopeEntry{},
-		"Expected return value of type 'Integer': Cannot use type 'struct' in place of type 'Integer'", ""},
+		"Expected return value of type 'Integer': 'Boolean' cannot be used in place of non-interface 'Integer'", ""},
 
 	/////////// Loops ///////////
 
