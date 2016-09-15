@@ -2,7 +2,7 @@ function<int> DoSomething() {
 	/* switch */switch {
 		case true:
 		case false:
-			return true
+			return 67
 	}
 
 	return 4
