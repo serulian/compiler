@@ -20,6 +20,7 @@ import (
 	srgtc "github.com/serulian/compiler/graphs/srg/typeconstructor"
 	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/packageloader"
+	"github.com/serulian/compiler/parser"
 	"github.com/serulian/compiler/webidl"
 	webidltc "github.com/serulian/compiler/webidl/typeconstructor"
 )
@@ -150,7 +151,11 @@ func buildScopeGraphWithResolver(srg *srg.SRG, irg *webidl.WebIRG, tdg *typegrap
 	for sit.Next() {
 		wg.Add(1)
 		go (func(node compilergraph.GraphNode) {
-			<-builder.buildScope(node, scopeContext{})
+			rootNode := node.GetIncomingNode(parser.NodePredicateBody)
+			<-builder.buildScope(node, scopeContext{
+				parentImplemented: rootNode,
+				rootNode:          rootNode,
+			})
 			wg.Done()
 		})(sit.Node())
 	}
@@ -159,7 +164,10 @@ func buildScopeGraphWithResolver(srg *srg.SRG, irg *webidl.WebIRG, tdg *typegrap
 	for mit.Next() {
 		wg.Add(1)
 		go (func(node compilergraph.GraphNode) {
-			<-builder.buildScope(node, scopeContext{})
+			<-builder.buildScope(node, scopeContext{
+				parentImplemented: node,
+				rootNode:          node,
+			})
 			wg.Done()
 		})(mit.Node())
 	}

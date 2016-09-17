@@ -11,7 +11,6 @@ import (
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
-	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/parser"
 
 	"github.com/streamrail/concurrent-map"
@@ -25,56 +24,6 @@ const (
 	scopeGetAccess scopeAccessOption = iota
 	scopeSetAccess
 )
-
-// scopeContext represents the currently operating context for scoping, allowing for
-// scope-specific overrides of such items as types of expressions.
-type scopeContext struct {
-	// The access option for the current scope.
-	accessOption scopeAccessOption
-
-	// overrideTypes is (if not nil) the map of the overridden type for an expression
-	// under this context.
-	overrideTypes *map[compilergraph.GraphNodeId]typegraph.TypeReference
-}
-
-// getTypeOverride returns the type override for the given expression node, if any.
-func (sc scopeContext) getTypeOverride(exprNode compilergraph.GraphNode) (typegraph.TypeReference, bool) {
-	if sc.overrideTypes == nil {
-		return typegraph.TypeReference{}, false
-	}
-
-	ot := *sc.overrideTypes
-	value, found := ot[exprNode.NodeId]
-	return value, found
-}
-
-// withAccess returns the scope context with the access option set to that given.
-func (sc scopeContext) withAccess(access scopeAccessOption) scopeContext {
-	return scopeContext{
-		accessOption:  access,
-		overrideTypes: sc.overrideTypes,
-	}
-}
-
-// withTypeOverride returns the scope context with the type of the given expression node
-// overridden.
-func (sc scopeContext) withTypeOverride(exprNode compilergraph.GraphNode, typeref typegraph.TypeReference) scopeContext {
-	overrideTypes := map[compilergraph.GraphNodeId]typegraph.TypeReference{}
-
-	if sc.overrideTypes != nil {
-		existing := *sc.overrideTypes
-		for key, value := range existing {
-			overrideTypes[key] = value
-		}
-	}
-
-	overrideTypes[exprNode.NodeId] = typeref
-
-	return scopeContext{
-		accessOption:  sc.accessOption,
-		overrideTypes: &overrideTypes,
-	}
-}
 
 // scopeHandler is a handler function for scoping an SRG node of a particular kind.
 type scopeHandler func(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo

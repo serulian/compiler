@@ -34,6 +34,19 @@ func (t *ScopeInfo) CalledOperator(tg *typegraph.TypeGraph) (typegraph.TGMember,
 	return tg.GetTypeOrMember(nodeId).(typegraph.TGMember), true
 }
 
+func (t *ScopeInfo) TargetedNode(srg *srg.SRG) (compilergraph.GraphNode, bool) {
+	if t.TargetedReference == nil {
+		return compilergraph.GraphNode{}, false
+	}
+
+	nodeId := compilergraph.GraphNodeId(t.TargetedReference.GetReferencedNode())
+	if t.TargetedReference.GetIsSRGNode() {
+		return srg.GetNode(nodeId), true
+	} else {
+		panic("Cannot have a non-SRG targeted node")
+	}
+}
+
 func (t *ScopeInfo) NamedReferenceNode(srg *srg.SRG, tg *typegraph.TypeGraph) (compilergraph.GraphNode, bool) {
 	if t.NamedReference == nil {
 		return compilergraph.GraphNode{}, false

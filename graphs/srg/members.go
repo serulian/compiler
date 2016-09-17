@@ -31,42 +31,6 @@ const (
 	OperatorMember
 )
 
-// TryGetContainingPropertySetter looks for the property setter containing the given node and returns it,
-// if any.
-func (g *SRG) TryGetContainingPropertySetter(node compilergraph.GraphNode) (SRGImplementable, bool) {
-	containingNode, found := g.TryGetContainingNode(node,
-		parser.NodeTypePropertyBlock)
-
-	if !found {
-		return SRGImplementable{}, false
-	}
-
-	_, underSetter := containingNode.TryGetIncomingNode(parser.NodePropertySetter)
-	if !underSetter {
-		return SRGImplementable{}, false
-	}
-
-	return SRGImplementable{containingNode}, true
-}
-
-// TryGetContainingMember looks for the type or module member containing the given node
-// and returns it, if any.
-func (g *SRG) TryGetContainingMember(node compilergraph.GraphNode) (SRGMember, bool) {
-	containingNode, found := g.TryGetContainingNode(node,
-		parser.NodeTypeConstructor,
-		parser.NodeTypeFunction,
-		parser.NodeTypeOperator,
-		parser.NodeTypeField,
-		parser.NodeTypeVariable,
-		parser.NodeTypeProperty)
-
-	if !found {
-		return SRGMember{}, false
-	}
-
-	return SRGMember{containingNode, g}, true
-}
-
 // GetMemberReference returns an SRGMember wrapper around the given SRG member node. Panics
 // if the node is not a member node.
 func (g *SRG) GetMemberReference(node compilergraph.GraphNode) SRGMember {
@@ -185,7 +149,7 @@ func (m SRGMember) Getter() (SRGImplementable, bool) {
 		return SRGImplementable{}, false
 	}
 
-	return SRGImplementable{node}, true
+	return SRGImplementable{node, m.srg}, true
 }
 
 // Setter returns the defined setter for this property. Panics if this is not a property.
@@ -199,7 +163,7 @@ func (m SRGMember) Setter() (SRGImplementable, bool) {
 		return SRGImplementable{}, false
 	}
 
-	return SRGImplementable{node}, true
+	return SRGImplementable{node, m.srg}, true
 }
 
 // IsReadOnly returns whether the member is marked as explicitly read-only.

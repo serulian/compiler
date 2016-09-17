@@ -427,13 +427,13 @@ func (sb *scopeBuilder) scopeNullLiteralExpression(node compilergraph.GraphNode,
 
 // scopeThisLiteralExpression scopes a this literal expression in the SRG.
 func (sb *scopeBuilder) scopeThisLiteralExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	srgMember, found := sb.sg.srg.TryGetContainingMember(node)
+	srgImpl, found := context.getParentContainer(sb.sg.srg)
 	if !found {
 		sb.decorateWithError(node, "The 'this' keyword can only be used under non-static type members")
 		return newScope().Invalid().GetScope()
 	}
 
-	tgMember, tgFound := sb.sg.tdg.GetMemberForSourceNode(srgMember.GraphNode)
+	tgMember, tgFound := sb.sg.tdg.GetMemberForSourceNode(srgImpl.ContainingMember().GraphNode)
 	if !tgFound {
 		sb.decorateWithError(node, "The 'this' keyword can only be used under non-static type members")
 		return newScope().Invalid().GetScope()
@@ -458,15 +458,14 @@ func (sb *scopeBuilder) scopeThisLiteralExpression(node compilergraph.GraphNode,
 
 // scopeValLiteralExpression scopes a val literal expression in the SRG.
 func (sb *scopeBuilder) scopeValLiteralExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	_, found := sb.sg.srg.TryGetContainingPropertySetter(node)
-	if !found {
+	srgImpl, found := context.getParentContainer(sb.sg.srg)
+	if !found || !srgImpl.IsPropertySetter() {
 		sb.decorateWithError(node, "The 'val' keyword can only be used under property setters")
 		return newScope().Invalid().GetScope()
 	}
 
 	// Find the containing property.
-	srgMember, _ := sb.sg.srg.TryGetContainingMember(node)
-	tgMember, _ := sb.sg.tdg.GetMemberForSourceNode(srgMember.GraphNode)
+	tgMember, _ := sb.sg.tdg.GetMemberForSourceNode(srgImpl.ContainingMember().GraphNode)
 
 	// The value of the 'val' keyword is an instance of the property type.
 	return newScope().
