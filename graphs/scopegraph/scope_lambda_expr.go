@@ -40,7 +40,7 @@ func (sb *scopeBuilder) scopeFullLambaExpression(node compilergraph.GraphNode, c
 	}
 
 	// Scope the block. If the function has no defined return type, we use the return type of the block.
-	blockScope := sb.getScope(node.GetNode(parser.NodeLambdaExpressionBlock), context)
+	blockScope := sb.getScope(node.GetNode(parser.NodeLambdaExpressionBlock), context.withImplemented(node))
 	if !hasReturnType && blockScope.GetIsValid() {
 		returnType = blockScope.ReturnedTypeRef(sb.sg.tdg)
 	}

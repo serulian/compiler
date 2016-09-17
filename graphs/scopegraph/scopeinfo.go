@@ -7,6 +7,7 @@ package scopegraph
 import (
 	"fmt"
 
+	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/typegraph"
 )
@@ -254,6 +255,16 @@ func (sib *scopeInfoBuilder) LabelSetOfExcept(scope *proto.ScopeInfo, except ...
 	labelSet.AppendLabelsOf(scope)
 	labelSet.RemoveLabels(except...)
 	return sib.WithLabelSet(labelSet)
+}
+
+// Targets sets the targetted node for a break or continue statement.
+func (sib *scopeInfoBuilder) Targets(node compilergraph.GraphNode) *scopeInfoBuilder {
+	trueValue := true
+	namedId := string(node.NodeId)
+	sib.info.TargetedReference = &proto.ScopeReference{}
+	sib.info.TargetedReference.ReferencedNode = &namedId
+	sib.info.TargetedReference.IsSRGNode = &trueValue
+	return sib
 }
 
 // GetScope returns the scope constructed.

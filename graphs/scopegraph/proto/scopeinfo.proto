@@ -7,7 +7,7 @@ package proto;
 enum ScopeKind {
     VALUE = 0;
     GENERIC = 1;
-    STATIC = 2;    
+    STATIC = 2;
 }
 
 enum ScopeLabel {
@@ -27,7 +27,7 @@ enum ScopeLabel {
 	SML_PROPS_CLASS = 14;
 	SML_PROPS_STRUCT = 15;
 
-	NOMINALLY_SHORTCUT_EXPR = 10; // Marks an expression of a nominal type being used 
+	NOMINALLY_SHORTCUT_EXPR = 10; // Marks an expression of a nominal type being used
 					 		      // where its root data is expected. This is a special
 							      // allowance as a shortcut for easier working with native APIs.
 
@@ -42,6 +42,7 @@ message ScopeInfo {
 
 	optional ScopeReference NamedReference = 8;
 	optional ScopeReference CalledOpReference = 9;
+	optional ScopeReference TargetedReference = 14;
 
 	optional string ResolvedType = 3;   // The type of the scope, if any.
 	optional string ReturnedType = 4;   // The returned type, if any.

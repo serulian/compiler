@@ -101,7 +101,7 @@ func (sb *scopeBuilder) scopeSwitchStatement(node compilergraph.GraphNode, conte
 	for sit.Next() {
 		// Scope the statement block under the case.
 		statementBlockNode := sit.Node().GetNode(parser.NodeSwitchStatementCaseStatement)
-		statementBlockScope := sb.getScope(statementBlockNode, context)
+		statementBlockScope := sb.getScope(statementBlockNode, context.withBreakable(node))
 		if !statementBlockScope.GetIsValid() {
 			isValid = false
 		}
@@ -198,7 +198,7 @@ func (sb *scopeBuilder) scopeMatchStatement(node compilergraph.GraphNode, contex
 
 		// Scope the statement block under the case.
 		statementBlockNode := sit.Node().GetNode(parser.NodeMatchStatementCaseStatement)
-		statementBlockScope := sb.getScope(statementBlockNode, localContext)
+		statementBlockScope := sb.getScope(statementBlockNode, localContext.withBreakable(node))
 		if !statementBlockScope.GetIsValid() {
 			isValid = false
 		}
@@ -353,7 +353,7 @@ func (sb *scopeBuilder) scopeWithStatement(node compilergraph.GraphNode, context
 func (sb *scopeBuilder) scopeLoopStatement(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Scope the underlying block.
 	blockNode := node.GetNode(parser.NodeLoopStatementBlock)
-	blockScope := sb.getScope(blockNode, context)
+	blockScope := sb.getScope(blockNode, context.withContinuable(node))
 
 	// If the loop has no expression, it is most likely an infinite loop, so we know it is valid and
 	// returns whatever the internal type is.
@@ -538,7 +538,7 @@ func (sb *scopeBuilder) scopeConditionalStatement(node compilergraph.GraphNode, 
 // scopeContinueStatement scopes a continue statement in the SRG.
 func (sb *scopeBuilder) scopeContinueStatement(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Ensure that the node is under a loop.
-	if !sb.sg.srg.HasContainingNode(node, parser.NodeTypeLoopStatement) {
+	if context.parentContinuable == nil {
 		sb.decorateWithError(node, "'continue' statement must be a under a loop statement")
 		return newScope().
 			IsTerminatingStatement().
@@ -549,13 +549,14 @@ func (sb *scopeBuilder) scopeContinueStatement(node compilergraph.GraphNode, con
 	return newScope().
 		IsTerminatingStatement().
 		Valid().
+		Targets(*context.parentContinuable).
 		GetScope()
 }
 
 // scopeBreakStatement scopes a break statement in the SRG.
 func (sb *scopeBuilder) scopeBreakStatement(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Ensure that the node is under a loop or switch.
-	if !sb.sg.srg.HasContainingNode(node, parser.NodeTypeLoopStatement, parser.NodeTypeSwitchStatement) {
+	if context.parentBreakable == nil {
 		sb.decorateWithError(node, "'break' statement must be a under a loop or switch statement")
 		return newScope().
 			IsTerminatingStatement().
@@ -568,6 +569,7 @@ func (sb *scopeBuilder) scopeBreakStatement(node compilergraph.GraphNode, contex
 		IsTerminatingStatement().
 		Valid().
 		WithLabel(proto.ScopeLabel_BROKEN_FLOW).
+		Targets(*context.parentBreakable).
 		GetScope()
 }
 
@@ -595,15 +597,6 @@ func (sb *scopeBuilder) scopeRejectStatement(node compilergraph.GraphNode, conte
 
 // scopeReturnStatement scopes a return statement in the SRG.
 func (sb *scopeBuilder) scopeReturnStatement(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	// Find the parent member/property.
-	parentImpl, found := sb.sg.srg.TryGetContainingImplemented(node)
-	if !found {
-		sb.decorateWithError(node, "'return' statement must be under a function or property")
-		return newScope().
-			Invalid().
-			GetScope()
-	}
-
 	var actualReturnType typegraph.TypeReference = sb.sg.tdg.VoidTypeReference()
 	exprNode, found := node.TryGetNode(parser.NodeReturnStatementValue)
 	if found {
@@ -618,7 +611,7 @@ func (sb *scopeBuilder) scopeReturnStatement(node compilergraph.GraphNode, conte
 	}
 
 	// Ensure the return types match.
-	expectedReturnType, _ := sb.sg.tdg.LookupReturnType(parentImpl)
+	expectedReturnType, _ := sb.sg.tdg.LookupReturnType(context.parentImplemented)
 	if expectedReturnType.IsVoid() {
 		if !actualReturnType.IsVoid() {
 			sb.decorateWithError(node, "No return value expected here, found value of type '%v'", actualReturnType)
@@ -652,17 +645,8 @@ func (sb *scopeBuilder) scopeReturnStatement(node compilergraph.GraphNode, conte
 
 // scopeYieldStatement scopes a yield statement in the SRG.
 func (sb *scopeBuilder) scopeYieldStatement(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	// Find the parent member/property.
-	parentImpl, found := sb.sg.srg.TryGetContainingImplemented(node)
-	if !found {
-		sb.decorateWithError(node, "'yield' statement must be under a function or property")
-		return newScope().
-			Invalid().
-			GetScope()
-	}
-
 	// Ensure it returns a stream.
-	returnType, ok := sb.sg.tdg.LookupReturnType(parentImpl)
+	returnType, ok := sb.sg.tdg.LookupReturnType(context.parentImplemented)
 	if !ok || !returnType.IsDirectReferenceTo(sb.sg.tdg.StreamType()) {
 		sb.decorateWithError(node, "'yield' statement must be under a function or property returning a Stream. Found: %v", returnType)
 		return newScope().

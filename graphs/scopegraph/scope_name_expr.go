@@ -54,8 +54,8 @@ func (sb *scopeBuilder) scopeIdentifierExpression(node compilergraph.GraphNode, 
 	// Warn if we are accessing an assignable value under an async function, as it will be executing
 	// in a different context.
 	if namedScope.IsAssignable() && namedScope.UnderModule() {
-		containing, found := sb.sg.srg.TryGetContainingMember(node)
-		if found && containing.IsAsyncFunction() {
+		srgImpl, found := context.getParentContainer(sb.sg.srg)
+		if found && srgImpl.ContainingMember().IsAsyncFunction() {
 			sb.decorateWithWarning(node, "%v '%v' is defined outside the async function and will therefore be unique for each call to this function", namedScope.Title(), name)
 		}
 	}

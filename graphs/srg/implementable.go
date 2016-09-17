@@ -12,9 +12,90 @@ import (
 // SRGImplementable wraps a node that can have a body.
 type SRGImplementable struct {
 	compilergraph.GraphNode
+	srg *SRG // The parent SRG.
 }
 
-// Body returns the statement block forming the implementation body for this implementable, if any.
+// Body returns the statement block forming the implementation body for
+// this implementable, if any.
 func (m SRGImplementable) Body() (compilergraph.GraphNode, bool) {
 	return m.TryGetNode(parser.NodePredicateBody)
+}
+
+func (m SRGImplementable) ContainingMember() SRGMember {
+	if m.IsMember() {
+		return SRGMember{m.GraphNode, m.srg}
+	}
+
+	if parentProp, found := m.GraphNode.TryGetIncomingNode(parser.NodePropertyGetter); found {
+		return SRGMember{parentProp, m.srg}
+	}
+
+	if parentProp, found := m.GraphNode.TryGetIncomingNode(parser.NodePropertySetter); found {
+		return SRGMember{parentProp, m.srg}
+	}
+
+	panic("No containing member found")
+}
+
+func (m SRGImplementable) IsPropertySetter() bool {
+	setter, found := m.ContainingMember().Setter()
+	if !found {
+		return false
+	}
+
+	return m.GraphNode.NodeId == setter.NodeId
+}
+
+func (m SRGImplementable) IsMember() bool {
+	switch m.GraphNode.Kind() {
+	case parser.NodeTypeConstructor:
+		fallthrough
+
+	case parser.NodeTypeFunction:
+		fallthrough
+
+	case parser.NodeTypeProperty:
+		fallthrough
+
+	case parser.NodeTypeOperator:
+		fallthrough
+
+	case parser.NodeTypeField:
+		fallthrough
+
+	case parser.NodeTypeVariable:
+		return true
+
+	default:
+		return false
+	}
+}
+
+// AsImplementable returns the given node as an SRGImplementable (if applicable).
+func (g *SRG) AsImplementable(node compilergraph.GraphNode) (SRGImplementable, bool) {
+	switch node.Kind() {
+	case parser.NodeTypeConstructor:
+		fallthrough
+
+	case parser.NodeTypeFunction:
+		fallthrough
+
+	case parser.NodeTypeProperty:
+		fallthrough
+
+	case parser.NodeTypeOperator:
+		fallthrough
+
+	case parser.NodeTypeField:
+		fallthrough
+
+	case parser.NodeTypeVariable:
+		fallthrough
+
+	case parser.NodeTypePropertyBlock:
+		return SRGImplementable{node, g}, true
+
+	default:
+		return SRGImplementable{}, false
+	}
 }

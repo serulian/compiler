@@ -44,7 +44,8 @@ func (db *domBuilder) buildExpressionStatement(node compilergraph.GraphNode) cod
 // buildBreakStatement builds the CodeDOM for a break statement.
 func (db *domBuilder) buildBreakStatement(node compilergraph.GraphNode) codedom.Statement {
 	// Find the parent statement (guarenteed to be there due to scope graph constraints).
-	parentNode, _ := db.scopegraph.SourceGraph().TryGetContainingNode(node, parser.NodeTypeLoopStatement, parser.NodeTypeSwitchStatement)
+	scope, _ := db.scopegraph.GetScope(node)
+	parentNode, _ := scope.TargetedNode(db.scopegraph.SourceGraph())
 
 	// Add a jump to the break state for the parent.
 	return codedom.UnconditionalJump(db.breakStatementMap[parentNode.NodeId], node)
@@ -53,10 +54,11 @@ func (db *domBuilder) buildBreakStatement(node compilergraph.GraphNode) codedom.
 // buildContinueStatement builds the CodeDOM for a continue statement.
 func (db *domBuilder) buildContinueStatement(node compilergraph.GraphNode) codedom.Statement {
 	// Find the parent loop statement (guarenteed to be there due to scope graph constraints).
-	loopNode, _ := db.scopegraph.SourceGraph().TryGetContainingNode(node, parser.NodeTypeLoopStatement)
+	scope, _ := db.scopegraph.GetScope(node)
+	parentNode, _ := scope.TargetedNode(db.scopegraph.SourceGraph())
 
 	// Add a jump to the continue state for the parent.
-	return codedom.UnconditionalJump(db.continueStatementMap[loopNode.NodeId], node)
+	return codedom.UnconditionalJump(db.continueStatementMap[parentNode.NodeId], node)
 }
 
 // buildReturnStatement builds the CodeDOM for a return statement.
