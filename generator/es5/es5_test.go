@@ -280,7 +280,8 @@ func TestGenerator(t *testing.T) {
 
 		buf := esbuilder.BuildSource(builder)
 		source, err := escommon.FormatECMASource(buf.String())
-		if !assert.Nil(t, err, "Could not format module source") {
+
+		if !assert.Nil(t, err, "Could not format module source under test %v: %v", test.name, err) {
 			continue
 		}
 

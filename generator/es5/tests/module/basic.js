@@ -23,9 +23,7 @@ $module('basic', function () {
   });
   this.$init(function () {
     return $g.basic.AnotherFunction().then(function ($result0) {
-      return $promise.resolve($result0);
-    }).then(function (result) {
-      $static.anotherBool = result;
+      $static.anotherBool = $result0;
     });
   });
 });

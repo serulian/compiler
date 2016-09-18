@@ -680,10 +680,10 @@ this.Serulian = function ($global) {
       $static.new = function () {
         var instance = new $static();
         var init = [];
-        init.push($promise.resolve(/*#null#*/null).then(function (result) {
+        init.push($promise.resolve(/*#null#*/null).then(/*#null#*/function (/*#null#*/result) /*#null#*/{
           instance.First = result;
         }));
-        init.push($promise.resolve(/*#null#*/null).then(function (result) {
+        init.push($promise.resolve(/*#null#*/null).then(/*#null#*/function (/*#null#*/result) /*#null#*/{
           instance.Second = result;
         }));
         return $promise.all(init).then(function () {
@@ -750,13 +750,13 @@ this.Serulian = function ($global) {
       $static.new = function () {
         var instance = new $static();
         var init = [];
-        init.push($promise.resolve(/*#0#*/$t.box(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer)).then(function (result) {
+        init.push($promise.resolve(/*#0#*/$t.box(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer)).then(/*#0#*/function (/*#0#*/result) /*#0#*/{
           instance.start = result;
         }));
-        init.push($promise.resolve(/*#-1#*/$t.box(/*#-1#*/-/*#-1#*/1, /*#-1#*/$g.____testlib.basictypes.Integer)).then(function (result) {
+        init.push($promise.resolve(/*#-1#*/$t.box(/*#-1#*/-/*#-1#*/1, /*#-1#*/$g.____testlib.basictypes.Integer)).then(/*#-1#*/function (/*#-1#*/result) /*#-1#*/{
           instance.end = result;
         }));
-        init.push($promise.resolve(/*#0#*/$t.box(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer)).then(function (result) {
+        init.push($promise.resolve(/*#0#*/$t.box(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer)).then(/*#0#*/function (/*#0#*/result) /*#0#*/{
           instance.current = result;
         }));
         return $promise.all(init).then(function () {
@@ -907,7 +907,7 @@ this.Serulian = function ($global) {
       $static.new = function () {
         var instance = new $static();
         var init = [];
-        init.push($promise.resolve(/*#Array.new()#*/$t.nativenew(/*#Array.new()#*/$global.Array)()).then(function (result) {
+        init.push($promise.resolve(/*#Array.new()#*/$t.nativenew(/*#Array.new()#*/$global.Array)()).then(/*#Array.new()#*/function (/*#Array.new()#*/result) /*#Array.new()#*/{
           instance.items = result;
         }));
         return $promise.all(init).then(function () {
@@ -1157,7 +1157,7 @@ this.Serulian = function ($global) {
       $static.new = function () {
         var instance = new $static();
         var init = [];
-        init.push($promise.resolve(/*#Object.new()#*/$t.nativenew(/*#Object.new()#*/$global.Object)()).then(function (result) {
+        init.push($promise.resolve(/*#Object.new()#*/$t.nativenew(/*#Object.new()#*/$global.Object)()).then(/*#Object.new()#*/function (/*#Object.new()#*/result) /*#Object.new()#*/{
           instance.internalObject = result;
         }));
         return $promise.all(init).then(function () {
