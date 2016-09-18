@@ -8,6 +8,7 @@ package escommon
 import (
 	"bytes"
 	"fmt"
+	"regexp"
 	"strings"
 	"unicode/utf8"
 
@@ -263,7 +264,16 @@ func (sf *sourceFormatter) formatExpression(expression ast.Expression) {
 		sf.indent()
 
 		for _, value := range e.Value {
+			noQuoting, _ := regexp.MatchString("^[$a-zA-Z0-9]+$", value.Key)
+
+			if !noQuoting {
+				sf.append("\"")
+			}
 			sf.append(value.Key)
+			if !noQuoting {
+				sf.append("\"")
+			}
+
 			sf.append(": ")
 			sf.formatExpression(value.Value)
 			sf.append(",")
