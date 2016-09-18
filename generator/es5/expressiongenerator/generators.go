@@ -6,9 +6,12 @@ package expressiongenerator
 
 import (
 	"fmt"
+	"sort"
+	"strconv"
 
 	"github.com/serulian/compiler/generator/es5/codedom"
 	"github.com/serulian/compiler/generator/escommon/esbuilder"
+	"github.com/serulian/compiler/parser"
 )
 
 var _ = fmt.Printf
@@ -292,14 +295,52 @@ func (eg *expressionGenerator) generateLocalAssignment(localAssign *codedom.Loca
 	return assignment
 }
 
+// ByKey is a helper to sort ObjectLiteralEntryNode's.
+type ByKey []codedom.ObjectLiteralEntryNode
+
+func (s ByKey) Len() int {
+	return len(s)
+}
+
+func (s ByKey) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+
+func (s ByKey) Less(i, j int) bool {
+	iKey := s[i].KeyExpression
+	jKey := s[j].KeyExpression
+
+	var iKeyString = ""
+	var jKeyString = ""
+
+	// First we try the literal value of the key. If not found, we use the node's location
+	// in the source file as a stable fallback.
+	if lvn, ok := iKey.(*codedom.LiteralValueNode); ok {
+		iKeyString = lvn.Value
+	} else {
+		iKeyString = strconv.Itoa(iKey.BasisNode().GetValue(parser.NodePredicateStartRune).Int())
+	}
+
+	if lvn, ok := jKey.(*codedom.LiteralValueNode); ok {
+		jKeyString = lvn.Value
+	} else {
+		jKeyString = strconv.Itoa(jKey.BasisNode().GetValue(parser.NodePredicateStartRune).Int())
+	}
+
+	return iKeyString < jKeyString
+}
+
 // generateObjectLiteral generates the expression source for a literal object value.
 func (eg *expressionGenerator) generateObjectLiteral(objectLiteral *codedom.ObjectLiteralNode, context generationContext) esbuilder.ExpressionBuilder {
+	// Sort the entries by key to ensure a consistent ordering.
+	sortedEntries := objectLiteral.Entries
+	sort.Sort(ByKey(sortedEntries))
+
 	// Determine whether we can use the compact form of object literals. The compact form is only
 	// possible if all the keys are string literals.
 	var compactFormAllowed = true
 	entries := make([]interface{}, len(objectLiteral.Entries))
-
-	for index, entry := range objectLiteral.Entries {
+	for index, entry := range sortedEntries {
 		if _, ok := entry.KeyExpression.(*codedom.LiteralValueNode); !ok {
 			compactFormAllowed = false
 		}
@@ -319,12 +360,12 @@ func (eg *expressionGenerator) generateObjectLiteral(objectLiteral *codedom.Obje
 		templateStr := `
 			({
 				{{ range $idx, $entry := .Entries }}
-					'{{ emit $entry.Key }}': {{ emit $entry.Value }},
+					{{ emit $entry.Key }}: {{ emit $entry.Value }},
 				{{ end }}
 			})
 		`
 
-		return esbuilder.Template("compapctobjectliteral", templateStr, data).AsExpression()
+		return esbuilder.Template("compactobjectliteral", templateStr, data).AsExpression()
 	} else {
 		templateStr := `
 			((function() {
