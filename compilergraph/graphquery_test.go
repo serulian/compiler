@@ -13,7 +13,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func getNodes(it NodeIterator) []GraphNode {
+type SimpleNodeIterator interface {
+	Next() bool
+	Node() GraphNode
+}
+
+func getNodes(it SimpleNodeIterator) []GraphNode {
 	var nodes = make([]GraphNode, 0)
 	for it.Next() {
 		nodes = append(nodes, it.Node())
