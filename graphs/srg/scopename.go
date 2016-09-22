@@ -166,6 +166,34 @@ func (ns SRGNamedScope) IsStatic() bool {
 	}
 }
 
+// AccessIsUsage returns true if the named scope refers to a member or variable that
+// is used immediately via the access. For example, a variable or property access will
+// "use" that member, while a function or constructor is not used until invoked.
+func (ns SRGNamedScope) AccessIsUsage() bool {
+	switch ns.ScopeKind() {
+	case NamedScopeType:
+		return false
+
+	case NamedScopeMember:
+		return ns.Kind() == parser.NodeTypeProperty
+
+	case NamedScopeImport:
+		return false
+
+	case NamedScopeValue:
+		fallthrough
+
+	case NamedScopeParameter:
+		fallthrough
+
+	case NamedScopeVariable:
+		return true
+
+	default:
+		panic("Unknown kind of named scope")
+	}
+}
+
 // ScopeKind returns the kind of the scoped node.
 func (ns SRGNamedScope) ScopeKind() NamedScopeKind {
 	switch ns.Kind() {

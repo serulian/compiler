@@ -59,6 +59,21 @@ func (sb *scopeBuilder) saveScopes() {
 func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandler {
 	switch node.Kind() {
 	// Members.
+	case parser.NodeTypeProperty:
+		fallthrough
+
+	case parser.NodeTypePropertyBlock:
+		fallthrough
+
+	case parser.NodeTypeFunction:
+		fallthrough
+
+	case parser.NodeTypeConstructor:
+		fallthrough
+
+	case parser.NodeTypeOperator:
+		return sb.scopeImplementedMember
+
 	case parser.NodeTypeVariable:
 		return sb.scopeVariable
 
@@ -310,13 +325,22 @@ func (sb *scopeBuilder) getScope(node compilergraph.GraphNode, context scopeCont
 		return &result
 	}
 
-	built := <-sb.buildScope(node, context)
+	built := <-sb.buildScopeWithContext(node, context)
 	return &built
 }
 
 // buildScope builds the scope for the given node, returning a channel
 // that can be watched for the result.
-func (sb *scopeBuilder) buildScope(node compilergraph.GraphNode, context scopeContext) chan proto.ScopeInfo {
+func (sb *scopeBuilder) buildScope(rootNode compilergraph.GraphNode) chan proto.ScopeInfo {
+	return sb.buildScopeWithContext(rootNode, scopeContext{
+		parentImplemented: rootNode,
+		rootNode:          rootNode,
+	})
+}
+
+// buildScopeWithContext builds the scope for the given node, returning a channel
+// that can be watched for the result.
+func (sb *scopeBuilder) buildScopeWithContext(node compilergraph.GraphNode, context scopeContext) chan proto.ScopeInfo {
 	// Execute the handler in a gorountine and return the result channel.
 	handler := sb.getScopeHandler(node)
 	resultChan := make(chan proto.ScopeInfo)

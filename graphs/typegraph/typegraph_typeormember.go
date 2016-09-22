@@ -20,4 +20,6 @@ type TGTypeOrMember interface {
 	IsStatic() bool
 	IsPromising() bool
 	Parent() TGTypeOrModule
+	IsImplicitlyCalled() bool
+	IsField() bool
 }

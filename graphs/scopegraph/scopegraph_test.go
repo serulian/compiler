@@ -1470,6 +1470,12 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"", ""},
 
+	/////////// module init tests /////////////////
+
+	scopegraphTest{"module init basic test", "moduleinit", "basic",
+		[]expectedScopeEntry{},
+		"", ""},
+
 	/////////// known issue tests /////////////////
 
 	scopegraphTest{"known issue panic test", "knownissues", "knownissue1",

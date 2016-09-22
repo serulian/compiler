@@ -152,24 +152,18 @@ func buildScopeGraphWithResolver(srg *srg.SRG, irg *webidl.WebIRG, tdg *typegrap
 		wg.Add(1)
 		go (func(node compilergraph.GraphNode) {
 			rootNode := node.GetIncomingNode(parser.NodePredicateBody)
-			<-builder.buildScope(node, scopeContext{
-				parentImplemented: rootNode,
-				rootNode:          rootNode,
-			})
+			<-builder.buildScope(rootNode)
 			wg.Done()
 		})(sit.Node())
 	}
 
-	mit := srg.EntrypointMembers()
-	for mit.Next() {
+	vit := srg.EntrypointVariables()
+	for vit.Next() {
 		wg.Add(1)
 		go (func(node compilergraph.GraphNode) {
-			<-builder.buildScope(node, scopeContext{
-				parentImplemented: node,
-				rootNode:          node,
-			})
+			<-builder.buildScope(node)
 			wg.Done()
-		})(mit.Node())
+		})(vit.Node())
 	}
 
 	wg.Wait()

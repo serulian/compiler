@@ -275,6 +275,16 @@ func (tn TGTypeDecl) IsPromising() bool {
 	return false
 }
 
+// IsImplicitlyCalled returns whether this type is implicitly called (always false).
+func (tn TGTypeDecl) IsImplicitlyCalled() bool {
+	return false
+}
+
+// IsField returns whether this type is a field (always false).
+func (tn TGTypeDecl) IsField() bool {
+	return false
+}
+
 // isConstructable returns whether this type is constructable.
 func (tn TGTypeDecl) isConstructable() bool {
 	typeKind := tn.TypeKind()
