@@ -52,12 +52,7 @@ func (t *ScopeInfo) NamedReferenceNode(srg *srg.SRG, tg *typegraph.TypeGraph) (c
 		return compilergraph.GraphNode{}, false
 	}
 
-	nodeId := compilergraph.GraphNodeId(t.NamedReference.GetReferencedNode())
-	if t.NamedReference.GetIsSRGNode() {
-		return srg.GetNode(nodeId), true
-	} else {
-		return tg.GetNode(nodeId), true
-	}
+	return t.NamedReference.GetNode(srg, tg), true
 }
 
 func (t *ScopeInfo) Build(value string) interface{} {
@@ -121,4 +116,13 @@ func (t *ScopeInfo) HasLabel(label ScopeLabel) bool {
 	}
 
 	return false
+}
+
+func (r *ScopeReference) GetNode(srg *srg.SRG, tg *typegraph.TypeGraph) compilergraph.GraphNode {
+	nodeId := compilergraph.GraphNodeId(r.GetReferencedNode())
+	if r.GetIsSRGNode() {
+		return srg.GetNode(nodeId)
+	} else {
+		return tg.GetNode(nodeId)
+	}
 }

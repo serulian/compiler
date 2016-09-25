@@ -76,15 +76,6 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 		return newScope().Invalid().GetScope()
 	}
 
-	getDescription := func() string {
-		namedNode, hasNamedNode := sb.getNamedScopeForScope(childScope)
-		if !hasNamedNode {
-			return ""
-		}
-
-		return fmt.Sprintf("on %v %v ", namedNode.Title(), namedNode.Name())
-	}
-
 	// Check if the child expression has a static scope. If so, this is a type conversion between
 	// a nominal type and a base type.
 	if childScope.GetKind() == proto.ScopeKind_STATIC {
@@ -97,6 +88,19 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 			sb.decorateWithError(node, "Cannot invoke function call on unclarified generic scope.")
 		}
 		return newScope().Invalid().GetScope()
+	}
+
+	namedNode, hasNamedNode := sb.getNamedScopeForScope(childScope)
+	if hasNamedNode {
+		context.staticDependencyCollector.registerNamedDependency(namedNode)
+	}
+
+	getDescription := func() string {
+		if !hasNamedNode {
+			return ""
+		}
+
+		return fmt.Sprintf("on %v %v ", namedNode.Title(), namedNode.Name())
 	}
 
 	// Ensure the child expression has type function.

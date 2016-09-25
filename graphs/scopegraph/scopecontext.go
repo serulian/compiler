@@ -16,8 +16,12 @@ type scopeContext struct {
 	// rootNode holds the root node under which we are scoping.
 	rootNode compilergraph.GraphNode
 
-	// The access option for the current scope.
+	// accessOption is the access option for the current scope.
 	accessOption scopeAccessOption
+
+	// staticDependencyCollector defines a helper for collecting all members accessed or called
+	// statically the current scope, which indicates a dependency for the purposes of initialization.
+	staticDependencyCollector *staticDependencyCollector
 
 	// overrideTypes is (if not nil) the map of the overridden type for an expression
 	// under this context.
@@ -58,7 +62,9 @@ func (sc scopeContext) getTypeOverride(exprNode compilergraph.GraphNode) (typegr
 // set to that given.
 func (sc scopeContext) withContinuable(node compilergraph.GraphNode) scopeContext {
 	return scopeContext{
-		rootNode:          sc.rootNode,
+		rootNode:                  sc.rootNode,
+		staticDependencyCollector: sc.staticDependencyCollector,
+
 		accessOption:      sc.accessOption,
 		overrideTypes:     sc.overrideTypes,
 		parentImplemented: sc.parentImplemented,
@@ -72,7 +78,9 @@ func (sc scopeContext) withContinuable(node compilergraph.GraphNode) scopeContex
 // given.
 func (sc scopeContext) withBreakable(node compilergraph.GraphNode) scopeContext {
 	return scopeContext{
-		rootNode:          sc.rootNode,
+		rootNode:                  sc.rootNode,
+		staticDependencyCollector: sc.staticDependencyCollector,
+
 		accessOption:      sc.accessOption,
 		overrideTypes:     sc.overrideTypes,
 		parentImplemented: sc.parentImplemented,
@@ -86,7 +94,9 @@ func (sc scopeContext) withBreakable(node compilergraph.GraphNode) scopeContext 
 // given.
 func (sc scopeContext) withImplemented(node compilergraph.GraphNode) scopeContext {
 	return scopeContext{
-		rootNode:          sc.rootNode,
+		rootNode:                  sc.rootNode,
+		staticDependencyCollector: sc.staticDependencyCollector,
+
 		accessOption:      sc.accessOption,
 		overrideTypes:     sc.overrideTypes,
 		parentBreakable:   sc.parentBreakable,
@@ -99,7 +109,9 @@ func (sc scopeContext) withImplemented(node compilergraph.GraphNode) scopeContex
 // withAccess returns the scope context with the access option set to that given.
 func (sc scopeContext) withAccess(access scopeAccessOption) scopeContext {
 	return scopeContext{
-		rootNode:          sc.rootNode,
+		rootNode:                  sc.rootNode,
+		staticDependencyCollector: sc.staticDependencyCollector,
+
 		overrideTypes:     sc.overrideTypes,
 		parentImplemented: sc.parentImplemented,
 		parentBreakable:   sc.parentBreakable,
@@ -124,7 +136,9 @@ func (sc scopeContext) withTypeOverride(exprNode compilergraph.GraphNode, typere
 	overrideTypes[exprNode.NodeId] = typeref
 
 	return scopeContext{
-		rootNode:          sc.rootNode,
+		rootNode:                  sc.rootNode,
+		staticDependencyCollector: sc.staticDependencyCollector,
+
 		accessOption:      sc.accessOption,
 		parentImplemented: sc.parentImplemented,
 		parentBreakable:   sc.parentBreakable,

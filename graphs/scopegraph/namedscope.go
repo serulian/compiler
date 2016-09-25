@@ -323,6 +323,39 @@ func (nsi *namedScopeInfo) UnderModule() bool {
 	}
 }
 
+// AccessIsUsage returns true if the named scope refers to a member or variable that
+// is used immediately via the access. For example, a variable or property access will
+// "use" that member, while a function or constructor is not used until invoked.
+func (nsi *namedScopeInfo) AccessIsUsage() bool {
+	if nsi.typeInfo != nil {
+		return nsi.typeInfo.IsImplicitlyCalled() || nsi.typeInfo.IsField()
+	} else {
+		return nsi.srgInfo.AccessIsUsage()
+	}
+}
+
+// IsLocalName returns whether the named scope points to a name only available
+// in the local context (parameters, values, and variables).
+func (nsi *namedScopeInfo) IsLocalName() bool {
+	if nsi.typeInfo != nil {
+		return false
+	}
+
+	switch nsi.srgInfo.ScopeKind() {
+	case srg.NamedScopeParameter:
+		fallthrough
+
+	case srg.NamedScopeValue:
+		fallthrough
+
+	case srg.NamedScopeVariable:
+		return true
+
+	default:
+		return false
+	}
+}
+
 // Generics returns the generics defined on the named scope, if any.
 func (nsi *namedScopeInfo) Generics() []typegraph.TGGeneric {
 	if !nsi.IsGeneric() {
@@ -340,4 +373,13 @@ func (nsi *namedScopeInfo) IsGeneric() bool {
 	}
 
 	return nsi.typeInfo.HasGenerics()
+}
+
+// Member returns the type/module member pointed to by this named scope, if any.
+func (nsi *namedScopeInfo) Member() (typegraph.TGMember, bool) {
+	if nsi.typeInfo == nil || nsi.typeInfo.IsType() {
+		return typegraph.TGMember{}, false
+	}
+
+	return nsi.typeInfo.(typegraph.TGMember), true
 }

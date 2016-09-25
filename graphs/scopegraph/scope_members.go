@@ -12,6 +12,10 @@ import (
 
 // scopeImplementedMember scopes an implemented type member.
 func (sb *scopeBuilder) scopeImplementedMember(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	scope := sb.getScope(node.GetNode(parser.NodePredicateBody), context)
-	return *scope
+	if body, hasBody := node.TryGetNode(parser.NodePredicateBody); hasBody {
+		scope := sb.getScope(body, context)
+		return *scope
+	} else {
+		return newScope().GetScope()
+	}
 }

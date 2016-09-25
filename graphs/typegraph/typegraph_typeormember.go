@@ -13,6 +13,7 @@ type TGTypeOrMember interface {
 	Name() string
 	Title() string
 	Node() compilergraph.GraphNode
+	SourceNodeId() (compilergraph.GraphNodeId, bool)
 	Generics() []TGGeneric
 	HasGenerics() bool
 	IsReadOnly() bool
