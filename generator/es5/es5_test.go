@@ -103,6 +103,8 @@ var generationTests = []generationTest{
 	generationTest{"class composition required fields test", "class", "requiredcomposition", integrationTestSuccessExpected, ""},
 	generationTest{"constructable interface test", "interface", "constructable", integrationTestSuccessExpected, ""},
 
+	generationTest{"module init test", "module", "init", integrationTestSuccessExpected, ""},
+
 	generationTest{"basic struct test", "struct", "basic", integrationTestSuccessExpected, ""},
 	generationTest{"struct equality test", "struct", "equals", integrationTestSuccessExpected, ""},
 	generationTest{"struct defaults test", "struct", "defaults", integrationTestSuccessExpected, ""},

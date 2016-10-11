@@ -1,6 +1,6 @@
 $module('async', function () {
   var $static = this;
-  $static.DoSomethingAsync = $t.workerwrap('0af00909efba2d45fc361ddb814e958e2524c086479947e7b6b5f090c793a4a7', function (a) {
+  $static.DoSomethingAsync = $t.workerwrap('0af00909', function (a) {
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       $resolve(a);

@@ -31,7 +31,7 @@ $module('asyncstruct', function () {
     };
   });
 
-  $static.DoSomethingAsync = $t.workerwrap('dd7aa26ec2db6858f13a458fe077b54060448d2e8a2998b7445a87f974ab256b', function (s) {
+  $static.DoSomethingAsync = $t.workerwrap('dd7aa26e', function (s) {
     var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {

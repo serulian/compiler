@@ -1,0 +1,8 @@
+from other import SomeClass
+
+var<SomeClass> sc = SomeClass.NewThing(1)
+var<SomeClass> sc2 = SomeClass.NewThing(2)
+
+function<any> TEST() {
+	return sc.value == 2 && sc2.value == 4
+}

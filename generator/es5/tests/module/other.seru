@@ -1,0 +1,12 @@
+var<int> counter = 0
+
+class SomeClass {
+	var<int> value
+	constructor NewThing(value int) {
+		counter = counter + 1
+
+		return SomeClass{
+			value: value + counter,
+		}
+	}
+}

@@ -20,10 +20,10 @@ $module('basic', function () {
     return $promise.resolve($t.box(true, $g.____testlib.basictypes.Boolean)).then(function (result) {
       $static.someInt = result;
     });
-  });
+  }, 'af4b3683', []);
   this.$init(function () {
     return $g.basic.AnotherFunction().then(function ($result0) {
       $static.anotherBool = $result0;
     });
-  });
+  }, '8795b5d7', ['af4b3683']);
 });

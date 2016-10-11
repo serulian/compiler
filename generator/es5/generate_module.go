@@ -5,6 +5,7 @@
 package es5
 
 import (
+	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/generator/escommon/esbuilder"
 	"github.com/serulian/compiler/graphs/typegraph"
@@ -70,6 +71,53 @@ func (gm generatingModule) GenerateVariables() *ordered_map.OrderedMap {
 	return gm.Generator.generateVariables(gm.Module)
 }
 
+// recursivelyCollectInitDependencies recursively collects the initialization dependency fields for the
+// field member, placing them in the deps map.
+func (gm generatingModule) recursivelyCollectInitDependencies(current typegraph.TGMember, field typegraph.TGMember, deps map[typegraph.TGMember]bool) {
+	if _, found := deps[current]; found {
+		return
+	}
+
+	if field.NodeId != current.NodeId && current.IsField() {
+		deps[current] = true
+	} else {
+		srgMember, hasSRGMember := gm.Generator.getSRGMember(current)
+		if !hasSRGMember {
+			return
+		}
+
+		scope, _ := gm.Generator.scopegraph.GetScope(srgMember.GraphNode)
+		for _, staticDep := range scope.GetStaticDependencies() {
+			memberNodeId := compilergraph.GraphNodeId(staticDep.GetReferencedNode())
+			member := gm.Generator.scopegraph.TypeGraph().GetTypeOrMember(memberNodeId)
+			gm.recursivelyCollectInitDependencies(member.(typegraph.TGMember), field, deps)
+		}
+	}
+}
+
+// FieldId returns a stable, unique ID for the given field.
+func (gm generatingModule) FieldId(member typegraph.TGMember) string {
+	srgMember, _ := gm.Generator.getSRGMember(member)
+	return srgMember.UniqueId()
+}
+
+// InitDependenceis returns a slice containing the FieldId's of the fields that the given
+// field depends upon for initialization, if any.
+func (gm generatingModule) InitDependencies(field typegraph.TGMember) []string {
+	deps := map[typegraph.TGMember]bool{}
+	gm.recursivelyCollectInitDependencies(field, field, deps)
+
+	dependencies := make([]string, 0, len(deps))
+	for mem, _ := range deps {
+		srgMember, hasSRGMember := gm.Generator.getSRGMember(mem)
+		if hasSRGMember {
+			dependencies = append(dependencies, srgMember.UniqueId())
+		}
+	}
+
+	return dependencies
+}
+
 // moduleTemplateStr defines the template for generating a module.
 const moduleTemplateStr = `
 $module('{{ .ExportedPath }}', function() {
@@ -83,10 +131,12 @@ $module('{{ .ExportedPath }}', function() {
   	{{ emit $kv.Value }};
   {{end}}
 
+  {{ $parent := . }}
+
   {{range $idx, $kv := .GenerateVariables.UnsafeIter }}
   	this.$init(function() {
 		return ({{ emit $kv.Value }});
-	});
+	}, '{{ $parent.FieldId $kv.Key }}', [{{ range $ddx, $did := $parent.InitDependencies $kv.Key }}{{ if $ddx }}, {{ end }}'{{ $did }}'{{ end }}]);
   {{end}}
 });
 `

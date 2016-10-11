@@ -663,8 +663,12 @@ this.Serulian = function ($global) {
         }
       };
     };
-    module.$init = function (callback) {
-      moduleInits.push(callback);
+    module.$init = function (callback, fieldId, dependencyIds) {
+      moduleInits.push({
+        callback: callback,
+        id: fieldId,
+        depends: dependencyIds,
+      });
     };
     module.$struct = $newtypebuilder('struct');
     module.$class = $newtypebuilder('class');
@@ -2238,10 +2242,41 @@ this.Serulian = function ($global) {
       }
     };
   };
-  var moduleInitPromises = moduleInits.map(function (callback) {
-    return callback();
-  });
-  return $promise.all(moduleInitPromises).then(function () {
+  var buildPromises = function (items) {
+    var seen = {
+    };
+    var result = [];
+    var itemsById = {
+    };
+    items.forEach(function (item) {
+      itemsById[item.id] = item;
+    });
+    items.forEach(function visit (item) {
+      if (seen[item.id]) {
+        return;
+      }
+      seen[item.id] = true;
+      item.depends.forEach(function (depId) {
+        visit(itemsById[depId]);
+      });
+      item['promise'] = item['callback']();
+    });
+    return items.map(function (item) {
+      if (!item.depends.length) {
+        return item['promise'];
+      }
+      var current = $promise.resolve();
+      item.depends.forEach(function (depId) {
+        current = current.then(function (resolved) {
+          return itemsById[depId]['promise'];
+        });
+      });
+      return current.then(function (resolved) {
+        return item['promise'];
+      });
+    });
+  };
+  return $promise.all(buildPromises(moduleInits)).then(function () {
     return $g;
   });
 }(this);

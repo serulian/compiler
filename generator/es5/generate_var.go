@@ -62,7 +62,7 @@ func (gm generatingMember) Initializer() expressiongenerator.ExpressionResult {
 	return statemachine.GenerateExpressionResult(initializer, gm.Generator.scopegraph, gm.Generator.positionMapper)
 }
 
-// Prefix returns "$this" or "$static", depending on whether the member is an instance member or
+// Prefix returns "instance" or "$static", depending on whether the member is an instance member or
 // static member.
 func (gm generatingMember) Prefix() string {
 	if gm.Member.IsStatic() {
