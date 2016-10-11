@@ -39,6 +39,11 @@ func (g *SRG) GetMemberReference(node compilergraph.GraphNode) SRGMember {
 	return member
 }
 
+// UniqueId returns a unique hash ID for the node that is stable across compilations.
+func (m SRGMember) UniqueId() string {
+	return GetUniqueId(m.GraphNode)
+}
+
 // Module returns the module under which the member is defined.
 func (m SRGMember) Module() SRGModule {
 	source := m.GraphNode.Get(parser.NodePredicateSource)

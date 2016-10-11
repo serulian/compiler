@@ -110,6 +110,16 @@ func (tn TGTypeDecl) Node() compilergraph.GraphNode {
 	return tn.GraphNode
 }
 
+// SourceNodeId returns the ID of the source node for this tyoe, if any.
+func (tn TGTypeDecl) SourceNodeId() (compilergraph.GraphNodeId, bool) {
+	idFound, hasId := tn.GraphNode.TryGetValue(NodePredicateSource)
+	if !hasId {
+		return compilergraph.GraphNodeId(""), false
+	}
+
+	return idFound.NodeId(), true
+}
+
 // Returns the containing type. Will only return a type for generics.
 func (tn TGTypeDecl) ContainingType() (TGTypeDecl, bool) {
 	containingTypeNode, hasContainingType := tn.GraphNode.TryGetIncomingNode(NodePredicateTypeGeneric)
@@ -272,6 +282,16 @@ func (tn TGTypeDecl) IsStatic() bool {
 
 // IsPromising returns whether this type is promising (always false).
 func (tn TGTypeDecl) IsPromising() bool {
+	return false
+}
+
+// IsImplicitlyCalled returns whether this type is implicitly called (always false).
+func (tn TGTypeDecl) IsImplicitlyCalled() bool {
+	return false
+}
+
+// IsField returns whether this type is a field (always false).
+func (tn TGTypeDecl) IsField() bool {
 	return false
 }
 

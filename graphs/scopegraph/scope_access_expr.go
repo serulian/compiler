@@ -189,6 +189,8 @@ func (sb *scopeBuilder) scopeStreamMemberAccessExpression(node compilergraph.Gra
 		}
 
 		memberScope := sb.getNamedScopeForMember(typeMember)
+		context.staticDependencyCollector.checkNamedScopeForDependency(memberScope)
+
 		return newScope().ForNamedScopeUnderModifiedType(memberScope, valueType, makeStream, context).GetScope()
 
 	case proto.ScopeKind_GENERIC:
@@ -250,6 +252,7 @@ func (sb *scopeBuilder) scopeDynamicMemberAccessExpression(node compilergraph.Gr
 		// The resulting type (if matching a named scope) is the named scope, but also nullable (since the operator)
 		// allows for nullable types.
 		memberScope := sb.getNamedScopeForMember(typeMember)
+		context.staticDependencyCollector.checkNamedScopeForDependency(memberScope)
 
 		if childType.IsNullable() {
 			sb.decorateWithWarning(node, "Dynamic access of known member '%v' under type %v. The ?. operator is suggested.", typeMember.Name(), childType)
@@ -314,6 +317,8 @@ func (sb *scopeBuilder) scopeNullableMemberAccessExpression(node compilergraph.G
 		}
 
 		memberScope := sb.getNamedScopeForMember(typeMember)
+		context.staticDependencyCollector.checkNamedScopeForDependency(memberScope)
+
 		return newScope().ForNamedScopeUnderModifiedType(memberScope, childNonNullableType, makeNullable, context).GetScope()
 
 	case proto.ScopeKind_GENERIC:
@@ -360,6 +365,8 @@ func (sb *scopeBuilder) scopeMemberAccessExpression(node compilergraph.GraphNode
 		}
 
 		memberScope := sb.getNamedScopeForMember(typeMember)
+		context.staticDependencyCollector.checkNamedScopeForDependency(memberScope)
+
 		return newScope().ForNamedScopeUnderType(memberScope, childType, context).GetScope()
 
 	case proto.ScopeKind_GENERIC:

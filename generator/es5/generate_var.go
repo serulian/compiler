@@ -62,7 +62,7 @@ func (gm generatingMember) Initializer() expressiongenerator.ExpressionResult {
 	return statemachine.GenerateExpressionResult(initializer, gm.Generator.scopegraph, gm.Generator.positionMapper)
 }
 
-// Prefix returns "$this" or "$static", depending on whether the member is an instance member or
+// Prefix returns "instance" or "$static", depending on whether the member is an instance member or
 // static member.
 func (gm generatingMember) Prefix() string {
 	if gm.Member.IsStatic() {
@@ -74,12 +74,16 @@ func (gm generatingMember) Prefix() string {
 
 // variableTemplateStr defines the template for generating variables/fields.
 const variableTemplateStr = `
-	({{ $result := .Initializer }}
+	{{ $result := .Initializer }}
+	{{ $prefix := .Prefix }}
+	{{ $name := .Member.Name }}
+	{{ $setvar := print $prefix "." $name " = {{ emit .ResultExpr }};" }}
+
 	{{ if $result.IsPromise }}
-	({{ emit ($result.BuildWrapped "return $promise.resolve({{ emit .ResultExpr }})" nil) }})
+		({{ emit ($result.BuildWrapped $setvar nil) }})
 	{{ else }}
-	$promise.resolve({{ emit $result.Build }})
-	{{ end }}).then(function(result) {
-		{{ .Prefix }}.{{ .Member.Name }} = result;
-	})
+		($promise.resolve({{ emit $result.Build }}).then(function(result) {
+			{{ .Prefix }}.{{ .Member.Name }} = result;
+		}))
+	{{ end }}
 `

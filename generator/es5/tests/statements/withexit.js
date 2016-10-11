@@ -105,5 +105,5 @@ $module('withexit', function () {
     return $promise.resolve($t.box(false, $g.____testlib.basictypes.Boolean)).then(function (result) {
       $static.someBool = result;
     });
-  });
+  }, '0b58b8ac', []);
 });

@@ -80,5 +80,5 @@ $module('with', function () {
     return $promise.resolve($t.box(false, $g.____testlib.basictypes.Boolean)).then(function (result) {
       $static.someBool = result;
     });
-  });
+  }, '19a53bdb', []);
 });

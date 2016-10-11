@@ -103,6 +103,8 @@ var generationTests = []generationTest{
 	generationTest{"class composition required fields test", "class", "requiredcomposition", integrationTestSuccessExpected, ""},
 	generationTest{"constructable interface test", "interface", "constructable", integrationTestSuccessExpected, ""},
 
+	generationTest{"module init test", "module", "init", integrationTestSuccessExpected, ""},
+
 	generationTest{"basic struct test", "struct", "basic", integrationTestSuccessExpected, ""},
 	generationTest{"struct equality test", "struct", "equals", integrationTestSuccessExpected, ""},
 	generationTest{"struct defaults test", "struct", "defaults", integrationTestSuccessExpected, ""},
@@ -280,7 +282,8 @@ func TestGenerator(t *testing.T) {
 
 		buf := esbuilder.BuildSource(builder)
 		source, err := escommon.FormatECMASource(buf.String())
-		if !assert.Nil(t, err, "Could not format module source") {
+
+		if !assert.Nil(t, err, "Could not format module source under test %v: %v", test.name, err) {
 			continue
 		}
 

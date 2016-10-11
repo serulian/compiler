@@ -1470,6 +1470,16 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"", ""},
 
+	/////////// module init tests /////////////////
+
+	scopegraphTest{"module init basic test", "moduleinit", "basic",
+		[]expectedScopeEntry{},
+		"", ""},
+
+	scopegraphTest{"module init cycle test", "moduleinit", "cycle",
+		[]expectedScopeEntry{},
+		"Initialization cycle found on module member foo: module member foo -> module member DoSomething -> module member DoSomethingElse -> module member foo", ""},
+
 	/////////// known issue tests /////////////////
 
 	scopegraphTest{"known issue panic test", "knownissues", "knownissue1",

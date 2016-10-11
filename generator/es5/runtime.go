@@ -918,8 +918,12 @@ this.Serulian = (function($global) {
     };
 
     // $init adds a promise to the module inits array.
-    module.$init = function(callback) {
-      moduleInits.push(callback);
+    module.$init = function(callback, fieldId, dependencyIds) {
+      moduleInits.push({
+        'callback': callback,
+        'id': fieldId,
+        'depends': dependencyIds
+      });
     };
 
     module.$struct = $newtypebuilder('struct');
@@ -991,14 +995,52 @@ this.Serulian = (function($global) {
     };
   };
 
-  // Perform the deferred creation of the init promises.
-  var moduleInitPromises = moduleInits.map(function(callback) {
-    return callback();
-  });
+  var buildPromises = function(items) {
+    var seen = {};
+    var result = [];
+
+    // Build a map by item ID.
+    var itemsById = {};
+    items.forEach(function(item) {
+      itemsById[item.id] = item;
+    });
+
+    // Topo-sort and execute in order.
+    items.forEach(function visit(item) {
+      if (seen[item.id]) {
+        return;
+      }
+
+      seen[item.id] = true;
+      item.depends.forEach(function(depId) {
+        visit(itemsById[depId]);
+      });
+      
+      item['promise'] = item['callback']();
+    });
+
+    // Build the dep-chained promises.
+    return items.map(function(item) {
+      if (!item.depends.length) {
+        return item['promise'];
+      }
+
+      var current = $promise.resolve();
+      item.depends.forEach(function(depId) {
+        current = current.then(function(resolved) {
+          return itemsById[depId]['promise'];
+        });
+      });
+
+      return current.then(function(resolved) {
+        return item['promise'];
+      });
+    });
+  };
 
   // Return a promise which initializes all modules and, once complete, returns the global
   // namespace map.
-  return $promise.all(moduleInitPromises).then(function() {
+  return $promise.all(buildPromises(moduleInits)).then(function() {
   	return $g;
   });
 })(this)

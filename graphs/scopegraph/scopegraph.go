@@ -23,6 +23,8 @@ import (
 	"github.com/serulian/compiler/parser"
 	"github.com/serulian/compiler/webidl"
 	webidltc "github.com/serulian/compiler/webidl/typeconstructor"
+
+	"github.com/cevaris/ordered_map"
 )
 
 // ScopeGraph represents the ScopeGraph layer and all its associated helper methods.
@@ -119,6 +121,70 @@ func BuildScopeGraph(srg *srg.SRG, irg *webidl.WebIRG, tdg *typegraph.TypeGraph)
 	return buildScopeGraphWithResolver(srg, irg, tdg, typerefresolver.NewResolver(srg))
 }
 
+func buildImplicitLambdaScopes(builder *scopeBuilder) {
+	var lwg sync.WaitGroup
+	lit := builder.sg.srg.ImplicitLambdaExpressions()
+	for lit.Next() {
+		lwg.Add(1)
+		go (func(node compilergraph.GraphNode) {
+			builder.inferLambdaParameterTypes(node, scopeContext{})
+			lwg.Done()
+		})(lit.Node())
+	}
+
+	lwg.Wait()
+	builder.saveScopes()
+}
+
+func scopeEntrypoints(builder *scopeBuilder) {
+	var wg sync.WaitGroup
+	sit := builder.sg.srg.EntrypointStatements()
+	for sit.Next() {
+		wg.Add(1)
+		go (func(node compilergraph.GraphNode) {
+			rootNode := node.GetIncomingNode(parser.NodePredicateBody)
+
+			// Build the scope for the root node, blocking until complete.
+			builder.getScopeForRootNode(rootNode)
+			wg.Done()
+		})(sit.Node())
+	}
+
+	vit := builder.sg.srg.EntrypointVariables()
+	for vit.Next() {
+		wg.Add(1)
+		go (func(node compilergraph.GraphNode) {
+			// Build the scope for the variable/field, blocking until complete.
+			builder.getScopeForRootNode(node)
+			wg.Done()
+		})(vit.Node())
+	}
+
+	wg.Wait()
+	builder.saveScopes()
+}
+
+func checkInitializationCycles(builder *scopeBuilder) {
+	var iwg sync.WaitGroup
+	iit := builder.sg.srg.EntrypointVariables()
+	for iit.Next() {
+		iwg.Add(1)
+		go (func(node compilergraph.GraphNode) {
+			// For each static dependency, collect the tranisitive closure of the dependencies
+			// and ensure a cycle doesn't exist that circles back to this variable/field.
+			built := builder.getScopeForRootNode(node)
+			for _, staticDep := range built.GetStaticDependencies() {
+				builder.checkStaticDependencyCycle(node, staticDep, ordered_map.NewOrderedMap(), []typegraph.TGMember{})
+			}
+
+			iwg.Done()
+		})(iit.Node())
+	}
+
+	iwg.Wait()
+	builder.saveScopes()
+}
+
 func buildScopeGraphWithResolver(srg *srg.SRG, irg *webidl.WebIRG, tdg *typegraph.TypeGraph, resolver *typerefresolver.TypeReferenceResolver) Result {
 	scopeGraph := &ScopeGraph{
 		srg:            srg,
@@ -132,48 +198,13 @@ func buildScopeGraphWithResolver(srg *srg.SRG, irg *webidl.WebIRG, tdg *typegrap
 	builder := newScopeBuilder(scopeGraph)
 
 	// Find all implicit lambda expressions and infer their argument types.
-	var lwg sync.WaitGroup
-	lit := srg.ImplicitLambdaExpressions()
-	for lit.Next() {
-		lwg.Add(1)
-		go (func(node compilergraph.GraphNode) {
-			builder.inferLambdaParameterTypes(node, scopeContext{})
-			lwg.Done()
-		})(lit.Node())
-	}
-
-	lwg.Wait()
-	builder.saveScopes()
+	buildImplicitLambdaScopes(builder)
 
 	// Scope all the entrypoint statements and members in the SRG. These will recursively scope downward.
-	var wg sync.WaitGroup
-	sit := srg.EntrypointStatements()
-	for sit.Next() {
-		wg.Add(1)
-		go (func(node compilergraph.GraphNode) {
-			rootNode := node.GetIncomingNode(parser.NodePredicateBody)
-			<-builder.buildScope(node, scopeContext{
-				parentImplemented: rootNode,
-				rootNode:          rootNode,
-			})
-			wg.Done()
-		})(sit.Node())
-	}
+	scopeEntrypoints(builder)
 
-	mit := srg.EntrypointMembers()
-	for mit.Next() {
-		wg.Add(1)
-		go (func(node compilergraph.GraphNode) {
-			<-builder.buildScope(node, scopeContext{
-				parentImplemented: node,
-				rootNode:          node,
-			})
-			wg.Done()
-		})(mit.Node())
-	}
-
-	wg.Wait()
-	builder.saveScopes()
+	// Check for initialization dependency cycles.
+	checkInitializationCycles(builder)
 
 	// Collect any errors or warnings that were added.
 	return Result{

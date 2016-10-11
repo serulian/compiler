@@ -41,9 +41,7 @@ $module('defaults', function () {
         instance.AnotherField = result;
       }));
       init.push($g.defaults.AnotherStruct.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
-        return $promise.resolve($result0);
-      }).then(function (result) {
-        instance.SomeInstance = result;
+        instance.SomeInstance = $result0;
       }));
       return $promise.all(init).then(function () {
         return instance;

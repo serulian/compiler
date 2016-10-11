@@ -55,6 +55,8 @@ message ScopeInfo {
 	optional bool IsAnonymousReference = 11; // If true, reference points to an anonymous value (i.e. _).
 
 	repeated ScopeLabel Labels = 12;
+
+	repeated ScopeReference StaticDependencies = 15;
 }
 
 message ScopeReference {

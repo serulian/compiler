@@ -44,8 +44,8 @@ $module('attributes', function () {
         switch ($current) {
           case 0:
             $g.____testlib.basictypes.Mapping($t.any).overObject({
-              "data-foo": $t.box("bar", $g.____testlib.basictypes.String),
               "an-attr-here": $t.box(true, $g.____testlib.basictypes.Boolean),
+              "data-foo": $t.box("bar", $g.____testlib.basictypes.String),
             }).then(function ($result1) {
               return $g.attributes.SimpleFunction($result1).then(function ($result0) {
                 $result = $result0;

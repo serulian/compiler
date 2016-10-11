@@ -206,6 +206,18 @@ func (gn GraphNode) TryGetIncomingValue(predicate Predicate) (GraphValue, bool) 
 	return buildGraphValueForValue(value), true
 }
 
+// OutgoingNodeIterator returns an OutgoingNodeIterator instance for this graph node. The
+// iterator provides an easy way of iterating over all the outgoing nodes accessible directly
+// from this node *in this node's layer*.
+func (gn GraphNode) OutgoingNodeIterator() OutgoingNodeIterator {
+	nodeIdValue := gn.layer.cayleyStore.ValueOf(nodeIdToValue(gn.NodeId))
+	if it, ok := gn.layer.cayleyStore.QuadIterator(quad.Subject, nodeIdValue).(*memstore.Iterator); ok {
+		return OutgoingNodeIterator{gn.layer, it}
+	}
+
+	return OutgoingNodeIterator{gn.layer, nil}
+}
+
 // tryGet returns the value of the given predicate found on this node (if any).
 func (gn GraphNode) tryGet(predicate Predicate) (quad.Value, bool) {
 	// Note: For efficiency reasons related to the overhead of constructing Cayley iterators,

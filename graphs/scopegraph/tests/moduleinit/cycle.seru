@@ -1,0 +1,9 @@
+var<int> foo = DoSomething()
+
+function<int> DoSomething() {
+	return DoSomethingElse()
+}
+
+function<int> DoSomethingElse() {
+	return foo
+}

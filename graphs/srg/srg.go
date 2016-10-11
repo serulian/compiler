@@ -6,7 +6,10 @@
 package srg
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
+	"strconv"
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
@@ -44,6 +47,13 @@ func NewSRG(graph *compilergraph.SerulianGraph) *SRG {
 	}
 
 	return g
+}
+
+// GetUniqueId returns a unique hash ID for the SRG node that is stable across compilations.
+func GetUniqueId(srgNode compilergraph.GraphNode) string {
+	hashBytes := []byte(srgNode.Get(parser.NodePredicateSource) + ":" + strconv.Itoa(srgNode.GetValue(parser.NodePredicateStartRune).Int()))
+	sha256bytes := sha256.Sum256(hashBytes)
+	return hex.EncodeToString(sha256bytes[:])[0:8]
 }
 
 // ResolveAliasedType returns the type with the global alias, if any.

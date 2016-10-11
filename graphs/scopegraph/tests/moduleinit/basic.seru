@@ -1,0 +1,6 @@
+var<int> bar = 2
+var<int> foo = bar
+
+function<void> DoSomething() {
+	foo
+}

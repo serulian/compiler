@@ -5,14 +5,17 @@
 package scopegraph
 
 import (
+	"bytes"
 	"fmt"
 	"strconv"
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
+	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/parser"
 
+	"github.com/cevaris/ordered_map"
 	"github.com/streamrail/concurrent-map"
 )
 
@@ -59,6 +62,21 @@ func (sb *scopeBuilder) saveScopes() {
 func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandler {
 	switch node.Kind() {
 	// Members.
+	case parser.NodeTypeProperty:
+		fallthrough
+
+	case parser.NodeTypePropertyBlock:
+		fallthrough
+
+	case parser.NodeTypeFunction:
+		fallthrough
+
+	case parser.NodeTypeConstructor:
+		fallthrough
+
+	case parser.NodeTypeOperator:
+		return sb.scopeImplementedMember
+
 	case parser.NodeTypeVariable:
 		return sb.scopeVariable
 
@@ -301,6 +319,17 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 	}
 }
 
+// getScopeForRootNode returns the scope for the given *root* node, building (and waiting) if necessary.
+func (sb *scopeBuilder) getScopeForRootNode(rootNode compilergraph.GraphNode) *proto.ScopeInfo {
+	staticDependencyCollector := newStaticDependencyCollector()
+
+	return sb.getScope(rootNode, scopeContext{
+		parentImplemented:         rootNode,
+		rootNode:                  rootNode,
+		staticDependencyCollector: staticDependencyCollector,
+	})
+}
+
 // getScope returns the scope for the given node, building (and waiting) if necessary.
 func (sb *scopeBuilder) getScope(node compilergraph.GraphNode, context scopeContext) *proto.ScopeInfo {
 	// Check the map cache for the scope.
@@ -310,13 +339,13 @@ func (sb *scopeBuilder) getScope(node compilergraph.GraphNode, context scopeCont
 		return &result
 	}
 
-	built := <-sb.buildScope(node, context)
+	built := <-sb.buildScopeWithContext(node, context)
 	return &built
 }
 
-// buildScope builds the scope for the given node, returning a channel
+// buildScopeWithContext builds the scope for the given node, returning a channel
 // that can be watched for the result.
-func (sb *scopeBuilder) buildScope(node compilergraph.GraphNode, context scopeContext) chan proto.ScopeInfo {
+func (sb *scopeBuilder) buildScopeWithContext(node compilergraph.GraphNode, context scopeContext) chan proto.ScopeInfo {
 	// Execute the handler in a gorountine and return the result channel.
 	handler := sb.getScopeHandler(node)
 	resultChan := make(chan proto.ScopeInfo)
@@ -324,6 +353,11 @@ func (sb *scopeBuilder) buildScope(node compilergraph.GraphNode, context scopeCo
 		result := handler(node, context)
 		if !result.GetIsValid() {
 			sb.Status = false
+		}
+
+		// If the node being scoped is the root node, add the static dependencies.
+		if node.NodeId == context.rootNode.NodeId {
+			result.StaticDependencies = context.staticDependencyCollector.ReferenceSlice()
 		}
 
 		// Add the scope to the map and on the node.
@@ -337,6 +371,66 @@ func (sb *scopeBuilder) buildScope(node compilergraph.GraphNode, context scopeCo
 	})()
 
 	return resultChan
+}
+
+// checkStaticDependencyCycle checks the given variable/field node for a initialization dependency
+// cycle.
+func (sb *scopeBuilder) checkStaticDependencyCycle(varNode compilergraph.GraphNode, currentDep *proto.ScopeReference, encountered *ordered_map.OrderedMap, path []typegraph.TGMember) bool {
+	// If we've already examined this dependency, nothing else to do.
+	if _, found := encountered.Get(currentDep.GetReferencedNode()); found {
+		return true
+	}
+
+	encountered.Set(currentDep.GetReferencedNode(), true)
+
+	// Lookup the dependency (which is a type or module member) in the type graph.
+	memberNodeId := compilergraph.GraphNodeId(currentDep.GetReferencedNode())
+	member := sb.sg.tdg.GetTypeOrMember(memberNodeId)
+
+	// Find the associated source node.
+	sourceNodeId, hasSourceNode := member.SourceNodeId()
+	if !hasSourceNode {
+		return true
+	}
+
+	updatedPath := append([]typegraph.TGMember(nil), path...)
+	updatedPath = append(updatedPath, member.(typegraph.TGMember))
+
+	// If we've found the variable itself, then we have a dependency cycle.
+	if sourceNodeId == varNode.GetNodeId() {
+		// Found a cycle.
+		var chain bytes.Buffer
+		chain.WriteString(member.Title())
+		chain.WriteRune(' ')
+		chain.WriteString(member.Name())
+
+		for _, cMember := range updatedPath {
+			chain.WriteString(" -> ")
+			chain.WriteString(cMember.Title())
+			chain.WriteRune(' ')
+			chain.WriteString(cMember.Name())
+		}
+
+		sb.decorateWithError(varNode, "Initialization cycle found on %v %v: %s", member.Title(), member.Name(), chain.String())
+		sb.Status = false
+		return false
+	}
+
+	// Lookup the dependency in the SRG, so we can recursively check *its* dependencies.
+	srgNode, hasSRGNode := sb.sg.srg.TryGetNode(sourceNodeId)
+	if !hasSRGNode {
+		return true
+	}
+
+	// Recursively lookup the static deps for the node and check them.
+	nodeScope := sb.getScopeForRootNode(srgNode)
+	for _, staticDep := range nodeScope.GetStaticDependencies() {
+		if !sb.checkStaticDependencyCycle(varNode, staticDep, encountered, updatedPath) {
+			return false
+		}
+	}
+
+	return true
 }
 
 // decorateWithError decorates an *SRG* node with the specified scope warning.

@@ -60,5 +60,6 @@ func (sb *scopeBuilder) scopeIdentifierExpression(node compilergraph.GraphNode, 
 		}
 	}
 
+	context.staticDependencyCollector.checkNamedScopeForDependency(namedScope)
 	return newScope().ForNamedScope(namedScope, context).GetScope()
 }

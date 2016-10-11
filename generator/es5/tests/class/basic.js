@@ -10,9 +10,7 @@ $module('basic', function () {
         instance.SomeInt = result;
       }));
       init.push($g.basic.CoolFunction().then(function ($result0) {
-        return $promise.resolve($result0);
-      }).then(function (result) {
-        instance.AnotherBool = result;
+        instance.AnotherBool = $result0;
       }));
       return $promise.all(init).then(function () {
         return instance;

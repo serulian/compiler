@@ -45,6 +45,9 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 		functionType = typeOrFuncScope.ResolvedTypeRef(sb.sg.tdg)
 		declarationLabel = proto.ScopeLabel_SML_FUNCTION
 
+		calledFunctionScope, _ := sb.getNamedScopeForScope(typeOrFuncScope)
+		context.staticDependencyCollector.registerNamedDependency(calledFunctionScope)
+
 	case proto.ScopeKind_STATIC:
 		// Type. Ensure it has a Declare constructor.
 		module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
@@ -55,6 +58,8 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 			sb.decorateWithError(node, "A type used in a SML declaration tag must have a 'Declare' constructor: %v", rerr)
 			return newScope().Invalid().GetScope()
 		}
+
+		context.staticDependencyCollector.registerDependency(declareConstructor)
 
 		functionType = declareConstructor.MemberType()
 		declarationLabel = proto.ScopeLabel_SML_CONSTRUCTOR
@@ -243,8 +248,11 @@ func (sb *scopeBuilder) scopeSmlDecorator(node compilergraph.GraphNode, declared
 		return declaredType, false
 	}
 
-	namedReference, _ := sb.sg.GetReferencedName(*decoratorScope)
-	decoratorName := namedReference.Name()
+	namedScope, _ := sb.getNamedScopeForScope(decoratorScope)
+	decoratorName := namedScope.Name()
+
+	// Register that we make use of the decorator function.
+	context.staticDependencyCollector.registerNamedDependency(namedScope)
 
 	// Ensure the decorator refers to a function.
 	decoratorType := decoratorScope.ResolvedTypeRef(sb.sg.tdg)
