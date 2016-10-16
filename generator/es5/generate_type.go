@@ -202,14 +202,13 @@ this.$class('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ 
 		{{ range $idx, $kv := $composed.UnsafeIter }}
 			init.push({{ emit $kv.Value }});
   		{{ end }}
+
 		{{ range $idx, $field := .RequiredFields }}
 		{{ if not $field.HasBaseMember }}
-			init.push($promise.new(function(resolve) {
-				instance.{{ $field.Name }} = {{ $field.Name }};
-				resolve();
-			}));
+			instance.{{ $field.Name }} = {{ $field.Name }};
 		{{ end }}
 		{{ end }}
+
 		{{ range $idx, $kv := $vars.UnsafeIter }}
 			init.push({{ emit $kv.Value }});
 		{{ end }}

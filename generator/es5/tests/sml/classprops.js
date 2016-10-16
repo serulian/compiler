@@ -6,14 +6,8 @@ $module('classprops', function () {
     $static.new = function (BoolValue, StringValue) {
       var instance = new $static();
       var init = [];
-      init.push($promise.new(function (resolve) {
-        instance.BoolValue = BoolValue;
-        resolve();
-      }));
-      init.push($promise.new(function (resolve) {
-        instance.StringValue = StringValue;
-        resolve();
-      }));
+      instance.BoolValue = BoolValue;
+      instance.StringValue = StringValue;
       return $promise.all(init).then(function () {
         return instance;
       });

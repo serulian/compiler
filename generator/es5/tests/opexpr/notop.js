@@ -6,10 +6,7 @@ $module('notop', function () {
     $static.new = function (boolValue) {
       var instance = new $static();
       var init = [];
-      init.push($promise.new(function (resolve) {
-        instance.boolValue = boolValue;
-        resolve();
-      }));
+      instance.boolValue = boolValue;
       return $promise.all(init).then(function () {
         return instance;
       });

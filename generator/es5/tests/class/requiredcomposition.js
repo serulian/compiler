@@ -6,10 +6,7 @@ $module('requiredcomposition', function () {
     $static.new = function (FirstValue) {
       var instance = new $static();
       var init = [];
-      init.push($promise.new(function (resolve) {
-        instance.FirstValue = FirstValue;
-        resolve();
-      }));
+      instance.FirstValue = FirstValue;
       return $promise.all(init).then(function () {
         return instance;
       });
@@ -25,10 +22,7 @@ $module('requiredcomposition', function () {
     $static.new = function (SecondValue) {
       var instance = new $static();
       var init = [];
-      init.push($promise.new(function (resolve) {
-        instance.SecondValue = SecondValue;
-        resolve();
-      }));
+      instance.SecondValue = SecondValue;
       return $promise.all(init).then(function () {
         return instance;
       });

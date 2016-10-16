@@ -6,10 +6,7 @@ $module('funcref', function () {
     $static.new = function (value) {
       var instance = new $static();
       var init = [];
-      init.push($promise.new(function (resolve) {
-        instance.value = value;
-        resolve();
-      }));
+      instance.value = value;
       return $promise.all(init).then(function () {
         return instance;
       });
