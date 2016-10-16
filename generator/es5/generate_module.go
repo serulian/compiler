@@ -68,7 +68,9 @@ func (gm generatingModule) GenerateTypes() *ordered_map.OrderedMap {
 
 // GenerateVariables generates the source for all the variables defined under the module.
 func (gm generatingModule) GenerateVariables() *ordered_map.OrderedMap {
-	return gm.Generator.generateVariables(gm.Module)
+	orderedMap := ordered_map.NewOrderedMap()
+	gm.Generator.generateVariables(gm.Module, orderedMap)
+	return orderedMap
 }
 
 // recursivelyCollectInitDependencies recursively collects the initialization dependency fields for the
@@ -135,7 +137,14 @@ $module('{{ .ExportedPath }}', function() {
 
   {{range $idx, $kv := .GenerateVariables.UnsafeIter }}
   	this.$init(function() {
-		return ({{ emit $kv.Value }});
+  		{{ if $kv.Value.IsPromise }}
+			return ({{ emit $kv.Value.Source }});
+  		{{ else }}
+  		    return $promise.new(function (resolve) {
+				{{ emit $kv.Value.Source }};
+				resolve();
+		    });
+  		{{ end }}
 	}, '{{ $parent.FieldId $kv.Key }}', [{{ range $ddx, $did := $parent.InitDependencies $kv.Key }}{{ if $ddx }}, {{ end }}'{{ $did }}'{{ end }}]);
   {{end}}
 });

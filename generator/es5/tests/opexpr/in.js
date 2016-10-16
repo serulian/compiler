@@ -5,10 +5,7 @@ $module('in', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      var init = [];
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      return $promise.resolve(instance);
     };
     $instance.$contains = function (value) {
       var $this = this;

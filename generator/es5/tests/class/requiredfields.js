@@ -5,14 +5,9 @@ $module('requiredfields', function () {
     var $instance = this.prototype;
     $static.new = function (SomeField) {
       var instance = new $static();
-      var init = [];
       instance.SomeField = SomeField;
-      init.push($promise.resolve($t.box(true, $g.____testlib.basictypes.Boolean)).then(function (result) {
-        instance.AnotherField = result;
-      }));
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      instance.AnotherField = $t.box(true, $g.____testlib.basictypes.Boolean);
+      return $promise.resolve(instance);
     };
     this.$typesig = function () {
       return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.requiredfields.SomeClass).$typeref()]);

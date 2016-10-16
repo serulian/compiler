@@ -6,9 +6,7 @@ $module('basic', function () {
     $static.new = function () {
       var instance = new $static();
       var init = [];
-      init.push($promise.resolve($t.box(2, $g.____testlib.basictypes.Integer)).then(function (result) {
-        instance.SomeInt = result;
-      }));
+      instance.SomeInt = $t.box(2, $g.____testlib.basictypes.Integer);
       init.push($g.basic.CoolFunction().then(function ($result0) {
         instance.AnotherBool = $result0;
       }));

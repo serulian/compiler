@@ -5,14 +5,11 @@ $module('defaults', function () {
     var $instance = this.prototype;
     $static.new = function (AnotherBool) {
       var instance = new $static();
-      var init = [];
       instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         AnotherBool: AnotherBool,
       };
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      return $promise.resolve(instance);
     };
     $static.$fields = [];
     $t.defineStructField($static, 'AnotherBool', 'AnotherBool', function () {
@@ -30,16 +27,12 @@ $module('defaults', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      var init = [];
       instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
       };
-      init.push($promise.resolve($t.box(42, $g.____testlib.basictypes.Integer)).then(function (result) {
-        instance.SomeField = result;
-      }));
-      init.push($promise.resolve($t.box(false, $g.____testlib.basictypes.Boolean)).then(function (result) {
-        instance.AnotherField = result;
-      }));
+      var init = [];
+      instance.SomeField = $t.box(42, $g.____testlib.basictypes.Integer);
+      instance.AnotherField = $t.box(false, $g.____testlib.basictypes.Boolean);
       init.push($g.defaults.AnotherStruct.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
         instance.SomeInstance = $result0;
       }));

@@ -5,10 +5,7 @@ $module('withexit', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      var init = [];
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      return $promise.resolve(instance);
     };
     $instance.Release = function () {
       var $this = this;
@@ -102,8 +99,9 @@ $module('withexit', function () {
     return $promise.new($continue);
   };
   this.$init(function () {
-    return $promise.resolve($t.box(false, $g.____testlib.basictypes.Boolean)).then(function (result) {
-      $static.someBool = result;
+    return $promise.new(function (resolve) {
+      $static.someBool = $t.box(false, $g.____testlib.basictypes.Boolean);
+      resolve();
     });
   }, '0b58b8ac', []);
 });

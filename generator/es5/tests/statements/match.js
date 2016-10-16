@@ -5,10 +5,7 @@ $module('match', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      var init = [];
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      return $promise.resolve(instance);
     };
     $instance.Value = $t.property(function () {
       var $this = this;

@@ -5,13 +5,8 @@ $module('nominalbase', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      var init = [];
-      init.push($promise.resolve($t.box(true, $g.____testlib.basictypes.Boolean)).then(function (result) {
-        instance.SomeField = result;
-      }));
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      instance.SomeField = $t.box(true, $g.____testlib.basictypes.Boolean);
+      return $promise.resolve(instance);
     };
     this.$typesig = function () {
       return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.nominalbase.SomeClass).$typeref()]);

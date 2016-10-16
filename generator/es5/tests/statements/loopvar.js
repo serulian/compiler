@@ -5,13 +5,8 @@ $module('loopvar', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      var init = [];
-      init.push($promise.resolve($t.box(false, $g.____testlib.basictypes.Boolean)).then(function (result) {
-        instance.wasChecked = result;
-      }));
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      instance.wasChecked = $t.box(false, $g.____testlib.basictypes.Boolean);
+      return $promise.resolve(instance);
     };
     $instance.Next = function () {
       var $this = this;

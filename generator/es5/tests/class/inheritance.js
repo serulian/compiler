@@ -5,13 +5,8 @@ $module('inheritance', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      var init = [];
-      init.push($promise.resolve($t.box(true, $g.____testlib.basictypes.Boolean)).then(function (result) {
-        instance.SomeBool = result;
-      }));
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      instance.SomeBool = $t.box(true, $g.____testlib.basictypes.Boolean);
+      return $promise.resolve(instance);
     };
     $instance.DoSomething = function () {
       var $this = this;
@@ -27,13 +22,8 @@ $module('inheritance', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      var init = [];
-      init.push($promise.resolve($t.box(false, $g.____testlib.basictypes.Boolean)).then(function (result) {
-        instance.SomeBool = result;
-      }));
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      instance.SomeBool = $t.box(false, $g.____testlib.basictypes.Boolean);
+      return $promise.resolve(instance);
     };
     $instance.AnotherThing = function () {
       var $this = this;

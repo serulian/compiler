@@ -5,11 +5,8 @@ $module('requiredcomposition', function () {
     var $instance = this.prototype;
     $static.new = function (FirstValue) {
       var instance = new $static();
-      var init = [];
       instance.FirstValue = FirstValue;
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      return $promise.resolve(instance);
     };
     this.$typesig = function () {
       return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.requiredcomposition.First).$typeref()]);
@@ -21,11 +18,8 @@ $module('requiredcomposition', function () {
     var $instance = this.prototype;
     $static.new = function (SecondValue) {
       var instance = new $static();
-      var init = [];
       instance.SecondValue = SecondValue;
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      return $promise.resolve(instance);
     };
     this.$typesig = function () {
       return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.requiredcomposition.Second).$typeref()]);

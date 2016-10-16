@@ -5,15 +5,12 @@ $module('equals', function () {
     var $instance = this.prototype;
     $static.new = function (SomeValue, AnotherValue) {
       var instance = new $static();
-      var init = [];
       instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         SomeValue: SomeValue,
         AnotherValue: AnotherValue,
       };
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      return $promise.resolve(instance);
     };
     $static.$fields = [];
     $t.defineStructField($static, 'SomeValue', 'SomeValue', function () {
@@ -36,14 +33,11 @@ $module('equals', function () {
     var $instance = this.prototype;
     $static.new = function (StringValue) {
       var instance = new $static();
-      var init = [];
       instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         StringValue: StringValue,
       };
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      return $promise.resolve(instance);
     };
     $static.$fields = [];
     $t.defineStructField($static, 'StringValue', 'StringValue', function () {
