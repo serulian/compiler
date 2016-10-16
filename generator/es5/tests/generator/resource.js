@@ -5,13 +5,8 @@ $module('resource', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      var init = [];
-      init.push($promise.resolve($t.box(false, $g.____testlib.basictypes.Boolean)).then(function (result) {
-        instance.released = result;
-      }));
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      instance.released = $t.box(false, $g.____testlib.basictypes.Boolean);
+      return $promise.resolve(instance);
     };
     $instance.Release = function () {
       var $this = this;

@@ -5,18 +5,9 @@ $module('classprops', function () {
     var $instance = this.prototype;
     $static.new = function (BoolValue, StringValue) {
       var instance = new $static();
-      var init = [];
-      init.push($promise.new(function (resolve) {
-        instance.BoolValue = BoolValue;
-        resolve();
-      }));
-      init.push($promise.new(function (resolve) {
-        instance.StringValue = StringValue;
-        resolve();
-      }));
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      instance.BoolValue = BoolValue;
+      instance.StringValue = StringValue;
+      return $promise.resolve(instance);
     };
     this.$typesig = function () {
       return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.classprops.SomeProps).$typeref()]);

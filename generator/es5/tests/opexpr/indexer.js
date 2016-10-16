@@ -5,13 +5,8 @@ $module('indexer', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      var init = [];
-      init.push($promise.resolve($t.box(false, $g.____testlib.basictypes.Boolean)).then(function (result) {
-        instance.result = result;
-      }));
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      instance.result = $t.box(false, $g.____testlib.basictypes.Boolean);
+      return $promise.resolve(instance);
     };
     $instance.$index = function (someParam) {
       var $this = this;

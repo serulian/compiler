@@ -5,14 +5,11 @@ $module('innergeneric', function () {
     var $instance = this.prototype;
     $static.new = function (BoolValue) {
       var instance = new $static();
-      var init = [];
       instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         BoolValue: BoolValue,
       };
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      return $promise.resolve(instance);
     };
     $static.$fields = [];
     $t.defineStructField($static, 'BoolValue', 'BoolValue', function () {
@@ -30,14 +27,11 @@ $module('innergeneric', function () {
     var $instance = this.prototype;
     $static.new = function (SomeField) {
       var instance = new $static();
-      var init = [];
       instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         SomeField: SomeField,
       };
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      return $promise.resolve(instance);
     };
     $static.$fields = [];
     $t.defineStructField($static, 'SomeField', 'SomeField', function () {

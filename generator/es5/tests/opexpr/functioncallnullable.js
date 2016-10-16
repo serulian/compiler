@@ -5,10 +5,7 @@ $module('functioncallnullable', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      var init = [];
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      return $promise.resolve(instance);
     };
     $instance.SomeMethod = function () {
       var $this = this;
@@ -29,10 +26,7 @@ $module('functioncallnullable', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      var init = [];
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      return $promise.resolve(instance);
     };
     $instance.AnotherMethod = function () {
       var $this = this;

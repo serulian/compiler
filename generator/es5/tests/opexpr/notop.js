@@ -5,14 +5,8 @@ $module('notop', function () {
     var $instance = this.prototype;
     $static.new = function (boolValue) {
       var instance = new $static();
-      var init = [];
-      init.push($promise.new(function (resolve) {
-        instance.boolValue = boolValue;
-        resolve();
-      }));
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      instance.boolValue = boolValue;
+      return $promise.resolve(instance);
     };
     $static.$bool = function (sc) {
       var $current = 0;

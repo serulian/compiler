@@ -5,17 +5,9 @@ $module('structnew', function () {
     var $instance = this.prototype;
     $static.new = function (SomeField) {
       var instance = new $static();
-      var init = [];
-      init.push($promise.new(function (resolve) {
-        instance.SomeField = SomeField;
-        resolve();
-      }));
-      init.push($promise.resolve($t.box(false, $g.____testlib.basictypes.Boolean)).then(function (result) {
-        instance.anotherField = result;
-      }));
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      instance.SomeField = SomeField;
+      instance.anotherField = $t.box(false, $g.____testlib.basictypes.Boolean);
+      return $promise.resolve(instance);
     };
     $instance.AnotherField = $t.property(function () {
       var $this = this;

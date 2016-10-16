@@ -5,16 +5,9 @@ $module('memberaccess', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      var init = [];
-      init.push($promise.resolve($t.box(2, $g.____testlib.basictypes.Integer)).then(function (result) {
-        instance.someInt = result;
-      }));
-      init.push($promise.resolve($t.box(true, $g.____testlib.basictypes.Boolean)).then(function (result) {
-        instance.someBool = result;
-      }));
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      instance.someInt = $t.box(2, $g.____testlib.basictypes.Integer);
+      instance.someBool = $t.box(true, $g.____testlib.basictypes.Boolean);
+      return $promise.resolve(instance);
     };
     $static.Build = function () {
       var $result;

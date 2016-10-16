@@ -5,14 +5,8 @@ $module('funcref', function () {
     var $instance = this.prototype;
     $static.new = function (value) {
       var instance = new $static();
-      var init = [];
-      init.push($promise.new(function (resolve) {
-        instance.value = value;
-        resolve();
-      }));
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      instance.value = value;
+      return $promise.resolve(instance);
     };
     $instance.SomeFunction = function () {
       var $this = this;

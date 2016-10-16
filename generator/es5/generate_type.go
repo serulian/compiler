@@ -70,8 +70,10 @@ func (gt generatingType) GenerateImplementedMembers() *ordered_map.OrderedMap {
 }
 
 // GenerateVariables generates the source for all the variables defined under the type.
-func (gt generatingType) GenerateVariables() *ordered_map.OrderedMap {
-	return gt.Generator.generateVariables(gt.Type)
+func (gt generatingType) GenerateVariables() *generatedInitMap {
+	varMap := newGeneratedInitMap()
+	gt.Generator.generateVariables(gt.Type, varMap)
+	return varMap
 }
 
 // RequiredFields returns the fields required to be initialized by this type.
@@ -126,8 +128,8 @@ func (gt generatingType) MappingAnyType() typegraph.TypeReference {
 }
 
 // GenerateComposition generates the source for all the composed types structurually inherited by the type.
-func (gt generatingType) GenerateComposition() *ordered_map.OrderedMap {
-	typeMap := ordered_map.NewOrderedMap()
+func (gt generatingType) GenerateComposition() *generatedInitMap {
+	initMap := newGeneratedInitMap()
 	parentTypes := gt.Type.ParentTypes()
 	for _, parentTypeRef := range parentTypes {
 		data := struct {
@@ -141,10 +143,10 @@ func (gt generatingType) GenerateComposition() *ordered_map.OrderedMap {
 		}
 
 		source := esbuilder.Template("composition", compositionTemplateStr, data)
-		typeMap.Set(parentTypeRef, source)
+		initMap.Set(parentTypeRef, generatedSourceResult{source, true})
 	}
 
-	return typeMap
+	return initMap
 }
 
 // TypeSignatureMethod generates the $typesig method on a type definition.
@@ -196,26 +198,31 @@ this.$class('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ 
 
     {{ $vars := .GenerateVariables }}
     {{ $composed := .GenerateComposition }}
+    {{ $combined := $vars.CombineWith $composed }}
+
 	$static.new = function({{ range $ridx, $field := .RequiredFields }}{{ if $ridx }}, {{ end }}{{ $field.Name }}{{ end }}) {
 		var instance = new $static();
-		var init = [];
-		{{ range $idx, $kv := $composed.UnsafeIter }}
-			init.push({{ emit $kv.Value }});
-  		{{ end }}
 		{{ range $idx, $field := .RequiredFields }}
 		{{ if not $field.HasBaseMember }}
-			init.push($promise.new(function(resolve) {
-				instance.{{ $field.Name }} = {{ $field.Name }};
-				resolve();
-			}));
+			instance.{{ $field.Name }} = {{ $field.Name }};
 		{{ end }}
 		{{ end }}
-		{{ range $idx, $kv := $vars.UnsafeIter }}
-			init.push({{ emit $kv.Value }});
+
+		{{ if $combined.Promising }}
+		var init = [];
 		{{ end }}
+
+		{{ range $idx, $kv := $combined.Iter }}
+			{{ emit $kv.Value }};
+  		{{ end }}
+
+		{{ if $combined.Promising }}
 		return $promise.all(init).then(function() {
 			return instance;
 		});
+		{{ else }}
+		return $promise.resolve(instance);
+		{{ end }}
 	};
 
 	{{range $idx, $kv := .GenerateImplementedMembers.UnsafeIter }}
@@ -236,22 +243,27 @@ this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{
     {{ $vars := .GenerateVariables }}
 	$static.new = function({{ range $ridx, $field := .RequiredFields }}{{ if $ridx }}, {{ end }}{{ $field.Name }}{{ end }}) {
 		var instance = new $static();
-		var init = [];
-
 		instance.$unboxed = false;
-
 		instance[BOXED_DATA_PROPERTY] = {
 			{{ range $idx, $field := .RequiredFields }}
 			'{{ $field.SerializableName }}': {{ $field.Name }},
 			{{ end }}
 		};
 
-		{{ range $idx, $kv := $vars.UnsafeIter }}
-			init.push({{ emit $kv.Value }});
+		{{ if $vars.Promising }}
+		var init = [];
 		{{ end }}
+		{{ range $idx, $kv := $vars.Iter }}
+			{{ emit $kv.Value }};
+		{{ end }}
+
+		{{ if $vars.Promising }}
 		return $promise.all(init).then(function() {
 			return instance;
 		});
+		{{ else }}
+		return $promise.resolve(instance);
+		{{ end }}
 	};
 
 	$static.$fields = [];

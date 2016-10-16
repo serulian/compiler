@@ -683,16 +683,9 @@ this.Serulian = function ($global) {
       var $instance = this.prototype;
       $static.new = function () {
         var instance = new $static();
-        var init = [];
-        init.push($promise.resolve(/*#null#*/null).then(/*#null#*/function (/*#null#*/result) /*#null#*/{
-          instance.First = result;
-        }));
-        init.push($promise.resolve(/*#null#*/null).then(/*#null#*/function (/*#null#*/result) /*#null#*/{
-          instance.Second = result;
-        }));
-        return $promise.all(init).then(function () {
-          return instance;
-        });
+        instance.First = /*#null#*/null;
+        instance.Second = /*#null#*/null;
+        return $promise.resolve(instance);
       };
       $static.Build = function (first, second) {
         var $result;
@@ -738,10 +731,7 @@ this.Serulian = function ($global) {
       var $instance = this.prototype;
       $static.new = function () {
         var instance = new $static();
-        var init = [];
-        return $promise.all(init).then(function () {
-          return instance;
-        });
+        return $promise.resolve(instance);
       };
       this.$typesig = function () {
         return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Function(T)).$typeref()]);
@@ -753,19 +743,10 @@ this.Serulian = function ($global) {
       var $instance = this.prototype;
       $static.new = function () {
         var instance = new $static();
-        var init = [];
-        init.push($promise.resolve(/*#0#*/$t.box(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer)).then(/*#0#*/function (/*#0#*/result) /*#0#*/{
-          instance.start = result;
-        }));
-        init.push($promise.resolve(/*#-1#*/$t.box(/*#-1#*/-/*#-1#*/1, /*#-1#*/$g.____testlib.basictypes.Integer)).then(/*#-1#*/function (/*#-1#*/result) /*#-1#*/{
-          instance.end = result;
-        }));
-        init.push($promise.resolve(/*#0#*/$t.box(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer)).then(/*#0#*/function (/*#0#*/result) /*#0#*/{
-          instance.current = result;
-        }));
-        return $promise.all(init).then(function () {
-          return instance;
-        });
+        instance.start = /*#0#*/$t.box(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer);
+        instance.end = /*#-1#*/$t.box(/*#-1#*/-/*#-1#*/1, /*#-1#*/$g.____testlib.basictypes.Integer);
+        instance.current = /*#0#*/$t.box(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer);
+        return $promise.resolve(instance);
       };
       $static.OverRange = function (start, end) {
         var $result;
@@ -895,10 +876,7 @@ this.Serulian = function ($global) {
       var $instance = this.prototype;
       $static.new = function () {
         var instance = new $static();
-        var init = [];
-        return $promise.all(init).then(function () {
-          return instance;
-        });
+        return $promise.resolve(instance);
       };
       this.$typesig = function () {
         return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Float64).$typeref()]);
@@ -910,13 +888,8 @@ this.Serulian = function ($global) {
       var $instance = this.prototype;
       $static.new = function () {
         var instance = new $static();
-        var init = [];
-        init.push($promise.resolve(/*#Array.new()#*/$t.nativenew(/*#Array.new()#*/$global.Array)()).then(/*#Array.new()#*/function (/*#Array.new()#*/result) /*#Array.new()#*/{
-          instance.items = result;
-        }));
-        return $promise.all(init).then(function () {
-          return instance;
-        });
+        instance.items = /*#Array.new()#*/$t.nativenew(/*#Array.new()#*/$global.Array)();
+        return $promise.resolve(instance);
       };
       $static.forArray = function (arr) {
         var $result;
@@ -1160,13 +1133,8 @@ this.Serulian = function ($global) {
       var $instance = this.prototype;
       $static.new = function () {
         var instance = new $static();
-        var init = [];
-        init.push($promise.resolve(/*#Object.new()#*/$t.nativenew(/*#Object.new()#*/$global.Object)()).then(/*#Object.new()#*/function (/*#Object.new()#*/result) /*#Object.new()#*/{
-          instance.internalObject = result;
-        }));
-        return $promise.all(init).then(function () {
-          return instance;
-        });
+        instance.internalObject = /*#Object.new()#*/$t.nativenew(/*#Object.new()#*/$global.Object)();
+        return $promise.resolve(instance);
       };
       $static.forArrays = function (keys, values) {
         var $result;
@@ -1367,10 +1335,7 @@ this.Serulian = function ($global) {
       var $instance = this.prototype;
       $static.new = function () {
         var instance = new $static();
-        var init = [];
-        return $promise.all(init).then(function () {
-          return instance;
-        });
+        return $promise.resolve(instance);
       };
       $static.Get = function () {
         var $result;

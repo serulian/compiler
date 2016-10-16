@@ -5,13 +5,8 @@ $module('streammember', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      var init = [];
-      init.push($promise.resolve($t.box(2, $g.____testlib.basictypes.Integer)).then(function (result) {
-        instance.SomeInt = result;
-      }));
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      instance.SomeInt = $t.box(2, $g.____testlib.basictypes.Integer);
+      return $promise.resolve(instance);
     };
     this.$typesig = function () {
       return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.streammember.SomeClass).$typeref()]);

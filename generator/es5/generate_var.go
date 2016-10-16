@@ -10,13 +10,14 @@ import (
 	"github.com/serulian/compiler/generator/escommon/esbuilder"
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/typegraph"
-
-	"github.com/cevaris/ordered_map"
 )
 
+type varMap interface {
+	Set(key interface{}, value interface{})
+}
+
 // generateVariables generates all the variables/fields under the given type or module into ES5.
-func (gen *es5generator) generateVariables(typeOrModule typegraph.TGTypeOrModule) *ordered_map.OrderedMap {
-	memberMap := ordered_map.NewOrderedMap()
+func (gen *es5generator) generateVariables(typeOrModule typegraph.TGTypeOrModule, initMap varMap) {
 	members := typeOrModule.Members()
 
 	// Find all variables defined under the type or module.
@@ -39,51 +40,41 @@ func (gen *es5generator) generateVariables(typeOrModule typegraph.TGTypeOrModule
 			continue
 		}
 
-		memberMap.Set(member, gen.generateVariable(member))
+		initMap.Set(member, gen.generateVariable(member))
 	}
-
-	return memberMap
 }
 
 // generateVariable generates the given variable into ES5.
-func (gen *es5generator) generateVariable(member typegraph.TGMember) esbuilder.SourceBuilder {
+func (gen *es5generator) generateVariable(member typegraph.TGMember) generatedSourceResult {
 	srgMember, _ := gen.getSRGMember(member)
-	generating := generatingMember{member, srgMember, gen}
-	return esbuilder.Template("variable", variableTemplateStr, generating)
-}
+	initializer, _ := srgMember.Initializer()
+	initResult := statemachine.GenerateExpressionResult(initializer, gen.scopegraph, gen.positionMapper)
 
-// Initializer returns the initializer expression for the member.
-func (gm generatingMember) Initializer() expressiongenerator.ExpressionResult {
-	initializer, hasInitializer := gm.SRGMember.Initializer()
-	if !hasInitializer {
-		panic("Member must have an initializer")
+	prefix := "instance"
+	if member.IsStatic() {
+		prefix = "$static"
 	}
 
-	return statemachine.GenerateExpressionResult(initializer, gm.Generator.scopegraph, gm.Generator.positionMapper)
-}
+	data := struct {
+		Name        string
+		Prefix      string
+		Initializer expressiongenerator.ExpressionResult
+	}{member.Name(), prefix, initResult}
 
-// Prefix returns "instance" or "$static", depending on whether the member is an instance member or
-// static member.
-func (gm generatingMember) Prefix() string {
-	if gm.Member.IsStatic() {
-		return "$static"
-	} else {
-		return "instance"
-	}
+	source := esbuilder.Template("variable", variableTemplateStr, data)
+	return generatedSourceResult{source, initResult.IsPromise()}
 }
 
 // variableTemplateStr defines the template for generating variables/fields.
 const variableTemplateStr = `
 	{{ $result := .Initializer }}
 	{{ $prefix := .Prefix }}
-	{{ $name := .Member.Name }}
+	{{ $name := .Name }}
 	{{ $setvar := print $prefix "." $name " = {{ emit .ResultExpr }};" }}
 
 	{{ if $result.IsPromise }}
 		({{ emit ($result.BuildWrapped $setvar nil) }})
 	{{ else }}
-		($promise.resolve({{ emit $result.Build }}).then(function(result) {
-			{{ .Prefix }}.{{ .Member.Name }} = result;
-		}))
+		{{ .Prefix }}.{{ .Name }} = {{ emit $result.Build }}
 	{{ end }}
 `
