@@ -8,20 +8,21 @@ $module('dynamicprop', function () {
       instance.value = $t.box(42, $g.____testlib.basictypes.Integer);
       return $promise.resolve(instance);
     };
-    $instance.SomeProp = $t.property(function () {
-      var $this = this;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        $resolve($this.value);
-        return;
-      };
-      return $promise.new($continue);
-    }, function (val) {
+    $instance.set$SomeProp = function (val) {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
         $this.value = val;
         $resolve();
+        return;
+      };
+      return $promise.new($continue);
+    };
+    $instance.SomeProp = $t.property(function () {
+      var $this = this;
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve($this.value);
         return;
       };
       return $promise.new($continue);
@@ -53,7 +54,7 @@ $module('dynamicprop', function () {
 
           case 1:
             sc = $result;
-            sc.SomeProp($t.box(123, $g.____testlib.basictypes.Integer)).then(function ($result0) {
+            sc.set$SomeProp($t.box(123, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $result = $result0;
               $current = 2;
               $continue($resolve, $reject);

@@ -9,20 +9,21 @@ $module('structnew', function () {
       instance.anotherField = $t.box(false, $g.____testlib.basictypes.Boolean);
       return $promise.resolve(instance);
     };
-    $instance.AnotherField = $t.property(function () {
-      var $this = this;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        $resolve($this.anotherField);
-        return;
-      };
-      return $promise.new($continue);
-    }, function (val) {
+    $instance.set$AnotherField = function (val) {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
         $this.anotherField = val;
         $resolve();
+        return;
+      };
+      return $promise.new($continue);
+    };
+    $instance.AnotherField = $t.property(function () {
+      var $this = this;
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve($this.anotherField);
         return;
       };
       return $promise.new($continue);
@@ -43,7 +44,7 @@ $module('structnew', function () {
           case 0:
             $g.structnew.SomeClass.new($t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $temp0 = $result0;
-              return $temp0.AnotherField($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
+              return $temp0.set$AnotherField($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
                 $result = ($temp0, $result1, $temp0);
                 $current = 1;
                 $continue($resolve, $reject);

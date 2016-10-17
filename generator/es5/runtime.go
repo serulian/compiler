@@ -483,19 +483,10 @@ this.Serulian = (function($global) {
       };
     },
 
-    // property wraps a getter handler and optional setter handler into a single function
-    // call.
-    'property': function(getter, opt_setter) {
-      var f = function() {
-        if (arguments.length == 1) {
-          return opt_setter.apply(this, arguments);
-        } else {
-          return getter.apply(this, arguments);
-        }
-      };
-
-      f.$property = true;
-      return f;
+    // property wraps a getter handler and marks it as belonging to a property.
+    'property': function(getter) {
+      getter.$property = true;
+      return getter;
     },
 
     // nullableinvoke invokes the function found at the given name on the object, but

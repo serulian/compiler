@@ -8,20 +8,21 @@ $module('property', function () {
       instance.SomeBool = $t.box(false, $g.____testlib.basictypes.Boolean);
       return $promise.resolve(instance);
     };
-    $instance.SomeProp = $t.property(function () {
-      var $this = this;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        $resolve($this.SomeBool);
-        return;
-      };
-      return $promise.new($continue);
-    }, function (val) {
+    $instance.set$SomeProp = function (val) {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
         $this.SomeBool = val;
         $resolve();
+        return;
+      };
+      return $promise.new($continue);
+    };
+    $instance.SomeProp = $t.property(function () {
+      var $this = this;
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        $resolve($this.SomeBool);
         return;
       };
       return $promise.new($continue);
@@ -50,7 +51,7 @@ $module('property', function () {
             return;
 
           case 1:
-            sc.SomeProp($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
+            sc.set$SomeProp($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $current = 2;
               $continue($resolve, $reject);

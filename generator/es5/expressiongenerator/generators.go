@@ -266,7 +266,7 @@ func (eg *expressionGenerator) generateMemberAssignment(memberAssign *codedom.Me
 		memberRef := memberAssign.NameExpression.(*codedom.MemberReferenceNode)
 
 		memberCall := codedom.MemberCall(
-			codedom.NativeAccess(memberRef.ChildExpression, eg.pather.GetMemberName(memberRef.Member), memberRef.BasisNode()),
+			codedom.NativeAccess(memberRef.ChildExpression, eg.pather.GetSetterName(memberRef.Member), memberRef.BasisNode()),
 			memberAssign.Target,
 			[]codedom.Expression{memberAssign.Value},
 			basisNode)

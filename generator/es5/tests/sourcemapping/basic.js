@@ -336,16 +336,9 @@ this.Serulian = function ($global) {
         return promise;
       };
     },
-    property: function (getter, opt_setter) {
-      var f = function () {
-        if (arguments.length == 1) {
-          return opt_setter.apply(this, arguments);
-        } else {
-          return getter.apply(this, arguments);
-        }
-      };
-      f.$property = true;
-      return f;
+    property: function (getter) {
+      getter.$property = true;
+      return getter;
     },
     nullableinvoke: function (obj, name, promising, args) {
       var found = obj != null ? obj[name] : null;
