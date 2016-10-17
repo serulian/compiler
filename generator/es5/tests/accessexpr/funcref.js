@@ -73,11 +73,13 @@ $module('funcref', function () {
 
           case 1:
             sc = $result;
-            $g.funcref.AnotherFunction($t.dynamicaccess(sc, 'SomeFunction')).then(function ($result0) {
-              $result = $result0;
-              $current = 2;
-              $continue($resolve, $reject);
-              return;
+            $t.dynamicaccess(sc, 'SomeFunction').then(function ($result1) {
+              return $g.funcref.AnotherFunction($result1).then(function ($result0) {
+                $result = $result0;
+                $current = 2;
+                $continue($resolve, $reject);
+                return;
+              });
             }).catch(function (err) {
               $reject(err);
               return;

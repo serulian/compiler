@@ -91,6 +91,11 @@ func (p Pather) GetMemberName(member typegraph.TGMember) string {
 	return strings.Replace(unidecode.Unidecode(member.ChildName()), "*", "$", 1)
 }
 
+// GetSetterName returns the name of the setter for the given member.
+func (p Pather) GetSetterName(member typegraph.TGMember) string {
+	return "set$" + p.GetMemberName(member)
+}
+
 // GetStaticTypePath returns the global path for the given defined type.
 func (p Pather) GetStaticTypePath(typedecl typegraph.TGTypeDecl, referenceType typegraph.TypeReference) string {
 	instanceTypeRef := typedecl.GetTypeReference().TransformUnder(referenceType)

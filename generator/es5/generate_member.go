@@ -228,10 +228,11 @@ const functionTemplateStr = `
 
 // propertyTemplateStr defines the template for generating properties.
 const propertyTemplateStr = `
+{{ if not .Member.IsReadOnly }}
+	{{ if .Member.IsStatic }}$static{{ else }}$instance{{ end }}.set${{ .MemberName }} = 
+	  {{ emit .SetterSource }};
+{{ end }} 
+
 {{ if .Member.IsStatic }}$static{{ else }}$instance{{ end }}.{{ .MemberName }} = 
-  {{ if .Member.IsReadOnly }}
-  	$t.property({{ emit .GetterSource }})
-  {{ else }}
-  	$t.property({{ emit .GetterSource }}, {{ emit .SetterSource }});
-  {{ end }}
+  	$t.property({{ emit .GetterSource }});
 `

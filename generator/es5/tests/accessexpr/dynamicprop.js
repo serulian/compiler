@@ -1,18 +1,18 @@
-$module('property', function () {
+$module('dynamicprop', function () {
   var $static = this;
   this.$class('SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      instance.SomeBool = $t.box(false, $g.____testlib.basictypes.Boolean);
+      instance.value = $t.box(42, $g.____testlib.basictypes.Integer);
       return $promise.resolve(instance);
     };
     $instance.set$SomeProp = function (val) {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $this.SomeBool = val;
+        $this.value = val;
         $resolve();
         return;
       };
@@ -22,24 +22,26 @@ $module('property', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($this.SomeBool);
+        $resolve($this.value);
         return;
       };
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      return $t.createtypesig(['SomeProp', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.property.SomeClass).$typeref()]);
+      return $t.createtypesig(['SomeProp', 3, $g.____testlib.basictypes.Integer.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.dynamicprop.SomeClass).$typeref()]);
     };
   });
 
-  $static.AnotherFunction = function (sc) {
+  $static.TEST = function () {
     var $result;
+    var sc;
+    var sca;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
         switch ($current) {
           case 0:
-            sc.SomeProp().then(function ($result0) {
+            $g.dynamicprop.SomeClass.new().then(function ($result0) {
               $result = $result0;
               $current = 1;
               $continue($resolve, $reject);
@@ -51,7 +53,8 @@ $module('property', function () {
             return;
 
           case 1:
-            sc.set$SomeProp($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
+            sc = $result;
+            sc.set$SomeProp($t.box(123, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $result = $result0;
               $current = 2;
               $continue($resolve, $reject);
@@ -63,42 +66,19 @@ $module('property', function () {
             return;
 
           case 2:
-            sc.SomeProp().then(function ($result0) {
-              $result = $result0;
-              $current = 3;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 3:
-            $resolve($result);
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
-    };
-    return $promise.new($continue);
-  };
-  $static.TEST = function () {
-    var $result;
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            $g.property.SomeClass.new().then(function ($result1) {
-              return $g.property.AnotherFunction($result1).then(function ($result0) {
-                $result = $result0;
-                $current = 1;
-                $continue($resolve, $reject);
-                return;
+            sca = sc;
+            $t.dynamicaccess(sca, 'SomeProp').then(function ($result2) {
+              return $g.____testlib.basictypes.Integer.$equals($t.cast($result2, $g.____testlib.basictypes.Integer, false), $t.box(123, $g.____testlib.basictypes.Integer)).then(function ($result1) {
+                return $promise.resolve($t.unbox($result1)).then(function ($result0) {
+                  return ($promise.shortcircuit($result0, true) || sc.SomeProp()).then(function ($result4) {
+                    return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.Integer.$equals($result4, $t.box(123, $g.____testlib.basictypes.Integer))).then(function ($result3) {
+                      $result = $t.box($result0 && $t.unbox($result3), $g.____testlib.basictypes.Boolean);
+                      $current = 3;
+                      $continue($resolve, $reject);
+                      return;
+                    });
+                  });
+                });
               });
             }).catch(function (err) {
               $reject(err);
@@ -106,7 +86,7 @@ $module('property', function () {
             });
             return;
 
-          case 1:
+          case 3:
             $resolve($result);
             return;
 

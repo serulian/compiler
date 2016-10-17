@@ -266,7 +266,7 @@ func (eg *expressionGenerator) generateMemberAssignment(memberAssign *codedom.Me
 		memberRef := memberAssign.NameExpression.(*codedom.MemberReferenceNode)
 
 		memberCall := codedom.MemberCall(
-			codedom.NativeAccess(memberRef.ChildExpression, eg.pather.GetMemberName(memberRef.Member), memberRef.BasisNode()),
+			codedom.NativeAccess(memberRef.ChildExpression, eg.pather.GetSetterName(memberRef.Member), memberRef.BasisNode()),
 			memberAssign.Target,
 			[]codedom.Expression{memberAssign.Value},
 			basisNode)
@@ -419,7 +419,8 @@ func (eg *expressionGenerator) generateDynamicAccess(dynamicAccess *codedom.Dyna
 		basisNode,
 	)
 
-	return eg.generateExpression(funcCall, context)
+	// All dynamic accesses return a promise, to ensure it works for properties.
+	return eg.generateExpression(codedom.AwaitPromise(funcCall, basisNode), context)
 }
 
 // generateNestedTypeAccess generates the expression source for a nested type access.
