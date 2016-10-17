@@ -501,7 +501,7 @@ this.Serulian = (function($global) {
     // nullableinvoke invokes the function found at the given name on the object, but
     // only if the object is not null.
     'nullableinvoke': function(obj, name, promising, args) {
-      var found = $t.dynamicaccess(obj, name);
+      var found = obj != null ? obj[name] : null;
       if (found == null) {
         return promising ? $promise.resolve(null) : null;
       }
@@ -509,27 +509,26 @@ this.Serulian = (function($global) {
       return found.apply(obj, args);
     },
 
-    // dynamicaccess looks for the given name under the given object and returns it. If the
-    // name was not found *OR* the object is null, returns null.
+    // dynamicaccess looks for the given name under the given object and returns it, wrapped in
+    // a promise (if not already a promise). If the name was not found *OR* the object is null,
+    // returns a promise resolving null.
     'dynamicaccess': function(obj, name) {
       if (obj == null || obj[name] == null) {
-        return null;
+        return $promise.resolve(null);
       }
 
       var value = obj[name];
       if (typeof value == 'function') {
         if (value.$property) {
-          return $promise.wrap(function() {
+          return value.apply(obj, arguments);
+        } else {
+          return $promise.resolve(function() {
             return value.apply(obj, arguments);
           });
-        } else {
-          return function() {
-            return value.apply(obj, arguments);
-          };         
         }
       }
 
-      return value
+      return $promise.resolve(value);
     },
 
     // assertnotnull checks if the value is null and, if so, raises an error. Otherwise,

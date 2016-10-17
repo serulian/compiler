@@ -348,7 +348,7 @@ this.Serulian = function ($global) {
       return f;
     },
     nullableinvoke: function (obj, name, promising, args) {
-      var found = $t.dynamicaccess(obj, name);
+      var found = obj != null ? obj[name] : null;
       if (found == null) {
         return promising ? $promise.resolve(null) : null;
       }
@@ -356,21 +356,19 @@ this.Serulian = function ($global) {
     },
     dynamicaccess: function (obj, name) {
       if ((obj == null) || (obj[name] == null)) {
-        return null;
+        return $promise.resolve(null);
       }
       var value = obj[name];
       if (typeof value == 'function') {
         if (value.$property) {
-          return $promise.wrap(function () {
+          return value.apply(obj, arguments);
+        } else {
+          return $promise.resolve(function () {
             return value.apply(obj, arguments);
           });
-        } else {
-          return function () {
-            return value.apply(obj, arguments);
-          };
         }
       }
-      return value;
+      return $promise.resolve(value);
     },
     assertnotnull: function (value) {
       if (value == null) {
@@ -1369,19 +1367,63 @@ this.Serulian = function ($global) {
       };
       $instance.Stringify = function (value) {
         var $this = this;
+        var $result;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#string(NativeJSON.stringify(Object(value), Internal.autoUnbox))#*/$t.box(/*#NativeJSON.stringify(Object(value), Internal.autoUnbox))#*/$global.JSON.stringify(/*#Object(value), Internal.autoUnbox))#*/$t.unbox(/*#value), Internal.autoUnbox))#*/value), /*#Internal.autoUnbox))#*/$t.dynamicaccess(/*#Internal.autoUnbox))#*/$global.__serulian_internal, /*#Internal.autoUnbox))#*/'autoUnbox')), /*#string(NativeJSON.stringify(Object(value), Internal.autoUnbox))#*/$g.____testlib.basictypes.String));
-          return;
+          while (true) {
+            switch ($current) {
+              case 0:
+/*#Internal.autoUnbox))#*/                $t.dynamicaccess(/*#Internal.autoUnbox))#*/$global.__serulian_internal, /*#Internal.autoUnbox))#*/'autoUnbox').then(/*#Internal.autoUnbox))#*/function (/*#Internal.autoUnbox))#*/$result0) /*#Internal.autoUnbox))#*/{
+                  $result = /*#string(NativeJSON.stringify(Object(value), Internal.autoUnbox))#*/$t.box(/*#NativeJSON.stringify(Object(value), Internal.autoUnbox))#*/$global.JSON.stringify(/*#Object(value), Internal.autoUnbox))#*/$t.unbox(/*#value), Internal.autoUnbox))#*/value), /*#Internal.autoUnbox))#*/$result0), /*#string(NativeJSON.stringify(Object(value), Internal.autoUnbox))#*/$g.____testlib.basictypes.String);
+                  $current = 1;
+                  $continue($resolve, $reject);
+                  return;
+                }).catch(function (err) {
+                  $reject(err);
+                  return;
+                });
+                return;
+
+              case 1:
+                $resolve($result);
+                return;
+
+              default:
+                $resolve();
+                return;
+            }
+          }
         };
         return $promise.new($continue);
       };
       $instance.Parse = function (value) {
         var $this = this;
+        var $result;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#<any>(NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$t.box(/*#NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$global.JSON.parse(/*#NativeString(value), Internal.autoBox))#*/$t.unbox(/*#value), Internal.autoBox))#*/value), /*#Internal.autoBox))#*/$t.dynamicaccess(/*#Internal.autoBox))#*/$global.__serulian_internal, /*#Internal.autoBox))#*/'autoBox')), /*#<any>(NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$g.____testlib.basictypes.Mapping(/*#<any>(NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$t.any)));
-          return;
+          while (true) {
+            switch ($current) {
+              case 0:
+/*#Internal.autoBox))#*/                $t.dynamicaccess(/*#Internal.autoBox))#*/$global.__serulian_internal, /*#Internal.autoBox))#*/'autoBox').then(/*#Internal.autoBox))#*/function (/*#Internal.autoBox))#*/$result0) /*#Internal.autoBox))#*/{
+                  $result = /*#<any>(NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$t.box(/*#NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$global.JSON.parse(/*#NativeString(value), Internal.autoBox))#*/$t.unbox(/*#value), Internal.autoBox))#*/value), /*#Internal.autoBox))#*/$result0), /*#<any>(NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$g.____testlib.basictypes.Mapping(/*#<any>(NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$t.any));
+                  $current = 1;
+                  $continue($resolve, $reject);
+                  return;
+                }).catch(function (err) {
+                  $reject(err);
+                  return;
+                });
+                return;
+
+              case 1:
+                $resolve($result);
+                return;
+
+              default:
+                $resolve();
+                return;
+            }
+          }
         };
         return $promise.new($continue);
       };

@@ -26,9 +26,31 @@ $module('basic', function () {
           case 1:
             $global.SomeBrowserThing.SomeStaticAttribute;
             $global.SomeBrowserThing.SomeStaticFunction();
-            $t.dynamicaccess($global.SomeBrowserThing, 'SomeStaticFunction');
+            $t.dynamicaccess($global.SomeBrowserThing, 'SomeStaticFunction').then(function ($result0) {
+              $result = $result0;
+              $current = 2;
+              $continue($resolve, $reject);
+              return;
+            }).catch(function (err) {
+              $reject(err);
+              return;
+            });
+            return;
+
+          case 2:
             $global.SomeBrowserThing.SomeStaticAttribute.SomeInterfaceFunction();
-            $t.dynamicaccess($global.SomeBrowserThing.SomeStaticAttribute, 'SomeInterfaceFunction');
+            $t.dynamicaccess($global.SomeBrowserThing.SomeStaticAttribute, 'SomeInterfaceFunction').then(function ($result0) {
+              $result = $result0;
+              $current = 3;
+              $continue($resolve, $reject);
+              return;
+            }).catch(function (err) {
+              $reject(err);
+              return;
+            });
+            return;
+
+          case 3:
             $t.nativenew($global.SomeBrowserThing)($t.box('foo', $g.____testlib.basictypes.String));
             $global.SomeBrowserThing.SomeStaticAttribute.SomeInterfaceFunction().InstanceAttr;
             first = $t.nativenew($global.SomeBrowserThing)($t.box('foo', $g.____testlib.basictypes.String));

@@ -64,13 +64,7 @@ $module('memberaccess', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $t.dynamicaccess($g.memberaccess.SomeClass, 'Build');
-            $t.dynamicaccess($g.memberaccess.SomeClass, 'Build');
-            $t.dynamicaccess(scn, 'someInt');
-            $t.dynamicaccess(maimport, 'AnotherFunction');
-            $g.maimport.AnotherFunction;
-            $g.maimport.AnotherFunction;
-            sc.InstanceFunc().then(function ($result0) {
+            $t.dynamicaccess($g.memberaccess.SomeClass, 'Build').then(function ($result0) {
               $result = $result0;
               $current = 1;
               $continue($resolve, $reject);
@@ -82,8 +76,7 @@ $module('memberaccess', function () {
             return;
 
           case 1:
-            $t.dynamicaccess(sc, 'InstanceFunc');
-            sc.SomeProp().then(function ($result0) {
+            $t.dynamicaccess($g.memberaccess.SomeClass, 'Build').then(function ($result0) {
               $result = $result0;
               $current = 2;
               $continue($resolve, $reject);
@@ -95,7 +88,7 @@ $module('memberaccess', function () {
             return;
 
           case 2:
-            sc.SomeProp().then(function ($result0) {
+            $t.dynamicaccess(scn, 'someInt').then(function ($result0) {
               $result = $result0;
               $current = 3;
               $continue($resolve, $reject);
@@ -107,9 +100,71 @@ $module('memberaccess', function () {
             return;
 
           case 3:
-            scn.SomeProp().then(function ($result0) {
+            $t.dynamicaccess(maimport, 'AnotherFunction').then(function ($result0) {
               $result = $result0;
               $current = 4;
+              $continue($resolve, $reject);
+              return;
+            }).catch(function (err) {
+              $reject(err);
+              return;
+            });
+            return;
+
+          case 4:
+            $g.maimport.AnotherFunction;
+            $g.maimport.AnotherFunction;
+            sc.InstanceFunc().then(function ($result0) {
+              $result = $result0;
+              $current = 5;
+              $continue($resolve, $reject);
+              return;
+            }).catch(function (err) {
+              $reject(err);
+              return;
+            });
+            return;
+
+          case 5:
+            $t.dynamicaccess(sc, 'InstanceFunc').then(function ($result0) {
+              $result = $result0;
+              $current = 6;
+              $continue($resolve, $reject);
+              return;
+            }).catch(function (err) {
+              $reject(err);
+              return;
+            });
+            return;
+
+          case 6:
+            sc.SomeProp().then(function ($result0) {
+              $result = $result0;
+              $current = 7;
+              $continue($resolve, $reject);
+              return;
+            }).catch(function (err) {
+              $reject(err);
+              return;
+            });
+            return;
+
+          case 7:
+            sc.SomeProp().then(function ($result0) {
+              $result = $result0;
+              $current = 8;
+              $continue($resolve, $reject);
+              return;
+            }).catch(function (err) {
+              $reject(err);
+              return;
+            });
+            return;
+
+          case 8:
+            scn.SomeProp().then(function ($result0) {
+              $result = $result0;
+              $current = 9;
               $continue($resolve, $reject);
               return;
             }).catch(function (err) {

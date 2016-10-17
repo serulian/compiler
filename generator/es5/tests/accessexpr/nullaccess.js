@@ -60,13 +60,17 @@ $module('nullaccess', function () {
             sc3 = null;
             sc.SomeBool().then(function ($result2) {
               return $promise.resolve($t.unbox($result2)).then(function ($result1) {
-                return $promise.resolve($t.dynamicaccess(sc2, 'SomeBool')).then(function ($result3) {
-                  return $promise.resolve($result1 && $t.unbox($t.nullcompare($result3, $t.box(false, $g.____testlib.basictypes.Boolean)))).then(function ($result0) {
-                    return $promise.resolve($t.dynamicaccess(sc3, 'SomeBool')).then(function ($result4) {
-                      $result = $t.box($result0 && $t.unbox($t.nullcompare($result4, $t.box(true, $g.____testlib.basictypes.Boolean))), $g.____testlib.basictypes.Boolean);
-                      $current = 3;
-                      $continue($resolve, $reject);
-                      return;
+                return ($promise.shortcircuit($result1, true) || $t.dynamicaccess(sc2, 'SomeBool')).then(function ($result4) {
+                  return $promise.resolve($result4).then(function ($result3) {
+                    return $promise.resolve($result1 && $t.unbox($t.nullcompare($result3, $t.box(false, $g.____testlib.basictypes.Boolean)))).then(function ($result0) {
+                      return ($promise.shortcircuit($result0, true) || $t.dynamicaccess(sc3, 'SomeBool')).then(function ($result6) {
+                        return $promise.resolve($result6).then(function ($result5) {
+                          $result = $t.box($result0 && $t.unbox($t.nullcompare($result5, $t.box(true, $g.____testlib.basictypes.Boolean))), $g.____testlib.basictypes.Boolean);
+                          $current = 3;
+                          $continue($resolve, $reject);
+                          return;
+                        });
+                      });
                     });
                   });
                 });

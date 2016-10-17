@@ -419,7 +419,8 @@ func (eg *expressionGenerator) generateDynamicAccess(dynamicAccess *codedom.Dyna
 		basisNode,
 	)
 
-	return eg.generateExpression(funcCall, context)
+	// All dynamic accesses return a promise, to ensure it works for properties.
+	return eg.generateExpression(codedom.AwaitPromise(funcCall, basisNode), context)
 }
 
 // generateNestedTypeAccess generates the expression source for a nested type access.

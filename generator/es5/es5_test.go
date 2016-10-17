@@ -72,6 +72,11 @@ func assertNoOttoError(t *testing.T, testName string, source string, err error) 
 		atLine := lines[1]
 		atParts := strings.Split(atLine, ":")
 
+		if len(atParts) < 3 {
+			t.Errorf("In test %v: %v\n", testName, err.Error())
+			return false
+		}
+
 		lineNumber, _ := strconv.Atoi(atParts[1])
 		columnPos, _ := strconv.Atoi(atParts[2])
 
@@ -155,6 +160,7 @@ var generationTests = []generationTest{
 	generationTest{"member access expressions", "accessexpr", "memberaccess", integrationTestSuccessExpected, ""},
 	generationTest{"function reference access expression", "accessexpr", "funcref", integrationTestSuccessExpected, ""},
 	generationTest{"nullable member access expression", "accessexpr", "nullaccess", integrationTestSuccessExpected, ""},
+	generationTest{"dynamic property access expression", "accessexpr", "dynamicprop", integrationTestSuccessExpected, ""},
 
 	generationTest{"full lambda expression", "lambdaexpr", "full", integrationTestSuccessExpected, ""},
 	generationTest{"mini lambda expression", "lambdaexpr", "mini", integrationTestSuccessExpected, ""},
