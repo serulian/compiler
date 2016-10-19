@@ -170,82 +170,81 @@ this.Serulian = (function($global) {
 
     // istype returns true if the specified value can be cast to the given type.
     'istype': function(value, type) {
-      // TODO: optimize this.
-      try {
-        $t.cast(value, type, false);
+      // Quick check to see if it matches directly or is 'any'.
+      if (type == $t.any || (value != null && (value.constructor == type || value instanceof type))) {
         return true;
-      } catch (e) {
-        return false;
+      }
+
+      // Quick check for function.
+      // TODO: this needs to properly check the function's parameter and return types
+      // once that information is added to the value. For now, we just make sure we have
+      // a function.
+      if (type.$generic == $a['function'] && typeof value == 'function') {
+        return value;
+      }
+
+      var targetKind = type.$typekind;
+      switch (targetKind) {
+        case 'struct':
+        case 'type':
+        case 'class':
+          // Direct matching is the requirement.
+          return false;
+
+        case 'interface':
+          // Check if the other type implements the interface by comparing type signatures.
+          var targetSignature = type.$typesig();
+          var valueSignature = value.constructor.$typesig();
+
+          var expectedKeys = Object.keys(targetSignature);
+          for (var i = 0; i < expectedKeys.length; ++i) {
+            var expectedKey = expectedKeys[i];
+            if (valueSignature[expectedKey] !== true) {
+              return false;
+            }
+          }
+          return true;
+
+        default:
+          return false;
       }
     },
 
     // cast performs a cast of the given value to the given type, throwing on
     // failure.
     'cast': function(value, type, opt_allownull) {
-      // Quick check for any.
-      if (type == $t.any) {
-        return value;
-      }
-
-      // Quick check to see if cast checking is necessary.
-      if (type == null || (value != null && (value.constructor == type || value instanceof type))) {
-        return value;
-      }
-      
-      // Quick check for function.
-      // TODO: this needs to properly check the function's parameter and return types
-      // once that information is added to the value. For now, we just make sure we have
-      // a function.
-      if (typeof value == 'function' && type.$generic == $a['function']) {
-        return value;
-      }
-
-      // Handle the null to non-nullable case.
-      var castKind = type.$typekind;
+      // Ensure that we don't cast to non-nullable if null.
       if (value == null && !opt_allownull) {
         throw Error('Cannot cast null value to ' + type.toString())        
       }
 
-      // Handle the cast-Object-to-struct case
-      if (castKind == 'struct' && value.constructor == Object) {
-        // Note: This cast can result in us getting a struct over invalid data, but
-        // the struct will ensure it is correct anyway, so this is allowed.
+      // Check if the type matches directly.
+      if ($t.istype(value, type)) {
         return value;
       }
 
-      // At this point, we can only cast native types to nominal types with auto-boxing.
-      var valueKind = value.constructor.$typekind;
-      if (!valueKind && castKind != 'type') {
-        // Native type.
-        throw Error('Cannot cast native type to non-nominal type')
-      }
-
-      switch (castKind) {
-        case 'class':
+      // Otherwise handle some cast-only cases and errors.
+      var targetKind = type.$typekind;
+      switch (targetKind) {
         case 'struct':
-          // Value type must be a struct or class. Since we check for equality above,
-          // this must fail.
-          throw Error('Cannot cast ' + value.constructor.toString() + ' to ' + type.toString())
+          // Note: This cast can result in us getting a struct over invalid data, but
+          // the struct will ensure it is correct anyway, so this is allowed.
+          if (value.constructor == Object) {
+            break;
+          }
+
+          throw Error('Cannot cast ' + value.constructor.toString() + ' to ' + type.toString());
+
+        case 'class':
+        case 'interface':
+          // Since we check for equality above, this must fail.
+          throw Error('Cannot cast ' + value.constructor.toString() + ' to ' + type.toString());
 
         case 'type':
           // Casting only is allowed if the nominal and the existing value's
           // type have the same root type.
           if ($t.roottype(value.constructor) != $t.roottype(type)) {
-            throw Error('Cannot auto-box ' + value.constructor.toString() + ' to ' + type.toString())
-          }
-          break;
-
-        case 'interface':
-          // Check if the other type implements the interface by comparing type signatures.
-          var castSignature = type.$typesig();
-          var valueSignature = value.constructor.$typesig();
-
-          var expectedKeys = Object.keys(castSignature);
-          for (var i = 0; i < expectedKeys.length; ++i) {
-            var expectedKey = expectedKeys[i];
-            if (valueSignature[expectedKey] !== true) {
-              throw Error('Cannot cast ' + value.constructor.toString() + ' to ' + type.toString())              
-            }
+            throw Error('Cannot auto-box ' + value.constructor.toString() + ' to ' + type.toString());
           }
           break;
       }

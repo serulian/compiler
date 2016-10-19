@@ -108,55 +108,60 @@ this.Serulian = function ($global) {
       return type;
     },
     istype: function (value, type) {
-      try {
-        $t.cast(value, type, false);
+      if ((type == $t.any) || ((value != null) && ((value.constructor == type) || (value instanceof type)))) {
         return true;
-      } catch (e) {
-        return false;
+      }
+      if ((type.$generic == $a['function']) && (typeof value == 'function')) {
+        return value;
+      }
+      var targetKind = type.$typekind;
+      switch (targetKind) {
+        case 'struct':
+
+        case 'type':
+
+        case 'class':
+          return false;
+
+        case 'interface':
+          var targetSignature = type.$typesig();
+          var valueSignature = value.constructor.$typesig();
+          var expectedKeys = Object.keys(targetSignature);
+          for (var i = 0; i < expectedKeys.length; ++i) {
+            var expectedKey = expectedKeys[i];
+            if (valueSignature[expectedKey] !== true) {
+              return false;
+            }
+          }
+          return true;
+
+        default:
+          return false;
       }
     },
     cast: function (value, type, opt_allownull) {
-      if (type == $t.any) {
-        return value;
-      }
-      if ((type == null) || ((value != null) && ((value.constructor == type) || (value instanceof type)))) {
-        return value;
-      }
-      if ((typeof value == 'function') && (type.$generic == $a['function'])) {
-        return value;
-      }
-      var castKind = type.$typekind;
       if ((value == null) && !opt_allownull) {
         throw Error('Cannot cast null value to ' + type.toString());
       }
-      if ((castKind == 'struct') && (value.constructor == Object)) {
+      if ($t.istype(value, type)) {
         return value;
       }
-      var valueKind = value.constructor.$typekind;
-      if (!valueKind && (castKind != 'type')) {
-        throw Error('Cannot cast native type to non-nominal type');
-      }
-      switch (castKind) {
+      var targetKind = type.$typekind;
+      switch (targetKind) {
+        case 'struct':
+          if (value.constructor == Object) {
+            break;
+          }
+          throw Error((('Cannot cast ' + value.constructor.toString()) + ' to ') + type.toString());
+
         case 'class':
 
-        case 'struct':
+        case 'interface':
           throw Error((('Cannot cast ' + value.constructor.toString()) + ' to ') + type.toString());
 
         case 'type':
           if ($t.roottype(value.constructor) != $t.roottype(type)) {
             throw Error((('Cannot auto-box ' + value.constructor.toString()) + ' to ') + type.toString());
-          }
-          break;
-
-        case 'interface':
-          var castSignature = type.$typesig();
-          var valueSignature = value.constructor.$typesig();
-          var expectedKeys = Object.keys(castSignature);
-          for (var i = 0; i < expectedKeys.length; ++i) {
-            var expectedKey = expectedKeys[i];
-            if (valueSignature[expectedKey] !== true) {
-              throw Error((('Cannot cast ' + value.constructor.toString()) + ' to ') + type.toString());
-            }
           }
           break;
       }
