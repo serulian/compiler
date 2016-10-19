@@ -9,7 +9,11 @@ $module('requiredcomposition', function () {
       return $promise.resolve(instance);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.requiredcomposition.First).$typeref()]);
+      var computed = $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.requiredcomposition.First).$typeref()]);
+      this.$typesig = function () {
+        return computed;
+      };
+      return computed;
     };
   });
 
@@ -22,7 +26,11 @@ $module('requiredcomposition', function () {
       return $promise.resolve(instance);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.requiredcomposition.Second).$typeref()]);
+      var computed = $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.requiredcomposition.Second).$typeref()]);
+      this.$typesig = function () {
+        return computed;
+      };
+      return computed;
     };
   });
 
@@ -59,7 +67,11 @@ $module('requiredcomposition', function () {
       },
     });
     this.$typesig = function () {
-      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.requiredcomposition.SomeClass).$typeref()]);
+      var computed = $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.requiredcomposition.SomeClass).$typeref()]);
+      this.$typesig = function () {
+        return computed;
+      };
+      return computed;
     };
   });
 

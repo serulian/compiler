@@ -19,7 +19,11 @@ $module('basic', function () {
       return $promise.empty();
     };
     this.$typesig = function () {
-      return $t.createtypesig(['AnotherFunction', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.basic.SomeClass).$typeref()]);
+      var computed = $t.createtypesig(['AnotherFunction', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.basic.SomeClass).$typeref()]);
+      this.$typesig = function () {
+        return computed;
+      };
+      return computed;
     };
   });
 

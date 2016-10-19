@@ -17,7 +17,11 @@ $module('nullcomparecall', function () {
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      return $t.createtypesig(['Message', 3, $g.____testlib.basictypes.String.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.nullcomparecall.SomeError).$typeref()]);
+      var computed = $t.createtypesig(['Message', 3, $g.____testlib.basictypes.String.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.nullcomparecall.SomeError).$typeref()]);
+      this.$typesig = function () {
+        return computed;
+      };
+      return computed;
     };
   });
 

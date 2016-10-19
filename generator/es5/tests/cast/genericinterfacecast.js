@@ -17,14 +17,22 @@ $module('genericinterfacecast', function () {
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      return $t.createtypesig(['SomeValue', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.genericinterfacecast.SomeClass).$typeref()]);
+      var computed = $t.createtypesig(['SomeValue', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.genericinterfacecast.SomeClass).$typeref()]);
+      this.$typesig = function () {
+        return computed;
+      };
+      return computed;
     };
   });
 
   this.$interface('SomeInterface', true, '', function (T) {
     var $static = this;
     this.$typesig = function () {
-      return $t.createtypesig(['SomeValue', 3, T.$typeref()]);
+      var computed = $t.createtypesig(['SomeValue', 3, T.$typeref()]);
+      this.$typesig = function () {
+        return computed;
+      };
+      return computed;
     };
   });
 

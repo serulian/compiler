@@ -53,7 +53,11 @@ $module('memberaccess', function () {
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      return $t.createtypesig(['Build', 1, $g.____testlib.basictypes.Function($g.memberaccess.SomeClass).$typeref()], ['InstanceFunc', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['SomeProp', 3, $g.____testlib.basictypes.Integer.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.memberaccess.SomeClass).$typeref()]);
+      var computed = $t.createtypesig(['Build', 1, $g.____testlib.basictypes.Function($g.memberaccess.SomeClass).$typeref()], ['InstanceFunc', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['SomeProp', 3, $g.____testlib.basictypes.Integer.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.memberaccess.SomeClass).$typeref()]);
+      this.$typesig = function () {
+        return computed;
+      };
+      return computed;
     };
   });
 

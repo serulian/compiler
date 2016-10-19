@@ -13,7 +13,11 @@ $module('inheritance', function () {
       return $promise.empty();
     };
     this.$typesig = function () {
-      return $t.createtypesig(['DoSomething', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.inheritance.FirstClass).$typeref()]);
+      var computed = $t.createtypesig(['DoSomething', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.inheritance.FirstClass).$typeref()]);
+      this.$typesig = function () {
+        return computed;
+      };
+      return computed;
     };
   });
 
@@ -30,7 +34,11 @@ $module('inheritance', function () {
       return $promise.empty();
     };
     this.$typesig = function () {
-      return $t.createtypesig(['AnotherThing', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.inheritance.SecondClass).$typeref()]);
+      var computed = $t.createtypesig(['AnotherThing', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.inheritance.SecondClass).$typeref()]);
+      this.$typesig = function () {
+        return computed;
+      };
+      return computed;
     };
   });
 
@@ -73,7 +81,11 @@ $module('inheritance', function () {
       },
     });
     this.$typesig = function () {
-      return $t.createtypesig(['DoSomething', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['AnotherThing', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.inheritance.MainClass).$typeref()]);
+      var computed = $t.createtypesig(['DoSomething', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['AnotherThing', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.inheritance.MainClass).$typeref()]);
+      this.$typesig = function () {
+        return computed;
+      };
+      return computed;
     };
   });
 

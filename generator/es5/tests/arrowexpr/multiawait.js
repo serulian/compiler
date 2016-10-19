@@ -16,7 +16,11 @@ $module('multiawait', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['plus', 4, $g.____testlib.basictypes.Function($g.multiawait.SomeClass).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.multiawait.SomeClass).$typeref()]);
+      var computed = $t.createtypesig(['plus', 4, $g.____testlib.basictypes.Function($g.multiawait.SomeClass).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.multiawait.SomeClass).$typeref()]);
+      this.$typesig = function () {
+        return computed;
+      };
+      return computed;
     };
   });
 

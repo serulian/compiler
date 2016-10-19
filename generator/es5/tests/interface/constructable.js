@@ -47,7 +47,11 @@ $module('constructable', function () {
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      return $t.createtypesig(['Get', 1, $g.____testlib.basictypes.Function($g.constructable.SomeClass).$typeref()], ['SomeBool', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.constructable.SomeClass).$typeref()]);
+      var computed = $t.createtypesig(['Get', 1, $g.____testlib.basictypes.Function($g.constructable.SomeClass).$typeref()], ['SomeBool', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.constructable.SomeClass).$typeref()]);
+      this.$typesig = function () {
+        return computed;
+      };
+      return computed;
     };
   });
 
@@ -84,7 +88,11 @@ $module('constructable', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['Get', 1, $g.____testlib.basictypes.Function($g.constructable.SomeInterface).$typeref()], ['SomeBool', 3, $g.____testlib.basictypes.Boolean.$typeref()]);
+      var computed = $t.createtypesig(['Get', 1, $g.____testlib.basictypes.Function($g.constructable.SomeInterface).$typeref()], ['SomeBool', 3, $g.____testlib.basictypes.Boolean.$typeref()]);
+      this.$typesig = function () {
+        return computed;
+      };
+      return computed;
     };
   });
 

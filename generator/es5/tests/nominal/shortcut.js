@@ -17,7 +17,11 @@ $module('shortcut', function () {
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      return $t.createtypesig(['Value', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.shortcut.SomeClass).$typeref()]);
+      var computed = $t.createtypesig(['Value', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.shortcut.SomeClass).$typeref()]);
+      this.$typesig = function () {
+        return computed;
+      };
+      return computed;
     };
   });
 
@@ -33,7 +37,11 @@ $module('shortcut', function () {
       return $g.shortcut.SomeClass;
     };
     this.$typesig = function () {
-      return $t.createtypesig();
+      var computed = $t.createtypesig();
+      this.$typesig = function () {
+        return computed;
+      };
+      return computed;
     };
   });
 

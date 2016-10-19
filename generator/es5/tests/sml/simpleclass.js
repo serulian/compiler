@@ -47,7 +47,11 @@ $module('simpleclass', function () {
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      return $t.createtypesig(['Declare', 1, $g.____testlib.basictypes.Function($g.simpleclass.SimpleClass).$typeref()], ['Value', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.simpleclass.SimpleClass).$typeref()]);
+      var computed = $t.createtypesig(['Declare', 1, $g.____testlib.basictypes.Function($g.simpleclass.SimpleClass).$typeref()], ['Value', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.simpleclass.SimpleClass).$typeref()]);
+      this.$typesig = function () {
+        return computed;
+      };
+      return computed;
     };
   });
 

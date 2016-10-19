@@ -9,7 +9,11 @@ $module('streammember', function () {
       return $promise.resolve(instance);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.streammember.SomeClass).$typeref()]);
+      var computed = $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.streammember.SomeClass).$typeref()]);
+      this.$typesig = function () {
+        return computed;
+      };
+      return computed;
     };
   });
 

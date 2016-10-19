@@ -8,7 +8,11 @@ $module('nominalcastfail', function () {
       return $promise.resolve(instance);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.nominalcastfail.SomeClass).$typeref()]);
+      var computed = $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.nominalcastfail.SomeClass).$typeref()]);
+      this.$typesig = function () {
+        return computed;
+      };
+      return computed;
     };
   });
 
@@ -20,7 +24,11 @@ $module('nominalcastfail', function () {
       return $promise.resolve(instance);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.nominalcastfail.AnotherClass).$typeref()]);
+      var computed = $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.nominalcastfail.AnotherClass).$typeref()]);
+      this.$typesig = function () {
+        return computed;
+      };
+      return computed;
     };
   });
 
@@ -36,7 +44,11 @@ $module('nominalcastfail', function () {
       return $g.nominalcastfail.SomeClass;
     };
     this.$typesig = function () {
-      return $t.createtypesig();
+      var computed = $t.createtypesig();
+      this.$typesig = function () {
+        return computed;
+      };
+      return computed;
     };
   });
 

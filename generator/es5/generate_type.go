@@ -157,7 +157,7 @@ func (gt generatingType) TypeSignatureMethod() string {
 // typeSignatureTemplateStr defines a template for generating the signature for a type.
 const typeSignatureTemplateStr = `
 	this.$typesig = function() {
-		return $t.createtypesig(
+		var computed = $t.createtypesig(
 		{{ $parent := . }}
 		{{ $counter := 0 }}
 		{{ range $midx, $member := .Type.NonFieldMembers }}
@@ -165,6 +165,12 @@ const typeSignatureTemplateStr = `
 		  ['{{ $member.Name }}', {{ $member.Signature.MemberKind }}, ({{ $parent.TypeReferenceCall $member.MemberType }}).$typeref()]
 		{{ end }}
 		);
+
+		this.$typesig = function() {
+			return computed;
+		};
+
+		return computed;
 	};
 `
 
