@@ -245,42 +245,49 @@ func (t *testBasicTypesConstructor) DefineModules(builder GetModuleBuilder) {
 func (t *testBasicTypesConstructor) DefineTypes(builder GetTypeBuilder) {
 	builder(*t.moduleNode).
 		Name("bool").
+		GlobalId("bool").
 		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
 		Alias("bool").
 		Define()
 
 	builder(*t.moduleNode).
 		Name("int").
+		GlobalId("int").
 		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
 		Alias("int").
 		Define()
 
 	builder(*t.moduleNode).
 		Name("mapping").
+		GlobalId("mapping").
 		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
 		Alias("mapping").
 		Define()
 
 	builder(*t.moduleNode).
 		Name("string").
+		GlobalId("string").
 		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
 		Alias("string").
 		Define()
 
 	builder(*t.moduleNode).
 		Name("$parser").
+		GlobalId("$parser").
 		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
 		Alias("$parser").
 		Define()
 
 	builder(*t.moduleNode).
 		Name("$stringifier").
+		GlobalId("$stringifier").
 		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
 		Alias("$stringifier").
 		Define()
 
 	funcGenBuilder := builder(*t.moduleNode).
 		Name("function").
+		GlobalId("function").
 		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
 		Alias("function").
 		Define()
@@ -289,6 +296,7 @@ func (t *testBasicTypesConstructor) DefineTypes(builder GetTypeBuilder) {
 
 	streamGenBuilder := builder(*t.moduleNode).
 		Name("stream").
+		GlobalId("stream").
 		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
 		Alias("stream").
 		Define()
@@ -333,6 +341,7 @@ func (t *testTypeGraphConstructor) DefineTypes(builder GetTypeBuilder) {
 
 		genericBuilder := builder(*t.moduleNode).
 			Name(typeInfo.name).
+			GlobalId(typeInfo.name).
 			SourceNode(typeNode).
 			TypeKind(typeKind).
 			Define()
