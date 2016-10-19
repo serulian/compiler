@@ -1,6 +1,6 @@
 {
-    "6209115a03329a4693c6a5fbb8ae7b6a": {
-        "Key": "6209115a03329a4693c6a5fbb8ae7b6a",
+    "4828cfa7de88baf9105d859380656d07": {
+        "Key": "4828cfa7de88baf9105d859380656d07",
         "Kind": 3,
         "Children": {
             "83a1c136c7adbe61b03ea96daf1d8949": {
@@ -92,6 +92,7 @@
             "tdg-node-kind": "3|NodeType|tdg",
             "tdg-source-module": "tests/operator.webidl",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "SomeInterface",
             "tdg-type-name": "SomeInterface"
         }
     }

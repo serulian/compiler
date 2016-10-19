@@ -1,6 +1,6 @@
 {
-    "5081b1fd9250d182827633669821218c": {
-        "Key": "5081b1fd9250d182827633669821218c",
+    "8b29d8990cd08fc33bf6399512794ffa": {
+        "Key": "8b29d8990cd08fc33bf6399512794ffa",
         "Kind": 3,
         "Children": {
             "0884367d090ad9c17b19d77fd1863e91": {
@@ -22,11 +22,12 @@
             "tdg-node-kind": "3|NodeType|tdg",
             "tdg-source-module": "tests/optionalparam.webidl",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "Foo",
             "tdg-type-name": "Foo"
         }
     },
-    "9e5e541b117f5979f4908a344eb9a9ce": {
-        "Key": "9e5e541b117f5979f4908a344eb9a9ce",
+    "f20c33ccf9596102359b3e9b9caf2cf8": {
+        "Key": "f20c33ccf9596102359b3e9b9caf2cf8",
         "Kind": 3,
         "Children": {
             "3dd6b9bb8b9387d69484350b44e085fe": {
@@ -52,6 +53,7 @@
             "tdg-node-kind": "3|NodeType|tdg",
             "tdg-source-module": "tests/optionalparam.webidl",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "SomeInterface",
             "tdg-type-name": "SomeInterface"
         }
     }

@@ -1,32 +1,6 @@
 {
-    "0fb9f51e5d24263dbc82417c33826558": {
-        "Key": "0fb9f51e5d24263dbc82417c33826558",
-        "Kind": 3,
-        "Children": {
-            "abcae4d53c908628f88965d86cd70169": {
-                "Predicate": "tdg-declaration-module",
-                "Child": {
-                    "Key": "abcae4d53c908628f88965d86cd70169",
-                    "Kind": 6,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-module-name": "nativetypes.webidl",
-                        "tdg-node-kind": "6|NodeType|tdg",
-                        "tdg-source-module": "tests/nativetypes.webidl",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            }
-        },
-        "Predicates": {
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "tests/nativetypes.webidl",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-name": "Boolean"
-        }
-    },
-    "137447688ef687b05053bbce6bc4b3b4": {
-        "Key": "137447688ef687b05053bbce6bc4b3b4",
+    "18b7b2630235da0b438050649ec4741a": {
+        "Key": "18b7b2630235da0b438050649ec4741a",
         "Kind": 3,
         "Children": {
             "086bdcfb102c9b90ac58cb0cda74bdab": {
@@ -70,17 +44,46 @@
             "tdg-node-kind": "3|NodeType|tdg",
             "tdg-source-module": "tests/nativetypes.webidl",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "ISomeInterface",
             "tdg-type-name": "ISomeInterface"
         }
     },
-    "541aee93b80c8a47760a65336184d78f": {
-        "Key": "541aee93b80c8a47760a65336184d78f",
+    "aa31127b813b381af3d9c251da669a8f": {
+        "Key": "aa31127b813b381af3d9c251da669a8f",
+        "Kind": 3,
+        "Children": {
+            "abcae4d53c908628f88965d86cd70169": {
+                "Predicate": "tdg-declaration-module",
+                "Child": {
+                    "Key": "abcae4d53c908628f88965d86cd70169",
+                    "Kind": 6,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-module-name": "nativetypes.webidl",
+                        "tdg-node-kind": "6|NodeType|tdg",
+                        "tdg-source-module": "tests/nativetypes.webidl",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-source-module": "tests/nativetypes.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "Boolean",
+            "tdg-type-name": "Boolean"
+        }
+    },
+    "c8a34a2787c3cdcf11b4e7b9d54978b3": {
+        "Key": "c8a34a2787c3cdcf11b4e7b9d54978b3",
         "Kind": 3,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
             "tdg-source-module": "tests/nativetypes.webidl",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "Number",
             "tdg-type-name": "Number"
         }
     }
