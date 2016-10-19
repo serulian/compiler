@@ -1,6 +1,6 @@
 {
-    "08a9f7109d309b314cb2c0d17671cb86": {
-        "Key": "08a9f7109d309b314cb2c0d17671cb86",
+    "aa13f6d4a3fefb98f363f3977e2391d4": {
+        "Key": "aa13f6d4a3fefb98f363f3977e2391d4",
         "Kind": 5,
         "Children": {
             "3ebf9acf5a89313d981340fdd258e247": {
@@ -215,11 +215,12 @@
             "tdg-node-kind": "5|NodeType|tdg",
             "tdg-source-module": "tests/struct/referenced.seru",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "d1600f4c",
             "tdg-type-name": "AnotherStruct"
         }
     },
-    "b536dc596e34ac70bd5e2ed2221a5d4c": {
-        "Key": "b536dc596e34ac70bd5e2ed2221a5d4c",
+    "f25aee1c9c46ce21e4076cbdee6dee3a": {
+        "Key": "f25aee1c9c46ce21e4076cbdee6dee3a",
         "Kind": 5,
         "Children": {
             "08816e5186425717f6d4b129b31cc639": {
@@ -456,6 +457,7 @@
             "tdg-node-kind": "5|NodeType|tdg",
             "tdg-source-module": "tests/struct/referenced.seru",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "bfaf6110",
             "tdg-type-name": "SomeStruct"
         }
     }

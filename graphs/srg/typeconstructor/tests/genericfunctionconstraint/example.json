@@ -1,6 +1,6 @@
 {
-    "a78e7547e6036ef08b3128b385ac35da": {
-        "Key": "a78e7547e6036ef08b3128b385ac35da",
+    "161a1a537be93d818d6c39208fc6e73f": {
+        "Key": "161a1a537be93d818d6c39208fc6e73f",
         "Kind": 1,
         "Children": {
             "4aac06e94f2b5a350f379a3a4364bd2e": {
@@ -105,6 +105,7 @@
             "tdg-node-kind": "1|NodeType|tdg",
             "tdg-source-module": "tests/genericfunctionconstraint/example.seru",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "e95f9c16",
             "tdg-type-name": "SomeClass"
         }
     }

@@ -45,8 +45,8 @@
             "tdg-source-node": "(NodeRef)"
         }
     },
-    "7433c2ff9ac253e0b98f7a4aba36c016": {
-        "Key": "7433c2ff9ac253e0b98f7a4aba36c016",
+    "5d67493fab08626da8996d7db0282ac1": {
+        "Key": "5d67493fab08626da8996d7db0282ac1",
         "Kind": 5,
         "Children": {
             "0e3da00d3cce878cfc450c8400e0d544": {
@@ -299,6 +299,7 @@
             "tdg-node-kind": "5|NodeType|tdg",
             "tdg-source-module": "tests/struct/success.seru",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "d570ace3",
             "tdg-type-name": "SomeStruct"
         }
     }

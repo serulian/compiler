@@ -1,6 +1,18 @@
 {
-    "99f3a3b20af62411497dae36ae15b04d": {
-        "Key": "99f3a3b20af62411497dae36ae15b04d",
+    "144214822c145d87589df61083a09cb4": {
+        "Key": "144214822c145d87589df61083a09cb4",
+        "Kind": 2,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "2|NodeType|tdg",
+            "tdg-source-module": "tests/simple/simple.seru",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "2e5ece29",
+            "tdg-type-name": "SomeInterface"
+        }
+    },
+    "8fd764dd6552a161fd8ad6468083f220": {
+        "Key": "8fd764dd6552a161fd8ad6468083f220",
         "Kind": 1,
         "Children": {
             "7b1a56aecc153defc9d57dbf4375bc03": {
@@ -40,18 +52,8 @@
             "tdg-node-kind": "1|NodeType|tdg",
             "tdg-source-module": "tests/simple/simple.seru",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "0df06489",
             "tdg-type-name": "SomeClass"
-        }
-    },
-    "d2a4daa92c40f2398d46e60fb95f6148": {
-        "Key": "d2a4daa92c40f2398d46e60fb95f6148",
-        "Kind": 2,
-        "Children": {},
-        "Predicates": {
-            "tdg-node-kind": "2|NodeType|tdg",
-            "tdg-source-module": "tests/simple/simple.seru",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-name": "SomeInterface"
         }
     }
 }

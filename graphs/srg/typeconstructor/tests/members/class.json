@@ -1,36 +1,6 @@
 {
-    "5a7d72f9c7e4f5717bc7b4f4f919b21d": {
-        "Key": "5a7d72f9c7e4f5717bc7b4f4f919b21d",
-        "Kind": 1,
-        "Children": {
-            "e9d566fe5cc2e6f29b7149d110b7bce7": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "e9d566fe5cc2e6f29b7149d110b7bce7",
-                    "Kind": 7,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-name": "new",
-                        "tdg-member-promising": "true",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cThirdClass\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0014function\u003cThirdClass\u003e",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "7|NodeType|tdg",
-                        "tdg-source-module": "tests/members/class.seru"
-                    }
-                }
-            }
-        },
-        "Predicates": {
-            "tdg-node-kind": "1|NodeType|tdg",
-            "tdg-source-module": "tests/members/class.seru",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-name": "ThirdClass"
-        }
-    },
-    "9492a51d7829890dc23bc9ca1b374b75": {
-        "Key": "9492a51d7829890dc23bc9ca1b374b75",
+    "38285a1e8e0d9e6045c66468cbe578b0": {
+        "Key": "38285a1e8e0d9e6045c66468cbe578b0",
         "Kind": 1,
         "Children": {
             "ea42a10a4a0fbf672530ecad6a14ce03": {
@@ -56,11 +26,12 @@
             "tdg-node-kind": "1|NodeType|tdg",
             "tdg-source-module": "tests/members/class.seru",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "8ce85edd",
             "tdg-type-name": "AnotherClass"
         }
     },
-    "f1338811534b132dcd7caa10329c4a9f": {
-        "Key": "f1338811534b132dcd7caa10329c4a9f",
+    "3ebc015b8dd3370008ed7ab67b10e894": {
+        "Key": "3ebc015b8dd3370008ed7ab67b10e894",
         "Kind": 1,
         "Children": {
             "04e3d0d30c55165817347ee2970ca60f": {
@@ -336,7 +307,39 @@
             "tdg-node-kind": "1|NodeType|tdg",
             "tdg-source-module": "tests/members/class.seru",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "47c4c1b8",
             "tdg-type-name": "SomeClass"
+        }
+    },
+    "cb7c044fc1883113fdb5bef011564245": {
+        "Key": "cb7c044fc1883113fdb5bef011564245",
+        "Kind": 1,
+        "Children": {
+            "e9d566fe5cc2e6f29b7149d110b7bce7": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "e9d566fe5cc2e6f29b7149d110b7bce7",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-name": "new",
+                        "tdg-member-promising": "true",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cThirdClass\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0014function\u003cThirdClass\u003e",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/members/class.seru"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-source-module": "tests/members/class.seru",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "06d4f15f",
+            "tdg-type-name": "ThirdClass"
         }
     }
 }

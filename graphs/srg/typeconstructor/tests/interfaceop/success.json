@@ -1,6 +1,6 @@
 {
-    "8055942e1f7ad13fecc5a31ca474ec0b": {
-        "Key": "8055942e1f7ad13fecc5a31ca474ec0b",
+    "b215ed2ed46d540549bd38b9a81a2ab7": {
+        "Key": "b215ed2ed46d540549bd38b9a81a2ab7",
         "Kind": 2,
         "Children": {
             "36f894b4789c136d09212a17eed6dfd5": {
@@ -91,6 +91,7 @@
             "tdg-node-kind": "2|NodeType|tdg",
             "tdg-source-module": "tests/interfaceop/success.seru",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "8e00720f",
             "tdg-type-name": "Foo"
         }
     }

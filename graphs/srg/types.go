@@ -85,6 +85,11 @@ func (t SRGType) Module() SRGModule {
 	return SRGModule{moduleNode, t.srg}
 }
 
+// UniqueId returns a unique hash ID for the node that is stable across compilations.
+func (m SRGType) UniqueId() string {
+	return GetUniqueId(m.GraphNode)
+}
+
 // Name returns the name of this type.
 func (t SRGType) Name() string {
 	return t.GraphNode.Get(parser.NodeTypeDefinitionName)

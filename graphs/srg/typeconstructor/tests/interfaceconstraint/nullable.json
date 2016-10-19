@@ -1,37 +1,6 @@
 {
-    "11b7d3d9e6106126ebc4793905a263a2": {
-        "Key": "11b7d3d9e6106126ebc4793905a263a2",
-        "Kind": 1,
-        "Children": {
-            "c05d3ea5232b9bfb1738656c3b168aa0": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "c05d3ea5232b9bfb1738656c3b168aa0",
-                    "Kind": 7,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-name": "new",
-                        "tdg-member-promising": "true",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cAnotherClass\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0016function\u003cAnotherClass\u003e",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "7|NodeType|tdg",
-                        "tdg-source-module": "tests/interfaceconstraint/nullable.seru"
-                    }
-                }
-            }
-        },
-        "Predicates": {
-            "tdg-node-kind": "1|NodeType|tdg",
-            "tdg-parent-type": "SomeClass\u003cThirdClass?\u003e",
-            "tdg-source-module": "tests/interfaceconstraint/nullable.seru",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-name": "AnotherClass"
-        }
-    },
-    "260308ec2045cce545ba321e275386a6": {
-        "Key": "260308ec2045cce545ba321e275386a6",
+    "585a7c445f0105ddb8079e1d37a05193": {
+        "Key": "585a7c445f0105ddb8079e1d37a05193",
         "Kind": 1,
         "Children": {
             "13d387d6dc5eb996864d3a35e541909c": {
@@ -90,11 +59,12 @@
             "tdg-node-kind": "1|NodeType|tdg",
             "tdg-source-module": "tests/interfaceconstraint/nullable.seru",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "c8449f34",
             "tdg-type-name": "ThirdClass"
         }
     },
-    "41ca0c4c59dee187ee84906a5f4a8e92": {
-        "Key": "41ca0c4c59dee187ee84906a5f4a8e92",
+    "7f66c3eb41ba711d49019ac5e2b0c085": {
+        "Key": "7f66c3eb41ba711d49019ac5e2b0c085",
         "Kind": 2,
         "Children": {
             "693d012856864506391cde569a54dd3c": {
@@ -151,11 +121,44 @@
             "tdg-node-kind": "2|NodeType|tdg",
             "tdg-source-module": "tests/interfaceconstraint/nullable.seru",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "ffa54c2c",
             "tdg-type-name": "ISomeInterface"
         }
     },
-    "4cfa83dce8f3facea9020f238845765a": {
-        "Key": "4cfa83dce8f3facea9020f238845765a",
+    "8c71ed58594a3539d854919220b29746": {
+        "Key": "8c71ed58594a3539d854919220b29746",
+        "Kind": 1,
+        "Children": {
+            "c05d3ea5232b9bfb1738656c3b168aa0": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "c05d3ea5232b9bfb1738656c3b168aa0",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-name": "new",
+                        "tdg-member-promising": "true",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cAnotherClass\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0016function\u003cAnotherClass\u003e",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/interfaceconstraint/nullable.seru"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-parent-type": "SomeClass\u003cThirdClass?\u003e",
+            "tdg-source-module": "tests/interfaceconstraint/nullable.seru",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "cdb991c7",
+            "tdg-type-name": "AnotherClass"
+        }
+    },
+    "f3953d35557719c19eb3da0be6eefbf4": {
+        "Key": "f3953d35557719c19eb3da0be6eefbf4",
         "Kind": 1,
         "Children": {
             "23f4a67b9feec572e43e1ec6ad9c8044": {
@@ -211,6 +214,7 @@
             "tdg-node-kind": "1|NodeType|tdg",
             "tdg-source-module": "tests/interfaceconstraint/nullable.seru",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "39fa2c19",
             "tdg-type-name": "SomeClass"
         }
     }
