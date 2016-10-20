@@ -154,23 +154,33 @@ func (gt generatingType) TypeSignatureMethod() string {
 	return gt.Generator.templater.Execute("typesig", typeSignatureTemplateStr, gt)
 }
 
+// TypeSignature generates and returns the type signature for the given type.
+func (gt generatingType) TypeSignature() typeSignature {
+	return computeTypeSignature(gt.Type)
+}
+
 // typeSignatureTemplateStr defines a template for generating the signature for a type.
 const typeSignatureTemplateStr = `
 	this.$typesig = function() {
-		var computed = $t.createtypesig(
-		{{ $parent := . }}
-		{{ $counter := 0 }}
-		{{ range $midx, $member := .Type.NonFieldMembers }}
-  		  {{ if $midx }},{{ end }}
-		  ['{{ $member.Name }}', {{ $member.Signature.MemberKind }}, ({{ $parent.TypeReferenceCall $member.MemberType }}).$typeref()]
+		{{ $sig := .TypeSignature }}
+		{{ if $sig.IsEmpty }}
+			return {};
+		{{ else }}
+			if (this.$cachedtypesig) { return this.$cachedtypesig; }
+
+			var computed = {
+				{{ range $sidx, $static := $sig.StaticSignatures }}
+				{{ if $sidx }},{{ end }}
+				{{ $static.ESCode }}: true
+				{{ end }}
+			};
+
+			{{ range $sidx, $dynamic := $sig.DynamicSignatures }}
+				computed[{{ $dynamic.ESCode }}] = true;
+			{{ end }}
+
+			return this.$cachedtypesig = computed;
 		{{ end }}
-		);
-
-		this.$typesig = function() {
-			return computed;
-		};
-
-		return computed;
 	};
 `
 
@@ -186,7 +196,7 @@ const genericsTemplateStr = `{{ range $index, $generic := .Generics }}{{ if $ind
 
 // interfaceTemplateStr defines the template for generating an interface type.
 const interfaceTemplateStr = `
-this.$interface('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .Generics }}) {
+this.$interface('{{ .Type.GlobalUniqueId }}', '{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .Generics }}) {
 	var $static = this;
 	{{range $idx, $kv := .GenerateImplementedMembers.UnsafeIter }}
   	  {{ emit $kv.Value }}
@@ -198,7 +208,7 @@ this.$interface('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function
 
 // classTemplateStr defines the template for generating a class type.
 const classTemplateStr = `
-this.$class('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .Generics }}) {
+this.$class('{{ .Type.GlobalUniqueId }}', '{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .Generics }}) {
 	var $static = this;
     var $instance = this.prototype;
 
@@ -241,7 +251,7 @@ this.$class('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ 
 
 // structTemplateStr defines the template for generating a struct type.
 const structTemplateStr = `
-this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .Generics }}) {
+this.$struct('{{ .Type.GlobalUniqueId }}', '{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .Generics }}) {
 	var $static = this;
 	var $instance = this.prototype;
 
@@ -293,7 +303,7 @@ this.$struct('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{
 
 // nominalTemplateStr defines the template for generating a nominal type.
 const nominalTemplateStr = `
-this.$type('{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .Generics }}) {
+this.$type('{{ .Type.GlobalUniqueId }}', '{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .Generics }}) {
 	var $instance = this.prototype;
 	var $static = this;
 

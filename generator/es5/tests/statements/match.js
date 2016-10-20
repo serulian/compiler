@@ -1,6 +1,6 @@
 $module('match', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('470dc45c', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -17,11 +17,13 @@ $module('match', function () {
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      var computed = $t.createtypesig(['Value', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.match.SomeClass).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Value|3|5ab5941e": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 

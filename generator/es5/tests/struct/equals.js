@@ -1,6 +1,6 @@
 $module('equals', function () {
   var $static = this;
-  this.$struct('Foo', false, '', function () {
+  this.$struct('9285bf36', 'Foo', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function (SomeValue, AnotherValue) {
@@ -24,15 +24,22 @@ $module('equals', function () {
       return $g.equals.Bar;
     }, false);
     this.$typesig = function () {
-      var computed = $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.equals.Foo).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.equals.Foo).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['Clone', 2, $g.____testlib.basictypes.Function($g.equals.Foo).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Parse|1|29dc432d<9285bf36>": true,
+        "equals|4|29dc432d<5ab5941e>": true,
+        "Stringify|2|29dc432d<538656f2>": true,
+        "Mapping|2|29dc432d<df58fcbd<any>>": true,
+        "Clone|2|29dc432d<9285bf36>": true,
+        "String|2|29dc432d<538656f2>": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 
-  this.$struct('Bar', false, '', function () {
+  this.$struct('4fb96a52', 'Bar', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function (StringValue) {
@@ -50,11 +57,18 @@ $module('equals', function () {
       return $g.____testlib.basictypes.String;
     }, false);
     this.$typesig = function () {
-      var computed = $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.equals.Bar).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.equals.Bar).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['Clone', 2, $g.____testlib.basictypes.Function($g.equals.Bar).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Parse|1|29dc432d<4fb96a52>": true,
+        "equals|4|29dc432d<5ab5941e>": true,
+        "Stringify|2|29dc432d<538656f2>": true,
+        "Mapping|2|29dc432d<df58fcbd<any>>": true,
+        "Clone|2|29dc432d<4fb96a52>": true,
+        "String|2|29dc432d<538656f2>": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 

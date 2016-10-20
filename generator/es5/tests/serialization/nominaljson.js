@@ -1,6 +1,6 @@
 $module('nominaljson', function () {
   var $static = this;
-  this.$type('SomeNominal', false, '', function () {
+  this.$type('4a09c49b', 'SomeNominal', false, '', function () {
     var $instance = this.prototype;
     var $static = this;
     this.$box = function ($wrapped) {
@@ -21,15 +21,17 @@ $module('nominaljson', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      var computed = $t.createtypesig(['GetValue', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "GetValue|2|29dc432d<5ab5941e>": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 
-  this.$struct('AnotherStruct', false, '', function () {
+  this.$struct('c267cdf9', 'AnotherStruct', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function (AnotherBool) {
@@ -47,15 +49,22 @@ $module('nominaljson', function () {
       return $g.____testlib.basictypes.Boolean;
     }, false);
     this.$typesig = function () {
-      var computed = $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.nominaljson.AnotherStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.nominaljson.AnotherStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['Clone', 2, $g.____testlib.basictypes.Function($g.nominaljson.AnotherStruct).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Parse|1|29dc432d<c267cdf9>": true,
+        "equals|4|29dc432d<5ab5941e>": true,
+        "Stringify|2|29dc432d<538656f2>": true,
+        "Mapping|2|29dc432d<df58fcbd<any>>": true,
+        "Clone|2|29dc432d<c267cdf9>": true,
+        "String|2|29dc432d<538656f2>": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 
-  this.$struct('SomeStruct', false, '', function () {
+  this.$struct('2904f0f0', 'SomeStruct', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function (Nested) {
@@ -73,11 +82,18 @@ $module('nominaljson', function () {
       return $g.nominaljson.SomeNominal;
     }, false);
     this.$typesig = function () {
-      var computed = $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.nominaljson.SomeStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.nominaljson.SomeStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['Clone', 2, $g.____testlib.basictypes.Function($g.nominaljson.SomeStruct).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Parse|1|29dc432d<2904f0f0>": true,
+        "equals|4|29dc432d<5ab5941e>": true,
+        "Stringify|2|29dc432d<538656f2>": true,
+        "Mapping|2|29dc432d<df58fcbd<any>>": true,
+        "Clone|2|29dc432d<2904f0f0>": true,
+        "String|2|29dc432d<538656f2>": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 

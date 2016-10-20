@@ -1,6 +1,6 @@
 $module('structuralcast', function () {
   var $static = this;
-  this.$class('BaseClass', true, '', function (T) {
+  this.$class('fa55db57', 'BaseClass', true, '', function (T) {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -17,15 +17,17 @@ $module('structuralcast', function () {
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      var computed = $t.createtypesig(['Result', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.structuralcast.BaseClass(T)).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Result|3|5ab5941e": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 
-  this.$class('SomeClass', false, '', function () {
+  this.$class('5a5a0b35', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -48,11 +50,13 @@ $module('structuralcast', function () {
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      var computed = $t.createtypesig(['Result', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.structuralcast.SomeClass).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Result|3|5ab5941e": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 

@@ -1,6 +1,6 @@
 $module('nominalautobox', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('f0465a3f', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -8,15 +8,12 @@ $module('nominalautobox', function () {
       return $promise.resolve(instance);
     };
     this.$typesig = function () {
-      var computed = $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.nominalautobox.SomeClass).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      return {
       };
-      return computed;
     };
   });
 
-  this.$type('SomeNominal', false, '', function () {
+  this.$type('e9a6d7f9', 'SomeNominal', false, '', function () {
     var $instance = this.prototype;
     var $static = this;
     this.$box = function ($wrapped) {
@@ -37,11 +34,13 @@ $module('nominalautobox', function () {
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      var computed = $t.createtypesig(['SomeValue', 3, $g.____testlib.basictypes.Boolean.$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "SomeValue|3|5ab5941e": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 

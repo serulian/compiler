@@ -1,6 +1,6 @@
 $module('calls', function () {
   var $static = this;
-  this.$class('SomeError', false, '', function () {
+  this.$class('165552b1', 'SomeError', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -17,11 +17,13 @@ $module('calls', function () {
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      var computed = $t.createtypesig(['Message', 3, $g.____testlib.basictypes.String.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.calls.SomeError).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Message|3|538656f2": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 

@@ -1,6 +1,6 @@
 $module('tagged', function () {
   var $static = this;
-  this.$struct('SomeStruct', false, '', function () {
+  this.$struct('bad44f92', 'SomeStruct', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function (SomeField) {
@@ -18,11 +18,18 @@ $module('tagged', function () {
       return $g.____testlib.basictypes.Integer;
     }, false);
     this.$typesig = function () {
-      var computed = $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.tagged.SomeStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.tagged.SomeStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['Clone', 2, $g.____testlib.basictypes.Function($g.tagged.SomeStruct).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Parse|1|29dc432d<bad44f92>": true,
+        "equals|4|29dc432d<5ab5941e>": true,
+        "Stringify|2|29dc432d<538656f2>": true,
+        "Mapping|2|29dc432d<df58fcbd<any>>": true,
+        "Clone|2|29dc432d<bad44f92>": true,
+        "String|2|29dc432d<538656f2>": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 

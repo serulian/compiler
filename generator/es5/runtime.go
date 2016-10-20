@@ -81,6 +81,7 @@ this.Serulian = (function($global) {
   // real implementation (such as 'any', 'void', 'null', etc).
   var $it = function(name, typeIndex) {
       var tpe = new Function("return function " + name + "() {};")();
+      tpe.$typeId = typeIndex;
       tpe.$typeref = function() {
         return {
           'i': typeIndex
@@ -107,6 +108,19 @@ this.Serulian = (function($global) {
     // toESType returns the ECMAScript type of the given object.
     'toESType': function(obj) {
       return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()
+    },
+
+    // From: http://stackoverflow.com/a/15714445
+    'functionName': function(func) {
+      var ret = fun.toString();
+      ret = ret.substr('function '.length);
+      ret = ret.substr(0, ret.indexOf('('));
+      return ret;
+    },
+
+    // typeid returns the globally unique ID for the given type.
+    'typeid': function(type) {
+      return type.$typeId || $t.functionName(type);
     },
 
     // buildDataForValue builds an object containing the given value in its unboxed form,
@@ -255,19 +269,6 @@ this.Serulian = (function($global) {
       }
 
       return value
-    },
-
-    // createtypesig returns an object with the type signature strings for the given
-    // piece entries (as arguments) as defined by the $typesig method on a type.
-    'createtypesig': function() {
-      var sig = {};
-      for (var i = 0; i < arguments.length; ++i) {
-        var entry = arguments[i];
-        var key = entry[0] + ':' + entry[1] + ':' + JSON.stringify(entry[2]);
-        sig[key] = true;
-      }
-
-      return sig;
     },
 
     // equals performs a comparison of the two values by calling the $equals operator on the
@@ -719,15 +720,21 @@ this.Serulian = (function($global) {
     // $newtypebuilder is a helper function for creating types of a particular kind. Returns
     // a function that can be used to create a type of the specified kind.
     var $newtypebuilder = function(kind) {
-      return function(name, hasGenerics, alias, creator) {
-        var buildType = function(n, args) {
+      return function(typeId, name, hasGenerics, alias, creator) {
+        var buildType = function(fullTypeId, fullName, args) {
           var args = args || [];
 
           // Create the type function itself, with the type's name.
-          var tpe = new Function("return function " + n + "() {};")();
+          var tpe = new Function("return function " + fullName + "() {};")();
 
           // Add a way to retrieve a type ref for the type.
           tpe.$typeref = function() {
+            if (!hasGenerics) {
+              return {
+                't': moduleName + '.' + name
+              };
+            }
+
             var generics = [];
             for (var i = 0; i < args.length; ++i) {
               generics.push(args[i].$typeref())
@@ -739,6 +746,7 @@ this.Serulian = (function($global) {
             };
           };
 
+          tpe.$typeId = fullTypeId;
           tpe.$typekind = kind;
 
           // Build the type's static and prototype.
@@ -887,16 +895,25 @@ this.Serulian = (function($global) {
         if (hasGenerics) {
           module[name] = function genericType(__genericargs) {
             var fullName = name;
+            var fullId = typeId;
+
             for (var i = 0; i < arguments.length; ++i) {
               fullName = fullName + '_' + arguments[i].name;
+              if (i == 0) {
+                fullId = fullId + '<';
+              } else {
+                fullId = fullId + ',';
+              }
+
+              fullId = fullId + arguments[i].$typeId;
             }
 
-            var tpe = buildType(name, arguments);
+            var tpe = buildType(fullId + '>', name, arguments);
             tpe.$generic = genericType;
             return tpe;
           };
         } else {
-          module[name] = buildType(name);
+          module[name] = buildType(typeId, name);
         }
 
         // If the type has an alias, add it to the global alias map.

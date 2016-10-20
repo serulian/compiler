@@ -1,6 +1,6 @@
 $module('loopstreamable', function () {
   var $static = this;
-  this.$class('SomeStreamable', false, '', function () {
+  this.$class('4f99dc7f', 'SomeStreamable', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -39,15 +39,17 @@ $module('loopstreamable', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      var computed = $t.createtypesig(['Stream', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Stream($g.____testlib.basictypes.Boolean)).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.loopstreamable.SomeStreamable).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Stream|2|29dc432d<6d9e64c3<5ab5941e>>": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 
-  this.$class('SomeStream', false, '', function () {
+  this.$class('e6a7b534', 'SomeStream', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -90,11 +92,13 @@ $module('loopstreamable', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      var computed = $t.createtypesig(['Next', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Tuple($g.____testlib.basictypes.Boolean, $g.____testlib.basictypes.Boolean)).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.loopstreamable.SomeStream).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Next|2|29dc432d<4499960a<5ab5941e,5ab5941e>>": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 

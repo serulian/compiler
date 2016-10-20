@@ -1,6 +1,6 @@
 $module('json', function () {
   var $static = this;
-  this.$struct('AnotherStruct', false, '', function () {
+  this.$struct('143c410b', 'AnotherStruct', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function (AnotherBool) {
@@ -18,15 +18,22 @@ $module('json', function () {
       return $g.____testlib.basictypes.Boolean;
     }, false);
     this.$typesig = function () {
-      var computed = $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.json.AnotherStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.json.AnotherStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['Clone', 2, $g.____testlib.basictypes.Function($g.json.AnotherStruct).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Parse|1|29dc432d<143c410b>": true,
+        "equals|4|29dc432d<5ab5941e>": true,
+        "Stringify|2|29dc432d<538656f2>": true,
+        "Mapping|2|29dc432d<df58fcbd<any>>": true,
+        "Clone|2|29dc432d<143c410b>": true,
+        "String|2|29dc432d<538656f2>": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 
-  this.$struct('SomeStruct', false, '', function () {
+  this.$struct('8c772f6d', 'SomeStruct', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function (SomeField, AnotherField, SomeInstance) {
@@ -56,11 +63,18 @@ $module('json', function () {
       return $g.json.AnotherStruct;
     }, false);
     this.$typesig = function () {
-      var computed = $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.json.SomeStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.json.SomeStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['Clone', 2, $g.____testlib.basictypes.Function($g.json.SomeStruct).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Parse|1|29dc432d<8c772f6d>": true,
+        "equals|4|29dc432d<5ab5941e>": true,
+        "Stringify|2|29dc432d<538656f2>": true,
+        "Mapping|2|29dc432d<df58fcbd<any>>": true,
+        "Clone|2|29dc432d<8c772f6d>": true,
+        "String|2|29dc432d<538656f2>": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 

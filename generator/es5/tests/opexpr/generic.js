@@ -1,6 +1,6 @@
 $module('generic', function () {
   var $static = this;
-  this.$class('SomeClass', true, '', function (T) {
+  this.$class('63802a70', 'SomeClass', true, '', function (T) {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -47,11 +47,13 @@ $module('generic', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      var computed = $t.createtypesig(['BoolValue', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['bool', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.generic.SomeClass(T)).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "BoolValue|3|5ab5941e": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 

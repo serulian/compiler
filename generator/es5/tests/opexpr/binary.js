@@ -1,6 +1,6 @@
 $module('binary', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('e724e586', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -88,11 +88,8 @@ $module('binary', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      var computed = $t.createtypesig(['xor', 4, $g.____testlib.basictypes.Function($g.binary.SomeClass).$typeref()], ['or', 4, $g.____testlib.basictypes.Function($g.binary.SomeClass).$typeref()], ['and', 4, $g.____testlib.basictypes.Function($g.binary.SomeClass).$typeref()], ['leftshift', 4, $g.____testlib.basictypes.Function($g.binary.SomeClass).$typeref()], ['not', 4, $g.____testlib.basictypes.Function($g.binary.SomeClass).$typeref()], ['plus', 4, $g.____testlib.basictypes.Function($g.binary.SomeClass).$typeref()], ['minus', 4, $g.____testlib.basictypes.Function($g.binary.SomeClass).$typeref()], ['times', 4, $g.____testlib.basictypes.Function($g.binary.SomeClass).$typeref()], ['div', 4, $g.____testlib.basictypes.Function($g.binary.SomeClass).$typeref()], ['mod', 4, $g.____testlib.basictypes.Function($g.binary.SomeClass).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.binary.SomeClass).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      return {
       };
-      return computed;
     };
   });
 

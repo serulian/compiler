@@ -1,6 +1,6 @@
 $module('interfacecastfail', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('206031eb', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -17,22 +17,26 @@ $module('interfacecastfail', function () {
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      var computed = $t.createtypesig(['SomeValue', 3, $g.____testlib.basictypes.Integer.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.interfacecastfail.SomeClass).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "SomeValue|3|c44e6c87": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 
-  this.$interface('SomeInterface', false, '', function () {
+  this.$interface('470545ee', 'SomeInterface', false, '', function () {
     var $static = this;
     this.$typesig = function () {
-      var computed = $t.createtypesig(['SomeValue', 3, $g.____testlib.basictypes.Boolean.$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "SomeValue|3|5ab5941e": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 

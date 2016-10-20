@@ -1,6 +1,6 @@
 $module('slice', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('5387b00e', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -17,11 +17,8 @@ $module('slice', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      var computed = $t.createtypesig(['slice', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.slice.SomeClass).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      return {
       };
-      return computed;
     };
   });
 

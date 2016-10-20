@@ -1,6 +1,6 @@
 $module('compare', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('bf8a0308', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -24,11 +24,8 @@ $module('compare', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      var computed = $t.createtypesig(['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['compare', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Integer).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.compare.SomeClass).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      return {
       };
-      return computed;
     };
   });
 

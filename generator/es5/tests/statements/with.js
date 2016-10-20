@@ -1,6 +1,6 @@
 $module('with', function () {
   var $static = this;
-  this.$class('SomeReleasable', false, '', function () {
+  this.$class('20c15ffe', 'SomeReleasable', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -18,11 +18,13 @@ $module('with', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      var computed = $t.createtypesig(['Release', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.with.SomeReleasable).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Release|2|29dc432d<void>": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 

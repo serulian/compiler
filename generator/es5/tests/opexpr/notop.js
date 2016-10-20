@@ -1,6 +1,6 @@
 $module('notop', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('df288f51', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function (boolValue) {
@@ -17,11 +17,8 @@ $module('notop', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      var computed = $t.createtypesig(['bool', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.notop.SomeClass).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      return {
       };
-      return computed;
     };
   });
 

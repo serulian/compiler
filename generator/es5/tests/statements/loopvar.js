@@ -1,6 +1,6 @@
 $module('loopvar', function () {
   var $static = this;
-  this.$class('SomeStream', false, '', function () {
+  this.$class('8caa43e9', 'SomeStream', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -43,11 +43,13 @@ $module('loopvar', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      var computed = $t.createtypesig(['Next', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Tuple($g.____testlib.basictypes.Boolean, $g.____testlib.basictypes.Boolean)).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.loopvar.SomeStream).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Next|2|29dc432d<4499960a<5ab5941e,5ab5941e>>": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 

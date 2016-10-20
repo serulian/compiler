@@ -1,6 +1,6 @@
 $module('generic', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('91099e16', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -17,15 +17,17 @@ $module('generic', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      var computed = $t.createtypesig(['DoSomething', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.generic.SomeClass).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "DoSomething|2|29dc432d<5ab5941e>": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 
-  this.$type('MyType', true, '', function (T) {
+  this.$type('ca868e9d', 'MyType', true, '', function (T) {
     var $instance = this.prototype;
     var $static = this;
     this.$box = function ($wrapped) {
@@ -77,11 +79,14 @@ $module('generic', function () {
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      var computed = $t.createtypesig(['AnotherThing', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['SomeProp', 3, $g.____testlib.basictypes.Boolean.$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "AnotherThing|2|29dc432d<5ab5941e>": true,
+        "SomeProp|3|5ab5941e": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 

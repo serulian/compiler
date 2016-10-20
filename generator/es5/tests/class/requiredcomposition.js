@@ -1,6 +1,6 @@
 $module('requiredcomposition', function () {
   var $static = this;
-  this.$class('First', false, '', function () {
+  this.$class('ca41b700', 'First', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function (FirstValue) {
@@ -9,15 +9,12 @@ $module('requiredcomposition', function () {
       return $promise.resolve(instance);
     };
     this.$typesig = function () {
-      var computed = $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.requiredcomposition.First).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      return {
       };
-      return computed;
     };
   });
 
-  this.$class('Second', false, '', function () {
+  this.$class('ea789272', 'Second', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function (SecondValue) {
@@ -26,15 +23,12 @@ $module('requiredcomposition', function () {
       return $promise.resolve(instance);
     };
     this.$typesig = function () {
-      var computed = $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.requiredcomposition.Second).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      return {
       };
-      return computed;
     };
   });
 
-  this.$class('SomeClass', false, '', function () {
+  this.$class('4e195caf', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function (FirstValue, SecondValue) {
@@ -67,11 +61,8 @@ $module('requiredcomposition', function () {
       },
     });
     this.$typesig = function () {
-      var computed = $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.requiredcomposition.SomeClass).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      return {
       };
-      return computed;
     };
   });
 

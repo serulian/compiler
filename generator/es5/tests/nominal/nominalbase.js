@@ -1,6 +1,6 @@
 $module('nominalbase', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('fc0ceb02', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -9,15 +9,12 @@ $module('nominalbase', function () {
       return $promise.resolve(instance);
     };
     this.$typesig = function () {
-      var computed = $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.nominalbase.SomeClass).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      return {
       };
-      return computed;
     };
   });
 
-  this.$type('FirstNominal', false, '', function () {
+  this.$type('ad913192', 'FirstNominal', false, '', function () {
     var $instance = this.prototype;
     var $static = this;
     this.$box = function ($wrapped) {
@@ -38,15 +35,17 @@ $module('nominalbase', function () {
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      var computed = $t.createtypesig(['SomeProp', 3, $g.____testlib.basictypes.Boolean.$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "SomeProp|3|5ab5941e": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 
-  this.$type('SecondNominal', false, '', function () {
+  this.$type('eb757a50', 'SecondNominal', false, '', function () {
     var $instance = this.prototype;
     var $static = this;
     this.$box = function ($wrapped) {
@@ -89,11 +88,13 @@ $module('nominalbase', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      var computed = $t.createtypesig(['GetValue', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "GetValue|2|29dc432d<5ab5941e>": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 

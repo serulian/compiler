@@ -1,6 +1,6 @@
 $module('shortcut', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('a8a36b32', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -17,15 +17,17 @@ $module('shortcut', function () {
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      var computed = $t.createtypesig(['Value', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.shortcut.SomeClass).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Value|3|5ab5941e": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 
-  this.$type('SomeNominalType', false, '', function () {
+  this.$type('7b5c3f1e', 'SomeNominalType', false, '', function () {
     var $instance = this.prototype;
     var $static = this;
     this.$box = function ($wrapped) {
@@ -37,11 +39,8 @@ $module('shortcut', function () {
       return $g.shortcut.SomeClass;
     };
     this.$typesig = function () {
-      var computed = $t.createtypesig();
-      this.$typesig = function () {
-        return computed;
+      return {
       };
-      return computed;
     };
   });
 

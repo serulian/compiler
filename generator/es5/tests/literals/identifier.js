@@ -1,6 +1,6 @@
 $module('identifier', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('1de9520f', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -8,11 +8,8 @@ $module('identifier', function () {
       return $promise.resolve(instance);
     };
     this.$typesig = function () {
-      var computed = $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.identifier.SomeClass).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      return {
       };
-      return computed;
     };
   });
 

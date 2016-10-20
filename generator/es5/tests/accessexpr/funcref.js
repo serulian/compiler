@@ -1,6 +1,6 @@
 $module('funcref', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('41fdfa22', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function (value) {
@@ -18,11 +18,13 @@ $module('funcref', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      var computed = $t.createtypesig(['SomeFunction', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.funcref.SomeClass).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "SomeFunction|2|29dc432d<5ab5941e>": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 

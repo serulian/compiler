@@ -1,6 +1,6 @@
 $module('memberaccess', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('a95b5789', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -53,11 +53,15 @@ $module('memberaccess', function () {
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      var computed = $t.createtypesig(['Build', 1, $g.____testlib.basictypes.Function($g.memberaccess.SomeClass).$typeref()], ['InstanceFunc', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['SomeProp', 3, $g.____testlib.basictypes.Integer.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.memberaccess.SomeClass).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Build|1|29dc432d<a95b5789>": true,
+        "InstanceFunc|2|29dc432d<void>": true,
+        "SomeProp|3|c44e6c87": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 

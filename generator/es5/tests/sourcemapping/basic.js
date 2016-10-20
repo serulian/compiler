@@ -50,6 +50,7 @@ this.Serulian = function ($global) {
   };
   var $it = function (name, typeIndex) {
     var tpe = new Function(("return function " + name) + "() {};")();
+    tpe.$typeId = typeIndex;
     tpe.$typeref = function () {
       return {
         i: typeIndex,
@@ -65,6 +66,15 @@ this.Serulian = function ($global) {
     toESType: function (obj) {
       return {
       }.toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
+    },
+    functionName: function (func) {
+      var ret = fun.toString();
+      ret = ret.substr('function '.length);
+      ret = ret.substr(0, ret.indexOf('('));
+      return ret;
+    },
+    typeid: function (type) {
+      return type.$typeId || $t.functionName(type);
     },
     buildDataForValue: function (value) {
       if (value == null) {
@@ -169,16 +179,6 @@ this.Serulian = function ($global) {
         return $t.box(value, type);
       }
       return value;
-    },
-    createtypesig: function () {
-      var sig = {
-      };
-      for (var i = 0; i < arguments.length; ++i) {
-        var entry = arguments[i];
-        var key = (((entry[0] + ':') + entry[1]) + ':') + JSON.stringify(entry[2]);
-        sig[key] = true;
-      }
-      return sig;
     },
     equals: function (left, right, type) {
       if (left === right) {
@@ -520,11 +520,16 @@ this.Serulian = function ($global) {
     }
     current[parts[parts.length - 1]] = module;
     var $newtypebuilder = function (kind) {
-      return function (name, hasGenerics, alias, creator) {
-        var buildType = function (n, args) {
+      return function (typeId, name, hasGenerics, alias, creator) {
+        var buildType = function (fullTypeId, fullName, args) {
           var args = args || [];
-          var tpe = new Function(("return function " + n) + "() {};")();
+          var tpe = new Function(("return function " + fullName) + "() {};")();
           tpe.$typeref = function () {
+            if (!hasGenerics) {
+              return {
+                t: (moduleName + '.') + name,
+              };
+            }
             var generics = [];
             for (var i = 0; i < args.length; ++i) {
               generics.push(args[i].$typeref());
@@ -534,6 +539,7 @@ this.Serulian = function ($global) {
               g: generics,
             };
           };
+          tpe.$typeId = fullTypeId;
           tpe.$typekind = kind;
           creator.apply(tpe, args);
           if (kind == 'struct') {
@@ -644,15 +650,22 @@ this.Serulian = function ($global) {
         if (hasGenerics) {
           module[name] = function genericType (__genericargs) {
             var fullName = name;
+            var fullId = typeId;
             for (var i = 0; i < arguments.length; ++i) {
               fullName = (fullName + '_') + arguments[i].name;
+              if (i == 0) {
+                fullId = fullId + '<';
+              } else {
+                fullId = fullId + ',';
+              }
+              fullId = fullId + arguments[i].$typeId;
             }
-            var tpe = buildType(name, arguments);
+            var tpe = buildType(fullId + '>', name, arguments);
             tpe.$generic = genericType;
             return tpe;
           };
         } else {
-          module[name] = buildType(name);
+          module[name] = buildType(typeId, name);
         }
         if (alias) {
           $a[alias] = module[name];
@@ -674,7 +687,7 @@ this.Serulian = function ($global) {
   };
   $module('____testlib.basictypes', function () {
     var $static = this;
-    this.$class('Tuple', true, 'tuple', function (T, Q) {
+    this.$class('4499960a', 'Tuple', true, 'tuple', function (T, Q) {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -718,15 +731,17 @@ this.Serulian = function ($global) {
         return $promise.new($continue);
       };
       this.$typesig = function () {
-        var computed = $t.createtypesig(['Build', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Tuple(T, Q)).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Tuple(T, Q)).$typeref()]);
-        this.$typesig = function () {
-          return computed;
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
         };
-        return computed;
+        computed[((("Build|1|29dc432d<4499960a<" + $t.typeid(T)) + ",") + $t.typeid(Q)) + ">>"] = true;
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$class('Function', true, 'function', function (T) {
+    this.$class('29dc432d', 'Function', true, 'function', function (T) {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -734,15 +749,12 @@ this.Serulian = function ($global) {
         return $promise.resolve(instance);
       };
       this.$typesig = function () {
-        var computed = $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Function(T)).$typeref()]);
-        this.$typesig = function () {
-          return computed;
+        return {
         };
-        return computed;
       };
     });
 
-    this.$class('IntStream', false, '', function () {
+    this.$class('73c406f4', 'IntStream', false, '', function () {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -871,15 +883,18 @@ this.Serulian = function ($global) {
         return $promise.new($continue);
       };
       this.$typesig = function () {
-        var computed = $t.createtypesig(['OverRange', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.IntStream).$typeref()], ['Next', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Tuple($g.____testlib.basictypes.Integer, $g.____testlib.basictypes.Boolean)).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.IntStream).$typeref()]);
-        this.$typesig = function () {
-          return computed;
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "OverRange|1|29dc432d<73c406f4>": true,
+          "Next|2|29dc432d<4499960a<c44e6c87,5ab5941e>>": true,
         };
-        return computed;
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$class('Float64', false, 'float64', function () {
+    this.$class('c382e798', 'Float64', false, 'float64', function () {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -887,15 +902,12 @@ this.Serulian = function ($global) {
         return $promise.resolve(instance);
       };
       this.$typesig = function () {
-        var computed = $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Float64).$typeref()]);
-        this.$typesig = function () {
-          return computed;
+        return {
         };
-        return computed;
       };
     });
 
-    this.$class('List', true, 'list', function (T) {
+    this.$class('bab1bf3a', 'List', true, 'list', function (T) {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -1136,15 +1148,19 @@ this.Serulian = function ($global) {
         return $promise.new($continue);
       };
       this.$typesig = function () {
-        var computed = $t.createtypesig(['forArray', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.List(T)).$typeref()], ['Count', 3, $g.____testlib.basictypes.Integer.$typeref()], ['index', 4, $g.____testlib.basictypes.Function(T).$typeref()], ['slice', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Slice(T)).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.List(T)).$typeref()]);
-        this.$typesig = function () {
-          return computed;
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "Count|3|c44e6c87": true,
         };
-        return computed;
+        computed[("index|4|29dc432d<" + $t.typeid(T)) + ">"] = true;
+        computed[("slice|4|29dc432d<b4e50744<" + $t.typeid(T)) + ">>"] = true;
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$class('Map', true, 'map', function (T, Q) {
+    this.$class('b2beb156', 'Map', true, 'map', function (T, Q) {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -1342,15 +1358,18 @@ this.Serulian = function ($global) {
         return $promise.new($continue);
       };
       this.$typesig = function () {
-        var computed = $t.createtypesig(['forArrays', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Map(T, Q)).$typeref()], ['index', 4, $g.____testlib.basictypes.Function(Q).$typeref()], ['setindex', 4, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Map(T, Q)).$typeref()]);
-        this.$typesig = function () {
-          return computed;
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "setindex|4|29dc432d<void>": true,
         };
-        return computed;
+        computed[("index|4|29dc432d<" + $t.typeid(Q)) + ">"] = true;
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$class('JSON', false, 'json', function () {
+    this.$class('ce1c4509', 'JSON', false, 'json', function () {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -1450,133 +1469,111 @@ this.Serulian = function ($global) {
         return $promise.new($continue);
       };
       this.$typesig = function () {
-        var computed = $t.createtypesig(['Get', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.JSON).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Parse', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.JSON).$typeref()]);
-        this.$typesig = function () {
-          return computed;
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "Get|1|29dc432d<ce1c4509>": true,
+          "Stringify|2|29dc432d<538656f2>": true,
+          "Parse|2|29dc432d<df58fcbd<any>>": true,
         };
-        return computed;
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('Stringable', false, 'stringable', function () {
+    this.$interface('f56564e1', 'Stringable', false, 'stringable', function () {
       var $static = this;
       this.$typesig = function () {
-        var computed = $t.createtypesig(['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
-        this.$typesig = function () {
-          return computed;
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "String|2|29dc432d<538656f2>": true,
         };
-        return computed;
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('Stream', true, 'stream', function (T) {
+    this.$interface('6d9e64c3', 'Stream', true, 'stream', function (T) {
       var $static = this;
       this.$typesig = function () {
-        var computed = $t.createtypesig(['Next', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Tuple(T, $g.____testlib.basictypes.Boolean)).$typeref()]);
-        this.$typesig = function () {
-          return computed;
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
         };
-        return computed;
+        computed[("Next|2|29dc432d<4499960a<" + $t.typeid(T)) + ",5ab5941e>>"] = true;
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('Streamable', true, 'streamable', function (T) {
+    this.$interface('ef6aceab', 'Streamable', true, 'streamable', function (T) {
       var $static = this;
       this.$typesig = function () {
-        var computed = $t.createtypesig(['Stream', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Stream(T)).$typeref()]);
-        this.$typesig = function () {
-          return computed;
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
         };
-        return computed;
+        computed[("Stream|2|29dc432d<6d9e64c3<" + $t.typeid(T)) + ">>"] = true;
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('Error', false, 'error', function () {
+    this.$interface('55ec3e50', 'Error', false, 'error', function () {
       var $static = this;
       this.$typesig = function () {
-        var computed = $t.createtypesig(['Message', 3, $g.____testlib.basictypes.String.$typeref()]);
-        this.$typesig = function () {
-          return computed;
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "Message|3|538656f2": true,
         };
-        return computed;
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('Awaitable', true, 'awaitable', function (T) {
+    this.$interface('ebc09764', 'Awaitable', true, 'awaitable', function (T) {
       var $static = this;
       this.$typesig = function () {
-        var computed = $t.createtypesig(['Then', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Awaitable(T)).$typeref()], ['Catch', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Awaitable(T)).$typeref()]);
-        this.$typesig = function () {
-          return computed;
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
         };
-        return computed;
+        computed[("Then|2|29dc432d<ebc09764<" + $t.typeid(T)) + ">>"] = true;
+        computed[("Catch|2|29dc432d<ebc09764<" + $t.typeid(T)) + ">>"] = true;
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('Releasable', false, 'releasable', function () {
+    this.$interface('9b33d358', 'Releasable', false, 'releasable', function () {
       var $static = this;
       this.$typesig = function () {
-        var computed = $t.createtypesig(['Release', 2, $g.____testlib.basictypes.Function($t.void).$typeref()]);
-        this.$typesig = function () {
-          return computed;
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "Release|2|29dc432d<void>": true,
         };
-        return computed;
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('Mappable', false, 'mappable', function () {
+    this.$interface('f8094a71', 'Mappable', false, 'mappable', function () {
       var $static = this;
       this.$typesig = function () {
-        var computed = $t.createtypesig(['MapKey', 3, $g.____testlib.basictypes.Stringable.$typeref()]);
-        this.$typesig = function () {
-          return computed;
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "MapKey|3|f56564e1": true,
         };
-        return computed;
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('Stringifier', false, '$stringifier', function () {
-      var $static = this;
-      $static.Get = function () {
-        var $result;
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          while (true) {
-            switch ($current) {
-              case 0:
-/*#JSON.new()#*/                $g.____testlib.basictypes.JSON.new().then(/*#JSON.new()#*/function (/*#JSON.new()#*/$result0) /*#JSON.new()#*/{
-                  $result = /*#.new()#*/$result0;
-                  $current = 1;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
-
-              case 1:
-                $resolve($result);
-                return;
-
-              default:
-                $resolve();
-                return;
-            }
-          }
-        };
-        return $promise.new($continue);
-      };
-      this.$typesig = function () {
-        var computed = $t.createtypesig(['Get', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Stringifier).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
-        this.$typesig = function () {
-          return computed;
-        };
-        return computed;
-      };
-    });
-
-    this.$interface('Parser', false, '$parser', function () {
+    this.$interface('a3ac78ed', 'Stringifier', false, '$stringifier', function () {
       var $static = this;
       $static.Get = function () {
         var $result;
@@ -1609,15 +1606,62 @@ this.Serulian = function ($global) {
         return $promise.new($continue);
       };
       this.$typesig = function () {
-        var computed = $t.createtypesig(['Get', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Parser).$typeref()], ['Parse', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()]);
-        this.$typesig = function () {
-          return computed;
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "Get|1|29dc432d<a3ac78ed>": true,
+          "Stringify|2|29dc432d<538656f2>": true,
         };
-        return computed;
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('Mapping', true, 'mapping', function (T) {
+    this.$interface('0490813e', 'Parser', false, '$parser', function () {
+      var $static = this;
+      $static.Get = function () {
+        var $result;
+        var $current = 0;
+        var $continue = function ($resolve, $reject) {
+          while (true) {
+            switch ($current) {
+              case 0:
+/*#JSON.new()#*/                $g.____testlib.basictypes.JSON.new().then(/*#JSON.new()#*/function (/*#JSON.new()#*/$result0) /*#JSON.new()#*/{
+                  $result = /*#.new()#*/$result0;
+                  $current = 1;
+                  $continue($resolve, $reject);
+                  return;
+                }).catch(function (err) {
+                  $reject(err);
+                  return;
+                });
+                return;
+
+              case 1:
+                $resolve($result);
+                return;
+
+              default:
+                $resolve();
+                return;
+            }
+          }
+        };
+        return $promise.new($continue);
+      };
+      this.$typesig = function () {
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "Get|1|29dc432d<0490813e>": true,
+          "Parse|2|29dc432d<df58fcbd<any>>": true,
+        };
+        return this.$cachedtypesig = computed;
+      };
+    });
+
+    this.$type('df58fcbd', 'Mapping', true, 'mapping', function (T) {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1710,15 +1754,19 @@ this.Serulian = function ($global) {
         return $promise.new($continue);
       };
       this.$typesig = function () {
-        var computed = $t.createtypesig(['Empty', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping(T)).$typeref()], ['overObject', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping(T)).$typeref()], ['Keys', 3, $g.____testlib.basictypes.Slice($g.____testlib.basictypes.String).$typeref()], ['index', 4, $g.____testlib.basictypes.Function(T).$typeref()]);
-        this.$typesig = function () {
-          return computed;
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "Keys|3|b4e50744<538656f2>": true,
         };
-        return computed;
+        computed[("Empty|1|29dc432d<df58fcbd<" + $t.typeid(T)) + ">>"] = true;
+        computed[("index|4|29dc432d<" + $t.typeid(T)) + ">"] = true;
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('Slice', true, 'slice', function (T) {
+    this.$type('b4e50744', 'Slice', true, 'slice', function (T) {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1764,15 +1812,19 @@ this.Serulian = function ($global) {
         return $promise.new($continue);
       });
       this.$typesig = function () {
-        var computed = $t.createtypesig(['Empty', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Slice(T)).$typeref()], ['overArray', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Slice(T)).$typeref()], ['index', 4, $g.____testlib.basictypes.Function(T).$typeref()], ['Length', 3, $g.____testlib.basictypes.Integer.$typeref()]);
-        this.$typesig = function () {
-          return computed;
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "Length|3|c44e6c87": true,
         };
-        return computed;
+        computed[("Empty|1|29dc432d<b4e50744<" + $t.typeid(T)) + ">>"] = true;
+        computed[("index|4|29dc432d<" + $t.typeid(T)) + ">"] = true;
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('Integer', false, 'int', function () {
+    this.$type('c44e6c87', 'Integer', false, 'int', function () {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1868,15 +1920,24 @@ this.Serulian = function ($global) {
         return $promise.new($continue);
       };
       this.$typesig = function () {
-        var computed = $t.createtypesig(['range', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Stream($g.____testlib.basictypes.Integer)).$typeref()], ['compare', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Integer).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['plus', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Integer).$typeref()], ['minus', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Integer).$typeref()], ['Release', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['MapKey', 3, $g.____testlib.basictypes.Stringable.$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
-        this.$typesig = function () {
-          return computed;
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "range|4|29dc432d<6d9e64c3<c44e6c87>>": true,
+          "compare|4|29dc432d<c44e6c87>": true,
+          "equals|4|29dc432d<5ab5941e>": true,
+          "plus|4|29dc432d<c44e6c87>": true,
+          "minus|4|29dc432d<c44e6c87>": true,
+          "Release|2|29dc432d<void>": true,
+          "MapKey|3|f56564e1": true,
+          "String|2|29dc432d<538656f2>": true,
         };
-        return computed;
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('Boolean', false, 'bool', function () {
+    this.$type('5ab5941e', 'Boolean', false, 'bool', function () {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1958,15 +2019,20 @@ this.Serulian = function ($global) {
         return $promise.new($continue);
       });
       this.$typesig = function () {
-        var computed = $t.createtypesig(['compare', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Integer).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['MapKey', 3, $g.____testlib.basictypes.Stringable.$typeref()]);
-        this.$typesig = function () {
-          return computed;
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "compare|4|29dc432d<c44e6c87>": true,
+          "equals|4|29dc432d<5ab5941e>": true,
+          "String|2|29dc432d<538656f2>": true,
+          "MapKey|3|f56564e1": true,
         };
-        return computed;
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('String', false, 'string', function () {
+    this.$type('538656f2', 'String', false, 'string', function () {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -2021,11 +2087,17 @@ this.Serulian = function ($global) {
         return $promise.new($continue);
       });
       this.$typesig = function () {
-        var computed = $t.createtypesig(['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['plus', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['MapKey', 3, $g.____testlib.basictypes.Stringable.$typeref()], ['Length', 3, $g.____testlib.basictypes.Integer.$typeref()]);
-        this.$typesig = function () {
-          return computed;
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "String|2|29dc432d<538656f2>": true,
+          "equals|4|29dc432d<5ab5941e>": true,
+          "plus|4|29dc432d<538656f2>": true,
+          "MapKey|3|f56564e1": true,
+          "Length|3|c44e6c87": true,
         };
-        return computed;
+        return this.$cachedtypesig = computed;
       };
     });
 

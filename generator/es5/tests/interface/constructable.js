@@ -1,6 +1,6 @@
 $module('constructable', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('ceb86b8e', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -47,15 +47,18 @@ $module('constructable', function () {
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      var computed = $t.createtypesig(['Get', 1, $g.____testlib.basictypes.Function($g.constructable.SomeClass).$typeref()], ['SomeBool', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.constructable.SomeClass).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Get|1|29dc432d<ceb86b8e>": true,
+        "SomeBool|3|5ab5941e": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 
-  this.$interface('SomeInterface', false, '', function () {
+  this.$interface('ba50ace2', 'SomeInterface', false, '', function () {
     var $static = this;
     $static.Get = function () {
       var $result;
@@ -88,11 +91,14 @@ $module('constructable', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      var computed = $t.createtypesig(['Get', 1, $g.____testlib.basictypes.Function($g.constructable.SomeInterface).$typeref()], ['SomeBool', 3, $g.____testlib.basictypes.Boolean.$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Get|1|29dc432d<ba50ace2>": true,
+        "SomeBool|3|5ab5941e": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 

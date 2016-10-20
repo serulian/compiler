@@ -1,6 +1,6 @@
 $module('simpleclass', function () {
   var $static = this;
-  this.$class('SimpleClass', false, '', function () {
+  this.$class('f6e326a6', 'SimpleClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -47,11 +47,14 @@ $module('simpleclass', function () {
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      var computed = $t.createtypesig(['Declare', 1, $g.____testlib.basictypes.Function($g.simpleclass.SimpleClass).$typeref()], ['Value', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.simpleclass.SimpleClass).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Declare|1|29dc432d<f6e326a6>": true,
+        "Value|3|5ab5941e": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 

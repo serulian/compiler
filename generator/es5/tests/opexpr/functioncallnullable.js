@@ -1,6 +1,6 @@
 $module('functioncallnullable', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('fa2a0786', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -17,15 +17,17 @@ $module('functioncallnullable', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      var computed = $t.createtypesig(['SomeMethod', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.functioncallnullable.SomeClass).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "SomeMethod|2|29dc432d<5ab5941e>": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 
-  this.$class('AnotherClass', false, '', function () {
+  this.$class('97cf7b5c', 'AnotherClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -42,11 +44,13 @@ $module('functioncallnullable', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      var computed = $t.createtypesig(['AnotherMethod', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.functioncallnullable.AnotherClass).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "AnotherMethod|2|29dc432d<5ab5941e>": true,
       };
-      return computed;
+      return this.$cachedtypesig = computed;
     };
   });
 

@@ -1,6 +1,6 @@
 $module('classprops', function () {
   var $static = this;
-  this.$class('SomeProps', false, '', function () {
+  this.$class('c89a612d', 'SomeProps', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function (BoolValue, StringValue) {
@@ -10,11 +10,8 @@ $module('classprops', function () {
       return $promise.resolve(instance);
     };
     this.$typesig = function () {
-      var computed = $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.classprops.SomeProps).$typeref()]);
-      this.$typesig = function () {
-        return computed;
+      return {
       };
-      return computed;
     };
   });
 
