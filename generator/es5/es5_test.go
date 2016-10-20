@@ -102,6 +102,7 @@ func assertNoOttoError(t *testing.T, testName string, source string, err error) 
 var generationTests = []generationTest{
 	generationTest{"basic module test", "module", "basic", integrationTestSuccessExpected, ""},
 	generationTest{"basic class test", "class", "basic", integrationTestSuccessExpected, ""},
+	generationTest{"generic class test", "class", "generic", integrationTestSuccessExpected, ""},
 	generationTest{"class property test", "class", "property", integrationTestSuccessExpected, ""},
 	generationTest{"class inheritance test", "class", "inheritance", integrationTestSuccessExpected, ""},
 	generationTest{"class required fields test", "class", "requiredfields", integrationTestSuccessExpected, ""},

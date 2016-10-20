@@ -112,7 +112,11 @@ this.Serulian = (function($global) {
 
     // From: http://stackoverflow.com/a/15714445
     'functionName': function(func) {
-      var ret = fun.toString();
+      if (func.name) {
+        return func.name;
+      }
+
+      var ret = func.toString();
       ret = ret.substr('function '.length);
       ret = ret.substr(0, ret.indexOf('('));
       return ret;
@@ -893,12 +897,12 @@ this.Serulian = (function($global) {
 
         // Define the type on the module.
         if (hasGenerics) {
-          module[name] = function genericType(__genericargs) {
+          module[name] = function genericType() {
             var fullName = name;
             var fullId = typeId;
 
             for (var i = 0; i < arguments.length; ++i) {
-              fullName = fullName + '_' + arguments[i].name;
+              fullName = fullName + '_' + $t.functionName(arguments[i]);
               if (i == 0) {
                 fullId = fullId + '<';
               } else {
@@ -908,9 +912,15 @@ this.Serulian = (function($global) {
               fullId = fullId + arguments[i].$typeId;
             }
 
-            var tpe = buildType(fullId + '>', name, arguments);
+            // Check for a cached version of the generic type.
+            var cached = module[fullName];
+            if (cached) {
+              return cached;
+            }
+
+            var tpe = buildType(fullId + '>', fullName, arguments);
             tpe.$generic = genericType;
-            return tpe;
+            return module[fullName] = tpe;
           };
         } else {
           module[name] = buildType(typeId, name);
