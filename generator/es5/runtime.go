@@ -423,7 +423,12 @@ this.Serulian = (function($global) {
       if (!$__currentScriptSrc) {
         return function() {
           var $this = this;
-          var args = arguments;
+
+          // Reference: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
+          var args = new Array(arguments.length);
+          for (var i = 0; i < args.length; ++i) {
+              args[i] = arguments[i];
+          }
 
           var promise = new Promise(function(resolve, reject) {
             $global.setTimeout(function() {
@@ -901,7 +906,9 @@ this.Serulian = (function($global) {
             var fullName = name;
             var fullId = typeId;
 
-            for (var i = 0; i < arguments.length; ++i) {
+            // Reference: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
+            var generics = new Array(arguments.length);
+            for (var i = 0; i < generics.length; ++i) {
               fullName = fullName + '_' + $t.functionName(arguments[i]);
               if (i == 0) {
                 fullId = fullId + '<';
@@ -910,6 +917,7 @@ this.Serulian = (function($global) {
               }
 
               fullId = fullId + arguments[i].$typeId;
+              generics[i] = arguments[i];
             }
 
             // Check for a cached version of the generic type.
@@ -918,7 +926,7 @@ this.Serulian = (function($global) {
               return cached;
             }
 
-            var tpe = buildType(fullId + '>', fullName, arguments);
+            var tpe = buildType(fullId + '>', fullName, generics);
             tpe.$generic = genericType;
             return module[fullName] = tpe;
           };

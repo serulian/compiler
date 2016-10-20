@@ -298,7 +298,10 @@ this.Serulian = function ($global) {
       if (!$__currentScriptSrc) {
         return function () {
           var $this = this;
-          var args = arguments;
+          var args = new Array(arguments.length);
+          for (var i = 0; i < args.length; ++i) {
+            args[i] = arguments[i];
+          }
           var promise = new Promise(function (resolve, reject) {
             $global.setTimeout(function () {
               f.apply($this, args).then(function (value) {
@@ -654,7 +657,8 @@ this.Serulian = function ($global) {
           module[name] = function genericType () {
             var fullName = name;
             var fullId = typeId;
-            for (var i = 0; i < arguments.length; ++i) {
+            var generics = new Array(arguments.length);
+            for (var i = 0; i < generics.length; ++i) {
               fullName = (fullName + '_') + $t.functionName(arguments[i]);
               if (i == 0) {
                 fullId = fullId + '<';
@@ -662,12 +666,13 @@ this.Serulian = function ($global) {
                 fullId = fullId + ',';
               }
               fullId = fullId + arguments[i].$typeId;
+              generics[i] = arguments[i];
             }
             var cached = module[fullName];
             if (cached) {
               return cached;
             }
-            var tpe = buildType(fullId + '>', fullName, arguments);
+            var tpe = buildType(fullId + '>', fullName, generics);
             tpe.$generic = genericType;
             return module[fullName] = tpe;
           };
