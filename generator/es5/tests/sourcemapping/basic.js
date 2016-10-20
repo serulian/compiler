@@ -190,11 +190,11 @@ this.Serulian = function ($global) {
       if ((left == null) || (right == null)) {
         return $promise.resolve($t.box(false, $a['bool']));
       }
-      if ($t.toESType(left) != 'object') {
-        return $promise.resolve($t.box(left === right, $a['bool']));
-      }
       if (type.$equals) {
         return type.$equals($t.box(left, type), $t.box(right, type));
+      }
+      if ($t.toESType(left) != 'object') {
+        return $promise.resolve($t.box(left === right, $a['bool']));
       }
       return $promise.resolve($t.box(false, $a['bool']));
     },

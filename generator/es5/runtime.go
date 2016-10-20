@@ -278,21 +278,24 @@ this.Serulian = (function($global) {
     // equals performs a comparison of the two values by calling the $equals operator on the
     // values, if any. Otherwise, uses a simple reference comparison.
     'equals': function(left, right, type) {
+      // Check for direct equality.
       if (left === right) {
         return $promise.resolve($t.box(true, $a['bool']));
       }
 
+      // Check for null.
       if (left == null || right == null) {
         return $promise.resolve($t.box(false, $a['bool']));
+      }
+
+      // Check for defined equals operator.
+      if (type.$equals) {
+        return type.$equals($t.box(left, type), $t.box(right, type));
       }
 
       // If we have a native value, compare directly.
       if ($t.toESType(left) != 'object') {
         return $promise.resolve($t.box(left === right, $a['bool']));
-      }
-
-      if (type.$equals) {
-        return type.$equals($t.box(left, type), $t.box(right, type));
       }
 
       return $promise.resolve($t.box(false, $a['bool']));
