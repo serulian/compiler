@@ -11,7 +11,7 @@ $module('nullcomparecall', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box('huh?', $g.____testlib.basictypes.String));
+        $resolve($t.fastbox('huh?', $g.____testlib.basictypes.String));
         return;
       };
       return $promise.new($continue);
@@ -65,7 +65,7 @@ $module('nullcomparecall', function () {
       while (true) {
         switch ($current) {
           case 0:
-            thing = $t.box(true, $g.____testlib.basictypes.Boolean);
+            thing = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
             $promise.resolve(thing).then(function ($result0) {
               return ($promise.shortcircuit($result0, null) || $g.nullcomparecall.RejectNow()).then(function ($result1) {
                 $result = $t.nullcompare($result0, $result1);

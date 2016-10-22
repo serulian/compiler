@@ -11,7 +11,7 @@ $module('shortcut', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+        $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
         return;
       };
       return $promise.new($continue);
@@ -83,7 +83,7 @@ $module('shortcut', function () {
         switch ($current) {
           case 0:
             $g.shortcut.SomeClass.new().then(function ($result0) {
-              $result = $t.box($result0, $g.shortcut.SomeNominalType);
+              $result = $t.fastbox($result0, $g.shortcut.SomeNominalType);
               $current = 1;
               $continue($resolve, $reject);
               return;

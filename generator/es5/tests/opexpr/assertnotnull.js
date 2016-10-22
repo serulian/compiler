@@ -4,7 +4,7 @@ $module('assertnotnull', function () {
     var someValue;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      someValue = $t.box(true, $g.____testlib.basictypes.Boolean);
+      someValue = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
       $resolve($t.assertnotnull(someValue));
       return;
     };

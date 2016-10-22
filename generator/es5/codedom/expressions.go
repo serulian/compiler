@@ -437,15 +437,19 @@ func NativeIndexing(childExpression Expression, index Expression, basis compiler
 // NominalWrappingNode is the wrapping of an instance in a nominal type.
 type NominalWrappingNode struct {
 	expressionBase
-	ChildExpression Expression
-	NominalTypeRef  typegraph.TypeReference
+	ChildExpression     Expression
+	ChildExpressionType typegraph.TypeReference
+	NominalTypeRef      typegraph.TypeReference
+	IsLiteralWrap       bool
 }
 
-func NominalRefWrapping(childExpression Expression, nominalTypeRef typegraph.TypeReference, basis compilergraph.GraphNode) Expression {
+func NominalRefWrapping(childExpression Expression, childExprType typegraph.TypeReference, nominalTypeRef typegraph.TypeReference, basis compilergraph.GraphNode) Expression {
 	return &NominalWrappingNode{
 		expressionBase{domBase{basis}},
 		childExpression,
+		childExprType,
 		nominalTypeRef,
+		false,
 	}
 }
 
@@ -454,18 +458,22 @@ func NominalWrapping(childExpression Expression, nominalType typegraph.TGTypeDec
 		expressionBase{domBase{basis}},
 		childExpression,
 		nominalType.GetTypeReference(),
+		nominalType.GetTypeReference(),
+		true,
 	}
 }
 
 // NominalUnwrappingNode is the unwrapping of an instance of a nominal type back to its original type.
 type NominalUnwrappingNode struct {
 	expressionBase
-	ChildExpression Expression
+	ChildExpression     Expression
+	ChildExpressionType typegraph.TypeReference
 }
 
-func NominalUnwrapping(childExpression Expression, basis compilergraph.GraphNode) Expression {
+func NominalUnwrapping(childExpression Expression, childExprType typegraph.TypeReference, basis compilergraph.GraphNode) Expression {
 	return &NominalUnwrappingNode{
 		expressionBase{domBase{basis}},
 		childExpression,
+		childExprType,
 	}
 }

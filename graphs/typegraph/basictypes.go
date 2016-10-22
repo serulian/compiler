@@ -40,9 +40,19 @@ func (t *TypeGraph) StructTypeReference() TypeReference {
 	}
 }
 
+// IntTypeReference returns a reference to the int type.
+func (t *TypeGraph) IntTypeReference() TypeReference {
+	return t.NewTypeReference(t.IntType())
+}
+
 // BoolTypeReference returns a reference to the bool type.
 func (t *TypeGraph) BoolTypeReference() TypeReference {
 	return t.NewTypeReference(t.BoolType())
+}
+
+// NativeBoolTypeReference returns a reference to the native boolean type.
+func (t *TypeGraph) NativeBoolTypeReference() TypeReference {
+	return t.BoolTypeReference().NominalDataType()
 }
 
 // StringTypeReference returns a reference to the string type.

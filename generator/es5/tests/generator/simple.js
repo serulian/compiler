@@ -6,12 +6,12 @@ $module('simple', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $yield($t.box(false, $g.____testlib.basictypes.Boolean));
+            $yield($t.fastbox(false, $g.____testlib.basictypes.Boolean));
             $current = 1;
             return;
 
           case 1:
-            $yield($t.box(true, $g.____testlib.basictypes.Boolean));
+            $yield($t.fastbox(true, $g.____testlib.basictypes.Boolean));
             $current = 2;
             return;
 
@@ -70,7 +70,7 @@ $module('simple', function () {
 
           case 4:
             value = $temp0.First;
-            if ($t.unbox($temp0.Second)) {
+            if ($temp0.Second.$wrapped) {
               $current = 5;
               continue;
             } else {

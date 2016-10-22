@@ -11,7 +11,7 @@ $module('in', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box(!$t.unbox(value), $g.____testlib.basictypes.Boolean));
+        $resolve($t.fastbox(!value.$wrapped, $g.____testlib.basictypes.Boolean));
         return;
       };
       return $promise.new($continue);
@@ -43,7 +43,7 @@ $module('in', function () {
 
           case 1:
             sc = $result;
-            sc.$contains($t.box(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
+            sc.$contains($t.fastbox(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $current = 2;
               $continue($resolve, $reject);

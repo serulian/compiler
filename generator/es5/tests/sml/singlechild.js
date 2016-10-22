@@ -7,7 +7,7 @@ $module('singlechild', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.____testlib.basictypes.Integer.$equals(child, $t.box(42, $g.____testlib.basictypes.Integer)).then(function ($result0) {
+            $g.____testlib.basictypes.Integer.$equals(child, $t.fastbox(42, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $result = $result0;
               $current = 1;
               $continue($resolve, $reject);
@@ -38,7 +38,7 @@ $module('singlechild', function () {
         switch ($current) {
           case 0:
             $g.____testlib.basictypes.Mapping($g.____testlib.basictypes.String).Empty().then(function ($result1) {
-              return $g.singlechild.SimpleFunction($result1, $t.box(42, $g.____testlib.basictypes.Integer)).then(function ($result0) {
+              return $g.singlechild.SimpleFunction($result1, $t.fastbox(42, $g.____testlib.basictypes.Integer)).then(function ($result0) {
                 $result = $result0;
                 $current = 1;
                 $continue($resolve, $reject);

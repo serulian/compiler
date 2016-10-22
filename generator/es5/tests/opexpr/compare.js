@@ -10,7 +10,7 @@ $module('compare', function () {
     $static.$equals = function (first, second) {
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+        $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
         return;
       };
       return $promise.new($continue);
@@ -18,7 +18,7 @@ $module('compare', function () {
     $static.$compare = function (first, second) {
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box(1, $g.____testlib.basictypes.Integer));
+        $resolve($t.fastbox(1, $g.____testlib.basictypes.Integer));
         return;
       };
       return $promise.new($continue);
@@ -77,7 +77,7 @@ $module('compare', function () {
 
           case 3:
             $g.compare.SomeClass.$equals(first, second).then(function ($result0) {
-              $result = $t.box(!$t.unbox($result0), $g.____testlib.basictypes.Boolean);
+              $result = $t.fastbox(!$result0.$wrapped, $g.____testlib.basictypes.Boolean);
               $current = 4;
               $continue($resolve, $reject);
               return;
@@ -89,7 +89,7 @@ $module('compare', function () {
 
           case 4:
             $g.compare.SomeClass.$compare(first, second).then(function ($result0) {
-              $result = $t.box($t.unbox($result0) < 0, $g.____testlib.basictypes.Boolean);
+              $result = $t.fastbox($result0.$wrapped < 0, $g.____testlib.basictypes.Boolean);
               $current = 5;
               $continue($resolve, $reject);
               return;
@@ -101,7 +101,7 @@ $module('compare', function () {
 
           case 5:
             $g.compare.SomeClass.$compare(first, second).then(function ($result0) {
-              $result = $t.box($t.unbox($result0) > 0, $g.____testlib.basictypes.Boolean);
+              $result = $t.fastbox($result0.$wrapped > 0, $g.____testlib.basictypes.Boolean);
               $current = 6;
               $continue($resolve, $reject);
               return;
@@ -113,7 +113,7 @@ $module('compare', function () {
 
           case 6:
             $g.compare.SomeClass.$compare(first, second).then(function ($result0) {
-              $result = $t.box($t.unbox($result0) <= 0, $g.____testlib.basictypes.Boolean);
+              $result = $t.fastbox($result0.$wrapped <= 0, $g.____testlib.basictypes.Boolean);
               $current = 7;
               $continue($resolve, $reject);
               return;
@@ -125,7 +125,7 @@ $module('compare', function () {
 
           case 7:
             $g.compare.SomeClass.$compare(first, second).then(function ($result0) {
-              $result = $t.box($t.unbox($result0) >= 0, $g.____testlib.basictypes.Boolean);
+              $result = $t.fastbox($result0.$wrapped >= 0, $g.____testlib.basictypes.Boolean);
               $current = 8;
               $continue($resolve, $reject);
               return;

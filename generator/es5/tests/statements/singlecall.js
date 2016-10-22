@@ -3,7 +3,7 @@ $module('singlecall', function () {
   $static.DoSomething = function () {
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      $resolve($t.box(42, $g.____testlib.basictypes.Integer));
+      $resolve($t.fastbox(42, $g.____testlib.basictypes.Integer));
       return;
     };
     return $promise.new($continue);
@@ -16,7 +16,7 @@ $module('singlecall', function () {
         switch ($current) {
           case 0:
             $g.singlecall.DoSomething().then(function ($result1) {
-              return $g.____testlib.basictypes.Integer.$equals($result1, $t.box(42, $g.____testlib.basictypes.Integer)).then(function ($result0) {
+              return $g.____testlib.basictypes.Integer.$equals($result1, $t.fastbox(42, $g.____testlib.basictypes.Integer)).then(function ($result0) {
                 $result = $result0;
                 $current = 1;
                 $continue($resolve, $reject);

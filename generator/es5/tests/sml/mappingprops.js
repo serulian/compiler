@@ -7,9 +7,9 @@ $module('mappingprops', function () {
       while (true) {
         switch ($current) {
           case 0:
-            props.$index($t.box('SomeProp', $g.____testlib.basictypes.String)).then(function ($result2) {
+            props.$index($t.fastbox('SomeProp', $g.____testlib.basictypes.String)).then(function ($result2) {
               return $promise.resolve($result2).then(function ($result1) {
-                return $g.____testlib.basictypes.String.$equals($t.nullcompare($result1, $t.box('', $g.____testlib.basictypes.String)), $t.box('hello world', $g.____testlib.basictypes.String)).then(function ($result0) {
+                return $g.____testlib.basictypes.String.$equals($t.nullcompare($result1, $t.fastbox('', $g.____testlib.basictypes.String)), $t.fastbox('hello world', $g.____testlib.basictypes.String)).then(function ($result0) {
                   $result = $result0;
                   $current = 1;
                   $continue($resolve, $reject);
@@ -42,7 +42,7 @@ $module('mappingprops', function () {
         switch ($current) {
           case 0:
             $g.____testlib.basictypes.Mapping($g.____testlib.basictypes.String).overObject({
-              SomeProp: $t.box("hello world", $g.____testlib.basictypes.String),
+              SomeProp: $t.fastbox("hello world", $g.____testlib.basictypes.String),
             }).then(function ($result1) {
               return $g.mappingprops.SimpleFunction($result1).then(function ($result0) {
                 $result = $result0;

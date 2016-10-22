@@ -11,7 +11,7 @@ $module('interfacecastfail', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box(2, $g.____testlib.basictypes.Integer));
+        $resolve($t.fastbox(2, $g.____testlib.basictypes.Integer));
         return;
       };
       return $promise.new($continue);

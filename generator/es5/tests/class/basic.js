@@ -6,7 +6,7 @@ $module('basic', function () {
     $static.new = function () {
       var instance = new $static();
       var init = [];
-      instance.SomeInt = $t.box(2, $g.____testlib.basictypes.Integer);
+      instance.SomeInt = $t.fastbox(2, $g.____testlib.basictypes.Integer);
       init.push($g.basic.CoolFunction().then(function ($result0) {
         instance.AnotherBool = $result0;
       }));
@@ -32,7 +32,7 @@ $module('basic', function () {
   $static.CoolFunction = function () {
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+      $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
       return;
     };
     return $promise.new($continue);

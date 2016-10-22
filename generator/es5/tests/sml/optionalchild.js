@@ -3,7 +3,7 @@ $module('optionalchild', function () {
   $static.SimpleFunction = function (props, child) {
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      $resolve($t.box(child == null, $g.____testlib.basictypes.Boolean));
+      $resolve($t.fastbox(child == null, $g.____testlib.basictypes.Boolean));
       return;
     };
     return $promise.new($continue);

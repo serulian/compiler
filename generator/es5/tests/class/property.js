@@ -5,7 +5,7 @@ $module('property', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      instance.SomeBool = $t.box(false, $g.____testlib.basictypes.Boolean);
+      instance.SomeBool = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
       return $promise.resolve(instance);
     };
     $instance.set$SomeProp = function (val) {
@@ -57,7 +57,7 @@ $module('property', function () {
             return;
 
           case 1:
-            sc.set$SomeProp($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
+            sc.set$SomeProp($t.fastbox(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $current = 2;
               $continue($resolve, $reject);

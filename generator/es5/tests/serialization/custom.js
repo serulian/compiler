@@ -130,7 +130,7 @@ $module('custom', function () {
     $static.$fields = [];
     $t.defineStructField($static, 'AnotherBool', 'AnotherBool', function () {
       return $g.____testlib.basictypes.Boolean;
-    }, true, function () {
+    }, function () {
       return $g.____testlib.basictypes.Boolean;
     }, false);
     this.$typesig = function () {
@@ -165,17 +165,17 @@ $module('custom', function () {
     $static.$fields = [];
     $t.defineStructField($static, 'SomeField', 'SomeField', function () {
       return $g.____testlib.basictypes.Integer;
-    }, true, function () {
+    }, function () {
       return $g.____testlib.basictypes.Integer;
     }, false);
     $t.defineStructField($static, 'AnotherField', 'AnotherField', function () {
       return $g.____testlib.basictypes.Boolean;
-    }, true, function () {
+    }, function () {
       return $g.____testlib.basictypes.Boolean;
     }, false);
     $t.defineStructField($static, 'SomeInstance', 'SomeInstance', function () {
       return $g.custom.AnotherStruct;
-    }, true, function () {
+    }, function () {
       return $g.custom.AnotherStruct;
     }, false);
     this.$typesig = function () {
@@ -204,8 +204,8 @@ $module('custom', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.custom.AnotherStruct.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
-              return $g.custom.SomeStruct.new($t.box(2, $g.____testlib.basictypes.Integer), $t.box(false, $g.____testlib.basictypes.Boolean), $result1).then(function ($result0) {
+            $g.custom.AnotherStruct.new($t.fastbox(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
+              return $g.custom.SomeStruct.new($t.fastbox(2, $g.____testlib.basictypes.Integer), $t.fastbox(false, $g.____testlib.basictypes.Boolean), $result1).then(function ($result0) {
                 $result = $result0;
                 $current = 1;
                 $continue($resolve, $reject);
@@ -219,7 +219,7 @@ $module('custom', function () {
 
           case 1:
             s = $result;
-            jsonString = $t.box('{"AnotherField":false,"SomeField":2,"SomeInstance":{"AnotherBool":true}}', $g.____testlib.basictypes.String);
+            jsonString = $t.fastbox('{"AnotherField":false,"SomeField":2,"SomeInstance":{"AnotherBool":true}}', $g.____testlib.basictypes.String);
             $g.custom.SomeStruct.Parse($g.custom.CustomJSON)(jsonString).then(function ($result0) {
               $result = $result0;
               $current = 2;
@@ -233,10 +233,10 @@ $module('custom', function () {
 
           case 2:
             parsed = $result;
-            $g.____testlib.basictypes.Integer.$equals(parsed.SomeField, $t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result2) {
-              return $promise.resolve($t.unbox($result2)).then(function ($result1) {
-                return $promise.resolve($result1 && !$t.unbox(parsed.AnotherField)).then(function ($result0) {
-                  $result = $t.box($result0 && $t.unbox(parsed.SomeInstance.AnotherBool), $g.____testlib.basictypes.Boolean);
+            $g.____testlib.basictypes.Integer.$equals(parsed.SomeField, $t.fastbox(2, $g.____testlib.basictypes.Integer)).then(function ($result2) {
+              return $promise.resolve($result2.$wrapped).then(function ($result1) {
+                return $promise.resolve($result1 && !parsed.AnotherField.$wrapped).then(function ($result0) {
+                  $result = $t.fastbox($result0 && parsed.SomeInstance.AnotherBool.$wrapped, $g.____testlib.basictypes.Boolean);
                   $current = 3;
                   $continue($resolve, $reject);
                   return;

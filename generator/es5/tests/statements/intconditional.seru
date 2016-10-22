@@ -1,0 +1,10 @@
+function<any> TEST() {
+	var first = 10
+	var second = 2
+
+	if second <= first {
+		return true
+	}
+
+	return false
+}

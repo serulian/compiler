@@ -5,7 +5,7 @@ $module('nominalbase', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      instance.SomeField = $t.box(true, $g.____testlib.basictypes.Boolean);
+      instance.SomeField = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
       return $promise.resolve(instance);
     };
     this.$typesig = function () {
@@ -29,7 +29,7 @@ $module('nominalbase', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box(!$t.unbox($t.unbox($this).SomeField), $g.____testlib.basictypes.Boolean));
+        $resolve($t.fastbox(!$this.$wrapped.SomeField.$wrapped, $g.____testlib.basictypes.Boolean));
         return;
       };
       return $promise.new($continue);
@@ -65,7 +65,7 @@ $module('nominalbase', function () {
           switch ($current) {
             case 0:
               $t.box($this, $g.nominalbase.FirstNominal).SomeProp().then(function ($result0) {
-                $result = $t.box(!$t.unbox($result0), $g.____testlib.basictypes.Boolean);
+                $result = $t.fastbox(!$result0.$wrapped, $g.____testlib.basictypes.Boolean);
                 $current = 1;
                 $continue($resolve, $reject);
                 return;
@@ -120,7 +120,7 @@ $module('nominalbase', function () {
 
           case 1:
             sc = $result;
-            sn = $t.box($t.box(sc, $g.nominalbase.FirstNominal), $g.nominalbase.SecondNominal);
+            sn = $t.box($t.fastbox(sc, $g.nominalbase.FirstNominal), $g.nominalbase.SecondNominal);
             sn.GetValue().then(function ($result0) {
               $result = $result0;
               $current = 2;

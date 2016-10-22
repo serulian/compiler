@@ -45,7 +45,7 @@ $module('nominaljson', function () {
     $static.$fields = [];
     $t.defineStructField($static, 'AnotherBool', 'AnotherBool', function () {
       return $g.____testlib.basictypes.Boolean;
-    }, true, function () {
+    }, function () {
       return $g.____testlib.basictypes.Boolean;
     }, false);
     this.$typesig = function () {
@@ -78,7 +78,7 @@ $module('nominaljson', function () {
     $static.$fields = [];
     $t.defineStructField($static, 'Nested', 'Nested', function () {
       return $g.nominaljson.SomeNominal;
-    }, true, function () {
+    }, function () {
       return $g.nominaljson.SomeNominal;
     }, false);
     this.$typesig = function () {
@@ -108,7 +108,7 @@ $module('nominaljson', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.nominaljson.AnotherStruct.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
+            $g.nominaljson.AnotherStruct.new($t.fastbox(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
               return $g.nominaljson.SomeStruct.new($t.box($result1, $g.nominaljson.SomeNominal)).then(function ($result0) {
                 $result = $result0;
                 $current = 1;
@@ -123,7 +123,7 @@ $module('nominaljson', function () {
 
           case 1:
             s = $result;
-            jsonString = $t.box('{"Nested":{"AnotherBool":true}}', $g.____testlib.basictypes.String);
+            jsonString = $t.fastbox('{"Nested":{"AnotherBool":true}}', $g.____testlib.basictypes.String);
             s.Stringify($g.____testlib.basictypes.JSON)().then(function ($result1) {
               return $g.____testlib.basictypes.String.$equals($result1, jsonString).then(function ($result0) {
                 $result = $result0;
@@ -152,9 +152,9 @@ $module('nominaljson', function () {
 
           case 3:
             parsed = $result;
-            $promise.resolve($t.unbox(correct)).then(function ($result0) {
+            $promise.resolve(correct.$wrapped).then(function ($result0) {
               return ($promise.shortcircuit($result0, true) || parsed.Nested.GetValue()).then(function ($result1) {
-                $result = $t.box($result0 && $t.unbox($result1), $g.____testlib.basictypes.Boolean);
+                $result = $t.fastbox($result0 && $result1.$wrapped, $g.____testlib.basictypes.Boolean);
                 $current = 4;
                 $continue($resolve, $reject);
                 return;

@@ -11,7 +11,7 @@ $module('generic', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box(false, $g.____testlib.basictypes.Boolean));
+        $resolve($t.fastbox(false, $g.____testlib.basictypes.Boolean));
         return;
       };
       return $promise.new($continue);
@@ -79,7 +79,7 @@ $module('generic', function () {
           case 1:
             sc = $result;
             $g.generic.SomeClass($g.____testlib.basictypes.Integer).$bool(sc).then(function ($result0) {
-              $result = $t.box(!$t.unbox($result0), $g.____testlib.basictypes.Boolean);
+              $result = $t.fastbox(!$result0.$wrapped, $g.____testlib.basictypes.Boolean);
               $current = 2;
               $continue($resolve, $reject);
               return;

@@ -6,12 +6,12 @@ $module('loop', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $t.box(1234, $g.____testlib.basictypes.Integer);
+            $t.fastbox(1234, $g.____testlib.basictypes.Integer);
             $current = 1;
             continue;
 
           case 1:
-            $t.box(1357, $g.____testlib.basictypes.Integer);
+            $t.fastbox(1357, $g.____testlib.basictypes.Integer);
             $current = 1;
             continue;
 

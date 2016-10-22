@@ -5,14 +5,14 @@ $module('resource', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      instance.released = $t.box(false, $g.____testlib.basictypes.Boolean);
+      instance.released = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
       return $promise.resolve(instance);
     };
     $instance.Release = function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $this.released = $t.box(true, $g.____testlib.basictypes.Boolean);
+        $this.released = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
         $resolve();
         return;
       };
@@ -42,7 +42,7 @@ $module('resource', function () {
           case 0:
             $temp0 = sr;
             $resources.pushr($temp0, '$temp0');
-            $yield($t.box(2, $g.____testlib.basictypes.Integer));
+            $yield($t.fastbox(2, $g.____testlib.basictypes.Integer));
             $current = 1;
             return;
 
@@ -59,7 +59,7 @@ $module('resource', function () {
             return;
 
           case 2:
-            $yield($t.box(40, $g.____testlib.basictypes.Integer));
+            $yield($t.fastbox(40, $g.____testlib.basictypes.Integer));
             $current = 3;
             return;
 
@@ -96,7 +96,7 @@ $module('resource', function () {
 
           case 1:
             sr = $result;
-            counter = $t.box(0, $g.____testlib.basictypes.Integer);
+            counter = $t.fastbox(0, $g.____testlib.basictypes.Integer);
             $current = 2;
             continue;
 
@@ -132,7 +132,7 @@ $module('resource', function () {
 
           case 5:
             i = $temp0.First;
-            if ($t.unbox($temp0.Second)) {
+            if ($temp0.Second.$wrapped) {
               $current = 6;
               continue;
             } else {
@@ -159,9 +159,9 @@ $module('resource', function () {
             continue;
 
           case 8:
-            $promise.resolve($t.unbox(sr.released)).then(function ($result0) {
-              return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.Integer.$equals(counter, $t.box(42, $g.____testlib.basictypes.Integer))).then(function ($result1) {
-                $result = $t.box($result0 && $t.unbox($result1), $g.____testlib.basictypes.Boolean);
+            $promise.resolve(sr.released.$wrapped).then(function ($result0) {
+              return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.Integer.$equals(counter, $t.fastbox(42, $g.____testlib.basictypes.Integer))).then(function ($result1) {
+                $result = $t.fastbox($result0 && $result1.$wrapped, $g.____testlib.basictypes.Boolean);
                 $current = 9;
                 $continue($resolve, $reject);
                 return;

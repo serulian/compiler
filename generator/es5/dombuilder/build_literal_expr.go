@@ -299,9 +299,17 @@ func (db *domBuilder) buildMappingLiteralExpression(node compilergraph.GraphNode
 				keyNode)
 		}
 
+		// Get the expression for the value.
 		valueExpr := db.getExpression(entryNode, parser.NodeMappingLiteralExpressionEntryValue)
 
-		entries = append(entries, codedom.ObjectLiteralEntryNode{codedom.NominalUnwrapping(keyExpr, keyNode), valueExpr, entryNode})
+		// Build an object literal expression with the (native version of the) key string and the
+		// created value.
+		entryExpr := codedom.ObjectLiteralEntryNode{
+			codedom.NominalUnwrapping(keyExpr, db.scopegraph.TypeGraph().StringTypeReference(), keyNode),
+			valueExpr,
+			entryNode,
+		}
+		entries = append(entries, entryExpr)
 	}
 
 	if len(entries) == 0 {

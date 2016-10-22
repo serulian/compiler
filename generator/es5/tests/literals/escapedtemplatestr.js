@@ -3,7 +3,7 @@ $module('escapedtemplatestr', function () {
   $static.DoSomething = function () {
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      $t.box("hello 'world'! \"This is a\n\tlong quote!\"", $g.____testlib.basictypes.String);
+      $t.fastbox("hello 'world'! \"This is a\n\tlong quote!\"", $g.____testlib.basictypes.String);
       $resolve();
       return;
     };

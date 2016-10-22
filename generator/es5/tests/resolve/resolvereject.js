@@ -9,7 +9,7 @@ $module('resolvereject', function () {
         switch ($current) {
           case 0:
             $promise.new(function ($resolve) {
-              $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+              $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
             }).then(function ($result0) {
               a = $result0;
               b = null;

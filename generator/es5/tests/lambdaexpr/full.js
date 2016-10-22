@@ -16,7 +16,7 @@ $module('full', function () {
               };
               return $promise.new($continue);
             };
-            lambda($t.box(123, $g.____testlib.basictypes.Integer), $t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
+            lambda($t.fastbox(123, $g.____testlib.basictypes.Integer), $t.fastbox(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $current = 1;
               $continue($resolve, $reject);

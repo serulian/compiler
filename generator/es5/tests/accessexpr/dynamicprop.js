@@ -5,7 +5,7 @@ $module('dynamicprop', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      instance.value = $t.box(42, $g.____testlib.basictypes.Integer);
+      instance.value = $t.fastbox(42, $g.____testlib.basictypes.Integer);
       return $promise.resolve(instance);
     };
     $instance.set$SomeProp = function (val) {
@@ -60,7 +60,7 @@ $module('dynamicprop', function () {
 
           case 1:
             sc = $result;
-            sc.set$SomeProp($t.box(123, $g.____testlib.basictypes.Integer)).then(function ($result0) {
+            sc.set$SomeProp($t.fastbox(123, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $result = $result0;
               $current = 2;
               $continue($resolve, $reject);
@@ -74,11 +74,11 @@ $module('dynamicprop', function () {
           case 2:
             sca = sc;
             $t.dynamicaccess(sca, 'SomeProp').then(function ($result2) {
-              return $g.____testlib.basictypes.Integer.$equals($t.cast($result2, $g.____testlib.basictypes.Integer, false), $t.box(123, $g.____testlib.basictypes.Integer)).then(function ($result1) {
-                return $promise.resolve($t.unbox($result1)).then(function ($result0) {
+              return $g.____testlib.basictypes.Integer.$equals($t.cast($result2, $g.____testlib.basictypes.Integer, false), $t.fastbox(123, $g.____testlib.basictypes.Integer)).then(function ($result1) {
+                return $promise.resolve($result1.$wrapped).then(function ($result0) {
                   return ($promise.shortcircuit($result0, true) || sc.SomeProp()).then(function ($result4) {
-                    return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.Integer.$equals($result4, $t.box(123, $g.____testlib.basictypes.Integer))).then(function ($result3) {
-                      $result = $t.box($result0 && $t.unbox($result3), $g.____testlib.basictypes.Boolean);
+                    return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.Integer.$equals($result4, $t.fastbox(123, $g.____testlib.basictypes.Integer))).then(function ($result3) {
+                      $result = $t.fastbox($result0 && $result3.$wrapped, $g.____testlib.basictypes.Boolean);
                       $current = 3;
                       $continue($resolve, $reject);
                       return;

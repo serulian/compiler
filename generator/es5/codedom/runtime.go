@@ -19,6 +19,7 @@ const (
 	AssertNotNullFunction      RuntimeFunction = "$t.assertnotnull"
 	StreamMemberAccessFunction RuntimeFunction = "$t.streamaccess"
 	BoxFunction                RuntimeFunction = "$t.box"
+	FastBoxFunction            RuntimeFunction = "$t.fastbox"
 	UnboxFunction              RuntimeFunction = "$t.unbox"
 	NullableInvokeFunction     RuntimeFunction = "$t.nullableinvoke"
 
@@ -31,6 +32,8 @@ const (
 	StatePopResourceFunction  RuntimeFunction = "$resources.popr"
 
 	EmptyGeneratorDirect RuntimeFunction = "$generator.directempty"
+
+	BoxedDataProperty string = "$wrapped"
 )
 
 // RuntimeFunctionCallNode represents a call to an internal runtime function defined

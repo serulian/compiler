@@ -11,7 +11,7 @@ $module('functioncallnullable', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+        $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
         return;
       };
       return $promise.new($continue);
@@ -38,7 +38,7 @@ $module('functioncallnullable', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box(false, $g.____testlib.basictypes.Boolean));
+        $resolve($t.fastbox(false, $g.____testlib.basictypes.Boolean));
         return;
       };
       return $promise.new($continue);
@@ -79,10 +79,10 @@ $module('functioncallnullable', function () {
             ac = null;
             $t.nullableinvoke(sc, 'SomeMethod', true, []).then(function ($result2) {
               return $promise.resolve($result2).then(function ($result1) {
-                return $promise.resolve($t.unbox($t.nullcompare($result1, $t.box(false, $g.____testlib.basictypes.Boolean)))).then(function ($result0) {
+                return $promise.resolve($t.nullcompare($result1, $t.fastbox(false, $g.____testlib.basictypes.Boolean)).$wrapped).then(function ($result0) {
                   return ($promise.shortcircuit($result0, true) || $t.nullableinvoke(ac, 'AnotherMethod', true, [])).then(function ($result4) {
                     return $promise.resolve($result4).then(function ($result3) {
-                      $result = $t.box($result0 && $t.unbox($t.nullcompare($result3, $t.box(true, $g.____testlib.basictypes.Boolean))), $g.____testlib.basictypes.Boolean);
+                      $result = $t.fastbox($result0 && $t.nullcompare($result3, $t.fastbox(true, $g.____testlib.basictypes.Boolean)).$wrapped, $g.____testlib.basictypes.Boolean);
                       $current = 2;
                       $continue($resolve, $reject);
                       return;

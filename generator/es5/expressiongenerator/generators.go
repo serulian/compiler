@@ -147,7 +147,7 @@ func (eg *expressionGenerator) generateTernary(ternary *codedom.TernaryNode, con
 	// places it into the result.
 	resultName := eg.generateUniqueName("$result")
 	resolveConditionalValue := codedom.RuntimeFunctionCall(codedom.ResolvePromiseFunction,
-		[]codedom.Expression{codedom.NominalUnwrapping(ternary.CheckExpr, ternary.CheckExpr.BasisNode())},
+		[]codedom.Expression{codedom.NominalUnwrapping(ternary.CheckExpr, eg.scopegraph.TypeGraph().BoolTypeReference(), ternary.CheckExpr.BasisNode())},
 		ternary.BasisNode())
 
 	eg.addAsyncWrapper(eg.generateExpression(resolveConditionalValue, context), resultName)
@@ -486,13 +486,25 @@ func (eg *expressionGenerator) generateNativeIndexing(nativeIndex *codedom.Nativ
 
 // generateNominalWrapping generates the expression source for the nominal wrapping of an instance of a base type.
 func (eg *expressionGenerator) generateNominalWrapping(nominalWrapping *codedom.NominalWrappingNode, context generationContext) esbuilder.ExpressionBuilder {
-	// If this is a wrap is of an unwrap, then cancel both operations.
-	if nested, ok := nominalWrapping.ChildExpression.(*codedom.NominalUnwrappingNode); ok {
-		return eg.generateExpression(nested.ChildExpression, context)
+	// If this is a wrap is of an unwrap, then cancel both operations if we are simply rewrapping
+	// the unwrapped type.
+	if unwrapping, ok := nominalWrapping.ChildExpression.(*codedom.NominalUnwrappingNode); ok {
+		if unwrapping.ChildExpressionType.NominalDataType() == nominalWrapping.NominalTypeRef {
+			// Skip entirely.
+			return eg.generateExpression(unwrapping.ChildExpression, context)
+		}
+	}
+
+	// If the child expression being wrapped is non-nullable and not a nominal or struct,
+	// then we can use a fast-path box call without the extra unboxing.
+	boxFunction := codedom.BoxFunction
+	if !nominalWrapping.ChildExpressionType.NullValueAllowed() &&
+		(!nominalWrapping.ChildExpressionType.IsNominalOrStruct() || nominalWrapping.IsLiteralWrap) {
+		boxFunction = codedom.FastBoxFunction
 	}
 
 	call := codedom.RuntimeFunctionCall(
-		codedom.BoxFunction,
+		boxFunction,
 		[]codedom.Expression{
 			nominalWrapping.ChildExpression,
 			codedom.TypeLiteral(nominalWrapping.NominalTypeRef, nominalWrapping.BasisNode())},
@@ -502,15 +514,36 @@ func (eg *expressionGenerator) generateNominalWrapping(nominalWrapping *codedom.
 
 // generateNominalUnwrapping generates the expression source for the unwrapping of a nominal instance of a base type.
 func (eg *expressionGenerator) generateNominalUnwrapping(nominalUnwrapping *codedom.NominalUnwrappingNode, context generationContext) esbuilder.ExpressionBuilder {
-	// If this is an unwrap is of a wrap, then cancel both operations.
-	if nested, ok := nominalUnwrapping.ChildExpression.(*codedom.NominalWrappingNode); ok {
-		return eg.generateExpression(nested.ChildExpression, context)
+	// If this is an unwrap is of a wrap, then try to either cancel both operations (if we can),
+	// or simplify the unwrapping operation.
+	childExpression := nominalUnwrapping.ChildExpression
+	if wrapping, ok := nominalUnwrapping.ChildExpression.(*codedom.NominalWrappingNode); ok {
+		// If the value that was being wrapped is, itself, nominal or structural, then we still
+		// need to unwrap it, but we can fast-path by ignoring the wrap and directly unwrapping
+		// the nominal/struct. Otherwise, we can simply just collapse the unwrap+wrap into a NOOP.
+		if !wrapping.IsLiteralWrap && wrapping.ChildExpressionType.IsNominalOrStruct() {
+			childExpression = wrapping.ChildExpression
+		} else {
+			// Otherwise, we can just collapse both operations into nothing.
+			return eg.generateExpression(wrapping.ChildExpression, context)
+		}
+	}
+
+	// If the child expression being unwrapped is non-nullable and we know it is boxed, then
+	// we can use a fast-path unbox call without the extra checks.
+	if !nominalUnwrapping.ChildExpressionType.NullValueAllowed() &&
+		nominalUnwrapping.ChildExpressionType.IsNominalOrStruct() {
+		access := codedom.NativeAccess(
+			childExpression,
+			codedom.BoxedDataProperty,
+			nominalUnwrapping.BasisNode())
+		return eg.generateExpression(access, context)
 	}
 
 	call := codedom.RuntimeFunctionCall(
 		codedom.UnboxFunction,
 		[]codedom.Expression{
-			nominalUnwrapping.ChildExpression,
+			childExpression,
 		},
 		nominalUnwrapping.BasisNode())
 	return eg.generateExpression(call, context)

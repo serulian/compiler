@@ -11,7 +11,7 @@ $module('calls', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box('huh?', $g.____testlib.basictypes.String));
+        $resolve($t.fastbox('huh?', $g.____testlib.basictypes.String));
         return;
       };
       return $promise.new($continue);
@@ -30,7 +30,7 @@ $module('calls', function () {
   $static.getValue = function () {
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+      $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
       return;
     };
     return $promise.new($continue);
@@ -68,7 +68,7 @@ $module('calls', function () {
   $static.getIntValue = function () {
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      $resolve($t.box(45, $g.____testlib.basictypes.Integer));
+      $resolve($t.fastbox(45, $g.____testlib.basictypes.Integer));
       return;
     };
     return $promise.new($continue);
@@ -81,8 +81,8 @@ $module('calls', function () {
         switch ($current) {
           case 0:
             $g.calls.getIntValue().then(function ($result2) {
-              return $g.____testlib.basictypes.Integer.$equals($result2, $t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result1) {
-                return $promise.resolve($t.unbox($result1)).then(function ($result0) {
+              return $g.____testlib.basictypes.Integer.$equals($result2, $t.fastbox(2, $g.____testlib.basictypes.Integer)).then(function ($result1) {
+                return $promise.resolve($result1.$wrapped).then(function ($result0) {
                   return ($promise.shortcircuit($result0, true) || $g.calls.failValue()).then(function ($result3) {
                     return ($promise.shortcircuit($result0, false) || $g.calls.getValue()).then(function ($result4) {
                       $result = $result0 ? $result3 : $result4;

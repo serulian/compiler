@@ -53,7 +53,7 @@ func (sg *stateGenerator) generateConditionalJump(jump *codedom.ConditionalJumpN
 	// Add the expression to the state machine. The type will be a nominally-wrapped Boolean, so we need to unwrap it
 	// here.
 	expression := sg.addTopLevelExpression(
-		codedom.NominalUnwrapping(jump.BranchExpression, jump.BasisNode()))
+		codedom.NominalUnwrapping(jump.BranchExpression, sg.scopegraph.TypeGraph().BoolTypeReference(), jump.BasisNode()))
 
 	currentState := sg.currentState
 

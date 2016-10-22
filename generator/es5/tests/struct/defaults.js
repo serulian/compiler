@@ -14,7 +14,7 @@ $module('defaults', function () {
     $static.$fields = [];
     $t.defineStructField($static, 'AnotherBool', 'AnotherBool', function () {
       return $g.____testlib.basictypes.Boolean;
-    }, true, function () {
+    }, function () {
       return $g.____testlib.basictypes.Boolean;
     }, false);
     this.$typesig = function () {
@@ -42,9 +42,9 @@ $module('defaults', function () {
       };
       instance.$markruntimecreated();
       var init = [];
-      instance.SomeField = $t.box(42, $g.____testlib.basictypes.Integer);
-      instance.AnotherField = $t.box(false, $g.____testlib.basictypes.Boolean);
-      init.push($g.defaults.AnotherStruct.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
+      instance.SomeField = $t.fastbox(42, $g.____testlib.basictypes.Integer);
+      instance.AnotherField = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+      init.push($g.defaults.AnotherStruct.new($t.fastbox(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
         instance.SomeInstance = $result0;
       }));
       return $promise.all(init).then(function () {
@@ -54,17 +54,17 @@ $module('defaults', function () {
     $static.$fields = [];
     $t.defineStructField($static, 'SomeField', 'SomeField', function () {
       return $g.____testlib.basictypes.Integer;
-    }, true, function () {
+    }, function () {
       return $g.____testlib.basictypes.Integer;
     }, false);
     $t.defineStructField($static, 'AnotherField', 'AnotherField', function () {
       return $g.____testlib.basictypes.Boolean;
-    }, true, function () {
+    }, function () {
       return $g.____testlib.basictypes.Boolean;
     }, false);
     $t.defineStructField($static, 'SomeInstance', 'SomeInstance', function () {
       return $g.defaults.AnotherStruct;
-    }, true, function () {
+    }, function () {
       return $g.defaults.AnotherStruct;
     }, false);
     this.$typesig = function () {
@@ -94,7 +94,7 @@ $module('defaults', function () {
           case 0:
             $g.defaults.SomeStruct.new().then(function ($result0) {
               $temp0 = $result0;
-              $result = ($temp0, $temp0.AnotherField = $t.box(true, $g.____testlib.basictypes.Boolean), $temp0);
+              $result = ($temp0, $temp0.AnotherField = $t.fastbox(true, $g.____testlib.basictypes.Boolean), $temp0);
               $current = 1;
               $continue($resolve, $reject);
               return;
@@ -106,10 +106,10 @@ $module('defaults', function () {
 
           case 1:
             ss = $result;
-            $g.____testlib.basictypes.Integer.$equals(ss.SomeField, $t.box(42, $g.____testlib.basictypes.Integer)).then(function ($result2) {
-              return $promise.resolve($t.unbox($result2)).then(function ($result1) {
-                return $promise.resolve($result1 && $t.unbox(ss.AnotherField)).then(function ($result0) {
-                  $result = $t.box($result0 && $t.unbox(ss.SomeInstance.AnotherBool), $g.____testlib.basictypes.Boolean);
+            $g.____testlib.basictypes.Integer.$equals(ss.SomeField, $t.fastbox(42, $g.____testlib.basictypes.Integer)).then(function ($result2) {
+              return $promise.resolve($result2.$wrapped).then(function ($result1) {
+                return $promise.resolve($result1 && ss.AnotherField.$wrapped).then(function ($result0) {
+                  $result = $t.fastbox($result0 && ss.SomeInstance.AnotherBool.$wrapped, $g.____testlib.basictypes.Boolean);
                   $current = 2;
                   $continue($resolve, $reject);
                   return;

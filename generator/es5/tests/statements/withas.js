@@ -11,10 +11,10 @@ $module('withas', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $t.box(123, $g.____testlib.basictypes.Integer);
+            $t.fastbox(123, $g.____testlib.basictypes.Integer);
             someName = someExpr;
             $resources.pushr(someName, 'someName');
-            $t.box(456, $g.____testlib.basictypes.Integer);
+            $t.fastbox(456, $g.____testlib.basictypes.Integer);
             $resources.popr('someName').then(function ($result0) {
               $result = $result0;
               $current = 1;
@@ -27,7 +27,7 @@ $module('withas', function () {
             return;
 
           case 1:
-            $t.box(789, $g.____testlib.basictypes.Integer);
+            $t.fastbox(789, $g.____testlib.basictypes.Integer);
             $resolve();
             return;
 

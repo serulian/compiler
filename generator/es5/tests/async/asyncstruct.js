@@ -15,12 +15,12 @@ $module('asyncstruct', function () {
     $static.$fields = [];
     $t.defineStructField($static, 'Foo', 'Foo', function () {
       return $g.____testlib.basictypes.Integer;
-    }, true, function () {
+    }, function () {
       return $g.____testlib.basictypes.Integer;
     }, false);
     $t.defineStructField($static, 'Bar', 'Bar', function () {
       return $g.____testlib.basictypes.Integer;
-    }, true, function () {
+    }, function () {
       return $g.____testlib.basictypes.Integer;
     }, false);
     this.$typesig = function () {
@@ -81,7 +81,7 @@ $module('asyncstruct', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.asyncstruct.SomeStruct.new($t.box(1, $g.____testlib.basictypes.Integer), $t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result1) {
+            $g.asyncstruct.SomeStruct.new($t.fastbox(1, $g.____testlib.basictypes.Integer), $t.fastbox(2, $g.____testlib.basictypes.Integer)).then(function ($result1) {
               return $promise.translate($g.asyncstruct.DoSomethingAsync($result1)).then(function ($result0) {
                 $result = $result0;
                 $current = 1;
@@ -96,7 +96,7 @@ $module('asyncstruct', function () {
 
           case 1:
             vle = $result;
-            $g.____testlib.basictypes.String.$equals(vle, $t.box("12", $g.____testlib.basictypes.String)).then(function ($result0) {
+            $g.____testlib.basictypes.String.$equals(vle, $t.fastbox("12", $g.____testlib.basictypes.String)).then(function ($result0) {
               $result = $result0;
               $current = 2;
               $continue($resolve, $reject);

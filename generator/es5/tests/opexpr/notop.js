@@ -30,7 +30,7 @@ $module('notop', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.notop.SomeClass.new($t.box(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
+            $g.notop.SomeClass.new($t.fastbox(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $current = 1;
               $continue($resolve, $reject);
@@ -44,7 +44,7 @@ $module('notop', function () {
           case 1:
             sc = $result;
             $g.notop.SomeClass.$bool(sc).then(function ($result0) {
-              $result = $t.box(!$t.unbox($result0), $g.____testlib.basictypes.Boolean);
+              $result = $t.fastbox(!$result0.$wrapped, $g.____testlib.basictypes.Boolean);
               $current = 2;
               $continue($resolve, $reject);
               return;

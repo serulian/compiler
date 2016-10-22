@@ -47,7 +47,13 @@ func (db *domBuilder) buildSmlExpression(node compilergraph.GraphNode) codedom.E
 		for ait.Next() {
 			attributeNode := ait.Node()
 			attributeName := attributeNode.Get(parser.NodeSmlAttributeName)
-			attributeExpressions[attributeName] = db.getExpressionOrDefault(attributeNode, parser.NodeSmlAttributeValue, codedom.LiteralValue("true", attributeNode))
+			attributeExpressions[attributeName] = db.getExpressionOrDefault(
+				attributeNode,
+				parser.NodeSmlAttributeValue,
+				codedom.NominalWrapping(
+					codedom.LiteralValue("true", attributeNode),
+					db.scopegraph.TypeGraph().BoolType(),
+					attributeNode))
 		}
 
 		// Construct the props object expression, either as a struct, class or as a mapping.
@@ -121,7 +127,10 @@ func (db *domBuilder) buildSmlExpression(node compilergraph.GraphNode) codedom.E
 		decoratorValue := db.getExpressionOrDefault(
 			decoratorNode,
 			parser.NodeSmlDecoratorValue,
-			codedom.LiteralValue("true", decoratorNode))
+			codedom.NominalWrapping(
+				codedom.LiteralValue("true", decoratorNode),
+				db.scopegraph.TypeGraph().BoolType(),
+				decoratorNode))
 
 		// The decorator is invoked over the definition.
 		decoratorArgs := []codedom.Expression{definition, decoratorValue}

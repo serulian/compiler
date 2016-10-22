@@ -14,7 +14,7 @@ $module('innergeneric', function () {
     $static.$fields = [];
     $t.defineStructField($static, 'BoolValue', 'BoolValue', function () {
       return $g.____testlib.basictypes.Boolean;
-    }, true, function () {
+    }, function () {
       return $g.____testlib.basictypes.Boolean;
     }, false);
     this.$typesig = function () {
@@ -47,7 +47,7 @@ $module('innergeneric', function () {
     $static.$fields = [];
     $t.defineStructField($static, 'SomeField', 'SomeField', function () {
       return T;
-    }, false, function () {
+    }, function () {
       return T;
     }, false);
     this.$typesig = function () {
@@ -77,7 +77,7 @@ $module('innergeneric', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.innergeneric.AnotherStruct.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
+            $g.innergeneric.AnotherStruct.new($t.fastbox(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
               return $g.innergeneric.SomeStruct($t.struct).new($result1).then(function ($result0) {
                 $result = $result0;
                 $current = 1;
@@ -131,9 +131,9 @@ $module('innergeneric', function () {
 
           case 4:
             iss = $result;
-            $promise.resolve($t.unbox($t.cast(ss.SomeField, $g.innergeneric.AnotherStruct, false).BoolValue)).then(function ($result1) {
-              return $promise.resolve($result1 && $t.unbox(sscopy.SomeField.BoolValue)).then(function ($result0) {
-                $result = $t.box($result0 && $t.unbox($t.cast(iss.SomeField, $g.innergeneric.AnotherStruct, false).BoolValue), $g.____testlib.basictypes.Boolean);
+            $promise.resolve($t.cast(ss.SomeField, $g.innergeneric.AnotherStruct, false).BoolValue.$wrapped).then(function ($result1) {
+              return $promise.resolve($result1 && sscopy.SomeField.BoolValue.$wrapped).then(function ($result0) {
+                $result = $t.fastbox($result0 && $t.cast(iss.SomeField, $g.innergeneric.AnotherStruct, false).BoolValue.$wrapped, $g.____testlib.basictypes.Boolean);
                 $current = 5;
                 $continue($resolve, $reject);
                 return;

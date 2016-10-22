@@ -14,7 +14,7 @@ $module('generic', function () {
     $static.$fields = [];
     $t.defineStructField($static, 'BoolValue', 'BoolValue', function () {
       return $g.____testlib.basictypes.Boolean;
-    }, true, function () {
+    }, function () {
       return $g.____testlib.basictypes.Boolean;
     }, false);
     this.$typesig = function () {
@@ -47,7 +47,7 @@ $module('generic', function () {
     $static.$fields = [];
     $t.defineStructField($static, 'SomeField', 'SomeField', function () {
       return T;
-    }, false, function () {
+    }, function () {
       return T;
     }, false);
     this.$typesig = function () {
@@ -75,7 +75,7 @@ $module('generic', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.generic.AnotherStruct.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
+            $g.generic.AnotherStruct.new($t.fastbox(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
               return $g.generic.SomeStruct($g.generic.AnotherStruct).new($result1).then(function ($result0) {
                 $result = $result0;
                 $current = 1;
@@ -90,7 +90,7 @@ $module('generic', function () {
 
           case 1:
             ss = $result;
-            $g.generic.SomeStruct($g.____testlib.basictypes.Boolean).new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
+            $g.generic.SomeStruct($g.____testlib.basictypes.Boolean).new($t.fastbox(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $current = 2;
               $continue($resolve, $reject);
@@ -103,8 +103,8 @@ $module('generic', function () {
 
           case 2:
             ss2 = $result;
-            $promise.resolve($t.unbox(ss.SomeField.BoolValue)).then(function ($result0) {
-              $result = $t.box($result0 && $t.unbox(ss2.SomeField), $g.____testlib.basictypes.Boolean);
+            $promise.resolve(ss.SomeField.BoolValue.$wrapped).then(function ($result0) {
+              $result = $t.fastbox($result0 && ss2.SomeField.$wrapped, $g.____testlib.basictypes.Boolean);
               $current = 3;
               $continue($resolve, $reject);
               return;

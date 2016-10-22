@@ -287,12 +287,10 @@ this.$struct('{{ .Type.GlobalUniqueId }}', '{{ .Type.Name }}', {{ .HasGenerics }
 	{{ $parent := . }}
 
 	{{ range $idx, $field := .Fields }}
-	 	{{ $boxed := $field.MemberType.IsNominalOrStruct }}
 		$t.defineStructField($static,
 							 '{{ $field.Name }}',
 							 '{{ $field.SerializableName }}',
 							 function() { return {{ $parent.TypeReferenceCall $field.MemberType }} },
-							 {{ $boxed }},
 							 function() { return {{ $parent.TypeReferenceCall $field.MemberType.NominalRootType }} },
 							 {{ $field.MemberType.NullValueAllowed }});
 	{{ end }}

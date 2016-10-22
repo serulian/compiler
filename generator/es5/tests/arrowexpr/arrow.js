@@ -15,7 +15,7 @@ $module('arrow', function () {
         while (true) {
           switch ($current) {
             case 0:
-              resolve($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
+              resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
                 $result = $result0;
                 $current = 1;
                 $continue($resolve, $reject);

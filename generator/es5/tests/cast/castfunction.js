@@ -4,7 +4,7 @@ $module('castfunction', function () {
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       $t.cast($g.castfunction.TEST, $g.____testlib.basictypes.Function($t.any), false);
-      $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+      $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
       return;
     };
     return $promise.new($continue);

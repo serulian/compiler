@@ -3,7 +3,7 @@ $module('decorator', function () {
   $static.SimpleFunction = function () {
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      $resolve($t.box(10, $g.____testlib.basictypes.Integer));
+      $resolve($t.fastbox(10, $g.____testlib.basictypes.Integer));
       return;
     };
     return $promise.new($continue);
@@ -75,9 +75,9 @@ $module('decorator', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $promise.resolve($t.unbox(value)).then(function ($result0) {
-              return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.Integer.$equals(decorated, $t.box(15, $g.____testlib.basictypes.Integer))).then(function ($result1) {
-                $result = $t.box($result0 && $t.unbox($result1), $g.____testlib.basictypes.Boolean);
+            $promise.resolve(value.$wrapped).then(function ($result0) {
+              return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.Integer.$equals(decorated, $t.fastbox(15, $g.____testlib.basictypes.Integer))).then(function ($result1) {
+                $result = $t.fastbox($result0 && $result1.$wrapped, $g.____testlib.basictypes.Boolean);
                 $current = 1;
                 $continue($resolve, $reject);
                 return;
@@ -108,9 +108,9 @@ $module('decorator', function () {
         switch ($current) {
           case 0:
             $g.decorator.SimpleFunction().then(function ($result3) {
-              return $g.decorator.First($result3, $t.box(10, $g.____testlib.basictypes.Integer)).then(function ($result2) {
-                return $g.decorator.Second($result2, $t.box(5, $g.____testlib.basictypes.Integer)).then(function ($result1) {
-                  return $g.decorator.Check($result1, true).then(function ($result0) {
+              return $g.decorator.First($result3, $t.fastbox(10, $g.____testlib.basictypes.Integer)).then(function ($result2) {
+                return $g.decorator.Second($result2, $t.fastbox(5, $g.____testlib.basictypes.Integer)).then(function ($result1) {
+                  return $g.decorator.Check($result1, $t.fastbox(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
                     $result = $result0;
                     $current = 1;
                     $continue($resolve, $reject);

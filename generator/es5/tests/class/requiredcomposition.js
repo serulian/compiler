@@ -74,7 +74,7 @@ $module('requiredcomposition', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.requiredcomposition.SomeClass.new($t.box(42, $g.____testlib.basictypes.Integer), $t.box('hello', $g.____testlib.basictypes.String)).then(function ($result0) {
+            $g.requiredcomposition.SomeClass.new($t.fastbox(42, $g.____testlib.basictypes.Integer), $t.fastbox('hello', $g.____testlib.basictypes.String)).then(function ($result0) {
               $result = $result0;
               $current = 1;
               $continue($resolve, $reject);
@@ -87,10 +87,10 @@ $module('requiredcomposition', function () {
 
           case 1:
             sc = $result;
-            $g.____testlib.basictypes.Integer.$equals(sc.FirstValue, $t.box(42, $g.____testlib.basictypes.Integer)).then(function ($result1) {
-              return $promise.resolve($t.unbox($result1)).then(function ($result0) {
-                return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.String.$equals(sc.SecondValue, $t.box('hello', $g.____testlib.basictypes.String))).then(function ($result2) {
-                  $result = $t.box($result0 && $t.unbox($result2), $g.____testlib.basictypes.Boolean);
+            $g.____testlib.basictypes.Integer.$equals(sc.FirstValue, $t.fastbox(42, $g.____testlib.basictypes.Integer)).then(function ($result1) {
+              return $promise.resolve($result1.$wrapped).then(function ($result0) {
+                return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.String.$equals(sc.SecondValue, $t.fastbox('hello', $g.____testlib.basictypes.String))).then(function ($result2) {
+                  $result = $t.fastbox($result0 && $result2.$wrapped, $g.____testlib.basictypes.Boolean);
                   $current = 2;
                   $continue($resolve, $reject);
                   return;

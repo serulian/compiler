@@ -20,7 +20,7 @@ $module('identifier', function () {
     var someVar;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      someVar = $t.box(2, $g.____testlib.basictypes.Integer);
+      someVar = $t.fastbox(2, $g.____testlib.basictypes.Integer);
       $g.identifier.SomeClass;
       $g.identifier.AnotherFunction;
       $resolve();

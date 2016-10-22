@@ -6,7 +6,7 @@ $module('loopexpr', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $t.box(1234, $g.____testlib.basictypes.Integer);
+            $t.fastbox(1234, $g.____testlib.basictypes.Integer);
             $current = 1;
             continue;
 
@@ -21,12 +21,12 @@ $module('loopexpr', function () {
             break;
 
           case 2:
-            $t.box(1357, $g.____testlib.basictypes.Integer);
+            $t.fastbox(1357, $g.____testlib.basictypes.Integer);
             $current = 1;
             continue;
 
           case 3:
-            $t.box(5678, $g.____testlib.basictypes.Integer);
+            $t.fastbox(5678, $g.____testlib.basictypes.Integer);
             $resolve();
             return;
 

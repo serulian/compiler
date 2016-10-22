@@ -13,7 +13,7 @@ $module('nullbox', function () {
     $static.$fields = [];
     $t.defineStructField($static, 'Value', 'Value', function () {
       return $g.____testlib.basictypes.String;
-    }, true, function () {
+    }, function () {
       return $g.____testlib.basictypes.String;
     }, true);
     this.$typesig = function () {
@@ -57,8 +57,8 @@ $module('nullbox', function () {
             s = $result;
             $promise.resolve(s.Value == null).then(function ($result0) {
               return ($promise.shortcircuit($result0, true) || s.Mapping()).then(function ($result2) {
-                return ($promise.shortcircuit($result0, true) || $result2.$index($t.box('Value', $g.____testlib.basictypes.String))).then(function ($result1) {
-                  $result = $t.box($result0 && ($result1 == null), $g.____testlib.basictypes.Boolean);
+                return ($promise.shortcircuit($result0, true) || $result2.$index($t.fastbox('Value', $g.____testlib.basictypes.String))).then(function ($result1) {
+                  $result = $t.fastbox($result0 && ($result1 == null), $g.____testlib.basictypes.Boolean);
                   $current = 2;
                   $continue($resolve, $reject);
                   return;

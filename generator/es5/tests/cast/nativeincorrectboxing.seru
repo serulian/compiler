@@ -1,0 +1,7 @@
+from webidl`../../../../testlib/basic` import String as DOMString
+
+function<any> TEST() {
+	var<any> sany = 'hello world'
+	result, err := string(sany.(DOMString))
+	return result is null && err is not null
+}

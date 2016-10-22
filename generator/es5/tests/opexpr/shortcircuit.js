@@ -11,7 +11,7 @@ $module('shortcircuit', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box('WHY CALLED? ', $g.____testlib.basictypes.String));
+        $resolve($t.fastbox('WHY CALLED? ', $g.____testlib.basictypes.String));
         return;
       };
       return $promise.new($continue);
@@ -96,9 +96,9 @@ $module('shortcircuit', function () {
           case 0:
             $promise.resolve(false).then(function ($result1) {
               return ($promise.shortcircuit($result1, true) || $g.shortcircuit.neverCalled()).then(function ($result2) {
-                return $promise.resolve(!($result1 && $t.unbox($result2))).then(function ($result0) {
+                return $promise.resolve(!($result1 && $result2.$wrapped)).then(function ($result0) {
                   return ($promise.shortcircuit($result0, false) || $g.shortcircuit.anotherNeverCalled()).then(function ($result3) {
-                    $result = $t.box($result0 || $t.unbox($result3), $g.____testlib.basictypes.Boolean);
+                    $result = $t.fastbox($result0 || $result3.$wrapped, $g.____testlib.basictypes.Boolean);
                     $current = 1;
                     $continue($resolve, $reject);
                     return;

@@ -22,10 +22,10 @@ $module('classprops', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.____testlib.basictypes.String.$equals(props.StringValue, $t.box("hello world", $g.____testlib.basictypes.String)).then(function ($result2) {
-              return $promise.resolve($t.unbox($result2)).then(function ($result1) {
-                return $promise.resolve($result1 && $t.unbox(props.BoolValue)).then(function ($result0) {
-                  $result = $t.box($result0 && !(props.OptionalValue == null), $g.____testlib.basictypes.Boolean);
+            $g.____testlib.basictypes.String.$equals(props.StringValue, $t.fastbox("hello world", $g.____testlib.basictypes.String)).then(function ($result2) {
+              return $promise.resolve($result2.$wrapped).then(function ($result1) {
+                return $promise.resolve($result1 && props.BoolValue.$wrapped).then(function ($result0) {
+                  $result = $t.fastbox($result0 && !(props.OptionalValue == null), $g.____testlib.basictypes.Boolean);
                   $current = 1;
                   $continue($resolve, $reject);
                   return;
@@ -57,9 +57,9 @@ $module('classprops', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.classprops.SomeProps.new(true, $t.box("hello world", $g.____testlib.basictypes.String)).then(function ($result1) {
+            $g.classprops.SomeProps.new($t.fastbox(true, $g.____testlib.basictypes.Boolean), $t.fastbox("hello world", $g.____testlib.basictypes.String)).then(function ($result1) {
               $temp0 = $result1;
-              return $g.classprops.SimpleFunction(($temp0, $temp0.OptionalValue = $t.box(42, $g.____testlib.basictypes.Integer), $temp0)).then(function ($result0) {
+              return $g.classprops.SimpleFunction(($temp0, $temp0.OptionalValue = $t.fastbox(42, $g.____testlib.basictypes.Integer), $temp0)).then(function ($result0) {
                 $result = $result0;
                 $current = 1;
                 $continue($resolve, $reject);

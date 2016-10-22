@@ -11,7 +11,7 @@ $module('expectrejection', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box('yo!', $g.____testlib.basictypes.String));
+        $resolve($t.fastbox('yo!', $g.____testlib.basictypes.String));
         return;
       };
       return $promise.new($continue);
@@ -84,8 +84,8 @@ $module('expectrejection', function () {
           case 1:
             $promise.resolve(a == null).then(function ($result0) {
               return ($promise.shortcircuit($result0, true) || $t.assertnotnull(b).Message()).then(function ($result2) {
-                return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.String.$equals($result2, $t.box('yo!', $g.____testlib.basictypes.String))).then(function ($result1) {
-                  $result = $t.box($result0 && $t.unbox($result1), $g.____testlib.basictypes.Boolean);
+                return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.String.$equals($result2, $t.fastbox('yo!', $g.____testlib.basictypes.String))).then(function ($result1) {
+                  $result = $t.fastbox($result0 && $result1.$wrapped, $g.____testlib.basictypes.Boolean);
                   $current = 2;
                   $continue($resolve, $reject);
                   return;

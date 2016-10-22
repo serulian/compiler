@@ -131,7 +131,7 @@ $module('generic', function () {
             $t.cast(asc, $g.generic.ASomething, false);
             $t.cast(asc2, $g.generic.ASomething, false);
             $t.cast(bsc, $g.generic.BSomething, false);
-            $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+            $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
             return;
 
           default:

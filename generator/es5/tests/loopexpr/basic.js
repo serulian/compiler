@@ -6,17 +6,17 @@ $module('basic', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $yield($t.box(1, $g.____testlib.basictypes.Integer));
+            $yield($t.fastbox(1, $g.____testlib.basictypes.Integer));
             $current = 1;
             return;
 
           case 1:
-            $yield($t.box(2, $g.____testlib.basictypes.Integer));
+            $yield($t.fastbox(2, $g.____testlib.basictypes.Integer));
             $current = 2;
             return;
 
           case 2:
-            $yield($t.box(3, $g.____testlib.basictypes.Integer));
+            $yield($t.fastbox(3, $g.____testlib.basictypes.Integer));
             $current = 3;
             return;
 
@@ -48,7 +48,7 @@ $module('basic', function () {
                   while (true) {
                     switch ($current) {
                       case 0:
-                        $g.____testlib.basictypes.Integer.$plus(s, $t.box(1, $g.____testlib.basictypes.Integer)).then(function ($result0) {
+                        $g.____testlib.basictypes.Integer.$plus(s, $t.fastbox(1, $g.____testlib.basictypes.Integer)).then(function ($result0) {
                           $result = $result0;
                           $current = 1;
                           $continue($resolve, $reject);
@@ -84,7 +84,7 @@ $module('basic', function () {
 
           case 1:
             s = $result;
-            counter = $t.box(0, $g.____testlib.basictypes.Integer);
+            counter = $t.fastbox(0, $g.____testlib.basictypes.Integer);
             $current = 2;
             continue;
 
@@ -108,7 +108,7 @@ $module('basic', function () {
 
           case 4:
             entry = $temp0.First;
-            if ($t.unbox($temp0.Second)) {
+            if ($temp0.Second.$wrapped) {
               $current = 5;
               continue;
             } else {
@@ -135,7 +135,7 @@ $module('basic', function () {
             continue;
 
           case 7:
-            $g.____testlib.basictypes.Integer.$equals(counter, $t.box(9, $g.____testlib.basictypes.Integer)).then(function ($result0) {
+            $g.____testlib.basictypes.Integer.$equals(counter, $t.fastbox(9, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $result = $result0;
               $current = 8;
               $continue($resolve, $reject);

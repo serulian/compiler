@@ -14,7 +14,7 @@ $module('tagged', function () {
     $static.$fields = [];
     $t.defineStructField($static, 'SomeField', 'somefield', function () {
       return $g.____testlib.basictypes.Integer;
-    }, true, function () {
+    }, function () {
       return $g.____testlib.basictypes.Integer;
     }, false);
     this.$typesig = function () {
@@ -42,7 +42,7 @@ $module('tagged', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.tagged.SomeStruct.new($t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
+            $g.tagged.SomeStruct.new($t.fastbox(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $result = $result0;
               $current = 1;
               $continue($resolve, $reject);
@@ -55,7 +55,7 @@ $module('tagged', function () {
 
           case 1:
             s = $result;
-            jsonString = $t.box('{"somefield":2}', $g.____testlib.basictypes.String);
+            jsonString = $t.fastbox('{"somefield":2}', $g.____testlib.basictypes.String);
             s.Stringify($g.____testlib.basictypes.JSON)().then(function ($result1) {
               return $g.____testlib.basictypes.String.$equals($result1, jsonString).then(function ($result0) {
                 $result = $result0;

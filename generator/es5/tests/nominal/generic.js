@@ -11,7 +11,7 @@ $module('generic', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+        $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
         return;
       };
       return $promise.new($continue);
@@ -46,7 +46,7 @@ $module('generic', function () {
         while (true) {
           switch ($current) {
             case 0:
-              $t.unbox($this).DoSomething().then(function ($result0) {
+              $this.$wrapped.DoSomething().then(function ($result0) {
                 $result = $result0;
                 $current = 1;
                 $continue($resolve, $reject);
@@ -73,7 +73,7 @@ $module('generic', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+        $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
         return;
       };
       return $promise.new($continue);
@@ -112,11 +112,11 @@ $module('generic', function () {
 
           case 1:
             sc = $result;
-            m = $t.box(sc, $g.generic.MyType($g.____testlib.basictypes.Integer));
+            m = $t.fastbox(sc, $g.generic.MyType($g.____testlib.basictypes.Integer));
             m.SomeProp().then(function ($result1) {
-              return $promise.resolve($t.unbox($result1)).then(function ($result0) {
+              return $promise.resolve($result1.$wrapped).then(function ($result0) {
                 return ($promise.shortcircuit($result0, true) || m.AnotherThing()).then(function ($result2) {
-                  $result = $t.box($result0 && $t.unbox($result2), $g.____testlib.basictypes.Boolean);
+                  $result = $t.fastbox($result0 && $result2.$wrapped, $g.____testlib.basictypes.Boolean);
                   $current = 2;
                   $continue($resolve, $reject);
                   return;

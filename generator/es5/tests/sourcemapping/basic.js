@@ -105,11 +105,14 @@ this.Serulian = function ($global) {
       }
       return instance;
     },
-    box: function (instance, type, opt_external) {
+    box: function (instance, type) {
       if (instance == null) {
         return null;
       }
-      return type.$box($t.unbox(instance), opt_external);
+      return type.$box($t.unbox(instance));
+    },
+    fastbox: function (instance, type) {
+      return type.$box(instance);
     },
     roottype: function (type) {
       if (type.$roottype) {
@@ -120,6 +123,10 @@ this.Serulian = function ($global) {
     istype: function (value, type) {
       if ((type == $t.any) || ((value != null) && ((value.constructor == type) || (value instanceof type)))) {
         return true;
+      }
+      if (type == $t.struct) {
+        var roottype = $t.roottype(value.constructor);
+        return ((((roottype.$typekind == 'struct') || (roottype == Number)) || (roottype == String)) || (roottype == Boolean)) || (roottype == Object);
       }
       if ((type.$generic == $a['function']) && (typeof value == 'function')) {
         return value;
@@ -174,6 +181,9 @@ this.Serulian = function ($global) {
             throw Error((('Cannot auto-box ' + value.constructor.toString()) + ' to ') + type.toString());
           }
           break;
+
+        case undefined:
+          throw Error((('Cannot cast ' + value.constructor.toString()) + ' to ') + type.toString());
       }
       if (type.$box) {
         return $t.box(value, type);
@@ -272,13 +282,12 @@ this.Serulian = function ($global) {
       };
       return ((((((((((S4(buf[0]) + S4(buf[1])) + "-") + S4(buf[2])) + "-") + S4(buf[3])) + "-") + S4(buf[4])) + "-") + S4(buf[5])) + S4(buf[6])) + S4(buf[7]);
     },
-    defineStructField: function (structType, name, serializableName, typeref, isBoxed, opt_nominalRootType, opt_nullAllowed) {
+    defineStructField: function (structType, name, serializableName, typeref, opt_nominalRootType, opt_nullAllowed) {
       var field = {
         name: name,
         serializableName: serializableName,
         typeref: typeref,
         nominalRootTyperef: opt_nominalRootType || typeref,
-        isBoxed: isBoxed,
         nullAllowed: opt_nullAllowed,
       };
       structType.$fields.push(field);
@@ -290,8 +299,9 @@ this.Serulian = function ($global) {
               $t.ensurevalue($t.unbox(boxedData[field.serializableName]), field.nominalRootTyperef(), field.nullAllowed, field.name);
               this.$lazychecked[field.name] = true;
             }
-            if (field.isBoxed) {
-              return $t.box(boxedData[field.serializableName], field.typeref());
+            var fieldType = field.typeref();
+            if (fieldType.$box) {
+              return $t.box(boxedData[field.serializableName], fieldType);
             } else {
               return boxedData[field.serializableName];
             }
@@ -470,10 +480,10 @@ this.Serulian = function ($global) {
               return;
             }
             var $yield = function (value) {
-              $a['tuple']($t.any, $a['bool']).Build(value, true).then(resolve);
+              $a['tuple']($t.any, $a['bool']).Build(value, $t.box(true, $a['bool'])).then(resolve);
             };
             var $done = function () {
-              $a['tuple']($t.any, $a['bool']).Build(null, false).then(resolve);
+              $a['tuple']($t.any, $a['bool']).Build(null, $t.box(false, $a['bool'])).then(resolve);
             };
             var $yieldin = function (ins) {
               stream.$is = ins;
@@ -559,7 +569,7 @@ this.Serulian = function ($global) {
           tpe.$typekind = kind;
           creator.apply(tpe, args);
           if (kind == 'struct') {
-            tpe.$box = function (data, opt_external) {
+            tpe.$box = function (data) {
               var instance = new tpe();
               instance[BOXED_DATA_PROPERTY] = data;
               instance.$lazychecked = {
@@ -775,9 +785,9 @@ this.Serulian = function ($global) {
       var $instance = this.prototype;
       $static.new = function () {
         var instance = new $static();
-        instance.start = /*#0#*/$t.box(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer);
-        instance.end = /*#-1#*/$t.box(/*#-1#*/-/*#-1#*/1, /*#-1#*/$g.____testlib.basictypes.Integer);
-        instance.current = /*#0#*/$t.box(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer);
+        instance.start = /*#0#*/$t.fastbox(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer);
+        instance.end = /*#-1#*/$t.fastbox(/*#-1#*/-/*#-1#*/1, /*#-1#*/$g.____testlib.basictypes.Integer);
+        instance.current = /*#0#*/$t.fastbox(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer);
         return $promise.resolve(instance);
       };
       $static.OverRange = function (start, end) {
@@ -825,7 +835,7 @@ this.Serulian = function ($global) {
             switch ($current) {
               case 0:
 /*#this.current <= this.end {#*/                $g.____testlib.basictypes.Integer.$compare(/*#this.current <= this.end {#*/$this.current, /*#this.end {#*/$this.end).then(/*#this.end {#*/function (/*#this.end {#*/$result0) /*#this.end {#*/{
-                  $result = /*#this.current <= this.end {#*/$t.unbox(/*#this.current <= this.end {#*/$result0) <= /*#this.current <= this.end {#*/0;
+                  $result = /*#this.current <= this.end {#*/$result0.$wrapped <= /*#this.current <= this.end {#*/0;
                   $current = 1;
                   $continue($resolve, $reject);
                   return;
@@ -846,7 +856,7 @@ this.Serulian = function ($global) {
                 break;
 
               case 2:
-/*#Tuple<int, bool>.Build(this.current, true)#*/                $g.____testlib.basictypes.Tuple(/*#int, bool>.Build(this.current, true)#*/$g.____testlib.basictypes.Integer, /*#bool>.Build(this.current, true)#*/$g.____testlib.basictypes.Boolean).Build(/*#this.current, true)#*/$this.current, /*#true)#*/$t.box(/*#true)#*/true, /*#true)#*/$g.____testlib.basictypes.Boolean)).then(/*#true)#*/function (/*#true)#*/$result0) /*#true)#*/{
+/*#Tuple<int, bool>.Build(this.current, true)#*/                $g.____testlib.basictypes.Tuple(/*#int, bool>.Build(this.current, true)#*/$g.____testlib.basictypes.Integer, /*#bool>.Build(this.current, true)#*/$g.____testlib.basictypes.Boolean).Build(/*#this.current, true)#*/$this.current, /*#true)#*/$t.fastbox(/*#true)#*/true, /*#true)#*/$g.____testlib.basictypes.Boolean)).then(/*#true)#*/function (/*#true)#*/$result0) /*#true)#*/{
                   $result = /*#.Build(this.current, true)#*/$result0;
                   $current = 3;
                   $continue($resolve, $reject);
@@ -859,7 +869,7 @@ this.Serulian = function ($global) {
 
               case 3:
                 t = $result;
-/*#this.current + 1#*/                $g.____testlib.basictypes.Integer.$plus(/*#this.current + 1#*/$this.current, /*#1#*/$t.box(/*#1#*/1, /*#1#*/$g.____testlib.basictypes.Integer)).then(/*#1#*/function (/*#1#*/$result0) /*#1#*/{
+/*#this.current + 1#*/                $g.____testlib.basictypes.Integer.$plus(/*#this.current + 1#*/$this.current, /*#1#*/$t.fastbox(/*#1#*/1, /*#1#*/$g.____testlib.basictypes.Integer)).then(/*#1#*/function (/*#1#*/$result0) /*#1#*/{
                   $result = /*#this.current = this.current + 1#*/$this.current = /*#this.current + 1#*/$result0;
                   $current = 4;
                   $continue($resolve, $reject);
@@ -875,7 +885,7 @@ this.Serulian = function ($global) {
                 return;
 
               case 5:
-/*#Tuple<int, bool>.Build(this.current, false)#*/                $g.____testlib.basictypes.Tuple(/*#int, bool>.Build(this.current, false)#*/$g.____testlib.basictypes.Integer, /*#bool>.Build(this.current, false)#*/$g.____testlib.basictypes.Boolean).Build(/*#this.current, false)#*/$this.current, /*#false)#*/$t.box(/*#false)#*/false, /*#false)#*/$g.____testlib.basictypes.Boolean)).then(/*#false)#*/function (/*#false)#*/$result0) /*#false)#*/{
+/*#Tuple<int, bool>.Build(this.current, false)#*/                $g.____testlib.basictypes.Tuple(/*#int, bool>.Build(this.current, false)#*/$g.____testlib.basictypes.Integer, /*#bool>.Build(this.current, false)#*/$g.____testlib.basictypes.Boolean).Build(/*#this.current, false)#*/$this.current, /*#false)#*/$t.fastbox(/*#false)#*/false, /*#false)#*/$g.____testlib.basictypes.Boolean)).then(/*#false)#*/function (/*#false)#*/$result0) /*#false)#*/{
                   $result = /*#.Build(this.current, false)#*/$result0;
                   $current = 6;
                   $continue($resolve, $reject);
@@ -968,7 +978,7 @@ this.Serulian = function ($global) {
         var $this = this;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#int(this.items.length)#*/$t.box(/*#this.items.length)#*/$this.items.length, /*#int(this.items.length)#*/$g.____testlib.basictypes.Integer));
+          $resolve(/*#int(this.items.length)#*/$t.fastbox(/*#this.items.length)#*/$this.items.length, /*#int(this.items.length)#*/$g.____testlib.basictypes.Integer));
           return;
         };
         return $promise.new($continue);
@@ -977,7 +987,7 @@ this.Serulian = function ($global) {
         var $this = this;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#[&index].(T)#*/$t.cast(/*#this.items[&index].(T)#*/$this.items[/*#index].(T)#*/$t.unbox(/*#index].(T)#*/index)], /*#[&index].(T)#*/T, /*#[&index].(T)#*/false));
+          $resolve(/*#[&index].(T)#*/$t.cast(/*#this.items[&index].(T)#*/$this.items[/*#index].(T)#*/index.$wrapped], /*#[&index].(T)#*/T, /*#[&index].(T)#*/false));
           return;
         };
         return $promise.new($continue);
@@ -993,7 +1003,7 @@ this.Serulian = function ($global) {
             switch ($current) {
               case 0:
 /*#startindex ?? 0#*/                $promise.resolve(/*#startindex ?? 0#*/startindex).then(/*#startindex ?? 0#*/function (/*#startindex ?? 0#*/$result0) /*#startindex ?? 0#*/{
-                  $result = /*#startindex ?? 0#*/$t.nullcompare(/*#startindex ?? 0#*/$result0, /*#0#*/$t.box(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer));
+                  $result = /*#startindex ?? 0#*/$t.nullcompare(/*#startindex ?? 0#*/$result0, /*#0#*/$t.fastbox(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer));
                   $current = 1;
                   $continue($resolve, $reject);
                   return;
@@ -1020,8 +1030,8 @@ this.Serulian = function ($global) {
 
               case 2:
                 end = $result;
-/*#start < 0 {#*/                $g.____testlib.basictypes.Integer.$compare(/*#start < 0 {#*/start, /*#0 {#*/$t.box(/*#0 {#*/0, /*#0 {#*/$g.____testlib.basictypes.Integer)).then(/*#0 {#*/function (/*#0 {#*/$result0) /*#0 {#*/{
-                  $result = /*#start < 0 {#*/$t.unbox(/*#start < 0 {#*/$result0) < /*#start < 0 {#*/0;
+/*#start < 0 {#*/                $g.____testlib.basictypes.Integer.$compare(/*#start < 0 {#*/start, /*#0 {#*/$t.fastbox(/*#0 {#*/0, /*#0 {#*/$g.____testlib.basictypes.Integer)).then(/*#0 {#*/function (/*#0 {#*/$result0) /*#0 {#*/{
+                  $result = /*#start < 0 {#*/$result0.$wrapped < /*#start < 0 {#*/0;
                   $current = 3;
                   $continue($resolve, $reject);
                   return;
@@ -1061,8 +1071,8 @@ this.Serulian = function ($global) {
                 continue;
 
               case 6:
-/*#end < 0 {#*/                $g.____testlib.basictypes.Integer.$compare(/*#end < 0 {#*/end, /*#0 {#*/$t.box(/*#0 {#*/0, /*#0 {#*/$g.____testlib.basictypes.Integer)).then(/*#0 {#*/function (/*#0 {#*/$result0) /*#0 {#*/{
-                  $result = /*#end < 0 {#*/$t.unbox(/*#end < 0 {#*/$result0) < /*#end < 0 {#*/0;
+/*#end < 0 {#*/                $g.____testlib.basictypes.Integer.$compare(/*#end < 0 {#*/end, /*#0 {#*/$t.fastbox(/*#0 {#*/0, /*#0 {#*/$g.____testlib.basictypes.Integer)).then(/*#0 {#*/function (/*#0 {#*/$result0) /*#0 {#*/{
+                  $result = /*#end < 0 {#*/$result0.$wrapped < /*#end < 0 {#*/0;
                   $current = 7;
                   $continue($resolve, $reject);
                   return;
@@ -1103,7 +1113,7 @@ this.Serulian = function ($global) {
 
               case 10:
 /*#start >= end {#*/                $g.____testlib.basictypes.Integer.$compare(/*#start >= end {#*/start, /*#end {#*/end).then(/*#end {#*/function (/*#end {#*/$result0) /*#end {#*/{
-                  $result = /*#start >= end {#*/$t.unbox(/*#start >= end {#*/$result0) >= /*#start >= end {#*/0;
+                  $result = /*#start >= end {#*/$result0.$wrapped >= /*#start >= end {#*/0;
                   $current = 11;
                   $continue($resolve, $reject);
                   return;
@@ -1140,7 +1150,7 @@ this.Serulian = function ($global) {
                 return;
 
               case 14:
-/*#Slice<T>.overArray(this.items.slice(Number(start), Number(end)))#*/                $g.____testlib.basictypes.Slice(/*#T>.overArray(this.items.slice(Number(start), Number(end)))#*/T).overArray(/*#this.items.slice(Number(start), Number(end)))#*/$this.items.slice(/*#Number(start), Number(end)))#*/$t.unbox(/*#start), Number(end)))#*/start), /*#Number(end)))#*/$t.unbox(/*#end)))#*/end))).then(/*#end)))#*/function (/*#end)))#*/$result0) /*#end)))#*/{
+/*#Slice<T>.overArray(this.items.slice(Number(start), Number(end)))#*/                $g.____testlib.basictypes.Slice(/*#T>.overArray(this.items.slice(Number(start), Number(end)))#*/T).overArray(/*#this.items.slice(Number(start), Number(end)))#*/$this.items.slice(/*#start), Number(end)))#*/start.$wrapped, /*#end)))#*/end.$wrapped)).then(/*#end)))#*/function (/*#end)))#*/$result0) /*#end)))#*/{
                   $result = /*#.overArray(this.items.slice(Number(start), Number(end)))#*/$result0;
                   $current = 15;
                   $continue($resolve, $reject);
@@ -1210,13 +1220,13 @@ this.Serulian = function ($global) {
 
               case 1:
                 map = $result;
-                len = /*#int(keys.length)#*/$t.box(/*#keys.length)#*/keys.length, /*#int(keys.length)#*/$g.____testlib.basictypes.Integer);
+                len = /*#int(keys.length)#*/$t.fastbox(/*#keys.length)#*/keys.length, /*#int(keys.length)#*/$g.____testlib.basictypes.Integer);
                 $current = 2;
                 continue;
 
               case 2:
-/*#len - 1) {#*/                $g.____testlib.basictypes.Integer.$minus(/*#len - 1) {#*/len, /*#1) {#*/$t.box(/*#1) {#*/1, /*#1) {#*/$g.____testlib.basictypes.Integer)).then(/*#1) {#*/function (/*#1) {#*/$result1) /*#1) {#*/{
-                  return /*#0..(len - 1) {#*/$g.____testlib.basictypes.Integer.$range(/*#0..(len - 1) {#*/$t.box(/*#0..(len - 1) {#*/0, /*#0..(len - 1) {#*/$g.____testlib.basictypes.Integer), /*#len - 1) {#*/$result1).then(/*#len - 1) {#*/function (/*#len - 1) {#*/$result0) /*#len - 1) {#*/{
+/*#len - 1) {#*/                $g.____testlib.basictypes.Integer.$minus(/*#len - 1) {#*/len, /*#1) {#*/$t.fastbox(/*#1) {#*/1, /*#1) {#*/$g.____testlib.basictypes.Integer)).then(/*#1) {#*/function (/*#1) {#*/$result1) /*#1) {#*/{
+                  return /*#0..(len - 1) {#*/$g.____testlib.basictypes.Integer.$range(/*#0..(len - 1) {#*/$t.fastbox(/*#0..(len - 1) {#*/0, /*#0..(len - 1) {#*/$g.____testlib.basictypes.Integer), /*#len - 1) {#*/$result1).then(/*#len - 1) {#*/function (/*#len - 1) {#*/$result0) /*#len - 1) {#*/{
                     $result = /*#0..(len - 1) {#*/$result0;
                     $current = 3;
                     $continue($resolve, $reject);
@@ -1248,7 +1258,7 @@ this.Serulian = function ($global) {
 
               case 5:
 /*#i in 0..(len - 1) {#*/                i = /*#i in 0..(len - 1) {#*/$temp0.First;
-                if (/*#for i in 0..(len - 1) {#*/$t.unbox(/*#for i in 0..(len - 1) {#*/$temp0.Second)) /*#for i in 0..(len - 1) {#*/{
+                if (/*#for i in 0..(len - 1) {#*/$temp0.Second.$wrapped) /*#for i in 0..(len - 1) {#*/{
                   $current = 6;
                   continue;
                 } else {
@@ -1258,8 +1268,8 @@ this.Serulian = function ($global) {
                 break;
 
               case 6:
-                tKey = /*#[Number(i)].(T)#*/$t.cast(/*#keys[Number(i)].(T)#*/keys[/*#Number(i)].(T)#*/$t.unbox(/*#i)].(T)#*/i)], /*#[Number(i)].(T)#*/T, /*#[Number(i)].(T)#*/false);
-/*#map[tKey] = values[Number(i)].(Q)#*/                map.$setindex(/*#tKey] = values[Number(i)].(Q)#*/tKey, /*#[Number(i)].(Q)#*/$t.cast(/*#values[Number(i)].(Q)#*/values[/*#Number(i)].(Q)#*/$t.unbox(/*#i)].(Q)#*/i)], /*#[Number(i)].(Q)#*/Q, /*#[Number(i)].(Q)#*/false)).then(/*#[Number(i)].(Q)#*/function (/*#[Number(i)].(Q)#*/$result0) /*#[Number(i)].(Q)#*/{
+                tKey = /*#[Number(i)].(T)#*/$t.cast(/*#keys[Number(i)].(T)#*/keys[/*#i)].(T)#*/i.$wrapped], /*#[Number(i)].(T)#*/T, /*#[Number(i)].(T)#*/false);
+/*#map[tKey] = values[Number(i)].(Q)#*/                map.$setindex(/*#tKey] = values[Number(i)].(Q)#*/tKey, /*#[Number(i)].(Q)#*/$t.cast(/*#values[Number(i)].(Q)#*/values[/*#i)].(Q)#*/i.$wrapped], /*#[Number(i)].(Q)#*/Q, /*#[Number(i)].(Q)#*/false)).then(/*#[Number(i)].(Q)#*/function (/*#[Number(i)].(Q)#*/$result0) /*#[Number(i)].(Q)#*/{
                   $result = /*#map[tKey] = values[Number(i)].(Q)#*/$result0;
                   $current = 7;
                   $continue($resolve, $reject);
@@ -1311,7 +1321,7 @@ this.Serulian = function ($global) {
 
               case 1:
                 keyString = $result;
-                value = /*#this.internalObject[NativeString(keyString)]#*/$this.internalObject[/*#NativeString(keyString)]#*/$t.unbox(/*#keyString)]#*/keyString)];
+                value = /*#this.internalObject[NativeString(keyString)]#*/$this.internalObject[/*#keyString)]#*/keyString.$wrapped];
                 if (/*#value is null {#*/value == /*#null {#*/null) /*#null {#*/{
                   $current = 2;
                   continue;
@@ -1361,7 +1371,7 @@ this.Serulian = function ($global) {
 
               case 1:
                 keyString = $result;
-/*#this.internalObject[NativeString(keyString)] = value#*/                $this.internalObject[/*#NativeString(keyString)] = value#*/$t.unbox(/*#keyString)] = value#*/keyString)] = /*#value#*/value;
+/*#this.internalObject[NativeString(keyString)] = value#*/                $this.internalObject[/*#keyString)] = value#*/keyString.$wrapped] = /*#value#*/value;
                 $resolve();
                 return;
 
@@ -1431,7 +1441,7 @@ this.Serulian = function ($global) {
             switch ($current) {
               case 0:
 /*#Internal.autoUnbox))#*/                $t.dynamicaccess(/*#Internal.autoUnbox))#*/$global.__serulian_internal, /*#Internal.autoUnbox))#*/'autoUnbox').then(/*#Internal.autoUnbox))#*/function (/*#Internal.autoUnbox))#*/$result0) /*#Internal.autoUnbox))#*/{
-                  $result = /*#string(NativeJSON.stringify(Object(value), Internal.autoUnbox))#*/$t.box(/*#NativeJSON.stringify(Object(value), Internal.autoUnbox))#*/$global.JSON.stringify(/*#Object(value), Internal.autoUnbox))#*/$t.unbox(/*#value), Internal.autoUnbox))#*/value), /*#Internal.autoUnbox))#*/$result0), /*#string(NativeJSON.stringify(Object(value), Internal.autoUnbox))#*/$g.____testlib.basictypes.String);
+                  $result = /*#string(NativeJSON.stringify(Object(value), Internal.autoUnbox))#*/$t.fastbox(/*#NativeJSON.stringify(Object(value), Internal.autoUnbox))#*/$global.JSON.stringify(/*#value), Internal.autoUnbox))#*/value.$wrapped, /*#Internal.autoUnbox))#*/$result0), /*#string(NativeJSON.stringify(Object(value), Internal.autoUnbox))#*/$g.____testlib.basictypes.String);
                   $current = 1;
                   $continue($resolve, $reject);
                   return;
@@ -1462,7 +1472,7 @@ this.Serulian = function ($global) {
             switch ($current) {
               case 0:
 /*#Internal.autoBox))#*/                $t.dynamicaccess(/*#Internal.autoBox))#*/$global.__serulian_internal, /*#Internal.autoBox))#*/'autoBox').then(/*#Internal.autoBox))#*/function (/*#Internal.autoBox))#*/$result0) /*#Internal.autoBox))#*/{
-                  $result = /*#<any>(NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$t.box(/*#NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$global.JSON.parse(/*#NativeString(value), Internal.autoBox))#*/$t.unbox(/*#value), Internal.autoBox))#*/value), /*#Internal.autoBox))#*/$result0), /*#<any>(NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$g.____testlib.basictypes.Mapping(/*#<any>(NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$t.any));
+                  $result = /*#<any>(NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$t.fastbox(/*#NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$global.JSON.parse(/*#value), Internal.autoBox))#*/value.$wrapped, /*#Internal.autoBox))#*/$result0), /*#<any>(NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$g.____testlib.basictypes.Mapping(/*#<any>(NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$t.any));
                   $current = 1;
                   $continue($resolve, $reject);
                   return;
@@ -1691,7 +1701,7 @@ this.Serulian = function ($global) {
       $static.Empty = function () {
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#<T>(Object.new())#*/$t.box(/*#Object.new())#*/$t.nativenew(/*#Object.new())#*/$global.Object)(), /*#<T>(Object.new())#*/$g.____testlib.basictypes.Mapping(/*#<T>(Object.new())#*/T)));
+          $resolve(/*#<T>(Object.new())#*/$t.fastbox(/*#Object.new())#*/$t.nativenew(/*#Object.new())#*/$global.Object)(), /*#<T>(Object.new())#*/$g.____testlib.basictypes.Mapping(/*#<T>(Object.new())#*/T)));
           return;
         };
         return $promise.new($continue);
@@ -1699,7 +1709,7 @@ this.Serulian = function ($global) {
       $static.overObject = function (obj) {
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#<T>(obj)#*/$t.box(/*#obj)#*/obj, /*#<T>(obj)#*/$g.____testlib.basictypes.Mapping(/*#<T>(obj)#*/T)));
+          $resolve(/*#<T>(obj)#*/$t.fastbox(/*#obj)#*/obj, /*#<T>(obj)#*/$g.____testlib.basictypes.Mapping(/*#<T>(obj)#*/T)));
           return;
         };
         return $promise.new($continue);
@@ -1712,7 +1722,7 @@ this.Serulian = function ($global) {
           while (true) {
             switch ($current) {
               case 0:
-/*#Slice<string>.overArray(Object.keys(Object(this)))#*/                $g.____testlib.basictypes.Slice(/*#string>.overArray(Object.keys(Object(this)))#*/$g.____testlib.basictypes.String).overArray(/*#Object.keys(Object(this)))#*/$global.Object.keys(/*#Object(this)))#*/$t.unbox(/*#this)))#*/$this))).then(/*#this)))#*/function (/*#this)))#*/$result0) /*#this)))#*/{
+/*#Slice<string>.overArray(Object.keys(Object(this)))#*/                $g.____testlib.basictypes.Slice(/*#string>.overArray(Object.keys(Object(this)))#*/$g.____testlib.basictypes.String).overArray(/*#Object.keys(Object(this)))#*/$global.Object.keys(/*#this)))#*/$this.$wrapped)).then(/*#this)))#*/function (/*#this)))#*/$result0) /*#this)))#*/{
                   $result = /*#.overArray(Object.keys(Object(this)))#*/$result0;
                   $current = 1;
                   $continue($resolve, $reject);
@@ -1743,7 +1753,7 @@ this.Serulian = function ($global) {
           while (true) {
             switch ($current) {
               case 0:
-                value = /*#Object(this)[NativeString(key)]#*/$t.unbox(/*#this)[NativeString(key)]#*/$this)[/*#NativeString(key)]#*/$t.unbox(/*#key)]#*/key)];
+                value = /*#this)[NativeString(key)]#*/$this.$wrapped[/*#key)]#*/key.$wrapped];
                 if (/*#value is null {#*/value == /*#null {#*/null) /*#null {#*/{
                   $current = 1;
                   continue;
@@ -1796,7 +1806,7 @@ this.Serulian = function ($global) {
       $static.Empty = function () {
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#<T>(Array.new())#*/$t.box(/*#Array.new())#*/$t.nativenew(/*#Array.new())#*/$global.Array)(), /*#<T>(Array.new())#*/$g.____testlib.basictypes.Slice(/*#<T>(Array.new())#*/T)));
+          $resolve(/*#<T>(Array.new())#*/$t.fastbox(/*#Array.new())#*/$t.nativenew(/*#Array.new())#*/$global.Array)(), /*#<T>(Array.new())#*/$g.____testlib.basictypes.Slice(/*#<T>(Array.new())#*/T)));
           return;
         };
         return $promise.new($continue);
@@ -1804,7 +1814,7 @@ this.Serulian = function ($global) {
       $static.overArray = function (arr) {
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#<T>(arr)#*/$t.box(/*#arr)#*/arr, /*#<T>(arr)#*/$g.____testlib.basictypes.Slice(/*#<T>(arr)#*/T)));
+          $resolve(/*#<T>(arr)#*/$t.fastbox(/*#arr)#*/arr, /*#<T>(arr)#*/$g.____testlib.basictypes.Slice(/*#<T>(arr)#*/T)));
           return;
         };
         return $promise.new($continue);
@@ -1813,7 +1823,7 @@ this.Serulian = function ($global) {
         var $this = this;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#[Number(index)].(T)#*/$t.cast(/*#Array(this)[Number(index)].(T)#*/$t.unbox(/*#this)[Number(index)].(T)#*/$this)[/*#Number(index)].(T)#*/$t.unbox(/*#index)].(T)#*/index)], /*#[Number(index)].(T)#*/T, /*#[Number(index)].(T)#*/false));
+          $resolve(/*#[Number(index)].(T)#*/$t.cast(/*#this)[Number(index)].(T)#*/$this.$wrapped[/*#index)].(T)#*/index.$wrapped], /*#[Number(index)].(T)#*/T, /*#[Number(index)].(T)#*/false));
           return;
         };
         return $promise.new($continue);
@@ -1822,7 +1832,7 @@ this.Serulian = function ($global) {
         var $this = this;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#int(Array(this).length)#*/$t.box(/*#Array(this).length)#*/$t.unbox(/*#this).length)#*/$this).length, /*#int(Array(this).length)#*/$g.____testlib.basictypes.Integer));
+          $resolve(/*#int(Array(this).length)#*/$t.fastbox(/*#this).length)#*/$this.$wrapped.length, /*#int(Array(this).length)#*/$g.____testlib.basictypes.Integer));
           return;
         };
         return $promise.new($continue);
@@ -1884,7 +1894,7 @@ this.Serulian = function ($global) {
       $static.$compare = function (left, right) {
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#Integer(Number(left) - Number(right))#*/$t.box(/*#Number(left) - Number(right))#*/$t.unbox(/*#left) - Number(right))#*/left) - /*#Number(right))#*/$t.unbox(/*#right))#*/right), /*#Integer(Number(left) - Number(right))#*/$g.____testlib.basictypes.Integer));
+          $resolve(/*#Integer(Number(left) - Number(right))#*/$t.fastbox(/*#left) - Number(right))#*/left.$wrapped - /*#right))#*/right.$wrapped, /*#Integer(Number(left) - Number(right))#*/$g.____testlib.basictypes.Integer));
           return;
         };
         return $promise.new($continue);
@@ -1892,7 +1902,7 @@ this.Serulian = function ($global) {
       $static.$equals = function (left, right) {
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#Boolean(Number(left) == Number(right))#*/$t.box(/*#Number(left) == Number(right))#*/$t.unbox(/*#left) == Number(right))#*/left) == /*#Number(right))#*/$t.unbox(/*#right))#*/right), /*#Boolean(Number(left) == Number(right))#*/$g.____testlib.basictypes.Boolean));
+          $resolve(/*#Boolean(Number(left) == Number(right))#*/$t.box(/*#left) == Number(right))#*/left.$wrapped == /*#right))#*/right.$wrapped, /*#Boolean(Number(left) == Number(right))#*/$g.____testlib.basictypes.Boolean));
           return;
         };
         return $promise.new($continue);
@@ -1900,7 +1910,7 @@ this.Serulian = function ($global) {
       $static.$plus = function (left, right) {
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#Integer(Number(left) + Number(right))#*/$t.box(/*#Number(left) + Number(right))#*/$t.unbox(/*#left) + Number(right))#*/left) + /*#Number(right))#*/$t.unbox(/*#right))#*/right), /*#Integer(Number(left) + Number(right))#*/$g.____testlib.basictypes.Integer));
+          $resolve(/*#Integer(Number(left) + Number(right))#*/$t.fastbox(/*#left) + Number(right))#*/left.$wrapped + /*#right))#*/right.$wrapped, /*#Integer(Number(left) + Number(right))#*/$g.____testlib.basictypes.Integer));
           return;
         };
         return $promise.new($continue);
@@ -1908,7 +1918,7 @@ this.Serulian = function ($global) {
       $static.$minus = function (left, right) {
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#Integer(Number(left) - Number(right))#*/$t.box(/*#Number(left) - Number(right))#*/$t.unbox(/*#left) - Number(right))#*/left) - /*#Number(right))#*/$t.unbox(/*#right))#*/right), /*#Integer(Number(left) - Number(right))#*/$g.____testlib.basictypes.Integer));
+          $resolve(/*#Integer(Number(left) - Number(right))#*/$t.fastbox(/*#left) - Number(right))#*/left.$wrapped - /*#right))#*/right.$wrapped, /*#Integer(Number(left) - Number(right))#*/$g.____testlib.basictypes.Integer));
           return;
         };
         return $promise.new($continue);
@@ -1930,7 +1940,7 @@ this.Serulian = function ($global) {
         var $this = this;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#String(Number(this).toString())#*/$t.box(/*#Number(this).toString())#*/$t.unbox(/*#this).toString())#*/$this).toString(), /*#String(Number(this).toString())#*/$g.____testlib.basictypes.String));
+          $resolve(/*#String(Number(this).toString())#*/$t.fastbox(/*#this).toString())#*/$this.$wrapped.toString(), /*#String(Number(this).toString())#*/$g.____testlib.basictypes.String));
           return;
         };
         return $promise.new($continue);
@@ -1972,7 +1982,7 @@ this.Serulian = function ($global) {
             switch ($current) {
               case 0:
 /*#left == right {#*/                $g.____testlib.basictypes.Boolean.$equals(/*#left == right {#*/left, /*#right {#*/right).then(/*#right {#*/function (/*#right {#*/$result0) /*#right {#*/{
-                  $result = /*#if left == right {#*/$t.unbox(/*#left == right {#*/$result0);
+                  $result = /*#left == right {#*/$result0.$wrapped;
                   $current = 1;
                   $continue($resolve, $reject);
                   return;
@@ -1993,11 +2003,11 @@ this.Serulian = function ($global) {
                 break;
 
               case 2:
-                $resolve(/*#0#*/$t.box(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer));
+                $resolve(/*#0#*/$t.fastbox(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer));
                 return;
 
               case 3:
-                $resolve(/*#-1#*/$t.box(/*#-1#*/-/*#-1#*/1, /*#-1#*/$g.____testlib.basictypes.Integer));
+                $resolve(/*#-1#*/$t.fastbox(/*#-1#*/-/*#-1#*/1, /*#-1#*/$g.____testlib.basictypes.Integer));
                 return;
 
               default:
@@ -2011,7 +2021,7 @@ this.Serulian = function ($global) {
       $static.$equals = function (left, right) {
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#Boolean(NativeBoolean(left) == NativeBoolean(right))#*/$t.box(/*#NativeBoolean(left) == NativeBoolean(right))#*/$t.unbox(/*#left) == NativeBoolean(right))#*/left) == /*#NativeBoolean(right))#*/$t.unbox(/*#right))#*/right), /*#Boolean(NativeBoolean(left) == NativeBoolean(right))#*/$g.____testlib.basictypes.Boolean));
+          $resolve(/*#Boolean(NativeBoolean(left) == NativeBoolean(right))#*/$t.box(/*#left) == NativeBoolean(right))#*/left.$wrapped == /*#right))#*/right.$wrapped, /*#Boolean(NativeBoolean(left) == NativeBoolean(right))#*/$g.____testlib.basictypes.Boolean));
           return;
         };
         return $promise.new($continue);
@@ -2020,7 +2030,7 @@ this.Serulian = function ($global) {
         var $this = this;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#String(NativeBoolean(this).toString())#*/$t.box(/*#NativeBoolean(this).toString())#*/$t.unbox(/*#this).toString())#*/$this).toString(), /*#String(NativeBoolean(this).toString())#*/$g.____testlib.basictypes.String));
+          $resolve(/*#String(NativeBoolean(this).toString())#*/$t.fastbox(/*#this).toString())#*/$this.$wrapped.toString(), /*#String(NativeBoolean(this).toString())#*/$g.____testlib.basictypes.String));
           return;
         };
         return $promise.new($continue);
@@ -2071,7 +2081,7 @@ this.Serulian = function ($global) {
       $static.$equals = function (first, second) {
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#Boolean(NativeString(first) == NativeString(second))#*/$t.box(/*#NativeString(first) == NativeString(second))#*/$t.unbox(/*#first) == NativeString(second))#*/first) == /*#NativeString(second))#*/$t.unbox(/*#second))#*/second), /*#Boolean(NativeString(first) == NativeString(second))#*/$g.____testlib.basictypes.Boolean));
+          $resolve(/*#Boolean(NativeString(first) == NativeString(second))#*/$t.box(/*#first) == NativeString(second))#*/first.$wrapped == /*#second))#*/second.$wrapped, /*#Boolean(NativeString(first) == NativeString(second))#*/$g.____testlib.basictypes.Boolean));
           return;
         };
         return $promise.new($continue);
@@ -2079,7 +2089,7 @@ this.Serulian = function ($global) {
       $static.$plus = function (first, second) {
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#String(NativeString(first) + NativeString(second))#*/$t.box(/*#NativeString(first) + NativeString(second))#*/$t.unbox(/*#first) + NativeString(second))#*/first) + /*#NativeString(second))#*/$t.unbox(/*#second))#*/second), /*#String(NativeString(first) + NativeString(second))#*/$g.____testlib.basictypes.String));
+          $resolve(/*#String(NativeString(first) + NativeString(second))#*/$t.fastbox(/*#first) + NativeString(second))#*/first.$wrapped + /*#second))#*/second.$wrapped, /*#String(NativeString(first) + NativeString(second))#*/$g.____testlib.basictypes.String));
           return;
         };
         return $promise.new($continue);
@@ -2097,7 +2107,7 @@ this.Serulian = function ($global) {
         var $this = this;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#Integer(NativeString(this).length)#*/$t.box(/*#NativeString(this).length)#*/$t.unbox(/*#this).length)#*/$this).length, /*#Integer(NativeString(this).length)#*/$g.____testlib.basictypes.Integer));
+          $resolve(/*#Integer(NativeString(this).length)#*/$t.fastbox(/*#this).length)#*/$this.$wrapped.length, /*#Integer(NativeString(this).length)#*/$g.____testlib.basictypes.Integer));
           return;
         };
         return $promise.new($continue);
@@ -2128,14 +2138,14 @@ this.Serulian = function ($global) {
         while (true) {
           switch ($current) {
             case 0:
-              result = /*#''#*/$t.box(/*#''#*/'', /*#''#*/$g.____testlib.basictypes.String);
+              result = /*#''#*/$t.fastbox(/*#''#*/'', /*#''#*/$g.____testlib.basictypes.String);
               $current = 1;
               continue;
 
             case 1:
 /*#pieces.Length - 1) {#*/              pieces.Length().then(/*#pieces.Length - 1) {#*/function (/*#pieces.Length - 1) {#*/$result2) /*#pieces.Length - 1) {#*/{
-                return /*#pieces.Length - 1) {#*/$g.____testlib.basictypes.Integer.$minus(/*#pieces.Length - 1) {#*/$result2, /*#1) {#*/$t.box(/*#1) {#*/1, /*#1) {#*/$g.____testlib.basictypes.Integer)).then(/*#1) {#*/function (/*#1) {#*/$result1) /*#1) {#*/{
-                  return /*#0 .. (pieces.Length - 1) {#*/$g.____testlib.basictypes.Integer.$range(/*#0 .. (pieces.Length - 1) {#*/$t.box(/*#0 .. (pieces.Length - 1) {#*/0, /*#0 .. (pieces.Length - 1) {#*/$g.____testlib.basictypes.Integer), /*#pieces.Length - 1) {#*/$result1).then(/*#pieces.Length - 1) {#*/function (/*#pieces.Length - 1) {#*/$result0) /*#pieces.Length - 1) {#*/{
+                return /*#pieces.Length - 1) {#*/$g.____testlib.basictypes.Integer.$minus(/*#pieces.Length - 1) {#*/$result2, /*#1) {#*/$t.fastbox(/*#1) {#*/1, /*#1) {#*/$g.____testlib.basictypes.Integer)).then(/*#1) {#*/function (/*#1) {#*/$result1) /*#1) {#*/{
+                  return /*#0 .. (pieces.Length - 1) {#*/$g.____testlib.basictypes.Integer.$range(/*#0 .. (pieces.Length - 1) {#*/$t.fastbox(/*#0 .. (pieces.Length - 1) {#*/0, /*#0 .. (pieces.Length - 1) {#*/$g.____testlib.basictypes.Integer), /*#pieces.Length - 1) {#*/$result1).then(/*#pieces.Length - 1) {#*/function (/*#pieces.Length - 1) {#*/$result0) /*#pieces.Length - 1) {#*/{
                     $result = /*#0 .. (pieces.Length - 1) {#*/$result0;
                     $current = 2;
                     $continue($resolve, $reject);
@@ -2168,7 +2178,7 @@ this.Serulian = function ($global) {
 
             case 4:
 /*#i in 0 .. (pieces.Length - 1) {#*/              i = /*#i in 0 .. (pieces.Length - 1) {#*/$temp0.First;
-              if (/*#for i in 0 .. (pieces.Length - 1) {#*/$t.unbox(/*#for i in 0 .. (pieces.Length - 1) {#*/$temp0.Second)) /*#for i in 0 .. (pieces.Length - 1) {#*/{
+              if (/*#for i in 0 .. (pieces.Length - 1) {#*/$temp0.Second.$wrapped) /*#for i in 0 .. (pieces.Length - 1) {#*/{
                 $current = 5;
                 continue;
               } else {
@@ -2195,7 +2205,7 @@ this.Serulian = function ($global) {
             case 6:
 /*#values.Length {#*/              values.Length().then(/*#values.Length {#*/function (/*#values.Length {#*/$result1) /*#values.Length {#*/{
                 return /*#i < values.Length {#*/$g.____testlib.basictypes.Integer.$compare(/*#i < values.Length {#*/i, /*#values.Length {#*/$result1).then(/*#values.Length {#*/function (/*#values.Length {#*/$result0) /*#values.Length {#*/{
-                  $result = /*#i < values.Length {#*/$t.unbox(/*#i < values.Length {#*/$result0) < /*#i < values.Length {#*/0;
+                  $result = /*#i < values.Length {#*/$result0.$wrapped < /*#i < values.Length {#*/0;
                   $current = 7;
                   $continue($resolve, $reject);
                   return;
@@ -2287,7 +2297,7 @@ this.Serulian = function ($global) {
 
               case 3:
 /*#item in stream {#*/                item = /*#item in stream {#*/$temp0.First;
-                if (/*#for item in stream {#*/$t.unbox(/*#for item in stream {#*/$temp0.Second)) /*#for item in stream {#*/{
+                if (/*#for item in stream {#*/$temp0.Second.$wrapped) /*#for item in stream {#*/{
                   $current = 4;
                   continue;
                 } else {
@@ -2339,12 +2349,12 @@ this.Serulian = function ($global) {
         while (true) {
           switch ($current) {
             case 0:
-              foo = /*#1#*/$t.box(/*#1#*/1, /*#1#*/$g.____testlib.basictypes.Integer);
-              bar = /*#'hi there!'#*/$t.box(/*#'hi there!'#*/'hi there!', /*#'hi there!'#*/$g.____testlib.basictypes.String);
-/*#foo == 2 && bar == 'hello world'#*/              $g.____testlib.basictypes.Integer.$equals(/*#foo == 2 && bar == 'hello world'#*/foo, /*#2 && bar == 'hello world'#*/$t.box(/*#2 && bar == 'hello world'#*/2, /*#2 && bar == 'hello world'#*/$g.____testlib.basictypes.Integer)).then(/*#2 && bar == 'hello world'#*/function (/*#2 && bar == 'hello world'#*/$result1) /*#2 && bar == 'hello world'#*/{
-                return /*#foo == 2 && bar == 'hello world'#*/$promise.resolve(/*#foo == 2 && bar == 'hello world'#*/$t.unbox(/*#foo == 2 && bar == 'hello world'#*/$result1)).then(/*#foo == 2 && bar == 'hello world'#*/function (/*#foo == 2 && bar == 'hello world'#*/$result0) /*#foo == 2 && bar == 'hello world'#*/{
-                  return /*#foo == 2 && bar == 'hello world'#*/(/*#foo == 2 && bar == 'hello world'#*/$promise.shortcircuit(/*#foo == 2 && bar == 'hello world'#*/$result0, /*#foo == 2 && bar == 'hello world'#*/true) || /*#bar == 'hello world'#*/$g.____testlib.basictypes.String.$equals(/*#bar == 'hello world'#*/bar, /*#'hello world'#*/$t.box(/*#'hello world'#*/'hello world', /*#'hello world'#*/$g.____testlib.basictypes.String))).then(/*#'hello world'#*/function (/*#'hello world'#*/$result2) /*#'hello world'#*/{
-                    $result = /*#foo == 2 && bar == 'hello world'#*/$t.box(/*#foo == 2 && bar == 'hello world'#*/$result0 && /*#foo == 2 && bar == 'hello world'#*/$t.unbox(/*#bar == 'hello world'#*/$result2), /*#foo == 2 && bar == 'hello world'#*/$g.____testlib.basictypes.Boolean);
+              foo = /*#1#*/$t.fastbox(/*#1#*/1, /*#1#*/$g.____testlib.basictypes.Integer);
+              bar = /*#'hi there!'#*/$t.fastbox(/*#'hi there!'#*/'hi there!', /*#'hi there!'#*/$g.____testlib.basictypes.String);
+/*#foo == 2 && bar == 'hello world'#*/              $g.____testlib.basictypes.Integer.$equals(/*#foo == 2 && bar == 'hello world'#*/foo, /*#2 && bar == 'hello world'#*/$t.fastbox(/*#2 && bar == 'hello world'#*/2, /*#2 && bar == 'hello world'#*/$g.____testlib.basictypes.Integer)).then(/*#2 && bar == 'hello world'#*/function (/*#2 && bar == 'hello world'#*/$result1) /*#2 && bar == 'hello world'#*/{
+                return /*#foo == 2 && bar == 'hello world'#*/$promise.resolve(/*#foo == 2 && bar == 'hello world'#*/$result1.$wrapped).then(/*#foo == 2 && bar == 'hello world'#*/function (/*#foo == 2 && bar == 'hello world'#*/$result0) /*#foo == 2 && bar == 'hello world'#*/{
+                  return /*#foo == 2 && bar == 'hello world'#*/(/*#foo == 2 && bar == 'hello world'#*/$promise.shortcircuit(/*#foo == 2 && bar == 'hello world'#*/$result0, /*#foo == 2 && bar == 'hello world'#*/true) || /*#bar == 'hello world'#*/$g.____testlib.basictypes.String.$equals(/*#bar == 'hello world'#*/bar, /*#'hello world'#*/$t.fastbox(/*#'hello world'#*/'hello world', /*#'hello world'#*/$g.____testlib.basictypes.String))).then(/*#'hello world'#*/function (/*#'hello world'#*/$result2) /*#'hello world'#*/{
+                    $result = /*#foo == 2 && bar == 'hello world'#*/$t.fastbox(/*#foo == 2 && bar == 'hello world'#*/$result0 && /*#bar == 'hello world'#*/$result2.$wrapped, /*#foo == 2 && bar == 'hello world'#*/$g.____testlib.basictypes.Boolean);
                     $current = 1;
                     $continue($resolve, $reject);
                     return;

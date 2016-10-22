@@ -14,7 +14,7 @@ $module('json', function () {
     $static.$fields = [];
     $t.defineStructField($static, 'AnotherBool', 'AnotherBool', function () {
       return $g.____testlib.basictypes.Boolean;
-    }, true, function () {
+    }, function () {
       return $g.____testlib.basictypes.Boolean;
     }, false);
     this.$typesig = function () {
@@ -49,17 +49,17 @@ $module('json', function () {
     $static.$fields = [];
     $t.defineStructField($static, 'SomeField', 'SomeField', function () {
       return $g.____testlib.basictypes.Integer;
-    }, true, function () {
+    }, function () {
       return $g.____testlib.basictypes.Integer;
     }, false);
     $t.defineStructField($static, 'AnotherField', 'AnotherField', function () {
       return $g.____testlib.basictypes.Boolean;
-    }, true, function () {
+    }, function () {
       return $g.____testlib.basictypes.Boolean;
     }, false);
     $t.defineStructField($static, 'SomeInstance', 'SomeInstance', function () {
       return $g.json.AnotherStruct;
-    }, true, function () {
+    }, function () {
       return $g.json.AnotherStruct;
     }, false);
     this.$typesig = function () {
@@ -89,8 +89,8 @@ $module('json', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.json.AnotherStruct.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
-              return $g.json.SomeStruct.new($t.box(2, $g.____testlib.basictypes.Integer), $t.box(false, $g.____testlib.basictypes.Boolean), $result1).then(function ($result0) {
+            $g.json.AnotherStruct.new($t.fastbox(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
+              return $g.json.SomeStruct.new($t.fastbox(2, $g.____testlib.basictypes.Integer), $t.fastbox(false, $g.____testlib.basictypes.Boolean), $result1).then(function ($result0) {
                 $result = $result0;
                 $current = 1;
                 $continue($resolve, $reject);
@@ -104,7 +104,7 @@ $module('json', function () {
 
           case 1:
             s = $result;
-            jsonString = $t.box('{"AnotherField":false,"SomeField":2,"SomeInstance":{"AnotherBool":true}}', $g.____testlib.basictypes.String);
+            jsonString = $t.fastbox('{"AnotherField":false,"SomeField":2,"SomeInstance":{"AnotherBool":true}}', $g.____testlib.basictypes.String);
             s.Stringify($g.____testlib.basictypes.JSON)().then(function ($result1) {
               return $g.____testlib.basictypes.String.$equals($result1, jsonString).then(function ($result0) {
                 $result = $result0;
@@ -133,11 +133,11 @@ $module('json', function () {
 
           case 3:
             parsed = $result;
-            $promise.resolve($t.unbox(correct)).then(function ($result2) {
-              return ($promise.shortcircuit($result2, true) || $g.____testlib.basictypes.Integer.$equals(parsed.SomeField, $t.box(2, $g.____testlib.basictypes.Integer))).then(function ($result3) {
-                return $promise.resolve($result2 && $t.unbox($result3)).then(function ($result1) {
-                  return $promise.resolve($result1 && !$t.unbox(parsed.AnotherField)).then(function ($result0) {
-                    $result = $t.box($result0 && $t.unbox(parsed.SomeInstance.AnotherBool), $g.____testlib.basictypes.Boolean);
+            $promise.resolve(correct.$wrapped).then(function ($result2) {
+              return ($promise.shortcircuit($result2, true) || $g.____testlib.basictypes.Integer.$equals(parsed.SomeField, $t.fastbox(2, $g.____testlib.basictypes.Integer))).then(function ($result3) {
+                return $promise.resolve($result2 && $result3.$wrapped).then(function ($result1) {
+                  return $promise.resolve($result1 && !parsed.AnotherField.$wrapped).then(function ($result0) {
+                    $result = $t.fastbox($result0 && parsed.SomeInstance.AnotherBool.$wrapped, $g.____testlib.basictypes.Boolean);
                     $current = 4;
                     $continue($resolve, $reject);
                     return;

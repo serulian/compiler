@@ -10,7 +10,7 @@ $module('nullcompare', function () {
           case 0:
             someBool = null;
             $promise.resolve(someBool).then(function ($result0) {
-              $result = $t.nullcompare($result0, $t.box(true, $g.____testlib.basictypes.Boolean));
+              $result = $t.nullcompare($result0, $t.fastbox(true, $g.____testlib.basictypes.Boolean));
               $current = 1;
               $continue($resolve, $reject);
               return;

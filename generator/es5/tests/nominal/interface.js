@@ -11,7 +11,7 @@ $module('interface', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box(42, $g.____testlib.basictypes.Integer));
+        $resolve($t.fastbox(42, $g.____testlib.basictypes.Integer));
         return;
       };
       return $promise.new($continue);
@@ -59,7 +59,7 @@ $module('interface', function () {
         while (true) {
           switch ($current) {
             case 0:
-              $t.unbox($this).SomeValue().then(function ($result0) {
+              $this.$wrapped.SomeValue().then(function ($result0) {
                 $result = $result0;
                 $current = 1;
                 $continue($resolve, $reject);
@@ -116,8 +116,8 @@ $module('interface', function () {
           case 1:
             sc = $result;
             v = sc;
-            $t.box(v, $g.interface.Valued).GetValue().then(function ($result1) {
-              return $g.____testlib.basictypes.Integer.$equals($result1, $t.box(42, $g.____testlib.basictypes.Integer)).then(function ($result0) {
+            $t.fastbox(v, $g.interface.Valued).GetValue().then(function ($result1) {
+              return $g.____testlib.basictypes.Integer.$equals($result1, $t.fastbox(42, $g.____testlib.basictypes.Integer)).then(function ($result0) {
                 $result = $result0;
                 $current = 2;
                 $continue($resolve, $reject);

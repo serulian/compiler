@@ -169,7 +169,14 @@ this.Serulian = (function($global) {
         return null;
       }
       
-      return type.$box($t.unbox(instance))
+      return type.$box($t.unbox(instance));
+    },
+
+    // fastbox wraps an object with a nominal or structural type, without first
+    // unboxing or null checking. This method will fail if those two assumptions
+    // are not correct.
+    'fastbox': function(instance, type) {
+      return type.$box(instance);
     },
 
     // roottype returns the root type of the given type. If the type is a nominal
@@ -182,11 +189,23 @@ this.Serulian = (function($global) {
       return type;
     },
 
-    // istype returns true if the specified value can be cast to the given type.
+    // istype returns true if the specified value can be used in place of the given type.
     'istype': function(value, type) {
       // Quick check to see if it matches directly or is 'any'.
       if (type == $t.any || (value != null && (value.constructor == type || value instanceof type))) {
         return true;
+      }
+
+      // Quick check for struct.
+      if (type == $t.struct) {
+        // Find the root type of the current value's type. If it is structural or a serializable
+        // native type, then we can cast it to struct.
+        var roottype = $t.roottype(value.constructor);
+        return (roottype.$typekind == 'struct' || 
+                roottype == Number ||
+                roottype == String ||
+                roottype == Boolean ||
+                roottype == Object);
       }
 
       // Quick check for function.
@@ -261,6 +280,11 @@ this.Serulian = (function($global) {
             throw Error('Cannot auto-box ' + value.constructor.toString() + ' to ' + type.toString());
           }
           break;
+
+        case undefined:
+          // Cannot cast a non-native type to a native type. The native-to-native check occurs in
+          // istype above.
+          throw Error((('Cannot cast ' + value.constructor.toString()) + ' to ') + type.toString());
       }
 
       // Automatically box if necessary.
@@ -387,13 +411,12 @@ this.Serulian = (function($global) {
     },
 
     // defineStructField defines a new field on a structural type.
-    'defineStructField': function(structType, name, serializableName, typeref, isBoxed, opt_nominalRootType, opt_nullAllowed) {
+    'defineStructField': function(structType, name, serializableName, typeref, opt_nominalRootType, opt_nullAllowed) {
       var field = {
         'name': name,
         'serializableName': serializableName,
         'typeref': typeref,
         'nominalRootTyperef': opt_nominalRootType || typeref,
-        'isBoxed': isBoxed,
         'nullAllowed': opt_nullAllowed
       };
       structType.$fields.push(field);
@@ -409,8 +432,9 @@ this.Serulian = (function($global) {
               this.$lazychecked[field.name] = true;
             }
 
-            if (field.isBoxed) {
-              return $t.box(boxedData[field.serializableName], field.typeref());
+            var fieldType = field.typeref();
+            if (fieldType.$box) {
+              return $t.box(boxedData[field.serializableName], fieldType);
             } else {
               return boxedData[field.serializableName];
             }
@@ -656,11 +680,11 @@ this.Serulian = (function($global) {
             }
 
             var $yield = function (value) {
-              $a['tuple']($t.any, $a['bool']).Build(value, true).then(resolve);
+              $a['tuple']($t.any, $a['bool']).Build(value, $t.box(true, $a['bool'])).then(resolve);
             };
-
+            
             var $done = function () {
-              $a['tuple']($t.any, $a['bool']).Build(null, false).then(resolve);
+              $a['tuple']($t.any, $a['bool']).Build(null, $t.box(false, $a['bool'])).then(resolve);
             };
 
             var $yieldin = function (ins) {
