@@ -17,24 +17,24 @@ this.Serulian = function ($global) {
       switch (typeName) {
         case 'object':
           if (k != '') {
-            return $t.box(v, $a.mapping($t.any));
+            return $t.fastbox(v, $a.mapping($t.any));
           }
           break;
 
         case 'array':
-          return $t.box(v, $a.slice($t.any));
+          return $t.fastbox(v, $a.slice($t.any));
 
         case 'boolean':
-          return $t.box(v, $a.bool);
+          return $t.fastbox(v, $a.bool);
 
         case 'string':
-          return $t.box(v, $a.string);
+          return $t.fastbox(v, $a.string);
 
         case 'number':
           if (Math.ceil(v) == v) {
-            return $t.box(v, $a.int);
+            return $t.fastbox(v, $a.int);
           }
-          return $t.box(v, $a.float64);
+          return $t.fastbox(v, $a.float64);
       }
       return v;
     },
@@ -192,18 +192,18 @@ this.Serulian = function ($global) {
     },
     equals: function (left, right, type) {
       if (left === right) {
-        return $promise.resolve($t.box(true, $a['bool']));
+        return $promise.resolve($t.fastbox(true, $a['bool']));
       }
       if ((left == null) || (right == null)) {
-        return $promise.resolve($t.box(false, $a['bool']));
+        return $promise.resolve($t.fastbox(false, $a['bool']));
       }
       if (type.$equals) {
-        return type.$equals($t.box(left, type), $t.box(right, type));
+        return type.$equals($t.fastbox(left, type), $t.fastbox(right, type));
       }
       if ($t.toESType(left) != 'object') {
-        return $promise.resolve($t.box(left === right, $a['bool']));
+        return $promise.resolve($t.fastbox(left === right, $a['bool']));
       }
-      return $promise.resolve($t.box(false, $a['bool']));
+      return $promise.resolve($t.fastbox(false, $a['bool']));
     },
     ensurevalue: function (value, type, canBeNull, name) {
       if (value == null) {
@@ -480,10 +480,10 @@ this.Serulian = function ($global) {
               return;
             }
             var $yield = function (value) {
-              $a['tuple']($t.any, $a['bool']).Build(value, $t.box(true, $a['bool'])).then(resolve);
+              $a['tuple']($t.any, $a['bool']).Build(value, $t.fastbox(true, $a['bool'])).then(resolve);
             };
             var $done = function () {
-              $a['tuple']($t.any, $a['bool']).Build(null, $t.box(false, $a['bool'])).then(resolve);
+              $a['tuple']($t.any, $a['bool']).Build(null, $t.fastbox(false, $a['bool'])).then(resolve);
             };
             var $yieldin = function (ins) {
               stream.$is = ins;
@@ -584,7 +584,7 @@ this.Serulian = function ($global) {
               });
             };
             tpe.prototype.String = function () {
-              return $promise.resolve($t.box(JSON.stringify(this, $global.__serulian_internal.autoUnbox, ' '), $a['string']));
+              return $promise.resolve($t.fastbox(JSON.stringify(this, $global.__serulian_internal.autoUnbox, ' '), $a['string']));
             };
             tpe.prototype.Clone = function () {
               var instance = new tpe();
@@ -609,7 +609,7 @@ this.Serulian = function ($global) {
               var $this = this;
               return function () {
                 if (T == $a['json']) {
-                  return $promise.resolve($t.box(JSON.stringify($this, $global.__serulian_internal.autoUnbox), $a['string']));
+                  return $promise.resolve($t.fastbox(JSON.stringify($this, $global.__serulian_internal.autoUnbox), $a['string']));
                 }
                 return $this.Mapping().then(function (mapped) {
                   return T.Get().then(function (resolved) {
@@ -622,7 +622,7 @@ this.Serulian = function ($global) {
               return function (value) {
                 if (T == $a['json']) {
                   var parsed = JSON.parse($t.unbox(value));
-                  var boxed = $t.box(parsed, tpe);
+                  var boxed = $t.fastbox(parsed, tpe);
                   return boxed.Mapping().then(function () {
                     return $promise.resolve(boxed);
                   });
@@ -636,7 +636,7 @@ this.Serulian = function ($global) {
             };
             tpe.$equals = function (left, right) {
               if (left === right) {
-                return $promise.resolve($t.box(true, $a['bool']));
+                return $promise.resolve($t.fastbox(true, $a['bool']));
               }
               var promises = [];
               tpe.$fields.forEach(function (field) {
@@ -648,12 +648,12 @@ this.Serulian = function ($global) {
                     return values[i];
                   }
                 }
-                return $t.box(true, $a['bool']);
+                return $t.fastbox(true, $a['bool']);
               });
             };
             tpe.prototype.Mapping = function () {
               if (this.$serucreated) {
-                return $promise.resolve($t.box(this[BOXED_DATA_PROPERTY], $a['mapping']($t.any)));
+                return $promise.resolve($t.fastbox(this[BOXED_DATA_PROPERTY], $a['mapping']($t.any)));
               } else {
                 var $this = this;
                 var mapped = {
@@ -661,7 +661,7 @@ this.Serulian = function ($global) {
                 tpe.$fields.forEach(function (field) {
                   mapped[field.serializableName] = $this[field.name];
                 });
-                return $promise.resolve($t.box(mapped, $a['mapping']($t.any)));
+                return $promise.resolve($t.fastbox(mapped, $a['mapping']($t.any)));
               }
             };
           }
