@@ -27,11 +27,7 @@ this.Serulian = (function($global) {
   $global.__serulian_internal = {
     // autoUnbox automatically unboxes ES primitives into their raw data.
     'autoUnbox': function(k, v) {
-        if (v != null) {
-          return $t.unbox(v);
-        }
-
-        return v;
+      return $t.unbox(v);
     },
 
     // autoBox automatically boxes ES primitives into their associated normal Serulian nominal types.
@@ -168,12 +164,12 @@ this.Serulian = (function($global) {
     },
 
     // box wraps an object with a nominal or structural type.
-    'box': function(instance, type, opt_external) {
+    'box': function(instance, type) {
       if (instance == null) {
         return null;
       }
       
-      return type.$box($t.unbox(instance), opt_external)
+      return type.$box($t.unbox(instance))
     },
 
     // roottype returns the root type of the given type. If the type is a nominal
@@ -392,18 +388,36 @@ this.Serulian = (function($global) {
 
     // defineStructField defines a new field on a structural type.
     'defineStructField': function(structType, name, serializableName, typeref, isBoxed, opt_nominalRootType, opt_nullAllowed) {
-      structType.$fields.push({
+      var field = {
         'name': name,
         'serializableName': serializableName,
         'typeref': typeref,
         'nominalRootTyperef': opt_nominalRootType || typeref,
         'isBoxed': isBoxed,
         'nullAllowed': opt_nullAllowed
-      });
+      };
+      structType.$fields.push(field);
 
       Object.defineProperty(structType.prototype, name, {
         get: function() {
-          return this[BOXED_DATA_PROPERTY][name];
+          // If the underlying object was not created by the runtime, then we must typecheck
+          // to be safe when accessing the field.
+          var boxedData = this[BOXED_DATA_PROPERTY];
+          if (!boxedData.$runtimecreated) {
+            if (!this.$lazychecked[field.name]) {
+              $t.ensurevalue($t.unbox(boxedData[field.serializableName]), field.nominalRootTyperef(), field.nullAllowed, field.name);
+              this.$lazychecked[field.name] = true;
+            }
+
+            if (field.isBoxed) {
+              return $t.box(boxedData[field.serializableName], field.typeref());
+            } else {
+              return boxedData[field.serializableName];
+            }
+          }
+
+          // Otherwise, simply return the field.
+          return boxedData[name];
         },
 
         set: function(value) {
@@ -771,27 +785,17 @@ this.Serulian = (function($global) {
               var instance = new tpe();
               instance[BOXED_DATA_PROPERTY] = data;
               instance.$lazychecked = {};
-              instance.$unboxed = true;
-
-              // Override the getters to lazy check and auto-box where necessary.
-              tpe.$fields.forEach(function(field) {
-                Object.defineProperty(instance, field.name, {
-                  get: function() {
-                    if (!this.$lazychecked[field.name]) {
-                      $t.ensurevalue($t.unbox(this[BOXED_DATA_PROPERTY][field.serializableName]), field.nominalRootTyperef(), field.nullAllowed, field.name);
-                      this.$lazychecked[field.name] = true;
-                    }
-
-                    if (field.isBoxed) {
-                      return $t.box(this[BOXED_DATA_PROPERTY][field.serializableName], field.typeref());
-                    } else {
-                      return this[BOXED_DATA_PROPERTY][field.serializableName];
-                    }
-                  }
-                });
-              });
-
               return instance;
+            };
+
+            // $markruntimecreated marks the struct as having been created by the runtime, allowing
+            // for certain optimizations to be used and checks to be turned off.
+            tpe.prototype.$markruntimecreated = function() {
+              Object.defineProperty(this[BOXED_DATA_PROPERTY], '$runtimecreated', {
+                enumerable: false,
+                configurable: true,
+                value: true
+              });
             };
 
             // String.
@@ -812,6 +816,11 @@ this.Serulian = (function($global) {
                   }
                 }
               }
+
+              if (this[BOXED_DATA_PROPERTY].$runtimecreated) {
+                instance.$markruntimecreated();
+              }
+
               return $promise.resolve(instance);
             };
 
@@ -838,7 +847,7 @@ this.Serulian = (function($global) {
                 // Special case JSON for performance, as it uses an internal method.
                 if (T == $a['json']) {
                   var parsed = JSON.parse($t.unbox(value));
-                  var boxed = $t.box(parsed, tpe, /* external */ true);
+                  var boxed = $t.box(parsed, tpe);
 
                   // Call Mapping to ensure every field is checked.
                   return boxed.Mapping().then(function() {
@@ -848,7 +857,7 @@ this.Serulian = (function($global) {
 
                 return T.Get().then(function(resolved) {
                   return (resolved.Parse(value)).then(function(parsed) {
-                    return $promise.resolve($t.box(parsed, tpe, /* external */ true));
+                    return $promise.resolve($t.box(parsed, tpe));
                   });
                 });
               };
@@ -882,7 +891,11 @@ this.Serulian = (function($global) {
 
             // Mapping.
             tpe.prototype.Mapping = function() {
-              if (this.$unboxed) {
+              if (this.$serucreated) {
+                // Fast-path for compiler-constructed instances. All data is guarenteed to already
+                // be boxed.
+                return $promise.resolve($t.box(this[BOXED_DATA_PROPERTY], $a['mapping']($t.any)));
+              } else {
                 // Slower path for instances unboxed from native data. We call the properties
                 // to make sure we have the boxed forms.
                 var $this = this;
@@ -892,10 +905,6 @@ this.Serulian = (function($global) {
                 });
 
                 return $promise.resolve($t.box(mapped, $a['mapping']($t.any)));
-              } else {
-                // Fast-path for compiler-constructed instances. All data is guarenteed to already
-                // be boxed.
-                return $promise.resolve($t.box(this[BOXED_DATA_PROPERTY], $a['mapping']($t.any)));
               }
             };
           } // end struct

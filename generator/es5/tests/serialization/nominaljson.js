@@ -36,10 +36,10 @@ $module('nominaljson', function () {
     var $instance = this.prototype;
     $static.new = function (AnotherBool) {
       var instance = new $static();
-      instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         AnotherBool: AnotherBool,
       };
+      instance.$markruntimecreated();
       return $promise.resolve(instance);
     };
     $static.$fields = [];
@@ -69,10 +69,10 @@ $module('nominaljson', function () {
     var $instance = this.prototype;
     $static.new = function (Nested) {
       var instance = new $static();
-      instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         Nested: Nested,
       };
+      instance.$markruntimecreated();
       return $promise.resolve(instance);
     };
     $static.$fields = [];

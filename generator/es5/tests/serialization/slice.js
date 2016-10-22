@@ -5,10 +5,10 @@ $module('slice', function () {
     var $instance = this.prototype;
     $static.new = function (AnotherInt) {
       var instance = new $static();
-      instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         AnotherInt: AnotherInt,
       };
+      instance.$markruntimecreated();
       return $promise.resolve(instance);
     };
     $static.$fields = [];
@@ -38,10 +38,10 @@ $module('slice', function () {
     var $instance = this.prototype;
     $static.new = function (Values) {
       var instance = new $static();
-      instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         Values: Values,
       };
+      instance.$markruntimecreated();
       return $promise.resolve(instance);
     };
     $static.$fields = [];

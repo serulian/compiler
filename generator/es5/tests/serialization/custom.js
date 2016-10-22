@@ -121,10 +121,10 @@ $module('custom', function () {
     var $instance = this.prototype;
     $static.new = function (AnotherBool) {
       var instance = new $static();
-      instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         AnotherBool: AnotherBool,
       };
+      instance.$markruntimecreated();
       return $promise.resolve(instance);
     };
     $static.$fields = [];
@@ -154,12 +154,12 @@ $module('custom', function () {
     var $instance = this.prototype;
     $static.new = function (SomeField, AnotherField, SomeInstance) {
       var instance = new $static();
-      instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         SomeField: SomeField,
         AnotherField: AnotherField,
         SomeInstance: SomeInstance,
       };
+      instance.$markruntimecreated();
       return $promise.resolve(instance);
     };
     $static.$fields = [];

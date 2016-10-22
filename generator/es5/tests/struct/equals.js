@@ -5,11 +5,11 @@ $module('equals', function () {
     var $instance = this.prototype;
     $static.new = function (SomeValue, AnotherValue) {
       var instance = new $static();
-      instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         SomeValue: SomeValue,
         AnotherValue: AnotherValue,
       };
+      instance.$markruntimecreated();
       return $promise.resolve(instance);
     };
     $static.$fields = [];
@@ -44,10 +44,10 @@ $module('equals', function () {
     var $instance = this.prototype;
     $static.new = function (StringValue) {
       var instance = new $static();
-      instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         StringValue: StringValue,
       };
+      instance.$markruntimecreated();
       return $promise.resolve(instance);
     };
     $static.$fields = [];

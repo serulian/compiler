@@ -258,13 +258,13 @@ this.$struct('{{ .Type.GlobalUniqueId }}', '{{ .Type.Name }}', {{ .HasGenerics }
 	// new is the constructor called from Serulian code to construct the struct instance.
     {{ $vars := .GenerateVariables }}
 	$static.new = function({{ range $ridx, $field := .RequiredFields }}{{ if $ridx }}, {{ end }}{{ $field.Name }}{{ end }}) {
-		var instance = new $static();
-		instance.$unboxed = false;
+		var instance = new $static();		
 		instance[BOXED_DATA_PROPERTY] = {
 			{{ range $idx, $field := .RequiredFields }}
 			'{{ $field.SerializableName }}': {{ $field.Name }},
 			{{ end }}
 		};
+		instance.$markruntimecreated();
 
 		{{ if $vars.Promising }}
 		var init = [];

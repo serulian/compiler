@@ -22,10 +22,10 @@ $module('nominal', function () {
     var $instance = this.prototype;
     $static.new = function (someField) {
       var instance = new $static();
-      instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         someField: someField,
       };
+      instance.$markruntimecreated();
       return $promise.resolve(instance);
     };
     $static.$fields = [];

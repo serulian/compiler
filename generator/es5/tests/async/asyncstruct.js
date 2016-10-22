@@ -5,11 +5,11 @@ $module('asyncstruct', function () {
     var $instance = this.prototype;
     $static.new = function (Foo, Bar) {
       var instance = new $static();
-      instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         Foo: Foo,
         Bar: Bar,
       };
+      instance.$markruntimecreated();
       return $promise.resolve(instance);
     };
     $static.$fields = [];

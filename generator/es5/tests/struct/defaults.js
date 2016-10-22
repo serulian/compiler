@@ -5,10 +5,10 @@ $module('defaults', function () {
     var $instance = this.prototype;
     $static.new = function (AnotherBool) {
       var instance = new $static();
-      instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         AnotherBool: AnotherBool,
       };
+      instance.$markruntimecreated();
       return $promise.resolve(instance);
     };
     $static.$fields = [];
@@ -38,9 +38,9 @@ $module('defaults', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
       };
+      instance.$markruntimecreated();
       var init = [];
       instance.SomeField = $t.box(42, $g.____testlib.basictypes.Integer);
       instance.AnotherField = $t.box(false, $g.____testlib.basictypes.Boolean);

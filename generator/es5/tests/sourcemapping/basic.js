@@ -7,10 +7,7 @@ this.Serulian = function ($global) {
   }
   $global.__serulian_internal = {
     autoUnbox: function (k, v) {
-      if (v != null) {
-        return $t.unbox(v);
-      }
-      return v;
+      return $t.unbox(v);
     },
     autoBox: function (k, v) {
       if (v == null) {
@@ -276,17 +273,30 @@ this.Serulian = function ($global) {
       return ((((((((((S4(buf[0]) + S4(buf[1])) + "-") + S4(buf[2])) + "-") + S4(buf[3])) + "-") + S4(buf[4])) + "-") + S4(buf[5])) + S4(buf[6])) + S4(buf[7]);
     },
     defineStructField: function (structType, name, serializableName, typeref, isBoxed, opt_nominalRootType, opt_nullAllowed) {
-      structType.$fields.push({
+      var field = {
         name: name,
         serializableName: serializableName,
         typeref: typeref,
         nominalRootTyperef: opt_nominalRootType || typeref,
         isBoxed: isBoxed,
         nullAllowed: opt_nullAllowed,
-      });
+      };
+      structType.$fields.push(field);
       Object.defineProperty(structType.prototype, name, {
         get: function () {
-          return this[BOXED_DATA_PROPERTY][name];
+          var boxedData = this[BOXED_DATA_PROPERTY];
+          if (!boxedData.$runtimecreated) {
+            if (!this.$lazychecked[field.name]) {
+              $t.ensurevalue($t.unbox(boxedData[field.serializableName]), field.nominalRootTyperef(), field.nullAllowed, field.name);
+              this.$lazychecked[field.name] = true;
+            }
+            if (field.isBoxed) {
+              return $t.box(boxedData[field.serializableName], field.typeref());
+            } else {
+              return boxedData[field.serializableName];
+            }
+          }
+          return boxedData[name];
         },
         set: function (value) {
           this[BOXED_DATA_PROPERTY][name] = value;
@@ -549,28 +559,19 @@ this.Serulian = function ($global) {
           tpe.$typekind = kind;
           creator.apply(tpe, args);
           if (kind == 'struct') {
-            tpe.$box = function (data) {
+            tpe.$box = function (data, opt_external) {
               var instance = new tpe();
               instance[BOXED_DATA_PROPERTY] = data;
               instance.$lazychecked = {
               };
-              instance.$unboxed = true;
-              tpe.$fields.forEach(function (field) {
-                Object.defineProperty(instance, field.name, {
-                  get: function () {
-                    if (!this.$lazychecked[field.name]) {
-                      $t.ensurevalue($t.unbox(this[BOXED_DATA_PROPERTY][field.serializableName]), field.nominalRootTyperef(), field.nullAllowed, field.name);
-                      this.$lazychecked[field.name] = true;
-                    }
-                    if (field.isBoxed) {
-                      return $t.box(this[BOXED_DATA_PROPERTY][field.serializableName], field.typeref());
-                    } else {
-                      return this[BOXED_DATA_PROPERTY][field.serializableName];
-                    }
-                  },
-                });
-              });
               return instance;
+            };
+            tpe.prototype.$markruntimecreated = function () {
+              Object.defineProperty(this[BOXED_DATA_PROPERTY], '$runtimecreated', {
+                enumerable: false,
+                configurable: true,
+                value: true,
+              });
             };
             tpe.prototype.String = function () {
               return $promise.resolve($t.box(JSON.stringify(this, $global.__serulian_internal.autoUnbox, ' '), $a['string']));
@@ -588,6 +589,9 @@ this.Serulian = function ($global) {
                     instance[BOXED_DATA_PROPERTY][key] = this[BOXED_DATA_PROPERTY][key];
                   }
                 }
+              }
+              if (this[BOXED_DATA_PROPERTY].$runtimecreated) {
+                instance.$markruntimecreated();
               }
               return $promise.resolve(instance);
             };
@@ -608,14 +612,14 @@ this.Serulian = function ($global) {
               return function (value) {
                 if (T == $a['json']) {
                   var parsed = JSON.parse($t.unbox(value));
-                  var boxed = $t.box(parsed, tpe, true);
+                  var boxed = $t.box(parsed, tpe);
                   return boxed.Mapping().then(function () {
                     return $promise.resolve(boxed);
                   });
                 }
                 return T.Get().then(function (resolved) {
                   return resolved.Parse(value).then(function (parsed) {
-                    return $promise.resolve($t.box(parsed, tpe, true));
+                    return $promise.resolve($t.box(parsed, tpe));
                   });
                 });
               };
@@ -638,7 +642,9 @@ this.Serulian = function ($global) {
               });
             };
             tpe.prototype.Mapping = function () {
-              if (this.$unboxed) {
+              if (this.$serucreated) {
+                return $promise.resolve($t.box(this[BOXED_DATA_PROPERTY], $a['mapping']($t.any)));
+              } else {
                 var $this = this;
                 var mapped = {
                 };
@@ -646,8 +652,6 @@ this.Serulian = function ($global) {
                   mapped[field.serializableName] = $this[field.name];
                 });
                 return $promise.resolve($t.box(mapped, $a['mapping']($t.any)));
-              } else {
-                return $promise.resolve($t.box(this[BOXED_DATA_PROPERTY], $a['mapping']($t.any)));
               }
             };
           }
