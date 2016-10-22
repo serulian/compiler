@@ -7,15 +7,11 @@ $module('init', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.____testlib.basictypes.Integer.$equals($g.init.sc.value, $t.fastbox(2, $g.____testlib.basictypes.Integer)).then(function ($result1) {
-              return $promise.resolve($result1.$wrapped).then(function ($result0) {
-                return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.Integer.$equals($g.init.sc2.value, $t.fastbox(4, $g.____testlib.basictypes.Integer))).then(function ($result2) {
-                  $result = $t.fastbox($result0 && $result2.$wrapped, $g.____testlib.basictypes.Boolean);
-                  $current = 1;
-                  $continue($resolve, $reject);
-                  return;
-                });
-              });
+            $promise.resolve($g.init.sc.value.$wrapped == 2).then(function ($result0) {
+              $result = $t.fastbox($result0 && ($g.init.sc2.value.$wrapped == 4), $g.____testlib.basictypes.Boolean);
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
               $reject(err);
               return;

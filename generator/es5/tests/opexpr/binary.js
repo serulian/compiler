@@ -132,34 +132,10 @@ $module('binary', function () {
     return $promise.new($continue);
   };
   $static.TEST = function () {
-    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            $g.____testlib.basictypes.Integer.$plus($t.fastbox(1, $g.____testlib.basictypes.Integer), $t.fastbox(2, $g.____testlib.basictypes.Integer)).then(function ($result1) {
-              return $g.____testlib.basictypes.Integer.$equals($result1, $t.fastbox(3, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-                $result = $result0;
-                $current = 1;
-                $continue($resolve, $reject);
-                return;
-              });
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            $resolve($result);
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
+      $resolve($t.fastbox((1 + 2) == 3, $g.____testlib.basictypes.Boolean));
+      return;
     };
     return $promise.new($continue);
   };

@@ -21,13 +21,11 @@ $module('list', function () {
 
           case 1:
             l = $result;
-            l.Count().then(function ($result1) {
-              return $g.____testlib.basictypes.Integer.$equals($result1, $t.fastbox(4, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-                $result = $result0;
-                $current = 2;
-                $continue($resolve, $reject);
-                return;
-              });
+            l.Count().then(function ($result0) {
+              $result = $t.fastbox($result0.$wrapped == 4, $g.____testlib.basictypes.Boolean);
+              $current = 2;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
               $reject(err);
               return;

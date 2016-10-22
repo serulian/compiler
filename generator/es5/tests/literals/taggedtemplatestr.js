@@ -7,14 +7,12 @@ $module('taggedtemplatestr', function () {
       while (true) {
         switch ($current) {
           case 0:
-            values.$index($t.fastbox(0, $g.____testlib.basictypes.Integer)).then(function ($result1) {
-              return values.Length().then(function ($result2) {
-                return $g.____testlib.basictypes.Integer.$plus($t.cast($result1, $g.____testlib.basictypes.Integer, false), $result2).then(function ($result0) {
-                  $result = $result0;
-                  $current = 1;
-                  $continue($resolve, $reject);
-                  return;
-                });
+            values.$index($t.fastbox(0, $g.____testlib.basictypes.Integer)).then(function ($result0) {
+              return values.Length().then(function ($result1) {
+                $result = $t.fastbox($t.cast($result0, $g.____testlib.basictypes.Integer, false).$wrapped + $result1.$wrapped, $g.____testlib.basictypes.Boolean);
+                $current = 1;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
               $reject(err);
@@ -63,19 +61,7 @@ $module('taggedtemplatestr', function () {
 
           case 1:
             result = $result;
-            $g.____testlib.basictypes.Integer.$equals(result, $t.fastbox(12, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-              $result = $result0;
-              $current = 2;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 2:
-            $resolve($result);
+            $resolve($t.fastbox(result.$wrapped == 12, $g.____testlib.basictypes.Boolean));
             return;
 
           default:

@@ -9,62 +9,18 @@ $module('decorator', function () {
     return $promise.new($continue);
   };
   $static.First = function (decorated, value) {
-    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            $g.____testlib.basictypes.Integer.$plus(decorated, value).then(function ($result0) {
-              $result = $result0;
-              $current = 1;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            $resolve($result);
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
+      $resolve($t.fastbox(decorated.$wrapped + value.$wrapped, $g.____testlib.basictypes.Boolean));
+      return;
     };
     return $promise.new($continue);
   };
   $static.Second = function (decorated, value) {
-    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            $g.____testlib.basictypes.Integer.$minus(decorated, value).then(function ($result0) {
-              $result = $result0;
-              $current = 1;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            $resolve($result);
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
+      $resolve($t.fastbox(decorated.$wrapped - value.$wrapped, $g.____testlib.basictypes.Boolean));
+      return;
     };
     return $promise.new($continue);
   };
@@ -76,12 +32,10 @@ $module('decorator', function () {
         switch ($current) {
           case 0:
             $promise.resolve(value.$wrapped).then(function ($result0) {
-              return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.Integer.$equals(decorated, $t.fastbox(15, $g.____testlib.basictypes.Integer))).then(function ($result1) {
-                $result = $t.fastbox($result0 && $result1.$wrapped, $g.____testlib.basictypes.Boolean);
-                $current = 1;
-                $continue($resolve, $reject);
-                return;
-              });
+              $result = $t.fastbox($result0 && (decorated.$wrapped == 15), $g.____testlib.basictypes.Boolean);
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
               $reject(err);
               return;

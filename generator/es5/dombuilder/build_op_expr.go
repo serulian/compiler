@@ -8,6 +8,7 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/codedom"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
+	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/parser"
 )
 
@@ -227,6 +228,68 @@ func (db *domBuilder) buildUnaryOperatorExpression(node compilergraph.GraphNode,
 	return callExpr
 }
 
+func (db *domBuilder) buildOptimizedBinaryOperatorExpression(node compilergraph.GraphNode, parentType typegraph.TypeReference, leftExpr codedom.Expression, rightExpr codedom.Expression) (codedom.Expression, bool) {
+	// Verify this is a supported native operator.
+	opString, hasOp := operatorMap[node.Kind()]
+	if !hasOp {
+		return nil, false
+	}
+
+	// Verify we have a native binary operator we can optimize.
+	if !parentType.IsNominal() {
+		return nil, false
+	}
+
+	isNumeric := false
+
+	switch {
+	case parentType.IsDirectReferenceTo(db.scopegraph.TypeGraph().IntType()):
+		isNumeric = true
+
+	case parentType.IsDirectReferenceTo(db.scopegraph.TypeGraph().BoolType()):
+		fallthrough
+
+	case parentType.IsDirectReferenceTo(db.scopegraph.TypeGraph().StringType()):
+		fallthrough
+
+	default:
+		return nil, false
+	}
+
+	// Handle the various kinds of operators.
+	switch node.Kind() {
+	case parser.NodeComparisonEqualsExpression:
+		fallthrough
+
+	case parser.NodeComparisonNotEqualsExpression:
+		// Always allowed.
+		break
+
+	case parser.NodeComparisonLTEExpression:
+		fallthrough
+	case parser.NodeComparisonLTExpression:
+		fallthrough
+	case parser.NodeComparisonGTEExpression:
+		fallthrough
+	case parser.NodeComparisonGTExpression:
+		// Only allowed for number.
+		if !isNumeric {
+			return nil, false
+		}
+	}
+
+	boolType := db.scopegraph.TypeGraph().BoolTypeReference()
+
+	unwrappedLeftExpr := codedom.NominalUnwrapping(leftExpr, parentType, node)
+	unwrappedRightExpr := codedom.NominalUnwrapping(rightExpr, parentType, node)
+
+	compareExpr := codedom.BinaryOperation(unwrappedLeftExpr, opString, unwrappedRightExpr, node)
+	return codedom.NominalRefWrapping(compareExpr,
+		boolType.NominalDataType(),
+		boolType,
+		node), true
+}
+
 // buildBinaryOperatorExpression builds the CodeDOM for a binary operator.
 func (db *domBuilder) buildBinaryOperatorExpression(node compilergraph.GraphNode, modifier exprModifier) codedom.Expression {
 	scope, _ := db.scopegraph.GetScope(node)
@@ -242,22 +305,9 @@ func (db *domBuilder) buildBinaryOperatorExpression(node compilergraph.GraphNode
 	leftScope, _ := db.scopegraph.GetScope(node.GetNode(parser.NodeBinaryExpressionLeftExpr))
 	parentType := leftScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
 
-	// If the operator is the comparison operator operating over a number, then we can optimize
-	// the check.
-	if operator.Name() == "compare" &&
-		parentType.IsDirectReferenceTo(db.scopegraph.TypeGraph().IntType()) {
-
-		boolType := db.scopegraph.TypeGraph().BoolTypeReference()
-		intType := db.scopegraph.TypeGraph().IntTypeReference()
-
-		unwrappedLeftExpr := codedom.NominalUnwrapping(leftExpr, intType, node)
-		unwrappedRightExpr := codedom.NominalUnwrapping(rightExpr, intType, node)
-
-		compareExpr := codedom.BinaryOperation(unwrappedLeftExpr, operatorMap[node.Kind()], unwrappedRightExpr, node)
-		return codedom.NominalRefWrapping(compareExpr,
-			boolType.NominalDataType(),
-			boolType,
-			node)
+	optimized, wasOptimized := db.buildOptimizedBinaryOperatorExpression(node, parentType, leftExpr, rightExpr)
+	if wasOptimized {
+		return optimized
 	}
 
 	callExpr := codedom.MemberCall(codedom.StaticMemberReference(operator, parentType, node), operator, []codedom.Expression{leftExpr, rightExpr}, node)

@@ -71,7 +71,7 @@ $module('match', function () {
               $current = 2;
               continue;
             } else {
-              $current = 30;
+              $current = 27;
               continue;
             }
             break;
@@ -99,7 +99,7 @@ $module('match', function () {
               $current = 5;
               continue;
             } else {
-              $current = 25;
+              $current = 23;
               continue;
             }
             break;
@@ -127,7 +127,7 @@ $module('match', function () {
               $current = 8;
               continue;
             } else {
-              $current = 20;
+              $current = 19;
               continue;
             }
             break;
@@ -202,31 +202,19 @@ $module('match', function () {
               $current = 16;
               continue;
             } else {
-              $current = 18;
+              $current = 17;
               continue;
             }
             break;
 
           case 16:
-            $g.____testlib.basictypes.Integer.$equals(fourthThing, $t.fastbox(1234, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-              fourthBool = $result0;
-              $result = fourthBool;
-              $current = 17;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 17:
+            fourthBool = $t.fastbox(fourthThing.$wrapped == 1234, $g.____testlib.basictypes.Boolean);
             $current = 13;
             continue;
 
-          case 18:
+          case 17:
             if (true) {
-              $current = 19;
+              $current = 18;
               continue;
             } else {
               $current = 13;
@@ -234,41 +222,29 @@ $module('match', function () {
             }
             break;
 
-          case 19:
+          case 18:
             fourthBool = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
             $current = 13;
             continue;
 
-          case 20:
+          case 19:
             if ($t.istype(thirdThing, $g.____testlib.basictypes.Integer)) {
-              $current = 21;
+              $current = 20;
               continue;
             } else {
-              $current = 23;
+              $current = 21;
               continue;
             }
             break;
 
-          case 21:
-            $g.____testlib.basictypes.Integer.$equals(thirdThing, $t.fastbox(1234, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-              thirdBool = $result0;
-              $result = thirdBool;
-              $current = 22;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 22:
+          case 20:
+            thirdBool = $t.fastbox(thirdThing.$wrapped == 1234, $g.____testlib.basictypes.Boolean);
             $current = 10;
             continue;
 
-          case 23:
+          case 21:
             if (true) {
-              $current = 24;
+              $current = 22;
               continue;
             } else {
               $current = 10;
@@ -276,41 +252,29 @@ $module('match', function () {
             }
             break;
 
-          case 24:
+          case 22:
             thirdBool = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
             $current = 10;
             continue;
 
-          case 25:
+          case 23:
             if ($t.istype(secondThing, $g.____testlib.basictypes.Integer)) {
-              $current = 26;
+              $current = 24;
               continue;
             } else {
-              $current = 28;
+              $current = 25;
               continue;
             }
             break;
 
-          case 26:
-            $g.____testlib.basictypes.Integer.$equals(secondThing, $t.fastbox(1234, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-              secondBool = $result0;
-              $result = secondBool;
-              $current = 27;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 27:
+          case 24:
+            secondBool = $t.fastbox(secondThing.$wrapped == 1234, $g.____testlib.basictypes.Boolean);
             $current = 7;
             continue;
 
-          case 28:
+          case 25:
             if (true) {
-              $current = 29;
+              $current = 26;
               continue;
             } else {
               $current = 7;
@@ -318,41 +282,29 @@ $module('match', function () {
             }
             break;
 
-          case 29:
+          case 26:
             secondBool = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
             $current = 7;
             continue;
 
-          case 30:
+          case 27:
             if ($t.istype(firstThing, $g.____testlib.basictypes.Integer)) {
-              $current = 31;
+              $current = 28;
               continue;
             } else {
-              $current = 33;
+              $current = 29;
               continue;
             }
             break;
 
-          case 31:
-            $g.____testlib.basictypes.Integer.$equals(firstThing, $t.fastbox(4567, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-              firstBool = $result0;
-              $result = firstBool;
-              $current = 32;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 32:
+          case 28:
+            firstBool = $t.fastbox(firstThing.$wrapped == 4567, $g.____testlib.basictypes.Boolean);
             $current = 4;
             continue;
 
-          case 33:
+          case 29:
             if (true) {
-              $current = 34;
+              $current = 30;
               continue;
             } else {
               $current = 4;
@@ -360,7 +312,7 @@ $module('match', function () {
             }
             break;
 
-          case 34:
+          case 30:
             firstBool = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
             $current = 4;
             continue;

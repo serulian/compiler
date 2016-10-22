@@ -233,14 +233,12 @@ $module('custom', function () {
 
           case 2:
             parsed = $result;
-            $g.____testlib.basictypes.Integer.$equals(parsed.SomeField, $t.fastbox(2, $g.____testlib.basictypes.Integer)).then(function ($result2) {
-              return $promise.resolve($result2.$wrapped).then(function ($result1) {
-                return $promise.resolve($result1 && !parsed.AnotherField.$wrapped).then(function ($result0) {
-                  $result = $t.fastbox($result0 && parsed.SomeInstance.AnotherBool.$wrapped, $g.____testlib.basictypes.Boolean);
-                  $current = 3;
-                  $continue($resolve, $reject);
-                  return;
-                });
+            $promise.resolve(parsed.SomeField.$wrapped == 2).then(function ($result1) {
+              return $promise.resolve($result1 && !parsed.AnotherField.$wrapped).then(function ($result0) {
+                $result = $t.fastbox($result0 && parsed.SomeInstance.AnotherBool.$wrapped, $g.____testlib.basictypes.Boolean);
+                $current = 3;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
               $reject(err);

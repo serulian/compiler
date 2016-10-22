@@ -101,14 +101,12 @@ $module('basic', function () {
 
           case 1:
             ss = $result;
-            $g.____testlib.basictypes.Integer.$equals(ss.SomeField, $t.fastbox(42, $g.____testlib.basictypes.Integer)).then(function ($result2) {
-              return $promise.resolve($result2.$wrapped).then(function ($result1) {
-                return $promise.resolve($result1 && ss.AnotherField.$wrapped).then(function ($result0) {
-                  $result = $t.fastbox($result0 && ss.SomeInstance.AnotherBool.$wrapped, $g.____testlib.basictypes.Boolean);
-                  $current = 2;
-                  $continue($resolve, $reject);
-                  return;
-                });
+            $promise.resolve(ss.SomeField.$wrapped == 42).then(function ($result1) {
+              return $promise.resolve($result1 && ss.AnotherField.$wrapped).then(function ($result0) {
+                $result = $t.fastbox($result0 && ss.SomeInstance.AnotherBool.$wrapped, $g.____testlib.basictypes.Boolean);
+                $current = 2;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
               $reject(err);

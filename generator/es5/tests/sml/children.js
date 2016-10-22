@@ -39,42 +39,18 @@ $module('children', function () {
               $current = 4;
               continue;
             } else {
-              $current = 6;
+              $current = 5;
               continue;
             }
             break;
 
           case 4:
-            $g.____testlib.basictypes.Integer.$plus(counter, value).then(function ($result0) {
-              counter = $result0;
-              $result = counter;
-              $current = 5;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 5:
+            counter = $t.fastbox(counter.$wrapped + value.$wrapped, $g.____testlib.basictypes.Boolean);
             $current = 2;
             continue;
 
-          case 6:
-            $g.____testlib.basictypes.Integer.$equals(counter, $t.fastbox(6, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-              $result = $result0;
-              $current = 7;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 7:
-            $resolve($result);
+          case 5:
+            $resolve($t.fastbox(counter.$wrapped == 6, $g.____testlib.basictypes.Boolean));
             return;
 
           default:

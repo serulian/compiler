@@ -142,17 +142,13 @@ $module('slice', function () {
           case 4:
             parsed = $result;
             $promise.resolve(correct.$wrapped).then(function ($result1) {
-              return ($promise.shortcircuit($result1, true) || s.Values.Length()).then(function ($result3) {
-                return ($promise.shortcircuit($result1, true) || $g.____testlib.basictypes.Integer.$equals($result3, $t.fastbox(3, $g.____testlib.basictypes.Integer))).then(function ($result2) {
-                  return $promise.resolve($result1 && $result2.$wrapped).then(function ($result0) {
-                    return ($promise.shortcircuit($result0, true) || s.Values.$index($t.fastbox(0, $g.____testlib.basictypes.Integer))).then(function ($result5) {
-                      return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.Integer.$equals($result5.AnotherInt, $t.fastbox(1, $g.____testlib.basictypes.Integer))).then(function ($result4) {
-                        $result = $t.fastbox($result0 && $result4.$wrapped, $g.____testlib.basictypes.Boolean);
-                        $current = 5;
-                        $continue($resolve, $reject);
-                        return;
-                      });
-                    });
+              return ($promise.shortcircuit($result1, true) || s.Values.Length()).then(function ($result2) {
+                return $promise.resolve($result1 && ($result2.$wrapped == 3)).then(function ($result0) {
+                  return ($promise.shortcircuit($result0, true) || s.Values.$index($t.fastbox(0, $g.____testlib.basictypes.Integer))).then(function ($result3) {
+                    $result = $t.fastbox($result0 && ($result3.AnotherInt.$wrapped == 1), $g.____testlib.basictypes.Boolean);
+                    $current = 5;
+                    $continue($resolve, $reject);
+                    return;
                   });
                 });
               });

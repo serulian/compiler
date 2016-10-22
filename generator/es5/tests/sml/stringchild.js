@@ -7,13 +7,11 @@ $module('stringchild', function () {
       while (true) {
         switch ($current) {
           case 0:
-            child.Length().then(function ($result1) {
-              return $g.____testlib.basictypes.Integer.$equals($result1, $t.fastbox(5, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-                $result = $result0;
-                $current = 1;
-                $continue($resolve, $reject);
-                return;
-              });
+            child.Length().then(function ($result0) {
+              $result = $t.fastbox($result0.$wrapped == 5, $g.____testlib.basictypes.Boolean);
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
               $reject(err);
               return;

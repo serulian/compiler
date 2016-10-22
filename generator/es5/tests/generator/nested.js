@@ -138,42 +138,18 @@ $module('nested', function () {
               $current = 5;
               continue;
             } else {
-              $current = 7;
+              $current = 6;
               continue;
             }
             break;
 
           case 5:
-            $g.____testlib.basictypes.Integer.$plus(v, value).then(function ($result0) {
-              v = $result0;
-              $result = v;
-              $current = 6;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 6:
+            v = $t.fastbox(v.$wrapped + value.$wrapped, $g.____testlib.basictypes.Boolean);
             $current = 3;
             continue;
 
-          case 7:
-            $g.____testlib.basictypes.Integer.$equals(v, $t.fastbox(12, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-              $result = $result0;
-              $current = 8;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 8:
-            $resolve($result);
+          case 6:
+            $resolve($t.fastbox(v.$wrapped == 12, $g.____testlib.basictypes.Boolean));
             return;
 
           default:

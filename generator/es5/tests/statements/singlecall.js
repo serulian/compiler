@@ -15,13 +15,11 @@ $module('singlecall', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.singlecall.DoSomething().then(function ($result1) {
-              return $g.____testlib.basictypes.Integer.$equals($result1, $t.fastbox(42, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-                $result = $result0;
-                $current = 1;
-                $continue($resolve, $reject);
-                return;
-              });
+            $g.singlecall.DoSomething().then(function ($result0) {
+              $result = $t.fastbox($result0.$wrapped == 42, $g.____testlib.basictypes.Boolean);
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
               $reject(err);
               return;

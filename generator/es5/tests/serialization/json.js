@@ -134,14 +134,12 @@ $module('json', function () {
           case 3:
             parsed = $result;
             $promise.resolve(correct.$wrapped).then(function ($result2) {
-              return ($promise.shortcircuit($result2, true) || $g.____testlib.basictypes.Integer.$equals(parsed.SomeField, $t.fastbox(2, $g.____testlib.basictypes.Integer))).then(function ($result3) {
-                return $promise.resolve($result2 && $result3.$wrapped).then(function ($result1) {
-                  return $promise.resolve($result1 && !parsed.AnotherField.$wrapped).then(function ($result0) {
-                    $result = $t.fastbox($result0 && parsed.SomeInstance.AnotherBool.$wrapped, $g.____testlib.basictypes.Boolean);
-                    $current = 4;
-                    $continue($resolve, $reject);
-                    return;
-                  });
+              return $promise.resolve($result2 && (parsed.SomeField.$wrapped == 2)).then(function ($result1) {
+                return $promise.resolve($result1 && !parsed.AnotherField.$wrapped).then(function ($result0) {
+                  $result = $t.fastbox($result0 && parsed.SomeInstance.AnotherBool.$wrapped, $g.____testlib.basictypes.Boolean);
+                  $current = 4;
+                  $continue($resolve, $reject);
+                  return;
                 });
               });
             }).catch(function (err) {

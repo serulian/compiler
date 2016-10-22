@@ -136,16 +136,20 @@ $module('resource', function () {
               $current = 6;
               continue;
             } else {
-              $current = 8;
+              $current = 7;
               continue;
             }
             break;
 
           case 6:
-            $g.____testlib.basictypes.Integer.$plus(counter, i).then(function ($result0) {
-              counter = $result0;
-              $result = counter;
-              $current = 7;
+            counter = $t.fastbox(counter.$wrapped + i.$wrapped, $g.____testlib.basictypes.Boolean);
+            $current = 4;
+            continue;
+
+          case 7:
+            $promise.resolve(sr.released.$wrapped).then(function ($result0) {
+              $result = $t.fastbox($result0 && (counter.$wrapped == 42), $g.____testlib.basictypes.Boolean);
+              $current = 8;
               $continue($resolve, $reject);
               return;
             }).catch(function (err) {
@@ -154,25 +158,7 @@ $module('resource', function () {
             });
             return;
 
-          case 7:
-            $current = 4;
-            continue;
-
           case 8:
-            $promise.resolve(sr.released.$wrapped).then(function ($result0) {
-              return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.Integer.$equals(counter, $t.fastbox(42, $g.____testlib.basictypes.Integer))).then(function ($result1) {
-                $result = $t.fastbox($result0 && $result1.$wrapped, $g.____testlib.basictypes.Boolean);
-                $current = 9;
-                $continue($resolve, $reject);
-                return;
-              });
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 9:
             $resolve($result);
             return;
 

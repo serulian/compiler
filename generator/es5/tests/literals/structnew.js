@@ -64,13 +64,11 @@ $module('structnew', function () {
 
           case 1:
             sc = $result;
-            $g.____testlib.basictypes.Integer.$equals(sc.SomeField, $t.fastbox(2, $g.____testlib.basictypes.Integer)).then(function ($result1) {
-              return $promise.resolve($result1.$wrapped).then(function ($result0) {
-                $result = $t.fastbox($result0 && sc.anotherField.$wrapped, $g.____testlib.basictypes.Boolean);
-                $current = 2;
-                $continue($resolve, $reject);
-                return;
-              });
+            $promise.resolve(sc.SomeField.$wrapped == 2).then(function ($result0) {
+              $result = $t.fastbox($result0 && sc.anotherField.$wrapped, $g.____testlib.basictypes.Boolean);
+              $current = 2;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
               $reject(err);
               return;

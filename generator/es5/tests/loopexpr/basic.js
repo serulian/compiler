@@ -42,32 +42,10 @@ $module('basic', function () {
           case 0:
             $g.basic.SomeGenerator().then(function ($result1) {
               return $g.____testlib.basictypes.MapStream($g.____testlib.basictypes.Integer, $g.____testlib.basictypes.Integer)($result1, function (s) {
-                var $result;
                 var $current = 0;
                 var $continue = function ($resolve, $reject) {
-                  while (true) {
-                    switch ($current) {
-                      case 0:
-                        $g.____testlib.basictypes.Integer.$plus(s, $t.fastbox(1, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-                          $result = $result0;
-                          $current = 1;
-                          $continue($resolve, $reject);
-                          return;
-                        }).catch(function (err) {
-                          $reject(err);
-                          return;
-                        });
-                        return;
-
-                      case 1:
-                        $resolve($result);
-                        return;
-
-                      default:
-                        $resolve();
-                        return;
-                    }
-                  }
+                  $resolve($t.fastbox(s.$wrapped + 1, $g.____testlib.basictypes.Boolean));
+                  return;
                 };
                 return $promise.new($continue);
               }).then(function ($result0) {
@@ -112,42 +90,18 @@ $module('basic', function () {
               $current = 5;
               continue;
             } else {
-              $current = 7;
+              $current = 6;
               continue;
             }
             break;
 
           case 5:
-            $g.____testlib.basictypes.Integer.$plus(counter, entry).then(function ($result0) {
-              counter = $result0;
-              $result = counter;
-              $current = 6;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 6:
+            counter = $t.fastbox(counter.$wrapped + entry.$wrapped, $g.____testlib.basictypes.Boolean);
             $current = 3;
             continue;
 
-          case 7:
-            $g.____testlib.basictypes.Integer.$equals(counter, $t.fastbox(9, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-              $result = $result0;
-              $current = 8;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 8:
-            $resolve($result);
+          case 6:
+            $resolve($t.fastbox(counter.$wrapped == 9, $g.____testlib.basictypes.Boolean));
             return;
 
           default:

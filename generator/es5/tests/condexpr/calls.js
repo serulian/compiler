@@ -80,16 +80,14 @@ $module('calls', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.calls.getIntValue().then(function ($result2) {
-              return $g.____testlib.basictypes.Integer.$equals($result2, $t.fastbox(2, $g.____testlib.basictypes.Integer)).then(function ($result1) {
-                return $promise.resolve($result1.$wrapped).then(function ($result0) {
-                  return ($promise.shortcircuit($result0, true) || $g.calls.failValue()).then(function ($result3) {
-                    return ($promise.shortcircuit($result0, false) || $g.calls.getValue()).then(function ($result4) {
-                      $result = $result0 ? $result3 : $result4;
-                      $current = 1;
-                      $continue($resolve, $reject);
-                      return;
-                    });
+            $g.calls.getIntValue().then(function ($result1) {
+              return $promise.resolve($result1.$wrapped == 2).then(function ($result0) {
+                return ($promise.shortcircuit($result0, true) || $g.calls.failValue()).then(function ($result2) {
+                  return ($promise.shortcircuit($result0, false) || $g.calls.getValue()).then(function ($result3) {
+                    $result = $result0 ? $result2 : $result3;
+                    $current = 1;
+                    $continue($resolve, $reject);
+                    return;
                   });
                 });
               });

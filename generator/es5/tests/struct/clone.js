@@ -76,14 +76,12 @@ $module('clone', function () {
 
           case 2:
             second = $result;
-            $g.____testlib.basictypes.Integer.$equals(second.SomeField, $t.fastbox(42, $g.____testlib.basictypes.Integer)).then(function ($result2) {
-              return $promise.resolve($result2.$wrapped).then(function ($result1) {
-                return $promise.resolve($result1 && second.AnotherField.$wrapped).then(function ($result0) {
-                  $result = $t.fastbox($result0 && !first.AnotherField.$wrapped, $g.____testlib.basictypes.Boolean);
-                  $current = 3;
-                  $continue($resolve, $reject);
-                  return;
-                });
+            $promise.resolve(second.SomeField.$wrapped == 42).then(function ($result1) {
+              return $promise.resolve($result1 && second.AnotherField.$wrapped).then(function ($result0) {
+                $result = $t.fastbox($result0 && !first.AnotherField.$wrapped, $g.____testlib.basictypes.Boolean);
+                $current = 3;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
               $reject(err);

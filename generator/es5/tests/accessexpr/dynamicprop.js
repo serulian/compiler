@@ -73,17 +73,13 @@ $module('dynamicprop', function () {
 
           case 2:
             sca = sc;
-            $t.dynamicaccess(sca, 'SomeProp').then(function ($result2) {
-              return $g.____testlib.basictypes.Integer.$equals($t.cast($result2, $g.____testlib.basictypes.Integer, false), $t.fastbox(123, $g.____testlib.basictypes.Integer)).then(function ($result1) {
-                return $promise.resolve($result1.$wrapped).then(function ($result0) {
-                  return ($promise.shortcircuit($result0, true) || sc.SomeProp()).then(function ($result4) {
-                    return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.Integer.$equals($result4, $t.fastbox(123, $g.____testlib.basictypes.Integer))).then(function ($result3) {
-                      $result = $t.fastbox($result0 && $result3.$wrapped, $g.____testlib.basictypes.Boolean);
-                      $current = 3;
-                      $continue($resolve, $reject);
-                      return;
-                    });
-                  });
+            $t.dynamicaccess(sca, 'SomeProp').then(function ($result1) {
+              return $promise.resolve($t.cast($result1, $g.____testlib.basictypes.Integer, false).$wrapped == 123).then(function ($result0) {
+                return ($promise.shortcircuit($result0, true) || sc.SomeProp()).then(function ($result2) {
+                  $result = $t.fastbox($result0 && ($result2.$wrapped == 123), $g.____testlib.basictypes.Boolean);
+                  $current = 3;
+                  $continue($resolve, $reject);
+                  return;
                 });
               });
             }).catch(function (err) {

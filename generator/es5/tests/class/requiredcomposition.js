@@ -87,14 +87,12 @@ $module('requiredcomposition', function () {
 
           case 1:
             sc = $result;
-            $g.____testlib.basictypes.Integer.$equals(sc.FirstValue, $t.fastbox(42, $g.____testlib.basictypes.Integer)).then(function ($result1) {
-              return $promise.resolve($result1.$wrapped).then(function ($result0) {
-                return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.String.$equals(sc.SecondValue, $t.fastbox('hello', $g.____testlib.basictypes.String))).then(function ($result2) {
-                  $result = $t.fastbox($result0 && $result2.$wrapped, $g.____testlib.basictypes.Boolean);
-                  $current = 2;
-                  $continue($resolve, $reject);
-                  return;
-                });
+            $promise.resolve(sc.FirstValue.$wrapped == 42).then(function ($result0) {
+              return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.String.$equals(sc.SecondValue, $t.fastbox('hello', $g.____testlib.basictypes.String))).then(function ($result1) {
+                $result = $t.fastbox($result0 && $result1.$wrapped, $g.____testlib.basictypes.Boolean);
+                $current = 2;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
               $reject(err);
