@@ -1,7 +1,6 @@
 $module('intconditional', function () {
   var $static = this;
   $static.TEST = function () {
-    var $result;
     var first;
     var second;
     var $current = 0;
@@ -11,32 +10,20 @@ $module('intconditional', function () {
           case 0:
             first = $t.fastbox(10, $g.____testlib.basictypes.Integer);
             second = $t.fastbox(2, $g.____testlib.basictypes.Integer);
-            $g.____testlib.basictypes.Integer.$compare(second, first).then(function ($result0) {
-              $result = $result0.$wrapped <= 0;
+            if (second.$wrapped <= first.$wrapped) {
               $current = 1;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            if ($result) {
-              $current = 2;
               continue;
             } else {
-              $current = 3;
+              $current = 2;
               continue;
             }
             break;
 
-          case 2:
+          case 1:
             $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
             return;
 
-          case 3:
+          case 2:
             $resolve($t.fastbox(false, $g.____testlib.basictypes.Boolean));
             return;
 

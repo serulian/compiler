@@ -242,6 +242,24 @@ func (db *domBuilder) buildBinaryOperatorExpression(node compilergraph.GraphNode
 	leftScope, _ := db.scopegraph.GetScope(node.GetNode(parser.NodeBinaryExpressionLeftExpr))
 	parentType := leftScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
 
+	// If the operator is the comparison operator operating over a number, then we can optimize
+	// the check.
+	if operator.Name() == "compare" &&
+		parentType.IsDirectReferenceTo(db.scopegraph.TypeGraph().IntType()) {
+
+		boolType := db.scopegraph.TypeGraph().BoolTypeReference()
+		intType := db.scopegraph.TypeGraph().IntTypeReference()
+
+		unwrappedLeftExpr := codedom.NominalUnwrapping(leftExpr, intType, node)
+		unwrappedRightExpr := codedom.NominalUnwrapping(rightExpr, intType, node)
+
+		compareExpr := codedom.BinaryOperation(unwrappedLeftExpr, operatorMap[node.Kind()], unwrappedRightExpr, node)
+		return codedom.NominalRefWrapping(compareExpr,
+			boolType.NominalDataType(),
+			boolType,
+			node)
+	}
+
 	callExpr := codedom.MemberCall(codedom.StaticMemberReference(operator, parentType, node), operator, []codedom.Expression{leftExpr, rightExpr}, node)
 	if modifier != nil {
 		return modifier(callExpr)

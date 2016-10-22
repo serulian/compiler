@@ -834,9 +834,19 @@ this.Serulian = function ($global) {
           while (true) {
             switch ($current) {
               case 0:
-/*#this.current <= this.end {#*/                $g.____testlib.basictypes.Integer.$compare(/*#this.current <= this.end {#*/$this.current, /*#this.end {#*/$this.end).then(/*#this.end {#*/function (/*#this.end {#*/$result0) /*#this.end {#*/{
-                  $result = /*#this.current <= this.end {#*/$result0.$wrapped <= /*#this.current <= this.end {#*/0;
+                if (/*#this.current <= this.end {#*/$this.current.$wrapped <= /*#this.end {#*/$this.end.$wrapped) /*#this.end {#*/{
                   $current = 1;
+                  continue;
+                } else {
+                  $current = 4;
+                  continue;
+                }
+                break;
+
+              case 1:
+/*#Tuple<int, bool>.Build(this.current, true)#*/                $g.____testlib.basictypes.Tuple(/*#int, bool>.Build(this.current, true)#*/$g.____testlib.basictypes.Integer, /*#bool>.Build(this.current, true)#*/$g.____testlib.basictypes.Boolean).Build(/*#this.current, true)#*/$this.current, /*#true)#*/$t.fastbox(/*#true)#*/true, /*#true)#*/$g.____testlib.basictypes.Boolean)).then(/*#true)#*/function (/*#true)#*/$result0) /*#true)#*/{
+                  $result = /*#.Build(this.current, true)#*/$result0;
+                  $current = 2;
                   $continue($resolve, $reject);
                   return;
                 }).catch(function (err) {
@@ -845,19 +855,10 @@ this.Serulian = function ($global) {
                 });
                 return;
 
-              case 1:
-                if ($result) {
-                  $current = 2;
-                  continue;
-                } else {
-                  $current = 5;
-                  continue;
-                }
-                break;
-
               case 2:
-/*#Tuple<int, bool>.Build(this.current, true)#*/                $g.____testlib.basictypes.Tuple(/*#int, bool>.Build(this.current, true)#*/$g.____testlib.basictypes.Integer, /*#bool>.Build(this.current, true)#*/$g.____testlib.basictypes.Boolean).Build(/*#this.current, true)#*/$this.current, /*#true)#*/$t.fastbox(/*#true)#*/true, /*#true)#*/$g.____testlib.basictypes.Boolean)).then(/*#true)#*/function (/*#true)#*/$result0) /*#true)#*/{
-                  $result = /*#.Build(this.current, true)#*/$result0;
+                t = $result;
+/*#this.current + 1#*/                $g.____testlib.basictypes.Integer.$plus(/*#this.current + 1#*/$this.current, /*#1#*/$t.fastbox(/*#1#*/1, /*#1#*/$g.____testlib.basictypes.Integer)).then(/*#1#*/function (/*#1#*/$result0) /*#1#*/{
+                  $result = /*#this.current = this.current + 1#*/$this.current = /*#this.current + 1#*/$result0;
                   $current = 3;
                   $continue($resolve, $reject);
                   return;
@@ -868,26 +869,13 @@ this.Serulian = function ($global) {
                 return;
 
               case 3:
-                t = $result;
-/*#this.current + 1#*/                $g.____testlib.basictypes.Integer.$plus(/*#this.current + 1#*/$this.current, /*#1#*/$t.fastbox(/*#1#*/1, /*#1#*/$g.____testlib.basictypes.Integer)).then(/*#1#*/function (/*#1#*/$result0) /*#1#*/{
-                  $result = /*#this.current = this.current + 1#*/$this.current = /*#this.current + 1#*/$result0;
-                  $current = 4;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
-
-              case 4:
                 $resolve(/*#t#*/t);
                 return;
 
-              case 5:
+              case 4:
 /*#Tuple<int, bool>.Build(this.current, false)#*/                $g.____testlib.basictypes.Tuple(/*#int, bool>.Build(this.current, false)#*/$g.____testlib.basictypes.Integer, /*#bool>.Build(this.current, false)#*/$g.____testlib.basictypes.Boolean).Build(/*#this.current, false)#*/$this.current, /*#false)#*/$t.fastbox(/*#false)#*/false, /*#false)#*/$g.____testlib.basictypes.Boolean)).then(/*#false)#*/function (/*#false)#*/$result0) /*#false)#*/{
                   $result = /*#.Build(this.current, false)#*/$result0;
-                  $current = 6;
+                  $current = 5;
                   $continue($resolve, $reject);
                   return;
                 }).catch(function (err) {
@@ -896,7 +884,7 @@ this.Serulian = function ($global) {
                 });
                 return;
 
-              case 6:
+              case 5:
                 $resolve($result);
                 return;
 
@@ -1030,33 +1018,21 @@ this.Serulian = function ($global) {
 
               case 2:
                 end = $result;
-/*#start < 0 {#*/                $g.____testlib.basictypes.Integer.$compare(/*#start < 0 {#*/start, /*#0 {#*/$t.fastbox(/*#0 {#*/0, /*#0 {#*/$g.____testlib.basictypes.Integer)).then(/*#0 {#*/function (/*#0 {#*/$result0) /*#0 {#*/{
-                  $result = /*#start < 0 {#*/$result0.$wrapped < /*#start < 0 {#*/0;
+                if (/*#start < 0 {#*/start.$wrapped < /*#start < 0 {#*/0) /*#start < 0 {#*/{
                   $current = 3;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
-
-              case 3:
-                if ($result) {
-                  $current = 4;
                   continue;
                 } else {
-                  $current = 6;
+                  $current = 5;
                   continue;
                 }
                 break;
 
-              case 4:
+              case 3:
 /*#this.Count#*/                $this.Count().then(/*#this.Count#*/function (/*#this.Count#*/$result1) /*#this.Count#*/{
                   return /*#start + this.Count#*/$g.____testlib.basictypes.Integer.$plus(/*#start + this.Count#*/start, /*#this.Count#*/$result1).then(/*#this.Count#*/function (/*#this.Count#*/$result0) /*#this.Count#*/{
                     start = /*#start + this.Count#*/$result0;
                     $result = /*#start = start + this.Count#*/start;
-                    $current = 5;
+                    $current = 4;
                     $continue($resolve, $reject);
                     return;
                   });
@@ -1066,16 +1042,29 @@ this.Serulian = function ($global) {
                 });
                 return;
 
-              case 5:
-                $current = 6;
+              case 4:
+                $current = 5;
                 continue;
 
+              case 5:
+                if (/*#end < 0 {#*/end.$wrapped < /*#end < 0 {#*/0) /*#end < 0 {#*/{
+                  $current = 6;
+                  continue;
+                } else {
+                  $current = 8;
+                  continue;
+                }
+                break;
+
               case 6:
-/*#end < 0 {#*/                $g.____testlib.basictypes.Integer.$compare(/*#end < 0 {#*/end, /*#0 {#*/$t.fastbox(/*#0 {#*/0, /*#0 {#*/$g.____testlib.basictypes.Integer)).then(/*#0 {#*/function (/*#0 {#*/$result0) /*#0 {#*/{
-                  $result = /*#end < 0 {#*/$result0.$wrapped < /*#end < 0 {#*/0;
-                  $current = 7;
-                  $continue($resolve, $reject);
-                  return;
+/*#this.Count#*/                $this.Count().then(/*#this.Count#*/function (/*#this.Count#*/$result1) /*#this.Count#*/{
+                  return /*#end + this.Count#*/$g.____testlib.basictypes.Integer.$plus(/*#end + this.Count#*/end, /*#this.Count#*/$result1).then(/*#this.Count#*/function (/*#this.Count#*/$result0) /*#this.Count#*/{
+                    end = /*#end + this.Count#*/$result0;
+                    $result = /*#end = end + this.Count#*/end;
+                    $current = 7;
+                    $continue($resolve, $reject);
+                    return;
+                  });
                 }).catch(function (err) {
                   $reject(err);
                   return;
@@ -1083,60 +1072,23 @@ this.Serulian = function ($global) {
                 return;
 
               case 7:
-                if ($result) {
-                  $current = 8;
-                  continue;
-                } else {
-                  $current = 10;
-                  continue;
-                }
-                break;
-
-              case 8:
-/*#this.Count#*/                $this.Count().then(/*#this.Count#*/function (/*#this.Count#*/$result1) /*#this.Count#*/{
-                  return /*#end + this.Count#*/$g.____testlib.basictypes.Integer.$plus(/*#end + this.Count#*/end, /*#this.Count#*/$result1).then(/*#this.Count#*/function (/*#this.Count#*/$result0) /*#this.Count#*/{
-                    end = /*#end + this.Count#*/$result0;
-                    $result = /*#end = end + this.Count#*/end;
-                    $current = 9;
-                    $continue($resolve, $reject);
-                    return;
-                  });
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
-
-              case 9:
-                $current = 10;
+                $current = 8;
                 continue;
 
-              case 10:
-/*#start >= end {#*/                $g.____testlib.basictypes.Integer.$compare(/*#start >= end {#*/start, /*#end {#*/end).then(/*#end {#*/function (/*#end {#*/$result0) /*#end {#*/{
-                  $result = /*#start >= end {#*/$result0.$wrapped >= /*#start >= end {#*/0;
-                  $current = 11;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
-
-              case 11:
-                if ($result) {
-                  $current = 12;
+              case 8:
+                if (/*#start >= end {#*/start.$wrapped >= /*#end {#*/end.$wrapped) /*#end {#*/{
+                  $current = 9;
                   continue;
                 } else {
-                  $current = 14;
+                  $current = 11;
                   continue;
                 }
                 break;
 
-              case 12:
+              case 9:
 /*#Slice<T>.Empty()#*/                $g.____testlib.basictypes.Slice(/*#T>.Empty()#*/T).Empty().then(/*#T>.Empty()#*/function (/*#T>.Empty()#*/$result0) /*#T>.Empty()#*/{
                   $result = /*#.Empty()#*/$result0;
-                  $current = 13;
+                  $current = 10;
                   $continue($resolve, $reject);
                   return;
                 }).catch(function (err) {
@@ -1145,14 +1097,14 @@ this.Serulian = function ($global) {
                 });
                 return;
 
-              case 13:
+              case 10:
                 $resolve($result);
                 return;
 
-              case 14:
+              case 11:
 /*#Slice<T>.overArray(this.items.slice(Number(start), Number(end)))#*/                $g.____testlib.basictypes.Slice(/*#T>.overArray(this.items.slice(Number(start), Number(end)))#*/T).overArray(/*#this.items.slice(Number(start), Number(end)))#*/$this.items.slice(/*#start), Number(end)))#*/start.$wrapped, /*#end)))#*/end.$wrapped)).then(/*#end)))#*/function (/*#end)))#*/$result0) /*#end)))#*/{
                   $result = /*#.overArray(this.items.slice(Number(start), Number(end)))#*/$result0;
-                  $current = 15;
+                  $current = 12;
                   $continue($resolve, $reject);
                   return;
                 }).catch(function (err) {
@@ -1161,7 +1113,7 @@ this.Serulian = function ($global) {
                 });
                 return;
 
-              case 15:
+              case 12:
                 $resolve($result);
                 return;
 
@@ -2203,13 +2155,11 @@ this.Serulian = function ($global) {
               return;
 
             case 6:
-/*#values.Length {#*/              values.Length().then(/*#values.Length {#*/function (/*#values.Length {#*/$result1) /*#values.Length {#*/{
-                return /*#i < values.Length {#*/$g.____testlib.basictypes.Integer.$compare(/*#i < values.Length {#*/i, /*#values.Length {#*/$result1).then(/*#values.Length {#*/function (/*#values.Length {#*/$result0) /*#values.Length {#*/{
-                  $result = /*#i < values.Length {#*/$result0.$wrapped < /*#i < values.Length {#*/0;
-                  $current = 7;
-                  $continue($resolve, $reject);
-                  return;
-                });
+/*#values.Length {#*/              values.Length().then(/*#values.Length {#*/function (/*#values.Length {#*/$result0) /*#values.Length {#*/{
+                $result = /*#i < values.Length {#*/i.$wrapped < /*#values.Length {#*/$result0.$wrapped;
+                $current = 7;
+                $continue($resolve, $reject);
+                return;
               }).catch(function (err) {
                 $reject(err);
                 return;
