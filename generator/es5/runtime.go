@@ -168,6 +168,10 @@ this.Serulian = (function($global) {
       if (instance == null) {
         return null;
       }
+
+      if (instance.constructor == type) {
+        return instance;
+      }
       
       return type.$box($t.unbox(instance));
     },
