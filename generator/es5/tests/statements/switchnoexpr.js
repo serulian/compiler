@@ -6,7 +6,7 @@ $module('switchnoexpr', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $t.box(123, $g.____testlib.basictypes.Integer);
+            $t.fastbox(123, $g.____testlib.basictypes.Integer);
             if (false) {
               $current = 1;
               continue;
@@ -17,12 +17,12 @@ $module('switchnoexpr', function () {
             break;
 
           case 1:
-            $t.box(1234, $g.____testlib.basictypes.Integer);
+            $t.fastbox(1234, $g.____testlib.basictypes.Integer);
             $current = 2;
             continue;
 
           case 2:
-            $t.box(789, $g.____testlib.basictypes.Integer);
+            $t.fastbox(789, $g.____testlib.basictypes.Integer);
             $resolve();
             return;
 
@@ -37,7 +37,7 @@ $module('switchnoexpr', function () {
             break;
 
           case 4:
-            $t.box(2345, $g.____testlib.basictypes.Integer);
+            $t.fastbox(2345, $g.____testlib.basictypes.Integer);
             $current = 2;
             continue;
 
@@ -52,7 +52,7 @@ $module('switchnoexpr', function () {
             break;
 
           case 6:
-            $t.box(3456, $g.____testlib.basictypes.Integer);
+            $t.fastbox(3456, $g.____testlib.basictypes.Integer);
             $current = 2;
             continue;
 

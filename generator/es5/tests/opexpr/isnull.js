@@ -8,9 +8,9 @@ $module('isnull', function () {
       while (true) {
         switch ($current) {
           case 0:
-            b = $t.box(1234, $g.____testlib.basictypes.Integer);
+            b = $t.fastbox(1234, $g.____testlib.basictypes.Integer);
             $promise.resolve(a == null).then(function ($result0) {
-              $result = $t.box($result0 && (b != null), $g.____testlib.basictypes.Boolean);
+              $result = $t.fastbox($result0 && (b != null), $g.____testlib.basictypes.Boolean);
               $current = 1;
               $continue($resolve, $reject);
               return;

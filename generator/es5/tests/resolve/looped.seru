@@ -3,7 +3,7 @@ function<any> TEST() {
 	for index in 0..2 {
 		value := values[index]
 		casted, _ := value.(bool)
-		if !(casted is null) {
+		if casted is not null {
 			return casted
 		}
 	}

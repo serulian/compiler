@@ -1,19 +1,20 @@
 $module('nominalbase', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('fc0ceb02', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      instance.SomeField = $t.box(true, $g.____testlib.basictypes.Boolean);
+      instance.SomeField = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
       return $promise.resolve(instance);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.nominalbase.SomeClass).$typeref()]);
+      return {
+      };
     };
   });
 
-  this.$type('FirstNominal', false, '', function () {
+  this.$type('ad913192', 'FirstNominal', false, '', function () {
     var $instance = this.prototype;
     var $static = this;
     this.$box = function ($wrapped) {
@@ -28,17 +29,23 @@ $module('nominalbase', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box(!$t.unbox($t.unbox($this).SomeField), $g.____testlib.basictypes.Boolean));
+        $resolve($t.fastbox(!$this.$wrapped.SomeField.$wrapped, $g.____testlib.basictypes.Boolean));
         return;
       };
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      return $t.createtypesig(['SomeProp', 3, $g.____testlib.basictypes.Boolean.$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "SomeProp|3|5ab5941e": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 
-  this.$type('SecondNominal', false, '', function () {
+  this.$type('eb757a50', 'SecondNominal', false, '', function () {
     var $instance = this.prototype;
     var $static = this;
     this.$box = function ($wrapped) {
@@ -58,7 +65,7 @@ $module('nominalbase', function () {
           switch ($current) {
             case 0:
               $t.box($this, $g.nominalbase.FirstNominal).SomeProp().then(function ($result0) {
-                $result = $t.box(!$t.unbox($result0), $g.____testlib.basictypes.Boolean);
+                $result = $t.fastbox(!$result0.$wrapped, $g.____testlib.basictypes.Boolean);
                 $current = 1;
                 $continue($resolve, $reject);
                 return;
@@ -81,7 +88,13 @@ $module('nominalbase', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['GetValue', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "GetValue|2|29dc432d<5ab5941e>": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 
@@ -107,7 +120,7 @@ $module('nominalbase', function () {
 
           case 1:
             sc = $result;
-            sn = $t.box($t.box(sc, $g.nominalbase.FirstNominal), $g.nominalbase.SecondNominal);
+            sn = $t.box($t.fastbox(sc, $g.nominalbase.FirstNominal), $g.nominalbase.SecondNominal);
             sn.GetValue().then(function ($result0) {
               $result = $result0;
               $current = 2;

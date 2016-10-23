@@ -1,11 +1,11 @@
 $module('property', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('88e36ba3', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      instance.SomeBool = $t.box(false, $g.____testlib.basictypes.Boolean);
+      instance.SomeBool = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
       return $promise.resolve(instance);
     };
     $instance.set$SomeProp = function (val) {
@@ -28,7 +28,13 @@ $module('property', function () {
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      return $t.createtypesig(['SomeProp', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.property.SomeClass).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "SomeProp|3|5ab5941e": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 
@@ -51,7 +57,7 @@ $module('property', function () {
             return;
 
           case 1:
-            sc.set$SomeProp($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
+            sc.set$SomeProp($t.fastbox(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $current = 2;
               $continue($resolve, $reject);

@@ -1,0 +1,8 @@
+from webidl`../../../../testlib/basic` import String as DOMString
+
+function<any> TEST() {
+	var s = &'hello world'
+	var<any> sany = s
+	var r = string(sany.(DOMString))
+	return r == 'hello world'
+}

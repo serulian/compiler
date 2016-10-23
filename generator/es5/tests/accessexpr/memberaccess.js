@@ -1,12 +1,12 @@
 $module('memberaccess', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('a95b5789', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      instance.someInt = $t.box(2, $g.____testlib.basictypes.Integer);
-      instance.someBool = $t.box(true, $g.____testlib.basictypes.Boolean);
+      instance.someInt = $t.fastbox(2, $g.____testlib.basictypes.Integer);
+      instance.someBool = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
       return $promise.resolve(instance);
     };
     $static.Build = function () {
@@ -53,7 +53,15 @@ $module('memberaccess', function () {
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      return $t.createtypesig(['Build', 1, $g.____testlib.basictypes.Function($g.memberaccess.SomeClass).$typeref()], ['InstanceFunc', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['SomeProp', 3, $g.____testlib.basictypes.Integer.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.memberaccess.SomeClass).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Build|1|29dc432d<a95b5789>": true,
+        "InstanceFunc|2|29dc432d<void>": true,
+        "SomeProp|3|c44e6c87": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 
@@ -202,8 +210,8 @@ $module('memberaccess', function () {
 
           case 1:
             sc = $result;
-            $promise.resolve($t.unbox(sc.someBool)).then(function ($result0) {
-              $result = $t.box($result0 && $t.unbox(sc.someBool), $g.____testlib.basictypes.Boolean);
+            $promise.resolve(sc.someBool.$wrapped).then(function ($result0) {
+              $result = $t.fastbox($result0 && sc.someBool.$wrapped, $g.____testlib.basictypes.Boolean);
               $current = 2;
               $continue($resolve, $reject);
               return;

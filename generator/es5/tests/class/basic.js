@@ -1,12 +1,12 @@
 $module('basic', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('7dbf4efd', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
       var init = [];
-      instance.SomeInt = $t.box(2, $g.____testlib.basictypes.Integer);
+      instance.SomeInt = $t.fastbox(2, $g.____testlib.basictypes.Integer);
       init.push($g.basic.CoolFunction().then(function ($result0) {
         instance.AnotherBool = $result0;
       }));
@@ -19,14 +19,20 @@ $module('basic', function () {
       return $promise.empty();
     };
     this.$typesig = function () {
-      return $t.createtypesig(['AnotherFunction', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.basic.SomeClass).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "AnotherFunction|2|29dc432d<void>": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 
   $static.CoolFunction = function () {
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+      $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
       return;
     };
     return $promise.new($continue);

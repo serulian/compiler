@@ -1,6 +1,6 @@
 $module('shortcut', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('a8a36b32', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -11,17 +11,23 @@ $module('shortcut', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+        $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
         return;
       };
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      return $t.createtypesig(['Value', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.shortcut.SomeClass).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Value|3|5ab5941e": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 
-  this.$type('SomeNominalType', false, '', function () {
+  this.$type('7b5c3f1e', 'SomeNominalType', false, '', function () {
     var $instance = this.prototype;
     var $static = this;
     this.$box = function ($wrapped) {
@@ -33,7 +39,8 @@ $module('shortcut', function () {
       return $g.shortcut.SomeClass;
     };
     this.$typesig = function () {
-      return $t.createtypesig();
+      return {
+      };
     };
   });
 
@@ -76,7 +83,7 @@ $module('shortcut', function () {
         switch ($current) {
           case 0:
             $g.shortcut.SomeClass.new().then(function ($result0) {
-              $result = $t.box($result0, $g.shortcut.SomeNominalType);
+              $result = $t.fastbox($result0, $g.shortcut.SomeNominalType);
               $current = 1;
               $continue($resolve, $reject);
               return;

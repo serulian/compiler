@@ -121,7 +121,7 @@ func (db *domBuilder) buildExpressions(iterator compilergraph.NodeIterator, opti
 		// expression value.
 		if option == buildExprCheckNominalShortcutting &&
 			db.scopegraph.HasSecondaryLabel(iterator.Node(), proto.ScopeLabel_NOMINALLY_SHORTCUT_EXPR) {
-			expr = codedom.NominalUnwrapping(expr, iterator.Node())
+			expr = codedom.NominalUnwrapping(expr, db.scopegraph.TypeGraph().AnyTypeReference(), iterator.Node())
 		}
 
 		expressions = append(expressions, expr)
@@ -205,7 +205,8 @@ func (db *domBuilder) buildExpression(node compilergraph.GraphNode) codedom.Expr
 
 	case parser.NodeKeywordNotExpression:
 		return db.buildUnaryOperatorExpression(node, func(expr codedom.Expression) codedom.Expression {
-			childExpr := codedom.UnaryOperation("!", codedom.NominalUnwrapping(expr, node), node)
+			boolType := db.scopegraph.TypeGraph().BoolTypeReference()
+			childExpr := codedom.UnaryOperation("!", codedom.NominalUnwrapping(expr, boolType, node), node)
 			return codedom.NominalWrapping(
 				childExpr,
 				db.scopegraph.TypeGraph().BoolType(),
@@ -250,46 +251,60 @@ func (db *domBuilder) buildExpression(node compilergraph.GraphNode) codedom.Expr
 
 	case parser.NodeComparisonNotEqualsExpression:
 		return db.buildBinaryOperatorExpression(node, func(expr codedom.Expression) codedom.Expression {
-			childExpr := codedom.UnaryOperation("!", codedom.NominalUnwrapping(expr, node), node)
-			return codedom.NominalWrapping(
+			boolType := db.scopegraph.TypeGraph().BoolTypeReference()
+			childExpr := codedom.UnaryOperation("!", codedom.NominalUnwrapping(expr, boolType, node), node)
+			return codedom.NominalRefWrapping(
 				childExpr,
-				db.scopegraph.TypeGraph().BoolType(),
+				boolType.NominalDataType(),
+				boolType,
 				node)
 		})
 
 	case parser.NodeComparisonLTEExpression:
 		return db.buildBinaryOperatorExpression(node, func(expr codedom.Expression) codedom.Expression {
-			childExpr := codedom.BinaryOperation(codedom.NominalUnwrapping(expr, node), "<=", codedom.LiteralValue("0", node), node)
-			return codedom.NominalWrapping(
+			intType := db.scopegraph.TypeGraph().IntTypeReference()
+			boolType := db.scopegraph.TypeGraph().BoolTypeReference()
+			childExpr := codedom.BinaryOperation(codedom.NominalUnwrapping(expr, intType, node), "<=", codedom.LiteralValue("0", node), node)
+			return codedom.NominalRefWrapping(
 				childExpr,
-				db.scopegraph.TypeGraph().BoolType(),
+				boolType.NominalDataType(),
+				boolType,
 				node)
 		})
 
 	case parser.NodeComparisonLTExpression:
 		return db.buildBinaryOperatorExpression(node, func(expr codedom.Expression) codedom.Expression {
-			childExpr := codedom.BinaryOperation(codedom.NominalUnwrapping(expr, node), "<", codedom.LiteralValue("0", node), node)
-			return codedom.NominalWrapping(
+			intType := db.scopegraph.TypeGraph().IntTypeReference()
+			boolType := db.scopegraph.TypeGraph().BoolTypeReference()
+			childExpr := codedom.BinaryOperation(codedom.NominalUnwrapping(expr, intType, node), "<", codedom.LiteralValue("0", node), node)
+			return codedom.NominalRefWrapping(
 				childExpr,
-				db.scopegraph.TypeGraph().BoolType(),
+				boolType.NominalDataType(),
+				boolType,
 				node)
 		})
 
 	case parser.NodeComparisonGTEExpression:
 		return db.buildBinaryOperatorExpression(node, func(expr codedom.Expression) codedom.Expression {
-			childExpr := codedom.BinaryOperation(codedom.NominalUnwrapping(expr, node), ">=", codedom.LiteralValue("0", node), node)
-			return codedom.NominalWrapping(
+			intType := db.scopegraph.TypeGraph().IntTypeReference()
+			boolType := db.scopegraph.TypeGraph().BoolTypeReference()
+			childExpr := codedom.BinaryOperation(codedom.NominalUnwrapping(expr, intType, node), ">=", codedom.LiteralValue("0", node), node)
+			return codedom.NominalRefWrapping(
 				childExpr,
-				db.scopegraph.TypeGraph().BoolType(),
+				boolType.NominalDataType(),
+				boolType,
 				node)
 		})
 
 	case parser.NodeComparisonGTExpression:
 		return db.buildBinaryOperatorExpression(node, func(expr codedom.Expression) codedom.Expression {
-			childExpr := codedom.BinaryOperation(codedom.NominalUnwrapping(expr, node), ">", codedom.LiteralValue("0", node), node)
-			return codedom.NominalWrapping(
+			intType := db.scopegraph.TypeGraph().IntTypeReference()
+			boolType := db.scopegraph.TypeGraph().BoolTypeReference()
+			childExpr := codedom.BinaryOperation(codedom.NominalUnwrapping(expr, intType, node), ">", codedom.LiteralValue("0", node), node)
+			return codedom.NominalRefWrapping(
 				childExpr,
-				db.scopegraph.TypeGraph().BoolType(),
+				boolType.NominalDataType(),
+				boolType,
 				node)
 		})
 

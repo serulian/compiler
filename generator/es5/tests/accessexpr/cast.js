@@ -1,6 +1,6 @@
 $module('cast', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('d9f85bbe', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -11,20 +11,27 @@ $module('cast', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+        $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
         return;
       };
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      return $t.createtypesig(['Result', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.cast.SomeClass).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Result|3|5ab5941e": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 
-  this.$interface('ISomeInterface', false, '', function () {
+  this.$interface('71f32d90', 'ISomeInterface', false, '', function () {
     var $static = this;
     this.$typesig = function () {
-      return $t.createtypesig();
+      return {
+      };
     };
   });
 

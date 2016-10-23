@@ -1,6 +1,6 @@
 $module('functioncallnullable', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('fa2a0786', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -11,17 +11,23 @@ $module('functioncallnullable', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+        $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
         return;
       };
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['SomeMethod', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.functioncallnullable.SomeClass).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "SomeMethod|2|29dc432d<5ab5941e>": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 
-  this.$class('AnotherClass', false, '', function () {
+  this.$class('97cf7b5c', 'AnotherClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -32,13 +38,19 @@ $module('functioncallnullable', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box(false, $g.____testlib.basictypes.Boolean));
+        $resolve($t.fastbox(false, $g.____testlib.basictypes.Boolean));
         return;
       };
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['AnotherMethod', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.functioncallnullable.AnotherClass).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "AnotherMethod|2|29dc432d<5ab5941e>": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 
@@ -67,10 +79,10 @@ $module('functioncallnullable', function () {
             ac = null;
             $t.nullableinvoke(sc, 'SomeMethod', true, []).then(function ($result2) {
               return $promise.resolve($result2).then(function ($result1) {
-                return $promise.resolve($t.unbox($t.nullcompare($result1, $t.box(false, $g.____testlib.basictypes.Boolean)))).then(function ($result0) {
+                return $promise.resolve($t.nullcompare($result1, $t.fastbox(false, $g.____testlib.basictypes.Boolean)).$wrapped).then(function ($result0) {
                   return ($promise.shortcircuit($result0, true) || $t.nullableinvoke(ac, 'AnotherMethod', true, [])).then(function ($result4) {
                     return $promise.resolve($result4).then(function ($result3) {
-                      $result = $t.box($result0 && $t.unbox($t.nullcompare($result3, $t.box(true, $g.____testlib.basictypes.Boolean))), $g.____testlib.basictypes.Boolean);
+                      $result = $t.fastbox($result0 && $t.nullcompare($result3, $t.fastbox(true, $g.____testlib.basictypes.Boolean)).$wrapped, $g.____testlib.basictypes.Boolean);
                       $current = 2;
                       $continue($resolve, $reject);
                       return;

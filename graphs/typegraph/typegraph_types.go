@@ -91,6 +91,9 @@ const (
 	// Marks a type with its name.
 	NodePredicateTypeName = "type-name"
 
+	// Marks a type with its global ID.
+	NodePredicateTypeGlobalId = "type-globalid"
+
 	// Marks a type with a type reference to a parent type.
 	NodePredicateParentType = "parent-type"
 

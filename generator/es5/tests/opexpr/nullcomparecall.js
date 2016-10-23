@@ -1,6 +1,6 @@
 $module('nullcomparecall', function () {
   var $static = this;
-  this.$class('SomeError', false, '', function () {
+  this.$class('9a17167d', 'SomeError', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -11,13 +11,19 @@ $module('nullcomparecall', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box('huh?', $g.____testlib.basictypes.String));
+        $resolve($t.fastbox('huh?', $g.____testlib.basictypes.String));
         return;
       };
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      return $t.createtypesig(['Message', 3, $g.____testlib.basictypes.String.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.nullcomparecall.SomeError).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Message|3|538656f2": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 
@@ -59,7 +65,7 @@ $module('nullcomparecall', function () {
       while (true) {
         switch ($current) {
           case 0:
-            thing = $t.box(true, $g.____testlib.basictypes.Boolean);
+            thing = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
             $promise.resolve(thing).then(function ($result0) {
               return ($promise.shortcircuit($result0, null) || $g.nullcomparecall.RejectNow()).then(function ($result1) {
                 $result = $t.nullcompare($result0, $result1);

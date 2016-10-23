@@ -1,6 +1,6 @@
 $module('nominalcastfail', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('9a6729ae', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -8,11 +8,12 @@ $module('nominalcastfail', function () {
       return $promise.resolve(instance);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.nominalcastfail.SomeClass).$typeref()]);
+      return {
+      };
     };
   });
 
-  this.$class('AnotherClass', false, '', function () {
+  this.$class('bad71184', 'AnotherClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -20,11 +21,12 @@ $module('nominalcastfail', function () {
       return $promise.resolve(instance);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.nominalcastfail.AnotherClass).$typeref()]);
+      return {
+      };
     };
   });
 
-  this.$type('SomeNominal', false, '', function () {
+  this.$type('b7296a0e', 'SomeNominal', false, '', function () {
     var $instance = this.prototype;
     var $static = this;
     this.$box = function ($wrapped) {
@@ -36,7 +38,8 @@ $module('nominalcastfail', function () {
       return $g.nominalcastfail.SomeClass;
     };
     this.$typesig = function () {
-      return $t.createtypesig();
+      return {
+      };
     };
   });
 

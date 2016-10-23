@@ -1,11 +1,11 @@
 $module('inheritance', function () {
   var $static = this;
-  this.$class('FirstClass', false, '', function () {
+  this.$class('16519abc', 'FirstClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      instance.SomeBool = $t.box(true, $g.____testlib.basictypes.Boolean);
+      instance.SomeBool = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
       return $promise.resolve(instance);
     };
     $instance.DoSomething = function () {
@@ -13,16 +13,22 @@ $module('inheritance', function () {
       return $promise.empty();
     };
     this.$typesig = function () {
-      return $t.createtypesig(['DoSomething', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.inheritance.FirstClass).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "DoSomething|2|29dc432d<void>": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 
-  this.$class('SecondClass', false, '', function () {
+  this.$class('bcec6d2c', 'SecondClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      instance.SomeBool = $t.box(false, $g.____testlib.basictypes.Boolean);
+      instance.SomeBool = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
       return $promise.resolve(instance);
     };
     $instance.AnotherThing = function () {
@@ -30,11 +36,17 @@ $module('inheritance', function () {
       return $promise.empty();
     };
     this.$typesig = function () {
-      return $t.createtypesig(['AnotherThing', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.inheritance.SecondClass).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "AnotherThing|2|29dc432d<void>": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 
-  this.$class('MainClass', false, '', function () {
+  this.$class('131aac76', 'MainClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -73,7 +85,14 @@ $module('inheritance', function () {
       },
     });
     this.$typesig = function () {
-      return $t.createtypesig(['DoSomething', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['AnotherThing', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.inheritance.MainClass).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "DoSomething|2|29dc432d<5ab5941e>": true,
+        "AnotherThing|2|29dc432d<void>": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 

@@ -1,6 +1,6 @@
 $module('classcastfail', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('aedde0c1', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -8,11 +8,12 @@ $module('classcastfail', function () {
       return $promise.resolve(instance);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.classcastfail.SomeClass).$typeref()]);
+      return {
+      };
     };
   });
 
-  this.$class('AnotherClass', false, '', function () {
+  this.$class('750445b9', 'AnotherClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -20,7 +21,8 @@ $module('classcastfail', function () {
       return $promise.resolve(instance);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.classcastfail.AnotherClass).$typeref()]);
+      return {
+      };
     };
   });
 

@@ -1,6 +1,6 @@
 $module('with', function () {
   var $static = this;
-  this.$class('SomeReleasable', false, '', function () {
+  this.$class('20c15ffe', 'SomeReleasable', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -11,14 +11,20 @@ $module('with', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $g.with.someBool = $t.box(true, $g.____testlib.basictypes.Boolean);
+        $g.with.someBool = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
         $resolve();
         return;
       };
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['Release', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.with.SomeReleasable).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Release|2|29dc432d<void>": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 
@@ -33,7 +39,7 @@ $module('with', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $t.box(123, $g.____testlib.basictypes.Integer);
+            $t.fastbox(123, $g.____testlib.basictypes.Integer);
             $g.with.SomeReleasable.new().then(function ($result0) {
               $result = $result0;
               $current = 1;
@@ -48,7 +54,7 @@ $module('with', function () {
           case 1:
             $temp0 = $result;
             $resources.pushr($temp0, '$temp0');
-            $t.box(456, $g.____testlib.basictypes.Integer);
+            $t.fastbox(456, $g.____testlib.basictypes.Integer);
             $resources.popr('$temp0').then(function ($result0) {
               $result = $result0;
               $current = 2;
@@ -61,7 +67,7 @@ $module('with', function () {
             return;
 
           case 2:
-            $t.box(789, $g.____testlib.basictypes.Integer);
+            $t.fastbox(789, $g.____testlib.basictypes.Integer);
             $resolve($g.with.someBool);
             return;
 
@@ -75,7 +81,7 @@ $module('with', function () {
   };
   this.$init(function () {
     return $promise.new(function (resolve) {
-      $static.someBool = $t.box(false, $g.____testlib.basictypes.Boolean);
+      $static.someBool = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
       resolve();
     });
   }, '19a53bdb', []);

@@ -1,6 +1,6 @@
 $module('expectrejection', function () {
   var $static = this;
-  this.$class('SimpleError', false, '', function () {
+  this.$class('aff287b8', 'SimpleError', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -11,13 +11,19 @@ $module('expectrejection', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box('yo!', $g.____testlib.basictypes.String));
+        $resolve($t.fastbox('yo!', $g.____testlib.basictypes.String));
         return;
       };
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      return $t.createtypesig(['Message', 3, $g.____testlib.basictypes.String.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.expectrejection.SimpleError).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Message|3|538656f2": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 
@@ -78,8 +84,8 @@ $module('expectrejection', function () {
           case 1:
             $promise.resolve(a == null).then(function ($result0) {
               return ($promise.shortcircuit($result0, true) || $t.assertnotnull(b).Message()).then(function ($result2) {
-                return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.String.$equals($result2, $t.box('yo!', $g.____testlib.basictypes.String))).then(function ($result1) {
-                  $result = $t.box($result0 && $t.unbox($result1), $g.____testlib.basictypes.Boolean);
+                return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.String.$equals($result2, $t.fastbox('yo!', $g.____testlib.basictypes.String))).then(function ($result1) {
+                  $result = $t.fastbox($result0 && $result1.$wrapped, $g.____testlib.basictypes.Boolean);
                   $current = 2;
                   $continue($resolve, $reject);
                   return;

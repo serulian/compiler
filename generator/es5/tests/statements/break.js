@@ -6,7 +6,7 @@ $module('break', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $t.box(1234, $g.____testlib.basictypes.Integer);
+            $t.fastbox(1234, $g.____testlib.basictypes.Integer);
             $current = 1;
             continue;
 
@@ -21,12 +21,12 @@ $module('break', function () {
             break;
 
           case 2:
-            $t.box(4567, $g.____testlib.basictypes.Integer);
+            $t.fastbox(4567, $g.____testlib.basictypes.Integer);
             $current = 3;
             continue;
 
           case 3:
-            $t.box(2567, $g.____testlib.basictypes.Integer);
+            $t.fastbox(2567, $g.____testlib.basictypes.Integer);
             $resolve();
             return;
 

@@ -51,11 +51,11 @@ $module('basic', function () {
             return;
 
           case 3:
-            $t.nativenew($global.SomeBrowserThing)($t.box('foo', $g.____testlib.basictypes.String));
+            $t.nativenew($global.SomeBrowserThing)($t.fastbox('foo', $g.____testlib.basictypes.String));
             $global.SomeBrowserThing.SomeStaticAttribute.SomeInterfaceFunction().InstanceAttr;
-            first = $t.nativenew($global.SomeBrowserThing)($t.box('foo', $g.____testlib.basictypes.String));
-            second = $t.nativenew($global.SomeBrowserThing)($t.box('bar', $g.____testlib.basictypes.String));
-            first[$t.box('hello', $g.____testlib.basictypes.String)] = second;
+            first = $t.nativenew($global.SomeBrowserThing)($t.fastbox('foo', $g.____testlib.basictypes.String));
+            second = $t.nativenew($global.SomeBrowserThing)($t.fastbox('bar', $g.____testlib.basictypes.String));
+            first[$t.fastbox('hello', $g.____testlib.basictypes.String)] = second;
             $resolve();
             return;
 
@@ -70,7 +70,7 @@ $module('basic', function () {
   $static.TEST = function () {
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      $resolve($t.box($global.boolValue, $g.____testlib.basictypes.Boolean));
+      $resolve($t.fastbox($global.boolValue, $g.____testlib.basictypes.Boolean));
       return;
     };
     return $promise.new($continue);

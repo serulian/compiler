@@ -15,13 +15,11 @@ $module('async', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $promise.translate($g.async.DoSomethingAsync($t.box(3, $g.____testlib.basictypes.Integer))).then(function ($result1) {
-              return $g.____testlib.basictypes.Integer.$equals($result1, $t.box(3, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-                $result = $result0;
-                $current = 1;
-                $continue($resolve, $reject);
-                return;
-              });
+            $promise.translate($g.async.DoSomethingAsync($t.fastbox(3, $g.____testlib.basictypes.Integer))).then(function ($result0) {
+              $result = $t.fastbox($result0.$wrapped == 3, $g.____testlib.basictypes.Boolean);
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
               $reject(err);
               return;

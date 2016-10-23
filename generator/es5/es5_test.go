@@ -102,6 +102,7 @@ func assertNoOttoError(t *testing.T, testName string, source string, err error) 
 var generationTests = []generationTest{
 	generationTest{"basic module test", "module", "basic", integrationTestSuccessExpected, ""},
 	generationTest{"basic class test", "class", "basic", integrationTestSuccessExpected, ""},
+	generationTest{"generic class test", "class", "generic", integrationTestSuccessExpected, ""},
 	generationTest{"class property test", "class", "property", integrationTestSuccessExpected, ""},
 	generationTest{"class inheritance test", "class", "inheritance", integrationTestSuccessExpected, ""},
 	generationTest{"class required fields test", "class", "requiredfields", integrationTestSuccessExpected, ""},
@@ -123,6 +124,7 @@ var generationTests = []generationTest{
 	generationTest{"async struct param test", "async", "asyncstruct", integrationTestSuccessExpected, ""},
 
 	generationTest{"conditional statement", "statements", "conditional", integrationTestSuccessExpected, ""},
+	generationTest{"int conditional statement", "statements", "intconditional", integrationTestSuccessExpected, ""},
 	generationTest{"conditional else statement", "statements", "conditionalelse", integrationTestSuccessExpected, ""},
 	generationTest{"chained conditional statement", "statements", "chainedconditional", integrationTestSuccessExpected, ""},
 	generationTest{"loop statement", "statements", "loop", integrationTestNone, ""},
@@ -231,8 +233,9 @@ var generationTests = []generationTest{
 	generationTest{"nominal cast autobox success test", "cast", "nominalautobox", integrationTestSuccessExpected, ""},
 	generationTest{"interface cast success test", "cast", "interfacecast", integrationTestSuccessExpected, ""},
 	generationTest{"generic interface cast success test", "cast", "genericinterfacecast", integrationTestSuccessExpected, ""},
-
 	generationTest{"native value to any cast test", "cast", "nativetoany", integrationTestSuccessExpected, ""},
+	generationTest{"native cast boxing test", "cast", "nativeboxing", integrationTestSuccessExpected, ""},
+	generationTest{"native incorrect cast boxing test", "cast", "nativeincorrectboxing", integrationTestSuccessExpected, ""},
 
 	generationTest{"simple generator success test", "generator", "simple", integrationTestSuccessExpected, ""},
 	generationTest{"nested generator success test", "generator", "nested", integrationTestSuccessExpected, ""},

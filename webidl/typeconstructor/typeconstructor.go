@@ -99,6 +99,7 @@ func (itc *irgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 			}
 
 			typeBuilder.Name(declaration.Name()).
+				GlobalId(declaration.Name()).
 				SourceNode(declaration.GraphNode).
 				TypeKind(typegraph.ExternalInternalType).
 				Define()

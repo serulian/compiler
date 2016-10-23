@@ -4,7 +4,7 @@ $module('simple', function () {
     var a;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      a = $t.box(true, $g.____testlib.basictypes.Boolean);
+      a = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
       $resolve(a);
       return;
     };

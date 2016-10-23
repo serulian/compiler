@@ -1,11 +1,11 @@
 $module('loopvar', function () {
   var $static = this;
-  this.$class('SomeStream', false, '', function () {
+  this.$class('8caa43e9', 'SomeStream', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      instance.wasChecked = $t.box(false, $g.____testlib.basictypes.Boolean);
+      instance.wasChecked = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
       return $promise.resolve(instance);
     };
     $instance.Next = function () {
@@ -18,8 +18,8 @@ $module('loopvar', function () {
           switch ($current) {
             case 0:
               r = $this.wasChecked;
-              $this.wasChecked = $t.box(true, $g.____testlib.basictypes.Boolean);
-              $g.____testlib.basictypes.Tuple($g.____testlib.basictypes.Boolean, $g.____testlib.basictypes.Boolean).Build($t.box(true, $g.____testlib.basictypes.Boolean), $t.box(!$t.unbox(r), $g.____testlib.basictypes.Boolean)).then(function ($result0) {
+              $this.wasChecked = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+              $g.____testlib.basictypes.Tuple($g.____testlib.basictypes.Boolean, $g.____testlib.basictypes.Boolean).Build($t.fastbox(true, $g.____testlib.basictypes.Boolean), $t.fastbox(!r.$wrapped, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
                 $result = $result0;
                 $current = 1;
                 $continue($resolve, $reject);
@@ -43,7 +43,13 @@ $module('loopvar', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['Next', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Tuple($g.____testlib.basictypes.Boolean, $g.____testlib.basictypes.Boolean)).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.loopvar.SomeStream).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Next|2|29dc432d<4499960a<5ab5941e,5ab5941e>>": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 
@@ -57,7 +63,7 @@ $module('loopvar', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $t.box(1234, $g.____testlib.basictypes.Integer);
+            $t.fastbox(1234, $g.____testlib.basictypes.Integer);
             $current = 1;
             continue;
 
@@ -81,7 +87,7 @@ $module('loopvar', function () {
 
           case 3:
             something = $temp0.First;
-            if ($t.unbox($temp0.Second)) {
+            if ($temp0.Second.$wrapped) {
               $current = 4;
               continue;
             } else {
@@ -91,12 +97,12 @@ $module('loopvar', function () {
             break;
 
           case 4:
-            $t.box(7654, $g.____testlib.basictypes.Integer);
+            $t.fastbox(7654, $g.____testlib.basictypes.Integer);
             $current = 2;
             continue;
 
           case 5:
-            $t.box(5678, $g.____testlib.basictypes.Integer);
+            $t.fastbox(5678, $g.____testlib.basictypes.Integer);
             $resolve();
             return;
 
@@ -120,7 +126,7 @@ $module('loopvar', function () {
       while (true) {
         switch ($current) {
           case 0:
-            result = $t.box('noloop', $g.____testlib.basictypes.String);
+            result = $t.fastbox('noloop', $g.____testlib.basictypes.String);
             $g.loopvar.SomeStream.new().then(function ($result0) {
               $result = $result0;
               $current = 1;
@@ -157,7 +163,7 @@ $module('loopvar', function () {
 
           case 4:
             i = $temp0.First;
-            if ($t.unbox($temp0.Second)) {
+            if ($temp0.Second.$wrapped) {
               $current = 5;
               continue;
             } else {

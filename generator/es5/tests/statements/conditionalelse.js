@@ -16,11 +16,11 @@ $module('conditionalelse', function () {
             break;
 
           case 1:
-            $resolve($t.box(false, $g.____testlib.basictypes.Boolean));
+            $resolve($t.fastbox(false, $g.____testlib.basictypes.Boolean));
             return;
 
           case 2:
-            $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+            $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
             return;
 
           default:

@@ -1,6 +1,6 @@
 $module('genericinterfacecast', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('58a4c803', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -11,20 +11,32 @@ $module('genericinterfacecast', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+        $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
         return;
       };
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      return $t.createtypesig(['SomeValue', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.genericinterfacecast.SomeClass).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "SomeValue|3|5ab5941e": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 
-  this.$interface('SomeInterface', true, '', function (T) {
+  this.$interface('3d5b9895', 'SomeInterface', true, '', function (T) {
     var $static = this;
     this.$typesig = function () {
-      return $t.createtypesig(['SomeValue', 3, T.$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+      };
+      computed[("SomeValue|3|" + $t.typeid(T)) + ""] = true;
+      return this.$cachedtypesig = computed;
     };
   });
 

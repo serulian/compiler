@@ -7,10 +7,7 @@ this.Serulian = function ($global) {
   }
   $global.__serulian_internal = {
     autoUnbox: function (k, v) {
-      if (v != null) {
-        return $t.unbox(v);
-      }
-      return v;
+      return $t.unbox(v);
     },
     autoBox: function (k, v) {
       if (v == null) {
@@ -20,24 +17,24 @@ this.Serulian = function ($global) {
       switch (typeName) {
         case 'object':
           if (k != '') {
-            return $t.box(v, $a.mapping($t.any));
+            return $t.fastbox(v, $a.mapping($t.any));
           }
           break;
 
         case 'array':
-          return $t.box(v, $a.slice($t.any));
+          return $t.fastbox(v, $a.slice($t.any));
 
         case 'boolean':
-          return $t.box(v, $a.bool);
+          return $t.fastbox(v, $a.bool);
 
         case 'string':
-          return $t.box(v, $a.string);
+          return $t.fastbox(v, $a.string);
 
         case 'number':
           if (Math.ceil(v) == v) {
-            return $t.box(v, $a.int);
+            return $t.fastbox(v, $a.int);
           }
-          return $t.box(v, $a.float64);
+          return $t.fastbox(v, $a.float64);
       }
       return v;
     },
@@ -50,6 +47,7 @@ this.Serulian = function ($global) {
   };
   var $it = function (name, typeIndex) {
     var tpe = new Function(("return function " + name) + "() {};")();
+    tpe.$typeId = typeIndex;
     tpe.$typeref = function () {
       return {
         i: typeIndex,
@@ -65,6 +63,18 @@ this.Serulian = function ($global) {
     toESType: function (obj) {
       return {
       }.toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
+    },
+    functionName: function (func) {
+      if (func.name) {
+        return func.name;
+      }
+      var ret = func.toString();
+      ret = ret.substr('function '.length);
+      ret = ret.substr(0, ret.indexOf('('));
+      return ret;
+    },
+    typeid: function (type) {
+      return type.$typeId || $t.functionName(type);
     },
     buildDataForValue: function (value) {
       if (value == null) {
@@ -95,11 +105,17 @@ this.Serulian = function ($global) {
       }
       return instance;
     },
-    box: function (instance, type, opt_external) {
+    box: function (instance, type) {
       if (instance == null) {
         return null;
       }
-      return type.$box($t.unbox(instance), opt_external);
+      if (instance.constructor == type) {
+        return instance;
+      }
+      return type.$box($t.unbox(instance));
+    },
+    fastbox: function (instance, type) {
+      return type.$box(instance);
     },
     roottype: function (type) {
       if (type.$roottype) {
@@ -108,38 +124,59 @@ this.Serulian = function ($global) {
       return type;
     },
     istype: function (value, type) {
-      try {
-        $t.cast(value, type, false);
+      if ((type == $t.any) || ((value != null) && ((value.constructor == type) || (value instanceof type)))) {
         return true;
-      } catch (e) {
-        return false;
+      }
+      if (type == $t.struct) {
+        var roottype = $t.roottype(value.constructor);
+        return ((((roottype.$typekind == 'struct') || (roottype == Number)) || (roottype == String)) || (roottype == Boolean)) || (roottype == Object);
+      }
+      if ((type.$generic == $a['function']) && (typeof value == 'function')) {
+        return value;
+      }
+      var targetKind = type.$typekind;
+      switch (targetKind) {
+        case 'struct':
+
+        case 'type':
+
+        case 'class':
+          return false;
+
+        case 'interface':
+          var targetSignature = type.$typesig();
+          var valueSignature = value.constructor.$typesig();
+          var expectedKeys = Object.keys(targetSignature);
+          for (var i = 0; i < expectedKeys.length; ++i) {
+            var expectedKey = expectedKeys[i];
+            if (valueSignature[expectedKey] !== true) {
+              return false;
+            }
+          }
+          return true;
+
+        default:
+          return false;
       }
     },
     cast: function (value, type, opt_allownull) {
-      if (type == $t.any) {
-        return value;
-      }
-      if ((type == null) || ((value != null) && ((value.constructor == type) || (value instanceof type)))) {
-        return value;
-      }
-      if ((typeof value == 'function') && (type.$generic == $a['function'])) {
-        return value;
-      }
-      var castKind = type.$typekind;
       if ((value == null) && !opt_allownull) {
         throw Error('Cannot cast null value to ' + type.toString());
       }
-      if ((castKind == 'struct') && (value.constructor == Object)) {
+      if ($t.istype(value, type)) {
         return value;
       }
-      var valueKind = value.constructor.$typekind;
-      if (!valueKind && (castKind != 'type')) {
-        throw Error('Cannot cast native type to non-nominal type');
-      }
-      switch (castKind) {
+      var targetKind = type.$typekind;
+      switch (targetKind) {
+        case 'struct':
+          if (value.constructor == Object) {
+            break;
+          }
+          throw Error((('Cannot cast ' + value.constructor.toString()) + ' to ') + type.toString());
+
         case 'class':
 
-        case 'struct':
+        case 'interface':
           throw Error((('Cannot cast ' + value.constructor.toString()) + ' to ') + type.toString());
 
         case 'type':
@@ -148,47 +185,25 @@ this.Serulian = function ($global) {
           }
           break;
 
-        case 'interface':
-          var castSignature = type.$typesig();
-          var valueSignature = value.constructor.$typesig();
-          var expectedKeys = Object.keys(castSignature);
-          for (var i = 0; i < expectedKeys.length; ++i) {
-            var expectedKey = expectedKeys[i];
-            if (valueSignature[expectedKey] !== true) {
-              throw Error((('Cannot cast ' + value.constructor.toString()) + ' to ') + type.toString());
-            }
-          }
-          break;
+        case undefined:
+          throw Error((('Cannot cast ' + value.constructor.toString()) + ' to ') + type.toString());
       }
       if (type.$box) {
         return $t.box(value, type);
       }
       return value;
     },
-    createtypesig: function () {
-      var sig = {
-      };
-      for (var i = 0; i < arguments.length; ++i) {
-        var entry = arguments[i];
-        var key = (((entry[0] + ':') + entry[1]) + ':') + JSON.stringify(entry[2]);
-        sig[key] = true;
-      }
-      return sig;
-    },
     equals: function (left, right, type) {
       if (left === right) {
-        return $promise.resolve($t.box(true, $a['bool']));
+        return $promise.resolve($t.fastbox(true, $a['bool']));
       }
       if ((left == null) || (right == null)) {
-        return $promise.resolve($t.box(false, $a['bool']));
-      }
-      if ($t.toESType(left) != 'object') {
-        return $promise.resolve($t.box(left === right, $a['bool']));
+        return $promise.resolve($t.fastbox(false, $a['bool']));
       }
       if (type.$equals) {
         return type.$equals($t.box(left, type), $t.box(right, type));
       }
-      return $promise.resolve($t.box(false, $a['bool']));
+      return $promise.resolve($t.fastbox(false, $a['bool']));
     },
     ensurevalue: function (value, type, canBeNull, name) {
       if (value == null) {
@@ -267,18 +282,31 @@ this.Serulian = function ($global) {
       };
       return ((((((((((S4(buf[0]) + S4(buf[1])) + "-") + S4(buf[2])) + "-") + S4(buf[3])) + "-") + S4(buf[4])) + "-") + S4(buf[5])) + S4(buf[6])) + S4(buf[7]);
     },
-    defineStructField: function (structType, name, serializableName, typeref, isBoxed, opt_nominalRootType, opt_nullAllowed) {
-      structType.$fields.push({
+    defineStructField: function (structType, name, serializableName, typeref, opt_nominalRootType, opt_nullAllowed) {
+      var field = {
         name: name,
         serializableName: serializableName,
         typeref: typeref,
         nominalRootTyperef: opt_nominalRootType || typeref,
-        isBoxed: isBoxed,
         nullAllowed: opt_nullAllowed,
-      });
+      };
+      structType.$fields.push(field);
       Object.defineProperty(structType.prototype, name, {
         get: function () {
-          return this[BOXED_DATA_PROPERTY][name];
+          var boxedData = this[BOXED_DATA_PROPERTY];
+          if (!boxedData.$runtimecreated) {
+            if (!this.$lazychecked[field.name]) {
+              $t.ensurevalue($t.unbox(boxedData[field.serializableName]), field.nominalRootTyperef(), field.nullAllowed, field.name);
+              this.$lazychecked[field.name] = true;
+            }
+            var fieldType = field.typeref();
+            if (fieldType.$box) {
+              return $t.box(boxedData[field.serializableName], fieldType);
+            } else {
+              return boxedData[field.serializableName];
+            }
+          }
+          return boxedData[name];
         },
         set: function (value) {
           this[BOXED_DATA_PROPERTY][name] = value;
@@ -290,7 +318,10 @@ this.Serulian = function ($global) {
       if (!$__currentScriptSrc) {
         return function () {
           var $this = this;
-          var args = arguments;
+          var args = new Array(arguments.length);
+          for (var i = 0; i < args.length; ++i) {
+            args[i] = arguments[i];
+          }
           var promise = new Promise(function (resolve, reject) {
             $global.setTimeout(function () {
               f.apply($this, args).then(function (value) {
@@ -449,10 +480,10 @@ this.Serulian = function ($global) {
               return;
             }
             var $yield = function (value) {
-              $a['tuple']($t.any, $a['bool']).Build(value, true).then(resolve);
+              $a['tuple']($t.any, $a['bool']).Build(value, $t.fastbox(true, $a['bool'])).then(resolve);
             };
             var $done = function () {
-              $a['tuple']($t.any, $a['bool']).Build(null, false).then(resolve);
+              $a['tuple']($t.any, $a['bool']).Build(null, $t.fastbox(false, $a['bool'])).then(resolve);
             };
             var $yieldin = function (ins) {
               stream.$is = ins;
@@ -515,11 +546,16 @@ this.Serulian = function ($global) {
     }
     current[parts[parts.length - 1]] = module;
     var $newtypebuilder = function (kind) {
-      return function (name, hasGenerics, alias, creator) {
-        var buildType = function (n, args) {
+      return function (typeId, name, hasGenerics, alias, creator) {
+        var buildType = function (fullTypeId, fullName, args) {
           var args = args || [];
-          var tpe = new Function(("return function " + n) + "() {};")();
+          var tpe = new Function(("return function " + fullName) + "() {};")();
           tpe.$typeref = function () {
+            if (!hasGenerics) {
+              return {
+                t: (moduleName + '.') + name,
+              };
+            }
             var generics = [];
             for (var i = 0; i < args.length; ++i) {
               generics.push(args[i].$typeref());
@@ -529,6 +565,7 @@ this.Serulian = function ($global) {
               g: generics,
             };
           };
+          tpe.$typeId = fullTypeId;
           tpe.$typekind = kind;
           creator.apply(tpe, args);
           if (kind == 'struct') {
@@ -537,26 +574,17 @@ this.Serulian = function ($global) {
               instance[BOXED_DATA_PROPERTY] = data;
               instance.$lazychecked = {
               };
-              instance.$unboxed = true;
-              tpe.$fields.forEach(function (field) {
-                Object.defineProperty(instance, field.name, {
-                  get: function () {
-                    if (!this.$lazychecked[field.name]) {
-                      $t.ensurevalue($t.unbox(this[BOXED_DATA_PROPERTY][field.serializableName]), field.nominalRootTyperef(), field.nullAllowed, field.name);
-                      this.$lazychecked[field.name] = true;
-                    }
-                    if (field.isBoxed) {
-                      return $t.box(this[BOXED_DATA_PROPERTY][field.serializableName], field.typeref());
-                    } else {
-                      return this[BOXED_DATA_PROPERTY][field.serializableName];
-                    }
-                  },
-                });
-              });
               return instance;
             };
+            tpe.prototype.$markruntimecreated = function () {
+              Object.defineProperty(this[BOXED_DATA_PROPERTY], '$runtimecreated', {
+                enumerable: false,
+                configurable: true,
+                value: true,
+              });
+            };
             tpe.prototype.String = function () {
-              return $promise.resolve($t.box(JSON.stringify(this, $global.__serulian_internal.autoUnbox, ' '), $a['string']));
+              return $promise.resolve($t.fastbox(JSON.stringify(this, $global.__serulian_internal.autoUnbox, ' '), $a['string']));
             };
             tpe.prototype.Clone = function () {
               var instance = new tpe();
@@ -572,13 +600,16 @@ this.Serulian = function ($global) {
                   }
                 }
               }
+              if (this[BOXED_DATA_PROPERTY].$runtimecreated) {
+                instance.$markruntimecreated();
+              }
               return $promise.resolve(instance);
             };
             tpe.prototype.Stringify = function (T) {
               var $this = this;
               return function () {
                 if (T == $a['json']) {
-                  return $promise.resolve($t.box(JSON.stringify($this, $global.__serulian_internal.autoUnbox), $a['string']));
+                  return $promise.resolve($t.fastbox(JSON.stringify($this, $global.__serulian_internal.autoUnbox), $a['string']));
                 }
                 return $this.Mapping().then(function (mapped) {
                   return T.Get().then(function (resolved) {
@@ -591,21 +622,21 @@ this.Serulian = function ($global) {
               return function (value) {
                 if (T == $a['json']) {
                   var parsed = JSON.parse($t.unbox(value));
-                  var boxed = $t.box(parsed, tpe, true);
+                  var boxed = $t.fastbox(parsed, tpe);
                   return boxed.Mapping().then(function () {
                     return $promise.resolve(boxed);
                   });
                 }
                 return T.Get().then(function (resolved) {
                   return resolved.Parse(value).then(function (parsed) {
-                    return $promise.resolve($t.box(parsed, tpe, true));
+                    return $promise.resolve($t.box(parsed, tpe));
                   });
                 });
               };
             };
             tpe.$equals = function (left, right) {
               if (left === right) {
-                return $promise.resolve($t.box(true, $a['bool']));
+                return $promise.resolve($t.fastbox(true, $a['bool']));
               }
               var promises = [];
               tpe.$fields.forEach(function (field) {
@@ -617,37 +648,50 @@ this.Serulian = function ($global) {
                     return values[i];
                   }
                 }
-                return $t.box(true, $a['bool']);
+                return $t.fastbox(true, $a['bool']);
               });
             };
             tpe.prototype.Mapping = function () {
-              if (this.$unboxed) {
+              if (this.$serucreated) {
+                return $promise.resolve($t.fastbox(this[BOXED_DATA_PROPERTY], $a['mapping']($t.any)));
+              } else {
                 var $this = this;
                 var mapped = {
                 };
                 tpe.$fields.forEach(function (field) {
                   mapped[field.serializableName] = $this[field.name];
                 });
-                return $promise.resolve($t.box(mapped, $a['mapping']($t.any)));
-              } else {
-                return $promise.resolve($t.box(this[BOXED_DATA_PROPERTY], $a['mapping']($t.any)));
+                return $promise.resolve($t.fastbox(mapped, $a['mapping']($t.any)));
               }
             };
           }
           return tpe;
         };
         if (hasGenerics) {
-          module[name] = function genericType (__genericargs) {
+          module[name] = function genericType () {
             var fullName = name;
-            for (var i = 0; i < arguments.length; ++i) {
-              fullName = (fullName + '_') + arguments[i].name;
+            var fullId = typeId;
+            var generics = new Array(arguments.length);
+            for (var i = 0; i < generics.length; ++i) {
+              fullName = (fullName + '_') + $t.functionName(arguments[i]);
+              if (i == 0) {
+                fullId = fullId + '<';
+              } else {
+                fullId = fullId + ',';
+              }
+              fullId = fullId + arguments[i].$typeId;
+              generics[i] = arguments[i];
             }
-            var tpe = buildType(name, arguments);
+            var cached = module[fullName];
+            if (cached) {
+              return cached;
+            }
+            var tpe = buildType(fullId + '>', fullName, generics);
             tpe.$generic = genericType;
-            return tpe;
+            return module[fullName] = tpe;
           };
         } else {
-          module[name] = buildType(name);
+          module[name] = buildType(typeId, name);
         }
         if (alias) {
           $a[alias] = module[name];
@@ -669,7 +713,7 @@ this.Serulian = function ($global) {
   };
   $module('____testlib.basictypes', function () {
     var $static = this;
-    this.$class('Tuple', true, 'tuple', function (T, Q) {
+    this.$class('4499960a', 'Tuple', true, 'tuple', function (T, Q) {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -713,11 +757,17 @@ this.Serulian = function ($global) {
         return $promise.new($continue);
       };
       this.$typesig = function () {
-        return $t.createtypesig(['Build', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Tuple(T, Q)).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Tuple(T, Q)).$typeref()]);
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+        };
+        computed[((("Build|1|29dc432d<4499960a<" + $t.typeid(T)) + ",") + $t.typeid(Q)) + ">>"] = true;
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$class('Function', true, 'function', function (T) {
+    this.$class('29dc432d', 'Function', true, 'function', function (T) {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -725,18 +775,19 @@ this.Serulian = function ($global) {
         return $promise.resolve(instance);
       };
       this.$typesig = function () {
-        return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Function(T)).$typeref()]);
+        return {
+        };
       };
     });
 
-    this.$class('IntStream', false, '', function () {
+    this.$class('73c406f4', 'IntStream', false, '', function () {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
         var instance = new $static();
-        instance.start = /*#0#*/$t.box(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer);
-        instance.end = /*#-1#*/$t.box(/*#-1#*/-/*#-1#*/1, /*#-1#*/$g.____testlib.basictypes.Integer);
-        instance.current = /*#0#*/$t.box(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer);
+        instance.start = /*#0#*/$t.fastbox(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer);
+        instance.end = /*#-1#*/$t.fastbox(/*#-1#*/-/*#-1#*/1, /*#-1#*/$g.____testlib.basictypes.Integer);
+        instance.current = /*#0#*/$t.fastbox(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer);
         return $promise.resolve(instance);
       };
       $static.OverRange = function (start, end) {
@@ -783,31 +834,19 @@ this.Serulian = function ($global) {
           while (true) {
             switch ($current) {
               case 0:
-/*#this.current <= this.end {#*/                $g.____testlib.basictypes.Integer.$compare(/*#this.current <= this.end {#*/$this.current, /*#this.end {#*/$this.end).then(/*#this.end {#*/function (/*#this.end {#*/$result0) /*#this.end {#*/{
-                  $result = /*#this.current <= this.end {#*/$t.unbox(/*#this.current <= this.end {#*/$result0) <= /*#this.current <= this.end {#*/0;
+                if (/*#this.current <= this.end {#*/$this.current.$wrapped <= /*#this.end {#*/$this.end.$wrapped) /*#this.end {#*/{
                   $current = 1;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
-
-              case 1:
-                if ($result) {
-                  $current = 2;
                   continue;
                 } else {
-                  $current = 5;
+                  $current = 3;
                   continue;
                 }
                 break;
 
-              case 2:
-/*#Tuple<int, bool>.Build(this.current, true)#*/                $g.____testlib.basictypes.Tuple(/*#int, bool>.Build(this.current, true)#*/$g.____testlib.basictypes.Integer, /*#bool>.Build(this.current, true)#*/$g.____testlib.basictypes.Boolean).Build(/*#this.current, true)#*/$this.current, /*#true)#*/$t.box(/*#true)#*/true, /*#true)#*/$g.____testlib.basictypes.Boolean)).then(/*#true)#*/function (/*#true)#*/$result0) /*#true)#*/{
+              case 1:
+/*#Tuple<int, bool>.Build(this.current, true)#*/                $g.____testlib.basictypes.Tuple(/*#int, bool>.Build(this.current, true)#*/$g.____testlib.basictypes.Integer, /*#bool>.Build(this.current, true)#*/$g.____testlib.basictypes.Boolean).Build(/*#this.current, true)#*/$this.current, /*#true)#*/$t.fastbox(/*#true)#*/true, /*#true)#*/$g.____testlib.basictypes.Boolean)).then(/*#true)#*/function (/*#true)#*/$result0) /*#true)#*/{
                   $result = /*#.Build(this.current, true)#*/$result0;
-                  $current = 3;
+                  $current = 2;
                   $continue($resolve, $reject);
                   return;
                 }).catch(function (err) {
@@ -816,10 +855,15 @@ this.Serulian = function ($global) {
                 });
                 return;
 
-              case 3:
+              case 2:
                 t = $result;
-/*#this.current + 1#*/                $g.____testlib.basictypes.Integer.$plus(/*#this.current + 1#*/$this.current, /*#1#*/$t.box(/*#1#*/1, /*#1#*/$g.____testlib.basictypes.Integer)).then(/*#1#*/function (/*#1#*/$result0) /*#1#*/{
-                  $result = /*#this.current = this.current + 1#*/$this.current = /*#this.current + 1#*/$result0;
+/*#this.current = this.current + 1#*/                $this.current = /*#this.current + 1#*/$t.fastbox(/*#this.current + 1#*/$this.current.$wrapped + /*#this.current + 1#*/1, /*#this.current + 1#*/$g.____testlib.basictypes.Boolean);
+                $resolve(/*#t#*/t);
+                return;
+
+              case 3:
+/*#Tuple<int, bool>.Build(this.current, false)#*/                $g.____testlib.basictypes.Tuple(/*#int, bool>.Build(this.current, false)#*/$g.____testlib.basictypes.Integer, /*#bool>.Build(this.current, false)#*/$g.____testlib.basictypes.Boolean).Build(/*#this.current, false)#*/$this.current, /*#false)#*/$t.fastbox(/*#false)#*/false, /*#false)#*/$g.____testlib.basictypes.Boolean)).then(/*#false)#*/function (/*#false)#*/$result0) /*#false)#*/{
+                  $result = /*#.Build(this.current, false)#*/$result0;
                   $current = 4;
                   $continue($resolve, $reject);
                   return;
@@ -830,22 +874,6 @@ this.Serulian = function ($global) {
                 return;
 
               case 4:
-                $resolve(/*#t#*/t);
-                return;
-
-              case 5:
-/*#Tuple<int, bool>.Build(this.current, false)#*/                $g.____testlib.basictypes.Tuple(/*#int, bool>.Build(this.current, false)#*/$g.____testlib.basictypes.Integer, /*#bool>.Build(this.current, false)#*/$g.____testlib.basictypes.Boolean).Build(/*#this.current, false)#*/$this.current, /*#false)#*/$t.box(/*#false)#*/false, /*#false)#*/$g.____testlib.basictypes.Boolean)).then(/*#false)#*/function (/*#false)#*/$result0) /*#false)#*/{
-                  $result = /*#.Build(this.current, false)#*/$result0;
-                  $current = 6;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
-
-              case 6:
                 $resolve($result);
                 return;
 
@@ -858,11 +886,18 @@ this.Serulian = function ($global) {
         return $promise.new($continue);
       };
       this.$typesig = function () {
-        return $t.createtypesig(['OverRange', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.IntStream).$typeref()], ['Next', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Tuple($g.____testlib.basictypes.Integer, $g.____testlib.basictypes.Boolean)).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.IntStream).$typeref()]);
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "OverRange|1|29dc432d<73c406f4>": true,
+          "Next|2|29dc432d<4499960a<c44e6c87,5ab5941e>>": true,
+        };
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$class('Float64', false, 'float64', function () {
+    this.$class('c382e798', 'Float64', false, 'float64', function () {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -870,11 +905,12 @@ this.Serulian = function ($global) {
         return $promise.resolve(instance);
       };
       this.$typesig = function () {
-        return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Float64).$typeref()]);
+        return {
+        };
       };
     });
 
-    this.$class('List', true, 'list', function (T) {
+    this.$class('bab1bf3a', 'List', true, 'list', function (T) {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -919,7 +955,7 @@ this.Serulian = function ($global) {
         var $this = this;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#int(this.items.length)#*/$t.box(/*#this.items.length)#*/$this.items.length, /*#int(this.items.length)#*/$g.____testlib.basictypes.Integer));
+          $resolve(/*#int(this.items.length)#*/$t.fastbox(/*#this.items.length)#*/$this.items.length, /*#int(this.items.length)#*/$g.____testlib.basictypes.Integer));
           return;
         };
         return $promise.new($continue);
@@ -928,7 +964,7 @@ this.Serulian = function ($global) {
         var $this = this;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#[&index].(T)#*/$t.cast(/*#this.items[&index].(T)#*/$this.items[/*#index].(T)#*/$t.unbox(/*#index].(T)#*/index)], /*#[&index].(T)#*/T, /*#[&index].(T)#*/false));
+          $resolve(/*#[&index].(T)#*/$t.cast(/*#this.items[&index].(T)#*/$this.items[/*#index].(T)#*/index.$wrapped], /*#[&index].(T)#*/T, /*#[&index].(T)#*/false));
           return;
         };
         return $promise.new($continue);
@@ -944,7 +980,7 @@ this.Serulian = function ($global) {
             switch ($current) {
               case 0:
 /*#startindex ?? 0#*/                $promise.resolve(/*#startindex ?? 0#*/startindex).then(/*#startindex ?? 0#*/function (/*#startindex ?? 0#*/$result0) /*#startindex ?? 0#*/{
-                  $result = /*#startindex ?? 0#*/$t.nullcompare(/*#startindex ?? 0#*/$result0, /*#0#*/$t.box(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer));
+                  $result = /*#startindex ?? 0#*/$t.nullcompare(/*#startindex ?? 0#*/$result0, /*#0#*/$t.fastbox(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer));
                   $current = 1;
                   $continue($resolve, $reject);
                   return;
@@ -971,9 +1007,20 @@ this.Serulian = function ($global) {
 
               case 2:
                 end = $result;
-/*#start < 0 {#*/                $g.____testlib.basictypes.Integer.$compare(/*#start < 0 {#*/start, /*#0 {#*/$t.box(/*#0 {#*/0, /*#0 {#*/$g.____testlib.basictypes.Integer)).then(/*#0 {#*/function (/*#0 {#*/$result0) /*#0 {#*/{
-                  $result = /*#start < 0 {#*/$t.unbox(/*#start < 0 {#*/$result0) < /*#start < 0 {#*/0;
+                if (/*#start < 0 {#*/start.$wrapped < /*#start < 0 {#*/0) /*#start < 0 {#*/{
                   $current = 3;
+                  continue;
+                } else {
+                  $current = 5;
+                  continue;
+                }
+                break;
+
+              case 3:
+/*#this.Count#*/                $this.Count().then(/*#this.Count#*/function (/*#this.Count#*/$result0) /*#this.Count#*/{
+                  start = /*#start + this.Count#*/$t.fastbox(/*#start + this.Count#*/start.$wrapped + /*#this.Count#*/$result0.$wrapped, /*#start + this.Count#*/$g.____testlib.basictypes.Boolean);
+                  $result = /*#start = start + this.Count#*/start;
+                  $current = 4;
                   $continue($resolve, $reject);
                   return;
                 }).catch(function (err) {
@@ -982,38 +1029,24 @@ this.Serulian = function ($global) {
                 });
                 return;
 
-              case 3:
-                if ($result) {
-                  $current = 4;
+              case 4:
+                $current = 5;
+                continue;
+
+              case 5:
+                if (/*#end < 0 {#*/end.$wrapped < /*#end < 0 {#*/0) /*#end < 0 {#*/{
+                  $current = 6;
                   continue;
                 } else {
-                  $current = 6;
+                  $current = 8;
                   continue;
                 }
                 break;
 
-              case 4:
-/*#this.Count#*/                $this.Count().then(/*#this.Count#*/function (/*#this.Count#*/$result1) /*#this.Count#*/{
-                  return /*#start + this.Count#*/$g.____testlib.basictypes.Integer.$plus(/*#start + this.Count#*/start, /*#this.Count#*/$result1).then(/*#this.Count#*/function (/*#this.Count#*/$result0) /*#this.Count#*/{
-                    start = /*#start + this.Count#*/$result0;
-                    $result = /*#start = start + this.Count#*/start;
-                    $current = 5;
-                    $continue($resolve, $reject);
-                    return;
-                  });
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
-
-              case 5:
-                $current = 6;
-                continue;
-
               case 6:
-/*#end < 0 {#*/                $g.____testlib.basictypes.Integer.$compare(/*#end < 0 {#*/end, /*#0 {#*/$t.box(/*#0 {#*/0, /*#0 {#*/$g.____testlib.basictypes.Integer)).then(/*#0 {#*/function (/*#0 {#*/$result0) /*#0 {#*/{
-                  $result = /*#end < 0 {#*/$t.unbox(/*#end < 0 {#*/$result0) < /*#end < 0 {#*/0;
+/*#this.Count#*/                $this.Count().then(/*#this.Count#*/function (/*#this.Count#*/$result0) /*#this.Count#*/{
+                  end = /*#end + this.Count#*/$t.fastbox(/*#end + this.Count#*/end.$wrapped + /*#this.Count#*/$result0.$wrapped, /*#end + this.Count#*/$g.____testlib.basictypes.Boolean);
+                  $result = /*#end = end + this.Count#*/end;
                   $current = 7;
                   $continue($resolve, $reject);
                   return;
@@ -1024,60 +1057,23 @@ this.Serulian = function ($global) {
                 return;
 
               case 7:
-                if ($result) {
-                  $current = 8;
-                  continue;
-                } else {
-                  $current = 10;
-                  continue;
-                }
-                break;
-
-              case 8:
-/*#this.Count#*/                $this.Count().then(/*#this.Count#*/function (/*#this.Count#*/$result1) /*#this.Count#*/{
-                  return /*#end + this.Count#*/$g.____testlib.basictypes.Integer.$plus(/*#end + this.Count#*/end, /*#this.Count#*/$result1).then(/*#this.Count#*/function (/*#this.Count#*/$result0) /*#this.Count#*/{
-                    end = /*#end + this.Count#*/$result0;
-                    $result = /*#end = end + this.Count#*/end;
-                    $current = 9;
-                    $continue($resolve, $reject);
-                    return;
-                  });
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
-
-              case 9:
-                $current = 10;
+                $current = 8;
                 continue;
 
-              case 10:
-/*#start >= end {#*/                $g.____testlib.basictypes.Integer.$compare(/*#start >= end {#*/start, /*#end {#*/end).then(/*#end {#*/function (/*#end {#*/$result0) /*#end {#*/{
-                  $result = /*#start >= end {#*/$t.unbox(/*#start >= end {#*/$result0) >= /*#start >= end {#*/0;
-                  $current = 11;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
-
-              case 11:
-                if ($result) {
-                  $current = 12;
+              case 8:
+                if (/*#start >= end {#*/start.$wrapped >= /*#end {#*/end.$wrapped) /*#end {#*/{
+                  $current = 9;
                   continue;
                 } else {
-                  $current = 14;
+                  $current = 11;
                   continue;
                 }
                 break;
 
-              case 12:
+              case 9:
 /*#Slice<T>.Empty()#*/                $g.____testlib.basictypes.Slice(/*#T>.Empty()#*/T).Empty().then(/*#T>.Empty()#*/function (/*#T>.Empty()#*/$result0) /*#T>.Empty()#*/{
                   $result = /*#.Empty()#*/$result0;
-                  $current = 13;
+                  $current = 10;
                   $continue($resolve, $reject);
                   return;
                 }).catch(function (err) {
@@ -1086,14 +1082,14 @@ this.Serulian = function ($global) {
                 });
                 return;
 
-              case 13:
+              case 10:
                 $resolve($result);
                 return;
 
-              case 14:
-/*#Slice<T>.overArray(this.items.slice(Number(start), Number(end)))#*/                $g.____testlib.basictypes.Slice(/*#T>.overArray(this.items.slice(Number(start), Number(end)))#*/T).overArray(/*#this.items.slice(Number(start), Number(end)))#*/$this.items.slice(/*#Number(start), Number(end)))#*/$t.unbox(/*#start), Number(end)))#*/start), /*#Number(end)))#*/$t.unbox(/*#end)))#*/end))).then(/*#end)))#*/function (/*#end)))#*/$result0) /*#end)))#*/{
+              case 11:
+/*#Slice<T>.overArray(this.items.slice(Number(start), Number(end)))#*/                $g.____testlib.basictypes.Slice(/*#T>.overArray(this.items.slice(Number(start), Number(end)))#*/T).overArray(/*#this.items.slice(Number(start), Number(end)))#*/$this.items.slice(/*#start), Number(end)))#*/start.$wrapped, /*#end)))#*/end.$wrapped)).then(/*#end)))#*/function (/*#end)))#*/$result0) /*#end)))#*/{
                   $result = /*#.overArray(this.items.slice(Number(start), Number(end)))#*/$result0;
-                  $current = 15;
+                  $current = 12;
                   $continue($resolve, $reject);
                   return;
                 }).catch(function (err) {
@@ -1102,7 +1098,7 @@ this.Serulian = function ($global) {
                 });
                 return;
 
-              case 15:
+              case 12:
                 $resolve($result);
                 return;
 
@@ -1115,11 +1111,19 @@ this.Serulian = function ($global) {
         return $promise.new($continue);
       };
       this.$typesig = function () {
-        return $t.createtypesig(['forArray', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.List(T)).$typeref()], ['Count', 3, $g.____testlib.basictypes.Integer.$typeref()], ['index', 4, $g.____testlib.basictypes.Function(T).$typeref()], ['slice', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Slice(T)).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.List(T)).$typeref()]);
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "Count|3|c44e6c87": true,
+        };
+        computed[("index|4|29dc432d<" + $t.typeid(T)) + ">"] = true;
+        computed[("slice|4|29dc432d<b4e50744<" + $t.typeid(T)) + ">>"] = true;
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$class('Map', true, 'map', function (T, Q) {
+    this.$class('b2beb156', 'Map', true, 'map', function (T, Q) {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -1153,18 +1157,16 @@ this.Serulian = function ($global) {
 
               case 1:
                 map = $result;
-                len = /*#int(keys.length)#*/$t.box(/*#keys.length)#*/keys.length, /*#int(keys.length)#*/$g.____testlib.basictypes.Integer);
+                len = /*#int(keys.length)#*/$t.fastbox(/*#keys.length)#*/keys.length, /*#int(keys.length)#*/$g.____testlib.basictypes.Integer);
                 $current = 2;
                 continue;
 
               case 2:
-/*#len - 1) {#*/                $g.____testlib.basictypes.Integer.$minus(/*#len - 1) {#*/len, /*#1) {#*/$t.box(/*#1) {#*/1, /*#1) {#*/$g.____testlib.basictypes.Integer)).then(/*#1) {#*/function (/*#1) {#*/$result1) /*#1) {#*/{
-                  return /*#0..(len - 1) {#*/$g.____testlib.basictypes.Integer.$range(/*#0..(len - 1) {#*/$t.box(/*#0..(len - 1) {#*/0, /*#0..(len - 1) {#*/$g.____testlib.basictypes.Integer), /*#len - 1) {#*/$result1).then(/*#len - 1) {#*/function (/*#len - 1) {#*/$result0) /*#len - 1) {#*/{
-                    $result = /*#0..(len - 1) {#*/$result0;
-                    $current = 3;
-                    $continue($resolve, $reject);
-                    return;
-                  });
+/*#0..(len - 1) {#*/                $g.____testlib.basictypes.Integer.$range(/*#0..(len - 1) {#*/$t.fastbox(/*#0..(len - 1) {#*/0, /*#0..(len - 1) {#*/$g.____testlib.basictypes.Integer), /*#len - 1) {#*/$t.fastbox(/*#len - 1) {#*/len.$wrapped - /*#len - 1) {#*/1, /*#len - 1) {#*/$g.____testlib.basictypes.Boolean)).then(/*#len - 1) {#*/function (/*#len - 1) {#*/$result0) /*#len - 1) {#*/{
+                  $result = /*#0..(len - 1) {#*/$result0;
+                  $current = 3;
+                  $continue($resolve, $reject);
+                  return;
                 }).catch(function (err) {
                   $reject(err);
                   return;
@@ -1191,7 +1193,7 @@ this.Serulian = function ($global) {
 
               case 5:
 /*#i in 0..(len - 1) {#*/                i = /*#i in 0..(len - 1) {#*/$temp0.First;
-                if (/*#for i in 0..(len - 1) {#*/$t.unbox(/*#for i in 0..(len - 1) {#*/$temp0.Second)) /*#for i in 0..(len - 1) {#*/{
+                if (/*#for i in 0..(len - 1) {#*/$temp0.Second.$wrapped) /*#for i in 0..(len - 1) {#*/{
                   $current = 6;
                   continue;
                 } else {
@@ -1201,8 +1203,8 @@ this.Serulian = function ($global) {
                 break;
 
               case 6:
-                tKey = /*#[Number(i)].(T)#*/$t.cast(/*#keys[Number(i)].(T)#*/keys[/*#Number(i)].(T)#*/$t.unbox(/*#i)].(T)#*/i)], /*#[Number(i)].(T)#*/T, /*#[Number(i)].(T)#*/false);
-/*#map[tKey] = values[Number(i)].(Q)#*/                map.$setindex(/*#tKey] = values[Number(i)].(Q)#*/tKey, /*#[Number(i)].(Q)#*/$t.cast(/*#values[Number(i)].(Q)#*/values[/*#Number(i)].(Q)#*/$t.unbox(/*#i)].(Q)#*/i)], /*#[Number(i)].(Q)#*/Q, /*#[Number(i)].(Q)#*/false)).then(/*#[Number(i)].(Q)#*/function (/*#[Number(i)].(Q)#*/$result0) /*#[Number(i)].(Q)#*/{
+                tKey = /*#[Number(i)].(T)#*/$t.cast(/*#keys[Number(i)].(T)#*/keys[/*#i)].(T)#*/i.$wrapped], /*#[Number(i)].(T)#*/T, /*#[Number(i)].(T)#*/false);
+/*#map[tKey] = values[Number(i)].(Q)#*/                map.$setindex(/*#tKey] = values[Number(i)].(Q)#*/tKey, /*#[Number(i)].(Q)#*/$t.cast(/*#values[Number(i)].(Q)#*/values[/*#i)].(Q)#*/i.$wrapped], /*#[Number(i)].(Q)#*/Q, /*#[Number(i)].(Q)#*/false)).then(/*#[Number(i)].(Q)#*/function (/*#[Number(i)].(Q)#*/$result0) /*#[Number(i)].(Q)#*/{
                   $result = /*#map[tKey] = values[Number(i)].(Q)#*/$result0;
                   $current = 7;
                   $continue($resolve, $reject);
@@ -1254,7 +1256,7 @@ this.Serulian = function ($global) {
 
               case 1:
                 keyString = $result;
-                value = /*#this.internalObject[NativeString(keyString)]#*/$this.internalObject[/*#NativeString(keyString)]#*/$t.unbox(/*#keyString)]#*/keyString)];
+                value = /*#this.internalObject[NativeString(keyString)]#*/$this.internalObject[/*#keyString)]#*/keyString.$wrapped];
                 if (/*#value is null {#*/value == /*#null {#*/null) /*#null {#*/{
                   $current = 2;
                   continue;
@@ -1304,7 +1306,7 @@ this.Serulian = function ($global) {
 
               case 1:
                 keyString = $result;
-/*#this.internalObject[NativeString(keyString)] = value#*/                $this.internalObject[/*#NativeString(keyString)] = value#*/$t.unbox(/*#keyString)] = value#*/keyString)] = /*#value#*/value;
+/*#this.internalObject[NativeString(keyString)] = value#*/                $this.internalObject[/*#keyString)] = value#*/keyString.$wrapped] = /*#value#*/value;
                 $resolve();
                 return;
 
@@ -1317,11 +1319,18 @@ this.Serulian = function ($global) {
         return $promise.new($continue);
       };
       this.$typesig = function () {
-        return $t.createtypesig(['forArrays', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Map(T, Q)).$typeref()], ['index', 4, $g.____testlib.basictypes.Function(Q).$typeref()], ['setindex', 4, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Map(T, Q)).$typeref()]);
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "setindex|4|29dc432d<void>": true,
+        };
+        computed[("index|4|29dc432d<" + $t.typeid(Q)) + ">"] = true;
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$class('JSON', false, 'json', function () {
+    this.$class('ce1c4509', 'JSON', false, 'json', function () {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -1367,7 +1376,7 @@ this.Serulian = function ($global) {
             switch ($current) {
               case 0:
 /*#Internal.autoUnbox))#*/                $t.dynamicaccess(/*#Internal.autoUnbox))#*/$global.__serulian_internal, /*#Internal.autoUnbox))#*/'autoUnbox').then(/*#Internal.autoUnbox))#*/function (/*#Internal.autoUnbox))#*/$result0) /*#Internal.autoUnbox))#*/{
-                  $result = /*#string(NativeJSON.stringify(Object(value), Internal.autoUnbox))#*/$t.box(/*#NativeJSON.stringify(Object(value), Internal.autoUnbox))#*/$global.JSON.stringify(/*#Object(value), Internal.autoUnbox))#*/$t.unbox(/*#value), Internal.autoUnbox))#*/value), /*#Internal.autoUnbox))#*/$result0), /*#string(NativeJSON.stringify(Object(value), Internal.autoUnbox))#*/$g.____testlib.basictypes.String);
+                  $result = /*#string(NativeJSON.stringify(Object(value), Internal.autoUnbox))#*/$t.fastbox(/*#NativeJSON.stringify(Object(value), Internal.autoUnbox))#*/$global.JSON.stringify(/*#value), Internal.autoUnbox))#*/value.$wrapped, /*#Internal.autoUnbox))#*/$result0), /*#string(NativeJSON.stringify(Object(value), Internal.autoUnbox))#*/$g.____testlib.basictypes.String);
                   $current = 1;
                   $continue($resolve, $reject);
                   return;
@@ -1398,7 +1407,7 @@ this.Serulian = function ($global) {
             switch ($current) {
               case 0:
 /*#Internal.autoBox))#*/                $t.dynamicaccess(/*#Internal.autoBox))#*/$global.__serulian_internal, /*#Internal.autoBox))#*/'autoBox').then(/*#Internal.autoBox))#*/function (/*#Internal.autoBox))#*/$result0) /*#Internal.autoBox))#*/{
-                  $result = /*#<any>(NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$t.box(/*#NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$global.JSON.parse(/*#NativeString(value), Internal.autoBox))#*/$t.unbox(/*#value), Internal.autoBox))#*/value), /*#Internal.autoBox))#*/$result0), /*#<any>(NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$g.____testlib.basictypes.Mapping(/*#<any>(NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$t.any));
+                  $result = /*#<any>(NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$t.fastbox(/*#NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$global.JSON.parse(/*#value), Internal.autoBox))#*/value.$wrapped, /*#Internal.autoBox))#*/$result0), /*#<any>(NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$g.____testlib.basictypes.Mapping(/*#<any>(NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$t.any));
                   $current = 1;
                   $continue($resolve, $reject);
                   return;
@@ -1421,60 +1430,111 @@ this.Serulian = function ($global) {
         return $promise.new($continue);
       };
       this.$typesig = function () {
-        return $t.createtypesig(['Get', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.JSON).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Parse', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.JSON).$typeref()]);
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "Get|1|29dc432d<ce1c4509>": true,
+          "Stringify|2|29dc432d<538656f2>": true,
+          "Parse|2|29dc432d<df58fcbd<any>>": true,
+        };
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('Stringable', false, 'stringable', function () {
+    this.$interface('f56564e1', 'Stringable', false, 'stringable', function () {
       var $static = this;
       this.$typesig = function () {
-        return $t.createtypesig(['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "String|2|29dc432d<538656f2>": true,
+        };
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('Stream', true, 'stream', function (T) {
+    this.$interface('6d9e64c3', 'Stream', true, 'stream', function (T) {
       var $static = this;
       this.$typesig = function () {
-        return $t.createtypesig(['Next', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Tuple(T, $g.____testlib.basictypes.Boolean)).$typeref()]);
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+        };
+        computed[("Next|2|29dc432d<4499960a<" + $t.typeid(T)) + ",5ab5941e>>"] = true;
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('Streamable', true, 'streamable', function (T) {
+    this.$interface('ef6aceab', 'Streamable', true, 'streamable', function (T) {
       var $static = this;
       this.$typesig = function () {
-        return $t.createtypesig(['Stream', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Stream(T)).$typeref()]);
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+        };
+        computed[("Stream|2|29dc432d<6d9e64c3<" + $t.typeid(T)) + ">>"] = true;
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('Error', false, 'error', function () {
+    this.$interface('55ec3e50', 'Error', false, 'error', function () {
       var $static = this;
       this.$typesig = function () {
-        return $t.createtypesig(['Message', 3, $g.____testlib.basictypes.String.$typeref()]);
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "Message|3|538656f2": true,
+        };
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('Awaitable', true, 'awaitable', function (T) {
+    this.$interface('ebc09764', 'Awaitable', true, 'awaitable', function (T) {
       var $static = this;
       this.$typesig = function () {
-        return $t.createtypesig(['Then', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Awaitable(T)).$typeref()], ['Catch', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Awaitable(T)).$typeref()]);
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+        };
+        computed[("Then|2|29dc432d<ebc09764<" + $t.typeid(T)) + ">>"] = true;
+        computed[("Catch|2|29dc432d<ebc09764<" + $t.typeid(T)) + ">>"] = true;
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('Releasable', false, 'releasable', function () {
+    this.$interface('9b33d358', 'Releasable', false, 'releasable', function () {
       var $static = this;
       this.$typesig = function () {
-        return $t.createtypesig(['Release', 2, $g.____testlib.basictypes.Function($t.void).$typeref()]);
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "Release|2|29dc432d<void>": true,
+        };
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('Mappable', false, 'mappable', function () {
+    this.$interface('f8094a71', 'Mappable', false, 'mappable', function () {
       var $static = this;
       this.$typesig = function () {
-        return $t.createtypesig(['MapKey', 3, $g.____testlib.basictypes.Stringable.$typeref()]);
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "MapKey|3|f56564e1": true,
+        };
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('Stringifier', false, '$stringifier', function () {
+    this.$interface('a3ac78ed', 'Stringifier', false, '$stringifier', function () {
       var $static = this;
       $static.Get = function () {
         var $result;
@@ -1507,11 +1567,18 @@ this.Serulian = function ($global) {
         return $promise.new($continue);
       };
       this.$typesig = function () {
-        return $t.createtypesig(['Get', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Stringifier).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "Get|1|29dc432d<a3ac78ed>": true,
+          "Stringify|2|29dc432d<538656f2>": true,
+        };
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('Parser', false, '$parser', function () {
+    this.$interface('0490813e', 'Parser', false, '$parser', function () {
       var $static = this;
       $static.Get = function () {
         var $result;
@@ -1544,11 +1611,18 @@ this.Serulian = function ($global) {
         return $promise.new($continue);
       };
       this.$typesig = function () {
-        return $t.createtypesig(['Get', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Parser).$typeref()], ['Parse', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()]);
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "Get|1|29dc432d<0490813e>": true,
+          "Parse|2|29dc432d<df58fcbd<any>>": true,
+        };
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('Mapping', true, 'mapping', function (T) {
+    this.$type('df58fcbd', 'Mapping', true, 'mapping', function (T) {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1562,7 +1636,7 @@ this.Serulian = function ($global) {
       $static.Empty = function () {
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#<T>(Object.new())#*/$t.box(/*#Object.new())#*/$t.nativenew(/*#Object.new())#*/$global.Object)(), /*#<T>(Object.new())#*/$g.____testlib.basictypes.Mapping(/*#<T>(Object.new())#*/T)));
+          $resolve(/*#<T>(Object.new())#*/$t.fastbox(/*#Object.new())#*/$t.nativenew(/*#Object.new())#*/$global.Object)(), /*#<T>(Object.new())#*/$g.____testlib.basictypes.Mapping(/*#<T>(Object.new())#*/T)));
           return;
         };
         return $promise.new($continue);
@@ -1570,7 +1644,7 @@ this.Serulian = function ($global) {
       $static.overObject = function (obj) {
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#<T>(obj)#*/$t.box(/*#obj)#*/obj, /*#<T>(obj)#*/$g.____testlib.basictypes.Mapping(/*#<T>(obj)#*/T)));
+          $resolve(/*#<T>(obj)#*/$t.fastbox(/*#obj)#*/obj, /*#<T>(obj)#*/$g.____testlib.basictypes.Mapping(/*#<T>(obj)#*/T)));
           return;
         };
         return $promise.new($continue);
@@ -1583,7 +1657,7 @@ this.Serulian = function ($global) {
           while (true) {
             switch ($current) {
               case 0:
-/*#Slice<string>.overArray(Object.keys(Object(this)))#*/                $g.____testlib.basictypes.Slice(/*#string>.overArray(Object.keys(Object(this)))#*/$g.____testlib.basictypes.String).overArray(/*#Object.keys(Object(this)))#*/$global.Object.keys(/*#Object(this)))#*/$t.unbox(/*#this)))#*/$this))).then(/*#this)))#*/function (/*#this)))#*/$result0) /*#this)))#*/{
+/*#Slice<string>.overArray(Object.keys(Object(this)))#*/                $g.____testlib.basictypes.Slice(/*#string>.overArray(Object.keys(Object(this)))#*/$g.____testlib.basictypes.String).overArray(/*#Object.keys(Object(this)))#*/$global.Object.keys(/*#this)))#*/$this.$wrapped)).then(/*#this)))#*/function (/*#this)))#*/$result0) /*#this)))#*/{
                   $result = /*#.overArray(Object.keys(Object(this)))#*/$result0;
                   $current = 1;
                   $continue($resolve, $reject);
@@ -1614,7 +1688,7 @@ this.Serulian = function ($global) {
           while (true) {
             switch ($current) {
               case 0:
-                value = /*#Object(this)[NativeString(key)]#*/$t.unbox(/*#this)[NativeString(key)]#*/$this)[/*#NativeString(key)]#*/$t.unbox(/*#key)]#*/key)];
+                value = /*#this)[NativeString(key)]#*/$this.$wrapped[/*#key)]#*/key.$wrapped];
                 if (/*#value is null {#*/value == /*#null {#*/null) /*#null {#*/{
                   $current = 1;
                   continue;
@@ -1641,11 +1715,19 @@ this.Serulian = function ($global) {
         return $promise.new($continue);
       };
       this.$typesig = function () {
-        return $t.createtypesig(['Empty', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping(T)).$typeref()], ['overObject', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping(T)).$typeref()], ['Keys', 3, $g.____testlib.basictypes.Slice($g.____testlib.basictypes.String).$typeref()], ['index', 4, $g.____testlib.basictypes.Function(T).$typeref()]);
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "Keys|3|b4e50744<538656f2>": true,
+        };
+        computed[("Empty|1|29dc432d<df58fcbd<" + $t.typeid(T)) + ">>"] = true;
+        computed[("index|4|29dc432d<" + $t.typeid(T)) + ">"] = true;
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('Slice', true, 'slice', function (T) {
+    this.$type('b4e50744', 'Slice', true, 'slice', function (T) {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1659,7 +1741,7 @@ this.Serulian = function ($global) {
       $static.Empty = function () {
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#<T>(Array.new())#*/$t.box(/*#Array.new())#*/$t.nativenew(/*#Array.new())#*/$global.Array)(), /*#<T>(Array.new())#*/$g.____testlib.basictypes.Slice(/*#<T>(Array.new())#*/T)));
+          $resolve(/*#<T>(Array.new())#*/$t.fastbox(/*#Array.new())#*/$t.nativenew(/*#Array.new())#*/$global.Array)(), /*#<T>(Array.new())#*/$g.____testlib.basictypes.Slice(/*#<T>(Array.new())#*/T)));
           return;
         };
         return $promise.new($continue);
@@ -1667,7 +1749,7 @@ this.Serulian = function ($global) {
       $static.overArray = function (arr) {
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#<T>(arr)#*/$t.box(/*#arr)#*/arr, /*#<T>(arr)#*/$g.____testlib.basictypes.Slice(/*#<T>(arr)#*/T)));
+          $resolve(/*#<T>(arr)#*/$t.fastbox(/*#arr)#*/arr, /*#<T>(arr)#*/$g.____testlib.basictypes.Slice(/*#<T>(arr)#*/T)));
           return;
         };
         return $promise.new($continue);
@@ -1676,7 +1758,7 @@ this.Serulian = function ($global) {
         var $this = this;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#[Number(index)].(T)#*/$t.cast(/*#Array(this)[Number(index)].(T)#*/$t.unbox(/*#this)[Number(index)].(T)#*/$this)[/*#Number(index)].(T)#*/$t.unbox(/*#index)].(T)#*/index)], /*#[Number(index)].(T)#*/T, /*#[Number(index)].(T)#*/false));
+          $resolve(/*#[Number(index)].(T)#*/$t.cast(/*#this)[Number(index)].(T)#*/$this.$wrapped[/*#index)].(T)#*/index.$wrapped], /*#[Number(index)].(T)#*/T, /*#[Number(index)].(T)#*/false));
           return;
         };
         return $promise.new($continue);
@@ -1685,17 +1767,25 @@ this.Serulian = function ($global) {
         var $this = this;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#int(Array(this).length)#*/$t.box(/*#Array(this).length)#*/$t.unbox(/*#this).length)#*/$this).length, /*#int(Array(this).length)#*/$g.____testlib.basictypes.Integer));
+          $resolve(/*#int(Array(this).length)#*/$t.fastbox(/*#this).length)#*/$this.$wrapped.length, /*#int(Array(this).length)#*/$g.____testlib.basictypes.Integer));
           return;
         };
         return $promise.new($continue);
       });
       this.$typesig = function () {
-        return $t.createtypesig(['Empty', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Slice(T)).$typeref()], ['overArray', 1, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Slice(T)).$typeref()], ['index', 4, $g.____testlib.basictypes.Function(T).$typeref()], ['Length', 3, $g.____testlib.basictypes.Integer.$typeref()]);
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "Length|3|c44e6c87": true,
+        };
+        computed[("Empty|1|29dc432d<b4e50744<" + $t.typeid(T)) + ">>"] = true;
+        computed[("index|4|29dc432d<" + $t.typeid(T)) + ">"] = true;
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('Integer', false, 'int', function () {
+    this.$type('c44e6c87', 'Integer', false, 'int', function () {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1739,7 +1829,7 @@ this.Serulian = function ($global) {
       $static.$compare = function (left, right) {
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#Integer(Number(left) - Number(right))#*/$t.box(/*#Number(left) - Number(right))#*/$t.unbox(/*#left) - Number(right))#*/left) - /*#Number(right))#*/$t.unbox(/*#right))#*/right), /*#Integer(Number(left) - Number(right))#*/$g.____testlib.basictypes.Integer));
+          $resolve(/*#Integer(Number(left) - Number(right))#*/$t.fastbox(/*#left) - Number(right))#*/left.$wrapped - /*#right))#*/right.$wrapped, /*#Integer(Number(left) - Number(right))#*/$g.____testlib.basictypes.Integer));
           return;
         };
         return $promise.new($continue);
@@ -1747,7 +1837,7 @@ this.Serulian = function ($global) {
       $static.$equals = function (left, right) {
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#Boolean(Number(left) == Number(right))#*/$t.box(/*#Number(left) == Number(right))#*/$t.unbox(/*#left) == Number(right))#*/left) == /*#Number(right))#*/$t.unbox(/*#right))#*/right), /*#Boolean(Number(left) == Number(right))#*/$g.____testlib.basictypes.Boolean));
+          $resolve(/*#Boolean(Number(left) == Number(right))#*/$t.box(/*#left) == Number(right))#*/left.$wrapped == /*#right))#*/right.$wrapped, /*#Boolean(Number(left) == Number(right))#*/$g.____testlib.basictypes.Boolean));
           return;
         };
         return $promise.new($continue);
@@ -1755,7 +1845,7 @@ this.Serulian = function ($global) {
       $static.$plus = function (left, right) {
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#Integer(Number(left) + Number(right))#*/$t.box(/*#Number(left) + Number(right))#*/$t.unbox(/*#left) + Number(right))#*/left) + /*#Number(right))#*/$t.unbox(/*#right))#*/right), /*#Integer(Number(left) + Number(right))#*/$g.____testlib.basictypes.Integer));
+          $resolve(/*#Integer(Number(left) + Number(right))#*/$t.fastbox(/*#left) + Number(right))#*/left.$wrapped + /*#right))#*/right.$wrapped, /*#Integer(Number(left) + Number(right))#*/$g.____testlib.basictypes.Integer));
           return;
         };
         return $promise.new($continue);
@@ -1763,7 +1853,7 @@ this.Serulian = function ($global) {
       $static.$minus = function (left, right) {
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#Integer(Number(left) - Number(right))#*/$t.box(/*#Number(left) - Number(right))#*/$t.unbox(/*#left) - Number(right))#*/left) - /*#Number(right))#*/$t.unbox(/*#right))#*/right), /*#Integer(Number(left) - Number(right))#*/$g.____testlib.basictypes.Integer));
+          $resolve(/*#Integer(Number(left) - Number(right))#*/$t.fastbox(/*#left) - Number(right))#*/left.$wrapped - /*#right))#*/right.$wrapped, /*#Integer(Number(left) - Number(right))#*/$g.____testlib.basictypes.Integer));
           return;
         };
         return $promise.new($continue);
@@ -1785,17 +1875,30 @@ this.Serulian = function ($global) {
         var $this = this;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#String(Number(this).toString())#*/$t.box(/*#Number(this).toString())#*/$t.unbox(/*#this).toString())#*/$this).toString(), /*#String(Number(this).toString())#*/$g.____testlib.basictypes.String));
+          $resolve(/*#String(Number(this).toString())#*/$t.fastbox(/*#this).toString())#*/$this.$wrapped.toString(), /*#String(Number(this).toString())#*/$g.____testlib.basictypes.String));
           return;
         };
         return $promise.new($continue);
       };
       this.$typesig = function () {
-        return $t.createtypesig(['range', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Stream($g.____testlib.basictypes.Integer)).$typeref()], ['compare', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Integer).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['plus', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Integer).$typeref()], ['minus', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Integer).$typeref()], ['Release', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['MapKey', 3, $g.____testlib.basictypes.Stringable.$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "range|4|29dc432d<6d9e64c3<c44e6c87>>": true,
+          "compare|4|29dc432d<c44e6c87>": true,
+          "equals|4|29dc432d<5ab5941e>": true,
+          "plus|4|29dc432d<c44e6c87>": true,
+          "minus|4|29dc432d<c44e6c87>": true,
+          "Release|2|29dc432d<void>": true,
+          "MapKey|3|f56564e1": true,
+          "String|2|29dc432d<538656f2>": true,
+        };
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('Boolean', false, 'bool', function () {
+    this.$type('5ab5941e', 'Boolean', false, 'bool', function () {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1814,7 +1917,7 @@ this.Serulian = function ($global) {
             switch ($current) {
               case 0:
 /*#left == right {#*/                $g.____testlib.basictypes.Boolean.$equals(/*#left == right {#*/left, /*#right {#*/right).then(/*#right {#*/function (/*#right {#*/$result0) /*#right {#*/{
-                  $result = /*#if left == right {#*/$t.unbox(/*#left == right {#*/$result0);
+                  $result = /*#left == right {#*/$result0.$wrapped;
                   $current = 1;
                   $continue($resolve, $reject);
                   return;
@@ -1835,11 +1938,11 @@ this.Serulian = function ($global) {
                 break;
 
               case 2:
-                $resolve(/*#0#*/$t.box(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer));
+                $resolve(/*#0#*/$t.fastbox(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer));
                 return;
 
               case 3:
-                $resolve(/*#-1#*/$t.box(/*#-1#*/-/*#-1#*/1, /*#-1#*/$g.____testlib.basictypes.Integer));
+                $resolve(/*#-1#*/$t.fastbox(/*#-1#*/-/*#-1#*/1, /*#-1#*/$g.____testlib.basictypes.Integer));
                 return;
 
               default:
@@ -1853,7 +1956,7 @@ this.Serulian = function ($global) {
       $static.$equals = function (left, right) {
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#Boolean(NativeBoolean(left) == NativeBoolean(right))#*/$t.box(/*#NativeBoolean(left) == NativeBoolean(right))#*/$t.unbox(/*#left) == NativeBoolean(right))#*/left) == /*#NativeBoolean(right))#*/$t.unbox(/*#right))#*/right), /*#Boolean(NativeBoolean(left) == NativeBoolean(right))#*/$g.____testlib.basictypes.Boolean));
+          $resolve(/*#Boolean(NativeBoolean(left) == NativeBoolean(right))#*/$t.box(/*#left) == NativeBoolean(right))#*/left.$wrapped == /*#right))#*/right.$wrapped, /*#Boolean(NativeBoolean(left) == NativeBoolean(right))#*/$g.____testlib.basictypes.Boolean));
           return;
         };
         return $promise.new($continue);
@@ -1862,7 +1965,7 @@ this.Serulian = function ($global) {
         var $this = this;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#String(NativeBoolean(this).toString())#*/$t.box(/*#NativeBoolean(this).toString())#*/$t.unbox(/*#this).toString())#*/$this).toString(), /*#String(NativeBoolean(this).toString())#*/$g.____testlib.basictypes.String));
+          $resolve(/*#String(NativeBoolean(this).toString())#*/$t.fastbox(/*#this).toString())#*/$this.$wrapped.toString(), /*#String(NativeBoolean(this).toString())#*/$g.____testlib.basictypes.String));
           return;
         };
         return $promise.new($continue);
@@ -1877,11 +1980,20 @@ this.Serulian = function ($global) {
         return $promise.new($continue);
       });
       this.$typesig = function () {
-        return $t.createtypesig(['compare', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Integer).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['MapKey', 3, $g.____testlib.basictypes.Stringable.$typeref()]);
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "compare|4|29dc432d<c44e6c87>": true,
+          "equals|4|29dc432d<5ab5941e>": true,
+          "String|2|29dc432d<538656f2>": true,
+          "MapKey|3|f56564e1": true,
+        };
+        return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('String', false, 'string', function () {
+    this.$type('538656f2', 'String', false, 'string', function () {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1904,7 +2016,7 @@ this.Serulian = function ($global) {
       $static.$equals = function (first, second) {
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#Boolean(NativeString(first) == NativeString(second))#*/$t.box(/*#NativeString(first) == NativeString(second))#*/$t.unbox(/*#first) == NativeString(second))#*/first) == /*#NativeString(second))#*/$t.unbox(/*#second))#*/second), /*#Boolean(NativeString(first) == NativeString(second))#*/$g.____testlib.basictypes.Boolean));
+          $resolve(/*#Boolean(NativeString(first) == NativeString(second))#*/$t.box(/*#first) == NativeString(second))#*/first.$wrapped == /*#second))#*/second.$wrapped, /*#Boolean(NativeString(first) == NativeString(second))#*/$g.____testlib.basictypes.Boolean));
           return;
         };
         return $promise.new($continue);
@@ -1912,7 +2024,7 @@ this.Serulian = function ($global) {
       $static.$plus = function (first, second) {
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#String(NativeString(first) + NativeString(second))#*/$t.box(/*#NativeString(first) + NativeString(second))#*/$t.unbox(/*#first) + NativeString(second))#*/first) + /*#NativeString(second))#*/$t.unbox(/*#second))#*/second), /*#String(NativeString(first) + NativeString(second))#*/$g.____testlib.basictypes.String));
+          $resolve(/*#String(NativeString(first) + NativeString(second))#*/$t.fastbox(/*#first) + NativeString(second))#*/first.$wrapped + /*#second))#*/second.$wrapped, /*#String(NativeString(first) + NativeString(second))#*/$g.____testlib.basictypes.String));
           return;
         };
         return $promise.new($continue);
@@ -1930,13 +2042,23 @@ this.Serulian = function ($global) {
         var $this = this;
         var $current = 0;
         var $continue = function ($resolve, $reject) {
-          $resolve(/*#Integer(NativeString(this).length)#*/$t.box(/*#NativeString(this).length)#*/$t.unbox(/*#this).length)#*/$this).length, /*#Integer(NativeString(this).length)#*/$g.____testlib.basictypes.Integer));
+          $resolve(/*#Integer(NativeString(this).length)#*/$t.fastbox(/*#this).length)#*/$this.$wrapped.length, /*#Integer(NativeString(this).length)#*/$g.____testlib.basictypes.Integer));
           return;
         };
         return $promise.new($continue);
       });
       this.$typesig = function () {
-        return $t.createtypesig(['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['plus', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['MapKey', 3, $g.____testlib.basictypes.Stringable.$typeref()], ['Length', 3, $g.____testlib.basictypes.Integer.$typeref()]);
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "String|2|29dc432d<538656f2>": true,
+          "equals|4|29dc432d<5ab5941e>": true,
+          "plus|4|29dc432d<538656f2>": true,
+          "MapKey|3|f56564e1": true,
+          "Length|3|c44e6c87": true,
+        };
+        return this.$cachedtypesig = computed;
       };
     });
 
@@ -1951,19 +2073,17 @@ this.Serulian = function ($global) {
         while (true) {
           switch ($current) {
             case 0:
-              result = /*#''#*/$t.box(/*#''#*/'', /*#''#*/$g.____testlib.basictypes.String);
+              result = /*#''#*/$t.fastbox(/*#''#*/'', /*#''#*/$g.____testlib.basictypes.String);
               $current = 1;
               continue;
 
             case 1:
-/*#pieces.Length - 1) {#*/              pieces.Length().then(/*#pieces.Length - 1) {#*/function (/*#pieces.Length - 1) {#*/$result2) /*#pieces.Length - 1) {#*/{
-                return /*#pieces.Length - 1) {#*/$g.____testlib.basictypes.Integer.$minus(/*#pieces.Length - 1) {#*/$result2, /*#1) {#*/$t.box(/*#1) {#*/1, /*#1) {#*/$g.____testlib.basictypes.Integer)).then(/*#1) {#*/function (/*#1) {#*/$result1) /*#1) {#*/{
-                  return /*#0 .. (pieces.Length - 1) {#*/$g.____testlib.basictypes.Integer.$range(/*#0 .. (pieces.Length - 1) {#*/$t.box(/*#0 .. (pieces.Length - 1) {#*/0, /*#0 .. (pieces.Length - 1) {#*/$g.____testlib.basictypes.Integer), /*#pieces.Length - 1) {#*/$result1).then(/*#pieces.Length - 1) {#*/function (/*#pieces.Length - 1) {#*/$result0) /*#pieces.Length - 1) {#*/{
-                    $result = /*#0 .. (pieces.Length - 1) {#*/$result0;
-                    $current = 2;
-                    $continue($resolve, $reject);
-                    return;
-                  });
+/*#pieces.Length - 1) {#*/              pieces.Length().then(/*#pieces.Length - 1) {#*/function (/*#pieces.Length - 1) {#*/$result1) /*#pieces.Length - 1) {#*/{
+                return /*#0 .. (pieces.Length - 1) {#*/$g.____testlib.basictypes.Integer.$range(/*#0 .. (pieces.Length - 1) {#*/$t.fastbox(/*#0 .. (pieces.Length - 1) {#*/0, /*#0 .. (pieces.Length - 1) {#*/$g.____testlib.basictypes.Integer), /*#pieces.Length - 1) {#*/$t.fastbox(/*#pieces.Length - 1) {#*/$result1.$wrapped - /*#pieces.Length - 1) {#*/1, /*#pieces.Length - 1) {#*/$g.____testlib.basictypes.Boolean)).then(/*#pieces.Length - 1) {#*/function (/*#pieces.Length - 1) {#*/$result0) /*#pieces.Length - 1) {#*/{
+                  $result = /*#0 .. (pieces.Length - 1) {#*/$result0;
+                  $current = 2;
+                  $continue($resolve, $reject);
+                  return;
                 });
               }).catch(function (err) {
                 $reject(err);
@@ -1991,7 +2111,7 @@ this.Serulian = function ($global) {
 
             case 4:
 /*#i in 0 .. (pieces.Length - 1) {#*/              i = /*#i in 0 .. (pieces.Length - 1) {#*/$temp0.First;
-              if (/*#for i in 0 .. (pieces.Length - 1) {#*/$t.unbox(/*#for i in 0 .. (pieces.Length - 1) {#*/$temp0.Second)) /*#for i in 0 .. (pieces.Length - 1) {#*/{
+              if (/*#for i in 0 .. (pieces.Length - 1) {#*/$temp0.Second.$wrapped) /*#for i in 0 .. (pieces.Length - 1) {#*/{
                 $current = 5;
                 continue;
               } else {
@@ -2016,13 +2136,11 @@ this.Serulian = function ($global) {
               return;
 
             case 6:
-/*#values.Length {#*/              values.Length().then(/*#values.Length {#*/function (/*#values.Length {#*/$result1) /*#values.Length {#*/{
-                return /*#i < values.Length {#*/$g.____testlib.basictypes.Integer.$compare(/*#i < values.Length {#*/i, /*#values.Length {#*/$result1).then(/*#values.Length {#*/function (/*#values.Length {#*/$result0) /*#values.Length {#*/{
-                  $result = /*#i < values.Length {#*/$t.unbox(/*#i < values.Length {#*/$result0) < /*#i < values.Length {#*/0;
-                  $current = 7;
-                  $continue($resolve, $reject);
-                  return;
-                });
+/*#values.Length {#*/              values.Length().then(/*#values.Length {#*/function (/*#values.Length {#*/$result0) /*#values.Length {#*/{
+                $result = /*#i < values.Length {#*/i.$wrapped < /*#values.Length {#*/$result0.$wrapped;
+                $current = 7;
+                $continue($resolve, $reject);
+                return;
               }).catch(function (err) {
                 $reject(err);
                 return;
@@ -2110,7 +2228,7 @@ this.Serulian = function ($global) {
 
               case 3:
 /*#item in stream {#*/                item = /*#item in stream {#*/$temp0.First;
-                if (/*#for item in stream {#*/$t.unbox(/*#for item in stream {#*/$temp0.Second)) /*#for item in stream {#*/{
+                if (/*#for item in stream {#*/$temp0.Second.$wrapped) /*#for item in stream {#*/{
                   $current = 4;
                   continue;
                 } else {
@@ -2162,16 +2280,14 @@ this.Serulian = function ($global) {
         while (true) {
           switch ($current) {
             case 0:
-              foo = /*#1#*/$t.box(/*#1#*/1, /*#1#*/$g.____testlib.basictypes.Integer);
-              bar = /*#'hi there!'#*/$t.box(/*#'hi there!'#*/'hi there!', /*#'hi there!'#*/$g.____testlib.basictypes.String);
-/*#foo == 2 && bar == 'hello world'#*/              $g.____testlib.basictypes.Integer.$equals(/*#foo == 2 && bar == 'hello world'#*/foo, /*#2 && bar == 'hello world'#*/$t.box(/*#2 && bar == 'hello world'#*/2, /*#2 && bar == 'hello world'#*/$g.____testlib.basictypes.Integer)).then(/*#2 && bar == 'hello world'#*/function (/*#2 && bar == 'hello world'#*/$result1) /*#2 && bar == 'hello world'#*/{
-                return /*#foo == 2 && bar == 'hello world'#*/$promise.resolve(/*#foo == 2 && bar == 'hello world'#*/$t.unbox(/*#foo == 2 && bar == 'hello world'#*/$result1)).then(/*#foo == 2 && bar == 'hello world'#*/function (/*#foo == 2 && bar == 'hello world'#*/$result0) /*#foo == 2 && bar == 'hello world'#*/{
-                  return /*#foo == 2 && bar == 'hello world'#*/(/*#foo == 2 && bar == 'hello world'#*/$promise.shortcircuit(/*#foo == 2 && bar == 'hello world'#*/$result0, /*#foo == 2 && bar == 'hello world'#*/true) || /*#bar == 'hello world'#*/$g.____testlib.basictypes.String.$equals(/*#bar == 'hello world'#*/bar, /*#'hello world'#*/$t.box(/*#'hello world'#*/'hello world', /*#'hello world'#*/$g.____testlib.basictypes.String))).then(/*#'hello world'#*/function (/*#'hello world'#*/$result2) /*#'hello world'#*/{
-                    $result = /*#foo == 2 && bar == 'hello world'#*/$t.box(/*#foo == 2 && bar == 'hello world'#*/$result0 && /*#foo == 2 && bar == 'hello world'#*/$t.unbox(/*#bar == 'hello world'#*/$result2), /*#foo == 2 && bar == 'hello world'#*/$g.____testlib.basictypes.Boolean);
-                    $current = 1;
-                    $continue($resolve, $reject);
-                    return;
-                  });
+              foo = /*#1#*/$t.fastbox(/*#1#*/1, /*#1#*/$g.____testlib.basictypes.Integer);
+              bar = /*#'hi there!'#*/$t.fastbox(/*#'hi there!'#*/'hi there!', /*#'hi there!'#*/$g.____testlib.basictypes.String);
+/*#foo == 2 && bar == 'hello world'#*/              $promise.resolve(/*#foo == 2 && bar == 'hello world'#*/foo.$wrapped == /*#foo == 2 && bar == 'hello world'#*/2).then(/*#foo == 2 && bar == 'hello world'#*/function (/*#foo == 2 && bar == 'hello world'#*/$result0) /*#foo == 2 && bar == 'hello world'#*/{
+                return /*#foo == 2 && bar == 'hello world'#*/(/*#foo == 2 && bar == 'hello world'#*/$promise.shortcircuit(/*#foo == 2 && bar == 'hello world'#*/$result0, /*#foo == 2 && bar == 'hello world'#*/true) || /*#bar == 'hello world'#*/$g.____testlib.basictypes.String.$equals(/*#bar == 'hello world'#*/bar, /*#'hello world'#*/$t.fastbox(/*#'hello world'#*/'hello world', /*#'hello world'#*/$g.____testlib.basictypes.String))).then(/*#'hello world'#*/function (/*#'hello world'#*/$result1) /*#'hello world'#*/{
+                  $result = /*#foo == 2 && bar == 'hello world'#*/$t.fastbox(/*#foo == 2 && bar == 'hello world'#*/$result0 && /*#bar == 'hello world'#*/$result1.$wrapped, /*#foo == 2 && bar == 'hello world'#*/$g.____testlib.basictypes.Boolean);
+                  $current = 1;
+                  $continue($resolve, $reject);
+                  return;
                 });
               }).catch(function (err) {
                 $reject(err);

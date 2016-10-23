@@ -10,7 +10,7 @@ $module('castrejection', function () {
       while (true) {
         switch ($current) {
           case 0:
-            somevalue = $t.box('hello', $g.____testlib.basictypes.String);
+            somevalue = $t.fastbox('hello', $g.____testlib.basictypes.String);
             $promise.new(function ($resolve) {
               $resolve($t.cast(somevalue, $g.____testlib.basictypes.Integer, false));
             }).then(function ($result0) {
@@ -30,7 +30,7 @@ $module('castrejection', function () {
 
           case 1:
             $promise.resolve(a == null).then(function ($result0) {
-              $result = $t.box($result0 && !(b == null), $g.____testlib.basictypes.Boolean);
+              $result = $t.fastbox($result0 && !(b == null), $g.____testlib.basictypes.Boolean);
               $current = 2;
               $continue($resolve, $reject);
               return;

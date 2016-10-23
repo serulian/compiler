@@ -1,6 +1,6 @@
 $module('interface', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('87868828', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -11,24 +11,36 @@ $module('interface', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box(42, $g.____testlib.basictypes.Integer));
+        $resolve($t.fastbox(42, $g.____testlib.basictypes.Integer));
         return;
       };
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      return $t.createtypesig(['SomeValue', 3, $g.____testlib.basictypes.Integer.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.interface.SomeClass).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "SomeValue|3|c44e6c87": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 
-  this.$interface('Valuable', false, '', function () {
+  this.$interface('0c7df867', 'Valuable', false, '', function () {
     var $static = this;
     this.$typesig = function () {
-      return $t.createtypesig(['SomeValue', 3, $g.____testlib.basictypes.Integer.$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "SomeValue|3|c44e6c87": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 
-  this.$type('Valued', false, '', function () {
+  this.$type('76c61a88', 'Valued', false, '', function () {
     var $instance = this.prototype;
     var $static = this;
     this.$box = function ($wrapped) {
@@ -47,7 +59,7 @@ $module('interface', function () {
         while (true) {
           switch ($current) {
             case 0:
-              $t.unbox($this).SomeValue().then(function ($result0) {
+              $this.$wrapped.SomeValue().then(function ($result0) {
                 $result = $result0;
                 $current = 1;
                 $continue($resolve, $reject);
@@ -71,7 +83,13 @@ $module('interface', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['GetValue', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Integer).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "GetValue|2|29dc432d<c44e6c87>": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 
@@ -98,13 +116,11 @@ $module('interface', function () {
           case 1:
             sc = $result;
             v = sc;
-            $t.box(v, $g.interface.Valued).GetValue().then(function ($result1) {
-              return $g.____testlib.basictypes.Integer.$equals($result1, $t.box(42, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-                $result = $result0;
-                $current = 2;
-                $continue($resolve, $reject);
-                return;
-              });
+            $t.fastbox(v, $g.interface.Valued).GetValue().then(function ($result0) {
+              $result = $t.fastbox($result0.$wrapped == 42, $g.____testlib.basictypes.Boolean);
+              $current = 2;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
               $reject(err);
               return;

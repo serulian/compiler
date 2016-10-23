@@ -11,7 +11,7 @@ $module('nochildren', function () {
       while (true) {
         switch ($current) {
           case 0:
-            found = $t.box(true, $g.____testlib.basictypes.Boolean);
+            found = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
             $current = 1;
             continue;
 
@@ -35,7 +35,7 @@ $module('nochildren', function () {
 
           case 3:
             value = $temp0.First;
-            if ($t.unbox($temp0.Second)) {
+            if ($temp0.Second.$wrapped) {
               $current = 4;
               continue;
             } else {
@@ -45,7 +45,7 @@ $module('nochildren', function () {
             break;
 
           case 4:
-            found = $t.box(false, $g.____testlib.basictypes.Boolean);
+            found = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
             $current = 2;
             continue;
 

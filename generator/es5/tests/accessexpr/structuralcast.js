@@ -1,6 +1,6 @@
 $module('structuralcast', function () {
   var $static = this;
-  this.$class('BaseClass', true, '', function (T) {
+  this.$class('fa55db57', 'BaseClass', true, '', function (T) {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -11,17 +11,23 @@ $module('structuralcast', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+        $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
         return;
       };
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      return $t.createtypesig(['Result', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.structuralcast.BaseClass(T)).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Result|3|5ab5941e": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 
-  this.$class('SomeClass', false, '', function () {
+  this.$class('5a5a0b35', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -38,13 +44,19 @@ $module('structuralcast', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box(false, $g.____testlib.basictypes.Boolean));
+        $resolve($t.fastbox(false, $g.____testlib.basictypes.Boolean));
         return;
       };
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      return $t.createtypesig(['Result', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.structuralcast.SomeClass).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Result|3|5ab5941e": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 

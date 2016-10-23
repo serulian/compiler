@@ -1,6 +1,6 @@
 $module('requiredcomposition', function () {
   var $static = this;
-  this.$class('First', false, '', function () {
+  this.$class('ca41b700', 'First', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function (FirstValue) {
@@ -9,11 +9,12 @@ $module('requiredcomposition', function () {
       return $promise.resolve(instance);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.requiredcomposition.First).$typeref()]);
+      return {
+      };
     };
   });
 
-  this.$class('Second', false, '', function () {
+  this.$class('ea789272', 'Second', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function (SecondValue) {
@@ -22,11 +23,12 @@ $module('requiredcomposition', function () {
       return $promise.resolve(instance);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.requiredcomposition.Second).$typeref()]);
+      return {
+      };
     };
   });
 
-  this.$class('SomeClass', false, '', function () {
+  this.$class('4e195caf', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function (FirstValue, SecondValue) {
@@ -59,7 +61,8 @@ $module('requiredcomposition', function () {
       },
     });
     this.$typesig = function () {
-      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.requiredcomposition.SomeClass).$typeref()]);
+      return {
+      };
     };
   });
 
@@ -71,7 +74,7 @@ $module('requiredcomposition', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.requiredcomposition.SomeClass.new($t.box(42, $g.____testlib.basictypes.Integer), $t.box('hello', $g.____testlib.basictypes.String)).then(function ($result0) {
+            $g.requiredcomposition.SomeClass.new($t.fastbox(42, $g.____testlib.basictypes.Integer), $t.fastbox('hello', $g.____testlib.basictypes.String)).then(function ($result0) {
               $result = $result0;
               $current = 1;
               $continue($resolve, $reject);
@@ -84,14 +87,12 @@ $module('requiredcomposition', function () {
 
           case 1:
             sc = $result;
-            $g.____testlib.basictypes.Integer.$equals(sc.FirstValue, $t.box(42, $g.____testlib.basictypes.Integer)).then(function ($result1) {
-              return $promise.resolve($t.unbox($result1)).then(function ($result0) {
-                return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.String.$equals(sc.SecondValue, $t.box('hello', $g.____testlib.basictypes.String))).then(function ($result2) {
-                  $result = $t.box($result0 && $t.unbox($result2), $g.____testlib.basictypes.Boolean);
-                  $current = 2;
-                  $continue($resolve, $reject);
-                  return;
-                });
+            $promise.resolve(sc.FirstValue.$wrapped == 42).then(function ($result0) {
+              return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.String.$equals(sc.SecondValue, $t.fastbox('hello', $g.____testlib.basictypes.String))).then(function ($result1) {
+                $result = $t.fastbox($result0 && $result1.$wrapped, $g.____testlib.basictypes.Boolean);
+                $current = 2;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
               $reject(err);

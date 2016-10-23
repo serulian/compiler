@@ -1,6 +1,6 @@
 {
-    "4218cfb525038742bd41b9a8bfd07444": {
-        "Key": "4218cfb525038742bd41b9a8bfd07444",
+    "5442b26c8c82fc2d6eac22fc13e8e278": {
+        "Key": "5442b26c8c82fc2d6eac22fc13e8e278",
         "Kind": 3,
         "Children": {
             "136a0e2216c17315aaa928e1baa31031": {
@@ -62,11 +62,12 @@
             "tdg-node-kind": "3|NodeType|tdg",
             "tdg-source-module": "tests/basic.webidl",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "SomeInterface",
             "tdg-type-name": "SomeInterface"
         }
     },
-    "e4053416b00b8a5f29186f3ea280c954": {
-        "Key": "e4053416b00b8a5f29186f3ea280c954",
+    "6cd2b50b1877ac2fd6fa373a4eff62c0": {
+        "Key": "6cd2b50b1877ac2fd6fa373a4eff62c0",
         "Kind": 3,
         "Children": {
             "5f19d3696f784203c7ba09c6565cc177": {
@@ -88,17 +89,19 @@
             "tdg-node-kind": "3|NodeType|tdg",
             "tdg-source-module": "tests/basic.webidl",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "Object",
             "tdg-type-name": "Object"
         }
     },
-    "fc5f4e0f32e185c28a4b2cc3a0a789f5": {
-        "Key": "fc5f4e0f32e185c28a4b2cc3a0a789f5",
+    "a822993a4d2f96c5bbd62ad073732a5a": {
+        "Key": "a822993a4d2f96c5bbd62ad073732a5a",
         "Kind": 3,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
             "tdg-source-module": "tests/basic.webidl",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "AnotherType",
             "tdg-type-name": "AnotherType"
         }
     }

@@ -1,0 +1,27 @@
+class SomeClass<T> {
+	function<T?> Something() {
+		return null;
+	}
+}
+
+class A {}
+class B {}
+
+interface ASomething {
+	function<A?> Something()
+}
+
+interface BSomething {
+	function<B?> Something()
+}
+
+function<any> TEST() {
+	var asc = SomeClass<A>.new()
+	var asc2 = SomeClass<A>.new()
+	var bsc = SomeClass<B>.new()
+
+	asc.(ASomething)
+	asc2.(ASomething)
+	bsc.(BSomething)
+	return true
+}

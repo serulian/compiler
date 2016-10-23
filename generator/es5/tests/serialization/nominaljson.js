@@ -1,6 +1,6 @@
 $module('nominaljson', function () {
   var $static = this;
-  this.$type('SomeNominal', false, '', function () {
+  this.$type('4a09c49b', 'SomeNominal', false, '', function () {
     var $instance = this.prototype;
     var $static = this;
     this.$box = function ($wrapped) {
@@ -21,51 +21,79 @@ $module('nominaljson', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['GetValue', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "GetValue|2|29dc432d<5ab5941e>": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 
-  this.$struct('AnotherStruct', false, '', function () {
+  this.$struct('c267cdf9', 'AnotherStruct', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function (AnotherBool) {
       var instance = new $static();
-      instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         AnotherBool: AnotherBool,
       };
+      instance.$markruntimecreated();
       return $promise.resolve(instance);
     };
     $static.$fields = [];
     $t.defineStructField($static, 'AnotherBool', 'AnotherBool', function () {
       return $g.____testlib.basictypes.Boolean;
-    }, true, function () {
+    }, function () {
       return $g.____testlib.basictypes.Boolean;
     }, false);
     this.$typesig = function () {
-      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.nominaljson.AnotherStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.nominaljson.AnotherStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['Clone', 2, $g.____testlib.basictypes.Function($g.nominaljson.AnotherStruct).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Parse|1|29dc432d<c267cdf9>": true,
+        "equals|4|29dc432d<5ab5941e>": true,
+        "Stringify|2|29dc432d<538656f2>": true,
+        "Mapping|2|29dc432d<df58fcbd<any>>": true,
+        "Clone|2|29dc432d<c267cdf9>": true,
+        "String|2|29dc432d<538656f2>": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 
-  this.$struct('SomeStruct', false, '', function () {
+  this.$struct('2904f0f0', 'SomeStruct', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function (Nested) {
       var instance = new $static();
-      instance.$unboxed = false;
       instance[BOXED_DATA_PROPERTY] = {
         Nested: Nested,
       };
+      instance.$markruntimecreated();
       return $promise.resolve(instance);
     };
     $static.$fields = [];
     $t.defineStructField($static, 'Nested', 'Nested', function () {
       return $g.nominaljson.SomeNominal;
-    }, true, function () {
+    }, function () {
       return $g.nominaljson.SomeNominal;
     }, false);
     this.$typesig = function () {
-      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.nominaljson.SomeStruct).$typeref()], ['Parse', 1, $g.____testlib.basictypes.Function($g.nominaljson.SomeStruct).$typeref()], ['equals', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['Stringify', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()], ['Mapping', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Mapping($t.any)).$typeref()], ['Clone', 2, $g.____testlib.basictypes.Function($g.nominaljson.SomeStruct).$typeref()], ['String', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.String).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Parse|1|29dc432d<2904f0f0>": true,
+        "equals|4|29dc432d<5ab5941e>": true,
+        "Stringify|2|29dc432d<538656f2>": true,
+        "Mapping|2|29dc432d<df58fcbd<any>>": true,
+        "Clone|2|29dc432d<2904f0f0>": true,
+        "String|2|29dc432d<538656f2>": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 
@@ -80,7 +108,7 @@ $module('nominaljson', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.nominaljson.AnotherStruct.new($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
+            $g.nominaljson.AnotherStruct.new($t.fastbox(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
               return $g.nominaljson.SomeStruct.new($t.box($result1, $g.nominaljson.SomeNominal)).then(function ($result0) {
                 $result = $result0;
                 $current = 1;
@@ -95,7 +123,7 @@ $module('nominaljson', function () {
 
           case 1:
             s = $result;
-            jsonString = $t.box('{"Nested":{"AnotherBool":true}}', $g.____testlib.basictypes.String);
+            jsonString = $t.fastbox('{"Nested":{"AnotherBool":true}}', $g.____testlib.basictypes.String);
             s.Stringify($g.____testlib.basictypes.JSON)().then(function ($result1) {
               return $g.____testlib.basictypes.String.$equals($result1, jsonString).then(function ($result0) {
                 $result = $result0;
@@ -124,9 +152,9 @@ $module('nominaljson', function () {
 
           case 3:
             parsed = $result;
-            $promise.resolve($t.unbox(correct)).then(function ($result0) {
+            $promise.resolve(correct.$wrapped).then(function ($result0) {
               return ($promise.shortcircuit($result0, true) || parsed.Nested.GetValue()).then(function ($result1) {
-                $result = $t.box($result0 && $t.unbox($result1), $g.____testlib.basictypes.Boolean);
+                $result = $t.fastbox($result0 && $result1.$wrapped, $g.____testlib.basictypes.Boolean);
                 $current = 4;
                 $continue($resolve, $reject);
                 return;

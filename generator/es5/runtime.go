@@ -27,11 +27,7 @@ this.Serulian = (function($global) {
   $global.__serulian_internal = {
     // autoUnbox automatically unboxes ES primitives into their raw data.
     'autoUnbox': function(k, v) {
-        if (v != null) {
-          return $t.unbox(v);
-        }
-
-        return v;
+      return $t.unbox(v);
     },
 
     // autoBox automatically boxes ES primitives into their associated normal Serulian nominal types.
@@ -43,24 +39,24 @@ this.Serulian = (function($global) {
       switch (typeName) {
         case 'object':
           if (k != '') {
-            return $t.box(v, $a.mapping($t.any));
+            return $t.fastbox(v, $a.mapping($t.any));
           }
           break;
 
         case 'array':
-          return $t.box(v, $a.slice($t.any));
+          return $t.fastbox(v, $a.slice($t.any));
 
         case 'boolean':
-          return $t.box(v, $a.bool);
+          return $t.fastbox(v, $a.bool);
 
         case 'string':
-          return $t.box(v, $a.string);
+          return $t.fastbox(v, $a.string);
 
         case 'number':
           if (Math.ceil(v) == v) {
-            return $t.box(v, $a.int);
+            return $t.fastbox(v, $a.int);
           }
-          return $t.box(v, $a.float64);
+          return $t.fastbox(v, $a.float64);
       }
       return v;
     }
@@ -81,6 +77,7 @@ this.Serulian = (function($global) {
   // real implementation (such as 'any', 'void', 'null', etc).
   var $it = function(name, typeIndex) {
       var tpe = new Function("return function " + name + "() {};")();
+      tpe.$typeId = typeIndex;
       tpe.$typeref = function() {
         return {
           'i': typeIndex
@@ -107,6 +104,23 @@ this.Serulian = (function($global) {
     // toESType returns the ECMAScript type of the given object.
     'toESType': function(obj) {
       return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()
+    },
+
+    // From: http://stackoverflow.com/a/15714445
+    'functionName': function(func) {
+      if (func.name) {
+        return func.name;
+      }
+
+      var ret = func.toString();
+      ret = ret.substr('function '.length);
+      ret = ret.substr(0, ret.indexOf('('));
+      return ret;
+    },
+
+    // typeid returns the globally unique ID for the given type.
+    'typeid': function(type) {
+      return type.$typeId || $t.functionName(type);
     },
 
     // buildDataForValue builds an object containing the given value in its unboxed form,
@@ -150,12 +164,23 @@ this.Serulian = (function($global) {
     },
 
     // box wraps an object with a nominal or structural type.
-    'box': function(instance, type, opt_external) {
+    'box': function(instance, type) {
       if (instance == null) {
         return null;
       }
+
+      if (instance.constructor == type) {
+        return instance;
+      }
       
-      return type.$box($t.unbox(instance), opt_external)
+      return type.$box($t.unbox(instance));
+    },
+
+    // fastbox wraps an object with a nominal or structural type, without first
+    // unboxing or null checking. This method will fail if those two assumptions
+    // are not correct.
+    'fastbox': function(instance, type) {
+      return type.$box(instance);
     },
 
     // roottype returns the root type of the given type. If the type is a nominal
@@ -168,86 +193,102 @@ this.Serulian = (function($global) {
       return type;
     },
 
-    // istype returns true if the specified value can be cast to the given type.
+    // istype returns true if the specified value can be used in place of the given type.
     'istype': function(value, type) {
-      // TODO: optimize this.
-      try {
-        $t.cast(value, type, false);
+      // Quick check to see if it matches directly or is 'any'.
+      if (type == $t.any || (value != null && (value.constructor == type || value instanceof type))) {
         return true;
-      } catch (e) {
-        return false;
+      }
+
+      // Quick check for struct.
+      if (type == $t.struct) {
+        // Find the root type of the current value's type. If it is structural or a serializable
+        // native type, then we can cast it to struct.
+        var roottype = $t.roottype(value.constructor);
+        return (roottype.$typekind == 'struct' || 
+                roottype == Number ||
+                roottype == String ||
+                roottype == Boolean ||
+                roottype == Object);
+      }
+
+      // Quick check for function.
+      // TODO: this needs to properly check the function's parameter and return types
+      // once that information is added to the value. For now, we just make sure we have
+      // a function.
+      if (type.$generic == $a['function'] && typeof value == 'function') {
+        return value;
+      }
+
+      var targetKind = type.$typekind;
+      switch (targetKind) {
+        case 'struct':
+        case 'type':
+        case 'class':
+          // Direct matching is the requirement.
+          return false;
+
+        case 'interface':
+          // Check if the other type implements the interface by comparing type signatures.
+          var targetSignature = type.$typesig();
+          var valueSignature = value.constructor.$typesig();
+
+          var expectedKeys = Object.keys(targetSignature);
+          for (var i = 0; i < expectedKeys.length; ++i) {
+            var expectedKey = expectedKeys[i];
+            if (valueSignature[expectedKey] !== true) {
+              return false;
+            }
+          }
+          return true;
+
+        default:
+          return false;
       }
     },
 
     // cast performs a cast of the given value to the given type, throwing on
     // failure.
     'cast': function(value, type, opt_allownull) {
-      // Quick check for any.
-      if (type == $t.any) {
-        return value;
-      }
-
-      // Quick check to see if cast checking is necessary.
-      if (type == null || (value != null && (value.constructor == type || value instanceof type))) {
-        return value;
-      }
-      
-      // Quick check for function.
-      // TODO: this needs to properly check the function's parameter and return types
-      // once that information is added to the value. For now, we just make sure we have
-      // a function.
-      if (typeof value == 'function' && type.$generic == $a['function']) {
-        return value;
-      }
-
-      // Handle the null to non-nullable case.
-      var castKind = type.$typekind;
+      // Ensure that we don't cast to non-nullable if null.
       if (value == null && !opt_allownull) {
         throw Error('Cannot cast null value to ' + type.toString())        
       }
 
-      // Handle the cast-Object-to-struct case
-      if (castKind == 'struct' && value.constructor == Object) {
-        // Note: This cast can result in us getting a struct over invalid data, but
-        // the struct will ensure it is correct anyway, so this is allowed.
+      // Check if the type matches directly.
+      if ($t.istype(value, type)) {
         return value;
       }
 
-      // At this point, we can only cast native types to nominal types with auto-boxing.
-      var valueKind = value.constructor.$typekind;
-      if (!valueKind && castKind != 'type') {
-        // Native type.
-        throw Error('Cannot cast native type to non-nominal type')
-      }
-
-      switch (castKind) {
-        case 'class':
+      // Otherwise handle some cast-only cases and errors.
+      var targetKind = type.$typekind;
+      switch (targetKind) {
         case 'struct':
-          // Value type must be a struct or class. Since we check for equality above,
-          // this must fail.
-          throw Error('Cannot cast ' + value.constructor.toString() + ' to ' + type.toString())
+          // Note: This cast can result in us getting a struct over invalid data, but
+          // the struct will ensure it is correct anyway, so this is allowed.
+          if (value.constructor == Object) {
+            break;
+          }
+
+          throw Error('Cannot cast ' + value.constructor.toString() + ' to ' + type.toString());
+
+        case 'class':
+        case 'interface':
+          // Since we check for equality above, this must fail.
+          throw Error('Cannot cast ' + value.constructor.toString() + ' to ' + type.toString());
 
         case 'type':
           // Casting only is allowed if the nominal and the existing value's
           // type have the same root type.
           if ($t.roottype(value.constructor) != $t.roottype(type)) {
-            throw Error('Cannot auto-box ' + value.constructor.toString() + ' to ' + type.toString())
+            throw Error('Cannot auto-box ' + value.constructor.toString() + ' to ' + type.toString());
           }
           break;
 
-        case 'interface':
-          // Check if the other type implements the interface by comparing type signatures.
-          var castSignature = type.$typesig();
-          var valueSignature = value.constructor.$typesig();
-
-          var expectedKeys = Object.keys(castSignature);
-          for (var i = 0; i < expectedKeys.length; ++i) {
-            var expectedKey = expectedKeys[i];
-            if (valueSignature[expectedKey] !== true) {
-              throw Error('Cannot cast ' + value.constructor.toString() + ' to ' + type.toString())              
-            }
-          }
-          break;
+        case undefined:
+          // Cannot cast a non-native type to a native type. The native-to-native check occurs in
+          // istype above.
+          throw Error((('Cannot cast ' + value.constructor.toString()) + ' to ') + type.toString());
       }
 
       // Automatically box if necessary.
@@ -258,40 +299,26 @@ this.Serulian = (function($global) {
       return value
     },
 
-    // createtypesig returns an object with the type signature strings for the given
-    // piece entries (as arguments) as defined by the $typesig method on a type.
-    'createtypesig': function() {
-      var sig = {};
-      for (var i = 0; i < arguments.length; ++i) {
-        var entry = arguments[i];
-        var key = entry[0] + ':' + entry[1] + ':' + JSON.stringify(entry[2]);
-        sig[key] = true;
-      }
-
-      return sig;
-    },
-
     // equals performs a comparison of the two values by calling the $equals operator on the
     // values, if any. Otherwise, uses a simple reference comparison.
     'equals': function(left, right, type) {
+      // Check for direct equality.
       if (left === right) {
-        return $promise.resolve($t.box(true, $a['bool']));
+        return $promise.resolve($t.fastbox(true, $a['bool']));
       }
 
+      // Check for null.
       if (left == null || right == null) {
-        return $promise.resolve($t.box(false, $a['bool']));
+        return $promise.resolve($t.fastbox(false, $a['bool']));
       }
 
-      // If we have a native value, compare directly.
-      if ($t.toESType(left) != 'object') {
-        return $promise.resolve($t.box(left === right, $a['bool']));
-      }
-
+      // Check for defined equals operator.
       if (type.$equals) {
         return type.$equals($t.box(left, type), $t.box(right, type));
       }
 
-      return $promise.resolve($t.box(false, $a['bool']));
+      // Otherwise we cannot compare, so we treat the objects as not equal.
+      return $promise.resolve($t.fastbox(false, $a['bool']));
     },
 
     // ensurevalue ensures that the given value is of the given type. If not,
@@ -384,19 +411,37 @@ this.Serulian = (function($global) {
     },
 
     // defineStructField defines a new field on a structural type.
-    'defineStructField': function(structType, name, serializableName, typeref, isBoxed, opt_nominalRootType, opt_nullAllowed) {
-      structType.$fields.push({
+    'defineStructField': function(structType, name, serializableName, typeref, opt_nominalRootType, opt_nullAllowed) {
+      var field = {
         'name': name,
         'serializableName': serializableName,
         'typeref': typeref,
         'nominalRootTyperef': opt_nominalRootType || typeref,
-        'isBoxed': isBoxed,
         'nullAllowed': opt_nullAllowed
-      });
+      };
+      structType.$fields.push(field);
 
       Object.defineProperty(structType.prototype, name, {
         get: function() {
-          return this[BOXED_DATA_PROPERTY][name];
+          // If the underlying object was not created by the runtime, then we must typecheck
+          // to be safe when accessing the field.
+          var boxedData = this[BOXED_DATA_PROPERTY];
+          if (!boxedData.$runtimecreated) {
+            if (!this.$lazychecked[field.name]) {
+              $t.ensurevalue($t.unbox(boxedData[field.serializableName]), field.nominalRootTyperef(), field.nullAllowed, field.name);
+              this.$lazychecked[field.name] = true;
+            }
+
+            var fieldType = field.typeref();
+            if (fieldType.$box) {
+              return $t.box(boxedData[field.serializableName], fieldType);
+            } else {
+              return boxedData[field.serializableName];
+            }
+          }
+
+          // Otherwise, simply return the field.
+          return boxedData[name];
         },
 
         set: function(value) {
@@ -419,7 +464,12 @@ this.Serulian = (function($global) {
       if (!$__currentScriptSrc) {
         return function() {
           var $this = this;
-          var args = arguments;
+
+          // Reference: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
+          var args = new Array(arguments.length);
+          for (var i = 0; i < args.length; ++i) {
+              args[i] = arguments[i];
+          }
 
           var promise = new Promise(function(resolve, reject) {
             $global.setTimeout(function() {
@@ -630,11 +680,11 @@ this.Serulian = (function($global) {
             }
 
             var $yield = function (value) {
-              $a['tuple']($t.any, $a['bool']).Build(value, true).then(resolve);
+              $a['tuple']($t.any, $a['bool']).Build(value, $t.fastbox(true, $a['bool'])).then(resolve);
             };
-
+            
             var $done = function () {
-              $a['tuple']($t.any, $a['bool']).Build(null, false).then(resolve);
+              $a['tuple']($t.any, $a['bool']).Build(null, $t.fastbox(false, $a['bool'])).then(resolve);
             };
 
             var $yieldin = function (ins) {
@@ -720,15 +770,21 @@ this.Serulian = (function($global) {
     // $newtypebuilder is a helper function for creating types of a particular kind. Returns
     // a function that can be used to create a type of the specified kind.
     var $newtypebuilder = function(kind) {
-      return function(name, hasGenerics, alias, creator) {
-        var buildType = function(n, args) {
+      return function(typeId, name, hasGenerics, alias, creator) {
+        var buildType = function(fullTypeId, fullName, args) {
           var args = args || [];
 
           // Create the type function itself, with the type's name.
-          var tpe = new Function("return function " + n + "() {};")();
+          var tpe = new Function("return function " + fullName + "() {};")();
 
           // Add a way to retrieve a type ref for the type.
           tpe.$typeref = function() {
+            if (!hasGenerics) {
+              return {
+                't': moduleName + '.' + name
+              };
+            }
+
             var generics = [];
             for (var i = 0; i < args.length; ++i) {
               generics.push(args[i].$typeref())
@@ -740,6 +796,7 @@ this.Serulian = (function($global) {
             };
           };
 
+          tpe.$typeId = fullTypeId;
           tpe.$typekind = kind;
 
           // Build the type's static and prototype.
@@ -752,32 +809,22 @@ this.Serulian = (function($global) {
               var instance = new tpe();
               instance[BOXED_DATA_PROPERTY] = data;
               instance.$lazychecked = {};
-              instance.$unboxed = true;
-
-              // Override the getters to lazy check and auto-box where necessary.
-              tpe.$fields.forEach(function(field) {
-                Object.defineProperty(instance, field.name, {
-                  get: function() {
-                    if (!this.$lazychecked[field.name]) {
-                      $t.ensurevalue($t.unbox(this[BOXED_DATA_PROPERTY][field.serializableName]), field.nominalRootTyperef(), field.nullAllowed, field.name);
-                      this.$lazychecked[field.name] = true;
-                    }
-
-                    if (field.isBoxed) {
-                      return $t.box(this[BOXED_DATA_PROPERTY][field.serializableName], field.typeref());
-                    } else {
-                      return this[BOXED_DATA_PROPERTY][field.serializableName];
-                    }
-                  }
-                });
-              });
-
               return instance;
+            };
+
+            // $markruntimecreated marks the struct as having been created by the runtime, allowing
+            // for certain optimizations to be used and checks to be turned off.
+            tpe.prototype.$markruntimecreated = function() {
+              Object.defineProperty(this[BOXED_DATA_PROPERTY], '$runtimecreated', {
+                enumerable: false,
+                configurable: true,
+                value: true
+              });
             };
 
             // String.
             tpe.prototype.String = function() {
-              return $promise.resolve($t.box(JSON.stringify(this, $global.__serulian_internal.autoUnbox, ' '), $a['string']));
+              return $promise.resolve($t.fastbox(JSON.stringify(this, $global.__serulian_internal.autoUnbox, ' '), $a['string']));
             };
 
             // Clone.
@@ -793,6 +840,11 @@ this.Serulian = (function($global) {
                   }
                 }
               }
+
+              if (this[BOXED_DATA_PROPERTY].$runtimecreated) {
+                instance.$markruntimecreated();
+              }
+
               return $promise.resolve(instance);
             };
 
@@ -802,7 +854,7 @@ this.Serulian = (function($global) {
               return function() {
                 // Special case JSON, as it uses an internal method.
                 if (T == $a['json']) {
-                  return $promise.resolve($t.box(JSON.stringify($this, $global.__serulian_internal.autoUnbox), $a['string']));
+                  return $promise.resolve($t.fastbox(JSON.stringify($this, $global.__serulian_internal.autoUnbox), $a['string']));
                 }
 
                 return $this.Mapping().then(function(mapped) {
@@ -819,7 +871,7 @@ this.Serulian = (function($global) {
                 // Special case JSON for performance, as it uses an internal method.
                 if (T == $a['json']) {
                   var parsed = JSON.parse($t.unbox(value));
-                  var boxed = $t.box(parsed, tpe, /* external */ true);
+                  var boxed = $t.fastbox(parsed, tpe);
 
                   // Call Mapping to ensure every field is checked.
                   return boxed.Mapping().then(function() {
@@ -829,7 +881,7 @@ this.Serulian = (function($global) {
 
                 return T.Get().then(function(resolved) {
                   return (resolved.Parse(value)).then(function(parsed) {
-                    return $promise.resolve($t.box(parsed, tpe, /* external */ true));
+                    return $promise.resolve($t.box(parsed, tpe));
                   });
                 });
               };
@@ -838,7 +890,7 @@ this.Serulian = (function($global) {
             // Equals.
             tpe.$equals = function(left, right) {
               if (left === right) {
-                return $promise.resolve($t.box(true, $a['bool']));
+                return $promise.resolve($t.fastbox(true, $a['bool']));
               }
 
               // TODO: find a way to do this without checking *all* fields.
@@ -857,13 +909,17 @@ this.Serulian = (function($global) {
                   }
                 }
 
-                return $t.box(true, $a['bool']);
+                return $t.fastbox(true, $a['bool']);
               });
             };
 
             // Mapping.
             tpe.prototype.Mapping = function() {
-              if (this.$unboxed) {
+              if (this.$serucreated) {
+                // Fast-path for compiler-constructed instances. All data is guarenteed to already
+                // be boxed.
+                return $promise.resolve($t.fastbox(this[BOXED_DATA_PROPERTY], $a['mapping']($t.any)));
+              } else {
                 // Slower path for instances unboxed from native data. We call the properties
                 // to make sure we have the boxed forms.
                 var $this = this;
@@ -872,11 +928,7 @@ this.Serulian = (function($global) {
                   mapped[field.serializableName] = $this[field.name];
                 });
 
-                return $promise.resolve($t.box(mapped, $a['mapping']($t.any)));
-              } else {
-                // Fast-path for compiler-constructed instances. All data is guarenteed to already
-                // be boxed.
-                return $promise.resolve($t.box(this[BOXED_DATA_PROPERTY], $a['mapping']($t.any)));
+                return $promise.resolve($t.fastbox(mapped, $a['mapping']($t.any)));
               }
             };
           } // end struct
@@ -886,18 +938,36 @@ this.Serulian = (function($global) {
 
         // Define the type on the module.
         if (hasGenerics) {
-          module[name] = function genericType(__genericargs) {
+          module[name] = function genericType() {
             var fullName = name;
-            for (var i = 0; i < arguments.length; ++i) {
-              fullName = fullName + '_' + arguments[i].name;
+            var fullId = typeId;
+
+            // Reference: https://github.com/petkaantonov/bluebird/wiki/Optimization-killers#3-managing-arguments
+            var generics = new Array(arguments.length);
+            for (var i = 0; i < generics.length; ++i) {
+              fullName = fullName + '_' + $t.functionName(arguments[i]);
+              if (i == 0) {
+                fullId = fullId + '<';
+              } else {
+                fullId = fullId + ',';
+              }
+
+              fullId = fullId + arguments[i].$typeId;
+              generics[i] = arguments[i];
             }
 
-            var tpe = buildType(name, arguments);
+            // Check for a cached version of the generic type.
+            var cached = module[fullName];
+            if (cached) {
+              return cached;
+            }
+
+            var tpe = buildType(fullId + '>', fullName, generics);
             tpe.$generic = genericType;
-            return tpe;
+            return module[fullName] = tpe;
           };
         } else {
-          module[name] = buildType(name);
+          module[name] = buildType(typeId, name);
         }
 
         // If the type has an alias, add it to the global alias map.

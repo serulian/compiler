@@ -1,6 +1,6 @@
 $module('calls', function () {
   var $static = this;
-  this.$class('SomeError', false, '', function () {
+  this.$class('165552b1', 'SomeError', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -11,20 +11,26 @@ $module('calls', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box('huh?', $g.____testlib.basictypes.String));
+        $resolve($t.fastbox('huh?', $g.____testlib.basictypes.String));
         return;
       };
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      return $t.createtypesig(['Message', 3, $g.____testlib.basictypes.String.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.calls.SomeError).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Message|3|538656f2": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 
   $static.getValue = function () {
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+      $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
       return;
     };
     return $promise.new($continue);
@@ -62,7 +68,7 @@ $module('calls', function () {
   $static.getIntValue = function () {
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      $resolve($t.box(45, $g.____testlib.basictypes.Integer));
+      $resolve($t.fastbox(45, $g.____testlib.basictypes.Integer));
       return;
     };
     return $promise.new($continue);
@@ -74,16 +80,14 @@ $module('calls', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.calls.getIntValue().then(function ($result2) {
-              return $g.____testlib.basictypes.Integer.$equals($result2, $t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result1) {
-                return $promise.resolve($t.unbox($result1)).then(function ($result0) {
-                  return ($promise.shortcircuit($result0, true) || $g.calls.failValue()).then(function ($result3) {
-                    return ($promise.shortcircuit($result0, false) || $g.calls.getValue()).then(function ($result4) {
-                      $result = $result0 ? $result3 : $result4;
-                      $current = 1;
-                      $continue($resolve, $reject);
-                      return;
-                    });
+            $g.calls.getIntValue().then(function ($result1) {
+              return $promise.resolve($result1.$wrapped == 2).then(function ($result0) {
+                return ($promise.shortcircuit($result0, true) || $g.calls.failValue()).then(function ($result2) {
+                  return ($promise.shortcircuit($result0, false) || $g.calls.getValue()).then(function ($result3) {
+                    $result = $result0 ? $result2 : $result3;
+                    $current = 1;
+                    $continue($resolve, $reject);
+                    return;
                   });
                 });
               });

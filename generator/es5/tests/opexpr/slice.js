@@ -1,6 +1,6 @@
 $module('slice', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('5387b00e', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -11,13 +11,14 @@ $module('slice', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+        $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
         return;
       };
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['slice', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.slice.SomeClass).$typeref()]);
+      return {
+      };
     };
   });
 
@@ -42,7 +43,7 @@ $module('slice', function () {
 
           case 1:
             c = $result;
-            c.$slice($t.box(1, $g.____testlib.basictypes.Integer), $t.box(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
+            c.$slice($t.fastbox(1, $g.____testlib.basictypes.Integer), $t.fastbox(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $result = $result0;
               $current = 2;
               $continue($resolve, $reject);
@@ -54,7 +55,7 @@ $module('slice', function () {
             return;
 
           case 2:
-            c.$slice(null, $t.box(1, $g.____testlib.basictypes.Integer)).then(function ($result0) {
+            c.$slice(null, $t.fastbox(1, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $result = $result0;
               $current = 3;
               $continue($resolve, $reject);
@@ -66,7 +67,7 @@ $module('slice', function () {
             return;
 
           case 3:
-            c.$slice($t.box(1, $g.____testlib.basictypes.Integer), null).then(function ($result0) {
+            c.$slice($t.fastbox(1, $g.____testlib.basictypes.Integer), null).then(function ($result0) {
               $result = $result0;
               $current = 4;
               $continue($resolve, $reject);
@@ -78,7 +79,7 @@ $module('slice', function () {
             return;
 
           case 4:
-            c.$slice($t.box(1, $g.____testlib.basictypes.Integer), $t.box(7, $g.____testlib.basictypes.Integer)).then(function ($result0) {
+            c.$slice($t.fastbox(1, $g.____testlib.basictypes.Integer), $t.fastbox(7, $g.____testlib.basictypes.Integer)).then(function ($result0) {
               $result = $result0;
               $current = 5;
               $continue($resolve, $reject);

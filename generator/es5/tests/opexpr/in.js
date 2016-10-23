@@ -1,6 +1,6 @@
 $module('in', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('0135b434', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -11,13 +11,14 @@ $module('in', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box(!$t.unbox(value), $g.____testlib.basictypes.Boolean));
+        $resolve($t.fastbox(!value.$wrapped, $g.____testlib.basictypes.Boolean));
         return;
       };
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['contains', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.in.SomeClass).$typeref()]);
+      return {
+      };
     };
   });
 
@@ -42,7 +43,7 @@ $module('in', function () {
 
           case 1:
             sc = $result;
-            sc.$contains($t.box(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
+            sc.$contains($t.fastbox(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $current = 2;
               $continue($resolve, $reject);

@@ -1,6 +1,6 @@
 $module('nullaccess', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('c3e4f083', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -11,13 +11,19 @@ $module('nullaccess', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+        $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
         return;
       };
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      return $t.createtypesig(['SomeBool', 3, $g.____testlib.basictypes.Boolean.$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.nullaccess.SomeClass).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "SomeBool|3|5ab5941e": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 
@@ -59,13 +65,13 @@ $module('nullaccess', function () {
             sc2 = $result;
             sc3 = null;
             sc.SomeBool().then(function ($result2) {
-              return $promise.resolve($t.unbox($result2)).then(function ($result1) {
+              return $promise.resolve($result2.$wrapped).then(function ($result1) {
                 return ($promise.shortcircuit($result1, true) || $t.dynamicaccess(sc2, 'SomeBool')).then(function ($result4) {
                   return $promise.resolve($result4).then(function ($result3) {
-                    return $promise.resolve($result1 && $t.unbox($t.nullcompare($result3, $t.box(false, $g.____testlib.basictypes.Boolean)))).then(function ($result0) {
+                    return $promise.resolve($result1 && $t.nullcompare($result3, $t.fastbox(false, $g.____testlib.basictypes.Boolean)).$wrapped).then(function ($result0) {
                       return ($promise.shortcircuit($result0, true) || $t.dynamicaccess(sc3, 'SomeBool')).then(function ($result6) {
                         return $promise.resolve($result6).then(function ($result5) {
-                          $result = $t.box($result0 && $t.unbox($t.nullcompare($result5, $t.box(true, $g.____testlib.basictypes.Boolean))), $g.____testlib.basictypes.Boolean);
+                          $result = $t.fastbox($result0 && $t.nullcompare($result5, $t.fastbox(true, $g.____testlib.basictypes.Boolean)).$wrapped, $g.____testlib.basictypes.Boolean);
                           $current = 3;
                           $continue($resolve, $reject);
                           return;

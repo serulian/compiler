@@ -3,12 +3,12 @@ $module('string', function () {
   $static.DoSomething = function () {
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      $t.box('hello world', $g.____testlib.basictypes.String);
-      $t.box("hi world", $g.____testlib.basictypes.String);
-      $t.box('single quote with "quoted"', $g.____testlib.basictypes.String);
-      $t.box("double quote with 'quoted'", $g.____testlib.basictypes.String);
-      $t.box("escaped \" quote", $g.____testlib.basictypes.String);
-      $t.box('escaped \' quote', $g.____testlib.basictypes.String);
+      $t.fastbox('hello world', $g.____testlib.basictypes.String);
+      $t.fastbox("hi world", $g.____testlib.basictypes.String);
+      $t.fastbox('single quote with "quoted"', $g.____testlib.basictypes.String);
+      $t.fastbox("double quote with 'quoted'", $g.____testlib.basictypes.String);
+      $t.fastbox("escaped \" quote", $g.____testlib.basictypes.String);
+      $t.fastbox('escaped \' quote', $g.____testlib.basictypes.String);
       $resolve();
       return;
     };

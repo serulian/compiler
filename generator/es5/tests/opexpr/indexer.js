@@ -1,11 +1,11 @@
 $module('indexer', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('272ade03', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      instance.result = $t.box(false, $g.____testlib.basictypes.Boolean);
+      instance.result = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
       return $promise.resolve(instance);
     };
     $instance.$index = function (someParam) {
@@ -16,8 +16,8 @@ $module('indexer', function () {
         while (true) {
           switch ($current) {
             case 0:
-              $promise.resolve($t.unbox($this.result)).then(function ($result0) {
-                $result = $t.box($result0 && !$t.unbox(someParam), $g.____testlib.basictypes.Boolean);
+              $promise.resolve($this.result.$wrapped).then(function ($result0) {
+                $result = $t.fastbox($result0 && !someParam.$wrapped, $g.____testlib.basictypes.Boolean);
                 $current = 1;
                 $continue($resolve, $reject);
                 return;
@@ -50,7 +50,8 @@ $module('indexer', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['index', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['setindex', 4, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.indexer.SomeClass).$typeref()]);
+      return {
+      };
     };
   });
 
@@ -75,7 +76,7 @@ $module('indexer', function () {
 
           case 1:
             sc = $result;
-            sc.$setindex($t.box(1, $g.____testlib.basictypes.Integer), $t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
+            sc.$setindex($t.fastbox(1, $g.____testlib.basictypes.Integer), $t.fastbox(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $current = 2;
               $continue($resolve, $reject);
@@ -87,7 +88,7 @@ $module('indexer', function () {
             return;
 
           case 2:
-            sc.$index($t.box(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
+            sc.$index($t.fastbox(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $current = 3;
               $continue($resolve, $reject);

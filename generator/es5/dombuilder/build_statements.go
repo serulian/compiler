@@ -284,11 +284,14 @@ func (db *domBuilder) buildMatchStatement(node compilergraph.GraphNode) (codedom
 		caseTypeLiteral, _ := db.scopegraph.ResolveSRGTypeRef(
 			db.scopegraph.SourceGraph().GetTypeRef(caseTypeRefNode))
 
-		return codedom.RuntimeFunctionCall(codedom.IsTypeFunction,
-			[]codedom.Expression{
-				codedom.LocalReference(matchExprVarName, caseTypeRefNode),
-				codedom.TypeLiteral(caseTypeLiteral, caseTypeRefNode),
-			},
+		return codedom.NominalWrapping(
+			codedom.RuntimeFunctionCall(codedom.IsTypeFunction,
+				[]codedom.Expression{
+					codedom.LocalReference(matchExprVarName, caseTypeRefNode),
+					codedom.TypeLiteral(caseTypeLiteral, caseTypeRefNode),
+				},
+				caseTypeRefNode),
+			db.scopegraph.TypeGraph().BoolType(),
 			caseTypeRefNode)
 	}
 

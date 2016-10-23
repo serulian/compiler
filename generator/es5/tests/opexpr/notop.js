@@ -1,6 +1,6 @@
 $module('notop', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('df288f51', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function (boolValue) {
@@ -17,7 +17,8 @@ $module('notop', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['bool', 4, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Boolean).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.notop.SomeClass).$typeref()]);
+      return {
+      };
     };
   });
 
@@ -29,7 +30,7 @@ $module('notop', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.notop.SomeClass.new($t.box(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
+            $g.notop.SomeClass.new($t.fastbox(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $current = 1;
               $continue($resolve, $reject);
@@ -43,7 +44,7 @@ $module('notop', function () {
           case 1:
             sc = $result;
             $g.notop.SomeClass.$bool(sc).then(function ($result0) {
-              $result = $t.box(!$t.unbox($result0), $g.____testlib.basictypes.Boolean);
+              $result = $t.fastbox(!$result0.$wrapped, $g.____testlib.basictypes.Boolean);
               $current = 2;
               $continue($resolve, $reject);
               return;

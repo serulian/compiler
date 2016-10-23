@@ -47,6 +47,12 @@ func (g *TypeGraph) GetTypeForSourceNode(node compilergraph.GraphNode) (TGTypeDe
 	return TGTypeDecl{typeNode, g}, true
 }
 
+// GlobalUniqueId returns a globally unique ID for this type, consistent across
+// multiple compilations.
+func (tn TGTypeDecl) GlobalUniqueId() string {
+	return tn.GraphNode.Get(NodePredicateTypeGlobalId)
+}
+
 // Name returns the name of the underlying type.
 func (tn TGTypeDecl) Name() string {
 	if tn.GraphNode.Kind() == NodeTypeGeneric {

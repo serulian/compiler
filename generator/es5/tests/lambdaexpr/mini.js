@@ -11,12 +11,12 @@ $module('mini', function () {
             lambda = function (someParam) {
               var $current = 0;
               var $continue = function ($resolve, $reject) {
-                $resolve($t.box(!$t.unbox(someParam), $g.____testlib.basictypes.Boolean));
+                $resolve($t.fastbox(!someParam.$wrapped, $g.____testlib.basictypes.Boolean));
                 return;
               };
               return $promise.new($continue);
             };
-            lambda($t.box(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
+            lambda($t.fastbox(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $current = 1;
               $continue($resolve, $reject);

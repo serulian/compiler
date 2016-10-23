@@ -1,6 +1,6 @@
 $module('arrow', function () {
   var $static = this;
-  this.$class('SomePromise', false, '', function () {
+  this.$class('5df88ab1', 'SomePromise', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -15,7 +15,7 @@ $module('arrow', function () {
         while (true) {
           switch ($current) {
             case 0:
-              resolve($t.box(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
+              resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
                 $result = $result0;
                 $current = 1;
                 $continue($resolve, $reject);
@@ -48,7 +48,14 @@ $module('arrow', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['Then', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Awaitable($g.____testlib.basictypes.Boolean)).$typeref()], ['Catch', 2, $g.____testlib.basictypes.Function($g.____testlib.basictypes.Awaitable($g.____testlib.basictypes.Boolean)).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.arrow.SomePromise).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "Then|2|29dc432d<ebc09764<5ab5941e>>": true,
+        "Catch|2|29dc432d<ebc09764<5ab5941e>>": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 

@@ -1,6 +1,6 @@
 $module('this', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('93ce2e23', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -12,7 +12,13 @@ $module('this', function () {
       return $promise.empty();
     };
     this.$typesig = function () {
-      return $t.createtypesig(['DoSomething', 2, $g.____testlib.basictypes.Function($t.void).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.this.SomeClass).$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "DoSomething|2|29dc432d<void>": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 

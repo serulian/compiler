@@ -8,6 +8,7 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/codedom"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
+	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/parser"
 )
 
@@ -37,8 +38,12 @@ var operatorMap = map[compilergraph.TaggedValue]string{
 
 // buildRootTypeExpression builds the CodeDOM for a root type expression.
 func (db *domBuilder) buildRootTypeExpression(node compilergraph.GraphNode) codedom.Expression {
-	childExpr := db.getExpression(node, parser.NodeUnaryExpressionChildExpr)
-	return codedom.NominalUnwrapping(childExpr, node)
+	childExprNode := node.GetNode(parser.NodeUnaryExpressionChildExpr)
+	childScope, _ := db.scopegraph.GetScope(childExprNode)
+	childType := childScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
+
+	childExpr := db.buildExpression(childExprNode)
+	return codedom.NominalUnwrapping(childExpr, childType, node)
 }
 
 // buildFunctionCall builds the CodeDOM for a function call.
@@ -49,14 +54,19 @@ func (db *domBuilder) buildFunctionCall(node compilergraph.GraphNode) codedom.Ex
 	// Check if the child expression has a static scope. If so, this is a type conversion between
 	// a nominal type and a base type.
 	if childScope.GetKind() == proto.ScopeKind_STATIC {
-		wrappedExpr := db.getExpression(node, parser.NodeFunctionCallArgument)
-		childTypeRef := childScope.StaticTypeRef(db.scopegraph.TypeGraph())
+		wrappedExprNode := node.GetNode(parser.NodeFunctionCallArgument)
+		wrappedExprScope, _ := db.scopegraph.GetScope(wrappedExprNode)
+		wrappedExprType := wrappedExprScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
 
-		// If the childTypeRef is not nominal or structural, then we know we are unwrapping.
-		if !childTypeRef.IsNominalOrStruct() {
-			return codedom.NominalUnwrapping(wrappedExpr, node)
+		wrappedExpr := db.buildExpression(wrappedExprNode)
+
+		targetTypeRef := childScope.StaticTypeRef(db.scopegraph.TypeGraph())
+
+		// If the targetTypeRef is not nominal or structural, then we know we are unwrapping.
+		if !targetTypeRef.IsNominalOrStruct() {
+			return codedom.NominalUnwrapping(wrappedExpr, wrappedExprType, node)
 		} else {
-			return codedom.NominalRefWrapping(wrappedExpr, childTypeRef, node)
+			return codedom.NominalRefWrapping(wrappedExpr, wrappedExprType, targetTypeRef, node)
 		}
 	}
 
@@ -165,8 +175,9 @@ func (db *domBuilder) buildIsComparisonExpression(node compilergraph.GraphNode) 
 
 // buildBooleanBinaryExpression builds the CodeDOM for a boolean unary operator.
 func (db *domBuilder) buildBooleanBinaryExpression(node compilergraph.GraphNode, op string) codedom.Expression {
-	leftExpr := codedom.NominalUnwrapping(db.getExpression(node, parser.NodeBinaryExpressionLeftExpr), node)
-	rightExpr := codedom.NominalUnwrapping(db.getExpression(node, parser.NodeBinaryExpressionRightExpr), node)
+	boolType := db.scopegraph.TypeGraph().BoolTypeReference()
+	leftExpr := codedom.NominalUnwrapping(db.getExpression(node, parser.NodeBinaryExpressionLeftExpr), boolType, node)
+	rightExpr := codedom.NominalUnwrapping(db.getExpression(node, parser.NodeBinaryExpressionRightExpr), boolType, node)
 	return codedom.NominalWrapping(
 		codedom.BinaryOperation(leftExpr, op, rightExpr, node),
 		db.scopegraph.TypeGraph().BoolType(),
@@ -175,7 +186,8 @@ func (db *domBuilder) buildBooleanBinaryExpression(node compilergraph.GraphNode,
 
 // buildBooleanUnaryExpression builds the CodeDOM for a native unary operator.
 func (db *domBuilder) buildBooleanUnaryExpression(node compilergraph.GraphNode, op string) codedom.Expression {
-	childExpr := codedom.NominalUnwrapping(db.getExpression(node, parser.NodeUnaryExpressionChildExpr), node)
+	boolType := db.scopegraph.TypeGraph().BoolTypeReference()
+	childExpr := codedom.NominalUnwrapping(db.getExpression(node, parser.NodeUnaryExpressionChildExpr), boolType, node)
 	return codedom.NominalWrapping(
 		codedom.UnaryOperation(op, childExpr, node),
 		db.scopegraph.TypeGraph().BoolType(),
@@ -216,6 +228,68 @@ func (db *domBuilder) buildUnaryOperatorExpression(node compilergraph.GraphNode,
 	return callExpr
 }
 
+func (db *domBuilder) buildOptimizedBinaryOperatorExpression(node compilergraph.GraphNode, parentType typegraph.TypeReference, leftExpr codedom.Expression, rightExpr codedom.Expression) (codedom.Expression, bool) {
+	// Verify this is a supported native operator.
+	opString, hasOp := operatorMap[node.Kind()]
+	if !hasOp {
+		return nil, false
+	}
+
+	// Verify we have a native binary operator we can optimize.
+	if !parentType.IsNominal() {
+		return nil, false
+	}
+
+	isNumeric := false
+
+	switch {
+	case parentType.IsDirectReferenceTo(db.scopegraph.TypeGraph().IntType()):
+		isNumeric = true
+
+	case parentType.IsDirectReferenceTo(db.scopegraph.TypeGraph().BoolType()):
+		fallthrough
+
+	case parentType.IsDirectReferenceTo(db.scopegraph.TypeGraph().StringType()):
+		fallthrough
+
+	default:
+		return nil, false
+	}
+
+	// Handle the various kinds of operators.
+	switch node.Kind() {
+	case parser.NodeComparisonEqualsExpression:
+		fallthrough
+
+	case parser.NodeComparisonNotEqualsExpression:
+		// Always allowed.
+		break
+
+	case parser.NodeComparisonLTEExpression:
+		fallthrough
+	case parser.NodeComparisonLTExpression:
+		fallthrough
+	case parser.NodeComparisonGTEExpression:
+		fallthrough
+	case parser.NodeComparisonGTExpression:
+		// Only allowed for number.
+		if !isNumeric {
+			return nil, false
+		}
+	}
+
+	boolType := db.scopegraph.TypeGraph().BoolTypeReference()
+
+	unwrappedLeftExpr := codedom.NominalUnwrapping(leftExpr, parentType, node)
+	unwrappedRightExpr := codedom.NominalUnwrapping(rightExpr, parentType, node)
+
+	compareExpr := codedom.BinaryOperation(unwrappedLeftExpr, opString, unwrappedRightExpr, node)
+	return codedom.NominalRefWrapping(compareExpr,
+		boolType.NominalDataType(),
+		boolType,
+		node), true
+}
+
 // buildBinaryOperatorExpression builds the CodeDOM for a binary operator.
 func (db *domBuilder) buildBinaryOperatorExpression(node compilergraph.GraphNode, modifier exprModifier) codedom.Expression {
 	scope, _ := db.scopegraph.GetScope(node)
@@ -230,6 +304,11 @@ func (db *domBuilder) buildBinaryOperatorExpression(node compilergraph.GraphNode
 
 	leftScope, _ := db.scopegraph.GetScope(node.GetNode(parser.NodeBinaryExpressionLeftExpr))
 	parentType := leftScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
+
+	optimized, wasOptimized := db.buildOptimizedBinaryOperatorExpression(node, parentType, leftExpr, rightExpr)
+	if wasOptimized {
+		return optimized
+	}
 
 	callExpr := codedom.MemberCall(codedom.StaticMemberReference(operator, parentType, node), operator, []codedom.Expression{leftExpr, rightExpr}, node)
 	if modifier != nil {

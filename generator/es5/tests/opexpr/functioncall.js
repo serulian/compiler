@@ -7,7 +7,7 @@ $module('functioncall', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.functioncall.AnotherFunction($t.box(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
+            $g.functioncall.AnotherFunction($t.fastbox(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
               $result = $result0;
               $current = 1;
               $continue($resolve, $reject);
@@ -33,7 +33,7 @@ $module('functioncall', function () {
   $static.AnotherFunction = function (param) {
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      $resolve($t.box(!$t.unbox(param), $g.____testlib.basictypes.Boolean));
+      $resolve($t.fastbox(!param.$wrapped, $g.____testlib.basictypes.Boolean));
       return;
     };
     return $promise.new($continue);

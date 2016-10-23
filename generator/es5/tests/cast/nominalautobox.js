@@ -1,6 +1,6 @@
 $module('nominalautobox', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('f0465a3f', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -8,11 +8,12 @@ $module('nominalautobox', function () {
       return $promise.resolve(instance);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['new', 1, $g.____testlib.basictypes.Function($g.nominalautobox.SomeClass).$typeref()]);
+      return {
+      };
     };
   });
 
-  this.$type('SomeNominal', false, '', function () {
+  this.$type('e9a6d7f9', 'SomeNominal', false, '', function () {
     var $instance = this.prototype;
     var $static = this;
     this.$box = function ($wrapped) {
@@ -27,13 +28,19 @@ $module('nominalautobox', function () {
       var $this = this;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        $resolve($t.box(true, $g.____testlib.basictypes.Boolean));
+        $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
         return;
       };
       return $promise.new($continue);
     });
     this.$typesig = function () {
-      return $t.createtypesig(['SomeValue', 3, $g.____testlib.basictypes.Boolean.$typeref()]);
+      if (this.$cachedtypesig) {
+        return this.$cachedtypesig;
+      }
+      var computed = {
+        "SomeValue|3|5ab5941e": true,
+      };
+      return this.$cachedtypesig = computed;
     };
   });
 

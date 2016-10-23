@@ -1,6 +1,6 @@
 $module('unary', function () {
   var $static = this;
-  this.$class('SomeClass', false, '', function () {
+  this.$class('44d9119f', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -16,7 +16,8 @@ $module('unary', function () {
       return $promise.new($continue);
     };
     this.$typesig = function () {
-      return $t.createtypesig(['not', 4, $g.____testlib.basictypes.Function($g.unary.SomeClass).$typeref()], ['new', 1, $g.____testlib.basictypes.Function($g.unary.SomeClass).$typeref()]);
+      return {
+      };
     };
   });
 
