@@ -198,10 +198,7 @@ this.Serulian = function ($global) {
         return $promise.resolve($t.fastbox(false, $a['bool']));
       }
       if (type.$equals) {
-        return type.$equals($t.fastbox(left, type), $t.fastbox(right, type));
-      }
-      if ($t.toESType(left) != 'object') {
-        return $promise.resolve($t.fastbox(left === right, $a['bool']));
+        return type.$equals($t.box(left, type), $t.box(right, type));
       }
       return $promise.resolve($t.fastbox(false, $a['bool']));
     },

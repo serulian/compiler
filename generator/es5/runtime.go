@@ -313,11 +313,7 @@ this.Serulian = (function($global) {
         return type.$equals($t.box(left, type), $t.box(right, type));
       }
 
-      // If we have a native value, compare directly.
-      if ($t.toESType(left) != 'object') {
-        return $promise.resolve($t.fastbox(left === right, $a['bool']));
-      }
-
+      // Otherwise we cannot compare, so we treat the objects as not equal.
       return $promise.resolve($t.fastbox(false, $a['bool']));
     },
 
