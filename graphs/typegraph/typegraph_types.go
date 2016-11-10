@@ -156,8 +156,7 @@ const (
 	// Decorates a member with the type from which it was aliased.
 	NodePredicateMemberBaseSource = "member-base-source"
 
-	// Decorates a member returning a promise of the member or return type. Used for
-	// functions and properties in SRG-created types.
+	// Decorates a member returning a promise of the member or return type.
 	NodePredicateMemberPromising = "member-promising"
 
 	// Decorates a member as being automatically initialized with a default value.

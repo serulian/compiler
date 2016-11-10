@@ -19,7 +19,7 @@ type TGTypeOrMember interface {
 	IsReadOnly() bool
 	IsType() bool
 	IsStatic() bool
-	IsPromising() bool
+	IsPromising() MemberPromisingOption
 	Parent() TGTypeOrModule
 	IsImplicitlyCalled() bool
 	IsField() bool

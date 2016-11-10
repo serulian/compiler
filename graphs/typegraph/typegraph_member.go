@@ -9,6 +9,22 @@ import (
 	"github.com/serulian/compiler/graphs/typegraph/proto"
 )
 
+// MemberPromisingOption defines the various states of promising for a member.
+type MemberPromisingOption int
+
+const (
+	// MemberNotPromising indicates the member does not return a promise.
+	MemberNotPromising MemberPromisingOption = iota
+
+	// MemberPromisingDynamic indicates that the member *may* return a promise, based
+	// on its implementation. This will typically only apply to members generated from
+	// source.
+	MemberPromisingDynamic
+
+	// MemberPromising indicates that the member always returns a promise.
+	MemberPromising
+)
+
 // TypeMemberTag defines the set of custom tags on type members.
 type TypeMemberTag string
 
@@ -137,9 +153,13 @@ func (tn TGMember) IsStatic() bool {
 }
 
 // IsPromising returns whether the member is promising.
-func (tn TGMember) IsPromising() bool {
-	_, isPromising := tn.GraphNode.TryGet(NodePredicateMemberPromising)
-	return isPromising
+func (tn TGMember) IsPromising() MemberPromisingOption {
+	value, found := tn.GraphNode.TryGetValue(NodePredicateMemberPromising)
+	if !found {
+		return MemberNotPromising
+	}
+
+	return MemberPromisingOption(value.Int())
 }
 
 // HasDefaultValue returns whether the member is automatically initialized with a default

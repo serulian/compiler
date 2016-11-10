@@ -467,10 +467,11 @@ type MemberDecorator struct {
 
 	issueReporter IssueReporter // The underlying issue reporter.
 
+	promising MemberPromisingOption // Whether the member is promising.
+
 	exported     bool // Whether the member is exported publicly.
 	readonly     bool // Whether the member is readonly.
 	static       bool // Whether the member is static.
-	promising    bool // Whether the member is promising.
 	implicit     bool // Whether the member is implicitly called.
 	native       bool // Whether this operator is native to ES.
 	hasdefault   bool // Whether the member has a default value.
@@ -576,7 +577,7 @@ func (mb *MemberDecorator) Static(static bool) *MemberDecorator {
 }
 
 // Promising sets whether the member is promising.
-func (mb *MemberDecorator) Promising(promising bool) *MemberDecorator {
+func (mb *MemberDecorator) Promising(promising MemberPromisingOption) *MemberDecorator {
 	mb.promising = promising
 	return mb
 }
@@ -643,8 +644,8 @@ func (mb *MemberDecorator) Decorate() {
 		mb.decorateWithSig(mb.signatureType, mb.member.Generics()...)
 	}
 
-	if mb.promising {
-		memberNode.Decorate(NodePredicateMemberPromising, "true")
+	if mb.promising != MemberNotPromising {
+		memberNode.DecorateWith(NodePredicateMemberPromising, int(mb.promising))
 	}
 
 	if mb.exported {
