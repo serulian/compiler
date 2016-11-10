@@ -226,7 +226,7 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 
 	var isReadOnly bool = true
 	var isStatic bool = false
-	var isPromising bool = true
+	var isPromising = typegraph.MemberPromisingDynamic
 	var isImplicitlyCalled bool = false
 	var hasDefaultValue bool = false
 	var isField = false
@@ -238,7 +238,7 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 		memberKind = typegraph.FieldMemberSignature
 
 		isReadOnly = false
-		isPromising = false
+		isPromising = typegraph.MemberNotPromising
 		isField = true
 		_, hasDefaultValue = member.Node().TryGetNode(parser.NodePredicateTypeFieldDefaultValue)
 
@@ -322,7 +322,7 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 
 		// If the function is an async function, make it non-promising and return a Awaitable instead.
 		if member.IsAsyncFunction() {
-			isPromising = false
+			isPromising = typegraph.MemberNotPromising
 			returnType = graph.AwaitableTypeReference(returnType)
 		}
 
