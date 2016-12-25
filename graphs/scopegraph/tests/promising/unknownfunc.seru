@@ -1,0 +1,3 @@
+function<void> CallsUnknownFunc(somefunc function<void>()) {
+	somefunc()
+}

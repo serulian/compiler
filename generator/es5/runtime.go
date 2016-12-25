@@ -106,6 +106,12 @@ this.Serulian = (function($global) {
       return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()
     },
 
+    // markpromising marks the given function as returning a promise.
+    'markpromising': function(func) {
+      func.$promising = true;
+      return func;
+    },
+
     // From: http://stackoverflow.com/a/15714445
     'functionName': function(func) {
       if (func.name) {
@@ -300,25 +306,26 @@ this.Serulian = (function($global) {
     },
 
     // equals performs a comparison of the two values by calling the $equals operator on the
-    // values, if any. Otherwise, uses a simple reference comparison.
+    // values, if any. Otherwise, uses a simple reference comparison. Should *only* be used
+    // for non-promising equals calls.
     'equals': function(left, right, type) {
       // Check for direct equality.
       if (left === right) {
-        return $promise.resolve($t.fastbox(true, $a['bool']));
+        return true;
       }
 
       // Check for null.
       if (left == null || right == null) {
-        return $promise.resolve($t.fastbox(false, $a['bool']));
+        return false;
       }
 
       // Check for defined equals operator.
       if (type.$equals) {
-        return type.$equals($t.box(left, type), $t.box(right, type));
+        return type.$equals($t.box(left, type), $t.box(right, type)).$wrapped;
       }
 
       // Otherwise we cannot compare, so we treat the objects as not equal.
-      return $promise.resolve($t.fastbox(false, $a['bool']));
+      return false;
     },
 
     // ensurevalue ensures that the given value is of the given type. If not,
@@ -473,7 +480,7 @@ this.Serulian = (function($global) {
 
           var promise = new Promise(function(resolve, reject) {
             $global.setTimeout(function() {
-              f.apply($this, args).then(function(value) {
+              $promise.maybe(f.apply($this, args)).then(function(value) {
                 resolve(value);
               }).catch(function(value) {
                 reject(value);
@@ -547,29 +554,36 @@ this.Serulian = (function($global) {
         return promising ? $promise.resolve(null) : null;
       }
 
-      return found.apply(obj, args);
+      var r = found.apply(obj, args);
+      if (promising) {
+        return $promise.maybe(r);
+      } else {
+        return r;
+      }
     },
 
-    // dynamicaccess looks for the given name under the given object and returns it, wrapped in
-    // a promise (if not already a promise). If the name was not found *OR* the object is null,
-    // returns a promise resolving null.
-    'dynamicaccess': function(obj, name) {
+    // dynamicaccess looks for the given name under the given object and returns it.
+    // If the name was not found *OR* the object is null, returns null.
+    'dynamicaccess': function(obj, name, promising) {
       if (obj == null || obj[name] == null) {
-        return $promise.resolve(null);
+        return promising ? $promise.resolve(null) : null;
       }
 
       var value = obj[name];
       if (typeof value == 'function') {
         if (value.$property) {
-          return value.apply(obj, arguments);
+          var result = value.apply(obj, arguments);
+          return promising ? $promise.maybe(result) : result;
         } else {
-          return $promise.resolve(function() {
+          var result = function() {
             return value.apply(obj, arguments);
-          });
+          };
+
+          return promising ? $promise.resolve(result) : result;
         }
       }
 
-      return $promise.resolve(value);
+      return promising ? $promise.resolve(value) : value;
     },
 
     // assertnotnull checks if the value is null and, if so, raises an error. Otherwise,
@@ -582,59 +596,86 @@ this.Serulian = (function($global) {
       return value;
     },
 
-    // nullcompare checks if the value is null and, if not, returns the value. Otherwise,
-    // returns 'otherwise'.
-    'nullcompare': function(value, otherwise) {
+    // syncnullcompare checks if the value is null and, if not, returns the value. Otherwise,
+    // returns the return value of calling the otherwise function.
+    'syncnullcompare': function(value, otherwise) {
+      return value == null ? otherwise() : value;
+    },
+
+    // asyncnullcompare checks if the value is null and, if not, returns the value. Otherwise,
+    // returns the otherwise value.
+    'asyncnullcompare': function(value, otherwise) {
       return value == null ? otherwise : value;
     },
 
     // resourcehandler returns a function for handling resources in a function.
   	'resourcehandler': function() {
   		return {
-        resources: {},
-        bind: function(func) {
-          if (func.$__resourcebound) {
-            return func;
-          }
+        // resources keeps track of the active resources in scope by name.
+        'resources': {},
 
-          var r = this;
-          var f = function() {
-            r.popall();
-            return func.apply(this, arguments);
+        // bind returns a function that, when invoked, first pops all resources
+        // from the stack (waiting for their promises to complete) and then invokes
+        // the bound function. This function is used to bind the $resolve, $reject
+        // and $done handlers in functions, to ensure all resources are removed
+        // before they complete.
+        'bind': function(func, isAsync) {          
+          if (isAsync) {
+            return this.bindasync(func);
+          } else {
+            return this.bindsync(func);
+          }
+        },
+
+        'bindsync': function(func) {
+            var r = this; // The resource handler.
+            var f = function() {
+              r.popall();
+              return func.apply(this, arguments);
+            };
+            return f;
+        },
+
+        'bindasync': function(func) {
+          var r = this; // The resource handler.
+          var f = function(value) {
+            var that = this; // The scope of the function.
+            return r.popall().then(function(_) {
+              func.call(that, value);
+            });            
           };
 
-          f.$__resourcebound = true;
           return f;
         },
 
-        pushr: function(value, name) {
+        // pushr pushes a resource onto the stack.
+        'pushr': function(value, name) {
           this.resources[name] = value;
         },
 
-        popr: function(names) {
-          var promises = [];
-
+        // popr pops resources from the stack, calling their Release() methods. Returns
+        // a promise over all the methods.
+        'popr': function(__names) {
+          var handlers = [];
           for (var i = 0; i < arguments.length; ++i) {
             var name = arguments[i];
             if (this.resources[name]) {
-              promises.push(this.resources[name].Release());
+              handlers.push(this.resources[name].Release());
               delete this.resources[name];
             }
           }
-
-          if (promises.length > 0) {
-            return $promise.all(promises);
-          } else {
-            return $promise.resolve(null);
-          }
+          return $promise.maybeall(handlers);
         },
 
-        popall: function() {
-          for (var name in this.resources) {
-            if (this.resources.hasOwnProperty(name)) {
-              this.resources[name].Release();
-            }
+        // popall pops all resources from the stack, calling their Release() methods. Returns
+        // a promise over all the methods.
+        'popall': function() {
+          var handlers = [];
+          var names = Object.keys(this.resources);
+          for (var i = 0; i < names.length; ++i) {
+            handlers.push(this.resources[names[i]].Release());
           }
+          return $promise.maybeall(handlers);
         }
   		};
   	}
@@ -646,57 +687,104 @@ this.Serulian = (function($global) {
     'directempty': function() {
       var stream = {
         'Next': function() {
-           return $promise.new(function (resolve, reject) {
-             $a['tuple']($t.any, $a['bool']).Build(null, false).then(resolve);
-           });
+           return $a['tuple']($t.any, $a['bool']).Build(null, false);
         },
       };
       return stream;
     },
 
-    // empty returns a new empty stream via a promise.
+    // empty returns a new empty stream.
     'empty': function() {
-      return $promise.resolve($generator.directempty());
+      return $generator.directempty();
     },
 
     // new returns a stream wrapping the given generator function.
-    'new': function (f) {
-      var stream = {
-        '$is': null,
-        'Next': function () {
-          return $promise.new(function (resolve, reject) {
+    'new': function (f, isAsync) {
+      if (isAsync) {
+        // Async Stream
+        var stream = {
+          '$is': null,
+          'Next': function () {
+            return $promise.new(function (resolve, reject) {
+              if (stream.$is != null) {
+                $promise.maybe(stream.$is.Next()).then(function (tuple) {
+                  if ($t.unbox(tuple.Second)) {
+                    resolve(tuple);
+                  } else {
+                    stream.$is = null;
+                    $promise.maybe(stream.Next()).then(resolve, reject);
+                  }
+                }).catch(function (rejected) {
+                  reject(rejected);
+                });
+                return;
+              }
+
+              var $yield = function (value) {
+                resolve($a['tuple']($t.any, $a['bool']).Build(value, $t.fastbox(true, $a['bool'])));
+              };
+              
+              var $done = function () {
+                resolve($a['tuple']($t.any, $a['bool']).Build(null, $t.fastbox(false, $a['bool'])));
+              };
+
+              var $yieldin = function (ins) {
+                stream.$is = ins;
+                $promise.maybe(stream.Next()).then(resolve, reject);
+              };
+              
+              f($yield, $yieldin, reject, $done);
+            });
+          },
+        };
+        // End Async Stream
+        return stream;
+      } else {
+        // Sync stream
+        var stream = {
+          '$is': null,
+          'Next': function () {
             if (stream.$is != null) {
-              stream.$is.Next().then(function (tuple) {
-                if ($t.unbox(tuple.Second)) {
-                  resolve(tuple);
-                } else {
-                  stream.$is = null;
-                  stream.Next().then(resolve, reject);
-                }
-              }).catch(function (rejected) {
-                reject(rejected);
-              });
-              return;
+              var tuple = stream.$is.Next();
+              if ($t.unbox(tuple.Second)) {
+                return tuple;
+              } else {
+                stream.$is = null;
+              }
             }
 
+            var yielded = null;
+
             var $yield = function (value) {
-              $a['tuple']($t.any, $a['bool']).Build(value, $t.fastbox(true, $a['bool'])).then(resolve);
+              yielded = $a['tuple']($t.any, $a['bool']).Build(value, $t.fastbox(true, $a['bool']));
             };
             
             var $done = function () {
-              $a['tuple']($t.any, $a['bool']).Build(null, $t.fastbox(false, $a['bool'])).then(resolve);
+              yielded = $a['tuple']($t.any, $a['bool']).Build(null, $t.fastbox(false, $a['bool']));
             };
 
             var $yieldin = function (ins) {
               stream.$is = ins;
-              stream.Next().then(resolve, reject);
             };
-            
-            f($yield, $yieldin, reject, $done);
-          });
-        },
-      };
-      return $promise.resolve(stream);
+
+            var $reject = function(rejected) {
+              throw rejected;
+            };
+          
+            // Get the next value.
+            f($yield, $yieldin, $reject, $done);
+
+            if (stream.$is) {
+              return stream.Next();
+            } else {
+              return yielded;
+            }
+          },
+        };
+
+        // End sync stream
+        return stream;
+      }
     }
   };
 
@@ -705,6 +793,18 @@ this.Serulian = (function($global) {
   	'all': function(promises) {
   		return Promise.all(promises);
   	},
+
+    'maybeall': function(results) {
+      return Promise.all(results.map($promise.maybe));
+    },
+
+    'maybe': function(r) {
+      if (r && r.then) {
+        return r;
+      } else {
+        return Promise.resolve(r);
+      }
+    },
 
     'new': function(f) {
       return new Promise(f);
@@ -824,7 +924,7 @@ this.Serulian = (function($global) {
 
             // String.
             tpe.prototype.String = function() {
-              return $promise.resolve($t.fastbox(JSON.stringify(this, $global.__serulian_internal.autoUnbox, ' '), $a['string']));
+              return $t.fastbox(JSON.stringify(this, $global.__serulian_internal.autoUnbox, ' '), $a['string']);
             };
 
             // Clone.
@@ -845,7 +945,7 @@ this.Serulian = (function($global) {
                 instance.$markruntimecreated();
               }
 
-              return $promise.resolve(instance);
+              return instance;
             };
 
             // Stringify.
@@ -857,10 +957,9 @@ this.Serulian = (function($global) {
                   return $promise.resolve($t.fastbox(JSON.stringify($this, $global.__serulian_internal.autoUnbox), $a['string']));
                 }
 
-                return $this.Mapping().then(function(mapped) {
-                  return T.Get().then(function(resolved) {
-                    return resolved.Stringify(mapped);
-                  });
+                var mapped = $this.Mapping();
+                return $promise.maybe(T.Get()).then(function(resolved) {
+                  return resolved.Stringify(mapped);
                 });
               };
             };
@@ -874,13 +973,12 @@ this.Serulian = (function($global) {
                   var boxed = $t.fastbox(parsed, tpe);
 
                   // Call Mapping to ensure every field is checked.
-                  return boxed.Mapping().then(function() {
-                    return $promise.resolve(boxed);
-                  });
+                  boxed.Mapping();
+                  return $promise.resolve(boxed);
                 }
 
-                return T.Get().then(function(resolved) {
-                  return (resolved.Parse(value)).then(function(parsed) {
+                return $promise.maybe(T.Get()).then(function(resolved) {
+                  return $promise.maybe(resolved.Parse(value)).then(function(parsed) {
                     return $promise.resolve($t.box(parsed, tpe));
                   });
                 });
@@ -890,27 +988,19 @@ this.Serulian = (function($global) {
             // Equals.
             tpe.$equals = function(left, right) {
               if (left === right) {
-                return $promise.resolve($t.fastbox(true, $a['bool']));
+                return $t.fastbox(true, $a['bool']);
               }
 
-              // TODO: find a way to do this without checking *all* fields.
-              var promises = [];
-              tpe.$fields.forEach(function(field) {
-                promises.push(
-                  $t.equals(left[BOXED_DATA_PROPERTY][field.serializableName], 
-                            right[BOXED_DATA_PROPERTY][field.serializableName],
-                            field.typeref()));
-              });
-
-              return Promise.all(promises).then(function(values) {
-                for (var i = 0; i < values.length; i++) {
-                  if (!$t.unbox(values[i])) {
-                    return values[i];
-                  }
+              for (var i = 0; i < tpe.$fields.length; ++i) {
+                var field = tpe.$fields[i];
+                if (!$t.equals(left[BOXED_DATA_PROPERTY][field.serializableName], 
+                               right[BOXED_DATA_PROPERTY][field.serializableName],
+                               field.typeref())) {
+                  return $t.fastbox(false, $a['bool']);
                 }
+              }
 
-                return $t.fastbox(true, $a['bool']);
-              });
+              return $t.fastbox(true, $a['bool']);
             };
 
             // Mapping.
@@ -918,7 +1008,7 @@ this.Serulian = (function($global) {
               if (this.$serucreated) {
                 // Fast-path for compiler-constructed instances. All data is guarenteed to already
                 // be boxed.
-                return $promise.resolve($t.fastbox(this[BOXED_DATA_PROPERTY], $a['mapping']($t.any)));
+                return $t.fastbox(this[BOXED_DATA_PROPERTY], $a['mapping']($t.any));
               } else {
                 // Slower path for instances unboxed from native data. We call the properties
                 // to make sure we have the boxed forms.
@@ -928,7 +1018,7 @@ this.Serulian = (function($global) {
                   mapped[field.serializableName] = $this[field.name];
                 });
 
-                return $promise.resolve($t.fastbox(mapped, $a['mapping']($t.any)));
+                return $t.fastbox(mapped, $a['mapping']($t.any));
               }
             };
           } // end struct

@@ -6,122 +6,34 @@ $module('property', function () {
     $static.new = function () {
       var instance = new $static();
       instance.SomeBool = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
-      return $promise.resolve(instance);
+      return instance;
     };
     $instance.set$SomeProp = function (val) {
       var $this = this;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        $this.SomeBool = val;
-        $resolve();
-        return;
-      };
-      return $promise.new($continue);
+      $this.SomeBool = val;
+      return;
     };
     $instance.SomeProp = $t.property(function () {
       var $this = this;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        $resolve($this.SomeBool);
-        return;
-      };
-      return $promise.new($continue);
+      return $this.SomeBool;
     });
     this.$typesig = function () {
       if (this.$cachedtypesig) {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeProp|3|5ab5941e": true,
+        "SomeProp|3|43834c3f": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
   $static.AnotherFunction = function (sc) {
-    var $result;
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            sc.SomeProp().then(function ($result0) {
-              $result = $result0;
-              $current = 1;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            sc.set$SomeProp($t.fastbox(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
-              $result = $result0;
-              $current = 2;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 2:
-            sc.SomeProp().then(function ($result0) {
-              $result = $result0;
-              $current = 3;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 3:
-            $resolve($result);
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
-    };
-    return $promise.new($continue);
+    sc.SomeProp();
+    sc.set$SomeProp($t.fastbox(true, $g.____testlib.basictypes.Boolean));
+    return sc.SomeProp();
   };
   $static.TEST = function () {
-    var $result;
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            $g.property.SomeClass.new().then(function ($result1) {
-              return $g.property.AnotherFunction($result1).then(function ($result0) {
-                $result = $result0;
-                $current = 1;
-                $continue($resolve, $reject);
-                return;
-              });
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            $resolve($result);
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
-    };
-    return $promise.new($continue);
+    return $g.property.AnotherFunction($g.property.SomeClass.new());
   };
 });

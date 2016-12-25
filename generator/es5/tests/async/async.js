@@ -1,14 +1,9 @@
 $module('async', function () {
   var $static = this;
   $static.DoSomethingAsync = $t.workerwrap('0af00909', function (a) {
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      $resolve(a);
-      return;
-    };
-    return $promise.new($continue);
+    return a;
   });
-  $static.TEST = function () {
+  $static.TEST = $t.markpromising(function () {
     var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
@@ -37,5 +32,5 @@ $module('async', function () {
       }
     };
     return $promise.new($continue);
-  };
+  });
 });

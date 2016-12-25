@@ -1,0 +1,8 @@
+function<bool> DoSomethingAsync() {
+	return true
+}
+
+function<any> TEST() {
+	var<bool?> someBool = null
+	return someBool ?? (<- DoSomethingAsync())
+}

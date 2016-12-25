@@ -100,6 +100,7 @@ func BuildSource(rootSourceFilePath string, debug bool, vcsDevelopmentDirectorie
 
 	outputWarnings(scopeResult.Warnings)
 	if !scopeResult.Status {
+		log.Println("Scoping failure")
 		outputErrors(scopeResult.Errors)
 		return false
 	}

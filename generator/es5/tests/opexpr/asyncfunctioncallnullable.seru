@@ -1,0 +1,14 @@
+function<bool> DoSomethingAsync() {
+	return true
+}
+
+class SomeClass {
+	function<bool> SomeMethod() {
+		return <- DoSomethingAsync()
+	}	
+}
+
+function<any> TEST() {
+	var<SomeClass?> sc = SomeClass.new()
+	return (sc?.SomeMethod() ?? false)
+}

@@ -100,14 +100,20 @@ func assertNoOttoError(t *testing.T, testName string, source string, err error) 
 }
 
 var generationTests = []generationTest{
+	generationTest{"basic sync test", "sync", "basic", integrationTestSuccessExpected, ""},
+	generationTest{"conditional sync test", "sync", "conditional", integrationTestSuccessExpected, ""},
+	generationTest{"loop sync test", "sync", "loop", integrationTestSuccessExpected, ""},
+
 	generationTest{"basic module test", "module", "basic", integrationTestSuccessExpected, ""},
 	generationTest{"basic class test", "class", "basic", integrationTestSuccessExpected, ""},
 	generationTest{"generic class test", "class", "generic", integrationTestSuccessExpected, ""},
 	generationTest{"class property test", "class", "property", integrationTestSuccessExpected, ""},
 	generationTest{"class inheritance test", "class", "inheritance", integrationTestSuccessExpected, ""},
+	generationTest{"class async inheritance test", "class", "asyncinheritance", integrationTestSuccessExpected, ""},
 	generationTest{"class required fields test", "class", "requiredfields", integrationTestSuccessExpected, ""},
 	generationTest{"class composition required fields test", "class", "requiredcomposition", integrationTestSuccessExpected, ""},
 	generationTest{"constructable interface test", "interface", "constructable", integrationTestSuccessExpected, ""},
+	generationTest{"interface property test", "interface", "interfaceprop", integrationTestSuccessExpected, ""},
 
 	generationTest{"module init test", "module", "init", integrationTestSuccessExpected, ""},
 
@@ -129,6 +135,7 @@ var generationTests = []generationTest{
 	generationTest{"chained conditional statement", "statements", "chainedconditional", integrationTestSuccessExpected, ""},
 	generationTest{"loop statement", "statements", "loop", integrationTestNone, ""},
 	generationTest{"loop expr statement", "statements", "loopexpr", integrationTestNone, ""},
+	generationTest{"loop no expr statement", "statements", "loopnoexpr", integrationTestSuccessExpected, ""},
 	generationTest{"loop var statement", "statements", "loopvar", integrationTestSuccessExpected, ""},
 	generationTest{"loop streamable statement", "statements", "loopstreamable", integrationTestSuccessExpected, ""},
 	generationTest{"continue statement", "statements", "continue", integrationTestNone, ""},
@@ -140,6 +147,7 @@ var generationTests = []generationTest{
 	generationTest{"with statement", "statements", "with", integrationTestSuccessExpected, ""},
 	generationTest{"with as statement", "statements", "withas", integrationTestNone, ""},
 	generationTest{"with exit scope statement", "statements", "withexit", integrationTestSuccessExpected, ""},
+	generationTest{"with async statement", "statements", "withasync", integrationTestSuccessExpected, ""},
 	generationTest{"single call statement", "statements", "singlecall", integrationTestSuccessExpected, ""},
 
 	generationTest{"generic op expression", "opexpr", "generic", integrationTestSuccessExpected, ""},
@@ -152,6 +160,7 @@ var generationTests = []generationTest{
 
 	generationTest{"conditional expression", "condexpr", "basic", integrationTestSuccessExpected, ""},
 	generationTest{"called conditional expression", "condexpr", "calls", integrationTestSuccessExpected, ""},
+	generationTest{"async conditional expression", "condexpr", "async", integrationTestSuccessExpected, ""},
 
 	generationTest{"loop expression", "loopexpr", "basic", integrationTestSuccessExpected, ""},
 
@@ -163,14 +172,17 @@ var generationTests = []generationTest{
 	generationTest{"function reference access expression", "accessexpr", "funcref", integrationTestSuccessExpected, ""},
 	generationTest{"nullable member access expression", "accessexpr", "nullaccess", integrationTestSuccessExpected, ""},
 	generationTest{"dynamic property access expression", "accessexpr", "dynamicprop", integrationTestSuccessExpected, ""},
+	generationTest{"async nullable member access expression", "accessexpr", "asyncnullaccess", integrationTestSuccessExpected, ""},
 
 	generationTest{"full lambda expression", "lambdaexpr", "full", integrationTestSuccessExpected, ""},
 	generationTest{"mini lambda expression", "lambdaexpr", "mini", integrationTestSuccessExpected, ""},
 
 	generationTest{"null comparison short circuit", "opexpr", "nullcomparecall", integrationTestSuccessExpected, ""},
 	generationTest{"null comparison", "opexpr", "nullcompare", integrationTestSuccessExpected, ""},
+	generationTest{"async null comparison", "opexpr", "asyncnullcompare", integrationTestSuccessExpected, ""},
 	generationTest{"function call", "opexpr", "functioncall", integrationTestSuccessExpected, ""},
 	generationTest{"function call nullable", "opexpr", "functioncallnullable", integrationTestSuccessExpected, ""},
+	generationTest{"async function call nullable", "opexpr", "asyncfunctioncallnullable", integrationTestSuccessExpected, ""},
 	generationTest{"boolean operators", "opexpr", "boolean", integrationTestSuccessExpected, ""},
 	generationTest{"binary op expressions", "opexpr", "binary", integrationTestSuccessExpected, ""},
 	generationTest{"unary op expressions", "opexpr", "unary", integrationTestNone, ""},
@@ -200,6 +212,7 @@ var generationTests = []generationTest{
 	generationTest{"template string literal", "literals", "templatestr", integrationTestSuccessExpected, ""},
 	generationTest{"tagged template string literal", "literals", "taggedtemplatestr", integrationTestSuccessExpected, ""},
 	generationTest{"escaped template string literal", "literals", "escapedtemplatestr", integrationTestNone, ""},
+	generationTest{"async template string literal", "literals", "asynctaggedtemplatestr", integrationTestSuccessExpected, ""},
 
 	generationTest{"basic webidl", "webidl", "basic", integrationTestSuccessExpected, ""},
 
@@ -240,13 +253,17 @@ var generationTests = []generationTest{
 	generationTest{"simple generator success test", "generator", "simple", integrationTestSuccessExpected, ""},
 	generationTest{"nested generator success test", "generator", "nested", integrationTestSuccessExpected, ""},
 	generationTest{"resource generator success test", "generator", "resource", integrationTestSuccessExpected, ""},
+	generationTest{"async generator success test", "generator", "async", integrationTestSuccessExpected, ""},
 
+	generationTest{"empty resolve statement test", "resolve", "empty", integrationTestNone, ""},
 	generationTest{"simple resolve statement test", "resolve", "simple", integrationTestSuccessExpected, ""},
 	generationTest{"looped resolve statement test", "resolve", "looped", integrationTestSuccessExpected, ""},
 	generationTest{"handle rejection resolve statement test", "resolve", "resolvereject", integrationTestSuccessExpected, ""},
 	generationTest{"async resolve statement test", "resolve", "async", integrationTestSuccessExpected, ""},
 	generationTest{"expect rejection resolve statement test", "resolve", "expectrejection", integrationTestSuccessExpected, ""},
 	generationTest{"cast rejection resolve statement test", "resolve", "castrejection", integrationTestSuccessExpected, ""},
+	generationTest{"cast ignore resolve statement test", "resolve", "castignore", integrationTestSuccessExpected, ""},
+	generationTest{"cast ignore interface resolve statement test", "resolve", "castignoreinterface", integrationTestSuccessExpected, ""},
 
 	generationTest{"sml simple function test", "sml", "simplefunc", integrationTestSuccessExpected, ""},
 	generationTest{"sml simple class test", "sml", "simpleclass", integrationTestSuccessExpected, ""},
@@ -261,6 +278,9 @@ var generationTests = []generationTest{
 	generationTest{"sml no children test", "sml", "nochildren", integrationTestSuccessExpected, ""},
 	generationTest{"sml decorator test", "sml", "decorator", integrationTestSuccessExpected, ""},
 	generationTest{"sml attributes test", "sml", "attributes", integrationTestSuccessExpected, ""},
+	generationTest{"sml async function test", "sml", "asyncfunction", integrationTestSuccessExpected, ""},
+	generationTest{"sml maybe async function test", "sml", "maybeasyncfunction", integrationTestSuccessExpected, ""},
+	generationTest{"sml async children test", "sml", "asyncchildren", integrationTestSuccessExpected, ""},
 }
 
 func TestGenerator(t *testing.T) {
@@ -291,8 +311,7 @@ func TestGenerator(t *testing.T) {
 
 		buf := esbuilder.BuildSource(builder)
 		source, err := escommon.FormatECMASource(buf.String())
-
-		if !assert.Nil(t, err, "Could not format module source under test %v: %v", test.name, err) {
+		if !assert.Nil(t, err, "Could not format module source under test %v: %v\n%v", test.name, err, buf.String()) {
 			continue
 		}
 
@@ -363,17 +382,29 @@ func TestGenerator(t *testing.T) {
 				}
 
 				testCall := `
+					var maybe = function(r) {
+					  if (r.then) {
+				        return r;
+				      } else {
+				        return Promise.resolve(r);
+				      }
+					};
+
 					$resolved = undefined;
 					$rejected = undefined;
 
 					this.boolValue = true;
 
 					this.Serulian.then(function(g) {
-						g.` + test.entrypoint + `.TEST().then(function(r) {
-							$resolved = r.$wrapped;
-						}).catch(function(err) {
-							$rejected = err;
-						});
+						try {
+							maybe(g.` + test.entrypoint + `.TEST()).then(function(r) {
+								$resolved = r.$wrapped;
+							}).catch(function(err) {
+								$rejected = err;
+							});
+						} catch (e) {
+							$rejected = e;
+						}
 					});
 					
 					if ($rejected) {
@@ -403,6 +434,10 @@ func TestGenerator(t *testing.T) {
 						continue
 					}
 				} else {
+					if !assert.NotNil(t, rerr, "Expected error for test case %v", test.name) {
+						continue
+					}
+
 					if !assert.Equal(t, test.expectedErrorMessage, rerr.Error(), "Error message mismatch for test case %v: %v", test.name, rerr) {
 						continue
 					}

@@ -3,15 +3,15 @@
         "Key": "b544e713d5c39c8ba60a6d743b6a4161",
         "Kind": 1,
         "Children": {
-            "a0c647703c25e11adbb5de37e19bcfbe": {
+            "a6f052f2007fa92daef7a0f494e50177": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "a0c647703c25e11adbb5de37e19bcfbe",
+                    "Key": "a6f052f2007fa92daef7a0f494e50177",
                     "Kind": 7,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
-                        "tdg-member-promising": "true",
+                        "tdg-member-promising": "1",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cInnerClass\u003e",
                         "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0014function\u003cInnerClass\u003e",
@@ -34,15 +34,15 @@
         "Key": "deef8e748e6aeb21eb42a80fcc6b0376",
         "Kind": 1,
         "Children": {
-            "4a66d52b2b7227540e3aa74d38222461": {
+            "1889ac7816f83a770e92ae4870c02c49": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "4a66d52b2b7227540e3aa74d38222461",
+                    "Key": "1889ac7816f83a770e92ae4870c02c49",
                     "Kind": 7,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
-                        "tdg-member-promising": "true",
+                        "tdg-member-promising": "1",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cSomeClass\u003cT, Q\u003e\u003e",
                         "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0019function\u003cSomeClass\u003cT, Q\u003e\u003e",
@@ -111,24 +111,6 @@
         "Key": "e8aa1db062465caf370f3346b64f883d",
         "Kind": 1,
         "Children": {
-            "48267cf28f99f6d04c8b145fc31412d6": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "48267cf28f99f6d04c8b145fc31412d6",
-                    "Kind": 7,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-name": "new",
-                        "tdg-member-promising": "true",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cAnotherClass\u003cT\u003e\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0019function\u003cAnotherClass\u003cT\u003e\u003e",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "7|NodeType|tdg",
-                        "tdg-source-module": "tests/complexgeneric/complexgeneric.seru"
-                    }
-                }
-            },
             "693d012856864506391cde569a54dd3c": {
                 "Predicate": "tdg-declaration-generic",
                 "Child": {
@@ -142,6 +124,24 @@
                         "tdg-generic-subtype": "any",
                         "tdg-node-kind": "11|NodeType|tdg",
                         "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "bfbc23b620a6ceb476d1cd341380eafe": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "bfbc23b620a6ceb476d1cd341380eafe",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-name": "new",
+                        "tdg-member-promising": "1",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cAnotherClass\u003cT\u003e\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0019function\u003cAnotherClass\u003cT\u003e\u003e",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/complexgeneric/complexgeneric.seru"
                     }
                 }
             }

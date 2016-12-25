@@ -14,6 +14,20 @@ import (
 	"github.com/serulian/compiler/parser"
 )
 
+// SRGMemberIterator is an iterator of SRGMembers's.
+type SRGMemberIterator struct {
+	nodeIterator compilergraph.NodeIterator
+	srg          *SRG // The parent SRG.
+}
+
+func (smi SRGMemberIterator) Next() bool {
+	return smi.nodeIterator.Next()
+}
+
+func (smi SRGMemberIterator) Member() SRGMember {
+	return SRGMember{smi.nodeIterator.Node(), smi.srg}
+}
+
 // SRGMember wraps a member declaration or definition in the SRG.
 type SRGMember struct {
 	compilergraph.GraphNode
@@ -169,6 +183,10 @@ func (m SRGMember) Setter() (SRGImplementable, bool) {
 	}
 
 	return SRGImplementable{node, m.srg}, true
+}
+
+func (m SRGMember) AsImplementable() SRGImplementable {
+	return SRGImplementable{m.GraphNode, m.srg}
 }
 
 // IsReadOnly returns whether the member is marked as explicitly read-only.

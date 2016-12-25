@@ -6,7 +6,7 @@ $module('nominalbase', function () {
     $static.new = function () {
       var instance = new $static();
       instance.SomeField = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
-      return $promise.resolve(instance);
+      return instance;
     };
     this.$typesig = function () {
       return {
@@ -27,19 +27,14 @@ $module('nominalbase', function () {
     };
     $instance.SomeProp = $t.property(function () {
       var $this = this;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        $resolve($t.fastbox(!$this.$wrapped.SomeField.$wrapped, $g.____testlib.basictypes.Boolean));
-        return;
-      };
-      return $promise.new($continue);
+      return $t.fastbox(!$this.$wrapped.SomeField.$wrapped, $g.____testlib.basictypes.Boolean);
     });
     this.$typesig = function () {
       if (this.$cachedtypesig) {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeProp|3|5ab5941e": true,
+        "SomeProp|3|43834c3f": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -58,90 +53,24 @@ $module('nominalbase', function () {
     };
     $instance.GetValue = function () {
       var $this = this;
-      var $result;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        while (true) {
-          switch ($current) {
-            case 0:
-              $t.box($this, $g.nominalbase.FirstNominal).SomeProp().then(function ($result0) {
-                $result = $t.fastbox(!$result0.$wrapped, $g.____testlib.basictypes.Boolean);
-                $current = 1;
-                $continue($resolve, $reject);
-                return;
-              }).catch(function (err) {
-                $reject(err);
-                return;
-              });
-              return;
-
-            case 1:
-              $resolve($result);
-              return;
-
-            default:
-              $resolve();
-              return;
-          }
-        }
-      };
-      return $promise.new($continue);
+      return $t.fastbox(!$t.box($this, $g.nominalbase.FirstNominal).SomeProp().$wrapped, $g.____testlib.basictypes.Boolean);
     };
     this.$typesig = function () {
       if (this.$cachedtypesig) {
         return this.$cachedtypesig;
       }
       var computed = {
-        "GetValue|2|29dc432d<5ab5941e>": true,
+        "GetValue|2|29dc432d<43834c3f>": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
   $static.TEST = function () {
-    var $result;
     var sc;
     var sn;
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            $g.nominalbase.SomeClass.new().then(function ($result0) {
-              $result = $result0;
-              $current = 1;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            sc = $result;
-            sn = $t.box($t.fastbox(sc, $g.nominalbase.FirstNominal), $g.nominalbase.SecondNominal);
-            sn.GetValue().then(function ($result0) {
-              $result = $result0;
-              $current = 2;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 2:
-            $resolve($result);
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
-    };
-    return $promise.new($continue);
+    sc = $g.nominalbase.SomeClass.new();
+    sn = $t.box($t.fastbox(sc, $g.nominalbase.FirstNominal), $g.nominalbase.SecondNominal);
+    return sn.GetValue();
   };
 });

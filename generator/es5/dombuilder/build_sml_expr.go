@@ -9,6 +9,7 @@ import (
 
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/codedom"
+	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/parser"
@@ -101,17 +102,17 @@ func (db *domBuilder) buildSmlExpression(node compilergraph.GraphNode) codedom.E
 				}
 
 				generatorFunc := codedom.FunctionDefinition([]string{}, []string{}, yielders[0], false, codedom.GeneratorFunction, node)
-				generatorExpr := codedom.FunctionCall(generatorFunc, []codedom.Expression{}, node)
-				declarationArguments = append(declarationArguments, codedom.AwaitPromise(generatorExpr, node))
+				generatorExpr := codedom.AnonymousClosureCall(generatorFunc, []codedom.Expression{}, node)
+				declarationArguments = append(declarationArguments, generatorExpr)
 			}
+
 		default:
 			panic("Unknown SML children scope label")
 		}
 	}
 
 	// The value of declaration function invoked with the arguments is the initial definition.
-	var definition = codedom.AwaitPromise(
-		codedom.FunctionCall(declarationFunction, declarationArguments, node), node)
+	var definition = codedom.InvokeFunction(declarationFunction, declarationArguments, scopegraph.PromisingAccessFunctionCall, db.scopegraph, node)
 
 	// Add any decorators as wrapping around the definition call.
 	dit := node.StartQuery().
@@ -134,9 +135,7 @@ func (db *domBuilder) buildSmlExpression(node compilergraph.GraphNode) codedom.E
 
 		// The decorator is invoked over the definition.
 		decoratorArgs := []codedom.Expression{definition, decoratorValue}
-		definition = codedom.AwaitPromise(
-			codedom.FunctionCall(decoratorFunc, decoratorArgs, decoratorNode),
-			decoratorNode)
+		definition = codedom.InvokeFunction(decoratorFunc, decoratorArgs, scopegraph.PromisingAccessFunctionCall, db.scopegraph, decoratorNode)
 	}
 
 	return definition

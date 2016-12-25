@@ -1,0 +1,13 @@
+var<any> someValue = null
+
+class SomeClass {
+	property<int> SomeProperty {
+		get {
+			return <- someValue.(awaitable<int>)
+		}
+	}
+}
+
+function<void> DynamicAccess(f any) {
+	f->SomeProperty
+}

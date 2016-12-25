@@ -5,11 +5,17 @@
 package statemachine
 
 import (
+	"fmt"
+
 	"github.com/serulian/compiler/generator/es5/shared"
 )
 
+var _ = fmt.Sprint
+
 type snippets struct {
-	templater *shared.Templater
+	functionTraits shared.StateFunctionTraits
+	templater      *shared.Templater
+	resources      *ResourceStack
 }
 
 func (s snippets) GeneratorDone() string {
@@ -22,45 +28,128 @@ func (s snippets) GeneratorDone() string {
 }
 
 func (s snippets) Resolve(value string) string {
-	template := `
-		$resolve({{ . }});
-		return;
-	`
+	var template = ""
+	switch s.functionTraits.Type() {
+	case shared.StateFunctionNormalSync:
+		template = `
+			return {{ . }};
+		`
+
+		if s.functionTraits.ManagesResources() {
+			template = `
+				{{ if . }}
+				var $pat = {{ . }};
+				{{ else }}
+				var $pat = undefined;
+				{{ end }}
+				$resources.popall();
+				return $pat;
+			`
+		}
+
+	case shared.StateFunctionNormalAsync:
+		template = `
+			$resolve({{ . }});
+			return;
+		`
+
+	default:
+		panic("Unknown function kind in resolve")
+	}
 
 	return s.templater.Execute("resolve", template, value)
 }
 
 func (s snippets) Reject(value string) string {
-	template := `
-		$reject({{ . }});
-		return;
-	`
+	var template = ""
+	if s.functionTraits.IsAsynchronous() {
+		template = `
+			$reject({{ . }});
+			return;
+		`
+	} else {
+		template = `
+			throw {{ . }};
+		`
+
+		if s.functionTraits.ManagesResources() {
+			template = `
+				var $pat = {{ . }};
+				$resources.popall();
+				throw $pat;
+			`
+		}
+	}
 
 	return s.templater.Execute("reject", template, value)
 }
 
-func (s snippets) Continue(isGenerator bool) string {
-	var template string = ""
+func (s snippets) Continue() string {
+	var template = ""
+	switch s.functionTraits.Type() {
+	case shared.StateFunctionNormalSync:
+		template = `
+			continue syncloop;
+		`
 
-	if isGenerator {
+	case shared.StateFunctionNormalAsync:
 		template = `
-		$continue($yield, $yieldin, $reject, $done);
-		return;
-	`
-	} else {
+			$continue($resolve, $reject);
+			return;
+		`
+
+	case shared.StateFunctionSyncOrAsyncGenerator:
 		template = `
-		$continue($resolve, $reject);
-		return;
-	`
+			$continue($yield, $yieldin, $reject, $done);
+			return;
+		`
+
+	default:
+		panic("Unknown function kind in continue")
 	}
 
 	return s.templater.Execute("continue", template, nil)
 }
 
-func (s snippets) SetState(id stateId) string {
+func (s snippets) setState(id stateId, followingAction string) string {
+	data := struct {
+		TargetID        int
+		FollowingAction string
+		ResourceNames   []string
+		IsAsync         bool
+	}{int(id), followingAction, s.resources.OutOfScope(id), s.functionTraits.IsAsynchronous()}
+
 	template := `
-		$current = {{ . }};
+		$current = {{ .TargetID }};
+		{{ .FollowingAction }}
 	`
 
-	return s.templater.Execute("setstate", template, int(id))
+	if len(data.ResourceNames) > 0 {
+		template = `
+		  $resources.popr(
+			{{ range $idx, $name := .ResourceNames }}
+				{{ if $idx }},{{ end }}
+				'{{ $name }}'
+			{{ end }}
+		  ){{ if .IsAsync }}.then(function() {
+		  	$current = {{ .TargetID }};
+		  	{{ .FollowingAction }}
+		  }){{ end }};
+
+		  {{ if not .IsAsync }}
+			$current = {{ .TargetID }};
+			{{ .FollowingAction }}
+		  {{ end }}
+		`
+	}
+
+	return s.templater.Execute("setstate", template, data)
+}
+
+func (s snippets) SetStateAndBreak(state *state) string {
+	return s.setState(state.ID, "return")
+}
+
+func (s snippets) SetStateAndContinue(state *state) string {
+	return s.setState(state.ID, s.Continue())
 }

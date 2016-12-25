@@ -5,11 +5,16 @@
 package dombuilder
 
 import (
+	"fmt"
+
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/codedom"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
+	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/parser"
 )
+
+var _ = fmt.Printf
 
 // buildStatementBlock builds the CodeDOM for a statement block.
 func (db *domBuilder) buildStatementBlock(node compilergraph.GraphNode) (codedom.Statement, codedom.Statement) {
@@ -131,16 +136,19 @@ func (db *domBuilder) buildLoopStatement(node compilergraph.GraphNode) (codedom.
 			resultVarName := db.generateScopeVarName(node)
 
 			namedValueScope, _ := db.scopegraph.GetScope(namedValue)
+			loopExpressionScope, _ := db.scopegraph.GetScope(node.GetNode(parser.NodeLoopStatementExpression))
+			loopExpressionType := loopExpressionScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
 
 			// Create the stream variable.
 			streamVarName := db.generateScopeVarName(node)
 			var streamVariable = codedom.VarDefinitionWithInit(streamVarName, loopExpr, node)
+			var streamType = db.scopegraph.TypeGraph().StreamType()
 
 			// If the expression is Streamable, first call .Stream() on the expression to get the stream
 			// for the variable.
 			if namedValueScope.HasLabel(proto.ScopeLabel_STREAMABLE_LOOP) {
 				// Call .Stream() on the expression.
-				streamableMember, _ := db.scopegraph.TypeGraph().StreamableType().GetMember("Stream")
+				streamableMember, _ := loopExpressionType.ReferredType().GetMember("Stream")
 				streamExpr := codedom.MemberCall(
 					codedom.MemberReference(loopExpr, streamableMember, namedValue),
 					streamableMember,
@@ -148,6 +156,10 @@ func (db *domBuilder) buildLoopStatement(node compilergraph.GraphNode) (codedom.
 					namedValue)
 
 				streamVariable = codedom.VarDefinitionWithInit(streamVarName, streamExpr, node)
+				streamReturnType, _ := streamableMember.ReturnType()
+				streamType = streamReturnType.ReferredType()
+			} else {
+				streamType = loopExpressionType.ReferredType()
 			}
 
 			// Create variables to hold the named value (as requested in the SRG) and the loop result.
@@ -155,7 +167,7 @@ func (db *domBuilder) buildLoopStatement(node compilergraph.GraphNode) (codedom.
 			resultVariable := codedom.VarDefinition(resultVarName, node)
 
 			// Create an expression statement to set the result variable to a call to Next().
-			streamMember, _ := db.scopegraph.TypeGraph().StreamType().GetMember("Next")
+			streamMember, _ := streamType.GetMember("Next")
 			nextCallExpr := codedom.MemberCall(
 				codedom.MemberReference(codedom.LocalReference(streamVarName, node), streamMember, node),
 				streamMember,
@@ -227,7 +239,7 @@ func (db *domBuilder) buildLoopStatement(node compilergraph.GraphNode) (codedom.
 		codedom.AssignNextStatement(bodyEnd, directJump)
 		codedom.AssignNextStatement(startStatement, bodyStart)
 
-		return startStatement, directJump
+		return startStatement, finalStatement
 	}
 }
 
@@ -261,10 +273,15 @@ func (db *domBuilder) buildWithStatement(node compilergraph.GraphNode) codedom.S
 		resourceVar = db.generateScopeVarName(node)
 	}
 
-	resourceExpr := db.getExpression(node, parser.NodeWithStatementExpression)
+	resourceExpr := node.GetNode(parser.NodeWithStatementExpression)
+	resourceScope, _ := db.scopegraph.GetScope(resourceExpr)
+	resourceType := resourceScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
+	releaseMethod, _ := resourceType.ResolveMember("Release", typegraph.MemberResolutionInstance)
+
+	resourceDomExpr := db.buildExpression(resourceExpr)
 	withStatement, _ := db.getStatements(node, parser.NodeWithStatementBlock)
 
-	return codedom.ResourceBlock(resourceVar, resourceExpr, withStatement, node)
+	return codedom.ResourceBlock(resourceVar, resourceDomExpr, withStatement, releaseMethod, node)
 }
 
 // buildMatchStatement builds the CodeDOM for a match statement.

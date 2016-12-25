@@ -15,8 +15,8 @@ type generatedSourceResult struct {
 	// Source is the generated source code.
 	Source esbuilder.SourceBuilder
 
-	// IsPromise indicates whether the generated source is a promise.
-	IsPromise bool
+	// IsAsync indicates whether the generated source is async.
+	IsAsync bool
 }
 
 // generatedInitMap defines an ordered map for generated source results, that also
@@ -66,7 +66,7 @@ func (gim *generatedInitMap) Promising() bool {
 // but this function takes in an interface{} to match the interface of the normal OrderedMap.
 func (gim *generatedInitMap) Set(key interface{}, value interface{}) {
 	result := value.(generatedSourceResult)
-	if result.IsPromise {
+	if result.IsAsync {
 		gim.promising = true
 		wrappedSource := esbuilder.Template("wrappedinit", `
 			(init.push({{ emit . }}))

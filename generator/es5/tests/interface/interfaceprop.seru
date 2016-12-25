@@ -1,0 +1,40 @@
+function<bool> DoSomethingAsync() {
+	return true
+}
+
+class SomeClass {
+	var<bool> propValue = true
+
+	property<bool> SomeProperty {
+		get {
+			return this.propValue
+		}
+		set {
+			this.propValue = val
+		}
+	}
+}
+
+class AnotherClass {
+	property<bool> SomeProperty {
+		get {
+			return <- DoSomethingAsync() 
+		}
+		set {
+			// Do nothing.
+		}
+	}
+}
+
+interface SomeInterface {
+	property<bool> SomeProperty
+}
+
+function<any> TEST(){
+	var<SomeInterface> si = SomeClass.new()
+	var<SomeInterface> si2 = AnotherClass.new()
+
+	si.SomeProperty = false
+
+	return !si.SomeProperty && si2.SomeProperty
+}

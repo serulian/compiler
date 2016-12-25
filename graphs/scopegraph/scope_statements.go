@@ -296,7 +296,8 @@ func (sb *scopeBuilder) scopeNamedValue(node compilergraph.GraphNode, context sc
 			predicate = parser.NodeLoopExpressionStreamExpression
 		}
 
-		exprScope := sb.getScope(parentNode.GetNode(predicate), context)
+		loopExpr := parentNode.GetNode(predicate)
+		exprScope := sb.getScope(loopExpr, context)
 		if !exprScope.GetIsValid() {
 			return newScope().Invalid().GetScope()
 		}
@@ -306,6 +307,13 @@ func (sb *scopeBuilder) scopeNamedValue(node compilergraph.GraphNode, context sc
 		// Check for a Streamable.
 		generics, lerr := loopExprType.CheckConcreteSubtypeOf(sb.sg.tdg.StreamableType())
 		if lerr == nil {
+			// Mark that we are invoking the Next() method of the iterator.
+			streamMethod, _ := loopExprType.ResolveMember("Stream", typegraph.MemberResolutionInstance)
+			streamType, _ := streamMethod.ReturnType()
+
+			nextMethod, _ := streamType.TransformUnder(loopExprType).ResolveMember("Next", typegraph.MemberResolutionInstance)
+			context.staticDependencyCollector.registerDependency(nextMethod)
+
 			return newScope().Valid().WithLabel(proto.ScopeLabel_STREAMABLE_LOOP).Assignable(generics[0]).GetScope()
 		} else {
 			generics, serr := loopExprType.CheckConcreteSubtypeOf(sb.sg.tdg.StreamType())
@@ -313,6 +321,9 @@ func (sb *scopeBuilder) scopeNamedValue(node compilergraph.GraphNode, context sc
 				sb.decorateWithError(parentNode, "Loop iterable expression must implement type 'stream' or 'streamable': %v", serr)
 				return newScope().Invalid().GetScope()
 			}
+
+			nextMethod, _ := loopExprType.ResolveMember("Next", typegraph.MemberResolutionInstance)
+			context.staticDependencyCollector.registerDependency(nextMethod)
 
 			return newScope().WithLabel(proto.ScopeLabel_STREAM_LOOP).Valid().Assignable(generics[0]).GetScope()
 		}
@@ -327,7 +338,6 @@ func (sb *scopeBuilder) scopeNamedValue(node compilergraph.GraphNode, context sc
 func (sb *scopeBuilder) scopeWithStatement(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Scope the child block.
 	var valid = true
-
 	statementBlockScope := sb.getScope(node.GetNode(parser.NodeWithStatementBlock), context)
 	if !statementBlockScope.GetIsValid() {
 		valid = false
@@ -345,6 +355,10 @@ func (sb *scopeBuilder) scopeWithStatement(node compilergraph.GraphNode, context
 		sb.decorateWithError(node, "With expression must implement the Releasable interface: %v", serr)
 		return newScope().Invalid().ReturningTypeOf(statementBlockScope).LabelSetOf(statementBlockScope).GetScope()
 	}
+
+	// Mark a dependency on the Release call.
+	release, _ := exprType.ResolveMember("Release", typegraph.MemberResolutionInstance)
+	context.staticDependencyCollector.registerDependency(release)
 
 	return newScope().IsValid(valid).ReturningTypeOf(statementBlockScope).LabelSetOf(statementBlockScope).GetScope()
 }
@@ -875,6 +889,7 @@ func (sb *scopeBuilder) scopeArrowStatement(node compilergraph.GraphNode, contex
 		}
 	}
 
+	context.rootLabelSet.Append(proto.ScopeLabel_AWAITS)
 	return newScope().Valid().GetScope()
 }
 

@@ -1,7 +1,7 @@
-var<bool> someInt = true
+var<bool> someBool = true
 
 function<bool> AnotherFunction() {
-	return someInt
+	return someBool
 }
 
 var<bool> anotherBool = AnotherFunction()

@@ -48,12 +48,12 @@ func (rn ReferencedName) ReferencedNode() compilergraph.GraphNode {
 	}
 }
 
-// IsPromising returns true if the referenced name is promising.
-func (rn ReferencedName) IsPromising() bool {
+// IsPromising returns whether the referenced name is promising.
+func (rn ReferencedName) IsPromising() typegraph.MemberPromisingOption {
 	if rn.typeInfo != nil {
 		return rn.typeInfo.IsPromising()
 	} else {
-		return false
+		return typegraph.MemberNotPromising
 	}
 }
 

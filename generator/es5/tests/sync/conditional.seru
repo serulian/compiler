@@ -1,0 +1,11 @@
+function<int> DoSomething() {
+	return 42
+}
+
+function<any> TEST() {
+	if DoSomething() == 42 {
+		return true
+	} else {
+		return false
+	}
+}

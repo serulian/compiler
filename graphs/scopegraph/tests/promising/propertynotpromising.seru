@@ -1,0 +1,21 @@
+class SomeClass {
+	var<bool> SomeBool = false
+
+	property<bool> SomeProp {
+		get { return this.SomeBool }
+		set {
+			this.SomeBool = val
+		}
+	}
+}
+
+function<bool> AnotherFunction(sc SomeClass) {
+	sc.SomeBool
+	sc.SomeProp
+	sc.SomeProp = true
+	return sc.SomeProp
+}
+
+function<any> TEST() {
+	return AnotherFunction(SomeClass.new())
+}

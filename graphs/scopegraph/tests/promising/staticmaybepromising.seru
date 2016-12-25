@@ -1,0 +1,22 @@
+function<int> DoSomethingAsync() {
+	return 2
+}
+
+interface SomeInterface {
+	function<int> DoSomething()
+}
+
+class SomeClass {
+	function<int> DoSomething() {
+		return <- DoSomethingAsync()
+	}
+}
+
+function<int?> Caller(si SomeInterface?) {
+	return si?.DoSomething()
+}
+
+function<void> TEST() {
+	Caller(null)
+}
+

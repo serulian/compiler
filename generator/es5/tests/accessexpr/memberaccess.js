@@ -7,50 +7,18 @@ $module('memberaccess', function () {
       var instance = new $static();
       instance.someInt = $t.fastbox(2, $g.____testlib.basictypes.Integer);
       instance.someBool = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
-      return $promise.resolve(instance);
+      return instance;
     };
     $static.Build = function () {
-      var $result;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        while (true) {
-          switch ($current) {
-            case 0:
-              $g.memberaccess.SomeClass.new().then(function ($result0) {
-                $result = $result0;
-                $current = 1;
-                $continue($resolve, $reject);
-                return;
-              }).catch(function (err) {
-                $reject(err);
-                return;
-              });
-              return;
-
-            case 1:
-              $resolve($result);
-              return;
-
-            default:
-              $resolve();
-              return;
-          }
-        }
-      };
-      return $promise.new($continue);
+      return $g.memberaccess.SomeClass.new();
     };
     $instance.InstanceFunc = function () {
       var $this = this;
-      return $promise.empty();
+      return;
     };
     $instance.SomeProp = $t.property(function () {
       var $this = this;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        $resolve($this.someInt);
-        return;
-      };
-      return $promise.new($continue);
+      return $this.someInt;
     });
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -59,178 +27,29 @@ $module('memberaccess', function () {
       var computed = {
         "Build|1|29dc432d<a95b5789>": true,
         "InstanceFunc|2|29dc432d<void>": true,
-        "SomeProp|3|c44e6c87": true,
+        "SomeProp|3|775378f0": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
   $static.DoSomething = function (sc, scn) {
-    var $result;
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            $t.dynamicaccess($g.memberaccess.SomeClass, 'Build').then(function ($result0) {
-              $result = $result0;
-              $current = 1;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            $t.dynamicaccess($g.memberaccess.SomeClass, 'Build').then(function ($result0) {
-              $result = $result0;
-              $current = 2;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 2:
-            $t.dynamicaccess(scn, 'someInt').then(function ($result0) {
-              $result = $result0;
-              $current = 3;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 3:
-            $t.dynamicaccess(maimport, 'AnotherFunction').then(function ($result0) {
-              $result = $result0;
-              $current = 4;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 4:
-            $g.maimport.AnotherFunction;
-            $g.maimport.AnotherFunction;
-            sc.InstanceFunc().then(function ($result0) {
-              $result = $result0;
-              $current = 5;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 5:
-            $t.dynamicaccess(sc, 'InstanceFunc').then(function ($result0) {
-              $result = $result0;
-              $current = 6;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 6:
-            sc.SomeProp().then(function ($result0) {
-              $result = $result0;
-              $current = 7;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 7:
-            sc.SomeProp().then(function ($result0) {
-              $result = $result0;
-              $current = 8;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 8:
-            scn.SomeProp().then(function ($result0) {
-              $result = $result0;
-              $current = 9;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
-    };
-    return $promise.new($continue);
+    $t.dynamicaccess($g.memberaccess.SomeClass, 'Build', false);
+    $t.dynamicaccess($g.memberaccess.SomeClass, 'Build', false);
+    $t.dynamicaccess(scn, 'someInt', false);
+    $t.dynamicaccess(maimport, 'AnotherFunction', false);
+    $g.maimport.AnotherFunction;
+    $g.maimport.AnotherFunction;
+    sc.InstanceFunc();
+    $t.dynamicaccess(sc, 'InstanceFunc', false);
+    sc.SomeProp();
+    sc.SomeProp();
+    scn.SomeProp();
+    return;
   };
   $static.TEST = function () {
-    var $result;
     var sc;
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            $g.memberaccess.SomeClass.new().then(function ($result0) {
-              $result = $result0;
-              $current = 1;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            sc = $result;
-            $promise.resolve(sc.someBool.$wrapped).then(function ($result0) {
-              $result = $t.fastbox($result0 && sc.someBool.$wrapped, $g.____testlib.basictypes.Boolean);
-              $current = 2;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 2:
-            $resolve($result);
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
-    };
-    return $promise.new($continue);
+    sc = $g.memberaccess.SomeClass.new();
+    return $t.fastbox(sc.someBool.$wrapped && sc.someBool.$wrapped, $g.____testlib.basictypes.Boolean);
   };
 });

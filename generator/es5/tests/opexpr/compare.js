@@ -5,23 +5,13 @@ $module('compare', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      return $promise.resolve(instance);
+      return instance;
     };
     $static.$equals = function (first, second) {
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
-        return;
-      };
-      return $promise.new($continue);
+      return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
     };
     $static.$compare = function (first, second) {
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        $resolve($t.fastbox(1, $g.____testlib.basictypes.Integer));
-        return;
-      };
-      return $promise.new($continue);
+      return $t.fastbox(1, $g.____testlib.basictypes.Integer);
     };
     this.$typesig = function () {
       return {
@@ -30,133 +20,16 @@ $module('compare', function () {
   });
 
   $static.TEST = function () {
-    var $result;
     var first;
     var second;
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            $g.compare.SomeClass.new().then(function ($result0) {
-              $result = $result0;
-              $current = 1;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            first = $result;
-            $g.compare.SomeClass.new().then(function ($result0) {
-              $result = $result0;
-              $current = 2;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 2:
-            second = $result;
-            $g.compare.SomeClass.$equals(first, second).then(function ($result0) {
-              $result = $result0;
-              $current = 3;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 3:
-            $g.compare.SomeClass.$equals(first, second).then(function ($result0) {
-              $result = $t.fastbox(!$result0.$wrapped, $g.____testlib.basictypes.Boolean);
-              $current = 4;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 4:
-            $g.compare.SomeClass.$compare(first, second).then(function ($result0) {
-              $result = $t.fastbox($result0.$wrapped < 0, $g.____testlib.basictypes.Boolean);
-              $current = 5;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 5:
-            $g.compare.SomeClass.$compare(first, second).then(function ($result0) {
-              $result = $t.fastbox($result0.$wrapped > 0, $g.____testlib.basictypes.Boolean);
-              $current = 6;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 6:
-            $g.compare.SomeClass.$compare(first, second).then(function ($result0) {
-              $result = $t.fastbox($result0.$wrapped <= 0, $g.____testlib.basictypes.Boolean);
-              $current = 7;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 7:
-            $g.compare.SomeClass.$compare(first, second).then(function ($result0) {
-              $result = $t.fastbox($result0.$wrapped >= 0, $g.____testlib.basictypes.Boolean);
-              $current = 8;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 8:
-            $g.compare.SomeClass.$equals(first, second).then(function ($result0) {
-              $result = $result0;
-              $current = 9;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 9:
-            $resolve($result);
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
-    };
-    return $promise.new($continue);
+    first = $g.compare.SomeClass.new();
+    second = $g.compare.SomeClass.new();
+    $g.compare.SomeClass.$equals(first, second);
+    $t.fastbox(!$g.compare.SomeClass.$equals(first, second).$wrapped, $g.____testlib.basictypes.Boolean);
+    $t.fastbox($g.compare.SomeClass.$compare(first, second).$wrapped < 0, $g.____testlib.basictypes.Boolean);
+    $t.fastbox($g.compare.SomeClass.$compare(first, second).$wrapped > 0, $g.____testlib.basictypes.Boolean);
+    $t.fastbox($g.compare.SomeClass.$compare(first, second).$wrapped <= 0, $g.____testlib.basictypes.Boolean);
+    $t.fastbox($g.compare.SomeClass.$compare(first, second).$wrapped >= 0, $g.____testlib.basictypes.Boolean);
+    return $g.compare.SomeClass.$equals(first, second);
   };
 });

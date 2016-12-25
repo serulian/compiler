@@ -6,15 +6,10 @@ $module('notop', function () {
     $static.new = function (boolValue) {
       var instance = new $static();
       instance.boolValue = boolValue;
-      return $promise.resolve(instance);
+      return instance;
     };
     $static.$bool = function (sc) {
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        $resolve(sc.boolValue);
-        return;
-      };
-      return $promise.new($continue);
+      return sc.boolValue;
     };
     this.$typesig = function () {
       return {
@@ -23,47 +18,8 @@ $module('notop', function () {
   });
 
   $static.TEST = function () {
-    var $result;
     var sc;
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            $g.notop.SomeClass.new($t.fastbox(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
-              $result = $result0;
-              $current = 1;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            sc = $result;
-            $g.notop.SomeClass.$bool(sc).then(function ($result0) {
-              $result = $t.fastbox(!$result0.$wrapped, $g.____testlib.basictypes.Boolean);
-              $current = 2;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 2:
-            $resolve($result);
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
-    };
-    return $promise.new($continue);
+    sc = $g.notop.SomeClass.new($t.fastbox(false, $g.____testlib.basictypes.Boolean));
+    return $t.fastbox(!$g.notop.SomeClass.$bool(sc).$wrapped, $g.____testlib.basictypes.Boolean);
   };
 });

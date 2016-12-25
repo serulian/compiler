@@ -9,19 +9,24 @@ import (
 	"github.com/serulian/compiler/parser"
 )
 
-// EntrypointStatements returns an iterator of all statements in the SRG that are entrypoints for
-// implementations of members.
-func (g *SRG) EntrypointStatements() compilergraph.NodeIterator {
-	return g.layer.StartQuery().Out(parser.NodePredicateBody).BuildNodeIterator()
+// EntrypointImplementations returns an iterator of all SRG members/impls in the SRG with bodies.
+func (g *SRG) EntrypointImplementations() SRGImplementableIterator {
+	iterator := g.layer.StartQuery().
+		Out(parser.NodePredicateBody).
+		In(parser.NodePredicateBody).
+		BuildNodeIterator()
+
+	return SRGImplementableIterator{iterator, g}
 }
 
 // EntrypointVariables returns an iterator of all vars in the SRG that are entrypoints for
 // scoping (currently variables and fields).
-func (g *SRG) EntrypointVariables() compilergraph.NodeIterator {
-	return g.layer.StartQuery().IsKind(parser.NodeTypeVariable, parser.NodeTypeField).BuildNodeIterator()
+func (g *SRG) EntrypointVariables() SRGMemberIterator {
+	iterator := g.layer.StartQuery().IsKind(parser.NodeTypeVariable, parser.NodeTypeField).BuildNodeIterator()
+	return SRGMemberIterator{iterator, g}
 }
 
-// ImplicitLambdaExpressions returns an iterator of all impliciit lambda expressions defined in the SRG.
+// ImplicitLambdaExpressions returns an iterator of all implicit lambda expressions defined in the SRG.
 func (g *SRG) ImplicitLambdaExpressions() compilergraph.NodeIterator {
 	return g.layer.StartQuery().
 		IsKind(parser.NodeTypeLambdaExpression).

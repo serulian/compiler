@@ -5,23 +5,18 @@ $module('structuralcast', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      return $promise.resolve(instance);
+      return instance;
     };
     $instance.Result = $t.property(function () {
       var $this = this;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
-        return;
-      };
-      return $promise.new($continue);
+      return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
     });
     this.$typesig = function () {
       if (this.$cachedtypesig) {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Result|3|5ab5941e": true,
+        "Result|3|43834c3f": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -32,79 +27,30 @@ $module('structuralcast', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      var init = [];
-      init.push($g.structuralcast.BaseClass($g.____testlib.basictypes.Integer).new().then(function (value) {
-        instance.BaseClass$Integer = value;
-      }));
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      instance.BaseClass$Integer = $g.structuralcast.BaseClass($g.____testlib.basictypes.Integer).new();
+      return instance;
     };
     $instance.Result = $t.property(function () {
       var $this = this;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        $resolve($t.fastbox(false, $g.____testlib.basictypes.Boolean));
-        return;
-      };
-      return $promise.new($continue);
+      return $t.fastbox(false, $g.____testlib.basictypes.Boolean);
     });
     this.$typesig = function () {
       if (this.$cachedtypesig) {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Result|3|5ab5941e": true,
+        "Result|3|43834c3f": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
   $static.DoSomething = function (sc) {
-    return $promise.empty();
+    return;
   };
   $static.TEST = function () {
-    var $result;
     var sc;
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            $g.structuralcast.SomeClass.new().then(function ($result0) {
-              $result = $result0;
-              $current = 1;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            sc = $result;
-            sc.BaseClass$Integer.Result().then(function ($result0) {
-              $result = $result0;
-              $current = 2;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 2:
-            $resolve($result);
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
-    };
-    return $promise.new($continue);
+    sc = $g.structuralcast.SomeClass.new();
+    return sc.BaseClass$Integer.Result();
   };
 });

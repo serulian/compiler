@@ -5,23 +5,18 @@ $module('interfacecastfail', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      return $promise.resolve(instance);
+      return instance;
     };
     $instance.SomeValue = $t.property(function () {
       var $this = this;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        $resolve($t.fastbox(2, $g.____testlib.basictypes.Integer));
-        return;
-      };
-      return $promise.new($continue);
+      return $t.fastbox(2, $g.____testlib.basictypes.Integer);
     });
     this.$typesig = function () {
       if (this.$cachedtypesig) {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeValue|3|c44e6c87": true,
+        "SomeValue|3|775378f0": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -34,43 +29,16 @@ $module('interfacecastfail', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeValue|3|5ab5941e": true,
+        "SomeValue|3|43834c3f": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
   $static.TEST = function () {
-    var $result;
     var sc;
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            $g.interfacecastfail.SomeClass.new().then(function ($result0) {
-              $result = $result0;
-              $current = 1;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            sc = $result;
-            $t.cast(sc, $g.interfacecastfail.SomeInterface, false);
-            $resolve();
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
-    };
-    return $promise.new($continue);
+    sc = $g.interfacecastfail.SomeClass.new();
+    $t.cast(sc, $g.interfacecastfail.SomeInterface, false);
+    return;
   };
 });

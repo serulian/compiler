@@ -200,6 +200,11 @@ func (t *TypeGraph) SerializationJSONType() TGTypeDecl {
 	return t.getAliasedType("json")
 }
 
+// IntStreamType returns the $intstream type.
+func (t *TypeGraph) IntStreamType() TGTypeDecl {
+	return t.getAliasedType("$intstream")
+}
+
 // SerializationParserType returns the $parser type.
 func (t *TypeGraph) SerializationParserType() TGTypeDecl {
 	return t.getAliasedType("$parser")

@@ -16,6 +16,6 @@ func (sb *scopeBuilder) scopeImplementedMember(node compilergraph.GraphNode, con
 		scope := sb.getScope(body, context)
 		return *scope
 	} else {
-		return newScope().GetScope()
+		return newScope().Valid().GetScope()
 	}
 }

@@ -17,4 +17,5 @@ type TGTypeOrModule interface {
 	IsType() bool
 	ParentModule() TGModule
 	AsType() TGTypeDecl
+	SourceGraphId() string
 }

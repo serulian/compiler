@@ -10,7 +10,7 @@ $module('clone', function () {
         AnotherField: AnotherField,
       };
       instance.$markruntimecreated();
-      return $promise.resolve(instance);
+      return instance;
     };
     $static.$fields = [];
     $t.defineStructField($static, 'SomeField', 'SomeField', function () {
@@ -29,76 +29,22 @@ $module('clone', function () {
       }
       var computed = {
         "Parse|1|29dc432d<be48fdbe>": true,
-        "equals|4|29dc432d<5ab5941e>": true,
-        "Stringify|2|29dc432d<538656f2>": true,
+        "equals|4|29dc432d<43834c3f>": true,
+        "Stringify|2|29dc432d<5cffd9b5>": true,
         "Mapping|2|29dc432d<df58fcbd<any>>": true,
         "Clone|2|29dc432d<be48fdbe>": true,
-        "String|2|29dc432d<538656f2>": true,
+        "String|2|29dc432d<5cffd9b5>": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
   $static.TEST = function () {
-    var $result;
     var $temp0;
     var first;
     var second;
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            $g.clone.SomeStruct.new($t.fastbox(42, $g.____testlib.basictypes.Integer), $t.fastbox(false, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
-              $result = $result0;
-              $current = 1;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            first = $result;
-            first.Clone().then(function ($result0) {
-              $temp0 = $result0;
-              $result = ($temp0, $temp0.AnotherField = $t.fastbox(true, $g.____testlib.basictypes.Boolean), $temp0);
-              $current = 2;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 2:
-            second = $result;
-            $promise.resolve(second.SomeField.$wrapped == 42).then(function ($result1) {
-              return $promise.resolve($result1 && second.AnotherField.$wrapped).then(function ($result0) {
-                $result = $t.fastbox($result0 && !first.AnotherField.$wrapped, $g.____testlib.basictypes.Boolean);
-                $current = 3;
-                $continue($resolve, $reject);
-                return;
-              });
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 3:
-            $resolve($result);
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
-    };
-    return $promise.new($continue);
+    first = $g.clone.SomeStruct.new($t.fastbox(42, $g.____testlib.basictypes.Integer), $t.fastbox(false, $g.____testlib.basictypes.Boolean));
+    second = ($temp0 = first.Clone(), $temp0.AnotherField = $t.fastbox(true, $g.____testlib.basictypes.Boolean), $temp0);
+    return $t.fastbox(((second.SomeField.$wrapped == 42) && second.AnotherField.$wrapped) && !first.AnotherField.$wrapped, $g.____testlib.basictypes.Boolean);
   };
 });

@@ -1,7 +1,6 @@
 $module('looped', function () {
   var $static = this;
   $static.TEST = function () {
-    var $result;
     var $temp0;
     var $temp1;
     var casted;
@@ -9,124 +8,64 @@ $module('looped', function () {
     var value;
     var values;
     var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            $g.____testlib.basictypes.List($t.struct).forArray([$t.fastbox(1, $g.____testlib.basictypes.Integer), $t.fastbox(true, $g.____testlib.basictypes.Boolean), $t.fastbox(3, $g.____testlib.basictypes.Integer)]).then(function ($result0) {
-              $result = $result0;
-              $current = 1;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
+    syncloop: while (true) {
+      switch ($current) {
+        case 0:
+          values = $g.____testlib.basictypes.List($t.struct).forArray([$t.fastbox(1, $g.____testlib.basictypes.Integer), $t.fastbox(true, $g.____testlib.basictypes.Boolean), $t.fastbox(3, $g.____testlib.basictypes.Integer)]);
+          $current = 1;
+          continue syncloop;
 
-          case 1:
-            values = $result;
-            $current = 2;
-            continue;
+        case 1:
+          $temp1 = $g.____testlib.basictypes.Integer.$range($t.fastbox(0, $g.____testlib.basictypes.Integer), $t.fastbox(2, $g.____testlib.basictypes.Integer));
+          $current = 2;
+          continue syncloop;
 
-          case 2:
-            $g.____testlib.basictypes.Integer.$range($t.fastbox(0, $g.____testlib.basictypes.Integer), $t.fastbox(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-              $result = $result0;
-              $current = 3;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
+        case 2:
+          $temp0 = $temp1.Next();
+          index = $temp0.First;
+          if ($temp0.Second.$wrapped) {
+            $current = 3;
+            continue syncloop;
+          } else {
+            $current = 7;
+            continue syncloop;
+          }
+          break;
 
-          case 3:
-            $temp1 = $result;
-            $current = 4;
-            continue;
+        case 3:
+          value = values.$index(index);
+          try {
+            var $expr = $t.cast(value, $g.____testlib.basictypes.Boolean, false);
+            casted = $expr;
+          } catch ($rejected) {
+            casted = null;
+          }
+          $current = 4;
+          continue syncloop;
 
-          case 4:
-            $temp1.Next().then(function ($result0) {
-              $temp0 = $result0;
-              $result = $temp0;
-              $current = 5;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
+        case 4:
+          if (casted != null) {
+            $current = 5;
+            continue syncloop;
+          } else {
+            $current = 6;
+            continue syncloop;
+          }
+          break;
 
-          case 5:
-            index = $temp0.First;
-            if ($temp0.Second.$wrapped) {
-              $current = 6;
-              continue;
-            } else {
-              $current = 11;
-              continue;
-            }
-            break;
+        case 5:
+          return casted;
 
-          case 6:
-            values.$index(index).then(function ($result0) {
-              $result = $result0;
-              $current = 7;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
+        case 6:
+          $current = 2;
+          continue syncloop;
 
-          case 7:
-            value = $result;
-            $promise.new(function ($resolve) {
-              $resolve($t.cast(value, $g.____testlib.basictypes.Boolean, false));
-            }).then(function ($result0) {
-              casted = $result0;
-              $current = 8;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function ($rejected) {
-              casted = null;
-              $current = 8;
-              $continue($resolve, $reject);
-              return;
-            });
-            return;
+        case 7:
+          return $t.fastbox(false, $g.____testlib.basictypes.Boolean);
 
-          case 8:
-            if (casted != null) {
-              $current = 9;
-              continue;
-            } else {
-              $current = 10;
-              continue;
-            }
-            break;
-
-          case 9:
-            $resolve(casted);
-            return;
-
-          case 10:
-            $current = 4;
-            continue;
-
-          case 11:
-            $resolve($t.fastbox(false, $g.____testlib.basictypes.Boolean));
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
+        default:
+          return;
       }
-    };
-    return $promise.new($continue);
+    }
   };
 });

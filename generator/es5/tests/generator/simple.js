@@ -21,9 +21,9 @@ $module('simple', function () {
         }
       }
     };
-    return $generator.new($continue);
+    return $generator.new($continue, false);
   };
-  $static.TEST = function () {
+  $static.TEST = $t.markpromising(function () {
     var $result;
     var $temp0;
     var $temp1;
@@ -36,30 +36,20 @@ $module('simple', function () {
           case 0:
             v = null;
             $current = 1;
-            continue;
+            $continue($resolve, $reject);
+            return;
 
           case 1:
-            $g.simple.SomeGenerator().then(function ($result0) {
-              $result = $result0;
-              $current = 2;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
+            $temp1 = $g.simple.SomeGenerator();
+            $current = 2;
+            $continue($resolve, $reject);
             return;
 
           case 2:
-            $temp1 = $result;
-            $current = 3;
-            continue;
-
-          case 3:
-            $temp1.Next().then(function ($result0) {
+            $promise.maybe($temp1.Next()).then(function ($result0) {
               $temp0 = $result0;
               $result = $temp0;
-              $current = 4;
+              $current = 3;
               $continue($resolve, $reject);
               return;
             }).catch(function (err) {
@@ -68,23 +58,26 @@ $module('simple', function () {
             });
             return;
 
-          case 4:
+          case 3:
             value = $temp0.First;
             if ($temp0.Second.$wrapped) {
-              $current = 5;
-              continue;
+              $current = 4;
+              $continue($resolve, $reject);
+              return;
             } else {
-              $current = 6;
-              continue;
+              $current = 5;
+              $continue($resolve, $reject);
+              return;
             }
             break;
 
-          case 5:
+          case 4:
             v = value;
-            $current = 3;
-            continue;
+            $current = 2;
+            $continue($resolve, $reject);
+            return;
 
-          case 6:
+          case 5:
             $resolve(v);
             return;
 
@@ -95,5 +88,5 @@ $module('simple', function () {
       }
     };
     return $promise.new($continue);
-  };
+  });
 });

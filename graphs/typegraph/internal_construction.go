@@ -43,7 +43,7 @@ func (g *TypeGraph) globallyValidate() bool {
 		var returnType = memberType.Generics()[0]
 
 		// If the function is *not* promising then strip off the Awaitable<T>.
-		if !member.IsPromising() {
+		if member.IsPromising() == MemberNotPromising {
 			if !returnType.IsDirectReferenceTo(g.AwaitableType()) {
 				panic("Non-promising Non-Awaitable<T> async function")
 			}
@@ -174,7 +174,7 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 			}
 
 			decorator.Static(true).
-				Promising(true).
+				Promising(MemberPromisingDynamic).
 				Exported(false).
 				ReadOnly(true).
 				MemberType(memberType).
@@ -193,7 +193,7 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 			decorator.
 				defineGenericConstraint(generics["T"].GraphNode, g.SerializationParserType().GetTypeReference()).
 				Static(true).
-				Promising(true).
+				Promising(MemberPromisingDynamic).
 				Exported(true).
 				ReadOnly(true).
 				MemberType(memberType).
@@ -210,7 +210,7 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 
 			decorator.
 				MemberType(memberType).
-				Promising(true).
+				Promising(MemberPromisingDynamic).
 				Exported(true).
 				MemberKind(OperatorMemberSignature).
 				Decorate()
@@ -222,7 +222,7 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 			decorator.
 				defineGenericConstraint(generics["T"].GraphNode, g.SerializationStringifier().GetTypeReference()).
 				Static(false).
-				Promising(true).
+				Promising(MemberPromisingDynamic).
 				Exported(true).
 				ReadOnly(true).
 				MemberType(memberType).
@@ -235,7 +235,7 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 			var memberType = g.FunctionTypeReference(g.MappingTypeReference(g.AnyTypeReference()))
 			decorator.
 				Static(false).
-				Promising(true).
+				Promising(MemberNotPromising).
 				Exported(true).
 				ReadOnly(true).
 				MemberType(memberType).
@@ -248,7 +248,7 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 			var memberType = g.FunctionTypeReference(g.NewInstanceTypeReference(typeDecl))
 			decorator.
 				Static(false).
-				Promising(true).
+				Promising(MemberNotPromising).
 				Exported(true).
 				ReadOnly(true).
 				MemberType(memberType).
@@ -261,7 +261,7 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 			var memberType = g.FunctionTypeReference(g.StringTypeReference())
 			decorator.
 				Static(false).
-				Promising(true).
+				Promising(MemberNotPromising).
 				Exported(true).
 				ReadOnly(true).
 				MemberType(memberType).

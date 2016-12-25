@@ -196,6 +196,14 @@ func (sb *scopeBuilder) scopeTaggedTemplateString(node compilergraph.GraphNode, 
 			sb.decorateWithError(node, "Tagging expression for template string must be function with parameters ([]string, []stringable). Found: %v", tagType)
 		}
 
+		// Mark that we have a dependency on the template string function.
+		if isValid {
+			namedNode, hasNamedNode := sb.getNamedScopeForScope(tagScope)
+			if hasNamedNode {
+				context.staticDependencyCollector.registerNamedDependency(namedNode)
+			}
+		}
+
 		return newScope().IsValid(isValid).Resolving(tagType.Generics()[0]).GetScope()
 	} else {
 		return newScope().IsValid(isValid).Resolving(sb.sg.tdg.AnyTypeReference()).GetScope()
@@ -223,6 +231,16 @@ func (sb *scopeBuilder) scopeTemplateStringExpression(node compilergraph.GraphNo
 			isValid = false
 			sb.decorateWithError(pieceNode, "All expressions in a template string must be of type Stringable: %v", serr)
 		}
+	}
+
+	// Mark that we have a dependency on the template string function.
+	if isValid {
+		member, found := sb.sg.tdg.StringType().ParentModule().FindMember("formatTemplateString")
+		if !found {
+			panic("Missing formatTemplateString method")
+		}
+
+		context.staticDependencyCollector.registerDependency(member)
 	}
 
 	return newScope().IsValid(isValid).Resolving(sb.sg.tdg.StringTypeReference()).GetScope()

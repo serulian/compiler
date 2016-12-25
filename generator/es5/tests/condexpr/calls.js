@@ -5,108 +5,33 @@ $module('calls', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      return $promise.resolve(instance);
+      return instance;
     };
     $instance.Message = $t.property(function () {
       var $this = this;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        $resolve($t.fastbox('huh?', $g.____testlib.basictypes.String));
-        return;
-      };
-      return $promise.new($continue);
+      return $t.fastbox('huh?', $g.____testlib.basictypes.String);
     });
     this.$typesig = function () {
       if (this.$cachedtypesig) {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Message|3|538656f2": true,
+        "Message|3|5cffd9b5": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
   $static.getValue = function () {
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
-      return;
-    };
-    return $promise.new($continue);
+    return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
   };
   $static.failValue = function () {
-    var $result;
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            $g.calls.SomeError.new().then(function ($result0) {
-              $result = $result0;
-              $current = 1;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            $reject($result);
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
-    };
-    return $promise.new($continue);
+    throw $g.calls.SomeError.new();
   };
   $static.getIntValue = function () {
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      $resolve($t.fastbox(45, $g.____testlib.basictypes.Integer));
-      return;
-    };
-    return $promise.new($continue);
+    return $t.fastbox(45, $g.____testlib.basictypes.Integer);
   };
   $static.TEST = function () {
-    var $result;
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            $g.calls.getIntValue().then(function ($result1) {
-              return $promise.resolve($result1.$wrapped == 2).then(function ($result0) {
-                return ($promise.shortcircuit($result0, true) || $g.calls.failValue()).then(function ($result2) {
-                  return ($promise.shortcircuit($result0, false) || $g.calls.getValue()).then(function ($result3) {
-                    $result = $result0 ? $result2 : $result3;
-                    $current = 1;
-                    $continue($resolve, $reject);
-                    return;
-                  });
-                });
-              });
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            $resolve($result);
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
-    };
-    return $promise.new($continue);
+    return $g.calls.getIntValue().$wrapped == 2 ? $g.calls.failValue() : $g.calls.getValue();
   };
 });

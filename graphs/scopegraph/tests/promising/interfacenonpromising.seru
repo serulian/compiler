@@ -1,0 +1,11 @@
+interface Foo {
+	function<void> SomeFunction(p awaitable<string>)
+}
+
+class SomeClass {
+	function<void> SomeFunction(p awaitable<string>) {}
+}
+
+function<void> AnotherFunction(f Foo, p awaitable<string>) {
+	f.SomeFunction(p)
+}

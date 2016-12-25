@@ -1,0 +1,11 @@
+function<bool> DoSomethingAsync() {
+	return true
+}
+
+function<bool> SimpleFunction() {
+	return <- DoSomethingAsync()
+}
+
+function<any> TEST() {
+	return <SimpleFunction />
+}

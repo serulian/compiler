@@ -1,0 +1,20 @@
+function<bool> DoSomethingAsync() {
+  return true
+}
+
+var<bool> someBool = false
+
+class SomeReleasable {
+	function<void> Release() {
+		someBool = <- DoSomethingAsync()
+	}
+}
+
+function<any> TEST() {
+	123
+	with SomeReleasable.new() {
+		456
+	}
+	789
+	return someBool
+}

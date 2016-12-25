@@ -62,7 +62,7 @@ func (gen *es5generator) generateVariable(member typegraph.TGMember) generatedSo
 	}{member.Name(), prefix, initResult}
 
 	source := esbuilder.Template("variable", variableTemplateStr, data)
-	return generatedSourceResult{source, initResult.IsPromise()}
+	return generatedSourceResult{source, initResult.IsAsync()}
 }
 
 // variableTemplateStr defines the template for generating variables/fields.
@@ -72,7 +72,7 @@ const variableTemplateStr = `
 	{{ $name := .Name }}
 	{{ $setvar := print $prefix "." $name " = {{ emit .ResultExpr }};" }}
 
-	{{ if $result.IsPromise }}
+	{{ if $result.IsAsync }}
 		({{ emit ($result.BuildWrapped $setvar nil) }})
 	{{ else }}
 		{{ .Prefix }}.{{ .Name }} = {{ emit $result.Build }}

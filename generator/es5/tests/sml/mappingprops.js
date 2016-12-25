@@ -1,71 +1,13 @@
 $module('mappingprops', function () {
   var $static = this;
   $static.SimpleFunction = function (props) {
-    var $result;
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            props.$index($t.fastbox('SomeProp', $g.____testlib.basictypes.String)).then(function ($result2) {
-              return $promise.resolve($result2).then(function ($result1) {
-                return $g.____testlib.basictypes.String.$equals($t.nullcompare($result1, $t.fastbox('', $g.____testlib.basictypes.String)), $t.fastbox('hello world', $g.____testlib.basictypes.String)).then(function ($result0) {
-                  $result = $result0;
-                  $current = 1;
-                  $continue($resolve, $reject);
-                  return;
-                });
-              });
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            $resolve($result);
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
-    };
-    return $promise.new($continue);
+    return $g.____testlib.basictypes.String.$equals($t.syncnullcompare(props.$index($t.fastbox('SomeProp', $g.____testlib.basictypes.String)), function () {
+      return $t.fastbox('', $g.____testlib.basictypes.String);
+    }), $t.fastbox('hello world', $g.____testlib.basictypes.String));
   };
   $static.TEST = function () {
-    var $result;
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            $g.____testlib.basictypes.Mapping($g.____testlib.basictypes.String).overObject({
-              SomeProp: $t.fastbox("hello world", $g.____testlib.basictypes.String),
-            }).then(function ($result1) {
-              return $g.mappingprops.SimpleFunction($result1).then(function ($result0) {
-                $result = $result0;
-                $current = 1;
-                $continue($resolve, $reject);
-                return;
-              });
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            $resolve($result);
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
-    };
-    return $promise.new($continue);
+    return $g.mappingprops.SimpleFunction($g.____testlib.basictypes.Mapping($g.____testlib.basictypes.String).overObject({
+      SomeProp: $t.fastbox("hello world", $g.____testlib.basictypes.String),
+    }));
   };
 });

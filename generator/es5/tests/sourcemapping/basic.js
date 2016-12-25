@@ -64,6 +64,10 @@ this.Serulian = function ($global) {
       return {
       }.toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
     },
+    markpromising: function (func) {
+      func.$promising = true;
+      return func;
+    },
     functionName: function (func) {
       if (func.name) {
         return func.name;
@@ -195,15 +199,15 @@ this.Serulian = function ($global) {
     },
     equals: function (left, right, type) {
       if (left === right) {
-        return $promise.resolve($t.fastbox(true, $a['bool']));
+        return true;
       }
       if ((left == null) || (right == null)) {
-        return $promise.resolve($t.fastbox(false, $a['bool']));
+        return false;
       }
       if (type.$equals) {
-        return type.$equals($t.box(left, type), $t.box(right, type));
+        return type.$equals($t.box(left, type), $t.box(right, type)).$wrapped;
       }
-      return $promise.resolve($t.fastbox(false, $a['bool']));
+      return false;
     },
     ensurevalue: function (value, type, canBeNull, name) {
       if (value == null) {
@@ -324,7 +328,7 @@ this.Serulian = function ($global) {
           }
           var promise = new Promise(function (resolve, reject) {
             $global.setTimeout(function () {
-              f.apply($this, args).then(function (value) {
+              $promise.maybe(f.apply($this, args)).then(function (value) {
                 resolve(value);
               }).catch(function (value) {
                 reject(value);
@@ -376,23 +380,30 @@ this.Serulian = function ($global) {
       if (found == null) {
         return promising ? $promise.resolve(null) : null;
       }
-      return found.apply(obj, args);
+      var r = found.apply(obj, args);
+      if (promising) {
+        return $promise.maybe(r);
+      } else {
+        return r;
+      }
     },
-    dynamicaccess: function (obj, name) {
+    dynamicaccess: function (obj, name, promising) {
       if ((obj == null) || (obj[name] == null)) {
-        return $promise.resolve(null);
+        return promising ? $promise.resolve(null) : null;
       }
       var value = obj[name];
       if (typeof value == 'function') {
         if (value.$property) {
-          return value.apply(obj, arguments);
+          var result = value.apply(obj, arguments);
+          return promising ? $promise.maybe(result) : result;
         } else {
-          return $promise.resolve(function () {
+          var result = function () {
             return value.apply(obj, arguments);
-          });
+          };
+          return promising ? $promise.resolve(result) : result;
         }
       }
-      return $promise.resolve(value);
+      return promising ? $promise.resolve(value) : value;
     },
     assertnotnull: function (value) {
       if (value == null) {
@@ -400,49 +411,62 @@ this.Serulian = function ($global) {
       }
       return value;
     },
-    nullcompare: function (value, otherwise) {
+    syncnullcompare: function (value, otherwise) {
+      return value == null ? otherwise() : value;
+    },
+    asyncnullcompare: function (value, otherwise) {
       return value == null ? otherwise : value;
     },
     resourcehandler: function () {
       return {
         resources: {
         },
-        bind: function (func) {
-          if (func.$__resourcebound) {
-            return func;
+        bind: function (func, isAsync) {
+          if (isAsync) {
+            return this.bindasync(func);
+          } else {
+            return this.bindsync(func);
           }
+        },
+        bindsync: function (func) {
           var r = this;
           var f = function () {
             r.popall();
             return func.apply(this, arguments);
           };
-          f.$__resourcebound = true;
+          return f;
+        },
+        bindasync: function (func) {
+          var r = this;
+          var f = function (value) {
+            var that = this;
+            return r.popall().then(function (_) {
+              func.call(that, value);
+            });
+          };
           return f;
         },
         pushr: function (value, name) {
           this.resources[name] = value;
         },
-        popr: function (names) {
-          var promises = [];
+        popr: function (__names) {
+          var handlers = [];
           for (var i = 0; i < arguments.length; ++i) {
             var name = arguments[i];
             if (this.resources[name]) {
-              promises.push(this.resources[name].Release());
+              handlers.push(this.resources[name].Release());
               delete this.resources[name];
             }
           }
-          if (promises.length > 0) {
-            return $promise.all(promises);
-          } else {
-            return $promise.resolve(null);
-          }
+          return $promise.maybeall(handlers);
         },
         popall: function () {
-          for (var name in this.resources) {
-            if (this.resources.hasOwnProperty(name)) {
-              this.resources[name].Release();
-            }
+          var handlers = [];
+          var names = Object.keys(this.resources);
+          for (var i = 0; i < names.length; ++i) {
+            handlers.push(this.resources[names[i]].Release());
           }
+          return $promise.maybeall(handlers);
         },
       };
     },
@@ -451,54 +475,98 @@ this.Serulian = function ($global) {
     directempty: function () {
       var stream = {
         Next: function () {
-          return $promise.new(function (resolve, reject) {
-            $a['tuple']($t.any, $a['bool']).Build(null, false).then(resolve);
-          });
+          return $a['tuple']($t.any, $a['bool']).Build(null, false);
         },
       };
       return stream;
     },
     empty: function () {
-      return $promise.resolve($generator.directempty());
+      return $generator.directempty();
     },
-    new: function (f) {
-      var stream = {
-        $is: null,
-        Next: function () {
-          return $promise.new(function (resolve, reject) {
+    new: function (f, isAsync) {
+      if (isAsync) {
+        var stream = {
+          $is: null,
+          Next: function () {
+            return $promise.new(function (resolve, reject) {
+              if (stream.$is != null) {
+                $promise.maybe(stream.$is.Next()).then(function (tuple) {
+                  if ($t.unbox(tuple.Second)) {
+                    resolve(tuple);
+                  } else {
+                    stream.$is = null;
+                    $promise.maybe(stream.Next()).then(resolve, reject);
+                  }
+                }).catch(function (rejected) {
+                  reject(rejected);
+                });
+                return;
+              }
+              var $yield = function (value) {
+                resolve($a['tuple']($t.any, $a['bool']).Build(value, $t.fastbox(true, $a['bool'])));
+              };
+              var $done = function () {
+                resolve($a['tuple']($t.any, $a['bool']).Build(null, $t.fastbox(false, $a['bool'])));
+              };
+              var $yieldin = function (ins) {
+                stream.$is = ins;
+                $promise.maybe(stream.Next()).then(resolve, reject);
+              };
+              f($yield, $yieldin, reject, $done);
+            });
+          },
+        };
+        return stream;
+      } else {
+        var stream = {
+          $is: null,
+          Next: function () {
             if (stream.$is != null) {
-              stream.$is.Next().then(function (tuple) {
-                if ($t.unbox(tuple.Second)) {
-                  resolve(tuple);
-                } else {
-                  stream.$is = null;
-                  stream.Next().then(resolve, reject);
-                }
-              }).catch(function (rejected) {
-                reject(rejected);
-              });
-              return;
+              var tuple = stream.$is.Next();
+              if ($t.unbox(tuple.Second)) {
+                return tuple;
+              } else {
+                stream.$is = null;
+              }
             }
+            var yielded = null;
             var $yield = function (value) {
-              $a['tuple']($t.any, $a['bool']).Build(value, $t.fastbox(true, $a['bool'])).then(resolve);
+              yielded = $a['tuple']($t.any, $a['bool']).Build(value, $t.fastbox(true, $a['bool']));
             };
             var $done = function () {
-              $a['tuple']($t.any, $a['bool']).Build(null, $t.fastbox(false, $a['bool'])).then(resolve);
+              yielded = $a['tuple']($t.any, $a['bool']).Build(null, $t.fastbox(false, $a['bool']));
             };
             var $yieldin = function (ins) {
               stream.$is = ins;
-              stream.Next().then(resolve, reject);
             };
-            f($yield, $yieldin, reject, $done);
-          });
-        },
-      };
-      return $promise.resolve(stream);
+            var $reject = function (rejected) {
+              throw rejected;
+            };
+            f($yield, $yieldin, $reject, $done);
+            if (stream.$is) {
+              return stream.Next();
+            } else {
+              return yielded;
+            }
+          },
+        };
+        return stream;
+      }
     },
   };
   var $promise = {
     all: function (promises) {
       return Promise.all(promises);
+    },
+    maybeall: function (results) {
+      return Promise.all(results.map($promise.maybe));
+    },
+    maybe: function (r) {
+      if (r && r.then) {
+        return r;
+      } else {
+        return Promise.resolve(r);
+      }
     },
     new: function (f) {
       return new Promise(f);
@@ -584,7 +652,7 @@ this.Serulian = function ($global) {
               });
             };
             tpe.prototype.String = function () {
-              return $promise.resolve($t.fastbox(JSON.stringify(this, $global.__serulian_internal.autoUnbox, ' '), $a['string']));
+              return $t.fastbox(JSON.stringify(this, $global.__serulian_internal.autoUnbox, ' '), $a['string']);
             };
             tpe.prototype.Clone = function () {
               var instance = new tpe();
@@ -603,7 +671,7 @@ this.Serulian = function ($global) {
               if (this[BOXED_DATA_PROPERTY].$runtimecreated) {
                 instance.$markruntimecreated();
               }
-              return $promise.resolve(instance);
+              return instance;
             };
             tpe.prototype.Stringify = function (T) {
               var $this = this;
@@ -611,10 +679,9 @@ this.Serulian = function ($global) {
                 if (T == $a['json']) {
                   return $promise.resolve($t.fastbox(JSON.stringify($this, $global.__serulian_internal.autoUnbox), $a['string']));
                 }
-                return $this.Mapping().then(function (mapped) {
-                  return T.Get().then(function (resolved) {
-                    return resolved.Stringify(mapped);
-                  });
+                var mapped = $this.Mapping();
+                return $promise.maybe(T.Get()).then(function (resolved) {
+                  return resolved.Stringify(mapped);
                 });
               };
             };
@@ -623,12 +690,11 @@ this.Serulian = function ($global) {
                 if (T == $a['json']) {
                   var parsed = JSON.parse($t.unbox(value));
                   var boxed = $t.fastbox(parsed, tpe);
-                  return boxed.Mapping().then(function () {
-                    return $promise.resolve(boxed);
-                  });
+                  boxed.Mapping();
+                  return $promise.resolve(boxed);
                 }
-                return T.Get().then(function (resolved) {
-                  return resolved.Parse(value).then(function (parsed) {
+                return $promise.maybe(T.Get()).then(function (resolved) {
+                  return $promise.maybe(resolved.Parse(value)).then(function (parsed) {
                     return $promise.resolve($t.box(parsed, tpe));
                   });
                 });
@@ -636,24 +702,19 @@ this.Serulian = function ($global) {
             };
             tpe.$equals = function (left, right) {
               if (left === right) {
-                return $promise.resolve($t.fastbox(true, $a['bool']));
-              }
-              var promises = [];
-              tpe.$fields.forEach(function (field) {
-                promises.push($t.equals(left[BOXED_DATA_PROPERTY][field.serializableName], right[BOXED_DATA_PROPERTY][field.serializableName], field.typeref()));
-              });
-              return Promise.all(promises).then(function (values) {
-                for (var i = 0; i < values.length; i++) {
-                  if (!$t.unbox(values[i])) {
-                    return values[i];
-                  }
-                }
                 return $t.fastbox(true, $a['bool']);
-              });
+              }
+              for (var i = 0; i < tpe.$fields.length; ++i) {
+                var field = tpe.$fields[i];
+                if (!$t.equals(left[BOXED_DATA_PROPERTY][field.serializableName], right[BOXED_DATA_PROPERTY][field.serializableName], field.typeref())) {
+                  return $t.fastbox(false, $a['bool']);
+                }
+              }
+              return $t.fastbox(true, $a['bool']);
             };
             tpe.prototype.Mapping = function () {
               if (this.$serucreated) {
-                return $promise.resolve($t.fastbox(this[BOXED_DATA_PROPERTY], $a['mapping']($t.any)));
+                return $t.fastbox(this[BOXED_DATA_PROPERTY], $a['mapping']($t.any));
               } else {
                 var $this = this;
                 var mapped = {
@@ -661,7 +722,7 @@ this.Serulian = function ($global) {
                 tpe.$fields.forEach(function (field) {
                   mapped[field.serializableName] = $this[field.name];
                 });
-                return $promise.resolve($t.fastbox(mapped, $a['mapping']($t.any)));
+                return $t.fastbox(mapped, $a['mapping']($t.any));
               }
             };
           }
@@ -720,41 +781,14 @@ this.Serulian = function ($global) {
         var instance = new $static();
         instance.First = /*#null#*/null;
         instance.Second = /*#null#*/null;
-        return $promise.resolve(instance);
+        return instance;
       };
       $static.Build = function (first, second) {
-        var $result;
         var tuple;
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          while (true) {
-            switch ($current) {
-              case 0:
-/*#Tuple<T, Q>.new()#*/                $g.____testlib.basictypes.Tuple(/*#T, Q>.new()#*/T, /*#Q>.new()#*/Q).new().then(/*#Q>.new()#*/function (/*#Q>.new()#*/$result0) /*#Q>.new()#*/{
-                  $result = /*#.new()#*/$result0;
-                  $current = 1;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
-
-              case 1:
-                tuple = $result;
-/*#tuple.First = first#*/                tuple.First = /*#first#*/first;
-/*#tuple.Second = second#*/                tuple.Second = /*#second#*/second;
-                $resolve(/*#tuple#*/tuple);
-                return;
-
-              default:
-                $resolve();
-                return;
-            }
-          }
-        };
-        return $promise.new($continue);
+        tuple = /*#Tuple<T, Q>.new()#*/$g.____testlib.basictypes.Tuple(/*#T, Q>.new()#*/T, /*#Q>.new()#*/Q).new();
+/*#tuple.First = first#*/        tuple.First = /*#first#*/first;
+/*#tuple.Second = second#*/        tuple.Second = /*#second#*/second;
+        return tuple;
       };
       this.$typesig = function () {
         if (this.$cachedtypesig) {
@@ -772,7 +806,7 @@ this.Serulian = function ($global) {
       var $instance = this.prototype;
       $static.new = function () {
         var instance = new $static();
-        return $promise.resolve(instance);
+        return instance;
       };
       this.$typesig = function () {
         return {
@@ -780,7 +814,7 @@ this.Serulian = function ($global) {
       };
     });
 
-    this.$class('73c406f4', 'IntStream', false, '', function () {
+    this.$class('a8070bd4', 'IntStream', false, '$intstream', function () {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -788,121 +822,63 @@ this.Serulian = function ($global) {
         instance.start = /*#0#*/$t.fastbox(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer);
         instance.end = /*#-1#*/$t.fastbox(/*#-1#*/-/*#-1#*/1, /*#-1#*/$g.____testlib.basictypes.Integer);
         instance.current = /*#0#*/$t.fastbox(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer);
-        return $promise.resolve(instance);
+        return instance;
       };
       $static.OverRange = function (start, end) {
-        var $result;
         var s;
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          while (true) {
-            switch ($current) {
-              case 0:
-/*#IntStream.new()#*/                $g.____testlib.basictypes.IntStream.new().then(/*#IntStream.new()#*/function (/*#IntStream.new()#*/$result0) /*#IntStream.new()#*/{
-                  $result = /*#.new()#*/$result0;
-                  $current = 1;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
-
-              case 1:
-                s = $result;
-/*#s.start = start#*/                s.start = /*#start#*/start;
-/*#s.end = end#*/                s.end = /*#end#*/end;
-/*#s.current = start#*/                s.current = /*#start#*/start;
-                $resolve(/*#s#*/s);
-                return;
-
-              default:
-                $resolve();
-                return;
-            }
-          }
-        };
-        return $promise.new($continue);
+        s = /*#IntStream.new()#*/$g.____testlib.basictypes.IntStream.new();
+/*#s.start = start#*/        s.start = /*#start#*/start;
+/*#s.end = end#*/        s.end = /*#end#*/end;
+/*#s.current = start#*/        s.current = /*#start#*/start;
+        return s;
       };
       $instance.Next = function () {
         var $this = this;
-        var $result;
         var t;
         var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          while (true) {
-            switch ($current) {
-              case 0:
-                if (/*#this.current <= this.end {#*/$this.current.$wrapped <= /*#this.end {#*/$this.end.$wrapped) /*#this.end {#*/{
-                  $current = 1;
-                  continue;
-                } else {
-                  $current = 3;
-                  continue;
-                }
-                break;
+        syncloop: while (true) {
+          switch ($current) {
+            case 0:
+              if (/*#this.current <= this.end {#*/$this.current.$wrapped <= /*#this.end {#*/$this.end.$wrapped) /*#this.end {#*/{
+                $current = 1;
+                continue syncloop;
+              } else {
+                $current = 2;
+                continue syncloop;
+              }
+              break;
 
-              case 1:
-/*#Tuple<int, bool>.Build(this.current, true)#*/                $g.____testlib.basictypes.Tuple(/*#int, bool>.Build(this.current, true)#*/$g.____testlib.basictypes.Integer, /*#bool>.Build(this.current, true)#*/$g.____testlib.basictypes.Boolean).Build(/*#this.current, true)#*/$this.current, /*#true)#*/$t.fastbox(/*#true)#*/true, /*#true)#*/$g.____testlib.basictypes.Boolean)).then(/*#true)#*/function (/*#true)#*/$result0) /*#true)#*/{
-                  $result = /*#.Build(this.current, true)#*/$result0;
-                  $current = 2;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
+            case 1:
+              t = /*#Tuple<int, bool>.Build(this.current, true)#*/$g.____testlib.basictypes.Tuple(/*#int, bool>.Build(this.current, true)#*/$g.____testlib.basictypes.Integer, /*#bool>.Build(this.current, true)#*/$g.____testlib.basictypes.Boolean).Build(/*#this.current, true)#*/$this.current, /*#true)#*/$t.fastbox(/*#true)#*/true, /*#true)#*/$g.____testlib.basictypes.Boolean));
+/*#this.current = this.current + 1#*/              $this.current = /*#this.current + 1#*/$t.fastbox(/*#this.current + 1#*/$this.current.$wrapped + /*#this.current + 1#*/1, /*#this.current + 1#*/$g.____testlib.basictypes.Boolean);
+              return t;
 
-              case 2:
-                t = $result;
-/*#this.current = this.current + 1#*/                $this.current = /*#this.current + 1#*/$t.fastbox(/*#this.current + 1#*/$this.current.$wrapped + /*#this.current + 1#*/1, /*#this.current + 1#*/$g.____testlib.basictypes.Boolean);
-                $resolve(/*#t#*/t);
-                return;
+            case 2:
+              return $g.____testlib.basictypes.Tuple($g.____testlib.basictypes.Integer, $g.____testlib.basictypes.Boolean).Build($this.current, $t.fastbox(false, $g.____testlib.basictypes.Boolean));
 
-              case 3:
-/*#Tuple<int, bool>.Build(this.current, false)#*/                $g.____testlib.basictypes.Tuple(/*#int, bool>.Build(this.current, false)#*/$g.____testlib.basictypes.Integer, /*#bool>.Build(this.current, false)#*/$g.____testlib.basictypes.Boolean).Build(/*#this.current, false)#*/$this.current, /*#false)#*/$t.fastbox(/*#false)#*/false, /*#false)#*/$g.____testlib.basictypes.Boolean)).then(/*#false)#*/function (/*#false)#*/$result0) /*#false)#*/{
-                  $result = /*#.Build(this.current, false)#*/$result0;
-                  $current = 4;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
-
-              case 4:
-                $resolve($result);
-                return;
-
-              default:
-                $resolve();
-                return;
-            }
+            default:
+              return;
           }
-        };
-        return $promise.new($continue);
+        }
       };
       this.$typesig = function () {
         if (this.$cachedtypesig) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "OverRange|1|29dc432d<73c406f4>": true,
-          "Next|2|29dc432d<4499960a<c44e6c87,5ab5941e>>": true,
+          "OverRange|1|29dc432d<a8070bd4>": true,
+          "Next|2|29dc432d<4499960a<775378f0,43834c3f>>": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$class('c382e798', 'Float64', false, 'float64', function () {
+    this.$class('1978d03d', 'Float64', false, 'float64', function () {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
         var instance = new $static();
-        return $promise.resolve(instance);
+        return instance;
       };
       this.$typesig = function () {
         return {
@@ -910,212 +886,98 @@ this.Serulian = function ($global) {
       };
     });
 
-    this.$class('bab1bf3a', 'List', true, 'list', function (T) {
+    this.$class('0ecca571', 'List', true, 'list', function (T) {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
         var instance = new $static();
         instance.items = /*#Array.new()#*/$t.nativenew(/*#Array.new()#*/$global.Array)();
-        return $promise.resolve(instance);
+        return instance;
       };
       $static.forArray = function (arr) {
-        var $result;
         var l;
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          while (true) {
-            switch ($current) {
-              case 0:
-/*#List<T>.new()#*/                $g.____testlib.basictypes.List(/*#T>.new()#*/T).new().then(/*#T>.new()#*/function (/*#T>.new()#*/$result0) /*#T>.new()#*/{
-                  $result = /*#.new()#*/$result0;
-                  $current = 1;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
-
-              case 1:
-                l = $result;
-/*#l.items = arr#*/                l.items = /*#arr#*/arr;
-                $resolve(/*#l#*/l);
-                return;
-
-              default:
-                $resolve();
-                return;
-            }
-          }
-        };
-        return $promise.new($continue);
+        l = /*#List<T>.new()#*/$g.____testlib.basictypes.List(/*#T>.new()#*/T).new();
+/*#l.items = arr#*/        l.items = /*#arr#*/arr;
+        return l;
       };
       $instance.Count = $t.property(function () {
         var $this = this;
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          $resolve(/*#int(this.items.length)#*/$t.fastbox(/*#this.items.length)#*/$this.items.length, /*#int(this.items.length)#*/$g.____testlib.basictypes.Integer));
-          return;
-        };
-        return $promise.new($continue);
+        return $t.fastbox($this.items.length, $g.____testlib.basictypes.Integer);
       });
       $instance.$index = function (index) {
         var $this = this;
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          $resolve(/*#[&index].(T)#*/$t.cast(/*#this.items[&index].(T)#*/$this.items[/*#index].(T)#*/index.$wrapped], /*#[&index].(T)#*/T, /*#[&index].(T)#*/false));
-          return;
-        };
-        return $promise.new($continue);
+        return $t.cast($this.items[index.$wrapped], T, false);
       };
       $instance.$slice = function (startindex, endindex) {
         var $this = this;
-        var $result;
         var end;
         var start;
         var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          while (true) {
-            switch ($current) {
-              case 0:
-/*#startindex ?? 0#*/                $promise.resolve(/*#startindex ?? 0#*/startindex).then(/*#startindex ?? 0#*/function (/*#startindex ?? 0#*/$result0) /*#startindex ?? 0#*/{
-                  $result = /*#startindex ?? 0#*/$t.nullcompare(/*#startindex ?? 0#*/$result0, /*#0#*/$t.fastbox(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer));
-                  $current = 1;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
+        syncloop: while (true) {
+          switch ($current) {
+            case 0:
+              start = /*#startindex ?? 0#*/$t.syncnullcompare(/*#startindex ?? 0#*/startindex, function () {
+                return $t.fastbox(0, $g.____testlib.basictypes.Integer);
+              });
+              end = /*#endindex ?? this.Count#*/$t.syncnullcompare(/*#endindex ?? this.Count#*/endindex, function () {
+                return $this.Count();
+              });
+              if (/*#start < 0 {#*/start.$wrapped < /*#start < 0 {#*/0) /*#start < 0 {#*/{
+                $current = 1;
+                continue syncloop;
+              } else {
+                $current = 2;
+                continue syncloop;
+              }
+              break;
 
-              case 1:
-                start = $result;
-/*#endindex ?? this.Count#*/                $promise.resolve(/*#endindex ?? this.Count#*/endindex).then(/*#endindex ?? this.Count#*/function (/*#endindex ?? this.Count#*/$result0) /*#endindex ?? this.Count#*/{
-                  return /*#this.Count#*/(/*#this.Count#*/$promise.shortcircuit(/*#this.Count#*/$result0, /*#endindex ?? this.Count#*/null) || /*#this.Count#*/$this.Count()).then(/*#this.Count#*/function (/*#this.Count#*/$result1) /*#this.Count#*/{
-                    $result = /*#endindex ?? this.Count#*/$t.nullcompare(/*#endindex ?? this.Count#*/$result0, /*#this.Count#*/$result1);
-                    $current = 2;
-                    $continue($resolve, $reject);
-                    return;
-                  });
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
+            case 1:
+/*#start = start + this.Count#*/              start = /*#start + this.Count#*/$t.fastbox(/*#start + this.Count#*/start.$wrapped + /*#this.Count#*/$this.Count().$wrapped, /*#start + this.Count#*/$g.____testlib.basictypes.Boolean);
+              $current = 2;
+              continue syncloop;
 
-              case 2:
-                end = $result;
-                if (/*#start < 0 {#*/start.$wrapped < /*#start < 0 {#*/0) /*#start < 0 {#*/{
-                  $current = 3;
-                  continue;
-                } else {
-                  $current = 5;
-                  continue;
-                }
-                break;
+            case 2:
+              if (/*#end < 0 {#*/end.$wrapped < /*#end < 0 {#*/0) /*#end < 0 {#*/{
+                $current = 3;
+                continue syncloop;
+              } else {
+                $current = 4;
+                continue syncloop;
+              }
+              break;
 
-              case 3:
-/*#this.Count#*/                $this.Count().then(/*#this.Count#*/function (/*#this.Count#*/$result0) /*#this.Count#*/{
-                  start = /*#start + this.Count#*/$t.fastbox(/*#start + this.Count#*/start.$wrapped + /*#this.Count#*/$result0.$wrapped, /*#start + this.Count#*/$g.____testlib.basictypes.Boolean);
-                  $result = /*#start = start + this.Count#*/start;
-                  $current = 4;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
+            case 3:
+/*#end = end + this.Count#*/              end = /*#end + this.Count#*/$t.fastbox(/*#end + this.Count#*/end.$wrapped + /*#this.Count#*/$this.Count().$wrapped, /*#end + this.Count#*/$g.____testlib.basictypes.Boolean);
+              $current = 4;
+              continue syncloop;
 
-              case 4:
+            case 4:
+              if (/*#start >= end {#*/start.$wrapped >= /*#end {#*/end.$wrapped) /*#end {#*/{
                 $current = 5;
-                continue;
+                continue syncloop;
+              } else {
+                $current = 6;
+                continue syncloop;
+              }
+              break;
 
-              case 5:
-                if (/*#end < 0 {#*/end.$wrapped < /*#end < 0 {#*/0) /*#end < 0 {#*/{
-                  $current = 6;
-                  continue;
-                } else {
-                  $current = 8;
-                  continue;
-                }
-                break;
+            case 5:
+              return $g.____testlib.basictypes.Slice(T).Empty();
 
-              case 6:
-/*#this.Count#*/                $this.Count().then(/*#this.Count#*/function (/*#this.Count#*/$result0) /*#this.Count#*/{
-                  end = /*#end + this.Count#*/$t.fastbox(/*#end + this.Count#*/end.$wrapped + /*#this.Count#*/$result0.$wrapped, /*#end + this.Count#*/$g.____testlib.basictypes.Boolean);
-                  $result = /*#end = end + this.Count#*/end;
-                  $current = 7;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
+            case 6:
+              return $g.____testlib.basictypes.Slice(T).overArray($this.items.slice(start.$wrapped, end.$wrapped));
 
-              case 7:
-                $current = 8;
-                continue;
-
-              case 8:
-                if (/*#start >= end {#*/start.$wrapped >= /*#end {#*/end.$wrapped) /*#end {#*/{
-                  $current = 9;
-                  continue;
-                } else {
-                  $current = 11;
-                  continue;
-                }
-                break;
-
-              case 9:
-/*#Slice<T>.Empty()#*/                $g.____testlib.basictypes.Slice(/*#T>.Empty()#*/T).Empty().then(/*#T>.Empty()#*/function (/*#T>.Empty()#*/$result0) /*#T>.Empty()#*/{
-                  $result = /*#.Empty()#*/$result0;
-                  $current = 10;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
-
-              case 10:
-                $resolve($result);
-                return;
-
-              case 11:
-/*#Slice<T>.overArray(this.items.slice(Number(start), Number(end)))#*/                $g.____testlib.basictypes.Slice(/*#T>.overArray(this.items.slice(Number(start), Number(end)))#*/T).overArray(/*#this.items.slice(Number(start), Number(end)))#*/$this.items.slice(/*#start), Number(end)))#*/start.$wrapped, /*#end)))#*/end.$wrapped)).then(/*#end)))#*/function (/*#end)))#*/$result0) /*#end)))#*/{
-                  $result = /*#.overArray(this.items.slice(Number(start), Number(end)))#*/$result0;
-                  $current = 12;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
-
-              case 12:
-                $resolve($result);
-                return;
-
-              default:
-                $resolve();
-                return;
-            }
+            default:
+              return;
           }
-        };
-        return $promise.new($continue);
+        }
       };
       this.$typesig = function () {
         if (this.$cachedtypesig) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Count|3|c44e6c87": true,
+          "Count|3|775378f0": true,
         };
         computed[("index|4|29dc432d<" + $t.typeid(T)) + ">"] = true;
         computed[("slice|4|29dc432d<b4e50744<" + $t.typeid(T)) + ">>"] = true;
@@ -1123,16 +985,15 @@ this.Serulian = function ($global) {
       };
     });
 
-    this.$class('b2beb156', 'Map', true, 'map', function (T, Q) {
+    this.$class('29e413d4', 'Map', true, 'map', function (T, Q) {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
         var instance = new $static();
         instance.internalObject = /*#Object.new()#*/$t.nativenew(/*#Object.new()#*/$global.Object)();
-        return $promise.resolve(instance);
+        return instance;
       };
       $static.forArrays = function (keys, values) {
-        var $result;
         var $temp0;
         var $temp1;
         var i;
@@ -1140,183 +1001,81 @@ this.Serulian = function ($global) {
         var map;
         var tKey;
         var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          while (true) {
-            switch ($current) {
-              case 0:
-/*#Map<T, Q>.new()#*/                $g.____testlib.basictypes.Map(/*#T, Q>.new()#*/T, /*#Q>.new()#*/Q).new().then(/*#Q>.new()#*/function (/*#Q>.new()#*/$result0) /*#Q>.new()#*/{
-                  $result = /*#.new()#*/$result0;
-                  $current = 1;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
+        syncloop: while (true) {
+          switch ($current) {
+            case 0:
+              map = /*#Map<T, Q>.new()#*/$g.____testlib.basictypes.Map(/*#T, Q>.new()#*/T, /*#Q>.new()#*/Q).new();
+              len = /*#int(keys.length)#*/$t.fastbox(/*#keys.length)#*/keys.length, /*#int(keys.length)#*/$g.____testlib.basictypes.Integer);
+              $current = 1;
+              continue syncloop;
 
-              case 1:
-                map = $result;
-                len = /*#int(keys.length)#*/$t.fastbox(/*#keys.length)#*/keys.length, /*#int(keys.length)#*/$g.____testlib.basictypes.Integer);
-                $current = 2;
-                continue;
+            case 1:
+              $temp1 = /*#0..(len - 1) {#*/$g.____testlib.basictypes.Integer.$range(/*#0..(len - 1) {#*/$t.fastbox(/*#0..(len - 1) {#*/0, /*#0..(len - 1) {#*/$g.____testlib.basictypes.Integer), /*#len - 1) {#*/$t.fastbox(/*#len - 1) {#*/len.$wrapped - /*#len - 1) {#*/1, /*#len - 1) {#*/$g.____testlib.basictypes.Boolean));
+              $current = 2;
+              continue syncloop;
 
-              case 2:
-/*#0..(len - 1) {#*/                $g.____testlib.basictypes.Integer.$range(/*#0..(len - 1) {#*/$t.fastbox(/*#0..(len - 1) {#*/0, /*#0..(len - 1) {#*/$g.____testlib.basictypes.Integer), /*#len - 1) {#*/$t.fastbox(/*#len - 1) {#*/len.$wrapped - /*#len - 1) {#*/1, /*#len - 1) {#*/$g.____testlib.basictypes.Boolean)).then(/*#len - 1) {#*/function (/*#len - 1) {#*/$result0) /*#len - 1) {#*/{
-                  $result = /*#0..(len - 1) {#*/$result0;
-                  $current = 3;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
-
-              case 3:
-                $temp1 = $result;
+            case 2:
+/*#i in 0..(len - 1) {#*/              $temp0 = /*#for i in 0..(len - 1) {#*/$temp1.Next();
+/*#i in 0..(len - 1) {#*/              i = /*#i in 0..(len - 1) {#*/$temp0.First;
+              if (/*#for i in 0..(len - 1) {#*/$temp0.Second.$wrapped) /*#for i in 0..(len - 1) {#*/{
+                $current = 3;
+                continue syncloop;
+              } else {
                 $current = 4;
-                continue;
+                continue syncloop;
+              }
+              break;
 
-              case 4:
-/*#for i in 0..(len - 1) {#*/                $temp1.Next().then(/*#for i in 0..(len - 1) {#*/function (/*#for i in 0..(len - 1) {#*/$result0) /*#for i in 0..(len - 1) {#*/{
-                  $temp0 = /*#i in 0..(len - 1) {#*/$result0;
-                  $result = /*#i in 0..(len - 1) {#*/$temp0;
-                  $current = 5;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
+            case 3:
+              tKey = /*#[Number(i)].(T)#*/$t.cast(/*#keys[Number(i)].(T)#*/keys[/*#i)].(T)#*/i.$wrapped], /*#[Number(i)].(T)#*/T, /*#[Number(i)].(T)#*/false);
+/*#map[tKey] = values[Number(i)].(Q)#*/              map.$setindex(/*#tKey] = values[Number(i)].(Q)#*/tKey, /*#[Number(i)].(Q)#*/$t.cast(/*#values[Number(i)].(Q)#*/values[/*#i)].(Q)#*/i.$wrapped], /*#[Number(i)].(Q)#*/Q, /*#[Number(i)].(Q)#*/false));
+              $current = 2;
+              continue syncloop;
 
-              case 5:
-/*#i in 0..(len - 1) {#*/                i = /*#i in 0..(len - 1) {#*/$temp0.First;
-                if (/*#for i in 0..(len - 1) {#*/$temp0.Second.$wrapped) /*#for i in 0..(len - 1) {#*/{
-                  $current = 6;
-                  continue;
-                } else {
-                  $current = 8;
-                  continue;
-                }
-                break;
+            case 4:
+              return map;
 
-              case 6:
-                tKey = /*#[Number(i)].(T)#*/$t.cast(/*#keys[Number(i)].(T)#*/keys[/*#i)].(T)#*/i.$wrapped], /*#[Number(i)].(T)#*/T, /*#[Number(i)].(T)#*/false);
-/*#map[tKey] = values[Number(i)].(Q)#*/                map.$setindex(/*#tKey] = values[Number(i)].(Q)#*/tKey, /*#[Number(i)].(Q)#*/$t.cast(/*#values[Number(i)].(Q)#*/values[/*#i)].(Q)#*/i.$wrapped], /*#[Number(i)].(Q)#*/Q, /*#[Number(i)].(Q)#*/false)).then(/*#[Number(i)].(Q)#*/function (/*#[Number(i)].(Q)#*/$result0) /*#[Number(i)].(Q)#*/{
-                  $result = /*#map[tKey] = values[Number(i)].(Q)#*/$result0;
-                  $current = 7;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
-
-              case 7:
-                $current = 4;
-                continue;
-
-              case 8:
-                $resolve(/*#map#*/map);
-                return;
-
-              default:
-                $resolve();
-                return;
-            }
+            default:
+              return;
           }
-        };
-        return $promise.new($continue);
+        }
       };
       $instance.$index = function (key) {
         var $this = this;
-        var $result;
         var keyString;
         var value;
         var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          while (true) {
-            switch ($current) {
-              case 0:
-/*#key.MapKey.String()#*/                key.MapKey().then(/*#key.MapKey.String()#*/function (/*#key.MapKey.String()#*/$result1) /*#key.MapKey.String()#*/{
-                  return /*#key.MapKey.String()#*/$result1.String().then(/*#key.MapKey.String()#*/function (/*#key.MapKey.String()#*/$result0) /*#key.MapKey.String()#*/{
-                    $result = /*#.String()#*/$result0;
-                    $current = 1;
-                    $continue($resolve, $reject);
-                    return;
-                  });
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
+        syncloop: while (true) {
+          switch ($current) {
+            case 0:
+              keyString = /*#key.MapKey.String()#*/key.MapKey().String();
+              value = /*#this.internalObject[NativeString(keyString)]#*/$this.internalObject[/*#keyString)]#*/keyString.$wrapped];
+              if (/*#value is null {#*/value == /*#null {#*/null) /*#null {#*/{
+                $current = 1;
+                continue syncloop;
+              } else {
+                $current = 2;
+                continue syncloop;
+              }
+              break;
 
-              case 1:
-                keyString = $result;
-                value = /*#this.internalObject[NativeString(keyString)]#*/$this.internalObject[/*#keyString)]#*/keyString.$wrapped];
-                if (/*#value is null {#*/value == /*#null {#*/null) /*#null {#*/{
-                  $current = 2;
-                  continue;
-                } else {
-                  $current = 3;
-                  continue;
-                }
-                break;
+            case 1:
+              return null;
 
-              case 2:
-                $resolve(/*#null#*/null);
-                return;
+            case 2:
+              return $t.cast(value, Q, false);
 
-              case 3:
-                $resolve(/*#value.(Q)#*/$t.cast(/*#value.(Q)#*/value, /*#value.(Q)#*/Q, /*#value.(Q)#*/false));
-                return;
-
-              default:
-                $resolve();
-                return;
-            }
+            default:
+              return;
           }
-        };
-        return $promise.new($continue);
+        }
       };
       $instance.$setindex = function (key, value) {
         var $this = this;
-        var $result;
         var keyString;
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          while (true) {
-            switch ($current) {
-              case 0:
-/*#key.MapKey.String()#*/                key.MapKey().then(/*#key.MapKey.String()#*/function (/*#key.MapKey.String()#*/$result1) /*#key.MapKey.String()#*/{
-                  return /*#key.MapKey.String()#*/$result1.String().then(/*#key.MapKey.String()#*/function (/*#key.MapKey.String()#*/$result0) /*#key.MapKey.String()#*/{
-                    $result = /*#.String()#*/$result0;
-                    $current = 1;
-                    $continue($resolve, $reject);
-                    return;
-                  });
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
-
-              case 1:
-                keyString = $result;
-/*#this.internalObject[NativeString(keyString)] = value#*/                $this.internalObject[/*#keyString)] = value#*/keyString.$wrapped] = /*#value#*/value;
-                $resolve();
-                return;
-
-              default:
-                $resolve();
-                return;
-            }
-          }
-        };
-        return $promise.new($continue);
+        keyString = /*#key.MapKey.String()#*/key.MapKey().String();
+/*#this.internalObject[NativeString(keyString)] = value#*/        $this.internalObject[/*#keyString)] = value#*/keyString.$wrapped] = /*#value#*/value;
+        return;
       };
       this.$typesig = function () {
         if (this.$cachedtypesig) {
@@ -1330,112 +1089,31 @@ this.Serulian = function ($global) {
       };
     });
 
-    this.$class('ce1c4509', 'JSON', false, 'json', function () {
+    this.$class('739023bc', 'JSON', false, 'json', function () {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
         var instance = new $static();
-        return $promise.resolve(instance);
+        return instance;
       };
       $static.Get = function () {
-        var $result;
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          while (true) {
-            switch ($current) {
-              case 0:
-/*#JSON.new()#*/                $g.____testlib.basictypes.JSON.new().then(/*#JSON.new()#*/function (/*#JSON.new()#*/$result0) /*#JSON.new()#*/{
-                  $result = /*#.new()#*/$result0;
-                  $current = 1;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
-
-              case 1:
-                $resolve($result);
-                return;
-
-              default:
-                $resolve();
-                return;
-            }
-          }
-        };
-        return $promise.new($continue);
+        return $g.____testlib.basictypes.JSON.new();
       };
       $instance.Stringify = function (value) {
         var $this = this;
-        var $result;
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          while (true) {
-            switch ($current) {
-              case 0:
-/*#Internal.autoUnbox))#*/                $t.dynamicaccess(/*#Internal.autoUnbox))#*/$global.__serulian_internal, /*#Internal.autoUnbox))#*/'autoUnbox').then(/*#Internal.autoUnbox))#*/function (/*#Internal.autoUnbox))#*/$result0) /*#Internal.autoUnbox))#*/{
-                  $result = /*#string(NativeJSON.stringify(Object(value), Internal.autoUnbox))#*/$t.fastbox(/*#NativeJSON.stringify(Object(value), Internal.autoUnbox))#*/$global.JSON.stringify(/*#value), Internal.autoUnbox))#*/value.$wrapped, /*#Internal.autoUnbox))#*/$result0), /*#string(NativeJSON.stringify(Object(value), Internal.autoUnbox))#*/$g.____testlib.basictypes.String);
-                  $current = 1;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
-
-              case 1:
-                $resolve($result);
-                return;
-
-              default:
-                $resolve();
-                return;
-            }
-          }
-        };
-        return $promise.new($continue);
+        return $t.fastbox($global.JSON.stringify(value.$wrapped, $t.dynamicaccess($global.__serulian_internal, 'autoUnbox', false)), $g.____testlib.basictypes.String);
       };
       $instance.Parse = function (value) {
         var $this = this;
-        var $result;
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          while (true) {
-            switch ($current) {
-              case 0:
-/*#Internal.autoBox))#*/                $t.dynamicaccess(/*#Internal.autoBox))#*/$global.__serulian_internal, /*#Internal.autoBox))#*/'autoBox').then(/*#Internal.autoBox))#*/function (/*#Internal.autoBox))#*/$result0) /*#Internal.autoBox))#*/{
-                  $result = /*#<any>(NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$t.fastbox(/*#NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$global.JSON.parse(/*#value), Internal.autoBox))#*/value.$wrapped, /*#Internal.autoBox))#*/$result0), /*#<any>(NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$g.____testlib.basictypes.Mapping(/*#<any>(NativeJSON.parse(NativeString(value), Internal.autoBox))#*/$t.any));
-                  $current = 1;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
-
-              case 1:
-                $resolve($result);
-                return;
-
-              default:
-                $resolve();
-                return;
-            }
-          }
-        };
-        return $promise.new($continue);
+        return $t.fastbox($global.JSON.parse(value.$wrapped, $t.dynamicaccess($global.__serulian_internal, 'autoBox', false)), $g.____testlib.basictypes.Mapping($t.any));
       };
       this.$typesig = function () {
         if (this.$cachedtypesig) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Get|1|29dc432d<ce1c4509>": true,
-          "Stringify|2|29dc432d<538656f2>": true,
+          "Get|1|29dc432d<739023bc>": true,
+          "Stringify|2|29dc432d<5cffd9b5>": true,
           "Parse|2|29dc432d<df58fcbd<any>>": true,
         };
         return this.$cachedtypesig = computed;
@@ -1449,7 +1127,7 @@ this.Serulian = function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "String|2|29dc432d<538656f2>": true,
+          "String|2|29dc432d<5cffd9b5>": true,
         };
         return this.$cachedtypesig = computed;
       };
@@ -1463,7 +1141,7 @@ this.Serulian = function ($global) {
         }
         var computed = {
         };
-        computed[("Next|2|29dc432d<4499960a<" + $t.typeid(T)) + ",5ab5941e>>"] = true;
+        computed[("Next|2|29dc432d<4499960a<" + $t.typeid(T)) + ",43834c3f>>"] = true;
         return this.$cachedtypesig = computed;
       };
     });
@@ -1488,7 +1166,7 @@ this.Serulian = function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Message|3|538656f2": true,
+          "Message|3|5cffd9b5": true,
         };
         return this.$cachedtypesig = computed;
       };
@@ -1521,7 +1199,7 @@ this.Serulian = function ($global) {
       };
     });
 
-    this.$interface('f8094a71', 'Mappable', false, 'mappable', function () {
+    this.$interface('7eff1793', 'Mappable', false, 'mappable', function () {
       var $static = this;
       this.$typesig = function () {
         if (this.$cachedtypesig) {
@@ -1534,88 +1212,34 @@ this.Serulian = function ($global) {
       };
     });
 
-    this.$interface('a3ac78ed', 'Stringifier', false, '$stringifier', function () {
+    this.$interface('068b6e85', 'Stringifier', false, '$stringifier', function () {
       var $static = this;
       $static.Get = function () {
-        var $result;
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          while (true) {
-            switch ($current) {
-              case 0:
-/*#JSON.new()#*/                $g.____testlib.basictypes.JSON.new().then(/*#JSON.new()#*/function (/*#JSON.new()#*/$result0) /*#JSON.new()#*/{
-                  $result = /*#.new()#*/$result0;
-                  $current = 1;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
-
-              case 1:
-                $resolve($result);
-                return;
-
-              default:
-                $resolve();
-                return;
-            }
-          }
-        };
-        return $promise.new($continue);
+        return $g.____testlib.basictypes.JSON.new();
       };
       this.$typesig = function () {
         if (this.$cachedtypesig) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Get|1|29dc432d<a3ac78ed>": true,
-          "Stringify|2|29dc432d<538656f2>": true,
+          "Get|1|29dc432d<068b6e85>": true,
+          "Stringify|2|29dc432d<5cffd9b5>": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('0490813e', 'Parser', false, '$parser', function () {
+    this.$interface('32e6c380', 'Parser', false, '$parser', function () {
       var $static = this;
       $static.Get = function () {
-        var $result;
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          while (true) {
-            switch ($current) {
-              case 0:
-/*#JSON.new()#*/                $g.____testlib.basictypes.JSON.new().then(/*#JSON.new()#*/function (/*#JSON.new()#*/$result0) /*#JSON.new()#*/{
-                  $result = /*#.new()#*/$result0;
-                  $current = 1;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
-
-              case 1:
-                $resolve($result);
-                return;
-
-              default:
-                $resolve();
-                return;
-            }
-          }
-        };
-        return $promise.new($continue);
+        return $g.____testlib.basictypes.JSON.new();
       };
       this.$typesig = function () {
         if (this.$cachedtypesig) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Get|1|29dc432d<0490813e>": true,
+          "Get|1|29dc432d<32e6c380>": true,
           "Parse|2|29dc432d<df58fcbd<any>>": true,
         };
         return this.$cachedtypesig = computed;
@@ -1634,92 +1258,49 @@ this.Serulian = function ($global) {
         return $global.Object;
       };
       $static.Empty = function () {
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          $resolve(/*#<T>(Object.new())#*/$t.fastbox(/*#Object.new())#*/$t.nativenew(/*#Object.new())#*/$global.Object)(), /*#<T>(Object.new())#*/$g.____testlib.basictypes.Mapping(/*#<T>(Object.new())#*/T)));
-          return;
-        };
-        return $promise.new($continue);
+        return $t.fastbox($t.nativenew($global.Object)(), $g.____testlib.basictypes.Mapping(T));
       };
       $static.overObject = function (obj) {
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          $resolve(/*#<T>(obj)#*/$t.fastbox(/*#obj)#*/obj, /*#<T>(obj)#*/$g.____testlib.basictypes.Mapping(/*#<T>(obj)#*/T)));
-          return;
-        };
-        return $promise.new($continue);
+        return $t.fastbox(obj, $g.____testlib.basictypes.Mapping(T));
       };
       $instance.Keys = $t.property(function () {
         var $this = this;
-        var $result;
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          while (true) {
-            switch ($current) {
-              case 0:
-/*#Slice<string>.overArray(Object.keys(Object(this)))#*/                $g.____testlib.basictypes.Slice(/*#string>.overArray(Object.keys(Object(this)))#*/$g.____testlib.basictypes.String).overArray(/*#Object.keys(Object(this)))#*/$global.Object.keys(/*#this)))#*/$this.$wrapped)).then(/*#this)))#*/function (/*#this)))#*/$result0) /*#this)))#*/{
-                  $result = /*#.overArray(Object.keys(Object(this)))#*/$result0;
-                  $current = 1;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
-
-              case 1:
-                $resolve($result);
-                return;
-
-              default:
-                $resolve();
-                return;
-            }
-          }
-        };
-        return $promise.new($continue);
+        return $g.____testlib.basictypes.Slice($g.____testlib.basictypes.String).overArray($global.Object.keys($this.$wrapped));
       });
       $instance.$index = function (key) {
         var $this = this;
         var value;
         var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          while (true) {
-            switch ($current) {
-              case 0:
-                value = /*#this)[NativeString(key)]#*/$this.$wrapped[/*#key)]#*/key.$wrapped];
-                if (/*#value is null {#*/value == /*#null {#*/null) /*#null {#*/{
-                  $current = 1;
-                  continue;
-                } else {
-                  $current = 2;
-                  continue;
-                }
-                break;
+        syncloop: while (true) {
+          switch ($current) {
+            case 0:
+              value = /*#this)[NativeString(key)]#*/$this.$wrapped[/*#key)]#*/key.$wrapped];
+              if (/*#value is null {#*/value == /*#null {#*/null) /*#null {#*/{
+                $current = 1;
+                continue syncloop;
+              } else {
+                $current = 2;
+                continue syncloop;
+              }
+              break;
 
-              case 1:
-                $resolve(/*#null#*/null);
-                return;
+            case 1:
+              return null;
 
-              case 2:
-                $resolve(/*#value.(T)#*/$t.cast(/*#value.(T)#*/value, /*#value.(T)#*/T, /*#value.(T)#*/false));
-                return;
+            case 2:
+              return $t.cast(value, T, false);
 
-              default:
-                $resolve();
-                return;
-            }
+            default:
+              return;
           }
-        };
-        return $promise.new($continue);
+        }
       };
       this.$typesig = function () {
         if (this.$cachedtypesig) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Keys|3|b4e50744<538656f2>": true,
+          "Keys|3|b4e50744<5cffd9b5>": true,
         };
         computed[("Empty|1|29dc432d<df58fcbd<" + $t.typeid(T)) + ">>"] = true;
         computed[("index|4|29dc432d<" + $t.typeid(T)) + ">"] = true;
@@ -1739,45 +1320,25 @@ this.Serulian = function ($global) {
         return $global.Array;
       };
       $static.Empty = function () {
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          $resolve(/*#<T>(Array.new())#*/$t.fastbox(/*#Array.new())#*/$t.nativenew(/*#Array.new())#*/$global.Array)(), /*#<T>(Array.new())#*/$g.____testlib.basictypes.Slice(/*#<T>(Array.new())#*/T)));
-          return;
-        };
-        return $promise.new($continue);
+        return $t.fastbox($t.nativenew($global.Array)(), $g.____testlib.basictypes.Slice(T));
       };
       $static.overArray = function (arr) {
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          $resolve(/*#<T>(arr)#*/$t.fastbox(/*#arr)#*/arr, /*#<T>(arr)#*/$g.____testlib.basictypes.Slice(/*#<T>(arr)#*/T)));
-          return;
-        };
-        return $promise.new($continue);
+        return $t.fastbox(arr, $g.____testlib.basictypes.Slice(T));
       };
       $instance.$index = function (index) {
         var $this = this;
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          $resolve(/*#[Number(index)].(T)#*/$t.cast(/*#this)[Number(index)].(T)#*/$this.$wrapped[/*#index)].(T)#*/index.$wrapped], /*#[Number(index)].(T)#*/T, /*#[Number(index)].(T)#*/false));
-          return;
-        };
-        return $promise.new($continue);
+        return $t.cast($this.$wrapped[index.$wrapped], T, false);
       };
       $instance.Length = $t.property(function () {
         var $this = this;
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          $resolve(/*#int(Array(this).length)#*/$t.fastbox(/*#this).length)#*/$this.$wrapped.length, /*#int(Array(this).length)#*/$g.____testlib.basictypes.Integer));
-          return;
-        };
-        return $promise.new($continue);
+        return $t.fastbox($this.$wrapped.length, $g.____testlib.basictypes.Integer);
       });
       this.$typesig = function () {
         if (this.$cachedtypesig) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Length|3|c44e6c87": true,
+          "Length|3|775378f0": true,
         };
         computed[("Empty|1|29dc432d<b4e50744<" + $t.typeid(T)) + ">>"] = true;
         computed[("index|4|29dc432d<" + $t.typeid(T)) + ">"] = true;
@@ -1785,7 +1346,7 @@ this.Serulian = function ($global) {
       };
     });
 
-    this.$type('c44e6c87', 'Integer', false, 'int', function () {
+    this.$type('775378f0', 'Integer', false, 'int', function () {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1797,108 +1358,51 @@ this.Serulian = function ($global) {
         return $global.Number;
       };
       $static.$range = function (start, end) {
-        var $result;
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          while (true) {
-            switch ($current) {
-              case 0:
-/*#IntStream.OverRange(start, end)#*/                $g.____testlib.basictypes.IntStream.OverRange(/*#start, end)#*/start, /*#end)#*/end).then(/*#end)#*/function (/*#end)#*/$result0) /*#end)#*/{
-                  $result = /*#.OverRange(start, end)#*/$result0;
-                  $current = 1;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
-
-              case 1:
-                $resolve($result);
-                return;
-
-              default:
-                $resolve();
-                return;
-            }
-          }
-        };
-        return $promise.new($continue);
+        return $g.____testlib.basictypes.IntStream.OverRange(start, end);
       };
       $static.$compare = function (left, right) {
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          $resolve(/*#Integer(Number(left) - Number(right))#*/$t.fastbox(/*#left) - Number(right))#*/left.$wrapped - /*#right))#*/right.$wrapped, /*#Integer(Number(left) - Number(right))#*/$g.____testlib.basictypes.Integer));
-          return;
-        };
-        return $promise.new($continue);
+        return $t.fastbox(left.$wrapped - right.$wrapped, $g.____testlib.basictypes.Integer);
       };
       $static.$equals = function (left, right) {
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          $resolve(/*#Boolean(Number(left) == Number(right))#*/$t.box(/*#left) == Number(right))#*/left.$wrapped == /*#right))#*/right.$wrapped, /*#Boolean(Number(left) == Number(right))#*/$g.____testlib.basictypes.Boolean));
-          return;
-        };
-        return $promise.new($continue);
+        return $t.box(left.$wrapped == right.$wrapped, $g.____testlib.basictypes.Boolean);
       };
       $static.$plus = function (left, right) {
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          $resolve(/*#Integer(Number(left) + Number(right))#*/$t.fastbox(/*#left) + Number(right))#*/left.$wrapped + /*#right))#*/right.$wrapped, /*#Integer(Number(left) + Number(right))#*/$g.____testlib.basictypes.Integer));
-          return;
-        };
-        return $promise.new($continue);
+        return $t.fastbox(left.$wrapped + right.$wrapped, $g.____testlib.basictypes.Integer);
       };
       $static.$minus = function (left, right) {
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          $resolve(/*#Integer(Number(left) - Number(right))#*/$t.fastbox(/*#left) - Number(right))#*/left.$wrapped - /*#right))#*/right.$wrapped, /*#Integer(Number(left) - Number(right))#*/$g.____testlib.basictypes.Integer));
-          return;
-        };
-        return $promise.new($continue);
+        return $t.fastbox(left.$wrapped - right.$wrapped, $g.____testlib.basictypes.Integer);
       };
       $instance.Release = function () {
         var $this = this;
-        return $promise.empty();
+        return;
       };
       $instance.MapKey = $t.property(function () {
         var $this = this;
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          $resolve(/*#this }#*/$this);
-          return;
-        };
-        return $promise.new($continue);
+        return $this;
       });
       $instance.String = function () {
         var $this = this;
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          $resolve(/*#String(Number(this).toString())#*/$t.fastbox(/*#this).toString())#*/$this.$wrapped.toString(), /*#String(Number(this).toString())#*/$g.____testlib.basictypes.String));
-          return;
-        };
-        return $promise.new($continue);
+        return $t.fastbox($this.$wrapped.toString(), $g.____testlib.basictypes.String);
       };
       this.$typesig = function () {
         if (this.$cachedtypesig) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "range|4|29dc432d<6d9e64c3<c44e6c87>>": true,
-          "compare|4|29dc432d<c44e6c87>": true,
-          "equals|4|29dc432d<5ab5941e>": true,
-          "plus|4|29dc432d<c44e6c87>": true,
-          "minus|4|29dc432d<c44e6c87>": true,
+          "range|4|29dc432d<6d9e64c3<775378f0>>": true,
+          "compare|4|29dc432d<775378f0>": true,
+          "equals|4|29dc432d<43834c3f>": true,
+          "plus|4|29dc432d<775378f0>": true,
+          "minus|4|29dc432d<775378f0>": true,
           "Release|2|29dc432d<void>": true,
           "MapKey|3|f56564e1": true,
-          "String|2|29dc432d<538656f2>": true,
+          "String|2|29dc432d<5cffd9b5>": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('5ab5941e', 'Boolean', false, 'bool', function () {
+    this.$type('43834c3f', 'Boolean', false, 'bool', function () {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1910,90 +1414,56 @@ this.Serulian = function ($global) {
         return $global.Boolean;
       };
       $static.$compare = function (left, right) {
-        var $result;
         var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          while (true) {
-            switch ($current) {
-              case 0:
-/*#left == right {#*/                $g.____testlib.basictypes.Boolean.$equals(/*#left == right {#*/left, /*#right {#*/right).then(/*#right {#*/function (/*#right {#*/$result0) /*#right {#*/{
-                  $result = /*#left == right {#*/$result0.$wrapped;
-                  $current = 1;
-                  $continue($resolve, $reject);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
-                return;
+        syncloop: while (true) {
+          switch ($current) {
+            case 0:
+              if (/*#left == right {#*/$g.____testlib.basictypes.Boolean.$equals(/*#left == right {#*/left, /*#right {#*/right).$wrapped) /*#right {#*/{
+                $current = 1;
+                continue syncloop;
+              } else {
+                $current = 2;
+                continue syncloop;
+              }
+              break;
 
-              case 1:
-                if ($result) {
-                  $current = 2;
-                  continue;
-                } else {
-                  $current = 3;
-                  continue;
-                }
-                break;
+            case 1:
+              return $t.fastbox(0, $g.____testlib.basictypes.Integer);
 
-              case 2:
-                $resolve(/*#0#*/$t.fastbox(/*#0#*/0, /*#0#*/$g.____testlib.basictypes.Integer));
-                return;
+            case 2:
+              return $t.fastbox(-1, $g.____testlib.basictypes.Integer);
 
-              case 3:
-                $resolve(/*#-1#*/$t.fastbox(/*#-1#*/-/*#-1#*/1, /*#-1#*/$g.____testlib.basictypes.Integer));
-                return;
-
-              default:
-                $resolve();
-                return;
-            }
+            default:
+              return;
           }
-        };
-        return $promise.new($continue);
+        }
       };
       $static.$equals = function (left, right) {
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          $resolve(/*#Boolean(NativeBoolean(left) == NativeBoolean(right))#*/$t.box(/*#left) == NativeBoolean(right))#*/left.$wrapped == /*#right))#*/right.$wrapped, /*#Boolean(NativeBoolean(left) == NativeBoolean(right))#*/$g.____testlib.basictypes.Boolean));
-          return;
-        };
-        return $promise.new($continue);
+        return $t.box(left.$wrapped == right.$wrapped, $g.____testlib.basictypes.Boolean);
       };
       $instance.String = function () {
         var $this = this;
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          $resolve(/*#String(NativeBoolean(this).toString())#*/$t.fastbox(/*#this).toString())#*/$this.$wrapped.toString(), /*#String(NativeBoolean(this).toString())#*/$g.____testlib.basictypes.String));
-          return;
-        };
-        return $promise.new($continue);
+        return $t.fastbox($this.$wrapped.toString(), $g.____testlib.basictypes.String);
       };
       $instance.MapKey = $t.property(function () {
         var $this = this;
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          $resolve(/*#this }#*/$this);
-          return;
-        };
-        return $promise.new($continue);
+        return $this;
       });
       this.$typesig = function () {
         if (this.$cachedtypesig) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "compare|4|29dc432d<c44e6c87>": true,
-          "equals|4|29dc432d<5ab5941e>": true,
-          "String|2|29dc432d<538656f2>": true,
+          "compare|4|29dc432d<775378f0>": true,
+          "equals|4|29dc432d<43834c3f>": true,
+          "String|2|29dc432d<5cffd9b5>": true,
           "MapKey|3|f56564e1": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('538656f2', 'String', false, 'string', function () {
+    this.$type('5cffd9b5', 'String', false, 'string', function () {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -2006,193 +1476,94 @@ this.Serulian = function ($global) {
       };
       $instance.String = function () {
         var $this = this;
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          $resolve(/*#this#*/$this);
-          return;
-        };
-        return $promise.new($continue);
+        return $this;
       };
       $static.$equals = function (first, second) {
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          $resolve(/*#Boolean(NativeString(first) == NativeString(second))#*/$t.box(/*#first) == NativeString(second))#*/first.$wrapped == /*#second))#*/second.$wrapped, /*#Boolean(NativeString(first) == NativeString(second))#*/$g.____testlib.basictypes.Boolean));
-          return;
-        };
-        return $promise.new($continue);
+        return $t.box(first.$wrapped == second.$wrapped, $g.____testlib.basictypes.Boolean);
       };
       $static.$plus = function (first, second) {
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          $resolve(/*#String(NativeString(first) + NativeString(second))#*/$t.fastbox(/*#first) + NativeString(second))#*/first.$wrapped + /*#second))#*/second.$wrapped, /*#String(NativeString(first) + NativeString(second))#*/$g.____testlib.basictypes.String));
-          return;
-        };
-        return $promise.new($continue);
+        return $t.fastbox(first.$wrapped + second.$wrapped, $g.____testlib.basictypes.String);
       };
       $instance.MapKey = $t.property(function () {
         var $this = this;
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          $resolve(/*#this }#*/$this);
-          return;
-        };
-        return $promise.new($continue);
+        return $this;
       });
       $instance.Length = $t.property(function () {
         var $this = this;
-        var $current = 0;
-        var $continue = function ($resolve, $reject) {
-          $resolve(/*#Integer(NativeString(this).length)#*/$t.fastbox(/*#this).length)#*/$this.$wrapped.length, /*#Integer(NativeString(this).length)#*/$g.____testlib.basictypes.Integer));
-          return;
-        };
-        return $promise.new($continue);
+        return $t.fastbox($this.$wrapped.length, $g.____testlib.basictypes.Integer);
       });
       this.$typesig = function () {
         if (this.$cachedtypesig) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "String|2|29dc432d<538656f2>": true,
-          "equals|4|29dc432d<5ab5941e>": true,
-          "plus|4|29dc432d<538656f2>": true,
+          "String|2|29dc432d<5cffd9b5>": true,
+          "equals|4|29dc432d<43834c3f>": true,
+          "plus|4|29dc432d<5cffd9b5>": true,
           "MapKey|3|f56564e1": true,
-          "Length|3|c44e6c87": true,
+          "Length|3|775378f0": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
     $static.formatTemplateString = function (pieces, values) {
-      var $result;
       var $temp0;
       var $temp1;
       var i;
       var result;
       var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        while (true) {
-          switch ($current) {
-            case 0:
-              result = /*#''#*/$t.fastbox(/*#''#*/'', /*#''#*/$g.____testlib.basictypes.String);
-              $current = 1;
-              continue;
+      syncloop: while (true) {
+        switch ($current) {
+          case 0:
+            result = /*#''#*/$t.fastbox(/*#''#*/'', /*#''#*/$g.____testlib.basictypes.String);
+            $current = 1;
+            continue syncloop;
 
-            case 1:
-/*#pieces.Length - 1) {#*/              pieces.Length().then(/*#pieces.Length - 1) {#*/function (/*#pieces.Length - 1) {#*/$result1) /*#pieces.Length - 1) {#*/{
-                return /*#0 .. (pieces.Length - 1) {#*/$g.____testlib.basictypes.Integer.$range(/*#0 .. (pieces.Length - 1) {#*/$t.fastbox(/*#0 .. (pieces.Length - 1) {#*/0, /*#0 .. (pieces.Length - 1) {#*/$g.____testlib.basictypes.Integer), /*#pieces.Length - 1) {#*/$t.fastbox(/*#pieces.Length - 1) {#*/$result1.$wrapped - /*#pieces.Length - 1) {#*/1, /*#pieces.Length - 1) {#*/$g.____testlib.basictypes.Boolean)).then(/*#pieces.Length - 1) {#*/function (/*#pieces.Length - 1) {#*/$result0) /*#pieces.Length - 1) {#*/{
-                  $result = /*#0 .. (pieces.Length - 1) {#*/$result0;
-                  $current = 2;
-                  $continue($resolve, $reject);
-                  return;
-                });
-              }).catch(function (err) {
-                $reject(err);
-                return;
-              });
-              return;
+          case 1:
+            $temp1 = /*#0 .. (pieces.Length - 1) {#*/$g.____testlib.basictypes.Integer.$range(/*#0 .. (pieces.Length - 1) {#*/$t.fastbox(/*#0 .. (pieces.Length - 1) {#*/0, /*#0 .. (pieces.Length - 1) {#*/$g.____testlib.basictypes.Integer), /*#pieces.Length - 1) {#*/$t.fastbox(/*#pieces.Length - 1) {#*/pieces.Length().$wrapped - /*#pieces.Length - 1) {#*/1, /*#pieces.Length - 1) {#*/$g.____testlib.basictypes.Boolean));
+            $current = 2;
+            continue syncloop;
 
-            case 2:
-              $temp1 = $result;
+          case 2:
+/*#i in 0 .. (pieces.Length - 1) {#*/            $temp0 = /*#for i in 0 .. (pieces.Length - 1) {#*/$temp1.Next();
+/*#i in 0 .. (pieces.Length - 1) {#*/            i = /*#i in 0 .. (pieces.Length - 1) {#*/$temp0.First;
+            if (/*#for i in 0 .. (pieces.Length - 1) {#*/$temp0.Second.$wrapped) /*#for i in 0 .. (pieces.Length - 1) {#*/{
               $current = 3;
-              continue;
+              continue syncloop;
+            } else {
+              $current = 6;
+              continue syncloop;
+            }
+            break;
 
-            case 3:
-/*#for i in 0 .. (pieces.Length - 1) {#*/              $temp1.Next().then(/*#for i in 0 .. (pieces.Length - 1) {#*/function (/*#for i in 0 .. (pieces.Length - 1) {#*/$result0) /*#for i in 0 .. (pieces.Length - 1) {#*/{
-                $temp0 = /*#i in 0 .. (pieces.Length - 1) {#*/$result0;
-                $result = /*#i in 0 .. (pieces.Length - 1) {#*/$temp0;
-                $current = 4;
-                $continue($resolve, $reject);
-                return;
-              }).catch(function (err) {
-                $reject(err);
-                return;
-              });
-              return;
+          case 3:
+/*#result = result + pieces[i]#*/            result = /*#result + pieces[i]#*/$g.____testlib.basictypes.String.$plus(/*#result + pieces[i]#*/result, /*#pieces[i]#*/pieces.$index(/*#i]#*/i));
+            if (/*#i < values.Length {#*/i.$wrapped < /*#values.Length {#*/values.Length().$wrapped) /*#values.Length {#*/{
+              $current = 4;
+              continue syncloop;
+            } else {
+              $current = 5;
+              continue syncloop;
+            }
+            break;
 
-            case 4:
-/*#i in 0 .. (pieces.Length - 1) {#*/              i = /*#i in 0 .. (pieces.Length - 1) {#*/$temp0.First;
-              if (/*#for i in 0 .. (pieces.Length - 1) {#*/$temp0.Second.$wrapped) /*#for i in 0 .. (pieces.Length - 1) {#*/{
-                $current = 5;
-                continue;
-              } else {
-                $current = 11;
-                continue;
-              }
-              break;
+          case 4:
+/*#result = result + values[i].String()#*/            result = /*#result + values[i].String()#*/$g.____testlib.basictypes.String.$plus(/*#result + values[i].String()#*/result, /*#values[i].String()#*/values.$index(/*#i].String()#*/i).String());
+            $current = 5;
+            continue syncloop;
 
-            case 5:
-/*#pieces[i]#*/              pieces.$index(/*#i]#*/i).then(/*#i]#*/function (/*#i]#*/$result1) /*#i]#*/{
-                return /*#result + pieces[i]#*/$g.____testlib.basictypes.String.$plus(/*#result + pieces[i]#*/result, /*#pieces[i]#*/$result1).then(/*#pieces[i]#*/function (/*#pieces[i]#*/$result0) /*#pieces[i]#*/{
-                  result = /*#result + pieces[i]#*/$result0;
-                  $result = /*#result = result + pieces[i]#*/result;
-                  $current = 6;
-                  $continue($resolve, $reject);
-                  return;
-                });
-              }).catch(function (err) {
-                $reject(err);
-                return;
-              });
-              return;
+          case 5:
+            $current = 2;
+            continue syncloop;
 
-            case 6:
-/*#values.Length {#*/              values.Length().then(/*#values.Length {#*/function (/*#values.Length {#*/$result0) /*#values.Length {#*/{
-                $result = /*#i < values.Length {#*/i.$wrapped < /*#values.Length {#*/$result0.$wrapped;
-                $current = 7;
-                $continue($resolve, $reject);
-                return;
-              }).catch(function (err) {
-                $reject(err);
-                return;
-              });
-              return;
+          case 6:
+            return result;
 
-            case 7:
-              if ($result) {
-                $current = 8;
-                continue;
-              } else {
-                $current = 10;
-                continue;
-              }
-              break;
-
-            case 8:
-/*#values[i].String()#*/              values.$index(/*#i].String()#*/i).then(/*#i].String()#*/function (/*#i].String()#*/$result2) /*#i].String()#*/{
-                return /*#values[i].String()#*/$result2.String().then(/*#values[i].String()#*/function (/*#values[i].String()#*/$result1) /*#values[i].String()#*/{
-                  return /*#result + values[i].String()#*/$g.____testlib.basictypes.String.$plus(/*#result + values[i].String()#*/result, /*#.String()#*/$result1).then(/*#.String()#*/function (/*#.String()#*/$result0) /*#.String()#*/{
-                    result = /*#result + values[i].String()#*/$result0;
-                    $result = /*#result = result + values[i].String()#*/result;
-                    $current = 9;
-                    $continue($resolve, $reject);
-                    return;
-                  });
-                });
-              }).catch(function (err) {
-                $reject(err);
-                return;
-              });
-              return;
-
-            case 9:
-              $current = 10;
-              continue;
-
-            case 10:
-              $current = 3;
-              continue;
-
-            case 11:
-              $resolve(/*#result#*/result);
-              return;
-
-            default:
-              $resolve();
-              return;
-          }
+          default:
+            return;
         }
-      };
-      return $promise.new($continue);
+      }
     };
     $static.MapStream = function (T, Q) {
       var $f = function (stream, mapper) {
@@ -2206,23 +1577,24 @@ this.Serulian = function ($global) {
             switch ($current) {
               case 0:
                 $current = 1;
-                continue;
+                $continue($yield, $yieldin, $reject, $done);
+                return;
 
               case 1:
                 $temp1 = /*#stream {#*/stream;
                 $current = 2;
-                continue;
+                $continue($yield, $yieldin, $reject, $done);
+                return;
 
               case 2:
-/*#for item in stream {#*/                $temp1.Next().then(/*#for item in stream {#*/function (/*#for item in stream {#*/$result0) /*#for item in stream {#*/{
+/*#item in stream {#*/                $promise.maybe(/*#for item in stream {#*/$temp1.Next()).then(/*#for item in stream {#*/function (/*#for item in stream {#*/$result0) /*#for item in stream {#*/{
                   $temp0 = /*#item in stream {#*/$result0;
                   $result = /*#item in stream {#*/$temp0;
                   $current = 3;
                   $continue($yield, $yieldin, $reject, $done);
                   return;
                 }).catch(function (err) {
-                  $reject(err);
-                  return;
+                  throw err;
                 });
                 return;
 
@@ -2230,33 +1602,24 @@ this.Serulian = function ($global) {
 /*#item in stream {#*/                item = /*#item in stream {#*/$temp0.First;
                 if (/*#for item in stream {#*/$temp0.Second.$wrapped) /*#for item in stream {#*/{
                   $current = 4;
-                  continue;
+                  $continue($yield, $yieldin, $reject, $done);
+                  return;
                 } else {
-                  $current = 7;
-                  continue;
+                  $current = 6;
+                  $continue($yield, $yieldin, $reject, $done);
+                  return;
                 }
                 break;
 
               case 4:
-/*#mapper(item)#*/                mapper(/*#item)#*/item).then(/*#item)#*/function (/*#item)#*/$result0) /*#item)#*/{
-                  $result = /*#mapper(item)#*/$result0;
-                  $current = 5;
-                  $continue($yield, $yieldin, $reject, $done);
-                  return;
-                }).catch(function (err) {
-                  $reject(err);
-                  return;
-                });
+                $yield(/*#mapper(item)#*/mapper(/*#item)#*/item));
+                $current = 5;
                 return;
 
               case 5:
-                $yield($result);
-                $current = 6;
-                return;
-
-              case 6:
                 $current = 2;
-                continue;
+                $continue($yield, $yieldin, $reject, $done);
+                return;
 
               default:
                 $done();
@@ -2264,7 +1627,7 @@ this.Serulian = function ($global) {
             }
           }
         };
-        return $generator.new($continue);
+        return $generator.new($continue, true);
       };
       return $f;
     };
@@ -2272,40 +1635,11 @@ this.Serulian = function ($global) {
   $module('basic', function () {
     var $static = this;
     $static.DoSomething = function () {
-      var $result;
       var bar;
       var foo;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        while (true) {
-          switch ($current) {
-            case 0:
-              foo = /*#1#*/$t.fastbox(/*#1#*/1, /*#1#*/$g.____testlib.basictypes.Integer);
-              bar = /*#'hi there!'#*/$t.fastbox(/*#'hi there!'#*/'hi there!', /*#'hi there!'#*/$g.____testlib.basictypes.String);
-/*#foo == 2 && bar == 'hello world'#*/              $promise.resolve(/*#foo == 2 && bar == 'hello world'#*/foo.$wrapped == /*#foo == 2 && bar == 'hello world'#*/2).then(/*#foo == 2 && bar == 'hello world'#*/function (/*#foo == 2 && bar == 'hello world'#*/$result0) /*#foo == 2 && bar == 'hello world'#*/{
-                return /*#foo == 2 && bar == 'hello world'#*/(/*#foo == 2 && bar == 'hello world'#*/$promise.shortcircuit(/*#foo == 2 && bar == 'hello world'#*/$result0, /*#foo == 2 && bar == 'hello world'#*/true) || /*#bar == 'hello world'#*/$g.____testlib.basictypes.String.$equals(/*#bar == 'hello world'#*/bar, /*#'hello world'#*/$t.fastbox(/*#'hello world'#*/'hello world', /*#'hello world'#*/$g.____testlib.basictypes.String))).then(/*#'hello world'#*/function (/*#'hello world'#*/$result1) /*#'hello world'#*/{
-                  $result = /*#foo == 2 && bar == 'hello world'#*/$t.fastbox(/*#foo == 2 && bar == 'hello world'#*/$result0 && /*#bar == 'hello world'#*/$result1.$wrapped, /*#foo == 2 && bar == 'hello world'#*/$g.____testlib.basictypes.Boolean);
-                  $current = 1;
-                  $continue($resolve, $reject);
-                  return;
-                });
-              }).catch(function (err) {
-                $reject(err);
-                return;
-              });
-              return;
-
-            case 1:
-              $resolve($result);
-              return;
-
-            default:
-              $resolve();
-              return;
-          }
-        }
-      };
-      return $promise.new($continue);
+      foo = /*#1#*/$t.fastbox(/*#1#*/1, /*#1#*/$g.____testlib.basictypes.Integer);
+      bar = /*#'hi there!'#*/$t.fastbox(/*#'hi there!'#*/'hi there!', /*#'hi there!'#*/$g.____testlib.basictypes.String);
+      return $t.fastbox((foo.$wrapped == 2) && $g.____testlib.basictypes.String.$equals(bar, $t.fastbox('hello world', $g.____testlib.basictypes.String)).$wrapped, $g.____testlib.basictypes.Boolean);
     };
   });
   $module('____testlib.basic.webidl', function () {
@@ -2327,7 +1661,6 @@ this.Serulian = function ($global) {
       var data = e.data;
       if (data['token'] != token) {
         throw Error('Invalid token');
-        $global.close();
       }
       switch (data['action']) {
         case 'invoke':

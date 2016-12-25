@@ -286,9 +286,9 @@ func (tn TGTypeDecl) IsStatic() bool {
 	return true
 }
 
-// IsPromising returns whether this type is promising (always false).
-func (tn TGTypeDecl) IsPromising() bool {
-	return false
+// IsPromising returns whether this type is promising (always MemberNotPromising).
+func (tn TGTypeDecl) IsPromising() MemberPromisingOption {
+	return MemberNotPromising
 }
 
 // IsImplicitlyCalled returns whether this type is implicitly called (always false).
@@ -367,4 +367,10 @@ func (tn TGTypeDecl) TypeKind() TypeKind {
 		panic(fmt.Sprintf("Unknown kind of type %s for node %s", nodeType, tn.NodeId))
 		return ClassType
 	}
+}
+
+// SourceGraphId returns the ID of the source graph from which this type originated.
+// If none, returns "typegraph".
+func (tn TGTypeDecl) SourceGraphId() string {
+	return tn.ParentModule().SourceGraphId()
 }

@@ -10,6 +10,7 @@ import (
 
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/codedom"
+	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/parser"
@@ -432,5 +433,10 @@ func (db *domBuilder) buildTemplateStringCall(node compilergraph.GraphNode, func
 		[]codedom.Expression{codedom.ArrayLiteral(valueExprs, node)},
 		node)
 
-	return codedom.AwaitPromise(codedom.FunctionCall(funcExpr, []codedom.Expression{pieceSliceExpr, valueSliceExpr}, node), node)
+	return codedom.InvokeFunction(
+		funcExpr,
+		[]codedom.Expression{pieceSliceExpr, valueSliceExpr},
+		scopegraph.PromisingAccessFunctionCall,
+		db.scopegraph,
+		node)
 }

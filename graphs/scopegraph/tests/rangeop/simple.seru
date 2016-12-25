@@ -1,0 +1,10 @@
+class SomeClass {
+	operator range(left SomeClass, right SomeClass) {
+		yield left
+		yield right
+	}
+}
+
+function<void> DoSomething(sc SomeClass) {
+	/* range */(sc..sc)
+}

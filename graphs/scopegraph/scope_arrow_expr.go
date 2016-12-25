@@ -31,5 +31,6 @@ func (sb *scopeBuilder) scopeAwaitExpression(node compilergraph.GraphNode, conte
 		return newScope().Invalid().GetScope()
 	}
 
+	context.rootLabelSet.Append(proto.ScopeLabel_AWAITS)
 	return newScope().Valid().Resolving(generics[0]).GetScope()
 }

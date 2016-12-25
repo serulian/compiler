@@ -17,7 +17,6 @@ var _ = fmt.Printf
 // generateExpressionStatement generates the code for an expression statement.
 func (sg *stateGenerator) generateExpressionStatement(exprst *codedom.ExpressionStatementNode) {
 	topLevel := sg.addTopLevelExpression(exprst.Expression)
-
 	if exprBuilder, ok := topLevel.(esbuilder.ExpressionBuilder); ok {
 		// If the expression for the statement is stateless, then it isn't needed and we can
 		// safely skip this whole expression statement.
@@ -34,17 +33,13 @@ func (sg *stateGenerator) generateExpressionStatement(exprst *codedom.Expression
 // generateUnconditionalJump generates the code for an unconditional jump.
 func (sg *stateGenerator) generateUnconditionalJump(jump *codedom.UnconditionalJumpNode) {
 	currentState := sg.currentState
-
-	data := struct {
-		JumpToTarget string
-	}{sg.jumpToStatement(jump.Target)}
+	targetState := sg.generateStates(jump.Target, generateNewState)
 
 	templateStr := `
-		{{ .Item.JumpToTarget }}
-		continue;
+		{{ .Snippets.SetStateAndContinue .Item }}
 	`
 
-	template := esbuilder.Template("unconditionaljump", templateStr, generatingItem{data, sg})
+	template := esbuilder.Template("unconditionaljump", templateStr, generatingItem{targetState, sg})
 	currentState.pushBuilt(sg.addMapping(template, jump))
 }
 
@@ -58,20 +53,21 @@ func (sg *stateGenerator) generateConditionalJump(jump *codedom.ConditionalJumpN
 	currentState := sg.currentState
 
 	// Based on the expression value, jump to one state or another.
+	trueState := sg.generateStates(jump.True, generateNewState)
+	falseState := sg.generateStates(jump.False, generateNewState)
+
 	data := struct {
-		This        codedom.Statement
-		JumpToTrue  string
-		JumpToFalse string
-		Expression  esbuilder.SourceBuilder
-	}{jump, sg.jumpToStatement(jump.True), sg.jumpToStatement(jump.False), expression}
+		This       codedom.Statement
+		TrueState  *state
+		FalseState *state
+		Expression esbuilder.SourceBuilder
+	}{jump, trueState, falseState, expression}
 
 	templateStr := `
 		if ({{ emit .Item.Expression }}) {
-			{{ .Item.JumpToTrue }}
-			continue;
+			{{ .Snippets.SetStateAndContinue .Item.TrueState }}
 		} else {
-			{{ .Item.JumpToFalse }}
-			continue;
+			{{ .Snippets.SetStateAndContinue .Item.FalseState }}
 		}
 	`
 
@@ -95,6 +91,23 @@ func (sg *stateGenerator) generateResourceBlock(resourceBlock *codedom.ResourceB
 
 	// Pop the resource from the resource stack.
 	sg.popResource(resourceBlock.ResourceName, resourceBlock.BasisNode())
+
+	// Generate the popr call for the resource.
+	popCall := codedom.RuntimeFunctionCall(
+		codedom.StatePopResourceFunction,
+		[]codedom.Expression{
+			codedom.LiteralValue("'"+resourceBlock.ResourceName+"'", basisNode),
+		},
+		basisNode,
+	)
+
+	// Determine if the Release() of the resource is async. If so, then await on the popr
+	// call.
+	if resourceBlock.HasAsyncRelease(sg.scopegraph) {
+		popCall = codedom.AwaitPromise(popCall, basisNode)
+	}
+
+	sg.generateStates(codedom.ExpressionStatement(popCall, basisNode), generateImplicitState)
 }
 
 // generateVarDefinition generates the code for a variable definition.
@@ -119,18 +132,16 @@ func (sg *stateGenerator) generateVarDefinition(vardef *codedom.VarDefinitionNod
 // generateResolution generates the code for promise resolution.
 func (sg *stateGenerator) generateResolution(resolution *codedom.ResolutionNode) {
 	var value esbuilder.SourceBuilder = nil
+	templateStr := `
+		{{ .Snippets.Resolve "" }}
+	`
+
 	if resolution.Value != nil {
 		value = sg.addTopLevelExpression(resolution.Value)
+		templateStr = `
+			{{ .Snippets.Resolve (emit .Item) }}
+		`
 	}
-
-	templateStr := `
-		{{ if .Item }}
-		$resolve({{ emit .Item }});
-		return;
-		{{ else }}
-		{{ .Snippets.Resolve "" }}
-		{{ end }}
-	`
 
 	template := esbuilder.Template("resolution", templateStr, generatingItem{value, sg})
 	sg.currentState.pushBuilt(sg.addMapping(template, resolution))
@@ -141,8 +152,7 @@ func (sg *stateGenerator) generateRejection(rejection *codedom.RejectionNode) {
 	value := sg.addTopLevelExpression(rejection.Value)
 
 	templateStr := `
-		$reject({{ emit .Item }});
-		return;
+		{{ .Snippets.Reject (emit .Item) }}
 	`
 
 	template := esbuilder.Template("rejection", templateStr, generatingItem{value, sg})
@@ -202,12 +212,14 @@ func (sg *stateGenerator) generateArrowPromise(arrowPromise *codedom.ArrowPromis
 		rejectionAssignment = sg.addTopLevelExpression(arrowPromise.RejectionAssignment)
 	}
 
+	targetState := sg.generateStates(arrowPromise.Target, generateNewState)
+
 	data := struct {
-		JumpToTarget         string
+		TargetState          *state
 		ChildExpression      esbuilder.SourceBuilder
 		ResolutionAssignment esbuilder.SourceBuilder
 		RejectionAssignment  esbuilder.SourceBuilder
-	}{sg.jumpToStatement(arrowPromise.Target), childExpression, resolutionAssignment, rejectionAssignment}
+	}{targetState, childExpression, resolutionAssignment, rejectionAssignment}
 
 	templateStr := `
 		({{ emit .Item.ChildExpression }}).then(function(resolved) {
@@ -215,13 +227,11 @@ func (sg *stateGenerator) generateArrowPromise(arrowPromise *codedom.ArrowPromis
 				{{ emit .Item.ResolutionAssignment }}
 			{{ end }}
 
-			{{ .Item.JumpToTarget }}
-			{{ .Snippets.Continue .IsGenerator }}
+			{{ .Snippets.SetStateAndContinue .Item.TargetState }}
 		}).catch(function(rejected) {
 			{{ if .Item.RejectionAssignment }}
 				{{ emit .Item.RejectionAssignment }}
-				{{ .Item.JumpToTarget }}
-				{{ .Snippets.Continue .IsGenerator }}
+				{{ .Snippets.SetStateAndContinue .Item.TargetState }}
 			{{ else }}
 				{{ .Snippets.Reject "rejected" }}
 			{{ end }}
@@ -235,6 +245,64 @@ func (sg *stateGenerator) generateArrowPromise(arrowPromise *codedom.ArrowPromis
 
 // generateResolveExpression generates the code for an expression resolution.
 func (sg *stateGenerator) generateResolveExpression(resolveExpression *codedom.ResolveExpressionNode) {
+	if resolveExpression.IsAsynchronous(sg.scopegraph) {
+		sg.generateAsyncResolveExpression(resolveExpression)
+	} else {
+		sg.generateSyncResolveExpression(resolveExpression)
+	}
+}
+
+func (sg *stateGenerator) generateSyncResolveExpression(resolveExpression *codedom.ResolveExpressionNode) {
+	var resolutionName = ""
+	var rejectionName = ""
+
+	if resolveExpression.ResolutionName != "" {
+		resolutionName = sg.addVariable(resolveExpression.ResolutionName)
+	}
+
+	if resolveExpression.RejectionName != "" {
+		rejectionName = sg.addVariable(resolveExpression.RejectionName)
+	}
+
+	childExpression := sg.addTopLevelExpression(resolveExpression.ChildExpression)
+
+	currentState := sg.currentState
+	targetState := sg.generateStates(resolveExpression.Target, generateNewState)
+
+	wrappedData := struct {
+		ChildExpression esbuilder.SourceBuilder
+		ResolutionName  string
+		RejectionName   string
+		TargetState     *state
+		Snippets        snippets
+	}{childExpression, resolutionName, rejectionName, targetState, sg.snippets()}
+
+	wrapTemplateStr := `
+		try {
+			var $expr = {{ emit .ChildExpression }};
+			{{ if .ResolutionName }}
+				{{ .ResolutionName }} = $expr;
+			{{ end }}
+
+			{{ if .RejectionName }}
+			{{ .RejectionName }} = null;
+			{{ end }}
+		} catch ($rejected) {
+			{{ if .RejectionName }}
+			{{ .RejectionName }} = $rejected;
+			{{ end }}
+			{{ if .ResolutionName }}
+			{{ .ResolutionName }} = null;
+			{{ end }}
+		}
+
+		{{ .Snippets.SetStateAndContinue .TargetState }}
+	`
+
+	currentState.pushBuilt(esbuilder.Template("resolvesyncwrap", wrapTemplateStr, wrappedData))
+}
+
+func (sg *stateGenerator) generateAsyncResolveExpression(resolveExpression *codedom.ResolveExpressionNode) {
 	// Generate the resolved expression, requiring that it is asynchronous to ensure it becomes
 	// a Promise.
 	result := expressiongenerator.GenerateExpression(resolveExpression.ChildExpression,
@@ -256,18 +324,16 @@ func (sg *stateGenerator) generateResolveExpression(resolveExpression *codedom.R
 	// Save the current state and create a new state to jump to once the expression's
 	// promise has resolved or rejected.
 	currentState := sg.currentState
-	sg.generateStates(resolveExpression.Target, generateNewState)
 
 	// Build the expression with an assignment of the resolved expression value assigned to
 	// the resolution variable (if any) and then a jump to the post-resolution state.
-	jumpToTarget := sg.jumpToStatement(resolveExpression.Target)
+	targetState := sg.generateStates(resolveExpression.Target, generateNewState)
 	resolveData := struct {
 		ResolutionName string
 		RejectionName  string
-		JumpToTarget   string
+		TargetState    *state
 		Snippets       snippets
-		IsGenerator    bool
-	}{resolutionName, rejectionName, jumpToTarget, sg.snippets(), sg.isGeneratorFunction}
+	}{resolutionName, rejectionName, targetState, sg.snippets()}
 
 	wrappingTemplateStr := `
 		{{ if .Data.ResolutionName }}
@@ -278,8 +344,7 @@ func (sg *stateGenerator) generateResolveExpression(resolveExpression *codedom.R
 		{{ .Data.RejectionName }} = null;
 		{{ end }}
 
-		{{ .Data.JumpToTarget }}
-		{{ .Data.Snippets.Continue .Data.IsGenerator }}
+		{{ .Data.Snippets.SetStateAndContinue .Data.TargetState }}
 	`
 
 	promise := result.BuildWrapped(wrappingTemplateStr, resolveData)
@@ -290,10 +355,9 @@ func (sg *stateGenerator) generateResolveExpression(resolveExpression *codedom.R
 		Promise        esbuilder.SourceBuilder
 		ResolutionName string
 		RejectionName  string
-		JumpToTarget   string
+		TargetState    *state
 		Snippets       snippets
-		IsGenerator    bool
-	}{promise, resolutionName, rejectionName, jumpToTarget, sg.snippets(), sg.isGeneratorFunction}
+	}{promise, resolutionName, rejectionName, targetState, sg.snippets()}
 
 	catchTemplateStr := `
 		({{ emit .Promise }}).catch(function($rejected) {
@@ -304,42 +368,10 @@ func (sg *stateGenerator) generateResolveExpression(resolveExpression *codedom.R
 			{{ .ResolutionName }} = null;
 			{{ end }}
 
-			{{ .JumpToTarget }}
-			{{ .Snippets.Continue .IsGenerator }}
+			{{ .Snippets.SetStateAndContinue .TargetState }}
 		});
 		return;
 	`
 
-	currentState.pushBuilt(esbuilder.Template("resolvecatch", catchTemplateStr, rejectData))
-}
-
-// jumpToStatement generates an unconditional jump to the target statement.
-func (sg *stateGenerator) jumpToStatement(target codedom.Statement) string {
-	// Check for resources that will be out of scope once the jump occurs.
-	resources := sg.resources.OutOfScope(target.BasisNode())
-	if len(resources) == 0 {
-		// No resources are moving out of scope, so simply set the next state.
-		targetState := sg.generateStates(target, generateNewState)
-		return sg.snippets().SetState(targetState.ID)
-	}
-
-	// Pop off any resources out of scope.
-	data := struct {
-		PopFunction codedom.RuntimeFunction
-		Resources   []resource
-		Snippets    snippets
-		TargetState *state
-		IsGenerator bool
-	}{codedom.StatePopResourceFunction, resources, sg.snippets(), sg.generateStates(target, generateNewState), sg.isGeneratorFunction}
-
-	popTemplateStr := `
-		{{ .PopFunction }}({{ range $index, $resource := .Resources }}{{ if $index }}, {{ end }} '{{ $resource.Name }}' {{ end }}).then(function() {
-			{{ .Snippets.SetState .TargetState.ID }}
-			{{ .Snippets.Continue .IsGenerator }}
-		}).catch(function(err) {
-			{{ .Snippets.Reject "err" }}
-		});
-	`
-
-	return sg.templater.Execute("popjump", popTemplateStr, data)
+	currentState.pushBuilt(esbuilder.Template("resolveasynccatch", catchTemplateStr, rejectData))
 }

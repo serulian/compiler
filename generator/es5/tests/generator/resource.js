@@ -6,17 +6,12 @@ $module('resource', function () {
     $static.new = function () {
       var instance = new $static();
       instance.released = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
-      return $promise.resolve(instance);
+      return instance;
     };
     $instance.Release = function () {
       var $this = this;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        $this.released = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
-        $resolve();
-        return;
-      };
-      return $promise.new($continue);
+      $this.released = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+      return;
     };
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -30,13 +25,11 @@ $module('resource', function () {
   });
 
   $static.SomeGenerator = function (sr) {
-    var $result;
     var $temp0;
     var $current = 0;
     var $resources = $t.resourcehandler();
     var $continue = function ($yield, $yieldin, $reject, $done) {
-      $done = $resources.bind($done);
-      $reject = $resources.bind($reject);
+      $done = $resources.bind($done, false);
       while (true) {
         switch ($current) {
           case 0:
@@ -47,20 +40,9 @@ $module('resource', function () {
             return;
 
           case 1:
-            $resources.popr('$temp0').then(function ($result0) {
-              $result = $result0;
-              $current = 2;
-              $continue($yield, $yieldin, $reject, $done);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 2:
+            $resources.popr('$temp0');
             $yield($t.fastbox(40, $g.____testlib.basictypes.Integer));
-            $current = 3;
+            $current = 2;
             return;
 
           default:
@@ -69,9 +51,9 @@ $module('resource', function () {
         }
       }
     };
-    return $generator.new($continue);
+    return $generator.new($continue, false);
   };
-  $static.TEST = function () {
+  $static.TEST = $t.markpromising(function () {
     var $result;
     var $temp0;
     var $temp1;
@@ -83,26 +65,22 @@ $module('resource', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.resource.SomeResource.new().then(function ($result0) {
-              $result = $result0;
-              $current = 1;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
+            sr = $g.resource.SomeResource.new();
+            counter = $t.fastbox(0, $g.____testlib.basictypes.Integer);
+            $current = 1;
+            $continue($resolve, $reject);
             return;
 
           case 1:
-            sr = $result;
-            counter = $t.fastbox(0, $g.____testlib.basictypes.Integer);
+            $temp1 = $g.resource.SomeGenerator(sr);
             $current = 2;
-            continue;
+            $continue($resolve, $reject);
+            return;
 
           case 2:
-            $g.resource.SomeGenerator(sr).then(function ($result0) {
-              $result = $result0;
+            $promise.maybe($temp1.Next()).then(function ($result0) {
+              $temp0 = $result0;
+              $result = $temp0;
               $current = 3;
               $continue($resolve, $reject);
               return;
@@ -113,53 +91,26 @@ $module('resource', function () {
             return;
 
           case 3:
-            $temp1 = $result;
-            $current = 4;
-            continue;
-
-          case 4:
-            $temp1.Next().then(function ($result0) {
-              $temp0 = $result0;
-              $result = $temp0;
+            i = $temp0.First;
+            if ($temp0.Second.$wrapped) {
+              $current = 4;
+              $continue($resolve, $reject);
+              return;
+            } else {
               $current = 5;
               $continue($resolve, $reject);
               return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 5:
-            i = $temp0.First;
-            if ($temp0.Second.$wrapped) {
-              $current = 6;
-              continue;
-            } else {
-              $current = 7;
-              continue;
             }
             break;
 
-          case 6:
+          case 4:
             counter = $t.fastbox(counter.$wrapped + i.$wrapped, $g.____testlib.basictypes.Boolean);
-            $current = 4;
-            continue;
-
-          case 7:
-            $promise.resolve(sr.released.$wrapped).then(function ($result0) {
-              $result = $t.fastbox($result0 && (counter.$wrapped == 42), $g.____testlib.basictypes.Boolean);
-              $current = 8;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
+            $current = 2;
+            $continue($resolve, $reject);
             return;
 
-          case 8:
-            $resolve($result);
+          case 5:
+            $resolve($t.fastbox(sr.released.$wrapped && (counter.$wrapped == 42), $g.____testlib.basictypes.Boolean));
             return;
 
           default:
@@ -169,5 +120,5 @@ $module('resource', function () {
       }
     };
     return $promise.new($continue);
-  };
+  });
 });

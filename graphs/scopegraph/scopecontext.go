@@ -20,8 +20,12 @@ type scopeContext struct {
 	accessOption scopeAccessOption
 
 	// staticDependencyCollector defines a helper for collecting all members accessed or called
-	// statically the current scope, which indicates a dependency for the purposes of initialization.
+	// statically the current scope.
 	staticDependencyCollector *staticDependencyCollector
+
+	// dynamicDependencyCollector defines a helper for collecting all names accessed dynamically in
+	// the current scope.
+	dynamicDependencyCollector *dynamicDependencyCollector
 
 	// overrideTypes is (if not nil) the map of the overridden type for an expression
 	// under this context.
@@ -39,6 +43,9 @@ type scopeContext struct {
 	// parentContinuable holds a reference to the parent node to which a `continue` statement
 	// can jump, if any.
 	parentContinuable *compilergraph.GraphNode
+
+	// rootLabelSet is the set of extra labels for the root node.
+	rootLabelSet *statementLabelSet
 }
 
 // getParentContainer returns the parent type member, module member or property getter/setter
@@ -62,12 +69,15 @@ func (sc scopeContext) getTypeOverride(exprNode compilergraph.GraphNode) (typegr
 // set to that given.
 func (sc scopeContext) withContinuable(node compilergraph.GraphNode) scopeContext {
 	return scopeContext{
-		rootNode:                  sc.rootNode,
-		staticDependencyCollector: sc.staticDependencyCollector,
+		rootNode:                   sc.rootNode,
+		staticDependencyCollector:  sc.staticDependencyCollector,
+		dynamicDependencyCollector: sc.dynamicDependencyCollector,
 
 		accessOption:      sc.accessOption,
 		overrideTypes:     sc.overrideTypes,
 		parentImplemented: sc.parentImplemented,
+
+		rootLabelSet: sc.rootLabelSet,
 
 		parentBreakable:   &node,
 		parentContinuable: &node,
@@ -78,13 +88,16 @@ func (sc scopeContext) withContinuable(node compilergraph.GraphNode) scopeContex
 // given.
 func (sc scopeContext) withBreakable(node compilergraph.GraphNode) scopeContext {
 	return scopeContext{
-		rootNode:                  sc.rootNode,
-		staticDependencyCollector: sc.staticDependencyCollector,
+		rootNode:                   sc.rootNode,
+		staticDependencyCollector:  sc.staticDependencyCollector,
+		dynamicDependencyCollector: sc.dynamicDependencyCollector,
 
 		accessOption:      sc.accessOption,
 		overrideTypes:     sc.overrideTypes,
 		parentImplemented: sc.parentImplemented,
 		parentContinuable: sc.parentContinuable,
+
+		rootLabelSet: sc.rootLabelSet,
 
 		parentBreakable: &node,
 	}
@@ -94,13 +107,16 @@ func (sc scopeContext) withBreakable(node compilergraph.GraphNode) scopeContext 
 // given.
 func (sc scopeContext) withImplemented(node compilergraph.GraphNode) scopeContext {
 	return scopeContext{
-		rootNode:                  sc.rootNode,
-		staticDependencyCollector: sc.staticDependencyCollector,
+		rootNode:                   sc.rootNode,
+		staticDependencyCollector:  sc.staticDependencyCollector,
+		dynamicDependencyCollector: sc.dynamicDependencyCollector,
 
 		accessOption:      sc.accessOption,
 		overrideTypes:     sc.overrideTypes,
 		parentBreakable:   sc.parentBreakable,
 		parentContinuable: sc.parentContinuable,
+
+		rootLabelSet: sc.rootLabelSet,
 
 		parentImplemented: node,
 	}
@@ -109,13 +125,16 @@ func (sc scopeContext) withImplemented(node compilergraph.GraphNode) scopeContex
 // withAccess returns the scope context with the access option set to that given.
 func (sc scopeContext) withAccess(access scopeAccessOption) scopeContext {
 	return scopeContext{
-		rootNode:                  sc.rootNode,
-		staticDependencyCollector: sc.staticDependencyCollector,
+		rootNode:                   sc.rootNode,
+		staticDependencyCollector:  sc.staticDependencyCollector,
+		dynamicDependencyCollector: sc.dynamicDependencyCollector,
 
 		overrideTypes:     sc.overrideTypes,
 		parentImplemented: sc.parentImplemented,
 		parentBreakable:   sc.parentBreakable,
 		parentContinuable: sc.parentContinuable,
+
+		rootLabelSet: sc.rootLabelSet,
 
 		accessOption: access,
 	}
@@ -136,13 +155,16 @@ func (sc scopeContext) withTypeOverride(exprNode compilergraph.GraphNode, typere
 	overrideTypes[exprNode.NodeId] = typeref
 
 	return scopeContext{
-		rootNode:                  sc.rootNode,
-		staticDependencyCollector: sc.staticDependencyCollector,
+		rootNode:                   sc.rootNode,
+		staticDependencyCollector:  sc.staticDependencyCollector,
+		dynamicDependencyCollector: sc.dynamicDependencyCollector,
 
 		accessOption:      sc.accessOption,
 		parentImplemented: sc.parentImplemented,
 		parentBreakable:   sc.parentBreakable,
 		parentContinuable: sc.parentContinuable,
+
+		rootLabelSet: sc.rootLabelSet,
 
 		overrideTypes: &overrideTypes,
 	}

@@ -1,0 +1,13 @@
+class SomeClass {
+	operator range(left SomeClass, right SomeClass) {
+		yield left
+		yield right
+	}
+}
+
+function<any> TEST() {
+	sc := SomeClass.new()
+	for i in sc..sc {
+	}
+	return 1
+}

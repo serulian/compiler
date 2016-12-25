@@ -8,8 +8,39 @@ import (
 	"fmt"
 
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/graphs/typegraph"
 )
+
+func isAsynchronous(scopegraph *scopegraph.ScopeGraph, expressions []Expression) bool {
+	for _, expr := range expressions {
+		if expr.IsAsynchronous(scopegraph) {
+			return true
+		}
+	}
+
+	return false
+}
+
+// AnonymousClosureCallNode wraps a function call to an anonymous closure, properly handling
+// whether to await the result.
+type AnonymousClosureCallNode struct {
+	expressionBase
+	Closure   *FunctionDefinitionNode // The closure to call.
+	Arguments []Expression            // The arguments to the function call.
+}
+
+func AnonymousClosureCall(closure *FunctionDefinitionNode, arguments []Expression, basis compilergraph.GraphNode) Expression {
+	return &AnonymousClosureCallNode{
+		expressionBase{domBase{basis}},
+		closure,
+		arguments,
+	}
+}
+
+func (e *AnonymousClosureCallNode) IsAsynchronous(scopegraph *scopegraph.ScopeGraph) bool {
+	return e.Closure.IsAsynchronous(scopegraph) || isAsynchronous(scopegraph, e.Arguments)
+}
 
 // AreEqual returns a call to the comparison operator between the two expressions.
 func AreEqual(leftExpr Expression, rightExpr Expression, comparisonType typegraph.TypeReference, tdg *typegraph.TypeGraph, basis compilergraph.GraphNode) Expression {
@@ -24,6 +55,22 @@ func AreEqual(leftExpr Expression, rightExpr Expression, comparisonType typegrap
 		[]Expression{leftExpr, rightExpr},
 		basis)
 }
+
+// AwaitPromiseNode wraps a child expression that returns a promise, waiting for it to complete
+// and return.
+type AwaitPromiseNode struct {
+	expressionBase
+	ChildExpression Expression // The child expression.
+}
+
+func AwaitPromise(childExpression Expression, basis compilergraph.GraphNode) Expression {
+	return &AwaitPromiseNode{
+		expressionBase{domBase{basis}},
+		childExpression,
+	}
+}
+
+func (e *AwaitPromiseNode) IsAsynchronous(scopegraph *scopegraph.ScopeGraph) bool { return true }
 
 // CompoundExpressionNode represents an expression that executes multiple sub-expressions
 // with an input and output value expression.
@@ -45,6 +92,10 @@ func CompoundExpression(inputVarName string, inputValue Expression, expressions 
 	}
 }
 
+func (e *CompoundExpressionNode) IsAsynchronous(scopegraph *scopegraph.ScopeGraph) bool {
+	return e.InputValue.IsAsynchronous(scopegraph) || isAsynchronous(scopegraph, e.Expressions)
+}
+
 // ObjectLiteralEntryNode represents an entry in an object literal.
 type ObjectLiteralEntryNode struct {
 	KeyExpression   Expression
@@ -52,10 +103,23 @@ type ObjectLiteralEntryNode struct {
 	BasisNode       compilergraph.GraphNode
 }
 
+func (e *ObjectLiteralEntryNode) IsAsynchronous(scopegraph *scopegraph.ScopeGraph) bool {
+	return e.KeyExpression.IsAsynchronous(scopegraph) || e.ValueExpression.IsAsynchronous(scopegraph)
+}
+
 // ObjectLiteralNode represents a literal object definition.
 type ObjectLiteralNode struct {
 	expressionBase
 	Entries []ObjectLiteralEntryNode
+}
+
+func (e *ObjectLiteralNode) IsAsynchronous(scopegraph *scopegraph.ScopeGraph) bool {
+	for _, expr := range e.Entries {
+		if expr.IsAsynchronous(scopegraph) {
+			return true
+		}
+	}
+	return false
 }
 
 func ObjectLiteral(entries []ObjectLiteralEntryNode, basis compilergraph.GraphNode) Expression {
@@ -76,6 +140,10 @@ func ArrayLiteral(values []Expression, basis compilergraph.GraphNode) Expression
 		expressionBase{domBase{basis}},
 		values,
 	}
+}
+
+func (e *ArrayLiteralNode) IsAsynchronous(scopegraph *scopegraph.ScopeGraph) bool {
+	return isAsynchronous(scopegraph, e.Values)
 }
 
 // LiteralValueNode refers to a literal value to be emitted.
@@ -123,8 +191,12 @@ func StaticMemberReference(member typegraph.TGMember, parentType typegraph.TypeR
 	}
 }
 
-func (n StaticMemberReferenceNode) ExprName() string {
+func (n *StaticMemberReferenceNode) ExprName() string {
 	return n.Member.Name()
+}
+
+func (e *StaticMemberReferenceNode) ReferencedMember() (typegraph.TGMember, bool) {
+	return e.Member, true
 }
 
 // StaticTypeReferenceNode refers statically to a type path.
@@ -176,20 +248,33 @@ func NestedTypeAccess(childExpression Expression, innerType typegraph.TypeRefere
 	}
 }
 
+func (e *NestedTypeAccessNode) IsAsynchronous(scopegraph *scopegraph.ScopeGraph) bool {
+	return e.ChildExpression.IsAsynchronous(scopegraph)
+}
+
 // MemberCallNode is the function call of a known named member under a child expression.
 type MemberCallNode struct {
 	expressionBase
-	ChildExpression Expression         // The child expression.
-	Member          typegraph.TGMember // The member being accessed.
-	Arguments       []Expression       // The arguments to the function call.
-	Nullable        bool               // Whether the call is on a nullable access.
+	ChildExpression Expression                     // The child expression.
+	Member          typegraph.TGMember             // The member being accessed.
+	Arguments       []Expression                   // The arguments to the function call.
+	Nullable        bool                           // Whether the call is on a nullable access.
+	CallType        scopegraph.PromisingAccessType // The access type for this call.
 }
 
-func (mc *MemberCallNode) IsPromise() bool {
-	return mc.Member.IsPromising()
+func (e *MemberCallNode) IsAsynchronous(scopegraph *scopegraph.ScopeGraph) bool {
+	return e.IsPromise(scopegraph) || e.ChildExpression.IsAsynchronous(scopegraph) || isAsynchronous(scopegraph, e.Arguments)
+}
+
+func (mc *MemberCallNode) IsPromise(sg *scopegraph.ScopeGraph) bool {
+	return sg.IsPromisingMember(mc.Member, scopegraph.PromisingAccessFunctionCall)
 }
 
 func MemberCall(childExpression Expression, member typegraph.TGMember, arguments []Expression, basis compilergraph.GraphNode) Expression {
+	return MemberCallWithCallType(childExpression, member, arguments, scopegraph.PromisingAccessFunctionCall, basis)
+}
+
+func MemberCallWithCallType(childExpression Expression, member typegraph.TGMember, arguments []Expression, callType scopegraph.PromisingAccessType, basis compilergraph.GraphNode) Expression {
 	if childExpression == nil {
 		panic("Nil child expression")
 	}
@@ -200,6 +285,7 @@ func MemberCall(childExpression Expression, member typegraph.TGMember, arguments
 		member,
 		arguments,
 		false,
+		callType,
 	}
 }
 
@@ -214,6 +300,7 @@ func NullableMemberCall(childExpression Expression, member typegraph.TGMember, a
 		member,
 		arguments,
 		true,
+		scopegraph.PromisingAccessFunctionCall,
 	}
 }
 
@@ -222,10 +309,19 @@ type MemberReferenceNode struct {
 	expressionBase
 	ChildExpression Expression         // The child expression.
 	Member          typegraph.TGMember // The member being accessed.
+	Nullable        bool               // Whether the access is a nullable access (`?.`)
 }
 
-func (mr *MemberReferenceNode) IsPromise() bool {
-	return mr.Member.IsPromising()
+func (mr *MemberReferenceNode) IsPromise(sg *scopegraph.ScopeGraph) bool {
+	return sg.IsPromisingMember(mr.Member, scopegraph.PromisingAccessImplicitGet)
+}
+
+func (e *MemberReferenceNode) IsAsynchronous(scopegraph *scopegraph.ScopeGraph) bool {
+	return e.IsPromise(scopegraph) || e.ChildExpression.IsAsynchronous(scopegraph)
+}
+
+func (e *MemberReferenceNode) ReferencedMember() (typegraph.TGMember, bool) {
+	return e.Member, true
 }
 
 func MemberReference(childExpression Expression, member typegraph.TGMember, basis compilergraph.GraphNode) Expression {
@@ -233,6 +329,16 @@ func MemberReference(childExpression Expression, member typegraph.TGMember, basi
 		expressionBase{domBase{basis}},
 		childExpression,
 		member,
+		false,
+	}
+}
+
+func NullableMemberReference(childExpression Expression, member typegraph.TGMember, basis compilergraph.GraphNode) Expression {
+	return &MemberReferenceNode{
+		expressionBase{domBase{basis}},
+		childExpression,
+		member,
+		true,
 	}
 }
 
@@ -240,44 +346,62 @@ func (n MemberReferenceNode) ExprName() string {
 	return n.Member.Name()
 }
 
+// NativeMemberAccessNode is the access of a named member under a child expression. Unlike a NativeAccessNode,
+// this node is decorated with the referenced member for proper async handling.
+type NativeMemberAccessNode struct {
+	expressionBase
+	ChildExpression Expression         // The child expression.
+	NativeName      string             // The native name to access to reference the member,
+	Member          typegraph.TGMember // The member being accessed.
+}
+
+func (mr *NativeMemberAccessNode) IsPromise(sg *scopegraph.ScopeGraph) bool {
+	return sg.IsPromisingMember(mr.Member, scopegraph.PromisingAccessImplicitGet)
+}
+
+func (e *NativeMemberAccessNode) IsAsynchronous(scopegraph *scopegraph.ScopeGraph) bool {
+	return e.IsPromise(scopegraph) || e.ChildExpression.IsAsynchronous(scopegraph)
+}
+
+func (e *NativeMemberAccessNode) ReferencedMember() (typegraph.TGMember, bool) {
+	return e.Member, true
+}
+
+func (n *NativeMemberAccessNode) ExprName() string {
+	return n.NativeName
+}
+
+func NativeMemberAccess(childExpression Expression, nativeName string, member typegraph.TGMember, basis compilergraph.GraphNode) Expression {
+	return &NativeMemberAccessNode{
+		expressionBase{domBase{basis}},
+		childExpression,
+		nativeName,
+		member,
+	}
+}
+
 // DynamicAccessNode is the access of an unknown named member under a child expression.
 type DynamicAccessNode struct {
 	expressionBase
-	ChildExpression Expression // The child expression.
-	Name            string     // The name of the member being accessed.
+	ChildExpression     Expression // The child expression.
+	Name                string     // The name of the member being accessed.
+	IsPossiblyPromising bool       // Whether the dynamic access is possibily promising.
 }
 
-func (n DynamicAccessNode) ExprName() string {
+func (e *DynamicAccessNode) IsAsynchronous(scopegraph *scopegraph.ScopeGraph) bool {
+	return e.IsPossiblyPromising
+}
+
+func (n *DynamicAccessNode) ExprName() string {
 	return n.Name
 }
 
-func DynamicAccess(childExpression Expression, name string, basis compilergraph.GraphNode) Expression {
+func DynamicAccess(childExpression Expression, name string, isPossiblyPromising bool, basis compilergraph.GraphNode) Expression {
 	return &DynamicAccessNode{
 		expressionBase{domBase{basis}},
 		childExpression,
 		name,
-	}
-}
-
-// AwaitPromiseNode wraps a child expression that returns a promise, waiting for it to complete
-// and return.
-type AwaitPromiseNode struct {
-	expressionBase
-	ChildExpression Expression // The child expression.
-}
-
-func WrapIfPromising(childExpression Expression, member typegraph.TGMember, basis compilergraph.GraphNode) Expression {
-	if member.IsPromising() {
-		return AwaitPromise(childExpression, basis)
-	}
-
-	return childExpression
-}
-
-func AwaitPromise(childExpression Expression, basis compilergraph.GraphNode) Expression {
-	return &AwaitPromiseNode{
-		expressionBase{domBase{basis}},
-		childExpression,
+		isPossiblyPromising,
 	}
 }
 
@@ -296,6 +420,10 @@ func LocalAssignment(target string, value Expression, basis compilergraph.GraphN
 	}
 }
 
+func (e *LocalAssignmentNode) IsAsynchronous(scopegraph *scopegraph.ScopeGraph) bool {
+	return e.Value.IsAsynchronous(scopegraph)
+}
+
 // MemberAssignmentNode represents assignment of a value to a target member.
 type MemberAssignmentNode struct {
 	expressionBase
@@ -304,8 +432,12 @@ type MemberAssignmentNode struct {
 	Value          Expression         // The value of the assignment.
 }
 
-func (ma *MemberAssignmentNode) IsPromise() bool {
-	return ma.Target.IsPromising()
+func (ma *MemberAssignmentNode) IsPromise(sg *scopegraph.ScopeGraph) bool {
+	return sg.IsPromisingMember(ma.Target, scopegraph.PromisingAccessImplicitSet)
+}
+
+func (e *MemberAssignmentNode) IsAsynchronous(scopegraph *scopegraph.ScopeGraph) bool {
+	return e.IsPromise(scopegraph) || e.NameExpression.IsAsynchronous(scopegraph) || e.Value.IsAsynchronous(scopegraph)
 }
 
 func MemberAssignment(target typegraph.TGMember, nameExpr Expression, value Expression, basis compilergraph.GraphNode) Expression {
@@ -315,6 +447,29 @@ func MemberAssignment(target typegraph.TGMember, nameExpr Expression, value Expr
 		nameExpr,
 		value,
 	}
+}
+
+// GenericSpecificationNode wraps a generic specification.
+type GenericSpecificationNode struct {
+	expressionBase
+	ChildExpression Expression   // The child expression.
+	TypeArguments   []Expression // The specified generic types.
+}
+
+func GenericSpecification(childExpression Expression, typeArguments []Expression, basis compilergraph.GraphNode) Expression {
+	return &GenericSpecificationNode{
+		expressionBase{domBase{basis}},
+		childExpression,
+		typeArguments,
+	}
+}
+
+func (e *GenericSpecificationNode) IsAsynchronous(scopegraph *scopegraph.ScopeGraph) bool {
+	return e.ChildExpression.IsAsynchronous(scopegraph)
+}
+
+func (e *GenericSpecificationNode) ReferencedMember() (typegraph.TGMember, bool) {
+	return e.ChildExpression.ReferencedMember()
 }
 
 // FunctionCallNode wraps a function call.
@@ -336,6 +491,10 @@ func FunctionCall(childExpression Expression, arguments []Expression, basis comp
 	}
 }
 
+func (e *FunctionCallNode) IsAsynchronous(scopegraph *scopegraph.ScopeGraph) bool {
+	return e.ChildExpression.IsAsynchronous(scopegraph) || isAsynchronous(scopegraph, e.Arguments)
+}
+
 // TernaryNode wraps a call to a ternary expr.
 type TernaryNode struct {
 	expressionBase
@@ -351,6 +510,10 @@ func Ternary(checkExpr Expression, thenExpr Expression, elseExpr Expression, bas
 		thenExpr,
 		elseExpr,
 	}
+}
+
+func (e *TernaryNode) IsAsynchronous(scopegraph *scopegraph.ScopeGraph) bool {
+	return e.CheckExpr.IsAsynchronous(scopegraph) || e.ThenExpr.IsAsynchronous(scopegraph) || e.ElseExpr.IsAsynchronous(scopegraph)
 }
 
 // BinaryOperationNode wraps a call to a binary operator.
@@ -370,6 +533,10 @@ func BinaryOperation(leftExpr Expression, operator string, rightExpr Expression,
 	}
 }
 
+func (e *BinaryOperationNode) IsAsynchronous(scopegraph *scopegraph.ScopeGraph) bool {
+	return e.LeftExpr.IsAsynchronous(scopegraph) || e.RightExpr.IsAsynchronous(scopegraph)
+}
+
 // UnaryOperationNode wraps a call to a unary operator.
 type UnaryOperationNode struct {
 	expressionBase
@@ -383,6 +550,10 @@ func UnaryOperation(operator string, childExpr Expression, basis compilergraph.G
 		operator,
 		childExpr,
 	}
+}
+
+func (e *UnaryOperationNode) IsAsynchronous(scopegraph *scopegraph.ScopeGraph) bool {
+	return e.ChildExpression.IsAsynchronous(scopegraph)
 }
 
 // NativeAccessNode is the access of an unknown native member under a child expression.
@@ -400,7 +571,11 @@ func NativeAccess(childExpr Expression, name string, basis compilergraph.GraphNo
 	}
 }
 
-func (n NativeAccessNode) ExprName() string {
+func (e *NativeAccessNode) IsAsynchronous(scopegraph *scopegraph.ScopeGraph) bool {
+	return e.ChildExpression.IsAsynchronous(scopegraph)
+}
+
+func (n *NativeAccessNode) ExprName() string {
 	return n.Name
 }
 
@@ -419,6 +594,10 @@ func NativeAssign(target Expression, value Expression, basis compilergraph.Graph
 	}
 }
 
+func (e *NativeAssignNode) IsAsynchronous(scopegraph *scopegraph.ScopeGraph) bool {
+	return e.TargetExpression.IsAsynchronous(scopegraph) || e.ValueExpression.IsAsynchronous(scopegraph)
+}
+
 // NativeIndexingNode is the indexing of one expression by another expression.
 type NativeIndexingNode struct {
 	expressionBase
@@ -432,6 +611,10 @@ func NativeIndexing(childExpression Expression, index Expression, basis compiler
 		childExpression,
 		index,
 	}
+}
+
+func (e *NativeIndexingNode) IsAsynchronous(scopegraph *scopegraph.ScopeGraph) bool {
+	return e.ChildExpression.IsAsynchronous(scopegraph) || e.IndexExpression.IsAsynchronous(scopegraph)
 }
 
 // NominalWrappingNode is the wrapping of an instance in a nominal type.
@@ -463,6 +646,10 @@ func NominalWrapping(childExpression Expression, nominalType typegraph.TGTypeDec
 	}
 }
 
+func (e *NominalWrappingNode) IsAsynchronous(scopegraph *scopegraph.ScopeGraph) bool {
+	return e.ChildExpression.IsAsynchronous(scopegraph)
+}
+
 // NominalUnwrappingNode is the unwrapping of an instance of a nominal type back to its original type.
 type NominalUnwrappingNode struct {
 	expressionBase
@@ -476,4 +663,8 @@ func NominalUnwrapping(childExpression Expression, childExprType typegraph.TypeR
 		childExpression,
 		childExprType,
 	}
+}
+
+func (e *NominalUnwrappingNode) IsAsynchronous(scopegraph *scopegraph.ScopeGraph) bool {
+	return e.ChildExpression.IsAsynchronous(scopegraph)
 }

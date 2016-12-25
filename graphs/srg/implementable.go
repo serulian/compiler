@@ -9,6 +9,20 @@ import (
 	"github.com/serulian/compiler/parser"
 )
 
+// SRGImplementableIterator is an iterator of SRGImplementable's.
+type SRGImplementableIterator struct {
+	nodeIterator compilergraph.NodeIterator
+	srg          *SRG // The parent SRG.
+}
+
+func (sii SRGImplementableIterator) Next() bool {
+	return sii.nodeIterator.Next()
+}
+
+func (sii SRGImplementableIterator) Implementable() SRGImplementable {
+	return SRGImplementable{sii.nodeIterator.Node(), sii.srg}
+}
+
 // SRGImplementable wraps a node that can have a body.
 type SRGImplementable struct {
 	compilergraph.GraphNode
@@ -19,6 +33,10 @@ type SRGImplementable struct {
 // this implementable, if any.
 func (m SRGImplementable) Body() (compilergraph.GraphNode, bool) {
 	return m.TryGetNode(parser.NodePredicateBody)
+}
+
+func (m SRGImplementable) Node() compilergraph.GraphNode {
+	return m.GraphNode
 }
 
 func (m SRGImplementable) ContainingMember() SRGMember {
