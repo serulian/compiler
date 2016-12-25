@@ -6,15 +6,15 @@ package statemachine
 
 import (
 	"github.com/serulian/compiler/compilergraph"
-	"github.com/serulian/compiler/parser"
 )
 
 // Based on stack found here: https://gist.github.com/bemasher/1777766
 
-// resource wraps information about a resource ('with') added into the scope.
+// resource wraps information about a managed resource  added into the scope.
 type resource struct {
-	name  string
-	basis compilergraph.GraphNode
+	name       string
+	basis      compilergraph.GraphNode
+	startState *state
 }
 
 func (r resource) Name() string {
@@ -53,30 +53,21 @@ func (s *ResourceStack) Pop() (value resource) {
 	return resource{}
 }
 
-// OutOfScope returns any resources that will be out of scope when context changes to the given reference
-// node. Used to determine which resources need to be popped off of the stack when jumps occurr. Note that
-// the reference node *must be an SRG node*.
-func (s *ResourceStack) OutOfScope(referenceNode compilergraph.GraphNode) []resource {
-	resources := make([]resource, 0)
-
-	// Find the start and end location for the reference node.
-	referenceStart := referenceNode.GetValue(parser.NodePredicateStartRune).Int()
-	referenceEnd := referenceNode.GetValue(parser.NodePredicateEndRune).Int()
+// OutOfScope returns the names of any resource that will be out of scope when context changes to the given state.
+func (s *ResourceStack) OutOfScope(stateId stateId) []string {
+	targetStateId := int(stateId)
+	resourceNames := make([]string, 0, s.size)
 
 	var current = s.top
 	for index := 0; index < s.size; index++ {
 		currentResource := current.value
-
-		// Find the start and end location for the resource node.
-		resourceStart := currentResource.basis.GetValue(parser.NodePredicateStartRune).Int()
-		resourceEnd := currentResource.basis.GetValue(parser.NodePredicateEndRune).Int()
-
-		if !(referenceStart >= resourceStart && referenceEnd <= resourceEnd) {
-			resources = append(resources, currentResource)
+		startStateId := int(currentResource.startState.ID)
+		if targetStateId <= startStateId {
+			resourceNames = append(resourceNames, currentResource.name)
 		}
 
 		current = current.next
 	}
 
-	return resources
+	return resourceNames
 }

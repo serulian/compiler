@@ -7,7 +7,7 @@ $module('requiredfields', function () {
       var instance = new $static();
       instance.SomeField = SomeField;
       instance.AnotherField = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
-      return $promise.resolve(instance);
+      return instance;
     };
     this.$typesig = function () {
       return {
@@ -16,47 +16,8 @@ $module('requiredfields', function () {
   });
 
   $static.TEST = function () {
-    var $result;
     var sc;
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            $g.requiredfields.SomeClass.new($t.fastbox(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-              $result = $result0;
-              $current = 1;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            sc = $result;
-            $promise.resolve(sc.SomeField.$wrapped == 2).then(function ($result0) {
-              $result = $t.fastbox($result0 && sc.AnotherField.$wrapped, $g.____testlib.basictypes.Boolean);
-              $current = 2;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 2:
-            $resolve($result);
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
-    };
-    return $promise.new($continue);
+    sc = $g.requiredfields.SomeClass.new($t.fastbox(2, $g.____testlib.basictypes.Integer));
+    return $t.fastbox((sc.SomeField.$wrapped == 2) && sc.AnotherField.$wrapped, $g.____testlib.basictypes.Boolean);
   };
 });

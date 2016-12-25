@@ -5,16 +5,11 @@ $module('generic', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      return $promise.resolve(instance);
+      return instance;
     };
     $instance.Something = function () {
       var $this = this;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        $resolve(null);
-        return;
-      };
-      return $promise.new($continue);
+      return null;
     };
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -32,7 +27,7 @@ $module('generic', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      return $promise.resolve(instance);
+      return instance;
     };
     this.$typesig = function () {
       return {
@@ -45,7 +40,7 @@ $module('generic', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      return $promise.resolve(instance);
+      return instance;
     };
     this.$typesig = function () {
       return {
@@ -80,66 +75,15 @@ $module('generic', function () {
   });
 
   $static.TEST = function () {
-    var $result;
     var asc;
     var asc2;
     var bsc;
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            $g.generic.SomeClass($g.generic.A).new().then(function ($result0) {
-              $result = $result0;
-              $current = 1;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            asc = $result;
-            $g.generic.SomeClass($g.generic.A).new().then(function ($result0) {
-              $result = $result0;
-              $current = 2;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 2:
-            asc2 = $result;
-            $g.generic.SomeClass($g.generic.B).new().then(function ($result0) {
-              $result = $result0;
-              $current = 3;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 3:
-            bsc = $result;
-            $t.cast(asc, $g.generic.ASomething, false);
-            $t.cast(asc2, $g.generic.ASomething, false);
-            $t.cast(bsc, $g.generic.BSomething, false);
-            $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
-    };
-    return $promise.new($continue);
+    asc = $g.generic.SomeClass($g.generic.A).new();
+    asc2 = $g.generic.SomeClass($g.generic.A).new();
+    bsc = $g.generic.SomeClass($g.generic.B).new();
+    $t.cast(asc, $g.generic.ASomething, false);
+    $t.cast(asc2, $g.generic.ASomething, false);
+    $t.cast(bsc, $g.generic.BSomething, false);
+    return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
   };
 });

@@ -26,7 +26,7 @@ $module('nominal', function () {
         someField: someField,
       };
       instance.$markruntimecreated();
-      return $promise.resolve(instance);
+      return instance;
     };
     $static.$fields = [];
     $t.defineStructField($static, 'someField', 'someField', function () {
@@ -40,17 +40,17 @@ $module('nominal', function () {
       }
       var computed = {
         "Parse|1|29dc432d<0d40ca4a>": true,
-        "equals|4|29dc432d<5ab5941e>": true,
-        "Stringify|2|29dc432d<538656f2>": true,
+        "equals|4|29dc432d<43834c3f>": true,
+        "Stringify|2|29dc432d<5cffd9b5>": true,
         "Mapping|2|29dc432d<df58fcbd<any>>": true,
         "Clone|2|29dc432d<0d40ca4a>": true,
-        "String|2|29dc432d<538656f2>": true,
+        "String|2|29dc432d<5cffd9b5>": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  $static.TEST = function () {
+  $static.TEST = $t.markpromising(function () {
     var $result;
     var c;
     var s;
@@ -61,7 +61,8 @@ $module('nominal', function () {
         switch ($current) {
           case 0:
             c = $t.box($t.fastbox(true, $g.____testlib.basictypes.Boolean), $g.nominal.CoolBool);
-            $g.nominal.SomeStruct.new(c).then(function ($result0) {
+            s = $g.nominal.SomeStruct.new(c);
+            $promise.maybe($g.nominal.SomeStruct.Parse($g.____testlib.basictypes.JSON)($t.fastbox('{"someField": true}', $g.____testlib.basictypes.String))).then(function ($result0) {
               $result = $result0;
               $current = 1;
               $continue($resolve, $reject);
@@ -73,33 +74,8 @@ $module('nominal', function () {
             return;
 
           case 1:
-            s = $result;
-            $g.nominal.SomeStruct.Parse($g.____testlib.basictypes.JSON)($t.fastbox('{"someField": true}', $g.____testlib.basictypes.String)).then(function ($result0) {
-              $result = $result0;
-              $current = 2;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 2:
             s2 = $result;
-            $promise.resolve(s2.someField.$wrapped).then(function ($result0) {
-              $result = $t.fastbox($result0 && s.someField.$wrapped, $g.____testlib.basictypes.Boolean);
-              $current = 3;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 3:
-            $resolve($result);
+            $resolve($t.fastbox(s2.someField.$wrapped && s.someField.$wrapped, $g.____testlib.basictypes.Boolean));
             return;
 
           default:
@@ -109,5 +85,5 @@ $module('nominal', function () {
       }
     };
     return $promise.new($continue);
-  };
+  });
 });

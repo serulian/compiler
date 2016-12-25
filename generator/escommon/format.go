@@ -8,6 +8,8 @@ package escommon
 import (
 	"bytes"
 	"fmt"
+	"io/ioutil"
+	"os"
 	"regexp"
 	"strings"
 	"unicode/utf8"
@@ -31,6 +33,10 @@ func FormatMappedECMASource(source string, sm *sourcemap.SourceMap) (string, *so
 	// Parse the ES source.
 	program, err := parser.ParseFile(nil, "", source, 0)
 	if err != nil {
+		if os.Getenv("DEBUGFORMAT") == "true" {
+			ioutil.WriteFile("debug.out.js", []byte(source), 0644)
+		}
+
 		return "", nil, err
 	}
 
@@ -376,6 +382,9 @@ loop:
 
 		case *ast.BranchStatement:
 			break loop
+
+		case *ast.ThrowStatement:
+			break loop
 		}
 	}
 }
@@ -386,6 +395,11 @@ func (sf *sourceFormatter) formatStatement(statement ast.Statement) {
 	sf.addMapping(statement.Idx0())
 
 	switch s := statement.(type) {
+	// LabelledStatement
+	case *ast.LabelledStatement:
+		sf.append(s.Label.Name)
+		sf.append(": ")
+		sf.formatStatement(s.Statement)
 
 	// Block
 	case *ast.BlockStatement:
@@ -555,6 +569,6 @@ func (sf *sourceFormatter) formatStatement(statement ast.Statement) {
 		sf.formatStatement(s.Body)
 
 	default:
-		panic(fmt.Sprintf("Unknown statement AST node: %v", s))
+		panic(fmt.Sprintf("Unknown statement AST node: %+v", s))
 	}
 }

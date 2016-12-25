@@ -322,11 +322,14 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 // getScopeForRootNode returns the scope for the given *root* node, building (and waiting) if necessary.
 func (sb *scopeBuilder) getScopeForRootNode(rootNode compilergraph.GraphNode) *proto.ScopeInfo {
 	staticDependencyCollector := newStaticDependencyCollector()
+	dynamicDependencyCollector := newDynamicDependencyCollector()
 
 	return sb.getScope(rootNode, scopeContext{
-		parentImplemented:         rootNode,
-		rootNode:                  rootNode,
-		staticDependencyCollector: staticDependencyCollector,
+		parentImplemented:          rootNode,
+		rootNode:                   rootNode,
+		staticDependencyCollector:  staticDependencyCollector,
+		dynamicDependencyCollector: dynamicDependencyCollector,
+		rootLabelSet:               newLabelSet(),
 	})
 }
 
@@ -358,6 +361,8 @@ func (sb *scopeBuilder) buildScopeWithContext(node compilergraph.GraphNode, cont
 		// If the node being scoped is the root node, add the static dependencies.
 		if node.NodeId == context.rootNode.NodeId {
 			result.StaticDependencies = context.staticDependencyCollector.ReferenceSlice()
+			result.DynamicDependencies = context.dynamicDependencyCollector.NameSlice()
+			result.Labels = context.rootLabelSet.AppendLabelsOf(&result).GetLabels()
 		}
 
 		// Add the scope to the map and on the node.

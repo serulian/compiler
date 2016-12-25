@@ -13,19 +13,14 @@ $module('nominaljson', function () {
     };
     $instance.GetValue = function () {
       var $this = this;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        $resolve($t.box($this, $g.nominaljson.AnotherStruct).AnotherBool);
-        return;
-      };
-      return $promise.new($continue);
+      return $t.box($this, $g.nominaljson.AnotherStruct).AnotherBool;
     };
     this.$typesig = function () {
       if (this.$cachedtypesig) {
         return this.$cachedtypesig;
       }
       var computed = {
-        "GetValue|2|29dc432d<5ab5941e>": true,
+        "GetValue|2|29dc432d<43834c3f>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -40,7 +35,7 @@ $module('nominaljson', function () {
         AnotherBool: AnotherBool,
       };
       instance.$markruntimecreated();
-      return $promise.resolve(instance);
+      return instance;
     };
     $static.$fields = [];
     $t.defineStructField($static, 'AnotherBool', 'AnotherBool', function () {
@@ -54,11 +49,11 @@ $module('nominaljson', function () {
       }
       var computed = {
         "Parse|1|29dc432d<c267cdf9>": true,
-        "equals|4|29dc432d<5ab5941e>": true,
-        "Stringify|2|29dc432d<538656f2>": true,
+        "equals|4|29dc432d<43834c3f>": true,
+        "Stringify|2|29dc432d<5cffd9b5>": true,
         "Mapping|2|29dc432d<df58fcbd<any>>": true,
         "Clone|2|29dc432d<c267cdf9>": true,
-        "String|2|29dc432d<538656f2>": true,
+        "String|2|29dc432d<5cffd9b5>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -73,7 +68,7 @@ $module('nominaljson', function () {
         Nested: Nested,
       };
       instance.$markruntimecreated();
-      return $promise.resolve(instance);
+      return instance;
     };
     $static.$fields = [];
     $t.defineStructField($static, 'Nested', 'Nested', function () {
@@ -87,17 +82,17 @@ $module('nominaljson', function () {
       }
       var computed = {
         "Parse|1|29dc432d<2904f0f0>": true,
-        "equals|4|29dc432d<5ab5941e>": true,
-        "Stringify|2|29dc432d<538656f2>": true,
+        "equals|4|29dc432d<43834c3f>": true,
+        "Stringify|2|29dc432d<5cffd9b5>": true,
         "Mapping|2|29dc432d<df58fcbd<any>>": true,
         "Clone|2|29dc432d<2904f0f0>": true,
-        "String|2|29dc432d<538656f2>": true,
+        "String|2|29dc432d<5cffd9b5>": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  $static.TEST = function () {
+  $static.TEST = $t.markpromising(function () {
     var $result;
     var correct;
     var jsonString;
@@ -108,40 +103,11 @@ $module('nominaljson', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.nominaljson.AnotherStruct.new($t.fastbox(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
-              return $g.nominaljson.SomeStruct.new($t.box($result1, $g.nominaljson.SomeNominal)).then(function ($result0) {
-                $result = $result0;
-                $current = 1;
-                $continue($resolve, $reject);
-                return;
-              });
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            s = $result;
+            s = $g.nominaljson.SomeStruct.new($t.box($g.nominaljson.AnotherStruct.new($t.fastbox(true, $g.____testlib.basictypes.Boolean)), $g.nominaljson.SomeNominal));
             jsonString = $t.fastbox('{"Nested":{"AnotherBool":true}}', $g.____testlib.basictypes.String);
-            s.Stringify($g.____testlib.basictypes.JSON)().then(function ($result1) {
-              return $g.____testlib.basictypes.String.$equals($result1, jsonString).then(function ($result0) {
-                $result = $result0;
-                $current = 2;
-                $continue($resolve, $reject);
-                return;
-              });
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 2:
-            correct = $result;
-            $g.nominaljson.SomeStruct.Parse($g.____testlib.basictypes.JSON)(jsonString).then(function ($result0) {
-              $result = $result0;
-              $current = 3;
+            $promise.maybe(s.Stringify($g.____testlib.basictypes.JSON)()).then(function ($result0) {
+              $result = $g.____testlib.basictypes.String.$equals($result0, jsonString);
+              $current = 1;
               $continue($resolve, $reject);
               return;
             }).catch(function (err) {
@@ -150,23 +116,22 @@ $module('nominaljson', function () {
             });
             return;
 
-          case 3:
-            parsed = $result;
-            $promise.resolve(correct.$wrapped).then(function ($result0) {
-              return ($promise.shortcircuit($result0, true) || parsed.Nested.GetValue()).then(function ($result1) {
-                $result = $t.fastbox($result0 && $result1.$wrapped, $g.____testlib.basictypes.Boolean);
-                $current = 4;
-                $continue($resolve, $reject);
-                return;
-              });
+          case 1:
+            correct = $result;
+            $promise.maybe($g.nominaljson.SomeStruct.Parse($g.____testlib.basictypes.JSON)(jsonString)).then(function ($result0) {
+              $result = $result0;
+              $current = 2;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
               $reject(err);
               return;
             });
             return;
 
-          case 4:
-            $resolve($result);
+          case 2:
+            parsed = $result;
+            $resolve($t.fastbox(correct.$wrapped && parsed.Nested.GetValue().$wrapped, $g.____testlib.basictypes.Boolean));
             return;
 
           default:
@@ -176,5 +141,5 @@ $module('nominaljson', function () {
       }
     };
     return $promise.new($continue);
-  };
+  });
 });

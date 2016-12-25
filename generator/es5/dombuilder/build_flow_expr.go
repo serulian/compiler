@@ -58,9 +58,14 @@ func (db *domBuilder) buildLoopExpression(node compilergraph.GraphNode) codedom.
 		codedom.NormalFunction,
 		builtMapExpr.BasisNode())
 
-	return codedom.AwaitPromise(
-		codedom.FunctionCall(mapFunctionReference,
-			[]codedom.Expression{builtStreamExpr, mapperFunction},
-			node),
+	funcCall := codedom.FunctionCall(mapFunctionReference,
+		[]codedom.Expression{builtStreamExpr, mapperFunction},
 		node)
+
+	isAsync := mapperFunction.IsAsynchronous(db.scopegraph)
+	if isAsync {
+		return codedom.AwaitPromise(funcCall, node)
+	} else {
+		return funcCall
+	}
 }

@@ -9,7 +9,7 @@ $module('json', function () {
         AnotherBool: AnotherBool,
       };
       instance.$markruntimecreated();
-      return $promise.resolve(instance);
+      return instance;
     };
     $static.$fields = [];
     $t.defineStructField($static, 'AnotherBool', 'AnotherBool', function () {
@@ -23,11 +23,11 @@ $module('json', function () {
       }
       var computed = {
         "Parse|1|29dc432d<143c410b>": true,
-        "equals|4|29dc432d<5ab5941e>": true,
-        "Stringify|2|29dc432d<538656f2>": true,
+        "equals|4|29dc432d<43834c3f>": true,
+        "Stringify|2|29dc432d<5cffd9b5>": true,
         "Mapping|2|29dc432d<df58fcbd<any>>": true,
         "Clone|2|29dc432d<143c410b>": true,
-        "String|2|29dc432d<538656f2>": true,
+        "String|2|29dc432d<5cffd9b5>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -44,7 +44,7 @@ $module('json', function () {
         SomeInstance: SomeInstance,
       };
       instance.$markruntimecreated();
-      return $promise.resolve(instance);
+      return instance;
     };
     $static.$fields = [];
     $t.defineStructField($static, 'SomeField', 'SomeField', function () {
@@ -68,17 +68,17 @@ $module('json', function () {
       }
       var computed = {
         "Parse|1|29dc432d<8c772f6d>": true,
-        "equals|4|29dc432d<5ab5941e>": true,
-        "Stringify|2|29dc432d<538656f2>": true,
+        "equals|4|29dc432d<43834c3f>": true,
+        "Stringify|2|29dc432d<5cffd9b5>": true,
         "Mapping|2|29dc432d<df58fcbd<any>>": true,
         "Clone|2|29dc432d<8c772f6d>": true,
-        "String|2|29dc432d<538656f2>": true,
+        "String|2|29dc432d<5cffd9b5>": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  $static.TEST = function () {
+  $static.TEST = $t.markpromising(function () {
     var $result;
     var correct;
     var jsonString;
@@ -89,40 +89,11 @@ $module('json', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.json.AnotherStruct.new($t.fastbox(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
-              return $g.json.SomeStruct.new($t.fastbox(2, $g.____testlib.basictypes.Integer), $t.fastbox(false, $g.____testlib.basictypes.Boolean), $result1).then(function ($result0) {
-                $result = $result0;
-                $current = 1;
-                $continue($resolve, $reject);
-                return;
-              });
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            s = $result;
+            s = $g.json.SomeStruct.new($t.fastbox(2, $g.____testlib.basictypes.Integer), $t.fastbox(false, $g.____testlib.basictypes.Boolean), $g.json.AnotherStruct.new($t.fastbox(true, $g.____testlib.basictypes.Boolean)));
             jsonString = $t.fastbox('{"AnotherField":false,"SomeField":2,"SomeInstance":{"AnotherBool":true}}', $g.____testlib.basictypes.String);
-            s.Stringify($g.____testlib.basictypes.JSON)().then(function ($result1) {
-              return $g.____testlib.basictypes.String.$equals($result1, jsonString).then(function ($result0) {
-                $result = $result0;
-                $current = 2;
-                $continue($resolve, $reject);
-                return;
-              });
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 2:
-            correct = $result;
-            $g.json.SomeStruct.Parse($g.____testlib.basictypes.JSON)(jsonString).then(function ($result0) {
-              $result = $result0;
-              $current = 3;
+            $promise.maybe(s.Stringify($g.____testlib.basictypes.JSON)()).then(function ($result0) {
+              $result = $g.____testlib.basictypes.String.$equals($result0, jsonString);
+              $current = 1;
               $continue($resolve, $reject);
               return;
             }).catch(function (err) {
@@ -131,25 +102,22 @@ $module('json', function () {
             });
             return;
 
-          case 3:
-            parsed = $result;
-            $promise.resolve(correct.$wrapped).then(function ($result2) {
-              return $promise.resolve($result2 && (parsed.SomeField.$wrapped == 2)).then(function ($result1) {
-                return $promise.resolve($result1 && !parsed.AnotherField.$wrapped).then(function ($result0) {
-                  $result = $t.fastbox($result0 && parsed.SomeInstance.AnotherBool.$wrapped, $g.____testlib.basictypes.Boolean);
-                  $current = 4;
-                  $continue($resolve, $reject);
-                  return;
-                });
-              });
+          case 1:
+            correct = $result;
+            $promise.maybe($g.json.SomeStruct.Parse($g.____testlib.basictypes.JSON)(jsonString)).then(function ($result0) {
+              $result = $result0;
+              $current = 2;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
               $reject(err);
               return;
             });
             return;
 
-          case 4:
-            $resolve($result);
+          case 2:
+            parsed = $result;
+            $resolve($t.fastbox(((correct.$wrapped && (parsed.SomeField.$wrapped == 2)) && !parsed.AnotherField.$wrapped) && parsed.SomeInstance.AnotherBool.$wrapped, $g.____testlib.basictypes.Boolean));
             return;
 
           default:
@@ -159,5 +127,5 @@ $module('json', function () {
       }
     };
     return $promise.new($continue);
-  };
+  });
 });

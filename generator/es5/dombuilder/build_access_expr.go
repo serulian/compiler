@@ -7,6 +7,7 @@ package dombuilder
 import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/codedom"
+	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/parser"
 )
 
@@ -26,9 +27,9 @@ func (db *domBuilder) buildNamedAccess(node compilergraph.GraphNode, name string
 	scope, _ := db.scopegraph.GetScope(node)
 	namedReference, hasNamedReference := db.scopegraph.GetReferencedName(scope)
 
-	// Reference to an unknown name or a nullable member access must be a dynamic access.
-	if !hasNamedReference || node.Kind() == parser.NodeNullableMemberAccessExpression {
-		return codedom.DynamicAccess(db.buildExpression(*childExprNode), name, node)
+	// Reference to an unknown name must be a dynamic access.
+	if !hasNamedReference {
+		return codedom.DynamicAccess(db.buildExpression(*childExprNode), name /* possibly promising */, true, node)
 	}
 
 	// Reference to a local name is a var or parameter.
@@ -47,11 +48,25 @@ func (db *domBuilder) buildNamedAccess(node compilergraph.GraphNode, name string
 		if childExprNode != nil {
 			childExpr := db.buildExpression(*childExprNode)
 
-			_, underFuncCall := node.TryGetIncomingNode(parser.NodeFunctionCallExpressionChildExpr)
+			// Check for a reference to an aliased function. A alias reference exists if the
+			// member returns a function and it is not immediately invoked by a parent expression
+			// that is either a function call or an SML expression. If we do find an aliased function,
+			// then we use generate the access as a dynamic access to ensure the `this` is properly
+			// bound under ES5.
 			isAliasedFunctionReference := scope.ResolvedTypeRef(db.scopegraph.TypeGraph()).HasReferredType(db.scopegraph.TypeGraph().FunctionType())
+			if isAliasedFunctionReference {
+				_, underFuncCall := node.TryGetIncomingNode(parser.NodeFunctionCallExpressionChildExpr)
+				_, underSmlCall := node.TryGetIncomingNode(parser.NodeSmlExpressionTypeOrFunction)
 
-			if isAliasedFunctionReference && !underFuncCall {
-				return codedom.DynamicAccess(childExpr, memberRef.Name(), node)
+				if !underFuncCall && !underSmlCall {
+					isPromising := db.scopegraph.IsPromisingMember(memberRef, scopegraph.PromisingAccessImplicitGet)
+					return codedom.DynamicAccess(childExpr, memberRef.Name(), isPromising, node)
+				}
+			}
+
+			// Handle nullable member references with a special case.
+			if node.Kind() == parser.NodeNullableMemberAccessExpression {
+				return codedom.NullableMemberReference(childExpr, memberRef, node)
 			} else {
 				return codedom.MemberReference(childExpr, memberRef, node)
 			}
@@ -112,11 +127,11 @@ func (db *domBuilder) buildGenericSpecifierExpression(node compilergraph.GraphNo
 		Out(parser.NodeGenericSpecifierType).
 		BuildNodeIterator()
 
-	var genericTypes = make([]codedom.Expression, 0)
+	var genericTypes = make([]codedom.Expression, 0, 2)
 	for git.Next() {
 		replacementType, _ := db.scopegraph.ResolveSRGTypeRef(db.scopegraph.SourceGraph().GetTypeRef(git.Node()))
 		genericTypes = append(genericTypes, codedom.TypeLiteral(replacementType, git.Node()))
 	}
 
-	return codedom.FunctionCall(childExpr, genericTypes, node)
+	return codedom.GenericSpecification(childExpr, genericTypes, node)
 }

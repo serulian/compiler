@@ -6,11 +6,11 @@ $module('inheritance', function () {
     $static.new = function () {
       var instance = new $static();
       instance.SomeBool = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
-      return $promise.resolve(instance);
+      return instance;
     };
     $instance.DoSomething = function () {
       var $this = this;
-      return $promise.empty();
+      return;
     };
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -29,11 +29,11 @@ $module('inheritance', function () {
     $static.new = function () {
       var instance = new $static();
       instance.SomeBool = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
-      return $promise.resolve(instance);
+      return instance;
     };
     $instance.AnotherThing = function () {
       var $this = this;
-      return $promise.empty();
+      return;
     };
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -51,25 +51,13 @@ $module('inheritance', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      var init = [];
-      init.push($g.inheritance.FirstClass.new().then(function (value) {
-        instance.FirstClass = value;
-      }));
-      init.push($g.inheritance.SecondClass.new().then(function (value) {
-        instance.SecondClass = value;
-      }));
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      instance.FirstClass = $g.inheritance.FirstClass.new();
+      instance.SecondClass = $g.inheritance.SecondClass.new();
+      return instance;
     };
     $instance.DoSomething = function () {
       var $this = this;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        $resolve($this.SomeBool);
-        return;
-      };
-      return $promise.new($continue);
+      return $this.SomeBool;
     };
     Object.defineProperty($instance, 'SomeBool', {
       get: function () {
@@ -89,7 +77,7 @@ $module('inheritance', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "DoSomething|2|29dc432d<5ab5941e>": true,
+        "DoSomething|2|29dc432d<43834c3f>": true,
         "AnotherThing|2|29dc432d<void>": true,
       };
       return this.$cachedtypesig = computed;
@@ -97,35 +85,6 @@ $module('inheritance', function () {
   });
 
   $static.TEST = function () {
-    var $result;
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            $g.inheritance.MainClass.new().then(function ($result1) {
-              return $result1.DoSomething().then(function ($result0) {
-                $result = $result0;
-                $current = 1;
-                $continue($resolve, $reject);
-                return;
-              });
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            $resolve($result);
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
-    };
-    return $promise.new($continue);
+    return $g.inheritance.MainClass.new().DoSomething();
   };
 });

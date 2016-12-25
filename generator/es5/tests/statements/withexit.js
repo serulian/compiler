@@ -5,17 +5,12 @@ $module('withexit', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      return $promise.resolve(instance);
+      return instance;
     };
     $instance.Release = function () {
       var $this = this;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        $g.withexit.someBool = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
-        $resolve();
-        return;
-      };
-      return $promise.new($continue);
+      $g.withexit.someBool = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+      return;
     };
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -29,80 +24,50 @@ $module('withexit', function () {
   });
 
   $static.TEST = function () {
-    var $result;
     var $temp0;
     var $current = 0;
     var $resources = $t.resourcehandler();
-    var $continue = function ($resolve, $reject) {
-      $resolve = $resources.bind($resolve);
-      $reject = $resources.bind($reject);
-      while (true) {
-        switch ($current) {
-          case 0:
-            $t.fastbox(123, $g.____testlib.basictypes.Integer);
-            $current = 1;
-            continue;
+    syncloop: while (true) {
+      switch ($current) {
+        case 0:
+          $t.fastbox(123, $g.____testlib.basictypes.Integer);
+          $current = 1;
+          continue syncloop;
 
-          case 1:
-            $g.withexit.SomeReleasable.new().then(function ($result0) {
-              $result = $result0;
-              $current = 2;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
+        case 1:
+          $temp0 = $g.withexit.SomeReleasable.new();
+          $resources.pushr($temp0, '$temp0');
+          $t.fastbox(456, $g.____testlib.basictypes.Integer);
+          if (false) {
+            $current = 2;
+            continue syncloop;
+          } else {
+            $current = 4;
+            continue syncloop;
+          }
+          break;
 
-          case 2:
-            $temp0 = $result;
-            $resources.pushr($temp0, '$temp0');
-            $t.fastbox(456, $g.____testlib.basictypes.Integer);
-            if (false) {
-              $current = 3;
-              continue;
-            } else {
-              $current = 5;
-              continue;
-            }
-            break;
+        case 2:
+          $current = 3;
+          continue syncloop;
 
-          case 3:
-            $resources.popr('$temp0').then(function () {
-              $current = 4;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            continue;
+        case 3:
+          $t.fastbox(789, $g.____testlib.basictypes.Integer);
+          var $pat = $g.withexit.someBool;
+          $resources.popall();
+          return $pat;
 
-          case 5:
-            $t.fastbox(12, $g.____testlib.basictypes.Integer);
-            $resources.popr('$temp0').then(function ($result0) {
-              $result = $result0;
-              $current = 6;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
+        case 4:
+          $t.fastbox(12, $g.____testlib.basictypes.Integer);
+          $resources.popr('$temp0');
+          var $pat = $g.withexit.someBool;
+          $resources.popall();
+          return $pat;
 
-          case 6:
-            $resolve($g.withexit.someBool);
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
+        default:
+          return;
       }
-    };
-    return $promise.new($continue);
+    }
   };
   this.$init(function () {
     return $promise.new(function (resolve) {

@@ -5,11 +5,16 @@
 package es5
 
 import (
+	"fmt"
+
 	"github.com/serulian/compiler/generator/escommon/esbuilder"
+	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/graphs/typegraph"
 
 	"github.com/cevaris/ordered_map"
 )
+
+var _ = fmt.Printf
 
 // generateTypes generates all the types under the  given modules into ES5.
 func (gen *es5generator) generateTypes(module typegraph.TGModule) *ordered_map.OrderedMap {
@@ -131,19 +136,23 @@ func (gt generatingType) MappingAnyType() typegraph.TypeReference {
 func (gt generatingType) GenerateComposition() *generatedInitMap {
 	initMap := newGeneratedInitMap()
 	parentTypes := gt.Type.ParentTypes()
+	constructor, _ := gt.Type.GetMember("new")
+
 	for _, parentTypeRef := range parentTypes {
 		data := struct {
-			ComposedTypeLocation string
-			InnerInstanceName    string
-			RequiredFields       []typegraph.TGMember
+			ComposedTypeLocation             string
+			InnerInstanceName                string
+			RequiredFields                   []typegraph.TGMember
+			ComposedTypeConstructorPromising bool
 		}{
 			gt.Generator.pather.TypeReferenceCall(parentTypeRef),
 			gt.Generator.pather.InnerInstanceName(parentTypeRef),
 			parentTypeRef.ReferredType().RequiredFields(),
+			gt.Generator.scopegraph.IsPromisingMember(constructor, scopegraph.PromisingAccessFunctionCall),
 		}
 
 		source := esbuilder.Template("composition", compositionTemplateStr, data)
-		initMap.Set(parentTypeRef, generatedSourceResult{source, true})
+		initMap.Set(parentTypeRef, generatedSourceResult{source, data.ComposedTypeConstructorPromising})
 	}
 
 	return initMap
@@ -186,9 +195,13 @@ const typeSignatureTemplateStr = `
 
 // compositionTemplateStr defines a template for instantiating a composed type.
 const compositionTemplateStr = `
-	({{ .ComposedTypeLocation }}).new({{ range $ridx, $field := .RequiredFields }}{{ if $ridx }}, {{ end }}{{ $field.Name }}{{ end }}).then(function(value) {
+	{{ if .ComposedTypeConstructorPromising }}
+	$promise.maybe({{ .ComposedTypeLocation }}.new({{ range $ridx, $field := .RequiredFields }}{{ if $ridx }}, {{ end }}{{ $field.Name }}{{ end }})).then(function(value) {
 	  instance.{{ .InnerInstanceName }} = value;
 	})
+	{{ else }}
+	instance.{{ .InnerInstanceName }} = {{ .ComposedTypeLocation }}.new({{ range $ridx, $field := .RequiredFields }}{{ if $ridx }}, {{ end }}{{ $field.Name }}{{ end }})
+	{{ end }}
 `
 
 // genericsTemplateStr defines a template for generating generics.
@@ -237,7 +250,7 @@ this.$class('{{ .Type.GlobalUniqueId }}', '{{ .Type.Name }}', {{ .HasGenerics }}
 			return instance;
 		});
 		{{ else }}
-		return $promise.resolve(instance);
+		return instance;
 		{{ end }}
 	};
 
@@ -278,7 +291,7 @@ this.$struct('{{ .Type.GlobalUniqueId }}', '{{ .Type.Name }}', {{ .HasGenerics }
 			return instance;
 		});
 		{{ else }}
-		return $promise.resolve(instance);
+		return instance;
 		{{ end }}
 	};
 

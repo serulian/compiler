@@ -10,7 +10,9 @@ import (
 	"strconv"
 
 	"github.com/serulian/compiler/generator/es5/codedom"
+	"github.com/serulian/compiler/generator/es5/shared"
 	"github.com/serulian/compiler/generator/escommon/esbuilder"
+	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/parser"
 )
 
@@ -40,25 +42,39 @@ func (eg *expressionGenerator) generateFunctionDefinition(function *codedom.Func
 			{{ if .Item.RequiresThis }}var $this = this;{{ end }}
 			var $f =
 		{{ end }}
+			{{ if .Async }}
+			$t.markpromising(
+			{{ end }}
 				function({{ range $index, $parameter := .Item.Parameters }}{{ if $index }}, {{ end }}{{ $parameter }}{{ end }}) {
 					{{ if not .Item.Generics }}{{ if .Item.RequiresThis }}var $this = this;{{ end }}{{ end }}
 					{{ $body := .GeneratedBody }}
 					{{ if .Item.IsGenerator }}
 						{{ if $body }}
 							{{ emit $body }}
-							return $generator.new($continue);
+							return $generator.new($continue, {{ .BodyAsync }});
 						{{ else }}
 							return $generator.empty();
 						{{ end }}						
 					{{ else }}
-						{{ if $body }}
-							{{ emit $body }}
-							return $promise.new($continue);
+						{{ if .Async }}
+							{{ if $body }}
+								{{ emit $body }}
+								return $promise.new($continue);
+							{{ else }}
+								return $promise.empty();
+							{{ end }}
 						{{ else }}
-							return $promise.empty();
+							{{ if $body }}
+								{{ emit $body }}
+							{{ else }}
+								return;
+							{{ end }}
 						{{ end }}
 					{{ end }}
 				}
+			{{ if .Async }}
+			)
+			{{ end }}
 		{{ if .Item.Generics }}
 			return $f;
 		  }
@@ -68,10 +84,17 @@ func (eg *expressionGenerator) generateFunctionDefinition(function *codedom.Func
    	    {{ end }}
 	`
 
+	isAsync := function.IsAsynchronous(eg.scopegraph)
+	bodyAsync := codedom.IsAsynchronous(function.Body, eg.scopegraph)
+	isGenerator := function.IsGenerator()
+	functionTraits := shared.FunctionTraits(isAsync, isGenerator, function.ManagesResources())
+
 	data := struct {
 		Item          *codedom.FunctionDefinitionNode
 		GeneratedBody esbuilder.SourceBuilder
-	}{function, eg.machineBuilder(function.Body, function.IsGenerator())}
+		Async         bool
+		BodyAsync     bool
+	}{function, eg.machineBuilder(function.Body, functionTraits), isAsync, bodyAsync}
 
 	return esbuilder.Template("functiondef", templateStr, data).AsExpression()
 }
@@ -92,6 +115,18 @@ func (eg *expressionGenerator) generateAwaitPromise(awaitPromise *codedom.AwaitP
 	// An await expression is a reference to the "result" after waiting on the child expression
 	// and then executing the parent expression inside the await callback.
 	return esbuilder.Identifier(resultName)
+}
+
+// generateAnonymousClosureCall generates the call to an anonymous closure.
+func (eg *expressionGenerator) generateAnonymousClosureCall(closureCall *codedom.AnonymousClosureCallNode, context generationContext) esbuilder.ExpressionBuilder {
+	functionCall := codedom.FunctionCall(closureCall.Closure, closureCall.Arguments, closureCall.BasisNode())
+	if functionCall.IsAsynchronous(eg.scopegraph) {
+		functionCall = codedom.AwaitPromise(functionCall, closureCall.BasisNode())
+	}
+
+	return eg.generateExpression(
+		functionCall,
+		context)
 }
 
 // generateCompoundExpression generates the expression source for a compound expression.
@@ -120,14 +155,14 @@ func (eg *expressionGenerator) generateUnaryOperation(unaryOp *codedom.UnaryOper
 
 // generateBinaryOperation generates the expression source for a binary operator.
 func (eg *expressionGenerator) generateBinaryOperation(binaryOp *codedom.BinaryOperationNode, context generationContext) esbuilder.ExpressionBuilder {
+	if binaryOp.Operator == "??" {
+		return eg.generateNullComparisonOperator(binaryOp, context)
+	}
+
 	// If the binary expression's operator short circuits, then we need to generate
 	// specialized wrappers and expressions to ensure that only the necessary functions get called.
-	//
-	// TODO: There is probably a cleaner way of doing this.
-	if binaryOp.Operator == "&&" || binaryOp.Operator == "||" {
+	if (binaryOp.Operator == "&&" || binaryOp.Operator == "||") && binaryOp.IsAsynchronous(eg.scopegraph) {
 		return eg.generateShortCircuitedBinaryOperator(binaryOp, context)
-	} else if binaryOp.Operator == "??" {
-		return eg.generateNullComparisonOperator(binaryOp, context)
 	} else {
 		return eg.generateNormalBinaryOperator(binaryOp, context)
 	}
@@ -143,11 +178,22 @@ func (eg *expressionGenerator) generateNormalBinaryOperator(binaryOp *codedom.Bi
 
 // generateTernary generates the expression for a ternary expression.
 func (eg *expressionGenerator) generateTernary(ternary *codedom.TernaryNode, context generationContext) esbuilder.ExpressionBuilder {
+	unwrappedCheckExpr := codedom.NominalUnwrapping(ternary.CheckExpr, eg.scopegraph.TypeGraph().BoolTypeReference(), ternary.CheckExpr.BasisNode())
+
+	// If not async, generate as a direct ternary expression.
+	if !ternary.IsAsynchronous(eg.scopegraph) {
+		return esbuilder.Ternary(
+			eg.generateExpression(unwrappedCheckExpr, context),
+			eg.generateExpression(ternary.ThenExpr, context),
+			eg.generateExpression(ternary.ElseExpr, context),
+		)
+	}
+
 	// Generate a specialized wrapper which resolves the conditional value of the ternary and
 	// places it into the result.
 	resultName := eg.generateUniqueName("$result")
 	resolveConditionalValue := codedom.RuntimeFunctionCall(codedom.ResolvePromiseFunction,
-		[]codedom.Expression{codedom.NominalUnwrapping(ternary.CheckExpr, eg.scopegraph.TypeGraph().BoolTypeReference(), ternary.CheckExpr.BasisNode())},
+		[]codedom.Expression{unwrappedCheckExpr},
 		ternary.BasisNode())
 
 	eg.addAsyncWrapper(eg.generateExpression(resolveConditionalValue, context), resultName)
@@ -174,6 +220,19 @@ func (eg *expressionGenerator) generateWithShortCircuiting(expr codedom.Expressi
 
 // generateNullComparisonOperator generates the expression for a null comparison operator.
 func (eg *expressionGenerator) generateNullComparisonOperator(compareOp *codedom.BinaryOperationNode, context generationContext) esbuilder.ExpressionBuilder {
+	// If not asynchronous, generate as a call to the sync nullable comparison function,
+	// with the left expression and a *closure* of the right expression. The closure is necessary
+	// to ensure the right hand expression is not executed unless the left hand expression is null.
+	if !compareOp.IsAsynchronous(eg.scopegraph) {
+		return eg.generateExpression(
+			codedom.RuntimeFunctionCall(codedom.SyncNullableComparisonFunction,
+				[]codedom.Expression{compareOp.LeftExpr,
+					codedom.FunctionDefinition([]string{}, []string{},
+						compareOp.RightExpr, false, codedom.NormalFunction, compareOp.BasisNode())},
+				compareOp.BasisNode()),
+			context)
+	}
+
 	return eg.generateShortCircuiter(
 		compareOp.LeftExpr,
 		codedom.LiteralValue("null", compareOp.BasisNode()),
@@ -181,7 +240,7 @@ func (eg *expressionGenerator) generateNullComparisonOperator(compareOp *codedom
 		context,
 
 		func(resultName string, rightSide esbuilder.ExpressionBuilder) esbuilder.ExpressionBuilder {
-			return esbuilder.Call(esbuilder.Snippet(string(codedom.NullableComparisonFunction)), esbuilder.Identifier(resultName), rightSide)
+			return esbuilder.Call(esbuilder.Snippet(string(codedom.AsyncNullableComparisonFunction)), esbuilder.Identifier(resultName), rightSide)
 		})
 }
 
@@ -223,60 +282,18 @@ func (eg *expressionGenerator) generateShortCircuiter(compareExpr codedom.Expres
 	return handler(resultName, shortedChildExpr)
 }
 
-// generateFunctionCall generates the expression soruce for a function call.
+// generateGenericSpecification generates the expression source for a generic specification.
+func (eg *expressionGenerator) generateGenericSpecification(genericSpecification *codedom.GenericSpecificationNode, context generationContext) esbuilder.ExpressionBuilder {
+	childExpr := eg.generateExpression(genericSpecification.ChildExpression, context)
+	arguments := eg.generateExpressions(genericSpecification.TypeArguments, context)
+	return esbuilder.Call(childExpr, arguments...)
+}
+
+// generateFunctionCall generates the expression source for a function call.
 func (eg *expressionGenerator) generateFunctionCall(functionCall *codedom.FunctionCallNode, context generationContext) esbuilder.ExpressionBuilder {
 	childExpr := eg.generateExpression(functionCall.ChildExpression, context)
 	arguments := eg.generateExpressions(functionCall.Arguments, context)
 	return esbuilder.Call(childExpr, arguments...)
-}
-
-// generateMemberAssignment generates the expression source for a member assignment.
-func (eg *expressionGenerator) generateMemberAssignment(memberAssign *codedom.MemberAssignmentNode, context generationContext) esbuilder.ExpressionBuilder {
-	basisNode := memberAssign.BasisNode()
-
-	// If the target member is an operator, then we need to invoke it as a function call, with the first
-	// argument being the argument to the child call, and the second argument being the assigned child
-	// expression.
-	if memberAssign.Target.IsOperator() {
-		childCall := memberAssign.NameExpression.(*codedom.MemberCallNode)
-		memberRef := childCall.ChildExpression.(*codedom.MemberReferenceNode)
-
-		// If this is a native operator, change it into a native indexing and assignment.
-		if memberAssign.Target.IsNative() {
-			nativeAssign := codedom.NativeAssign(
-				codedom.NativeIndexing(memberRef.ChildExpression,
-					childCall.Arguments[0], basisNode),
-				memberAssign.Value,
-				basisNode)
-
-			return eg.generateExpression(nativeAssign, context)
-		} else {
-			memberCall := codedom.MemberCall(
-				codedom.NativeAccess(memberRef.ChildExpression, eg.pather.GetMemberName(memberAssign.Target), memberRef.BasisNode()),
-				memberAssign.Target,
-				[]codedom.Expression{childCall.Arguments[0], memberAssign.Value},
-				basisNode)
-
-			return eg.generateExpression(memberCall, context)
-		}
-	}
-
-	// If the target member is implicitly called, then this is a property that needs to be assigned via a call.
-	if memberAssign.Target.IsImplicitlyCalled() {
-		memberRef := memberAssign.NameExpression.(*codedom.MemberReferenceNode)
-
-		memberCall := codedom.MemberCall(
-			codedom.NativeAccess(memberRef.ChildExpression, eg.pather.GetSetterName(memberRef.Member), memberRef.BasisNode()),
-			memberAssign.Target,
-			[]codedom.Expression{memberAssign.Value},
-			basisNode)
-
-		return eg.generateExpression(memberCall, context)
-	}
-
-	value := eg.generateExpression(memberAssign.Value, context)
-	targetExpr := eg.generateExpression(memberAssign.NameExpression, context)
-	return esbuilder.Assignment(targetExpr, value)
 }
 
 // generateLocalAssignment generates the expression source for a local assignment.
@@ -410,46 +427,33 @@ func (eg *expressionGenerator) generateLocalReference(localRef *codedom.LocalRef
 // generateDynamicAccess generates the expression source for dynamic access.
 func (eg *expressionGenerator) generateDynamicAccess(dynamicAccess *codedom.DynamicAccessNode, context generationContext) esbuilder.ExpressionBuilder {
 	basisNode := dynamicAccess.BasisNode()
+
+	isPromisingLiteral := "false"
+	if dynamicAccess.IsPossiblyPromising {
+		isPromisingLiteral = "true"
+	}
+
 	funcCall := codedom.RuntimeFunctionCall(
 		codedom.DynamicAccessFunction,
 		[]codedom.Expression{
 			dynamicAccess.ChildExpression,
 			codedom.LiteralValue("'"+dynamicAccess.Name+"'", basisNode),
+			codedom.LiteralValue(isPromisingLiteral, basisNode),
 		},
 		basisNode,
 	)
 
-	// All dynamic accesses return a promise, to ensure it works for properties.
-	return eg.generateExpression(codedom.AwaitPromise(funcCall, basisNode), context)
+	if dynamicAccess.IsPossiblyPromising {
+		funcCall = codedom.AwaitPromise(funcCall, basisNode)
+	}
+
+	return eg.generateExpression(funcCall, context)
 }
 
 // generateNestedTypeAccess generates the expression source for a nested type access.
 func (eg *expressionGenerator) generateNestedTypeAccess(nestedAccess *codedom.NestedTypeAccessNode, context generationContext) esbuilder.ExpressionBuilder {
 	childExpr := eg.generateExpression(nestedAccess.ChildExpression, context)
 	return childExpr.Member(eg.pather.InnerInstanceName(nestedAccess.InnerType))
-}
-
-// generateMemberReference generates the expression for a reference to a module or type member.
-func (eg *expressionGenerator) generateMemberReference(memberReference *codedom.MemberReferenceNode, context generationContext) esbuilder.ExpressionBuilder {
-	// If the target member is implicitly called, then this is a property that needs to be accessed via a call.
-	if memberReference.Member.IsImplicitlyCalled() {
-		basisNode := memberReference.BasisNode()
-		memberCall := codedom.MemberCall(
-			codedom.NativeAccess(memberReference.ChildExpression, memberReference.Member.Name(), basisNode),
-			memberReference.Member,
-			[]codedom.Expression{},
-			basisNode)
-
-		return eg.generateExpression(memberCall, context)
-	}
-
-	// This handles the native new case for WebIDL. We should probably handle this directly.
-	if memberReference.Member.IsStatic() && !memberReference.Member.IsPromising() {
-		return eg.generateExpression(codedom.StaticMemberReference(memberReference.Member, eg.scopegraph.TypeGraph().AnyTypeReference(), memberReference.BasisNode()), context)
-	}
-
-	childExpr := eg.generateExpression(memberReference.ChildExpression, context)
-	return childExpr.Member(eg.pather.GetMemberName(memberReference.Member))
 }
 
 // generateStaticMemberReference generates the expression for a static reference to a module or type member.
@@ -471,10 +475,16 @@ func (eg *expressionGenerator) generateNativeAssign(nativeAssign *codedom.Native
 	return esbuilder.Assignment(target, value)
 }
 
-// generateNativeAccess generates the expression source for a native access to a member.
+// generateNativeAccess generates the expression source for a native access to a name under an expression.
 func (eg *expressionGenerator) generateNativeAccess(nativeAccess *codedom.NativeAccessNode, context generationContext) esbuilder.ExpressionBuilder {
 	childExpr := eg.generateExpression(nativeAccess.ChildExpression, context)
 	return childExpr.Member(nativeAccess.Name)
+}
+
+// generateNativeMemberAccess generates the expression source for a native access to a defined member.
+func (eg *expressionGenerator) generateNativeMemberAccess(nativeAccess *codedom.NativeMemberAccessNode, context generationContext) esbuilder.ExpressionBuilder {
+	childExpr := eg.generateExpression(nativeAccess.ChildExpression, context)
+	return childExpr.Member(nativeAccess.NativeName)
 }
 
 // generateNativeIndexing generates the expression source for a native index on an expression.
@@ -549,6 +559,94 @@ func (eg *expressionGenerator) generateNominalUnwrapping(nominalUnwrapping *code
 	return eg.generateExpression(call, context)
 }
 
+// generateMemberAssignment generates the expression source for a member assignment.
+func (eg *expressionGenerator) generateMemberAssignment(memberAssign *codedom.MemberAssignmentNode, context generationContext) esbuilder.ExpressionBuilder {
+	basisNode := memberAssign.BasisNode()
+
+	// If the target member is an operator, then we need to invoke it as a function call, with the first
+	// argument being the argument to the child call, and the second argument being the assigned child
+	// expression.
+	if memberAssign.Target.IsOperator() {
+		childCall := memberAssign.NameExpression.(*codedom.MemberCallNode)
+		memberRef := childCall.ChildExpression.(*codedom.MemberReferenceNode)
+
+		// If this is a native operator, change it into a native indexing and assignment.
+		if memberAssign.Target.IsNative() {
+			nativeAssign := codedom.NativeAssign(
+				codedom.NativeIndexing(memberRef.ChildExpression,
+					childCall.Arguments[0], basisNode),
+				memberAssign.Value,
+				basisNode)
+
+			return eg.generateExpression(nativeAssign, context)
+		} else {
+			memberCall := codedom.MemberCall(
+				codedom.NativeMemberAccess(memberRef.ChildExpression, eg.pather.GetMemberName(memberAssign.Target), memberAssign.Target, memberRef.BasisNode()),
+				memberAssign.Target,
+				[]codedom.Expression{childCall.Arguments[0], memberAssign.Value},
+				basisNode)
+
+			return eg.generateExpression(memberCall, context)
+		}
+	}
+
+	// If the target member is implicitly called, then this is a property that needs to be assigned via a call.
+	if memberAssign.Target.IsImplicitlyCalled() {
+		memberRef := memberAssign.NameExpression.(*codedom.MemberReferenceNode)
+
+		memberCall := codedom.MemberCallWithCallType(
+			codedom.NativeMemberAccess(memberRef.ChildExpression, eg.pather.GetSetterName(memberRef.Member), memberRef.Member, memberRef.BasisNode()),
+			memberAssign.Target,
+			[]codedom.Expression{memberAssign.Value},
+			scopegraph.PromisingAccessImplicitSet,
+			basisNode)
+
+		return eg.generateExpression(memberCall, context)
+	}
+
+	value := eg.generateExpression(memberAssign.Value, context)
+	targetExpr := eg.generateExpression(memberAssign.NameExpression, context)
+	return esbuilder.Assignment(targetExpr, value)
+}
+
+// generateMemberReference generates the expression for a reference to a module or type member.
+func (eg *expressionGenerator) generateMemberReference(memberReference *codedom.MemberReferenceNode, context generationContext) esbuilder.ExpressionBuilder {
+	// If the access is nullable, generate as a dynamic access, since it handles nullables for us.
+	if memberReference.Nullable {
+		return eg.generateExpression(
+			codedom.DynamicAccess(
+				memberReference.ChildExpression,
+				memberReference.ExprName(),
+				memberReference.IsAsynchronous(eg.scopegraph),
+				memberReference.BasisNode()),
+			context)
+	}
+
+	// If the target member is implicitly called, then this is a property that needs to be accessed via a call.
+	if memberReference.Member.IsImplicitlyCalled() {
+		basisNode := memberReference.BasisNode()
+		memberCall := codedom.MemberCallWithCallType(
+			codedom.NativeMemberAccess(memberReference.ChildExpression, memberReference.Member.Name(), memberReference.Member, basisNode),
+			memberReference.Member,
+			[]codedom.Expression{},
+			scopegraph.PromisingAccessImplicitGet,
+			basisNode)
+
+		return eg.generateExpression(memberCall, context)
+	}
+
+	// This handles the native new case for WebIDL. We should probably handle this directly.
+	// TODO: generalize this.
+	if memberReference.Member.IsStatic() {
+		if memberReference.Member.SourceGraphId() == "webidl" {
+			return eg.generateExpression(codedom.StaticMemberReference(memberReference.Member, eg.scopegraph.TypeGraph().AnyTypeReference(), memberReference.BasisNode()), context)
+		}
+	}
+
+	childExpr := eg.generateExpression(memberReference.ChildExpression, context)
+	return childExpr.Member(eg.pather.GetMemberName(memberReference.Member))
+}
+
 // generateMemberCall generates the expression source for a call to a module or type member.
 func (eg *expressionGenerator) generateMemberCall(memberCall *codedom.MemberCallNode, context generationContext) esbuilder.ExpressionBuilder {
 	if memberCall.Member.IsOperator() && memberCall.Member.IsNative() {
@@ -564,13 +662,15 @@ func (eg *expressionGenerator) generateMemberCall(memberCall *codedom.MemberCall
 	callPath := memberCall.ChildExpression
 	arguments := memberCall.Arguments
 
-	var functionCall = codedom.FunctionCall(callPath, arguments, memberCall.BasisNode())
+	var functionCall = codedom.InvokeFunction(callPath, arguments, memberCall.CallType, eg.scopegraph, memberCall.BasisNode())
+
+	// Special case: A function call invoke on an otherwise nullable function.
 	if memberCall.Nullable {
 		// Invoke the function with a specialized nullable-invoke.
-		refExpr := callPath.(*codedom.DynamicAccessNode).ChildExpression
+		refExpr := callPath.(*codedom.MemberReferenceNode).ChildExpression
 
 		var isPromising = "false"
-		if memberCall.Member.IsPromising() {
+		if eg.scopegraph.IsPromisingMember(memberCall.Member, memberCall.CallType) {
 			isPromising = "true"
 		}
 
@@ -582,7 +682,10 @@ func (eg *expressionGenerator) generateMemberCall(memberCall *codedom.MemberCall
 		}
 
 		functionCall = codedom.RuntimeFunctionCall(codedom.NullableInvokeFunction, localArguments, memberCall.BasisNode())
+		if eg.scopegraph.IsPromisingMember(memberCall.Member, memberCall.CallType) {
+			functionCall = codedom.AwaitPromise(functionCall, memberCall.BasisNode())
+		}
 	}
 
-	return eg.generateExpression(codedom.WrapIfPromising(functionCall, memberCall.Member, memberCall.BasisNode()), context)
+	return eg.generateExpression(functionCall, context)
 }

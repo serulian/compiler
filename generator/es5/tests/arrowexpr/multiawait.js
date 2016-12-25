@@ -5,15 +5,10 @@ $module('multiawait', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      return $promise.resolve(instance);
+      return instance;
     };
     $static.$plus = function (first, second) {
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        $resolve(first);
-        return;
-      };
-      return $promise.new($continue);
+      return first;
     };
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -26,21 +21,19 @@ $module('multiawait', function () {
     };
   });
 
-  $static.DoSomething = function (p, q) {
+  $static.DoSomething = $t.markpromising(function (p, q) {
     var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
         switch ($current) {
           case 0:
-            $promise.translate(p).then(function ($result1) {
-              return $promise.translate(q).then(function ($result2) {
-                return $g.multiawait.SomeClass.$plus($result1, $result2).then(function ($result0) {
-                  $result = $result0;
-                  $current = 1;
-                  $continue($resolve, $reject);
-                  return;
-                });
+            $promise.translate(p).then(function ($result0) {
+              return $promise.translate(q).then(function ($result1) {
+                $result = $g.multiawait.SomeClass.$plus($result0, $result1);
+                $current = 1;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
               $reject(err);
@@ -55,5 +48,5 @@ $module('multiawait', function () {
       }
     };
     return $promise.new($continue);
-  };
+  });
 });

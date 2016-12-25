@@ -1,14 +1,40 @@
 $module('async', function () {
   var $static = this;
-  $static.DoSomething = function () {
+  $static.DoSomethingAsync = $t.workerwrap('088145a7', function () {
+    return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+  });
+  $static.DoSomethingElse = $t.markpromising(function () {
+    var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      $resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
-      return;
+      while (true) {
+        switch ($current) {
+          case 0:
+            $promise.translate($g.async.DoSomethingAsync()).then(function ($result0) {
+              $result = $result0;
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
+            }).catch(function (err) {
+              $reject(err);
+              return;
+            });
+            return;
+
+          case 1:
+            $resolve($result);
+            return;
+
+          default:
+            $resolve();
+            return;
+        }
+      }
     };
     return $promise.new($continue);
-  };
-  $static.TEST = function () {
+  });
+  $static.TEST = $t.markpromising(function () {
+    var $result;
     var a;
     var b;
     var $current = 0;
@@ -16,22 +42,31 @@ $module('async', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.async.DoSomething().then(function ($result0) {
-              a = $result0;
-              b = null;
+            $promise.maybe($g.async.DoSomethingElse()).then(function ($result0) {
+              $result = $result0;
               $current = 1;
               $continue($resolve, $reject);
               return;
-            }).catch(function ($rejected) {
-              b = $rejected;
-              a = null;
-              $current = 1;
-              $continue($resolve, $reject);
+            }).catch(function (err) {
+              $reject(err);
               return;
             });
             return;
 
           case 1:
+            try {
+              var $expr = $result;
+              a = $expr;
+              b = null;
+            } catch ($rejected) {
+              b = $rejected;
+              a = null;
+            }
+            $current = 2;
+            $continue($resolve, $reject);
+            return;
+
+          case 2:
             $resolve(a);
             return;
 
@@ -42,5 +77,5 @@ $module('async', function () {
       }
     };
     return $promise.new($continue);
-  };
+  });
 });

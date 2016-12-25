@@ -5,103 +5,18 @@ $module('custom', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      return $promise.resolve(instance);
+      return instance;
     };
     $static.Get = function () {
-      var $result;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        while (true) {
-          switch ($current) {
-            case 0:
-              $g.custom.CustomJSON.new().then(function ($result0) {
-                $result = $result0;
-                $current = 1;
-                $continue($resolve, $reject);
-                return;
-              }).catch(function (err) {
-                $reject(err);
-                return;
-              });
-              return;
-
-            case 1:
-              $resolve($result);
-              return;
-
-            default:
-              $resolve();
-              return;
-          }
-        }
-      };
-      return $promise.new($continue);
+      return $g.custom.CustomJSON.new();
     };
     $instance.Stringify = function (value) {
       var $this = this;
-      var $result;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        while (true) {
-          switch ($current) {
-            case 0:
-              $g.____testlib.basictypes.JSON.Get().then(function ($result1) {
-                return $result1.Stringify(value).then(function ($result0) {
-                  $result = $result0;
-                  $current = 1;
-                  $continue($resolve, $reject);
-                  return;
-                });
-              }).catch(function (err) {
-                $reject(err);
-                return;
-              });
-              return;
-
-            case 1:
-              $resolve($result);
-              return;
-
-            default:
-              $resolve();
-              return;
-          }
-        }
-      };
-      return $promise.new($continue);
+      return $g.____testlib.basictypes.JSON.Get().Stringify(value);
     };
     $instance.Parse = function (value) {
       var $this = this;
-      var $result;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        while (true) {
-          switch ($current) {
-            case 0:
-              $g.____testlib.basictypes.JSON.Get().then(function ($result1) {
-                return $result1.Parse(value).then(function ($result0) {
-                  $result = $result0;
-                  $current = 1;
-                  $continue($resolve, $reject);
-                  return;
-                });
-              }).catch(function (err) {
-                $reject(err);
-                return;
-              });
-              return;
-
-            case 1:
-              $resolve($result);
-              return;
-
-            default:
-              $resolve();
-              return;
-          }
-        }
-      };
-      return $promise.new($continue);
+      return $g.____testlib.basictypes.JSON.Get().Parse(value);
     };
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -109,7 +24,7 @@ $module('custom', function () {
       }
       var computed = {
         "Get|1|29dc432d<38a26367>": true,
-        "Stringify|2|29dc432d<538656f2>": true,
+        "Stringify|2|29dc432d<5cffd9b5>": true,
         "Parse|2|29dc432d<df58fcbd<any>>": true,
       };
       return this.$cachedtypesig = computed;
@@ -125,7 +40,7 @@ $module('custom', function () {
         AnotherBool: AnotherBool,
       };
       instance.$markruntimecreated();
-      return $promise.resolve(instance);
+      return instance;
     };
     $static.$fields = [];
     $t.defineStructField($static, 'AnotherBool', 'AnotherBool', function () {
@@ -139,11 +54,11 @@ $module('custom', function () {
       }
       var computed = {
         "Parse|1|29dc432d<9a932bd6>": true,
-        "equals|4|29dc432d<5ab5941e>": true,
-        "Stringify|2|29dc432d<538656f2>": true,
+        "equals|4|29dc432d<43834c3f>": true,
+        "Stringify|2|29dc432d<5cffd9b5>": true,
         "Mapping|2|29dc432d<df58fcbd<any>>": true,
         "Clone|2|29dc432d<9a932bd6>": true,
-        "String|2|29dc432d<538656f2>": true,
+        "String|2|29dc432d<5cffd9b5>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -160,7 +75,7 @@ $module('custom', function () {
         SomeInstance: SomeInstance,
       };
       instance.$markruntimecreated();
-      return $promise.resolve(instance);
+      return instance;
     };
     $static.$fields = [];
     $t.defineStructField($static, 'SomeField', 'SomeField', function () {
@@ -184,17 +99,17 @@ $module('custom', function () {
       }
       var computed = {
         "Parse|1|29dc432d<f97a88eb>": true,
-        "equals|4|29dc432d<5ab5941e>": true,
-        "Stringify|2|29dc432d<538656f2>": true,
+        "equals|4|29dc432d<43834c3f>": true,
+        "Stringify|2|29dc432d<5cffd9b5>": true,
         "Mapping|2|29dc432d<df58fcbd<any>>": true,
         "Clone|2|29dc432d<f97a88eb>": true,
-        "String|2|29dc432d<538656f2>": true,
+        "String|2|29dc432d<5cffd9b5>": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  $static.TEST = function () {
+  $static.TEST = $t.markpromising(function () {
     var $result;
     var jsonString;
     var parsed;
@@ -204,25 +119,11 @@ $module('custom', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.custom.AnotherStruct.new($t.fastbox(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
-              return $g.custom.SomeStruct.new($t.fastbox(2, $g.____testlib.basictypes.Integer), $t.fastbox(false, $g.____testlib.basictypes.Boolean), $result1).then(function ($result0) {
-                $result = $result0;
-                $current = 1;
-                $continue($resolve, $reject);
-                return;
-              });
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            s = $result;
+            s = $g.custom.SomeStruct.new($t.fastbox(2, $g.____testlib.basictypes.Integer), $t.fastbox(false, $g.____testlib.basictypes.Boolean), $g.custom.AnotherStruct.new($t.fastbox(true, $g.____testlib.basictypes.Boolean)));
             jsonString = $t.fastbox('{"AnotherField":false,"SomeField":2,"SomeInstance":{"AnotherBool":true}}', $g.____testlib.basictypes.String);
-            $g.custom.SomeStruct.Parse($g.custom.CustomJSON)(jsonString).then(function ($result0) {
+            $promise.maybe($g.custom.SomeStruct.Parse($g.custom.CustomJSON)(jsonString)).then(function ($result0) {
               $result = $result0;
-              $current = 2;
+              $current = 1;
               $continue($resolve, $reject);
               return;
             }).catch(function (err) {
@@ -231,23 +132,9 @@ $module('custom', function () {
             });
             return;
 
-          case 2:
+          case 1:
             parsed = $result;
-            $promise.resolve(parsed.SomeField.$wrapped == 2).then(function ($result1) {
-              return $promise.resolve($result1 && !parsed.AnotherField.$wrapped).then(function ($result0) {
-                $result = $t.fastbox($result0 && parsed.SomeInstance.AnotherBool.$wrapped, $g.____testlib.basictypes.Boolean);
-                $current = 3;
-                $continue($resolve, $reject);
-                return;
-              });
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 3:
-            $resolve($result);
+            $resolve($t.fastbox(((parsed.SomeField.$wrapped == 2) && !parsed.AnotherField.$wrapped) && parsed.SomeInstance.AnotherBool.$wrapped, $g.____testlib.basictypes.Boolean));
             return;
 
           default:
@@ -257,5 +144,5 @@ $module('custom', function () {
       }
     };
     return $promise.new($continue);
-  };
+  });
 });

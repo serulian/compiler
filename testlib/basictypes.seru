@@ -118,6 +118,7 @@ interface Releasable {
 @•typealias('function')
 class Function<T> {}
 
+@•typealias('$intstream')
 class IntStream {
 	var<int> start = 0
 	var<int> end = -1

@@ -1,0 +1,7 @@
+function<bool> DoSomethingAsync() {
+	return true
+}
+
+function<bool> TEST() {
+	return true if <- DoSomethingAsync() else false	
+}

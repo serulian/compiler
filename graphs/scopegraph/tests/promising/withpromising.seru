@@ -1,0 +1,15 @@
+function<bool> DoSomethingAsync() {
+	return true
+}
+
+class SomeResource {
+	function<void> Release() {
+		<- DoSomethingAsync()
+	}
+}
+
+function<void> TEST(sr SomeResource) {
+	with sr {
+
+	}
+}

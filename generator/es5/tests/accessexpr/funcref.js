@@ -6,59 +6,27 @@ $module('funcref', function () {
     $static.new = function (value) {
       var instance = new $static();
       instance.value = value;
-      return $promise.resolve(instance);
+      return instance;
     };
     $instance.SomeFunction = function () {
       var $this = this;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        $resolve($this.value);
-        return;
-      };
-      return $promise.new($continue);
+      return $this.value;
     };
     this.$typesig = function () {
       if (this.$cachedtypesig) {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeFunction|2|29dc432d<5ab5941e>": true,
+        "SomeFunction|2|29dc432d<43834c3f>": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
   $static.AnotherFunction = function (toCall) {
-    var $result;
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            toCall().then(function ($result0) {
-              $result = $result0;
-              $current = 1;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            $resolve($result);
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
-    };
-    return $promise.new($continue);
+    return toCall();
   };
-  $static.TEST = function () {
+  $static.TEST = $t.markpromising(function () {
     var $result;
     var sc;
     var $current = 0;
@@ -66,7 +34,8 @@ $module('funcref', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.funcref.SomeClass.new($t.fastbox(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
+            sc = $g.funcref.SomeClass.new($t.fastbox(true, $g.____testlib.basictypes.Boolean));
+            $promise.maybe($g.funcref.AnotherFunction($t.dynamicaccess(sc, 'SomeFunction', false))).then(function ($result0) {
               $result = $result0;
               $current = 1;
               $continue($resolve, $reject);
@@ -78,21 +47,6 @@ $module('funcref', function () {
             return;
 
           case 1:
-            sc = $result;
-            $t.dynamicaccess(sc, 'SomeFunction').then(function ($result1) {
-              return $g.funcref.AnotherFunction($result1).then(function ($result0) {
-                $result = $result0;
-                $current = 2;
-                $continue($resolve, $reject);
-                return;
-              });
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 2:
             $resolve($result);
             return;
 
@@ -103,5 +57,5 @@ $module('funcref', function () {
       }
     };
     return $promise.new($continue);
-  };
+  });
 });

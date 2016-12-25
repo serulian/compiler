@@ -26,9 +26,9 @@ $module('basic', function () {
         }
       }
     };
-    return $generator.new($continue);
+    return $generator.new($continue, false);
   };
-  $static.TEST = function () {
+  $static.TEST = $t.markpromising(function () {
     var $result;
     var $temp0;
     var $temp1;
@@ -40,42 +40,25 @@ $module('basic', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.basic.SomeGenerator().then(function ($result1) {
-              return $g.____testlib.basictypes.MapStream($g.____testlib.basictypes.Integer, $g.____testlib.basictypes.Integer)($result1, function (s) {
-                var $current = 0;
-                var $continue = function ($resolve, $reject) {
-                  $resolve($t.fastbox(s.$wrapped + 1, $g.____testlib.basictypes.Boolean));
-                  return;
-                };
-                return $promise.new($continue);
-              }).then(function ($result0) {
-                $result = $result0;
-                $current = 1;
-                $continue($resolve, $reject);
-                return;
-              });
-            }).catch(function (err) {
-              $reject(err);
-              return;
+            s = $g.____testlib.basictypes.MapStream($g.____testlib.basictypes.Integer, $g.____testlib.basictypes.Integer)($g.basic.SomeGenerator(), function (s) {
+              return $t.fastbox(s.$wrapped + 1, $g.____testlib.basictypes.Boolean);
             });
+            counter = $t.fastbox(0, $g.____testlib.basictypes.Integer);
+            $current = 1;
+            $continue($resolve, $reject);
             return;
 
           case 1:
-            s = $result;
-            counter = $t.fastbox(0, $g.____testlib.basictypes.Integer);
+            $temp1 = s;
             $current = 2;
-            continue;
+            $continue($resolve, $reject);
+            return;
 
           case 2:
-            $temp1 = s;
-            $current = 3;
-            continue;
-
-          case 3:
-            $temp1.Next().then(function ($result0) {
+            $promise.maybe($temp1.Next()).then(function ($result0) {
               $temp0 = $result0;
               $result = $temp0;
-              $current = 4;
+              $current = 3;
               $continue($resolve, $reject);
               return;
             }).catch(function (err) {
@@ -84,23 +67,26 @@ $module('basic', function () {
             });
             return;
 
-          case 4:
+          case 3:
             entry = $temp0.First;
             if ($temp0.Second.$wrapped) {
-              $current = 5;
-              continue;
+              $current = 4;
+              $continue($resolve, $reject);
+              return;
             } else {
-              $current = 6;
-              continue;
+              $current = 5;
+              $continue($resolve, $reject);
+              return;
             }
             break;
 
-          case 5:
+          case 4:
             counter = $t.fastbox(counter.$wrapped + entry.$wrapped, $g.____testlib.basictypes.Boolean);
-            $current = 3;
-            continue;
+            $current = 2;
+            $continue($resolve, $reject);
+            return;
 
-          case 6:
+          case 5:
             $resolve($t.fastbox(counter.$wrapped == 9, $g.____testlib.basictypes.Boolean));
             return;
 
@@ -111,5 +97,5 @@ $module('basic', function () {
       }
     };
     return $promise.new($continue);
-  };
+  });
 });

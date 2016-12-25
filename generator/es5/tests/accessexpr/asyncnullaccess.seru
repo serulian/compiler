@@ -1,0 +1,16 @@
+function<int> DoSomethingAsync() {
+	return 42
+}
+
+class SomeClass {
+	property<bool> SomeProperty {
+		get { 
+			return (<- DoSomethingAsync()) == 42
+		}
+	}
+}
+
+function<any> TEST() {
+	var<SomeClass?> sc = SomeClass.new()
+	return sc?.SomeProperty
+}

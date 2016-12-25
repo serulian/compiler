@@ -1,0 +1,14 @@
+function<int> DoSomethingAsync() {
+	return 30
+}
+
+function<int> myFunction(pieces []string, values []stringable) {
+	return values[0].(int) + values.Length + (<- DoSomethingAsync())
+}
+
+function<any> TEST() {
+	var a = 10
+	var b = true
+	var result = myFunction`This function is #${a}! It is ${b}!`
+	return result == 42
+}

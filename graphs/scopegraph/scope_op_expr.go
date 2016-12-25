@@ -93,6 +93,11 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 	namedNode, hasNamedNode := sb.getNamedScopeForScope(childScope)
 	if hasNamedNode {
 		context.staticDependencyCollector.registerNamedDependency(namedNode)
+		if namedNode.IsLocalName() {
+			context.rootLabelSet.Append(proto.ScopeLabel_CALLS_ANONYMOUS_CLOSURE)
+		}
+	} else {
+		context.rootLabelSet.Append(proto.ScopeLabel_CALLS_ANONYMOUS_CLOSURE)
 	}
 
 	getDescription := func() string {
@@ -305,7 +310,7 @@ func (sb *scopeBuilder) scopeIndexerExpression(node compilergraph.GraphNode, con
 	}
 
 	if context.accessOption == scopeSetAccess {
-		return newScope().Valid().ForNamedScopeUnderType(sb.getNamedScopeForMember(operator), childType, context).GetScope()
+		return newScope().Valid().CallsOperator(operator).ForNamedScopeUnderType(sb.getNamedScopeForMember(operator), childType, context).GetScope()
 	} else {
 		returnType, _ := operator.ReturnType()
 		return newScope().Valid().CallsOperator(operator).Resolving(returnType.TransformUnder(childType)).GetScope()
@@ -599,7 +604,19 @@ func (sb *scopeBuilder) scopeBinaryExpression(node compilergraph.GraphNode, opNa
 		return newScope().Invalid().CallsOperator(operator).Resolving(returnType.TransformUnder(leftType))
 	}
 
-	return newScope().Valid().CallsOperator(operator).Resolving(returnType.TransformUnder(leftType))
+	operatorReturnType := returnType.TransformUnder(leftType)
+
+	// Special handling: If the expression is a range of Integer, change the return type to
+	// an IntStream. This is special cased because we *know* the stream type, and we don't want
+	// the fact that Next() being async *somewhere* makes all loops async to influence numeric
+	// streams (which are the most common).
+	// TODO: Remove this stupid hack once we an inlining optimization pass that makes it unnecessary
+	// OR we find a better way to identify the types of streams being produced.
+	if node.Kind() == parser.NodeDefineRangeExpression && leftType == sb.sg.tdg.IntTypeReference() {
+		operatorReturnType = sb.sg.tdg.IntStreamType().GetTypeReference()
+	}
+
+	return newScope().Valid().CallsOperator(operator).Resolving(operatorReturnType)
 }
 
 // scopeUnaryExpression scopes a unary expression in the SRG.

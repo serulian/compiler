@@ -1,8 +1,12 @@
-function<bool> DoSomething() {
+function<bool> DoSomethingAsync() {
 	return true
 }
 
+function<bool> DoSomethingElse() {
+	return <- DoSomethingAsync()
+}
+
 function<any> TEST() {
-	a, b := DoSomething()
+	a, b := DoSomethingElse()
 	return a
 }

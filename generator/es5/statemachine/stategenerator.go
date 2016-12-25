@@ -25,16 +25,15 @@ type stateGenerator struct {
 
 	scopegraph *scopegraph.ScopeGraph // The scope graph being generated.
 
-	states           []*state                     // The list of states.
-	stateStartMap    map[codedom.Statement]*state // Map from statement to its start state.
-	managesResources bool                         // Whether the states manage resources.
+	states        []*state                     // The list of states.
+	stateStartMap map[codedom.Statement]*state // Map from statement to its start state.
 
 	hasAsyncJump bool            // Whether the state generator has any async jumps.
 	variables    map[string]bool // The variables added into the scope.
 	resources    *ResourceStack  // The current resources in the scope.
 	currentState *state          // The current state.
 
-	isGeneratorFunction bool // Whether the function being generated is a generator function.
+	funcTraits shared.StateFunctionTraits // The traits of the parent function being generated.
 }
 
 // generateStatesOption defines options for the generateStates call.
@@ -47,7 +46,7 @@ const (
 )
 
 // buildGenerator builds a new state machine generator.
-func buildGenerator(scopegraph *scopegraph.ScopeGraph, positionMapper *compilercommon.PositionMapper, templater *shared.Templater, isGeneratorFunction bool) *stateGenerator {
+func buildGenerator(scopegraph *scopegraph.ScopeGraph, positionMapper *compilercommon.PositionMapper, templater *shared.Templater, funcTraits shared.StateFunctionTraits) *stateGenerator {
 	generator := &stateGenerator{
 		pather:    shared.NewPather(scopegraph.SourceGraph().Graph),
 		templater: templater,
@@ -61,17 +60,16 @@ func buildGenerator(scopegraph *scopegraph.ScopeGraph, positionMapper *compilerc
 		variables: map[string]bool{},
 		resources: &ResourceStack{},
 
-		managesResources:    false,
-		isGeneratorFunction: isGeneratorFunction,
+		funcTraits: funcTraits,
 	}
 
 	return generator
 }
 
 // generateMachine generates state machine source for a CodeDOM statement or expression.
-func (sg *stateGenerator) generateMachine(element codedom.StatementOrExpression, isGeneratorFunction bool) esbuilder.SourceBuilder {
+func (sg *stateGenerator) generateMachine(element codedom.StatementOrExpression, funcTraits shared.StateFunctionTraits) esbuilder.SourceBuilder {
 	// Build a state generator for the new machine.
-	generator := buildGenerator(sg.scopegraph, sg.positionMapper, sg.templater, isGeneratorFunction)
+	generator := buildGenerator(sg.scopegraph, sg.positionMapper, sg.templater, funcTraits)
 
 	// Generate the statement or expression that forms the definition of the state machine.
 	if statement, ok := element.(codedom.Statement); ok {
@@ -110,8 +108,7 @@ func (sg *stateGenerator) generateStates(statement codedom.Statement, option gen
 		// for jumping "in between" and otherwise single state. Therefore, control flow must immediately
 		// go from the existing state to the new state (as it would normally naturally flow)
 		if statement.IsReferenceable() {
-			currentState.pushSnippet(sg.snippets().SetState(newState.ID))
-			currentState.pushSnippet("continue;")
+			currentState.pushSnippet(sg.snippets().SetStateAndContinue(newState))
 		}
 	}
 
@@ -164,8 +161,7 @@ func (sg *stateGenerator) generateStates(statement codedom.Statement, option gen
 	if statement.ReleasesFlow() {
 		endState := sg.currentState
 		newState := sg.newState()
-		endState.pushSnippet(sg.snippets().SetState(newState.ID))
-		endState.pushSnippet("return;")
+		endState.pushSnippet(sg.snippets().SetStateAndBreak(newState))
 	}
 
 	// Handle generation of chained statements.
@@ -209,9 +205,15 @@ func (sg *stateGenerator) filterStates() []*state {
 
 // pushResource adds a resource to the resource stack with the given name.
 func (sg *stateGenerator) pushResource(name string, basis compilergraph.GraphNode) {
-	sg.managesResources = true
+	// Add the resource to the generator tracking stack.
+	sg.resources.Push(resource{
+		name:       name,
+		basis:      basis,
+		startState: sg.currentState,
+	})
 
-	// pushr(varName, 'varName');
+	// Add a call to push the resource name onto the generated stack:
+	// $resources.pushr(varName, 'varName')
 	pushCall := codedom.RuntimeFunctionCall(
 		codedom.StatePushResourceFunction,
 		[]codedom.Expression{
@@ -222,28 +224,12 @@ func (sg *stateGenerator) pushResource(name string, basis compilergraph.GraphNod
 	)
 
 	sg.generateStates(codedom.ExpressionStatement(pushCall, basis), generateImplicitState)
-	sg.resources.Push(resource{
-		name:  name,
-		basis: basis,
-	})
 }
 
 // popResource removes a resource from the resource stack.
 func (sg *stateGenerator) popResource(name string, basis compilergraph.GraphNode) {
-	sg.managesResources = true
+	// Remove the resource from the generator tracking stack.
 	sg.resources.Pop()
-
-	// popr('varName').then(...)
-	popCall := codedom.RuntimeFunctionCall(
-		codedom.StatePopResourceFunction,
-		[]codedom.Expression{
-			codedom.LiteralValue("'"+name+"'", basis),
-		},
-		basis,
-	)
-
-	sg.generateStates(codedom.ExpressionStatement(codedom.AwaitPromise(popCall, basis), basis),
-		generateImplicitState)
 }
 
 // addVariable adds a variable with the given name to the current state machine.
@@ -254,7 +240,7 @@ func (sg *stateGenerator) addVariable(name string) string {
 
 // snippets returns a snippets generator for this state generator.
 func (sg *stateGenerator) snippets() snippets {
-	return snippets{sg.templater}
+	return snippets{sg.funcTraits, sg.templater, sg.resources}
 }
 
 // addTopLevelExpression generates the source for the given expression and adds it to the
@@ -286,15 +272,13 @@ func (sg *stateGenerator) addTopLevelExpression(expression codedom.Expression) e
 		// Wrap the expression's promise result expression to be stored in $result,
 		// followed by a jump to the new state.
 		data := struct {
-			ResolutionStateId stateId
-			Snippets          snippets
-			IsGenerator       bool
-		}{targetState.ID, sg.snippets(), sg.isGeneratorFunction}
+			ResolutionState *state
+			Snippets        snippets
+		}{targetState, sg.snippets()}
 
 		wrappingTemplateStr := `
 			$result = {{ emit .ResultExpr }};
-			{{ .Data.Snippets.SetState .Data.ResolutionStateId }}
-			{{ .Data.Snippets.Continue .Data.IsGenerator }}
+			{{ .Data.Snippets.SetStateAndContinue .Data.ResolutionState }}
 		`
 		promise := result.BuildWrapped(wrappingTemplateStr, data)
 
@@ -317,12 +301,19 @@ func (sg *stateGenerator) addTopLevelExpression(expression codedom.Expression) e
 // source returns the full source for the generated state machine.
 func (sg *stateGenerator) source(states []*state) esbuilder.SourceBuilder {
 	if len(states) == 0 {
-		if sg.isGeneratorFunction {
-			return esbuilder.Returns(esbuilder.Identifier("$generator").Member("empty").Call())
-		}
+		switch sg.funcTraits.Type() {
+		case shared.StateFunctionNormalSync:
+			return esbuilder.Return()
 
-		// If there are no states, this is an empty state machine.
-		return esbuilder.Returns(esbuilder.Identifier("$promise").Member("empty").Call())
+		case shared.StateFunctionNormalAsync:
+			return esbuilder.Returns(esbuilder.Identifier("$promise").Member("empty").Call())
+
+		case shared.StateFunctionSyncOrAsyncGenerator:
+			return esbuilder.Returns(esbuilder.Identifier("$generator").Member("empty").Call())
+
+		default:
+			panic("Unknown function kind")
+		}
 	}
 
 	// Check if this machine is in fact a single state with no jumps. If so, then we don't
@@ -337,14 +328,24 @@ func (sg *stateGenerator) source(states []*state) esbuilder.SourceBuilder {
 		SingleState      *state
 		Snippets         snippets
 		ManagesResources bool
+		IsAsync          bool
 		Variables        map[string]bool
-	}{states, singleState, sg.snippets(), sg.managesResources, sg.variables}
+	}{states, singleState, sg.snippets(), sg.funcTraits.ManagesResources(), sg.funcTraits.IsAsynchronous(), sg.variables}
 
-	if sg.isGeneratorFunction {
+	switch sg.funcTraits.Type() {
+	case shared.StateFunctionNormalSync:
+		return esbuilder.Template("statestatemachine", syncStateMachineTemplateStr, data)
+
+	case shared.StateFunctionNormalAsync:
+		return esbuilder.Template("asyncstatemachine", asyncStateMachineTemplateStr, data)
+
+	case shared.StateFunctionSyncOrAsyncGenerator:
 		return esbuilder.Template("generatorstatemachine", generatorStateMachineTemplateStr, data)
+
+	default:
+		panic("Unknown function kind")
 	}
 
-	return esbuilder.Template("statemachine", stateMachineTemplateStr, data)
 }
 
 // generatorStateMachineTemplateStr is the template for the generated state machine for a generator
@@ -361,8 +362,11 @@ const generatorStateMachineTemplateStr = `
 
 	var $continue = (function($yield, $yieldin, $reject, $done) {
 		{{ if .ManagesResources }}
-			$done = $resources.bind($done);
-			$reject = $resources.bind($reject);
+			$done = $resources.bind($done, {{ .IsAsync }});
+
+			{{ if .IsAsync }}
+				$reject = $resources.bind($reject, true);
+			{{ end }}
 		{{ end }}
 
 		{{ $parent := . }}
@@ -388,8 +392,8 @@ const generatorStateMachineTemplateStr = `
 	});
 `
 
-// stateMachineTemplateStr is the template for the generated state machine for a normal function.
-const stateMachineTemplateStr = `
+// asyncStateMachineTemplateStr is the template for the generated state machine for an async function.
+const asyncStateMachineTemplateStr = `
 	{{ range $name, $true := .Variables }}
 	   var {{ $name }};
 	{{ end }}
@@ -401,8 +405,8 @@ const stateMachineTemplateStr = `
 
 	var $continue = (function($resolve, $reject) {
 		{{ if .ManagesResources }}
-			$resolve = $resources.bind($resolve);
-			$reject = $resources.bind($reject);
+			$resolve = $resources.bind($resolve, true);
+			$reject = $resources.bind($reject, true);
 		{{ end }}
 
 		{{ if .SingleState }}
@@ -431,4 +435,42 @@ const stateMachineTemplateStr = `
 		}
 		{{ end }}
 	});
+`
+
+// syncStateMachineTemplateStr is the template for the generated state machine for a sync function.
+const syncStateMachineTemplateStr = `
+	{{ range $name, $true := .Variables }}
+	   var {{ $name }};
+	{{ end }}
+
+	{{ if not .SingleState }}
+	var $current = 0;
+	{{ end }}
+
+	{{ if .ManagesResources }}
+		var $resources = $t.resourcehandler();
+	{{ end }}
+
+	{{ if .SingleState }}
+		{{ emit .SingleState.SourceTemplate }}
+		{{ .Snippets.Resolve "" }}
+	{{ else }}
+	{{ $parent := . }}
+	syncloop: while (true) {
+		switch ($current) {
+			{{range .States }}
+			case {{ .ID }}:
+				{{ emit .SourceTemplate }}
+				{{ if .IsLeafState }}
+					return;
+				{{ else }}
+					break;
+				{{ end }}
+			{{end}}
+
+			default:
+				return;
+		}
+	}
+	{{ end }}
 `

@@ -140,23 +140,56 @@ func (gm generatingMember) InnerInstanceName() string {
 
 // FunctionSource returns the generated code for the implementation for this member.
 func (gm generatingMember) FunctionSource() esbuilder.SourceBuilder {
-	return statemachine.GenerateFunctionSource(gm, gm.Generator.scopegraph, gm.Generator.positionMapper)
+	functionDef := statemachine.FunctionDef{
+		Generics:       gm.Generics(),
+		Parameters:     gm.Parameters(),
+		RequiresThis:   gm.RequiresThis(),
+		WorkerExecutes: gm.WorkerExecutes(),
+		IsGenerator:    gm.IsGenerator(),
+		BodyNode:       gm.BodyNode(),
+	}
+
+	return statemachine.GenerateFunctionSource(functionDef, gm.Generator.scopegraph, gm.Generator.positionMapper)
 }
 
 // GetterSource returns the generated code for the getter for this member.
 func (gm generatingMember) GetterSource() esbuilder.SourceBuilder {
 	getterNode, _ := gm.SRGMember.Getter()
 	getterBodyNode, _ := getterNode.Body()
-	getterBody := propertyBodyInfo{gm.Member, getterBodyNode, []string{""}, gm.Generator}
-	return statemachine.GenerateFunctionSource(getterBody, gm.Generator.scopegraph, gm.Generator.positionMapper)
+
+	bodyScope, _ := gm.Generator.scopegraph.GetScope(getterBodyNode)
+	isGenerator := bodyScope.HasLabel(proto.ScopeLabel_GENERATOR_STATEMENT)
+
+	functionDef := statemachine.FunctionDef{
+		Generics:       []string{},
+		Parameters:     []string{},
+		RequiresThis:   true,
+		WorkerExecutes: false,
+		IsGenerator:    isGenerator,
+		BodyNode:       getterBodyNode,
+	}
+
+	return statemachine.GenerateFunctionSource(functionDef, gm.Generator.scopegraph, gm.Generator.positionMapper)
 }
 
 // SetterSource returns the generated code for the setter for this member.
 func (gm generatingMember) SetterSource() esbuilder.SourceBuilder {
 	setterNode, _ := gm.SRGMember.Setter()
 	setterBodyNode, _ := setterNode.Body()
-	setterBody := propertyBodyInfo{gm.Member, setterBodyNode, []string{"val"}, gm.Generator}
-	return statemachine.GenerateFunctionSource(setterBody, gm.Generator.scopegraph, gm.Generator.positionMapper)
+
+	bodyScope, _ := gm.Generator.scopegraph.GetScope(setterBodyNode)
+	isGenerator := bodyScope.HasLabel(proto.ScopeLabel_GENERATOR_STATEMENT)
+
+	functionDef := statemachine.FunctionDef{
+		Generics:       []string{},
+		Parameters:     []string{"val"},
+		RequiresThis:   true,
+		WorkerExecutes: false,
+		IsGenerator:    isGenerator,
+		BodyNode:       setterBodyNode,
+	}
+
+	return statemachine.GenerateFunctionSource(functionDef, gm.Generator.scopegraph, gm.Generator.positionMapper)
 }
 
 func (gm generatingMember) ReturnType() typegraph.TypeReference {
@@ -167,43 +200,6 @@ func (gm generatingMember) ReturnType() typegraph.TypeReference {
 // AliasRequiresSet returns whether a member (which is being aliased) requires a 'set' block.
 func (gm generatingMember) AliasRequiresSet() bool {
 	return gm.SRGMember.MemberKind() == srg.VarMember
-}
-
-type propertyBodyInfo struct {
-	propertyMember typegraph.TGMember
-	bodyNode       compilergraph.GraphNode
-	parameterNames []string
-	generator      *es5generator // The parent generator.
-}
-
-func (pbi propertyBodyInfo) BodyNode() compilergraph.GraphNode {
-	return pbi.bodyNode
-}
-
-func (pbi propertyBodyInfo) Parameters() []string {
-	return pbi.parameterNames
-}
-
-func (pbi propertyBodyInfo) Generics() []string {
-	return []string{}
-}
-
-func (pbi propertyBodyInfo) RequiresThis() bool {
-	return true
-}
-
-func (pbi propertyBodyInfo) WorkerExecutes() bool {
-	return false
-}
-
-func (pbi propertyBodyInfo) IsGenerator() bool {
-	bodyScope, _ := pbi.generator.scopegraph.GetScope(pbi.BodyNode())
-	return bodyScope.HasLabel(proto.ScopeLabel_GENERATOR_STATEMENT)
-}
-
-func (pbi propertyBodyInfo) ReturnType() typegraph.TypeReference {
-	returnType, _ := pbi.propertyMember.ReturnType()
-	return returnType
 }
 
 // aliasedMemberTemplateStr defines the template for generating an aliased member.

@@ -1,0 +1,21 @@
+interface SomeInterface {
+	function<void> SomeFunction(value bool)
+}
+
+function<bool> DoSomethingAsync() {
+	return true
+}
+
+class SomeClass {
+	function<void> SomeFunction(value bool) {
+		<- DoSomethingAsync()
+	}
+}
+
+function<any> TEST() {
+	var<any> somevalue = 'hello'
+	a, _ := somevalue.(SomeInterface)
+	a?.SomeFunction(true)
+
+	return a is null
+}

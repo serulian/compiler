@@ -4,7 +4,7 @@
 
 package statemachine
 
-// generatingItem wraps some data with an additional Generator field.
+// generatingItem wraps some data with an additional generator field.
 type generatingItem struct {
 	Item      interface{}
 	generator *stateGenerator
@@ -13,9 +13,4 @@ type generatingItem struct {
 // Snippets returns a helper type for generating small snippets of state-related ES code.
 func (gi generatingItem) Snippets() snippets {
 	return gi.generator.snippets()
-}
-
-// IsGenerator returns whether the function being generated is a generator.
-func (gi generatingItem) IsGenerator() bool {
-	return gi.generator.isGeneratorFunction
 }

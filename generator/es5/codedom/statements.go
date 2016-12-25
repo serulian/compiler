@@ -5,8 +5,14 @@
 package codedom
 
 import (
+	"fmt"
+
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/graphs/scopegraph"
+	"github.com/serulian/compiler/graphs/typegraph"
 )
+
+var _ = fmt.Printf
 
 // YieldNode represents a yield of some sort under a generator function.
 type YieldNode struct {
@@ -41,6 +47,22 @@ func YieldBreak(basis compilergraph.GraphNode) Statement {
 
 func (yn *YieldNode) ReleasesFlow() bool { return true }
 
+func (s *YieldNode) WalkStatements(walker statementWalker) bool {
+	return walker(s) && s.nextStatementBase.WalkNextStatements(walker)
+}
+
+func (s *YieldNode) WalkExpressions(walker expressionWalker) bool {
+	if s.Value != nil {
+		return walker(s.Value)
+	}
+
+	if s.StreamValue != nil {
+		return walker(s.StreamValue)
+	}
+
+	return true
+}
+
 // ResolutionNode represents the resolution of a function.
 type ResolutionNode struct {
 	statementBase
@@ -52,6 +74,18 @@ func Resolution(value Expression, basis compilergraph.GraphNode) Statement {
 		statementBase{domBase{basis}, false},
 		value,
 	}
+}
+
+func (s *ResolutionNode) WalkExpressions(walker expressionWalker) bool {
+	if s.Value != nil {
+		return walker(s.Value)
+	}
+
+	return true
+}
+
+func (s *ResolutionNode) WalkStatements(walker statementWalker) bool {
+	return walker(s)
 }
 
 // RejectionNode represents the rejection of a function.
@@ -67,10 +101,18 @@ func Rejection(value Expression, basis compilergraph.GraphNode) Statement {
 	}
 }
 
+func (s *RejectionNode) WalkStatements(walker statementWalker) bool {
+	return walker(s)
+}
+
+func (s *RejectionNode) WalkExpressions(walker expressionWalker) bool {
+	return walker(s.Value)
+}
+
 // ExpressionStatementNode represents a statement of a single expression being executed.
 type ExpressionStatementNode struct {
 	nextStatementBase
-	Expression Expression // The expression being exected.
+	Expression Expression // The expression being executed.
 }
 
 func ExpressionStatement(expression Expression, basis compilergraph.GraphNode) Statement {
@@ -78,6 +120,14 @@ func ExpressionStatement(expression Expression, basis compilergraph.GraphNode) S
 		nextStatementBase{statementBase{domBase{basis}, false}, nil},
 		expression,
 	}
+}
+
+func (s *ExpressionStatementNode) WalkStatements(walker statementWalker) bool {
+	return walker(s) && s.nextStatementBase.WalkNextStatements(walker)
+}
+
+func (s *ExpressionStatementNode) WalkExpressions(walker expressionWalker) bool {
+	return walker(s.Expression)
 }
 
 // EmptyStatementNode represents an empty statement. Typically used as a the target of jumps.
@@ -89,6 +139,10 @@ func EmptyStatement(basis compilergraph.GraphNode) Statement {
 	return &EmptyStatementNode{
 		nextStatementBase{statementBase{domBase{basis}, false}, nil},
 	}
+}
+
+func (s *EmptyStatementNode) WalkStatements(walker statementWalker) bool {
+	return walker(s) && s.nextStatementBase.WalkNextStatements(walker)
 }
 
 // VarDefinitionNode represents a variable defined in the scope.
@@ -114,22 +168,53 @@ func VarDefinitionWithInit(name string, initializer Expression, basis compilergr
 	}
 }
 
+func (s *VarDefinitionNode) WalkStatements(walker statementWalker) bool {
+	return walker(s) && s.nextStatementBase.WalkNextStatements(walker)
+}
+
+func (s *VarDefinitionNode) WalkExpressions(walker expressionWalker) bool {
+	if s.Initializer != nil {
+		return walker(s.Initializer)
+	}
+
+	return true
+}
+
 // ResourceBlockNode represents a resource placed on the resource stack for the duration of
 // a statement call.
 type ResourceBlockNode struct {
 	nextStatementBase
-	ResourceName string     // The name for the resource.
-	Resource     Expression // The resource itself.
-	Statement    Statement  // The statement to execute with the resource.
+	ResourceName  string             // The name for the resource.
+	Resource      Expression         // The resource itself.
+	Statement     Statement          // The statement to execute with the resource.
+	ReleaseMethod typegraph.TGMember // The Release() for the resource.
 }
 
-func ResourceBlock(resourceName string, resource Expression, statement Statement, basis compilergraph.GraphNode) Statement {
+func ResourceBlock(resourceName string, resource Expression, statement Statement, releaseMethod typegraph.TGMember, basis compilergraph.GraphNode) Statement {
 	return &ResourceBlockNode{
 		nextStatementBase{statementBase{domBase{basis}, false}, nil},
 		resourceName,
 		resource,
 		statement,
+		releaseMethod,
 	}
+}
+
+// HasAsyncRelease returns true if the Release() call on the resource managed by this block is async.
+func (s *ResourceBlockNode) HasAsyncRelease(sg *scopegraph.ScopeGraph) bool {
+	return sg.IsPromisingMember(s.ReleaseMethod, scopegraph.PromisingAccessFunctionCall)
+}
+
+func (s *ResourceBlockNode) IsLocallyAsynchronous(scopegraph *scopegraph.ScopeGraph) bool {
+	return s.HasAsyncRelease(scopegraph)
+}
+
+func (s *ResourceBlockNode) WalkExpressions(walker expressionWalker) bool {
+	return walker(s.Resource)
+}
+
+func (s *ResourceBlockNode) WalkStatements(walker statementWalker) bool {
+	return walker(s) && walker(s.Statement) && s.nextStatementBase.WalkNextStatements(walker)
 }
 
 // ConditionalJumpNode represents a jump to a true statement if an expression is true, and
@@ -161,6 +246,26 @@ func ConditionalJump(branchExpression Expression, trueTarget Statement, falseTar
 	}
 }
 
+func (s *ConditionalJumpNode) WalkExpressions(walker expressionWalker) bool {
+	return walker(s.BranchExpression)
+}
+
+func (s *ConditionalJumpNode) WalkStatements(walker statementWalker) bool {
+	if !walker(s) {
+		return false
+	}
+
+	if s.True != nil && !walker(s.True) {
+		return false
+	}
+
+	if s.False != nil && !walker(s.False) {
+		return false
+	}
+
+	return true
+}
+
 // UnconditionalJumpNode represents a jump to another statement.
 type UnconditionalJumpNode struct {
 	statementBase
@@ -174,6 +279,10 @@ func UnconditionalJump(target Statement, basis compilergraph.GraphNode) Statemen
 		statementBase{domBase{basis}, false},
 		target,
 	}
+}
+
+func (s *UnconditionalJumpNode) WalkStatements(walker statementWalker) bool {
+	return walker(s) && walker(s.Target)
 }
 
 // ArrowPromiseNode represents a wait on a promise expression and assignment to a
@@ -196,7 +305,32 @@ func ArrowPromise(childExpr Expression, resolution Expression, rejection Express
 	}
 }
 
+func (s *ArrowPromiseNode) IsLocallyAsynchronous(scopegraph *scopegraph.ScopeGraph) bool {
+	// Always async.
+	return true
+}
+
 func (j *ArrowPromiseNode) IsJump() bool { return true }
+
+func (s *ArrowPromiseNode) WalkExpressions(walker expressionWalker) bool {
+	if !walker(s.ChildExpression) {
+		return false
+	}
+
+	if s.ResolutionAssignment != nil && !walker(s.ResolutionAssignment) {
+		return false
+	}
+
+	if s.RejectionAssignment != nil && !walker(s.RejectionAssignment) {
+		return false
+	}
+
+	return true
+}
+
+func (s *ArrowPromiseNode) WalkStatements(walker statementWalker) bool {
+	return walker(s) && walker(s.Target)
+}
 
 // ResolveExpressionNode represents a resolution of an arbitrary expression, with assignment
 // to either a resolved value or a rejected value.
@@ -205,7 +339,7 @@ type ResolveExpressionNode struct {
 	ChildExpression Expression // The child expression to be executed.
 	ResolutionName  string     // Variable to which the resolution value is assigned, if any.
 	RejectionName   string     // Variable to which the rejection value is assigned, if any.
-	Target          Statement  // The statement to which the await will jump.
+	Target          Statement  // The statement to which the resolve will jump.
 }
 
 func ResolveExpression(childExpr Expression, resolutionName string, rejectionName string, targetState Statement, basis compilergraph.GraphNode) Statement {
@@ -219,3 +353,11 @@ func ResolveExpression(childExpr Expression, resolutionName string, rejectionNam
 }
 
 func (j *ResolveExpressionNode) IsJump() bool { return true }
+
+func (s *ResolveExpressionNode) WalkExpressions(walker expressionWalker) bool {
+	return walker(s.ChildExpression)
+}
+
+func (s *ResolveExpressionNode) WalkStatements(walker statementWalker) bool {
+	return walker(s) && walker(s.Target)
+}

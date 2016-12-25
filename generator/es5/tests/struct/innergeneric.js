@@ -9,7 +9,7 @@ $module('innergeneric', function () {
         BoolValue: BoolValue,
       };
       instance.$markruntimecreated();
-      return $promise.resolve(instance);
+      return instance;
     };
     $static.$fields = [];
     $t.defineStructField($static, 'BoolValue', 'BoolValue', function () {
@@ -23,11 +23,11 @@ $module('innergeneric', function () {
       }
       var computed = {
         "Parse|1|29dc432d<078feecd>": true,
-        "equals|4|29dc432d<5ab5941e>": true,
-        "Stringify|2|29dc432d<538656f2>": true,
+        "equals|4|29dc432d<43834c3f>": true,
+        "Stringify|2|29dc432d<5cffd9b5>": true,
         "Mapping|2|29dc432d<df58fcbd<any>>": true,
         "Clone|2|29dc432d<078feecd>": true,
-        "String|2|29dc432d<538656f2>": true,
+        "String|2|29dc432d<5cffd9b5>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -42,7 +42,7 @@ $module('innergeneric', function () {
         SomeField: SomeField,
       };
       instance.$markruntimecreated();
-      return $promise.resolve(instance);
+      return instance;
     };
     $static.$fields = [];
     $t.defineStructField($static, 'SomeField', 'SomeField', function () {
@@ -55,10 +55,10 @@ $module('innergeneric', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "equals|4|29dc432d<5ab5941e>": true,
-        "Stringify|2|29dc432d<538656f2>": true,
+        "equals|4|29dc432d<43834c3f>": true,
+        "Stringify|2|29dc432d<5cffd9b5>": true,
         "Mapping|2|29dc432d<df58fcbd<any>>": true,
-        "String|2|29dc432d<538656f2>": true,
+        "String|2|29dc432d<5cffd9b5>": true,
       };
       computed[("Parse|1|29dc432d<8369fb45<" + $t.typeid(T)) + ">>"] = true;
       computed[("Clone|2|29dc432d<8369fb45<" + $t.typeid(T)) + ">>"] = true;
@@ -66,7 +66,7 @@ $module('innergeneric', function () {
     };
   });
 
-  $static.TEST = function () {
+  $static.TEST = $t.markpromising(function () {
     var $result;
     var iss;
     var jsonString;
@@ -77,13 +77,12 @@ $module('innergeneric', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.innergeneric.AnotherStruct.new($t.fastbox(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
-              return $g.innergeneric.SomeStruct($t.struct).new($result1).then(function ($result0) {
-                $result = $result0;
-                $current = 1;
-                $continue($resolve, $reject);
-                return;
-              });
+            ss = $g.innergeneric.SomeStruct($t.struct).new($g.innergeneric.AnotherStruct.new($t.fastbox(true, $g.____testlib.basictypes.Boolean)));
+            $promise.maybe(ss.Stringify($g.____testlib.basictypes.JSON)()).then(function ($result0) {
+              $result = $result0;
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
               $reject(err);
               return;
@@ -91,8 +90,8 @@ $module('innergeneric', function () {
             return;
 
           case 1:
-            ss = $result;
-            ss.Stringify($g.____testlib.basictypes.JSON)().then(function ($result0) {
+            jsonString = $result;
+            $promise.maybe($g.innergeneric.SomeStruct($g.innergeneric.AnotherStruct).Parse($g.____testlib.basictypes.JSON)(jsonString)).then(function ($result0) {
               $result = $result0;
               $current = 2;
               $continue($resolve, $reject);
@@ -104,8 +103,8 @@ $module('innergeneric', function () {
             return;
 
           case 2:
-            jsonString = $result;
-            $g.innergeneric.SomeStruct($g.innergeneric.AnotherStruct).Parse($g.____testlib.basictypes.JSON)(jsonString).then(function ($result0) {
+            sscopy = $result;
+            $promise.maybe($g.innergeneric.SomeStruct($t.struct).Parse($g.____testlib.basictypes.JSON)(jsonString)).then(function ($result0) {
               $result = $result0;
               $current = 3;
               $continue($resolve, $reject);
@@ -117,35 +116,8 @@ $module('innergeneric', function () {
             return;
 
           case 3:
-            sscopy = $result;
-            $g.innergeneric.SomeStruct($t.struct).Parse($g.____testlib.basictypes.JSON)(jsonString).then(function ($result0) {
-              $result = $result0;
-              $current = 4;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 4:
             iss = $result;
-            $promise.resolve($t.cast(ss.SomeField, $g.innergeneric.AnotherStruct, false).BoolValue.$wrapped).then(function ($result1) {
-              return $promise.resolve($result1 && sscopy.SomeField.BoolValue.$wrapped).then(function ($result0) {
-                $result = $t.fastbox($result0 && $t.cast(iss.SomeField, $g.innergeneric.AnotherStruct, false).BoolValue.$wrapped, $g.____testlib.basictypes.Boolean);
-                $current = 5;
-                $continue($resolve, $reject);
-                return;
-              });
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 5:
-            $resolve($result);
+            $resolve($t.fastbox(($t.cast(ss.SomeField, $g.innergeneric.AnotherStruct, false).BoolValue.$wrapped && sscopy.SomeField.BoolValue.$wrapped) && $t.cast(iss.SomeField, $g.innergeneric.AnotherStruct, false).BoolValue.$wrapped, $g.____testlib.basictypes.Boolean));
             return;
 
           default:
@@ -155,5 +127,5 @@ $module('innergeneric', function () {
       }
     };
     return $promise.new($continue);
-  };
+  });
 });

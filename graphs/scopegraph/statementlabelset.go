@@ -21,10 +21,11 @@ func newLabelSet() *statementLabelSet {
 }
 
 // AppendLabelsOf appends any propagating statement labels found to this set.
-func (sls *statementLabelSet) AppendLabelsOf(scope *proto.ScopeInfo) {
+func (sls *statementLabelSet) AppendLabelsOf(scope *proto.ScopeInfo) *statementLabelSet {
 	for _, label := range scope.Labels {
 		sls.Append(label)
 	}
+	return sls
 }
 
 // Append appends the given label to the set.

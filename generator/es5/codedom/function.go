@@ -6,6 +6,7 @@ package codedom
 
 import (
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/graphs/srg"
 )
 
@@ -42,6 +43,16 @@ func FunctionDefinition(generics []string, parameters []string, body StatementOr
 		requiresThis,
 		specialization,
 	}
+}
+
+// ManagesResources returns whether any of the statements in the function's body are ResourceBlock's.
+func (f FunctionDefinitionNode) ManagesResources() bool {
+	return IsManagingResources(f.Body)
+}
+
+// IsAsynchronous returns whether the function's implementation is asynchronous in some way.
+func (f FunctionDefinitionNode) IsAsynchronous(scopegraph *scopegraph.ScopeGraph) bool {
+	return f.Specialization == NormalFunction && IsAsynchronous(f.Body, scopegraph)
 }
 
 // IsGenerator returns whether the function is a generator.

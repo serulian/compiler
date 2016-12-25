@@ -31,3 +31,7 @@ function<void> RejectionTest() {
 	_, someError <- promise
 	_, _ <- promise
 }
+
+function<void> AnotherFunction() {
+	DoSomething()
+}

@@ -5,61 +5,30 @@ $module('arrow', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      return $promise.resolve(instance);
+      return instance;
     };
     $instance.Then = function (resolve) {
       var $this = this;
-      var $result;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        while (true) {
-          switch ($current) {
-            case 0:
-              resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
-                $result = $result0;
-                $current = 1;
-                $continue($resolve, $reject);
-                return;
-              }).catch(function (err) {
-                $reject(err);
-                return;
-              });
-              return;
-
-            case 1:
-              $resolve($this);
-              return;
-
-            default:
-              $resolve();
-              return;
-          }
-        }
-      };
-      return $promise.new($continue);
+      resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
+      return $this;
     };
     $instance.Catch = function (rejection) {
       var $this = this;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        $resolve($this);
-        return;
-      };
-      return $promise.new($continue);
+      return $this;
     };
     this.$typesig = function () {
       if (this.$cachedtypesig) {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Then|2|29dc432d<ebc09764<5ab5941e>>": true,
-        "Catch|2|29dc432d<ebc09764<5ab5941e>>": true,
+        "Then|2|29dc432d<ebc09764<43834c3f>>": true,
+        "Catch|2|29dc432d<ebc09764<43834c3f>>": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  $static.DoSomething = function (p) {
+  $static.DoSomething = $t.markpromising(function (p) {
     var somebool;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
@@ -89,21 +58,19 @@ $module('arrow', function () {
       }
     };
     return $promise.new($continue);
-  };
-  $static.TEST = function () {
+  });
+  $static.TEST = $t.markpromising(function () {
     var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
         switch ($current) {
           case 0:
-            $g.arrow.SomePromise.new().then(function ($result1) {
-              return $g.arrow.DoSomething($result1).then(function ($result0) {
-                $result = $result0;
-                $current = 1;
-                $continue($resolve, $reject);
-                return;
-              });
+            $promise.maybe($g.arrow.DoSomething($g.arrow.SomePromise.new())).then(function ($result0) {
+              $result = $result0;
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
               $reject(err);
               return;
@@ -121,5 +88,5 @@ $module('arrow', function () {
       }
     };
     return $promise.new($continue);
-  };
+  });
 });

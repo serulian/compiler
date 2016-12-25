@@ -1,0 +1,29 @@
+function<bool> DoSomethingAsync() {
+	return true
+}
+
+class SomeClass {
+	function<bool> SimpleFunction() {
+		return <- DoSomethingAsync()
+	}
+}
+
+class AnotherClass {
+	function<bool> SimpleFunction() {
+		return true
+	}
+}
+
+interface ISimple {
+	function<bool> SimpleFunction()
+}
+
+function<any> TEST() {
+	var<ISimple> isi = SomeClass.new()
+	var<ISimple> isi2 = AnotherClass.new()
+
+	var r1 = <isi.SimpleFunction />
+	var r2 = <isi2.SimpleFunction />
+
+	return r1 && r2
+}

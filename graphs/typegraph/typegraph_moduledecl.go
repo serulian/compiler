@@ -5,6 +5,8 @@
 package typegraph
 
 import (
+	"strings"
+
 	"github.com/serulian/compiler/compilergraph"
 )
 
@@ -89,4 +91,17 @@ func (tn TGModule) Types() []TGTypeDecl {
 	}
 
 	return types
+}
+
+// SourceGraphId returns the ID of the source graph from which this module originated.
+// If none, returns "typegraph".
+func (tn TGModule) SourceGraphId() string {
+	// TODO: make this generic.
+	if strings.HasSuffix(tn.Path(), ".seru") {
+		return "srg"
+	} else if strings.HasSuffix(tn.Path(), ".webidl") {
+		return "webidl"
+	} else {
+		return "typegraph"
+	}
 }

@@ -5,7 +5,7 @@ $module('identifier', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      return $promise.resolve(instance);
+      return instance;
     };
     this.$typesig = function () {
       return {
@@ -14,18 +14,13 @@ $module('identifier', function () {
   });
 
   $static.AnotherFunction = function () {
-    return $promise.empty();
+    return;
   };
   $static.DoSomething = function (someParam) {
     var someVar;
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      someVar = $t.fastbox(2, $g.____testlib.basictypes.Integer);
-      $g.identifier.SomeClass;
-      $g.identifier.AnotherFunction;
-      $resolve();
-      return;
-    };
-    return $promise.new($continue);
+    someVar = $t.fastbox(2, $g.____testlib.basictypes.Integer);
+    $g.identifier.SomeClass;
+    $g.identifier.AnotherFunction;
+    return;
   };
 });

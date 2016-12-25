@@ -355,3 +355,9 @@ func (tn TGMember) Signature() *proto.MemberSig {
 	esig := &proto.MemberSig{}
 	return tn.GetTagged(NodePredicateMemberSignature, esig).(*proto.MemberSig)
 }
+
+// SourceGraphId returns the ID of the source graph from which this member originated.
+// If none, returns "typegraph".
+func (tn TGMember) SourceGraphId() string {
+	return tn.Parent().SourceGraphId()
+}

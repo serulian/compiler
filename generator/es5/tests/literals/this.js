@@ -5,11 +5,11 @@ $module('this', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      return $promise.resolve(instance);
+      return instance;
     };
     $instance.DoSomething = function () {
       var $this = this;
-      return $promise.empty();
+      return;
     };
     this.$typesig = function () {
       if (this.$cachedtypesig) {

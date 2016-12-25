@@ -6,39 +6,29 @@ $module('dynamicprop', function () {
     $static.new = function () {
       var instance = new $static();
       instance.value = $t.fastbox(42, $g.____testlib.basictypes.Integer);
-      return $promise.resolve(instance);
+      return instance;
     };
     $instance.set$SomeProp = function (val) {
       var $this = this;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        $this.value = val;
-        $resolve();
-        return;
-      };
-      return $promise.new($continue);
+      $this.value = val;
+      return;
     };
     $instance.SomeProp = $t.property(function () {
       var $this = this;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        $resolve($this.value);
-        return;
-      };
-      return $promise.new($continue);
+      return $this.value;
     });
     this.$typesig = function () {
       if (this.$cachedtypesig) {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeProp|3|c44e6c87": true,
+        "SomeProp|3|775378f0": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  $static.TEST = function () {
+  $static.TEST = $t.markpromising(function () {
     var $result;
     var sc;
     var sca;
@@ -47,40 +37,15 @@ $module('dynamicprop', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.dynamicprop.SomeClass.new().then(function ($result0) {
-              $result = $result0;
-              $current = 1;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            sc = $result;
-            sc.set$SomeProp($t.fastbox(123, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-              $result = $result0;
-              $current = 2;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 2:
+            sc = $g.dynamicprop.SomeClass.new();
+            sc.set$SomeProp($t.fastbox(123, $g.____testlib.basictypes.Integer));
             sca = sc;
-            $t.dynamicaccess(sca, 'SomeProp').then(function ($result1) {
+            $t.dynamicaccess(sca, 'SomeProp', true).then(function ($result1) {
               return $promise.resolve($t.cast($result1, $g.____testlib.basictypes.Integer, false).$wrapped == 123).then(function ($result0) {
-                return ($promise.shortcircuit($result0, true) || sc.SomeProp()).then(function ($result2) {
-                  $result = $t.fastbox($result0 && ($result2.$wrapped == 123), $g.____testlib.basictypes.Boolean);
-                  $current = 3;
-                  $continue($resolve, $reject);
-                  return;
-                });
+                $result = $t.fastbox($result0 && (sc.SomeProp().$wrapped == 123), $g.____testlib.basictypes.Boolean);
+                $current = 1;
+                $continue($resolve, $reject);
+                return;
               });
             }).catch(function (err) {
               $reject(err);
@@ -88,7 +53,7 @@ $module('dynamicprop', function () {
             });
             return;
 
-          case 3:
+          case 1:
             $resolve($result);
             return;
 
@@ -99,5 +64,5 @@ $module('dynamicprop', function () {
       }
     };
     return $promise.new($continue);
-  };
+  });
 });

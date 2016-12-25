@@ -5,6 +5,8 @@
 package es5
 
 import (
+	"fmt"
+
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/generator/escommon/esbuilder"
@@ -12,6 +14,8 @@ import (
 
 	"github.com/cevaris/ordered_map"
 )
+
+var _ = fmt.Printf
 
 // generateModules generates all the given modules into ES5.
 func (gen *es5generator) generateModules(modules []typegraph.TGModule) map[typegraph.TGModule]esbuilder.SourceBuilder {
@@ -112,7 +116,7 @@ func (gm generatingModule) InitDependencies(field typegraph.TGMember) []string {
 	dependencies := make([]string, 0, len(deps))
 	for mem, _ := range deps {
 		srgMember, hasSRGMember := gm.Generator.getSRGMember(mem)
-		if hasSRGMember {
+		if hasSRGMember && srgMember.IsStatic() {
 			dependencies = append(dependencies, srgMember.UniqueId())
 		}
 	}
@@ -137,7 +141,7 @@ $module('{{ .ExportedPath }}', function() {
 
   {{range $idx, $kv := .GenerateVariables.UnsafeIter }}
   	this.$init(function() {
-  		{{ if $kv.Value.IsPromise }}
+  		{{ if $kv.Value.IsAsync }}
 			return ({{ emit $kv.Value.Source }});
   		{{ else }}
   		    return $promise.new(function (resolve) {

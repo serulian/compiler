@@ -9,7 +9,7 @@ $module('generic', function () {
         BoolValue: BoolValue,
       };
       instance.$markruntimecreated();
-      return $promise.resolve(instance);
+      return instance;
     };
     $static.$fields = [];
     $t.defineStructField($static, 'BoolValue', 'BoolValue', function () {
@@ -23,11 +23,11 @@ $module('generic', function () {
       }
       var computed = {
         "Parse|1|29dc432d<6b885b52>": true,
-        "equals|4|29dc432d<5ab5941e>": true,
-        "Stringify|2|29dc432d<538656f2>": true,
+        "equals|4|29dc432d<43834c3f>": true,
+        "Stringify|2|29dc432d<5cffd9b5>": true,
         "Mapping|2|29dc432d<df58fcbd<any>>": true,
         "Clone|2|29dc432d<6b885b52>": true,
-        "String|2|29dc432d<538656f2>": true,
+        "String|2|29dc432d<5cffd9b5>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -42,7 +42,7 @@ $module('generic', function () {
         SomeField: SomeField,
       };
       instance.$markruntimecreated();
-      return $promise.resolve(instance);
+      return instance;
     };
     $static.$fields = [];
     $t.defineStructField($static, 'SomeField', 'SomeField', function () {
@@ -55,10 +55,10 @@ $module('generic', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "equals|4|29dc432d<5ab5941e>": true,
-        "Stringify|2|29dc432d<538656f2>": true,
+        "equals|4|29dc432d<43834c3f>": true,
+        "Stringify|2|29dc432d<5cffd9b5>": true,
         "Mapping|2|29dc432d<df58fcbd<any>>": true,
-        "String|2|29dc432d<538656f2>": true,
+        "String|2|29dc432d<5cffd9b5>": true,
       };
       computed[("Parse|1|29dc432d<d34106e1<" + $t.typeid(T)) + ">>"] = true;
       computed[("Clone|2|29dc432d<d34106e1<" + $t.typeid(T)) + ">>"] = true;
@@ -67,63 +67,10 @@ $module('generic', function () {
   });
 
   $static.TEST = function () {
-    var $result;
     var ss;
     var ss2;
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            $g.generic.AnotherStruct.new($t.fastbox(true, $g.____testlib.basictypes.Boolean)).then(function ($result1) {
-              return $g.generic.SomeStruct($g.generic.AnotherStruct).new($result1).then(function ($result0) {
-                $result = $result0;
-                $current = 1;
-                $continue($resolve, $reject);
-                return;
-              });
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            ss = $result;
-            $g.generic.SomeStruct($g.____testlib.basictypes.Boolean).new($t.fastbox(true, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
-              $result = $result0;
-              $current = 2;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 2:
-            ss2 = $result;
-            $promise.resolve(ss.SomeField.BoolValue.$wrapped).then(function ($result0) {
-              $result = $t.fastbox($result0 && ss2.SomeField.$wrapped, $g.____testlib.basictypes.Boolean);
-              $current = 3;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 3:
-            $resolve($result);
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
-    };
-    return $promise.new($continue);
+    ss = $g.generic.SomeStruct($g.generic.AnotherStruct).new($g.generic.AnotherStruct.new($t.fastbox(true, $g.____testlib.basictypes.Boolean)));
+    ss2 = $g.generic.SomeStruct($g.____testlib.basictypes.Boolean).new($t.fastbox(true, $g.____testlib.basictypes.Boolean));
+    return $t.fastbox(ss.SomeField.BoolValue.$wrapped && ss2.SomeField.$wrapped, $g.____testlib.basictypes.Boolean);
   };
 });

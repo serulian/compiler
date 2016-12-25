@@ -34,6 +34,15 @@ enum ScopeLabel {
 	STRUCTURAL_UPDATE_EXPR = 11; // Marks a structural new expression as updating an existing struct.
 
 	BROKEN_FLOW = 12; // Marks a block as having a break somewhere that breaks a parent loop or switch.
+
+	AWAITS = 16; // Marks a body as awaiting on a promise.
+	CALLS_ANONYMOUS_CLOSURE = 17; // Marks a body as calling an anonymous closure.
+
+	// Marks member nodes with whether their implementation is promising, as computed by the scope
+	// system.
+	SML_PROMISING_NO = 18;
+	SML_PROMISING_MAYBE = 19;
+	SML_PROMISING_YES = 20;
 }
 
 message ScopeInfo {
@@ -57,6 +66,8 @@ message ScopeInfo {
 	repeated ScopeLabel Labels = 12;
 
 	repeated ScopeReference StaticDependencies = 15;
+	repeated string DynamicDependencies = 16;
+	optional bool Awaits = 17; // If true, the scoped member awaits on a promise.
 }
 
 message ScopeReference {

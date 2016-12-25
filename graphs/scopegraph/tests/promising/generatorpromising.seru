@@ -1,0 +1,11 @@
+function<int> DoSomethingAsync() {
+	return 2
+}
+
+function<int*> SomeGenerator() {
+	yield <- DoSomethingAsync()
+}
+
+function<void> TEST() {
+	for i in SomeGenerator() {}
+}

@@ -5,108 +5,50 @@ $module('expectrejection', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      return $promise.resolve(instance);
+      return instance;
     };
     $instance.Message = $t.property(function () {
       var $this = this;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        $resolve($t.fastbox('yo!', $g.____testlib.basictypes.String));
-        return;
-      };
-      return $promise.new($continue);
+      return $t.fastbox('yo!', $g.____testlib.basictypes.String);
     });
     this.$typesig = function () {
       if (this.$cachedtypesig) {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Message|3|538656f2": true,
+        "Message|3|5cffd9b5": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
   $static.DoSomething = function () {
-    var $result;
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            $g.expectrejection.SimpleError.new().then(function ($result0) {
-              $result = $result0;
-              $current = 1;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            $reject($result);
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
-    };
-    return $promise.new($continue);
+    throw $g.expectrejection.SimpleError.new();
   };
   $static.TEST = function () {
-    var $result;
     var a;
     var b;
     var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            $g.expectrejection.DoSomething().then(function ($result0) {
-              a = $result0;
-              b = null;
-              $current = 1;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function ($rejected) {
-              b = $rejected;
-              a = null;
-              $current = 1;
-              $continue($resolve, $reject);
-              return;
-            });
-            return;
+    syncloop: while (true) {
+      switch ($current) {
+        case 0:
+          try {
+            var $expr = $g.expectrejection.DoSomething();
+            a = $expr;
+            b = null;
+          } catch ($rejected) {
+            b = $rejected;
+            a = null;
+          }
+          $current = 1;
+          continue syncloop;
 
-          case 1:
-            $promise.resolve(a == null).then(function ($result0) {
-              return ($promise.shortcircuit($result0, true) || $t.assertnotnull(b).Message()).then(function ($result2) {
-                return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.String.$equals($result2, $t.fastbox('yo!', $g.____testlib.basictypes.String))).then(function ($result1) {
-                  $result = $t.fastbox($result0 && $result1.$wrapped, $g.____testlib.basictypes.Boolean);
-                  $current = 2;
-                  $continue($resolve, $reject);
-                  return;
-                });
-              });
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
+        case 1:
+          return $t.fastbox((a == null) && $g.____testlib.basictypes.String.$equals($t.assertnotnull(b).Message(), $t.fastbox('yo!', $g.____testlib.basictypes.String)).$wrapped, $g.____testlib.basictypes.Boolean);
 
-          case 2:
-            $resolve($result);
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
+        default:
+          return;
       }
-    };
-    return $promise.new($continue);
+    }
   };
 });

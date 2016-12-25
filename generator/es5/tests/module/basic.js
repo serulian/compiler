@@ -1,30 +1,21 @@
 $module('basic', function () {
   var $static = this;
   $static.AnotherFunction = function () {
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      $resolve($g.basic.someInt);
-      return;
-    };
-    return $promise.new($continue);
+    return $g.basic.someBool;
   };
   $static.TEST = function () {
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      $resolve($g.basic.anotherBool);
-      return;
-    };
-    return $promise.new($continue);
+    return $g.basic.anotherBool;
   };
   this.$init(function () {
     return $promise.new(function (resolve) {
-      $static.someInt = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+      $static.someBool = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
       resolve();
     });
   }, 'af4b3683', []);
   this.$init(function () {
-    return $g.basic.AnotherFunction().then(function ($result0) {
-      $static.anotherBool = $result0;
+    return $promise.new(function (resolve) {
+      $static.anotherBool = $g.basic.AnotherFunction();
+      resolve();
     });
-  }, '8795b5d7', ['af4b3683']);
+  }, 'c4254aac', ['af4b3683']);
 });

@@ -49,6 +49,23 @@
         "Key": "5d67493fab08626da8996d7db0282ac1",
         "Kind": 5,
         "Children": {
+            "05e4a81bfcf370c8ff746d64f7654076": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "05e4a81bfcf370c8ff746d64f7654076",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "Mapping",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cMapping\u003cany\u003e\u003e",
+                        "tdg-member-signature": "\n\u0007mapping\u0010\u0002\u0018\u0000 \u0001*\u0016function\u003cMapping\u003cany\u003e\u003e",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/struct/success.seru"
+                    }
+                }
+            },
             "0f001d0871257573b2a2885d861ddb4e": {
                 "Predicate": "tdg-declaration-generic",
                 "Child": {
@@ -65,19 +82,18 @@
                     }
                 }
             },
-            "206444c1ba62b8bb080fade8575eeb3a": {
+            "18b6f6c7293c10a4804c632b22a154e9": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "206444c1ba62b8bb080fade8575eeb3a",
+                    "Key": "18b6f6c7293c10a4804c632b22a154e9",
                     "Kind": 7,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-exported": "true",
-                        "tdg-member-name": "Mapping",
-                        "tdg-member-promising": "1",
+                        "tdg-member-name": "Clone",
                         "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cMapping\u003cany\u003e\u003e",
-                        "tdg-member-signature": "\n\u0007mapping\u0010\u0002\u0018\u0000 \u0001*\u0016function\u003cMapping\u003cany\u003e\u003e",
+                        "tdg-member-resolved-type": "function\u003cSomeStruct\u003cT\u003e\u003e",
+                        "tdg-member-signature": "\n\u0005clone\u0010\u0002\u0018\u0000 \u0001*\u0017function\u003cSomeStruct\u003cT\u003e\u003e",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/struct/success.seru"
                     }
@@ -114,6 +130,23 @@
                         "tdg-member-resolved-type": "function\u003cSomeStruct\u003cT\u003e\u003e(Integer, String, T)",
                         "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*+function\u003cSomeStruct\u003cT\u003e\u003e(Integer, String, T)",
                         "tdg-member-static": "true",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/struct/success.seru"
+                    }
+                }
+            },
+            "6e1d0b7582041a1918d2376ceb11ebe1": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "6e1d0b7582041a1918d2376ceb11ebe1",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "String",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cString\u003e",
+                        "tdg-member-signature": "\n\u0006string\u0010\u0002\u0018\u0000 \u0001*\u0010function\u003cString\u003e",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/struct/success.seru"
                     }
@@ -224,24 +257,6 @@
                     }
                 }
             },
-            "d81e49672a303321ff805b16c99b1c86": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "d81e49672a303321ff805b16c99b1c86",
-                    "Kind": 7,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-exported": "true",
-                        "tdg-member-name": "Clone",
-                        "tdg-member-promising": "1",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cSomeStruct\u003cT\u003e\u003e",
-                        "tdg-member-signature": "\n\u0005clone\u0010\u0002\u0018\u0000 \u0001*\u0017function\u003cSomeStruct\u003cT\u003e\u003e",
-                        "tdg-node-kind": "7|NodeType|tdg",
-                        "tdg-source-module": "tests/struct/success.seru"
-                    }
-                }
-            },
             "e3bc251b8be893bc3b86272703c6126d": {
                 "Predicate": "tdg-node-member",
                 "Child": {
@@ -271,24 +286,6 @@
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cString\u003e",
                         "tdg-member-signature": "\n\tstringify\u0010\u0002\u0018\u0000 \u0001*\u0010function\u003cString\u003e2\u000bStringifier",
-                        "tdg-node-kind": "7|NodeType|tdg",
-                        "tdg-source-module": "tests/struct/success.seru"
-                    }
-                }
-            },
-            "ffc2ad63e11fecd3bd2c36bf66ef873f": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "ffc2ad63e11fecd3bd2c36bf66ef873f",
-                    "Kind": 7,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-exported": "true",
-                        "tdg-member-name": "String",
-                        "tdg-member-promising": "1",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cString\u003e",
-                        "tdg-member-signature": "\n\u0006string\u0010\u0002\u0018\u0000 \u0001*\u0010function\u003cString\u003e",
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/struct/success.seru"
                     }

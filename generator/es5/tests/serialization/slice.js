@@ -9,7 +9,7 @@ $module('slice', function () {
         AnotherInt: AnotherInt,
       };
       instance.$markruntimecreated();
-      return $promise.resolve(instance);
+      return instance;
     };
     $static.$fields = [];
     $t.defineStructField($static, 'AnotherInt', 'AnotherInt', function () {
@@ -23,11 +23,11 @@ $module('slice', function () {
       }
       var computed = {
         "Parse|1|29dc432d<9b59dab3>": true,
-        "equals|4|29dc432d<5ab5941e>": true,
-        "Stringify|2|29dc432d<538656f2>": true,
+        "equals|4|29dc432d<43834c3f>": true,
+        "Stringify|2|29dc432d<5cffd9b5>": true,
         "Mapping|2|29dc432d<df58fcbd<any>>": true,
         "Clone|2|29dc432d<9b59dab3>": true,
-        "String|2|29dc432d<538656f2>": true,
+        "String|2|29dc432d<5cffd9b5>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -42,7 +42,7 @@ $module('slice', function () {
         Values: Values,
       };
       instance.$markruntimecreated();
-      return $promise.resolve(instance);
+      return instance;
     };
     $static.$fields = [];
     $t.defineStructField($static, 'Values', 'Values', function () {
@@ -56,17 +56,17 @@ $module('slice', function () {
       }
       var computed = {
         "Parse|1|29dc432d<a7573ae2>": true,
-        "equals|4|29dc432d<5ab5941e>": true,
-        "Stringify|2|29dc432d<538656f2>": true,
+        "equals|4|29dc432d<43834c3f>": true,
+        "Stringify|2|29dc432d<5cffd9b5>": true,
         "Mapping|2|29dc432d<df58fcbd<any>>": true,
         "Clone|2|29dc432d<a7573ae2>": true,
-        "String|2|29dc432d<538656f2>": true,
+        "String|2|29dc432d<5cffd9b5>": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  $static.TEST = function () {
+  $static.TEST = $t.markpromising(function () {
     var $result;
     var correct;
     var jsonString;
@@ -78,59 +78,12 @@ $module('slice', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.slice.AnotherStruct.new($t.fastbox(1, $g.____testlib.basictypes.Integer)).then(function ($result1) {
-              return $g.slice.AnotherStruct.new($t.fastbox(2, $g.____testlib.basictypes.Integer)).then(function ($result2) {
-                return $g.slice.AnotherStruct.new($t.fastbox(3, $g.____testlib.basictypes.Integer)).then(function ($result3) {
-                  return $g.____testlib.basictypes.List($g.slice.AnotherStruct).forArray([$result1, $result2, $result3]).then(function ($result0) {
-                    $result = $result0;
-                    $current = 1;
-                    $continue($resolve, $reject);
-                    return;
-                  });
-                });
-              });
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            values = $result;
-            values.$slice($t.fastbox(0, $g.____testlib.basictypes.Integer), null).then(function ($result1) {
-              return $g.slice.SomeStruct.new($result1).then(function ($result0) {
-                $result = $result0;
-                $current = 2;
-                $continue($resolve, $reject);
-                return;
-              });
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 2:
-            s = $result;
+            values = $g.____testlib.basictypes.List($g.slice.AnotherStruct).forArray([$g.slice.AnotherStruct.new($t.fastbox(1, $g.____testlib.basictypes.Integer)), $g.slice.AnotherStruct.new($t.fastbox(2, $g.____testlib.basictypes.Integer)), $g.slice.AnotherStruct.new($t.fastbox(3, $g.____testlib.basictypes.Integer))]);
+            s = $g.slice.SomeStruct.new(values.$slice($t.fastbox(0, $g.____testlib.basictypes.Integer), null));
             jsonString = $t.fastbox('{"Values":[{"AnotherInt":1},{"AnotherInt":2},{"AnotherInt":3}]}', $g.____testlib.basictypes.String);
-            s.Stringify($g.____testlib.basictypes.JSON)().then(function ($result1) {
-              return $g.____testlib.basictypes.String.$equals($result1, jsonString).then(function ($result0) {
-                $result = $result0;
-                $current = 3;
-                $continue($resolve, $reject);
-                return;
-              });
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 3:
-            correct = $result;
-            $g.slice.SomeStruct.Parse($g.____testlib.basictypes.JSON)(jsonString).then(function ($result0) {
-              $result = $result0;
-              $current = 4;
+            $promise.maybe(s.Stringify($g.____testlib.basictypes.JSON)()).then(function ($result0) {
+              $result = $g.____testlib.basictypes.String.$equals($result0, jsonString);
+              $current = 1;
               $continue($resolve, $reject);
               return;
             }).catch(function (err) {
@@ -139,27 +92,22 @@ $module('slice', function () {
             });
             return;
 
-          case 4:
-            parsed = $result;
-            $promise.resolve(correct.$wrapped).then(function ($result1) {
-              return ($promise.shortcircuit($result1, true) || s.Values.Length()).then(function ($result2) {
-                return $promise.resolve($result1 && ($result2.$wrapped == 3)).then(function ($result0) {
-                  return ($promise.shortcircuit($result0, true) || s.Values.$index($t.fastbox(0, $g.____testlib.basictypes.Integer))).then(function ($result3) {
-                    $result = $t.fastbox($result0 && ($result3.AnotherInt.$wrapped == 1), $g.____testlib.basictypes.Boolean);
-                    $current = 5;
-                    $continue($resolve, $reject);
-                    return;
-                  });
-                });
-              });
+          case 1:
+            correct = $result;
+            $promise.maybe($g.slice.SomeStruct.Parse($g.____testlib.basictypes.JSON)(jsonString)).then(function ($result0) {
+              $result = $result0;
+              $current = 2;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
               $reject(err);
               return;
             });
             return;
 
-          case 5:
-            $resolve($result);
+          case 2:
+            parsed = $result;
+            $resolve($t.fastbox((correct.$wrapped && (s.Values.Length().$wrapped == 3)) && (s.Values.$index($t.fastbox(0, $g.____testlib.basictypes.Integer)).AnotherInt.$wrapped == 1), $g.____testlib.basictypes.Boolean));
             return;
 
           default:
@@ -169,5 +117,5 @@ $module('slice', function () {
       }
     };
     return $promise.new($continue);
-  };
+  });
 });

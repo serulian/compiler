@@ -5,45 +5,18 @@ $module('loopstreamable', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      return $promise.resolve(instance);
+      return instance;
     };
     $instance.Stream = function () {
       var $this = this;
-      var $result;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        while (true) {
-          switch ($current) {
-            case 0:
-              $g.loopstreamable.SomeStream.new().then(function ($result0) {
-                $result = $result0;
-                $current = 1;
-                $continue($resolve, $reject);
-                return;
-              }).catch(function (err) {
-                $reject(err);
-                return;
-              });
-              return;
-
-            case 1:
-              $resolve($result);
-              return;
-
-            default:
-              $resolve();
-              return;
-          }
-        }
-      };
-      return $promise.new($continue);
+      return $g.loopstreamable.SomeStream.new();
     };
     this.$typesig = function () {
       if (this.$cachedtypesig) {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Stream|2|29dc432d<6d9e64c3<5ab5941e>>": true,
+        "Stream|2|29dc432d<6d9e64c3<43834c3f>>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -55,54 +28,27 @@ $module('loopstreamable', function () {
     $static.new = function () {
       var instance = new $static();
       instance.wasChecked = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
-      return $promise.resolve(instance);
+      return instance;
     };
     $instance.Next = function () {
       var $this = this;
-      var $result;
       var r;
-      var $current = 0;
-      var $continue = function ($resolve, $reject) {
-        while (true) {
-          switch ($current) {
-            case 0:
-              r = $this.wasChecked;
-              $this.wasChecked = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
-              $g.____testlib.basictypes.Tuple($g.____testlib.basictypes.Boolean, $g.____testlib.basictypes.Boolean).Build($t.fastbox(true, $g.____testlib.basictypes.Boolean), $t.fastbox(!r.$wrapped, $g.____testlib.basictypes.Boolean)).then(function ($result0) {
-                $result = $result0;
-                $current = 1;
-                $continue($resolve, $reject);
-                return;
-              }).catch(function (err) {
-                $reject(err);
-                return;
-              });
-              return;
-
-            case 1:
-              $resolve($result);
-              return;
-
-            default:
-              $resolve();
-              return;
-          }
-        }
-      };
-      return $promise.new($continue);
+      r = $this.wasChecked;
+      $this.wasChecked = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+      return $g.____testlib.basictypes.Tuple($g.____testlib.basictypes.Boolean, $g.____testlib.basictypes.Boolean).Build($t.fastbox(true, $g.____testlib.basictypes.Boolean), $t.fastbox(!r.$wrapped, $g.____testlib.basictypes.Boolean));
     };
     this.$typesig = function () {
       if (this.$cachedtypesig) {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Next|2|29dc432d<4499960a<5ab5941e,5ab5941e>>": true,
+        "Next|2|29dc432d<4499960a<43834c3f,43834c3f>>": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  $static.DoSomething = function (somethingElse) {
+  $static.DoSomething = $t.markpromising(function (somethingElse) {
     var $result;
     var $temp0;
     var $temp1;
@@ -114,30 +60,20 @@ $module('loopstreamable', function () {
           case 0:
             $t.fastbox(1234, $g.____testlib.basictypes.Integer);
             $current = 1;
-            continue;
+            $continue($resolve, $reject);
+            return;
 
           case 1:
-            somethingElse.Stream().then(function ($result0) {
-              $result = $result0;
-              $current = 2;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
+            $temp1 = somethingElse.Stream();
+            $current = 2;
+            $continue($resolve, $reject);
             return;
 
           case 2:
-            $temp1 = $result;
-            $current = 3;
-            continue;
-
-          case 3:
-            $temp1.Next().then(function ($result0) {
+            $promise.maybe($temp1.Next()).then(function ($result0) {
               $temp0 = $result0;
               $result = $temp0;
-              $current = 4;
+              $current = 3;
               $continue($resolve, $reject);
               return;
             }).catch(function (err) {
@@ -146,23 +82,26 @@ $module('loopstreamable', function () {
             });
             return;
 
-          case 4:
+          case 3:
             something = $temp0.First;
             if ($temp0.Second.$wrapped) {
-              $current = 5;
-              continue;
+              $current = 4;
+              $continue($resolve, $reject);
+              return;
             } else {
-              $current = 6;
-              continue;
+              $current = 5;
+              $continue($resolve, $reject);
+              return;
             }
             break;
 
-          case 5:
+          case 4:
             $t.fastbox(7654, $g.____testlib.basictypes.Integer);
-            $current = 3;
-            continue;
+            $current = 2;
+            $continue($resolve, $reject);
+            return;
 
-          case 6:
+          case 5:
             $t.fastbox(5678, $g.____testlib.basictypes.Integer);
             $resolve();
             return;
@@ -174,8 +113,8 @@ $module('loopstreamable', function () {
       }
     };
     return $promise.new($continue);
-  };
-  $static.TEST = function () {
+  });
+  $static.TEST = $t.markpromising(function () {
     var $result;
     var $temp0;
     var $temp1;
@@ -188,25 +127,21 @@ $module('loopstreamable', function () {
         switch ($current) {
           case 0:
             result = $t.fastbox('noloop', $g.____testlib.basictypes.String);
-            $g.loopstreamable.SomeStreamable.new().then(function ($result0) {
-              $result = $result0;
-              $current = 1;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
+            s = $g.loopstreamable.SomeStreamable.new();
+            $current = 1;
+            $continue($resolve, $reject);
             return;
 
           case 1:
-            s = $result;
+            $temp1 = s.Stream();
             $current = 2;
-            continue;
+            $continue($resolve, $reject);
+            return;
 
           case 2:
-            s.Stream().then(function ($result0) {
-              $result = $result0;
+            $promise.maybe($temp1.Next()).then(function ($result0) {
+              $temp0 = $result0;
+              $result = $temp0;
               $current = 3;
               $continue($resolve, $reject);
               return;
@@ -217,40 +152,25 @@ $module('loopstreamable', function () {
             return;
 
           case 3:
-            $temp1 = $result;
-            $current = 4;
-            continue;
-
-          case 4:
-            $temp1.Next().then(function ($result0) {
-              $temp0 = $result0;
-              $result = $temp0;
+            i = $temp0.First;
+            if ($temp0.Second.$wrapped) {
+              $current = 4;
+              $continue($resolve, $reject);
+              return;
+            } else {
               $current = 5;
               $continue($resolve, $reject);
               return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 5:
-            i = $temp0.First;
-            if ($temp0.Second.$wrapped) {
-              $current = 6;
-              continue;
-            } else {
-              $current = 7;
-              continue;
             }
             break;
 
-          case 6:
+          case 4:
             result = i;
-            $current = 4;
-            continue;
+            $current = 2;
+            $continue($resolve, $reject);
+            return;
 
-          case 7:
+          case 5:
             $resolve(result);
             return;
 
@@ -261,5 +181,5 @@ $module('loopstreamable', function () {
       }
     };
     return $promise.new($continue);
-  };
+  });
 });

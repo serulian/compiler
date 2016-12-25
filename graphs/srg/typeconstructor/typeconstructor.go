@@ -238,9 +238,12 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 		memberKind = typegraph.FieldMemberSignature
 
 		isReadOnly = false
-		isPromising = typegraph.MemberNotPromising
 		isField = true
+
 		_, hasDefaultValue = member.Node().TryGetNode(parser.NodePredicateTypeFieldDefaultValue)
+		if !hasDefaultValue {
+			isPromising = typegraph.MemberNotPromising
+		}
 
 	case srg.PropertyMember:
 		// Properties have their declared type.

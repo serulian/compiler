@@ -5,12 +5,17 @@
 package dombuilder
 
 import (
+	"fmt"
+
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/codedom"
+	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/parser"
 )
+
+var _ = fmt.Printf
 
 type exprModifier func(codedom.Expression) codedom.Expression
 
@@ -90,8 +95,8 @@ func (db *domBuilder) buildFunctionCall(node compilergraph.GraphNode) codedom.Ex
 		return codedom.MemberCall(childExpr, member, arguments, node)
 	}
 
-	// Otherwise, this is a normal function call with an await.
-	return codedom.AwaitPromise(codedom.FunctionCall(childExpr, arguments, node), node)
+	// Otherwise, this is a normal function call.
+	return codedom.InvokeFunction(childExpr, arguments, scopegraph.PromisingAccessFunctionCall, db.scopegraph, node)
 }
 
 // buildSliceExpression builds the CodeDOM for a slicer or indexer expression.

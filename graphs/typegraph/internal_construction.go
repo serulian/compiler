@@ -235,7 +235,7 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 			var memberType = g.FunctionTypeReference(g.MappingTypeReference(g.AnyTypeReference()))
 			decorator.
 				Static(false).
-				Promising(MemberPromisingDynamic).
+				Promising(MemberNotPromising).
 				Exported(true).
 				ReadOnly(true).
 				MemberType(memberType).
@@ -248,7 +248,7 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 			var memberType = g.FunctionTypeReference(g.NewInstanceTypeReference(typeDecl))
 			decorator.
 				Static(false).
-				Promising(MemberPromisingDynamic).
+				Promising(MemberNotPromising).
 				Exported(true).
 				ReadOnly(true).
 				MemberType(memberType).
@@ -261,7 +261,7 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 			var memberType = g.FunctionTypeReference(g.StringTypeReference())
 			decorator.
 				Static(false).
-				Promising(MemberPromisingDynamic).
+				Promising(MemberNotPromising).
 				Exported(true).
 				ReadOnly(true).
 				MemberType(memberType).

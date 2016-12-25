@@ -9,7 +9,7 @@ $module('tagged', function () {
         somefield: SomeField,
       };
       instance.$markruntimecreated();
-      return $promise.resolve(instance);
+      return instance;
     };
     $static.$fields = [];
     $t.defineStructField($static, 'SomeField', 'somefield', function () {
@@ -23,17 +23,17 @@ $module('tagged', function () {
       }
       var computed = {
         "Parse|1|29dc432d<bad44f92>": true,
-        "equals|4|29dc432d<5ab5941e>": true,
-        "Stringify|2|29dc432d<538656f2>": true,
+        "equals|4|29dc432d<43834c3f>": true,
+        "Stringify|2|29dc432d<5cffd9b5>": true,
         "Mapping|2|29dc432d<df58fcbd<any>>": true,
         "Clone|2|29dc432d<bad44f92>": true,
-        "String|2|29dc432d<538656f2>": true,
+        "String|2|29dc432d<5cffd9b5>": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  $static.TEST = function () {
+  $static.TEST = $t.markpromising(function () {
     var $result;
     var jsonString;
     var s;
@@ -42,8 +42,10 @@ $module('tagged', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $g.tagged.SomeStruct.new($t.fastbox(2, $g.____testlib.basictypes.Integer)).then(function ($result0) {
-              $result = $result0;
+            s = $g.tagged.SomeStruct.new($t.fastbox(2, $g.____testlib.basictypes.Integer));
+            jsonString = $t.fastbox('{"somefield":2}', $g.____testlib.basictypes.String);
+            $promise.maybe(s.Stringify($g.____testlib.basictypes.JSON)()).then(function ($result0) {
+              $result = $g.____testlib.basictypes.String.$equals($result0, jsonString);
               $current = 1;
               $continue($resolve, $reject);
               return;
@@ -54,22 +56,6 @@ $module('tagged', function () {
             return;
 
           case 1:
-            s = $result;
-            jsonString = $t.fastbox('{"somefield":2}', $g.____testlib.basictypes.String);
-            s.Stringify($g.____testlib.basictypes.JSON)().then(function ($result1) {
-              return $g.____testlib.basictypes.String.$equals($result1, jsonString).then(function ($result0) {
-                $result = $result0;
-                $current = 2;
-                $continue($resolve, $reject);
-                return;
-              });
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 2:
             $resolve($result);
             return;
 
@@ -80,5 +66,5 @@ $module('tagged', function () {
       }
     };
     return $promise.new($continue);
-  };
+  });
 });

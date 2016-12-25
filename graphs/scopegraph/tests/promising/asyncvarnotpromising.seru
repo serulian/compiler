@@ -1,0 +1,9 @@
+function<int> DoSomethingAsync() {
+	return 42
+}
+
+var<int> SomeVar = <- DoSomethingAsync()
+
+function<int> TEST() {
+	return SomeVar + 10
+}

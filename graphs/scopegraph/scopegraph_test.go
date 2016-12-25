@@ -6,7 +6,6 @@ package scopegraph
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 	"testing"
@@ -40,22 +39,6 @@ type scopegraphTest struct {
 	expectedScope   []expectedScopeEntry
 	expectedError   string
 	expectedWarning string
-}
-
-func (sgt *scopegraphTest) json() string {
-	b, err := ioutil.ReadFile(fmt.Sprintf("tests/%s/%s.json", sgt.input, sgt.entrypoint))
-	if err != nil {
-		panic(err)
-	}
-
-	return string(b)
-}
-
-func (sgt *scopegraphTest) writeJson(value string) {
-	err := ioutil.WriteFile(fmt.Sprintf("tests/%s/%s.json", sgt.input, sgt.entrypoint), []byte(value), 0644)
-	if err != nil {
-		panic(err)
-	}
 }
 
 var scopeGraphTests = []scopegraphTest{
@@ -705,6 +688,14 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"unary ops nullable fail test", "unaryops", "nullable",
 		[]expectedScopeEntry{},
 		"Cannot invoke operator 'not' on nullable type 'SomeClass?'", ""},
+
+	/////////// Range operator expressions ///////////
+
+	scopegraphTest{"range op simple test", "rangeop", "simple",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"range", expectedScope{true, proto.ScopeKind_VALUE, "Stream<SomeClass>", "void"}},
+		},
+		"", ""},
 
 	/////////// Binary operator expressions ///////////
 

@@ -105,9 +105,9 @@ func (p Pather) GetStaticTypePath(typedecl typegraph.TGTypeDecl, referenceType t
 // GetStaticMemberPath returns the global path for the given statically defined type member.
 func (p Pather) GetStaticMemberPath(member typegraph.TGMember, referenceType typegraph.TypeReference) string {
 	// TODO(jschorr): We should generalize non-SRG support.
-	if member.Name() == "new" && !member.IsPromising() {
-		parentType, _ := member.ParentType()
-		if strings.HasSuffix(parentType.ParentModule().Path(), ".webidl") {
+	if member.Name() == "new" {
+		if member.SourceGraphId() == "webidl" {
+			parentType, _ := member.ParentType()
 			return "$t.nativenew(" + p.GetTypePath(parentType) + ")"
 		}
 	}

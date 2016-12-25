@@ -1,0 +1,16 @@
+var<any> someValue = null
+
+interface SomeInterface {
+	function<void> SomeFunction()
+}
+
+class SomeClass {
+	function<void> SomeFunction() {
+		<- someValue.(awaitable<int>)
+	}
+}
+
+function<void> TEST(sia any) {
+	si, _ := sia.(SomeInterface)
+	si?.SomeFunction()
+}

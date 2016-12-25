@@ -5,7 +5,7 @@ $module('nominalcastfail', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      return $promise.resolve(instance);
+      return instance;
     };
     this.$typesig = function () {
       return {
@@ -18,7 +18,7 @@ $module('nominalcastfail', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      return $promise.resolve(instance);
+      return instance;
     };
     this.$typesig = function () {
       return {
@@ -44,50 +44,11 @@ $module('nominalcastfail', function () {
   });
 
   $static.TEST = function () {
-    var $result;
     var ac;
     var sc;
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            $g.nominalcastfail.SomeClass.new().then(function ($result0) {
-              $result = $result0;
-              $current = 1;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            sc = $result;
-            $g.nominalcastfail.AnotherClass.new().then(function ($result0) {
-              $result = $result0;
-              $current = 2;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 2:
-            ac = $result;
-            $t.cast(ac, $g.nominalcastfail.SomeNominal, false);
-            $resolve();
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
-    };
-    return $promise.new($continue);
+    sc = $g.nominalcastfail.SomeClass.new();
+    ac = $g.nominalcastfail.AnotherClass.new();
+    $t.cast(ac, $g.nominalcastfail.SomeNominal, false);
+    return;
   };
 });

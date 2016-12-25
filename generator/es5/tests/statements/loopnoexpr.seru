@@ -1,0 +1,8 @@
+function<any> TEST() {
+	var value = false
+	for {
+		value = true
+		break
+	}
+	return value
+}

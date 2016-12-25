@@ -1,6 +1,6 @@
 $module('streamchild', function () {
   var $static = this;
-  $static.SimpleFunction = function (props, children) {
+  $static.SimpleFunction = $t.markpromising(function (props, children) {
     var $result;
     var $temp0;
     var $temp1;
@@ -13,15 +13,17 @@ $module('streamchild', function () {
           case 0:
             counter = $t.fastbox(0, $g.____testlib.basictypes.Integer);
             $current = 1;
-            continue;
+            $continue($resolve, $reject);
+            return;
 
           case 1:
             $temp1 = children;
             $current = 2;
-            continue;
+            $continue($resolve, $reject);
+            return;
 
           case 2:
-            $temp1.Next().then(function ($result0) {
+            $promise.maybe($temp1.Next()).then(function ($result0) {
               $temp0 = $result0;
               $result = $temp0;
               $current = 3;
@@ -37,17 +39,20 @@ $module('streamchild', function () {
             value = $temp0.First;
             if ($temp0.Second.$wrapped) {
               $current = 4;
-              continue;
+              $continue($resolve, $reject);
+              return;
             } else {
               $current = 5;
-              continue;
+              $continue($resolve, $reject);
+              return;
             }
             break;
 
           case 4:
             counter = $t.fastbox(counter.$wrapped + value.$wrapped, $g.____testlib.basictypes.Boolean);
             $current = 2;
-            continue;
+            $continue($resolve, $reject);
+            return;
 
           case 5:
             $resolve($t.fastbox(counter.$wrapped == 9, $g.____testlib.basictypes.Boolean));
@@ -60,7 +65,7 @@ $module('streamchild', function () {
       }
     };
     return $promise.new($continue);
-  };
+  });
   $static.GetValues = function () {
     var $current = 0;
     var $continue = function ($yield, $yieldin, $reject, $done) {
@@ -87,33 +92,22 @@ $module('streamchild', function () {
         }
       }
     };
-    return $generator.new($continue);
+    return $generator.new($continue, false);
   };
-  $static.TEST = function () {
+  $static.TEST = $t.markpromising(function () {
     var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       while (true) {
         switch ($current) {
           case 0:
-            $g.____testlib.basictypes.Mapping($g.____testlib.basictypes.String).Empty().then(function ($result1) {
-              return $g.streamchild.GetValues().then(function ($result3) {
-                return $g.____testlib.basictypes.MapStream($g.____testlib.basictypes.Integer, $g.____testlib.basictypes.Integer)($result3, function (value) {
-                  var $current = 0;
-                  var $continue = function ($resolve, $reject) {
-                    $resolve($t.fastbox(value.$wrapped + 1, $g.____testlib.basictypes.Boolean));
-                    return;
-                  };
-                  return $promise.new($continue);
-                }).then(function ($result2) {
-                  return $g.streamchild.SimpleFunction($result1, $result2).then(function ($result0) {
-                    $result = $result0;
-                    $current = 1;
-                    $continue($resolve, $reject);
-                    return;
-                  });
-                });
-              });
+            $promise.maybe($g.streamchild.SimpleFunction($g.____testlib.basictypes.Mapping($g.____testlib.basictypes.String).Empty(), $g.____testlib.basictypes.MapStream($g.____testlib.basictypes.Integer, $g.____testlib.basictypes.Integer)($g.streamchild.GetValues(), function (value) {
+              return $t.fastbox(value.$wrapped + 1, $g.____testlib.basictypes.Boolean);
+            }))).then(function ($result0) {
+              $result = $result0;
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
             }).catch(function (err) {
               $reject(err);
               return;
@@ -131,5 +125,5 @@ $module('streamchild', function () {
       }
     };
     return $promise.new($continue);
-  };
+  });
 });

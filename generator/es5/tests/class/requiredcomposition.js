@@ -6,7 +6,7 @@ $module('requiredcomposition', function () {
     $static.new = function (FirstValue) {
       var instance = new $static();
       instance.FirstValue = FirstValue;
-      return $promise.resolve(instance);
+      return instance;
     };
     this.$typesig = function () {
       return {
@@ -20,7 +20,7 @@ $module('requiredcomposition', function () {
     $static.new = function (SecondValue) {
       var instance = new $static();
       instance.SecondValue = SecondValue;
-      return $promise.resolve(instance);
+      return instance;
     };
     this.$typesig = function () {
       return {
@@ -33,16 +33,9 @@ $module('requiredcomposition', function () {
     var $instance = this.prototype;
     $static.new = function (FirstValue, SecondValue) {
       var instance = new $static();
-      var init = [];
-      init.push($g.requiredcomposition.First.new(FirstValue).then(function (value) {
-        instance.First = value;
-      }));
-      init.push($g.requiredcomposition.Second.new(SecondValue).then(function (value) {
-        instance.Second = value;
-      }));
-      return $promise.all(init).then(function () {
-        return instance;
-      });
+      instance.First = $g.requiredcomposition.First.new(FirstValue);
+      instance.Second = $g.requiredcomposition.Second.new(SecondValue);
+      return instance;
     };
     Object.defineProperty($instance, 'FirstValue', {
       get: function () {
@@ -67,49 +60,8 @@ $module('requiredcomposition', function () {
   });
 
   $static.TEST = function () {
-    var $result;
     var sc;
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            $g.requiredcomposition.SomeClass.new($t.fastbox(42, $g.____testlib.basictypes.Integer), $t.fastbox('hello', $g.____testlib.basictypes.String)).then(function ($result0) {
-              $result = $result0;
-              $current = 1;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            sc = $result;
-            $promise.resolve(sc.FirstValue.$wrapped == 42).then(function ($result0) {
-              return ($promise.shortcircuit($result0, true) || $g.____testlib.basictypes.String.$equals(sc.SecondValue, $t.fastbox('hello', $g.____testlib.basictypes.String))).then(function ($result1) {
-                $result = $t.fastbox($result0 && $result1.$wrapped, $g.____testlib.basictypes.Boolean);
-                $current = 2;
-                $continue($resolve, $reject);
-                return;
-              });
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 2:
-            $resolve($result);
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
-    };
-    return $promise.new($continue);
+    sc = $g.requiredcomposition.SomeClass.new($t.fastbox(42, $g.____testlib.basictypes.Integer), $t.fastbox('hello', $g.____testlib.basictypes.String));
+    return $t.fastbox((sc.FirstValue.$wrapped == 42) && $g.____testlib.basictypes.String.$equals(sc.SecondValue, $t.fastbox('hello', $g.____testlib.basictypes.String)).$wrapped, $g.____testlib.basictypes.Boolean);
   };
 });

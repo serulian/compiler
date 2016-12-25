@@ -23,4 +23,5 @@ type TGTypeOrMember interface {
 	Parent() TGTypeOrModule
 	IsImplicitlyCalled() bool
 	IsField() bool
+	SourceGraphId() string
 }

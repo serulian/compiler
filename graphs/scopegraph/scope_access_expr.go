@@ -224,6 +224,7 @@ func (sb *scopeBuilder) scopeDynamicMemberAccessExpression(node compilergraph.Gr
 	scopeMemberAccess := func(childType typegraph.TypeReference, expectStatic bool) proto.ScopeInfo {
 		// If the child type is any, then this operator returns another value of any, regardless of name.
 		if childType.IsAny() {
+			context.dynamicDependencyCollector.registerDynamicDependency(memberName)
 			return newScope().Valid().Resolving(sb.sg.tdg.AnyTypeReference()).GetScope()
 		}
 
@@ -236,6 +237,8 @@ func (sb *scopeBuilder) scopeDynamicMemberAccessExpression(node compilergraph.Gr
 		// returns an "any" type.
 		typeMember, rerr := lookupType.ResolveAccessibleMember(memberName, module, typegraph.MemberResolutionInstanceOrStatic)
 		if rerr != nil {
+			// This is an unknown member, so register it as a dynamic dependency.
+			context.dynamicDependencyCollector.registerDynamicDependency(memberName)
 			return newScope().Valid().Resolving(sb.sg.tdg.AnyTypeReference()).GetScope()
 		}
 

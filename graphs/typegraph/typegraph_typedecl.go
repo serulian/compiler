@@ -368,3 +368,9 @@ func (tn TGTypeDecl) TypeKind() TypeKind {
 		return ClassType
 	}
 }
+
+// SourceGraphId returns the ID of the source graph from which this type originated.
+// If none, returns "typegraph".
+func (tn TGTypeDecl) SourceGraphId() string {
+	return tn.ParentModule().SourceGraphId()
+}

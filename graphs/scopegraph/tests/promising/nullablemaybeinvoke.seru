@@ -1,0 +1,15 @@
+var<any> someValue = null
+
+interface SomeInterface {
+	function<void> SomeFunction()
+}
+
+class SomeClass {
+	function<void> SomeFunction(f function<void>()) {
+		f()
+	}
+}
+
+function<void> TEST(si SomeInterface?) {
+	si?.SomeFunction()
+}

@@ -13,10 +13,12 @@ $module('nested', function () {
           case 1:
             if (true) {
               $current = 2;
-              continue;
+              $continue($yield, $yieldin, $reject, $done);
+              return;
             } else {
               $current = 6;
-              continue;
+              $continue($yield, $yieldin, $reject, $done);
+              return;
             }
             break;
 
@@ -27,7 +29,8 @@ $module('nested', function () {
 
           case 3:
             $current = 4;
-            continue;
+            $continue($yield, $yieldin, $reject, $done);
+            return;
 
           case 4:
             $yield($t.fastbox(4, $g.____testlib.basictypes.Integer));
@@ -41,7 +44,8 @@ $module('nested', function () {
 
           case 7:
             $current = 4;
-            continue;
+            $continue($yield, $yieldin, $reject, $done);
+            return;
 
           default:
             $done();
@@ -49,34 +53,21 @@ $module('nested', function () {
         }
       }
     };
-    return $generator.new($continue);
+    return $generator.new($continue, false);
   };
   $static.SomeGenerator = function () {
-    var $result;
     var $current = 0;
     var $continue = function ($yield, $yieldin, $reject, $done) {
       while (true) {
         switch ($current) {
           case 0:
-            $g.nested.AnotherGenerator().then(function ($result0) {
-              $result = $result0;
-              $current = 1;
-              $continue($yield, $yieldin, $reject, $done);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
+            $yieldin($g.nested.AnotherGenerator());
+            $current = 1;
             return;
 
           case 1:
-            $yieldin($result);
-            $current = 2;
-            return;
-
-          case 2:
             $yield($t.fastbox(5, $g.____testlib.basictypes.Integer));
-            $current = 3;
+            $current = 2;
             return;
 
           default:
@@ -85,9 +76,9 @@ $module('nested', function () {
         }
       }
     };
-    return $generator.new($continue);
+    return $generator.new($continue, false);
   };
-  $static.TEST = function () {
+  $static.TEST = $t.markpromising(function () {
     var $result;
     var $temp0;
     var $temp1;
@@ -100,30 +91,20 @@ $module('nested', function () {
           case 0:
             v = $t.fastbox(0, $g.____testlib.basictypes.Integer);
             $current = 1;
-            continue;
+            $continue($resolve, $reject);
+            return;
 
           case 1:
-            $g.nested.SomeGenerator().then(function ($result0) {
-              $result = $result0;
-              $current = 2;
-              $continue($resolve, $reject);
-              return;
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
+            $temp1 = $g.nested.SomeGenerator();
+            $current = 2;
+            $continue($resolve, $reject);
             return;
 
           case 2:
-            $temp1 = $result;
-            $current = 3;
-            continue;
-
-          case 3:
-            $temp1.Next().then(function ($result0) {
+            $promise.maybe($temp1.Next()).then(function ($result0) {
               $temp0 = $result0;
               $result = $temp0;
-              $current = 4;
+              $current = 3;
               $continue($resolve, $reject);
               return;
             }).catch(function (err) {
@@ -132,23 +113,26 @@ $module('nested', function () {
             });
             return;
 
-          case 4:
+          case 3:
             value = $temp0.First;
             if ($temp0.Second.$wrapped) {
-              $current = 5;
-              continue;
+              $current = 4;
+              $continue($resolve, $reject);
+              return;
             } else {
-              $current = 6;
-              continue;
+              $current = 5;
+              $continue($resolve, $reject);
+              return;
             }
             break;
 
-          case 5:
+          case 4:
             v = $t.fastbox(v.$wrapped + value.$wrapped, $g.____testlib.basictypes.Boolean);
-            $current = 3;
-            continue;
+            $current = 2;
+            $continue($resolve, $reject);
+            return;
 
-          case 6:
+          case 5:
             $resolve($t.fastbox(v.$wrapped == 12, $g.____testlib.basictypes.Boolean));
             return;
 
@@ -159,5 +143,5 @@ $module('nested', function () {
       }
     };
     return $promise.new($continue);
-  };
+  });
 });

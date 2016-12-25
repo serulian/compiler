@@ -17,7 +17,7 @@ import (
 	"github.com/serulian/compiler/graphs/scopegraph"
 )
 
-type StateMachineBuilder func(body codedom.StatementOrExpression, isGenerator bool) esbuilder.SourceBuilder
+type StateMachineBuilder func(body codedom.StatementOrExpression, functionTraits shared.StateFunctionTraits) esbuilder.SourceBuilder
 
 // AsyncOption defines the various options around asynchrounous expression generation.
 type AsyncOption int
@@ -44,12 +44,6 @@ func GenerateExpression(expression codedom.Expression, asyncOption AsyncOption, 
 		variables:      make([]string, 0),
 	}
 
-	// Determine whether the expression is a promise.
-	var isPromise = false
-	if promising, ok := expression.(codedom.Promising); ok {
-		isPromise = promising.IsPromise()
-	}
-
 	// Generate the expression into code.
 	generated := generator.generateExpression(expression, generationContext{})
 
@@ -59,7 +53,7 @@ func GenerateExpression(expression codedom.Expression, asyncOption AsyncOption, 
 		generated = generator.wrapSynchronousExpression(generated)
 	}
 
-	return ExpressionResult{generated, generator.wrappers, generator.variables, isPromise}
+	return ExpressionResult{generated, generator.wrappers, generator.variables}
 }
 
 // expressionGenerator defines a type that converts CodeDOM expressions into ES5 source code.
@@ -138,11 +132,17 @@ func (eg *expressionGenerator) generateExpressionWithoutMapping(expression coded
 	case *codedom.AwaitPromiseNode:
 		return eg.generateAwaitPromise(e, context)
 
+	case *codedom.AnonymousClosureCallNode:
+		return eg.generateAnonymousClosureCall(e, context)
+
 	case *codedom.UnaryOperationNode:
 		return eg.generateUnaryOperation(e, context)
 
 	case *codedom.BinaryOperationNode:
 		return eg.generateBinaryOperation(e, context)
+
+	case *codedom.GenericSpecificationNode:
+		return eg.generateGenericSpecification(e, context)
 
 	case *codedom.FunctionCallNode:
 		return eg.generateFunctionCall(e, context)
@@ -194,6 +194,9 @@ func (eg *expressionGenerator) generateExpressionWithoutMapping(expression coded
 
 	case *codedom.NativeAccessNode:
 		return eg.generateNativeAccess(e, context)
+
+	case *codedom.NativeMemberAccessNode:
+		return eg.generateNativeMemberAccess(e, context)
 
 	case *codedom.NativeAssignNode:
 		return eg.generateNativeAssign(e, context)
