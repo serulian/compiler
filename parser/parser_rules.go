@@ -2241,6 +2241,9 @@ func (p *sourceParser) consumeMarkupExpression() AstNode {
 
 	// Consume one (or more attributes)
 	for {
+		// Consume any statement terminators that are found between attributes.
+		p.tryConsumeStatementTerminator()
+
 		// Attributes must start with an identifier or an at sign.
 		if p.isToken(tokenTypeAtSign) {
 			markupNode.Connect(NodeSmlExpressionDecorator, p.consumeMarkupAttribute(NodeTypeSmlDecorator, NodeSmlDecoratorValue))

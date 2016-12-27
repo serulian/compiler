@@ -246,6 +246,7 @@ var parserTests = []parserTest{
 	{"tag only sml test", "sml/tagonly"},
 	{"open and close sml test", "sml/openclose"},
 	{"missing close sml test", "sml/missingclose"},
+	{"multiline sml test", "sml/multiline"},
 	{"mismatch sml test", "sml/mismatch"},
 	{"attributes sml test", "sml/attributes"},
 	{"invalid attribute value sml test", "sml/invalidattributevalue"},
