@@ -610,7 +610,7 @@ func (sb *scopeBuilder) scopeBinaryExpression(node compilergraph.GraphNode, opNa
 	// an IntStream. This is special cased because we *know* the stream type, and we don't want
 	// the fact that Next() being async *somewhere* makes all loops async to influence numeric
 	// streams (which are the most common).
-	// TODO: Remove this stupid hack once we an inlining optimization pass that makes it unnecessary
+	// TODO: Remove this stupid hack once we have an inlining optimization pass that makes it unnecessary
 	// OR we find a better way to identify the types of streams being produced.
 	if node.Kind() == parser.NodeDefineRangeExpression && leftType == sb.sg.tdg.IntTypeReference() {
 		operatorReturnType = sb.sg.tdg.IntStreamType().GetTypeReference()
