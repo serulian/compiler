@@ -7,9 +7,9 @@ interface SomeBrowserThing {
 
     getter any (any propertyName);
     setter void (any propertyName, any propertyValue);
-}
+};
 
 [Global]
 interface WindowContext {
 	static readonly attribute Boolean boolValue;
-}
+};
