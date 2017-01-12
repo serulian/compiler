@@ -1,0 +1,63 @@
+NodeTypeGlobalModule
+  child-node =>
+    NodeTypeFile
+      end-rune = 91
+      input-source = missing semicolons test
+      start-rune = 0
+      child-node =>
+        NodeTypeDeclaration
+          declaration-kind = interface
+          declaration-name = foo
+          end-rune = 51
+          input-source = missing semicolons test
+          start-rune = 0
+          child-node =>
+            NodeTypeError
+              end-rune = 49
+              error-message = Expected one of: [tokenTypeSemicolon], found: tokenTypeRightBrace
+              input-source = missing semicolons test
+              start-rune = 51
+            NodeTypeError
+              end-rune = 51
+              error-message = Expected one of: [tokenTypeSemicolon], found: tokenTypeKeyword
+              input-source = missing semicolons test
+              start-rune = 54
+          declaration-member =>
+            NodeTypeMember
+              end-rune = 49
+              input-source = missing semicolons test
+              member-name = baz
+              member-static = true
+              member-type = someType
+              start-rune = 17
+              member-parameter =>
+                NodeTypeParameter
+                  end-rune = 48
+                  input-source = missing semicolons test
+                  parameter-name = param
+                  parameter-type = string
+                  start-rune = 37
+        NodeTypeDeclaration
+          declaration-kind = interface
+          declaration-name = someType
+          end-rune = 91
+          input-source = missing semicolons test
+          start-rune = 54
+          child-node =>
+            NodeTypeError
+              end-rune = 89
+              error-message = Expected one of: [tokenTypeSemicolon], found: tokenTypeRightBrace
+              input-source = missing semicolons test
+              start-rune = 91
+            NodeTypeError
+              end-rune = 91
+              error-message = Expected one of: [tokenTypeSemicolon], found: tokenTypeEOF
+              input-source = missing semicolons test
+              start-rune = 94
+          declaration-member =>
+            NodeTypeMember
+              end-rune = 89
+              input-source = missing semicolons test
+              member-name = getBool
+              member-type = bool
+              start-rune = 76
