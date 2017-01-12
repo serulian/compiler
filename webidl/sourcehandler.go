@@ -37,7 +37,26 @@ func (sh *irgSourceHandler) Apply(packageMap packageloader.LoadedPackageMap) {
 }
 
 func (sh *irgSourceHandler) Verify(errorReporter packageloader.ErrorReporter, warningReporter packageloader.WarningReporter) {
+	g := sh.irg
 
+	// Collect any parse errors found and add them to the result.
+	eit := g.findAllNodes(parser.NodeTypeError).BuildNodeIterator(
+		parser.NodePredicateErrorMessage,
+		parser.NodePredicateSource,
+		parser.NodePredicateStartRune)
+
+	for eit.Next() {
+		sal := salForIterator(eit)
+		errorReporter(compilercommon.NewSourceError(sal, eit.GetPredicate(parser.NodePredicateErrorMessage).String()))
+	}
+}
+
+// salForIterator returns a SourceAndLocation for the given iterator. Note that
+// the iterator *must* contain the NodePredicateSource and NodePredicateStartRune predicates.
+func salForIterator(iterator compilergraph.NodeIterator) compilercommon.SourceAndLocation {
+	return compilercommon.NewSourceAndLocation(
+		compilercommon.InputSource(iterator.GetPredicate(parser.NodePredicateSource).String()),
+		iterator.GetPredicate(parser.NodePredicateStartRune).Int())
 }
 
 // buildASTNode constructs a new node in the IRG.

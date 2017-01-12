@@ -9,7 +9,6 @@ package parser
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/serulian/compiler/compilercommon"
 )
@@ -25,6 +24,10 @@ type AstNode interface {
 	// Decorate decorates this AstNode with the given property and string value,
 	// and returns the same AstNode.
 	Decorate(property string, value string) AstNode
+
+	// Decorate decorates this AstNode with the given property and int value,
+	// and returns the same AstNode.
+	DecorateWithInt(property string, value int) AstNode
 }
 
 // NodeBuilder is a function for building AST nodes.
@@ -132,7 +135,7 @@ func (p *sourceParser) startNode(kind generic.U) AstNode {
 // starting rune, as well as any comments attached to the token.
 func (p *sourceParser) decorateStartRuneAndComments(node AstNode, token commentedLexeme) {
 	node.Decorate(p.config.sourcePredicate, string(p.source))
-	node.Decorate(p.config.startRunePredicate, strconv.Itoa(int(token.position)+int(p.startIndex)))
+	node.DecorateWithInt(p.config.startRunePredicate, int(token.position)+int(p.startIndex))
 	p.decorateComments(node, token.comments)
 }
 
@@ -149,7 +152,7 @@ func (p *sourceParser) decorateComments(node AstNode, comments []string) {
 // ending rune.
 func (p *sourceParser) decorateEndRune(node AstNode, token commentedLexeme) {
 	position := int(token.position) + len(token.value) - 1 + int(p.startIndex)
-	node.Decorate(p.config.endRunePredicate, strconv.Itoa(position))
+	node.DecorateWithInt(p.config.endRunePredicate, position)
 }
 
 // currentNode returns the node at the top of the stack.

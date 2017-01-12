@@ -1,7 +1,7 @@
 interface First {};
 interface Second {};
 interface Third {};
-interface Fourth {}
+interface Fourth {};
 
 interface MyInterface {
 	  getter Second (First propertyName);

@@ -19,7 +19,7 @@ import (
 
 type testNode struct {
 	nodeType   NodeType
-	properties map[string]string
+	properties map[string]interface{}
 	children   map[string]*list.List
 }
 
@@ -56,7 +56,7 @@ func (pt *parserTest) writeTree(value string) {
 func createAstNode(source compilercommon.InputSource, kind NodeType) AstNode {
 	return &testNode{
 		nodeType:   kind,
-		properties: make(map[string]string),
+		properties: make(map[string]interface{}),
 		children:   make(map[string]*list.List),
 	}
 }
@@ -83,6 +83,15 @@ func (tn *testNode) Decorate(property string, value string) AstNode {
 	return tn
 }
 
+func (tn *testNode) DecorateWithInt(property string, value int) AstNode {
+	if _, ok := tn.properties[property]; ok {
+		panic(fmt.Sprintf("Existing key for property %s\n\tNode: %v", property, tn.properties))
+	}
+
+	tn.properties[property] = value
+	return tn
+}
+
 var parserTests = []parserTest{
 	parserTest{"empty interface test", "interface"},
 	parserTest{"implements test", "implements"},
@@ -96,6 +105,7 @@ var parserTests = []parserTest{
 
 	parserTest{"known issue test", "knownissue"},
 	parserTest{"full file test", "fullfile"},
+	parserTest{"missing semicolons test", "missingsemis"},
 }
 
 func TestParser(t *testing.T) {
@@ -143,7 +153,7 @@ func getParseTree(currentNode *testNode, indentation int) string {
 
 	for _, key := range keys {
 		parseTree = parseTree + strings.Repeat(" ", indentation+2)
-		parseTree = parseTree + fmt.Sprintf("%s = %s", key, currentNode.properties[key])
+		parseTree = parseTree + fmt.Sprintf("%s = %v", key, currentNode.properties[key])
 		parseTree = parseTree + "\n"
 	}
 

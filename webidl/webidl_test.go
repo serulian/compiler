@@ -100,3 +100,15 @@ func TestBasicLoading(t *testing.T) {
 		return
 	}
 }
+
+func TestParsingIssue(t *testing.T) {
+	graph, err := compilergraph.NewGraph("tests/parseissue.webidl")
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+
+	testIRG := NewIRG(graph)
+	loader := packageloader.NewPackageLoader(graph.RootSourceFilePath, []string{}, testIRG.PackageLoaderHandler())
+	result := loader.Load()
+	assert.False(t, result.Status, "Expected parsing issue")
+}

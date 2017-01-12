@@ -5,9 +5,6 @@
 package webidl
 
 import (
-	"fmt"
-	"strconv"
-
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 
@@ -75,16 +72,11 @@ func (g *WebIRG) NodeLocation(node compilergraph.GraphNode) compilercommon.Sourc
 
 // salForNode returns a SourceAndLocation for the given graph node.
 func salForNode(node compilergraph.GraphNode) compilercommon.SourceAndLocation {
-	return salForValues(node.Get(parser.NodePredicateSource), node.Get(parser.NodePredicateStartRune))
+	return salForValues(node.Get(parser.NodePredicateSource), node.GetValue(parser.NodePredicateStartRune).Int())
 }
 
 // salForValues returns a SourceAndLocation for the given string predicate values.
-func salForValues(sourceStr string, bytePositionStr string) compilercommon.SourceAndLocation {
+func salForValues(sourceStr string, bytePosition int) compilercommon.SourceAndLocation {
 	source := compilercommon.InputSource(sourceStr)
-	bytePosition, err := strconv.Atoi(bytePositionStr)
-	if err != nil {
-		panic(fmt.Sprintf("Expected int value for byte position, found: %v", bytePositionStr))
-	}
-
 	return compilercommon.NewSourceAndLocation(source, bytePosition)
 }
