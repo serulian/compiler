@@ -1331,6 +1331,13 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"Could not find static name 'SomeFunction' under external interface SomeType", ""},
 
+	scopegraphTest{"webidl same name", "webidl", "samename",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"global", expectedScope{true, proto.ScopeKind_VALUE, "Number", "void"}},
+			expectedScopeEntry{"local", expectedScope{true, proto.ScopeKind_VALUE, "String", "void"}},
+		},
+		"", ""},
+
 	/////////// nominal tests /////////////////
 
 	scopegraphTest{"nominal type success", "nominal", "success",

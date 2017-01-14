@@ -1,0 +1,76 @@
+{
+    "0601e2c314f699a4c573d3d428e12919": {
+        "Key": "0601e2c314f699a4c573d3d428e12919",
+        "Kind": 6,
+        "Children": {
+            "95f4641eb70f120010fb634a54bc3b61": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "95f4641eb70f120010fb634a54bc3b61",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "document",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "HTMLDocument",
+                        "tdg-member-signature": "\n\u0008document\u0010\t\u0018\u0000 \u0001*\u000cHTMLDocument",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/window.webidl",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-module-name": "window.webidl",
+            "tdg-node-kind": "6|NodeType|tdg",
+            "tdg-source-module": "tests/window.webidl",
+            "tdg-source-node": "(NodeRef)"
+        }
+    },
+    "344ab39c2ea59d345ef2886478feac27": {
+        "Key": "344ab39c2ea59d345ef2886478feac27",
+        "Kind": 3,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-source-module": "tests/window.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "HTMLDocument",
+            "tdg-type-name": "HTMLDocument"
+        }
+    },
+    "c7944884a7f0a269fe1240eb6c9b56c0": {
+        "Key": "c7944884a7f0a269fe1240eb6c9b56c0",
+        "Kind": 3,
+        "Children": {
+            "d81880e87a681e6ab361e4e432b6c51a": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "d81880e87a681e6ab361e4e432b6c51a",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "document",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "HTMLDocument",
+                        "tdg-member-signature": "\n\u0008document\u0010\t\u0018\u0000 \u0001*\u000cHTMLDocument",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/window.webidl",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-source-module": "tests/window.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "HTMLWindow",
+            "tdg-type-name": "HTMLWindow"
+        }
+    }
+}

@@ -232,7 +232,7 @@ func TestPromisingLabels(t *testing.T) {
 		for _, expectedLabel := range test.expectedPromiseLabels {
 			pieces := strings.Split(expectedLabel.name, ".")
 
-			member, found := result.Graph.TypeGraph().LookupMember(expectedLabel.name, compilercommon.InputSource(entrypointFile))
+			member, found := result.Graph.TypeGraph().LookupModuleMember(expectedLabel.name, compilercommon.InputSource(entrypointFile))
 			if len(pieces) > 1 {
 				parentType, found := result.Graph.TypeGraph().LookupType(pieces[0], compilercommon.InputSource(entrypointFile))
 				if !assert.True(t, found, "Missing type %s in test: %v", pieces[0], test.name) {

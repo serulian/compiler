@@ -1,0 +1,50 @@
+NodeTypeGlobalModule
+  child-node =>
+    NodeTypeFile
+      end-rune = 184
+      input-source = window test
+      start-rune = 0
+      child-node =>
+        NodeTypeDeclaration
+          declaration-kind = interface
+          declaration-name = HTMLDocument
+          end-rune = 28
+          input-source = window test
+          start-rune = 0
+        NodeTypeDeclaration
+          declaration-kind = interface
+          declaration-name = HTMLWindow
+          end-rune = 100
+          input-source = window test
+          start-rune = 31
+          declaration-member =>
+            NodeTypeMember
+              end-rune = 96
+              input-source = window test
+              member-attribute = true
+              member-name = document
+              member-readonly = true
+              member-type = HTMLDocument
+              start-rune = 57
+        NodeTypeDeclaration
+          declaration-kind = interface
+          declaration-name = Window
+          end-rune = 184
+          input-source = window test
+          start-rune = 103
+          declaration-annotation =>
+            NodeTypeAnnotation
+              annotation-name = Global
+              end-rune = 109
+              input-source = window test
+              start-rune = 104
+          declaration-member =>
+            NodeTypeMember
+              end-rune = 180
+              input-source = window test
+              member-attribute = true
+              member-name = document
+              member-readonly = true
+              member-static = true
+              member-type = HTMLDocument
+              start-rune = 134
