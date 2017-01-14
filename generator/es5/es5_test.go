@@ -195,6 +195,8 @@ var generationTests = []generationTest{
 	generationTest{"in collection op expression", "opexpr", "in", integrationTestSuccessExpected, ""},
 	generationTest{"assert not null op expression", "opexpr", "assertnotnull", integrationTestSuccessExpected, ""},
 	generationTest{"short circuit expression", "opexpr", "shortcircuit", integrationTestSuccessExpected, ""},
+	generationTest{"unwrap op expression", "opexpr", "unwrap", integrationTestSuccessExpected, ""},
+	generationTest{"unwrap nullable op expression", "opexpr", "unwrapnullable", integrationTestSuccessExpected, ""},
 
 	generationTest{"identifier expressions", "literals", "identifier", integrationTestNone, ""},
 

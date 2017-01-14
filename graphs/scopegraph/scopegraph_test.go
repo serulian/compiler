@@ -584,6 +584,14 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"Root type operator (&) cannot be applied to value of type SomeClass", ""},
 
+	scopegraphTest{"root type op nullable test", "rootop", "nullable",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"someclass", expectedScope{true, proto.ScopeKind_VALUE, "SomeClass?", "void"}},
+			expectedScopeEntry{"generic", expectedScope{true, proto.ScopeKind_VALUE, "any", "void"}},
+			expectedScopeEntry{"interface", expectedScope{true, proto.ScopeKind_VALUE, "any", "void"}},
+		},
+		"", ""},
+
 	/////////// In operator expression ///////////
 
 	scopegraphTest{"in op success test", "inop", "success",

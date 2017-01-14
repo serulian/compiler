@@ -1,0 +1,15 @@
+class SomeClass {
+	property<bool> SomeProperty {
+		get { return true }
+	}
+}
+
+type SomeType : SomeClass {}
+
+function<any> TEST() {
+	var<SomeType?> st = SomeType(SomeClass.new())
+	var<SomeType?> st2 = null
+	first := (&st)?.SomeProperty ?? false
+	second := (&st2)?.SomeProperty ?? false
+	return first && !second
+}

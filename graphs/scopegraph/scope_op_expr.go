@@ -672,7 +672,12 @@ func (sb *scopeBuilder) scopeRootTypeExpression(node compilergraph.GraphNode, co
 		referredType := childType.ReferredType()
 		if referredType.TypeKind() == typegraph.NominalType {
 			// The result of the operator is the nominal type's parent type.
-			return newScope().Valid().Resolving(referredType.ParentTypes()[0]).GetScope()
+			parentType := referredType.ParentTypes()[0]
+			if childType.IsNullable() {
+				parentType = parentType.AsNullable()
+			}
+
+			return newScope().Valid().Resolving(parentType).GetScope()
 		}
 
 		if referredType.TypeKind() != typegraph.ImplicitInterfaceType && referredType.TypeKind() != typegraph.GenericType {
