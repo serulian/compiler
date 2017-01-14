@@ -1,0 +1,12 @@
+class SomeClass {
+	property<bool> SomeProperty {
+		get { return true }
+	}
+}
+
+type SomeType : SomeClass {}
+
+function<any> TEST() {
+	st := SomeType(SomeClass.new())
+	return (&st).SomeProperty
+}
