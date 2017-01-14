@@ -344,7 +344,7 @@ func (g *TypeGraph) LookupTypeOrMember(name string, module compilercommon.InputS
 		return typeDecl, true
 	}
 
-	member, found := g.LookupMember(name, module)
+	member, found := g.LookupModuleMember(name, module)
 	if found {
 		return member, true
 	}
@@ -358,19 +358,20 @@ func (g *TypeGraph) GetOperatorDefinition(operatorName string) (operatorDefiniti
 	return def, found
 }
 
-// LookupMember looks up the member with the given name in the given module and returns it (if any).
-func (g *TypeGraph) LookupMember(memberName string, module compilercommon.InputSource) (TGMember, bool) {
+// LookupModuleMember looks up the member with the given name directly under the given module and returns it (if any).
+func (g *TypeGraph) LookupModuleMember(memberName string, module compilercommon.InputSource) (TGMember, bool) {
+	directMemberFilter := func(q compilergraph.GraphQuery) compilergraph.Query {
+		return q.In(NodePredicateMember).IsKind(NodeTypeModule)
+	}
+
 	memberNode, found := g.layer.StartQuery(memberName).
 		In(NodePredicateMemberName).
 		Has(NodePredicateModulePath, string(module)).
 		IsKind(NodeTypeMember).
+		FilterBy(directMemberFilter).
 		TryGetNode()
 
-	if !found {
-		return TGMember{}, false
-	}
-
-	return TGMember{memberNode, g}, true
+	return TGMember{memberNode, g}, found
 }
 
 // LookupType looks up the type declaration with the given name in the given module and returns it (if any).

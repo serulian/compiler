@@ -216,7 +216,8 @@ var generationTests = []generationTest{
 	generationTest{"escaped template string literal", "literals", "escapedtemplatestr", integrationTestNone, ""},
 	generationTest{"async template string literal", "literals", "asynctaggedtemplatestr", integrationTestSuccessExpected, ""},
 
-	generationTest{"basic webidl", "webidl", "basic", integrationTestSuccessExpected, ""},
+	generationTest{"basic webidl test", "webidl", "basic", integrationTestSuccessExpected, ""},
+	generationTest{"webidl window test", "webidl", "window", integrationTestNone, ""},
 
 	generationTest{"basic nominal type", "nominal", "basic", integrationTestSuccessExpected, ""},
 	generationTest{"generic nominal type", "nominal", "generic", integrationTestSuccessExpected, ""},

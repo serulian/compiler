@@ -1,0 +1,5 @@
+from webidl`window` import document
+
+function<any> TEST() {
+	return document
+}

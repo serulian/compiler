@@ -46,6 +46,7 @@ var typeGraphTests = []typegraphTest{
 	// Success tests.
 	typegraphTest{"basic test", "basic", ""},
 	typegraphTest{"global context test", "global", ""},
+	typegraphTest{"window test", "window", ""},
 	typegraphTest{"optional parameter test", "optionalparam", ""},
 	typegraphTest{"constructors test", "constructors", ""},
 	typegraphTest{"native operators test", "operator", ""},

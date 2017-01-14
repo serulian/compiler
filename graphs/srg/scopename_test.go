@@ -193,15 +193,24 @@ var nameScopeTests = []nameScopeTest{
 	nameScopeTest{"resolved rejection after source test", "basic", "afterresolve", "b",
 		expectedScopeResult{true, false, parser.NodeTypeAssignedValue, "b", NamedScopeValue},
 	},
+
+	// Resolve "doSomething" under function "SomeFunction"
+	nameScopeTest{"same name test", "samename", "somefn", "doSomething",
+		expectedScopeResult{true, false, parser.NodeTypeVariable, "doSomething", NamedScopeMember},
+	},
 }
 
 func TestNameScoping(t *testing.T) {
 	for _, test := range nameScopeTests {
-		if os.Getenv("FILTER") != "" && !strings.Contains(test.name, os.Getenv("FILTER")) {
-			continue
+		if os.Getenv("FILTER") != "" {
+			if !strings.Contains(test.name, os.Getenv("FILTER")) {
+				continue
+			} else {
+				fmt.Printf("Matched test %v\n", test.name)
+			}
 		}
 
-		source := fmt.Sprintf("tests/namescope/%s.seru", test.source)
+		source := fmt.Sprintf("tests/scopename/%s.seru", test.source)
 		testSRG := getSRG(t, source, "tests/testlib")
 
 		_, found := testSRG.FindModuleBySource(compilercommon.InputSource(source))

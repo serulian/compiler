@@ -169,11 +169,12 @@ func resolveTestingTypeRef(name string, refNode compilergraph.GraphNode, graph *
 
 // newTestTypeGraphConstructor returns a type graph constructor which adds all the given test types
 // to a fake module with the given name.
-func newTestTypeGraphConstructor(graph *compilergraph.SerulianGraph, moduleName string, testTypes []testType) *testTypeGraphConstructor {
+func newTestTypeGraphConstructor(graph *compilergraph.SerulianGraph, moduleName string, testTypes []testType, testMembers ...testMember) *testTypeGraphConstructor {
 	return &testTypeGraphConstructor{
-		moduleName: moduleName,
-		testTypes:  testTypes,
-		layer:      graph.NewGraphLayer(moduleName, fakeNodeTypeTagged),
+		moduleName:  moduleName,
+		testTypes:   testTypes,
+		testMembers: testMembers,
+		layer:       graph.NewGraphLayer(moduleName, fakeNodeTypeTagged),
 
 		typeMap:    map[string]compilergraph.GraphNode{},
 		memberMap:  map[string]compilergraph.GraphNode{},
@@ -376,6 +377,24 @@ func isExportedName(name string) bool {
 }
 
 func (t *testTypeGraphConstructor) DefineMembers(builder GetMemberBuilder, reporter IssueReporter, graph *TypeGraph) {
+	for _, memberInfo := range t.testMembers {
+		memberNode := t.CreateNode(fakeNodeTypeTagged)
+		t.memberMap[memberInfo.name] = memberNode
+
+		moduleNode := t.moduleNode
+		ib := builder(*moduleNode, false).
+			Name(memberInfo.name).
+			SourceNode(memberNode)
+
+		for _, genericInfo := range memberInfo.generics {
+			genericNode := t.CreateNode(fakeNodeTypeTagged)
+			t.genericMap[memberInfo.name+"::"+genericInfo.name] = genericNode
+			ib.WithGeneric(genericInfo.name, genericNode)
+		}
+
+		ib.Define()
+	}
+
 	for _, typeInfo := range t.testTypes {
 		typeNode, _ := t.typeMap[typeInfo.name]
 		for _, memberInfo := range typeInfo.members {
@@ -442,10 +461,11 @@ func (t *testTypeGraphConstructor) DecorateMembers(decorator GetMemberDecorator,
 type testTypeGraphConstructor struct {
 	emptyTypeConstructor
 
-	layer      *compilergraph.GraphLayer
-	moduleNode *compilergraph.GraphNode
-	moduleName string
-	testTypes  []testType
+	layer       *compilergraph.GraphLayer
+	moduleNode  *compilergraph.GraphNode
+	moduleName  string
+	testTypes   []testType
+	testMembers []testMember
 
 	typeMap    map[string]compilergraph.GraphNode
 	memberMap  map[string]compilergraph.GraphNode

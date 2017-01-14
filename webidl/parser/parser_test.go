@@ -106,6 +106,7 @@ var parserTests = []parserTest{
 	parserTest{"known issue test", "knownissue"},
 	parserTest{"full file test", "fullfile"},
 	parserTest{"missing semicolons test", "missingsemis"},
+	parserTest{"window test", "window"},
 }
 
 func TestParser(t *testing.T) {
