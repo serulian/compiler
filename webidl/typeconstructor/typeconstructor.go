@@ -86,6 +86,8 @@ func (itc *irgTypeConstructor) DefineModules(builder typegraph.GetModuleBuilder)
 func (itc *irgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 	for _, module := range itc.irg.GetModules() {
 		for _, declaration := range module.Declarations() {
+			// If the type is marked as [Global] then it defines an "interface" whose members
+			// get added to the global context, and not a real type.
 			if declaration.HasOneAnnotation(GLOBAL_CONTEXT_ANNOTATIONS...) {
 				continue
 			}
@@ -110,6 +112,8 @@ func (itc *irgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 func (itc *irgTypeConstructor) DefineDependencies(annotator typegraph.Annotator, graph *typegraph.TypeGraph) {
 	for _, module := range itc.irg.GetModules() {
 		for _, declaration := range module.Declarations() {
+			// If the type is marked as [Global] then it defines an "interface" whose members
+			// get added to the global context, and not a real type.
 			if declaration.HasOneAnnotation(GLOBAL_CONTEXT_ANNOTATIONS...) {
 				continue
 			}
@@ -207,6 +211,12 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 func (itc *irgTypeConstructor) DecorateMembers(decorator typegraph.GetMemberDecorator, reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {
 	for _, declaration := range itc.irg.Declarations() {
 		if declaration.HasAnnotation(CONSTRUCTOR_ANNOTATION) {
+			// Should never be allowed.
+			if declaration.HasOneAnnotation(GLOBAL_CONTEXT_ANNOTATIONS...) {
+				reporter.ReportError(declaration.GraphNode, "[Global] interface `%v` cannot also have a [Constructor]", declaration.Name())
+				continue
+			}
+
 			// For each constructor defined, create the intersection of their parameters.
 			var parameters = make([]typegraph.TypeReference, 0)
 			for constructorIndex, constructor := range declaration.GetAnnotations(CONSTRUCTOR_ANNOTATION) {
@@ -237,7 +247,11 @@ func (itc *irgTypeConstructor) DecorateMembers(decorator typegraph.GetMemberDeco
 			}
 
 			// Define the construction function for the type.
-			typeDecl, _ := graph.GetTypeForSourceNode(declaration.GraphNode)
+			typeDecl, hasTypeDecl := graph.GetTypeForSourceNode(declaration.GraphNode)
+			if !hasTypeDecl {
+				panic(fmt.Sprintf("Missing type declaration for node %v", declaration.Name()))
+			}
+
 			var constructorFunction = graph.FunctionTypeReference(typeDecl.GetTypeReference())
 			for _, parameterType := range parameters {
 				constructorFunction = constructorFunction.WithParameter(parameterType)
@@ -253,6 +267,12 @@ func (itc *irgTypeConstructor) DecorateMembers(decorator typegraph.GetMemberDeco
 		}
 
 		for _, nativeOp := range declaration.GetAnnotations(NATIVE_OPERATOR_ANNOTATION) {
+			// Should never be allowed.
+			if declaration.HasOneAnnotation(GLOBAL_CONTEXT_ANNOTATIONS...) {
+				reporter.ReportError(declaration.GraphNode, "[Global] interface `%v` cannot also have a [NativeOperator]", declaration.Name())
+				continue
+			}
+
 			opName, hasOpName := nativeOp.Value()
 			if !hasOpName {
 				continue

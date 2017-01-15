@@ -1,0 +1,104 @@
+NodeTypeGlobalModule
+  child-node =>
+    NodeTypeFile
+      end-rune = 289
+      input-source = multiple annotations test
+      start-rune = 0
+      child-node =>
+        NodeTypeDeclaration
+          declaration-kind = interface
+          declaration-name = XMLHttpRequest
+          end-rune = 289
+          input-source = multiple annotations test
+          start-rune = 0
+          declaration-annotation =>
+            NodeTypeAnnotation
+              annotation-name = Global
+              end-rune = 6
+              input-source = multiple annotations test
+              start-rune = 1
+            NodeTypeAnnotation
+              annotation-name = Constructor
+              end-rune = 22
+              input-source = multiple annotations test
+              start-rune = 10
+          declaration-member =>
+            NodeTypeMember
+              end-rune = 75
+              input-source = multiple annotations test
+              member-attribute = true
+              member-name = status
+              member-type = Number
+              start-rune = 53
+            NodeTypeMember
+              end-rune = 105
+              input-source = multiple annotations test
+              member-attribute = true
+              member-name = statusText
+              member-type = String
+              start-rune = 79
+            NodeTypeMember
+              end-rune = 137
+              input-source = multiple annotations test
+              member-attribute = true
+              member-name = responseText
+              member-type = String
+              start-rune = 109
+            NodeTypeMember
+              end-rune = 167
+              input-source = multiple annotations test
+              member-attribute = true
+              member-name = readyState
+              member-type = Number
+              start-rune = 141
+            NodeTypeMember
+              end-rune = 190
+              input-source = multiple annotations test
+              member-name = send
+              member-type = void
+              start-rune = 172
+              member-parameter =>
+                NodeTypeParameter
+                  end-rune = 189
+                  input-source = multiple annotations test
+                  parameter-name = body
+                  parameter-type = any
+                  start-rune = 182
+            NodeTypeMember
+              end-rune = 229
+              input-source = multiple annotations test
+              member-name = open
+              member-type = void
+              start-rune = 194
+              member-parameter =>
+                NodeTypeParameter
+                  end-rune = 216
+                  input-source = multiple annotations test
+                  parameter-name = method
+                  parameter-type = String
+                  start-rune = 204
+                NodeTypeParameter
+                  end-rune = 228
+                  input-source = multiple annotations test
+                  parameter-name = url
+                  parameter-type = String
+                  start-rune = 219
+            NodeTypeMember
+              end-rune = 285
+              input-source = multiple annotations test
+              member-name = addEventListener
+              member-type = void
+              start-rune = 233
+              member-parameter =>
+                NodeTypeParameter
+                  end-rune = 270
+                  input-source = multiple annotations test
+                  parameter-name = eventName
+                  parameter-type = String
+                  start-rune = 255
+                NodeTypeParameter
+                  end-rune = 284
+                  input-source = multiple annotations test
+                  parameter-name = listener
+                  parameter-type = any
+                  start-rune = 273

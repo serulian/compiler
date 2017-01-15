@@ -191,27 +191,33 @@ func (p *sourceParser) consumeMember() AstNode {
 	return memberNode
 }
 
-// tryConsumeAnnotations consumes any annotations if any found.
+// tryConsumeAnnotations consumes any annotations found on the parent node.
 func (p *sourceParser) tryConsumeAnnotations(parentNode AstNode, predicate string) {
-	if _, ok := p.tryConsume(tokenTypeLeftBracket); !ok {
-		return
-	}
-
 	for {
-		parentNode.Connect(predicate, p.consumeAnnotation())
-
-		if _, ok := p.tryConsume(tokenTypeRightBracket); ok {
+		// [
+		if _, ok := p.tryConsume(tokenTypeLeftBracket); !ok {
 			return
 		}
 
-		if _, ok := p.consume(tokenTypeComma); !ok {
-			break
+		for {
+			// Foo()
+			parentNode.Connect(predicate, p.consumeAnnotationPart())
+
+			// ,
+			if _, ok := p.tryConsume(tokenTypeComma); !ok {
+				break
+			}
+		}
+
+		// ]
+		if _, ok := p.consume(tokenTypeRightBracket); !ok {
+			return
 		}
 	}
 }
 
-// consumeAnnotation consumes an annotation.
-func (p *sourceParser) consumeAnnotation() AstNode {
+// consumeAnnotationPart consumes an annotation, as found within a set of brackets `[]`.
+func (p *sourceParser) consumeAnnotationPart() AstNode {
 	annotationNode := p.startNode(NodeTypeAnnotation)
 	defer p.finishNode()
 
