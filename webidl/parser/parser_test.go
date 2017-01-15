@@ -97,6 +97,7 @@ var parserTests = []parserTest{
 	parserTest{"implements test", "implements"},
 	parserTest{"inheritance test", "inheritance"},
 	parserTest{"annotated interface test", "annotatedinterface"},
+	parserTest{"multiple annotations test", "multipleannotations"},
 	parserTest{"members test", "members"},
 	parserTest{"annotation value test", "annotationvalue"},
 	parserTest{"indexer test", "indexer"},
