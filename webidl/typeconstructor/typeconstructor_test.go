@@ -61,6 +61,7 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"unknown type test", "unknowntype", "Could not find WebIDL type Bar"},
 	typegraphTest{"invalid indexer test", "invalidindexer", "Operator 'index' defined on type 'MyInterface' expects 1 parameters; found 2"},
 	typegraphTest{"invalid parent test", "invalidparent", "Could not find WebIDL type Node"},
+	typegraphTest{"global constructor test", "globalconstructor", "[Global] interface `SomeWeirdInterface` cannot also have a [Constructor]"},
 }
 
 func TestGraphs(t *testing.T) {
