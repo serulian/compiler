@@ -112,7 +112,7 @@ func (dt *developTransaction) Build(w http.ResponseWriter, r *http.Request) {
 		dt.emitInfo(w, "Build completed successfully")
 		dt.closeGroup(w)
 
-		dt.offsetCount = len(strings.Split(string(generated), "\n"))
+		dt.offsetCount = len(strings.Split(string(generated), "\n")) + 1
 
 		for _, warning := range scopeResult.Warnings {
 			dt.emitWarning(w, warning)
