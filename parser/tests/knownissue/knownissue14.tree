@@ -1,0 +1,69 @@
+NodeTypeFile
+  end-rune = 79
+  input-source = known issue 14 test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 79
+      input-source = known issue 14 test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 79
+          input-source = known issue 14 test
+          start-rune = 29
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 106
+              input-source = known issue 14 test
+              start-rune = 32
+              expr-statement-expr =>
+                NodeFunctionCallExpression
+                  end-rune = 79
+                  input-source = known issue 14 test
+                  start-rune = 32
+                  function-call-argument =>
+                    NodeThisLiteralExpression
+                      end-rune = 48
+                      input-source = known issue 14 test
+                      start-rune = 45
+                    NodeStructuralNewExpression
+                      end-rune = 106
+                      input-source = known issue 14 test
+                      start-rune = 51
+                      structural-new-entry =>
+                        NodeStructuralNewExpressionEntry
+                          end-rune = 79
+                          input-source = known issue 14 test
+                          start-rune = 64
+                          structural-new-entry-key = someProp
+                          structural-new-entry-value =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 79
+                              identexpr-name = output
+                              input-source = known issue 14 test
+                              start-rune = 74
+                      structural-new-type-expr =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 59
+                          identexpr-name = something
+                          input-source = known issue 14 test
+                          start-rune = 51
+                  function-call-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 43
+                      identexpr-name = SomeFunction
+                      input-source = known issue 14 test
+                      start-rune = 32
+          child-node =>
+            NodeTypeError
+              end-rune = 79
+              error-message = Expected one of: [tokenTypeRightBrace], found: tokenTypeError
+              input-source = known issue 14 test
+              start-rune = 80
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 12
+          input-source = known issue 14 test
+          start-rune = 9
