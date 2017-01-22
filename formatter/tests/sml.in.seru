@@ -13,13 +13,25 @@ function<void> SomeFunction() {
 				</Here>
 			</Tags>
 		</Nested>
+
+		<AnotherNested>{ withstuff}</AnotherNested>
+		<ThirdNested />
+		more text
 	</SomeTag>
 
-	var fifth = <SomeTag @First="first!" SomeAttribute="helloworld" @Second={second} AnotherAttr={someExpr} />
+	var fourth2 = <SomeTag><Foo/></SomeTag>
+
+	var fifth = <SomeTag @First="first!" SomeAttribute="helloworld" @Second={second} AnotherAttr={someExpr} EvenMoreAttributesGo="Here!" />
+
+	var fifth2 = <SomeTag @First="first!" SomeAttribute="helloworld" @Second={second} AnotherAttr={someExpr} EvenMoreAttributesGo="Here!" ><stuff/> stuff here</SomeTag>
 
 	var sixth = <Is.SomeTag>Some text!</Is.SomeTag>
 
 	var seventh = <SomeTag @Foo.Bar={Baz.Meh}	/>
 
 	var eighth = <SomeTag>I love to put {expressions} here in the {cool} text{s}!</SomeTag>
+
+	var ninth = <Foo Bar={{'someawesomekey': this.foo.bar.baz.meh, 'andanotherawesomekey': morestuffgoeshere}}/>
+
+	var tenth = <Foo @Bar={someType{foo: 'foo', bar: 'bar'}}/>
 }

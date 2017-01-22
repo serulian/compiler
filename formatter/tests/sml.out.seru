@@ -1,25 +1,46 @@
 function<void> SomeFunction() {
 	var first = <SomeTag />
-	var second = <SomeTag>
-		some text goes here
+	var second = <SomeTag>some text goes here
 	</SomeTag>
 
 	var third = <SomeTag SomeAttribute="helloworld" AnotherAttr={someExpr} />
 	var fourth = <SomeTag>
 		<Nested>
 			<Tags>
-				<Here>
-					Text!
+				<Here>Text!
 				</Here>
 			</Tags>
 		</Nested>
+
+		<AnotherNested>{withstuff}</AnotherNested>
+		<ThirdNested />
+		more text
 	</SomeTag>
 
-	var fifth = <SomeTag SomeAttribute="helloworld" AnotherAttr={someExpr} @First="first!" @Second={second} />
+	var fourth2 = <SomeTag>
+		<Foo />
+	</SomeTag>
+
+	var fifth = <SomeTag SomeAttribute="helloworld" AnotherAttr={someExpr}
+	                     EvenMoreAttributesGo="Here!" @First="first!"
+	                     @Second={second} />
+
+	var fifth2 = <SomeTag SomeAttribute="helloworld" AnotherAttr={someExpr}
+	                      EvenMoreAttributesGo="Here!" @First="first!"
+	                      @Second={second}>
+		<stuff /> stuff here
+	</SomeTag>
 
 	var sixth = <Is.SomeTag>Some text!</Is.SomeTag>
 
 	var seventh = <SomeTag @Foo.Bar={Baz.Meh} />
 
 	var eighth = <SomeTag>I love to put {expressions} here in the {cool} text{s}!</SomeTag>
+
+	var ninth = <Foo Bar={{
+		'someawesomekey': this.foo.bar.baz.meh,
+		'andanotherawesomekey': morestuffgoeshere,
+	}} />
+
+	var tenth = <Foo @Bar={someType{foo: 'foo', bar: 'bar'}} />
 }

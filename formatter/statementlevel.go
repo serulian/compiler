@@ -16,10 +16,20 @@ func (sf *sourceFormatter) emitStatementBlock(node formatterNode) {
 
 	statements := node.getChildren(parser.NodeStatementBlockStatement)
 	if len(statements) > 0 {
-		// Special case: A single return or reject statement.
+		// Special case: A single return or reject statement with character length <= 50 and
+		// (if under a conditional), the condition does not have an else clause.
 		if len(statements) == 1 {
-			if statements[0].GetType() == parser.NodeTypeReturnStatement ||
-				statements[0].GetType() == parser.NodeTypeRejectStatement {
+			valid := statements[0].GetType() == parser.NodeTypeReturnStatement ||
+				statements[0].GetType() == parser.NodeTypeRejectStatement
+
+			parentNode, hasParentNode := sf.parentNode()
+			if valid && hasParentNode && parentNode.GetType() == parser.NodeTypeConditionalStatement {
+				_, hasElse := parentNode.tryGetChild(parser.NodeConditionalStatementElseClause)
+				valid = !hasElse
+			}
+
+			if valid {
+
 				formatter := &sourceFormatter{
 					indentationLevel: 0,
 					hasNewline:       true,
@@ -29,7 +39,7 @@ func (sf *sourceFormatter) emitStatementBlock(node formatterNode) {
 				}
 
 				formatter.emitNode(statements[0])
-				if len(formatter.buf.String())+sf.existingLineLength <= 80 {
+				if len(formatter.buf.String())+sf.existingLineLength <= 50 {
 					sf.append(" ")
 					sf.emitNode(statements[0])
 					sf.append(" ")

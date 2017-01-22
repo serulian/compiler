@@ -3,9 +3,13 @@
  */
 @•typealias('coolInterface')
 interface SomeInterface<T : int, R : arrrrr> {
-	constructor SecondConstructor() { return SomeClass<T>.new() }
+	constructor SecondConstructor() {
+		return SomeClass<T>.new()
+	}
 
-	constructor FirstConstructor(oneParam Here) { reject Because.ThatsWhy() }
+	constructor FirstConstructor(oneParam Here) {
+		reject Because.ThatsWhy()
+	}
 
 	function<void> DoSomething<Q : any>(firstParam int, secondParam string*)
 

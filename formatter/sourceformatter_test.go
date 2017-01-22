@@ -72,6 +72,9 @@ var goldenTests = []goldenTest{
 	{"expressions test", "expressions"},
 	{"nullable precedence test", "nullable"},
 	{"sml test", "sml"},
+	{"simple return test", "simplereturn"},
+	{"if-else return test", "ifelsereturn"},
+	{"null assert test", "nullassert"},
 }
 
 func conductParsing(t *testing.T, test goldenTest, source []byte) (*parseTree, formatterNode) {
