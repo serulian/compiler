@@ -5,9 +5,13 @@ class SomeClass<T : int> : FirstClass + SecondClass {
 	var<int?> noInit
 	var<int> foo = bar
 
-	constructor SecondConstructor() { return SomeClass<T>.new() }
+	constructor SecondConstructor() {
+		return SomeClass<T>.new()
+	}
 
-	constructor FirstConstructor(oneParam Here) { reject Because.ThatsWhy() }
+	constructor FirstConstructor(oneParam Here) {
+		reject Because.ThatsWhy()
+	}
 
 	function<void> DoSomething<Q : any>(firstParam int, secondParam string*) {
 		return
@@ -17,20 +21,24 @@ class SomeClass<T : int> : FirstClass + SecondClass {
 	 * SomeProp is some sort of prop.
 	 */
 	property<SomeType?> SomeProp {
-		get  { return null }
+		get { return null }
 
-		set  {
+		set {
 			this.foo = val
 		}
 	}
 
 	property<bool> GetterProp {
-		get  { return true }
+		get { return true }
 	}
 
-	operator Range(first int, second int) { return someStream }
+	operator Range(first int, second int) {
+		return someStream
+	}
 
-	operator<someOpReturn> someOp(onlyOneParam here) { return someThing }
+	operator<someOpReturn> someOp(onlyOneParam here) {
+		return someThing
+	}
 
 	function<int> AnotherFunction() { return 33 }
 }

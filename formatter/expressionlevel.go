@@ -7,6 +7,7 @@ package formatter
 import (
 	"container/list"
 	"strings"
+	"unicode"
 
 	"github.com/serulian/compiler/parser"
 )
@@ -441,15 +442,36 @@ func (sf *sourceFormatter) emitKeywordNotExpression(node formatterNode) {
 
 // emitSmlAttributes emits all the attributes/decorators under the given SML expression
 // node.
-func (sf *sourceFormatter) emitSmlAttributes(node formatterNode, predicate string) {
+func (sf *sourceFormatter) emitSmlAttributes(node formatterNode, predicate string, tagOffset int) {
 	attributes := node.getChildren(predicate)
 	if len(attributes) == 0 {
 		return
 	}
 
 	for _, attribute := range attributes {
-		sf.append(" ")
-		sf.emitNode(attribute)
+		// Determine if the attribute + the existing text will push the line length past 80.
+		// If so, we push the attribute to the next line.
+		formatter := &sourceFormatter{
+			indentationLevel: 0,
+			hasNewline:       true,
+			tree:             sf.tree,
+			nodeList:         list.New(),
+			commentMap:       sf.commentMap,
+		}
+		formatter.emitNode(attribute)
+
+		formatted := formatter.buf.String()
+		if len(formatted)+sf.existingLineLength > 80 && !strings.Contains(formatted, "\n") {
+			sf.appendLine()
+			var i = 0
+			for i = 0; i < tagOffset; i++ {
+				sf.append(" ")
+			}
+		} else {
+			sf.append(" ")
+		}
+
+		sf.append(formatted)
 	}
 }
 
@@ -459,8 +481,9 @@ func (sf *sourceFormatter) emitSmlExpression(node formatterNode) {
 	sf.emitNode(node.getChild(parser.NodeSmlExpressionTypeOrFunction))
 
 	// Add attributes and decorators.
-	sf.emitSmlAttributes(node, parser.NodeSmlExpressionAttribute)
-	sf.emitSmlAttributes(node, parser.NodeSmlExpressionDecorator)
+	postTagPosition := sf.existingLineLength
+	sf.emitSmlAttributes(node, parser.NodeSmlExpressionAttribute, postTagPosition)
+	sf.emitSmlAttributes(node, parser.NodeSmlExpressionDecorator, postTagPosition)
 
 	// Add children (if any).
 	children := node.getChildren(parser.NodeSmlExpressionChild)
@@ -478,12 +501,34 @@ func (sf *sourceFormatter) emitSmlExpression(node formatterNode) {
 		sf.appendLine()
 	}
 
-	for _, child := range children {
+	var previousEndLine = -1
+	var previousSmlExpression = false
+
+	for index, child := range children {
+		startLine, endLine := sf.getLineNumberOf(child)
+
 		switch child.GetType() {
 		case parser.NodeTypeSmlText:
-			fallthrough
+			// If this is the first or last Sml text, then properly trim
+			value := child.getProperty(parser.NodeSmlTextValue)
+			if index == 0 {
+				value = strings.TrimLeftFunc(value, unicode.IsSpace)
+			} else if index == len(children)-1 {
+				value = strings.TrimRightFunc(value, unicode.IsSpace)
+			}
+
+			sf.appendRaw(value)
 
 		case parser.NodeTypeSmlExpression:
+			if previousSmlExpression {
+				sf.appendLine()
+			}
+
+			if previousEndLine >= 0 && startLine > (previousEndLine+1) {
+				// Ensure that there is a blank line.
+				sf.ensureBlankLine()
+			}
+
 			sf.emitNode(child)
 
 		default:
@@ -491,11 +536,16 @@ func (sf *sourceFormatter) emitSmlExpression(node formatterNode) {
 			sf.emitNode(child)
 			sf.append("}")
 		}
+
+		previousEndLine = endLine
+		previousSmlExpression = child.GetType() == parser.NodeTypeSmlExpression
 	}
 
 	if children[0].GetType() == parser.NodeTypeSmlExpression {
 		sf.dedent()
-		sf.appendLine()
+		if !sf.hasNewline {
+			sf.appendLine()
+		}
 	}
 
 	sf.append("</")

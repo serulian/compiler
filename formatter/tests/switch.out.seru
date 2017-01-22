@@ -1,13 +1,16 @@
 function<void> DoSomething() {
 	switch someExpr {
 		case foo:
+			// some foobar thing
 			1
 			2
 
 		case bar:
+			// foobar is here!
 			foobar
 
 		default:
+			// de-fault!
 			return
 	}
 }

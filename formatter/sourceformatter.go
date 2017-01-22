@@ -517,6 +517,12 @@ func (sf *sourceFormatter) dedent() {
 // appendRaw adds the given value to the buffer without indenting.
 func (sf *sourceFormatter) appendRaw(value string) {
 	sf.hasNewScope = false
+	if len(value) > 0 {
+		sf.hasNewline = value[len(value)-1] == '\n'
+	} else {
+		sf.hasNewline = false
+	}
+
 	sf.buf.WriteString(value)
 }
 
