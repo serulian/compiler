@@ -1,0 +1,3 @@
+function<void> SomeFunction() {
+	var first = <SomeTag>This is a <strong>tag</strong> with stuff</SomeTag>
+}
