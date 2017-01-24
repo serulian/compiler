@@ -559,3 +559,19 @@ func (sf *sourceFormatter) append(value string) {
 func (sf *sourceFormatter) appendLine() {
 	sf.append("\n")
 }
+
+// formatNode formats the given node in an isolated context and returns the formatted source,
+// as well as whether the formatted source contains a newline.
+func (sf *sourceFormatter) formatNode(node formatterNode) (string, bool) {
+	formatter := &sourceFormatter{
+		indentationLevel: 0,
+		hasNewline:       true,
+		tree:             sf.tree,
+		nodeList:         list.New(),
+		commentMap:       sf.commentMap,
+	}
+
+	formatter.emitNode(node)
+	formatted := formatter.buf.String()
+	return formatted, strings.Contains(formatted, "\n")
+}

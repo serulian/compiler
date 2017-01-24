@@ -1,14 +1,12 @@
 function<void> SomeFunction() {
 	var first = <SomeTag />
-	var second = <SomeTag>some text goes here
-	</SomeTag>
+	var second = <SomeTag>some text goes here <FollowedByATag /></SomeTag>
 
 	var third = <SomeTag SomeAttribute="helloworld" AnotherAttr={someExpr} />
 	var fourth = <SomeTag>
 		<Nested>
 			<Tags>
-				<Here>Text!
-				</Here>
+				<Here>Text!</Here>
 			</Tags>
 		</Nested>
 

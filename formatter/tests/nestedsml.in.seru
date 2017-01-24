@@ -1,0 +1,5 @@
+function<void> SomeFunction() {
+	var first = <SomeTag>
+		  <SomeTag @First="first!" SomeAttribute="helloworld" @Second={second} AnotherAttr={someExpr} EvenMoreAttributesGo="Here!" />
+	</SomeTag>
+}
