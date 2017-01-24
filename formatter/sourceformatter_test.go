@@ -72,6 +72,7 @@ var goldenTests = []goldenTest{
 	{"expressions test", "expressions"},
 	{"nullable precedence test", "nullable"},
 	{"sml test", "sml"},
+	{"nested sml test", "nestedsml"},
 	{"simple return test", "simplereturn"},
 	{"if-else return test", "ifelsereturn"},
 	{"null assert test", "nullassert"},

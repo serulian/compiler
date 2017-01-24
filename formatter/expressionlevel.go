@@ -464,7 +464,7 @@ func (sf *sourceFormatter) emitSmlAttributes(node formatterNode, predicate strin
 		if len(formatted)+sf.existingLineLength > 80 && !strings.Contains(formatted, "\n") {
 			sf.appendLine()
 			var i = 0
-			for i = 0; i < tagOffset; i++ {
+			for i = 0; i < tagOffset-sf.indentationLevel+1; i++ {
 				sf.append(" ")
 			}
 		} else {
