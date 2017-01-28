@@ -1,0 +1,5 @@
+function<void> SomeFunction() {
+	var first = <SomeTag>
+		this is some really long text that goes here and makes the line quite long
+	</SomeTag>
+}

@@ -5,6 +5,7 @@
 package formatter
 
 import (
+	"container/list"
 	"fmt"
 	"strings"
 	"unicode"
@@ -462,8 +463,135 @@ func (sf *sourceFormatter) emitSmlAttributes(node formatterNode, predicate strin
 	return newline
 }
 
+// formatSmlChildren formats the given children of an SML expression into a formatted source string
+// and returns it, as well as a boolean indicating whether the formatted string is multiline.
+func (sf *sourceFormatter) formatSmlChildren(children []formatterNode, childStartPosition int) (string, bool) {
+	// Format each child on its own, collecting whether any have newlines and whether
+	// there are any adjacent non-textual nodes.
+	childSource := make([]string, len(children))
+	hasMultilineChild := false
+	hasAdjacentNonText := false
+	onlyIsExpression := len(children) == 1 && children[0].GetType() == parser.NodeTypeSmlExpression
+
+	for index, child := range children {
+		switch child.GetType() {
+		case parser.NodeTypeSmlText:
+			value := child.getProperty(parser.NodeSmlTextValue)
+			childSource[index] = value
+			hasMultilineChild = hasMultilineChild || strings.Contains(strings.TrimSpace(value), "\n")
+
+		case parser.NodeTypeSmlExpression:
+			hasAdjacentNonText = hasAdjacentNonText || (index > 0 && children[index-1].GetType() != parser.NodeTypeSmlText)
+
+			formatted, hasNewline := sf.formatNode(child)
+			childSource[index] = formatted
+			hasMultilineChild = hasMultilineChild || hasNewline
+
+		default:
+			hasAdjacentNonText = hasAdjacentNonText || (index > 0 && children[index-1].GetType() != parser.NodeTypeSmlText)
+
+			formatted, hasNewline := sf.formatNode(child)
+			childSource[index] = "{" + formatted + "}"
+			hasMultilineChild = hasMultilineChild || hasNewline
+		}
+	}
+
+	// Emit the child source into the child formatter.
+	cf := &sourceFormatter{
+		indentationLevel: 0,
+		hasNewline:       true,
+		tree:             sf.tree,
+		nodeList:         list.New(),
+		commentMap:       sf.commentMap,
+	}
+
+	// If newlines are necessary, then we simply emit each child followed by a newline.
+	if hasMultilineChild || hasAdjacentNonText || onlyIsExpression {
+		var previousEndLine = -1
+		for index, child := range children {
+			startLine, endLine := sf.getLineNumberOf(child)
+
+			// If the child is an SML expression, respect extra whitespace added by the user between
+			// it and any previous expression. Sometimes users like the extra whitespace, so we compact
+			// it down to a single blank line for them.
+			if child.GetType() == parser.NodeTypeSmlExpression {
+				if previousEndLine >= 0 && startLine > (previousEndLine+1) {
+					// Ensure that there is a blank line.
+					cf.ensureBlankLine()
+				}
+			}
+
+			previousEndLine = endLine
+
+			// Add the child's source.
+			cf.append(strings.TrimSpace(childSource[index]))
+			cf.appendLine()
+		}
+
+		return cf.buf.String(), true
+	}
+
+	// Otherwise, we need to determine cut points and handling of trimming accordingly.
+	cutPoints := map[int]bool{}
+
+	var currentLineCount = childStartPosition
+	for index, _ := range children {
+		formatted := childSource[index]
+
+		if index == 0 || cutPoints[index-1] {
+			formatted = strings.TrimLeftFunc(formatted, unicode.IsSpace)
+		}
+
+		if (currentLineCount + len(strings.TrimRightFunc(formatted, unicode.IsSpace))) > 80 {
+			currentLineCount = 0
+			cutPoints[index] = true
+		}
+
+		if index == len(children)-1 {
+			formatted = strings.TrimRightFunc(formatted, unicode.IsSpace)
+		}
+
+		currentLineCount = currentLineCount + len(formatted)
+	}
+
+	// Emit the child source, adding newlines at the proper cut points.
+	for index, _ := range children {
+		formatted := childSource[index]
+
+		// If this entry is the first child or there is a cut point right before it,
+		// then trim on its left side to remove unnecessary whitespace.
+		if index == 0 || cutPoints[index-1] {
+			formatted = strings.TrimLeftFunc(formatted, unicode.IsSpace)
+		}
+
+		// If this entry is the last child or this is a cut point right after it,
+		// then trim on its right side to remove unnecessary whitespace. In the case
+		// where whitespace would be necessary (not meeting the above conditions),
+		// then collapse any right-side whitespace down to a single space, as that
+		// is all that is necessary to ensure the code operations the same.
+		if index == len(children)-1 || cutPoints[index] {
+			formatted = strings.TrimRightFunc(formatted, unicode.IsSpace)
+		} else {
+			trimmed := strings.TrimRightFunc(formatted, unicode.IsSpace)
+			if len(trimmed) < len(formatted) {
+				formatted = trimmed + " "
+			}
+		}
+
+		cf.append(formatted)
+		if cutPoints[index] {
+			cf.appendLine()
+		}
+	}
+
+	return cf.buf.String(), len(cutPoints) > 0
+}
+
 // emitSmlExpression emits an SML expression value.
 func (sf *sourceFormatter) emitSmlExpression(node formatterNode) {
+	children := node.getChildren(parser.NodeSmlExpressionChild)
+
+	// Start the opening tag.
 	sf.append("<")
 	sf.emitNode(node.getChild(parser.NodeSmlExpressionTypeOrFunction))
 
@@ -474,8 +602,7 @@ func (sf *sourceFormatter) emitSmlExpression(node formatterNode) {
 	decoratorNewLine := sf.emitSmlAttributes(node, parser.NodeSmlExpressionDecorator, postTagPosition)
 	attributesNewLine := attrNewLine || decoratorNewLine
 
-	// Add children (if any).
-	children := node.getChildren(parser.NodeSmlExpressionChild)
+	// Finish the opening tag.
 	if len(children) == 0 {
 		sf.append(" />")
 		return
@@ -483,72 +610,33 @@ func (sf *sourceFormatter) emitSmlExpression(node formatterNode) {
 		sf.append(">")
 	}
 
-	// Note: We only indent and append a new line if the first child is itself
-	// a tag.
-	if children[0].GetType() == parser.NodeTypeSmlExpression || attributesNewLine {
+	// Process the children in a buffer. We measure the size of the children and whether
+	// they have any newlines in order to determine whether we need to indent their source.
+	childStartPosition := sf.existingLineLength
+	if attributesNewLine {
+		childStartPosition = 0
+	}
+
+	childSource, childIndentRequired := sf.formatSmlChildren(children, childStartPosition)
+
+	// Indent if necessary.
+	if childIndentRequired || attributesNewLine {
 		sf.indent()
 		sf.appendLine()
 	}
 
-	var previousEndLine = -1
-	var previousSmlExpression = false
-	var previousNewlined = false
+	// Add the formatted children.
+	sf.append(childSource)
 
-	for index, child := range children {
-		startLine, endLine := sf.getLineNumberOf(child)
-
-		switch child.GetType() {
-		case parser.NodeTypeSmlText:
-			if previousNewlined {
-				sf.appendLine()
-			}
-
-			value := child.getProperty(parser.NodeSmlTextValue)
-
-			if index == 0 || previousNewlined {
-				value = strings.TrimLeftFunc(value, unicode.IsSpace)
-			}
-
-			if index == len(children)-1 {
-				value = strings.TrimRightFunc(value, unicode.IsSpace)
-			}
-
-			sf.append(value)
-			previousNewlined = false
-
-		case parser.NodeTypeSmlExpression:
-			if previousSmlExpression {
-				sf.appendLine()
-				previousNewlined = true
-			}
-
-			if previousEndLine >= 0 && startLine > (previousEndLine+1) {
-				// Ensure that there is a blank line.
-				sf.ensureBlankLine()
-			}
-
-			formatted, hasNewline := sf.formatNode(child)
-			sf.append(formatted)
-			previousNewlined = previousNewlined || hasNewline
-
-		default:
-			sf.append("{")
-			sf.emitNode(child)
-			sf.append("}")
-			previousNewlined = false
-		}
-
-		previousEndLine = endLine
-		previousSmlExpression = child.GetType() == parser.NodeTypeSmlExpression
-	}
-
-	if children[0].GetType() == parser.NodeTypeSmlExpression || attributesNewLine {
+	// Dedent if necessary.
+	if childIndentRequired || attributesNewLine {
 		sf.dedent()
 		if !sf.hasNewline {
 			sf.appendLine()
 		}
 	}
 
+	// Add the close tag.
 	sf.append("</")
 	sf.emitNode(node.getChild(parser.NodeSmlExpressionTypeOrFunction))
 	sf.append(">")

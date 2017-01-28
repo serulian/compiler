@@ -1,3 +1,14 @@
 function<void> SomeFunction() {
 	var first = <SomeTag>This is a <strong>tag</strong> with stuff</SomeTag>
+	var second = <SomeTag>This is a <strong>tag</strong> with stuff</SomeTag>
+
+	var third = <SomeTag>
+		<Foo /> followed by a {bar} went to the corner <Market>Super!</Market>
+		to get ahold of all the really cool {stuff}
+	</SomeTag>
+
+	var fourth = <SomeTag>
+		<Foo /> followed by {bar}s went to the corner <Market>Super {thing}</Market>
+		to get ahold of all the really cool {stuff}
+	</SomeTag>
 }
