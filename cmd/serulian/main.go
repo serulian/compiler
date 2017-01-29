@@ -132,9 +132,9 @@ func main() {
 		},
 	}
 
-	var cmdStabilize = &cobra.Command{
-		Use:   "stabilize [source path] [vcs import]",
-		Short: "Stablizes imports",
+	var cmdUpgrade = &cobra.Command{
+		Use:   "upgrade [source path] [vcs import]",
+		Short: "Upgrades imports",
 		Long:  `Freezes the specified VCS imports in all Serulian files at the given path at the latest *stable* version`,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) < 1 {
@@ -147,7 +147,28 @@ func main() {
 				os.Exit(-1)
 			}
 
-			if !formatter.Stabilize(args[0], args[1:len(args)], vcsDevelopmentDirectories, debug) {
+			if !formatter.Upgrade(args[0], args[1:len(args)], vcsDevelopmentDirectories, debug) {
+				os.Exit(-1)
+			}
+		},
+	}
+
+	var cmdUpdate = &cobra.Command{
+		Use:   "update [source path] [vcs import]",
+		Short: "Updates imports",
+		Long:  `Changes the specified imports to the latest version *compatible* version, as per semvar`,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) < 1 {
+				fmt.Println("Expected source path")
+				os.Exit(-1)
+			}
+
+			if len(args) < 2 {
+				fmt.Println("Expected one or more VCS import patterns")
+				os.Exit(-1)
+			}
+
+			if !formatter.Update(args[0], args[1:len(args)], vcsDevelopmentDirectories, debug) {
 				os.Exit(-1)
 			}
 		},
@@ -173,7 +194,8 @@ func main() {
 
 	cmdImports.AddCommand(cmdFreeze)
 	cmdImports.AddCommand(cmdUnfreeze)
-	cmdImports.AddCommand(cmdStabilize)
+	cmdImports.AddCommand(cmdUpgrade)
+	cmdImports.AddCommand(cmdUpdate)
 	cmdImports.PersistentFlags().StringSliceVar(&vcsDevelopmentDirectories, "vcs-dev-dir", []string{},
 		"If specified, VCS packages without specification will be first checked against this path")
 

@@ -167,8 +167,59 @@ func (sf *sourceFormatter) emitModifiedImportSource(info importInfo) bool {
 		sf.append(parsed.AsGeneric().String())
 		return true
 
-	case importHandlingStabilize:
-		// For stabilizing, perform VCS checkout and append the latest stable version of the
+	case importHandlingUpdate:
+		// Make sure the import refers to a tag that has a semvar.
+		if parsed.Tag() == "" {
+			sf.importHandling.logInfo(info.node, "Import '%v' doesn't refer to a version; skipped", info.source)
+			return false
+		}
+
+		currentVersion, err := semver.ParseTolerant(parsed.Tag())
+		if err != nil {
+			sf.importHandling.logInfo(info.node, "Import '%v' doesn't refer to a semantic version; skipped", info.source)
+			return false
+		}
+
+		// For updating, perform VCS checkout and append the latest applicable minor version of the
+		// import, as per semvar. If none, then we don't change the import.
+		inspectInfo, err := sf.getVCSInfo(info)
+		if err != nil {
+			return false
+		}
+
+		// Find the latest *minor* version, and update to it.
+		currentTag := ""
+		for _, tag := range inspectInfo.Tags {
+			// Skip empty tags.
+			if len(tag) == 0 {
+				continue
+			}
+
+			// Skip tags that don't parse, as well as pre-release versions
+			// (since they are, by definition, not considered stable).
+			parsed, err := semver.ParseTolerant(tag)
+			if err != nil || len(parsed.Pre) > 0 {
+				continue
+			}
+
+			// Find the latest stable version.
+			if parsed.GT(currentVersion) && parsed.Major == currentVersion.Major {
+				currentVersion = parsed
+				currentTag = tag
+			}
+		}
+
+		if currentTag == "" {
+			sf.importHandling.logInfo(info.node, "No updated version found for '%v'", info.source)
+			return false
+		}
+
+		sf.importHandling.logSuccess(info.node, "Updating '%v' to version '%v'", info.source, currentTag)
+		sf.append(parsed.WithTag(currentTag).String())
+		return true
+
+	case importHandlingUpgrade:
+		// For upgrading, perform VCS checkout and append the latest stable version of the
 		// import, as per semvar. If none, then we don't change the import.
 		inspectInfo, err := sf.getVCSInfo(info)
 		if err != nil {
@@ -203,7 +254,7 @@ func (sf *sourceFormatter) emitModifiedImportSource(info importInfo) bool {
 			return false
 		}
 
-		sf.importHandling.logSuccess(info.node, "Stabilizing '%v' at tag '%v'", info.source, currentTag)
+		sf.importHandling.logSuccess(info.node, "Upgrading '%v' to version '%v'", info.source, currentTag)
 		sf.append(parsed.WithTag(currentTag).String())
 		return true
 

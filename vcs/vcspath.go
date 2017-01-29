@@ -57,6 +57,11 @@ func (pp vcsPackagePath) URL() string {
 	return pp.url
 }
 
+// Tag returns the tag of the VCS package.
+func (pp vcsPackagePath) Tag() string {
+	return pp.tag
+}
+
 // WithCommit returns the VCS package path with the given commit.
 func (pp vcsPackagePath) WithCommit(commitSha string) vcsPackagePath {
 	return vcsPackagePath{

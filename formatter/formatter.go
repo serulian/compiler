@@ -26,7 +26,8 @@ const (
 	importHandlingNone importHandlingOption = iota
 	importHandlingFreeze
 	importHandlingUnfreeze
-	importHandlingStabilize
+	importHandlingUpdate
+	importHandlingUpgrade
 )
 
 // importHandlingInfo defines the information for handling (freezing or unfreezing)
@@ -85,10 +86,16 @@ func Unfreeze(path string, importPatterns []string, vcsDevelopmentDirectories []
 	return formatFiles(path, importHandlingInfo{importHandlingUnfreeze, importPatterns, vcsDevelopmentDirectories, true}, debug)
 }
 
-// Stabilize formats the source files at the given path and stabilizes the specified
+// Update formats the source files at the given path and updates the specified
+// VCS import patterns by moving forward their minor version, as per semvar.
+func Update(path string, importPatterns []string, vcsDevelopmentDirectories []string, debug bool) bool {
+	return formatFiles(path, importHandlingInfo{importHandlingUpdate, importPatterns, vcsDevelopmentDirectories, true}, debug)
+}
+
+// Upgrade formats the source files at the given path and upgrades the specified
 // VCS import patterns by making them refer to the latest stable version, as per semvar.
-func Stabilize(path string, importPatterns []string, vcsDevelopmentDirectories []string, debug bool) bool {
-	return formatFiles(path, importHandlingInfo{importHandlingStabilize, importPatterns, vcsDevelopmentDirectories, true}, debug)
+func Upgrade(path string, importPatterns []string, vcsDevelopmentDirectories []string, debug bool) bool {
+	return formatFiles(path, importHandlingInfo{importHandlingUpgrade, importPatterns, vcsDevelopmentDirectories, true}, debug)
 }
 
 // Format formats the source files at the given path.
