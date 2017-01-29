@@ -57,17 +57,13 @@ The above will reformat all Serulian files found under the `somedir` directory.
 
 ### Working with imports
 
-[Imports in Serulian](https://github.com/Serulian/spec/blob/master/proposals/ImportsAndPackages.md) are usually tied to a specific commit SHA or tagged version. The Serulian toolkit commands `freeze`, `unfreeze` and `stabilize` can be used to easily manage the versions of these imports.
+[Imports in Serulian](https://github.com/Serulian/spec/blob/master/proposals/ImportsAndPackages.md) are usually tied to a specific commit SHA or tagged version. The Serulian toolkit commands `freeze`, `unfreeze`, `update` and `upgrade` can be used to easily manage the versions of these imports.
 
-For example, given a source file that imports a HEAD revision of another package:
-
-```seru
-from "github.com/Serulian/somelib" import SomeThing
-```
+#### Freeze
 
 The `imports freeze` command can be used to rewrite the import to point to its current HEAD SHA:
 
-```
+```sh
 ./serulian imports freeze ./... github.com/Serulian/somelib
 ```
 
@@ -77,24 +73,51 @@ Contents of the matching source file after `freeze`:
 from "github.com/Serulian/somelib:somesha" import SomeThing
 ```
 
-Similarly, the `unfreeze` command can be used to rewrite imports back to HEAD, for upgrading and real-time development:
+#### Unfreeze
 
-```
+The `unfreeze` command can be used to rewrite imports back to HEAD, for real-time development:
+
+```sh
 ./serulian imports unfreeze ./... github.com/Serulian/somelib
 ```
 
-If the library being imported is versioned using [Semantic Versioning](http://semver.org/), the additional command `stabilize` can be used to rewrite the import to the latest *stable* version:
+#### Update
 
-```
-./serulian imports stabilize ./... github.com/Serulian/somelib
-```
+If the library being imported is versioned using [Semantic Versioning](http://semver.org/), the additional command `update` can be used to update the import from an existing semantic version to a *minor* later version:
 
-Contents of the matching source file after `stabilize`:
+Given contents:
 
 ```seru
 from "github.com/Serulian/somelib@v1.2.3" import SomeThing
 ```
 
+Running:
+
+```sh
+./serulian imports update ./... github.com/Serulian/somelib
+```
+
+Contents of the matching source file after `update`:
+
+```seru
+from "github.com/Serulian/somelib@v1.3.0" import SomeThing
+```
+
+**Note:** The version will *not* be upgraded if the only change available is a major version change. To apply a major version change, use `upgrade`.
+
+#### Upgrade
+
+If the library being imported is versioned using [Semantic Versioning](http://semver.org/), the additional command `upgrade` can be used to upgrade the import to the latest *stable* version:
+
+```sh
+./serulian imports upgrade ./... github.com/Serulian/somelib
+```
+
+Contents of the matching source file after `upgrade`:
+
+```seru
+from "github.com/Serulian/somelib@v1.2.3" import SomeThing
+```
 
 ### Testing a project
 
