@@ -7,6 +7,8 @@ package vcs
 import (
 	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var _ = fmt.Printf
@@ -26,6 +28,8 @@ var successTests = []pathSuccessTest{
 	pathSuccessTest{"github.com/some/project//somesubdir", "github.com/some/project", "", "", "somesubdir"},
 	pathSuccessTest{"github.com/some/project//somesubdir:somebranch", "github.com/some/project", "somebranch", "", "somesubdir"},
 	pathSuccessTest{"github.com/some/project//somesubdir@sometag", "github.com/some/project", "", "sometag", "somesubdir"},
+	pathSuccessTest{"github.com/some/project//somesubdir@v1.2.3", "github.com/some/project", "", "v1.2.3", "somesubdir"},
+	pathSuccessTest{"github.com/some/project//somesubdir@v1.2.3-alpha", "github.com/some/project", "", "v1.2.3-alpha", "somesubdir"},
 }
 
 var failTests = []string{
@@ -50,27 +54,31 @@ func TestVCSParsingSuccess(t *testing.T) {
 
 		if err != nil {
 			t.Errorf("Expected no error, found: %v", err)
-			return
+			continue
 		}
 
 		if result.url != test.url {
 			t.Errorf("Expected url %s, found: %s", test.url, result.url)
-			return
+			continue
 		}
 
 		if result.branchOrCommit != test.branchOrCommit {
 			t.Errorf("Expected branchOrCommit %s, found: %s", test.branchOrCommit, result.branchOrCommit)
-			return
+			continue
 		}
 
 		if result.tag != test.tag {
 			t.Errorf("Expected tag %s, found: %s", test.tag, result.tag)
-			return
+			continue
 		}
 
 		if result.subpackage != test.subpackage {
 			t.Errorf("Expected subpackage %s, found: %s", test.subpackage, result.subpackage)
-			return
+			continue
+		}
+
+		if !assert.Equal(t, test.path, result.String(), "Parse <-> String mismatch") {
+			continue
 		}
 	}
 }
