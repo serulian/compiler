@@ -155,7 +155,7 @@ func (sf *sourceFormatter) emitModifiedImportSource(info importInfo) bool {
 	}
 
 	// Check if the import's URL was specified to be modified.
-	if !sf.importHandling.hasImport(parsed.URL()) {
+	if !sf.importHandling.matchesImport(parsed.URL()) {
 		return false
 	}
 

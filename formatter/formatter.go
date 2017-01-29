@@ -19,6 +19,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/kr/text"
+	"github.com/ryanuber/go-glob"
 )
 
 type importHandlingOption int
@@ -33,14 +34,14 @@ const (
 // VCS imports.
 type importHandlingInfo struct {
 	option                    importHandlingOption
-	imports                   []string
+	importPatterns            []string
 	vcsDevelopmentDirectories []string
 	logProgress               bool
 }
 
-func (ih importHandlingInfo) hasImport(url string) bool {
-	for _, importUrl := range ih.imports {
-		if importUrl == url {
+func (ih importHandlingInfo) matchesImport(url string) bool {
+	for _, importUrlPattern := range ih.importPatterns {
+		if glob.Glob(importUrlPattern, url) {
 			return true
 		}
 	}
@@ -74,15 +75,15 @@ func (ih importHandlingInfo) log(prefix string, prefixColor *color.Color, node f
 }
 
 // Freeze formats the source files at the given path and freezes the specified
-// VCS imports.
-func Freeze(path string, imports []string, vcsDevelopmentDirectories []string, debug bool) bool {
-	return formatFiles(path, importHandlingInfo{importHandlingFreeze, imports, vcsDevelopmentDirectories, true}, debug)
+// VCS import patterns.
+func Freeze(path string, importPatterns []string, vcsDevelopmentDirectories []string, debug bool) bool {
+	return formatFiles(path, importHandlingInfo{importHandlingFreeze, importPatterns, vcsDevelopmentDirectories, true}, debug)
 }
 
 // Unfreeze formats the source files at the given path and unfreezes the specified
-// VCS imports.
-func Unfreeze(path string, imports []string, vcsDevelopmentDirectories []string, debug bool) bool {
-	return formatFiles(path, importHandlingInfo{importHandlingUnfreeze, imports, vcsDevelopmentDirectories, true}, debug)
+// VCS import patterns.
+func Unfreeze(path string, importPatterns []string, vcsDevelopmentDirectories []string, debug bool) bool {
+	return formatFiles(path, importHandlingInfo{importHandlingUnfreeze, importPatterns, vcsDevelopmentDirectories, true}, debug)
 }
 
 // Format formats the source files at the given path.

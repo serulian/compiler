@@ -101,7 +101,7 @@ func main() {
 			}
 
 			if len(args) < 2 {
-				fmt.Println("Expected one or more VCS imports")
+				fmt.Println("Expected one or more VCS import patterns")
 				os.Exit(-1)
 			}
 
@@ -122,7 +122,7 @@ func main() {
 			}
 
 			if len(args) < 2 {
-				fmt.Println("Expected one or more VCS imports")
+				fmt.Println("Expected one or more VCS import patterns")
 				os.Exit(-1)
 			}
 
