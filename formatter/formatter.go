@@ -17,8 +17,6 @@ import (
 	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/parser"
 
-	"github.com/fatih/color"
-	"github.com/kr/text"
 	"github.com/ryanuber/go-glob"
 )
 
@@ -39,6 +37,8 @@ type importHandlingInfo struct {
 	logProgress               bool
 }
 
+// matchesImport returns true if the given VCS url matches one of the import patterns
+// given to the format command.
 func (ih importHandlingInfo) matchesImport(url string) bool {
 	for _, importUrlPattern := range ih.importPatterns {
 		if glob.Glob(importUrlPattern, url) {
@@ -50,28 +50,22 @@ func (ih importHandlingInfo) matchesImport(url string) bool {
 }
 
 func (ih importHandlingInfo) logError(node formatterNode, message string, args ...interface{}) {
-	ih.log("ERROR", color.New(color.FgRed, color.Bold), node, message, args...)
+	ih.log(compilerutil.ErrorLogLevel, node, message, args...)
 }
 
 func (ih importHandlingInfo) logInfo(node formatterNode, message string, args ...interface{}) {
-	ih.log("INFO", color.New(color.FgBlue, color.Bold), node, message, args...)
+	ih.log(compilerutil.InfoLogLevel, node, message, args...)
 }
 
 func (ih importHandlingInfo) logSuccess(node formatterNode, message string, args ...interface{}) {
-	ih.log("SUCCESS", color.New(color.FgGreen, color.Bold), node, message, args...)
+	ih.log(compilerutil.SuccessLogLevel, node, message, args...)
 }
 
-func (ih importHandlingInfo) log(prefix string, prefixColor *color.Color, node formatterNode, message string, args ...interface{}) {
-	locationColor := color.New(color.FgWhite)
-	messageColor := color.New(color.FgHiWhite)
-
+func (ih importHandlingInfo) log(level compilerutil.ConsoleLogLevel, node formatterNode, message string, args ...interface{}) {
 	startRune, _ := strconv.Atoi(node.getProperty(parser.NodePredicateStartRune))
 	inputSource := compilercommon.InputSource(node.getProperty(parser.NodePredicateSource))
 	sal := compilercommon.NewSourceAndLocation(inputSource, startRune)
-
-	prefixColor.Print(prefix)
-	locationColor.Printf(": At %v:%v:%v:\n", sal.Source(), sal.Location().LineNumber()+1, sal.Location().ColumnPosition()+1)
-	messageColor.Printf("%s\n\n", text.Indent(text.Wrap(fmt.Sprintf(message, args...), 80), "  "))
+	compilerutil.LogToConsole(level, sal, message, args...)
 }
 
 // Freeze formats the source files at the given path and freezes the specified
