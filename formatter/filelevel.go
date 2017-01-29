@@ -9,7 +9,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/serulian/compiler/packageloader"
+	"github.com/blang/semver"
+
 	"github.com/serulian/compiler/parser"
 	"github.com/serulian/compiler/vcs"
 )
@@ -166,28 +167,56 @@ func (sf *sourceFormatter) emitModifiedImportSource(info importInfo) bool {
 		sf.append(parsed.AsGeneric().String())
 		return true
 
-	case importHandlingFreeze:
-		// For freezing, perform VCS checkout and append the commit of
-		// the checked out info.
-		if commitSha, exists := sf.vcsCommitCache[parsed.URL()]; exists {
-			sf.importHandling.logSuccess(info.node, "Freezing '%v' at commit '%v'", info.source, commitSha)
-			sf.append(parsed.WithCommit(commitSha).String())
-			return true
-		}
-
-		sf.importHandling.logInfo(info.node, "Performing checkout and inspection of '%v'", parsed.URL())
-		commitSha, err, _ := vcs.PerformVCSCheckoutAndInspect(
-			info.source, packageloader.SerulianPackageDirectory,
-			sf.importHandling.vcsDevelopmentDirectories...)
-
+	case importHandlingStabilize:
+		// For stabilizing, perform VCS checkout and append the latest stable version of the
+		// import, as per semvar. If none, then we don't change the import.
+		inspectInfo, err := sf.getVCSInfo(info)
 		if err != nil {
-			sf.importHandling.logError(info.node, "Could not checkout and inspect %v: %v", parsed.URL(), err)
 			return false
 		}
 
-		sf.importHandling.logSuccess(info.node, "Freezing '%v' at commit '%v'", info.source, commitSha)
-		sf.vcsCommitCache[parsed.URL()] = commitSha
-		sf.append(parsed.WithCommit(commitSha).String())
+		currentVersion, _ := semver.Parse("0.0.0")
+		currentTag := ""
+
+		for _, tag := range inspectInfo.Tags {
+			// Skip empty tags.
+			if len(tag) == 0 {
+				continue
+			}
+
+			// Skip tags that don't parse, as well as pre-release versions
+			// (since they are, by definition, not considered stable).
+			parsed, err := semver.ParseTolerant(tag)
+			if err != nil || len(parsed.Pre) > 0 {
+				continue
+			}
+
+			// Find the latest stable version.
+			if parsed.GT(currentVersion) {
+				currentVersion = parsed
+				currentTag = tag
+			}
+		}
+
+		if currentTag == "" {
+			sf.importHandling.logWarning(info.node, "No stable versioned tag found for '%v'", info.source)
+			return false
+		}
+
+		sf.importHandling.logSuccess(info.node, "Stabilizing '%v' at tag '%v'", info.source, currentTag)
+		sf.append(parsed.WithTag(currentTag).String())
+		return true
+
+	case importHandlingFreeze:
+		// For freezing, perform VCS checkout and append the commit of
+		// the checked out info.
+		inspectInfo, err := sf.getVCSInfo(info)
+		if err != nil {
+			return false
+		}
+
+		sf.importHandling.logSuccess(info.node, "Freezing '%v' at commit '%v'", info.source, inspectInfo.CommitSHA)
+		sf.append(parsed.WithCommit(inspectInfo.CommitSHA).String())
 		return true
 
 	case importHandlingNone:

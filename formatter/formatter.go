@@ -26,6 +26,7 @@ const (
 	importHandlingNone importHandlingOption = iota
 	importHandlingFreeze
 	importHandlingUnfreeze
+	importHandlingStabilize
 )
 
 // importHandlingInfo defines the information for handling (freezing or unfreezing)
@@ -53,6 +54,10 @@ func (ih importHandlingInfo) logError(node formatterNode, message string, args .
 	ih.log(compilerutil.ErrorLogLevel, node, message, args...)
 }
 
+func (ih importHandlingInfo) logWarning(node formatterNode, message string, args ...interface{}) {
+	ih.log(compilerutil.WarningLogLevel, node, message, args...)
+}
+
 func (ih importHandlingInfo) logInfo(node formatterNode, message string, args ...interface{}) {
 	ih.log(compilerutil.InfoLogLevel, node, message, args...)
 }
@@ -78,6 +83,12 @@ func Freeze(path string, importPatterns []string, vcsDevelopmentDirectories []st
 // VCS import patterns.
 func Unfreeze(path string, importPatterns []string, vcsDevelopmentDirectories []string, debug bool) bool {
 	return formatFiles(path, importHandlingInfo{importHandlingUnfreeze, importPatterns, vcsDevelopmentDirectories, true}, debug)
+}
+
+// Stabilize formats the source files at the given path and stabilizes the specified
+// VCS import patterns by making them refer to the latest stable version, as per semvar.
+func Stabilize(path string, importPatterns []string, vcsDevelopmentDirectories []string, debug bool) bool {
+	return formatFiles(path, importHandlingInfo{importHandlingStabilize, importPatterns, vcsDevelopmentDirectories, true}, debug)
 }
 
 // Format formats the source files at the given path.

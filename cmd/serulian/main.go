@@ -92,7 +92,7 @@ func main() {
 
 	var cmdFreeze = &cobra.Command{
 		Use:   "freeze [source path] [vcs import]",
-		Short: "Freezes the specified VCS imports in all Serulian files at the given path",
+		Short: "Freezes imports",
 		Long:  `Modifies all imports of the given VCS libraries to refer to the SHA of the current HEAD commit`,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) < 1 {
@@ -113,7 +113,7 @@ func main() {
 
 	var cmdUnfreeze = &cobra.Command{
 		Use:   "unfreeze [source path] [vcs import]",
-		Short: "Unfreezes the specified VCS imports in all Serulian files at the given path",
+		Short: "Unfreezes imports",
 		Long:  `Modifies all imports of the given VCS libraries to refer to HEAD`,
 		Run: func(cmd *cobra.Command, args []string) {
 			if len(args) < 1 {
@@ -127,6 +127,27 @@ func main() {
 			}
 
 			if !formatter.Unfreeze(args[0], args[1:len(args)], vcsDevelopmentDirectories, debug) {
+				os.Exit(-1)
+			}
+		},
+	}
+
+	var cmdStabilize = &cobra.Command{
+		Use:   "stabilize [source path] [vcs import]",
+		Short: "Stablizes imports",
+		Long:  `Freezes the specified VCS imports in all Serulian files at the given path at the latest *stable* version`,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) < 1 {
+				fmt.Println("Expected source path")
+				os.Exit(-1)
+			}
+
+			if len(args) < 2 {
+				fmt.Println("Expected one or more VCS import patterns")
+				os.Exit(-1)
+			}
+
+			if !formatter.Stabilize(args[0], args[1:len(args)], vcsDevelopmentDirectories, debug) {
 				os.Exit(-1)
 			}
 		},
@@ -152,6 +173,7 @@ func main() {
 
 	cmdImports.AddCommand(cmdFreeze)
 	cmdImports.AddCommand(cmdUnfreeze)
+	cmdImports.AddCommand(cmdStabilize)
 	cmdImports.PersistentFlags().StringSliceVar(&vcsDevelopmentDirectories, "vcs-dev-dir", []string{},
 		"If specified, VCS packages without specification will be first checked against this path")
 

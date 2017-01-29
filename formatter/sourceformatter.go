@@ -11,22 +11,24 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/vcs"
 )
 
 // sourceFormatter formats a Serulian parse tree.
 type sourceFormatter struct {
-	importHandling     importHandlingInfo // Information for handling import freezing/unfreezing.
-	tree               *parseTree         // The parse tree being formatted.
-	buf                bytes.Buffer       // The buffer for the new source code.
-	indentationLevel   int                // The current indentation level.
-	hasNewline         bool               // Whether there is a newline at the end of the buffer.
-	hasBlankline       bool               // Whether there is a blank line at the end of the buffer.
-	hasNewScope        bool               // Whether new scope has been started as the last text added.
-	existingLineLength int                // Length of the existing line.
-	nodeList           *list.List         // List of the current nodes being formatted.
-	commentMap         map[string]bool    // Map of the start runes of comments already emitted.
-	vcsCommitCache     map[string]string  // Cache of VCS path to its commit SHA.
+	importHandling     importHandlingInfo         // Information for handling import freezing/unfreezing.
+	tree               *parseTree                 // The parse tree being formatted.
+	buf                bytes.Buffer               // The buffer for the new source code.
+	indentationLevel   int                        // The current indentation level.
+	hasNewline         bool                       // Whether there is a newline at the end of the buffer.
+	hasBlankline       bool                       // Whether there is a blank line at the end of the buffer.
+	hasNewScope        bool                       // Whether new scope has been started as the last text added.
+	existingLineLength int                        // Length of the existing line.
+	nodeList           *list.List                 // List of the current nodes being formatted.
+	commentMap         map[string]bool            // Map of the start runes of comments already emitted.
+	vcsInspectCache    map[string]vcs.InspectInfo // Cache of VCS path to its inspect info.
 }
 
 // buildFormattedSource builds the fully formatted source for the parse tree starting at the given
@@ -40,11 +42,37 @@ func buildFormattedSource(tree *parseTree, rootNode formatterNode, importHandlin
 		tree:             tree,
 		nodeList:         list.New(),
 		commentMap:       map[string]bool{},
-		vcsCommitCache:   map[string]string{},
+		vcsInspectCache:  map[string]vcs.InspectInfo{},
 	}
 
 	formatter.emitNode(rootNode)
 	return formatter.buf.Bytes()
+}
+
+// getVCSInfo returns the VCS information for the import. If the info does not yet exist,
+// a VCS checkout will be formed on the import's path.
+func (sf *sourceFormatter) getVCSInfo(info importInfo) (vcs.InspectInfo, error) {
+	parsed, err := vcs.ParseVCSPath(info.source)
+	if err != nil {
+		panic(err)
+	}
+
+	if inspectInfo, exists := sf.vcsInspectCache[parsed.URL()]; exists {
+		return inspectInfo, nil
+	}
+
+	sf.importHandling.logInfo(info.node, "Performing checkout and inspection of '%v'", parsed.URL())
+	inspectInfo, err, _ := vcs.PerformVCSCheckoutAndInspect(
+		info.source, packageloader.SerulianPackageDirectory,
+		sf.importHandling.vcsDevelopmentDirectories...)
+
+	if err != nil {
+		sf.importHandling.logError(info.node, "Could not checkout and inspect %v: %v", parsed.URL(), err)
+		return inspectInfo, err
+	}
+
+	sf.vcsInspectCache[parsed.URL()] = inspectInfo
+	return inspectInfo, nil
 }
 
 // emitNode emits the formatted source code for the given node.
