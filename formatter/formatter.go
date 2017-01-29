@@ -8,6 +8,7 @@ package formatter
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -15,6 +16,8 @@ import (
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/parser"
+
+	"github.com/ryanuber/go-glob"
 )
 
 type importHandlingOption int
@@ -23,19 +26,24 @@ const (
 	importHandlingNone importHandlingOption = iota
 	importHandlingFreeze
 	importHandlingUnfreeze
+	importHandlingUpdate
+	importHandlingUpgrade
 )
 
 // importHandlingInfo defines the information for handling (freezing or unfreezing)
 // VCS imports.
 type importHandlingInfo struct {
 	option                    importHandlingOption
-	imports                   []string
+	importPatterns            []string
 	vcsDevelopmentDirectories []string
+	logProgress               bool
 }
 
-func (ih importHandlingInfo) hasImport(url string) bool {
-	for _, importUrl := range ih.imports {
-		if importUrl == url {
+// matchesImport returns true if the given VCS url matches one of the import patterns
+// given to the format command.
+func (ih importHandlingInfo) matchesImport(url string) bool {
+	for _, importUrlPattern := range ih.importPatterns {
+		if glob.Glob(importUrlPattern, url) {
 			return true
 		}
 	}
@@ -43,25 +51,64 @@ func (ih importHandlingInfo) hasImport(url string) bool {
 	return false
 }
 
+func (ih importHandlingInfo) logError(node formatterNode, message string, args ...interface{}) {
+	ih.log(compilerutil.ErrorLogLevel, node, message, args...)
+}
+
+func (ih importHandlingInfo) logWarning(node formatterNode, message string, args ...interface{}) {
+	ih.log(compilerutil.WarningLogLevel, node, message, args...)
+}
+
+func (ih importHandlingInfo) logInfo(node formatterNode, message string, args ...interface{}) {
+	ih.log(compilerutil.InfoLogLevel, node, message, args...)
+}
+
+func (ih importHandlingInfo) logSuccess(node formatterNode, message string, args ...interface{}) {
+	ih.log(compilerutil.SuccessLogLevel, node, message, args...)
+}
+
+func (ih importHandlingInfo) log(level compilerutil.ConsoleLogLevel, node formatterNode, message string, args ...interface{}) {
+	startRune, _ := strconv.Atoi(node.getProperty(parser.NodePredicateStartRune))
+	inputSource := compilercommon.InputSource(node.getProperty(parser.NodePredicateSource))
+	sal := compilercommon.NewSourceAndLocation(inputSource, startRune)
+	compilerutil.LogToConsole(level, sal, message, args...)
+}
+
 // Freeze formats the source files at the given path and freezes the specified
-// VCS imports.
-func Freeze(path string, imports []string, vcsDevelopmentDirectories []string, debug bool) bool {
-	return formatFiles(path, importHandlingInfo{importHandlingFreeze, imports, vcsDevelopmentDirectories}, debug)
+// VCS import patterns.
+func Freeze(path string, importPatterns []string, vcsDevelopmentDirectories []string, debug bool) bool {
+	return formatFiles(path, importHandlingInfo{importHandlingFreeze, importPatterns, vcsDevelopmentDirectories, true}, debug)
 }
 
 // Unfreeze formats the source files at the given path and unfreezes the specified
-// VCS imports.
-func Unfreeze(path string, imports []string, vcsDevelopmentDirectories []string, debug bool) bool {
-	return formatFiles(path, importHandlingInfo{importHandlingUnfreeze, imports, vcsDevelopmentDirectories}, debug)
+// VCS import patterns.
+func Unfreeze(path string, importPatterns []string, vcsDevelopmentDirectories []string, debug bool) bool {
+	return formatFiles(path, importHandlingInfo{importHandlingUnfreeze, importPatterns, vcsDevelopmentDirectories, true}, debug)
+}
+
+// Update formats the source files at the given path and updates the specified
+// VCS import patterns by moving forward their minor version, as per semvar.
+func Update(path string, importPatterns []string, vcsDevelopmentDirectories []string, debug bool) bool {
+	return formatFiles(path, importHandlingInfo{importHandlingUpdate, importPatterns, vcsDevelopmentDirectories, true}, debug)
+}
+
+// Upgrade formats the source files at the given path and upgrades the specified
+// VCS import patterns by making them refer to the latest stable version, as per semvar.
+func Upgrade(path string, importPatterns []string, vcsDevelopmentDirectories []string, debug bool) bool {
+	return formatFiles(path, importHandlingInfo{importHandlingUpgrade, importPatterns, vcsDevelopmentDirectories, true}, debug)
 }
 
 // Format formats the source files at the given path.
 func Format(path string, debug bool) bool {
-	return formatFiles(path, importHandlingInfo{importHandlingNone, []string{}, []string{}}, debug)
+	return formatFiles(path, importHandlingInfo{importHandlingNone, []string{}, []string{}, false}, debug)
 }
 
 // formatFiles runs formatting of all matching source files found at the given source path.
 func formatFiles(path string, importHandling importHandlingInfo, debug bool) bool {
+	if !debug {
+		log.SetOutput(ioutil.Discard)
+	}
+
 	return compilerutil.WalkSourcePath(path, func(currentPath string, info os.FileInfo) (bool, error) {
 		if !strings.HasSuffix(info.Name(), parser.SERULIAN_FILE_EXTENSION) {
 			return false, nil

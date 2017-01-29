@@ -17,7 +17,7 @@ import (
 //   github.com/some/project:somebranch
 //   github.com/some/project@sometag
 //   github.com/some/project//somesubdir@sometag
-const vcsPackagePathRegex = "^(([a-zA-Z0-9\\._-]+)(/([a-zA-Z0-9\\._-])+)*)(//([^@:]+))?((@|:)([a-zA-Z0-9_-]+))?$"
+const vcsPackagePathRegex = "^(([a-zA-Z0-9\\._-]+)(/([a-zA-Z0-9\\._-])+)*)(//([^@:]+))?((@|:)([\\.a-zA-Z0-9_-]+))?$"
 
 // vcsPackagePath holds information about a package located in a VCS.
 type vcsPackagePath struct {
@@ -57,11 +57,36 @@ func (pp vcsPackagePath) URL() string {
 	return pp.url
 }
 
+// Tag returns the tag of the VCS package.
+func (pp vcsPackagePath) Tag() string {
+	return pp.tag
+}
+
 // WithCommit returns the VCS package path with the given commit.
 func (pp vcsPackagePath) WithCommit(commitSha string) vcsPackagePath {
 	return vcsPackagePath{
 		url:            pp.url,
 		branchOrCommit: commitSha,
+		tag:            "",
+		subpackage:     pp.subpackage,
+	}
+}
+
+// WithTag returns the VCS package path with the given tag.
+func (pp vcsPackagePath) WithTag(tag string) vcsPackagePath {
+	return vcsPackagePath{
+		url:            pp.url,
+		branchOrCommit: "",
+		tag:            tag,
+		subpackage:     pp.subpackage,
+	}
+}
+
+// AsGeneric returns the VCS import without any commit, branch or tag.
+func (pp vcsPackagePath) AsGeneric() vcsPackagePath {
+	return vcsPackagePath{
+		url:            pp.url,
+		branchOrCommit: "",
 		tag:            "",
 		subpackage:     pp.subpackage,
 	}
@@ -94,7 +119,7 @@ func (pp vcsPackagePath) String() string {
 		return strRep + ":" + pp.branchOrCommit
 
 	case pp.tag != "":
-		return strRep + "@" + pp.branchOrCommit
+		return strRep + "@" + pp.tag
 
 	default:
 		return strRep

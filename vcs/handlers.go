@@ -39,6 +39,9 @@ type vcsUpdateFn func(checkoutDir string) error
 // vcsInspectFn is a function for inspecting a checked out directory.
 type vcsInspectFn func(checkoutDir string) (string, error)
 
+// vcsListTagsFn is a function for listing all tags/version of a checked out directory.
+type vcsListTagsFn func(checkoutDir string) ([]string, error)
+
 // vcsHandler represents the defined handler information for a specific kind of VCS.
 type vcsHandler struct {
 	kind     VCSKind         // The kind of the VCS being handled.
@@ -47,6 +50,7 @@ type vcsHandler struct {
 	update   vcsUpdateFn     // Function to update a checkout.
 	inspect  vcsInspectFn    // Function to inspect a checkout for its commit SHA.
 	check    vcsHasChangesFn // Function to detect for code changes.
+	listTags vcsListTagsFn   // Function to list tags.
 }
 
 // runCommand uses exec to run an external command.
@@ -150,6 +154,15 @@ var vcsById = map[string]vcsHandler{
 
 			return len(out.String()) > 0
 		},
+
+		listTags: func(checkoutDir string) ([]string, error) {
+			err, output, errStr := runCommand(checkoutDir, "git", "tag")
+			if err != nil {
+				return []string{}, fmt.Errorf("Could not list tags: %v", errStr)
+			}
+
+			return strings.Split(output, "\n"), nil
+		},
 	},
 
 	"___fake__git___": vcsHandler{
@@ -174,6 +187,10 @@ var vcsById = map[string]vcsHandler{
 		},
 
 		check: func(checkoutDir string) bool {
+			panic("Fake git!")
+		},
+
+		listTags: func(checkoutDir string) ([]string, error) {
 			panic("Fake git!")
 		},
 	},

@@ -55,9 +55,9 @@ The Serulian toolkit command `format` can be used to reformat Serulian source co
 The above will reformat all Serulian files found under the `somedir` directory.
 
 
-### Freezing and unfreezing imports
+### Working with imports
 
-[Imports in Serulian](https://github.com/Serulian/spec/blob/master/proposals/ImportsAndPackages.md) are usually tied to a specific commit SHA or tagged version. The Serulian toolkit commands `freeze` and `unfreeze` can be used to easily manage the versions of these imports.
+[Imports in Serulian](https://github.com/Serulian/spec/blob/master/proposals/ImportsAndPackages.md) are usually tied to a specific commit SHA or tagged version. The Serulian toolkit commands `freeze`, `unfreeze` and `stabilize` can be used to easily manage the versions of these imports.
 
 For example, given a source file that imports a HEAD revision of another package:
 
@@ -81,6 +81,18 @@ Similarly, the `unfreeze` command can be used to rewrite imports back to HEAD, f
 
 ```
 ./serulian imports unfreeze ./... github.com/Serulian/somelib
+```
+
+If the library being imported is versioned using [Semantic Versioning](http://semver.org/), the additional command `stabilize` can be used to rewrite the import to the latest *stable* version:
+
+```
+./serulian imports stabilize ./... github.com/Serulian/somelib
+```
+
+Contents of the matching source file after `stabilize`:
+
+```seru
+from "github.com/Serulian/somelib@v1.2.3" import SomeThing
 ```
 
 

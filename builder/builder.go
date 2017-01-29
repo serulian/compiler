@@ -12,12 +12,10 @@ import (
 	"sort"
 
 	"github.com/serulian/compiler/compilercommon"
+	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/generator/es5"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/packageloader"
-
-	"github.com/fatih/color"
-	"github.com/kr/text"
 )
 
 // CORE_LIBRARY contains the location of the Serulian core library.
@@ -60,29 +58,15 @@ func (s ErrorsSlice) Less(i, j int) bool {
 
 func outputWarnings(warnings []compilercommon.SourceWarning) {
 	sort.Sort(WarningsSlice(warnings))
-
-	highlight := color.New(color.FgYellow, color.Bold)
-	location := color.New(color.FgWhite)
-	message := color.New(color.FgHiWhite)
-
 	for _, warning := range warnings {
-		highlight.Print("WARNING: ")
-		location.Printf("At %v:%v:%v:\n", warning.SourceAndLocation().Source(), warning.SourceAndLocation().Location().LineNumber()+1, warning.SourceAndLocation().Location().ColumnPosition()+1)
-		message.Printf("%s\n\n", text.Indent(text.Wrap(warning.String(), 80), "  "))
+		compilerutil.LogToConsole(compilerutil.WarningLogLevel, warning.SourceAndLocation(), "%s", warning.String())
 	}
 }
 
 func outputErrors(errors []compilercommon.SourceError) {
 	sort.Sort(ErrorsSlice(errors))
-
-	highlight := color.New(color.FgRed, color.Bold)
-	location := color.New(color.FgWhite)
-	message := color.New(color.FgHiWhite)
-
 	for _, err := range errors {
-		highlight.Print("ERROR: ")
-		location.Printf("At %v:%v:%v:\n", err.SourceAndLocation().Source(), err.SourceAndLocation().Location().LineNumber()+1, err.SourceAndLocation().Location().ColumnPosition()+1)
-		message.Printf("%s\n\n", text.Indent(text.Wrap(err.Error(), 80), "  "))
+		compilerutil.LogToConsole(compilerutil.ErrorLogLevel, err.SourceAndLocation(), "%s", err.Error())
 	}
 }
 
