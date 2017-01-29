@@ -8,6 +8,7 @@ package formatter
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -15,6 +16,9 @@ import (
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/parser"
+
+	"github.com/fatih/color"
+	"github.com/kr/text"
 )
 
 type importHandlingOption int
@@ -31,6 +35,7 @@ type importHandlingInfo struct {
 	option                    importHandlingOption
 	imports                   []string
 	vcsDevelopmentDirectories []string
+	logProgress               bool
 }
 
 func (ih importHandlingInfo) hasImport(url string) bool {
@@ -43,25 +48,54 @@ func (ih importHandlingInfo) hasImport(url string) bool {
 	return false
 }
 
+func (ih importHandlingInfo) logError(node formatterNode, message string, args ...interface{}) {
+	ih.log("ERROR", color.New(color.FgRed, color.Bold), node, message, args...)
+}
+
+func (ih importHandlingInfo) logInfo(node formatterNode, message string, args ...interface{}) {
+	ih.log("INFO", color.New(color.FgBlue, color.Bold), node, message, args...)
+}
+
+func (ih importHandlingInfo) logSuccess(node formatterNode, message string, args ...interface{}) {
+	ih.log("SUCCESS", color.New(color.FgGreen, color.Bold), node, message, args...)
+}
+
+func (ih importHandlingInfo) log(prefix string, prefixColor *color.Color, node formatterNode, message string, args ...interface{}) {
+	locationColor := color.New(color.FgWhite)
+	messageColor := color.New(color.FgHiWhite)
+
+	startRune, _ := strconv.Atoi(node.getProperty(parser.NodePredicateStartRune))
+	inputSource := compilercommon.InputSource(node.getProperty(parser.NodePredicateSource))
+	sal := compilercommon.NewSourceAndLocation(inputSource, startRune)
+
+	prefixColor.Print(prefix)
+	locationColor.Printf(": At %v:%v:%v:\n", sal.Source(), sal.Location().LineNumber()+1, sal.Location().ColumnPosition()+1)
+	messageColor.Printf("%s\n\n", text.Indent(text.Wrap(fmt.Sprintf(message, args...), 80), "  "))
+}
+
 // Freeze formats the source files at the given path and freezes the specified
 // VCS imports.
 func Freeze(path string, imports []string, vcsDevelopmentDirectories []string, debug bool) bool {
-	return formatFiles(path, importHandlingInfo{importHandlingFreeze, imports, vcsDevelopmentDirectories}, debug)
+	return formatFiles(path, importHandlingInfo{importHandlingFreeze, imports, vcsDevelopmentDirectories, true}, debug)
 }
 
 // Unfreeze formats the source files at the given path and unfreezes the specified
 // VCS imports.
 func Unfreeze(path string, imports []string, vcsDevelopmentDirectories []string, debug bool) bool {
-	return formatFiles(path, importHandlingInfo{importHandlingUnfreeze, imports, vcsDevelopmentDirectories}, debug)
+	return formatFiles(path, importHandlingInfo{importHandlingUnfreeze, imports, vcsDevelopmentDirectories, true}, debug)
 }
 
 // Format formats the source files at the given path.
 func Format(path string, debug bool) bool {
-	return formatFiles(path, importHandlingInfo{importHandlingNone, []string{}, []string{}}, debug)
+	return formatFiles(path, importHandlingInfo{importHandlingNone, []string{}, []string{}, false}, debug)
 }
 
 // formatFiles runs formatting of all matching source files found at the given source path.
 func formatFiles(path string, importHandling importHandlingInfo, debug bool) bool {
+	if !debug {
+		log.SetOutput(ioutil.Discard)
+	}
+
 	return compilerutil.WalkSourcePath(path, func(currentPath string, info os.FileInfo) (bool, error) {
 		if !strings.HasSuffix(info.Name(), parser.SERULIAN_FILE_EXTENSION) {
 			return false, nil

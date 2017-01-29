@@ -67,6 +67,16 @@ func (pp vcsPackagePath) WithCommit(commitSha string) vcsPackagePath {
 	}
 }
 
+// AsGeneric returns the VCS import without any commit, branch or tag.
+func (pp vcsPackagePath) AsGeneric() vcsPackagePath {
+	return vcsPackagePath{
+		url:            pp.url,
+		branchOrCommit: "",
+		tag:            "",
+		subpackage:     pp.subpackage,
+	}
+}
+
 // AsHEAD returns the VCS package path pointing to HEAD.
 func (pp vcsPackagePath) AsHEAD() vcsPackagePath {
 	if pp.isHEAD() {

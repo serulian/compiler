@@ -6,7 +6,6 @@ package formatter
 
 import (
 	"fmt"
-	"log"
 	"sort"
 	"strings"
 
@@ -151,7 +150,7 @@ func (sf *sourceFormatter) emitImportInfos(infos []importInfo) {
 func (sf *sourceFormatter) emitModifiedImportSource(info importInfo) bool {
 	parsed, err := vcs.ParseVCSPath(info.source)
 	if err != nil {
-		log.Printf("Could not parse VCS path '%v': %v", info.source, err)
+		sf.importHandling.logError(info.node, "Could not parse VCS path '%v': %v", info.source, err)
 		return false
 	}
 
@@ -163,27 +162,30 @@ func (sf *sourceFormatter) emitModifiedImportSource(info importInfo) bool {
 	switch sf.importHandling.option {
 	case importHandlingUnfreeze:
 		// For unfreezing, append the HEAD form of the VCS path.
-		sf.append(parsed.AsHEAD().String())
+		sf.importHandling.logSuccess(info.node, "Unfreezing '%v'", info.source)
+		sf.append(parsed.AsGeneric().String())
 		return true
 
 	case importHandlingFreeze:
 		// For freezing, perform VCS checkout and append the commit of
 		// the checked out info.
 		if commitSha, exists := sf.vcsCommitCache[parsed.URL()]; exists {
+			sf.importHandling.logSuccess(info.node, "Freezing '%v' at commit '%v'", info.source, commitSha)
 			sf.append(parsed.WithCommit(commitSha).String())
 			return true
 		}
 
-		log.Printf("Performing checkout and inspection of '%v'", parsed.URL())
+		sf.importHandling.logInfo(info.node, "Performing checkout and inspection of '%v'", parsed.URL())
 		commitSha, err, _ := vcs.PerformVCSCheckoutAndInspect(
 			info.source, packageloader.SerulianPackageDirectory,
 			sf.importHandling.vcsDevelopmentDirectories...)
 
 		if err != nil {
-			log.Printf("Could not checkout and inspect %v: %v", parsed.URL(), err)
+			sf.importHandling.logError(info.node, "Could not checkout and inspect %v: %v", parsed.URL(), err)
 			return false
 		}
 
+		sf.importHandling.logSuccess(info.node, "Freezing '%v' at commit '%v'", info.source, commitSha)
 		sf.vcsCommitCache[parsed.URL()] = commitSha
 		sf.append(parsed.WithCommit(commitSha).String())
 		return true
