@@ -577,6 +577,9 @@ this.Serulian = function ($global) {
     resolve: function (value) {
       return Promise.resolve(value);
     },
+    reject: function (value) {
+      return Promise.reject(value);
+    },
     wrap: function (func) {
       return Promise.resolve(func());
     },
@@ -690,7 +693,11 @@ this.Serulian = function ($global) {
                 if (T == $a['json']) {
                   var parsed = JSON.parse($t.unbox(value));
                   var boxed = $t.fastbox(parsed, tpe);
-                  boxed.Mapping();
+                  try {
+                    boxed.Mapping();
+                  } catch (e) {
+                    return $promise.reject(e);
+                  }
                   return $promise.resolve(boxed);
                 }
                 return $promise.maybe(T.Get()).then(function (resolved) {

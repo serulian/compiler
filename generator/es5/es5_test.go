@@ -231,6 +231,7 @@ var generationTests = []generationTest{
 	generationTest{"custom json test", "serialization", "custom", integrationTestSuccessExpected, ""},
 	generationTest{"tagged json test", "serialization", "tagged", integrationTestSuccessExpected, ""},
 	generationTest{"slice json test", "serialization", "slice", integrationTestSuccessExpected, ""},
+	generationTest{"failed json test", "serialization", "jsonfail", integrationTestSuccessExpected, ""},
 
 	generationTest{"cast function success test", "cast", "castfunction", integrationTestSuccessExpected, ""},
 

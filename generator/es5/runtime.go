@@ -818,6 +818,10 @@ this.Serulian = (function($global) {
       return Promise.resolve(value);
     },
 
+    'reject': function(value) {
+      return Promise.reject(value);
+    },
+
   	'wrap': function(func) {
   		return Promise.resolve(func());
   	},
@@ -973,7 +977,11 @@ this.Serulian = (function($global) {
                   var boxed = $t.fastbox(parsed, tpe);
 
                   // Call Mapping to ensure every field is checked.
-                  boxed.Mapping();
+                  try {
+                    boxed.Mapping();
+                  } catch (e) {
+                    return $promise.reject(e);
+                  }
                   return $promise.resolve(boxed);
                 }
 

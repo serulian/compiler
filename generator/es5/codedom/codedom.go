@@ -238,8 +238,6 @@ type statementBase struct {
 
 func (sb *statementBase) ReleasesFlow() bool { return false }
 
-func (sb *statementBase) IsAsynchronous(scopegraph *scopegraph.ScopeGraph) bool { return false }
-
 func (sb *statementBase) IsJump() bool { return false }
 
 func (sb *statementBase) IsReferenceable() bool { return sb.referenceable }
