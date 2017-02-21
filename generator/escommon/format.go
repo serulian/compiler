@@ -6,6 +6,7 @@
 package escommon
 
 import (
+	"log"
 	"bytes"
 	"fmt"
 	"io/ioutil"
@@ -34,6 +35,7 @@ func FormatMappedECMASource(source string, sm *sourcemap.SourceMap) (string, *so
 	program, err := parser.ParseFile(nil, "", source, 0)
 	if err != nil {
 		if os.Getenv("DEBUGFORMAT") == "true" {
+			log.Println("Writing debug out file as `debug.out.js`")
 			ioutil.WriteFile("debug.out.js", []byte(source), 0644)
 		}
 

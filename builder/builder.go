@@ -77,6 +77,10 @@ func BuildSource(rootSourceFilePath string, debug bool, vcsDevelopmentDirectorie
 		log.SetOutput(ioutil.Discard)
 	}
 
+	for _, vcsDevelopmentDir := range vcsDevelopmentDirectories {
+		log.Printf("Using VCS development directory %s", vcsDevelopmentDir)
+	}
+
 	// Build a scope graph for the project. This will conduct parsing and type graph
 	// construction on our behalf.
 	log.Println("Starting build")
