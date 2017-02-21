@@ -150,6 +150,8 @@ func (p Pather) GetRelativeModulePath(module typegraph.TGModule) string {
 		rel = module.Path()
 	}
 
+	// TODO: make this a proper replacement system.
+	rel = strings.Replace(rel, "-", "_", -1)
 	rel = strings.Replace(rel, "../", "_", -1)
 	rel = strings.Replace(rel, "/", ".", -1)
 
