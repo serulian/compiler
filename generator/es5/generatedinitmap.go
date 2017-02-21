@@ -62,6 +62,11 @@ func (gim *generatedInitMap) Promising() bool {
 	return gim.promising
 }
 
+// HasEntries returns true iff the init map as any entries.
+func (gim *generatedInitMap) HasEntries() bool {
+	return gim.orderedMap.Len() > 0
+}
+
 // Set sets the given key to the given value. Note that the value *must* be a generatedSourceResult,
 // but this function takes in an interface{} to match the interface of the normal OrderedMap.
 func (gim *generatedInitMap) Set(key interface{}, value interface{}) {

@@ -34,7 +34,6 @@ $module('async', function () {
     return $promise.new($continue);
   });
   $static.TEST = $t.markpromising(function () {
-    var $result;
     var a;
     var b;
     var $current = 0;
@@ -43,30 +42,21 @@ $module('async', function () {
         switch ($current) {
           case 0:
             $promise.maybe($g.async.DoSomethingElse()).then(function ($result0) {
-              $result = $result0;
+              a = $result0;
+              b = null;
               $current = 1;
               $continue($resolve, $reject);
               return;
-            }).catch(function (err) {
-              $reject(err);
+            }).catch(function ($rejected) {
+              b = $rejected;
+              a = null;
+              $current = 1;
+              $continue($resolve, $reject);
               return;
             });
             return;
 
           case 1:
-            try {
-              var $expr = $result;
-              a = $expr;
-              b = null;
-            } catch ($rejected) {
-              b = $rejected;
-              a = null;
-            }
-            $current = 2;
-            $continue($resolve, $reject);
-            return;
-
-          case 2:
             $resolve(a);
             return;
 

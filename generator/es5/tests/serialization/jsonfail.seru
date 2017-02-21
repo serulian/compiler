@@ -1,0 +1,15 @@
+struct AnotherStruct {
+	AnotherBool bool
+}
+
+struct SomeStruct {
+	SomeField int
+	AnotherField bool
+	SomeInstance AnotherStruct
+}
+
+function<any> TEST() {
+	var jsonString = '{"SomeField":"hello world"}'
+	parsed, err := SomeStruct.Parse<json>(jsonString)
+	return parsed is null && err is not null
+}

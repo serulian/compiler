@@ -245,7 +245,7 @@ func (sg *stateGenerator) generateArrowPromise(arrowPromise *codedom.ArrowPromis
 
 // generateResolveExpression generates the code for an expression resolution.
 func (sg *stateGenerator) generateResolveExpression(resolveExpression *codedom.ResolveExpressionNode) {
-	if resolveExpression.IsAsynchronous(sg.scopegraph) {
+	if resolveExpression.ChildExpression.IsAsynchronous(sg.scopegraph) {
 		sg.generateAsyncResolveExpression(resolveExpression)
 	} else {
 		sg.generateSyncResolveExpression(resolveExpression)

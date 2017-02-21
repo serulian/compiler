@@ -818,6 +818,10 @@ this.Serulian = (function($global) {
       return Promise.resolve(value);
     },
 
+    'reject': function(value) {
+      return Promise.reject(value);
+    },
+
   	'wrap': function(func) {
   		return Promise.resolve(func());
   	},
@@ -972,9 +976,17 @@ this.Serulian = (function($global) {
                   var parsed = JSON.parse($t.unbox(value));
                   var boxed = $t.fastbox(parsed, tpe);
 
-                  // Call Mapping to ensure every field is checked.
-                  boxed.Mapping();
-                  return $promise.resolve(boxed);
+                  // If the boxes item has defaults, initialize them.
+                  var initPromise = $promise.resolve(boxed);
+                  if (tpe.$initDefaults) {
+                    initPromise = $promise.maybe(tpe.$initDefaults(boxed, false));
+                  }
+
+                  return initPromise.then(function() {
+                    // Call Mapping to ensure every field is checked.
+                    boxed.Mapping();
+                    return boxed;
+                  });
                 }
 
                 return $promise.maybe(T.Get()).then(function(resolved) {
