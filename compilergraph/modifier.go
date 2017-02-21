@@ -21,6 +21,7 @@ type GraphLayerModifier interface {
 	CreateNode(nodeKind TaggedValue) ModifiableGraphNode
 	Modify(node GraphNode) ModifiableGraphNode
 	Apply()
+	Close()
 }
 
 func (gl *GraphLayer) createNewModifier() GraphLayerModifier {
@@ -105,12 +106,17 @@ func (gl *graphLayerModifierStruct) addQuad(quad quad.Quad) {
 
 // Apply applies all changes in the modification transaction to the graph.
 func (gl *graphLayerModifierStruct) Apply() {
-	gl.wg.Wait()
-	gl.closeChannel <- true
+	gl.Close()
 	err := gl.layer.cayleyStore.ApplyDeltas(gl.deltas, graph.IgnoreOpts{true, true})
 	if err != nil {
 		panic(err)
 	}
+}
+
+// Close closes the modifier, without applying its collected changes.
+func (gl *graphLayerModifierStruct) Close() {
+	gl.wg.Wait()
+	gl.closeChannel <- true
 }
 
 // AsNode returns the ModifiableGraphNode as a GraphNode. Note that the node will not

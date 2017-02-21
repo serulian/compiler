@@ -229,6 +229,9 @@ func buildScopeGraphWithResolver(srg *srg.SRG, irg *webidl.WebIRG, tdg *typegrap
 		labelEntrypointPromising(builder)
 	}
 
+	// Close the outstanding modifier.
+	builder.modifier.Close()
+
 	// Collect any errors or warnings that were added.
 	return Result{
 		Status:   builder.Status,
