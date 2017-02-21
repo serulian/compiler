@@ -693,12 +693,14 @@ this.Serulian = function ($global) {
                 if (T == $a['json']) {
                   var parsed = JSON.parse($t.unbox(value));
                   var boxed = $t.fastbox(parsed, tpe);
-                  try {
-                    boxed.Mapping();
-                  } catch (e) {
-                    return $promise.reject(e);
+                  var initPromise = $promise.resolve(boxed);
+                  if (tpe.$initDefaults) {
+                    initPromise = $promise.maybe(tpe.$initDefaults(boxed, false));
                   }
-                  return $promise.resolve(boxed);
+                  return initPromise.then(function () {
+                    boxed.Mapping();
+                    return boxed;
+                  });
                 }
                 return $promise.maybe(T.Get()).then(function (resolved) {
                   return $promise.maybe(resolved.Parse(value)).then(function (parsed) {

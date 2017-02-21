@@ -41,9 +41,19 @@ $module('defaults', function () {
       instance[BOXED_DATA_PROPERTY] = {
       };
       instance.$markruntimecreated();
-      instance.SomeField = $t.fastbox(42, $g.____testlib.basictypes.Integer);
-      instance.AnotherField = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
-      instance.SomeInstance = $g.defaults.AnotherStruct.new($t.fastbox(true, $g.____testlib.basictypes.Boolean));
+      return $static.$initDefaults(instance, true);
+    };
+    $static.$initDefaults = function (instance, isRuntimeCreated) {
+      var boxed = instance[BOXED_DATA_PROPERTY];
+      if (isRuntimeCreated || (boxed['SomeField'] === undefined)) {
+        instance.SomeField = $t.fastbox(42, $g.____testlib.basictypes.Integer);
+      }
+      if (isRuntimeCreated || (boxed['AnotherField'] === undefined)) {
+        instance.AnotherField = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+      }
+      if (isRuntimeCreated || (boxed['SomeInstance'] === undefined)) {
+        instance.SomeInstance = $g.defaults.AnotherStruct.new($t.fastbox(true, $g.____testlib.basictypes.Boolean));
+      }
       return instance;
     };
     $static.$fields = [];

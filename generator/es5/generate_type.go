@@ -279,11 +279,24 @@ this.$struct('{{ .Type.GlobalUniqueId }}', '{{ .Type.Name }}', {{ .HasGenerics }
 		};
 		instance.$markruntimecreated();
 
+		{{ if $vars.HasEntries }}
+		return $static.$initDefaults(instance, true);
+		{{ else }}
+		return instance;
+		{{ end }}
+	};
+
+	{{ if $vars.HasEntries }}
+	$static.$initDefaults = function(instance, isRuntimeCreated) {
+		var boxed = instance[BOXED_DATA_PROPERTY];
+
 		{{ if $vars.Promising }}
 		var init = [];
 		{{ end }}
 		{{ range $idx, $kv := $vars.Iter }}
-			{{ emit $kv.Value }};
+			if (isRuntimeCreated || boxed['{{ $kv.Key.Name }}'] === undefined) {
+				{{ emit $kv.Value }};
+			}
 		{{ end }}
 
 		{{ if $vars.Promising }}
@@ -294,6 +307,7 @@ this.$struct('{{ .Type.GlobalUniqueId }}', '{{ .Type.Name }}', {{ .HasGenerics }
 		return instance;
 		{{ end }}
 	};
+	{{ end }}
 
 	$static.$fields = [];
 
