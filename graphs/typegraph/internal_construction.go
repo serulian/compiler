@@ -24,6 +24,8 @@ func (g *TypeGraph) globallyValidate() bool {
 
 	// Ensure that async functions are under modules and have fully structural types.
 	modifier := g.layer.NewModifier()
+	defer modifier.Apply()
+	
 	for _, member := range g.AsyncMembers() {
 		if !member.IsStatic() || member.Parent().IsType() {
 			status = false
@@ -78,10 +80,6 @@ func (g *TypeGraph) globallyValidate() bool {
 				"Asynchronous function %v cannot have generics",
 				member.Name())
 		}
-	}
-
-	if !status {
-		modifier.Apply()
 	}
 
 	return status

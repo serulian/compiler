@@ -30,8 +30,9 @@ func NewIRG(graph *compilergraph.SerulianGraph) *WebIRG {
 	}
 
 	modifier := irg.layer.NewModifier()
+	defer modifier.Apply()
+
 	irg.rootModuleNode = modifier.CreateNode(parser.NodeTypeGlobalModule).AsNode()
-	modifier.Apply()
 	return irg
 }
 

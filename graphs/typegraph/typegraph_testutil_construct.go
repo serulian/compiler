@@ -232,9 +232,9 @@ type testBasicTypesConstructor struct {
 
 func (t *testBasicTypesConstructor) CreateNode(kind compilergraph.TaggedValue) compilergraph.GraphNode {
 	modifier := t.layer.NewModifier()
-	node := modifier.CreateNode(kind).AsNode()
-	modifier.Apply()
-	return node
+	defer modifier.Apply()
+
+	return modifier.CreateNode(kind).AsNode()
 }
 
 func (t *testBasicTypesConstructor) DefineModules(builder GetModuleBuilder) {
