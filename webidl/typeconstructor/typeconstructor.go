@@ -152,7 +152,7 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 			parentNode = declaration.Module().GraphNode
 		}
 
-		// If the declaration has one (or more) constructors, add then as a "new".
+		// If the declaration has one (or more) constructors, add them as a "new".
 		if declaration.HasAnnotation(CONSTRUCTOR_ANNOTATION) {
 			// Declare a "new" member which returns an instance of this type.
 			builder(parentNode, false).
