@@ -41,11 +41,6 @@ func (g *WebIRG) PackageLoaderHandler() packageloader.SourceHandler {
 	return &irgSourceHandler{g, g.layer.NewModifier()}
 }
 
-// RootModuleNode returns the node that represents the root global module for all WebIDL.
-func (g *WebIRG) RootModuleNode() compilergraph.GraphNode {
-	return g.rootModuleNode
-}
-
 // findAllNodes starts a new query over the IRG from nodes of the given type.
 func (g *WebIRG) findAllNodes(nodeTypes ...parser.NodeType) compilergraph.GraphQuery {
 	var nodeTypesTagged []compilergraph.TaggedValue = make([]compilergraph.TaggedValue, len(nodeTypes))
