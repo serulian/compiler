@@ -102,7 +102,6 @@ func (tn TGTypeDecl) Title() string {
 
 	default:
 		panic(fmt.Sprintf("Unknown kind of type %s for node %s", nodeType, tn.NodeId))
-		return "class"
 	}
 }
 
@@ -365,7 +364,6 @@ func (tn TGTypeDecl) TypeKind() TypeKind {
 
 	default:
 		panic(fmt.Sprintf("Unknown kind of type %s for node %s", nodeType, tn.NodeId))
-		return ClassType
 	}
 }
 

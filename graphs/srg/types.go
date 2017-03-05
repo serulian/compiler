@@ -122,7 +122,6 @@ func (t SRGType) TypeKind() TypeKind {
 
 	default:
 		panic(fmt.Sprintf("Unknown kind of type %s", t.GraphNode.Kind()))
-		return ClassType
 	}
 }
 

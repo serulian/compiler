@@ -222,7 +222,6 @@ func getSubReferenceSlotAndChar(kind subReferenceKind) (typeReferenceHeaderSlot,
 
 	default:
 		panic("Unknown kind of subreference")
-		return trhSlotGenericCount, '_'
 	}
 }
 
@@ -243,7 +242,6 @@ func getSlotLocation(slot typeReferenceHeaderSlot) int {
 	}
 
 	panic("Could not retrieve location for slot")
-	return -1
 }
 
 // buildTypeReferenceValue returns a string value for representing the given type reference data in a single

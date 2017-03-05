@@ -278,7 +278,6 @@ func getTypeNodeType(kind TypeKind) NodeType {
 
 	default:
 		panic(fmt.Sprintf("Unknown kind of type declaration: %v", kind))
-		return NodeTypeClass
 	}
 }
 

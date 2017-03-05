@@ -251,7 +251,6 @@ func (sb *scopeBuilder) scopeAssignedValue(node compilergraph.GraphNode, context
 
 	default:
 		panic(fmt.Sprintf("Unknown node exporting an assigned value: %v", parentNode.Kind()))
-		return newScope().Invalid().GetScope()
 	}
 }
 
@@ -330,7 +329,6 @@ func (sb *scopeBuilder) scopeNamedValue(node compilergraph.GraphNode, context sc
 
 	default:
 		panic(fmt.Sprintf("Unknown node exporting a named value: %v", parentNode.Kind()))
-		return newScope().Invalid().GetScope()
 	}
 }
 

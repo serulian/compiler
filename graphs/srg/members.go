@@ -107,7 +107,6 @@ func (m SRGMember) MemberKind() MemberKind {
 
 	default:
 		panic(fmt.Sprintf("Unknown kind of member %s", m.GraphNode.Kind()))
-		return ConstructorMember
 	}
 }
 
@@ -254,7 +253,6 @@ func (m SRGMember) HasImplementation() bool {
 	}
 
 	panic(fmt.Sprintf("Unknown kind of member %s", m.GraphNode.Kind()))
-	return false
 }
 
 // Generics returns the generics on this member.

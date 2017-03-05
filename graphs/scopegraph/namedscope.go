@@ -93,7 +93,6 @@ func (sb *scopeBuilder) buildNamedScopeForSRGInfo(srgInfo srg.SRGNamedScope) nam
 
 	default:
 		panic(fmt.Sprintf("Unknown named scope type: %v", srgInfo.ScopeKind()))
-		return namedScopeInfo{}
 	}
 }
 

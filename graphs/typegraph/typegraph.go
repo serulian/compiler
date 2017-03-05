@@ -329,7 +329,6 @@ func (g *TypeGraph) GetTypeOrMember(nodeId compilergraph.GraphNodeId) TGTypeOrMe
 
 	default:
 		panic(fmt.Sprintf("Node is not a type or member: %v", node))
-		return TGMember{node, g}
 	}
 }
 
