@@ -3,11 +3,11 @@
         "Key": "0601e2c314f699a4c573d3d428e12919",
         "Kind": 6,
         "Children": {
-            "95f4641eb70f120010fb634a54bc3b61": {
+            "5f32a60e7416fa377d5cf9abf25a0c1b": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "95f4641eb70f120010fb634a54bc3b61",
-                    "Kind": 7,
+                    "Key": "5f32a60e7416fa377d5cf9abf25a0c1b",
+                    "Kind": 8,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-exported": "true",
@@ -16,7 +16,7 @@
                         "tdg-member-resolved-type": "HTMLDocument",
                         "tdg-member-signature": "\n\u0008document\u0010\t\u0018\u0000 \u0001*\u000cHTMLDocument",
                         "tdg-member-static": "true",
-                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-node-kind": "8|NodeType|tdg",
                         "tdg-source-module": "tests/window.webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -46,11 +46,11 @@
         "Key": "c7944884a7f0a269fe1240eb6c9b56c0",
         "Kind": 3,
         "Children": {
-            "d81880e87a681e6ab361e4e432b6c51a": {
+            "e984f3b177b06b4481e6652a479283a3": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "d81880e87a681e6ab361e4e432b6c51a",
-                    "Kind": 7,
+                    "Key": "e984f3b177b06b4481e6652a479283a3",
+                    "Kind": 8,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-exported": "true",
@@ -58,7 +58,7 @@
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "HTMLDocument",
                         "tdg-member-signature": "\n\u0008document\u0010\t\u0018\u0000 \u0001*\u000cHTMLDocument",
-                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-node-kind": "8|NodeType|tdg",
                         "tdg-source-module": "tests/window.webidl",
                         "tdg-source-node": "(NodeRef)"
                     }

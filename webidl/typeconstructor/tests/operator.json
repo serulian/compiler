@@ -17,20 +17,20 @@
                     }
                 }
             },
-            "b8cc6fc83b718d9d50edb9a5cce33177": {
+            "94697fcaff32256bc0212492c5513e1d": {
                 "Predicate": "tdg-declaration-operator",
                 "Child": {
-                    "Key": "b8cc6fc83b718d9d50edb9a5cce33177",
-                    "Kind": 8,
+                    "Key": "94697fcaff32256bc0212492c5513e1d",
+                    "Kind": 9,
                     "Children": {
-                        "f9603789a6c6e4afeeef9629d4b35f70": {
+                        "01fe2e90f3bfd9f3ea9a14a6a6321b3e": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "f9603789a6c6e4afeeef9629d4b35f70",
-                                "Kind": 10,
+                                "Key": "01fe2e90f3bfd9f3ea9a14a6a6321b3e",
+                                "Kind": 11,
                                 "Children": {},
                                 "Predicates": {
-                                    "tdg-node-kind": "10|NodeType|tdg",
+                                    "tdg-node-kind": "11|NodeType|tdg",
                                     "tdg-return-type": "SomeInterface",
                                     "tdg-source-node": "(NodeRef)"
                                 }
@@ -44,7 +44,7 @@
                         "tdg-member-resolved-type": "function\u003cSomeInterface\u003e(SomeInterface, SomeInterface)",
                         "tdg-member-signature": "\n\u0004plus\u0010\u0008\u0018\u0000 \u0001*\u0003any",
                         "tdg-member-static": "true",
-                        "tdg-node-kind": "8|NodeType|tdg",
+                        "tdg-node-kind": "9|NodeType|tdg",
                         "tdg-operator-name": "plus",
                         "tdg-operator-native": "true",
                         "tdg-source-module": "tests/operator.webidl",
@@ -52,20 +52,20 @@
                     }
                 }
             },
-            "ec5ed677fa2e647c5b69ba0fdde38fb7": {
+            "9eb3bb13fa47b14a0e9d51802518b2ac": {
                 "Predicate": "tdg-declaration-operator",
                 "Child": {
-                    "Key": "ec5ed677fa2e647c5b69ba0fdde38fb7",
-                    "Kind": 8,
+                    "Key": "9eb3bb13fa47b14a0e9d51802518b2ac",
+                    "Kind": 9,
                     "Children": {
-                        "f9603789a6c6e4afeeef9629d4b35f70": {
+                        "01fe2e90f3bfd9f3ea9a14a6a6321b3e": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "f9603789a6c6e4afeeef9629d4b35f70",
-                                "Kind": 10,
+                                "Key": "01fe2e90f3bfd9f3ea9a14a6a6321b3e",
+                                "Kind": 11,
                                 "Children": {},
                                 "Predicates": {
-                                    "tdg-node-kind": "10|NodeType|tdg",
+                                    "tdg-node-kind": "11|NodeType|tdg",
                                     "tdg-return-type": "SomeInterface",
                                     "tdg-source-node": "(NodeRef)"
                                 }
@@ -79,7 +79,7 @@
                         "tdg-member-resolved-type": "function\u003cSomeInterface\u003e(SomeInterface, SomeInterface)",
                         "tdg-member-signature": "\n\u0005minus\u0010\u0008\u0018\u0000 \u0001*\u0003any",
                         "tdg-member-static": "true",
-                        "tdg-node-kind": "8|NodeType|tdg",
+                        "tdg-node-kind": "9|NodeType|tdg",
                         "tdg-operator-name": "minus",
                         "tdg-operator-native": "true",
                         "tdg-source-module": "tests/operator.webidl",

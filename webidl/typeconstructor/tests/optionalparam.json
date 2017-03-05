@@ -30,11 +30,11 @@
         "Key": "f20c33ccf9596102359b3e9b9caf2cf8",
         "Kind": 3,
         "Children": {
-            "3dd6b9bb8b9387d69484350b44e085fe": {
+            "8d2a6fa4bbb5e9b9cd43149d4ce2e73a": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "3dd6b9bb8b9387d69484350b44e085fe",
-                    "Kind": 7,
+                    "Key": "8d2a6fa4bbb5e9b9cd43149d4ce2e73a",
+                    "Kind": 8,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-exported": "true",
@@ -42,7 +42,7 @@
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cvoid\u003e(Foo, Foo, Foo?, Foo?)",
                         "tdg-member-signature": "\n\u000csomefunction\u0010\u0007\u0018\u0000 \u0001*$function\u003cvoid\u003e(Foo, Foo, Foo?, Foo?)",
-                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-node-kind": "8|NodeType|tdg",
                         "tdg-source-module": "tests/optionalparam.webidl",
                         "tdg-source-node": "(NodeRef)"
                     }

@@ -3,11 +3,11 @@
         "Key": "3e39fee5369ddc19e6f4bbae6dda3d00",
         "Kind": 1,
         "Children": {
-            "6991ed9b95c5c1a5fe44c2317ceb41fa": {
+            "5867cd058aadf2556e1277be5d235e53": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "6991ed9b95c5c1a5fe44c2317ceb41fa",
-                    "Kind": 7,
+                    "Key": "5867cd058aadf2556e1277be5d235e53",
+                    "Kind": 8,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
@@ -16,7 +16,7 @@
                         "tdg-member-resolved-type": "function\u003cAnotherClass\u003e",
                         "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0016function\u003cAnotherClass\u003e",
                         "tdg-member-static": "true",
-                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-node-kind": "8|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/interface.seru"
                     }
                 }
@@ -35,6 +35,22 @@
         "Key": "5da95350f30ce9007cea79df0b14c3d8",
         "Kind": 1,
         "Children": {
+            "149e07dec0bf75a6ab83e64f417ffd22": {
+                "Predicate": "tdg-declaration-generic",
+                "Child": {
+                    "Key": "149e07dec0bf75a6ab83e64f417ffd22",
+                    "Kind": 12,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-generic-index": "0",
+                        "tdg-generic-kind": "0",
+                        "tdg-generic-name": "T",
+                        "tdg-generic-subtype": "ISomeInterface",
+                        "tdg-node-kind": "12|NodeType|tdg",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
             "1ebf3eb4ff005c7788527d33c8d03230": {
                 "Predicate": "tdg-declaration-module",
                 "Child": {
@@ -49,11 +65,11 @@
                     }
                 }
             },
-            "369d90afa0f5df81adf8aca3f7708aa0": {
+            "68fb1858eff36f423be967e0fcf4444a": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "369d90afa0f5df81adf8aca3f7708aa0",
-                    "Kind": 7,
+                    "Key": "68fb1858eff36f423be967e0fcf4444a",
+                    "Kind": 8,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
@@ -62,24 +78,8 @@
                         "tdg-member-resolved-type": "function\u003cSomeClass\u003cT\u003e\u003e",
                         "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0016function\u003cSomeClass\u003cT\u003e\u003e",
                         "tdg-member-static": "true",
-                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-node-kind": "8|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/interface.seru"
-                    }
-                }
-            },
-            "c270d35e3ef022fb725e5a47061b2aa8": {
-                "Predicate": "tdg-declaration-generic",
-                "Child": {
-                    "Key": "c270d35e3ef022fb725e5a47061b2aa8",
-                    "Kind": 11,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-generic-index": "0",
-                        "tdg-generic-kind": "0",
-                        "tdg-generic-name": "T",
-                        "tdg-generic-subtype": "ISomeInterface",
-                        "tdg-node-kind": "11|NodeType|tdg",
-                        "tdg-source-node": "(NodeRef)"
                     }
                 }
             }
@@ -96,20 +96,20 @@
         "Key": "c62eef30dcad1f2379adb196338f556d",
         "Kind": 2,
         "Children": {
-            "fab59a4c66597ff690b663e02cbcea72": {
+            "4758733280c72a704fc42ae81ad11363": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "fab59a4c66597ff690b663e02cbcea72",
-                    "Kind": 7,
+                    "Key": "4758733280c72a704fc42ae81ad11363",
+                    "Kind": 8,
                     "Children": {
-                        "02ef448f77e3c36a2b7b1142ee6e860a": {
+                        "92a7c69f3835cd533b71962e7f1af63b": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "02ef448f77e3c36a2b7b1142ee6e860a",
-                                "Kind": 10,
+                                "Key": "92a7c69f3835cd533b71962e7f1af63b",
+                                "Kind": 11,
                                 "Children": {},
                                 "Predicates": {
-                                    "tdg-node-kind": "10|NodeType|tdg",
+                                    "tdg-node-kind": "11|NodeType|tdg",
                                     "tdg-return-type": "Integer",
                                     "tdg-source-node": "(NodeRef)"
                                 }
@@ -123,7 +123,7 @@
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cInteger\u003e(Integer, Integer)",
                         "tdg-member-signature": "\n\u000bdosomething\u0010\u0002\u0018\u0000 \u0001*#function\u003cInteger\u003e(Integer, Integer)",
-                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-node-kind": "8|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/interface.seru",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -142,38 +142,20 @@
         "Key": "e9f7024add2332730aa87127ccbca576",
         "Kind": 1,
         "Children": {
-            "35b1d2148a13130ac110941651383817": {
+            "200ee253f3c266985f09a07af9d92150": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "35b1d2148a13130ac110941651383817",
-                    "Kind": 7,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-name": "new",
-                        "tdg-member-promising": "1",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cThirdClass\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0014function\u003cThirdClass\u003e",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "7|NodeType|tdg",
-                        "tdg-source-module": "tests/interfaceconstraint/interface.seru"
-                    }
-                }
-            },
-            "e624aca268b625248285d18d813f436b": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "e624aca268b625248285d18d813f436b",
-                    "Kind": 7,
+                    "Key": "200ee253f3c266985f09a07af9d92150",
+                    "Kind": 8,
                     "Children": {
-                        "02ef448f77e3c36a2b7b1142ee6e860a": {
+                        "92a7c69f3835cd533b71962e7f1af63b": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "02ef448f77e3c36a2b7b1142ee6e860a",
-                                "Kind": 10,
+                                "Key": "92a7c69f3835cd533b71962e7f1af63b",
+                                "Kind": 11,
                                 "Children": {},
                                 "Predicates": {
-                                    "tdg-node-kind": "10|NodeType|tdg",
+                                    "tdg-node-kind": "11|NodeType|tdg",
                                     "tdg-return-type": "Integer",
                                     "tdg-source-node": "(NodeRef)"
                                 }
@@ -187,26 +169,26 @@
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cInteger\u003e",
                         "tdg-member-signature": "\n\u000canotherthing\u0010\u0002\u0018\u0000 \u0001*\u0011function\u003cInteger\u003e",
-                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-node-kind": "8|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/interface.seru",
                         "tdg-source-node": "(NodeRef)"
                     }
                 }
             },
-            "fab59a4c66597ff690b663e02cbcea72": {
+            "4758733280c72a704fc42ae81ad11363": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "fab59a4c66597ff690b663e02cbcea72",
-                    "Kind": 7,
+                    "Key": "4758733280c72a704fc42ae81ad11363",
+                    "Kind": 8,
                     "Children": {
-                        "02ef448f77e3c36a2b7b1142ee6e860a": {
+                        "92a7c69f3835cd533b71962e7f1af63b": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "02ef448f77e3c36a2b7b1142ee6e860a",
-                                "Kind": 10,
+                                "Key": "92a7c69f3835cd533b71962e7f1af63b",
+                                "Kind": 11,
                                 "Children": {},
                                 "Predicates": {
-                                    "tdg-node-kind": "10|NodeType|tdg",
+                                    "tdg-node-kind": "11|NodeType|tdg",
                                     "tdg-return-type": "Integer",
                                     "tdg-source-node": "(NodeRef)"
                                 }
@@ -220,9 +202,27 @@
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cInteger\u003e(Integer, Integer)",
                         "tdg-member-signature": "\n\u000bdosomething\u0010\u0002\u0018\u0000 \u0001*#function\u003cInteger\u003e(Integer, Integer)",
-                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-node-kind": "8|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/interface.seru",
                         "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "632d8775934b1f2eb2c93463d9baf1ef": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "632d8775934b1f2eb2c93463d9baf1ef",
+                    "Kind": 8,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-name": "new",
+                        "tdg-member-promising": "1",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cThirdClass\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0014function\u003cThirdClass\u003e",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "8|NodeType|tdg",
+                        "tdg-source-module": "tests/interfaceconstraint/interface.seru"
                     }
                 }
             }

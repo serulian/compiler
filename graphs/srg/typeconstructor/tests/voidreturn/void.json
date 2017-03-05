@@ -3,20 +3,20 @@
         "Key": "1e50c715a29f03dd69228bf642022cb0",
         "Kind": 6,
         "Children": {
-            "efb1d4c7d10c3e477b40a9bf5872aecb": {
+            "74b988d84313ea9301fc0f3b9253dece": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "efb1d4c7d10c3e477b40a9bf5872aecb",
-                    "Kind": 7,
+                    "Key": "74b988d84313ea9301fc0f3b9253dece",
+                    "Kind": 8,
                     "Children": {
-                        "ed96df037d4bbe6586d8149cfab9ac80": {
+                        "275a61e456e5f3df08e01a03122e86cb": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "ed96df037d4bbe6586d8149cfab9ac80",
-                                "Kind": 10,
+                                "Key": "275a61e456e5f3df08e01a03122e86cb",
+                                "Kind": 11,
                                 "Children": {},
                                 "Predicates": {
-                                    "tdg-node-kind": "10|NodeType|tdg",
+                                    "tdg-node-kind": "11|NodeType|tdg",
                                     "tdg-return-type": "void",
                                     "tdg-source-node": "(NodeRef)"
                                 }
@@ -31,7 +31,7 @@
                         "tdg-member-resolved-type": "function\u003cvoid\u003e",
                         "tdg-member-signature": "\n\u0010somevoidfunction\u0010\u0002\u0018\u0000 \u0001*\u000efunction\u003cvoid\u003e",
                         "tdg-member-static": "true",
-                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-node-kind": "8|NodeType|tdg",
                         "tdg-source-module": "tests/voidreturn/void.seru",
                         "tdg-source-node": "(NodeRef)"
                     }

@@ -3,11 +3,11 @@
         "Key": "585a7c445f0105ddb8079e1d37a05193",
         "Kind": 1,
         "Children": {
-            "a0e724d906257771d1267571250fd28e": {
+            "00a4f1e1bc0ebd175518de15923bb32e": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "a0e724d906257771d1267571250fd28e",
-                    "Kind": 7,
+                    "Key": "00a4f1e1bc0ebd175518de15923bb32e",
+                    "Kind": 8,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
@@ -16,25 +16,25 @@
                         "tdg-member-resolved-type": "function\u003cThirdClass\u003e",
                         "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0014function\u003cThirdClass\u003e",
                         "tdg-member-static": "true",
-                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-node-kind": "8|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/nullable.seru"
                     }
                 }
             },
-            "ebf1e1532fa0d075b76b23858b7b5080": {
+            "8e4bcc4539cf7273f0709c257111f32e": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "ebf1e1532fa0d075b76b23858b7b5080",
-                    "Kind": 7,
+                    "Key": "8e4bcc4539cf7273f0709c257111f32e",
+                    "Kind": 8,
                     "Children": {
-                        "02ef448f77e3c36a2b7b1142ee6e860a": {
+                        "92a7c69f3835cd533b71962e7f1af63b": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "02ef448f77e3c36a2b7b1142ee6e860a",
-                                "Kind": 10,
+                                "Key": "92a7c69f3835cd533b71962e7f1af63b",
+                                "Kind": 11,
                                 "Children": {},
                                 "Predicates": {
-                                    "tdg-node-kind": "10|NodeType|tdg",
+                                    "tdg-node-kind": "11|NodeType|tdg",
                                     "tdg-return-type": "Integer",
                                     "tdg-source-node": "(NodeRef)"
                                 }
@@ -48,7 +48,7 @@
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cInteger\u003e(Integer, Integer)",
                         "tdg-member-signature": "\n\u000bdosomething\u0010\u0002\u0018\u0000 \u0001*#function\u003cInteger\u003e(Integer, Integer)",
-                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-node-kind": "8|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/nullable.seru",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -67,20 +67,36 @@
         "Key": "7f66c3eb41ba711d49019ac5e2b0c085",
         "Kind": 2,
         "Children": {
-            "33858bceac1d28a1d3feac6bcae447cf": {
+            "96cd1ad9519b16344a3392e96a54f3ea": {
+                "Predicate": "tdg-declaration-generic",
+                "Child": {
+                    "Key": "96cd1ad9519b16344a3392e96a54f3ea",
+                    "Kind": 12,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-generic-index": "0",
+                        "tdg-generic-kind": "0",
+                        "tdg-generic-name": "T",
+                        "tdg-generic-subtype": "any",
+                        "tdg-node-kind": "12|NodeType|tdg",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "f32a97744b2478f193ed6815870981b6": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "33858bceac1d28a1d3feac6bcae447cf",
-                    "Kind": 7,
+                    "Key": "f32a97744b2478f193ed6815870981b6",
+                    "Kind": 8,
                     "Children": {
-                        "9516550ec6a30ac5ab017e1c64399451": {
+                        "72b962d379f3fe5ff2ec02d336f68619": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "9516550ec6a30ac5ab017e1c64399451",
-                                "Kind": 10,
+                                "Key": "72b962d379f3fe5ff2ec02d336f68619",
+                                "Kind": 11,
                                 "Children": {},
                                 "Predicates": {
-                                    "tdg-node-kind": "10|NodeType|tdg",
+                                    "tdg-node-kind": "11|NodeType|tdg",
                                     "tdg-return-type": "T",
                                     "tdg-source-node": "(NodeRef)"
                                 }
@@ -94,24 +110,8 @@
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cT\u003e(T, T)",
                         "tdg-member-signature": "\n\u000bdosomething\u0010\u0002\u0018\u0000 \u0001*\u0011function\u003cT\u003e(T, T)",
-                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-node-kind": "8|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/nullable.seru",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
-            "693d012856864506391cde569a54dd3c": {
-                "Predicate": "tdg-declaration-generic",
-                "Child": {
-                    "Key": "693d012856864506391cde569a54dd3c",
-                    "Kind": 11,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-generic-index": "0",
-                        "tdg-generic-kind": "0",
-                        "tdg-generic-name": "T",
-                        "tdg-generic-subtype": "any",
-                        "tdg-node-kind": "11|NodeType|tdg",
                         "tdg-source-node": "(NodeRef)"
                     }
                 }
@@ -129,11 +129,11 @@
         "Key": "8c71ed58594a3539d854919220b29746",
         "Kind": 1,
         "Children": {
-            "f56485ef1c93af4f4c6aa051a4421927": {
+            "503246d8e70bbc7aec2ba6c49ad76198": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "f56485ef1c93af4f4c6aa051a4421927",
-                    "Kind": 7,
+                    "Key": "503246d8e70bbc7aec2ba6c49ad76198",
+                    "Kind": 8,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
@@ -142,7 +142,7 @@
                         "tdg-member-resolved-type": "function\u003cAnotherClass\u003e",
                         "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0016function\u003cAnotherClass\u003e",
                         "tdg-member-static": "true",
-                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-node-kind": "8|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/nullable.seru"
                     }
                 }
@@ -161,11 +161,27 @@
         "Key": "f3953d35557719c19eb3da0be6eefbf4",
         "Kind": 1,
         "Children": {
-            "15aa6bd049200feb04fdd8bbe4cef874": {
+            "430a8a8e6c20b1c2b2da3e9ffe25d076": {
+                "Predicate": "tdg-declaration-generic",
+                "Child": {
+                    "Key": "430a8a8e6c20b1c2b2da3e9ffe25d076",
+                    "Kind": 12,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-generic-index": "0",
+                        "tdg-generic-kind": "0",
+                        "tdg-generic-name": "T",
+                        "tdg-generic-subtype": "ISomeInterface\u003cInteger\u003e?",
+                        "tdg-node-kind": "12|NodeType|tdg",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "90cab7592c103c1da501c7feb7464373": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "15aa6bd049200feb04fdd8bbe4cef874",
-                    "Kind": 7,
+                    "Key": "90cab7592c103c1da501c7feb7464373",
+                    "Kind": 8,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
@@ -174,24 +190,8 @@
                         "tdg-member-resolved-type": "function\u003cSomeClass\u003cT\u003e\u003e",
                         "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0016function\u003cSomeClass\u003cT\u003e\u003e",
                         "tdg-member-static": "true",
-                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-node-kind": "8|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/nullable.seru"
-                    }
-                }
-            },
-            "23f4a67b9feec572e43e1ec6ad9c8044": {
-                "Predicate": "tdg-declaration-generic",
-                "Child": {
-                    "Key": "23f4a67b9feec572e43e1ec6ad9c8044",
-                    "Kind": 11,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-generic-index": "0",
-                        "tdg-generic-kind": "0",
-                        "tdg-generic-name": "T",
-                        "tdg-generic-subtype": "ISomeInterface\u003cInteger\u003e?",
-                        "tdg-node-kind": "11|NodeType|tdg",
-                        "tdg-source-node": "(NodeRef)"
                     }
                 }
             },

@@ -66,20 +66,53 @@
         "Key": "bc3de13f317df50e3fcbf4a0c22bd71d",
         "Kind": 3,
         "Children": {
-            "43eeb19b39ffc638b3d63309479da148": {
+            "34e5d1a89de60472478378c1f0498340": {
                 "Predicate": "tdg-declaration-operator",
                 "Child": {
-                    "Key": "43eeb19b39ffc638b3d63309479da148",
-                    "Kind": 8,
+                    "Key": "34e5d1a89de60472478378c1f0498340",
+                    "Kind": 9,
                     "Children": {
-                        "cdbf0deaf5fbf2d8ac6bc0a70936454f": {
+                        "275a61e456e5f3df08e01a03122e86cb": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "cdbf0deaf5fbf2d8ac6bc0a70936454f",
-                                "Kind": 10,
+                                "Key": "275a61e456e5f3df08e01a03122e86cb",
+                                "Kind": 11,
                                 "Children": {},
                                 "Predicates": {
-                                    "tdg-node-kind": "10|NodeType|tdg",
+                                    "tdg-node-kind": "11|NodeType|tdg",
+                                    "tdg-return-type": "void",
+                                    "tdg-source-node": "(NodeRef)"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "•setindex",
+                        "tdg-member-resolved-type": "function\u003cvoid\u003e(Third, Fourth)",
+                        "tdg-member-signature": "\n\u0008setindex\u0010\u0007\u0018\u0001 \u0001*\u001dfunction\u003cvoid\u003e(Third, Fourth)",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-operator-name": "setindex",
+                        "tdg-operator-native": "true",
+                        "tdg-source-module": "tests/indexer.webidl",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "7d92be01c23dd14a272d356be7fe0c5c": {
+                "Predicate": "tdg-declaration-operator",
+                "Child": {
+                    "Key": "7d92be01c23dd14a272d356be7fe0c5c",
+                    "Kind": 9,
+                    "Children": {
+                        "490b82edf7069ec511d1d6c05bcb8e91": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "490b82edf7069ec511d1d6c05bcb8e91",
+                                "Kind": 11,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "11|NodeType|tdg",
                                     "tdg-return-type": "Second",
                                     "tdg-source-node": "(NodeRef)"
                                 }
@@ -92,41 +125,8 @@
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cSecond\u003e(First)",
                         "tdg-member-signature": "\n\u0005index\u0010\u0007\u0018\u0000 \u0001*\u0017function\u003cSecond\u003e(First)",
-                        "tdg-node-kind": "8|NodeType|tdg",
+                        "tdg-node-kind": "9|NodeType|tdg",
                         "tdg-operator-name": "index",
-                        "tdg-operator-native": "true",
-                        "tdg-source-module": "tests/indexer.webidl",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
-            "4ce159cc5ff050757393300b6ba9ba88": {
-                "Predicate": "tdg-declaration-operator",
-                "Child": {
-                    "Key": "4ce159cc5ff050757393300b6ba9ba88",
-                    "Kind": 8,
-                    "Children": {
-                        "ed96df037d4bbe6586d8149cfab9ac80": {
-                            "Predicate": "tdg-member-returnable",
-                            "Child": {
-                                "Key": "ed96df037d4bbe6586d8149cfab9ac80",
-                                "Kind": 10,
-                                "Children": {},
-                                "Predicates": {
-                                    "tdg-node-kind": "10|NodeType|tdg",
-                                    "tdg-return-type": "void",
-                                    "tdg-source-node": "(NodeRef)"
-                                }
-                            }
-                        }
-                    },
-                    "Predicates": {
-                        "tdg-member-exported": "true",
-                        "tdg-member-name": "•setindex",
-                        "tdg-member-resolved-type": "function\u003cvoid\u003e(Third, Fourth)",
-                        "tdg-member-signature": "\n\u0008setindex\u0010\u0007\u0018\u0001 \u0001*\u001dfunction\u003cvoid\u003e(Third, Fourth)",
-                        "tdg-node-kind": "8|NodeType|tdg",
-                        "tdg-operator-name": "setindex",
                         "tdg-operator-native": "true",
                         "tdg-source-module": "tests/indexer.webidl",
                         "tdg-source-node": "(NodeRef)"

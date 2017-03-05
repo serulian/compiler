@@ -17,15 +17,15 @@
                     }
                 }
             },
-            "9645c7ade228d24b444031b1e0ad4f6c": {
+            "b183ff64b09d2e42c96631c5446cd483": {
                 "Predicate": "tdg-type-attribute",
                 "Child": {
-                    "Key": "9645c7ade228d24b444031b1e0ad4f6c",
-                    "Kind": 12,
+                    "Key": "b183ff64b09d2e42c96631c5446cd483",
+                    "Kind": 13,
                     "Children": {},
                     "Predicates": {
                         "tdg-attribute-name": "serializable",
-                        "tdg-node-kind": "12|NodeType|tdg"
+                        "tdg-node-kind": "13|NodeType|tdg"
                     }
                 }
             }
