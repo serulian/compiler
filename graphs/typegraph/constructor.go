@@ -164,14 +164,14 @@ func (mb *moduleBuilder) Define() {
 
 // typeBuilder defines a helper type for easy construction of type definitions in the type graph.
 type typeBuilder struct {
-	modifier   compilergraph.GraphLayerModifier // The modifier being used.
-	module     TGModule                         // The parent module.
-	name       string                           // The name of the type.
-	globalId   string                           // The global ID of the type.
-	alias      string                           // The alias of the type.
-	sourceNode compilergraph.GraphNode          // The node for the type in the source graph.
-	typeKind   TypeKind                         // The kind of this type.
-	attributes []TypeAttribute                  // The custom attributes on the type, if any.
+	modifier    compilergraph.GraphLayerModifier // The modifier being used.
+	module      TGModule                         // The parent module.
+	name        string                           // The name of the type.
+	globalId    string                           // The global ID of the type.
+	globalAlias string                           // The global alias of the type.
+	sourceNode  compilergraph.GraphNode          // The node for the type in the source graph.
+	typeKind    TypeKind                         // The kind of this type.
+	attributes  []TypeAttribute                  // The custom attributes on the type, if any.
 }
 
 // GlobalId sets the global ID of the type. This ID must be unique. For types that are
@@ -193,9 +193,9 @@ func (tb *typeBuilder) WithAttribute(name TypeAttribute) *typeBuilder {
 	return tb
 }
 
-// Alias sets the global alias of the type.
-func (tb *typeBuilder) Alias(alias string) *typeBuilder {
-	tb.alias = alias
+// GlobalAlias sets the global alias of the type.
+func (tb *typeBuilder) GlobalAlias(globalAlias string) *typeBuilder {
+	tb.globalAlias = globalAlias
 	return tb
 }
 
@@ -233,8 +233,8 @@ func (tb *typeBuilder) Define() getGenericBuilder {
 	typeNode.Decorate(NodePredicateTypeGlobalId, tb.globalId)
 	typeNode.Decorate(NodePredicateModulePath, tb.module.Get(NodePredicateModulePath))
 
-	if tb.alias != "" {
-		typeNode.Decorate(NodePredicateTypeAlias, tb.alias)
+	if tb.globalAlias != "" {
+		typeNode.Decorate(NodePredicateTypeAlias, tb.globalAlias)
 	}
 
 	for _, attribute := range tb.attributes {

@@ -248,49 +248,49 @@ func (t *testBasicTypesConstructor) DefineTypes(builder GetTypeBuilder) {
 		Name("bool").
 		GlobalId("bool").
 		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
-		Alias("bool").
+		GlobalAlias("bool").
 		Define()
 
 	builder(*t.moduleNode).
 		Name("int").
 		GlobalId("int").
 		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
-		Alias("int").
+		GlobalAlias("int").
 		Define()
 
 	builder(*t.moduleNode).
 		Name("mapping").
 		GlobalId("mapping").
 		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
-		Alias("mapping").
+		GlobalAlias("mapping").
 		Define()
 
 	builder(*t.moduleNode).
 		Name("string").
 		GlobalId("string").
 		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
-		Alias("string").
+		GlobalAlias("string").
 		Define()
 
 	builder(*t.moduleNode).
 		Name("$parser").
 		GlobalId("$parser").
 		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
-		Alias("$parser").
+		GlobalAlias("$parser").
 		Define()
 
 	builder(*t.moduleNode).
 		Name("$stringifier").
 		GlobalId("$stringifier").
 		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
-		Alias("$stringifier").
+		GlobalAlias("$stringifier").
 		Define()
 
 	funcGenBuilder := builder(*t.moduleNode).
 		Name("function").
 		GlobalId("function").
 		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
-		Alias("function").
+		GlobalAlias("function").
 		Define()
 
 	funcGenBuilder().Name("T").SourceNode(t.CreateNode(fakeNodeTypeTagged)).Define()
@@ -299,7 +299,7 @@ func (t *testBasicTypesConstructor) DefineTypes(builder GetTypeBuilder) {
 		Name("stream").
 		GlobalId("stream").
 		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
-		Alias("stream").
+		GlobalAlias("stream").
 		Define()
 
 	streamGenBuilder().Name("T").SourceNode(t.CreateNode(fakeNodeTypeTagged)).Define()
