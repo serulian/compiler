@@ -19,10 +19,6 @@ import (
 var TYPE_NODE_TYPES = []NodeType{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType, NodeTypeStruct}
 var TYPE_NODE_TYPES_TAGGED = []compilergraph.TaggedValue{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType, NodeTypeStruct}
 
-var TYPEORMODULE_NODE_TYPES = []compilergraph.TaggedValue{NodeTypeModule, NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType, NodeTypeStruct}
-var TYPEORGENERIC_NODE_TYPES = []compilergraph.TaggedValue{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType, NodeTypeStruct, NodeTypeGeneric}
-var MEMBER_NODE_TYPES = []compilergraph.TaggedValue{NodeTypeMember, NodeTypeOperator}
-
 // TypeGraph represents the TypeGraph layer and all its associated helper methods.
 type TypeGraph struct {
 	graph        *compilergraph.SerulianGraph  // The root graph.
