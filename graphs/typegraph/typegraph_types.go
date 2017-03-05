@@ -22,6 +22,7 @@ const (
 	NodeTypeNominalType                       // A nominal type
 	NodeTypeStruct                            // A structural type
 	NodeTypeModule                            // A module
+	NodeTypeAlias                             // An alias pointing to a type
 
 	// Member-level
 	NodeTypeMember   // A member of a type or module.
@@ -76,17 +77,11 @@ const (
 	NodePredicateModuleName = "module-name"
 
 	//
-	// NodeTypeClass/NodeTypeInterface/NodeTypeExternalInterface/NodeTypeNominal/NodeTypeStruct
+	// NodeTypeClass/NodeTypeInterface/NodeTypeExternalInterface/NodeTypeNominal/NodeTypeStruct/NodeTypeAlias
 	//
 
 	// Connects a type declaration to its parent module.
 	NodePredicateTypeModule = "declaration-module"
-
-	// Connects a type declaration to an operator (function, var, etc).
-	NodePredicateTypeOperator = "declaration-operator"
-
-	// Connects a type declaration to a generic.
-	NodePredicateTypeGeneric = "declaration-generic"
 
 	// Marks a type with its name.
 	NodePredicateTypeName = "type-name"
@@ -94,14 +89,31 @@ const (
 	// Marks a type with its global ID.
 	NodePredicateTypeGlobalId = "type-globalid"
 
+	//
+	// NodeTypeClass/NodeTypeInterface/NodeTypeExternalInterface/NodeTypeNominal/NodeTypeStruct
+	//
+
+	// Connects a type declaration to an operator (function, var, etc).
+	NodePredicateTypeOperator = "declaration-operator"
+
+	// Connects a type declaration to a generic.
+	NodePredicateTypeGeneric = "declaration-generic"
+
 	// Marks a type with a type reference to a parent type.
 	NodePredicateParentType = "parent-type"
 
-	// Marks a type with its alias.
-	NodePredicateTypeAlias = "type-alias"
+	// Marks a type with its global alias.
+	NodePredicateTypeGlobalAlias = "type-alias"
 
 	// Connects a type declaration to a custom attribute.
 	NodePredicateTypeAttribute = "type-attribute"
+
+	//
+	// NodeTypeAlias
+	//
+
+	// Connects a type alias to the type it is aliasing.
+	NodePredicateAliasedType = "aliased-type"
 
 	//
 	// NodeTypeGeneric

@@ -104,11 +104,17 @@ func (an Annotator) DefineGenericConstraint(genericSourceNode compilergraph.Grap
 	an.modifier.Modify(genericNode).DecorateWithTagged(NodePredicateGenericSubtype, constraint)
 }
 
-// DefineParentType defines that the given type inherits from the given parent type. For classes, the parent
+// DefineParentType defines that the given type inherits from the given parent type ref. For classes, the parent
 // is structurally inherited and for nominal types, it describes conversion.
 func (an Annotator) DefineParentType(typeSourceNode compilergraph.GraphNode, inherits TypeReference) {
 	typeNode := an.tdg.getMatchingTypeGraphNode(typeSourceNode)
 	an.modifier.Modify(typeNode).DecorateWithTagged(NodePredicateParentType, inherits)
+}
+
+// DefineAliasedType defines that the given type aliases the other type. Only applies to aliases.
+func (an Annotator) DefineAliasedType(typeSourceNode compilergraph.GraphNode, aliased compilergraph.GraphNode) {
+	typeNode := an.tdg.getMatchingTypeGraphNode(typeSourceNode)
+	an.modifier.Modify(typeNode).Connect(NodePredicateAliasedType, aliased)
 }
 
 // moduleBuilder ////////////////////////////////////////////////////////////////////////////////////
@@ -234,10 +240,18 @@ func (tb *typeBuilder) Define() getGenericBuilder {
 	typeNode.Decorate(NodePredicateModulePath, tb.module.Get(NodePredicateModulePath))
 
 	if tb.globalAlias != "" {
-		typeNode.Decorate(NodePredicateTypeAlias, tb.globalAlias)
+		typeNode.Decorate(NodePredicateTypeGlobalAlias, tb.globalAlias)
+
+		if tb.typeKind == AliasType {
+			panic("Aliases cannot themselves be aliased")
+		}
 	}
 
 	for _, attribute := range tb.attributes {
+		if tb.typeKind == AliasType {
+			panic("Aliases cannot have attributes")
+		}
+
 		attrNode := tb.modifier.CreateNode(NodeTypeAttribute)
 		attrNode.Decorate(NodePredicateAttributeName, string(attribute))
 		typeNode.Connect(NodePredicateTypeAttribute, attrNode)
@@ -275,6 +289,9 @@ func getTypeNodeType(kind TypeKind) NodeType {
 
 	case StructType:
 		return NodeTypeStruct
+
+	case AliasType:
+		return NodeTypeAlias
 
 	default:
 		panic(fmt.Sprintf("Unknown kind of type declaration: %v", kind))

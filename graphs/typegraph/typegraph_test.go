@@ -65,6 +65,32 @@ func assertType(t *testing.T, graph *TypeGraph, kind TypeKind, name string, modu
 	return true
 }
 
+func assertAlias(t *testing.T, graph *TypeGraph, aliasName string, kind TypeKind, name string, modulePath string) bool {
+	typeDecl, typeFound := graph.LookupTypeOrMember(aliasName, compilercommon.InputSource(modulePath))
+	if !assert.True(t, typeFound, "Expected to find type %v", name) {
+		return false
+	}
+
+	if !assert.True(t, typeDecl.IsType(), "Expected to %v to be a type", name) {
+		return false
+	}
+
+	if !assert.Equal(t, name, typeDecl.Name()) {
+		return false
+	}
+
+	if !assert.Equal(t, kind, typeDecl.(TGTypeDecl).TypeKind()) {
+		return false
+	}
+
+	typeDecl, typeFound = graph.LookupType(name, compilercommon.InputSource(modulePath))
+	if !assert.True(t, typeFound, "Expected to find type %v", name) {
+		return false
+	}
+
+	return true
+}
+
 func TestLookup(t *testing.T) {
 	g, _ := compilergraph.NewGraph("-")
 
@@ -102,6 +128,18 @@ func TestLookup(t *testing.T) {
 				[]testGeneric{},
 				[]testMember{},
 			},
+
+			// (alias) SomeAlias => SomeClass
+			testType{"alias", "SomeAlias", "SomeClass",
+				[]testGeneric{},
+				[]testMember{},
+			},
+
+			// (alias) SomeOtherAlias => IBasicInterface
+			testType{"alias", "SomeOtherAlias", "IBasicInterface",
+				[]testGeneric{},
+				[]testMember{},
+			},
 		},
 
 		// function<int> AnotherFunction() {}
@@ -124,6 +162,15 @@ func TestLookup(t *testing.T) {
 	}
 
 	if !assertType(t, graph, NominalType, "SomeNominal", "testModule") {
+		return
+	}
+
+	// Test alias lookups.
+	if !assertAlias(t, graph, "SomeAlias", ClassType, "SomeClass", "testModule") {
+		return
+	}
+
+	if !assertAlias(t, graph, "SomeOtherAlias", ImplicitInterfaceType, "IBasicInterface", "testModule") {
 		return
 	}
 

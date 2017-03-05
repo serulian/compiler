@@ -139,7 +139,8 @@ func resolveTestingTypeRef(name string, refNode compilergraph.GraphNode, graph *
 	// Check for type generics.
 	if currentNode.Kind() == NodeTypeClass || currentNode.Kind() == NodeTypeInterface ||
 		currentNode.Kind() == NodeTypeNominalType ||
-		currentNode.Kind() == NodeTypeStruct || currentNode.Kind() == NodeTypeExternalInterface {
+		currentNode.Kind() == NodeTypeStruct || currentNode.Kind() == NodeTypeExternalInterface ||
+		currentNode.Kind() == NodeTypeAlias {
 		typeInfo := TGTypeDecl{currentNode, graph}
 		for _, generic := range typeInfo.Generics() {
 			if generic.Name() == name {
@@ -340,6 +341,10 @@ func (t *testTypeGraphConstructor) DefineTypes(builder GetTypeBuilder) {
 			typeKind = ExternalInternalType
 		}
 
+		if typeInfo.kind == "alias" {
+			typeKind = AliasType
+		}
+
 		genericBuilder := builder(*t.moduleNode).
 			Name(typeInfo.name).
 			GlobalId(typeInfo.name).
@@ -366,7 +371,11 @@ func (t *testTypeGraphConstructor) DefineDependencies(annotator Annotator, graph
 		}
 
 		if typeInfo.parentType != "" {
-			annotator.DefineParentType(typeNode, parseTypeReferenceForTesting(typeInfo.parentType, graph, typeNode))
+			if typeInfo.kind == "alias" {
+				annotator.DefineAliasedType(typeNode, parseTypeReferenceForTesting(typeInfo.parentType, graph, typeNode).ReferredType().GraphNode)
+			} else {
+				annotator.DefineParentType(typeNode, parseTypeReferenceForTesting(typeInfo.parentType, graph, typeNode))
+			}
 		}
 	}
 }

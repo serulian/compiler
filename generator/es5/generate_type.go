@@ -93,7 +93,7 @@ func (gt generatingType) Fields() []typegraph.TGMember {
 
 // Alias returns the alias for this type, if any.
 func (gt generatingType) Alias() string {
-	alias, hasAlias := gt.Type.Alias()
+	alias, hasAlias := gt.Type.GlobalAlias()
 	if !hasAlias {
 		return ""
 	}

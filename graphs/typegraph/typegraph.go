@@ -16,8 +16,10 @@ import (
 	"github.com/serulian/compiler/packageloader"
 )
 
+// Note: The list below does not contain NodeTypeAlias, which is a special handled case in LookupType.
 var TYPE_NODE_TYPES = []NodeType{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType, NodeTypeStruct}
-var TYPE_NODE_TYPES_TAGGED = []compilergraph.TaggedValue{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType, NodeTypeStruct}
+
+var TYPE_NODE_TYPES_TAGGED = []compilergraph.TaggedValue{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType, NodeTypeStruct, NodeTypeAlias}
 
 // TypeGraph represents the TypeGraph layer and all its associated helper methods.
 type TypeGraph struct {
@@ -81,12 +83,12 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 	// Built the aliased types map.
 	ait := typeGraph.layer.
 		StartQuery().
-		In(NodePredicateTypeAlias).
+		In(NodePredicateTypeGlobalAlias).
 		BuildNodeIterator()
 
 	for ait.Next() {
 		typeDecl := TGTypeDecl{ait.Node(), typeGraph}
-		alias, _ := typeDecl.Alias()
+		alias, _ := typeDecl.GlobalAlias()
 		typeGraph.globalAliasedTypes[alias] = typeDecl
 	}
 
@@ -379,6 +381,12 @@ func (g *TypeGraph) LookupType(typeName string, module compilercommon.InputSourc
 
 	if !found {
 		return TGTypeDecl{}, false
+	}
+
+	// If the type is an alias, return its referenced type.
+	if typeNode.Kind() == NodeTypeAlias {
+		aliasedType := typeNode.GetNode(NodePredicateAliasedType)
+		return TGTypeDecl{aliasedType, g}, true
 	}
 
 	return TGTypeDecl{typeNode, g}, true

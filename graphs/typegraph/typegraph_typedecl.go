@@ -29,6 +29,7 @@ const (
 	NominalType
 	StructType
 	GenericType
+	AliasType
 )
 
 // TGTypeDeclaration represents a type declaration (class, interface or generic) in the type graph.
@@ -69,8 +70,8 @@ func (tn TGTypeDecl) DescriptiveName() string {
 		return containingType.DescriptiveName() + "::" + tn.Name()
 	}
 
-	alias, hasAlias := tn.Alias()
-	if hasAlias && alias == "function" {
+	globalAlias, hasAlias := tn.GlobalAlias()
+	if hasAlias && globalAlias == "function" {
 		return "function"
 	}
 
@@ -105,9 +106,9 @@ func (tn TGTypeDecl) Title() string {
 	}
 }
 
-// Alias returns the alias for this type, if any.
-func (tn TGTypeDecl) Alias() (string, bool) {
-	return tn.TryGet(NodePredicateTypeAlias)
+// GlobalAlias returns the global alias for this type, if any.
+func (tn TGTypeDecl) GlobalAlias() (string, bool) {
+	return tn.TryGet(NodePredicateTypeGlobalAlias)
 }
 
 // Node returns the underlying node in this declaration.
