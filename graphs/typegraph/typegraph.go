@@ -21,10 +21,10 @@ var TYPE_NODE_TYPES_TAGGED = []compilergraph.TaggedValue{NodeTypeClass, NodeType
 
 // TypeGraph represents the TypeGraph layer and all its associated helper methods.
 type TypeGraph struct {
-	graph        *compilergraph.SerulianGraph  // The root graph.
-	layer        *compilergraph.GraphLayer     // The TypeGraph layer in the graph.
-	operators    map[string]operatorDefinition // The supported operators.
-	aliasedTypes map[string]TGTypeDecl         // The aliased types.
+	graph              *compilergraph.SerulianGraph  // The root graph.
+	layer              *compilergraph.GraphLayer     // The TypeGraph layer in the graph.
+	operators          map[string]operatorDefinition // The supported operators.
+	globalAliasedTypes map[string]TGTypeDecl         // The aliased types.
 }
 
 // Results represents the results of building a type graph.
@@ -39,10 +39,10 @@ type Result struct {
 func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGraphConstructor) *Result {
 	// Create the type graph.
 	typeGraph := &TypeGraph{
-		graph:        graph,
-		layer:        graph.NewGraphLayer("tdg", NodeTypeTagged),
-		operators:    map[string]operatorDefinition{},
-		aliasedTypes: map[string]TGTypeDecl{},
+		graph:              graph,
+		layer:              graph.NewGraphLayer("tdg", NodeTypeTagged),
+		operators:          map[string]operatorDefinition{},
+		globalAliasedTypes: map[string]TGTypeDecl{},
 	}
 
 	// Create a struct to hold the results of the construction.
@@ -87,7 +87,7 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 	for ait.Next() {
 		typeDecl := TGTypeDecl{ait.Node(), typeGraph}
 		alias, _ := typeDecl.Alias()
-		typeGraph.aliasedTypes[alias] = typeDecl
+		typeGraph.globalAliasedTypes[alias] = typeDecl
 	}
 
 	// Annotate all dependencies.
@@ -398,8 +398,8 @@ func (g *TypeGraph) LookupReturnType(sourceNode compilergraph.GraphNode) (TypeRe
 	return resolvedNode.GetTagged(NodePredicateReturnType, g.AnyTypeReference()).(TypeReference), true
 }
 
-// LookupAliasedType looks up the type with the given alias and returns it, if any.
-func (t *TypeGraph) LookupAliasedType(alias string) (TGTypeDecl, bool) {
-	typeDecl, found := t.aliasedTypes[alias]
+// LookupGlobalAliasedType looks up the type with the given global alias and returns it, if any.
+func (t *TypeGraph) LookupGlobalAliasedType(alias string) (TGTypeDecl, bool) {
+	typeDecl, found := t.globalAliasedTypes[alias]
 	return typeDecl, found
 }

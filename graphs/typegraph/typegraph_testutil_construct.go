@@ -107,7 +107,7 @@ func resolveTestingTypeRefFromSourceNodes(name string, graph *TypeGraph, refSour
 	}
 
 	// Resolve globally.
-	return graph.NewTypeReference(graph.getAliasedType(name))
+	return graph.NewTypeReference(graph.getGlobalAliasedType(name))
 }
 
 func resolveTestingTypeRef(name string, refNode compilergraph.GraphNode, graph *TypeGraph) (TypeReference, bool) {

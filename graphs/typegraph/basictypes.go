@@ -117,107 +117,107 @@ func (t *TypeGraph) MappableTypeReference() TypeReference {
 
 // StreamableType returns the streamable type.
 func (t *TypeGraph) StreamableType() TGTypeDecl {
-	return t.getAliasedType("streamable")
+	return t.getGlobalAliasedType("streamable")
 }
 
 // SliceType returns the slice type.
 func (t *TypeGraph) SliceType() TGTypeDecl {
-	return t.getAliasedType("slice")
+	return t.getGlobalAliasedType("slice")
 }
 
 // MappingType returns the mapping type.
 func (t *TypeGraph) MappingType() TGTypeDecl {
-	return t.getAliasedType("mapping")
+	return t.getGlobalAliasedType("mapping")
 }
 
 // StreamType returns the stream type.
 func (t *TypeGraph) StreamType() TGTypeDecl {
-	return t.getAliasedType("stream")
+	return t.getGlobalAliasedType("stream")
 }
 
 // AwaitableType returns the awaitable type.
 func (t *TypeGraph) AwaitableType() TGTypeDecl {
-	return t.getAliasedType("awaitable")
+	return t.getGlobalAliasedType("awaitable")
 }
 
 // FunctionType returns the function type.
 func (t *TypeGraph) FunctionType() TGTypeDecl {
-	return t.getAliasedType("function")
+	return t.getGlobalAliasedType("function")
 }
 
 // MappableType returns the mappable type.
 func (t *TypeGraph) MappableType() TGTypeDecl {
-	return t.getAliasedType("mappable")
+	return t.getGlobalAliasedType("mappable")
 }
 
 // StringableType returns the string type.
 func (t *TypeGraph) StringableType() TGTypeDecl {
-	return t.getAliasedType("stringable")
+	return t.getGlobalAliasedType("stringable")
 }
 
 // StringType returns the string type.
 func (t *TypeGraph) StringType() TGTypeDecl {
-	return t.getAliasedType("string")
+	return t.getGlobalAliasedType("string")
 }
 
 // IntType returns the integer type.
 func (t *TypeGraph) IntType() TGTypeDecl {
-	return t.getAliasedType("int")
+	return t.getGlobalAliasedType("int")
 }
 
 // FloatType returns the float type.
 func (t *TypeGraph) FloatType() TGTypeDecl {
-	return t.getAliasedType("float64")
+	return t.getGlobalAliasedType("float64")
 }
 
 // BoolType returns the boolean type.
 func (t *TypeGraph) BoolType() TGTypeDecl {
-	return t.getAliasedType("bool")
+	return t.getGlobalAliasedType("bool")
 }
 
 // ListType returns the list type.
 func (t *TypeGraph) ListType() TGTypeDecl {
-	return t.getAliasedType("list")
+	return t.getGlobalAliasedType("list")
 }
 
 // MapType returns the map type.
 func (t *TypeGraph) MapType() TGTypeDecl {
-	return t.getAliasedType("map")
+	return t.getGlobalAliasedType("map")
 }
 
 // ReleasableType returns the releasable type.
 func (t *TypeGraph) ReleasableType() TGTypeDecl {
-	return t.getAliasedType("releasable")
+	return t.getGlobalAliasedType("releasable")
 }
 
 // ErrorType returns the error type.
 func (t *TypeGraph) ErrorType() TGTypeDecl {
-	return t.getAliasedType("error")
+	return t.getGlobalAliasedType("error")
 }
 
 // SerializationJSONType returns the $json type.
 func (t *TypeGraph) SerializationJSONType() TGTypeDecl {
-	return t.getAliasedType("json")
+	return t.getGlobalAliasedType("json")
 }
 
 // IntStreamType returns the $intstream type.
 func (t *TypeGraph) IntStreamType() TGTypeDecl {
-	return t.getAliasedType("$intstream")
+	return t.getGlobalAliasedType("$intstream")
 }
 
 // SerializationParserType returns the $parser type.
 func (t *TypeGraph) SerializationParserType() TGTypeDecl {
-	return t.getAliasedType("$parser")
+	return t.getGlobalAliasedType("$parser")
 }
 
 // SerializationStringifierType returns the $stringifier type.
 func (t *TypeGraph) SerializationStringifier() TGTypeDecl {
-	return t.getAliasedType("$stringifier")
+	return t.getGlobalAliasedType("$stringifier")
 }
 
-// getAliasedType returns the type defined for the given alias.
-func (t *TypeGraph) getAliasedType(alias string) TGTypeDecl {
-	typeDecl, found := t.LookupAliasedType(alias)
+// getGlobalAliasedType returns the type defined for the given alias.
+func (t *TypeGraph) getGlobalAliasedType(alias string) TGTypeDecl {
+	typeDecl, found := t.LookupGlobalAliasedType(alias)
 	if !found {
 		panic(fmt.Sprintf("%s type not found", alias))
 	}
