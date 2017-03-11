@@ -1,12 +1,24 @@
 {
-    "0601e2c314f699a4c573d3d428e12919": {
-        "Key": "0601e2c314f699a4c573d3d428e12919",
-        "Kind": 6,
+    "13e7be43f0b66c26464b35bc246a354d": {
+        "Key": "13e7be43f0b66c26464b35bc246a354d",
+        "Kind": 7,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "7|NodeType|tdg",
+            "tdg-source-module": "tests/window.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "a95165cc",
+            "tdg-type-name": "HTMLWindow"
+        }
+    },
+    "32a1b9f3e6c896767ceea9c331365e98": {
+        "Key": "32a1b9f3e6c896767ceea9c331365e98",
+        "Kind": 3,
         "Children": {
-            "5f32a60e7416fa377d5cf9abf25a0c1b": {
+            "bb649bc52c614efd9fd78f7791f4ea27": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "5f32a60e7416fa377d5cf9abf25a0c1b",
+                    "Key": "bb649bc52c614efd9fd78f7791f4ea27",
                     "Kind": 8,
                     "Children": {},
                     "Predicates": {
@@ -15,62 +27,43 @@
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "HTMLDocument",
                         "tdg-member-signature": "\n\u0008document\u0010\t\u0018\u0000 \u0001*\u000cHTMLDocument",
-                        "tdg-member-static": "true",
                         "tdg-node-kind": "8|NodeType|tdg",
-                        "tdg-source-module": "tests/window.webidl",
+                        "tdg-source-module": "(root)",
                         "tdg-source-node": "(NodeRef)"
                     }
                 }
             }
         },
         "Predicates": {
-            "tdg-module-name": "window.webidl",
-            "tdg-node-kind": "6|NodeType|tdg",
-            "tdg-source-module": "tests/window.webidl",
-            "tdg-source-node": "(NodeRef)"
+            "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-source-module": "(root)",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "HTMLWindow",
+            "tdg-type-name": "HTMLWindow"
         }
     },
-    "344ab39c2ea59d345ef2886478feac27": {
-        "Key": "344ab39c2ea59d345ef2886478feac27",
+    "c743765c28fed4290c521823d7e462a2": {
+        "Key": "c743765c28fed4290c521823d7e462a2",
+        "Kind": 7,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "7|NodeType|tdg",
+            "tdg-source-module": "tests/window.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "2b685419",
+            "tdg-type-name": "HTMLDocument"
+        }
+    },
+    "d32aac0588cc84b630ca05b8bf1dff12": {
+        "Key": "d32aac0588cc84b630ca05b8bf1dff12",
         "Kind": 3,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "tests/window.webidl",
+            "tdg-source-module": "(root)",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "HTMLDocument",
             "tdg-type-name": "HTMLDocument"
-        }
-    },
-    "c7944884a7f0a269fe1240eb6c9b56c0": {
-        "Key": "c7944884a7f0a269fe1240eb6c9b56c0",
-        "Kind": 3,
-        "Children": {
-            "e984f3b177b06b4481e6652a479283a3": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "e984f3b177b06b4481e6652a479283a3",
-                    "Kind": 8,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-exported": "true",
-                        "tdg-member-name": "document",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "HTMLDocument",
-                        "tdg-member-signature": "\n\u0008document\u0010\t\u0018\u0000 \u0001*\u000cHTMLDocument",
-                        "tdg-node-kind": "8|NodeType|tdg",
-                        "tdg-source-module": "tests/window.webidl",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            }
-        },
-        "Predicates": {
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "tests/window.webidl",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "HTMLWindow",
-            "tdg-type-name": "HTMLWindow"
         }
     }
 }

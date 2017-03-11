@@ -54,14 +54,22 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"custom op test", "customop", ""},
 	typegraphTest{"inheritance test", "inheritance", ""},
 	typegraphTest{"native types test", "nativetypes", ""},
+	typegraphTest{"serializable test", "serializable", ""},
+
+	typegraphTest{"basic multifile test", "basicmultifile", ""},
+	typegraphTest{"collapsed types test", "collapsed", ""},
+	typegraphTest{"collapsed types inheritance test", "collapsedinheritance", ""},
 
 	// Failure tests.
-	typegraphTest{"redeclaration test", "redeclare", "external interface 'Foo' redefines name 'Foo' under Module 'redeclare.webidl'"},
-	typegraphTest{"same member test", "redefine", "type member 'Foo' redefines name 'Foo' under external interface 'SomeInterface'"},
+	typegraphTest{"redeclaration test", "redeclare", "type alias 'Foo' redefines name 'Foo' under Module 'redeclare.webidl'"},
+	typegraphTest{"same member test", "redefine", "Member 'Foo' redefined under type 'SomeInterface' but with a different signature"},
 	typegraphTest{"unknown type test", "unknowntype", "Could not find WebIDL type Bar"},
 	typegraphTest{"invalid indexer test", "invalidindexer", "Operator 'index' defined on type 'MyInterface' expects 1 parameters; found 2"},
 	typegraphTest{"invalid parent test", "invalidparent", "Could not find WebIDL type Node"},
 	typegraphTest{"global constructor test", "globalconstructor", "[Global] interface `SomeWeirdInterface` cannot also have a [Constructor]"},
+
+	typegraphTest{"collapsed types mismatch member test", "collapsedmismatch", "Member 'First' redefined under type 'ISomeCollapsedType' but with a different signature"},
+	typegraphTest{"collapsed inheritance mismatch member test", "collapsedinheritancemismatch", "Multiple parent types defined on type 'ISomeCollapsedType'"},
 }
 
 func TestGraphs(t *testing.T) {
@@ -82,7 +90,13 @@ func TestGraphs(t *testing.T) {
 		testIRG := webidl.NewIRG(graph)
 
 		loader := packageloader.NewPackageLoader(graph.RootSourceFilePath, []string{}, testIRG.PackageLoaderHandler())
-		irgResult := loader.Load()
+
+		secondaryLibs := make([]packageloader.Library, 0)
+		if _, err := os.Stat("tests/" + test.entrypoint + "/"); err == nil {
+			secondaryLibs = append(secondaryLibs, packageloader.Library{"tests/" + test.entrypoint + "/", false, "webidl"})
+		}
+
+		irgResult := loader.Load(secondaryLibs...)
 
 		// Make sure we had no errors during construction.
 		assert.True(t, irgResult.Status, "Got error for IRG construction %v: %s", test.name, irgResult.Errors)
@@ -96,7 +110,9 @@ func TestGraphs(t *testing.T) {
 				continue
 			}
 
-			currentLayerView := result.Graph.GetFilteredJSONForm("tests/" + test.entrypoint + ".webidl")
+			currentLayerView := result.Graph.GetFilteredJSONForm(
+				[]string{"tests/" + test.entrypoint + ".webidl", "(root)"},
+				[]compilergraph.TaggedValue{typegraph.NodeTypeModule})
 
 			if os.Getenv("REGEN") == "true" {
 				test.writeJson(currentLayerView)

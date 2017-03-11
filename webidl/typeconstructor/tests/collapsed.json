@@ -1,0 +1,81 @@
+{
+    "3ccdce59db2578507869f4fd0a0ea41e": {
+        "Key": "3ccdce59db2578507869f4fd0a0ea41e",
+        "Kind": 7,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "7|NodeType|tdg",
+            "tdg-source-module": "tests/collapsed.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "fd519595",
+            "tdg-type-name": "ISomeCollapsedType"
+        }
+    },
+    "75bde0d670e2f16985e3fce72c291edc": {
+        "Key": "75bde0d670e2f16985e3fce72c291edc",
+        "Kind": 3,
+        "Children": {
+            "5864bf880d0d2878f98060622f3cf1ce": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "5864bf880d0d2878f98060622f3cf1ce",
+                    "Kind": 8,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "Third",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "any",
+                        "tdg-member-signature": "\n\u0005third\u0010\t\u0018\u0000 \u0001*\u0003any",
+                        "tdg-node-kind": "8|NodeType|tdg",
+                        "tdg-source-module": "(root)",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "d8fd09095bfa6fca7ffcd7097e38f4c2": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "d8fd09095bfa6fca7ffcd7097e38f4c2",
+                    "Kind": 8,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "First",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "any",
+                        "tdg-member-signature": "\n\u0005first\u0010\t\u0018\u0000 \u0001*\u0003any",
+                        "tdg-node-kind": "8|NodeType|tdg",
+                        "tdg-source-module": "(root)",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "e8a14bb828e8c7e985b2adfb07de8366": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "e8a14bb828e8c7e985b2adfb07de8366",
+                    "Kind": 8,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "Second",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "any",
+                        "tdg-member-signature": "\n\u0006second\u0010\t\u0018\u0000 \u0001*\u0003any",
+                        "tdg-node-kind": "8|NodeType|tdg",
+                        "tdg-source-module": "(root)",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-source-module": "(root)",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "ISomeCollapsedType",
+            "tdg-type-name": "ISomeCollapsedType"
+        }
+    }
+}

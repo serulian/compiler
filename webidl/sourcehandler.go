@@ -34,6 +34,17 @@ func (sh *irgSourceHandler) Parse(source compilercommon.InputSource, input strin
 func (sh *irgSourceHandler) Apply(packageMap packageloader.LoadedPackageMap) {
 	// Apply the changes to the graph.
 	sh.modifier.Apply()
+
+	// Make sure we didn't encounter any errors.
+	if sh.irg.findAllNodes(parser.NodeTypeError).BuildNodeIterator().Next() {
+		return
+	}
+
+	// Perform type collapsing.
+	modifier := sh.irg.layer.NewModifier()
+	defer modifier.Apply()
+
+	sh.irg.typeCollapser = createTypeCollapser(sh.irg, modifier)
 }
 
 func (sh *irgSourceHandler) Verify(errorReporter packageloader.ErrorReporter, warningReporter packageloader.WarningReporter) {

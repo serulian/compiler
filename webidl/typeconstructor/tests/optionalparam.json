@@ -1,39 +1,24 @@
 {
-    "8b29d8990cd08fc33bf6399512794ffa": {
-        "Key": "8b29d8990cd08fc33bf6399512794ffa",
+    "2aa231b4ca48453242ccaaa21a10c6f8": {
+        "Key": "2aa231b4ca48453242ccaaa21a10c6f8",
         "Kind": 3,
-        "Children": {
-            "0884367d090ad9c17b19d77fd1863e91": {
-                "Predicate": "tdg-declaration-module",
-                "Child": {
-                    "Key": "0884367d090ad9c17b19d77fd1863e91",
-                    "Kind": 6,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-module-name": "optionalparam.webidl",
-                        "tdg-node-kind": "6|NodeType|tdg",
-                        "tdg-source-module": "tests/optionalparam.webidl",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            }
-        },
+        "Children": {},
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "tests/optionalparam.webidl",
+            "tdg-source-module": "(root)",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "Foo",
             "tdg-type-name": "Foo"
         }
     },
-    "f20c33ccf9596102359b3e9b9caf2cf8": {
-        "Key": "f20c33ccf9596102359b3e9b9caf2cf8",
+    "4dc56579136ccd27071f4f0ffc6ca6e9": {
+        "Key": "4dc56579136ccd27071f4f0ffc6ca6e9",
         "Kind": 3,
         "Children": {
-            "8d2a6fa4bbb5e9b9cd43149d4ce2e73a": {
+            "8c8bd1c81b265fa54b7fdae0a107b8a7": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "8d2a6fa4bbb5e9b9cd43149d4ce2e73a",
+                    "Key": "8c8bd1c81b265fa54b7fdae0a107b8a7",
                     "Kind": 8,
                     "Children": {},
                     "Predicates": {
@@ -43,7 +28,7 @@
                         "tdg-member-resolved-type": "function\u003cvoid\u003e(Foo, Foo, Foo?, Foo?)",
                         "tdg-member-signature": "\n\u000csomefunction\u0010\u0007\u0018\u0000 \u0001*$function\u003cvoid\u003e(Foo, Foo, Foo?, Foo?)",
                         "tdg-node-kind": "8|NodeType|tdg",
-                        "tdg-source-module": "tests/optionalparam.webidl",
+                        "tdg-source-module": "(root)",
                         "tdg-source-node": "(NodeRef)"
                     }
                 }
@@ -51,9 +36,33 @@
         },
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "tests/optionalparam.webidl",
+            "tdg-source-module": "(root)",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "SomeInterface",
+            "tdg-type-name": "SomeInterface"
+        }
+    },
+    "8207b674d4e6906b113b86212812e9d9": {
+        "Key": "8207b674d4e6906b113b86212812e9d9",
+        "Kind": 7,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "7|NodeType|tdg",
+            "tdg-source-module": "tests/optionalparam.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "6757ffcf",
+            "tdg-type-name": "Foo"
+        }
+    },
+    "d1302d3b6b9c9ff6e260d008a94982d9": {
+        "Key": "d1302d3b6b9c9ff6e260d008a94982d9",
+        "Kind": 7,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "7|NodeType|tdg",
+            "tdg-source-module": "tests/optionalparam.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "8bf7577c",
             "tdg-type-name": "SomeInterface"
         }
     }
