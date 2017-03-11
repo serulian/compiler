@@ -21,31 +21,37 @@ func (gen *es5generator) generateTypes(module typegraph.TGModule) *ordered_map.O
 	typeMap := ordered_map.NewOrderedMap()
 	types := module.Types()
 	for _, typedecl := range types {
-		typeMap.Set(typedecl, gen.generateType(typedecl))
+		generated, result := gen.generateType(typedecl)
+		if result {
+			typeMap.Set(typedecl, generated)
+		}
 	}
 
 	return typeMap
 }
 
 // generateType generates the given type into ES5.
-func (gen *es5generator) generateType(typedef typegraph.TGTypeDecl) esbuilder.SourceBuilder {
+func (gen *es5generator) generateType(typedef typegraph.TGTypeDecl) (esbuilder.SourceBuilder, bool) {
 	generating := generatingType{typedef, gen}
 
 	switch typedef.TypeKind() {
 	case typegraph.ClassType:
-		return esbuilder.Template("class", classTemplateStr, generating)
+		return esbuilder.Template("class", classTemplateStr, generating), true
 
 	case typegraph.ImplicitInterfaceType:
-		return esbuilder.Template("interface", interfaceTemplateStr, generating)
+		return esbuilder.Template("interface", interfaceTemplateStr, generating), true
 
 	case typegraph.NominalType:
-		return esbuilder.Template("nominal", nominalTemplateStr, generating)
+		return esbuilder.Template("nominal", nominalTemplateStr, generating), true
 
 	case typegraph.StructType:
-		return esbuilder.Template("struct", structTemplateStr, generating)
+		return esbuilder.Template("struct", structTemplateStr, generating), true
 
 	case typegraph.ExternalInternalType:
-		return esbuilder.Snippet("")
+		return esbuilder.Snippet(""), false
+
+	case typegraph.AliasType:
+		return esbuilder.Snippet(""), false
 
 	default:
 		panic("Unknown typedef kind")

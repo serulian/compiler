@@ -1651,16 +1651,6 @@ this.Serulian = function ($global) {
       return $t.fastbox((foo.$wrapped == 2) && $g.____testlib.basictypes.String.$equals(bar, $t.fastbox('hello world', $g.____testlib.basictypes.String)).$wrapped, $g.____testlib.basictypes.Boolean);
     };
   });
-  $module('____testlib.basic.webidl', function () {
-    var $static = this;
-
-
-
-
-
-
-
-  });
   $g.$executeWorkerMethod = function (token) {
     $global.onmessage = function (e) {
       if (!e.isTrusted) {

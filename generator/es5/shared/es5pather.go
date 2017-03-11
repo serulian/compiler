@@ -133,7 +133,7 @@ func (p Pather) GetTypePath(typedecl typegraph.TGTypeDecl) string {
 // GetModulePath returns the global path for the given module.
 func (p Pather) GetModulePath(module typegraph.TGModule) string {
 	// TODO(jschorr): We should generalize non-SRG support.
-	if strings.HasSuffix(module.Path(), ".webidl") {
+	if module.SourceGraphId() == "webidl" {
 		return "$global"
 	}
 
