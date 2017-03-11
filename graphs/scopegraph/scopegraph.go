@@ -73,7 +73,7 @@ func ParseAndBuildScopeGraph(rootSourceFilePath string, vcsDevelopmentDirectorie
 	// Construct the type graph.
 	resolver := typerefresolver.NewResolver(sourcegraph)
 	srgConstructor := srgtc.GetConstructorWithResolver(sourcegraph, resolver)
-	typeResult := typegraph.BuildTypeGraph(sourcegraph.Graph, srgConstructor, webidltc.GetConstructor(webidlgraph))
+	typeResult := typegraph.BuildTypeGraph(sourcegraph.Graph, webidltc.GetConstructor(webidlgraph), srgConstructor)
 	if !typeResult.Status {
 		return Result{
 			Status:   false,
