@@ -1,0 +1,39 @@
+{
+    "8758f5d8d63e606d5960b6fe6800d898": {
+        "Key": "8758f5d8d63e606d5960b6fe6800d898",
+        "Kind": 3,
+        "Children": {
+            "b183ff64b09d2e42c96631c5446cd483": {
+                "Predicate": "tdg-type-attribute",
+                "Child": {
+                    "Key": "b183ff64b09d2e42c96631c5446cd483",
+                    "Kind": 13,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-attribute-name": "serializable",
+                        "tdg-node-kind": "13|NodeType|tdg"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-source-module": "(root).webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "ISomeSerializable",
+            "tdg-type-name": "ISomeSerializable"
+        }
+    },
+    "e5e3e970e9a6d42ff47f41f2759f738f": {
+        "Key": "e5e3e970e9a6d42ff47f41f2759f738f",
+        "Kind": 7,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "7|NodeType|tdg",
+            "tdg-source-module": "tests/serializable.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "d8b7cc1d",
+            "tdg-type-name": "ISomeSerializable"
+        }
+    }
+}

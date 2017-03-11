@@ -99,6 +99,14 @@ func TestBasicLoading(t *testing.T) {
 	if !assert.True(t, anotherthing.IsStatic()) {
 		return
 	}
+
+	if !assert.NotEqual(t, coolthing.Signature(), anotherthing.Signature()) {
+		return
+	}
+
+	if !assert.Equal(t, anotherthing.Signature(), anotherthing.Signature()) {
+		return
+	}
 }
 
 func TestParsingIssue(t *testing.T) {

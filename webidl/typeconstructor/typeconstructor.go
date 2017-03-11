@@ -8,72 +8,35 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/streamrail/concurrent-map"
-
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/webidl"
 )
 
-// GLOBAL_CONTEXT_ANNOTATIONS are the annotations that mark an interface as being a global context
-// (e.g. Window) in WebIDL.
-var GLOBAL_CONTEXT_ANNOTATIONS = []interface{}{"Global", "PrimaryGlobal"}
-
-// CONSTRUCTOR_ANNOTATION is an annotation that describes support for a constructor on a WebIDL
-// type. This translates to being able to do "new Type(...)" in ECMAScript.
-const CONSTRUCTOR_ANNOTATION = "Constructor"
-
-// NATIVE_OPERATOR_ANNOTATION is an annotation that marks an declaration as supporting the
-// specified operator natively (i.e. not a custom defined operator).
-const NATIVE_OPERATOR_ANNOTATION = "NativeOperator"
-
-// SPECIALIZATION_NAMES maps WebIDL member specializations into Serulian typegraph names.
-var SPECIALIZATION_NAMES = map[webidl.MemberSpecialization]string{
-	webidl.GetterSpecialization: "index",
-	webidl.SetterSpecialization: "setindex",
-}
-
-// SERIALIZABLE_OPS defines the WebIDL custom ops that mark a type as serializable.
-var SERIALIZABLE_OPS = map[string]bool{
-	"jsonifier":  true,
-	"serializer": true,
-}
-
-// NATIVE_TYPES maps from the predefined WebIDL types to the type actually supported
-// in ES. We lose some information by doing so, but it allows for compatibility
-// with existing WebIDL specifications. In the future, we might find a way to
-// have these types be used in a more specific manner.
-var NATIVE_TYPES = map[string]string{
-	"boolean":             "Boolean",
-	"byte":                "Number",
-	"octet":               "Number",
-	"short":               "Number",
-	"unsigned short":      "Number",
-	"long":                "Number",
-	"unsigned long":       "Number",
-	"long long":           "Number",
-	"float":               "Number",
-	"double":              "Number",
-	"unrestricted float":  "Number",
-	"unrestricted double": "Number",
-}
-
 // GetConstructor returns a TypeGraph constructor for the given IRG.
 func GetConstructor(irg *webidl.WebIRG) *irgTypeConstructor {
 	return &irgTypeConstructor{
-		irg:              irg,
-		typesEncountered: cmap.New(),
+		irg: irg,
+		tc:  irg.TypeCollapser(),
 	}
 }
 
 // irgTypeConstructor defines a type for populating a type graph from the IRG.
 type irgTypeConstructor struct {
-	irg              *webidl.WebIRG     // The IRG being transformed.
-	typesEncountered cmap.ConcurrentMap // The types already encountered.
+	irg *webidl.WebIRG        // The IRG being transformed.
+	tc  *webidl.TypeCollapser // The type collapser for tracking all collapsed types.
 }
 
 func (itc *irgTypeConstructor) DefineModules(builder typegraph.GetModuleBuilder) {
+	// Define a module node for the root node.
+	builder().
+		Name("(root).webidl").
+		Path("(root).webidl").
+		SourceNode(itc.irg.RootModuleNode()).
+		Define()
+
+	// Define a module node for each module.
 	for _, module := range itc.irg.GetModules() {
 		builder().
 			Name(module.Name()).
@@ -84,292 +47,337 @@ func (itc *irgTypeConstructor) DefineModules(builder typegraph.GetModuleBuilder)
 }
 
 func (itc *irgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
-	for _, module := range itc.irg.GetModules() {
-		for _, declaration := range module.Declarations() {
-			// If the type is marked as [Global] then it defines an "interface" whose members
-			// get added to the global context, and not a real type.
-			if declaration.HasOneAnnotation(GLOBAL_CONTEXT_ANNOTATIONS...) {
-				continue
-			}
+	itc.tc.ForEachType(func(collapsedType *webidl.CollapsedType) {
+		// Define a single type under the root module node.
+		typeBuilder := builder(itc.irg.RootModuleNode()).
+			Name(collapsedType.Name).
+			GlobalId(collapsedType.Name).
+			SourceNode(collapsedType.RootNode).
+			TypeKind(typegraph.ExternalInternalType)
 
-			typeBuilder := builder(module.Node())
+		if collapsedType.Serializable {
+			typeBuilder.WithAttribute(typegraph.SERIALIZABLE_ATTRIBUTE)
+		}
 
-			for _, customop := range declaration.CustomOperations() {
-				if _, ok := SERIALIZABLE_OPS[customop]; ok {
-					typeBuilder.WithAttribute(typegraph.SERIALIZABLE_ATTRIBUTE)
-				}
-			}
+		typeBuilder.Define()
 
-			typeBuilder.Name(declaration.Name()).
-				GlobalId(declaration.Name()).
+		// For each declaration that contributed to the type, define an alias that will
+		// point to the type.
+		for _, declaration := range collapsedType.Declarations {
+			builder(declaration.Module().Node()).
+				Name(declaration.Name()).
+				GlobalId(webidl.GetUniqueId(declaration.GraphNode)).
 				SourceNode(declaration.GraphNode).
-				TypeKind(typegraph.ExternalInternalType).
+				TypeKind(typegraph.AliasType).
 				Define()
 		}
-	}
+	})
 }
 
 func (itc *irgTypeConstructor) DefineDependencies(annotator typegraph.Annotator, graph *typegraph.TypeGraph) {
-	for _, module := range itc.irg.GetModules() {
-		for _, declaration := range module.Declarations() {
-			// If the type is marked as [Global] then it defines an "interface" whose members
-			// get added to the global context, and not a real type.
-			if declaration.HasOneAnnotation(GLOBAL_CONTEXT_ANNOTATIONS...) {
-				continue
+	itc.tc.ForEachType(func(collapsedType *webidl.CollapsedType) {
+		// Set the parent type of the collapsed type, if any.
+		if len(collapsedType.ParentTypes) > 0 {
+			var index = -1
+			for parentTypeString, annotation := range collapsedType.ParentTypes {
+				index = index + 1
+				parentType, err := itc.ResolveType(parentTypeString, graph)
+				if err != nil {
+					annotator.ReportError(annotation.GraphNode, "%v", err)
+					continue
+				}
+
+				annotator.DefineParentType(collapsedType.RootNode, parentType)
+
+				// If there is more than one, then it is an error.
+				if index > 0 {
+					annotator.ReportError(annotation.GraphNode, "Multiple parent types defined on type '%s'", collapsedType.Name)
+					break
+				}
 			}
-
-			// Ensure that we don't have duplicate types across modules. Intra-module is handled by the type
-			// graph.
-			existingModule, found := itc.typesEncountered.Get(declaration.Name())
-			if found && existingModule != module {
-				annotator.ReportError(declaration.GraphNode, "Redeclaration of WebIDL interface %v is not supported", declaration.Name())
-			}
-
-			itc.typesEncountered.Set(declaration.Name(), module)
-
-			// Determine whether we have a parent type for inheritance.
-			parentTypeString, hasParentType := declaration.ParentType()
-			if !hasParentType {
-				continue
-			}
-
-			parentType, err := itc.ResolveType(parentTypeString, graph)
-			if err != nil {
-				annotator.ReportError(declaration.GraphNode, "%v", err)
-				continue
-			}
-
-			annotator.DefineParentType(declaration.GraphNode, parentType)
 		}
-	}
+
+		// Alias each declaration to the type created.
+		for _, declaration := range collapsedType.Declarations {
+			// Define the aliased type.
+			aliasedType, _ := graph.GetTypeForSourceNode(collapsedType.RootNode)
+			annotator.DefineAliasedType(declaration.GraphNode, aliasedType)
+		}
+	})
 }
 
 func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder, reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {
-	for _, declaration := range itc.irg.Declarations() {
-		// Global members get defined under their module, not their declaration.
-		var parentNode = declaration.GraphNode
-		if declaration.HasOneAnnotation(GLOBAL_CONTEXT_ANNOTATIONS...) {
-			parentNode = declaration.Module().GraphNode
-		}
+	// Define global members.
+	itc.tc.ForEachGlobalDeclaration(func(declaration webidl.IRGDeclaration) {
+		itc.defineGlobalContextMembers(declaration, builder, reporter)
+	})
 
-		// If the declaration has one (or more) constructors, add then as a "new".
-		if declaration.HasAnnotation(CONSTRUCTOR_ANNOTATION) {
-			// Declare a "new" member which returns an instance of this type.
-			builder(parentNode, false).
+	// Define members of the collapsed types.
+	itc.tc.ForEachType(func(collapsedType *webidl.CollapsedType) {
+		// Define the constructor (if any)
+		if len(collapsedType.ConstructorAnnotations) > 0 {
+			builder(collapsedType.RootNode, false).
 				Name("new").
-				SourceNode(declaration.GetAnnotations(CONSTRUCTOR_ANNOTATION)[0].GraphNode).
+				SourceNode(collapsedType.ConstructorAnnotations[0].GraphNode).
 				Define()
 		}
 
-		// Add support for any native operators.
-		if declaration.HasOneAnnotation(GLOBAL_CONTEXT_ANNOTATIONS...) && declaration.HasAnnotation(NATIVE_OPERATOR_ANNOTATION) {
-			reporter.ReportError(declaration.GraphNode, "[NativeOperator] not supported on declarations marked with [GlobalContext]")
-			return
-		}
+		for _, declaration := range collapsedType.Declarations {
+			// Define the operators.
+			for _, nativeOp := range declaration.GetAnnotations(webidl.NATIVE_OPERATOR_ANNOTATION) {
+				opName, hasOpName := nativeOp.Value()
+				if !hasOpName {
+					reporter.ReportError(nativeOp.GraphNode, "Missing operator name on [NativeOperator] annotation")
+					continue
+				}
 
-		for _, nativeOp := range declaration.GetAnnotations(NATIVE_OPERATOR_ANNOTATION) {
-			opName, hasOpName := nativeOp.Value()
-			if !hasOpName {
-				reporter.ReportError(nativeOp.GraphNode, "Missing operator name on [NativeOperator] annotation")
-				continue
-			}
+				// Lookup the operator under the type graph.
+				opDefinition, found := graph.GetOperatorDefinition(opName)
+				if !found || !opDefinition.IsStatic {
+					reporter.ReportError(nativeOp.GraphNode, "Unknown native operator '%v'", opName)
+					continue
+				}
 
-			// Lookup the operator under the type graph.
-			opDefinition, found := graph.GetOperatorDefinition(opName)
-			if !found || !opDefinition.IsStatic {
-				reporter.ReportError(nativeOp.GraphNode, "Unknown native operator '%v'", opName)
-				continue
-			}
-
-			// Add the operator to the type.
-			builder(parentNode, true).
-				Name(opName).
-				SourceNode(nativeOp.GraphNode).
-				Define()
-		}
-
-		// Add the declared members and specializations.
-		for _, member := range declaration.Members() {
-			name, hasName := member.Name()
-			if hasName {
-				builder(parentNode, false).
-					Name(name).
-					SourceNode(member.GraphNode).
-					Define()
-			} else {
-				// This is a specialization.
-				specialization, _ := member.Specialization()
-				builder(parentNode, true).
-					Name(SPECIALIZATION_NAMES[specialization]).
-					SourceNode(member.GraphNode).
-					Define()
-			}
-		}
-	}
-}
-
-func (itc *irgTypeConstructor) DecorateMembers(decorator typegraph.GetMemberDecorator, reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {
-	for _, declaration := range itc.irg.Declarations() {
-		if declaration.HasAnnotation(CONSTRUCTOR_ANNOTATION) {
-			// Should never be allowed.
-			if declaration.HasOneAnnotation(GLOBAL_CONTEXT_ANNOTATIONS...) {
-				reporter.ReportError(declaration.GraphNode, "[Global] interface `%v` cannot also have a [Constructor]", declaration.Name())
-				continue
-			}
-
-			// For each constructor defined, create the intersection of their parameters.
-			var parameters = make([]typegraph.TypeReference, 0)
-			for constructorIndex, constructor := range declaration.GetAnnotations(CONSTRUCTOR_ANNOTATION) {
-				for index, parameter := range constructor.Parameters() {
-					parameterType, err := itc.ResolveType(parameter.DeclaredType(), graph)
-					if err != nil {
-						reporter.ReportError(parameter.GraphNode, "%v", err)
-						continue
-					}
-
-					var resolvedParameterType = parameterType
-					if parameter.IsOptional() {
-						resolvedParameterType = resolvedParameterType.AsNullable()
-					}
-
-					if index >= len(parameters) {
-						// If this is not the first constructor, then this parameter is implicitly optional
-						// and therefore nullable.
-						if constructorIndex > 0 {
-							resolvedParameterType = resolvedParameterType.AsNullable()
-						}
-
-						parameters = append(parameters, resolvedParameterType)
-					} else {
-						parameters[index] = parameters[index].Intersect(resolvedParameterType)
-					}
+				// Add the operator to the type.
+				if collapsedType.RegisterOperator(opName, nativeOp) {
+					builder(collapsedType.RootNode, true).
+						Name(opName).
+						SourceNode(nativeOp.GraphNode).
+						Define()
 				}
 			}
 
-			// Define the construction function for the type.
-			typeDecl, hasTypeDecl := graph.GetTypeForSourceNode(declaration.GraphNode)
-			if !hasTypeDecl {
-				panic(fmt.Sprintf("Missing type declaration for node %v", declaration.Name()))
-			}
+			// Define the members.
+			for _, member := range declaration.Members() {
+				_, hasName := member.Name()
+				_, hasSpecialization := member.Specialization()
 
-			var constructorFunction = graph.FunctionTypeReference(typeDecl.GetTypeReference())
-			for _, parameterType := range parameters {
-				constructorFunction = constructorFunction.WithParameter(parameterType)
+				if hasName && collapsedType.RegisterMember(member, reporter) {
+					itc.defineMember(member, collapsedType.RootNode, builder)
+				} else if hasSpecialization && collapsedType.RegisterSpecialization(member, reporter) {
+					itc.defineMember(member, collapsedType.RootNode, builder)
+				}
 			}
-
-			decorator(declaration.GetAnnotations(CONSTRUCTOR_ANNOTATION)[0].GraphNode).
-				Exported(true).
-				Static(true).
-				ReadOnly(true).
-				MemberKind(typegraph.NativeConstructorMemberSignature).
-				MemberType(constructorFunction).
-				Decorate()
 		}
+	})
+}
 
-		for _, nativeOp := range declaration.GetAnnotations(NATIVE_OPERATOR_ANNOTATION) {
-			// Should never be allowed.
-			if declaration.HasOneAnnotation(GLOBAL_CONTEXT_ANNOTATIONS...) {
-				reporter.ReportError(declaration.GraphNode, "[Global] interface `%v` cannot also have a [NativeOperator]", declaration.Name())
+// defineGlobalContextMembers defines all the members found under a declaration marked with
+// a [GlobalContext] annotation, indicating that the declaration emits its members into
+// the global context.
+func (itc *irgTypeConstructor) defineGlobalContextMembers(declaration webidl.IRGDeclaration, builder typegraph.GetMemberBuilder, reporter typegraph.IssueReporter) {
+	if declaration.HasAnnotation(webidl.NATIVE_OPERATOR_ANNOTATION) {
+		reporter.ReportError(declaration.GraphNode, "[NativeOperator] not supported on declarations marked with [GlobalContext]")
+		return
+	}
+
+	if declaration.HasAnnotation(webidl.CONSTRUCTOR_ANNOTATION) {
+		reporter.ReportError(declaration.GraphNode, "[Global] interface `%v` cannot also have a [Constructor]", declaration.Name())
+		return
+	}
+
+	module := declaration.Module()
+	for _, member := range declaration.Members() {
+		itc.defineMember(member, module.GraphNode, builder)
+	}
+}
+
+// defineMember defines a single member under a WebIDL module or declaration.
+func (itc *irgTypeConstructor) defineMember(member webidl.IRGMember, parentNode compilergraph.GraphNode, builder typegraph.GetMemberBuilder) {
+	name, hasName := member.Name()
+	if hasName {
+		builder(parentNode, false).
+			Name(name).
+			SourceNode(member.GraphNode).
+			Define()
+	} else {
+		// This is a specialization.
+		specialization, _ := member.Specialization()
+		builder(parentNode, true).
+			Name(webidl.SPECIALIZATION_NAMES[specialization]).
+			SourceNode(member.GraphNode).
+			Define()
+	}
+}
+
+// decorateConstructor decorates the metadata on the constructor of a collapsed type.
+func (itc *irgTypeConstructor) decorateConstructor(collapsedType *webidl.CollapsedType, decorator typegraph.GetMemberDecorator, reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {
+	// Create the intersection of the parameters of every constructor defined, as we expose all
+	// the constructors as a single `new` function.
+	var parameters = make([]typegraph.TypeReference, 0)
+	for _, constructor := range collapsedType.ConstructorAnnotations {
+		for index, parameter := range constructor.Parameters() {
+			// Resolve the type of the parameter.
+			parameterType, err := itc.ResolveType(parameter.DeclaredType(), graph)
+			if err != nil {
+				reporter.ReportError(parameter.GraphNode, "%v", err)
 				continue
 			}
 
-			opName, hasOpName := nativeOp.Value()
-			if !hasOpName {
-				continue
+			// If the parameter is optional, make it nullable.
+			var resolvedParameterType = parameterType
+			if parameter.IsOptional() {
+				resolvedParameterType = resolvedParameterType.AsNullable()
 			}
 
-			opDefinition, found := graph.GetOperatorDefinition(opName)
-			if !found {
-				continue
+			if index >= len(parameters) {
+				// If this is not the first constructor, then this parameter is implicitly optional
+				// and therefore nullable.
+				//if constructorIndex > 0 {
+				//	resolvedParameterType = resolvedParameterType.AsNullable()
+				//}
+				// TODO: Why?
+
+				parameters = append(parameters, resolvedParameterType)
+			} else {
+				parameters[index] = parameters[index].Intersect(resolvedParameterType)
 			}
-
-			// Define the operator's member type based on the definition.
-			typeDecl, _ := graph.GetTypeForSourceNode(declaration.GraphNode)
-
-			var expectedReturnType = opDefinition.ExpectedReturnType(typeDecl.GetTypeReference())
-			if expectedReturnType.HasReferredType(graph.BoolType()) {
-				expectedReturnType, _ = itc.ResolveType("Boolean", graph)
-			}
-
-			var operatorType = graph.FunctionTypeReference(expectedReturnType)
-			for _, parameter := range opDefinition.Parameters {
-				operatorType = operatorType.WithParameter(parameter.ExpectedType(typeDecl.GetTypeReference()))
-			}
-
-			// Add the operator to the type.
-			decorator(nativeOp.GraphNode).
-				Native(true).
-				Exported(true).
-				SkipOperatorChecking(true).
-				MemberType(operatorType).
-				MemberKind(typegraph.NativeOperatorMemberSignature).
-				Decorate()
 		}
+	}
 
-		// Add the declared members.
-		for _, member := range declaration.Members() {
-			declaredType, err := itc.ResolveType(member.DeclaredType(), graph)
+	// Define the construction function for the type.
+	typeDecl, hasTypeDecl := graph.GetTypeForSourceNode(collapsedType.RootNode)
+	if !hasTypeDecl {
+		panic(fmt.Sprintf("Missing type declaration for node %v", collapsedType.Name))
+	}
+
+	var constructorFunction = graph.FunctionTypeReference(typeDecl.GetTypeReference())
+	for _, parameterType := range parameters {
+		constructorFunction = constructorFunction.WithParameter(parameterType)
+	}
+
+	decorator(collapsedType.ConstructorAnnotations[0].GraphNode).
+		Exported(true).
+		Static(true).
+		ReadOnly(true).
+		MemberKind(typegraph.NativeConstructorMemberSignature).
+		MemberType(constructorFunction).
+		Decorate()
+}
+
+// decorateOperator decorates the metadata on a native operator defined on a collapsed type.
+func (itc *irgTypeConstructor) decorateOperator(operator webidl.IRGAnnotation, collapsedType *webidl.CollapsedType, decorator typegraph.GetMemberDecorator, reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {
+	opName, _ := operator.Value()
+	opDefinition, _ := graph.GetOperatorDefinition(opName)
+
+	// Define the operator's member type based on the definition.
+	typeDecl, _ := graph.GetTypeForSourceNode(collapsedType.RootNode)
+
+	var expectedReturnType = opDefinition.ExpectedReturnType(typeDecl.GetTypeReference())
+	if expectedReturnType.HasReferredType(graph.BoolType()) {
+		expectedReturnType, _ = itc.ResolveType("Boolean", graph)
+	}
+
+	var operatorType = graph.FunctionTypeReference(expectedReturnType)
+	for _, parameter := range opDefinition.Parameters {
+		operatorType = operatorType.WithParameter(parameter.ExpectedType(typeDecl.GetTypeReference()))
+	}
+
+	// Add the operator to the type.
+	decorator(operator.GraphNode).
+		Native(true).
+		Exported(true).
+		SkipOperatorChecking(true).
+		MemberType(operatorType).
+		MemberKind(typegraph.NativeOperatorMemberSignature).
+		Decorate()
+}
+
+// decorateMember decorates the metadata on a member of a type or module.
+func (itc *irgTypeConstructor) decorateMember(member webidl.IRGMember, decorator typegraph.GetMemberDecorator, reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {
+	// Resolve the declared type of the member.
+	declaredType, err := itc.ResolveType(member.DeclaredType(), graph)
+	if err != nil {
+		reporter.ReportError(member.GraphNode, "%v", err)
+		return
+	}
+
+	// Determine the overall type, kind and whether the member is read-only.
+	var memberType = declaredType
+	var memberKind = typegraph.CustomMemberSignature
+	var isReadOnly = member.IsReadonly()
+
+	switch member.Kind() {
+	case webidl.FunctionMember:
+		isReadOnly = true
+		memberKind = typegraph.NativeFunctionMemberSignature
+		memberType = graph.FunctionTypeReference(memberType)
+
+		// Add the parameter types.
+		var markOptional = false
+		for _, parameter := range member.Parameters() {
+			if parameter.IsOptional() {
+				markOptional = true
+			}
+
+			parameterType, err := itc.ResolveType(parameter.DeclaredType(), graph)
 			if err != nil {
 				reporter.ReportError(member.GraphNode, "%v", err)
 				continue
 			}
 
-			var memberType = declaredType
-			var memberKind = typegraph.CustomMemberSignature
-			var isReadonly = member.IsReadonly()
-
-			switch member.Kind() {
-			case webidl.FunctionMember:
-				isReadonly = true
-				memberKind = typegraph.NativeFunctionMemberSignature
-				memberType = graph.FunctionTypeReference(memberType)
-
-				// Add the parameter types.
-				var markOptional = false
-				for _, parameter := range member.Parameters() {
-					if parameter.IsOptional() {
-						markOptional = true
-					}
-
-					parameterType, err := itc.ResolveType(parameter.DeclaredType(), graph)
-					if err != nil {
-						reporter.ReportError(member.GraphNode, "%v", err)
-						continue
-					}
-
-					// All optional parameters get marked as nullable, which means we can skip
-					// passing them on function calls.
-					if markOptional {
-						memberType = memberType.WithParameter(parameterType.AsNullable())
-					} else {
-						memberType = memberType.WithParameter(parameterType)
-					}
-				}
-
-			case webidl.AttributeMember:
-				memberKind = typegraph.NativePropertyMemberSignature
-
-				if len(member.Parameters()) > 0 {
-					reporter.ReportError(member.GraphNode, "Attributes cannot have parameters")
-				}
-
-			default:
-				panic("Unknown WebIDL member kind")
+			// All optional parameters get marked as nullable, which means we can skip
+			// passing them on function calls.
+			if markOptional {
+				memberType = memberType.WithParameter(parameterType.AsNullable())
+			} else {
+				memberType = memberType.WithParameter(parameterType)
 			}
-
-			decorator := decorator(member.GraphNode)
-			if _, hasName := member.Name(); !hasName {
-				decorator.Native(true)
-			}
-
-			decorator.Exported(true).
-				Static(member.IsStatic()).
-				ReadOnly(isReadonly).
-				MemberKind(memberKind).
-				MemberType(memberType).
-				Decorate()
 		}
+
+	case webidl.AttributeMember:
+		memberKind = typegraph.NativePropertyMemberSignature
+
+		if len(member.Parameters()) > 0 {
+			reporter.ReportError(member.GraphNode, "Attributes cannot have parameters")
+		}
+
+	default:
+		panic("Unknown WebIDL member kind")
 	}
+
+	memberDecorator := decorator(member.GraphNode)
+	if _, hasName := member.Name(); !hasName {
+		memberDecorator.Native(true)
+	}
+
+	memberDecorator.Exported(true).
+		Static(member.IsStatic()).
+		ReadOnly(isReadOnly).
+		MemberKind(memberKind).
+		MemberType(memberType).
+		Decorate()
+}
+
+func (itc *irgTypeConstructor) DecorateMembers(decorator typegraph.GetMemberDecorator, reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {
+	// Decorate global declarations members.
+	itc.tc.ForEachGlobalDeclaration(func(declaration webidl.IRGDeclaration) {
+		for _, member := range declaration.Members() {
+			itc.decorateMember(member, decorator, reporter, graph)
+		}
+	})
+
+	// Decorate types.
+	itc.tc.ForEachType(func(collapsedType *webidl.CollapsedType) {
+		// Decorate the constructor (if any)
+		if len(collapsedType.ConstructorAnnotations) > 0 {
+			itc.decorateConstructor(collapsedType, decorator, reporter, graph)
+		}
+
+		// Decorate the operators.
+		for _, operator := range collapsedType.Operators {
+			itc.decorateOperator(operator, collapsedType, decorator, reporter, graph)
+		}
+
+		// Decorate the members.
+		for _, member := range collapsedType.Members {
+			itc.decorateMember(member, decorator, reporter, graph)
+		}
+
+		for _, member := range collapsedType.Specializations {
+			itc.decorateMember(member, decorator, reporter, graph)
+		}
+	})
 }
 
 func (itc *irgTypeConstructor) Validate(reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {
@@ -401,16 +409,17 @@ func (itc *irgTypeConstructor) ResolveType(typeString string, graph *typegraph.T
 	}
 
 	// Perform native type mapping.
-	if found, ok := NATIVE_TYPES[typeString]; ok {
+	if found, ok := webidl.NATIVE_TYPES[typeString]; ok {
 		typeString = found
 	}
 
-	declaration, hasDeclaration := itc.irg.FindDeclaration(typeString)
-	if !hasDeclaration {
+	// Find the collapsed type with the matching name.
+	collapsedType, found := itc.tc.GetType(typeString)
+	if !found {
 		return graph.AnyTypeReference(), fmt.Errorf("Could not find WebIDL type %v", typeString)
 	}
 
-	typeDecl, hasType := graph.GetTypeForSourceNode(declaration.GraphNode)
+	typeDecl, hasType := graph.GetTypeForSourceNode(collapsedType.RootNode)
 	if !hasType {
 		panic("Type not found for WebIDL type declaration")
 	}

@@ -15,11 +15,11 @@
         "Key": "8fd764dd6552a161fd8ad6468083f220",
         "Kind": 1,
         "Children": {
-            "8b94f15f41db58ec8ed732de8e6b7663": {
+            "21aa16338bd4664582592c8be6c7d72d": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "8b94f15f41db58ec8ed732de8e6b7663",
-                    "Kind": 7,
+                    "Key": "21aa16338bd4664582592c8be6c7d72d",
+                    "Kind": 8,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
@@ -28,7 +28,7 @@
                         "tdg-member-resolved-type": "function\u003cSomeClass\u003e",
                         "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0013function\u003cSomeClass\u003e",
                         "tdg-member-static": "true",
-                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-node-kind": "8|NodeType|tdg",
                         "tdg-source-module": "tests/simple/simple.seru"
                     }
                 }

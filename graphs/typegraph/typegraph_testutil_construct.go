@@ -107,7 +107,7 @@ func resolveTestingTypeRefFromSourceNodes(name string, graph *TypeGraph, refSour
 	}
 
 	// Resolve globally.
-	return graph.NewTypeReference(graph.getAliasedType(name))
+	return graph.NewTypeReference(graph.getGlobalAliasedType(name))
 }
 
 func resolveTestingTypeRef(name string, refNode compilergraph.GraphNode, graph *TypeGraph) (TypeReference, bool) {
@@ -139,7 +139,8 @@ func resolveTestingTypeRef(name string, refNode compilergraph.GraphNode, graph *
 	// Check for type generics.
 	if currentNode.Kind() == NodeTypeClass || currentNode.Kind() == NodeTypeInterface ||
 		currentNode.Kind() == NodeTypeNominalType ||
-		currentNode.Kind() == NodeTypeStruct || currentNode.Kind() == NodeTypeExternalInterface {
+		currentNode.Kind() == NodeTypeStruct || currentNode.Kind() == NodeTypeExternalInterface ||
+		currentNode.Kind() == NodeTypeAlias {
 		typeInfo := TGTypeDecl{currentNode, graph}
 		for _, generic := range typeInfo.Generics() {
 			if generic.Name() == name {
@@ -248,49 +249,49 @@ func (t *testBasicTypesConstructor) DefineTypes(builder GetTypeBuilder) {
 		Name("bool").
 		GlobalId("bool").
 		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
-		Alias("bool").
+		GlobalAlias("bool").
 		Define()
 
 	builder(*t.moduleNode).
 		Name("int").
 		GlobalId("int").
 		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
-		Alias("int").
+		GlobalAlias("int").
 		Define()
 
 	builder(*t.moduleNode).
 		Name("mapping").
 		GlobalId("mapping").
 		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
-		Alias("mapping").
+		GlobalAlias("mapping").
 		Define()
 
 	builder(*t.moduleNode).
 		Name("string").
 		GlobalId("string").
 		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
-		Alias("string").
+		GlobalAlias("string").
 		Define()
 
 	builder(*t.moduleNode).
 		Name("$parser").
 		GlobalId("$parser").
 		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
-		Alias("$parser").
+		GlobalAlias("$parser").
 		Define()
 
 	builder(*t.moduleNode).
 		Name("$stringifier").
 		GlobalId("$stringifier").
 		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
-		Alias("$stringifier").
+		GlobalAlias("$stringifier").
 		Define()
 
 	funcGenBuilder := builder(*t.moduleNode).
 		Name("function").
 		GlobalId("function").
 		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
-		Alias("function").
+		GlobalAlias("function").
 		Define()
 
 	funcGenBuilder().Name("T").SourceNode(t.CreateNode(fakeNodeTypeTagged)).Define()
@@ -299,7 +300,7 @@ func (t *testBasicTypesConstructor) DefineTypes(builder GetTypeBuilder) {
 		Name("stream").
 		GlobalId("stream").
 		SourceNode(t.CreateNode(fakeNodeTypeTagged)).
-		Alias("stream").
+		GlobalAlias("stream").
 		Define()
 
 	streamGenBuilder().Name("T").SourceNode(t.CreateNode(fakeNodeTypeTagged)).Define()
@@ -340,6 +341,10 @@ func (t *testTypeGraphConstructor) DefineTypes(builder GetTypeBuilder) {
 			typeKind = ExternalInternalType
 		}
 
+		if typeInfo.kind == "alias" {
+			typeKind = AliasType
+		}
+
 		genericBuilder := builder(*t.moduleNode).
 			Name(typeInfo.name).
 			GlobalId(typeInfo.name).
@@ -366,7 +371,11 @@ func (t *testTypeGraphConstructor) DefineDependencies(annotator Annotator, graph
 		}
 
 		if typeInfo.parentType != "" {
-			annotator.DefineParentType(typeNode, parseTypeReferenceForTesting(typeInfo.parentType, graph, typeNode))
+			if typeInfo.kind == "alias" {
+				annotator.DefineAliasedType(typeNode, parseTypeReferenceForTesting(typeInfo.parentType, graph, typeNode).ReferredType())
+			} else {
+				annotator.DefineParentType(typeNode, parseTypeReferenceForTesting(typeInfo.parentType, graph, typeNode))
+			}
 		}
 	}
 }

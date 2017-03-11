@@ -206,8 +206,6 @@ func (sb *scopeBuilder) scopeStreamMemberAccessExpression(node compilergraph.Gra
 	default:
 		panic("Unknown scope kind")
 	}
-
-	return newScope().Invalid().GetScope()
 }
 
 // scopeDynamicMemberAccessExpression scopes a dynamic member access expression in the SRG.
@@ -289,8 +287,6 @@ func (sb *scopeBuilder) scopeDynamicMemberAccessExpression(node compilergraph.Gr
 	default:
 		panic("Unknown scope kind")
 	}
-
-	return newScope().Invalid().GetScope()
 }
 
 // scopeNullableMemberAccessExpression scopes a nullable member access expression in the SRG.
@@ -337,8 +333,6 @@ func (sb *scopeBuilder) scopeNullableMemberAccessExpression(node compilergraph.G
 	default:
 		panic("Unknown scope kind")
 	}
-
-	return newScope().Invalid().GetScope()
 }
 
 // scopeMemberAccessExpression scopes a member access expression in the SRG.
@@ -390,6 +384,4 @@ func (sb *scopeBuilder) scopeMemberAccessExpression(node compilergraph.GraphNode
 	default:
 		panic("Unknown scope kind")
 	}
-
-	return newScope().Invalid().GetScope()
 }

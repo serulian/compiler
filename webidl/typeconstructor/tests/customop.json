@@ -1,40 +1,38 @@
 {
-    "6ee7726f11d5c00d84c9831547303193": {
-        "Key": "6ee7726f11d5c00d84c9831547303193",
+    "0afacb500df23d576019168e5d740e4b": {
+        "Key": "0afacb500df23d576019168e5d740e4b",
         "Kind": 3,
         "Children": {
-            "132c04d8f6f28302f5a8c114bb8377a3": {
-                "Predicate": "tdg-declaration-module",
-                "Child": {
-                    "Key": "132c04d8f6f28302f5a8c114bb8377a3",
-                    "Kind": 6,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-module-name": "customop.webidl",
-                        "tdg-node-kind": "6|NodeType|tdg",
-                        "tdg-source-module": "tests/customop.webidl",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
-            "9645c7ade228d24b444031b1e0ad4f6c": {
+            "b183ff64b09d2e42c96631c5446cd483": {
                 "Predicate": "tdg-type-attribute",
                 "Child": {
-                    "Key": "9645c7ade228d24b444031b1e0ad4f6c",
-                    "Kind": 12,
+                    "Key": "b183ff64b09d2e42c96631c5446cd483",
+                    "Kind": 13,
                     "Children": {},
                     "Predicates": {
                         "tdg-attribute-name": "serializable",
-                        "tdg-node-kind": "12|NodeType|tdg"
+                        "tdg-node-kind": "13|NodeType|tdg"
                     }
                 }
             }
         },
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "tests/customop.webidl",
+            "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "SomeInterface",
+            "tdg-type-name": "SomeInterface"
+        }
+    },
+    "55f599402d88be90cce287af2cdcbb34": {
+        "Key": "55f599402d88be90cce287af2cdcbb34",
+        "Kind": 7,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "7|NodeType|tdg",
+            "tdg-source-module": "tests/customop.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "320ced89",
             "tdg-type-name": "SomeInterface"
         }
     }

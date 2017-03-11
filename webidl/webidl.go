@@ -5,6 +5,10 @@
 package webidl
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
+	"strconv"
+
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 
@@ -19,7 +23,8 @@ type WebIRG struct {
 	layer          *compilergraph.GraphLayer // The IRG layer in the graph.
 	rootModuleNode compilergraph.GraphNode   // The root module node.
 
-	packageMap map[string]packageloader.PackageInfo // Map from package internal ID to info.
+	packageMap    map[string]packageloader.PackageInfo // Map from package internal ID to info.
+	typeCollapser *TypeCollapser
 }
 
 // NewIRG returns a new IRG for populating the graph with parsed source.
@@ -36,14 +41,27 @@ func NewIRG(graph *compilergraph.SerulianGraph) *WebIRG {
 	return irg
 }
 
+// GetUniqueId returns a unique hash ID for the IRG node that is stable across compilations.
+func GetUniqueId(irgNode compilergraph.GraphNode) string {
+	hashBytes := []byte(irgNode.Get(parser.NodePredicateSource) + ":" + strconv.Itoa(irgNode.GetValue(parser.NodePredicateStartRune).Int()))
+	sha256bytes := sha256.Sum256(hashBytes)
+	return hex.EncodeToString(sha256bytes[:])[0:8]
+}
+
+// TypeCollapser returns the type collapser for this graph. Will not exist until after source
+// has been loaded into the graph.
+func (g *WebIRG) TypeCollapser() *TypeCollapser {
+	return g.typeCollapser
+}
+
+// RootModuleNode returns the node for the root module containing all the collapsed types.
+func (g *WebIRG) RootModuleNode() compilergraph.GraphNode {
+	return g.rootModuleNode
+}
+
 // PackageLoaderHandler returns a SourceHandler for populating the IRG via a package loader.
 func (g *WebIRG) PackageLoaderHandler() packageloader.SourceHandler {
 	return &irgSourceHandler{g, g.layer.NewModifier()}
-}
-
-// RootModuleNode returns the node that represents the root global module for all WebIDL.
-func (g *WebIRG) RootModuleNode() compilergraph.GraphNode {
-	return g.rootModuleNode
 }
 
 // findAllNodes starts a new query over the IRG from nodes of the given type.

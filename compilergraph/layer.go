@@ -101,6 +101,7 @@ func (gl *GraphLayer) WalkOutward(startingNodes []GraphNode, callback WalkCallba
 		workList[index] = &WalkResult{nil, "", startNode, map[string]string{}}
 	}
 
+outer:
 	for {
 		if len(workList) == 0 {
 			break
@@ -120,6 +121,8 @@ func (gl *GraphLayer) WalkOutward(startingNodes []GraphNode, callback WalkCallba
 		// Lookup all quads in the system from the current node, outward.
 		subjectValue := gl.cayleyStore.ValueOf(nodeIdToValue(currentId))
 		it := gl.cayleyStore.QuadIterator(quad.Subject, subjectValue)
+
+		var nextWorkList = make([]*WalkResult, 0)
 
 		for it.Next() {
 			currentQuad := gl.cayleyStore.Quad(it.Result())
@@ -141,7 +144,7 @@ func (gl *GraphLayer) WalkOutward(startingNodes []GraphNode, callback WalkCallba
 			}
 
 			if isPossibleNodeId && found {
-				workList = append(workList, &WalkResult{&currentResult.Node, predicate, targetNode, map[string]string{}})
+				nextWorkList = append(nextWorkList, &WalkResult{&currentResult.Node, predicate, targetNode, map[string]string{}})
 			} else {
 				// This is a value predicate.
 				switch objectValue := currentQuad.Object.(type) {
@@ -161,7 +164,11 @@ func (gl *GraphLayer) WalkOutward(startingNodes []GraphNode, callback WalkCallba
 		}
 
 		if !callback(currentResult) {
-			return
+			continue outer
+		}
+
+		for _, result := range nextWorkList {
+			workList = append(workList, result)
 		}
 	}
 }

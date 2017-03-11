@@ -22,10 +22,10 @@ func (g *TypeGraph) globallyValidate() bool {
 		}
 	}
 
-	// Ensure that async functions are under modules and have fully structural types.
 	modifier := g.layer.NewModifier()
 	defer modifier.Apply()
-	
+
+	// Ensure that async functions are under modules and have fully structural types.
 	for _, member := range g.AsyncMembers() {
 		if !member.IsStatic() || member.Parent().IsType() {
 			status = false

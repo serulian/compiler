@@ -104,11 +104,27 @@ func (an Annotator) DefineGenericConstraint(genericSourceNode compilergraph.Grap
 	an.modifier.Modify(genericNode).DecorateWithTagged(NodePredicateGenericSubtype, constraint)
 }
 
-// DefineParentType defines that the given type inherits from the given parent type. For classes, the parent
+// DefineParentType defines that the given type inherits from the given parent type ref. For classes, the parent
 // is structurally inherited and for nominal types, it describes conversion.
 func (an Annotator) DefineParentType(typeSourceNode compilergraph.GraphNode, inherits TypeReference) {
 	typeNode := an.tdg.getMatchingTypeGraphNode(typeSourceNode)
+	if typeNode.Kind() == NodeTypeAlias {
+		panic("Cannot set parent on an aliased type declaration")
+	}
+
 	an.modifier.Modify(typeNode).DecorateWithTagged(NodePredicateParentType, inherits)
+}
+
+// DefineAliasedType defines that the given type aliases the other type. Only applies to aliases.
+func (an Annotator) DefineAliasedType(typeSourceNode compilergraph.GraphNode, aliased TGTypeDecl) {
+	aliased.TypeKind() // Will panic if not a valid type.
+
+	typeNode := an.tdg.getMatchingTypeGraphNode(typeSourceNode)
+	if typeNode.Kind() != NodeTypeAlias {
+		panic("Cannot alias a non-alias type declaration")
+	}
+
+	an.modifier.Modify(typeNode).Connect(NodePredicateAliasedType, aliased.GraphNode)
 }
 
 // moduleBuilder ////////////////////////////////////////////////////////////////////////////////////
@@ -164,14 +180,14 @@ func (mb *moduleBuilder) Define() {
 
 // typeBuilder defines a helper type for easy construction of type definitions in the type graph.
 type typeBuilder struct {
-	modifier   compilergraph.GraphLayerModifier // The modifier being used.
-	module     TGModule                         // The parent module.
-	name       string                           // The name of the type.
-	globalId   string                           // The global ID of the type.
-	alias      string                           // The alias of the type.
-	sourceNode compilergraph.GraphNode          // The node for the type in the source graph.
-	typeKind   TypeKind                         // The kind of this type.
-	attributes []TypeAttribute                  // The custom attributes on the type, if any.
+	modifier    compilergraph.GraphLayerModifier // The modifier being used.
+	module      TGModule                         // The parent module.
+	name        string                           // The name of the type.
+	globalId    string                           // The global ID of the type.
+	globalAlias string                           // The global alias of the type.
+	sourceNode  compilergraph.GraphNode          // The node for the type in the source graph.
+	typeKind    TypeKind                         // The kind of this type.
+	attributes  []TypeAttribute                  // The custom attributes on the type, if any.
 }
 
 // GlobalId sets the global ID of the type. This ID must be unique. For types that are
@@ -193,9 +209,9 @@ func (tb *typeBuilder) WithAttribute(name TypeAttribute) *typeBuilder {
 	return tb
 }
 
-// Alias sets the global alias of the type.
-func (tb *typeBuilder) Alias(alias string) *typeBuilder {
-	tb.alias = alias
+// GlobalAlias sets the global alias of the type.
+func (tb *typeBuilder) GlobalAlias(globalAlias string) *typeBuilder {
+	tb.globalAlias = globalAlias
 	return tb
 }
 
@@ -233,11 +249,19 @@ func (tb *typeBuilder) Define() getGenericBuilder {
 	typeNode.Decorate(NodePredicateTypeGlobalId, tb.globalId)
 	typeNode.Decorate(NodePredicateModulePath, tb.module.Get(NodePredicateModulePath))
 
-	if tb.alias != "" {
-		typeNode.Decorate(NodePredicateTypeAlias, tb.alias)
+	if tb.globalAlias != "" {
+		typeNode.Decorate(NodePredicateTypeGlobalAlias, tb.globalAlias)
+
+		if tb.typeKind == AliasType {
+			panic("Aliases cannot themselves be aliased")
+		}
 	}
 
 	for _, attribute := range tb.attributes {
+		if tb.typeKind == AliasType {
+			panic("Aliases cannot have attributes")
+		}
+
 		attrNode := tb.modifier.CreateNode(NodeTypeAttribute)
 		attrNode.Decorate(NodePredicateAttributeName, string(attribute))
 		typeNode.Connect(NodePredicateTypeAttribute, attrNode)
@@ -276,9 +300,11 @@ func getTypeNodeType(kind TypeKind) NodeType {
 	case StructType:
 		return NodeTypeStruct
 
+	case AliasType:
+		return NodeTypeAlias
+
 	default:
 		panic(fmt.Sprintf("Unknown kind of type declaration: %v", kind))
-		return NodeTypeClass
 	}
 }
 

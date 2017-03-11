@@ -1,0 +1,58 @@
+{
+    "19cad6d105c8783b9e5952a21d557888": {
+        "Key": "19cad6d105c8783b9e5952a21d557888",
+        "Kind": 3,
+        "Children": {
+            "0418a0d6f05159f2f6bf18473fc53a34": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "0418a0d6f05159f2f6bf18473fc53a34",
+                    "Kind": 8,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "First",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "any",
+                        "tdg-member-signature": "\n\u0005first\u0010\t\u0018\u0000 \u0001*\u0003any",
+                        "tdg-node-kind": "8|NodeType|tdg",
+                        "tdg-source-module": "(root).webidl",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-parent-type": "IBaseType",
+            "tdg-source-module": "(root).webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "ISomeCollapsedType",
+            "tdg-type-name": "ISomeCollapsedType"
+        }
+    },
+    "371ac3bf8c531fb9cfbe4218fc6add60": {
+        "Key": "371ac3bf8c531fb9cfbe4218fc6add60",
+        "Kind": 7,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "7|NodeType|tdg",
+            "tdg-source-module": "tests/collapsedinheritance.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "96f01e59",
+            "tdg-type-name": "ISomeCollapsedType"
+        }
+    },
+    "9928ded7c41b6738532b3e0a0c03dcf6": {
+        "Key": "9928ded7c41b6738532b3e0a0c03dcf6",
+        "Kind": 3,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-source-module": "(root).webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "IBaseType",
+            "tdg-type-name": "IBaseType"
+        }
+    }
+}

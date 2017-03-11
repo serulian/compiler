@@ -1,40 +1,13 @@
 {
-    "8b29d8990cd08fc33bf6399512794ffa": {
-        "Key": "8b29d8990cd08fc33bf6399512794ffa",
+    "0afacb500df23d576019168e5d740e4b": {
+        "Key": "0afacb500df23d576019168e5d740e4b",
         "Kind": 3,
         "Children": {
-            "0884367d090ad9c17b19d77fd1863e91": {
-                "Predicate": "tdg-declaration-module",
-                "Child": {
-                    "Key": "0884367d090ad9c17b19d77fd1863e91",
-                    "Kind": 6,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-module-name": "optionalparam.webidl",
-                        "tdg-node-kind": "6|NodeType|tdg",
-                        "tdg-source-module": "tests/optionalparam.webidl",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            }
-        },
-        "Predicates": {
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "tests/optionalparam.webidl",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "Foo",
-            "tdg-type-name": "Foo"
-        }
-    },
-    "f20c33ccf9596102359b3e9b9caf2cf8": {
-        "Key": "f20c33ccf9596102359b3e9b9caf2cf8",
-        "Kind": 3,
-        "Children": {
-            "3dd6b9bb8b9387d69484350b44e085fe": {
+            "b5bcf73c911d4f3f491f4116335264c6": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "3dd6b9bb8b9387d69484350b44e085fe",
-                    "Kind": 7,
+                    "Key": "b5bcf73c911d4f3f491f4116335264c6",
+                    "Kind": 8,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-exported": "true",
@@ -42,8 +15,8 @@
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cvoid\u003e(Foo, Foo, Foo?, Foo?)",
                         "tdg-member-signature": "\n\u000csomefunction\u0010\u0007\u0018\u0000 \u0001*$function\u003cvoid\u003e(Foo, Foo, Foo?, Foo?)",
-                        "tdg-node-kind": "7|NodeType|tdg",
-                        "tdg-source-module": "tests/optionalparam.webidl",
+                        "tdg-node-kind": "8|NodeType|tdg",
+                        "tdg-source-module": "(root).webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
                 }
@@ -51,9 +24,45 @@
         },
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "tests/optionalparam.webidl",
+            "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "SomeInterface",
+            "tdg-type-name": "SomeInterface"
+        }
+    },
+    "4367653e2725b18c2e169644c0cf2db6": {
+        "Key": "4367653e2725b18c2e169644c0cf2db6",
+        "Kind": 3,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-source-module": "(root).webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "Foo",
+            "tdg-type-name": "Foo"
+        }
+    },
+    "8207b674d4e6906b113b86212812e9d9": {
+        "Key": "8207b674d4e6906b113b86212812e9d9",
+        "Kind": 7,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "7|NodeType|tdg",
+            "tdg-source-module": "tests/optionalparam.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "6757ffcf",
+            "tdg-type-name": "Foo"
+        }
+    },
+    "d1302d3b6b9c9ff6e260d008a94982d9": {
+        "Key": "d1302d3b6b9c9ff6e260d008a94982d9",
+        "Kind": 7,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "7|NodeType|tdg",
+            "tdg-source-module": "tests/optionalparam.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "8bf7577c",
             "tdg-type-name": "SomeInterface"
         }
     }

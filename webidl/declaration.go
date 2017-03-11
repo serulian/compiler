@@ -9,6 +9,12 @@ import (
 	"github.com/serulian/compiler/webidl/parser"
 )
 
+// SERIALIZABLE_OPS defines the WebIDL custom ops that mark a type as serializable.
+var SERIALIZABLE_OPS = map[string]bool{
+	"jsonifier":  true,
+	"serializer": true,
+}
+
 // Declarations returns all the type declarations in the WebIDL IRG.
 func (g *WebIRG) Declarations() []IRGDeclaration {
 	dit := g.findAllNodes(parser.NodeTypeDeclaration).BuildNodeIterator()
@@ -62,6 +68,17 @@ func (i *IRGDeclaration) Kind() DeclarationKind {
 	default:
 		panic("Unknown kind of WebIDL declaration")
 	}
+}
+
+// IsSerializable returns whether the declaration contains one of the custom
+// operations that makes the declared interface serializable.
+func (i *IRGDeclaration) IsSerializable() bool {
+	for _, customop := range i.CustomOperations() {
+		if _, ok := SERIALIZABLE_OPS[customop]; ok {
+			return true
+		}
+	}
+	return false
 }
 
 // Module returns the parent module.

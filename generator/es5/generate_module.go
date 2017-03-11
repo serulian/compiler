@@ -126,20 +126,27 @@ func (gm generatingModule) InitDependencies(field typegraph.TGMember) []string {
 
 // moduleTemplateStr defines the template for generating a module.
 const moduleTemplateStr = `
+{{ $types := .GenerateTypes }}
+{{ $members := .GenerateMembers }}
+{{ $vars := .GenerateVariables }}
+
+{{ $hasContents := or $types.Len $members.Len $vars.Len }}
+
+{{ if $hasContents }}
 $module('{{ .ExportedPath }}', function() {
   var $static = this;
 
-  {{range $idx, $kv := .GenerateTypes.UnsafeIter }}
+  {{range $idx, $kv := $types.UnsafeIter }}
   	{{ emit $kv.Value }};
   {{end}}
   
-  {{range $idx, $kv := .GenerateMembers.UnsafeIter }}
+  {{range $idx, $kv := $members.UnsafeIter }}
   	{{ emit $kv.Value }};
   {{end}}
 
   {{ $parent := . }}
 
-  {{range $idx, $kv := .GenerateVariables.UnsafeIter }}
+  {{range $idx, $kv := $vars.UnsafeIter }}
   	this.$init(function() {
   		{{ if $kv.Value.IsAsync }}
 			return ({{ emit $kv.Value.Source }});
@@ -152,4 +159,5 @@ $module('{{ .ExportedPath }}', function() {
 	}, '{{ $parent.FieldId $kv.Key }}', [{{ range $ddx, $did := $parent.InitDependencies $kv.Key }}{{ if $ddx }}, {{ end }}'{{ $did }}'{{ end }}]);
   {{end}}
 });
+{{ end }}
 `

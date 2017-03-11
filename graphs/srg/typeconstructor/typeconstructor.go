@@ -76,7 +76,7 @@ func (stc *srgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 		// Add the global alias (if any).
 		alias, hasAlias := srgType.Alias()
 		if hasAlias {
-			typeBuilder.Alias(alias)
+			typeBuilder.GlobalAlias(alias)
 		}
 
 		// Define the actual type, which returns a builder for adding generics.

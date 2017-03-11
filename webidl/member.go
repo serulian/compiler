@@ -5,8 +5,13 @@
 package webidl
 
 import (
+	"bytes"
+	"encoding/hex"
+
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/webidl/parser"
+
+	"github.com/minio/blake2b-simd"
 )
 
 type MemberSpecialization string
@@ -101,4 +106,62 @@ func (i *IRGMember) Parameters() []IRGParameter {
 	}
 
 	return parameters
+}
+
+// Signature returns a signature for comparing two members to determine
+// if they are defined the same way. Used for comparing members when collapsing
+// types in the type constructor. The output of this function should be considered
+// opaque and never used for anything except comparison.
+func (i *IRGMember) Signature() string {
+	var buffer bytes.Buffer
+
+	name, _ := i.Name()
+	specialization, _ := i.Specialization()
+
+	buffer.WriteString(name)
+	buffer.WriteByte(0)
+
+	buffer.WriteString(string(specialization))
+	buffer.WriteByte(0)
+
+	buffer.WriteByte(byte(i.Kind()))
+	buffer.WriteByte(0)
+
+	buffer.WriteString(i.DeclaredType())
+	buffer.WriteByte(0)
+
+	if i.IsStatic() {
+		buffer.WriteByte(1)
+	} else {
+		buffer.WriteByte(0)
+	}
+	buffer.WriteByte(0)
+
+	if i.IsReadonly() {
+		buffer.WriteByte(1)
+	} else {
+		buffer.WriteByte(0)
+	}
+	buffer.WriteByte(0)
+
+	parameters := i.Parameters()
+	buffer.WriteByte(byte(len(parameters)))
+
+	for _, parameter := range parameters {
+		buffer.WriteString(parameter.Name())
+		buffer.WriteByte(0)
+
+		buffer.WriteString(parameter.DeclaredType())
+		buffer.WriteByte(0)
+
+		if parameter.IsOptional() {
+			buffer.WriteByte(1)
+		} else {
+			buffer.WriteByte(0)
+		}
+		buffer.WriteByte(0)
+	}
+
+	bytes := blake2b.Sum256(buffer.Bytes())
+	return hex.EncodeToString(bytes[:])
 }

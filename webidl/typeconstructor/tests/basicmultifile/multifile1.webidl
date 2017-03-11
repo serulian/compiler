@@ -1,0 +1,3 @@
+interface AnotherInterface {
+	void DoSomething();
+};
