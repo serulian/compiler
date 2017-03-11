@@ -372,7 +372,7 @@ func (t *testTypeGraphConstructor) DefineDependencies(annotator Annotator, graph
 
 		if typeInfo.parentType != "" {
 			if typeInfo.kind == "alias" {
-				annotator.DefineAliasedType(typeNode, parseTypeReferenceForTesting(typeInfo.parentType, graph, typeNode).ReferredType().GraphNode)
+				annotator.DefineAliasedType(typeNode, parseTypeReferenceForTesting(typeInfo.parentType, graph, typeNode).ReferredType())
 			} else {
 				annotator.DefineParentType(typeNode, parseTypeReferenceForTesting(typeInfo.parentType, graph, typeNode))
 			}

@@ -244,6 +244,11 @@ func (g *TypeGraph) ModulesWithMembers() []TGModule {
 	return modules
 }
 
+// TypeAliases returns all type aliases in the type graph.
+func (g *TypeGraph) TypeAliases() []TGTypeDecl {
+	return g.GetTypeDecls(NodeTypeAlias)
+}
+
 // TypeDecls returns all types defined in the type graph.
 func (g *TypeGraph) TypeDecls() []TGTypeDecl {
 	return g.GetTypeDecls(TYPE_NODE_TYPES...)
@@ -385,7 +390,11 @@ func (g *TypeGraph) LookupType(typeName string, module compilercommon.InputSourc
 
 	// If the type is an alias, return its referenced type.
 	if typeNode.Kind() == NodeTypeAlias {
-		aliasedType := typeNode.GetNode(NodePredicateAliasedType)
+		aliasedType, hasAliasedType := typeNode.TryGetNode(NodePredicateAliasedType)
+		if !hasAliasedType {
+			typeAlias := TGTypeDecl{typeNode, g}
+			panic(fmt.Sprintf("Missing alias reference on type alias '%s'", typeAlias.Name()))
+		}
 		return TGTypeDecl{aliasedType, g}, true
 	}
 

@@ -101,6 +101,9 @@ func (tn TGTypeDecl) Title() string {
 	case NodeTypeStruct:
 		return "struct"
 
+	case NodeTypeAlias:
+		return "type alias"
+
 	default:
 		panic(fmt.Sprintf("Unknown kind of type %s for node %s", nodeType, tn.NodeId))
 	}
@@ -362,6 +365,9 @@ func (tn TGTypeDecl) TypeKind() TypeKind {
 
 	case NodeTypeGeneric:
 		return GenericType
+
+	case NodeTypeAlias:
+		return AliasType
 
 	default:
 		panic(fmt.Sprintf("Unknown kind of type %s for node %s", nodeType, tn.NodeId))

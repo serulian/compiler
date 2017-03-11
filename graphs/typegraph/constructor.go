@@ -108,13 +108,23 @@ func (an Annotator) DefineGenericConstraint(genericSourceNode compilergraph.Grap
 // is structurally inherited and for nominal types, it describes conversion.
 func (an Annotator) DefineParentType(typeSourceNode compilergraph.GraphNode, inherits TypeReference) {
 	typeNode := an.tdg.getMatchingTypeGraphNode(typeSourceNode)
+	if typeNode.Kind() == NodeTypeAlias {
+		panic("Cannot set parent on an aliased type declaration")
+	}
+
 	an.modifier.Modify(typeNode).DecorateWithTagged(NodePredicateParentType, inherits)
 }
 
 // DefineAliasedType defines that the given type aliases the other type. Only applies to aliases.
-func (an Annotator) DefineAliasedType(typeSourceNode compilergraph.GraphNode, aliased compilergraph.GraphNode) {
+func (an Annotator) DefineAliasedType(typeSourceNode compilergraph.GraphNode, aliased TGTypeDecl) {
+	aliased.TypeKind() // Will panic if not a valid type.
+
 	typeNode := an.tdg.getMatchingTypeGraphNode(typeSourceNode)
-	an.modifier.Modify(typeNode).Connect(NodePredicateAliasedType, aliased)
+	if typeNode.Kind() != NodeTypeAlias {
+		panic("Cannot alias a non-alias type declaration")
+	}
+
+	an.modifier.Modify(typeNode).Connect(NodePredicateAliasedType, aliased.GraphNode)
 }
 
 // moduleBuilder ////////////////////////////////////////////////////////////////////////////////////
