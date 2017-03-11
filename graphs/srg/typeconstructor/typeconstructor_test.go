@@ -125,7 +125,7 @@ func TestGraphs(t *testing.T) {
 		}
 
 		// Construct the type graph.
-		result := typegraph.BuildTypeGraph(testSRG.Graph, GetConstructor(testSRG), webidltc.GetConstructor(testIDL))
+		result := typegraph.BuildTypeGraph(testSRG.Graph, webidltc.GetConstructor(testIDL), GetConstructor(testSRG))
 
 		if test.expectedError == "" {
 			// Make sure we had no errors during construction.
@@ -133,7 +133,7 @@ func TestGraphs(t *testing.T) {
 				continue
 			}
 
-			currentLayerView := result.Graph.GetFilteredJSONForm(graph.RootSourceFilePath)
+			currentLayerView := result.Graph.GetFilteredJSONForm([]string{graph.RootSourceFilePath}, []compilergraph.TaggedValue{})
 
 			if os.Getenv("REGEN") == "true" {
 				test.writeJson(currentLayerView)
@@ -172,7 +172,7 @@ func TestLookupReturnType(t *testing.T) {
 	}
 
 	// Construct the type graph.
-	result := typegraph.BuildTypeGraph(testSRG.Graph, GetConstructor(testSRG), webidltc.GetConstructor(testIDL))
+	result := typegraph.BuildTypeGraph(testSRG.Graph, webidltc.GetConstructor(testIDL), GetConstructor(testSRG))
 	if !assert.True(t, result.Status, "Got error for TypeGraph construction: %v", result.Errors) {
 		return
 	}

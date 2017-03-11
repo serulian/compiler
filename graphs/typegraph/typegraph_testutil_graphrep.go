@@ -31,27 +31,33 @@ type graphNodeRep struct {
 
 // GetJSONForm returns this type graph serialized to JSON. *For testing purposes only*.
 func (tg *TypeGraph) GetJSONForm() string {
-	return tg.GetFilteredJSONForm()
+	return tg.GetFilteredJSONForm([]string{}, []compilergraph.TaggedValue{})
 }
 
 // GetFilteredJSONForm returns the filtered type graph serialized to JSON. *For testing purposes only*.
-func (tg *TypeGraph) GetFilteredJSONForm(filterPaths ...string) string {
+func (tg *TypeGraph) GetFilteredJSONForm(pathFilters []string, skipNodeKinds []compilergraph.TaggedValue) string {
 	repMap := map[compilergraph.GraphNodeId]*graphNodeRep{}
 	filterMap := map[string]bool{}
-	for _, path := range filterPaths {
+	for _, path := range pathFilters {
 		filterMap[path] = true
 	}
 
 	// Start the walk at the type declarations.
 	var startingNodes = make([]compilergraph.GraphNode, 0)
 	for _, typeDecl := range tg.TypeDecls() {
-		if len(filterPaths) == 0 || filterMap[typeDecl.ParentModule().Path()] {
+		if len(pathFilters) == 0 || filterMap[typeDecl.ParentModule().Path()] {
 			startingNodes = append(startingNodes, typeDecl.Node())
 		}
 	}
 
+	for _, typeAlias := range tg.TypeAliases() {
+		if len(pathFilters) == 0 || filterMap[typeAlias.ParentModule().Path()] {
+			startingNodes = append(startingNodes, typeAlias.Node())
+		}
+	}
+
 	for _, module := range tg.ModulesWithMembers() {
-		if len(filterPaths) == 0 || filterMap[module.Path()] {
+		if len(pathFilters) == 0 || filterMap[module.Path()] {
 			startingNodes = append(startingNodes, module.Node())
 		}
 	}
@@ -59,18 +65,24 @@ func (tg *TypeGraph) GetFilteredJSONForm(filterPaths ...string) string {
 	// Walk the graph outward from the type declaration nodes, building an in-memory tree
 	// representation along the way.
 	tg.layer.WalkOutward(startingNodes, func(result *compilergraph.WalkResult) bool {
+		for _, nodeKind := range skipNodeKinds {
+			if result.Node.Kind() == nodeKind {
+				return false
+			}
+		}
+
 		// Filter any predicates that match UUIDs, as they attach to other graph layers
 		// and will have rotating IDs.
-		filteredPredicates := map[string]string{}
+		normalizedPredicates := map[string]string{}
 
 		var keys []string
 		for name, value := range result.Predicates {
 			if compilerutil.IsId(value) {
-				filteredPredicates[name] = "(NodeRef)"
+				normalizedPredicates[name] = "(NodeRef)"
 			} else if strings.Contains(value, "|TypeReference") {
 				// Convert type references into human-readable strings so that they don't change constantly
 				// due to the underlying IDs.
-				filteredPredicates[name] = tg.AnyTypeReference().Build(value).(TypeReference).String()
+				normalizedPredicates[name] = tg.AnyTypeReference().Build(value).(TypeReference).String()
 			} else if name == "tdg-"+NodePredicateMemberSignature {
 				esig := &proto.MemberSig{}
 				sig := esig.Build(value[:len(value)-len("|MemberSig|tdg")]).(*proto.MemberSig)
@@ -86,9 +98,9 @@ func (tg *TypeGraph) GetFilteredJSONForm(filterPaths ...string) string {
 
 				sig.GenericConstraints = genericTypes
 				marshalled, _ := sig.Marshal()
-				filteredPredicates[name] = string(marshalled)
+				normalizedPredicates[name] = string(marshalled)
 			} else {
-				filteredPredicates[name] = value
+				normalizedPredicates[name] = value
 			}
 
 			keys = append(keys, name)
@@ -98,7 +110,7 @@ func (tg *TypeGraph) GetFilteredJSONForm(filterPaths ...string) string {
 		sort.Strings(keys)
 		h := md5.New()
 		for _, key := range keys {
-			io.WriteString(h, key+":"+filteredPredicates[key])
+			io.WriteString(h, key+":"+normalizedPredicates[key])
 		}
 
 		// Build the representation of the node.
@@ -107,7 +119,7 @@ func (tg *TypeGraph) GetFilteredJSONForm(filterPaths ...string) string {
 			Key:        repKey,
 			Kind:       result.Node.Kind(),
 			Children:   map[string]graphChildRep{},
-			Predicates: filteredPredicates,
+			Predicates: normalizedPredicates,
 		}
 
 		if result.ParentNode != nil {
@@ -120,19 +132,27 @@ func (tg *TypeGraph) GetFilteredJSONForm(filterPaths ...string) string {
 			}
 		}
 
-		return true
+		return result.Node.Kind() != NodeTypeAlias
 	})
 
 	rootReps := map[string]*graphNodeRep{}
 	for _, typeDecl := range tg.TypeDecls() {
-		if len(filterPaths) == 0 || filterMap[typeDecl.ParentModule().Path()] {
+		if len(pathFilters) == 0 || filterMap[typeDecl.ParentModule().Path()] {
 			rootReps[repMap[typeDecl.Node().NodeId].Key] = repMap[typeDecl.Node().NodeId]
 		}
 	}
 
+	for _, typeAlias := range tg.TypeAliases() {
+		if len(pathFilters) == 0 || filterMap[typeAlias.ParentModule().Path()] {
+			rootReps[repMap[typeAlias.Node().NodeId].Key] = repMap[typeAlias.Node().NodeId]
+		}
+	}
+
 	for _, module := range tg.ModulesWithMembers() {
-		if len(filterPaths) == 0 || filterMap[module.Path()] {
-			rootReps[repMap[module.Node().NodeId].Key] = repMap[module.Node().NodeId]
+		if len(pathFilters) == 0 || filterMap[module.Path()] {
+			if _, exists := repMap[module.Node().NodeId]; exists {
+				rootReps[repMap[module.Node().NodeId].Key] = repMap[module.Node().NodeId]
+			}
 		}
 	}
 
