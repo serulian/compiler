@@ -71,8 +71,19 @@ const (
 	specialFlagStruct = 'S' // The value of the trhSlotFlagSpecial for "struct" type refs.
 )
 
-// typeReferenceHeaderSlotCacheMap holds a cache for looking up the offset of a TRH.
+// typeReferenceHeaderSlotCacheMap holds a cache for looking up the offset of a TRH. This
+// map is initialized in `init` below and then should be considered *read-only*, and
+// therefore concurrent-safe.
 var typeReferenceHeaderSlotCacheMap = map[typeReferenceHeaderSlot]int{}
+
+func init() {
+	// Initialize the slot cache map.
+	var location int
+	for _, currentSlot := range typeReferenceHeaderSlots {
+		typeReferenceHeaderSlotCacheMap[currentSlot] = location
+		location = location + currentSlot.length
+	}
+}
 
 // The size of the length prefix for subreferences.
 const typeRefValueSubReferenceLength = 6
@@ -227,21 +238,8 @@ func getSubReferenceSlotAndChar(kind subReferenceKind) (typeReferenceHeaderSlot,
 
 // getSlotLocation returns the slot location (0-indexed) in the value string.
 func getSlotLocation(slot typeReferenceHeaderSlot) int {
-	if location, ok := typeReferenceHeaderSlotCacheMap[slot]; ok {
-		return location
-	}
-
-	var location int
-	for _, currentSlot := range typeReferenceHeaderSlots {
-		if currentSlot == slot {
-			typeReferenceHeaderSlotCacheMap[slot] = location
-			return location
-		}
-
-		location = location + currentSlot.length
-	}
-
-	panic("Could not retrieve location for slot")
+	location, _ := typeReferenceHeaderSlotCacheMap[slot]
+	return location
 }
 
 // buildTypeReferenceValue returns a string value for representing the given type reference data in a single
