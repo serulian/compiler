@@ -23,6 +23,8 @@ type TypeCollapser struct {
 	globalDeclarations []IRGDeclaration
 }
 
+// createTypeCollapser returns a new populated type collapser. Note that this call modifies the
+// graph, and therefore should only be invoked once.
 func createTypeCollapser(irg *WebIRG, modifier compilergraph.GraphLayerModifier) *TypeCollapser {
 	tc := &TypeCollapser{
 		irg:                irg,
@@ -37,6 +39,8 @@ func createTypeCollapser(irg *WebIRG, modifier compilergraph.GraphLayerModifier)
 type ctHandler func(ct *CollapsedType)
 type gdHandler func(gd IRGDeclaration)
 
+// ForEachType invokes the given handler for each collapsed type. Note that the handlers will
+// be invoked in parallel via goroutines, so care must be taken if access any shared resources.
 func (tc *TypeCollapser) ForEachType(handler ctHandler) {
 	process := func(key interface{}, value interface{}) bool {
 		handler(key.(*CollapsedType))
@@ -50,6 +54,8 @@ func (tc *TypeCollapser) ForEachType(handler ctHandler) {
 	workqueue.Run()
 }
 
+// ForEachGlobalDeclaration invokes the given handler for each global decl. Note that the handlers will
+// be invoked in parallel via goroutines, so care must be taken if access any shared resources.
 func (tc *TypeCollapser) ForEachGlobalDeclaration(handler gdHandler) {
 	process := func(key interface{}, value interface{}) bool {
 		handler(key.(IRGDeclaration))
@@ -63,6 +69,7 @@ func (tc *TypeCollapser) ForEachGlobalDeclaration(handler gdHandler) {
 	workqueue.Run()
 }
 
+// Types returns all collapsed types found in the WebIDL IRG.
 func (tc *TypeCollapser) Types() chan *CollapsedType {
 	ch := make(chan *CollapsedType, 10)
 	go (func() {
@@ -74,6 +81,7 @@ func (tc *TypeCollapser) Types() chan *CollapsedType {
 	return ch
 }
 
+// GetType returns the collapsed type matching the given name, if any.
 func (tc *TypeCollapser) GetType(name string) (*CollapsedType, bool) {
 	ct, found := tc.typesEncountered.Get(name)
 	if !found {
@@ -110,6 +118,10 @@ func (tc *TypeCollapser) getType(modifier compilergraph.GraphLayerModifier, name
 	return ct
 }
 
+// populate populates the type collapser (and IRG) with a root type node for each shared
+// name defined via the various declarations in the IRG. For example, two declarations
+// named `Number` will result in a single *CollapsedType with name `Number`, a backing
+// node in the IRG, and the list of those declarations contained within.
 func (tc *TypeCollapser) populate(modifier compilergraph.GraphLayerModifier) {
 	collapseDeclaration := func(key interface{}, value interface{}) bool {
 		name := key.(string)
@@ -155,21 +167,25 @@ func (tc *TypeCollapser) populate(modifier compilergraph.GraphLayerModifier) {
 	workqueue.Run()
 }
 
+// CollapsedType represents a single named type in the WebIDL that has been collapsed
+// from (possibly multiple) declarations.
 type CollapsedType struct {
-	RootNode     compilergraph.GraphNode
-	Declarations []IRGDeclaration
+	RootNode     compilergraph.GraphNode // The root node for this type in the IRG.
+	Declarations []IRGDeclaration        // The declarations that created this type.
 
-	Name                   string
-	ConstructorAnnotations []IRGAnnotation
+	Name                   string          // The name of this type. Unique amongst all CollapsedType's.
+	ConstructorAnnotations []IRGAnnotation // The constructor(s) for this type, if any.
 
-	Serializable bool
-	ParentTypes  map[string]IRGDeclaration
+	Serializable bool                      // Whether this type is marked as serializable.
+	ParentTypes  map[string]IRGDeclaration // The parent type(s) for this type, if any.
 
-	Operators       map[string]IRGAnnotation
-	Members         map[string]IRGMember
-	Specializations map[MemberSpecialization]IRGMember
+	Operators       map[string]IRGAnnotation           // The registered operators.
+	Members         map[string]IRGMember               // The registered members.
+	Specializations map[MemberSpecialization]IRGMember // The registered specializations.
 }
 
+// RegisterOperator registers an operator with the given name and annotation, returning
+// true if this is the first occurance of the operator under the collapsed type.
 func (ct *CollapsedType) RegisterOperator(name string, opAnnotation IRGAnnotation) bool {
 	if _, exists := ct.Operators[name]; exists {
 		return false
@@ -179,6 +195,9 @@ func (ct *CollapsedType) RegisterOperator(name string, opAnnotation IRGAnnotatio
 	return true
 }
 
+// RegisterMember registers a member, returning true if this is the first occurance of the
+// member under the collapsed type. If another member of the same name exists *and* its
+// signature does not match, an error is reported on the reporter.
 func (ct *CollapsedType) RegisterMember(member IRGMember, reporter typegraph.IssueReporter) bool {
 	name, _ := member.Name()
 	if existingMember, exists := ct.Members[name]; exists {
@@ -193,6 +212,9 @@ func (ct *CollapsedType) RegisterMember(member IRGMember, reporter typegraph.Iss
 	return true
 }
 
+// RegisterSpecialization registers a specialization member, returning true if this is the first occurance of the
+// member under the collapsed type. If another member of the same specialization exists *and* its
+// signature does not match, an error is reported on the reporter.
 func (ct *CollapsedType) RegisterSpecialization(member IRGMember, reporter typegraph.IssueReporter) bool {
 	specialization, _ := member.Specialization()
 	if existingMember, exists := ct.Specializations[specialization]; exists {
