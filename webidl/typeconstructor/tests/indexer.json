@@ -11,16 +11,96 @@
             "tdg-type-name": "Fourth"
         }
     },
-    "1c7af1dd43748612a8f81066c7fafc15": {
-        "Key": "1c7af1dd43748612a8f81066c7fafc15",
+    "58167990c381b247bd1607661bc624d6": {
+        "Key": "58167990c381b247bd1607661bc624d6",
         "Kind": 3,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "(root)",
+            "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "Fourth",
-            "tdg-type-name": "Fourth"
+            "tdg-type-globalid": "Third",
+            "tdg-type-name": "Third"
+        }
+    },
+    "5a7d4ff74f3c4ab7fe4f1ff92128c2ca": {
+        "Key": "5a7d4ff74f3c4ab7fe4f1ff92128c2ca",
+        "Kind": 3,
+        "Children": {
+            "097672985b754b557bb163db714c3923": {
+                "Predicate": "tdg-declaration-operator",
+                "Child": {
+                    "Key": "097672985b754b557bb163db714c3923",
+                    "Kind": 9,
+                    "Children": {
+                        "490b82edf7069ec511d1d6c05bcb8e91": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "490b82edf7069ec511d1d6c05bcb8e91",
+                                "Kind": 11,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "11|NodeType|tdg",
+                                    "tdg-return-type": "Second",
+                                    "tdg-source-node": "(NodeRef)"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "•index",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cSecond\u003e(First)",
+                        "tdg-member-signature": "\n\u0005index\u0010\u0007\u0018\u0000 \u0001*\u0017function\u003cSecond\u003e(First)",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-operator-name": "index",
+                        "tdg-operator-native": "true",
+                        "tdg-source-module": "(root).webidl",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "7e811027b911dc382e226decf8a4a3fa": {
+                "Predicate": "tdg-declaration-operator",
+                "Child": {
+                    "Key": "7e811027b911dc382e226decf8a4a3fa",
+                    "Kind": 9,
+                    "Children": {
+                        "275a61e456e5f3df08e01a03122e86cb": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "275a61e456e5f3df08e01a03122e86cb",
+                                "Kind": 11,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "11|NodeType|tdg",
+                                    "tdg-return-type": "void",
+                                    "tdg-source-node": "(NodeRef)"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "•setindex",
+                        "tdg-member-resolved-type": "function\u003cvoid\u003e(Third, Fourth)",
+                        "tdg-member-signature": "\n\u0008setindex\u0010\u0007\u0018\u0001 \u0001*\u001dfunction\u003cvoid\u003e(Third, Fourth)",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-operator-name": "setindex",
+                        "tdg-operator-native": "true",
+                        "tdg-source-module": "(root).webidl",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-source-module": "(root).webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "MyInterface",
+            "tdg-type-name": "MyInterface"
         }
     },
     "686b832ac72f1768b9c2f78aa137d6f4": {
@@ -44,18 +124,6 @@
             "tdg-source-module": "tests/indexer.webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "da77d421",
-            "tdg-type-name": "Third"
-        }
-    },
-    "8c7cdee41a4e9caa4502f37ae447afef": {
-        "Key": "8c7cdee41a4e9caa4502f37ae447afef",
-        "Kind": 3,
-        "Children": {},
-        "Predicates": {
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "(root)",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "Third",
             "tdg-type-name": "Third"
         }
     },
@@ -83,108 +151,40 @@
             "tdg-type-name": "Second"
         }
     },
-    "aa2b34e07f7338e43cfdd90ebb93a792": {
-        "Key": "aa2b34e07f7338e43cfdd90ebb93a792",
+    "b9cee4214b06b86b3147c6fbe1453461": {
+        "Key": "b9cee4214b06b86b3147c6fbe1453461",
         "Kind": 3,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "(root)",
+            "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "First",
             "tdg-type-name": "First"
         }
     },
-    "cfeea5a4b7cec6a35093e0f929636be6": {
-        "Key": "cfeea5a4b7cec6a35093e0f929636be6",
+    "d5869ad3e3b66fc899fb6cf62ba323e8": {
+        "Key": "d5869ad3e3b66fc899fb6cf62ba323e8",
         "Kind": 3,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "(root)",
+            "tdg-source-module": "(root).webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "Fourth",
+            "tdg-type-name": "Fourth"
+        }
+    },
+    "e9769cb70b49900a1b8a0ee1a8c09dda": {
+        "Key": "e9769cb70b49900a1b8a0ee1a8c09dda",
+        "Kind": 3,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "Second",
             "tdg-type-name": "Second"
-        }
-    },
-    "d4391d35c5bab999bb539f021e0d502e": {
-        "Key": "d4391d35c5bab999bb539f021e0d502e",
-        "Kind": 3,
-        "Children": {
-            "ce002c7dd3d197f09101cc4f9320750c": {
-                "Predicate": "tdg-declaration-operator",
-                "Child": {
-                    "Key": "ce002c7dd3d197f09101cc4f9320750c",
-                    "Kind": 9,
-                    "Children": {
-                        "275a61e456e5f3df08e01a03122e86cb": {
-                            "Predicate": "tdg-member-returnable",
-                            "Child": {
-                                "Key": "275a61e456e5f3df08e01a03122e86cb",
-                                "Kind": 11,
-                                "Children": {},
-                                "Predicates": {
-                                    "tdg-node-kind": "11|NodeType|tdg",
-                                    "tdg-return-type": "void",
-                                    "tdg-source-node": "(NodeRef)"
-                                }
-                            }
-                        }
-                    },
-                    "Predicates": {
-                        "tdg-member-exported": "true",
-                        "tdg-member-name": "•setindex",
-                        "tdg-member-resolved-type": "function\u003cvoid\u003e(Third, Fourth)",
-                        "tdg-member-signature": "\n\u0008setindex\u0010\u0007\u0018\u0001 \u0001*\u001dfunction\u003cvoid\u003e(Third, Fourth)",
-                        "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-operator-name": "setindex",
-                        "tdg-operator-native": "true",
-                        "tdg-source-module": "(root)",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
-            "fdeca15ced127195f2d7c289f7c3dc5d": {
-                "Predicate": "tdg-declaration-operator",
-                "Child": {
-                    "Key": "fdeca15ced127195f2d7c289f7c3dc5d",
-                    "Kind": 9,
-                    "Children": {
-                        "490b82edf7069ec511d1d6c05bcb8e91": {
-                            "Predicate": "tdg-member-returnable",
-                            "Child": {
-                                "Key": "490b82edf7069ec511d1d6c05bcb8e91",
-                                "Kind": 11,
-                                "Children": {},
-                                "Predicates": {
-                                    "tdg-node-kind": "11|NodeType|tdg",
-                                    "tdg-return-type": "Second",
-                                    "tdg-source-node": "(NodeRef)"
-                                }
-                            }
-                        }
-                    },
-                    "Predicates": {
-                        "tdg-member-exported": "true",
-                        "tdg-member-name": "•index",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cSecond\u003e(First)",
-                        "tdg-member-signature": "\n\u0005index\u0010\u0007\u0018\u0000 \u0001*\u0017function\u003cSecond\u003e(First)",
-                        "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-operator-name": "index",
-                        "tdg-operator-native": "true",
-                        "tdg-source-module": "(root)",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            }
-        },
-        "Predicates": {
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "(root)",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "MyInterface",
-            "tdg-type-name": "MyInterface"
         }
     }
 }

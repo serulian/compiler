@@ -11,14 +11,14 @@
             "tdg-type-name": "HTMLWindow"
         }
     },
-    "32a1b9f3e6c896767ceea9c331365e98": {
-        "Key": "32a1b9f3e6c896767ceea9c331365e98",
+    "5c7877ca00e227f493bc52804da0a7ae": {
+        "Key": "5c7877ca00e227f493bc52804da0a7ae",
         "Kind": 3,
         "Children": {
-            "bb649bc52c614efd9fd78f7791f4ea27": {
+            "f5caff599fd3d81c4f8dc0d05c414df3": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "bb649bc52c614efd9fd78f7791f4ea27",
+                    "Key": "f5caff599fd3d81c4f8dc0d05c414df3",
                     "Kind": 8,
                     "Children": {},
                     "Predicates": {
@@ -28,7 +28,7 @@
                         "tdg-member-resolved-type": "HTMLDocument",
                         "tdg-member-signature": "\n\u0008document\u0010\t\u0018\u0000 \u0001*\u000cHTMLDocument",
                         "tdg-node-kind": "8|NodeType|tdg",
-                        "tdg-source-module": "(root)",
+                        "tdg-source-module": "(root).webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
                 }
@@ -36,7 +36,7 @@
         },
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "(root)",
+            "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "HTMLWindow",
             "tdg-type-name": "HTMLWindow"
@@ -54,13 +54,13 @@
             "tdg-type-name": "HTMLDocument"
         }
     },
-    "d32aac0588cc84b630ca05b8bf1dff12": {
-        "Key": "d32aac0588cc84b630ca05b8bf1dff12",
+    "ec008a0fcec663e5edf55c527705fa9e": {
+        "Key": "ec008a0fcec663e5edf55c527705fa9e",
         "Kind": 3,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "(root)",
+            "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "HTMLDocument",
             "tdg-type-name": "HTMLDocument"

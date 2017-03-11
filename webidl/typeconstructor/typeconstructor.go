@@ -31,8 +31,8 @@ type irgTypeConstructor struct {
 func (itc *irgTypeConstructor) DefineModules(builder typegraph.GetModuleBuilder) {
 	// Define a module node for the root node.
 	builder().
-		Name("(root)").
-		Path("(root)").
+		Name("(root).webidl").
+		Path("(root).webidl").
 		SourceNode(itc.irg.RootModuleNode()).
 		Define()
 

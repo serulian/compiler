@@ -1,14 +1,81 @@
 {
-    "329c7cccec748c67e4c0435e10eac873": {
-        "Key": "329c7cccec748c67e4c0435e10eac873",
+    "018d089c10327230c3e472f2f8a32ca2": {
+        "Key": "018d089c10327230c3e472f2f8a32ca2",
         "Kind": 3,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "(root)",
+            "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "AnotherType",
-            "tdg-type-name": "AnotherType"
+            "tdg-type-globalid": "Object",
+            "tdg-type-name": "Object"
+        }
+    },
+    "0afacb500df23d576019168e5d740e4b": {
+        "Key": "0afacb500df23d576019168e5d740e4b",
+        "Kind": 3,
+        "Children": {
+            "48dbb07745a6a82e7d771e148ea26800": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "48dbb07745a6a82e7d771e148ea26800",
+                    "Kind": 8,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "AnotherMember",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cAnotherType?\u003e(Object)",
+                        "tdg-member-signature": "\n\ranothermember\u0010\u0007\u0018\u0000 \u0001*\u001efunction\u003cAnotherType?\u003e(Object)",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "8|NodeType|tdg",
+                        "tdg-source-module": "(root).webidl",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "5a267946a157a1190c1c5d7a74edf451": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "5a267946a157a1190c1c5d7a74edf451",
+                    "Kind": 8,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "CoolThing",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "Object",
+                        "tdg-member-signature": "\n\tcoolthing\u0010\t\u0018\u0000 \u0001*\u0006Object",
+                        "tdg-node-kind": "8|NodeType|tdg",
+                        "tdg-source-module": "(root).webidl",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "5e3c3168c69ddd9dd1fa193f8d18c702": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "5e3c3168c69ddd9dd1fa193f8d18c702",
+                    "Kind": 8,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "AnyThing",
+                        "tdg-member-resolved-type": "any",
+                        "tdg-member-signature": "\n\u0008anything\u0010\t\u0018\u0001 \u0001*\u0003any",
+                        "tdg-node-kind": "8|NodeType|tdg",
+                        "tdg-source-module": "(root).webidl",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-source-module": "(root).webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "SomeInterface",
+            "tdg-type-name": "SomeInterface"
         }
     },
     "3b90fac85b19b034895ce60403100217": {
@@ -23,85 +90,6 @@
             "tdg-type-name": "AnotherType"
         }
     },
-    "4dc56579136ccd27071f4f0ffc6ca6e9": {
-        "Key": "4dc56579136ccd27071f4f0ffc6ca6e9",
-        "Kind": 3,
-        "Children": {
-            "8215b31c498043a4427a98bd2d6e06b5": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "8215b31c498043a4427a98bd2d6e06b5",
-                    "Kind": 8,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-exported": "true",
-                        "tdg-member-name": "CoolThing",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "Object",
-                        "tdg-member-signature": "\n\tcoolthing\u0010\t\u0018\u0000 \u0001*\u0006Object",
-                        "tdg-node-kind": "8|NodeType|tdg",
-                        "tdg-source-module": "(root)",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
-            "b4494dc7de06dc948f994ce6341dad7a": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "b4494dc7de06dc948f994ce6341dad7a",
-                    "Kind": 8,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-exported": "true",
-                        "tdg-member-name": "AnyThing",
-                        "tdg-member-resolved-type": "any",
-                        "tdg-member-signature": "\n\u0008anything\u0010\t\u0018\u0001 \u0001*\u0003any",
-                        "tdg-node-kind": "8|NodeType|tdg",
-                        "tdg-source-module": "(root)",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
-            "d34217f17db74611207b31fa1ed29370": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "d34217f17db74611207b31fa1ed29370",
-                    "Kind": 8,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-exported": "true",
-                        "tdg-member-name": "AnotherMember",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cAnotherType?\u003e(Object)",
-                        "tdg-member-signature": "\n\ranothermember\u0010\u0007\u0018\u0000 \u0001*\u001efunction\u003cAnotherType?\u003e(Object)",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "8|NodeType|tdg",
-                        "tdg-source-module": "(root)",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            }
-        },
-        "Predicates": {
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "(root)",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "SomeInterface",
-            "tdg-type-name": "SomeInterface"
-        }
-    },
-    "505e7647dfbcbe9299dafcf89732a60d": {
-        "Key": "505e7647dfbcbe9299dafcf89732a60d",
-        "Kind": 3,
-        "Children": {},
-        "Predicates": {
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "(root)",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "Object",
-            "tdg-type-name": "Object"
-        }
-    },
     "581b3e9621ad90b47ce8e9a9fbf4f60b": {
         "Key": "581b3e9621ad90b47ce8e9a9fbf4f60b",
         "Kind": 7,
@@ -112,6 +100,18 @@
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "f5dd57b7",
             "tdg-type-name": "Object"
+        }
+    },
+    "862f631ba6fabf7fd2ab74f94cce2b1a": {
+        "Key": "862f631ba6fabf7fd2ab74f94cce2b1a",
+        "Kind": 3,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-source-module": "(root).webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "AnotherType",
+            "tdg-type-name": "AnotherType"
         }
     },
     "8e1e82ea1292a825d82798cc3978db7b": {

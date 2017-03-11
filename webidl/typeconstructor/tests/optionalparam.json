@@ -1,24 +1,12 @@
 {
-    "2aa231b4ca48453242ccaaa21a10c6f8": {
-        "Key": "2aa231b4ca48453242ccaaa21a10c6f8",
-        "Kind": 3,
-        "Children": {},
-        "Predicates": {
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "(root)",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "Foo",
-            "tdg-type-name": "Foo"
-        }
-    },
-    "4dc56579136ccd27071f4f0ffc6ca6e9": {
-        "Key": "4dc56579136ccd27071f4f0ffc6ca6e9",
+    "0afacb500df23d576019168e5d740e4b": {
+        "Key": "0afacb500df23d576019168e5d740e4b",
         "Kind": 3,
         "Children": {
-            "8c8bd1c81b265fa54b7fdae0a107b8a7": {
+            "b5bcf73c911d4f3f491f4116335264c6": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "8c8bd1c81b265fa54b7fdae0a107b8a7",
+                    "Key": "b5bcf73c911d4f3f491f4116335264c6",
                     "Kind": 8,
                     "Children": {},
                     "Predicates": {
@@ -28,7 +16,7 @@
                         "tdg-member-resolved-type": "function\u003cvoid\u003e(Foo, Foo, Foo?, Foo?)",
                         "tdg-member-signature": "\n\u000csomefunction\u0010\u0007\u0018\u0000 \u0001*$function\u003cvoid\u003e(Foo, Foo, Foo?, Foo?)",
                         "tdg-node-kind": "8|NodeType|tdg",
-                        "tdg-source-module": "(root)",
+                        "tdg-source-module": "(root).webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
                 }
@@ -36,10 +24,22 @@
         },
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "(root)",
+            "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "SomeInterface",
             "tdg-type-name": "SomeInterface"
+        }
+    },
+    "4367653e2725b18c2e169644c0cf2db6": {
+        "Key": "4367653e2725b18c2e169644c0cf2db6",
+        "Kind": 3,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-source-module": "(root).webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "Foo",
+            "tdg-type-name": "Foo"
         }
     },
     "8207b674d4e6906b113b86212812e9d9": {

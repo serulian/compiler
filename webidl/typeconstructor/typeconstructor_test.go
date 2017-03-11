@@ -111,7 +111,7 @@ func TestGraphs(t *testing.T) {
 			}
 
 			currentLayerView := result.Graph.GetFilteredJSONForm(
-				[]string{"tests/" + test.entrypoint + ".webidl", "(root)"},
+				[]string{"tests/" + test.entrypoint + ".webidl", "(root).webidl"},
 				[]compilergraph.TaggedValue{typegraph.NodeTypeModule})
 
 			if os.Getenv("REGEN") == "true" {

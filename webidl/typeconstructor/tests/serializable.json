@@ -1,6 +1,6 @@
 {
-    "acde7915bc563f34b658fdea80da164b": {
-        "Key": "acde7915bc563f34b658fdea80da164b",
+    "8758f5d8d63e606d5960b6fe6800d898": {
+        "Key": "8758f5d8d63e606d5960b6fe6800d898",
         "Kind": 3,
         "Children": {
             "b183ff64b09d2e42c96631c5446cd483": {
@@ -18,7 +18,7 @@
         },
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "(root)",
+            "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "ISomeSerializable",
             "tdg-type-name": "ISomeSerializable"
