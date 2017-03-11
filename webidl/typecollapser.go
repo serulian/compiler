@@ -38,17 +38,29 @@ type ctHandler func(ct *CollapsedType)
 type gdHandler func(gd IRGDeclaration)
 
 func (tc *TypeCollapser) ForEachType(handler ctHandler) {
-	// TODO: ||
-	for ct := range tc.Types() {
-		handler(ct)
+	process := func(key interface{}, value interface{}) bool {
+		handler(key.(*CollapsedType))
+		return true
 	}
+
+	workqueue := compilerutil.Queue()
+	for ct := range tc.Types() {
+		workqueue.Enqueue(ct, ct, process)
+	}
+	workqueue.Run()
 }
 
 func (tc *TypeCollapser) ForEachGlobalDeclaration(handler gdHandler) {
-	// TODO: ||
-	for _, globalDecl := range tc.globalDeclarations {
-		handler(globalDecl)
+	process := func(key interface{}, value interface{}) bool {
+		handler(key.(IRGDeclaration))
+		return true
 	}
+
+	workqueue := compilerutil.Queue()
+	for _, globalDecl := range tc.globalDeclarations {
+		workqueue.Enqueue(globalDecl, globalDecl, process)
+	}
+	workqueue.Run()
 }
 
 func (tc *TypeCollapser) Types() chan *CollapsedType {
