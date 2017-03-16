@@ -22,11 +22,6 @@ func (se SourceError) SourceAndLocation() SourceAndLocation {
 	return se.sal
 }
 
-// SourcePositionErrorf returns a new SourceError for the given source, byte position and message.
-func SourcePositionErrorf(source InputSource, bytePosition int, msg string, args ...interface{}) SourceError {
-	return SourceErrorf(NewSourceAndLocation(source, bytePosition), msg, args...)
-}
-
 // SourceErrorf returns a new SourceError for the given location and message.
 func SourceErrorf(sal SourceAndLocation, msg string, args ...interface{}) SourceError {
 	return SourceError{
