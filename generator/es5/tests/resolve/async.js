@@ -48,7 +48,7 @@ $module('async', function () {
               $continue($resolve, $reject);
               return;
             }).catch(function ($rejected) {
-              b = $rejected;
+              b = $t.ensureerror($rejected);
               a = null;
               $current = 1;
               $continue($resolve, $reject);

@@ -16,7 +16,7 @@ $module('cast', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Result|3|43834c3f": true,
+        "Result|3|f7f23c49": true,
       };
       return this.$cachedtypesig = computed;
     };

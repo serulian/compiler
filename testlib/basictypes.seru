@@ -3,6 +3,7 @@ from webidl`basic` import String as NativeString
 from webidl`basic` import Boolean as NativeBoolean
 from webidl`basic` import Array
 from webidl`basic` import Object
+from webidl`basic` import Error as NativeError
 from webidl`basic` import debugprint
 from webidl`basic` import JSON as NativeJSON
 from webidl`basic` import __serulian_internal as Internal
@@ -333,4 +334,17 @@ interface Parser {
 	}
 
 	function<mapping<any>> Parse(value string)
+}
+
+@•typealias('wrappederror')
+type WrappedError : NativeError {
+	constructor For(err NativeError) {
+		return WrappedError(err)
+	}
+
+	property<string> Message {
+		get {
+			return string(NativeError(this).message)
+		}
+	}
 }

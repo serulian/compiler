@@ -16,7 +16,7 @@ $module('expectrejection', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Message|3|5cffd9b5": true,
+        "Message|3|549fbddd": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -37,7 +37,7 @@ $module('expectrejection', function () {
             a = $expr;
             b = null;
           } catch ($rejected) {
-            b = $rejected;
+            b = $t.ensureerror($rejected);
             a = null;
           }
           $current = 1;

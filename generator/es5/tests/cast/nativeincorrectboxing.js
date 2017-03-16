@@ -14,7 +14,7 @@ $module('nativeincorrectboxing', function () {
             result = $expr;
             err = null;
           } catch ($rejected) {
-            err = $rejected;
+            err = $t.ensureerror($rejected);
             result = null;
           }
           $current = 1;

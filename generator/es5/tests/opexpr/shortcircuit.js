@@ -16,7 +16,7 @@ $module('shortcircuit', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Message|3|5cffd9b5": true,
+        "Message|3|549fbddd": true,
       };
       return this.$cachedtypesig = computed;
     };

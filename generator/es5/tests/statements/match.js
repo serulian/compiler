@@ -16,7 +16,7 @@ $module('match', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Value|3|43834c3f": true,
+        "Value|3|f7f23c49": true,
       };
       return this.$cachedtypesig = computed;
     };
