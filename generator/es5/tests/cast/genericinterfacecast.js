@@ -16,7 +16,7 @@ $module('genericinterfacecast', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeValue|3|43834c3f": true,
+        "SomeValue|3|f7f23c49": true,
       };
       return this.$cachedtypesig = computed;
     };

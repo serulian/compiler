@@ -18,7 +18,7 @@ $module('basic', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "AnotherFunction|2|29dc432d<void>": true,
+        "AnotherFunction|2|89b8f38e<void>": true,
       };
       return this.$cachedtypesig = computed;
     };

@@ -14,7 +14,7 @@ $module('castrejection', function () {
             a = $expr;
             b = null;
           } catch ($rejected) {
-            b = $rejected;
+            b = $t.ensureerror($rejected);
             a = null;
           }
           $current = 1;

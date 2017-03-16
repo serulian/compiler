@@ -39,7 +39,7 @@ $module('castignoreinterface', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeFunction|2|29dc432d<void>": true,
+        "SomeFunction|2|89b8f38e<void>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -52,7 +52,7 @@ $module('castignoreinterface', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeFunction|2|29dc432d<void>": true,
+        "SomeFunction|2|89b8f38e<void>": true,
       };
       return this.$cachedtypesig = computed;
     };

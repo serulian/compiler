@@ -19,8 +19,8 @@ $module('simpleclass', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Declare|1|29dc432d<f6e326a6>": true,
-        "Value|3|43834c3f": true,
+        "Declare|1|89b8f38e<f6e326a6>": true,
+        "Value|3|f7f23c49": true,
       };
       return this.$cachedtypesig = computed;
     };
