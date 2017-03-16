@@ -50,3 +50,14 @@ interface JSON {
   static Object parse(any text, optional any reviver);
   static String stringify(any value, optional any replacer, optional any space);
 };
+
+
+[Constructor(optional String message, optional String fileName, optional Number lineNumber)]
+interface Error {
+	readonly attribute String message;
+	readonly attribute String fileName;
+	readonly attribute String name;
+	readonly attribute Number lineNumber;
+	readonly attribute Number columnNumber;
+	readonly attribute String stack;
+};

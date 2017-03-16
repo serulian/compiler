@@ -106,6 +106,16 @@ this.Serulian = (function($global) {
       return ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()
     },
 
+    // ensureerror ensures that the given rejected value is a Serulian Error interface impl.
+    // If it is not (which means it is a browser Error or a string), then it is wrapped.
+    'ensureerror': function(rejected) {
+      if (rejected instanceof Error) {
+        return $a['wrappederror'].For(rejected);
+      }
+
+      return rejected;
+    },
+
     // markpromising marks the given function as returning a promise.
     'markpromising': function(func) {
       func.$promising = true;

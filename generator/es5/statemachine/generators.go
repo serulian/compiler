@@ -289,7 +289,7 @@ func (sg *stateGenerator) generateSyncResolveExpression(resolveExpression *coded
 			{{ end }}
 		} catch ($rejected) {
 			{{ if .RejectionName }}
-			{{ .RejectionName }} = $rejected;
+			{{ .RejectionName }} = $t.ensureerror($rejected);
 			{{ end }}
 			{{ if .ResolutionName }}
 			{{ .ResolutionName }} = null;
@@ -362,7 +362,7 @@ func (sg *stateGenerator) generateAsyncResolveExpression(resolveExpression *code
 	catchTemplateStr := `
 		({{ emit .Promise }}).catch(function($rejected) {
 			{{ if .RejectionName }}
-			{{ .RejectionName }} = $rejected;
+			{{ .RejectionName }} = $t.ensureerror($rejected);
 			{{ end }}
 			{{ if .ResolutionName }}
 			{{ .ResolutionName }} = null;

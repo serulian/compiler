@@ -1,0 +1,5 @@
+function<any> TEST() {
+	var<any> somevalue = 'hello'
+	_, b := somevalue.(int)
+	return (b?.Message ?? '') == 'Cannot auto-box function String() {} to function Integer() {}'
+}
