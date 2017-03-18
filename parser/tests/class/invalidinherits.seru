@@ -1,3 +1,0 @@
-class SomeClass : any {}
-class AnotherClass : SomeClass? {}
-class ThirdClass : void {}
