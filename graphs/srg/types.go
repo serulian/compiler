@@ -157,16 +157,7 @@ func (t SRGType) FindMember(name string) (SRGMember, bool) {
 func (t SRGType) Inheritance() []SRGTypeRef {
 	switch t.TypeKind() {
 	case ClassType:
-		it := t.GraphNode.StartQuery().
-			Out(parser.NodeClassPredicateBaseType).
-			BuildNodeIterator()
-
-		var inherits = make([]SRGTypeRef, 0)
-		for it.Next() {
-			inherits = append(inherits, SRGTypeRef{it.Node(), t.srg})
-		}
-
-		return inherits
+		return make([]SRGTypeRef, 0)
 
 	case InterfaceType:
 		return make([]SRGTypeRef, 0)

@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	"github.com/serulian/compiler/parser"
-	"github.com/stretchr/testify/assert"
 )
 
 var _ = fmt.Printf
@@ -39,18 +38,7 @@ func TestSyntaxError(t *testing.T) {
 	}
 
 	// Ensure the syntax error was reported.
-	if !strings.Contains(result.Errors[0].Error(), "Expected identifier") {
+	if !strings.Contains(result.Errors[0].Error(), "Expected one of: [tokenTypeLeftBrace], found: tokenTypeRightBrace") {
 		t.Errorf("Expected parse error, found: %v", result.Errors)
 	}
-}
-
-func TestImportError(t *testing.T) {
-	_, result := loadSRG(t, "tests/syntaxerror/start.seru")
-	if result.Status {
-		t.Errorf("Expected failed parse")
-		return
-	}
-
-	// Ensure the parse error was reported.
-	assert.Equal(t, "Expected identifier, found token tokenTypeLeftBrace", result.Errors[0].Error())
 }
