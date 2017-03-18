@@ -1,7 +1,7 @@
 /**
  * SomeClass is some cool class
  */
-class SomeClass<T : int> : FirstClass + SecondClass {
+class SomeClass<T : int> {
 	var<int?> noInit
 	var<int> foo = bar
 
