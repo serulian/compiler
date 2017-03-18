@@ -1,7 +1,7 @@
 /**
  * SomeClass is some cool class
  */
-class SomeClass<T : int> : FirstClass + SecondClass {
+class SomeClass<T : int> {
 	function<void> DoSomething<Q : any>(firstParam int, secondParam string*) {
 		return
 	}

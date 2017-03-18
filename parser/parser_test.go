@@ -126,18 +126,22 @@ var parserTests = []parserTest{
 	// Class success tests.
 	{"empty class test", "class/empty"},
 	{"basic formatted class test", "class/basic_formatted"},
-	{"basic inheritance test", "class/inherits"},
-	{"complex inheritance test", "class/complex_inherits"},
+
+	/*
+		{"basic inheritance test", "class/inherits"},
+		{"complex inheritance test", "class/complex_inherits"},
+		{"complex class def test", "class/complex_def"},
+		{"invalid inherits test", "class/invalidinherits"},
+		{"missing subtype test", "class/missing_subtype"},
+		{"missing another subtype test", "class/missing_another_subtype"},
+	*/
+
 	{"generic class test", "class/generic"},
 	{"complex generic class test", "class/complex_generic"},
-	{"complex class def test", "class/complex_def"},
 
 	// Class failure tests.
 	{"missing name class test", "class/missing_name"},
-	{"missing subtype test", "class/missing_subtype"},
-	{"missing another subtype test", "class/missing_another_subtype"},
 	{"missing generic test", "class/missing_generic"},
-	{"invalid inherits test", "class/invalidinherits"},
 
 	// Interface success tests.
 	{"basic interface test", "interface/basic"},

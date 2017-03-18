@@ -484,16 +484,18 @@ func (p *sourceParser) consumeClassDefinition() AstNode {
 	// Generics (optional).
 	p.consumeGenerics(classNode, NodeTypeDefinitionGeneric)
 
-	// Inheritance.
-	if _, ok := p.tryConsume(tokenTypeColon); ok {
-		// Consume type references until we don't find a plus.
-		for {
-			classNode.Connect(NodeClassPredicateBaseType, p.consumeTypeReference(typeReferenceNoSpecialTypes))
-			if _, ok := p.tryConsume(tokenTypePlus); !ok {
-				break
+	/*
+		// Inheritance.
+		if _, ok := p.tryConsume(tokenTypeColon); ok {
+			// Consume type references until we don't find a plus.
+			for {
+				classNode.Connect(NodeClassPredicateBaseType, p.consumeTypeReference(typeReferenceNoSpecialTypes))
+				if _, ok := p.tryConsume(tokenTypePlus); !ok {
+					break
+				}
 			}
 		}
-	}
+	*/
 
 	// Open bracket.
 	if _, ok := p.consume(tokenTypeLeftBrace); !ok {

@@ -963,13 +963,6 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
-	scopegraphTest{"cast subclass success test", "castexpr", "subclass",
-		[]expectedScopeEntry{
-			expectedScopeEntry{"bc", expectedScope{true, proto.ScopeKind_VALUE, "BaseClass", "void"}},
-			expectedScopeEntry{"abc", expectedScope{true, proto.ScopeKind_VALUE, "AnotherBaseClass", "void"}},
-		},
-		"", ""},
-
 	scopegraphTest{"cast failure test", "castexpr", "failure",
 		[]expectedScopeEntry{},
 		"Cannot cast value of type 'ISomeInterface' to type 'SomeClass': Type 'SomeClass' does not define or export member 'DoSomething', which is required by type 'ISomeInterface'", ""},

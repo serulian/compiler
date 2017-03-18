@@ -9,6 +9,6 @@ class ThirdClass {
 	operator plus (left ThirdClass, right ThirdClass) {}
 }
 
-class AnotherClass : SomeClass<ThirdClass> {
-	
+class AnotherClass  {
+	var<SomeClass<ThirdClass>> someClass
 }

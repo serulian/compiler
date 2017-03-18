@@ -1,3 +1,0 @@
-class ThirdClass : SecondClass {}
-class SecondClass : FirstClass {}
-class FirstClass : ThirdClass {}

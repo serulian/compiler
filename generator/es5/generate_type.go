@@ -8,7 +8,6 @@ import (
 	"fmt"
 
 	"github.com/serulian/compiler/generator/escommon/esbuilder"
-	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/graphs/typegraph"
 
 	"github.com/cevaris/ordered_map"
@@ -138,32 +137,6 @@ func (gt generatingType) MappingAnyType() typegraph.TypeReference {
 	return gt.Generator.scopegraph.TypeGraph().MappingTypeReference(gt.Generator.scopegraph.TypeGraph().AnyTypeReference())
 }
 
-// GenerateComposition generates the source for all the composed types structurually inherited by the type.
-func (gt generatingType) GenerateComposition() *generatedInitMap {
-	initMap := newGeneratedInitMap()
-	parentTypes := gt.Type.ParentTypes()
-	constructor, _ := gt.Type.GetMember("new")
-
-	for _, parentTypeRef := range parentTypes {
-		data := struct {
-			ComposedTypeLocation             string
-			InnerInstanceName                string
-			RequiredFields                   []typegraph.TGMember
-			ComposedTypeConstructorPromising bool
-		}{
-			gt.Generator.pather.TypeReferenceCall(parentTypeRef),
-			gt.Generator.pather.InnerInstanceName(parentTypeRef),
-			parentTypeRef.ReferredType().RequiredFields(),
-			gt.Generator.scopegraph.IsPromisingMember(constructor, scopegraph.PromisingAccessFunctionCall),
-		}
-
-		source := esbuilder.Template("composition", compositionTemplateStr, data)
-		initMap.Set(parentTypeRef, generatedSourceResult{source, data.ComposedTypeConstructorPromising})
-	}
-
-	return initMap
-}
-
 // TypeSignatureMethod generates the $typesig method on a type definition.
 func (gt generatingType) TypeSignatureMethod() string {
 	return gt.Generator.templater.Execute("typesig", typeSignatureTemplateStr, gt)
@@ -199,17 +172,6 @@ const typeSignatureTemplateStr = `
 	};
 `
 
-// compositionTemplateStr defines a template for instantiating a composed type.
-const compositionTemplateStr = `
-	{{ if .ComposedTypeConstructorPromising }}
-	$promise.maybe({{ .ComposedTypeLocation }}.new({{ range $ridx, $field := .RequiredFields }}{{ if $ridx }}, {{ end }}{{ $field.Name }}{{ end }})).then(function(value) {
-	  instance.{{ .InnerInstanceName }} = value;
-	})
-	{{ else }}
-	instance.{{ .InnerInstanceName }} = {{ .ComposedTypeLocation }}.new({{ range $ridx, $field := .RequiredFields }}{{ if $ridx }}, {{ end }}{{ $field.Name }}{{ end }})
-	{{ end }}
-`
-
 // genericsTemplateStr defines a template for generating generics.
 const genericsTemplateStr = `{{ range $index, $generic := .Generics }}{{ if $index }}, {{ end }}{{ $generic.Name }}{{ end }}`
 
@@ -232,8 +194,6 @@ this.$class('{{ .Type.GlobalUniqueId }}', '{{ .Type.Name }}', {{ .HasGenerics }}
     var $instance = this.prototype;
 
     {{ $vars := .GenerateVariables }}
-    {{ $composed := .GenerateComposition }}
-    {{ $combined := $vars.CombineWith $composed }}
 
 	$static.new = function({{ range $ridx, $field := .RequiredFields }}{{ if $ridx }}, {{ end }}{{ $field.Name }}{{ end }}) {
 		var instance = new $static();
@@ -243,15 +203,15 @@ this.$class('{{ .Type.GlobalUniqueId }}', '{{ .Type.Name }}', {{ .HasGenerics }}
 		{{ end }}
 		{{ end }}
 
-		{{ if $combined.Promising }}
+		{{ if $vars.Promising }}
 		var init = [];
 		{{ end }}
 
-		{{ range $idx, $kv := $combined.Iter }}
+		{{ range $idx, $kv := $vars.Iter }}
 			{{ emit $kv.Value }};
   		{{ end }}
 
-		{{ if $combined.Promising }}
+		{{ if $vars.Promising }}
 		return $promise.all(init).then(function() {
 			return instance;
 		});

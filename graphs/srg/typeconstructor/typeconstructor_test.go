@@ -56,8 +56,6 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"stream test", "stream", "stream", ""},
 	typegraphTest{"class members test", "members", "class", ""},
 	typegraphTest{"generic local constraint test", "genericlocalconstraint", "example", ""},
-	typegraphTest{"class inherits members test", "membersinherit", "inheritance", ""},
-	typegraphTest{"generic class inherits members test", "genericmembersinherit", "inheritance", ""},
 	typegraphTest{"generic function constraint test", "genericfunctionconstraint", "example", ""},
 	typegraphTest{"interface constraint test", "interfaceconstraint", "interface", ""},
 	typegraphTest{"generic interface constraint test", "interfaceconstraint", "genericinterface", ""},
@@ -76,7 +74,6 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"interface members test", "members", "interface", ""},
 
 	// Failure tests.
-	typegraphTest{"class required composition test", "class", "requiredcomposition", "class AnotherClass cannot compose class SomeClass as it shadows type member 'SomeField' which requires initialization"},
 	typegraphTest{"struct invalid ref test", "struct", "invalidref", "SomeStruct<SomeClass> has non-structural generic type SomeClass: SomeClass is not structural nor serializable"},
 	typegraphTest{"type redeclaration test", "redeclare", "redeclare", "interface 'SomeClass' redefines name 'SomeClass' under Module 'redeclare.seru'"},
 	typegraphTest{"generic redeclaration test", "genericredeclare", "redeclare", "Generic 'T' is already defined under class 'SomeClass'"},
@@ -85,9 +82,6 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"operator redefine failure test", "operatorfail", "redefine", "operator 'plus' redefines name 'plus' under class 'SomeType'"},
 	typegraphTest{"operator param count mismatch failure test", "operatorfail", "paramcount", "Operator 'plus' defined on type 'SomeType' expects 2 parameters; found 1"},
 	typegraphTest{"operator param type mismatch failure test", "operatorfail", "paramtype", "Parameter 'right' (#1) for operator 'plus' defined on type 'SomeType' expects type SomeType; found Integer"},
-	typegraphTest{"inheritance cycle failure test", "inheritscycle", "inheritscycle", "A cycle was detected in the inheritance of types: [ThirdClass SecondClass FirstClass]"},
-	typegraphTest{"invalid parents test", "invalidparent", "generic", "Type 'DerivesFromGeneric' cannot derive from a generic ('T')"},
-	typegraphTest{"invalid parents test", "invalidparent", "interface", "Type 'DerivesFromInterface' cannot derive from an interface ('SomeInterface')"},
 	typegraphTest{"interface constraint failure missing func test", "interfaceconstraint", "missingfunc", "Generic 'SomeClass::T' (#1) on type 'SomeClass' has constraint 'ISomeInterface'. Specified type 'ThirdClass' does not match: Type 'ThirdClass' does not define or export member 'DoSomething', which is required by type 'ISomeInterface'"},
 	typegraphTest{"interface constraint failure misdefined func test", "interfaceconstraint", "notmatchingfunc", "Generic 'SomeClass::T' (#1) on type 'SomeClass' has constraint 'ISomeInterface'. Specified type 'ThirdClass' does not match: Type 'ThirdClass' does not define or export member 'DoSomething', which is required by type 'ISomeInterface'"},
 	typegraphTest{"generic interface constraint missing test", "interfaceconstraint", "genericinterfacemissing", "Generic 'SomeClass::T' (#1) on type 'SomeClass' has constraint 'ISomeInterface<Integer>'. Specified type 'ThirdClass' does not match: Type 'ThirdClass' does not define or export member 'DoSomething', which is required by type 'ISomeInterface<Integer>'"},

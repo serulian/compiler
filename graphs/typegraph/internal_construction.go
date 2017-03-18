@@ -6,7 +6,6 @@ package typegraph
 
 import (
 	"github.com/serulian/compiler/compilergraph"
-	"github.com/serulian/compiler/compilerutil"
 )
 
 // globallyValidate validates the typegraph for global constraints (i.e. those shared by all
@@ -266,122 +265,6 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 				MemberKind(FunctionMemberSignature).
 				Decorate()
 		})
-	}
-}
-
-// defineFullInheritance copies any inherited members over to types, as well as type checking
-// for inheritance cycles.
-func (g *TypeGraph) defineFullInheritance(modifier compilergraph.GraphLayerModifier) {
-	buildInheritance := func(key interface{}, value interface{}) bool {
-		typeDecl := value.(TGTypeDecl)
-		g.buildInheritedMembership(typeDecl, NodePredicateMember, modifier)
-		g.buildInheritedMembership(typeDecl, NodePredicateTypeOperator, modifier)
-		return true
-	}
-
-	// Enqueue the full set of classes with dependencies on any parent types.
-	workqueue := compilerutil.Queue()
-	for _, typeDecl := range g.TypeDecls() {
-		if typeDecl.TypeKind() != ClassType {
-			continue
-		}
-
-		// Build a set of dependencies for this type.
-		var dependencies = make([]interface{}, 0)
-		for _, inheritsRef := range typeDecl.ParentTypes() {
-			dependencies = append(dependencies, inheritsRef.ReferredType())
-		}
-
-		workqueue.Enqueue(typeDecl, typeDecl, buildInheritance, dependencies...)
-	}
-
-	// Run the queue to construct the full inheritance.
-	result := workqueue.Run()
-	if result.HasCycle {
-		// TODO(jschorr): If there are two cycles, this will conflate them. We should do actual
-		// checking here.
-		var types = make([]string, len(result.Cycle))
-		for index, key := range result.Cycle {
-			decl := key.(TGTypeDecl)
-			types[index] = decl.Name()
-		}
-
-		typeNode := result.Cycle[0].(TGTypeDecl).GraphNode
-		g.decorateWithError(modifier.Modify(typeNode), "A cycle was detected in the inheritance of types: %v", types)
-	}
-}
-
-// buildInheritedMembership copies any applicable type members from the inherited type references to the given type.
-func (t *TypeGraph) buildInheritedMembership(typeDecl TGTypeDecl, childPredicate compilergraph.Predicate, modifier compilergraph.GraphLayerModifier) {
-	// Build a map of all the existing names.
-	names := map[string]bool{}
-	it := typeDecl.GraphNode.StartQuery().
-		Out(childPredicate).
-		BuildNodeIterator(NodePredicateMemberName)
-
-	for it.Next() {
-		names[it.GetPredicate(NodePredicateMemberName).String()] = true
-	}
-
-	// Add members defined on the type's inheritance, skipping those already defined.
-	typeNode := typeDecl.GraphNode
-	for _, inherit := range typeDecl.ParentTypes() {
-		parentType := inherit.ReferredType()
-
-		pit := parentType.StartQuery().
-			Out(childPredicate).
-			BuildNodeIterator(NodePredicateMemberName)
-
-		for pit.Next() {
-			// Skip this member if already defined.
-			name := pit.GetPredicate(NodePredicateMemberName).String()
-			if _, exists := names[name]; exists {
-				// Ensure that the parent member is not a required field. If so, then we cannot
-				// shadow the field.
-				parentMember := TGMember{pit.Node(), t}
-				if parentMember.IsRequiredField() {
-					t.decorateWithError(modifier.Modify(typeDecl.GraphNode),
-						"%v %v cannot compose %v %v as it shadows %v '%v' which requires initialization",
-						typeDecl.Title(),
-						typeDecl.Name(),
-						parentType.Title(),
-						parentType.Name(),
-						parentMember.Title(),
-						parentMember.Name())
-				}
-
-				continue
-			}
-
-			// Mark the name as added.
-			names[name] = true
-
-			// Create a new node of the same kind and copy over any predicates except the type.
-			parentMemberNode := pit.Node()
-			memberNode := parentMemberNode.CloneExcept(modifier, NodePredicateMemberType)
-			memberNode.Connect(NodePredicateMemberBaseMember, parentMemberNode)
-			memberNode.DecorateWithTagged(NodePredicateMemberBaseSource, inherit)
-
-			modifier.Modify(typeNode).Connect(childPredicate, memberNode)
-
-			// If the node is an operator, nothing more to do.
-			if memberNode.Kind == NodeTypeOperator {
-				continue
-			}
-
-			parentMemberType := parentMemberNode.GetTagged(NodePredicateMemberType, t.AnyTypeReference()).(TypeReference)
-
-			// If the parent type has generics, then replace the generics in the member type with those
-			// specified in the inheritance type reference.
-			if _, ok := parentType.GraphNode.TryGetNode(NodePredicateTypeGeneric); !ok {
-				// Parent type has no generics, so just decorate with the type directly.
-				memberNode.DecorateWithTagged(NodePredicateMemberType, parentMemberType)
-				continue
-			}
-
-			memberType := parentMemberType.TransformUnder(inherit)
-			memberNode.DecorateWithTagged(NodePredicateMemberType, memberType)
-		}
 	}
 }
 

@@ -1,30 +1,46 @@
 {
-    "3e39fee5369ddc19e6f4bbae6dda3d00": {
-        "Key": "3e39fee5369ddc19e6f4bbae6dda3d00",
+    "474d77168e697b627a65c0e33018f802": {
+        "Key": "474d77168e697b627a65c0e33018f802",
         "Kind": 1,
         "Children": {
-            "5867cd058aadf2556e1277be5d235e53": {
+            "c61f688b2503e1f6aed4d108b1f2839f": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "5867cd058aadf2556e1277be5d235e53",
+                    "Key": "c61f688b2503e1f6aed4d108b1f2839f",
                     "Kind": 8,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
                         "tdg-member-promising": "1",
                         "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cAnotherClass\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0016function\u003cAnotherClass\u003e",
+                        "tdg-member-resolved-type": "function\u003cAnotherClass\u003e(SomeClass\u003cThirdClass\u003e)",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*-function\u003cAnotherClass\u003e(SomeClass\u003cThirdClass\u003e)",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "8|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/interface.seru"
+                    }
+                }
+            },
+            "fd426e30eadb0f6e87b8efcb077050fd": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "fd426e30eadb0f6e87b8efcb077050fd",
+                    "Kind": 8,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-field": "true",
+                        "tdg-member-name": "somevar",
+                        "tdg-member-resolved-type": "SomeClass\u003cThirdClass\u003e",
+                        "tdg-member-signature": "\n\u0007somevar\u0010\u0005\u0018\u0001 \u0000*\u0015SomeClass\u003cThirdClass\u003e",
+                        "tdg-node-kind": "8|NodeType|tdg",
+                        "tdg-source-module": "tests/interfaceconstraint/interface.seru",
+                        "tdg-source-node": "(NodeRef)"
                     }
                 }
             }
         },
         "Predicates": {
             "tdg-node-kind": "1|NodeType|tdg",
-            "tdg-parent-type": "SomeClass\u003cThirdClass\u003e",
             "tdg-source-module": "tests/interfaceconstraint/interface.seru",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "644a5dd5",
