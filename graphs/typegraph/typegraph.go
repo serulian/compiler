@@ -153,11 +153,6 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 	// Perform global validation, including checking fields in structs.
 	typeGraph.globallyValidate()
 
-	// Handle inheritance checking and member cloning.
-	inheritsModifier := typeGraph.layer.NewModifier()
-	typeGraph.defineFullInheritance(inheritsModifier)
-	inheritsModifier.Apply()
-
 	// Define implicit members.
 	typeGraph.defineAllImplicitMembers()
 
