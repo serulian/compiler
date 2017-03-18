@@ -9,6 +9,6 @@ class ThirdClass {
    function<int> AnotherThing() {}
 }
 
-class AnotherClass : SomeClass<ThirdClass> {
-	
+class AnotherClass {
+	var<SomeClass<ThirdClass>> someClass
 }

@@ -8,4 +8,6 @@ class SomeClass {
 
 class GenericClass<T : ISomething>{}
 
-class AnotherClass : GenericClass<SomeClass> {}
+class AnotherClass {
+	var<GenericClass<SomeClass>> genericClass
+}

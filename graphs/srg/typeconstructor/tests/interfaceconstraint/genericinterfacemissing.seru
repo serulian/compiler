@@ -8,6 +8,6 @@ class SomeClass<T : ISomeInterface<int>> {
 class ThirdClass {
 }
 
-class AnotherClass : SomeClass<ThirdClass> {
-	
+class AnotherClass {
+	var<SomeClass<ThirdClass>> someClass
 }

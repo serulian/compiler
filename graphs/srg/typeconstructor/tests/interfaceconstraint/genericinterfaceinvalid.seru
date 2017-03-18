@@ -11,6 +11,6 @@ class ThirdClass {
    function<SomeRandomClass> DoSomething(foo int, bar int) {}
 }
 
-class AnotherClass : SomeClass<ThirdClass> {
-	
+class AnotherClass {
+	var<SomeClass<ThirdClass>> someClass
 }
