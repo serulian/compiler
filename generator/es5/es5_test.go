@@ -108,10 +108,7 @@ var generationTests = []generationTest{
 	generationTest{"basic class test", "class", "basic", integrationTestSuccessExpected, ""},
 	generationTest{"generic class test", "class", "generic", integrationTestSuccessExpected, ""},
 	generationTest{"class property test", "class", "property", integrationTestSuccessExpected, ""},
-	generationTest{"class inheritance test", "class", "inheritance", integrationTestSuccessExpected, ""},
-	generationTest{"class async inheritance test", "class", "asyncinheritance", integrationTestSuccessExpected, ""},
 	generationTest{"class required fields test", "class", "requiredfields", integrationTestSuccessExpected, ""},
-	generationTest{"class composition required fields test", "class", "requiredcomposition", integrationTestSuccessExpected, ""},
 	generationTest{"constructable interface test", "interface", "constructable", integrationTestSuccessExpected, ""},
 	generationTest{"interface property test", "interface", "interfaceprop", integrationTestSuccessExpected, ""},
 
@@ -166,7 +163,6 @@ var generationTests = []generationTest{
 
 	generationTest{"generic specifier expression", "accessexpr", "genericspecifier", integrationTestSuccessExpected, ""},
 	generationTest{"cast expression", "accessexpr", "cast", integrationTestSuccessExpected, ""},
-	generationTest{"structural cast expression", "accessexpr", "structuralcast", integrationTestSuccessExpected, ""},
 	generationTest{"stream member access expression", "accessexpr", "streammember", integrationTestNone, ""},
 	generationTest{"member access expressions", "accessexpr", "memberaccess", integrationTestSuccessExpected, ""},
 	generationTest{"function reference access expression", "accessexpr", "funcref", integrationTestSuccessExpected, ""},
