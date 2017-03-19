@@ -287,6 +287,10 @@ class Map<T : Mappable, Q> {
 		return map
 	}
 
+	function<Mapping<Q>> Mapping() {
+		return Mapping<Q>(this.internalObject)
+	}
+
 	operator<Q?> Index(key T) {
 		var keyString = key.MapKey.String()
 		var value = this.internalObject[NativeString(keyString)]

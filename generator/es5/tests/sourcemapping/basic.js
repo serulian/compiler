@@ -170,7 +170,7 @@ this.Serulian = function ($global) {
       }
     },
     cast: function (value, type, opt_allownull) {
-      if ((value == null) && !opt_allownull) {
+      if (((value == null) && !opt_allownull) && (type != $t.any)) {
         throw Error('Cannot cast null value to ' + type.toString());
       }
       if ($t.istype(value, type)) {
@@ -1055,6 +1055,10 @@ this.Serulian = function ($global) {
           }
         }
       };
+      $instance.Mapping = function () {
+        var $this = this;
+        return $t.fastbox($this.internalObject, $g.____testlib.basictypes.Mapping(Q));
+      };
       $instance.$index = function (key) {
         var $this = this;
         var keyString;
@@ -1099,12 +1103,13 @@ this.Serulian = function ($global) {
         var computed = {
           "setindex|4|89b8f38e<void>": true,
         };
+        computed[("Mapping|2|89b8f38e<ad6de9ce<" + $t.typeid(Q)) + ">>"] = true;
         computed[("index|4|89b8f38e<" + $t.typeid(Q)) + ">"] = true;
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$class('99b7ba7c', 'JSON', false, 'json', function () {
+    this.$class('5e55fc76', 'JSON', false, 'json', function () {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -1127,7 +1132,7 @@ this.Serulian = function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Get|1|89b8f38e<99b7ba7c>": true,
+          "Get|1|89b8f38e<5e55fc76>": true,
           "Stringify|2|89b8f38e<549fbddd>": true,
           "Parse|2|89b8f38e<ad6de9ce<any>>": true,
         };
@@ -1227,7 +1232,7 @@ this.Serulian = function ($global) {
       };
     });
 
-    this.$interface('5a04f9f6', 'Stringifier', false, '$stringifier', function () {
+    this.$interface('e85fc804', 'Stringifier', false, '$stringifier', function () {
       var $static = this;
       $static.Get = function () {
         return $g.____testlib.basictypes.JSON.new();
@@ -1237,14 +1242,14 @@ this.Serulian = function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Get|1|89b8f38e<5a04f9f6>": true,
+          "Get|1|89b8f38e<e85fc804>": true,
           "Stringify|2|89b8f38e<549fbddd>": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('689f80ad', 'Parser', false, '$parser', function () {
+    this.$interface('1e865678', 'Parser', false, '$parser', function () {
       var $static = this;
       $static.Get = function () {
         return $g.____testlib.basictypes.JSON.new();
@@ -1254,7 +1259,7 @@ this.Serulian = function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Get|1|89b8f38e<689f80ad>": true,
+          "Get|1|89b8f38e<1e865678>": true,
           "Parse|2|89b8f38e<ad6de9ce<any>>": true,
         };
         return this.$cachedtypesig = computed;
@@ -1522,7 +1527,7 @@ this.Serulian = function ($global) {
       };
     });
 
-    this.$type('39ca8fe5', 'WrappedError', false, 'wrappederror', function () {
+    this.$type('0a2940c0', 'WrappedError', false, 'wrappederror', function () {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1545,7 +1550,7 @@ this.Serulian = function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "For|1|89b8f38e<39ca8fe5>": true,
+          "For|1|89b8f38e<0a2940c0>": true,
           "Message|3|549fbddd": true,
         };
         return this.$cachedtypesig = computed;

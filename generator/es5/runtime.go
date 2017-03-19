@@ -267,7 +267,7 @@ this.Serulian = (function($global) {
     // failure.
     'cast': function(value, type, opt_allownull) {
       // Ensure that we don't cast to non-nullable if null.
-      if (value == null && !opt_allownull) {
+      if (value == null && !opt_allownull && type != $t.any) {
         throw Error('Cannot cast null value to ' + type.toString())        
       }
 
