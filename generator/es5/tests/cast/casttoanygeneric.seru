@@ -1,0 +1,15 @@
+class SomeClass {}
+
+function<void> test<T>(value any) {
+	value.(T)
+}
+
+function<bool> TEST() {
+	test<any>('hello world')
+	test<any>(1234)
+	test<any>(SomeClass.new())
+	test<any>({})
+	test<any>([])
+	test<any>(null)
+	return true
+}

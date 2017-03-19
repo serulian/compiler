@@ -201,6 +201,7 @@ var generationTests = []generationTest{
 	generationTest{"list literal", "literals", "list", integrationTestSuccessExpected, ""},
 	generationTest{"slice literal", "literals", "sliceexpr", integrationTestSuccessExpected, ""},
 	generationTest{"mapping literal", "literals", "mappingliteral", integrationTestSuccessExpected, ""},
+	generationTest{"map of any literal", "literals", "mapofanyliteral", integrationTestSuccessExpected, ""},
 	generationTest{"boolean literal", "literals", "boolean", integrationTestNone, ""},
 	generationTest{"numeric literal", "literals", "numeric", integrationTestNone, ""},
 	generationTest{"string literal", "literals", "string", integrationTestNone, ""},
@@ -231,6 +232,8 @@ var generationTests = []generationTest{
 	generationTest{"default json test", "serialization", "jsondefault", integrationTestSuccessExpected, ""},
 
 	generationTest{"cast function success test", "cast", "castfunction", integrationTestSuccessExpected, ""},
+	generationTest{"cast to any success test", "cast", "casttoany", integrationTestSuccessExpected, ""},
+	generationTest{"cast to any via generic success test", "cast", "casttoanygeneric", integrationTestSuccessExpected, ""},
 
 	generationTest{"class cast failure test", "cast", "classcastfail", integrationTestFailureExpected,
 		"Error: Cannot cast function AnotherClass() {} to function SomeClass() {}"},

@@ -1,0 +1,9 @@
+class SomeClass {}
+
+function<bool> TEST() {
+	'hello'.(any)
+	123.(any)
+	SomeClass.new().(any)
+	null.(any)
+	return true
+}

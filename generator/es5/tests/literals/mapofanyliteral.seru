@@ -1,0 +1,10 @@
+function<any> TEST() {
+	var map = {
+		'hello': true,
+		1234: 'hello world',
+		'anotherKey': [1, 2, 3],
+		'thirdKey': {'a': 'b', 'c': 'd'},
+	}
+
+	return int(map.Mapping().Keys.Length) == 4
+}
