@@ -3322,7 +3322,7 @@ func (p *sourceParser) consumeMappingLiteralExpression() AstNode {
 	p.consume(tokenTypeLeftBrace)
 
 	// Type Reference.
-	mappingNode.Connect(NodeMappingLiteralExpressionType, p.consumeTypeReference(typeReferenceNoSpecialTypes))
+	mappingNode.Connect(NodeMappingLiteralExpressionType, p.consumeTypeReference(typeReferenceNoVoid))
 
 	// }
 	if _, ok := p.consume(tokenTypeRightBrace); !ok {

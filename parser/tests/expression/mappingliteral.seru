@@ -3,6 +3,11 @@ function<void> DoSomething() {
 		'styleName': 'color: blue',
 	}
 
+	[]{any}{
+		'styleName': 'color: blue',
+		1234: null,
+	}
+
 	SomeType{
 		SomeMapping: []{sometype}{
 			someKey: someValue,
