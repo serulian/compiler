@@ -11,18 +11,18 @@ import (
 // globallyValidate validates the typegraph for global constraints (i.e. those shared by all
 // types constructed, regardless of source)
 func (g *TypeGraph) globallyValidate() bool {
-	// TODO(jschorr): Make concurrent for better performance.
 	var status = true
 
-	// Ensure structures do not reference non-struct, non-serializable types.
-	for _, typeDecl := range g.GetTypeDecls(NodeTypeStruct) {
-		if !g.checkStructuralType(typeDecl) {
-			status = false
-		}
-	}
-
+	// The modifier will be used to decorate errors.
 	modifier := g.layer.NewModifier()
 	defer modifier.Apply()
+
+	// Ensure structures do not reference non-struct, non-serializable types.
+	g.ForEachTypeDecl([]NodeType{NodeTypeStruct}, func(typeDecl TGTypeDecl) {
+		if !g.checkStructuralType(typeDecl, modifier) {
+			status = false
+		}
+	})
 
 	// Ensure that async functions are under modules and have fully structural types.
 	for _, member := range g.AsyncMembers() {
@@ -86,10 +86,8 @@ func (g *TypeGraph) globallyValidate() bool {
 
 // checkStructuralType ensures that a structural type does not reference non-structural,
 // non-serializable types.
-func (g *TypeGraph) checkStructuralType(structType TGTypeDecl) bool {
+func (g *TypeGraph) checkStructuralType(structType TGTypeDecl, modifier compilergraph.GraphLayerModifier) bool {
 	var status = true
-
-	modifier := g.layer.NewModifier()
 
 	// Check the inner types.
 	for _, member := range structType.Members() {
@@ -111,7 +109,6 @@ func (g *TypeGraph) checkStructuralType(structType TGTypeDecl) bool {
 		}
 	}
 
-	modifier.Apply()
 	return status
 }
 

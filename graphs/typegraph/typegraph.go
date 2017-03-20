@@ -13,6 +13,7 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/packageloader"
 )
 
@@ -259,6 +260,24 @@ func (g *TypeGraph) GetTypeDecls(typeKinds ...NodeType) []TGTypeDecl {
 		types = append(types, TGTypeDecl{it.Node(), g})
 	}
 	return types
+}
+
+type typeDeclHandler func(typeDecl TGTypeDecl)
+
+// ForEachTypeDecl executes the given function for each defined type matching the type kinds. Note
+// that the functions will be executed in *parallel*, so care must be taken to ensure there isn't
+// any inconsistent accesses or writes.
+func (g *TypeGraph) ForEachTypeDecl(typeKinds []NodeType, handler typeDeclHandler) {
+	process := func(key interface{}, value interface{}) bool {
+		handler(key.(TGTypeDecl))
+		return true
+	}
+
+	workqueue := compilerutil.Queue()
+	for _, td := range g.GetTypeDecls(typeKinds...) {
+		workqueue.Enqueue(td, td, process)
+	}
+	workqueue.Run()
 }
 
 // GetTypeOrModuleForSourceNode returns the type or module for the given source node, if any.
