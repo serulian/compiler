@@ -262,10 +262,28 @@ func (g *TypeGraph) GetTypeDecls(typeKinds ...NodeType) []TGTypeDecl {
 	return types
 }
 
+type moduleHandler func(module TGModule)
+
+// ForEachModule executes the given function for each defined module in the graph. Note
+// that the functions will be executed in *parallel*, so care must be taken to ensure there aren't
+// any inconsistent accesses or writes.
+func (g *TypeGraph) ForEachModule(handler moduleHandler) {
+	process := func(key interface{}, value interface{}) bool {
+		handler(key.(TGModule))
+		return true
+	}
+
+	workqueue := compilerutil.Queue()
+	for _, m := range g.Modules() {
+		workqueue.Enqueue(m, m, process)
+	}
+	workqueue.Run()
+}
+
 type typeDeclHandler func(typeDecl TGTypeDecl)
 
 // ForEachTypeDecl executes the given function for each defined type matching the type kinds. Note
-// that the functions will be executed in *parallel*, so care must be taken to ensure there isn't
+// that the functions will be executed in *parallel*, so care must be taken to ensure there aren't
 // any inconsistent accesses or writes.
 func (g *TypeGraph) ForEachTypeDecl(typeKinds []NodeType, handler typeDeclHandler) {
 	process := func(key interface{}, value interface{}) bool {

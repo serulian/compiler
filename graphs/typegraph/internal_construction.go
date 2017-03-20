@@ -266,14 +266,16 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 }
 
 // checkForDuplicateNames ensures that there are not duplicate names defined in the graph.
-func (t *TypeGraph) checkForDuplicateNames() bool {
+func (g *TypeGraph) checkForDuplicateNames() bool {
 	var hasError = false
 
-	modifier := t.layer.NewModifier()
+	modifier := g.layer.NewModifier()
+	defer modifier.Apply()
+
 	ensureUniqueName := func(typeOrMember TGTypeOrMember, parent TGTypeOrModule, nameMap map[string]bool) {
 		name := typeOrMember.Name()
 		if _, ok := nameMap[name]; ok {
-			t.decorateWithError(modifier.Modify(typeOrMember.Node()), "%s '%s' redefines name '%s' under %s '%s'", typeOrMember.Title(), name, name, parent.Title(), parent.Name())
+			g.decorateWithError(modifier.Modify(typeOrMember.Node()), "%s '%s' redefines name '%s' under %s '%s'", typeOrMember.Title(), name, name, parent.Title(), parent.Name())
 			hasError = true
 			return
 		}
@@ -290,7 +292,7 @@ func (t *TypeGraph) checkForDuplicateNames() bool {
 		for _, generic := range typeOrMember.Generics() {
 			name := generic.Name()
 			if _, ok := genericMap[name]; ok {
-				t.decorateWithError(modifier.Modify(generic.GraphNode), "Generic '%s' is already defined under %s '%s'", name, typeOrMember.Title(), typeOrMember.Name())
+				g.decorateWithError(modifier.Modify(generic.GraphNode), "Generic '%s' is already defined under %s '%s'", name, typeOrMember.Title(), typeOrMember.Name())
 				hasError = true
 				continue
 			}
@@ -300,7 +302,7 @@ func (t *TypeGraph) checkForDuplicateNames() bool {
 	}
 
 	// Check all module members.
-	for _, module := range t.Modules() {
+	g.ForEachModule(func(module TGModule) {
 		moduleMembers := map[string]bool{}
 
 		for _, member := range module.Members() {
@@ -328,8 +330,7 @@ func (t *TypeGraph) checkForDuplicateNames() bool {
 				ensureUniqueGenerics(typeMember)
 			}
 		}
-	}
+	})
 
-	modifier.Apply()
 	return hasError
 }
