@@ -1226,6 +1226,10 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	scopegraphTest{"private interface member test", "types", "privateinterface",
+		[]expectedScopeEntry{},
+		"", ""},
+
 	/////////// class field ///////////
 
 	scopegraphTest{"class field uninitialized test", "var", "uninitializedfield",

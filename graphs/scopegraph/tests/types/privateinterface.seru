@@ -1,0 +1,11 @@
+interface SomeInterface {
+	function<void> privateMember()
+}
+
+class someClass {
+	function<void> privateMember() {}
+}
+
+function<void> DoSomething() {
+	var<SomeInterface> si = someClass.new()
+}
