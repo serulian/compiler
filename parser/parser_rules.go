@@ -113,7 +113,7 @@ Loop:
 			p.currentNode().Connect(NodePredicateChild, p.consumeImport())
 
 		// type definitions.
-		case p.isToken(tokenTypeAtSign) || p.isKeyword("class") || p.isKeyword("interface") || p.isKeyword("type") || p.isKeyword("struct"):
+		case p.isToken(tokenTypeAtSign) || p.isKeyword("class") || p.isKeyword("interface") || p.isKeyword("type") || p.isKeyword("struct") || p.isKeyword("agent"):
 			seenNonImport = true
 			p.currentNode().Connect(NodePredicateChild, p.consumeTypeDefinition())
 			p.tryConsumeStatementTerminator()
@@ -370,8 +370,10 @@ func (p *sourceParser) consumeTypeDefinition() AstNode {
 		typeDef = p.consumeNominalDefinition()
 	} else if p.isKeyword("struct") {
 		typeDef = p.consumeStructuralDefinition()
+	} else if p.isKeyword("agent") {
+		typeDef = p.consumeAgentDefinition()
 	} else {
-		return p.createErrorNode("Expected 'class', 'interface', 'type' or 'struct', Found: %s", p.currentToken.value)
+		return p.createErrorNode("Expected 'class', 'interface', 'type', 'struct' or 'agent', Found: %s", p.currentToken.value)
 	}
 
 	if ok {
@@ -460,55 +462,100 @@ func (p *sourceParser) consumeNominalDefinition() AstNode {
 	return nominalNode
 }
 
+// consumeAgentDefinition consumes an agent definition.
+//
+// agent<TypeRef> Identifier { ... }
+// agent<TypeRef> Identifier with Agent1 + Agent2 { ... }
+// agent<TypeRef> Identifier<Generic> { ... }
+// agent<TypeRef> Identifier<Generic> with Agent1 + Agent2 { ... }
+func (p *sourceParser) consumeAgentDefinition() AstNode {
+	agentNode := p.startNode(NodeTypeAgent)
+	defer p.finishNode()
+
+	// agent<PrincipalType> ...
+	p.consumeKeyword("agent")
+
+	if _, ok := p.consume(tokenTypeLessThan); !ok {
+		return agentNode
+	}
+
+	agentNode.Connect(NodeAgentPredicatePrincipalType, p.consumeTypeReference(typeReferenceNoSpecialTypes))
+
+	if _, ok := p.consume(tokenTypeGreaterThan); !ok {
+		return agentNode
+	}
+
+	p.consumeClassOrAgent(agentNode)
+	return agentNode
+}
+
 // consumeClassDefinition consumes a class definition.
 //
 // class Identifier { ... }
-// class Identifier : BaseClass.Path + AnotherBaseClass.Path { ... }
+// class Identifier with Agent1 + Agent2 { ... }
 // class Identifier<Generic> { ... }
-// class Identifier<Generic> : BaseClass.Path { ... }
+// class Identifier<Generic> with Agent1 + Agent2 { ... }
 func (p *sourceParser) consumeClassDefinition() AstNode {
 	classNode := p.startNode(NodeTypeClass)
 	defer p.finishNode()
 
 	// class ...
 	p.consumeKeyword("class")
+	p.consumeClassOrAgent(classNode)
+	return classNode
+}
 
+func (p *sourceParser) consumeClassOrAgent(typeNode AstNode) {
 	// Identifier
-	className, ok := p.consumeIdentifier()
+	typeName, ok := p.consumeIdentifier()
 	if !ok {
-		return classNode
+		return
 	}
 
-	classNode.Decorate(NodeTypeDefinitionName, className)
+	typeNode.Decorate(NodeTypeDefinitionName, typeName)
 
 	// Generics (optional).
-	p.consumeGenerics(classNode, NodeTypeDefinitionGeneric)
+	p.consumeGenerics(typeNode, NodeTypeDefinitionGeneric)
 
-	/*
-		// Inheritance.
-		if _, ok := p.tryConsume(tokenTypeColon); ok {
-			// Consume type references until we don't find a plus.
-			for {
-				classNode.Connect(NodeClassPredicateBaseType, p.consumeTypeReference(typeReferenceNoSpecialTypes))
-				if _, ok := p.tryConsume(tokenTypePlus); !ok {
-					break
-				}
+	// Agents.
+	if ok := p.tryConsumeKeyword("with"); ok {
+		// Consume agent inclusions until we don't find a plus.
+		for {
+			typeNode.Connect(NodePredicateComposedAgent, p.consumeAgentReference())
+			if _, ok := p.tryConsume(tokenTypePlus); !ok {
+				break
 			}
 		}
-	*/
+	}
 
 	// Open bracket.
 	if _, ok := p.consume(tokenTypeLeftBrace); !ok {
-		return classNode
+		return
 	}
 
-	// Consume class members.
-	p.consumeClassMembers(classNode)
+	// Consume class/agent members.
+	p.consumeImplementedTypeMembers(typeNode)
 
 	// Close bracket.
 	p.consume(tokenTypeRightBrace)
+}
 
-	return classNode
+// consumeAgentReference consumes a reference to an agent included in the class.
+// SomeType
+// SomeType<Generic>
+// SomeType as foobar
+func (p *sourceParser) consumeAgentReference() AstNode {
+	agentReferenceNode := p.startNode(NodeTypeAgentReference)
+	defer p.finishNode()
+
+	agentReferenceNode.Connect(NodeAgentReferencePredicateReferenceType, p.consumeTypeReference(typeReferenceNoSpecialTypes))
+
+	if ok := p.tryConsumeKeyword("as"); ok {
+		alias, _ := p.consumeIdentifier()
+		agentReferenceNode.Decorate(NodeAgentReferencePredicateAlias, alias)
+	}
+
+	return agentReferenceNode
 }
 
 // consumeInterfaceDefinition consumes an interface definition.
@@ -689,8 +736,8 @@ func (p *sourceParser) consumeNominalTypeMembers(typeNode AstNode) {
 	}
 }
 
-// consumeClassMembers consumes the member definitions of a class.
-func (p *sourceParser) consumeClassMembers(typeNode AstNode) {
+// consumeImplementedTypeMembers consumes the member definitions of a class or agent.
+func (p *sourceParser) consumeImplementedTypeMembers(typeNode AstNode) {
 	for {
 		switch {
 		case p.isKeyword("var"):
@@ -714,7 +761,7 @@ func (p *sourceParser) consumeClassMembers(typeNode AstNode) {
 			return
 
 		default:
-			p.emitError("Expected class member, found %s", p.currentToken.value)
+			p.emitError("Expected type member, found %s", p.currentToken.value)
 			p.consumeUntil(tokenTypeNewline, tokenTypeSyntheticSemicolon, tokenTypeEOF)
 			return
 		}
@@ -3000,6 +3047,14 @@ func (p *sourceParser) tryConsumeLiteralValue() (AstNode, bool) {
 		defer p.finishNode()
 
 		p.consumeKeyword("null")
+		return literalNode, true
+
+	// principal literal.
+	case p.isKeyword("principal"):
+		literalNode := p.startNode(NodePrincipalLiteralExpression)
+		defer p.finishNode()
+
+		p.consumeKeyword("principal")
 		return literalNode, true
 
 	// this literal.

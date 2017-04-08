@@ -1,0 +1,15 @@
+NodeTypeFile
+  end-rune = 4
+  input-source = missing principal type agent test
+  start-rune = 0
+  child-node =>
+    NodeTypeAgent
+      end-rune = 4
+      input-source = missing principal type agent test
+      start-rune = 0
+      child-node =>
+        NodeTypeError
+          end-rune = 4
+          error-message = Expected one of: [tokenTypeLessThan], found: tokenTypeIdentifer
+          input-source = missing principal type agent test
+          start-rune = 6

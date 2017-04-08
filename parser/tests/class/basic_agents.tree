@@ -1,0 +1,51 @@
+NodeTypeFile
+  end-rune = 26
+  input-source = basic agents test
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 26
+      input-source = basic agents test
+      named = Foo
+      start-rune = 0
+      composed-agent =>
+        NodeTypeAgentReference
+          end-rune = 17
+          input-source = basic agents test
+          start-rune = 15
+          agent-reference-reftypepath =>
+            NodeTypeTypeReference
+              end-rune = 17
+              input-source = basic agents test
+              start-rune = 15
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 17
+                  input-source = basic agents test
+                  start-rune = 15
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 17
+                      identifieraccess-name = Bar
+                      input-source = basic agents test
+                      start-rune = 15
+        NodeTypeAgentReference
+          end-rune = 23
+          input-source = basic agents test
+          start-rune = 21
+          agent-reference-reftypepath =>
+            NodeTypeTypeReference
+              end-rune = 23
+              input-source = basic agents test
+              start-rune = 21
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 23
+                  input-source = basic agents test
+                  start-rune = 21
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 23
+                      identifieraccess-name = Baz
+                      input-source = basic agents test
+                      start-rune = 21

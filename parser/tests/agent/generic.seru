@@ -1,0 +1,3 @@
+agent<SomeInterface> SomeAgent<T, Q> {
+	function<void> DoSomething() {}
+}

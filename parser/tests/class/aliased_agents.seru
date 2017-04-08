@@ -1,0 +1,1 @@
+class Foo with Bar<T> as bar + Baz<int> as baz {}

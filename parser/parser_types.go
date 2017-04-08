@@ -44,7 +44,10 @@ const (
 	NodeTypeInterface // An interface
 	NodeTypeNominal   // A nominal type
 	NodeTypeStruct    // A structural type
-	NodeTypeGeneric   // A generic definition on a type
+	NodeTypeAgent     // An agent type
+
+	NodeTypeGeneric        // A generic definition on a type
+	NodeTypeAgentReference // A single agent included in a class
 
 	// Module and Type Members
 	NodeTypeFunction // A function declaration or definition
@@ -146,12 +149,13 @@ const (
 	NodeTaggedTemplateLiteralString // someexpr`foo`
 	NodeTypeTemplateString          // `foo`
 
-	NodeNumericLiteralExpression // 123
-	NodeStringLiteralExpression  // 'hello'
-	NodeBooleanLiteralExpression // true
-	NodeThisLiteralExpression    // this
-	NodeNullLiteralExpression    // null
-	NodeValLiteralExpression     // val
+	NodeNumericLiteralExpression   // 123
+	NodeStringLiteralExpression    // 'hello'
+	NodeBooleanLiteralExpression   // true
+	NodeThisLiteralExpression      // this
+	NodePrincipalLiteralExpression // principal
+	NodeNullLiteralExpression      // null
+	NodeValLiteralExpression       // val
 
 	NodeListExpression                // [1, 2, 3]
 	NodeSliceLiteralExpression        // []int{1, 2, 3}
@@ -261,14 +265,25 @@ const (
 	NodeTypeDefinitionDecorator = "decorator"
 
 	//
-	// NodeTypeClass
+	// NodeTypeClass + NodeTypeAgent
 	//
-	NodeClassPredicateBaseType = "class-basetypepath"
+	NodePredicateComposedAgent = "composed-agent"
 
 	//
 	// NodeTypeNominal
 	//
 	NodeNominalPredicateBaseType = "nominal-basetypepath"
+
+	//
+	// NodeTypeAgent
+	//
+	NodeAgentPredicatePrincipalType = "agent-principaltypepath"
+
+	//
+	// NodeTypeAgentReference
+	//
+	NodeAgentReferencePredicateReferenceType = "agent-reference-reftypepath"
+	NodeAgentReferencePredicateAlias         = "agent-alias"
 
 	//
 	// NodeTypeGeneric

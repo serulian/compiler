@@ -153,6 +153,7 @@ var keywords = map[string]bool{
 	"interface": true,
 	"type":      true,
 	"struct":    true,
+	"agent":     true,
 	"default":   true,
 
 	"function":    true,
@@ -169,8 +170,9 @@ var keywords = map[string]bool{
 	"set": true,
 	"val": true,
 
-	"this": true,
-	"null": true,
+	"this":      true,
+	"null":      true,
+	"principal": true,
 
 	"is":  true,
 	"not": true,

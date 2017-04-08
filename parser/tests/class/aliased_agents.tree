@@ -1,0 +1,85 @@
+NodeTypeFile
+  end-rune = 48
+  input-source = aliased agents test
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 48
+      input-source = aliased agents test
+      named = Foo
+      start-rune = 0
+      composed-agent =>
+        NodeTypeAgentReference
+          agent-alias = bar
+          end-rune = 27
+          input-source = aliased agents test
+          start-rune = 15
+          agent-reference-reftypepath =>
+            NodeTypeTypeReference
+              end-rune = 20
+              input-source = aliased agents test
+              start-rune = 15
+              typereference-generic =>
+                NodeTypeTypeReference
+                  end-rune = 19
+                  input-source = aliased agents test
+                  start-rune = 19
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 19
+                      input-source = aliased agents test
+                      start-rune = 19
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 19
+                          identifieraccess-name = T
+                          input-source = aliased agents test
+                          start-rune = 19
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 17
+                  input-source = aliased agents test
+                  start-rune = 15
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 17
+                      identifieraccess-name = Bar
+                      input-source = aliased agents test
+                      start-rune = 15
+        NodeTypeAgentReference
+          agent-alias = baz
+          end-rune = 45
+          input-source = aliased agents test
+          start-rune = 31
+          agent-reference-reftypepath =>
+            NodeTypeTypeReference
+              end-rune = 38
+              input-source = aliased agents test
+              start-rune = 31
+              typereference-generic =>
+                NodeTypeTypeReference
+                  end-rune = 37
+                  input-source = aliased agents test
+                  start-rune = 35
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 37
+                      input-source = aliased agents test
+                      start-rune = 35
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 37
+                          identifieraccess-name = int
+                          input-source = aliased agents test
+                          start-rune = 35
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 33
+                  input-source = aliased agents test
+                  start-rune = 31
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 33
+                      identifieraccess-name = Baz
+                      input-source = aliased agents test
+                      start-rune = 31
