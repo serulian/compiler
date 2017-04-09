@@ -345,6 +345,10 @@ func (t *testTypeGraphConstructor) DefineTypes(builder GetTypeBuilder) {
 			typeKind = AliasType
 		}
 
+		if typeInfo.kind == "agent" {
+			typeKind = AgentType
+		}
+
 		genericBuilder := builder(*t.moduleNode).
 			Name(typeInfo.name).
 			GlobalId(typeInfo.name).

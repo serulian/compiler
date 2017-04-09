@@ -1,22 +1,22 @@
 {
-    "1e50c715a29f03dd69228bf642022cb0": {
-        "Key": "1e50c715a29f03dd69228bf642022cb0",
-        "Kind": 6,
+    "54a34e2b293f0d5e81fa075f6d9f3287": {
+        "Key": "54a34e2b293f0d5e81fa075f6d9f3287",
+        "Kind": 7,
         "Children": {
-            "74b988d84313ea9301fc0f3b9253dece": {
+            "290acd5dcf2ca86df88b308ef83ce8b3": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "74b988d84313ea9301fc0f3b9253dece",
-                    "Kind": 8,
+                    "Key": "290acd5dcf2ca86df88b308ef83ce8b3",
+                    "Kind": 9,
                     "Children": {
-                        "275a61e456e5f3df08e01a03122e86cb": {
+                        "69c7dfb293b5923e5b91ad780ee76061": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "275a61e456e5f3df08e01a03122e86cb",
-                                "Kind": 11,
+                                "Key": "69c7dfb293b5923e5b91ad780ee76061",
+                                "Kind": 12,
                                 "Children": {},
                                 "Predicates": {
-                                    "tdg-node-kind": "11|NodeType|tdg",
+                                    "tdg-node-kind": "12|NodeType|tdg",
                                     "tdg-return-type": "void",
                                     "tdg-source-node": "(NodeRef)"
                                 }
@@ -31,7 +31,7 @@
                         "tdg-member-resolved-type": "function\u003cvoid\u003e",
                         "tdg-member-signature": "\n\u0010somevoidfunction\u0010\u0002\u0018\u0000 \u0001*\u000efunction\u003cvoid\u003e",
                         "tdg-member-static": "true",
-                        "tdg-node-kind": "8|NodeType|tdg",
+                        "tdg-node-kind": "9|NodeType|tdg",
                         "tdg-source-module": "tests/voidreturn/void.seru",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -40,7 +40,7 @@
         },
         "Predicates": {
             "tdg-module-name": "void.seru",
-            "tdg-node-kind": "6|NodeType|tdg",
+            "tdg-node-kind": "7|NodeType|tdg",
             "tdg-source-module": "tests/voidreturn/void.seru",
             "tdg-source-node": "(NodeRef)"
         }

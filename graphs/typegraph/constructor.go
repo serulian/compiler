@@ -104,15 +104,45 @@ func (an Annotator) DefineGenericConstraint(genericSourceNode compilergraph.Grap
 	an.modifier.Modify(genericNode).DecorateWithTagged(NodePredicateGenericSubtype, constraint)
 }
 
-// DefineParentType defines that the given type inherits from the given parent type ref. For classes, the parent
-// is structurally inherited and for nominal types, it describes conversion.
+// DefinePrincipalType defines the principal type that this agent accepts.
+func (an Annotator) DefinePrincipalType(typeSourceNode compilergraph.GraphNode, principal TypeReference) {
+	typeNode := an.tdg.getMatchingTypeGraphNode(typeSourceNode)
+	if typeNode.Kind() != NodeTypeAgent {
+		panic("Cannot set principal on non-agent type")
+	}
+
+	an.modifier.Modify(typeNode).DecorateWithTagged(NodePredicatePrincipalType, principal)
+}
+
+// DefineParentType defines that the given type inherits from the given parent type ref. For external interfaces, the
+// parent is inherited and for nominal types, it describes conversion. Inheritance should only be used by legacy code
+// and never for SRG-based types: Agency composition should be used instead.
 func (an Annotator) DefineParentType(typeSourceNode compilergraph.GraphNode, inherits TypeReference) {
 	typeNode := an.tdg.getMatchingTypeGraphNode(typeSourceNode)
-	if typeNode.Kind() == NodeTypeAlias {
-		panic("Cannot set parent on an aliased type declaration")
+	typeKind := typeNode.Kind()
+
+	if typeKind != NodeTypeExternalInterface && typeKind != NodeTypeNominalType {
+		panic("Cannot set parent on non-nominal and non-external interface type")
 	}
 
 	an.modifier.Modify(typeNode).DecorateWithTagged(NodePredicateParentType, inherits)
+}
+
+// DefineAgencyComposition defines that the type being constructed composes an agent of the given type,
+// with the given name. Agency composition is a type-safe form of composition with automatic back reference
+// to the composing type within the agent.
+func (an Annotator) DefineAgencyComposition(typeSourceNode compilergraph.GraphNode, agentType TypeReference, compositionName string) {
+	typeNode := an.tdg.getMatchingTypeGraphNode(typeSourceNode)
+	typeKind := typeNode.Kind()
+
+	if typeKind != NodeTypeClass && typeKind != NodeTypeAgent {
+		panic("Cannot agency compose on non-class and non-agent type")
+	}
+
+	agentReference := an.modifier.CreateNode(NodeTypeAgentReference)
+	agentReference.DecorateWithTagged(NodePredicateAgentType, agentType)
+	agentReference.Decorate(NodePredicateAgentCompositionName, compositionName)
+	an.modifier.Modify(typeNode).Connect(NodePredicateComposedAgent, agentReference)
 }
 
 // DefineAliasedType defines that the given type aliases the other type. Only applies to aliases.
@@ -299,6 +329,9 @@ func getTypeNodeType(kind TypeKind) NodeType {
 
 	case StructType:
 		return NodeTypeStruct
+
+	case AgentType:
+		return NodeTypeAgent
 
 	case AliasType:
 		return NodeTypeAlias
@@ -490,6 +523,7 @@ type MemberDecorator struct {
 	tdg        *TypeGraph                       // The parent type graph.
 	sourceNode compilergraph.GraphNode          // The node for the generic in the source graph.
 	member     TGMember                         // The member being decorated.
+	memberName string                           // The name of the member.
 
 	issueReporter IssueReporter // The underlying issue reporter.
 
@@ -818,7 +852,7 @@ func (mb *MemberDecorator) decorateWithSig(sigMemberType TypeReference, generics
 	}
 
 	isWritable := !mb.readonly
-	name := strings.ToLower(mb.member.Name())
+	name := strings.ToLower(mb.memberName)
 	memberKind := uint64(mb.memberKind)
 
 	signature := &proto.MemberSig{

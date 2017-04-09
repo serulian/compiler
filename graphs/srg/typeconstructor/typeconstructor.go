@@ -71,6 +71,13 @@ func (stc *srgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 		case srg.StructType:
 			typeBuilder.TypeKind(typegraph.StructType)
 			break
+
+		case srg.AgentType:
+			typeBuilder.TypeKind(typegraph.AgentType)
+			break
+
+		default:
+			panic("Unknown SRG type kind")
 		}
 
 		// Add the global alias (if any).
@@ -94,34 +101,41 @@ func (stc *srgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 
 func (stc *srgTypeConstructor) DefineDependencies(annotator typegraph.Annotator, graph *typegraph.TypeGraph) {
 	for _, srgType := range stc.srg.GetTypes() {
-		// Decorate all types with their inheritance.
-		if srgType.TypeKind() != srg.InterfaceType {
-			for _, inheritsRef := range srgType.Inheritance() {
-				// Resolve the type to which the inherits points.
-				resolvedType, err := stc.BuildTypeRef(inheritsRef, graph)
+		// Decorate all types with their inheritance or composition.
+		if srgType.TypeKind() == srg.NominalType {
+			wrappedType, _ := srgType.WrappedType()
+			resolvedType, err := stc.BuildTypeRef(wrappedType, graph)
+			if err != nil {
+				annotator.ReportError(srgType.Node(), "%s", err.Error())
+				continue
+			}
+
+			annotator.DefineParentType(srgType.Node(), resolvedType)
+		} else if srgType.TypeKind() != srg.InterfaceType {
+			// Check for agent composition.
+			for _, agent := range srgType.ComposedAgents() {
+				// Resolve the type of the agent.
+				agentType := agent.AgentType()
+				resolvedAgentType, err := stc.BuildTypeRef(agentType, graph)
 				if err != nil {
 					annotator.ReportError(srgType.Node(), "%s", err.Error())
 					continue
 				}
 
-				if srgType.TypeKind() == srg.ClassType {
-					if resolvedType.ReferredType().TypeKind() != typegraph.ClassType {
-						switch resolvedType.ReferredType().TypeKind() {
-						case typegraph.GenericType:
-							annotator.ReportError(srgType.Node(), "Type '%s' cannot derive from a generic ('%s')", srgType.Name(), resolvedType.ReferredType().Name())
-
-						case typegraph.ImplicitInterfaceType:
-							annotator.ReportError(srgType.Node(), "Type '%s' cannot derive from an interface ('%s')", srgType.Name(), resolvedType.ReferredType().Name())
-						}
-
-						continue
-					}
-
-					annotator.DefineParentType(srgType.Node(), resolvedType)
-				} else if srgType.TypeKind() == srg.NominalType {
-					annotator.DefineParentType(srgType.Node(), resolvedType)
-				}
+				annotator.DefineAgencyComposition(srgType.Node(), resolvedAgentType, agent.CompositionName())
 			}
+		}
+
+		// Decorate agents with their principal type.
+		if srgType.TypeKind() == srg.AgentType {
+			principalType, _ := srgType.PrincipalType()
+			resolvedType, err := stc.BuildTypeRef(principalType, graph)
+			if err != nil {
+				annotator.ReportError(srgType.Node(), "%s", err.Error())
+				continue
+			}
+
+			annotator.DefinePrincipalType(srgType.Node(), resolvedType)
 		}
 
 		// Decorate all type generics with their constraints.

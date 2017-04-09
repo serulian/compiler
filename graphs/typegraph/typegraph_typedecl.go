@@ -28,6 +28,7 @@ const (
 	ExternalInternalType
 	NominalType
 	StructType
+	AgentType
 	GenericType
 	AliasType
 )
@@ -100,6 +101,9 @@ func (tn TGTypeDecl) Title() string {
 
 	case NodeTypeStruct:
 		return "struct"
+
+	case NodeTypeAgent:
+		return "agent"
 
 	case NodeTypeAlias:
 		return "type alias"
@@ -239,7 +243,36 @@ func (tn TGTypeDecl) Members() []TGMember {
 	return members
 }
 
-// ParentTypes returns the types from which this type derives, structually (if any).
+// ComposesAgent returns true if the given agent type is composed by this type.
+func (tn TGTypeDecl) ComposesAgent(agentTypeRef TypeReference) bool {
+	if !agentTypeRef.IsRefToAgent() {
+		panic("agentType must refer to an agent")
+	}
+
+	for _, agentRef := range tn.ComposedAgents() {
+		if agentRef.AgentType() == agentTypeRef {
+			return true
+		}
+	}
+
+	return false
+}
+
+// ComposedAgents returns the types which this type composes (if any).
+func (tn TGTypeDecl) ComposedAgents() []TGAgentReference {
+	it := tn.GraphNode.StartQuery().
+		Out(NodePredicateComposedAgent).
+		BuildNodeIterator()
+
+	var agents = make([]TGAgentReference, 0)
+	for it.Next() {
+		agents = append(agents, TGAgentReference{it.Node(), tn.tdg})
+	}
+
+	return agents
+}
+
+// ParentTypes returns the types from which this type derives (if any).
 func (tn TGTypeDecl) ParentTypes() []TypeReference {
 	tagged := tn.GraphNode.GetAllTagged(NodePredicateParentType, tn.tdg.AnyTypeReference())
 	typerefs := make([]TypeReference, len(tagged))
@@ -248,6 +281,11 @@ func (tn TGTypeDecl) ParentTypes() []TypeReference {
 	}
 
 	return typerefs
+}
+
+// PrincipalType returns the type of the principal for this agent. Will panic for non-agents.
+func (tn TGTypeDecl) PrincipalType() TypeReference {
+	return tn.GraphNode.GetTagged(NodePredicatePrincipalType, tn.tdg.AnyTypeReference()).(TypeReference)
 }
 
 // Parent returns themodule containing this type.
@@ -307,7 +345,7 @@ func (tn TGTypeDecl) IsField() bool {
 // isConstructable returns whether this type is constructable.
 func (tn TGTypeDecl) isConstructable() bool {
 	typeKind := tn.TypeKind()
-	return typeKind == ClassType || typeKind == StructType
+	return typeKind == ClassType || typeKind == StructType || typeKind == AgentType
 }
 
 // Fields returns the fields under this type.
@@ -362,6 +400,9 @@ func (tn TGTypeDecl) TypeKind() TypeKind {
 
 	case NodeTypeStruct:
 		return StructType
+
+	case NodeTypeAgent:
+		return AgentType
 
 	case NodeTypeGeneric:
 		return GenericType

@@ -72,6 +72,13 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"tagged struct type test", "struct", "tagged", ""},
 	typegraphTest{"referenced struct type test", "struct", "referenced", ""},
 	typegraphTest{"interface members test", "members", "interface", ""},
+	typegraphTest{"basic agent test", "agent", "basic", ""},
+	typegraphTest{"multiple agent test", "agent", "multiple", ""},
+	typegraphTest{"agent tree test", "agent", "tree", ""},
+	typegraphTest{"generic agent test", "agent", "generic", ""},
+	typegraphTest{"agent shadowing agent test", "agent", "agent_shadowing", ""},
+	typegraphTest{"class shadowing agent test", "agent", "class_shadowing", ""},
+	typegraphTest{"simple generic agent test", "agent", "simplegeneric", ""},
 
 	// Failure tests.
 	typegraphTest{"struct invalid ref test", "struct", "invalidref", "SomeStruct<SomeClass> has non-structural generic type SomeClass: SomeClass is not structural nor serializable"},
@@ -92,6 +99,10 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"operator return type mismatch test", "operatorreturnmismatch", "operator", "Operator 'mod' defined on type 'SomeClass' expects a return type of 'SomeClass'; found Integer"},
 	typegraphTest{"interface instance operator with impl test", "interfaceop", "instanceimpl", "Instance operator Index under interface Foo cannot have an implementation"},
 	typegraphTest{"interface static operator without impl test", "interfaceop", "staticnoimpl", "Static operator Plus under interface Foo must have an implementation"},
+	typegraphTest{"composition non-agent test", "agent", "nonagent", "Type 'SomeClass' composes a non-agent type: AnotherClass"},
+	typegraphTest{"composition cycle test", "agent", "cycle", "A cycle was detected in the composition of types: [SomeAgent AnotherAgent]"},
+	typegraphTest{"invalid shadowing agent test", "agent", "invalidshadowing", "class SomeClass cannot compose agent SomeAgent as its compositon name 'sa' shadows type member 'sa'"},
+	typegraphTest{"invalid principal agent test", "agent", "invalidprincipal", "Type 'SomeClass' composes agent type 'SomeAgent' but does not match its expected principal type 'SomeInterface': Type 'SomeClass' does not define or export member 'DoSomething', which is required by type 'SomeInterface'"},
 }
 
 func TestGraphs(t *testing.T) {

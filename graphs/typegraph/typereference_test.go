@@ -220,7 +220,7 @@ func TestExtractTypeDiff(t *testing.T) {
 	testTG := newTestTypeGraph(g)
 	modifier := testTG.layer.NewModifier()
 
-	firstTypeNode := modifier.CreateNode(NodeTypeClass)
+	firstTypeNode := modifier.CreateNode(NodeTypeAgent)
 	secondTypeNode := modifier.CreateNode(NodeTypeClass)
 	thirdTypeNode := modifier.CreateNode(NodeTypeClass)
 	fourthTypeNode := modifier.CreateNode(NodeTypeClass)
@@ -456,7 +456,17 @@ func TestConcreteSubtypes(t *testing.T) {
 					testMember{FunctionMemberSignature, "AwaitNext", "void", []testGeneric{},
 						[]testParam{testParam{"callback", "function<void>(int)"}}},
 				},
-			}},
+			},
+
+			// agent<?> FirstAgent {
+			//   function<int> DoSomething(someparam int) {}
+			// }
+			testType{"agent", "FirstAgent", "", []testGeneric{},
+				[]testMember{
+					testMember{FunctionMemberSignature, "DoSomething", "int", []testGeneric{}, []testParam{}},
+				},
+			},
+		},
 	)
 
 	graph := newTestTypeGraph(g, testConstruction)
@@ -502,6 +512,10 @@ func TestConcreteSubtypes(t *testing.T) {
 
 		concreteSubtypeCheckTest{"SomePort subtype of port", "SomePort", "Port",
 			"",
+			[]string{"int"},
+		},
+
+		concreteSubtypeCheckTest{"FirstAgent subtype of basic generic interface test", "FirstAgent", "IBasicInterface", "",
 			[]string{"int"},
 		},
 	}
@@ -585,6 +599,15 @@ func TestSubtypes(t *testing.T) {
 			//   function<void> SomeMethod() {}
 			// }
 			testType{"class", "SomeClass", "", []testGeneric{},
+				[]testMember{
+					testMember{FunctionMemberSignature, "SomeMethod", "void", []testGeneric{}, []testParam{}},
+				},
+			},
+
+			// agent<?> SomeAgent {
+			//   function<void> SomeMethod() {}
+			// }
+			testType{"agent", "SomeAgent", "", []testGeneric{},
 				[]testMember{
 					testMember{FunctionMemberSignature, "SomeMethod", "void", []testGeneric{}, []testParam{}},
 				},
@@ -767,8 +790,16 @@ func TestSubtypes(t *testing.T) {
 		subtypeCheckTest{"SomeClass not a subtype of AnotherClass", "SomeClass", "AnotherClass",
 			"'SomeClass' cannot be used in place of non-interface 'AnotherClass'"},
 
+		// SomeClass and SomeAgent
+		subtypeCheckTest{"SomeAgent not a subtype of SomeClass", "SomeAgent", "SomeClass",
+			"'SomeAgent' cannot be used in place of non-interface 'SomeClass'"},
+
+		subtypeCheckTest{"SomeClass not a subtype of SomeAgent", "SomeClass", "SomeAgent",
+			"'SomeClass' cannot be used in place of non-interface 'SomeAgent'"},
+
 		// IWithMethod
 		subtypeCheckTest{"SomeClass subtype of IWithMethod", "SomeClass", "IWithMethod", ""},
+		subtypeCheckTest{"SomeAgent subtype of IWithMethod", "SomeAgent", "IWithMethod", ""},
 
 		subtypeCheckTest{"AnotherClass not a subtype of IWithMethod", "AnotherClass", "IWithMethod",
 			"Type 'AnotherClass' does not define or export member 'SomeMethod', which is required by type 'IWithMethod'"},
@@ -1068,6 +1099,12 @@ func TestEnsureStructural(t *testing.T) {
 				[]testMember{},
 			},
 
+			// agent<?> SomeAgent {}
+			testType{"agent", "SomeAgent", "",
+				[]testGeneric{},
+				[]testMember{},
+			},
+
 			// struct GenericStruct<T> {}
 			testType{"struct", "GenericStruct", "",
 				[]testGeneric{
@@ -1125,6 +1162,12 @@ func TestEnsureStructural(t *testing.T) {
 	tests := []ensureStructuralTest{
 		// SomeStruct
 		ensureStructuralTest{"SomeStruct is structural", "SomeStruct", ""},
+
+		// SomeClass
+		ensureStructuralTest{"SomeClass is not structural", "SomeClass", "SomeClass is not structural nor serializable"},
+
+		// SomeAgent
+		ensureStructuralTest{"SomeAgent is not structural", "SomeAgent", "SomeAgent is not structural nor serializable"},
 
 		// GenericStruct<SomeStruct>
 		ensureStructuralTest{"GenericStruct<SomeStruct> is structural", "GenericStruct<SomeStruct>", ""},
@@ -1207,6 +1250,16 @@ func TestIntersection(t *testing.T) {
 				},
 			},
 
+			// agent<?> SomeAgent {
+			// 	 function<bool> DoSomething()
+			// }
+			testType{"agent", "SomeAgent", "",
+				[]testGeneric{},
+				[]testMember{
+					testMember{FunctionMemberSignature, "DoSomething", "bool", []testGeneric{}, []testParam{}},
+				},
+			},
+
 			// interface SomeInterface {
 			// 	 function<bool> DoSomething()
 			// }
@@ -1262,6 +1315,12 @@ func TestIntersection(t *testing.T) {
 		// any & SomeClass = any
 		intersectionTest{"any", "SomeClass", "any"},
 
+		// SomeAgent & any = any
+		intersectionTest{"SomeAgent", "any", "any"},
+
+		// any & SomeAgent = any
+		intersectionTest{"any", "SomeAgent", "any"},
+
 		// SomeInterface & any = any
 		intersectionTest{"SomeInterface", "any", "any"},
 
@@ -1274,6 +1333,9 @@ func TestIntersection(t *testing.T) {
 		// SomeClass & SomeClass = SomeClass
 		intersectionTest{"SomeClass", "SomeClass", "SomeClass"},
 
+		// SomeAgent & SomeAgent = SomeAgent
+		intersectionTest{"SomeAgent", "SomeAgent", "SomeAgent"},
+
 		// SomeInterface & SomeInterface = SomeInterface
 		intersectionTest{"SomeInterface", "SomeInterface", "SomeInterface"},
 
@@ -1282,6 +1344,9 @@ func TestIntersection(t *testing.T) {
 
 		// SomeClass & SomeInterface = SomeInterface
 		intersectionTest{"SomeClass", "SomeInterface", "SomeInterface"},
+
+		// SomeAgent & SomeInterface = SomeInterface
+		intersectionTest{"SomeAgent", "SomeInterface", "SomeInterface"},
 
 		// SomeStruct & AnotherInterface = AnotherInterface
 		intersectionTest{"SomeStruct", "AnotherInterface", "AnotherInterface"},
@@ -1377,6 +1442,16 @@ func TestCasting(t *testing.T) {
 				},
 			},
 
+			// agent<?> SomeAgent {
+			// 	 function<bool> DoSomething()
+			// }
+			testType{"agent", "SomeAgent", "",
+				[]testGeneric{},
+				[]testMember{
+					testMember{FunctionMemberSignature, "DoSomething", "bool", []testGeneric{}, []testParam{}},
+				},
+			},
+
 			// interface SomeInterface {
 			// 	 function<bool> DoSomething()
 			// }
@@ -1425,24 +1500,29 @@ func TestCasting(t *testing.T) {
 		castTest{"SomeStruct", "SomeStruct", ""},
 		castTest{"SomeClass", "SomeClass", ""},
 		castTest{"SomeInterface", "SomeInterface", ""},
+		castTest{"SomeAgent", "SomeAgent", ""},
 
 		// Any -> Type
 		castTest{"any", "SomeStruct", ""},
 		castTest{"any", "SomeClass", ""},
 		castTest{"any", "SomeInterface", ""},
+		castTest{"any", "SomeAgent", ""},
 
 		castTest{"any", "SomeStruct?", ""},
 		castTest{"any", "SomeClass?", ""},
 		castTest{"any", "SomeInterface?", ""},
+		castTest{"any", "SomeAgent?", ""},
 
 		// Type -> Any
 		castTest{"SomeStruct", "any", ""},
 		castTest{"SomeClass", "any", ""},
 		castTest{"SomeInterface", "any", ""},
+		castTest{"SomeAgent", "any", ""},
 
 		castTest{"SomeStruct?", "any", ""},
 		castTest{"SomeClass?", "any", ""},
 		castTest{"SomeInterface?", "any", ""},
+		castTest{"SomeAgent?", "any", ""},
 
 		// Interface -> Interface
 		castTest{"SomeInterface", "AnotherInterface", ""},
@@ -1464,13 +1544,25 @@ func TestCasting(t *testing.T) {
 		castTest{"SomeStruct", "SomeClass", "'SomeClass' cannot be used in place of non-interface 'SomeStruct'"},
 		castTest{"SomeClass", "SomeStruct", "'SomeStruct' cannot be used in place of non-interface 'SomeClass'"},
 
+		// SomeStruct <-> SomeAgent
+		castTest{"SomeStruct", "SomeAgent", "'SomeAgent' cannot be used in place of non-interface 'SomeStruct'"},
+		castTest{"SomeAgent", "SomeStruct", "'SomeStruct' cannot be used in place of non-interface 'SomeAgent'"},
+
 		// SomeInterface <-> SomeClass
 		castTest{"SomeInterface", "SomeClass", ""},
 		castTest{"SomeClass", "SomeInterface", ""},
 
+		// SomeInterface <-> SomeAgent
+		castTest{"SomeInterface", "SomeAgent", ""},
+		castTest{"SomeAgent", "SomeInterface", ""},
+
 		// AnotherInterface <-> SomeClass
 		castTest{"AnotherInterface", "SomeClass", "Type 'SomeClass' does not define or export member 'DoSomethingElse', which is required by type 'AnotherInterface'"},
 		castTest{"SomeClass", "AnotherInterface", ""},
+
+		// AnotherInterface <-> SomeAgent
+		castTest{"AnotherInterface", "SomeAgent", "Type 'SomeAgent' does not define or export member 'DoSomethingElse', which is required by type 'AnotherInterface'"},
+		castTest{"SomeAgent", "AnotherInterface", ""},
 
 		// Nullable <-> non-nullable
 		castTest{"SomeClass", "SomeClass?", "Cannot cast non-nullable SomeClass to nullable SomeClass?"},

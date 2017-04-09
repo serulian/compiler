@@ -1,0 +1,5 @@
+interface SomeInterface {}
+
+agent<SomeInterface> SomeAgent with AnotherAgent {}
+
+agent<SomeInterface> AnotherAgent with SomeAgent {}

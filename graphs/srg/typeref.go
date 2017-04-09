@@ -57,6 +57,14 @@ func (t SRGTypeRef) Location() compilercommon.SourceAndLocation {
 	return salForNode(t.GraphNode)
 }
 
+// ResolutionName returns the last piece of the ResolutionPath.
+// Panics if this is not a RefKind of TypeRefPath.
+func (t SRGTypeRef) ResolutionName() string {
+	// TODO: optimize this?
+	pieces := strings.Split(t.ResolutionPath(), ".")
+	return pieces[len(pieces)-1]
+}
+
 // ResolutionPath returns the full resolution path for this type reference.
 // Panics if this is not a RefKind of TypeRefPath.
 func (t SRGTypeRef) ResolutionPath() string {

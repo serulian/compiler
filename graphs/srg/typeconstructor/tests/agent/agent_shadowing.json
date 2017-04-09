@@ -1,0 +1,267 @@
+{
+    "0055dfd0555016a2f71872d1ca74c6de": {
+        "Key": "0055dfd0555016a2f71872d1ca74c6de",
+        "Kind": 6,
+        "Children": {
+            "52c97fb8f2fc9d689d55e6c1740889be": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "52c97fb8f2fc9d689d55e6c1740889be",
+                    "Kind": 9,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-name": "new",
+                        "tdg-member-promising": "1",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cAnotherAgent\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0016function\u003cAnotherAgent\u003e",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-module": "tests/agent/agent_shadowing.seru"
+                    }
+                }
+            },
+            "7f3e29ce08a161adbf5fb8281cd83b95": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "7f3e29ce08a161adbf5fb8281cd83b95",
+                    "Kind": 9,
+                    "Children": {
+                        "69c7dfb293b5923e5b91ad780ee76061": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "69c7dfb293b5923e5b91ad780ee76061",
+                                "Kind": 12,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-return-type": "void",
+                                    "tdg-source-node": "(NodeRef)"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "DoSomething",
+                        "tdg-member-promising": "1",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cvoid\u003e",
+                        "tdg-member-signature": "\n\u000bdosomething\u0010\u0002\u0018\u0000 \u0001*\u000efunction\u003cvoid\u003e",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-module": "tests/agent/agent_shadowing.seru",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-node-kind": "6|NodeType|tdg",
+            "tdg-principal-type": "SomeInterface",
+            "tdg-source-module": "tests/agent/agent_shadowing.seru",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "54ef18dd",
+            "tdg-type-name": "AnotherAgent"
+        }
+    },
+    "434d40f2888aa95b03db20c05e3216b7": {
+        "Key": "434d40f2888aa95b03db20c05e3216b7",
+        "Kind": 2,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "2|NodeType|tdg",
+            "tdg-source-module": "tests/agent/agent_shadowing.seru",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "e51e6865",
+            "tdg-type-name": "SomeInterface"
+        }
+    },
+    "a6b6228afc21c048166cd2ecb71229c6": {
+        "Key": "a6b6228afc21c048166cd2ecb71229c6",
+        "Kind": 1,
+        "Children": {
+            "23a4e5760797d8257c9aad7a809ada5e": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "23a4e5760797d8257c9aad7a809ada5e",
+                    "Kind": 9,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-name": "SomeAgent",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "SomeAgent",
+                        "tdg-member-signature": "\n\tsomeagent\u0010\u0005\u0018\u0000 \u0000*\tSomeAgent",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-module": "tests/agent/agent_shadowing.seru"
+                    }
+                }
+            },
+            "2752a0900ff0cc41c859bb5bd5c0fead": {
+                "Predicate": "tdg-declaration-module",
+                "Child": {
+                    "Key": "2752a0900ff0cc41c859bb5bd5c0fead",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-module-name": "agent_shadowing.seru",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/agent/agent_shadowing.seru",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "7c51fd33726f6278de1cb600046896ff": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "7c51fd33726f6278de1cb600046896ff",
+                    "Kind": 9,
+                    "Children": {
+                        "69c7dfb293b5923e5b91ad780ee76061": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "69c7dfb293b5923e5b91ad780ee76061",
+                                "Kind": 12,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-return-type": "void",
+                                    "tdg-source-node": "(NodeRef)"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-base-source": "SomeAgent",
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "DoSomething",
+                        "tdg-member-promising": "1",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cvoid\u003e",
+                        "tdg-member-signature": "\n\u000bdosomething\u0010\u0002\u0018\u0000 \u0001*\u000efunction\u003cvoid\u003e",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-module": "tests/agent/agent_shadowing.seru",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "7e37b81b4c756957f5b187cbc68160bc": {
+                "Predicate": "tdg-composed-agent",
+                "Child": {
+                    "Key": "7e37b81b4c756957f5b187cbc68160bc",
+                    "Kind": 14,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-agent-composition-name": "SomeAgent",
+                        "tdg-agent-type": "SomeAgent",
+                        "tdg-node-kind": "14|NodeType|tdg"
+                    }
+                }
+            },
+            "95116fe66a68d6e34634d516ac35b1db": {
+                "Predicate": "tdg-composed-agent",
+                "Child": {
+                    "Key": "95116fe66a68d6e34634d516ac35b1db",
+                    "Kind": 14,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-agent-composition-name": "AnotherAgent",
+                        "tdg-agent-type": "AnotherAgent",
+                        "tdg-node-kind": "14|NodeType|tdg"
+                    }
+                }
+            },
+            "add42a211df0cb7b851483b134607d1c": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "add42a211df0cb7b851483b134607d1c",
+                    "Kind": 9,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-name": "AnotherAgent",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "AnotherAgent",
+                        "tdg-member-signature": "\n\u000canotheragent\u0010\u0005\u0018\u0000 \u0000*\u000cAnotherAgent",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-module": "tests/agent/agent_shadowing.seru"
+                    }
+                }
+            },
+            "f76f8ad28e38d6a2864165b0bfa056f6": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "f76f8ad28e38d6a2864165b0bfa056f6",
+                    "Kind": 9,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-name": "new",
+                        "tdg-member-promising": "1",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cSomeClass\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0013function\u003cSomeClass\u003e",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-module": "tests/agent/agent_shadowing.seru"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-source-module": "tests/agent/agent_shadowing.seru",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "e72db8b4",
+            "tdg-type-name": "SomeClass"
+        }
+    },
+    "baa1aa3fcddc42e9f639a903279cf20a": {
+        "Key": "baa1aa3fcddc42e9f639a903279cf20a",
+        "Kind": 6,
+        "Children": {
+            "18098400da7fc12d2513b83465760868": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "18098400da7fc12d2513b83465760868",
+                    "Kind": 9,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-name": "new",
+                        "tdg-member-promising": "1",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cSomeAgent\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0013function\u003cSomeAgent\u003e",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-module": "tests/agent/agent_shadowing.seru"
+                    }
+                }
+            },
+            "7f3e29ce08a161adbf5fb8281cd83b95": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "7f3e29ce08a161adbf5fb8281cd83b95",
+                    "Kind": 9,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "DoSomething",
+                        "tdg-member-promising": "1",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cvoid\u003e",
+                        "tdg-member-signature": "\n\u000bdosomething\u0010\u0002\u0018\u0000 \u0001*\u000efunction\u003cvoid\u003e",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-module": "tests/agent/agent_shadowing.seru",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-node-kind": "6|NodeType|tdg",
+            "tdg-principal-type": "SomeInterface",
+            "tdg-source-module": "tests/agent/agent_shadowing.seru",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "7a3f964e",
+            "tdg-type-name": "SomeAgent"
+        }
+    }
+}

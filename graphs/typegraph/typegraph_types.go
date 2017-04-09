@@ -21,6 +21,7 @@ const (
 	NodeTypeExternalInterface                 // An externally defined interface
 	NodeTypeNominalType                       // A nominal type
 	NodeTypeStruct                            // A structural type
+	NodeTypeAgent                             // An agent type
 	NodeTypeModule                            // A module
 	NodeTypeAlias                             // An alias pointing to a type
 
@@ -36,6 +37,9 @@ const (
 
 	// Generics.
 	NodeTypeGeneric // A defined generic on a type or type member.
+
+	// Agents.
+	NodeTypeAgentReference // A reference to an agent composed into a class/agent.
 
 	// Custom attribute.
 	NodeTypeAttribute
@@ -77,7 +81,8 @@ const (
 	NodePredicateModuleName = "module-name"
 
 	//
-	// NodeTypeClass/NodeTypeInterface/NodeTypeExternalInterface/NodeTypeNominal/NodeTypeStruct/NodeTypeAlias
+	// NodeTypeClass/NodeTypeInterface/NodeTypeExternalInterface/NodeTypeAgent/
+	// NodeTypeNominal/NodeTypeStruct/NodeTypeAlias
 	//
 
 	// Connects a type declaration to its parent module.
@@ -90,7 +95,8 @@ const (
 	NodePredicateTypeGlobalId = "type-globalid"
 
 	//
-	// NodeTypeClass/NodeTypeInterface/NodeTypeExternalInterface/NodeTypeNominal/NodeTypeStruct
+	// NodeTypeClass/NodeTypeInterface/NodeTypeExternalInterface/NodeTypeAgent/
+	// NodeTypeNominal/NodeTypeStruct/NodeTypeAlias
 	//
 
 	// Connects a type declaration to an operator (function, var, etc).
@@ -99,9 +105,6 @@ const (
 	// Connects a type declaration to a generic.
 	NodePredicateTypeGeneric = "declaration-generic"
 
-	// Marks a type with a type reference to a parent type.
-	NodePredicateParentType = "parent-type"
-
 	// Marks a type with its global alias.
 	NodePredicateTypeGlobalAlias = "type-alias"
 
@@ -109,11 +112,43 @@ const (
 	NodePredicateTypeAttribute = "type-attribute"
 
 	//
+	// NodeTypeClass/NodeTypeNominal
+	//
+
+	// Marks a type with a type reference to a parent type.
+	NodePredicateParentType = "parent-type"
+
+	//
+	// NodeTypeClass/NodeTypeAgent
+	//
+
+	// Marks a class or agent with a reference to an agent it composes.
+	NodePredicateComposedAgent = "composed-agent"
+
+	//
+	// NodeTypeAgent
+	//
+
+	// Marks an agent with a type reference to its principal type.
+	NodePredicatePrincipalType = "principal-type"
+
+	//
 	// NodeTypeAlias
 	//
 
 	// Connects a type alias to the type it is aliasing.
 	NodePredicateAliasedType = "aliased-type"
+
+	//
+	// NodeTypeAgentReference
+	//
+
+	// Marks an agent reference with the type of the agent being composed.
+	NodePredicateAgentType = "agent-type"
+
+	// Decorates an agent reference with the name that will be used when composed into
+	// the type.
+	NodePredicateAgentCompositionName = "agent-composition-name"
 
 	//
 	// NodeTypeGeneric

@@ -1,0 +1,9 @@
+interface SomeInterface {}
+
+agent<SomeInterface> SomeAgent<T> {
+	function<T> DoSomething() {
+		return principal
+	}
+}
+
+class SomeClass<Q> with SomeAgent<Q> {}

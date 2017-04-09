@@ -3,11 +3,11 @@
         "Key": "7a1bcd0ba6de630355506f09e248c621",
         "Kind": 1,
         "Children": {
-            "77df29cabc1b7b8cf5368861fccda081": {
+            "b2c7188d26d71e74a7841fd4c681e861": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "77df29cabc1b7b8cf5368861fccda081",
-                    "Kind": 8,
+                    "Key": "b2c7188d26d71e74a7841fd4c681e861",
+                    "Kind": 9,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
@@ -16,7 +16,7 @@
                         "tdg-member-resolved-type": "function\u003cAnotherClass\u003e",
                         "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0016function\u003cAnotherClass\u003e",
                         "tdg-member-static": "true",
-                        "tdg-node-kind": "8|NodeType|tdg",
+                        "tdg-node-kind": "9|NodeType|tdg",
                         "tdg-source-module": "tests/generic/generic.seru"
                     }
                 }
@@ -34,11 +34,57 @@
         "Key": "9a574f15193a94cdadee21f0275d36f6",
         "Kind": 1,
         "Children": {
-            "01fb1e2611687949727a96f709e368cf": {
+            "1d67578882b8e16125f294d13b65d337": {
+                "Predicate": "tdg-declaration-generic",
+                "Child": {
+                    "Key": "1d67578882b8e16125f294d13b65d337",
+                    "Kind": 13,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-generic-index": "1",
+                        "tdg-generic-kind": "0",
+                        "tdg-generic-name": "Q",
+                        "tdg-generic-subtype": "AnotherClass",
+                        "tdg-node-kind": "13|NodeType|tdg",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "af1c6e4b4090cd4dc4d8015c1e4ae8c9": {
+                "Predicate": "tdg-declaration-module",
+                "Child": {
+                    "Key": "af1c6e4b4090cd4dc4d8015c1e4ae8c9",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-module-name": "generic.seru",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/generic/generic.seru",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "b18bbe3c9a23a967467e04815d331b84": {
+                "Predicate": "tdg-declaration-generic",
+                "Child": {
+                    "Key": "b18bbe3c9a23a967467e04815d331b84",
+                    "Kind": 13,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-generic-index": "0",
+                        "tdg-generic-kind": "0",
+                        "tdg-generic-name": "T",
+                        "tdg-generic-subtype": "any",
+                        "tdg-node-kind": "13|NodeType|tdg",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "cccdf8b1c86dd20df79afacfc83c6c3b": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "01fb1e2611687949727a96f709e368cf",
-                    "Kind": 8,
+                    "Key": "cccdf8b1c86dd20df79afacfc83c6c3b",
+                    "Kind": 9,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
@@ -47,54 +93,8 @@
                         "tdg-member-resolved-type": "function\u003cSomeClass\u003cT, Q\u003e\u003e",
                         "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0019function\u003cSomeClass\u003cT, Q\u003e\u003e",
                         "tdg-member-static": "true",
-                        "tdg-node-kind": "8|NodeType|tdg",
+                        "tdg-node-kind": "9|NodeType|tdg",
                         "tdg-source-module": "tests/generic/generic.seru"
-                    }
-                }
-            },
-            "1729644abdaf484b2f663efa855a8ed7": {
-                "Predicate": "tdg-declaration-module",
-                "Child": {
-                    "Key": "1729644abdaf484b2f663efa855a8ed7",
-                    "Kind": 6,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-module-name": "generic.seru",
-                        "tdg-node-kind": "6|NodeType|tdg",
-                        "tdg-source-module": "tests/generic/generic.seru",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
-            "96cd1ad9519b16344a3392e96a54f3ea": {
-                "Predicate": "tdg-declaration-generic",
-                "Child": {
-                    "Key": "96cd1ad9519b16344a3392e96a54f3ea",
-                    "Kind": 12,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-generic-index": "0",
-                        "tdg-generic-kind": "0",
-                        "tdg-generic-name": "T",
-                        "tdg-generic-subtype": "any",
-                        "tdg-node-kind": "12|NodeType|tdg",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
-            "f2b6975dcc906357398c7662ab6e0c83": {
-                "Predicate": "tdg-declaration-generic",
-                "Child": {
-                    "Key": "f2b6975dcc906357398c7662ab6e0c83",
-                    "Kind": 12,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-generic-index": "1",
-                        "tdg-generic-kind": "0",
-                        "tdg-generic-name": "Q",
-                        "tdg-generic-subtype": "AnotherClass",
-                        "tdg-node-kind": "12|NodeType|tdg",
-                        "tdg-source-node": "(NodeRef)"
                     }
                 }
             }
