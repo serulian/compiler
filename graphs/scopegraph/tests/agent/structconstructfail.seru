@@ -1,0 +1,10 @@
+interface SomeInterface {}
+
+agent<SomeInterface> SomeAgent {}
+
+class SomeClass {
+	constructor Declare() {
+		SomeAgent{}
+		return SomeClass.new()
+	}
+}

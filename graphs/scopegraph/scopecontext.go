@@ -54,6 +54,22 @@ func (sc scopeContext) getParentContainer(g *srg.SRG) (srg.SRGImplementable, boo
 	return g.AsImplementable(sc.rootNode)
 }
 
+// getParentType returns the parent type (and type member) under which we are scoping, if any.
+func (sc scopeContext) getParentTypeAndMember(srg *srg.SRG, tdg *typegraph.TypeGraph) (typegraph.TGTypeDecl, typegraph.TGMember, bool, bool) {
+	srgImpl, found := sc.getParentContainer(srg)
+	if !found {
+		return typegraph.TGTypeDecl{}, typegraph.TGMember{}, false, false
+	}
+
+	tgMember, tgFound := tdg.GetMemberForSourceNode(srgImpl.ContainingMember().GraphNode)
+	if !tgFound {
+		return typegraph.TGTypeDecl{}, tgMember, false, false
+	}
+
+	tgType, typeFound := tgMember.ParentType()
+	return tgType, tgMember, typeFound, true
+}
+
 // getTypeOverride returns the type override for the given expression node, if any.
 func (sc scopeContext) getTypeOverride(exprNode compilergraph.GraphNode) (typegraph.TypeReference, bool) {
 	if sc.overrideTypes == nil {

@@ -3,19 +3,36 @@
         "Key": "44c1a6c128d345aeaa3d4c41d1d710f8",
         "Kind": 1,
         "Children": {
-            "0329c852ba376fdbda0a9cb06c10779b": {
+            "1407343a1a8765698bf7d0ee2986b474": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "0329c852ba376fdbda0a9cb06c10779b",
+                    "Key": "1407343a1a8765698bf7d0ee2986b474",
                     "Kind": 9,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
                         "tdg-member-promising": "1",
                         "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cSomeClass\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0013function\u003cSomeClass\u003e",
+                        "tdg-member-resolved-type": "function\u003cSomeClass\u003e(SomeAgent)",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u001efunction\u003cSomeClass\u003e(SomeAgent)",
                         "tdg-member-static": "true",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-module": "tests/agent/class_shadowing.seru"
+                    }
+                }
+            },
+            "7b749a601c0838e7ea0c12015c273986": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "7b749a601c0838e7ea0c12015c273986",
+                    "Kind": 9,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-field": "true",
+                        "tdg-member-name": "SomeAgent",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "SomeAgent",
+                        "tdg-member-signature": "\n\tsomeagent\u0010\u0005\u0018\u0000 \u0000*\tSomeAgent",
                         "tdg-node-kind": "9|NodeType|tdg",
                         "tdg-source-module": "tests/agent/class_shadowing.seru"
                     }
@@ -79,22 +96,6 @@
                         "tdg-node-kind": "9|NodeType|tdg",
                         "tdg-source-module": "tests/agent/class_shadowing.seru",
                         "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
-            "ba084d5aaaacbc31f6cd73d5dc235709": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "ba084d5aaaacbc31f6cd73d5dc235709",
-                    "Kind": 9,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-name": "SomeAgent",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "SomeAgent",
-                        "tdg-member-signature": "\n\tsomeagent\u0010\u0005\u0018\u0000 \u0000*\tSomeAgent",
-                        "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-module": "tests/agent/class_shadowing.seru"
                     }
                 }
             }

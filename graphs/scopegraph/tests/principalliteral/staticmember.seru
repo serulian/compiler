@@ -1,0 +1,8 @@
+interface SomeInterface {}
+
+agent<SomeInterface> SomeAgent {
+	constructor Build() {
+		principal
+		return SomeAgent.new()
+	}
+}

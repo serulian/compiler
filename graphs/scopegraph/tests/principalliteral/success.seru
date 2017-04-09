@@ -1,0 +1,7 @@
+interface SomeInterface {}
+
+agent<SomeInterface> SomeAgent {
+	function<void> DoSomething() {
+		/* principal */ principal
+	}
+}

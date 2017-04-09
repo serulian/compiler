@@ -1,0 +1,15 @@
+interface SomeInterface {}
+
+agent<SomeInterface> SomeAgent {
+	var<int> SomeField
+}
+
+class SomeClass with SomeAgent {
+	constructor Declare() {
+		return SomeClass{
+			SomeAgent: SomeAgent{
+				SomeField: 42,
+			},
+		}
+	}
+}

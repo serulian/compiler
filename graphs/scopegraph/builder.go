@@ -291,6 +291,9 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 	case parser.NodeThisLiteralExpression:
 		return sb.scopeThisLiteralExpression
 
+	case parser.NodePrincipalLiteralExpression:
+		return sb.scopePrincipalLiteralExpression
+
 	case parser.NodeTypeLambdaExpression:
 		return sb.scopeLambdaExpression
 

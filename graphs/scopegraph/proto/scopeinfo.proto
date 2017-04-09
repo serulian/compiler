@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+syntax = "proto2";
+
 package proto;
 
 enum ScopeKind {
@@ -43,6 +45,9 @@ enum ScopeLabel {
 	SML_PROMISING_NO = 18;
 	SML_PROMISING_MAYBE = 19;
 	SML_PROMISING_YES = 20;
+
+	// Marks an expression as referencing the constructor of an agent.
+	AGENT_CONSTRUCTOR_REF = 21;
 }
 
 message ScopeInfo {

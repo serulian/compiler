@@ -98,6 +98,7 @@ func (p typeCompositionProcessor) addCompositionField(agent TGAgentReference, me
 		MemberKind(FieldMemberSignature).
 		MemberType(agentTypeRef).
 		ReadOnly(true).
+		Field(true).
 		Decorate()
 
 	members[agent.CompositionName()] = memberStatus{agent.CompositionName(), "type member", true}

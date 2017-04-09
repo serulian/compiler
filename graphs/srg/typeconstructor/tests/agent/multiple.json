@@ -47,22 +47,6 @@
         "Key": "a5fb8d98652ba098d5bea6a70f287e46",
         "Kind": 1,
         "Children": {
-            "146c95f76cd700676f48b92fe322f863": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "146c95f76cd700676f48b92fe322f863",
-                    "Kind": 9,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-name": "SomeAgent",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "SomeAgent",
-                        "tdg-member-signature": "\n\tsomeagent\u0010\u0005\u0018\u0000 \u0000*\tSomeAgent",
-                        "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-module": "tests/agent/multiple.seru"
-                    }
-                }
-            },
             "4e2d1bb42744c851d3ac8c6510845780": {
                 "Predicate": "tdg-declaration-module",
                 "Child": {
@@ -77,19 +61,18 @@
                     }
                 }
             },
-            "722d97741c2a1c5dffb16f7938bb403f": {
+            "5652cf46d6590ddeee39bd850559d29c": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "722d97741c2a1c5dffb16f7938bb403f",
+                    "Key": "5652cf46d6590ddeee39bd850559d29c",
                     "Kind": 9,
                     "Children": {},
                     "Predicates": {
-                        "tdg-member-name": "new",
-                        "tdg-member-promising": "1",
+                        "tdg-member-field": "true",
+                        "tdg-member-name": "SomeAgent",
                         "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cSomeClass\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0013function\u003cSomeClass\u003e",
-                        "tdg-member-static": "true",
+                        "tdg-member-resolved-type": "SomeAgent",
+                        "tdg-member-signature": "\n\tsomeagent\u0010\u0005\u0018\u0000 \u0000*\tSomeAgent",
                         "tdg-node-kind": "9|NodeType|tdg",
                         "tdg-source-module": "tests/agent/multiple.seru"
                     }
@@ -121,17 +104,36 @@
                     }
                 }
             },
-            "d492aaabd9551fc53971bec9917dc421": {
+            "b6b5a1cf8a64afff33972504cec7e5d1": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "d492aaabd9551fc53971bec9917dc421",
+                    "Key": "b6b5a1cf8a64afff33972504cec7e5d1",
                     "Kind": 9,
                     "Children": {},
                     "Predicates": {
+                        "tdg-member-field": "true",
                         "tdg-member-name": "AnotherAgent",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "AnotherAgent",
                         "tdg-member-signature": "\n\u000canotheragent\u0010\u0005\u0018\u0000 \u0000*\u000cAnotherAgent",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-module": "tests/agent/multiple.seru"
+                    }
+                }
+            },
+            "e8771491ae5733fdbac5f159b6930c9c": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "e8771491ae5733fdbac5f159b6930c9c",
+                    "Kind": 9,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-name": "new",
+                        "tdg-member-promising": "1",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cSomeClass\u003e(SomeAgent, AnotherAgent)",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*,function\u003cSomeClass\u003e(SomeAgent, AnotherAgent)",
+                        "tdg-member-static": "true",
                         "tdg-node-kind": "9|NodeType|tdg",
                         "tdg-source-module": "tests/agent/multiple.seru"
                     }

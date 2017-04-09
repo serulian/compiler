@@ -17,40 +17,6 @@
                     }
                 }
             },
-            "2c1a4ea1c642e8b2ba48115b932c9e1e": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "2c1a4ea1c642e8b2ba48115b932c9e1e",
-                    "Kind": 9,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-name": "AnotherAgent",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "AnotherAgent",
-                        "tdg-member-signature": "\n\u000canotheragent\u0010\u0005\u0018\u0000 \u0000*\u000cAnotherAgent",
-                        "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-module": "tests/agent/tree.seru"
-                    }
-                }
-            },
-            "712eb8b4ff9206450a7705e78e1f8d2b": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "712eb8b4ff9206450a7705e78e1f8d2b",
-                    "Kind": 9,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-name": "new",
-                        "tdg-member-promising": "1",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cSomeClass\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0013function\u003cSomeClass\u003e",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-module": "tests/agent/tree.seru"
-                    }
-                }
-            },
             "95116fe66a68d6e34634d516ac35b1db": {
                 "Predicate": "tdg-composed-agent",
                 "Child": {
@@ -61,6 +27,41 @@
                         "tdg-agent-composition-name": "AnotherAgent",
                         "tdg-agent-type": "AnotherAgent",
                         "tdg-node-kind": "14|NodeType|tdg"
+                    }
+                }
+            },
+            "b517f5a3b1711681bc0aafdcc6529a83": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "b517f5a3b1711681bc0aafdcc6529a83",
+                    "Kind": 9,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-field": "true",
+                        "tdg-member-name": "AnotherAgent",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "AnotherAgent",
+                        "tdg-member-signature": "\n\u000canotheragent\u0010\u0005\u0018\u0000 \u0000*\u000cAnotherAgent",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-module": "tests/agent/tree.seru"
+                    }
+                }
+            },
+            "eb1f85038a5e2c3c3e93655a99ce5dcc": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "eb1f85038a5e2c3c3e93655a99ce5dcc",
+                    "Kind": 9,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-name": "new",
+                        "tdg-member-promising": "1",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cSomeClass\u003e(AnotherAgent)",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*!function\u003cSomeClass\u003e(AnotherAgent)",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-module": "tests/agent/tree.seru"
                     }
                 }
             }
@@ -121,35 +122,19 @@
         "Key": "ff08b2fff064bd3aa1f533506991a321",
         "Kind": 6,
         "Children": {
-            "20c803fda907a74a52c94d0d237765fc": {
+            "704c807541a33c8a425f3f376fa0071f": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "20c803fda907a74a52c94d0d237765fc",
+                    "Key": "704c807541a33c8a425f3f376fa0071f",
                     "Kind": 9,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
                         "tdg-member-promising": "1",
                         "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cAnotherAgent\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0016function\u003cAnotherAgent\u003e",
+                        "tdg-member-resolved-type": "function\u003cAnotherAgent\u003e(SomeAgent)",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*!function\u003cAnotherAgent\u003e(SomeAgent)",
                         "tdg-member-static": "true",
-                        "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-module": "tests/agent/tree.seru"
-                    }
-                }
-            },
-            "6f3c654b8460c8b3e562339745f4493c": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "6f3c654b8460c8b3e562339745f4493c",
-                    "Kind": 9,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-name": "SomeAgent",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "SomeAgent",
-                        "tdg-member-signature": "\n\tsomeagent\u0010\u0005\u0018\u0000 \u0000*\tSomeAgent",
                         "tdg-node-kind": "9|NodeType|tdg",
                         "tdg-source-module": "tests/agent/tree.seru"
                     }
@@ -165,6 +150,23 @@
                         "tdg-agent-composition-name": "SomeAgent",
                         "tdg-agent-type": "SomeAgent",
                         "tdg-node-kind": "14|NodeType|tdg"
+                    }
+                }
+            },
+            "a7a6c26d5ff193b3bf1d88dd522a6a9a": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "a7a6c26d5ff193b3bf1d88dd522a6a9a",
+                    "Kind": 9,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-field": "true",
+                        "tdg-member-name": "SomeAgent",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "SomeAgent",
+                        "tdg-member-signature": "\n\tsomeagent\u0010\u0005\u0018\u0000 \u0000*\tSomeAgent",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-module": "tests/agent/tree.seru"
                     }
                 }
             }

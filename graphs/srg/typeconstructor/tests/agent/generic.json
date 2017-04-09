@@ -3,24 +3,6 @@
         "Key": "6a190636d61eec74f59d8495684c9a3c",
         "Kind": 1,
         "Children": {
-            "1774231e1579f67e4190185ae52aafef": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "1774231e1579f67e4190185ae52aafef",
-                    "Kind": 9,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-name": "new",
-                        "tdg-member-promising": "1",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cSomeClass\u003cQ\u003e\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0016function\u003cSomeClass\u003cQ\u003e\u003e",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-module": "tests/agent/generic.seru"
-                    }
-                }
-            },
             "1e542d1b516d2467917311d395865917": {
                 "Predicate": "tdg-declaration-module",
                 "Child": {
@@ -32,6 +14,41 @@
                         "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/agent/generic.seru",
                         "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "263ff418b8d3853de9c3be3ce8ed18a1": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "263ff418b8d3853de9c3be3ce8ed18a1",
+                    "Kind": 9,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-field": "true",
+                        "tdg-member-name": "SomeAgent",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "SomeAgent\u003cQ\u003e",
+                        "tdg-member-signature": "\n\tsomeagent\u0010\u0005\u0018\u0000 \u0000*\u000cSomeAgent\u003cQ\u003e",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-module": "tests/agent/generic.seru"
+                    }
+                }
+            },
+            "430f7f139a9fe280c40b65949bce378a": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "430f7f139a9fe280c40b65949bce378a",
+                    "Kind": 9,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-name": "new",
+                        "tdg-member-promising": "1",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cSomeClass\u003cQ\u003e\u003e(SomeAgent\u003cQ\u003e)",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*$function\u003cSomeClass\u003cQ\u003e\u003e(SomeAgent\u003cQ\u003e)",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-module": "tests/agent/generic.seru"
                     }
                 }
             },
@@ -61,22 +78,6 @@
                         "tdg-agent-composition-name": "SomeAgent",
                         "tdg-agent-type": "SomeAgent\u003cQ\u003e",
                         "tdg-node-kind": "14|NodeType|tdg"
-                    }
-                }
-            },
-            "9189fa2659a09c5aff1304dc72df1481": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "9189fa2659a09c5aff1304dc72df1481",
-                    "Kind": 9,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-name": "SomeAgent",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "SomeAgent\u003cQ\u003e",
-                        "tdg-member-signature": "\n\tsomeagent\u0010\u0005\u0018\u0000 \u0000*\u000cSomeAgent\u003cQ\u003e",
-                        "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-module": "tests/agent/generic.seru"
                     }
                 }
             },

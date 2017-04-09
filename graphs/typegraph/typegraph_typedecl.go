@@ -381,6 +381,11 @@ func (tn TGTypeDecl) HasAttribute(attribute TypeAttribute) bool {
 	return found
 }
 
+// IsClass returns true if this type is a class.
+func (tn TGTypeDecl) IsClass() bool {
+	return tn.TypeKind() == ClassType
+}
+
 // TypeKind returns the kind of the type node.
 func (tn TGTypeDecl) TypeKind() TypeKind {
 	nodeType := tn.GraphNode.Kind().(NodeType)
