@@ -3,11 +3,11 @@
         "Key": "0afacb500df23d576019168e5d740e4b",
         "Kind": 3,
         "Children": {
-            "b5bcf73c911d4f3f491f4116335264c6": {
+            "933430f912a5b3f2f4e1906683423b46": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "b5bcf73c911d4f3f491f4116335264c6",
-                    "Kind": 8,
+                    "Key": "933430f912a5b3f2f4e1906683423b46",
+                    "Kind": 9,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-exported": "true",
@@ -15,7 +15,7 @@
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cvoid\u003e(Foo, Foo, Foo?, Foo?)",
                         "tdg-member-signature": "\n\u000csomefunction\u0010\u0007\u0018\u0000 \u0001*$function\u003cvoid\u003e(Foo, Foo, Foo?, Foo?)",
-                        "tdg-node-kind": "8|NodeType|tdg",
+                        "tdg-node-kind": "9|NodeType|tdg",
                         "tdg-source-module": "(root).webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -42,24 +42,24 @@
             "tdg-type-name": "Foo"
         }
     },
-    "8207b674d4e6906b113b86212812e9d9": {
-        "Key": "8207b674d4e6906b113b86212812e9d9",
-        "Kind": 7,
+    "6fab3f45bf2bd4a1a159c5508ec0e04c": {
+        "Key": "6fab3f45bf2bd4a1a159c5508ec0e04c",
+        "Kind": 8,
         "Children": {},
         "Predicates": {
-            "tdg-node-kind": "7|NodeType|tdg",
+            "tdg-node-kind": "8|NodeType|tdg",
             "tdg-source-module": "tests/optionalparam.webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "6757ffcf",
             "tdg-type-name": "Foo"
         }
     },
-    "d1302d3b6b9c9ff6e260d008a94982d9": {
-        "Key": "d1302d3b6b9c9ff6e260d008a94982d9",
-        "Kind": 7,
+    "f9f9b3569fba07b35900da3c86c7eacd": {
+        "Key": "f9f9b3569fba07b35900da3c86c7eacd",
+        "Kind": 8,
         "Children": {},
         "Predicates": {
-            "tdg-node-kind": "7|NodeType|tdg",
+            "tdg-node-kind": "8|NodeType|tdg",
             "tdg-source-module": "tests/optionalparam.webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "8bf7577c",

@@ -1,25 +1,13 @@
 {
-    "3ccdce59db2578507869f4fd0a0ea41e": {
-        "Key": "3ccdce59db2578507869f4fd0a0ea41e",
-        "Kind": 7,
-        "Children": {},
-        "Predicates": {
-            "tdg-node-kind": "7|NodeType|tdg",
-            "tdg-source-module": "tests/collapsed.webidl",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "fd519595",
-            "tdg-type-name": "ISomeCollapsedType"
-        }
-    },
     "d2e938e36719df6b352759a3503f2543": {
         "Key": "d2e938e36719df6b352759a3503f2543",
         "Kind": 3,
         "Children": {
-            "0418a0d6f05159f2f6bf18473fc53a34": {
+            "7dfd587f5c4084a8992c8a84fb411675": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "0418a0d6f05159f2f6bf18473fc53a34",
-                    "Kind": 8,
+                    "Key": "7dfd587f5c4084a8992c8a84fb411675",
+                    "Kind": 9,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-exported": "true",
@@ -27,17 +15,17 @@
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "any",
                         "tdg-member-signature": "\n\u0005first\u0010\t\u0018\u0000 \u0001*\u0003any",
-                        "tdg-node-kind": "8|NodeType|tdg",
+                        "tdg-node-kind": "9|NodeType|tdg",
                         "tdg-source-module": "(root).webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
                 }
             },
-            "6e3e04a52cd351cb6fff6e2ff85c353a": {
+            "bb200398c398b81e75bfd27f267b8d6d": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "6e3e04a52cd351cb6fff6e2ff85c353a",
-                    "Kind": 8,
+                    "Key": "bb200398c398b81e75bfd27f267b8d6d",
+                    "Kind": 9,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-exported": "true",
@@ -45,17 +33,17 @@
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "any",
                         "tdg-member-signature": "\n\u0006second\u0010\t\u0018\u0000 \u0001*\u0003any",
-                        "tdg-node-kind": "8|NodeType|tdg",
+                        "tdg-node-kind": "9|NodeType|tdg",
                         "tdg-source-module": "(root).webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
                 }
             },
-            "e4297ee0c763fd466ad8fd8b17013995": {
+            "d4d0c5c3ed521b6a58e3a7255188daa4": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "e4297ee0c763fd466ad8fd8b17013995",
-                    "Kind": 8,
+                    "Key": "d4d0c5c3ed521b6a58e3a7255188daa4",
+                    "Kind": 9,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-exported": "true",
@@ -63,7 +51,7 @@
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "any",
                         "tdg-member-signature": "\n\u0005third\u0010\t\u0018\u0000 \u0001*\u0003any",
-                        "tdg-node-kind": "8|NodeType|tdg",
+                        "tdg-node-kind": "9|NodeType|tdg",
                         "tdg-source-module": "(root).webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -75,6 +63,18 @@
             "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "ISomeCollapsedType",
+            "tdg-type-name": "ISomeCollapsedType"
+        }
+    },
+    "fafb6f46db4314511c8c0cd8d778a9c1": {
+        "Key": "fafb6f46db4314511c8c0cd8d778a9c1",
+        "Kind": 8,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "8|NodeType|tdg",
+            "tdg-source-module": "tests/collapsed.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "fd519595",
             "tdg-type-name": "ISomeCollapsedType"
         }
     }
