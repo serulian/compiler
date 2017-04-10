@@ -1169,6 +1169,32 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	/////////// principal literal expression ///////////
+
+	scopegraphTest{"principal literal expression success test", "principalliteral", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"principal", expectedScope{true, proto.ScopeKind_VALUE, "SomeInterface", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"principal under class test", "principalliteral", "underclass",
+		[]expectedScopeEntry{},
+		"The 'principal' keyword cannot be used under non-agent class SomeClass", ""},
+
+	scopegraphTest{"principal under module member test", "principalliteral", "modulemember",
+		[]expectedScopeEntry{},
+		"The 'principal' keyword cannot be used under module member DoSomething", ""},
+
+	scopegraphTest{"principal under static member test", "principalliteral", "staticmember",
+		[]expectedScopeEntry{},
+		"The 'principal' keyword cannot be used under static type member Build", ""},
+
+	scopegraphTest{"principal under property test", "principalliteral", "property",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"scprincipal", expectedScope{true, proto.ScopeKind_VALUE, "SomeInterface", "void"}},
+		},
+		"", ""},
+
 	/////////// generic specifier expression ///////////
 
 	scopegraphTest{"generic specifier expression success test", "genericspecifier", "success",
@@ -1482,6 +1508,28 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"module init cycle test", "moduleinit", "cycle",
 		[]expectedScopeEntry{},
 		"Initialization cycle found on module member foo: module member foo -> module member DoSomething -> module member DoSomethingElse -> module member foo", ""},
+
+	/////////// agent tests /////////////////
+
+	scopegraphTest{"agent constructor success test", "agent", "constructor",
+		[]expectedScopeEntry{},
+		"", ""},
+
+	scopegraphTest{"agent constructor required field test", "agent", "requiredfield",
+		[]expectedScopeEntry{},
+		"", ""},
+
+	scopegraphTest{"agent constructor fail test", "agent", "constructorfail",
+		[]expectedScopeEntry{},
+		"Cannot reference constructor 'new' of agent 'SomeAgent' under non-composing type 'SomeClass'", ""},
+
+	scopegraphTest{"agent struct constructor fail test", "agent", "structconstructfail",
+		[]expectedScopeEntry{},
+		"Cannot structurally construct agent 'SomeAgent' under non-composing type 'SomeClass'", ""},
+
+	scopegraphTest{"agent constructor generic fail test", "agent", "genericfail",
+		[]expectedScopeEntry{},
+		"Cannot reference constructor 'new' of agent 'SomeAgent<Boolean>' under non-composing type 'SomeClass'", ""},
 
 	/////////// known issue tests /////////////////
 

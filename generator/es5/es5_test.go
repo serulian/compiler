@@ -223,6 +223,9 @@ var generationTests = []generationTest{
 	generationTest{"literal nominal type", "nominal", "literal", integrationTestSuccessExpected, ""},
 	generationTest{"shortcut nominal type", "nominal", "shortcut", integrationTestSuccessExpected, ""},
 
+	generationTest{"basic agent test", "agent", "basic", integrationTestSuccessExpected, ""},
+	generationTest{"agent field test", "agent", "field", integrationTestSuccessExpected, ""},
+
 	generationTest{"basic json test", "serialization", "json", integrationTestSuccessExpected, ""},
 	generationTest{"nominal json test", "serialization", "nominaljson", integrationTestSuccessExpected, ""},
 	generationTest{"custom json test", "serialization", "custom", integrationTestSuccessExpected, ""},

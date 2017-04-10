@@ -18,9 +18,9 @@ import (
 )
 
 // Note: The list below does not contain NodeTypeAlias, which is a special handled case in LookupType.
-var TYPE_NODE_TYPES = []NodeType{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType, NodeTypeStruct}
+var TYPE_NODE_TYPES = []NodeType{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType, NodeTypeStruct, NodeTypeAgent}
 
-var TYPE_NODE_TYPES_TAGGED = []compilergraph.TaggedValue{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType, NodeTypeStruct, NodeTypeAlias}
+var TYPE_NODE_TYPES_TAGGED = []compilergraph.TaggedValue{NodeTypeClass, NodeTypeInterface, NodeTypeExternalInterface, NodeTypeNominalType, NodeTypeStruct, NodeTypeAgent, NodeTypeAlias}
 
 // TypeGraph represents the TypeGraph layer and all its associated helper methods.
 type TypeGraph struct {
@@ -135,11 +135,12 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 		modifier := typeGraph.layer.NewModifier()
 		constructor.DecorateMembers(func(memberSourceNode compilergraph.GraphNode) *MemberDecorator {
 			typegraphNode := typeGraph.getMatchingTypeGraphNode(memberSourceNode)
-
+			member := TGMember{typegraphNode, typeGraph}
 			return &MemberDecorator{
 				modifier:           modifier,
 				sourceNode:         memberSourceNode,
-				member:             TGMember{typegraphNode, typeGraph},
+				member:             member,
+				memberName:         member.Name(),
 				tdg:                typeGraph,
 				genericConstraints: map[compilergraph.GraphNode]TypeReference{},
 				tags:               map[string]string{},
@@ -153,6 +154,9 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 
 	// Perform global validation, including checking fields in structs.
 	typeGraph.globallyValidate()
+
+	// Handle composition checking and member cloning.
+	typeGraph.defineFullComposition()
 
 	// Define implicit members.
 	typeGraph.defineAllImplicitMembers()
@@ -355,6 +359,9 @@ func (g *TypeGraph) GetTypeOrMember(nodeId compilergraph.GraphNodeId) TGTypeOrMe
 		fallthrough
 
 	case NodeTypeStruct:
+		fallthrough
+
+	case NodeTypeAgent:
 		fallthrough
 
 	case NodeTypeGeneric:

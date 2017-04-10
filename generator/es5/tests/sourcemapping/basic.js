@@ -783,6 +783,7 @@ this.Serulian = function ($global) {
     };
     module.$struct = $newtypebuilder('struct');
     module.$class = $newtypebuilder('class');
+    module.$agent = $newtypebuilder('agent');
     module.$interface = $newtypebuilder('interface');
     module.$type = $newtypebuilder('type');
     creator.call(module);

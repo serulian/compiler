@@ -1,0 +1,13 @@
+interface SomeInterface {}
+
+agent<SomeInterface> SomeAgent {
+	property<bool> SomeProp {
+		get {
+			/* scprincipal */principal
+			return true
+		}
+		set {
+			
+		}
+	}
+}

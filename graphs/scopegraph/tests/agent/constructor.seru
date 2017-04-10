@@ -1,0 +1,21 @@
+interface SomeInterface {}
+
+agent<SomeInterface> SomeAgent {}
+
+class SomeClass with SomeAgent {
+	constructor Declare() {
+		return SomeClass.new(SomeAgent{})
+	}
+}
+
+agent<SomeInterface> SomeGenericAgent<T> {
+	constructor Declare() {
+		return SomeGenericAgent<T>.new()
+	}
+}
+
+class SomeClass2 with SomeGenericAgent<bool> {
+	constructor Declare() {
+		return SomeClass2.new(SomeGenericAgent<bool>.new())
+	}
+}

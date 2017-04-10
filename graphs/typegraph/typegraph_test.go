@@ -105,6 +105,15 @@ func TestLookup(t *testing.T) {
 				},
 			},
 
+			// agent<?> SomeAgent {
+			//   function<int> DoSomething() {}
+			// }
+			testType{"agent", "SomeAgent", "", []testGeneric{},
+				[]testMember{
+					testMember{FunctionMemberSignature, "DoSomething", "int", []testGeneric{}, []testParam{}},
+				},
+			},
+
 			// interface IBasicInterface<T> {
 			//	 function<T> DoSomething()
 			// }
@@ -150,6 +159,10 @@ func TestLookup(t *testing.T) {
 
 	// Test LookupTypeOrMember of all the types under the module.
 	if !assertType(t, graph, ClassType, "SomeClass", "testModule") {
+		return
+	}
+
+	if !assertType(t, graph, AgentType, "SomeAgent", "testModule") {
 		return
 	}
 

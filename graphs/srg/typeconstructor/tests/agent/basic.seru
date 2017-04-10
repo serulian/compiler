@@ -1,0 +1,9 @@
+interface SomeInterface {}
+
+agent<SomeInterface> SomeAgent {
+	constructor FooBar() {
+		return SomeAgent.new()
+	}
+}
+
+class SomeClass with SomeAgent {}

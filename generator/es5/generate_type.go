@@ -34,8 +34,11 @@ func (gen *es5generator) generateType(typedef typegraph.TGTypeDecl) (esbuilder.S
 	generating := generatingType{typedef, gen}
 
 	switch typedef.TypeKind() {
+	case typegraph.AgentType:
+		fallthrough
+
 	case typegraph.ClassType:
-		return esbuilder.Template("class", classTemplateStr, generating), true
+		return esbuilder.Template("implemented", implementedTemplateStr, generating), true
 
 	case typegraph.ImplicitInterfaceType:
 		return esbuilder.Template("interface", interfaceTemplateStr, generating), true
@@ -187,9 +190,9 @@ this.$interface('{{ .Type.GlobalUniqueId }}', '{{ .Type.Name }}', {{ .HasGeneric
 });
 `
 
-// classTemplateStr defines the template for generating a class type.
-const classTemplateStr = `
-this.$class('{{ .Type.GlobalUniqueId }}', '{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .Generics }}) {
+// implementedTemplateStr defines the template for generating a class or agent type.
+const implementedTemplateStr = `
+{{ if .Type.IsClass }}this.$class{{ else }}this.$agent{{ end }}('{{ .Type.GlobalUniqueId }}', '{{ .Type.Name }}', {{ .HasGenerics }}, '{{ .Alias }}', function({{ .Generics }}) {
 	var $static = this;
     var $instance = this.prototype;
 
@@ -213,9 +216,15 @@ this.$class('{{ .Type.GlobalUniqueId }}', '{{ .Type.Name }}', {{ .HasGenerics }}
 
 		{{ if $vars.Promising }}
 		return $promise.all(init).then(function() {
+			{{ range $adx, $agent := .Type.ComposedAgents }}
+			instance.{{ $agent.CompositionName }}.$principal = instance;
+			{{ end }}
 			return instance;
 		});
 		{{ else }}
+		{{ range $adx, $agent := .Type.ComposedAgents }}
+		instance.{{ $agent.CompositionName }}.$principal = instance;
+		{{ end }}
 		return instance;
 		{{ end }}
 	};

@@ -3,20 +3,20 @@
         "Key": "b215ed2ed46d540549bd38b9a81a2ab7",
         "Kind": 2,
         "Children": {
-            "0ab8efb28bd26316cd560a5095078bc4": {
+            "100083b8bc84f2927ef5c81c5e68c8f9": {
                 "Predicate": "tdg-declaration-operator",
                 "Child": {
-                    "Key": "0ab8efb28bd26316cd560a5095078bc4",
-                    "Kind": 9,
+                    "Key": "100083b8bc84f2927ef5c81c5e68c8f9",
+                    "Kind": 10,
                     "Children": {
-                        "918b2b7ded496347c78f92b340c5984f": {
+                        "f16ec07a909bced2a26e291dec2f92b5": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "918b2b7ded496347c78f92b340c5984f",
-                                "Kind": 11,
+                                "Key": "f16ec07a909bced2a26e291dec2f92b5",
+                                "Kind": 12,
                                 "Children": {},
                                 "Predicates": {
-                                    "tdg-node-kind": "11|NodeType|tdg",
+                                    "tdg-node-kind": "12|NodeType|tdg",
                                     "tdg-return-type": "Foo",
                                     "tdg-source-node": "(NodeRef)"
                                 }
@@ -31,27 +31,27 @@
                         "tdg-member-resolved-type": "function\u003cFoo\u003e(Foo, Foo)",
                         "tdg-member-signature": "\n\u0004plus\u0010\u0004\u0018\u0000 \u0001*\u0003any",
                         "tdg-member-static": "true",
-                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-node-kind": "10|NodeType|tdg",
                         "tdg-operator-name": "plus",
                         "tdg-source-module": "tests/interfaceop/success.seru",
                         "tdg-source-node": "(NodeRef)"
                     }
                 }
             },
-            "50232a09516f1fa7ed30af2889f9224a": {
+            "8301ce68ba69bccc39c0f299477234e1": {
                 "Predicate": "tdg-declaration-operator",
                 "Child": {
-                    "Key": "50232a09516f1fa7ed30af2889f9224a",
-                    "Kind": 9,
+                    "Key": "8301ce68ba69bccc39c0f299477234e1",
+                    "Kind": 10,
                     "Children": {
-                        "cc76586cc2d2ac3bf9750e0a1e2c816f": {
+                        "429c06163dccb8df2d23a410fdb2bf44": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "cc76586cc2d2ac3bf9750e0a1e2c816f",
-                                "Kind": 11,
+                                "Key": "429c06163dccb8df2d23a410fdb2bf44",
+                                "Kind": 12,
                                 "Children": {},
                                 "Predicates": {
-                                    "tdg-node-kind": "11|NodeType|tdg",
+                                    "tdg-node-kind": "12|NodeType|tdg",
                                     "tdg-return-type": "any",
                                     "tdg-source-node": "(NodeRef)"
                                 }
@@ -65,22 +65,22 @@
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cany\u003e(any)",
                         "tdg-member-signature": "\n\u0005index\u0010\u0004\u0018\u0000 \u0001*\u0012function\u003cany\u003e(any)",
-                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-node-kind": "10|NodeType|tdg",
                         "tdg-operator-name": "index",
                         "tdg-source-module": "tests/interfaceop/success.seru",
                         "tdg-source-node": "(NodeRef)"
                     }
                 }
             },
-            "d5b8ffa82e1fbaca7d5f41059df13014": {
+            "d0322fea8ec21811a3ed15438f92b559": {
                 "Predicate": "tdg-declaration-module",
                 "Child": {
-                    "Key": "d5b8ffa82e1fbaca7d5f41059df13014",
-                    "Kind": 6,
+                    "Key": "d0322fea8ec21811a3ed15438f92b559",
+                    "Kind": 7,
                     "Children": {},
                     "Predicates": {
                         "tdg-module-name": "success.seru",
-                        "tdg-node-kind": "6|NodeType|tdg",
+                        "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/interfaceop/success.seru",
                         "tdg-source-node": "(NodeRef)"
                     }

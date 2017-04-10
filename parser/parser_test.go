@@ -127,14 +127,9 @@ var parserTests = []parserTest{
 	{"empty class test", "class/empty"},
 	{"basic formatted class test", "class/basic_formatted"},
 
-	/*
-		{"basic inheritance test", "class/inherits"},
-		{"complex inheritance test", "class/complex_inherits"},
-		{"complex class def test", "class/complex_def"},
-		{"invalid inherits test", "class/invalidinherits"},
-		{"missing subtype test", "class/missing_subtype"},
-		{"missing another subtype test", "class/missing_another_subtype"},
-	*/
+	{"basic agents test", "class/basic_agents"},
+	{"aliased agents test", "class/aliased_agents"},
+	{"missing agent test", "class/missing_agent"},
 
 	{"generic class test", "class/generic"},
 	{"complex generic class test", "class/complex_generic"},
@@ -151,6 +146,11 @@ var parserTests = []parserTest{
 	{"basic nominal type test", "nominal/basic"},
 	{"generic nominal type test", "nominal/generic"},
 	{"missing subtype nominal type test", "nominal/missingsubtype"},
+
+	// Agent tests.
+	{"basic agent test", "agent/basic"},
+	{"generic agent test", "agent/generic"},
+	{"missing principal type agent test", "agent/missingprincipal"},
 
 	// Class member success tests.
 	{"basic class function test", "class/basic_function"},

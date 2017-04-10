@@ -3,57 +3,11 @@
         "Key": "234d5619d5feea916a5743f83af849b3",
         "Kind": 1,
         "Children": {
-            "ab23ca13357a519ade50eeb06be4d772": {
-                "Predicate": "tdg-declaration-module",
-                "Child": {
-                    "Key": "ab23ca13357a519ade50eeb06be4d772",
-                    "Kind": 6,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-module-name": "example.seru",
-                        "tdg-node-kind": "6|NodeType|tdg",
-                        "tdg-source-module": "tests/genericlocalconstraint/example.seru",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
-            "cab5519e9ee993fa21e33870becbd96f": {
-                "Predicate": "tdg-declaration-generic",
-                "Child": {
-                    "Key": "cab5519e9ee993fa21e33870becbd96f",
-                    "Kind": 12,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-generic-index": "0",
-                        "tdg-generic-kind": "0",
-                        "tdg-generic-name": "T",
-                        "tdg-generic-subtype": "Q",
-                        "tdg-node-kind": "12|NodeType|tdg",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
-            "ec5d7d254839e70c6da5081c1bcd1b97": {
-                "Predicate": "tdg-declaration-generic",
-                "Child": {
-                    "Key": "ec5d7d254839e70c6da5081c1bcd1b97",
-                    "Kind": 12,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-generic-index": "1",
-                        "tdg-generic-kind": "0",
-                        "tdg-generic-name": "Q",
-                        "tdg-generic-subtype": "any",
-                        "tdg-node-kind": "12|NodeType|tdg",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
-            "fa7ca48e19562eceb4ac6e8e99583278": {
+            "0ee7f3206405340cace67cb95a00b3b7": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "fa7ca48e19562eceb4ac6e8e99583278",
-                    "Kind": 8,
+                    "Key": "0ee7f3206405340cace67cb95a00b3b7",
+                    "Kind": 9,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
@@ -62,8 +16,54 @@
                         "tdg-member-resolved-type": "function\u003cSomeClass\u003cT, Q\u003e\u003e",
                         "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0019function\u003cSomeClass\u003cT, Q\u003e\u003e",
                         "tdg-member-static": "true",
-                        "tdg-node-kind": "8|NodeType|tdg",
+                        "tdg-node-kind": "9|NodeType|tdg",
                         "tdg-source-module": "tests/genericlocalconstraint/example.seru"
+                    }
+                }
+            },
+            "1d0fd2cfa98cae771394c5d56d326cf3": {
+                "Predicate": "tdg-declaration-generic",
+                "Child": {
+                    "Key": "1d0fd2cfa98cae771394c5d56d326cf3",
+                    "Kind": 13,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-generic-index": "0",
+                        "tdg-generic-kind": "0",
+                        "tdg-generic-name": "T",
+                        "tdg-generic-subtype": "Q",
+                        "tdg-node-kind": "13|NodeType|tdg",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "2a34bbecdd7bf1c64ae1760e75331828": {
+                "Predicate": "tdg-declaration-generic",
+                "Child": {
+                    "Key": "2a34bbecdd7bf1c64ae1760e75331828",
+                    "Kind": 13,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-generic-index": "1",
+                        "tdg-generic-kind": "0",
+                        "tdg-generic-name": "Q",
+                        "tdg-generic-subtype": "any",
+                        "tdg-node-kind": "13|NodeType|tdg",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "3a43df97fd21fb31906a7b44f0765ef0": {
+                "Predicate": "tdg-declaration-module",
+                "Child": {
+                    "Key": "3a43df97fd21fb31906a7b44f0765ef0",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-module-name": "example.seru",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/genericlocalconstraint/example.seru",
+                        "tdg-source-node": "(NodeRef)"
                     }
                 }
             }

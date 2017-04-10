@@ -87,14 +87,31 @@ func (sb *scopeBuilder) scopeStructuralNewTypeExpression(node compilergraph.Grap
 	// Ensure that the static type is a struct OR it is a class with an accessible 'new'.
 	staticType := staticTypeRef.ReferredType()
 	switch staticType.TypeKind() {
+	case typegraph.AgentType:
+		fallthrough
+
 	case typegraph.ClassType:
-		// Classes can only be constructed structurally if they are in the same module as this call.
+		// Classes and agents can only be constructed structurally if they are in the same module as this call.
 		// Otherwise, an exported constructor must be used.
 		module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
 		_, rerr := staticTypeRef.ResolveAccessibleMember("new", module, typegraph.MemberResolutionStatic)
 		if rerr != nil {
 			sb.decorateWithError(node, "Cannot structurally construct type %v, as it is imported from another module", staticTypeRef)
 			return newScope().Invalid().Resolving(staticTypeRef).GetScope()
+		}
+
+		// Agents further can only be constructed under types that compose them.
+		if staticType.TypeKind() == typegraph.AgentType {
+			tgType, _, hasParentType, _ := context.getParentTypeAndMember(sb.sg.srg, sb.sg.tdg)
+			if !hasParentType {
+				sb.decorateWithError(node, "Cannot structurally construct agent '%v' outside non-composing type", staticTypeRef)
+				return newScope().Invalid().GetScope()
+			}
+
+			if tgType != staticTypeRef.ReferredType() && !tgType.ComposesAgent(staticTypeRef) {
+				sb.decorateWithError(node, "Cannot structurally construct agent '%v' under non-composing type '%v'", staticTypeRef, tgType.Name())
+				return newScope().Invalid().GetScope()
+			}
 		}
 
 	case typegraph.StructType:
@@ -120,7 +137,12 @@ func (sb *scopeBuilder) scopeStructuralNewTypeExpression(node compilergraph.Grap
 		}
 	}
 
-	return newScope().IsValid(isValid).Resolving(staticTypeRef).GetScope()
+	var scope = newScope().IsValid(isValid).Resolving(staticTypeRef)
+	if staticType.TypeKind() == typegraph.AgentType {
+		scope = scope.WithLabel(proto.ScopeLabel_AGENT_CONSTRUCTOR_REF)
+	}
+
+	return scope.GetScope()
 }
 
 // scopeStructuralNewExpressionEntry scopes a single entry in a structural new expression.
@@ -150,7 +172,7 @@ func (sb *scopeBuilder) scopeStructuralNewExpressionEntry(node compilergraph.Gra
 	}
 
 	// Ensure the member is assignable.
-	if member.IsReadOnly() {
+	if member.IsReadOnly() && !member.IsField() {
 		sb.decorateWithError(node, "%v %v under type %v is read-only", member.Title(), member.Name(), parentType)
 		return newScope().Invalid().GetScope()
 	}
@@ -443,21 +465,43 @@ func (sb *scopeBuilder) scopeNullLiteralExpression(node compilergraph.GraphNode,
 		GetScope()
 }
 
+// scopePrincipalLiteralExpression scopes a principal literal expression in the SRG.
+func (sb *scopeBuilder) scopePrincipalLiteralExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
+	tgType, tgMember, hasParentType, hasParentMember := context.getParentTypeAndMember(sb.sg.srg, sb.sg.tdg)
+	if !hasParentMember {
+		sb.decorateWithError(node, "The 'principal' keyword can only be used under non-static type members")
+		return newScope().Invalid().GetScope()
+	}
+
+	if !hasParentType {
+		sb.decorateWithError(node, "The 'principal' keyword cannot be used under %v %v", tgMember.Title(), tgMember.Name())
+		return newScope().Invalid().GetScope()
+	}
+
+	if tgMember.IsStatic() {
+		sb.decorateWithError(node, "The 'principal' keyword cannot be used under static type member %v", tgMember.Name())
+		return newScope().Invalid().GetScope()
+	}
+
+	if tgType.TypeKind() != typegraph.AgentType {
+		sb.decorateWithError(node, "The 'principal' keyword cannot be used under non-agent %v %v", tgType.Title(), tgType.Name())
+		return newScope().Invalid().GetScope()
+	}
+
+	return newScope().
+		Valid().
+		Resolving(tgType.PrincipalType()).
+		GetScope()
+}
+
 // scopeThisLiteralExpression scopes a this literal expression in the SRG.
 func (sb *scopeBuilder) scopeThisLiteralExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	srgImpl, found := context.getParentContainer(sb.sg.srg)
-	if !found {
+	tgType, tgMember, hasParentType, hasParentMember := context.getParentTypeAndMember(sb.sg.srg, sb.sg.tdg)
+	if !hasParentMember {
 		sb.decorateWithError(node, "The 'this' keyword can only be used under non-static type members")
 		return newScope().Invalid().GetScope()
 	}
 
-	tgMember, tgFound := sb.sg.tdg.GetMemberForSourceNode(srgImpl.ContainingMember().GraphNode)
-	if !tgFound {
-		sb.decorateWithError(node, "The 'this' keyword can only be used under non-static type members")
-		return newScope().Invalid().GetScope()
-	}
-
-	tgType, hasParentType := tgMember.ParentType()
 	if !hasParentType {
 		sb.decorateWithError(node, "The 'this' keyword cannot be used under %v %v", tgMember.Title(), tgMember.Name())
 		return newScope().Invalid().GetScope()

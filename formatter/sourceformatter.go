@@ -109,8 +109,14 @@ func (sf *sourceFormatter) emitNode(node formatterNode) {
 	case parser.NodeTypeStruct:
 		sf.emitTypeDefinition(node, "struct")
 
+	case parser.NodeTypeAgent:
+		sf.emitTypeDefinition(node, "agent")
+
 	case parser.NodeTypeDecorator:
 		sf.emitDecorator(node)
+
+	case parser.NodeTypeAgentReference:
+		sf.emitAgentReference(node)
 
 	// Type definition
 	case parser.NodeTypeProperty:
@@ -380,6 +386,9 @@ func (sf *sourceFormatter) emitNode(node formatterNode) {
 
 	case parser.NodeThisLiteralExpression:
 		sf.append("this")
+
+	case parser.NodePrincipalLiteralExpression:
+		sf.append("principal")
 
 	case parser.NodeNullLiteralExpression:
 		sf.append("null")

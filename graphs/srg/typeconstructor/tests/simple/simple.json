@@ -15,11 +15,11 @@
         "Key": "8fd764dd6552a161fd8ad6468083f220",
         "Kind": 1,
         "Children": {
-            "21aa16338bd4664582592c8be6c7d72d": {
+            "0529f156d5c905f27137f6e92ba45aac": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "21aa16338bd4664582592c8be6c7d72d",
-                    "Kind": 8,
+                    "Key": "0529f156d5c905f27137f6e92ba45aac",
+                    "Kind": 9,
                     "Children": {},
                     "Predicates": {
                         "tdg-member-name": "new",
@@ -28,20 +28,20 @@
                         "tdg-member-resolved-type": "function\u003cSomeClass\u003e",
                         "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0013function\u003cSomeClass\u003e",
                         "tdg-member-static": "true",
-                        "tdg-node-kind": "8|NodeType|tdg",
+                        "tdg-node-kind": "9|NodeType|tdg",
                         "tdg-source-module": "tests/simple/simple.seru"
                     }
                 }
             },
-            "a99a5f1e4031428ab95c178b6ff0c56f": {
+            "cdea9385a04d3a75d5960dd32a0fff14": {
                 "Predicate": "tdg-declaration-module",
                 "Child": {
-                    "Key": "a99a5f1e4031428ab95c178b6ff0c56f",
-                    "Kind": 6,
+                    "Key": "cdea9385a04d3a75d5960dd32a0fff14",
+                    "Kind": 7,
                     "Children": {},
                     "Predicates": {
                         "tdg-module-name": "simple.seru",
-                        "tdg-node-kind": "6|NodeType|tdg",
+                        "tdg-node-kind": "7|NodeType|tdg",
                         "tdg-source-module": "tests/simple/simple.seru",
                         "tdg-source-node": "(NodeRef)"
                     }

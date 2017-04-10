@@ -20,6 +20,7 @@ import (
 
 const DEFINED_VAL_PARAMETER = "val"
 const DEFINED_THIS_PARAMETER = "$this"
+const DEFINED_PRINCIPAL_PARAMETER = "$this.$principal"
 
 // buildStructuralNewExpression builds the CodeDOM for a structural new expression.
 func (db *domBuilder) buildStructuralNewExpression(node compilergraph.GraphNode) codedom.Expression {
@@ -192,6 +193,11 @@ func (db *domBuilder) buildValLiteral(node compilergraph.GraphNode) codedom.Expr
 // buildThisLiteral builds the CodeDOM for the this literal.
 func (db *domBuilder) buildThisLiteral(node compilergraph.GraphNode) codedom.Expression {
 	return codedom.LocalReference(DEFINED_THIS_PARAMETER, node)
+}
+
+// buildPrincipalLiteral builds the CodeDOM for the principal literal.
+func (db *domBuilder) buildPrincipalLiteral(node compilergraph.GraphNode) codedom.Expression {
+	return codedom.LocalReference(DEFINED_PRINCIPAL_PARAMETER, node)
 }
 
 // buildListExpression builds the CodeDOM for a list expression.

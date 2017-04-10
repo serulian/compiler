@@ -14,10 +14,10 @@ import (
 	"github.com/serulian/compiler/parser"
 )
 
-var TYPE_KINDS = []parser.NodeType{parser.NodeTypeClass, parser.NodeTypeInterface, parser.NodeTypeNominal, parser.NodeTypeStruct}
-var TYPE_KINDS_TAGGED = []compilergraph.TaggedValue{parser.NodeTypeClass, parser.NodeTypeInterface, parser.NodeTypeNominal, parser.NodeTypeStruct}
+var TYPE_KINDS = []parser.NodeType{parser.NodeTypeClass, parser.NodeTypeInterface, parser.NodeTypeNominal, parser.NodeTypeStruct, parser.NodeTypeAgent}
+var TYPE_KINDS_TAGGED = []compilergraph.TaggedValue{parser.NodeTypeClass, parser.NodeTypeInterface, parser.NodeTypeNominal, parser.NodeTypeStruct, parser.NodeTypeAgent}
 
-var MEMBER_KINDS_TAGGED = []compilergraph.TaggedValue{parser.NodeTypeClass, parser.NodeTypeInterface, parser.NodeTypeNominal, parser.NodeTypeStruct, parser.NodeTypeVariable, parser.NodeTypeFunction}
+var MEMBER_KINDS_TAGGED = []compilergraph.TaggedValue{parser.NodeTypeClass, parser.NodeTypeInterface, parser.NodeTypeNominal, parser.NodeTypeStruct, parser.NodeTypeAgent, parser.NodeTypeVariable, parser.NodeTypeFunction}
 
 // SRGType wraps a type declaration or definition in the SRG.
 type SRGType struct {
@@ -33,6 +33,7 @@ const (
 	InterfaceType
 	NominalType
 	StructType
+	AgentType
 )
 
 // GetTypes returns all the types defined in the SRG.
@@ -120,6 +121,9 @@ func (t SRGType) TypeKind() TypeKind {
 	case parser.NodeTypeStruct:
 		return StructType
 
+	case parser.NodeTypeAgent:
+		return AgentType
+
 	default:
 		panic(fmt.Sprintf("Unknown kind of type %s", t.GraphNode.Kind()))
 	}
@@ -153,26 +157,39 @@ func (t SRGType) FindMember(name string) (SRGMember, bool) {
 	return SRGMember{memberNode, t.srg}, true
 }
 
-// Inheritance returns type references to the types this type composes, if any.
-func (t SRGType) Inheritance() []SRGTypeRef {
-	switch t.TypeKind() {
-	case ClassType:
-		return make([]SRGTypeRef, 0)
-
-	case InterfaceType:
-		return make([]SRGTypeRef, 0)
-
-	case StructType:
-		return make([]SRGTypeRef, 0)
-
-	case NominalType:
-		inherits := make([]SRGTypeRef, 1)
-		inherits[0] = SRGTypeRef{t.GraphNode.GetNode(parser.NodeNominalPredicateBaseType), t.srg}
-		return inherits
-
-	default:
-		panic("Unknown kind of type")
+// PrincipalType returns a type reference to the principal type for this agent. Will only
+// return a valid reference for AgentTypes.
+func (t SRGType) PrincipalType() (SRGTypeRef, bool) {
+	if t.TypeKind() == AgentType {
+		return SRGTypeRef{t.GraphNode.GetNode(parser.NodeAgentPredicatePrincipalType), t.srg}, true
 	}
+
+	return SRGTypeRef{}, false
+}
+
+// WrappedType returns a type reference to the wrapped type, if any. Will only
+// return a valid reference for NominalTypes.
+func (t SRGType) WrappedType() (SRGTypeRef, bool) {
+	if t.TypeKind() == NominalType {
+		return SRGTypeRef{t.GraphNode.GetNode(parser.NodeNominalPredicateBaseType), t.srg}, true
+	}
+
+	return SRGTypeRef{}, false
+}
+
+// ComposedAgents returns references to the agents composed by this type,
+// if any.
+func (t SRGType) ComposedAgents() []SRGComposedAgent {
+	it := t.GraphNode.StartQuery().
+		Out(parser.NodePredicateComposedAgent).
+		BuildNodeIterator()
+
+	var agents = make([]SRGComposedAgent, 0)
+	for it.Next() {
+		agents = append(agents, SRGComposedAgent{it.Node(), t.srg})
+	}
+
+	return agents
 }
 
 // GetMembers returns the members on this type.

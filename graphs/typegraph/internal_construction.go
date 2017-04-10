@@ -5,8 +5,13 @@
 package typegraph
 
 import (
+	"fmt"
+
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/compilerutil"
 )
+
+var _ = fmt.Printf
 
 // globallyValidate validates the typegraph for global constraints (i.e. those shared by all
 // types constructed, regardless of source)
@@ -20,6 +25,13 @@ func (g *TypeGraph) globallyValidate() bool {
 	// Ensure structures do not reference non-struct, non-serializable types.
 	g.ForEachTypeDecl([]NodeType{NodeTypeStruct}, func(typeDecl TGTypeDecl) {
 		if !g.checkStructuralType(typeDecl, modifier) {
+			status = false
+		}
+	})
+
+	// Ensure that classes and agents only compose other agents.
+	g.ForEachTypeDecl([]NodeType{NodeTypeClass, NodeTypeAgent}, func(typeDecl TGTypeDecl) {
+		if !g.checkComposition(typeDecl, modifier) {
 			status = false
 		}
 	})
@@ -78,6 +90,39 @@ func (g *TypeGraph) globallyValidate() bool {
 				modifier.Modify(member.GraphNode),
 				"Asynchronous function %v cannot have generics",
 				member.Name())
+		}
+	}
+
+	return status
+}
+
+// checkComposition ensures that all types composed into the given type are agents.
+func (g *TypeGraph) checkComposition(parentType TGTypeDecl, modifier compilergraph.GraphLayerModifier) bool {
+	var status = true
+
+	for _, agent := range parentType.ComposedAgents() {
+		agentTypeRef := agent.AgentType()
+
+		// Make sure the agent type is a reference to an agent.
+		if !agentTypeRef.IsRefToAgent() || agentTypeRef.IsNullable() {
+			status = false
+			g.decorateWithError(
+				modifier.Modify(parentType.GraphNode),
+				"Type '%s' composes a non-agent type: %s",
+				parentType.Name(), agent.AgentType())
+			continue
+		}
+
+		// Make sure the class implements the agent type's principal type.
+		agentType := agentTypeRef.ReferredType()
+		principalTypeRef := agentType.PrincipalType()
+		if serr := parentType.GetTypeReference().CheckSubTypeOf(principalTypeRef); serr != nil {
+			status = false
+			g.decorateWithError(
+				modifier.Modify(parentType.GraphNode),
+				"Type '%s' composes agent type '%s' but does not match its expected principal type '%s': %s",
+				parentType.Name(), agent.AgentType(), principalTypeRef, serr)
+			continue
 		}
 	}
 
@@ -151,7 +196,15 @@ func (g *TypeGraph) defineMemberInternal(typeDecl TGTypeDecl, name string, gener
 	}
 
 	dmodifier := g.layer.NewModifier()
-	decorator := &MemberDecorator{tdg: g, modifier: dmodifier, member: member, genericConstraints: map[compilergraph.GraphNode]TypeReference{}, tags: map[string]string{}}
+	decorator := &MemberDecorator{
+		tdg:                g,
+		modifier:           dmodifier,
+		memberName:         name,
+		member:             member,
+		genericConstraints: map[compilergraph.GraphNode]TypeReference{},
+		tags:               map[string]string{},
+	}
+
 	handler(decorator, genericMap)
 	dmodifier.Apply()
 }
@@ -333,4 +386,48 @@ func (g *TypeGraph) checkForDuplicateNames() bool {
 	})
 
 	return hasError
+}
+
+// defineFullComposition copies any composed members over to types, as well as type checking
+// for composition cycles.
+func (g *TypeGraph) defineFullComposition() {
+	modifier := g.layer.NewModifier()
+	defer modifier.Apply()
+
+	buildComposition := func(key interface{}, value interface{}) bool {
+		typeDecl := value.(TGTypeDecl)
+		processor := typeCompositionProcessor{typeDecl, modifier, g}
+		return processor.processComposition()
+	}
+
+	// Enqueue the full set of types that compose other types.
+	workqueue := compilerutil.Queue()
+	for _, typeDecl := range g.TypeDecls() {
+		composedAgents := typeDecl.ComposedAgents()
+		if len(composedAgents) == 0 {
+			continue
+		}
+
+		var dependencies = make([]interface{}, len(composedAgents))
+		for index, agent := range composedAgents {
+			dependencies[index] = agent.AgentType().ReferredType()
+		}
+
+		workqueue.Enqueue(typeDecl, typeDecl, buildComposition, dependencies...)
+	}
+
+	// Run the queue to construct the full composition set.
+	result := workqueue.Run()
+	if result.HasCycle {
+		// TODO(jschorr): If there are two cycles, this will conflate them. We should do actual
+		// checking here.
+		var types = make([]string, len(result.Cycle))
+		for index, key := range result.Cycle {
+			decl := key.(TGTypeDecl)
+			types[index] = decl.Name()
+		}
+
+		typeNode := result.Cycle[0].(TGTypeDecl).GraphNode
+		g.decorateWithError(modifier.Modify(typeNode), "A cycle was detected in the composition of types: %v", types)
+	}
 }

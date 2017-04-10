@@ -58,6 +58,7 @@ function<void> SomeFunction() {
 	}
 	null
 	this
+	principal
 	a<b>
 	a<b<c>?>
 	a in b

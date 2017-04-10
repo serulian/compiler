@@ -1,0 +1,9 @@
+interface SomeInterface {}
+
+agent<SomeInterface> SomeAgent<T> {}
+
+class SomeClass with SomeAgent<int> {
+	constructor Declare() {
+		return SomeClass.new(SomeAgent<bool>.new())
+	}
+}

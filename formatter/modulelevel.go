@@ -40,10 +40,24 @@ func (sf *sourceFormatter) emitTypeDefinition(node formatterNode, kind string) {
 	sf.emitOrderedNodes(node.getChildren(parser.NodeTypeDefinitionDecorator))
 
 	sf.append(kind)
+
+	if node.hasChild(parser.NodeAgentPredicatePrincipalType) {
+		sf.append("<")
+		sf.emitNode(node.getChild(parser.NodeAgentPredicatePrincipalType))
+		sf.append(">")
+	}
+
 	sf.append(" ")
 	sf.append(node.getProperty(parser.NodeTypeDefinitionName))
 	sf.emitGenerics(node, parser.NodeTypeDefinitionGeneric)
-	sf.emitInheritance(node)
+
+	if node.GetType() == parser.NodeTypeNominal {
+		baseType := node.getChild(parser.NodeNominalPredicateBaseType)
+		sf.append(" : ")
+		sf.emitNode(baseType)
+	} else {
+		sf.emitComposition(node)
+	}
 
 	sf.append(" {")
 
@@ -155,20 +169,30 @@ func (sf *sourceFormatter) emitParameters(node formatterNode, parametersPredicat
 	sf.append(")")
 }
 
-// emitInheritance emits the parent type references declared on the given type node (if any).
-func (sf *sourceFormatter) emitInheritance(node formatterNode) {
-	inheritance := node.getChildren(parser.NodeNominalPredicateBaseType, parser.NodeClassPredicateBaseType)
-	if len(inheritance) == 0 {
+// emitComposition emits the agents composed into this type (if any.)
+func (sf *sourceFormatter) emitComposition(node formatterNode) {
+	agents := node.getChildren(parser.NodePredicateComposedAgent)
+	if len(agents) == 0 {
 		return
 	}
 
-	sf.append(" : ")
+	sf.append(" with ")
 
-	for index, inherits := range inheritance {
+	for index, agent := range agents {
 		if index > 0 {
 			sf.append(" + ")
 		}
 
-		sf.emitNode(inherits)
+		sf.emitNode(agent)
 	}
+}
+
+// emitAgentReference emits source of an agent reference.
+func (sf *sourceFormatter) emitAgentReference(agent formatterNode) {
+	sf.emitNode(agent.getChild(parser.NodeAgentReferencePredicateReferenceType))
+	if agent.hasProperty(parser.NodeAgentReferencePredicateAlias) {
+		sf.append(" as ")
+		sf.append(agent.getProperty(parser.NodeAgentReferencePredicateAlias))
+	}
+
 }

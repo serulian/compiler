@@ -347,6 +347,11 @@ func (tr TypeReference) IsRefToStruct() bool {
 	return tr.isNormal() && tr.ReferredType().TypeKind() == StructType
 }
 
+// IsRefToAgent returns whether the referenced type is an agent.
+func (tr TypeReference) IsRefToAgent() bool {
+	return tr.isNormal() && tr.ReferredType().TypeKind() == AgentType
+}
+
 // IsRefToClass returns whether the referenced type is a class.
 func (tr TypeReference) IsRefToClass() bool {
 	return tr.isNormal() && tr.ReferredType().TypeKind() == ClassType

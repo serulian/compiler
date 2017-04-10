@@ -1,0 +1,11 @@
+interface SomeInterface {}
+
+agent<SomeInterface> SomeAgent {
+	function<void> DoSomething() {}
+}
+
+class SomeClass with SomeAgent {
+	property<int> DoSomething {
+		get { return 42 }
+	}	
+}

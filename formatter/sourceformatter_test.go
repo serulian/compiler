@@ -60,6 +60,7 @@ var goldenTests = []goldenTest{
 	{"binary precedence test", "binary"},
 	{"imports test", "imports"},
 	{"class test", "class"},
+	{"agent test", "agent"},
 	{"interface test", "interface"},
 	{"struct test", "struct"},
 	{"nominal test", "nominal"},

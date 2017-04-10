@@ -1,0 +1,11 @@
+interface SomeInterface {}
+
+agent<SomeInterface> SomeAgent {
+	function<void> DoSomething() {
+		principal
+	}
+}
+
+agent<SomeInterface> AnotherAgent<T> {}
+
+class SomeClass with SomeAgent + AnotherAgent<int> {}

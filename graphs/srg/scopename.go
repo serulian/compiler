@@ -211,6 +211,9 @@ func (ns SRGNamedScope) ScopeKind() NamedScopeKind {
 	case parser.NodeTypeStruct:
 		return NamedScopeType
 
+	case parser.NodeTypeAgent:
+		return NamedScopeType
+
 	/* Generic */
 	case parser.NodeTypeGeneric:
 		return NamedScopeType
@@ -272,6 +275,9 @@ func (ns SRGNamedScope) Name() string {
 		return ns.Get(parser.NodeTypeDefinitionName)
 
 	case parser.NodeTypeStruct:
+		return ns.Get(parser.NodeTypeDefinitionName)
+
+	case parser.NodeTypeAgent:
 		return ns.Get(parser.NodeTypeDefinitionName)
 
 	case parser.NodeTypeImportPackage:
@@ -436,14 +442,14 @@ func (g *SRG) findAddedNameInScope(name string, node compilergraph.GraphNode) (c
 
 		return q.
 			In(parser.NodePredicateTypeMemberParameter,
-			parser.NodeLambdaExpressionInferredParameter,
-			parser.NodeLambdaExpressionParameter,
-			parser.NodePredicateTypeMemberGeneric,
-			parser.NodeStatementNamedValue,
-			parser.NodeAssignedDestination,
-			parser.NodeAssignedRejection,
-			parser.NodePredicateChild,
-			parser.NodeStatementBlockStatement).
+				parser.NodeLambdaExpressionInferredParameter,
+				parser.NodeLambdaExpressionParameter,
+				parser.NodePredicateTypeMemberGeneric,
+				parser.NodeStatementNamedValue,
+				parser.NodeAssignedDestination,
+				parser.NodeAssignedRejection,
+				parser.NodePredicateChild,
+				parser.NodeStatementBlockStatement).
 			InIfKind(parser.NodeStatementBlockStatement, parser.NodeTypeResolveStatement).
 			HasWhere(parser.NodePredicateStartRune, compilergraph.WhereLTE, startRune).
 			HasWhere(parser.NodePredicateEndRune, compilergraph.WhereGTE, endRune)
@@ -453,7 +459,7 @@ func (g *SRG) findAddedNameInScope(name string, node compilergraph.GraphNode) (c
 		In("named").
 		Has(parser.NodePredicateSource, nodeSource).
 		IsKind(parser.NodeTypeParameter, parser.NodeTypeNamedValue, parser.NodeTypeAssignedValue,
-		parser.NodeTypeVariableStatement, parser.NodeTypeLambdaParameter, parser.NodeTypeGeneric).
+			parser.NodeTypeVariableStatement, parser.NodeTypeLambdaParameter, parser.NodeTypeGeneric).
 		FilterBy(containingFilter).
 		BuildNodeIterator(parser.NodePredicateStartRune, parser.NodePredicateEndRune)
 

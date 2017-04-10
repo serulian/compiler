@@ -206,19 +206,23 @@ func (tn TGMember) InvokesAsync() bool {
 // IsRequiredField returns whether this member is a field requiring initialization on
 // construction of an instance of the parent type.
 func (tn TGMember) IsRequiredField() bool {
-	// If this member is not an instance assignable field, nothing more to do.
-	if !tn.IsField() || tn.IsReadOnly() || tn.IsStatic() {
+	// If this member is not an instance field, nothing more to do.
+	if !tn.IsField() || tn.IsStatic() {
 		return false
 	}
 
 	// Ensure this member does not have a default value.
 	if tn.HasDefaultValue() {
 		return false
-
 	}
 
 	// If this member can be assigned a null value, then it isn't required.
 	if tn.AssignableType().NullValueAllowed() {
+		return false
+	}
+
+	// If this member is "inherited" from a composed agent, then it isn't required.
+	if tn.HasBaseMember() {
 		return false
 	}
 
@@ -293,7 +297,7 @@ func (tn TGMember) ReturnType() (TypeReference, bool) {
 // AssignableType returns the type of values that can be assigned to this member. Returns void for
 // readonly members.
 func (tn TGMember) AssignableType() TypeReference {
-	if tn.IsReadOnly() {
+	if tn.IsReadOnly() && !tn.IsField() {
 		return tn.tdg.VoidTypeReference()
 	}
 

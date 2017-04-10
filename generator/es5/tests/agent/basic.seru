@@ -1,0 +1,26 @@
+interface SomeInterface {
+	function<int> GetValue()
+}
+
+agent<SomeInterface> SomeAgent {
+	function<int> GetMainValue() {
+		return principal.GetValue() + 10
+	}
+}
+
+class SomeClass with SomeAgent {
+	constructor Declare() {
+		return SomeClass{
+			SomeAgent: SomeAgent.new(),
+		}
+	}
+
+	function<int> GetValue() {
+		return 32
+	}
+}
+
+function<bool> TEST() {
+	sc := SomeClass.Declare()
+	return sc.GetMainValue() == 42
+}

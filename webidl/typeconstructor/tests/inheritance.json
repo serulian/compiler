@@ -1,16 +1,4 @@
 {
-    "84041de031b4f5e949d7e2478e7dae28": {
-        "Key": "84041de031b4f5e949d7e2478e7dae28",
-        "Kind": 7,
-        "Children": {},
-        "Predicates": {
-            "tdg-node-kind": "7|NodeType|tdg",
-            "tdg-source-module": "tests/inheritance.webidl",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "e65127a7",
-            "tdg-type-name": "Node"
-        }
-    },
     "8b8b54d40bbcaa6ba4bd5d24966cfe47": {
         "Key": "8b8b54d40bbcaa6ba4bd5d24966cfe47",
         "Kind": 3,
@@ -23,12 +11,12 @@
             "tdg-type-name": "Node"
         }
     },
-    "c8d20dc156660d729b2b7d4264068ebf": {
-        "Key": "c8d20dc156660d729b2b7d4264068ebf",
-        "Kind": 7,
+    "e419643b620eae3810d749cf952f9000": {
+        "Key": "e419643b620eae3810d749cf952f9000",
+        "Kind": 8,
         "Children": {},
         "Predicates": {
-            "tdg-node-kind": "7|NodeType|tdg",
+            "tdg-node-kind": "8|NodeType|tdg",
             "tdg-source-module": "tests/inheritance.webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "7e89feb3",
@@ -46,6 +34,18 @@
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "Element",
             "tdg-type-name": "Element"
+        }
+    },
+    "ef09b6333b5101a1d00b192a5b1ad06f": {
+        "Key": "ef09b6333b5101a1d00b192a5b1ad06f",
+        "Kind": 8,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "8|NodeType|tdg",
+            "tdg-source-module": "tests/inheritance.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "e65127a7",
+            "tdg-type-name": "Node"
         }
     }
 }

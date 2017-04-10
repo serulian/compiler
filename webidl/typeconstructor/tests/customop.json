@@ -3,15 +3,15 @@
         "Key": "0afacb500df23d576019168e5d740e4b",
         "Kind": 3,
         "Children": {
-            "b183ff64b09d2e42c96631c5446cd483": {
+            "47830255db406e0170a60d6159e02163": {
                 "Predicate": "tdg-type-attribute",
                 "Child": {
-                    "Key": "b183ff64b09d2e42c96631c5446cd483",
-                    "Kind": 13,
+                    "Key": "47830255db406e0170a60d6159e02163",
+                    "Kind": 15,
                     "Children": {},
                     "Predicates": {
                         "tdg-attribute-name": "serializable",
-                        "tdg-node-kind": "13|NodeType|tdg"
+                        "tdg-node-kind": "15|NodeType|tdg"
                     }
                 }
             }
@@ -24,12 +24,12 @@
             "tdg-type-name": "SomeInterface"
         }
     },
-    "55f599402d88be90cce287af2cdcbb34": {
-        "Key": "55f599402d88be90cce287af2cdcbb34",
-        "Kind": 7,
+    "e5312163c305135eac38fe88f5a20afe": {
+        "Key": "e5312163c305135eac38fe88f5a20afe",
+        "Kind": 8,
         "Children": {},
         "Predicates": {
-            "tdg-node-kind": "7|NodeType|tdg",
+            "tdg-node-kind": "8|NodeType|tdg",
             "tdg-source-module": "tests/customop.webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "320ced89",

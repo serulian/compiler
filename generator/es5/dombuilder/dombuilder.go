@@ -337,6 +337,9 @@ func (db *domBuilder) buildExpression(node compilergraph.GraphNode) codedom.Expr
 	case parser.NodeThisLiteralExpression:
 		return db.buildThisLiteral(node)
 
+	case parser.NodePrincipalLiteralExpression:
+		return db.buildPrincipalLiteral(node)
+
 	case parser.NodeValLiteralExpression:
 		return db.buildValLiteral(node)
 
