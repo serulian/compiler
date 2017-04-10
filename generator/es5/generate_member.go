@@ -206,7 +206,11 @@ func (gm generatingMember) AliasRequiresSet() bool {
 const aliasedMemberTemplateStr = `
   Object.defineProperty($instance, '{{ .MemberName }}', {
     get: function() {
+    	{{ if .Member.IsField }}
     	return this.{{ .InnerInstanceName }}.{{ .MemberName }};
+    	{{ else }}
+    	return this.{{ .InnerInstanceName }}.{{ .MemberName }}.bind(this.{{ .InnerInstanceName }});
+    	{{ end }}
     }
 
     {{ if .AliasRequiresSet }}
