@@ -1,0 +1,9 @@
+interface SomeInterface {
+	function<void> DoSomething()
+}
+
+agent<SomeInterface> SomeAgent {
+	function<void> DoSomething() {}
+}
+
+class SomeClass with SomeAgent {}

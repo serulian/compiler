@@ -158,6 +158,10 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 	// Handle composition checking and member cloning.
 	typeGraph.defineFullComposition()
 
+	// Perform principal validation. This occurs after full composition to ensure that
+	// members composed from agents are present when checking principals.
+	typeGraph.validatePrincipals()
+
 	// Define implicit members.
 	typeGraph.defineAllImplicitMembers()
 

@@ -96,6 +96,32 @@ func (g *TypeGraph) globallyValidate() bool {
 	return status
 }
 
+// validatePrincipals ensures that all `with` compositions match the principal type of the agents
+// specified.
+func (g *TypeGraph) validatePrincipals() bool {
+	var status = true
+
+	modifier := g.layer.NewModifier()
+	defer modifier.Apply()
+
+	g.ForEachTypeDecl([]NodeType{NodeTypeClass, NodeTypeAgent}, func(typeDecl TGTypeDecl) {
+		// Make sure the class/agent implements the agent type's principal type.
+		for _, agent := range typeDecl.ComposedAgents() {
+			principalTypeRef := agent.AgentType().ReferredType().PrincipalType()
+			if serr := typeDecl.GetTypeReference().CheckSubTypeOf(principalTypeRef); serr != nil {
+				status = false
+				g.decorateWithError(
+					modifier.Modify(typeDecl.GraphNode),
+					"Type '%s' composes agent type '%s' but does not match its expected principal type '%s': %s",
+					typeDecl.Name(), agent.AgentType(), principalTypeRef, serr)
+				continue
+			}
+		}
+	})
+
+	return status
+}
+
 // checkComposition ensures that all types composed into the given type are agents.
 func (g *TypeGraph) checkComposition(parentType TGTypeDecl, modifier compilergraph.GraphLayerModifier) bool {
 	var status = true
@@ -110,18 +136,6 @@ func (g *TypeGraph) checkComposition(parentType TGTypeDecl, modifier compilergra
 				modifier.Modify(parentType.GraphNode),
 				"Type '%s' composes a non-agent type: %s",
 				parentType.Name(), agent.AgentType())
-			continue
-		}
-
-		// Make sure the class implements the agent type's principal type.
-		agentType := agentTypeRef.ReferredType()
-		principalTypeRef := agentType.PrincipalType()
-		if serr := parentType.GetTypeReference().CheckSubTypeOf(principalTypeRef); serr != nil {
-			status = false
-			g.decorateWithError(
-				modifier.Modify(parentType.GraphNode),
-				"Type '%s' composes agent type '%s' but does not match its expected principal type '%s': %s",
-				parentType.Name(), agent.AgentType(), principalTypeRef, serr)
 			continue
 		}
 	}
