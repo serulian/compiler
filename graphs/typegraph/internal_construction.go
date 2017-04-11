@@ -107,7 +107,12 @@ func (g *TypeGraph) validatePrincipals() bool {
 	g.ForEachTypeDecl([]NodeType{NodeTypeClass, NodeTypeAgent}, func(typeDecl TGTypeDecl) {
 		// Make sure the class/agent implements the agent type's principal type.
 		for _, agent := range typeDecl.ComposedAgents() {
-			principalTypeRef := agent.AgentType().ReferredType().PrincipalType()
+			agentTypeRef := agent.AgentType()
+			if !agentTypeRef.IsRefToAgent() {
+				continue
+			}
+
+			principalTypeRef := agentTypeRef.ReferredType().PrincipalType()
 			if serr := typeDecl.GetTypeReference().CheckSubTypeOf(principalTypeRef); serr != nil {
 				status = false
 				g.decorateWithError(
