@@ -26,7 +26,20 @@
                 "Child": {
                     "Key": "40c505f9cf5fdba6c107df5dc47e4959",
                     "Kind": 9,
-                    "Children": {},
+                    "Children": {
+                        "8fa22a75b14c72936d3e832b686eda58": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "8fa22a75b14c72936d3e832b686eda58",
+                                "Kind": 12,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-return-type": "AnotherStruct"
+                                }
+                            }
+                        }
+                    },
                     "Predicates": {
                         "tdg-member-exported": "true",
                         "tdg-member-name": "Clone",
@@ -43,7 +56,20 @@
                 "Child": {
                     "Key": "a17e1bfe06b48213f2958413accc4983",
                     "Kind": 9,
-                    "Children": {},
+                    "Children": {
+                        "e77f6a250fab254ce775a6aa23617c22": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "e77f6a250fab254ce775a6aa23617c22",
+                                "Kind": 12,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-return-type": "String"
+                                }
+                            }
+                        }
+                    },
                     "Predicates": {
                         "tdg-member-exported": "true",
                         "tdg-member-name": "String",
@@ -60,7 +86,20 @@
                 "Child": {
                     "Key": "a72e06a0d4e89ad288c84b7fb4bd7e18",
                     "Kind": 9,
-                    "Children": {},
+                    "Children": {
+                        "b1bacc48f93ae6f709e25b26b5b3278b": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "b1bacc48f93ae6f709e25b26b5b3278b",
+                                "Kind": 12,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-return-type": "Mapping\u003cany\u003e"
+                                }
+                            }
+                        }
+                    },
                     "Predicates": {
                         "tdg-member-exported": "true",
                         "tdg-member-name": "Mapping",
@@ -90,6 +129,18 @@
                                     "tdg-source-node": ""
                                 }
                             }
+                        },
+                        "cbbf192423101e2637d29f1e63ab02e8": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "cbbf192423101e2637d29f1e63ab02e8",
+                                "Kind": 12,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-return-type": "Boolean"
+                                }
+                            }
                         }
                     },
                     "Predicates": {
@@ -111,7 +162,20 @@
                 "Child": {
                     "Key": "cef193a0a94a29b0b205fe33fc6fdab7",
                     "Kind": 9,
-                    "Children": {},
+                    "Children": {
+                        "8fa22a75b14c72936d3e832b686eda58": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "8fa22a75b14c72936d3e832b686eda58",
+                                "Kind": 12,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-return-type": "AnotherStruct"
+                                }
+                            }
+                        }
+                    },
                     "Predicates": {
                         "tdg-member-name": "new",
                         "tdg-member-promising": "1",
@@ -158,6 +222,18 @@
                                     "tdg-node-kind": "13|NodeType|tdg"
                                 }
                             }
+                        },
+                        "e77f6a250fab254ce775a6aa23617c22": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "e77f6a250fab254ce775a6aa23617c22",
+                                "Kind": 12,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-return-type": "String"
+                                }
+                            }
                         }
                     },
                     "Predicates": {
@@ -190,6 +266,18 @@
                                     "tdg-generic-name": "T",
                                     "tdg-generic-subtype": "Parser",
                                     "tdg-node-kind": "13|NodeType|tdg"
+                                }
+                            }
+                        },
+                        "8fa22a75b14c72936d3e832b686eda58": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "8fa22a75b14c72936d3e832b686eda58",
+                                "Kind": 12,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-return-type": "AnotherStruct"
                                 }
                             }
                         }
@@ -225,7 +313,20 @@
                 "Child": {
                     "Key": "2ec8666161bb74001e2b5546fbb12b0e",
                     "Kind": 9,
-                    "Children": {},
+                    "Children": {
+                        "ae7b6aece3cb27019518ec1568b49bb9": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "ae7b6aece3cb27019518ec1568b49bb9",
+                                "Kind": 12,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-return-type": "SomeStruct"
+                                }
+                            }
+                        }
+                    },
                     "Predicates": {
                         "tdg-member-exported": "true",
                         "tdg-member-name": "Clone",
@@ -293,6 +394,18 @@
                                     "tdg-node-kind": "13|NodeType|tdg"
                                 }
                             }
+                        },
+                        "ae7b6aece3cb27019518ec1568b49bb9": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "ae7b6aece3cb27019518ec1568b49bb9",
+                                "Kind": 12,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-return-type": "SomeStruct"
+                                }
+                            }
                         }
                     },
                     "Predicates": {
@@ -326,6 +439,18 @@
                                     "tdg-source-node": ""
                                 }
                             }
+                        },
+                        "cbbf192423101e2637d29f1e63ab02e8": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "cbbf192423101e2637d29f1e63ab02e8",
+                                "Kind": 12,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-return-type": "Boolean"
+                                }
+                            }
                         }
                     },
                     "Predicates": {
@@ -347,7 +472,20 @@
                 "Child": {
                     "Key": "a17e1bfe06b48213f2958413accc4983",
                     "Kind": 9,
-                    "Children": {},
+                    "Children": {
+                        "e77f6a250fab254ce775a6aa23617c22": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "e77f6a250fab254ce775a6aa23617c22",
+                                "Kind": 12,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-return-type": "String"
+                                }
+                            }
+                        }
+                    },
                     "Predicates": {
                         "tdg-member-exported": "true",
                         "tdg-member-name": "String",
@@ -364,7 +502,20 @@
                 "Child": {
                     "Key": "a72e06a0d4e89ad288c84b7fb4bd7e18",
                     "Kind": 9,
-                    "Children": {},
+                    "Children": {
+                        "b1bacc48f93ae6f709e25b26b5b3278b": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "b1bacc48f93ae6f709e25b26b5b3278b",
+                                "Kind": 12,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-return-type": "Mapping\u003cany\u003e"
+                                }
+                            }
+                        }
+                    },
                     "Predicates": {
                         "tdg-member-exported": "true",
                         "tdg-member-name": "Mapping",
@@ -414,6 +565,18 @@
                                     "tdg-node-kind": "13|NodeType|tdg"
                                 }
                             }
+                        },
+                        "e77f6a250fab254ce775a6aa23617c22": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "e77f6a250fab254ce775a6aa23617c22",
+                                "Kind": 12,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-return-type": "String"
+                                }
+                            }
                         }
                     },
                     "Predicates": {
@@ -433,7 +596,20 @@
                 "Child": {
                     "Key": "fe9d90a62b0b7d4b7636126d3afe1d55",
                     "Kind": 9,
-                    "Children": {},
+                    "Children": {
+                        "ae7b6aece3cb27019518ec1568b49bb9": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "ae7b6aece3cb27019518ec1568b49bb9",
+                                "Kind": 12,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-return-type": "SomeStruct"
+                                }
+                            }
+                        }
+                    },
                     "Predicates": {
                         "tdg-member-name": "new",
                         "tdg-member-promising": "1",

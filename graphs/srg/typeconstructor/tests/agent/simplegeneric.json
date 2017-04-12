@@ -8,7 +8,20 @@
                 "Child": {
                     "Key": "1fd87f3c37c8e1a1ea87680975e436bd",
                     "Kind": 9,
-                    "Children": {},
+                    "Children": {
+                        "2d6718b793cfc4ee895ab88693a9d0a7": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "2d6718b793cfc4ee895ab88693a9d0a7",
+                                "Kind": 12,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-return-type": "SomeAgent\u003cT, Q\u003e"
+                                }
+                            }
+                        }
+                    },
                     "Predicates": {
                         "tdg-member-name": "new",
                         "tdg-member-promising": "1",
