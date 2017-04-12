@@ -16,6 +16,8 @@ import (
 
 type ConsoleLogLevel int
 
+const INDENTATION = "  "
+
 const (
 	InfoLogLevel ConsoleLogLevel = iota
 	SuccessLogLevel
@@ -62,7 +64,7 @@ func LogToConsole(level ConsoleLogLevel, sal compilercommon.SourceAndLocation, m
 	if len(prefixText+locationText+formattedMessage) > int(width) {
 		prefixColor.Print(prefixText)
 		locationColor.Print(locationText)
-		messageColor.Printf("\n%s\n\n", text.Indent(text.Wrap(formattedMessage, int(width)), "  "))
+		messageColor.Printf("\n%s\n\n", text.Indent(text.Wrap(formattedMessage, int(width)-len(INDENTATION)), INDENTATION))
 	} else {
 		prefixColor.Print(prefixText)
 		locationColor.Print(locationText)
