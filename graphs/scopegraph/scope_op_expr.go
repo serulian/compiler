@@ -90,11 +90,23 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 		return newScope().Invalid().GetScope()
 	}
 
+	var argumentContext = context
 	namedNode, hasNamedNode := sb.getNamedScopeForScope(childScope)
 	if hasNamedNode {
 		context.staticDependencyCollector.registerNamedDependency(namedNode)
+
+		// Check for a call to an aliased function.
 		if namedNode.IsLocalName() {
 			context.rootLabelSet.Append(proto.ScopeLabel_CALLS_ANONYMOUS_CLOSURE)
+		}
+
+		// Check for a call to a constructor of a class/agent. If present, then
+		// for the scoping of the arguments, agent constructor calls are allowed.
+		member, isMember := namedNode.Member()
+		if isMember {
+			if constructedType, isConstructor := member.ConstructorType(); isConstructor {
+				argumentContext = context.withAllowedAgentConstructionsOf(constructedType)
+			}
 		}
 	} else {
 		context.rootLabelSet.Append(proto.ScopeLabel_CALLS_ANONYMOUS_CLOSURE)
@@ -146,7 +158,7 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 		index = index + 1
 
 		// Resolve the scope of the argument.
-		argumentScope := sb.getScope(ait.Node(), context)
+		argumentScope := sb.getScope(ait.Node(), argumentContext)
 		if !argumentScope.GetIsValid() {
 			isValid = false
 			nonOptionalIndex = index

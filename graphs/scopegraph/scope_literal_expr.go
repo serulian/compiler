@@ -70,7 +70,7 @@ func (sb *scopeBuilder) scopeStructuralNewCloneExpression(node compilergraph.Gra
 		return newScope().Invalid().GetScope()
 	}
 
-	_, isValid := sb.scopeStructuralNewEntries(node, context)
+	_, isValid := sb.scopeStructuralNewEntries(node, context.withAllowedAgentConstructionsOf(resolvedTypeRef))
 	return newScope().
 		IsValid(isValid).
 		Resolving(resolvedTypeRef).
@@ -100,18 +100,9 @@ func (sb *scopeBuilder) scopeStructuralNewTypeExpression(node compilergraph.Grap
 			return newScope().Invalid().Resolving(staticTypeRef).GetScope()
 		}
 
-		// Agents further can only be constructed under types that compose them.
-		if staticType.TypeKind() == typegraph.AgentType {
-			tgType, _, hasParentType, _ := context.getParentTypeAndMember(sb.sg.srg, sb.sg.tdg)
-			if !hasParentType {
-				sb.decorateWithError(node, "Cannot structurally construct agent '%v' outside non-composing type", staticTypeRef)
-				return newScope().Invalid().GetScope()
-			}
-
-			if tgType != staticTypeRef.ReferredType() && !tgType.ComposesAgent(staticTypeRef) {
-				sb.decorateWithError(node, "Cannot structurally construct agent '%v' under non-composing type '%v'", staticTypeRef, tgType.Name())
-				return newScope().Invalid().GetScope()
-			}
+		// Check for a call to a constructor of an agent.
+		if isAgent, isValid := sb.checkAgentStructuralConstruction(node, staticTypeRef, context); isAgent && !isValid {
+			return newScope().Invalid().GetScope()
 		}
 
 	case typegraph.StructType:
@@ -124,7 +115,7 @@ func (sb *scopeBuilder) scopeStructuralNewTypeExpression(node compilergraph.Grap
 		return newScope().Invalid().Resolving(staticTypeRef).GetScope()
 	}
 
-	encountered, isValid := sb.scopeStructuralNewEntries(node, context)
+	encountered, isValid := sb.scopeStructuralNewEntries(node, context.withAllowedAgentConstructionsOf(staticTypeRef))
 	if !isValid {
 		return newScope().Invalid().Resolving(staticTypeRef).GetScope()
 	}

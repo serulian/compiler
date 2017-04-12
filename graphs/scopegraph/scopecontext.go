@@ -46,6 +46,13 @@ type scopeContext struct {
 
 	// rootLabelSet is the set of extra labels for the root node.
 	rootLabelSet *statementLabelSet
+
+	// allowAgentConstructions is (if not nil) the "set" of agent types that can be constructed
+	// under the current context. This prevents agents from being constructed in code where they
+	// will not be *immediately* given to the constructor of their composing type, thus ensuring
+	// the `principal` back-reference is available immediately and therefore not breaking type
+	// safety.
+	allowAgentConstructions *map[typegraph.TypeReference]bool
 }
 
 // getParentContainer returns the parent type member, module member or property getter/setter
@@ -81,6 +88,18 @@ func (sc scopeContext) getTypeOverride(exprNode compilergraph.GraphNode) (typegr
 	return value, found
 }
 
+// allowsAgentConstruction returns whether construction of the agent with the given type is allowed
+// under the current context.
+func (sc scopeContext) allowsAgentConstruction(agentType typegraph.TypeReference) bool {
+	if sc.allowAgentConstructions == nil {
+		return false
+	}
+
+	checkMap := *sc.allowAgentConstructions
+	_, exists := checkMap[agentType]
+	return exists
+}
+
 // withContinuable returns the scope context with the parent continuable and breakable nodes
 // set to that given.
 func (sc scopeContext) withContinuable(node compilergraph.GraphNode) scopeContext {
@@ -89,9 +108,10 @@ func (sc scopeContext) withContinuable(node compilergraph.GraphNode) scopeContex
 		staticDependencyCollector:  sc.staticDependencyCollector,
 		dynamicDependencyCollector: sc.dynamicDependencyCollector,
 
-		accessOption:      sc.accessOption,
-		overrideTypes:     sc.overrideTypes,
-		parentImplemented: sc.parentImplemented,
+		accessOption:            sc.accessOption,
+		overrideTypes:           sc.overrideTypes,
+		allowAgentConstructions: sc.allowAgentConstructions,
+		parentImplemented:       sc.parentImplemented,
 
 		rootLabelSet: sc.rootLabelSet,
 
@@ -108,10 +128,11 @@ func (sc scopeContext) withBreakable(node compilergraph.GraphNode) scopeContext 
 		staticDependencyCollector:  sc.staticDependencyCollector,
 		dynamicDependencyCollector: sc.dynamicDependencyCollector,
 
-		accessOption:      sc.accessOption,
-		overrideTypes:     sc.overrideTypes,
-		parentImplemented: sc.parentImplemented,
-		parentContinuable: sc.parentContinuable,
+		accessOption:            sc.accessOption,
+		overrideTypes:           sc.overrideTypes,
+		allowAgentConstructions: sc.allowAgentConstructions,
+		parentImplemented:       sc.parentImplemented,
+		parentContinuable:       sc.parentContinuable,
 
 		rootLabelSet: sc.rootLabelSet,
 
@@ -127,10 +148,11 @@ func (sc scopeContext) withImplemented(node compilergraph.GraphNode) scopeContex
 		staticDependencyCollector:  sc.staticDependencyCollector,
 		dynamicDependencyCollector: sc.dynamicDependencyCollector,
 
-		accessOption:      sc.accessOption,
-		overrideTypes:     sc.overrideTypes,
-		parentBreakable:   sc.parentBreakable,
-		parentContinuable: sc.parentContinuable,
+		accessOption:            sc.accessOption,
+		overrideTypes:           sc.overrideTypes,
+		allowAgentConstructions: sc.allowAgentConstructions,
+		parentBreakable:         sc.parentBreakable,
+		parentContinuable:       sc.parentContinuable,
 
 		rootLabelSet: sc.rootLabelSet,
 
@@ -145,6 +167,56 @@ func (sc scopeContext) withAccess(access scopeAccessOption) scopeContext {
 		staticDependencyCollector:  sc.staticDependencyCollector,
 		dynamicDependencyCollector: sc.dynamicDependencyCollector,
 
+		overrideTypes:           sc.overrideTypes,
+		allowAgentConstructions: sc.allowAgentConstructions,
+		parentImplemented:       sc.parentImplemented,
+		parentBreakable:         sc.parentBreakable,
+		parentContinuable:       sc.parentContinuable,
+
+		rootLabelSet: sc.rootLabelSet,
+
+		accessOption: access,
+	}
+}
+
+// withAllowedAgentConstructionsOf returns the scope context with the agent types composed into
+// the given type registered as allowed construction under this context.
+func (sc scopeContext) withAllowedAgentConstructionsOf(parentType typegraph.TypeReference) scopeContext {
+	if !parentType.IsRefToClass() && !parentType.IsRefToAgent() {
+		return sc
+	}
+
+	var current = sc
+	for _, agent := range parentType.ReferredType().ComposedAgents() {
+		current = current.withAllowedAgentConstruction(agent.AgentType())
+	}
+	return current
+}
+
+// withAllowedAgentConstruction returns the scope context with the given agent type added as an allowed
+// construction of an agent under this context.
+func (sc scopeContext) withAllowedAgentConstruction(agentType typegraph.TypeReference) scopeContext {
+	if !agentType.IsRefToAgent() {
+		panic("Expected agent type")
+	}
+
+	allowAgentConstructions := map[typegraph.TypeReference]bool{}
+
+	if sc.allowAgentConstructions != nil {
+		existing := *sc.allowAgentConstructions
+		for key, value := range existing {
+			allowAgentConstructions[key] = value
+		}
+	}
+
+	allowAgentConstructions[agentType] = true
+
+	return scopeContext{
+		rootNode:                   sc.rootNode,
+		staticDependencyCollector:  sc.staticDependencyCollector,
+		dynamicDependencyCollector: sc.dynamicDependencyCollector,
+
+		accessOption:      sc.accessOption,
 		overrideTypes:     sc.overrideTypes,
 		parentImplemented: sc.parentImplemented,
 		parentBreakable:   sc.parentBreakable,
@@ -152,7 +224,7 @@ func (sc scopeContext) withAccess(access scopeAccessOption) scopeContext {
 
 		rootLabelSet: sc.rootLabelSet,
 
-		accessOption: access,
+		allowAgentConstructions: &allowAgentConstructions,
 	}
 }
 
@@ -175,10 +247,11 @@ func (sc scopeContext) withTypeOverride(exprNode compilergraph.GraphNode, typere
 		staticDependencyCollector:  sc.staticDependencyCollector,
 		dynamicDependencyCollector: sc.dynamicDependencyCollector,
 
-		accessOption:      sc.accessOption,
-		parentImplemented: sc.parentImplemented,
-		parentBreakable:   sc.parentBreakable,
-		parentContinuable: sc.parentContinuable,
+		accessOption:            sc.accessOption,
+		allowAgentConstructions: sc.allowAgentConstructions,
+		parentImplemented:       sc.parentImplemented,
+		parentBreakable:         sc.parentBreakable,
+		parentContinuable:       sc.parentContinuable,
 
 		rootLabelSet: sc.rootLabelSet,
 
