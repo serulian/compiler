@@ -5,9 +5,13 @@
 package typegraph
 
 import (
+	"fmt"
+
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/typegraph/proto"
 )
+
+var _ = fmt.Printf
 
 // MemberPromisingOption defines the various states of promising for a member.
 type MemberPromisingOption int
@@ -189,6 +193,28 @@ func (tn TGMember) IsType() bool {
 // IsOperator returns whether this is an operator.
 func (tn TGMember) IsOperator() bool {
 	return tn.GraphNode.Kind() == NodeTypeOperator
+}
+
+// ConstructorType returns the type constructed by invoking this member,
+// if it is a constructor.
+func (tn TGMember) ConstructorType() (TypeReference, bool) {
+	// TODO: make this explicit?
+	if !tn.IsStatic() || tn.IsField() || !tn.IsReadOnly() {
+		return tn.tdg.AnyTypeReference(), false
+	}
+
+	returnType, hasReturnType := tn.ReturnType()
+	if !hasReturnType {
+		return tn.tdg.AnyTypeReference(), false
+	}
+
+	parentType, hasParentType := tn.ParentType()
+	if !hasParentType {
+		return tn.tdg.AnyTypeReference(), false
+	}
+
+	parentTypeRef := parentType.GetTypeReference()
+	return parentTypeRef, returnType == parentTypeRef
 }
 
 // IsField returns whether the member is a field.

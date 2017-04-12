@@ -380,29 +380,16 @@ func (sb *scopeBuilder) scopeMemberAccessExpression(node compilergraph.GraphNode
 			return newScope().Invalid().GetScope()
 		}
 
-		// Check if the resolved member is a constructor of an agent. If so, the agent *must*
-		// be declared on the containing type for this to be valid.
-		if staticType.IsRefToAgent() {
-			member, isMember := memberScope.Member()
-			if isMember {
-				// This is a constructor for an agent. Make sure the parent of this expression
-				// composes this agent.
-				tgType, _, hasParentType, _ := context.getParentTypeAndMember(sb.sg.srg, sb.sg.tdg)
-				if !hasParentType {
-					sb.decorateWithError(node, "Cannot reference constructor '%v' of agent '%v' outside non-composing type", member.Name(), staticType)
-					return newScope().Invalid().GetScope()
-				}
-
-				if tgType != staticType.ReferredType() && !tgType.ComposesAgent(staticType) {
-					sb.decorateWithError(node, "Cannot reference constructor '%v' of agent '%v' under non-composing type '%v'", member.Name(), staticType, tgType.Name())
-					return newScope().Invalid().GetScope()
-				}
-
-				return newScope().
-					ForNamedScopeUnderType(memberScope, staticType, context).
-					WithLabel(proto.ScopeLabel_AGENT_CONSTRUCTOR_REF).
-					GetScope()
+		// Check for a call to a constructor of an agent.
+		if isAgent, isValid := sb.checkAccessAgentConstruction(node, memberScope, staticType, context); isAgent {
+			if !isValid {
+				return newScope().Invalid().GetScope()
 			}
+
+			return newScope().
+				ForNamedScopeUnderType(memberScope, staticType, context).
+				WithLabel(proto.ScopeLabel_AGENT_CONSTRUCTOR_REF).
+				GetScope()
 		}
 
 		return newScope().ForNamedScopeUnderType(memberScope, staticType, context).GetScope()

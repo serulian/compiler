@@ -8,7 +8,20 @@
                 "Child": {
                     "Key": "14fe747fcd77b32d827cbd0822f1361c",
                     "Kind": 9,
-                    "Children": {},
+                    "Children": {
+                        "b260da3385668751b37c86a31828c51f": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "b260da3385668751b37c86a31828c51f",
+                                "Kind": 12,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-return-type": "AnotherClass"
+                                }
+                            }
+                        }
+                    },
                     "Predicates": {
                         "tdg-member-name": "new",
                         "tdg-member-promising": "1",
@@ -55,7 +68,20 @@
                 "Child": {
                     "Key": "8debb27b3370756eb8de2b3879599a24",
                     "Kind": 9,
-                    "Children": {},
+                    "Children": {
+                        "e22eab3a9ec64e59c0293abd20190686": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "e22eab3a9ec64e59c0293abd20190686",
+                                "Kind": 12,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-return-type": "SomeClass\u003cT\u003e"
+                                }
+                            }
+                        }
+                    },
                     "Predicates": {
                         "tdg-member-name": "new",
                         "tdg-member-promising": "1",

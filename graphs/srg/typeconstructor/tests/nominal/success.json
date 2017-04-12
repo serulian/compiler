@@ -69,7 +69,20 @@
                 "Child": {
                     "Key": "ec1b16967a62ad58d117d36b7e2076a4",
                     "Kind": 9,
-                    "Children": {},
+                    "Children": {
+                        "b945553b92023e4fd1ae23820ab04ff1": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "b945553b92023e4fd1ae23820ab04ff1",
+                                "Kind": 12,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-return-type": "SomeClass"
+                                }
+                            }
+                        }
+                    },
                     "Predicates": {
                         "tdg-member-name": "new",
                         "tdg-member-promising": "1",

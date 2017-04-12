@@ -234,7 +234,9 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 	if typeDecl.isConstructable() {
 		g.defineMember(typeDecl, "new", []string{}, func(decorator *MemberDecorator, generics map[string]TGGeneric) {
 			// The new constructor returns an instance of the type.
-			var memberType = g.FunctionTypeReference(g.NewInstanceTypeReference(typeDecl))
+			returnType := g.NewInstanceTypeReference(typeDecl)
+
+			var memberType = g.FunctionTypeReference(returnType)
 			for _, requiredMember := range typeDecl.RequiredFields() {
 				memberType = memberType.WithParameter(requiredMember.AssignableType())
 			}
@@ -245,6 +247,7 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 				ReadOnly(true).
 				MemberType(memberType).
 				MemberKind(ConstructorMemberSignature).
+				CreateReturnable(decorator.member.GraphNode, returnType).
 				Decorate()
 		})
 	}
@@ -253,7 +256,9 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 	if typeDecl.TypeKind() == StructType {
 		// constructor Parse<T : $parser>(value string)
 		g.defineMember(typeDecl, "Parse", []string{"T"}, func(decorator *MemberDecorator, generics map[string]TGGeneric) {
-			var memberType = g.FunctionTypeReference(g.NewInstanceTypeReference(typeDecl))
+			returnType := g.NewInstanceTypeReference(typeDecl)
+
+			var memberType = g.FunctionTypeReference(returnType)
 			memberType = memberType.WithParameter(g.StringTypeReference())
 
 			decorator.
@@ -264,6 +269,7 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 				ReadOnly(true).
 				MemberType(memberType).
 				MemberKind(ConstructorMemberSignature).
+				CreateReturnable(decorator.member.GraphNode, returnType).
 				Decorate()
 		})
 
@@ -279,12 +285,13 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 				Promising(MemberPromisingDynamic).
 				Exported(true).
 				MemberKind(OperatorMemberSignature).
+				CreateReturnable(decorator.member.GraphNode, g.BoolTypeReference()).
 				Decorate()
 		})
 
 		// function<string> Stringify<T : $stringifier>()
 		g.defineMember(typeDecl, "Stringify", []string{"T"}, func(decorator *MemberDecorator, generics map[string]TGGeneric) {
-			var memberType = g.FunctionTypeReference(g.StringTypeReference())
+			memberType := g.FunctionTypeReference(g.StringTypeReference())
 			decorator.
 				defineGenericConstraint(generics["T"].GraphNode, g.SerializationStringifier().GetTypeReference()).
 				Static(false).
@@ -293,12 +300,14 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 				ReadOnly(true).
 				MemberType(memberType).
 				MemberKind(FunctionMemberSignature).
+				CreateReturnable(decorator.member.GraphNode, g.StringTypeReference()).
 				Decorate()
 		})
 
 		// function<Mapping<any>> Mapping()
 		g.defineMember(typeDecl, "Mapping", []string{}, func(decorator *MemberDecorator, generics map[string]TGGeneric) {
-			var memberType = g.FunctionTypeReference(g.MappingTypeReference(g.AnyTypeReference()))
+			returnType := g.MappingTypeReference(g.AnyTypeReference())
+			memberType := g.FunctionTypeReference(returnType)
 			decorator.
 				Static(false).
 				Promising(MemberNotPromising).
@@ -306,12 +315,14 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 				ReadOnly(true).
 				MemberType(memberType).
 				MemberKind(FunctionMemberSignature).
+				CreateReturnable(decorator.member.GraphNode, returnType).
 				Decorate()
 		})
 
 		// function<ThisType> Clone()
 		g.defineMember(typeDecl, "Clone", []string{}, func(decorator *MemberDecorator, generics map[string]TGGeneric) {
-			var memberType = g.FunctionTypeReference(g.NewInstanceTypeReference(typeDecl))
+			returnType := g.NewInstanceTypeReference(typeDecl)
+			memberType := g.FunctionTypeReference(returnType)
 			decorator.
 				Static(false).
 				Promising(MemberNotPromising).
@@ -319,12 +330,13 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 				ReadOnly(true).
 				MemberType(memberType).
 				MemberKind(FunctionMemberSignature).
+				CreateReturnable(decorator.member.GraphNode, returnType).
 				Decorate()
 		})
 
 		// function<string> String()
 		g.defineMember(typeDecl, "String", []string{}, func(decorator *MemberDecorator, generics map[string]TGGeneric) {
-			var memberType = g.FunctionTypeReference(g.StringTypeReference())
+			memberType := g.FunctionTypeReference(g.StringTypeReference())
 			decorator.
 				Static(false).
 				Promising(MemberNotPromising).
@@ -332,6 +344,7 @@ func (g *TypeGraph) defineImplicitMembers(typeDecl TGTypeDecl) {
 				ReadOnly(true).
 				MemberType(memberType).
 				MemberKind(FunctionMemberSignature).
+				CreateReturnable(decorator.member.GraphNode, g.StringTypeReference()).
 				Decorate()
 		})
 	}

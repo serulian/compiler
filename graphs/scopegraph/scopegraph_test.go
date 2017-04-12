@@ -1521,15 +1521,15 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"agent constructor fail test", "agent", "constructorfail",
 		[]expectedScopeEntry{},
-		"Cannot reference constructor 'new' of agent 'SomeAgent' under non-composing type 'SomeClass'", ""},
+		"Cannot construct agent 'SomeAgent' outside its own constructor or without a composing type's context", ""},
 
 	scopegraphTest{"agent struct constructor fail test", "agent", "structconstructfail",
 		[]expectedScopeEntry{},
-		"Cannot structurally construct agent 'SomeAgent' under non-composing type 'SomeClass'", ""},
+		"Cannot construct agent 'SomeAgent' outside its own constructor or without a composing type's context", ""},
 
 	scopegraphTest{"agent constructor generic fail test", "agent", "genericfail",
 		[]expectedScopeEntry{},
-		"Cannot reference constructor 'new' of agent 'SomeAgent<Boolean>' under non-composing type 'SomeClass'", ""},
+		"Cannot construct agent 'SomeAgent<Boolean>' outside its own constructor or without a composing type's context", ""},
 
 	/////////// known issue tests /////////////////
 
