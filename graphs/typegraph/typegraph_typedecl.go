@@ -182,6 +182,21 @@ func (tn TGTypeDecl) GetStaticMember(name string) (TGMember, bool) {
 	return member, true
 }
 
+// GetOperator returns the operator with the given name under this type, if any.
+func (tn TGTypeDecl) GetOperator(name string) (TGMember, bool) {
+	node, found := tn.GraphNode.
+		StartQuery().
+		Out(NodePredicateTypeOperator).
+		Has(NodePredicateOperatorName, name).
+		TryGetNode()
+
+	if !found {
+		return TGMember{}, false
+	}
+
+	return TGMember{node, tn.tdg}, true
+}
+
 // GetMember returns the member with the given name under this type, if any.
 func (tn TGTypeDecl) GetMember(name string) (TGMember, bool) {
 	node, found := tn.GraphNode.

@@ -199,7 +199,7 @@ func (tn TGMember) IsOperator() bool {
 // if it is a constructor.
 func (tn TGMember) ConstructorType() (TypeReference, bool) {
 	// TODO: make this explicit?
-	if !tn.IsStatic() || tn.IsField() || !tn.IsReadOnly() {
+	if !tn.IsStatic() || tn.IsField() || !tn.IsReadOnly() || tn.IsOperator() {
 		return tn.tdg.AnyTypeReference(), false
 	}
 

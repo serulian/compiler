@@ -430,13 +430,41 @@ func (t *testTypeGraphConstructor) DefineMembers(builder GetMemberBuilder, repor
 }
 
 func (t *testTypeGraphConstructor) DecorateMembers(decorator GetMemberDecorator, reporter IssueReporter, graph *TypeGraph) {
+	for _, memberInfo := range t.testMembers {
+		memberNode := t.memberMap[memberInfo.name]
+
+		builder := decorator(memberNode)
+		for _, genericInfo := range memberInfo.generics {
+			if genericInfo.constraint != "" {
+				genericNode, _ := t.genericMap[memberInfo.name+"::"+genericInfo.name]
+				builder.DefineGenericConstraint(genericNode, parseTypeReferenceForTesting(genericInfo.constraint, graph, memberNode))
+			}
+		}
+
+		var memberType = parseTypeReferenceForTesting(memberInfo.returnType, graph, memberNode)
+		if memberInfo.kind != FieldMemberSignature {
+			memberType = graph.FunctionTypeReference(memberType)
+			for _, paramInfo := range memberInfo.parameters {
+				memberType = memberType.WithParameter(parseTypeReferenceForTesting(paramInfo.paramType, graph, memberNode))
+			}
+		}
+
+		builder.Exported(isExportedName(memberInfo.name)).
+			ReadOnly(memberInfo.kind != FieldMemberSignature).
+			MemberType(memberType).
+			Static(true).
+			Field(memberInfo.kind == FieldMemberSignature).
+			SignatureType(memberType).
+			MemberKind(memberInfo.kind).
+			Decorate()
+	}
+
 	for _, typeInfo := range t.testTypes {
 		typeNode, _ := t.typeMap[typeInfo.name]
 		for _, memberInfo := range typeInfo.members {
 			memberNode := t.memberMap[typeInfo.name+"."+memberInfo.name]
 
 			builder := decorator(memberNode)
-
 			for _, genericInfo := range memberInfo.generics {
 				if genericInfo.constraint != "" {
 					genericNode, _ := t.genericMap[typeInfo.name+"."+memberInfo.name+"::"+genericInfo.name]
@@ -459,11 +487,15 @@ func (t *testTypeGraphConstructor) DecorateMembers(decorator GetMemberDecorator,
 				for _, paramInfo := range memberInfo.parameters {
 					signatureType = signatureType.WithParameter(parseTypeReferenceForTesting(paramInfo.paramType, graph, memberNode, typeNode))
 				}
+
+				builder.CreateReturnable(memberNode, memberType.Generics()[0])
 			}
 
 			builder.Exported(isExportedName(memberInfo.name)).
-				ReadOnly(false).
+				ReadOnly(memberInfo.kind != PropertyMemberSignature && memberInfo.kind != FieldMemberSignature).
 				MemberType(memberType).
+				Static(memberInfo.kind == ConstructorMemberSignature).
+				Field(memberInfo.kind == FieldMemberSignature).
 				SignatureType(signatureType).
 				MemberKind(memberInfo.kind).
 				Decorate()
