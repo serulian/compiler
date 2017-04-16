@@ -157,7 +157,7 @@ const (
 	NodeNullLiteralExpression      // null
 	NodeValLiteralExpression       // val
 
-	NodeListExpression                // [1, 2, 3]
+	NodeListLiteralExpression         // [1, 2, 3]
 	NodeSliceLiteralExpression        // []int{1, 2, 3}
 	NodeMappingLiteralExpression      // []{string}{a: 1, b: 2}
 	NodeMappingLiteralExpressionEntry // a: 1

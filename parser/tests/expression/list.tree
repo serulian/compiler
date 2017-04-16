@@ -19,7 +19,7 @@ NodeTypeFile
               input-source = list expr test
               start-rune = 33
               expr-statement-expr =>
-                NodeListExpression
+                NodeListLiteralExpression
                   end-rune = 34
                   input-source = list expr test
                   start-rune = 33
@@ -28,7 +28,7 @@ NodeTypeFile
               input-source = list expr test
               start-rune = 37
               expr-statement-expr =>
-                NodeListExpression
+                NodeListLiteralExpression
                   end-rune = 45
                   input-source = list expr test
                   start-rune = 37
@@ -53,7 +53,7 @@ NodeTypeFile
               input-source = list expr test
               start-rune = 48
               expr-statement-expr =>
-                NodeListExpression
+                NodeListLiteralExpression
                   end-rune = 71
                   input-source = list expr test
                   start-rune = 48
@@ -78,7 +78,7 @@ NodeTypeFile
               input-source = list expr test
               start-rune = 74
               expr-statement-expr =>
-                NodeListExpression
+                NodeListLiteralExpression
                   end-rune = 107
                   input-source = list expr test
                   start-rune = 74

@@ -793,7 +793,7 @@ NodeTypeFile
               input-source = all expr test
               start-rune = 352
               expr-statement-expr =>
-                NodeListExpression
+                NodeListLiteralExpression
                   end-rune = 353
                   input-source = all expr test
                   start-rune = 352
@@ -802,7 +802,7 @@ NodeTypeFile
               input-source = all expr test
               start-rune = 356
               expr-statement-expr =>
-                NodeListExpression
+                NodeListLiteralExpression
                   end-rune = 358
                   input-source = all expr test
                   start-rune = 356
@@ -817,7 +817,7 @@ NodeTypeFile
               input-source = all expr test
               start-rune = 361
               expr-statement-expr =>
-                NodeListExpression
+                NodeListLiteralExpression
                   end-rune = 369
                   input-source = all expr test
                   start-rune = 361

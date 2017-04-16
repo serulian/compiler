@@ -3490,7 +3490,7 @@ func (p *sourceParser) consumeSliceLiteralExpression() AstNode {
 
 // consumeListExpression consumes an inline list expression.
 func (p *sourceParser) consumeListExpression() AstNode {
-	listNode := p.startNode(NodeListExpression)
+	listNode := p.startNode(NodeListLiteralExpression)
 	defer p.finishNode()
 
 	// [
