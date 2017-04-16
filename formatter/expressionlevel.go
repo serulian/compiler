@@ -55,8 +55,8 @@ var nonWrappingUnaryNodeKinds = []parser.NodeType{
 	parser.NodeBooleanLiteralExpression,
 	parser.NodeNumericLiteralExpression,
 	parser.NodeTypeIdentifierExpression,
-	parser.NodeListExpression,
-	parser.NodeMapExpression,
+	parser.NodeListLiteralExpression,
+	parser.NodeMapLiteralExpression,
 	parser.NodeMemberAccessExpression,
 	parser.NodeDynamicMemberAccessExpression,
 	parser.NodeStreamMemberAccessExpression,
@@ -216,7 +216,7 @@ var nonWrappingSliceNodeKinds = []parser.NodeType{
 	parser.NodeBooleanLiteralExpression,
 	parser.NodeNumericLiteralExpression,
 	parser.NodeTypeIdentifierExpression,
-	parser.NodeListExpression,
+	parser.NodeListLiteralExpression,
 	parser.NodeMemberAccessExpression,
 	parser.NodeDynamicMemberAccessExpression,
 	parser.NodeStreamMemberAccessExpression,
@@ -296,10 +296,10 @@ func (sf *sourceFormatter) emitTemplateString(node formatterNode) {
 	sf.append("`")
 }
 
-// emitListExpression emits a list literal expression.
-func (sf *sourceFormatter) emitListExpression(node formatterNode) {
+// emitListLiteralExpression emits a list literal expression.
+func (sf *sourceFormatter) emitListLiteralExpression(node formatterNode) {
 	sf.append("[")
-	exprs := node.getChildren(parser.NodeListExpressionValue)
+	exprs := node.getChildren(parser.NodeListLiteralExpressionValue)
 	sf.emitInnerExpressions(exprs)
 	sf.append("]")
 }
@@ -314,21 +314,21 @@ func (sf *sourceFormatter) emitSliceLiteralExpression(node formatterNode) {
 	sf.append("}")
 }
 
-// emitMapExpression emits a map literal expression value.
-func (sf *sourceFormatter) emitMapExpression(node formatterNode) {
+// emitMapLiteralExpression emits a map literal expression value.
+func (sf *sourceFormatter) emitMapLiteralExpression(node formatterNode) {
 	sf.append("{")
 
-	entries := node.getChildren(parser.NodeMapExpressionChildEntry)
+	entries := node.getChildren(parser.NodeMapLiteralExpressionChildEntry)
 	sf.emitInnerExpressions(entries)
 
 	sf.append("}")
 }
 
-// emitMapExpressionEntry emits a single entry under a map literal expression.
-func (sf *sourceFormatter) emitMapExpressionEntry(node formatterNode) {
-	sf.emitNode(node.getChild(parser.NodeMapExpressionEntryKey))
+// emitMapLiteralExpressionEntry emits a single entry under a map literal expression.
+func (sf *sourceFormatter) emitMapLiteralExpressionEntry(node formatterNode) {
+	sf.emitNode(node.getChild(parser.NodeMapLiteralExpressionEntryKey))
 	sf.append(": ")
-	sf.emitNode(node.getChild(parser.NodeMapExpressionEntryValue))
+	sf.emitNode(node.getChild(parser.NodeMapLiteralExpressionEntryValue))
 }
 
 // emitMappingLiteralExpression emits a mapping literal expression value.

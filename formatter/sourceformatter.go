@@ -399,8 +399,8 @@ func (sf *sourceFormatter) emitNode(node formatterNode) {
 	case parser.NodeTypeIdentifierExpression:
 		sf.emitIdentifierExpression(node)
 
-	case parser.NodeListExpression:
-		sf.emitListExpression(node)
+	case parser.NodeListLiteralExpression:
+		sf.emitListLiteralExpression(node)
 
 	case parser.NodeSliceLiteralExpression:
 		sf.emitSliceLiteralExpression(node)
@@ -417,11 +417,11 @@ func (sf *sourceFormatter) emitNode(node formatterNode) {
 	case parser.NodeStructuralNewExpressionEntry:
 		sf.emitStructuralNewExpressionEntry(node)
 
-	case parser.NodeMapExpression:
-		sf.emitMapExpression(node)
+	case parser.NodeMapLiteralExpression:
+		sf.emitMapLiteralExpression(node)
 
-	case parser.NodeMapExpressionEntry:
-		sf.emitMapExpressionEntry(node)
+	case parser.NodeMapLiteralExpressionEntry:
+		sf.emitMapLiteralExpressionEntry(node)
 
 	default:
 		panic(fmt.Sprintf("Unhandled parser node type: %v", node.nodeType))
