@@ -955,7 +955,7 @@ NodeTypeFile
               input-source = all expr test
               start-rune = 462
               expr-statement-expr =>
-                NodeMapExpression
+                NodeMapLiteralExpression
                   end-rune = 463
                   input-source = all expr test
                   start-rune = 462
@@ -964,12 +964,12 @@ NodeTypeFile
               input-source = all expr test
               start-rune = 466
               expr-statement-expr =>
-                NodeMapExpression
+                NodeMapLiteralExpression
                   end-rune = 479
                   input-source = all expr test
                   start-rune = 466
                   map-expr-entry =>
-                    NodeMapExpressionEntry
+                    NodeMapLiteralExpressionEntry
                       end-rune = 475
                       input-source = all expr test
                       start-rune = 470
@@ -990,12 +990,12 @@ NodeTypeFile
               input-source = all expr test
               start-rune = 482
               expr-statement-expr =>
-                NodeMapExpression
+                NodeMapLiteralExpression
                   end-rune = 493
                   input-source = all expr test
                   start-rune = 482
                   map-expr-entry =>
-                    NodeMapExpressionEntry
+                    NodeMapLiteralExpressionEntry
                       end-rune = 489
                       input-source = all expr test
                       start-rune = 486

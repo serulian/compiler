@@ -19,7 +19,7 @@ NodeTypeFile
               input-source = map missing comma expr test
               start-rune = 33
               expr-statement-expr =>
-                NodeMapExpression
+                NodeMapLiteralExpression
                   end-rune = 42
                   input-source = map missing comma expr test
                   start-rune = 33
@@ -30,7 +30,7 @@ NodeTypeFile
                       input-source = map missing comma expr test
                       start-rune = 43
                   map-expr-entry =>
-                    NodeMapExpressionEntry
+                    NodeMapLiteralExpressionEntry
                       end-rune = 42
                       input-source = map missing comma expr test
                       start-rune = 37
