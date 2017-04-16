@@ -1,0 +1,10 @@
+function<int> DoSomething(arg mapping<string>) {
+    return 2
+}
+
+function<void> TEST() {
+    DoSomething{
+        Foo: 'bar',
+        Foo: 'baz',
+    }
+}

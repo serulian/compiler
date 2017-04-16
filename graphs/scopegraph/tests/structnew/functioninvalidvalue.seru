@@ -1,0 +1,9 @@
+function<int> DoSomething(arg mapping<bool>) {
+    return 2
+}
+
+function<void> TEST() {
+    DoSomething{
+        Foo: 'bar',
+    }
+}

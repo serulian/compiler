@@ -1,0 +1,7 @@
+function<int> DoSomething() {
+    return 2
+}
+
+function<void> TEST() {
+    DoSomething{}
+}

@@ -1,3 +1,4 @@
 function<void> DoSomething() {
-	DoSomething{}
+	var someVar = 2
+	someVar{}
 }
