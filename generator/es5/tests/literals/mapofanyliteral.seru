@@ -6,5 +6,5 @@ function<any> TEST() {
 		'thirdKey': {'a': 'b', 'c': 'd'},
 	}
 
-	return int(map.Mapping().Keys.Length) == 4
+	return int(map.Keys.Length) == 4
 }

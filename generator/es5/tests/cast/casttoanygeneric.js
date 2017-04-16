@@ -24,8 +24,8 @@ $module('casttoanygeneric', function () {
     $g.casttoanygeneric.test($t.any)($t.fastbox('hello world', $g.____testlib.basictypes.String));
     $g.casttoanygeneric.test($t.any)($t.fastbox(1234, $g.____testlib.basictypes.Integer));
     $g.casttoanygeneric.test($t.any)($g.casttoanygeneric.SomeClass.new());
-    $g.casttoanygeneric.test($t.any)($g.____testlib.basictypes.Map($g.____testlib.basictypes.Mappable, $t.any).new());
-    $g.casttoanygeneric.test($t.any)($g.____testlib.basictypes.List($t.any).new());
+    $g.casttoanygeneric.test($t.any)($g.____testlib.basictypes.Mapping($t.any).Empty());
+    $g.casttoanygeneric.test($t.any)($g.____testlib.basictypes.Slice($t.any).Empty());
     $g.casttoanygeneric.test($t.any)(null);
     return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
   };

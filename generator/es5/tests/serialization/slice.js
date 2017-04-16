@@ -22,12 +22,12 @@ $module('slice', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Parse|1|89b8f38e<9b59dab3>": true,
-        "equals|4|89b8f38e<f7f23c49>": true,
-        "Stringify|2|89b8f38e<549fbddd>": true,
-        "Mapping|2|89b8f38e<ad6de9ce<any>>": true,
-        "Clone|2|89b8f38e<9b59dab3>": true,
-        "String|2|89b8f38e<549fbddd>": true,
+        "Parse|1|fd8bc7c9<9b59dab3>": true,
+        "equals|4|fd8bc7c9<9706e8ab>": true,
+        "Stringify|2|fd8bc7c9<268aa058>": true,
+        "Mapping|2|fd8bc7c9<ad6de9ce<any>>": true,
+        "Clone|2|fd8bc7c9<9b59dab3>": true,
+        "String|2|fd8bc7c9<268aa058>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -55,12 +55,12 @@ $module('slice', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Parse|1|89b8f38e<a7573ae2>": true,
-        "equals|4|89b8f38e<f7f23c49>": true,
-        "Stringify|2|89b8f38e<549fbddd>": true,
-        "Mapping|2|89b8f38e<ad6de9ce<any>>": true,
-        "Clone|2|89b8f38e<a7573ae2>": true,
-        "String|2|89b8f38e<549fbddd>": true,
+        "Parse|1|fd8bc7c9<a7573ae2>": true,
+        "equals|4|fd8bc7c9<9706e8ab>": true,
+        "Stringify|2|fd8bc7c9<268aa058>": true,
+        "Mapping|2|fd8bc7c9<ad6de9ce<any>>": true,
+        "Clone|2|fd8bc7c9<a7573ae2>": true,
+        "String|2|fd8bc7c9<268aa058>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -78,7 +78,7 @@ $module('slice', function () {
       while (true) {
         switch ($current) {
           case 0:
-            values = $g.____testlib.basictypes.List($g.slice.AnotherStruct).forArray([$g.slice.AnotherStruct.new($t.fastbox(1, $g.____testlib.basictypes.Integer)), $g.slice.AnotherStruct.new($t.fastbox(2, $g.____testlib.basictypes.Integer)), $g.slice.AnotherStruct.new($t.fastbox(3, $g.____testlib.basictypes.Integer))]);
+            values = $g.____testlib.basictypes.Slice($g.slice.AnotherStruct).overArray([$g.slice.AnotherStruct.new($t.fastbox(1, $g.____testlib.basictypes.Integer)), $g.slice.AnotherStruct.new($t.fastbox(2, $g.____testlib.basictypes.Integer)), $g.slice.AnotherStruct.new($t.fastbox(3, $g.____testlib.basictypes.Integer))]);
             s = $g.slice.SomeStruct.new(values.$slice($t.fastbox(0, $g.____testlib.basictypes.Integer), null));
             jsonString = $t.fastbox('{"Values":[{"AnotherInt":1},{"AnotherInt":2},{"AnotherInt":3}]}', $g.____testlib.basictypes.String);
             $promise.maybe(s.Stringify($g.____testlib.basictypes.JSON)()).then(function ($result0) {

@@ -222,9 +222,14 @@ func (db *domBuilder) buildPrincipalLiteral(node compilergraph.GraphNode) codedo
 	return codedom.LocalReference(DEFINED_PRINCIPAL_PARAMETER, node)
 }
 
-// buildListExpression builds the CodeDOM for a list expression.
-func (db *domBuilder) buildListExpression(node compilergraph.GraphNode) codedom.Expression {
-	return db.buildCollectionLiteralExpression(node, parser.NodeListExpressionValue, "new", "forArray")
+// buildSliceLiteralExpression builds the CodeDOM for a slice literal expression.
+func (db *domBuilder) buildSliceLiteralExpression(node compilergraph.GraphNode) codedom.Expression {
+	return db.buildCollectionLiteralExpression(node, parser.NodeSliceLiteralExpressionValue, "Empty", "overArray")
+}
+
+// buildListLiteralExpression builds the CodeDOM for a list literal expression.
+func (db *domBuilder) buildListLiteralExpression(node compilergraph.GraphNode) codedom.Expression {
+	return db.buildCollectionLiteralExpression(node, parser.NodeListLiteralExpressionValue, "Empty", "overArray")
 }
 
 // buildCollectionLiteralExpression builds a literal collection expression.
@@ -262,11 +267,6 @@ func (db *domBuilder) buildCollectionInitializerExpression(collectionType typegr
 		node)
 }
 
-// buildSliceLiteralExpression builds the CodeDOM for a slice literal expression.
-func (db *domBuilder) buildSliceLiteralExpression(node compilergraph.GraphNode) codedom.Expression {
-	return db.buildCollectionLiteralExpression(node, parser.NodeSliceLiteralExpressionValue, "Empty", "overArray")
-}
-
 // buildMappingInitializerExpression builds the CodeDOM for initializing a mapping literal expression.
 func (db *domBuilder) buildMappingInitializerExpression(mappingType typegraph.TypeReference, initializers map[string]codedom.Expression, node compilergraph.GraphNode) codedom.Expression {
 	var entries = make([]codedom.ObjectLiteralEntryNode, 0)
@@ -297,13 +297,33 @@ func (db *domBuilder) buildMappingInitializerExpression(mappingType typegraph.Ty
 		node)
 }
 
+// buildMapLiteralExpression builds the CodeDOM for a map literal expression.
+func (db *domBuilder) buildMapLiteralExpression(node compilergraph.GraphNode) codedom.Expression {
+	return db.buildMappedCollectionExpression(node,
+		parser.NodeMapLiteralExpressionChildEntry,
+		parser.NodeMapLiteralExpressionEntryKey,
+		parser.NodeMapLiteralExpressionEntryValue)
+}
+
 // buildMappingLiteralExpression builds the CodeDOM for a mapping literal expression.
 func (db *domBuilder) buildMappingLiteralExpression(node compilergraph.GraphNode) codedom.Expression {
+	return db.buildMappedCollectionExpression(node,
+		parser.NodeMappingLiteralExpressionEntryRef,
+		parser.NodeMappingLiteralExpressionEntryKey,
+		parser.NodeMappingLiteralExpressionEntryValue)
+}
+
+// buildMappedCollectionExpression builds the CodeDOM for a map or mapping literal expression.
+func (db *domBuilder) buildMappedCollectionExpression(node compilergraph.GraphNode,
+	entryPredicate compilergraph.Predicate,
+	keyPredicate compilergraph.Predicate,
+	valuePredicate compilergraph.Predicate) codedom.Expression {
+
 	mappingScope, _ := db.scopegraph.GetScope(node)
 	mappingType := mappingScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
 
 	eit := node.StartQuery().
-		Out(parser.NodeMappingLiteralExpressionEntryRef).
+		Out(entryPredicate).
 		BuildNodeIterator()
 
 	var entries = make([]codedom.ObjectLiteralEntryNode, 0)
@@ -313,7 +333,7 @@ func (db *domBuilder) buildMappingLiteralExpression(node compilergraph.GraphNode
 
 		// The key expression must be a string when produced. We either reference it directly (if a string)
 		// or call .String() (if a Stringable).
-		keyNode := entryNode.GetNode(parser.NodeMappingLiteralExpressionEntryKey)
+		keyNode := entryNode.GetNode(keyPredicate)
 		keyScope, _ := db.scopegraph.GetScope(keyNode)
 		keyType := keyScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
 
@@ -329,7 +349,7 @@ func (db *domBuilder) buildMappingLiteralExpression(node compilergraph.GraphNode
 		}
 
 		// Get the expression for the value.
-		valueExpr := db.getExpression(entryNode, parser.NodeMappingLiteralExpressionEntryValue)
+		valueExpr := db.getExpression(entryNode, valuePredicate)
 
 		// Build an object literal expression with the (native version of the) key string and the
 		// created value.
@@ -356,43 +376,6 @@ func (db *domBuilder) buildMappingLiteralExpression(node compilergraph.GraphNode
 		codedom.MemberReference(codedom.TypeLiteral(mappingType, node), constructor, node),
 		constructor,
 		[]codedom.Expression{codedom.ObjectLiteral(entries, node)},
-		node)
-}
-
-// buildMapExpression builds the CodeDOM for a map expression.
-func (db *domBuilder) buildMapExpression(node compilergraph.GraphNode) codedom.Expression {
-	mapScope, _ := db.scopegraph.GetScope(node)
-	mapType := mapScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
-
-	eit := node.StartQuery().
-		Out(parser.NodeMapExpressionChildEntry).
-		BuildNodeIterator()
-
-	var keyExprs = make([]codedom.Expression, 0)
-	var valueExprs = make([]codedom.Expression, 0)
-
-	for eit.Next() {
-		entryNode := eit.Node()
-
-		keyExprs = append(keyExprs, db.getExpression(entryNode, parser.NodeMapExpressionEntryKey))
-		valueExprs = append(valueExprs, db.getExpression(entryNode, parser.NodeMapExpressionEntryValue))
-	}
-
-	if len(valueExprs) == 0 {
-		// Empty map. Call the new() constructor directly.
-		constructor, _ := mapType.ResolveMember("new", typegraph.MemberResolutionStatic)
-		return codedom.MemberCall(
-			codedom.MemberReference(codedom.TypeLiteral(mapType, node), constructor, node),
-			constructor,
-			[]codedom.Expression{},
-			node)
-	}
-
-	constructor, _ := mapType.ResolveMember("forArrays", typegraph.MemberResolutionStatic)
-	return codedom.MemberCall(
-		codedom.MemberReference(codedom.TypeLiteral(mapType, node), constructor, node),
-		constructor,
-		[]codedom.Expression{codedom.ArrayLiteral(keyExprs, node), codedom.ArrayLiteral(valueExprs, node)},
 		node)
 }
 

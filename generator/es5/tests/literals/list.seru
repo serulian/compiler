@@ -1,4 +1,4 @@
 function<any> TEST() {
 	var l = [1, 2, 3, true]
-	return l.Count == 4
+	return l.Length == 4
 }

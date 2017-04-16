@@ -78,6 +78,25 @@ type Slice<T> : Array {
 		return Array(this)[Number(index)].(T)
 	}
 
+	operator<Slice<T>> Slice(startindex int?, endindex int?) {
+		var start = startindex ?? 0
+		var end = endindex ?? this.Length
+
+		if start < 0 {
+			start = start + this.Length
+		}
+
+		if end < 0 {
+			end = end + this.Length
+		}
+
+		if start >= end {
+			return Slice<T>.Empty()
+		}
+
+		return Slice<T>.overArray(Array(this).slice(Number(start), Number(end)))
+	}
+
 	property<int> Length {
 		get {
 			return int(Array(this).length)
