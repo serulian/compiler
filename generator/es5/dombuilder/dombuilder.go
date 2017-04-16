@@ -343,8 +343,8 @@ func (db *domBuilder) buildExpression(node compilergraph.GraphNode) codedom.Expr
 	case parser.NodeValLiteralExpression:
 		return db.buildValLiteral(node)
 
-	case parser.NodeListExpression:
-		return db.buildListExpression(node)
+	case parser.NodeListLiteralExpression:
+		return db.buildListLiteralExpression(node)
 
 	case parser.NodeSliceLiteralExpression:
 		return db.buildSliceLiteralExpression(node)
@@ -352,8 +352,8 @@ func (db *domBuilder) buildExpression(node compilergraph.GraphNode) codedom.Expr
 	case parser.NodeMappingLiteralExpression:
 		return db.buildMappingLiteralExpression(node)
 
-	case parser.NodeMapExpression:
-		return db.buildMapExpression(node)
+	case parser.NodeMapLiteralExpression:
+		return db.buildMapLiteralExpression(node)
 
 	case parser.NodeTypeTemplateString:
 		return db.buildTemplateStringExpression(node)

@@ -34,7 +34,7 @@ $module('nominalbase', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeProp|3|f7f23c49": true,
+        "SomeProp|3|9706e8ab": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -60,7 +60,7 @@ $module('nominalbase', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "GetValue|2|89b8f38e<f7f23c49>": true,
+        "GetValue|2|fd8bc7c9<9706e8ab>": true,
       };
       return this.$cachedtypesig = computed;
     };

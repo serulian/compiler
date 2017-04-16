@@ -11,7 +11,7 @@ $module('looped', function () {
     syncloop: while (true) {
       switch ($current) {
         case 0:
-          values = $g.____testlib.basictypes.List($t.struct).forArray([$t.fastbox(1, $g.____testlib.basictypes.Integer), $t.fastbox(true, $g.____testlib.basictypes.Boolean), $t.fastbox(3, $g.____testlib.basictypes.Integer)]);
+          values = $g.____testlib.basictypes.Slice($t.struct).overArray([$t.fastbox(1, $g.____testlib.basictypes.Integer), $t.fastbox(true, $g.____testlib.basictypes.Boolean), $t.fastbox(3, $g.____testlib.basictypes.Integer)]);
           $current = 1;
           continue syncloop;
 

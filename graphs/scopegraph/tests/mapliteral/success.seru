@@ -1,6 +1,6 @@
 class SomeClass {
-	property<stringable> MapKey {
-		get { return 'hey '}
+	function<string> String() {
+		return 'hey!'
 	}
 }
 

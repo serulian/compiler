@@ -171,12 +171,12 @@ NodeTypeFile
                       sml-attribute-name = someAttr
                       start-rune = 168
                       sml-attribute-value =>
-                        NodeMapExpression
+                        NodeMapLiteralExpression
                           end-rune = 191
                           input-source = attributes sml test
                           start-rune = 178
                           map-expr-entry =>
-                            NodeMapExpressionEntry
+                            NodeMapLiteralExpressionEntry
                               end-rune = 190
                               input-source = attributes sml test
                               start-rune = 179

@@ -90,7 +90,7 @@ NodeTypeFile
                       start-rune = 135
                       structural-new-entry-key = Values
                       structural-new-entry-value =>
-                        NodeListExpression
+                        NodeListLiteralExpression
                           end-rune = 276
                           input-source = slice struct test
                           start-rune = 143

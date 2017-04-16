@@ -19,7 +19,7 @@ NodeTypeFile
               input-source = list call expr test
               start-rune = 33
               expr-statement-expr =>
-                NodeListExpression
+                NodeListLiteralExpression
                   end-rune = 43
                   input-source = list call expr test
                   start-rune = 33

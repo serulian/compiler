@@ -3292,7 +3292,7 @@ func (p *sourceParser) tryConsumeMapExpression() (AstNode, bool) {
 		return nil, false
 	}
 
-	mapNode := p.startNode(NodeMapExpression)
+	mapNode := p.startNode(NodeMapLiteralExpression)
 	defer p.finishNode()
 
 	// {
@@ -3302,7 +3302,7 @@ func (p *sourceParser) tryConsumeMapExpression() (AstNode, bool) {
 
 	if !p.isToken(tokenTypeRightBrace) {
 		for {
-			mapNode.Connect(NodeMapExpressionChildEntry, p.consumeMapExpressionEntry())
+			mapNode.Connect(NodeMapLiteralExpressionChildEntry, p.consumeMapExpressionEntry())
 
 			if _, ok := p.tryConsume(tokenTypeComma); !ok {
 				break
@@ -3321,17 +3321,17 @@ func (p *sourceParser) tryConsumeMapExpression() (AstNode, bool) {
 
 // consumeMapExpressionEntry consumes an entry of an inline map expression.
 func (p *sourceParser) consumeMapExpressionEntry() AstNode {
-	entryNode := p.startNode(NodeMapExpressionEntry)
+	entryNode := p.startNode(NodeMapLiteralExpressionEntry)
 	defer p.finishNode()
 
 	// Consume an expression.
-	entryNode.Connect(NodeMapExpressionEntryKey, p.consumeExpression(consumeExpressionNoBraces))
+	entryNode.Connect(NodeMapLiteralExpressionEntryKey, p.consumeExpression(consumeExpressionNoBraces))
 
 	// Consume a colon.
 	p.consume(tokenTypeColon)
 
 	// Consume an expression.
-	entryNode.Connect(NodeMapExpressionEntryValue, p.consumeExpression(consumeExpressionAllowBraces))
+	entryNode.Connect(NodeMapLiteralExpressionEntryValue, p.consumeExpression(consumeExpressionAllowBraces))
 
 	return entryNode
 }
@@ -3490,7 +3490,7 @@ func (p *sourceParser) consumeSliceLiteralExpression() AstNode {
 
 // consumeListExpression consumes an inline list expression.
 func (p *sourceParser) consumeListExpression() AstNode {
-	listNode := p.startNode(NodeListExpression)
+	listNode := p.startNode(NodeListLiteralExpression)
 	defer p.finishNode()
 
 	// [
@@ -3505,7 +3505,7 @@ func (p *sourceParser) consumeListExpression() AstNode {
 				break
 			}
 
-			listNode.Connect(NodeListExpressionValue, p.consumeExpression(consumeExpressionAllowBraces))
+			listNode.Connect(NodeListLiteralExpressionValue, p.consumeExpression(consumeExpressionAllowBraces))
 
 			if p.isToken(tokenTypeRightBracket) {
 				break

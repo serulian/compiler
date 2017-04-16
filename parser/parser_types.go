@@ -157,7 +157,7 @@ const (
 	NodeNullLiteralExpression      // null
 	NodeValLiteralExpression       // val
 
-	NodeListExpression                // [1, 2, 3]
+	NodeListLiteralExpression         // [1, 2, 3]
 	NodeSliceLiteralExpression        // []int{1, 2, 3}
 	NodeMappingLiteralExpression      // []{string}{a: 1, b: 2}
 	NodeMappingLiteralExpressionEntry // a: 1
@@ -165,8 +165,8 @@ const (
 	NodeStructuralNewExpression      // SomeName{a: 1, b: 2}
 	NodeStructuralNewExpressionEntry // a: 1
 
-	NodeMapExpression      // {a: 1, b: 2}
-	NodeMapExpressionEntry // a: 1
+	NodeMapLiteralExpression      // {a: 1, b: 2}
+	NodeMapLiteralExpressionEntry // a: 1
 
 	NodeTypeIdentifierExpression // An identifier expression
 
@@ -569,9 +569,9 @@ const (
 	NodeFunctionCallExpressionChildExpr = "function-call-expr"
 
 	//
-	// NodeListExpression
+	// NodeListLiteralExpression
 	//
-	NodeListExpressionValue = "list-expr-value"
+	NodeListLiteralExpressionValue = "list-expr-value"
 
 	//
 	// NodeSliceLiteralExpression
@@ -604,12 +604,12 @@ const (
 	NodeStructuralNewEntryValue = "structural-new-entry-value"
 
 	//
-	// NodeMapExpression
+	// NodeMapLiteralExpression
 	//
-	NodeMapExpressionChildEntry = "map-expr-entry"
+	NodeMapLiteralExpressionChildEntry = "map-expr-entry"
 
-	NodeMapExpressionEntryKey   = "map-entry-key"
-	NodeMapExpressionEntryValue = "map-entry-value"
+	NodeMapLiteralExpressionEntryKey   = "map-entry-key"
+	NodeMapLiteralExpressionEntryValue = "map-entry-value"
 
 	//
 	// NodeGenericSpecifierExpression

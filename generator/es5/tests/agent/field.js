@@ -25,7 +25,7 @@ $module('field', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Declare|1|89b8f38e<ad638208>": true,
+        "Declare|1|fd8bc7c9<ad638208>": true,
       };
       return this.$cachedtypesig = computed;
     };

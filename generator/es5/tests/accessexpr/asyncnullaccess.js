@@ -43,7 +43,7 @@ $module('asyncnullaccess', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeProperty|3|f7f23c49": true,
+        "SomeProperty|3|9706e8ab": true,
       };
       return this.$cachedtypesig = computed;
     };

@@ -138,7 +138,7 @@ NodeTypeFile
                               input-source = slice literal expr test
                               start-rune = 92
                   slice-literal-expr-value =>
-                    NodeListExpression
+                    NodeListLiteralExpression
                       end-rune = 116
                       input-source = slice literal expr test
                       start-rune = 108

@@ -15,7 +15,7 @@ $module('multiawait', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "plus|4|89b8f38e<5965b3f7>": true,
+        "plus|4|fd8bc7c9<5965b3f7>": true,
       };
       return this.$cachedtypesig = computed;
     };
