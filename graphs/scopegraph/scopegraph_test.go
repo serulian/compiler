@@ -1429,6 +1429,25 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	scopegraphTest{"structural new function test", "structnew", "function",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"call1", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+			expectedScopeEntry{"call2", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"structural new invalid function test", "structnew", "invalidfunction",
+		[]expectedScopeEntry{},
+		"Structural mapping function must have 1 parameter. Found: function<Integer>", ""},
+
+	scopegraphTest{"structural new function invalid map value test", "structnew", "functioninvalidvalue",
+		[]expectedScopeEntry{},
+		"Structural mapping function's parameter is Mapping with value type Boolean, but was given String: 'String' cannot be used in place of non-interface 'Boolean'", ""},
+
+	scopegraphTest{"structural new function duplicate key test", "structnew", "functionduplicatekey",
+		[]expectedScopeEntry{},
+		"Structural mapping contains duplicate key: Foo", ""},
+
 	scopegraphTest{"structural new invalid default test", "structnew", "invaliddefault",
 		[]expectedScopeEntry{},
 		"Field 'SomeField' has declared type 'Integer': 'String' cannot be used in place of non-interface 'Integer'", ""},
@@ -1443,7 +1462,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"structural new non-type test", "structnew", "nontype",
 		[]expectedScopeEntry{},
-		"Cannot clone and modify non-structural type function<void>", ""},
+		"Cannot clone and modify non-structural type Integer", ""},
 
 	scopegraphTest{"structural new imported class test", "structnew", "importedclass",
 		[]expectedScopeEntry{},

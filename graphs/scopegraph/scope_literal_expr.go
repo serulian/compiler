@@ -26,15 +26,102 @@ func (sb *scopeBuilder) scopeStructuralNewExpression(node compilergraph.GraphNod
 	}
 
 	// If the child scope refers to a static type, then we are constructing a new instance of that
-	// type. Otherwise, we are "modifying" an existing structural instance via a clone.
+	// type. Otherwise, we are either "modifying" an existing structural instance via a clone or
+	// calling a structural construction function.
 	if childScope.GetKind() == proto.ScopeKind_STATIC {
 		return sb.scopeStructuralNewTypeExpression(node, childScope, context)
 	} else if childScope.GetKind() == proto.ScopeKind_VALUE {
+		// This is either a structural clone or a call to a structural function. Check
+		// if we have a function.
+		resolvedTypeRef := childScope.ResolvedTypeRef(sb.sg.tdg)
+		if resolvedTypeRef.IsDirectReferenceTo(sb.sg.tdg.FunctionType()) {
+			return sb.scopeStructuralFunctionExpression(node, childScope, context)
+		}
+
 		return sb.scopeStructuralNewCloneExpression(node, childScope, context)
 	} else {
 		sb.decorateWithError(node, "Cannot construct non-type, non-struct expression")
 		return newScope().Invalid().GetScope()
 	}
+}
+
+// scopeStructuralFunctionExpression scopes a call to a structural construction function expression.
+func (sb *scopeBuilder) scopeStructuralFunctionExpression(node compilergraph.GraphNode, childScope *proto.ScopeInfo, context scopeContext) proto.ScopeInfo {
+	// Scope each of the entries, determine the combined value type, and check for duplicate entry keys.
+	eit := node.StartQuery().
+		Out(parser.NodeStructuralNewExpressionChildEntry).
+		BuildNodeIterator(parser.NodeStructuralNewEntryKey)
+
+	var isValid = true
+	var valueType = sb.sg.tdg.VoidTypeReference()
+	var encountered = map[string]bool{}
+
+	for eit.Next() {
+		entryValue := eit.Node().GetNode(parser.NodeStructuralNewEntryValue)
+		entryScope := sb.getScope(entryValue, context)
+		if !entryScope.GetIsValid() {
+			isValid = false
+			continue
+		}
+
+		valueType = valueType.Intersect(entryScope.ResolvedTypeRef(sb.sg.tdg))
+
+		entryKey := eit.GetPredicate(parser.NodeStructuralNewEntryKey).String()
+		if _, exists := encountered[entryKey]; exists {
+			isValid = false
+			sb.decorateWithError(node, "Structural mapping contains duplicate key: %s", entryKey)
+			continue
+		}
+
+		encountered[entryKey] = true
+	}
+
+	if !isValid {
+		return newScope().Invalid().GetScope()
+	}
+
+	// Make sure the function takes in a valid mapping.
+	resolvedTypeRef := childScope.ResolvedTypeRef(sb.sg.tdg)
+	parameterTypes := resolvedTypeRef.Parameters()
+	if len(parameterTypes) != 1 {
+		sb.decorateWithError(node, "Structural mapping function must have 1 parameter. Found: %s", resolvedTypeRef)
+		return newScope().Invalid().GetScope()
+	}
+
+	// Make sure we have a Mapping.
+	mappingType := parameterTypes[0]
+	if !mappingType.IsDirectReferenceTo(sb.sg.tdg.MappingType()) {
+		sb.decorateWithError(node, "Structural mapping function's parameter must be a Mapping. Found: %s", mappingType)
+		return newScope().Invalid().GetScope()
+	}
+
+	// Make sure the Mapping's value can accept instances of type valueType.
+	if !valueType.IsVoid() {
+		if serr := valueType.CheckSubTypeOf(mappingType.Generics()[0]); serr != nil {
+			sb.decorateWithError(node, "Structural mapping function's parameter is Mapping with value type %v, but was given %v: %v", mappingType.Generics()[0], valueType, serr)
+			return newScope().Invalid().GetScope()
+		}
+	}
+
+	// Register the call with the dependency collector.
+	namedNode, hasNamedNode := sb.getNamedScopeForScope(childScope)
+	if hasNamedNode {
+		context.staticDependencyCollector.registerNamedDependency(namedNode)
+
+		// Check for a call to an aliased function.
+		if namedNode.IsLocalName() {
+			context.rootLabelSet.Append(proto.ScopeLabel_CALLS_ANONYMOUS_CLOSURE)
+		}
+	} else {
+		context.rootLabelSet.Append(proto.ScopeLabel_CALLS_ANONYMOUS_CLOSURE)
+	}
+
+	// The value is the return value of the function being invoked.
+	return newScope().
+		Valid().
+		Resolving(resolvedTypeRef.Generics()[0]).
+		WithLabel(proto.ScopeLabel_STRUCTURAL_FUNCTION_EXPR).
+		GetScope()
 }
 
 // scopeStructuralNewEntries scopes all the entries of a structural new expression.
