@@ -24,6 +24,9 @@ const DEFINED_PRINCIPAL_PARAMETER = "$this.$principal"
 
 // buildStructuralNewExpression builds the CodeDOM for a structural new expression.
 func (db *domBuilder) buildStructuralNewExpression(node compilergraph.GraphNode) codedom.Expression {
+	nodeScope, _ := db.scopegraph.GetScope(node)
+	childScope, _ := db.scopegraph.GetScope(node.GetNode(parser.NodeStructuralNewTypeExpression))
+
 	// Collect the full set of initializers, by member.
 	initializers := map[string]codedom.Expression{}
 	eit := node.StartQuery().
@@ -32,24 +35,43 @@ func (db *domBuilder) buildStructuralNewExpression(node compilergraph.GraphNode)
 
 	for eit.Next() {
 		entryScope, _ := db.scopegraph.GetScope(eit.Node())
-		entryName, _ := db.scopegraph.GetReferencedName(entryScope)
-		entryMember, _ := entryName.Member()
 
-		initializers[entryMember.Name()] = db.getExpression(eit.Node(), parser.NodeStructuralNewEntryValue)
+		var name = eit.Node().Get(parser.NodeStructuralNewEntryKey)
+		if !nodeScope.HasLabel(proto.ScopeLabel_STRUCTURAL_FUNCTION_EXPR) {
+			entryName, _ := db.scopegraph.GetReferencedName(entryScope)
+			entryMember, _ := entryName.Member()
+			name = entryMember.Name()
+		}
+
+		initializers[name] = db.getExpression(eit.Node(), parser.NodeStructuralNewEntryValue)
 	}
 
-	childScope, _ := db.scopegraph.GetScope(node.GetNode(parser.NodeStructuralNewTypeExpression))
-
-	nodeScope, _ := db.scopegraph.GetScope(node)
 	if nodeScope.HasLabel(proto.ScopeLabel_STRUCTURAL_UPDATE_EXPR) {
 		// Build a call to the Clone() method followed by assignments.
 		resolvedTypeRef := childScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
 		return db.buildStructCloneExpression(resolvedTypeRef, initializers, node)
+	} else if nodeScope.HasLabel(proto.ScopeLabel_STRUCTURAL_FUNCTION_EXPR) {
+		// Build a call to create the map and then call the function.
+		resolvedTypeRef := childScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
+		return db.buildStructFunctionExpression(resolvedTypeRef.Parameters()[0], initializers, node)
 	} else {
 		// Build a call to the new() constructor of the type with the required field expressions.
 		staticTypeRef := childScope.StaticTypeRef(db.scopegraph.TypeGraph())
 		return db.buildStructInitializerExpression(staticTypeRef, initializers, node)
 	}
+}
+
+// buildStructFunctionExpression builds a function call to a function that takes in a map literal
+// which is constructed structurally.
+func (db *domBuilder) buildStructFunctionExpression(mapType typegraph.TypeReference, initializers map[string]codedom.Expression, node compilergraph.GraphNode) codedom.Expression {
+	mapValueExpression := db.buildMappingInitializerExpression(mapType, initializers, node)
+	funcExpr := db.buildExpression(node.GetNode(parser.NodeStructuralNewTypeExpression))
+	return codedom.InvokeFunction(
+		funcExpr,
+		[]codedom.Expression{mapValueExpression},
+		scopegraph.PromisingAccessFunctionCall,
+		db.scopegraph,
+		node)
 }
 
 // buildStructCloneExpression builds a clone expression for a struct type.

@@ -1,0 +1,13 @@
+function<int> buildSomething(theMap mapping<int>) {
+    return (theMap["Foo"] ?? 0) + (theMap["Bar"] ?? 0)
+}
+
+function<bool> TEST() {
+    result := buildSomething{
+        Foo: 32,
+        Bar: 10,
+        Baz: 20,
+    }
+
+    return result == 42
+}

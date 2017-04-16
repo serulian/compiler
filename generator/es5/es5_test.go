@@ -207,6 +207,7 @@ var generationTests = []generationTest{
 	generationTest{"string literal", "literals", "string", integrationTestNone, ""},
 	generationTest{"null literal", "literals", "null", integrationTestNone, ""},
 	generationTest{"this literal", "literals", "this", integrationTestNone, ""},
+	generationTest{"struct function literal", "literals", "structfunction", integrationTestSuccessExpected, ""},
 
 	generationTest{"template string literal", "literals", "templatestr", integrationTestSuccessExpected, ""},
 	generationTest{"tagged template string literal", "literals", "taggedtemplatestr", integrationTestSuccessExpected, ""},
