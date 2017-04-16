@@ -844,9 +844,9 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"list literal success test", "listliteral", "listliteral",
 		[]expectedScopeEntry{
-			expectedScopeEntry{"emptylist", expectedScope{true, proto.ScopeKind_VALUE, "List<any>", "void"}},
-			expectedScopeEntry{"intlist", expectedScope{true, proto.ScopeKind_VALUE, "List<Integer>", "void"}},
-			expectedScopeEntry{"mixedlist", expectedScope{true, proto.ScopeKind_VALUE, "List<struct>", "void"}},
+			expectedScopeEntry{"emptylist", expectedScope{true, proto.ScopeKind_VALUE, "Slice<any>", "void"}},
+			expectedScopeEntry{"intlist", expectedScope{true, proto.ScopeKind_VALUE, "Slice<Integer>", "void"}},
+			expectedScopeEntry{"mixedlist", expectedScope{true, proto.ScopeKind_VALUE, "Slice<struct>", "void"}},
 		},
 		"", ""},
 
@@ -882,23 +882,23 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"map literal success test", "mapliteral", "success",
 		[]expectedScopeEntry{
-			expectedScopeEntry{"emptymap", expectedScope{true, proto.ScopeKind_VALUE, "Map<Mappable, any>", "void"}},
-			expectedScopeEntry{"intmap", expectedScope{true, proto.ScopeKind_VALUE, "Map<String, Integer>", "void"}},
-			expectedScopeEntry{"mixedmap", expectedScope{true, proto.ScopeKind_VALUE, "Map<String, struct>", "void"}},
+			expectedScopeEntry{"emptymap", expectedScope{true, proto.ScopeKind_VALUE, "Mapping<any>", "void"}},
+			expectedScopeEntry{"intmap", expectedScope{true, proto.ScopeKind_VALUE, "Mapping<Integer>", "void"}},
+			expectedScopeEntry{"mixedmap", expectedScope{true, proto.ScopeKind_VALUE, "Mapping<struct>", "void"}},
 
-			expectedScopeEntry{"intkeymap", expectedScope{true, proto.ScopeKind_VALUE, "Map<Integer, Integer>", "void"}},
-			expectedScopeEntry{"mixedkeymap", expectedScope{true, proto.ScopeKind_VALUE, "Map<struct, Integer>", "void"}},
-			expectedScopeEntry{"mixedkeymap2", expectedScope{true, proto.ScopeKind_VALUE, "Map<Mappable, Integer>", "void"}},
+			expectedScopeEntry{"intkeymap", expectedScope{true, proto.ScopeKind_VALUE, "Mapping<Integer>", "void"}},
+			expectedScopeEntry{"mixedkeymap", expectedScope{true, proto.ScopeKind_VALUE, "Mapping<Integer>", "void"}},
+			expectedScopeEntry{"mixedkeymap2", expectedScope{true, proto.ScopeKind_VALUE, "Mapping<Integer>", "void"}},
 		},
 		"", ""},
 
 	scopegraphTest{"map literal nonmappable fail test", "mapliteral", "nonmappable",
 		[]expectedScopeEntry{},
-		"Map literal keys must be of type Mappable: Type 'SomeClass' does not define or export member 'MapKey', which is required by type 'Mappable'", ""},
+		"Map literal keys must be of type Stringable: Type 'SomeClass' does not define or export member 'String', which is required by type 'Stringable'", ""},
 
 	scopegraphTest{"map literal null key fail test", "mapliteral", "nullkey",
 		[]expectedScopeEntry{},
-		"Map literal keys must be of type Mappable: null cannot be used in place of non-nullable type Mappable", ""},
+		"Map literal keys must be of type Stringable: null cannot be used in place of non-nullable type Stringable", ""},
 
 	/////////// Slice expression ///////////
 
