@@ -1,0 +1,8 @@
+function<bool> DoSomething() {
+    SomeCall(
+    return true
+}
+
+function<void> AnotherFunction(someParam int) {
+    someParam + 2
+}

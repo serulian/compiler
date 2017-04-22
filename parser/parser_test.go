@@ -297,6 +297,15 @@ var parserTests = []parserTest{
 	{"comment assign statement test", "comment/assignstatement"},
 	{"comment keywords test", "comment/keywords"},
 	{"comment keyword op test", "comment/keywordop"},
+
+	// Partial tests.
+	{"partial function call test", "partial/funccall"},
+	{"partial member access test", "partial/memberaccess"},
+	{"partial type definition test", "partial/typedef"},
+	{"partial sml definition test", "partial/sml"},
+	{"partial type member test", "partial/typemember"},
+	{"partial type member test 2", "partial/typemember2"},
+	{"partial type ref test", "partial/typeref"},
 }
 
 func reportImport(path packageloader.PackageImport) string {

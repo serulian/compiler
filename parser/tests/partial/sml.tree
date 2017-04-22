@@ -1,0 +1,52 @@
+NodeTypeFile
+  end-rune = 54
+  input-source = partial sml definition test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 54
+      input-source = partial sml definition test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 54
+          input-source = partial sml definition test
+          start-rune = 29
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 39
+              input-source = partial sml definition test
+              start-rune = 35
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 38
+                  input-source = partial sml definition test
+                  start-rune = 35
+                  child-node =>
+                    NodeTypeError
+                      end-rune = 38
+                      error-message = Expected one of: [tokenTypeGreaterThan], found: tokenTypeSyntheticSemicolon
+                      input-source = partial sml definition test
+                      start-rune = 39
+                  sml-expression-typefunc =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 38
+                      identexpr-name = Div
+                      input-source = partial sml definition test
+                      start-rune = 36
+            NodeTypeReturnStatement
+              end-rune = 52
+              input-source = partial sml definition test
+              start-rune = 44
+              return-expr =>
+                NodeNumericLiteralExpression
+                  end-rune = 52
+                  input-source = partial sml definition test
+                  literal-value = 42
+                  start-rune = 51
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 12
+          input-source = partial sml definition test
+          start-rune = 9

@@ -1,0 +1,57 @@
+NodeTypeFile
+  end-rune = 107
+  input-source = partial type member test 2
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 107
+      input-source = partial type member test 2
+      named = SomeClass
+      start-rune = 0
+      type-member =>
+        NodeTypeFunction
+          end-rune = 65
+          input-source = partial type member test 2
+          named = DoSomething
+          start-rune = 22
+          definition-body =>
+            NodeTypeStatementBlock
+              end-rune = 65
+              input-source = partial type member test 2
+              start-rune = 51
+              block-child =>
+                NodeTypeExpressionStatement
+                  end-rune = 65
+                  input-source = partial type member test 2
+                  start-rune = 61
+                  expr-statement-expr =>
+                    NodeThisLiteralExpression
+                      end-rune = 64
+                      input-source = partial type member test 2
+                      start-rune = 61
+              child-node =>
+                NodeTypeError
+                  end-rune = 65
+                  error-message = Expected one of: [tokenTypeRightBrace], found: tokenTypeKeyword
+                  input-source = partial type member test 2
+                  start-rune = 71
+          typemember-return-type =>
+            NodeTypeVoid
+              end-rune = 34
+              input-source = partial type member test 2
+              start-rune = 31
+        NodeTypeFunction
+          end-rune = 106
+          input-source = partial type member test 2
+          named = DoSomethingElse
+          start-rune = 71
+          definition-body =>
+            NodeTypeStatementBlock
+              end-rune = 106
+              input-source = partial type member test 2
+              start-rune = 104
+          typemember-return-type =>
+            NodeTypeVoid
+              end-rune = 83
+              input-source = partial type member test 2
+              start-rune = 80

@@ -1,0 +1,86 @@
+NodeTypeFile
+  end-rune = 135
+  input-source = partial type member test
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 135
+      input-source = partial type member test
+      named = SomeClass
+      start-rune = 0
+      type-member =>
+        NodeTypeFunction
+          end-rune = 65
+          input-source = partial type member test
+          named = DoSomething
+          start-rune = 22
+          definition-body =>
+            NodeTypeStatementBlock
+              end-rune = 65
+              input-source = partial type member test
+              start-rune = 51
+              block-child =>
+                NodeTypeExpressionStatement
+                  end-rune = 65
+                  input-source = partial type member test
+                  start-rune = 61
+                  expr-statement-expr =>
+                    NodeThisLiteralExpression
+                      end-rune = 64
+                      input-source = partial type member test
+                      start-rune = 61
+              child-node =>
+                NodeTypeError
+                  end-rune = 65
+                  error-message = Expected one of: [tokenTypeRightBrace], found: tokenTypeKeyword
+                  input-source = partial type member test
+                  start-rune = 71
+          typemember-return-type =>
+            NodeTypeVoid
+              end-rune = 34
+              input-source = partial type member test
+              start-rune = 31
+        NodeTypeProperty
+          end-rune = 134
+          input-source = partial type member test
+          named = DoSomethingElse
+          start-rune = 71
+          typemember-readonly = true
+          property-getter =>
+            NodeTypePropertyBlock
+              end-rune = 128
+              input-source = partial type member test
+              propertyblock-type = get
+              start-rune = 111
+              definition-body =>
+                NodeTypeStatementBlock
+                  end-rune = 128
+                  input-source = partial type member test
+                  start-rune = 115
+                  block-child =>
+                    NodeTypeReturnStatement
+                      end-rune = 125
+                      input-source = partial type member test
+                      start-rune = 117
+                      return-expr =>
+                        NodeNumericLiteralExpression
+                          end-rune = 125
+                          input-source = partial type member test
+                          literal-value = 42
+                          start-rune = 124
+          typemember-declared-type =>
+            NodeTypeTypeReference
+              end-rune = 82
+              input-source = partial type member test
+              start-rune = 80
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 82
+                  input-source = partial type member test
+                  start-rune = 80
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 82
+                      identifieraccess-name = int
+                      input-source = partial type member test
+                      start-rune = 80

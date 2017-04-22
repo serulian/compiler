@@ -1,0 +1,8 @@
+class SomeClass {
+    function<void> DoSomething() {
+        this
+
+    property<int> DoSomethingElse {
+        get { return 42 }
+    }
+}

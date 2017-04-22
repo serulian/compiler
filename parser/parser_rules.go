@@ -99,6 +99,28 @@ func (p *sourceParser) consumeTopLevel() AstNode {
 		return rootNode
 	}
 
+	// Push an error production to skip to the next top-level member.
+	p.pushErrorProduction(func(token commentedLexeme) bool {
+		if token.isKeyword("import") || token.isKeyword("from") {
+			return true
+		}
+
+		if p.isKeyword("class") || p.isKeyword("interface") || p.isKeyword("type") || p.isKeyword("struct") || p.isKeyword("agent") {
+			return true
+		}
+
+		if p.isKeyword("function") || p.isKeyword("var") {
+			return true
+		}
+
+		if p.isToken(tokenTypeAtSign) {
+			return true
+		}
+
+		return false
+	})
+	defer p.popErrorProduction()
+
 Loop:
 	for {
 		switch {
@@ -107,7 +129,7 @@ Loop:
 		case p.isKeyword("import") || p.isKeyword("from"):
 			if seenNonImport {
 				p.emitError("Imports must precede all definitions")
-				break Loop
+				continue Loop
 			}
 
 			p.currentNode().Connect(NodePredicateChild, p.consumeImport())
@@ -262,23 +284,23 @@ func (p *sourceParser) consumeImport() AstNode {
 
 		p.consumeStatementTerminator()
 		return importNode
-	} else {
-		// import ...
-		p.consumeKeyword("import")
-		sourceName, valid := p.consumeImportSource(importNode)
-		if !valid {
-			return importNode
-		}
-
-		// Create the import package node.
-		packageNode := p.startNode(NodeTypeImportPackage)
-		importNode.Connect(NodeImportPredicatePackageRef, packageNode)
-
-		// ... as ...
-		p.consumeImportAlias(packageNode, sourceName, NodeImportPredicatePackageName)
-		p.consumeStatementTerminator()
-		p.finishNode()
 	}
+
+	// import ...
+	p.consumeKeyword("import")
+	sourceName, valid := p.consumeImportSource(importNode)
+	if !valid {
+		return importNode
+	}
+
+	// Create the import package node.
+	packageNode := p.startNode(NodeTypeImportPackage)
+	importNode.Connect(NodeImportPredicatePackageRef, packageNode)
+
+	// ... as ...
+	p.consumeImportAlias(packageNode, sourceName, NodeImportPredicatePackageName)
+	p.consumeStatementTerminator()
+	p.finishNode()
 
 	return importNode
 }
@@ -738,6 +760,19 @@ func (p *sourceParser) consumeNominalTypeMembers(typeNode AstNode) {
 
 // consumeImplementedTypeMembers consumes the member definitions of a class or agent.
 func (p *sourceParser) consumeImplementedTypeMembers(typeNode AstNode) {
+	p.pushErrorProduction(func(token commentedLexeme) bool {
+		if token.isKeyword("var") || token.isKeyword("function") || token.isKeyword("constructor") || token.isKeyword("property") || token.isKeyword("operator") {
+			return true
+		}
+
+		if token.isToken(tokenTypeRightBrace) {
+			return true
+		}
+
+		return false
+	})
+	defer p.popErrorProduction()
+
 	for {
 		switch {
 		case p.isKeyword("var"):
@@ -762,7 +797,7 @@ func (p *sourceParser) consumeImplementedTypeMembers(typeNode AstNode) {
 
 		default:
 			p.emitError("Expected type member, found %s", p.currentToken.value)
-			p.consumeUntil(tokenTypeNewline, tokenTypeSyntheticSemicolon, tokenTypeEOF)
+			p.consumeUntil(tokenTypeNewline, tokenTypeSyntheticSemicolon, tokenTypeError, tokenTypeEOF)
 			return
 		}
 	}
@@ -909,28 +944,28 @@ func (p *sourceParser) consumeProperty(option typeMemberOption) AstNode {
 		p.consume(tokenTypeRightBrace)
 		p.consumeStatementTerminator()
 		return propertyNode
-	} else {
-		// Otherwise, this is a definition. "get" (and optional "set") blocks
-		// are required.
-		if _, ok := p.consume(tokenTypeLeftBrace); !ok {
-			p.consumeStatementTerminator()
-			return propertyNode
-		}
+	}
 
-		// Add the getter (required)
-		propertyNode.Connect(NodePropertyGetter, p.consumePropertyBlock("get"))
-
-		// Add the setter (optional)
-		if p.isKeyword("set") {
-			propertyNode.Connect(NodePropertySetter, p.consumePropertyBlock("set"))
-		} else {
-			propertyNode.Decorate(NodePropertyReadOnly, "true")
-		}
-
-		p.consume(tokenTypeRightBrace)
+	// Otherwise, this is a definition. "get" (and optional "set") blocks
+	// are required.
+	if _, ok := p.consume(tokenTypeLeftBrace); !ok {
 		p.consumeStatementTerminator()
 		return propertyNode
 	}
+
+	// Add the getter (required)
+	propertyNode.Connect(NodePropertyGetter, p.consumePropertyBlock("get"))
+
+	// Add the setter (optional)
+	if p.isKeyword("set") {
+		propertyNode.Connect(NodePropertySetter, p.consumePropertyBlock("set"))
+	} else {
+		propertyNode.Decorate(NodePropertyReadOnly, "true")
+	}
+
+	p.consume(tokenTypeRightBrace)
+	p.consumeStatementTerminator()
+	return propertyNode
 }
 
 // consumePropertyBlock consumes a get or set block for a property definition
@@ -1143,15 +1178,15 @@ func (p *sourceParser) consumeTypeReference(option typeReferenceOption) AstNode 
 			p.consume(tokenTypeRightBrace)
 			p.finishNode()
 			return mappingNode
-		} else {
-			// Slice.
-			sliceNode := p.startNode(NodeTypeSlice)
-			p.consume(tokenTypeLeftBracket)
-			p.consume(tokenTypeRightBracket)
-			sliceNode.Connect(NodeTypeReferenceInnerType, p.consumeTypeReference(typeReferenceNoVoid))
-			p.finishNode()
-			return sliceNode
 		}
+
+		// Slice.
+		sliceNode := p.startNode(NodeTypeSlice)
+		p.consume(tokenTypeLeftBracket)
+		p.consume(tokenTypeRightBracket)
+		sliceNode.Connect(NodeTypeReferenceInnerType, p.consumeTypeReference(typeReferenceNoVoid))
+		p.finishNode()
+		return sliceNode
 	}
 
 	// Otherwise, left recursively build a type reference.
@@ -1413,6 +1448,11 @@ func (p *sourceParser) consumeStatementBlock(option statementBlockOption) AstNod
 	statementBlockNode := p.startNode(NodeTypeStatementBlock)
 	defer p.finishNode()
 
+	p.pushErrorProduction(func(token commentedLexeme) bool {
+		return token.isToken(tokenTypeRightBrace)
+	})
+	defer p.popErrorProduction()
+
 	// Consume the start of the block: {
 	if _, ok := p.consume(tokenTypeLeftBrace); !ok {
 		return statementBlockNode
@@ -1465,6 +1505,11 @@ func (p *sourceParser) consumeStatementBlock(option statementBlockOption) AstNod
 
 // tryConsumeStatement attempts to consume a statement.
 func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
+	p.pushErrorProduction(func(token commentedLexeme) bool {
+		return token.isToken(tokenTypeSyntheticSemicolon) || token.isToken(tokenTypeSemicolon)
+	})
+	defer p.popErrorProduction()
+
 	switch {
 	// Switch statement.
 	case p.isKeyword("switch"):
@@ -1546,9 +1591,9 @@ func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
 func (p *sourceParser) consumeAssignableExpression() AstNode {
 	if memberAccess, ok := p.tryConsumeCallAccessExpression(); ok {
 		return memberAccess
-	} else {
-		return p.consumeIdentifierExpression()
 	}
+
+	return p.consumeIdentifierExpression()
 }
 
 // tryConsumeResolveStatement attempts to consume a resolve statement.
@@ -2257,9 +2302,9 @@ func (p *sourceParser) tryConsumeExpression(option consumeExpressionOption) (Ast
 		}
 
 		return node, true
-	} else {
-		return p.oneOf(p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, p.tryConsumeMarkupExpression, nonArrow)
 	}
+
+	return p.oneOf(p.tryConsumeLambdaExpression, p.tryConsumeAwaitExpression, p.tryConsumeMarkupExpression, nonArrow)
 }
 
 // tryConsumeMarkupExpression tries to consume a markup expression of the following form:
@@ -2288,23 +2333,36 @@ func (p *sourceParser) consumeMarkupExpression() AstNode {
 	access, path := p.consumeSimpleAccessPath()
 	markupNode.Connect(NodeSmlExpressionTypeOrFunction, access)
 
-	// Consume one (or more attributes)
-	for {
-		// Consume any statement terminators that are found between attributes.
-		p.tryConsumeStatementTerminator()
+	// Check for a statement terminator followed by a keyword. If found, then this is an open
+	// tag and we don't want to consume the statement terminator.
+	t := p.newLookaheadTracker()
+	_, ok1 := t.matchToken(tokenTypeSyntheticSemicolon)
+	_, ok2 := t.matchToken(tokenTypeKeyword)
 
-		// Attributes must start with an identifier or an at sign.
-		if p.isToken(tokenTypeAtSign) {
-			markupNode.Connect(NodeSmlExpressionDecorator, p.consumeMarkupAttribute(NodeTypeSmlDecorator, NodeSmlDecoratorValue))
-		} else if p.isToken(tokenTypeIdentifer) {
-			markupNode.Connect(NodeSmlExpressionAttribute, p.consumeMarkupAttribute(NodeTypeSmlAttribute, NodeSmlAttributeValue))
-		} else {
-			break
+	if !ok1 || !ok2 {
+		// Consume one (or more attributes)
+		for {
+			// Consume any statement terminators that are found between attributes.
+			p.tryConsumeStatementTerminator()
+
+			// Attributes must start with an identifier or an at sign.
+			if p.isToken(tokenTypeAtSign) {
+				markupNode.Connect(NodeSmlExpressionDecorator, p.consumeMarkupAttribute(NodeTypeSmlDecorator, NodeSmlDecoratorValue))
+			} else if p.isToken(tokenTypeIdentifer) {
+				markupNode.Connect(NodeSmlExpressionAttribute, p.consumeMarkupAttribute(NodeTypeSmlAttribute, NodeSmlAttributeValue))
+			} else {
+				break
+			}
 		}
 	}
 
 	// Consume the closing of the tag, with an optional immediate closer.
 	_, isImmediatelyClosed := p.tryConsume(tokenTypeDiv)
+
+	p.pushErrorProduction(func(token commentedLexeme) bool {
+		return token.isToken(tokenTypeGreaterThan)
+	})
+	defer p.popErrorProduction()
 
 	// >
 	if _, ok := p.consume(tokenTypeGreaterThan); !ok {
@@ -2471,9 +2529,11 @@ func (p *sourceParser) consumeMarkupAttribute(kind NodeType, valuePredicate stri
 // (arg1, arg2) => expression
 // function<ReturnType> (arg1 type, arg2 type) { ... }
 func (p *sourceParser) tryConsumeLambdaExpression() (AstNode, bool) {
-	// Check for the function keyword. If found, we have a full definition lambda function.
+	// Check for the function keyword. If found, we potentially have a full definition lambda function.
 	if p.isKeyword("function") {
-		return p.consumeFullLambdaExpression(), true
+		if p.lookaheadFullLambdaExpr() {
+			return p.consumeFullLambdaExpression(), true
+		}
 	}
 
 	// Otherwise, we look for an inline lambda expression. To do so, we need to perform
@@ -2532,6 +2592,33 @@ func (p *sourceParser) consumeLambdaParameter() AstNode {
 
 	parameterNode.Decorate(NodeLambdaExpressionParameterName, value)
 	return parameterNode
+}
+
+// lookaheadFullLambdaExpr performs lookahead to determine if there is a
+// full lambda expression at the head of the lexer stream.
+func (p *sourceParser) lookaheadFullLambdaExpr() bool {
+	t := p.newLookaheadTracker()
+
+	// function
+	t.matchToken(tokenTypeKeyword)
+
+	// optional type reference
+	if _, ok := t.matchToken(tokenTypeLessThan); ok {
+		if !p.lookaheadTypeReference(t) {
+			return false
+		}
+
+		if _, ok := t.matchToken(tokenTypeGreaterThan); !ok {
+			return false
+		}
+	}
+
+	// (
+	if _, ok := t.matchToken(tokenTypeLeftParen); !ok {
+		return false
+	}
+
+	return true
 }
 
 // lookaheadLambdaExpr performs lookahead to determine if there is a lambda expression
@@ -3082,8 +3169,12 @@ func (p *sourceParser) consumeStringLiteral() AstNode {
 	literalNode := p.startNode(NodeStringLiteralExpression)
 	defer p.finishNode()
 
-	token, _ := p.consume(tokenTypeStringLiteral)
-	literalNode.Decorate(NodeStringLiteralExpressionValue, token.value)
+	token, foundString := p.consume(tokenTypeStringLiteral)
+	if foundString {
+		literalNode.Decorate(NodeStringLiteralExpressionValue, token.value)
+	} else {
+		literalNode.Decorate(NodeStringLiteralExpressionValue, "''")
+	}
 
 	return literalNode
 }

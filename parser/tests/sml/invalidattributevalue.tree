@@ -1,39 +1,45 @@
 NodeTypeFile
-  end-rune = 40
+  end-rune = 45
   input-source = invalid attribute value sml test
   start-rune = 0
   child-node =>
     NodeTypeFunction
-      end-rune = 40
+      end-rune = 45
       input-source = invalid attribute value sml test
       named = DoSomething
       start-rune = 0
       definition-body =>
         NodeTypeStatementBlock
-          end-rune = 40
+          end-rune = 45
           input-source = invalid attribute value sml test
           start-rune = 29
           block-child =>
             NodeTypeExpressionStatement
-              end-rune = 41
+              end-rune = 45
               input-source = invalid attribute value sml test
               start-rune = 32
               expr-statement-expr =>
                 NodeTypeSmlExpression
-                  end-rune = 40
+                  end-rune = 44
                   input-source = invalid attribute value sml test
                   start-rune = 32
+                  child-node =>
+                    NodeTypeError
+                      end-rune = 44
+                      error-message = Expected one of: [tokenTypeGreaterThan], found: tokenTypeRightBrace
+                      input-source = invalid attribute value sml test
+                      start-rune = 45
                   sml-expression-attribute =>
                     NodeTypeSmlAttribute
-                      end-rune = 40
+                      end-rune = 43
                       input-source = invalid attribute value sml test
                       sml-attribute-name = bar
                       start-rune = 37
                       sml-attribute-value =>
                         NodeStringLiteralExpression
-                          end-rune = 40
+                          end-rune = 43
                           input-source = invalid attribute value sml test
-                          literal-value = 
+                          literal-value = ''
                           start-rune = 41
                           child-node =>
                             NodeTypeError

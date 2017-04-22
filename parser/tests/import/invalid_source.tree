@@ -1,10 +1,10 @@
 NodeTypeFile
-  end-rune = 5
+  end-rune = 10
   input-source = invalid source
   start-rune = 0
   child-node =>
     NodeTypeImport
-      end-rune = 5
+      end-rune = 10
       input-source = invalid source
       start-rune = 0
       child-node =>
