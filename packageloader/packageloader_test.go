@@ -64,7 +64,7 @@ func TestBasicLoading(t *testing.T) {
 		pathsImported: map[string]bool{},
 	}
 
-	loader := NewPackageLoader("tests/basic/somefile.json", []string{}, tt.createHandler())
+	loader := NewPackageLoader(NewBasicConfig("tests/basic/somefile.json", tt.createHandler()))
 	result := loader.Load()
 	if !result.Status || len(result.Errors) > 0 {
 		t.Errorf("Expected success, found: %v", result.Errors)
@@ -87,7 +87,7 @@ func TestRelativeImportSuccess(t *testing.T) {
 		pathsImported: map[string]bool{},
 	}
 
-	loader := NewPackageLoader("tests/relative/entrypoint.json", []string{}, tt.createHandler())
+	loader := NewPackageLoader(NewBasicConfig("tests/relative/entrypoint.json", tt.createHandler()))
 	result := loader.Load()
 	if !result.Status || len(result.Errors) > 0 {
 		t.Errorf("Expected success, found: %v", result.Errors)
@@ -110,7 +110,7 @@ func TestRelativeImportFailureAboveVCS(t *testing.T) {
 		pathsImported: map[string]bool{},
 	}
 
-	loader := NewPackageLoader("tests/vcsabove/fail.json", []string{}, tt.createHandler())
+	loader := NewPackageLoader(NewBasicConfig("tests/vcsabove/fail.json", tt.createHandler()))
 	result := loader.Load()
 	if !assert.False(t, result.Status, "Expected failure for relative import VCS above") {
 		return
@@ -128,7 +128,7 @@ func TestRelativeImportFailureBelowVCS(t *testing.T) {
 		pathsImported: map[string]bool{},
 	}
 
-	loader := NewPackageLoader("tests/vcsbelow/fail.json", []string{}, tt.createHandler())
+	loader := NewPackageLoader(NewBasicConfig("tests/vcsbelow/fail.json", tt.createHandler()))
 	result := loader.Load()
 	if !assert.False(t, result.Status, "Expected failure for relative import VCS below") {
 		return
@@ -146,7 +146,7 @@ func TestUnknownPath(t *testing.T) {
 		pathsImported: map[string]bool{},
 	}
 
-	loader := NewPackageLoader("tests/unknownimport/importsunknown.json", []string{}, tt.createHandler())
+	loader := NewPackageLoader(NewBasicConfig("tests/unknownimport/importsunknown.json", tt.createHandler()))
 	result := loader.Load()
 	if result.Status || len(result.Errors) != 1 {
 		t.Errorf("Expected error")
@@ -166,7 +166,7 @@ func TestLibraryPath(t *testing.T) {
 		pathsImported: map[string]bool{},
 	}
 
-	loader := NewPackageLoader("tests/basic/somefile.json", []string{}, tt.createHandler())
+	loader := NewPackageLoader(NewBasicConfig("tests/basic/somefile.json", tt.createHandler()))
 	result := loader.Load(Library{"tests/libtest", false, ""})
 	if !result.Status || len(result.Errors) > 0 {
 		t.Errorf("Expected success, found: %v", result.Errors)
@@ -185,4 +185,51 @@ func assertFileImported(t *testing.T, tt *testTracker, filePath string) {
 	if _, ok := tt.pathsImported[filePath]; !ok {
 		t.Errorf("Expected import of file %s", filePath)
 	}
+}
+
+type TestPathLoader struct{}
+
+func (tpl TestPathLoader) LoadSourceFile(path string) ([]byte, error) {
+	if path == "startingfile.json" {
+		return []byte(`{
+				"Imports": ["anotherfile"]
+			}
+			`), nil
+	}
+
+	if path == "anotherfile.json" {
+		return []byte("{}"), nil
+	}
+
+	return []byte{}, fmt.Errorf("Could not find file: %s", path)
+}
+
+func (tpl TestPathLoader) IsSourceFile(path string) bool {
+	return path == "startingfile.json" || path == "anotherfile.json"
+}
+
+func (tpl TestPathLoader) LoadDirectory(path string) ([]string, error) {
+	return []string{}, fmt.Errorf("Invalid path: %s", path)
+}
+
+func TestLocalLoader(t *testing.T) {
+	tt := &testTracker{
+		pathsImported: map[string]bool{},
+	}
+
+	loader := NewPackageLoader(Config{
+		RootSourceFilePath:        "startingfile.json",
+		SourceHandlers:            []SourceHandler{tt.createHandler()},
+		VCSDevelopmentDirectories: []string{},
+		PathLoader:                TestPathLoader{},
+	})
+
+	result := loader.Load()
+	if !result.Status || len(result.Errors) > 0 {
+		t.Errorf("Expected success, found: %v", result.Errors)
+		return
+	}
+
+	assertFileImported(t, tt, "startingfile.json")
+	assertFileImported(t, tt, "anotherfile.json")
 }

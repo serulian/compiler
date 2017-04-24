@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// packageloader package defines functions and types for loading and parsing source from disk or VCS.
+// Package packageloader defines functions and types for loading and parsing source from disk or VCS.
 package packageloader
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"path"
 	"strings"
@@ -16,7 +15,7 @@ import (
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/vcs"
 
-	"github.com/streamrail/concurrent-map"
+	cmap "github.com/streamrail/concurrent-map"
 )
 
 // SerulianPackageDirectory is the directory under the root directory holding cached packages.
@@ -70,8 +69,9 @@ func (p *pathInformation) String() string {
 // PackageLoader helps to fully and recursively load a Serulian package and its dependencies
 // from a directory or set of directories.
 type PackageLoader struct {
-	rootSourceFile            string   // The root source file location.
-	vcsDevelopmentDirectories []string // Directories to check for VCS packages before VCS checkout.
+	rootSourceFile            string     // The root source file location.
+	vcsDevelopmentDirectories []string   // Directories to check for VCS packages before VCS checkout.
+	pathLoader                PathLoader // The path loaders to use.
 
 	errors   chan compilercommon.SourceError   // Errors are reported on this channel
 	warnings chan compilercommon.SourceWarning // Warnings are reported on this channel
@@ -105,16 +105,48 @@ type LoadResult struct {
 	PackageMap LoadedPackageMap               // Map of packages loaded
 }
 
-// NewPackageLoader creates and returns a new package loader for the given path.
-func NewPackageLoader(rootSourceFile string, vcsDevelopmentDirectories []string, handlers ...SourceHandler) *PackageLoader {
+// Config defines configuration for a PackageLoader.
+type Config struct {
+	// The path of the root source file from which loading will begin.
+	RootSourceFilePath string
+
+	// Paths of directories to check for local copies of remote packages
+	// before performing VCS checkout.
+	VCSDevelopmentDirectories []string
+
+	// The source handlers to use to parse and import the loaded source files.
+	SourceHandlers []SourceHandler
+
+	// The path loader to use to load source files and directories.
+	PathLoader PathLoader
+}
+
+// NewBasicConfig returns PackageLoader Config for a root source file and source handlers.
+func NewBasicConfig(rootSourceFilePath string, sourceHandlers ...SourceHandler) Config {
+	return Config{
+		RootSourceFilePath:        rootSourceFilePath,
+		VCSDevelopmentDirectories: []string{},
+		SourceHandlers:            sourceHandlers,
+		PathLoader:                LocalFilePathLoader{},
+	}
+}
+
+// NewPackageLoader creates and returns a new package loader for the given config.
+func NewPackageLoader(config Config) *PackageLoader {
 	handlersMap := map[string]SourceHandler{}
-	for _, handler := range handlers {
+	for _, handler := range config.SourceHandlers {
 		handlersMap[handler.Kind()] = handler
 	}
 
+	pathLoader := config.PathLoader
+	if pathLoader == nil {
+		pathLoader = LocalFilePathLoader{}
+	}
+
 	return &PackageLoader{
-		rootSourceFile:            rootSourceFile,
-		vcsDevelopmentDirectories: vcsDevelopmentDirectories,
+		rootSourceFile:            config.RootSourceFilePath,
+		vcsDevelopmentDirectories: config.VCSDevelopmentDirectories,
+		pathLoader:                pathLoader,
 
 		errors:   make(chan compilercommon.SourceError),
 		warnings: make(chan compilercommon.SourceWarning),
@@ -314,14 +346,8 @@ func (p *PackageLoader) loadVCSPackage(packagePath pathInformation) {
 
 // loadLocalPackage loads the package found at the path relative to the package directory.
 func (p *PackageLoader) loadLocalPackage(packagePath pathInformation) {
-	// Ensure the directory exists.
-	if ok, _ := exists(packagePath.path); !ok {
-		p.errors <- compilercommon.SourceErrorf(packagePath.sal, "Could not find directory '%s'", packagePath.path)
-		return
-	}
-
 	// Read the contents of the directory.
-	directoryContents, err := ioutil.ReadDir(packagePath.path)
+	directoryContents, err := p.pathLoader.LoadDirectory(packagePath.path)
 	if err != nil {
 		p.errors <- compilercommon.SourceErrorf(packagePath.sal, "Could not load directory '%s'", packagePath.path)
 		return
@@ -342,10 +368,10 @@ func (p *PackageLoader) loadLocalPackage(packagePath pathInformation) {
 
 	// Find all source files in the directory and add them to the paths list.
 	var fileFound bool
-	for _, fileInfo := range directoryContents {
-		if path.Ext(fileInfo.Name()) == handler.PackageFileExtension() {
+	for _, fileName := range directoryContents {
+		if path.Ext(fileName) == handler.PackageFileExtension() {
 			fileFound = true
-			filePath := path.Join(packagePath.path, fileInfo.Name())
+			filePath := path.Join(packagePath.path, fileName)
 			p.pushPath(pathSourceFile, packagePath.sourceKind, filePath, packagePath.sal)
 
 			// Add the source file to the package information.
@@ -371,16 +397,10 @@ func (p *PackageLoader) conductParsing(sourceFile pathInformation) {
 		modulePaths: []compilercommon.InputSource{inputSource},
 	})
 
-	// Ensure the file exists.
-	if ok, _ := exists(sourceFile.path); !ok {
-		p.errors <- compilercommon.SourceErrorf(sourceFile.sal, "Could not find source file '%s'", sourceFile.path)
-		return
-	}
-
 	// Load the source file's contents.
-	contents, err := ioutil.ReadFile(sourceFile.path)
+	contents, err := p.pathLoader.LoadSourceFile(sourceFile.path)
 	if err != nil {
-		p.errors <- compilercommon.SourceErrorf(sourceFile.sal, "Could not load source file '%s'", sourceFile.path)
+		p.errors <- compilercommon.SourceErrorf(sourceFile.sal, "Could not load source file '%s': %v", sourceFile.path, err)
 		return
 	}
 
@@ -431,48 +451,48 @@ func (p *PackageLoader) handleImport(importInformation PackageImport) string {
 	if importInformation.ImportType == ImportTypeVCS {
 		// VCS paths get added directly.
 		return p.pushPath(pathVCSPackage, importInformation.Kind, importInformation.Path, importInformation.SourceLocation)
-	} else {
-		// Check the path to see if it exists as a single source file. If so, we add it
-		// as a source file instead of a local package.
-		currentDirectory := path.Dir(sourcePath)
-		dirPath := path.Join(currentDirectory, importInformation.Path)
-		filePath := dirPath + handler.PackageFileExtension()
+	}
 
-		var importedDirectoryPath = dirPath
-		var title = "package"
+	// Check the path to see if it exists as a single source file. If so, we add it
+	// as a source file instead of a local package.
+	currentDirectory := path.Dir(sourcePath)
+	dirPath := path.Join(currentDirectory, importInformation.Path)
+	filePath := dirPath + handler.PackageFileExtension()
 
-		// Determine if path refers to a single source file. If so, it is imported rather than
-		// the entire directory.
-		isSourceFile, _ := exists(filePath)
-		if isSourceFile {
-			title = "module"
-			importedDirectoryPath = path.Dir(filePath)
-		}
+	var importedDirectoryPath = dirPath
+	var title = "package"
 
-		// Check to ensure we are not crossing a VCS boundary.
-		if currentDirectory != importedDirectoryPath {
-			// If the imported directory is underneath the current directory, we need to walk upward.
-			if strings.HasPrefix(importedDirectoryPath, currentDirectory) {
-				err := p.verifyNoVCSBoundaryCross(importedDirectoryPath, currentDirectory, title, importInformation)
-				if err != nil {
-					p.errors <- *err
-					return ""
-				}
-			} else {
-				// Otherwise, we walk upward from the current directory to the imported directory.
-				err := p.verifyNoVCSBoundaryCross(currentDirectory, importedDirectoryPath, title, importInformation)
-				if err != nil {
-					p.errors <- *err
-					return ""
-				}
+	// Determine if path refers to a single source file. If so, it is imported rather than
+	// the entire directory.
+	isSourceFile := p.pathLoader.IsSourceFile(filePath)
+	if isSourceFile {
+		title = "module"
+		importedDirectoryPath = path.Dir(filePath)
+	}
+
+	// Check to ensure we are not crossing a VCS boundary.
+	if currentDirectory != importedDirectoryPath {
+		// If the imported directory is underneath the current directory, we need to walk upward.
+		if strings.HasPrefix(importedDirectoryPath, currentDirectory) {
+			err := p.verifyNoVCSBoundaryCross(importedDirectoryPath, currentDirectory, title, importInformation)
+			if err != nil {
+				p.errors <- *err
+				return ""
+			}
+		} else {
+			// Otherwise, we walk upward from the current directory to the imported directory.
+			err := p.verifyNoVCSBoundaryCross(currentDirectory, importedDirectoryPath, title, importInformation)
+			if err != nil {
+				p.errors <- *err
+				return ""
 			}
 		}
-
-		// Push the imported path.
-		if isSourceFile {
-			return p.pushPath(pathSourceFile, handler.Kind(), filePath, importInformation.SourceLocation)
-		} else {
-			return p.pushPath(pathLocalPackage, handler.Kind(), dirPath, importInformation.SourceLocation)
-		}
 	}
+
+	// Push the imported path.
+	if isSourceFile {
+		return p.pushPath(pathSourceFile, handler.Kind(), filePath, importInformation.SourceLocation)
+	}
+
+	return p.pushPath(pathLocalPackage, handler.Kind(), dirPath, importInformation.SourceLocation)
 }

@@ -60,7 +60,13 @@ func ParseAndBuildScopeGraph(rootSourceFilePath string, vcsDevelopmentDirectorie
 	sourcegraph := srg.NewSRG(graph)
 	webidlgraph := webidl.NewIRG(graph)
 
-	loader := packageloader.NewPackageLoader(rootSourceFilePath, vcsDevelopmentDirectories, sourcegraph.PackageLoaderHandler(), webidlgraph.PackageLoaderHandler())
+	loader := packageloader.NewPackageLoader(packageloader.Config{
+		RootSourceFilePath:        rootSourceFilePath,
+		VCSDevelopmentDirectories: vcsDevelopmentDirectories,
+		SourceHandlers:            []packageloader.SourceHandler{sourcegraph.PackageLoaderHandler(), webidlgraph.PackageLoaderHandler()},
+		PathLoader:                packageloader.LocalFilePathLoader{},
+	})
+
 	loaderResult := loader.Load(libraries...)
 	if !loaderResult.Status {
 		return Result{

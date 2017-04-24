@@ -122,7 +122,9 @@ func TestGraphs(t *testing.T) {
 		testSRG := srg.NewSRG(graph)
 		testIDL := webidl.NewIRG(graph)
 
-		loader := packageloader.NewPackageLoader(graph.RootSourceFilePath, []string{}, testSRG.PackageLoaderHandler(), testIDL.PackageLoaderHandler())
+		loader := packageloader.NewPackageLoader(
+			packageloader.NewBasicConfig(graph.RootSourceFilePath, testSRG.PackageLoaderHandler(), testIDL.PackageLoaderHandler()))
+
 		srgResult := loader.Load(packageloader.Library{TESTLIB_PATH, false, ""})
 
 		// Make sure we had no errors during construction.
@@ -170,7 +172,7 @@ func TestLookupReturnType(t *testing.T) {
 	testSRG := srg.NewSRG(graph)
 	testIDL := webidl.NewIRG(graph)
 
-	loader := packageloader.NewPackageLoader(graph.RootSourceFilePath, []string{}, testSRG.PackageLoaderHandler(), testIDL.PackageLoaderHandler())
+	loader := packageloader.NewPackageLoader(packageloader.NewBasicConfig(graph.RootSourceFilePath, testSRG.PackageLoaderHandler(), testIDL.PackageLoaderHandler()))
 
 	srgResult := loader.Load(packageloader.Library{TESTLIB_PATH, false, ""})
 	if !assert.True(t, srgResult.Status, "Got error for SRG construction: %v", srgResult.Errors) {
