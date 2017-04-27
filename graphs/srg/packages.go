@@ -21,8 +21,9 @@ func InSamePackage(first compilercommon.InputSource, second compilercommon.Input
 }
 
 // getPackageForImport returns the package information for the package imported by the given import
-// package node.
-func (g *SRG) getPackageForImport(importPackageNode compilergraph.GraphNode) importedPackage {
+// package node or an error if none. Note that error should only ever be returned if we have an
+// "incomplete" graph because this is a call from groking.
+func (g *SRG) getPackageForImport(importPackageNode compilergraph.GraphNode) (importedPackage, error) {
 	importNode := importPackageNode.GetIncomingNode(parser.NodeImportPredicatePackageRef)
 
 	// Note: There may not be a kind, in which case this will return empty string, which is the
@@ -34,15 +35,17 @@ func (g *SRG) getPackageForImport(importPackageNode compilergraph.GraphNode) imp
 	if !ok {
 		source := importNode.Get(parser.NodeImportPredicateSource)
 		subsource, _ := importPackageNode.TryGet(parser.NodeImportPredicateSubsource)
-		panic(fmt.Sprintf("Missing package info for import %s %s (reference %v) (node %v)\nPackage Map: %v",
-			source, subsource, packageLocation, importNode, g.packageMap))
+		err := fmt.Errorf("Missing package info for import %s %s (reference %v) (node %v)\nPackage Map: %v",
+			source, subsource, packageLocation, importNode, g.packageMap)
+
+		return importedPackage{}, err
 	}
 
 	return importedPackage{
 		srg:          g,
 		packageInfo:  packageInfo,
 		importSource: compilercommon.InputSource(importPackageNode.Get(parser.NodePredicateSource)),
-	}
+	}, nil
 }
 
 // srgPackage implements the typeContainer information for searching over a package of

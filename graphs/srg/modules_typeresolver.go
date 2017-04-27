@@ -62,7 +62,11 @@ func (m SRGModule) ResolveTypePath(path string) (TypeResolutionResult, bool) {
 		}
 
 		// Resolve the name as the subsource under the import's package.
-		packageInfo := m.srg.getPackageForImport(importPackageNode)
+		packageInfo, err := m.srg.getPackageForImport(importPackageNode)
+		if err != nil {
+			return TypeResolutionResult{}, false
+		}
+
 		return packageInfo.ResolveType(importPackageNode.Get(parser.NodeImportPredicateSubsource))
 	}
 
@@ -87,7 +91,12 @@ func (m SRGModule) ResolveImportedPackage(packageName string) (importedPackage, 
 
 	// If we've found a node, retrieve its package location and find it
 	// in the package map.
-	return m.srg.getPackageForImport(node), true
+	info, err := m.srg.getPackageForImport(node)
+	if err != nil {
+		return importedPackage{}, false
+	}
+
+	return info, true
 }
 
 func resultForTypeOrGeneric(srgType SRGTypeOrGeneric) TypeResolutionResult {

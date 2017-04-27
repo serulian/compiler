@@ -324,7 +324,11 @@ func (ns SRGNamedScope) ResolveNameUnderScope(name string) (SRGScopeOrImport, bo
 		return SRGNamedScope{}, false
 	}
 
-	packageInfo := ns.srg.getPackageForImport(ns.GraphNode)
+	packageInfo, err := ns.srg.getPackageForImport(ns.GraphNode)
+	if err != nil {
+		return SRGNamedScope{}, false
+	}
+
 	if !packageInfo.IsSRGPackage() {
 		return SRGExternalPackageImport{packageInfo.packageInfo, name, ns.srg}, true
 	}
@@ -384,7 +388,11 @@ func (g *SRG) FindNameInScope(name string, node compilergraph.GraphNode) (SRGSco
 	localImportNode, localImportFound := parentModule.findImportWithLocalName(name)
 	if localImportFound {
 		// Retrieve the package for the imported member.
-		packageInfo := g.getPackageForImport(localImportNode)
+		packageInfo, err := g.getPackageForImport(localImportNode)
+		if err != nil {
+			return SRGNamedScope{}, false
+		}
+
 		resolutionName := localImportNode.Get(parser.NodeImportPredicateSubsource)
 
 		// If an SRG package, then continue with the resolution. Otherwise,

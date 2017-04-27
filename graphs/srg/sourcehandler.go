@@ -64,13 +64,13 @@ func (sh *srgSourceHandler) Verify(errorReporter packageloader.ErrorReporter, wa
 	fit := g.findAllNodes(parser.NodeTypeImportPackage).
 		Has(parser.NodeImportPredicateSubsource).
 		BuildNodeIterator(parser.NodeImportPredicateSubsource,
-		parser.NodePredicateSource,
-		parser.NodePredicateStartRune)
+			parser.NodePredicateSource,
+			parser.NodePredicateStartRune)
 
 	for fit.Next() {
 		// Load the package information.
-		packageInfo := g.getPackageForImport(fit.Node())
-		if !packageInfo.IsSRGPackage() {
+		packageInfo, err := g.getPackageForImport(fit.Node())
+		if err != nil || !packageInfo.IsSRGPackage() {
 			continue
 		}
 
