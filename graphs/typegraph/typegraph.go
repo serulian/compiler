@@ -349,6 +349,16 @@ func (g *TypeGraph) ResolveTypeUnderPackage(name string, packageInfo packageload
 // GetTypeOrMember returns the type or member matching the given node ID.
 func (g *TypeGraph) GetTypeOrMember(nodeId compilergraph.GraphNodeId) TGTypeOrMember {
 	node := g.layer.GetNode(nodeId)
+	typeOrMember, found := g.GetTypeOrMemberForNode(node)
+	if !found {
+		panic(fmt.Sprintf("Node is not a type or member: %v", node))
+	}
+
+	return typeOrMember
+}
+
+// GetTypeOrMemberForNode returns a type or member wrapper around the given node, if applicable.
+func (g *TypeGraph) GetTypeOrMemberForNode(node compilergraph.GraphNode) (TGTypeOrMember, bool) {
 	switch node.Kind() {
 	case NodeTypeClass:
 		fallthrough
@@ -369,16 +379,16 @@ func (g *TypeGraph) GetTypeOrMember(nodeId compilergraph.GraphNodeId) TGTypeOrMe
 		fallthrough
 
 	case NodeTypeGeneric:
-		return TGTypeDecl{node, g}
+		return TGTypeDecl{node, g}, true
 
 	case NodeTypeOperator:
 		fallthrough
 
 	case NodeTypeMember:
-		return TGMember{node, g}
+		return TGMember{node, g}, true
 
 	default:
-		panic(fmt.Sprintf("Node is not a type or member: %v", node))
+		return TGMember{}, false
 	}
 }
 

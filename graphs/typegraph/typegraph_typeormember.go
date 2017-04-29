@@ -8,6 +8,16 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 )
 
+// GetTypeOrMemberForSourceNode returns the TypeGraph type or member for the given source node, if any.
+func (g *TypeGraph) GetTypeOrMemberForSourceNode(node compilergraph.GraphNode) (TGTypeOrMember, bool) {
+	typegraphNode, found := g.tryGetMatchingTypeGraphNode(node)
+	if !found {
+		return TGMember{}, false
+	}
+
+	return g.GetTypeOrMemberForNode(typegraphNode)
+}
+
 // TGTypeOrMember represents an interface shared by types and members.
 type TGTypeOrMember interface {
 	Name() string

@@ -72,6 +72,7 @@ type PackageLoader struct {
 	rootSourceFile            string     // The root source file location.
 	vcsDevelopmentDirectories []string   // Directories to check for VCS packages before VCS checkout.
 	pathLoader                PathLoader // The path loaders to use.
+	alwaysValidate            bool       // Whether to always run validation, regardless of errors. Useful to IDE tooling.
 
 	errors   chan compilercommon.SourceError   // Errors are reported on this channel
 	warnings chan compilercommon.SourceWarning // Warnings are reported on this channel
@@ -119,6 +120,9 @@ type Config struct {
 
 	// The path loader to use to load source files and directories.
 	PathLoader PathLoader
+
+	// If true, validation will always be called.
+	AlwaysValidate bool
 }
 
 // NewBasicConfig returns PackageLoader Config for a root source file and source handlers.
@@ -128,6 +132,7 @@ func NewBasicConfig(rootSourceFilePath string, sourceHandlers ...SourceHandler) 
 		VCSDevelopmentDirectories: []string{},
 		SourceHandlers:            sourceHandlers,
 		PathLoader:                LocalFilePathLoader{},
+		AlwaysValidate:            false,
 	}
 }
 
@@ -147,6 +152,7 @@ func NewPackageLoader(config Config) *PackageLoader {
 		rootSourceFile:            config.RootSourceFilePath,
 		vcsDevelopmentDirectories: config.VCSDevelopmentDirectories,
 		pathLoader:                pathLoader,
+		alwaysValidate:            config.AlwaysValidate,
 
 		errors:   make(chan compilercommon.SourceError),
 		warnings: make(chan compilercommon.SourceWarning),
@@ -222,7 +228,7 @@ func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 	}
 
 	// Perform verification in all handlers.
-	if len(result.Errors) == 0 {
+	if p.alwaysValidate || len(result.Errors) == 0 {
 		errorReporter := func(err compilercommon.SourceError) {
 			result.Errors = append(result.Errors, err)
 			result.Status = false

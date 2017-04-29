@@ -1,0 +1,8 @@
+///    [af1      ]
+import anotherfile
+
+///  [af2      ] [i2  ] [sc     ]
+from anotherfile import SomeClass
+
+///  [af3      ] [i3  ] [sf        ]
+from anotherfile import SomeFunction

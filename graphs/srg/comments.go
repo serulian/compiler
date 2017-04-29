@@ -16,3 +16,8 @@ func (g *SRG) FindCommentedNode(commentValue string) (compilergraph.GraphNode, b
 		In(parser.NodePredicateChild).
 		TryGetNode()
 }
+
+// AllComments returns an iterator over all the comment nodes found in the SRG.
+func (g *SRG) AllComments() compilergraph.NodeIterator {
+	return g.layer.StartQuery().Has(parser.NodeCommentPredicateValue).BuildNodeIterator()
+}

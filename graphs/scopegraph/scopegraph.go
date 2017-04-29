@@ -48,12 +48,58 @@ type Result struct {
 	Graph    *ScopeGraph                    // The constructed scope graph.
 }
 
-// ParseAndBuildScopeGraph conducts full parsing and type graph construction for the project
+// BuildTarget defines the target of the scoping being performed.
+type BuildTarget string
+
+const (
+	Compilation BuildTarget = "compilation"
+	Tooling     BuildTarget = "tooling"
+)
+
+// Config defines the configuration for scoping.
+type Config struct {
+	// RootSourceFilePath is the root source file path from which to begin scoping.
+	RootSourceFilePath string
+
+	// VCSDevelopmentDirectories are the paths to the development directories, if any, that
+	// override VCS imports.
+	VCSDevelopmentDirectories []string
+
+	// Libraries defines the libraries, if any, to import along with the root source file.
+	Libraries []packageloader.Library
+
+	// Target defines the target of the scope building.
+	Target BuildTarget
+
+	// PathLoader defines the path loader to use when parsing.
+	PathLoader packageloader.PathLoader
+}
+
+// ParseAndBuildScopeGraph conducts full parsing, type graph construction and scoping for the project
 // starting at the given root source file.
 func ParseAndBuildScopeGraph(rootSourceFilePath string, vcsDevelopmentDirectories []string, libraries ...packageloader.Library) Result {
-	graph, err := compilergraph.NewGraph(rootSourceFilePath)
+	result, err := ParseAndBuildScopeGraphWithConfig(Config{
+		RootSourceFilePath:        rootSourceFilePath,
+		VCSDevelopmentDirectories: vcsDevelopmentDirectories,
+		Libraries:                 libraries,
+		Target:                    Compilation,
+		PathLoader:                packageloader.LocalFilePathLoader{},
+	})
+
 	if err != nil {
-		log.Fatalf("Could not instantiate graph: %v", err)
+		log.Fatalf("Could not build graph: %v", err)
+	}
+
+	return result
+}
+
+// ParseAndBuildScopeGraphWithConfig conducts full parsing, type graph construction and scoping for the project
+// starting at the root source file specified in configuration. If an *internal error* occurs, it is
+// returned as the `err`. Parsing and scoping errors are returned in the Result.
+func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
+	graph, err := compilergraph.NewGraph(config.RootSourceFilePath)
+	if err != nil {
+		return Result{}, err
 	}
 
 	// Create the SRG for the source and load it.
@@ -61,31 +107,35 @@ func ParseAndBuildScopeGraph(rootSourceFilePath string, vcsDevelopmentDirectorie
 	webidlgraph := webidl.NewIRG(graph)
 
 	loader := packageloader.NewPackageLoader(packageloader.Config{
-		RootSourceFilePath:        rootSourceFilePath,
-		VCSDevelopmentDirectories: vcsDevelopmentDirectories,
-		SourceHandlers:            []packageloader.SourceHandler{sourcegraph.PackageLoaderHandler(), webidlgraph.PackageLoaderHandler()},
-		PathLoader:                packageloader.LocalFilePathLoader{},
+		RootSourceFilePath:        config.RootSourceFilePath,
+		PathLoader:                config.PathLoader,
+		VCSDevelopmentDirectories: config.VCSDevelopmentDirectories,
+		AlwaysValidate:            config.Target == Tooling,
+
+		SourceHandlers: []packageloader.SourceHandler{
+			sourcegraph.PackageLoaderHandler(),
+			webidlgraph.PackageLoaderHandler()},
 	})
 
-	loaderResult := loader.Load(libraries...)
-	if !loaderResult.Status {
+	loaderResult := loader.Load(config.Libraries...)
+	if !loaderResult.Status && config.Target != Tooling {
 		return Result{
 			Status:   false,
 			Errors:   loaderResult.Errors,
 			Warnings: loaderResult.Warnings,
-		}
+		}, nil
 	}
 
 	// Construct the type graph.
 	resolver := typerefresolver.NewResolver(sourcegraph)
 	srgConstructor := srgtc.GetConstructorWithResolver(sourcegraph, resolver)
 	typeResult := typegraph.BuildTypeGraph(sourcegraph.Graph, webidltc.GetConstructor(webidlgraph), srgConstructor)
-	if !typeResult.Status {
+	if !typeResult.Status && config.Target != Tooling {
 		return Result{
 			Status:   false,
 			Errors:   typeResult.Errors,
 			Warnings: combineWarnings(loaderResult.Warnings, typeResult.Warnings),
-		}
+		}, nil
 	}
 
 	// Freeze the resolver's cache.
@@ -94,11 +144,11 @@ func ParseAndBuildScopeGraph(rootSourceFilePath string, vcsDevelopmentDirectorie
 	// Construct the scope graph.
 	scopeResult := buildScopeGraphWithResolver(sourcegraph, webidlgraph, typeResult.Graph, resolver)
 	return Result{
-		Status:   scopeResult.Status,
+		Status:   scopeResult.Status && typeResult.Status && loaderResult.Status,
 		Errors:   scopeResult.Errors,
 		Warnings: combineWarnings(loaderResult.Warnings, typeResult.Warnings, scopeResult.Warnings),
 		Graph:    scopeResult.Graph,
-	}
+	}, nil
 }
 
 // SourceGraph returns the SRG behind this scope graph.
