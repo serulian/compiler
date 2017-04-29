@@ -16,7 +16,7 @@ import (
 	"github.com/serulian/compiler/parser"
 
 	"github.com/cevaris/ordered_map"
-	"github.com/streamrail/concurrent-map"
+	cmap "github.com/streamrail/concurrent-map"
 )
 
 // scopeAccessOption defines the kind of access under which the scope

@@ -20,7 +20,9 @@ type scopeInfoBuilder struct {
 
 func newScope() *scopeInfoBuilder {
 	return &scopeInfoBuilder{
-		info: &proto.ScopeInfo{},
+		info: &proto.ScopeInfo{
+			Kind: proto.ScopeKind_VALUE,
+		},
 	}
 }
 
@@ -36,91 +38,76 @@ func (sib *scopeInfoBuilder) Invalid() *scopeInfoBuilder {
 
 // IsValid marks the scope as valid or invalid.
 func (sib *scopeInfoBuilder) IsValid(isValid bool) *scopeInfoBuilder {
-	sib.info.IsValid = &isValid
+	sib.info.IsValid = isValid
 	return sib
 }
 
 // ResolvingTypeOf marks the scope as resolving the type of the given scope.
 func (sib *scopeInfoBuilder) ResolvingTypeOf(scope *proto.ScopeInfo) *scopeInfoBuilder {
-	resolvedValue := scope.GetResolvedType()
-	sib.info.ResolvedType = &resolvedValue
+	sib.info.ResolvedType = scope.GetResolvedType()
 	return sib
 }
 
 // Assignable marks the scope as being assignable with a value of the given type.
 func (sib *scopeInfoBuilder) Assignable(assignable typegraph.TypeReference) *scopeInfoBuilder {
-	assignableValue := assignable.Value()
-	sib.info.AssignableType = &assignableValue
+	sib.info.AssignableType = assignable.Value()
 	return sib
 }
 
 // Resolving marks the scope as resolving a value of the given type.
 func (sib *scopeInfoBuilder) Resolving(resolved typegraph.TypeReference) *scopeInfoBuilder {
-	resolvedValue := resolved.Value()
-	sib.info.ResolvedType = &resolvedValue
+	sib.info.ResolvedType = resolved.Value()
 	return sib
 }
 
 // WithStaticType marks the scope as having the given static type.
 func (sib *scopeInfoBuilder) WithStaticType(static typegraph.TypeReference) *scopeInfoBuilder {
-	staticValue := static.Value()
-	sib.info.StaticType = &staticValue
+	sib.info.StaticType = static.Value()
 	return sib
 }
 
 // WithGenericType marks the scope as having the given generic type.
 func (sib *scopeInfoBuilder) WithGenericType(generic typegraph.TypeReference) *scopeInfoBuilder {
-	genericValue := generic.Value()
-	sib.info.GenericType = &genericValue
+	sib.info.GenericType = generic.Value()
 	return sib
 }
 
 // AssignableResolvedTypeOf marks the scope as being assignable of the *resolved* type of the given scope.
 func (sib *scopeInfoBuilder) AssignableResolvedTypeOf(scope *proto.ScopeInfo) *scopeInfoBuilder {
-	resolvedValue := scope.GetResolvedType()
-	sib.info.AssignableType = &resolvedValue
+	sib.info.AssignableType = scope.GetResolvedType()
 	return sib
 }
 
 // ReturningTypeOf marks the scope as returning the return type of the given scope.
 func (sib *scopeInfoBuilder) ReturningTypeOf(scope *proto.ScopeInfo) *scopeInfoBuilder {
-	returnedValue := scope.GetReturnedType()
-	settlesValue := scope.GetIsSettlingScope()
-
-	sib.info.ReturnedType = &returnedValue
-	sib.info.IsSettlingScope = &settlesValue
+	sib.info.ReturnedType = scope.GetReturnedType()
+	sib.info.IsSettlingScope = scope.GetIsSettlingScope()
 	return sib
 }
 
 // ReturningResolvedTypeOf marks the scope as returning the *resolved* type of the given scope.
 func (sib *scopeInfoBuilder) ReturningResolvedTypeOf(scope *proto.ScopeInfo) *scopeInfoBuilder {
-	resolvedValue := scope.GetResolvedType()
-	settlesScope := true
-
-	sib.info.ReturnedType = &resolvedValue
-	sib.info.IsSettlingScope = &settlesScope
+	sib.info.ReturnedType = scope.GetResolvedType()
+	sib.info.IsSettlingScope = true
 	return sib
 }
 
 // Returning marks the scope as returning a value of the given type.
 func (sib *scopeInfoBuilder) Returning(returning typegraph.TypeReference, settlesScope bool) *scopeInfoBuilder {
-	returnedValue := returning.Value()
-	sib.info.ReturnedType = &returnedValue
-	sib.info.IsSettlingScope = &settlesScope
+	sib.info.ReturnedType = returning.Value()
+	sib.info.IsSettlingScope = settlesScope
 	return sib
 }
 
 // IsSettlingScope marks the scope as settling the function.
 func (sib *scopeInfoBuilder) IsSettlingScope() *scopeInfoBuilder {
-	trueValue := true
-	sib.info.IsSettlingScope = &trueValue
+	sib.info.IsSettlingScope = true
 	return sib
 }
 
 // IsTerminatingStatement marks the scope as containing a terminating statement.
 func (sib *scopeInfoBuilder) IsTerminatingStatement() *scopeInfoBuilder {
-	trueValue := true
-	sib.info.IsTerminatingStatement = &trueValue
+	sib.info.IsTerminatingStatement = true
 	return sib
 }
 
@@ -172,19 +159,15 @@ func (sib *scopeInfoBuilder) ForNamedScopeUnderType(info namedScopeInfo, parentT
 
 // ForAnonymousScope points the scope to an anonymously scope.
 func (sib *scopeInfoBuilder) ForAnonymousScope(typegraph *typegraph.TypeGraph) *scopeInfoBuilder {
-	trueValue := true
-	sib.info.IsAnonymousReference = &trueValue
+	sib.info.IsAnonymousReference = true
 	return sib.Resolving(typegraph.VoidTypeReference()).Valid()
 }
 
 // CallsOperator marks the scope as being the result of a call to the specified operator.
 func (sib *scopeInfoBuilder) CallsOperator(op typegraph.TGMember) *scopeInfoBuilder {
 	sib.info.CalledOpReference = &proto.ScopeReference{}
-
-	falseValue := false
-	namedId := string(op.GraphNode.NodeId)
-	sib.info.CalledOpReference.ReferencedNode = &namedId
-	sib.info.CalledOpReference.IsSRGNode = &falseValue
+	sib.info.CalledOpReference.ReferencedNode = string(op.GraphNode.NodeId)
+	sib.info.CalledOpReference.IsSRGNode = false
 	return sib
 }
 
@@ -192,27 +175,21 @@ func (sib *scopeInfoBuilder) CallsOperator(op typegraph.TGMember) *scopeInfoBuil
 func (sib *scopeInfoBuilder) ForNamedScope(info namedScopeInfo, context scopeContext) *scopeInfoBuilder {
 	if info.IsGeneric() {
 		genericType, _ := info.ValueOrGenericType(context)
-		genericKind := proto.ScopeKind_GENERIC
-		sib.info.Kind = &genericKind
+		sib.info.Kind = proto.ScopeKind_GENERIC
 		sib.WithGenericType(genericType)
 	} else if info.IsStatic() {
-		staticKind := proto.ScopeKind_STATIC
-		sib.info.Kind = &staticKind
+		sib.info.Kind = proto.ScopeKind_STATIC
 		sib.WithStaticType(info.StaticType(context))
 	}
 
 	sib.info.NamedReference = &proto.ScopeReference{}
 
 	if info.typeInfo != nil {
-		falseValue := false
-		namedId := string(info.typeInfo.Node().NodeId)
-		sib.info.NamedReference.ReferencedNode = &namedId
-		sib.info.NamedReference.IsSRGNode = &falseValue
+		sib.info.NamedReference.ReferencedNode = string(info.typeInfo.Node().NodeId)
+		sib.info.NamedReference.IsSRGNode = false
 	} else {
-		trueValue := true
-		namedId := string(info.srgInfo.GraphNode.NodeId)
-		sib.info.NamedReference.ReferencedNode = &namedId
-		sib.info.NamedReference.IsSRGNode = &trueValue
+		sib.info.NamedReference.ReferencedNode = string(info.srgInfo.GraphNode.NodeId)
+		sib.info.NamedReference.IsSRGNode = true
 	}
 
 	if info.IsAssignable() {
@@ -226,7 +203,7 @@ func (sib *scopeInfoBuilder) ForNamedScope(info namedScopeInfo, context scopeCon
 
 // WithKind sets the kind of this scope to the given kind.
 func (sib *scopeInfoBuilder) WithKind(kind proto.ScopeKind) *scopeInfoBuilder {
-	sib.info.Kind = &kind
+	sib.info.Kind = kind
 	return sib
 }
 
@@ -259,11 +236,9 @@ func (sib *scopeInfoBuilder) LabelSetOfExcept(scope *proto.ScopeInfo, except ...
 
 // Targets sets the targetted node for a break or continue statement.
 func (sib *scopeInfoBuilder) Targets(node compilergraph.GraphNode) *scopeInfoBuilder {
-	trueValue := true
-	namedId := string(node.NodeId)
 	sib.info.TargetedReference = &proto.ScopeReference{}
-	sib.info.TargetedReference.ReferencedNode = &namedId
-	sib.info.TargetedReference.IsSRGNode = &trueValue
+	sib.info.TargetedReference.ReferencedNode = string(node.NodeId)
+	sib.info.TargetedReference.IsSRGNode = true
 	return sib
 }
 
