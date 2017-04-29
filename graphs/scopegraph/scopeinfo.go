@@ -201,6 +201,12 @@ func (sib *scopeInfoBuilder) ForNamedScope(info namedScopeInfo, context scopeCon
 	return sib.Resolving(valueType).Valid()
 }
 
+// WithAttributes sets the attributes on the scope. Only applies to SML expression scope.
+func (sib *scopeInfoBuilder) WithAttributes(attributeScope map[string]*proto.ScopeInfo) *scopeInfoBuilder {
+	sib.info.Attributes = attributeScope
+	return sib
+}
+
 // WithKind sets the kind of this scope to the given kind.
 func (sib *scopeInfoBuilder) WithKind(kind proto.ScopeKind) *scopeInfoBuilder {
 	sib.info.Kind = kind

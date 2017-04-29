@@ -76,6 +76,8 @@ message ScopeInfo {
 	repeated ScopeReference StaticDependencies = 15;
 	repeated string DynamicDependencies = 16;
 	bool Awaits = 17; // If true, the scoped member awaits on a promise.
+
+	map<string, ScopeInfo> Attributes = 18; // The scope of the attributes. Applies to SML expressions.
 }
 
 message ScopeReference {
