@@ -1,5 +1,7 @@
 ///   [sc     ]
-class SomeClass {}
+class SomeClass {
+  var<int> FooBarBaz
+}
 
 ///      [v ]  [d        ] [sp     ] [i]            [scref  ]
 function<void> DoSomething(someParam int, someClass SomeClass) {
@@ -20,4 +22,12 @@ function<void> DoSomething(someParam int, someClass SomeClass) {
 
   /// [str ]
   someString
+
+  /// [str2]
+  someString = 'foobar'
+
+  SomeClass{
+    /// [fbb]  [nl2]
+    FooBarBaz: 12345,
+  }
 }

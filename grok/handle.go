@@ -5,6 +5,8 @@
 package grok
 
 import (
+	"fmt"
+
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/parser"
@@ -79,6 +81,41 @@ func (gh Handle) LookupLocation(sal compilercommon.SourceAndLocation) (RangeInfo
 			Kind:              TypeRef,
 			SourceAndLocation: sal,
 			TypeReference:     resolvedTypeRef,
+		}, nil
+
+	// Sml.
+	case parser.NodeTypeSmlAttribute:
+		// Get the scope of the parent SML expression, and lookup the scope of the attribute,
+		// if any.
+		parentExpression := node.GetIncomingNode(parser.NodeSmlExpressionAttribute)
+		parentScopeInfo, hasParentScope := gh.scopeResult.Graph.GetScope(parentExpression)
+		if !hasParentScope {
+			return RangeInformation{
+				Kind:              NotFound,
+				SourceAndLocation: sal,
+			}, nil
+		}
+
+		attributeName := node.Get(parser.NodeSmlAttributeName)
+
+		// Find the scope of the attribute under the SML expression. If not found, this is a
+		// string literal key to a props mapping.
+		attributeScope, hasAttributeScope := parentScopeInfo.Attributes[attributeName]
+		if hasAttributeScope && attributeScope != nil {
+			referencedName, hasReferencedName := gh.scopeResult.Graph.GetReferencedName(*attributeScope)
+			if hasReferencedName {
+				return RangeInformation{
+					Kind:              NamedReference,
+					SourceAndLocation: sal,
+					NamedReference:    referencedName,
+				}, nil
+			}
+		}
+
+		return RangeInformation{
+			Kind:              Literal,
+			SourceAndLocation: sal,
+			LiteralValue:      fmt.Sprintf("'%s'", attributeName),
 		}, nil
 
 	// Literals.

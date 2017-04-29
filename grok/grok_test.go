@@ -41,11 +41,14 @@ var grokTests = []grokTest{
 		grokNamedRange{"sl2", Literal, "\"hello world\""},
 		grokNamedRange{"bl", Literal, "true"},
 		grokNamedRange{"nl", Literal, "12345678"},
+		grokNamedRange{"nl2", Literal, "12345"},
 		grokNamedRange{"i", TypeRef, "Integer"},
 		grokNamedRange{"scref", TypeRef, "SomeClass"},
 
 		grokNamedRange{"sl3", Literal, "'hello'"},
 		grokNamedRange{"str", NamedReference, "someString"},
+		grokNamedRange{"str2", NamedReference, "someString"},
+		grokNamedRange{"fbb", NamedReference, "FooBarBaz"},
 	}},
 
 	grokTest{"imports", true, []grokNamedRange{
@@ -56,6 +59,15 @@ var grokTests = []grokTest{
 
 		grokNamedRange{"i2", PackageOrModule, "anotherfile"},
 		grokNamedRange{"i3", PackageOrModule, "anotherfile"},
+	}},
+
+	grokTest{"sml", false, []grokNamedRange{
+		grokNamedRange{"sf", NamedReference, "SomeFunction"},
+		grokNamedRange{"sp", NamedReference, "SomeProperty"},
+		grokNamedRange{"sd", NamedReference, "SomeDecorator"},
+
+		grokNamedRange{"af", NamedReference, "AnotherFunction"},
+		grokNamedRange{"sp2", Literal, "'SomeProperty'"},
 	}},
 
 	grokTest{"brokenimport", false, []grokNamedRange{}},
