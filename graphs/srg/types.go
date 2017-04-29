@@ -14,11 +14,6 @@ import (
 	"github.com/serulian/compiler/parser"
 )
 
-var TYPE_KINDS = []parser.NodeType{parser.NodeTypeClass, parser.NodeTypeInterface, parser.NodeTypeNominal, parser.NodeTypeStruct, parser.NodeTypeAgent}
-var TYPE_KINDS_TAGGED = []compilergraph.TaggedValue{parser.NodeTypeClass, parser.NodeTypeInterface, parser.NodeTypeNominal, parser.NodeTypeStruct, parser.NodeTypeAgent}
-
-var MEMBER_KINDS_TAGGED = []compilergraph.TaggedValue{parser.NodeTypeClass, parser.NodeTypeInterface, parser.NodeTypeNominal, parser.NodeTypeStruct, parser.NodeTypeAgent, parser.NodeTypeVariable, parser.NodeTypeFunction}
-
 // SRGType wraps a type declaration or definition in the SRG.
 type SRGType struct {
 	compilergraph.GraphNode
