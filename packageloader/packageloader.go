@@ -374,10 +374,10 @@ func (p *PackageLoader) loadLocalPackage(packagePath pathInformation) {
 
 	// Find all source files in the directory and add them to the paths list.
 	var fileFound bool
-	for _, fileName := range directoryContents {
-		if path.Ext(fileName) == handler.PackageFileExtension() {
+	for _, entry := range directoryContents {
+		if !entry.IsDirectory && path.Ext(entry.Name) == handler.PackageFileExtension() {
 			fileFound = true
-			filePath := path.Join(packagePath.path, fileName)
+			filePath := path.Join(packagePath.path, entry.Name)
 			p.pushPath(pathSourceFile, packagePath.sourceKind, filePath, packagePath.sal)
 
 			// Add the source file to the package information.

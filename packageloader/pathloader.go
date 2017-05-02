@@ -17,8 +17,14 @@ type PathLoader interface {
 	// if the path refers to a directory.
 	IsSourceFile(path string) bool
 
-	// LoadDirectory returns the names of the files in the directory at the given path.
-	LoadDirectory(path string) ([]string, error)
+	// LoadDirectory returns the files and sub-directories in the directory at the given path.
+	LoadDirectory(path string) ([]DirectoryEntry, error)
+}
+
+// DirectoryEntry represents a single entry under a directory.
+type DirectoryEntry struct {
+	Name        string
+	IsDirectory bool
 }
 
 type LocalFilePathLoader struct{}
@@ -32,15 +38,15 @@ func (lfpl LocalFilePathLoader) IsSourceFile(path string) bool {
 	return ok
 }
 
-func (lfpl LocalFilePathLoader) LoadDirectory(path string) ([]string, error) {
-	entries, err := ioutil.ReadDir(path)
+func (lfpl LocalFilePathLoader) LoadDirectory(path string) ([]DirectoryEntry, error) {
+	fsEntries, err := ioutil.ReadDir(path)
 	if err != nil {
-		return []string{}, err
+		return []DirectoryEntry{}, err
 	}
 
-	names := make([]string, len(entries))
-	for index, entry := range entries {
-		names[index] = entry.Name()
+	entries := make([]DirectoryEntry, len(fsEntries))
+	for index, entry := range fsEntries {
+		entries[index] = DirectoryEntry{entry.Name(), entry.IsDir()}
 	}
-	return names, nil
+	return entries, nil
 }

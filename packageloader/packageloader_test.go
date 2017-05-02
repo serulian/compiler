@@ -208,8 +208,8 @@ func (tpl TestPathLoader) IsSourceFile(path string) bool {
 	return path == "startingfile.json" || path == "anotherfile.json"
 }
 
-func (tpl TestPathLoader) LoadDirectory(path string) ([]string, error) {
-	return []string{}, fmt.Errorf("Invalid path: %s", path)
+func (tpl TestPathLoader) LoadDirectory(path string) ([]DirectoryEntry, error) {
+	return []DirectoryEntry{}, fmt.Errorf("Invalid path: %s", path)
 }
 
 func TestLocalLoader(t *testing.T) {
