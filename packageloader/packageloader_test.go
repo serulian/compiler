@@ -12,6 +12,8 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/stretchr/testify/assert"
+
+	cmap "github.com/streamrail/concurrent-map"
 )
 
 var _ = fmt.Printf
@@ -21,7 +23,7 @@ type testFile struct {
 }
 
 type testTracker struct {
-	pathsImported map[string]bool
+	pathsImported cmap.ConcurrentMap
 }
 
 func (tt *testTracker) PackageFileExtension() string {
@@ -44,7 +46,7 @@ func (tt *testTracker) Verify(errorReporter ErrorReporter, warningReporter Warni
 }
 
 func (tt *testTracker) Parse(source compilercommon.InputSource, input string, importHandler ImportHandler) {
-	tt.pathsImported[string(source)] = true
+	tt.pathsImported.Set(string(source), true)
 
 	file := testFile{}
 	json.Unmarshal([]byte(input), &file)
@@ -61,7 +63,7 @@ func (tt *testTracker) Parse(source compilercommon.InputSource, input string, im
 
 func TestBasicLoading(t *testing.T) {
 	tt := &testTracker{
-		pathsImported: map[string]bool{},
+		pathsImported: cmap.New(),
 	}
 
 	loader := NewPackageLoader(NewBasicConfig("tests/basic/somefile.json", tt.createHandler()))
@@ -75,7 +77,7 @@ func TestBasicLoading(t *testing.T) {
 	assertFileImported(t, tt, "tests/basic/somesubdir/subdirfile.json")
 
 	// Ensure that the PATH map contains an entry for package imported.
-	for key := range tt.pathsImported {
+	for key := range tt.pathsImported.Items() {
 		if _, ok := result.PackageMap.Get("", key); !ok {
 			t.Errorf("Expected package %s in packages map", key)
 		}
@@ -84,7 +86,7 @@ func TestBasicLoading(t *testing.T) {
 
 func TestRelativeImportSuccess(t *testing.T) {
 	tt := &testTracker{
-		pathsImported: map[string]bool{},
+		pathsImported: cmap.New(),
 	}
 
 	loader := NewPackageLoader(NewBasicConfig("tests/relative/entrypoint.json", tt.createHandler()))
@@ -98,7 +100,7 @@ func TestRelativeImportSuccess(t *testing.T) {
 	assertFileImported(t, tt, "tests/relative/relativelyimported.json")
 
 	// Ensure that the PATH map contains an entry for package imported.
-	for key := range tt.pathsImported {
+	for key := range tt.pathsImported.Items() {
 		if _, ok := result.PackageMap.Get("", key); !ok {
 			t.Errorf("Expected package %s in packages map", key)
 		}
@@ -107,7 +109,7 @@ func TestRelativeImportSuccess(t *testing.T) {
 
 func TestRelativeImportFailureAboveVCS(t *testing.T) {
 	tt := &testTracker{
-		pathsImported: map[string]bool{},
+		pathsImported: cmap.New(),
 	}
 
 	loader := NewPackageLoader(NewBasicConfig("tests/vcsabove/fail.json", tt.createHandler()))
@@ -125,7 +127,7 @@ func TestRelativeImportFailureAboveVCS(t *testing.T) {
 
 func TestRelativeImportFailureBelowVCS(t *testing.T) {
 	tt := &testTracker{
-		pathsImported: map[string]bool{},
+		pathsImported: cmap.New(),
 	}
 
 	loader := NewPackageLoader(NewBasicConfig("tests/vcsbelow/fail.json", tt.createHandler()))
@@ -143,7 +145,7 @@ func TestRelativeImportFailureBelowVCS(t *testing.T) {
 
 func TestUnknownPath(t *testing.T) {
 	tt := &testTracker{
-		pathsImported: map[string]bool{},
+		pathsImported: cmap.New(),
 	}
 
 	loader := NewPackageLoader(NewBasicConfig("tests/unknownimport/importsunknown.json", tt.createHandler()))
@@ -161,9 +163,82 @@ func TestUnknownPath(t *testing.T) {
 	assertFileImported(t, tt, "tests/unknownimport/importsunknown.json")
 }
 
+func TestListSubModulesAndPackages(t *testing.T) {
+	tt := &testTracker{
+		pathsImported: cmap.New(),
+	}
+
+	loader := NewPackageLoader(NewBasicConfig("tests/basic/somefile.json", tt.createHandler()))
+
+	modulesOrPackages, err := loader.ListSubModulesAndPackages("tests/basic")
+	if !assert.Nil(t, err, "Expected successful listing") {
+		return
+	}
+
+	assert.Equal(t, len(modulesOrPackages), 3)
+	assert.Equal(t, modulesOrPackages[0], ModuleOrPackage{"anotherfile", "tests/basic/anotherfile.json", ""})
+	assert.Equal(t, modulesOrPackages[1], ModuleOrPackage{"somefile", "tests/basic/somefile.json", ""})
+	assert.Equal(t, modulesOrPackages[2], ModuleOrPackage{"somesubdir", "tests/basic/somesubdir", ""})
+}
+
+type localPackageInfoForPathTest struct {
+	path            string
+	sourceKind      string
+	isVCSPath       bool
+	expectedSuccess bool
+	expectedInfo    PackageInfo
+}
+
+var localPackageInfoForPathTests = []localPackageInfoForPathTest{
+	localPackageInfoForPathTest{"basic", "", false, true, PackageInfo{
+		kind:        "",
+		referenceId: "tests/basic",
+		modulePaths: []compilercommon.InputSource{"tests/basic/anotherfile.json", "tests/basic/somefile.json"},
+	}},
+
+	localPackageInfoForPathTest{"basic/anotherfile", "", false, true, PackageInfo{
+		kind:        "",
+		referenceId: "tests/basic/anotherfile.json",
+		modulePaths: []compilercommon.InputSource{"tests/basic/anotherfile.json"},
+	}},
+
+	localPackageInfoForPathTest{"relative", "", false, true, PackageInfo{
+		kind:        "",
+		referenceId: "tests/relative",
+		modulePaths: []compilercommon.InputSource{"tests/relative/entrypoint.json", "tests/relative/relativelyimported.json"},
+	}},
+
+	localPackageInfoForPathTest{"someinvalid", "", false, false, PackageInfo{}},
+
+	// Note: since we don't have a valid VCS cache, this should fail.
+	localPackageInfoForPathTest{"vcsabove", "", true, false, PackageInfo{}},
+}
+
+func TestLocalPackageInfoForPath(t *testing.T) {
+	tt := &testTracker{
+		pathsImported: cmap.New(),
+	}
+
+	loader := NewPackageLoader(NewBasicConfig("tests/basic/somefile.json", tt.createHandler()))
+	for _, test := range localPackageInfoForPathTests {
+		packageInfo, err := loader.LocalPackageInfoForPath("tests/"+test.path, test.sourceKind, test.isVCSPath)
+		if !assert.Equal(t, err == nil, test.expectedSuccess, "Expected %v success for local package info test %s", test.expectedSuccess, test.path) {
+			continue
+		}
+
+		if !test.expectedSuccess {
+			continue
+		}
+
+		if !assert.Equal(t, packageInfo, test.expectedInfo, "Mismatch in expected package info for test %s", test.path) {
+			continue
+		}
+	}
+}
+
 func TestLibraryPath(t *testing.T) {
 	tt := &testTracker{
-		pathsImported: map[string]bool{},
+		pathsImported: cmap.New(),
 	}
 
 	loader := NewPackageLoader(NewBasicConfig("tests/basic/somefile.json", tt.createHandler()))
@@ -182,7 +257,7 @@ func TestLibraryPath(t *testing.T) {
 }
 
 func assertFileImported(t *testing.T, tt *testTracker, filePath string) {
-	if _, ok := tt.pathsImported[filePath]; !ok {
+	if !tt.pathsImported.Has(filePath) {
 		t.Errorf("Expected import of file %s", filePath)
 	}
 }
@@ -214,7 +289,7 @@ func (tpl TestPathLoader) LoadDirectory(path string) ([]DirectoryEntry, error) {
 
 func TestLocalLoader(t *testing.T) {
 	tt := &testTracker{
-		pathsImported: map[string]bool{},
+		pathsImported: cmap.New(),
 	}
 
 	loader := NewPackageLoader(Config{

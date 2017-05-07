@@ -22,24 +22,24 @@ func exists(path string) (bool, error) {
 	return true, err
 }
 
-// LockMap defines a concurrent-safe map that returns a sync Mutex for each key. This is useful
+// lockMap defines a concurrent-safe map that returns a sync Mutex for each key. This is useful
 // when multiple resources are being loaded concurrently and locking is needed, but only on a
 // per-resource basis.
-type LockMap struct {
+type lockMap struct {
 	locks      map[string]*sync.Mutex
 	globalLock *sync.Mutex
 }
 
-// CreateLockMap returns a new LockMap.
-func CreateLockMap() LockMap {
-	return LockMap{
+// createLockMap returns a new lockMap.
+func createLockMap() lockMap {
+	return lockMap{
 		locks:      map[string]*sync.Mutex{},
 		globalLock: &sync.Mutex{},
 	}
 }
 
-// GetLock returns a lock for the given key.
-func (lm LockMap) GetLock(key string) *sync.Mutex {
+// getLock returns a lock for the given key.
+func (lm lockMap) getLock(key string) *sync.Mutex {
 	lm.globalLock.Lock()
 	defer lm.globalLock.Unlock()
 
