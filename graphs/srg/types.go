@@ -101,6 +101,11 @@ func (t SRGType) Location() compilercommon.SourceAndLocation {
 	return salForNode(t.GraphNode)
 }
 
+// Documentation returns the documentation on the type, if any.
+func (t SRGType) Documentation() (SRGDocumentation, bool) {
+	return t.srg.getDocumentationForNode(t.GraphNode)
+}
+
 // GetTypeKind returns the kind matching the type definition/declaration node type.
 func (t SRGType) TypeKind() TypeKind {
 	switch t.GraphNode.Kind() {

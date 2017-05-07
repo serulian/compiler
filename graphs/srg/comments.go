@@ -37,6 +37,34 @@ func (g *SRG) AllComments() compilergraph.NodeIterator {
 	return g.layer.StartQuery().Has(parser.NodeCommentPredicateValue).BuildNodeIterator()
 }
 
+// getDocumentationForNode returns the documentation attached to the given node, if any.
+func (g *SRG) getDocumentationForNode(node compilergraph.GraphNode) (SRGDocumentation, bool) {
+	cit := node.StartQuery().
+		Out(parser.NodePredicateChild).
+		Has(parser.NodeCommentPredicateValue).
+		BuildNodeIterator()
+
+	var docComment *SRGComment
+	for cit.Next() {
+		commentNode := cit.Node()
+		srgComment := SRGComment{commentNode, g}
+		if docComment == nil {
+			docComment = &srgComment
+		}
+
+		// Doc comments always win.
+		if srgComment.IsDocComment() {
+			docComment = &srgComment
+		}
+	}
+
+	if docComment == nil {
+		return SRGDocumentation{}, false
+	}
+
+	return docComment.Documentation()
+}
+
 // getDocumentationCommentForNode returns the last comment attached to the given SRG node, if any.
 func (g *SRG) getDocumentationCommentForNode(node compilergraph.GraphNode) (SRGComment, bool) {
 	// The documentation on a node is its *last* comment.
@@ -165,7 +193,7 @@ type SRGDocumentation struct {
 
 // String returns the human-readable documentation string.
 func (d SRGDocumentation) String() string {
-	return d.commentValue
+	return strings.Replace(strings.Replace(d.commentValue, "\n", " ", -1), "  ", " ", -1)
 }
 
 // IsDocComment returns true if the documentation was found in a doc-comment style

@@ -80,6 +80,7 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"class shadowing agent test", "agent", "class_shadowing", ""},
 	typegraphTest{"simple generic agent test", "agent", "simplegeneric", ""},
 	typegraphTest{"agent meets principal requirements test", "agent", "agentmeetsprincipal", ""},
+	typegraphTest{"documentation test", "doccomment", "doccomment", ""},
 
 	// Failure tests.
 	typegraphTest{"struct invalid ref test", "struct", "invalidref", "SomeStruct<SomeClass> has non-structural generic type SomeClass: SomeClass is not structural nor serializable"},

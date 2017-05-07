@@ -1,0 +1,19 @@
+/**
+ * SomeClass is some awesome class.
+ */
+class SomeClass {
+    /**
+     * DoSomething does.... something...
+     * over multiple lines!
+     */
+    function<void> DoSomething() {}
+}
+
+// AnotherClass does other cool things.
+class AnotherClass {}
+
+// ThirdClass has multiple comments
+/**
+ * One of which is a documentation comment!
+ */
+class ThirdClass {}
