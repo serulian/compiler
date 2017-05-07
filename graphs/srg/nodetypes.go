@@ -25,7 +25,7 @@ var TYPE_MEMBER_KINDS = []parser.NodeType{
 	parser.NodeTypeOperator,
 }
 
-var TYPE_OR_MEMBER_KINDS = append(TYPE_KINDS, TYPE_MEMBER_KINDS...)
+var MEMBER_OR_TYPE_KINDS = append(TYPE_MEMBER_KINDS, TYPE_KINDS...)
 
 var TYPE_KINDS_TAGGED = []compilergraph.TaggedValue{
 	parser.NodeTypeClass,

@@ -104,6 +104,21 @@ func (m SRGModule) GetMembers() []SRGMember {
 	return members
 }
 
+// GetImports returns the imports declared under the module.
+func (m SRGModule) GetImports() []SRGImport {
+	it := m.GraphNode.StartQuery().
+		Out(parser.NodePredicateChild).
+		IsKind(parser.NodeTypeImport).
+		BuildNodeIterator()
+
+	var imports []SRGImport
+	for it.Next() {
+		imports = append(imports, SRGImport{it.Node(), m.srg})
+	}
+
+	return imports
+}
+
 // FindTypeOrMemberByName searches for the type definition, declaration or module member with the given
 // name under this module and returns it (if found). Note that this method does not handle imports.
 func (m SRGModule) FindTypeOrMemberByName(name string, option ModuleResolutionOption) (SRGTypeOrMember, bool) {

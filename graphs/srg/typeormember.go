@@ -63,3 +63,25 @@ func (t SRGTypeOrMember) Node() compilergraph.GraphNode {
 func (t SRGTypeOrMember) Location() compilercommon.SourceAndLocation {
 	return salForNode(t.GraphNode)
 }
+
+// ContainingModule returns the module containing this type or member.
+func (t SRGTypeOrMember) ContainingModule() SRGModule {
+	srgType, isType := t.AsType()
+	if isType {
+		return srgType.Module()
+	}
+
+	srgMember, _ := t.AsMember()
+	return srgMember.Module()
+}
+
+// Generics returns the generics of this type or member.
+func (t SRGTypeOrMember) Generics() []SRGGeneric {
+	srgType, isType := t.AsType()
+	if isType {
+		return srgType.Generics()
+	}
+
+	srgMember, _ := t.AsMember()
+	return srgMember.Generics()
+}

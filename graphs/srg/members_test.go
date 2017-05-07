@@ -153,6 +153,10 @@ func TestTypeMembers(t *testing.T) {
 		// Check the member.
 		assert.Equal(t, test.expectedKind, member.MemberKind(), "Member kind mismatch")
 
+		// Check the implementable version.
+		implementable := SRGImplementable{member.GraphNode, testSRG}
+		assert.True(t, implementable.IsMember())
+
 		// Check generics.
 		foundGenerics := member.Generics()
 		assert.Equal(t, len(test.expectedGenerics), len(foundGenerics), "Generic count mismatch")
@@ -163,10 +167,14 @@ func TestTypeMembers(t *testing.T) {
 
 		// Check parameters.
 		foundParameters := member.Parameters()
+		implementableParameters := implementable.Parameters()
+
 		assert.Equal(t, len(test.expectedParameters), len(foundParameters), "Parameter count mismatch")
+		assert.Equal(t, len(test.expectedParameters), len(implementableParameters), "Parameter count mismatch")
 
 		for index, parameterName := range test.expectedParameters {
 			assert.Equal(t, parameterName, foundParameters[index].Name(), "Parameter name mismatch")
+			assert.Equal(t, parameterName, implementableParameters[index].Name(), "Parameter name mismatch")
 		}
 
 		// Check declared and return type.

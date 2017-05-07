@@ -35,10 +35,47 @@ func (m SRGImplementable) Body() (compilergraph.GraphNode, bool) {
 	return m.TryGetNode(parser.NodePredicateBody)
 }
 
+// Name returns the name of the implementable, if any.
+func (m SRGImplementable) Name() (string, bool) {
+	if m.IsMember() {
+		return m.ContainingMember().Name(), true
+	}
+
+	return "", false
+}
+
+// Parameters returns the parameters defined on this implementable, if any.
+func (m SRGImplementable) Parameters() []SRGParameter {
+	// If this is a member, return its parameters.
+	if m.IsMember() {
+		return m.ContainingMember().Parameters()
+	}
+
+	// Otherwise, check for a function lambda (of either kind) and return its
+	// parameters.
+	switch m.GraphNode.Kind() {
+	case parser.NodeTypeLambdaExpression:
+		var parameters = make([]SRGParameter, 0)
+		pit := m.GraphNode.StartQuery().
+			Out(parser.NodeLambdaExpressionParameter, parser.NodeLambdaExpressionInferredParameter).
+			BuildNodeIterator()
+		for pit.Next() {
+			parameters = append(parameters, SRGParameter{pit.Node(), m.srg})
+		}
+		return parameters
+
+	default:
+		return make([]SRGParameter, 0)
+	}
+}
+
+// Node returns the underlying node for this implementable in the SRG.
 func (m SRGImplementable) Node() compilergraph.GraphNode {
 	return m.GraphNode
 }
 
+// ContainingMember returns the containing member of this implementable. If the node is,
+// itself, a member, itself is returned.
 func (m SRGImplementable) ContainingMember() SRGMember {
 	if m.IsMember() {
 		return SRGMember{m.GraphNode, m.srg}
@@ -55,6 +92,7 @@ func (m SRGImplementable) ContainingMember() SRGMember {
 	panic("No containing member found")
 }
 
+// IsPropertySetter returns true if this implementable is a property setter.
 func (m SRGImplementable) IsPropertySetter() bool {
 	setter, found := m.ContainingMember().Setter()
 	if !found {
@@ -64,6 +102,7 @@ func (m SRGImplementable) IsPropertySetter() bool {
 	return m.GraphNode.NodeId == setter.NodeId
 }
 
+// IsMember returns true if this implementable is an SRGMember.
 func (m SRGImplementable) IsMember() bool {
 	switch m.GraphNode.Kind() {
 	case parser.NodeTypeConstructor:

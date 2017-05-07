@@ -30,6 +30,20 @@ func (i SRGImport) Source() string {
 	return i.GraphNode.Get(parser.NodeImportPredicateSource)
 }
 
+// PackageImports returns the package imports for this import statement, if any.
+func (i SRGImport) PackageImports() []SRGPackageImport {
+	pit := i.GraphNode.
+		StartQuery().
+		Out(parser.NodeImportPredicatePackageRef).
+		BuildNodeIterator()
+
+	var packageImports = make([]SRGPackageImport, 0)
+	for pit.Next() {
+		packageImports = append(packageImports, i.srg.GetPackageImport(pit.Node()))
+	}
+	return packageImports
+}
+
 // GetPackageImport returns an SRGPackageImport wrapper around the given import package node.
 // Will panic if the node is not an import package node.
 func (g *SRG) GetPackageImport(packageNode compilergraph.GraphNode) SRGPackageImport {
@@ -46,9 +60,14 @@ type SRGPackageImport struct {
 	srg *SRG // The parent SRG.
 }
 
-// Subsource returns the subsource for this package import.
-func (i SRGPackageImport) Subsource() string {
-	return i.GraphNode.Get(parser.NodeImportPredicateSubsource)
+// Subsource returns the subsource for this package import, if any.
+func (i SRGPackageImport) Subsource() (string, bool) {
+	return i.GraphNode.TryGet(parser.NodeImportPredicateSubsource)
+}
+
+// Alias returns the local alias for this package import, if any.
+func (i SRGPackageImport) Alias() (string, bool) {
+	return i.GraphNode.TryGet(parser.NodeImportPredicateName)
 }
 
 // ResolvedTypeOrMember returns the SRG type or member referenced by this import, if any.
@@ -60,5 +79,6 @@ func (i SRGPackageImport) ResolvedTypeOrMember() (SRGTypeOrMember, bool) {
 	}
 
 	// Search for the subsource.
-	return packageInfo.FindTypeOrMemberByName(i.Subsource())
+	subsource, _ := i.Subsource()
+	return packageInfo.FindTypeOrMemberByName(subsource)
 }

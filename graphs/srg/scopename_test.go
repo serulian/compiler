@@ -12,6 +12,7 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/parser"
+
 	"github.com/stretchr/testify/assert"
 )
 
