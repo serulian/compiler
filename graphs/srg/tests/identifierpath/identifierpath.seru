@@ -1,0 +1,9 @@
+function<void> DoSomething() {
+    /*this*/(this)
+    /*principal*/(principal)
+    /*this.whatever*/(this.whatever)
+    /*foo*/(foo)
+    /*foo.bar*/(foo.bar)
+    /*foo.bar.baz*/(foo.bar.baz)
+    /*foo[1234]*/(foo[1234])
+}

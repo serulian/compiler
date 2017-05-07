@@ -22,13 +22,13 @@ NodeTypeFile
                 NodeFunctionCallExpression
                   end-rune = 79
                   input-source = known issue 12 test
-                  start-rune = 72
+                  start-rune = 32
                   function-call-expr =>
                     NodeMemberAccessExpression
                       end-rune = 77
                       input-source = known issue 12 test
                       member-access-identifier = Empty
-                      start-rune = 35
+                      start-rune = 32
                       member-access-expr =>
                         NodeGenericSpecifierExpression
                           end-rune = 71

@@ -14,11 +14,6 @@ import (
 	"github.com/serulian/compiler/parser"
 )
 
-var TYPE_KINDS = []parser.NodeType{parser.NodeTypeClass, parser.NodeTypeInterface, parser.NodeTypeNominal, parser.NodeTypeStruct, parser.NodeTypeAgent}
-var TYPE_KINDS_TAGGED = []compilergraph.TaggedValue{parser.NodeTypeClass, parser.NodeTypeInterface, parser.NodeTypeNominal, parser.NodeTypeStruct, parser.NodeTypeAgent}
-
-var MEMBER_KINDS_TAGGED = []compilergraph.TaggedValue{parser.NodeTypeClass, parser.NodeTypeInterface, parser.NodeTypeNominal, parser.NodeTypeStruct, parser.NodeTypeAgent, parser.NodeTypeVariable, parser.NodeTypeFunction}
-
 // SRGType wraps a type declaration or definition in the SRG.
 type SRGType struct {
 	compilergraph.GraphNode
@@ -104,6 +99,11 @@ func (t SRGType) Node() compilergraph.GraphNode {
 // Location returns the source location for this type.
 func (t SRGType) Location() compilercommon.SourceAndLocation {
 	return salForNode(t.GraphNode)
+}
+
+// Documentation returns the documentation on the type, if any.
+func (t SRGType) Documentation() (SRGDocumentation, bool) {
+	return t.srg.getDocumentationForNode(t.GraphNode)
 }
 
 // GetTypeKind returns the kind matching the type definition/declaration node type.

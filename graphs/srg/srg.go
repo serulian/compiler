@@ -82,6 +82,24 @@ func (g *SRG) PackageLoaderHandler() packageloader.SourceHandler {
 	return &srgSourceHandler{g, g.layer.NewModifier()}
 }
 
+// ParseExpression parses the given expression string and returns its node. Note that the
+// expression will be added to *its own layer*, which means it will not be accessible from
+// the normal SRG layer.
+func (g *SRG) ParseExpression(expressionString string, source compilercommon.InputSource, startRune int) (compilergraph.GraphNode, bool) {
+	layer := g.Graph.NewGraphLayer("exprlayer", parser.NodeTypeTagged)
+	modifier := layer.NewModifier()
+	defer modifier.Apply()
+
+	astNode, ok := parser.ParseExpression(func(source compilercommon.InputSource, kind parser.NodeType) parser.AstNode {
+		graphNode := modifier.CreateNode(kind)
+		return &srgASTNode{
+			graphNode: graphNode,
+		}
+	}, source, startRune, expressionString)
+
+	return astNode.(*srgASTNode).graphNode.AsNode(), ok
+}
+
 // findVariableTypeWithName returns the SRGTypeRef for the declared type of the
 // variable in the SRG with the given name.
 //

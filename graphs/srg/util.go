@@ -24,3 +24,29 @@ func salForNode(node compilergraph.GraphNode) compilercommon.SourceAndLocation {
 		compilercommon.InputSource(node.Get(parser.NodePredicateSource)),
 		node.GetValue(parser.NodePredicateStartRune).Int())
 }
+
+// IdentifierPathString returns the string form of the identifier path referenced
+// by the given node. Will return false if the node is not an identifier path.
+func IdentifierPathString(node compilergraph.GraphNode) (string, bool) {
+	switch node.Kind() {
+	case parser.NodeTypeIdentifierExpression:
+		return node.Get(parser.NodeIdentifierExpressionName), true
+
+	case parser.NodeThisLiteralExpression:
+		return "this", true
+
+	case parser.NodePrincipalLiteralExpression:
+		return "principal", true
+
+	case parser.NodeMemberAccessExpression:
+		parentPath, ok := IdentifierPathString(node.GetNode(parser.NodeMemberAccessChildExpr))
+		if !ok {
+			return "", false
+		}
+
+		return parentPath + "." + node.Get(parser.NodeMemberAccessIdentifier), true
+
+	default:
+		return "", false
+	}
+}

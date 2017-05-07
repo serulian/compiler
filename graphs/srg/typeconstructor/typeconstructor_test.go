@@ -80,6 +80,7 @@ var typeGraphTests = []typegraphTest{
 	typegraphTest{"class shadowing agent test", "agent", "class_shadowing", ""},
 	typegraphTest{"simple generic agent test", "agent", "simplegeneric", ""},
 	typegraphTest{"agent meets principal requirements test", "agent", "agentmeetsprincipal", ""},
+	typegraphTest{"documentation test", "doccomment", "doccomment", ""},
 
 	// Failure tests.
 	typegraphTest{"struct invalid ref test", "struct", "invalidref", "SomeStruct<SomeClass> has non-structural generic type SomeClass: SomeClass is not structural nor serializable"},
@@ -122,7 +123,9 @@ func TestGraphs(t *testing.T) {
 		testSRG := srg.NewSRG(graph)
 		testIDL := webidl.NewIRG(graph)
 
-		loader := packageloader.NewPackageLoader(graph.RootSourceFilePath, []string{}, testSRG.PackageLoaderHandler(), testIDL.PackageLoaderHandler())
+		loader := packageloader.NewPackageLoader(
+			packageloader.NewBasicConfig(graph.RootSourceFilePath, testSRG.PackageLoaderHandler(), testIDL.PackageLoaderHandler()))
+
 		srgResult := loader.Load(packageloader.Library{TESTLIB_PATH, false, ""})
 
 		// Make sure we had no errors during construction.
@@ -170,7 +173,7 @@ func TestLookupReturnType(t *testing.T) {
 	testSRG := srg.NewSRG(graph)
 	testIDL := webidl.NewIRG(graph)
 
-	loader := packageloader.NewPackageLoader(graph.RootSourceFilePath, []string{}, testSRG.PackageLoaderHandler(), testIDL.PackageLoaderHandler())
+	loader := packageloader.NewPackageLoader(packageloader.NewBasicConfig(graph.RootSourceFilePath, testSRG.PackageLoaderHandler(), testIDL.PackageLoaderHandler()))
 
 	srgResult := loader.Load(packageloader.Library{TESTLIB_PATH, false, ""})
 	if !assert.True(t, srgResult.Status, "Got error for SRG construction: %v", srgResult.Errors) {

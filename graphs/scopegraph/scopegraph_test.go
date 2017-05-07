@@ -10,8 +10,10 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/packageloader"
+	"github.com/serulian/compiler/parser"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -1621,6 +1623,56 @@ func TestGraphs(t *testing.T) {
 			if !assert.Equal(t, expected.scope.ReturnedType, scope.ReturnedTypeRef(result.Graph.TypeGraph()).String(), "Returned type mismatch for commented node %s in test: %v", expected.name, test.name) {
 				continue
 			}
+		}
+	}
+}
+
+type transientScopeTest struct {
+	commentValue string
+	expression   string
+	expectedType string
+}
+
+var transientScopeTests = []transientScopeTest{
+	transientScopeTest{"someParam", "someParam + 2", "Integer"},
+	transientScopeTest{"someParam", "someParam - 2", "Integer"},
+	transientScopeTest{"someParam", "this", "SomeClass"},
+	transientScopeTest{"someParam", "'hello world'", "String"},
+}
+
+func TestBuildTransientScope(t *testing.T) {
+	entrypointFile := "tests/transient/transient.seru"
+	result := ParseAndBuildScopeGraph(entrypointFile, []string{}, packageloader.Library{TESTLIB_PATH, false, ""})
+	if !assert.True(t, result.Status, "Expected success in transient scope test") {
+		return
+	}
+
+	for _, test := range transientScopeTests {
+		commentNode, found := result.Graph.SourceGraph().FindCommentedNode("/* " + test.commentValue + " */")
+		if !assert.True(t, found, "Could not find %s commented node", test.commentValue) {
+			return
+		}
+
+		containingImplemented, hasContainingImplemented := result.Graph.SourceGraph().NewSourceStructureFinder().TryGetContainingImplemented(commentNode)
+		if !assert.True(t, hasContainingImplemented, "Could not find containing implemented for %s commented node", test.commentValue) {
+			return
+		}
+
+		source := compilercommon.InputSource(entrypointFile)
+		startRune := commentNode.GetValue(parser.NodePredicateStartRune).Int()
+
+		transientNode, parsed := result.Graph.SourceGraph().ParseExpression(test.expression, source, startRune)
+		if !assert.True(t, parsed, "Could not parse transient scope expression for %s comment node", test.commentValue) {
+			return
+		}
+
+		scope, ok := result.Graph.BuildTransientScope(transientNode, containingImplemented)
+		if !assert.True(t, ok, "Could not build transient scope for `%s` expression", test.expression) {
+			return
+		}
+
+		if !assert.Equal(t, test.expectedType, scope.ResolvedTypeRef(result.Graph.TypeGraph()).String(), "Transient scope type mismatch for %s commented node", test.commentValue) {
+			return
 		}
 	}
 }

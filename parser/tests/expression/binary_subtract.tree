@@ -22,7 +22,7 @@ NodeTypeFile
                 NodeBinarySubtractExpression
                   end-rune = 41
                   input-source = subtract binary expr test
-                  start-rune = 35
+                  start-rune = 33
                   binary-expression-left =>
                     NodeBinarySubtractExpression
                       end-rune = 37

@@ -88,7 +88,7 @@ NodeTypeFile
                         NodeBinaryAddExpression
                           end-rune = 96
                           input-source = attributes sml test
-                          start-rune = 90
+                          start-rune = 88
                           binary-expression-left =>
                             NodeBinaryAddExpression
                               end-rune = 92

@@ -13,7 +13,6 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/compilerutil"
 
-	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/typegraph/proto"
 )
 
@@ -123,7 +122,7 @@ func (tr TypeReference) ContainsType(typeDecl TGTypeDecl) bool {
 // to SomeClass<int> and the other reference is SomeClass<T>, passing in 'T' will return 'int'.
 func (tr TypeReference) ExtractTypeDiff(otherRef TypeReference, diffType TGTypeDecl) (TypeReference, bool) {
 	// Only normal type references apply.
-	if !tr.isNormal() || !otherRef.isNormal() {
+	if !tr.IsNormal() || !otherRef.IsNormal() {
 		return TypeReference{}, false
 	}
 
@@ -142,7 +141,7 @@ func (tr TypeReference) ExtractTypeDiff(otherRef TypeReference, diffType TGTypeD
 	localGenerics := tr.Generics()
 
 	for index, genericRef := range otherGenerics {
-		if !genericRef.isNormal() {
+		if !genericRef.IsNormal() {
 			continue
 		}
 
@@ -168,7 +167,7 @@ func (tr TypeReference) ExtractTypeDiff(otherRef TypeReference, diffType TGTypeD
 	}
 
 	for index, parameterRef := range otherParameters {
-		if !parameterRef.isNormal() {
+		if !parameterRef.IsNormal() {
 			continue
 		}
 
@@ -191,7 +190,7 @@ func (tr TypeReference) ExtractTypeDiff(otherRef TypeReference, diffType TGTypeD
 // CheckNominalConvertable checks that the current type reference refers to a type that is nominally deriving
 // from the given type reference's type or vice versa.
 func (tr TypeReference) CheckNominalConvertable(other TypeReference) error {
-	if !tr.isNormal() || !other.isNormal() {
+	if !tr.IsNormal() || !other.IsNormal() {
 		return fmt.Errorf("Type '%v' cannot be converted to type '%v'", tr, other)
 	}
 
@@ -283,7 +282,7 @@ func (tr TypeReference) EnsureStructural() error {
 		return nil
 	}
 
-	if !tr.isNormal() {
+	if !tr.IsNormal() {
 		return fmt.Errorf("Type %v is not guarenteed to be structural", tr)
 	}
 
@@ -344,33 +343,33 @@ func (tr TypeReference) IsNominalOrStruct() bool {
 
 // IsRefToStruct returns whether the referenced type is a struct.
 func (tr TypeReference) IsRefToStruct() bool {
-	return tr.isNormal() && tr.ReferredType().TypeKind() == StructType
+	return tr.IsNormal() && tr.ReferredType().TypeKind() == StructType
 }
 
 // IsRefToAgent returns whether the referenced type is an agent.
 func (tr TypeReference) IsRefToAgent() bool {
-	return tr.isNormal() && tr.ReferredType().TypeKind() == AgentType
+	return tr.IsNormal() && tr.ReferredType().TypeKind() == AgentType
 }
 
 // IsRefToClass returns whether the referenced type is a class.
 func (tr TypeReference) IsRefToClass() bool {
-	return tr.isNormal() && tr.ReferredType().TypeKind() == ClassType
+	return tr.IsNormal() && tr.ReferredType().TypeKind() == ClassType
 }
 
 // IsRefToImplicitInterface returns whether the referenced type is an interface.
 func (tr TypeReference) IsRefToImplicitInterface() bool {
-	return tr.isNormal() && tr.ReferredType().TypeKind() == ImplicitInterfaceType
+	return tr.IsNormal() && tr.ReferredType().TypeKind() == ImplicitInterfaceType
 }
 
 // IsNominal returns whether the referenced type is a nominal type.
 func (tr TypeReference) IsNominal() bool {
-	return tr.isNormal() && tr.ReferredType().TypeKind() == NominalType
+	return tr.IsNormal() && tr.ReferredType().TypeKind() == NominalType
 }
 
 // CheckStructuralSubtypeOf checks that the current type reference refers to a type that is structurally deriving
 // from the given type reference's type.
 func (tr TypeReference) CheckStructuralSubtypeOf(other TypeReference) bool {
-	if !tr.isNormal() || !other.isNormal() {
+	if !tr.IsNormal() || !other.IsNormal() {
 		return false
 	}
 
@@ -395,7 +394,7 @@ func (tr TypeReference) CheckConcreteSubtypeOf(otherType TGTypeDecl) ([]TypeRefe
 		panic("Cannot use non-generic type in call to CheckImplOfGeneric")
 	}
 
-	if !tr.isNormal() {
+	if !tr.IsNormal() {
 		if tr.IsAny() {
 			return nil, fmt.Errorf("Any type %v does not implement type %v", tr, otherType.DescriptiveName())
 		}
@@ -487,7 +486,7 @@ func (tr TypeReference) CheckConcreteSubtypeOf(otherType TGTypeDecl) ([]TypeRefe
 
 // referenceOrConstraint returns the given type reference or, if it refers to a generic type, its constraint.
 func (tr TypeReference) referenceOrConstraint() TypeReference {
-	if !tr.isNormal() {
+	if !tr.IsNormal() {
 		return tr
 	}
 
@@ -538,10 +537,10 @@ func (tr TypeReference) CheckCastableFrom(source TypeReference) error {
 	}
 
 	// Check for implicit interface.
-	if tr.isNormal() {
+	if tr.IsNormal() {
 		destinationType := tr.ReferredType()
 		if destinationType.TypeKind() == ImplicitInterfaceType {
-			if !source.isNormal() {
+			if !source.IsNormal() {
 				// Anything non-normal can be cast to an interface.
 				return nil
 			}
@@ -856,8 +855,9 @@ func (tr TypeReference) adjustedMemberSignature(node compilergraph.GraphNode) st
 	return memberSig.Value()
 }
 
-// isNormal returns whether this type reference refers to a normal type.
-func (tr TypeReference) isNormal() bool {
+// IsNormal returns whether this type reference refers to a normal type, such as a
+// class, struct, agent or interface.
+func (tr TypeReference) IsNormal() bool {
 	return tr.getSlot(trhSlotFlagSpecial)[0] == specialFlagNormal
 }
 
@@ -940,7 +940,7 @@ func (tr TypeReference) IsDirectReferenceTo(typeDecl TGTypeDecl) bool {
 // HasReferredType returns whether this type references refers to the given type. Note that the
 // type reference can be nullable.
 func (tr TypeReference) HasReferredType(typeDecl TGTypeDecl) bool {
-	if !tr.isNormal() {
+	if !tr.IsNormal() {
 		return false
 	}
 
@@ -992,13 +992,13 @@ func (mrk MemberResolutionKind) Title() string {
 
 // ResolveMember looks for an member with the given name under the referred type and returns it (if any).
 func (tr TypeReference) ResolveMember(memberName string, kind MemberResolutionKind) (TGMember, bool) {
-	if !tr.isNormal() {
+	if !tr.IsNormal() {
 		return TGMember{}, false
 	}
 
 	// If this reference is a generic, we resolve under its constraint type.
 	resolutionType := tr.referenceOrConstraint()
-	if !resolutionType.isNormal() {
+	if !resolutionType.IsNormal() {
 		return TGMember{}, false
 	}
 
@@ -1055,13 +1055,8 @@ func (tr TypeReference) ResolveAccessibleMember(memberName string, modulePath co
 		return TGMember{}, fmt.Errorf("Could not find %v name '%v' under %v", kind.Title(), memberName, tr.TitledString())
 	}
 
-	// If the member is exported, then always return it. Otherwise, only return it if the asking module's package
-	// is the same as the declaring module's package.
-	if !member.IsExported() {
-		memberModulePath := compilercommon.InputSource(member.Node().Get(NodePredicateModulePath))
-		if !srg.InSamePackage(memberModulePath, modulePath) {
-			return TGMember{}, fmt.Errorf("%v %v is not exported under %v", member.Title(), member.Name(), tr.TitledString())
-		}
+	if !member.IsAccessibleTo(modulePath) {
+		return TGMember{}, fmt.Errorf("%v %v is not exported under %v", member.Title(), member.Name(), tr.TitledString())
 	}
 
 	return member, nil

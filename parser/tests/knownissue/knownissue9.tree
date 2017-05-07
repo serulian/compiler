@@ -1,26 +1,26 @@
 NodeTypeFile
-  end-rune = 59
+  end-rune = 69
   input-source = known issue 9 test
   start-rune = 0
   child-node =>
     NodeTypeFunction
-      end-rune = 59
+      end-rune = 69
       input-source = known issue 9 test
       named = DoSomething
       start-rune = 0
       definition-body =>
         NodeTypeStatementBlock
-          end-rune = 59
+          end-rune = 69
           input-source = known issue 9 test
           start-rune = 29
           block-child =>
             NodeTypeExpressionStatement
-              end-rune = 64
+              end-rune = 68
               input-source = known issue 9 test
               start-rune = 32
               expr-statement-expr =>
                 NodeStructuralNewExpression
-                  end-rune = 64
+                  end-rune = 68
                   input-source = known issue 9 test
                   start-rune = 32
                   structural-new-entry =>
@@ -67,3 +67,8 @@ NodeTypeFile
           end-rune = 12
           input-source = known issue 9 test
           start-rune = 9
+    NodeTypeError
+      end-rune = 69
+      error-message = Unexpected token at root level: tokenTypeRightBrace
+      input-source = known issue 9 test
+      start-rune = 70

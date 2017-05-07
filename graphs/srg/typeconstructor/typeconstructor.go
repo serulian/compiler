@@ -47,11 +47,17 @@ func (stc *srgTypeConstructor) DefineModules(builder typegraph.GetModuleBuilder)
 func (stc *srgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 	for _, srgType := range stc.srg.GetTypes() {
 		moduleNode := srgType.Module().Node()
+		documentation, hasDocumentation := srgType.Documentation()
+		docString := ""
+		if hasDocumentation {
+			docString = documentation.String()
+		}
 
 		// Start the type definition.
 		typeBuilder := builder(moduleNode).
 			Name(srgType.Name()).
 			GlobalId(srgType.UniqueId()).
+			Documentation(docString).
 			SourceNode(srgType.Node())
 
 		// As a class or interface.
@@ -213,9 +219,16 @@ func (stc *srgTypeConstructor) DecorateMembers(decorater typegraph.GetMemberDeco
 
 // defineMember defines a single type member under a type or module.
 func (stc *srgTypeConstructor) defineMember(member srg.SRGMember, parent typegraph.TGTypeOrModule, builder *typegraph.MemberBuilder, reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {
+	documentation, hasDocumentation := member.Documentation()
+	docString := ""
+	if hasDocumentation {
+		docString = documentation.String()
+	}
+
 	// Define the member's name and source node.
 	builder.Name(member.Name()).
-		SourceNode(member.Node())
+		SourceNode(member.Node()).
+		Documentation(docString)
 
 	// Add the member's generics.
 	for _, generic := range member.Generics() {

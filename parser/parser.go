@@ -44,6 +44,7 @@ type sourceParser struct {
 	lex               *peekableLexer              // a reference to the lexer used for tokenization
 	builder           NodeBuilder                 // the builder function for creating AstNode instances
 	nodes             *nodeStack                  // the stack of the current nodes
+	errorProductions  *errorProductionStack       // the stack of error productions
 	currentToken      commentedLexeme             // the current token
 	previousToken     commentedLexeme             // the previous token
 	importReporter    packageloader.ImportHandler // callback invoked when an import is found
@@ -71,12 +72,19 @@ func Parse(builder NodeBuilder, importReporter packageloader.ImportHandler, sour
 	return p.consumeTopLevel()
 }
 
-// parseExpression parses the given string as an expression.
-func parseExpression(builder NodeBuilder, importReporter packageloader.ImportHandler, source compilercommon.InputSource, startIndex bytePosition, input string) (AstNode, commentedLexeme, bool) {
+// ParseExpression parses the given string as an expression.
+func ParseExpression(builder NodeBuilder, source compilercommon.InputSource, startIndex int, input string) (AstNode, bool) {
+	noopHandler := func(importInfo packageloader.PackageImport) string { return "" }
+	node, _, p, ok := parseExpression(builder, noopHandler, source, bytePosition(startIndex), input)
+	return node, ok && p.currentToken.kind == tokenTypeEOF && p.lastErrorPosition == -1
+}
+
+// parseExpression parses the given string as an expression, starting at the given start index.
+func parseExpression(builder NodeBuilder, importReporter packageloader.ImportHandler, source compilercommon.InputSource, startIndex bytePosition, input string) (AstNode, commentedLexeme, *sourceParser, bool) {
 	p := buildParser(builder, importReporter, source, startIndex, input)
 	p.consumeToken()
 	node, ok := p.tryConsumeExpression(consumeExpressionNoBraces)
-	return node, p.previousToken, ok
+	return node, p.previousToken, p, ok
 }
 
 // buildParser returns a new sourceParser instance.
@@ -88,6 +96,7 @@ func buildParser(builder NodeBuilder, importReporter packageloader.ImportHandler
 		lex:               l,
 		builder:           builder,
 		nodes:             &nodeStack{},
+		errorProductions:  &errorProductionStack{},
 		currentToken:      commentedLexeme{lexeme{tokenTypeEOF, 0, ""}, make([]lexeme, 0)},
 		previousToken:     commentedLexeme{lexeme{tokenTypeEOF, 0, ""}, make([]lexeme, 0)},
 		importReporter:    importReporter,
@@ -127,6 +136,18 @@ func (p *sourceParser) createErrorNode(format string, args ...interface{}) AstNo
 	node := p.startNode(NodeTypeError).Decorate(NodePredicateErrorMessage, message)
 	p.finishNode()
 	return node
+}
+
+// pushErrorProduction pushes an error production handler onto the stack, that will be called
+// if the consuming of an expected token fails. Error production handlers are called in *stack*
+// order, with the most recently pushed handler invoked first.
+func (p *sourceParser) pushErrorProduction(handler errorProduction) {
+	p.errorProductions.push(handler)
+}
+
+// popErrorProduction props an error production handler off of the stack.
+func (p *sourceParser) popErrorProduction() {
+	p.errorProductions.pop()
 }
 
 // startNode creates a new node of the given type, decorates it with the current token's
@@ -241,13 +262,7 @@ func (p *sourceParser) consumeToken() commentedLexeme {
 
 // isToken returns true if the current token matches one of the types given.
 func (p *sourceParser) isToken(types ...tokenType) bool {
-	for _, kind := range types {
-		if p.currentToken.kind == kind {
-			return true
-		}
-	}
-
-	return false
+	return p.currentToken.isToken(types...)
 }
 
 // nextToken returns the next token found, without advancing the parser. Used for
@@ -279,7 +294,7 @@ func (p *sourceParser) isNextToken(types ...tokenType) bool {
 
 // isKeyword returns true if the current token is a keyword matching that given.
 func (p *sourceParser) isKeyword(keyword string) bool {
-	return p.isToken(tokenTypeKeyword) && p.currentToken.value == keyword
+	return p.currentToken.isKeyword(keyword)
 }
 
 // isNextKeyword returns true if the next token is a keyword matching that given.
@@ -296,9 +311,15 @@ func (p *sourceParser) emitError(format string, args ...interface{}) {
 		return
 	}
 
+	p.lastErrorPosition = p.bytePosition(p.currentToken.lexeme)
+
+	if p.currentNode() == nil {
+		// Under an expression parse.
+		return
+	}
+
 	errorNode := p.createErrorNode(format, args...)
 	p.currentNode().Connect(NodePredicateChild, errorNode)
-	p.lastErrorPosition = p.bytePosition(p.currentToken.lexeme)
 }
 
 // consumeKeyword consumes an expected keyword token or adds an error node.
@@ -362,6 +383,20 @@ func (p *sourceParser) consume(types ...tokenType) (lexeme, bool) {
 	token, ok := p.tryConsume(types...)
 	if !ok {
 		p.emitError("Expected one of: %v, found: %v", types, p.currentToken.kind)
+
+		// Consume tokens to get back into a "good" state via the error productions. Error
+		// productions will determine how many "bad" tokens to consume until we can continue.
+		for {
+			if p.isToken(tokenTypeError, tokenTypeEOF) {
+				break
+			}
+
+			if !p.errorProductions.consumeToken(p.currentToken) {
+				break
+			}
+
+			p.consumeToken()
+		}
 	}
 	return token, ok
 }
@@ -415,7 +450,10 @@ func (p *sourceParser) consumeUntil(types ...tokenType) lexeme {
 			return found
 		}
 
-		p.consumeToken()
+		consumed := p.consumeToken()
+		if consumed.kind == tokenTypeError {
+			return consumed.lexeme
+		}
 	}
 }
 
@@ -437,8 +475,7 @@ func (p *sourceParser) oneOf(subParsers ...tryParserFn) (AstNode, bool) {
 // rightNodeBuilder is called to attempt to construct an operator expression. This method also
 // properly handles decoration of the nodes with their proper start and end run locations.
 func (p *sourceParser) performLeftRecursiveParsing(subTryExprFn tryParserFn, rightNodeBuilder rightNodeConstructor, rightTokenTester lookaheadParserFn, operatorTokens ...tokenType) (AstNode, bool) {
-	var currentLeftToken commentedLexeme
-	currentLeftToken = p.currentToken
+	startingLeftToken := p.currentToken
 
 	// Consume the left side of the expression.
 	leftNode, ok := subTryExprFn()
@@ -482,11 +519,10 @@ func (p *sourceParser) performLeftRecursiveParsing(subTryExprFn tryParserFn, rig
 			return currentLeftNode, true
 		}
 
-		p.decorateStartRuneAndComments(exprNode, currentLeftToken)
+		p.decorateStartRuneAndComments(exprNode, startingLeftToken)
 		p.decorateEndRune(exprNode, p.previousToken.lexeme)
 
 		currentLeftNode = exprNode
-		currentLeftToken = operatorToken
 	}
 
 	return currentLeftNode, true

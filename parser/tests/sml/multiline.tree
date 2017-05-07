@@ -107,7 +107,7 @@ NodeTypeFile
                         NodeBinaryAddExpression
                           end-rune = 121
                           input-source = multiline sml test
-                          start-rune = 115
+                          start-rune = 113
                           binary-expression-left =>
                             NodeBinaryAddExpression
                               end-rune = 117

@@ -1043,8 +1043,8 @@ this.Serulian = function ($global) {
               break;
 
             case 3:
-              tKey = /*#[Number(i)].(T)#*/$t.cast(/*#keys[Number(i)].(T)#*/keys[/*#i)].(T)#*/i.$wrapped], /*#[Number(i)].(T)#*/T, /*#[Number(i)].(T)#*/false);
-/*#map[tKey] = values[Number(i)].(Q)#*/              map.$setindex(/*#tKey] = values[Number(i)].(Q)#*/tKey, /*#[Number(i)].(Q)#*/$t.cast(/*#values[Number(i)].(Q)#*/values[/*#i)].(Q)#*/i.$wrapped], /*#[Number(i)].(Q)#*/Q, /*#[Number(i)].(Q)#*/false));
+              tKey = /*#keys[Number(i)].(T)#*/$t.cast(/*#keys[Number(i)].(T)#*/keys[/*#i)].(T)#*/i.$wrapped], /*#keys[Number(i)].(T)#*/T, /*#keys[Number(i)].(T)#*/false);
+/*#map[tKey] = values[Number(i)].(Q)#*/              map.$setindex(/*#tKey] = values[Number(i)].(Q)#*/tKey, /*#values[Number(i)].(Q)#*/$t.cast(/*#values[Number(i)].(Q)#*/values[/*#i)].(Q)#*/i.$wrapped], /*#values[Number(i)].(Q)#*/Q, /*#values[Number(i)].(Q)#*/false));
               $current = 2;
               continue syncloop;
 

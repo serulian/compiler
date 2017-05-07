@@ -41,7 +41,7 @@ NodeTypeFile
                     NodeFunctionCallExpression
                       end-rune = 119
                       input-source = basic full example test
-                      start-rune = 96
+                      start-rune = 89
                       function-call-argument =>
                         NodeStringLiteralExpression
                           end-rune = 118

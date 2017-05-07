@@ -26,7 +26,12 @@ func loadSRG(t *testing.T, path string, libPaths ...string) (*SRG, packageloader
 	testSRG := NewSRG(graph)
 	testLoader := &testTypePackageLoader{graph}
 
-	loader := packageloader.NewPackageLoader(graph.RootSourceFilePath, []string{}, testSRG.PackageLoaderHandler(), testLoader)
+	loader := packageloader.NewPackageLoader(packageloader.Config{
+		RootSourceFilePath:        graph.RootSourceFilePath,
+		VCSDevelopmentDirectories: []string{},
+		SourceHandlers:            []packageloader.SourceHandler{testSRG.PackageLoaderHandler(), testLoader},
+	})
+
 	result := loader.Load(libraries...)
 	return testSRG, result
 }

@@ -86,6 +86,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 	}
 
 	parameters := functionType.Parameters()
+	attributesEncountered := map[string]*proto.ScopeInfo{}
 
 	// Check for attributes.
 	var isValid = true
@@ -134,11 +135,9 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 			Out(parser.NodeSmlExpressionAttribute).
 			BuildNodeIterator()
 
-		attributesEncountered := map[string]bool{}
-
 		for ait.Next() {
-			attributeName, ok := sb.scopeSmlAttribute(ait.Node(), propsType, context)
-			attributesEncountered[attributeName] = true
+			attributeScope, attributeName, ok := sb.scopeSmlAttribute(ait.Node(), propsType, context)
+			attributesEncountered[attributeName] = attributeScope
 			isValid = isValid && ok
 		}
 
@@ -234,6 +233,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 	return newScope().
 		IsValid(isValid).
 		Resolving(resolvedType).
+		WithAttributes(attributesEncountered).
 		WithLabel(declarationLabel).
 		WithLabel(propsLabel).
 		WithLabel(childrenLabel).
@@ -307,20 +307,27 @@ func (sb *scopeBuilder) scopeSmlDecorator(node compilergraph.GraphNode, declared
 }
 
 // scopeSmlNormalAttribute scopes an SML expression attribute under a declaration.
-func (sb *scopeBuilder) scopeSmlAttribute(node compilergraph.GraphNode, propsType typegraph.TypeReference, context scopeContext) (string, bool) {
+func (sb *scopeBuilder) scopeSmlAttribute(node compilergraph.GraphNode, propsType typegraph.TypeReference, context scopeContext) (*proto.ScopeInfo, string, bool) {
 	attributeName := node.Get(parser.NodeSmlAttributeName)
 
 	// If the props type is a struct or class, ensure that the attribute name exists.
 	var allowedValueType = sb.sg.tdg.AnyTypeReference()
+	var scopeInfo *proto.ScopeInfo
+
 	if propsType.IsRefToStruct() || propsType.IsRefToClass() {
 		module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
 		resolvedMember, rerr := propsType.ResolveAccessibleMember(attributeName, module, typegraph.MemberResolutionInstance)
 		if rerr != nil {
 			sb.decorateWithError(node, "%v", rerr)
-			return attributeName, false
+			return nil, attributeName, false
 		}
 
 		allowedValueType = resolvedMember.AssignableType()
+		memberScope := sb.getNamedScopeForMember(resolvedMember)
+		context.staticDependencyCollector.checkNamedScopeForDependency(memberScope)
+
+		scopeInfoValue := newScope().ForNamedScopeUnderType(memberScope, propsType, context).GetScope()
+		scopeInfo = &scopeInfoValue
 	} else {
 		// The props type must be a mapping, so the value must match it value type.
 		allowedValueType = propsType.Generics()[0]
@@ -333,7 +340,7 @@ func (sb *scopeBuilder) scopeSmlAttribute(node compilergraph.GraphNode, propsTyp
 	if hasValueNode {
 		attributeValueScope := sb.getScope(valueNode, context)
 		if !attributeValueScope.GetIsValid() {
-			return attributeName, false
+			return scopeInfo, attributeName, false
 		}
 
 		attributeValueType = attributeValueScope.ResolvedTypeRef(sb.sg.tdg)
@@ -342,10 +349,10 @@ func (sb *scopeBuilder) scopeSmlAttribute(node compilergraph.GraphNode, propsTyp
 	// Ensure it matches the assignable value type.
 	if serr := attributeValueType.CheckSubTypeOf(allowedValueType); serr != nil {
 		sb.decorateWithError(node, "Cannot assign value of type %v for attribute %v: %v", attributeValueType, attributeName, serr)
-		return attributeName, false
+		return scopeInfo, attributeName, false
 	}
 
-	return attributeName, true
+	return scopeInfo, attributeName, true
 }
 
 // scopeSmlText scopes a text block under an SML expression in the SRG.

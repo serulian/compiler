@@ -27,7 +27,7 @@ NodeTypeFile
                     NodeFunctionCallExpression
                       end-rune = 42
                       input-source = list call expr test
-                      start-rune = 37
+                      start-rune = 34
                       function-call-expr =>
                         NodeMemberAccessExpression
                           end-rune = 40

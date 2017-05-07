@@ -10,6 +10,8 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/packageloader"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -211,5 +213,41 @@ func TestLookup(t *testing.T) {
 	_, doSomethingFound := graph.LookupTypeOrMember("DoSomething", compilercommon.InputSource("testModule"))
 	if !assert.False(t, doSomethingFound, "Expected to not find DoSomething") {
 		return
+	}
+
+	// Test TypeOrMembersUnderPackage.
+	packageInfo := packageloader.PackageInfoForTesting("", []compilercommon.InputSource{compilercommon.InputSource("testModule")})
+	typesOrMembers := graph.TypeOrMembersUnderPackage(packageInfo)
+	if !assert.Equal(t, len(typesOrMembers), len(testModule.testMembers)+len(testModule.testTypes)) {
+		return
+	}
+
+	encountered := map[string]TGTypeOrMember{}
+	for _, typeOrMember := range typesOrMembers {
+		encountered[typeOrMember.Name()] = typeOrMember
+	}
+
+	for _, testMember := range testModule.testMembers {
+		definedMember, ok := encountered[testMember.name]
+		if !assert.True(t, ok, "Expected member %s", testMember.name) {
+			continue
+		}
+
+		_, isMember := definedMember.(TGMember)
+		if !assert.True(t, isMember, "Expected %s to be member", testMember.name) {
+			continue
+		}
+	}
+
+	for _, testType := range testModule.testTypes {
+		definedType, ok := encountered[testType.name]
+		if !assert.True(t, ok, "Expected type %s", testType.name) {
+			continue
+		}
+
+		_, isType := definedType.(TGTypeDecl)
+		if !assert.True(t, isType, "Expected %s to be member", testType.name) {
+			continue
+		}
 	}
 }

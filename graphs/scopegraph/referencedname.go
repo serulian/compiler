@@ -39,6 +39,11 @@ func (sg *ScopeGraph) GetReferencedName(scope proto.ScopeInfo) (ReferencedName, 
 	}
 }
 
+// ReferencedNameForTypeOrMember returns a ReferencedName instance for the given type or member.
+func (sg *ScopeGraph) ReferencedNameForTypeOrMember(typeOrMember typegraph.TGTypeOrMember) ReferencedName {
+	return ReferencedName{srg.SRGNamedScope{}, typeOrMember, sg}
+}
+
 // ReferencedNode returns the named node underlying this referenced name.
 func (rn ReferencedName) ReferencedNode() compilergraph.GraphNode {
 	if rn.typeInfo != nil {

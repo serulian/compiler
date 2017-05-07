@@ -5,8 +5,19 @@
 package typegraph
 
 import (
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 )
+
+// GetTypeOrMemberForSourceNode returns the TypeGraph type or member for the given source node, if any.
+func (g *TypeGraph) GetTypeOrMemberForSourceNode(node compilergraph.GraphNode) (TGTypeOrMember, bool) {
+	typegraphNode, found := g.tryGetMatchingTypeGraphNode(node)
+	if !found {
+		return TGMember{}, false
+	}
+
+	return g.GetTypeOrMemberForNode(typegraphNode)
+}
 
 // TGTypeOrMember represents an interface shared by types and members.
 type TGTypeOrMember interface {
@@ -19,9 +30,11 @@ type TGTypeOrMember interface {
 	IsReadOnly() bool
 	IsType() bool
 	IsStatic() bool
+	IsExported() bool
 	IsPromising() MemberPromisingOption
 	Parent() TGTypeOrModule
 	IsImplicitlyCalled() bool
 	IsField() bool
 	SourceGraphId() string
+	IsAccessibleTo(modulePath compilercommon.InputSource) bool
 }

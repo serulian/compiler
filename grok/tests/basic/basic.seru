@@ -1,0 +1,38 @@
+///   [sc     ]
+class SomeClass {
+  var<int> FooBarBaz
+}
+
+///      [v ]  [d        ] [sp     ] [i]            [scref  ]
+function<void> DoSomething(someParam int, someClass SomeClass) {
+  /// [sl     ]
+  'hello world'
+
+  /// [sl2    ]
+  "hello world"
+
+  /// [nl]
+  12345678
+
+  ///       [bl]
+  var foo = true
+
+  ///              [sl3  ]
+  var someString = 'hello'
+
+  /// [str ]
+  someString
+
+  /// [str2]
+  someString = 'foobar'
+
+  SomeClass{
+    /// [fbb]  [nl2]
+    FooBarBaz: 12345,
+  }
+
+  for someIntValue in 1..2 {
+    /// [si]
+    someIntValue
+  }
+}

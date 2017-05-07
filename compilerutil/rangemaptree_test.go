@@ -54,6 +54,22 @@ func TestRangeMapping(t *testing.T) {
 				rangeMapTreeTestRange{"baz", 80, 200},
 			},
 		},
+
+		rangeMapTreeTestEntry{
+			key: "thirdkey",
+			ranges: []rangeMapTreeTestRange{
+				rangeMapTreeTestRange{"bar", 11, 20},
+				rangeMapTreeTestRange{"foo", 10, 25},
+			},
+		},
+
+		rangeMapTreeTestEntry{
+			key: "fourthkey",
+			ranges: []rangeMapTreeTestRange{
+				rangeMapTreeTestRange{"foo", 10, 25},
+				rangeMapTreeTestRange{"bar", 11, 20},
+			},
+		},
 	}
 
 	calculator := func(key string, requested IntRange) (IntRange, interface{}) {
@@ -98,4 +114,11 @@ func TestRangeMapping(t *testing.T) {
 
 	assertGetNil(t, rangeMap, "secondkey", 51)
 	assertGetNil(t, rangeMap, "secondkey", 51)
+
+	assertGet(t, rangeMap, "thirdkey", 12, "bar")
+	assertGet(t, rangeMap, "thirdkey", 10, "foo")
+
+	// Since `foo` is written first, we will never find `bar`.
+	assertGet(t, rangeMap, "fourthkey", 12, "foo")
+	assertGet(t, rangeMap, "fourthkey", 10, "foo")
 }

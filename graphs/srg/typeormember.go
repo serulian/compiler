@@ -19,9 +19,9 @@ type SRGTypeOrMember struct {
 func (t SRGTypeOrMember) Name() string {
 	if t.IsType() {
 		return SRGType{t.GraphNode, t.srg}.Name()
-	} else {
-		return SRGMember{t.GraphNode, t.srg}.Name()
 	}
+
+	return SRGMember{t.GraphNode, t.srg}.Name()
 }
 
 // IsType returns whether this represents a reference to a type.
@@ -36,6 +36,24 @@ func (t SRGTypeOrMember) IsType() bool {
 	return false
 }
 
+// AsType returns the type or member as a type, if applicable.
+func (t SRGTypeOrMember) AsType() (SRGType, bool) {
+	if !t.IsType() {
+		return SRGType{}, false
+	}
+
+	return SRGType{t.GraphNode, t.srg}, true
+}
+
+// AsMember returns the type or member as a member, if applicable.
+func (t SRGTypeOrMember) AsMember() (SRGMember, bool) {
+	if t.IsType() {
+		return SRGMember{}, false
+	}
+
+	return SRGMember{t.GraphNode, t.srg}, true
+}
+
 // Node returns the underlying node.
 func (t SRGTypeOrMember) Node() compilergraph.GraphNode {
 	return t.GraphNode
@@ -44,4 +62,26 @@ func (t SRGTypeOrMember) Node() compilergraph.GraphNode {
 // Location returns the source location for this resolved type or member.
 func (t SRGTypeOrMember) Location() compilercommon.SourceAndLocation {
 	return salForNode(t.GraphNode)
+}
+
+// ContainingModule returns the module containing this type or member.
+func (t SRGTypeOrMember) ContainingModule() SRGModule {
+	srgType, isType := t.AsType()
+	if isType {
+		return srgType.Module()
+	}
+
+	srgMember, _ := t.AsMember()
+	return srgMember.Module()
+}
+
+// Generics returns the generics of this type or member.
+func (t SRGTypeOrMember) Generics() []SRGGeneric {
+	srgType, isType := t.AsType()
+	if isType {
+		return srgType.Generics()
+	}
+
+	srgMember, _ := t.AsMember()
+	return srgMember.Generics()
 }

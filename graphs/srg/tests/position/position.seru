@@ -1,0 +1,6 @@
+function</*void*/void> DoSomething() {
+    (/*foo*/foo)
+    (/*helloworld*/'hello world')
+
+    (/*bar*/(/*this*/this).bar)
+}

@@ -1,10 +1,10 @@
 NodeTypeFile
-  end-rune = 12
+  end-rune = 15
   input-source = missing subtype nominal type test
   start-rune = 0
   child-node =>
     NodeTypeNominal
-      end-rune = 12
+      end-rune = 15
       input-source = missing subtype nominal type test
       named = SomeType
       start-rune = 0

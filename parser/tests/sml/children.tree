@@ -74,7 +74,7 @@ NodeTypeFile
                     NodeSliceExpression
                       end-rune = 126
                       input-source = children sml test
-                      start-rune = 105
+                      start-rune = 97
                       slice-expr-expr =>
                         NodeMemberAccessExpression
                           end-rune = 109

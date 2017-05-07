@@ -65,13 +65,11 @@ func (dc *staticDependencyCollector) ReferenceSlice() []*proto.ScopeReference {
 
 	staticDepReferences := make([]*proto.ScopeReference, len(dc.dependencies))
 	index := 0
-	falseValue := false
 
-	for staticDependencyId, _ := range dc.dependencies {
-		staticDependencyIdStr := string(staticDependencyId)
+	for staticDependencyId := range dc.dependencies {
 		depReference := &proto.ScopeReference{
-			IsSRGNode:      &falseValue,
-			ReferencedNode: &staticDependencyIdStr,
+			IsSRGNode:      false,
+			ReferencedNode: string(staticDependencyId),
 		}
 		staticDepReferences[index] = depReference
 		index = index + 1

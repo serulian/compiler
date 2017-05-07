@@ -59,6 +59,11 @@ func (sl SourceLocation) ColumnPosition() int {
 	return sl.columnPosition
 }
 
+// BytePosition returns the 0-indexed byte position for this location.
+func (sl SourceLocation) BytePosition() int {
+	return sl.bytePosition
+}
+
 // SourceAndLocation contains a source path, as well as a location.
 type SourceAndLocation struct {
 	source       InputSource // The source file path.

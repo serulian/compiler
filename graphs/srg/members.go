@@ -74,6 +74,11 @@ func (m SRGMember) Name() string {
 	return m.GraphNode.Get(parser.NodePredicateTypeMemberName)
 }
 
+// Documentation returns the documentation on the member, if any.
+func (m SRGMember) Documentation() (SRGDocumentation, bool) {
+	return m.srg.getDocumentationForNode(m.GraphNode)
+}
+
 // Node returns the underlying member node for this member.
 func (m SRGMember) Node() compilergraph.GraphNode {
 	return m.GraphNode

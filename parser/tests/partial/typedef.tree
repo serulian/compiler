@@ -1,0 +1,42 @@
+NodeTypeFile
+  end-rune = 62
+  input-source = partial type definition test
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 19
+      input-source = partial type definition test
+      named = SomeClass
+      start-rune = 0
+    NodeTypeAgent
+      end-rune = 42
+      input-source = partial type definition test
+      named = SomeAgent
+      start-rune = 22
+      agent-principaltypepath =>
+        NodeTypeTypeReference
+          end-rune = 30
+          input-source = partial type definition test
+          start-rune = 28
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 30
+              input-source = partial type definition test
+              start-rune = 28
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 30
+                  identifieraccess-name = Foo
+                  input-source = partial type definition test
+                  start-rune = 28
+      child-node =>
+        NodeTypeError
+          end-rune = 41
+          error-message = Expected one of: [tokenTypeLeftBrace], found: tokenTypeSyntheticSemicolon
+          input-source = partial type definition test
+          start-rune = 42
+    NodeTypeClass
+      end-rune = 62
+      input-source = partial type definition test
+      named = ThirdClass
+      start-rune = 44

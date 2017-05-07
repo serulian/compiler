@@ -18,6 +18,7 @@ import (
 
 // SRGScopeOrImport represents a named scope or an external package import.
 type SRGScopeOrImport interface {
+	Name() string
 	IsNamedScope() bool // Whether this is a named scope.
 	AsNamedScope() SRGNamedScope
 	AsPackageImport() SRGExternalPackageImport
@@ -34,6 +35,11 @@ type SRGExternalPackageImport struct {
 // Package returns the package under which the name is being imported.
 func (ns SRGExternalPackageImport) Package() packageloader.PackageInfo {
 	return ns.packageInfo
+}
+
+// Name returns the name of the imported member.
+func (ns SRGExternalPackageImport) Name() string {
+	return ns.name
 }
 
 // ImportedName returns the name being accessed under the package.
@@ -64,6 +70,7 @@ func (g *SRG) GetNamedScope(nodeId compilergraph.GraphNodeId) SRGNamedScope {
 	return SRGNamedScope{g.layer.GetNode(nodeId), g}
 }
 
+// NamedScopeKind defines the various kinds of named scope in the SRG.
 type NamedScopeKind int
 
 const (
@@ -75,14 +82,22 @@ const (
 	NamedScopeVariable                        // The named scope refers to a variable statement.
 )
 
+// IsNamedScope returns true if this is a named scope (always returns true).
 func (ns SRGNamedScope) IsNamedScope() bool {
 	return true
 }
 
+// AsNamedScope returns the named scope as a named scope object.
 func (ns SRGNamedScope) AsNamedScope() SRGNamedScope {
 	return ns
 }
 
+// Node returns the underlying node.
+func (ns SRGNamedScope) Node() compilergraph.GraphNode {
+	return ns.GraphNode
+}
+
+// AsPackageImport returns the named scope as a package import (always panics).
 func (ns SRGNamedScope) AsPackageImport() SRGExternalPackageImport {
 	panic("Not an imported package!")
 }
@@ -261,6 +276,27 @@ func (ns SRGNamedScope) ScopeKind() NamedScopeKind {
 	}
 }
 
+// Documentation returns the documentation comment found on the scoped node, if any.
+func (ns SRGNamedScope) Documentation() (SRGDocumentation, bool) {
+	switch ns.Kind() {
+	case parser.NodeTypeParameter:
+		fallthrough
+
+	case parser.NodeTypeLambdaParameter:
+		// TODO: if/when we support parameter documentation, look it up
+		// on the parent function.
+		return SRGDocumentation{}, false
+
+	default:
+		comment, found := ns.srg.getDocumentationCommentForNode(ns.GraphNode)
+		if !found {
+			return SRGDocumentation{}, false
+		}
+
+		return comment.Documentation()
+	}
+}
+
 // Name returns the name of the scoped node.
 func (ns SRGNamedScope) Name() string {
 	switch ns.Kind() {
@@ -282,6 +318,9 @@ func (ns SRGNamedScope) Name() string {
 
 	case parser.NodeTypeImportPackage:
 		return ns.Get(parser.NodeImportPredicatePackageName)
+
+	case parser.NodeTypeGeneric:
+		return ns.Get(parser.NodeGenericPredicateName)
 
 	case parser.NodeTypeProperty:
 		fallthrough
@@ -318,13 +357,76 @@ func (ns SRGNamedScope) Name() string {
 	}
 }
 
+// GetMember returns the member pointed to by this scope, if any.
+func (ns SRGNamedScope) GetMember() (SRGMember, bool) {
+	switch ns.Kind() {
+	case parser.NodeTypeProperty:
+		fallthrough
+
+	case parser.NodeTypeConstructor:
+		fallthrough
+
+	case parser.NodeTypeVariable:
+		fallthrough
+
+	case parser.NodeTypeField:
+		fallthrough
+
+	case parser.NodeTypeFunction:
+		return SRGMember{ns.GraphNode, ns.srg}, true
+	}
+
+	return SRGMember{}, false
+}
+
+// GetParameter returns the parameter pointed to by this scope, if any.
+func (ns SRGNamedScope) GetParameter() (SRGParameter, bool) {
+	switch ns.Kind() {
+	case parser.NodeTypeParameter:
+		fallthrough
+
+	case parser.NodeTypeLambdaParameter:
+		return SRGParameter{ns.GraphNode, ns.srg}, true
+	}
+
+	return SRGParameter{}, false
+}
+
+// ReturnType returns the return type of the scoped node, if any.
+func (ns SRGNamedScope) ReturnType() (SRGTypeRef, bool) {
+	if member, isMember := ns.GetMember(); isMember {
+		return member.ReturnType()
+	}
+
+	return SRGTypeRef{}, false
+}
+
+// DeclaredType returns the declared type of the scoped node, if any.
+func (ns SRGNamedScope) DeclaredType() (SRGTypeRef, bool) {
+	if member, isMember := ns.GetMember(); isMember {
+		return member.DeclaredType()
+	}
+
+	if parameter, isParameter := ns.GetParameter(); isParameter {
+		return parameter.DeclaredType()
+	}
+
+	// Note: variables and named values can have their types inferred at scope time, so the scope
+	// graph will need to be queried for those types.
+	return SRGTypeRef{}, false
+}
+
 // ResolveNameUnderScope attempts to resolve the given name under this scope. Only applies to imports.
 func (ns SRGNamedScope) ResolveNameUnderScope(name string) (SRGScopeOrImport, bool) {
 	if ns.Kind() != parser.NodeTypeImportPackage {
 		return SRGNamedScope{}, false
 	}
 
-	packageInfo := ns.srg.getPackageForImport(ns.GraphNode)
+	packageInfo, err := ns.srg.getPackageForImport(ns.GraphNode)
+	if err != nil {
+		return SRGNamedScope{}, false
+	}
+
 	if !packageInfo.IsSRGPackage() {
 		return SRGExternalPackageImport{packageInfo.packageInfo, name, ns.srg}, true
 	}
@@ -384,7 +486,11 @@ func (g *SRG) FindNameInScope(name string, node compilergraph.GraphNode) (SRGSco
 	localImportNode, localImportFound := parentModule.findImportWithLocalName(name)
 	if localImportFound {
 		// Retrieve the package for the imported member.
-		packageInfo := g.getPackageForImport(localImportNode)
+		packageInfo, err := g.getPackageForImport(localImportNode)
+		if err != nil {
+			return SRGNamedScope{}, false
+		}
+
 		resolutionName := localImportNode.Get(parser.NodeImportPredicateSubsource)
 
 		// If an SRG package, then continue with the resolution. Otherwise,

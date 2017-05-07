@@ -23,13 +23,13 @@ NodeTypeFile
                   end-rune = 39
                   input-source = basic access expr test
                   member-access-identifier = d
-                  start-rune = 36
+                  start-rune = 33
                   member-access-expr =>
                     NodeMemberAccessExpression
                       end-rune = 37
                       input-source = basic access expr test
                       member-access-identifier = c
-                      start-rune = 34
+                      start-rune = 33
                       member-access-expr =>
                         NodeMemberAccessExpression
                           end-rune = 35

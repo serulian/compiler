@@ -7,7 +7,9 @@ package typegraph
 import (
 	"fmt"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/typegraph/proto"
 )
 
@@ -138,6 +140,17 @@ func (tn TGMember) BaseMemberSource() (TypeReference, bool) {
 	return source.(TypeReference), true
 }
 
+// IsAccessibleTo returns whether this member is accessible to the module with the given source path.
+func (tn TGMember) IsAccessibleTo(modulePath compilercommon.InputSource) bool {
+	if tn.IsExported() {
+		return true
+	}
+
+	// Otherwise, only return it if the asking module's package is the same as the declaring module's package.
+	memberModulePath := compilercommon.InputSource(tn.Get(NodePredicateModulePath))
+	return srg.InSamePackage(memberModulePath, modulePath)
+}
+
 // IsExported returns whether the member is exported.
 func (tn TGMember) IsExported() bool {
 	_, isExported := tn.GraphNode.TryGet(NodePredicateMemberExported)
@@ -253,6 +266,11 @@ func (tn TGMember) IsRequiredField() bool {
 	}
 
 	return true
+}
+
+// Documentation returns the documentation associated with this member, if any.
+func (tn TGMember) Documentation() (string, bool) {
+	return tn.GraphNode.TryGet(NodePredicateDocumentation)
 }
 
 // MemberType returns the type for this member.

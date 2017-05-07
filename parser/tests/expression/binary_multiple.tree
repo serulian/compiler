@@ -22,7 +22,7 @@ NodeTypeFile
                 NodeBinaryAddExpression
                   end-rune = 57
                   input-source = multiple binary expr test
-                  start-rune = 43
+                  start-rune = 33
                   binary-expression-left =>
                     NodeBinaryAddExpression
                       end-rune = 45

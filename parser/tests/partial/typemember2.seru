@@ -1,0 +1,6 @@
+class SomeClass {
+    function<void> DoSomething() {
+        this
+
+    function<void> DoSomethingElse() {}
+}

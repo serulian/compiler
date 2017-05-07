@@ -28,7 +28,7 @@ NodeTypeFile
                       end-rune = 51
                       input-source = template string expr test
                       member-access-identifier = String
-                      start-rune = 36
+                      start-rune = 32
                       member-access-expr =>
                         NodeMemberAccessExpression
                           end-rune = 44

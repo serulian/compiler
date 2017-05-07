@@ -46,6 +46,22 @@ type lexeme struct {
 	value    string       // The textual value of this token.
 }
 
+// isKeyword returns true if the lexeme is the given keyword.
+func (l lexeme) isKeyword(keyword string) bool {
+	return l.isToken(tokenTypeKeyword) && l.value == keyword
+}
+
+// isToken returns true if the lexeme has one of the types given.
+func (l lexeme) isToken(types ...tokenType) bool {
+	for _, kind := range types {
+		if l.kind == kind {
+			return true
+		}
+	}
+
+	return false
+}
+
 // tokenType identifies the type of lexer lexemes.
 type tokenType int
 

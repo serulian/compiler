@@ -7,13 +7,13 @@
 package parser
 
 type nodeStack struct {
-	top  *element
+	top  *nodeElement
 	size int
 }
 
-type element struct {
+type nodeElement struct {
 	value AstNode
-	next  *element
+	next  *nodeElement
 }
 
 func (s *nodeStack) topValue() AstNode {
@@ -26,7 +26,7 @@ func (s *nodeStack) topValue() AstNode {
 
 // Push pushes a node onto the stack.
 func (s *nodeStack) push(value AstNode) {
-	s.top = &element{value, s.top}
+	s.top = &nodeElement{value, s.top}
 	s.size++
 }
 

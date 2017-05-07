@@ -1,10 +1,10 @@
 NodeTypeFile
-  end-rune = 4
+  end-rune = 50
   input-source = missing principal type agent test
   start-rune = 0
   child-node =>
     NodeTypeAgent
-      end-rune = 4
+      end-rune = 16
       input-source = missing principal type agent test
       start-rune = 0
       child-node =>
@@ -13,3 +13,23 @@ NodeTypeFile
           error-message = Expected one of: [tokenTypeLessThan], found: tokenTypeIdentifer
           input-source = missing principal type agent test
           start-rune = 6
+    NodeTypeFunction
+      end-rune = 50
+      input-source = missing principal type agent test
+      named = DoSomething
+      start-rune = 19
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 50
+          input-source = missing principal type agent test
+          start-rune = 48
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 31
+          input-source = missing principal type agent test
+          start-rune = 28
+    NodeTypeError
+      end-rune = 50
+      error-message = Unexpected token at root level: tokenTypeRightBrace
+      input-source = missing principal type agent test
+      start-rune = 51

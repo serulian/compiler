@@ -210,14 +210,15 @@ func (mb *moduleBuilder) Define() {
 
 // typeBuilder defines a helper type for easy construction of type definitions in the type graph.
 type typeBuilder struct {
-	modifier    compilergraph.GraphLayerModifier // The modifier being used.
-	module      TGModule                         // The parent module.
-	name        string                           // The name of the type.
-	globalId    string                           // The global ID of the type.
-	globalAlias string                           // The global alias of the type.
-	sourceNode  compilergraph.GraphNode          // The node for the type in the source graph.
-	typeKind    TypeKind                         // The kind of this type.
-	attributes  []TypeAttribute                  // The custom attributes on the type, if any.
+	modifier      compilergraph.GraphLayerModifier // The modifier being used.
+	module        TGModule                         // The parent module.
+	name          string                           // The name of the type.
+	globalId      string                           // The global ID of the type.
+	globalAlias   string                           // The global alias of the type.
+	sourceNode    compilergraph.GraphNode          // The node for the type in the source graph.
+	typeKind      TypeKind                         // The kind of this type.
+	attributes    []TypeAttribute                  // The custom attributes on the type, if any.
+	documentation string                           // The documentation string for the type, if any.
 }
 
 // GlobalId sets the global ID of the type. This ID must be unique. For types that are
@@ -230,6 +231,12 @@ func (tb *typeBuilder) GlobalId(globalId string) *typeBuilder {
 // Name sets the name of the type.
 func (tb *typeBuilder) Name(name string) *typeBuilder {
 	tb.name = name
+	return tb
+}
+
+// Documentation sets the documentation of the type.
+func (tb *typeBuilder) Documentation(documentation string) *typeBuilder {
+	tb.documentation = documentation
 	return tb
 }
 
@@ -278,6 +285,10 @@ func (tb *typeBuilder) Define() getGenericBuilder {
 	typeNode.Decorate(NodePredicateTypeName, tb.name)
 	typeNode.Decorate(NodePredicateTypeGlobalId, tb.globalId)
 	typeNode.Decorate(NodePredicateModulePath, tb.module.Get(NodePredicateModulePath))
+
+	if tb.documentation != "" {
+		typeNode.Decorate(NodePredicateDocumentation, tb.documentation)
+	}
 
 	if tb.globalAlias != "" {
 		typeNode.Decorate(NodePredicateTypeGlobalAlias, tb.globalAlias)
@@ -419,6 +430,7 @@ type MemberBuilder struct {
 	sourceNode     compilergraph.GraphNode          // The node for the generic in the source graph.
 	hasSourceNode  bool                             // Whether there is a source node.
 	memberGenerics []memberGeneric                  // The generics on the member.
+	documentation  string                           // The documentation string for the member, if any.
 }
 
 // memberGeneric holds information about a member's generic.
@@ -431,6 +443,12 @@ type memberGeneric struct {
 // Name sets the name of the member.
 func (mb *MemberBuilder) Name(name string) *MemberBuilder {
 	mb.name = name
+	return mb
+}
+
+// Documentation sets the documentation of the member.
+func (mb *MemberBuilder) Documentation(documentation string) *MemberBuilder {
+	mb.documentation = documentation
 	return mb
 }
 
@@ -480,6 +498,10 @@ func (mb *MemberBuilder) Define() TGMember {
 
 	if mb.hasSourceNode {
 		memberNode.Connect(NodePredicateSource, mb.sourceNode)
+	}
+
+	if mb.documentation != "" {
+		memberNode.Decorate(NodePredicateDocumentation, mb.documentation)
 	}
 
 	memberNode.Decorate(NodePredicateModulePath, mb.parent.ParentModule().Get(NodePredicateModulePath))
