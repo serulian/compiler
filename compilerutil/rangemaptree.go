@@ -13,7 +13,7 @@ import (
 // RangeMapTree defines a helper struct for cached, faster lookup of an int range to an associated
 // piece of data, under a specific key (such as a source file path). Note that the ranges for the
 // data must be explicitly *non-overlapping* under each key, or this data structure will fail to
-// work as intended.
+// work as intended. Ranges *within* other ranges, on the other hand, are allowed.
 //
 // This data structure is safe for multi-threaded access.
 type RangeMapTree struct {
@@ -53,7 +53,7 @@ func (rmt *RangeMapTree) Get(key string, current IntRange) interface{} {
 	if !hasKey {
 		currentEntry = rangeTreeEntry{
 			key:          key,
-			internalTree: redblacktree.NewWith(rangeComparator),
+			internalTree: redblacktree.NewWithIntComparator(),
 			entryLock:    &sync.RWMutex{},
 		}
 
@@ -72,40 +72,39 @@ type rangeTreeEntry struct {
 	entryLock    *sync.RWMutex
 }
 
+// positionEntry represents an entry for a single position in the range map.
+type positionEntry struct {
+	positionRange IntRange
+	value         interface{}
+}
+
 // Get returns the data found for the given range.
 func (rte rangeTreeEntry) Get(current IntRange, calculator RangeMapTreeCalculator) interface{} {
 	rte.entryLock.RLock()
-	data, found := rte.internalTree.Get(current)
+	// Note: we only need to check the start position, since any range in the tree will match.
+	data, found := rte.internalTree.Get(current.StartPosition)
 	rte.entryLock.RUnlock()
 
+	// If we've found the range, nothing more to do.
 	if found {
-		return data
+		return data.(positionEntry).value
 	}
 
+	// Otherwise, calculate the new value for the range.
 	resultRange, resultData := calculator(rte.key, current)
 
 	rte.entryLock.Lock()
-	rte.internalTree.Put(resultRange, resultData)
+
+	// For each position in the result range, update the tree if the position doesn't already exist
+	// *or* the existing range is larger than the result range.
+	for i := resultRange.StartPosition; i <= resultRange.EndPosition; i++ {
+		data, found = rte.internalTree.Get(i)
+		if !found || (data.(positionEntry).positionRange.StartPosition < resultRange.StartPosition) {
+			rte.internalTree.Put(i, positionEntry{resultRange, resultData})
+		}
+	}
+
 	rte.entryLock.Unlock()
 
 	return resultData
-}
-
-func rangeComparator(a, b interface{}) int {
-	i1 := a.(IntRange)
-	i2 := b.(IntRange)
-
-	if i1.StartPosition >= i2.StartPosition && i1.EndPosition <= i2.EndPosition {
-		return 0
-	}
-
-	diff := i1.StartPosition - i2.StartPosition
-
-	if diff < 0 {
-		return -1
-	}
-	if diff > 0 {
-		return 1
-	}
-	return 0
 }
