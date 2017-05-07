@@ -5,6 +5,7 @@
 package typegraph
 
 import (
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 )
 
@@ -29,9 +30,11 @@ type TGTypeOrMember interface {
 	IsReadOnly() bool
 	IsType() bool
 	IsStatic() bool
+	IsExported() bool
 	IsPromising() MemberPromisingOption
 	Parent() TGTypeOrModule
 	IsImplicitlyCalled() bool
 	IsField() bool
 	SourceGraphId() string
+	IsAccessibleTo(modulePath compilercommon.InputSource) bool
 }

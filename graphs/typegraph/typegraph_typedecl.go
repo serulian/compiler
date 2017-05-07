@@ -7,7 +7,9 @@ package typegraph
 import (
 	"fmt"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/graphs/srg"
 )
 
 // TypeAttribute defines the set of custom attributes allowed on type declarations.
@@ -141,6 +143,12 @@ func (tn TGTypeDecl) ContainingType() (TGTypeDecl, bool) {
 	}
 
 	return TGTypeDecl{containingTypeNode, tn.tdg}, true
+}
+
+// IsExported returns whether the type is exported.
+func (tn TGTypeDecl) IsExported() bool {
+	_, isExported := tn.GraphNode.TryGet(NodePredicateMemberExported)
+	return isExported
 }
 
 // HasGenerics returns whether this type has generics defined.
@@ -296,6 +304,23 @@ func (tn TGTypeDecl) ParentTypes() []TypeReference {
 	}
 
 	return typerefs
+}
+
+// Documentation returns the documentation associated with this type, if any.
+func (tn TGTypeDecl) Documentation() (string, bool) {
+	// TODO: save this during construction?
+	return "", false
+}
+
+// IsAccessibleTo returns whether this type is accessible to the module with the given source path.
+func (tn TGTypeDecl) IsAccessibleTo(modulePath compilercommon.InputSource) bool {
+	if tn.IsExported() {
+		return true
+	}
+
+	// Otherwise, only return it if the asking module's package is the same as the declaring module's package.
+	typeModulePath := compilercommon.InputSource(tn.Get(NodePredicateModulePath))
+	return srg.InSamePackage(typeModulePath, modulePath)
 }
 
 // PrincipalType returns the type of the principal for this agent. Will panic for non-agents.

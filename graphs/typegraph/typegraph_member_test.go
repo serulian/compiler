@@ -221,6 +221,12 @@ func TestMemberAccessors(t *testing.T) {
 		assert.Equal(t, expectedMember.isReadOnly, member.IsReadOnly(), "Member IsReadOnly mismatch")
 		assert.Equal(t, expectedMember.memberType, member.MemberType().String(), "Member MemberType mismatch")
 
+		if !member.IsExported() {
+			assert.True(t, member.IsAccessibleTo(compilercommon.InputSource("testModule")))
+			assert.True(t, member.IsAccessibleTo(compilercommon.InputSource("anotherModule")))
+			assert.False(t, member.IsAccessibleTo(compilercommon.InputSource("anotherPackage/anotherModule")))
+		}
+
 		// Check generics.
 		if assert.Equal(t, len(expectedMember.generics), len(member.Generics()), "Generics gount mismatch") {
 			for index, generic := range member.Generics() {

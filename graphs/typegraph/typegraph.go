@@ -320,6 +320,28 @@ func (g *TypeGraph) GetTypeOrModuleForSourceNode(sourceNode compilergraph.GraphN
 	}
 }
 
+// TypeOrMembersUnderPackage returns all types or members defined under the given package.
+func (g *TypeGraph) TypeOrMembersUnderPackage(packageInfo packageloader.PackageInfo) []TGTypeOrMember {
+	var typesOrMembers = make([]TGTypeOrMember, 0)
+
+	for _, modulePath := range packageInfo.ModulePaths() {
+		module, found := g.LookupModule(modulePath)
+		if !found {
+			continue
+		}
+
+		for _, member := range module.Members() {
+			typesOrMembers = append(typesOrMembers, member)
+		}
+
+		for _, typedef := range module.Types() {
+			typesOrMembers = append(typesOrMembers, typedef)
+		}
+	}
+
+	return typesOrMembers
+}
+
 // ResolveTypeOrMemberUnderPackage searches the type graph for a type or member with the given name, located
 // in any modules found in the given package.
 func (g *TypeGraph) ResolveTypeOrMemberUnderPackage(name string, packageInfo packageloader.PackageInfo) (TGTypeOrMember, bool) {
