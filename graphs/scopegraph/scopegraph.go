@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// scopegraph package defines methods for creating and interacting with the Scope Information Graph, which
+// Package scopegraph defines methods for creating and interacting with the Scope Information Graph, which
 // represents the determing scopes of all expressions and statements.
 package scopegraph
 
 import (
-	"fmt"
 	"log"
 	"strconv"
-	"sync"
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
@@ -23,16 +21,36 @@ import (
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/webidl"
 	webidltc "github.com/serulian/compiler/webidl/typeconstructor"
+)
 
-	"github.com/cevaris/ordered_map"
+// PromisingAccessType defines an enumeration of access types for the IsPromisingMember check.
+type PromisingAccessType int
+
+const (
+	// PromisingAccessFunctionCall indicates that the expression is being invoked as a function
+	// call and the function itself should be checked if promising.
+	PromisingAccessFunctionCall PromisingAccessType = iota
+
+	// PromisingAccessImplicitGet indicates the expression is calling a property via an implicit
+	// get and the property's getter should be checked.
+	PromisingAccessImplicitGet
+
+	// PromisingAccessImplicitSet indicates the expression is calling a property via an implicit
+	// set and the property's setter should be checked.
+	PromisingAccessImplicitSet
+
+	// PromisingAccessInitializer indicates that the initializer of a variable is being accessed
+	// and should be checked.
+	PromisingAccessInitializer
 )
 
 // ScopeGraph represents the ScopeGraph layer and all its associated helper methods.
 type ScopeGraph struct {
-	srg   *srg.SRG                     // The SRG behind this scope graph.
-	tdg   *typegraph.TypeGraph         // The TDG behind this scope graph.
-	irg   *webidl.WebIRG               // The IRG for WebIDL behind this scope graph.
-	graph *compilergraph.SerulianGraph // The root graph.
+	srg           *srg.SRG                     // The SRG behind this scope graph.
+	tdg           *typegraph.TypeGraph         // The TDG behind this scope graph.
+	irg           *webidl.WebIRG               // The IRG for WebIDL behind this scope graph.
+	packageLoader *packageloader.PackageLoader // The package loader behind this scope graph.
+	graph         *compilergraph.SerulianGraph // The root graph.
 
 	srgRefResolver        *typerefresolver.TypeReferenceResolver // The resolver to use for SRG type refs.
 	dynamicPromisingNames map[string]bool
@@ -40,7 +58,7 @@ type ScopeGraph struct {
 	layer *compilergraph.GraphLayer // The ScopeGraph layer in the graph.
 }
 
-// Results represents the results of building a scope graph.
+// Result represents the results of building a scope graph.
 type Result struct {
 	Status   bool                           // Whether the construction succeeded.
 	Warnings []compilercommon.SourceWarning // Any warnings encountered during construction.
@@ -52,8 +70,13 @@ type Result struct {
 type BuildTarget string
 
 const (
+	// Compilation indicates the scope graph is being built for compilation of code
+	// and therefore should not process the remaining phases if any errors occur.
 	Compilation BuildTarget = "compilation"
-	Tooling     BuildTarget = "tooling"
+
+	// Tooling indicates the scope graph is being built for IDE or other forms of tooling,
+	// and that a partially valid graph should be returned.
+	Tooling BuildTarget = "tooling"
 )
 
 // Config defines the configuration for scoping.
@@ -142,7 +165,7 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 	resolver.FreezeCache()
 
 	// Construct the scope graph.
-	scopeResult := buildScopeGraphWithResolver(sourcegraph, webidlgraph, typeResult.Graph, resolver)
+	scopeResult := buildScopeGraphWithResolver(sourcegraph, webidlgraph, typeResult.Graph, resolver, loader)
 	return Result{
 		Status:   scopeResult.Status && typeResult.Status && loaderResult.Status,
 		Errors:   scopeResult.Errors,
@@ -152,149 +175,18 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 }
 
 // SourceGraph returns the SRG behind this scope graph.
-func (g *ScopeGraph) SourceGraph() *srg.SRG {
-	return g.srg
+func (sg *ScopeGraph) SourceGraph() *srg.SRG {
+	return sg.srg
 }
 
 // TypeGraph returns the type graph behind this scope graph.
-func (g *ScopeGraph) TypeGraph() *typegraph.TypeGraph {
-	return g.tdg
+func (sg *ScopeGraph) TypeGraph() *typegraph.TypeGraph {
+	return sg.tdg
 }
 
-func combineWarnings(warnings ...[]compilercommon.SourceWarning) []compilercommon.SourceWarning {
-	var newWarnings = make([]compilercommon.SourceWarning, 0)
-	for _, warningsSlice := range warnings {
-		for _, warning := range warningsSlice {
-			newWarnings = append(newWarnings, warning)
-		}
-	}
-
-	return newWarnings
-}
-
-// BuildScopeGraph returns a new ScopeGraph that is populated from the given SRG and TypeGraph,
-// computing scope for all statements and expressions and semantic checking along the way.
-func BuildScopeGraph(srg *srg.SRG, irg *webidl.WebIRG, tdg *typegraph.TypeGraph) Result {
-	return buildScopeGraphWithResolver(srg, irg, tdg, typerefresolver.NewResolver(srg))
-}
-
-func buildImplicitLambdaScopes(builder *scopeBuilder) {
-	var lwg sync.WaitGroup
-	lit := builder.sg.srg.ImplicitLambdaExpressions()
-	for lit.Next() {
-		lwg.Add(1)
-		go (func(node compilergraph.GraphNode) {
-			builder.inferLambdaParameterTypes(node, scopeContext{})
-			lwg.Done()
-		})(lit.Node())
-	}
-
-	lwg.Wait()
-	builder.saveScopes()
-}
-
-func labelEntrypointPromising(builder *scopeBuilder) {
-	labeler := newPromiseLabeler(builder)
-
-	iit := builder.sg.srg.EntrypointImplementations()
-	for iit.Next() {
-		labeler.addEntrypoint(iit.Implementable())
-	}
-
-	vit := builder.sg.srg.EntrypointVariables()
-	for vit.Next() {
-		labeler.addEntrypoint(vit.Member().AsImplementable())
-	}
-
-	builder.sg.dynamicPromisingNames = labeler.labelEntrypoints()
-	builder.saveScopes()
-}
-
-func scopeEntrypoints(builder *scopeBuilder) {
-	var wg sync.WaitGroup
-	iit := builder.sg.srg.EntrypointImplementations()
-	for iit.Next() {
-		wg.Add(1)
-		go (func(implementable srg.SRGImplementable) {
-			// Build the scope for the root node, blocking until complete.
-			builder.getScopeForRootNode(implementable.Node())
-			wg.Done()
-		})(iit.Implementable())
-	}
-
-	vit := builder.sg.srg.EntrypointVariables()
-	for vit.Next() {
-		wg.Add(1)
-		go (func(member srg.SRGMember) {
-			// Build the scope for the variable/field, blocking until complete.
-			builder.getScopeForRootNode(member.Node())
-			wg.Done()
-		})(vit.Member())
-	}
-
-	wg.Wait()
-	builder.saveScopes()
-}
-
-func checkInitializationCycles(builder *scopeBuilder) {
-	var iwg sync.WaitGroup
-	vit := builder.sg.srg.EntrypointVariables()
-	for vit.Next() {
-		iwg.Add(1)
-		go (func(member srg.SRGMember) {
-			// For each static dependency, collect the tranisitive closure of the dependencies
-			// and ensure a cycle doesn't exist that circles back to this variable/field.
-			node := member.Node()
-			built := builder.getScopeForRootNode(node)
-			for _, staticDep := range built.GetStaticDependencies() {
-				builder.checkStaticDependencyCycle(node, staticDep, ordered_map.NewOrderedMap(), []typegraph.TGMember{})
-			}
-
-			iwg.Done()
-		})(vit.Member())
-	}
-
-	iwg.Wait()
-	builder.saveScopes()
-}
-
-func buildScopeGraphWithResolver(srg *srg.SRG, irg *webidl.WebIRG, tdg *typegraph.TypeGraph, resolver *typerefresolver.TypeReferenceResolver) Result {
-	scopeGraph := &ScopeGraph{
-		srg:                   srg,
-		tdg:                   tdg,
-		irg:                   irg,
-		graph:                 srg.Graph,
-		srgRefResolver:        resolver,
-		dynamicPromisingNames: map[string]bool{},
-		layer: srg.Graph.NewGraphLayer("sig", NodeTypeTagged),
-	}
-
-	builder := newScopeBuilder(scopeGraph)
-
-	// Find all implicit lambda expressions and infer their argument types.
-	buildImplicitLambdaScopes(builder)
-
-	// Scope all the entrypoint statements and members in the SRG. These will recursively scope downward.
-	scopeEntrypoints(builder)
-
-	// Check for initialization dependency cycles.
-	checkInitializationCycles(builder)
-
-	// Determine promising nature of entrypoints.
-	if builder.Status {
-		labelEntrypointPromising(builder)
-	}
-
-	// Close the outstanding modifier.
-	builder.modifier.Close()
-
-	// Collect any errors or warnings that were added.
-	return Result{
-		Status:   builder.Status,
-		Warnings: builder.GetWarnings(),
-		Errors:   builder.GetErrors(),
-		Graph:    scopeGraph,
-	}
+// PackageLoader returns the package loader behind this scope graph.
+func (sg *ScopeGraph) PackageLoader() *packageloader.PackageLoader {
+	return sg.packageLoader
 }
 
 // GetScope returns the scope for the given SRG node, if any.
@@ -312,6 +204,31 @@ func (sg *ScopeGraph) GetScope(srgNode compilergraph.GraphNode) (proto.ScopeInfo
 	return *scopeInfo, true
 }
 
+// BuildTransientScope builds the scope for the given transient node, as scoped under the given parent node.
+// Note that this method should *only* be used for transient nodes (i.e. expressions in something like Grok),
+// and that the scope created will not be saved anywhere once this method returns.
+func (sg *ScopeGraph) BuildTransientScope(transientNode compilergraph.GraphNode, parentImplementable srg.SRGImplementable) (proto.ScopeInfo, bool) {
+	// TODO: maybe skip writing the scope to the graph layer?
+	builder := newScopeBuilder(sg)
+	defer builder.modifier.Close()
+
+	// TODO: Change these types into interfaces and use no-op implementations here as performance
+	// improvement.
+	staticDependencyCollector := newStaticDependencyCollector()
+	dynamicDependencyCollector := newDynamicDependencyCollector()
+
+	context := scopeContext{
+		parentImplemented:          parentImplementable.GraphNode,
+		rootNode:                   parentImplementable.GraphNode,
+		staticDependencyCollector:  staticDependencyCollector,
+		dynamicDependencyCollector: dynamicDependencyCollector,
+		rootLabelSet:               newLabelSet(),
+	}
+
+	scopeInfo := builder.getScope(transientNode, context)
+	return *scopeInfo, builder.Status
+}
+
 // HasSecondaryLabel returns whether the given SRG node has a secondary scope label of the given kind.
 func (sg *ScopeGraph) HasSecondaryLabel(srgNode compilergraph.GraphNode, label proto.ScopeLabel) bool {
 	_, found := sg.layer.
@@ -323,90 +240,9 @@ func (sg *ScopeGraph) HasSecondaryLabel(srgNode compilergraph.GraphNode, label p
 	return found
 }
 
-// resolveSRGTypeRef builds an SRG type reference into a resolved type reference.
+// ResolveSRGTypeRef builds an SRG type reference into a resolved type reference.
 func (sg *ScopeGraph) ResolveSRGTypeRef(srgTypeRef srg.SRGTypeRef) (typegraph.TypeReference, error) {
 	return sg.srgRefResolver.ResolveTypeRef(srgTypeRef, sg.tdg)
-}
-
-// PromisingAccessType defines an enumeration of access types for the IsPromisingMember check.
-type PromisingAccessType int
-
-const (
-	PromisingAccessFunctionCall PromisingAccessType = iota
-	PromisingAccessImplicitGet
-	PromisingAccessImplicitSet
-	PromisingAccessInitializer
-)
-
-// inferMemberPromising returns the inferred promising state for the given type member. Should
-// only be called for members implicitly added by the type system, and never for members with
-// attached SRG source nodes.
-func (sg *ScopeGraph) inferMemberPromising(member typegraph.TGMember) bool {
-	parentType, hasParentType := member.ParentType()
-	if !hasParentType {
-		panic("inferMemberPromising called for non-type member")
-	}
-
-	switch member.Name() {
-	case "new":
-		// Constructor of classes or structs. Check the initializers
-		// on all the fields. If any promise, then so does the constructor.
-		for _, field := range parentType.Fields() {
-			if sg.IsPromisingMember(field, PromisingAccessInitializer) {
-				return true
-			}
-		}
-
-		// If the type composes other types, check their constructors as well.
-		for _, composedTypeRef := range parentType.ParentTypes() {
-			composedType := composedTypeRef.ReferredType()
-			composedConstructor, hasConstructor := composedType.GetMember("new")
-			if hasConstructor && sg.inferMemberPromising(composedConstructor) {
-				return true
-			}
-		}
-
-		return false
-
-	case "equals":
-		// equals on structs.
-		if parentType.TypeKind() != typegraph.StructType {
-			panic("infer `equals` on non-struct type")
-		}
-
-		// If any of the equals operators on the field types are promising, so is the equals.
-		for _, field := range parentType.Fields() {
-			equals, hasEquals := field.MemberType().ResolveMember("equals", typegraph.MemberResolutionOperator)
-			if hasEquals {
-				if sg.IsPromisingMember(equals, PromisingAccessInitializer) {
-					return true
-				}
-			}
-		}
-
-		return false
-
-	case "Parse":
-		// Parse on structs.
-		if parentType.TypeKind() != typegraph.StructType {
-			panic("infer `Parse` on non-struct type")
-		}
-
-		// TODO: better check here
-		return true
-
-	case "Stringify":
-		// Stringify on structs.
-		if parentType.TypeKind() != typegraph.StructType {
-			panic("infer `Stringify` on non-struct type")
-		}
-
-		// TODO: better check here
-		return true
-
-	default:
-		panic(fmt.Sprintf("Unsupported member for inferred promising: %v", member.Name()))
-	}
 }
 
 // IsPromisingMember returns whether the member, when accessed via the given access type, returns a promise.
