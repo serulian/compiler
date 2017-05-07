@@ -270,8 +270,7 @@ func (tn TGMember) IsRequiredField() bool {
 
 // Documentation returns the documentation associated with this member, if any.
 func (tn TGMember) Documentation() (string, bool) {
-	// TODO: save this during construction?
-	return "", false
+	return tn.GraphNode.TryGet(NodePredicateDocumentation)
 }
 
 // MemberType returns the type for this member.

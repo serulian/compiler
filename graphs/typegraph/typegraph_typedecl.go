@@ -308,8 +308,7 @@ func (tn TGTypeDecl) ParentTypes() []TypeReference {
 
 // Documentation returns the documentation associated with this type, if any.
 func (tn TGTypeDecl) Documentation() (string, bool) {
-	// TODO: save this during construction?
-	return "", false
+	return tn.GraphNode.TryGet(NodePredicateDocumentation)
 }
 
 // IsAccessibleTo returns whether this type is accessible to the module with the given source path.
