@@ -383,3 +383,47 @@ func getParseTree(t *testing.T, currentNode *testNode, indentation int) string {
 
 	return parseTree
 }
+
+type parseExpressionTest struct {
+	expressionString string
+	expectedNodeType NodeType
+	isOkay           bool
+}
+
+var parseExpressionTests = []parseExpressionTest{
+	// Success tests.
+	parseExpressionTest{"this", NodeThisLiteralExpression, true},
+	parseExpressionTest{"principal", NodePrincipalLiteralExpression, true},
+	parseExpressionTest{"a.b", NodeMemberAccessExpression, true},
+	parseExpressionTest{"a.b.c", NodeMemberAccessExpression, true},
+	parseExpressionTest{"a.b.c.d", NodeMemberAccessExpression, true},
+	parseExpressionTest{"a[1]", NodeSliceExpression, true},
+	parseExpressionTest{"a == b", NodeComparisonEqualsExpression, true},
+
+	// Failure tests.
+	parseExpressionTest{"a +", NodeTypeError, false},
+	parseExpressionTest{"a ++", NodeTypeError, false},
+	parseExpressionTest{"a....b", NodeTypeError, false},
+}
+
+func TestParseExpression(t *testing.T) {
+	for index, test := range parseExpressionTests {
+		parsed, ok := ParseExpression(createAstNode, compilercommon.InputSource(test.expressionString), index+10, test.expressionString)
+		if !assert.Equal(t, test.isOkay, ok, "Mismatch in success expected for parsing test: %s", test.expressionString) {
+			continue
+		}
+
+		if !test.isOkay {
+			continue
+		}
+
+		testNode := parsed.(*testNode)
+		if !assert.Equal(t, test.expectedNodeType, testNode.nodeType, "Mismatch in node type found for parsing test: %s", test.expressionString) {
+			continue
+		}
+
+		if !assert.Equal(t, fmt.Sprintf("%v", index+10), testNode.properties[NodePredicateStartRune], "Mismatch in start rune") {
+			continue
+		}
+	}
+}

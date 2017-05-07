@@ -28,7 +28,7 @@ NodeTypeFile
                 NodeSliceExpression
                   end-rune = 54
                   input-source = known issue 13 test
-                  start-rune = 36
+                  start-rune = 32
                   slice-expr-expr =>
                     NodeMemberAccessExpression
                       end-rune = 44

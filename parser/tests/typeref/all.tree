@@ -570,7 +570,7 @@ NodeTypeFile
         NodeTypeStream
           end-rune = 412
           input-source = all type reference test
-          start-rune = 411
+          start-rune = 408
           typereference-inner-type =>
             NodeTypeNullable
               end-rune = 411

@@ -77,13 +77,13 @@ NodeTypeFile
                     NodeFunctionCallExpression
                       end-rune = 65
                       input-source = conditional expr test
-                      start-rune = 60
+                      start-rune = 53
                       function-call-expr =>
                         NodeMemberAccessExpression
                           end-rune = 63
                           input-source = conditional expr test
                           member-access-identifier = baz
-                          start-rune = 56
+                          start-rune = 53
                           member-access-expr =>
                             NodeMemberAccessExpression
                               end-rune = 59

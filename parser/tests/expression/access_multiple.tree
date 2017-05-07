@@ -23,19 +23,19 @@ NodeTypeFile
                   end-rune = 44
                   input-source = multiple access expr test
                   member-access-identifier = e
-                  start-rune = 39
+                  start-rune = 33
                   member-access-expr =>
                     NodeStreamMemberAccessExpression
                       end-rune = 41
                       input-source = multiple access expr test
                       member-access-identifier = d
-                      start-rune = 36
+                      start-rune = 33
                       member-access-expr =>
                         NodeNullableMemberAccessExpression
                           end-rune = 38
                           input-source = multiple access expr test
                           member-access-identifier = c
-                          start-rune = 34
+                          start-rune = 33
                           member-access-expr =>
                             NodeMemberAccessExpression
                               end-rune = 35

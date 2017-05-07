@@ -3659,7 +3659,7 @@ func (p *sourceParser) consumeTemplateString() AstNode {
 
 		// Parse the token value as an expression.
 		exprStartIndex := bytePosition(offset + int(token.position))
-		expr, lastToken, ok := parseExpression(p.builder, p.importReporter, p.source, exprStartIndex, tokenValue)
+		expr, lastToken, _, ok := parseExpression(p.builder, p.importReporter, p.source, exprStartIndex, tokenValue)
 		if !ok {
 			templateNode.Connect(NodeTemplateStringPiece, p.createErrorNode("Could not parse expression in template string"))
 			return templateNode

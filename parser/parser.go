@@ -72,12 +72,19 @@ func Parse(builder NodeBuilder, importReporter packageloader.ImportHandler, sour
 	return p.consumeTopLevel()
 }
 
-// parseExpression parses the given string as an expression.
-func parseExpression(builder NodeBuilder, importReporter packageloader.ImportHandler, source compilercommon.InputSource, startIndex bytePosition, input string) (AstNode, commentedLexeme, bool) {
+// ParseExpression parses the given string as an expression.
+func ParseExpression(builder NodeBuilder, source compilercommon.InputSource, startIndex int, input string) (AstNode, bool) {
+	noopHandler := func(importInfo packageloader.PackageImport) string { return "" }
+	node, _, p, ok := parseExpression(builder, noopHandler, source, bytePosition(startIndex), input)
+	return node, ok && p.currentToken.kind == tokenTypeEOF && p.lastErrorPosition == -1
+}
+
+// parseExpression parses the given string as an expression, starting at the given start index.
+func parseExpression(builder NodeBuilder, importReporter packageloader.ImportHandler, source compilercommon.InputSource, startIndex bytePosition, input string) (AstNode, commentedLexeme, *sourceParser, bool) {
 	p := buildParser(builder, importReporter, source, startIndex, input)
 	p.consumeToken()
 	node, ok := p.tryConsumeExpression(consumeExpressionNoBraces)
-	return node, p.previousToken, ok
+	return node, p.previousToken, p, ok
 }
 
 // buildParser returns a new sourceParser instance.
@@ -304,9 +311,15 @@ func (p *sourceParser) emitError(format string, args ...interface{}) {
 		return
 	}
 
+	p.lastErrorPosition = p.bytePosition(p.currentToken.lexeme)
+
+	if p.currentNode() == nil {
+		// Under an expression parse.
+		return
+	}
+
 	errorNode := p.createErrorNode(format, args...)
 	p.currentNode().Connect(NodePredicateChild, errorNode)
-	p.lastErrorPosition = p.bytePosition(p.currentToken.lexeme)
 }
 
 // consumeKeyword consumes an expected keyword token or adds an error node.
@@ -462,8 +475,7 @@ func (p *sourceParser) oneOf(subParsers ...tryParserFn) (AstNode, bool) {
 // rightNodeBuilder is called to attempt to construct an operator expression. This method also
 // properly handles decoration of the nodes with their proper start and end run locations.
 func (p *sourceParser) performLeftRecursiveParsing(subTryExprFn tryParserFn, rightNodeBuilder rightNodeConstructor, rightTokenTester lookaheadParserFn, operatorTokens ...tokenType) (AstNode, bool) {
-	var currentLeftToken commentedLexeme
-	currentLeftToken = p.currentToken
+	startingLeftToken := p.currentToken
 
 	// Consume the left side of the expression.
 	leftNode, ok := subTryExprFn()
@@ -507,11 +519,10 @@ func (p *sourceParser) performLeftRecursiveParsing(subTryExprFn tryParserFn, rig
 			return currentLeftNode, true
 		}
 
-		p.decorateStartRuneAndComments(exprNode, currentLeftToken)
+		p.decorateStartRuneAndComments(exprNode, startingLeftToken)
 		p.decorateEndRune(exprNode, p.previousToken.lexeme)
 
 		currentLeftNode = exprNode
-		currentLeftToken = operatorToken
 	}
 
 	return currentLeftNode, true

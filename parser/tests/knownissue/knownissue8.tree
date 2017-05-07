@@ -22,7 +22,7 @@ NodeTypeFile
                 NodeFunctionCallExpression
                   end-rune = 66
                   input-source = known issue 8 test
-                  start-rune = 48
+                  start-rune = 32
                   function-call-argument =>
                     NodeStringLiteralExpression
                       end-rune = 65
@@ -33,18 +33,18 @@ NodeTypeFile
                     NodeGenericSpecifierExpression
                       end-rune = 52
                       input-source = known issue 8 test
-                      start-rune = 42
+                      start-rune = 32
                       generic-specifier-expr =>
                         NodeMemberAccessExpression
                           end-rune = 47
                           input-source = known issue 8 test
                           member-access-identifier = Parse
-                          start-rune = 40
+                          start-rune = 32
                           member-access-expr =>
                             NodeFunctionCallExpression
                               end-rune = 41
                               input-source = known issue 8 test
-                              start-rune = 36
+                              start-rune = 32
                               function-call-expr =>
                                 NodeMemberAccessExpression
                                   end-rune = 39

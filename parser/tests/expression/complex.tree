@@ -23,23 +23,23 @@ NodeTypeFile
                   end-rune = 62
                   input-source = complex expr test
                   member-access-identifier = baz
-                  start-rune = 47
+                  start-rune = 32
                   member-access-expr =>
                     NodeCastExpression
                       end-rune = 58
                       input-source = complex expr test
-                      start-rune = 43
+                      start-rune = 32
                       cast-expr-expr =>
                         NodeMemberAccessExpression
                           end-rune = 46
                           input-source = complex expr test
                           member-access-identifier = bar
-                          start-rune = 40
+                          start-rune = 32
                           member-access-expr =>
                             NodeSliceExpression
                               end-rune = 42
                               input-source = complex expr test
-                              start-rune = 36
+                              start-rune = 32
                               slice-expr-expr =>
                                 NodeMemberAccessExpression
                                   end-rune = 39
@@ -81,7 +81,7 @@ NodeTypeFile
                 NodeGenericSpecifierExpression
                   end-rune = 77
                   input-source = complex expr test
-                  start-rune = 69
+                  start-rune = 65
                   generic-specifier-expr =>
                     NodeMemberAccessExpression
                       end-rune = 72
@@ -117,18 +117,18 @@ NodeTypeFile
                 NodeSliceExpression
                   end-rune = 101
                   input-source = complex expr test
-                  start-rune = 93
+                  start-rune = 80
                   slice-expr-expr =>
                     NodeMemberAccessExpression
                       end-rune = 96
                       input-source = complex expr test
                       member-access-identifier = baz
-                      start-rune = 88
+                      start-rune = 80
                       member-access-expr =>
                         NodeGenericSpecifierExpression
                           end-rune = 92
                           input-source = complex expr test
-                          start-rune = 84
+                          start-rune = 80
                           generic-specifier-expr =>
                             NodeMemberAccessExpression
                               end-rune = 87

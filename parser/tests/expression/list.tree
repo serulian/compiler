@@ -118,7 +118,7 @@ NodeTypeFile
                     NodeFunctionCallExpression
                       end-rune = 99
                       input-source = list expr test
-                      start-rune = 94
+                      start-rune = 91
                       function-call-expr =>
                         NodeMemberAccessExpression
                           end-rune = 97
