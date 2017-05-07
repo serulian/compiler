@@ -27,6 +27,29 @@ func IsVCSRootDirectory(localPath string) bool {
 	return hasHandler
 }
 
+// GetVCSCheckoutDirectory returns the path of the directory into which the given VCS path will checked out,
+// if PerformVCSCheckout is called.
+func GetVCSCheckoutDirectory(vcsPath string, pkgCacheRootPath string, vcsDevelopmentDirectories ...string) (string, error) {
+	// Parse the VCS path.
+	parsedPath, perr := ParseVCSPath(vcsPath)
+	if perr != nil {
+		return "", perr
+	}
+
+	// Check for a local development cache.
+	if parsedPath.isRepoOnlyReference() {
+		for _, directoryPath := range vcsDevelopmentDirectories {
+			fullCheckDirectory := path.Join(directoryPath, parsedPath.url)
+			if _, err := os.Stat(fullCheckDirectory); err == nil {
+				return fullCheckDirectory, nil
+			}
+		}
+	}
+
+	fullCacheDirectory := path.Join(pkgCacheRootPath, parsedPath.cacheDirectory())
+	return fullCacheDirectory, nil
+}
+
 // PerformVCSCheckout performs the checkout and updating of the given VCS path and returns
 // the local system directory at which the package was checked out.
 //
