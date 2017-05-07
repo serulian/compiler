@@ -1,3 +1,5 @@
 class SomeClass {}
 
 function<void> SomeFunction() {}
+
+class samePackageType {}

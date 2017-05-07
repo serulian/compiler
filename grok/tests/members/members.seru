@@ -1,0 +1,14 @@
+class SomeClass<T> {
+    constructor BuildMe() {
+        return SomeClass.new()
+    }
+
+    function<void> DoSomething (someParam T) {}
+}
+
+function<void> SomeFunction() {
+    var sc = SomeClass<int>.new()
+
+/// [sl     ]
+'hello world'
+}

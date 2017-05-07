@@ -22,7 +22,7 @@ var _ = fmt.Printf
 
 const TESTLIB_PATH = "../testlib"
 
-type grokTest struct {
+type grokRangeTest struct {
 	name           string
 	expectSuccess  bool
 	expectedRanges []grokNamedRange
@@ -34,8 +34,8 @@ type grokNamedRange struct {
 	metadata     string
 }
 
-var grokTests = []grokTest{
-	grokTest{"basic", true, []grokNamedRange{
+var grokRangeTests = []grokRangeTest{
+	grokRangeTest{"basic", true, []grokNamedRange{
 		grokNamedRange{"v", Keyword, "void"},
 		grokNamedRange{"sl", Literal, "'hello world'"},
 		grokNamedRange{"sl2", Literal, "\"hello world\""},
@@ -51,7 +51,7 @@ var grokTests = []grokTest{
 		grokNamedRange{"fbb", NamedReference, "FooBarBaz"},
 	}},
 
-	grokTest{"imports", true, []grokNamedRange{
+	grokRangeTest{"imports", true, []grokNamedRange{
 		grokNamedRange{"af1", PackageOrModule, "anotherfile"},
 		grokNamedRange{"af2", PackageOrModule, "anotherfile"},
 		grokNamedRange{"sc", NamedReference, "SomeClass"},
@@ -61,7 +61,7 @@ var grokTests = []grokTest{
 		grokNamedRange{"i3", PackageOrModule, "anotherfile"},
 	}},
 
-	grokTest{"sml", false, []grokNamedRange{
+	grokRangeTest{"sml", false, []grokNamedRange{
 		grokNamedRange{"sf", NamedReference, "SomeFunction"},
 		grokNamedRange{"sp", NamedReference, "SomeProperty"},
 		grokNamedRange{"sd", NamedReference, "SomeDecorator"},
@@ -70,26 +70,26 @@ var grokTests = []grokTest{
 		grokNamedRange{"sp2", Literal, "'SomeProperty'"},
 	}},
 
-	grokTest{"brokenimport", false, []grokNamedRange{}},
-	grokTest{"invalidtyperef", false, []grokNamedRange{}},
+	grokRangeTest{"brokenimport", false, []grokNamedRange{}},
+	grokRangeTest{"invalidtyperef", false, []grokNamedRange{}},
 
-	grokTest{"syntaxerror", false, []grokNamedRange{
+	grokRangeTest{"syntaxerror", false, []grokNamedRange{
 		grokNamedRange{"f", NamedReference, "foobars"},
 	}},
 }
 
-func TestGrok(t *testing.T) {
-	for _, grokTest := range grokTests {
-		testSourcePath := "tests/" + grokTest.name + "/" + grokTest.name + ".seru"
+func TestGrokRange(t *testing.T) {
+	for _, grokRangeTest := range grokRangeTests {
+		testSourcePath := "tests/" + grokRangeTest.name + "/" + grokRangeTest.name + ".seru"
 		groker := NewGroker(testSourcePath, []string{}, []packageloader.Library{packageloader.Library{TESTLIB_PATH, false, ""}})
 		handle, err := groker.GetHandle()
 
 		// Ensure we have a valid groker.
-		if !assert.Nil(t, err, "Expected no error for test %s", grokTest.name) {
+		if !assert.Nil(t, err, "Expected no error for test %s", grokRangeTest.name) {
 			continue
 		}
 
-		if !assert.Equal(t, grokTest.expectSuccess, handle.IsCompilable(), "Mismatch in success for test %s", grokTest.name) {
+		if !assert.Equal(t, grokRangeTest.expectSuccess, handle.IsCompilable(), "Mismatch in success for test %s", grokRangeTest.name) {
 			continue
 		}
 
@@ -100,7 +100,7 @@ func TestGrok(t *testing.T) {
 		}
 
 		// For each range, look up *all* its positions and ensure they work.
-		for _, expectedRange := range grokTest.expectedRanges {
+		for _, expectedRange := range grokRangeTest.expectedRanges {
 			commentedRange := ranges[expectedRange.name]
 
 			var i = commentedRange.startIndex

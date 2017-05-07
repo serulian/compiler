@@ -69,3 +69,47 @@ type RangeInformation struct {
 	// If the range is a named reference, the reference.
 	NamedReference scopegraph.ReferencedName
 }
+
+// CompletionInformation represents information about auto-completion over a particular
+// activation string, at a particular location.
+type CompletionInformation struct {
+	// ActivationString contains the string used to activate the completion. May be empty.
+	ActivationString string
+
+	// SourceAndLocation contains the location of the source file in which the completion occurred.
+	SourceAndLocation compilercommon.SourceAndLocation
+
+	// Completions are the completions found, if any.
+	Completions []Completion
+}
+
+type CompletionKind string
+
+const (
+	SnippetCompletion   CompletionKind = "snippet"
+	TypeCompletion                     = "type"
+	MemberCompletion                   = "member"
+	ImportCompletion                   = "import"
+	ValueCompletion                    = "value"
+	ParameterCompletion                = "parameter"
+	VariableCompletion                 = "variable"
+)
+
+// Completion defines a single autocompletion returned by grok.
+type Completion struct {
+	// Kind is the kind of the completion.
+	Kind CompletionKind
+
+	// Title is the human readable title of the completion.
+	Title string
+
+	// Code is the code to be added when this completion is selected.
+	Code string
+
+	// The human readable documentation on the completion's item, if any.
+	Documentation string
+
+	// The type of the completion, if any. If the completion doesn't have a valid
+	// type, will be void.
+	TypeReference typegraph.TypeReference
+}

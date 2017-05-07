@@ -2,14 +2,21 @@ struct SomeStruct {
     SomeProperty int
 }
 
+/**
+ * Some really cool function
+ */
 function<int> SomeFunction(props SomeStruct) {
     return 2
 }
 
+/*
+ * AnotherFunction without a 'doc' comment
+ */
 function<int> AnotherFunction(props []{string}) {
     return 3
 }
 
+// SomeDecorator loves normal comments!
 function<int> SomeDecorator(value int) {
     return value
 }
@@ -20,4 +27,11 @@ function<void> DoSomething() {
 
 ///  [af       ] [sp2       ]
 <AnotherFunction SomeProperty="hello world"/>
+
+<SomeFunction>
+{
+/// [isf]
+'hello world'
+}
+</SomeFunction>
 }

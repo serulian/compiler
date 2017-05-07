@@ -7,9 +7,8 @@
 package grok
 
 import (
-	"github.com/serulian/compiler/packageloader"
-
 	"github.com/serulian/compiler/graphs/scopegraph"
+	"github.com/serulian/compiler/packageloader"
 )
 
 // Groker defines a toolkit for providing IDE tooling for Serulian projects.
@@ -25,6 +24,9 @@ type Groker struct {
 
 	// currentHandle returns the currently cached handle, if any.
 	currentHandle *Handle
+
+	// pathLoader is the path loader to use.
+	pathLoader packageloader.PathLoader
 }
 
 // NewGroker returns a new Groker for the given root source file path.
@@ -33,6 +35,7 @@ func NewGroker(rootSourceFilePath string, vcsDevelopmentDirectories []string, li
 		rootSourceFilePath:        rootSourceFilePath,
 		vcsDevelopmentDirectories: vcsDevelopmentDirectories,
 		libraries:                 libraries,
+		pathLoader:                packageloader.LocalFilePathLoader{},
 	}
 }
 
@@ -50,7 +53,11 @@ func (g *Groker) GetHandle() (Handle, error) {
 		return Handle{}, err
 	}
 
-	newHandle := Handle{result}
+	newHandle := Handle{
+		scopeResult:     result,
+		structureFinder: result.Graph.SourceGraph().NewSourceStructureFinder(),
+	}
+
 	g.currentHandle = &newHandle
 	return newHandle, nil
 }

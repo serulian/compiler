@@ -30,4 +30,9 @@ function<void> DoSomething(someParam int, someClass SomeClass) {
     /// [fbb]  [nl2]
     FooBarBaz: 12345,
   }
+
+  for someIntValue in 1..2 {
+    /// [si]
+    someIntValue
+  }
 }

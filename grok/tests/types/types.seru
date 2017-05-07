@@ -1,0 +1,9 @@
+import anotherfile
+from anotherfile import AnotherClass, ThirdClass
+
+class SomeClass {}
+
+function<void> DoSomething<T>() {
+/// [sl        ]
+'string literal'
+}
