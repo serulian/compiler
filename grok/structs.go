@@ -112,4 +112,8 @@ type Completion struct {
 	// The type of the completion, if any. If the completion doesn't have a valid
 	// type, will be void.
 	TypeReference typegraph.TypeReference
+
+	// SourceAndLocation contains the location of the source file in which this
+	// completion is found. Will be nil if no valid location applies.
+	SourceAndLocation *compilercommon.SourceAndLocation
 }
