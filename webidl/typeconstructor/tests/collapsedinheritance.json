@@ -1,24 +1,25 @@
 {
-    "0237ab719eb7d8b07587f507d6a28030": {
-        "Key": "0237ab719eb7d8b07587f507d6a28030",
+    "7ae675dd360db21da1cea8b4b99e276d": {
+        "Key": "7ae675dd360db21da1cea8b4b99e276d",
         "Kind": 8,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "8|NodeType|tdg",
+            "tdg-source-declaration-rune": "0",
             "tdg-source-module": "tests/collapsedinheritance.webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "96f01e59",
             "tdg-type-name": "ISomeCollapsedType"
         }
     },
-    "19cad6d105c8783b9e5952a21d557888": {
-        "Key": "19cad6d105c8783b9e5952a21d557888",
+    "82ec1c8475bb1f210e381e46206ec98f": {
+        "Key": "82ec1c8475bb1f210e381e46206ec98f",
         "Kind": 3,
         "Children": {
-            "7dfd587f5c4084a8992c8a84fb411675": {
+            "89738c422bc337a3e202b648561841e7": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "7dfd587f5c4084a8992c8a84fb411675",
+                    "Key": "89738c422bc337a3e202b648561841e7",
                     "Kind": 9,
                     "Children": {},
                     "Predicates": {
@@ -28,6 +29,7 @@
                         "tdg-member-resolved-type": "any",
                         "tdg-member-signature": "\n\u0005first\u0010\t\u0018\u0000 \u0001*\u0003any",
                         "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-declaration-rune": "32",
                         "tdg-source-module": "(root).webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -37,18 +39,20 @@
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
             "tdg-parent-type": "IBaseType",
+            "tdg-source-declaration-rune": "0",
             "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "ISomeCollapsedType",
             "tdg-type-name": "ISomeCollapsedType"
         }
     },
-    "9928ded7c41b6738532b3e0a0c03dcf6": {
-        "Key": "9928ded7c41b6738532b3e0a0c03dcf6",
+    "a02fb8bb6be6a1bb432b6d382d79a4f7": {
+        "Key": "a02fb8bb6be6a1bb432b6d382d79a4f7",
         "Kind": 3,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-source-declaration-rune": "0",
             "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "IBaseType",

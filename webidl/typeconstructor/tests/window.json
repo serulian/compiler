@@ -1,24 +1,51 @@
 {
-    "4080293faf0b86d25f97d1fabdb979d4": {
-        "Key": "4080293faf0b86d25f97d1fabdb979d4",
+    "203844286e1d33841d678c4b184afbb7": {
+        "Key": "203844286e1d33841d678c4b184afbb7",
+        "Kind": 3,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-source-declaration-rune": "0",
+            "tdg-source-module": "(root).webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "HTMLDocument",
+            "tdg-type-name": "HTMLDocument"
+        }
+    },
+    "2c601ad345995c8a1c28d367b7a6ba61": {
+        "Key": "2c601ad345995c8a1c28d367b7a6ba61",
         "Kind": 8,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "8|NodeType|tdg",
+            "tdg-source-declaration-rune": "31",
+            "tdg-source-module": "tests/window.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "a95165cc",
+            "tdg-type-name": "HTMLWindow"
+        }
+    },
+    "a55fb4a41569e9a78940ece835599141": {
+        "Key": "a55fb4a41569e9a78940ece835599141",
+        "Kind": 8,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "8|NodeType|tdg",
+            "tdg-source-declaration-rune": "0",
             "tdg-source-module": "tests/window.webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "2b685419",
             "tdg-type-name": "HTMLDocument"
         }
     },
-    "5c7877ca00e227f493bc52804da0a7ae": {
-        "Key": "5c7877ca00e227f493bc52804da0a7ae",
+    "a991e1193a6890f6f107bf6c9b8e5d5e": {
+        "Key": "a991e1193a6890f6f107bf6c9b8e5d5e",
         "Kind": 3,
         "Children": {
-            "cdab0cc664b967fa171b1cd09554aa42": {
+            "85209e65fa5ae29fc9904de4510b410f": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "cdab0cc664b967fa171b1cd09554aa42",
+                    "Key": "85209e65fa5ae29fc9904de4510b410f",
                     "Kind": 9,
                     "Children": {},
                     "Predicates": {
@@ -28,6 +55,7 @@
                         "tdg-member-resolved-type": "HTMLDocument",
                         "tdg-member-signature": "\n\u0008document\u0010\t\u0018\u0000 \u0001*\u000cHTMLDocument",
                         "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-declaration-rune": "57",
                         "tdg-source-module": "(root).webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -36,34 +64,11 @@
         },
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-source-declaration-rune": "31",
             "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "HTMLWindow",
             "tdg-type-name": "HTMLWindow"
-        }
-    },
-    "967f2128a124b3334b4ac560467f61cf": {
-        "Key": "967f2128a124b3334b4ac560467f61cf",
-        "Kind": 8,
-        "Children": {},
-        "Predicates": {
-            "tdg-node-kind": "8|NodeType|tdg",
-            "tdg-source-module": "tests/window.webidl",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "a95165cc",
-            "tdg-type-name": "HTMLWindow"
-        }
-    },
-    "ec008a0fcec663e5edf55c527705fa9e": {
-        "Key": "ec008a0fcec663e5edf55c527705fa9e",
-        "Kind": 3,
-        "Children": {},
-        "Predicates": {
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "(root).webidl",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "HTMLDocument",
-            "tdg-type-name": "HTMLDocument"
         }
     }
 }
