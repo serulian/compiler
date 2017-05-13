@@ -200,7 +200,7 @@ func (g *TypeGraph) defineMember(typeDecl TGTypeDecl, name string, generics []st
 
 func (g *TypeGraph) defineMemberInternal(typeDecl TGTypeDecl, name string, generics []string, isOperator bool, handler decorateHandler) {
 	modifier := g.layer.NewModifier()
-	builder := &MemberBuilder{tdg: g, modifier: modifier, parent: typeDecl, isOperator: isOperator}
+	builder := &MemberBuilder{tdg: g, modifier: modifier, parent: typeDecl, isOperator: isOperator, sourceRune: -1}
 	for _, generic := range generics {
 		builder.withGeneric(generic)
 	}

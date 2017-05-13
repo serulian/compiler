@@ -24,7 +24,6 @@ type TGTypeOrMember interface {
 	Name() string
 	Title() string
 	Node() compilergraph.GraphNode
-	SourceNodeId() (compilergraph.GraphNodeId, bool)
 	Generics() []TGGeneric
 	HasGenerics() bool
 	IsReadOnly() bool
@@ -35,6 +34,8 @@ type TGTypeOrMember interface {
 	Parent() TGTypeOrModule
 	IsImplicitlyCalled() bool
 	IsField() bool
+	SourceNodeId() (compilergraph.GraphNodeId, bool)
 	SourceGraphId() string
+	SourceLocation() (compilercommon.SourceAndLocation, bool)
 	IsAccessibleTo(modulePath compilercommon.InputSource) bool
 }

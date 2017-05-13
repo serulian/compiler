@@ -125,6 +125,7 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 				parent:     parent,
 				tdg:        typeGraph,
 				isOperator: isOperator,
+				sourceRune: -1,
 			}
 		}, issueReporterImpl{typeGraph, modifier}, typeGraph)
 		modifier.Apply()
