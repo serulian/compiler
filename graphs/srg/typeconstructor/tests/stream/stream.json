@@ -1,50 +1,6 @@
 {
-    "70e9a7903d9e79f3380102fd8bcda0a7": {
-        "Key": "70e9a7903d9e79f3380102fd8bcda0a7",
-        "Kind": 1,
-        "Children": {
-            "14fe747fcd77b32d827cbd0822f1361c": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "14fe747fcd77b32d827cbd0822f1361c",
-                    "Kind": 9,
-                    "Children": {
-                        "b260da3385668751b37c86a31828c51f": {
-                            "Predicate": "tdg-member-returnable",
-                            "Child": {
-                                "Key": "b260da3385668751b37c86a31828c51f",
-                                "Kind": 12,
-                                "Children": {},
-                                "Predicates": {
-                                    "tdg-node-kind": "12|NodeType|tdg",
-                                    "tdg-return-type": "AnotherClass"
-                                }
-                            }
-                        }
-                    },
-                    "Predicates": {
-                        "tdg-member-name": "new",
-                        "tdg-member-promising": "1",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cAnotherClass\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0016function\u003cAnotherClass\u003e",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-module": "tests/stream/stream.seru"
-                    }
-                }
-            }
-        },
-        "Predicates": {
-            "tdg-node-kind": "1|NodeType|tdg",
-            "tdg-source-module": "tests/stream/stream.seru",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "ce86e675",
-            "tdg-type-name": "AnotherClass"
-        }
-    },
-    "bc1aebbdaed3d8ae0e545907881ca431": {
-        "Key": "bc1aebbdaed3d8ae0e545907881ca431",
+    "1ebb3a343345ac9ad1f42912954fe09d": {
+        "Key": "1ebb3a343345ac9ad1f42912954fe09d",
         "Kind": 1,
         "Children": {
             "8da1dd71c16557115ac5cb8139b5450d": {
@@ -111,10 +67,56 @@
         },
         "Predicates": {
             "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-source-declaration-rune": "0",
             "tdg-source-module": "tests/stream/stream.seru",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "1cf65ceb",
             "tdg-type-name": "SomeClass"
+        }
+    },
+    "af3e5e505065ea9e145201c8f907cc5d": {
+        "Key": "af3e5e505065ea9e145201c8f907cc5d",
+        "Kind": 1,
+        "Children": {
+            "14fe747fcd77b32d827cbd0822f1361c": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "14fe747fcd77b32d827cbd0822f1361c",
+                    "Kind": 9,
+                    "Children": {
+                        "b260da3385668751b37c86a31828c51f": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "b260da3385668751b37c86a31828c51f",
+                                "Kind": 12,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-return-type": "AnotherClass"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-name": "new",
+                        "tdg-member-promising": "1",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cAnotherClass\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0016function\u003cAnotherClass\u003e",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-module": "tests/stream/stream.seru"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-source-declaration-rune": "38",
+            "tdg-source-module": "tests/stream/stream.seru",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "ce86e675",
+            "tdg-type-name": "AnotherClass"
         }
     }
 }

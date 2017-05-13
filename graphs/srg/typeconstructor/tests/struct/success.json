@@ -1,6 +1,6 @@
 {
-    "5d67493fab08626da8996d7db0282ac1": {
-        "Key": "5d67493fab08626da8996d7db0282ac1",
+    "302a9e774cde368b52b22c60b0561200": {
+        "Key": "302a9e774cde368b52b22c60b0561200",
         "Kind": 5,
         "Children": {
             "0d8a2e47860790d4c94d800846f73e19": {
@@ -34,10 +34,10 @@
                     }
                 }
             },
-            "0e411fa8df4c295a42cf7014b44769f8": {
+            "104081449138379eaf47c148027271c2": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "0e411fa8df4c295a42cf7014b44769f8",
+                    "Key": "104081449138379eaf47c148027271c2",
                     "Kind": 9,
                     "Children": {},
                     "Predicates": {
@@ -47,6 +47,7 @@
                         "tdg-member-resolved-type": "String",
                         "tdg-member-signature": "\n\u000canotherfield\u0010\u0005\u0018\u0001 \u0001*\u0006String",
                         "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-declaration-rune": "39",
                         "tdg-source-module": "tests/struct/success.seru",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -221,10 +222,10 @@
                     }
                 }
             },
-            "a1761dcb98123c3c3731543ec00ea437": {
+            "beb98d09886e729520ee86ac0c7e23cf": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "a1761dcb98123c3c3731543ec00ea437",
+                    "Key": "beb98d09886e729520ee86ac0c7e23cf",
                     "Kind": 9,
                     "Children": {},
                     "Predicates": {
@@ -234,6 +235,7 @@
                         "tdg-member-resolved-type": "T",
                         "tdg-member-signature": "\n\u000cgenericfield\u0010\u0005\u0018\u0001 \u0001*\u0001T",
                         "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-declaration-rune": "60",
                         "tdg-source-module": "tests/struct/success.seru",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -315,10 +317,10 @@
                     }
                 }
             },
-            "fbe28ad02a5f6ececb479fa214e715eb": {
+            "f3db95ee5aa83da776726b51b4df3ca2": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "fbe28ad02a5f6ececb479fa214e715eb",
+                    "Key": "f3db95ee5aa83da776726b51b4df3ca2",
                     "Kind": 9,
                     "Children": {},
                     "Predicates": {
@@ -328,6 +330,7 @@
                         "tdg-member-resolved-type": "Integer",
                         "tdg-member-signature": "\n\tcoolfield\u0010\u0005\u0018\u0001 \u0001*\u0007Integer",
                         "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-declaration-rune": "24",
                         "tdg-source-module": "tests/struct/success.seru",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -336,6 +339,7 @@
         },
         "Predicates": {
             "tdg-node-kind": "5|NodeType|tdg",
+            "tdg-source-declaration-rune": "0",
             "tdg-source-module": "tests/struct/success.seru",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "d570ace3",
@@ -346,10 +350,10 @@
         "Key": "7cf2f9194df290c7fab20525974bef2d",
         "Kind": 7,
         "Children": {
-            "a0efd7bfef76516718c63ffcf6e7f236": {
+            "256a1d3b7b87184aa634d479988f8a86": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "a0efd7bfef76516718c63ffcf6e7f236",
+                    "Key": "256a1d3b7b87184aa634d479988f8a86",
                     "Kind": 9,
                     "Children": {
                         "69c7dfb293b5923e5b91ad780ee76061": {
@@ -375,6 +379,7 @@
                         "tdg-member-signature": "\n\u000bdosomething\u0010\u0002\u0018\u0000 \u0001*#function\u003cvoid\u003e(SomeStruct\u003cInteger\u003e)",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-declaration-rune": "78",
                         "tdg-source-module": "tests/struct/success.seru",
                         "tdg-source-node": "(NodeRef)"
                     }

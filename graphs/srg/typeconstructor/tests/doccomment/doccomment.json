@@ -1,51 +1,6 @@
 {
-    "0a07083897a73cc01182f00367be852b": {
-        "Key": "0a07083897a73cc01182f00367be852b",
-        "Kind": 1,
-        "Children": {
-            "6fef68ce901b1cdd7ce3ae7606aaf29e": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "6fef68ce901b1cdd7ce3ae7606aaf29e",
-                    "Kind": 9,
-                    "Children": {
-                        "9fc2fd555054c445b1dcb0e738f6505c": {
-                            "Predicate": "tdg-member-returnable",
-                            "Child": {
-                                "Key": "9fc2fd555054c445b1dcb0e738f6505c",
-                                "Kind": 12,
-                                "Children": {},
-                                "Predicates": {
-                                    "tdg-node-kind": "12|NodeType|tdg",
-                                    "tdg-return-type": "ThirdClass"
-                                }
-                            }
-                        }
-                    },
-                    "Predicates": {
-                        "tdg-member-name": "new",
-                        "tdg-member-promising": "1",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cThirdClass\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0014function\u003cThirdClass\u003e",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-module": "tests/doccomment/doccomment.seru"
-                    }
-                }
-            }
-        },
-        "Predicates": {
-            "tdg-documentation": "One of which is a documentation comment!",
-            "tdg-node-kind": "1|NodeType|tdg",
-            "tdg-source-module": "tests/doccomment/doccomment.seru",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "89c98031",
-            "tdg-type-name": "ThirdClass"
-        }
-    },
-    "18afb5cae874db2ba3d444d584e504a5": {
-        "Key": "18afb5cae874db2ba3d444d584e504a5",
+    "2a820d3ddfe4323b24f9cc9dd03e2783": {
+        "Key": "2a820d3ddfe4323b24f9cc9dd03e2783",
         "Kind": 1,
         "Children": {
             "03d4f37bbb524f56de3f367754255e9f": {
@@ -93,10 +48,10 @@
                     }
                 }
             },
-            "63200406c6d593335c57da80bfd03410": {
+            "800b238d229d8a0717efd8b5cdb411a2": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "63200406c6d593335c57da80bfd03410",
+                    "Key": "800b238d229d8a0717efd8b5cdb411a2",
                     "Kind": 9,
                     "Children": {
                         "69c7dfb293b5923e5b91ad780ee76061": {
@@ -122,6 +77,7 @@
                         "tdg-member-resolved-type": "function\u003cvoid\u003e",
                         "tdg-member-signature": "\n\u000bdosomething\u0010\u0002\u0018\u0000 \u0001*\u000efunction\u003cvoid\u003e",
                         "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-declaration-rune": "151",
                         "tdg-source-module": "tests/doccomment/doccomment.seru",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -131,14 +87,15 @@
         "Predicates": {
             "tdg-documentation": "SomeClass is some awesome class.",
             "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-source-declaration-rune": "44",
             "tdg-source-module": "tests/doccomment/doccomment.seru",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "70ac6d61",
             "tdg-type-name": "SomeClass"
         }
     },
-    "e2df3347695af5a2f2131d03946961de": {
-        "Key": "e2df3347695af5a2f2131d03946961de",
+    "88f5fbda39bc025a530cc3de85fe137a": {
+        "Key": "88f5fbda39bc025a530cc3de85fe137a",
         "Kind": 1,
         "Children": {
             "2c9941f5246b84200341c1485d594191": {
@@ -176,10 +133,57 @@
         "Predicates": {
             "tdg-documentation": "AnotherClass does other cool things.",
             "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-source-declaration-rune": "226",
             "tdg-source-module": "tests/doccomment/doccomment.seru",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "b2cb039d",
             "tdg-type-name": "AnotherClass"
+        }
+    },
+    "bb325082589a2a57206b1ff0afe5fd58": {
+        "Key": "bb325082589a2a57206b1ff0afe5fd58",
+        "Kind": 1,
+        "Children": {
+            "6fef68ce901b1cdd7ce3ae7606aaf29e": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "6fef68ce901b1cdd7ce3ae7606aaf29e",
+                    "Kind": 9,
+                    "Children": {
+                        "9fc2fd555054c445b1dcb0e738f6505c": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "9fc2fd555054c445b1dcb0e738f6505c",
+                                "Kind": 12,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-return-type": "ThirdClass"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-name": "new",
+                        "tdg-member-promising": "1",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cThirdClass\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0014function\u003cThirdClass\u003e",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-module": "tests/doccomment/doccomment.seru"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-documentation": "One of which is a documentation comment!",
+            "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-source-declaration-rune": "337",
+            "tdg-source-module": "tests/doccomment/doccomment.seru",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "89c98031",
+            "tdg-type-name": "ThirdClass"
         }
     }
 }

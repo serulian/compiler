@@ -1,12 +1,61 @@
 {
-    "b215ed2ed46d540549bd38b9a81a2ab7": {
-        "Key": "b215ed2ed46d540549bd38b9a81a2ab7",
+    "7ed4998be1ea719ea6bf0356af2be397": {
+        "Key": "7ed4998be1ea719ea6bf0356af2be397",
         "Kind": 2,
         "Children": {
-            "100083b8bc84f2927ef5c81c5e68c8f9": {
+            "6be64753b12057a4a82acad7d8b5e55c": {
                 "Predicate": "tdg-declaration-operator",
                 "Child": {
-                    "Key": "100083b8bc84f2927ef5c81c5e68c8f9",
+                    "Key": "6be64753b12057a4a82acad7d8b5e55c",
+                    "Kind": 10,
+                    "Children": {
+                        "429c06163dccb8df2d23a410fdb2bf44": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "429c06163dccb8df2d23a410fdb2bf44",
+                                "Kind": 12,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-return-type": "any",
+                                    "tdg-source-node": "(NodeRef)"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "•index",
+                        "tdg-member-promising": "1",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cany\u003e(any)",
+                        "tdg-member-signature": "\n\u0005index\u0010\u0004\u0018\u0000 \u0001*\u0012function\u003cany\u003e(any)",
+                        "tdg-node-kind": "10|NodeType|tdg",
+                        "tdg-operator-name": "index",
+                        "tdg-source-declaration-rune": "56",
+                        "tdg-source-module": "tests/interfaceop/success.seru",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "d0322fea8ec21811a3ed15438f92b559": {
+                "Predicate": "tdg-declaration-module",
+                "Child": {
+                    "Key": "d0322fea8ec21811a3ed15438f92b559",
+                    "Kind": 7,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-module-name": "success.seru",
+                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-module": "tests/interfaceop/success.seru",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "d40e63f9175b5581cb84fb04ea137024": {
+                "Predicate": "tdg-declaration-operator",
+                "Child": {
+                    "Key": "d40e63f9175b5581cb84fb04ea137024",
                     "Kind": 10,
                     "Children": {
                         "f16ec07a909bced2a26e291dec2f92b5": {
@@ -33,54 +82,7 @@
                         "tdg-member-static": "true",
                         "tdg-node-kind": "10|NodeType|tdg",
                         "tdg-operator-name": "plus",
-                        "tdg-source-module": "tests/interfaceop/success.seru",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
-            "8301ce68ba69bccc39c0f299477234e1": {
-                "Predicate": "tdg-declaration-operator",
-                "Child": {
-                    "Key": "8301ce68ba69bccc39c0f299477234e1",
-                    "Kind": 10,
-                    "Children": {
-                        "429c06163dccb8df2d23a410fdb2bf44": {
-                            "Predicate": "tdg-member-returnable",
-                            "Child": {
-                                "Key": "429c06163dccb8df2d23a410fdb2bf44",
-                                "Kind": 12,
-                                "Children": {},
-                                "Predicates": {
-                                    "tdg-node-kind": "12|NodeType|tdg",
-                                    "tdg-return-type": "any",
-                                    "tdg-source-node": "(NodeRef)"
-                                }
-                            }
-                        }
-                    },
-                    "Predicates": {
-                        "tdg-member-exported": "true",
-                        "tdg-member-name": "•index",
-                        "tdg-member-promising": "1",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cany\u003e(any)",
-                        "tdg-member-signature": "\n\u0005index\u0010\u0004\u0018\u0000 \u0001*\u0012function\u003cany\u003e(any)",
-                        "tdg-node-kind": "10|NodeType|tdg",
-                        "tdg-operator-name": "index",
-                        "tdg-source-module": "tests/interfaceop/success.seru",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
-            "d0322fea8ec21811a3ed15438f92b559": {
-                "Predicate": "tdg-declaration-module",
-                "Child": {
-                    "Key": "d0322fea8ec21811a3ed15438f92b559",
-                    "Kind": 7,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-module-name": "success.seru",
-                        "tdg-node-kind": "7|NodeType|tdg",
+                        "tdg-source-declaration-rune": "17",
                         "tdg-source-module": "tests/interfaceop/success.seru",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -89,6 +91,7 @@
         },
         "Predicates": {
             "tdg-node-kind": "2|NodeType|tdg",
+            "tdg-source-declaration-rune": "0",
             "tdg-source-module": "tests/interfaceop/success.seru",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "8e00720f",
