@@ -40,23 +40,29 @@ func (cb *completionBuilder) addTypeOrMember(typeOrMember typegraph.TGTypeOrMemb
 
 func (cb *completionBuilder) addMember(member typegraph.TGMember, lookupType typegraph.TypeReference) *completionBuilder {
 	docString, _ := member.Documentation()
+
 	return cb.addCompletion(Completion{
-		Kind:          MemberCompletion,
-		Title:         member.Name(),
-		Code:          member.Name(),
-		Documentation: docString,
-		TypeReference: member.MemberType().TransformUnder(lookupType),
+		Kind:              MemberCompletion,
+		Title:             member.Name(),
+		Code:              member.Name(),
+		Documentation:     docString,
+		TypeReference:     member.MemberType().TransformUnder(lookupType),
+		SourceAndLocation: getSAL(member),
+		Member:            &member,
 	})
 }
 
 func (cb *completionBuilder) addType(typedef typegraph.TGTypeDecl) *completionBuilder {
 	docString, _ := typedef.Documentation()
+
 	return cb.addCompletion(Completion{
-		Kind:          TypeCompletion,
-		Title:         typedef.Name(),
-		Code:          typedef.Name(),
-		Documentation: docString,
-		TypeReference: cb.handle.scopeResult.Graph.TypeGraph().VoidTypeReference(),
+		Kind:              TypeCompletion,
+		Title:             typedef.Name(),
+		Code:              typedef.Name(),
+		Documentation:     docString,
+		TypeReference:     cb.handle.scopeResult.Graph.TypeGraph().VoidTypeReference(),
+		SourceAndLocation: getSAL(typedef),
+		Type:              &typedef,
 	})
 }
 
@@ -145,11 +151,12 @@ func (cb *completionBuilder) addScopeOrImport(scopeOrImport srg.SRGContextScopeN
 	}
 
 	return cb.addCompletion(Completion{
-		Kind:          cb.completionKindForNamedScope(namedScope),
-		Title:         namedScope.Name(),
-		Code:          scopeOrImport.LocalName(),
-		Documentation: docString,
-		TypeReference: typeref,
+		Kind:              cb.completionKindForNamedScope(namedScope),
+		Title:             namedScope.Name(),
+		Code:              scopeOrImport.LocalName(),
+		Documentation:     docString,
+		TypeReference:     typeref,
+		SourceAndLocation: getSAL(namedScope),
 	})
 }
 

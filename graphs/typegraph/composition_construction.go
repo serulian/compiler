@@ -82,6 +82,7 @@ func (p typeCompositionProcessor) addCompositionField(agent TGAgentReference, me
 		modifier:   p.modifier,
 		parent:     p.composingType,
 		isOperator: false,
+		sourceRune: -1,
 	}
 
 	builtMember := builder.Name(agent.CompositionName()).Define()

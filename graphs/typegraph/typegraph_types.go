@@ -61,6 +61,9 @@ const (
 	// Decorates a type or type member node with the path of its source module.
 	NodePredicateModulePath = "source-module"
 
+	// Decorates a type or type member node with the location rune of its declaration.
+	NodePredicateSourceRune = "source-declaration-rune"
+
 	// Connects a type or type member with its documentation.
 	NodePredicateDocumentation = "documentation"
 

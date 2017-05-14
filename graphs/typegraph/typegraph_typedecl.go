@@ -311,6 +311,18 @@ func (tn TGTypeDecl) Documentation() (string, bool) {
 	return tn.GraphNode.TryGet(NodePredicateDocumentation)
 }
 
+// SourceLocation returns the source and location for the source node for this
+// type, if any.
+func (tn TGTypeDecl) SourceLocation() (compilercommon.SourceAndLocation, bool) {
+	sourceRune, hasSourceRune := tn.GraphNode.TryGetValue(NodePredicateSourceRune)
+	if !hasSourceRune {
+		return compilercommon.SourceAndLocation{}, false
+	}
+
+	path := tn.ParentModule().Path()
+	return compilercommon.NewSourceAndLocation(compilercommon.InputSource(path), sourceRune.Int()), true
+}
+
 // IsAccessibleTo returns whether this type is accessible to the module with the given source path.
 func (tn TGTypeDecl) IsAccessibleTo(modulePath compilercommon.InputSource) bool {
 	if tn.IsExported() {
@@ -423,6 +435,16 @@ func (tn TGTypeDecl) HasAttribute(attribute TypeAttribute) bool {
 // IsClass returns true if this type is a class.
 func (tn TGTypeDecl) IsClass() bool {
 	return tn.TypeKind() == ClassType
+}
+
+// AliasedType returns the type aliased by this type alias.
+func (tn TGTypeDecl) AliasedType() (TGTypeDecl, bool) {
+	aliasedTypeNode, hasAliasedType := tn.TryGetNode(NodePredicateAliasedType)
+	if !hasAliasedType {
+		return TGTypeDecl{}, false
+	}
+
+	return TGTypeDecl{aliasedTypeNode, tn.tdg}, true
 }
 
 // TypeKind returns the kind of the type node.

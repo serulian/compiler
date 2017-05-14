@@ -125,6 +125,7 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 				parent:     parent,
 				tdg:        typeGraph,
 				isOperator: isOperator,
+				sourceRune: -1,
 			}
 		}, issueReporterImpl{typeGraph, modifier}, typeGraph)
 		modifier.Apply()
@@ -246,6 +247,18 @@ func (g *TypeGraph) ModulesWithMembers() []TGModule {
 		modules = append(modules, TGModule{it.Node(), g})
 	}
 	return modules
+}
+
+// Members returns all members defined in the type graph.
+func (g *TypeGraph) Members() []TGMember {
+	it := g.findAllNodes(NodeTypeMember).
+		BuildNodeIterator()
+
+	var members []TGMember
+	for it.Next() {
+		members = append(members, TGMember{it.Node(), g})
+	}
+	return members
 }
 
 // TypeAliases returns all type aliases in the type graph.
@@ -464,16 +477,16 @@ func (g *TypeGraph) LookupType(typeName string, module compilercommon.InputSourc
 	}
 
 	// If the type is an alias, return its referenced type.
+	typeDecl := TGTypeDecl{typeNode, g}
 	if typeNode.Kind() == NodeTypeAlias {
-		aliasedType, hasAliasedType := typeNode.TryGetNode(NodePredicateAliasedType)
+		aliasedType, hasAliasedType := typeDecl.AliasedType()
 		if !hasAliasedType {
-			typeAlias := TGTypeDecl{typeNode, g}
-			panic(fmt.Sprintf("Missing alias reference on type alias '%s'", typeAlias.Name()))
+			panic(fmt.Sprintf("Missing alias reference on type alias '%s'", typeDecl.Name()))
 		}
-		return TGTypeDecl{aliasedType, g}, true
+		return aliasedType, true
 	}
 
-	return TGTypeDecl{typeNode, g}, true
+	return typeDecl, true
 }
 
 // LookupReturnType looks up the return type for an source member or property getter.

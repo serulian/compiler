@@ -216,6 +216,7 @@ type typeBuilder struct {
 	globalId      string                           // The global ID of the type.
 	globalAlias   string                           // The global alias of the type.
 	sourceNode    compilergraph.GraphNode          // The node for the type in the source graph.
+	sourceRune    int                              // The source rune for this type, if not -1.
 	typeKind      TypeKind                         // The kind of this type.
 	attributes    []TypeAttribute                  // The custom attributes on the type, if any.
 	documentation string                           // The documentation string for the type, if any.
@@ -264,6 +265,12 @@ func (tb *typeBuilder) SourceNode(sourceNode compilergraph.GraphNode) *typeBuild
 	return tb
 }
 
+// SourceRune sets the rune position of the source node for the type in the source graph.
+func (tb *typeBuilder) SourceRune(sourceRune int) *typeBuilder {
+	tb.sourceRune = sourceRune
+	return tb
+}
+
 // Define defines the type in the type graph.
 func (tb *typeBuilder) Define() getGenericBuilder {
 	if tb.name == "" {
@@ -288,6 +295,10 @@ func (tb *typeBuilder) Define() getGenericBuilder {
 
 	if tb.documentation != "" {
 		typeNode.Decorate(NodePredicateDocumentation, tb.documentation)
+	}
+
+	if tb.sourceRune >= 0 {
+		typeNode.DecorateWith(NodePredicateSourceRune, tb.sourceRune)
 	}
 
 	if tb.globalAlias != "" {
@@ -427,7 +438,8 @@ type MemberBuilder struct {
 	parent         TGTypeOrModule                   // The parent type or module node.
 	isOperator     bool                             // Whether the member being defined is an operator.
 	name           string                           // The name of the member.
-	sourceNode     compilergraph.GraphNode          // The node for the generic in the source graph.
+	sourceNode     compilergraph.GraphNode          // The node for the member in the source graph.
+	sourceRune     int                              // The rune for the source node, or -1 if none.
 	hasSourceNode  bool                             // Whether there is a source node.
 	memberGenerics []memberGeneric                  // The generics on the member.
 	documentation  string                           // The documentation string for the member, if any.
@@ -456,6 +468,12 @@ func (mb *MemberBuilder) Documentation(documentation string) *MemberBuilder {
 func (mb *MemberBuilder) SourceNode(sourceNode compilergraph.GraphNode) *MemberBuilder {
 	mb.sourceNode = sourceNode
 	mb.hasSourceNode = true
+	return mb
+}
+
+// SourceRune sets the rune position of the source for the member in the source graph.
+func (mb *MemberBuilder) SourceRune(sourceRune int) *MemberBuilder {
+	mb.sourceRune = sourceRune
 	return mb
 }
 
@@ -498,6 +516,10 @@ func (mb *MemberBuilder) Define() TGMember {
 
 	if mb.hasSourceNode {
 		memberNode.Connect(NodePredicateSource, mb.sourceNode)
+	}
+
+	if mb.sourceRune >= 0 {
+		memberNode.DecorateWith(NodePredicateSourceRune, mb.sourceRune)
 	}
 
 	if mb.documentation != "" {

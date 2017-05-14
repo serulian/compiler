@@ -276,6 +276,19 @@ func (ns SRGNamedScope) ScopeKind() NamedScopeKind {
 	}
 }
 
+// SourceLocation returns the location of the named scope in source, if any.
+func (ns SRGNamedScope) SourceLocation() (compilercommon.SourceAndLocation, bool) {
+	switch ns.ScopeKind() {
+	case NamedScopeImport:
+		return compilercommon.SourceAndLocation{}, false
+
+	default:
+		source := ns.GraphNode.Get(parser.NodePredicateSource)
+		startRune := ns.GraphNode.GetValue(parser.NodePredicateStartRune).Int()
+		return compilercommon.NewSourceAndLocation(compilercommon.InputSource(source), startRune), true
+	}
+}
+
 // Documentation returns the documentation comment found on the scoped node, if any.
 func (ns SRGNamedScope) Documentation() (SRGDocumentation, bool) {
 	switch ns.Kind() {

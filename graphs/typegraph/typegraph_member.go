@@ -273,6 +273,18 @@ func (tn TGMember) Documentation() (string, bool) {
 	return tn.GraphNode.TryGet(NodePredicateDocumentation)
 }
 
+// SourceLocation returns the source and location for the source node for this
+// member, if any.
+func (tn TGMember) SourceLocation() (compilercommon.SourceAndLocation, bool) {
+	sourceRune, hasSourceRune := tn.GraphNode.TryGetValue(NodePredicateSourceRune)
+	if !hasSourceRune {
+		return compilercommon.SourceAndLocation{}, false
+	}
+
+	path := tn.Parent().ParentModule().Path()
+	return compilercommon.NewSourceAndLocation(compilercommon.InputSource(path), sourceRune.Int()), true
+}
+
 // MemberType returns the type for this member.
 func (tn TGMember) MemberType() TypeReference {
 	return tn.GraphNode.GetTagged(NodePredicateMemberType, tn.tdg.AnyTypeReference()).(TypeReference)

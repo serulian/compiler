@@ -112,4 +112,54 @@ type Completion struct {
 	// The type of the completion, if any. If the completion doesn't have a valid
 	// type, will be void.
 	TypeReference typegraph.TypeReference
+
+	// SourceAndLocation contains the location of the source file in which this
+	// completion is found. Will be nil if no valid location applies.
+	SourceAndLocation *compilercommon.SourceAndLocation
+
+	// If the completion is a member, the member.
+	Member *typegraph.TGMember
+
+	// If the completion is a type, the type.
+	Type *typegraph.TGTypeDecl
+}
+
+// SymbolKind defines the various kinds of symbols.
+type SymbolKind string
+
+const (
+	// TypeSymbol indicates the symbol is a type.
+	TypeSymbol SymbolKind = "symbol-type"
+
+	// MemberSymbol indicates the symbol is a member.
+	MemberSymbol = "symbol-member"
+
+	// ModuleSymbol indicates the symbol is a module.
+	ModuleSymbol = "symbol-module"
+)
+
+// Symbol represents a named symbol in the type graph, such as a type,
+// member or module.
+type Symbol struct {
+	// Name is the name of the symbol.
+	Name string
+
+	// Kind is the kind of symbol.
+	Kind SymbolKind
+
+	// IsExported returns whether the symbol is exported.
+	IsExported bool
+
+	// SourceAndLocation contains the location of the source file in which this
+	// symbol is found. Will be nil if no valid location applies.
+	SourceAndLocation *compilercommon.SourceAndLocation
+
+	// If the symbol is a member, the member.
+	Member *typegraph.TGMember
+
+	// If the symbol is a type, the type.
+	Type *typegraph.TGTypeDecl
+
+	// If the symbol is a module, the module.
+	Module *typegraph.TGModule
 }

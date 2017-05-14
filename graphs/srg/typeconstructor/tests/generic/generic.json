@@ -1,6 +1,6 @@
 {
-    "7a1bcd0ba6de630355506f09e248c621": {
-        "Key": "7a1bcd0ba6de630355506f09e248c621",
+    "27e522726ad7d4d6796c3ef270b68ea7": {
+        "Key": "27e522726ad7d4d6796c3ef270b68ea7",
         "Kind": 1,
         "Children": {
             "b2c7188d26d71e74a7841fd4c681e861": {
@@ -37,14 +37,15 @@
         },
         "Predicates": {
             "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-source-declaration-rune": "40",
             "tdg-source-module": "tests/generic/generic.seru",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "053766f5",
             "tdg-type-name": "AnotherClass"
         }
     },
-    "9a574f15193a94cdadee21f0275d36f6": {
-        "Key": "9a574f15193a94cdadee21f0275d36f6",
+    "876050306f9c824ce1c08312862bb2c3": {
+        "Key": "876050306f9c824ce1c08312862bb2c3",
         "Kind": 1,
         "Children": {
             "1d67578882b8e16125f294d13b65d337": {
@@ -127,6 +128,7 @@
         },
         "Predicates": {
             "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-source-declaration-rune": "0",
             "tdg-source-module": "tests/generic/generic.seru",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "f8876935",

@@ -58,6 +58,7 @@ func (stc *srgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 			Name(srgType.Name()).
 			GlobalId(srgType.UniqueId()).
 			Documentation(docString).
+			SourceRune(srgType.Location().Location().BytePosition()).
 			SourceNode(srgType.Node())
 
 		// As a class or interface.
@@ -228,6 +229,7 @@ func (stc *srgTypeConstructor) defineMember(member srg.SRGMember, parent typegra
 	// Define the member's name and source node.
 	builder.Name(member.Name()).
 		SourceNode(member.Node()).
+		SourceRune(member.Location().Location().BytePosition()).
 		Documentation(docString)
 
 	// Add the member's generics.
