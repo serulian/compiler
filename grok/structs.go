@@ -154,6 +154,9 @@ type Symbol struct {
 	// symbol is found. Will be nil if no valid location applies.
 	SourceAndLocation *compilercommon.SourceAndLocation
 
+	// Score is the score for this symbol under the query.
+	Score float64
+
 	// If the symbol is a member, the member.
 	Member *typegraph.TGMember
 

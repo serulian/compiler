@@ -48,9 +48,9 @@ var searchTests = []searchTest{
 				expectedSymbol{"DoSomething", MemberSymbol},
 			}},
 			searchSubTest{"me", []expectedSymbol{
-				expectedSymbol{"Message", MemberSymbol},
-				expectedSymbol{"Message", MemberSymbol},
 				expectedSymbol{"message", MemberSymbol},
+				expectedSymbol{"Message", MemberSymbol},
+				expectedSymbol{"Message", MemberSymbol},
 				expectedSymbol{"DoSomething", MemberSymbol},
 				expectedSymbol{"fileName", MemberSymbol},
 				expectedSymbol{"name", MemberSymbol},
@@ -83,7 +83,7 @@ func TestSymbolSearch(t *testing.T) {
 			}
 
 			for index, expectedSymbol := range searchTest.expectedSymbols {
-				if !assert.Equal(t, expectedSymbol.name, symbols[index].Name, "Name mismatch for query %s under test %s", searchTest.query, test.name) {
+				if !assert.Equal(t, expectedSymbol.name, symbols[index].Name, "Name mismatch for query %s under test %s: %v", searchTest.query, test.name, symbols) {
 					continue
 				}
 
