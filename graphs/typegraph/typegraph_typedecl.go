@@ -437,6 +437,16 @@ func (tn TGTypeDecl) IsClass() bool {
 	return tn.TypeKind() == ClassType
 }
 
+// AliasedType returns the type aliased by this type alias.
+func (tn TGTypeDecl) AliasedType() (TGTypeDecl, bool) {
+	aliasedTypeNode, hasAliasedType := tn.TryGetNode(NodePredicateAliasedType)
+	if !hasAliasedType {
+		return TGTypeDecl{}, false
+	}
+
+	return TGTypeDecl{aliasedTypeNode, tn.tdg}, true
+}
+
 // TypeKind returns the kind of the type node.
 func (tn TGTypeDecl) TypeKind() TypeKind {
 	nodeType := tn.GraphNode.Kind().(NodeType)

@@ -41,30 +41,19 @@ func (cb *completionBuilder) addTypeOrMember(typeOrMember typegraph.TGTypeOrMemb
 func (cb *completionBuilder) addMember(member typegraph.TGMember, lookupType typegraph.TypeReference) *completionBuilder {
 	docString, _ := member.Documentation()
 
-	var salpointer *compilercommon.SourceAndLocation
-	sal, hasSal := member.SourceLocation()
-	if hasSal {
-		salpointer = &sal
-	}
-
 	return cb.addCompletion(Completion{
 		Kind:              MemberCompletion,
 		Title:             member.Name(),
 		Code:              member.Name(),
 		Documentation:     docString,
 		TypeReference:     member.MemberType().TransformUnder(lookupType),
-		SourceAndLocation: salpointer,
+		SourceAndLocation: getSAL(member),
+		Member:            &member,
 	})
 }
 
 func (cb *completionBuilder) addType(typedef typegraph.TGTypeDecl) *completionBuilder {
 	docString, _ := typedef.Documentation()
-
-	var salpointer *compilercommon.SourceAndLocation
-	sal, hasSal := typedef.SourceLocation()
-	if hasSal {
-		salpointer = &sal
-	}
 
 	return cb.addCompletion(Completion{
 		Kind:              TypeCompletion,
@@ -72,7 +61,8 @@ func (cb *completionBuilder) addType(typedef typegraph.TGTypeDecl) *completionBu
 		Code:              typedef.Name(),
 		Documentation:     docString,
 		TypeReference:     cb.handle.scopeResult.Graph.TypeGraph().VoidTypeReference(),
-		SourceAndLocation: salpointer,
+		SourceAndLocation: getSAL(typedef),
+		Type:              &typedef,
 	})
 }
 
@@ -160,19 +150,13 @@ func (cb *completionBuilder) addScopeOrImport(scopeOrImport srg.SRGContextScopeN
 		}
 	}
 
-	var salpointer *compilercommon.SourceAndLocation
-	sal, hasSal := namedScope.SourceLocation()
-	if hasSal {
-		salpointer = &sal
-	}
-
 	return cb.addCompletion(Completion{
 		Kind:              cb.completionKindForNamedScope(namedScope),
 		Title:             namedScope.Name(),
 		Code:              scopeOrImport.LocalName(),
 		Documentation:     docString,
 		TypeReference:     typeref,
-		SourceAndLocation: salpointer,
+		SourceAndLocation: getSAL(namedScope),
 	})
 }
 
