@@ -39,6 +39,11 @@ func (sg *ScopeGraph) GetReferencedName(scope proto.ScopeInfo) (ReferencedName, 
 	}
 }
 
+// ReferencedNameForNamedScope returns a ReferencedName instance for the given named scope.
+func (sg *ScopeGraph) ReferencedNameForNamedScope(namedScope srg.SRGNamedScope) ReferencedName {
+	return ReferencedName{namedScope, nil, sg}
+}
+
 // ReferencedNameForTypeOrMember returns a ReferencedName instance for the given type or member.
 func (sg *ScopeGraph) ReferencedNameForTypeOrMember(typeOrMember typegraph.TGTypeOrMember) ReferencedName {
 	return ReferencedName{srg.SRGNamedScope{}, typeOrMember, sg}
@@ -122,4 +127,27 @@ func (rn ReferencedName) Name() string {
 	}
 
 	return rn.srgInfo.Name()
+}
+
+// Code returns a code-like summarization of the referenced name, for human consumption.
+func (rn ReferencedName) Code() string {
+	if rn.typeInfo != nil {
+		// Check if the type info is in the SRG. If so, we use its `Code`, as it is more
+		// descriptive.
+		// TODO: Make this generic?
+		if !rn.typeInfo.IsType() && rn.typeInfo.SourceGraphId() == "srg" {
+			sourceNodeId, hasSourceNodeId := rn.typeInfo.SourceNodeId()
+			if hasSourceNodeId {
+				srgNode, found := rn.sg.SourceGraph().TryGetNode(sourceNodeId)
+				if found {
+					member := rn.sg.SourceGraph().GetMemberReference(srgNode)
+					return member.Code()
+				}
+			}
+		}
+
+		return rn.typeInfo.Code()
+	}
+
+	return rn.srgInfo.Code()
 }

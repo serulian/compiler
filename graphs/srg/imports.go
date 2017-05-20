@@ -30,6 +30,11 @@ func (i SRGImport) Source() string {
 	return i.GraphNode.Get(parser.NodeImportPredicateSource)
 }
 
+// Code returns a code-like summarization of the import, for human consumption.
+func (i SRGImport) Code() string {
+	return "import " + i.Source()
+}
+
 // PackageImports returns the package imports for this import statement, if any.
 func (i SRGImport) PackageImports() []SRGPackageImport {
 	pit := i.GraphNode.
