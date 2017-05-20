@@ -1009,6 +1009,9 @@ this.Serulian = function ($global) {
         instance.internalObject = /*#Object.new()#*/$t.nativenew(/*#Object.new()#*/$global.Object)();
         return instance;
       };
+      $static.Empty = function () {
+        return $g.____testlib.basictypes.Map(T, Q).new();
+      };
       $static.forArrays = function (keys, values) {
         var $temp0;
         var $temp1;
@@ -1104,13 +1107,14 @@ this.Serulian = function ($global) {
         var computed = {
           "setindex|4|fd8bc7c9<void>": true,
         };
+        computed[((("Empty|1|fd8bc7c9<2e031d94<" + $t.typeid(T)) + ",") + $t.typeid(Q)) + ">>"] = true;
         computed[("Mapping|2|fd8bc7c9<ad6de9ce<" + $t.typeid(Q)) + ">>"] = true;
         computed[("index|4|fd8bc7c9<" + $t.typeid(Q)) + ">"] = true;
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$class('8298558d', 'JSON', false, 'json', function () {
+    this.$class('e84fb0ce', 'JSON', false, 'json', function () {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -1133,7 +1137,7 @@ this.Serulian = function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Get|1|fd8bc7c9<8298558d>": true,
+          "Get|1|fd8bc7c9<e84fb0ce>": true,
           "Stringify|2|fd8bc7c9<268aa058>": true,
           "Parse|2|fd8bc7c9<ad6de9ce<any>>": true,
         };
@@ -1233,7 +1237,7 @@ this.Serulian = function ($global) {
       };
     });
 
-    this.$interface('53dd860d', 'Stringifier', false, '$stringifier', function () {
+    this.$interface('e4152f8e', 'Stringifier', false, '$stringifier', function () {
       var $static = this;
       $static.Get = function () {
         return $g.____testlib.basictypes.JSON.new();
@@ -1243,14 +1247,14 @@ this.Serulian = function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Get|1|fd8bc7c9<53dd860d>": true,
+          "Get|1|fd8bc7c9<e4152f8e>": true,
           "Stringify|2|fd8bc7c9<268aa058>": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('345ef0c3', 'Parser', false, '$parser', function () {
+    this.$interface('f5873a5f', 'Parser', false, '$parser', function () {
       var $static = this;
       $static.Get = function () {
         return $g.____testlib.basictypes.JSON.new();
@@ -1260,7 +1264,7 @@ this.Serulian = function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Get|1|fd8bc7c9<345ef0c3>": true,
+          "Get|1|fd8bc7c9<f5873a5f>": true,
           "Parse|2|fd8bc7c9<ad6de9ce<any>>": true,
         };
         return this.$cachedtypesig = computed;
@@ -1593,7 +1597,7 @@ this.Serulian = function ($global) {
       };
     });
 
-    this.$type('344e66ae', 'WrappedError', false, 'wrappederror', function () {
+    this.$type('443094ae', 'WrappedError', false, 'wrappederror', function () {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1616,7 +1620,7 @@ this.Serulian = function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "For|1|fd8bc7c9<344e66ae>": true,
+          "For|1|fd8bc7c9<443094ae>": true,
           "Message|3|268aa058": true,
         };
         return this.$cachedtypesig = computed;
