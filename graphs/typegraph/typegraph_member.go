@@ -435,8 +435,30 @@ func (tn TGMember) Code() string {
 		buffer.WriteString("\n")
 	}
 
-	buffer.WriteString(tn.MemberType().String())
-	buffer.WriteString(" ")
-	buffer.WriteString(tn.Name())
+	forceParameters := false
+	_, isConstructor := tn.ConstructorType()
+	if isConstructor {
+		buffer.WriteString("constructor ")
+		buffer.WriteString(tn.Name())
+		forceParameters = true
+	} else {
+		buffer.WriteString(tn.MemberType().String())
+		buffer.WriteString(" ")
+		buffer.WriteString(tn.Name())
+	}
+
+	parameterTypes := tn.ParameterTypes()
+	if len(parameterTypes) > 0 || forceParameters {
+		buffer.WriteString("(")
+		for index, parameterType := range parameterTypes {
+			if index > 0 {
+				buffer.WriteString(", ")
+			}
+			buffer.WriteString(parameterType.String())
+		}
+
+		buffer.WriteString(")")
+	}
+
 	return buffer.String()
 }

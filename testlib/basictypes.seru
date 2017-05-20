@@ -296,6 +296,10 @@ class List<T> {
 class Map<T : Mappable, Q> {
 	var<Object> internalObject = Object.new()
 
+	constructor Empty() {
+		return Map<T, Q>.new()
+	}
+
 	constructor forArrays(keys Array, values Array) {
 		var map = Map<T, Q>.new()
 		var len = int(keys.length)
