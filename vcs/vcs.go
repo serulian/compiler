@@ -50,6 +50,18 @@ func GetVCSCheckoutDirectory(vcsPath string, pkgCacheRootPath string, vcsDevelop
 	return fullCacheDirectory, nil
 }
 
+// VCSCacheOption defines the caching options for VCS checkout.
+type VCSCacheOption int
+
+const (
+	// VCSFollowNormalCacheRules indicates that VCS checkouts will be pulled from cache unless a HEAD
+	// reference.
+	VCSFollowNormalCacheRules VCSCacheOption = iota
+
+	// VCSAlwaysUseCache indicates that VCS checkouts will always use the cache if available.
+	VCSAlwaysUseCache
+)
+
 // PerformVCSCheckout performs the checkout and updating of the given VCS path and returns
 // the local system directory at which the package was checked out.
 //
@@ -57,7 +69,7 @@ func GetVCSCheckoutDirectory(vcsPath string, pkgCacheRootPath string, vcsDevelop
 //
 // vcsDevelopmentDirectories specifies optional directories to check for branchless and tagless copies
 // of the repository first. If found, the copy will be used in lieu of a normal checkout.
-func PerformVCSCheckout(vcsPath string, pkgCacheRootPath string, vcsDevelopmentDirectories ...string) (string, error, string) {
+func PerformVCSCheckout(vcsPath string, pkgCacheRootPath string, cacheOption VCSCacheOption, vcsDevelopmentDirectories ...string) (string, error, string) {
 	// Parse the VCS path.
 	parsedPath, perr := ParseVCSPath(vcsPath)
 	if perr != nil {
@@ -83,7 +95,7 @@ func PerformVCSCheckout(vcsPath string, pkgCacheRootPath string, vcsDevelopmentD
 
 	// Conduct the checkout or pull.
 	fullCacheDirectory := path.Join(pkgCacheRootPath, parsedPath.cacheDirectory())
-	err, warning = checkCacheAndPull(parsedPath, fullCacheDirectory)
+	err, warning = checkCacheAndPull(parsedPath, fullCacheDirectory, cacheOption)
 
 	// Warn if the package is a HEAD checkout.
 	if err == nil && warning == "" && parsedPath.isHEAD() {
@@ -116,7 +128,7 @@ type InspectInfo struct {
 // vcsDevelopmentDirectories specifies optional directories to check for branchless and tagless copies
 // of the repository first. If found, the copy will be used in lieu of a normal checkout.
 func PerformVCSCheckoutAndInspect(vcsPath string, pkgCacheRootPath string, vcsDevelopmentDirectories ...string) (InspectInfo, error, string) {
-	directory, err, warning := PerformVCSCheckout(vcsPath, pkgCacheRootPath, vcsDevelopmentDirectories...)
+	directory, err, warning := PerformVCSCheckout(vcsPath, pkgCacheRootPath, VCSFollowNormalCacheRules, vcsDevelopmentDirectories...)
 	if err != nil {
 		return InspectInfo{}, err, warning
 	}
@@ -136,7 +148,7 @@ func PerformVCSCheckoutAndInspect(vcsPath string, pkgCacheRootPath string, vcsDe
 }
 
 // checkCacheAndPull conducts the cache check and necessary pulls.
-func checkCacheAndPull(parsedPath vcsPackagePath, fullCacheDirectory string) (error, string) {
+func checkCacheAndPull(parsedPath vcsPackagePath, fullCacheDirectory string, cacheOption VCSCacheOption) (error, string) {
 	// TODO(jschorr): Should we delete the package cache directory here if there was an error?
 
 	// Check the package cache for the path.
@@ -149,7 +161,7 @@ func checkCacheAndPull(parsedPath vcsPackagePath, fullCacheDirectory string) (er
 	// If the cache exists, we only perform an update to the VCS package if the package
 	// is marked as pointing to HEAD of a branch or commit. Tagged VCS packages are always left alone.
 	log.Printf("Cache directory %s exists", fullCacheDirectory)
-	if parsedPath.isHEAD() {
+	if parsedPath.isHEAD() && cacheOption == VCSFollowNormalCacheRules {
 		return performUpdateCheckout(parsedPath, fullCacheDirectory)
 	}
 
