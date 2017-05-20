@@ -32,49 +32,72 @@ type grokNamedRange struct {
 	name         string
 	expectedKind RangeKind
 	metadata     string
+	expectedCode string
 }
 
 var grokRangeTests = []grokRangeTest{
 	grokRangeTest{"basic", true, []grokNamedRange{
-		grokNamedRange{"v", Keyword, "void"},
-		grokNamedRange{"sl", Literal, "'hello world'"},
-		grokNamedRange{"sl2", Literal, "\"hello world\""},
-		grokNamedRange{"bl", Literal, "true"},
-		grokNamedRange{"nl", Literal, "12345678"},
-		grokNamedRange{"nl2", Literal, "12345"},
-		grokNamedRange{"i", TypeRef, "Integer"},
-		grokNamedRange{"scref", TypeRef, "SomeClass"},
+		grokNamedRange{"v", Keyword, "void", "void"},
+		grokNamedRange{"sl", Literal, "'hello world'", "'hello world'"},
+		grokNamedRange{"sl2", Literal, "\"hello world\"", "\"hello world\""},
+		grokNamedRange{"bl", Literal, "true", "true"},
+		grokNamedRange{"nl", Literal, "12345678", "12345678"},
+		grokNamedRange{"nl2", Literal, "12345", "12345"},
 
-		grokNamedRange{"sl3", Literal, "'hello'"},
-		grokNamedRange{"str", NamedReference, "someString"},
-		grokNamedRange{"str2", NamedReference, "someString"},
-		grokNamedRange{"fbb", NamedReference, "FooBarBaz"},
+		grokNamedRange{"fbbdef", NamedReference, "FooBarBaz", "// /   [fbbdef ]\nvar<int> FooBarBaz"},
+
+		grokNamedRange{"sp", NamedReference, "someParam", "someParam int"},
+		grokNamedRange{"i", TypeRef, "Integer", "type Integer: Number"},
+		grokNamedRange{"scref", TypeRef, "SomeClass", "// /  [sc   ]\nclass SomeClass"},
+		grokNamedRange{"cst", TypeRef, "SomeClass", "// /  [sc   ]\nclass SomeClass"},
+
+		grokNamedRange{"sl3", Literal, "'hello'", "'hello'"},
+		grokNamedRange{"str", NamedReference, "someString", "var someString"},
+		grokNamedRange{"str2", NamedReference, "someString", "var someString"},
+		grokNamedRange{"fbb", NamedReference, "FooBarBaz", "// /   [fbbdef ]\nvar<int> FooBarBaz"},
+	}},
+
+	grokRangeTest{"rangekeyword", true, []grokNamedRange{
+		grokNamedRange{"si", TypeRef, "SomeInterface", "interface SomeInterface"},
+		grokNamedRange{"sa", NamedReference, "SomeAgent", "// /  [si     ] [sa   ]\nagent<SomeInterface> SomeAgent"},
+
+		grokNamedRange{"th", LocalValue, "this", "this\n\nclass SomeClass"},
+		grokNamedRange{"pri", LocalValue, "principal", "principal\n\ninterface SomeInterface"},
+
+		grokNamedRange{"v", LocalValue, "val", "val\n\ntype Integer: Number"},
+
+		grokNamedRange{"sn", NamedReference, "somenum", "somenum => Integer"},
+	}},
+
+	grokRangeTest{"resolve", true, []grokNamedRange{
+		grokNamedRange{"sv", NamedReference, "someValue", "someValue => Integer?"},
+		grokNamedRange{"e", NamedReference, "err", "err => Error?"},
 	}},
 
 	grokRangeTest{"imports", true, []grokNamedRange{
-		grokNamedRange{"af1", PackageOrModule, "anotherfile"},
-		grokNamedRange{"af2", PackageOrModule, "anotherfile"},
-		grokNamedRange{"sc", NamedReference, "SomeClass"},
-		grokNamedRange{"sf", NamedReference, "SomeFunction"},
+		grokNamedRange{"af1", PackageOrModule, "anotherfile", "import anotherfile"},
+		grokNamedRange{"af2", PackageOrModule, "anotherfile", "import anotherfile"},
+		grokNamedRange{"sc", NamedReference, "SomeClass", "class SomeClass"},
+		grokNamedRange{"sf", NamedReference, "SomeFunction", "function<void> SomeFunction()"},
 
-		grokNamedRange{"i2", PackageOrModule, "anotherfile"},
-		grokNamedRange{"i3", PackageOrModule, "anotherfile"},
+		grokNamedRange{"i2", PackageOrModule, "anotherfile", "import anotherfile"},
+		grokNamedRange{"i3", PackageOrModule, "anotherfile", "import anotherfile"},
 	}},
 
 	grokRangeTest{"sml", false, []grokNamedRange{
-		grokNamedRange{"sf", NamedReference, "SomeFunction"},
-		grokNamedRange{"sp", NamedReference, "SomeProperty"},
-		grokNamedRange{"sd", NamedReference, "SomeDecorator"},
+		grokNamedRange{"sf", NamedReference, "SomeFunction", "// Some really cool function.\nfunction<int> SomeFunction(props SomeStruct)"},
+		grokNamedRange{"sp", NamedReference, "SomeProperty", "SomeProperty int"},
+		grokNamedRange{"sd", NamedReference, "SomeDecorator", "// SomeDecorator loves normal comments!\nfunction<int> SomeDecorator(value int)"},
 
-		grokNamedRange{"af", NamedReference, "AnotherFunction"},
-		grokNamedRange{"sp2", Literal, "'SomeProperty'"},
+		grokNamedRange{"af", NamedReference, "AnotherFunction", "// AnotherFunction without a 'doc' comment\nfunction<int> AnotherFunction(props []{string})"},
+		grokNamedRange{"sp2", Literal, "'SomeProperty'", "'SomeProperty'"},
 	}},
 
 	grokRangeTest{"brokenimport", false, []grokNamedRange{}},
 	grokRangeTest{"invalidtyperef", false, []grokNamedRange{}},
 
 	grokRangeTest{"syntaxerror", false, []grokNamedRange{
-		grokNamedRange{"f", NamedReference, "foobars"},
+		grokNamedRange{"f", NamedReference, "foobars", "foobars int"},
 	}},
 }
 
@@ -89,7 +112,7 @@ func TestGrokRange(t *testing.T) {
 			continue
 		}
 
-		if !assert.Equal(t, grokRangeTest.expectSuccess, handle.IsCompilable(), "Mismatch in success for test %s", grokRangeTest.name) {
+		if !assert.Equal(t, grokRangeTest.expectSuccess, handle.IsCompilable(), "Mismatch in success for test %s: %v", grokRangeTest.name, handle.scopeResult.Errors) {
 			continue
 		}
 
@@ -115,6 +138,10 @@ func TestGrokRange(t *testing.T) {
 					continue
 				}
 
+				if !assert.Equal(t, ri.Code(), expectedRange.expectedCode, "Range code mismatch on range %s", commentedRange.name) {
+					continue
+				}
+
 				switch expectedRange.expectedKind {
 				case Keyword:
 					if !assert.Equal(t, ri.Keyword, expectedRange.metadata, "Range metadata mismatch on range %s", commentedRange.name) {
@@ -133,6 +160,11 @@ func TestGrokRange(t *testing.T) {
 
 				case PackageOrModule:
 					if !assert.Equal(t, ri.PackageOrModule, expectedRange.metadata, "Range metadata mismatch on range %s", commentedRange.name) {
+						continue
+					}
+
+				case LocalValue:
+					if !assert.Equal(t, ri.LocalName, expectedRange.metadata, "Range metadata mismatch on range %s", commentedRange.name) {
 						continue
 					}
 

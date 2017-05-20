@@ -8,8 +8,27 @@ import (
 	"fmt"
 
 	"github.com/serulian/compiler/compilercommon"
+	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/parser"
 )
+
+func (gh Handle) rangeForLocalName(localName string, node compilergraph.GraphNode, sal compilercommon.SourceAndLocation) (RangeInformation, error) {
+	scopeInfo, hasScope := gh.scopeResult.Graph.GetScope(node)
+	if hasScope {
+		referencedType := scopeInfo.ResolvedTypeRef(gh.scopeResult.Graph.TypeGraph())
+		return RangeInformation{
+			Kind:              LocalValue,
+			SourceAndLocation: sal,
+			LocalName:         localName,
+			TypeReference:     referencedType,
+		}, nil
+	}
+
+	return RangeInformation{
+		Kind:              NotFound,
+		SourceAndLocation: sal,
+	}, nil
+}
 
 // LookupLocation looks up the location as specified by the source location, and returns its
 // descriptive metadata, if any.
@@ -45,6 +64,7 @@ func (gh Handle) LookupLocation(sal compilercommon.SourceAndLocation) (RangeInfo
 					Kind:              NamedReference,
 					SourceAndLocation: sal,
 					NamedReference:    gh.scopeResult.Graph.ReferencedNameForTypeOrMember(typeOrMember),
+					TypeReference:     gh.scopeResult.Graph.TypeGraph().VoidTypeReference(),
 				}, nil
 			}
 		}
@@ -70,6 +90,69 @@ func (gh Handle) LookupLocation(sal compilercommon.SourceAndLocation) (RangeInfo
 			TypeReference:     resolvedTypeRef,
 		}, nil
 
+	// Types.
+	case parser.NodeTypeClass:
+		fallthrough
+
+	case parser.NodeTypeInterface:
+		fallthrough
+
+	case parser.NodeTypeNominal:
+		fallthrough
+
+	case parser.NodeTypeStruct:
+		fallthrough
+
+	case parser.NodeTypeAgent:
+		srgType := gh.scopeResult.Graph.SourceGraph().GetDefinedTypeReference(node)
+		referencedName := gh.scopeResult.Graph.ReferencedNameForNamedScope(srgType.AsNamedScope())
+
+		return RangeInformation{
+			Kind:              NamedReference,
+			SourceAndLocation: sal,
+			NamedReference:    referencedName,
+			TypeReference:     gh.scopeResult.Graph.TypeGraph().VoidTypeReference(),
+		}, nil
+
+	// Members.
+	case parser.NodeTypeField:
+		fallthrough
+
+	case parser.NodeTypeFunction:
+		fallthrough
+
+	case parser.NodeTypeProperty:
+		fallthrough
+
+	case parser.NodeTypeOperator:
+		fallthrough
+
+	case parser.NodeTypeConstructor:
+		fallthrough
+
+	case parser.NodeTypeVariable:
+		srgMember := gh.scopeResult.Graph.SourceGraph().GetMemberReference(node)
+		referencedName := gh.scopeResult.Graph.ReferencedNameForNamedScope(srgMember.AsNamedScope())
+
+		return RangeInformation{
+			Kind:              NamedReference,
+			SourceAndLocation: sal,
+			NamedReference:    referencedName,
+			TypeReference:     gh.scopeResult.Graph.TypeGraph().VoidTypeReference(),
+		}, nil
+
+	// Parameters.
+	case parser.NodeTypeParameter:
+		srgParameter := gh.scopeResult.Graph.SourceGraph().GetParameterReference(node)
+		referencedName := gh.scopeResult.Graph.ReferencedNameForNamedScope(srgParameter.AsNamedScope())
+
+		return RangeInformation{
+			Kind:              NamedReference,
+			SourceAndLocation: sal,
+			NamedReference:    referencedName,
+			TypeReference:     gh.scopeResult.Graph.TypeGraph().VoidTypeReference(),
+		}, nil
+
 	// Sml.
 	case parser.NodeTypeSmlAttribute:
 		// Get the scope of the parent SML expression, and lookup the scope of the attribute,
@@ -89,12 +172,14 @@ func (gh Handle) LookupLocation(sal compilercommon.SourceAndLocation) (RangeInfo
 		// string literal key to a props mapping.
 		attributeScope, hasAttributeScope := parentScopeInfo.Attributes[attributeName]
 		if hasAttributeScope && attributeScope != nil {
-			referencedName, hasReferencedName := gh.scopeResult.Graph.GetReferencedName(*attributeScope)
+			attributeScopeValue := *attributeScope
+			referencedName, hasReferencedName := gh.scopeResult.Graph.GetReferencedName(attributeScopeValue)
 			if hasReferencedName {
 				return RangeInformation{
 					Kind:              NamedReference,
 					SourceAndLocation: sal,
 					NamedReference:    referencedName,
+					TypeReference:     attributeScopeValue.ResolvedTypeRef(gh.scopeResult.Graph.TypeGraph()),
 				}, nil
 			}
 		}
@@ -127,6 +212,33 @@ func (gh Handle) LookupLocation(sal compilercommon.SourceAndLocation) (RangeInfo
 			Keyword:           "void",
 		}, nil
 
+	case parser.NodeValLiteralExpression:
+		return gh.rangeForLocalName("val", node, sal)
+
+	case parser.NodeThisLiteralExpression:
+		return gh.rangeForLocalName("this", node, sal)
+
+	case parser.NodePrincipalLiteralExpression:
+		return gh.rangeForLocalName("principal", node, sal)
+
+	// Assigned value.
+	case parser.NodeTypeAssignedValue:
+		scopeInfo, hasScope := gh.scopeResult.Graph.GetScope(node)
+		if hasScope {
+			referencedType := scopeInfo.AssignableTypeRef(gh.scopeResult.Graph.TypeGraph())
+			return RangeInformation{
+				Kind:              LocalValue,
+				SourceAndLocation: sal,
+				LocalName:         node.Get(parser.NodeNamedValueName),
+				TypeReference:     referencedType,
+			}, nil
+		}
+
+		return RangeInformation{
+			Kind:              NotFound,
+			SourceAndLocation: sal,
+		}, nil
+
 	// Default scoped items.
 	default:
 		// Check for named scope.
@@ -138,6 +250,7 @@ func (gh Handle) LookupLocation(sal compilercommon.SourceAndLocation) (RangeInfo
 					Kind:              NamedReference,
 					SourceAndLocation: sal,
 					NamedReference:    referencedName,
+					TypeReference:     scopeInfo.ResolvedTypeRef(gh.scopeResult.Graph.TypeGraph()),
 				}, nil
 			}
 		}
