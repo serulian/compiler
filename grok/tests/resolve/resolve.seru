@@ -1,0 +1,9 @@
+function<int> DoSomething() {
+    someValue, err := DoSomething()
+
+    ///           [e]
+    var someErr = err
+
+    ///    [sv     ]
+    return someValue!
+}

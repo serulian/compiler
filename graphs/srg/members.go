@@ -7,6 +7,7 @@ package srg
 //go:generate stringer -type=MemberKind
 
 import (
+	"bytes"
 	"fmt"
 
 	"github.com/serulian/compiler/compilercommon"
@@ -303,4 +304,93 @@ func (m SRGMember) Tags() map[string]string {
 	}
 
 	return tags
+}
+
+// ContainingType returns the type containing this member, if any.
+func (m SRGMember) ContainingType() (SRGType, bool) {
+	containingTypeNode, hasContainingType := m.TryGetIncomingNode(parser.NodeTypeDefinitionMember)
+	return SRGType{containingTypeNode, m.srg}, hasContainingType
+}
+
+// AsNamedScope returns the member as a named scope reference.
+func (m SRGMember) AsNamedScope() SRGNamedScope {
+	return SRGNamedScope{m.GraphNode, m.srg}
+}
+
+// Code returns a code-like summarization of the member, for human consumption.
+func (m SRGMember) Code() string {
+	var buffer bytes.Buffer
+	documentationString := getSummarizedDocumentation(m)
+	if len(documentationString) > 0 {
+		buffer.WriteString(documentationString)
+		buffer.WriteString("\n")
+	}
+
+	switch m.GraphNode.Kind() {
+	case parser.NodeTypeConstructor:
+		buffer.WriteString("constructor ")
+		buffer.WriteString(m.Name())
+		writeCodeParameters(m, &buffer)
+
+	case parser.NodeTypeFunction:
+		returnType, _ := m.ReturnType()
+
+		buffer.WriteString("function<")
+		buffer.WriteString(returnType.String())
+		buffer.WriteString("> ")
+
+		buffer.WriteString(m.Name())
+		writeCodeGenerics(m, &buffer)
+		writeCodeParameters(m, &buffer)
+
+	case parser.NodeTypeProperty:
+		declaredType, _ := m.DeclaredType()
+		buffer.WriteString("property<")
+		buffer.WriteString(declaredType.String())
+		buffer.WriteString("> ")
+
+		buffer.WriteString(m.Name())
+
+		if !m.HasSetter() {
+			buffer.WriteString(" { get }")
+		}
+
+	case parser.NodeTypeOperator:
+		returnType, hasReturnType := m.ReturnType()
+
+		if hasReturnType {
+			buffer.WriteString("operator<")
+			buffer.WriteString(returnType.String())
+			buffer.WriteString("> ")
+		} else {
+			buffer.WriteString("operator ")
+		}
+
+		buffer.WriteString(m.Name())
+		writeCodeParameters(m, &buffer)
+
+	case parser.NodeTypeField:
+		fallthrough
+
+	case parser.NodeTypeVariable:
+		declaredType, _ := m.DeclaredType()
+
+		containingType, hasContainingType := m.ContainingType()
+		if hasContainingType && containingType.TypeKind() == StructType {
+			buffer.WriteString(m.Name())
+			buffer.WriteString(" ")
+			buffer.WriteString(declaredType.String())
+		} else {
+			buffer.WriteString("var<")
+			buffer.WriteString(declaredType.String())
+			buffer.WriteString("> ")
+
+			buffer.WriteString(m.Name())
+		}
+
+	default:
+		panic(fmt.Sprintf("Unknown kind of member %s", m.GraphNode.Kind()))
+	}
+
+	return buffer.String()
 }

@@ -1,5 +1,6 @@
 ///   [sc     ]
 class SomeClass {
+  ///      [fbbdef ]
   var<int> FooBarBaz
 }
 
@@ -35,4 +36,7 @@ function<void> DoSomething(someParam int, someClass SomeClass) {
     /// [si]
     someIntValue
   }
+
+  ///         [cst    ]
+  (someClass.(SomeClass))
 }

@@ -31,11 +31,16 @@ type Groker struct {
 
 // NewGroker returns a new Groker for the given root source file path.
 func NewGroker(rootSourceFilePath string, vcsDevelopmentDirectories []string, libraries []packageloader.Library) *Groker {
+	return NewGrokerWithPathLoader(rootSourceFilePath, vcsDevelopmentDirectories, libraries, packageloader.LocalFilePathLoader{})
+}
+
+// NewGrokerWithPathLoader returns a new Groker for the given root source file path.
+func NewGrokerWithPathLoader(rootSourceFilePath string, vcsDevelopmentDirectories []string, libraries []packageloader.Library, pathLoader packageloader.PathLoader) *Groker {
 	return &Groker{
 		rootSourceFilePath:        rootSourceFilePath,
 		vcsDevelopmentDirectories: vcsDevelopmentDirectories,
 		libraries:                 libraries,
-		pathLoader:                packageloader.LocalFilePathLoader{},
+		pathLoader:                pathLoader,
 	}
 }
 

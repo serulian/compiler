@@ -7,6 +7,7 @@ package srg
 //go:generate stringer -type=TypeKind
 
 import (
+	"bytes"
 	"fmt"
 
 	"github.com/serulian/compiler/compilercommon"
@@ -73,6 +74,14 @@ func (g *SRG) GetTypeGenerics() []SRGGeneric {
 	}
 
 	return generics
+}
+
+// GetDefinedTypeReference returns an SRGType wrapper around the given SRG type node. Panics
+// if the node is not a type node.
+func (g *SRG) GetDefinedTypeReference(node compilergraph.GraphNode) SRGType {
+	srgType := SRGType{node, g}
+	srgType.TypeKind() // Will panic on error.
+	return srgType
 }
 
 // Module returns the module under which the type is defined.
@@ -240,4 +249,92 @@ func (t SRGType) Alias() (string, bool) {
 	}
 
 	return "", false
+}
+
+// AsNamedScope returns the type as a named scope reference.
+func (t SRGType) AsNamedScope() SRGNamedScope {
+	return SRGNamedScope{t.GraphNode, t.srg}
+}
+
+// Code returns a code-like summarization of the type, for human consumption.
+func (t SRGType) Code() string {
+	var buffer bytes.Buffer
+	documentationString := getSummarizedDocumentation(t)
+	if len(documentationString) > 0 {
+		buffer.WriteString(documentationString)
+		buffer.WriteString("\n")
+	}
+
+	writeComposition := func() {
+		agents := t.ComposedAgents()
+		if len(agents) == 0 {
+			return
+		}
+
+		buffer.WriteString(" with ")
+		for index, agent := range agents {
+			if index > 0 {
+				buffer.WriteString(", ")
+			}
+
+			buffer.WriteString(agent.AgentType().String())
+			buffer.WriteString(" as ")
+			buffer.WriteString(agent.CompositionName())
+		}
+	}
+
+	switch t.GraphNode.Kind() {
+	case parser.NodeTypeClass:
+		buffer.WriteString("class ")
+		buffer.WriteString(t.Name())
+		writeCodeGenerics(t, &buffer)
+		writeComposition()
+
+	case parser.NodeTypeInterface:
+		buffer.WriteString("interface ")
+		buffer.WriteString(t.Name())
+		writeCodeGenerics(t, &buffer)
+
+	case parser.NodeTypeNominal:
+		buffer.WriteString("type ")
+		buffer.WriteString(t.Name())
+		writeCodeGenerics(t, &buffer)
+		buffer.WriteString(": ")
+
+		// Note: Nominals should always have wrapped types, but since this method can be called
+		// from tooling where the SRG may not be completely valid, we check anyway.
+		wrappedType, hasWrappedType := t.WrappedType()
+		if hasWrappedType {
+			buffer.WriteString(wrappedType.String())
+		} else {
+			buffer.WriteString("?")
+		}
+
+	case parser.NodeTypeStruct:
+		buffer.WriteString("struct ")
+		buffer.WriteString(t.Name())
+		writeCodeGenerics(t, &buffer)
+
+	case parser.NodeTypeAgent:
+		buffer.WriteString("agent<")
+
+		// Note: Agents should always have principal types, but since this method can be called
+		// from tooling where the SRG may not be completely valid, we check anyway.
+		principalType, hasPrincipalType := t.PrincipalType()
+		if hasPrincipalType {
+			buffer.WriteString(principalType.String())
+		} else {
+			buffer.WriteString("?")
+		}
+
+		buffer.WriteString("> ")
+		buffer.WriteString(t.Name())
+		writeCodeGenerics(t, &buffer)
+		writeComposition()
+
+	default:
+		panic(fmt.Sprintf("Unknown kind of type %s", t.GraphNode.Kind()))
+	}
+
+	return buffer.String()
 }

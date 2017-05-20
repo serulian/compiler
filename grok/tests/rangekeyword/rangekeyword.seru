@@ -1,0 +1,31 @@
+class SomeClass {
+  function<void> SomeFunction() {
+    ///             [th]
+    var something = this
+  }
+}
+
+interface SomeInterface {}
+
+///   [si         ]  [sa     ]
+agent<SomeInterface> SomeAgent {
+  function<void> SomeAgentFunction() {
+    /// [pri]
+    principal
+
+    for somenum in 0..10 {
+      ///      [sn   ]
+      var sn = somenum
+    } 
+  }
+
+  property<int> SomeProperty {
+      get {
+         return 2 
+      }
+      set {
+        ///       [v]
+        var foo = val
+      }
+  }
+}

@@ -5,10 +5,20 @@
 package srg
 
 import (
+	"bytes"
+
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/parser"
 )
+
+// GetParameterReference returns an SRGParameter wrapper around the given SRG parameter node. Panics
+// if the node is not a member node.
+func (g *SRG) GetParameterReference(node compilergraph.GraphNode) SRGParameter {
+	parameter := SRGParameter{node, g}
+	parameter.Name() // Will panic if not a parameter.
+	return parameter
+}
 
 // SRGParameter represents a parameter on a function, constructor or operator.
 type SRGParameter struct {
@@ -35,4 +45,23 @@ func (p SRGParameter) Location() compilercommon.SourceAndLocation {
 func (p SRGParameter) DeclaredType() (SRGTypeRef, bool) {
 	typeNode, exists := p.GraphNode.StartQuery().Out(parser.NodeParameterType).TryGetNode()
 	return SRGTypeRef{typeNode, p.srg}, exists
+}
+
+// AsNamedScope returns the parameter as a named scope reference.
+func (p SRGParameter) AsNamedScope() SRGNamedScope {
+	return SRGNamedScope{p.GraphNode, p.srg}
+}
+
+// Code returns a code-like summarization of the parameter, for human consumption.
+func (p SRGParameter) Code() string {
+	var buffer bytes.Buffer
+	buffer.WriteString(p.Name())
+	buffer.WriteString(" ")
+
+	declaredType, hasDeclaredType := p.DeclaredType()
+	if hasDeclaredType {
+		buffer.WriteString(declaredType.String())
+	}
+
+	return buffer.String()
 }

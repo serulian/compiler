@@ -38,4 +38,5 @@ type TGTypeOrMember interface {
 	SourceGraphId() string
 	SourceLocation() (compilercommon.SourceAndLocation, bool)
 	IsAccessibleTo(modulePath compilercommon.InputSource) bool
+	Code() string
 }

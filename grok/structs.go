@@ -5,6 +5,8 @@
 package grok
 
 import (
+	"strings"
+
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/graphs/typegraph"
@@ -38,6 +40,9 @@ const (
 	// non-SRG import.
 	UnresolvedTypeOrMember = "unresolved-type-or-member"
 
+	// LocalValue indicates the specified location matches a locally named and typed value.
+	LocalValue = "local-value"
+
 	// Unknown indicates the specified location matches an unknown value.
 	Unknown = "unknown"
 )
@@ -62,12 +67,67 @@ type RangeInformation struct {
 	// If the range is an unresolved type or member, the name of the import source.
 	UnresolvedTypeOrMember string
 
-	// If the range is a typeref, the type referenced. If the type could not
+	// If the range is a typeref or local value, the type referenced. If the type could not
 	// be referenced, `void` is returned.
 	TypeReference typegraph.TypeReference
 
+	// If the range is a local value, the name.
+	LocalName string
+
 	// If the range is a named reference, the reference.
 	NamedReference scopegraph.ReferencedName
+}
+
+// Code returns the code form of the range information.
+func (ri RangeInformation) Code() string {
+	switch ri.Kind {
+	case NotFound:
+		return ""
+
+	case Unknown:
+		return "(Unknown)"
+
+	case Keyword:
+		return ri.Keyword
+
+	case Literal:
+		return ri.LiteralValue
+
+	case LocalValue:
+		if ri.TypeReference.IsNormal() {
+			return ri.LocalName + "\n\n" + ri.TypeReference.ReferredType().Code()
+		}
+
+		return ri.LocalName + "\n\n" + ri.TypeReference.String()
+
+	case PackageOrModule:
+		return "import " + ri.PackageOrModule
+
+	case UnresolvedTypeOrMember:
+		return "<" + ri.UnresolvedTypeOrMember + ">"
+
+	case TypeRef:
+		if ri.TypeReference.IsNormal() {
+			return ri.TypeReference.ReferredType().Code()
+		}
+
+		return ri.TypeReference.String()
+
+	case NamedReference:
+		code := ri.NamedReference.Code()
+
+		// TODO: have code return whether it includes the type?
+		if !strings.Contains(code, "<") && !strings.Contains(code, " ") {
+			// Missing type. Add the resolved type, if any.
+			if !ri.TypeReference.IsVoid() {
+				code = code + " => " + ri.TypeReference.String()
+			}
+		}
+		return code
+
+	default:
+		panic("Unknown kind of range")
+	}
 }
 
 // CompletionInformation represents information about auto-completion over a particular

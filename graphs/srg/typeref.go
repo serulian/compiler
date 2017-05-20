@@ -185,6 +185,39 @@ func (t SRGTypeRef) subReferences(predicate compilergraph.Predicate) []SRGTypeRe
 	return subRefs
 }
 
+// String returns the human-readable string form of this type reference.
+func (t SRGTypeRef) String() string {
+	nodeKind := t.GraphNode.Kind().(parser.NodeType)
+	switch nodeKind {
+	case parser.NodeTypeVoid:
+		return "void"
+
+	case parser.NodeTypeAny:
+		return "any"
+
+	case parser.NodeTypeStructReference:
+		return "struct"
+
+	case parser.NodeTypeStream:
+		return t.InnerReference().String() + "*"
+
+	case parser.NodeTypeSlice:
+		return "[]" + t.InnerReference().String()
+
+	case parser.NodeTypeMapping:
+		return "[]{" + t.InnerReference().String() + "}"
+
+	case parser.NodeTypeNullable:
+		return t.InnerReference().String() + "?"
+
+	case parser.NodeTypeTypeReference:
+		return t.ResolutionName()
+
+	default:
+		panic(fmt.Sprintf("Unknown kind of type reference node %v", nodeKind))
+	}
+}
+
 // RefKind returns the kind of this type reference.
 func (t SRGTypeRef) RefKind() TypeRefKind {
 	nodeKind := t.GraphNode.Kind().(parser.NodeType)

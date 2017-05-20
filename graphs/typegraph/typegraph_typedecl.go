@@ -5,6 +5,7 @@
 package typegraph
 
 import (
+	"bytes"
 	"fmt"
 
 	"github.com/serulian/compiler/compilercommon"
@@ -445,6 +446,80 @@ func (tn TGTypeDecl) AliasedType() (TGTypeDecl, bool) {
 	}
 
 	return TGTypeDecl{aliasedTypeNode, tn.tdg}, true
+}
+
+// Code returns a code-like summarization of the type, for human consumption.
+func (tn TGTypeDecl) Code() string {
+	var buffer bytes.Buffer
+
+	// Add documentation.
+	documentation, hasDocumentation := tn.Documentation()
+	if hasDocumentation {
+		buffer.WriteString("// ")
+		buffer.WriteString(documentation)
+		buffer.WriteString("\n")
+	}
+
+	// Write the kind.
+	switch tn.TypeKind() {
+	case ClassType:
+		buffer.WriteString("class ")
+		buffer.WriteString(tn.Name())
+
+	case ImplicitInterfaceType:
+		buffer.WriteString("interface ")
+		buffer.WriteString(tn.Name())
+
+	case ExternalInternalType:
+		buffer.WriteString("interface ")
+		buffer.WriteString(tn.Name())
+
+		parentTypes := tn.ParentTypes()
+		if len(parentTypes) > 0 {
+			buffer.WriteString(": ")
+
+			for index, parentType := range parentTypes {
+				if index > 0 {
+					buffer.WriteString(", ")
+				}
+
+				buffer.WriteString(parentType.String())
+			}
+		}
+
+	case NominalType:
+		buffer.WriteString("type ")
+		buffer.WriteString(tn.Name())
+
+		parentTypes := tn.ParentTypes()
+		if len(parentTypes) > 0 {
+			buffer.WriteString(": ")
+			buffer.WriteString(parentTypes[0].String())
+		}
+
+	case StructType:
+		buffer.WriteString("struct ")
+		buffer.WriteString(tn.Name())
+
+	case AgentType:
+		buffer.WriteString("agent<")
+		buffer.WriteString(tn.PrincipalType().String())
+		buffer.WriteString("> ")
+		buffer.WriteString(tn.Name())
+
+	case GenericType:
+		buffer.WriteString(tn.Name())
+		buffer.WriteString(" (generic)")
+
+	case AliasType:
+		buffer.WriteString(tn.Name())
+		buffer.WriteString(" => ")
+
+		aliasedType, _ := tn.AliasedType()
+		buffer.WriteString(aliasedType.DescriptiveName())
+	}
+
+	return buffer.String()
 }
 
 // TypeKind returns the kind of the type node.

@@ -5,6 +5,7 @@
 package typegraph
 
 import (
+	"bytes"
 	"fmt"
 
 	"github.com/serulian/compiler/compilercommon"
@@ -420,4 +421,22 @@ func (tn TGMember) Signature() *proto.MemberSig {
 // If none, returns "typegraph".
 func (tn TGMember) SourceGraphId() string {
 	return tn.Parent().SourceGraphId()
+}
+
+// Code returns a code-like summarization of the member, for human consumption.
+func (tn TGMember) Code() string {
+	var buffer bytes.Buffer
+
+	// Add documentation.
+	documentation, hasDocumentation := tn.Documentation()
+	if hasDocumentation {
+		buffer.WriteString("// ")
+		buffer.WriteString(documentation)
+		buffer.WriteString("\n")
+	}
+
+	buffer.WriteString(tn.MemberType().String())
+	buffer.WriteString(" ")
+	buffer.WriteString(tn.Name())
+	return buffer.String()
 }

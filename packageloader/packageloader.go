@@ -89,6 +89,7 @@ type PackageLoader struct {
 	vcsDevelopmentDirectories []string   // Directories to check for VCS packages before VCS checkout.
 	pathLoader                PathLoader // The path loaders to use.
 	alwaysValidate            bool       // Whether to always run validation, regardless of errors. Useful to IDE tooling.
+	skipVCSRefresh            bool       // Whether to skip VCS refresh if cache exists. Useful to IDE tooling.
 
 	errors   chan compilercommon.SourceError   // Errors are reported on this channel
 	warnings chan compilercommon.SourceWarning // Warnings are reported on this channel
@@ -139,6 +140,10 @@ type Config struct {
 
 	// If true, validation will always be called.
 	AlwaysValidate bool
+
+	// If true, VCS forced refresh (for branches and HEAD) will be skipped if cache
+	// exists.
+	SkipVCSRefresh bool
 }
 
 // NewBasicConfig returns PackageLoader Config for a root source file and source handlers.
@@ -149,6 +154,7 @@ func NewBasicConfig(rootSourceFilePath string, sourceHandlers ...SourceHandler) 
 		SourceHandlers:            sourceHandlers,
 		PathLoader:                LocalFilePathLoader{},
 		AlwaysValidate:            false,
+		SkipVCSRefresh:            false,
 	}
 }
 
@@ -169,6 +175,7 @@ func NewPackageLoader(config Config) *PackageLoader {
 		vcsDevelopmentDirectories: config.VCSDevelopmentDirectories,
 		pathLoader:                pathLoader,
 		alwaysValidate:            config.AlwaysValidate,
+		skipVCSRefresh:            config.SkipVCSRefresh,
 
 		errors:   make(chan compilercommon.SourceError),
 		warnings: make(chan compilercommon.SourceWarning),
@@ -465,7 +472,12 @@ func (p *PackageLoader) loadVCSPackage(packagePath pathInformation) {
 	pkgDirectory := path.Join(rootDirectory, SerulianPackageDirectory)
 
 	// Perform the checkout of the VCS package.
-	checkoutDirectory, err, warning := vcs.PerformVCSCheckout(packagePath.path, pkgDirectory, p.vcsDevelopmentDirectories...)
+	var cacheOption = vcs.VCSFollowNormalCacheRules
+	if p.skipVCSRefresh {
+		cacheOption = vcs.VCSAlwaysUseCache
+	}
+
+	checkoutDirectory, err, warning := vcs.PerformVCSCheckout(packagePath.path, pkgDirectory, cacheOption, p.vcsDevelopmentDirectories...)
 	if err != nil {
 		p.vcsPathsLoaded.Set(packagePath.path, "")
 		p.errors <- compilercommon.SourceErrorf(packagePath.sal, "Error loading VCS package '%s': %v", packagePath.path, err)
