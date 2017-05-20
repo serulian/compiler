@@ -134,6 +134,7 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 		PathLoader:                config.PathLoader,
 		VCSDevelopmentDirectories: config.VCSDevelopmentDirectories,
 		AlwaysValidate:            config.Target == Tooling,
+		SkipVCSRefresh:            config.Target == Tooling,
 
 		SourceHandlers: []packageloader.SourceHandler{
 			sourcegraph.PackageLoaderHandler(),
