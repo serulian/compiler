@@ -1,0 +1,7 @@
+class SomeClass {
+    /// [m] [s1  ]  [sc1    ]   [c     ]   [n] [s2  ]  [sc2    ]  [e  ]
+	var<map<string, SomeClass>> children = map<string, SomeClass>.Empty()    
+
+    ///                           [o]
+	var<SomeClass> sc = SomeClass.new()
+}

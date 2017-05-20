@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"strings"
 
+	"bytes"
+
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/compilerutil"
@@ -211,7 +213,34 @@ func (t SRGTypeRef) String() string {
 		return t.InnerReference().String() + "?"
 
 	case parser.NodeTypeTypeReference:
-		return t.ResolutionName()
+		var buffer bytes.Buffer
+		buffer.WriteString(t.ResolutionName())
+
+		generics := t.Generics()
+		if len(generics) > 0 {
+			buffer.WriteString("<")
+			for index, generic := range generics {
+				if index > 0 {
+					buffer.WriteString(", ")
+				}
+				buffer.WriteString(generic.String())
+			}
+			buffer.WriteString(">")
+		}
+
+		parameters := t.Parameters()
+		if len(parameters) > 0 {
+			buffer.WriteString("(")
+			for index, parameter := range parameters {
+				if index > 0 {
+					buffer.WriteString(", ")
+				}
+				buffer.WriteString(parameter.String())
+			}
+			buffer.WriteString(")")
+		}
+
+		return buffer.String()
 
 	default:
 		panic(fmt.Sprintf("Unknown kind of type reference node %v", nodeKind))

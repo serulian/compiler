@@ -12,6 +12,37 @@ import (
 	"github.com/serulian/compiler/parser"
 )
 
+func (gh Handle) checkRangeUnderTypeReference(node compilergraph.GraphNode, sal compilercommon.SourceAndLocation) (RangeInformation, error) {
+	// Check for a direct parent.
+	parentRef, hasParentRef := node.TryGetIncomingNode(parser.NodeTypeReferencePath)
+	if hasParentRef {
+		unresolvedTypeRef := gh.scopeResult.Graph.SourceGraph().GetTypeRef(parentRef)
+		resolvedTypeRef, _ := gh.scopeResult.Graph.ResolveSRGTypeRef(unresolvedTypeRef)
+		return RangeInformation{
+			Kind:              TypeRef,
+			SourceAndLocation: sal,
+			TypeReference:     resolvedTypeRef,
+		}, nil
+	}
+
+	// Check for a parent identifier path.
+	parentPath, hasParentPath := node.TryGetIncomingNode(parser.NodeIdentifierPathRoot)
+	if hasParentPath {
+		return gh.checkRangeUnderTypeReference(parentPath, sal)
+	}
+
+	parentPath, hasParentPath = node.TryGetIncomingNode(parser.NodeIdentifierAccessSource)
+	if hasParentPath {
+		return gh.checkRangeUnderTypeReference(parentPath, sal)
+	}
+
+	// Otherwise, return not found.
+	return RangeInformation{
+		Kind:              NotFound,
+		SourceAndLocation: sal,
+	}, nil
+}
+
 func (gh Handle) rangeForLocalName(localName string, node compilergraph.GraphNode, sal compilercommon.SourceAndLocation) (RangeInformation, error) {
 	scopeInfo, hasScope := gh.scopeResult.Graph.GetScope(node)
 	if hasScope {
@@ -255,10 +286,7 @@ func (gh Handle) LookupLocation(sal compilercommon.SourceAndLocation) (RangeInfo
 			}
 		}
 
-		// Otherwise, return not found.
-		return RangeInformation{
-			Kind:              NotFound,
-			SourceAndLocation: sal,
-		}, nil
+		// Check if part of a parent type ref.
+		return gh.checkRangeUnderTypeReference(node, sal)
 	}
 }

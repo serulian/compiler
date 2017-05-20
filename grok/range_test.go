@@ -74,6 +74,22 @@ var grokRangeTests = []grokRangeTest{
 		grokNamedRange{"e", NamedReference, "err", "err => Error?"},
 	}},
 
+	grokRangeTest{"complex", true, []grokNamedRange{
+		grokNamedRange{"m", TypeRef, "Map<String, SomeClass>", "class Map"},
+		grokNamedRange{"s1", TypeRef, "String", "type String: String"},
+		grokNamedRange{"sc1", TypeRef, "SomeClass", "class SomeClass"},
+
+		grokNamedRange{"c", NamedReference, "children", "// / [m] [s1 ] [sc1  ]  [c   ]  [n] [s2 ] [sc2  ] [e ]\nvar<map<string, SomeClass>> children"},
+
+		grokNamedRange{"n", NamedReference, "Map", "class Map"},
+		grokNamedRange{"s2", TypeRef, "String", "type String: String"},
+		grokNamedRange{"sc2", TypeRef, "SomeClass", "class SomeClass"},
+
+		grokNamedRange{"e", NamedReference, "Empty", "constructor Empty()"},
+
+		grokNamedRange{"o", NamedReference, "new", "constructor new()"},
+	}},
+
 	grokRangeTest{"imports", true, []grokNamedRange{
 		grokNamedRange{"af1", PackageOrModule, "anotherfile", "import anotherfile"},
 		grokNamedRange{"af2", PackageOrModule, "anotherfile", "import anotherfile"},
