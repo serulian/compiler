@@ -112,6 +112,10 @@ var grokRangeTests = []grokRangeTest{
 	grokRangeTest{"brokenimport", false, []grokNamedRange{}},
 	grokRangeTest{"invalidtyperef", false, []grokNamedRange{}},
 
+	grokRangeTest{"webidl", true, []grokNamedRange{
+		grokNamedRange{"si", TypeRef, "SomeInterface", "interface SomeInterface"},
+	}},
+
 	grokRangeTest{"syntaxerror", false, []grokNamedRange{
 		grokNamedRange{"f", NamedReference, "foobars", "foobars int"},
 	}},
@@ -174,6 +178,10 @@ func TestGrokRange(t *testing.T) {
 						continue
 					}
 
+					if !assert.True(t, len(ri.SourceLocations) > 0, "Missing source locations on range %s", commentedRange.name) {
+						continue
+					}
+
 				case PackageOrModule:
 					if !assert.Equal(t, ri.PackageOrModule, expectedRange.metadata, "Range metadata mismatch on range %s", commentedRange.name) {
 						continue
@@ -181,6 +189,10 @@ func TestGrokRange(t *testing.T) {
 
 				case LocalValue:
 					if !assert.Equal(t, ri.LocalName, expectedRange.metadata, "Range metadata mismatch on range %s", commentedRange.name) {
+						continue
+					}
+
+					if !assert.True(t, len(ri.SourceLocations) > 0, "Missing source locations on range %s", commentedRange.name) {
 						continue
 					}
 

@@ -19,9 +19,9 @@ func (gh Handle) checkRangeUnderTypeReference(node compilergraph.GraphNode, sal 
 		unresolvedTypeRef := gh.scopeResult.Graph.SourceGraph().GetTypeRef(parentRef)
 		resolvedTypeRef, _ := gh.scopeResult.Graph.ResolveSRGTypeRef(unresolvedTypeRef)
 		return RangeInformation{
-			Kind:              TypeRef,
-			SourceAndLocation: sal,
-			TypeReference:     resolvedTypeRef,
+			Kind:            TypeRef,
+			SourceLocations: getSALsForTypeRef(resolvedTypeRef),
+			TypeReference:   resolvedTypeRef,
 		}, nil
 	}
 
@@ -38,8 +38,7 @@ func (gh Handle) checkRangeUnderTypeReference(node compilergraph.GraphNode, sal 
 
 	// Otherwise, return not found.
 	return RangeInformation{
-		Kind:              NotFound,
-		SourceAndLocation: sal,
+		Kind: NotFound,
 	}, nil
 }
 
@@ -48,16 +47,15 @@ func (gh Handle) rangeForLocalName(localName string, node compilergraph.GraphNod
 	if hasScope {
 		referencedType := scopeInfo.ResolvedTypeRef(gh.scopeResult.Graph.TypeGraph())
 		return RangeInformation{
-			Kind:              LocalValue,
-			SourceAndLocation: sal,
-			LocalName:         localName,
-			TypeReference:     referencedType,
+			Kind:            LocalValue,
+			SourceLocations: getSALsForNode(node),
+			LocalName:       localName,
+			TypeReference:   referencedType,
 		}, nil
 	}
 
 	return RangeInformation{
-		Kind:              NotFound,
-		SourceAndLocation: sal,
+		Kind: NotFound,
 	}, nil
 }
 
@@ -68,8 +66,7 @@ func (gh Handle) LookupLocation(sal compilercommon.SourceAndLocation) (RangeInfo
 	node, found := sourceGraph.FindNodeForLocation(sal)
 	if !found {
 		return RangeInformation{
-			Kind:              NotFound,
-			SourceAndLocation: sal,
+			Kind: NotFound,
 		}, nil
 	}
 
@@ -77,10 +74,11 @@ func (gh Handle) LookupLocation(sal compilercommon.SourceAndLocation) (RangeInfo
 	switch node.Kind() {
 	// Import.
 	case parser.NodeTypeImport:
+		importInfo := sourceGraph.GetImport(node)
 		return RangeInformation{
-			Kind:              PackageOrModule,
-			SourceAndLocation: sal,
-			PackageOrModule:   sourceGraph.GetImport(node).Source(),
+			Kind:            PackageOrModule,
+			SourceLocations: getSALs(importInfo),
+			PackageOrModule: importInfo.Source(),
 		}, nil
 
 	case parser.NodeTypeImportPackage:
@@ -92,10 +90,10 @@ func (gh Handle) LookupLocation(sal compilercommon.SourceAndLocation) (RangeInfo
 			typeOrMember, exists := gh.scopeResult.Graph.TypeGraph().GetTypeOrMemberForSourceNode(srgTypeOrMember.GraphNode)
 			if exists {
 				return RangeInformation{
-					Kind:              NamedReference,
-					SourceAndLocation: sal,
-					NamedReference:    gh.scopeResult.Graph.ReferencedNameForTypeOrMember(typeOrMember),
-					TypeReference:     gh.scopeResult.Graph.TypeGraph().VoidTypeReference(),
+					Kind:            NamedReference,
+					SourceLocations: getSALs(typeOrMember),
+					NamedReference:  gh.scopeResult.Graph.ReferencedNameForTypeOrMember(typeOrMember),
+					TypeReference:   gh.scopeResult.Graph.TypeGraph().VoidTypeReference(),
 				}, nil
 			}
 		}
@@ -104,7 +102,7 @@ func (gh Handle) LookupLocation(sal compilercommon.SourceAndLocation) (RangeInfo
 		subsource, _ := packageImport.Subsource()
 		return RangeInformation{
 			Kind:                   UnresolvedTypeOrMember,
-			SourceAndLocation:      sal,
+			SourceLocations:        getSALs(packageImport),
 			UnresolvedTypeOrMember: subsource,
 		}, nil
 
@@ -116,9 +114,9 @@ func (gh Handle) LookupLocation(sal compilercommon.SourceAndLocation) (RangeInfo
 		unresolvedTypeRef := sourceGraph.GetTypeRef(node)
 		resolvedTypeRef, _ := gh.scopeResult.Graph.ResolveSRGTypeRef(unresolvedTypeRef)
 		return RangeInformation{
-			Kind:              TypeRef,
-			SourceAndLocation: sal,
-			TypeReference:     resolvedTypeRef,
+			Kind:            TypeRef,
+			SourceLocations: getSALsForTypeRef(resolvedTypeRef),
+			TypeReference:   resolvedTypeRef,
 		}, nil
 
 	// Types.
@@ -139,10 +137,10 @@ func (gh Handle) LookupLocation(sal compilercommon.SourceAndLocation) (RangeInfo
 		referencedName := gh.scopeResult.Graph.ReferencedNameForNamedScope(srgType.AsNamedScope())
 
 		return RangeInformation{
-			Kind:              NamedReference,
-			SourceAndLocation: sal,
-			NamedReference:    referencedName,
-			TypeReference:     gh.scopeResult.Graph.TypeGraph().VoidTypeReference(),
+			Kind:            NamedReference,
+			SourceLocations: getSALs(srgType),
+			NamedReference:  referencedName,
+			TypeReference:   gh.scopeResult.Graph.TypeGraph().VoidTypeReference(),
 		}, nil
 
 	// Members.
@@ -166,10 +164,10 @@ func (gh Handle) LookupLocation(sal compilercommon.SourceAndLocation) (RangeInfo
 		referencedName := gh.scopeResult.Graph.ReferencedNameForNamedScope(srgMember.AsNamedScope())
 
 		return RangeInformation{
-			Kind:              NamedReference,
-			SourceAndLocation: sal,
-			NamedReference:    referencedName,
-			TypeReference:     gh.scopeResult.Graph.TypeGraph().VoidTypeReference(),
+			Kind:            NamedReference,
+			SourceLocations: getSALs(srgMember),
+			NamedReference:  referencedName,
+			TypeReference:   gh.scopeResult.Graph.TypeGraph().VoidTypeReference(),
 		}, nil
 
 	// Parameters.
@@ -178,10 +176,10 @@ func (gh Handle) LookupLocation(sal compilercommon.SourceAndLocation) (RangeInfo
 		referencedName := gh.scopeResult.Graph.ReferencedNameForNamedScope(srgParameter.AsNamedScope())
 
 		return RangeInformation{
-			Kind:              NamedReference,
-			SourceAndLocation: sal,
-			NamedReference:    referencedName,
-			TypeReference:     gh.scopeResult.Graph.TypeGraph().VoidTypeReference(),
+			Kind:            NamedReference,
+			SourceLocations: getSALs(srgParameter),
+			NamedReference:  referencedName,
+			TypeReference:   gh.scopeResult.Graph.TypeGraph().VoidTypeReference(),
 		}, nil
 
 	// Sml.
@@ -192,8 +190,7 @@ func (gh Handle) LookupLocation(sal compilercommon.SourceAndLocation) (RangeInfo
 		parentScopeInfo, hasParentScope := gh.scopeResult.Graph.GetScope(parentExpression)
 		if !hasParentScope {
 			return RangeInformation{
-				Kind:              NotFound,
-				SourceAndLocation: sal,
+				Kind: NotFound,
 			}, nil
 		}
 
@@ -207,18 +204,17 @@ func (gh Handle) LookupLocation(sal compilercommon.SourceAndLocation) (RangeInfo
 			referencedName, hasReferencedName := gh.scopeResult.Graph.GetReferencedName(attributeScopeValue)
 			if hasReferencedName {
 				return RangeInformation{
-					Kind:              NamedReference,
-					SourceAndLocation: sal,
-					NamedReference:    referencedName,
-					TypeReference:     attributeScopeValue.ResolvedTypeRef(gh.scopeResult.Graph.TypeGraph()),
+					Kind:            NamedReference,
+					SourceLocations: getSALs(referencedName),
+					NamedReference:  referencedName,
+					TypeReference:   attributeScopeValue.ResolvedTypeRef(gh.scopeResult.Graph.TypeGraph()),
 				}, nil
 			}
 		}
 
 		return RangeInformation{
-			Kind:              Literal,
-			SourceAndLocation: sal,
-			LiteralValue:      fmt.Sprintf("'%s'", attributeName),
+			Kind:         Literal,
+			LiteralValue: fmt.Sprintf("'%s'", attributeName),
 		}, nil
 
 	// Literals.
@@ -230,17 +226,15 @@ func (gh Handle) LookupLocation(sal compilercommon.SourceAndLocation) (RangeInfo
 
 	case parser.NodeBooleanLiteralExpression:
 		return RangeInformation{
-			Kind:              Literal,
-			SourceAndLocation: sal,
-			LiteralValue:      node.Get(parser.NodeBooleanLiteralExpressionValue), // Literals share the same predicate value.
+			Kind:         Literal,
+			LiteralValue: node.Get(parser.NodeBooleanLiteralExpressionValue), // Literals share the same predicate value.
 		}, nil
 
 	// Keywords.
 	case parser.NodeTypeVoid:
 		return RangeInformation{
-			Kind:              Keyword,
-			SourceAndLocation: sal,
-			Keyword:           "void",
+			Kind:    Keyword,
+			Keyword: "void",
 		}, nil
 
 	case parser.NodeValLiteralExpression:
@@ -258,16 +252,15 @@ func (gh Handle) LookupLocation(sal compilercommon.SourceAndLocation) (RangeInfo
 		if hasScope {
 			referencedType := scopeInfo.AssignableTypeRef(gh.scopeResult.Graph.TypeGraph())
 			return RangeInformation{
-				Kind:              LocalValue,
-				SourceAndLocation: sal,
-				LocalName:         node.Get(parser.NodeNamedValueName),
-				TypeReference:     referencedType,
+				Kind:            LocalValue,
+				SourceLocations: getSALsForNode(node),
+				LocalName:       node.Get(parser.NodeNamedValueName),
+				TypeReference:   referencedType,
 			}, nil
 		}
 
 		return RangeInformation{
-			Kind:              NotFound,
-			SourceAndLocation: sal,
+			Kind: NotFound,
 		}, nil
 
 	// Default scoped items.
@@ -278,10 +271,10 @@ func (gh Handle) LookupLocation(sal compilercommon.SourceAndLocation) (RangeInfo
 			referencedName, hasReferencedName := gh.scopeResult.Graph.GetReferencedName(scopeInfo)
 			if hasReferencedName {
 				return RangeInformation{
-					Kind:              NamedReference,
-					SourceAndLocation: sal,
-					NamedReference:    referencedName,
-					TypeReference:     scopeInfo.ResolvedTypeRef(gh.scopeResult.Graph.TypeGraph()),
+					Kind:            NamedReference,
+					SourceLocations: getSALs(referencedName),
+					NamedReference:  referencedName,
+					TypeReference:   scopeInfo.ResolvedTypeRef(gh.scopeResult.Graph.TypeGraph()),
 				}, nil
 			}
 		}

@@ -52,8 +52,8 @@ type RangeInformation struct {
 	// Kind indicates the kind of the range found (if not found, is `NotFound`).
 	Kind RangeKind
 
-	// SourceAndLocation contains the location of the source file in which this range is found.
-	SourceAndLocation compilercommon.SourceAndLocation
+	// SourceLocations contains the location(s) of the source file in which this range is found. May be empty.
+	SourceLocations []compilercommon.SourceAndLocation
 
 	// If the range is a Keyword, the keyword.
 	Keyword string
@@ -136,9 +136,6 @@ type CompletionInformation struct {
 	// ActivationString contains the string used to activate the completion. May be empty.
 	ActivationString string
 
-	// SourceAndLocation contains the location of the source file in which the completion occurred.
-	SourceAndLocation compilercommon.SourceAndLocation
-
 	// Completions are the completions found, if any.
 	Completions []Completion
 }
@@ -173,9 +170,8 @@ type Completion struct {
 	// type, will be void.
 	TypeReference typegraph.TypeReference
 
-	// SourceAndLocation contains the location of the source file in which this
-	// completion is found. Will be nil if no valid location applies.
-	SourceAndLocation *compilercommon.SourceAndLocation
+	// SourceLocations contains the location(s) of the source file in which this completion's item is found. May be empty.
+	SourceLocations []compilercommon.SourceAndLocation
 
 	// If the completion is a member, the member.
 	Member *typegraph.TGMember
@@ -210,9 +206,8 @@ type Symbol struct {
 	// IsExported returns whether the symbol is exported.
 	IsExported bool
 
-	// SourceAndLocation contains the location of the source file in which this
-	// symbol is found. Will be nil if no valid location applies.
-	SourceAndLocation *compilercommon.SourceAndLocation
+	// SourceLocations contains the location(s) of the source file in which this symbol is found. May be empty.
+	SourceLocations []compilercommon.SourceAndLocation
 
 	// Score is the score for this symbol under the query.
 	Score float64
