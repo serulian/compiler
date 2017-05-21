@@ -312,16 +312,15 @@ func (tn TGTypeDecl) Documentation() (string, bool) {
 	return tn.GraphNode.TryGet(NodePredicateDocumentation)
 }
 
+// SourceLocations returns all the source locations for the source node for this type, if any.
+func (tn TGTypeDecl) SourceLocations() []compilercommon.SourceAndLocation {
+	return getSourceLocations(tn)
+}
+
 // SourceLocation returns the source and location for the source node for this
 // type, if any.
 func (tn TGTypeDecl) SourceLocation() (compilercommon.SourceAndLocation, bool) {
-	sourceRune, hasSourceRune := tn.GraphNode.TryGetValue(NodePredicateSourceRune)
-	if !hasSourceRune {
-		return compilercommon.SourceAndLocation{}, false
-	}
-
-	path := tn.ParentModule().Path()
-	return compilercommon.NewSourceAndLocation(compilercommon.InputSource(path), sourceRune.Int()), true
+	return getSourceLocation(tn)
 }
 
 // IsAccessibleTo returns whether this type is accessible to the module with the given source path.

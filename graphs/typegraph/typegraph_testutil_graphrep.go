@@ -89,7 +89,7 @@ func (tg *TypeGraph) GetFilteredJSONForm(pathFilters []string, skipNodeKinds []c
 
 				// Normalize the member type and constraints into human-readable strings.
 				memberType := tg.AnyTypeReference().Build(sig.GetMemberType()).(TypeReference).String()
-				sig.MemberType = &memberType
+				sig.MemberType = memberType
 
 				genericTypes := make([]string, len(sig.GetGenericConstraints()))
 				for index, constraint := range sig.GetGenericConstraints() {

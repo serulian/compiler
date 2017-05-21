@@ -14,6 +14,7 @@ import (
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/compilerutil"
+	"github.com/serulian/compiler/graphs/typegraph/proto"
 	"github.com/serulian/compiler/packageloader"
 )
 
@@ -121,11 +122,11 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 			}
 
 			return &MemberBuilder{
-				modifier:   modifier,
-				parent:     parent,
-				tdg:        typeGraph,
-				isOperator: isOperator,
-				sourceRune: -1,
+				modifier:        modifier,
+				parent:          parent,
+				tdg:             typeGraph,
+				isOperator:      isOperator,
+				sourceLocations: []proto.SourceLocation{},
 			}
 		}, issueReporterImpl{typeGraph, modifier}, typeGraph)
 		modifier.Apply()

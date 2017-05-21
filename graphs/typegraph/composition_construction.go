@@ -9,6 +9,7 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/graphs/typegraph/proto"
 )
 
 var _ = fmt.Printf
@@ -78,11 +79,11 @@ func (p typeCompositionProcessor) addCompositionField(agent TGAgentReference, me
 
 	// Add the composition field to the type.
 	builder := &MemberBuilder{
-		tdg:        p.tdg,
-		modifier:   p.modifier,
-		parent:     p.composingType,
-		isOperator: false,
-		sourceRune: -1,
+		tdg:             p.tdg,
+		modifier:        p.modifier,
+		parent:          p.composingType,
+		isOperator:      false,
+		sourceLocations: []proto.SourceLocation{},
 	}
 
 	builtMember := builder.Name(agent.CompositionName()).Define()

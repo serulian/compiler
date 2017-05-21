@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+syntax = "proto3";
+
 package proto;
 
 message MemberSig {
-   optional string MemberName = 1;
-   optional uint64 MemberKind = 2;
-   optional bool IsWritable = 3;
-   optional bool IsExported = 4;
-   optional string MemberType = 5;
+   string MemberName = 1;
+   uint64 MemberKind = 2;
+   bool IsWritable = 3;
+   bool IsExported = 4;
+   string MemberType = 5;
    repeated string GenericConstraints = 6;
 }
