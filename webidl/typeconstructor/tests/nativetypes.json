@@ -1,57 +1,64 @@
 {
-    "477b8e92b06a5a668b8c5b6b114b131a": {
-        "Key": "477b8e92b06a5a668b8c5b6b114b131a",
+    "177ec535a16a1b8f08a16b090f7052ff": {
+        "Key": "177ec535a16a1b8f08a16b090f7052ff",
         "Kind": 8,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "8|NodeType|tdg",
-            "tdg-source-declaration-rune": "44",
-            "tdg-source-module": "tests/nativetypes.webidl",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "033451db",
-            "tdg-type-name": "ISomeInterface"
-        }
-    },
-    "7b393462ebb2731596909cf543b71ccd": {
-        "Key": "7b393462ebb2731596909cf543b71ccd",
-        "Kind": 8,
-        "Children": {},
-        "Predicates": {
-            "tdg-node-kind": "8|NodeType|tdg",
-            "tdg-source-declaration-rune": "0",
+            "tdg-source-location": "\n\u0018tests/nativetypes.webidl|SourceLocation|tdg",
             "tdg-source-module": "tests/nativetypes.webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "bb7a61f1",
             "tdg-type-name": "Boolean"
         }
     },
-    "8b7557efb0c3b63b9efeb4b48cb57909": {
-        "Key": "8b7557efb0c3b63b9efeb4b48cb57909",
+    "28cbf52e111dc967975fa5ab4ea96b0a": {
+        "Key": "28cbf52e111dc967975fa5ab4ea96b0a",
+        "Kind": 8,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "8|NodeType|tdg",
+            "tdg-source-location": "\n\u0018tests/nativetypes.webidl\u0010\u0016|SourceLocation|tdg",
+            "tdg-source-module": "tests/nativetypes.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "2ba2d480",
+            "tdg-type-name": "Number"
+        }
+    },
+    "2eb438fe7fa5352ea96a58f6473c15ed": {
+        "Key": "2eb438fe7fa5352ea96a58f6473c15ed",
+        "Kind": 8,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "8|NodeType|tdg",
+            "tdg-source-location": "\n\u0018tests/nativetypes.webidl\u0010,|SourceLocation|tdg",
+            "tdg-source-module": "tests/nativetypes.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "033451db",
+            "tdg-type-name": "ISomeInterface"
+        }
+    },
+    "5265db9b0b2d7f57c159d12fe70151c2": {
+        "Key": "5265db9b0b2d7f57c159d12fe70151c2",
+        "Kind": 3,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-source-location": "\n\u0018tests/nativetypes.webidl|SourceLocation|tdg",
+            "tdg-source-module": "(root).webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "Boolean",
+            "tdg-type-name": "Boolean"
+        }
+    },
+    "63bc63ed7ff335ead4752396ddaa2721": {
+        "Key": "63bc63ed7ff335ead4752396ddaa2721",
         "Kind": 3,
         "Children": {
-            "75181c3279aa1c8d70fd674fa15fe681": {
+            "40bbb6757b58edd44fec2ca913b3fa27": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "75181c3279aa1c8d70fd674fa15fe681",
-                    "Kind": 9,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-exported": "true",
-                        "tdg-member-name": "SomeFunction",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cNumber\u003e(Number)",
-                        "tdg-member-signature": "\n\u000csomefunction\u0010\u0007\u0018\u0000 \u0001*\u0018function\u003cNumber\u003e(Number)",
-                        "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-declaration-rune": "113",
-                        "tdg-source-module": "(root).webidl",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
-            "a5387e24d73f863df841db2cb617397e": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "a5387e24d73f863df841db2cb617397e",
+                    "Key": "40bbb6757b58edd44fec2ca913b3fa27",
                     "Kind": 9,
                     "Children": {},
                     "Predicates": {
@@ -59,9 +66,28 @@
                         "tdg-member-name": "SomeBoolean",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "Boolean",
-                        "tdg-member-signature": "\n\u000bsomeboolean\u0010\t\u0018\u0000 \u0001*\u0007Boolean",
+                        "tdg-member-signature": "\n\u000bsomeboolean\u0010\t \u0001*\u0007Boolean",
                         "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-declaration-rune": "72",
+                        "tdg-source-location": "\n\u0018tests/nativetypes.webidl\u0010H|SourceLocation|tdg",
+                        "tdg-source-module": "(root).webidl",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "8913102d81a73d8967f84a07a440c240": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "8913102d81a73d8967f84a07a440c240",
+                    "Kind": 9,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "SomeFunction",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cNumber\u003e(Number)",
+                        "tdg-member-signature": "\n\u000csomefunction\u0010\u0007 \u0001*\u0018function\u003cNumber\u003e(Number)",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-location": "\n\u0018tests/nativetypes.webidl\u0010q|SourceLocation|tdg",
                         "tdg-source-module": "(root).webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -70,49 +96,23 @@
         },
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-declaration-rune": "44",
+            "tdg-source-location": "\n\u0018tests/nativetypes.webidl\u0010,|SourceLocation|tdg",
             "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "ISomeInterface",
             "tdg-type-name": "ISomeInterface"
         }
     },
-    "8b8714b88b6cd4cfc7e88d6273a10b92": {
-        "Key": "8b8714b88b6cd4cfc7e88d6273a10b92",
+    "e6d00743678f4e49f93946502da8cbc6": {
+        "Key": "e6d00743678f4e49f93946502da8cbc6",
         "Kind": 3,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-declaration-rune": "0",
-            "tdg-source-module": "(root).webidl",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "Boolean",
-            "tdg-type-name": "Boolean"
-        }
-    },
-    "9ffdc7713ea04e12484601538dee749d": {
-        "Key": "9ffdc7713ea04e12484601538dee749d",
-        "Kind": 3,
-        "Children": {},
-        "Predicates": {
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-declaration-rune": "22",
+            "tdg-source-location": "\n\u0018tests/nativetypes.webidl\u0010\u0016|SourceLocation|tdg",
             "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "Number",
-            "tdg-type-name": "Number"
-        }
-    },
-    "d4e3c89b9da0d75f5e2e255be635e980": {
-        "Key": "d4e3c89b9da0d75f5e2e255be635e980",
-        "Kind": 8,
-        "Children": {},
-        "Predicates": {
-            "tdg-node-kind": "8|NodeType|tdg",
-            "tdg-source-declaration-rune": "22",
-            "tdg-source-module": "tests/nativetypes.webidl",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "2ba2d480",
             "tdg-type-name": "Number"
         }
     }

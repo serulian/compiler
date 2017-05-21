@@ -1,25 +1,25 @@
 {
-    "7ae675dd360db21da1cea8b4b99e276d": {
-        "Key": "7ae675dd360db21da1cea8b4b99e276d",
+    "27515874dec669c6a01165492d32d300": {
+        "Key": "27515874dec669c6a01165492d32d300",
         "Kind": 8,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "8|NodeType|tdg",
-            "tdg-source-declaration-rune": "0",
+            "tdg-source-location": "\n!tests/collapsedinheritance.webidl|SourceLocation|tdg",
             "tdg-source-module": "tests/collapsedinheritance.webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "96f01e59",
             "tdg-type-name": "ISomeCollapsedType"
         }
     },
-    "82ec1c8475bb1f210e381e46206ec98f": {
-        "Key": "82ec1c8475bb1f210e381e46206ec98f",
+    "b8c97fd3e47f71734000dc80f7ea51e6": {
+        "Key": "b8c97fd3e47f71734000dc80f7ea51e6",
         "Kind": 3,
         "Children": {
-            "89738c422bc337a3e202b648561841e7": {
+            "8461e646c263b9a2dac6cfafb0623146": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "89738c422bc337a3e202b648561841e7",
+                    "Key": "8461e646c263b9a2dac6cfafb0623146",
                     "Kind": 9,
                     "Children": {},
                     "Predicates": {
@@ -27,9 +27,9 @@
                         "tdg-member-name": "First",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "any",
-                        "tdg-member-signature": "\n\u0005first\u0010\t\u0018\u0000 \u0001*\u0003any",
+                        "tdg-member-signature": "\n\u0005first\u0010\t \u0001*\u0003any",
                         "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-declaration-rune": "32",
+                        "tdg-source-location": "\n!tests/collapsedinheritance.webidl\u0010 |SourceLocation|tdg",
                         "tdg-source-module": "(root).webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -39,20 +39,20 @@
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
             "tdg-parent-type": "IBaseType",
-            "tdg-source-declaration-rune": "0",
+            "tdg-source-location": "\n'tests/collapsedinheritance/other.webidl\u0010\u0019|SourceLocation|tdg",
             "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "ISomeCollapsedType",
             "tdg-type-name": "ISomeCollapsedType"
         }
     },
-    "a02fb8bb6be6a1bb432b6d382d79a4f7": {
-        "Key": "a02fb8bb6be6a1bb432b6d382d79a4f7",
+    "cdf28ec2454a43613e8235fb0eb0e035": {
+        "Key": "cdf28ec2454a43613e8235fb0eb0e035",
         "Kind": 3,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-declaration-rune": "0",
+            "tdg-source-location": "\n'tests/collapsedinheritance/other.webidl|SourceLocation|tdg",
             "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "IBaseType",

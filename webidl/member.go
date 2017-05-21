@@ -8,10 +8,11 @@ import (
 	"bytes"
 	"encoding/hex"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/webidl/parser"
 
-	"github.com/minio/blake2b-simd"
+	blake2b "github.com/minio/blake2b-simd"
 )
 
 type MemberSpecialization string
@@ -164,4 +165,9 @@ func (i *IRGMember) Signature() string {
 
 	bytes := blake2b.Sum256(buffer.Bytes())
 	return hex.EncodeToString(bytes[:])
+}
+
+// SourceLocations returns the location of the member in source.
+func (i *IRGMember) SourceLocation() compilercommon.SourceAndLocation {
+	return salForNode(i.GraphNode)
 }
