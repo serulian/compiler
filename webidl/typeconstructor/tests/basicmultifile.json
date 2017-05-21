@@ -1,12 +1,25 @@
 {
-    "62a9ba9b023086e96b324bee1c0a922c": {
-        "Key": "62a9ba9b023086e96b324bee1c0a922c",
+    "67395327cadd4afe177edfe4f0901246": {
+        "Key": "67395327cadd4afe177edfe4f0901246",
+        "Kind": 8,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "8|NodeType|tdg",
+            "tdg-source-location": "\n\u001btests/basicmultifile.webidl|SourceLocation|tdg",
+            "tdg-source-module": "tests/basicmultifile.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "e4f645a7",
+            "tdg-type-name": "SomeInterface"
+        }
+    },
+    "6e381a92190056adb4f21cfd8e17aab9": {
+        "Key": "6e381a92190056adb4f21cfd8e17aab9",
         "Kind": 3,
         "Children": {
-            "0c19d9f17924c4b75f56d1a5c001f642": {
+            "035db5d69c3f187ff68e328e6aaddc2e": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "0c19d9f17924c4b75f56d1a5c001f642",
+                    "Key": "035db5d69c3f187ff68e328e6aaddc2e",
                     "Kind": 9,
                     "Children": {},
                     "Predicates": {
@@ -14,9 +27,9 @@
                         "tdg-member-name": "CoolThing",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "AnotherInterface",
-                        "tdg-member-signature": "\n\tcoolthing\u0010\t\u0018\u0000 \u0001*\u0010AnotherInterface",
+                        "tdg-member-signature": "\n\tcoolthing\u0010\t \u0001*\u0010AnotherInterface",
                         "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-declaration-rune": "27",
+                        "tdg-source-location": "\n\u001btests/basicmultifile.webidl\u0010\u001b|SourceLocation|tdg",
                         "tdg-source-module": "(root).webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -25,34 +38,21 @@
         },
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-declaration-rune": "0",
+            "tdg-source-location": "\n\u001btests/basicmultifile.webidl|SourceLocation|tdg",
             "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "SomeInterface",
             "tdg-type-name": "SomeInterface"
         }
     },
-    "84aad88f3f70bcc4477cb163aac27c3a": {
-        "Key": "84aad88f3f70bcc4477cb163aac27c3a",
-        "Kind": 8,
-        "Children": {},
-        "Predicates": {
-            "tdg-node-kind": "8|NodeType|tdg",
-            "tdg-source-declaration-rune": "0",
-            "tdg-source-module": "tests/basicmultifile.webidl",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "e4f645a7",
-            "tdg-type-name": "SomeInterface"
-        }
-    },
-    "92875d4a55408c869c8e866b8e75f823": {
-        "Key": "92875d4a55408c869c8e866b8e75f823",
+    "f99a75fedee5310fa3643d8408d2189c": {
+        "Key": "f99a75fedee5310fa3643d8408d2189c",
         "Kind": 3,
         "Children": {
-            "eb31777acab63425911e3f9d05959f55": {
+            "c9d470e1014143b55ce6eb4bd7e35b14": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "eb31777acab63425911e3f9d05959f55",
+                    "Key": "c9d470e1014143b55ce6eb4bd7e35b14",
                     "Kind": 9,
                     "Children": {},
                     "Predicates": {
@@ -60,9 +60,9 @@
                         "tdg-member-name": "DoSomething",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cvoid\u003e",
-                        "tdg-member-signature": "\n\u000bdosomething\u0010\u0007\u0018\u0000 \u0001*\u000efunction\u003cvoid\u003e",
+                        "tdg-member-signature": "\n\u000bdosomething\u0010\u0007 \u0001*\u000efunction\u003cvoid\u003e",
                         "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-declaration-rune": "30",
+                        "tdg-source-location": "\n\u0026tests/basicmultifile/multifile1.webidl\u0010\u001e|SourceLocation|tdg",
                         "tdg-source-module": "(root).webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -71,7 +71,7 @@
         },
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-declaration-rune": "0",
+            "tdg-source-location": "\n\u0026tests/basicmultifile/multifile1.webidl|SourceLocation|tdg",
             "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "AnotherInterface",

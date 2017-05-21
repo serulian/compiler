@@ -17,6 +17,7 @@ type importsTest struct {
 
 type expectedImport struct {
 	source           string
+	isModule         bool
 	expectedPackages []expectedPackage
 }
 
@@ -31,12 +32,14 @@ var importsTests = []importsTest{
 		[]expectedImport{
 			expectedImport{
 				"anothermodule",
+				true,
 				[]expectedPackage{
 					expectedPackage{"", ""},
 				},
 			},
 			expectedImport{
 				"thirdpackage",
+				true,
 				[]expectedPackage{
 					expectedPackage{"ThirdClass", "ThirdClass"},
 					expectedPackage{"ThirdFunction", "ThirdFunction"},
@@ -63,6 +66,11 @@ func TestImports(t *testing.T) {
 
 			matchingPackages := matchingImport.PackageImports()
 			if !assert.Equal(t, len(expected.expectedPackages), len(matchingPackages), "Mismatch in expected packages for import %s under test %s: %v", expected.source, test.sourceFile, matchingPackages) {
+				continue
+			}
+
+			_, hasSAL := matchingImport.SourceLocation()
+			if !assert.Equal(t, expected.isModule, hasSAL, "Mismatch in SourceLocation for import %s under test %s", expected.source, test.sourceFile) {
 				continue
 			}
 

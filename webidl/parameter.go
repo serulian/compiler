@@ -5,6 +5,7 @@
 package webidl
 
 import (
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/webidl/parser"
 )
@@ -29,4 +30,9 @@ func (i *IRGParameter) IsOptional() bool {
 // DeclaredType returns the declared type of the parameter.
 func (i *IRGParameter) DeclaredType() string {
 	return i.GraphNode.Get(parser.NodePredicateParameterType)
+}
+
+// SourceLocations returns the location of the parameter in source.
+func (i *IRGParameter) SourceLocation() compilercommon.SourceAndLocation {
+	return salForNode(i.GraphNode)
 }

@@ -1,0 +1,6 @@
+from webidl`something` import SomeInterface
+
+function<void> DoSomething(something any) {
+    ///         [si         ]
+    (something.(SomeInterface))
+}

@@ -851,7 +851,7 @@ func (tr TypeReference) adjustedMemberSignature(node compilergraph.GraphNode) st
 	}
 
 	adjustedType := memberType.Value()
-	memberSig.MemberType = &adjustedType
+	memberSig.MemberType = adjustedType
 	return memberSig.Value()
 }
 

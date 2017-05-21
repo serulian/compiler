@@ -5,6 +5,7 @@
 package webidl
 
 import (
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/webidl/parser"
 )
@@ -38,4 +39,9 @@ func (i *IRGAnnotation) Parameters() []IRGParameter {
 	}
 
 	return parameters
+}
+
+// SourceLocations returns the location of the parameter in source.
+func (i *IRGAnnotation) SourceLocation() compilercommon.SourceAndLocation {
+	return salForNode(i.GraphNode)
 }

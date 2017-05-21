@@ -1,25 +1,25 @@
 {
-    "246b9f74a42ab414d49c72275dfe7491": {
-        "Key": "246b9f74a42ab414d49c72275dfe7491",
+    "2a3d79b81fbe034c27d8e4ba587d5402": {
+        "Key": "2a3d79b81fbe034c27d8e4ba587d5402",
         "Kind": 3,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-declaration-rune": "0",
+            "tdg-source-location": "\n\u001atests/optionalparam.webidl|SourceLocation|tdg",
             "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "Foo",
             "tdg-type-name": "Foo"
         }
     },
-    "61caea0440f01f6edb630155be9fa5b2": {
-        "Key": "61caea0440f01f6edb630155be9fa5b2",
+    "5d7d460ca5de1cf6d7577fffd03fa8fd": {
+        "Key": "5d7d460ca5de1cf6d7577fffd03fa8fd",
         "Kind": 3,
         "Children": {
-            "6e936958cf510b432d27b6c84095d4d8": {
+            "f4ae8c5930eec5bebf8300601db49a40": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "6e936958cf510b432d27b6c84095d4d8",
+                    "Key": "f4ae8c5930eec5bebf8300601db49a40",
                     "Kind": 9,
                     "Children": {},
                     "Predicates": {
@@ -27,9 +27,9 @@
                         "tdg-member-name": "SomeFunction",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cvoid\u003e(Foo, Foo, Foo?, Foo?)",
-                        "tdg-member-signature": "\n\u000csomefunction\u0010\u0007\u0018\u0000 \u0001*$function\u003cvoid\u003e(Foo, Foo, Foo?, Foo?)",
+                        "tdg-member-signature": "\n\u000csomefunction\u0010\u0007 \u0001*$function\u003cvoid\u003e(Foo, Foo, Foo?, Foo?)",
                         "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-declaration-rune": "46",
+                        "tdg-source-location": "\n\u001atests/optionalparam.webidl\u0010.|SourceLocation|tdg",
                         "tdg-source-module": "(root).webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -38,37 +38,37 @@
         },
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-declaration-rune": "19",
+            "tdg-source-location": "\n\u001atests/optionalparam.webidl\u0010\u0013|SourceLocation|tdg",
             "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "SomeInterface",
             "tdg-type-name": "SomeInterface"
         }
     },
-    "8f8cb8cb48f14b4d92242289eb26db5e": {
-        "Key": "8f8cb8cb48f14b4d92242289eb26db5e",
+    "6d17769d6c01e32e21aa1306eb68d2bc": {
+        "Key": "6d17769d6c01e32e21aa1306eb68d2bc",
         "Kind": 8,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "8|NodeType|tdg",
-            "tdg-source-declaration-rune": "19",
-            "tdg-source-module": "tests/optionalparam.webidl",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "8bf7577c",
-            "tdg-type-name": "SomeInterface"
-        }
-    },
-    "dd345476ed30504e8a5d61ddd68212da": {
-        "Key": "dd345476ed30504e8a5d61ddd68212da",
-        "Kind": 8,
-        "Children": {},
-        "Predicates": {
-            "tdg-node-kind": "8|NodeType|tdg",
-            "tdg-source-declaration-rune": "0",
+            "tdg-source-location": "\n\u001atests/optionalparam.webidl|SourceLocation|tdg",
             "tdg-source-module": "tests/optionalparam.webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "6757ffcf",
             "tdg-type-name": "Foo"
+        }
+    },
+    "daa5aa16e8f470292c74a691dc4f69bd": {
+        "Key": "daa5aa16e8f470292c74a691dc4f69bd",
+        "Kind": 8,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "8|NodeType|tdg",
+            "tdg-source-location": "\n\u001atests/optionalparam.webidl\u0010\u0013|SourceLocation|tdg",
+            "tdg-source-module": "tests/optionalparam.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "8bf7577c",
+            "tdg-type-name": "SomeInterface"
         }
     }
 }

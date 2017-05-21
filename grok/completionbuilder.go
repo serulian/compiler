@@ -23,10 +23,11 @@ type completionBuilder struct {
 
 func (cb *completionBuilder) addSnippet(title string, code string) *completionBuilder {
 	return cb.addCompletion(Completion{
-		Kind:          SnippetCompletion,
-		Title:         title,
-		Code:          code,
-		TypeReference: cb.handle.scopeResult.Graph.TypeGraph().VoidTypeReference(),
+		Kind:            SnippetCompletion,
+		Title:           title,
+		Code:            code,
+		SourceLocations: []compilercommon.SourceAndLocation{},
+		TypeReference:   cb.handle.scopeResult.Graph.TypeGraph().VoidTypeReference(),
 	})
 }
 
@@ -42,13 +43,13 @@ func (cb *completionBuilder) addMember(member typegraph.TGMember, lookupType typ
 	docString, _ := member.Documentation()
 
 	return cb.addCompletion(Completion{
-		Kind:              MemberCompletion,
-		Title:             member.Name(),
-		Code:              member.Name(),
-		Documentation:     docString,
-		TypeReference:     member.MemberType().TransformUnder(lookupType),
-		SourceAndLocation: getSAL(member),
-		Member:            &member,
+		Kind:            MemberCompletion,
+		Title:           member.Name(),
+		Code:            member.Name(),
+		Documentation:   docString,
+		TypeReference:   member.MemberType().TransformUnder(lookupType),
+		SourceLocations: getSALs(member),
+		Member:          &member,
 	})
 }
 
@@ -56,13 +57,13 @@ func (cb *completionBuilder) addType(typedef typegraph.TGTypeDecl) *completionBu
 	docString, _ := typedef.Documentation()
 
 	return cb.addCompletion(Completion{
-		Kind:              TypeCompletion,
-		Title:             typedef.Name(),
-		Code:              typedef.Name(),
-		Documentation:     docString,
-		TypeReference:     cb.handle.scopeResult.Graph.TypeGraph().VoidTypeReference(),
-		SourceAndLocation: getSAL(typedef),
-		Type:              &typedef,
+		Kind:            TypeCompletion,
+		Title:           typedef.Name(),
+		Code:            typedef.Name(),
+		Documentation:   docString,
+		TypeReference:   cb.handle.scopeResult.Graph.TypeGraph().VoidTypeReference(),
+		SourceLocations: getSALs(typedef),
+		Type:            &typedef,
 	})
 }
 
@@ -94,20 +95,22 @@ func (cb *completionBuilder) completionKindForNamedScope(namedScope srg.SRGNamed
 func (cb *completionBuilder) addImport(packageName string, sourceKind string) *completionBuilder {
 	if sourceKind == "" {
 		return cb.addCompletion(Completion{
-			Kind:          ImportCompletion,
-			Title:         packageName,
-			Code:          packageName,
-			Documentation: "",
-			TypeReference: cb.handle.scopeResult.Graph.TypeGraph().VoidTypeReference(),
+			Kind:            ImportCompletion,
+			Title:           packageName,
+			Code:            packageName,
+			Documentation:   "",
+			SourceLocations: []compilercommon.SourceAndLocation{},
+			TypeReference:   cb.handle.scopeResult.Graph.TypeGraph().VoidTypeReference(),
 		})
 	}
 
 	return cb.addCompletion(Completion{
-		Kind:          ImportCompletion,
-		Title:         fmt.Sprintf("%s (%s)", packageName, sourceKind),
-		Code:          fmt.Sprintf("%s`%s`", sourceKind, packageName),
-		Documentation: "",
-		TypeReference: cb.handle.scopeResult.Graph.TypeGraph().VoidTypeReference(),
+		Kind:            ImportCompletion,
+		Title:           fmt.Sprintf("%s (%s)", packageName, sourceKind),
+		Code:            fmt.Sprintf("%s`%s`", sourceKind, packageName),
+		Documentation:   "",
+		SourceLocations: []compilercommon.SourceAndLocation{},
+		TypeReference:   cb.handle.scopeResult.Graph.TypeGraph().VoidTypeReference(),
 	})
 }
 
@@ -151,12 +154,12 @@ func (cb *completionBuilder) addScopeOrImport(scopeOrImport srg.SRGContextScopeN
 	}
 
 	return cb.addCompletion(Completion{
-		Kind:              cb.completionKindForNamedScope(namedScope),
-		Title:             namedScope.Name(),
-		Code:              scopeOrImport.LocalName(),
-		Documentation:     docString,
-		TypeReference:     typeref,
-		SourceAndLocation: getSAL(namedScope),
+		Kind:            cb.completionKindForNamedScope(namedScope),
+		Title:           namedScope.Name(),
+		Code:            scopeOrImport.LocalName(),
+		Documentation:   docString,
+		TypeReference:   typeref,
+		SourceLocations: getSALs(namedScope),
 	})
 }
 
@@ -166,5 +169,5 @@ func (cb *completionBuilder) addCompletion(completion Completion) *completionBui
 }
 
 func (cb *completionBuilder) build() CompletionInformation {
-	return CompletionInformation{cb.activationString, cb.sal, cb.completions}
+	return CompletionInformation{cb.activationString, cb.completions}
 }

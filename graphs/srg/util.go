@@ -21,6 +21,13 @@ func salForIterator(iterator compilergraph.NodeIterator) compilercommon.SourceAn
 		iterator.GetPredicate(parser.NodePredicateStartRune).Int())
 }
 
+// SourceLocationForNode returns a SourceAndLocation for the given graph node.
+func SourceLocationForNode(node compilergraph.GraphNode) compilercommon.SourceAndLocation {
+	return compilercommon.NewSourceAndLocation(
+		compilercommon.InputSource(node.Get(parser.NodePredicateSource)),
+		node.GetValue(parser.NodePredicateStartRune).Int())
+}
+
 // salForNode returns a SourceAndLocation for the given graph node.
 func salForNode(node compilergraph.GraphNode) compilercommon.SourceAndLocation {
 	return compilercommon.NewSourceAndLocation(

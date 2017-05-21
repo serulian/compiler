@@ -97,34 +97,34 @@ func (gh Handle) symbolForMember(member typegraph.TGMember, query string) Symbol
 	}
 
 	return Symbol{
-		Name:              member.Name(),
-		Kind:              MemberSymbol,
-		SourceAndLocation: getSAL(member),
-		Score:             gh.getSymbolScore(member, query, member.IsExported()) * modifier,
-		Member:            &member,
-		IsExported:        member.IsExported(),
+		Name:            member.Name(),
+		Kind:            MemberSymbol,
+		SourceLocations: getSALs(member),
+		Score:           gh.getSymbolScore(member, query, member.IsExported()) * modifier,
+		Member:          &member,
+		IsExported:      member.IsExported(),
 	}
 }
 
 func (gh Handle) symbolForType(typedecl typegraph.TGTypeDecl, query string) Symbol {
 	return Symbol{
-		Name:              typedecl.Name(),
-		Kind:              TypeSymbol,
-		SourceAndLocation: getSAL(typedecl),
-		Score:             gh.getSymbolScore(typedecl, query, typedecl.IsExported()),
-		Type:              &typedecl,
-		IsExported:        typedecl.IsExported(),
+		Name:            typedecl.Name(),
+		Kind:            TypeSymbol,
+		SourceLocations: getSALs(typedecl),
+		Score:           gh.getSymbolScore(typedecl, query, typedecl.IsExported()),
+		Type:            &typedecl,
+		IsExported:      typedecl.IsExported(),
 	}
 }
 
 func (gh Handle) symbolForModule(module typegraph.TGModule, query string) Symbol {
 	sal := compilercommon.NewSourceAndLocation(compilercommon.InputSource(module.Path()), 0)
 	return Symbol{
-		Name:              module.Name(),
-		Kind:              ModuleSymbol,
-		SourceAndLocation: &sal,
-		Score:             gh.getSymbolScore(module, query, true) * 0.5,
-		Module:            &module,
-		IsExported:        true,
+		Name:            module.Name(),
+		Kind:            ModuleSymbol,
+		SourceLocations: []compilercommon.SourceAndLocation{sal},
+		Score:           gh.getSymbolScore(module, query, true) * 0.5,
+		Module:          &module,
+		IsExported:      true,
 	}
 }

@@ -98,7 +98,7 @@ func computeMemberSignature(member typegraph.TGMember) memberSignature {
 	buf.WriteRune('"')
 	buf.WriteString(member.Name())
 	buf.WriteRune('|')
-	buf.WriteString(strconv.Itoa(int(*kind)))
+	buf.WriteString(strconv.Itoa(int(kind)))
 	buf.WriteRune('|')
 
 	dynamic := appendSigReference(member.MemberType(), &buf)

@@ -210,16 +210,16 @@ func (mb *moduleBuilder) Define() {
 
 // typeBuilder defines a helper type for easy construction of type definitions in the type graph.
 type typeBuilder struct {
-	modifier      compilergraph.GraphLayerModifier // The modifier being used.
-	module        TGModule                         // The parent module.
-	name          string                           // The name of the type.
-	globalId      string                           // The global ID of the type.
-	globalAlias   string                           // The global alias of the type.
-	sourceNode    compilergraph.GraphNode          // The node for the type in the source graph.
-	sourceRune    int                              // The source rune for this type, if not -1.
-	typeKind      TypeKind                         // The kind of this type.
-	attributes    []TypeAttribute                  // The custom attributes on the type, if any.
-	documentation string                           // The documentation string for the type, if any.
+	modifier        compilergraph.GraphLayerModifier // The modifier being used.
+	module          TGModule                         // The parent module.
+	name            string                           // The name of the type.
+	globalId        string                           // The global ID of the type.
+	globalAlias     string                           // The global alias of the type.
+	sourceNode      compilergraph.GraphNode          // The node for the type in the source graph.
+	sourceLocations []proto.SourceLocation           // The source locations(s) for the type.
+	typeKind        TypeKind                         // The kind of this type.
+	attributes      []TypeAttribute                  // The custom attributes on the type, if any.
+	documentation   string                           // The documentation string for the type, if any.
 }
 
 // GlobalId sets the global ID of the type. This ID must be unique. For types that are
@@ -265,9 +265,9 @@ func (tb *typeBuilder) SourceNode(sourceNode compilergraph.GraphNode) *typeBuild
 	return tb
 }
 
-// SourceRune sets the rune position of the source node for the type in the source graph.
-func (tb *typeBuilder) SourceRune(sourceRune int) *typeBuilder {
-	tb.sourceRune = sourceRune
+// WithSourceLocation adds a source location for the type in the source graph.
+func (tb *typeBuilder) WithSourceLocation(sourceLocation compilercommon.SourceAndLocation) *typeBuilder {
+	tb.sourceLocations = append(tb.sourceLocations, proto.SourceLocation{string(sourceLocation.Source()), uint64(sourceLocation.Location().BytePosition())})
 	return tb
 }
 
@@ -297,8 +297,10 @@ func (tb *typeBuilder) Define() getGenericBuilder {
 		typeNode.Decorate(NodePredicateDocumentation, tb.documentation)
 	}
 
-	if tb.sourceRune >= 0 {
-		typeNode.DecorateWith(NodePredicateSourceRune, tb.sourceRune)
+	if len(tb.sourceLocations) > 0 {
+		for _, sl := range tb.sourceLocations {
+			typeNode.DecorateWithTagged(NodePredicateSourceLocation, &sl)
+		}
 	}
 
 	if tb.globalAlias != "" {
@@ -433,16 +435,16 @@ func (gb *genericBuilder) defineGeneric() TGGeneric {
 
 // MemberBuilder defines a helper type for easy construction of module and type members.
 type MemberBuilder struct {
-	modifier       compilergraph.GraphLayerModifier // The modifier being used.
-	tdg            *TypeGraph                       // The underlying type graph.
-	parent         TGTypeOrModule                   // The parent type or module node.
-	isOperator     bool                             // Whether the member being defined is an operator.
-	name           string                           // The name of the member.
-	sourceNode     compilergraph.GraphNode          // The node for the member in the source graph.
-	sourceRune     int                              // The rune for the source node, or -1 if none.
-	hasSourceNode  bool                             // Whether there is a source node.
-	memberGenerics []memberGeneric                  // The generics on the member.
-	documentation  string                           // The documentation string for the member, if any.
+	modifier        compilergraph.GraphLayerModifier // The modifier being used.
+	tdg             *TypeGraph                       // The underlying type graph.
+	parent          TGTypeOrModule                   // The parent type or module node.
+	isOperator      bool                             // Whether the member being defined is an operator.
+	name            string                           // The name of the member.
+	sourceNode      compilergraph.GraphNode          // The node for the member in the source graph.
+	sourceLocations []proto.SourceLocation           // The source locations(s) for the member.
+	hasSourceNode   bool                             // Whether there is a source node.
+	memberGenerics  []memberGeneric                  // The generics on the member.
+	documentation   string                           // The documentation string for the member, if any.
 }
 
 // memberGeneric holds information about a member's generic.
@@ -471,9 +473,9 @@ func (mb *MemberBuilder) SourceNode(sourceNode compilergraph.GraphNode) *MemberB
 	return mb
 }
 
-// SourceRune sets the rune position of the source for the member in the source graph.
-func (mb *MemberBuilder) SourceRune(sourceRune int) *MemberBuilder {
-	mb.sourceRune = sourceRune
+// WithSourceLocation adds a source location for the type in the source graph.
+func (mb *MemberBuilder) WithSourceLocation(sourceLocation compilercommon.SourceAndLocation) *MemberBuilder {
+	mb.sourceLocations = append(mb.sourceLocations, proto.SourceLocation{string(sourceLocation.Source()), uint64(sourceLocation.Location().BytePosition())})
 	return mb
 }
 
@@ -518,8 +520,10 @@ func (mb *MemberBuilder) Define() TGMember {
 		memberNode.Connect(NodePredicateSource, mb.sourceNode)
 	}
 
-	if mb.sourceRune >= 0 {
-		memberNode.DecorateWith(NodePredicateSourceRune, mb.sourceRune)
+	if len(mb.sourceLocations) > 0 {
+		for _, sl := range mb.sourceLocations {
+			memberNode.DecorateWithTagged(NodePredicateSourceLocation, &sl)
+		}
 	}
 
 	if mb.documentation != "" {
@@ -900,11 +904,11 @@ func (mb *MemberDecorator) decorateWithSig(sigMemberType TypeReference, generics
 	memberKind := uint64(mb.memberKind)
 
 	signature := &proto.MemberSig{
-		MemberName:         &name,
-		MemberKind:         &memberKind,
-		IsExported:         &mb.exported,
-		IsWritable:         &isWritable,
-		MemberType:         &memberTypeStr,
+		MemberName:         name,
+		MemberKind:         memberKind,
+		IsExported:         mb.exported,
+		IsWritable:         isWritable,
+		MemberType:         memberTypeStr,
 		GenericConstraints: constraintStr,
 	}
 

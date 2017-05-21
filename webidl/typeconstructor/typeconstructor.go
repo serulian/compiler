@@ -12,7 +12,6 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/webidl"
-	"github.com/serulian/compiler/webidl/parser"
 )
 
 // GetConstructor returns a TypeGraph constructor for the given IRG.
@@ -54,26 +53,27 @@ func (itc *irgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 			Name(collapsedType.Name).
 			GlobalId(collapsedType.Name).
 			SourceNode(collapsedType.RootNode).
-			SourceRune(collapsedType.Declarations[0].GraphNode.GetValue(parser.NodePredicateStartRune).Int()).
 			TypeKind(typegraph.ExternalInternalType)
 
 		if collapsedType.Serializable {
 			typeBuilder.WithAttribute(typegraph.SERIALIZABLE_ATTRIBUTE)
 		}
 
-		typeBuilder.Define()
-
 		// For each declaration that contributed to the type, define an alias that will
 		// point to the type.
 		for _, declaration := range collapsedType.Declarations {
+			typeBuilder.WithSourceLocation(declaration.SourceLocation())
+
 			builder(declaration.Module().Node()).
 				Name(declaration.Name()).
 				GlobalId(webidl.GetUniqueId(declaration.GraphNode)).
 				SourceNode(declaration.GraphNode).
-				SourceRune(declaration.GraphNode.GetValue(parser.NodePredicateStartRune).Int()).
 				TypeKind(typegraph.AliasType).
+				WithSourceLocation(declaration.SourceLocation()).
 				Define()
 		}
+
+		typeBuilder.Define()
 	})
 }
 
@@ -122,7 +122,7 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 			builder(collapsedType.RootNode, false).
 				Name("new").
 				SourceNode(collapsedType.ConstructorAnnotations[0].GraphNode).
-				SourceRune(collapsedType.ConstructorAnnotations[0].GraphNode.GetValue(parser.NodePredicateStartRune).Int()).
+				WithSourceLocation(collapsedType.ConstructorAnnotations[0].SourceLocation()).
 				Define()
 		}
 
@@ -147,7 +147,7 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 					builder(collapsedType.RootNode, true).
 						Name(opName).
 						SourceNode(nativeOp.GraphNode).
-						SourceRune(nativeOp.GraphNode.GetValue(parser.NodePredicateStartRune).Int()).
+						WithSourceLocation(nativeOp.SourceLocation()).
 						Define()
 				}
 			}
@@ -194,7 +194,7 @@ func (itc *irgTypeConstructor) defineMember(member webidl.IRGMember, parentNode 
 		builder(parentNode, false).
 			Name(name).
 			SourceNode(member.GraphNode).
-			SourceRune(member.GraphNode.GetValue(parser.NodePredicateStartRune).Int()).
+			WithSourceLocation(member.SourceLocation()).
 			Define()
 	} else {
 		// This is a specialization.
@@ -202,7 +202,7 @@ func (itc *irgTypeConstructor) defineMember(member webidl.IRGMember, parentNode 
 		builder(parentNode, true).
 			Name(webidl.SPECIALIZATION_NAMES[specialization]).
 			SourceNode(member.GraphNode).
-			SourceRune(member.GraphNode.GetValue(parser.NodePredicateStartRune).Int()).
+			WithSourceLocation(member.SourceLocation()).
 			Define()
 	}
 }

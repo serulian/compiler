@@ -5,6 +5,7 @@
 package webidl
 
 import (
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/webidl/parser"
 )
@@ -184,4 +185,9 @@ func (i *IRGDeclaration) Annotations() []IRGAnnotation {
 	}
 
 	return annotations
+}
+
+// SourceLocations returns the location of the declaration in source.
+func (i *IRGDeclaration) SourceLocation() compilercommon.SourceAndLocation {
+	return salForNode(i.GraphNode)
 }

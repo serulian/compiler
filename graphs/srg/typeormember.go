@@ -59,9 +59,9 @@ func (t SRGTypeOrMember) Node() compilergraph.GraphNode {
 	return t.GraphNode
 }
 
-// Location returns the source location for this resolved type or member.
-func (t SRGTypeOrMember) Location() compilercommon.SourceAndLocation {
-	return salForNode(t.GraphNode)
+// SourceLocation returns the source location for this resolved type or member.
+func (t SRGTypeOrMember) SourceLocation() (compilercommon.SourceAndLocation, bool) {
+	return salForNode(t.GraphNode), true
 }
 
 // ContainingModule returns the module containing this type or member.

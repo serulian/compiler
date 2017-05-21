@@ -280,7 +280,8 @@ func (ns SRGNamedScope) ScopeKind() NamedScopeKind {
 func (ns SRGNamedScope) SourceLocation() (compilercommon.SourceAndLocation, bool) {
 	switch ns.ScopeKind() {
 	case NamedScopeImport:
-		return compilercommon.SourceAndLocation{}, false
+		srgImport := SRGPackageImport{ns.GraphNode, ns.srg}
+		return srgImport.SourceLocation()
 
 	default:
 		source := ns.GraphNode.Get(parser.NodePredicateSource)
