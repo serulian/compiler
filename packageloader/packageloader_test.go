@@ -256,6 +256,28 @@ func TestLibraryPath(t *testing.T) {
 	assertFileImported(t, tt, "tests/libtest/libfile2.json")
 }
 
+func TestEntrypointDir(t *testing.T) {
+	tt := &testTracker{
+		pathsImported: cmap.New(),
+	}
+
+	loader := NewPackageLoader(Config{
+		Entrypoint:                Entrypoint("tests/libtest/"),
+		SourceHandlers:            []SourceHandler{tt.createHandler()},
+		VCSDevelopmentDirectories: []string{},
+		PathLoader:                LocalFilePathLoader{},
+	})
+
+	result := loader.Load()
+	if !result.Status || len(result.Errors) > 0 {
+		t.Errorf("Expected success, found: %v", result.Errors)
+		return
+	}
+
+	assertFileImported(t, tt, "tests/libtest/libfile1.json")
+	assertFileImported(t, tt, "tests/libtest/libfile2.json")
+}
+
 func assertFileImported(t *testing.T, tt *testTracker, filePath string) {
 	if !tt.pathsImported.Has(filePath) {
 		t.Errorf("Expected import of file %s", filePath)
@@ -293,7 +315,7 @@ func TestLocalLoader(t *testing.T) {
 	}
 
 	loader := NewPackageLoader(Config{
-		RootSourceFilePath:        "startingfile.json",
+		Entrypoint:                Entrypoint("startingfile.json"),
 		SourceHandlers:            []SourceHandler{tt.createHandler()},
 		VCSDevelopmentDirectories: []string{},
 		PathLoader:                TestPathLoader{},
