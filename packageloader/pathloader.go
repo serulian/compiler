@@ -4,7 +4,10 @@
 
 package packageloader
 
-import "io/ioutil"
+import (
+	"io/ioutil"
+	"os"
+)
 
 // PathLoader defines the interface for loading source files (modules) and directories (packages) in
 // the package loader. Note that VCS checkout will still be done locally, regardless of the path
@@ -34,8 +37,19 @@ func (lfpl LocalFilePathLoader) LoadSourceFile(path string) ([]byte, error) {
 }
 
 func (lfpl LocalFilePathLoader) IsSourceFile(path string) bool {
-	ok, _ := exists(path)
-	return ok
+	file, err := os.Open(path)
+	if err != nil {
+		return false
+	}
+
+	defer file.Close()
+
+	fi, err := file.Stat()
+	if err != nil {
+		return false
+	}
+
+	return !fi.IsDir()
 }
 
 func (lfpl LocalFilePathLoader) LoadDirectory(path string) ([]DirectoryEntry, error) {

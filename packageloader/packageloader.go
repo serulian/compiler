@@ -85,7 +85,7 @@ func (p *pathInformation) String() string {
 // PackageLoader helps to fully and recursively load a Serulian package and its dependencies
 // from a directory or set of directories.
 type PackageLoader struct {
-	rootSourceFile            string     // The root source file location.
+	entrypoint                Entrypoint // The entrypoint for the package loader.
 	vcsDevelopmentDirectories []string   // Directories to check for VCS packages before VCS checkout.
 	pathLoader                PathLoader // The path loaders to use.
 	alwaysValidate            bool       // Whether to always run validation, regardless of errors. Useful to IDE tooling.
@@ -125,8 +125,8 @@ type LoadResult struct {
 
 // Config defines configuration for a PackageLoader.
 type Config struct {
-	// The path of the root source file from which loading will begin.
-	RootSourceFilePath string
+	// The entrypoint from which loading will begin. Can be a file or a directory.
+	Entrypoint Entrypoint
 
 	// Paths of directories to check for local copies of remote packages
 	// before performing VCS checkout.
@@ -149,7 +149,7 @@ type Config struct {
 // NewBasicConfig returns PackageLoader Config for a root source file and source handlers.
 func NewBasicConfig(rootSourceFilePath string, sourceHandlers ...SourceHandler) Config {
 	return Config{
-		RootSourceFilePath:        rootSourceFilePath,
+		Entrypoint:                Entrypoint(rootSourceFilePath),
 		VCSDevelopmentDirectories: []string{},
 		SourceHandlers:            sourceHandlers,
 		PathLoader:                LocalFilePathLoader{},
@@ -171,7 +171,7 @@ func NewPackageLoader(config Config) *PackageLoader {
 	}
 
 	return &PackageLoader{
-		rootSourceFile:            config.RootSourceFilePath,
+		entrypoint:                config.Entrypoint,
 		vcsDevelopmentDirectories: config.VCSDevelopmentDirectories,
 		pathLoader:                pathLoader,
 		alwaysValidate:            config.AlwaysValidate,
@@ -208,20 +208,22 @@ func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 
 	go p.collectIssues(result)
 
-	// Add the root source file as the first package to be parsed.
-	sal := compilercommon.NewSourceAndLocation(compilercommon.InputSource(p.rootSourceFile), 0)
-
-	var added = false
-	for _, handler := range p.handlers {
-		if strings.HasSuffix(p.rootSourceFile, handler.PackageFileExtension()) {
-			p.pushPath(pathSourceFile, handler.Kind(), p.rootSourceFile, sal)
-			added = true
-			break
-		}
+	// Add the root source file(s) as the first items to be parsed.
+	entrypointPaths, err := p.entrypoint.EntrypointPaths(p.pathLoader)
+	if err != nil {
+		sal := compilercommon.NewSourceAndLocation(compilercommon.InputSource(string(p.entrypoint)), 0)
+		result.Errors = append(result.Errors, compilercommon.SourceErrorf(sal, "Could not resolve entrypoint path: %v", err))
+		return *result
 	}
 
-	if !added {
-		log.Fatalf("Could not find handler for root source file: %v", p.rootSourceFile)
+	for _, path := range entrypointPaths {
+		sal := compilercommon.NewSourceAndLocation(compilercommon.InputSource(path), 0)
+		for _, handler := range p.handlers {
+			if strings.HasSuffix(path, handler.PackageFileExtension()) {
+				p.pushPath(pathSourceFile, handler.Kind(), path, sal)
+				break
+			}
+		}
 	}
 
 	// Add the libraries to be parsed.
@@ -379,7 +381,7 @@ func (p *PackageLoader) packageInfoForPackageDirectory(packagePath string, sourc
 
 // getVCSDirectoryForPath returns the directory on disk where the given VCS path will be placed, if any.
 func (p *PackageLoader) getVCSDirectoryForPath(vcsPath string) (string, error) {
-	rootDirectory := path.Dir(p.rootSourceFile)
+	rootDirectory := p.entrypoint.EntrypointDirectoryPath(p.pathLoader)
 	pkgDirectory := path.Join(rootDirectory, SerulianPackageDirectory)
 	return vcs.GetVCSCheckoutDirectory(vcsPath, pkgDirectory, p.vcsDevelopmentDirectories...)
 }
@@ -468,7 +470,7 @@ func (p *PackageLoader) loadVCSPackage(packagePath pathInformation) {
 		}
 	}
 
-	rootDirectory := path.Dir(p.rootSourceFile)
+	rootDirectory := p.entrypoint.EntrypointDirectoryPath(p.pathLoader)
 	pkgDirectory := path.Join(rootDirectory, SerulianPackageDirectory)
 
 	// Perform the checkout of the VCS package.

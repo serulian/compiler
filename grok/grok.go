@@ -13,8 +13,8 @@ import (
 
 // Groker defines a toolkit for providing IDE tooling for Serulian projects.
 type Groker struct {
-	// rootSourceFilePath is the path of the root source file of the project being groked.
-	rootSourceFilePath string
+	// entrypoint is the entrypoint of the project being groked.
+	entrypoint packageloader.Entrypoint
 
 	// vcsDevelopmentDirectories defines the development directories (if any) to use.
 	vcsDevelopmentDirectories []string
@@ -29,15 +29,15 @@ type Groker struct {
 	pathLoader packageloader.PathLoader
 }
 
-// NewGroker returns a new Groker for the given root source file path.
-func NewGroker(rootSourceFilePath string, vcsDevelopmentDirectories []string, libraries []packageloader.Library) *Groker {
-	return NewGrokerWithPathLoader(rootSourceFilePath, vcsDevelopmentDirectories, libraries, packageloader.LocalFilePathLoader{})
+// NewGroker returns a new Groker for the given entrypoint file/directory path.
+func NewGroker(entrypointPath string, vcsDevelopmentDirectories []string, libraries []packageloader.Library) *Groker {
+	return NewGrokerWithPathLoader(entrypointPath, vcsDevelopmentDirectories, libraries, packageloader.LocalFilePathLoader{})
 }
 
-// NewGrokerWithPathLoader returns a new Groker for the given root source file path.
-func NewGrokerWithPathLoader(rootSourceFilePath string, vcsDevelopmentDirectories []string, libraries []packageloader.Library, pathLoader packageloader.PathLoader) *Groker {
+// NewGrokerWithPathLoader returns a new Groker for the given entrypoint file/directory path.
+func NewGrokerWithPathLoader(entrypointPath string, vcsDevelopmentDirectories []string, libraries []packageloader.Library, pathLoader packageloader.PathLoader) *Groker {
 	return &Groker{
-		rootSourceFilePath:        rootSourceFilePath,
+		entrypoint:                packageloader.Entrypoint(entrypointPath),
 		vcsDevelopmentDirectories: vcsDevelopmentDirectories,
 		libraries:                 libraries,
 		pathLoader:                pathLoader,
@@ -71,7 +71,7 @@ func (g *Groker) GetHandle() (Handle, error) {
 // root source file.
 func (g *Groker) refresh() (scopegraph.Result, error) {
 	config := scopegraph.Config{
-		RootSourceFilePath:        g.rootSourceFilePath,
+		Entrypoint:                g.entrypoint,
 		VCSDevelopmentDirectories: g.vcsDevelopmentDirectories,
 		Libraries:                 g.libraries,
 		Target:                    scopegraph.Tooling,

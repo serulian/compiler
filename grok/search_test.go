@@ -63,7 +63,7 @@ var searchTests = []searchTest{
 func TestSymbolSearch(t *testing.T) {
 	for _, test := range searchTests {
 		testSourcePath := "tests/" + test.name + "/" + test.name + ".seru"
-		groker := NewGroker(testSourcePath, []string{}, []packageloader.Library{packageloader.Library{TESTLIB_PATH, false, ""}})
+		groker := NewGroker(packageloader.Entrypoint(testSourcePath), []string{}, []packageloader.Library{packageloader.Library{TESTLIB_PATH, false, ""}})
 		handle, err := groker.GetHandle()
 
 		// Ensure we have a valid groker.

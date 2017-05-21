@@ -81,8 +81,8 @@ const (
 
 // Config defines the configuration for scoping.
 type Config struct {
-	// RootSourceFilePath is the root source file path from which to begin scoping.
-	RootSourceFilePath string
+	// Entrypoint is the entrypoint path from which to begin scoping.
+	Entrypoint packageloader.Entrypoint
 
 	// VCSDevelopmentDirectories are the paths to the development directories, if any, that
 	// override VCS imports.
@@ -102,7 +102,7 @@ type Config struct {
 // starting at the given root source file.
 func ParseAndBuildScopeGraph(rootSourceFilePath string, vcsDevelopmentDirectories []string, libraries ...packageloader.Library) Result {
 	result, err := ParseAndBuildScopeGraphWithConfig(Config{
-		RootSourceFilePath:        rootSourceFilePath,
+		Entrypoint:                packageloader.Entrypoint(rootSourceFilePath),
 		VCSDevelopmentDirectories: vcsDevelopmentDirectories,
 		Libraries:                 libraries,
 		Target:                    Compilation,
@@ -120,7 +120,7 @@ func ParseAndBuildScopeGraph(rootSourceFilePath string, vcsDevelopmentDirectorie
 // starting at the root source file specified in configuration. If an *internal error* occurs, it is
 // returned as the `err`. Parsing and scoping errors are returned in the Result.
 func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
-	graph, err := compilergraph.NewGraph(config.RootSourceFilePath)
+	graph, err := compilergraph.NewGraph(config.Entrypoint.Path())
 	if err != nil {
 		return Result{}, err
 	}
@@ -130,7 +130,7 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 	webidlgraph := webidl.NewIRG(graph)
 
 	loader := packageloader.NewPackageLoader(packageloader.Config{
-		RootSourceFilePath:        config.RootSourceFilePath,
+		Entrypoint:                config.Entrypoint,
 		PathLoader:                config.PathLoader,
 		VCSDevelopmentDirectories: config.VCSDevelopmentDirectories,
 		AlwaysValidate:            config.Target == Tooling,
