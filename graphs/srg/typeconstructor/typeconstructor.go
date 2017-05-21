@@ -54,11 +54,12 @@ func (stc *srgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 		}
 
 		// Start the type definition.
+		sal, _ := srgType.SourceLocation()
 		typeBuilder := builder(moduleNode).
 			Name(srgType.Name()).
 			GlobalId(srgType.UniqueId()).
 			Documentation(docString).
-			SourceRune(srgType.Location().Location().BytePosition()).
+			WithSourceLocation(sal).
 			SourceNode(srgType.Node())
 
 		// As a class or interface.
@@ -227,9 +228,10 @@ func (stc *srgTypeConstructor) defineMember(member srg.SRGMember, parent typegra
 	}
 
 	// Define the member's name and source node.
+	sal, _ := member.SourceLocation()
 	builder.Name(member.Name()).
 		SourceNode(member.Node()).
-		SourceRune(member.Location().Location().BytePosition()).
+		WithSourceLocation(sal).
 		Documentation(docString)
 
 	// Add the member's generics.

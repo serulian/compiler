@@ -3,45 +3,10 @@
         "Key": "397026063ed7ec70d02fafaf759e4a68",
         "Kind": 7,
         "Children": {
-            "3c9559a0a127c53093cc6e01040aeda3": {
+            "726c8de0acf0c03257332b3bf68a6df0": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "3c9559a0a127c53093cc6e01040aeda3",
-                    "Kind": 9,
-                    "Children": {
-                        "69c7dfb293b5923e5b91ad780ee76061": {
-                            "Predicate": "tdg-member-returnable",
-                            "Child": {
-                                "Key": "69c7dfb293b5923e5b91ad780ee76061",
-                                "Kind": 12,
-                                "Children": {},
-                                "Predicates": {
-                                    "tdg-node-kind": "12|NodeType|tdg",
-                                    "tdg-return-type": "void",
-                                    "tdg-source-node": "(NodeRef)"
-                                }
-                            }
-                        }
-                    },
-                    "Predicates": {
-                        "tdg-member-exported": "true",
-                        "tdg-member-invokes-async": "true",
-                        "tdg-member-name": "DoSomethingAsync",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cAwaitable\u003cvoid\u003e\u003e",
-                        "tdg-member-signature": "\n\u0010dosomethingasync\u0010\u0002\u0018\u0000 \u0001*\u0019function\u003cAwaitable\u003cvoid\u003e\u003e",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-declaration-rune": "53",
-                        "tdg-source-module": "tests/modulelevel/module.seru",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
-            "936a8ae4e3bd9abf8a29712befe7325b": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "936a8ae4e3bd9abf8a29712befe7325b",
+                    "Key": "726c8de0acf0c03257332b3bf68a6df0",
                     "Kind": 9,
                     "Children": {
                         "78bb9b144f2834343dc0c7f553626572": {
@@ -64,19 +29,19 @@
                         "tdg-member-promising": "1",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cInteger\u003e",
-                        "tdg-member-signature": "\n\u000bdosomething\u0010\u0002\u0018\u0000 \u0001*\u0011function\u003cInteger\u003e",
+                        "tdg-member-signature": "\n\u000bdosomething\u0010\u0002 \u0001*\u0011function\u003cInteger\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-declaration-rune": "18",
+                        "tdg-source-location": "\n\u001dtests/modulelevel/module.seru\u0010\u0012|SourceLocation|tdg",
                         "tdg-source-module": "tests/modulelevel/module.seru",
                         "tdg-source-node": "(NodeRef)"
                     }
                 }
             },
-            "fc6843f4c4e4bc7bb744f6e3ca056db5": {
+            "b532f7aa1677327fafdc50238d8c891d": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "fc6843f4c4e4bc7bb744f6e3ca056db5",
+                    "Key": "b532f7aa1677327fafdc50238d8c891d",
                     "Kind": 9,
                     "Children": {},
                     "Predicates": {
@@ -87,7 +52,42 @@
                         "tdg-member-signature": "\n\u0007somevar\u0010\u0005\u0018\u0001 \u0001*\u0007Integer",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-declaration-rune": "0",
+                        "tdg-source-location": "\n\u001dtests/modulelevel/module.seru|SourceLocation|tdg",
+                        "tdg-source-module": "tests/modulelevel/module.seru",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "d9abd8088372022fa4b603152d8d4a6c": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "d9abd8088372022fa4b603152d8d4a6c",
+                    "Kind": 9,
+                    "Children": {
+                        "69c7dfb293b5923e5b91ad780ee76061": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "69c7dfb293b5923e5b91ad780ee76061",
+                                "Kind": 12,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-return-type": "void",
+                                    "tdg-source-node": "(NodeRef)"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-invokes-async": "true",
+                        "tdg-member-name": "DoSomethingAsync",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cAwaitable\u003cvoid\u003e\u003e",
+                        "tdg-member-signature": "\n\u0010dosomethingasync\u0010\u0002 \u0001*\u0019function\u003cAwaitable\u003cvoid\u003e\u003e",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-location": "\n\u001dtests/modulelevel/module.seru\u00105|SourceLocation|tdg",
                         "tdg-source-module": "tests/modulelevel/module.seru",
                         "tdg-source-node": "(NodeRef)"
                     }

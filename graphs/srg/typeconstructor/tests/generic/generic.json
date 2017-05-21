@@ -1,51 +1,6 @@
 {
-    "27e522726ad7d4d6796c3ef270b68ea7": {
-        "Key": "27e522726ad7d4d6796c3ef270b68ea7",
-        "Kind": 1,
-        "Children": {
-            "b2c7188d26d71e74a7841fd4c681e861": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "b2c7188d26d71e74a7841fd4c681e861",
-                    "Kind": 9,
-                    "Children": {
-                        "b260da3385668751b37c86a31828c51f": {
-                            "Predicate": "tdg-member-returnable",
-                            "Child": {
-                                "Key": "b260da3385668751b37c86a31828c51f",
-                                "Kind": 12,
-                                "Children": {},
-                                "Predicates": {
-                                    "tdg-node-kind": "12|NodeType|tdg",
-                                    "tdg-return-type": "AnotherClass"
-                                }
-                            }
-                        }
-                    },
-                    "Predicates": {
-                        "tdg-member-name": "new",
-                        "tdg-member-promising": "1",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cAnotherClass\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0016function\u003cAnotherClass\u003e",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-module": "tests/generic/generic.seru"
-                    }
-                }
-            }
-        },
-        "Predicates": {
-            "tdg-node-kind": "1|NodeType|tdg",
-            "tdg-source-declaration-rune": "40",
-            "tdg-source-module": "tests/generic/generic.seru",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "053766f5",
-            "tdg-type-name": "AnotherClass"
-        }
-    },
-    "876050306f9c824ce1c08312862bb2c3": {
-        "Key": "876050306f9c824ce1c08312862bb2c3",
+    "43bba182f857b21eb2ad81afbdd57805": {
+        "Key": "43bba182f857b21eb2ad81afbdd57805",
         "Kind": 1,
         "Children": {
             "1d67578882b8e16125f294d13b65d337": {
@@ -94,10 +49,10 @@
                     }
                 }
             },
-            "cccdf8b1c86dd20df79afacfc83c6c3b": {
+            "dec666ce20956f28c363efd094311ba4": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "cccdf8b1c86dd20df79afacfc83c6c3b",
+                    "Key": "dec666ce20956f28c363efd094311ba4",
                     "Kind": 9,
                     "Children": {
                         "4f41ee3216ce8c395e499afc55c6b0cf": {
@@ -118,7 +73,7 @@
                         "tdg-member-promising": "1",
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cSomeClass\u003cT, Q\u003e\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0001\u0018\u0000 \u0000*\u0019function\u003cSomeClass\u003cT, Q\u003e\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001*\u0019function\u003cSomeClass\u003cT, Q\u003e\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "9|NodeType|tdg",
                         "tdg-source-module": "tests/generic/generic.seru"
@@ -128,11 +83,56 @@
         },
         "Predicates": {
             "tdg-node-kind": "1|NodeType|tdg",
-            "tdg-source-declaration-rune": "0",
+            "tdg-source-location": "\n\u001atests/generic/generic.seru|SourceLocation|tdg",
             "tdg-source-module": "tests/generic/generic.seru",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "f8876935",
             "tdg-type-name": "SomeClass"
+        }
+    },
+    "c189f60a5ee526d87710955ae649cc72": {
+        "Key": "c189f60a5ee526d87710955ae649cc72",
+        "Kind": 1,
+        "Children": {
+            "c225bb804ae8a730153e0824382d6201": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "c225bb804ae8a730153e0824382d6201",
+                    "Kind": 9,
+                    "Children": {
+                        "b260da3385668751b37c86a31828c51f": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "b260da3385668751b37c86a31828c51f",
+                                "Kind": 12,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-return-type": "AnotherClass"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-name": "new",
+                        "tdg-member-promising": "1",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cAnotherClass\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001*\u0016function\u003cAnotherClass\u003e",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-module": "tests/generic/generic.seru"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-source-location": "\n\u001atests/generic/generic.seru\u0010(|SourceLocation|tdg",
+            "tdg-source-module": "tests/generic/generic.seru",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "053766f5",
+            "tdg-type-name": "AnotherClass"
         }
     }
 }

@@ -36,9 +36,9 @@ func (p SRGParameter) Node() compilergraph.GraphNode {
 	return p.GraphNode
 }
 
-// Location returns the source location for this parameter.
-func (p SRGParameter) Location() compilercommon.SourceAndLocation {
-	return salForNode(p.GraphNode)
+// SourceLocation returns the source location for this parameter.
+func (p SRGParameter) SourceLocation() (compilercommon.SourceAndLocation, bool) {
+	return salForNode(p.GraphNode), true
 }
 
 // DeclaredType returns the declared type for this parameter, if any.
