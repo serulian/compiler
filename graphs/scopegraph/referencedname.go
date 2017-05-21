@@ -7,6 +7,7 @@ package scopegraph
 import (
 	"fmt"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/srg"
@@ -127,6 +128,29 @@ func (rn ReferencedName) Name() string {
 	}
 
 	return rn.srgInfo.Name()
+}
+
+// SourceLocation returns the primary source location for the referenced node, if any.
+func (rn ReferencedName) SourceLocation() (compilercommon.SourceAndLocation, bool) {
+	if rn.typeInfo != nil {
+		return rn.typeInfo.SourceLocation()
+	}
+
+	return rn.srgInfo.SourceLocation()
+}
+
+// SourceLocations returns the set of source locations for the referenced node, if any.
+func (rn ReferencedName) SourceLocations() []compilercommon.SourceAndLocation {
+	if rn.typeInfo != nil {
+		return rn.typeInfo.SourceLocations()
+	}
+
+	sl, hasLocation := rn.srgInfo.SourceLocation()
+	if hasLocation {
+		return []compilercommon.SourceAndLocation{sl}
+	}
+
+	return []compilercommon.SourceAndLocation{}
 }
 
 // Code returns a code-like summarization of the referenced name, for human consumption.
