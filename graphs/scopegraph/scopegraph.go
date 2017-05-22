@@ -157,7 +157,7 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 	if !typeResult.Status && config.Target != Tooling {
 		return Result{
 			Status:   false,
-			Errors:   typeResult.Errors,
+			Errors:   combineErrors(loaderResult.Errors, typeResult.Errors),
 			Warnings: combineWarnings(loaderResult.Warnings, typeResult.Warnings),
 		}, nil
 	}
@@ -169,7 +169,7 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 	scopeResult := buildScopeGraphWithResolver(sourcegraph, webidlgraph, typeResult.Graph, resolver, loader)
 	return Result{
 		Status:   scopeResult.Status && typeResult.Status && loaderResult.Status,
-		Errors:   scopeResult.Errors,
+		Errors:   combineErrors(loaderResult.Errors, typeResult.Errors, scopeResult.Errors),
 		Warnings: combineWarnings(loaderResult.Warnings, typeResult.Warnings, scopeResult.Warnings),
 		Graph:    scopeResult.Graph,
 	}, nil

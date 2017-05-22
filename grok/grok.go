@@ -46,10 +46,15 @@ func NewGrokerWithPathLoader(entrypointPath string, vcsDevelopmentDirectories []
 
 // GetHandle returns a handle for querying the Grok toolkit.
 func (g *Groker) GetHandle() (Handle, error) {
-	// If there is a cached handle, return it.
+	// If there is a cached handle, return it if nothing has changed.
+	// TODO: Support partial re-build here once supported by the rest of the pipeline.
 	currentHandle := g.currentHandle
 	if currentHandle != nil {
-		return *currentHandle, nil
+		handle := *currentHandle
+		modified, err := handle.scopeResult.Graph.PackageLoader().ModifiedSourceFiles()
+		if err == nil && len(modified) == 0 {
+			return handle, nil
+		}
 	}
 
 	// Otherwise, rebuild the graph and cache it.
@@ -75,7 +80,7 @@ func (g *Groker) refresh() (scopegraph.Result, error) {
 		VCSDevelopmentDirectories: g.vcsDevelopmentDirectories,
 		Libraries:                 g.libraries,
 		Target:                    scopegraph.Tooling,
-		PathLoader:                packageloader.LocalFilePathLoader{},
+		PathLoader:                g.pathLoader,
 	}
 
 	result, err := scopegraph.ParseAndBuildScopeGraphWithConfig(config)

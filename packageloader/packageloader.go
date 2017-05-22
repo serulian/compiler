@@ -100,7 +100,8 @@ type PackageLoader struct {
 	pathKindsEncountered cmap.ConcurrentMap   // The path+kinds processed by the loader goroutine
 	vcsPathsLoaded       cmap.ConcurrentMap   // The VCS paths that have been loaded, mapping to their checkout dir
 	vcsLockMap           lockMap              // LockMap for ensuring single loads of all VCS paths.
-	packageMap           *mutablePackageMap   // The package map
+	packageMap           *mutablePackageMap   // The package map.
+	pathToRevisions      cmap.ConcurrentMap   // Map from the path of each file to loaded to its revision ID.
 
 	workTracker sync.WaitGroup // WaitGroup used to wait until all loading is complete
 	finished    chan bool      // Channel used to tell background goroutines to quit
@@ -182,6 +183,7 @@ func NewPackageLoader(config Config) *PackageLoader {
 
 		handlers: handlersMap,
 
+		pathToRevisions:      cmap.New(),
 		pathKindsEncountered: cmap.New(),
 		packageMap:           newMutablePackageMap(),
 		pathsToLoad:          make(chan pathInformation),
@@ -274,6 +276,23 @@ func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 // PathLoader returns the path loader used by this package manager.
 func (p *PackageLoader) PathLoader() PathLoader {
 	return p.pathLoader
+}
+
+// ModifiedSourceFiles returns the set of paths to any source files that have been modified
+// since the package loader ran.
+func (p *PackageLoader) ModifiedSourceFiles() ([]string, error) {
+	var modifiedPaths = make([]string, 0)
+	for entry := range p.pathToRevisions.Iter() {
+		current, err := p.pathLoader.GetRevisionID(entry.Key)
+		if err != nil {
+			return []string{}, err
+		}
+
+		if current != entry.Val.(int64) {
+			modifiedPaths = append(modifiedPaths, entry.Key)
+		}
+	}
+	return modifiedPaths, nil
 }
 
 // ModuleOrPackage defines a reference to a module or package.
@@ -535,6 +554,14 @@ func (p *PackageLoader) conductParsing(sourceFile pathInformation) {
 		p.errors <- compilercommon.SourceErrorf(sourceFile.sal, "Could not load source file '%s': %v", sourceFile.path, err)
 		return
 	}
+
+	revisionID, err := p.pathLoader.GetRevisionID(sourceFile.path)
+	if err != nil {
+		p.errors <- compilercommon.SourceErrorf(sourceFile.sal, "Could not load source file '%s': %v", sourceFile.path, err)
+		return
+	}
+
+	p.pathToRevisions.Set(sourceFile.path, revisionID)
 
 	// Parse the source file.
 	handler, hasHandler := p.handlers[sourceFile.sourceKind]
