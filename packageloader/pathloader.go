@@ -13,8 +13,12 @@ import (
 // the package loader. Note that VCS checkout will still be done locally, regardless of the path
 // loader configured.
 type PathLoader interface {
-	// LoadSourceFile attempts to load the source file from the given path.
+	// LoadSourceFile attempts to load the source file from the given path. Returns the contents.
 	LoadSourceFile(path string) ([]byte, error)
+
+	// GetRevisionID returns an ID representing the current revision of the given file.
+	// The revision ID is typically a version number or a ctime.
+	GetRevisionID(path string) (int64, error)
 
 	// IsSourceFile returns true if the given path refers to a source file. Must return false
 	// if the path refers to a directory.
@@ -34,6 +38,15 @@ type LocalFilePathLoader struct{}
 
 func (lfpl LocalFilePathLoader) LoadSourceFile(path string) ([]byte, error) {
 	return ioutil.ReadFile(path)
+}
+
+func (lfpl LocalFilePathLoader) GetRevisionID(path string) (int64, error) {
+	fi, err := os.Stat(path)
+	if err != nil {
+		return -1, err
+	}
+
+	return fi.ModTime().UnixNano(), nil
 }
 
 func (lfpl LocalFilePathLoader) IsSourceFile(path string) bool {
