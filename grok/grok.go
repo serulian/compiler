@@ -75,7 +75,7 @@ func (g *Groker) refresh() (scopegraph.Result, error) {
 		VCSDevelopmentDirectories: g.vcsDevelopmentDirectories,
 		Libraries:                 g.libraries,
 		Target:                    scopegraph.Tooling,
-		PathLoader:                packageloader.LocalFilePathLoader{},
+		PathLoader:                g.pathLoader,
 	}
 
 	result, err := scopegraph.ParseAndBuildScopeGraphWithConfig(config)
