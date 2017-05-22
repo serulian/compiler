@@ -5,6 +5,7 @@
 package grok
 
 import (
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/graphs/srg"
 )
@@ -24,4 +25,14 @@ type Handle struct {
 // no errors of any kid.
 func (gh Handle) IsCompilable() bool {
 	return gh.scopeResult.Status
+}
+
+// Errors returns any source errors found when building the handle, if any.
+func (gh Handle) Errors() []compilercommon.SourceError {
+	return gh.scopeResult.Errors
+}
+
+// Warnings returns any source warnings found when building the handle, if any.
+func (gh Handle) Warnings() []compilercommon.SourceWarning {
+	return gh.scopeResult.Warnings
 }
