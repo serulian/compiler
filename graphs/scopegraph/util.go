@@ -19,3 +19,15 @@ func combineWarnings(warnings ...[]compilercommon.SourceWarning) []compilercommo
 
 	return newWarnings
 }
+
+// combineErrors combines the slices of compiler errors into a single slice.
+func combineErrors(errors ...[]compilercommon.SourceError) []compilercommon.SourceError {
+	var newErrors = make([]compilercommon.SourceError, 0)
+	for _, errorsSlice := range errors {
+		for _, err := range errorsSlice {
+			newErrors = append(newErrors, err)
+		}
+	}
+
+	return newErrors
+}
