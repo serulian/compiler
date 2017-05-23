@@ -17,6 +17,11 @@ type Position struct {
 // InputSource represents the path of a source file.
 type InputSource string
 
+// RangeForRunePosition returns a source range over this source file.
+func (is InputSource) RangeForRunePosition(runePosition uint64, mapper PositionMapper) SourceRange {
+	return is.RangeForRunePositions(runePosition, runePosition, mapper)
+}
+
 // RangeForRunePositions returns a source range over this source file.
 func (is InputSource) RangeForRunePositions(startRune uint64, endRune uint64, mapper PositionMapper) SourceRange {
 	return sourceRange{is, runeIndexedPosition{is, mapper, startRune}, runeIndexedPosition{is, mapper, endRune}}

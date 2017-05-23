@@ -33,22 +33,25 @@ type SourceHandler interface {
 type PackageImportType int
 
 const (
+	// ImportTypeLocal indicates the import is a local module or package.
 	ImportTypeLocal PackageImportType = iota
+
+	// ImportTypeVCS indicates the import is a VCS package.
 	ImportTypeVCS
 )
 
 // PackageImport defines the import of a package as exported by a SourceHandler.
 type PackageImport struct {
-	Kind           string // The kind of the import. Must match the code returned by a SourceHandler.
-	Path           string
-	ImportType     PackageImportType
-	SourceLocation compilercommon.SourceAndLocation
+	Kind        string // The kind of the import. Must match the code returned by a SourceHandler.
+	Path        string
+	ImportType  PackageImportType
+	SourceRange compilercommon.SourceRange
 }
 
 // ImportHandler is a function called for registering imports encountered. The function
 // returns a reference string for the package or file location of the import after the
 // full set of packages is parsed.
-type ImportHandler func(importInfo PackageImport) string
+type ImportHandler func(sourceKind string, importPath string, importType PackageImportType, importSource compilercommon.InputSource, runePosition uint64) string
 
 // WarningReporter is a callback for reporting any warnings during verification.
 type WarningReporter func(warning compilercommon.SourceWarning)

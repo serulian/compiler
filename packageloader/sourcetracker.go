@@ -7,6 +7,8 @@ package packageloader
 import (
 	"github.com/serulian/compiler/compilercommon"
 
+	"fmt"
+
 	cmap "github.com/streamrail/concurrent-map"
 )
 
@@ -47,6 +49,32 @@ func (st SourceTracker) LoadedContents(path compilercommon.InputSource) ([]byte,
 	return tracked.contents, true
 }
 
+func (st SourceTracker) RunePositionToLineAndCol(runePosition uint64, path compilercommon.InputSource) (uint64, uint64, error) {
+	tsf, exists := st.sourceFiles[path]
+	if !exists {
+		return 0, 0, fmt.Errorf("Could not find path %s", path)
+	}
+
+	if tsf.positionMapper == nil {
+		tsf.positionMapper = createSourcePositionMapper(tsf.contents)
+	}
+
+	return tsf.positionMapper.RunePositionToLineAndCol(runePosition)
+}
+
+func (st SourceTracker) LineAndColToRunePosition(lineNumber uint64, colPosition uint64, path compilercommon.InputSource) (uint64, error) {
+	tsf, exists := st.sourceFiles[path]
+	if !exists {
+		return 0, fmt.Errorf("Could not find path %s", path)
+	}
+
+	if tsf.positionMapper == nil {
+		tsf.positionMapper = createSourcePositionMapper(tsf.contents)
+	}
+
+	return tsf.positionMapper.LineAndColToRunePosition(lineNumber, colPosition)
+}
+
 // trackedSourceFile defines a struct for tracking the versioning and contents of a source file
 // encountered during package loading.
 type trackedSourceFile struct {
@@ -64,6 +92,10 @@ type trackedSourceFile struct {
 	// revision ID has changed, the contents of the file are assumed to have been altered since
 	// the file was read.
 	revisionID int64
+
+	// positionMapper is the source position mapper for converting rune positions <-> line+col
+	// positions. Only instantiated if necessary.
+	positionMapper *sourcePositionMapper
 }
 
 // mutableSourceTracker is a source tracker that is built during the package loading phase.
@@ -90,6 +122,34 @@ func (m *mutableSourceTracker) AddSourceFile(path compilercommon.InputSource, so
 		contents:   contents,
 		revisionID: revisionID,
 	})
+}
+
+func (m *mutableSourceTracker) RunePositionToLineAndCol(runePosition uint64, path compilercommon.InputSource) (uint64, uint64, error) {
+	tracked, exists := m.sourceFiles.Get(string(path))
+	if !exists {
+		return 0, 0, fmt.Errorf("Could not find path %s", path)
+	}
+
+	tsf := tracked.(trackedSourceFile)
+	if tsf.positionMapper == nil {
+		tsf.positionMapper = createSourcePositionMapper(tsf.contents)
+	}
+
+	return tsf.positionMapper.RunePositionToLineAndCol(runePosition)
+}
+
+func (m *mutableSourceTracker) LineAndColToRunePosition(lineNumber uint64, colPosition uint64, path compilercommon.InputSource) (uint64, error) {
+	tracked, exists := m.sourceFiles.Get(string(path))
+	if !exists {
+		return 0, fmt.Errorf("Could not find path %s", path)
+	}
+
+	tsf := tracked.(trackedSourceFile)
+	if tsf.positionMapper == nil {
+		tsf.positionMapper = createSourcePositionMapper(tsf.contents)
+	}
+
+	return tsf.positionMapper.LineAndColToRunePosition(lineNumber, colPosition)
 }
 
 // Freeze freezes the mutable source tracker into an immutable SourceTracker.

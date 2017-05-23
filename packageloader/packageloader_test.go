@@ -52,12 +52,7 @@ func (tt *testTracker) Parse(source compilercommon.InputSource, input string, im
 	json.Unmarshal([]byte(input), &file)
 
 	for _, importPath := range file.Imports {
-		importHandler(PackageImport{
-			Kind:           "",
-			Path:           importPath,
-			ImportType:     ImportTypeLocal,
-			SourceLocation: compilercommon.NewSourceAndLocation(source, 0),
-		})
+		importHandler("", importPath, ImportTypeLocal, source, 0)
 	}
 }
 
