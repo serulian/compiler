@@ -21,33 +21,6 @@ import (
 // SerulianPackageDirectory is the directory under the root directory holding cached packages.
 const SerulianPackageDirectory = ".pkg"
 
-// PackageInfo holds information about a loaded package.
-type PackageInfo struct {
-	kind        string                       // The source kind of the package.
-	referenceId string                       // The unique ID for this package.
-	modulePaths []compilercommon.InputSource // The module paths making up this package.
-}
-
-// PackageInfoForTesting returns a PackageInfo for testing.
-func PackageInfoForTesting(kind string, modulePaths []compilercommon.InputSource) PackageInfo {
-	return PackageInfo{kind, "testpackage", modulePaths}
-}
-
-// Kind returns the source kind of this package.
-func (pi PackageInfo) Kind() string {
-	return pi.kind
-}
-
-// ReferenceId returns the unique reference ID for this package.
-func (pi PackageInfo) ReferenceId() string {
-	return pi.referenceId
-}
-
-// ModulePaths returns the list of full paths of the modules in this package.
-func (pi PackageInfo) ModulePaths() []compilercommon.InputSource {
-	return pi.modulePaths
-}
-
 // pathKind identifies the supported kind of paths
 type pathKind int
 
@@ -96,12 +69,12 @@ type PackageLoader struct {
 
 	handlers map[string]SourceHandler // The handlers for each of the supported package kinds.
 
-	pathsToLoad          chan pathInformation // The paths to load
-	pathKindsEncountered cmap.ConcurrentMap   // The path+kinds processed by the loader goroutine
-	vcsPathsLoaded       cmap.ConcurrentMap   // The VCS paths that have been loaded, mapping to their checkout dir
-	vcsLockMap           lockMap              // LockMap for ensuring single loads of all VCS paths.
-	packageMap           *mutablePackageMap   // The package map.
-	pathToRevisions      cmap.ConcurrentMap   // Map from the path of each file to loaded to its revision ID.
+	pathsToLoad          chan pathInformation  // The paths to load
+	pathKindsEncountered cmap.ConcurrentMap    // The path+kinds processed by the loader goroutine
+	vcsPathsLoaded       cmap.ConcurrentMap    // The VCS paths that have been loaded, mapping to their checkout dir
+	vcsLockMap           lockMap               // LockMap for ensuring single loads of all VCS paths.
+	packageMap           *mutablePackageMap    // The package map.
+	sourceTracker        *mutableSourceTracker // The source tracker.
 
 	workTracker sync.WaitGroup // WaitGroup used to wait until all loading is complete
 	finished    chan bool      // Channel used to tell background goroutines to quit
@@ -118,10 +91,11 @@ type Library struct {
 // LoadResult contains the result of attempting to load all packages and source files for this
 // project.
 type LoadResult struct {
-	Status     bool                           // True on success, false otherwise
-	Errors     []compilercommon.SourceError   // The errors encountered, if any
-	Warnings   []compilercommon.SourceWarning // The warnings encountered, if any
-	PackageMap LoadedPackageMap               // Map of packages loaded
+	Status        bool                           // True on success, false otherwise
+	Errors        []compilercommon.SourceError   // The errors encountered, if any
+	Warnings      []compilercommon.SourceWarning // The warnings encountered, if any
+	PackageMap    LoadedPackageMap               // Map of packages loaded.
+	SourceTracker SourceTracker                  // Tracker of all source loaded.
 }
 
 // Config defines configuration for a PackageLoader.
@@ -183,10 +157,11 @@ func NewPackageLoader(config Config) *PackageLoader {
 
 		handlers: handlersMap,
 
-		pathToRevisions:      cmap.New(),
 		pathKindsEncountered: cmap.New(),
 		packageMap:           newMutablePackageMap(),
 		pathsToLoad:          make(chan pathInformation),
+
+		sourceTracker: newMutableSourceTracker(config.PathLoader),
 
 		vcsPathsLoaded: cmap.New(),
 		vcsLockMap:     createLockMap(),
@@ -248,6 +223,7 @@ func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 
 	// Save the package map.
 	result.PackageMap = p.packageMap.Build()
+	result.SourceTracker = p.sourceTracker.Freeze()
 
 	// Apply all handler changes.
 	for _, handler := range p.handlers {
@@ -276,23 +252,6 @@ func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 // PathLoader returns the path loader used by this package manager.
 func (p *PackageLoader) PathLoader() PathLoader {
 	return p.pathLoader
-}
-
-// ModifiedSourceFiles returns the set of paths to any source files that have been modified
-// since the package loader ran.
-func (p *PackageLoader) ModifiedSourceFiles() ([]string, error) {
-	var modifiedPaths = make([]string, 0)
-	for entry := range p.pathToRevisions.Iter() {
-		current, err := p.pathLoader.GetRevisionID(entry.Key)
-		if err != nil {
-			return []string{}, err
-		}
-
-		if current != entry.Val.(int64) {
-			modifiedPaths = append(modifiedPaths, entry.Key)
-		}
-	}
-	return modifiedPaths, nil
 }
 
 // ModuleOrPackage defines a reference to a module or package.
@@ -555,13 +514,15 @@ func (p *PackageLoader) conductParsing(sourceFile pathInformation) {
 		return
 	}
 
+	// Load the source file's revision ID.
 	revisionID, err := p.pathLoader.GetRevisionID(sourceFile.path)
 	if err != nil {
 		p.errors <- compilercommon.SourceErrorf(sourceFile.sal, "Could not load source file '%s': %v", sourceFile.path, err)
 		return
 	}
 
-	p.pathToRevisions.Set(sourceFile.path, revisionID)
+	// Add the source file to the tracker.
+	p.sourceTracker.AddSourceFile(compilercommon.InputSource(sourceFile.path), sourceFile.sourceKind, contents, revisionID)
 
 	// Parse the source file.
 	handler, hasHandler := p.handlers[sourceFile.sourceKind]

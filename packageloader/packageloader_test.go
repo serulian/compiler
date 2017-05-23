@@ -72,9 +72,9 @@ func TestBasicLoading(t *testing.T) {
 		t.Errorf("Expected success, found: %v", result.Errors)
 	}
 
-	assertFileImported(t, tt, "tests/basic/somefile.json")
-	assertFileImported(t, tt, "tests/basic/anotherfile.json")
-	assertFileImported(t, tt, "tests/basic/somesubdir/subdirfile.json")
+	assertFileImported(t, tt, result, "tests/basic/somefile.json")
+	assertFileImported(t, tt, result, "tests/basic/anotherfile.json")
+	assertFileImported(t, tt, result, "tests/basic/somesubdir/subdirfile.json")
 
 	// Ensure that the PATH map contains an entry for package imported.
 	for key := range tt.pathsImported.Items() {
@@ -95,9 +95,9 @@ func TestRelativeImportSuccess(t *testing.T) {
 		t.Errorf("Expected success, found: %v", result.Errors)
 	}
 
-	assertFileImported(t, tt, "tests/relative/entrypoint.json")
-	assertFileImported(t, tt, "tests/relative/subdir/subfile.json")
-	assertFileImported(t, tt, "tests/relative/relativelyimported.json")
+	assertFileImported(t, tt, result, "tests/relative/entrypoint.json")
+	assertFileImported(t, tt, result, "tests/relative/subdir/subfile.json")
+	assertFileImported(t, tt, result, "tests/relative/relativelyimported.json")
 
 	// Ensure that the PATH map contains an entry for package imported.
 	for key := range tt.pathsImported.Items() {
@@ -160,7 +160,7 @@ func TestUnknownPath(t *testing.T) {
 		return
 	}
 
-	assertFileImported(t, tt, "tests/unknownimport/importsunknown.json")
+	assertFileImported(t, tt, result, "tests/unknownimport/importsunknown.json")
 }
 
 func TestListSubModulesAndPackages(t *testing.T) {
@@ -248,12 +248,12 @@ func TestLibraryPath(t *testing.T) {
 		return
 	}
 
-	assertFileImported(t, tt, "tests/basic/somefile.json")
-	assertFileImported(t, tt, "tests/basic/anotherfile.json")
-	assertFileImported(t, tt, "tests/basic/somesubdir/subdirfile.json")
+	assertFileImported(t, tt, result, "tests/basic/somefile.json")
+	assertFileImported(t, tt, result, "tests/basic/anotherfile.json")
+	assertFileImported(t, tt, result, "tests/basic/somesubdir/subdirfile.json")
 
-	assertFileImported(t, tt, "tests/libtest/libfile1.json")
-	assertFileImported(t, tt, "tests/libtest/libfile2.json")
+	assertFileImported(t, tt, result, "tests/libtest/libfile1.json")
+	assertFileImported(t, tt, result, "tests/libtest/libfile2.json")
 }
 
 func TestEntrypointDir(t *testing.T) {
@@ -274,13 +274,18 @@ func TestEntrypointDir(t *testing.T) {
 		return
 	}
 
-	assertFileImported(t, tt, "tests/libtest/libfile1.json")
-	assertFileImported(t, tt, "tests/libtest/libfile2.json")
+	assertFileImported(t, tt, result, "tests/libtest/libfile1.json")
+	assertFileImported(t, tt, result, "tests/libtest/libfile2.json")
 }
 
-func assertFileImported(t *testing.T, tt *testTracker, filePath string) {
+func assertFileImported(t *testing.T, tt *testTracker, result LoadResult, filePath string) {
 	if !tt.pathsImported.Has(filePath) {
 		t.Errorf("Expected import of file %s", filePath)
+	}
+
+	_, exists := result.SourceTracker.LoadedContents(compilercommon.InputSource(filePath))
+	if !exists {
+		t.Errorf("Expected tracking of imported file %s", filePath)
 	}
 }
 
@@ -331,6 +336,6 @@ func TestLocalLoader(t *testing.T) {
 		return
 	}
 
-	assertFileImported(t, tt, "startingfile.json")
-	assertFileImported(t, tt, "anotherfile.json")
+	assertFileImported(t, tt, result, "startingfile.json")
+	assertFileImported(t, tt, result, "anotherfile.json")
 }
