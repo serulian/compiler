@@ -16,6 +16,7 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/packageloader"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -308,8 +309,8 @@ var parserTests = []parserTest{
 	{"partial type ref test", "partial/typeref"},
 }
 
-func reportImport(path packageloader.PackageImport) string {
-	return "location:" + path.Path
+func reportImport(sourceKind string, importPath string, importType packageloader.PackageImportType, importSource compilercommon.InputSource, runePosition uint64) string {
+	return "location:" + importPath
 }
 
 func TestParser(t *testing.T) {

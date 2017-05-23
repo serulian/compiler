@@ -7,6 +7,7 @@
 package parser
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/serulian/compiler/compilercommon"
@@ -284,6 +285,18 @@ class SomeClass`
 	checkNext(t, l, text, lexeme{tokenTypeEOF, 40, ""}, 1, 15)
 }
 
+func getSourceLocation(text string, bytePosition int) (int, int) {
+	lineNumber := strings.Count(text[:bytePosition], "\n")
+	newlineLocation := strings.LastIndex(text[:bytePosition], "\n")
+	if newlineLocation < 0 {
+		// Since there was no newline, the "synthetic" newline is at position -1
+		newlineLocation = -1
+	}
+
+	columnPosition := bytePosition - newlineLocation - 1
+	return lineNumber, columnPosition
+}
+
 // checkNext checks that the next token found in the lexer matches that expected, including
 // positioning information.
 func checkNext(t *testing.T, l *lexer, text string, expected lexeme, line int, column int) {
@@ -293,14 +306,14 @@ func checkNext(t *testing.T, l *lexer, text string, expected lexeme, line int, c
 		t.Errorf("%s: got\n\t%+v\nexpected\n\t%v", l.source, found, expected)
 	}
 
-	foundLocation := compilercommon.GetSourceLocation(text, int(found.position))
+	lineNumber, colPosition := getSourceLocation(text, int(found.position))
 
-	if line != foundLocation.LineNumber() {
-		t.Errorf("%s line: got\n\t%+v\nexpected\n\t%v", l.source, foundLocation.LineNumber(), line)
+	if line != lineNumber {
+		t.Errorf("%s line: got\n\t%+v\nexpected\n\t%v", l.source, lineNumber, line)
 	}
 
-	if column != foundLocation.ColumnPosition() {
-		t.Errorf("%s column: got\n\t%+v\nexpected\n\t%v", l.source, foundLocation.ColumnPosition(), column)
+	if column != colPosition {
+		t.Errorf("%s column: got\n\t%+v\nexpected\n\t%v", l.source, colPosition, column)
 	}
 }
 
