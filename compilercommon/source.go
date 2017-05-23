@@ -2,93 +2,121 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// compilercommon package defines common types and their functions shared across the compiler.
+// Package compilercommon defines common types and their functions shared across the compiler.
 package compilercommon
 
-import (
-	"io/ioutil"
-	"path"
-	"strings"
-)
+// Position represents a position in an arbitrary source file.
+type Position struct {
+	// LineNumber is the 0-indexed line number.
+	LineNumber uint64
 
-// InputSource represents the a source file path in the graph.
+	// ColumnPosition is the 0-indexed column position on the line.
+	ColumnPosition uint64
+}
+
+// InputSource represents the path of a source file.
 type InputSource string
 
-// GetLocation returns the SourceLocation for the given byte position in the input source.
-func (i InputSource) GetLocation(bytePosition int) SourceLocation {
-	contents, err := ioutil.ReadFile(string(i))
-	if err != nil {
-		return SourceLocation{0, 0, 0}
-	}
-
-	return GetSourceLocation(string(contents), bytePosition)
+// RangeForRunePositions returns a source range over this source file.
+func (is InputSource) RangeForRunePositions(startRune uint64, endRune uint64, mapper PositionMapper) SourceRange {
+	return sourceRange{is, runeIndexedPosition{is, mapper, startRune}, runeIndexedPosition{is, mapper, endRune}}
 }
 
-// SourceLocation represents a location in an input source file.
-type SourceLocation struct {
-	lineNumber     int // The 0-indexed line number.
-	columnPosition int // The 0-indexed column position.
-	bytePosition   int // The 0-indexed byte position.
+// RangeForLineAndColPositions returns a source range over this source file.
+func (is InputSource) RangeForLineAndColPositions(start Position, end Position, mapper PositionMapper) SourceRange {
+	return sourceRange{is, lcIndexedPosition{is, mapper, start}, lcIndexedPosition{is, mapper, end}}
 }
 
-// GetSourceLocation returns the calculated source location for the given byte position in the given
-// text.
-func GetSourceLocation(text string, bytePosition int) SourceLocation {
-	lineNumber := strings.Count(text[:bytePosition], "\n")
-	newlineLocation := strings.LastIndex(text[:bytePosition], "\n")
-	if newlineLocation < 0 {
-		// Since there was no newline, the "synthetic" newline is at position -1
-		newlineLocation = -1
-	}
+// PositionMapper defines an interface for converting rune position <-> line+col position
+// under source files.
+type PositionMapper interface {
+	// RunePositionToLineAndCol converts the given 0-indexed rune position under the given source file
+	// into a 0-indexed line number and column position.
+	RunePositionToLineAndCol(runePosition uint64, path InputSource) (uint64, uint64, error)
 
-	columnPosition := bytePosition - newlineLocation - 1
-	return SourceLocation{
-		lineNumber:     lineNumber,
-		columnPosition: columnPosition,
-		bytePosition:   bytePosition,
-	}
+	// LineAndColToRunePosition converts the given 0-indexed line number and column position under the
+	// given source file into a 0-indexed rune position.
+	LineAndColToRunePosition(lineNumber uint64, colPosition uint64, path InputSource) (uint64, error)
 }
 
-// LineNumber returns the line number (0-indexed) of this location.
-func (sl SourceLocation) LineNumber() int {
-	return sl.lineNumber
+// SourceRange represents a range inside a source file.
+type SourceRange interface {
+	// Source is the input source for this range.
+	Source() InputSource
+
+	// Start is the starting position of the source range.
+	Start() SourcePosition
+
+	// End is the ending position (inclusive) of the source range. If the same as the Start,
+	// this range represents a single position.
+	End() SourcePosition
 }
 
-// ColumnPosition returns the column position (0-indexed) of this location.
-func (sl SourceLocation) ColumnPosition() int {
-	return sl.columnPosition
+// SourcePosition represents a single position in a source file.
+type SourcePosition interface {
+	// Source is the input source for this position.
+	Source() InputSource
+
+	// RunePosition returns the 0-indexed rune position in the source file.
+	RunePosition() (uint64, error)
+
+	// LineAndColumn returns the 0-indexed line number and column position in the source file.
+	LineAndColumn() (uint64, uint64, error)
 }
 
-// BytePosition returns the 0-indexed byte position for this location.
-func (sl SourceLocation) BytePosition() int {
-	return sl.bytePosition
+// sourceRange implements the SourceRange interface.
+type sourceRange struct {
+	source InputSource
+	start  SourcePosition
+	end    SourcePosition
 }
 
-// SourceAndLocation contains a source path, as well as a location.
-type SourceAndLocation struct {
-	source       InputSource // The source file path.
-	bytePosition int         // The byte position for this location. Used for lazy-loaded.
+func (sr sourceRange) Source() InputSource {
+	return sr.source
 }
 
-// Source returns the input source path.
-func (sal SourceAndLocation) Source() InputSource {
-	return sal.source
+func (sr sourceRange) Start() SourcePosition {
+	return sr.start
 }
 
-// SourceName returns the name portion of the source path.
-func (sal SourceAndLocation) SourceName() string {
-	return path.Base(string(sal.source))
+func (sr sourceRange) End() SourcePosition {
+	return sr.end
 }
 
-// Location returns the SourceLocation for this SourceAndLocation.
-func (sal SourceAndLocation) Location() SourceLocation {
-	return sal.source.GetLocation(sal.bytePosition)
+// runeIndexedPosition implements the SourcePosition interface over a rune position.
+type runeIndexedPosition struct {
+	source       InputSource
+	mapper       PositionMapper
+	runePosition uint64
 }
 
-// NewSourceAndLocation returns a new source and location for the given source and byte position.
-func NewSourceAndLocation(source InputSource, bytePosition int) SourceAndLocation {
-	return SourceAndLocation{
-		source:       source,
-		bytePosition: bytePosition,
-	}
+func (ris runeIndexedPosition) Source() InputSource {
+	return ris.source
+}
+
+func (ris runeIndexedPosition) RunePosition() (uint64, error) {
+	return ris.runePosition, nil
+}
+
+func (ris runeIndexedPosition) LineAndColumn() (uint64, uint64, error) {
+	return ris.mapper.RunePositionToLineAndCol(ris.runePosition, ris.source)
+}
+
+// lcIndexedPosition implements the SourcePosition interface over a line and colu,n position.
+type lcIndexedPosition struct {
+	source     InputSource
+	mapper     PositionMapper
+	lcPosition Position
+}
+
+func (lcip lcIndexedPosition) Source() InputSource {
+	return lcip.source
+}
+
+func (lcip lcIndexedPosition) RunePosition() (uint64, error) {
+	return lcip.mapper.LineAndColToRunePosition(lcip.lcPosition.LineNumber, lcip.lcPosition.ColumnPosition, lcip.source)
+}
+
+func (lcip lcIndexedPosition) LineAndColumn() (uint64, uint64, error) {
+	return lcip.lcPosition.LineNumber, lcip.lcPosition.ColumnPosition, nil
 }
