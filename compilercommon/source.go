@@ -42,6 +42,9 @@ type PositionMapper interface {
 	// LineAndColToRunePosition converts the given 0-indexed line number and column position under the
 	// given source file into a 0-indexed rune position.
 	LineAndColToRunePosition(lineNumber uint64, colPosition uint64, path InputSource) (uint64, error)
+
+	// TextForLine returns the text for the specified line number.
+	TextForLine(lineNumber uint64, path InputSource) (string, error)
 }
 
 // SourceRange represents a range inside a source file.
@@ -67,6 +70,9 @@ type SourcePosition interface {
 
 	// LineAndColumn returns the 0-indexed line number and column position in the source file.
 	LineAndColumn() (uint64, uint64, error)
+
+	// LineText returns the text of the line for this position.
+	LineText() (string, error)
 }
 
 // sourceRange implements the SourceRange interface.
@@ -107,6 +113,15 @@ func (ris runeIndexedPosition) LineAndColumn() (uint64, uint64, error) {
 	return ris.mapper.RunePositionToLineAndCol(ris.runePosition, ris.source)
 }
 
+func (ris runeIndexedPosition) LineText() (string, error) {
+	lineNumber, _, err := ris.LineAndColumn()
+	if err != nil {
+		return "", err
+	}
+
+	return ris.mapper.TextForLine(lineNumber, ris.source)
+}
+
 // lcIndexedPosition implements the SourcePosition interface over a line and colu,n position.
 type lcIndexedPosition struct {
 	source     InputSource
@@ -124,4 +139,8 @@ func (lcip lcIndexedPosition) RunePosition() (uint64, error) {
 
 func (lcip lcIndexedPosition) LineAndColumn() (uint64, uint64, error) {
 	return lcip.lcPosition.LineNumber, lcip.lcPosition.ColumnPosition, nil
+}
+
+func (lcip lcIndexedPosition) LineText() (string, error) {
+	return lcip.mapper.TextForLine(lcip.lcPosition.LineNumber, lcip.source)
 }

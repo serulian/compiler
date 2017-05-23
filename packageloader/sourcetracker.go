@@ -5,6 +5,8 @@
 package packageloader
 
 import (
+	"strings"
+
 	"github.com/serulian/compiler/compilercommon"
 
 	"fmt"
@@ -73,6 +75,20 @@ func (st SourceTracker) LineAndColToRunePosition(lineNumber uint64, colPosition 
 	}
 
 	return tsf.positionMapper.LineAndColToRunePosition(lineNumber, colPosition)
+}
+
+func (st SourceTracker) TextForLine(lineNumber uint64, path compilercommon.InputSource) (string, error) {
+	tsf, exists := st.sourceFiles[path]
+	if !exists {
+		return "", fmt.Errorf("Could not find path %s", path)
+	}
+
+	lines := strings.Split(string(tsf.contents), "\n")
+	if int(lineNumber) >= len(lines) {
+		return "", fmt.Errorf("Line number %v not found in path %v", lineNumber, path)
+	}
+
+	return lines[int(lineNumber)], nil
 }
 
 // trackedSourceFile defines a struct for tracking the versioning and contents of a source file
@@ -150,6 +166,22 @@ func (m *mutableSourceTracker) LineAndColToRunePosition(lineNumber uint64, colPo
 	}
 
 	return tsf.positionMapper.LineAndColToRunePosition(lineNumber, colPosition)
+}
+
+func (m *mutableSourceTracker) TextForLine(lineNumber uint64, path compilercommon.InputSource) (string, error) {
+	tracked, exists := m.sourceFiles.Get(string(path))
+	if !exists {
+		return "", fmt.Errorf("Could not find path %s", path)
+	}
+
+	tsf := tracked.(trackedSourceFile)
+
+	lines := strings.Split(string(tsf.contents), "\n")
+	if int(lineNumber) >= len(lines) {
+		return "", fmt.Errorf("Line number %v not found in path %v", lineNumber, path)
+	}
+
+	return lines[int(lineNumber)], nil
 }
 
 // Freeze freezes the mutable source tracker into an immutable SourceTracker.
