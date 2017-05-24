@@ -71,44 +71,8 @@ func (ih importHandlingInfo) log(level compilerutil.ConsoleLogLevel, node format
 	startRune, _ := strconv.Atoi(node.getProperty(parser.NodePredicateStartRune))
 	endRune, _ := strconv.Atoi(node.getProperty(parser.NodePredicateEndRune))
 	inputSource := compilercommon.InputSource(node.getProperty(parser.NodePredicateSource))
-	sourceRange := inputSource.RangeForRunePositions(startRune, endRune, positionMapper{})
+	sourceRange := inputSource.RangeForRunePositions(startRune, endRune, compilercommon.LocalFilePositionMapper{})
 	compilerutil.LogToConsole(level, sourceRange, message, args...)
-}
-
-type positionMapper struct{}
-
-func (pm positionMapper) RunePositionToLineAndCol(runePosition int, path compilercommon.InputSource) (int, int, error) {
-	contents, err := ioutil.ReadFile(string(path))
-	if err != nil {
-		return -1, -1, err
-	}
-
-	sm := compilercommon.CreateSourcePositionMapper(contents)
-	return sm.RunePositionToLineAndCol(runePosition)
-}
-
-func (pm positionMapper) LineAndColToRunePosition(lineNumber int, colPosition int, path compilercommon.InputSource) (int, error) {
-	contents, err := ioutil.ReadFile(string(path))
-	if err != nil {
-		return -1, err
-	}
-
-	sm := compilercommon.CreateSourcePositionMapper(contents)
-	return sm.LineAndColToRunePosition(lineNumber, colPosition)
-}
-
-func (pm positionMapper) TextForLine(lineNumber int, path compilercommon.InputSource) (string, error) {
-	contents, err := ioutil.ReadFile(string(path))
-	if err != nil {
-		return "", err
-	}
-
-	lines := strings.Split(string(contents), "\n")
-	if lineNumber >= len(lines) {
-		return "", fmt.Errorf("Invalid line number")
-	}
-
-	return lines[lineNumber], nil
 }
 
 // Freeze formats the source files at the given path and freezes the specified

@@ -51,7 +51,7 @@ func (g *Groker) GetHandle() (Handle, error) {
 	currentHandle := g.currentHandle
 	if currentHandle != nil {
 		handle := *currentHandle
-		modified, err := handle.scopeResult.Graph.PackageLoader().ModifiedSourceFiles()
+		modified, err := handle.scopeResult.SourceTracker.ModifiedSourcePaths()
 		if err == nil && len(modified) == 0 {
 			return handle, nil
 		}

@@ -7,6 +7,7 @@ package srg
 import (
 	"fmt"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/parser"
 )
@@ -35,6 +36,11 @@ func (i SRGImport) Source() string {
 // Code returns a code-like summarization of the import, for human consumption.
 func (i SRGImport) Code() string {
 	return "import " + i.Source()
+}
+
+// SourceRange returns the source range for this import.
+func (i SRGImport) SourceRange() (compilercommon.SourceRange, bool) {
+	return i.srg.SourceRangeOf(i.GraphNode)
 }
 
 // PackageImports returns the package imports for this import statement, if any.
@@ -75,6 +81,11 @@ func (i SRGPackageImport) Subsource() (string, bool) {
 // Alias returns the local alias for this package import, if any.
 func (i SRGPackageImport) Alias() (string, bool) {
 	return i.GraphNode.TryGet(parser.NodeImportPredicateName)
+}
+
+// SourceRange returns the source range for this import.
+func (i SRGPackageImport) SourceRange() (compilercommon.SourceRange, bool) {
+	return i.srg.SourceRangeOf(i.GraphNode)
 }
 
 // ResolvedTypeOrMember returns the SRG type or member referenced by this import, if any.

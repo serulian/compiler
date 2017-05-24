@@ -60,10 +60,11 @@ type ScopeGraph struct {
 
 // Result represents the results of building a scope graph.
 type Result struct {
-	Status   bool                           // Whether the construction succeeded.
-	Warnings []compilercommon.SourceWarning // Any warnings encountered during construction.
-	Errors   []compilercommon.SourceError   // Any errors encountered during construction.
-	Graph    *ScopeGraph                    // The constructed scope graph.
+	Status        bool                           // Whether the construction succeeded.
+	Warnings      []compilercommon.SourceWarning // Any warnings encountered during construction.
+	Errors        []compilercommon.SourceError   // Any errors encountered during construction.
+	Graph         *ScopeGraph                    // The constructed scope graph.
+	SourceTracker packageloader.SourceTracker    // The source tracker.
 }
 
 // BuildTarget defines the target of the scoping being performed.
@@ -168,10 +169,11 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 	// Construct the scope graph.
 	scopeResult := buildScopeGraphWithResolver(sourcegraph, webidlgraph, typeResult.Graph, resolver, loader)
 	return Result{
-		Status:   scopeResult.Status && typeResult.Status && loaderResult.Status,
-		Errors:   combineErrors(loaderResult.Errors, typeResult.Errors, scopeResult.Errors),
-		Warnings: combineWarnings(loaderResult.Warnings, typeResult.Warnings, scopeResult.Warnings),
-		Graph:    scopeResult.Graph,
+		Status:        scopeResult.Status && typeResult.Status && loaderResult.Status,
+		Errors:        combineErrors(loaderResult.Errors, typeResult.Errors, scopeResult.Errors),
+		Warnings:      combineWarnings(loaderResult.Warnings, typeResult.Warnings, scopeResult.Warnings),
+		Graph:         scopeResult.Graph,
+		SourceTracker: loaderResult.SourceTracker,
 	}, nil
 }
 

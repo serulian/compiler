@@ -6,45 +6,37 @@ package grok
 
 import (
 	"github.com/serulian/compiler/compilercommon"
-	"github.com/serulian/compiler/compilergraph"
-	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/typegraph"
 )
 
-type sourceLocationCapable interface {
-	SourceLocation() (compilercommon.SourceAndLocation, bool)
+type sourceRangeCapable interface {
+	SourceRange() (compilercommon.SourceRange, bool)
 }
 
-type sourceLocationsCapable interface {
-	SourceLocations() []compilercommon.SourceAndLocation
+type multipleSourceRangesCapable interface {
+	SourceRanges() []compilercommon.SourceRange
 }
 
-// getSALs returns the source locations found for the given capable instance, if any.
-func getSALs(slc sourceLocationCapable) []compilercommon.SourceAndLocation {
-	instance, supportsMultiple := slc.(sourceLocationsCapable)
+// sourceRangesOf returns the source ranges found for the given capable instance, if any.
+func sourceRangesOf(src sourceRangeCapable) []compilercommon.SourceRange {
+	instance, supportsMultiple := src.(multipleSourceRangesCapable)
 	if supportsMultiple {
-		return instance.SourceLocations()
+		return instance.SourceRanges()
 	}
 
-	sal, hasSal := slc.SourceLocation()
-	if hasSal {
-		return []compilercommon.SourceAndLocation{sal}
+	sourceRange, hasSourceRange := src.SourceRange()
+	if hasSourceRange {
+		return []compilercommon.SourceRange{sourceRange}
 	}
 
-	return []compilercommon.SourceAndLocation{}
+	return []compilercommon.SourceRange{}
 }
 
-// getSALsForNode returns a source and location for the given SRG node, if any.
-func getSALsForNode(node compilergraph.GraphNode) []compilercommon.SourceAndLocation {
-	sal := srg.SourceLocationForNode(node)
-	return []compilercommon.SourceAndLocation{sal}
-}
-
-// getSALsForTypeRef returns a source and location for the type referenced, if any.
-func getSALsForTypeRef(typeref typegraph.TypeReference) []compilercommon.SourceAndLocation {
+// sourceRangesForTypeRef returns source ranges for the type referenced, if any.
+func sourceRangesForTypeRef(typeref typegraph.TypeReference) []compilercommon.SourceRange {
 	if !typeref.IsNormal() {
-		return []compilercommon.SourceAndLocation{}
+		return []compilercommon.SourceRange{}
 	}
 
-	return getSALs(typeref.ReferredType())
+	return sourceRangesOf(typeref.ReferredType())
 }
