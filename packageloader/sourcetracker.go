@@ -18,7 +18,7 @@ import (
 // encountered by the package loader during its loading phase.
 type SourceTracker struct {
 	// sourceFiles is the map of tracked source files.
-	sourceFiles map[compilercommon.InputSource]trackedSourceFile
+	sourceFiles map[compilercommon.InputSource]*trackedSourceFile
 
 	// pathLoader is the path loader used when loading the source files.
 	pathLoader PathLoader
@@ -132,7 +132,7 @@ func newMutableSourceTracker(pathLoader PathLoader) *mutableSourceTracker {
 
 // AddSourceFile adds a source file to the mutable source tracker.
 func (m *mutableSourceTracker) AddSourceFile(path compilercommon.InputSource, sourceKind string, contents []byte, revisionID int64) {
-	m.sourceFiles.Set(string(path), trackedSourceFile{
+	m.sourceFiles.Set(string(path), &trackedSourceFile{
 		sourcePath: path,
 		sourceKind: sourceKind,
 		contents:   contents,
@@ -186,9 +186,9 @@ func (m *mutableSourceTracker) TextForLine(lineNumber int, path compilercommon.I
 
 // Freeze freezes the mutable source tracker into an immutable SourceTracker.
 func (m *mutableSourceTracker) Freeze() SourceTracker {
-	sourceFileMap := map[compilercommon.InputSource]trackedSourceFile{}
+	sourceFileMap := map[compilercommon.InputSource]*trackedSourceFile{}
 	for entry := range m.sourceFiles.Iter() {
-		sourceFileMap[compilercommon.InputSource(entry.Key)] = entry.Val.(trackedSourceFile)
+		sourceFileMap[compilercommon.InputSource(entry.Key)] = entry.Val.(*trackedSourceFile)
 	}
 	return SourceTracker{sourceFileMap, m.pathLoader}
 }
