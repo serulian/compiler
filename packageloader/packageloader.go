@@ -226,7 +226,7 @@ func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 
 	// Apply all handler changes.
 	for _, handler := range p.handlers {
-		handler.Apply(result.PackageMap)
+		handler.Apply(result.PackageMap, result.SourceTracker)
 	}
 
 	// Perform verification in all handlers.

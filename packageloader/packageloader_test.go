@@ -38,7 +38,7 @@ func (tt *testTracker) createHandler() SourceHandler {
 	return tt
 }
 
-func (tt *testTracker) Apply(packageMap LoadedPackageMap) {
+func (tt *testTracker) Apply(packageMap LoadedPackageMap, sourceTracker SourceTracker) {
 
 }
 
