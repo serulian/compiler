@@ -1,25 +1,12 @@
 {
-    "67395327cadd4afe177edfe4f0901246": {
-        "Key": "67395327cadd4afe177edfe4f0901246",
-        "Kind": 8,
-        "Children": {},
-        "Predicates": {
-            "tdg-node-kind": "8|NodeType|tdg",
-            "tdg-source-location": "\n\u001btests/basicmultifile.webidl|SourceLocation|tdg",
-            "tdg-source-module": "tests/basicmultifile.webidl",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "e4f645a7",
-            "tdg-type-name": "SomeInterface"
-        }
-    },
-    "6e381a92190056adb4f21cfd8e17aab9": {
-        "Key": "6e381a92190056adb4f21cfd8e17aab9",
+    "0afacb500df23d576019168e5d740e4b": {
+        "Key": "0afacb500df23d576019168e5d740e4b",
         "Kind": 3,
         "Children": {
-            "035db5d69c3f187ff68e328e6aaddc2e": {
+            "8fb3880b832e5f05e1c81f7f8ef5f2e1": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "035db5d69c3f187ff68e328e6aaddc2e",
+                    "Key": "8fb3880b832e5f05e1c81f7f8ef5f2e1",
                     "Kind": 9,
                     "Children": {},
                     "Predicates": {
@@ -29,7 +16,6 @@
                         "tdg-member-resolved-type": "AnotherInterface",
                         "tdg-member-signature": "\n\tcoolthing\u0010\t \u0001*\u0010AnotherInterface",
                         "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-location": "\n\u001btests/basicmultifile.webidl\u0010\u001b|SourceLocation|tdg",
                         "tdg-source-module": "(root).webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -38,21 +24,32 @@
         },
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-location": "\n\u001btests/basicmultifile.webidl|SourceLocation|tdg",
             "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "SomeInterface",
             "tdg-type-name": "SomeInterface"
         }
     },
-    "f99a75fedee5310fa3643d8408d2189c": {
-        "Key": "f99a75fedee5310fa3643d8408d2189c",
+    "81d13a9cd3a6465dd2f5e4b2534dae91": {
+        "Key": "81d13a9cd3a6465dd2f5e4b2534dae91",
+        "Kind": 8,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "8|NodeType|tdg",
+            "tdg-source-module": "tests/basicmultifile.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "e4f645a7",
+            "tdg-type-name": "SomeInterface"
+        }
+    },
+    "92d578cb16072cbd059b75e9fb3ac2ce": {
+        "Key": "92d578cb16072cbd059b75e9fb3ac2ce",
         "Kind": 3,
         "Children": {
-            "c9d470e1014143b55ce6eb4bd7e35b14": {
+            "237320870965977bd7b85d3ee2a1db71": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "c9d470e1014143b55ce6eb4bd7e35b14",
+                    "Key": "237320870965977bd7b85d3ee2a1db71",
                     "Kind": 9,
                     "Children": {},
                     "Predicates": {
@@ -62,7 +59,6 @@
                         "tdg-member-resolved-type": "function\u003cvoid\u003e",
                         "tdg-member-signature": "\n\u000bdosomething\u0010\u0007 \u0001*\u000efunction\u003cvoid\u003e",
                         "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-location": "\n\u0026tests/basicmultifile/multifile1.webidl\u0010\u001e|SourceLocation|tdg",
                         "tdg-source-module": "(root).webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -71,7 +67,6 @@
         },
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-location": "\n\u0026tests/basicmultifile/multifile1.webidl|SourceLocation|tdg",
             "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "AnotherInterface",

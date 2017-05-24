@@ -1,77 +1,48 @@
 {
-    "2e693671bf1b506d877c8d1a2a172b4c": {
-        "Key": "2e693671bf1b506d877c8d1a2a172b4c",
+    "2df2291930eb27aa162448443ef4937d": {
+        "Key": "2df2291930eb27aa162448443ef4937d",
         "Kind": 8,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "8|NodeType|tdg",
-            "tdg-source-location": "\n\u0014tests/indexer.webidl\u0010=|SourceLocation|tdg",
+            "tdg-source-module": "tests/indexer.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "84a4692e",
+            "tdg-type-name": "Second"
+        }
+    },
+    "38682d27d3bcb1f192c679f65cc9849e": {
+        "Key": "38682d27d3bcb1f192c679f65cc9849e",
+        "Kind": 8,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "8|NodeType|tdg",
             "tdg-source-module": "tests/indexer.webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "a21e8923",
             "tdg-type-name": "Fourth"
         }
     },
-    "3312e20aea64f648c0d7e5a444dd39f1": {
-        "Key": "3312e20aea64f648c0d7e5a444dd39f1",
-        "Kind": 8,
-        "Children": {},
-        "Predicates": {
-            "tdg-node-kind": "8|NodeType|tdg",
-            "tdg-source-location": "\n\u0014tests/indexer.webidl|SourceLocation|tdg",
-            "tdg-source-module": "tests/indexer.webidl",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "53841263",
-            "tdg-type-name": "First"
-        }
-    },
-    "3a66af0b23bca7fb8799485231214606": {
-        "Key": "3a66af0b23bca7fb8799485231214606",
+    "58167990c381b247bd1607661bc624d6": {
+        "Key": "58167990c381b247bd1607661bc624d6",
         "Kind": 3,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-location": "\n\u0014tests/indexer.webidl\u0010=|SourceLocation|tdg",
-            "tdg-source-module": "(root).webidl",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "Fourth",
-            "tdg-type-name": "Fourth"
-        }
-    },
-    "43a9291078bacef64e80785264c5efb8": {
-        "Key": "43a9291078bacef64e80785264c5efb8",
-        "Kind": 3,
-        "Children": {},
-        "Predicates": {
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-location": "\n\u0014tests/indexer.webidl\u0010)|SourceLocation|tdg",
             "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "Third",
             "tdg-type-name": "Third"
         }
     },
-    "51c161b0481a21e6e0b3486f9f75158a": {
-        "Key": "51c161b0481a21e6e0b3486f9f75158a",
-        "Kind": 8,
-        "Children": {},
-        "Predicates": {
-            "tdg-node-kind": "8|NodeType|tdg",
-            "tdg-source-location": "\n\u0014tests/indexer.webidl\u0010)|SourceLocation|tdg",
-            "tdg-source-module": "tests/indexer.webidl",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "da77d421",
-            "tdg-type-name": "Third"
-        }
-    },
-    "64956d13ea3dc68748be3e7352e8ce32": {
-        "Key": "64956d13ea3dc68748be3e7352e8ce32",
+    "5a7d4ff74f3c4ab7fe4f1ff92128c2ca": {
+        "Key": "5a7d4ff74f3c4ab7fe4f1ff92128c2ca",
         "Kind": 3,
         "Children": {
-            "08d5bc3e21c52074de129f4af0bc4e5a": {
+            "0cafb9dfc8563d9a570fbd7a263582db": {
                 "Predicate": "tdg-declaration-operator",
                 "Child": {
-                    "Key": "08d5bc3e21c52074de129f4af0bc4e5a",
+                    "Key": "0cafb9dfc8563d9a570fbd7a263582db",
                     "Kind": 10,
                     "Children": {
                         "ec1431cb17a2a53947afec3c2cf726d0": {
@@ -97,16 +68,15 @@
                         "tdg-node-kind": "10|NodeType|tdg",
                         "tdg-operator-name": "index",
                         "tdg-operator-native": "true",
-                        "tdg-source-location": "\n\u0014tests/indexer.webidl\u0010n|SourceLocation|tdg",
                         "tdg-source-module": "(root).webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
                 }
             },
-            "3e2874a1185460e2a5b206afc631cc0e": {
+            "d6275e240a384d282baa0cea757c467c": {
                 "Predicate": "tdg-declaration-operator",
                 "Child": {
-                    "Key": "3e2874a1185460e2a5b206afc631cc0e",
+                    "Key": "d6275e240a384d282baa0cea757c467c",
                     "Kind": 10,
                     "Children": {
                         "69c7dfb293b5923e5b91ad780ee76061": {
@@ -131,7 +101,6 @@
                         "tdg-node-kind": "10|NodeType|tdg",
                         "tdg-operator-name": "setindex",
                         "tdg-operator-native": "true",
-                        "tdg-source-location": "\n\u0014tests/indexer.webidl\u0010\ufffd\u0001|SourceLocation|tdg",
                         "tdg-source-module": "(root).webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -140,63 +109,82 @@
         },
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-location": "\n\u0014tests/indexer.webidl\u0010S|SourceLocation|tdg",
             "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "MyInterface",
             "tdg-type-name": "MyInterface"
         }
     },
-    "94fe0f95e88f956b8508c01ff3a8aa39": {
-        "Key": "94fe0f95e88f956b8508c01ff3a8aa39",
-        "Kind": 3,
-        "Children": {},
-        "Predicates": {
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-location": "\n\u0014tests/indexer.webidl\u0010\u0014|SourceLocation|tdg",
-            "tdg-source-module": "(root).webidl",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "Second",
-            "tdg-type-name": "Second"
-        }
-    },
-    "a07fa8a50287a45b7372001bea69f30e": {
-        "Key": "a07fa8a50287a45b7372001bea69f30e",
+    "6a188a85808be2d5cedfae507df00ec7": {
+        "Key": "6a188a85808be2d5cedfae507df00ec7",
         "Kind": 8,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "8|NodeType|tdg",
-            "tdg-source-location": "\n\u0014tests/indexer.webidl\u0010S|SourceLocation|tdg",
             "tdg-source-module": "tests/indexer.webidl",
             "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "8ab6475b",
-            "tdg-type-name": "MyInterface"
+            "tdg-type-globalid": "da77d421",
+            "tdg-type-name": "Third"
         }
     },
-    "b4f2ee7dc5eea9dfd735ef3208d81a29": {
-        "Key": "b4f2ee7dc5eea9dfd735ef3208d81a29",
+    "b9cee4214b06b86b3147c6fbe1453461": {
+        "Key": "b9cee4214b06b86b3147c6fbe1453461",
         "Kind": 3,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-location": "\n\u0014tests/indexer.webidl|SourceLocation|tdg",
             "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "First",
             "tdg-type-name": "First"
         }
     },
-    "bbca40bdaf7a6f7e7f435e4280723f79": {
-        "Key": "bbca40bdaf7a6f7e7f435e4280723f79",
+    "bcd9d41fb4dd729d877b0933aeddc045": {
+        "Key": "bcd9d41fb4dd729d877b0933aeddc045",
         "Kind": 8,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "8|NodeType|tdg",
-            "tdg-source-location": "\n\u0014tests/indexer.webidl\u0010\u0014|SourceLocation|tdg",
             "tdg-source-module": "tests/indexer.webidl",
             "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "84a4692e",
+            "tdg-type-globalid": "53841263",
+            "tdg-type-name": "First"
+        }
+    },
+    "d5869ad3e3b66fc899fb6cf62ba323e8": {
+        "Key": "d5869ad3e3b66fc899fb6cf62ba323e8",
+        "Kind": 3,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-source-module": "(root).webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "Fourth",
+            "tdg-type-name": "Fourth"
+        }
+    },
+    "e9769cb70b49900a1b8a0ee1a8c09dda": {
+        "Key": "e9769cb70b49900a1b8a0ee1a8c09dda",
+        "Kind": 3,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-source-module": "(root).webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "Second",
             "tdg-type-name": "Second"
+        }
+    },
+    "f4b2bac62721539b084e126edf477b56": {
+        "Key": "f4b2bac62721539b084e126edf477b56",
+        "Kind": 8,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "8|NodeType|tdg",
+            "tdg-source-module": "tests/indexer.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "8ab6475b",
+            "tdg-type-name": "MyInterface"
         }
     }
 }

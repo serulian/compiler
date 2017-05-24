@@ -5,12 +5,13 @@
 package webidl
 
 import (
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/webidl/parser"
 
-	"github.com/streamrail/concurrent-map"
+	cmap "github.com/streamrail/concurrent-map"
 )
 
 // TypeCollapser represents a collapsed set of the types that will be emitted
@@ -18,18 +19,20 @@ import (
 // because in order to ensure compatibility in the flat namespace of WebIDL,
 // we need to merge types with the same name.
 type TypeCollapser struct {
-	irg                *WebIRG
-	typesEncountered   cmap.ConcurrentMap
-	globalDeclarations []IRGDeclaration
+	irg                    *WebIRG
+	typesEncountered       cmap.ConcurrentMap
+	collapsedTypesByNodeID cmap.ConcurrentMap
+	globalDeclarations     []IRGDeclaration
 }
 
 // createTypeCollapser returns a new populated type collapser. Note that this call modifies the
 // graph, and therefore should only be invoked once.
 func createTypeCollapser(irg *WebIRG, modifier compilergraph.GraphLayerModifier) *TypeCollapser {
 	tc := &TypeCollapser{
-		irg:                irg,
-		typesEncountered:   cmap.New(),
-		globalDeclarations: make([]IRGDeclaration, 0),
+		irg:                    irg,
+		typesEncountered:       cmap.New(),
+		collapsedTypesByNodeID: cmap.New(),
+		globalDeclarations:     make([]IRGDeclaration, 0),
 	}
 
 	tc.populate(modifier)
@@ -81,6 +84,16 @@ func (tc *TypeCollapser) Types() chan *CollapsedType {
 	return ch
 }
 
+// GetTypeForNodeID returns the collapsed type with the given matching Node ID.
+func (tc *TypeCollapser) GetTypeForNodeID(nodeID compilergraph.GraphNodeId) (*CollapsedType, bool) {
+	collapsed, found := tc.collapsedTypesByNodeID.Get(string(nodeID))
+	if !found {
+		return nil, false
+	}
+
+	return collapsed.(*CollapsedType), true
+}
+
 // GetType returns the collapsed type matching the given name, if any.
 func (tc *TypeCollapser) GetType(name string) (*CollapsedType, bool) {
 	ct, found := tc.typesEncountered.Get(name)
@@ -98,7 +111,7 @@ func (tc *TypeCollapser) getType(modifier compilergraph.GraphLayerModifier, name
 		func(exist bool, valueInMap interface{}, newValue interface{}) interface{} {
 			if !exist {
 				globalDeclaration := modifier.CreateNode(parser.NodeTypeGlobalDeclaration).AsNode()
-				return &CollapsedType{
+				collapsedType := &CollapsedType{
 					RootNode:     globalDeclaration,
 					Declarations: make([]IRGDeclaration, 0, 1),
 					Name:         name,
@@ -109,6 +122,9 @@ func (tc *TypeCollapser) getType(modifier compilergraph.GraphLayerModifier, name
 					Members:         map[string]IRGMember{},
 					Specializations: map[MemberSpecialization]IRGMember{},
 				}
+
+				tc.collapsedTypesByNodeID.Set(string(globalDeclaration.GetNodeId()), collapsedType)
+				return collapsedType
 			}
 
 			return valueInMap
@@ -227,4 +243,16 @@ func (ct *CollapsedType) RegisterSpecialization(member IRGMember, reporter typeg
 
 	ct.Specializations[specialization] = member
 	return true
+}
+
+// SourceRanges returns the ranges for this collapsed type.
+func (ct *CollapsedType) SourceRanges() []compilercommon.SourceRange {
+	var ranges = make([]compilercommon.SourceRange, 0, len(ct.Declarations))
+	for _, declaration := range ct.Declarations {
+		sourceRange, hasSourceRange := declaration.SourceRange()
+		if hasSourceRange {
+			ranges = append(ranges, sourceRange)
+		}
+	}
+	return ranges
 }

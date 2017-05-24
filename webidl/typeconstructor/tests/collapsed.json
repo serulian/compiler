@@ -1,31 +1,12 @@
 {
-    "13462ab42f68754824ebcc7e55007a0d": {
-        "Key": "13462ab42f68754824ebcc7e55007a0d",
+    "d2e938e36719df6b352759a3503f2543": {
+        "Key": "d2e938e36719df6b352759a3503f2543",
         "Kind": 3,
         "Children": {
-            "175dc4a0405d522dbae7228041744f6b": {
+            "386f3d463c204cc0af01b7ee26485ffa": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "175dc4a0405d522dbae7228041744f6b",
-                    "Kind": 9,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-exported": "true",
-                        "tdg-member-name": "Second",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "any",
-                        "tdg-member-signature": "\n\u0006second\u0010\t \u0001*\u0003any",
-                        "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-location": "\n\u001dtests/collapsed/second.webidl\u0010 |SourceLocation|tdg",
-                        "tdg-source-module": "(root).webidl",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
-            "2413256b4208c6f48dc35b4ed1e5bceb": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "2413256b4208c6f48dc35b4ed1e5bceb",
+                    "Key": "386f3d463c204cc0af01b7ee26485ffa",
                     "Kind": 9,
                     "Children": {},
                     "Predicates": {
@@ -35,16 +16,15 @@
                         "tdg-member-resolved-type": "any",
                         "tdg-member-signature": "\n\u0005first\u0010\t \u0001*\u0003any",
                         "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-location": "\n\u0016tests/collapsed.webidl\u0010\ufffd\u0001|SourceLocation|tdg",
                         "tdg-source-module": "(root).webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
                 }
             },
-            "6b92d6eb61d8293d7a59c8ffd679890f": {
+            "3951af39c7b249232008d383bffdf0ec": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "6b92d6eb61d8293d7a59c8ffd679890f",
+                    "Key": "3951af39c7b249232008d383bffdf0ec",
                     "Kind": 9,
                     "Children": {},
                     "Predicates": {
@@ -54,7 +34,24 @@
                         "tdg-member-resolved-type": "any",
                         "tdg-member-signature": "\n\u0005third\u0010\t \u0001*\u0003any",
                         "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-location": "\n\u0016tests/collapsed.webidl\u0010 |SourceLocation|tdg",
+                        "tdg-source-module": "(root).webidl",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "c11c3e3313a0c563754eeb0c517d7046": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "c11c3e3313a0c563754eeb0c517d7046",
+                    "Kind": 9,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "Second",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "any",
+                        "tdg-member-signature": "\n\u0006second\u0010\t \u0001*\u0003any",
+                        "tdg-node-kind": "9|NodeType|tdg",
                         "tdg-source-module": "(root).webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -63,20 +60,18 @@
         },
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-location": "\n\u001ctests/collapsed/first.webidl|SourceLocation|tdg",
             "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "ISomeCollapsedType",
             "tdg-type-name": "ISomeCollapsedType"
         }
     },
-    "eafe700e6cb9492dca22ec777b1a14c1": {
-        "Key": "eafe700e6cb9492dca22ec777b1a14c1",
+    "fafb6f46db4314511c8c0cd8d778a9c1": {
+        "Key": "fafb6f46db4314511c8c0cd8d778a9c1",
         "Kind": 8,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "8|NodeType|tdg",
-            "tdg-source-location": "\n\u0016tests/collapsed.webidl|SourceLocation|tdg",
             "tdg-source-module": "tests/collapsed.webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "fd519595",
