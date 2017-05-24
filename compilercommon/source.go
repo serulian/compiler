@@ -22,6 +22,11 @@ func (is InputSource) RangeForRunePosition(runePosition int, mapper PositionMapp
 	return is.RangeForRunePositions(runePosition, runePosition, mapper)
 }
 
+// PositionForRunePosition returns a source position over this source file.
+func (is InputSource) PositionForRunePosition(runePosition int, mapper PositionMapper) SourcePosition {
+	return runeIndexedPosition{is, mapper, runePosition}
+}
+
 // RangeForRunePositions returns a source range over this source file.
 func (is InputSource) RangeForRunePositions(startRune int, endRune int, mapper PositionMapper) SourceRange {
 	return sourceRange{is, runeIndexedPosition{is, mapper, startRune}, runeIndexedPosition{is, mapper, endRune}}

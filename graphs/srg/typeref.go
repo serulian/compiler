@@ -54,9 +54,9 @@ func (g *SRG) GetTypeReferences() []SRGTypeRef {
 	return refs
 }
 
-// Location returns the source location for this type ref.
-func (t SRGTypeRef) Location() compilercommon.SourceAndLocation {
-	return salForNode(t.GraphNode)
+// SourceRange returns the source range for this type ref.
+func (t SRGTypeRef) SourceRange() (compilercommon.SourceRange, bool) {
+	return t.srg.SourceRangeOf(t.GraphNode)
 }
 
 // ResolutionName returns the last piece of the ResolutionPath.

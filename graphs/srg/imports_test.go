@@ -69,11 +69,6 @@ func TestImports(t *testing.T) {
 				continue
 			}
 
-			_, hasSAL := matchingImport.SourceLocation()
-			if !assert.Equal(t, expected.isModule, hasSAL, "Mismatch in SourceLocation for import %s under test %s", expected.source, test.sourceFile) {
-				continue
-			}
-
 			for index, matchingPackage := range matchingPackages {
 				expectedPackage := expected.expectedPackages[index]
 				subsource, hasSubsource := matchingPackage.Subsource()

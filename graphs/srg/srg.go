@@ -29,8 +29,9 @@ const srgSourceKind = ""
 type SRG struct {
 	Graph *compilergraph.SerulianGraph // The root graph.
 
-	layer      *compilergraph.GraphLayer      // The SRG layer in the graph.
-	packageMap packageloader.LoadedPackageMap // Map from package kind and path to info.
+	layer         *compilergraph.GraphLayer      // The SRG layer in the graph.
+	packageMap    packageloader.LoadedPackageMap // Map from package kind and path to info.
+	sourceTracker packageloader.SourceTracker    // The source tracker.
 
 	aliasMap      map[string]SRGType                       // Map of aliased types.
 	modulePathMap map[compilercommon.InputSource]SRGModule // Map of modules by path.
@@ -72,14 +73,23 @@ func (g *SRG) TryGetNode(nodeId compilergraph.GraphNodeId) (compilergraph.GraphN
 	return g.layer.TryGetNode(nodeId)
 }
 
-// NodeLocation returns the location of the given SRG node.
-func (g *SRG) NodeLocation(node compilergraph.GraphNode) compilercommon.SourceAndLocation {
-	return salForNode(node)
-}
-
 // PackageLoaderHandler returns a SourceHandler for populating the SRG via a package loader.
 func (g *SRG) PackageLoaderHandler() packageloader.SourceHandler {
 	return &srgSourceHandler{g, g.layer.NewModifier()}
+}
+
+// SourceRangeOf returns a SourceRange for the given graph node.
+func (g *SRG) SourceRangeOf(node compilergraph.GraphNode) (compilercommon.SourceRange, bool) {
+	startRune, hasStartRune := node.TryGetValue(parser.NodePredicateStartRune)
+	endRune, hasEndRune := node.TryGetValue(parser.NodePredicateEndRune)
+	sourcePath, hasSource := node.TryGet(parser.NodePredicateSource)
+
+	if !hasStartRune || !hasEndRune || !hasSource {
+		return nil, false
+	}
+
+	source := compilercommon.InputSource(sourcePath)
+	return source.RangeForRunePositions(startRune.Int(), endRune.Int(), g.sourceTracker), true
 }
 
 // ParseExpression parses the given expression string and returns its node. Note that the

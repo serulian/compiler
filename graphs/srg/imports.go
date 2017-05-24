@@ -7,7 +7,6 @@ package srg
 import (
 	"fmt"
 
-	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/parser"
 )
@@ -36,23 +35,6 @@ func (i SRGImport) Source() string {
 // Code returns a code-like summarization of the import, for human consumption.
 func (i SRGImport) Code() string {
 	return "import " + i.Source()
-}
-
-// SourceLocation returns the source location for this import's module, if applicable.
-func (i SRGImport) SourceLocation() (compilercommon.SourceAndLocation, bool) {
-	packageLocation := i.Get(parser.NodeImportPredicateLocation)
-	packageKind, _ := i.TryGet(parser.NodeImportPredicateKind)
-	packageInfo, ok := i.srg.packageMap.Get(packageKind, packageLocation)
-	if !ok {
-		return compilercommon.SourceAndLocation{}, false
-	}
-
-	modulePaths := packageInfo.ModulePaths()
-	if len(modulePaths) == 1 {
-		return compilercommon.NewSourceAndLocation(modulePaths[0], 0), true
-	}
-
-	return compilercommon.SourceAndLocation{}, false
 }
 
 // PackageImports returns the package imports for this import statement, if any.
@@ -93,21 +75,6 @@ func (i SRGPackageImport) Subsource() (string, bool) {
 // Alias returns the local alias for this package import, if any.
 func (i SRGPackageImport) Alias() (string, bool) {
 	return i.GraphNode.TryGet(parser.NodeImportPredicateName)
-}
-
-// SourceLocation returns the source location for this package import's module, if applicable.
-func (i SRGPackageImport) SourceLocation() (compilercommon.SourceAndLocation, bool) {
-	packageInfo, err := i.srg.getPackageForImport(i.GraphNode)
-	if err != nil {
-		return compilercommon.SourceAndLocation{}, false
-	}
-
-	modulePaths := packageInfo.ModulePaths()
-	if len(modulePaths) == 1 {
-		return compilercommon.NewSourceAndLocation(modulePaths[0], 0), true
-	}
-
-	return compilercommon.SourceAndLocation{}, false
 }
 
 // ResolvedTypeOrMember returns the SRG type or member referenced by this import, if any.

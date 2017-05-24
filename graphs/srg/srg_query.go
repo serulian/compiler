@@ -45,11 +45,14 @@ func (slice locationResultNodes) Swap(i, j int) {
 	slice[i], slice[j] = slice[j], slice[i]
 }
 
-// FindNodeForLocation finds the node matching the given location in the SRG.
-// As multiple nodes may *contain* the location, the node with the smallest range
+// FindNodeForPosition finds the node matching the given position in the SRG.
+// As multiple nodes may *contain* the position, the node with the smallest range
 // is returned (if any).
-func (g *SRG) FindNodeForLocation(sal compilercommon.SourceAndLocation) (compilergraph.GraphNode, bool) {
-	runePosition := sal.Location().BytePosition()
+func (g *SRG) FindNodeForPosition(sourcePosition compilercommon.SourcePosition) (compilergraph.GraphNode, bool) {
+	runePosition, err := sourcePosition.RunePosition()
+	if err != nil {
+		return compilergraph.GraphNode{}, false
+	}
 
 	containingFilter := func(q compilergraph.GraphQuery) compilergraph.Query {
 		return q.
@@ -58,7 +61,7 @@ func (g *SRG) FindNodeForLocation(sal compilercommon.SourceAndLocation) (compile
 	}
 
 	nit := g.layer.StartQuery().
-		Has(parser.NodePredicateSource, string(sal.Source())).
+		Has(parser.NodePredicateSource, string(sourcePosition.Source())).
 		FilterBy(containingFilter).
 		BuildNodeIterator(parser.NodePredicateStartRune, parser.NodePredicateEndRune)
 
