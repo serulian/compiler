@@ -72,7 +72,7 @@ type sourceFormatter struct {
 	newlineCount     int  // The number of lines in the buffer.
 	charactersOnLine int  // The number of characters on the current line in the buffer.
 
-	positionMapper compilercommon.SourcePositionMapper // Mapper for mapping from the input source.
+	positionMapper *compilercommon.SourcePositionMapper // Mapper for mapping from the input source.
 
 	existingSourceMap  *sourcemap.SourceMap // The source map for the input code.
 	formattedSourceMap *sourcemap.SourceMap // The source map for the formatted code.
@@ -147,7 +147,7 @@ func (sf *sourceFormatter) formatIdentifierList(identifiers []*ast.Identifier) {
 func (sf *sourceFormatter) addMapping(bytePosition file.Idx) {
 	// Note: We use a position mapper here rather than the built-in .Position as the built-in
 	// is incredibly slow and does not do any form of caching.
-	ufLineNumber, ufColPosition, err := sf.positionMapper.Map(int(bytePosition))
+	ufLineNumber, ufColPosition, err := sf.positionMapper.RunePositionToLineAndCol(int(bytePosition))
 	if err != nil {
 		panic(err)
 	}

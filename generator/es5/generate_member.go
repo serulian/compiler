@@ -149,7 +149,7 @@ func (gm generatingMember) FunctionSource() esbuilder.SourceBuilder {
 		BodyNode:       gm.BodyNode(),
 	}
 
-	return statemachine.GenerateFunctionSource(functionDef, gm.Generator.scopegraph, gm.Generator.positionMapper)
+	return statemachine.GenerateFunctionSource(functionDef, gm.Generator.scopegraph)
 }
 
 // GetterSource returns the generated code for the getter for this member.
@@ -169,7 +169,7 @@ func (gm generatingMember) GetterSource() esbuilder.SourceBuilder {
 		BodyNode:       getterBodyNode,
 	}
 
-	return statemachine.GenerateFunctionSource(functionDef, gm.Generator.scopegraph, gm.Generator.positionMapper)
+	return statemachine.GenerateFunctionSource(functionDef, gm.Generator.scopegraph)
 }
 
 // SetterSource returns the generated code for the setter for this member.
@@ -189,7 +189,7 @@ func (gm generatingMember) SetterSource() esbuilder.SourceBuilder {
 		BodyNode:       setterBodyNode,
 	}
 
-	return statemachine.GenerateFunctionSource(functionDef, gm.Generator.scopegraph, gm.Generator.positionMapper)
+	return statemachine.GenerateFunctionSource(functionDef, gm.Generator.scopegraph)
 }
 
 func (gm generatingMember) ReturnType() typegraph.TypeReference {

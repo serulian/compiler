@@ -307,7 +307,7 @@ func (sg *stateGenerator) generateAsyncResolveExpression(resolveExpression *code
 	// a Promise.
 	result := expressiongenerator.GenerateExpression(resolveExpression.ChildExpression,
 		expressiongenerator.EnsureAsync,
-		sg.scopegraph, sg.positionMapper,
+		sg.scopegraph,
 		sg.generateMachine)
 
 	var resolutionName = ""

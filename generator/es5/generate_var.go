@@ -48,7 +48,7 @@ func (gen *es5generator) generateVariables(typeOrModule typegraph.TGTypeOrModule
 func (gen *es5generator) generateVariable(member typegraph.TGMember) generatedSourceResult {
 	srgMember, _ := gen.getSRGMember(member)
 	initializer, _ := srgMember.Initializer()
-	initResult := statemachine.GenerateExpressionResult(initializer, gen.scopegraph, gen.positionMapper)
+	initResult := statemachine.GenerateExpressionResult(initializer, gen.scopegraph)
 
 	prefix := "instance"
 	if member.IsStatic() {
