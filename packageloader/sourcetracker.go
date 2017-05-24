@@ -58,7 +58,7 @@ func (st SourceTracker) RunePositionToLineAndCol(runePosition int, path compiler
 	}
 
 	if tsf.positionMapper == nil {
-		tsf.positionMapper = createSourcePositionMapper(tsf.contents)
+		tsf.positionMapper = compilercommon.CreateSourcePositionMapper(tsf.contents)
 	}
 
 	return tsf.positionMapper.RunePositionToLineAndCol(runePosition)
@@ -71,7 +71,7 @@ func (st SourceTracker) LineAndColToRunePosition(lineNumber int, colPosition int
 	}
 
 	if tsf.positionMapper == nil {
-		tsf.positionMapper = createSourcePositionMapper(tsf.contents)
+		tsf.positionMapper = compilercommon.CreateSourcePositionMapper(tsf.contents)
 	}
 
 	return tsf.positionMapper.LineAndColToRunePosition(lineNumber, colPosition)
@@ -111,7 +111,7 @@ type trackedSourceFile struct {
 
 	// positionMapper is the source position mapper for converting rune positions <-> line+col
 	// positions. Only instantiated if necessary.
-	positionMapper *sourcePositionMapper
+	positionMapper *compilercommon.SourcePositionMapper
 }
 
 // mutableSourceTracker is a source tracker that is built during the package loading phase.
@@ -148,7 +148,7 @@ func (m *mutableSourceTracker) RunePositionToLineAndCol(runePosition int, path c
 
 	tsf := tracked.(trackedSourceFile)
 	if tsf.positionMapper == nil {
-		tsf.positionMapper = createSourcePositionMapper(tsf.contents)
+		tsf.positionMapper = compilercommon.CreateSourcePositionMapper(tsf.contents)
 	}
 
 	return tsf.positionMapper.RunePositionToLineAndCol(runePosition)
@@ -162,7 +162,7 @@ func (m *mutableSourceTracker) LineAndColToRunePosition(lineNumber int, colPosit
 
 	tsf := tracked.(trackedSourceFile)
 	if tsf.positionMapper == nil {
-		tsf.positionMapper = createSourcePositionMapper(tsf.contents)
+		tsf.positionMapper = compilercommon.CreateSourcePositionMapper(tsf.contents)
 	}
 
 	return tsf.positionMapper.LineAndColToRunePosition(lineNumber, colPosition)

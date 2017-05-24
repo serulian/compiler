@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package packageloader
+package compilercommon
 
 import (
 	"fmt"
@@ -11,14 +11,31 @@ import (
 	"github.com/emirpasic/gods/trees/redblacktree"
 )
 
-// sourcePositionMapper defines a helper struct for cached, faster lookup of rune position <->
+// SourcePositionMapper defines a helper struct for cached, faster lookup of rune position <->
 // (line, column) for a specific source file.
-type sourcePositionMapper struct {
+type SourcePositionMapper struct {
 	// rangeTree holds a tree that maps from rune position to a line and start position.
 	rangeTree *redblacktree.Tree
 
 	// lineMap holds a map from line number to rune positions for that line.
 	lineMap map[int]inclusiveRange
+}
+
+// CreateSourcePositionMapper returns a source position mapper for the contents of a source file.
+func CreateSourcePositionMapper(contents []byte) *SourcePositionMapper {
+	lines := strings.Split(string(contents), "\n")
+	rangeTree := redblacktree.NewWith(inclusiveComparator)
+	lineMap := map[int]inclusiveRange{}
+
+	var currentStart = int(0)
+	for index, line := range lines {
+		lineEnd := currentStart + int(len(line))
+		rangeTree.Put(inclusiveRange{currentStart, lineEnd}, lineAndStart{int(index), currentStart})
+		lineMap[int(index)] = inclusiveRange{currentStart, lineEnd}
+		currentStart = lineEnd + 1
+	}
+
+	return &SourcePositionMapper{rangeTree, lineMap}
 }
 
 type inclusiveRange struct {
@@ -50,25 +67,8 @@ func inclusiveComparator(a, b interface{}) int {
 	return 0
 }
 
-// createSourcePositionMapper returns a source position mapper for the contents of a source file.
-func createSourcePositionMapper(contents []byte) *sourcePositionMapper {
-	lines := strings.Split(string(contents), "\n")
-	rangeTree := redblacktree.NewWith(inclusiveComparator)
-	lineMap := map[int]inclusiveRange{}
-
-	var currentStart = int(0)
-	for index, line := range lines {
-		lineEnd := currentStart + int(len(line))
-		rangeTree.Put(inclusiveRange{currentStart, lineEnd}, lineAndStart{int(index), currentStart})
-		lineMap[int(index)] = inclusiveRange{currentStart, lineEnd}
-		currentStart = lineEnd + 1
-	}
-
-	return &sourcePositionMapper{rangeTree, lineMap}
-}
-
 // RunePositionToLineAndCol returns the line number and column position of the rune position in source.
-func (spm *sourcePositionMapper) RunePositionToLineAndCol(runePosition int) (int, int, error) {
+func (spm *SourcePositionMapper) RunePositionToLineAndCol(runePosition int) (int, int, error) {
 	ls, found := spm.rangeTree.Get(inclusiveRange{runePosition, runePosition})
 	if !found {
 		return 0, 0, fmt.Errorf("Unknown rune position %v in source file", runePosition)
@@ -79,7 +79,7 @@ func (spm *sourcePositionMapper) RunePositionToLineAndCol(runePosition int) (int
 }
 
 // LineAndColToRunePosition returns the rune position of the line number and column position in source.
-func (spm *sourcePositionMapper) LineAndColToRunePosition(lineNumber int, colPosition int) (int, error) {
+func (spm *SourcePositionMapper) LineAndColToRunePosition(lineNumber int, colPosition int) (int, error) {
 	lineRuneInfo, hasLine := spm.lineMap[lineNumber]
 	if !hasLine {
 		return 0, fmt.Errorf("Unknown line %v in source file", lineNumber)

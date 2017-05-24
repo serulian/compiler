@@ -6,10 +6,10 @@
 package escommon
 
 import (
-	"log"
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"regexp"
 	"strings"

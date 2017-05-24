@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package packageloader
+package compilercommon
 
 import (
 	"io/ioutil"
@@ -17,7 +17,7 @@ func TestPositionMapping(t *testing.T) {
 		return
 	}
 
-	mapper := createSourcePositionMapper(mappingText)
+	mapper := CreateSourcePositionMapper(mappingText)
 
 	for runePosition := range mappingText {
 		lineNumber, colPosition, err := mapper.RunePositionToLineAndCol(runePosition)
