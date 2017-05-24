@@ -31,7 +31,7 @@ func (sh *irgSourceHandler) Parse(source compilercommon.InputSource, input strin
 	parser.Parse(&irgASTNode{rootNode}, sh.buildASTNode, source, input)
 }
 
-func (sh *irgSourceHandler) Apply(packageMap packageloader.LoadedPackageMap) {
+func (sh *irgSourceHandler) Apply(packageMap packageloader.LoadedPackageMap, sourceTracker packageloader.SourceTracker) {
 	// Apply the changes to the graph.
 	sh.modifier.Apply()
 
@@ -44,6 +44,7 @@ func (sh *irgSourceHandler) Apply(packageMap packageloader.LoadedPackageMap) {
 	modifier := sh.irg.layer.NewModifier()
 	defer modifier.Apply()
 
+	sh.irg.sourceTracker = sourceTracker
 	sh.irg.typeCollapser = createTypeCollapser(sh.irg, modifier)
 }
 
@@ -52,22 +53,16 @@ func (sh *irgSourceHandler) Verify(errorReporter packageloader.ErrorReporter, wa
 
 	// Collect any parse errors found and add them to the result.
 	eit := g.findAllNodes(parser.NodeTypeError).BuildNodeIterator(
-		parser.NodePredicateErrorMessage,
-		parser.NodePredicateSource,
-		parser.NodePredicateStartRune)
+		parser.NodePredicateErrorMessage)
 
 	for eit.Next() {
-		sal := salForIterator(eit)
-		errorReporter(compilercommon.NewSourceError(sal, eit.GetPredicate(parser.NodePredicateErrorMessage).String()))
-	}
-}
+		sourceRange, hasSourceRange := sh.irg.SourceRangeOf(eit.Node())
+		if !hasSourceRange {
+			continue
+		}
 
-// salForIterator returns a SourceAndLocation for the given iterator. Note that
-// the iterator *must* contain the NodePredicateSource and NodePredicateStartRune predicates.
-func salForIterator(iterator compilergraph.NodeIterator) compilercommon.SourceAndLocation {
-	return compilercommon.NewSourceAndLocation(
-		compilercommon.InputSource(iterator.GetPredicate(parser.NodePredicateSource).String()),
-		iterator.GetPredicate(parser.NodePredicateStartRune).Int())
+		errorReporter(compilercommon.NewSourceError(sourceRange, eit.GetPredicate(parser.NodePredicateErrorMessage).String()))
+	}
 }
 
 // buildASTNode constructs a new node in the IRG.

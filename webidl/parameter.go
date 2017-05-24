@@ -32,7 +32,7 @@ func (i *IRGParameter) DeclaredType() string {
 	return i.GraphNode.Get(parser.NodePredicateParameterType)
 }
 
-// SourceLocations returns the location of the parameter in source.
-func (i *IRGParameter) SourceLocation() compilercommon.SourceAndLocation {
-	return salForNode(i.GraphNode)
+// SourceRange returns the source range of the parameter in source.
+func (i *IRGParameter) SourceRange() (compilercommon.SourceRange, bool) {
+	return i.irg.SourceRangeOf(i.GraphNode)
 }
