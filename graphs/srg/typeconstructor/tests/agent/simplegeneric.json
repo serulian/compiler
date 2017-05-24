@@ -1,6 +1,6 @@
 {
-    "1b5e2e0f506b131f2d1edc0a6432d1a3": {
-        "Key": "1b5e2e0f506b131f2d1edc0a6432d1a3",
+    "7c5d0a9bdaee477e1a497854b5645737": {
+        "Key": "7c5d0a9bdaee477e1a497854b5645737",
         "Kind": 6,
         "Children": {
             "2825dfad0263562c6dd7f10302403344": {
@@ -84,7 +84,6 @@
         "Predicates": {
             "tdg-node-kind": "6|NodeType|tdg",
             "tdg-principal-type": "T",
-            "tdg-source-location": "\n\u001etests/agent/simplegeneric.seru|SourceLocation|tdg",
             "tdg-source-module": "tests/agent/simplegeneric.seru",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "1fe8301a",

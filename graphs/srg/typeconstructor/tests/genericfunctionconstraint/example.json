@@ -1,12 +1,12 @@
 {
-    "c17ee974f207a9794f4a4ddc60b20975": {
-        "Key": "c17ee974f207a9794f4a4ddc60b20975",
+    "161a1a537be93d818d6c39208fc6e73f": {
+        "Key": "161a1a537be93d818d6c39208fc6e73f",
         "Kind": 1,
         "Children": {
-            "202536f6e26811b20009206519001951": {
+            "26ed25c834a9080b93a9c7785ee8c640": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "202536f6e26811b20009206519001951",
+                    "Key": "26ed25c834a9080b93a9c7785ee8c640",
                     "Kind": 9,
                     "Children": {
                         "78bb9b144f2834343dc0c7f553626572": {
@@ -63,7 +63,6 @@
                         "tdg-member-resolved-type": "function\u003cInteger\u003e",
                         "tdg-member-signature": "\n\u000csomefunction\u0010\u0002 \u0001*\u0011function\u003cInteger\u003e2$local:1:1                           2\u0003any",
                         "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-location": "\n,tests/genericfunctionconstraint/example.seru\u0010\u0013|SourceLocation|tdg",
                         "tdg-source-module": "tests/genericfunctionconstraint/example.seru",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -117,7 +116,6 @@
         },
         "Predicates": {
             "tdg-node-kind": "1|NodeType|tdg",
-            "tdg-source-location": "\n,tests/genericfunctionconstraint/example.seru|SourceLocation|tdg",
             "tdg-source-module": "tests/genericfunctionconstraint/example.seru",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "e95f9c16",

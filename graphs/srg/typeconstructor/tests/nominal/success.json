@@ -1,12 +1,12 @@
 {
-    "788ef54abb4540e1b3d0f033aa9509a9": {
-        "Key": "788ef54abb4540e1b3d0f033aa9509a9",
+    "8f09952f3f43b007f06e0864753ae676": {
+        "Key": "8f09952f3f43b007f06e0864753ae676",
         "Kind": 4,
         "Children": {
-            "dbff1367f30e79a0928597eb3b50c03d": {
+            "35d3e3149efac2f92bce3ff1b82fba14": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "dbff1367f30e79a0928597eb3b50c03d",
+                    "Key": "35d3e3149efac2f92bce3ff1b82fba14",
                     "Kind": 9,
                     "Children": {
                         "69c7dfb293b5923e5b91ad780ee76061": {
@@ -31,7 +31,6 @@
                         "tdg-member-resolved-type": "function\u003cvoid\u003e",
                         "tdg-member-signature": "\n\u000bdosomething\u0010\u0002 \u0001*\u000efunction\u003cvoid\u003e",
                         "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-location": "\n\u001atests/nominal/success.seru\u00101|SourceLocation|tdg",
                         "tdg-source-module": "tests/nominal/success.seru",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -41,15 +40,14 @@
         "Predicates": {
             "tdg-node-kind": "4|NodeType|tdg",
             "tdg-parent-type": "SomeClass",
-            "tdg-source-location": "\n\u001atests/nominal/success.seru\u0010\u0014|SourceLocation|tdg",
             "tdg-source-module": "tests/nominal/success.seru",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "c2fd67d0",
             "tdg-type-name": "SomeView"
         }
     },
-    "c9ad2029c0801516aaf5a460db5307bd": {
-        "Key": "c9ad2029c0801516aaf5a460db5307bd",
+    "da88e503589d0f115950b624ae885883": {
+        "Key": "da88e503589d0f115950b624ae885883",
         "Kind": 1,
         "Children": {
             "6dad5fc4fb6fea011ecb5dab4a1f1b91": {
@@ -100,7 +98,6 @@
         },
         "Predicates": {
             "tdg-node-kind": "1|NodeType|tdg",
-            "tdg-source-location": "\n\u001atests/nominal/success.seru|SourceLocation|tdg",
             "tdg-source-module": "tests/nominal/success.seru",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "99700bdb",
