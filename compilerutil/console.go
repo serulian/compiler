@@ -9,6 +9,8 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 
+	"strings"
+
 	"github.com/fatih/color"
 	"github.com/kr/text"
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
@@ -59,12 +61,14 @@ func LogToConsole(level ConsoleLogLevel, sourceRange compilercommon.SourceRange,
 
 	startLine, startCol, err := sourceRange.Start().LineAndColumn()
 	if err != nil {
-		panic(err)
+		startLine = 0
+		startCol = 0
 	}
 
 	endLine, endCol, err := sourceRange.End().LineAndColumn()
 	if err != nil {
-		panic(err)
+		endLine = 0
+		endCol = 0
 	}
 
 	locationText := fmt.Sprintf("%v:%v:%v:", sourceRange.Source(), startLine+1, startCol+1)
@@ -88,15 +92,18 @@ func LogToConsole(level ConsoleLogLevel, sourceRange compilercommon.SourceRange,
 		endCol = len(lineContents)
 	}
 
-	if err != nil {
-		codeColor.Printf("%s\n", lineContents)
+	if err == nil {
+		caretValue := ""
 		for index := range lineContents {
 			if index < startCol {
-				codeColor.Printf(" ")
+				caretValue += " "
 			} else if index >= startCol && index <= endCol {
-				codeColor.Printf("^")
+				caretValue += "^"
 			}
 		}
-		codeColor.Printf("\n")
+
+		codeColor.Printf("%s\n%s\n\n\n", text.Indent(strings.Replace(lineContents, "\t", " ", -1), INDENTATION), text.Indent(caretValue, INDENTATION))
+	} else {
+		codeColor.Printf("\n\n")
 	}
 }

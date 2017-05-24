@@ -146,7 +146,7 @@ func (m *mutableSourceTracker) RunePositionToLineAndCol(runePosition int, path c
 		return 0, 0, fmt.Errorf("Could not find path %s", path)
 	}
 
-	tsf := tracked.(trackedSourceFile)
+	tsf := tracked.(*trackedSourceFile)
 	if tsf.positionMapper == nil {
 		tsf.positionMapper = compilercommon.CreateSourcePositionMapper(tsf.contents)
 	}
@@ -160,7 +160,7 @@ func (m *mutableSourceTracker) LineAndColToRunePosition(lineNumber int, colPosit
 		return 0, fmt.Errorf("Could not find path %s", path)
 	}
 
-	tsf := tracked.(trackedSourceFile)
+	tsf := tracked.(*trackedSourceFile)
 	if tsf.positionMapper == nil {
 		tsf.positionMapper = compilercommon.CreateSourcePositionMapper(tsf.contents)
 	}
@@ -174,7 +174,7 @@ func (m *mutableSourceTracker) TextForLine(lineNumber int, path compilercommon.I
 		return "", fmt.Errorf("Could not find path %s", path)
 	}
 
-	tsf := tracked.(trackedSourceFile)
+	tsf := tracked.(*trackedSourceFile)
 
 	lines := strings.Split(string(tsf.contents), "\n")
 	if int(lineNumber) >= len(lines) {
