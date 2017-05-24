@@ -36,8 +36,8 @@ type TGTypeOrMember interface {
 	IsField() bool
 	SourceNodeId() (compilergraph.GraphNodeId, bool)
 	SourceGraphId() string
-	SourceLocation() (compilercommon.SourceAndLocation, bool)
-	SourceLocations() []compilercommon.SourceAndLocation
+	SourceRange() (compilercommon.SourceRange, bool)
+	SourceRanges() []compilercommon.SourceRange
 	IsAccessibleTo(modulePath compilercommon.InputSource) bool
 	Code() string
 }

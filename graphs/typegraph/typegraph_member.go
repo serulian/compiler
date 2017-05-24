@@ -274,15 +274,14 @@ func (tn TGMember) Documentation() (string, bool) {
 	return tn.GraphNode.TryGet(NodePredicateDocumentation)
 }
 
-// SourceLocations returns all the source locations for the source node for this member, if any.
-func (tn TGMember) SourceLocations() []compilercommon.SourceAndLocation {
-	return getSourceLocations(tn)
+// SourceRanges returns all the source ranges for the source node for this member, if any.
+func (tn TGMember) SourceRanges() []compilercommon.SourceRange {
+	return tn.tdg.SourceRangesOf(tn.GraphNode)
 }
 
-// SourceLocation returns the source and location for the source node for this
-// member, if any.
-func (tn TGMember) SourceLocation() (compilercommon.SourceAndLocation, bool) {
-	return getSourceLocation(tn)
+// SourceRange returns the source range for the source node for this member, if any.
+func (tn TGMember) SourceRange() (compilercommon.SourceRange, bool) {
+	return tn.tdg.SourceRangeOf(tn.GraphNode)
 }
 
 // MemberType returns the type for this member.

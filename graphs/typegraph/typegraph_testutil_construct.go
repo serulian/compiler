@@ -215,8 +215,8 @@ func (t *emptyTypeConstructor) DecorateMembers(decorator GetMemberDecorator, rep
 }
 
 func (t *emptyTypeConstructor) Validate(reporter IssueReporter, graph *TypeGraph) {}
-func (t *emptyTypeConstructor) GetLocation(sourceNodeId compilergraph.GraphNodeId) (compilercommon.SourceAndLocation, bool) {
-	return compilercommon.SourceAndLocation{}, false
+func (t *emptyTypeConstructor) GetRanges(sourceNodeId compilergraph.GraphNodeId) []compilercommon.SourceRange {
+	return []compilercommon.SourceRange{}
 }
 
 func NewBasicTypesConstructor(graph *compilergraph.SerulianGraph) TypeGraphConstructor {

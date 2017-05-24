@@ -59,9 +59,9 @@ type TypeGraphConstructor interface {
 	// Performs final validation of the type graph after full definition.
 	Validate(reporter IssueReporter, graph *TypeGraph)
 
-	// GetLocation returns the location information for the given source node in the source graph,
+	// GetRanges returns the range information for the given source node in the source graph,
 	// if any.
-	GetLocation(sourceNodeId compilergraph.GraphNodeId) (compilercommon.SourceAndLocation, bool)
+	GetRanges(sourceNodeID compilergraph.GraphNodeId) []compilercommon.SourceRange
 }
 
 type GetModuleBuilder func() *moduleBuilder
@@ -210,16 +210,15 @@ func (mb *moduleBuilder) Define() {
 
 // typeBuilder defines a helper type for easy construction of type definitions in the type graph.
 type typeBuilder struct {
-	modifier        compilergraph.GraphLayerModifier // The modifier being used.
-	module          TGModule                         // The parent module.
-	name            string                           // The name of the type.
-	globalId        string                           // The global ID of the type.
-	globalAlias     string                           // The global alias of the type.
-	sourceNode      compilergraph.GraphNode          // The node for the type in the source graph.
-	sourceLocations []proto.SourceLocation           // The source locations(s) for the type.
-	typeKind        TypeKind                         // The kind of this type.
-	attributes      []TypeAttribute                  // The custom attributes on the type, if any.
-	documentation   string                           // The documentation string for the type, if any.
+	modifier      compilergraph.GraphLayerModifier // The modifier being used.
+	module        TGModule                         // The parent module.
+	name          string                           // The name of the type.
+	globalId      string                           // The global ID of the type.
+	globalAlias   string                           // The global alias of the type.
+	sourceNode    compilergraph.GraphNode          // The node for the type in the source graph.
+	typeKind      TypeKind                         // The kind of this type.
+	attributes    []TypeAttribute                  // The custom attributes on the type, if any.
+	documentation string                           // The documentation string for the type, if any.
 }
 
 // GlobalId sets the global ID of the type. This ID must be unique. For types that are
@@ -265,12 +264,6 @@ func (tb *typeBuilder) SourceNode(sourceNode compilergraph.GraphNode) *typeBuild
 	return tb
 }
 
-// WithSourceLocation adds a source location for the type in the source graph.
-func (tb *typeBuilder) WithSourceLocation(sourceLocation compilercommon.SourceAndLocation) *typeBuilder {
-	tb.sourceLocations = append(tb.sourceLocations, proto.SourceLocation{string(sourceLocation.Source()), uint64(sourceLocation.Location().BytePosition())})
-	return tb
-}
-
 // Define defines the type in the type graph.
 func (tb *typeBuilder) Define() getGenericBuilder {
 	if tb.name == "" {
@@ -295,12 +288,6 @@ func (tb *typeBuilder) Define() getGenericBuilder {
 
 	if tb.documentation != "" {
 		typeNode.Decorate(NodePredicateDocumentation, tb.documentation)
-	}
-
-	if len(tb.sourceLocations) > 0 {
-		for _, sl := range tb.sourceLocations {
-			typeNode.DecorateWithTagged(NodePredicateSourceLocation, &sl)
-		}
 	}
 
 	if tb.globalAlias != "" {
@@ -435,16 +422,15 @@ func (gb *genericBuilder) defineGeneric() TGGeneric {
 
 // MemberBuilder defines a helper type for easy construction of module and type members.
 type MemberBuilder struct {
-	modifier        compilergraph.GraphLayerModifier // The modifier being used.
-	tdg             *TypeGraph                       // The underlying type graph.
-	parent          TGTypeOrModule                   // The parent type or module node.
-	isOperator      bool                             // Whether the member being defined is an operator.
-	name            string                           // The name of the member.
-	sourceNode      compilergraph.GraphNode          // The node for the member in the source graph.
-	sourceLocations []proto.SourceLocation           // The source locations(s) for the member.
-	hasSourceNode   bool                             // Whether there is a source node.
-	memberGenerics  []memberGeneric                  // The generics on the member.
-	documentation   string                           // The documentation string for the member, if any.
+	modifier       compilergraph.GraphLayerModifier // The modifier being used.
+	tdg            *TypeGraph                       // The underlying type graph.
+	parent         TGTypeOrModule                   // The parent type or module node.
+	isOperator     bool                             // Whether the member being defined is an operator.
+	name           string                           // The name of the member.
+	sourceNode     compilergraph.GraphNode          // The node for the member in the source graph.
+	hasSourceNode  bool                             // Whether there is a source node.
+	memberGenerics []memberGeneric                  // The generics on the member.
+	documentation  string                           // The documentation string for the member, if any.
 }
 
 // memberGeneric holds information about a member's generic.
@@ -470,12 +456,6 @@ func (mb *MemberBuilder) Documentation(documentation string) *MemberBuilder {
 func (mb *MemberBuilder) SourceNode(sourceNode compilergraph.GraphNode) *MemberBuilder {
 	mb.sourceNode = sourceNode
 	mb.hasSourceNode = true
-	return mb
-}
-
-// WithSourceLocation adds a source location for the type in the source graph.
-func (mb *MemberBuilder) WithSourceLocation(sourceLocation compilercommon.SourceAndLocation) *MemberBuilder {
-	mb.sourceLocations = append(mb.sourceLocations, proto.SourceLocation{string(sourceLocation.Source()), uint64(sourceLocation.Location().BytePosition())})
 	return mb
 }
 
@@ -518,12 +498,6 @@ func (mb *MemberBuilder) Define() TGMember {
 
 	if mb.hasSourceNode {
 		memberNode.Connect(NodePredicateSource, mb.sourceNode)
-	}
-
-	if len(mb.sourceLocations) > 0 {
-		for _, sl := range mb.sourceLocations {
-			memberNode.DecorateWithTagged(NodePredicateSourceLocation, &sl)
-		}
 	}
 
 	if mb.documentation != "" {
