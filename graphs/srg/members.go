@@ -85,9 +85,9 @@ func (m SRGMember) Node() compilergraph.GraphNode {
 	return m.GraphNode
 }
 
-// SourceLocation returns the source location for this member.
-func (m SRGMember) SourceLocation() (compilercommon.SourceAndLocation, bool) {
-	return salForNode(m.GraphNode), true
+// SourceRange returns the source range for this member.
+func (m SRGMember) SourceRange() (compilercommon.SourceRange, bool) {
+	return m.srg.SourceRangeOf(m.GraphNode)
 }
 
 // MemberKind returns the kind matching the member definition/declaration node type.

@@ -38,9 +38,10 @@ func (sh *srgSourceHandler) Parse(source compilercommon.InputSource, input strin
 	parser.Parse(sh.buildASTNode, importHandler, source, input)
 }
 
-func (sh *srgSourceHandler) Apply(packageMap packageloader.LoadedPackageMap) {
-	// Save the package map for later resolution.
+func (sh *srgSourceHandler) Apply(packageMap packageloader.LoadedPackageMap, sourceTracker packageloader.SourceTracker) {
+	// Save the package map and source tracker for later resolution.
 	sh.srg.packageMap = packageMap
+	sh.srg.sourceTracker = sourceTracker
 
 	// Apply the changes to the graph.
 	sh.modifier.Apply()
@@ -51,21 +52,21 @@ func (sh *srgSourceHandler) Verify(errorReporter packageloader.ErrorReporter, wa
 
 	// Collect any parse errors found and add them to the result.
 	eit := g.findAllNodes(parser.NodeTypeError).BuildNodeIterator(
-		parser.NodePredicateErrorMessage,
-		parser.NodePredicateSource,
-		parser.NodePredicateStartRune)
+		parser.NodePredicateErrorMessage)
 
 	for eit.Next() {
-		sal := salForIterator(eit)
-		errorReporter(compilercommon.NewSourceError(sal, eit.GetPredicate(parser.NodePredicateErrorMessage).String()))
+		sourceRange, hasRange := sh.srg.SourceRangeOf(eit.Node())
+		if !hasRange {
+			panic("Missing source range")
+		}
+
+		errorReporter(compilercommon.NewSourceError(sourceRange, eit.GetPredicate(parser.NodePredicateErrorMessage).String()))
 	}
 
 	// Verify all 'from ... import ...' are valid.
 	fit := g.findAllNodes(parser.NodeTypeImportPackage).
 		Has(parser.NodeImportPredicateSubsource).
-		BuildNodeIterator(parser.NodeImportPredicateSubsource,
-			parser.NodePredicateSource,
-			parser.NodePredicateStartRune)
+		BuildNodeIterator(parser.NodeImportPredicateSubsource)
 
 	for fit.Next() {
 		// Load the package information.
@@ -79,8 +80,12 @@ func (sh *srgSourceHandler) Verify(errorReporter packageloader.ErrorReporter, wa
 		_, found := packageInfo.FindTypeOrMemberByName(subsource)
 		if !found {
 			source := fit.Node().GetIncomingNode(parser.NodeImportPredicatePackageRef).Get(parser.NodeImportPredicateSource)
-			sal := salForIterator(fit)
-			errorReporter(compilercommon.SourceErrorf(sal, "Import '%s' not found under package '%s'", subsource, source))
+			sourceRange, hasRange := sh.srg.SourceRangeOf(fit.Node())
+			if !hasRange {
+				panic("Missing source range")
+			}
+
+			errorReporter(compilercommon.SourceErrorf(sourceRange, "Import '%s' not found under package '%s'", subsource, source))
 		}
 	}
 
@@ -94,8 +99,12 @@ func (sh *srgSourceHandler) Verify(errorReporter packageloader.ErrorReporter, wa
 		decorator := ait.Node()
 		parameter, ok := decorator.TryGetNode(parser.NodeDecoratorPredicateParameter)
 		if !ok || parameter.Kind() != parser.NodeStringLiteralExpression {
-			sal := salForNode(decorator)
-			errorReporter(compilercommon.SourceErrorf(sal, "Alias decorator requires a single string literal parameter"))
+			sourceRange, hasRange := sh.srg.SourceRangeOf(decorator)
+			if !hasRange {
+				panic("Missing source range")
+			}
+
+			errorReporter(compilercommon.SourceErrorf(sourceRange, "Alias decorator requires a single string literal parameter"))
 			continue
 		}
 

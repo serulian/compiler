@@ -23,8 +23,8 @@ func TestFindNodeForPosition(t *testing.T) {
 		source := parent.Get(parser.NodePredicateSource)
 		startRune := parent.GetValue(parser.NodePredicateStartRune).Int()
 
-		sal := compilercommon.NewSourceAndLocation(compilercommon.InputSource(source), startRune)
-		node, found := testSRG.FindNodeForLocation(sal)
+		sourcePosition := compilercommon.InputSource(source).PositionForRunePosition(startRune, nil)
+		node, found := testSRG.FindNodeForPosition(sourcePosition)
 		if !assert.True(t, found, "Missing node with comment %s", comment.Contents()) {
 			continue
 		}

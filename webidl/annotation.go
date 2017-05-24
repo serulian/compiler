@@ -41,7 +41,7 @@ func (i *IRGAnnotation) Parameters() []IRGParameter {
 	return parameters
 }
 
-// SourceLocations returns the location of the parameter in source.
-func (i *IRGAnnotation) SourceLocation() compilercommon.SourceAndLocation {
-	return salForNode(i.GraphNode)
+// SourceRange returns the source range of the parameter in source.
+func (i *IRGAnnotation) SourceRange() (compilercommon.SourceRange, bool) {
+	return i.irg.SourceRangeOf(i.GraphNode)
 }

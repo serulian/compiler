@@ -105,9 +105,9 @@ func (t SRGType) Node() compilergraph.GraphNode {
 	return t.GraphNode
 }
 
-// SourceLocation returns the source location for this type.
-func (t SRGType) SourceLocation() (compilercommon.SourceAndLocation, bool) {
-	return salForNode(t.GraphNode), true
+// SourceRange returns the source range for this type.
+func (t SRGType) SourceRange() (compilercommon.SourceRange, bool) {
+	return t.srg.SourceRangeOf(t.GraphNode)
 }
 
 // Documentation returns the documentation on the type, if any.

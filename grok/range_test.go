@@ -148,9 +148,10 @@ func TestGrokRange(t *testing.T) {
 
 			var i = commentedRange.startIndex
 			for ; i <= commentedRange.endIndex; i++ {
-				sal := compilercommon.NewSourceAndLocation(compilercommon.InputSource(testSourcePath), i)
-				ri, err := handle.LookupLocation(sal)
-				if !assert.Nil(t, err, "Error when looking up range position: %s => %v", commentedRange.name, sal) {
+				pm := compilercommon.LocalFilePositionMapper{}
+				sourcePosition := compilercommon.InputSource(testSourcePath).PositionForRunePosition(i, pm)
+				ri, err := handle.LookupPosition(sourcePosition)
+				if !assert.Nil(t, err, "Error when looking up range position: %s => %v", commentedRange.name, sourcePosition) {
 					continue
 				}
 
@@ -178,7 +179,7 @@ func TestGrokRange(t *testing.T) {
 						continue
 					}
 
-					if !assert.True(t, len(ri.SourceLocations) > 0, "Missing source locations on range %s", commentedRange.name) {
+					if !assert.True(t, len(ri.SourceRanges) > 0, "Missing source locations on range %s", commentedRange.name) {
 						continue
 					}
 
@@ -192,7 +193,7 @@ func TestGrokRange(t *testing.T) {
 						continue
 					}
 
-					if !assert.True(t, len(ri.SourceLocations) > 0, "Missing source locations on range %s", commentedRange.name) {
+					if !assert.True(t, len(ri.SourceRanges) > 0, "Missing source locations on range %s", commentedRange.name) {
 						continue
 					}
 

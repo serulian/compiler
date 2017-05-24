@@ -61,10 +61,6 @@ const (
 	// Decorates a type or type member node with the path of its source module.
 	NodePredicateModulePath = "source-module"
 
-	// Decorates a type or type member node with a location of its declaration. Multiple
-	// source locations are supported.
-	NodePredicateSourceLocation = "source-location"
-
 	// Connects a type or type member with its documentation.
 	NodePredicateDocumentation = "documentation"
 

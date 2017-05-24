@@ -167,7 +167,7 @@ func (i *IRGMember) Signature() string {
 	return hex.EncodeToString(bytes[:])
 }
 
-// SourceLocations returns the location of the member in source.
-func (i *IRGMember) SourceLocation() compilercommon.SourceAndLocation {
-	return salForNode(i.GraphNode)
+// SourceRange returns the source range of the member in source.
+func (i *IRGMember) SourceRange() (compilercommon.SourceRange, bool) {
+	return i.irg.SourceRangeOf(i.GraphNode)
 }

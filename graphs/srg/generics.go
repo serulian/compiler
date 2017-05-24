@@ -26,9 +26,9 @@ func (t SRGGeneric) Node() compilergraph.GraphNode {
 	return t.GraphNode
 }
 
-// Location returns the source location for this generic.
-func (t SRGGeneric) Location() compilercommon.SourceAndLocation {
-	return salForNode(t.GraphNode)
+// SourceRange returns the source range for this generic.
+func (t SRGGeneric) SourceRange() (compilercommon.SourceRange, bool) {
+	return t.srg.SourceRangeOf(t.GraphNode)
 }
 
 // HasConstraint returns whether this generic has a type constraint.

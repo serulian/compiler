@@ -11,7 +11,7 @@ import (
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/typegraph"
 
-	"github.com/streamrail/concurrent-map"
+	cmap "github.com/streamrail/concurrent-map"
 )
 
 // TypeReferenceResolver defines a helper type for resolving SRG type references into type
@@ -108,7 +108,12 @@ func (trr *TypeReferenceResolver) resolveTypeRef(typeref srg.SRGTypeRef, tdg *ty
 		// Resolve the package type for the type ref.
 		resolvedTypeInfo, found := typeref.ResolveType()
 		if !found {
-			sourceError := compilercommon.SourceErrorf(typeref.Location(),
+			sourceRange, hasSourceRange := typeref.SourceRange()
+			if !hasSourceRange {
+				panic("Missing source range on invalid typeref")
+			}
+
+			sourceError := compilercommon.SourceErrorf(sourceRange,
 				"Type '%s' could not be found",
 				typeref.ResolutionPath())
 
@@ -131,7 +136,12 @@ func (trr *TypeReferenceResolver) resolveTypeRef(typeref srg.SRGTypeRef, tdg *ty
 			// was imported.
 			resolvedType, hasResolvedType := tdg.ResolveTypeUnderPackage(resolvedTypeInfo.ExternalPackageTypePath, resolvedTypeInfo.ExternalPackage)
 			if !hasResolvedType {
-				sourceError := compilercommon.SourceErrorf(typeref.Location(),
+				sourceRange, hasSourceRange := typeref.SourceRange()
+				if !hasSourceRange {
+					panic("Missing source range on invalid typeref")
+				}
+
+				sourceError := compilercommon.SourceErrorf(sourceRange,
 					"Type '%s' could not be found",
 					typeref.ResolutionPath())
 

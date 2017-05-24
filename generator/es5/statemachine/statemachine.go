@@ -9,7 +9,6 @@ package statemachine
 import (
 	"fmt"
 
-	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/codedom"
 	"github.com/serulian/compiler/generator/es5/dombuilder"
@@ -32,13 +31,13 @@ type FunctionDef struct {
 }
 
 // GenerateFunctionSource generates the source code for a function, including its internal state machine.
-func GenerateFunctionSource(functionDef FunctionDef, scopegraph *scopegraph.ScopeGraph, positionMapper *compilercommon.PositionMapper) esbuilder.SourceBuilder {
+func GenerateFunctionSource(functionDef FunctionDef, scopegraph *scopegraph.ScopeGraph) esbuilder.SourceBuilder {
 	// Build the body via CodeDOM.
 	funcBody := dombuilder.BuildStatement(scopegraph, functionDef.BodyNode)
 
 	// Instantiate a new state machine generator and use it to generate the function.
 	functionTraits := shared.FunctionTraits(codedom.IsAsynchronous(funcBody, scopegraph), functionDef.IsGenerator, codedom.IsManagingResources(funcBody))
-	sg := buildGenerator(scopegraph, positionMapper, shared.NewTemplater(), functionTraits)
+	sg := buildGenerator(scopegraph, shared.NewTemplater(), functionTraits)
 	specialization := codedom.NormalFunction
 
 	// Generate the function expression.
@@ -58,17 +57,17 @@ func GenerateFunctionSource(functionDef FunctionDef, scopegraph *scopegraph.Scop
 		specialization,
 		functionDef.BodyNode)
 
-	result := expressiongenerator.GenerateExpression(domDefinition, expressiongenerator.AllowedSync, scopegraph, positionMapper, sg.generateMachine)
+	result := expressiongenerator.GenerateExpression(domDefinition, expressiongenerator.AllowedSync, scopegraph, sg.generateMachine)
 	return result.Build()
 }
 
 // GenerateExpressionResult generates the expression result for an expression.
-func GenerateExpressionResult(expressionNode compilergraph.GraphNode, scopegraph *scopegraph.ScopeGraph, positionMapper *compilercommon.PositionMapper) expressiongenerator.ExpressionResult {
+func GenerateExpressionResult(expressionNode compilergraph.GraphNode, scopegraph *scopegraph.ScopeGraph) expressiongenerator.ExpressionResult {
 	// Build the CodeDOM for the expression.
 	domDefinition := dombuilder.BuildExpression(scopegraph, expressionNode)
 
 	// Generate the state machine.
 	functionTraits := shared.FunctionTraits(domDefinition.IsAsynchronous(scopegraph), false, false)
-	sg := buildGenerator(scopegraph, positionMapper, shared.NewTemplater(), functionTraits)
-	return expressiongenerator.GenerateExpression(domDefinition, expressiongenerator.AllowedSync, scopegraph, positionMapper, sg.generateMachine)
+	sg := buildGenerator(scopegraph, shared.NewTemplater(), functionTraits)
+	return expressiongenerator.GenerateExpression(domDefinition, expressiongenerator.AllowedSync, scopegraph, sg.generateMachine)
 }

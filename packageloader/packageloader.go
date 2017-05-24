@@ -21,33 +21,6 @@ import (
 // SerulianPackageDirectory is the directory under the root directory holding cached packages.
 const SerulianPackageDirectory = ".pkg"
 
-// PackageInfo holds information about a loaded package.
-type PackageInfo struct {
-	kind        string                       // The source kind of the package.
-	referenceId string                       // The unique ID for this package.
-	modulePaths []compilercommon.InputSource // The module paths making up this package.
-}
-
-// PackageInfoForTesting returns a PackageInfo for testing.
-func PackageInfoForTesting(kind string, modulePaths []compilercommon.InputSource) PackageInfo {
-	return PackageInfo{kind, "testpackage", modulePaths}
-}
-
-// Kind returns the source kind of this package.
-func (pi PackageInfo) Kind() string {
-	return pi.kind
-}
-
-// ReferenceId returns the unique reference ID for this package.
-func (pi PackageInfo) ReferenceId() string {
-	return pi.referenceId
-}
-
-// ModulePaths returns the list of full paths of the modules in this package.
-func (pi PackageInfo) ModulePaths() []compilercommon.InputSource {
-	return pi.modulePaths
-}
-
 // pathKind identifies the supported kind of paths
 type pathKind int
 
@@ -73,8 +46,8 @@ type pathInformation struct {
 	// sourceKind is the source kind (empty string for `.seru`, `webidl` for "webidl")
 	sourceKind string
 
-	// sal is the source and location that *referenced* this path.
-	sal compilercommon.SourceAndLocation
+	// sourceRange is the source range that *referenced* this path.
+	sourceRange compilercommon.SourceRange
 }
 
 // Returns the string representation of the given path.
@@ -96,12 +69,12 @@ type PackageLoader struct {
 
 	handlers map[string]SourceHandler // The handlers for each of the supported package kinds.
 
-	pathsToLoad          chan pathInformation // The paths to load
-	pathKindsEncountered cmap.ConcurrentMap   // The path+kinds processed by the loader goroutine
-	vcsPathsLoaded       cmap.ConcurrentMap   // The VCS paths that have been loaded, mapping to their checkout dir
-	vcsLockMap           lockMap              // LockMap for ensuring single loads of all VCS paths.
-	packageMap           *mutablePackageMap   // The package map.
-	pathToRevisions      cmap.ConcurrentMap   // Map from the path of each file to loaded to its revision ID.
+	pathsToLoad          chan pathInformation  // The paths to load
+	pathKindsEncountered cmap.ConcurrentMap    // The path+kinds processed by the loader goroutine
+	vcsPathsLoaded       cmap.ConcurrentMap    // The VCS paths that have been loaded, mapping to their checkout dir
+	vcsLockMap           lockMap               // LockMap for ensuring single loads of all VCS paths.
+	packageMap           *mutablePackageMap    // The package map.
+	sourceTracker        *mutableSourceTracker // The source tracker.
 
 	workTracker sync.WaitGroup // WaitGroup used to wait until all loading is complete
 	finished    chan bool      // Channel used to tell background goroutines to quit
@@ -118,10 +91,11 @@ type Library struct {
 // LoadResult contains the result of attempting to load all packages and source files for this
 // project.
 type LoadResult struct {
-	Status     bool                           // True on success, false otherwise
-	Errors     []compilercommon.SourceError   // The errors encountered, if any
-	Warnings   []compilercommon.SourceWarning // The warnings encountered, if any
-	PackageMap LoadedPackageMap               // Map of packages loaded
+	Status        bool                           // True on success, false otherwise
+	Errors        []compilercommon.SourceError   // The errors encountered, if any
+	Warnings      []compilercommon.SourceWarning // The warnings encountered, if any
+	PackageMap    LoadedPackageMap               // Map of packages loaded.
+	SourceTracker SourceTracker                  // Tracker of all source loaded.
 }
 
 // Config defines configuration for a PackageLoader.
@@ -183,10 +157,11 @@ func NewPackageLoader(config Config) *PackageLoader {
 
 		handlers: handlersMap,
 
-		pathToRevisions:      cmap.New(),
 		pathKindsEncountered: cmap.New(),
 		packageMap:           newMutablePackageMap(),
 		pathsToLoad:          make(chan pathInformation),
+
+		sourceTracker: newMutableSourceTracker(config.PathLoader),
 
 		vcsPathsLoaded: cmap.New(),
 		vcsLockMap:     createLockMap(),
@@ -213,16 +188,16 @@ func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 	// Add the root source file(s) as the first items to be parsed.
 	entrypointPaths, err := p.entrypoint.EntrypointPaths(p.pathLoader)
 	if err != nil {
-		sal := compilercommon.NewSourceAndLocation(compilercommon.InputSource(string(p.entrypoint)), 0)
-		result.Errors = append(result.Errors, compilercommon.SourceErrorf(sal, "Could not resolve entrypoint path: %v", err))
+		sourceRange := compilercommon.InputSource(string(p.entrypoint)).RangeForRunePosition(0, p.sourceTracker)
+		result.Errors = append(result.Errors, compilercommon.SourceErrorf(sourceRange, "Could not resolve entrypoint path: %v", err))
 		return *result
 	}
 
 	for _, path := range entrypointPaths {
-		sal := compilercommon.NewSourceAndLocation(compilercommon.InputSource(path), 0)
+		sourceRange := compilercommon.InputSource(path).RangeForRunePosition(0, p.sourceTracker)
 		for _, handler := range p.handlers {
 			if strings.HasSuffix(path, handler.PackageFileExtension()) {
-				p.pushPath(pathSourceFile, handler.Kind(), path, sal)
+				p.pushPath(pathSourceFile, handler.Kind(), path, sourceRange)
 				break
 			}
 		}
@@ -230,12 +205,11 @@ func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 
 	// Add the libraries to be parsed.
 	for _, library := range libraries {
+		sourceRange := compilercommon.InputSource(library.PathOrURL).RangeForRunePosition(0, p.sourceTracker)
 		if library.IsSCM {
-			sal := compilercommon.NewSourceAndLocation(compilercommon.InputSource(library.PathOrURL), 0)
-			p.pushPath(pathVCSPackage, library.Kind, library.PathOrURL, sal)
+			p.pushPath(pathVCSPackage, library.Kind, library.PathOrURL, sourceRange)
 		} else {
-			sal := compilercommon.NewSourceAndLocation(compilercommon.InputSource(library.PathOrURL), 0)
-			p.pushPath(pathLocalPackage, library.Kind, library.PathOrURL, sal)
+			p.pushPath(pathLocalPackage, library.Kind, library.PathOrURL, sourceRange)
 		}
 	}
 
@@ -248,10 +222,11 @@ func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 
 	// Save the package map.
 	result.PackageMap = p.packageMap.Build()
+	result.SourceTracker = p.sourceTracker.Freeze()
 
 	// Apply all handler changes.
 	for _, handler := range p.handlers {
-		handler.Apply(result.PackageMap)
+		handler.Apply(result.PackageMap, result.SourceTracker)
 	}
 
 	// Perform verification in all handlers.
@@ -276,23 +251,6 @@ func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 // PathLoader returns the path loader used by this package manager.
 func (p *PackageLoader) PathLoader() PathLoader {
 	return p.pathLoader
-}
-
-// ModifiedSourceFiles returns the set of paths to any source files that have been modified
-// since the package loader ran.
-func (p *PackageLoader) ModifiedSourceFiles() ([]string, error) {
-	var modifiedPaths = make([]string, 0)
-	for entry := range p.pathToRevisions.Iter() {
-		current, err := p.pathLoader.GetRevisionID(entry.Key)
-		if err != nil {
-			return []string{}, err
-		}
-
-		if current != entry.Val.(int64) {
-			modifiedPaths = append(modifiedPaths, entry.Key)
-		}
-	}
-	return modifiedPaths, nil
 }
 
 // ModuleOrPackage defines a reference to a module or package.
@@ -406,14 +364,14 @@ func (p *PackageLoader) getVCSDirectoryForPath(vcsPath string) (string, error) {
 }
 
 // pushPath adds a path to be processed by the package loader.
-func (p *PackageLoader) pushPath(kind pathKind, sourceKind string, path string, sal compilercommon.SourceAndLocation) string {
-	return p.pushPathWithId(path, sourceKind, kind, path, sal)
+func (p *PackageLoader) pushPath(kind pathKind, sourceKind string, path string, sourceRange compilercommon.SourceRange) string {
+	return p.pushPathWithId(path, sourceKind, kind, path, sourceRange)
 }
 
 // pushPathWithId adds a path to be processed by the package loader, with the specified ID.
-func (p *PackageLoader) pushPathWithId(pathId string, sourceKind string, kind pathKind, path string, sal compilercommon.SourceAndLocation) string {
+func (p *PackageLoader) pushPathWithId(pathId string, sourceKind string, kind pathKind, path string, sourceRange compilercommon.SourceRange) string {
 	p.workTracker.Add(1)
-	p.pathsToLoad <- pathInformation{pathId, kind, path, sourceKind, sal}
+	p.pathsToLoad <- pathInformation{pathId, kind, path, sourceKind, sourceRange}
 	return pathId
 }
 
@@ -484,7 +442,7 @@ func (p *PackageLoader) loadVCSPackage(packagePath pathInformation) {
 		// Note: existingCheckoutDir will be empty if there was an error loading the VCS.
 		if existingCheckoutDir != "" {
 			// Push the now-local directory onto the package loading channel.
-			p.pushPathWithId(packagePath.referenceId, packagePath.sourceKind, pathLocalPackage, existingCheckoutDir.(string), packagePath.sal)
+			p.pushPathWithId(packagePath.referenceId, packagePath.sourceKind, pathLocalPackage, existingCheckoutDir.(string), packagePath.sourceRange)
 			return
 		}
 	}
@@ -501,38 +459,38 @@ func (p *PackageLoader) loadVCSPackage(packagePath pathInformation) {
 	checkoutDirectory, err, warning := vcs.PerformVCSCheckout(packagePath.path, pkgDirectory, cacheOption, p.vcsDevelopmentDirectories...)
 	if err != nil {
 		p.vcsPathsLoaded.Set(packagePath.path, "")
-		p.errors <- compilercommon.SourceErrorf(packagePath.sal, "Error loading VCS package '%s': %v", packagePath.path, err)
+		p.errors <- compilercommon.SourceErrorf(packagePath.sourceRange, "Error loading VCS package '%s': %v", packagePath.path, err)
 		return
 	}
 
 	p.vcsPathsLoaded.Set(packagePath.path, checkoutDirectory)
 	if warning != "" {
-		p.warnings <- compilercommon.NewSourceWarning(packagePath.sal, warning)
+		p.warnings <- compilercommon.NewSourceWarning(packagePath.sourceRange, warning)
 	}
 
 	// Push the now-local directory onto the package loading channel.
-	p.pushPathWithId(packagePath.referenceId, packagePath.sourceKind, pathLocalPackage, checkoutDirectory, packagePath.sal)
+	p.pushPathWithId(packagePath.referenceId, packagePath.sourceKind, pathLocalPackage, checkoutDirectory, packagePath.sourceRange)
 }
 
 // loadLocalPackage loads the package found at the path relative to the package directory.
 func (p *PackageLoader) loadLocalPackage(packagePath pathInformation) {
 	packageInfo, err := p.packageInfoForPackageDirectory(packagePath.path, packagePath.sourceKind)
 	if err != nil {
-		p.errors <- compilercommon.SourceErrorf(packagePath.sal, "Could not load directory '%s'", packagePath.path)
+		p.errors <- compilercommon.SourceErrorf(packagePath.sourceRange, "Could not load directory '%s'", packagePath.path)
 		return
 	}
 
 	// Add the module paths to be parsed.
 	var moduleFound = false
 	for _, modulePath := range packageInfo.ModulePaths() {
-		p.pushPath(pathSourceFile, packagePath.sourceKind, string(modulePath), packagePath.sal)
+		p.pushPath(pathSourceFile, packagePath.sourceKind, string(modulePath), packagePath.sourceRange)
 		moduleFound = true
 	}
 
 	// Add the package itself to the package map.
 	p.packageMap.Add(packagePath.sourceKind, packagePath.referenceId, packageInfo)
 	if !moduleFound {
-		p.warnings <- compilercommon.SourceWarningf(packagePath.sal, "Package '%s' has no source files", packagePath.path)
+		p.warnings <- compilercommon.SourceWarningf(packagePath.sourceRange, "Package '%s' has no source files", packagePath.path)
 		return
 	}
 }
@@ -551,17 +509,19 @@ func (p *PackageLoader) conductParsing(sourceFile pathInformation) {
 	// Load the source file's contents.
 	contents, err := p.pathLoader.LoadSourceFile(sourceFile.path)
 	if err != nil {
-		p.errors <- compilercommon.SourceErrorf(sourceFile.sal, "Could not load source file '%s': %v", sourceFile.path, err)
+		p.errors <- compilercommon.SourceErrorf(sourceFile.sourceRange, "Could not load source file '%s': %v", sourceFile.path, err)
 		return
 	}
 
+	// Load the source file's revision ID.
 	revisionID, err := p.pathLoader.GetRevisionID(sourceFile.path)
 	if err != nil {
-		p.errors <- compilercommon.SourceErrorf(sourceFile.sal, "Could not load source file '%s': %v", sourceFile.path, err)
+		p.errors <- compilercommon.SourceErrorf(sourceFile.sourceRange, "Could not load source file '%s': %v", sourceFile.path, err)
 		return
 	}
 
-	p.pathToRevisions.Set(sourceFile.path, revisionID)
+	// Add the source file to the tracker.
+	p.sourceTracker.AddSourceFile(compilercommon.InputSource(sourceFile.path), sourceFile.sourceKind, contents, revisionID)
 
 	// Parse the source file.
 	handler, hasHandler := p.handlers[sourceFile.sourceKind]
@@ -582,7 +542,7 @@ func (p *PackageLoader) verifyNoVCSBoundaryCross(startPath string, endPath strin
 		}
 
 		if vcs.IsVCSRootDirectory(checkPath) {
-			err := compilercommon.SourceErrorf(importInformation.SourceLocation,
+			err := compilercommon.SourceErrorf(importInformation.SourceRange,
 				"Import of %s '%s' crosses VCS boundary at package '%s'", title,
 				importInformation.Path, checkPath)
 			return &err
@@ -598,22 +558,24 @@ func (p *PackageLoader) verifyNoVCSBoundaryCross(startPath string, endPath strin
 }
 
 // handleImport queues an import found in a source file.
-func (p *PackageLoader) handleImport(importInformation PackageImport) string {
+func (p *PackageLoader) handleImport(sourceKind string, importPath string, importType PackageImportType, importSource compilercommon.InputSource, runePosition int) string {
+	sourceRange := importSource.RangeForRunePosition(runePosition, p.sourceTracker)
+	importInformation := PackageImport{sourceKind, importPath, importType, sourceRange}
+
 	handler, hasHandler := p.handlers[importInformation.Kind]
 	if !hasHandler {
-		p.errors <- compilercommon.SourceErrorf(importInformation.SourceLocation, "Unknown kind of import '%s'", importInformation.Kind)
+		p.errors <- compilercommon.SourceErrorf(importInformation.SourceRange, "Unknown kind of import '%s'", importInformation.Kind)
 		return ""
 	}
 
-	sourcePath := string(importInformation.SourceLocation.Source())
-
 	if importInformation.ImportType == ImportTypeVCS {
 		// VCS paths get added directly.
-		return p.pushPath(pathVCSPackage, importInformation.Kind, importInformation.Path, importInformation.SourceLocation)
+		return p.pushPath(pathVCSPackage, importInformation.Kind, importInformation.Path, importInformation.SourceRange)
 	}
 
 	// Check the path to see if it exists as a single source file. If so, we add it
 	// as a source file instead of a local package.
+	sourcePath := string(importInformation.SourceRange.Source())
 	currentDirectory := path.Dir(sourcePath)
 	dirPath := path.Join(currentDirectory, importInformation.Path)
 	filePath := dirPath + handler.PackageFileExtension()
@@ -650,8 +612,8 @@ func (p *PackageLoader) handleImport(importInformation PackageImport) string {
 
 	// Push the imported path.
 	if isSourceFile {
-		return p.pushPath(pathSourceFile, handler.Kind(), filePath, importInformation.SourceLocation)
+		return p.pushPath(pathSourceFile, handler.Kind(), filePath, importInformation.SourceRange)
 	}
 
-	return p.pushPath(pathLocalPackage, handler.Kind(), dirPath, importInformation.SourceLocation)
+	return p.pushPath(pathLocalPackage, handler.Kind(), dirPath, importInformation.SourceRange)
 }

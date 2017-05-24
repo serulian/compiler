@@ -187,7 +187,7 @@ func (i *IRGDeclaration) Annotations() []IRGAnnotation {
 	return annotations
 }
 
-// SourceLocations returns the location of the declaration in source.
-func (i *IRGDeclaration) SourceLocation() compilercommon.SourceAndLocation {
-	return salForNode(i.GraphNode)
+// SourceRange returns the source range of the declaration in source.
+func (i *IRGDeclaration) SourceRange() (compilercommon.SourceRange, bool) {
+	return i.irg.SourceRangeOf(i.GraphNode)
 }

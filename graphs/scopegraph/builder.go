@@ -475,11 +475,12 @@ func (sb *scopeBuilder) GetWarnings() []compilercommon.SourceWarning {
 
 		// Lookup the location of the SRG source node.
 		warningSource := sb.sg.srg.GetNode(warningNode.GetValue(NodePredicateNoticeSource).NodeId())
-		location := sb.sg.srg.NodeLocation(warningSource)
-
-		// Add the error.
-		msg := warningNode.Get(NodePredicateNoticeMessage)
-		warnings = append(warnings, compilercommon.NewSourceWarning(location, msg))
+		sourceRange, hasSourceRange := sb.sg.srg.SourceRangeOf(warningSource)
+		if hasSourceRange {
+			// Add the error.
+			msg := warningNode.Get(NodePredicateNoticeMessage)
+			warnings = append(warnings, compilercommon.NewSourceWarning(sourceRange, msg))
+		}
 	}
 
 	return warnings
@@ -498,11 +499,12 @@ func (sb *scopeBuilder) GetErrors() []compilercommon.SourceError {
 
 		// Lookup the location of the SRG source node.
 		errorSource := sb.sg.srg.GetNode(errNode.GetValue(NodePredicateNoticeSource).NodeId())
-		location := sb.sg.srg.NodeLocation(errorSource)
-
-		// Add the error.
-		msg := errNode.Get(NodePredicateNoticeMessage)
-		errors = append(errors, compilercommon.NewSourceError(location, msg))
+		sourceRange, hasSourceRange := sb.sg.srg.SourceRangeOf(errorSource)
+		if hasSourceRange {
+			// Add the error.
+			msg := errNode.Get(NodePredicateNoticeMessage)
+			errors = append(errors, compilercommon.NewSourceError(sourceRange, msg))
+		}
 	}
 
 	return errors

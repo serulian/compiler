@@ -8,32 +8,9 @@ import (
 	"bytes"
 	"strings"
 
-	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/parser"
 )
-
-// salForIterator returns a SourceAndLocation for the given iterator. Note that
-// the iterator *must* contain the NodePredicateSource and NodePredicateStartRune predicates.
-func salForIterator(iterator compilergraph.NodeIterator) compilercommon.SourceAndLocation {
-	return compilercommon.NewSourceAndLocation(
-		compilercommon.InputSource(iterator.GetPredicate(parser.NodePredicateSource).String()),
-		iterator.GetPredicate(parser.NodePredicateStartRune).Int())
-}
-
-// SourceLocationForNode returns a SourceAndLocation for the given graph node.
-func SourceLocationForNode(node compilergraph.GraphNode) compilercommon.SourceAndLocation {
-	return compilercommon.NewSourceAndLocation(
-		compilercommon.InputSource(node.Get(parser.NodePredicateSource)),
-		node.GetValue(parser.NodePredicateStartRune).Int())
-}
-
-// salForNode returns a SourceAndLocation for the given graph node.
-func salForNode(node compilergraph.GraphNode) compilercommon.SourceAndLocation {
-	return compilercommon.NewSourceAndLocation(
-		compilercommon.InputSource(node.Get(parser.NodePredicateSource)),
-		node.GetValue(parser.NodePredicateStartRune).Int())
-}
 
 // IdentifierPathString returns the string form of the identifier path referenced
 // by the given node. Will return false if the node is not an identifier path.

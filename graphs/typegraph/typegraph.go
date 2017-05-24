@@ -14,7 +14,6 @@ import (
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/compilerutil"
-	"github.com/serulian/compiler/graphs/typegraph/proto"
 	"github.com/serulian/compiler/packageloader"
 )
 
@@ -29,9 +28,10 @@ type TypeGraph struct {
 	layer              *compilergraph.GraphLayer     // The TypeGraph layer in the graph.
 	operators          map[string]operatorDefinition // The supported operators.
 	globalAliasedTypes map[string]TGTypeDecl         // The aliased types.
+	constructors       []TypeGraphConstructor        // The constructors for this type graph.
 }
 
-// Results represents the results of building a type graph.
+// Result represents the results of building a type graph.
 type Result struct {
 	Status   bool                           // Whether the construction succeeded.
 	Warnings []compilercommon.SourceWarning // Any warnings encountered during construction.
@@ -41,12 +41,13 @@ type Result struct {
 
 // BuildTypeGraph returns a new TypeGraph that is populated from the given constructors.
 func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGraphConstructor) *Result {
-	// Create the type graph.
+	//Create the type graph.
 	typeGraph := &TypeGraph{
 		graph:              graph,
 		layer:              graph.NewGraphLayer("tdg", NodeTypeTagged),
 		operators:          map[string]operatorDefinition{},
 		globalAliasedTypes: map[string]TGTypeDecl{},
+		constructors:       constructors,
 	}
 
 	// Create a struct to hold the results of the construction.
@@ -122,11 +123,10 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 			}
 
 			return &MemberBuilder{
-				modifier:        modifier,
-				parent:          parent,
-				tdg:             typeGraph,
-				isOperator:      isOperator,
-				sourceLocations: []proto.SourceLocation{},
+				modifier:   modifier,
+				parent:     parent,
+				tdg:        typeGraph,
+				isOperator: isOperator,
 			}
 		}, issueReporterImpl{typeGraph, modifier}, typeGraph)
 		modifier.Apply()
@@ -180,35 +180,29 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 	// Collect any errors generated during construction.
 	it := typeGraph.layer.StartQuery().
 		With(NodePredicateError).
-		BuildNodeIterator(NodePredicateSource)
+		BuildNodeIterator()
 
 	for it.Next() {
 		node := it.Node()
 		result.Status = false
 
-		sourceNodeId := it.GetPredicate(NodePredicateSource).NodeId()
-
-		// Lookup the location of the source node.
-		var location = compilercommon.SourceAndLocation{}
-		for _, constructor := range constructors {
-			constructorLocation, found := constructor.GetLocation(sourceNodeId)
-			if found {
-				location = constructorLocation
-			}
+		sourceRange, hasSourceRange := typeGraph.SourceRangeOf(node)
+		if !hasSourceRange {
+			continue
 		}
 
 		// Add the error.
 		errNode := node.GetNode(NodePredicateError)
 		msg := errNode.Get(NodePredicateErrorMessage)
-		result.Errors = append(result.Errors, compilercommon.NewSourceError(location, msg))
+		result.Errors = append(result.Errors, compilercommon.NewSourceError(sourceRange, msg))
 	}
 
 	return result
 }
 
 // GetNode returns the node with the given ID in this layer or panics.
-func (g *TypeGraph) GetNode(nodeId compilergraph.GraphNodeId) compilergraph.GraphNode {
-	return g.layer.GetNode(nodeId)
+func (g *TypeGraph) GetNode(nodeID compilergraph.GraphNodeId) compilergraph.GraphNode {
+	return g.layer.GetNode(nodeID)
 }
 
 // Modules returns all modules defined in the type graph.
@@ -505,7 +499,34 @@ func (g *TypeGraph) LookupReturnType(sourceNode compilergraph.GraphNode) (TypeRe
 }
 
 // LookupGlobalAliasedType looks up the type with the given global alias and returns it, if any.
-func (t *TypeGraph) LookupGlobalAliasedType(alias string) (TGTypeDecl, bool) {
-	typeDecl, found := t.globalAliasedTypes[alias]
+func (g *TypeGraph) LookupGlobalAliasedType(alias string) (TGTypeDecl, bool) {
+	typeDecl, found := g.globalAliasedTypes[alias]
 	return typeDecl, found
+}
+
+// SourceRangesOf returns the source ranges of the given in its *source* graph, if any.
+func (g *TypeGraph) SourceRangesOf(node compilergraph.GraphNode) []compilercommon.SourceRange {
+	sourceNodeID, hasSourceNode := node.TryGetValue(NodePredicateSource)
+	if !hasSourceNode {
+		return []compilercommon.SourceRange{}
+	}
+
+	for _, constructor := range g.constructors {
+		ranges := constructor.GetRanges(sourceNodeID.NodeId())
+		if len(ranges) > 0 {
+			return ranges
+		}
+	}
+
+	return []compilercommon.SourceRange{}
+}
+
+// SourceRangeOf returns the source range of the given node in its *source* graph, if any.
+func (g *TypeGraph) SourceRangeOf(node compilergraph.GraphNode) (compilercommon.SourceRange, bool) {
+	ranges := g.SourceRangesOf(node)
+	if len(ranges) == 0 {
+		return nil, false
+	}
+
+	return ranges[0], true
 }

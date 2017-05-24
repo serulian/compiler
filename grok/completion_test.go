@@ -213,9 +213,10 @@ func TestGrokCompletion(t *testing.T) {
 			}
 
 			// Retrieve the completions for the range's location.
-			sal := compilercommon.NewSourceAndLocation(compilercommon.InputSource(testSourcePath), testRange.startIndex)
-			completionInfo, err := handle.GetCompletions(grokCompletionSubTest.activationString, sal)
-			if !assert.Nil(t, err, "Error when looking up completions: %s => %v", testRange.name, sal) {
+			pm := compilercommon.LocalFilePositionMapper{}
+			sourcePosition := compilercommon.InputSource(testSourcePath).PositionForRunePosition(testRange.startIndex, pm)
+			completionInfo, err := handle.GetCompletions(grokCompletionSubTest.activationString, sourcePosition)
+			if !assert.Nil(t, err, "Error when looking up completions: %s => %v", testRange.name, sourcePosition) {
 				continue
 			}
 

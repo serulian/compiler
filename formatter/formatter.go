@@ -69,9 +69,10 @@ func (ih importHandlingInfo) logSuccess(node formatterNode, message string, args
 
 func (ih importHandlingInfo) log(level compilerutil.ConsoleLogLevel, node formatterNode, message string, args ...interface{}) {
 	startRune, _ := strconv.Atoi(node.getProperty(parser.NodePredicateStartRune))
+	endRune, _ := strconv.Atoi(node.getProperty(parser.NodePredicateEndRune))
 	inputSource := compilercommon.InputSource(node.getProperty(parser.NodePredicateSource))
-	sal := compilercommon.NewSourceAndLocation(inputSource, startRune)
-	compilerutil.LogToConsole(level, sal, message, args...)
+	sourceRange := inputSource.RangeForRunePositions(startRune, endRune, compilercommon.LocalFilePositionMapper{})
+	compilerutil.LogToConsole(level, sourceRange, message, args...)
 }
 
 // Freeze formats the source files at the given path and freezes the specified

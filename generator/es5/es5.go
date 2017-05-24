@@ -8,7 +8,6 @@ package es5
 import (
 	"sort"
 
-	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/shared"
 	"github.com/serulian/compiler/generator/escommon"
@@ -23,21 +22,19 @@ import (
 
 // es5generator defines a generator for producing ECMAScript 5 code.
 type es5generator struct {
-	graph          *compilergraph.SerulianGraph   // The root graph.
-	scopegraph     *scopegraph.ScopeGraph         // The scope graph.
-	positionMapper *compilercommon.PositionMapper // The position mapper.
-	templater      *shared.Templater              // The caching templater.
-	pather         shared.Pather                  // The pather being used.
+	graph      *compilergraph.SerulianGraph // The root graph.
+	scopegraph *scopegraph.ScopeGraph       // The scope graph.
+	templater  *shared.Templater            // The caching templater.
+	pather     shared.Pather                // The pather being used.
 }
 
 // generateModules generates all the modules found in the given scope graph into source.
 func generateModules(sg *scopegraph.ScopeGraph) map[typegraph.TGModule]esbuilder.SourceBuilder {
 	generator := es5generator{
-		graph:          sg.SourceGraph().Graph,
-		scopegraph:     sg,
-		positionMapper: compilercommon.NewPositionMapper(),
-		templater:      shared.NewTemplater(),
-		pather:         shared.NewPather(sg.SourceGraph().Graph),
+		graph:      sg.SourceGraph().Graph,
+		scopegraph: sg,
+		templater:  shared.NewTemplater(),
+		pather:     shared.NewPather(sg.SourceGraph().Graph),
 	}
 
 	// Generate the builder for each of the modules.

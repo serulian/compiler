@@ -3,10 +3,10 @@
         "Key": "54a34e2b293f0d5e81fa075f6d9f3287",
         "Kind": 7,
         "Children": {
-            "69e5730660fe3f5e6e31ab13d9259815": {
+            "4b0194ae7810fc492125821b3c0b74e2": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "69e5730660fe3f5e6e31ab13d9259815",
+                    "Key": "4b0194ae7810fc492125821b3c0b74e2",
                     "Kind": 9,
                     "Children": {
                         "69c7dfb293b5923e5b91ad780ee76061": {
@@ -32,7 +32,6 @@
                         "tdg-member-signature": "\n\u0010somevoidfunction\u0010\u0002 \u0001*\u000efunction\u003cvoid\u003e",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-location": "\n\u001atests/voidreturn/void.seru|SourceLocation|tdg",
                         "tdg-source-module": "tests/voidreturn/void.seru",
                         "tdg-source-node": "(NodeRef)"
                     }

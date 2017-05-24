@@ -35,9 +35,9 @@ func (t SRGTypeOrGeneric) Node() compilergraph.GraphNode {
 	return t.GraphNode
 }
 
-// Location returns the source location for this resolved type or generic.
-func (t SRGTypeOrGeneric) Location() compilercommon.SourceAndLocation {
-	return salForNode(t.GraphNode)
+// SourceRange returns the source range for this resolved type or generic.
+func (t SRGTypeOrGeneric) SourceRange() (compilercommon.SourceRange, bool) {
+	return t.srg.SourceRangeOf(t.GraphNode)
 }
 
 // AsType returns this type or generic as a type. Panics if not a type.

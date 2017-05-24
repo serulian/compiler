@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/generator/es5/codedom"
 	"github.com/serulian/compiler/generator/es5/shared"
 	"github.com/serulian/compiler/generator/escommon/esbuilder"
@@ -33,12 +32,11 @@ const (
 
 // GenerateExpression generates the full ES5 expression for the given CodeDOM expression representation.
 func GenerateExpression(expression codedom.Expression, asyncOption AsyncOption, scopegraph *scopegraph.ScopeGraph,
-	positionMapper *compilercommon.PositionMapper, machineBuilder StateMachineBuilder) ExpressionResult {
+	machineBuilder StateMachineBuilder) ExpressionResult {
 
 	generator := &expressionGenerator{
 		scopegraph:     scopegraph,
 		machineBuilder: machineBuilder,
-		positionmapper: positionMapper,
 		pather:         shared.NewPather(scopegraph.SourceGraph().Graph),
 		wrappers:       make([]*expressionWrapper, 0),
 		variables:      make([]string, 0),
@@ -58,13 +56,12 @@ func GenerateExpression(expression codedom.Expression, asyncOption AsyncOption, 
 
 // expressionGenerator defines a type that converts CodeDOM expressions into ES5 source code.
 type expressionGenerator struct {
-	scopegraph     *scopegraph.ScopeGraph         // The scope graph being generated.
-	machineBuilder StateMachineBuilder            // Builder for state machines.
-	positionmapper *compilercommon.PositionMapper // Mapper for fast position mapping.
-	pather         shared.Pather                  // The pather to use for generating references.
-	wrappers       []*expressionWrapper           // The async wrappers over the generated expression.
-	variables      []string                       // The variables that were generated.
-	counter        int                            // Counter for unique names.
+	scopegraph     *scopegraph.ScopeGraph // The scope graph being generated.
+	machineBuilder StateMachineBuilder    // Builder for state machines.
+	pather         shared.Pather          // The pather to use for generating references.
+	wrappers       []*expressionWrapper   // The async wrappers over the generated expression.
+	variables      []string               // The variables that were generated.
+	counter        int                    // Counter for unique names.
 }
 
 // generationContext defines extra context for the generation of expressions.
@@ -122,7 +119,7 @@ func (eg *expressionGenerator) generateExpressions(expressions []codedom.Express
 // as adding any source mapping.
 func (eg *expressionGenerator) generateExpression(expression codedom.Expression, context generationContext) esbuilder.ExpressionBuilder {
 	generated := eg.generateExpressionWithoutMapping(expression, context)
-	return shared.SourceMapWrapExpr(generated, expression, eg.positionmapper)
+	return shared.SourceMapWrapExpr(generated, expression, eg.scopegraph.SourceGraph())
 }
 
 // generateExpressionWithoutMapping generates an ExpressionBuilder for the given CodeDOM expression.

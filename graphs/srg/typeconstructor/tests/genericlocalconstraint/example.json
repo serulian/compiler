@@ -1,6 +1,6 @@
 {
-    "6b86cf76bf9e67cc28311f5a4f25decc": {
-        "Key": "6b86cf76bf9e67cc28311f5a4f25decc",
+    "234d5619d5feea916a5743f83af849b3": {
+        "Key": "234d5619d5feea916a5743f83af849b3",
         "Kind": 1,
         "Children": {
             "0fcbb1a783ca14524f8a1a4a77fc63c1": {
@@ -83,7 +83,6 @@
         },
         "Predicates": {
             "tdg-node-kind": "1|NodeType|tdg",
-            "tdg-source-location": "\n)tests/genericlocalconstraint/example.seru|SourceLocation|tdg",
             "tdg-source-module": "tests/genericlocalconstraint/example.seru",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "52a4392f",

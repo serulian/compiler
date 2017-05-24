@@ -62,14 +62,11 @@ func (itc *irgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 		// For each declaration that contributed to the type, define an alias that will
 		// point to the type.
 		for _, declaration := range collapsedType.Declarations {
-			typeBuilder.WithSourceLocation(declaration.SourceLocation())
-
 			builder(declaration.Module().Node()).
 				Name(declaration.Name()).
 				GlobalId(webidl.GetUniqueId(declaration.GraphNode)).
 				SourceNode(declaration.GraphNode).
 				TypeKind(typegraph.AliasType).
-				WithSourceLocation(declaration.SourceLocation()).
 				Define()
 		}
 
@@ -122,7 +119,6 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 			builder(collapsedType.RootNode, false).
 				Name("new").
 				SourceNode(collapsedType.ConstructorAnnotations[0].GraphNode).
-				WithSourceLocation(collapsedType.ConstructorAnnotations[0].SourceLocation()).
 				Define()
 		}
 
@@ -147,7 +143,6 @@ func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder,
 					builder(collapsedType.RootNode, true).
 						Name(opName).
 						SourceNode(nativeOp.GraphNode).
-						WithSourceLocation(nativeOp.SourceLocation()).
 						Define()
 				}
 			}
@@ -194,7 +189,6 @@ func (itc *irgTypeConstructor) defineMember(member webidl.IRGMember, parentNode 
 		builder(parentNode, false).
 			Name(name).
 			SourceNode(member.GraphNode).
-			WithSourceLocation(member.SourceLocation()).
 			Define()
 	} else {
 		// This is a specialization.
@@ -202,7 +196,6 @@ func (itc *irgTypeConstructor) defineMember(member webidl.IRGMember, parentNode 
 		builder(parentNode, true).
 			Name(webidl.SPECIALIZATION_NAMES[specialization]).
 			SourceNode(member.GraphNode).
-			WithSourceLocation(member.SourceLocation()).
 			Define()
 	}
 }
@@ -390,13 +383,20 @@ func (itc *irgTypeConstructor) DecorateMembers(decorator typegraph.GetMemberDeco
 func (itc *irgTypeConstructor) Validate(reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {
 }
 
-func (itc *irgTypeConstructor) GetLocation(sourceNodeId compilergraph.GraphNodeId) (compilercommon.SourceAndLocation, bool) {
-	layerNode, found := itc.irg.TryGetNode(sourceNodeId)
+func (itc *irgTypeConstructor) GetRanges(sourceNodeID compilergraph.GraphNodeId) []compilercommon.SourceRange {
+	layerNode, found := itc.irg.TryGetNode(sourceNodeID)
 	if !found {
-		return compilercommon.SourceAndLocation{}, false
+		return []compilercommon.SourceRange{}
 	}
 
-	return itc.irg.NodeLocation(layerNode), true
+	// If the node is a synthesized node representing a collapsed type, return all its ranges.
+	collapsedType, isCollapsedType := itc.tc.GetTypeForNodeID(sourceNodeID)
+	if isCollapsedType {
+		return collapsedType.SourceRanges()
+	}
+
+	// Otherwise, return the ranges for the single node.
+	return itc.irg.SourceRangesOf(layerNode)
 }
 
 // ResolveType attempts to resolve the given type string.

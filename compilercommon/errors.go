@@ -8,32 +8,37 @@ import (
 	"fmt"
 )
 
-// SourceError represents an error produced by a source file at a specific location.
+// SourceError represents an error produced by a source file at a specific range.
 type SourceError struct {
-	message string            // The error message.
-	sal     SourceAndLocation // The source and location of the error.
+	message     string
+	sourceRange SourceRange
 }
 
 func (se SourceError) Error() string {
 	return se.message
 }
 
-func (se SourceError) SourceAndLocation() SourceAndLocation {
-	return se.sal
+func (se SourceError) String() string {
+	return se.message
 }
 
-// SourceErrorf returns a new SourceError for the given location and message.
-func SourceErrorf(sal SourceAndLocation, msg string, args ...interface{}) SourceError {
+// SourceRange returns the range of this error.
+func (se SourceError) SourceRange() SourceRange {
+	return se.sourceRange
+}
+
+// SourceErrorf returns a new SourceError for the given range and message.
+func SourceErrorf(sourceRange SourceRange, msg string, args ...interface{}) SourceError {
 	return SourceError{
-		message: fmt.Sprintf(msg, args...),
-		sal:     sal,
+		message:     fmt.Sprintf(msg, args...),
+		sourceRange: sourceRange,
 	}
 }
 
-// NewSourceError returns a new SourceError for the given location and message.
-func NewSourceError(sal SourceAndLocation, msg string) SourceError {
+// NewSourceError returns a new SourceError for the given range and message.
+func NewSourceError(sourceRange SourceRange, msg string) SourceError {
 	return SourceError{
-		message: msg,
-		sal:     sal,
+		message:     msg,
+		sourceRange: sourceRange,
 	}
 }

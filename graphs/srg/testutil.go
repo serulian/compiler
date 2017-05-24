@@ -62,7 +62,7 @@ func (t testTypePackageLoader) Parse(source compilercommon.InputSource, input st
 
 }
 
-func (t testTypePackageLoader) Apply(packageMap packageloader.LoadedPackageMap) {
+func (t testTypePackageLoader) Apply(packageMap packageloader.LoadedPackageMap, sourceTracker packageloader.SourceTracker) {
 
 }
 

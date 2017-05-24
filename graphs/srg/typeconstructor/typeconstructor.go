@@ -54,12 +54,10 @@ func (stc *srgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 		}
 
 		// Start the type definition.
-		sal, _ := srgType.SourceLocation()
 		typeBuilder := builder(moduleNode).
 			Name(srgType.Name()).
 			GlobalId(srgType.UniqueId()).
 			Documentation(docString).
-			WithSourceLocation(sal).
 			SourceNode(srgType.Node())
 
 		// As a class or interface.
@@ -228,10 +226,8 @@ func (stc *srgTypeConstructor) defineMember(member srg.SRGMember, parent typegra
 	}
 
 	// Define the member's name and source node.
-	sal, _ := member.SourceLocation()
 	builder.Name(member.Name()).
 		SourceNode(member.Node()).
-		WithSourceLocation(sal).
 		Documentation(docString)
 
 	// Add the member's generics.
@@ -429,13 +425,18 @@ func (stc *srgTypeConstructor) Validate(reporter typegraph.IssueReporter, graph 
 	workqueue.Run()
 }
 
-func (stc *srgTypeConstructor) GetLocation(sourceNodeId compilergraph.GraphNodeId) (compilercommon.SourceAndLocation, bool) {
-	layerNode, found := stc.srg.TryGetNode(sourceNodeId)
+func (stc *srgTypeConstructor) GetRanges(sourceNodeID compilergraph.GraphNodeId) []compilercommon.SourceRange {
+	layerNode, found := stc.srg.TryGetNode(sourceNodeID)
 	if !found {
-		return compilercommon.SourceAndLocation{}, false
+		return []compilercommon.SourceRange{}
 	}
 
-	return stc.srg.NodeLocation(layerNode), true
+	sourceRange, hasSourceRange := stc.srg.SourceRangeOf(layerNode)
+	if !hasSourceRange {
+		return []compilercommon.SourceRange{}
+	}
+
+	return []compilercommon.SourceRange{sourceRange}
 }
 
 // BuildTypeRef builds a type graph type reference from the SRG type reference. This also fully

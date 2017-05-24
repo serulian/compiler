@@ -35,11 +35,14 @@ func (s WarningsSlice) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
 func (s WarningsSlice) Less(i, j int) bool {
-	if s[i].SourceAndLocation().Location().LineNumber() == s[j].SourceAndLocation().Location().LineNumber() {
-		return s[i].SourceAndLocation().Location().ColumnPosition() < s[j].SourceAndLocation().Location().ColumnPosition()
+	iLine, iCol, _ := s[i].SourceRange().Start().LineAndColumn()
+	jLine, jCol, _ := s[j].SourceRange().Start().LineAndColumn()
+
+	if iLine == jLine {
+		return iCol < jCol
 	}
 
-	return s[i].SourceAndLocation().Location().LineNumber() < s[j].SourceAndLocation().Location().LineNumber()
+	return iLine < jLine
 }
 
 func (s ErrorsSlice) Len() int {
@@ -49,24 +52,27 @@ func (s ErrorsSlice) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
 func (s ErrorsSlice) Less(i, j int) bool {
-	if s[i].SourceAndLocation().Location().LineNumber() == s[j].SourceAndLocation().Location().LineNumber() {
-		return s[i].SourceAndLocation().Location().ColumnPosition() < s[j].SourceAndLocation().Location().ColumnPosition()
+	iLine, iCol, _ := s[i].SourceRange().Start().LineAndColumn()
+	jLine, jCol, _ := s[j].SourceRange().Start().LineAndColumn()
+
+	if iLine == jLine {
+		return iCol < jCol
 	}
 
-	return s[i].SourceAndLocation().Location().LineNumber() < s[j].SourceAndLocation().Location().LineNumber()
+	return iLine < jLine
 }
 
 func outputWarnings(warnings []compilercommon.SourceWarning) {
 	sort.Sort(WarningsSlice(warnings))
 	for _, warning := range warnings {
-		compilerutil.LogToConsole(compilerutil.WarningLogLevel, warning.SourceAndLocation(), "%s", warning.String())
+		compilerutil.LogToConsole(compilerutil.WarningLogLevel, warning.SourceRange(), "%s", warning.String())
 	}
 }
 
 func outputErrors(errors []compilercommon.SourceError) {
 	sort.Sort(ErrorsSlice(errors))
 	for _, err := range errors {
-		compilerutil.LogToConsole(compilerutil.ErrorLogLevel, err.SourceAndLocation(), "%s", err.Error())
+		compilerutil.LogToConsole(compilerutil.ErrorLogLevel, err.SourceRange(), "%s", err.Error())
 	}
 }
 

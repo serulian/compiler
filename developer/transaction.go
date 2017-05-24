@@ -148,30 +148,36 @@ func (dt *developTransaction) ServeSourceFile(w http.ResponseWriter, r *http.Req
 	fmt.Fprint(w, string(contents))
 }
 
-func (dt *developTransaction) emitError(w http.ResponseWriter, err compilercommon.SourceError) {
-	message := fmt.Sprintf("console.error(%v);\n", strconv.Quote(err.Error()))
+func (dt *developTransaction) emitError(w http.ResponseWriter, sourceErr compilercommon.SourceError) {
+	message := fmt.Sprintf("console.error(%v);\n", strconv.Quote(sourceErr.Error()))
 	fmt.Fprint(w, message)
 
-	dt.sourceMap.AddMapping(dt.offsetCount, 0, sourcemap.SourceMapping{
-		SourcePath:     string(err.SourceAndLocation().Source()),
-		LineNumber:     err.SourceAndLocation().Location().LineNumber(),
-		ColumnPosition: err.SourceAndLocation().Location().ColumnPosition(),
-	})
+	line, col, err := sourceErr.SourceRange().Start().LineAndColumn()
+	if err == nil {
+		dt.sourceMap.AddMapping(dt.offsetCount, 0, sourcemap.SourceMapping{
+			SourcePath:     string(sourceErr.SourceRange().Source()),
+			LineNumber:     line,
+			ColumnPosition: col,
+		})
 
-	dt.offsetCount++
+		dt.offsetCount++
+	}
 }
 
 func (dt *developTransaction) emitWarning(w http.ResponseWriter, warn compilercommon.SourceWarning) {
 	message := fmt.Sprintf("console.warn(%v);\n", strconv.Quote(warn.String()))
 	fmt.Fprint(w, message)
 
-	dt.sourceMap.AddMapping(dt.offsetCount, 0, sourcemap.SourceMapping{
-		SourcePath:     string(warn.SourceAndLocation().Source()),
-		LineNumber:     warn.SourceAndLocation().Location().LineNumber(),
-		ColumnPosition: warn.SourceAndLocation().Location().ColumnPosition(),
-	})
+	line, col, err := warn.SourceRange().Start().LineAndColumn()
+	if err == nil {
+		dt.sourceMap.AddMapping(dt.offsetCount, 0, sourcemap.SourceMapping{
+			SourcePath:     string(warn.SourceRange().Source()),
+			LineNumber:     line,
+			ColumnPosition: col,
+		})
 
-	dt.offsetCount++
+		dt.offsetCount++
+	}
 }
 
 func (dt *developTransaction) emitInfo(w http.ResponseWriter, msg string, args ...interface{}) {

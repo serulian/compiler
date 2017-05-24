@@ -130,27 +130,27 @@ func (rn ReferencedName) Name() string {
 	return rn.srgInfo.Name()
 }
 
-// SourceLocation returns the primary source location for the referenced node, if any.
-func (rn ReferencedName) SourceLocation() (compilercommon.SourceAndLocation, bool) {
+// SourceRange returns the primary source range for the referenced node, if any.
+func (rn ReferencedName) SourceRange() (compilercommon.SourceRange, bool) {
 	if rn.typeInfo != nil {
-		return rn.typeInfo.SourceLocation()
+		return rn.typeInfo.SourceRange()
 	}
 
-	return rn.srgInfo.SourceLocation()
+	return rn.srgInfo.SourceRange()
 }
 
-// SourceLocations returns the set of source locations for the referenced node, if any.
-func (rn ReferencedName) SourceLocations() []compilercommon.SourceAndLocation {
+// SourceRanges returns the set of source ranges for the referenced node, if any.
+func (rn ReferencedName) SourceRanges() []compilercommon.SourceRange {
 	if rn.typeInfo != nil {
-		return rn.typeInfo.SourceLocations()
+		return rn.typeInfo.SourceRanges()
 	}
 
-	sl, hasLocation := rn.srgInfo.SourceLocation()
-	if hasLocation {
-		return []compilercommon.SourceAndLocation{sl}
+	sr, hasSourceRange := rn.srgInfo.SourceRange()
+	if hasSourceRange {
+		return []compilercommon.SourceRange{sr}
 	}
 
-	return []compilercommon.SourceAndLocation{}
+	return []compilercommon.SourceRange{}
 }
 
 // Code returns a code-like summarization of the referenced name, for human consumption.

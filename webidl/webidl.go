@@ -24,6 +24,8 @@ type WebIRG struct {
 	rootModuleNode compilergraph.GraphNode   // The root module node.
 
 	packageMap    map[string]packageloader.PackageInfo // Map from package internal ID to info.
+	sourceTracker packageloader.SourceTracker          // The source tracker.
+
 	typeCollapser *TypeCollapser
 }
 
@@ -84,18 +86,26 @@ func (g *WebIRG) TryGetNode(nodeId compilergraph.GraphNodeId) (compilergraph.Gra
 	return g.layer.TryGetNode(nodeId)
 }
 
-// NodeLocation returns the location of the given SRG node.
-func (g *WebIRG) NodeLocation(node compilergraph.GraphNode) compilercommon.SourceAndLocation {
-	return salForNode(node)
+// SourceRangesOf returns the source ranges of the given IRG node.
+func (g *WebIRG) SourceRangesOf(node compilergraph.GraphNode) []compilercommon.SourceRange {
+	sourceRange, hasSourceRange := g.SourceRangeOf(node)
+	if !hasSourceRange {
+		return []compilercommon.SourceRange{}
+	}
+
+	return []compilercommon.SourceRange{sourceRange}
 }
 
-// salForNode returns a SourceAndLocation for the given graph node.
-func salForNode(node compilergraph.GraphNode) compilercommon.SourceAndLocation {
-	return salForValues(node.Get(parser.NodePredicateSource), node.GetValue(parser.NodePredicateStartRune).Int())
-}
+// SourceRangeOf returns the source range of the given IRG node.
+func (g *WebIRG) SourceRangeOf(node compilergraph.GraphNode) (compilercommon.SourceRange, bool) {
+	startRune, hasStartRune := node.TryGetValue(parser.NodePredicateStartRune)
+	endRune, hasEndRune := node.TryGetValue(parser.NodePredicateEndRune)
+	sourcePath, hasSource := node.TryGet(parser.NodePredicateSource)
 
-// salForValues returns a SourceAndLocation for the given string predicate values.
-func salForValues(sourceStr string, bytePosition int) compilercommon.SourceAndLocation {
-	source := compilercommon.InputSource(sourceStr)
-	return compilercommon.NewSourceAndLocation(source, bytePosition)
+	if !hasStartRune || !hasEndRune || !hasSource {
+		return nil, false
+	}
+
+	source := compilercommon.InputSource(sourcePath)
+	return source.RangeForRunePositions(startRune.Int(), endRune.Int(), g.sourceTracker), true
 }

@@ -16,17 +16,17 @@ import (
 
 // GetCompletions returns the autocompletion information for the given activationString at the given location.
 // If the activation string is empty, returns all context-sensitive defined names.
-func (gh Handle) GetCompletions(activationString string, sal compilercommon.SourceAndLocation) (CompletionInformation, error) {
+func (gh Handle) GetCompletions(activationString string, sourcePosition compilercommon.SourcePosition) (CompletionInformation, error) {
 	builder := &completionBuilder{
 		handle:           gh,
 		activationString: activationString,
-		sal:              sal,
+		sourcePosition:   sourcePosition,
 		completions:      make([]Completion, 0),
 	}
 
 	// Find the node at the location.
 	sourceGraph := gh.scopeResult.Graph.SourceGraph()
-	node, found := sourceGraph.FindNodeForLocation(sal)
+	node, found := sourceGraph.FindNodeForPosition(sourcePosition)
 	if !found {
 		return builder.build(), nil
 	}
@@ -50,7 +50,7 @@ func (gh Handle) GetCompletions(activationString string, sal compilercommon.Sour
 		// Imports.
 		importSnippet, ok := buildImportSnippet(activationString)
 		if ok {
-			importSnippet.populateCompletions(builder, sal.Source())
+			importSnippet.populateCompletions(builder, sourcePosition.Source())
 		}
 
 	default:

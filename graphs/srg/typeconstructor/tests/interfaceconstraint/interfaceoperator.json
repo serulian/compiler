@@ -1,75 +1,60 @@
 {
-    "0ec5e5bd2050f74cba5aff39609f5211": {
-        "Key": "0ec5e5bd2050f74cba5aff39609f5211",
-        "Kind": 1,
+    "3bb627c1d4cc8fcf862dfc32ef327ca3": {
+        "Key": "3bb627c1d4cc8fcf862dfc32ef327ca3",
+        "Kind": 2,
         "Children": {
-            "e101b205c99e3670af9f910b07ec0360": {
-                "Predicate": "tdg-node-member",
+            "af8990d86e69af5dbfe709cbda1bbde1": {
+                "Predicate": "tdg-declaration-operator",
                 "Child": {
-                    "Key": "e101b205c99e3670af9f910b07ec0360",
-                    "Kind": 9,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-field": "true",
-                        "tdg-member-name": "someClass",
-                        "tdg-member-resolved-type": "SomeClass\u003cThirdClass\u003e",
-                        "tdg-member-signature": "\n\tsomeclass\u0010\u0005\u0018\u0001*\u0015SomeClass\u003cThirdClass\u003e",
-                        "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-location": "\n0tests/interfaceconstraint/interfaceoperator.seru\u0010\ufffd\u0001|SourceLocation|tdg",
-                        "tdg-source-module": "tests/interfaceconstraint/interfaceoperator.seru",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
-            "ecab1c22a16d99f456909ae7403c624b": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "ecab1c22a16d99f456909ae7403c624b",
-                    "Kind": 9,
+                    "Key": "af8990d86e69af5dbfe709cbda1bbde1",
+                    "Kind": 10,
                     "Children": {
-                        "b260da3385668751b37c86a31828c51f": {
+                        "2307ac4f0f073d656d32d3d16858eb31": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "b260da3385668751b37c86a31828c51f",
+                                "Key": "2307ac4f0f073d656d32d3d16858eb31",
                                 "Kind": 12,
                                 "Children": {},
                                 "Predicates": {
                                     "tdg-node-kind": "12|NodeType|tdg",
-                                    "tdg-return-type": "AnotherClass"
+                                    "tdg-return-type": "ISomeInterface",
+                                    "tdg-source-node": "(NodeRef)"
                                 }
                             }
                         }
                     },
                     "Predicates": {
-                        "tdg-member-name": "new",
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "•plus",
                         "tdg-member-promising": "1",
                         "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cAnotherClass\u003e(SomeClass\u003cThirdClass\u003e)",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0001*-function\u003cAnotherClass\u003e(SomeClass\u003cThirdClass\u003e)",
+                        "tdg-member-resolved-type": "function\u003cISomeInterface\u003e(ISomeInterface, ISomeInterface)",
+                        "tdg-member-signature": "\n\u0004plus\u0010\u0004 \u0001*\u0003any",
                         "tdg-member-static": "true",
-                        "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-module": "tests/interfaceconstraint/interfaceoperator.seru"
+                        "tdg-node-kind": "10|NodeType|tdg",
+                        "tdg-operator-name": "plus",
+                        "tdg-source-module": "tests/interfaceconstraint/interfaceoperator.seru",
+                        "tdg-source-node": "(NodeRef)"
                     }
                 }
             }
         },
         "Predicates": {
-            "tdg-node-kind": "1|NodeType|tdg",
-            "tdg-source-location": "\n0tests/interfaceconstraint/interfaceoperator.seru\u0010\ufffd\u0001|SourceLocation|tdg",
+            "tdg-node-kind": "2|NodeType|tdg",
             "tdg-source-module": "tests/interfaceconstraint/interfaceoperator.seru",
             "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "82e3855b",
-            "tdg-type-name": "AnotherClass"
+            "tdg-type-globalid": "4e6500b3",
+            "tdg-type-name": "ISomeInterface"
         }
     },
-    "335506955042ab7f2465f9d2fb1eea41": {
-        "Key": "335506955042ab7f2465f9d2fb1eea41",
+    "4c67be752c683e57145861252c7e85a0": {
+        "Key": "4c67be752c683e57145861252c7e85a0",
         "Kind": 1,
         "Children": {
-            "67f0abdd166ee3bb450e658a24924dc7": {
+            "8c2e097374e2561d4448e1950d598663": {
                 "Predicate": "tdg-declaration-operator",
                 "Child": {
-                    "Key": "67f0abdd166ee3bb450e658a24924dc7",
+                    "Key": "8c2e097374e2561d4448e1950d598663",
                     "Kind": 10,
                     "Children": {
                         "117786da46bf902eb75ea110a111954c": {
@@ -96,7 +81,6 @@
                         "tdg-member-static": "true",
                         "tdg-node-kind": "10|NodeType|tdg",
                         "tdg-operator-name": "plus",
-                        "tdg-source-location": "\n0tests/interfaceconstraint/interfaceoperator.seru\u0010\ufffd\u0001|SourceLocation|tdg",
                         "tdg-source-module": "tests/interfaceconstraint/interfaceoperator.seru",
                         "tdg-source-node": "(NodeRef)"
                     }
@@ -136,15 +120,75 @@
         },
         "Predicates": {
             "tdg-node-kind": "1|NodeType|tdg",
-            "tdg-source-location": "\n0tests/interfaceconstraint/interfaceoperator.seru\u0010\ufffd\u0001|SourceLocation|tdg",
             "tdg-source-module": "tests/interfaceconstraint/interfaceoperator.seru",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "68167da9",
             "tdg-type-name": "ThirdClass"
         }
     },
-    "33ee38cc8cbcaf409f9bbe15221537ae": {
-        "Key": "33ee38cc8cbcaf409f9bbe15221537ae",
+    "526b1b766d72681cf5dffbea91245c38": {
+        "Key": "526b1b766d72681cf5dffbea91245c38",
+        "Kind": 1,
+        "Children": {
+            "660603d4cb38b47cf02d40f8f66748ee": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "660603d4cb38b47cf02d40f8f66748ee",
+                    "Kind": 9,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-field": "true",
+                        "tdg-member-name": "someClass",
+                        "tdg-member-resolved-type": "SomeClass\u003cThirdClass\u003e",
+                        "tdg-member-signature": "\n\tsomeclass\u0010\u0005\u0018\u0001*\u0015SomeClass\u003cThirdClass\u003e",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-module": "tests/interfaceconstraint/interfaceoperator.seru",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "ecab1c22a16d99f456909ae7403c624b": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "ecab1c22a16d99f456909ae7403c624b",
+                    "Kind": 9,
+                    "Children": {
+                        "b260da3385668751b37c86a31828c51f": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "b260da3385668751b37c86a31828c51f",
+                                "Kind": 12,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-return-type": "AnotherClass"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-name": "new",
+                        "tdg-member-promising": "1",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cAnotherClass\u003e(SomeClass\u003cThirdClass\u003e)",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001*-function\u003cAnotherClass\u003e(SomeClass\u003cThirdClass\u003e)",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-module": "tests/interfaceconstraint/interfaceoperator.seru"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-source-module": "tests/interfaceconstraint/interfaceoperator.seru",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-globalid": "82e3855b",
+            "tdg-type-name": "AnotherClass"
+        }
+    },
+    "7ed04800a9c20cd159203bf012480341": {
+        "Key": "7ed04800a9c20cd159203bf012480341",
         "Kind": 1,
         "Children": {
             "09fd15e7f3531ae4e057dcea0e4025f0": {
@@ -211,61 +255,10 @@
         },
         "Predicates": {
             "tdg-node-kind": "1|NodeType|tdg",
-            "tdg-source-location": "\n0tests/interfaceconstraint/interfaceoperator.seru\u0010\\|SourceLocation|tdg",
             "tdg-source-module": "tests/interfaceconstraint/interfaceoperator.seru",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-globalid": "029c195a",
             "tdg-type-name": "SomeClass"
-        }
-    },
-    "e876877a17c9ac33c48cbf50a8adf667": {
-        "Key": "e876877a17c9ac33c48cbf50a8adf667",
-        "Kind": 2,
-        "Children": {
-            "c04064d90b50cd285fdd4feefb586860": {
-                "Predicate": "tdg-declaration-operator",
-                "Child": {
-                    "Key": "c04064d90b50cd285fdd4feefb586860",
-                    "Kind": 10,
-                    "Children": {
-                        "2307ac4f0f073d656d32d3d16858eb31": {
-                            "Predicate": "tdg-member-returnable",
-                            "Child": {
-                                "Key": "2307ac4f0f073d656d32d3d16858eb31",
-                                "Kind": 12,
-                                "Children": {},
-                                "Predicates": {
-                                    "tdg-node-kind": "12|NodeType|tdg",
-                                    "tdg-return-type": "ISomeInterface",
-                                    "tdg-source-node": "(NodeRef)"
-                                }
-                            }
-                        }
-                    },
-                    "Predicates": {
-                        "tdg-member-exported": "true",
-                        "tdg-member-name": "•plus",
-                        "tdg-member-promising": "1",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cISomeInterface\u003e(ISomeInterface, ISomeInterface)",
-                        "tdg-member-signature": "\n\u0004plus\u0010\u0004 \u0001*\u0003any",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "10|NodeType|tdg",
-                        "tdg-operator-name": "plus",
-                        "tdg-source-location": "\n0tests/interfaceconstraint/interfaceoperator.seru\u0010\u001c|SourceLocation|tdg",
-                        "tdg-source-module": "tests/interfaceconstraint/interfaceoperator.seru",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            }
-        },
-        "Predicates": {
-            "tdg-node-kind": "2|NodeType|tdg",
-            "tdg-source-location": "\n0tests/interfaceconstraint/interfaceoperator.seru|SourceLocation|tdg",
-            "tdg-source-module": "tests/interfaceconstraint/interfaceoperator.seru",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "4e6500b3",
-            "tdg-type-name": "ISomeInterface"
         }
     }
 }
