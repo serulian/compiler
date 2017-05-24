@@ -18,17 +18,17 @@ type sourcePositionMapper struct {
 	rangeTree *redblacktree.Tree
 
 	// lineMap holds a map from line number to rune positions for that line.
-	lineMap map[uint64]inclusiveRange
+	lineMap map[int]inclusiveRange
 }
 
 type inclusiveRange struct {
-	start uint64
-	end   uint64
+	start int
+	end   int
 }
 
 type lineAndStart struct {
-	lineNumber    uint64
-	startPosition uint64
+	lineNumber    int
+	startPosition int
 }
 
 func inclusiveComparator(a, b interface{}) int {
@@ -54,13 +54,13 @@ func inclusiveComparator(a, b interface{}) int {
 func createSourcePositionMapper(contents []byte) *sourcePositionMapper {
 	lines := strings.Split(string(contents), "\n")
 	rangeTree := redblacktree.NewWith(inclusiveComparator)
-	lineMap := map[uint64]inclusiveRange{}
+	lineMap := map[int]inclusiveRange{}
 
-	var currentStart = uint64(0)
+	var currentStart = int(0)
 	for index, line := range lines {
-		lineEnd := currentStart + uint64(len(line))
-		rangeTree.Put(inclusiveRange{currentStart, lineEnd}, lineAndStart{uint64(index), currentStart})
-		lineMap[uint64(index)] = inclusiveRange{currentStart, lineEnd}
+		lineEnd := currentStart + int(len(line))
+		rangeTree.Put(inclusiveRange{currentStart, lineEnd}, lineAndStart{int(index), currentStart})
+		lineMap[int(index)] = inclusiveRange{currentStart, lineEnd}
 		currentStart = lineEnd + 1
 	}
 
@@ -68,7 +68,7 @@ func createSourcePositionMapper(contents []byte) *sourcePositionMapper {
 }
 
 // RunePositionToLineAndCol returns the line number and column position of the rune position in source.
-func (spm *sourcePositionMapper) RunePositionToLineAndCol(runePosition uint64) (uint64, uint64, error) {
+func (spm *sourcePositionMapper) RunePositionToLineAndCol(runePosition int) (int, int, error) {
 	ls, found := spm.rangeTree.Get(inclusiveRange{runePosition, runePosition})
 	if !found {
 		return 0, 0, fmt.Errorf("Unknown rune position %v in source file", runePosition)
@@ -79,7 +79,7 @@ func (spm *sourcePositionMapper) RunePositionToLineAndCol(runePosition uint64) (
 }
 
 // LineAndColToRunePosition returns the rune position of the line number and column position in source.
-func (spm *sourcePositionMapper) LineAndColToRunePosition(lineNumber uint64, colPosition uint64) (uint64, error) {
+func (spm *sourcePositionMapper) LineAndColToRunePosition(lineNumber int, colPosition int) (int, error) {
 	lineRuneInfo, hasLine := spm.lineMap[lineNumber]
 	if !hasLine {
 		return 0, fmt.Errorf("Unknown line %v in source file", lineNumber)

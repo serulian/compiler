@@ -85,15 +85,15 @@ func LogToConsole(level ConsoleLogLevel, sourceRange compilercommon.SourceRange,
 	// Print the actual code line, and annotate the range.
 	lineContents, err := sourceRange.Start().LineText()
 	if endLine != startLine {
-		endCol = uint64(len(lineContents))
+		endCol = len(lineContents)
 	}
 
 	if err != nil {
 		codeColor.Printf("%s\n", lineContents)
 		for index := range lineContents {
-			if uint64(index) < startCol {
+			if index < startCol {
 				codeColor.Printf(" ")
-			} else if uint64(index) >= startCol && uint64(index) <= endCol {
+			} else if index >= startCol && index <= endCol {
 				codeColor.Printf("^")
 			}
 		}

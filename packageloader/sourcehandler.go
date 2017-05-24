@@ -51,7 +51,7 @@ type PackageImport struct {
 // ImportHandler is a function called for registering imports encountered. The function
 // returns a reference string for the package or file location of the import after the
 // full set of packages is parsed.
-type ImportHandler func(sourceKind string, importPath string, importType PackageImportType, importSource compilercommon.InputSource, runePosition uint64) string
+type ImportHandler func(sourceKind string, importPath string, importType PackageImportType, importSource compilercommon.InputSource, runePosition int) string
 
 // WarningReporter is a callback for reporting any warnings during verification.
 type WarningReporter func(warning compilercommon.SourceWarning)

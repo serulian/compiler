@@ -74,7 +74,7 @@ func Parse(builder NodeBuilder, importReporter packageloader.ImportHandler, sour
 
 // ParseExpression parses the given string as an expression.
 func ParseExpression(builder NodeBuilder, source compilercommon.InputSource, startIndex int, input string) (AstNode, bool) {
-	noopHandler := func(kind string, importPath string, packageImportType packageloader.PackageImportType, importSource compilercommon.InputSource, runePosition uint64) string {
+	noopHandler := func(kind string, importPath string, packageImportType packageloader.PackageImportType, importSource compilercommon.InputSource, runePosition int) string {
 		return ""
 	}
 
@@ -123,7 +123,7 @@ func (p *sourceParser) reportImport(value string, kind string) (string, error) {
 		packageImportType = packageloader.ImportTypeVCS
 	}
 
-	return p.importReporter(kind, importPath, packageImportType, p.source, uint64(p.currentToken.position)), nil
+	return p.importReporter(kind, importPath, packageImportType, p.source, int(p.currentToken.position)), nil
 }
 
 // createNode creates a new AstNode and returns it.

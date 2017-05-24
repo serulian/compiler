@@ -558,7 +558,7 @@ func (p *PackageLoader) verifyNoVCSBoundaryCross(startPath string, endPath strin
 }
 
 // handleImport queues an import found in a source file.
-func (p *PackageLoader) handleImport(sourceKind string, importPath string, importType PackageImportType, importSource compilercommon.InputSource, runePosition uint64) string {
+func (p *PackageLoader) handleImport(sourceKind string, importPath string, importType PackageImportType, importSource compilercommon.InputSource, runePosition int) string {
 	sourceRange := importSource.RangeForRunePosition(runePosition, p.sourceTracker)
 	importInformation := PackageImport{sourceKind, importPath, importType, sourceRange}
 

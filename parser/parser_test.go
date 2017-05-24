@@ -309,7 +309,7 @@ var parserTests = []parserTest{
 	{"partial type ref test", "partial/typeref"},
 }
 
-func reportImport(sourceKind string, importPath string, importType packageloader.PackageImportType, importSource compilercommon.InputSource, runePosition uint64) string {
+func reportImport(sourceKind string, importPath string, importType packageloader.PackageImportType, importSource compilercommon.InputSource, runePosition int) string {
 	return "location:" + importPath
 }
 

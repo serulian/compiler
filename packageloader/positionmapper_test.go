@@ -20,7 +20,7 @@ func TestPositionMapping(t *testing.T) {
 	mapper := createSourcePositionMapper(mappingText)
 
 	for runePosition := range mappingText {
-		lineNumber, colPosition, err := mapper.RunePositionToLineAndCol(uint64(runePosition))
+		lineNumber, colPosition, err := mapper.RunePositionToLineAndCol(runePosition)
 		if !assert.Nil(t, err, "Got error mapping file") {
 			return
 		}
@@ -31,7 +31,7 @@ func TestPositionMapping(t *testing.T) {
 			return
 		}
 
-		if !assert.Equal(t, runePosition, int(foundRunePosition), "Rune position mismatch for position %v", runePosition) {
+		if !assert.Equal(t, runePosition, foundRunePosition, "Rune position mismatch for position %v", runePosition) {
 			return
 		}
 	}

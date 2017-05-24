@@ -51,7 +51,7 @@ func (st SourceTracker) LoadedContents(path compilercommon.InputSource) ([]byte,
 	return tracked.contents, true
 }
 
-func (st SourceTracker) RunePositionToLineAndCol(runePosition uint64, path compilercommon.InputSource) (uint64, uint64, error) {
+func (st SourceTracker) RunePositionToLineAndCol(runePosition int, path compilercommon.InputSource) (int, int, error) {
 	tsf, exists := st.sourceFiles[path]
 	if !exists {
 		return 0, 0, fmt.Errorf("Could not find path %s", path)
@@ -64,7 +64,7 @@ func (st SourceTracker) RunePositionToLineAndCol(runePosition uint64, path compi
 	return tsf.positionMapper.RunePositionToLineAndCol(runePosition)
 }
 
-func (st SourceTracker) LineAndColToRunePosition(lineNumber uint64, colPosition uint64, path compilercommon.InputSource) (uint64, error) {
+func (st SourceTracker) LineAndColToRunePosition(lineNumber int, colPosition int, path compilercommon.InputSource) (int, error) {
 	tsf, exists := st.sourceFiles[path]
 	if !exists {
 		return 0, fmt.Errorf("Could not find path %s", path)
@@ -77,7 +77,7 @@ func (st SourceTracker) LineAndColToRunePosition(lineNumber uint64, colPosition 
 	return tsf.positionMapper.LineAndColToRunePosition(lineNumber, colPosition)
 }
 
-func (st SourceTracker) TextForLine(lineNumber uint64, path compilercommon.InputSource) (string, error) {
+func (st SourceTracker) TextForLine(lineNumber int, path compilercommon.InputSource) (string, error) {
 	tsf, exists := st.sourceFiles[path]
 	if !exists {
 		return "", fmt.Errorf("Could not find path %s", path)
@@ -140,7 +140,7 @@ func (m *mutableSourceTracker) AddSourceFile(path compilercommon.InputSource, so
 	})
 }
 
-func (m *mutableSourceTracker) RunePositionToLineAndCol(runePosition uint64, path compilercommon.InputSource) (uint64, uint64, error) {
+func (m *mutableSourceTracker) RunePositionToLineAndCol(runePosition int, path compilercommon.InputSource) (int, int, error) {
 	tracked, exists := m.sourceFiles.Get(string(path))
 	if !exists {
 		return 0, 0, fmt.Errorf("Could not find path %s", path)
@@ -154,7 +154,7 @@ func (m *mutableSourceTracker) RunePositionToLineAndCol(runePosition uint64, pat
 	return tsf.positionMapper.RunePositionToLineAndCol(runePosition)
 }
 
-func (m *mutableSourceTracker) LineAndColToRunePosition(lineNumber uint64, colPosition uint64, path compilercommon.InputSource) (uint64, error) {
+func (m *mutableSourceTracker) LineAndColToRunePosition(lineNumber int, colPosition int, path compilercommon.InputSource) (int, error) {
 	tracked, exists := m.sourceFiles.Get(string(path))
 	if !exists {
 		return 0, fmt.Errorf("Could not find path %s", path)
@@ -168,7 +168,7 @@ func (m *mutableSourceTracker) LineAndColToRunePosition(lineNumber uint64, colPo
 	return tsf.positionMapper.LineAndColToRunePosition(lineNumber, colPosition)
 }
 
-func (m *mutableSourceTracker) TextForLine(lineNumber uint64, path compilercommon.InputSource) (string, error) {
+func (m *mutableSourceTracker) TextForLine(lineNumber int, path compilercommon.InputSource) (string, error) {
 	tracked, exists := m.sourceFiles.Get(string(path))
 	if !exists {
 		return "", fmt.Errorf("Could not find path %s", path)
