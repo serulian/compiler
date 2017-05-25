@@ -53,7 +53,8 @@ func (pl *promiseLabeler) labelEntrypoints() map[string]bool {
 		}
 
 		pl.workset.Remove(e)
-		dynamicNames[entrypoint.ContainingMember().Name()] = true
+		memberName, _ := entrypoint.ContainingMember().Name()
+		dynamicNames[memberName] = true
 		hasChanges = true
 	}
 

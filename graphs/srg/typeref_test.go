@@ -105,7 +105,8 @@ func assertTypeRef(t *testing.T, test string, typeRef SRGTypeRef, expected expec
 				return
 			}
 
-			if !assert.Equal(t, expected.typeName, resolvedType.ResolvedType.Name(), "In test %s, expected type name %s, found: %s", test, expected.typeName, resolvedType.ResolvedType.Name()) {
+			typeName, _ := resolvedType.ResolvedType.Name()
+			if !assert.Equal(t, expected.typeName, typeName, "In test %s, expected type name %s, found: %s", test, expected.typeName, typeName) {
 				return
 			}
 

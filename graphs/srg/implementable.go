@@ -38,7 +38,7 @@ func (m SRGImplementable) Body() (compilergraph.GraphNode, bool) {
 // Name returns the name of the implementable, if any.
 func (m SRGImplementable) Name() (string, bool) {
 	if m.IsMember() {
-		return m.ContainingMember().Name(), true
+		return m.ContainingMember().Name()
 	}
 
 	return "", false

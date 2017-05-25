@@ -95,9 +95,9 @@ func (m SRGType) UniqueId() string {
 	return GetUniqueId(m.GraphNode)
 }
 
-// Name returns the name of this type.
-func (t SRGType) Name() string {
-	return t.GraphNode.Get(parser.NodeTypeDefinitionName)
+// Name returns the name of this type. Can not exist in the partial-parsing case in tooling.
+func (t SRGType) Name() (string, bool) {
+	return t.GraphNode.TryGet(parser.NodeTypeDefinitionName)
 }
 
 // Node returns the underlying type node for this type.
@@ -258,6 +258,11 @@ func (t SRGType) AsNamedScope() SRGNamedScope {
 
 // Code returns a code-like summarization of the type, for human consumption.
 func (t SRGType) Code() string {
+	name, hasName := t.Name()
+	if !hasName {
+		return ""
+	}
+
 	var buffer bytes.Buffer
 	documentationString := getSummarizedDocumentation(t)
 	if len(documentationString) > 0 {
@@ -286,18 +291,18 @@ func (t SRGType) Code() string {
 	switch t.GraphNode.Kind() {
 	case parser.NodeTypeClass:
 		buffer.WriteString("class ")
-		buffer.WriteString(t.Name())
+		buffer.WriteString(name)
 		writeCodeGenerics(t, &buffer)
 		writeComposition()
 
 	case parser.NodeTypeInterface:
 		buffer.WriteString("interface ")
-		buffer.WriteString(t.Name())
+		buffer.WriteString(name)
 		writeCodeGenerics(t, &buffer)
 
 	case parser.NodeTypeNominal:
 		buffer.WriteString("type ")
-		buffer.WriteString(t.Name())
+		buffer.WriteString(name)
 		writeCodeGenerics(t, &buffer)
 		buffer.WriteString(": ")
 
@@ -312,7 +317,7 @@ func (t SRGType) Code() string {
 
 	case parser.NodeTypeStruct:
 		buffer.WriteString("struct ")
-		buffer.WriteString(t.Name())
+		buffer.WriteString(name)
 		writeCodeGenerics(t, &buffer)
 
 	case parser.NodeTypeAgent:
@@ -328,7 +333,7 @@ func (t SRGType) Code() string {
 		}
 
 		buffer.WriteString("> ")
-		buffer.WriteString(t.Name())
+		buffer.WriteString(name)
 		writeCodeGenerics(t, &buffer)
 		writeComposition()
 

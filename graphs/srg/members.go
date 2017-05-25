@@ -66,13 +66,13 @@ func (m SRGMember) Module() SRGModule {
 	return module
 }
 
-// Name returns the name of this member.
-func (m SRGMember) Name() string {
+// Name returns the name of this member. Can not exist in the partial-parsing case for tooling.
+func (m SRGMember) Name() (string, bool) {
 	if m.GraphNode.Kind() == parser.NodeTypeOperator {
-		return m.GraphNode.Get(parser.NodeOperatorName)
+		return m.GraphNode.TryGet(parser.NodeOperatorName)
 	}
 
-	return m.GraphNode.Get(parser.NodePredicateTypeMemberName)
+	return m.GraphNode.TryGet(parser.NodePredicateTypeMemberName)
 }
 
 // Documentation returns the documentation on the member, if any.
@@ -219,12 +219,14 @@ func (m SRGMember) IsStatic() bool {
 
 // IsExported returns whether the given member is exported for use outside its module.
 func (m SRGMember) IsExported() bool {
-	return isExportedName(m.Name())
+	name, _ := m.Name()
+	return isExportedName(name)
 }
 
 // IsAsync returns whether the given member is an async function.
 func (m SRGMember) IsAsyncFunction() bool {
-	return m.MemberKind() == FunctionMember && isAsyncFunction(m.Name())
+	name, _ := m.Name()
+	return m.MemberKind() == FunctionMember && isAsyncFunction(name)
 }
 
 // IsOperator returns whether the given member is an operator.
@@ -319,6 +321,11 @@ func (m SRGMember) AsNamedScope() SRGNamedScope {
 
 // Code returns a code-like summarization of the member, for human consumption.
 func (m SRGMember) Code() string {
+	name, hasName := m.Name()
+	if !hasName {
+		return ""
+	}
+
 	var buffer bytes.Buffer
 	documentationString := getSummarizedDocumentation(m)
 	if len(documentationString) > 0 {
@@ -329,7 +336,7 @@ func (m SRGMember) Code() string {
 	switch m.GraphNode.Kind() {
 	case parser.NodeTypeConstructor:
 		buffer.WriteString("constructor ")
-		buffer.WriteString(m.Name())
+		buffer.WriteString(name)
 		writeCodeParameters(m, &buffer)
 
 	case parser.NodeTypeFunction:
@@ -339,7 +346,7 @@ func (m SRGMember) Code() string {
 		buffer.WriteString(returnType.String())
 		buffer.WriteString("> ")
 
-		buffer.WriteString(m.Name())
+		buffer.WriteString(name)
 		writeCodeGenerics(m, &buffer)
 		writeCodeParameters(m, &buffer)
 
@@ -349,7 +356,7 @@ func (m SRGMember) Code() string {
 		buffer.WriteString(declaredType.String())
 		buffer.WriteString("> ")
 
-		buffer.WriteString(m.Name())
+		buffer.WriteString(name)
 
 		if !m.HasSetter() {
 			buffer.WriteString(" { get }")
@@ -366,7 +373,7 @@ func (m SRGMember) Code() string {
 			buffer.WriteString("operator ")
 		}
 
-		buffer.WriteString(m.Name())
+		buffer.WriteString(name)
 		writeCodeParameters(m, &buffer)
 
 	case parser.NodeTypeField:
@@ -377,7 +384,7 @@ func (m SRGMember) Code() string {
 
 		containingType, hasContainingType := m.ContainingType()
 		if hasContainingType && containingType.TypeKind() == StructType {
-			buffer.WriteString(m.Name())
+			buffer.WriteString(name)
 			buffer.WriteString(" ")
 			buffer.WriteString(declaredType.String())
 		} else {
@@ -385,7 +392,7 @@ func (m SRGMember) Code() string {
 			buffer.WriteString(declaredType.String())
 			buffer.WriteString("> ")
 
-			buffer.WriteString(m.Name())
+			buffer.WriteString(name)
 		}
 
 	default:

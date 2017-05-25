@@ -25,16 +25,17 @@ func TestBasicTypes(t *testing.T) {
 
 	var typeNames []string
 	for _, typeDef := range types {
-		typeNames = append(typeNames, typeDef.Name())
+		typeName, _ := typeDef.Name()
+		typeNames = append(typeNames, typeName)
 
 		// Find the module for the type.
 		module := typeDef.Module()
 
 		// Search for the type under the module again and verify matches.
-		node, found := module.FindTypeByName(typeDef.Name(), ModuleResolveAll)
+		node, found := module.FindTypeByName(typeName, ModuleResolveAll)
 
 		assert.Equal(t, ClassType, node.TypeKind(), "Expected class as kind of type")
-		assert.True(t, found, "Could not find type def or decl %s", typeDef.Name())
+		assert.True(t, found, "Could not find type def or decl %s", typeName)
 		assert.Equal(t, node.NodeId, typeDef.NodeId, "Node ID mismatch on types")
 	}
 
@@ -46,14 +47,18 @@ func TestGenericType(t *testing.T) {
 	testSRG := getSRG(t, "tests/generics/generics.seru")
 	genericType := testSRG.GetTypes()[0]
 
+	typeName, _ := genericType.Name()
 	assert.Equal(t, ClassType, genericType.TypeKind(), "Expected class as kind of type")
-	assert.Equal(t, "SomeClass", genericType.Name())
+	assert.Equal(t, "SomeClass", typeName)
 
 	generics := genericType.Generics()
 	assert.Equal(t, 2, len(generics), "Expected two generics on type")
 
-	assert.Equal(t, "T", generics[0].Name())
-	assert.Equal(t, "Q", generics[1].Name())
+	generic0Name, _ := generics[0].Name()
+	generic1Name, _ := generics[1].Name()
+
+	assert.Equal(t, "T", generic0Name)
+	assert.Equal(t, "Q", generic1Name)
 
 	assert.False(t, generics[0].HasConstraint(), "Expected T to have no constraint")
 	assert.True(t, generics[1].HasConstraint(), "Expected Q to have constraint")
@@ -63,5 +68,7 @@ func TestGenericType(t *testing.T) {
 
 	resolvedConstraint, valid := constraint.ResolveType()
 	assert.True(t, valid, "Expected resolved constraint on generic Q")
-	assert.Equal(t, "InnerClass", resolvedConstraint.ResolvedType.Name(), "Expected InnerClass constraint on generic Q")
+
+	ctName, _ := resolvedConstraint.ResolvedType.Name()
+	assert.Equal(t, "InnerClass", ctName, "Expected InnerClass constraint on generic Q")
 }

@@ -42,7 +42,8 @@ func assertResolveTypePath(t *testing.T, module SRGModule, path string, expected
 		return
 	}
 
-	assert.Equal(t, expectedName, typeDecl.ResolvedType.AsType().Name(), "Name mismatch on found type")
+	typeName, _ := typeDecl.ResolvedType.AsType().Name()
+	assert.Equal(t, expectedName, typeName, "Name mismatch on found type")
 }
 
 func TestBasicResolveTypePath(t *testing.T) {
