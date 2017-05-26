@@ -317,6 +317,9 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 	case parser.NodeTypeIdentifierExpression:
 		return sb.scopeIdentifierExpression
 
+	case parser.NodeTypeError:
+		return sb.scopeError
+
 	default:
 		panic(fmt.Sprintf("Unknown SRG node in scoping: %v", node.Kind()))
 	}
