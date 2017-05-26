@@ -18,7 +18,7 @@ var _ = fmt.Printf
 
 // scopeTypeConversionExpression scopes a conversion from a nominal type to a base type.
 func (sb *scopeBuilder) scopeTypeConversionExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	childScope := sb.getScope(node.GetNode(parser.NodeFunctionCallExpressionChildExpr), context)
+	childScope := sb.getScopeForPredicate(node, parser.NodeFunctionCallExpressionChildExpr, context)
 	conversionType := childScope.StaticTypeRef(sb.sg.tdg)
 
 	// Ensure that the function call has a single argument.
@@ -70,7 +70,11 @@ func (sb *scopeBuilder) scopeTypeConversionExpression(node compilergraph.GraphNo
 // scopeFunctionCallExpression scopes a function call expression in the SRG.
 func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Scope the child expression.
-	childExpr := node.GetNode(parser.NodeFunctionCallExpressionChildExpr)
+	childExpr, hasChildExpr := node.TryGetNode(parser.NodeFunctionCallExpressionChildExpr)
+	if !hasChildExpr {
+		return newScope().Invalid().GetScope()
+	}
+
 	childScope := sb.getScope(childExpr, context)
 	if !childScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
@@ -217,16 +221,16 @@ func (sb *scopeBuilder) scopeSliceExpression(node compilergraph.GraphNode, conte
 	_, isIndexer := node.TryGetNode(parser.NodeSliceExpressionIndex)
 	if isIndexer {
 		return sb.scopeIndexerExpression(node, context)
-	} else {
-		return sb.scopeSlicerExpression(node, context)
 	}
+
+	return sb.scopeSlicerExpression(node, context)
 }
 
 // scopeSliceChildExpression scopes the child expression of a slice expression, returning whether it
 // is valid and the associated operator found, if any.
 func (sb *scopeBuilder) scopeSliceChildExpression(node compilergraph.GraphNode, opName string, context scopeContext) (typegraph.TGMember, typegraph.TypeReference, bool) {
 	// Scope the child expression of the slice.
-	childScope := sb.getScope(node.GetNode(parser.NodeSliceExpressionChildExpr), context)
+	childScope := sb.getScopeForPredicate(node, parser.NodeSliceExpressionChildExpr, context)
 	if !childScope.GetIsValid() {
 		return typegraph.TGMember{}, sb.sg.tdg.AnyTypeReference(), false
 	}
@@ -307,7 +311,7 @@ func (sb *scopeBuilder) scopeIndexerExpression(node compilergraph.GraphNode, con
 	}
 
 	// Scope the index expression.
-	exprScope := sb.getScope(node.GetNode(parser.NodeSliceExpressionIndex), context)
+	exprScope := sb.getScopeForPredicate(node, parser.NodeSliceExpressionIndex, context)
 	if !exprScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
@@ -332,8 +336,8 @@ func (sb *scopeBuilder) scopeIndexerExpression(node compilergraph.GraphNode, con
 // scopeInCollectionExpression scopes an 'in' collection expression in the SRG.
 func (sb *scopeBuilder) scopeInCollectionExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Get the scope of the left and right expressions.
-	leftScope := sb.getScope(node.GetNode(parser.NodeBinaryExpressionLeftExpr), context)
-	rightScope := sb.getScope(node.GetNode(parser.NodeBinaryExpressionRightExpr), context)
+	leftScope := sb.getScopeForPredicate(node, parser.NodeBinaryExpressionLeftExpr, context)
+	rightScope := sb.getScopeForPredicate(node, parser.NodeBinaryExpressionRightExpr, context)
 
 	// Ensure that both scopes are valid.
 	if !leftScope.GetIsValid() || !rightScope.GetIsValid() {
@@ -369,8 +373,8 @@ func (sb *scopeBuilder) scopeInCollectionExpression(node compilergraph.GraphNode
 // scopeIsComparisonExpression scopes an 'is' comparison expression in the SRG.
 func (sb *scopeBuilder) scopeIsComparisonExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Get the scope of the left and right expressions.
-	leftScope := sb.getScope(node.GetNode(parser.NodeBinaryExpressionLeftExpr), context)
-	rightScope := sb.getScope(node.GetNode(parser.NodeBinaryExpressionRightExpr), context)
+	leftScope := sb.getScopeForPredicate(node, parser.NodeBinaryExpressionLeftExpr, context)
+	rightScope := sb.getScopeForPredicate(node, parser.NodeBinaryExpressionRightExpr, context)
 
 	// Ensure that both scopes are valid.
 	if !leftScope.GetIsValid() || !rightScope.GetIsValid() {
@@ -379,7 +383,12 @@ func (sb *scopeBuilder) scopeIsComparisonExpression(node compilergraph.GraphNode
 
 	// Ensure the right hand side is null or the 'not' keyword (which itself will make sure it
 	// has a null)
-	rightKind := node.GetNode(parser.NodeBinaryExpressionRightExpr).Kind()
+	rightNode, hasRightNode := node.TryGetNode(parser.NodeBinaryExpressionRightExpr)
+	if !hasRightNode {
+		return newScope().Invalid().GetScope()
+	}
+
+	rightKind := rightNode.Kind()
 	if rightKind != parser.NodeKeywordNotExpression && rightKind != parser.NodeNullLiteralExpression {
 		sb.decorateWithError(node, "Right side of 'is' operator must be 'null' or 'not null'")
 		return newScope().Invalid().Resolving(sb.sg.tdg.BoolTypeReference()).GetScope()
@@ -397,7 +406,7 @@ func (sb *scopeBuilder) scopeIsComparisonExpression(node compilergraph.GraphNode
 // scopeAssertNotNullExpression scopes an assert-not-null operator expression in the SRG.
 func (sb *scopeBuilder) scopeAssertNotNullExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Get the scope of the child expression.
-	childScope := sb.getScope(node.GetNode(parser.NodeUnaryExpressionChildExpr), context)
+	childScope := sb.getScopeForPredicate(node, parser.NodeUnaryExpressionChildExpr, context)
 	if !childScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
@@ -416,8 +425,8 @@ func (sb *scopeBuilder) scopeAssertNotNullExpression(node compilergraph.GraphNod
 // scopeNullComparisonExpression scopes a nullable comparison expression in the SRG.
 func (sb *scopeBuilder) scopeNullComparisonExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Get the scope of the left and right expressions.
-	leftScope := sb.getScope(node.GetNode(parser.NodeBinaryExpressionLeftExpr), context)
-	rightScope := sb.getScope(node.GetNode(parser.NodeBinaryExpressionRightExpr), context)
+	leftScope := sb.getScopeForPredicate(node, parser.NodeBinaryExpressionLeftExpr, context)
+	rightScope := sb.getScopeForPredicate(node, parser.NodeBinaryExpressionRightExpr, context)
 
 	// Ensure that both scopes are valid.
 	if !leftScope.GetIsValid() || !rightScope.GetIsValid() {
@@ -467,7 +476,7 @@ func (sb *scopeBuilder) scopeEqualsExpression(node compilergraph.GraphNode, cont
 // scopeBooleanUnaryExpression scopes a boolean unary operator expression in the SRG.
 func (sb *scopeBuilder) scopeBooleanUnaryExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Get the scope of the child expression.
-	childScope := sb.getScope(node.GetNode(parser.NodeUnaryExpressionChildExpr), context)
+	childScope := sb.getScopeForPredicate(node, parser.NodeUnaryExpressionChildExpr, context)
 
 	// Ensure that the child scope is valid.
 	if !childScope.GetIsValid() {
@@ -489,8 +498,8 @@ func (sb *scopeBuilder) scopeBooleanUnaryExpression(node compilergraph.GraphNode
 // scopeBooleanBinaryExpression scopes a boolean binary operator expression in the SRG.
 func (sb *scopeBuilder) scopeBooleanBinaryExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Get the scope of the left and right expressions.
-	leftScope := sb.getScope(node.GetNode(parser.NodeBinaryExpressionLeftExpr), context)
-	rightScope := sb.getScope(node.GetNode(parser.NodeBinaryExpressionRightExpr), context)
+	leftScope := sb.getScopeForPredicate(node, parser.NodeBinaryExpressionLeftExpr, context)
+	rightScope := sb.getScopeForPredicate(node, parser.NodeBinaryExpressionRightExpr, context)
 
 	// Ensure that both scopes are valid.
 	if !leftScope.GetIsValid() || !rightScope.GetIsValid() {
@@ -578,8 +587,8 @@ func (sb *scopeBuilder) scopeBinaryModuloExpression(node compilergraph.GraphNode
 // scopeBinaryExpression scopes a binary expression in the SRG.
 func (sb *scopeBuilder) scopeBinaryExpression(node compilergraph.GraphNode, opName string, context scopeContext) *scopeInfoBuilder {
 	// Get the scope of the left and right expressions.
-	leftScope := sb.getScope(node.GetNode(parser.NodeBinaryExpressionLeftExpr), context)
-	rightScope := sb.getScope(node.GetNode(parser.NodeBinaryExpressionRightExpr), context)
+	leftScope := sb.getScopeForPredicate(node, parser.NodeBinaryExpressionLeftExpr, context)
+	rightScope := sb.getScopeForPredicate(node, parser.NodeBinaryExpressionRightExpr, context)
 
 	// Ensure that both scopes are valid.
 	if !leftScope.GetIsValid() || !rightScope.GetIsValid() {
@@ -634,7 +643,7 @@ func (sb *scopeBuilder) scopeBinaryExpression(node compilergraph.GraphNode, opNa
 // scopeUnaryExpression scopes a unary expression in the SRG.
 func (sb *scopeBuilder) scopeUnaryExpression(node compilergraph.GraphNode, opName string, predicate compilergraph.Predicate, context scopeContext) *scopeInfoBuilder {
 	// Get the scope of the sub expression.
-	childScope := sb.getScope(node.GetNode(predicate), context)
+	childScope := sb.getScopeForPredicate(node, predicate, context)
 
 	// Ensure that the child scope is valid.
 	if !childScope.GetIsValid() {
@@ -664,7 +673,7 @@ func (sb *scopeBuilder) scopeUnaryExpression(node compilergraph.GraphNode, opNam
 // scopeRootTypeExpression scopes a root-type expression in the SRG.
 func (sb *scopeBuilder) scopeRootTypeExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Get the scope of the sub expression.
-	childScope := sb.getScope(node.GetNode(parser.NodeUnaryExpressionChildExpr), context)
+	childScope := sb.getScopeForPredicate(node, parser.NodeUnaryExpressionChildExpr, context)
 
 	// Ensure that the child scope is valid.
 	if !childScope.GetIsValid() {
@@ -707,7 +716,12 @@ func (sb *scopeBuilder) scopeKeywordNotExpression(node compilergraph.GraphNode, 
 	// Check for 'is not null' case.
 	parentExpr, hasParentExpr := node.TryGetIncomingNode(parser.NodeBinaryExpressionRightExpr)
 	if hasParentExpr && parentExpr.Kind() == parser.NodeIsComparisonExpression {
-		if node.GetNode(parser.NodeUnaryExpressionChildExpr).Kind() != parser.NodeNullLiteralExpression {
+		childNode, hasChildNode := node.TryGetNode(parser.NodeUnaryExpressionChildExpr)
+		if !hasChildNode {
+			return newScope().Invalid().GetScope()
+		}
+
+		if childNode.Kind() != parser.NodeNullLiteralExpression {
 			sb.decorateWithError(node, "Expression under an 'is not' must be 'null'")
 			return newScope().Invalid().GetScope()
 		}

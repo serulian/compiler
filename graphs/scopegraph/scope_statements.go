@@ -18,7 +18,7 @@ var _ = fmt.Printf
 
 // scopeExpressionStatement scopes an expression statement in the SRG.
 func (sb *scopeBuilder) scopeExpressionStatement(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	scope := sb.getScope(node.GetNode(parser.NodeExpressionStatementExpression), context)
+	scope := sb.getScopeForPredicate(node, parser.NodeExpressionStatementExpression, context)
 	if !scope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
@@ -31,10 +31,10 @@ func (sb *scopeBuilder) scopeAssignStatement(node compilergraph.GraphNode, conte
 	// TODO: Handle tuple assignment once we figure out tuple types
 
 	// Scope the name.
-	nameScope := sb.getScope(node.GetNode(parser.NodeAssignStatementName), context.withAccess(scopeSetAccess))
+	nameScope := sb.getScopeForPredicate(node, parser.NodeAssignStatementName, context.withAccess(scopeSetAccess))
 
 	// Scope the expression value.
-	exprScope := sb.getScope(node.GetNode(parser.NodeAssignStatementValue), context)
+	exprScope := sb.getScopeForPredicate(node, parser.NodeAssignStatementValue, context)
 
 	if !nameScope.GetIsValid() || !exprScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
@@ -100,7 +100,12 @@ func (sb *scopeBuilder) scopeSwitchStatement(node compilergraph.GraphNode, conte
 
 	for sit.Next() {
 		// Scope the statement block under the case.
-		statementBlockNode := sit.Node().GetNode(parser.NodeSwitchStatementCaseStatement)
+		statementBlockNode, hasStatementBlockNode := sit.Node().TryGetNode(parser.NodeSwitchStatementCaseStatement)
+		if !hasStatementBlockNode {
+			isValid = false
+			continue
+		}
+
 		statementBlockScope := sb.getScope(statementBlockNode, context.withBreakable(node))
 		if !statementBlockScope.GetIsValid() {
 			isValid = false
@@ -141,7 +146,7 @@ func (sb *scopeBuilder) scopeSwitchStatement(node compilergraph.GraphNode, conte
 // scopeMatchStatement scopes a match statement in the SRG.
 func (sb *scopeBuilder) scopeMatchStatement(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Scope the match expression.
-	matchExprScope := sb.getScope(node.GetNode(parser.NodeMatchStatementExpression), context)
+	matchExprScope := sb.getScopeForPredicate(node, parser.NodeMatchStatementExpression, context)
 	if !matchExprScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
@@ -171,7 +176,8 @@ func (sb *scopeBuilder) scopeMatchStatement(node compilergraph.GraphNode, contex
 		if hasCaseTypeRef {
 			matchTypeRef, rerr := sb.sg.ResolveSRGTypeRef(sb.sg.srg.GetTypeRef(caseTypeRefNode))
 			if rerr != nil {
-				panic(rerr)
+				isValid = false
+				continue
 			}
 
 			// Ensure that the type is not nullable, as then a null could match anything.
@@ -197,7 +203,12 @@ func (sb *scopeBuilder) scopeMatchStatement(node compilergraph.GraphNode, contex
 		}
 
 		// Scope the statement block under the case.
-		statementBlockNode := sit.Node().GetNode(parser.NodeMatchStatementCaseStatement)
+		statementBlockNode, hasStatementBlockNode := sit.Node().TryGetNode(parser.NodeMatchStatementCaseStatement)
+		if !hasStatementBlockNode {
+			isValid = false
+			continue
+		}
+
 		statementBlockScope := sb.getScope(statementBlockNode, localContext.withBreakable(node))
 		if !statementBlockScope.GetIsValid() {
 			isValid = false
@@ -220,8 +231,13 @@ func (sb *scopeBuilder) scopeMatchStatement(node compilergraph.GraphNode, contex
 
 // scopeAssignedValue scopes a named assigned value exported into the context.
 func (sb *scopeBuilder) scopeAssignedValue(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
+	namedValue, hasNamedValue := node.TryGet(parser.NodeNamedValueName)
+	if !hasNamedValue {
+		return newScope().Invalid().GetScope()
+	}
+
 	// If the assigned value's name is _, then it is anonymous scope.
-	if node.Get(parser.NodeNamedValueName) == ANONYMOUS_REFERENCE {
+	if namedValue == ANONYMOUS_REFERENCE {
 		return newScope().ForAnonymousScope(sb.sg.tdg).GetScope()
 	}
 
@@ -236,7 +252,7 @@ func (sb *scopeBuilder) scopeAssignedValue(node compilergraph.GraphNode, context
 	switch parentNode.Kind() {
 	case parser.NodeTypeResolveStatement:
 		// The assigned value exported by a resolve statement has the type of its expression.
-		exprScope := sb.getScope(parentNode.GetNode(parser.NodeResolveStatementSource), context)
+		exprScope := sb.getScopeForPredicate(parentNode, parser.NodeResolveStatementSource, context)
 		if !exprScope.GetIsValid() {
 			return newScope().Invalid().GetScope()
 		}
@@ -256,8 +272,13 @@ func (sb *scopeBuilder) scopeAssignedValue(node compilergraph.GraphNode, context
 
 // scopeNamedValue scopes a named value exported by a with or loop statement into context.
 func (sb *scopeBuilder) scopeNamedValue(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
+	namedValue, hasNamedValue := node.TryGet(parser.NodeNamedValueName)
+	if !hasNamedValue {
+		return newScope().Invalid().GetScope()
+	}
+
 	// If the value's name is _, then it is anonymous scope.
-	if node.Get(parser.NodeNamedValueName) == ANONYMOUS_REFERENCE {
+	if namedValue == ANONYMOUS_REFERENCE {
 		return newScope().ForAnonymousScope(sb.sg.tdg).GetScope()
 	}
 
@@ -267,7 +288,7 @@ func (sb *scopeBuilder) scopeNamedValue(node compilergraph.GraphNode, context sc
 	switch parentNode.Kind() {
 	case parser.NodeTypeWithStatement:
 		// The named value exported by a with statement has the type of its expression.
-		exprScope := sb.getScope(parentNode.GetNode(parser.NodeWithStatementExpression), context)
+		exprScope := sb.getScopeForPredicate(parentNode, parser.NodeWithStatementExpression, context)
 		if !exprScope.GetIsValid() {
 			return newScope().Invalid().GetScope()
 		}
@@ -277,7 +298,7 @@ func (sb *scopeBuilder) scopeNamedValue(node compilergraph.GraphNode, context sc
 	case parser.NodeTypeMatchStatement:
 		// The named value exported by a match statement has the type of its expression (although
 		// this is then overridden with specific hints under each case).
-		exprScope := sb.getScope(parentNode.GetNode(parser.NodeMatchStatementExpression), context)
+		exprScope := sb.getScopeForPredicate(parentNode, parser.NodeMatchStatementExpression, context)
 		if !exprScope.GetIsValid() {
 			return newScope().Invalid().GetScope()
 		}
@@ -295,7 +316,11 @@ func (sb *scopeBuilder) scopeNamedValue(node compilergraph.GraphNode, context sc
 			predicate = parser.NodeLoopExpressionStreamExpression
 		}
 
-		loopExpr := parentNode.GetNode(predicate)
+		loopExpr, hasLoopExpr := parentNode.TryGetNode(predicate)
+		if !hasLoopExpr {
+			return newScope().Invalid().GetScope()
+		}
+
 		exprScope := sb.getScope(loopExpr, context)
 		if !exprScope.GetIsValid() {
 			return newScope().Invalid().GetScope()
@@ -336,13 +361,13 @@ func (sb *scopeBuilder) scopeNamedValue(node compilergraph.GraphNode, context sc
 func (sb *scopeBuilder) scopeWithStatement(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Scope the child block.
 	var valid = true
-	statementBlockScope := sb.getScope(node.GetNode(parser.NodeWithStatementBlock), context)
+	statementBlockScope := sb.getScopeForPredicate(node, parser.NodeWithStatementBlock, context)
 	if !statementBlockScope.GetIsValid() {
 		valid = false
 	}
 
 	// Scope the with expression, ensuring that it is a releasable value.
-	exprScope := sb.getScope(node.GetNode(parser.NodeWithStatementExpression), context)
+	exprScope := sb.getScopeForPredicate(node, parser.NodeWithStatementExpression, context)
 	if !exprScope.GetIsValid() {
 		return newScope().Invalid().ReturningTypeOf(statementBlockScope).LabelSetOf(statementBlockScope).GetScope()
 	}
@@ -364,7 +389,11 @@ func (sb *scopeBuilder) scopeWithStatement(node compilergraph.GraphNode, context
 // scopeLoopStatement scopes a loop statement in the SRG.
 func (sb *scopeBuilder) scopeLoopStatement(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Scope the underlying block.
-	blockNode := node.GetNode(parser.NodeLoopStatementBlock)
+	blockNode, hasBlockNode := node.TryGetNode(parser.NodeLoopStatementBlock)
+	if !hasBlockNode {
+		return newScope().Invalid().GetScope()
+	}
+
 	blockScope := sb.getScope(blockNode, context.withContinuable(node))
 
 	// If the loop has no expression, it is most likely an infinite loop, so we know it is valid and
@@ -445,7 +474,12 @@ func (sb *scopeBuilder) inferTypesForConditionalExpressionContext(baseContext sc
 		}
 
 		// Ensure the left expression of the `is` has valid scope.
-		leftScope := sb.getScope(isExpressionNode.GetNode(parser.NodeBinaryExpressionLeftExpr), baseContext)
+		leftExpr, hasLeftExpr := isExpressionNode.TryGetNode(parser.NodeBinaryExpressionLeftExpr)
+		if !hasLeftExpr {
+			return baseContext
+		}
+
+		leftScope := sb.getScope(leftExpr, baseContext)
 		if !leftScope.GetIsValid() {
 			return baseContext
 		}
@@ -464,7 +498,11 @@ func (sb *scopeBuilder) inferTypesForConditionalExpressionContext(baseContext sc
 		}
 
 		// Lookup the right expression. If it is itself a `not`, then we invert the set to null.
-		rightExpr := isExpressionNode.GetNode(parser.NodeBinaryExpressionRightExpr)
+		rightExpr, hasRightExpr := isExpressionNode.TryGetNode(parser.NodeBinaryExpressionRightExpr)
+		if !hasRightExpr {
+			return baseContext
+		}
+
 		if rightExpr.Kind() == parser.NodeKeywordNotExpression {
 			setToNull = !setToNull
 		}
@@ -488,7 +526,11 @@ func (sb *scopeBuilder) inferTypesForConditionalExpressionContext(baseContext sc
 
 	case parser.NodeBooleanNotExpression:
 		// If the ! is in front of an `is` expression, then invert it.
-		childExpr := conditionalExprNode.GetNode(parser.NodeUnaryExpressionChildExpr)
+		childExpr, hasChildExpr := conditionalExprNode.TryGetNode(parser.NodeUnaryExpressionChildExpr)
+		if !hasChildExpr {
+			return baseContext
+		}
+
 		if childExpr.Kind() == parser.NodeIsComparisonExpression {
 			return checkIsExpression(childExpr, false)
 		}
@@ -503,11 +545,14 @@ func (sb *scopeBuilder) scopeConditionalStatement(node compilergraph.GraphNode, 
 	var valid = true
 	var labelSet = newLabelSet()
 
-	conditionalExprNode := node.GetNode(parser.NodeConditionalStatementConditional)
+	conditionalExprNode, hasConditionalExpr := node.TryGetNode(parser.NodeConditionalStatementConditional)
+	if !hasConditionalExpr {
+		return newScope().Invalid().GetScope()
+	}
 
 	// Scope the child block(s).
 	statementBlockContext := sb.inferTypesForConditionalExpressionContext(context, conditionalExprNode, inferredDirect)
-	statementBlockScope := sb.getScope(node.GetNode(parser.NodeConditionalStatementBlock), statementBlockContext)
+	statementBlockScope := sb.getScopeForPredicate(node, parser.NodeConditionalStatementBlock, statementBlockContext)
 	labelSet.AppendLabelsOf(statementBlockScope)
 	if !statementBlockScope.GetIsValid() {
 		valid = false
@@ -587,7 +632,11 @@ func (sb *scopeBuilder) scopeBreakStatement(node compilergraph.GraphNode, contex
 
 // scopeRejectStatement scopes a reject statement in the SRG.
 func (sb *scopeBuilder) scopeRejectStatement(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	exprNode := node.GetNode(parser.NodeRejectStatementValue)
+	exprNode, hasExprNode := node.TryGetNode(parser.NodeRejectStatementValue)
+	if !hasExprNode {
+		return newScope().Invalid().GetScope()
+	}
+
 	exprScope := sb.getScope(exprNode, context)
 
 	// Make sure the rejection is of type Error.
@@ -702,7 +751,7 @@ func (sb *scopeBuilder) scopeYieldStatement(node compilergraph.GraphNode, contex
 
 	// - yield {someExpr}
 	// Scope the value expression.
-	valueExprScope := sb.getScope(node.GetNode(parser.NodeYieldStatementValue), context)
+	valueExprScope := sb.getScopeForPredicate(node, parser.NodeYieldStatementValue, context)
 	if !valueExprScope.GetIsValid() {
 		return newScope().
 			Invalid().
@@ -811,7 +860,11 @@ func (sb *scopeBuilder) scopeStatementBlock(node compilergraph.GraphNode, contex
 // scopeArrowStatement scopes an arrow statement in the SRG.
 func (sb *scopeBuilder) scopeArrowStatement(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Scope the source node.
-	sourceNode := node.GetNode(parser.NodeArrowStatementSource)
+	sourceNode, hasSourceNode := node.TryGetNode(parser.NodeArrowStatementSource)
+	if !hasSourceNode {
+		return newScope().Invalid().GetScope()
+	}
+
 	sourceScope := sb.getScope(sourceNode, context)
 	if !sourceScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
@@ -828,7 +881,7 @@ func (sb *scopeBuilder) scopeArrowStatement(node compilergraph.GraphNode, contex
 	receivedType := generics[0]
 
 	// Scope the destination.
-	destinationScope := sb.getScope(node.GetNode(parser.NodeArrowStatementDestination), context)
+	destinationScope := sb.getScopeForPredicate(node, parser.NodeArrowStatementDestination, context)
 	if !destinationScope.GetIsValid() || !sourceScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
@@ -893,8 +946,8 @@ func (sb *scopeBuilder) scopeArrowStatement(node compilergraph.GraphNode, contex
 
 // scopeResolveStatement scopes a resolve statement in the SRG.
 func (sb *scopeBuilder) scopeResolveStatement(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	destinationScope := sb.getScope(node.GetNode(parser.NodeAssignedDestination), context)
-	sourceScope := sb.getScope(node.GetNode(parser.NodeResolveStatementSource), context)
+	destinationScope := sb.getScopeForPredicate(node, parser.NodeAssignedDestination, context)
+	sourceScope := sb.getScopeForPredicate(node, parser.NodeResolveStatementSource, context)
 
 	isValid := sourceScope.GetIsValid() && destinationScope.GetIsValid()
 

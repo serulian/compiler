@@ -17,7 +17,11 @@ var _ = fmt.Printf
 // scopeAwaitExpression scopes an await expression in the SRG.
 func (sb *scopeBuilder) scopeAwaitExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Scope the source node.
-	sourceNode := node.GetNode(parser.NodeAwaitExpressionSource)
+	sourceNode, hasSourceNode := node.TryGetNode(parser.NodeAwaitExpressionSource)
+	if !hasSourceNode {
+		return newScope().Invalid().GetScope()
+	}
+
 	sourceScope := sb.getScope(sourceNode, context)
 	if !sourceScope.GetIsValid() {
 		return newScope().Invalid().GetScope()

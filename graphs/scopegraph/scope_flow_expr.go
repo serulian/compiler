@@ -16,15 +16,18 @@ var _ = fmt.Printf
 
 // scopeConditionalExpression scopes a conditional expression in the SRG.
 func (sb *scopeBuilder) scopeConditionalExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	conditionalExprNode := node.GetNode(parser.NodeConditionalExpressionCheckExpression)
+	conditionalExprNode, hasConditionalExpression := node.TryGetNode(parser.NodeConditionalExpressionCheckExpression)
+	if !hasConditionalExpression {
+		return newScope().Invalid().GetScope()
+	}
 
 	thenContext := sb.inferTypesForConditionalExpressionContext(context, conditionalExprNode, inferredDirect)
 	elseContext := sb.inferTypesForConditionalExpressionContext(context, conditionalExprNode, inferredInverted)
 
 	// Scope the child expressions.
 	checkScope := sb.getScope(conditionalExprNode, context)
-	thenScope := sb.getScope(node.GetNode(parser.NodeConditionalExpressionThenExpression), thenContext)
-	elseScope := sb.getScope(node.GetNode(parser.NodeConditionalExpressionElseExpression), elseContext)
+	thenScope := sb.getScopeForPredicate(node, parser.NodeConditionalExpressionThenExpression, thenContext)
+	elseScope := sb.getScopeForPredicate(node, parser.NodeConditionalExpressionElseExpression, elseContext)
 
 	if !checkScope.GetIsValid() || !thenScope.GetIsValid() || !elseScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
@@ -48,20 +51,20 @@ func (sb *scopeBuilder) scopeConditionalExpression(node compilergraph.GraphNode,
 
 // scopeLoopExpression scopes a loop expression in the SRG.
 func (sb *scopeBuilder) scopeLoopExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	streamScope := sb.getScope(node.GetNode(parser.NodeLoopExpressionStreamExpression), context)
+	streamScope := sb.getScopeForPredicate(node, parser.NodeLoopExpressionStreamExpression, context)
 	if !streamScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
 
 	// Note: The following will ensure the streamScope refers to a stream.
-	namedValueScope := sb.getScope(node.GetNode(parser.NodeLoopExpressionNamedValue), context)
+	namedValueScope := sb.getScopeForPredicate(node, parser.NodeLoopExpressionNamedValue, context)
 	if !namedValueScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
 
 	// Scope the mapping expression. The resolved type of the loop expression is a Stream of
 	// the type of the mapping expression.
-	mapScope := sb.getScope(node.GetNode(parser.NodeLoopExpressionMapExpression), context)
+	mapScope := sb.getScopeForPredicate(node, parser.NodeLoopExpressionMapExpression, context)
 	if !mapScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}

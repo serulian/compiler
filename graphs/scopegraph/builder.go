@@ -336,6 +336,19 @@ func (sb *scopeBuilder) getScopeForRootNode(rootNode compilergraph.GraphNode) *p
 	})
 }
 
+// getScopeForPredicate returns the scope for the node found off of the given predice of the given node, building (and waiting) if necessary.
+// If the predicate doesn't exist, invalid scope is returned. This method should be used in place of getScope wherever possible, as it is
+// safe for partial graphs produced when using IDE tooling.
+func (sb *scopeBuilder) getScopeForPredicate(node compilergraph.GraphNode, predicate compilergraph.Predicate, context scopeContext) *proto.ScopeInfo {
+	targetNode, hasTargetNode := node.TryGetNode(predicate)
+	if !hasTargetNode {
+		invalidScope := newScope().Invalid().GetScope()
+		return &invalidScope
+	}
+
+	return sb.getScope(targetNode, context)
+}
+
 // getScope returns the scope for the given node, building (and waiting) if necessary.
 func (sb *scopeBuilder) getScope(node compilergraph.GraphNode, context scopeContext) *proto.ScopeInfo {
 	// Check the map cache for the scope.

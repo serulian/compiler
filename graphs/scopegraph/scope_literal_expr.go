@@ -20,7 +20,7 @@ var _ = fmt.Printf
 // scopeStructuralNewExpression scopes a structural new-type expressions.
 func (sb *scopeBuilder) scopeStructuralNewExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Scope the child expression and ensure it refers to a type or an existing struct.
-	childScope := sb.getScope(node.GetNode(parser.NodeStructuralNewTypeExpression), context)
+	childScope := sb.getScopeForPredicate(node, parser.NodeStructuralNewTypeExpression, context)
 	if !childScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
@@ -57,7 +57,12 @@ func (sb *scopeBuilder) scopeStructuralFunctionExpression(node compilergraph.Gra
 	var encountered = map[string]bool{}
 
 	for eit.Next() {
-		entryValue := eit.Node().GetNode(parser.NodeStructuralNewEntryValue)
+		entryValue, hasEntryValue := eit.Node().TryGetNode(parser.NodeStructuralNewEntryValue)
+		if !hasEntryValue {
+			isValid = false
+			continue
+		}
+
 		entryScope := sb.getScope(entryValue, context)
 		if !entryScope.GetIsValid() {
 			isValid = false
@@ -226,17 +231,20 @@ func (sb *scopeBuilder) scopeStructuralNewTypeExpression(node compilergraph.Grap
 // scopeStructuralNewExpressionEntry scopes a single entry in a structural new expression.
 func (sb *scopeBuilder) scopeStructuralNewExpressionEntry(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	parentNode := node.GetIncomingNode(parser.NodeStructuralNewExpressionChildEntry)
-	parentExprScope := sb.getScope(parentNode.GetNode(parser.NodeStructuralNewTypeExpression), context)
+	parentExprScope := sb.getScopeForPredicate(parentNode, parser.NodeStructuralNewTypeExpression, context)
 
 	parentType := parentExprScope.StaticTypeRef(sb.sg.tdg)
 	if parentExprScope.GetKind() == proto.ScopeKind_VALUE {
 		parentType = parentExprScope.ResolvedTypeRef(sb.sg.tdg)
 	}
 
-	entryName := node.Get(parser.NodeStructuralNewEntryKey)
+	entryName, hasEntryName := node.TryGet(parser.NodeStructuralNewEntryKey)
+	if !hasEntryName {
+		return newScope().Invalid().GetScope()
+	}
 
 	// Get the scope for the value.
-	valueScope := sb.getScope(node.GetNode(parser.NodeStructuralNewEntryValue), context)
+	valueScope := sb.getScopeForPredicate(node, parser.NodeStructuralNewEntryValue, context)
 	if !valueScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
@@ -273,13 +281,13 @@ func (sb *scopeBuilder) scopeTaggedTemplateString(node compilergraph.GraphNode, 
 	var isValid = true
 
 	// Scope the tagging expression.
-	tagScope := sb.getScope(node.GetNode(parser.NodeTaggedTemplateCallExpression), context)
+	tagScope := sb.getScopeForPredicate(node, parser.NodeTaggedTemplateCallExpression, context)
 	if !tagScope.GetIsValid() {
 		isValid = false
 	}
 
 	// Scope the template string.
-	templateScope := sb.getScope(node.GetNode(parser.NodeTaggedTemplateParsed), context)
+	templateScope := sb.getScopeForPredicate(node, parser.NodeTaggedTemplateParsed, context)
 	if !templateScope.GetIsValid() {
 		isValid = false
 	}
@@ -359,8 +367,13 @@ func (sb *scopeBuilder) scopeMapLiteralExpression(node compilergraph.GraphNode, 
 	for eit.Next() {
 		entryNode := eit.Node()
 
-		keyNode := entryNode.GetNode(parser.NodeMapLiteralExpressionEntryKey)
-		valueNode := entryNode.GetNode(parser.NodeMapLiteralExpressionEntryValue)
+		keyNode, hasKeyNode := entryNode.TryGetNode(parser.NodeMapLiteralExpressionEntryKey)
+		valueNode, hasValueNode := entryNode.TryGetNode(parser.NodeMapLiteralExpressionEntryValue)
+
+		if !hasKeyNode || !hasValueNode {
+			isValid = false
+			continue
+		}
 
 		keyScope := sb.getScope(keyNode, context)
 		valueScope := sb.getScope(valueNode, context)
@@ -419,7 +432,11 @@ func (sb *scopeBuilder) scopeListLiteralExpression(node compilergraph.GraphNode,
 func (sb *scopeBuilder) scopeSliceLiteralExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	var isValid = true
 
-	declaredTypeNode := node.GetNode(parser.NodeSliceLiteralExpressionType)
+	declaredTypeNode, hasDeclaredType := node.TryGetNode(parser.NodeSliceLiteralExpressionType)
+	if !hasDeclaredType {
+		return newScope().Invalid().GetScope()
+	}
+
 	declaredType, rerr := sb.sg.ResolveSRGTypeRef(sb.sg.srg.GetTypeRef(declaredTypeNode))
 	if rerr != nil {
 		sb.decorateWithError(node, "%v", rerr)
@@ -451,7 +468,11 @@ func (sb *scopeBuilder) scopeSliceLiteralExpression(node compilergraph.GraphNode
 func (sb *scopeBuilder) scopeMappingLiteralExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	var isValid = true
 
-	declaredTypeNode := node.GetNode(parser.NodeMappingLiteralExpressionType)
+	declaredTypeNode, hasDeclaredType := node.TryGetNode(parser.NodeMappingLiteralExpressionType)
+	if !hasDeclaredType {
+		return newScope().Invalid().GetScope()
+	}
+
 	declaredType, rerr := sb.sg.ResolveSRGTypeRef(sb.sg.srg.GetTypeRef(declaredTypeNode))
 	if rerr != nil {
 		sb.decorateWithError(node, "%v", rerr)
@@ -466,8 +487,13 @@ func (sb *scopeBuilder) scopeMappingLiteralExpression(node compilergraph.GraphNo
 	for eit.Next() {
 		entryNode := eit.Node()
 
-		keyNode := entryNode.GetNode(parser.NodeMappingLiteralExpressionEntryKey)
-		valueNode := entryNode.GetNode(parser.NodeMappingLiteralExpressionEntryValue)
+		keyNode, hasKeyNode := entryNode.TryGetNode(parser.NodeMappingLiteralExpressionEntryKey)
+		valueNode, hasValueNode := entryNode.TryGetNode(parser.NodeMappingLiteralExpressionEntryValue)
+
+		if !hasKeyNode || !hasValueNode {
+			isValid = false
+			continue
+		}
 
 		keyScope := sb.getScope(keyNode, context)
 		valueScope := sb.getScope(valueNode, context)
@@ -514,7 +540,11 @@ func (sb *scopeBuilder) scopeBooleanLiteralExpression(node compilergraph.GraphNo
 
 // scopeNumericLiteralExpression scopes a numeric literal expression in the SRG.
 func (sb *scopeBuilder) scopeNumericLiteralExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	numericValueStr := node.Get(parser.NodeNumericLiteralExpressionValue)
+	numericValueStr, hasNumericValue := node.TryGet(parser.NodeNumericLiteralExpressionValue)
+	if !hasNumericValue {
+		return newScope().Invalid().GetScope()
+	}
+
 	_, isNotInt := strconv.ParseInt(numericValueStr, 0, 64)
 	if isNotInt == nil {
 		return newScope().
