@@ -122,7 +122,8 @@ func assertTypeRef(t *testing.T, test string, typeRef SRGTypeRef, expected expec
 			}
 		}
 	} else {
-		assertTypeRef(t, test, typeRef.InnerReference(), expected.genericsOrInner[0])
+		innerReference, _ := typeRef.InnerReference()
+		assertTypeRef(t, test, innerReference, expected.genericsOrInner[0])
 	}
 }
 

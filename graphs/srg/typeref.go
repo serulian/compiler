@@ -79,7 +79,11 @@ func (t SRGTypeRef) ResolutionPath() string {
 
 	for {
 		// Add the path piece to the array.
-		name := currentPath.Get(parser.NodeIdentifierAccessName)
+		name, hasName := currentPath.TryGet(parser.NodeIdentifierAccessName)
+		if !hasName {
+			break
+		}
+
 		resolvePathPieces = append([]string{name}, resolvePathPieces...)
 
 		// If there is a source, continue searching.
@@ -146,15 +150,18 @@ func (t SRGTypeRef) ResolveType() (TypeResolutionResult, bool) {
 }
 
 // InnerReference returns the inner type reference, if this is a nullable or stream.
-func (t SRGTypeRef) InnerReference() SRGTypeRef {
-	compilerutil.DCHECK(func() bool { return t.RefKind() != TypeRefPath }, "Expected non-path")
-	return SRGTypeRef{t.GraphNode.GetNode(parser.NodeTypeReferenceInnerType), t.srg}
+func (t SRGTypeRef) InnerReference() (SRGTypeRef, bool) {
+	innerReference, hasInnerReference := t.GraphNode.TryGetNode(parser.NodeTypeReferenceInnerType)
+	if !hasInnerReference {
+		return SRGTypeRef{}, false
+	}
+
+	return SRGTypeRef{innerReference, t.srg}, true
 }
 
 // Generics returns the generics defined on this type ref.
 // Panics if this is not a RefKind of TypeRefPath.
 func (t SRGTypeRef) Generics() []SRGTypeRef {
-	compilerutil.DCHECK(func() bool { return t.RefKind() == TypeRefPath }, "Expected type ref path")
 	return t.subReferences(parser.NodeTypeReferenceGeneric)
 }
 
@@ -167,7 +174,6 @@ func (t SRGTypeRef) HasGenerics() bool {
 // Parameters returns the parameters defined on this type ref.
 // Panics if this is not a RefKind of TypeRefPath.
 func (t SRGTypeRef) Parameters() []SRGTypeRef {
-	compilerutil.DCHECK(func() bool { return t.RefKind() == TypeRefPath }, "Expected type ref path")
 	return t.subReferences(parser.NodeTypeReferenceParameter)
 }
 
@@ -190,6 +196,12 @@ func (t SRGTypeRef) subReferences(predicate compilergraph.Predicate) []SRGTypeRe
 // String returns the human-readable string form of this type reference.
 func (t SRGTypeRef) String() string {
 	nodeKind := t.GraphNode.Kind().(parser.NodeType)
+
+	innerReferenceString := "?"
+	if innerReference, hasInnerReference := t.InnerReference(); hasInnerReference {
+		innerReferenceString = innerReference.String()
+	}
+
 	switch nodeKind {
 	case parser.NodeTypeVoid:
 		return "void"
@@ -201,16 +213,16 @@ func (t SRGTypeRef) String() string {
 		return "struct"
 
 	case parser.NodeTypeStream:
-		return t.InnerReference().String() + "*"
+		return innerReferenceString + "*"
 
 	case parser.NodeTypeSlice:
-		return "[]" + t.InnerReference().String()
+		return "[]" + innerReferenceString
 
 	case parser.NodeTypeMapping:
-		return "[]{" + t.InnerReference().String() + "}"
+		return "[]{" + innerReferenceString + "}"
 
 	case parser.NodeTypeNullable:
-		return t.InnerReference().String() + "?"
+		return innerReferenceString + "?"
 
 	case parser.NodeTypeTypeReference:
 		var buffer bytes.Buffer

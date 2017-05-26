@@ -73,7 +73,12 @@ func (trr *TypeReferenceResolver) resolveTypeRef(typeref srg.SRGTypeRef, tdg *ty
 		return tdg.StructTypeReference(), nil
 
 	case srg.TypeRefMapping:
-		innerType, err := trr.ResolveTypeRef(typeref.InnerReference(), tdg)
+		innerRef, hasInnerRef := typeref.InnerReference()
+		if !hasInnerRef {
+			return tdg.AnyTypeReference(), fmt.Errorf("Missing type reference")
+		}
+
+		innerType, err := trr.ResolveTypeRef(innerRef, tdg)
 		if err != nil {
 			return tdg.AnyTypeReference(), err
 		}
@@ -81,7 +86,12 @@ func (trr *TypeReferenceResolver) resolveTypeRef(typeref srg.SRGTypeRef, tdg *ty
 		return tdg.NewTypeReference(tdg.MappingType(), innerType), nil
 
 	case srg.TypeRefSlice:
-		innerType, err := trr.ResolveTypeRef(typeref.InnerReference(), tdg)
+		innerRef, hasInnerRef := typeref.InnerReference()
+		if !hasInnerRef {
+			return tdg.AnyTypeReference(), fmt.Errorf("Missing type reference")
+		}
+
+		innerType, err := trr.ResolveTypeRef(innerRef, tdg)
 		if err != nil {
 			return tdg.AnyTypeReference(), err
 		}
@@ -89,7 +99,12 @@ func (trr *TypeReferenceResolver) resolveTypeRef(typeref srg.SRGTypeRef, tdg *ty
 		return tdg.NewTypeReference(tdg.SliceType(), innerType), nil
 
 	case srg.TypeRefStream:
-		innerType, err := trr.ResolveTypeRef(typeref.InnerReference(), tdg)
+		innerRef, hasInnerRef := typeref.InnerReference()
+		if !hasInnerRef {
+			return tdg.AnyTypeReference(), fmt.Errorf("Missing type reference")
+		}
+
+		innerType, err := trr.ResolveTypeRef(innerRef, tdg)
 		if err != nil {
 			return tdg.AnyTypeReference(), err
 		}
@@ -97,7 +112,12 @@ func (trr *TypeReferenceResolver) resolveTypeRef(typeref srg.SRGTypeRef, tdg *ty
 		return tdg.NewTypeReference(tdg.StreamType(), innerType), nil
 
 	case srg.TypeRefNullable:
-		innerType, err := trr.ResolveTypeRef(typeref.InnerReference(), tdg)
+		innerRef, hasInnerRef := typeref.InnerReference()
+		if !hasInnerRef {
+			return tdg.AnyTypeReference(), fmt.Errorf("Missing type reference")
+		}
+
+		innerType, err := trr.ResolveTypeRef(innerRef, tdg)
 		if err != nil {
 			return tdg.AnyTypeReference(), err
 		}
