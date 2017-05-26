@@ -26,9 +26,9 @@ type SRGParameter struct {
 	srg *SRG // The parent SRG.
 }
 
-// Name returns the name of this parameter.
-func (p SRGParameter) Name() string {
-	return p.GraphNode.Get(parser.NodeParameterName)
+// Name returns the name of this parameter. May not exist in the partial-parsing case for tooling.
+func (p SRGParameter) Name() (string, bool) {
+	return p.GraphNode.TryGet(parser.NodeParameterName)
 }
 
 // Node returns the underlying node.
@@ -54,8 +54,13 @@ func (p SRGParameter) AsNamedScope() SRGNamedScope {
 
 // Code returns a code-like summarization of the parameter, for human consumption.
 func (p SRGParameter) Code() string {
+	name, hasName := p.Name()
+	if !hasName {
+		return ""
+	}
+
 	var buffer bytes.Buffer
-	buffer.WriteString(p.Name())
+	buffer.WriteString(name)
 	buffer.WriteString(" ")
 
 	declaredType, hasDeclaredType := p.DeclaredType()

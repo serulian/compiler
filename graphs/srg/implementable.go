@@ -38,7 +38,7 @@ func (m SRGImplementable) Body() (compilergraph.GraphNode, bool) {
 // Name returns the name of the implementable, if any.
 func (m SRGImplementable) Name() (string, bool) {
 	if m.IsMember() {
-		return m.ContainingMember().Name(), true
+		return m.ContainingMember().Name()
 	}
 
 	return "", false
@@ -94,7 +94,12 @@ func (m SRGImplementable) ContainingMember() SRGMember {
 
 // IsPropertySetter returns true if this implementable is a property setter.
 func (m SRGImplementable) IsPropertySetter() bool {
-	setter, found := m.ContainingMember().Setter()
+	containingMember := m.ContainingMember()
+	if containingMember.MemberKind() != PropertyMember {
+		return false
+	}
+
+	setter, found := containingMember.Setter()
 	if !found {
 		return false
 	}

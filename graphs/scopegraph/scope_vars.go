@@ -50,7 +50,7 @@ func (sb *scopeBuilder) getDeclaredVariableType(node compilergraph.GraphNode) (t
 	// Load the declared type.
 	declaredType, rerr := sb.sg.ResolveSRGTypeRef(sb.sg.srg.GetTypeRef(declaredTypeNode))
 	if rerr != nil {
-		panic(rerr)
+		return sb.sg.tdg.AnyTypeReference(), false
 	}
 
 	return declaredType, true
@@ -58,8 +58,7 @@ func (sb *scopeBuilder) getDeclaredVariableType(node compilergraph.GraphNode) (t
 
 // scopeDeclaredValue scopes a declared value (variable statement, variable member, type field).
 func (sb *scopeBuilder) scopeDeclaredValue(node compilergraph.GraphNode, title string, option requiresInitializerOption, exprPredicate compilergraph.Predicate, context scopeContext) proto.ScopeInfo {
-	var exprScope *proto.ScopeInfo = nil
-
+	var exprScope *proto.ScopeInfo
 	exprNode, hasExpression := node.TryGetNode(exprPredicate)
 	if hasExpression {
 		// Scope the expression.
@@ -73,23 +72,28 @@ func (sb *scopeBuilder) scopeDeclaredValue(node compilergraph.GraphNode, title s
 	declaredType, hasDeclaredType := sb.getDeclaredVariableType(node)
 	if !hasDeclaredType {
 		if exprScope == nil {
-			panic("Somehow ended up with no declared type and no expr scope")
+			return newScope().Invalid().GetScope()
 		}
 
 		return newScope().Valid().AssignableResolvedTypeOf(exprScope).GetScope()
+	}
+
+	varName, hasVarName := node.TryGet(parser.NodeVariableStatementName)
+	if !hasVarName {
+		return newScope().Invalid().GetScope()
 	}
 
 	// Compare against the type of the expression.
 	if hasExpression {
 		exprType := exprScope.ResolvedTypeRef(sb.sg.tdg)
 		if serr := exprType.CheckSubTypeOf(declaredType); serr != nil {
-			sb.decorateWithError(node, "%s '%s' has declared type '%v': %v", title, node.Get(parser.NodeVariableStatementName), declaredType, serr)
+			sb.decorateWithError(node, "%s '%s' has declared type '%v': %v", title, varName, declaredType, serr)
 			return newScope().Invalid().GetScope()
 		}
 	} else if option == requiresInitializer {
 		// Make sure if the type is non-nullable that there is an expression.
 		if !declaredType.IsNullable() {
-			sb.decorateWithError(node, "%s '%s' must have explicit initializer as its type '%v' is non-nullable", title, node.Get(parser.NodeVariableStatementName), declaredType)
+			sb.decorateWithError(node, "%s '%s' must have explicit initializer as its type '%v' is non-nullable", title, varName, declaredType)
 			return newScope().Invalid().Assignable(declaredType).GetScope()
 		}
 	}

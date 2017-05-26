@@ -93,7 +93,8 @@ func TestImports(t *testing.T) {
 					continue
 				}
 
-				if !assert.Equal(t, member.Name(), expectedPackage.expectedTypeOrMember, "Mismatch on type or member for import %s under test %s", expected.source, test.sourceFile) {
+				name, _ := member.Name()
+				if !assert.Equal(t, name, expectedPackage.expectedTypeOrMember, "Mismatch on type or member for import %s under test %s", expected.source, test.sourceFile) {
 					continue
 				}
 			}

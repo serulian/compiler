@@ -62,9 +62,15 @@ func (gh Handle) rangeForLocalName(localName string, node compilergraph.GraphNod
 	}, nil
 }
 
-// LookupPosition looks up the position as specified by the source position, and returns its
+// LookupPosition looks up the given position in the given source file, and returns its descriptive metadata, if any.
+func (gh Handle) LookupPosition(source compilercommon.InputSource, lineNumber int, colPosition int) (RangeInformation, error) {
+	sourcePosition := source.PositionFromLineAndColumn(lineNumber, colPosition, gh.scopeResult.SourceTracker)
+	return gh.LookupSourcePosition(sourcePosition)
+}
+
+// LookupSourcePosition looks up the position as specified by the source position, and returns its
 // descriptive metadata, if any.
-func (gh Handle) LookupPosition(sourcePosition compilercommon.SourcePosition) (RangeInformation, error) {
+func (gh Handle) LookupSourcePosition(sourcePosition compilercommon.SourcePosition) (RangeInformation, error) {
 	sourceGraph := gh.scopeResult.Graph.SourceGraph()
 	node, found := sourceGraph.FindNodeForPosition(sourcePosition)
 	if !found {

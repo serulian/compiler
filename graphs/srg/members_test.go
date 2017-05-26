@@ -139,8 +139,8 @@ func TestTypeMembers(t *testing.T) {
 		}
 
 		testType := resolvedType.ResolvedType.AsType()
-
-		if !assert.Equal(t, test.typeName, testType.Name(), "Expected type mismatch") {
+		name, _ := testType.Name()
+		if !assert.Equal(t, test.typeName, name, "Expected type mismatch") {
 			continue
 		}
 
@@ -158,7 +158,8 @@ func TestTypeMembers(t *testing.T) {
 			continue
 		}
 
-		assert.Equal(t, test.memberName, member.Name(), "Member name mismatch")
+		memberName, _ := member.Name()
+		assert.Equal(t, test.memberName, memberName, "Member name mismatch")
 
 		// Check the member.
 		assert.Equal(t, test.expectedKind, member.MemberKind(), "Member kind mismatch")
@@ -172,7 +173,8 @@ func TestTypeMembers(t *testing.T) {
 		assert.Equal(t, len(test.expectedGenerics), len(foundGenerics), "Generic count mismatch")
 
 		for index, genericName := range test.expectedGenerics {
-			assert.Equal(t, genericName, foundGenerics[index].Name(), "Generic name mismatch")
+			fgName, _ := foundGenerics[index].Name()
+			assert.Equal(t, genericName, fgName, "Generic name mismatch")
 		}
 
 		// Check parameters.
@@ -183,21 +185,24 @@ func TestTypeMembers(t *testing.T) {
 		assert.Equal(t, len(test.expectedParameters), len(implementableParameters), "Parameter count mismatch")
 
 		for index, parameterName := range test.expectedParameters {
-			assert.Equal(t, parameterName, foundParameters[index].Name(), "Parameter name mismatch")
-			assert.Equal(t, parameterName, implementableParameters[index].Name(), "Parameter name mismatch")
+			fpName, _ := foundParameters[index].Name()
+			ipName, _ := implementableParameters[index].Name()
+
+			assert.Equal(t, parameterName, fpName, "Parameter name mismatch")
+			assert.Equal(t, parameterName, ipName, "Parameter name mismatch")
 		}
 
 		// Check declared and return type.
 		if test.expectedDeclaredType.kind != typeRefUnknown {
 			declaredTypeRef, dtrFound := member.DeclaredType()
-			if assert.True(t, dtrFound, "Missing declared type on member %s", member.Name()) {
+			if assert.True(t, dtrFound, "Missing declared type on member %s", memberName) {
 				assertTypeRef(t, test.name, declaredTypeRef, test.expectedDeclaredType)
 			}
 		}
 
 		if test.expectedReturnType.kind != typeRefUnknown {
 			returnTypeRef, rtrFound := member.ReturnType()
-			if assert.True(t, rtrFound, "Missing return type on member %s", member.Name()) {
+			if assert.True(t, rtrFound, "Missing return type on member %s", memberName) {
 				assertTypeRef(t, test.name, returnTypeRef, test.expectedReturnType)
 			}
 		}

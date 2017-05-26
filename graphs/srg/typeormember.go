@@ -16,7 +16,7 @@ type SRGTypeOrMember struct {
 }
 
 // Name returns the name of the referenced type or member.
-func (t SRGTypeOrMember) Name() string {
+func (t SRGTypeOrMember) Name() (string, bool) {
 	if t.IsType() {
 		return SRGType{t.GraphNode, t.srg}.Name()
 	}

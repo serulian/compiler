@@ -116,7 +116,8 @@ func (gm generatingMember) Parameters() []string {
 	parameters := gm.SRGMember.Parameters()
 	parameterNames := make([]string, len(parameters))
 	for index, parameter := range parameters {
-		parameterNames[index] = parameter.Name()
+		parameterName, _ := parameter.Name()
+		parameterNames[index] = parameterName
 	}
 
 	return parameterNames

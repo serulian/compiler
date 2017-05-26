@@ -17,7 +17,7 @@ type SRGTypeOrGeneric struct {
 }
 
 // Name returns the name of the referenced type or generic.
-func (t SRGTypeOrGeneric) Name() string {
+func (t SRGTypeOrGeneric) Name() (string, bool) {
 	if t.IsGeneric() {
 		return SRGGeneric{t.GraphNode, t.srg}.Name()
 	} else {

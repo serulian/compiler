@@ -108,7 +108,12 @@ func writeCodeGenerics(m genericable, buffer *bytes.Buffer) {
 			buffer.WriteString(", ")
 		}
 
-		buffer.WriteString(generic.Name())
+		name, hasName := generic.Name()
+		if !hasName {
+			name = "?"
+		}
+
+		buffer.WriteString(name)
 
 		constraint, hasConstraint := generic.GetConstraint()
 		if hasConstraint {

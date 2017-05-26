@@ -161,7 +161,8 @@ func TestStructure(t *testing.T) {
 		}
 
 		if hasContainingMemberOrType {
-			if !assert.Equal(t, test.expectedMemberOrType, containerMemberOrType.Name(), "Mismatch on containing member or type on test %s", test.commentValue) {
+			mtName, _ := containerMemberOrType.Name()
+			if !assert.Equal(t, test.expectedMemberOrType, mtName, "Mismatch on containing member or type on test %s", test.commentValue) {
 				continue
 			}
 		}
@@ -173,7 +174,8 @@ func TestStructure(t *testing.T) {
 		}
 
 		if hasContainingType {
-			if !assert.Equal(t, test.expectedType, containingType.Name(), "Mismatch on containing type on test %s", test.commentValue) {
+			ctName, _ := containingType.Name()
+			if !assert.Equal(t, test.expectedType, ctName, "Mismatch on containing type on test %s", test.commentValue) {
 				continue
 			}
 		}

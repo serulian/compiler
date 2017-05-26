@@ -20,7 +20,11 @@ var ALLOWED_ANONYMOUS = []compilergraph.Predicate{parser.NodeArrowStatementDesti
 
 // scopeIdentifierExpression scopes an identifier expression in the SRG.
 func (sb *scopeBuilder) scopeIdentifierExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	name := node.Get(parser.NodeIdentifierExpressionName)
+	name, hasName := node.TryGet(parser.NodeIdentifierExpressionName)
+	if !hasName {
+		return newScope().Invalid().GetScope()
+	}
+
 	if name == ANONYMOUS_REFERENCE {
 		// Make sure this node is under an assignment of some kind.
 		var found = false

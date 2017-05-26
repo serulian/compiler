@@ -53,9 +53,14 @@ func (stc *srgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 			docString = documentation.String()
 		}
 
+		typeName, hasTypeName := srgType.Name()
+		if !hasTypeName {
+			continue
+		}
+
 		// Start the type definition.
 		typeBuilder := builder(moduleNode).
-			Name(srgType.Name()).
+			Name(typeName).
 			GlobalId(srgType.UniqueId()).
 			Documentation(docString).
 			SourceNode(srgType.Node())
@@ -97,8 +102,13 @@ func (stc *srgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 
 		// Define any generics on the type.
 		for _, srgGeneric := range srgType.Generics() {
+			genericName, hasGenericName := srgGeneric.Name()
+			if !hasGenericName {
+				continue
+			}
+
 			getGenericBuilder().
-				Name(srgGeneric.Name()).
+				Name(genericName).
 				SourceNode(srgGeneric.Node()).
 				Define()
 		}
@@ -195,6 +205,11 @@ func (stc *srgTypeConstructor) DecorateMembers(decorater typegraph.GetMemberDeco
 	// Decorate all module members.
 	for _, module := range stc.srg.GetModules() {
 		for _, member := range module.GetMembers() {
+			_, hasMemberName := member.Name()
+			if !hasMemberName {
+				continue
+			}
+
 			parent, _ := graph.GetTypeOrModuleForSourceNode(module.Node())
 			stc.decorateMember(member, parent, decorater(member.GraphNode), reporter, graph)
 		}
@@ -204,6 +219,11 @@ func (stc *srgTypeConstructor) DecorateMembers(decorater typegraph.GetMemberDeco
 	buildTypeMembers := func(key interface{}, value interface{}) bool {
 		data := value.(typeMemberWork)
 		for _, member := range data.srgType.GetMembers() {
+			_, hasMemberName := member.Name()
+			if !hasMemberName {
+				continue
+			}
+
 			parent, _ := graph.GetTypeOrModuleForSourceNode(data.srgType.Node())
 			stc.decorateMember(member, parent, decorater(member.GraphNode), reporter, graph)
 		}
@@ -226,13 +246,23 @@ func (stc *srgTypeConstructor) defineMember(member srg.SRGMember, parent typegra
 	}
 
 	// Define the member's name and source node.
-	builder.Name(member.Name()).
+	memberName, hasMemberName := member.Name()
+	if !hasMemberName {
+		return
+	}
+
+	builder.Name(memberName).
 		SourceNode(member.Node()).
 		Documentation(docString)
 
 	// Add the member's generics.
 	for _, generic := range member.Generics() {
-		builder.WithGeneric(generic.Name(), generic.Node())
+		genericName, hasGenericName := generic.Name()
+		if !hasGenericName {
+			continue
+		}
+
+		builder.WithGeneric(genericName, generic.Node())
 	}
 
 	builder.Define()
@@ -321,15 +351,17 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 		if parent.IsType() {
 			parentType := parent.AsType()
 			if parentType.TypeKind() == typegraph.ImplicitInterfaceType {
-				opDef, found := graph.GetOperatorDefinition(member.Name())
+				memberName, _ := member.Name()
+				opDef, found := graph.GetOperatorDefinition(memberName)
 
 				// Note: If not found, the type graph will emit an error.
 				if found {
 					if member.HasImplementation() != opDef.IsStatic {
+						parentTypeName := parentType.Name()
 						if opDef.IsStatic {
-							reporter.ReportError(member.GraphNode, "Static operator %v under %v %v must have an implementation", member.Name(), parentType.Title(), parentType.Name())
+							reporter.ReportError(member.GraphNode, "Static operator %v under %v %v must have an implementation", memberName, parentType.Title(), parentTypeName)
 						} else {
-							reporter.ReportError(member.GraphNode, "Instance operator %v under %v %v cannot have an implementation", member.Name(), parentType.Title(), parentType.Name())
+							reporter.ReportError(member.GraphNode, "Instance operator %v under %v %v cannot have an implementation", memberName, parentType.Title(), parentTypeName)
 						}
 					}
 				}

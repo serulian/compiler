@@ -317,6 +317,9 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 	case parser.NodeTypeIdentifierExpression:
 		return sb.scopeIdentifierExpression
 
+	case parser.NodeTypeError:
+		return sb.scopeError
+
 	default:
 		panic(fmt.Sprintf("Unknown SRG node in scoping: %v", node.Kind()))
 	}
@@ -334,6 +337,19 @@ func (sb *scopeBuilder) getScopeForRootNode(rootNode compilergraph.GraphNode) *p
 		dynamicDependencyCollector: dynamicDependencyCollector,
 		rootLabelSet:               newLabelSet(),
 	})
+}
+
+// getScopeForPredicate returns the scope for the node found off of the given predice of the given node, building (and waiting) if necessary.
+// If the predicate doesn't exist, invalid scope is returned. This method should be used in place of getScope wherever possible, as it is
+// safe for partial graphs produced when using IDE tooling.
+func (sb *scopeBuilder) getScopeForPredicate(node compilergraph.GraphNode, predicate compilergraph.Predicate, context scopeContext) *proto.ScopeInfo {
+	targetNode, hasTargetNode := node.TryGetNode(predicate)
+	if !hasTargetNode {
+		invalidScope := newScope().Invalid().GetScope()
+		return &invalidScope
+	}
+
+	return sb.getScope(targetNode, context)
 }
 
 // getScope returns the scope for the given node, building (and waiting) if necessary.

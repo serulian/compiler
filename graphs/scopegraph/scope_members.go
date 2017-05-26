@@ -15,7 +15,12 @@ func (sb *scopeBuilder) scopeImplementedMember(node compilergraph.GraphNode, con
 	if body, hasBody := node.TryGetNode(parser.NodePredicateBody); hasBody {
 		scope := sb.getScope(body, context)
 		return *scope
-	} else {
-		return newScope().Valid().GetScope()
 	}
+
+	return newScope().Valid().GetScope()
+}
+
+// scopeError scopes an error node found in the graph.
+func (sb *scopeBuilder) scopeError(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
+	return newScope().Invalid().GetScope()
 }

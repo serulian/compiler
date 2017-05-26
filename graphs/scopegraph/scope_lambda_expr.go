@@ -33,14 +33,14 @@ func (sb *scopeBuilder) scopeFullLambaExpression(node compilergraph.GraphNode, c
 	if hasReturnType {
 		resolvedReturnType, rerr := sb.sg.ResolveSRGTypeRef(sb.sg.srg.GetTypeRef(returnTypeNode))
 		if rerr != nil {
-			panic(rerr)
+			return newScope().Invalid().GetScope()
 		}
 
 		returnType = resolvedReturnType
 	}
 
 	// Scope the block. If the function has no defined return type, we use the return type of the block.
-	blockScope := sb.getScope(node.GetNode(parser.NodeLambdaExpressionBlock), context.withImplemented(node))
+	blockScope := sb.getScopeForPredicate(node, parser.NodeLambdaExpressionBlock, context.withImplemented(node))
 	if !hasReturnType && blockScope.GetIsValid() {
 		returnType = blockScope.ReturnedTypeRef(sb.sg.tdg)
 	}
@@ -54,10 +54,14 @@ func (sb *scopeBuilder) scopeFullLambaExpression(node compilergraph.GraphNode, c
 		BuildNodeIterator()
 
 	for pit.Next() {
-		parameterTypeNode := pit.Node().GetNode(parser.NodeParameterType)
+		parameterTypeNode, hasNodeType := pit.Node().TryGetNode(parser.NodeParameterType)
+		if !hasNodeType {
+			return newScope().Invalid().GetScope()
+		}
+
 		parameterType, perr := sb.sg.ResolveSRGTypeRef(sb.sg.srg.GetTypeRef(parameterTypeNode))
 		if perr != nil {
-			panic(perr)
+			return newScope().Invalid().GetScope()
 		}
 
 		functionType = functionType.WithParameter(parameterType)
@@ -71,7 +75,7 @@ func (sb *scopeBuilder) scopeInlineLambaExpression(node compilergraph.GraphNode,
 	var returnType = sb.sg.tdg.AnyTypeReference()
 
 	// Scope the lambda's internal expression.
-	exprScope := sb.getScope(node.GetNode(parser.NodeLambdaExpressionChildExpr), context)
+	exprScope := sb.getScopeForPredicate(node, parser.NodeLambdaExpressionChildExpr, context)
 	if exprScope.GetIsValid() {
 		returnType = exprScope.ResolvedTypeRef(sb.sg.tdg)
 	}
@@ -147,7 +151,11 @@ func (sb *scopeBuilder) inferLambdaParameterTypes(node compilergraph.GraphNode, 
 
 		// Otherwise, we find all references of the variable under the parent scope that are,
 		// themselves, under a function call, and intersect the types of arguments found.
-		parentVariableName := parentVariable.Get(parser.NodeVariableStatementName)
+		parentVariableName, hasParentVariableName := parentVariable.TryGet(parser.NodeVariableStatementName)
+		if !hasParentVariableName {
+			return make([]typegraph.TypeReference, 0), false
+		}
+
 		parentBlock, hasParentBlock := parentVariable.TryGetIncomingNode(parser.NodeStatementBlockStatement)
 		if !hasParentBlock {
 			return make([]typegraph.TypeReference, 0), false

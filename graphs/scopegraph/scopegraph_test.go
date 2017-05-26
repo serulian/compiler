@@ -1301,6 +1301,10 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"The 'val' keyword can only be used under property setters", ""},
 
+	scopegraphTest{"non-property val test", "property", "nonpropertyval",
+		[]expectedScopeEntry{},
+		"The 'val' keyword can only be used under property setters", ""},
+
 	scopegraphTest{"property val test", "property", "value",
 		[]expectedScopeEntry{
 			expectedScopeEntry{"val", expectedScope{true, proto.ScopeKind_VALUE, "Boolean", "void"}},

@@ -119,6 +119,8 @@ var grokRangeTests = []grokRangeTest{
 	grokRangeTest{"syntaxerror", false, []grokNamedRange{
 		grokNamedRange{"f", NamedReference, "foobars", "foobars int"},
 	}},
+
+	grokRangeTest{"syntaxerror2", false, []grokNamedRange{}},
 }
 
 func TestGrokRange(t *testing.T) {
@@ -150,7 +152,7 @@ func TestGrokRange(t *testing.T) {
 			for ; i <= commentedRange.endIndex; i++ {
 				pm := compilercommon.LocalFilePositionMapper{}
 				sourcePosition := compilercommon.InputSource(testSourcePath).PositionForRunePosition(i, pm)
-				ri, err := handle.LookupPosition(sourcePosition)
+				ri, err := handle.LookupSourcePosition(sourcePosition)
 				if !assert.Nil(t, err, "Error when looking up range position: %s => %v", commentedRange.name, sourcePosition) {
 					continue
 				}

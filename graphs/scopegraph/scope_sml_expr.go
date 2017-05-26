@@ -29,7 +29,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 	//     3) A mapping
 	//
 	//  - Parameter #2 (optional) represents the children (contents).
-	typeOrFuncScope := sb.getScope(node.GetNode(parser.NodeSmlExpressionTypeOrFunction), context)
+	typeOrFuncScope := sb.getScopeForPredicate(node, parser.NodeSmlExpressionTypeOrFunction, context)
 	if !typeOrFuncScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
@@ -243,7 +243,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 // scopeSmlDecoratorAttribute scopes a decorator SML expression attribute under a declaration.
 func (sb *scopeBuilder) scopeSmlDecorator(node compilergraph.GraphNode, declaredType typegraph.TypeReference, context scopeContext) (typegraph.TypeReference, bool) {
 	// Resolve the scope of the decorator.
-	decoratorScope := sb.getScope(node.GetNode(parser.NodeSmlDecoratorPath), context)
+	decoratorScope := sb.getScopeForPredicate(node, parser.NodeSmlDecoratorPath, context)
 	if !decoratorScope.GetIsValid() {
 		return declaredType, false
 	}
@@ -308,7 +308,10 @@ func (sb *scopeBuilder) scopeSmlDecorator(node compilergraph.GraphNode, declared
 
 // scopeSmlNormalAttribute scopes an SML expression attribute under a declaration.
 func (sb *scopeBuilder) scopeSmlAttribute(node compilergraph.GraphNode, propsType typegraph.TypeReference, context scopeContext) (*proto.ScopeInfo, string, bool) {
-	attributeName := node.Get(parser.NodeSmlAttributeName)
+	attributeName, hasAttributeName := node.TryGet(parser.NodeSmlAttributeName)
+	if !hasAttributeName {
+		return nil, attributeName, false
+	}
 
 	// If the props type is a struct or class, ensure that the attribute name exists.
 	var allowedValueType = sb.sg.tdg.AnyTypeReference()

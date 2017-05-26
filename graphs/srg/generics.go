@@ -16,9 +16,9 @@ type SRGGeneric struct {
 	srg *SRG // The parent SRG.
 }
 
-// Name returns the name of this generic.
-func (t SRGGeneric) Name() string {
-	return t.GraphNode.Get(parser.NodeGenericPredicateName)
+// Name returns the name of this generic. May not existing in the partial-parsing case for tooling.
+func (t SRGGeneric) Name() (string, bool) {
+	return t.GraphNode.TryGet(parser.NodeGenericPredicateName)
 }
 
 // Node returns the underlying node.
