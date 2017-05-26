@@ -94,7 +94,12 @@ func (m SRGImplementable) ContainingMember() SRGMember {
 
 // IsPropertySetter returns true if this implementable is a property setter.
 func (m SRGImplementable) IsPropertySetter() bool {
-	setter, found := m.ContainingMember().Setter()
+	containingMember := m.ContainingMember()
+	if containingMember.MemberKind() != PropertyMember {
+		return false
+	}
+
+	setter, found := containingMember.Setter()
 	if !found {
 		return false
 	}
