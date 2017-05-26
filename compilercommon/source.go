@@ -27,6 +27,11 @@ func (is InputSource) PositionForRunePosition(runePosition int, mapper PositionM
 	return runeIndexedPosition{is, mapper, runePosition}
 }
 
+// PositionFromLineAndColumn returns a source position at the given line and column in this source file.
+func (is InputSource) PositionFromLineAndColumn(lineNumber int, columnPosition int, mapper PositionMapper) SourcePosition {
+	return lcIndexedPosition{is, mapper, Position{lineNumber, columnPosition}}
+}
+
 // RangeForRunePositions returns a source range over this source file.
 func (is InputSource) RangeForRunePositions(startRune int, endRune int, mapper PositionMapper) SourceRange {
 	return sourceRange{is, runeIndexedPosition{is, mapper, startRune}, runeIndexedPosition{is, mapper, endRune}}

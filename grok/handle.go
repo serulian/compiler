@@ -22,7 +22,7 @@ type Handle struct {
 }
 
 // IsCompilable returns true if the graph referred to by Grok is fully valid, containing
-// no errors of any kid.
+// no errors of any kind.
 func (gh Handle) IsCompilable() bool {
 	return gh.scopeResult.Status
 }
