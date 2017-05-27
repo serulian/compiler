@@ -14,6 +14,13 @@ import (
 	"github.com/serulian/compiler/parser"
 )
 
+// GetCompletionsForPosition returns the autocompletion information for the given activationString at the given position.
+// If the activation string is empty, returns all context-sensitive defined names.
+func (gh Handle) GetCompletionsForPosition(activationString string, source compilercommon.InputSource, lineNumber int, colPosition int) (CompletionInformation, error) {
+	sourcePosition := source.PositionFromLineAndColumn(lineNumber, colPosition, gh.scopeResult.SourceTracker)
+	return gh.GetCompletions(activationString, sourcePosition)
+}
+
 // GetCompletions returns the autocompletion information for the given activationString at the given location.
 // If the activation string is empty, returns all context-sensitive defined names.
 func (gh Handle) GetCompletions(activationString string, sourcePosition compilercommon.SourcePosition) (CompletionInformation, error) {
