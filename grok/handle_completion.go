@@ -11,19 +11,32 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/srg"
+	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/parser"
 )
 
 // GetCompletionsForPosition returns the autocompletion information for the given activationString at the given position.
 // If the activation string is empty, returns all context-sensitive defined names.
 func (gh Handle) GetCompletionsForPosition(activationString string, source compilercommon.InputSource, lineNumber int, colPosition int) (CompletionInformation, error) {
-	sourcePosition := source.PositionFromLineAndColumn(lineNumber, colPosition, gh.scopeResult.SourceTracker)
+	// Note: We cannot use PositionFromLineAndColumn here, as it will lookup the position in the *tracked* source, which
+	// may be different than the current live source.
+	liveRune, err := gh.scopeResult.SourceTracker.LineAndColToRunePosition(lineNumber, colPosition, source, compilercommon.SourceMapCurrent)
+	if err != nil {
+		return CompletionInformation{}, err
+	}
+
+	sourcePosition := source.PositionForRunePosition(liveRune, gh.scopeResult.SourceTracker)
 	return gh.GetCompletions(activationString, sourcePosition)
 }
 
 // GetCompletions returns the autocompletion information for the given activationString at the given location.
 // If the activation string is empty, returns all context-sensitive defined names.
 func (gh Handle) GetCompletions(activationString string, sourcePosition compilercommon.SourcePosition) (CompletionInformation, error) {
+	updatedPosition, err := gh.scopeResult.SourceTracker.GetPositionOffset(sourcePosition, packageloader.CurrentFilePosition)
+	if err != nil {
+		return CompletionInformation{}, err
+	}
+
 	builder := &completionBuilder{
 		handle:           gh,
 		activationString: activationString,
@@ -31,9 +44,9 @@ func (gh Handle) GetCompletions(activationString string, sourcePosition compiler
 		completions:      make([]Completion, 0),
 	}
 
-	// Find the node at the location.
+	// Find the node or a nearby node at the position.
 	sourceGraph := gh.scopeResult.Graph.SourceGraph()
-	node, found := sourceGraph.FindNodeForPosition(sourcePosition)
+	node, found := sourceGraph.FindNearbyNodeForPosition(updatedPosition)
 	if !found {
 		return builder.build(), nil
 	}

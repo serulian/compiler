@@ -15,7 +15,7 @@ import (
 // for testing.
 type LocalFilePositionMapper struct{}
 
-func (pm LocalFilePositionMapper) RunePositionToLineAndCol(runePosition int, path InputSource) (int, int, error) {
+func (pm LocalFilePositionMapper) RunePositionToLineAndCol(runePosition int, path InputSource, sourceOption SourceMappingOption) (int, int, error) {
 	contents, err := ioutil.ReadFile(string(path))
 	if err != nil {
 		return -1, -1, err
@@ -25,7 +25,7 @@ func (pm LocalFilePositionMapper) RunePositionToLineAndCol(runePosition int, pat
 	return sm.RunePositionToLineAndCol(runePosition)
 }
 
-func (pm LocalFilePositionMapper) LineAndColToRunePosition(lineNumber int, colPosition int, path InputSource) (int, error) {
+func (pm LocalFilePositionMapper) LineAndColToRunePosition(lineNumber int, colPosition int, path InputSource, sourceOption SourceMappingOption) (int, error) {
 	contents, err := ioutil.ReadFile(string(path))
 	if err != nil {
 		return -1, err
@@ -35,7 +35,7 @@ func (pm LocalFilePositionMapper) LineAndColToRunePosition(lineNumber int, colPo
 	return sm.LineAndColToRunePosition(lineNumber, colPosition)
 }
 
-func (pm LocalFilePositionMapper) TextForLine(lineNumber int, path InputSource) (string, error) {
+func (pm LocalFilePositionMapper) TextForLine(lineNumber int, path InputSource, sourceOption SourceMappingOption) (string, error) {
 	contents, err := ioutil.ReadFile(string(path))
 	if err != nil {
 		return "", err

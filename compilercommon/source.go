@@ -5,6 +5,10 @@
 // Package compilercommon defines common types and their functions shared across the compiler.
 package compilercommon
 
+import (
+	"fmt"
+)
+
 // Position represents a position in an arbitrary source file.
 type Position struct {
 	// LineNumber is the 0-indexed line number.
@@ -42,19 +46,33 @@ func (is InputSource) RangeForLineAndColPositions(start Position, end Position, 
 	return sourceRange{is, lcIndexedPosition{is, mapper, start}, lcIndexedPosition{is, mapper, end}}
 }
 
+// SourceMappingOption defines the options for whichn source to use when position mapping.
+type SourceMappingOption int
+
+const (
+	// SourceMapTracked indicates that position mapping should occur over the *tracked* source
+	// contents. This is the default.
+	SourceMapTracked SourceMappingOption = iota
+
+	// SourceMapCurrent indicates that position mapping should occur over the *current* source
+	// contents. This should only be used by tooling, and is likely to fail in certain cases
+	// where positions have gotten desynced.
+	SourceMapCurrent
+)
+
 // PositionMapper defines an interface for converting rune position <-> line+col position
 // under source files.
 type PositionMapper interface {
 	// RunePositionToLineAndCol converts the given 0-indexed rune position under the given source file
 	// into a 0-indexed line number and column position.
-	RunePositionToLineAndCol(runePosition int, path InputSource) (int, int, error)
+	RunePositionToLineAndCol(runePosition int, path InputSource, sourceOption SourceMappingOption) (int, int, error)
 
 	// LineAndColToRunePosition converts the given 0-indexed line number and column position under the
 	// given source file into a 0-indexed rune position.
-	LineAndColToRunePosition(lineNumber int, colPosition int, path InputSource) (int, error)
+	LineAndColToRunePosition(lineNumber int, colPosition int, path InputSource, sourceOption SourceMappingOption) (int, error)
 
 	// TextForLine returns the text for the specified line number.
-	TextForLine(lineNumber int, path InputSource) (string, error)
+	TextForLine(lineNumber int, path InputSource, sourceOption SourceMappingOption) (string, error)
 }
 
 // SourceRange represents a range inside a source file.
@@ -120,7 +138,11 @@ func (ris runeIndexedPosition) RunePosition() (int, error) {
 }
 
 func (ris runeIndexedPosition) LineAndColumn() (int, int, error) {
-	return ris.mapper.RunePositionToLineAndCol(ris.runePosition, ris.source)
+	return ris.mapper.RunePositionToLineAndCol(ris.runePosition, ris.source, SourceMapTracked)
+}
+
+func (ris runeIndexedPosition) String() string {
+	return fmt.Sprintf("%s@%v (rune)", ris.source, ris.runePosition)
 }
 
 func (ris runeIndexedPosition) LineText() (string, error) {
@@ -129,7 +151,7 @@ func (ris runeIndexedPosition) LineText() (string, error) {
 		return "", err
 	}
 
-	return ris.mapper.TextForLine(lineNumber, ris.source)
+	return ris.mapper.TextForLine(lineNumber, ris.source, SourceMapTracked)
 }
 
 // lcIndexedPosition implements the SourcePosition interface over a line and colu,n position.
@@ -143,8 +165,12 @@ func (lcip lcIndexedPosition) Source() InputSource {
 	return lcip.source
 }
 
+func (lcip lcIndexedPosition) String() string {
+	return fmt.Sprintf("%s@%v:%v (line/col)", lcip.source, lcip.lcPosition.LineNumber, lcip.lcPosition.ColumnPosition)
+}
+
 func (lcip lcIndexedPosition) RunePosition() (int, error) {
-	return lcip.mapper.LineAndColToRunePosition(lcip.lcPosition.LineNumber, lcip.lcPosition.ColumnPosition, lcip.source)
+	return lcip.mapper.LineAndColToRunePosition(lcip.lcPosition.LineNumber, lcip.lcPosition.ColumnPosition, lcip.source, SourceMapTracked)
 }
 
 func (lcip lcIndexedPosition) LineAndColumn() (int, int, error) {
@@ -152,5 +178,5 @@ func (lcip lcIndexedPosition) LineAndColumn() (int, int, error) {
 }
 
 func (lcip lcIndexedPosition) LineText() (string, error) {
-	return lcip.mapper.TextForLine(lcip.lcPosition.LineNumber, lcip.source)
+	return lcip.mapper.TextForLine(lcip.lcPosition.LineNumber, lcip.source, SourceMapTracked)
 }
