@@ -45,6 +45,51 @@ func (slice locationResultNodes) Swap(i, j int) {
 	slice[i], slice[j] = slice[j], slice[i]
 }
 
+// FindNearbyNodeForPosition finds a node near to matching the given position in the SRG. The exact location is tried
+// first, followed by looking upwards and downwards by lines.
+func (g *SRG) FindNearbyNodeForPosition(sourcePosition compilercommon.SourcePosition) (compilergraph.GraphNode, bool) {
+	node, found := g.FindNodeForPosition(sourcePosition)
+	if found {
+		return node, true
+	}
+
+	line, col, err := sourcePosition.LineAndColumn()
+	if err != nil {
+		return compilergraph.GraphNode{}, false
+	}
+
+	// Otherwise, find a nearby node, working upward and downward.
+	upLine := line - 1
+	downLine := line + 1
+
+	for {
+		var checked = false
+		if upLine >= 0 {
+			upPosition := sourcePosition.Source().PositionFromLineAndColumn(upLine, col, g.sourceTracker)
+			node, found = g.FindNodeForPosition(upPosition)
+			if found {
+				return node, true
+			}
+
+			checked = true
+		}
+
+		if downLine < line+10 {
+			downPosition := sourcePosition.Source().PositionFromLineAndColumn(downLine, col, g.sourceTracker)
+			node, found = g.FindNodeForPosition(downPosition)
+			if found {
+				return node, true
+			}
+
+			checked = true
+		}
+
+		if !checked {
+			return compilergraph.GraphNode{}, false
+		}
+	}
+}
+
 // FindNodeForPosition finds the node matching the given position in the SRG.
 // As multiple nodes may *contain* the position, the node with the smallest range
 // is returned (if any).

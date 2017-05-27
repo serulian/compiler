@@ -44,13 +44,33 @@ func NewGrokerWithPathLoader(entrypointPath string, vcsDevelopmentDirectories []
 	}
 }
 
+// HandleFreshnessOption defines the options around code freshness when retrieving a handle.
+type HandleFreshnessOption int
+
+const (
+	// HandleMustBeFresh indicates that all code must be up-to-date before returning the handle.
+	HandleMustBeFresh HandleFreshnessOption = iota
+
+	// HandleAllowStale indicates that a stale cached handle can be returned.
+	HandleAllowStale
+)
+
 // GetHandle returns a handle for querying the Grok toolkit.
 func (g *Groker) GetHandle() (Handle, error) {
+	return g.GetHandleWithOption(HandleMustBeFresh)
+}
+
+// GetHandleWithOption returns a handle for querying the Grok toolkit.
+func (g *Groker) GetHandleWithOption(freshnessOption HandleFreshnessOption) (Handle, error) {
 	// If there is a cached handle, return it if nothing has changed.
 	// TODO: Support partial re-build here once supported by the rest of the pipeline.
 	currentHandle := g.currentHandle
 	if currentHandle != nil {
 		handle := *currentHandle
+		if freshnessOption == HandleAllowStale {
+			return handle, nil
+		}
+
 		modified, err := handle.scopeResult.SourceTracker.ModifiedSourcePaths()
 		if err == nil && len(modified) == 0 {
 			return handle, nil

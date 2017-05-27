@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/serulian/compiler/compilercommon"
+
 	"github.com/stretchr/testify/assert"
 
 	cmap "github.com/streamrail/concurrent-map"
