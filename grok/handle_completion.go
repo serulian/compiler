@@ -88,7 +88,11 @@ type srgScopeFilter func(scope srg.SRGContextScopeName) bool
 
 // addAccessCompletions adds completions based on an access expression underneath a node's context.
 func (gh Handle) addAccessCompletions(node compilergraph.GraphNode, activationString string, builder *completionBuilder) {
-	expressionString := strings.TrimSuffix(strings.TrimSuffix(activationString, "?."), ".")
+	prefixString := strings.TrimSuffix(strings.TrimSuffix(activationString, "?."), ".")
+	expressionString, hasValid := extractExpression(prefixString)
+	if !hasValid {
+		return
+	}
 
 	// Parse the activation string into an expression.
 	source := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
