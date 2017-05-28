@@ -107,7 +107,11 @@ func (g *SRG) ParseExpression(expressionString string, source compilercommon.Inp
 		}
 	}, source, startRune, expressionString)
 
-	return astNode.(*srgASTNode).graphNode.AsNode(), ok
+	if !ok {
+		return compilergraph.GraphNode{}, false
+	}
+
+	return astNode.(*srgASTNode).graphNode.AsNode(), true
 }
 
 // findVariableTypeWithName returns the SRGTypeRef for the declared type of the
