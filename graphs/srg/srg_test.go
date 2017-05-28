@@ -61,6 +61,8 @@ var parseExpressionTests = []parseExpressionTest{
 	parseExpressionTest{"a[1]", parser.NodeSliceExpression, true},
 	parseExpressionTest{"a == b", parser.NodeComparisonEqualsExpression, true},
 	parseExpressionTest{"a +", parser.NodeTypeError, false},
+	parseExpressionTest{"if something", parser.NodeTypeError, false},
+	parseExpressionTest{"a(((", parser.NodeTypeError, false},
 }
 
 func TestParseExpression(t *testing.T) {
