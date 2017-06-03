@@ -52,6 +52,27 @@ func (p SRGParameter) AsNamedScope() SRGNamedScope {
 	return SRGNamedScope{p.GraphNode, p.srg}
 }
 
+// Documentation returns the documentation associated with this parameter, if any.
+func (p SRGParameter) Documentation() (SRGDocumentation, bool) {
+	parentNode, hasParentNode := p.GraphNode.TryGetIncomingNode(parser.NodePredicateTypeMemberParameter)
+	if !hasParentNode {
+		return SRGDocumentation{}, false
+	}
+
+	paramName, hasParamName := p.Name()
+	if !hasParamName {
+		return SRGDocumentation{}, false
+	}
+
+	parentMember := SRGMember{parentNode, p.srg}
+	documentation, hasDocumentation := parentMember.Documentation()
+	if !hasDocumentation {
+		return SRGDocumentation{}, false
+	}
+
+	return documentation.ForParameter(paramName)
+}
+
 // Code returns a code-like summarization of the parameter, for human consumption.
 func (p SRGParameter) Code() string {
 	name, hasName := p.Name()
@@ -60,6 +81,12 @@ func (p SRGParameter) Code() string {
 	}
 
 	var buffer bytes.Buffer
+	documentationString := getSummarizedDocumentation(p)
+	if len(documentationString) > 0 {
+		buffer.WriteString(documentationString)
+		buffer.WriteString("\n")
+	}
+
 	buffer.WriteString(name)
 	buffer.WriteString(" ")
 

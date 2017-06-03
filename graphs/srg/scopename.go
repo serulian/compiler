@@ -283,21 +283,24 @@ func (ns SRGNamedScope) SourceRange() (compilercommon.SourceRange, bool) {
 
 // Documentation returns the documentation comment found on the scoped node, if any.
 func (ns SRGNamedScope) Documentation() (SRGDocumentation, bool) {
+	comment, found := ns.srg.getDocumentationCommentForNode(ns.GraphNode)
+	if !found {
+		return SRGDocumentation{}, false
+	}
+
 	switch ns.Kind() {
 	case parser.NodeTypeParameter:
 		fallthrough
 
 	case parser.NodeTypeLambdaParameter:
-		// TODO: if/when we support parameter documentation, look it up
-		// on the parent function.
-		return SRGDocumentation{}, false
-
-	default:
-		comment, found := ns.srg.getDocumentationCommentForNode(ns.GraphNode)
-		if !found {
+		docInfo, hasDocInfo := comment.Documentation()
+		if !hasDocInfo {
 			return SRGDocumentation{}, false
 		}
 
+		return docInfo.ForParameter(ns.Name())
+
+	default:
 		return comment.Documentation()
 	}
 }

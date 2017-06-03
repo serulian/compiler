@@ -5,6 +5,8 @@
 package srg
 
 import (
+	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/serulian/compiler/compilergraph"
@@ -200,4 +202,57 @@ func (d SRGDocumentation) String() string {
 // comment (instead of a standard comment).
 func (d SRGDocumentation) IsDocComment() bool {
 	return d.isDocComment
+}
+
+type byLocation struct {
+	values   []string
+	strValue string
+}
+
+func (s byLocation) Len() int {
+	return len(s.values)
+}
+
+func (s byLocation) Swap(i, j int) {
+	s.values[i], s.values[j] = s.values[j], s.values[i]
+}
+
+func (s byLocation) Less(i, j int) bool {
+	return strings.Index(s.values[i], s.strValue) < strings.Index(s.values[j], s.strValue)
+}
+
+// ForParameter returns the documentation associated with the given parameter name, if any.
+func (d SRGDocumentation) ForParameter(paramName string) (SRGDocumentation, bool) {
+	strValue, hasValue := documentationForParameter(d.String(), paramName)
+	if !hasValue {
+		return SRGDocumentation{}, false
+	}
+
+	return SRGDocumentation{
+		parentComment: d.parentComment,
+		isDocComment:  d.isDocComment,
+		commentValue:  strValue,
+	}, true
+}
+
+func documentationForParameter(commentValue string, paramName string) (string, bool) {
+	// Find all sentences in the documentation.
+	sentences := strings.Split(commentValue, ".")
+
+	// Find any sentences with a ticked reference to the parameter.
+	tickedParam := fmt.Sprintf("`%s`", paramName)
+	tickedSentences := make([]string, 0, len(sentences))
+	for _, sentence := range sentences {
+		if strings.Contains(sentence, tickedParam) {
+			tickedSentences = append(tickedSentences, sentence)
+		}
+	}
+
+	if len(tickedSentences) == 0 {
+		return "", false
+	}
+
+	sort.Sort(byLocation{tickedSentences, tickedParam})
+	paramComment := strings.TrimSpace(strings.Replace(tickedSentences[0], tickedParam, fmt.Sprintf("**%s**", paramName), 1))
+	return paramComment, true
 }

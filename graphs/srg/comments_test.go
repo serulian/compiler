@@ -32,6 +32,23 @@ var commentTests = []commentTest{
 	commentTest{"/**     hello\n*     world\n   */", true, "hello\nworld"},
 }
 
+type docParameterTest struct {
+	commentValue  string
+	parameterName string
+	expectedValue string
+}
+
+var parameterTests = []docParameterTest{
+	docParameterTest{"some comment", "some", ""},
+	docParameterTest{"This method does something with `someParam`.",
+		"someParam",
+		"This method does something with **someParam**"},
+
+	docParameterTest{"This method does something with `someParam`. If `someParam` is specified, things happen",
+		"someParam",
+		"If **someParam** is specified, things happen"},
+}
+
 func TestComments(t *testing.T) {
 	kindsEncountered := map[srgCommentKind]bool{}
 
@@ -56,6 +73,19 @@ func TestComments(t *testing.T) {
 	for _, kind := range commentsKinds {
 		_, tested := kindsEncountered[kind]
 		if !assert.True(t, tested, "Missing test for comment kind %v", kind) {
+			continue
+		}
+	}
+}
+
+func TestDocParameters(t *testing.T) {
+	for _, test := range parameterTests {
+		docValue, hasDocValue := documentationForParameter(test.commentValue, test.parameterName)
+		if !assert.Equal(t, test.expectedValue != "", hasDocValue, "Mismatch in found param for test %s", test.parameterName) {
+			continue
+		}
+
+		if !assert.Equal(t, test.expectedValue, docValue, "Mismatch in doc value for param for test %s", test.parameterName) {
 			continue
 		}
 	}
