@@ -65,7 +65,7 @@ func (ee *expressionExtractor) extract() (string, bool) {
 		closingRunes[closeRune] = true
 	}
 
-	afterSpaceStartIndex := 0
+	afterSeperatorStartIndex := 0
 	for index, char := range ee.inputString {
 		_, isOpenRune := nestingRunes[char]
 		_, isCloseRune := closingRunes[char]
@@ -108,9 +108,9 @@ func (ee *expressionExtractor) extract() (string, bool) {
 				return "", false
 			}
 
-		case char == ' ':
+		case char == ' ' || char == ',':
 			if ee.currentState == extractorStateNormal {
-				afterSpaceStartIndex = index + 1
+				afterSeperatorStartIndex = index + 1
 			}
 		}
 	}
@@ -120,11 +120,11 @@ func (ee *expressionExtractor) extract() (string, bool) {
 	}
 
 	// If we've reached this point, return the expression string found
-	// at the last nesting or the last space index.
+	// at the last nesting or the last separator index.
 	_, lastNestingStartIndex, _ := ee.nestingStack.topValue()
 	expressionStartIndex := lastNestingStartIndex + 1
-	if afterSpaceStartIndex > expressionStartIndex {
-		expressionStartIndex = afterSpaceStartIndex
+	if afterSeperatorStartIndex > expressionStartIndex {
+		expressionStartIndex = afterSeperatorStartIndex
 	}
 
 	return ee.inputString[expressionStartIndex:], true

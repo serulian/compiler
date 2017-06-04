@@ -37,6 +37,8 @@ var expressionExtractorTests = []expressionExtractorTest{
 	expressionExtractorTest{"a(b(c(d", "d", true},
 	expressionExtractorTest{"if a(b(c(d", "d", true},
 	expressionExtractorTest{"a(b(c(d e", "e", true},
+	expressionExtractorTest{"a(b(c(d,e", "e", true},
+	expressionExtractorTest{"a(b(c(d,e,f", "f", true},
 
 	// Failure tests.
 	expressionExtractorTest{"'hello world", "", false},
