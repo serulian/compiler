@@ -262,7 +262,19 @@ func (stc *srgTypeConstructor) defineMember(member srg.SRGMember, parent typegra
 			continue
 		}
 
-		builder.WithGeneric(genericName, generic.Node())
+		documentation, _ := generic.Documentation()
+		builder.WithGeneric(genericName, documentation.String(), generic.Node())
+	}
+
+	// Add the member's parameters.
+	for _, parameter := range member.Parameters() {
+		parameterName, hasParameterName := parameter.Name()
+		if !hasParameterName {
+			continue
+		}
+
+		documentation, _ := parameter.Documentation()
+		builder.WithParameter(parameterName, documentation.String(), parameter.Node())
 	}
 
 	builder.Define()
@@ -427,6 +439,12 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 		decorator.WithTag(name, value)
 	}
 
+	// Decorate the member's parameters.
+	for _, parameter := range member.Parameters() {
+		resolvedParameterType, _ := stc.resolvePossibleType(parameter.Node(), parameter.DeclaredType, graph, nil)
+		decorator.DefineParameterType(parameter.Node(), resolvedParameterType)
+	}
+
 	// Finalize the member.
 	decorator.Decorate()
 }
@@ -489,7 +507,9 @@ func (stc *srgTypeConstructor) resolvePossibleType(sourceNode compilergraph.Grap
 
 	resolvedTypeRef, err := stc.BuildTypeRef(srgTypeRef, tdg)
 	if err != nil {
-		reporter.ReportError(sourceNode, "%s", err.Error())
+		if reporter != nil {
+			reporter.ReportError(sourceNode, "%s", err.Error())
+		}
 		return tdg.AnyTypeReference(), false
 	}
 
