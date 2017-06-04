@@ -29,6 +29,9 @@ const (
 	NodeTypeMember   // A member of a type or module.
 	NodeTypeOperator // An operator defined on a type.
 
+	// Member parameters.
+	NodeTypeParameter // A parameter under a member.
+
 	// Member tags.
 	NodeTypeMemberTag
 
@@ -188,6 +191,9 @@ const (
 	// Marks a member with a generic.
 	NodePredicateMemberGeneric = "member-generic"
 
+	// Marks a member with a parameter.
+	NodePredicateMemberParameter = "member-parameter"
+
 	// Marks a member with its signature.
 	NodePredicateMemberSignature = "member-signature"
 
@@ -231,6 +237,19 @@ const (
 
 	// Marks an operator as being a call to a native (ES) operator.
 	NodePredicateOperatorNative = "operator-native"
+
+	//
+	// NodeTypeParameter
+	//
+
+	// Decorates a parameter with its name.
+	NodePredicateParameterName = "parameter-name"
+
+	// Decorates a parameter with its documentation.
+	NodePredicateParameterDocumentation = "parameter-documentation"
+
+	// Decorates a parameter with its type.
+	NodePredicateParameterType = "parameter-type"
 
 	//
 	// NodeTypeMemberTag

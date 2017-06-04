@@ -309,6 +309,20 @@ func (tn TGMember) Generics() []TGGeneric {
 	return generics
 }
 
+// Parameters returns the parameters on this member.
+func (tn TGMember) Parameters() []TGParameter {
+	it := tn.GraphNode.StartQuery().
+		Out(NodePredicateMemberParameter).
+		BuildNodeIterator()
+
+	var parameters = make([]TGParameter, 0)
+	for it.Next() {
+		parameters = append(parameters, TGParameter{it.Node(), tn.tdg})
+	}
+
+	return parameters
+}
+
 // Parent returns the type or module containing this member.
 func (tn TGMember) Parent() TGTypeOrModule {
 	parentNode := tn.GraphNode.StartQuery().
