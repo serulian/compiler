@@ -54,39 +54,17 @@ func (p SRGParameter) AsNamedScope() SRGNamedScope {
 
 // Documentation returns the documentation associated with this parameter, if any.
 func (p SRGParameter) Documentation() (SRGDocumentation, bool) {
-	parentNode, hasParentNode := p.GraphNode.TryGetIncomingNode(parser.NodePredicateTypeMemberParameter)
-	if !hasParentNode {
-		return SRGDocumentation{}, false
-	}
-
-	paramName, hasParamName := p.Name()
-	if !hasParamName {
-		return SRGDocumentation{}, false
-	}
-
-	parentMember := SRGMember{parentNode, p.srg}
-	documentation, hasDocumentation := parentMember.Documentation()
-	if !hasDocumentation {
-		return SRGDocumentation{}, false
-	}
-
-	return documentation.ForParameter(paramName)
+	return getParameterDocumentation(p.srg, p, parser.NodePredicateTypeMemberParameter)
 }
 
 // Code returns a code-like summarization of the parameter, for human consumption.
-func (p SRGParameter) Code() string {
+func (p SRGParameter) Code() (compilercommon.CodeSummary, bool) {
 	name, hasName := p.Name()
 	if !hasName {
-		return ""
+		return compilercommon.CodeSummary{}, false
 	}
 
 	var buffer bytes.Buffer
-	documentationString := getSummarizedDocumentation(p)
-	if len(documentationString) > 0 {
-		buffer.WriteString(documentationString)
-		buffer.WriteString("\n")
-	}
-
 	buffer.WriteString(name)
 	buffer.WriteString(" ")
 
@@ -95,5 +73,6 @@ func (p SRGParameter) Code() string {
 		buffer.WriteString(declaredType.String())
 	}
 
-	return buffer.String()
+	documentation, _ := p.Documentation()
+	return compilercommon.CodeSummary{documentation.String(), buffer.String(), hasDeclaredType}, true
 }

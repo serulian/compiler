@@ -208,6 +208,7 @@ func TestTypeMembers(t *testing.T) {
 		}
 
 		// Check Code.
-		assert.Equal(t, test.expectedCode, member.Code(), "Member code mismatch")
+		cs, _ := member.Code()
+		assert.Equal(t, test.expectedCode, cs.Code, "Member code mismatch")
 	}
 }

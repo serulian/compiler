@@ -306,7 +306,7 @@ func (ns SRGNamedScope) Documentation() (SRGDocumentation, bool) {
 }
 
 // Code returns a code-like summarization of the referenced scope, for human consumption.
-func (ns SRGNamedScope) Code() string {
+func (ns SRGNamedScope) Code() (compilercommon.CodeSummary, bool) {
 	switch ns.ScopeKind() {
 	case NamedScopeType:
 		srgType := SRGType{ns.GraphNode, ns.srg}
@@ -325,15 +325,15 @@ func (ns SRGNamedScope) Code() string {
 		return srgParameter.Code()
 
 	case NamedScopeValue:
-		return ns.Name()
+		return compilercommon.CodeSummary{"", ns.Name(), false}, true
 
 	case NamedScopeVariable:
 		declaredType, hasDeclaredType := ns.DeclaredType()
 		if hasDeclaredType {
-			return fmt.Sprintf("var<%s> %s", declaredType.String(), ns.Name())
+			return compilercommon.CodeSummary{"", fmt.Sprintf("var<%s> %s", declaredType.String(), ns.Name()), true}, true
 		}
 
-		return "var " + ns.Name()
+		return compilercommon.CodeSummary{"", "var " + ns.Name(), false}, true
 
 	default:
 		panic("Unknown kind of named scope")

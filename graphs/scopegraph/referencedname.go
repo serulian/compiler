@@ -154,7 +154,7 @@ func (rn ReferencedName) SourceRanges() []compilercommon.SourceRange {
 }
 
 // Code returns a code-like summarization of the referenced name, for human consumption.
-func (rn ReferencedName) Code() string {
+func (rn ReferencedName) Code() (compilercommon.CodeSummary, bool) {
 	if rn.typeInfo != nil {
 		// Check if the type info is in the SRG. If so, we use its `Code`, as it is more
 		// descriptive.

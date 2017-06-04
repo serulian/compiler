@@ -257,19 +257,13 @@ func (t SRGType) AsNamedScope() SRGNamedScope {
 }
 
 // Code returns a code-like summarization of the type, for human consumption.
-func (t SRGType) Code() string {
+func (t SRGType) Code() (compilercommon.CodeSummary, bool) {
 	name, hasName := t.Name()
 	if !hasName {
-		return ""
+		return compilercommon.CodeSummary{}, false
 	}
 
 	var buffer bytes.Buffer
-	documentationString := getSummarizedDocumentation(t)
-	if len(documentationString) > 0 {
-		buffer.WriteString(documentationString)
-		buffer.WriteString("\n")
-	}
-
 	writeComposition := func() {
 		agents := t.ComposedAgents()
 		if len(agents) == 0 {
@@ -341,5 +335,6 @@ func (t SRGType) Code() string {
 		panic(fmt.Sprintf("Unknown kind of type %s", t.GraphNode.Kind()))
 	}
 
-	return buffer.String()
+	documentation, _ := t.Documentation()
+	return compilercommon.CodeSummary{documentation.String(), buffer.String(), true}, true
 }

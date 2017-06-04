@@ -52,8 +52,8 @@ var grokRangeTests = []grokRangeTest{
 		grokNamedRange{"cst", TypeRef, "SomeClass", "// /  [sc   ]\nclass SomeClass"},
 
 		grokNamedRange{"sl3", Literal, "'hello'", "'hello'"},
-		grokNamedRange{"str", NamedReference, "someString", "var someString"},
-		grokNamedRange{"str2", NamedReference, "someString", "var someString"},
+		grokNamedRange{"str", NamedReference, "someString", "var someString\nString"},
+		grokNamedRange{"str2", NamedReference, "someString", "var someString\nString"},
 		grokNamedRange{"fbb", NamedReference, "FooBarBaz", "// /   [fbbdef ]\nvar<int> FooBarBaz"},
 	}},
 
@@ -61,17 +61,17 @@ var grokRangeTests = []grokRangeTest{
 		grokNamedRange{"si", TypeRef, "SomeInterface", "interface SomeInterface"},
 		grokNamedRange{"sa", NamedReference, "SomeAgent", "// /  [si     ] [sa   ]\nagent<SomeInterface> SomeAgent"},
 
-		grokNamedRange{"th", LocalValue, "this", "this\n\nclass SomeClass"},
-		grokNamedRange{"pri", LocalValue, "principal", "principal\n\ninterface SomeInterface"},
+		grokNamedRange{"th", LocalValue, "this", "this\nclass SomeClass"},
+		grokNamedRange{"pri", LocalValue, "principal", "principal\ninterface SomeInterface"},
 
-		grokNamedRange{"v", LocalValue, "val", "val\n\ntype Integer: Number"},
+		grokNamedRange{"v", LocalValue, "val", "val\ntype Integer: Number"},
 
-		grokNamedRange{"sn", NamedReference, "somenum", "somenum => Integer"},
+		grokNamedRange{"sn", NamedReference, "somenum", "somenum\nInteger"},
 	}},
 
 	grokRangeTest{"resolve", true, []grokNamedRange{
-		grokNamedRange{"sv", NamedReference, "someValue", "someValue => Integer?"},
-		grokNamedRange{"e", NamedReference, "err", "err => Error?"},
+		grokNamedRange{"sv", NamedReference, "someValue", "someValue\nInteger?"},
+		grokNamedRange{"e", NamedReference, "err", "err\nError?"},
 	}},
 
 	grokRangeTest{"complex", true, []grokNamedRange{
@@ -101,7 +101,7 @@ var grokRangeTests = []grokRangeTest{
 	}},
 
 	grokRangeTest{"sml", false, []grokNamedRange{
-		grokNamedRange{"sf", NamedReference, "SomeFunction", "// Some really cool function.\nfunction<int> SomeFunction(props SomeStruct)"},
+		grokNamedRange{"sf", NamedReference, "SomeFunction", "// Some really cool function\nfunction<int> SomeFunction(props SomeStruct)"},
 		grokNamedRange{"sp", NamedReference, "SomeProperty", "SomeProperty int"},
 		grokNamedRange{"sd", NamedReference, "SomeDecorator", "// SomeDecorator loves normal comments!\nfunction<int> SomeDecorator(value int)"},
 
@@ -153,7 +153,7 @@ func TestGrokRange(t *testing.T) {
 				pm := compilercommon.LocalFilePositionMapper{}
 				sourcePosition := compilercommon.InputSource(testSourcePath).PositionForRunePosition(i, pm)
 				ri, err := handle.LookupSourcePosition(sourcePosition)
-				if !assert.Nil(t, err, "Error when looking up range position: %s => %v", commentedRange.name, sourcePosition) {
+				if !assert.Nil(t, err, "Error when looking up range position: %s\n%v", commentedRange.name, sourcePosition) {
 					continue
 				}
 
@@ -161,7 +161,21 @@ func TestGrokRange(t *testing.T) {
 					continue
 				}
 
-				if !assert.Equal(t, ri.Code(), expectedRange.expectedCode, "Range code mismatch on range %s", commentedRange.name) {
+				hr := ri.HumanReadable()
+				var code = ""
+				for _, entry := range hr {
+					if entry.Kind == DocumentationText {
+						code = "// " + entry.Value + "\n" + code
+					} else {
+						if len(code) > 0 {
+							code = code + "\n"
+						}
+
+						code = code + entry.Value
+					}
+				}
+
+				if !assert.Equal(t, code, expectedRange.expectedCode, "Range code mismatch on range %s", commentedRange.name) {
 					continue
 				}
 

@@ -320,19 +320,13 @@ func (m SRGMember) AsNamedScope() SRGNamedScope {
 }
 
 // Code returns a code-like summarization of the member, for human consumption.
-func (m SRGMember) Code() string {
+func (m SRGMember) Code() (compilercommon.CodeSummary, bool) {
 	name, hasName := m.Name()
 	if !hasName {
-		return ""
+		return compilercommon.CodeSummary{}, false
 	}
 
 	var buffer bytes.Buffer
-	documentationString := getSummarizedDocumentation(m)
-	if len(documentationString) > 0 {
-		buffer.WriteString(documentationString)
-		buffer.WriteString("\n")
-	}
-
 	switch m.GraphNode.Kind() {
 	case parser.NodeTypeConstructor:
 		buffer.WriteString("constructor ")
@@ -399,5 +393,6 @@ func (m SRGMember) Code() string {
 		panic(fmt.Sprintf("Unknown kind of member %s", m.GraphNode.Kind()))
 	}
 
-	return buffer.String()
+	documentation, _ := m.Documentation()
+	return compilercommon.CodeSummary{documentation.String(), buffer.String(), true}, true
 }

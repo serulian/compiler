@@ -39,5 +39,5 @@ type TGTypeOrMember interface {
 	SourceRange() (compilercommon.SourceRange, bool)
 	SourceRanges() []compilercommon.SourceRange
 	IsAccessibleTo(modulePath compilercommon.InputSource) bool
-	Code() string
+	Code() (compilercommon.CodeSummary, bool)
 }
