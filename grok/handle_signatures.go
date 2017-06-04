@@ -119,7 +119,7 @@ func (gh Handle) GetSignature(activationString string, sourcePosition compilerco
 				Name:                 name,
 				Documentation:        documentation,
 				ActiveParameterIndex: signatureIndex,
-				Member:               nil,
+				Member:               &member,
 				Parameters:           parameterInfo,
 			}, nil
 		}
