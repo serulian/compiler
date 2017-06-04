@@ -9,14 +9,14 @@
                     "Key": "07986046f92fee1efb279e9e858f7d11",
                     "Kind": 10,
                     "Children": {
-                        "22368ef7cbde68fe32afe68aeb60f186": {
+                        "e4aa70201f3e500c3be8e9b70115884f": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "22368ef7cbde68fe32afe68aeb60f186",
-                                "Kind": 12,
+                                "Key": "e4aa70201f3e500c3be8e9b70115884f",
+                                "Kind": 13,
                                 "Children": {},
                                 "Predicates": {
-                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-node-kind": "13|NodeType|tdg",
                                     "tdg-return-type": "SomeInterface",
                                     "tdg-source-node": "(NodeRef)"
                                 }
@@ -44,14 +44,14 @@
                     "Key": "bb6598f210190017a9e42302acfc3f5a",
                     "Kind": 10,
                     "Children": {
-                        "22368ef7cbde68fe32afe68aeb60f186": {
+                        "e4aa70201f3e500c3be8e9b70115884f": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "22368ef7cbde68fe32afe68aeb60f186",
-                                "Kind": 12,
+                                "Key": "e4aa70201f3e500c3be8e9b70115884f",
+                                "Kind": 13,
                                 "Children": {},
                                 "Predicates": {
-                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-node-kind": "13|NodeType|tdg",
                                     "tdg-return-type": "SomeInterface",
                                     "tdg-source-node": "(NodeRef)"
                                 }

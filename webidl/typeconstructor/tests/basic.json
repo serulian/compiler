@@ -67,7 +67,22 @@
                 "Child": {
                     "Key": "b4bbd10b06021518d6bedab2d8c2141d",
                     "Kind": 9,
-                    "Children": {},
+                    "Children": {
+                        "e4596b7d34177eb547e319b339d698e9": {
+                            "Predicate": "tdg-member-parameter",
+                            "Child": {
+                                "Key": "e4596b7d34177eb547e319b339d698e9",
+                                "Kind": 11,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "11|NodeType|tdg",
+                                    "tdg-parameter-name": "someparam",
+                                    "tdg-parameter-type": "Object",
+                                    "tdg-source-node": "(NodeRef)"
+                                }
+                            }
+                        }
+                    },
                     "Predicates": {
                         "tdg-member-exported": "true",
                         "tdg-member-name": "AnotherMember",
