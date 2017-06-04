@@ -19,6 +19,13 @@ type expressionExtractorTest struct {
 	expectedResult     bool
 }
 
+type calledExtractorTest struct {
+	inputString        string
+	expectedExpression string
+	expectedIndex      int
+	expectedResult     bool
+}
+
 var expressionExtractorTests = []expressionExtractorTest{
 	// Success tests.
 	expressionExtractorTest{"1234", "1234", true},
@@ -37,6 +44,8 @@ var expressionExtractorTests = []expressionExtractorTest{
 	expressionExtractorTest{"a(b(c(d", "d", true},
 	expressionExtractorTest{"if a(b(c(d", "d", true},
 	expressionExtractorTest{"a(b(c(d e", "e", true},
+	expressionExtractorTest{"a(b(c(d,e", "e", true},
+	expressionExtractorTest{"a(b(c(d,e,f", "f", true},
 
 	// Failure tests.
 	expressionExtractorTest{"'hello world", "", false},
@@ -51,6 +60,36 @@ func TestExpressionExtraction(t *testing.T) {
 			continue
 		}
 		if !assert.Equal(t, test.expectedExpression, expression, "Got mismatched expression for input string: %s", test.inputString) {
+			continue
+		}
+	}
+}
+
+var calledExtractorTests = []calledExtractorTest{
+	// Success tests.
+	calledExtractorTest{"a(", "a", 0, true},
+	calledExtractorTest{"a(b", "a", 0, true},
+	calledExtractorTest{"a(b,", "a", 1, true},
+	calledExtractorTest{"a(b,c", "a", 1, true},
+	calledExtractorTest{"a(b,c[", "c", 0, true},
+
+	// Failure tests.
+	calledExtractorTest{"a", "", -1, false},
+	calledExtractorTest{"'hello world", "", -1, false},
+	calledExtractorTest{"'hello world\"", "", -1, false},
+	calledExtractorTest{"a[1234)", "", -1, false},
+}
+
+func TestCalledExtraction(t *testing.T) {
+	for _, test := range calledExtractorTests {
+		expression, index, result := extractCalled(test.inputString)
+		if !assert.Equal(t, test.expectedResult, result, "Got mismatched result for input string: %s", test.inputString) {
+			continue
+		}
+		if !assert.Equal(t, test.expectedExpression, expression, "Got mismatched expression for input string: %s", test.inputString) {
+			continue
+		}
+		if !assert.Equal(t, test.expectedIndex, index, "Got mismatched index for input string: %s", test.inputString) {
 			continue
 		}
 	}

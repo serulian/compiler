@@ -185,19 +185,22 @@ func (itc *irgTypeConstructor) defineGlobalContextMembers(declaration webidl.IRG
 // defineMember defines a single member under a WebIDL module or declaration.
 func (itc *irgTypeConstructor) defineMember(member webidl.IRGMember, parentNode compilergraph.GraphNode, builder typegraph.GetMemberBuilder) {
 	name, hasName := member.Name()
-	if hasName {
-		builder(parentNode, false).
-			Name(name).
-			SourceNode(member.GraphNode).
-			Define()
-	} else {
+	if !hasName {
 		// This is a specialization.
 		specialization, _ := member.Specialization()
-		builder(parentNode, true).
-			Name(webidl.SPECIALIZATION_NAMES[specialization]).
-			SourceNode(member.GraphNode).
-			Define()
+		name = webidl.SPECIALIZATION_NAMES[specialization]
 	}
+
+	b := builder(parentNode, !hasName).
+		Name(name).
+		SourceNode(member.GraphNode)
+
+	// Add the parameters.
+	for _, parameter := range member.Parameters() {
+		b.WithParameter(parameter.Name(), "", parameter.GraphNode)
+	}
+
+	b.Define()
 }
 
 // decorateConstructor decorates the metadata on the constructor of a collapsed type.
@@ -292,6 +295,8 @@ func (itc *irgTypeConstructor) decorateMember(member webidl.IRGMember, decorator
 		return
 	}
 
+	memberDecorator := decorator(member.GraphNode)
+
 	// Determine the overall type, kind and whether the member is read-only.
 	var memberType = declaredType
 	var memberKind = typegraph.CustomMemberSignature
@@ -319,10 +324,11 @@ func (itc *irgTypeConstructor) decorateMember(member webidl.IRGMember, decorator
 			// All optional parameters get marked as nullable, which means we can skip
 			// passing them on function calls.
 			if markOptional {
-				memberType = memberType.WithParameter(parameterType.AsNullable())
-			} else {
-				memberType = memberType.WithParameter(parameterType)
+				parameterType = parameterType.AsNullable()
 			}
+
+			memberType = memberType.WithParameter(parameterType)
+			memberDecorator.DefineParameterType(parameter.GraphNode, parameterType)
 		}
 
 	case webidl.AttributeMember:
@@ -336,7 +342,6 @@ func (itc *irgTypeConstructor) decorateMember(member webidl.IRGMember, decorator
 		panic("Unknown WebIDL member kind")
 	}
 
-	memberDecorator := decorator(member.GraphNode)
 	if _, hasName := member.Name(); !hasName {
 		memberDecorator.Native(true)
 	}

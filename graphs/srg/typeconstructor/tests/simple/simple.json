@@ -35,14 +35,14 @@
                     "Key": "f933c2e300d40983c025997fe5e0040c",
                     "Kind": 9,
                     "Children": {
-                        "b945553b92023e4fd1ae23820ab04ff1": {
+                        "97fc37904d05ff89dff8d0f27758b7ac": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "b945553b92023e4fd1ae23820ab04ff1",
-                                "Kind": 12,
+                                "Key": "97fc37904d05ff89dff8d0f27758b7ac",
+                                "Kind": 13,
                                 "Children": {},
                                 "Predicates": {
-                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-node-kind": "13|NodeType|tdg",
                                     "tdg-return-type": "SomeClass"
                                 }
                             }

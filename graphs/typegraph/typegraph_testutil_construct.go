@@ -402,7 +402,7 @@ func (t *testTypeGraphConstructor) DefineMembers(builder GetMemberBuilder, repor
 		for _, genericInfo := range memberInfo.generics {
 			genericNode := t.CreateNode(fakeNodeTypeTagged)
 			t.genericMap[memberInfo.name+"::"+genericInfo.name] = genericNode
-			ib.WithGeneric(genericInfo.name, genericNode)
+			ib.WithGeneric(genericInfo.name, "", genericNode)
 		}
 
 		ib.Define()
@@ -421,7 +421,7 @@ func (t *testTypeGraphConstructor) DefineMembers(builder GetMemberBuilder, repor
 			for _, genericInfo := range memberInfo.generics {
 				genericNode := t.CreateNode(fakeNodeTypeTagged)
 				t.genericMap[typeInfo.name+"."+memberInfo.name+"::"+genericInfo.name] = genericNode
-				ib.WithGeneric(genericInfo.name, genericNode)
+				ib.WithGeneric(genericInfo.name, "", genericNode)
 			}
 
 			ib.Define()

@@ -45,14 +45,28 @@
                     "Key": "0cafb9dfc8563d9a570fbd7a263582db",
                     "Kind": 10,
                     "Children": {
-                        "ec1431cb17a2a53947afec3c2cf726d0": {
-                            "Predicate": "tdg-member-returnable",
+                        "007ce2ceb013d11b4222fdaa26a9deec": {
+                            "Predicate": "tdg-member-parameter",
                             "Child": {
-                                "Key": "ec1431cb17a2a53947afec3c2cf726d0",
-                                "Kind": 12,
+                                "Key": "007ce2ceb013d11b4222fdaa26a9deec",
+                                "Kind": 11,
                                 "Children": {},
                                 "Predicates": {
-                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-node-kind": "11|NodeType|tdg",
+                                    "tdg-parameter-name": "propertyName",
+                                    "tdg-parameter-type": "First",
+                                    "tdg-source-node": "(NodeRef)"
+                                }
+                            }
+                        },
+                        "45381c813be00e05316628fb7a7b343a": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "45381c813be00e05316628fb7a7b343a",
+                                "Kind": 13,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "13|NodeType|tdg",
                                     "tdg-return-type": "Second",
                                     "tdg-source-node": "(NodeRef)"
                                 }
@@ -79,15 +93,43 @@
                     "Key": "d6275e240a384d282baa0cea757c467c",
                     "Kind": 10,
                     "Children": {
-                        "69c7dfb293b5923e5b91ad780ee76061": {
+                        "0ab7ff81f5d66766e19e204a04b5f724": {
                             "Predicate": "tdg-member-returnable",
                             "Child": {
-                                "Key": "69c7dfb293b5923e5b91ad780ee76061",
-                                "Kind": 12,
+                                "Key": "0ab7ff81f5d66766e19e204a04b5f724",
+                                "Kind": 13,
                                 "Children": {},
                                 "Predicates": {
-                                    "tdg-node-kind": "12|NodeType|tdg",
+                                    "tdg-node-kind": "13|NodeType|tdg",
                                     "tdg-return-type": "void",
+                                    "tdg-source-node": "(NodeRef)"
+                                }
+                            }
+                        },
+                        "305359f7457838a943fb448f09d279f5": {
+                            "Predicate": "tdg-member-parameter",
+                            "Child": {
+                                "Key": "305359f7457838a943fb448f09d279f5",
+                                "Kind": 11,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "11|NodeType|tdg",
+                                    "tdg-parameter-name": "propertyName",
+                                    "tdg-parameter-type": "Third",
+                                    "tdg-source-node": "(NodeRef)"
+                                }
+                            }
+                        },
+                        "35b50e97e60e73eea9bc5d0aa5cff1ed": {
+                            "Predicate": "tdg-member-parameter",
+                            "Child": {
+                                "Key": "35b50e97e60e73eea9bc5d0aa5cff1ed",
+                                "Kind": 11,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "11|NodeType|tdg",
+                                    "tdg-parameter-name": "propertyValue",
+                                    "tdg-parameter-type": "Fourth",
                                     "tdg-source-node": "(NodeRef)"
                                 }
                             }

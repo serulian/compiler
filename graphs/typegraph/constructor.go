@@ -371,6 +371,7 @@ type genericBuilder struct {
 	parentPredicate compilergraph.Predicate           // The predicate for connecting the type or member to the generic.
 
 	name          string                  // The name of the generic.
+	documentation string                  // The documentation for the generic.
 	sourceNode    compilergraph.GraphNode // The node for the generic in the source graph.
 	hasSourceNode bool                    // Whether this generic has a source node.
 }
@@ -378,6 +379,12 @@ type genericBuilder struct {
 // Name sets the name of the generic.
 func (gb *genericBuilder) Name(name string) *genericBuilder {
 	gb.name = name
+	return gb
+}
+
+// Documentation sets the documentation for the generic.
+func (gb *genericBuilder) Documentation(documentation string) *genericBuilder {
+	gb.documentation = documentation
 	return gb
 }
 
@@ -412,6 +419,10 @@ func (gb *genericBuilder) defineGeneric() TGGeneric {
 		genericNode.Connect(NodePredicateSource, gb.sourceNode)
 	}
 
+	if len(gb.documentation) > 0 {
+		genericNode.Decorate(NodePredicateDocumentation, gb.documentation)
+	}
+
 	// Add the generic to the parent node.
 	gb.parentNode.Connect(gb.parentPredicate, genericNode)
 
@@ -422,20 +433,30 @@ func (gb *genericBuilder) defineGeneric() TGGeneric {
 
 // MemberBuilder defines a helper type for easy construction of module and type members.
 type MemberBuilder struct {
-	modifier       compilergraph.GraphLayerModifier // The modifier being used.
-	tdg            *TypeGraph                       // The underlying type graph.
-	parent         TGTypeOrModule                   // The parent type or module node.
-	isOperator     bool                             // Whether the member being defined is an operator.
-	name           string                           // The name of the member.
-	sourceNode     compilergraph.GraphNode          // The node for the member in the source graph.
-	hasSourceNode  bool                             // Whether there is a source node.
-	memberGenerics []memberGeneric                  // The generics on the member.
-	documentation  string                           // The documentation string for the member, if any.
+	modifier         compilergraph.GraphLayerModifier // The modifier being used.
+	tdg              *TypeGraph                       // The underlying type graph.
+	parent           TGTypeOrModule                   // The parent type or module node.
+	isOperator       bool                             // Whether the member being defined is an operator.
+	name             string                           // The name of the member.
+	sourceNode       compilergraph.GraphNode          // The node for the member in the source graph.
+	hasSourceNode    bool                             // Whether there is a source node.
+	memberGenerics   []memberGeneric                  // The generics on the member.
+	memberParameters []memberParameter                // The parameters on the member.
+	documentation    string                           // The documentation string for the member, if any.
 }
 
 // memberGeneric holds information about a member's generic.
 type memberGeneric struct {
 	name          string
+	documentation string
+	sourceNode    compilergraph.GraphNode
+	hasSourceNode bool
+}
+
+// memberParameter holds information about a member's parameter.
+type memberParameter struct {
+	name          string
+	documentation string
 	sourceNode    compilergraph.GraphNode
 	hasSourceNode bool
 }
@@ -460,9 +481,9 @@ func (mb *MemberBuilder) SourceNode(sourceNode compilergraph.GraphNode) *MemberB
 }
 
 // WithGeneric adds a generic to this member.
-func (mb *MemberBuilder) WithGeneric(name string, sourceNode compilergraph.GraphNode) *MemberBuilder {
+func (mb *MemberBuilder) WithGeneric(name string, documentation string, sourceNode compilergraph.GraphNode) *MemberBuilder {
 	mb.memberGenerics = append(mb.memberGenerics, memberGeneric{
-		name, sourceNode, true,
+		name, documentation, sourceNode, true,
 	})
 
 	return mb
@@ -471,7 +492,16 @@ func (mb *MemberBuilder) WithGeneric(name string, sourceNode compilergraph.Graph
 // withGeneric adds a generic to this member.
 func (mb *MemberBuilder) withGeneric(name string) *MemberBuilder {
 	mb.memberGenerics = append(mb.memberGenerics, memberGeneric{
-		name, compilergraph.GraphNode{}, false,
+		name, "", compilergraph.GraphNode{}, false,
+	})
+
+	return mb
+}
+
+// WithParameter adds a paramedter to this member.
+func (mb *MemberBuilder) WithParameter(name string, documentation string, sourceNode compilergraph.GraphNode) *MemberBuilder {
+	mb.memberParameters = append(mb.memberParameters, memberParameter{
+		name, documentation, sourceNode, true,
 	})
 
 	return mb
@@ -521,7 +551,26 @@ func (mb *MemberBuilder) Define() TGMember {
 		if genericInfo.hasSourceNode {
 			genericBuilder.SourceNode(genericInfo.sourceNode)
 		}
+		genericBuilder.Documentation(genericInfo.documentation)
 		genericBuilder.defineGeneric()
+	}
+
+	// Decorate the member with its parameters.
+	for _, parameterInfo := range mb.memberParameters {
+		// Create the parameter node.
+		parameterNode := mb.modifier.CreateNode(NodeTypeParameter)
+		parameterNode.Decorate(NodePredicateParameterName, parameterInfo.name)
+
+		if parameterInfo.hasSourceNode {
+			parameterNode.Connect(NodePredicateSource, parameterInfo.sourceNode)
+		}
+
+		if len(parameterInfo.documentation) > 0 {
+			parameterNode.Decorate(NodePredicateParameterDocumentation, parameterInfo.documentation)
+		}
+
+		// Add the parameter to the member node.
+		memberNode.Connect(NodePredicateMemberParameter, parameterNode)
 	}
 
 	// Add the member to the parent node.
@@ -696,6 +745,12 @@ func (mb *MemberDecorator) CreateReturnable(sourceNode compilergraph.GraphNode, 
 		sourceNode, returnType,
 	})
 	return mb
+}
+
+// DefineParameterType defines the type of the parameter specified.
+func (mb *MemberDecorator) DefineParameterType(parameterSourceNode compilergraph.GraphNode, parameterType TypeReference) {
+	parameterNode := mb.tdg.getMatchingTypeGraphNode(parameterSourceNode)
+	mb.modifier.Modify(parameterNode).DecorateWithTagged(NodePredicateParameterType, parameterType)
 }
 
 // DefineGenericConstraint defines the constraint on the type member generic to be that specified.

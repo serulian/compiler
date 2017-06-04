@@ -3,15 +3,15 @@
         "Key": "8758f5d8d63e606d5960b6fe6800d898",
         "Kind": 3,
         "Children": {
-            "47830255db406e0170a60d6159e02163": {
+            "613ee9436c9bee469ae906675f136bb7": {
                 "Predicate": "tdg-type-attribute",
                 "Child": {
-                    "Key": "47830255db406e0170a60d6159e02163",
-                    "Kind": 15,
+                    "Key": "613ee9436c9bee469ae906675f136bb7",
+                    "Kind": 16,
                     "Children": {},
                     "Predicates": {
                         "tdg-attribute-name": "serializable",
-                        "tdg-node-kind": "15|NodeType|tdg"
+                        "tdg-node-kind": "16|NodeType|tdg"
                     }
                 }
             }
