@@ -12,9 +12,21 @@ type nestingStack struct {
 }
 
 type nestingElement struct {
-	openRune   rune
-	startIndex int
-	next       *nestingElement
+	openRune           rune
+	startIndex         int
+	commaCounter       int
+	lastSeparatorIndex int
+	next               *nestingElement
+}
+
+// expressionStartIndex returns the start index for the nested expression, based on the
+// start index of the nesting element and last encountered separator index.
+func (ne *nestingElement) expressionStartIndex() int {
+	startIndex := ne.startIndex + 1
+	if ne.lastSeparatorIndex+1 > startIndex {
+		return ne.lastSeparatorIndex + 1
+	}
+	return startIndex
 }
 
 func (s *nestingStack) topValue() (rune, int, bool) {
@@ -27,7 +39,7 @@ func (s *nestingStack) topValue() (rune, int, bool) {
 
 // Push pushes an opening rune onto the stack.
 func (s *nestingStack) push(openRune rune, startIndex int) {
-	s.top = &nestingElement{openRune, startIndex, s.top}
+	s.top = &nestingElement{openRune, startIndex, 0, -1, s.top}
 	s.size++
 }
 

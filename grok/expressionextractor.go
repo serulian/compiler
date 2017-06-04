@@ -41,6 +41,7 @@ type expressionExtractor struct {
 }
 
 // extractExpression extracts the closest inner expression from the given input string, if any.
+//
 // For example, this method will perform the following transformations:
 // a -> a
 // a.b ->
@@ -59,13 +60,58 @@ func extractExpression(inputString string) (string, bool) {
 	return expressionExtractor.extract()
 }
 
+// extractCalled extracts the closest *called* inner expression from the given input string, if any.
+//
+// For example, this method will perform the following transformations:
+// a -> (none)
+// a.b -> (none)
+// a[1] -> (none)
+// a[b -> a (w/index 0)
+// a(b -> a (w/index 0)
+// a(b, c -> a (w/index 1)
+// a( -> a (w/index 0)
+func extractCalled(inputString string) (string, int, bool) {
+	expressionExtractor := &expressionExtractor{
+		inputString:       strings.TrimSpace(inputString),
+		currentState:      extractorStateNormal,
+		nestingStack:      &nestingStack{},
+		currentStringRune: ' ',
+	}
+
+	// Extract the normal expression.
+	_, ok := expressionExtractor.extract()
+	if !ok {
+		return "", -1, false
+	}
+
+	// Find the containing nesting level, to determine it expression.
+	containingNesting := expressionExtractor.nestingStack.top
+
+	// Pop it.
+	expressionExtractor.nestingStack.pop()
+
+	// Find the second nesting level, if any.
+	if expressionExtractor.nestingStack.top == nil {
+		return "", -1, false
+	}
+
+	// The called expression is that found between the two levels.
+	startIndex := expressionExtractor.nestingStack.top.expressionStartIndex()
+	endIndex := containingNesting.startIndex
+	commaIndex := containingNesting.commaCounter
+	return inputString[startIndex:endIndex], commaIndex, true
+}
+
 func (ee *expressionExtractor) extract() (string, bool) {
+	// Build the map of closing runes.
 	closingRunes := map[rune]bool{}
 	for _, closeRune := range nestingRunes {
 		closingRunes[closeRune] = true
 	}
 
-	afterSeperatorStartIndex := 0
+	// Push a top-level "nesting" state onto the stack.
+	ee.nestingStack.push(' ', -1)
+
 	for index, char := range ee.inputString {
 		_, isOpenRune := nestingRunes[char]
 		_, isCloseRune := closingRunes[char]
@@ -110,7 +156,10 @@ func (ee *expressionExtractor) extract() (string, bool) {
 
 		case char == ' ' || char == ',':
 			if ee.currentState == extractorStateNormal {
-				afterSeperatorStartIndex = index + 1
+				ee.nestingStack.top.lastSeparatorIndex = index
+				if char == ',' {
+					ee.nestingStack.top.commaCounter++
+				}
 			}
 		}
 	}
@@ -121,11 +170,6 @@ func (ee *expressionExtractor) extract() (string, bool) {
 
 	// If we've reached this point, return the expression string found
 	// at the last nesting or the last separator index.
-	_, lastNestingStartIndex, _ := ee.nestingStack.topValue()
-	expressionStartIndex := lastNestingStartIndex + 1
-	if afterSeperatorStartIndex > expressionStartIndex {
-		expressionStartIndex = afterSeperatorStartIndex
-	}
-
+	expressionStartIndex := ee.nestingStack.top.expressionStartIndex()
 	return ee.inputString[expressionStartIndex:], true
 }
