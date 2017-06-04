@@ -1,0 +1,18 @@
+class SomeClass {
+    // A cool indexer, that takes `index`.
+    operator<int> Index(index int) {
+        return index
+    }
+
+    constructor CreateMe() {
+        return SomeClass.new()
+    }
+}
+
+// DoSomething does something. When `someParam` is specified, good things happen. `anotherParam` controls other things.
+function<void> DoSomething(someParam int, anotherParam string) {
+    var sc = SomeClass.new()
+
+    /// [ids  ]
+    DoSomething
+}

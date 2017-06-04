@@ -272,3 +272,37 @@ type Symbol struct {
 	// If the symbol is a module, the module.
 	Module *typegraph.TGModule
 }
+
+// SignatureInformation represents information about the signature of a function/operator
+// and its parameters.
+type SignatureInformation struct {
+	// Name is the name of the referenced function/operator.
+	Name string
+
+	// If the function is a member, the member.
+	Member *typegraph.TGMember
+
+	// The human readable documentation on the function/operator, if any.
+	Documentation string
+
+	// Parameters represents the parameters of the signature.
+	Parameters []ParameterInformation
+
+	// If >= 0, the active parameter for this signature when lookup occurred.
+	ActiveParameterIndex int
+
+	// TypeReference is the type of the entity being invoked. May be missing, in which case it will be void.
+	TypeReference typegraph.TypeReference
+}
+
+// ParameterInformation represents information about a single parameter in a signature.
+type ParameterInformation struct {
+	// Name is the name of the parameter.
+	Name string
+
+	// TypeReference is the type of the parameter. May be missing, in which case it will be void.
+	TypeReference typegraph.TypeReference
+
+	// The human readable documentation on the parameter, if any.
+	Documentation string
+}
