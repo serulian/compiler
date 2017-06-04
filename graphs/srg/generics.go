@@ -5,6 +5,8 @@
 package srg
 
 import (
+	"bytes"
+
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/parser"
@@ -41,4 +43,29 @@ func (t SRGGeneric) HasConstraint() bool {
 func (t SRGGeneric) GetConstraint() (SRGTypeRef, bool) {
 	constraint, exists := t.GraphNode.StartQuery().Out(parser.NodeGenericSubtype).TryGetNode()
 	return SRGTypeRef{constraint, t.srg}, exists
+}
+
+// Documentation returns the documentation associated with this generic, if any.
+func (t SRGGeneric) Documentation() (SRGDocumentation, bool) {
+	return getParameterDocumentation(t.srg, t, parser.NodePredicateTypeMemberGeneric)
+}
+
+// Code returns a code-like summarization of the generic, for human consumption.
+func (t SRGGeneric) Code() (compilercommon.CodeSummary, bool) {
+	name, hasName := t.Name()
+	if !hasName {
+		return compilercommon.CodeSummary{}, false
+	}
+
+	var buffer bytes.Buffer
+	buffer.WriteString(name)
+
+	constraint, hasConstraint := t.GetConstraint()
+	if hasConstraint {
+		buffer.WriteString(" : ")
+		buffer.WriteString(constraint.String())
+	}
+
+	documentation, _ := t.Documentation()
+	return compilercommon.CodeSummary{documentation.String(), buffer.String(), true}, true
 }

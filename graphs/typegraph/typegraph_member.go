@@ -422,16 +422,8 @@ func (tn TGMember) SourceGraphId() string {
 }
 
 // Code returns a code-like summarization of the member, for human consumption.
-func (tn TGMember) Code() string {
+func (tn TGMember) Code() (compilercommon.CodeSummary, bool) {
 	var buffer bytes.Buffer
-
-	// Add documentation.
-	documentation, hasDocumentation := tn.Documentation()
-	if hasDocumentation {
-		buffer.WriteString("// ")
-		buffer.WriteString(documentation)
-		buffer.WriteString("\n")
-	}
 
 	forceParameters := false
 	_, isConstructor := tn.ConstructorType()
@@ -458,5 +450,6 @@ func (tn TGMember) Code() string {
 		buffer.WriteString(")")
 	}
 
-	return buffer.String()
+	documentation, _ := tn.Documentation()
+	return compilercommon.CodeSummary{documentation, buffer.String(), true}, true
 }

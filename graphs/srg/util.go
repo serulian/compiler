@@ -6,7 +6,6 @@ package srg
 
 import (
 	"bytes"
-	"strings"
 
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/parser"
@@ -38,36 +37,30 @@ func IdentifierPathString(node compilergraph.GraphNode) (string, bool) {
 	}
 }
 
-type documentable interface {
-	Documentation() (SRGDocumentation, bool)
+type named interface {
+	Name() (string, bool)
+	Node() compilergraph.GraphNode
 }
 
-// getSummarizedDocumentation returns the summarized documentation for the given documentable
-// instance, or empty string if none.
-func getSummarizedDocumentation(documentable documentable) string {
-	documentation, hasDocumentation := documentable.Documentation()
+// getParameterDocumentation returns the documentation associated with the given parameterized entity
+// (parameter or generic).
+func getParameterDocumentation(srg *SRG, named named, parentPredicate compilergraph.Predicate) (SRGDocumentation, bool) {
+	name, hasName := named.Name()
+	if !hasName {
+		return SRGDocumentation{}, false
+	}
+
+	parentNode, hasParentNode := named.Node().TryGetIncomingNode(parentPredicate)
+	if !hasParentNode {
+		return SRGDocumentation{}, false
+	}
+
+	documentation, hasDocumentation := srg.getDocumentationForNode(parentNode)
 	if !hasDocumentation {
-		return ""
+		return SRGDocumentation{}, false
 	}
 
-	value := documentation.String()
-	if len(value) == 0 {
-		return ""
-	}
-
-	sentences := strings.Split(value, ". ")
-	if len(sentences) < 1 {
-		return "// " + value
-	}
-
-	firstSentence := strings.TrimSpace(sentences[0])
-	if documentation.IsDocComment() {
-		if !strings.HasSuffix(firstSentence, ".") && !strings.HasSuffix(firstSentence, "!") {
-			firstSentence = firstSentence + "."
-		}
-	}
-
-	return "// " + firstSentence
+	return documentation.ForParameter(name)
 }
 
 type parameterable interface {
@@ -88,7 +81,12 @@ func writeCodeParameters(m parameterable, buffer *bytes.Buffer) {
 			buffer.WriteString(", ")
 		}
 
-		buffer.WriteString(parameter.Code())
+		cs, hasSummary := parameter.Code()
+		if hasSummary {
+			buffer.WriteString(cs.Code)
+		} else {
+			buffer.WriteString("?")
+		}
 	}
 
 	buffer.WriteString(")")
@@ -108,17 +106,11 @@ func writeCodeGenerics(m genericable, buffer *bytes.Buffer) {
 			buffer.WriteString(", ")
 		}
 
-		name, hasName := generic.Name()
-		if !hasName {
-			name = "?"
-		}
-
-		buffer.WriteString(name)
-
-		constraint, hasConstraint := generic.GetConstraint()
-		if hasConstraint {
-			buffer.WriteString(" : ")
-			buffer.WriteString(constraint.String())
+		cs, hasSummary := generic.Code()
+		if hasSummary {
+			buffer.WriteString(cs.Code)
+		} else {
+			buffer.WriteString("?")
 		}
 	}
 

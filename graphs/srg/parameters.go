@@ -52,11 +52,16 @@ func (p SRGParameter) AsNamedScope() SRGNamedScope {
 	return SRGNamedScope{p.GraphNode, p.srg}
 }
 
+// Documentation returns the documentation associated with this parameter, if any.
+func (p SRGParameter) Documentation() (SRGDocumentation, bool) {
+	return getParameterDocumentation(p.srg, p, parser.NodePredicateTypeMemberParameter)
+}
+
 // Code returns a code-like summarization of the parameter, for human consumption.
-func (p SRGParameter) Code() string {
+func (p SRGParameter) Code() (compilercommon.CodeSummary, bool) {
 	name, hasName := p.Name()
 	if !hasName {
-		return ""
+		return compilercommon.CodeSummary{}, false
 	}
 
 	var buffer bytes.Buffer
@@ -68,5 +73,6 @@ func (p SRGParameter) Code() string {
 		buffer.WriteString(declaredType.String())
 	}
 
-	return buffer.String()
+	documentation, _ := p.Documentation()
+	return compilercommon.CodeSummary{documentation.String(), buffer.String(), hasDeclaredType}, true
 }

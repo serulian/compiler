@@ -283,27 +283,30 @@ func (ns SRGNamedScope) SourceRange() (compilercommon.SourceRange, bool) {
 
 // Documentation returns the documentation comment found on the scoped node, if any.
 func (ns SRGNamedScope) Documentation() (SRGDocumentation, bool) {
+	comment, found := ns.srg.getDocumentationCommentForNode(ns.GraphNode)
+	if !found {
+		return SRGDocumentation{}, false
+	}
+
 	switch ns.Kind() {
 	case parser.NodeTypeParameter:
 		fallthrough
 
 	case parser.NodeTypeLambdaParameter:
-		// TODO: if/when we support parameter documentation, look it up
-		// on the parent function.
-		return SRGDocumentation{}, false
-
-	default:
-		comment, found := ns.srg.getDocumentationCommentForNode(ns.GraphNode)
-		if !found {
+		docInfo, hasDocInfo := comment.Documentation()
+		if !hasDocInfo {
 			return SRGDocumentation{}, false
 		}
 
+		return docInfo.ForParameter(ns.Name())
+
+	default:
 		return comment.Documentation()
 	}
 }
 
 // Code returns a code-like summarization of the referenced scope, for human consumption.
-func (ns SRGNamedScope) Code() string {
+func (ns SRGNamedScope) Code() (compilercommon.CodeSummary, bool) {
 	switch ns.ScopeKind() {
 	case NamedScopeType:
 		srgType := SRGType{ns.GraphNode, ns.srg}
@@ -322,15 +325,15 @@ func (ns SRGNamedScope) Code() string {
 		return srgParameter.Code()
 
 	case NamedScopeValue:
-		return ns.Name()
+		return compilercommon.CodeSummary{"", ns.Name(), false}, true
 
 	case NamedScopeVariable:
 		declaredType, hasDeclaredType := ns.DeclaredType()
 		if hasDeclaredType {
-			return fmt.Sprintf("var<%s> %s", declaredType.String(), ns.Name())
+			return compilercommon.CodeSummary{"", fmt.Sprintf("var<%s> %s", declaredType.String(), ns.Name()), true}, true
 		}
 
-		return "var " + ns.Name()
+		return compilercommon.CodeSummary{"", "var " + ns.Name(), false}, true
 
 	default:
 		panic("Unknown kind of named scope")

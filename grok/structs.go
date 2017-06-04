@@ -78,52 +78,103 @@ type RangeInformation struct {
 	NamedReference scopegraph.ReferencedName
 }
 
-// Code returns the code form of the range information.
-func (ri RangeInformation) Code() string {
+type TextKind string
+
+const (
+	SerulianCodeText  TextKind = "serulian"
+	DocumentationText          = "documentation"
+	NormalText                 = "normal"
+)
+
+// MarkedText is text marked with a kind.
+type MarkedText struct {
+	Value string
+	Kind  TextKind
+}
+
+// codeToMarkedText translates a CodeSummary into a set of MarkedText.
+func (ri RangeInformation) codeToMarkedText(cs compilercommon.CodeSummary) []MarkedText {
+	var marked = []MarkedText{}
+
+	if cs.Code != "" {
+		marked = append(marked, MarkedText{cs.Code, SerulianCodeText})
+	}
+
+	// Add the inferred type, if any and necessary.
+	if !cs.HasDeclaredType && !ri.TypeReference.IsVoid() {
+		marked = append(marked, MarkedText{ri.TypeReference.String(), SerulianCodeText})
+	}
+
+	trimmed := strings.TrimSpace(cs.Documentation)
+	if trimmed != "" {
+		marked = append(marked, MarkedText{trimmed, DocumentationText})
+	}
+
+	return marked
+}
+
+// HumanReadable returns the human readable information for the range information.
+func (ri RangeInformation) HumanReadable() []MarkedText {
 	switch ri.Kind {
 	case NotFound:
-		return ""
+		return []MarkedText{}
 
 	case Unknown:
-		return "(Unknown)"
+		return []MarkedText{}
 
 	case Keyword:
-		return ri.Keyword
-
-	case Literal:
-		return ri.LiteralValue
-
-	case LocalValue:
-		if ri.TypeReference.IsNormal() {
-			return ri.LocalName + "\n\n" + ri.TypeReference.ReferredType().Code()
+		return []MarkedText{
+			MarkedText{ri.Keyword, SerulianCodeText},
 		}
 
-		return ri.LocalName + "\n\n" + ri.TypeReference.String()
+	case Literal:
+		return []MarkedText{
+			MarkedText{ri.LiteralValue, SerulianCodeText},
+		}
+
+	case LocalValue:
+		lvNameText := []MarkedText{MarkedText{ri.LocalName, NormalText}}
+
+		if ri.TypeReference.IsNormal() {
+			cs, hasCS := ri.TypeReference.ReferredType().Code()
+			if hasCS {
+				return append(lvNameText, ri.codeToMarkedText(cs)...)
+			}
+
+			return lvNameText
+		}
+
+		return []MarkedText{
+			MarkedText{ri.LocalName, NormalText},
+			MarkedText{ri.TypeReference.String(), SerulianCodeText},
+		}
 
 	case PackageOrModule:
-		return "import " + ri.PackageOrModule
+		return []MarkedText{MarkedText{"import " + ri.PackageOrModule, SerulianCodeText}}
 
 	case UnresolvedTypeOrMember:
-		return "<" + ri.UnresolvedTypeOrMember + ">"
+		return []MarkedText{
+			MarkedText{ri.UnresolvedTypeOrMember, SerulianCodeText},
+			MarkedText{"Note: This type reference is unresolved and may refer to an invalid type", NormalText},
+		}
 
 	case TypeRef:
 		if ri.TypeReference.IsNormal() {
-			return ri.TypeReference.ReferredType().Code()
-		}
-
-		return ri.TypeReference.String()
-
-	case NamedReference:
-		code := ri.NamedReference.Code()
-
-		// TODO: have code return whether it includes the type?
-		if !strings.Contains(code, "<") && !strings.Contains(code, " ") {
-			// Missing type. Add the resolved type, if any.
-			if !ri.TypeReference.IsVoid() {
-				code = code + " => " + ri.TypeReference.String()
+			cs, hasCS := ri.TypeReference.ReferredType().Code()
+			if hasCS {
+				return ri.codeToMarkedText(cs)
 			}
 		}
-		return code
+
+		return []MarkedText{MarkedText{ri.TypeReference.String(), SerulianCodeText}}
+
+	case NamedReference:
+		cs, hasCS := ri.NamedReference.Code()
+		if hasCS {
+			return ri.codeToMarkedText(cs)
+		}
+
+		return []MarkedText{MarkedText{ri.NamedReference.Name(), SerulianCodeText}}
 
 	default:
 		panic("Unknown kind of range")

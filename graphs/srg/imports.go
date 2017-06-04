@@ -34,8 +34,8 @@ func (i SRGImport) Source() string {
 }
 
 // Code returns a code-like summarization of the import, for human consumption.
-func (i SRGImport) Code() string {
-	return "import " + i.Source()
+func (i SRGImport) Code() (compilercommon.CodeSummary, bool) {
+	return compilercommon.CodeSummary{"", "import " + i.Source(), true}, true
 }
 
 // SourceRange returns the source range for this import.
@@ -102,14 +102,14 @@ func (i SRGPackageImport) ResolvedTypeOrMember() (SRGTypeOrMember, bool) {
 }
 
 // Code returns a code-like summarization of the import, for human consumption.
-func (i SRGPackageImport) Code() string {
+func (i SRGPackageImport) Code() (compilercommon.CodeSummary, bool) {
 	importNode := i.GraphNode.GetIncomingNode(parser.NodeImportPredicatePackageRef)
 	importRef := SRGImport{importNode, i.srg}
 
 	subsource, hasSubsource := i.Subsource()
 	if hasSubsource {
-		return fmt.Sprintf("from %s import %s", subsource, importRef.Source())
+		return compilercommon.CodeSummary{"", fmt.Sprintf("from %s import %s", subsource, importRef.Source()), true}, true
 	}
 
-	return "import " + importRef.Source()
+	return compilercommon.CodeSummary{"", "import " + importRef.Source(), true}, true
 }

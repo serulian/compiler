@@ -447,16 +447,8 @@ func (tn TGTypeDecl) AliasedType() (TGTypeDecl, bool) {
 }
 
 // Code returns a code-like summarization of the type, for human consumption.
-func (tn TGTypeDecl) Code() string {
+func (tn TGTypeDecl) Code() (compilercommon.CodeSummary, bool) {
 	var buffer bytes.Buffer
-
-	// Add documentation.
-	documentation, hasDocumentation := tn.Documentation()
-	if hasDocumentation {
-		buffer.WriteString("// ")
-		buffer.WriteString(documentation)
-		buffer.WriteString("\n")
-	}
 
 	// Write the kind.
 	switch tn.TypeKind() {
@@ -517,7 +509,8 @@ func (tn TGTypeDecl) Code() string {
 		buffer.WriteString(aliasedType.DescriptiveName())
 	}
 
-	return buffer.String()
+	documentation, _ := tn.Documentation()
+	return compilercommon.CodeSummary{documentation, buffer.String(), true}, true
 }
 
 // TypeKind returns the kind of the type node.
