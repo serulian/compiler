@@ -9,8 +9,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/blang/semver"
-
+	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/parser"
 	"github.com/serulian/compiler/vcs"
 )
@@ -174,12 +173,6 @@ func (sf *sourceFormatter) emitModifiedImportSource(info importInfo) bool {
 			return false
 		}
 
-		currentVersion, err := semver.ParseTolerant(parsed.Tag())
-		if err != nil {
-			sf.importHandling.logInfo(info.node, "Import '%v' doesn't refer to a semantic version; skipped", info.source)
-			return false
-		}
-
 		// For updating, perform VCS checkout and append the latest applicable minor version of the
 		// import, as per semvar. If none, then we don't change the import.
 		inspectInfo, err := sf.getVCSInfo(info)
@@ -188,25 +181,10 @@ func (sf *sourceFormatter) emitModifiedImportSource(info importInfo) bool {
 		}
 
 		// Find the latest *minor* version, and update to it.
-		currentTag := ""
-		for _, tag := range inspectInfo.Tags {
-			// Skip empty tags.
-			if len(tag) == 0 {
-				continue
-			}
-
-			// Skip tags that don't parse, as well as pre-release versions
-			// (since they are, by definition, not considered stable).
-			parsed, err := semver.ParseTolerant(tag)
-			if err != nil || len(parsed.Pre) > 0 {
-				continue
-			}
-
-			// Find the latest stable version.
-			if parsed.GT(currentVersion) && parsed.Major == currentVersion.Major {
-				currentVersion = parsed
-				currentTag = tag
-			}
+		currentTag, err := compilerutil.SemanticUpdateVersion(parsed.Tag(), inspectInfo.Tags, compilerutil.UpdateVersionMinor)
+		if err != nil {
+			sf.importHandling.logInfo(info.node, "Import '%v' doesn't refer to a semantic version; skipped", info.source)
+			return false
 		}
 
 		if currentTag == "" {
@@ -226,31 +204,15 @@ func (sf *sourceFormatter) emitModifiedImportSource(info importInfo) bool {
 			return false
 		}
 
-		currentVersion, _ := semver.Parse("0.0.0")
-		currentTag := ""
-
-		for _, tag := range inspectInfo.Tags {
-			// Skip empty tags.
-			if len(tag) == 0 {
-				continue
-			}
-
-			// Skip tags that don't parse, as well as pre-release versions
-			// (since they are, by definition, not considered stable).
-			parsed, err := semver.ParseTolerant(tag)
-			if err != nil || len(parsed.Pre) > 0 {
-				continue
-			}
-
-			// Find the latest stable version.
-			if parsed.GT(currentVersion) {
-				currentVersion = parsed
-				currentTag = tag
-			}
+		// Find the latest *major* version, and update to it.
+		currentTag, err := compilerutil.SemanticUpdateVersion(parsed.Tag(), inspectInfo.Tags, compilerutil.UpdateVersionMajor)
+		if err != nil {
+			sf.importHandling.logInfo(info.node, "Import '%v' doesn't refer to a semantic version; skipped", info.source)
+			return false
 		}
 
 		if currentTag == "" {
-			sf.importHandling.logWarning(info.node, "No stable versioned tag found for '%v'", info.source)
+			sf.importHandling.logInfo(info.node, "No updated version found for '%v'", info.source)
 			return false
 		}
 
