@@ -306,3 +306,43 @@ type ParameterInformation struct {
 	// The human readable documentation on the parameter, if any.
 	Documentation string
 }
+
+// CodeContextOrAction represents context or an action to display inline with *specific* code. Typically provides
+// additional information about the code (such as the SHA of an unfrozen import) or an action that
+// can be performed by the developer (like freezing an import).
+type CodeContextOrAction struct {
+	// Range represents the range in the source to which the context is applied.
+	Range compilercommon.SourceRange
+
+	// Resolve is a function to be invoked by the tooling, to resolve the actual context or action.
+	Resolve func() (ContextOrAction, bool)
+}
+
+// Action represents a single action that can be performed against a sourcefile.
+type Action string
+
+const (
+	// NoAction indicates that there is no action associated with the context.
+	NoAction Action = "none"
+
+	// UnfreezeImport indicates that an import should be unfrozen.
+	UnfreezeImport = "unfreeze-import"
+
+	// FreezeImport indicates that an import should be frozen at a commit or tag.
+	FreezeImport = "freeze-import"
+)
+
+// ContextOrAction represents context or an action that is applied to code.
+type ContextOrAction struct {
+	// Range represents the range in the source to which the context/action is applied.
+	Range compilercommon.SourceRange
+
+	// Title is the title to display inline in the code.
+	Title string
+
+	// Action is the action that can be invoked for this context, if any.
+	Action Action
+
+	// ActionParams is a generic map of data to be sent when the action is invoked, if any.
+	ActionParams map[string]interface{}
+}
