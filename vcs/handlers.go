@@ -15,13 +15,13 @@ import (
 )
 
 // VCSKind identifies the supported kinds of VCS.
-type VCSKind int
+type VCSKind string
 
 const (
-	VCSKindUnknown VCSKind = iota // an unknown kind of VCS
-	VCSKindGit                    // Git
+	VCSKindUnknown VCSKind = "unknown" // an unknown kind of VCS
+	VCSKindGit             = "git"     // Git
 
-	VCSKindFakeGit // Fake git for testing only
+	VCSKindFakeGit = "__fake__git" // Fake git for testing only
 )
 
 // vcsCheckoutFn is a function for performing a full checkout.
