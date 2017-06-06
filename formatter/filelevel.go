@@ -167,14 +167,14 @@ func (sf *sourceFormatter) emitModifiedImportSource(info importInfo) bool {
 		return true
 
 	case importHandlingUpdate:
-		// Make sure the import refers to a tag that has a semvar.
+		// Make sure the import refers to a tag that has a semver.
 		if parsed.Tag() == "" {
 			sf.importHandling.logInfo(info.node, "Import '%v' doesn't refer to a version; skipped", info.source)
 			return false
 		}
 
 		// For updating, perform VCS checkout and append the latest applicable minor version of the
-		// import, as per semvar. If none, then we don't change the import.
+		// import, as per semver. If none, then we don't change the import.
 		inspectInfo, err := sf.getVCSInfo(info)
 		if err != nil {
 			return false
@@ -198,7 +198,7 @@ func (sf *sourceFormatter) emitModifiedImportSource(info importInfo) bool {
 
 	case importHandlingUpgrade:
 		// For upgrading, perform VCS checkout and append the latest stable version of the
-		// import, as per semvar. If none, then we don't change the import.
+		// import, as per semver. If none, then we don't change the import.
 		inspectInfo, err := sf.getVCSInfo(info)
 		if err != nil {
 			return false
@@ -218,6 +218,17 @@ func (sf *sourceFormatter) emitModifiedImportSource(info importInfo) bool {
 
 		sf.importHandling.logSuccess(info.node, "Upgrading '%v' to version '%v'", info.source, currentTag)
 		sf.append(parsed.WithTag(currentTag).String())
+		return true
+
+	case importHandlingCustomFreeze:
+		if sf.importHandling.customTagOrCommit.isTag {
+			sf.importHandling.logSuccess(info.node, "Freezing '%v' at tag '%v'", info.source, sf.importHandling.customTagOrCommit.commitOrTag)
+			sf.append(parsed.WithTag(sf.importHandling.customTagOrCommit.commitOrTag).String())
+		} else {
+			sf.importHandling.logSuccess(info.node, "Freezing '%v' at commit '%v'", info.source, sf.importHandling.customTagOrCommit.commitOrTag)
+			sf.append(parsed.WithCommit(sf.importHandling.customTagOrCommit.commitOrTag).String())
+		}
+
 		return true
 
 	case importHandlingFreeze:

@@ -28,7 +28,24 @@ const (
 	importHandlingUnfreeze
 	importHandlingUpdate
 	importHandlingUpgrade
+	importHandlingCustomFreeze
 )
+
+// CommitOrTag represents a commit SHA or a tag.
+type CommitOrTag struct {
+	commitOrTag string
+	isTag       bool
+}
+
+// Commit returns a CommitOrTag representing a commit SHA.
+func Commit(commitSha string) CommitOrTag {
+	return CommitOrTag{commitSha, false}
+}
+
+// Tag returns a CommitOrTag representing a tag.
+func Tag(tag string) CommitOrTag {
+	return CommitOrTag{tag, true}
+}
 
 // importHandlingInfo defines the information for handling (freezing or unfreezing)
 // VCS imports.
@@ -37,13 +54,14 @@ type importHandlingInfo struct {
 	importPatterns            []string
 	vcsDevelopmentDirectories []string
 	logProgress               bool
+	customTagOrCommit         CommitOrTag
 }
 
 // matchesImport returns true if the given VCS url matches one of the import patterns
 // given to the format command.
 func (ih importHandlingInfo) matchesImport(url string) bool {
-	for _, importUrlPattern := range ih.importPatterns {
-		if glob.Glob(importUrlPattern, url) {
+	for _, importURLPattern := range ih.importPatterns {
+		if glob.Glob(importURLPattern, url) {
 			return true
 		}
 	}
@@ -68,45 +86,59 @@ func (ih importHandlingInfo) logSuccess(node formatterNode, message string, args
 }
 
 func (ih importHandlingInfo) log(level compilerutil.ConsoleLogLevel, node formatterNode, message string, args ...interface{}) {
-	startRune, _ := strconv.Atoi(node.getProperty(parser.NodePredicateStartRune))
-	endRune, _ := strconv.Atoi(node.getProperty(parser.NodePredicateEndRune))
-	inputSource := compilercommon.InputSource(node.getProperty(parser.NodePredicateSource))
-	sourceRange := inputSource.RangeForRunePositions(startRune, endRune, compilercommon.LocalFilePositionMapper{})
-	compilerutil.LogToConsole(level, sourceRange, message, args...)
+	if ih.logProgress {
+		startRune, _ := strconv.Atoi(node.getProperty(parser.NodePredicateStartRune))
+		endRune, _ := strconv.Atoi(node.getProperty(parser.NodePredicateEndRune))
+		inputSource := compilercommon.InputSource(node.getProperty(parser.NodePredicateSource))
+		sourceRange := inputSource.RangeForRunePositions(startRune, endRune, compilercommon.LocalFilePositionMapper{})
+		compilerutil.LogToConsole(level, sourceRange, message, args...)
+	}
+}
+
+// FreezeAt formats the source files at the given path and freezes the specified VCS import pattern at the given
+// commit or tag.
+func FreezeAt(path string, importPattern string, commitOrTag CommitOrTag, vcsDevelopmentDirectories []string, debug bool) bool {
+	return formatFiles(path, importHandlingInfo{importHandlingCustomFreeze, []string{importPattern}, vcsDevelopmentDirectories, false, commitOrTag}, debug)
+}
+
+// UnfreezeAt formats the source files at the given path and unfreezes the specified
+// VCS import pattern.
+func UnfreezeAt(path string, importPattern string, vcsDevelopmentDirectories []string, debug bool) bool {
+	return formatFiles(path, importHandlingInfo{importHandlingUnfreeze, []string{importPattern}, vcsDevelopmentDirectories, false, CommitOrTag{}}, debug)
 }
 
 // Freeze formats the source files at the given path and freezes the specified
 // VCS import patterns.
 func Freeze(path string, importPatterns []string, vcsDevelopmentDirectories []string, debug bool) bool {
-	return formatFiles(path, importHandlingInfo{importHandlingFreeze, importPatterns, vcsDevelopmentDirectories, true}, debug)
+	return formatFiles(path, importHandlingInfo{importHandlingFreeze, importPatterns, vcsDevelopmentDirectories, true, CommitOrTag{}}, debug)
 }
 
 // Unfreeze formats the source files at the given path and unfreezes the specified
 // VCS import patterns.
 func Unfreeze(path string, importPatterns []string, vcsDevelopmentDirectories []string, debug bool) bool {
-	return formatFiles(path, importHandlingInfo{importHandlingUnfreeze, importPatterns, vcsDevelopmentDirectories, true}, debug)
+	return formatFiles(path, importHandlingInfo{importHandlingUnfreeze, importPatterns, vcsDevelopmentDirectories, true, CommitOrTag{}}, debug)
 }
 
 // Update formats the source files at the given path and updates the specified
 // VCS import patterns by moving forward their minor version, as per semvar.
 func Update(path string, importPatterns []string, vcsDevelopmentDirectories []string, debug bool) bool {
-	return formatFiles(path, importHandlingInfo{importHandlingUpdate, importPatterns, vcsDevelopmentDirectories, true}, debug)
+	return formatFiles(path, importHandlingInfo{importHandlingUpdate, importPatterns, vcsDevelopmentDirectories, true, CommitOrTag{}}, debug)
 }
 
 // Upgrade formats the source files at the given path and upgrades the specified
 // VCS import patterns by making them refer to the latest stable version, as per semvar.
 func Upgrade(path string, importPatterns []string, vcsDevelopmentDirectories []string, debug bool) bool {
-	return formatFiles(path, importHandlingInfo{importHandlingUpgrade, importPatterns, vcsDevelopmentDirectories, true}, debug)
+	return formatFiles(path, importHandlingInfo{importHandlingUpgrade, importPatterns, vcsDevelopmentDirectories, true, CommitOrTag{}}, debug)
 }
 
 // Format formats the source files at the given path.
 func Format(path string, debug bool) bool {
-	return formatFiles(path, importHandlingInfo{importHandlingNone, []string{}, []string{}, false}, debug)
+	return formatFiles(path, importHandlingInfo{importHandlingNone, []string{}, []string{}, false, CommitOrTag{}}, debug)
 }
 
 // FormatSource formats the given Serulian source code.
 func FormatSource(source string) (string, error) {
-	return formatSource(source, importHandlingInfo{importHandlingNone, []string{}, []string{}, false})
+	return formatSource(source, importHandlingInfo{importHandlingNone, []string{}, []string{}, false, CommitOrTag{}})
 }
 
 // formatFiles runs formatting of all matching source files found at the given source path.
