@@ -86,6 +86,9 @@ type SourceRange interface {
 	// End is the ending position (inclusive) of the source range. If the same as the Start,
 	// this range represents a single position.
 	End() SourcePosition
+
+	// ContainsPosition returns true if the given range contains the given position.
+	ContainsPosition(position SourcePosition) (bool, error)
 }
 
 // SourcePosition represents a single position in a source file.
@@ -120,6 +123,29 @@ func (sr sourceRange) Start() SourcePosition {
 
 func (sr sourceRange) End() SourcePosition {
 	return sr.end
+}
+
+func (sr sourceRange) ContainsPosition(position SourcePosition) (bool, error) {
+	if position.Source() != sr.source {
+		return false, nil
+	}
+
+	startRune, err := sr.start.RunePosition()
+	if err != nil {
+		return false, err
+	}
+
+	endRune, err := sr.end.RunePosition()
+	if err != nil {
+		return false, err
+	}
+
+	positionRune, err := position.RunePosition()
+	if err != nil {
+		return false, err
+	}
+
+	return positionRune >= startRune && positionRune <= endRune, nil
 }
 
 // runeIndexedPosition implements the SourcePosition interface over a rune position.
