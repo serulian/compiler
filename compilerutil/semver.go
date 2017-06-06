@@ -19,6 +19,29 @@ const (
 	UpdateVersionMajor = "major"
 )
 
+// LatestSemanticVersion returns the latest non-patch semantic version found in the list of available
+// versions, if any.
+func LatestSemanticVersion(availableVersions []string) (string, bool) {
+	latestVersionString := ""
+	for _, possibleVersion := range availableVersions {
+		// Skip empty version strings.
+		if len(possibleVersion) == 0 {
+			continue
+		}
+
+		// Skip possibleVersions that don't parse, as well as pre-release versions
+		// (since they are, by definition, not considered stable).
+		parsed, err := semver.ParseTolerant(possibleVersion)
+		if err != nil || len(parsed.Pre) > 0 {
+			continue
+		}
+
+		latestVersionString = possibleVersion
+	}
+
+	return latestVersionString, len(latestVersionString) > 0
+}
+
 // SemanticUpdateVersion finds the semver in the available versions list that is newer than the current
 // version.
 func SemanticUpdateVersion(currentVersionString string, availableVersions []string, option UpdateVersionOption) (string, error) {
