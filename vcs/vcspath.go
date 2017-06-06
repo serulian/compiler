@@ -62,6 +62,11 @@ func (pp vcsPackagePath) Tag() string {
 	return pp.tag
 }
 
+// BranchOrCommit returns the branch or commit of the VCS package.
+func (pp vcsPackagePath) BranchOrCommit() string {
+	return pp.branchOrCommit
+}
+
 // WithCommit returns the VCS package path with the given commit.
 func (pp vcsPackagePath) WithCommit(commitSha string) vcsPackagePath {
 	return vcsPackagePath{

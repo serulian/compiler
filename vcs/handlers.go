@@ -15,13 +15,13 @@ import (
 )
 
 // VCSKind identifies the supported kinds of VCS.
-type VCSKind int
+type VCSKind string
 
 const (
-	VCSKindUnknown VCSKind = iota // an unknown kind of VCS
-	VCSKindGit                    // Git
+	VCSKindUnknown VCSKind = "unknown" // an unknown kind of VCS
+	VCSKindGit             = "git"     // Git
 
-	VCSKindFakeGit // Fake git for testing only
+	VCSKindFakeGit = "__fake__git" // Fake git for testing only
 )
 
 // vcsCheckoutFn is a function for performing a full checkout.
@@ -156,12 +156,28 @@ var vcsById = map[string]vcsHandler{
 		},
 
 		listTags: func(checkoutDir string) ([]string, error) {
-			err, output, errStr := runCommand(checkoutDir, "git", "tag")
+			err, output, errStr := runCommand(checkoutDir, "git", "ls-remote", "--tags", "--refs", "--q")
 			if err != nil {
 				return []string{}, fmt.Errorf("Could not list tags: %v", errStr)
 			}
 
-			return strings.Split(output, "\n"), nil
+			lines := strings.Split(output, "\n")
+			tags := make([]string, 0, len(lines))
+			for _, line := range lines {
+				pieces := strings.Split(line, "\t")
+				if len(pieces) != 2 {
+					continue
+				}
+
+				ref := pieces[1]
+				if !strings.HasPrefix(ref, "refs/tags/") {
+					continue
+				}
+
+				tags = append(tags, ref[len("refs/tags/"):])
+			}
+
+			return tags, nil
 		},
 	},
 

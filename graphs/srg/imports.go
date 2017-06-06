@@ -33,6 +33,11 @@ func (i SRGImport) Source() string {
 	return i.GraphNode.Get(parser.NodeImportPredicateSource)
 }
 
+// ParsedSource returns the source for this import, parsed.
+func (i SRGImport) ParsedSource() (string, parser.ParsedImportType, error) {
+	return parser.ParseImportValue(i.Source())
+}
+
 // Code returns a code-like summarization of the import, for human consumption.
 func (i SRGImport) Code() (compilercommon.CodeSummary, bool) {
 	return compilercommon.CodeSummary{"", "import " + i.Source(), true}, true

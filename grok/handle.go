@@ -8,6 +8,8 @@ import (
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/graphs/srg"
+
+	cmap "github.com/streamrail/concurrent-map"
 )
 
 // Handle defines a handle to the Grok toolkit. Once given, a handle can be used
@@ -19,6 +21,13 @@ type Handle struct {
 
 	// structureFinder helps lookup structure in the SRG.
 	structureFinder *srg.SourceStructureFinder
+
+	// groker is the parent groker.
+	groker *Groker
+
+	// importInspectCache is a cache containing the import inspection information, indexed
+	// by import source.
+	importInspectCache cmap.ConcurrentMap
 }
 
 // IsCompilable returns true if the graph referred to by Grok is fully valid, containing

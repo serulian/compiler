@@ -5,8 +5,6 @@
 // Some code based on the Golang VCS portion of the cmd package:
 // https://golang.org/src/cmd/go/vcs.go
 
-//go:generate stringer -type=VCSKind
-
 // vcs package defines helpers functions and interfaces for working with Version Control Systems
 // such as git, including discovery of VCS information based on the Golang VCS discovery protocol.
 //
@@ -116,6 +114,7 @@ func PerformVCSCheckout(vcsPath string, pkgCacheRootPath string, cacheOption VCS
 
 // InspectInfo holds all the data returned from a call to PerformVCSCheckoutAndInspect.
 type InspectInfo struct {
+	Engine    string
 	CommitSHA string
 	Tags      []string
 }
@@ -127,8 +126,8 @@ type InspectInfo struct {
 //
 // vcsDevelopmentDirectories specifies optional directories to check for branchless and tagless copies
 // of the repository first. If found, the copy will be used in lieu of a normal checkout.
-func PerformVCSCheckoutAndInspect(vcsPath string, pkgCacheRootPath string, vcsDevelopmentDirectories ...string) (InspectInfo, error, string) {
-	directory, err, warning := PerformVCSCheckout(vcsPath, pkgCacheRootPath, VCSFollowNormalCacheRules, vcsDevelopmentDirectories...)
+func PerformVCSCheckoutAndInspect(vcsPath string, pkgCacheRootPath string, cacheOption VCSCacheOption, vcsDevelopmentDirectories ...string) (InspectInfo, error, string) {
+	directory, err, warning := PerformVCSCheckout(vcsPath, pkgCacheRootPath, cacheOption, vcsDevelopmentDirectories...)
 	if err != nil {
 		return InspectInfo{}, err, warning
 	}
@@ -144,7 +143,7 @@ func PerformVCSCheckoutAndInspect(vcsPath string, pkgCacheRootPath string, vcsDe
 		return InspectInfo{}, err, warning
 	}
 
-	return InspectInfo{sha, tags}, nil, warning
+	return InspectInfo{string(handler.kind), sha, tags}, nil, warning
 }
 
 // checkCacheAndPull conducts the cache check and necessary pulls.

@@ -64,6 +64,7 @@ func (sf *sourceFormatter) getVCSInfo(info importInfo) (vcs.InspectInfo, error) 
 	sf.importHandling.logInfo(info.node, "Performing checkout and inspection of '%v'", parsed.URL())
 	inspectInfo, err, _ := vcs.PerformVCSCheckoutAndInspect(
 		info.source, packageloader.SerulianPackageDirectory,
+		vcs.VCSFollowNormalCacheRules,
 		sf.importHandling.vcsDevelopmentDirectories...)
 
 	if err != nil {

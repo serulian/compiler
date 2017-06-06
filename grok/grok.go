@@ -9,6 +9,8 @@ package grok
 import (
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/packageloader"
+
+	cmap "github.com/streamrail/concurrent-map"
 )
 
 // Groker defines a toolkit for providing IDE tooling for Serulian projects.
@@ -84,8 +86,10 @@ func (g *Groker) GetHandleWithOption(freshnessOption HandleFreshnessOption) (Han
 	}
 
 	newHandle := Handle{
-		scopeResult:     result,
-		structureFinder: result.Graph.SourceGraph().NewSourceStructureFinder(),
+		scopeResult:        result,
+		structureFinder:    result.Graph.SourceGraph().NewSourceStructureFinder(),
+		groker:             g,
+		importInspectCache: cmap.New(),
 	}
 
 	g.currentHandle = &newHandle
