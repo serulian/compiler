@@ -110,14 +110,14 @@ func (gh Handle) GetSignature(activationString string, sourcePosition compilerco
 				parameterInfo[index] = ParameterInformation{
 					Name:          parameterName,
 					TypeReference: parameter.DeclaredType(),
-					Documentation: parameterDocumentation,
+					Documentation: trimDocumentation(parameterDocumentation),
 				}
 			}
 
 			return SignatureInformation{
 				TypeReference:        functionType,
 				Name:                 name,
-				Documentation:        documentation,
+				Documentation:        trimDocumentation(documentation),
 				ActiveParameterIndex: signatureIndex,
 				Member:               &member,
 				Parameters:           parameterInfo,

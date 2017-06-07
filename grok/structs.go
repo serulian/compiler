@@ -5,8 +5,6 @@
 package grok
 
 import (
-	"strings"
-
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/graphs/typegraph"
@@ -105,7 +103,7 @@ func (ri RangeInformation) codeToMarkedText(cs compilercommon.CodeSummary) []Mar
 		marked = append(marked, MarkedText{ri.TypeReference.String(), SerulianCodeText})
 	}
 
-	trimmed := strings.TrimSpace(cs.Documentation)
+	trimmed := trimDocumentation(cs.Documentation)
 	if trimmed != "" {
 		marked = append(marked, MarkedText{trimmed, DocumentationText})
 	}

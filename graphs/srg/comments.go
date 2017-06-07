@@ -195,7 +195,7 @@ type SRGDocumentation struct {
 
 // String returns the human-readable documentation string.
 func (d SRGDocumentation) String() string {
-	return strings.Replace(strings.Replace(d.commentValue, "\n", " ", -1), "  ", " ", -1)
+	return d.commentValue
 }
 
 // IsDocComment returns true if the documentation was found in a doc-comment style
