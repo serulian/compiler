@@ -140,7 +140,9 @@ func (gh Handle) addAccessCompletions(node compilergraph.GraphNode, activationSt
 
 	for _, member := range lookupType.ReferredType().Members() {
 		if member.IsStatic() == isStatic && member.IsAccessibleTo(source) {
-			builder.addMember(member, lookupType)
+			if !member.IsOperator() {
+				builder.addMember(member, lookupType)
+			}
 		}
 	}
 }

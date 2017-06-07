@@ -138,6 +138,15 @@ var grokCompletionTests = []grokCompletionTest{
 		},
 	},
 
+	grokCompletionTest{"ops",
+		[]grokCompletionSubTest{
+			// Context completions.
+			grokCompletionSubTest{"r", "sc.", []expectedCompletion{
+				expectedCompletion{MemberCompletion, "SomeFunction", "SomeFunction", "", "function<void>"},
+			}},
+		},
+	},
+
 	grokCompletionTest{"imports",
 		[]grokCompletionSubTest{
 			// Type completions.

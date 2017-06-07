@@ -1,0 +1,16 @@
+class SomeClass {
+    operator Plus(left SomeClass, right SomeClass) {
+        return left
+    }
+
+    operator<int> Index(someIndex int) {
+        return someIndex
+    }
+
+    function<void> SomeFunction() {}
+}
+
+function<int> DoSomething(sc SomeClass) {
+    /// [r  ]
+    return 42
+}
