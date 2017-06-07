@@ -44,22 +44,22 @@ var grokRangeTests = []grokRangeTest{
 		grokNamedRange{"nl", Literal, "12345678", "12345678"},
 		grokNamedRange{"nl2", Literal, "12345", "12345"},
 
-		grokNamedRange{"fbbdef", NamedReference, "FooBarBaz", "// /   [fbbdef ]\nvar<int> FooBarBaz"},
+		grokNamedRange{"fbbdef", NamedReference, "FooBarBaz", "// /      [fbbdef ]\nvar<int> FooBarBaz"},
 
 		grokNamedRange{"sp", NamedReference, "someParam", "someParam int"},
 		grokNamedRange{"i", TypeRef, "Integer", "type Integer: Number"},
-		grokNamedRange{"scref", TypeRef, "SomeClass", "// /  [sc   ]\nclass SomeClass"},
-		grokNamedRange{"cst", TypeRef, "SomeClass", "// /  [sc   ]\nclass SomeClass"},
+		grokNamedRange{"scref", TypeRef, "SomeClass", "// /   [sc     ]\nclass SomeClass"},
+		grokNamedRange{"cst", TypeRef, "SomeClass", "// /   [sc     ]\nclass SomeClass"},
 
 		grokNamedRange{"sl3", Literal, "'hello'", "'hello'"},
 		grokNamedRange{"str", NamedReference, "someString", "var someString\nString"},
 		grokNamedRange{"str2", NamedReference, "someString", "var someString\nString"},
-		grokNamedRange{"fbb", NamedReference, "FooBarBaz", "// /   [fbbdef ]\nvar<int> FooBarBaz"},
+		grokNamedRange{"fbb", NamedReference, "FooBarBaz", "// /      [fbbdef ]\nvar<int> FooBarBaz"},
 	}},
 
 	grokRangeTest{"rangekeyword", true, []grokNamedRange{
 		grokNamedRange{"si", TypeRef, "SomeInterface", "interface SomeInterface"},
-		grokNamedRange{"sa", NamedReference, "SomeAgent", "// /  [si     ] [sa   ]\nagent<SomeInterface> SomeAgent"},
+		grokNamedRange{"sa", NamedReference, "SomeAgent", "// /   [si         ]  [sa     ]\nagent<SomeInterface> SomeAgent"},
 
 		grokNamedRange{"th", LocalValue, "this", "this\nclass SomeClass"},
 		grokNamedRange{"pri", LocalValue, "principal", "principal\ninterface SomeInterface"},
@@ -79,7 +79,7 @@ var grokRangeTests = []grokRangeTest{
 		grokNamedRange{"s1", TypeRef, "String", "type String: String"},
 		grokNamedRange{"sc1", TypeRef, "SomeClass", "class SomeClass"},
 
-		grokNamedRange{"c", NamedReference, "children", "// / [m] [s1 ] [sc1  ]  [c   ]  [n] [s2 ] [sc2  ] [e ]\nvar<map<string, SomeClass>> children"},
+		grokNamedRange{"c", NamedReference, "children", "// / [m] [s1  ]  [sc1    ]   [c     ]   [n] [s2  ]  [sc2    ]  [e  ]\nvar<map<string, SomeClass>> children"},
 
 		grokNamedRange{"n", NamedReference, "Map", "class Map"},
 		grokNamedRange{"s2", TypeRef, "String", "type String: String"},

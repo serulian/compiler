@@ -5,6 +5,8 @@
 package grok
 
 import (
+	"strings"
+
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/graphs/typegraph"
 )
@@ -39,4 +41,11 @@ func sourceRangesForTypeRef(typeref typegraph.TypeReference) []compilercommon.So
 	}
 
 	return sourceRangesOf(typeref.ReferredType())
+}
+
+// trimDocumentation trims the given documentation string, removing excess whitespace and any documentation following
+// an empty line.
+func trimDocumentation(documentation string) string {
+	parts := strings.Split(documentation, "\n\n")
+	return strings.TrimSpace(parts[0])
 }
