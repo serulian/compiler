@@ -9,8 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/serulian/compiler/packageloader"
 )
 
 // RECURSIVE_PATTERN defines the pattern for recursively searching for files.
@@ -22,7 +20,7 @@ type PathHandler func(filePath string, info os.FileInfo) (bool, error)
 
 // WalkSourcePath walks the given source path, invoking the given handler for each file
 // found.
-func WalkSourcePath(path string, handler PathHandler) bool {
+func WalkSourcePath(path string, handler PathHandler, skipDirectories ...string) bool {
 	originalPath := path
 	isRecursive := strings.HasSuffix(path, RECURSIVE_PATTERN)
 	if isRecursive {
@@ -37,8 +35,10 @@ func WalkSourcePath(path string, handler PathHandler) bool {
 				return filepath.SkipDir
 			}
 
-			if info.Name() == packageloader.SerulianPackageDirectory {
-				return filepath.SkipDir
+			for _, skipDirectory := range skipDirectories {
+				if info.Name() == skipDirectory {
+					return filepath.SkipDir
+				}
 			}
 
 			return nil

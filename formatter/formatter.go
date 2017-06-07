@@ -15,6 +15,7 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilerutil"
+	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/parser"
 
 	glob "github.com/ryanuber/go-glob"
@@ -153,7 +154,7 @@ func formatFiles(path string, importHandling importHandlingInfo, debug bool) boo
 		}
 
 		return true, parseAndFormatSourceFile(currentPath, info, importHandling)
-	})
+	}, packageloader.SerulianPackageDirectory)
 }
 
 // parseAndFormatSourceFile parses the source file at the given path (with associated file info),

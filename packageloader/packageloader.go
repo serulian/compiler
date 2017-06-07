@@ -13,6 +13,7 @@ import (
 	"sync"
 
 	"github.com/serulian/compiler/compilercommon"
+	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/vcs"
 
 	cmap "github.com/streamrail/concurrent-map"
@@ -72,7 +73,7 @@ type PackageLoader struct {
 	pathsToLoad          chan pathInformation  // The paths to load
 	pathKindsEncountered cmap.ConcurrentMap    // The path+kinds processed by the loader goroutine
 	vcsPathsLoaded       cmap.ConcurrentMap    // The VCS paths that have been loaded, mapping to their checkout dir
-	vcsLockMap           lockMap               // LockMap for ensuring single loads of all VCS paths.
+	vcsLockMap           compilerutil.LockMap  // LockMap for ensuring single loads of all VCS paths.
 	packageMap           *mutablePackageMap    // The package map.
 	sourceTracker        *mutableSourceTracker // The source tracker.
 
@@ -164,7 +165,7 @@ func NewPackageLoader(config Config) *PackageLoader {
 		sourceTracker: newMutableSourceTracker(config.PathLoader),
 
 		vcsPathsLoaded: cmap.New(),
-		vcsLockMap:     createLockMap(),
+		vcsLockMap:     compilerutil.CreateLockMap(),
 
 		finished: make(chan bool, 2),
 	}
@@ -433,7 +434,7 @@ func (p *PackageLoader) loadAndParsePath(currentPath pathInformation) {
 // loadVCSPackage loads the package found at the given VCS path.
 func (p *PackageLoader) loadVCSPackage(packagePath pathInformation) {
 	// Lock on the package path to ensure no other checkouts occur for this path.
-	pathLock := p.vcsLockMap.getLock(packagePath.path)
+	pathLock := p.vcsLockMap.GetLock(packagePath.path)
 	pathLock.Lock()
 	defer pathLock.Unlock()
 

@@ -17,6 +17,7 @@ import (
 	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/generator/es5"
 	"github.com/serulian/compiler/graphs/scopegraph"
+	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/parser"
 
 	"github.com/fatih/color"
@@ -77,7 +78,7 @@ func runTestsViaRunner(runner TestRunner, path string) bool {
 		} else {
 			return true, fmt.Errorf("Failure in test of file %s", currentPath)
 		}
-	})
+	}, packageloader.SerulianPackageDirectory)
 }
 
 // buildAndRunTests builds the source found at the given path and then runs its tests via the runner.
