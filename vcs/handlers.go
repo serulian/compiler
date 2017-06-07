@@ -12,7 +12,13 @@ import (
 	"os/exec"
 	"path"
 	"strings"
+
+	"github.com/serulian/compiler/compilerutil"
 )
+
+// modificationLockMap is a map for locking checkouts or updates of specific paths, to prevent multiple concurrent calls
+// from being made.
+var modificationLockMap = compilerutil.CreateLockMap()
 
 // VCSKind identifies the supported kinds of VCS.
 type VCSKind string
@@ -75,6 +81,10 @@ var vcsById = map[string]vcsHandler{
 		kind: VCSKindGit,
 
 		checkout: func(vcsPath vcsPackagePath, discovery VCSUrlInformation, checkoutDir string) (string, error) {
+			lock := modificationLockMap.GetLock(checkoutDir)
+			lock.Lock()
+			defer lock.Unlock()
+
 			// Make the new directory.
 			log.Printf("Making GIT package path: %s", checkoutDir)
 			err := os.MkdirAll(checkoutDir, 0744)
@@ -134,6 +144,10 @@ var vcsById = map[string]vcsHandler{
 		},
 
 		update: func(checkoutDir string) error {
+			lock := modificationLockMap.GetLock(checkoutDir)
+			lock.Lock()
+			defer lock.Unlock()
+
 			if err, _, errStr := runCommand(checkoutDir, "git", "pull"); err != nil {
 				return fmt.Errorf("Error updating git package %s: %s", checkoutDir, errStr)
 			}
