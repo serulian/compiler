@@ -118,7 +118,7 @@ func (gh Handle) symbolForType(typedecl typegraph.TGTypeDecl, query string) Symb
 }
 
 func (gh Handle) symbolForModule(module typegraph.TGModule, query string) Symbol {
-	sourceRange := compilercommon.InputSource(module.Path()).RangeForRunePosition(0, nil)
+	sourceRange := compilercommon.InputSource(module.Path()).RangeForRunePosition(0, gh.scopeResult.SourceTracker)
 	return Symbol{
 		Name:         module.Name(),
 		Kind:         ModuleSymbol,
