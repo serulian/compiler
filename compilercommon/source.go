@@ -164,6 +164,12 @@ func (ris runeIndexedPosition) RunePosition() (int, error) {
 }
 
 func (ris runeIndexedPosition) LineAndColumn() (int, int, error) {
+	if ris.runePosition == 0 {
+		return 0, 0, nil
+	}
+	if ris.mapper == nil {
+		return -1, -1, fmt.Errorf("nil mapper")
+	}
 	return ris.mapper.RunePositionToLineAndCol(ris.runePosition, ris.source, SourceMapTracked)
 }
 
@@ -196,6 +202,12 @@ func (lcip lcIndexedPosition) String() string {
 }
 
 func (lcip lcIndexedPosition) RunePosition() (int, error) {
+	if lcip.lcPosition.LineNumber == 0 && lcip.lcPosition.ColumnPosition == 0 {
+		return 0, nil
+	}
+	if lcip.mapper == nil {
+		return -1, fmt.Errorf("nil mapper")
+	}
 	return lcip.mapper.LineAndColToRunePosition(lcip.lcPosition.LineNumber, lcip.lcPosition.ColumnPosition, lcip.source, SourceMapTracked)
 }
 
@@ -204,5 +216,8 @@ func (lcip lcIndexedPosition) LineAndColumn() (int, int, error) {
 }
 
 func (lcip lcIndexedPosition) LineText() (string, error) {
+	if lcip.mapper == nil {
+		return "", fmt.Errorf("nil mapper")
+	}
 	return lcip.mapper.TextForLine(lcip.lcPosition.LineNumber, lcip.source, SourceMapTracked)
 }
