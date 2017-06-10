@@ -56,7 +56,7 @@ $module('basic', function () {
     };
     $instance.GetMainValue = function () {
       var $this = this;
-      return $t.fastbox($this.$principal.GetValue().$wrapped + 10, $g.____testlib.basictypes.Boolean);
+      return $t.fastbox($this.$principal.GetValue().$wrapped + 10, $g.____testlib.basictypes.Integer);
     };
     this.$typesig = function () {
       if (this.$cachedtypesig) {

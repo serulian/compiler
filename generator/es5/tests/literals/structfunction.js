@@ -5,7 +5,7 @@ $module('structfunction', function () {
       return $t.fastbox(0, $g.____testlib.basictypes.Integer);
     }).$wrapped + $t.syncnullcompare(theMap.$index($t.fastbox("Bar", $g.____testlib.basictypes.String)), function () {
       return $t.fastbox(0, $g.____testlib.basictypes.Integer);
-    }).$wrapped, $g.____testlib.basictypes.Boolean);
+    }).$wrapped, $g.____testlib.basictypes.Integer);
   };
   $static.TEST = function () {
     var result;

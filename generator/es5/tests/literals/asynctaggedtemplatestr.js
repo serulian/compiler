@@ -11,7 +11,7 @@ $module('asynctaggedtemplatestr', function () {
         switch ($current) {
           case 0:
             $promise.translate($g.asynctaggedtemplatestr.DoSomethingAsync()).then(function ($result0) {
-              $result = $t.fastbox(($t.cast(values.$index($t.fastbox(0, $g.____testlib.basictypes.Integer)), $g.____testlib.basictypes.Integer, false).$wrapped + values.Length().$wrapped) + $result0.$wrapped, $g.____testlib.basictypes.Boolean);
+              $result = $t.fastbox(($t.cast(values.$index($t.fastbox(0, $g.____testlib.basictypes.Integer)), $g.____testlib.basictypes.Integer, false).$wrapped + values.Length().$wrapped) + $result0.$wrapped, $g.____testlib.basictypes.Integer);
               $current = 1;
               $continue($resolve, $reject);
               return;

@@ -104,7 +104,7 @@ $module('resource', function () {
             break;
 
           case 4:
-            counter = $t.fastbox(counter.$wrapped + i.$wrapped, $g.____testlib.basictypes.Boolean);
+            counter = $t.fastbox(counter.$wrapped + i.$wrapped, $g.____testlib.basictypes.Integer);
             $current = 2;
             $continue($resolve, $reject);
             return;

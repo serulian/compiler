@@ -41,7 +41,7 @@ $module('basic', function () {
         switch ($current) {
           case 0:
             s = $g.____testlib.basictypes.MapStream($g.____testlib.basictypes.Integer, $g.____testlib.basictypes.Integer)($g.basic.SomeGenerator(), function (s) {
-              return $t.fastbox(s.$wrapped + 1, $g.____testlib.basictypes.Boolean);
+              return $t.fastbox(s.$wrapped + 1, $g.____testlib.basictypes.Integer);
             });
             counter = $t.fastbox(0, $g.____testlib.basictypes.Integer);
             $current = 1;
@@ -81,7 +81,7 @@ $module('basic', function () {
             break;
 
           case 4:
-            counter = $t.fastbox(counter.$wrapped + entry.$wrapped, $g.____testlib.basictypes.Boolean);
+            counter = $t.fastbox(counter.$wrapped + entry.$wrapped, $g.____testlib.basictypes.Integer);
             $current = 2;
             $continue($resolve, $reject);
             return;
