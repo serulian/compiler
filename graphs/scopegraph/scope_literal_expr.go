@@ -590,9 +590,14 @@ func (sb *scopeBuilder) scopePrincipalLiteralExpression(node compilergraph.Graph
 		return newScope().Invalid().GetScope()
 	}
 
+	principalType, hasPrincipalType := tgType.PrincipalType()
+	if !hasPrincipalType {
+		principalType = sb.sg.tdg.AnyTypeReference()
+	}
+
 	return newScope().
 		Valid().
-		Resolving(tgType.PrincipalType()).
+		Resolving(principalType).
 		GetScope()
 }
 

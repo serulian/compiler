@@ -112,7 +112,15 @@ func (g *TypeGraph) validatePrincipals() bool {
 				continue
 			}
 
-			principalTypeRef := agentTypeRef.ReferredType().PrincipalType()
+			principalTypeRef, hasPrincipalType := agentTypeRef.ReferredType().PrincipalType()
+			if !hasPrincipalType {
+				status = false
+				g.decorateWithError(
+					modifier.Modify(typeDecl.GraphNode),
+					"Type '%s' is an agent type but is missing a defined principal type", typeDecl.Name())
+				continue
+			}
+
 			if serr := typeDecl.GetTypeReference().CheckSubTypeOf(principalTypeRef); serr != nil {
 				status = false
 				g.decorateWithError(
