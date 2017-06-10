@@ -42,11 +42,11 @@ var parameterTests = []docParameterTest{
 	docParameterTest{"some comment", "some", ""},
 	docParameterTest{"This method does something with `someParam`.",
 		"someParam",
-		"This method does something with **someParam**"},
+		"This method does something with `someParam`"},
 
 	docParameterTest{"This method does something with `someParam`. If `someParam` is specified, things happen",
 		"someParam",
-		"If **someParam** is specified, things happen"},
+		"If `someParam` is specified, things happen"},
 }
 
 func TestComments(t *testing.T) {
