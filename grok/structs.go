@@ -76,6 +76,28 @@ type RangeInformation struct {
 	NamedReference scopegraph.ReferencedName
 }
 
+// Name returns the name of entity found in this range, if any.
+func (ri RangeInformation) Name() (string, bool) {
+	switch ri.Kind {
+
+	case LocalValue:
+		return ri.LocalName, true
+
+	case TypeRef:
+		if ri.TypeReference.IsNormal() {
+			return ri.TypeReference.ReferredType().Name(), true
+		}
+
+		return "", false
+
+	case NamedReference:
+		return ri.NamedReference.Name(), true
+
+	default:
+		return "", false
+	}
+}
+
 type TextKind string
 
 const (
@@ -104,6 +126,11 @@ func (ri RangeInformation) codeToMarkedText(cs compilercommon.CodeSummary) []Mar
 	}
 
 	trimmed := trimDocumentation(cs.Documentation)
+	name, hasName := ri.Name()
+	if hasName {
+		trimmed = highlightParameter(trimmed, name)
+	}
+
 	if trimmed != "" {
 		marked = append(marked, MarkedText{trimmed, DocumentationText})
 	}

@@ -157,7 +157,7 @@ func (cb *completionBuilder) addScopeOrImport(scopeOrImport srg.SRGContextScopeN
 		Kind:          cb.completionKindForNamedScope(namedScope),
 		Title:         namedScope.Name(),
 		Code:          scopeOrImport.LocalName(),
-		Documentation: trimDocumentation(docString),
+		Documentation: highlightParameter(trimDocumentation(docString), namedScope.Name()),
 		TypeReference: typeref,
 		SourceRanges:  sourceRangesOf(namedScope),
 	})

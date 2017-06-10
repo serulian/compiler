@@ -5,6 +5,7 @@
 package grok
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/serulian/compiler/compilercommon"
@@ -48,4 +49,16 @@ func sourceRangesForTypeRef(typeref typegraph.TypeReference) []compilercommon.So
 func trimDocumentation(documentation string) string {
 	parts := strings.Split(documentation, "\n\n")
 	return strings.TrimSpace(parts[0])
+}
+
+// highlightParameter highlights the given parameter name found in the given documentation, by replacing its ticked
+// form (`example`) with a bolded form (***example***).
+func highlightParameter(documentation string, paramName string) string {
+	if paramName != "" {
+		tickedParam := fmt.Sprintf("`%s`", paramName)
+		boldParam := fmt.Sprintf("***%s***", paramName)
+		return strings.Replace(documentation, tickedParam, boldParam, -1)
+	}
+
+	return documentation
 }
