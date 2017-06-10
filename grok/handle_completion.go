@@ -76,7 +76,12 @@ func (gh Handle) GetCompletions(activationString string, sourcePosition compiler
 	default:
 		// Context autocomplete.
 		gh.addContextCompletions(node, builder, func(scope srg.SRGContextScopeName) bool {
-			return strings.HasPrefix(strings.ToLower(scope.LocalName()), strings.ToLower(activationString))
+			localName, hasLocalName := scope.LocalName()
+			if !hasLocalName {
+				return false
+			}
+
+			return strings.HasPrefix(strings.ToLower(localName), strings.ToLower(activationString))
 		})
 	}
 
@@ -185,13 +190,18 @@ func (gh Handle) addSmlCompletions(node compilergraph.GraphNode, activationStrin
 
 	// Otherwise, if requested, lookup all valid SML functions and types within the context.
 	gh.addContextCompletions(node, builder, func(scope srg.SRGContextScopeName) bool {
+		localName, hasLocalName := scope.LocalName()
+		if !hasLocalName {
+			return false
+		}
+
 		switch scope.NamedScope().Kind() {
 		case parser.NodeTypeClass:
 			// TODO: Check for a Declare constructor?
-			return strings.HasPrefix(scope.LocalName(), activationString[1:])
+			return strings.HasPrefix(localName, activationString[1:])
 
 		case parser.NodeTypeFunction:
-			return strings.HasPrefix(scope.LocalName(), activationString[1:])
+			return strings.HasPrefix(localName, activationString[1:])
 		}
 
 		return false

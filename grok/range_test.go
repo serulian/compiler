@@ -219,7 +219,8 @@ func TestGrokRange(t *testing.T) {
 					}
 
 				case NamedReference:
-					if !assert.Equal(t, ri.NamedReference.Name(), expectedRange.metadata, "Range metadata mismatch on range %s", commentedRange.name) {
+					name, _ := ri.NamedReference.Name()
+					if !assert.Equal(t, name, expectedRange.metadata, "Range metadata mismatch on range %s", commentedRange.name) {
 						continue
 					}
 				}

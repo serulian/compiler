@@ -153,11 +153,21 @@ func (cb *completionBuilder) addScopeOrImport(scopeOrImport srg.SRGContextScopeN
 		}
 	}
 
+	name, hasName := namedScope.Name()
+	if !hasName {
+		return cb
+	}
+
+	localName, hasLocalName := scopeOrImport.LocalName()
+	if !hasLocalName {
+		return cb
+	}
+
 	return cb.addCompletion(Completion{
 		Kind:          cb.completionKindForNamedScope(namedScope),
-		Title:         namedScope.Name(),
-		Code:          scopeOrImport.LocalName(),
-		Documentation: highlightParameter(trimDocumentation(docString), namedScope.Name()),
+		Title:         name,
+		Code:          localName,
+		Documentation: highlightParameter(trimDocumentation(docString), name),
 		TypeReference: typeref,
 		SourceRanges:  sourceRangesOf(namedScope),
 	})
