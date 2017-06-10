@@ -7,6 +7,7 @@ package packageloader
 import (
 	"io/ioutil"
 	"os"
+	"path"
 )
 
 // PathLoader defines the interface for loading source files (modules) and directories (packages) in
@@ -26,6 +27,9 @@ type PathLoader interface {
 
 	// LoadDirectory returns the files and sub-directories in the directory at the given path.
 	LoadDirectory(path string) ([]DirectoryEntry, error)
+
+	// VCSPackageDirectory returns the directory into which VCS packages will be loaded.
+	VCSPackageDirectory(entrypoint Entrypoint) string
 }
 
 // DirectoryEntry represents a single entry under a directory.
@@ -35,6 +39,11 @@ type DirectoryEntry struct {
 }
 
 type LocalFilePathLoader struct{}
+
+func (lfpl LocalFilePathLoader) VCSPackageDirectory(entrypoint Entrypoint) string {
+	rootDirectory := entrypoint.EntrypointDirectoryPath(lfpl)
+	return path.Join(rootDirectory, SerulianPackageDirectory)
+}
 
 func (lfpl LocalFilePathLoader) LoadSourceFile(path string) ([]byte, error) {
 	return ioutil.ReadFile(path)

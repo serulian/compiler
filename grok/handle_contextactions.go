@@ -7,7 +7,6 @@ package grok
 import (
 	"fmt"
 	"log"
-	"path"
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilerutil"
@@ -244,7 +243,7 @@ func (gh Handle) getInspectInfo(importSource string, source compilercommon.Input
 	}
 
 	// If not found, retrieve it via the VCS engine.
-	dirPath := path.Join(path.Dir(string(source)), packageloader.SerulianPackageDirectory)
+	dirPath := gh.groker.pathLoader.VCSPackageDirectory(gh.groker.entrypoint)
 	inspectInfo, err, _ := vcs.PerformVCSCheckoutAndInspect(importSource, dirPath, vcs.VCSAlwaysUseCache)
 	if err != nil {
 		return vcs.InspectInfo{}, nil

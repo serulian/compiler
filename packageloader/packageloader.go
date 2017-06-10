@@ -359,8 +359,7 @@ func (p *PackageLoader) packageInfoForPackageDirectory(packagePath string, sourc
 
 // getVCSDirectoryForPath returns the directory on disk where the given VCS path will be placed, if any.
 func (p *PackageLoader) getVCSDirectoryForPath(vcsPath string) (string, error) {
-	rootDirectory := p.entrypoint.EntrypointDirectoryPath(p.pathLoader)
-	pkgDirectory := path.Join(rootDirectory, SerulianPackageDirectory)
+	pkgDirectory := p.pathLoader.VCSPackageDirectory(p.entrypoint)
 	return vcs.GetVCSCheckoutDirectory(vcsPath, pkgDirectory, p.vcsDevelopmentDirectories...)
 }
 
@@ -448,15 +447,13 @@ func (p *PackageLoader) loadVCSPackage(packagePath pathInformation) {
 		}
 	}
 
-	rootDirectory := p.entrypoint.EntrypointDirectoryPath(p.pathLoader)
-	pkgDirectory := path.Join(rootDirectory, SerulianPackageDirectory)
-
 	// Perform the checkout of the VCS package.
 	var cacheOption = vcs.VCSFollowNormalCacheRules
 	if p.skipVCSRefresh {
 		cacheOption = vcs.VCSAlwaysUseCache
 	}
 
+	pkgDirectory := p.pathLoader.VCSPackageDirectory(p.entrypoint)
 	checkoutDirectory, err, warning := vcs.PerformVCSCheckout(packagePath.path, pkgDirectory, cacheOption, p.vcsDevelopmentDirectories...)
 	if err != nil {
 		p.vcsPathsLoaded.Set(packagePath.path, "")
