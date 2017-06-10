@@ -84,10 +84,17 @@ func (gh Handle) LookupSourcePosition(sourcePosition compilercommon.SourcePositi
 	// Import.
 	case parser.NodeTypeImport:
 		importInfo := sourceGraph.GetImport(node)
+		source, hasSource := importInfo.Source()
+		if !hasSource {
+			return RangeInformation{
+				Kind: NotFound,
+			}, nil
+		}
+
 		return RangeInformation{
 			Kind:            PackageOrModule,
 			SourceRanges:    sourceRangesOf(importInfo),
-			PackageOrModule: importInfo.Source(),
+			PackageOrModule: source,
 		}, nil
 
 	case parser.NodeTypeImportPackage:
