@@ -45,3 +45,9 @@ func (gh Handle) Errors() []compilercommon.SourceError {
 func (gh Handle) Warnings() []compilercommon.SourceWarning {
 	return gh.scopeResult.Warnings
 }
+
+// ContainsSource returns true if the graph referenced by this handle contains the given input source.
+func (gh Handle) ContainsSource(source compilercommon.InputSource) bool {
+	_, exists := gh.scopeResult.Graph.SourceGraph().FindModuleBySource(source)
+	return exists
+}
