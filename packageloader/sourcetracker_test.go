@@ -54,6 +54,10 @@ func (tpl *anotherTestPathLoader) LoadDirectory(path string) ([]DirectoryEntry, 
 	return []DirectoryEntry{}, fmt.Errorf("Invalid path: %s", path)
 }
 
+func (tpl *anotherTestPathLoader) VCSPackageDirectory(entrypoint Entrypoint) string {
+	return ""
+}
+
 func (tpl *anotherTestPathLoader) GetRevisionID(path string) (int64, error) {
 	file, exists := tpl.files[path]
 	if exists {

@@ -287,6 +287,10 @@ func assertFileImported(t *testing.T, tt *testTracker, result LoadResult, filePa
 
 type TestPathLoader struct{}
 
+func (tpl TestPathLoader) VCSPackageDirectory(entrypoint Entrypoint) string {
+	return ""
+}
+
 func (tpl TestPathLoader) LoadSourceFile(path string) ([]byte, error) {
 	if path == "startingfile.json" {
 		return []byte(`{
