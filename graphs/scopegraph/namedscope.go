@@ -129,12 +129,21 @@ func (nsi *namedScopeInfo) Title() string {
 }
 
 // Name returns a human-readable name for the named scope.
-func (nsi *namedScopeInfo) Name() string {
+func (nsi *namedScopeInfo) Name() (string, bool) {
 	if nsi.typeInfo != nil {
-		return nsi.typeInfo.Name()
+		return nsi.typeInfo.Name(), true
 	}
 
 	return nsi.srgInfo.Name()
+}
+
+// NonEmptyName always returns a name for the named scope.
+func (nsi *namedScopeInfo) NonEmptyName() string {
+	name, hasName := nsi.Name()
+	if !hasName {
+		return "?"
+	}
+	return name
 }
 
 // ResolveStaticMember attempts to resolve a member (child) with the given name under this named scope, which
@@ -154,7 +163,8 @@ func (nsi *namedScopeInfo) ResolveStaticMember(name string, module compilercommo
 	} else {
 		namedScopeOrImport, found := nsi.srgInfo.ResolveNameUnderScope(name)
 		if !found {
-			return namedScopeInfo{}, fmt.Errorf("Could not find static name '%v' under %v %v", name, nsi.srgInfo.Title(), nsi.srgInfo.Name())
+			srgName, _ := nsi.srgInfo.Name()
+			return namedScopeInfo{}, fmt.Errorf("Could not find static name '%v' under %v %v", name, nsi.srgInfo.Title(), srgName)
 		}
 
 		return nsi.sb.processSRGNameOrInfo(namedScopeOrImport)

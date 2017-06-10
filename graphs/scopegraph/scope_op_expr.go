@@ -87,7 +87,7 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 	} else if childScope.GetKind() == proto.ScopeKind_GENERIC {
 		namedScopedRef, found := sb.getNamedScopeForScope(childScope)
 		if found {
-			sb.decorateWithError(node, "Cannot invoke function call on unclarified generic %s %s.", namedScopedRef.Title(), namedScopedRef.Name())
+			sb.decorateWithError(node, "Cannot invoke function call on unclarified generic %s %s.", namedScopedRef.Title(), namedScopedRef.NonEmptyName())
 		} else {
 			sb.decorateWithError(node, "Cannot invoke function call on unclarified generic scope.")
 		}
@@ -121,7 +121,7 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 			return ""
 		}
 
-		return fmt.Sprintf("on %v %v ", namedNode.Title(), namedNode.Name())
+		return fmt.Sprintf("on %v %v ", namedNode.Title(), namedNode.NonEmptyName())
 	}
 
 	// Ensure the child expression has type function.

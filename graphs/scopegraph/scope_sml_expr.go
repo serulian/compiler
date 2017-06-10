@@ -249,7 +249,10 @@ func (sb *scopeBuilder) scopeSmlDecorator(node compilergraph.GraphNode, declared
 	}
 
 	namedScope, _ := sb.getNamedScopeForScope(decoratorScope)
-	decoratorName := namedScope.Name()
+	decoratorName, hasDecoratorName := namedScope.Name()
+	if !hasDecoratorName {
+		return declaredType, false
+	}
 
 	// Register that we make use of the decorator function.
 	context.staticDependencyCollector.registerNamedDependency(namedScope)
