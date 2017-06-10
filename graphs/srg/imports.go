@@ -29,18 +29,28 @@ type SRGImport struct {
 }
 
 // Source returns the source of the import.
-func (i SRGImport) Source() string {
-	return i.GraphNode.Get(parser.NodeImportPredicateSource)
+func (i SRGImport) Source() (string, bool) {
+	return i.GraphNode.TryGet(parser.NodeImportPredicateSource)
 }
 
 // ParsedSource returns the source for this import, parsed.
 func (i SRGImport) ParsedSource() (string, parser.ParsedImportType, error) {
-	return parser.ParseImportValue(i.Source())
+	source, hasSource := i.Source()
+	if !hasSource {
+		return "", parser.ParsedImportTypeLocal, fmt.Errorf("Missing source")
+	}
+
+	return parser.ParseImportValue(source)
 }
 
 // Code returns a code-like summarization of the import, for human consumption.
 func (i SRGImport) Code() (compilercommon.CodeSummary, bool) {
-	return compilercommon.CodeSummary{"", "import " + i.Source(), true}, true
+	source, hasSource := i.Source()
+	if !hasSource {
+		return compilercommon.CodeSummary{}, false
+	}
+
+	return compilercommon.CodeSummary{"", "import " + source, true}, true
 }
 
 // SourceRange returns the source range for this import.
@@ -111,10 +121,15 @@ func (i SRGPackageImport) Code() (compilercommon.CodeSummary, bool) {
 	importNode := i.GraphNode.GetIncomingNode(parser.NodeImportPredicatePackageRef)
 	importRef := SRGImport{importNode, i.srg}
 
-	subsource, hasSubsource := i.Subsource()
-	if hasSubsource {
-		return compilercommon.CodeSummary{"", fmt.Sprintf("from %s import %s", subsource, importRef.Source()), true}, true
+	source, hasSource := importRef.Source()
+	if !hasSource {
+		return compilercommon.CodeSummary{}, false
 	}
 
-	return compilercommon.CodeSummary{"", "import " + importRef.Source(), true}, true
+	subsource, hasSubsource := i.Subsource()
+	if hasSubsource {
+		return compilercommon.CodeSummary{"", fmt.Sprintf("from %s import %s", subsource, source), true}, true
+	}
+
+	return compilercommon.CodeSummary{"", "import " + source, true}, true
 }

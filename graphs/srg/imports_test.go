@@ -55,7 +55,8 @@ func TestImports(t *testing.T) {
 		module, _ := testSRG.FindModuleBySource("tests/complexresolve/entrypoint.seru")
 		importsBySource := map[string]SRGImport{}
 		for _, moduleImport := range module.GetImports() {
-			importsBySource[moduleImport.Source()] = moduleImport
+			source, _ := moduleImport.Source()
+			importsBySource[source] = moduleImport
 		}
 
 		for _, expected := range test.imports {
