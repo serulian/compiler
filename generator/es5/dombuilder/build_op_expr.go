@@ -233,7 +233,7 @@ func (db *domBuilder) buildUnaryOperatorExpression(node compilergraph.GraphNode,
 	return callExpr
 }
 
-func (db *domBuilder) buildOptimizedBinaryOperatorExpression(node compilergraph.GraphNode, parentType typegraph.TypeReference, leftExpr codedom.Expression, rightExpr codedom.Expression) (codedom.Expression, bool) {
+func (db *domBuilder) buildOptimizedBinaryOperatorExpression(node compilergraph.GraphNode, operator typegraph.TGMember, parentType typegraph.TypeReference, leftExpr codedom.Expression, rightExpr codedom.Expression) (codedom.Expression, bool) {
 	// Verify this is a supported native operator.
 	opString, hasOp := operatorMap[node.Kind()]
 	if !hasOp {
@@ -262,6 +262,8 @@ func (db *domBuilder) buildOptimizedBinaryOperatorExpression(node compilergraph.
 	}
 
 	// Handle the various kinds of operators.
+	resultType := db.scopegraph.TypeGraph().BoolTypeReference()
+
 	switch node.Kind() {
 	case parser.NodeComparisonEqualsExpression:
 		fallthrough
@@ -281,17 +283,19 @@ func (db *domBuilder) buildOptimizedBinaryOperatorExpression(node compilergraph.
 		if !isNumeric {
 			return nil, false
 		}
-	}
 
-	boolType := db.scopegraph.TypeGraph().BoolTypeReference()
+	default:
+		returnType, _ := operator.ReturnType()
+		resultType = returnType.TransformUnder(parentType)
+	}
 
 	unwrappedLeftExpr := codedom.NominalUnwrapping(leftExpr, parentType, node)
 	unwrappedRightExpr := codedom.NominalUnwrapping(rightExpr, parentType, node)
 
 	compareExpr := codedom.BinaryOperation(unwrappedLeftExpr, opString, unwrappedRightExpr, node)
 	return codedom.NominalRefWrapping(compareExpr,
-		boolType.NominalDataType(),
-		boolType,
+		resultType.NominalDataType(),
+		resultType,
 		node), true
 }
 
@@ -310,7 +314,7 @@ func (db *domBuilder) buildBinaryOperatorExpression(node compilergraph.GraphNode
 	leftScope, _ := db.scopegraph.GetScope(node.GetNode(parser.NodeBinaryExpressionLeftExpr))
 	parentType := leftScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
 
-	optimized, wasOptimized := db.buildOptimizedBinaryOperatorExpression(node, parentType, leftExpr, rightExpr)
+	optimized, wasOptimized := db.buildOptimizedBinaryOperatorExpression(node, operator, parentType, leftExpr, rightExpr)
 	if wasOptimized {
 		return optimized
 	}

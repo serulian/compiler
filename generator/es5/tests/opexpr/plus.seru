@@ -1,0 +1,7 @@
+function<int> SomeFunction() {
+    return 1 + 2
+}
+
+function<bool> TEST() {
+    return SomeFunction() == 3
+}

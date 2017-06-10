@@ -866,7 +866,7 @@ this.Serulian = function ($global) {
 
             case 1:
               t = /*#Tuple<int, bool>.Build(this.current, true)#*/$g.____testlib.basictypes.Tuple(/*#int, bool>.Build(this.current, true)#*/$g.____testlib.basictypes.Integer, /*#bool>.Build(this.current, true)#*/$g.____testlib.basictypes.Boolean).Build(/*#this.current, true)#*/$this.current, /*#true)#*/$t.fastbox(/*#true)#*/true, /*#true)#*/$g.____testlib.basictypes.Boolean));
-/*#this.current = this.current + 1#*/              $this.current = /*#this.current + 1#*/$t.fastbox(/*#this.current + 1#*/$this.current.$wrapped + /*#this.current + 1#*/1, /*#this.current + 1#*/$g.____testlib.basictypes.Boolean);
+/*#this.current = this.current + 1#*/              $this.current = /*#this.current + 1#*/$t.fastbox(/*#this.current + 1#*/$this.current.$wrapped + /*#this.current + 1#*/1, /*#this.current + 1#*/$g.____testlib.basictypes.Integer);
               return t;
 
             case 2:
@@ -948,7 +948,7 @@ this.Serulian = function ($global) {
               break;
 
             case 1:
-/*#start = start + this.Count#*/              start = /*#start + this.Count#*/$t.fastbox(/*#start + this.Count#*/start.$wrapped + /*#this.Count#*/$this.Count().$wrapped, /*#start + this.Count#*/$g.____testlib.basictypes.Boolean);
+/*#start = start + this.Count#*/              start = /*#start + this.Count#*/$t.fastbox(/*#start + this.Count#*/start.$wrapped + /*#this.Count#*/$this.Count().$wrapped, /*#start + this.Count#*/$g.____testlib.basictypes.Integer);
               $current = 2;
               continue syncloop;
 
@@ -963,7 +963,7 @@ this.Serulian = function ($global) {
               break;
 
             case 3:
-/*#end = end + this.Count#*/              end = /*#end + this.Count#*/$t.fastbox(/*#end + this.Count#*/end.$wrapped + /*#this.Count#*/$this.Count().$wrapped, /*#end + this.Count#*/$g.____testlib.basictypes.Boolean);
+/*#end = end + this.Count#*/              end = /*#end + this.Count#*/$t.fastbox(/*#end + this.Count#*/end.$wrapped + /*#this.Count#*/$this.Count().$wrapped, /*#end + this.Count#*/$g.____testlib.basictypes.Integer);
               $current = 4;
               continue syncloop;
 
@@ -1029,7 +1029,7 @@ this.Serulian = function ($global) {
               continue syncloop;
 
             case 1:
-              $temp1 = /*#0..(len - 1) {#*/$g.____testlib.basictypes.Integer.$range(/*#0..(len - 1) {#*/$t.fastbox(/*#0..(len - 1) {#*/0, /*#0..(len - 1) {#*/$g.____testlib.basictypes.Integer), /*#len - 1) {#*/$t.fastbox(/*#len - 1) {#*/len.$wrapped - /*#len - 1) {#*/1, /*#len - 1) {#*/$g.____testlib.basictypes.Boolean));
+              $temp1 = /*#0..(len - 1) {#*/$g.____testlib.basictypes.Integer.$range(/*#0..(len - 1) {#*/$t.fastbox(/*#0..(len - 1) {#*/0, /*#0..(len - 1) {#*/$g.____testlib.basictypes.Integer), /*#len - 1) {#*/$t.fastbox(/*#len - 1) {#*/len.$wrapped - /*#len - 1) {#*/1, /*#len - 1) {#*/$g.____testlib.basictypes.Integer));
               $current = 2;
               continue syncloop;
 
@@ -1378,7 +1378,7 @@ this.Serulian = function ($global) {
               break;
 
             case 1:
-/*#start = start + this.Length#*/              start = /*#start + this.Length#*/$t.fastbox(/*#start + this.Length#*/start.$wrapped + /*#this.Length#*/$this.Length().$wrapped, /*#start + this.Length#*/$g.____testlib.basictypes.Boolean);
+/*#start = start + this.Length#*/              start = /*#start + this.Length#*/$t.fastbox(/*#start + this.Length#*/start.$wrapped + /*#this.Length#*/$this.Length().$wrapped, /*#start + this.Length#*/$g.____testlib.basictypes.Integer);
               $current = 2;
               continue syncloop;
 
@@ -1393,7 +1393,7 @@ this.Serulian = function ($global) {
               break;
 
             case 3:
-/*#end = end + this.Length#*/              end = /*#end + this.Length#*/$t.fastbox(/*#end + this.Length#*/end.$wrapped + /*#this.Length#*/$this.Length().$wrapped, /*#end + this.Length#*/$g.____testlib.basictypes.Boolean);
+/*#end = end + this.Length#*/              end = /*#end + this.Length#*/$t.fastbox(/*#end + this.Length#*/end.$wrapped + /*#this.Length#*/$this.Length().$wrapped, /*#end + this.Length#*/$g.____testlib.basictypes.Integer);
               $current = 4;
               continue syncloop;
 
@@ -1641,7 +1641,7 @@ this.Serulian = function ($global) {
             continue syncloop;
 
           case 1:
-            $temp1 = /*#0 .. (pieces.Length - 1) {#*/$g.____testlib.basictypes.Integer.$range(/*#0 .. (pieces.Length - 1) {#*/$t.fastbox(/*#0 .. (pieces.Length - 1) {#*/0, /*#0 .. (pieces.Length - 1) {#*/$g.____testlib.basictypes.Integer), /*#pieces.Length - 1) {#*/$t.fastbox(/*#pieces.Length - 1) {#*/pieces.Length().$wrapped - /*#pieces.Length - 1) {#*/1, /*#pieces.Length - 1) {#*/$g.____testlib.basictypes.Boolean));
+            $temp1 = /*#0 .. (pieces.Length - 1) {#*/$g.____testlib.basictypes.Integer.$range(/*#0 .. (pieces.Length - 1) {#*/$t.fastbox(/*#0 .. (pieces.Length - 1) {#*/0, /*#0 .. (pieces.Length - 1) {#*/$g.____testlib.basictypes.Integer), /*#pieces.Length - 1) {#*/$t.fastbox(/*#pieces.Length - 1) {#*/pieces.Length().$wrapped - /*#pieces.Length - 1) {#*/1, /*#pieces.Length - 1) {#*/$g.____testlib.basictypes.Integer));
             $current = 2;
             continue syncloop;
 

@@ -49,7 +49,7 @@ $module('streamchild', function () {
             break;
 
           case 4:
-            counter = $t.fastbox(counter.$wrapped + value.$wrapped, $g.____testlib.basictypes.Boolean);
+            counter = $t.fastbox(counter.$wrapped + value.$wrapped, $g.____testlib.basictypes.Integer);
             $current = 2;
             $continue($resolve, $reject);
             return;
@@ -102,7 +102,7 @@ $module('streamchild', function () {
         switch ($current) {
           case 0:
             $promise.maybe($g.streamchild.SimpleFunction($g.____testlib.basictypes.Mapping($g.____testlib.basictypes.String).Empty(), $g.____testlib.basictypes.MapStream($g.____testlib.basictypes.Integer, $g.____testlib.basictypes.Integer)($g.streamchild.GetValues(), function (value) {
-              return $t.fastbox(value.$wrapped + 1, $g.____testlib.basictypes.Boolean);
+              return $t.fastbox(value.$wrapped + 1, $g.____testlib.basictypes.Integer);
             }))).then(function ($result0) {
               $result = $result0;
               $current = 1;

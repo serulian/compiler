@@ -127,7 +127,7 @@ $module('nested', function () {
             break;
 
           case 4:
-            v = $t.fastbox(v.$wrapped + value.$wrapped, $g.____testlib.basictypes.Boolean);
+            v = $t.fastbox(v.$wrapped + value.$wrapped, $g.____testlib.basictypes.Integer);
             $current = 2;
             $continue($resolve, $reject);
             return;

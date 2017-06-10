@@ -1,7 +1,7 @@
 $module('taggedtemplatestr', function () {
   var $static = this;
   $static.myFunction = function (pieces, values) {
-    return $t.fastbox($t.cast(values.$index($t.fastbox(0, $g.____testlib.basictypes.Integer)), $g.____testlib.basictypes.Integer, false).$wrapped + values.Length().$wrapped, $g.____testlib.basictypes.Boolean);
+    return $t.fastbox($t.cast(values.$index($t.fastbox(0, $g.____testlib.basictypes.Integer)), $g.____testlib.basictypes.Integer, false).$wrapped + values.Length().$wrapped, $g.____testlib.basictypes.Integer);
   };
   $static.TEST = function () {
     var a;

@@ -49,7 +49,7 @@ $module('asyncchildren', function () {
             break;
 
           case 4:
-            counter = $t.fastbox(counter.$wrapped + value.$wrapped, $g.____testlib.basictypes.Boolean);
+            counter = $t.fastbox(counter.$wrapped + value.$wrapped, $g.____testlib.basictypes.Integer);
             $current = 2;
             $continue($resolve, $reject);
             return;
@@ -67,7 +67,7 @@ $module('asyncchildren', function () {
     return $promise.new($continue);
   });
   $static.DoSomethingAsync = $t.workerwrap('a6e86a18', function (i) {
-    return $t.fastbox(i.$wrapped + 1, $g.____testlib.basictypes.Boolean);
+    return $t.fastbox(i.$wrapped + 1, $g.____testlib.basictypes.Integer);
   });
   $static.GetSomething = $t.markpromising(function (i) {
     var $result;

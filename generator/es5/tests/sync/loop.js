@@ -1,7 +1,7 @@
 $module('loop', function () {
   var $static = this;
   $static.DoSomething = function (i) {
-    return $t.fastbox(i.$wrapped + 1, $g.____testlib.basictypes.Boolean);
+    return $t.fastbox(i.$wrapped + 1, $g.____testlib.basictypes.Integer);
   };
   $static.TEST = function () {
     var counter;
@@ -37,7 +37,7 @@ $module('loop', function () {
         case 4:
           counter = $t.fastbox(counter.$wrapped + $g.loop.DoSomething($t.syncnullcompare(result.First, function () {
             return $t.fastbox(0, $g.____testlib.basictypes.Integer);
-          })).$wrapped, $g.____testlib.basictypes.Boolean);
+          })).$wrapped, $g.____testlib.basictypes.Integer);
           $current = 1;
           continue syncloop;
 
