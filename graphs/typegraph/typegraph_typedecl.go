@@ -333,9 +333,14 @@ func (tn TGTypeDecl) IsAccessibleTo(modulePath compilercommon.InputSource) bool 
 	return srg.InSamePackage(typeModulePath, modulePath)
 }
 
-// PrincipalType returns the type of the principal for this agent. Will panic for non-agents.
-func (tn TGTypeDecl) PrincipalType() TypeReference {
-	return tn.GraphNode.GetTagged(NodePredicatePrincipalType, tn.tdg.AnyTypeReference()).(TypeReference)
+// PrincipalType returns the type of the principal for this agent.
+func (tn TGTypeDecl) PrincipalType() (TypeReference, bool) {
+	principalTypeRef, hasPrincipalType := tn.GraphNode.TryGetTagged(NodePredicatePrincipalType, tn.tdg.AnyTypeReference())
+	if !hasPrincipalType {
+		return tn.tdg.VoidTypeReference(), false
+	}
+
+	return principalTypeRef.(TypeReference), true
 }
 
 // Parent returns themodule containing this type.
@@ -492,8 +497,14 @@ func (tn TGTypeDecl) Code() (compilercommon.CodeSummary, bool) {
 		buffer.WriteString(tn.Name())
 
 	case AgentType:
+		pts := "?"
+		principalType, hasPrincipalType := tn.PrincipalType()
+		if hasPrincipalType {
+			pts = principalType.String()
+		}
+
 		buffer.WriteString("agent<")
-		buffer.WriteString(tn.PrincipalType().String())
+		buffer.WriteString(pts)
 		buffer.WriteString("> ")
 		buffer.WriteString(tn.Name())
 
