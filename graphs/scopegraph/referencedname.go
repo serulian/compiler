@@ -122,9 +122,19 @@ func (rn ReferencedName) Type() (typegraph.TGTypeDecl, bool) {
 }
 
 // The name of the referenced node.
-func (rn ReferencedName) Name() string {
+func (rn ReferencedName) NameOrPanic() string {
+	name, hasName := rn.Name()
+	if !hasName {
+		panic("Missing name")
+	}
+
+	return name
+}
+
+// The name of the referenced node.
+func (rn ReferencedName) Name() (string, bool) {
 	if rn.typeInfo != nil {
-		return rn.typeInfo.Name()
+		return rn.typeInfo.Name(), true
 	}
 
 	return rn.srgInfo.Name()

@@ -49,13 +49,13 @@ func (sb *scopeBuilder) scopeAssignStatement(node compilergraph.GraphNode, conte
 
 	// Check that the item is assignable.
 	if !namedScopedRef.IsAssignable() {
-		sb.decorateWithError(node, "Cannot assign to non-assignable %v %v", namedScopedRef.Title(), namedScopedRef.Name())
+		sb.decorateWithError(node, "Cannot assign to non-assignable %v %v", namedScopedRef.Title(), namedScopedRef.NonEmptyName())
 		return newScope().Invalid().GetScope()
 	}
 
 	// Ensure that we can assign the expr value to the named scope.
 	if serr := exprScope.ResolvedTypeRef(sb.sg.tdg).CheckSubTypeOf(nameScope.AssignableTypeRef(sb.sg.tdg)); serr != nil {
-		sb.decorateWithError(node, "Cannot assign value to %v %v: %v", namedScopedRef.Title(), namedScopedRef.Name(), serr)
+		sb.decorateWithError(node, "Cannot assign value to %v %v: %v", namedScopedRef.Title(), namedScopedRef.NonEmptyName(), serr)
 		return newScope().Invalid().GetScope()
 	}
 
@@ -895,7 +895,7 @@ func (sb *scopeBuilder) scopeArrowStatement(node compilergraph.GraphNode, contex
 		}
 
 		if !destinationName.IsAssignable() {
-			sb.decorateWithError(node, "Destination of arrow statement must be assignable. %v %v is not assignable", destinationName.Title(), destinationName.Name())
+			sb.decorateWithError(node, "Destination of arrow statement must be assignable. %v %v is not assignable", destinationName.Title(), destinationName.NonEmptyName())
 			return newScope().Invalid().GetScope()
 		}
 
@@ -923,7 +923,7 @@ func (sb *scopeBuilder) scopeArrowStatement(node compilergraph.GraphNode, contex
 			}
 
 			if !rejectionName.IsAssignable() {
-				sb.decorateWithError(node, "Rejection of arrow statement must be assignable. %v %v is not assignable", rejectionName.Title(), rejectionName.Name())
+				sb.decorateWithError(node, "Rejection of arrow statement must be assignable. %v %v is not assignable", rejectionName.Title(), rejectionName.NonEmptyName())
 				return newScope().Invalid().GetScope()
 			}
 

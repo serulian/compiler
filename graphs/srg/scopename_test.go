@@ -246,7 +246,8 @@ func TestNameScoping(t *testing.T) {
 				continue
 			}
 
-			if !assert.Equal(t, test.result.expectedName, resolved.Name(), "Test %v expected name %v", test.name, test.result.expectedName) {
+			name, _ := resolved.Name()
+			if !assert.Equal(t, test.result.expectedName, name, "Test %v expected name %v", test.name, test.result.expectedName) {
 				continue
 			}
 

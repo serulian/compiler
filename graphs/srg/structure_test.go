@@ -124,7 +124,8 @@ func TestStructure(t *testing.T) {
 		scopes := finder.ScopeInContext(commentedNode)
 		names := make([]string, len(scopes))
 		for index, scope := range scopes {
-			names[index] = scope.LocalName()
+			localName, _ := scope.LocalName()
+			names[index] = localName
 		}
 
 		if !assert.Equal(t, len(test.expectedScopeNames), len(scopes), "Mismatch in number of scopes found on test %s: %v", test.commentValue, names) {
@@ -132,7 +133,8 @@ func TestStructure(t *testing.T) {
 		}
 
 		for index, scope := range scopes {
-			if !assert.Equal(t, test.expectedScopeNames[index], scope.LocalName(), "Mismatch on scope name on test %s: %s", test.commentValue, names) {
+			localName, _ := scope.LocalName()
+			if !assert.Equal(t, test.expectedScopeNames[index], localName, "Mismatch on scope name on test %s: %s", test.commentValue, names) {
 				continue
 			}
 		}

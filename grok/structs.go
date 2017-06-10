@@ -91,7 +91,7 @@ func (ri RangeInformation) Name() (string, bool) {
 		return "", false
 
 	case NamedReference:
-		return ri.NamedReference.Name(), true
+		return ri.NamedReference.Name()
 
 	default:
 		return "", false
@@ -199,7 +199,12 @@ func (ri RangeInformation) HumanReadable() []MarkedText {
 			return ri.codeToMarkedText(cs)
 		}
 
-		return []MarkedText{MarkedText{ri.NamedReference.Name(), SerulianCodeText}}
+		name, hasName := ri.NamedReference.Name()
+		if hasName {
+			return []MarkedText{MarkedText{name, SerulianCodeText}}
+		}
+
+		return []MarkedText{MarkedText{"(Unnamed)", NormalText}}
 
 	default:
 		panic("Unknown kind of range")

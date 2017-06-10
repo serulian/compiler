@@ -34,7 +34,7 @@ func (db *domBuilder) buildNamedAccess(node compilergraph.GraphNode, name string
 
 	// Reference to a local name is a var or parameter.
 	if namedReference.IsLocal() {
-		return codedom.LocalReference(namedReference.Name(), node)
+		return codedom.LocalReference(namedReference.NameOrPanic(), node)
 	}
 
 	// Check for a reference to a type.
