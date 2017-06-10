@@ -441,11 +441,11 @@ func (db *domBuilder) buildAssignmentExpression(targetNode compilergraph.GraphNo
 	namedReference, _ := db.scopegraph.GetReferencedName(targetScope)
 
 	if namedReference.IsLocal() {
-		return codedom.LocalAssignment(namedReference.Name(), value, basisNode)
-	} else {
-		member, _ := namedReference.Member()
-		return codedom.MemberAssignment(member, db.buildExpression(targetNode), value, basisNode)
+		return codedom.LocalAssignment(namedReference.NameOrPanic(), value, basisNode)
 	}
+
+	member, _ := namedReference.Member()
+	return codedom.MemberAssignment(member, db.buildExpression(targetNode), value, basisNode)
 }
 
 // buildArrowStatement builds the CodeDOM for an arrow statement.
