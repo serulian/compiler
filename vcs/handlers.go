@@ -133,6 +133,10 @@ var vcsById = map[string]vcsHandler{
 				return "", err
 			}
 
+			if strings.HasPrefix(out.String(), "fatal:") {
+				return "", fmt.Errorf("Invalid repository")
+			}
+
 			trimmed := strings.TrimSpace(out.String())
 			return trimmed[0:7], nil
 		},

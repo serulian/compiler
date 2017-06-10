@@ -16,6 +16,8 @@ import (
 	"github.com/serulian/compiler/vcs"
 )
 
+const shortSHALength = 7
+
 // AllActions defines the set of all actions supported by Grok.
 var AllActions = []string{string(NoAction), string(FreezeImport), string(UnfreezeImport)}
 
@@ -165,10 +167,10 @@ func (gh Handle) GetPositionalActions(sourcePosition compilercommon.SourcePositi
 					"import-source": parsed.URL(),
 				},
 			})
-		} else {
+		} else if len(inspectInfo.CommitSHA) >= shortSHALength {
 			actions = append(actions, ContextOrAction{
 				Range:  sourceRange,
-				Title:  "Freeze import at " + inspectInfo.CommitSHA[0:7],
+				Title:  "Freeze import at " + inspectInfo.CommitSHA[0:shortSHALength],
 				Action: FreezeImport,
 				ActionParams: map[string]interface{}{
 					"source":        string(source),
@@ -220,9 +222,13 @@ func (gh Handle) GetContextActions(source compilercommon.InputSource) ([]CodeCon
 					return ContextOrAction{}, false
 				}
 
+				if len(inspectInfo.CommitSHA) < shortSHALength {
+					return ContextOrAction{}, false
+				}
+
 				return ContextOrAction{
 					Range:        sourceRange,
-					Title:        inspectInfo.CommitSHA[0:7] + " (" + inspectInfo.Engine + ")",
+					Title:        inspectInfo.CommitSHA[0:shortSHALength] + " (" + inspectInfo.Engine + ")",
 					Action:       NoAction,
 					ActionParams: map[string]interface{}{},
 				}, true
