@@ -18,7 +18,7 @@ import (
 
 // SRGScopeOrImport represents a named scope or an external package import.
 type SRGScopeOrImport interface {
-	Name() string
+	Name() (string, bool)
 	IsNamedScope() bool // Whether this is a named scope.
 	AsNamedScope() SRGNamedScope
 	AsPackageImport() SRGExternalPackageImport
@@ -38,8 +38,8 @@ func (ns SRGExternalPackageImport) Package() packageloader.PackageInfo {
 }
 
 // Name returns the name of the imported member.
-func (ns SRGExternalPackageImport) Name() string {
-	return ns.name
+func (ns SRGExternalPackageImport) Name() (string, bool) {
+	return ns.name, true
 }
 
 // ImportedName returns the name being accessed under the package.
@@ -298,7 +298,12 @@ func (ns SRGNamedScope) Documentation() (SRGDocumentation, bool) {
 			return SRGDocumentation{}, false
 		}
 
-		return docInfo.ForParameter(ns.Name())
+		name, hasName := ns.Name()
+		if !hasName {
+			return SRGDocumentation{}, false
+		}
+
+		return docInfo.ForParameter(name)
 
 	default:
 		return comment.Documentation()
@@ -307,6 +312,11 @@ func (ns SRGNamedScope) Documentation() (SRGDocumentation, bool) {
 
 // Code returns a code-like summarization of the referenced scope, for human consumption.
 func (ns SRGNamedScope) Code() (compilercommon.CodeSummary, bool) {
+	name, hasName := ns.Name()
+	if !hasName {
+		return compilercommon.CodeSummary{}, false
+	}
+
 	switch ns.ScopeKind() {
 	case NamedScopeType:
 		srgType := SRGType{ns.GraphNode, ns.srg}
@@ -325,15 +335,15 @@ func (ns SRGNamedScope) Code() (compilercommon.CodeSummary, bool) {
 		return srgParameter.Code()
 
 	case NamedScopeValue:
-		return compilercommon.CodeSummary{"", ns.Name(), false}, true
+		return compilercommon.CodeSummary{"", name, false}, true
 
 	case NamedScopeVariable:
 		declaredType, hasDeclaredType := ns.DeclaredType()
 		if hasDeclaredType {
-			return compilercommon.CodeSummary{"", fmt.Sprintf("var<%s> %s", declaredType.String(), ns.Name()), true}, true
+			return compilercommon.CodeSummary{"", fmt.Sprintf("var<%s> %s", declaredType.String(), name), true}, true
 		}
 
-		return compilercommon.CodeSummary{"", "var " + ns.Name(), false}, true
+		return compilercommon.CodeSummary{"", "var " + name, false}, true
 
 	default:
 		panic("Unknown kind of named scope")
@@ -341,29 +351,29 @@ func (ns SRGNamedScope) Code() (compilercommon.CodeSummary, bool) {
 }
 
 // Name returns the name of the scoped node.
-func (ns SRGNamedScope) Name() string {
+func (ns SRGNamedScope) Name() (string, bool) {
 	switch ns.Kind() {
 
 	case parser.NodeTypeClass:
-		return ns.Get(parser.NodeTypeDefinitionName)
+		return ns.TryGet(parser.NodeTypeDefinitionName)
 
 	case parser.NodeTypeInterface:
-		return ns.Get(parser.NodeTypeDefinitionName)
+		return ns.TryGet(parser.NodeTypeDefinitionName)
 
 	case parser.NodeTypeNominal:
-		return ns.Get(parser.NodeTypeDefinitionName)
+		return ns.TryGet(parser.NodeTypeDefinitionName)
 
 	case parser.NodeTypeStruct:
-		return ns.Get(parser.NodeTypeDefinitionName)
+		return ns.TryGet(parser.NodeTypeDefinitionName)
 
 	case parser.NodeTypeAgent:
-		return ns.Get(parser.NodeTypeDefinitionName)
+		return ns.TryGet(parser.NodeTypeDefinitionName)
 
 	case parser.NodeTypeImportPackage:
-		return ns.Get(parser.NodeImportPredicatePackageName)
+		return ns.TryGet(parser.NodeImportPredicatePackageName)
 
 	case parser.NodeTypeGeneric:
-		return ns.Get(parser.NodeGenericPredicateName)
+		return ns.TryGet(parser.NodeGenericPredicateName)
 
 	case parser.NodeTypeProperty:
 		fallthrough
@@ -378,22 +388,22 @@ func (ns SRGNamedScope) Name() string {
 		fallthrough
 
 	case parser.NodeTypeFunction:
-		return ns.Get(parser.NodePredicateTypeMemberName)
+		return ns.TryGet(parser.NodePredicateTypeMemberName)
 
 	case parser.NodeTypeParameter:
-		return ns.Get(parser.NodeParameterName)
+		return ns.TryGet(parser.NodeParameterName)
 
 	case parser.NodeTypeLambdaParameter:
-		return ns.Get(parser.NodeLambdaExpressionParameterName)
+		return ns.TryGet(parser.NodeLambdaExpressionParameterName)
 
 	case parser.NodeTypeVariableStatement:
-		return ns.Get(parser.NodeVariableStatementName)
+		return ns.TryGet(parser.NodeVariableStatementName)
 
 	case parser.NodeTypeNamedValue:
-		return ns.Get(parser.NodeNamedValueName)
+		return ns.TryGet(parser.NodeNamedValueName)
 
 	case parser.NodeTypeAssignedValue:
-		return ns.Get(parser.NodeNamedValueName)
+		return ns.TryGet(parser.NodeNamedValueName)
 
 	default:
 		panic(fmt.Sprintf("Unknown scoped name %v", ns.Kind()))

@@ -29,9 +29,9 @@ type SRGContextScopeName struct {
 }
 
 // LocalName returns the locally accessible name of the scope in context.
-func (cn SRGContextScopeName) LocalName() string {
+func (cn SRGContextScopeName) LocalName() (string, bool) {
 	if cn.alias != "" {
-		return cn.alias
+		return cn.alias, true
 	}
 
 	return cn.NamedScope().Name()
