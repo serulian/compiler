@@ -253,6 +253,6 @@ func documentationForParameter(commentValue string, paramName string) (string, b
 	}
 
 	sort.Sort(byLocation{tickedSentences, tickedParam})
-	paramComment := strings.TrimSpace(strings.Replace(tickedSentences[0], tickedParam, fmt.Sprintf("**%s**", paramName), 1))
+	paramComment := strings.TrimSpace(tickedSentences[0])
 	return paramComment, true
 }
