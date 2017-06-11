@@ -201,6 +201,12 @@ func (t SRGType) ComposedAgents() []SRGComposedAgent {
 	return agents
 }
 
+// HasComposedAgents returns true if this SRG type composes any agents.
+func (t SRGType) HasComposedAgents() bool {
+	_, hasComposedAgents := t.TryGetNode(parser.NodePredicateComposedAgent)
+	return hasComposedAgents
+}
+
 // GetMembers returns the members on this type.
 func (t SRGType) GetMembers() []SRGMember {
 	it := t.GraphNode.StartQuery().

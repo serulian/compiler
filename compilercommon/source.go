@@ -89,6 +89,9 @@ type SourceRange interface {
 
 	// ContainsPosition returns true if the given range contains the given position.
 	ContainsPosition(position SourcePosition) (bool, error)
+
+	// AtStartPosition returns a SourceRange located only at the starting position of this range.
+	AtStartPosition() SourceRange
 }
 
 // SourcePosition represents a single position in a source file.
@@ -123,6 +126,10 @@ func (sr sourceRange) Start() SourcePosition {
 
 func (sr sourceRange) End() SourcePosition {
 	return sr.end
+}
+
+func (sr sourceRange) AtStartPosition() SourceRange {
+	return sourceRange{sr.source, sr.start, sr.end}
 }
 
 func (sr sourceRange) ContainsPosition(position SourcePosition) (bool, error) {
