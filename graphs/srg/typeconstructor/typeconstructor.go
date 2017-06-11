@@ -117,6 +117,11 @@ func (stc *srgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 
 func (stc *srgTypeConstructor) DefineDependencies(annotator typegraph.Annotator, graph *typegraph.TypeGraph) {
 	for _, srgType := range stc.srg.GetTypes() {
+		_, hasTypeName := srgType.Name()
+		if !hasTypeName {
+			continue
+		}
+
 		// Decorate all types with their inheritance or composition.
 		if srgType.TypeKind() == srg.NominalType {
 			wrappedType, _ := srgType.WrappedType()
