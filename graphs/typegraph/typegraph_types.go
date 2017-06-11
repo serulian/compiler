@@ -212,6 +212,9 @@ const (
 	// Decorates a member with the type from which it was aliased.
 	NodePredicateMemberBaseSource = "member-base-source"
 
+	// Decorates a member as shadowing another member.
+	NodePredicateMemberShadows = "member-shadows"
+
 	// Decorates a member returning a promise of the member or return type.
 	NodePredicateMemberPromising = "member-promising"
 

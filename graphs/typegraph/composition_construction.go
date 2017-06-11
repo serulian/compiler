@@ -22,18 +22,18 @@ type typeCompositionProcessor struct {
 }
 
 type memberStatus struct {
-	Name       string
-	Title      string
-	IsRequired bool
+	Name           string
+	Title          string
+	OriginalMember *TGMember
+	IsRequired     bool
 }
 
 // processComposition performs all composition declaration, building and validation.
 func (p typeCompositionProcessor) processComposition() bool {
-	// Build a map of all existing members. If the boolean is `true`, then it was
-	// defined on the original type, vs on a composed type.
+	// Build a map of all existing members.
 	members := map[string]memberStatus{}
 	for _, member := range p.composingType.Members() {
-		members[member.Name()] = memberStatus{member.Name(), member.Title(), member.IsRequiredField()}
+		members[member.Name()] = memberStatus{member.Name(), member.Title(), &member, member.IsRequiredField()}
 	}
 
 	// For each composed agent type, add a field representing the agent itself
@@ -101,7 +101,7 @@ func (p typeCompositionProcessor) addCompositionField(agent TGAgentReference, me
 		Field(true).
 		Decorate()
 
-	members[agent.CompositionName()] = memberStatus{agent.CompositionName(), "type member", true}
+	members[agent.CompositionName()] = memberStatus{agent.CompositionName(), "type member", nil, true}
 	return true
 }
 
@@ -116,7 +116,15 @@ func (p typeCompositionProcessor) buildComposedMembership(agent TGAgentReference
 
 	for _, member := range agentType.Members() {
 		// If the member is already defined, skip.
-		if _, exists := members[member.Name()]; exists {
+		if status, exists := members[member.Name()]; exists {
+			// Mark the original member (if any) as shadowing.
+			if status.OriginalMember != nil {
+				_, isShadowing := status.OriginalMember.TryGet(NodePredicateMemberShadows)
+				if !isShadowing {
+					p.modifier.Modify(status.OriginalMember.GraphNode).Decorate(NodePredicateMemberShadows, "true")
+				}
+			}
+
 			continue
 		}
 
@@ -127,7 +135,7 @@ func (p typeCompositionProcessor) buildComposedMembership(agent TGAgentReference
 		}
 
 		// Mark the member as added.
-		members[member.Name()] = memberStatus{member.Name(), member.Title(), false}
+		members[member.Name()] = memberStatus{member.Name(), member.Title(), nil, false}
 
 		// Create a new node of the same kind and copy over any predicates except the type.
 		clonedMemberNode := member.GraphNode.CloneExcept(p.modifier, NodePredicateMemberType)

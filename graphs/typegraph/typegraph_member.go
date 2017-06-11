@@ -429,6 +429,40 @@ func (tn TGMember) Signature() *proto.MemberSig {
 	return tn.GetTagged(NodePredicateMemberSignature, esig).(*proto.MemberSig)
 }
 
+// ShadowsMembers returns the type members from any composed types that this member shadows.
+func (tn TGMember) ShadowsMembers() []TGMember {
+	// Ensure this member is marked as shadowing.
+	_, shadows := tn.GraphNode.TryGet(NodePredicateMemberShadows)
+	if !shadows {
+		return []TGMember{}
+	}
+
+	// If so, find all members with the same name in types composed by the containing type.
+	parentType, hasParentType := tn.ParentType()
+	if !hasParentType {
+		panic("Type member marked as shadowing but doesn't have a parent type")
+	}
+
+	agents := parentType.ComposedAgents()
+	members := make([]TGMember, 0, len(agents))
+	memberName := tn.Name()
+
+	for _, agent := range agents {
+		agentTypeRef := agent.AgentType()
+		if !agentTypeRef.IsNormal() {
+			continue
+		}
+
+		agentType := agentTypeRef.ReferredType()
+		member, hasMember := agentType.GetMember(memberName)
+		if hasMember {
+			members = append(members, member)
+		}
+	}
+
+	return members
+}
+
 // SourceGraphId returns the ID of the source graph from which this member originated.
 // If none, returns "typegraph".
 func (tn TGMember) SourceGraphId() string {

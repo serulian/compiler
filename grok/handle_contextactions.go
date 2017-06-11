@@ -186,12 +186,12 @@ func (gh Handle) GetPositionalActions(sourcePosition compilercommon.SourcePositi
 
 // GetContextActions returns all context actions for the given source file.
 func (gh Handle) GetContextActions(source compilercommon.InputSource) ([]CodeContextOrAction, error) {
-	// Create a CodeContextOrAction for every import statement in the file that comes from VCS.
 	module, found := gh.scopeResult.Graph.SourceGraph().FindModuleBySource(source)
 	if !found {
 		return []CodeContextOrAction{}, fmt.Errorf("Invalid or non-SRG source file")
 	}
 
+	// Create a CodeContextOrAction for every import statement in the file that comes from VCS.
 	imports := module.GetImports()
 	cca := make([]CodeContextOrAction, 0, len(imports))
 
@@ -234,6 +234,43 @@ func (gh Handle) GetContextActions(source compilercommon.InputSource) ([]CodeCon
 				}, true
 			},
 		})
+	}
+
+	// Create a CodeContextOrAction for every type member that overrides that composed from an agent.
+	for _, srgTypeDecl := range module.GetTypes() {
+		if !srgTypeDecl.HasComposedAgents() {
+			continue
+		}
+
+		// Find the type in the type graph.
+		typeDecl, hasTypeDecl := gh.scopeResult.Graph.TypeGraph().GetTypeOrModuleForSourceNode(srgTypeDecl.GraphNode)
+		if !hasTypeDecl {
+			continue
+		}
+
+		for _, member := range typeDecl.Members() {
+			sourceRange, hasSourceRange := member.SourceRange()
+			if !hasSourceRange {
+				continue
+			}
+
+			shadowsMembers := member.ShadowsMembers()
+			if len(shadowsMembers) == 0 {
+				continue
+			}
+
+			cca = append(cca, CodeContextOrAction{
+				Range: sourceRange.AtStartPosition(),
+				Resolve: func() (ContextOrAction, bool) {
+					return ContextOrAction{
+						Range:        sourceRange.AtStartPosition(),
+						Title:        fmt.Sprintf("Shadows %v members", len(shadowsMembers)),
+						Action:       NoAction,
+						ActionParams: map[string]interface{}{},
+					}, true
+				},
+			})
+		}
 	}
 
 	return cca, nil
