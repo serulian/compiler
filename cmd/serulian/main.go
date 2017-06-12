@@ -10,6 +10,7 @@ import (
 	"os"
 	runtime "runtime/debug"
 
+	goprofile "github.com/pkg/profile"
 	"github.com/serulian/compiler/builder"
 	"github.com/serulian/compiler/developer"
 	"github.com/serulian/compiler/formatter"
@@ -22,6 +23,7 @@ import (
 var (
 	vcsDevelopmentDirectories []string
 	debug                     bool
+	profile                   bool
 	addr                      string
 )
 
@@ -42,7 +44,12 @@ func main() {
 			}
 
 			disableGC()
-			if !builder.BuildSource(args[0], debug, vcsDevelopmentDirectories...) {
+
+			if profile {
+				defer goprofile.Start(goprofile.CPUProfile).Stop()
+			}
+
+			if !builder.BuildSource(args[0], debug, vcsDevelopmentDirectories...) && !profile {
 				os.Exit(-1)
 			}
 		},
@@ -215,5 +222,6 @@ func main() {
 	rootCmd.AddCommand(cmdImports)
 	rootCmd.AddCommand(cmdTest)
 	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "If set to true, Serulian will print debug logs")
+	rootCmd.PersistentFlags().BoolVar(&profile, "profile", false, "If set to true, Serulian will be profiled")
 	rootCmd.Execute()
 }
