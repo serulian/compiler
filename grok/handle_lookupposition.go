@@ -159,6 +159,23 @@ func (gh Handle) LookupSourcePosition(sourcePosition compilercommon.SourcePositi
 			TypeReference:  gh.scopeResult.Graph.TypeGraph().VoidTypeReference(),
 		}, nil
 
+	// Agent reference.
+	case parser.NodeTypeAgentReference:
+		agentTypeRef, hasAgentTypeRef := node.TryGetNode(parser.NodeAgentReferencePredicateReferenceType)
+		if !hasAgentTypeRef {
+			return RangeInformation{
+				Kind: NotFound,
+			}, nil
+		}
+
+		unresolvedTypeRef := sourceGraph.GetTypeRef(agentTypeRef)
+		resolvedTypeRef, _ := gh.scopeResult.Graph.ResolveSRGTypeRef(unresolvedTypeRef)
+		return RangeInformation{
+			Kind:          TypeRef,
+			SourceRanges:  sourceRangesForTypeRef(resolvedTypeRef),
+			TypeReference: resolvedTypeRef,
+		}, nil
+
 	// Members.
 	case parser.NodeTypeField:
 		fallthrough

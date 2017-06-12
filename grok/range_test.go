@@ -69,6 +69,12 @@ var grokRangeTests = []grokRangeTest{
 		grokNamedRange{"sn", NamedReference, "somenum", "somenum\nInteger"},
 	}},
 
+	grokRangeTest{"agent", true, []grokNamedRange{
+		grokNamedRange{"em", TypeRef, "Empty", "interface Empty"},
+		grokNamedRange{"ac", NamedReference, "AnotherClass", "// /   [ac        ]      [sa     ]\nclass AnotherClass with SomeAgent as SomeAgent"},
+		grokNamedRange{"sa", TypeRef, "SomeAgent", "// /   [em ]\nagent<Empty> SomeAgent"},
+	}},
+
 	grokRangeTest{"resolve", true, []grokNamedRange{
 		grokNamedRange{"sv", NamedReference, "someValue", "someValue\nInteger?"},
 		grokNamedRange{"e", NamedReference, "err", "err\nError?"},

@@ -1,0 +1,7 @@
+interface Empty {}
+
+///   [em ]
+agent<Empty> SomeAgent {}
+
+///   [ac        ]      [sa     ]
+class AnotherClass with SomeAgent {}
