@@ -18,6 +18,38 @@ import (
 	"path"
 )
 
+// VCSPackageStatus is the status of the VCS package checked out.
+type VCSPackageStatus int
+
+const (
+	// DetachedPackage indicates that the package is detatched from a branch and therefore
+	// is static.
+	DetachedPackage VCSPackageStatus = iota
+
+	// BranchOrHEADPackage indicates that the package is a branch or head package, and will
+	// therefore be updated on every call.
+	BranchOrHEADPackage
+
+	// LocallyModifiedPackage indicates that the package was modified on the local file system,
+	// and therefore cannot be updated.
+	LocallyModifiedPackage
+
+	// DevelopmentPackage indicates that the package was found in the VCS development directory
+	// and was therefore loaded from that location.
+	DevelopmentPackage
+
+	// CachedPackage indicates that the package was returned from cache without further operation.
+	// Should only be returned if the always-use-cache options is specified (typically by tooling).
+	CachedPackage
+)
+
+// VCSCheckoutResult is the result of a VCS checkout, if it succeeds.
+type VCSCheckoutResult struct {
+	PackageDirectory string
+	Warning          string
+	Status           VCSPackageStatus
+}
+
 // IsVCSRootDirectory returns true if the given local file system path is a VCS root directory.
 // Note that this method will return false if the path does not exist locally.
 func IsVCSRootDirectory(localPath string) bool {
@@ -67,11 +99,11 @@ const (
 //
 // vcsDevelopmentDirectories specifies optional directories to check for branchless and tagless copies
 // of the repository first. If found, the copy will be used in lieu of a normal checkout.
-func PerformVCSCheckout(vcsPath string, pkgCacheRootPath string, cacheOption VCSCacheOption, vcsDevelopmentDirectories ...string) (string, error, string) {
+func PerformVCSCheckout(vcsPath string, pkgCacheRootPath string, cacheOption VCSCacheOption, vcsDevelopmentDirectories ...string) (VCSCheckoutResult, error) {
 	// Parse the VCS path.
 	parsedPath, perr := ParseVCSPath(vcsPath)
 	if perr != nil {
-		return "", perr, ""
+		return VCSCheckoutResult{}, perr
 	}
 
 	var err error
@@ -86,30 +118,34 @@ func PerformVCSCheckout(vcsPath string, pkgCacheRootPath string, cacheOption VCS
 				log.Printf("Found a local HEAD copy of package %s under development directory %s", parsedPath.url, directoryPath)
 				warning = fmt.Sprintf(
 					`Package '%s' does not specify a tag, commit or branch and a local copy was found under development directory '%s'. VCS checkout will be skipped and the local copy used instead. To return to normal VCS behavior for this package, remove the --vcs-dev-dir flag or specify the package's tag, commit or branch.`, parsedPath.String(), directoryPath)
-				return fullCheckDirectory, nil, warning
+				return VCSCheckoutResult{fullCheckDirectory, warning, DevelopmentPackage}, nil
 			}
 		}
 	}
 
-	// Conduct the checkout or pull.
+	// Conduct the checkout or update.
 	fullCacheDirectory := path.Join(pkgCacheRootPath, parsedPath.cacheDirectory())
-	err, warning = checkCacheAndPull(parsedPath, fullCacheDirectory, cacheOption)
+	status, err := checkCacheAndPull(parsedPath, fullCacheDirectory, cacheOption)
+	if err != nil {
+		return VCSCheckoutResult{}, err
+	}
 
-	// Warn if the package is a HEAD checkout.
-	if err == nil && warning == "" && parsedPath.isHEAD() {
-		warning = fmt.Sprintf("Package '%s' points to HEAD of a branch or commit and will be updated on every build", parsedPath.String())
+	// Warn if the package is HEAD checkout.
+	if status == BranchOrHEADPackage {
+		warning = fmt.Sprintf("Package '%s' points to HEAD or a branch and will be updated on every build", parsedPath.String())
 	}
 
 	// If the parsed path is a subdirectory of the checkout, return a reference to it.
-	if err == nil && parsedPath.subpackage != "" {
+	if parsedPath.subpackage != "" {
 		subpackageCacheDirectory := path.Join(fullCacheDirectory, parsedPath.subpackage)
 		if _, serr := os.Stat(subpackageCacheDirectory); os.IsNotExist(serr) {
-			return "", fmt.Errorf("Subpackage '%s' does not exist under VCS package '%s'", parsedPath.subpackage, parsedPath.url), warning
+			return VCSCheckoutResult{}, fmt.Errorf("Subpackage '%s' does not exist under VCS package '%s'", parsedPath.subpackage, parsedPath.url)
 		}
-		return subpackageCacheDirectory, nil, warning
+
+		return VCSCheckoutResult{subpackageCacheDirectory, warning, status}, nil
 	}
 
-	return fullCacheDirectory, err, warning
+	return VCSCheckoutResult{fullCacheDirectory, warning, status}, nil
 }
 
 // InspectInfo holds all the data returned from a call to PerformVCSCheckoutAndInspect.
@@ -126,30 +162,28 @@ type InspectInfo struct {
 //
 // vcsDevelopmentDirectories specifies optional directories to check for branchless and tagless copies
 // of the repository first. If found, the copy will be used in lieu of a normal checkout.
-func PerformVCSCheckoutAndInspect(vcsPath string, pkgCacheRootPath string, cacheOption VCSCacheOption, vcsDevelopmentDirectories ...string) (InspectInfo, error, string) {
-	directory, err, warning := PerformVCSCheckout(vcsPath, pkgCacheRootPath, cacheOption, vcsDevelopmentDirectories...)
+func PerformVCSCheckoutAndInspect(vcsPath string, pkgCacheRootPath string, cacheOption VCSCacheOption, vcsDevelopmentDirectories ...string) (InspectInfo, string, error) {
+	result, err := PerformVCSCheckout(vcsPath, pkgCacheRootPath, cacheOption, vcsDevelopmentDirectories...)
 	if err != nil {
-		return InspectInfo{}, err, warning
+		return InspectInfo{}, "", err
 	}
 
-	handler, _ := detectHandler(directory)
-	sha, err := handler.inspect(directory)
+	handler, _ := detectHandler(result.PackageDirectory)
+	sha, err := handler.inspect(result.PackageDirectory)
 	if err != nil {
-		return InspectInfo{}, err, warning
+		return InspectInfo{}, "", err
 	}
 
-	tags, err := handler.listTags(directory)
+	tags, err := handler.listTags(result.PackageDirectory)
 	if err != nil {
-		return InspectInfo{}, err, warning
+		return InspectInfo{}, "", err
 	}
 
-	return InspectInfo{string(handler.kind), sha, tags}, nil, warning
+	return InspectInfo{string(handler.kind), sha, tags}, result.Warning, nil
 }
 
 // checkCacheAndPull conducts the cache check and necessary pulls.
-func checkCacheAndPull(parsedPath vcsPackagePath, fullCacheDirectory string, cacheOption VCSCacheOption) (error, string) {
-	// TODO(jschorr): Should we delete the package cache directory here if there was an error?
-
+func checkCacheAndPull(parsedPath vcsPackagePath, fullCacheDirectory string, cacheOption VCSCacheOption) (VCSPackageStatus, error) {
 	// Check the package cache for the path.
 	log.Printf("Checking cache directory %s", fullCacheDirectory)
 	if _, err := os.Stat(fullCacheDirectory); os.IsNotExist(err) {
@@ -157,23 +191,22 @@ func checkCacheAndPull(parsedPath vcsPackagePath, fullCacheDirectory string, cac
 		return performFullCheckout(parsedPath, fullCacheDirectory)
 	}
 
-	// If the cache exists, we only perform an update to the VCS package if the package
-	// is marked as pointing to HEAD of a branch or commit. Tagged VCS packages are always left alone.
 	log.Printf("Cache directory %s exists", fullCacheDirectory)
-	if parsedPath.isHEAD() && cacheOption == VCSFollowNormalCacheRules {
-		return performUpdateCheckout(parsedPath, fullCacheDirectory)
+
+	// If caching should always be used, just return the cached package.
+	if cacheOption == VCSAlwaysUseCache {
+		return CachedPackage, nil
 	}
 
-	log.Printf("Cache directory %s exists and points to tag %s; no update needed", fullCacheDirectory, parsedPath.tag)
-	return nil, ""
+	return performPossibleUpdateCheckout(parsedPath, fullCacheDirectory)
 }
 
 // performFullCheckout performs a full VCS checkout of the given package path.
-func performFullCheckout(path vcsPackagePath, fullCacheDirectory string) (error, string) {
+func performFullCheckout(path vcsPackagePath, fullCacheDirectory string) (VCSPackageStatus, error) {
 	// Lookup the VCS discovery information.
 	discovery, err := DiscoverVCSInformation(path.url)
 	if err != nil {
-		return err, ""
+		return DetachedPackage, err
 	}
 
 	// Perform a full checkout.
@@ -182,25 +215,43 @@ func performFullCheckout(path vcsPackagePath, fullCacheDirectory string) (error,
 		panic("Unknown VCS handler")
 	}
 
-	warning, err := handler.checkout(path, discovery, fullCacheDirectory)
-	return err, warning
+	err = handler.checkout(path, discovery, fullCacheDirectory)
+	if err != nil {
+		return DetachedPackage, err
+	}
+
+	// Check if it currently points to a detached state.
+	isDetached, err := handler.isDetached(fullCacheDirectory)
+	if err != nil {
+		return DetachedPackage, err
+	}
+
+	if isDetached {
+		return DetachedPackage, nil
+	}
+
+	return BranchOrHEADPackage, nil
 }
 
-// performUpdateCheckout performs a VCS update of the given package path.
-func performUpdateCheckout(path vcsPackagePath, fullCacheDirectory string) (error, string) {
+// performPossibleUpdateCheckout performs a VCS update of the given package path, if necessary.
+func performPossibleUpdateCheckout(path vcsPackagePath, fullCacheDirectory string) (VCSPackageStatus, error) {
 	// Detect the kind of VCS based on the checkout.
 	handler, ok := detectHandler(fullCacheDirectory)
 	if !ok {
-		return fmt.Errorf("Could not detect VCS for directory: %s", fullCacheDirectory), ""
+		return DetachedPackage, fmt.Errorf("Could not detect VCS for directory: %s", fullCacheDirectory)
 	}
 
-	// If the checkout has changes, warn, but nothing more to do.
-	if handler.check(fullCacheDirectory) {
-		warning := fmt.Sprintf("VCS Package '%s' has changes on the local file system and will therefore not be updated", path.String())
-		return nil, warning
+	// Check for any local file changes.
+	if handler.checkForLocalChanges(fullCacheDirectory) {
+		log.Printf("Package %s is locally modified", fullCacheDirectory)
+		return LocallyModifiedPackage, nil
 	}
 
-	// Otherwise, perform a pull to update.
-	err := handler.update(fullCacheDirectory)
-	return err, ""
+	// Check for a detached package. If found, nothing more to do.
+	isDetached, err := handler.isDetached(fullCacheDirectory)
+	if isDetached || err != nil {
+		return DetachedPackage, err
+	}
+
+	return BranchOrHEADPackage, handler.update(fullCacheDirectory)
 }

@@ -454,20 +454,22 @@ func (p *PackageLoader) loadVCSPackage(packagePath pathInformation) {
 	}
 
 	pkgDirectory := p.pathLoader.VCSPackageDirectory(p.entrypoint)
-	checkoutDirectory, err, warning := vcs.PerformVCSCheckout(packagePath.path, pkgDirectory, cacheOption, p.vcsDevelopmentDirectories...)
+	result, err := vcs.PerformVCSCheckout(packagePath.path, pkgDirectory, cacheOption, p.vcsDevelopmentDirectories...)
 	if err != nil {
 		p.vcsPathsLoaded.Set(packagePath.path, "")
 		p.errors <- compilercommon.SourceErrorf(packagePath.sourceRange, "Error loading VCS package '%s': %v", packagePath.path, err)
 		return
 	}
 
-	p.vcsPathsLoaded.Set(packagePath.path, checkoutDirectory)
-	if warning != "" {
-		p.warnings <- compilercommon.NewSourceWarning(packagePath.sourceRange, warning)
+	p.vcsPathsLoaded.Set(packagePath.path, result.PackageDirectory)
+	if result.Warning != "" {
+		p.warnings <- compilercommon.NewSourceWarning(packagePath.sourceRange, result.Warning)
+	}
+
 	}
 
 	// Push the now-local directory onto the package loading channel.
-	p.pushPathWithId(packagePath.referenceId, packagePath.sourceKind, pathLocalPackage, checkoutDirectory, packagePath.sourceRange)
+	p.pushPathWithId(packagePath.referenceId, packagePath.sourceKind, pathLocalPackage, result.PackageDirectory, packagePath.sourceRange)
 }
 
 // loadLocalPackage loads the package found at the path relative to the package directory.

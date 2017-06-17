@@ -116,9 +116,9 @@ func (p Pather) GetStaticMemberPath(member typegraph.TGMember, referenceType typ
 	parent := member.Parent()
 	if parent.IsType() {
 		return p.GetStaticTypePath(parent.(typegraph.TGTypeDecl), referenceType) + "." + name
-	} else {
-		return p.GetModulePath(parent.(typegraph.TGModule)) + "." + name
 	}
+
+	return p.GetModulePath(parent.(typegraph.TGModule)) + "." + name
 }
 
 // GetTypePath returns the global path for the given type.

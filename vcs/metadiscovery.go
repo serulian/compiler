@@ -98,7 +98,7 @@ func DiscoverVCSInformation(vcsUrl string) (VCSUrlInformation, error) {
 	}
 
 	// Find the associated VCS.
-	handler, ok := vcsById[pieces[1]]
+	handler, ok := vcsByID[pieces[1]]
 	if !ok {
 		err := fmt.Errorf("VCS url '%s' requires engine '%s', which is not currently supported", vcsUrl, pieces[1])
 		return VCSUrlInformation{}, err
