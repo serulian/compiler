@@ -31,7 +31,7 @@ const (
 )
 
 // vcsCheckoutFn is a function for performing a full checkout.
-type vcsCheckoutFn func(path vcsPackagePath, discovery VCSUrlInformation, checkoutDir string) (string, error)
+type vcsCheckoutFn func(path vcsPackagePath, discovery VCSUrlInformation, checkoutDir string) error
 
 // vcsDetectFn is a function for detecting whether this handler matches the given checkout directory.
 type vcsDetectFn func(checkoutDir string) bool
@@ -48,19 +48,23 @@ type vcsInspectFn func(checkoutDir string) (string, error)
 // vcsListTagsFn is a function for listing all tags/version of a checked out directory.
 type vcsListTagsFn func(checkoutDir string) ([]string, error)
 
+// vcsIsDetachedFn is a function for returning whether the checked out directory is in a detached state.
+type vcsIsDetachedFn func(checkoutDir string) (bool, error)
+
 // vcsHandler represents the defined handler information for a specific kind of VCS.
 type vcsHandler struct {
-	kind     VCSKind         // The kind of the VCS being handled.
-	checkout vcsCheckoutFn   // Function to checkout a package.
-	detect   vcsDetectFn     // Function to detect if this handler matches a package.
-	update   vcsUpdateFn     // Function to update a checkout.
-	inspect  vcsInspectFn    // Function to inspect a checkout for its commit SHA.
-	check    vcsHasChangesFn // Function to detect for code changes.
-	listTags vcsListTagsFn   // Function to list tags.
+	kind                 VCSKind         // The kind of the VCS being handled.
+	checkout             vcsCheckoutFn   // Function to checkout a package.
+	detect               vcsDetectFn     // Function to detect if this handler matches a package.
+	update               vcsUpdateFn     // Function to update a checkout.
+	inspect              vcsInspectFn    // Function to inspect a checkout for its commit SHA.
+	checkForLocalChanges vcsHasChangesFn // Function to detect for code changes.
+	listTags             vcsListTagsFn   // Function to list tags.
+	isDetached           vcsIsDetachedFn // Function to return whether the checkout is detached.
 }
 
 // runCommand uses exec to run an external command.
-func runCommand(runDirectory string, command string, args ...string) (error, string, string) {
+func runCommand(runDirectory string, command string, args ...string) (string, string, error) {
 	log.Printf("Running command %s %v", command, args)
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
@@ -72,15 +76,15 @@ func runCommand(runDirectory string, command string, args ...string) (error, str
 
 	err := cmd.Run()
 	log.Printf("Result: %v | %s | %s", err, stdout.String(), stderr.String())
-	return err, stdout.String(), stderr.String()
+	return stdout.String(), stderr.String(), err
 }
 
-// vcsById holds a map from string ID for the VCS to its associated vcsHandler struct.
-var vcsById = map[string]vcsHandler{
+// vcsByID holds a map from string ID for the VCS to its associated vcsHandler struct.
+var vcsByID = map[string]vcsHandler{
 	"git": vcsHandler{
 		kind: VCSKindGit,
 
-		checkout: func(vcsPath vcsPackagePath, discovery VCSUrlInformation, checkoutDir string) (string, error) {
+		checkout: func(vcsPath vcsPackagePath, discovery VCSUrlInformation, checkoutDir string) error {
 			lock := modificationLockMap.GetLock(checkoutDir)
 			lock.Lock()
 			defer lock.Unlock()
@@ -89,13 +93,13 @@ var vcsById = map[string]vcsHandler{
 			log.Printf("Making GIT package path: %s", checkoutDir)
 			err := os.MkdirAll(checkoutDir, 0744)
 			if err != nil {
-				return "", err
+				return err
 			}
 
 			// Run the clone to checkout the package.
 			log.Printf("Clone git repository: %s", discovery.DownloadPath)
-			if err, _, errStr := runCommand(checkoutDir, "git", "clone", discovery.DownloadPath, "."); err != nil {
-				return "", fmt.Errorf("Error cloning git package %s: %s", discovery.DownloadPath, errStr)
+			if _, errStr, err := runCommand(checkoutDir, "git", "clone", discovery.DownloadPath, "."); err != nil {
+				return fmt.Errorf("Error cloning git package %s: %s", discovery.DownloadPath, errStr)
 			}
 
 			// Checkout any submodules.
@@ -108,18 +112,18 @@ var vcsById = map[string]vcsHandler{
 			switch {
 			case vcsPath.branchOrCommit != "":
 				log.Printf("Switch to branch on git repository: %s => %s", discovery.DownloadPath, vcsPath.branchOrCommit)
-				if err, _, errStr := runCommand(checkoutDir, "git", "checkout", vcsPath.branchOrCommit); err != nil {
-					return "", fmt.Errorf("Error changing branch of git package %s: %s", discovery.DownloadPath, errStr)
+				if _, errStr, err := runCommand(checkoutDir, "git", "checkout", vcsPath.branchOrCommit); err != nil {
+					return fmt.Errorf("Error changing branch of git package %s: %s", discovery.DownloadPath, errStr)
 				}
 
 			case vcsPath.tag != "":
 				log.Printf("Switch to tag on git repository: %s => %s", discovery.DownloadPath, vcsPath.tag)
-				if err, _, errStr := runCommand(checkoutDir, "git", "checkout", "tags/"+vcsPath.tag); err != nil {
-					return "", fmt.Errorf("Error changing tag of git package %s: %s", discovery.DownloadPath, errStr)
+				if _, errStr, err := runCommand(checkoutDir, "git", "checkout", "tags/"+vcsPath.tag); err != nil {
+					return fmt.Errorf("Error changing tag of git package %s: %s", discovery.DownloadPath, errStr)
 				}
 			}
 
-			return "", nil
+			return nil
 		},
 
 		inspect: func(checkoutDir string) (string, error) {
@@ -152,14 +156,14 @@ var vcsById = map[string]vcsHandler{
 			lock.Lock()
 			defer lock.Unlock()
 
-			if err, _, errStr := runCommand(checkoutDir, "git", "pull"); err != nil {
+			if _, errStr, err := runCommand(checkoutDir, "git", "pull"); err != nil {
 				return fmt.Errorf("Error updating git package %s: %s", checkoutDir, errStr)
 			}
 
 			return nil
 		},
 
-		check: func(checkoutDir string) bool {
+		checkForLocalChanges: func(checkoutDir string) bool {
 			var out bytes.Buffer
 
 			statusCmd := exec.Command("git", "status", "--porcelain")
@@ -174,7 +178,7 @@ var vcsById = map[string]vcsHandler{
 		},
 
 		listTags: func(checkoutDir string) ([]string, error) {
-			err, output, errStr := runCommand(checkoutDir, "git", "ls-remote", "--tags", "--refs", "--q")
+			output, errStr, err := runCommand(checkoutDir, "git", "ls-remote", "--tags", "--refs", "--q")
 			if err != nil {
 				return []string{}, fmt.Errorf("Could not list tags: %v", errStr)
 			}
@@ -197,12 +201,25 @@ var vcsById = map[string]vcsHandler{
 
 			return tags, nil
 		},
+
+		isDetached: func(checkoutDir string) (bool, error) {
+			_, errStr, err := runCommand(checkoutDir, "git", "symbolic-ref", "HEAD")
+			if err != nil {
+				if strings.Contains(errStr, "not a symbolic ref") {
+					return true, nil
+				}
+
+				return false, fmt.Errorf("Could check repo status: %v", errStr)
+			}
+
+			return false, nil
+		},
 	},
 
 	"___fake__git___": vcsHandler{
 		kind: VCSKindFakeGit,
 
-		checkout: func(vcsPath vcsPackagePath, discovery VCSUrlInformation, checkoutDir string) (string, error) {
+		checkout: func(vcsPath vcsPackagePath, discovery VCSUrlInformation, checkoutDir string) error {
 			panic("Fake git!")
 		},
 
@@ -220,20 +237,23 @@ var vcsById = map[string]vcsHandler{
 			panic("Fake git!")
 		},
 
-		check: func(checkoutDir string) bool {
+		checkForLocalChanges: func(checkoutDir string) bool {
 			panic("Fake git!")
 		},
 
 		listTags: func(checkoutDir string) ([]string, error) {
 			panic("Fake git!")
 		},
+
+		isDetached: func(checkoutDir string) (bool, error) {
+			panic("Fake git!")
+		},
 	},
 }
 
 var vcsByKind = map[VCSKind]vcsHandler{
-	VCSKindGit: vcsById["git"],
-
-	VCSKindFakeGit: vcsById["___fake__git___"],
+	VCSKindGit:     vcsByID["git"],
+	VCSKindFakeGit: vcsByID["___fake__git___"],
 }
 
 // detectHandler attempts to detect which VCS handler is applicable to the given checkout

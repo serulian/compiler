@@ -14,7 +14,7 @@ import (
 //
 // Examples:
 //   github.com/some/project
-//   github.com/some/project:somebranch
+//   github.com/some/project:somebranchorcommit
 //   github.com/some/project@sometag
 //   github.com/some/project//somesubdir@sometag
 const vcsPackagePathRegex = "^(([a-zA-Z0-9\\._-]+)(/([a-zA-Z0-9\\._-])+)*)(//([^@:]+))?((@|:)([\\.a-zA-Z0-9_-]+))?$"
@@ -97,23 +97,9 @@ func (pp vcsPackagePath) AsGeneric() vcsPackagePath {
 	}
 }
 
-// AsHEAD returns the VCS package path pointing to HEAD.
-func (pp vcsPackagePath) AsHEAD() vcsPackagePath {
-	if pp.isHEAD() {
-		return pp
-	}
-
-	return vcsPackagePath{
-		url:            pp.url,
-		branchOrCommit: "",
-		tag:            "",
-		subpackage:     pp.subpackage,
-	}
-}
-
 // String returns the string representation of this path.
 func (pp vcsPackagePath) String() string {
-	var strRep string = pp.url
+	var strRep = pp.url
 
 	if pp.subpackage != "" {
 		strRep = strRep + "//" + pp.subpackage
@@ -131,7 +117,7 @@ func (pp vcsPackagePath) String() string {
 	}
 }
 
-// isHEAD returns whether this VCS package is pointed to HEAD of a branch.
+// isHEAD returns whether this VCS package is pointed to HEAD of a branch or a specific commit.
 func (pp vcsPackagePath) isHEAD() bool {
 	return pp.tag == ""
 }

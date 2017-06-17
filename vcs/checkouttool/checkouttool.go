@@ -22,11 +22,10 @@ func main() {
 			fmt.Printf("Performing checkout for path: %v\n", path)
 
 			pkgCacheDirectory := ".pkg"
-			packagePath, err, warning := vcs.PerformVCSCheckout(path, pkgCacheDirectory, vcs.VCSFollowNormalCacheRules)
+			result, err := vcs.PerformVCSCheckout(path, pkgCacheDirectory, vcs.VCSFollowNormalCacheRules)
 
-			fmt.Printf("Path: %s\n", packagePath)
+			fmt.Printf("Result: %+v\n", result)
 			fmt.Printf("Error: %v\n", err)
-			fmt.Printf("Warning: %s\n", warning)
 		},
 	}
 

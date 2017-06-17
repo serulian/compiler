@@ -59,7 +59,9 @@ func (p *pathInformation) String() string {
 // PackageLoader helps to fully and recursively load a Serulian package and its dependencies
 // from a directory or set of directories.
 type PackageLoader struct {
-	entrypoint                Entrypoint // The entrypoint for the package loader.
+	entrypoint Entrypoint // The entrypoint for the package loader.
+	libraries  []Library  // The libraries being loaded.
+
 	vcsDevelopmentDirectories []string   // Directories to check for VCS packages before VCS checkout.
 	pathLoader                PathLoader // The path loaders to use.
 	alwaysValidate            bool       // Whether to always run validation, regardless of errors. Useful to IDE tooling.
@@ -174,6 +176,8 @@ func NewPackageLoader(config Config) *PackageLoader {
 // Load performs the loading of a Serulian package found at the directory path.
 // Any libraries specified will be loaded as well.
 func (p *PackageLoader) Load(libraries ...Library) LoadResult {
+	p.libraries = libraries
+
 	// Start the loading goroutine.
 	go p.loadAndParse()
 
@@ -454,20 +458,40 @@ func (p *PackageLoader) loadVCSPackage(packagePath pathInformation) {
 	}
 
 	pkgDirectory := p.pathLoader.VCSPackageDirectory(p.entrypoint)
-	checkoutDirectory, err, warning := vcs.PerformVCSCheckout(packagePath.path, pkgDirectory, cacheOption, p.vcsDevelopmentDirectories...)
+	result, err := vcs.PerformVCSCheckout(packagePath.path, pkgDirectory, cacheOption, p.vcsDevelopmentDirectories...)
 	if err != nil {
 		p.vcsPathsLoaded.Set(packagePath.path, "")
 		p.errors <- compilercommon.SourceErrorf(packagePath.sourceRange, "Error loading VCS package '%s': %v", packagePath.path, err)
 		return
 	}
 
-	p.vcsPathsLoaded.Set(packagePath.path, checkoutDirectory)
-	if warning != "" {
-		p.warnings <- compilercommon.NewSourceWarning(packagePath.sourceRange, warning)
+	p.vcsPathsLoaded.Set(packagePath.path, result.PackageDirectory)
+	if result.Warning != "" {
+		p.warnings <- compilercommon.NewSourceWarning(packagePath.sourceRange, result.Warning)
+	}
+
+	// Check for VCS version different than a library.
+	packageVCSPath, _ := vcs.ParseVCSPath(packagePath.path)
+	for _, library := range p.libraries {
+		if library.IsSCM && library.Kind == packagePath.sourceKind {
+			libraryVCSPath, err := vcs.ParseVCSPath(library.PathOrURL)
+			if err != nil {
+				continue
+			}
+
+			if libraryVCSPath.URL() == packageVCSPath.URL() {
+				if libraryVCSPath.String() != packageVCSPath.String() {
+					p.warnings <- compilercommon.SourceWarningf(packagePath.sourceRange,
+						"Library specifies VCS package `%s` but source file is loading `%s`, which could lead to incompatibilities. It is recommended to upgrade the package in the source file.",
+						libraryVCSPath.String(), packageVCSPath.String())
+				}
+				break
+			}
+		}
 	}
 
 	// Push the now-local directory onto the package loading channel.
-	p.pushPathWithId(packagePath.referenceId, packagePath.sourceKind, pathLocalPackage, checkoutDirectory, packagePath.sourceRange)
+	p.pushPathWithId(packagePath.referenceId, packagePath.sourceKind, pathLocalPackage, result.PackageDirectory, packagePath.sourceRange)
 }
 
 // loadLocalPackage loads the package found at the path relative to the package directory.

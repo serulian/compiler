@@ -287,7 +287,7 @@ func (gh Handle) getInspectInfo(importSource string, source compilercommon.Input
 
 	// If not found, retrieve it via the VCS engine.
 	dirPath := gh.groker.pathLoader.VCSPackageDirectory(gh.groker.entrypoint)
-	inspectInfo, err, _ := vcs.PerformVCSCheckoutAndInspect(importSource, dirPath, vcs.VCSAlwaysUseCache)
+	inspectInfo, _, err := vcs.PerformVCSCheckoutAndInspect(importSource, dirPath, vcs.VCSAlwaysUseCache)
 	if err != nil {
 		return vcs.InspectInfo{}, nil
 	}
