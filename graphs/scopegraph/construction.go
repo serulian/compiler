@@ -13,7 +13,6 @@ import (
 	"github.com/serulian/compiler/graphs/srg/typerefresolver"
 	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/packageloader"
-	"github.com/serulian/compiler/webidl"
 
 	"github.com/cevaris/ordered_map"
 )
@@ -169,13 +168,12 @@ func checkInitializationCycles(builder *scopeBuilder) {
 	builder.saveScopes()
 }
 
-func buildScopeGraphWithResolver(srg *srg.SRG, irg *webidl.WebIRG, tdg *typegraph.TypeGraph,
+func buildScopeGraphWithResolver(srg *srg.SRG, tdg *typegraph.TypeGraph,
 	resolver *typerefresolver.TypeReferenceResolver, packageLoader *packageloader.PackageLoader) Result {
 
 	scopeGraph := &ScopeGraph{
 		srg:                   srg,
 		tdg:                   tdg,
-		irg:                   irg,
 		graph:                 srg.Graph,
 		packageLoader:         packageLoader,
 		srgRefResolver:        resolver,

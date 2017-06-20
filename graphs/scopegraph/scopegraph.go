@@ -167,7 +167,7 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 	resolver.FreezeCache()
 
 	// Construct the scope graph.
-	scopeResult := buildScopeGraphWithResolver(sourcegraph, webidlgraph, typeResult.Graph, resolver, loader)
+	scopeResult := buildScopeGraphWithResolver(sourcegraph, typeResult.Graph, resolver, loader)
 	return Result{
 		Status:        scopeResult.Status && typeResult.Status && loaderResult.Status,
 		Errors:        combineErrors(loaderResult.Errors, typeResult.Errors, scopeResult.Errors),
