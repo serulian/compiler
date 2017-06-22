@@ -20,7 +20,6 @@ import (
 	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/webidl"
-	webidltc "github.com/serulian/compiler/webidl/typeconstructor"
 )
 
 // PromisingAccessType defines an enumeration of access types for the IsPromisingMember check.
@@ -48,7 +47,6 @@ const (
 type ScopeGraph struct {
 	srg           *srg.SRG                     // The SRG behind this scope graph.
 	tdg           *typegraph.TypeGraph         // The TDG behind this scope graph.
-	irg           *webidl.WebIRG               // The IRG for WebIDL behind this scope graph.
 	packageLoader *packageloader.PackageLoader // The package loader behind this scope graph.
 	graph         *compilergraph.SerulianGraph // The root graph.
 
@@ -128,7 +126,7 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 
 	// Create the SRG for the source and load it.
 	sourcegraph := srg.NewSRG(graph)
-	webidlgraph := webidl.NewIRG(graph)
+	webidl := webidl.WebIDLProvider(graph)
 
 	loader := packageloader.NewPackageLoader(packageloader.Config{
 		Entrypoint:                config.Entrypoint,
@@ -139,7 +137,7 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 
 		SourceHandlers: []packageloader.SourceHandler{
 			sourcegraph.SourceHandler(),
-			webidlgraph.SourceHandler()},
+			webidl.SourceHandler()},
 	})
 
 	loaderResult := loader.Load(config.Libraries...)
@@ -154,7 +152,7 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 	// Construct the type graph.
 	resolver := typerefresolver.NewResolver(sourcegraph)
 	srgConstructor := srgtc.GetConstructorWithResolver(sourcegraph, resolver)
-	typeResult := typegraph.BuildTypeGraph(sourcegraph.Graph, webidltc.GetConstructor(webidlgraph), srgConstructor)
+	typeResult := typegraph.BuildTypeGraph(sourcegraph.Graph, webidl.TypeConstructor(), srgConstructor)
 	if !typeResult.Status && config.Target != Tooling {
 		return Result{
 			Status:   false,

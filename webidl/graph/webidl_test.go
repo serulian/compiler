@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package webidl
+package graph
 
 import (
 	"fmt"
@@ -32,7 +32,7 @@ func getIRG(t *testing.T, path string) *WebIRG {
 }
 
 func TestBasicLoading(t *testing.T) {
-	testIRG := getIRG(t, "tests/basic.webidl")
+	testIRG := getIRG(t, "../tests/basic.webidl")
 	decl := testIRG.Declarations()
 
 	if !assert.Equal(t, 1, len(decl), "Expected 1 declaration") {
@@ -110,7 +110,7 @@ func TestBasicLoading(t *testing.T) {
 }
 
 func TestParsingIssue(t *testing.T) {
-	graph, err := compilergraph.NewGraph("tests/parseissue.webidl")
+	graph, err := compilergraph.NewGraph("../tests/parseissue.webidl")
 	if err != nil {
 		t.Errorf("%v", err)
 	}

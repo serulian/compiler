@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package webidl
+package graph
 
 import (
 	"github.com/serulian/compiler/compilercommon"
