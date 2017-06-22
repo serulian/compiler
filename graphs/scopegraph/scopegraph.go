@@ -138,8 +138,8 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 		SkipVCSRefresh:            config.Target == Tooling,
 
 		SourceHandlers: []packageloader.SourceHandler{
-			sourcegraph.PackageLoaderHandler(),
-			webidlgraph.PackageLoaderHandler()},
+			sourcegraph.SourceHandler(),
+			webidlgraph.SourceHandler()},
 	})
 
 	loaderResult := loader.Load(config.Libraries...)

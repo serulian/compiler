@@ -61,8 +61,8 @@ func (g *WebIRG) RootModuleNode() compilergraph.GraphNode {
 	return g.rootModuleNode
 }
 
-// PackageLoaderHandler returns a SourceHandler for populating the IRG via a package loader.
-func (g *WebIRG) PackageLoaderHandler() packageloader.SourceHandler {
+// SourceHandler returns a SourceHandler for populating the IRG via a package loader.
+func (g *WebIRG) SourceHandler() packageloader.SourceHandler {
 	return &irgSourceHandler{g, g.layer.NewModifier()}
 }
 

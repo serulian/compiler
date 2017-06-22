@@ -89,7 +89,7 @@ func TestGraphs(t *testing.T) {
 
 		testIRG := webidl.NewIRG(graph)
 
-		loader := packageloader.NewPackageLoader(packageloader.NewBasicConfig(graph.RootSourceFilePath, testIRG.PackageLoaderHandler()))
+		loader := packageloader.NewPackageLoader(packageloader.NewBasicConfig(graph.RootSourceFilePath, testIRG.SourceHandler()))
 
 		secondaryLibs := make([]packageloader.Library, 0)
 		if _, err := os.Stat("tests/" + test.entrypoint + "/"); err == nil {

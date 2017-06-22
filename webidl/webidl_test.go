@@ -22,7 +22,7 @@ func getIRG(t *testing.T, path string) *WebIRG {
 	}
 
 	testIRG := NewIRG(graph)
-	loader := packageloader.NewPackageLoader(packageloader.NewBasicConfig(graph.RootSourceFilePath, testIRG.PackageLoaderHandler()))
+	loader := packageloader.NewPackageLoader(packageloader.NewBasicConfig(graph.RootSourceFilePath, testIRG.SourceHandler()))
 	result := loader.Load()
 	if !result.Status {
 		t.Errorf("Failed to load IRG: %v", result.Errors)
@@ -116,7 +116,7 @@ func TestParsingIssue(t *testing.T) {
 	}
 
 	testIRG := NewIRG(graph)
-	loader := packageloader.NewPackageLoader(packageloader.NewBasicConfig(graph.RootSourceFilePath, testIRG.PackageLoaderHandler()))
+	loader := packageloader.NewPackageLoader(packageloader.NewBasicConfig(graph.RootSourceFilePath, testIRG.SourceHandler()))
 	result := loader.Load()
 	assert.False(t, result.Status, "Expected parsing issue")
 }
