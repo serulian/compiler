@@ -37,7 +37,7 @@ func GenerateExpression(expression codedom.Expression, asyncOption AsyncOption, 
 	generator := &expressionGenerator{
 		scopegraph:     scopegraph,
 		machineBuilder: machineBuilder,
-		pather:         shared.NewPather(scopegraph.SourceGraph().Graph),
+		pather:         shared.NewPather(scopegraph),
 		wrappers:       make([]*expressionWrapper, 0),
 		variables:      make([]string, 0),
 	}

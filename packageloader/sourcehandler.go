@@ -18,14 +18,18 @@ type SourceHandler interface {
 	// handler under packages.
 	PackageFileExtension() string
 
-	// Parse parses the given source file.
+	// Parse parses the given source file, typically applying the AST to the underlying
+	// graph being constructed by this handler. importHandler should be invoked for any
+	// imports found, to indicate to the package loader that the imports should be followed
+	// and themselves loaded.
 	Parse(source compilercommon.InputSource, input string, importHandler ImportHandler)
 
 	// Apply performs final application of all changes in the source handler. This method is called
 	// synchronously, and is typically used to apply the parsed structure to the underlying graph.
 	Apply(packageMap LoadedPackageMap, sourceTracker SourceTracker)
 
-	// Verify performs verification of the loaded source.
+	// Verify performs verification of the loaded source. Any errors or warnings encountered
+	// should be reported via the given reporter callbacks.
 	Verify(errorReporter ErrorReporter, warningReporter WarningReporter)
 }
 

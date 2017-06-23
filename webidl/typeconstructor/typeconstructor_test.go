@@ -14,7 +14,8 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/packageloader"
-	"github.com/serulian/compiler/webidl"
+	webidl "github.com/serulian/compiler/webidl/graph"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -89,7 +90,7 @@ func TestGraphs(t *testing.T) {
 
 		testIRG := webidl.NewIRG(graph)
 
-		loader := packageloader.NewPackageLoader(packageloader.NewBasicConfig(graph.RootSourceFilePath, testIRG.PackageLoaderHandler()))
+		loader := packageloader.NewPackageLoader(packageloader.NewBasicConfig(graph.RootSourceFilePath, testIRG.SourceHandler()))
 
 		secondaryLibs := make([]packageloader.Library, 0)
 		if _, err := os.Stat("tests/" + test.entrypoint + "/"); err == nil {

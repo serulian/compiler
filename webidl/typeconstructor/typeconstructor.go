@@ -11,7 +11,7 @@ import (
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/typegraph"
-	"github.com/serulian/compiler/webidl"
+	webidl "github.com/serulian/compiler/webidl/graph"
 )
 
 // GetConstructor returns a TypeGraph constructor for the given IRG.

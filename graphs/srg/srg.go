@@ -73,8 +73,8 @@ func (g *SRG) TryGetNode(nodeId compilergraph.GraphNodeId) (compilergraph.GraphN
 	return g.layer.TryGetNode(nodeId)
 }
 
-// PackageLoaderHandler returns a SourceHandler for populating the SRG via a package loader.
-func (g *SRG) PackageLoaderHandler() packageloader.SourceHandler {
+// SourceHandler returns a SourceHandler for populating the SRG via a package loader.
+func (g *SRG) SourceHandler() packageloader.SourceHandler {
 	return &srgSourceHandler{g, g.layer.NewModifier()}
 }
 

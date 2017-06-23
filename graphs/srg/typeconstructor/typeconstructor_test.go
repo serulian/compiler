@@ -17,7 +17,6 @@ import (
 	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/webidl"
-	webidltc "github.com/serulian/compiler/webidl/typeconstructor"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -121,10 +120,10 @@ func TestGraphs(t *testing.T) {
 		}
 
 		testSRG := srg.NewSRG(graph)
-		testIDL := webidl.NewIRG(graph)
+		testIDL := webidl.WebIDLProvider(graph)
 
 		loader := packageloader.NewPackageLoader(
-			packageloader.NewBasicConfig(graph.RootSourceFilePath, testSRG.PackageLoaderHandler(), testIDL.PackageLoaderHandler()))
+			packageloader.NewBasicConfig(graph.RootSourceFilePath, testSRG.SourceHandler(), testIDL.SourceHandler()))
 
 		srgResult := loader.Load(packageloader.Library{TESTLIB_PATH, false, ""})
 
@@ -134,7 +133,7 @@ func TestGraphs(t *testing.T) {
 		}
 
 		// Construct the type graph.
-		result := typegraph.BuildTypeGraph(testSRG.Graph, webidltc.GetConstructor(testIDL), GetConstructor(testSRG))
+		result := typegraph.BuildTypeGraph(testSRG.Graph, testIDL.TypeConstructor(), GetConstructor(testSRG))
 
 		if test.expectedError == "" {
 			// Make sure we had no errors during construction.
@@ -171,9 +170,9 @@ func TestLookupReturnType(t *testing.T) {
 	}
 
 	testSRG := srg.NewSRG(graph)
-	testIDL := webidl.NewIRG(graph)
+	testIDL := webidl.WebIDLProvider(graph)
 
-	loader := packageloader.NewPackageLoader(packageloader.NewBasicConfig(graph.RootSourceFilePath, testSRG.PackageLoaderHandler(), testIDL.PackageLoaderHandler()))
+	loader := packageloader.NewPackageLoader(packageloader.NewBasicConfig(graph.RootSourceFilePath, testSRG.SourceHandler(), testIDL.SourceHandler()))
 
 	srgResult := loader.Load(packageloader.Library{TESTLIB_PATH, false, ""})
 	if !assert.True(t, srgResult.Status, "Got error for SRG construction: %v", srgResult.Errors) {
@@ -181,7 +180,7 @@ func TestLookupReturnType(t *testing.T) {
 	}
 
 	// Construct the type graph.
-	result := typegraph.BuildTypeGraph(testSRG.Graph, webidltc.GetConstructor(testIDL), GetConstructor(testSRG))
+	result := typegraph.BuildTypeGraph(testSRG.Graph, testIDL.TypeConstructor(), GetConstructor(testSRG))
 	if !assert.True(t, result.Status, "Got error for TypeGraph construction: %v", result.Errors) {
 		return
 	}

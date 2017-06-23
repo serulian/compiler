@@ -7,6 +7,7 @@
 package scopegraph
 
 import (
+	"fmt"
 	"log"
 	"strconv"
 
@@ -18,9 +19,9 @@ import (
 	"github.com/serulian/compiler/graphs/srg"
 	srgtc "github.com/serulian/compiler/graphs/srg/typeconstructor"
 	"github.com/serulian/compiler/graphs/typegraph"
+	"github.com/serulian/compiler/integration"
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/webidl"
-	webidltc "github.com/serulian/compiler/webidl/typeconstructor"
 )
 
 // PromisingAccessType defines an enumeration of access types for the IsPromisingMember check.
@@ -48,9 +49,10 @@ const (
 type ScopeGraph struct {
 	srg           *srg.SRG                     // The SRG behind this scope graph.
 	tdg           *typegraph.TypeGraph         // The TDG behind this scope graph.
-	irg           *webidl.WebIRG               // The IRG for WebIDL behind this scope graph.
 	packageLoader *packageloader.PackageLoader // The package loader behind this scope graph.
 	graph         *compilergraph.SerulianGraph // The root graph.
+
+	integrations map[string]integration.LanguageIntegration // The language integrations used when constructing this graph, by source ID.
 
 	srgRefResolver        *typerefresolver.TypeReferenceResolver // The resolver to use for SRG type refs.
 	dynamicPromisingNames map[string]bool
@@ -128,7 +130,10 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 
 	// Create the SRG for the source and load it.
 	sourcegraph := srg.NewSRG(graph)
-	webidlgraph := webidl.NewIRG(graph)
+
+	// Create the IRG and register it as an integration.
+	webidl := webidl.WebIDLProvider(graph)
+	integrations := []integration.LanguageIntegration{webidl}
 
 	loader := packageloader.NewPackageLoader(packageloader.Config{
 		Entrypoint:                config.Entrypoint,
@@ -138,8 +143,8 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 		SkipVCSRefresh:            config.Target == Tooling,
 
 		SourceHandlers: []packageloader.SourceHandler{
-			sourcegraph.PackageLoaderHandler(),
-			webidlgraph.PackageLoaderHandler()},
+			sourcegraph.SourceHandler(),
+			webidl.SourceHandler()},
 	})
 
 	loaderResult := loader.Load(config.Libraries...)
@@ -154,7 +159,7 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 	// Construct the type graph.
 	resolver := typerefresolver.NewResolver(sourcegraph)
 	srgConstructor := srgtc.GetConstructorWithResolver(sourcegraph, resolver)
-	typeResult := typegraph.BuildTypeGraph(sourcegraph.Graph, webidltc.GetConstructor(webidlgraph), srgConstructor)
+	typeResult := typegraph.BuildTypeGraph(sourcegraph.Graph, webidl.TypeConstructor(), srgConstructor)
 	if !typeResult.Status && config.Target != Tooling {
 		return Result{
 			Status:   false,
@@ -167,7 +172,7 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 	resolver.FreezeCache()
 
 	// Construct the scope graph.
-	scopeResult := buildScopeGraphWithResolver(sourcegraph, webidlgraph, typeResult.Graph, resolver, loader)
+	scopeResult := buildScopeGraphWithResolver(sourcegraph, typeResult.Graph, integrations, resolver, loader)
 	return Result{
 		Status:        scopeResult.Status && typeResult.Status && loaderResult.Status,
 		Errors:        combineErrors(loaderResult.Errors, typeResult.Errors, scopeResult.Errors),
@@ -175,6 +180,11 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 		Graph:         scopeResult.Graph,
 		SourceTracker: loaderResult.SourceTracker,
 	}, nil
+}
+
+// RootSourceFilePath returns the root source file for this scope graph.
+func (sg *ScopeGraph) RootSourceFilePath() string {
+	return sg.graph.RootSourceFilePath
 }
 
 // SourceGraph returns the SRG behind this scope graph.
@@ -205,6 +215,21 @@ func (sg *ScopeGraph) GetScope(srgNode compilergraph.GraphNode) (proto.ScopeInfo
 
 	scopeInfo := scopeNode.GetTagged(NodePredicateScopeInfo, &proto.ScopeInfo{}).(*proto.ScopeInfo)
 	return *scopeInfo, true
+}
+
+// GetLanguageIntegration returns the language integration with the given source graph ID, if any.
+func (sg *ScopeGraph) GetLanguageIntegration(sourceGraphID string) (integration.LanguageIntegration, bool) {
+	li, ok := sg.integrations[sourceGraphID]
+	return li, ok
+}
+
+// MustGetLanguageIntegration returns the language integration with the given source graph ID or panics.
+func (sg *ScopeGraph) MustGetLanguageIntegration(sourceGraphID string) integration.LanguageIntegration {
+	li, ok := sg.integrations[sourceGraphID]
+	if !ok {
+		panic(fmt.Sprintf("Missing expected language integration: %s", sourceGraphID))
+	}
+	return li
 }
 
 // BuildTransientScope builds the scope for the given transient node, as scoped under the given parent node.

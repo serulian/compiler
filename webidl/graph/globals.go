@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package webidl
+package graph
 
 // GLOBAL_CONTEXT_ANNOTATIONS are the annotations that mark an interface as being a global context
 // (e.g. Window) in WebIDL.
