@@ -45,7 +45,7 @@ const (
 // buildGenerator builds a new state machine generator.
 func buildGenerator(scopegraph *scopegraph.ScopeGraph, templater *shared.Templater, funcTraits shared.StateFunctionTraits) *stateGenerator {
 	generator := &stateGenerator{
-		pather:    shared.NewPather(scopegraph.SourceGraph().Graph),
+		pather:    shared.NewPather(scopegraph),
 		templater: templater,
 
 		scopegraph: scopegraph,

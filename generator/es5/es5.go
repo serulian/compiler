@@ -34,7 +34,7 @@ func generateModules(sg *scopegraph.ScopeGraph) map[typegraph.TGModule]esbuilder
 		graph:      sg.SourceGraph().Graph,
 		scopegraph: sg,
 		templater:  shared.NewTemplater(),
-		pather:     shared.NewPather(sg.SourceGraph().Graph),
+		pather:     shared.NewPather(sg),
 	}
 
 	// Generate the builder for each of the modules.
@@ -46,11 +46,11 @@ func GenerateES5(sg *scopegraph.ScopeGraph, generatedFilePath string, sourceRoot
 	generated := generateModules(sg)
 
 	// Order the modules by their paths.
-	pather := shared.NewPather(sg.SourceGraph().Graph)
+	pather := shared.NewPather(sg)
 	modulePathMap := map[string]esbuilder.SourceBuilder{}
 
 	var modulePathList = make([]string, 0)
-	for module, _ := range generated {
+	for module := range generated {
 		path := pather.GetModulePath(module)
 		modulePathList = append(modulePathList, path)
 		modulePathMap[path] = generated[module]

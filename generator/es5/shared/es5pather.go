@@ -10,18 +10,18 @@ import (
 
 	"github.com/rainycape/unidecode"
 
-	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/graphs/typegraph"
 )
 
 // Pather defines a helper type for generating paths.
 type Pather struct {
-	graph *compilergraph.SerulianGraph // The root graph.
+	scopegraph *scopegraph.ScopeGraph
 }
 
 // NewPather creates a new path generator for the given graph.
-func NewPather(graph *compilergraph.SerulianGraph) Pather {
-	return Pather{graph}
+func NewPather(scopegraph *scopegraph.ScopeGraph) Pather {
+	return Pather{scopegraph}
 }
 
 // TypeReferenceCall returns source for retrieving an object reference to the type defined by the given
@@ -104,11 +104,15 @@ func (p Pather) GetStaticTypePath(typedecl typegraph.TGTypeDecl, referenceType t
 
 // GetStaticMemberPath returns the global path for the given statically defined type member.
 func (p Pather) GetStaticMemberPath(member typegraph.TGMember, referenceType typegraph.TypeReference) string {
-	// TODO(jschorr): We should generalize non-SRG support.
-	if member.Name() == "new" {
-		if member.SourceGraphId() == "webidl" {
-			parentType, _ := member.ParentType()
-			return "$t.nativenew(" + p.GetTypePath(parentType) + ")"
+	sourceGraphID := member.SourceGraphId()
+	if sourceGraphID != "srg" {
+		integration := p.scopegraph.MustGetLanguageIntegration(sourceGraphID)
+		pathHandler := integration.PathHandler()
+		if pathHandler != nil {
+			staticPath := integration.PathHandler().GetStaticMemberPath(member, referenceType)
+			if staticPath != "" {
+				return staticPath
+			}
 		}
 	}
 
@@ -132,9 +136,16 @@ func (p Pather) GetTypePath(typedecl typegraph.TGTypeDecl) string {
 
 // GetModulePath returns the global path for the given module.
 func (p Pather) GetModulePath(module typegraph.TGModule) string {
-	// TODO(jschorr): We should generalize non-SRG support.
-	if module.SourceGraphId() == "webidl" {
-		return "$global"
+	sourceGraphID := module.SourceGraphId()
+	if sourceGraphID != "srg" {
+		integration := p.scopegraph.MustGetLanguageIntegration(sourceGraphID)
+		pathHandler := integration.PathHandler()
+		if pathHandler != nil {
+			modulePath := pathHandler.GetModulePath(module)
+			if modulePath != "" {
+				return modulePath
+			}
+		}
 	}
 
 	return "$g." + p.GetRelativeModulePath(module)
@@ -144,7 +155,7 @@ func (p Pather) GetModulePath(module typegraph.TGModule) string {
 func (p Pather) GetRelativeModulePath(module typegraph.TGModule) string {
 	// We create the exported path based on the location of this module's source file relative
 	// to the entrypoint file.
-	basePath := filepath.Dir(p.graph.RootSourceFilePath)
+	basePath := filepath.Dir(p.scopegraph.RootSourceFilePath())
 	rel, err := filepath.Rel(basePath, module.Path())
 	if err != nil {
 		rel = module.Path()

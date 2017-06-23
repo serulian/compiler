@@ -12,6 +12,7 @@ import (
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/srg/typerefresolver"
 	"github.com/serulian/compiler/graphs/typegraph"
+	"github.com/serulian/compiler/integration"
 	"github.com/serulian/compiler/packageloader"
 
 	"github.com/cevaris/ordered_map"
@@ -168,14 +169,20 @@ func checkInitializationCycles(builder *scopeBuilder) {
 	builder.saveScopes()
 }
 
-func buildScopeGraphWithResolver(srg *srg.SRG, tdg *typegraph.TypeGraph,
+func buildScopeGraphWithResolver(srg *srg.SRG, tdg *typegraph.TypeGraph, integrations []integration.LanguageIntegration,
 	resolver *typerefresolver.TypeReferenceResolver, packageLoader *packageloader.PackageLoader) Result {
+
+	integrationsMap := map[string]integration.LanguageIntegration{}
+	for _, integration := range integrations {
+		integrationsMap[integration.SourceHandler().Kind()] = integration
+	}
 
 	scopeGraph := &ScopeGraph{
 		srg:                   srg,
 		tdg:                   tdg,
 		graph:                 srg.Graph,
 		packageLoader:         packageLoader,
+		integrations:          integrationsMap,
 		srgRefResolver:        resolver,
 		dynamicPromisingNames: map[string]bool{},
 		layer: srg.Graph.NewGraphLayer("sig", NodeTypeTagged),
