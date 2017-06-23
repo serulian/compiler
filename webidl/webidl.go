@@ -27,6 +27,10 @@ func WebIDLProvider(graph *compilergraph.SerulianGraph) webidlProvider {
 	return webidlProvider{irg.NewIRG(graph)}
 }
 
+func (p webidlProvider) GraphID() string {
+	return "webidl"
+}
+
 func (p webidlProvider) SourceHandler() packageloader.SourceHandler {
 	return p.irg.SourceHandler()
 }

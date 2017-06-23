@@ -174,7 +174,7 @@ func buildScopeGraphWithResolver(srg *srg.SRG, tdg *typegraph.TypeGraph, integra
 
 	integrationsMap := map[string]integration.LanguageIntegration{}
 	for _, integration := range integrations {
-		integrationsMap[integration.SourceHandler().Kind()] = integration
+		integrationsMap[integration.GraphID()] = integration
 	}
 
 	scopeGraph := &ScopeGraph{

@@ -20,8 +20,14 @@ type LanguageIntegrationProvider interface {
 
 // LanguageIntegration defines an integration of an external language or system into Serulian.
 type LanguageIntegration interface {
+	// GraphID returns the ID for this integration's nodes in the graph. Must match the Kind
+	// in the SourceHandler.
+	GraphID() string
+
 	// SourceHandler returns the source handler used to load, parse and validate the input
-	// source file(s) for the integrated language or system.
+	// source file(s) for the integrated language or system. Note that calling this method
+	// will typically start a modifier, so it should only be called if the full handler
+	// lifecycle will be used.
 	SourceHandler() packageloader.SourceHandler
 
 	// TypeConstructor returns the type constructor used to construct the types and members that
