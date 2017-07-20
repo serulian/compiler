@@ -82,9 +82,14 @@ func (dt *developTransaction) Start(w http.ResponseWriter, r *http.Request) {
 func (dt *developTransaction) Build(w http.ResponseWriter, r *http.Request) {
 	// Build a scope graph for the project. This will conduct parsing and type graph
 	// construction on our behalf.
-	scopeResult := scopegraph.ParseAndBuildScopeGraph(dt.rootSourceFilePath,
+	scopeResult, err := scopegraph.ParseAndBuildScopeGraph(dt.rootSourceFilePath,
 		dt.vcsDevelopmentDirectories,
 		builder.CORE_LIBRARY)
+
+	if err != nil {
+		dt.emitInfo(w, "Build failed: %s", err)
+		dt.closeGroup(w)
+	}
 
 	if !scopeResult.Status {
 		dt.sourceMap = sourcemap.NewSourceMap(dt.name+".develop.js", "source/")

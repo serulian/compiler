@@ -59,6 +59,14 @@ func LogToConsole(level ConsoleLogLevel, sourceRange compilercommon.SourceRange,
 		prefixText = "ERROR: "
 	}
 
+	formattedMessage := fmt.Sprintf(message, args...)
+
+	if sourceRange == nil {
+		prefixColor.Print(prefixText)
+		messageColor.Printf("%s\n", formattedMessage)
+		return
+	}
+
 	startLine, startCol, err := sourceRange.Start().LineAndColumn()
 	if err != nil {
 		startLine = 0
@@ -72,7 +80,6 @@ func LogToConsole(level ConsoleLogLevel, sourceRange compilercommon.SourceRange,
 	}
 
 	locationText := fmt.Sprintf("%v:%v:%v:", sourceRange.Source(), startLine+1, startCol+1)
-	formattedMessage := fmt.Sprintf(message, args...)
 
 	// If the text will go past the terminal width, then make it multiline and add extra whitespace
 	// after it.

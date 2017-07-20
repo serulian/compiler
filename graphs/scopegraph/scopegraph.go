@@ -8,12 +8,13 @@ package scopegraph
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/srg/typerefresolver"
+
+	"path"
 
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/srg"
@@ -23,6 +24,9 @@ import (
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/webidl"
 )
+
+// DYNAMIC_LANGUAGE_DIRECTORY is the directory under the entrypoint dir that contains language extension binaries.
+const DYNAMIC_LANGUAGE_DIRECTORY = ".langext"
 
 // PromisingAccessType defines an enumeration of access types for the IsPromisingMember check.
 type PromisingAccessType int
@@ -103,20 +107,14 @@ type Config struct {
 
 // ParseAndBuildScopeGraph conducts full parsing, type graph construction and scoping for the project
 // starting at the given root source file.
-func ParseAndBuildScopeGraph(rootSourceFilePath string, vcsDevelopmentDirectories []string, libraries ...packageloader.Library) Result {
-	result, err := ParseAndBuildScopeGraphWithConfig(Config{
+func ParseAndBuildScopeGraph(rootSourceFilePath string, vcsDevelopmentDirectories []string, libraries ...packageloader.Library) (Result, error) {
+	return ParseAndBuildScopeGraphWithConfig(Config{
 		Entrypoint:                packageloader.Entrypoint(rootSourceFilePath),
 		VCSDevelopmentDirectories: vcsDevelopmentDirectories,
 		Libraries:                 libraries,
 		Target:                    Compilation,
 		PathLoader:                packageloader.LocalFilePathLoader{},
 	})
-
-	if err != nil {
-		log.Fatalf("Could not build graph: %v", err)
-	}
-
-	return result
 }
 
 // ParseAndBuildScopeGraphWithConfig conducts full parsing, type graph construction and scoping for the project
@@ -135,16 +133,29 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 	webidl := webidl.WebIDLProvider(graph)
 	integrations := []integration.LanguageIntegration{webidl}
 
+	// Load the dynamic integrations.
+	dynamicLanguagePath := path.Join(config.Entrypoint.EntrypointDirectoryPath(config.PathLoader), DYNAMIC_LANGUAGE_DIRECTORY)
+	dynamicIntegrationProviders, err := integration.LoadLanguageIntegrationProviders(dynamicLanguagePath)
+	if err != nil {
+		return Result{}, err
+	}
+
+	for _, provider := range dynamicIntegrationProviders {
+		integrations = append(integrations, provider.GetIntegration(graph))
+	}
+
+	sourceHandlers := []packageloader.SourceHandler{sourcegraph.SourceHandler()}
+	for _, integration := range integrations {
+		sourceHandlers = append(sourceHandlers, integration.SourceHandler())
+	}
+
 	loader := packageloader.NewPackageLoader(packageloader.Config{
 		Entrypoint:                config.Entrypoint,
 		PathLoader:                config.PathLoader,
 		VCSDevelopmentDirectories: config.VCSDevelopmentDirectories,
 		AlwaysValidate:            config.Target == Tooling,
 		SkipVCSRefresh:            config.Target == Tooling,
-
-		SourceHandlers: []packageloader.SourceHandler{
-			sourcegraph.SourceHandler(),
-			webidl.SourceHandler()},
+		SourceHandlers:            sourceHandlers,
 	})
 
 	loaderResult := loader.Load(config.Libraries...)

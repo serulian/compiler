@@ -87,9 +87,14 @@ func buildAndRunTests(filePath string, runner TestRunner) (bool, error) {
 
 	filename := path.Base(filePath)
 
-	scopeResult := scopegraph.ParseAndBuildScopeGraph(filePath,
+	scopeResult, err := scopegraph.ParseAndBuildScopeGraph(filePath,
 		[]string{},
 		builder.CORE_LIBRARY)
+
+	if err != nil {
+		// TODO: better output
+		return false, fmt.Errorf("Error running test %s: %v", filePath, err)
+	}
 
 	if !scopeResult.Status {
 		// TODO: better output
