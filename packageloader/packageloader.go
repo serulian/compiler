@@ -586,7 +586,7 @@ func (p *PackageLoader) handleImport(sourceKind string, importPath string, impor
 
 	handler, hasHandler := p.handlers[importInformation.Kind]
 	if !hasHandler {
-		p.errors <- compilercommon.SourceErrorf(importInformation.SourceRange, "Unknown kind of import '%s'", importInformation.Kind)
+		p.errors <- compilercommon.SourceErrorf(importInformation.SourceRange, "Unknown kind of import '%s'. Did you forgot to install a source plugin?", importInformation.Kind)
 		return ""
 	}
 
