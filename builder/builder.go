@@ -90,7 +90,11 @@ func BuildSource(rootSourceFilePath string, debug bool, vcsDevelopmentDirectorie
 	// Build a scope graph for the project. This will conduct parsing and type graph
 	// construction on our behalf.
 	log.Println("Starting build")
-	scopeResult := scopegraph.ParseAndBuildScopeGraph(rootSourceFilePath, vcsDevelopmentDirectories, CORE_LIBRARY)
+	scopeResult, err := scopegraph.ParseAndBuildScopeGraph(rootSourceFilePath, vcsDevelopmentDirectories, CORE_LIBRARY)
+	if err != nil {
+		compilerutil.LogToConsole(compilerutil.ErrorLogLevel, nil, "%s", err.Error())
+		return false
+	}
 
 	outputWarnings(scopeResult.Warnings)
 	if !scopeResult.Status {
