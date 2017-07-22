@@ -1,10 +1,10 @@
 # Serulian Toolkit - Toolkit and Compiler for building Serulian projects
 
-[![godoc](https://godoc.org/github.com/Serulian/compiler?status.svg)](http://godoc.org/github.com/Serulian/compiler)
-[![Build Status (Travis)](https://travis-ci.org/Serulian/compiler.svg?branch=master)](https://travis-ci.org/Serulian/compiler)
+[![godoc](https://godoc.org/github.com/serulian/compiler?status.svg)](http://godoc.org/github.com/serulian/compiler)
+[![Build Status (Travis)](https://travis-ci.org/serulian/compiler.svg?branch=master)](https://travis-ci.org/serulian/compiler)
 [![Container Image on Quay](https://quay.io/repository/serulian/compiler/status "Container Image on Quay")](https://quay.io/repository/serulian/compiler)
 
-The Serulian toolkit and compiler provides tooling for developing, building, formatting and testing [Serulian](https://github.com/Serulian/spec) web/mobile applications.
+The Serulian toolkit and compiler provides tooling for developing, building, formatting and testing [Serulian](https://github.com/serulian/spec) web/mobile applications.
 
 ## Project Status
 
@@ -57,20 +57,20 @@ The above will reformat all Serulian files found under the `somedir` directory.
 
 ### Working with imports
 
-[Imports in Serulian](https://github.com/Serulian/spec/blob/master/proposals/ImportsAndPackages.md) are usually tied to a specific commit SHA or tagged version. The Serulian toolkit commands `freeze`, `unfreeze`, `update` and `upgrade` can be used to easily manage the versions of these imports.
+[Imports in Serulian](https://github.com/serulian/spec/blob/master/proposals/ImportsAndPackages.md) are usually tied to a specific commit SHA or tagged version. The Serulian toolkit commands `freeze`, `unfreeze`, `update` and `upgrade` can be used to easily manage the versions of these imports.
 
 #### Freeze
 
 The `imports freeze` command can be used to rewrite the import to point to its current HEAD SHA:
 
 ```sh
-./serulian imports freeze ./... github.com/Serulian/somelib
+./serulian imports freeze ./... github.com/serulian/somelib
 ```
 
 Contents of the matching source file after `freeze`:
 
 ```seru
-from "github.com/Serulian/somelib:somesha" import SomeThing
+from "github.com/serulian/somelib:somesha" import SomeThing
 ```
 
 #### Unfreeze
@@ -78,7 +78,7 @@ from "github.com/Serulian/somelib:somesha" import SomeThing
 The `unfreeze` command can be used to rewrite imports back to HEAD, for real-time development:
 
 ```sh
-./serulian imports unfreeze ./... github.com/Serulian/somelib
+./serulian imports unfreeze ./... github.com/serulian/somelib
 ```
 
 #### Update
@@ -88,19 +88,19 @@ If the library being imported is versioned using [Semantic Versioning](http://se
 Given contents:
 
 ```seru
-from "github.com/Serulian/somelib@v1.2.3" import SomeThing
+from "github.com/serulian/somelib@v1.2.3" import SomeThing
 ```
 
 Running:
 
 ```sh
-./serulian imports update ./... github.com/Serulian/somelib
+./serulian imports update ./... github.com/serulian/somelib
 ```
 
 Contents of the matching source file after `update`:
 
 ```seru
-from "github.com/Serulian/somelib@v1.3.0" import SomeThing
+from "github.com/serulian/somelib@v1.3.0" import SomeThing
 ```
 
 **Note:** The version will *not* be upgraded if the only change available is a major version change. To apply a major version change, use `upgrade`.
@@ -110,13 +110,13 @@ from "github.com/Serulian/somelib@v1.3.0" import SomeThing
 If the library being imported is versioned using [Semantic Versioning](http://semver.org/), the additional command `upgrade` can be used to upgrade the import to the latest *stable* version:
 
 ```sh
-./serulian imports upgrade ./... github.com/Serulian/somelib
+./serulian imports upgrade ./... github.com/serulian/somelib
 ```
 
 Contents of the matching source file after `upgrade`:
 
 ```seru
-from "github.com/Serulian/somelib@v1.2.3" import SomeThing
+from "github.com/serulian/somelib@v1.2.3" import SomeThing
 ```
 
 ### Testing a project
