@@ -11,7 +11,7 @@ $module('nochildren', function () {
       while (true) {
         switch ($current) {
           case 0:
-            found = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+            found = $t.fastbox(true, $g.________testlib.basictypes.Boolean);
             $current = 1;
             $continue($resolve, $reject);
             return;
@@ -49,7 +49,7 @@ $module('nochildren', function () {
             break;
 
           case 4:
-            found = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+            found = $t.fastbox(false, $g.________testlib.basictypes.Boolean);
             $current = 2;
             $continue($resolve, $reject);
             return;
@@ -73,7 +73,7 @@ $module('nochildren', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $promise.maybe($g.nochildren.SimpleFunction($g.____testlib.basictypes.Mapping($g.____testlib.basictypes.String).Empty(), $generator.directempty())).then(function ($result0) {
+            $promise.maybe($g.nochildren.SimpleFunction($g.________testlib.basictypes.Mapping($g.________testlib.basictypes.String).Empty(), $generator.directempty())).then(function ($result0) {
               $result = $result0;
               $current = 1;
               $continue($resolve, $reject);

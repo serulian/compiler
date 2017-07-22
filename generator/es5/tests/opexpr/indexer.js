@@ -5,12 +5,12 @@ $module('indexer', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      instance.result = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+      instance.result = $t.fastbox(false, $g.________testlib.basictypes.Boolean);
       return instance;
     };
     $instance.$index = function (someParam) {
       var $this = this;
-      return $t.fastbox($this.result.$wrapped && !someParam.$wrapped, $g.____testlib.basictypes.Boolean);
+      return $t.fastbox($this.result.$wrapped && !someParam.$wrapped, $g.________testlib.basictypes.Boolean);
     };
     $instance.$setindex = function (index, value) {
       var $this = this;
@@ -26,7 +26,7 @@ $module('indexer', function () {
   $static.TEST = function () {
     var sc;
     sc = $g.indexer.SomeClass.new();
-    sc.$setindex($t.fastbox(1, $g.____testlib.basictypes.Integer), $t.fastbox(true, $g.____testlib.basictypes.Boolean));
-    return sc.$index($t.fastbox(false, $g.____testlib.basictypes.Boolean));
+    sc.$setindex($t.fastbox(1, $g.________testlib.basictypes.Integer), $t.fastbox(true, $g.________testlib.basictypes.Boolean));
+    return sc.$index($t.fastbox(false, $g.________testlib.basictypes.Boolean));
   };
 });

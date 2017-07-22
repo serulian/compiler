@@ -9,7 +9,7 @@ $module('with', function () {
     };
     $instance.Release = function () {
       var $this = this;
-      $g.with.someBool = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+      $g.with.someBool = $t.fastbox(true, $g.________testlib.basictypes.Boolean);
       return;
     };
     this.$typesig = function () {
@@ -26,19 +26,19 @@ $module('with', function () {
   $static.TEST = function () {
     var $temp0;
     var $resources = $t.resourcehandler();
-    $t.fastbox(123, $g.____testlib.basictypes.Integer);
+    $t.fastbox(123, $g.________testlib.basictypes.Integer);
     $temp0 = $g.with.SomeReleasable.new();
     $resources.pushr($temp0, '$temp0');
-    $t.fastbox(456, $g.____testlib.basictypes.Integer);
+    $t.fastbox(456, $g.________testlib.basictypes.Integer);
     $resources.popr('$temp0');
-    $t.fastbox(789, $g.____testlib.basictypes.Integer);
+    $t.fastbox(789, $g.________testlib.basictypes.Integer);
     var $pat = $g.with.someBool;
     $resources.popall();
     return $pat;
   };
   this.$init(function () {
     return $promise.new(function (resolve) {
-      $static.someBool = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+      $static.someBool = $t.fastbox(false, $g.________testlib.basictypes.Boolean);
       resolve();
     });
   }, '19a53bdb', []);

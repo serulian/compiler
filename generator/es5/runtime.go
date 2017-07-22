@@ -377,13 +377,7 @@ this.Serulian = (function($global) {
           return new type();
         }
 
-        if (type == $global.Promise) {
-          return new Promise(arguments[0]);
-        }
-
-        var newInstance = Object.create(type.prototype);
-        newInstance = type.apply(newInstance, arguments) || newInstance;
-        return newInstance;
+        return new (Function.prototype.bind.apply(type, [null].concat(arguments)))();
       };
     },
 

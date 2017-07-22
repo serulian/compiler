@@ -1,0 +1,13 @@
+class SomeClass {}
+
+type SomeType : SomeClass {}
+
+class ThirdClass {
+    operator<bool> index(sc SomeClass) {
+        return true
+    }
+}
+
+function<void> DoSomething(st SomeType, tc ThirdClass) {
+	tc[st]
+}

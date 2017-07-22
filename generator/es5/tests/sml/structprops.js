@@ -14,19 +14,19 @@ $module('structprops', function () {
     };
     $static.$fields = [];
     $t.defineStructField($static, 'BoolValue', 'BoolValue', function () {
-      return $g.____testlib.basictypes.Boolean;
+      return $g.________testlib.basictypes.Boolean;
     }, function () {
-      return $g.____testlib.basictypes.Boolean;
+      return $g.________testlib.basictypes.Boolean;
     }, false);
     $t.defineStructField($static, 'StringValue', 'StringValue', function () {
-      return $g.____testlib.basictypes.String;
+      return $g.________testlib.basictypes.String;
     }, function () {
-      return $g.____testlib.basictypes.String;
+      return $g.________testlib.basictypes.String;
     }, false);
     $t.defineStructField($static, 'OptionalValue', 'OptionalValue', function () {
-      return $g.____testlib.basictypes.Integer;
+      return $g.________testlib.basictypes.Integer;
     }, function () {
-      return $g.____testlib.basictypes.Integer;
+      return $g.________testlib.basictypes.Integer;
     }, true);
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -45,10 +45,10 @@ $module('structprops', function () {
   });
 
   $static.SimpleFunction = function (props) {
-    return $t.fastbox(($g.____testlib.basictypes.String.$equals(props.StringValue, $t.fastbox("hello world", $g.____testlib.basictypes.String)).$wrapped && props.BoolValue.$wrapped) && !(props.OptionalValue == null), $g.____testlib.basictypes.Boolean);
+    return $t.fastbox(($g.________testlib.basictypes.String.$equals(props.StringValue, $t.fastbox("hello world", $g.________testlib.basictypes.String)).$wrapped && props.BoolValue.$wrapped) && !(props.OptionalValue == null), $g.________testlib.basictypes.Boolean);
   };
   $static.TEST = function () {
     var $temp0;
-    return $g.structprops.SimpleFunction(($temp0 = $g.structprops.SomeProps.new($t.fastbox(true, $g.____testlib.basictypes.Boolean), $t.fastbox("hello world", $g.____testlib.basictypes.String)), $temp0.OptionalValue = $t.fastbox(42, $g.____testlib.basictypes.Integer), $temp0));
+    return $g.structprops.SimpleFunction(($temp0 = $g.structprops.SomeProps.new($t.fastbox(true, $g.________testlib.basictypes.Boolean), $t.fastbox("hello world", $g.________testlib.basictypes.String)), $temp0.OptionalValue = $t.fastbox(42, $g.________testlib.basictypes.Integer), $temp0));
   };
 });

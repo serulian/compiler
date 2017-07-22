@@ -13,9 +13,9 @@ $module('generic', function () {
     };
     $static.$fields = [];
     $t.defineStructField($static, 'BoolValue', 'BoolValue', function () {
-      return $g.____testlib.basictypes.Boolean;
+      return $g.________testlib.basictypes.Boolean;
     }, function () {
-      return $g.____testlib.basictypes.Boolean;
+      return $g.________testlib.basictypes.Boolean;
     }, false);
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -69,8 +69,8 @@ $module('generic', function () {
   $static.TEST = function () {
     var ss;
     var ss2;
-    ss = $g.generic.SomeStruct($g.generic.AnotherStruct).new($g.generic.AnotherStruct.new($t.fastbox(true, $g.____testlib.basictypes.Boolean)));
-    ss2 = $g.generic.SomeStruct($g.____testlib.basictypes.Boolean).new($t.fastbox(true, $g.____testlib.basictypes.Boolean));
-    return $t.fastbox(ss.SomeField.BoolValue.$wrapped && ss2.SomeField.$wrapped, $g.____testlib.basictypes.Boolean);
+    ss = $g.generic.SomeStruct($g.generic.AnotherStruct).new($g.generic.AnotherStruct.new($t.fastbox(true, $g.________testlib.basictypes.Boolean)));
+    ss2 = $g.generic.SomeStruct($g.________testlib.basictypes.Boolean).new($t.fastbox(true, $g.________testlib.basictypes.Boolean));
+    return $t.fastbox(ss.SomeField.BoolValue.$wrapped && ss2.SomeField.$wrapped, $g.________testlib.basictypes.Boolean);
   };
 });

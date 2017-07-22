@@ -84,6 +84,6 @@ $module('generic', function () {
     $t.cast(asc, $g.generic.ASomething, false);
     $t.cast(asc2, $g.generic.ASomething, false);
     $t.cast(bsc, $g.generic.BSomething, false);
-    return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+    return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
   };
 });

@@ -9,7 +9,7 @@ $module('unwrapnullable', function () {
     };
     $instance.SomeProperty = $t.property(function () {
       var $this = this;
-      return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+      return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
     });
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -47,11 +47,11 @@ $module('unwrapnullable', function () {
     st = $t.fastbox($g.unwrapnullable.SomeClass.new(), $g.unwrapnullable.SomeType);
     st2 = null;
     first = $t.syncnullcompare($t.dynamicaccess($t.unbox(st), 'SomeProperty', false), function () {
-      return $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+      return $t.fastbox(false, $g.________testlib.basictypes.Boolean);
     });
     second = $t.syncnullcompare($t.dynamicaccess($t.unbox(st2), 'SomeProperty', false), function () {
-      return $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+      return $t.fastbox(false, $g.________testlib.basictypes.Boolean);
     });
-    return $t.fastbox(first.$wrapped && !second.$wrapped, $g.____testlib.basictypes.Boolean);
+    return $t.fastbox(first.$wrapped && !second.$wrapped, $g.________testlib.basictypes.Boolean);
   };
 });

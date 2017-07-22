@@ -9,7 +9,7 @@ $module('nullaccess', function () {
     };
     $instance.SomeBool = $t.property(function () {
       var $this = this;
-      return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+      return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
     });
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -30,9 +30,9 @@ $module('nullaccess', function () {
     sc2 = $g.nullaccess.SomeClass.new();
     sc3 = null;
     return $t.fastbox((sc.SomeBool().$wrapped && $t.syncnullcompare($t.dynamicaccess(sc2, 'SomeBool', false), function () {
-      return $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+      return $t.fastbox(false, $g.________testlib.basictypes.Boolean);
     }).$wrapped) && $t.syncnullcompare($t.dynamicaccess(sc3, 'SomeBool', false), function () {
-      return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
-    }).$wrapped, $g.____testlib.basictypes.Boolean);
+      return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
+    }).$wrapped, $g.________testlib.basictypes.Boolean);
   };
 });

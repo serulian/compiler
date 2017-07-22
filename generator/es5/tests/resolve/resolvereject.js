@@ -8,7 +8,7 @@ $module('resolvereject', function () {
       switch ($current) {
         case 0:
           try {
-            var $expr = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+            var $expr = $t.fastbox(true, $g.________testlib.basictypes.Boolean);
             a = $expr;
             b = null;
           } catch ($rejected) {

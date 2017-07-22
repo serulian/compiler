@@ -13,9 +13,9 @@ $module('defaults', function () {
     };
     $static.$fields = [];
     $t.defineStructField($static, 'AnotherBool', 'AnotherBool', function () {
-      return $g.____testlib.basictypes.Boolean;
+      return $g.________testlib.basictypes.Boolean;
     }, function () {
-      return $g.____testlib.basictypes.Boolean;
+      return $g.________testlib.basictypes.Boolean;
     }, false);
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -46,26 +46,26 @@ $module('defaults', function () {
     $static.$initDefaults = function (instance, isRuntimeCreated) {
       var boxed = instance[BOXED_DATA_PROPERTY];
       if (isRuntimeCreated || (boxed['SomeField'] === undefined)) {
-        instance.SomeField = $t.fastbox(42, $g.____testlib.basictypes.Integer);
+        instance.SomeField = $t.fastbox(42, $g.________testlib.basictypes.Integer);
       }
       if (isRuntimeCreated || (boxed['AnotherField'] === undefined)) {
-        instance.AnotherField = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+        instance.AnotherField = $t.fastbox(false, $g.________testlib.basictypes.Boolean);
       }
       if (isRuntimeCreated || (boxed['SomeInstance'] === undefined)) {
-        instance.SomeInstance = $g.defaults.AnotherStruct.new($t.fastbox(true, $g.____testlib.basictypes.Boolean));
+        instance.SomeInstance = $g.defaults.AnotherStruct.new($t.fastbox(true, $g.________testlib.basictypes.Boolean));
       }
       return instance;
     };
     $static.$fields = [];
     $t.defineStructField($static, 'SomeField', 'SomeField', function () {
-      return $g.____testlib.basictypes.Integer;
+      return $g.________testlib.basictypes.Integer;
     }, function () {
-      return $g.____testlib.basictypes.Integer;
+      return $g.________testlib.basictypes.Integer;
     }, false);
     $t.defineStructField($static, 'AnotherField', 'AnotherField', function () {
-      return $g.____testlib.basictypes.Boolean;
+      return $g.________testlib.basictypes.Boolean;
     }, function () {
-      return $g.____testlib.basictypes.Boolean;
+      return $g.________testlib.basictypes.Boolean;
     }, false);
     $t.defineStructField($static, 'SomeInstance', 'SomeInstance', function () {
       return $g.defaults.AnotherStruct;
@@ -91,7 +91,7 @@ $module('defaults', function () {
   $static.TEST = function () {
     var $temp0;
     var ss;
-    ss = ($temp0 = $g.defaults.SomeStruct.new(), $temp0.AnotherField = $t.fastbox(true, $g.____testlib.basictypes.Boolean), $temp0);
-    return $t.fastbox(((ss.SomeField.$wrapped == 42) && ss.AnotherField.$wrapped) && ss.SomeInstance.AnotherBool.$wrapped, $g.____testlib.basictypes.Boolean);
+    ss = ($temp0 = $g.defaults.SomeStruct.new(), $temp0.AnotherField = $t.fastbox(true, $g.________testlib.basictypes.Boolean), $temp0);
+    return $t.fastbox(((ss.SomeField.$wrapped == 42) && ss.AnotherField.$wrapped) && ss.SomeInstance.AnotherBool.$wrapped, $g.________testlib.basictypes.Boolean);
   };
 });

@@ -46,7 +46,7 @@ $module('withasync', function () {
   });
 
   $static.DoSomethingAsync = $t.workerwrap('1947914b', function () {
-    return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+    return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
   });
   $static.TEST = $t.markpromising(function () {
     var $result;
@@ -59,10 +59,10 @@ $module('withasync', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $t.fastbox(123, $g.____testlib.basictypes.Integer);
+            $t.fastbox(123, $g.________testlib.basictypes.Integer);
             $temp0 = $g.withasync.SomeReleasable.new();
             $resources.pushr($temp0, '$temp0');
-            $t.fastbox(456, $g.____testlib.basictypes.Integer);
+            $t.fastbox(456, $g.________testlib.basictypes.Integer);
             $resources.popr('$temp0').then(function ($result0) {
               $result = $result0;
               $current = 1;
@@ -75,7 +75,7 @@ $module('withasync', function () {
             return;
 
           case 1:
-            $t.fastbox(789, $g.____testlib.basictypes.Integer);
+            $t.fastbox(789, $g.________testlib.basictypes.Integer);
             $resolve($g.withasync.someBool);
             return;
 
@@ -89,7 +89,7 @@ $module('withasync', function () {
   });
   this.$init(function () {
     return $promise.new(function (resolve) {
-      $static.someBool = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+      $static.someBool = $t.fastbox(false, $g.________testlib.basictypes.Boolean);
       resolve();
     });
   }, 'e45641b5', []);

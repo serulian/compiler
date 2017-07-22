@@ -39,9 +39,9 @@ $module('nominaljson', function () {
     };
     $static.$fields = [];
     $t.defineStructField($static, 'AnotherBool', 'AnotherBool', function () {
-      return $g.____testlib.basictypes.Boolean;
+      return $g.________testlib.basictypes.Boolean;
     }, function () {
-      return $g.____testlib.basictypes.Boolean;
+      return $g.________testlib.basictypes.Boolean;
     }, false);
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -103,10 +103,10 @@ $module('nominaljson', function () {
       while (true) {
         switch ($current) {
           case 0:
-            s = $g.nominaljson.SomeStruct.new($t.box($g.nominaljson.AnotherStruct.new($t.fastbox(true, $g.____testlib.basictypes.Boolean)), $g.nominaljson.SomeNominal));
-            jsonString = $t.fastbox('{"Nested":{"AnotherBool":true}}', $g.____testlib.basictypes.String);
-            $promise.maybe(s.Stringify($g.____testlib.basictypes.JSON)()).then(function ($result0) {
-              $result = $g.____testlib.basictypes.String.$equals($result0, jsonString);
+            s = $g.nominaljson.SomeStruct.new($t.box($g.nominaljson.AnotherStruct.new($t.fastbox(true, $g.________testlib.basictypes.Boolean)), $g.nominaljson.SomeNominal));
+            jsonString = $t.fastbox('{"Nested":{"AnotherBool":true}}', $g.________testlib.basictypes.String);
+            $promise.maybe(s.Stringify($g.________testlib.basictypes.JSON)()).then(function ($result0) {
+              $result = $g.________testlib.basictypes.String.$equals($result0, jsonString);
               $current = 1;
               $continue($resolve, $reject);
               return;
@@ -118,7 +118,7 @@ $module('nominaljson', function () {
 
           case 1:
             correct = $result;
-            $promise.maybe($g.nominaljson.SomeStruct.Parse($g.____testlib.basictypes.JSON)(jsonString)).then(function ($result0) {
+            $promise.maybe($g.nominaljson.SomeStruct.Parse($g.________testlib.basictypes.JSON)(jsonString)).then(function ($result0) {
               $result = $result0;
               $current = 2;
               $continue($resolve, $reject);
@@ -131,7 +131,7 @@ $module('nominaljson', function () {
 
           case 2:
             parsed = $result;
-            $resolve($t.fastbox(correct.$wrapped && parsed.Nested.GetValue().$wrapped, $g.____testlib.basictypes.Boolean));
+            $resolve($t.fastbox(correct.$wrapped && parsed.Nested.GetValue().$wrapped, $g.________testlib.basictypes.Boolean));
             return;
 
           default:

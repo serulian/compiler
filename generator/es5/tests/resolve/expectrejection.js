@@ -9,7 +9,7 @@ $module('expectrejection', function () {
     };
     $instance.Message = $t.property(function () {
       var $this = this;
-      return $t.fastbox('yo!', $g.____testlib.basictypes.String);
+      return $t.fastbox('yo!', $g.________testlib.basictypes.String);
     });
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -44,7 +44,7 @@ $module('expectrejection', function () {
           continue syncloop;
 
         case 1:
-          return $t.fastbox((a == null) && $g.____testlib.basictypes.String.$equals($t.assertnotnull(b).Message(), $t.fastbox('yo!', $g.____testlib.basictypes.String)).$wrapped, $g.____testlib.basictypes.Boolean);
+          return $t.fastbox((a == null) && $g.________testlib.basictypes.String.$equals($t.assertnotnull(b).Message(), $t.fastbox('yo!', $g.________testlib.basictypes.String)).$wrapped, $g.________testlib.basictypes.Boolean);
 
         default:
           return;

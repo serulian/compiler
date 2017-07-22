@@ -5,7 +5,7 @@ $module('dynamicprop', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      instance.value = $t.fastbox(42, $g.____testlib.basictypes.Integer);
+      instance.value = $t.fastbox(42, $g.________testlib.basictypes.Integer);
       return instance;
     };
     $instance.set$SomeProp = function (val) {
@@ -38,11 +38,11 @@ $module('dynamicprop', function () {
         switch ($current) {
           case 0:
             sc = $g.dynamicprop.SomeClass.new();
-            sc.set$SomeProp($t.fastbox(123, $g.____testlib.basictypes.Integer));
+            sc.set$SomeProp($t.fastbox(123, $g.________testlib.basictypes.Integer));
             sca = sc;
             $t.dynamicaccess(sca, 'SomeProp', true).then(function ($result1) {
-              return $promise.resolve($t.cast($result1, $g.____testlib.basictypes.Integer, false).$wrapped == 123).then(function ($result0) {
-                $result = $t.fastbox($result0 && (sc.SomeProp().$wrapped == 123), $g.____testlib.basictypes.Boolean);
+              return $promise.resolve($t.cast($result1, $g.________testlib.basictypes.Integer, false).$wrapped == 123).then(function ($result0) {
+                $result = $t.fastbox($result0 && (sc.SomeProp().$wrapped == 123), $g.________testlib.basictypes.Boolean);
                 $current = 1;
                 $continue($resolve, $reject);
                 return;

@@ -9,7 +9,7 @@ $module('nullcomparecall', function () {
     };
     $instance.Message = $t.property(function () {
       var $this = this;
-      return $t.fastbox('huh?', $g.____testlib.basictypes.String);
+      return $t.fastbox('huh?', $g.________testlib.basictypes.String);
     });
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -27,7 +27,7 @@ $module('nullcomparecall', function () {
   };
   $static.TEST = function () {
     var thing;
-    thing = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+    thing = $t.fastbox(true, $g.________testlib.basictypes.Boolean);
     return $t.syncnullcompare(thing, function () {
       return $g.nullcomparecall.RejectNow();
     });

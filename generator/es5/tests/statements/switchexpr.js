@@ -6,9 +6,9 @@ $module('switchexpr', function () {
     syncloop: while (true) {
       switch ($current) {
         case 0:
-          $t.fastbox(123, $g.____testlib.basictypes.Integer);
+          $t.fastbox(123, $g.________testlib.basictypes.Integer);
           $temp0 = someVar;
-          if ($g.____testlib.basictypes.Integer.$equals($temp0, $t.fastbox(1, $g.____testlib.basictypes.Integer)).$wrapped) {
+          if ($g.________testlib.basictypes.Integer.$equals($temp0, $t.fastbox(1, $g.________testlib.basictypes.Integer)).$wrapped) {
             $current = 1;
             continue syncloop;
           } else {
@@ -18,16 +18,16 @@ $module('switchexpr', function () {
           break;
 
         case 1:
-          $t.fastbox(1234, $g.____testlib.basictypes.Integer);
+          $t.fastbox(1234, $g.________testlib.basictypes.Integer);
           $current = 2;
           continue syncloop;
 
         case 2:
-          $t.fastbox(789, $g.____testlib.basictypes.Integer);
+          $t.fastbox(789, $g.________testlib.basictypes.Integer);
           return;
 
         case 3:
-          if ($g.____testlib.basictypes.Integer.$equals($temp0, $t.fastbox(2, $g.____testlib.basictypes.Integer)).$wrapped) {
+          if ($g.________testlib.basictypes.Integer.$equals($temp0, $t.fastbox(2, $g.________testlib.basictypes.Integer)).$wrapped) {
             $current = 4;
             continue syncloop;
           } else {
@@ -37,7 +37,7 @@ $module('switchexpr', function () {
           break;
 
         case 4:
-          $t.fastbox(2345, $g.____testlib.basictypes.Integer);
+          $t.fastbox(2345, $g.________testlib.basictypes.Integer);
           $current = 2;
           continue syncloop;
 
@@ -52,7 +52,7 @@ $module('switchexpr', function () {
           break;
 
         case 6:
-          $t.fastbox(3456, $g.____testlib.basictypes.Integer);
+          $t.fastbox(3456, $g.________testlib.basictypes.Integer);
           $current = 2;
           continue syncloop;
 

@@ -11,7 +11,7 @@ $module('children', function () {
       while (true) {
         switch ($current) {
           case 0:
-            counter = $t.fastbox(0, $g.____testlib.basictypes.Integer);
+            counter = $t.fastbox(0, $g.________testlib.basictypes.Integer);
             $current = 1;
             $continue($resolve, $reject);
             return;
@@ -49,13 +49,13 @@ $module('children', function () {
             break;
 
           case 4:
-            counter = $t.fastbox(counter.$wrapped + value.$wrapped, $g.____testlib.basictypes.Integer);
+            counter = $t.fastbox(counter.$wrapped + value.$wrapped, $g.________testlib.basictypes.Integer);
             $current = 2;
             $continue($resolve, $reject);
             return;
 
           case 5:
-            $resolve($t.fastbox(counter.$wrapped == 6, $g.____testlib.basictypes.Boolean));
+            $resolve($t.fastbox(counter.$wrapped == 6, $g.________testlib.basictypes.Boolean));
             return;
 
           default:
@@ -73,23 +73,23 @@ $module('children', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $promise.maybe($g.children.SimpleFunction($g.____testlib.basictypes.Mapping($g.____testlib.basictypes.String).Empty(), function () {
+            $promise.maybe($g.children.SimpleFunction($g.________testlib.basictypes.Mapping($g.________testlib.basictypes.String).Empty(), function () {
               var $current = 0;
               var $continue = function ($yield, $yieldin, $reject, $done) {
                 while (true) {
                   switch ($current) {
                     case 0:
-                      $yield($t.fastbox(1, $g.____testlib.basictypes.Integer));
+                      $yield($t.fastbox(1, $g.________testlib.basictypes.Integer));
                       $current = 1;
                       return;
 
                     case 1:
-                      $yield($t.fastbox(2, $g.____testlib.basictypes.Integer));
+                      $yield($t.fastbox(2, $g.________testlib.basictypes.Integer));
                       $current = 2;
                       return;
 
                     case 2:
-                      $yield($t.fastbox(3, $g.____testlib.basictypes.Integer));
+                      $yield($t.fastbox(3, $g.________testlib.basictypes.Integer));
                       $current = 3;
                       return;
 

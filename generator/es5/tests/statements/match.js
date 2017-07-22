@@ -9,7 +9,7 @@ $module('match', function () {
     };
     $instance.Value = $t.property(function () {
       var $this = this;
-      return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+      return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
     });
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -39,13 +39,13 @@ $module('match', function () {
     syncloop: while (true) {
       switch ($current) {
         case 0:
-          firstBool = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
-          secondBool = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
-          thirdBool = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
-          fourthBool = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+          firstBool = $t.fastbox(false, $g.________testlib.basictypes.Boolean);
+          secondBool = $t.fastbox(false, $g.________testlib.basictypes.Boolean);
+          thirdBool = $t.fastbox(false, $g.________testlib.basictypes.Boolean);
+          fourthBool = $t.fastbox(false, $g.________testlib.basictypes.Boolean);
           firstValue = $g.match.SomeClass.new();
-          secondValue = $t.fastbox(1234, $g.____testlib.basictypes.Integer);
-          thirdValue = $t.fastbox('hello world', $g.____testlib.basictypes.String);
+          secondValue = $t.fastbox(1234, $g.________testlib.basictypes.Integer);
+          thirdValue = $t.fastbox('hello world', $g.________testlib.basictypes.String);
           fourthValue = null;
           firstThing = firstValue;
           if ($t.istype(firstThing, $g.match.SomeClass)) {
@@ -74,7 +74,7 @@ $module('match', function () {
           break;
 
         case 3:
-          secondBool = $t.fastbox(!secondThing.Value().$wrapped, $g.____testlib.basictypes.Boolean);
+          secondBool = $t.fastbox(!secondThing.Value().$wrapped, $g.________testlib.basictypes.Boolean);
           $current = 4;
           continue syncloop;
 
@@ -90,7 +90,7 @@ $module('match', function () {
           break;
 
         case 5:
-          thirdBool = $t.fastbox(!thirdThing.Value().$wrapped, $g.____testlib.basictypes.Boolean);
+          thirdBool = $t.fastbox(!thirdThing.Value().$wrapped, $g.________testlib.basictypes.Boolean);
           $current = 6;
           continue syncloop;
 
@@ -106,15 +106,15 @@ $module('match', function () {
           break;
 
         case 7:
-          fourthBool = $t.fastbox(!fourthThing.Value().$wrapped, $g.____testlib.basictypes.Boolean);
+          fourthBool = $t.fastbox(!fourthThing.Value().$wrapped, $g.________testlib.basictypes.Boolean);
           $current = 8;
           continue syncloop;
 
         case 8:
-          return $t.fastbox(((firstBool.$wrapped && secondBool.$wrapped) && thirdBool.$wrapped) && fourthBool.$wrapped, $g.____testlib.basictypes.Boolean);
+          return $t.fastbox(((firstBool.$wrapped && secondBool.$wrapped) && thirdBool.$wrapped) && fourthBool.$wrapped, $g.________testlib.basictypes.Boolean);
 
         case 9:
-          if ($t.istype(fourthThing, $g.____testlib.basictypes.Integer)) {
+          if ($t.istype(fourthThing, $g.________testlib.basictypes.Integer)) {
             $current = 10;
             continue syncloop;
           } else {
@@ -124,7 +124,7 @@ $module('match', function () {
           break;
 
         case 10:
-          fourthBool = $t.fastbox(fourthThing.$wrapped == 1234, $g.____testlib.basictypes.Boolean);
+          fourthBool = $t.fastbox(fourthThing.$wrapped == 1234, $g.________testlib.basictypes.Boolean);
           $current = 8;
           continue syncloop;
 
@@ -139,12 +139,12 @@ $module('match', function () {
           break;
 
         case 12:
-          fourthBool = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+          fourthBool = $t.fastbox(true, $g.________testlib.basictypes.Boolean);
           $current = 8;
           continue syncloop;
 
         case 13:
-          if ($t.istype(thirdThing, $g.____testlib.basictypes.Integer)) {
+          if ($t.istype(thirdThing, $g.________testlib.basictypes.Integer)) {
             $current = 14;
             continue syncloop;
           } else {
@@ -154,7 +154,7 @@ $module('match', function () {
           break;
 
         case 14:
-          thirdBool = $t.fastbox(thirdThing.$wrapped == 1234, $g.____testlib.basictypes.Boolean);
+          thirdBool = $t.fastbox(thirdThing.$wrapped == 1234, $g.________testlib.basictypes.Boolean);
           $current = 6;
           continue syncloop;
 
@@ -169,12 +169,12 @@ $module('match', function () {
           break;
 
         case 16:
-          thirdBool = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+          thirdBool = $t.fastbox(true, $g.________testlib.basictypes.Boolean);
           $current = 6;
           continue syncloop;
 
         case 17:
-          if ($t.istype(secondThing, $g.____testlib.basictypes.Integer)) {
+          if ($t.istype(secondThing, $g.________testlib.basictypes.Integer)) {
             $current = 18;
             continue syncloop;
           } else {
@@ -184,7 +184,7 @@ $module('match', function () {
           break;
 
         case 18:
-          secondBool = $t.fastbox(secondThing.$wrapped == 1234, $g.____testlib.basictypes.Boolean);
+          secondBool = $t.fastbox(secondThing.$wrapped == 1234, $g.________testlib.basictypes.Boolean);
           $current = 4;
           continue syncloop;
 
@@ -199,12 +199,12 @@ $module('match', function () {
           break;
 
         case 20:
-          secondBool = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+          secondBool = $t.fastbox(false, $g.________testlib.basictypes.Boolean);
           $current = 4;
           continue syncloop;
 
         case 21:
-          if ($t.istype(firstThing, $g.____testlib.basictypes.Integer)) {
+          if ($t.istype(firstThing, $g.________testlib.basictypes.Integer)) {
             $current = 22;
             continue syncloop;
           } else {
@@ -214,7 +214,7 @@ $module('match', function () {
           break;
 
         case 22:
-          firstBool = $t.fastbox(firstThing.$wrapped == 4567, $g.____testlib.basictypes.Boolean);
+          firstBool = $t.fastbox(firstThing.$wrapped == 4567, $g.________testlib.basictypes.Boolean);
           $current = 2;
           continue syncloop;
 
@@ -229,7 +229,7 @@ $module('match', function () {
           break;
 
         case 24:
-          firstBool = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+          firstBool = $t.fastbox(false, $g.________testlib.basictypes.Boolean);
           $current = 2;
           continue syncloop;
 

@@ -14,7 +14,7 @@ $module('basic', function () {
     };
     $instance.GetValue = function () {
       var $this = this;
-      return $t.fastbox(32, $g.____testlib.basictypes.Integer);
+      return $t.fastbox(32, $g.________testlib.basictypes.Integer);
     };
     Object.defineProperty($instance, 'GetMainValue', {
       get: function () {
@@ -56,7 +56,7 @@ $module('basic', function () {
     };
     $instance.GetMainValue = function () {
       var $this = this;
-      return $t.fastbox($this.$principal.GetValue().$wrapped + 10, $g.____testlib.basictypes.Integer);
+      return $t.fastbox($this.$principal.GetValue().$wrapped + 10, $g.________testlib.basictypes.Integer);
     };
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -72,6 +72,6 @@ $module('basic', function () {
   $static.TEST = function () {
     var sc;
     sc = $g.basic.SomeClass.Declare();
-    return $t.fastbox(sc.GetMainValue().$wrapped == 42, $g.____testlib.basictypes.Boolean);
+    return $t.fastbox(sc.GetMainValue().$wrapped == 42, $g.________testlib.basictypes.Boolean);
   };
 });

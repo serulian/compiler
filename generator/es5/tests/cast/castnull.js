@@ -3,6 +3,6 @@ $module('castnull', function () {
   $static.TEST = function () {
     var value;
     value = null;
-    return $t.cast(value, $g.____testlib.basictypes.Boolean, false);
+    return $t.cast(value, $g.________testlib.basictypes.Boolean, false);
   };
 });

@@ -59,7 +59,7 @@ $module('castignoreinterface', function () {
   });
 
   $static.DoSomethingAsync = $t.workerwrap('7c17decb', function () {
-    return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+    return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
   });
   $static.TEST = $t.markpromising(function () {
     var $result;
@@ -70,7 +70,7 @@ $module('castignoreinterface', function () {
       while (true) {
         switch ($current) {
           case 0:
-            somevalue = $t.fastbox('hello', $g.____testlib.basictypes.String);
+            somevalue = $t.fastbox('hello', $g.________testlib.basictypes.String);
             try {
               var $expr = $t.cast(somevalue, $g.castignoreinterface.SomeInterface, false);
               a = $expr;
@@ -82,7 +82,7 @@ $module('castignoreinterface', function () {
             return;
 
           case 1:
-            $t.nullableinvoke(a, 'SomeFunction', true, [$t.fastbox(true, $g.____testlib.basictypes.Boolean)]).then(function ($result0) {
+            $t.nullableinvoke(a, 'SomeFunction', true, [$t.fastbox(true, $g.________testlib.basictypes.Boolean)]).then(function ($result0) {
               $result = $result0;
               $current = 2;
               $continue($resolve, $reject);
@@ -94,7 +94,7 @@ $module('castignoreinterface', function () {
             return;
 
           case 2:
-            $resolve($t.fastbox(a == null, $g.____testlib.basictypes.Boolean));
+            $resolve($t.fastbox(a == null, $g.________testlib.basictypes.Boolean));
             return;
 
           default:

@@ -1,7 +1,7 @@
 $module('asyncnullcompare', function () {
   var $static = this;
   $static.DoSomethingAsync = $t.workerwrap('9be4de44', function () {
-    return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+    return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
   });
   $static.TEST = $t.markpromising(function () {
     var $result;

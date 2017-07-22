@@ -9,7 +9,7 @@ $module('shortcircuit', function () {
     };
     $instance.Message = $t.property(function () {
       var $this = this;
-      return $t.fastbox('WHY CALLED? ', $g.____testlib.basictypes.String);
+      return $t.fastbox('WHY CALLED? ', $g.________testlib.basictypes.String);
     });
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -29,6 +29,6 @@ $module('shortcircuit', function () {
     throw $g.shortcircuit.someError.new();
   };
   $static.TEST = function () {
-    return $t.fastbox(!(false && $g.shortcircuit.neverCalled().$wrapped) || $g.shortcircuit.anotherNeverCalled().$wrapped, $g.____testlib.basictypes.Boolean);
+    return $t.fastbox(!(false && $g.shortcircuit.neverCalled().$wrapped) || $g.shortcircuit.anotherNeverCalled().$wrapped, $g.________testlib.basictypes.Boolean);
   };
 });

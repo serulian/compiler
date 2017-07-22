@@ -13,15 +13,15 @@ $module('jsondefault', function () {
     $static.$initDefaults = function (instance, isRuntimeCreated) {
       var boxed = instance[BOXED_DATA_PROPERTY];
       if (isRuntimeCreated || (boxed['SomeField'] === undefined)) {
-        instance.SomeField = $t.fastbox(42, $g.____testlib.basictypes.Integer);
+        instance.SomeField = $t.fastbox(42, $g.________testlib.basictypes.Integer);
       }
       return instance;
     };
     $static.$fields = [];
     $t.defineStructField($static, 'SomeField', 'SomeField', function () {
-      return $g.____testlib.basictypes.Integer;
+      return $g.________testlib.basictypes.Integer;
     }, function () {
-      return $g.____testlib.basictypes.Integer;
+      return $g.________testlib.basictypes.Integer;
     }, false);
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -48,8 +48,8 @@ $module('jsondefault', function () {
       while (true) {
         switch ($current) {
           case 0:
-            jsonString = $t.fastbox('{}', $g.____testlib.basictypes.String);
-            $promise.maybe($g.jsondefault.SomeStruct.Parse($g.____testlib.basictypes.JSON)(jsonString)).then(function ($result0) {
+            jsonString = $t.fastbox('{}', $g.________testlib.basictypes.String);
+            $promise.maybe($g.jsondefault.SomeStruct.Parse($g.________testlib.basictypes.JSON)(jsonString)).then(function ($result0) {
               $result = $result0;
               $current = 1;
               $continue($resolve, $reject);
@@ -62,7 +62,7 @@ $module('jsondefault', function () {
 
           case 1:
             parsed = $result;
-            $resolve($t.fastbox(parsed.SomeField.$wrapped == 42, $g.____testlib.basictypes.Boolean));
+            $resolve($t.fastbox(parsed.SomeField.$wrapped == 42, $g.________testlib.basictypes.Boolean));
             return;
 
           default:

@@ -12,11 +12,11 @@ $module('custom', function () {
     };
     $instance.Stringify = function (value) {
       var $this = this;
-      return $g.____testlib.basictypes.JSON.Get().Stringify(value);
+      return $g.________testlib.basictypes.JSON.Get().Stringify(value);
     };
     $instance.Parse = function (value) {
       var $this = this;
-      return $g.____testlib.basictypes.JSON.Get().Parse(value);
+      return $g.________testlib.basictypes.JSON.Get().Parse(value);
     };
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -44,9 +44,9 @@ $module('custom', function () {
     };
     $static.$fields = [];
     $t.defineStructField($static, 'AnotherBool', 'AnotherBool', function () {
-      return $g.____testlib.basictypes.Boolean;
+      return $g.________testlib.basictypes.Boolean;
     }, function () {
-      return $g.____testlib.basictypes.Boolean;
+      return $g.________testlib.basictypes.Boolean;
     }, false);
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -79,14 +79,14 @@ $module('custom', function () {
     };
     $static.$fields = [];
     $t.defineStructField($static, 'SomeField', 'SomeField', function () {
-      return $g.____testlib.basictypes.Integer;
+      return $g.________testlib.basictypes.Integer;
     }, function () {
-      return $g.____testlib.basictypes.Integer;
+      return $g.________testlib.basictypes.Integer;
     }, false);
     $t.defineStructField($static, 'AnotherField', 'AnotherField', function () {
-      return $g.____testlib.basictypes.Boolean;
+      return $g.________testlib.basictypes.Boolean;
     }, function () {
-      return $g.____testlib.basictypes.Boolean;
+      return $g.________testlib.basictypes.Boolean;
     }, false);
     $t.defineStructField($static, 'SomeInstance', 'SomeInstance', function () {
       return $g.custom.AnotherStruct;
@@ -119,8 +119,8 @@ $module('custom', function () {
       while (true) {
         switch ($current) {
           case 0:
-            s = $g.custom.SomeStruct.new($t.fastbox(2, $g.____testlib.basictypes.Integer), $t.fastbox(false, $g.____testlib.basictypes.Boolean), $g.custom.AnotherStruct.new($t.fastbox(true, $g.____testlib.basictypes.Boolean)));
-            jsonString = $t.fastbox('{"AnotherField":false,"SomeField":2,"SomeInstance":{"AnotherBool":true}}', $g.____testlib.basictypes.String);
+            s = $g.custom.SomeStruct.new($t.fastbox(2, $g.________testlib.basictypes.Integer), $t.fastbox(false, $g.________testlib.basictypes.Boolean), $g.custom.AnotherStruct.new($t.fastbox(true, $g.________testlib.basictypes.Boolean)));
+            jsonString = $t.fastbox('{"AnotherField":false,"SomeField":2,"SomeInstance":{"AnotherBool":true}}', $g.________testlib.basictypes.String);
             $promise.maybe($g.custom.SomeStruct.Parse($g.custom.CustomJSON)(jsonString)).then(function ($result0) {
               $result = $result0;
               $current = 1;
@@ -134,7 +134,7 @@ $module('custom', function () {
 
           case 1:
             parsed = $result;
-            $resolve($t.fastbox(((parsed.SomeField.$wrapped == 2) && !parsed.AnotherField.$wrapped) && parsed.SomeInstance.AnotherBool.$wrapped, $g.____testlib.basictypes.Boolean));
+            $resolve($t.fastbox(((parsed.SomeField.$wrapped == 2) && !parsed.AnotherField.$wrapped) && parsed.SomeInstance.AnotherBool.$wrapped, $g.________testlib.basictypes.Boolean));
             return;
 
           default:

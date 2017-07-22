@@ -105,14 +105,16 @@ func (db *domBuilder) buildSliceExpression(node compilergraph.GraphNode) codedom
 	_, isIndexer := node.TryGetNode(parser.NodeSliceExpressionIndex)
 	if isIndexer {
 		return db.buildIndexerExpression(node)
-	} else {
-		return db.buildSlicerExpression(node)
 	}
+
+	return db.buildSlicerExpression(node)
 }
 
 // buildIndexerExpression builds the CodeDOM for an indexer call.
 func (db *domBuilder) buildIndexerExpression(node compilergraph.GraphNode) codedom.Expression {
-	indexExpr := db.getExpression(node, parser.NodeSliceExpressionIndex)
+	indexExprNode := node.GetNode(parser.NodeSliceExpressionIndex)
+	indexExpr := db.buildExpressionWithOption(indexExprNode, buildExprCheckNominalShortcutting)
+
 	childExpr := db.getExpression(node, parser.NodeSliceExpressionChildExpr)
 
 	scope, _ := db.scopegraph.GetScope(node)

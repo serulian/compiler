@@ -5,7 +5,7 @@ $module('basic', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      instance.SomeInt = $t.fastbox(2, $g.____testlib.basictypes.Integer);
+      instance.SomeInt = $t.fastbox(2, $g.________testlib.basictypes.Integer);
       instance.AnotherBool = $g.basic.CoolFunction();
       return instance;
     };
@@ -25,7 +25,7 @@ $module('basic', function () {
   });
 
   $static.CoolFunction = function () {
-    return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+    return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
   };
   $static.TEST = function () {
     return $g.basic.SomeClass.new().AnotherBool;

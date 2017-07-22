@@ -1,7 +1,7 @@
 $module('async', function () {
   var $static = this;
   $static.DoSomethingAsync = $t.workerwrap('088145a7', function () {
-    return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+    return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
   });
   $static.DoSomethingElse = $t.markpromising(function () {
     var $result;

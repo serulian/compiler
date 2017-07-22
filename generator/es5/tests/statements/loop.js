@@ -5,12 +5,12 @@ $module('loop', function () {
     syncloop: while (true) {
       switch ($current) {
         case 0:
-          $t.fastbox(1234, $g.____testlib.basictypes.Integer);
+          $t.fastbox(1234, $g.________testlib.basictypes.Integer);
           $current = 1;
           continue syncloop;
 
         case 1:
-          $t.fastbox(1357, $g.____testlib.basictypes.Integer);
+          $t.fastbox(1357, $g.________testlib.basictypes.Integer);
           $current = 1;
           continue syncloop;
 

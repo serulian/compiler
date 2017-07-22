@@ -13,9 +13,9 @@ $module('slice', function () {
     };
     $static.$fields = [];
     $t.defineStructField($static, 'AnotherInt', 'AnotherInt', function () {
-      return $g.____testlib.basictypes.Integer;
+      return $g.________testlib.basictypes.Integer;
     }, function () {
-      return $g.____testlib.basictypes.Integer;
+      return $g.________testlib.basictypes.Integer;
     }, false);
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -46,9 +46,9 @@ $module('slice', function () {
     };
     $static.$fields = [];
     $t.defineStructField($static, 'Values', 'Values', function () {
-      return $g.____testlib.basictypes.Slice($g.slice.AnotherStruct);
+      return $g.________testlib.basictypes.Slice($g.slice.AnotherStruct);
     }, function () {
-      return $g.____testlib.basictypes.Slice($g.slice.AnotherStruct);
+      return $g.________testlib.basictypes.Slice($g.slice.AnotherStruct);
     }, false);
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -78,11 +78,11 @@ $module('slice', function () {
       while (true) {
         switch ($current) {
           case 0:
-            values = $g.____testlib.basictypes.Slice($g.slice.AnotherStruct).overArray([$g.slice.AnotherStruct.new($t.fastbox(1, $g.____testlib.basictypes.Integer)), $g.slice.AnotherStruct.new($t.fastbox(2, $g.____testlib.basictypes.Integer)), $g.slice.AnotherStruct.new($t.fastbox(3, $g.____testlib.basictypes.Integer))]);
-            s = $g.slice.SomeStruct.new(values.$slice($t.fastbox(0, $g.____testlib.basictypes.Integer), null));
-            jsonString = $t.fastbox('{"Values":[{"AnotherInt":1},{"AnotherInt":2},{"AnotherInt":3}]}', $g.____testlib.basictypes.String);
-            $promise.maybe(s.Stringify($g.____testlib.basictypes.JSON)()).then(function ($result0) {
-              $result = $g.____testlib.basictypes.String.$equals($result0, jsonString);
+            values = $g.________testlib.basictypes.Slice($g.slice.AnotherStruct).overArray([$g.slice.AnotherStruct.new($t.fastbox(1, $g.________testlib.basictypes.Integer)), $g.slice.AnotherStruct.new($t.fastbox(2, $g.________testlib.basictypes.Integer)), $g.slice.AnotherStruct.new($t.fastbox(3, $g.________testlib.basictypes.Integer))]);
+            s = $g.slice.SomeStruct.new(values.$slice($t.fastbox(0, $g.________testlib.basictypes.Integer), null));
+            jsonString = $t.fastbox('{"Values":[{"AnotherInt":1},{"AnotherInt":2},{"AnotherInt":3}]}', $g.________testlib.basictypes.String);
+            $promise.maybe(s.Stringify($g.________testlib.basictypes.JSON)()).then(function ($result0) {
+              $result = $g.________testlib.basictypes.String.$equals($result0, jsonString);
               $current = 1;
               $continue($resolve, $reject);
               return;
@@ -94,7 +94,7 @@ $module('slice', function () {
 
           case 1:
             correct = $result;
-            $promise.maybe($g.slice.SomeStruct.Parse($g.____testlib.basictypes.JSON)(jsonString)).then(function ($result0) {
+            $promise.maybe($g.slice.SomeStruct.Parse($g.________testlib.basictypes.JSON)(jsonString)).then(function ($result0) {
               $result = $result0;
               $current = 2;
               $continue($resolve, $reject);
@@ -107,7 +107,7 @@ $module('slice', function () {
 
           case 2:
             parsed = $result;
-            $resolve($t.fastbox((correct.$wrapped && (s.Values.Length().$wrapped == 3)) && (s.Values.$index($t.fastbox(0, $g.____testlib.basictypes.Integer)).AnotherInt.$wrapped == 1), $g.____testlib.basictypes.Boolean));
+            $resolve($t.fastbox((correct.$wrapped && (s.Values.Length().$wrapped == 3)) && (s.Values.$index($t.fastbox(0, $g.________testlib.basictypes.Integer)).AnotherInt.$wrapped == 1), $g.________testlib.basictypes.Boolean));
             return;
 
           default:

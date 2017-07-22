@@ -9,7 +9,7 @@ $module('interface', function () {
     };
     $instance.SomeValue = $t.property(function () {
       var $this = this;
-      return $t.fastbox(42, $g.____testlib.basictypes.Integer);
+      return $t.fastbox(42, $g.________testlib.basictypes.Integer);
     });
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -66,6 +66,6 @@ $module('interface', function () {
     var v;
     sc = $g.interface.SomeClass.new();
     v = sc;
-    return $t.fastbox($t.fastbox(v, $g.interface.Valued).GetValue().$wrapped == 42, $g.____testlib.basictypes.Boolean);
+    return $t.fastbox($t.fastbox(v, $g.interface.Valued).GetValue().$wrapped == 42, $g.________testlib.basictypes.Boolean);
   };
 });

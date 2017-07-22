@@ -19,7 +19,7 @@ $module('notop', function () {
 
   $static.TEST = function () {
     var sc;
-    sc = $g.notop.SomeClass.new($t.fastbox(false, $g.____testlib.basictypes.Boolean));
-    return $t.fastbox(!$g.notop.SomeClass.$bool(sc).$wrapped, $g.____testlib.basictypes.Boolean);
+    sc = $g.notop.SomeClass.new($t.fastbox(false, $g.________testlib.basictypes.Boolean));
+    return $t.fastbox(!$g.notop.SomeClass.$bool(sc).$wrapped, $g.________testlib.basictypes.Boolean);
   };
 });

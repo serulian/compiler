@@ -6,7 +6,7 @@ $module('requiredfields', function () {
     $static.new = function (SomeField) {
       var instance = new $static();
       instance.SomeField = SomeField;
-      instance.AnotherField = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+      instance.AnotherField = $t.fastbox(true, $g.________testlib.basictypes.Boolean);
       return instance;
     };
     this.$typesig = function () {
@@ -17,7 +17,7 @@ $module('requiredfields', function () {
 
   $static.TEST = function () {
     var sc;
-    sc = $g.requiredfields.SomeClass.new($t.fastbox(2, $g.____testlib.basictypes.Integer));
-    return $t.fastbox((sc.SomeField.$wrapped == 2) && sc.AnotherField.$wrapped, $g.____testlib.basictypes.Boolean);
+    sc = $g.requiredfields.SomeClass.new($t.fastbox(2, $g.________testlib.basictypes.Integer));
+    return $t.fastbox((sc.SomeField.$wrapped == 2) && sc.AnotherField.$wrapped, $g.________testlib.basictypes.Boolean);
   };
 });

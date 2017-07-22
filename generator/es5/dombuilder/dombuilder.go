@@ -114,19 +114,26 @@ const (
 func (db *domBuilder) buildExpressions(iterator compilergraph.NodeIterator, option buildExprOption) []codedom.Expression {
 	var expressions = make([]codedom.Expression, 0)
 	for iterator.Next() {
-		expr := db.buildExpression(iterator.Node())
-
-		// If requested, check to see if the expression was used under a special exception where
-		// a nominal type is used in place of its root data type. If so, we need to unwrap the
-		// expression value.
-		if option == buildExprCheckNominalShortcutting &&
-			db.scopegraph.HasSecondaryLabel(iterator.Node(), proto.ScopeLabel_NOMINALLY_SHORTCUT_EXPR) {
-			expr = codedom.NominalUnwrapping(expr, db.scopegraph.TypeGraph().AnyTypeReference(), iterator.Node())
-		}
-
+		expr := db.buildExpressionWithOption(iterator.Node(), option)
 		expressions = append(expressions, expr)
 	}
 	return expressions
+}
+
+// buildExpressionWithOption builds the CodeDOM for the given SRG node, with the specified option and returns it as an expression. Will
+// panic if the returned DOM type is not an expression.
+func (db *domBuilder) buildExpressionWithOption(node compilergraph.GraphNode, option buildExprOption) codedom.Expression {
+	expr := db.buildExpression(node)
+
+	// If requested, check to see if the expression was used under a special exception where
+	// a nominal type is used in place of its root data type. If so, we need to unwrap the
+	// expression value.
+	if option == buildExprCheckNominalShortcutting &&
+		db.scopegraph.HasSecondaryLabel(node, proto.ScopeLabel_NOMINALLY_SHORTCUT_EXPR) {
+		expr = codedom.NominalUnwrapping(expr, db.scopegraph.TypeGraph().AnyTypeReference(), node)
+	}
+
+	return expr
 }
 
 // buildExpression builds the CodeDOM for the given SRG node and returns it as an expression. Will

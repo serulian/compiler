@@ -9,7 +9,7 @@ $module('functioncallnullable', function () {
     };
     $instance.SomeMethod = function () {
       var $this = this;
-      return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+      return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
     };
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -31,7 +31,7 @@ $module('functioncallnullable', function () {
     };
     $instance.AnotherMethod = function () {
       var $this = this;
-      return $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+      return $t.fastbox(false, $g.________testlib.basictypes.Boolean);
     };
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -50,9 +50,9 @@ $module('functioncallnullable', function () {
     sc = $g.functioncallnullable.SomeClass.new();
     ac = null;
     return $t.fastbox($t.syncnullcompare($t.nullableinvoke(sc, 'SomeMethod', false, []), function () {
-      return $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+      return $t.fastbox(false, $g.________testlib.basictypes.Boolean);
     }).$wrapped && $t.syncnullcompare($t.nullableinvoke(ac, 'AnotherMethod', false, []), function () {
-      return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
-    }).$wrapped, $g.____testlib.basictypes.Boolean);
+      return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
+    }).$wrapped, $g.________testlib.basictypes.Boolean);
   };
 });

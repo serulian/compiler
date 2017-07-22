@@ -5,7 +5,7 @@ $module('property', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      instance.SomeBool = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+      instance.SomeBool = $t.fastbox(false, $g.________testlib.basictypes.Boolean);
       return instance;
     };
     $instance.set$SomeProp = function (val) {
@@ -30,7 +30,7 @@ $module('property', function () {
 
   $static.AnotherFunction = function (sc) {
     sc.SomeProp();
-    sc.set$SomeProp($t.fastbox(true, $g.____testlib.basictypes.Boolean));
+    sc.set$SomeProp($t.fastbox(true, $g.________testlib.basictypes.Boolean));
     return sc.SomeProp();
   };
   $static.TEST = function () {

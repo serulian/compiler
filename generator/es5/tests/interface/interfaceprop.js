@@ -5,7 +5,7 @@ $module('interfaceprop', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      instance.propValue = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+      instance.propValue = $t.fastbox(true, $g.________testlib.basictypes.Boolean);
       return instance;
     };
     $instance.set$SomeProperty = function (val) {
@@ -95,7 +95,7 @@ $module('interfaceprop', function () {
   });
 
   $static.DoSomethingAsync = $t.workerwrap('c342c45f', function () {
-    return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+    return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
   });
   $static.TEST = $t.markpromising(function () {
     var $result;
@@ -108,7 +108,7 @@ $module('interfaceprop', function () {
           case 0:
             si = $g.interfaceprop.SomeClass.new();
             si2 = $g.interfaceprop.AnotherClass.new();
-            $promise.maybe(si.set$SomeProperty($t.fastbox(false, $g.____testlib.basictypes.Boolean))).then(function ($result0) {
+            $promise.maybe(si.set$SomeProperty($t.fastbox(false, $g.________testlib.basictypes.Boolean))).then(function ($result0) {
               $result = $result0;
               $current = 1;
               $continue($resolve, $reject);
@@ -123,7 +123,7 @@ $module('interfaceprop', function () {
             $promise.maybe(si.SomeProperty()).then(function ($result1) {
               return $promise.resolve(!$result1.$wrapped).then(function ($result0) {
                 return ($promise.shortcircuit($result0, true) || $promise.maybe(si2.SomeProperty())).then(function ($result2) {
-                  $result = $t.fastbox($result0 && $result2.$wrapped, $g.____testlib.basictypes.Boolean);
+                  $result = $t.fastbox($result0 && $result2.$wrapped, $g.________testlib.basictypes.Boolean);
                   $current = 2;
                   $continue($resolve, $reject);
                   return;

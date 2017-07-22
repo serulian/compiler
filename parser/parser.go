@@ -353,10 +353,21 @@ func (p *sourceParser) tryConsumeIdentifier() (string, bool) {
 	return value, true
 }
 
-// consumeIdentifierOrKeyword consumes an expected identifier or keyword.
+// consumeIdentifierOrKeyword consumes an expected identifier or keyword. If no keywords are specified,
+// any are acceptable.
 func (p *sourceParser) consumeIdentifierOrKeyword(keywords ...string) (string, bool) {
 	if p.isToken(tokenTypeIdentifer) {
 		return p.consumeIdentifier()
+	}
+
+	if !p.isToken(tokenTypeKeyword) {
+		return "", false
+	}
+
+	if len(keywords) == 0 {
+		keywordValue := p.currentToken.value
+		p.consume(tokenTypeKeyword)
+		return keywordValue, true
 	}
 
 	for _, keyword := range keywords {

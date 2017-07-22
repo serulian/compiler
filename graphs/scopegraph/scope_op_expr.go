@@ -67,6 +67,28 @@ func (sb *scopeBuilder) scopeTypeConversionExpression(node compilergraph.GraphNo
 	return newScope().IsValid(isValid).Resolving(conversionType).GetScope()
 }
 
+// checkArgumentTypeWithAutounboxing ensures that an argument of the specified type can fulfill the given parameter type, with
+// checking for automatic nominal unboxing/unwrapping. Returns whether the check succeeded. If it fails, the error message will
+// be decorated onto the argument node.
+func (sb *scopeBuilder) checkArgumentTypeWithAutounboxing(argumentType typegraph.TypeReference, parameterType typegraph.TypeReference,
+	argumentNode compilergraph.GraphNode, errorMessage string, errorMessageArgs ...interface{}) bool {
+
+	serr, exception := argumentType.CheckSubTypeOfWithExceptions(parameterType, typegraph.AllowNominalWrappedForData)
+	if serr != nil {
+		errorMessageArgsWithSerr := append(errorMessageArgs, serr)
+		sb.decorateWithError(argumentNode, errorMessage+": %s", errorMessageArgsWithSerr...)
+		return false
+	}
+
+	// If a nominally-wrapped value was used in place of an argument that expects its data type, then
+	// mark the expression as being a shortcut that needs unwrapping during generation.
+	if exception == typegraph.AllowNominalWrappedForData {
+		sb.decorateWithSecondaryLabel(argumentNode, proto.ScopeLabel_NOMINALLY_SHORTCUT_EXPR)
+	}
+
+	return true
+}
+
 // scopeFunctionCallExpression scopes a function call expression in the SRG.
 func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Scope the child expression.
@@ -172,16 +194,9 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 		if index < len(childParameters) {
 			// Ensure the type of the argument matches the parameter.
 			argumentType := argumentScope.ResolvedTypeRef(sb.sg.tdg)
-			serr, exception := argumentType.CheckSubTypeOfWithExceptions(childParameters[index], typegraph.AllowNominalWrappedForData)
-			if serr != nil {
-				sb.decorateWithError(ait.Node(), "Parameter #%v %sexpects type %v: %v", index+1, getDescription(), childParameters[index], serr)
+			if !sb.checkArgumentTypeWithAutounboxing(argumentType, childParameters[index], ait.Node(),
+				"Parameter #%v %sexpects type %v", index+1, getDescription(), childParameters[index]) {
 				isValid = false
-			}
-
-			// If a nominally-wrapped value was used in place of an argument that expects its data type, then
-			// mark the expression as being a shortcut that needs unwrapping during generation.
-			if exception == typegraph.AllowNominalWrappedForData {
-				sb.decorateWithSecondaryLabel(ait.Node(), proto.ScopeLabel_NOMINALLY_SHORTCUT_EXPR)
 			}
 		}
 	}
@@ -317,20 +332,21 @@ func (sb *scopeBuilder) scopeIndexerExpression(node compilergraph.GraphNode, con
 	}
 
 	// Ensure the index expression type matches that expected.
-	exprType := exprScope.ResolvedTypeRef(sb.sg.tdg)
+	argumentType := exprScope.ResolvedTypeRef(sb.sg.tdg)
 	parameterType := operator.ParameterTypes()[0].TransformUnder(childType)
 
-	if serr := exprType.CheckSubTypeOf(parameterType); serr != nil {
-		sb.decorateWithError(node, "Indexer parameter must be type %v: %v", parameterType, serr)
+	argumentNode := node.GetNode(parser.NodeSliceExpressionIndex)
+	if !sb.checkArgumentTypeWithAutounboxing(argumentType, parameterType, argumentNode,
+		"Indexer parameter must be type %v", parameterType) {
 		return newScope().Invalid().GetScope()
 	}
 
 	if context.accessOption == scopeSetAccess {
 		return newScope().Valid().CallsOperator(operator).ForNamedScopeUnderType(sb.getNamedScopeForMember(operator), childType, context).GetScope()
-	} else {
-		returnType, _ := operator.ReturnType()
-		return newScope().Valid().CallsOperator(operator).Resolving(returnType.TransformUnder(childType)).GetScope()
 	}
+
+	returnType, _ := operator.ReturnType()
+	return newScope().Valid().CallsOperator(operator).Resolving(returnType.TransformUnder(childType)).GetScope()
 }
 
 // scopeInCollectionExpression scopes an 'in' collection expression in the SRG.

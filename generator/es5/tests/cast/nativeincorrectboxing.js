@@ -8,9 +8,9 @@ $module('nativeincorrectboxing', function () {
     syncloop: while (true) {
       switch ($current) {
         case 0:
-          sany = $t.fastbox('hello world', $g.____testlib.basictypes.String);
+          sany = $t.fastbox('hello world', $g.________testlib.basictypes.String);
           try {
-            var $expr = $t.fastbox($t.cast(sany, $global.String, false), $g.____testlib.basictypes.String);
+            var $expr = $t.fastbox($t.cast(sany, $global.String, false), $g.________testlib.basictypes.String);
             result = $expr;
             err = null;
           } catch ($rejected) {
@@ -21,7 +21,7 @@ $module('nativeincorrectboxing', function () {
           continue syncloop;
 
         case 1:
-          return $t.fastbox((result == null) && (err != null), $g.____testlib.basictypes.Boolean);
+          return $t.fastbox((result == null) && (err != null), $g.________testlib.basictypes.Boolean);
 
         default:
           return;

@@ -1,7 +1,7 @@
 $module('loop', function () {
   var $static = this;
   $static.DoSomething = function (i) {
-    return $t.fastbox(i.$wrapped + 1, $g.____testlib.basictypes.Integer);
+    return $t.fastbox(i.$wrapped + 1, $g.________testlib.basictypes.Integer);
   };
   $static.TEST = function () {
     var counter;
@@ -11,8 +11,8 @@ $module('loop', function () {
     syncloop: while (true) {
       switch ($current) {
         case 0:
-          counter = $t.fastbox(0, $g.____testlib.basictypes.Integer);
-          stream = $g.____testlib.basictypes.IntStream.OverRange($t.fastbox(1, $g.____testlib.basictypes.Integer), $t.fastbox(2, $g.____testlib.basictypes.Integer));
+          counter = $t.fastbox(0, $g.________testlib.basictypes.Integer);
+          stream = $g.________testlib.basictypes.IntStream.OverRange($t.fastbox(1, $g.________testlib.basictypes.Integer), $t.fastbox(2, $g.________testlib.basictypes.Integer));
           $current = 1;
           continue syncloop;
 
@@ -32,12 +32,12 @@ $module('loop', function () {
           continue syncloop;
 
         case 3:
-          return $t.fastbox(counter.$wrapped == 5, $g.____testlib.basictypes.Boolean);
+          return $t.fastbox(counter.$wrapped == 5, $g.________testlib.basictypes.Boolean);
 
         case 4:
           counter = $t.fastbox(counter.$wrapped + $g.loop.DoSomething($t.syncnullcompare(result.First, function () {
-            return $t.fastbox(0, $g.____testlib.basictypes.Integer);
-          })).$wrapped, $g.____testlib.basictypes.Integer);
+            return $t.fastbox(0, $g.________testlib.basictypes.Integer);
+          })).$wrapped, $g.________testlib.basictypes.Integer);
           $current = 1;
           continue syncloop;
 

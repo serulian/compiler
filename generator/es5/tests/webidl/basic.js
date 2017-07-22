@@ -12,14 +12,14 @@ $module('basic', function () {
     $t.dynamicaccess($global.SomeBrowserThing, 'SomeStaticFunction', false);
     $global.SomeBrowserThing.SomeStaticAttribute.SomeInterfaceFunction();
     $t.dynamicaccess($global.SomeBrowserThing.SomeStaticAttribute, 'SomeInterfaceFunction', false);
-    $t.nativenew($global.SomeBrowserThing)($t.fastbox('foo', $g.____testlib.basictypes.String));
+    $t.nativenew($global.SomeBrowserThing)($t.fastbox('foo', $g.________testlib.basictypes.String));
     $global.SomeBrowserThing.SomeStaticAttribute.SomeInterfaceFunction().InstanceAttr;
-    first = $t.nativenew($global.SomeBrowserThing)($t.fastbox('foo', $g.____testlib.basictypes.String));
-    second = $t.nativenew($global.SomeBrowserThing)($t.fastbox('bar', $g.____testlib.basictypes.String));
-    first[$t.fastbox('hello', $g.____testlib.basictypes.String)] = second;
+    first = $t.nativenew($global.SomeBrowserThing)($t.fastbox('foo', $g.________testlib.basictypes.String));
+    second = $t.nativenew($global.SomeBrowserThing)($t.fastbox('bar', $g.________testlib.basictypes.String));
+    first[$t.fastbox('hello', $g.________testlib.basictypes.String)] = second;
     return;
   };
   $static.TEST = function () {
-    return $t.fastbox($global.boolValue, $g.____testlib.basictypes.Boolean);
+    return $t.fastbox($global.boolValue, $g.________testlib.basictypes.Boolean);
   };
 });

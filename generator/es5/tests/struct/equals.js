@@ -14,9 +14,9 @@ $module('equals', function () {
     };
     $static.$fields = [];
     $t.defineStructField($static, 'SomeValue', 'SomeValue', function () {
-      return $g.____testlib.basictypes.Integer;
+      return $g.________testlib.basictypes.Integer;
     }, function () {
-      return $g.____testlib.basictypes.Integer;
+      return $g.________testlib.basictypes.Integer;
     }, false);
     $t.defineStructField($static, 'AnotherValue', 'AnotherValue', function () {
       return $g.equals.Bar;
@@ -52,9 +52,9 @@ $module('equals', function () {
     };
     $static.$fields = [];
     $t.defineStructField($static, 'StringValue', 'StringValue', function () {
-      return $g.____testlib.basictypes.String;
+      return $g.________testlib.basictypes.String;
     }, function () {
-      return $g.____testlib.basictypes.String;
+      return $g.________testlib.basictypes.String;
     }, false);
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -77,10 +77,10 @@ $module('equals', function () {
     var different;
     var first;
     var second;
-    first = $g.equals.Foo.new($t.fastbox(42, $g.____testlib.basictypes.Integer), $g.equals.Bar.new($t.fastbox('hello world', $g.____testlib.basictypes.String)));
+    first = $g.equals.Foo.new($t.fastbox(42, $g.________testlib.basictypes.Integer), $g.equals.Bar.new($t.fastbox('hello world', $g.________testlib.basictypes.String)));
     second = first;
-    copy = $g.equals.Foo.new($t.fastbox(42, $g.____testlib.basictypes.Integer), $g.equals.Bar.new($t.fastbox('hello world', $g.____testlib.basictypes.String)));
-    different = $g.equals.Foo.new($t.fastbox(42, $g.____testlib.basictypes.Integer), $g.equals.Bar.new($t.fastbox('hello worlds!', $g.____testlib.basictypes.String)));
-    return $t.fastbox((($g.equals.Foo.$equals(first, second).$wrapped && $g.equals.Foo.$equals(first, copy).$wrapped) && !$g.equals.Foo.$equals(first, different).$wrapped) && !$g.equals.Foo.$equals(copy, different).$wrapped, $g.____testlib.basictypes.Boolean);
+    copy = $g.equals.Foo.new($t.fastbox(42, $g.________testlib.basictypes.Integer), $g.equals.Bar.new($t.fastbox('hello world', $g.________testlib.basictypes.String)));
+    different = $g.equals.Foo.new($t.fastbox(42, $g.________testlib.basictypes.Integer), $g.equals.Bar.new($t.fastbox('hello worlds!', $g.________testlib.basictypes.String)));
+    return $t.fastbox((($g.equals.Foo.$equals(first, second).$wrapped && $g.equals.Foo.$equals(first, copy).$wrapped) && !$g.equals.Foo.$equals(first, different).$wrapped) && !$g.equals.Foo.$equals(copy, different).$wrapped, $g.________testlib.basictypes.Boolean);
   };
 });

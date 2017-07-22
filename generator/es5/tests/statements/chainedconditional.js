@@ -15,8 +15,8 @@ $module('chainedconditional', function () {
           break;
 
         case 1:
-          $t.fastbox(123, $g.____testlib.basictypes.Integer);
-          return $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+          $t.fastbox(123, $g.________testlib.basictypes.Integer);
+          return $t.fastbox(false, $g.________testlib.basictypes.Boolean);
 
         case 2:
           if (false) {
@@ -29,12 +29,12 @@ $module('chainedconditional', function () {
           break;
 
         case 3:
-          $t.fastbox(456, $g.____testlib.basictypes.Integer);
-          return $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+          $t.fastbox(456, $g.________testlib.basictypes.Integer);
+          return $t.fastbox(false, $g.________testlib.basictypes.Boolean);
 
         case 4:
-          $t.fastbox(789, $g.____testlib.basictypes.Integer);
-          return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+          $t.fastbox(789, $g.________testlib.basictypes.Integer);
+          return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
 
         default:
           return;

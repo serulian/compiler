@@ -7,9 +7,9 @@ $module('castignore', function () {
     syncloop: while (true) {
       switch ($current) {
         case 0:
-          somevalue = $t.fastbox('hello', $g.____testlib.basictypes.String);
+          somevalue = $t.fastbox('hello', $g.________testlib.basictypes.String);
           try {
-            var $expr = $t.cast(somevalue, $g.____testlib.basictypes.Integer, false);
+            var $expr = $t.cast(somevalue, $g.________testlib.basictypes.Integer, false);
             a = $expr;
           } catch ($rejected) {
             a = null;
@@ -18,7 +18,7 @@ $module('castignore', function () {
           continue syncloop;
 
         case 1:
-          return $t.fastbox(a == null, $g.____testlib.basictypes.Boolean);
+          return $t.fastbox(a == null, $g.________testlib.basictypes.Boolean);
 
         default:
           return;

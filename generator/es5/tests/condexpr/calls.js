@@ -9,7 +9,7 @@ $module('calls', function () {
     };
     $instance.Message = $t.property(function () {
       var $this = this;
-      return $t.fastbox('huh?', $g.____testlib.basictypes.String);
+      return $t.fastbox('huh?', $g.________testlib.basictypes.String);
     });
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -23,13 +23,13 @@ $module('calls', function () {
   });
 
   $static.getValue = function () {
-    return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+    return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
   };
   $static.failValue = function () {
     throw $g.calls.SomeError.new();
   };
   $static.getIntValue = function () {
-    return $t.fastbox(45, $g.____testlib.basictypes.Integer);
+    return $t.fastbox(45, $g.________testlib.basictypes.Integer);
   };
   $static.TEST = function () {
     return $g.calls.getIntValue().$wrapped == 2 ? $g.calls.failValue() : $g.calls.getValue();
