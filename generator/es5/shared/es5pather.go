@@ -6,9 +6,12 @@ package shared
 
 import (
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/rainycape/unidecode"
+
+	"unicode"
 
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/graphs/typegraph"
@@ -161,18 +164,48 @@ func (p Pather) GetRelativeModulePath(module typegraph.TGModule) string {
 		rel = module.Path()
 	}
 
-	// TODO: make this a proper replacement system.
-	rel = strings.Replace(rel, "-", "_", -1)
-	rel = strings.Replace(rel, "../", "_", -1)
-	rel = strings.Replace(rel, "/", ".", -1)
+	return normalizeModulePath(rel)
+}
 
+var allowedModulePathCharacters, _ = regexp.Compile("[^a-zA-Z_0-9\\$\\.]")
+
+func normalizeModulePath(rel string) string {
+	// Replace any relative pathing with underscores.
+	rel = strings.Replace(rel, "../", "__", -1)
+
+	// Strip off any starting .
 	if rel[0] == '.' {
 		rel = rel[1:len(rel)]
 	}
 
+	// Remove any Serulian source file suffix.
 	if strings.HasSuffix(rel, ".seru") {
 		rel = rel[0 : len(rel)-5]
 	}
 
-	return rel
+	// Replace any dot parts and change slashes into submodules.
+	parts := strings.Split(rel, "/")
+	updatedParts := make([]string, 0, len(parts))
+
+	for _, part := range parts {
+		if part == "." {
+			continue
+		}
+
+		// If the part does not start with a letter or underscore, prepend a prefix, as literals in ES5 cannot start
+		// with numbers.
+		newPart := part
+		firstRune := rune(part[0])
+		if firstRune != '_' && !unicode.IsLetter(firstRune) {
+			newPart = "m$" + part
+		}
+
+		updatedParts = append(updatedParts, newPart)
+	}
+
+	path := strings.Join(updatedParts, ".")
+
+	// Replace any other bad characters.
+	path = allowedModulePathCharacters.ReplaceAllLiteralString(path, "_")
+	return path
 }
