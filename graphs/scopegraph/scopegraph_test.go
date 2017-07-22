@@ -1406,7 +1406,11 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"Could not find instance name 'DoSomething' under nominal type MyType", ""},
 
-	scopegraphTest{"nominal shortcut (wrapped in place of base)", "nominal", "wrappedinplaceofbase",
+	scopegraphTest{"auto unbox function call", "nominal", "autounboxfunctioncall",
+		[]expectedScopeEntry{},
+		"", ""},
+
+	scopegraphTest{"auto unbox index access", "nominal", "autounboxindexaccess",
 		[]expectedScopeEntry{},
 		"", ""},
 
