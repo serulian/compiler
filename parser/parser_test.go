@@ -254,6 +254,7 @@ var parserTests = []parserTest{
 	{"multiline sml test", "sml/multiline"},
 	{"mismatch sml test", "sml/mismatch"},
 	{"attributes sml test", "sml/attributes"},
+	{"keyword attribute sml test", "sml/keywordattribute"},
 	{"invalid attribute value sml test", "sml/invalidattributevalue"},
 	{"children sml test", "sml/children"},
 	{"multiple children sml test", "sml/multichild"},

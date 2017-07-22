@@ -2339,7 +2339,7 @@ func (p *sourceParser) consumeMarkupExpression() AstNode {
 	_, ok1 := t.matchToken(tokenTypeSyntheticSemicolon)
 	_, ok2 := t.matchToken(tokenTypeKeyword)
 
-	if !ok1 || !ok2 {
+	if !(ok1 && ok2) {
 		// Consume one (or more attributes)
 		for {
 			// Consume any statement terminators that are found between attributes.
@@ -2348,7 +2348,7 @@ func (p *sourceParser) consumeMarkupExpression() AstNode {
 			// Attributes must start with an identifier or an at sign.
 			if p.isToken(tokenTypeAtSign) {
 				markupNode.Connect(NodeSmlExpressionDecorator, p.consumeMarkupAttribute(NodeTypeSmlDecorator, NodeSmlDecoratorValue))
-			} else if p.isToken(tokenTypeIdentifer) {
+			} else if p.isToken(tokenTypeIdentifer) || p.isToken(tokenTypeKeyword) {
 				markupNode.Connect(NodeSmlExpressionAttribute, p.consumeMarkupAttribute(NodeTypeSmlAttribute, NodeSmlAttributeValue))
 			} else {
 				break
@@ -2494,7 +2494,7 @@ func (p *sourceParser) consumeMarkupAttribute(kind NodeType, valuePredicate stri
 		// Attribute name. Can have dashes.
 		var name = ""
 		for {
-			namePiece, _ := p.consumeIdentifier()
+			namePiece, _ := p.consumeIdentifierOrKeyword()
 			name = name + namePiece
 
 			if _, ok := p.tryConsume(tokenTypeMinus); !ok {
