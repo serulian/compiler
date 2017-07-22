@@ -16,7 +16,7 @@ $module('asyncnullaccess', function () {
           switch ($current) {
             case 0:
               $promise.translate($g.asyncnullaccess.DoSomethingAsync()).then(function ($result0) {
-                $result = $t.fastbox($result0.$wrapped == 42, $g.____testlib.basictypes.Boolean);
+                $result = $t.fastbox($result0.$wrapped == 42, $g.________testlib.basictypes.Boolean);
                 $current = 1;
                 $continue($resolve, $reject);
                 return;
@@ -50,7 +50,7 @@ $module('asyncnullaccess', function () {
   });
 
   $static.DoSomethingAsync = $t.workerwrap('69732a26', function () {
-    return $t.fastbox(42, $g.____testlib.basictypes.Integer);
+    return $t.fastbox(42, $g.________testlib.basictypes.Integer);
   });
   $static.TEST = $t.markpromising(function () {
     var $result;

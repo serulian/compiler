@@ -11,12 +11,12 @@ $module('looped', function () {
     syncloop: while (true) {
       switch ($current) {
         case 0:
-          values = $g.____testlib.basictypes.Slice($t.struct).overArray([$t.fastbox(1, $g.____testlib.basictypes.Integer), $t.fastbox(true, $g.____testlib.basictypes.Boolean), $t.fastbox(3, $g.____testlib.basictypes.Integer)]);
+          values = $g.________testlib.basictypes.Slice($t.struct).overArray([$t.fastbox(1, $g.________testlib.basictypes.Integer), $t.fastbox(true, $g.________testlib.basictypes.Boolean), $t.fastbox(3, $g.________testlib.basictypes.Integer)]);
           $current = 1;
           continue syncloop;
 
         case 1:
-          $temp1 = $g.____testlib.basictypes.Integer.$range($t.fastbox(0, $g.____testlib.basictypes.Integer), $t.fastbox(2, $g.____testlib.basictypes.Integer));
+          $temp1 = $g.________testlib.basictypes.Integer.$range($t.fastbox(0, $g.________testlib.basictypes.Integer), $t.fastbox(2, $g.________testlib.basictypes.Integer));
           $current = 2;
           continue syncloop;
 
@@ -35,7 +35,7 @@ $module('looped', function () {
         case 3:
           value = values.$index(index);
           try {
-            var $expr = $t.cast(value, $g.____testlib.basictypes.Boolean, false);
+            var $expr = $t.cast(value, $g.________testlib.basictypes.Boolean, false);
             casted = $expr;
           } catch ($rejected) {
             casted = null;
@@ -61,7 +61,7 @@ $module('looped', function () {
           continue syncloop;
 
         case 7:
-          return $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+          return $t.fastbox(false, $g.________testlib.basictypes.Boolean);
 
         default:
           return;

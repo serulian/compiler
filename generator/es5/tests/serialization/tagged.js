@@ -13,9 +13,9 @@ $module('tagged', function () {
     };
     $static.$fields = [];
     $t.defineStructField($static, 'SomeField', 'somefield', function () {
-      return $g.____testlib.basictypes.Integer;
+      return $g.________testlib.basictypes.Integer;
     }, function () {
-      return $g.____testlib.basictypes.Integer;
+      return $g.________testlib.basictypes.Integer;
     }, false);
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -42,10 +42,10 @@ $module('tagged', function () {
       while (true) {
         switch ($current) {
           case 0:
-            s = $g.tagged.SomeStruct.new($t.fastbox(2, $g.____testlib.basictypes.Integer));
-            jsonString = $t.fastbox('{"somefield":2}', $g.____testlib.basictypes.String);
-            $promise.maybe(s.Stringify($g.____testlib.basictypes.JSON)()).then(function ($result0) {
-              $result = $g.____testlib.basictypes.String.$equals($result0, jsonString);
+            s = $g.tagged.SomeStruct.new($t.fastbox(2, $g.________testlib.basictypes.Integer));
+            jsonString = $t.fastbox('{"somefield":2}', $g.________testlib.basictypes.String);
+            $promise.maybe(s.Stringify($g.________testlib.basictypes.JSON)()).then(function ($result0) {
+              $result = $g.________testlib.basictypes.String.$equals($result0, jsonString);
               $current = 1;
               $continue($resolve, $reject);
               return;

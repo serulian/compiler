@@ -13,9 +13,9 @@ $module('basic', function () {
     };
     $static.$fields = [];
     $t.defineStructField($static, 'AnotherBool', 'AnotherBool', function () {
-      return $g.____testlib.basictypes.Boolean;
+      return $g.________testlib.basictypes.Boolean;
     }, function () {
-      return $g.____testlib.basictypes.Boolean;
+      return $g.________testlib.basictypes.Boolean;
     }, false);
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -48,14 +48,14 @@ $module('basic', function () {
     };
     $static.$fields = [];
     $t.defineStructField($static, 'SomeField', 'SomeField', function () {
-      return $g.____testlib.basictypes.Integer;
+      return $g.________testlib.basictypes.Integer;
     }, function () {
-      return $g.____testlib.basictypes.Integer;
+      return $g.________testlib.basictypes.Integer;
     }, false);
     $t.defineStructField($static, 'AnotherField', 'AnotherField', function () {
-      return $g.____testlib.basictypes.Boolean;
+      return $g.________testlib.basictypes.Boolean;
     }, function () {
-      return $g.____testlib.basictypes.Boolean;
+      return $g.________testlib.basictypes.Boolean;
     }, false);
     $t.defineStructField($static, 'SomeInstance', 'SomeInstance', function () {
       return $g.basic.AnotherStruct;
@@ -80,7 +80,7 @@ $module('basic', function () {
 
   $static.TEST = function () {
     var ss;
-    ss = $g.basic.SomeStruct.new($t.fastbox(42, $g.____testlib.basictypes.Integer), $t.fastbox(true, $g.____testlib.basictypes.Boolean), $g.basic.AnotherStruct.new($t.fastbox(true, $g.____testlib.basictypes.Boolean)));
-    return $t.fastbox(((ss.SomeField.$wrapped == 42) && ss.AnotherField.$wrapped) && ss.SomeInstance.AnotherBool.$wrapped, $g.____testlib.basictypes.Boolean);
+    ss = $g.basic.SomeStruct.new($t.fastbox(42, $g.________testlib.basictypes.Integer), $t.fastbox(true, $g.________testlib.basictypes.Boolean), $g.basic.AnotherStruct.new($t.fastbox(true, $g.________testlib.basictypes.Boolean)));
+    return $t.fastbox(((ss.SomeField.$wrapped == 42) && ss.AnotherField.$wrapped) && ss.SomeInstance.AnotherBool.$wrapped, $g.________testlib.basictypes.Boolean);
   };
 });

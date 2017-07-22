@@ -1,7 +1,7 @@
 $module('async', function () {
   var $static = this;
   $static.DoSomethingAsync = $t.workerwrap('f4772373', function () {
-    return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+    return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
   });
   $static.SomeGenerator = function () {
     var $result;
@@ -10,7 +10,7 @@ $module('async', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $yield($t.fastbox(false, $g.____testlib.basictypes.Boolean));
+            $yield($t.fastbox(false, $g.________testlib.basictypes.Boolean));
             $current = 1;
             return;
 

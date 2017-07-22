@@ -49,6 +49,6 @@ $module('binary', function () {
     return;
   };
   $static.TEST = function () {
-    return $t.fastbox((1 + 2) == 3, $g.____testlib.basictypes.Boolean);
+    return $t.fastbox((1 + 2) == 3, $g.________testlib.basictypes.Boolean);
   };
 });

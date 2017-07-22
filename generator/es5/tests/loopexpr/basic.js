@@ -6,17 +6,17 @@ $module('basic', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $yield($t.fastbox(1, $g.____testlib.basictypes.Integer));
+            $yield($t.fastbox(1, $g.________testlib.basictypes.Integer));
             $current = 1;
             return;
 
           case 1:
-            $yield($t.fastbox(2, $g.____testlib.basictypes.Integer));
+            $yield($t.fastbox(2, $g.________testlib.basictypes.Integer));
             $current = 2;
             return;
 
           case 2:
-            $yield($t.fastbox(3, $g.____testlib.basictypes.Integer));
+            $yield($t.fastbox(3, $g.________testlib.basictypes.Integer));
             $current = 3;
             return;
 
@@ -40,10 +40,10 @@ $module('basic', function () {
       while (true) {
         switch ($current) {
           case 0:
-            s = $g.____testlib.basictypes.MapStream($g.____testlib.basictypes.Integer, $g.____testlib.basictypes.Integer)($g.basic.SomeGenerator(), function (s) {
-              return $t.fastbox(s.$wrapped + 1, $g.____testlib.basictypes.Integer);
+            s = $g.________testlib.basictypes.MapStream($g.________testlib.basictypes.Integer, $g.________testlib.basictypes.Integer)($g.basic.SomeGenerator(), function (s) {
+              return $t.fastbox(s.$wrapped + 1, $g.________testlib.basictypes.Integer);
             });
-            counter = $t.fastbox(0, $g.____testlib.basictypes.Integer);
+            counter = $t.fastbox(0, $g.________testlib.basictypes.Integer);
             $current = 1;
             $continue($resolve, $reject);
             return;
@@ -81,13 +81,13 @@ $module('basic', function () {
             break;
 
           case 4:
-            counter = $t.fastbox(counter.$wrapped + entry.$wrapped, $g.____testlib.basictypes.Integer);
+            counter = $t.fastbox(counter.$wrapped + entry.$wrapped, $g.________testlib.basictypes.Integer);
             $current = 2;
             $continue($resolve, $reject);
             return;
 
           case 5:
-            $resolve($t.fastbox(counter.$wrapped == 9, $g.____testlib.basictypes.Boolean));
+            $resolve($t.fastbox(counter.$wrapped == 9, $g.________testlib.basictypes.Boolean));
             return;
 
           default:

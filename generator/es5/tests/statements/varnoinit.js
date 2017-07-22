@@ -3,7 +3,7 @@ $module('varnoinit', function () {
   $static.DoSomething = function () {
     var i;
     i = null;
-    $t.fastbox(1234, $g.____testlib.basictypes.Integer);
+    $t.fastbox(1234, $g.________testlib.basictypes.Integer);
     return;
   };
 });

@@ -50,7 +50,7 @@ $module('asyncfunctioncallnullable', function () {
   });
 
   $static.DoSomethingAsync = $t.workerwrap('af11cc4a', function () {
-    return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+    return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
   });
   $static.TEST = $t.markpromising(function () {
     var $result;
@@ -63,7 +63,7 @@ $module('asyncfunctioncallnullable', function () {
             sc = $g.asyncfunctioncallnullable.SomeClass.new();
             $t.nullableinvoke(sc, 'SomeMethod', true, []).then(function ($result1) {
               return $promise.resolve($result1).then(function ($result0) {
-                $result = $t.asyncnullcompare($result0, $t.fastbox(false, $g.____testlib.basictypes.Boolean));
+                $result = $t.asyncnullcompare($result0, $t.fastbox(false, $g.________testlib.basictypes.Boolean));
                 $current = 1;
                 $continue($resolve, $reject);
                 return;

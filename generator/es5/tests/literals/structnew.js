@@ -6,7 +6,7 @@ $module('structnew', function () {
     $static.new = function (SomeField) {
       var instance = new $static();
       instance.SomeField = SomeField;
-      instance.anotherField = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+      instance.anotherField = $t.fastbox(false, $g.________testlib.basictypes.Boolean);
       return instance;
     };
     $instance.set$AnotherField = function (val) {
@@ -32,7 +32,7 @@ $module('structnew', function () {
   $static.TEST = function () {
     var $temp0;
     var sc;
-    sc = ($temp0 = $g.structnew.SomeClass.new($t.fastbox(2, $g.____testlib.basictypes.Integer)), $temp0.set$AnotherField($t.fastbox(true, $g.____testlib.basictypes.Boolean)), $temp0);
-    return $t.fastbox((sc.SomeField.$wrapped == 2) && sc.anotherField.$wrapped, $g.____testlib.basictypes.Boolean);
+    sc = ($temp0 = $g.structnew.SomeClass.new($t.fastbox(2, $g.________testlib.basictypes.Integer)), $temp0.set$AnotherField($t.fastbox(true, $g.________testlib.basictypes.Boolean)), $temp0);
+    return $t.fastbox((sc.SomeField.$wrapped == 2) && sc.anotherField.$wrapped, $g.________testlib.basictypes.Boolean);
   };
 });

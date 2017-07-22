@@ -9,7 +9,7 @@ $module('in', function () {
     };
     $instance.$contains = function (value) {
       var $this = this;
-      return $t.fastbox(!value.$wrapped, $g.____testlib.basictypes.Boolean);
+      return $t.fastbox(!value.$wrapped, $g.________testlib.basictypes.Boolean);
     };
     this.$typesig = function () {
       return {
@@ -20,6 +20,6 @@ $module('in', function () {
   $static.TEST = function () {
     var sc;
     sc = $g.in.SomeClass.new();
-    return sc.$contains($t.fastbox(false, $g.____testlib.basictypes.Boolean));
+    return sc.$contains($t.fastbox(false, $g.________testlib.basictypes.Boolean));
   };
 });

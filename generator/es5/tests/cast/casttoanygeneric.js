@@ -21,12 +21,12 @@ $module('casttoanygeneric', function () {
     return $f;
   };
   $static.TEST = function () {
-    $g.casttoanygeneric.test($t.any)($t.fastbox('hello world', $g.____testlib.basictypes.String));
-    $g.casttoanygeneric.test($t.any)($t.fastbox(1234, $g.____testlib.basictypes.Integer));
+    $g.casttoanygeneric.test($t.any)($t.fastbox('hello world', $g.________testlib.basictypes.String));
+    $g.casttoanygeneric.test($t.any)($t.fastbox(1234, $g.________testlib.basictypes.Integer));
     $g.casttoanygeneric.test($t.any)($g.casttoanygeneric.SomeClass.new());
-    $g.casttoanygeneric.test($t.any)($g.____testlib.basictypes.Mapping($t.any).Empty());
-    $g.casttoanygeneric.test($t.any)($g.____testlib.basictypes.Slice($t.any).Empty());
+    $g.casttoanygeneric.test($t.any)($g.________testlib.basictypes.Mapping($t.any).Empty());
+    $g.casttoanygeneric.test($t.any)($g.________testlib.basictypes.Slice($t.any).Empty());
     $g.casttoanygeneric.test($t.any)(null);
-    return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+    return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
   };
 });

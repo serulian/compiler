@@ -10,7 +10,7 @@ $module('field', function () {
       return instance;
     };
     $static.Declare = function () {
-      return $g.field.SomeClass.new($g.field.SomeAgent.new($t.fastbox(42, $g.____testlib.basictypes.Integer)));
+      return $g.field.SomeClass.new($g.field.SomeAgent.new($t.fastbox(42, $g.________testlib.basictypes.Integer)));
     };
     Object.defineProperty($instance, 'SomeField', {
       get: function () {
@@ -56,6 +56,6 @@ $module('field', function () {
   $static.TEST = function () {
     var sc;
     sc = $g.field.SomeClass.Declare();
-    return $t.fastbox(sc.SomeField.$wrapped == 42, $g.____testlib.basictypes.Boolean);
+    return $t.fastbox(sc.SomeField.$wrapped == 42, $g.________testlib.basictypes.Boolean);
   };
 });

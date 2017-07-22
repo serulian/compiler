@@ -5,7 +5,7 @@ $module('streammember', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      instance.SomeInt = $t.fastbox(2, $g.____testlib.basictypes.Integer);
+      instance.SomeInt = $t.fastbox(2, $g.________testlib.basictypes.Integer);
       return instance;
     };
     this.$typesig = function () {

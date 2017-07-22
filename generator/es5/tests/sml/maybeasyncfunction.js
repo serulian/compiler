@@ -58,7 +58,7 @@ $module('maybeasyncfunction', function () {
     };
     $instance.SimpleFunction = function () {
       var $this = this;
-      return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+      return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
     };
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -85,7 +85,7 @@ $module('maybeasyncfunction', function () {
   });
 
   $static.DoSomethingAsync = $t.workerwrap('b6375801', function () {
-    return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+    return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
   });
   $static.TEST = $t.markpromising(function () {
     var $result;
@@ -126,7 +126,7 @@ $module('maybeasyncfunction', function () {
 
           case 2:
             r2 = $result;
-            $resolve($t.fastbox(r1.$wrapped && r2.$wrapped, $g.____testlib.basictypes.Boolean));
+            $resolve($t.fastbox(r1.$wrapped && r2.$wrapped, $g.________testlib.basictypes.Boolean));
             return;
 
           default:

@@ -13,9 +13,9 @@ $module('jsonfail', function () {
     };
     $static.$fields = [];
     $t.defineStructField($static, 'AnotherBool', 'AnotherBool', function () {
-      return $g.____testlib.basictypes.Boolean;
+      return $g.________testlib.basictypes.Boolean;
     }, function () {
-      return $g.____testlib.basictypes.Boolean;
+      return $g.________testlib.basictypes.Boolean;
     }, false);
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -48,14 +48,14 @@ $module('jsonfail', function () {
     };
     $static.$fields = [];
     $t.defineStructField($static, 'SomeField', 'SomeField', function () {
-      return $g.____testlib.basictypes.Integer;
+      return $g.________testlib.basictypes.Integer;
     }, function () {
-      return $g.____testlib.basictypes.Integer;
+      return $g.________testlib.basictypes.Integer;
     }, false);
     $t.defineStructField($static, 'AnotherField', 'AnotherField', function () {
-      return $g.____testlib.basictypes.Boolean;
+      return $g.________testlib.basictypes.Boolean;
     }, function () {
-      return $g.____testlib.basictypes.Boolean;
+      return $g.________testlib.basictypes.Boolean;
     }, false);
     $t.defineStructField($static, 'SomeInstance', 'SomeInstance', function () {
       return $g.jsonfail.AnotherStruct;
@@ -87,8 +87,8 @@ $module('jsonfail', function () {
       while (true) {
         switch ($current) {
           case 0:
-            jsonString = $t.fastbox('{"SomeField":"hello world"}', $g.____testlib.basictypes.String);
-            $promise.maybe($g.jsonfail.SomeStruct.Parse($g.____testlib.basictypes.JSON)(jsonString)).then(function ($result0) {
+            jsonString = $t.fastbox('{"SomeField":"hello world"}', $g.________testlib.basictypes.String);
+            $promise.maybe($g.jsonfail.SomeStruct.Parse($g.________testlib.basictypes.JSON)(jsonString)).then(function ($result0) {
               parsed = $result0;
               err = null;
               $current = 1;
@@ -104,7 +104,7 @@ $module('jsonfail', function () {
             return;
 
           case 1:
-            $resolve($t.fastbox((parsed == null) && (err != null), $g.____testlib.basictypes.Boolean));
+            $resolve($t.fastbox((parsed == null) && (err != null), $g.________testlib.basictypes.Boolean));
             return;
 
           default:

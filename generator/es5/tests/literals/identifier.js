@@ -18,7 +18,7 @@ $module('identifier', function () {
   };
   $static.DoSomething = function (someParam) {
     var someVar;
-    someVar = $t.fastbox(2, $g.____testlib.basictypes.Integer);
+    someVar = $t.fastbox(2, $g.________testlib.basictypes.Integer);
     $g.identifier.SomeClass;
     $g.identifier.AnotherFunction;
     return;

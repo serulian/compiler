@@ -16,10 +16,10 @@ $module('classprops', function () {
   });
 
   $static.SimpleFunction = function (props) {
-    return $t.fastbox(($g.____testlib.basictypes.String.$equals(props.StringValue, $t.fastbox("hello world", $g.____testlib.basictypes.String)).$wrapped && props.BoolValue.$wrapped) && !(props.OptionalValue == null), $g.____testlib.basictypes.Boolean);
+    return $t.fastbox(($g.________testlib.basictypes.String.$equals(props.StringValue, $t.fastbox("hello world", $g.________testlib.basictypes.String)).$wrapped && props.BoolValue.$wrapped) && !(props.OptionalValue == null), $g.________testlib.basictypes.Boolean);
   };
   $static.TEST = function () {
     var $temp0;
-    return $g.classprops.SimpleFunction(($temp0 = $g.classprops.SomeProps.new($t.fastbox(true, $g.____testlib.basictypes.Boolean), $t.fastbox("hello world", $g.____testlib.basictypes.String)), $temp0.OptionalValue = $t.fastbox(42, $g.____testlib.basictypes.Integer), $temp0));
+    return $g.classprops.SimpleFunction(($temp0 = $g.classprops.SomeProps.new($t.fastbox(true, $g.________testlib.basictypes.Boolean), $t.fastbox("hello world", $g.________testlib.basictypes.String)), $temp0.OptionalValue = $t.fastbox(42, $g.________testlib.basictypes.Integer), $temp0));
   };
 });

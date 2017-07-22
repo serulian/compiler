@@ -14,14 +14,14 @@ $module('asyncstruct', function () {
     };
     $static.$fields = [];
     $t.defineStructField($static, 'Foo', 'Foo', function () {
-      return $g.____testlib.basictypes.Integer;
+      return $g.________testlib.basictypes.Integer;
     }, function () {
-      return $g.____testlib.basictypes.Integer;
+      return $g.________testlib.basictypes.Integer;
     }, false);
     $t.defineStructField($static, 'Bar', 'Bar', function () {
-      return $g.____testlib.basictypes.Integer;
+      return $g.________testlib.basictypes.Integer;
     }, function () {
-      return $g.____testlib.basictypes.Integer;
+      return $g.________testlib.basictypes.Integer;
     }, false);
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -40,7 +40,7 @@ $module('asyncstruct', function () {
   });
 
   $static.DoSomethingAsync = $t.workerwrap('dd7aa26e', function (s) {
-    return $g.____testlib.basictypes.String.$plus(s.Foo.String(), s.Bar.String());
+    return $g.________testlib.basictypes.String.$plus(s.Foo.String(), s.Bar.String());
   });
   $static.TEST = $t.markpromising(function () {
     var $result;
@@ -50,7 +50,7 @@ $module('asyncstruct', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $promise.translate($g.asyncstruct.DoSomethingAsync($g.asyncstruct.SomeStruct.new($t.fastbox(1, $g.____testlib.basictypes.Integer), $t.fastbox(2, $g.____testlib.basictypes.Integer)))).then(function ($result0) {
+            $promise.translate($g.asyncstruct.DoSomethingAsync($g.asyncstruct.SomeStruct.new($t.fastbox(1, $g.________testlib.basictypes.Integer), $t.fastbox(2, $g.________testlib.basictypes.Integer)))).then(function ($result0) {
               $result = $result0;
               $current = 1;
               $continue($resolve, $reject);
@@ -63,7 +63,7 @@ $module('asyncstruct', function () {
 
           case 1:
             vle = $result;
-            $resolve($g.____testlib.basictypes.String.$equals(vle, $t.fastbox("12", $g.____testlib.basictypes.String)));
+            $resolve($g.________testlib.basictypes.String.$equals(vle, $t.fastbox("12", $g.________testlib.basictypes.String)));
             return;
 
           default:

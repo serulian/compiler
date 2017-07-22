@@ -6,12 +6,12 @@ $module('loopnoexpr', function () {
     syncloop: while (true) {
       switch ($current) {
         case 0:
-          value = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+          value = $t.fastbox(false, $g.________testlib.basictypes.Boolean);
           $current = 1;
           continue syncloop;
 
         case 1:
-          value = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+          value = $t.fastbox(true, $g.________testlib.basictypes.Boolean);
           $current = 2;
           continue syncloop;
 

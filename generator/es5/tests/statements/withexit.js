@@ -9,7 +9,7 @@ $module('withexit', function () {
     };
     $instance.Release = function () {
       var $this = this;
-      $g.withexit.someBool = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+      $g.withexit.someBool = $t.fastbox(true, $g.________testlib.basictypes.Boolean);
       return;
     };
     this.$typesig = function () {
@@ -30,14 +30,14 @@ $module('withexit', function () {
     syncloop: while (true) {
       switch ($current) {
         case 0:
-          $t.fastbox(123, $g.____testlib.basictypes.Integer);
+          $t.fastbox(123, $g.________testlib.basictypes.Integer);
           $current = 1;
           continue syncloop;
 
         case 1:
           $temp0 = $g.withexit.SomeReleasable.new();
           $resources.pushr($temp0, '$temp0');
-          $t.fastbox(456, $g.____testlib.basictypes.Integer);
+          $t.fastbox(456, $g.________testlib.basictypes.Integer);
           if (false) {
             $current = 2;
             continue syncloop;
@@ -52,13 +52,13 @@ $module('withexit', function () {
           continue syncloop;
 
         case 3:
-          $t.fastbox(789, $g.____testlib.basictypes.Integer);
+          $t.fastbox(789, $g.________testlib.basictypes.Integer);
           var $pat = $g.withexit.someBool;
           $resources.popall();
           return $pat;
 
         case 4:
-          $t.fastbox(12, $g.____testlib.basictypes.Integer);
+          $t.fastbox(12, $g.________testlib.basictypes.Integer);
           $resources.popr('$temp0');
           var $pat = $g.withexit.someBool;
           $resources.popall();
@@ -71,7 +71,7 @@ $module('withexit', function () {
   };
   this.$init(function () {
     return $promise.new(function (resolve) {
-      $static.someBool = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+      $static.someBool = $t.fastbox(false, $g.________testlib.basictypes.Boolean);
       resolve();
     });
   }, '0b58b8ac', []);

@@ -5,8 +5,8 @@ $module('memberaccess', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      instance.someInt = $t.fastbox(2, $g.____testlib.basictypes.Integer);
-      instance.someBool = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+      instance.someInt = $t.fastbox(2, $g.________testlib.basictypes.Integer);
+      instance.someBool = $t.fastbox(true, $g.________testlib.basictypes.Boolean);
       return instance;
     };
     $static.Build = function () {
@@ -50,6 +50,6 @@ $module('memberaccess', function () {
   $static.TEST = function () {
     var sc;
     sc = $g.memberaccess.SomeClass.new();
-    return $t.fastbox(sc.someBool.$wrapped && sc.someBool.$wrapped, $g.____testlib.basictypes.Boolean);
+    return $t.fastbox(sc.someBool.$wrapped && sc.someBool.$wrapped, $g.________testlib.basictypes.Boolean);
   };
 });

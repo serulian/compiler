@@ -1,6 +1,6 @@
 $module('sliceexpr', function () {
   var $static = this;
   $static.TEST = function () {
-    return $g.____testlib.basictypes.Slice($g.____testlib.basictypes.Boolean).overArray([$t.fastbox(false, $g.____testlib.basictypes.Boolean), $t.fastbox(true, $g.____testlib.basictypes.Boolean), $t.fastbox(false, $g.____testlib.basictypes.Boolean)]).$index($t.fastbox(1, $g.____testlib.basictypes.Integer));
+    return $g.________testlib.basictypes.Slice($g.________testlib.basictypes.Boolean).overArray([$t.fastbox(false, $g.________testlib.basictypes.Boolean), $t.fastbox(true, $g.________testlib.basictypes.Boolean), $t.fastbox(false, $g.________testlib.basictypes.Boolean)]).$index($t.fastbox(1, $g.________testlib.basictypes.Integer));
   };
 });

@@ -15,10 +15,10 @@ $module('conditional', function () {
           break;
 
         case 1:
-          return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+          return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
 
         case 2:
-          return $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+          return $t.fastbox(false, $g.________testlib.basictypes.Boolean);
 
         default:
           return;

@@ -9,7 +9,7 @@ $module('arrow', function () {
     };
     $instance.Then = function (resolve) {
       var $this = this;
-      resolve($t.fastbox(true, $g.____testlib.basictypes.Boolean));
+      resolve($t.fastbox(true, $g.________testlib.basictypes.Boolean));
       return $this;
     };
     $instance.Catch = function (rejection) {

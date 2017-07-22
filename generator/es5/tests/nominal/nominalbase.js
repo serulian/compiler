@@ -5,7 +5,7 @@ $module('nominalbase', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      instance.SomeField = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+      instance.SomeField = $t.fastbox(true, $g.________testlib.basictypes.Boolean);
       return instance;
     };
     this.$typesig = function () {
@@ -27,7 +27,7 @@ $module('nominalbase', function () {
     };
     $instance.SomeProp = $t.property(function () {
       var $this = this;
-      return $t.fastbox(!$this.$wrapped.SomeField.$wrapped, $g.____testlib.basictypes.Boolean);
+      return $t.fastbox(!$this.$wrapped.SomeField.$wrapped, $g.________testlib.basictypes.Boolean);
     });
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -53,7 +53,7 @@ $module('nominalbase', function () {
     };
     $instance.GetValue = function () {
       var $this = this;
-      return $t.fastbox(!$t.box($this, $g.nominalbase.FirstNominal).SomeProp().$wrapped, $g.____testlib.basictypes.Boolean);
+      return $t.fastbox(!$t.box($this, $g.nominalbase.FirstNominal).SomeProp().$wrapped, $g.________testlib.basictypes.Boolean);
     };
     this.$typesig = function () {
       if (this.$cachedtypesig) {

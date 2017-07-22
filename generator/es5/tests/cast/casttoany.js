@@ -14,10 +14,10 @@ $module('casttoany', function () {
   });
 
   $static.TEST = function () {
-    $t.cast($t.fastbox('hello', $g.____testlib.basictypes.String), $t.any, true);
-    $t.cast($t.fastbox(123, $g.____testlib.basictypes.Integer), $t.any, true);
+    $t.cast($t.fastbox('hello', $g.________testlib.basictypes.String), $t.any, true);
+    $t.cast($t.fastbox(123, $g.________testlib.basictypes.Integer), $t.any, true);
     $t.cast($g.casttoany.SomeClass.new(), $t.any, true);
     $t.cast(null, $t.any, true);
-    return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+    return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
   };
 });

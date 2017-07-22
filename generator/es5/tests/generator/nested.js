@@ -6,7 +6,7 @@ $module('nested', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $yield($t.fastbox(1, $g.____testlib.basictypes.Integer));
+            $yield($t.fastbox(1, $g.________testlib.basictypes.Integer));
             $current = 1;
             return;
 
@@ -23,7 +23,7 @@ $module('nested', function () {
             break;
 
           case 2:
-            $yield($t.fastbox(2, $g.____testlib.basictypes.Integer));
+            $yield($t.fastbox(2, $g.________testlib.basictypes.Integer));
             $current = 3;
             return;
 
@@ -33,12 +33,12 @@ $module('nested', function () {
             return;
 
           case 4:
-            $yield($t.fastbox(4, $g.____testlib.basictypes.Integer));
+            $yield($t.fastbox(4, $g.________testlib.basictypes.Integer));
             $current = 5;
             return;
 
           case 6:
-            $yield($t.fastbox(3, $g.____testlib.basictypes.Integer));
+            $yield($t.fastbox(3, $g.________testlib.basictypes.Integer));
             $current = 7;
             return;
 
@@ -66,7 +66,7 @@ $module('nested', function () {
             return;
 
           case 1:
-            $yield($t.fastbox(5, $g.____testlib.basictypes.Integer));
+            $yield($t.fastbox(5, $g.________testlib.basictypes.Integer));
             $current = 2;
             return;
 
@@ -89,7 +89,7 @@ $module('nested', function () {
       while (true) {
         switch ($current) {
           case 0:
-            v = $t.fastbox(0, $g.____testlib.basictypes.Integer);
+            v = $t.fastbox(0, $g.________testlib.basictypes.Integer);
             $current = 1;
             $continue($resolve, $reject);
             return;
@@ -127,13 +127,13 @@ $module('nested', function () {
             break;
 
           case 4:
-            v = $t.fastbox(v.$wrapped + value.$wrapped, $g.____testlib.basictypes.Integer);
+            v = $t.fastbox(v.$wrapped + value.$wrapped, $g.________testlib.basictypes.Integer);
             $current = 2;
             $continue($resolve, $reject);
             return;
 
           case 5:
-            $resolve($t.fastbox(v.$wrapped == 12, $g.____testlib.basictypes.Boolean));
+            $resolve($t.fastbox(v.$wrapped == 12, $g.________testlib.basictypes.Boolean));
             return;
 
           default:

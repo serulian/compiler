@@ -5,15 +5,15 @@ $module('loopvar', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      instance.wasChecked = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+      instance.wasChecked = $t.fastbox(false, $g.________testlib.basictypes.Boolean);
       return instance;
     };
     $instance.Next = function () {
       var $this = this;
       var r;
       r = $this.wasChecked;
-      $this.wasChecked = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
-      return $g.____testlib.basictypes.Tuple($g.____testlib.basictypes.Boolean, $g.____testlib.basictypes.Boolean).Build($t.fastbox(true, $g.____testlib.basictypes.Boolean), $t.fastbox(!r.$wrapped, $g.____testlib.basictypes.Boolean));
+      $this.wasChecked = $t.fastbox(true, $g.________testlib.basictypes.Boolean);
+      return $g.________testlib.basictypes.Tuple($g.________testlib.basictypes.Boolean, $g.________testlib.basictypes.Boolean).Build($t.fastbox(true, $g.________testlib.basictypes.Boolean), $t.fastbox(!r.$wrapped, $g.________testlib.basictypes.Boolean));
     };
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -36,7 +36,7 @@ $module('loopvar', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $t.fastbox(1234, $g.____testlib.basictypes.Integer);
+            $t.fastbox(1234, $g.________testlib.basictypes.Integer);
             $current = 1;
             $continue($resolve, $reject);
             return;
@@ -74,13 +74,13 @@ $module('loopvar', function () {
             break;
 
           case 4:
-            $t.fastbox(7654, $g.____testlib.basictypes.Integer);
+            $t.fastbox(7654, $g.________testlib.basictypes.Integer);
             $current = 2;
             $continue($resolve, $reject);
             return;
 
           case 5:
-            $t.fastbox(5678, $g.____testlib.basictypes.Integer);
+            $t.fastbox(5678, $g.________testlib.basictypes.Integer);
             $resolve();
             return;
 
@@ -102,7 +102,7 @@ $module('loopvar', function () {
     syncloop: while (true) {
       switch ($current) {
         case 0:
-          result = $t.fastbox('noloop', $g.____testlib.basictypes.String);
+          result = $t.fastbox('noloop', $g.________testlib.basictypes.String);
           s = $g.loopvar.SomeStream.new();
           $current = 1;
           continue syncloop;

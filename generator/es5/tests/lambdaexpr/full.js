@@ -5,6 +5,6 @@ $module('full', function () {
     lambda = function (firstParam, secondParam) {
       return secondParam;
     };
-    return lambda($t.fastbox(123, $g.____testlib.basictypes.Integer), $t.fastbox(true, $g.____testlib.basictypes.Boolean));
+    return lambda($t.fastbox(123, $g.________testlib.basictypes.Integer), $t.fastbox(true, $g.________testlib.basictypes.Boolean));
   };
 });

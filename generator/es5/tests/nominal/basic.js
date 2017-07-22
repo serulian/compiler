@@ -9,7 +9,7 @@ $module('basic', function () {
     };
     $instance.DoSomething = function () {
       var $this = this;
-      return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+      return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
     };
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -39,7 +39,7 @@ $module('basic', function () {
     };
     $instance.SomeProp = $t.property(function () {
       var $this = this;
-      return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+      return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
     });
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -58,6 +58,6 @@ $module('basic', function () {
     var sc;
     sc = $g.basic.SomeClass.new();
     m = $t.fastbox(sc, $g.basic.MyType);
-    return $t.fastbox(m.SomeProp().$wrapped && m.AnotherThing().$wrapped, $g.____testlib.basictypes.Boolean);
+    return $t.fastbox(m.SomeProp().$wrapped && m.AnotherThing().$wrapped, $g.________testlib.basictypes.Boolean);
   };
 });

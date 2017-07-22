@@ -9,7 +9,7 @@ $module('genericinterfacecast', function () {
     };
     $instance.SomeValue = $t.property(function () {
       var $this = this;
-      return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+      return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
     });
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -38,6 +38,6 @@ $module('genericinterfacecast', function () {
   $static.TEST = function () {
     var sc;
     sc = $g.genericinterfacecast.SomeClass.new();
-    return $t.cast(sc, $g.genericinterfacecast.SomeInterface($g.____testlib.basictypes.Boolean), false).SomeValue();
+    return $t.cast(sc, $g.genericinterfacecast.SomeInterface($g.________testlib.basictypes.Boolean), false).SomeValue();
   };
 });

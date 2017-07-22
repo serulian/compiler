@@ -8,7 +8,7 @@ $module('basic', function () {
   };
   this.$init(function () {
     return $promise.new(function (resolve) {
-      $static.someBool = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+      $static.someBool = $t.fastbox(true, $g.________testlib.basictypes.Boolean);
       resolve();
     });
   }, 'af4b3683', []);

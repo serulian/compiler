@@ -7,8 +7,8 @@ $module('intconditional', function () {
     syncloop: while (true) {
       switch ($current) {
         case 0:
-          first = $t.fastbox(10, $g.____testlib.basictypes.Integer);
-          second = $t.fastbox(2, $g.____testlib.basictypes.Integer);
+          first = $t.fastbox(10, $g.________testlib.basictypes.Integer);
+          second = $t.fastbox(2, $g.________testlib.basictypes.Integer);
           if (second.$wrapped <= first.$wrapped) {
             $current = 1;
             continue syncloop;
@@ -19,10 +19,10 @@ $module('intconditional', function () {
           break;
 
         case 1:
-          return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+          return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
 
         case 2:
-          return $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+          return $t.fastbox(false, $g.________testlib.basictypes.Boolean);
 
         default:
           return;

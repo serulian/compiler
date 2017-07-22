@@ -12,9 +12,9 @@ $module('nullbox', function () {
     };
     $static.$fields = [];
     $t.defineStructField($static, 'Value', 'Value', function () {
-      return $g.____testlib.basictypes.String;
+      return $g.________testlib.basictypes.String;
     }, function () {
-      return $g.____testlib.basictypes.String;
+      return $g.________testlib.basictypes.String;
     }, true);
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -36,6 +36,6 @@ $module('nullbox', function () {
     var $temp0;
     var s;
     s = ($temp0 = $g.nullbox.SomeStruct.new(), $temp0.Value = null, $temp0);
-    return $t.fastbox((s.Value == null) && (s.Mapping().$index($t.fastbox('Value', $g.____testlib.basictypes.String)) == null), $g.____testlib.basictypes.Boolean);
+    return $t.fastbox((s.Value == null) && (s.Mapping().$index($t.fastbox('Value', $g.________testlib.basictypes.String)) == null), $g.________testlib.basictypes.Boolean);
   };
 });

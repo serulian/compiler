@@ -13,9 +13,9 @@ $module('innergeneric', function () {
     };
     $static.$fields = [];
     $t.defineStructField($static, 'BoolValue', 'BoolValue', function () {
-      return $g.____testlib.basictypes.Boolean;
+      return $g.________testlib.basictypes.Boolean;
     }, function () {
-      return $g.____testlib.basictypes.Boolean;
+      return $g.________testlib.basictypes.Boolean;
     }, false);
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -77,8 +77,8 @@ $module('innergeneric', function () {
       while (true) {
         switch ($current) {
           case 0:
-            ss = $g.innergeneric.SomeStruct($t.struct).new($g.innergeneric.AnotherStruct.new($t.fastbox(true, $g.____testlib.basictypes.Boolean)));
-            $promise.maybe(ss.Stringify($g.____testlib.basictypes.JSON)()).then(function ($result0) {
+            ss = $g.innergeneric.SomeStruct($t.struct).new($g.innergeneric.AnotherStruct.new($t.fastbox(true, $g.________testlib.basictypes.Boolean)));
+            $promise.maybe(ss.Stringify($g.________testlib.basictypes.JSON)()).then(function ($result0) {
               $result = $result0;
               $current = 1;
               $continue($resolve, $reject);
@@ -91,7 +91,7 @@ $module('innergeneric', function () {
 
           case 1:
             jsonString = $result;
-            $promise.maybe($g.innergeneric.SomeStruct($g.innergeneric.AnotherStruct).Parse($g.____testlib.basictypes.JSON)(jsonString)).then(function ($result0) {
+            $promise.maybe($g.innergeneric.SomeStruct($g.innergeneric.AnotherStruct).Parse($g.________testlib.basictypes.JSON)(jsonString)).then(function ($result0) {
               $result = $result0;
               $current = 2;
               $continue($resolve, $reject);
@@ -104,7 +104,7 @@ $module('innergeneric', function () {
 
           case 2:
             sscopy = $result;
-            $promise.maybe($g.innergeneric.SomeStruct($t.struct).Parse($g.____testlib.basictypes.JSON)(jsonString)).then(function ($result0) {
+            $promise.maybe($g.innergeneric.SomeStruct($t.struct).Parse($g.________testlib.basictypes.JSON)(jsonString)).then(function ($result0) {
               $result = $result0;
               $current = 3;
               $continue($resolve, $reject);
@@ -117,7 +117,7 @@ $module('innergeneric', function () {
 
           case 3:
             iss = $result;
-            $resolve($t.fastbox(($t.cast(ss.SomeField, $g.innergeneric.AnotherStruct, false).BoolValue.$wrapped && sscopy.SomeField.BoolValue.$wrapped) && $t.cast(iss.SomeField, $g.innergeneric.AnotherStruct, false).BoolValue.$wrapped, $g.____testlib.basictypes.Boolean));
+            $resolve($t.fastbox(($t.cast(ss.SomeField, $g.innergeneric.AnotherStruct, false).BoolValue.$wrapped && sscopy.SomeField.BoolValue.$wrapped) && $t.cast(iss.SomeField, $g.innergeneric.AnotherStruct, false).BoolValue.$wrapped, $g.________testlib.basictypes.Boolean));
             return;
 
           default:

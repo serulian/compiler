@@ -5,12 +5,12 @@ $module('resource', function () {
     var $instance = this.prototype;
     $static.new = function () {
       var instance = new $static();
-      instance.released = $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+      instance.released = $t.fastbox(false, $g.________testlib.basictypes.Boolean);
       return instance;
     };
     $instance.Release = function () {
       var $this = this;
-      $this.released = $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+      $this.released = $t.fastbox(true, $g.________testlib.basictypes.Boolean);
       return;
     };
     this.$typesig = function () {
@@ -35,13 +35,13 @@ $module('resource', function () {
           case 0:
             $temp0 = sr;
             $resources.pushr($temp0, '$temp0');
-            $yield($t.fastbox(2, $g.____testlib.basictypes.Integer));
+            $yield($t.fastbox(2, $g.________testlib.basictypes.Integer));
             $current = 1;
             return;
 
           case 1:
             $resources.popr('$temp0');
-            $yield($t.fastbox(40, $g.____testlib.basictypes.Integer));
+            $yield($t.fastbox(40, $g.________testlib.basictypes.Integer));
             $current = 2;
             return;
 
@@ -66,7 +66,7 @@ $module('resource', function () {
         switch ($current) {
           case 0:
             sr = $g.resource.SomeResource.new();
-            counter = $t.fastbox(0, $g.____testlib.basictypes.Integer);
+            counter = $t.fastbox(0, $g.________testlib.basictypes.Integer);
             $current = 1;
             $continue($resolve, $reject);
             return;
@@ -104,13 +104,13 @@ $module('resource', function () {
             break;
 
           case 4:
-            counter = $t.fastbox(counter.$wrapped + i.$wrapped, $g.____testlib.basictypes.Integer);
+            counter = $t.fastbox(counter.$wrapped + i.$wrapped, $g.________testlib.basictypes.Integer);
             $current = 2;
             $continue($resolve, $reject);
             return;
 
           case 5:
-            $resolve($t.fastbox(sr.released.$wrapped && (counter.$wrapped == 42), $g.____testlib.basictypes.Boolean));
+            $resolve($t.fastbox(sr.released.$wrapped && (counter.$wrapped == 42), $g.________testlib.basictypes.Boolean));
             return;
 
           default:

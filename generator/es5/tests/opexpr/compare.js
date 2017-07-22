@@ -8,10 +8,10 @@ $module('compare', function () {
       return instance;
     };
     $static.$equals = function (first, second) {
-      return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+      return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
     };
     $static.$compare = function (first, second) {
-      return $t.fastbox(1, $g.____testlib.basictypes.Integer);
+      return $t.fastbox(1, $g.________testlib.basictypes.Integer);
     };
     this.$typesig = function () {
       return {
@@ -25,11 +25,11 @@ $module('compare', function () {
     first = $g.compare.SomeClass.new();
     second = $g.compare.SomeClass.new();
     $g.compare.SomeClass.$equals(first, second);
-    $t.fastbox(!$g.compare.SomeClass.$equals(first, second).$wrapped, $g.____testlib.basictypes.Boolean);
-    $t.fastbox($g.compare.SomeClass.$compare(first, second).$wrapped < 0, $g.____testlib.basictypes.Boolean);
-    $t.fastbox($g.compare.SomeClass.$compare(first, second).$wrapped > 0, $g.____testlib.basictypes.Boolean);
-    $t.fastbox($g.compare.SomeClass.$compare(first, second).$wrapped <= 0, $g.____testlib.basictypes.Boolean);
-    $t.fastbox($g.compare.SomeClass.$compare(first, second).$wrapped >= 0, $g.____testlib.basictypes.Boolean);
+    $t.fastbox(!$g.compare.SomeClass.$equals(first, second).$wrapped, $g.________testlib.basictypes.Boolean);
+    $t.fastbox($g.compare.SomeClass.$compare(first, second).$wrapped < 0, $g.________testlib.basictypes.Boolean);
+    $t.fastbox($g.compare.SomeClass.$compare(first, second).$wrapped > 0, $g.________testlib.basictypes.Boolean);
+    $t.fastbox($g.compare.SomeClass.$compare(first, second).$wrapped <= 0, $g.________testlib.basictypes.Boolean);
+    $t.fastbox($g.compare.SomeClass.$compare(first, second).$wrapped >= 0, $g.________testlib.basictypes.Boolean);
     return $g.compare.SomeClass.$equals(first, second);
   };
 });

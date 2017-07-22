@@ -9,7 +9,7 @@ $module('generic', function () {
     };
     $instance.BoolValue = $t.property(function () {
       var $this = this;
-      return $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+      return $t.fastbox(false, $g.________testlib.basictypes.Boolean);
     });
     $static.$bool = function (value) {
       return value.BoolValue();
@@ -27,7 +27,7 @@ $module('generic', function () {
 
   $static.TEST = function () {
     var sc;
-    sc = $g.generic.SomeClass($g.____testlib.basictypes.Integer).new();
-    return $t.fastbox(!$g.generic.SomeClass($g.____testlib.basictypes.Integer).$bool(sc).$wrapped, $g.____testlib.basictypes.Boolean);
+    sc = $g.generic.SomeClass($g.________testlib.basictypes.Integer).new();
+    return $t.fastbox(!$g.generic.SomeClass($g.________testlib.basictypes.Integer).$bool(sc).$wrapped, $g.________testlib.basictypes.Boolean);
   };
 });

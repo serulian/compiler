@@ -9,7 +9,7 @@ $module('interfacecastfail', function () {
     };
     $instance.SomeValue = $t.property(function () {
       var $this = this;
-      return $t.fastbox(2, $g.____testlib.basictypes.Integer);
+      return $t.fastbox(2, $g.________testlib.basictypes.Integer);
     });
     this.$typesig = function () {
       if (this.$cachedtypesig) {

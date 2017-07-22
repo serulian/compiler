@@ -34,7 +34,7 @@ $module('funcref', function () {
       while (true) {
         switch ($current) {
           case 0:
-            sc = $g.funcref.SomeClass.new($t.fastbox(true, $g.____testlib.basictypes.Boolean));
+            sc = $g.funcref.SomeClass.new($t.fastbox(true, $g.________testlib.basictypes.Boolean));
             $promise.maybe($g.funcref.AnotherFunction($t.dynamicaccess(sc, 'SomeFunction', false))).then(function ($result0) {
               $result = $result0;
               $current = 1;

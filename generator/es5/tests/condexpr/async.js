@@ -1,7 +1,7 @@
 $module('async', function () {
   var $static = this;
   $static.DoSomethingAsync = $t.workerwrap('337fe384', function () {
-    return $t.fastbox(true, $g.____testlib.basictypes.Boolean);
+    return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
   });
   $static.TEST = $t.markpromising(function () {
     var $result;
@@ -12,7 +12,7 @@ $module('async', function () {
           case 0:
             $promise.translate($g.async.DoSomethingAsync()).then(function ($result1) {
               return $promise.resolve($result1.$wrapped).then(function ($result0) {
-                $result = $result0 ? $t.fastbox(true, $g.____testlib.basictypes.Boolean) : $t.fastbox(false, $g.____testlib.basictypes.Boolean);
+                $result = $result0 ? $t.fastbox(true, $g.________testlib.basictypes.Boolean) : $t.fastbox(false, $g.________testlib.basictypes.Boolean);
                 $current = 1;
                 $continue($resolve, $reject);
                 return;

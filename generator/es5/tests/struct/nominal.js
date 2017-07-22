@@ -32,7 +32,7 @@ $module('nominal', function () {
     $t.defineStructField($static, 'someField', 'someField', function () {
       return $g.nominal.CoolBool;
     }, function () {
-      return $g.____testlib.basictypes.Boolean;
+      return $g.________testlib.basictypes.Boolean;
     }, false);
     this.$typesig = function () {
       if (this.$cachedtypesig) {
@@ -60,9 +60,9 @@ $module('nominal', function () {
       while (true) {
         switch ($current) {
           case 0:
-            c = $t.box($t.fastbox(true, $g.____testlib.basictypes.Boolean), $g.nominal.CoolBool);
+            c = $t.box($t.fastbox(true, $g.________testlib.basictypes.Boolean), $g.nominal.CoolBool);
             s = $g.nominal.SomeStruct.new(c);
-            $promise.maybe($g.nominal.SomeStruct.Parse($g.____testlib.basictypes.JSON)($t.fastbox('{"someField": true}', $g.____testlib.basictypes.String))).then(function ($result0) {
+            $promise.maybe($g.nominal.SomeStruct.Parse($g.________testlib.basictypes.JSON)($t.fastbox('{"someField": true}', $g.________testlib.basictypes.String))).then(function ($result0) {
               $result = $result0;
               $current = 1;
               $continue($resolve, $reject);
@@ -75,7 +75,7 @@ $module('nominal', function () {
 
           case 1:
             s2 = $result;
-            $resolve($t.fastbox(s2.someField.$wrapped && s.someField.$wrapped, $g.____testlib.basictypes.Boolean));
+            $resolve($t.fastbox(s2.someField.$wrapped && s.someField.$wrapped, $g.________testlib.basictypes.Boolean));
             return;
 
           default:
