@@ -291,6 +291,8 @@ var generationTests = []generationTest{
 	generationTest{"sml async function test", "sml", "asyncfunction", integrationTestSuccessExpected, ""},
 	generationTest{"sml maybe async function test", "sml", "maybeasyncfunction", integrationTestSuccessExpected, ""},
 	generationTest{"sml async children test", "sml", "asyncchildren", integrationTestSuccessExpected, ""},
+
+	generationTest{"native new integration test", "nativenew", "nativenew", integrationTestSuccessExpected, ""},
 }
 
 func TestGenerator(t *testing.T) {
