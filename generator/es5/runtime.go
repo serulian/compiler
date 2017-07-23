@@ -377,7 +377,14 @@ this.Serulian = (function($global) {
           return new type();
         }
 
-        return new (Function.prototype.bind.apply(type, [null].concat(arguments)))();
+        var args = new Array(arguments.length + 1);
+        args[0] = null;
+        for (var i = 0; i < arguments.length; ++i) {
+            args[i + 1] = arguments[i];
+        }
+
+        var constructor = Function.prototype.bind.apply(type, args);
+        return new constructor();
       };
     },
 

@@ -1,0 +1,6 @@
+from webidl`../../../../testlib/basic` import Number
+
+function<any> TEST() {
+    n := Number.new(&42)
+    return bool((n + &0) == &42)
+}
