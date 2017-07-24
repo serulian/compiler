@@ -28,41 +28,12 @@ $module('dynamicprop', function () {
     };
   });
 
-  $static.TEST = $t.markpromising(function () {
-    var $result;
+  $static.TEST = function () {
     var sc;
     var sca;
-    var $current = 0;
-    var $continue = function ($resolve, $reject) {
-      while (true) {
-        switch ($current) {
-          case 0:
-            sc = $g.dynamicprop.SomeClass.new();
-            sc.set$SomeProp($t.fastbox(123, $g.________testlib.basictypes.Integer));
-            sca = sc;
-            $t.dynamicaccess(sca, 'SomeProp', true).then(function ($result1) {
-              return $promise.resolve($t.cast($result1, $g.________testlib.basictypes.Integer, false).$wrapped == 123).then(function ($result0) {
-                $result = $t.fastbox($result0 && (sc.SomeProp().$wrapped == 123), $g.________testlib.basictypes.Boolean);
-                $current = 1;
-                $continue($resolve, $reject);
-                return;
-              });
-            }).catch(function (err) {
-              $reject(err);
-              return;
-            });
-            return;
-
-          case 1:
-            $resolve($result);
-            return;
-
-          default:
-            $resolve();
-            return;
-        }
-      }
-    };
-    return $promise.new($continue);
-  });
+    sc = $g.dynamicprop.SomeClass.new();
+    sc.set$SomeProp($t.fastbox(123, $g.________testlib.basictypes.Integer));
+    sca = sc;
+    return $t.fastbox(($t.cast($t.dynamicaccess(sca, 'SomeProp', false), $g.________testlib.basictypes.Integer, false).$wrapped == 123) && (sc.SomeProp().$wrapped == 123), $g.________testlib.basictypes.Boolean);
+  };
 });

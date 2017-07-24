@@ -29,7 +29,8 @@ func (db *domBuilder) buildNamedAccess(node compilergraph.GraphNode, name string
 
 	// Reference to an unknown name must be a dynamic access.
 	if !hasNamedReference {
-		return codedom.DynamicAccess(db.buildExpression(*childExprNode), name /* possibly promising */, true, node)
+		isPossiblyPromising := db.scopegraph.IsDynamicPromisingName(name)
+		return codedom.DynamicAccess(db.buildExpression(*childExprNode), name, isPossiblyPromising, node)
 	}
 
 	// Reference to a local name is a var or parameter.

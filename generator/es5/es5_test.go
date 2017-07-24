@@ -293,6 +293,7 @@ var generationTests = []generationTest{
 	generationTest{"sml async children test", "sml", "asyncchildren", integrationTestSuccessExpected, ""},
 
 	generationTest{"native new integration test", "nativenew", "nativenew", integrationTestSuccessExpected, ""},
+	generationTest{"dynamic access non-promising test", "dynamicaccess", "nonpromising", integrationTestSuccessExpected, ""},
 }
 
 func TestGenerator(t *testing.T) {
