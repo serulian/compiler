@@ -32,7 +32,7 @@ $module('await', function () {
     var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
+      localasyncloop: while (true) {
         switch ($current) {
           case 0:
             $promise.translate(p).then(function ($result0) {
@@ -62,7 +62,7 @@ $module('await', function () {
     var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
+      localasyncloop: while (true) {
         switch ($current) {
           case 0:
             $promise.maybe($g.await.DoSomething($g.await.SomePromise.new())).then(function ($result0) {

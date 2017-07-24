@@ -12,7 +12,7 @@ $module('maybeasyncfunction', function () {
       var $result;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        while (true) {
+        localasyncloop: while (true) {
           switch ($current) {
             case 0:
               $promise.translate($g.maybeasyncfunction.DoSomethingAsync()).then(function ($result0) {
@@ -95,7 +95,7 @@ $module('maybeasyncfunction', function () {
     var r2;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
+      localasyncloop: while (true) {
         switch ($current) {
           case 0:
             isi = $g.maybeasyncfunction.SomeClass.new();

@@ -86,19 +86,17 @@ $module('nested', function () {
     var value;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
+      localasyncloop: while (true) {
         switch ($current) {
           case 0:
             v = $t.fastbox(0, $g.________testlib.basictypes.Integer);
             $current = 1;
-            $continue($resolve, $reject);
-            return;
+            continue localasyncloop;
 
           case 1:
             $temp1 = $g.nested.SomeGenerator();
             $current = 2;
-            $continue($resolve, $reject);
-            return;
+            continue localasyncloop;
 
           case 2:
             $promise.maybe($temp1.Next()).then(function ($result0) {
@@ -117,20 +115,17 @@ $module('nested', function () {
             value = $temp0.First;
             if ($temp0.Second.$wrapped) {
               $current = 4;
-              $continue($resolve, $reject);
-              return;
+              continue localasyncloop;
             } else {
               $current = 5;
-              $continue($resolve, $reject);
-              return;
+              continue localasyncloop;
             }
             break;
 
           case 4:
             v = $t.fastbox(v.$wrapped + value.$wrapped, $g.________testlib.basictypes.Integer);
             $current = 2;
-            $continue($resolve, $reject);
-            return;
+            continue localasyncloop;
 
           case 5:
             $resolve($t.fastbox(v.$wrapped == 12, $g.________testlib.basictypes.Boolean));

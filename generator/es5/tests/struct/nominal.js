@@ -57,7 +57,7 @@ $module('nominal', function () {
     var s2;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
+      localasyncloop: while (true) {
         switch ($current) {
           case 0:
             c = $t.box($t.fastbox(true, $g.________testlib.basictypes.Boolean), $g.nominal.CoolBool);

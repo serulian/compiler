@@ -75,7 +75,7 @@ $module('slice', function () {
     var values;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
+      localasyncloop: while (true) {
         switch ($current) {
           case 0:
             values = $g.________testlib.basictypes.Slice($g.slice.AnotherStruct).overArray([$g.slice.AnotherStruct.new($t.fastbox(1, $g.________testlib.basictypes.Integer)), $g.slice.AnotherStruct.new($t.fastbox(2, $g.________testlib.basictypes.Integer)), $g.slice.AnotherStruct.new($t.fastbox(3, $g.________testlib.basictypes.Integer))]);

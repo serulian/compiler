@@ -37,7 +37,7 @@ $module('basic', function () {
     var s;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
+      localasyncloop: while (true) {
         switch ($current) {
           case 0:
             s = $g.________testlib.basictypes.MapStream($g.________testlib.basictypes.Integer, $g.________testlib.basictypes.Integer)($g.basic.SomeGenerator(), function (s) {
@@ -45,14 +45,12 @@ $module('basic', function () {
             });
             counter = $t.fastbox(0, $g.________testlib.basictypes.Integer);
             $current = 1;
-            $continue($resolve, $reject);
-            return;
+            continue localasyncloop;
 
           case 1:
             $temp1 = s;
             $current = 2;
-            $continue($resolve, $reject);
-            return;
+            continue localasyncloop;
 
           case 2:
             $promise.maybe($temp1.Next()).then(function ($result0) {
@@ -71,20 +69,17 @@ $module('basic', function () {
             entry = $temp0.First;
             if ($temp0.Second.$wrapped) {
               $current = 4;
-              $continue($resolve, $reject);
-              return;
+              continue localasyncloop;
             } else {
               $current = 5;
-              $continue($resolve, $reject);
-              return;
+              continue localasyncloop;
             }
             break;
 
           case 4:
             counter = $t.fastbox(counter.$wrapped + entry.$wrapped, $g.________testlib.basictypes.Integer);
             $current = 2;
-            $continue($resolve, $reject);
-            return;
+            continue localasyncloop;
 
           case 5:
             $resolve($t.fastbox(counter.$wrapped == 9, $g.________testlib.basictypes.Boolean));

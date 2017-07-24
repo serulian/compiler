@@ -46,13 +46,12 @@ $module('async', function () {
     var value;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
+      localasyncloop: while (true) {
         switch ($current) {
           case 0:
             v = null;
             $current = 1;
-            $continue($resolve, $reject);
-            return;
+            continue localasyncloop;
 
           case 1:
             $promise.maybe($g.async.SomeGenerator()).then(function ($result0) {
@@ -69,8 +68,7 @@ $module('async', function () {
           case 2:
             $temp1 = $result;
             $current = 3;
-            $continue($resolve, $reject);
-            return;
+            continue localasyncloop;
 
           case 3:
             $promise.maybe($temp1.Next()).then(function ($result0) {
@@ -89,20 +87,17 @@ $module('async', function () {
             value = $temp0.First;
             if ($temp0.Second.$wrapped) {
               $current = 5;
-              $continue($resolve, $reject);
-              return;
+              continue localasyncloop;
             } else {
               $current = 6;
-              $continue($resolve, $reject);
-              return;
+              continue localasyncloop;
             }
             break;
 
           case 5:
             v = value;
             $current = 3;
-            $continue($resolve, $reject);
-            return;
+            continue localasyncloop;
 
           case 6:
             $resolve(v);
