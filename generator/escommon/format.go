@@ -16,6 +16,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/serulian/compiler/compilercommon"
+	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/sourcemap"
 
 	"github.com/robertkrimen/otto/ast"
@@ -47,10 +48,12 @@ func FormatMappedECMASource(source string, sm *sourcemap.SourceMap) (string, *so
 		file: program.File,
 
 		indentationLevel: 0,
-		hasNewline:       true,
 
+		hasNewline:       true,
 		newlineCount:     0,
 		charactersOnLine: 0,
+
+		expressionStack: &compilerutil.Stack{},
 
 		existingSourceMap:  sm,
 		formattedSourceMap: sourcemap.NewSourceMap(sm.GeneratedFilePath(), sm.SourceRoot()),
@@ -71,6 +74,8 @@ type sourceFormatter struct {
 	hasNewline       bool // Whether there is a newline at the end of the buffer.
 	newlineCount     int  // The number of lines in the buffer.
 	charactersOnLine int  // The number of characters on the current line in the buffer.
+
+	expressionStack *compilerutil.Stack // Stack of the current nesting of expressions.
 
 	positionMapper *compilercommon.SourcePositionMapper // Mapper for mapping from the input source.
 
@@ -164,8 +169,20 @@ func (sf *sourceFormatter) addMapping(bytePosition file.Idx) {
 	sf.formattedSourceMap.AddMapping(sf.newlineCount, sf.charactersOnLine, mapping)
 }
 
+// parentExpression returns the second expression on the current stack, if any or nil if none.
+func (sf *sourceFormatter) parentExpression() ast.Expression {
+	if sf.expressionStack.Len() < 2 {
+		return nil
+	}
+
+	return sf.expressionStack.PeekSecond().(ast.Expression)
+}
+
 // formatExpression formats an ES expression.
 func (sf *sourceFormatter) formatExpression(expression ast.Expression) {
+	sf.expressionStack.Push(expression)
+	defer sf.expressionStack.Pop()
+
 	// Add the mapping for the expression.
 	sf.addMapping(expression.Idx0())
 
@@ -234,6 +251,21 @@ func (sf *sourceFormatter) formatExpression(expression ast.Expression) {
 
 	// FunctionLiteral
 	case *ast.FunctionLiteral:
+		requiresWrapping := false
+
+		// If the function is the callee expression for a CallExpression, then it must be wrapped for it
+		// to parse correctly under JS.
+		parentExpr := sf.parentExpression()
+		if parentExpr != nil {
+			if callExpr, ok := parentExpr.(*ast.CallExpression); ok {
+				requiresWrapping = callExpr.Callee == e
+			}
+		}
+
+		if requiresWrapping {
+			sf.append("(")
+		}
+
 		sf.append("function")
 		if e.Name != nil {
 			sf.append(" ")
@@ -244,6 +276,10 @@ func (sf *sourceFormatter) formatExpression(expression ast.Expression) {
 		sf.formatIdentifierList(e.ParameterList.List)
 		sf.append(") ")
 		sf.formatStatement(e.Body)
+
+		if requiresWrapping {
+			sf.append(")")
+		}
 
 	// Identifer
 	case *ast.Identifier:

@@ -1,5 +1,5 @@
 "use strict";
-this.Serulian = function ($global) {
+this.Serulian = (function ($global) {
   var BOXED_DATA_PROPERTY = '$wrapped';
   var $__currentScriptSrc = null;
   if (typeof $global.document === 'object') {
@@ -1839,7 +1839,7 @@ this.Serulian = function ($global) {
   return $promise.all(buildPromises(moduleInits)).then(function () {
     return $g;
   });
-}(this);
+})(this);
 if (typeof importScripts === 'function') {
   var runWorker = function () {
     var search = location.search;

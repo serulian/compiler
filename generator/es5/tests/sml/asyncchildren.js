@@ -106,7 +106,7 @@ $module('asyncchildren', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $promise.maybe($g.asyncchildren.SimpleFunction($g.________testlib.basictypes.Mapping($g.________testlib.basictypes.String).Empty(), function () {
+            $promise.maybe($g.asyncchildren.SimpleFunction($g.________testlib.basictypes.Mapping($g.________testlib.basictypes.String).Empty(), (function () {
               var $result;
               var $current = 0;
               var $continue = function ($yield, $yieldin, $reject, $done) {
@@ -151,7 +151,7 @@ $module('asyncchildren', function () {
                 }
               };
               return $generator.new($continue, true);
-            }())).then(function ($result0) {
+            })())).then(function ($result0) {
               $result = $result0;
               $current = 1;
               $continue($resolve, $reject);

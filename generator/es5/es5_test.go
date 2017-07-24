@@ -172,6 +172,7 @@ var generationTests = []generationTest{
 
 	generationTest{"full lambda expression", "lambdaexpr", "full", integrationTestSuccessExpected, ""},
 	generationTest{"mini lambda expression", "lambdaexpr", "mini", integrationTestSuccessExpected, ""},
+	generationTest{"inline lambda expression", "lambdaexpr", "inline", integrationTestSuccessExpected, ""},
 
 	generationTest{"simple plus op expression", "opexpr", "plus", integrationTestSuccessExpected, ""},
 	generationTest{"null comparison short circuit", "opexpr", "nullcomparecall", integrationTestSuccessExpected, ""},
