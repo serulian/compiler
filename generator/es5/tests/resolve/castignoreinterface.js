@@ -12,7 +12,7 @@ $module('castignoreinterface', function () {
       var $result;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        while (true) {
+        localasyncloop: while (true) {
           switch ($current) {
             case 0:
               $promise.translate($g.castignoreinterface.DoSomethingAsync()).then(function ($result0) {
@@ -67,7 +67,7 @@ $module('castignoreinterface', function () {
     var somevalue;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
+      localasyncloop: while (true) {
         switch ($current) {
           case 0:
             somevalue = $t.fastbox('hello', $g.________testlib.basictypes.String);
@@ -78,8 +78,7 @@ $module('castignoreinterface', function () {
               a = null;
             }
             $current = 1;
-            $continue($resolve, $reject);
-            return;
+            continue localasyncloop;
 
           case 1:
             $t.nullableinvoke(a, 'SomeFunction', true, [$t.fastbox(true, $g.________testlib.basictypes.Boolean)]).then(function ($result0) {

@@ -12,7 +12,7 @@ $module('withasync', function () {
       var $result;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        while (true) {
+        localasyncloop: while (true) {
           switch ($current) {
             case 0:
               $promise.translate($g.withasync.DoSomethingAsync()).then(function ($result0) {
@@ -56,7 +56,7 @@ $module('withasync', function () {
     var $continue = function ($resolve, $reject) {
       $resolve = $resources.bind($resolve, true);
       $reject = $resources.bind($reject, true);
-      while (true) {
+      localasyncloop: while (true) {
         switch ($current) {
           case 0:
             $t.fastbox(123, $g.________testlib.basictypes.Integer);

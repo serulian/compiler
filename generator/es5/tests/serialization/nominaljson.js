@@ -100,7 +100,7 @@ $module('nominaljson', function () {
     var s;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
+      localasyncloop: while (true) {
         switch ($current) {
           case 0:
             s = $g.nominaljson.SomeStruct.new($t.box($g.nominaljson.AnotherStruct.new($t.fastbox(true, $g.________testlib.basictypes.Boolean)), $g.nominaljson.SomeNominal));

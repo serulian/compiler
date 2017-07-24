@@ -36,7 +36,7 @@ func (sg *stateGenerator) generateUnconditionalJump(jump *codedom.UnconditionalJ
 	targetState := sg.generateStates(jump.Target, generateNewState)
 
 	templateStr := `
-		{{ .Snippets.SetStateAndContinue .Item }}
+		{{ .Snippets.SetStateAndContinue .Item false }}
 	`
 
 	template := esbuilder.Template("unconditionaljump", templateStr, generatingItem{targetState, sg})
@@ -65,9 +65,9 @@ func (sg *stateGenerator) generateConditionalJump(jump *codedom.ConditionalJumpN
 
 	templateStr := `
 		if ({{ emit .Item.Expression }}) {
-			{{ .Snippets.SetStateAndContinue .Item.TrueState }}
+			{{ .Snippets.SetStateAndContinue .Item.TrueState false }}
 		} else {
-			{{ .Snippets.SetStateAndContinue .Item.FalseState }}
+			{{ .Snippets.SetStateAndContinue .Item.FalseState false }}
 		}
 	`
 
@@ -227,11 +227,11 @@ func (sg *stateGenerator) generateArrowPromise(arrowPromise *codedom.ArrowPromis
 				{{ emit .Item.ResolutionAssignment }}
 			{{ end }}
 
-			{{ .Snippets.SetStateAndContinue .Item.TargetState }}
+			{{ .Snippets.SetStateAndContinue .Item.TargetState true }}
 		}).catch(function(rejected) {
 			{{ if .Item.RejectionAssignment }}
 				{{ emit .Item.RejectionAssignment }}
-				{{ .Snippets.SetStateAndContinue .Item.TargetState }}
+				{{ .Snippets.SetStateAndContinue .Item.TargetState true }}
 			{{ else }}
 				{{ .Snippets.Reject "rejected" }}
 			{{ end }}
@@ -296,7 +296,7 @@ func (sg *stateGenerator) generateSyncResolveExpression(resolveExpression *coded
 			{{ end }}
 		}
 
-		{{ .Snippets.SetStateAndContinue .TargetState }}
+		{{ .Snippets.SetStateAndContinue .TargetState false }}
 	`
 
 	currentState.pushBuilt(esbuilder.Template("resolvesyncwrap", wrapTemplateStr, wrappedData))
@@ -344,7 +344,7 @@ func (sg *stateGenerator) generateAsyncResolveExpression(resolveExpression *code
 		{{ .Data.RejectionName }} = null;
 		{{ end }}
 
-		{{ .Data.Snippets.SetStateAndContinue .Data.TargetState }}
+		{{ .Data.Snippets.SetStateAndContinue .Data.TargetState true }}
 	`
 
 	promise := result.BuildWrapped(wrappingTemplateStr, resolveData)
@@ -368,7 +368,7 @@ func (sg *stateGenerator) generateAsyncResolveExpression(resolveExpression *code
 			{{ .ResolutionName }} = null;
 			{{ end }}
 
-			{{ .Snippets.SetStateAndContinue .TargetState }}
+			{{ .Snippets.SetStateAndContinue .TargetState true }}
 		});
 		return;
 	`

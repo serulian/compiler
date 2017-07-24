@@ -160,6 +160,7 @@ var generationTests = []generationTest{
 	generationTest{"async conditional expression", "condexpr", "async", integrationTestSuccessExpected, ""},
 
 	generationTest{"loop expression", "loopexpr", "basic", integrationTestSuccessExpected, ""},
+	generationTest{"loop numeric async expression", "loopexpr", "numeric", integrationTestSuccessExpected, ""},
 
 	generationTest{"generic specifier expression", "accessexpr", "genericspecifier", integrationTestSuccessExpected, ""},
 	generationTest{"cast expression", "accessexpr", "cast", integrationTestSuccessExpected, ""},

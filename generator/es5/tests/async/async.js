@@ -7,7 +7,7 @@ $module('async', function () {
     var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
+      localasyncloop: while (true) {
         switch ($current) {
           case 0:
             $promise.translate($g.async.DoSomethingAsync($t.fastbox(3, $g.________testlib.basictypes.Integer))).then(function ($result0) {

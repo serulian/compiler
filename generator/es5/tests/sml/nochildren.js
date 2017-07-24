@@ -8,19 +8,17 @@ $module('nochildren', function () {
     var value;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
+      localasyncloop: while (true) {
         switch ($current) {
           case 0:
             found = $t.fastbox(true, $g.________testlib.basictypes.Boolean);
             $current = 1;
-            $continue($resolve, $reject);
-            return;
+            continue localasyncloop;
 
           case 1:
             $temp1 = children;
             $current = 2;
-            $continue($resolve, $reject);
-            return;
+            continue localasyncloop;
 
           case 2:
             $promise.maybe($temp1.Next()).then(function ($result0) {
@@ -39,20 +37,17 @@ $module('nochildren', function () {
             value = $temp0.First;
             if ($temp0.Second.$wrapped) {
               $current = 4;
-              $continue($resolve, $reject);
-              return;
+              continue localasyncloop;
             } else {
               $current = 5;
-              $continue($resolve, $reject);
-              return;
+              continue localasyncloop;
             }
             break;
 
           case 4:
             found = $t.fastbox(false, $g.________testlib.basictypes.Boolean);
             $current = 2;
-            $continue($resolve, $reject);
-            return;
+            continue localasyncloop;
 
           case 5:
             $resolve(found);
@@ -70,7 +65,7 @@ $module('nochildren', function () {
     var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
+      localasyncloop: while (true) {
         switch ($current) {
           case 0:
             $promise.maybe($g.nochildren.SimpleFunction($g.________testlib.basictypes.Mapping($g.________testlib.basictypes.String).Empty(), $generator.directempty())).then(function ($result0) {

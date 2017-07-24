@@ -86,7 +86,7 @@ $module('json', function () {
     var s;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
+      localasyncloop: while (true) {
         switch ($current) {
           case 0:
             s = $g.json.SomeStruct.new($t.fastbox(2, $g.________testlib.basictypes.Integer), $t.fastbox(false, $g.________testlib.basictypes.Boolean), $g.json.AnotherStruct.new($t.fastbox(true, $g.________testlib.basictypes.Boolean)));

@@ -84,7 +84,7 @@ func (s snippets) Reject(value string) string {
 	return s.templater.Execute("reject", template, value)
 }
 
-func (s snippets) Continue() string {
+func (s snippets) Continue(isUnderPromise bool) string {
 	var template = ""
 	switch s.functionTraits.Type() {
 	case shared.StateFunctionNormalSync:
@@ -93,10 +93,16 @@ func (s snippets) Continue() string {
 		`
 
 	case shared.StateFunctionNormalAsync:
-		template = `
-			$continue($resolve, $reject);
-			return;
-		`
+		if isUnderPromise {
+			template = `
+				$continue($resolve, $reject);
+				return;
+			`
+		} else {
+			template = `				
+				continue localasyncloop;
+			`
+		}
 
 	case shared.StateFunctionSyncOrAsyncGenerator:
 		template = `
@@ -150,6 +156,6 @@ func (s snippets) SetStateAndBreak(state *state) string {
 	return s.setState(state.ID, "return")
 }
 
-func (s snippets) SetStateAndContinue(state *state) string {
-	return s.setState(state.ID, s.Continue())
+func (s snippets) SetStateAndContinue(state *state, isUnderPromise bool) string {
+	return s.setState(state.ID, s.Continue(isUnderPromise))
 }
