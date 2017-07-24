@@ -73,7 +73,7 @@ $module('children', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $promise.maybe($g.children.SimpleFunction($g.________testlib.basictypes.Mapping($g.________testlib.basictypes.String).Empty(), function () {
+            $promise.maybe($g.children.SimpleFunction($g.________testlib.basictypes.Mapping($g.________testlib.basictypes.String).Empty(), (function () {
               var $current = 0;
               var $continue = function ($yield, $yieldin, $reject, $done) {
                 while (true) {
@@ -100,7 +100,7 @@ $module('children', function () {
                 }
               };
               return $generator.new($continue, false);
-            }())).then(function ($result0) {
+            })())).then(function ($result0) {
               $result = $result0;
               $current = 1;
               $continue($resolve, $reject);

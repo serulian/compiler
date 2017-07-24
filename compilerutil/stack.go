@@ -37,6 +37,16 @@ func (s *Stack) Peek() interface{} {
 	return nil
 }
 
+// PeekSecond returns the element second to the top of the list, if any.
+// If the stack contains less than two elemeents, return nil
+func (s *Stack) PeekSecond() interface{} {
+	if s.size > 1 {
+		return s.top.next.value
+	}
+
+	return nil
+}
+
 // Remove the top element from the stack and return it's value
 // If the stack is empty, return nil
 func (s *Stack) Pop() (value interface{}) {
