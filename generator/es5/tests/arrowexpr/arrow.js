@@ -32,7 +32,7 @@ $module('arrow', function () {
     var somebool;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
+      localasyncloop: while (true) {
         switch ($current) {
           case 0:
             somebool = null;
@@ -63,7 +63,7 @@ $module('arrow', function () {
     var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
+      localasyncloop: while (true) {
         switch ($current) {
           case 0:
             $promise.maybe($g.arrow.DoSomething($g.arrow.SomePromise.new())).then(function ($result0) {

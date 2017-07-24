@@ -31,7 +31,7 @@ $module('funcref', function () {
     var sc;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
+      localasyncloop: while (true) {
         switch ($current) {
           case 0:
             sc = $g.funcref.SomeClass.new($t.fastbox(true, $g.________testlib.basictypes.Boolean));

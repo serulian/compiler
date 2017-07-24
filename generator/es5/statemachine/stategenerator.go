@@ -104,7 +104,7 @@ func (sg *stateGenerator) generateStates(statement codedom.Statement, option gen
 		// for jumping "in between" and otherwise single state. Therefore, control flow must immediately
 		// go from the existing state to the new state (as it would normally naturally flow)
 		if statement.IsReferenceable() {
-			currentState.pushSnippet(sg.snippets().SetStateAndContinue(newState))
+			currentState.pushSnippet(sg.snippets().SetStateAndContinue(newState, false))
 		}
 	}
 
@@ -274,7 +274,7 @@ func (sg *stateGenerator) addTopLevelExpression(expression codedom.Expression) e
 
 		wrappingTemplateStr := `
 			$result = {{ emit .ResultExpr }};
-			{{ .Data.Snippets.SetStateAndContinue .Data.ResolutionState }}
+			{{ .Data.Snippets.SetStateAndContinue .Data.ResolutionState true }}
 		`
 		promise := result.BuildWrapped(wrappingTemplateStr, data)
 
@@ -410,7 +410,7 @@ const asyncStateMachineTemplateStr = `
 			{{ .Snippets.Resolve "" }}
 		{{ else }}
 		{{ $parent := . }}
-		while (true) {
+		localasyncloop: while (true) {
 			switch ($current) {
 				{{range .States }}
 				case {{ .ID }}:

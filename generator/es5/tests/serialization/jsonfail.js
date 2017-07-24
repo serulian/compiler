@@ -84,7 +84,7 @@ $module('jsonfail', function () {
     var parsed;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
+      localasyncloop: while (true) {
         switch ($current) {
           case 0:
             jsonString = $t.fastbox('{"SomeField":"hello world"}', $g.________testlib.basictypes.String);

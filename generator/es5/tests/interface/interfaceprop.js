@@ -44,7 +44,7 @@ $module('interfaceprop', function () {
       var $result;
       var $current = 0;
       var $continue = function ($resolve, $reject) {
-        while (true) {
+        localasyncloop: while (true) {
           switch ($current) {
             case 0:
               $promise.translate($g.interfaceprop.DoSomethingAsync()).then(function ($result0) {
@@ -103,7 +103,7 @@ $module('interfaceprop', function () {
     var si2;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
+      localasyncloop: while (true) {
         switch ($current) {
           case 0:
             si = $g.interfaceprop.SomeClass.new();

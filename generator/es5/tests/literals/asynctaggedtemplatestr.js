@@ -7,7 +7,7 @@ $module('asynctaggedtemplatestr', function () {
     var $result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
+      localasyncloop: while (true) {
         switch ($current) {
           case 0:
             $promise.translate($g.asynctaggedtemplatestr.DoSomethingAsync()).then(function ($result0) {
@@ -40,7 +40,7 @@ $module('asynctaggedtemplatestr', function () {
     var result;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
+      localasyncloop: while (true) {
         switch ($current) {
           case 0:
             a = $t.fastbox(10, $g.________testlib.basictypes.Integer);

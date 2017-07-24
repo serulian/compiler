@@ -45,7 +45,7 @@ $module('jsondefault', function () {
     var parsed;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
+      localasyncloop: while (true) {
         switch ($current) {
           case 0:
             jsonString = $t.fastbox('{}', $g.________testlib.basictypes.String);

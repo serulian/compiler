@@ -55,19 +55,17 @@ $module('loopstreamable', function () {
     var something;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
+      localasyncloop: while (true) {
         switch ($current) {
           case 0:
             $t.fastbox(1234, $g.________testlib.basictypes.Integer);
             $current = 1;
-            $continue($resolve, $reject);
-            return;
+            continue localasyncloop;
 
           case 1:
             $temp1 = somethingElse.Stream();
             $current = 2;
-            $continue($resolve, $reject);
-            return;
+            continue localasyncloop;
 
           case 2:
             $promise.maybe($temp1.Next()).then(function ($result0) {
@@ -86,20 +84,17 @@ $module('loopstreamable', function () {
             something = $temp0.First;
             if ($temp0.Second.$wrapped) {
               $current = 4;
-              $continue($resolve, $reject);
-              return;
+              continue localasyncloop;
             } else {
               $current = 5;
-              $continue($resolve, $reject);
-              return;
+              continue localasyncloop;
             }
             break;
 
           case 4:
             $t.fastbox(7654, $g.________testlib.basictypes.Integer);
             $current = 2;
-            $continue($resolve, $reject);
-            return;
+            continue localasyncloop;
 
           case 5:
             $t.fastbox(5678, $g.________testlib.basictypes.Integer);
@@ -123,20 +118,18 @@ $module('loopstreamable', function () {
     var s;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
+      localasyncloop: while (true) {
         switch ($current) {
           case 0:
             result = $t.fastbox('noloop', $g.________testlib.basictypes.String);
             s = $g.loopstreamable.SomeStreamable.new();
             $current = 1;
-            $continue($resolve, $reject);
-            return;
+            continue localasyncloop;
 
           case 1:
             $temp1 = s.Stream();
             $current = 2;
-            $continue($resolve, $reject);
-            return;
+            continue localasyncloop;
 
           case 2:
             $promise.maybe($temp1.Next()).then(function ($result0) {
@@ -155,20 +148,17 @@ $module('loopstreamable', function () {
             i = $temp0.First;
             if ($temp0.Second.$wrapped) {
               $current = 4;
-              $continue($resolve, $reject);
-              return;
+              continue localasyncloop;
             } else {
               $current = 5;
-              $continue($resolve, $reject);
-              return;
+              continue localasyncloop;
             }
             break;
 
           case 4:
             result = i;
             $current = 2;
-            $continue($resolve, $reject);
-            return;
+            continue localasyncloop;
 
           case 5:
             $resolve(result);

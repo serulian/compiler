@@ -8,7 +8,7 @@ $module('asyncnullcompare', function () {
     var someBool;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
-      while (true) {
+      localasyncloop: while (true) {
         switch ($current) {
           case 0:
             someBool = null;
