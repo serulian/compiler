@@ -21,7 +21,7 @@ import (
 // CORE_LIBRARY contains the location of the Serulian core library.
 var CORE_LIBRARY = packageloader.Library{
 	// TODO: this should be set to a defined tag once the compiler is stable.
-	PathOrURL: "github.com/Serulian/corelib:master",
+	PathOrURL: "github.com/serulian/corelib:master",
 	IsSCM:     true,
 }
 

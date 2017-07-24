@@ -291,6 +291,11 @@ func (tpl TestPathLoader) VCSPackageDirectory(entrypoint Entrypoint) string {
 	return ""
 }
 
+func (tpl TestPathLoader) Exists(path string) (bool, error) {
+	_, err := tpl.LoadSourceFile(path)
+	return err == nil, nil
+}
+
 func (tpl TestPathLoader) LoadSourceFile(path string) ([]byte, error) {
 	if path == "startingfile.json" {
 		return []byte(`{

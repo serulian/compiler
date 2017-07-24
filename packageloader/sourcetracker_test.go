@@ -36,6 +36,11 @@ func (tpl *anotherTestPathLoader) setFile(path string, contents string) {
 	}
 }
 
+func (tpl *anotherTestPathLoader) Exists(path string) (bool, error) {
+	_, exists := tpl.files[path]
+	return exists, nil
+}
+
 func (tpl *anotherTestPathLoader) LoadSourceFile(path string) ([]byte, error) {
 	file, exists := tpl.files[path]
 	if exists {
