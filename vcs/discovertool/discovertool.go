@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/Serulian/compiler/vcs"
+	"github.com/serulian/compiler/vcs"
 	"github.com/spf13/cobra"
 )
 
