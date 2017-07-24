@@ -14,6 +14,9 @@ import (
 // the package loader. Note that VCS checkout will still be done locally, regardless of the path
 // loader configured.
 type PathLoader interface {
+	// Exists returns if the given path exists.
+	Exists(path string) (bool, error)
+
 	// LoadSourceFile attempts to load the source file from the given path. Returns the contents.
 	LoadSourceFile(path string) ([]byte, error)
 
@@ -39,6 +42,18 @@ type DirectoryEntry struct {
 }
 
 type LocalFilePathLoader struct{}
+
+func (lfpl LocalFilePathLoader) Exists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
+}
 
 func (lfpl LocalFilePathLoader) VCSPackageDirectory(entrypoint Entrypoint) string {
 	rootDirectory := entrypoint.EntrypointDirectoryPath(lfpl)

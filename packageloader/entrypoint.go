@@ -14,6 +14,11 @@ func (e Entrypoint) IsSourceFile(pathloader PathLoader) bool {
 	return pathloader.IsSourceFile(string(e))
 }
 
+// IsValid returns if the entrypoint is a valid path that exists.
+func (e Entrypoint) IsValid(pathloader PathLoader) (bool, error) {
+	return pathloader.Exists(e.Path())
+}
+
 // Path returns the path that this entrypoint represents.
 func (e Entrypoint) Path() string {
 	return string(e)

@@ -121,6 +121,15 @@ func ParseAndBuildScopeGraph(rootSourceFilePath string, vcsDevelopmentDirectorie
 // starting at the root source file specified in configuration. If an *internal error* occurs, it is
 // returned as the `err`. Parsing and scoping errors are returned in the Result.
 func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
+	entrypointExists, err := config.Entrypoint.IsValid(config.PathLoader)
+	if err != nil {
+		return Result{}, err
+	}
+
+	if !entrypointExists {
+		return Result{}, fmt.Errorf("Could not find entrypoint %s", config.Entrypoint.Path())
+	}
+
 	graph, err := compilergraph.NewGraph(config.Entrypoint.Path())
 	if err != nil {
 		return Result{}, err
