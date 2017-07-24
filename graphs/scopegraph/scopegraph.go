@@ -284,6 +284,13 @@ func (sg *ScopeGraph) ResolveSRGTypeRef(srgTypeRef srg.SRGTypeRef) (typegraph.Ty
 	return sg.srgRefResolver.ResolveTypeRef(srgTypeRef, sg.tdg)
 }
 
+// IsDynamicPromisingName returns true if the given name is considered dynamically promising in the graph.
+// Such a name, when accessed dynamically, *may* return a promise.
+func (sg *ScopeGraph) IsDynamicPromisingName(name string) bool {
+	_, exists := sg.dynamicPromisingNames[name]
+	return exists
+}
+
 // IsPromisingMember returns whether the member, when accessed via the given access type, returns a promise.
 func (sg *ScopeGraph) IsPromisingMember(member typegraph.TGMember, accessType PromisingAccessType) bool {
 	// If this member is not implicitly called and we are asking for implicit access information, then

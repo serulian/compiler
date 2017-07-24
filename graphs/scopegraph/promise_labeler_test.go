@@ -58,6 +58,12 @@ var promisingLabelTests = []promisingLabelTest{
 		},
 	},
 
+	promisingLabelTest{"dynamic access field promise test", "dynamicaccessfield",
+		[]expectedPromiseLabel{
+			expectedPromiseLabel{"doSomething", proto.ScopeLabel_SML_PROMISING_NO},
+		},
+	},
+
 	promisingLabelTest{"unknown function called maybe promise test", "unknownfunc",
 		[]expectedPromiseLabel{
 			expectedPromiseLabel{"CallsUnknownFunc", proto.ScopeLabel_SML_PROMISING_MAYBE},

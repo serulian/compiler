@@ -1,0 +1,16 @@
+struct SomeStruct {
+    field int
+}
+
+function<int> doSomething() {
+    ss := SomeStruct{
+        field: 42,
+    }
+
+    var<any> ssa = ss
+    return ssa->field.(int)
+}
+
+function<any> TEST() {
+    return doSomething() == 42
+}
