@@ -276,6 +276,7 @@ var generationTests = []generationTest{
 	generationTest{"cast ignore resolve statement test", "resolve", "castignore", integrationTestSuccessExpected, ""},
 	generationTest{"cast ignore interface resolve statement test", "resolve", "castignoreinterface", integrationTestSuccessExpected, ""},
 	generationTest{"cast rejection message resolve statement test", "resolve", "castrejectmessage", integrationTestSuccessExpected, ""},
+	generationTest{"resolve last statement test", "resolve", "last", integrationTestNone, ""},
 
 	generationTest{"sml simple function test", "sml", "simplefunc", integrationTestSuccessExpected, ""},
 	generationTest{"sml simple class test", "sml", "simpleclass", integrationTestSuccessExpected, ""},

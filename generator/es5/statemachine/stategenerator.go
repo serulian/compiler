@@ -190,12 +190,20 @@ func (sg *stateGenerator) newState() *state {
 
 // filterStates returns the states generated, minus those that have no source.
 func (sg *stateGenerator) filterStates() []*state {
-	states := make([]*state, 0)
+	states := make([]*state, 0, len(sg.states))
 	for _, state := range sg.states {
 		if state.HasSource() {
 			states = append(states, state)
 		}
 	}
+
+	// If the resulting state list only has a single state, skip the filtering. This
+	// fixes a bug where jumps require multiple states to ensure we generate a sync loop.
+	// In the future, we should probably fix this properly.
+	if len(sg.states) > 1 && len(states) == 1 {
+		return sg.states
+	}
+
 	return states
 }
 

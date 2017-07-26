@@ -26,6 +26,10 @@ $module('withasync', function () {
               });
               return;
 
+            case 1:
+              $resolve();
+              return;
+
             default:
               $resolve();
               return;
