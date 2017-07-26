@@ -956,5 +956,14 @@ func (sb *scopeBuilder) scopeResolveStatement(node compilergraph.GraphNode, cont
 		isValid = isValid && rejectionScope.GetIsValid()
 	}
 
+	if isValid && !destinationScope.GetIsAnonymousReference() {
+		// Make sure we don't have a void value.
+		receivedType := sourceScope.ResolvedTypeRef(sb.sg.tdg)
+		if receivedType.IsVoid() {
+			sb.decorateWithError(node, "Resolution target of a `void` statement must be anonymous")
+			return newScope().Invalid().GetScope()
+		}
+	}
+
 	return newScope().IsValid(isValid).GetScope()
 }

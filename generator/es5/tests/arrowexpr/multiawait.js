@@ -41,6 +41,10 @@ $module('multiawait', function () {
             });
             return;
 
+          case 1:
+            $resolve();
+            return;
+
           default:
             $resolve();
             return;

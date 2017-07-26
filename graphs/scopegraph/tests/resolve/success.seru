@@ -2,6 +2,8 @@ function<int> SomeFunction() {
 	return 2
 }
 
+function<void> VoidFunction() {}
+
 function<void> DoSomething() {
 	first := 2
 	/* firstref */(first)
@@ -18,4 +20,7 @@ function<void> DoSomething() {
 
 	_, fifthreject := SomeFunction()
 	/* fifthrejectref */(fifthreject)
+
+	_, voidreject := VoidFunction()
+	/* voidrejectref */(voidreject)
 }

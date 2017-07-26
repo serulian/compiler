@@ -491,8 +491,13 @@ var scopeGraphTests = []scopegraphTest{
 			expectedScopeEntry{"fourthresolveref", expectedScope{true, proto.ScopeKind_VALUE, "Integer?", "void"}},
 
 			expectedScopeEntry{"fifthrejectref", expectedScope{true, proto.ScopeKind_VALUE, "Error?", "void"}},
+			expectedScopeEntry{"voidrejectref", expectedScope{true, proto.ScopeKind_VALUE, "Error?", "void"}},
 		},
 		"", ""},
+
+	scopegraphTest{"resolve statement void test", "resolve", "void",
+		[]expectedScopeEntry{},
+		"Resolution target of a `void` statement must be anonymous", ""},
 
 	/////////// Assign ///////////
 
