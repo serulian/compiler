@@ -1,0 +1,5 @@
+function<void> SomeFunction() {}
+
+function<void> AnotherFunction() {
+    foo, _ := SomeFunction()
+}
