@@ -246,6 +246,7 @@ var parserTests = []parserTest{
 	{"complex conditional expr test", "expression/complexconditional"},
 	{"loop expr test", "expression/loop"},
 	{"slice literal slice expr test", "expression/sliceliteralslice"},
+	{"numeric literal expr test", "expression/numericliteral"},
 
 	// Serulian Markup Language expression tests.
 	{"tag only sml test", "sml/tagonly"},

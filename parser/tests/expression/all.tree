@@ -1,16 +1,16 @@
 NodeTypeFile
-  end-rune = 810
+  end-rune = 830
   input-source = all expr test
   start-rune = 0
   child-node =>
     NodeTypeFunction
-      end-rune = 810
+      end-rune = 830
       input-source = all expr test
       named = SomeFunction
       start-rune = 0
       definition-body =>
         NodeTypeStatementBlock
-          end-rune = 810
+          end-rune = 830
           input-source = all expr test
           start-rune = 30
           block-child =>
@@ -1510,6 +1510,68 @@ NodeTypeFile
                       identexpr-name = SomeStruct
                       input-source = all expr test
                       start-rune = 699
+            NodeTypeExpressionStatement
+              end-rune = 814
+              input-source = all expr test
+              start-rune = 811
+              expr-statement-expr =>
+                NodeBinaryAddExpression
+                  end-rune = 813
+                  input-source = all expr test
+                  start-rune = 811
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 811
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 811
+                  binary-expression-right =>
+                    NodeNumericLiteralExpression
+                      end-rune = 813
+                      input-source = all expr test
+                      literal-value = 1
+                      start-rune = 813
+            NodeTypeExpressionStatement
+              end-rune = 819
+              input-source = all expr test
+              start-rune = 816
+              expr-statement-expr =>
+                NodeBinarySubtractExpression
+                  end-rune = 818
+                  input-source = all expr test
+                  start-rune = 816
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 816
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 816
+                  binary-expression-right =>
+                    NodeNumericLiteralExpression
+                      end-rune = 818
+                      input-source = all expr test
+                      literal-value = 1
+                      start-rune = 818
+            NodeTypeExpressionStatement
+              end-rune = 823
+              input-source = all expr test
+              start-rune = 821
+              expr-statement-expr =>
+                NodeNumericLiteralExpression
+                  end-rune = 822
+                  input-source = all expr test
+                  literal-value = -1
+                  start-rune = 821
+            NodeTypeExpressionStatement
+              end-rune = 829
+              input-source = all expr test
+              start-rune = 825
+              expr-statement-expr =>
+                NodeNumericLiteralExpression
+                  end-rune = 828
+                  input-source = all expr test
+                  literal-value = 1234
+                  start-rune = 825
       typemember-return-type =>
         NodeTypeVoid
           end-rune = 12
