@@ -80,4 +80,8 @@ function<void> SomeFunction() {
 			NestedField: 'hello!',
 		},
 	}
+	a+1
+	a-1
+	-1
+	1234
 }

@@ -125,16 +125,16 @@ var lexerTests = []lexerTest{
 	{"unicode identifier", "םש", []lexeme{lexeme{tokenTypeIdentifer, 0, "םש"}, tEOF}},
 
 	{"numeric literal", "123", []lexeme{lexeme{tokenTypeNumericLiteral, 0, "123"}, tEOF}},
-	{"numeric literal 2", "-123", []lexeme{lexeme{tokenTypeNumericLiteral, 0, "-123"}, tEOF}},
-	{"numeric literal 3", "123.56", []lexeme{lexeme{tokenTypeNumericLiteral, 0, "123.56"}, tEOF}},
-	{"numeric literal 4", "-123.56", []lexeme{lexeme{tokenTypeNumericLiteral, 0, "-123.56"}, tEOF}},
-	{"numeric literal 5", "123e56", []lexeme{lexeme{tokenTypeNumericLiteral, 0, "123e56"}, tEOF}},
-	{"numeric literal 6", "123e-56", []lexeme{lexeme{tokenTypeNumericLiteral, 0, "123e-56"}, tEOF}},
-	{"numeric literal 7", "0xfe", []lexeme{lexeme{tokenTypeNumericLiteral, 0, "0xfe"}, tEOF}},
-	{"numeric literal 8", "42f", []lexeme{lexeme{tokenTypeNumericLiteral, 0, "42f"}, tEOF}},
-	{"numeric literal 9", "42.7f", []lexeme{lexeme{tokenTypeNumericLiteral, 0, "42.7f"}, tEOF}},
-	{"numeric literal 10", "0b10", []lexeme{lexeme{tokenTypeNumericLiteral, 0, "0b10"}, tEOF}},
-	{"numeric literal 11", "0B11", []lexeme{lexeme{tokenTypeNumericLiteral, 0, "0B11"}, tEOF}},
+	{"numeric literal 1", "123.56", []lexeme{lexeme{tokenTypeNumericLiteral, 0, "123.56"}, tEOF}},
+	{"numeric literal 2", "123e56", []lexeme{lexeme{tokenTypeNumericLiteral, 0, "123e56"}, tEOF}},
+	{"numeric literal 3", "123e-56", []lexeme{lexeme{tokenTypeNumericLiteral, 0, "123e-56"}, tEOF}},
+	{"numeric literal 4", "0xfe", []lexeme{lexeme{tokenTypeNumericLiteral, 0, "0xfe"}, tEOF}},
+	{"numeric literal 5", "42f", []lexeme{lexeme{tokenTypeNumericLiteral, 0, "42f"}, tEOF}},
+	{"numeric literal 6", "42.7f", []lexeme{lexeme{tokenTypeNumericLiteral, 0, "42.7f"}, tEOF}},
+	{"numeric literal 7", "0b10", []lexeme{lexeme{tokenTypeNumericLiteral, 0, "0b10"}, tEOF}},
+	{"numeric literal 8", "0B11", []lexeme{lexeme{tokenTypeNumericLiteral, 0, "0B11"}, tEOF}},
+
+	{"negative number", "-1", []lexeme{lexeme{tokenTypeMinus, 0, "-"}, lexeme{tokenTypeNumericLiteral, 1, "1"}, tEOF}},
 
 	// Complex tests.
 	{"dot expression test", "this.foo", []lexeme{

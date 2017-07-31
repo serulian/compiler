@@ -467,15 +467,11 @@ Loop:
 
 		// Cases:
 		// -
-		// -1234
 		// ->
 		case r == '-':
 			if l.peek() == '>' {
 				l.next()
 				l.emit(tokenTypeArrowAccessOperator)
-			} else if unicode.IsDigit(l.peek()) {
-				l.backup()
-				return lexNumber
 			} else {
 				l.emit(tokenTypeMinus)
 			}
@@ -722,21 +718,12 @@ func lexNumber(l *lexer) stateFn {
 	if !l.scanNumber() {
 		return l.errorf("bad number syntax: %q", l.input[l.start:l.pos])
 	}
-	if sign := l.peek(); sign == '+' || sign == '-' {
-		// Complex: 1+2i. No spaces, must end in 'i'.
-		if !l.scanNumber() || l.input[l.pos-1] != 'i' {
-			return l.errorf("bad number syntax: %q", l.input[l.start:l.pos])
-		}
-		l.emit(tokenTypeNumericLiteral)
-	} else {
-		l.emit(tokenTypeNumericLiteral)
-	}
+
+	l.emit(tokenTypeNumericLiteral)
 	return lexSource
 }
 
 func (l *lexer) scanNumber() bool {
-	// Optional leading sign.
-	l.accept("+-")
 	// Is it hex?
 	digits := "0123456789"
 	if l.accept("0") {

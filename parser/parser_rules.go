@@ -3187,6 +3187,21 @@ func (p *sourceParser) tryConsumeBaseExpression() (AstNode, bool) {
 	case p.isToken(tokenTypeLeftBracket):
 		return p.consumeBracketedLiteralExpression(), true
 
+	// Negative numeric literal.
+	case p.isToken(tokenTypeMinus):
+		// If the next token is numeric, then this is a negative number.
+		if p.isNextToken(tokenTypeNumericLiteral) {
+			literalNode := p.startNode(NodeNumericLiteralExpression)
+			defer p.finishNode()
+
+			// Consume the minus sign.
+			p.consume(tokenTypeMinus)
+
+			token, _ := p.consume(tokenTypeNumericLiteral)
+			literalNode.Decorate(NodeNumericLiteralExpressionValue, "-"+token.value)
+			return literalNode, true
+		}
+
 	// Unary: not
 	case p.isKeyword("not"):
 		p.consumeKeyword("not")
