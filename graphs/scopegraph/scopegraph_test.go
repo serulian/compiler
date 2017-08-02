@@ -519,6 +519,9 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"assign interface property test", "assign", "interfaceprop", []expectedScopeEntry{},
 		"", ""},
 
+	scopegraphTest{"assign auto unbox test", "assign", "autounbox", []expectedScopeEntry{},
+		"", ""},
+
 	scopegraphTest{"assign indexer test", "assign", "indexer",
 		[]expectedScopeEntry{},
 		"", ""},

@@ -54,9 +54,20 @@ func (sb *scopeBuilder) scopeAssignStatement(node compilergraph.GraphNode, conte
 	}
 
 	// Ensure that we can assign the expr value to the named scope.
-	if serr := exprScope.ResolvedTypeRef(sb.sg.tdg).CheckSubTypeOf(nameScope.AssignableTypeRef(sb.sg.tdg)); serr != nil {
+	assignableType := nameScope.AssignableTypeRef(sb.sg.tdg)
+	valueType := exprScope.ResolvedTypeRef(sb.sg.tdg)
+
+	serr, exception := valueType.CheckSubTypeOfWithExceptions(assignableType, typegraph.AllowNominalWrappedForData)
+	if serr != nil {
 		sb.decorateWithError(node, "Cannot assign value to %v %v: %v", namedScopedRef.Title(), namedScopedRef.NonEmptyName(), serr)
 		return newScope().Invalid().GetScope()
+	}
+
+	// If a nominally-wrapped value was used in place of the assigned value that expects its data type, then
+	// mark the expression as being a shortcut that needs unwrapping during generation.
+	if exception == typegraph.AllowNominalWrappedForData {
+		valueNode := node.GetNode(parser.NodeAssignStatementValue)
+		sb.decorateWithSecondaryLabel(valueNode, proto.ScopeLabel_NOMINALLY_SHORTCUT_EXPR)
 	}
 
 	return newScope().Valid().GetScope()
