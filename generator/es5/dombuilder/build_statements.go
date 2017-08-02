@@ -246,7 +246,9 @@ func (db *domBuilder) buildLoopStatement(node compilergraph.GraphNode) (codedom.
 // buildAssignStatement builds the CodeDOM for an assignment statement.
 func (db *domBuilder) buildAssignStatement(node compilergraph.GraphNode) codedom.Statement {
 	targetNode := node.GetNode(parser.NodeAssignStatementName)
-	exprValue := db.getExpression(node, parser.NodeAssignStatementValue)
+	valueNode := node.GetNode(parser.NodeAssignStatementValue)
+
+	exprValue := db.buildExpressionWithOption(valueNode, buildExprCheckNominalShortcutting)
 	return codedom.ExpressionStatement(db.buildAssignmentExpression(targetNode, exprValue, node), node)
 }
 
