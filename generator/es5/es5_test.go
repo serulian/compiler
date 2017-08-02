@@ -146,6 +146,7 @@ var generationTests = []generationTest{
 	generationTest{"with exit scope statement", "statements", "withexit", integrationTestSuccessExpected, ""},
 	generationTest{"with async statement", "statements", "withasync", integrationTestSuccessExpected, ""},
 	generationTest{"single call statement", "statements", "singlecall", integrationTestSuccessExpected, ""},
+	generationTest{"auto-unboxing assign statement", "statements", "autounboxassign", integrationTestSuccessExpected, ""},
 
 	generationTest{"generic op expression", "opexpr", "generic", integrationTestSuccessExpected, ""},
 

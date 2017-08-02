@@ -1,0 +1,14 @@
+class SomeClass {
+    property<int> SomeValue {
+        get { return 42 }
+    }
+}
+
+type AnotherType : SomeClass {}
+
+function<any> TEST() {
+    at := AnotherType(SomeClass.new())
+    var<SomeClass?> sc
+    sc = at
+    return (sc?.SomeValue ?? 0) == 42
+}
