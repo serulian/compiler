@@ -1,0 +1,7 @@
+function<void> DoSomething() {
+    <SomeTag>
+        <.SomeProp>
+            hello world!
+        </.SomeProp>
+    </SomeTag>
+}
