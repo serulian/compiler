@@ -295,6 +295,7 @@ var generationTests = []generationTest{
 	generationTest{"sml async function test", "sml", "asyncfunction", integrationTestSuccessExpected, ""},
 	generationTest{"sml maybe async function test", "sml", "maybeasyncfunction", integrationTestSuccessExpected, ""},
 	generationTest{"sml async children test", "sml", "asyncchildren", integrationTestSuccessExpected, ""},
+	generationTest{"sml nested attributes test", "sml", "nestedattributes", integrationTestSuccessExpected, ""},
 
 	generationTest{"native new integration test", "nativenew", "nativenew", integrationTestSuccessExpected, ""},
 	generationTest{"dynamic access non-promising test", "dynamicaccess", "nonpromising", integrationTestSuccessExpected, ""},
