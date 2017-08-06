@@ -94,7 +94,7 @@ const (
 	NodeTypeLambdaExpression // A lambda expression
 
 	NodeTypeSmlExpression // <sometag />
-	NodeTypeSmlAttribute  // a="somevalue"
+	NodeTypeSmlAttribute  // a="somevalue" or <.a>
 	NodeTypeSmlDecorator  // @a="somevalue"
 	NodeTypeSmlText       // some text
 
@@ -404,12 +404,14 @@ const (
 	NodeSmlExpressionAttribute      = "sml-expression-attribute"
 	NodeSmlExpressionDecorator      = "sml-expression-decorator"
 	NodeSmlExpressionChild          = "sml-expression-child"
+	NodeSmlExpressionNestedProperty = "sml-expression-nested-prop"
 
 	//
 	// NodeTypeSmlAttribute
 	//
-	NodeSmlAttributeName  = "sml-attribute-name"
-	NodeSmlAttributeValue = "sml-attribute-value"
+	NodeSmlAttributeName   = "sml-attribute-name"
+	NodeSmlAttributeValue  = "sml-attribute-value"
+	NodeSmlAttributeNested = "sml-attribute-nested"
 
 	//
 	// NodeTypeSmlDecorator

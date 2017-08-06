@@ -86,4 +86,5 @@ function<void> DoSomething(someStream int*) {
 
 	/* propsclass */(<FunctionWithPropsClass something="hello" />)
 	/* propsclass2 */(<FunctionWithPropsClass something="hello" somethingElse={42} />)
+	/* propsclass3 */(<FunctionWithPropsClass somethingElse={42}><.something>hello</.something></FunctionWithPropsClass>)
 }

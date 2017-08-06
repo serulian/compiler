@@ -7,6 +7,7 @@ package formatter
 import (
 	"container/list"
 	"fmt"
+	"sort"
 	"strings"
 	"unicode"
 
@@ -444,6 +445,11 @@ func (sf *sourceFormatter) emitSmlAttributes(node formatterNode, predicate strin
 
 	newline := false
 	for _, attribute := range attributes {
+		// Skip nested attributes.
+		if attribute.hasProperty(parser.NodeSmlAttributeNested) {
+			continue
+		}
+
 		// Determine if the attribute + the existing text will push the line length past 80.
 		// If so, we push the attribute to the next line.
 		formatted, hasNewLine := sf.formatNode(attribute)
@@ -471,7 +477,7 @@ func (sf *sourceFormatter) formatSmlChildren(children []formatterNode, childStar
 	childSource := make([]string, len(children))
 	hasMultilineChild := false
 	hasAdjacentNonText := false
-	onlyIsExpression := len(children) == 1 && children[0].GetType() == parser.NodeTypeSmlExpression
+	onlyIsExpression := len(children) == 1 && (children[0].GetType() == parser.NodeTypeSmlExpression || children[0].GetType() == parser.NodeTypeSmlAttribute)
 
 	for index, child := range children {
 		switch child.GetType() {
@@ -479,6 +485,9 @@ func (sf *sourceFormatter) formatSmlChildren(children []formatterNode, childStar
 			value := child.getProperty(parser.NodeSmlTextValue)
 			childSource[index] = value
 			hasMultilineChild = hasMultilineChild || strings.Contains(strings.TrimSpace(value), "\n")
+
+		case parser.NodeTypeSmlAttribute:
+			fallthrough
 
 		case parser.NodeTypeSmlExpression:
 			hasAdjacentNonText = hasAdjacentNonText || (index > 0 && children[index-1].GetType() != parser.NodeTypeSmlText)
@@ -535,7 +544,7 @@ func (sf *sourceFormatter) formatSmlChildren(children []formatterNode, childStar
 	cutPoints := map[int]bool{}
 
 	var currentLineCount = childStartPosition
-	for index, _ := range children {
+	for index := range children {
 		formatted := childSource[index]
 
 		if index == 0 || cutPoints[index-1] {
@@ -555,7 +564,7 @@ func (sf *sourceFormatter) formatSmlChildren(children []formatterNode, childStar
 	}
 
 	// Emit the child source, adding newlines at the proper cut points.
-	for index, _ := range children {
+	for index := range children {
 		formatted := childSource[index]
 
 		// If this entry is the first child or there is a cut point right before it,
@@ -587,9 +596,39 @@ func (sf *sourceFormatter) formatSmlChildren(children []formatterNode, childStar
 	return cf.buf.String(), len(cutPoints) > 0
 }
 
+type byAttributeName []formatterNode
+
+func (s byAttributeName) Len() int {
+	return len(s)
+}
+func (s byAttributeName) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+func (s byAttributeName) Less(i, j int) bool {
+	return s[i].getProperty(parser.NodeSmlAttributeName) < s[j].getProperty(parser.NodeSmlAttributeName)
+}
+
 // emitSmlExpression emits an SML expression value.
 func (sf *sourceFormatter) emitSmlExpression(node formatterNode) {
 	children := node.getChildren(parser.NodeSmlExpressionChild)
+	nestedAttributes := []formatterNode{}
+
+	// Collect the nested attributes, in order by name.
+	for _, attrNode := range node.getChildren(parser.NodeSmlExpressionAttribute) {
+		if attrNode.hasProperty(parser.NodeSmlAttributeNested) {
+			nestedAttributes = append(nestedAttributes, attrNode)
+		}
+	}
+
+	sort.Sort(byAttributeName(nestedAttributes))
+
+	allChildTags := make([]formatterNode, 0, len(children)+len(nestedAttributes))
+	for _, nestedAttr := range nestedAttributes {
+		allChildTags = append(allChildTags, nestedAttr)
+	}
+	for _, child := range children {
+		allChildTags = append(allChildTags, child)
+	}
 
 	// Start the opening tag.
 	sf.append("<")
@@ -603,13 +642,22 @@ func (sf *sourceFormatter) emitSmlExpression(node formatterNode) {
 	attributesNewLine := attrNewLine || decoratorNewLine
 
 	// Finish the opening tag.
-	if len(children) == 0 {
+	if len(allChildTags) == 0 {
 		sf.append(" />")
 		return
-	} else {
-		sf.append(">")
 	}
 
+	sf.append(">")
+	sf.emitSmlTagContents(allChildTags, attributesNewLine)
+
+	// Add the close tag.
+	sf.append("</")
+	sf.emitNode(node.getChild(parser.NodeSmlExpressionTypeOrFunction))
+	sf.append(">")
+}
+
+// emitSmlTagContents emits the contents of an SML tag (expression or nested attribute).
+func (sf *sourceFormatter) emitSmlTagContents(children []formatterNode, attributesNewLine bool) {
 	// Process the children in a buffer. We measure the size of the children and whether
 	// they have any newlines in order to determine whether we need to indent their source.
 	childStartPosition := sf.existingLineLength
@@ -635,15 +683,33 @@ func (sf *sourceFormatter) emitSmlExpression(node formatterNode) {
 			sf.appendLine()
 		}
 	}
-
-	// Add the close tag.
-	sf.append("</")
-	sf.emitNode(node.getChild(parser.NodeSmlExpressionTypeOrFunction))
-	sf.append(">")
 }
 
 // emitSmlAttribute emits an SML attribute.
 func (sf *sourceFormatter) emitSmlAttribute(node formatterNode) {
+	if node.hasProperty(parser.NodeSmlAttributeNested) {
+		sf.emitNestedSmlAttribute(node)
+		return
+	}
+
+	sf.emitInlineSmlAttribute(node)
+}
+
+// emitNestedSmlAttribute emits an SML attribute in nested form.
+func (sf *sourceFormatter) emitNestedSmlAttribute(node formatterNode) {
+	children := node.getChildren(parser.NodeSmlAttributeValue)
+
+	sf.append("<.")
+	sf.append(node.getProperty(parser.NodeSmlAttributeName))
+	sf.append(">")
+	sf.emitSmlTagContents(children, false)
+	sf.append("</.")
+	sf.append(node.getProperty(parser.NodeSmlAttributeName))
+	sf.append(">")
+}
+
+// emitInlineSmlAttribute emits an SML attribute in inline form.
+func (sf *sourceFormatter) emitInlineSmlAttribute(node formatterNode) {
 	sf.append(node.getProperty(parser.NodeSmlAttributeName))
 	sf.append("=")
 

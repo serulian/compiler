@@ -465,6 +465,10 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"Child #1 under SML declaration must be subtype of Integer: 'String' cannot be used in place of non-interface 'Integer'", ""},
 
+	scopegraphTest{"sml expression unknown nested attribute test", "sml", "nestedattributeunknown",
+		[]expectedScopeEntry{},
+		"Could not find instance name 'unknown' under struct SomeType", ""},
+
 	/////////// Numeric literals ///////////
 
 	scopegraphTest{"numeric literals test", "literals", "numeric",

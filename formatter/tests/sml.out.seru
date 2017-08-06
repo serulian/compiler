@@ -41,4 +41,12 @@ function<void> SomeFunction() {
 	}} />
 
 	var tenth = <Foo @Bar={someType{foo: 'foo', bar: 'bar'}} />
+
+	var eleventh = <Foo>
+		<.Bar>Hi!</.Bar>
+		<.Foo>{1234}</.Foo>
+		<Baz />
+
+		<Meh />
+	</Foo>
 }

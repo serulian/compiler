@@ -260,6 +260,7 @@ var parserTests = []parserTest{
 	{"children sml test", "sml/children"},
 	{"multiple children sml test", "sml/multichild"},
 	{"whitespace text sml test", "sml/whitespacetext"},
+	{"nested property sml test", "sml/nestedprop"},
 
 	{"all expr test", "expression/all"},
 	{"complex expr test", "expression/complex"},

@@ -1,0 +1,9 @@
+function<bool> SimpleFunction(props []{string}) {
+	return (props['SomeProp'] ?? '') == 'hello world'
+}
+
+function<any> TEST() {
+	return <SimpleFunction>
+        <.SomeProp>hello world</.SomeProp>
+    </SimpleFunction>
+}

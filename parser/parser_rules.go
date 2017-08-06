@@ -2374,7 +2374,7 @@ func (p *sourceParser) consumeMarkupExpression() AstNode {
 		return markupNode
 	}
 
-	// Consume any children.
+	// Consume any children and nested attributes.
 	for {
 		// If we see </, then it is the beginning of a close tag.
 		if p.isToken(tokenTypeLessThan) && p.isNextToken(tokenTypeDiv) {
@@ -2384,6 +2384,12 @@ func (p *sourceParser) consumeMarkupExpression() AstNode {
 		// If we've reached the end of the file or an error, then just break out.
 		if p.isToken(tokenTypeEOF) || p.isToken(tokenTypeError) {
 			break
+		}
+
+		// Check for a nested attribute.
+		if p.isToken(tokenTypeLessThan) && p.isNextToken(tokenTypeDotAccessOperator) {
+			markupNode.Connect(NodeSmlExpressionAttribute, p.consumeMarkupNestedAttribute())
+			continue
 		}
 
 		// Otherwise, consume a child.
@@ -2412,6 +2418,73 @@ func (p *sourceParser) consumeMarkupExpression() AstNode {
 	}
 
 	return markupNode
+}
+
+// consumeMarkupNestedAttribute consumes a nested attribute under a markup element.
+//
+// Form:
+// <.SomeAttr>...</.SomeAttr>
+func (p *sourceParser) consumeMarkupNestedAttribute() AstNode {
+	attrNode := p.startNode(NodeTypeSmlAttribute)
+	attrNode.Decorate(NodeSmlAttributeNested, "true")
+	defer p.finishNode()
+
+	// <.
+	p.consume(tokenTypeLessThan)
+	p.consume(tokenTypeDotAccessOperator)
+
+	// Consume the attribute name as an identifier.
+	attrName, ok := p.consumeIdentifier()
+	if !ok {
+		return attrNode
+	}
+
+	attrNode.Decorate(NodeSmlAttributeName, attrName)
+
+	// >
+	if _, ok := p.consume(tokenTypeGreaterThan); !ok {
+		return attrNode
+	}
+
+	// Consume the contents of the property, which must be a single markup child.
+	child, ok := p.consumeMarkupChild()
+	if !ok {
+		return attrNode
+	}
+
+	attrNode.Connect(NodeSmlAttributeValue, child)
+
+	// Consume the closing tag.
+	// </.
+	if _, ok := p.consume(tokenTypeLessThan); !ok {
+		return attrNode
+	}
+
+	if _, ok := p.consume(tokenTypeDiv); !ok {
+		return attrNode
+	}
+
+	if _, ok := p.consume(tokenTypeDotAccessOperator); !ok {
+		return attrNode
+	}
+
+	// Consume the closing identifier, which must match the attribute name.
+	attrNameAgain, ok := p.consumeIdentifier()
+	if !ok {
+		return attrNode
+	}
+
+	if attrNameAgain != attrName {
+		p.emitError("Expected closing tag for <.%s>, found </.%s>", attrName, attrNameAgain)
+		return attrNode
+	}
+
+	// >
+	if _, ok := p.consume(tokenTypeGreaterThan); !ok {
+		return attrNode
+	}
+
+	return attrNode
 }
 
 // consumeMarkupChild consumes a markup child.

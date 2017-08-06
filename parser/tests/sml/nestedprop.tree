@@ -1,0 +1,51 @@
+NodeTypeFile
+  end-rune = 126
+  input-source = nested property sml test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 126
+      input-source = nested property sml test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 126
+          input-source = nested property sml test
+          start-rune = 29
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 125
+              input-source = nested property sml test
+              start-rune = 35
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 124
+                  input-source = nested property sml test
+                  start-rune = 35
+                  sml-expression-attribute =>
+                    NodeTypeSmlAttribute
+                      end-rune = 109
+                      input-source = nested property sml test
+                      sml-attribute-name = SomeProp
+                      sml-attribute-nested = true
+                      start-rune = 53
+                      sml-attribute-value =>
+                        NodeTypeSmlText
+                          end-rune = 97
+                          input-source = nested property sml test
+                          sml-text-value = 
+            hello world!
+        
+                          start-rune = 64
+                  sml-expression-typefunc =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 42
+                      identexpr-name = SomeTag
+                      input-source = nested property sml test
+                      start-rune = 36
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 12
+          input-source = nested property sml test
+          start-rune = 9
