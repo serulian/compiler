@@ -34,4 +34,11 @@ function<void> SomeFunction() {
 	var ninth = <Foo Bar={{'someawesomekey': this.foo.bar.baz.meh, 'andanotherawesomekey': morestuffgoeshere}}/>
 
 	var tenth = <Foo @Bar={someType{foo: 'foo', bar: 'bar'}}/>
+
+	var eleventh = <Foo>
+		<.Foo>{1234}</.Foo>
+		<Baz />
+		<.Bar>Hi!</.Bar>
+		<Meh />
+	</Foo>
 }
