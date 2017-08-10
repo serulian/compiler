@@ -1,0 +1,9 @@
+from @testcore import Integer
+
+function<Integer> SomeFunction() {
+    return 42
+}
+
+function<int> SomeOtherFunction() {
+    return 43
+}
