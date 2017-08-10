@@ -127,7 +127,7 @@ var grokSignaturesTests = []grokSignaturesTest{
 func TestGrokSignatures(t *testing.T) {
 	for _, grokSignaturesTest := range grokSignaturesTests {
 		testSourcePath := "tests/" + grokSignaturesTest.name + "/" + grokSignaturesTest.name + ".seru"
-		groker := NewGroker(testSourcePath, []string{}, []packageloader.Library{packageloader.Library{TESTLIB_PATH, false, ""}})
+		groker := NewGroker(testSourcePath, []string{}, []packageloader.Library{packageloader.Library{TESTLIB_PATH, false, "", "testcore"}})
 		handle, err := groker.GetHandle()
 
 		// Ensure we have a valid groker.

@@ -5,6 +5,7 @@
 package srg
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/serulian/compiler/compilercommon"
@@ -20,7 +21,7 @@ func loadSRG(t *testing.T, path string, libPaths ...string) (*SRG, packageloader
 
 	libraries := make([]packageloader.Library, len(libPaths))
 	for index, libPath := range libPaths {
-		libraries[index] = packageloader.Library{libPath, false, ""}
+		libraries[index] = packageloader.Library{libPath, false, "", fmt.Sprintf("testlib%v", index)}
 	}
 
 	testSRG := NewSRG(graph)

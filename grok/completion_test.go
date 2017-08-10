@@ -200,7 +200,7 @@ var grokCompletionTests = []grokCompletionTest{
 func TestGrokCompletion(t *testing.T) {
 	for _, grokCompletionTest := range grokCompletionTests {
 		testSourcePath := "tests/" + grokCompletionTest.name + "/" + grokCompletionTest.name + ".seru"
-		groker := NewGroker(testSourcePath, []string{}, []packageloader.Library{packageloader.Library{TESTLIB_PATH, false, ""}})
+		groker := NewGroker(testSourcePath, []string{}, []packageloader.Library{packageloader.Library{TESTLIB_PATH, false, "", "testcore"}})
 		handle, err := groker.GetHandle()
 
 		// Ensure we have a valid groker.

@@ -311,7 +311,7 @@ func TestGenerator(t *testing.T) {
 
 		fmt.Printf("Running test %v...\n", test.name)
 
-		result, _ := scopegraph.ParseAndBuildScopeGraph(entrypointFile, []string{}, packageloader.Library{TESTLIB_PATH, false, ""})
+		result, _ := scopegraph.ParseAndBuildScopeGraph(entrypointFile, []string{}, packageloader.Library{TESTLIB_PATH, false, "", "testcore"})
 		if !assert.True(t, result.Status, "Got error for ScopeGraph construction %v: %s", test.name, result.Errors) {
 			continue
 		}
@@ -520,7 +520,7 @@ func TestSourceMapping(t *testing.T) {
 
 		// Parse and scope.
 		fmt.Printf("Running mapping test %v...\n", test.name)
-		scopeResult, _ := scopegraph.ParseAndBuildScopeGraph(entrypointFile, []string{}, packageloader.Library{TESTLIB_PATH, false, ""})
+		scopeResult, _ := scopegraph.ParseAndBuildScopeGraph(entrypointFile, []string{}, packageloader.Library{TESTLIB_PATH, false, "", "testcore"})
 		if !assert.True(t, scopeResult.Status, "Got error for ScopeGraph construction %v: %s", test.name, scopeResult.Errors) {
 			continue
 		}
