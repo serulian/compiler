@@ -1588,7 +1588,7 @@ func TestGraphs(t *testing.T) {
 		fmt.Printf("Running test: %v\n", test.name)
 
 		entrypointFile := "tests/" + test.input + "/" + test.entrypoint + ".seru"
-		result, _ := ParseAndBuildScopeGraph(entrypointFile, []string{}, packageloader.Library{TESTLIB_PATH, false, ""})
+		result, _ := ParseAndBuildScopeGraph(entrypointFile, []string{}, packageloader.Library{TESTLIB_PATH, false, "", "testcore"})
 
 		if test.expectedError != "" {
 			if !assert.False(t, result.Status, "Expected failure in scoping on test : %v", test.name) {
@@ -1662,7 +1662,7 @@ var transientScopeTests = []transientScopeTest{
 
 func TestBuildTransientScope(t *testing.T) {
 	entrypointFile := "tests/transient/transient.seru"
-	result, _ := ParseAndBuildScopeGraph(entrypointFile, []string{}, packageloader.Library{TESTLIB_PATH, false, ""})
+	result, _ := ParseAndBuildScopeGraph(entrypointFile, []string{}, packageloader.Library{TESTLIB_PATH, false, "", "testcore"})
 	if !assert.True(t, result.Status, "Expected success in transient scope test") {
 		return
 	}

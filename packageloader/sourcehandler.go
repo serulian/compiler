@@ -40,6 +40,9 @@ const (
 	// ImportTypeLocal indicates the import is a local module or package.
 	ImportTypeLocal PackageImportType = iota
 
+	// ImportTypeAlias indicates that the import is a library alias.
+	ImportTypeAlias
+
 	// ImportTypeVCS indicates the import is a VCS package.
 	ImportTypeVCS
 )

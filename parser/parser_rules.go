@@ -226,14 +226,24 @@ func (p *sourceParser) tryConsumeDecorator() (AstNode, bool) {
 	return decoratorNode, true
 }
 
+type importSourceOption int
+
+const (
+	importSourceAllowAliases importSourceOption = iota
+	importSourceNoAliases
+)
+
 // consumeImport attempts to consume an import statement.
 //
 // Supported forms (all must be terminated by \n or EOF):
 //
+// from @aliased import something
 // from something import foobar
 // from something import foobar as barbaz
+// from "@aliased" import something
 // from "something" import foobar
 // from "something" import foobar as barbaz
+// from somekind`@aliased` import something
 // from somekind`somestring` import foobar
 // from somekind`somestring` import foobar as barbaz
 // from something import foobar, barbaz as meh
@@ -251,7 +261,7 @@ func (p *sourceParser) consumeImport() AstNode {
 	// from ...
 	if p.tryConsumeKeyword("from") {
 		// Consume the source for the import.
-		_, valid := p.consumeImportSource(importNode)
+		_, valid := p.consumeImportSource(importNode, importSourceAllowAliases)
 		if !valid {
 			return importNode
 		}
@@ -288,7 +298,7 @@ func (p *sourceParser) consumeImport() AstNode {
 
 	// import ...
 	p.consumeKeyword("import")
-	sourceName, valid := p.consumeImportSource(importNode)
+	sourceName, valid := p.consumeImportSource(importNode, importSourceNoAliases)
 	if !valid {
 		return importNode
 	}
@@ -305,44 +315,53 @@ func (p *sourceParser) consumeImport() AstNode {
 	return importNode
 }
 
-func (p *sourceParser) consumeImportSource(importNode AstNode) (string, bool) {
-	// Consume a source or kind.
-	token, ok := p.consume(tokenTypeIdentifer, tokenTypeStringLiteral)
-	if !ok {
-		return "", false
-	}
-
-	// If the previous token is an identifier and next token is a template string literal,
-	// then the previous token was a kind.
-	if token.kind == tokenTypeIdentifer && p.isToken(tokenTypeTemplateStringLiteral) {
-		sourceToken, _ := p.consume(tokenTypeTemplateStringLiteral)
-
-		importLocation, err := p.reportImport(sourceToken.value, token.value)
+func (p *sourceParser) consumeImportSource(importNode AstNode, aliasOption importSourceOption) (string, bool) {
+	decorateAndReport := func(source string, kind string) {
+		importLocation, err := p.reportImport(source, kind)
 		if err != nil {
 			p.emitError("%s", err)
 		} else {
-			importNode.Decorate(NodeImportPredicateKind, token.value)
+			if kind != "" {
+				importNode.Decorate(NodeImportPredicateKind, kind)
+			}
+
 			importNode.Decorate(NodeImportPredicateLocation, importLocation)
-			importNode.Decorate(NodeImportPredicateSource, sourceToken.value)
+			importNode.Decorate(NodeImportPredicateSource, source)
+		}
+	}
+
+	switch {
+	// @somealias
+	case aliasOption == importSourceAllowAliases && p.isToken(tokenTypeAtSign) && p.isNextToken(tokenTypeIdentifer):
+		p.consume(tokenTypeAtSign)
+		unaliasedSource, _ := p.consumeIdentifier()
+		decorateAndReport("@"+unaliasedSource, "")
+		return "", true
+
+	// somekind`somesource`
+	case p.isToken(tokenTypeIdentifer) && p.isNextToken(tokenTypeTemplateStringLiteral):
+		kind, _ := p.consumeIdentifier()
+		sourceToken, _ := p.consume(tokenTypeTemplateStringLiteral)
+		decorateAndReport(sourceToken.value, kind)
+		return "", true
+
+	// somesource or "sourcesource"
+	default:
+		token, ok := p.consume(tokenTypeIdentifer, tokenTypeStringLiteral)
+		if !ok {
+			return "", false
+		}
+
+		decorateAndReport(token.value, "")
+
+		if token.kind == tokenTypeIdentifer {
+			return token.value, true
 		}
 
 		return "", true
 	}
 
-	// Otherwise, decorate the node with its source.
-	importLocation, err := p.reportImport(token.value, "")
-	if err != nil {
-		p.emitError("%s", err)
-	} else {
-		importNode.Decorate(NodeImportPredicateLocation, importLocation)
-		importNode.Decorate(NodeImportPredicateSource, token.value)
-	}
-
-	if token.kind == tokenTypeIdentifer {
-		return token.value, true
-	} else {
-		return "", true
-	}
+	return "", false
 }
 
 func (p *sourceParser) consumeImportSubsource(importPackageNode AstNode) (string, bool) {

@@ -59,8 +59,8 @@ func (p *pathInformation) String() string {
 // PackageLoader helps to fully and recursively load a Serulian package and its dependencies
 // from a directory or set of directories.
 type PackageLoader struct {
-	entrypoint Entrypoint // The entrypoint for the package loader.
-	libraries  []Library  // The libraries being loaded.
+	entrypoint Entrypoint         // The entrypoint for the package loader.
+	libraries  map[string]Library // The libraries being loaded.
 
 	vcsDevelopmentDirectories []string   // Directories to check for VCS packages before VCS checkout.
 	pathLoader                PathLoader // The path loaders to use.
@@ -89,6 +89,7 @@ type Library struct {
 	PathOrURL string // The file location or SCM URL of the library's package.
 	IsSCM     bool   // If true, the PathOrURL is treated as a remote SCM package.
 	Kind      string // The kind of the library. Leave empty for Serulian files.
+	Alias     string // The import alias for this library.
 }
 
 // LoadResult contains the result of attempting to load all packages and source files for this
@@ -149,6 +150,8 @@ func NewPackageLoader(config Config) *PackageLoader {
 	}
 
 	return &PackageLoader{
+		libraries: map[string]Library{},
+
 		entrypoint:                config.Entrypoint,
 		vcsDevelopmentDirectories: config.VCSDevelopmentDirectories,
 		pathLoader:                pathLoader,
@@ -176,7 +179,10 @@ func NewPackageLoader(config Config) *PackageLoader {
 // Load performs the loading of a Serulian package found at the directory path.
 // Any libraries specified will be loaded as well.
 func (p *PackageLoader) Load(libraries ...Library) LoadResult {
-	p.libraries = libraries
+	// Populate the libraries map.
+	for _, library := range libraries {
+		p.libraries[library.Alias] = library
+	}
 
 	// Start the loading goroutine.
 	go p.loadAndParse()
@@ -211,11 +217,7 @@ func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 	// Add the libraries to be parsed.
 	for _, library := range libraries {
 		sourceRange := compilercommon.InputSource(library.PathOrURL).RangeForRunePosition(0, p.sourceTracker)
-		if library.IsSCM {
-			p.pushPath(pathVCSPackage, library.Kind, library.PathOrURL, sourceRange)
-		} else {
-			p.pushPath(pathLocalPackage, library.Kind, library.PathOrURL, sourceRange)
-		}
+		p.pushLibrary(library, sourceRange)
 	}
 
 	// Wait for all packages and source files to be completed.
@@ -365,6 +367,15 @@ func (p *PackageLoader) packageInfoForPackageDirectory(packagePath string, sourc
 func (p *PackageLoader) getVCSDirectoryForPath(vcsPath string) (string, error) {
 	pkgDirectory := p.pathLoader.VCSPackageDirectory(p.entrypoint)
 	return vcs.GetVCSCheckoutDirectory(vcsPath, pkgDirectory, p.vcsDevelopmentDirectories...)
+}
+
+// pushLibrary adds a library to be processed by the package loader.
+func (p *PackageLoader) pushLibrary(library Library, sourceRange compilercommon.SourceRange) string {
+	if library.IsSCM {
+		return p.pushPath(pathVCSPackage, library.Kind, library.PathOrURL, sourceRange)
+	} else {
+		return p.pushPath(pathLocalPackage, library.Kind, library.PathOrURL, sourceRange)
+	}
 }
 
 // pushPath adds a path to be processed by the package loader.
@@ -590,7 +601,20 @@ func (p *PackageLoader) handleImport(sourceKind string, importPath string, impor
 		return ""
 	}
 
-	if importInformation.ImportType == ImportTypeVCS {
+	// Check for a library alias.
+	switch importInformation.ImportType {
+	case ImportTypeAlias:
+		// Aliases get pushed as their library.
+		libraryName := importInformation.Path
+		library, found := p.libraries[libraryName]
+		if !found {
+			p.errors <- compilercommon.SourceErrorf(importInformation.SourceRange, "Import alias `%s` not found", libraryName)
+			return ""
+		}
+
+		return p.pushLibrary(library, importInformation.SourceRange)
+
+	case ImportTypeVCS:
 		// VCS paths get added directly.
 		return p.pushPath(pathVCSPackage, importInformation.Kind, importInformation.Path, importInformation.SourceRange)
 	}

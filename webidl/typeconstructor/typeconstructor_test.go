@@ -94,7 +94,7 @@ func TestGraphs(t *testing.T) {
 
 		secondaryLibs := make([]packageloader.Library, 0)
 		if _, err := os.Stat("tests/" + test.entrypoint + "/"); err == nil {
-			secondaryLibs = append(secondaryLibs, packageloader.Library{"tests/" + test.entrypoint + "/", false, "webidl"})
+			secondaryLibs = append(secondaryLibs, packageloader.Library{"tests/" + test.entrypoint + "/", false, "webidl", "secondary"})
 		}
 
 		irgResult := loader.Load(secondaryLibs...)

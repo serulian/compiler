@@ -229,7 +229,7 @@ func TestPromisingLabels(t *testing.T) {
 		fmt.Printf("Running promise label test: %v\n", test.name)
 
 		entrypointFile := "tests/promising/" + test.entrypoint + ".seru"
-		result, _ := ParseAndBuildScopeGraph(entrypointFile, []string{}, packageloader.Library{TESTLIB_PATH, false, ""})
+		result, _ := ParseAndBuildScopeGraph(entrypointFile, []string{}, packageloader.Library{TESTLIB_PATH, false, "", "testcore"})
 		if !assert.True(t, result.Status, "Expected success in scoping on test: %v\n%v\n%v", test.name, result.Errors, result.Warnings) {
 			continue
 		}
