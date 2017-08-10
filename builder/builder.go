@@ -23,6 +23,7 @@ var CORE_LIBRARY = packageloader.Library{
 	// TODO: this should be set to a defined tag once the compiler is stable.
 	PathOrURL: "github.com/serulian/corelib:master",
 	IsSCM:     true,
+	Alias:     "core",
 }
 
 type WarningsSlice []compilercommon.SourceWarning
