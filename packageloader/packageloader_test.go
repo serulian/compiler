@@ -238,7 +238,7 @@ func TestLibraryPath(t *testing.T) {
 	}
 
 	loader := NewPackageLoader(NewBasicConfig("tests/basic/somefile.json", tt.createHandler()))
-	result := loader.Load(Library{"tests/libtest", false, ""})
+	result := loader.Load(Library{"tests/libtest", false, "", "testlib"})
 	if !result.Status || len(result.Errors) > 0 {
 		t.Errorf("Expected success, found: %v", result.Errors)
 		return
