@@ -1,0 +1,45 @@
+NodeTypeFile
+  end-rune = 110
+  input-source = alias import test
+  start-rune = 0
+  child-node =>
+    NodeTypeImport
+      end-rune = 32
+      import-location-ref = location:somealias
+      import-source = @somealias
+      input-source = alias import test
+      start-rune = 0
+      import-package =>
+        NodeTypeImportPackage
+          end-rune = 31
+          import-subsource = something
+          input-source = alias import test
+          named = something
+          start-rune = 23
+    NodeTypeImport
+      end-rune = 67
+      import-location-ref = location:somealias
+      import-source = "@somealias"
+      input-source = alias import test
+      start-rune = 33
+      import-package =>
+        NodeTypeImportPackage
+          end-rune = 66
+          import-subsource = something
+          input-source = alias import test
+          named = something
+          start-rune = 58
+    NodeTypeImport
+      end-rune = 110
+      import-kind = somekind
+      import-location-ref = location:somealias
+      import-source = `@somealias`
+      input-source = alias import test
+      start-rune = 68
+      import-package =>
+        NodeTypeImportPackage
+          end-rune = 109
+          import-subsource = something
+          input-source = alias import test
+          named = something
+          start-rune = 101

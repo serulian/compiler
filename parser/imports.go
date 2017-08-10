@@ -18,16 +18,23 @@ const (
 	// ParsedImportTypeLocal indicates that the import is a local file system import.
 	ParsedImportTypeLocal ParsedImportType = iota
 
+	// ParsedImportTypeAlias indicates that the import is an alias to defined library.
+	ParsedImportTypeAlias
+
 	// ParsedImportTypeVCS indicates that the import is a VCS import.
 	ParsedImportTypeVCS
 )
 
 // ParseImportValue parses an import literal value into its path and whether it is found under VCS.
-// Returns a tuple of (path, isVCS).
+// Returns a tuple of (path, type).
 func ParseImportValue(importLiteral string) (string, ParsedImportType, error) {
-	// If the path doesn't start with a string literal character, then it is a local import.
+	// If the path doesn't start with a string literal character, then it is a local or alias import.
 	isStringLiteral := importLiteral[0] == '"' || importLiteral[0] == '`' || importLiteral[0] == '\''
 	if !isStringLiteral {
+		if importLiteral[0] == '@' {
+			return importLiteral[1:], ParsedImportTypeAlias, nil
+		}
+
 		return importLiteral, ParsedImportTypeLocal, nil
 	}
 
@@ -46,6 +53,11 @@ func ParseImportValue(importLiteral string) (string, ParsedImportType, error) {
 	// If the path contains "..", then it is by definition a local relative import.
 	if strings.Contains(path, "..") {
 		return path, ParsedImportTypeLocal, nil
+	}
+
+	// Check for an alias inside the path.
+	if path[0] == '@' {
+		return path[1:], ParsedImportTypeAlias, nil
 	}
 
 	// Otherwise, split the path into components. We check to see if we have more than a single

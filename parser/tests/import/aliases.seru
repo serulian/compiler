@@ -1,0 +1,3 @@
+from @somealias import something
+from "@somealias" import something
+from somekind`@somealias` import something

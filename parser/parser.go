@@ -121,6 +121,8 @@ func (p *sourceParser) reportImport(value string, kind string) (string, error) {
 	var packageImportType = packageloader.ImportTypeLocal
 	if importType == ParsedImportTypeVCS {
 		packageImportType = packageloader.ImportTypeVCS
+	} else if importType == ParsedImportTypeAlias {
+		packageImportType = packageloader.ImportTypeAlias
 	}
 
 	return p.importReporter(kind, importPath, packageImportType, p.source, int(p.currentToken.position)), nil

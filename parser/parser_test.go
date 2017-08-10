@@ -102,6 +102,7 @@ var parserTests = []parserTest{
 	{"relative import test 2", "import/relative2"},
 	{"absolute import test", "import/absolute"},
 	{"empty import test", "import/empty"},
+	{"alias import test", "import/aliases"},
 
 	// Import failure tests.
 	{"missing source import test", "import/missing_source"},
