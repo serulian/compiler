@@ -104,6 +104,11 @@ func (sf *sourceFormatter) emitImports(node formatterNode) {
 			directRune = 'z'
 		}
 
+		var aliasRune = 'a'
+		if source[0] == '@' {
+			aliasRune = 'z'
+		}
+
 		info := importInfo{
 			node: importNode,
 
@@ -111,7 +116,7 @@ func (sf *sourceFormatter) emitImports(node formatterNode) {
 			kind:     kind,
 			packages: packages,
 
-			sortKey:       fmt.Sprintf("%s/%s/%s/%s/%s/%s/%s", vcsRune, serulianRune, kind, directRune, source, packagesKey),
+			sortKey:       fmt.Sprintf("%s/%s/%s/%s/%s/%s/%s/%s", aliasRune, vcsRune, serulianRune, kind, directRune, source, packagesKey),
 			comparisonKey: kind,
 
 			isVCS:      isVCS,
