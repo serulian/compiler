@@ -35,9 +35,8 @@ func (g *SRG) getPackageForImport(importPackageNode compilergraph.GraphNode) (im
 	if !ok {
 		source := importNode.Get(parser.NodeImportPredicateSource)
 		subsource, _ := importPackageNode.TryGet(parser.NodeImportPredicateSubsource)
-		err := fmt.Errorf("Missing package info for import %s %s (reference %v) (node %v)\nPackage Map: %v",
-			source, subsource, packageLocation, importNode, g.packageMap)
-
+		err := fmt.Errorf("Missing package info for import %s %s (reference %v::%v) (node %v)\nPackage Map: %v",
+			source, subsource, packageKind, packageLocation, importNode, g.packageMap)
 		return importedPackage{}, err
 	}
 

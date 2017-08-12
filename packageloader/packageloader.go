@@ -217,7 +217,7 @@ func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 	// Add the libraries to be parsed.
 	for _, library := range libraries {
 		sourceRange := compilercommon.InputSource(library.PathOrURL).RangeForRunePosition(0, p.sourceTracker)
-		p.pushLibrary(library, sourceRange)
+		p.pushLibrary(library, library.Kind, sourceRange)
 	}
 
 	// Wait for all packages and source files to be completed.
@@ -370,12 +370,12 @@ func (p *PackageLoader) getVCSDirectoryForPath(vcsPath string) (string, error) {
 }
 
 // pushLibrary adds a library to be processed by the package loader.
-func (p *PackageLoader) pushLibrary(library Library, sourceRange compilercommon.SourceRange) string {
+func (p *PackageLoader) pushLibrary(library Library, kind string, sourceRange compilercommon.SourceRange) string {
 	if library.IsSCM {
-		return p.pushPath(pathVCSPackage, library.Kind, library.PathOrURL, sourceRange)
-	} else {
-		return p.pushPath(pathLocalPackage, library.Kind, library.PathOrURL, sourceRange)
+		return p.pushPath(pathVCSPackage, kind, library.PathOrURL, sourceRange)
 	}
+
+	return p.pushPath(pathLocalPackage, kind, library.PathOrURL, sourceRange)
 }
 
 // pushPath adds a path to be processed by the package loader.
@@ -612,7 +612,7 @@ func (p *PackageLoader) handleImport(sourceKind string, importPath string, impor
 			return ""
 		}
 
-		return p.pushLibrary(library, importInformation.SourceRange)
+		return p.pushLibrary(library, importInformation.Kind, importInformation.SourceRange)
 
 	case ImportTypeVCS:
 		// VCS paths get added directly.
