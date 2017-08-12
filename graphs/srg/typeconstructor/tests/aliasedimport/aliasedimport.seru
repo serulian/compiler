@@ -1,4 +1,5 @@
 from @testcore import Integer
+from webidl`@testcore` import Boolean
 
 function<Integer> SomeFunction() {
     return 42
@@ -7,3 +8,5 @@ function<Integer> SomeFunction() {
 function<int> SomeOtherFunction() {
     return 43
 }
+
+function<Boolean> SomeNativeBool() {}
