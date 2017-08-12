@@ -16,6 +16,9 @@ type normalizeTest struct {
 }
 
 var normalizeTests = []normalizeTest{
+	normalizeTest{"", ""},
+	normalizeTest{"/foo", "foo"},
+	normalizeTest{"/foo/bar", "foo.bar"},
 	normalizeTest{"foo", "foo"},
 	normalizeTest{"foo/bar", "foo.bar"},
 	normalizeTest{"foo/./bar", "foo.bar"},
