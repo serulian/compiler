@@ -170,6 +170,10 @@ func (p Pather) GetRelativeModulePath(module typegraph.TGModule) string {
 var allowedModulePathCharacters, _ = regexp.Compile("[^a-zA-Z_0-9\\$\\.]")
 
 func normalizeModulePath(rel string) string {
+	if rel == "" {
+		return ""
+	}
+
 	// Replace any relative pathing with underscores.
 	rel = strings.Replace(rel, "../", "__", -1)
 
@@ -188,7 +192,7 @@ func normalizeModulePath(rel string) string {
 	updatedParts := make([]string, 0, len(parts))
 
 	for _, part := range parts {
-		if part == "." {
+		if part == "." || part == "" {
 			continue
 		}
 
