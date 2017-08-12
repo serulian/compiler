@@ -1,3 +1,7 @@
+from webidl`@core` import nativecorething
+
+from @core import corething
+
 import webidl`github.com/Serulian/corelib:master` as someWebIDLLib
 from webidl`github.com/Serulian/anotherlib:1fd83ac` import String as DOMString
 from webidl`github.com/Serulian/anotherlib@sometag` import something as SomethingElse

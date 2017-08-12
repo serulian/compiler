@@ -1,5 +1,7 @@
 from webidl`github.com/Serulian/anotherlib:1fd83ac` import String as DOMString
 
+from @core import corething
+
 import localpackage
 import webidl`nicething` as nicething
 
@@ -22,3 +24,5 @@ import anotherfile
 import webidl`github.com/Serulian/corelib:master` as someWebIDLLib
 
 from anotherthing`foobar` import SomeOtherThing
+
+from webidl`@core` import nativecorething
