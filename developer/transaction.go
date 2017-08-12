@@ -28,7 +28,7 @@ import (
 const developerRuntimeTemplateStr = `
 	console.group('Compilation of project {{ .Name }}');
 	console.info('Compilation has begun');
-	document.write('<script src="http://localhost{{ .Addr }}/{{ .Name }}.develop.js"></script>');
+	document.write('<script src="http://localhost{{ .Addr }}/{{ .Name }}.develop.js" async></script>');
 `
 
 // developTransaction represents a single transaction of loading source via the development
