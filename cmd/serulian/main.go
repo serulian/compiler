@@ -15,6 +15,8 @@ import (
 	"github.com/serulian/compiler/developer"
 	"github.com/serulian/compiler/formatter"
 	"github.com/serulian/compiler/tester"
+	"github.com/serulian/compiler/version"
+
 	"github.com/spf13/cobra"
 
 	_ "github.com/serulian/compiler/tester/karma"
@@ -191,6 +193,16 @@ func main() {
 		},
 	}
 
+	var cmdVersion = &cobra.Command{
+		Use:   "version",
+		Short: "Displays the version of the toolkit",
+		Long:  "Displays the version of the toolkit",
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Printf("Serulian %s\n", version.DescriptiveVersion())
+			os.Exit(1)
+		},
+	}
+
 	// Register command-specific flags.
 	cmdBuild.PersistentFlags().StringSliceVar(&vcsDevelopmentDirectories, "vcs-dev-dir", []string{},
 		"If specified, VCS packages without specification will be first checked against this path")
@@ -212,8 +224,8 @@ func main() {
 	// Register the root command.
 	var rootCmd = &cobra.Command{
 		Use:   "serulian",
-		Short: "Serulian",
-		Long:  "Serulian: A web and mobile development language",
+		Short: fmt.Sprintf("Serulian %s", version.DescriptiveVersion()),
+		Long:  fmt.Sprintf("Serulian %s: A web and mobile development language", version.DescriptiveVersion()),
 	}
 
 	rootCmd.AddCommand(cmdBuild)
@@ -221,6 +233,7 @@ func main() {
 	rootCmd.AddCommand(cmdFormat)
 	rootCmd.AddCommand(cmdImports)
 	rootCmd.AddCommand(cmdTest)
+	rootCmd.AddCommand(cmdVersion)
 	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "If set to true, Serulian will print debug logs")
 	rootCmd.PersistentFlags().BoolVar(&profile, "profile", false, "If set to true, Serulian will be profiled")
 	rootCmd.Execute()
