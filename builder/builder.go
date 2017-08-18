@@ -16,12 +16,12 @@ import (
 	"github.com/serulian/compiler/generator/es5"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/packageloader"
+	"github.com/serulian/compiler/version"
 )
 
 // CORE_LIBRARY contains the location of the Serulian core library.
 var CORE_LIBRARY = packageloader.Library{
-	// TODO: this should be set to a defined tag once the compiler is stable.
-	PathOrURL: "github.com/serulian/corelib:master",
+	PathOrURL: "github.com/serulian/corelib" + version.CoreLibraryTagOrBranch(),
 	IsSCM:     true,
 	Alias:     "core",
 }
