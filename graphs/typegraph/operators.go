@@ -109,11 +109,12 @@ func (t *TypeGraph) buildOperatorDefinitions() {
 		// Equality.
 		operatorDefinition{"equals", true, false, staticTypeGetter(t.BoolType()), binaryParameters},
 
-		// Comparison.s
+		// Comparison.
 		operatorDefinition{"compare", true, false, staticTypeGetter(t.IntType()), binaryParameters},
 
-		// Range.
+		// Ranges.
 		operatorDefinition{"range", true, false, streamContainingTypeGetter, binaryParameters},
+		operatorDefinition{"exclusiverange", true, false, streamContainingTypeGetter, binaryParameters},
 
 		// Contains.
 		operatorDefinition{"contains", false, false, staticTypeGetter(t.BoolType()), []operatorParameter{

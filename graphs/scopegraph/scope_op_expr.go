@@ -540,6 +540,11 @@ func (sb *scopeBuilder) scopeBooleanBinaryExpression(node compilergraph.GraphNod
 	return newScope().IsValid(isValid).Resolving(sb.sg.tdg.BoolTypeReference()).GetScope()
 }
 
+// scopeDefineExclusiveRangeExpression scopes a define exlusive range expression in the SRG.
+func (sb *scopeBuilder) scopeDefineExclusiveRangeExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
+	return sb.scopeBinaryExpression(node, "exclusiverange", context).GetScope()
+}
+
 // scopeDefineRangeExpression scopes a define range expression in the SRG.
 func (sb *scopeBuilder) scopeDefineRangeExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	return sb.scopeBinaryExpression(node, "range", context).GetScope()

@@ -176,6 +176,9 @@ func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandl
 	case parser.NodeDefineRangeExpression:
 		return sb.scopeDefineRangeExpression
 
+	case parser.NodeDefineExclusiveRangeExpression:
+		return sb.scopeDefineExclusiveRangeExpression
+
 	case parser.NodeSliceExpression:
 		return sb.scopeSliceExpression
 

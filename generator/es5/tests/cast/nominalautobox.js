@@ -33,7 +33,7 @@ $module('nominalautobox', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeValue|3|9706e8ab": true,
+        "SomeValue|3|54ff3ddf": true,
       };
       return this.$cachedtypesig = computed;
     };

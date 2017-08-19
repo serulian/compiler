@@ -16,7 +16,7 @@ $module('unwrapnullable', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeProperty|3|9706e8ab": true,
+        "SomeProperty|3|54ff3ddf": true,
       };
       return this.$cachedtypesig = computed;
     };

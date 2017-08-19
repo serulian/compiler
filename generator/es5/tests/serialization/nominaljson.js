@@ -20,7 +20,7 @@ $module('nominaljson', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "GetValue|2|fd8bc7c9<9706e8ab>": true,
+        "GetValue|2|fd8bc7c9<54ff3ddf>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -49,11 +49,11 @@ $module('nominaljson', function () {
       }
       var computed = {
         "Parse|1|fd8bc7c9<c267cdf9>": true,
-        "equals|4|fd8bc7c9<9706e8ab>": true,
-        "Stringify|2|fd8bc7c9<268aa058>": true,
+        "equals|4|fd8bc7c9<54ff3ddf>": true,
+        "Stringify|2|fd8bc7c9<44e219a9>": true,
         "Mapping|2|fd8bc7c9<ad6de9ce<any>>": true,
         "Clone|2|fd8bc7c9<c267cdf9>": true,
-        "String|2|fd8bc7c9<268aa058>": true,
+        "String|2|fd8bc7c9<44e219a9>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -82,11 +82,11 @@ $module('nominaljson', function () {
       }
       var computed = {
         "Parse|1|fd8bc7c9<2904f0f0>": true,
-        "equals|4|fd8bc7c9<9706e8ab>": true,
-        "Stringify|2|fd8bc7c9<268aa058>": true,
+        "equals|4|fd8bc7c9<54ff3ddf>": true,
+        "Stringify|2|fd8bc7c9<44e219a9>": true,
         "Mapping|2|fd8bc7c9<ad6de9ce<any>>": true,
         "Clone|2|fd8bc7c9<2904f0f0>": true,
-        "String|2|fd8bc7c9<268aa058>": true,
+        "String|2|fd8bc7c9<44e219a9>": true,
       };
       return this.$cachedtypesig = computed;
     };

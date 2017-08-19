@@ -129,7 +129,8 @@ const (
 	tokenTypeInOperator // in
 
 	// Stream Operators
-	tokenTypeEllipsis // ..
+	tokenTypeEllipsis          // ..
+	tokenTypeExclusiveEllipsis // ..<
 
 	// Unary Operators
 	tokenTypeNot   // !
@@ -414,7 +415,13 @@ Loop:
 		case r == '.':
 			if l.peek() == '.' {
 				l.next()
-				l.emit(tokenTypeEllipsis)
+
+				if l.peek() == '<' {
+					l.next()
+					l.emit(tokenTypeExclusiveEllipsis)
+				} else {
+					l.emit(tokenTypeEllipsis)
+				}
 				continue
 			}
 

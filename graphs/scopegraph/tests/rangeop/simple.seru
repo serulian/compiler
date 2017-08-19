@@ -3,8 +3,14 @@ class SomeClass {
 		yield left
 		yield right
 	}
+
+	operator exclusiveRange(left SomeClass, right SomeClass) {
+		yield left
+		yield right
+	}
 }
 
 function<void> DoSomething(sc SomeClass) {
 	/* range */(sc..sc)
+	/* exrange */(sc..<sc)
 }

@@ -169,6 +169,10 @@ type Integer : Number {
 		return IntStream.OverRange(start, end)
 	}
 
+	operator ExclusiveRange(start int, end int) {
+		return IntStream.OverRange(start, end - 1)
+	}
+
 	operator Compare(left int, right int) {
 		return Integer(Number(left) - Number(right))
 	}

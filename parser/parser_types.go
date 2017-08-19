@@ -129,7 +129,8 @@ const (
 
 	NodeInCollectionExpression // a in b
 
-	NodeDefineRangeExpression // a .. b
+	NodeDefineRangeExpression          // a .. b
+	NodeDefineExclusiveRangeExpression // a ..< b
 
 	NodeBinaryAddExpression      // A plus expression: +
 	NodeBinarySubtractExpression // A subtract expression: -

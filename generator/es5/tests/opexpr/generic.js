@@ -19,7 +19,7 @@ $module('generic', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "BoolValue|3|9706e8ab": true,
+        "BoolValue|3|54ff3ddf": true,
       };
       return this.$cachedtypesig = computed;
     };

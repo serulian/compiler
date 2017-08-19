@@ -23,11 +23,11 @@ $module('nonpromising', function () {
       }
       var computed = {
         "Parse|1|fd8bc7c9<5d13a931>": true,
-        "equals|4|fd8bc7c9<9706e8ab>": true,
-        "Stringify|2|fd8bc7c9<268aa058>": true,
+        "equals|4|fd8bc7c9<54ff3ddf>": true,
+        "Stringify|2|fd8bc7c9<44e219a9>": true,
         "Mapping|2|fd8bc7c9<ad6de9ce<any>>": true,
         "Clone|2|fd8bc7c9<5d13a931>": true,
-        "String|2|fd8bc7c9<268aa058>": true,
+        "String|2|fd8bc7c9<44e219a9>": true,
       };
       return this.$cachedtypesig = computed;
     };
