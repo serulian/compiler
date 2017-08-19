@@ -1,3 +1,17 @@
+# Serulian language release tool
+#
+# USAGE: Run from the *root directory* of the `compiler` repository
+#
+# NOTE: The `corelib` and `serulian-langserver` repositories must be up-to-date and checked out
+# under the same directory as `compiler` for this script to function.
+#
+# REQUIREMENTS:
+#  - git
+#  - go
+#  - make
+#  - hub (Github CLI tool)
+#  - github_changelog_generator
+
 check_repo() {
     echo "Checking $1 for any uncommited changes"
     if [[ -e "ls ../$1" ]] ; then
@@ -60,6 +74,7 @@ check_dep "git"
 check_dep "github_changelog_generator"
 check_dep "make"
 check_dep "hub"
+check_dep "go"
 
 version="$1"
 if [[ -z "$version" ]] ; then
