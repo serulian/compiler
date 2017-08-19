@@ -198,8 +198,9 @@ func main() {
 		Short: "Displays the version of the toolkit",
 		Long:  "Displays the version of the toolkit",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Printf("Serulian %s\n", version.DescriptiveVersion())
-			os.Exit(1)
+			fmt.Printf("Serulian Toolkit\n\n")
+			fmt.Printf("Toolkit Version: %s\n", version.DescriptiveVersion())
+			fmt.Printf("Toolkit SHA: %s\n", version.GitSHA)
 		},
 	}
 
