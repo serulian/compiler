@@ -2874,8 +2874,9 @@ func (p *sourceParser) tryConsumeArrowStatement() (AstNode, bool) {
 
 // BinaryOperators defines the binary operators in precedence order.
 var BinaryOperators = []boe{
-	// Stream operator.
+	// Stream operators
 	boe{tokenTypeEllipsis, NodeDefineRangeExpression},
+	boe{tokenTypeExclusiveEllipsis, NodeDefineExclusiveRangeExpression},
 
 	// Boolean operators.
 	boe{tokenTypeBooleanOr, NodeBooleanOrExpression},
