@@ -310,6 +310,9 @@ func (sf *sourceFormatter) emitNode(node formatterNode) {
 	case parser.NodeDefineRangeExpression:
 		sf.emitBinaryOperator(node, "..")
 
+	case parser.NodeDefineExclusiveRangeExpression:
+		sf.emitBinaryOperator(node, "..<")
+
 	case parser.NodeBinaryAddExpression:
 		sf.emitBinaryOperator(node, "+")
 
