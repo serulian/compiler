@@ -716,6 +716,7 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"range op simple test", "rangeop", "simple",
 		[]expectedScopeEntry{
 			expectedScopeEntry{"range", expectedScope{true, proto.ScopeKind_VALUE, "Stream<SomeClass>", "void"}},
+			expectedScopeEntry{"exrange", expectedScope{true, proto.ScopeKind_VALUE, "Stream<SomeClass>", "void"}},
 		},
 		"", ""},
 
