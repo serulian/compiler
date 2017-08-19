@@ -149,6 +149,7 @@ var generationTests = []generationTest{
 	generationTest{"auto-unboxing assign statement", "statements", "autounboxassign", integrationTestSuccessExpected, ""},
 
 	generationTest{"generic op expression", "opexpr", "generic", integrationTestSuccessExpected, ""},
+	generationTest{"exclusive range expression", "opexpr", "exrange", integrationTestSuccessExpected, ""},
 
 	generationTest{"match statement", "statements", "match", integrationTestSuccessExpected, ""},
 

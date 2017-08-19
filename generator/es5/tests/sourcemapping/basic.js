@@ -884,13 +884,13 @@ this.Serulian = (function ($global) {
         }
         var computed = {
           "OverRange|1|fd8bc7c9<08e38881>": true,
-          "Next|2|fd8bc7c9<58998129<bb8d3aad,9706e8ab>>": true,
+          "Next|2|fd8bc7c9<58998129<bb8d3aad,54ff3ddf>>": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$class('db8daea9', 'Float64', false, 'float64', function () {
+    this.$class('2c6e7a16', 'Float64', false, 'float64', function () {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -903,7 +903,7 @@ this.Serulian = (function ($global) {
       };
     });
 
-    this.$class('6af5f55b', 'List', true, 'list', function (T) {
+    this.$class('49c113d9', 'List', true, 'list', function (T) {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -1002,7 +1002,7 @@ this.Serulian = (function ($global) {
       };
     });
 
-    this.$class('2e031d94', 'Map', true, 'map', function (T, Q) {
+    this.$class('f2f897e8', 'Map', true, 'map', function (T, Q) {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -1108,14 +1108,14 @@ this.Serulian = (function ($global) {
         var computed = {
           "setindex|4|fd8bc7c9<void>": true,
         };
-        computed[((("Empty|1|fd8bc7c9<2e031d94<" + $t.typeid(T)) + ",") + $t.typeid(Q)) + ">>"] = true;
+        computed[((("Empty|1|fd8bc7c9<f2f897e8<" + $t.typeid(T)) + ",") + $t.typeid(Q)) + ">>"] = true;
         computed[("Mapping|2|fd8bc7c9<ad6de9ce<" + $t.typeid(Q)) + ">>"] = true;
         computed[("index|4|fd8bc7c9<" + $t.typeid(Q)) + ">"] = true;
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$class('e84fb0ce', 'JSON', false, 'json', function () {
+    this.$class('17172d1e', 'JSON', false, 'json', function () {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -1138,8 +1138,8 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Get|1|fd8bc7c9<e84fb0ce>": true,
-          "Stringify|2|fd8bc7c9<268aa058>": true,
+          "Get|1|fd8bc7c9<17172d1e>": true,
+          "Stringify|2|fd8bc7c9<44e219a9>": true,
           "Parse|2|fd8bc7c9<ad6de9ce<any>>": true,
         };
         return this.$cachedtypesig = computed;
@@ -1153,7 +1153,7 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "String|2|fd8bc7c9<268aa058>": true,
+          "String|2|fd8bc7c9<44e219a9>": true,
         };
         return this.$cachedtypesig = computed;
       };
@@ -1167,7 +1167,7 @@ this.Serulian = (function ($global) {
         }
         var computed = {
         };
-        computed[("Next|2|fd8bc7c9<58998129<" + $t.typeid(T)) + ",9706e8ab>>"] = true;
+        computed[("Next|2|fd8bc7c9<58998129<" + $t.typeid(T)) + ",54ff3ddf>>"] = true;
         return this.$cachedtypesig = computed;
       };
     });
@@ -1192,7 +1192,7 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Message|3|268aa058": true,
+          "Message|3|44e219a9": true,
         };
         return this.$cachedtypesig = computed;
       };
@@ -1225,7 +1225,7 @@ this.Serulian = (function ($global) {
       };
     });
 
-    this.$interface('f06c2356', 'Mappable', false, 'mappable', function () {
+    this.$interface('ef89c4c8', 'Mappable', false, 'mappable', function () {
       var $static = this;
       this.$typesig = function () {
         if (this.$cachedtypesig) {
@@ -1238,7 +1238,7 @@ this.Serulian = (function ($global) {
       };
     });
 
-    this.$interface('e4152f8e', 'Stringifier', false, '$stringifier', function () {
+    this.$interface('195abf50', 'Stringifier', false, '$stringifier', function () {
       var $static = this;
       $static.Get = function () {
         return $g.________testlib.basictypes.JSON.new();
@@ -1248,14 +1248,14 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Get|1|fd8bc7c9<e4152f8e>": true,
-          "Stringify|2|fd8bc7c9<268aa058>": true,
+          "Get|1|fd8bc7c9<195abf50>": true,
+          "Stringify|2|fd8bc7c9<44e219a9>": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('f5873a5f', 'Parser', false, '$parser', function () {
+    this.$interface('7e8913a0', 'Parser', false, '$parser', function () {
       var $static = this;
       $static.Get = function () {
         return $g.________testlib.basictypes.JSON.new();
@@ -1265,7 +1265,7 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Get|1|fd8bc7c9<f5873a5f>": true,
+          "Get|1|fd8bc7c9<7e8913a0>": true,
           "Parse|2|fd8bc7c9<ad6de9ce<any>>": true,
         };
         return this.$cachedtypesig = computed;
@@ -1326,7 +1326,7 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Keys|3|9b1698d6<268aa058>": true,
+          "Keys|3|9b1698d6<44e219a9>": true,
         };
         computed[("Empty|1|fd8bc7c9<ad6de9ce<" + $t.typeid(T)) + ">>"] = true;
         computed[("index|4|fd8bc7c9<" + $t.typeid(T)) + ">"] = true;
@@ -1451,6 +1451,9 @@ this.Serulian = (function ($global) {
       $static.$range = function (start, end) {
         return $g.________testlib.basictypes.IntStream.OverRange(start, end);
       };
+      $static.$exclusiverange = function (start, end) {
+        return $g.________testlib.basictypes.IntStream.OverRange(start, $t.fastbox(end.$wrapped - 1, $g.________testlib.basictypes.Integer));
+      };
       $static.$compare = function (left, right) {
         return $t.fastbox(left.$wrapped - right.$wrapped, $g.________testlib.basictypes.Integer);
       };
@@ -1481,19 +1484,20 @@ this.Serulian = (function ($global) {
         }
         var computed = {
           "range|4|fd8bc7c9<1d733667<bb8d3aad>>": true,
+          "exclusiverange|4|fd8bc7c9<1d733667<bb8d3aad>>": true,
           "compare|4|fd8bc7c9<bb8d3aad>": true,
-          "equals|4|fd8bc7c9<9706e8ab>": true,
+          "equals|4|fd8bc7c9<54ff3ddf>": true,
           "plus|4|fd8bc7c9<bb8d3aad>": true,
           "minus|4|fd8bc7c9<bb8d3aad>": true,
           "Release|2|fd8bc7c9<void>": true,
           "MapKey|3|8ca0891a": true,
-          "String|2|fd8bc7c9<268aa058>": true,
+          "String|2|fd8bc7c9<44e219a9>": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('9706e8ab', 'Boolean', false, 'bool', function () {
+    this.$type('54ff3ddf', 'Boolean', false, 'bool', function () {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1546,15 +1550,15 @@ this.Serulian = (function ($global) {
         }
         var computed = {
           "compare|4|fd8bc7c9<bb8d3aad>": true,
-          "equals|4|fd8bc7c9<9706e8ab>": true,
-          "String|2|fd8bc7c9<268aa058>": true,
+          "equals|4|fd8bc7c9<54ff3ddf>": true,
+          "String|2|fd8bc7c9<44e219a9>": true,
           "MapKey|3|8ca0891a": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('268aa058', 'String', false, 'string', function () {
+    this.$type('44e219a9', 'String', false, 'string', function () {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1588,9 +1592,9 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "String|2|fd8bc7c9<268aa058>": true,
-          "equals|4|fd8bc7c9<9706e8ab>": true,
-          "plus|4|fd8bc7c9<268aa058>": true,
+          "String|2|fd8bc7c9<44e219a9>": true,
+          "equals|4|fd8bc7c9<54ff3ddf>": true,
+          "plus|4|fd8bc7c9<44e219a9>": true,
           "MapKey|3|8ca0891a": true,
           "Length|3|bb8d3aad": true,
         };
@@ -1598,7 +1602,7 @@ this.Serulian = (function ($global) {
       };
     });
 
-    this.$type('443094ae', 'WrappedError', false, 'wrappederror', function () {
+    this.$type('f16409fd', 'WrappedError', false, 'wrappederror', function () {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1621,8 +1625,8 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "For|1|fd8bc7c9<443094ae>": true,
-          "Message|3|268aa058": true,
+          "For|1|fd8bc7c9<f16409fd>": true,
+          "Message|3|44e219a9": true,
         };
         return this.$cachedtypesig = computed;
       };

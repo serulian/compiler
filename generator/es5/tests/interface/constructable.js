@@ -20,7 +20,7 @@ $module('constructable', function () {
       }
       var computed = {
         "Get|1|fd8bc7c9<ceb86b8e>": true,
-        "SomeBool|3|9706e8ab": true,
+        "SomeBool|3|54ff3ddf": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -37,7 +37,7 @@ $module('constructable', function () {
       }
       var computed = {
         "Get|1|fd8bc7c9<ba50ace2>": true,
-        "SomeBool|3|9706e8ab": true,
+        "SomeBool|3|54ff3ddf": true,
       };
       return this.$cachedtypesig = computed;
     };

@@ -16,7 +16,7 @@ $module('functioncallnullable', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeMethod|2|fd8bc7c9<9706e8ab>": true,
+        "SomeMethod|2|fd8bc7c9<54ff3ddf>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -38,7 +38,7 @@ $module('functioncallnullable', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "AnotherMethod|2|fd8bc7c9<9706e8ab>": true,
+        "AnotherMethod|2|fd8bc7c9<54ff3ddf>": true,
       };
       return this.$cachedtypesig = computed;
     };

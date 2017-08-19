@@ -21,8 +21,8 @@ $module('await', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Then|2|fd8bc7c9<69a8a979<9706e8ab>>": true,
-        "Catch|2|fd8bc7c9<69a8a979<9706e8ab>>": true,
+        "Then|2|fd8bc7c9<69a8a979<54ff3ddf>>": true,
+        "Catch|2|fd8bc7c9<69a8a979<54ff3ddf>>": true,
       };
       return this.$cachedtypesig = computed;
     };

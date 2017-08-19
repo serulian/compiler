@@ -220,6 +220,9 @@ func (db *domBuilder) buildExpression(node compilergraph.GraphNode) codedom.Expr
 				node)
 		})
 
+	case parser.NodeDefineExclusiveRangeExpression:
+		fallthrough
+
 	case parser.NodeDefineRangeExpression:
 		fallthrough
 
