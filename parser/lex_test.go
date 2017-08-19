@@ -244,6 +244,12 @@ var lexerTests = []lexerTest{
 		lexeme{tokenTypeNumericLiteral, 0, "3"},
 		tEOF}},
 
+	{"numeric exclusive range test", "2..<3", []lexeme{
+		lexeme{tokenTypeNumericLiteral, 0, "2"},
+		lexeme{tokenTypeExclusiveEllipsis, 0, "..<"},
+		lexeme{tokenTypeNumericLiteral, 0, "3"},
+		tEOF}},
+
 	{"numeric range start float test", "2.7..3", []lexeme{
 		lexeme{tokenTypeNumericLiteral, 0, "2.7"},
 		lexeme{tokenTypeEllipsis, 0, ".."},
