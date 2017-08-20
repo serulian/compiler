@@ -64,7 +64,7 @@ func runTestsViaRunner(runner TestRunner, path string) bool {
 	// JS at a temporary location and then pass the temporary location to the test
 	// runner.
 	return compilerutil.WalkSourcePath(path, func(currentPath string, info os.FileInfo) (bool, error) {
-		if !strings.HasSuffix(info.Name(), "_test"+parser.SERULIAN_FILE_EXTENSION) {
+		if !strings.HasSuffix(info.Name(), packageloader.SerulianTestSuffix+parser.SERULIAN_FILE_EXTENSION) {
 			return false, nil
 		}
 
@@ -156,7 +156,7 @@ func DecorateRunners(command *cobra.Command) {
 		var runnerCmd = &cobra.Command{
 			Use:   fmt.Sprintf("%s [source path]", name),
 			Short: "Runs the tests defined at the given source path via " + runner.Title(),
-			Long:  "Runs the tests found in any *_test.seru files at the given source path",
+			Long:  fmt.Sprintf("Runs the tests found in any *%s.seru files at the given source path", packageloader.SerulianTestSuffix),
 			Run: func(cmd *cobra.Command, args []string) {
 				if len(args) != 1 {
 					fmt.Println("Expected source path")
