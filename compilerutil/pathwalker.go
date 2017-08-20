@@ -29,6 +29,10 @@ func WalkSourcePath(path string, handler PathHandler, skipDirectories ...string)
 
 	var filesFound = 0
 	walkFn := func(currentPath string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
 		// Handle directories and whether to recursively format.
 		if info.IsDir() {
 			if currentPath != path && !isRecursive {

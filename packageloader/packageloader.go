@@ -22,6 +22,10 @@ import (
 // SerulianPackageDirectory is the directory under the root directory holding cached packages.
 const SerulianPackageDirectory = ".pkg"
 
+// SerulianTestSuffix is the suffix for all testing modules. Testing modules will not be loaded
+// when loading a package.
+const SerulianTestSuffix = "_test"
+
 // pathKind identifies the supported kind of paths
 type pathKind int
 
@@ -282,6 +286,11 @@ func (p *PackageLoader) ListSubModulesAndPackages(packagePath string) ([]ModuleO
 
 	var modulesOrPackages = make([]ModuleOrPackage, 0, len(directoryContents))
 	for _, entry := range directoryContents {
+		// Filter any test modules.
+		if strings.Contains(entry.Name, SerulianTestSuffix+".") {
+			continue
+		}
+
 		if entry.IsDirectory {
 			modulesOrPackages = append(modulesOrPackages, ModuleOrPackage{entry.Name, path.Join(packagePath, entry.Name), ""})
 			continue
@@ -352,6 +361,11 @@ func (p *PackageLoader) packageInfoForPackageDirectory(packagePath string, sourc
 
 	// Find all source files in the directory and add them to the paths list.
 	for _, entry := range directoryContents {
+		// Filter any test modules.
+		if strings.Contains(entry.Name, SerulianTestSuffix+".") {
+			continue
+		}
+
 		if !entry.IsDirectory && path.Ext(entry.Name) == handler.PackageFileExtension() {
 			filePath := path.Join(packagePath, entry.Name)
 

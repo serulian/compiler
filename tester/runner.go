@@ -24,6 +24,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// testingRootPath is the path of the testing directory, in which all test runner dependencies will be installed.
+const testingRootPath = ".test"
+
 // runners defines the map of test runners by name.
 var runners = map[string]TestRunner{}
 
@@ -39,18 +42,23 @@ type TestRunner interface {
 	// SetupIfNecessary is run before any test runs occur to run the setup process
 	// for the runner (if necessary). This method should no-op if all necessary
 	// dependencies are in place.
-	SetupIfNecessary() error
+	SetupIfNecessary(testingEnvDirectoryPath string) error
 
 	// Run runs the test runner over the generated ES path.
-	Run(generatedFilePath string) (bool, error)
+	Run(testingEnvDirectoryPath string, generatedFilePath string) (bool, error)
 }
 
 // runTestsViaRunner runs all the tests at the given source path via the runner.
 func runTestsViaRunner(runner TestRunner, path string) bool {
 	log.Printf("Starting test run of %s via %v runner", path, runner.Title())
 
+	// Ensure the testing root path exists.
+	if _, serr := os.Stat(testingRootPath); serr != nil && os.IsNotExist(serr) {
+		os.Mkdir(testingRootPath, 0777)
+	}
+
 	// Run setup for the runner.
-	err := runner.SetupIfNecessary()
+	err := runner.SetupIfNecessary(testingRootPath)
 	if err != nil {
 		errHighlight := color.New(color.FgRed, color.Bold)
 		errHighlight.Print("ERROR: ")
@@ -64,7 +72,7 @@ func runTestsViaRunner(runner TestRunner, path string) bool {
 	// JS at a temporary location and then pass the temporary location to the test
 	// runner.
 	return compilerutil.WalkSourcePath(path, func(currentPath string, info os.FileInfo) (bool, error) {
-		if !strings.HasSuffix(info.Name(), "_test"+parser.SERULIAN_FILE_EXTENSION) {
+		if !strings.HasSuffix(info.Name(), packageloader.SerulianTestSuffix+parser.SERULIAN_FILE_EXTENSION) {
 			return false, nil
 		}
 
@@ -75,9 +83,9 @@ func runTestsViaRunner(runner TestRunner, path string) bool {
 
 		if success {
 			return true, nil
-		} else {
-			return true, fmt.Errorf("Failure in test of file %s", currentPath)
 		}
+
+		return true, fmt.Errorf("Failure in test of file %s", currentPath)
 	}, packageloader.SerulianPackageDirectory)
 }
 
@@ -147,7 +155,7 @@ func buildAndRunTests(filePath string, runner TestRunner) (bool, error) {
 	}
 
 	// Call the runner with the test file.
-	return runner.Run(path.Join(dir, filename+".js"))
+	return runner.Run(testingRootPath, path.Join(dir, filename+".js"))
 }
 
 // DecorateRunners decorates the test command with a command for each runner.
@@ -156,7 +164,7 @@ func DecorateRunners(command *cobra.Command) {
 		var runnerCmd = &cobra.Command{
 			Use:   fmt.Sprintf("%s [source path]", name),
 			Short: "Runs the tests defined at the given source path via " + runner.Title(),
-			Long:  "Runs the tests found in any *_test.seru files at the given source path",
+			Long:  fmt.Sprintf("Runs the tests found in any *%s.seru files at the given source path", packageloader.SerulianTestSuffix),
 			Run: func(cmd *cobra.Command, args []string) {
 				if len(args) != 1 {
 					fmt.Println("Expected source path")
