@@ -17,10 +17,10 @@ var (
 // the toolkit.
 func CoreLibraryTagOrBranch() string {
 	if Version == "" {
-		return ":master"
+		return ""
 	}
 
-	return "@v" + Version
+	return "@" + Version
 }
 
 // DescriptiveVersion returns a descriptive form of the version that will never be empty.
