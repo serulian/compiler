@@ -9,7 +9,6 @@ import (
 
 	"github.com/serulian/compiler/compilerutil"
 
-	"github.com/cayleygraph/cayley/graph"
 	"github.com/cayleygraph/cayley/quad"
 )
 
@@ -27,9 +26,9 @@ type GraphLayerModifier interface {
 func (gl *GraphLayer) createNewModifier() GraphLayerModifier {
 	modifier := &graphLayerModifierStruct{
 		layer:        gl,
-		deltas:       make([]graph.Delta, 0, 100),
+		quads:        make([]quad.Quad, 0, 100),
 		wg:           sync.WaitGroup{},
-		deltaChannel: make(chan graph.Delta, 25),
+		quadChannel:  make(chan quad.Quad, 25),
 		closeChannel: make(chan bool),
 	}
 
@@ -37,13 +36,13 @@ func (gl *GraphLayer) createNewModifier() GraphLayerModifier {
 	return modifier
 }
 
-// graphLayerModifier defines a small helper type for constructing deltas to be applied
+// graphLayerModifier defines a small helper type for constructing quads to be applied
 // safely to a graph layer.
 type graphLayerModifierStruct struct {
-	layer        *GraphLayer   // The layer being modified.
-	deltas       []graph.Delta // The deltas to apply to the graph.
+	layer        *GraphLayer // The layer being modified.
+	quads        []quad.Quad // The quads to apply to the graph.
 	wg           sync.WaitGroup
-	deltaChannel chan graph.Delta
+	quadChannel  chan quad.Quad
 	closeChannel chan bool
 	counter      uint64
 }
@@ -59,8 +58,8 @@ type ModifiableGraphNode struct {
 func (gl *graphLayerModifierStruct) runCollector() {
 	for {
 		select {
-		case delta := <-gl.deltaChannel:
-			gl.deltas = append(gl.deltas, delta)
+		case quad := <-gl.quadChannel:
+			gl.quads = append(gl.quads, quad)
 			gl.wg.Done()
 
 		case <-gl.closeChannel:
@@ -93,23 +92,17 @@ func (gl *graphLayerModifierStruct) CreateNode(nodeKind TaggedValue) ModifiableG
 	return node
 }
 
-// addQuad adds a delta to add a quad to the graph.
+// addQuad registers to add a quad to the graph.
 func (gl *graphLayerModifierStruct) addQuad(quad quad.Quad) {
-	ad := graph.Delta{
-		Quad:   quad,
-		Action: graph.Add,
-	}
-
 	gl.wg.Add(1)
-	gl.deltaChannel <- ad
+	gl.quadChannel <- quad
 }
 
 // Apply applies all changes in the modification transaction to the graph.
 func (gl *graphLayerModifierStruct) Apply() {
 	gl.Close()
-	err := gl.layer.cayleyStore.ApplyDeltas(gl.deltas, graph.IgnoreOpts{true, true})
-	if err != nil {
-		panic(err)
+	for _, quad := range gl.quads {
+		gl.layer.cayleyStore.AddQuad(quad)
 	}
 }
 
