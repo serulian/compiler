@@ -76,7 +76,6 @@ type PackageLoader struct {
 
 	handlers map[string]SourceHandler // The handlers for each of the supported package kinds.
 
-	pathsToLoad          chan pathInformation  // The paths to load
 	pathKindsEncountered cmap.ConcurrentMap    // The path+kinds processed by the loader goroutine
 	vcsPathsLoaded       cmap.ConcurrentMap    // The VCS paths that have been loaded, mapping to their checkout dir
 	vcsLockMap           compilerutil.LockMap  // LockMap for ensuring single loads of all VCS paths.
@@ -169,14 +168,13 @@ func NewPackageLoader(config Config) *PackageLoader {
 
 		pathKindsEncountered: cmap.New(),
 		packageMap:           newMutablePackageMap(),
-		pathsToLoad:          make(chan pathInformation, 1024),
 
 		sourceTracker: newMutableSourceTracker(config.PathLoader),
 
 		vcsPathsLoaded: cmap.New(),
 		vcsLockMap:     compilerutil.CreateLockMap(),
 
-		finished: make(chan bool, 2),
+		finished: make(chan bool, 1),
 	}
 }
 
@@ -187,9 +185,6 @@ func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 	for _, library := range libraries {
 		p.libraries[library.Alias] = library
 	}
-
-	// Start the loading goroutine.
-	go p.loadAndParse()
 
 	// Start the error/warning collection goroutine.
 	result := &LoadResult{
@@ -228,7 +223,6 @@ func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 	p.workTracker.Wait()
 
 	// Tell the goroutines to quit.
-	p.finished <- true
 	p.finished <- true
 
 	// Save the package map.
@@ -400,7 +394,7 @@ func (p *PackageLoader) pushPath(kind pathKind, sourceKind string, path string, 
 // pushPathWithId adds a path to be processed by the package loader, with the specified ID.
 func (p *PackageLoader) pushPathWithId(pathId string, sourceKind string, kind pathKind, path string, sourceRange compilercommon.SourceRange) string {
 	p.workTracker.Add(1)
-	p.pathsToLoad <- pathInformation{pathId, kind, path, sourceKind, sourceRange}
+	go p.loadAndParsePath(pathInformation{pathId, kind, path, sourceKind, sourceRange})
 	return pathId
 }
 
@@ -415,20 +409,6 @@ func (p *PackageLoader) collectIssues(result *LoadResult) {
 
 		case newWarnings := <-p.warnings:
 			result.Warnings = append(result.Warnings, newWarnings)
-
-		case <-p.finished:
-			return
-		}
-	}
-}
-
-// loadAndParse watches the pathsToLoad channel and parses load operations off to their
-// own goroutines.
-func (p *PackageLoader) loadAndParse() {
-	for {
-		select {
-		case currentPath := <-p.pathsToLoad:
-			go p.loadAndParsePath(currentPath)
 
 		case <-p.finished:
 			return
