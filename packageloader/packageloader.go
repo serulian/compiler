@@ -162,14 +162,14 @@ func NewPackageLoader(config Config) *PackageLoader {
 		alwaysValidate:            config.AlwaysValidate,
 		skipVCSRefresh:            config.SkipVCSRefresh,
 
-		errors:   make(chan compilercommon.SourceError),
-		warnings: make(chan compilercommon.SourceWarning),
+		errors:   make(chan compilercommon.SourceError, 32),
+		warnings: make(chan compilercommon.SourceWarning, 32),
 
 		handlers: handlersMap,
 
 		pathKindsEncountered: cmap.New(),
 		packageMap:           newMutablePackageMap(),
-		pathsToLoad:          make(chan pathInformation),
+		pathsToLoad:          make(chan pathInformation, 1024),
 
 		sourceTracker: newMutableSourceTracker(config.PathLoader),
 
