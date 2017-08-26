@@ -49,7 +49,7 @@ type TestRunner interface {
 }
 
 // runTestsViaRunner runs all the tests at the given source path via the runner.
-func runTestsViaRunner(runner TestRunner, path string) bool {
+func runTestsViaRunner(runner TestRunner, path string, vcsDevelopmentDirectories []string) bool {
 	log.Printf("Starting test run of %s via %v runner", path, runner.Title())
 
 	// Ensure the testing root path exists.
@@ -76,37 +76,31 @@ func runTestsViaRunner(runner TestRunner, path string) bool {
 			return false, nil
 		}
 
-		success, err := buildAndRunTests(currentPath, runner)
-		if err != nil {
-			return true, err
-		}
-
-		if success {
-			return true, nil
-		}
-
-		return true, fmt.Errorf("Failure in test of file %s", currentPath)
+		success := buildAndRunTests(currentPath, vcsDevelopmentDirectories, runner)
+		return success, nil
 	}, packageloader.SerulianPackageDirectory)
 }
 
 // buildAndRunTests builds the source found at the given path and then runs its tests via the runner.
-func buildAndRunTests(filePath string, runner TestRunner) (bool, error) {
+func buildAndRunTests(filePath string, vcsDevelopmentDirectories []string, runner TestRunner) bool {
 	log.Printf("Building %s...", filePath)
 
 	filename := path.Base(filePath)
 
 	scopeResult, err := scopegraph.ParseAndBuildScopeGraph(filePath,
-		[]string{},
+		vcsDevelopmentDirectories,
 		builder.CORE_LIBRARY)
 
 	if err != nil {
-		// TODO: better output
-		return false, fmt.Errorf("Error running test %s: %v", filePath, err)
+		compilerutil.LogToConsole(compilerutil.ErrorLogLevel, nil, "%s", fmt.Errorf("Error running test %s: %v", filePath, err))
+		return false
 	}
 
+	builder.OutputWarnings(scopeResult.Warnings)
+
 	if !scopeResult.Status {
-		// TODO: better output
-		return false, fmt.Errorf("Compilation errors for test %s: %v", filePath, scopeResult.Errors)
+		builder.OutputErrors(scopeResult.Errors)
+		return false
 	}
 
 	// Generate the source.
@@ -155,11 +149,16 @@ func buildAndRunTests(filePath string, runner TestRunner) (bool, error) {
 	}
 
 	// Call the runner with the test file.
-	return runner.Run(testingRootPath, path.Join(dir, filename+".js"))
+	success, err := runner.Run(testingRootPath, path.Join(dir, filename+".js"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return success
 }
 
 // DecorateRunners decorates the test command with a command for each runner.
-func DecorateRunners(command *cobra.Command) {
+func DecorateRunners(command *cobra.Command, vcsDevelopmentDirectories *[]string) {
 	for name, runner := range runners {
 		var runnerCmd = &cobra.Command{
 			Use:   fmt.Sprintf("%s [source path]", name),
@@ -171,7 +170,7 @@ func DecorateRunners(command *cobra.Command) {
 					os.Exit(-1)
 				}
 
-				if runTestsViaRunner(runner, args[0]) {
+				if runTestsViaRunner(runner, args[0], *vcsDevelopmentDirectories) {
 					os.Exit(1)
 				} else {
 					os.Exit(-1)
