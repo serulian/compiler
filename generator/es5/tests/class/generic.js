@@ -17,7 +17,7 @@ $module('generic', function () {
       }
       var computed = {
       };
-      computed[("Something|2|fd8bc7c9<" + $t.typeid(T)) + ">"] = true;
+      computed[("Something|2|2549c819<" + $t.typeid(T)) + ">"] = true;
       return this.$cachedtypesig = computed;
     };
   });
@@ -55,7 +55,7 @@ $module('generic', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Something|2|fd8bc7c9<e0aeb390>": true,
+        "Something|2|2549c819<e0aeb390>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -68,7 +68,7 @@ $module('generic', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Something|2|fd8bc7c9<2989c0d0>": true,
+        "Something|2|2549c819<2989c0d0>": true,
       };
       return this.$cachedtypesig = computed;
     };

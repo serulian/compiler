@@ -22,12 +22,12 @@ $module('generic', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Parse|1|fd8bc7c9<6b885b52>": true,
-        "equals|4|fd8bc7c9<54ff3ddf>": true,
-        "Stringify|2|fd8bc7c9<44e219a9>": true,
-        "Mapping|2|fd8bc7c9<ad6de9ce<any>>": true,
-        "Clone|2|fd8bc7c9<6b885b52>": true,
-        "String|2|fd8bc7c9<44e219a9>": true,
+        "Parse|1|2549c819<6b885b52>": true,
+        "equals|4|2549c819<f361570c>": true,
+        "Stringify|2|2549c819<ec87fc3f>": true,
+        "Mapping|2|2549c819<95776681<any>>": true,
+        "Clone|2|2549c819<6b885b52>": true,
+        "String|2|2549c819<ec87fc3f>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -55,13 +55,13 @@ $module('generic', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "equals|4|fd8bc7c9<54ff3ddf>": true,
-        "Stringify|2|fd8bc7c9<44e219a9>": true,
-        "Mapping|2|fd8bc7c9<ad6de9ce<any>>": true,
-        "String|2|fd8bc7c9<44e219a9>": true,
+        "equals|4|2549c819<f361570c>": true,
+        "Stringify|2|2549c819<ec87fc3f>": true,
+        "Mapping|2|2549c819<95776681<any>>": true,
+        "String|2|2549c819<ec87fc3f>": true,
       };
-      computed[("Parse|1|fd8bc7c9<d34106e1<" + $t.typeid(T)) + ">>"] = true;
-      computed[("Clone|2|fd8bc7c9<d34106e1<" + $t.typeid(T)) + ">>"] = true;
+      computed[("Parse|1|2549c819<d34106e1<" + $t.typeid(T)) + ">>"] = true;
+      computed[("Clone|2|2549c819<d34106e1<" + $t.typeid(T)) + ">>"] = true;
       return this.$cachedtypesig = computed;
     };
   });
