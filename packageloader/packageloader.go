@@ -398,24 +398,6 @@ func (p *PackageLoader) pushPathWithId(pathId string, sourceKind string, kind pa
 	return pathId
 }
 
-// collectIssues watches the errors and warnings channels to collect those issues as they
-// are added.
-func (p *PackageLoader) collectIssues(result *LoadResult) {
-	for {
-		select {
-		case newError := <-p.errors:
-			result.Errors = append(result.Errors, newError)
-			result.Status = false
-
-		case newWarnings := <-p.warnings:
-			result.Warnings = append(result.Warnings, newWarnings)
-
-		case <-p.finished:
-			return
-		}
-	}
-}
-
 // loadAndParsePath parses or loads a specific path.
 func (p *PackageLoader) loadAndParsePath(currentPath pathInformation) {
 	defer p.workTracker.Done()
@@ -466,13 +448,13 @@ func (p *PackageLoader) loadVCSPackage(packagePath pathInformation) {
 	result, err := vcs.PerformVCSCheckout(packagePath.path, pkgDirectory, cacheOption, p.vcsDevelopmentDirectories...)
 	if err != nil {
 		p.vcsPathsLoaded.Set(packagePath.path, "")
-		p.errors <- compilercommon.SourceErrorf(packagePath.sourceRange, "Error loading VCS package '%s': %v", packagePath.path, err)
+		p.enqueueError(compilercommon.SourceErrorf(packagePath.sourceRange, "Error loading VCS package '%s': %v", packagePath.path, err))
 		return
 	}
 
 	p.vcsPathsLoaded.Set(packagePath.path, result.PackageDirectory)
 	if result.Warning != "" {
-		p.warnings <- compilercommon.NewSourceWarning(packagePath.sourceRange, result.Warning)
+		p.enqueueWarning(compilercommon.NewSourceWarning(packagePath.sourceRange, result.Warning))
 	}
 
 	// Check for VCS version different than a library.
@@ -486,9 +468,9 @@ func (p *PackageLoader) loadVCSPackage(packagePath pathInformation) {
 
 			if libraryVCSPath.URL() == packageVCSPath.URL() {
 				if libraryVCSPath.String() != packageVCSPath.String() {
-					p.warnings <- compilercommon.SourceWarningf(packagePath.sourceRange,
+					p.enqueueWarning(compilercommon.SourceWarningf(packagePath.sourceRange,
 						"Library specifies VCS package `%s` but source file is loading `%s`, which could lead to incompatibilities. It is recommended to upgrade the package in the source file.",
-						libraryVCSPath.String(), packageVCSPath.String())
+						libraryVCSPath.String(), packageVCSPath.String()))
 				}
 				break
 			}
@@ -503,7 +485,7 @@ func (p *PackageLoader) loadVCSPackage(packagePath pathInformation) {
 func (p *PackageLoader) loadLocalPackage(packagePath pathInformation) {
 	packageInfo, err := p.packageInfoForPackageDirectory(packagePath.path, packagePath.sourceKind)
 	if err != nil {
-		p.errors <- compilercommon.SourceErrorf(packagePath.sourceRange, "Could not load directory '%s'", packagePath.path)
+		p.enqueueError(compilercommon.SourceErrorf(packagePath.sourceRange, "Could not load directory '%s'", packagePath.path))
 		return
 	}
 
@@ -517,7 +499,7 @@ func (p *PackageLoader) loadLocalPackage(packagePath pathInformation) {
 	// Add the package itself to the package map.
 	p.packageMap.Add(packagePath.sourceKind, packagePath.referenceId, packageInfo)
 	if !moduleFound {
-		p.warnings <- compilercommon.SourceWarningf(packagePath.sourceRange, "Package '%s' has no source files", packagePath.path)
+		p.enqueueWarning(compilercommon.SourceWarningf(packagePath.sourceRange, "Package '%s' has no source files", packagePath.path))
 		return
 	}
 }
@@ -536,14 +518,14 @@ func (p *PackageLoader) conductParsing(sourceFile pathInformation) {
 	// Load the source file's contents.
 	contents, err := p.pathLoader.LoadSourceFile(sourceFile.path)
 	if err != nil {
-		p.errors <- compilercommon.SourceErrorf(sourceFile.sourceRange, "Could not load source file '%s': %v", sourceFile.path, err)
+		p.enqueueError(compilercommon.SourceErrorf(sourceFile.sourceRange, "Could not load source file '%s': %v", sourceFile.path, err))
 		return
 	}
 
 	// Load the source file's revision ID.
 	revisionID, err := p.pathLoader.GetRevisionID(sourceFile.path)
 	if err != nil {
-		p.errors <- compilercommon.SourceErrorf(sourceFile.sourceRange, "Could not load source file '%s': %v", sourceFile.path, err)
+		p.enqueueError(compilercommon.SourceErrorf(sourceFile.sourceRange, "Could not load source file '%s': %v", sourceFile.path, err))
 		return
 	}
 
@@ -591,7 +573,7 @@ func (p *PackageLoader) handleImport(sourceKind string, importPath string, impor
 
 	handler, hasHandler := p.handlers[importInformation.Kind]
 	if !hasHandler {
-		p.errors <- compilercommon.SourceErrorf(importInformation.SourceRange, "Unknown kind of import '%s'. Did you forgot to install a source plugin?", importInformation.Kind)
+		p.enqueueError(compilercommon.SourceErrorf(importInformation.SourceRange, "Unknown kind of import '%s'. Did you forgot to install a source plugin?", importInformation.Kind))
 		return ""
 	}
 
@@ -602,7 +584,7 @@ func (p *PackageLoader) handleImport(sourceKind string, importPath string, impor
 		libraryName := importInformation.Path
 		library, found := p.libraries[libraryName]
 		if !found {
-			p.errors <- compilercommon.SourceErrorf(importInformation.SourceRange, "Import alias `%s` not found", libraryName)
+			p.enqueueError(compilercommon.SourceErrorf(importInformation.SourceRange, "Import alias `%s` not found", libraryName))
 			return ""
 		}
 
@@ -637,14 +619,14 @@ func (p *PackageLoader) handleImport(sourceKind string, importPath string, impor
 		if strings.HasPrefix(importedDirectoryPath, currentDirectory) {
 			err := p.verifyNoVCSBoundaryCross(importedDirectoryPath, currentDirectory, title, importInformation)
 			if err != nil {
-				p.errors <- *err
+				p.enqueueError(*err)
 				return ""
 			}
 		} else {
 			// Otherwise, we walk upward from the current directory to the imported directory.
 			err := p.verifyNoVCSBoundaryCross(currentDirectory, importedDirectoryPath, title, importInformation)
 			if err != nil {
-				p.errors <- *err
+				p.enqueueError(*err)
 				return ""
 			}
 		}
@@ -656,4 +638,36 @@ func (p *PackageLoader) handleImport(sourceKind string, importPath string, impor
 	}
 
 	return p.pushPath(pathLocalPackage, handler.Kind(), dirPath, importInformation.SourceRange)
+}
+
+// enqueueError queues an error to be added to the Errors slice in the Result.
+func (p *PackageLoader) enqueueError(err compilercommon.SourceError) {
+	p.workTracker.Add(1)
+	p.errors <- err
+}
+
+// enqueueWarning queues a warning to be added to the Warnings slice in the Result.
+func (p *PackageLoader) enqueueWarning(warning compilercommon.SourceWarning) {
+	p.workTracker.Add(1)
+	p.warnings <- warning
+}
+
+// collectIssues watches the errors and warnings channels to collect those issues as they
+// are added.
+func (p *PackageLoader) collectIssues(result *LoadResult) {
+	for {
+		select {
+		case newError := <-p.errors:
+			result.Errors = append(result.Errors, newError)
+			result.Status = false
+			p.workTracker.Done()
+
+		case newWarnings := <-p.warnings:
+			result.Warnings = append(result.Warnings, newWarnings)
+			p.workTracker.Done()
+
+		case <-p.finished:
+			return
+		}
+	}
 }
