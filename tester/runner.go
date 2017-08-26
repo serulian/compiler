@@ -49,7 +49,7 @@ type TestRunner interface {
 }
 
 // runTestsViaRunner runs all the tests at the given source path via the runner.
-func runTestsViaRunner(runner TestRunner, path string) bool {
+func runTestsViaRunner(runner TestRunner, path string, vcsDevelopmentDirectories []string) bool {
 	log.Printf("Starting test run of %s via %v runner", path, runner.Title())
 
 	// Ensure the testing root path exists.
@@ -76,7 +76,7 @@ func runTestsViaRunner(runner TestRunner, path string) bool {
 			return false, nil
 		}
 
-		success, err := buildAndRunTests(currentPath, runner)
+		success, err := buildAndRunTests(currentPath, vcsDevelopmentDirectories, runner)
 		if err != nil {
 			return true, err
 		}
@@ -90,13 +90,13 @@ func runTestsViaRunner(runner TestRunner, path string) bool {
 }
 
 // buildAndRunTests builds the source found at the given path and then runs its tests via the runner.
-func buildAndRunTests(filePath string, runner TestRunner) (bool, error) {
+func buildAndRunTests(filePath string, vcsDevelopmentDirectories []string, runner TestRunner) (bool, error) {
 	log.Printf("Building %s...", filePath)
 
 	filename := path.Base(filePath)
 
 	scopeResult, err := scopegraph.ParseAndBuildScopeGraph(filePath,
-		[]string{},
+		vcsDevelopmentDirectories,
 		builder.CORE_LIBRARY)
 
 	if err != nil {
@@ -159,7 +159,7 @@ func buildAndRunTests(filePath string, runner TestRunner) (bool, error) {
 }
 
 // DecorateRunners decorates the test command with a command for each runner.
-func DecorateRunners(command *cobra.Command) {
+func DecorateRunners(command *cobra.Command, vcsDevelopmentDirectories *[]string) {
 	for name, runner := range runners {
 		var runnerCmd = &cobra.Command{
 			Use:   fmt.Sprintf("%s [source path]", name),
@@ -171,7 +171,7 @@ func DecorateRunners(command *cobra.Command) {
 					os.Exit(-1)
 				}
 
-				if runTestsViaRunner(runner, args[0]) {
+				if runTestsViaRunner(runner, args[0], *vcsDevelopmentDirectories) {
 					os.Exit(1)
 				} else {
 					os.Exit(-1)

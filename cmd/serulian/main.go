@@ -212,6 +212,9 @@ func main() {
 		"If specified, VCS packages without specification will be first checked against this path")
 	cmdDevelop.PersistentFlags().StringVar(&addr, "addr", ":8080", "The address at which the development code will be served")
 
+	cmdTest.PersistentFlags().StringSliceVar(&vcsDevelopmentDirectories, "vcs-dev-dir", []string{},
+		"If specified, VCS packages without specification will be first checked against this path")
+
 	cmdImports.AddCommand(cmdFreeze)
 	cmdImports.AddCommand(cmdUnfreeze)
 	cmdImports.AddCommand(cmdUpgrade)
@@ -220,7 +223,7 @@ func main() {
 		"If specified, VCS packages without specification will be first checked against this path")
 
 	// Decorate the test commands.
-	tester.DecorateRunners(cmdTest)
+	tester.DecorateRunners(cmdTest, &vcsDevelopmentDirectories)
 
 	// Register the root command.
 	var rootCmd = &cobra.Command{
