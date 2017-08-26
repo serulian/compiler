@@ -63,14 +63,14 @@ func (s ErrorsSlice) Less(i, j int) bool {
 	return iLine < jLine
 }
 
-func outputWarnings(warnings []compilercommon.SourceWarning) {
+func OutputWarnings(warnings []compilercommon.SourceWarning) {
 	sort.Sort(WarningsSlice(warnings))
 	for _, warning := range warnings {
 		compilerutil.LogToConsole(compilerutil.WarningLogLevel, warning.SourceRange(), "%s", warning.String())
 	}
 }
 
-func outputErrors(errors []compilercommon.SourceError) {
+func OutputErrors(errors []compilercommon.SourceError) {
 	sort.Sort(ErrorsSlice(errors))
 	for _, err := range errors {
 		compilerutil.LogToConsole(compilerutil.ErrorLogLevel, err.SourceRange(), "%s", err.Error())
@@ -97,10 +97,10 @@ func BuildSource(rootSourceFilePath string, debug bool, vcsDevelopmentDirectorie
 		return false
 	}
 
-	outputWarnings(scopeResult.Warnings)
+	OutputWarnings(scopeResult.Warnings)
 	if !scopeResult.Status {
 		log.Println("Scoping failure")
-		outputErrors(scopeResult.Errors)
+		OutputErrors(scopeResult.Errors)
 		return false
 	}
 
