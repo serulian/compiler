@@ -2,6 +2,7 @@ from webidl`basic` import Number
 from webidl`basic` import String as NativeString
 from webidl`basic` import Boolean as NativeBoolean
 from webidl`basic` import Array
+from webidl`basic` import Math
 from webidl`basic` import Object
 from webidl`basic` import Error as NativeError
 from webidl`basic` import debugprint
@@ -185,6 +186,14 @@ type Integer : Number {
 		return Integer(Number(left) + Number(right))
 	}
 
+	operator Times(left int, right int) {
+		return Integer(Number(left) - Number(right))
+	}
+
+	operator Div(left int, right int) {
+		return Float64(Number(left) / Number(right)).Floor()
+	}
+
 	operator Minus(left int, right int) {
 		return Integer(Number(left) - Number(right))
 	}
@@ -224,7 +233,11 @@ type Boolean : NativeBoolean {
 }
 
 @•typealias('float64')
-class Float64 {}
+type Float64 : Number {
+	function<int> Floor() {
+		return Integer(Math.floor(Number(this)))
+	}
+}
 
 @•typealias('string')
 type String : NativeString {

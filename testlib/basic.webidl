@@ -22,7 +22,7 @@ interface Boolean {
 };
 
 [Constructor(optional any value),
- NativeOperator=Plus, NativeOperator=Minus, NativeOperator=Equals]
+ NativeOperator=Plus, NativeOperator=Minus, NativeOperator=Times, NativeOperator=Div, NativeOperator=Equals]
 interface Number {
 	String toString();
 	serializer;
@@ -60,4 +60,8 @@ interface Error {
 	readonly attribute Number lineNumber;
 	readonly attribute Number columnNumber;
 	readonly attribute String stack;
+};
+
+interface Math {
+  static Number floor(Number value);
 };
