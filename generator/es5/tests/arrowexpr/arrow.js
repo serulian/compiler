@@ -21,8 +21,8 @@ $module('arrow', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Then|2|fd8bc7c9<69a8a979<54ff3ddf>>": true,
-        "Catch|2|fd8bc7c9<69a8a979<54ff3ddf>>": true,
+        "Then|2|2549c819<837d6211<f361570c>>": true,
+        "Catch|2|2549c819<837d6211<f361570c>>": true,
       };
       return this.$cachedtypesig = computed;
     };

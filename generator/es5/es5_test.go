@@ -150,6 +150,7 @@ var generationTests = []generationTest{
 
 	generationTest{"generic op expression", "opexpr", "generic", integrationTestSuccessExpected, ""},
 	generationTest{"exclusive range expression", "opexpr", "exrange", integrationTestSuccessExpected, ""},
+	generationTest{"numeric op expression", "opexpr", "numeric", integrationTestSuccessExpected, ""},
 
 	generationTest{"match statement", "statements", "match", integrationTestSuccessExpected, ""},
 

@@ -26,9 +26,9 @@ $module('basic', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Declare|1|fd8bc7c9<78afdb83>": true,
-        "GetValue|2|fd8bc7c9<bb8d3aad>": true,
-        "GetMainValue|2|fd8bc7c9<bb8d3aad>": true,
+        "Declare|1|2549c819<78afdb83>": true,
+        "GetValue|2|2549c819<7243cf1b>": true,
+        "GetMainValue|2|2549c819<7243cf1b>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -41,7 +41,7 @@ $module('basic', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "GetValue|2|fd8bc7c9<bb8d3aad>": true,
+        "GetValue|2|2549c819<7243cf1b>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -63,7 +63,7 @@ $module('basic', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "GetMainValue|2|fd8bc7c9<bb8d3aad>": true,
+        "GetMainValue|2|2549c819<7243cf1b>": true,
       };
       return this.$cachedtypesig = computed;
     };

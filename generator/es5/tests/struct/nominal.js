@@ -39,12 +39,12 @@ $module('nominal', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Parse|1|fd8bc7c9<0d40ca4a>": true,
-        "equals|4|fd8bc7c9<54ff3ddf>": true,
-        "Stringify|2|fd8bc7c9<44e219a9>": true,
-        "Mapping|2|fd8bc7c9<ad6de9ce<any>>": true,
-        "Clone|2|fd8bc7c9<0d40ca4a>": true,
-        "String|2|fd8bc7c9<44e219a9>": true,
+        "Parse|1|2549c819<0d40ca4a>": true,
+        "equals|4|2549c819<f361570c>": true,
+        "Stringify|2|2549c819<ec87fc3f>": true,
+        "Mapping|2|2549c819<95776681<any>>": true,
+        "Clone|2|2549c819<0d40ca4a>": true,
+        "String|2|2549c819<ec87fc3f>": true,
       };
       return this.$cachedtypesig = computed;
     };

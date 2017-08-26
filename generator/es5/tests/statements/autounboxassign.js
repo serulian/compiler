@@ -16,7 +16,7 @@ $module('autounboxassign', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeValue|3|bb8d3aad": true,
+        "SomeValue|3|7243cf1b": true,
       };
       return this.$cachedtypesig = computed;
     };

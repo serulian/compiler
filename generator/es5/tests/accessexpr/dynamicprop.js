@@ -22,7 +22,7 @@ $module('dynamicprop', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeProp|3|bb8d3aad": true,
+        "SomeProp|3|7243cf1b": true,
       };
       return this.$cachedtypesig = computed;
     };

@@ -251,6 +251,12 @@ func (db *domBuilder) buildOptimizedBinaryOperatorExpression(node compilergraph.
 
 	switch {
 	case parentType.IsDirectReferenceTo(db.scopegraph.TypeGraph().IntType()):
+		// Since division of integers requires flooring, turn this off for int div.
+		// TODO: Have the optimizer add the proper Math.floor call.
+		if opString == "/" {
+			return nil, false
+		}
+
 		isNumeric = true
 
 	case parentType.IsDirectReferenceTo(db.scopegraph.TypeGraph().BoolType()):
