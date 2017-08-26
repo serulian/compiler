@@ -71,14 +71,19 @@ func runTestsViaRunner(runner TestRunner, path string, vcsDevelopmentDirectories
 	// Iterate over each test file in the source path. For each, compile the code into
 	// JS at a temporary location and then pass the temporary location to the test
 	// runner.
-	return compilerutil.WalkSourcePath(path, func(currentPath string, info os.FileInfo) (bool, error) {
+	overallSuccess := true
+
+	compilerutil.WalkSourcePath(path, func(currentPath string, info os.FileInfo) (bool, error) {
 		if !strings.HasSuffix(info.Name(), packageloader.SerulianTestSuffix+parser.SERULIAN_FILE_EXTENSION) {
 			return false, nil
 		}
 
 		success := buildAndRunTests(currentPath, vcsDevelopmentDirectories, runner)
-		return success, nil
+		overallSuccess = overallSuccess && success
+		return true, nil
 	}, packageloader.SerulianPackageDirectory)
+
+	return overallSuccess
 }
 
 // buildAndRunTests builds the source found at the given path and then runs its tests via the runner.
@@ -173,7 +178,7 @@ func DecorateRunners(command *cobra.Command, vcsDevelopmentDirectories *[]string
 				if runTestsViaRunner(runner, args[0], *vcsDevelopmentDirectories) {
 					os.Exit(0)
 				} else {
-					os.Exit(-1)
+					os.Exit(1)
 				}
 			},
 		}
