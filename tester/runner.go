@@ -171,7 +171,7 @@ func DecorateRunners(command *cobra.Command, vcsDevelopmentDirectories *[]string
 				}
 
 				if runTestsViaRunner(runner, args[0], *vcsDevelopmentDirectories) {
-					os.Exit(1)
+					os.Exit(0)
 				} else {
 					os.Exit(-1)
 				}

@@ -30,7 +30,8 @@ var karmaPackages = []string{"karma", "jasmine-core", "karma-jasmine", "karma-so
 
 // karmaRunnerPackages defines the packages necessary for each browser runner.
 var karmaRunnerPackages = map[string]string{
-	"Chrome": "karma-chrome-launcher",
+	"Chrome":             "karma-chrome-launcher",
+	"NonSandboxedChrome": "karma-chrome-launcher",
 }
 
 // karmaConfigTemplate defines a template for emitting the config ES code.
@@ -87,7 +88,7 @@ func (ktr *karmaTestRunner) SetupIfNecessary(testingEnvDirectoryPath string) err
 	for _, browser := range browsers {
 		browserPackage, exists := karmaRunnerPackages[browser]
 		if !exists {
-			return fmt.Errorf("Unknown browser %s", browser)
+			return fmt.Errorf("Unknown browser %s (%v)", browser, browsers)
 		}
 
 		packages = append(packages, browserPackage)
@@ -133,13 +134,14 @@ func (ktr *karmaTestRunner) SetupIfNecessary(testingEnvDirectoryPath string) err
 
 // karmaConfig defines the structural view of Karma configuration.
 type karmaConfig struct {
-	BasePath      string                 `json:"basePath"`
-	Frameworks    []string               `json:"frameworks"`
-	AutoWatch     bool                   `json:"autoWatch"`
-	Browsers      []string               `json:"browsers"`
-	Files         []string               `json:"files"`
-	SingleRun     bool                   `json:"singleRun"`
-	Preprocessors map[string]interface{} `json:"preprocessors"`
+	BasePath        string                 `json:"basePath"`
+	Frameworks      []string               `json:"frameworks"`
+	AutoWatch       bool                   `json:"autoWatch"`
+	Browsers        []string               `json:"browsers"`
+	Files           []string               `json:"files"`
+	SingleRun       bool                   `json:"singleRun"`
+	Preprocessors   map[string]interface{} `json:"preprocessors"`
+	CustomLaunchers map[string]interface{} `json:"customLaunchers"`
 }
 
 func (ktr *karmaTestRunner) Run(testingEnvDirectoryPath string, generatedFilePath string) (bool, error) {
@@ -153,6 +155,13 @@ func (ktr *karmaTestRunner) Run(testingEnvDirectoryPath string, generatedFilePat
 		SingleRun:  true,
 		Preprocessors: map[string]interface{}{
 			"**/*.js": []string{"sourcemap"},
+		},
+		CustomLaunchers: map[string]interface{}{
+			// Based on: https://hackernoon.com/running-karma-tests-with-headless-chrome-inside-docker-ae4aceb06ed3
+			"NonSandboxedChrome": map[string]interface{}{
+				"base":  "ChromeHeadless",
+				"flags": []string{"--no-sandbox"},
+			},
 		},
 	}
 
