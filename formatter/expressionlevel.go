@@ -178,7 +178,18 @@ func (sf *sourceFormatter) emitBinaryOperator(node formatterNode, op string) {
 
 // emitAccessExpression emits an access expression.
 func (sf *sourceFormatter) emitAccessExpression(node formatterNode, op string) {
-	sf.emitNode(node.getChild(parser.NodeMemberAccessChildExpr))
+	childExpr := node.getChild(parser.NodeMemberAccessChildExpr)
+	requiresWrapping := childExpr.hasType(parser.NodeMappingLiteralExpression, parser.NodeMapLiteralExpression)
+	if requiresWrapping {
+		sf.append("(")
+	}
+
+	sf.emitNode(childExpr)
+
+	if requiresWrapping {
+		sf.append(")")
+	}
+
 	sf.append(op)
 	sf.append(node.getProperty(parser.NodeMemberAccessIdentifier))
 }

@@ -1,0 +1,5 @@
+function<void> DoSomething() {
+	({}).Foo
+	([]{string}{'foo': 'bar'}).Bar
+	[].Foo
+}
