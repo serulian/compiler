@@ -1,0 +1,88 @@
+NodeTypeFile
+  end-rune = 79
+  input-source = not precedence expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 79
+      input-source = not precedence expr test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 79
+          input-source = not precedence expr test
+          start-rune = 30
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 43
+              input-source = not precedence expr test
+              start-rune = 36
+              expr-statement-expr =>
+                NodeKeywordNotExpression
+                  end-rune = 42
+                  input-source = not precedence expr test
+                  start-rune = 40
+                  unary-expression-child =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 42
+                      identexpr-name = key
+                      input-source = not precedence expr test
+                      start-rune = 40
+            NodeTypeExpressionStatement
+              end-rune = 63
+              input-source = not precedence expr test
+              start-rune = 48
+              expr-statement-expr =>
+                NodeKeywordNotExpression
+                  end-rune = 62
+                  input-source = not precedence expr test
+                  start-rune = 52
+                  unary-expression-child =>
+                    NodeInCollectionExpression
+                      end-rune = 62
+                      input-source = not precedence expr test
+                      start-rune = 52
+                      binary-expression-left =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 54
+                          identexpr-name = key
+                          input-source = not precedence expr test
+                          start-rune = 52
+                      binary-expression-right =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 62
+                          identexpr-name = keys
+                          input-source = not precedence expr test
+                          start-rune = 59
+            NodeTypeExpressionStatement
+              end-rune = 78
+              input-source = not precedence expr test
+              start-rune = 68
+              expr-statement-expr =>
+                NodeIsComparisonExpression
+                  end-rune = 77
+                  input-source = not precedence expr test
+                  start-rune = 68
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 68
+                      identexpr-name = a
+                      input-source = not precedence expr test
+                      start-rune = 68
+                  binary-expression-right =>
+                    NodeKeywordNotExpression
+                      end-rune = 77
+                      input-source = not precedence expr test
+                      start-rune = 77
+                      unary-expression-child =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 77
+                          identexpr-name = b
+                          input-source = not precedence expr test
+                          start-rune = 77
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 12
+          input-source = not precedence expr test
+          start-rune = 9

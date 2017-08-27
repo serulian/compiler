@@ -2920,9 +2920,19 @@ var BinaryOperators = []boe{
 
 // tryConsumeNonArrowExpression tries to consume an expression that cannot contain an arrow.
 func (p *sourceParser) tryConsumeNonArrowExpression(option consumeExpressionOption) (AstNode, bool) {
+	// Special case: `not` has a lower precedence than other unary operators.
+	if p.isKeyword("not") {
+		p.consumeKeyword("not")
+		exprNode := p.startNode(NodeKeywordNotExpression)
+		defer p.finishNode()
+
+		node, ok := p.tryConsumeNonArrowExpression(option)
+		exprNode.Connect(NodeUnaryExpressionChildExpr, node)
+		return exprNode, ok
+	}
+
 	// TODO(jschorr): Cache this!
 	binaryParser := p.buildBinaryOperatorExpressionFnTree(option, BinaryOperators...)
-
 	return binaryParser()
 }
 
