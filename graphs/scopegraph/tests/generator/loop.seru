@@ -1,0 +1,16 @@
+function<int*> DoSomething() {
+    for i in 0..2  {
+    	yield 2
+    }
+}
+
+class SomeClass {
+    property<int*> SomeProp {
+        get {
+            foo := 20
+            for i in 0..<foo  {
+                yield 2
+            }
+        }
+    }
+}

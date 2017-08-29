@@ -65,6 +65,10 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"generator success test", "generator", "success", []expectedScopeEntry{},
 		"", ""},
 
+	// Loop success test.
+	scopegraphTest{"generator loop success test", "generator", "loop", []expectedScopeEntry{},
+		"", ""},
+
 	// Nested success test.
 	scopegraphTest{"generator nested success test", "generator", "nestedsuccess", []expectedScopeEntry{},
 		"", ""},
