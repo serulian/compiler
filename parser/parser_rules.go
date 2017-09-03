@@ -2520,7 +2520,14 @@ func (p *sourceParser) consumeMarkupChild() (AstNode, bool) {
 
 	// Check for a nested expression.
 	if _, ok := p.tryConsume(tokenTypeLeftBrace); ok {
+		// Consume the expression.
 		expr := p.consumeExpression(consumeExpressionAllowBraces)
+
+		// Skip any synthetic statement terminator. This can happen
+		// with a multi-line nested expression.
+		p.tryConsumeStatementTerminator()
+
+		// Consume the close brace.
 		p.consume(tokenTypeRightBrace)
 		return expr, true
 	}
@@ -2534,7 +2541,7 @@ func (p *sourceParser) consumeMarkupChild() (AstNode, bool) {
 	// consuming from the start of the text will lose any whitespace after the closing brace or
 	// tag, because the consume will consume the (normally ignored) whitespace. We special handle
 	// the case here.
-	var previousNonTextToken *commentedLexeme = nil
+	var previousNonTextToken *commentedLexeme
 	if p.previousToken.kind == tokenTypeRightBrace || p.previousToken.kind == tokenTypeGreaterThan {
 		previousToken := p.previousToken
 		previousNonTextToken = &previousToken
