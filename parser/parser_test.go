@@ -263,6 +263,7 @@ var parserTests = []parserTest{
 	{"multiple children sml test", "sml/multichild"},
 	{"whitespace text sml test", "sml/whitespacetext"},
 	{"nested property sml test", "sml/nestedprop"},
+	{"loop sml test", "sml/loop"},
 
 	{"all expr test", "expression/all"},
 	{"complex expr test", "expression/complex"},
