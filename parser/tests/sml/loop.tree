@@ -1,0 +1,70 @@
+NodeTypeFile
+  end-rune = 92
+  input-source = loop sml test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 92
+      input-source = loop sml test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 92
+          input-source = loop sml test
+          start-rune = 29
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 91
+              input-source = loop sml test
+              start-rune = 32
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 90
+                  input-source = loop sml test
+                  start-rune = 32
+                  sml-expression-child =>
+                    NodeTypeLoopExpression
+                      end-rune = 85
+                      input-source = loop sml test
+                      start-rune = 37
+                      loop-expr-map-expr =>
+                        NodeTypeSmlExpression
+                          end-rune = 56
+                          input-source = loop sml test
+                          start-rune = 37
+                          sml-expression-child =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 50
+                              identexpr-name = something
+                              input-source = loop sml test
+                              start-rune = 42
+                          sml-expression-typefunc =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 39
+                              identexpr-name = li
+                              input-source = loop sml test
+                              start-rune = 38
+                      loop-expr-stream-expr =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 84
+                          identexpr-name = somestream
+                          input-source = loop sml test
+                          start-rune = 75
+                      named-value =>
+                        NodeTypeNamedValue
+                          end-rune = 70
+                          input-source = loop sml test
+                          named = something
+                          start-rune = 62
+                  sml-expression-typefunc =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 34
+                      identexpr-name = ul
+                      input-source = loop sml test
+                      start-rune = 33
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 12
+          input-source = loop sml test
+          start-rune = 9
