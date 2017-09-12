@@ -265,6 +265,7 @@ var parserTests = []parserTest{
 	{"nested property sml test", "sml/nestedprop"},
 	{"loop sml test", "sml/loop"},
 	{"multiline loop sml test", "sml/multilineloop"},
+	{"inline loop sml test", "sml/inlineloop"},
 
 	{"all expr test", "expression/all"},
 	{"complex expr test", "expression/complex"},
