@@ -1,0 +1,19 @@
+function<int> somenumber(props []{any}, value int) {
+    return value
+}
+
+function<int> somesum(props []{any}, numbers *int) {
+    var<int> sum = 0
+    for number in numbers {
+        sum = sum + number
+    }
+    return sum
+}
+
+function<any> TEST() {
+    result := <somesum>
+        <somenumber [for index in 0..2]>{index}</somenumber>
+    </somesum>
+
+    return result == 3
+}

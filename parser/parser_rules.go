@@ -2260,6 +2260,24 @@ func (p *sourceParser) consumeExpression(option consumeExpressionOption) AstNode
 	return p.createErrorNode("Could not parse expected expression")
 }
 
+// consumePartialLoopExpression consumes the portion of a loop expression after the initial expression value. Note that this method does
+// **not** decorate the end rune, which is the responsibility of the **caller**.
+//
+// Form: {expr} for something in somethingelse
+func (p *sourceParser) consumePartialLoopExpression(exprNode AstNode, startToken commentedLexeme, option consumeExpressionOption) AstNode {
+	loopNode := p.createNode(NodeTypeLoopExpression)
+	loopNode.Connect(NodeLoopExpressionMapExpression, exprNode)
+
+	p.consumeKeyword("for")
+	loopNode.Connect(NodeLoopExpressionNamedValue, p.consumeNamedValue())
+
+	p.consume(tokenTypeInOperator)
+	loopNode.Connect(NodeLoopExpressionStreamExpression, p.consumeExpression(option))
+
+	p.decorateStartRuneAndComments(loopNode, startToken)
+	return loopNode
+}
+
 // tryConsumeExpression attempts to consume an expression. If an expression
 // could not be found, returns false.
 func (p *sourceParser) tryConsumeExpression(option consumeExpressionOption) (AstNode, bool) {
@@ -2289,18 +2307,8 @@ func (p *sourceParser) tryConsumeExpression(option consumeExpressionOption) (Ast
 
 		// Check for a for keyword. If found, then the expression starts a loop expression.
 		if p.isKeyword("for") {
-			loopNode := p.createNode(NodeTypeLoopExpression)
-			loopNode.Connect(NodeLoopExpressionMapExpression, node)
-
-			p.consumeKeyword("for")
-			loopNode.Connect(NodeLoopExpressionNamedValue, p.consumeNamedValue())
-
-			p.consume(tokenTypeInOperator)
-			loopNode.Connect(NodeLoopExpressionStreamExpression, p.consumeExpression(option))
-
-			p.decorateStartRuneAndComments(loopNode, startToken)
+			loopNode := p.consumePartialLoopExpression(node, startToken, option)
 			p.decorateEndRune(loopNode, p.currentToken.lexeme)
-
 			return loopNode, true
 		}
 
@@ -2339,8 +2347,12 @@ func (p *sourceParser) tryConsumeMarkupExpression() (AstNode, bool) {
 
 // consumeMarkupExpression consumes a markup expression.
 func (p *sourceParser) consumeMarkupExpression() AstNode {
+	startToken := p.currentToken
+
 	markupNode := p.startNode(NodeTypeSmlExpression)
 	defer p.finishNode()
+
+	var topNode = markupNode
 
 	// Consume the markup tag:
 	// <identifier
@@ -2359,6 +2371,36 @@ func (p *sourceParser) consumeMarkupExpression() AstNode {
 	_, ok2 := t.matchToken(tokenTypeKeyword)
 
 	if !(ok1 && ok2) {
+		p.tryConsumeStatementTerminator()
+
+		// Check for an inline loop expression.
+		//
+		// [
+		if _, ok := p.tryConsume(tokenTypeLeftBracket); ok {
+			// Note: This predicate uses a specialized parsing trick/hack to produce a parse tree that
+			// matches the "natural" format, which would be `{<tag/> for item in stream}`, rather than
+			// `<tag [for item in stream] />`. Therefore, we parse the loop expression with the *markup*
+			// node as the "expression", and then we have the loop become the new *top* node, to be returned
+			// by this function. While this is a bit of a hack, it produces a nice clean structural tree
+			// and allows for no additional code changes in the rest of the system, including scoping,
+			// so it seems to be a good tradeoff.
+
+			// for foo in bar
+			topNode = p.consumePartialLoopExpression(markupNode, startToken, consumeExpressionNoBraces)
+
+			// Since the node was not created with a call to startNode, defer a call to decorate it with
+			// the end rune of the *entire* markup tag, as the markup tag is "logically nested" below
+			// the loop expression.
+			defer func() {
+				p.decorateEndRune(topNode, p.currentToken.lexeme)
+			}()
+
+			// ]
+			if _, ok := p.consume(tokenTypeRightBracket); !ok {
+				return topNode
+			}
+		}
+
 		// Consume one (or more attributes)
 		for {
 			// Consume any statement terminators that are found between attributes.
@@ -2385,12 +2427,12 @@ func (p *sourceParser) consumeMarkupExpression() AstNode {
 
 	// >
 	if _, ok := p.consume(tokenTypeGreaterThan); !ok {
-		return markupNode
+		return topNode
 	}
 
 	// If not immediately closed, check for children and then ensure that we have a matching tag.
 	if isImmediatelyClosed {
-		return markupNode
+		return topNode
 	}
 
 	// Consume any children and nested attributes.
@@ -2420,11 +2462,11 @@ func (p *sourceParser) consumeMarkupExpression() AstNode {
 
 	// </identifier.path>
 	if _, ok := p.consume(tokenTypeLessThan); !ok {
-		return markupNode
+		return topNode
 	}
 
 	if _, ok := p.consume(tokenTypeDiv); !ok {
-		return markupNode
+		return topNode
 	}
 
 	_, pathAgain := p.consumeSimpleAccessPath()
@@ -2433,10 +2475,10 @@ func (p *sourceParser) consumeMarkupExpression() AstNode {
 	}
 
 	if _, ok := p.consume(tokenTypeGreaterThan); !ok {
-		return markupNode
+		return topNode
 	}
 
-	return markupNode
+	return topNode
 }
 
 // consumeMarkupNestedAttribute consumes a nested attribute under a markup element.
