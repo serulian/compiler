@@ -365,6 +365,18 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	scopegraphTest{"sml loop success test", "sml", "loop",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"something", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"sml inline loop success test", "sml", "inlineloop",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"something", expectedScope{true, proto.ScopeKind_VALUE, "Integer", "void"}},
+		},
+		"", ""},
+
 	scopegraphTest{"sml expression unknown ref test", "sml", "unknownref",
 		[]expectedScopeEntry{},
 		"The name 'something' could not be found in this context", ""},
