@@ -51,6 +51,9 @@ enum ScopeLabel {
 
 	// Marks an expression as referencing the constructor of an agent.
 	AGENT_CONSTRUCTOR_REF = 21;
+
+	SML_CHILD_YIELD_VALUE = 23; // Marks an SML child value to be yielded as a single value.
+	SML_CHILD_YIELD_FROM = 24; // Marks an SML child value to be yielded from as a stream.
 }
 
 message ScopeInfo {

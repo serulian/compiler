@@ -95,7 +95,15 @@ func (db *domBuilder) buildSmlExpression(node compilergraph.GraphNode) codedom.E
 			} else {
 				yielders := make([]codedom.Statement, len(children))
 				for index, child := range children {
-					yielders[index] = codedom.YieldValue(child, child.BasisNode())
+					if db.scopegraph.HasSecondaryLabel(child.BasisNode(), proto.ScopeLabel_SML_CHILD_YIELD_FROM) {
+						streamScope, _ := db.scopegraph.GetScope(child.BasisNode())
+						streamType := streamScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
+
+						yielders[index] = codedom.YieldStream(child, streamType, child.BasisNode())
+					} else {
+						yielders[index] = codedom.YieldValue(child, child.BasisNode())
+					}
+
 					if index > 0 {
 						yielders[index-1].(codedom.HasNextStatement).SetNext(yielders[index])
 					}

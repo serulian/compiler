@@ -1,0 +1,18 @@
+function<string> thirdfunction(props []{any}) {
+    return 'hello'
+}
+
+function<int> anotherfunction(props []{any}) {
+    return 42
+}
+
+function<bool> somefunction(props []{any}, child int*) {
+	return true
+}
+
+function<void> DoSomething(somestream int*) {
+	<somefunction>
+        <thirdfunction />
+        <anotherfunction [for index in 0..2] />
+    </somefunction>
+}

@@ -299,6 +299,7 @@ var generationTests = []generationTest{
 	generationTest{"sml async children test", "sml", "asyncchildren", integrationTestSuccessExpected, ""},
 	generationTest{"sml nested attributes test", "sml", "nestedattributes", integrationTestSuccessExpected, ""},
 	generationTest{"sml inline loop test", "sml", "inlineloop", integrationTestSuccessExpected, ""},
+	generationTest{"sml loop and elements test", "sml", "loopandelements", integrationTestSuccessExpected, ""},
 
 	generationTest{"native new integration test", "nativenew", "nativenew", integrationTestSuccessExpected, ""},
 	generationTest{"dynamic access non-promising test", "dynamicaccess", "nonpromising", integrationTestSuccessExpected, ""},

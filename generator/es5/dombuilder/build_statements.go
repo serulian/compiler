@@ -85,7 +85,9 @@ func (db *domBuilder) buildYieldStatement(node compilergraph.GraphNode) codedom.
 	}
 
 	if streamExpr, hasStreamExpr := db.tryGetExpression(node, parser.NodeYieldStatementStreamValue); hasStreamExpr {
-		return codedom.YieldStream(streamExpr, node)
+		streamScope, _ := db.scopegraph.GetScope(node.GetNode(parser.NodeYieldStatementStreamValue))
+		streamType := streamScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
+		return codedom.YieldStream(streamExpr, streamType, node)
 	}
 
 	return codedom.YieldValue(db.getExpression(node, parser.NodeYieldStatementValue), node)

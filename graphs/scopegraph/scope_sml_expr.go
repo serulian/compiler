@@ -174,6 +174,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 
 		// Scope and collect the types of all the children.
 		var childrenTypes = make([]typegraph.TypeReference, 0)
+		var childNodes = make([]compilergraph.GraphNode, 0)
 
 		cit := node.StartQuery().
 			Out(parser.NodeSmlExpressionChild).
@@ -187,23 +188,38 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 			}
 
 			childrenTypes = append(childrenTypes, childScope.ResolvedTypeRef(sb.sg.tdg))
+			childNodes = append(childNodes, childNode)
 		}
 
 		// Check if the children parameter is a stream. If so, we match the stream type. Otherwise,
 		// we check if the child matches the value expected.
 		if childsType.IsDirectReferenceTo(sb.sg.tdg.StreamType()) {
-			// If there is a single child that is also a matching stream, then we allow it.
+			// If there is a single child that is also a matching stream, then we use the stream directly.
 			if len(childrenTypes) == 1 && childrenTypes[0] == childsType {
 				childrenLabel = proto.ScopeLabel_SML_STREAM_CHILD
 			} else {
+				// Otherwise, the children must either match the type of the stream, or the type of the *values*
+				// in the stream.
 				childrenLabel = proto.ScopeLabel_SML_CHILDREN
 				streamValueType := childsType.Generics()[0]
 
 				// Ensure the child types match.
 				for index, childType := range childrenTypes {
-					if serr := childType.CheckSubTypeOf(streamValueType); serr != nil {
-						sb.decorateWithError(node, "Child #%v under SML declaration must be subtype of %v: %v", index+1, streamValueType, serr)
-						isValid = false
+					// If the child has the type of the stream, then its allowed. Otherwise, the child must represent a single
+					// item *in* the stream.
+					if childType == childsType {
+						sb.decorateWithSecondaryLabel(childNodes[index], proto.ScopeLabel_SML_CHILD_YIELD_FROM)
+
+						// Register a dependency on MapStream.
+						member, _ := sb.sg.tdg.StreamType().ParentModule().FindMember("MapStream")
+						context.staticDependencyCollector.registerDependency(member)
+					} else {
+						if serr := childType.CheckSubTypeOf(streamValueType); serr != nil {
+							sb.decorateWithError(node, "Child #%v under SML declaration must be subtype of %v or of type %v: %v", index+1, streamValueType, childsType, serr)
+							isValid = false
+						}
+
+						sb.decorateWithSecondaryLabel(childNodes[index], proto.ScopeLabel_SML_CHILD_YIELD_VALUE)
 					}
 				}
 			}

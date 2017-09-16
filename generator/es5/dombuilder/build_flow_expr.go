@@ -65,7 +65,7 @@ func (db *domBuilder) buildLoopExpression(node compilergraph.GraphNode) codedom.
 	isAsync := mapperFunction.IsAsynchronous(db.scopegraph)
 	if isAsync {
 		return codedom.AwaitPromise(funcCall, node)
-	} else {
-		return funcCall
 	}
+
+	return funcCall
 }

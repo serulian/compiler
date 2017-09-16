@@ -377,6 +377,14 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	scopegraphTest{"sml mixed children success test", "sml", "mixedchildren",
+		[]expectedScopeEntry{},
+		"", ""},
+
+	scopegraphTest{"sml mixed children failure test", "sml", "mixedincorrectchildren",
+		[]expectedScopeEntry{},
+		"Child #1 under SML declaration must be subtype of Integer or of type Stream<Integer>: 'String' cannot be used in place of non-interface 'Integer'", ""},
+
 	scopegraphTest{"sml expression unknown ref test", "sml", "unknownref",
 		[]expectedScopeEntry{},
 		"The name 'something' could not be found in this context", ""},
@@ -479,7 +487,7 @@ var scopeGraphTests = []scopegraphTest{
 
 	scopegraphTest{"sml expression child stream mismatch test", "sml", "childstreammismatch",
 		[]expectedScopeEntry{},
-		"Child #1 under SML declaration must be subtype of Integer: 'String' cannot be used in place of non-interface 'Integer'", ""},
+		"Child #1 under SML declaration must be subtype of Integer or of type Stream<Integer>: 'String' cannot be used in place of non-interface 'Integer'", ""},
 
 	scopegraphTest{"sml expression unknown nested attribute test", "sml", "nestedattributeunknown",
 		[]expectedScopeEntry{},
