@@ -218,6 +218,14 @@ var promisingLabelTests = []promisingLabelTest{
 			expectedPromiseLabel{"TEST", proto.ScopeLabel_SML_PROMISING_NO},
 		},
 	},
+
+	promisingLabelTest{"nested sml children promising test", "nestedsml",
+		[]expectedPromiseLabel{
+			expectedPromiseLabel{"anotherfunction", proto.ScopeLabel_SML_PROMISING_NO},
+			expectedPromiseLabel{"somefunction", proto.ScopeLabel_SML_PROMISING_NO},
+			expectedPromiseLabel{"TEST", proto.ScopeLabel_SML_PROMISING_MAYBE},
+		},
+	},
 }
 
 func TestPromisingLabels(t *testing.T) {
