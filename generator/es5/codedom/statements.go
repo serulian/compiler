@@ -17,8 +17,9 @@ var _ = fmt.Printf
 // YieldNode represents a yield of some sort under a generator function.
 type YieldNode struct {
 	nextStatementBase
-	Value       Expression // The value yielded, if any.
-	StreamValue Expression // The stream yielded, if any.
+	Value       Expression               // The value yielded, if any.
+	StreamValue Expression               // The stream yielded, if any.
+	StreamType  *typegraph.TypeReference // The type of the stream being yielded from, if any.
 }
 
 func YieldValue(value Expression, basis compilergraph.GraphNode) Statement {
@@ -26,20 +27,23 @@ func YieldValue(value Expression, basis compilergraph.GraphNode) Statement {
 		nextStatementBase{statementBase{domBase{basis}, false}, nil},
 		value,
 		nil,
+		nil,
 	}
 }
 
-func YieldStream(streamValue Expression, basis compilergraph.GraphNode) Statement {
+func YieldStream(streamValue Expression, streamType typegraph.TypeReference, basis compilergraph.GraphNode) Statement {
 	return &YieldNode{
 		nextStatementBase{statementBase{domBase{basis}, false}, nil},
 		nil,
 		streamValue,
+		&streamType,
 	}
 }
 
 func YieldBreak(basis compilergraph.GraphNode) Statement {
 	return &YieldNode{
 		nextStatementBase{statementBase{domBase{basis}, false}, nil},
+		nil,
 		nil,
 		nil,
 	}
@@ -61,6 +65,17 @@ func (s *YieldNode) WalkExpressions(walker expressionWalker) bool {
 	}
 
 	return true
+}
+
+func (s *YieldNode) IsLocallyAsynchronous(sg *scopegraph.ScopeGraph) bool {
+	// A yield statement is locally asynchronous if the Next() call of its stream *may*
+	// be asynchronous.
+	if s.StreamValue != nil {
+		referencedMember, _ := s.StreamType.ResolveMember("Next", typegraph.MemberResolutionInstance)
+		return sg.IsPromisingMember(referencedMember, scopegraph.PromisingAccessFunctionCall)
+	}
+
+	return false
 }
 
 // ResolutionNode represents the resolution of a function.

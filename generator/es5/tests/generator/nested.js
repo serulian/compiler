@@ -76,7 +76,7 @@ $module('nested', function () {
         }
       }
     };
-    return $generator.new($continue, false);
+    return $generator.new($continue, true);
   };
   $static.TEST = $t.markpromising(function () {
     var $result;
