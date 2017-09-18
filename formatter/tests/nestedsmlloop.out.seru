@@ -1,0 +1,8 @@
+function<void> SomeFunction() {
+	var something = <Ul>
+		<Li>Foo</Li>
+		<Li [for foo1 in bar]>{foo2}</Li>
+		<Li [for foo4 in bar]>{foo3}</Li>
+		<Li>Bar</Li>
+	</Ul>
+}

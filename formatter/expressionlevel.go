@@ -405,7 +405,7 @@ func (sf *sourceFormatter) emitInnerExpressions(exprs []formatterNode) {
 		sf.indent()
 	}
 
-	for index, _ := range exprs {
+	for index := range exprs {
 		if inline && index > 0 {
 			sf.append(", ")
 		}
@@ -491,19 +491,32 @@ func (sf *sourceFormatter) formatSmlChildren(children []formatterNode, childStar
 	onlyIsExpression := len(children) == 1 && (children[0].GetType() == parser.NodeTypeSmlExpression || children[0].GetType() == parser.NodeTypeSmlAttribute)
 
 	for index, child := range children {
-		switch child.GetType() {
-		case parser.NodeTypeSmlText:
+		switch {
+		case child.GetType() == parser.NodeTypeSmlText:
 			value := child.getProperty(parser.NodeSmlTextValue)
 			childSource[index] = value
 			hasMultilineChild = hasMultilineChild || strings.Contains(strings.TrimSpace(value), "\n")
 
-		case parser.NodeTypeSmlAttribute:
+		case child.GetType() == parser.NodeTypeSmlAttribute:
 			fallthrough
 
-		case parser.NodeTypeSmlExpression:
+		case child.GetType() == parser.NodeTypeSmlExpression:
 			hasAdjacentNonText = hasAdjacentNonText || (index > 0 && children[index-1].GetType() != parser.NodeTypeSmlText)
 
 			formatted, hasNewline := sf.formatNode(child)
+			childSource[index] = formatted
+			hasMultilineChild = hasMultilineChild || hasNewline
+
+		case child.GetType() == parser.NodeTypeLoopExpression && child.getChild(parser.NodeLoopExpressionMapExpression).GetType() == parser.NodeTypeSmlExpression:
+			// If there is a loop expression containing a single markup as its child, then we specially format it
+			// as <Tag [loop expression]>...</Tag>, which is technically backwards but easier to read.
+			hasAdjacentNonText = hasAdjacentNonText || (index > 0 && children[index-1].GetType() != parser.NodeTypeSmlText)
+
+			smlExprNode := child.getChild(parser.NodeLoopExpressionMapExpression)
+			formatted, hasNewline := sf.formatNodeViaEmitter(func(formatter *sourceFormatter) {
+				formatter.emitSmlExpressionWithOptionalLoop(smlExprNode, &child)
+			})
+
 			childSource[index] = formatted
 			hasMultilineChild = hasMultilineChild || hasNewline
 
@@ -621,6 +634,11 @@ func (s byAttributeName) Less(i, j int) bool {
 
 // emitSmlExpression emits an SML expression value.
 func (sf *sourceFormatter) emitSmlExpression(node formatterNode) {
+	sf.emitSmlExpressionWithOptionalLoop(node, nil)
+}
+
+// emitSmlExpression emits an SML expression value.
+func (sf *sourceFormatter) emitSmlExpressionWithOptionalLoop(node formatterNode, loopNode *formatterNode) {
 	children := node.getChildren(parser.NodeSmlExpressionChild)
 	nestedAttributes := []formatterNode{}
 
@@ -644,6 +662,16 @@ func (sf *sourceFormatter) emitSmlExpression(node formatterNode) {
 	// Start the opening tag.
 	sf.append("<")
 	sf.emitNode(node.getChild(parser.NodeSmlExpressionTypeOrFunction))
+
+	// Add the (optional) loop.
+	if loopNode != nil {
+		sf.append(" [")
+		sf.append("for ")
+		sf.emitNode(loopNode.getChild(parser.NodeLoopExpressionNamedValue))
+		sf.append(" in ")
+		sf.emitNode(loopNode.getChild(parser.NodeLoopExpressionStreamExpression))
+		sf.append("]")
+	}
 
 	// Add attributes and decorators.
 	postTagPosition := sf.existingLineLength
