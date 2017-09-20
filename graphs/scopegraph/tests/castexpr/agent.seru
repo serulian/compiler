@@ -1,0 +1,11 @@
+interface ISomeInterface {}
+
+agent<ISomeInterface> SomeAgent {}
+
+class SomeClass with SomeAgent {
+}
+
+function<void> DoSomething() {
+	var<SomeClass> scs = SomeClass.new(SomeAgent.new())
+	scs.(SomeAgent)
+}

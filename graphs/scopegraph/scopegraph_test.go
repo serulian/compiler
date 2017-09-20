@@ -1010,6 +1010,10 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"Cannot cast value of type 'ISomeInterface?' to type 'SomeClass': Value may be null", ""},
 
+	scopegraphTest{"cast agent test", "castexpr", "agent",
+		[]expectedScopeEntry{},
+		"Cannot cast value of type 'SomeClass' to type 'SomeAgent': 'SomeAgent' cannot be used in place of non-interface 'SomeClass'", ""},
+
 	/////////// Function call expression ///////////
 
 	scopegraphTest{"function call success test", "funccall", "success",
