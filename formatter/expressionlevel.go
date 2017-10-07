@@ -750,6 +750,10 @@ func (sf *sourceFormatter) emitNestedSmlAttribute(node formatterNode) {
 // emitInlineSmlAttribute emits an SML attribute in inline form.
 func (sf *sourceFormatter) emitInlineSmlAttribute(node formatterNode) {
 	sf.append(node.getProperty(parser.NodeSmlAttributeName))
+	if !node.hasChild(parser.NodeSmlAttributeValue) {
+		return
+	}
+
 	sf.append("=")
 
 	value := node.getChild(parser.NodeSmlAttributeValue)
