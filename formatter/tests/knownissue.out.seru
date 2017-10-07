@@ -1,0 +1,3 @@
+function<any> Render(context Context) {
+	<Button className="btn" disabled>Shared</Button>
+}
