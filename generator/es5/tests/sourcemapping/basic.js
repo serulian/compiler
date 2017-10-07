@@ -759,13 +759,13 @@ this.Serulian = (function ($global) {
               fullId = fullId + arguments[i].$typeId;
               generics[i] = arguments[i];
             }
-            var cached = module[fullName];
+            var cached = module[fullId];
             if (cached) {
               return cached;
             }
             var tpe = buildType(fullId + '>', fullName, generics);
             tpe.$generic = genericType;
-            return module[fullName] = tpe;
+            return module[fullId] = tpe;
           };
         } else {
           module[name] = buildType(typeId, name);

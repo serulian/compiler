@@ -1,0 +1,15 @@
+class Boolean {}
+
+function<any> TEST() {
+    // Create a Mapping<Boolean> where Boolean is defined here. This will prime the cache with that type.
+    firstMapping := []{Boolean}{}
+
+    // Create another Mapping<Boolean>, but with the core type. If caching is working correctly, this will
+    // be given a *different* class, rather than the same as above (which was the behavior the bug was causing).
+    secondMapping := []{bool}{
+        "somekey": true,
+    }
+
+    // Access a key, which forces a cast, and will ensure things work so long as type caching is not broken.
+    return secondMapping['somekey'] ?? false
+}

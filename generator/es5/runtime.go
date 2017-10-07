@@ -1070,14 +1070,14 @@ this.Serulian = (function($global) {
             }
 
             // Check for a cached version of the generic type.
-            var cached = module[fullName];
+            var cached = module[fullId];
             if (cached) {
               return cached;
             }
 
             var tpe = buildType(fullId + '>', fullName, generics);
             tpe.$generic = genericType;
-            return module[fullName] = tpe;
+            return module[fullId] = tpe;
           };
         } else {
           module[name] = buildType(typeId, name);

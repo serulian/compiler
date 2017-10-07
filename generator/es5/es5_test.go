@@ -303,6 +303,8 @@ var generationTests = []generationTest{
 
 	generationTest{"native new integration test", "nativenew", "nativenew", integrationTestSuccessExpected, ""},
 	generationTest{"dynamic access non-promising test", "dynamicaccess", "nonpromising", integrationTestSuccessExpected, ""},
+
+	generationTest{"cached generic types test", "runtime", "cachedgenerictypes", integrationTestSuccessExpected, ""},
 }
 
 func TestGenerator(t *testing.T) {
