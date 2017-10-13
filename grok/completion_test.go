@@ -90,7 +90,7 @@ var grokCompletionTests = []grokCompletionTest{
 			// SML completions.
 			grokCompletionSubTest{"isf", "<",
 				[]expectedCompletion{
-					expectedCompletion{SnippetCompletion, "Close SML Tag", "/SomeFunction>", "", "void"},
+					expectedCompletion{SnippetCompletion, "/SomeFunction>", "/SomeFunction>", "", "void"},
 					expectedCompletion{MemberCompletion, "SomeFunction", "SomeFunction", "Some really cool function", "function<Integer>"},
 					expectedCompletion{MemberCompletion, "AnotherFunction", "AnotherFunction", "AnotherFunction without a 'doc' comment", "function<Integer>"},
 					expectedCompletion{MemberCompletion, "SomeDecorator", "SomeDecorator", "SomeDecorator loves normal comments!", "function<Integer>"},
@@ -100,7 +100,13 @@ var grokCompletionTests = []grokCompletionTest{
 
 			grokCompletionSubTest{"isf", "</",
 				[]expectedCompletion{
-					expectedCompletion{SnippetCompletion, "Close SML Tag", "SomeFunction>", "", "void"},
+					expectedCompletion{SnippetCompletion, "SomeFunction>", "SomeFunction>", "", "void"},
+				},
+			},
+
+			grokCompletionSubTest{"isg", "</",
+				[]expectedCompletion{
+					expectedCompletion{SnippetCompletion, "AnotherFunction>", "AnotherFunction>", "", "void"},
 				},
 			},
 		},

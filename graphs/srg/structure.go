@@ -5,6 +5,8 @@
 package srg
 
 import (
+	"sort"
+
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/parser"
@@ -65,6 +67,53 @@ func (f *SourceStructureFinder) TryGetContainingNode(node compilergraph.GraphNod
 		Has(parser.NodePredicateSource, node.Get(parser.NodePredicateSource)).
 		FilterBy(containingFilter).
 		TryGetNode()
+}
+
+type nodes []compilergraph.GraphNode
+
+type byStartRune struct {
+	nodes
+	startRune int
+}
+
+func (s nodes) Len() int      { return len(s) }
+func (s nodes) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
+
+func (s byStartRune) Less(i, j int) bool {
+	iStart := s.startRune - s.nodes[i].GetValue(parser.NodePredicateStartRune).Int()
+	jStart := s.startRune - s.nodes[j].GetValue(parser.NodePredicateStartRune).Int()
+	return iStart < jStart
+}
+
+// TryGetNearestContainingNode returns the containing node of the given node that is one of the given types, if any. If there are multiple such
+// nodes, the node which is closest (by rune position) is returned.
+func (f *SourceStructureFinder) TryGetNearestContainingNode(node compilergraph.GraphNode, nodeTypes ...parser.NodeType) (compilergraph.GraphNode, bool) {
+	startRune := node.GetValue(parser.NodePredicateStartRune).Int()
+	endRune := node.GetValue(parser.NodePredicateEndRune).Int()
+
+	containingFilter := func(q compilergraph.GraphQuery) compilergraph.Query {
+		return q.
+			HasWhere(parser.NodePredicateStartRune, compilergraph.WhereLTE, startRune).
+			HasWhere(parser.NodePredicateEndRune, compilergraph.WhereGTE, endRune)
+	}
+
+	nit := f.srg.findAllNodes(nodeTypes...).
+		Has(parser.NodePredicateSource, node.Get(parser.NodePredicateSource)).
+		FilterBy(containingFilter).
+		BuildNodeIterator()
+
+	var nodes = make([]compilergraph.GraphNode, 0)
+	for nit.Next() {
+		nodes = append(nodes, nit.Node())
+	}
+
+	if len(nodes) == 0 {
+		return compilergraph.GraphNode{}, false
+	}
+
+	// Sort the nodes by starting rune.
+	sort.Sort(byStartRune{nodes, startRune})
+	return nodes[0], true
 }
 
 // TryGetContainingModule returns the containing module of the given SRG node, if any.
@@ -200,7 +249,10 @@ func (f *SourceStructureFinder) ScopeInContext(node compilergraph.GraphNode) []S
 	}
 
 	// Find the parent module and add members and imports.
-	module, _ := f.TryGetContainingModule(node)
+	module, hasParentModule := f.TryGetContainingModule(node)
+	if !hasParentModule {
+		return namedScopes
+	}
 
 	// Add module members.
 	for _, moduleMember := range module.GetMembers() {

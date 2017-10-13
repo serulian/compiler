@@ -34,4 +34,11 @@ function<void> DoSomething() {
 'hello world'
 }
 </SomeFunction>
+
+<SomeFunction>
+    <AnotherFunction>{
+        /// [isg]
+        'hello world'
+    }</AnotherFunction>
+</SomeFunction>
 }

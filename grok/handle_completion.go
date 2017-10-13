@@ -166,17 +166,19 @@ func (gh Handle) addSmlCompletions(node compilergraph.GraphNode, activationStrin
 	// First lookup the parent SML expression (if any). If one is found, offer it as the closing
 	// completion if applicable.
 	if activationString == "<" || strings.HasPrefix(activationString, "</") {
-		smlExpression, isUnderExpression := gh.structureFinder.TryGetContainingNode(node, parser.NodeTypeSmlExpression)
+		smlExpression, isUnderExpression := gh.structureFinder.TryGetNearestContainingNode(node, parser.NodeTypeSmlExpression)
 		if isUnderExpression {
 			// Grab the name of the expression and add it as a completion.
 			smlPathExpression := smlExpression.GetNode(parser.NodeSmlExpressionTypeOrFunction)
 			pathString, hasPathString := srg.IdentifierPathString(smlPathExpression)
 			if hasPathString {
 				if activationString == "<" {
-					builder.addSnippet("Close SML Tag", "/"+pathString+">")
+					closeTag := "/" + pathString + ">"
+					builder.addSnippet(closeTag, closeTag)
 				} else {
 					if strings.HasPrefix(pathString, activationString[2:]) {
-						builder.addSnippet("Close SML Tag", pathString[len(activationString)-2:]+">")
+						closeTag := pathString[len(activationString)-2:] + ">"
+						builder.addSnippet(closeTag, closeTag)
 					}
 				}
 			}
