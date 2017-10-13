@@ -200,7 +200,10 @@ func (f *SourceStructureFinder) ScopeInContext(node compilergraph.GraphNode) []S
 	}
 
 	// Find the parent module and add members and imports.
-	module, _ := f.TryGetContainingModule(node)
+	module, hasParentModule := f.TryGetContainingModule(node)
+	if !hasParentModule {
+		return namedScopes
+	}
 
 	// Add module members.
 	for _, moduleMember := range module.GetMembers() {
