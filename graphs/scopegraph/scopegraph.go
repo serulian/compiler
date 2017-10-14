@@ -74,16 +74,25 @@ type Result struct {
 }
 
 // BuildTarget defines the target of the scoping being performed.
-type BuildTarget string
+type BuildTarget struct {
+	id                       string
+	alwaysValidate           bool
+	skipVCSRefresh           bool
+	continueWithErrors       bool
+	labelEntrypointPromising bool
+}
 
-const (
+// ScopeFilter defines a filtering function for only scoping certain nodes in the SRG.
+type ScopeFilter func(inputSource compilercommon.InputSource) bool
+
+var (
 	// Compilation indicates the scope graph is being built for compilation of code
 	// and therefore should not process the remaining phases if any errors occur.
-	Compilation BuildTarget = "compilation"
+	Compilation = BuildTarget{"compilation", false, false, false, true}
 
 	// Tooling indicates the scope graph is being built for IDE or other forms of tooling,
 	// and that a partially valid graph should be returned.
-	Tooling BuildTarget = "tooling"
+	Tooling = BuildTarget{"tooling", true, true, true, false}
 )
 
 // Config defines the configuration for scoping.
@@ -103,6 +112,10 @@ type Config struct {
 
 	// PathLoader defines the path loader to use when parsing.
 	PathLoader packageloader.PathLoader
+
+	// ScopeFilter defines the filter, if any, to use when scoping. If specified, only those entrypoints
+	// for which the filter returns true, will be scoped.
+	ScopeFilter ScopeFilter
 }
 
 // ParseAndBuildScopeGraph conducts full parsing, type graph construction and scoping for the project
@@ -162,13 +175,13 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 		Entrypoint:                config.Entrypoint,
 		PathLoader:                config.PathLoader,
 		VCSDevelopmentDirectories: config.VCSDevelopmentDirectories,
-		AlwaysValidate:            config.Target == Tooling,
-		SkipVCSRefresh:            config.Target == Tooling,
+		AlwaysValidate:            config.Target.alwaysValidate,
+		SkipVCSRefresh:            config.Target.skipVCSRefresh,
 		SourceHandlers:            sourceHandlers,
 	})
 
 	loaderResult := loader.Load(config.Libraries...)
-	if !loaderResult.Status && config.Target != Tooling {
+	if !loaderResult.Status && !config.Target.continueWithErrors {
 		return Result{
 			Status:   false,
 			Errors:   loaderResult.Errors,
@@ -180,7 +193,7 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 	resolver := typerefresolver.NewResolver(sourcegraph)
 	srgConstructor := srgtc.GetConstructorWithResolver(sourcegraph, resolver)
 	typeResult := typegraph.BuildTypeGraph(sourcegraph.Graph, webidl.TypeConstructor(), srgConstructor)
-	if !typeResult.Status && config.Target != Tooling {
+	if !typeResult.Status && !config.Target.continueWithErrors {
 		return Result{
 			Status:   false,
 			Errors:   combineErrors(loaderResult.Errors, typeResult.Errors),
@@ -192,7 +205,7 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 	resolver.FreezeCache()
 
 	// Construct the scope graph.
-	scopeResult := buildScopeGraphWithResolver(sourcegraph, typeResult.Graph, integrations, resolver, loader)
+	scopeResult := performConstruction(config.Target, sourcegraph, typeResult.Graph, integrations, resolver, loader, config.ScopeFilter)
 	return Result{
 		Status:        scopeResult.Status && typeResult.Status && loaderResult.Status,
 		Errors:        combineErrors(loaderResult.Errors, typeResult.Errors, scopeResult.Errors),
@@ -260,16 +273,11 @@ func (sg *ScopeGraph) BuildTransientScope(transientNode compilergraph.GraphNode,
 	builder := newScopeBuilder(sg)
 	defer builder.modifier.Close()
 
-	// TODO: Change these types into interfaces and use no-op implementations here as performance
-	// improvement.
-	staticDependencyCollector := newStaticDependencyCollector()
-	dynamicDependencyCollector := newDynamicDependencyCollector()
-
 	context := scopeContext{
 		parentImplemented:          parentImplementable.GraphNode,
 		rootNode:                   parentImplementable.GraphNode,
-		staticDependencyCollector:  staticDependencyCollector,
-		dynamicDependencyCollector: dynamicDependencyCollector,
+		staticDependencyCollector:  &noopStaticDependencyCollector{},
+		dynamicDependencyCollector: &noopDynamicDependencyCollector{},
 		rootLabelSet:               newLabelSet(),
 	}
 

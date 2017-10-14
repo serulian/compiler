@@ -1676,6 +1676,38 @@ func TestGraphs(t *testing.T) {
 	}
 }
 
+func TestBuildFilteredScope(t *testing.T) {
+	entrypointFile := "tests/basic/basic.seru"
+	result, _ := ParseAndBuildScopeGraphWithConfig(Config{
+		Entrypoint:                packageloader.Entrypoint(entrypointFile),
+		VCSDevelopmentDirectories: []string{},
+		Libraries:                 []packageloader.Library{packageloader.Library{TESTLIB_PATH, false, "", "testcore"}},
+		Target:                    Compilation,
+		PathLoader:                packageloader.LocalFilePathLoader{},
+		ScopeFilter: func(inputSource compilercommon.InputSource) bool {
+			return strings.Contains(string(inputSource), "basic.seru")
+		},
+	})
+
+	if !assert.True(t, result.Status, "Expected success in filtered scope test") {
+		return
+	}
+
+	node, found := result.Graph.SourceGraph().FindCommentedNode("/* len */")
+	if !assert.True(t, found, "Missing commented node `len` in filtered test") {
+		return
+	}
+
+	scope, valid := result.Graph.GetScope(node)
+	if !assert.True(t, valid, "Could not get scope for `len` node in filtered test") {
+		return
+	}
+
+	if !assert.Equal(t, "Integer", scope.ResolvedTypeRef(result.Graph.TypeGraph()).String()) {
+		return
+	}
+}
+
 type transientScopeTest struct {
 	commentValue string
 	expression   string

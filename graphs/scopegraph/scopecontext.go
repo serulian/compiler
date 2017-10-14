@@ -21,11 +21,11 @@ type scopeContext struct {
 
 	// staticDependencyCollector defines a helper for collecting all members accessed or called
 	// statically the current scope.
-	staticDependencyCollector *staticDependencyCollector
+	staticDependencyCollector staticDependencyCollector
 
 	// dynamicDependencyCollector defines a helper for collecting all names accessed dynamically in
 	// the current scope.
-	dynamicDependencyCollector *dynamicDependencyCollector
+	dynamicDependencyCollector dynamicDependencyCollector
 
 	// overrideTypes is (if not nil) the map of the overridden type for an expression
 	// under this context.
