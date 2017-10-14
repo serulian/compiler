@@ -74,16 +74,21 @@ type Result struct {
 }
 
 // BuildTarget defines the target of the scoping being performed.
-type BuildTarget string
+type BuildTarget struct {
+	id                 string
+	alwaysValidate     bool
+	skipVCSRefresh     bool
+	continueWithErrors bool
+}
 
-const (
+var (
 	// Compilation indicates the scope graph is being built for compilation of code
 	// and therefore should not process the remaining phases if any errors occur.
-	Compilation BuildTarget = "compilation"
+	Compilation = BuildTarget{"compilation", false, false, false}
 
 	// Tooling indicates the scope graph is being built for IDE or other forms of tooling,
 	// and that a partially valid graph should be returned.
-	Tooling BuildTarget = "tooling"
+	Tooling = BuildTarget{"tooling", true, true, true}
 )
 
 // Config defines the configuration for scoping.
@@ -162,13 +167,13 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 		Entrypoint:                config.Entrypoint,
 		PathLoader:                config.PathLoader,
 		VCSDevelopmentDirectories: config.VCSDevelopmentDirectories,
-		AlwaysValidate:            config.Target == Tooling,
-		SkipVCSRefresh:            config.Target == Tooling,
+		AlwaysValidate:            config.Target.alwaysValidate,
+		SkipVCSRefresh:            config.Target.skipVCSRefresh,
 		SourceHandlers:            sourceHandlers,
 	})
 
 	loaderResult := loader.Load(config.Libraries...)
-	if !loaderResult.Status && config.Target != Tooling {
+	if !loaderResult.Status && !config.Target.continueWithErrors {
 		return Result{
 			Status:   false,
 			Errors:   loaderResult.Errors,
@@ -180,7 +185,7 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 	resolver := typerefresolver.NewResolver(sourcegraph)
 	srgConstructor := srgtc.GetConstructorWithResolver(sourcegraph, resolver)
 	typeResult := typegraph.BuildTypeGraph(sourcegraph.Graph, webidl.TypeConstructor(), srgConstructor)
-	if !typeResult.Status && config.Target != Tooling {
+	if !typeResult.Status && !config.Target.continueWithErrors {
 		return Result{
 			Status:   false,
 			Errors:   combineErrors(loaderResult.Errors, typeResult.Errors),
