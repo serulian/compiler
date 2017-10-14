@@ -273,16 +273,11 @@ func (sg *ScopeGraph) BuildTransientScope(transientNode compilergraph.GraphNode,
 	builder := newScopeBuilder(sg)
 	defer builder.modifier.Close()
 
-	// TODO: Change these types into interfaces and use no-op implementations here as performance
-	// improvement.
-	staticDependencyCollector := newStaticDependencyCollector()
-	dynamicDependencyCollector := newDynamicDependencyCollector()
-
 	context := scopeContext{
 		parentImplemented:          parentImplementable.GraphNode,
 		rootNode:                   parentImplementable.GraphNode,
-		staticDependencyCollector:  staticDependencyCollector,
-		dynamicDependencyCollector: dynamicDependencyCollector,
+		staticDependencyCollector:  &noopStaticDependencyCollector{},
+		dynamicDependencyCollector: &noopDynamicDependencyCollector{},
 		rootLabelSet:               newLabelSet(),
 	}
 
