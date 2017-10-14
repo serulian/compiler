@@ -7,6 +7,7 @@
 package grok
 
 import (
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/packageloader"
 
@@ -63,14 +64,34 @@ func (g *Groker) GetHandle() (Handle, error) {
 }
 
 // GetHandleWithOption returns a handle for querying the Grok toolkit.
-func (g *Groker) GetHandleWithOption(freshnessOption HandleFreshnessOption) (Handle, error) {
+func (g *Groker) GetHandleWithOption(freshnessOption HandleFreshnessOption, pathFilters ...compilercommon.InputSource) (Handle, error) {
+	pathFiltersMap := map[compilercommon.InputSource]bool{}
+	if len(pathFilters) > 0 {
+		for _, path := range pathFilters {
+			pathFiltersMap[path] = true
+		}
+	}
+
 	// If there is a cached handle, return it if nothing has changed.
 	// TODO: Support partial re-build here once supported by the rest of the pipeline.
 	currentHandle := g.currentHandle
 	if currentHandle != nil {
 		handle := *currentHandle
 		if freshnessOption == HandleAllowStale {
-			return handle, nil
+			var allPathsFound = true
+			if len(pathFilters) > 0 && len(handle.pathFiltersMap) > 0 {
+				// Make sure the paths specified are in the handle.
+				for _, path := range pathFilters {
+					if _, ok := handle.pathFiltersMap[path]; !ok {
+						allPathsFound = false
+						break
+					}
+				}
+			}
+
+			if allPathsFound {
+				return handle, nil
+			}
 		}
 
 		modified, err := handle.scopeResult.SourceTracker.ModifiedSourcePaths()
@@ -80,7 +101,7 @@ func (g *Groker) GetHandleWithOption(freshnessOption HandleFreshnessOption) (Han
 	}
 
 	// Otherwise, rebuild the graph and cache it.
-	result, err := g.refresh()
+	result, err := g.refresh(pathFiltersMap)
 	if err != nil {
 		return Handle{}, err
 	}
@@ -90,6 +111,7 @@ func (g *Groker) GetHandleWithOption(freshnessOption HandleFreshnessOption) (Han
 		structureFinder:    result.Graph.SourceGraph().NewSourceStructureFinder(),
 		groker:             g,
 		importInspectCache: cmap.New(),
+		pathFiltersMap:     pathFiltersMap,
 	}
 
 	g.currentHandle = &newHandle
@@ -98,13 +120,21 @@ func (g *Groker) GetHandleWithOption(freshnessOption HandleFreshnessOption) (Han
 
 // refresh causes the Groker to perform a full refresh of the source, starting at the
 // root source file.
-func (g *Groker) refresh() (scopegraph.Result, error) {
+func (g *Groker) refresh(pathFilters map[compilercommon.InputSource]bool) (scopegraph.Result, error) {
+	var scopeFilter scopegraph.ScopeFilter
+	if len(pathFilters) > 0 {
+		scopeFilter = func(path compilercommon.InputSource) bool {
+			return pathFilters[path]
+		}
+	}
+
 	config := scopegraph.Config{
 		Entrypoint:                g.entrypoint,
 		VCSDevelopmentDirectories: g.vcsDevelopmentDirectories,
 		Libraries:                 g.libraries,
 		Target:                    scopegraph.Tooling,
 		PathLoader:                g.pathLoader,
+		ScopeFilter:               scopeFilter,
 	}
 
 	result, err := scopegraph.ParseAndBuildScopeGraphWithConfig(config)

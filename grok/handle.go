@@ -28,6 +28,9 @@ type Handle struct {
 	// importInspectCache is a cache containing the import inspection information, indexed
 	// by import source.
 	importInspectCache cmap.ConcurrentMap
+
+	// pathFiltersMap defines (if not empty), the set of paths for which scoping was filtered.
+	pathFiltersMap map[compilercommon.InputSource]bool
 }
 
 // IsCompilable returns true if the graph referred to by Grok is fully valid, containing

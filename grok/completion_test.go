@@ -207,7 +207,7 @@ func TestGrokCompletion(t *testing.T) {
 	for _, grokCompletionTest := range grokCompletionTests {
 		testSourcePath := "tests/" + grokCompletionTest.name + "/" + grokCompletionTest.name + ".seru"
 		groker := NewGroker(testSourcePath, []string{}, []packageloader.Library{packageloader.Library{TESTLIB_PATH, false, "", "testcore"}})
-		handle, err := groker.GetHandle()
+		handle, err := groker.GetHandleWithOption(HandleMustBeFresh, compilercommon.InputSource(testSourcePath))
 
 		// Ensure we have a valid groker.
 		if !assert.Nil(t, err, "Expected no error for test %s", grokCompletionTest.name) {
