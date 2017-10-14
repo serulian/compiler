@@ -1,0 +1,3 @@
+function<int> DoSomething(someParam string) {
+    return /* len */(someParam.Length)
+}

@@ -75,20 +75,24 @@ type Result struct {
 
 // BuildTarget defines the target of the scoping being performed.
 type BuildTarget struct {
-	id                 string
-	alwaysValidate     bool
-	skipVCSRefresh     bool
-	continueWithErrors bool
+	id                       string
+	alwaysValidate           bool
+	skipVCSRefresh           bool
+	continueWithErrors       bool
+	labelEntrypointPromising bool
 }
+
+// ScopeFilter defines a filtering function for only scoping certain nodes in the SRG.
+type ScopeFilter func(inputSource compilercommon.InputSource) bool
 
 var (
 	// Compilation indicates the scope graph is being built for compilation of code
 	// and therefore should not process the remaining phases if any errors occur.
-	Compilation = BuildTarget{"compilation", false, false, false}
+	Compilation = BuildTarget{"compilation", false, false, false, true}
 
 	// Tooling indicates the scope graph is being built for IDE or other forms of tooling,
 	// and that a partially valid graph should be returned.
-	Tooling = BuildTarget{"tooling", true, true, true}
+	Tooling = BuildTarget{"tooling", true, true, true, false}
 )
 
 // Config defines the configuration for scoping.
@@ -108,6 +112,10 @@ type Config struct {
 
 	// PathLoader defines the path loader to use when parsing.
 	PathLoader packageloader.PathLoader
+
+	// ScopeFilter defines the filter, if any, to use when scoping. If specified, only those entrypoints
+	// for which the filter returns true, will be scoped.
+	ScopeFilter ScopeFilter
 }
 
 // ParseAndBuildScopeGraph conducts full parsing, type graph construction and scoping for the project
@@ -197,7 +205,7 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 	resolver.FreezeCache()
 
 	// Construct the scope graph.
-	scopeResult := buildScopeGraphWithResolver(sourcegraph, typeResult.Graph, integrations, resolver, loader)
+	scopeResult := performConstruction(config.Target, sourcegraph, typeResult.Graph, integrations, resolver, loader, config.ScopeFilter)
 	return Result{
 		Status:        scopeResult.Status && typeResult.Status && loaderResult.Status,
 		Errors:        combineErrors(loaderResult.Errors, typeResult.Errors, scopeResult.Errors),
