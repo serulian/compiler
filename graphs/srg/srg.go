@@ -15,6 +15,8 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/parser"
+
+	cmap "github.com/streamrail/concurrent-map"
 )
 
 var _ = fmt.Print
@@ -35,6 +37,8 @@ type SRG struct {
 
 	aliasMap      map[string]SRGType                       // Map of aliased types.
 	modulePathMap map[compilercommon.InputSource]SRGModule // Map of modules by path.
+
+	moduleTypeCache cmap.ConcurrentMap // Caching map for lookup of module types
 }
 
 // NewSRG returns a new SRG for populating the graph with parsed source.
@@ -45,6 +49,8 @@ func NewSRG(graph *compilergraph.SerulianGraph) *SRG {
 
 		aliasMap:      map[string]SRGType{},
 		modulePathMap: nil,
+
+		moduleTypeCache: cmap.New(),
 	}
 
 	return g
