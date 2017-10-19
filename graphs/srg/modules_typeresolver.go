@@ -32,9 +32,26 @@ func (m SRGModule) ResolveType(path string, option ModuleResolutionOption) (Type
 	return TypeResolutionResult{}, false
 }
 
+type trrCache struct {
+	result TypeResolutionResult
+	ok     bool
+}
+
 // ResolveTypePath attempts to resolve the type at the given path under this module and its
 // imports.
 func (m SRGModule) ResolveTypePath(path string) (TypeResolutionResult, bool) {
+	cacheKey := string(m.InputSource()) + ":" + path
+	if foundType, ok := m.srg.moduleTypeCache.Get(cacheKey); ok {
+		cached := foundType.(trrCache)
+		return cached.result, cached.ok
+	}
+
+	resolved, ok := m.resolveTypePathNoCaching(path)
+	m.srg.moduleTypeCache.Set(cacheKey, trrCache{resolved, ok})
+	return resolved, ok
+}
+
+func (m SRGModule) resolveTypePathNoCaching(path string) (TypeResolutionResult, bool) {
 	pieces := strings.Split(path, ".")
 
 	if len(pieces) < 1 || len(pieces) > 2 {
