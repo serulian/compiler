@@ -1,9 +1,11 @@
 # Serulian language release tool
 #
-# USAGE: Run from the *root directory* of the `compiler` repository
+# USAGE: Run from the *root directory* of the `compiler` repository:
+# ./tools/release.sh v1.0.0 {github-api-token}
 #
-# NOTE: The `corelib` and `serulian-langserver` repositories must be up-to-date and checked out
-# under the same directory as `compiler` for this script to function.
+# NOTE: The `corelib`, `serulian-langserver` and `homebrew-serulian` repositories must
+# be up-to-date and checked out under the same directory as `compiler` for this script
+# to function.
 #
 # REQUIREMENTS:
 #  - git
@@ -32,6 +34,7 @@ check_dep() {
 
 cut_release() {
   cd ../$1
+  git checkout master
   git pull
 
   attach=""
@@ -52,7 +55,7 @@ cut_release() {
   releasenotes="$versionwithv.notes.md"
 
   github_changelog_generator -u serulian -p $1 --token=$token
-  github_changelog_generator -u serulian -p $1 --token=$token --between-tags $versionwithv --no-unreleased  --header-label "Release notes" --output $releasenotes
+  github_changelog_generator -u serulian -p $1 --token=$token --between-tags $versionwithv --no-unreleased  --header-label "Version $versionwithv" --output $releasenotes
 
   $editor CHANGELOG.md
   $editor $releasenotes
@@ -67,7 +70,23 @@ cut_release() {
 
   echo ""
   echo ""
-  exit
+}
+
+update_homebrew() {
+  cd ../homebrew-serulian
+  git checkout master
+  git pull
+
+  echo ">> Updating homebrew formula"
+
+  previous_version_with_quotes=`grep "version \"*\"" serulian.rb | awk '{print $2}'`
+  previous_version=${previous_version_with_quotes%\"}
+  previous_version=${previous_version#\"}
+
+  sed -i '' "s/$previous_version/$versionwithv/" serulian.rb
+  git add serulian.rb
+  git commit -m "Update to toolkit version $versionwithv"
+  git push
 }
 
 check_dep "git"
@@ -75,6 +94,9 @@ check_dep "github_changelog_generator"
 check_dep "make"
 check_dep "hub"
 check_dep "go"
+check_dep "sed"
+check_dep "grep"
+check_dep "awk"
 
 version="$1"
 if [[ -z "$version" ]] ; then
@@ -82,7 +104,10 @@ if [[ -z "$version" ]] ; then
   exit 1
 fi
 
-versionwithv="v$version"
+versionwithv="$version"
+if [[ $version != "v"* ]]; then
+  versionwithv="v$version"
+fi
 
 token="$2"
 if [[ -z "$token" ]] ; then
@@ -100,7 +125,9 @@ editor=${EDITOR:-emacs}
 check_repo "corelib"
 check_repo "compiler"
 check_repo "serulian-langserver"
+check_repo "homebrew-serulian"
 
 cut_release "corelib" false
 cut_release "compiler" true
 cut_release "serulian-langserver" true
+update_homebrew
