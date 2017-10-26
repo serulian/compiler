@@ -17,7 +17,7 @@ import (
 //   github.com/some/project:somebranchorcommit
 //   github.com/some/project@sometag
 //   github.com/some/project//somesubdir@sometag
-const vcsPackagePathRegex = "^(([a-zA-Z0-9\\._-]+)(/([a-zA-Z0-9\\._-])+)*)(//([^@:]+))?((@|:)([\\.a-zA-Z0-9_-]+))?$"
+const vcsPackagePathRegex = "^(([a-zA-Z0-9\\._-]+)(/([a-zA-Z0-9\\._-])+)*)(//([^@:]+))?((@|:)([\\.a-zA-Z0-9_\\+-]+))?$"
 
 // vcsPackagePath holds information about a package located in a VCS.
 type vcsPackagePath struct {
