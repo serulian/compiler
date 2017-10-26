@@ -168,6 +168,7 @@ func (p Pather) GetRelativeModulePath(module typegraph.TGModule) string {
 }
 
 var allowedModulePathCharacters, _ = regexp.Compile("[^a-zA-Z_0-9\\$\\.]")
+var allowedPathPartCharacters, _ = regexp.Compile("[^a-zA-Z_0-9\\$]")
 
 func normalizeModulePath(rel string) string {
 	if rel == "" {
@@ -204,6 +205,8 @@ func normalizeModulePath(rel string) string {
 			newPart = "m$" + part
 		}
 
+		// Ensure any non-identifier pieces are replaced with a dash.
+		newPart = allowedPathPartCharacters.ReplaceAllLiteralString(newPart, "_")
 		updatedParts = append(updatedParts, newPart)
 	}
 

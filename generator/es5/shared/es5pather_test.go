@@ -27,6 +27,9 @@ var normalizeTests = []normalizeTest{
 	normalizeTest{"123/456/789", "m$123.m$456.m$789"},
 	normalizeTest{"foo/../bar", "foo.__bar"},
 	normalizeTest{"../../bar", "____bar"},
+	normalizeTest{"v0.0.1/bar", "v0_0_1.bar"},
+	normalizeTest{"/v0.0.1/bar", "v0_0_1.bar"},
+	normalizeTest{"/*.0.1/bar", "m$__0_1.bar"},
 }
 
 func TestNormalizeModulePath(t *testing.T) {
