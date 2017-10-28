@@ -25,13 +25,14 @@ type GraphLayer struct {
 	cayleyStore       *cayley.Handle // Handle to the cayley store.
 	nodeKindPredicate Predicate      // Name of the predicate for representing the kind of a node in this layer.
 	nodeKindEnum      TaggedValue    // Tagged value type that is the enum of possible node kinds.
+	isFrozen          bool           // Whether the layer is frozen. Once frozen, a layer cannot be modified.
 }
 
 // NewGraphLayer returns a new graph layer of the given kind.
-func (sg *SerulianGraph) NewGraphLayer(uniqueId string, nodeKindEnum TaggedValue) *GraphLayer {
+func (sg *SerulianGraph) NewGraphLayer(uniqueID string, nodeKindEnum TaggedValue) *GraphLayer {
 	return &GraphLayer{
 		id:                compilerutil.NewUniqueId(),
-		prefix:            uniqueId,
+		prefix:            uniqueID,
 		cayleyStore:       sg.cayleyStore,
 		nodeKindPredicate: "node-kind",
 		nodeKindEnum:      nodeKindEnum,
@@ -40,27 +41,41 @@ func (sg *SerulianGraph) NewGraphLayer(uniqueId string, nodeKindEnum TaggedValue
 
 // NewModifier returns a new layer modifier for modifying the graph.
 func (gl *GraphLayer) NewModifier() GraphLayerModifier {
+	if gl.isFrozen {
+		panic("Cannot modify a frozen graph layer")
+	}
+
 	return gl.createNewModifier()
 }
 
+// Freeze freezes the layer, preventing any further modification.
+func (gl *GraphLayer) Freeze() {
+	gl.isFrozen = true
+}
+
+// Unfreeze unfreezes the layer, allowing for additional modification.
+func (gl *GraphLayer) Unfreeze() {
+	gl.isFrozen = false
+}
+
 // GetNode returns a node found in the graph layer.
-func (gl *GraphLayer) GetNode(nodeId GraphNodeId) GraphNode {
-	result, found := gl.TryGetNode(nodeId)
+func (gl *GraphLayer) GetNode(nodeID GraphNodeId) GraphNode {
+	result, found := gl.TryGetNode(nodeID)
 	if !found {
-		panic(fmt.Sprintf("Unknown node %s in layer %s (%s)", nodeId, gl.prefix, gl.id))
+		panic(fmt.Sprintf("Unknown node %s in layer %s (%s)", nodeID, gl.prefix, gl.id))
 	}
 	return result
 }
 
 // TryGetNode tries to return a node found in the graph layer.
-func (gl *GraphLayer) TryGetNode(nodeId GraphNodeId) (GraphNode, bool) {
+func (gl *GraphLayer) TryGetNode(nodeID GraphNodeId) (GraphNode, bool) {
 	// Note: For efficiency reasons related to the overhead of constructing Cayley iterators,
 	// we instead perform the lookup of the node directly off of the memstore's QuadIterator.
 	// This code was originally:
-	//	return gl.StartQuery(nodeId).TryGetNode()
+	//	return gl.StartQuery(nodeID).TryGetNode()
 
 	// Lookup an iterator of all quads with the node's ID as a subject.
-	subjectValue := gl.cayleyStore.ValueOf(nodeIdToValue(nodeId))
+	subjectValue := gl.cayleyStore.ValueOf(nodeIdToValue(nodeID))
 	if it, ok := gl.cayleyStore.QuadIterator(quad.Subject, subjectValue).(*memstore.Iterator); ok {
 		// Find a node with a predicate matching the prefixed "kind" predicate for the layer, which
 		// indicates this is a node in this layer.
@@ -69,7 +84,7 @@ func (gl *GraphLayer) TryGetNode(nodeId GraphNodeId) (GraphNode, bool) {
 		for it.Next() {
 			quad := gl.cayleyStore.Quad(it.Result())
 			if quad.Predicate == fullKindPredicate {
-				return GraphNode{GraphNodeId(nodeId), quad.Object, gl}, true
+				return GraphNode{GraphNodeId(nodeID), quad.Object, gl}, true
 			}
 		}
 	}
@@ -112,14 +127,14 @@ outer:
 		workList = workList[1:]
 
 		// Skip this node if we have seen it already. This prevents cycles from infinitely looping.
-		currentId := currentResult.Node.NodeId
-		if _, ok := encountered[currentId]; ok {
+		currentID := currentResult.Node.NodeId
+		if _, ok := encountered[currentID]; ok {
 			continue
 		}
-		encountered[currentId] = true
+		encountered[currentID] = true
 
 		// Lookup all quads in the system from the current node, outward.
-		subjectValue := gl.cayleyStore.ValueOf(nodeIdToValue(currentId))
+		subjectValue := gl.cayleyStore.ValueOf(nodeIdToValue(currentID))
 		it := gl.cayleyStore.QuadIterator(quad.Subject, subjectValue)
 
 		var nextWorkList = make([]*WalkResult, 0)
@@ -135,15 +150,15 @@ outer:
 
 			// Try to retrieve the object as a node. If found, then we have another step in the walk.
 			// Otherwise, we have a string predicate value.
-			_, isPossibleNodeId := currentQuad.Object.(quad.Raw)
+			_, isPossibleNodeID := currentQuad.Object.(quad.Raw)
 			found := false
 			targetNode := GraphNode{}
 
-			if isPossibleNodeId {
+			if isPossibleNodeID {
 				targetNode, found = gl.TryGetNode(valueToNodeId(currentQuad.Object))
 			}
 
-			if isPossibleNodeId && found {
+			if isPossibleNodeID && found {
 				nextWorkList = append(nextWorkList, &WalkResult{&currentResult.Node, predicate, targetNode, map[string]string{}})
 			} else {
 				// This is a value predicate.
@@ -218,14 +233,14 @@ func (gl *GraphLayer) getPrefixedPredicates(predicates ...Predicate) []interface
 func (gl *GraphLayer) getPredicatesListForDebugging(graphNode GraphNode) []string {
 	var predicates = make([]string, 0)
 
-	nodeIdValue := gl.cayleyStore.ValueOf(nodeIdToValue(graphNode.NodeId))
-	iit := gl.cayleyStore.QuadIterator(quad.Subject, nodeIdValue)
+	nodeIDValue := gl.cayleyStore.ValueOf(nodeIdToValue(graphNode.NodeId))
+	iit := gl.cayleyStore.QuadIterator(quad.Subject, nodeIDValue)
 	for iit.Next() {
 		quad := gl.cayleyStore.Quad(iit.Result())
 		predicates = append(predicates, fmt.Sprintf("Outgoing predicate: %v => %v", quad.Predicate, quad.Object))
 	}
 
-	oit := gl.cayleyStore.QuadIterator(quad.Object, nodeIdValue)
+	oit := gl.cayleyStore.QuadIterator(quad.Object, nodeIDValue)
 	for oit.Next() {
 		quad := gl.cayleyStore.Quad(oit.Result())
 		predicates = append(predicates, fmt.Sprintf("Incoming predicate: %v <= %v", quad.Predicate, quad.Subject))
