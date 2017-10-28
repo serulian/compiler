@@ -78,7 +78,7 @@ func main() {
 		Short: "Runs the tests defined at the given source path",
 		Long:  "Runs the tests found in any *_test.seru files at the given source path",
 		Run: func(cmd *cobra.Command, args []string) {
-			cmd.UsageFunc()
+			fmt.Println(cmd.UsageString())
 			os.Exit(1)
 		},
 	}

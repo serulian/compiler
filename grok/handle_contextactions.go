@@ -136,11 +136,16 @@ func (gh Handle) GetPositionalActions(sourcePosition compilercommon.SourcePositi
 		}
 
 		// Add an upgrade/update command (if applicable)
+		tags, err := inspectInfo.GetTags()
+		if err != nil {
+			continue
+		}
+
 		updateTitle := "Update"
-		updateVersion, err := compilerutil.SemanticUpdateVersion(parsed.Tag(), inspectInfo.Tags, compilerutil.UpdateVersionMinor)
+		updateVersion, err := compilerutil.SemanticUpdateVersion(parsed.Tag(), tags, compilerutil.UpdateVersionMinor)
 		if err != nil {
 			updateTitle = "Upgrade"
-			updateVersion, err = compilerutil.SemanticUpdateVersion("0.0.0", inspectInfo.Tags, compilerutil.UpdateVersionMajor)
+			updateVersion, err = compilerutil.SemanticUpdateVersion("0.0.0", tags, compilerutil.UpdateVersionMajor)
 		}
 
 		if err == nil && updateVersion != "" && updateVersion != "0.0.0" {
@@ -219,11 +224,21 @@ func (gh Handle) GetContextActions(source compilercommon.InputSource) ([]CodeCon
 			Resolve: func() (ContextOrAction, bool) {
 				inspectInfo, err := gh.getInspectInfo(importSource, source)
 				if err != nil {
-					return ContextOrAction{}, false
+					return ContextOrAction{
+						Range:        sourceRange,
+						Title:        "(Unable to load current commit)",
+						Action:       NoAction,
+						ActionParams: map[string]interface{}{},
+					}, true
 				}
 
 				if len(inspectInfo.CommitSHA) < shortSHALength {
-					return ContextOrAction{}, false
+					return ContextOrAction{
+						Range:        sourceRange,
+						Title:        "(Unable to load current commit)",
+						Action:       NoAction,
+						ActionParams: map[string]interface{}{},
+					}, true
 				}
 
 				return ContextOrAction{

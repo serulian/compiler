@@ -5,7 +5,6 @@
 package compilerutil
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -19,15 +18,14 @@ const RECURSIVE_PATTERN = "/..."
 type PathHandler func(filePath string, info os.FileInfo) (bool, error)
 
 // WalkSourcePath walks the given source path, invoking the given handler for each file
-// found.
-func WalkSourcePath(path string, handler PathHandler, skipDirectories ...string) bool {
-	originalPath := path
+// found. Returns the number of files walked and the error that occurred, if any.
+func WalkSourcePath(path string, handler PathHandler, skipDirectories ...string) (uint, error) {
 	isRecursive := strings.HasSuffix(path, RECURSIVE_PATTERN)
 	if isRecursive {
 		path = path[0 : len(path)-len(RECURSIVE_PATTERN)]
 	}
 
-	var filesFound = 0
+	var filesFound uint
 	walkFn := func(currentPath string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -58,14 +56,5 @@ func WalkSourcePath(path string, handler PathHandler, skipDirectories ...string)
 	}
 
 	err := filepath.Walk(path, walkFn)
-	if err != nil {
-		fmt.Printf("%v\n", err)
-		return false
-	}
-
-	if filesFound == 0 {
-		fmt.Printf("No Serulian matching files found under path %s\n", originalPath)
-	}
-
-	return true
+	return filesFound, err
 }

@@ -185,8 +185,13 @@ func (sf *sourceFormatter) emitModifiedImportSource(info importInfo) bool {
 			return false
 		}
 
+		tags, err := inspectInfo.GetTags()
+		if err != nil {
+			return false
+		}
+
 		// Find the latest *minor* version, and update to it.
-		currentTag, err := compilerutil.SemanticUpdateVersion(parsed.Tag(), inspectInfo.Tags, compilerutil.UpdateVersionMinor)
+		currentTag, err := compilerutil.SemanticUpdateVersion(parsed.Tag(), tags, compilerutil.UpdateVersionMinor)
 		if err != nil {
 			sf.importHandling.logInfo(info.node, "Import '%v' doesn't refer to a semantic version; skipped", info.source)
 			return false
@@ -209,8 +214,13 @@ func (sf *sourceFormatter) emitModifiedImportSource(info importInfo) bool {
 			return false
 		}
 
+		tags, err := inspectInfo.GetTags()
+		if err != nil {
+			return false
+		}
+
 		// Find the latest *major* version, and update to it.
-		currentTag, err := compilerutil.SemanticUpdateVersion(parsed.Tag(), inspectInfo.Tags, compilerutil.UpdateVersionMajor)
+		currentTag, err := compilerutil.SemanticUpdateVersion(parsed.Tag(), tags, compilerutil.UpdateVersionMajor)
 		if err != nil {
 			sf.importHandling.logInfo(info.node, "Import '%v' doesn't refer to a semantic version; skipped", info.source)
 			return false
