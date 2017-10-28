@@ -1,0 +1,8 @@
+function<void> DoSomething(someParam SomeClass) {
+	/// [sp ]
+	someParam
+}
+
+class SomeClass {
+	function<void> SomeFunction() {}
+}

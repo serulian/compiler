@@ -99,17 +99,18 @@ func (gh Handle) addAccessCompletions(node compilergraph.GraphNode, activationSt
 		return
 	}
 
+	// Make sure we're under an implementable, as otherwise we don't have sufficient context.
+	parentImplementable, hasParentImplementable := gh.structureFinder.TryGetContainingImplemented(node)
+	if !hasParentImplementable {
+		return
+	}
+
 	// Parse the activation string into an expression.
 	source := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
 	startRune := node.GetValue(parser.NodePredicateStartRune).Int()
 
 	parsed, ok := gh.scopeResult.Graph.SourceGraph().ParseExpression(expressionString, source, startRune)
 	if !ok {
-		return
-	}
-
-	parentImplementable, hasParentImplementable := gh.structureFinder.TryGetContainingImplemented(node)
-	if !hasParentImplementable {
 		return
 	}
 
