@@ -80,16 +80,6 @@ func (t *TypeGraph) StreamTypeReference(generic TypeReference) TypeReference {
 	return t.NewTypeReference(t.StreamType(), generic)
 }
 
-// ListTypeReference returns a new reference to the list type, with the given generic.
-func (t *TypeGraph) ListTypeReference(generic TypeReference) TypeReference {
-	return t.NewTypeReference(t.ListType(), generic)
-}
-
-// MapTypeReference returns a new reference to the map type, with the given generics.
-func (t *TypeGraph) MapTypeReference(key TypeReference, value TypeReference) TypeReference {
-	return t.NewTypeReference(t.MapType(), key, value)
-}
-
 // MappingTypeReference returns a new reference to the mapoing type, with the given generic.
 func (t *TypeGraph) MappingTypeReference(value TypeReference) TypeReference {
 	return t.NewTypeReference(t.MappingType(), value)
@@ -108,11 +98,6 @@ func (t *TypeGraph) ErrorTypeReference() TypeReference {
 // StringableTypeReference returns a reference to the stringable type.
 func (t *TypeGraph) StringableTypeReference() TypeReference {
 	return t.NewTypeReference(t.StringableType())
-}
-
-// MappableTypeReference returns a reference to the mappable type.
-func (t *TypeGraph) MappableTypeReference() TypeReference {
-	return t.NewTypeReference(t.MappableType())
 }
 
 // StreamableType returns the streamable type.
@@ -145,11 +130,6 @@ func (t *TypeGraph) FunctionType() TGTypeDecl {
 	return t.getGlobalAliasedType("function")
 }
 
-// MappableType returns the mappable type.
-func (t *TypeGraph) MappableType() TGTypeDecl {
-	return t.getGlobalAliasedType("mappable")
-}
-
 // StringableType returns the string type.
 func (t *TypeGraph) StringableType() TGTypeDecl {
 	return t.getGlobalAliasedType("stringable")
@@ -173,16 +153,6 @@ func (t *TypeGraph) FloatType() TGTypeDecl {
 // BoolType returns the boolean type.
 func (t *TypeGraph) BoolType() TGTypeDecl {
 	return t.getGlobalAliasedType("bool")
-}
-
-// ListType returns the list type.
-func (t *TypeGraph) ListType() TGTypeDecl {
-	return t.getGlobalAliasedType("list")
-}
-
-// MapType returns the map type.
-func (t *TypeGraph) MapType() TGTypeDecl {
-	return t.getGlobalAliasedType("map")
 }
 
 // ReleasableType returns the releasable type.
@@ -210,7 +180,7 @@ func (t *TypeGraph) SerializationParserType() TGTypeDecl {
 	return t.getGlobalAliasedType("$parser")
 }
 
-// SerializationStringifierType returns the $stringifier type.
+// SerializationStringifier returns the $stringifier type.
 func (t *TypeGraph) SerializationStringifier() TGTypeDecl {
 	return t.getGlobalAliasedType("$stringifier")
 }
@@ -223,4 +193,20 @@ func (t *TypeGraph) getGlobalAliasedType(alias string) TGTypeDecl {
 	}
 
 	return typeDecl
+}
+
+// validateBasicTypes checks if the expected basic types are found. If not, the error is returned.
+func (t *TypeGraph) validateBasicTypes() error {
+	return t.ensureBasicTypesExist("streamable", "slice", "mapping", "int", "string", "bool", "float64", "releasable", "error", "json", "$intstream", "$parser", "$stringifier")
+}
+
+func (t *TypeGraph) ensureBasicTypesExist(typeAliases ...string) error {
+	for _, typeAlias := range typeAliases {
+		_, found := t.LookupGlobalAliasedType(typeAlias)
+		if !found {
+			return fmt.Errorf("Missing expected basic type %v", typeAlias)
+		}
+	}
+
+	return nil
 }

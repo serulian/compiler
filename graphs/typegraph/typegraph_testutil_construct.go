@@ -22,7 +22,8 @@ func newTestTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGr
 	fsg := graph.NewGraphLayer("test", fakeNodeTypeTagged)
 
 	constructors = append(constructors, &testBasicTypesConstructor{emptyTypeConstructor{}, fsg, nil})
-	return BuildTypeGraph(graph, constructors...).Graph
+	built, _ := BuildTypeGraphWithOption(graph, SkipBasicTypeValidation, constructors...)
+	return built.Graph
 }
 
 // parseTypeReferenceForTesting parses the given human-form of a type reference string into

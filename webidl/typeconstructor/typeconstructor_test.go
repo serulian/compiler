@@ -89,7 +89,6 @@ func TestGraphs(t *testing.T) {
 		}
 
 		testIRG := webidl.NewIRG(graph)
-
 		loader := packageloader.NewPackageLoader(packageloader.NewBasicConfig(graph.RootSourceFilePath, testIRG.SourceHandler()))
 
 		secondaryLibs := make([]packageloader.Library, 0)
@@ -103,7 +102,7 @@ func TestGraphs(t *testing.T) {
 		assert.True(t, irgResult.Status, "Got error for IRG construction %v: %s", test.name, irgResult.Errors)
 
 		// Construct the type graph.
-		result := typegraph.BuildTypeGraph(graph, GetConstructor(testIRG), typegraph.NewBasicTypesConstructor(graph))
+		result, _ := typegraph.BuildTypeGraphWithOption(graph, typegraph.SkipBasicTypeValidation, GetConstructor(testIRG), typegraph.NewBasicTypesConstructor(graph))
 
 		if test.expectedError == "" {
 			// Make sure we had no errors during construction.
