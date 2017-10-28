@@ -148,11 +148,13 @@ func PerformVCSCheckout(vcsPath string, pkgCacheRootPath string, cacheOption VCS
 	return VCSCheckoutResult{fullCacheDirectory, warning, status}, nil
 }
 
+type tagGetter func() ([]string, error)
+
 // InspectInfo holds all the data returned from a call to PerformVCSCheckoutAndInspect.
 type InspectInfo struct {
 	Engine    string
 	CommitSHA string
-	Tags      []string
+	GetTags   tagGetter
 }
 
 // PerformVCSCheckoutAndInspect performs the checkout and updating of the given VCS path and returns
@@ -174,12 +176,11 @@ func PerformVCSCheckoutAndInspect(vcsPath string, pkgCacheRootPath string, cache
 		return InspectInfo{}, "", err
 	}
 
-	tags, err := handler.listTags(result.PackageDirectory)
-	if err != nil {
-		return InspectInfo{}, "", err
+	tagGetter := func() ([]string, error) {
+		return handler.listTags(result.PackageDirectory)
 	}
 
-	return InspectInfo{string(handler.kind), sha, tags}, result.Warning, nil
+	return InspectInfo{string(handler.kind), sha, tagGetter}, result.Warning, nil
 }
 
 // checkCacheAndPull conducts the cache check and necessary pulls.

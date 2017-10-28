@@ -136,11 +136,16 @@ func (gh Handle) GetPositionalActions(sourcePosition compilercommon.SourcePositi
 		}
 
 		// Add an upgrade/update command (if applicable)
+		tags, err := inspectInfo.GetTags()
+		if err != nil {
+			continue
+		}
+
 		updateTitle := "Update"
-		updateVersion, err := compilerutil.SemanticUpdateVersion(parsed.Tag(), inspectInfo.Tags, compilerutil.UpdateVersionMinor)
+		updateVersion, err := compilerutil.SemanticUpdateVersion(parsed.Tag(), tags, compilerutil.UpdateVersionMinor)
 		if err != nil {
 			updateTitle = "Upgrade"
-			updateVersion, err = compilerutil.SemanticUpdateVersion("0.0.0", inspectInfo.Tags, compilerutil.UpdateVersionMajor)
+			updateVersion, err = compilerutil.SemanticUpdateVersion("0.0.0", tags, compilerutil.UpdateVersionMajor)
 		}
 
 		if err == nil && updateVersion != "" && updateVersion != "0.0.0" {
