@@ -23,6 +23,7 @@ func newTestTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGr
 
 	constructors = append(constructors, &testBasicTypesConstructor{emptyTypeConstructor{}, fsg, nil})
 	built, _ := BuildTypeGraphWithOption(graph, SkipBasicTypeValidation, constructors...)
+	built.Graph.layer.Unfreeze()
 	return built.Graph
 }
 
