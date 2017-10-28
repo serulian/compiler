@@ -144,6 +144,24 @@ var grokCompletionTests = []grokCompletionTest{
 		},
 	},
 
+	grokCompletionTest{"tiny",
+		[]grokCompletionSubTest{
+			// Context completions.
+			grokCompletionSubTest{"sp", "someParam.", []expectedCompletion{
+				expectedCompletion{MemberCompletion, "SomeFunction", "SomeFunction", "", "function<void>"},
+			}},
+		},
+	},
+
+	grokCompletionTest{"webidl2",
+		[]grokCompletionSubTest{
+			// Context completions.
+			grokCompletionSubTest{"sp", "someParam.", []expectedCompletion{
+				expectedCompletion{MemberCompletion, "SomeAttribute", "SomeAttribute", "", "Number"},
+			}},
+		},
+	},
+
 	grokCompletionTest{"ops",
 		[]grokCompletionSubTest{
 			// Context completions.
