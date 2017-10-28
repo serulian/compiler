@@ -11,7 +11,11 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
+	"strings"
+
+	"github.com/serulian/compiler/compilerutil"
 
 	"github.com/fatih/color"
 	"github.com/gorilla/mux"
@@ -24,7 +28,13 @@ func Run(addr string, rootSourceFilePath string, debug bool, vcsDevelopmentDirec
 		log.SetOutput(ioutil.Discard)
 	}
 
-	var transaction *developTransaction = nil
+	// Ensure the source file path exists.
+	if _, err := os.Stat(rootSourceFilePath); os.IsNotExist(err) {
+		compilerutil.LogToConsole(compilerutil.ErrorLogLevel, nil, "Could not find source file `%s`", rootSourceFilePath)
+		return false
+	}
+
+	var transaction *developTransaction
 	name := filepath.Base(rootSourceFilePath)
 
 	serveRuntime := func(w http.ResponseWriter, r *http.Request) {
