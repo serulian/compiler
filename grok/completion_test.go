@@ -162,6 +162,13 @@ var grokCompletionTests = []grokCompletionTest{
 		},
 	},
 
+	grokCompletionTest{"missingwebidl",
+		[]grokCompletionSubTest{
+			// Context completions.
+			grokCompletionSubTest{"sp", "someParam.", []expectedCompletion{}},
+		},
+	},
+
 	grokCompletionTest{"ops",
 		[]grokCompletionSubTest{
 			// Context completions.
