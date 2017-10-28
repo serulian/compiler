@@ -66,10 +66,8 @@ var parseExpressionTests = []parseExpressionTest{
 }
 
 func TestParseExpression(t *testing.T) {
-	testSRG := getSRG(t, "tests/basic/basic.seru")
-
 	for index, test := range parseExpressionTests {
-		parsed, ok := testSRG.ParseExpression(test.expressionString, compilercommon.InputSource(test.expressionString), index)
+		parsed, ok := ParseExpression(test.expressionString, compilercommon.InputSource(test.expressionString), index)
 		if !assert.Equal(t, test.isOkay, ok, "Mismatch in success expected for parsing test: %s", test.expressionString) {
 			continue
 		}
