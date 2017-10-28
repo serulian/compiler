@@ -72,8 +72,7 @@ func runTestsViaRunner(runner TestRunner, path string, vcsDevelopmentDirectories
 	// JS at a temporary location and then pass the temporary location to the test
 	// runner.
 	overallSuccess := true
-
-	compilerutil.WalkSourcePath(path, func(currentPath string, info os.FileInfo) (bool, error) {
+	filesWalked, err := compilerutil.WalkSourcePath(path, func(currentPath string, info os.FileInfo) (bool, error) {
 		if !strings.HasSuffix(info.Name(), packageloader.SerulianTestSuffix+parser.SERULIAN_FILE_EXTENSION) {
 			return false, nil
 		}
@@ -83,7 +82,12 @@ func runTestsViaRunner(runner TestRunner, path string, vcsDevelopmentDirectories
 		return true, nil
 	}, packageloader.SerulianPackageDirectory)
 
-	return overallSuccess
+	if filesWalked == 0 {
+		compilerutil.LogToConsole(compilerutil.WarningLogLevel, nil, "No valid test source files found for path `%s`", path)
+		return false
+	}
+
+	return overallSuccess && err == nil
 }
 
 // buildAndRunTests builds the source found at the given path and then runs its tests via the runner.

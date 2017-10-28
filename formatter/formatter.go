@@ -148,13 +148,20 @@ func formatFiles(path string, importHandling importHandlingInfo, debug bool) boo
 		log.SetOutput(ioutil.Discard)
 	}
 
-	return compilerutil.WalkSourcePath(path, func(currentPath string, info os.FileInfo) (bool, error) {
+	filesWalked, err := compilerutil.WalkSourcePath(path, func(currentPath string, info os.FileInfo) (bool, error) {
 		if !strings.HasSuffix(info.Name(), parser.SERULIAN_FILE_EXTENSION) {
 			return false, nil
 		}
 
 		return true, parseAndFormatSourceFile(currentPath, info, importHandling)
 	}, packageloader.SerulianPackageDirectory)
+
+	if filesWalked == 0 {
+		compilerutil.LogToConsole(compilerutil.WarningLogLevel, nil, "No valid source files found for path `%s`", path)
+		return false
+	}
+
+	return err == nil
 }
 
 // parseAndFormatSourceFile parses the source file at the given path (with associated file info),
