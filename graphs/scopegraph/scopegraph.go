@@ -171,6 +171,7 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 		sourceHandlers = append(sourceHandlers, integration.SourceHandler())
 	}
 
+	// Conduct package and library loading.
 	loader := packageloader.NewPackageLoader(packageloader.Config{
 		Entrypoint:                config.Entrypoint,
 		PathLoader:                config.PathLoader,
@@ -181,6 +182,10 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 	})
 
 	loaderResult := loader.Load(config.Libraries...)
+
+	// Freeze the source graph.
+	sourcegraph.Freeze()
+
 	if !loaderResult.Status && !config.Target.continueWithErrors {
 		return Result{
 			Status:   false,
@@ -277,10 +282,7 @@ func (sg *ScopeGraph) MustGetLanguageIntegration(sourceGraphID string) integrati
 // Note that this method should *only* be used for transient nodes (i.e. expressions in something like Grok),
 // and that the scope created will not be saved anywhere once this method returns.
 func (sg *ScopeGraph) BuildTransientScope(transientNode compilergraph.GraphNode, parentImplementable srg.SRGImplementable) (proto.ScopeInfo, bool) {
-	// TODO: maybe skip writing the scope to the graph layer?
-	builder := newScopeBuilder(sg)
-	defer builder.modifier.Close()
-
+	builder := newScopeBuilder(sg, noopScopeApplier{})
 	context := scopeContext{
 		parentImplemented:          parentImplementable.GraphNode,
 		rootNode:                   parentImplementable.GraphNode,

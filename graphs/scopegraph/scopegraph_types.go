@@ -42,9 +42,6 @@ const (
 
 	// The error or warning message on a scope notice node.
 	NodePredicateNoticeMessage = "notice-message"
-
-	// Decorates a *SRG* node with its inferred type.
-	NodePredicateInferredType = "scope-inferred-type"
 )
 
 func (t NodeType) Name() string {

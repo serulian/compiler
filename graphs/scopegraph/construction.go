@@ -29,6 +29,7 @@ func performConstruction(target BuildTarget, srg *srg.SRG, tdg *typegraph.TypeGr
 		integrationsMap[integration.GraphID()] = integration
 	}
 
+	// Build the scope graph, making sure to freeze once complete.
 	scopeGraph := &ScopeGraph{
 		srg:                   srg,
 		tdg:                   tdg,
@@ -39,8 +40,11 @@ func performConstruction(target BuildTarget, srg *srg.SRG, tdg *typegraph.TypeGr
 		dynamicPromisingNames: map[string]bool{},
 		layer: srg.Graph.NewGraphLayer("sig", NodeTypeTagged),
 	}
+	defer scopeGraph.layer.Freeze()
 
-	builder := newScopeBuilder(scopeGraph)
+	// Create a modifier to use for adding the scope created via the builder.
+	modifier := scopeGraph.layer.NewModifier()
+	builder := newScopeBuilder(scopeGraph, concreteScopeApplier{modifier})
 
 	// Find all implicit lambda expressions and infer their argument types.
 	buildImplicitLambdaScopes(builder, filter)
@@ -56,16 +60,65 @@ func performConstruction(target BuildTarget, srg *srg.SRG, tdg *typegraph.TypeGr
 		labelEntrypointPromising(builder, filter)
 	}
 
-	// Close the outstanding modifier.
-	builder.modifier.Close()
+	// Apply the scope changes. We must do this before getScopeWarnings/getScopeErrors to ensure the nodes
+	// are in the graph.
+	modifier.Apply()
 
 	// Collect any errors or warnings that were added.
 	return Result{
 		Status:   builder.Status,
-		Warnings: builder.GetWarnings(),
-		Errors:   builder.GetErrors(),
+		Warnings: scopeGraph.getScopeWarnings(),
+		Errors:   scopeGraph.getScopeErrors(),
 		Graph:    scopeGraph,
 	}
+}
+
+// getScopeWarnings returns the warnings found in the scopegraph.
+func (sg *ScopeGraph) getScopeWarnings() []compilercommon.SourceWarning {
+	var warnings = make([]compilercommon.SourceWarning, 0)
+
+	it := sg.layer.StartQuery().
+		IsKind(NodeTypeWarning).
+		BuildNodeIterator()
+
+	for it.Next() {
+		warningNode := it.Node()
+
+		// Lookup the location of the SRG source node.
+		warningSource := sg.srg.GetNode(warningNode.GetValue(NodePredicateNoticeSource).NodeId())
+		sourceRange, hasSourceRange := sg.srg.SourceRangeOf(warningSource)
+		if hasSourceRange {
+			// Add the error.
+			msg := warningNode.Get(NodePredicateNoticeMessage)
+			warnings = append(warnings, compilercommon.NewSourceWarning(sourceRange, msg))
+		}
+	}
+
+	return warnings
+}
+
+// getScopeErrors returns the errors found in the scopegraph.
+func (sg *ScopeGraph) getScopeErrors() []compilercommon.SourceError {
+	var errors = make([]compilercommon.SourceError, 0)
+
+	it := sg.layer.StartQuery().
+		IsKind(NodeTypeError).
+		BuildNodeIterator()
+
+	for it.Next() {
+		errNode := it.Node()
+
+		// Lookup the location of the SRG source node.
+		errorSource := sg.srg.GetNode(errNode.GetValue(NodePredicateNoticeSource).NodeId())
+		sourceRange, hasSourceRange := sg.srg.SourceRangeOf(errorSource)
+		if hasSourceRange {
+			// Add the error.
+			msg := errNode.Get(NodePredicateNoticeMessage)
+			errors = append(errors, compilercommon.NewSourceError(sourceRange, msg))
+		}
+	}
+
+	return errors
 }
 
 // inferMemberPromising returns the inferred promising state for the given type member. Should
@@ -157,7 +210,6 @@ func buildImplicitLambdaScopes(builder *scopeBuilder, filter ScopeFilter) {
 	}
 
 	lwg.Wait()
-	builder.saveScopes()
 }
 
 func labelEntrypointPromising(builder *scopeBuilder, filter ScopeFilter) {
@@ -182,7 +234,6 @@ func labelEntrypointPromising(builder *scopeBuilder, filter ScopeFilter) {
 	}
 
 	builder.sg.dynamicPromisingNames = labeler.labelEntrypoints()
-	builder.saveScopes()
 }
 
 func scopeEntrypoints(builder *scopeBuilder, filter ScopeFilter) {
@@ -216,7 +267,6 @@ func scopeEntrypoints(builder *scopeBuilder, filter ScopeFilter) {
 	}
 
 	wg.Wait()
-	builder.saveScopes()
 }
 
 func checkInitializationCycles(builder *scopeBuilder, filter ScopeFilter) {
@@ -242,5 +292,4 @@ func checkInitializationCycles(builder *scopeBuilder, filter ScopeFilter) {
 	}
 
 	iwg.Wait()
-	builder.saveScopes()
 }
