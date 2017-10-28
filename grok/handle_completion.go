@@ -108,8 +108,7 @@ func (gh Handle) addAccessCompletions(node compilergraph.GraphNode, activationSt
 	// Parse the activation string into an expression.
 	source := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
 	startRune := node.GetValue(parser.NodePredicateStartRune).Int()
-
-	parsed, ok := gh.scopeResult.Graph.SourceGraph().ParseExpression(expressionString, source, startRune)
+	parsed, ok := srg.ParseExpression(expressionString, source, startRune)
 	if !ok {
 		return
 	}

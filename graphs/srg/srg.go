@@ -63,6 +63,11 @@ func GetUniqueId(srgNode compilergraph.GraphNode) string {
 	return hex.EncodeToString(sha256bytes[:])[0:8]
 }
 
+// Freeze freezes the source graph so that no additional changes can be applied to it.
+func (g *SRG) Freeze() {
+	g.layer.Freeze()
+}
+
 // ResolveAliasedType returns the type with the global alias, if any.
 func (g *SRG) ResolveAliasedType(name string) (SRGType, bool) {
 	aliased, ok := g.aliasMap[name]
@@ -96,28 +101,6 @@ func (g *SRG) SourceRangeOf(node compilergraph.GraphNode) (compilercommon.Source
 
 	source := compilercommon.InputSource(sourcePath)
 	return source.RangeForRunePositions(startRune.Int(), endRune.Int(), g.sourceTracker), true
-}
-
-// ParseExpression parses the given expression string and returns its node. Note that the
-// expression will be added to *its own layer*, which means it will not be accessible from
-// the normal SRG layer.
-func (g *SRG) ParseExpression(expressionString string, source compilercommon.InputSource, startRune int) (compilergraph.GraphNode, bool) {
-	layer := g.Graph.NewGraphLayer("exprlayer", parser.NodeTypeTagged)
-	modifier := layer.NewModifier()
-	defer modifier.Apply()
-
-	astNode, ok := parser.ParseExpression(func(source compilercommon.InputSource, kind parser.NodeType) parser.AstNode {
-		graphNode := modifier.CreateNode(kind)
-		return &srgASTNode{
-			graphNode: graphNode,
-		}
-	}, source, startRune, expressionString)
-
-	if !ok {
-		return compilergraph.GraphNode{}, false
-	}
-
-	return astNode.(*srgASTNode).graphNode.AsNode(), true
 }
 
 // findVariableTypeWithName returns the SRGTypeRef for the declared type of the
