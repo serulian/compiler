@@ -219,11 +219,21 @@ func (gh Handle) GetContextActions(source compilercommon.InputSource) ([]CodeCon
 			Resolve: func() (ContextOrAction, bool) {
 				inspectInfo, err := gh.getInspectInfo(importSource, source)
 				if err != nil {
-					return ContextOrAction{}, false
+					return ContextOrAction{
+						Range:        sourceRange,
+						Title:        "(Unable to load current commit)",
+						Action:       NoAction,
+						ActionParams: map[string]interface{}{},
+					}, true
 				}
 
 				if len(inspectInfo.CommitSHA) < shortSHALength {
-					return ContextOrAction{}, false
+					return ContextOrAction{
+						Range:        sourceRange,
+						Title:        "(Unable to load current commit)",
+						Action:       NoAction,
+						ActionParams: map[string]interface{}{},
+					}, true
 				}
 
 				return ContextOrAction{
