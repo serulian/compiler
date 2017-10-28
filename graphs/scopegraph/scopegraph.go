@@ -192,7 +192,15 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 	// Construct the type graph.
 	resolver := typerefresolver.NewResolver(sourcegraph)
 	srgConstructor := srgtc.GetConstructorWithResolver(sourcegraph, resolver)
-	typeResult := typegraph.BuildTypeGraph(sourcegraph.Graph, webidl.TypeConstructor(), srgConstructor)
+	typeResult, err := typegraph.BuildTypeGraph(sourcegraph.Graph, webidl.TypeConstructor(), srgConstructor)
+	if err != nil {
+		return Result{
+			Status:   false,
+			Errors:   combineErrors(loaderResult.Errors, typeResult.Errors),
+			Warnings: combineWarnings(loaderResult.Warnings, typeResult.Warnings),
+		}, nil
+	}
+
 	if !typeResult.Status && !config.Target.continueWithErrors {
 		return Result{
 			Status:   false,

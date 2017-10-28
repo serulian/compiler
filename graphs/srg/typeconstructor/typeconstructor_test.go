@@ -134,7 +134,7 @@ func TestGraphs(t *testing.T) {
 		}
 
 		// Construct the type graph.
-		result := typegraph.BuildTypeGraph(testSRG.Graph, testIDL.TypeConstructor(), GetConstructor(testSRG))
+		result, _ := typegraph.BuildTypeGraph(testSRG.Graph, testIDL.TypeConstructor(), GetConstructor(testSRG))
 
 		if test.expectedError == "" {
 			// Make sure we had no errors during construction.
@@ -181,7 +181,7 @@ func TestLookupReturnType(t *testing.T) {
 	}
 
 	// Construct the type graph.
-	result := typegraph.BuildTypeGraph(testSRG.Graph, testIDL.TypeConstructor(), GetConstructor(testSRG))
+	result, _ := typegraph.BuildTypeGraph(testSRG.Graph, testIDL.TypeConstructor(), GetConstructor(testSRG))
 	if !assert.True(t, result.Status, "Got error for TypeGraph construction: %v", result.Errors) {
 		return
 	}

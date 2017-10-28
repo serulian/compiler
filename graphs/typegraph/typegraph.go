@@ -39,8 +39,25 @@ type Result struct {
 	Graph    *TypeGraph                     // The constructed type graph.
 }
 
+// ValidationOption is an option for validation of the type graph when its being built.
+type ValidationOption int
+
+const (
+	// ValidateBasicTypes indicates that basic types should be fully validated. This is the
+	// option to use when requesting a type graph that will make use of the basic types.
+	ValidateBasicTypes ValidationOption = iota
+
+	// SkipBasicTypeValidation will skip basic type validation. Should only be used for testing.
+	SkipBasicTypeValidation
+)
+
 // BuildTypeGraph returns a new TypeGraph that is populated from the given constructors.
-func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGraphConstructor) *Result {
+func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGraphConstructor) (*Result, error) {
+	return BuildTypeGraphWithOption(graph, ValidateBasicTypes, constructors...)
+}
+
+// BuildTypeGraphWithOption returns a new TypeGraph that is populated from the given constructors.
+func BuildTypeGraphWithOption(graph *compilergraph.SerulianGraph, validateBasicTypes ValidationOption, constructors ...TypeGraphConstructor) (*Result, error) {
 	//Create the type graph.
 	typeGraph := &TypeGraph{
 		graph:              graph,
@@ -95,6 +112,15 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 		typeGraph.globalAliasedTypes[alias] = typeDecl
 	}
 
+	// Ensure expected basic types exist. They won't if we are in the middle of a load or the corelib
+	// has not been properly added as a library. Since this is a fatal issue, we terminate immediately.
+	if validateBasicTypes == ValidateBasicTypes {
+		berr := typeGraph.validateBasicTypes()
+		if berr != nil {
+			return result, berr
+		}
+	}
+
 	// Annotate all dependencies.
 	for _, constructor := range constructors {
 		modifier := typeGraph.layer.NewModifier()
@@ -115,7 +141,7 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 		constructor.DefineMembers(func(moduleOrTypeSourceNode compilergraph.GraphNode, isOperator bool) *MemberBuilder {
 			typegraphNode := typeGraph.getMatchingTypeGraphNode(moduleOrTypeSourceNode)
 
-			var parent TGTypeOrModule = nil
+			var parent TGTypeOrModule
 			if typegraphNode.Kind() == NodeTypeModule {
 				parent = TGModule{typegraphNode, typeGraph}
 			} else {
@@ -197,7 +223,7 @@ func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGrap
 		result.Errors = append(result.Errors, compilercommon.NewSourceError(sourceRange, msg))
 	}
 
-	return result
+	return result, nil
 }
 
 // GetNode returns the node with the given ID in this layer or panics.
