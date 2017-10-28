@@ -12,10 +12,13 @@ import (
 	"github.com/cayleygraph/cayley/quad"
 )
 
+// GraphNodeInterface defines the interface for a simple graph node, either already existing
+// or being constructed by the modifier.
 type GraphNodeInterface interface {
 	GetNodeId() GraphNodeId
 }
 
+// GraphLayerModifier defines the interface for modifying a graph layer.
 type GraphLayerModifier interface {
 	CreateNode(nodeKind TaggedValue) ModifiableGraphNode
 	Modify(node GraphNode) ModifiableGraphNode
@@ -23,6 +26,7 @@ type GraphLayerModifier interface {
 	Close()
 }
 
+// createNewModifier creates a new, concrete graph modifier.
 func (gl *GraphLayer) createNewModifier() GraphLayerModifier {
 	modifier := &graphLayerModifierStruct{
 		layer:        gl,
@@ -79,10 +83,9 @@ func (gl *graphLayerModifierStruct) Modify(node GraphNode) ModifiableGraphNode {
 // CreateNode will create a new node in the graph layer.
 func (gl *graphLayerModifierStruct) CreateNode(nodeKind TaggedValue) ModifiableGraphNode {
 	// Create the new node.
-	nodeId := compilerutil.NewUniqueId()
-
+	nodeID := compilerutil.NewUniqueId()
 	node := ModifiableGraphNode{
-		NodeId:   GraphNodeId(nodeId),
+		NodeId:   GraphNodeId(nodeID),
 		Kind:     nodeKind,
 		modifier: gl,
 	}
@@ -100,6 +103,10 @@ func (gl *graphLayerModifierStruct) addQuad(quad quad.Quad) {
 
 // Apply applies all changes in the modification transaction to the graph.
 func (gl *graphLayerModifierStruct) Apply() {
+	if gl.layer.isFrozen {
+		panic("Cannot modify a frozen layer")
+	}
+
 	gl.Close()
 	for _, quad := range gl.quads {
 		gl.layer.cayleyStore.AddQuad(quad)
@@ -123,6 +130,7 @@ func (gn ModifiableGraphNode) AsNode() GraphNode {
 	}
 }
 
+// Modifier returns the modifier used to create this node.
 func (gn ModifiableGraphNode) Modifier() GraphLayerModifier {
 	return gn.modifier
 }

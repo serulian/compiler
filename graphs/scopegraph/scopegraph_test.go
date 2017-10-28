@@ -1624,8 +1624,9 @@ func TestGraphs(t *testing.T) {
 				continue
 			}
 
-			assert.Equal(t, 1, len(result.Errors), "Expected 1 error on test %v, found: %v", test.name, result.Errors)
-			assert.Equal(t, test.expectedError, result.Errors[0].Error(), "Error mismatch on test %v", test.name)
+			if assert.Equal(t, 1, len(result.Errors), "Expected 1 error on test %v, found: %v", test.name, result.Errors) {
+				assert.Equal(t, test.expectedError, result.Errors[0].Error(), "Error mismatch on test %v", test.name)
+			}
 			continue
 		} else {
 			if !assert.True(t, result.Status, "Expected success in scoping on test: %v\n%v\n%v", test.name, result.Errors, result.Warnings) {

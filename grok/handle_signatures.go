@@ -7,6 +7,7 @@ package grok
 import (
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
+	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/parser"
 )
@@ -40,6 +41,12 @@ func (gh Handle) GetSignature(activationString string, sourcePosition compilerco
 		return SignatureInformation{}, nil
 	}
 
+	// Make sure we are under an implementable.
+	parentImplementable, hasParentImplementable := gh.structureFinder.TryGetContainingImplemented(node)
+	if !hasParentImplementable {
+		return SignatureInformation{}, nil
+	}
+
 	// Extract the expression over which we are activating and the parameter position.
 	expressionString, signatureIndex, ok := extractCalled(activationString)
 	if !ok {
@@ -49,14 +56,8 @@ func (gh Handle) GetSignature(activationString string, sourcePosition compilerco
 	// Parse the expression string into an expression.
 	source := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
 	startRune := node.GetValue(parser.NodePredicateStartRune).Int()
-
-	parsed, ok := gh.scopeResult.Graph.SourceGraph().ParseExpression(expressionString, source, startRune)
+	parsed, ok := srg.ParseExpression(expressionString, source, startRune)
 	if !ok {
-		return SignatureInformation{}, nil
-	}
-
-	parentImplementable, hasParentImplementable := gh.structureFinder.TryGetContainingImplemented(node)
-	if !hasParentImplementable {
 		return SignatureInformation{}, nil
 	}
 

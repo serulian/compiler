@@ -19,9 +19,9 @@ var _ = fmt.Printf
 func (sb *scopeBuilder) scopeLambdaExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	if _, ok := node.TryGetNode(parser.NodeLambdaExpressionBlock); ok {
 		return sb.scopeFullLambaExpression(node, context)
-	} else {
-		return sb.scopeInlineLambaExpression(node, context)
 	}
+
+	return sb.scopeInlineLambaExpression(node, context)
 }
 
 // scopeFullLambaExpression scopes a fully defined lambda expression node in the SRG.
@@ -187,12 +187,10 @@ func (sb *scopeBuilder) inferLambdaParameterTypes(node compilergraph.GraphNode, 
 			}
 
 			sb.inferredParameterTypes.Set(string(inferenceParameter.NodeId), inferredType)
-			sb.modifier.Modify(inferenceParameter).DecorateWithTagged(NodePredicateInferredType, inferredType)
 		}
 	} else {
 		for _, inferenceParameter := range inferenceParameters {
 			sb.inferredParameterTypes.Set(string(inferenceParameter.NodeId), sb.sg.tdg.AnyTypeReference())
-			sb.modifier.Modify(inferenceParameter).DecorateWithTagged(NodePredicateInferredType, sb.sg.tdg.AnyTypeReference())
 		}
 	}
 }

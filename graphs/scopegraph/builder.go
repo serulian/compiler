@@ -7,9 +7,7 @@ package scopegraph
 import (
 	"bytes"
 	"fmt"
-	"strconv"
 
-	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/typegraph"
@@ -19,43 +17,52 @@ import (
 	cmap "github.com/streamrail/concurrent-map"
 )
 
-// scopeAccessOption defines the kind of access under which the scope
-// exists.
-type scopeAccessOption int
+// scopeBuilderApplier defines an interface for handling how scope is actually applied once
+// constructed.
+type scopeBuilderApplier interface {
+	// NodeScoped is invoked once scope has been built for the given node. Callee's will
+	// typically save the scope, either on the node itself or in a data structure for later
+	// retrieval.
+	NodeScoped(node compilergraph.GraphNode, result proto.ScopeInfo)
 
-const (
-	scopeGetAccess scopeAccessOption = iota
-	scopeSetAccess
-)
+	// DecorateWithSecondaryLabel is invoked by the builder to apply a secondary scoping label to
+	// the given node.
+	DecorateWithSecondaryLabel(node compilergraph.GraphNode, label proto.ScopeLabel)
+
+	// AddErrorForSourceNode is invoked to mark a source node with a scoping error.
+	AddErrorForSourceNode(node compilergraph.GraphNode, message string)
+
+	// AddWarningForSourceNode is invoked to mark a source node with a scoping warning.
+	AddWarningForSourceNode(node compilergraph.GraphNode, message string)
+}
 
 // scopeHandler is a handler function for scoping an SRG node of a particular kind.
 type scopeHandler func(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo
 
 // scopeBuilder defines a type for easy scoping of the SRG.
 type scopeBuilder struct {
-	sg                     *ScopeGraph
+	sg *ScopeGraph
+
 	nodeMap                cmap.ConcurrentMap
-	modifier               compilergraph.GraphLayerModifier
 	inferredParameterTypes cmap.ConcurrentMap
+
+	applier scopeBuilderApplier
 
 	Status bool
 }
 
 // newScopeBuilder returns a new scope builder for the given scope graph.
-func newScopeBuilder(sg *ScopeGraph) *scopeBuilder {
+func newScopeBuilder(sg *ScopeGraph, applier scopeBuilderApplier) *scopeBuilder {
 	return &scopeBuilder{
-		sg:                     sg,
-		nodeMap:                cmap.New(),
-		modifier:               sg.layer.NewModifier(),
-		inferredParameterTypes: cmap.New(),
-		Status:                 true,
-	}
-}
+		sg: sg,
 
-// saveScopes saves all the created scopes to the graph.
-func (sb *scopeBuilder) saveScopes() {
-	sb.modifier.Apply()
-	sb.modifier = sb.sg.layer.NewModifier()
+		nodeMap:                cmap.New(),
+		inferredParameterTypes: cmap.New(),
+
+		applier: applier,
+
+		Status: true,
+	}
 }
 
 // getScopeHandler returns the scope building handler for nodes of the given type.
@@ -387,12 +394,11 @@ func (sb *scopeBuilder) buildScopeWithContext(node compilergraph.GraphNode, cont
 			result.Labels = context.rootLabelSet.AppendLabelsOf(&result).GetLabels()
 		}
 
-		// Add the scope to the map and on the node.
+		// Add the scope to the map.
 		sb.nodeMap.Set(string(node.NodeId), result)
 
-		scopeNode := sb.modifier.CreateNode(NodeTypeResolvedScope)
-		scopeNode.DecorateWithTagged(NodePredicateScopeInfo, &result)
-		scopeNode.Connect(NodePredicateSource, node)
+		// Mark the node as scoped.
+		sb.applier.NodeScoped(node, result)
 
 		resultChan <- result
 	})()
@@ -411,11 +417,11 @@ func (sb *scopeBuilder) checkStaticDependencyCycle(varNode compilergraph.GraphNo
 	encountered.Set(currentDep.GetReferencedNode(), true)
 
 	// Lookup the dependency (which is a type or module member) in the type graph.
-	memberNodeId := compilergraph.GraphNodeId(currentDep.GetReferencedNode())
-	member := sb.sg.tdg.GetTypeOrMember(memberNodeId)
+	memberNodeID := compilergraph.GraphNodeId(currentDep.GetReferencedNode())
+	member := sb.sg.tdg.GetTypeOrMember(memberNodeID)
 
 	// Find the associated source node.
-	sourceNodeId, hasSourceNode := member.SourceNodeId()
+	sourceNodeID, hasSourceNode := member.SourceNodeId()
 	if !hasSourceNode {
 		return true
 	}
@@ -424,7 +430,7 @@ func (sb *scopeBuilder) checkStaticDependencyCycle(varNode compilergraph.GraphNo
 	updatedPath = append(updatedPath, member.(typegraph.TGMember))
 
 	// If we've found the variable itself, then we have a dependency cycle.
-	if sourceNodeId == varNode.GetNodeId() {
+	if sourceNodeID == varNode.GetNodeId() {
 		// Found a cycle.
 		var chain bytes.Buffer
 		chain.WriteString(member.Title())
@@ -444,7 +450,7 @@ func (sb *scopeBuilder) checkStaticDependencyCycle(varNode compilergraph.GraphNo
 	}
 
 	// Lookup the dependency in the SRG, so we can recursively check *its* dependencies.
-	srgNode, hasSRGNode := sb.sg.srg.TryGetNode(sourceNodeId)
+	srgNode, hasSRGNode := sb.sg.srg.TryGetNode(sourceNodeID)
 	if !hasSRGNode {
 		return true
 	}
@@ -462,69 +468,15 @@ func (sb *scopeBuilder) checkStaticDependencyCycle(varNode compilergraph.GraphNo
 
 // decorateWithError decorates an *SRG* node with the specified scope warning.
 func (sb *scopeBuilder) decorateWithWarning(node compilergraph.GraphNode, message string, args ...interface{}) {
-	warningNode := sb.modifier.CreateNode(NodeTypeWarning)
-	warningNode.Decorate(NodePredicateNoticeMessage, fmt.Sprintf(message, args...))
-	warningNode.Connect(NodePredicateNoticeSource, node)
+	sb.applier.AddWarningForSourceNode(node, fmt.Sprintf(message, args...))
 }
 
 // decorateWithError decorates an *SRG* node with the specified scope error.
 func (sb *scopeBuilder) decorateWithError(node compilergraph.GraphNode, message string, args ...interface{}) {
-	errorNode := sb.modifier.CreateNode(NodeTypeError)
-	errorNode.Decorate(NodePredicateNoticeMessage, fmt.Sprintf(message, args...))
-	errorNode.Connect(NodePredicateNoticeSource, node)
+	sb.applier.AddErrorForSourceNode(node, fmt.Sprintf(message, args...))
 }
 
 // decorateWithSecondaryLabel decorates an *SRG* node with a secondary scope label.
 func (sb *scopeBuilder) decorateWithSecondaryLabel(node compilergraph.GraphNode, label proto.ScopeLabel) {
-	labelNode := sb.modifier.CreateNode(NodeTypeSecondaryLabel)
-	labelNode.Decorate(NodePredicateSecondaryLabelValue, strconv.Itoa(int(label)))
-	labelNode.Connect(NodePredicateLabelSource, node)
-}
-
-// GetWarnings returns the warnings created during the build pass.
-func (sb *scopeBuilder) GetWarnings() []compilercommon.SourceWarning {
-	var warnings = make([]compilercommon.SourceWarning, 0)
-
-	it := sb.sg.layer.StartQuery().
-		IsKind(NodeTypeWarning).
-		BuildNodeIterator()
-
-	for it.Next() {
-		warningNode := it.Node()
-
-		// Lookup the location of the SRG source node.
-		warningSource := sb.sg.srg.GetNode(warningNode.GetValue(NodePredicateNoticeSource).NodeId())
-		sourceRange, hasSourceRange := sb.sg.srg.SourceRangeOf(warningSource)
-		if hasSourceRange {
-			// Add the error.
-			msg := warningNode.Get(NodePredicateNoticeMessage)
-			warnings = append(warnings, compilercommon.NewSourceWarning(sourceRange, msg))
-		}
-	}
-
-	return warnings
-}
-
-// GetErrors returns the errors created during the build pass.
-func (sb *scopeBuilder) GetErrors() []compilercommon.SourceError {
-	var errors = make([]compilercommon.SourceError, 0)
-
-	it := sb.sg.layer.StartQuery().
-		IsKind(NodeTypeError).
-		BuildNodeIterator()
-
-	for it.Next() {
-		errNode := it.Node()
-
-		// Lookup the location of the SRG source node.
-		errorSource := sb.sg.srg.GetNode(errNode.GetValue(NodePredicateNoticeSource).NodeId())
-		sourceRange, hasSourceRange := sb.sg.srg.SourceRangeOf(errorSource)
-		if hasSourceRange {
-			// Add the error.
-			msg := errNode.Get(NodePredicateNoticeMessage)
-			errors = append(errors, compilercommon.NewSourceError(sourceRange, msg))
-		}
-	}
-
-	return errors
+	sb.applier.DecorateWithSecondaryLabel(node, label)
 }

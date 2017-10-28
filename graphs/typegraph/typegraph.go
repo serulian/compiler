@@ -66,6 +66,7 @@ func BuildTypeGraphWithOption(graph *compilergraph.SerulianGraph, validateBasicT
 		globalAliasedTypes: map[string]TGTypeDecl{},
 		constructors:       constructors,
 	}
+	defer typeGraph.layer.Freeze()
 
 	// Create a struct to hold the results of the construction.
 	result := &Result{

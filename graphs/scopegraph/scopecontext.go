@@ -10,6 +10,15 @@ import (
 	"github.com/serulian/compiler/graphs/typegraph"
 )
 
+// scopeAccessOption defines the kind of access under which the scope
+// exists.
+type scopeAccessOption int
+
+const (
+	scopeGetAccess scopeAccessOption = iota
+	scopeSetAccess
+)
+
 // scopeContext represents the currently operating context for scoping, allowing for
 // scope-specific overrides of such items as types of expressions.
 type scopeContext struct {
