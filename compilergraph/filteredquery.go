@@ -20,7 +20,7 @@ type FilteredQuery struct {
 }
 
 // BuildNodeIterator returns an iterator over the filtered query.
-func (fq *FilteredQuery) BuildNodeIterator(predicates ...Predicate) NodeIterator {
+func (fq FilteredQuery) BuildNodeIterator(predicates ...Predicate) NodeIterator {
 	// Build an iterator to collect the IDs matching the inner query.
 	it := fq.query.BuildNodeIterator()
 	if !it.Next() {
@@ -41,8 +41,8 @@ func (fq *FilteredQuery) BuildNodeIterator(predicates ...Predicate) NodeIterator
 	// Otherwise, create a new query starting from the nodes found and send it
 	// to the filtering function.
 	fullKindPredicate := fq.query.layer.getPrefixedPredicate(fq.query.layer.nodeKindPredicate)
-	markId := compilerutil.NewUniqueId()
-	subQuery := fq.query.layer.StartQueryFromNodes(nodeIds...).mark(markId).save(fullKindPredicate, markId+"-kind")
+	markID := compilerutil.NewUniqueId()
+	subQuery := fq.query.layer.StartQueryFromNodes(nodeIds...).mark(markID).save(fullKindPredicate, markID+"-kind")
 	filteredQuery := fq.filter(subQuery)
 
 	// Build an iterator over the filtered query.
@@ -54,9 +54,9 @@ func (fq *FilteredQuery) BuildNodeIterator(predicates ...Predicate) NodeIterator
 	// Collect the filtered nodes.
 	var filtered = make([]GraphNode, 0, len(nodeIds))
 	for {
-		nodeId := valueToNodeId(fit.getMarked(markId))
-		kindValue := fit.getMarked(markId + "-kind")
-		filtered = append(filtered, GraphNode{nodeId, kindValue, fq.query.layer})
+		nodeID := valueToNodeId(fit.getMarked(markID))
+		kindValue := fit.getMarked(markID + "-kind")
+		filtered = append(filtered, GraphNode{nodeID, kindValue, fq.query.layer})
 		if !fit.Next() {
 			break
 		}
@@ -66,13 +66,13 @@ func (fq *FilteredQuery) BuildNodeIterator(predicates ...Predicate) NodeIterator
 }
 
 // HasWhere starts a new client query.
-func (fq *FilteredQuery) HasWhere(predicate Predicate, op clientQueryOperation, value interface{}) Query {
+func (fq FilteredQuery) HasWhere(predicate Predicate, op clientQueryOperation, value interface{}) Query {
 	return getClientQuery(fq.query.layer, fq, predicate, op, value)
 }
 
 // TryGetNode executes the query and returns the single node found or false. If there is
 // more than a single node as a result of the query, the first node is returned.
-func (fq *FilteredQuery) TryGetNode() (GraphNode, bool) {
+func (fq FilteredQuery) TryGetNode() (GraphNode, bool) {
 	return tryGetNode(fq.BuildNodeIterator())
 }
 
