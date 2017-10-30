@@ -1759,3 +1759,10 @@ func TestBuildTransientScope(t *testing.T) {
 		}
 	}
 }
+
+func TestBuildWithInvalidTypeGraph(t *testing.T) {
+	// Load the file without a corelib, which should fail.
+	entrypointFile := "tests/transient/transient.seru"
+	_, err := ParseAndBuildScopeGraph(entrypointFile, []string{})
+	assert.NotNil(t, err, "Expected error when constructing the scope graph")
+}

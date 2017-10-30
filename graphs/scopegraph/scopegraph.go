@@ -199,11 +199,7 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 	srgConstructor := srgtc.GetConstructorWithResolver(sourcegraph, resolver)
 	typeResult, err := typegraph.BuildTypeGraph(sourcegraph.Graph, webidl.TypeConstructor(), srgConstructor)
 	if err != nil {
-		return Result{
-			Status:   false,
-			Errors:   combineErrors(loaderResult.Errors, typeResult.Errors),
-			Warnings: combineWarnings(loaderResult.Warnings, typeResult.Warnings),
-		}, nil
+		return Result{}, err
 	}
 
 	if !typeResult.Status && !config.Target.continueWithErrors {
