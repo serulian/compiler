@@ -135,3 +135,40 @@ func TestFilteringViaClientQuery(t *testing.T) {
 	assert.True(t, found, "Expected node")
 	assert.Equal(t, rootNodeTwo.NodeId, result.NodeId, "Expected second node")
 }
+
+func BenchmarkFilteredQuery(b *testing.B) {
+	store, err := cayley.NewMemoryGraph()
+	assert.Nil(b, err, "Could not construct Cayley graph")
+
+	gl := &GraphLayer{
+		id:                compilerutil.NewUniqueId(),
+		prefix:            "testprefix",
+		cayleyStore:       store,
+		nodeKindPredicate: "node-kind",
+		nodeKindEnum:      TestNodeTypeTagged,
+	}
+
+	gm := gl.NewModifier()
+
+	// Add some nodes.
+	for i := 0; i < 50; i++ {
+		rootNode := gm.CreateNode(TestNodeTypeFirst)
+		rootNode.Decorate("is-root", "true")
+
+		childNode := gm.CreateNode(TestNodeTypeSecond)
+		childNode.DecorateWith("child-id", i)
+
+		rootNode.Connect("has-child", childNode)
+	}
+
+	gm.Apply()
+
+	// Find the root node whose child has an ID of 2.
+	filter := func(q GraphQuery) Query {
+		return q.Out("has-child").Has("child-id", 2)
+	}
+
+	for n := 0; n < b.N; n++ {
+		gl.StartQuery().Has("is-root", "true").FilterBy(filter).TryGetNode()
+	}
+}
