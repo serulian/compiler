@@ -1,5 +1,18 @@
 # Change Log
 
+## [v0.0.2](https://github.com/serulian/compiler/tree/v0.0.2) (2017-10-28)
+[Full Changelog](https://github.com/serulian/compiler/compare/v0.0.1...v0.0.2)
+
+**Fixed bugs:**
+
+- Fix panics when using Grok due to concurrent reads and writes [\#260](https://github.com/serulian/compiler/pull/260) ([josephschorr](https://github.com/josephschorr))
+- Various small fixes for discovered bugs [\#257](https://github.com/serulian/compiler/pull/257) ([josephschorr](https://github.com/josephschorr))
+
+**Merged pull requests:**
+
+- Additional testing of completions in Grok [\#259](https://github.com/serulian/compiler/pull/259) ([josephschorr](https://github.com/josephschorr))
+- Add validation of basic types during typegraph construction [\#258](https://github.com/serulian/compiler/pull/258) ([josephschorr](https://github.com/josephschorr))
+
 ## [v0.0.1](https://github.com/serulian/compiler/tree/v0.0.1) (2017-10-26)
 **Implemented enhancements:**
 
