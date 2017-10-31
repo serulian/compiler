@@ -5,9 +5,8 @@
 package compilergraph
 
 import (
-	"github.com/serulian/compiler/compilerutil"
-
 	"github.com/cayleygraph/cayley/quad"
+	uuid "github.com/satori/go.uuid"
 )
 
 // nodeFilter is a filtering function for a graph query.
@@ -41,7 +40,7 @@ func (fq FilteredQuery) BuildNodeIterator(predicates ...Predicate) NodeIterator 
 	// Otherwise, create a new query starting from the nodes found and send it
 	// to the filtering function.
 	fullKindPredicate := fq.query.layer.getPrefixedPredicate(fq.query.layer.nodeKindPredicate)
-	markID := compilerutil.NewUniqueId()
+	markID := uuid.NewV1().String()
 	subQuery := fq.query.layer.StartQueryFromNodes(nodeIds...).mark(markID).save(fullKindPredicate, markID+"-kind")
 	filteredQuery := fq.filter(subQuery)
 
