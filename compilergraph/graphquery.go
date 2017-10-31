@@ -109,8 +109,8 @@ func (gq GraphQuery) IsKind(nodeKinds ...TaggedValue) GraphQuery {
 
 // FilterBy returns a query which further filters the current query, but leaves the
 // virtual "cursor" at the current nodes.
-func (gq GraphQuery) FilterBy(filter nodeFilter) *FilteredQuery {
-	return &FilteredQuery{
+func (gq GraphQuery) FilterBy(filter nodeFilter) FilteredQuery {
+	return FilteredQuery{
 		query:  gq,
 		filter: filter,
 	}
