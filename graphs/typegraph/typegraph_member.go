@@ -325,37 +325,34 @@ func (tn TGMember) Parameters() []TGParameter {
 
 // Parent returns the type or module containing this member.
 func (tn TGMember) Parent() TGTypeOrModule {
-	parentNode := tn.GraphNode.StartQuery().
-		In(NodePredicateMember, NodePredicateTypeOperator).
-		GetNode()
+	parentNode := tn.parent()
 
 	if parentNode.Kind() == NodeTypeModule {
 		return TGModule{parentNode, tn.tdg}
-	} else {
-		return TGTypeDecl{parentNode, tn.tdg}
 	}
+
+	return TGTypeDecl{parentNode, tn.tdg}
+}
+
+func (tn TGMember) parent() compilergraph.GraphNode {
+	parentNode, hasParentNode := tn.GraphNode.TryGetIncomingNode(NodePredicateMember)
+	if hasParentNode {
+		return parentNode
+	}
+
+	parentNode, _ = tn.GraphNode.TryGetIncomingNode(NodePredicateTypeOperator)
+	return parentNode
 }
 
 // ParentType returns the type containing this member, if any.
 func (tn TGMember) ParentType() (TGTypeDecl, bool) {
-	typeNode, hasType := tn.GraphNode.StartQuery().
-		In(NodePredicateMember, NodePredicateTypeOperator).
-		IsKind(TYPE_NODE_TYPES_TAGGED...).
-		TryGetNode()
-
-	if !hasType {
-		return TGTypeDecl{}, false
-	}
-
-	return TGTypeDecl{typeNode, tn.tdg}, true
+	parentNode := tn.parent()
+	return TGTypeDecl{parentNode, tn.tdg}, parentNode.Kind() != NodeTypeModule
 }
 
 // ReturnType returns the return type for this member.
 func (tn TGMember) ReturnType() (TypeReference, bool) {
-	returnNode, found := tn.GraphNode.StartQuery().
-		Out(NodePredicateReturnable).
-		TryGetNode()
-
+	returnNode, found := tn.GraphNode.TryGetNode(NodePredicateReturnable)
 	if !found {
 		return tn.tdg.AnyTypeReference(), false
 	}
