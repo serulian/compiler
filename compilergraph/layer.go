@@ -188,29 +188,19 @@ outer:
 	}
 }
 
+const taggedDelimeter = '|'
+
 // getTaggedKey returns a unique Quad value representing the tagged name and associated value, such
 // that it doesn't conflict with other tagged values in the system with the same data.
 func (gl *GraphLayer) getTaggedKey(value TaggedValue) quad.Value {
-	return taggedValueDataToValue(value.Value() + "|" + value.Name() + "|" + gl.prefix)
+	return taggedValueDataToValue(value.Value() + string(taggedDelimeter) + value.Name() + string(taggedDelimeter) + gl.prefix)
 }
 
 // parseTaggedKey parses an tagged value key (as returned by getTaggedKey) and returns the underlying value.
 func (gl *GraphLayer) parseTaggedKey(value quad.Value, example TaggedValue) interface{} {
 	strValue := valueToTaggedValueData(value)
-	pieces := strings.SplitN(strValue, "|", 3)
-	if len(pieces) != 3 {
-		panic(fmt.Sprintf("Expected 3 pieces in tagged key, found: %v for value '%s'", pieces, strValue))
-	}
-
-	if pieces[2] != gl.prefix {
-		panic(fmt.Sprintf("Expected tagged suffix %s, found: %s", gl.prefix, pieces[2]))
-	}
-
-	if pieces[1] != example.Name() {
-		panic(fmt.Sprintf("Expected tagged key %s, found: %s", example.Name(), pieces[1]))
-	}
-
-	return example.Build(pieces[0])
+	endIndex := strings.IndexByte(strValue, taggedDelimeter)
+	return example.Build(strValue[0:endIndex])
 }
 
 // getPrefixedPredicate returns the given predicate prefixed with the layer prefix.
