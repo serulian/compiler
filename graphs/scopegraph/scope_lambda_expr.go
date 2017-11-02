@@ -39,16 +39,9 @@ func (sb *scopeBuilder) scopeFullLambaExpression(node compilergraph.GraphNode, c
 		returnType = resolvedReturnType
 	}
 
-	// Scope the block. If the function has no defined return type, we use the return type of the block.
-	blockScope := sb.getScopeForPredicate(node, parser.NodeLambdaExpressionBlock, context.withImplemented(node))
-	if !hasReturnType && blockScope.GetIsValid() {
-		returnType = blockScope.ReturnedTypeRef(sb.sg.tdg)
-	}
+	var currentContext = context
+	var parameterTypes = make([]typegraph.TypeReference, 0)
 
-	// Build the function type.
-	var functionType = sb.sg.tdg.FunctionTypeReference(returnType)
-
-	// Add the parameter types.
 	pit := node.StartQuery().
 		Out(parser.NodeLambdaExpressionParameter).
 		BuildNodeIterator()
@@ -64,6 +57,21 @@ func (sb *scopeBuilder) scopeFullLambaExpression(node compilergraph.GraphNode, c
 			return newScope().Invalid().GetScope()
 		}
 
+		parameterTypes = append(parameterTypes, parameterType)
+		currentContext = currentContext.withLocalNamed(pit.Node(), sb)
+	}
+
+	// Scope the block. If the function has no defined return type, we use the return type of the block.
+	blockScope := sb.getScopeForPredicate(node, parser.NodeLambdaExpressionBlock, currentContext.withImplemented(node))
+	if !hasReturnType && blockScope.GetIsValid() {
+		returnType = blockScope.ReturnedTypeRef(sb.sg.tdg)
+	}
+
+	// Build the function type.
+	var functionType = sb.sg.tdg.FunctionTypeReference(returnType)
+
+	// Add the parameter types.
+	for _, parameterType := range parameterTypes {
 		functionType = functionType.WithParameter(parameterType)
 	}
 
@@ -73,9 +81,26 @@ func (sb *scopeBuilder) scopeFullLambaExpression(node compilergraph.GraphNode, c
 // scopeInlineLambaExpression scopes an inline lambda expression node in the SRG.
 func (sb *scopeBuilder) scopeInlineLambaExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	var returnType = sb.sg.tdg.AnyTypeReference()
+	var currentContext = context
+	var parameterTypes = make([]typegraph.TypeReference, 0)
+
+	pit := node.StartQuery().
+		Out(parser.NodeLambdaExpressionInferredParameter).
+		BuildNodeIterator()
+
+	for pit.Next() {
+		parameterType, hasParameterType := sb.inferredParameterTypes.Get(string(pit.Node().NodeId))
+		if hasParameterType {
+			parameterTypes = append(parameterTypes, parameterType.(typegraph.TypeReference))
+		} else {
+			parameterTypes = append(parameterTypes, sb.sg.tdg.AnyTypeReference())
+		}
+
+		currentContext = currentContext.withLocalNamed(pit.Node(), sb)
+	}
 
 	// Scope the lambda's internal expression.
-	exprScope := sb.getScopeForPredicate(node, parser.NodeLambdaExpressionChildExpr, context)
+	exprScope := sb.getScopeForPredicate(node, parser.NodeLambdaExpressionChildExpr, currentContext)
 	if exprScope.GetIsValid() {
 		returnType = exprScope.ResolvedTypeRef(sb.sg.tdg)
 	}
@@ -84,17 +109,8 @@ func (sb *scopeBuilder) scopeInlineLambaExpression(node compilergraph.GraphNode,
 	var functionType = sb.sg.tdg.FunctionTypeReference(returnType)
 
 	// Add the parameter types.
-	pit := node.StartQuery().
-		Out(parser.NodeLambdaExpressionInferredParameter).
-		BuildNodeIterator()
-
-	for pit.Next() {
-		parameterType, hasParameterType := sb.inferredParameterTypes.Get(string(pit.Node().NodeId))
-		if hasParameterType {
-			functionType = functionType.WithParameter(parameterType.(typegraph.TypeReference))
-		} else {
-			functionType = functionType.WithParameter(sb.sg.tdg.AnyTypeReference())
-		}
+	for _, parameterType := range parameterTypes {
+		functionType = functionType.WithParameter(parameterType)
 	}
 
 	return newScope().IsValid(exprScope.GetIsValid()).Resolving(functionType).GetScope()
