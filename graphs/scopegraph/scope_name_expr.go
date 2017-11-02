@@ -43,11 +43,16 @@ func (sb *scopeBuilder) scopeIdentifierExpression(node compilergraph.GraphNode, 
 		return newScope().ForAnonymousScope(sb.sg.tdg).GetScope()
 	}
 
-	// Lookup the name given, starting at the location of the current node.
-	namedScope, rerr := sb.lookupNamedScope(name, node)
-	if rerr != nil {
-		sb.decorateWithError(node, "%v", rerr)
-		return newScope().Invalid().GetScope()
+	// Check the cache.
+	namedScope, found := context.lookupLocalScopeName(name)
+	if !found {
+		// Lookup the name given, starting at the location of the current node.
+		var rerr error
+		namedScope, rerr = sb.lookupNamedScope(name, node)
+		if rerr != nil {
+			sb.decorateWithError(node, "%v", rerr)
+			return newScope().Invalid().GetScope()
+		}
 	}
 
 	// Ensure that the named scope has a valid type.

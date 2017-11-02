@@ -340,13 +340,21 @@ func (sb *scopeBuilder) getScopeForRootNode(rootNode compilergraph.GraphNode) *p
 	staticDependencyCollector := newStaticDependencyCollector()
 	dynamicDependencyCollector := newDynamicDependencyCollector()
 
-	return sb.getScope(rootNode, scopeContext{
+	context := scopeContext{
 		parentImplemented:          rootNode,
 		rootNode:                   rootNode,
 		staticDependencyCollector:  staticDependencyCollector,
 		dynamicDependencyCollector: dynamicDependencyCollector,
 		rootLabelSet:               newLabelSet(),
-	})
+	}
+
+	// Populate the context's name cache with all the parameters, if any.
+	implemented, _ := sb.sg.srg.AsImplementable(rootNode)
+	for _, param := range implemented.Parameters() {
+		context = context.withLocalNamed(param.GraphNode, sb)
+	}
+
+	return sb.getScope(rootNode, context)
 }
 
 // getScopeForPredicate returns the scope for the node found off of the given predice of the given node, building (and waiting) if necessary.
@@ -380,7 +388,7 @@ func (sb *scopeBuilder) getScope(node compilergraph.GraphNode, context scopeCont
 func (sb *scopeBuilder) buildScopeWithContext(node compilergraph.GraphNode, context scopeContext) chan proto.ScopeInfo {
 	// Execute the handler in a gorountine and return the result channel.
 	handler := sb.getScopeHandler(node)
-	resultChan := make(chan proto.ScopeInfo)
+	resultChan := make(chan proto.ScopeInfo, 1)
 	go (func() {
 		result := handler(node, context)
 		if !result.GetIsValid() {

@@ -492,6 +492,12 @@ func (ns SRGNamedScope) ResolveNameUnderScope(name string) (SRGScopeOrImport, bo
 	return SRGNamedScope{moduleOrType.GraphNode, ns.srg}, true
 }
 
+// ScopeNameForNode returns an SRGNamedScope for the given SRG node. Note that the node
+// must be a named node in the SRG or this can cause a panic.
+func (g *SRG) ScopeNameForNode(srgNode compilergraph.GraphNode) SRGNamedScope {
+	return SRGNamedScope{srgNode, g}
+}
+
 // FindReferencesInScope finds all identifier expressions that refer to the given name, under the given
 // scope.
 func (g *SRG) FindReferencesInScope(name string, node compilergraph.GraphNode) compilergraph.NodeIterator {

@@ -173,7 +173,11 @@ func (sb *scopeBuilder) scopeMatchStatement(node compilergraph.GraphNode, contex
 	var isValid = true
 
 	// Lookup the named value, if any.
+	matchContext := context
 	matchNamedValue, hasNamedValue := node.TryGetNode(parser.NodeStatementNamedValue)
+	if hasNamedValue {
+		matchContext = context.withLocalNamed(matchNamedValue, sb)
+	}
 
 	sit := node.StartQuery().
 		Out(parser.NodeMatchStatementCase).
@@ -208,9 +212,9 @@ func (sb *scopeBuilder) scopeMatchStatement(node compilergraph.GraphNode, contex
 
 		// Build the local context for scoping. If this match has an 'as', then its type is overridden
 		// to the match type for each branch.
-		localContext := context
+		localContext := matchContext
 		if hasNamedValue {
-			localContext = context.withTypeOverride(matchNamedValue, matchBranchType)
+			localContext = matchContext.withTypeOverride(matchNamedValue, matchBranchType)
 		}
 
 		// Scope the statement block under the case.
@@ -370,9 +374,15 @@ func (sb *scopeBuilder) scopeNamedValue(node compilergraph.GraphNode, context sc
 
 // scopeWithStatement scopes a with statement in the SRG.
 func (sb *scopeBuilder) scopeWithStatement(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
+	blockContext := context
+	named, hasNamed := node.TryGetNode(parser.NodeStatementNamedValue)
+	if hasNamed {
+		blockContext = blockContext.withLocalNamed(named, sb)
+	}
+
 	// Scope the child block.
 	var valid = true
-	statementBlockScope := sb.getScopeForPredicate(node, parser.NodeWithStatementBlock, context)
+	statementBlockScope := sb.getScopeForPredicate(node, parser.NodeWithStatementBlock, blockContext)
 	if !statementBlockScope.GetIsValid() {
 		valid = false
 	}
@@ -405,7 +415,13 @@ func (sb *scopeBuilder) scopeLoopStatement(node compilergraph.GraphNode, context
 		return newScope().Invalid().GetScope()
 	}
 
-	blockScope := sb.getScope(blockNode, context.withContinuable(node))
+	blockContext := context.withContinuable(node)
+	varNode, hasVar := node.TryGetNode(parser.NodeStatementNamedValue)
+	if hasVar {
+		blockContext = blockContext.withLocalNamed(varNode, sb)
+	}
+
+	blockScope := sb.getScope(blockNode, blockContext)
 
 	// If the loop has no expression, it is most likely an infinite loop, so we know it is valid and
 	// returns whatever the internal type is.
@@ -438,7 +454,6 @@ func (sb *scopeBuilder) scopeLoopStatement(node compilergraph.GraphNode, context
 
 	// If the loop has a variable defined, we'll check above that the loop expression is a Stream or Streamable. Otherwise,
 	// it must be a boolean value.
-	varNode, hasVar := node.TryGetNode(parser.NodeStatementNamedValue)
 	if hasVar {
 		if !sb.getScope(varNode, context).GetIsValid() {
 			return newScope().Invalid().GetScope()
@@ -797,9 +812,10 @@ func (sb *scopeBuilder) scopeStatementBlock(node compilergraph.GraphNode, contex
 	var skipRemaining = false
 	var unreachableWarned = false
 	var labelSet = newLabelSet()
+	var currentContext = context
 
 	for sit.Next() {
-		statementScope := sb.getScope(sit.Node(), context)
+		statementScope := sb.getScope(sit.Node(), currentContext)
 		labelSet.AppendLabelsOf(statementScope)
 
 		if skipRemaining {
@@ -813,6 +829,19 @@ func (sb *scopeBuilder) scopeStatementBlock(node compilergraph.GraphNode, contex
 
 		if !statementScope.GetIsValid() {
 			isValid = false
+		}
+
+		// If the statement is adding a name to the scope, add it to the context's name cache
+		// so that it can be found faster.
+		switch sit.Node().Kind() {
+		case parser.NodeTypeVariableStatement:
+			currentContext = currentContext.withLocalNamed(sit.Node(), sb)
+
+		case parser.NodeTypeResolveStatement:
+			destination, hasDestination := sit.Node().TryGetNode(parser.NodeAssignedDestination)
+			if hasDestination {
+				currentContext = currentContext.withLocalNamed(destination, sb)
+			}
 		}
 
 		returnedType = returnedType.Intersect(statementScope.ReturnedTypeRef(sb.sg.tdg))

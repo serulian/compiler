@@ -6,6 +6,7 @@ package scopegraph
 
 import (
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/typegraph"
 )
@@ -62,6 +63,64 @@ type scopeContext struct {
 	// the `principal` back-reference is available immediately and therefore not breaking type
 	// safety.
 	allowAgentConstructions *map[typegraph.TypeReference]bool
+
+	// localScopeNamesCache is (if not nil) an immutable map of the cached names found in the local
+	// scope. Note that as this is a cache, it is not *guarenteed* to have all local names. It merely
+	// makes looking up of local names that we know to add, much faster.
+	localScopeNamesCache compilerutil.ImmutableMap
+}
+
+// lookupLocalScopeName checks the local name *cache* for the given name returning it if found.
+// If the name is *not* found, callers should still execute the slower path via the SRG, as
+// the cache is not guarenteed to contain all the names. The use of this cache results in
+// significant speedups in scoping, as, at the time it was written, name lookup in the graph
+// is incredibly slow in comparison to a map lookup.
+func (sc scopeContext) lookupLocalScopeName(name string) (namedScopeInfo, bool) {
+	localScopeNamesCache := sc.localScopeNamesCache
+	if localScopeNamesCache == nil {
+		return namedScopeInfo{}, false
+	}
+
+	scope, ok := localScopeNamesCache.Get(name)
+	if !ok {
+		return namedScopeInfo{}, false
+	}
+
+	return scope.(namedScopeInfo), true
+}
+
+// withLocalNamed adds the given named node to the local named cache.
+func (sc scopeContext) withLocalNamed(node compilergraph.GraphNode, builder *scopeBuilder) scopeContext {
+	localScopeNamesCache := sc.localScopeNamesCache
+	if localScopeNamesCache == nil {
+		localScopeNamesCache = compilerutil.NewImmutableMap()
+	}
+
+	scope, err := builder.processSRGNameOrInfo(builder.sg.srg.ScopeNameForNode(node))
+	if err != nil {
+		return sc
+	}
+
+	name, hasName := scope.Name()
+	if !hasName {
+		return sc
+	}
+
+	return scopeContext{
+		rootNode:                   sc.rootNode,
+		staticDependencyCollector:  sc.staticDependencyCollector,
+		dynamicDependencyCollector: sc.dynamicDependencyCollector,
+
+		accessOption:            sc.accessOption,
+		overrideTypes:           sc.overrideTypes,
+		allowAgentConstructions: sc.allowAgentConstructions,
+		parentImplemented:       sc.parentImplemented,
+		parentContinuable:       sc.parentContinuable,
+		parentBreakable:         sc.parentBreakable,
+		rootLabelSet:            sc.rootLabelSet,
+
+		localScopeNamesCache: localScopeNamesCache.Set(name, scope),
+	}
 }
 
 // getParentContainer returns the parent type member, module member or property getter/setter
@@ -122,7 +181,8 @@ func (sc scopeContext) withContinuable(node compilergraph.GraphNode) scopeContex
 		allowAgentConstructions: sc.allowAgentConstructions,
 		parentImplemented:       sc.parentImplemented,
 
-		rootLabelSet: sc.rootLabelSet,
+		rootLabelSet:         sc.rootLabelSet,
+		localScopeNamesCache: sc.localScopeNamesCache,
 
 		parentBreakable:   &node,
 		parentContinuable: &node,
@@ -143,7 +203,8 @@ func (sc scopeContext) withBreakable(node compilergraph.GraphNode) scopeContext 
 		parentImplemented:       sc.parentImplemented,
 		parentContinuable:       sc.parentContinuable,
 
-		rootLabelSet: sc.rootLabelSet,
+		rootLabelSet:         sc.rootLabelSet,
+		localScopeNamesCache: sc.localScopeNamesCache,
 
 		parentBreakable: &node,
 	}
@@ -163,7 +224,8 @@ func (sc scopeContext) withImplemented(node compilergraph.GraphNode) scopeContex
 		parentBreakable:         sc.parentBreakable,
 		parentContinuable:       sc.parentContinuable,
 
-		rootLabelSet: sc.rootLabelSet,
+		rootLabelSet:         sc.rootLabelSet,
+		localScopeNamesCache: sc.localScopeNamesCache,
 
 		parentImplemented: node,
 	}
@@ -182,7 +244,8 @@ func (sc scopeContext) withAccess(access scopeAccessOption) scopeContext {
 		parentBreakable:         sc.parentBreakable,
 		parentContinuable:       sc.parentContinuable,
 
-		rootLabelSet: sc.rootLabelSet,
+		rootLabelSet:         sc.rootLabelSet,
+		localScopeNamesCache: sc.localScopeNamesCache,
 
 		accessOption: access,
 	}
@@ -231,7 +294,8 @@ func (sc scopeContext) withAllowedAgentConstruction(agentType typegraph.TypeRefe
 		parentBreakable:   sc.parentBreakable,
 		parentContinuable: sc.parentContinuable,
 
-		rootLabelSet: sc.rootLabelSet,
+		rootLabelSet:         sc.rootLabelSet,
+		localScopeNamesCache: sc.localScopeNamesCache,
 
 		allowAgentConstructions: &allowAgentConstructions,
 	}
@@ -262,7 +326,8 @@ func (sc scopeContext) withTypeOverride(exprNode compilergraph.GraphNode, typere
 		parentBreakable:         sc.parentBreakable,
 		parentContinuable:       sc.parentContinuable,
 
-		rootLabelSet: sc.rootLabelSet,
+		rootLabelSet:         sc.rootLabelSet,
+		localScopeNamesCache: sc.localScopeNamesCache,
 
 		overrideTypes: &overrideTypes,
 	}
