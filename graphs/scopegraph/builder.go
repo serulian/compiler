@@ -388,7 +388,7 @@ func (sb *scopeBuilder) getScope(node compilergraph.GraphNode, context scopeCont
 func (sb *scopeBuilder) buildScopeWithContext(node compilergraph.GraphNode, context scopeContext) chan proto.ScopeInfo {
 	// Execute the handler in a gorountine and return the result channel.
 	handler := sb.getScopeHandler(node)
-	resultChan := make(chan proto.ScopeInfo)
+	resultChan := make(chan proto.ScopeInfo, 1)
 	go (func() {
 		result := handler(node, context)
 		if !result.GetIsValid() {
