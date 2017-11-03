@@ -1,5 +1,20 @@
 # Change Log
 
+## [v0.1.0](https://github.com/serulian/compiler/tree/v0.1.0) (2017-11-02)
+[Full Changelog](https://github.com/serulian/compiler/compare/v0.0.2...v0.1.0)
+
+**Implemented enhancements:**
+
+- Add a local name cache to significantly speed up scoping, and add some other small optimizations [\#263](https://github.com/serulian/compiler/pull/263) ([josephschorr](https://github.com/josephschorr))
+
+**Fixed bugs:**
+
+- Fix error handling of invalid typegraph construction [\#261](https://github.com/serulian/compiler/pull/261) ([josephschorr](https://github.com/josephschorr))
+
+**Merged pull requests:**
+
+- Small FilteredQuery optimizations [\#262](https://github.com/serulian/compiler/pull/262) ([josephschorr](https://github.com/josephschorr))
+
 ## [v0.0.2](https://github.com/serulian/compiler/tree/v0.0.2) (2017-10-28)
 [Full Changelog](https://github.com/serulian/compiler/compare/v0.0.1...v0.0.2)
 
