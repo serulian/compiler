@@ -1,0 +1,27 @@
+{
+    "Packages": {
+        "test/unexportedtypechanged": {
+            "Kind": "same",
+            "Path": "test/unexportedtypechanged",
+            "ChangeReason": 0,
+            "Types": [
+                {
+                    "Kind": "changed",
+                    "Name": "someClass",
+                    "ChangeReason": 4,
+                    "Members": [
+                        {
+                            "Kind": "changed",
+                            "Name": "new",
+                            "ChangeReason": 32
+                        }
+                    ]
+                }
+            ],
+            "Members": []
+        }
+    },
+    "Filters": [
+        "test/unexportedtypechanged"
+    ]
+}

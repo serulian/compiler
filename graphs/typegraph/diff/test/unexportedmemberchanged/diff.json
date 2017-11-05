@@ -1,0 +1,20 @@
+{
+    "Packages": {
+        "test/unexportedmemberchanged": {
+            "Kind": "same",
+            "Path": "test/unexportedmemberchanged",
+            "ChangeReason": 0,
+            "Types": [],
+            "Members": [
+                {
+                    "Kind": "changed",
+                    "Name": "doSomething",
+                    "ChangeReason": 4
+                }
+            ]
+        }
+    },
+    "Filters": [
+        "test/unexportedmemberchanged"
+    ]
+}

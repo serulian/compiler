@@ -1,0 +1,20 @@
+{
+    "Packages": {
+        "test/nullableparameteradded": {
+            "Kind": "changed",
+            "Path": "test/nullableparameteradded",
+            "ChangeReason": 64,
+            "Types": [],
+            "Members": [
+                {
+                    "Kind": "changed",
+                    "Name": "DoSomething",
+                    "ChangeReason": 8
+                }
+            ]
+        }
+    },
+    "Filters": [
+        "test/nullableparameteradded"
+    ]
+}
