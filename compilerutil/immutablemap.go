@@ -31,7 +31,7 @@ func (i immutableMap) Get(key string) (interface{}, bool) {
 }
 
 func (i immutableMap) Set(key string, value interface{}) ImmutableMap {
-	newMap := map[string]interface{}{}
+	newMap := make(map[string]interface{}, len(i.internalMap))
 	for existingKey, value := range i.internalMap {
 		newMap[existingKey] = value
 	}
