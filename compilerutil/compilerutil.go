@@ -31,7 +31,7 @@ func DCHECK(checker checkFn, failMessage string, args ...interface{}) {
 func ParseFloat(strValue string) float64 {
 	value, err := strconv.ParseFloat(strValue, 64)
 	if err != nil {
-		panic(fmt.Sprintf("Expected numeric value, got: %s", value))
+		panic(fmt.Sprintf("Expected numeric value, got: %v", value))
 	}
 	return value
 }

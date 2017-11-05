@@ -116,7 +116,7 @@ func (sf *sourceFormatter) emitImports(node formatterNode) {
 			kind:     kind,
 			packages: packages,
 
-			sortKey:       fmt.Sprintf("%s/%s/%s/%s/%s/%s/%s/%s", aliasRune, vcsRune, serulianRune, kind, directRune, source, packagesKey),
+			sortKey:       fmt.Sprintf("%v/%v/%v/%v/%v/%v/%v", aliasRune, vcsRune, serulianRune, kind, directRune, source, packagesKey),
 			comparisonKey: kind,
 
 			isVCS:      isVCS,
