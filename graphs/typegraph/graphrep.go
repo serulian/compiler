@@ -17,18 +17,6 @@ import (
 	"github.com/serulian/compiler/graphs/typegraph/proto"
 )
 
-type graphChildRep struct {
-	Predicate string
-	Child     *graphNodeRep
-}
-
-type graphNodeRep struct {
-	Key        string
-	Kind       interface{}
-	Children   map[string]graphChildRep
-	Predicates map[string]string
-}
-
 // GetJSONForm returns this type graph serialized to JSON. *For testing purposes only*.
 func (tg *TypeGraph) GetJSONForm() string {
 	return tg.GetFilteredJSONForm([]string{}, []compilergraph.TaggedValue{})
@@ -159,4 +147,16 @@ func (tg *TypeGraph) GetFilteredJSONForm(pathFilters []string, skipNodeKinds []c
 	// Marshal the tree to JSON.
 	b, _ := json.MarshalIndent(rootReps, "", "    ")
 	return string(b)
+}
+
+type graphChildRep struct {
+	Predicate string
+	Child     *graphNodeRep
+}
+
+type graphNodeRep struct {
+	Key        string
+	Kind       interface{}
+	Children   map[string]graphChildRep
+	Predicates map[string]string
 }

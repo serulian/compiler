@@ -491,8 +491,9 @@ func (tr TypeReference) referenceOrConstraint() TypeReference {
 	}
 
 	referredType := tr.ReferredType()
-	if referredType.TypeKind() == GenericType {
-		return referredType.AsGeneric().Constraint()
+	asGeneric, isGeneric := referredType.AsGeneric()
+	if isGeneric {
+		return asGeneric.Constraint()
 	}
 
 	return tr

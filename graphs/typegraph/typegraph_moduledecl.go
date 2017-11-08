@@ -70,8 +70,8 @@ func (tn TGModule) IsType() bool {
 }
 
 // AsType panics (since module is not a type).
-func (tn TGModule) AsType() TGTypeDecl {
-	panic("Module is not a type!")
+func (tn TGModule) AsType() (TGTypeDecl, bool) {
+	return TGTypeDecl{}, false
 }
 
 // ParentModule returns the parent module (which, is this module).

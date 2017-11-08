@@ -39,25 +39,25 @@ type Result struct {
 	Graph    *TypeGraph                     // The constructed type graph.
 }
 
-// ValidationOption is an option for validation of the type graph when its being built.
-type ValidationOption int
+// BuildOption is an option for building of the type graph.
+type BuildOption int
 
 const (
-	// ValidateBasicTypes indicates that basic types should be fully validated. This is the
-	// option to use when requesting a type graph that will make use of the basic types.
-	ValidateBasicTypes ValidationOption = iota
+	// FullBuild indicates that basic types should be fully validated and that the type graph
+	// should be frozen once complete.
+	FullBuild BuildOption = iota
 
-	// SkipBasicTypeValidation will skip basic type validation. Should only be used for testing.
-	SkipBasicTypeValidation
+	// BuildForTesting will skip basic type validation and freezing. Should only be used for testing.
+	BuildForTesting
 )
 
 // BuildTypeGraph returns a new TypeGraph that is populated from the given constructors.
 func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGraphConstructor) (*Result, error) {
-	return BuildTypeGraphWithOption(graph, ValidateBasicTypes, constructors...)
+	return BuildTypeGraphWithOption(graph, FullBuild, constructors...)
 }
 
 // BuildTypeGraphWithOption returns a new TypeGraph that is populated from the given constructors.
-func BuildTypeGraphWithOption(graph *compilergraph.SerulianGraph, validateBasicTypes ValidationOption, constructors ...TypeGraphConstructor) (*Result, error) {
+func BuildTypeGraphWithOption(graph *compilergraph.SerulianGraph, buildOption BuildOption, constructors ...TypeGraphConstructor) (*Result, error) {
 	//Create the type graph.
 	typeGraph := &TypeGraph{
 		graph:              graph,
@@ -66,7 +66,10 @@ func BuildTypeGraphWithOption(graph *compilergraph.SerulianGraph, validateBasicT
 		globalAliasedTypes: map[string]TGTypeDecl{},
 		constructors:       constructors,
 	}
-	defer typeGraph.layer.Freeze()
+
+	if buildOption != BuildForTesting {
+		defer typeGraph.layer.Freeze()
+	}
 
 	// Create a struct to hold the results of the construction.
 	result := &Result{
@@ -115,7 +118,7 @@ func BuildTypeGraphWithOption(graph *compilergraph.SerulianGraph, validateBasicT
 
 	// Ensure expected basic types exist. They won't if we are in the middle of a load or the corelib
 	// has not been properly added as a library. Since this is a fatal issue, we terminate immediately.
-	if validateBasicTypes == ValidateBasicTypes {
+	if buildOption != BuildForTesting {
 		berr := typeGraph.validateBasicTypes()
 		if berr != nil {
 			return result, berr

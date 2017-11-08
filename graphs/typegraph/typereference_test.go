@@ -20,9 +20,7 @@ func toType(tdg *TypeGraph, typeNode compilergraph.ModifiableGraphNode) TGTypeDe
 }
 
 func TestBasicReferenceOperations(t *testing.T) {
-	g, _ := compilergraph.NewGraph("-")
-	testTG := newTestTypeGraph(g)
-
+	testTG := ConstructTypeGraphWithBasicTypes()
 	modifier := testTG.layer.NewModifier()
 
 	newNode := modifier.CreateNode(NodeTypeClass)
@@ -121,9 +119,7 @@ func TestBasicReferenceOperations(t *testing.T) {
 }
 
 func TestReplaceTypeNullable(t *testing.T) {
-	g, _ := compilergraph.NewGraph("-")
-	testTG := newTestTypeGraph(g)
-
+	testTG := ConstructTypeGraphWithBasicTypes()
 	modifier := testTG.layer.NewModifier()
 
 	firstTypeNode := modifier.CreateNode(NodeTypeClass)
@@ -153,9 +149,7 @@ func TestReplaceTypeNullable(t *testing.T) {
 }
 
 func TestReplaceTypeNested(t *testing.T) {
-	g, _ := compilergraph.NewGraph("-")
-	testTG := newTestTypeGraph(g)
-
+	testTG := ConstructTypeGraphWithBasicTypes()
 	modifier := testTG.layer.NewModifier()
 
 	firstTypeNode := modifier.CreateNode(NodeTypeClass)
@@ -187,8 +181,7 @@ func TestReplaceTypeNested(t *testing.T) {
 }
 
 func TestSpecialReferenceOperations(t *testing.T) {
-	g, _ := compilergraph.NewGraph("-")
-	testTG := newTestTypeGraph(g)
+	testTG := ConstructTypeGraphWithBasicTypes()
 
 	anyRef := testTG.AnyTypeReference()
 	assert.True(t, anyRef.IsAny(), "Expected 'any' reference")
@@ -216,8 +209,7 @@ type extractTypeDiff struct {
 }
 
 func TestExtractTypeDiff(t *testing.T) {
-	g, _ := compilergraph.NewGraph("-")
-	testTG := newTestTypeGraph(g)
+	testTG := ConstructTypeGraphWithBasicTypes()
 	modifier := testTG.layer.NewModifier()
 
 	firstTypeNode := modifier.CreateNode(NodeTypeAgent)
@@ -350,67 +342,66 @@ type concreteSubtypeCheckTest struct {
 }
 
 func TestConcreteSubtypes(t *testing.T) {
-	g, _ := compilergraph.NewGraph("-")
-	testConstruction := newTestTypeGraphConstructor(g,
+	testModule := TestModule{
 		"concrete",
-		[]testType{
+		[]TestType{
 			// interface IBasicInterface<T> {
 			//	 function<T> DoSomething()
 			// }
-			testType{"interface", "IBasicInterface", "", []testGeneric{testGeneric{"T", ""}},
-				[]testMember{
-					testMember{FunctionMemberSignature, "DoSomething", "T", []testGeneric{}, []testParam{}},
+			TestType{"interface", "IBasicInterface", "", []TestGeneric{TestGeneric{"T", ""}},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "DoSomething", "T", []TestGeneric{}, []TestParam{}},
 				},
 			},
 
 			// class SomeClass {
 			//   function<int> DoSomething() {}
 			// }
-			testType{"class", "SomeClass", "", []testGeneric{},
-				[]testMember{
-					testMember{FunctionMemberSignature, "DoSomething", "int", []testGeneric{}, []testParam{}},
+			TestType{"class", "SomeClass", "", []TestGeneric{},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "DoSomething", "int", []TestGeneric{}, []TestParam{}},
 				},
 			},
 
 			// class AnotherClass {
 			//   function<bool> DoSomething() {}
 			// }
-			testType{"class", "AnotherClass", "", []testGeneric{},
-				[]testMember{
-					testMember{FunctionMemberSignature, "DoSomething", "bool", []testGeneric{}, []testParam{}},
+			TestType{"class", "AnotherClass", "", []TestGeneric{},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "DoSomething", "bool", []TestGeneric{}, []TestParam{}},
 				},
 			},
 
 			// class ThirdClass {}
-			testType{"class", "ThirdClass", "", []testGeneric{}, []testMember{}},
+			TestType{"class", "ThirdClass", "", []TestGeneric{}, []TestMember{}},
 
 			// class FourthClass {
 			//   function<int> DoSomething(someparam int) {}
 			// }
-			testType{"class", "FourthClass", "", []testGeneric{},
-				[]testMember{
-					testMember{FunctionMemberSignature, "DoSomething", "int", []testGeneric{},
-						[]testParam{testParam{"someparam", "int"}}},
+			TestType{"class", "FourthClass", "", []TestGeneric{},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "DoSomething", "int", []TestGeneric{},
+						[]TestParam{TestParam{"someparam", "int"}}},
 				},
 			},
 
 			// interface IMultiGeneric<T, Q> {
 			//    function<T> DoSomething(someparam Q)
 			// }
-			testType{"interface", "IMultiGeneric", "", []testGeneric{testGeneric{"T", ""}, testGeneric{"Q", ""}},
-				[]testMember{
-					testMember{FunctionMemberSignature, "DoSomething", "T", []testGeneric{},
-						[]testParam{testParam{"someparam", "Q"}}},
+			TestType{"interface", "IMultiGeneric", "", []TestGeneric{TestGeneric{"T", ""}, TestGeneric{"Q", ""}},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "DoSomething", "T", []TestGeneric{},
+						[]TestParam{TestParam{"someparam", "Q"}}},
 				},
 			},
 
 			// class FifthClass<T, Q> {
 			//   function<Q> DoSomething(someparam T) {}
 			// }
-			testType{"class", "FifthClass", "", []testGeneric{testGeneric{"T", ""}, testGeneric{"Q", ""}},
-				[]testMember{
-					testMember{FunctionMemberSignature, "DoSomething", "Q", []testGeneric{},
-						[]testParam{testParam{"someparam", "T"}}},
+			TestType{"class", "FifthClass", "", []TestGeneric{TestGeneric{"T", ""}, TestGeneric{"Q", ""}},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "DoSomething", "Q", []TestGeneric{},
+						[]TestParam{TestParam{"someparam", "T"}}},
 				},
 			},
 
@@ -418,11 +409,11 @@ func TestConcreteSubtypes(t *testing.T) {
 			//    function<T> TFunc()
 			//    function<void> QFunc(someparam Q)
 			// }
-			testType{"interface", "IMultiMember", "", []testGeneric{testGeneric{"T", ""}, testGeneric{"Q", ""}},
-				[]testMember{
-					testMember{FunctionMemberSignature, "TFunc", "T", []testGeneric{}, []testParam{}},
-					testMember{FunctionMemberSignature, "QFunc", "void", []testGeneric{},
-						[]testParam{testParam{"someparam", "Q"}}},
+			TestType{"interface", "IMultiMember", "", []TestGeneric{TestGeneric{"T", ""}, TestGeneric{"Q", ""}},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "TFunc", "T", []TestGeneric{}, []TestParam{}},
+					TestMember{FunctionMemberSignature, "QFunc", "void", []TestGeneric{},
+						[]TestParam{TestParam{"someparam", "Q"}}},
 				},
 			},
 
@@ -430,46 +421,48 @@ func TestConcreteSubtypes(t *testing.T) {
 			//	function<int> TFunc() {}
 			//	function<void> QFunc(someparam bool) {}
 			// }
-			testType{"class", "MultiClass", "", []testGeneric{},
-				[]testMember{
-					testMember{FunctionMemberSignature, "TFunc", "int", []testGeneric{}, []testParam{}},
-					testMember{FunctionMemberSignature, "QFunc", "void", []testGeneric{},
-						[]testParam{testParam{"someparam", "bool"}}},
+			TestType{"class", "MultiClass", "", []TestGeneric{},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "TFunc", "int", []TestGeneric{}, []TestParam{}},
+					TestMember{FunctionMemberSignature, "QFunc", "void", []TestGeneric{},
+						[]TestParam{TestParam{"someparam", "bool"}}},
 				},
 			},
 
 			// interface Port<T> {
 			//   function<void> AwaitNext(callback function<void>(T))
 			// }
-			testType{"interface", "Port", "", []testGeneric{testGeneric{"T", ""}},
-				[]testMember{
-					testMember{FunctionMemberSignature, "AwaitNext", "void", []testGeneric{},
-						[]testParam{testParam{"callback", "function<void>(T)"}}},
+			TestType{"interface", "Port", "", []TestGeneric{TestGeneric{"T", ""}},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "AwaitNext", "void", []TestGeneric{},
+						[]TestParam{TestParam{"callback", "function<void>(T)"}}},
 				},
 			},
 
 			// class SomePort {
 			//   function<void> AwaitNext(callback function<void>(int))
 			// }
-			testType{"class", "SomePort", "", []testGeneric{},
-				[]testMember{
-					testMember{FunctionMemberSignature, "AwaitNext", "void", []testGeneric{},
-						[]testParam{testParam{"callback", "function<void>(int)"}}},
+			TestType{"class", "SomePort", "", []TestGeneric{},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "AwaitNext", "void", []TestGeneric{},
+						[]TestParam{TestParam{"callback", "function<void>(int)"}}},
 				},
 			},
 
 			// agent<?> FirstAgent {
 			//   function<int> DoSomething(someparam int) {}
 			// }
-			testType{"agent", "FirstAgent", "", []testGeneric{},
-				[]testMember{
-					testMember{FunctionMemberSignature, "DoSomething", "int", []testGeneric{}, []testParam{}},
+			TestType{"agent", "FirstAgent", "", []TestGeneric{},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "DoSomething", "int", []TestGeneric{}, []TestParam{}},
 				},
 			},
 		},
-	)
 
-	graph := newTestTypeGraph(g, testConstruction)
+		[]TestMember{},
+	}
+
+	graph := ConstructTypeGraphWithBasicTypes(testModule)
 
 	tests := []concreteSubtypeCheckTest{
 		concreteSubtypeCheckTest{"SomeClass subtype of basic generic interface test", "SomeClass", "IBasicInterface", "",
@@ -521,15 +514,13 @@ func TestConcreteSubtypes(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		source := compilercommon.InputSource("concrete")
+		source := compilercommon.InputSource(testModule.ModuleName)
 		interfaceType, found := graph.LookupType(test.interfaceName, source)
 		if !assert.True(t, found, "Could not find interface %v for test %v", test.interfaceName, test.name) {
 			continue
 		}
 
-		moduleSourceNode := *testConstruction.moduleNode
-		subRef := parseTypeReferenceForTesting(test.subtype, graph, moduleSourceNode)
-		generics, sterr := subRef.CheckConcreteSubtypeOf(interfaceType)
+		generics, sterr := testModule.ResolveTypeString(test.subtype, graph).CheckConcreteSubtypeOf(interfaceType)
 		if test.expectedError != "" {
 			if !assert.NotNil(t, sterr, "Expected subtype error for test %v", test.name) {
 				continue
@@ -564,33 +555,32 @@ type subtypeCheckTest struct {
 }
 
 func TestSubtypes(t *testing.T) {
-	g, _ := compilergraph.NewGraph("-")
-	testConstruction := newTestTypeGraphConstructor(g,
+	testModule := TestModule{
 		"subtype",
-		[]testType{
+		[]TestType{
 			// interface IEmpty {}
-			testType{"interface", "IEmpty", "", []testGeneric{},
-				[]testMember{},
+			TestType{"interface", "IEmpty", "", []TestGeneric{},
+				[]TestMember{},
 			},
 
 			// interface IWithMethod {
 			//    function<void> SomeMethod()
 			// }
-			testType{"interface", "IWithMethod", "", []testGeneric{},
-				[]testMember{
-					testMember{FunctionMemberSignature, "SomeMethod", "void", []testGeneric{}, []testParam{}},
+			TestType{"interface", "IWithMethod", "", []TestGeneric{},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "SomeMethod", "void", []TestGeneric{}, []TestParam{}},
 				},
 			},
 
 			// interface IWithOperator {
 			//    operator Range(left IWithOperator, right IWithOperator) {}
 			// }
-			testType{"interface", "IWithOperator", "", []testGeneric{},
-				[]testMember{
-					testMember{OperatorMemberSignature, "Range", "any", []testGeneric{},
-						[]testParam{
-							testParam{"left", "IWithOperator"},
-							testParam{"right", "IWithOperator"},
+			TestType{"interface", "IWithOperator", "", []TestGeneric{},
+				[]TestMember{
+					TestMember{OperatorMemberSignature, "Range", "any", []TestGeneric{},
+						[]TestParam{
+							TestParam{"left", "IWithOperator"},
+							TestParam{"right", "IWithOperator"},
 						}},
 				},
 			},
@@ -598,30 +588,30 @@ func TestSubtypes(t *testing.T) {
 			// class SomeClass {
 			//   function<void> SomeMethod() {}
 			// }
-			testType{"class", "SomeClass", "", []testGeneric{},
-				[]testMember{
-					testMember{FunctionMemberSignature, "SomeMethod", "void", []testGeneric{}, []testParam{}},
+			TestType{"class", "SomeClass", "", []TestGeneric{},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "SomeMethod", "void", []TestGeneric{}, []TestParam{}},
 				},
 			},
 
 			// agent<?> SomeAgent {
 			//   function<void> SomeMethod() {}
 			// }
-			testType{"agent", "SomeAgent", "", []testGeneric{},
-				[]testMember{
-					testMember{FunctionMemberSignature, "SomeMethod", "void", []testGeneric{}, []testParam{}},
+			TestType{"agent", "SomeAgent", "", []TestGeneric{},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "SomeMethod", "void", []TestGeneric{}, []TestParam{}},
 				},
 			},
 
 			// class AnotherClass {
 			//   operator Range(left AnotherClass, right AnotherClass) {}
 			// }
-			testType{"class", "AnotherClass", "", []testGeneric{},
-				[]testMember{
-					testMember{OperatorMemberSignature, "Range", "any", []testGeneric{},
-						[]testParam{
-							testParam{"left", "AnotherClass"},
-							testParam{"right", "AnotherClass"},
+			TestType{"class", "AnotherClass", "", []TestGeneric{},
+				[]TestMember{
+					TestMember{OperatorMemberSignature, "Range", "any", []TestGeneric{},
+						[]TestParam{
+							TestParam{"left", "AnotherClass"},
+							TestParam{"right", "AnotherClass"},
 						}},
 				},
 			},
@@ -629,41 +619,41 @@ func TestSubtypes(t *testing.T) {
 			// interface IGeneric<T, Q> {
 			//    function<T> SomeMethod(someparam Q)
 			// }
-			testType{"interface", "IGeneric", "", []testGeneric{testGeneric{"T", ""}, testGeneric{"Q", ""}},
-				[]testMember{
-					testMember{FunctionMemberSignature, "SomeMethod", "T", []testGeneric{},
-						[]testParam{testParam{"someparam", "Q"}}},
+			TestType{"interface", "IGeneric", "", []TestGeneric{TestGeneric{"T", ""}, TestGeneric{"Q", ""}},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "SomeMethod", "T", []TestGeneric{},
+						[]TestParam{TestParam{"someparam", "Q"}}},
 				},
 			},
 
 			// class ThirdClass {
 			//   function<int> SomeMethod(someparam bool) {}
 			// }
-			testType{"class", "ThirdClass", "", []testGeneric{},
-				[]testMember{
-					testMember{FunctionMemberSignature, "SomeMethod", "int", []testGeneric{},
-						[]testParam{testParam{"someparam", "bool"}}},
+			TestType{"class", "ThirdClass", "", []TestGeneric{},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "SomeMethod", "int", []TestGeneric{},
+						[]TestParam{TestParam{"someparam", "bool"}}},
 				},
 			},
 
 			// class FourthClass<T, Q> {
 			//   function<Q> SomeMethod(someparam T) {}
 			// }
-			testType{"class", "FourthClass", "", []testGeneric{testGeneric{"T", ""}, testGeneric{"Q", ""}},
-				[]testMember{
-					testMember{FunctionMemberSignature, "SomeMethod", "Q", []testGeneric{},
-						[]testParam{testParam{"someparam", "T"}}},
+			TestType{"class", "FourthClass", "", []TestGeneric{TestGeneric{"T", ""}, TestGeneric{"Q", ""}},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "SomeMethod", "Q", []TestGeneric{},
+						[]TestParam{TestParam{"someparam", "T"}}},
 				},
 			},
 
 			// interface IWithInstanceOperator<T> {
 			//    operator<T> Index(index any) {}
 			// }
-			testType{"interface", "IWithInstanceOperator", "", []testGeneric{testGeneric{"T", ""}},
-				[]testMember{
-					testMember{OperatorMemberSignature, "Index", "T", []testGeneric{},
-						[]testParam{
-							testParam{"index", "any"},
+			TestType{"interface", "IWithInstanceOperator", "", []TestGeneric{TestGeneric{"T", ""}},
+				[]TestMember{
+					TestMember{OperatorMemberSignature, "Index", "T", []TestGeneric{},
+						[]TestParam{
+							TestParam{"index", "any"},
 						}},
 				},
 			},
@@ -671,11 +661,11 @@ func TestSubtypes(t *testing.T) {
 			// class IntInstanceOperator {
 			//    operator<int> Index(index any) {}
 			// }
-			testType{"class", "IntInstanceOperator", "", []testGeneric{},
-				[]testMember{
-					testMember{OperatorMemberSignature, "Index", "int", []testGeneric{},
-						[]testParam{
-							testParam{"index", "any"},
+			TestType{"class", "IntInstanceOperator", "", []TestGeneric{},
+				[]TestMember{
+					TestMember{OperatorMemberSignature, "Index", "int", []TestGeneric{},
+						[]TestParam{
+							TestParam{"index", "any"},
 						}},
 				},
 			},
@@ -683,80 +673,81 @@ func TestSubtypes(t *testing.T) {
 			// class BoolInstanceOperator {
 			//    operator<bool> Index(index any) {}
 			// }
-			testType{"class", "BoolInstanceOperator", "", []testGeneric{},
-				[]testMember{
-					testMember{OperatorMemberSignature, "Index", "bool", []testGeneric{},
-						[]testParam{
-							testParam{"index", "any"},
+			TestType{"class", "BoolInstanceOperator", "", []TestGeneric{},
+				[]TestMember{
+					TestMember{OperatorMemberSignature, "Index", "bool", []TestGeneric{},
+						[]TestParam{
+							TestParam{"index", "any"},
 						}},
 				},
 			},
 
 			// class ConstrainedGeneric<T : IWithMethod> {
 			// }
-			testType{"class", "ConstrainedGeneric", "",
-				[]testGeneric{
-					testGeneric{"T", "IWithMethod"},
-					testGeneric{"Q", "IWithOperator"},
-					testGeneric{"R", "any"},
-					testGeneric{"S", "any"},
+			TestType{"class", "ConstrainedGeneric", "",
+				[]TestGeneric{
+					TestGeneric{"T", "IWithMethod"},
+					TestGeneric{"Q", "IWithOperator"},
+					TestGeneric{"R", "any"},
+					TestGeneric{"S", "any"},
 				},
-				[]testMember{},
+				[]TestMember{},
 			},
 
 			// struct SomeStruct {
 			//	  SomeField int
 			// }
-			testType{"struct", "SomeStruct", "", []testGeneric{},
-				[]testMember{
-					testMember{FieldMemberSignature, "SomeField", "int", []testGeneric{}, []testParam{}},
+			TestType{"struct", "SomeStruct", "", []TestGeneric{},
+				[]TestMember{
+					TestMember{FieldMemberSignature, "SomeField", "int", []TestGeneric{}, []TestParam{}},
 				},
 			},
 
 			// struct SomeGenericStruct<T, Q:struct> {
 			// }
-			testType{"struct", "SomeGenericStruct", "",
-				[]testGeneric{
-					testGeneric{"T", "any"},
-					testGeneric{"Q", "struct"},
+			TestType{"struct", "SomeGenericStruct", "",
+				[]TestGeneric{
+					TestGeneric{"T", "any"},
+					TestGeneric{"Q", "struct"},
 				},
-				[]testMember{},
+				[]TestMember{},
 			},
 
 			// interface Constructable {
 			//	  constructor BuildMe()
 			// }
-			testType{"interface", "Constructable", "", []testGeneric{},
-				[]testMember{
-					testMember{ConstructorMemberSignature, "BuildMe", "Constructable", []testGeneric{}, []testParam{}},
+			TestType{"interface", "Constructable", "", []TestGeneric{},
+				[]TestMember{
+					TestMember{ConstructorMemberSignature, "BuildMe", "Constructable", []TestGeneric{}, []TestParam{}},
 				},
 			},
 
 			// class ConstructableClass {
 			//	  constructor BuildMe()
 			// }
-			testType{"class", "ConstructableClass", "", []testGeneric{},
-				[]testMember{
-					testMember{ConstructorMemberSignature, "BuildMe", "ConstructableClass", []testGeneric{}, []testParam{}},
+			TestType{"class", "ConstructableClass", "", []TestGeneric{},
+				[]TestMember{
+					TestMember{ConstructorMemberSignature, "BuildMe", "ConstructableClass", []TestGeneric{}, []TestParam{}},
 				},
 			},
 
 			// external-interface ISomeExternalType {}
-			testType{"external-interface", "ISomeExternalType", "", []testGeneric{}, []testMember{}},
+			TestType{"external-interface", "ISomeExternalType", "", []TestGeneric{}, []TestMember{}},
 
 			// external-interface IAnotherExternalType {}
-			testType{"external-interface", "IAnotherExternalType", "", []testGeneric{}, []testMember{}},
+			TestType{"external-interface", "IAnotherExternalType", "", []TestGeneric{}, []TestMember{}},
 
 			// external-interface IChildExternalType : ISomeExternalType {}
-			testType{"external-interface", "IChildExternalType", "ISomeExternalType", []testGeneric{}, []testMember{}},
+			TestType{"external-interface", "IChildExternalType", "ISomeExternalType", []TestGeneric{}, []TestMember{}},
 
 			// external-interface IGrandchildExternalType : IChildExternalType {}
-			testType{"external-interface", "IGrandchildExternalType", "IChildExternalType", []testGeneric{}, []testMember{}},
+			TestType{"external-interface", "IGrandchildExternalType", "IChildExternalType", []TestGeneric{}, []TestMember{}},
 		},
-	)
 
-	graph := newTestTypeGraph(g, testConstruction)
-	moduleSourceNode := *testConstruction.moduleNode
+		[]TestMember{},
+	}
+
+	graph := ConstructTypeGraphWithBasicTypes(testModule)
 
 	tests := []subtypeCheckTest{
 		// External interfaces.
@@ -930,8 +921,8 @@ func TestSubtypes(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		baseRef := parseTypeReferenceForTesting(test.basetype, graph, moduleSourceNode)
-		subRef := parseTypeReferenceForTesting(test.subtype, graph, moduleSourceNode)
+		baseRef := testModule.ResolveTypeString(test.basetype, graph)
+		subRef := testModule.ResolveTypeString(test.subtype, graph)
 
 		sterr := subRef.CheckSubTypeOf(baseRef)
 		if test.expectedError != "" {
@@ -959,61 +950,62 @@ type resolveMemberTest struct {
 }
 
 func TestResolveMembers(t *testing.T) {
-
-	g, _ := compilergraph.NewGraph("-")
-	entrypoint := newTestTypeGraphConstructor(g,
+	testModule := TestModule{
 		"entrypoint",
-		[]testType{
+		[]TestType{
 			// class SomeClass {
 			//	function<void> ExportedFunction() {}
 			//	function<void> notExported() {}
 			// }
-			testType{"class", "SomeClass", "", []testGeneric{},
-				[]testMember{
-					testMember{FunctionMemberSignature, "ExportedFunction", "void", []testGeneric{}, []testParam{}},
-					testMember{FunctionMemberSignature, "notExported", "void", []testGeneric{}, []testParam{}},
+			TestType{"class", "SomeClass", "", []TestGeneric{},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "ExportedFunction", "void", []TestGeneric{}, []TestParam{}},
+					TestMember{FunctionMemberSignature, "notExported", "void", []TestGeneric{}, []TestParam{}},
 				},
 			},
 
 			// external-interface ISomeBaseInterface {
 			//   function<void> SomeFunction() {}
 			// }
-			testType{"external-interface", "ISomeBaseInterface", "", []testGeneric{},
-				[]testMember{
-					testMember{FunctionMemberSignature, "SomeFunction", "void", []testGeneric{}, []testParam{}},
+			TestType{"external-interface", "ISomeBaseInterface", "", []TestGeneric{},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "SomeFunction", "void", []TestGeneric{}, []TestParam{}},
 				},
 			},
 
 			// external-interface IAnotherInterface : ISomeBaseInterface {
 			// }
-			testType{"external-interface", "IAnotherInterface", "ISomeBaseInterface", []testGeneric{},
-				[]testMember{},
+			TestType{"external-interface", "IAnotherInterface", "ISomeBaseInterface", []TestGeneric{},
+				[]TestMember{},
 			},
 		},
-	)
+		[]TestMember{},
+	}
 
-	otherfile := newTestTypeGraphConstructor(g,
+	otherModule := TestModule{
 		"otherfile",
-		[]testType{
+		[]TestType{
 			// class OtherClass {
 			//	function<void> OtherExportedFunction() {}
 			//	function<void> otherNotExported() {}
 			// }
-			testType{"class", "OtherClass", "", []testGeneric{},
-				[]testMember{
-					testMember{FunctionMemberSignature, "OtherExportedFunction", "void", []testGeneric{}, []testParam{}},
-					testMember{FunctionMemberSignature, "otherNotExported", "void", []testGeneric{}, []testParam{}},
+			TestType{"class", "OtherClass", "", []TestGeneric{},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "OtherExportedFunction", "void", []TestGeneric{}, []TestParam{}},
+					TestMember{FunctionMemberSignature, "otherNotExported", "void", []TestGeneric{}, []TestParam{}},
 				},
 			},
 		},
-	)
+		[]TestMember{},
+	}
 
-	otherPackageFile := newTestTypeGraphConstructor(g,
+	otherPackageFile := TestModule{
 		"otherpackage/sourcefile",
-		[]testType{},
-	)
+		[]TestType{},
+		[]TestMember{},
+	}
 
-	graph := newTestTypeGraph(g, entrypoint, otherfile, otherPackageFile)
+	graph := ConstructTypeGraphWithBasicTypes(testModule, otherModule, otherPackageFile)
 
 	// Get a reference to SomeClass and attempt to resolve members from both modules.
 	someClass, someClassFound := graph.LookupType("SomeClass", compilercommon.InputSource("entrypoint"))
@@ -1080,84 +1072,84 @@ type ensureStructuralTest struct {
 }
 
 func TestEnsureStructural(t *testing.T) {
-	g, _ := compilergraph.NewGraph("-")
-	testConstruction := newTestTypeGraphConstructor(g,
+	testModule := TestModule{
 		"ensurestruct",
-		[]testType{
+		[]TestType{
 			// struct SomeStruct {
 			//	  SomeField int
 			// }
-			testType{"struct", "SomeStruct", "", []testGeneric{},
-				[]testMember{
-					testMember{FieldMemberSignature, "SomeField", "int", []testGeneric{}, []testParam{}},
+			TestType{"struct", "SomeStruct", "", []TestGeneric{},
+				[]TestMember{
+					TestMember{FieldMemberSignature, "SomeField", "int", []TestGeneric{}, []TestParam{}},
 				},
 			},
 
 			// class SomeClass {}
-			testType{"class", "SomeClass", "",
-				[]testGeneric{},
-				[]testMember{},
+			TestType{"class", "SomeClass", "",
+				[]TestGeneric{},
+				[]TestMember{},
 			},
 
 			// agent<?> SomeAgent {}
-			testType{"agent", "SomeAgent", "",
-				[]testGeneric{},
-				[]testMember{},
+			TestType{"agent", "SomeAgent", "",
+				[]TestGeneric{},
+				[]TestMember{},
 			},
 
 			// struct GenericStruct<T> {}
-			testType{"struct", "GenericStruct", "",
-				[]testGeneric{
-					testGeneric{"T", "any"},
+			TestType{"struct", "GenericStruct", "",
+				[]TestGeneric{
+					TestGeneric{"T", "any"},
 				},
-				[]testMember{},
+				[]TestMember{},
 			},
 
 			// struct StructGenericStruct<T> {}
-			testType{"struct", "StructGenericStruct", "",
-				[]testGeneric{
-					testGeneric{"T", "struct"},
+			TestType{"struct", "StructGenericStruct", "",
+				[]TestGeneric{
+					TestGeneric{"T", "struct"},
 				},
-				[]testMember{},
+				[]TestMember{},
 			},
 
 			// class GenericClass<T> {
 			// }
-			testType{"class", "GenericClass", "",
-				[]testGeneric{
-					testGeneric{"T", "any"},
+			TestType{"class", "GenericClass", "",
+				[]TestGeneric{
+					TestGeneric{"T", "any"},
 				},
-				[]testMember{},
+				[]TestMember{},
 			},
 
 			// type StructuralNominal : SomeStruct {}
-			testType{"nominal", "StructuralNominal", "SomeStruct",
-				[]testGeneric{},
-				[]testMember{},
+			TestType{"nominal", "StructuralNominal", "SomeStruct",
+				[]TestGeneric{},
+				[]TestMember{},
 			},
 
 			// type NonStructuralNominal : SomeClass {}
-			testType{"nominal", "NonStructuralNominal", "SomeClass",
-				[]testGeneric{},
-				[]testMember{},
+			TestType{"nominal", "NonStructuralNominal", "SomeClass",
+				[]TestGeneric{},
+				[]TestMember{},
 			},
 
 			// type GenericNominalOverStruct : GenericStruct<SomeStruct> {}
-			testType{"nominal", "GenericNominalOverStruct", "GenericStruct<SomeStruct>",
-				[]testGeneric{},
-				[]testMember{},
+			TestType{"nominal", "GenericNominalOverStruct", "GenericStruct<SomeStruct>",
+				[]TestGeneric{},
+				[]TestMember{},
 			},
 
 			// type GenericNominalOverNonStruct : GenericClass<any> {}
-			testType{"nominal", "GenericNominalOverNonStruct", "GenericStruct<any>",
-				[]testGeneric{},
-				[]testMember{},
+			TestType{"nominal", "GenericNominalOverNonStruct", "GenericStruct<any>",
+				[]TestGeneric{},
+				[]TestMember{},
 			},
 		},
-	)
 
-	graph := newTestTypeGraph(g, testConstruction)
-	moduleSourceNode := *testConstruction.moduleNode
+		[]TestMember{},
+	}
+
+	graph := ConstructTypeGraphWithBasicTypes(testModule)
 
 	tests := []ensureStructuralTest{
 		// SomeStruct
@@ -1201,8 +1193,8 @@ func TestEnsureStructural(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		ref := parseTypeReferenceForTesting(test.typename, graph, moduleSourceNode)
-		sterr := ref.EnsureStructural()
+		testTypeRef := testModule.ResolveTypeString(test.typename, graph)
+		sterr := testTypeRef.EnsureStructural()
 		if test.expectedError != "" {
 			if !assert.NotNil(t, sterr, "Expected ensure struct error for test %v", test.name) {
 				continue
@@ -1226,72 +1218,72 @@ type intersectionTest struct {
 }
 
 func TestIntersection(t *testing.T) {
-	g, _ := compilergraph.NewGraph("-")
-	testConstruction := newTestTypeGraphConstructor(g,
+	testModule := TestModule{
 		"intersection",
-		[]testType{
+		[]TestType{
 			// struct SomeStruct {}
-			testType{"struct", "SomeStruct", "", []testGeneric{},
-				[]testMember{},
+			TestType{"struct", "SomeStruct", "", []TestGeneric{},
+				[]TestMember{},
 			},
 
 			// struct AnotherStruct {}
-			testType{"struct", "AnotherStruct", "", []testGeneric{},
-				[]testMember{},
+			TestType{"struct", "AnotherStruct", "", []TestGeneric{},
+				[]TestMember{},
 			},
 
 			// class SomeClass {
 			// 	 function<bool> DoSomething()
 			// }
-			testType{"class", "SomeClass", "",
-				[]testGeneric{},
-				[]testMember{
-					testMember{FunctionMemberSignature, "DoSomething", "bool", []testGeneric{}, []testParam{}},
+			TestType{"class", "SomeClass", "",
+				[]TestGeneric{},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "DoSomething", "bool", []TestGeneric{}, []TestParam{}},
 				},
 			},
 
 			// agent<?> SomeAgent {
 			// 	 function<bool> DoSomething()
 			// }
-			testType{"agent", "SomeAgent", "",
-				[]testGeneric{},
-				[]testMember{
-					testMember{FunctionMemberSignature, "DoSomething", "bool", []testGeneric{}, []testParam{}},
+			TestType{"agent", "SomeAgent", "",
+				[]TestGeneric{},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "DoSomething", "bool", []TestGeneric{}, []TestParam{}},
 				},
 			},
 
 			// interface SomeInterface {
 			// 	 function<bool> DoSomething()
 			// }
-			testType{"interface", "SomeInterface", "",
-				[]testGeneric{},
-				[]testMember{
-					testMember{FunctionMemberSignature, "DoSomething", "bool", []testGeneric{}, []testParam{}},
+			TestType{"interface", "SomeInterface", "",
+				[]TestGeneric{},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "DoSomething", "bool", []TestGeneric{}, []TestParam{}},
 				},
 			},
 
 			// interface AnotherInterface {}
-			testType{"interface", "AnotherInterface", "",
-				[]testGeneric{},
-				[]testMember{},
+			TestType{"interface", "AnotherInterface", "",
+				[]TestGeneric{},
+				[]TestMember{},
 			},
 
 			// type StructuralNominal : SomeStruct {}
-			testType{"nominal", "StructuralNominal", "SomeStruct",
-				[]testGeneric{},
-				[]testMember{},
+			TestType{"nominal", "StructuralNominal", "SomeStruct",
+				[]TestGeneric{},
+				[]TestMember{},
 			},
 
 			// type NonStructuralNominal : SomeClass {}
-			testType{"nominal", "NonStructuralNominal", "SomeClass",
-				[]testGeneric{},
-				[]testMember{},
+			TestType{"nominal", "NonStructuralNominal", "SomeClass",
+				[]TestGeneric{},
+				[]TestMember{},
 			},
 		},
-	)
 
-	graph := newTestTypeGraph(g, testConstruction)
-	moduleSourceNode := *testConstruction.moduleNode
+		[]TestMember{},
+	}
+
+	graph := ConstructTypeGraphWithBasicTypes(testModule)
 
 	tests := []intersectionTest{
 		// any & any = any
@@ -1401,8 +1393,8 @@ func TestIntersection(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		firstRef := parseTypeReferenceForTesting(test.first, graph, moduleSourceNode)
-		secondRef := parseTypeReferenceForTesting(test.second, graph, moduleSourceNode)
+		firstRef := testModule.ResolveTypeString(test.first, graph)
+		secondRef := testModule.ResolveTypeString(test.second, graph)
 
 		intersect := firstRef.Intersect(secondRef)
 		if !assert.Equal(t, test.expectedType, intersect.String(), "Expected %s for %s & %s", test.expectedType, firstRef.String(), secondRef.String()) {
@@ -1418,82 +1410,81 @@ type castTest struct {
 }
 
 func TestCasting(t *testing.T) {
-	g, _ := compilergraph.NewGraph("-")
-	testConstruction := newTestTypeGraphConstructor(g,
+	testModule := TestModule{
 		"casting",
-		[]testType{
+		[]TestType{
 			// struct SomeStruct {}
-			testType{"struct", "SomeStruct", "", []testGeneric{},
-				[]testMember{},
+			TestType{"struct", "SomeStruct", "", []TestGeneric{},
+				[]TestMember{},
 			},
 
 			// struct AnotherStruct {}
-			testType{"struct", "AnotherStruct", "", []testGeneric{},
-				[]testMember{},
+			TestType{"struct", "AnotherStruct", "", []TestGeneric{},
+				[]TestMember{},
 			},
 
 			// class SomeClass {
 			// 	 function<bool> DoSomething()
 			// }
-			testType{"class", "SomeClass", "",
-				[]testGeneric{},
-				[]testMember{
-					testMember{FunctionMemberSignature, "DoSomething", "bool", []testGeneric{}, []testParam{}},
+			TestType{"class", "SomeClass", "",
+				[]TestGeneric{},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "DoSomething", "bool", []TestGeneric{}, []TestParam{}},
 				},
 			},
 
 			// agent<?> SomeAgent {
 			// 	 function<bool> DoSomething()
 			// }
-			testType{"agent", "SomeAgent", "",
-				[]testGeneric{},
-				[]testMember{
-					testMember{FunctionMemberSignature, "DoSomething", "bool", []testGeneric{}, []testParam{}},
+			TestType{"agent", "SomeAgent", "",
+				[]TestGeneric{},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "DoSomething", "bool", []TestGeneric{}, []TestParam{}},
 				},
 			},
 
 			// interface SomeInterface {
 			// 	 function<bool> DoSomething()
 			// }
-			testType{"interface", "SomeInterface", "",
-				[]testGeneric{},
-				[]testMember{
-					testMember{FunctionMemberSignature, "DoSomething", "bool", []testGeneric{}, []testParam{}},
+			TestType{"interface", "SomeInterface", "",
+				[]TestGeneric{},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "DoSomething", "bool", []TestGeneric{}, []TestParam{}},
 				},
 			},
 
 			// interface AnotherInterface {
 			// 	 function<string> DoSomethingElse()
 			// }
-			testType{"interface", "AnotherInterface", "",
-				[]testGeneric{},
-				[]testMember{
-					testMember{FunctionMemberSignature, "DoSomethingElse", "string", []testGeneric{}, []testParam{}},
+			TestType{"interface", "AnotherInterface", "",
+				[]TestGeneric{},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "DoSomethingElse", "string", []TestGeneric{}, []TestParam{}},
 				},
 			},
 
 			// interface EmptyInterface {}
-			testType{"interface", "EmptyInterface", "",
-				[]testGeneric{},
-				[]testMember{},
+			TestType{"interface", "EmptyInterface", "",
+				[]TestGeneric{},
+				[]TestMember{},
 			},
 
 			// type StructuralNominal : SomeStruct {}
-			testType{"nominal", "StructuralNominal", "SomeStruct",
-				[]testGeneric{},
-				[]testMember{},
+			TestType{"nominal", "StructuralNominal", "SomeStruct",
+				[]TestGeneric{},
+				[]TestMember{},
 			},
 
 			// type NonStructuralNominal : SomeClass {}
-			testType{"nominal", "NonStructuralNominal", "SomeClass",
-				[]testGeneric{},
-				[]testMember{},
+			TestType{"nominal", "NonStructuralNominal", "SomeClass",
+				[]TestGeneric{},
+				[]TestMember{},
 			},
 		},
-	)
+		[]TestMember{},
+	}
 
-	graph := newTestTypeGraph(g, testConstruction)
-	moduleSourceNode := *testConstruction.moduleNode
+	graph := ConstructTypeGraphWithBasicTypes(testModule)
 
 	tests := []castTest{
 		// Type -> Type
@@ -1571,8 +1562,8 @@ func TestCasting(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		sourceRef := parseTypeReferenceForTesting(test.source, graph, moduleSourceNode)
-		destinationRef := parseTypeReferenceForTesting(test.destination, graph, moduleSourceNode)
+		sourceRef := testModule.ResolveTypeString(test.source, graph)
+		destinationRef := testModule.ResolveTypeString(test.destination, graph)
 
 		cerr := destinationRef.CheckCastableFrom(sourceRef)
 		if test.expectedError == "" {

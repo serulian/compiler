@@ -24,6 +24,11 @@ func (tn TGGeneric) DescriptiveName() string {
 	return tn.AsType().DescriptiveName()
 }
 
+// GetTypeReference returns a new type reference to this generic.
+func (tn TGGeneric) GetTypeReference() TypeReference {
+	return tn.AsType().GetTypeReference()
+}
+
 // Node returns the underlying node in this declaration.
 func (tn TGGeneric) Node() compilergraph.GraphNode {
 	return tn.GraphNode

@@ -209,6 +209,11 @@ func (tn TGMember) IsOperator() bool {
 	return tn.GraphNode.Kind() == NodeTypeOperator
 }
 
+// AsType returns whether this is a type (always false).
+func (tn TGMember) AsType() (TGTypeDecl, bool) {
+	return TGTypeDecl{}, false
+}
+
 // ConstructorType returns the type constructed by invoking this member,
 // if it is a constructor.
 func (tn TGMember) ConstructorType() (TypeReference, bool) {

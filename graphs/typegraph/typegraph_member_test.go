@@ -11,7 +11,6 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/serulian/compiler/compilercommon"
-	"github.com/serulian/compiler/compilergraph"
 )
 
 var _ = fmt.Printf
@@ -30,41 +29,41 @@ type expectedMember struct {
 	memberType      string
 	constructorType string
 	assignableType  string
-	generics        []testGeneric
+	generics        []TestGeneric
 }
 
 func TestMemberAccessors(t *testing.T) {
 	// Build the test graph.
-	g, _ := compilergraph.NewGraph("-")
-	testModule := newTestTypeGraphConstructor(g, "testModule",
-		[]testType{
+	graph := ConstructTypeGraphWithBasicTypes(TestModule{"testModule",
+		[]TestType{
 			// class SomeClass {
 			//   function<int> DoSomething() {}
 			//   constructor Declare() {}
 			//   var<SomeClass> SomeClassInstance
 			//   operator Plus(left SomeClass, right SomeClass) {}
 			// }
-			testType{"class", "SomeClass", "", []testGeneric{},
-				[]testMember{
-					testMember{FunctionMemberSignature, "DoSomething", "int", []testGeneric{}, []testParam{}},
-					testMember{ConstructorMemberSignature, "Declare", "SomeClass", []testGeneric{}, []testParam{}},
-					testMember{FieldMemberSignature, "SomeClassInstance", "SomeClass", []testGeneric{}, []testParam{}},
-					testMember{OperatorMemberSignature, "Plus", "SomeClass", []testGeneric{}, []testParam{
-						testParam{"left", "SomeClass"},
-						testParam{"right", "SomeClass"},
+			TestType{"class", "SomeClass", "", []TestGeneric{},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "DoSomething", "int", []TestGeneric{}, []TestParam{}},
+					TestMember{ConstructorMemberSignature, "Declare", "SomeClass", []TestGeneric{}, []TestParam{}},
+					TestMember{FieldMemberSignature, "SomeClassInstance", "SomeClass", []TestGeneric{}, []TestParam{}},
+					TestMember{OperatorMemberSignature, "Plus", "SomeClass", []TestGeneric{}, []TestParam{
+						TestParam{"left", "SomeClass"},
+						TestParam{"right", "SomeClass"},
 					}},
-					testMember{FunctionMemberSignature, "someGeneirc", "int", []testGeneric{
-						testGeneric{"T", "any"},
-						testGeneric{"Q", "any"},
-					}, []testParam{}},
+					TestMember{FunctionMemberSignature, "someGeneirc", "int", []TestGeneric{
+						TestGeneric{"T", "any"},
+						TestGeneric{"Q", "any"},
+					}, []TestParam{}},
 				},
 			},
 		},
 
 		// function<int> AnotherFunction() {}
-		testMember{FunctionMemberSignature, "AnotherFunction", "int", []testGeneric{}, []testParam{}},
-	)
-	graph := newTestTypeGraph(g, testModule)
+		[]TestMember{
+			TestMember{FunctionMemberSignature, "AnotherFunction", "int", []TestGeneric{}, []TestParam{}},
+		},
+	})
 
 	// For each expected member, lookup and compare.
 	expectedMembers := []expectedMember{
@@ -83,7 +82,7 @@ func TestMemberAccessors(t *testing.T) {
 			constructorType: "",
 			memberType:      "function<int>",
 			assignableType:  "void",
-			generics:        []testGeneric{},
+			generics:        []TestGeneric{},
 		},
 
 		// SomeClass::DoSomething
@@ -101,7 +100,7 @@ func TestMemberAccessors(t *testing.T) {
 			constructorType: "",
 			assignableType:  "void",
 			memberType:      "function<int>",
-			generics:        []testGeneric{},
+			generics:        []TestGeneric{},
 		},
 
 		// SomeClass::SomeClassInstance
@@ -119,7 +118,7 @@ func TestMemberAccessors(t *testing.T) {
 			constructorType: "",
 			assignableType:  "SomeClass",
 			memberType:      "SomeClass",
-			generics:        []testGeneric{},
+			generics:        []TestGeneric{},
 		},
 
 		// SomeClass::Declare
@@ -137,7 +136,7 @@ func TestMemberAccessors(t *testing.T) {
 			constructorType: "SomeClass",
 			assignableType:  "void",
 			memberType:      "function<SomeClass>",
-			generics:        []testGeneric{},
+			generics:        []TestGeneric{},
 		},
 
 		// SomeClass::Plus
@@ -155,7 +154,7 @@ func TestMemberAccessors(t *testing.T) {
 			constructorType: "",
 			assignableType:  "void",
 			memberType:      "function<SomeClass>(SomeClass, SomeClass)",
-			generics:        []testGeneric{},
+			generics:        []TestGeneric{},
 		},
 
 		// SomeClass::SomeGeneric
@@ -173,9 +172,9 @@ func TestMemberAccessors(t *testing.T) {
 			constructorType: "",
 			assignableType:  "void",
 			memberType:      "function<int>",
-			generics: []testGeneric{
-				testGeneric{"T", "any"},
-				testGeneric{"Q", "any"},
+			generics: []TestGeneric{
+				TestGeneric{"T", "any"},
+				TestGeneric{"Q", "any"},
 			},
 		},
 	}
@@ -230,8 +229,8 @@ func TestMemberAccessors(t *testing.T) {
 		// Check generics.
 		if assert.Equal(t, len(expectedMember.generics), len(member.Generics()), "Generics gount mismatch") {
 			for index, generic := range member.Generics() {
-				assert.Equal(t, expectedMember.generics[index].name, generic.Name())
-				assert.Equal(t, expectedMember.generics[index].constraint, generic.Constraint().String())
+				assert.Equal(t, expectedMember.generics[index].Name, generic.Name())
+				assert.Equal(t, expectedMember.generics[index].Constraint, generic.Constraint().String())
 			}
 		}
 

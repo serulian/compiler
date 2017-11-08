@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/serulian/compiler/compilercommon"
-	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/packageloader"
 
 	"github.com/stretchr/testify/assert"
@@ -18,12 +17,17 @@ import (
 var _ = fmt.Printf
 
 func TestModules(t *testing.T) {
-	g, _ := compilergraph.NewGraph("-")
+	graph := ConstructTypeGraphWithBasicTypes(
+		TestModule{"first",
+			[]TestType{},
+			[]TestMember{},
+		},
 
-	firstModule := newTestTypeGraphConstructor(g, "firstModule", []testType{})
-	secondModule := newTestTypeGraphConstructor(g, "secondModule", []testType{})
+		TestModule{"second",
+			[]TestType{},
+			[]TestMember{},
+		})
 
-	graph := newTestTypeGraph(g, firstModule, secondModule)
 	modules := graph.Modules()
 	if !assert.Equal(t, 3, len(modules), "Expected three modules (two here, one lib)") {
 		return
@@ -94,70 +98,72 @@ func assertAlias(t *testing.T, graph *TypeGraph, aliasName string, kind TypeKind
 }
 
 func TestLookup(t *testing.T) {
-	g, _ := compilergraph.NewGraph("-")
+	testModule := TestModule{
+		"testModule",
 
-	testModule := newTestTypeGraphConstructor(g, "testModule",
-		[]testType{
+		[]TestType{
 			// class SomeClass {
 			//   function<int> DoSomething() {}
 			// }
-			testType{"class", "SomeClass", "", []testGeneric{},
-				[]testMember{
-					testMember{FunctionMemberSignature, "DoSomething", "int", []testGeneric{}, []testParam{}},
+			TestType{"class", "SomeClass", "", []TestGeneric{},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "DoSomething", "int", []TestGeneric{}, []TestParam{}},
 				},
 			},
 
 			// agent<?> SomeAgent {
 			//   function<int> DoSomething() {}
 			// }
-			testType{"agent", "SomeAgent", "", []testGeneric{},
-				[]testMember{
-					testMember{FunctionMemberSignature, "DoSomething", "int", []testGeneric{}, []testParam{}},
+			TestType{"agent", "SomeAgent", "", []TestGeneric{},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "DoSomething", "int", []TestGeneric{}, []TestParam{}},
 				},
 			},
 
 			// interface IBasicInterface<T> {
 			//	 function<T> DoSomething()
 			// }
-			testType{"interface", "IBasicInterface", "", []testGeneric{testGeneric{"T", ""}},
-				[]testMember{
-					testMember{FunctionMemberSignature, "DoSomething", "T", []testGeneric{}, []testParam{}},
+			TestType{"interface", "IBasicInterface", "", []TestGeneric{TestGeneric{"T", ""}},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "DoSomething", "T", []TestGeneric{}, []TestParam{}},
 				},
 			},
 
 			// struct SomeStruct {
 			//	  SomeField int
 			// }
-			testType{"struct", "SomeStruct", "", []testGeneric{},
-				[]testMember{
-					testMember{FieldMemberSignature, "SomeField", "int", []testGeneric{}, []testParam{}},
+			TestType{"struct", "SomeStruct", "", []TestGeneric{},
+				[]TestMember{
+					TestMember{FieldMemberSignature, "SomeField", "int", []TestGeneric{}, []TestParam{}},
 				},
 			},
 
 			// type SomeNominal : SomeClass {}
-			testType{"nominal", "SomeNominal", "SomeClass",
-				[]testGeneric{},
-				[]testMember{},
+			TestType{"nominal", "SomeNominal", "SomeClass",
+				[]TestGeneric{},
+				[]TestMember{},
 			},
 
 			// (alias) SomeAlias => SomeClass
-			testType{"alias", "SomeAlias", "SomeClass",
-				[]testGeneric{},
-				[]testMember{},
+			TestType{"alias", "SomeAlias", "SomeClass",
+				[]TestGeneric{},
+				[]TestMember{},
 			},
 
 			// (alias) SomeOtherAlias => IBasicInterface
-			testType{"alias", "SomeOtherAlias", "IBasicInterface",
-				[]testGeneric{},
-				[]testMember{},
+			TestType{"alias", "SomeOtherAlias", "IBasicInterface",
+				[]TestGeneric{},
+				[]TestMember{},
 			},
 		},
 
 		// function<int> AnotherFunction() {}
-		testMember{FunctionMemberSignature, "AnotherFunction", "int", []testGeneric{}, []testParam{}},
-	)
+		[]TestMember{
+			TestMember{FunctionMemberSignature, "AnotherFunction", "int", []TestGeneric{}, []TestParam{}},
+		},
+	}
 
-	graph := newTestTypeGraph(g, testModule)
+	graph := ConstructTypeGraphWithBasicTypes(testModule)
 
 	// Test LookupTypeOrMember of all the types under the module.
 	if !assertType(t, graph, ClassType, "SomeClass", "testModule") {
@@ -218,7 +224,7 @@ func TestLookup(t *testing.T) {
 	// Test TypeOrMembersUnderPackage.
 	packageInfo := packageloader.PackageInfoForTesting("", []compilercommon.InputSource{compilercommon.InputSource("testModule")})
 	typesOrMembers := graph.TypeOrMembersUnderPackage(packageInfo)
-	if !assert.Equal(t, len(typesOrMembers), len(testModule.testMembers)+len(testModule.testTypes)) {
+	if !assert.Equal(t, len(typesOrMembers), len(testModule.Members)+len(testModule.Types)) {
 		return
 	}
 
@@ -227,26 +233,26 @@ func TestLookup(t *testing.T) {
 		encountered[typeOrMember.Name()] = typeOrMember
 	}
 
-	for _, testMember := range testModule.testMembers {
-		definedMember, ok := encountered[testMember.name]
-		if !assert.True(t, ok, "Expected member %s", testMember.name) {
+	for _, testMember := range testModule.Members {
+		definedMember, ok := encountered[testMember.Name]
+		if !assert.True(t, ok, "Expected member %s", testMember.Name) {
 			continue
 		}
 
 		_, isMember := definedMember.(TGMember)
-		if !assert.True(t, isMember, "Expected %s to be member", testMember.name) {
+		if !assert.True(t, isMember, "Expected %s to be member", testMember.Name) {
 			continue
 		}
 	}
 
-	for _, testType := range testModule.testTypes {
-		definedType, ok := encountered[testType.name]
-		if !assert.True(t, ok, "Expected type %s", testType.name) {
+	for _, testType := range testModule.Types {
+		definedType, ok := encountered[testType.Name]
+		if !assert.True(t, ok, "Expected type %s", testType.Name) {
 			continue
 		}
 
 		_, isType := definedType.(TGTypeDecl)
-		if !assert.True(t, isType, "Expected %s to be member", testType.name) {
+		if !assert.True(t, isType, "Expected %s to be member", testType.Name) {
 			continue
 		}
 	}

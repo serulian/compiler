@@ -498,7 +498,7 @@ func (mb *MemberBuilder) withGeneric(name string) *MemberBuilder {
 	return mb
 }
 
-// WithParameter adds a paramedter to this member.
+// WithParameter adds a parameter to this member.
 func (mb *MemberBuilder) WithParameter(name string, documentation string, sourceNode compilergraph.GraphNode) *MemberBuilder {
 	mb.memberParameters = append(mb.memberParameters, memberParameter{
 		name, documentation, sourceNode, true,
@@ -857,8 +857,10 @@ func (mb *MemberDecorator) checkAndComputeOperator(memberNode compilergraph.Modi
 	mb.readonly = !definition.IsAssignable
 
 	// Ensure that the declared return type is equal to that expected.
+	asType, _ := mb.parent().AsType()
+
 	declaredReturnType := mb.memberType.Generics()[0]
-	containingType := mb.tdg.NewInstanceTypeReference(mb.parent().AsType())
+	containingType := asType.GetTypeReference()
 	expectedReturnType := definition.ExpectedReturnType(containingType)
 
 	if !mb.skipOperatorChecking {

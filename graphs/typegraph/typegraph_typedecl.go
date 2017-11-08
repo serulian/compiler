@@ -364,17 +364,13 @@ func (tn TGTypeDecl) IsType() bool {
 }
 
 // AsType returns this type.
-func (tn TGTypeDecl) AsType() TGTypeDecl {
-	return tn
+func (tn TGTypeDecl) AsType() (TGTypeDecl, bool) {
+	return tn, true
 }
 
-// AsGeneric returns this type as a generic. Will panic if this is not a generic.
-func (tn TGTypeDecl) AsGeneric() TGGeneric {
-	if tn.TypeKind() != GenericType {
-		panic("AsGeneric called on non-generic")
-	}
-
-	return TGGeneric{tn.Node(), tn.tdg}
+// AsGeneric returns this type as a generic.
+func (tn TGTypeDecl) AsGeneric() (TGGeneric, bool) {
+	return TGGeneric{tn.Node(), tn.tdg}, tn.TypeKind() == GenericType
 }
 
 // IsStatic returns whether this type is static (always true).
