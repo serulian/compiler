@@ -20,7 +20,7 @@ func (db *domBuilder) buildConditionalExpression(node compilergraph.GraphNode) c
 
 // buildLoopExpression builds the CodeDOM for a loop expression.
 func (db *domBuilder) buildLoopExpression(node compilergraph.GraphNode) codedom.Expression {
-	member, found := db.scopegraph.TypeGraph().StreamType().ParentModule().FindMember("MapStream")
+	member, found := db.scopegraph.TypeGraph().StreamType().ParentModule().GetMember("MapStream")
 	if !found {
 		panic("Missing MapStream function under Stream's module")
 	}

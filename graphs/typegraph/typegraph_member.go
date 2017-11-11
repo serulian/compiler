@@ -294,6 +294,16 @@ func (tn TGMember) MemberType() TypeReference {
 	return tn.GraphNode.GetTagged(NodePredicateMemberType, tn.tdg.AnyTypeReference()).(TypeReference)
 }
 
+// DeclaredType returns the declared type for this member. If a function, returns the return type.
+// Otherwise, returns the member type.
+func (tn TGMember) DeclaredType() TypeReference {
+	if returnType, hasReturnType := tn.ReturnType(); hasReturnType {
+		return returnType
+	}
+
+	return tn.MemberType()
+}
+
 // HasGenerics returns whether this member has generics defined.
 func (tn TGMember) HasGenerics() bool {
 	_, isGeneric := tn.GraphNode.TryGetNode(NodePredicateMemberGeneric)

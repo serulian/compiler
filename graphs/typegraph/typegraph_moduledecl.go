@@ -50,8 +50,8 @@ func (tn TGModule) Members() []TGMember {
 	return members
 }
 
-// FindMember finds the member under this module with the given name, if any.
-func (tn TGModule) FindMember(name string) (TGMember, bool) {
+// GetMember finds the member under this module with the given name, if any.
+func (tn TGModule) GetMember(name string) (TGMember, bool) {
 	node, found := tn.GraphNode.StartQuery().
 		Out(NodePredicateMember).
 		Has(NodePredicateMemberName, name).

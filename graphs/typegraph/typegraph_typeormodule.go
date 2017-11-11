@@ -16,6 +16,7 @@ type TGTypeOrModule interface {
 	Title() string
 	IsType() bool
 	ParentModule() TGModule
+	GetMember(name string) (TGMember, bool)
 	AsType() (TGTypeDecl, bool)
 	SourceGraphId() string
 }
