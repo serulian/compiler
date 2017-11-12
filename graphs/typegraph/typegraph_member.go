@@ -481,6 +481,11 @@ func (tn TGMember) SourceGraphId() string {
 	return tn.Parent().SourceGraphId()
 }
 
+// TypeGraph returns the type graph that contains this member.
+func (tn TGMember) TypeGraph() *TypeGraph {
+	return tn.tdg
+}
+
 // Code returns a code-like summarization of the member, for human consumption.
 func (tn TGMember) Code() (compilercommon.CodeSummary, bool) {
 	var buffer bytes.Buffer

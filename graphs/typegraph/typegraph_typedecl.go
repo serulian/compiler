@@ -433,6 +433,20 @@ func (tn TGTypeDecl) RequiredFields() []TGMember {
 	return fields
 }
 
+// Attributes returns the attributes of this type.
+func (tn TGTypeDecl) Attributes() []TypeAttribute {
+	attributes := make([]TypeAttribute, 0, 1)
+
+	ait := tn.StartQuery().
+		Out(NodePredicateTypeAttribute).
+		BuildNodeIterator()
+	for ait.Next() {
+		attributes = append(attributes, TypeAttribute(ait.Node().Get(NodePredicateAttributeName)))
+	}
+
+	return attributes
+}
+
 // HasAttribute returns whether this type has the given attribute.
 func (tn TGTypeDecl) HasAttribute(attribute TypeAttribute) bool {
 	_, found := tn.StartQuery().
