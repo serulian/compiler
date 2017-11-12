@@ -159,9 +159,9 @@ func (p Pather) GetRelativeModulePath(module typegraph.TGModule) string {
 	// We create the exported path based on the location of this module's source file relative
 	// to the entrypoint file.
 	basePath := filepath.Dir(p.scopegraph.RootSourceFilePath())
-	rel, err := filepath.Rel(basePath, module.Path())
+	rel, err := filepath.Rel(basePath, string(module.Path()))
 	if err != nil {
-		rel = module.Path()
+		rel = string(module.Path())
 	}
 
 	return normalizeModulePath(rel)

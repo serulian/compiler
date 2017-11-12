@@ -7,7 +7,9 @@ package typegraph
 import (
 	"strings"
 
+	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
+	"github.com/serulian/compiler/graphs/srg"
 )
 
 // TGModule represents a module in the type graph.
@@ -22,8 +24,13 @@ func (tn TGModule) Name() string {
 }
 
 // Path returns the path of the underlying module.
-func (tn TGModule) Path() string {
-	return tn.GraphNode.Get(NodePredicateModulePath)
+func (tn TGModule) Path() compilercommon.InputSource {
+	return compilercommon.InputSource(tn.GraphNode.Get(NodePredicateModulePath))
+}
+
+// PackagePath returns the path of the module's parent package.
+func (tn TGModule) PackagePath() string {
+	return srg.PackagePath(tn.Path())
 }
 
 // Title returns the human readable name of this type ("Module")
@@ -96,10 +103,12 @@ func (tn TGModule) Types() []TGTypeDecl {
 // SourceGraphId returns the ID of the source graph from which this module originated.
 // If none, returns "typegraph".
 func (tn TGModule) SourceGraphId() string {
-	// TODO: make this generic.
-	if strings.HasSuffix(tn.Path(), ".seru") {
+	path := string(tn.Path())
+
+	// TODO: remove the hard-coded check.
+	if strings.HasSuffix(path, ".seru") {
 		return "srg"
-	} else if strings.HasSuffix(tn.Path(), ".webidl") {
+	} else if strings.HasSuffix(path, ".webidl") {
 		return "webidl"
 	} else {
 		return "typegraph"

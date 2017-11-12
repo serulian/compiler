@@ -14,10 +14,15 @@ import (
 	"github.com/serulian/compiler/parser"
 )
 
-// IsSamePackage returns true if the given input source paths are found *directly* under the same
+// InSamePackage returns true if the given input source paths are found *directly* under the same
 // package (no subpackages).
 func InSamePackage(first compilercommon.InputSource, second compilercommon.InputSource) bool {
 	return first == second || path.Dir(string(first)) == path.Dir(string(second))
+}
+
+// PackagePath returns the path of the package that holds the specified module path.
+func PackagePath(modulePath compilercommon.InputSource) string {
+	return path.Dir(string(modulePath))
 }
 
 // getPackageForImport returns the package information for the package imported by the given import
