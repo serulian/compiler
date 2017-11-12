@@ -199,6 +199,7 @@ func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 	entrypointPaths, err := p.entrypoint.EntrypointPaths(p.pathLoader)
 	if err != nil {
 		sourceRange := compilercommon.InputSource(string(p.entrypoint)).RangeForRunePosition(0, p.sourceTracker)
+		result.Status = false
 		result.Errors = append(result.Errors, compilercommon.SourceErrorf(sourceRange, "Could not resolve entrypoint path: %v", err))
 		return *result
 	}
