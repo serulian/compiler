@@ -1272,23 +1272,39 @@ func (tr TypeReference) ReplaceType(typeDecl TGTypeDecl, replacement TypeReferen
 	}
 }
 
+type humanStringOption int
+
+const (
+	humanStringNormal humanStringOption = iota << 1
+	humanStringTitled
+	humanStringPackageQualified
+)
+
 // TitledString returns a human-friendly string which includes the title of the type referenced.
 func (tr TypeReference) TitledString() string {
 	var buffer bytes.Buffer
-	tr.appendHumanString(&buffer, true)
+	tr.appendHumanString(&buffer, humanStringTitled)
 	return buffer.String()
 }
 
 // String returns a human-friendly string.
 func (tr TypeReference) String() string {
 	var buffer bytes.Buffer
-	tr.appendHumanString(&buffer, false)
+	tr.appendHumanString(&buffer, humanStringNormal)
+	return buffer.String()
+}
+
+// PackageQualifiedString returns a string representation of the type, qualified by package path
+// for all types, including generics.
+func (tr TypeReference) PackageQualifiedString() string {
+	var buffer bytes.Buffer
+	tr.appendHumanString(&buffer, humanStringPackageQualified)
 	return buffer.String()
 }
 
 // appendHumanString appends the human-readable version of this type reference to
 // the given buffer.
-func (tr TypeReference) appendHumanString(buffer *bytes.Buffer, titled bool) {
+func (tr TypeReference) appendHumanString(buffer *bytes.Buffer, option humanStringOption) {
 	if tr.IsAny() {
 		buffer.WriteString("any")
 		return
@@ -1319,14 +1335,30 @@ func (tr TypeReference) appendHumanString(buffer *bytes.Buffer, titled bool) {
 
 	typeNode := tr.referredTypeNode()
 	if typeNode.Kind() == NodeTypeGeneric {
+		if option&humanStringPackageQualified == humanStringPackageQualified {
+			parentNode, isUnderType := typeNode.TryGetIncomingNode(NodePredicateTypeGeneric)
+			if isUnderType {
+				buffer.WriteString(parentNode.Get(NodePredicateTypeName))
+			} else {
+				parentNode = typeNode.GetIncomingNode(NodePredicateMemberGeneric)
+				buffer.WriteString(parentNode.Get(NodePredicateMemberName))
+			}
+
+			buffer.WriteString("::")
+		}
+
 		buffer.WriteString(typeNode.Get(NodePredicateGenericName))
 	} else {
-		if titled {
+		if option&humanStringTitled == humanStringTitled {
 			buffer.WriteString(tr.ReferredType().Title())
 			buffer.WriteRune(' ')
 		}
 
-		buffer.WriteString(tr.ReferredType().DescriptiveName())
+		if option&humanStringPackageQualified == humanStringPackageQualified {
+			buffer.WriteString(tr.ReferredType().PackagedName())
+		} else {
+			buffer.WriteString(tr.ReferredType().DescriptiveName())
+		}
 	}
 
 	if tr.HasGenerics() {
@@ -1336,7 +1368,7 @@ func (tr TypeReference) appendHumanString(buffer *bytes.Buffer, titled bool) {
 				buffer.WriteString(", ")
 			}
 
-			generic.appendHumanString(buffer, false)
+			generic.appendHumanString(buffer, option&humanStringPackageQualified)
 		}
 
 		buffer.WriteByte('>')
@@ -1349,7 +1381,7 @@ func (tr TypeReference) appendHumanString(buffer *bytes.Buffer, titled bool) {
 				buffer.WriteString(", ")
 			}
 
-			parameter.appendHumanString(buffer, false)
+			parameter.appendHumanString(buffer, option&humanStringPackageQualified)
 		}
 
 		buffer.WriteByte(')')

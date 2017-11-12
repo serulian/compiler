@@ -82,6 +82,16 @@ func (tn TGTypeDecl) DescriptiveName() string {
 	return tn.Name()
 }
 
+// FullName returns the full name of this type, including its parent module's path.
+func (tn TGTypeDecl) FullName() string {
+	return string(tn.ParentModule().Path()) + "::" + tn.Name()
+}
+
+// PackagedName returns the packaged name of this type, including its parent package's path.
+func (tn TGTypeDecl) PackagedName() string {
+	return tn.ParentModule().PackagePath() + "::" + tn.Name()
+}
+
 // Title returns a nice title for the type.
 func (tn TGTypeDecl) Title() string {
 	nodeType := tn.GraphNode.Kind().(NodeType)
