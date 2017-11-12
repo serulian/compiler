@@ -61,6 +61,7 @@ func (stc *srgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 		// Start the type definition.
 		typeBuilder := builder(moduleNode).
 			Name(typeName).
+			Exported(srgType.IsExported()).
 			GlobalId(srgType.UniqueId()).
 			Documentation(docString).
 			SourceNode(srgType.Node())

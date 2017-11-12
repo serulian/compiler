@@ -51,6 +51,7 @@ func (itc *irgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 		// Define a single type under the root module node.
 		typeBuilder := builder(itc.irg.RootModuleNode()).
 			Name(collapsedType.Name).
+			Exported(true).
 			GlobalId(collapsedType.Name).
 			SourceNode(collapsedType.RootNode).
 			TypeKind(typegraph.ExternalInternalType)
@@ -64,6 +65,7 @@ func (itc *irgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 		for _, declaration := range collapsedType.Declarations {
 			builder(declaration.Module().Node()).
 				Name(declaration.Name()).
+				Exported(true).
 				GlobalId(webidl.GetUniqueId(declaration.GraphNode)).
 				SourceNode(declaration.GraphNode).
 				TypeKind(typegraph.AliasType).

@@ -1,6 +1,6 @@
 {
-    "6a190636d61eec74f59d8495684c9a3c": {
-        "Key": "6a190636d61eec74f59d8495684c9a3c",
+    "03640bbffea719b48b692d56b0c4e840": {
+        "Key": "03640bbffea719b48b692d56b0c4e840",
         "Kind": 1,
         "Children": {
             "1e542d1b516d2467917311d395865917": {
@@ -133,12 +133,26 @@
             "tdg-node-kind": "1|NodeType|tdg",
             "tdg-source-module": "tests/agent/generic.seru",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-exported": "true",
             "tdg-type-globalid": "b6d9cb59",
             "tdg-type-name": "SomeClass"
         }
     },
-    "8f84e294966805e99712da50500b1326": {
-        "Key": "8f84e294966805e99712da50500b1326",
+    "635560f94ad8be4cd9243bdb47b7e6bb": {
+        "Key": "635560f94ad8be4cd9243bdb47b7e6bb",
+        "Kind": 2,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "2|NodeType|tdg",
+            "tdg-source-module": "tests/agent/generic.seru",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-exported": "true",
+            "tdg-type-globalid": "76201a5f",
+            "tdg-type-name": "SomeInterface"
+        }
+    },
+    "ee80f1a86eaaf93398fa308a8f6dfd23": {
+        "Key": "ee80f1a86eaaf93398fa308a8f6dfd23",
         "Kind": 6,
         "Children": {
             "4d6bfdea86e17976175e654bff4994e5": {
@@ -213,20 +227,9 @@
             "tdg-principal-type": "SomeInterface",
             "tdg-source-module": "tests/agent/generic.seru",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-exported": "true",
             "tdg-type-globalid": "5439324f",
             "tdg-type-name": "SomeAgent"
-        }
-    },
-    "96e441459e79035dc2e3b1e9131d72bd": {
-        "Key": "96e441459e79035dc2e3b1e9131d72bd",
-        "Kind": 2,
-        "Children": {},
-        "Predicates": {
-            "tdg-node-kind": "2|NodeType|tdg",
-            "tdg-source-module": "tests/agent/generic.seru",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "76201a5f",
-            "tdg-type-name": "SomeInterface"
         }
     }
 }

@@ -1,6 +1,6 @@
 {
-    "0a07083897a73cc01182f00367be852b": {
-        "Key": "0a07083897a73cc01182f00367be852b",
+    "00289647acf2084e9626e19d7737b045": {
+        "Key": "00289647acf2084e9626e19d7737b045",
         "Kind": 1,
         "Children": {
             "bbdafb33ec8e3ac51d50cfdef503289b": {
@@ -40,12 +40,59 @@
             "tdg-node-kind": "1|NodeType|tdg",
             "tdg-source-module": "tests/doccomment/doccomment.seru",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-exported": "true",
             "tdg-type-globalid": "89c98031",
             "tdg-type-name": "ThirdClass"
         }
     },
-    "18afb5cae874db2ba3d444d584e504a5": {
-        "Key": "18afb5cae874db2ba3d444d584e504a5",
+    "0746a1cfd2dfc53ed74112a9d42e9b94": {
+        "Key": "0746a1cfd2dfc53ed74112a9d42e9b94",
+        "Kind": 1,
+        "Children": {
+            "2192fe716f65afd36b5f673f0b573c5c": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "2192fe716f65afd36b5f673f0b573c5c",
+                    "Kind": 9,
+                    "Children": {
+                        "a2322590426e79641949a5d5765810f0": {
+                            "Predicate": "tdg-member-returnable",
+                            "Child": {
+                                "Key": "a2322590426e79641949a5d5765810f0",
+                                "Kind": 13,
+                                "Children": {},
+                                "Predicates": {
+                                    "tdg-node-kind": "13|NodeType|tdg",
+                                    "tdg-return-type": "AnotherClass"
+                                }
+                            }
+                        }
+                    },
+                    "Predicates": {
+                        "tdg-member-name": "new",
+                        "tdg-member-promising": "1",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "function\u003cAnotherClass\u003e",
+                        "tdg-member-signature": "\n\u0003new\u0010\u0001*\u0016function\u003cAnotherClass\u003e",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-module": "tests/doccomment/doccomment.seru"
+                    }
+                }
+            }
+        },
+        "Predicates": {
+            "tdg-documentation": "AnotherClass does other cool things.",
+            "tdg-node-kind": "1|NodeType|tdg",
+            "tdg-source-module": "tests/doccomment/doccomment.seru",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-exported": "true",
+            "tdg-type-globalid": "b2cb039d",
+            "tdg-type-name": "AnotherClass"
+        }
+    },
+    "36586f847d5da0a799313eb423052bf7": {
+        "Key": "36586f847d5da0a799313eb423052bf7",
         "Kind": 1,
         "Children": {
             "03d4f37bbb524f56de3f367754255e9f": {
@@ -133,53 +180,9 @@
             "tdg-node-kind": "1|NodeType|tdg",
             "tdg-source-module": "tests/doccomment/doccomment.seru",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-exported": "true",
             "tdg-type-globalid": "70ac6d61",
             "tdg-type-name": "SomeClass"
-        }
-    },
-    "e2df3347695af5a2f2131d03946961de": {
-        "Key": "e2df3347695af5a2f2131d03946961de",
-        "Kind": 1,
-        "Children": {
-            "2192fe716f65afd36b5f673f0b573c5c": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "2192fe716f65afd36b5f673f0b573c5c",
-                    "Kind": 9,
-                    "Children": {
-                        "a2322590426e79641949a5d5765810f0": {
-                            "Predicate": "tdg-member-returnable",
-                            "Child": {
-                                "Key": "a2322590426e79641949a5d5765810f0",
-                                "Kind": 13,
-                                "Children": {},
-                                "Predicates": {
-                                    "tdg-node-kind": "13|NodeType|tdg",
-                                    "tdg-return-type": "AnotherClass"
-                                }
-                            }
-                        }
-                    },
-                    "Predicates": {
-                        "tdg-member-name": "new",
-                        "tdg-member-promising": "1",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "function\u003cAnotherClass\u003e",
-                        "tdg-member-signature": "\n\u0003new\u0010\u0001*\u0016function\u003cAnotherClass\u003e",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-module": "tests/doccomment/doccomment.seru"
-                    }
-                }
-            }
-        },
-        "Predicates": {
-            "tdg-documentation": "AnotherClass does other cool things.",
-            "tdg-node-kind": "1|NodeType|tdg",
-            "tdg-source-module": "tests/doccomment/doccomment.seru",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "b2cb039d",
-            "tdg-type-name": "AnotherClass"
         }
     }
 }

@@ -242,6 +242,7 @@ func (t *testTypeGraphConstructor) DefineTypes(builder GetTypeBuilder) {
 
 		genericBuilder := builder(*t.moduleNode).
 			Name(typeInfo.Name).
+			Exported(isExportedName(typeInfo.Name)).
 			GlobalId(typeInfo.Name).
 			SourceNode(typeNode).
 			TypeKind(typeKind).
@@ -270,6 +271,8 @@ func (t *testTypeGraphConstructor) DefineDependencies(annotator Annotator, graph
 		if typeInfo.ParentType != "" {
 			if typeInfo.Kind == "alias" {
 				annotator.DefineAliasedType(typeNode, resolveTypeReferenceString(typeInfo.ParentType, graph, typeNode).ReferredType())
+			} else if typeInfo.Kind == "agent" {
+				annotator.DefinePrincipalType(typeNode, resolveTypeReferenceString(typeInfo.ParentType, graph, typeNode))
 			} else {
 				annotator.DefineParentType(typeNode, resolveTypeReferenceString(typeInfo.ParentType, graph, typeNode))
 			}

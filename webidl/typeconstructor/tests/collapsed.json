@@ -1,6 +1,19 @@
 {
-    "d2e938e36719df6b352759a3503f2543": {
-        "Key": "d2e938e36719df6b352759a3503f2543",
+    "77c6db6d8946fbcee5ea8174cecd4aa2": {
+        "Key": "77c6db6d8946fbcee5ea8174cecd4aa2",
+        "Kind": 8,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "8|NodeType|tdg",
+            "tdg-source-module": "tests/collapsed.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-exported": "true",
+            "tdg-type-globalid": "fd519595",
+            "tdg-type-name": "ISomeCollapsedType"
+        }
+    },
+    "87965a1a2e46c89eeda43e2ea07249e0": {
+        "Key": "87965a1a2e46c89eeda43e2ea07249e0",
         "Kind": 3,
         "Children": {
             "386f3d463c204cc0af01b7ee26485ffa": {
@@ -62,19 +75,8 @@
             "tdg-node-kind": "3|NodeType|tdg",
             "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-exported": "true",
             "tdg-type-globalid": "ISomeCollapsedType",
-            "tdg-type-name": "ISomeCollapsedType"
-        }
-    },
-    "fafb6f46db4314511c8c0cd8d778a9c1": {
-        "Key": "fafb6f46db4314511c8c0cd8d778a9c1",
-        "Kind": 8,
-        "Children": {},
-        "Predicates": {
-            "tdg-node-kind": "8|NodeType|tdg",
-            "tdg-source-module": "tests/collapsed.webidl",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "fd519595",
             "tdg-type-name": "ISomeCollapsedType"
         }
     }

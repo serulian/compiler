@@ -148,7 +148,7 @@ func (tn TGTypeDecl) ContainingType() (TGTypeDecl, bool) {
 
 // IsExported returns whether the type is exported.
 func (tn TGTypeDecl) IsExported() bool {
-	_, isExported := tn.GraphNode.TryGet(NodePredicateMemberExported)
+	_, isExported := tn.GraphNode.TryGet(NodePredicateTypeExported)
 	return isExported
 }
 

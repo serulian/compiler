@@ -100,6 +100,9 @@ const (
 	// Marks a type with its global ID.
 	NodePredicateTypeGlobalId = "type-globalid"
 
+	// Marks a type as being publicly exported from its package.
+	NodePredicateTypeExported = "type-exported"
+
 	//
 	// NodeTypeClass/NodeTypeInterface/NodeTypeExternalInterface/NodeTypeAgent/
 	// NodeTypeNominal/NodeTypeStruct/NodeTypeAlias
