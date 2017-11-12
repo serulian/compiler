@@ -72,7 +72,7 @@ func (g *TypeGraph) globallyValidate() bool {
 				member.Name(), serr)
 		}
 
-		// Check the function's paramters.
+		// Check the function's parameters.
 		for _, parameterType := range memberType.Parameters() {
 			if serr := parameterType.EnsureStructural(); serr != nil {
 				status = false
