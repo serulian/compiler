@@ -152,6 +152,6 @@ func diffType(original typegraph.TGTypeDecl, updated typegraph.TGTypeDecl) TypeD
 		ChangeReason: changeReason,
 		Original:     &original,
 		Updated:      &updated,
-		Members:      memberDiffs,
+		Members:      sortedMemberDiffs(memberDiffs),
 	}
 }

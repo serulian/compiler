@@ -70,7 +70,7 @@ func diffPackage(path string, originalModules []typegraph.TGModule,
 		ChangeReason:    changeReason,
 		OriginalModules: originalModules,
 		UpdatedModules:  updatedModules,
-		Types:           typeDiffs,
-		Members:         memberDiffs,
+		Types:           sortedTypeDiffs(typeDiffs),
+		Members:         sortedMemberDiffs(memberDiffs),
 	}
 }

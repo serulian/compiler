@@ -5,6 +5,8 @@
 package diff
 
 import (
+	"sort"
+
 	"github.com/serulian/compiler/graphs/typegraph"
 )
 
@@ -55,4 +57,26 @@ func (mhw memberHolderWrap) Members() []typegraph.TGMember {
 		members = append(members, member)
 	}
 	return members
+}
+
+type sortableMemberDiff []MemberDiff
+
+func (s sortableMemberDiff) Len() int           { return len(s) }
+func (s sortableMemberDiff) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
+func (s sortableMemberDiff) Less(i, j int) bool { return s[i].Name < s[j].Name }
+
+type sortableTypeDiff []TypeDiff
+
+func (s sortableTypeDiff) Len() int           { return len(s) }
+func (s sortableTypeDiff) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
+func (s sortableTypeDiff) Less(i, j int) bool { return s[i].Name < s[j].Name }
+
+func sortedMemberDiffs(diffs []MemberDiff) []MemberDiff {
+	sort.Sort(sortableMemberDiff(diffs))
+	return diffs
+}
+
+func sortedTypeDiffs(diffs []TypeDiff) []TypeDiff {
+	sort.Sort(sortableTypeDiff(diffs))
+	return diffs
 }

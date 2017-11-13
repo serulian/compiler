@@ -6,6 +6,12 @@
             "ChangeReason": 4,
             "Types": [
                 {
+                    "Kind": "added",
+                    "Name": "AnotherClass",
+                    "ChangeReason": 0,
+                    "Members": null
+                },
+                {
                     "Kind": "same",
                     "Name": "SomeClass",
                     "ChangeReason": 0,
@@ -16,12 +22,6 @@
                             "ChangeReason": 0
                         }
                     ]
-                },
-                {
-                    "Kind": "added",
-                    "Name": "AnotherClass",
-                    "ChangeReason": 0,
-                    "Members": null
                 }
             ],
             "Members": []
