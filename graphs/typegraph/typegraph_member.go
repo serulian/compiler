@@ -209,6 +209,11 @@ func (tn TGMember) IsOperator() bool {
 	return tn.GraphNode.Kind() == NodeTypeOperator
 }
 
+// AsType returns whether this is a type (always false).
+func (tn TGMember) AsType() (TGTypeDecl, bool) {
+	return TGTypeDecl{}, false
+}
+
 // ConstructorType returns the type constructed by invoking this member,
 // if it is a constructor.
 func (tn TGMember) ConstructorType() (TypeReference, bool) {
@@ -287,6 +292,16 @@ func (tn TGMember) SourceRange() (compilercommon.SourceRange, bool) {
 // MemberType returns the type for this member.
 func (tn TGMember) MemberType() TypeReference {
 	return tn.GraphNode.GetTagged(NodePredicateMemberType, tn.tdg.AnyTypeReference()).(TypeReference)
+}
+
+// DeclaredType returns the declared type for this member. If a function, returns the return type.
+// Otherwise, returns the member type.
+func (tn TGMember) DeclaredType() TypeReference {
+	if returnType, hasReturnType := tn.ReturnType(); hasReturnType {
+		return returnType
+	}
+
+	return tn.MemberType()
 }
 
 // HasGenerics returns whether this member has generics defined.
@@ -464,6 +479,11 @@ func (tn TGMember) ShadowsMembers() []TGMember {
 // If none, returns "typegraph".
 func (tn TGMember) SourceGraphId() string {
 	return tn.Parent().SourceGraphId()
+}
+
+// TypeGraph returns the type graph that contains this member.
+func (tn TGMember) TypeGraph() *TypeGraph {
+	return tn.tdg
 }
 
 // Code returns a code-like summarization of the member, for human consumption.

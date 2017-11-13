@@ -47,10 +47,15 @@ func (itc *irgTypeConstructor) DefineModules(builder typegraph.GetModuleBuilder)
 }
 
 func (itc *irgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
+	if itc.tc == nil {
+		panic("TypeCollapser is nil")
+	}
+
 	itc.tc.ForEachType(func(collapsedType *webidl.CollapsedType) {
 		// Define a single type under the root module node.
 		typeBuilder := builder(itc.irg.RootModuleNode()).
 			Name(collapsedType.Name).
+			Exported(true).
 			GlobalId(collapsedType.Name).
 			SourceNode(collapsedType.RootNode).
 			TypeKind(typegraph.ExternalInternalType)
@@ -64,6 +69,7 @@ func (itc *irgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 		for _, declaration := range collapsedType.Declarations {
 			builder(declaration.Module().Node()).
 				Name(declaration.Name()).
+				Exported(true).
 				GlobalId(webidl.GetUniqueId(declaration.GraphNode)).
 				SourceNode(declaration.GraphNode).
 				TypeKind(typegraph.AliasType).
@@ -75,6 +81,10 @@ func (itc *irgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 }
 
 func (itc *irgTypeConstructor) DefineDependencies(annotator typegraph.Annotator, graph *typegraph.TypeGraph) {
+	if itc.tc == nil {
+		panic("TypeCollapser is nil")
+	}
+
 	itc.tc.ForEachType(func(collapsedType *webidl.CollapsedType) {
 		// Set the parent type of the collapsed type, if any.
 		if len(collapsedType.ParentTypes) > 0 {
@@ -107,6 +117,10 @@ func (itc *irgTypeConstructor) DefineDependencies(annotator typegraph.Annotator,
 }
 
 func (itc *irgTypeConstructor) DefineMembers(builder typegraph.GetMemberBuilder, reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {
+	if itc.tc == nil {
+		panic("TypeCollapser is nil")
+	}
+
 	// Define global members.
 	itc.tc.ForEachGlobalDeclaration(func(declaration webidl.IRGDeclaration) {
 		itc.defineGlobalContextMembers(declaration, builder, reporter)
@@ -355,6 +369,10 @@ func (itc *irgTypeConstructor) decorateMember(member webidl.IRGMember, decorator
 }
 
 func (itc *irgTypeConstructor) DecorateMembers(decorator typegraph.GetMemberDecorator, reporter typegraph.IssueReporter, graph *typegraph.TypeGraph) {
+	if itc.tc == nil {
+		panic("TypeCollapser is nil")
+	}
+
 	// Decorate global declarations members.
 	itc.tc.ForEachGlobalDeclaration(func(declaration webidl.IRGDeclaration) {
 		for _, member := range declaration.Members() {
@@ -392,6 +410,10 @@ func (itc *irgTypeConstructor) GetRanges(sourceNodeID compilergraph.GraphNodeId)
 	layerNode, found := itc.irg.TryGetNode(sourceNodeID)
 	if !found {
 		return []compilercommon.SourceRange{}
+	}
+
+	if itc.tc == nil {
+		panic("TypeCollapser is nil")
 	}
 
 	// If the node is a synthesized node representing a collapsed type, return all its ranges.

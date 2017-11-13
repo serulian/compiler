@@ -1,6 +1,6 @@
 {
-    "0afacb500df23d576019168e5d740e4b": {
-        "Key": "0afacb500df23d576019168e5d740e4b",
+    "5c9700b7b82c7033c03ee5303bd91eb2": {
+        "Key": "5c9700b7b82c7033c03ee5303bd91eb2",
         "Kind": 3,
         "Children": {
             "07986046f92fee1efb279e9e858f7d11": {
@@ -78,18 +78,20 @@
             "tdg-node-kind": "3|NodeType|tdg",
             "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-exported": "true",
             "tdg-type-globalid": "SomeInterface",
             "tdg-type-name": "SomeInterface"
         }
     },
-    "0b8117b9a1510fba25911812ad185fe7": {
-        "Key": "0b8117b9a1510fba25911812ad185fe7",
+    "94ed69734988cb02f1ae43ae0d2f9c4b": {
+        "Key": "94ed69734988cb02f1ae43ae0d2f9c4b",
         "Kind": 8,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "8|NodeType|tdg",
             "tdg-source-module": "tests/operator.webidl",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-exported": "true",
             "tdg-type-globalid": "a9fcf475",
             "tdg-type-name": "SomeInterface"
         }

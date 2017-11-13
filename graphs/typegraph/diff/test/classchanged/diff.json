@@ -1,0 +1,27 @@
+{
+    "Packages": {
+        "test/classchanged": {
+            "Kind": "changed",
+            "Path": "test/classchanged",
+            "ChangeReason": 8,
+            "Types": [
+                {
+                    "Kind": "changed",
+                    "Name": "SomeClass",
+                    "ChangeReason": 4,
+                    "Members": [
+                        {
+                            "Kind": "changed",
+                            "Name": "new",
+                            "ChangeReason": 32
+                        }
+                    ]
+                }
+            ],
+            "Members": []
+        }
+    },
+    "Filters": [
+        "test/classchanged"
+    ]
+}

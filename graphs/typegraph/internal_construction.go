@@ -72,7 +72,7 @@ func (g *TypeGraph) globallyValidate() bool {
 				member.Name(), serr)
 		}
 
-		// Check the function's paramters.
+		// Check the function's parameters.
 		for _, parameterType := range memberType.Parameters() {
 			if serr := parameterType.EnsureStructural(); serr != nil {
 				status = false
@@ -371,15 +371,16 @@ func (g *TypeGraph) checkForDuplicateNames() bool {
 	modifier := g.layer.NewModifier()
 	defer modifier.Apply()
 
-	ensureUniqueName := func(typeOrMember TGTypeOrMember, parent TGTypeOrModule, nameMap map[string]bool) {
+	ensureUniqueName := func(typeOrMember TGTypeOrMember, parent TGTypeOrModule, nameMap map[string]bool) bool {
 		name := typeOrMember.Name()
 		if _, ok := nameMap[name]; ok {
 			g.decorateWithError(modifier.Modify(typeOrMember.Node()), "%s '%s' redefines name '%s' under %s '%s'", typeOrMember.Title(), name, name, parent.Title(), parent.Name())
 			hasError = true
-			return
+			return false
 		}
 
 		nameMap[name] = true
+		return true
 	}
 
 	ensureUniqueGenerics := func(typeOrMember TGTypeOrMember) {
@@ -400,13 +401,23 @@ func (g *TypeGraph) checkForDuplicateNames() bool {
 		}
 	}
 
+	packageNameMap := newPackageNameMap()
+
 	// Check all module members.
 	g.ForEachModule(func(module TGModule) {
 		moduleMembers := map[string]bool{}
 
 		for _, member := range module.Members() {
 			// Ensure the member name is unique.
-			ensureUniqueName(member, module, moduleMembers)
+			isUniqueInModule := ensureUniqueName(member, module, moduleMembers)
+
+			// If exported, ensure the member's name is unique under the package.
+			if isUniqueInModule && member.IsExported() {
+				if existing, ok := packageNameMap.CheckAndTrack(module, member); !ok {
+					g.decorateWithError(modifier.Modify(member.GraphNode), "Exported name '%s' is already defined under package %s as '%s' %s", member.Name(), module.PackagePath(), existing.Title(), existing.Name())
+					hasError = true
+				}
+			}
 
 			// Ensure that the member's generics are unique.
 			ensureUniqueGenerics(member)
@@ -414,7 +425,15 @@ func (g *TypeGraph) checkForDuplicateNames() bool {
 
 		for _, typeDecl := range module.Types() {
 			// Ensure the type name is unique.
-			ensureUniqueName(typeDecl, module, moduleMembers)
+			isUniqueInModule := ensureUniqueName(typeDecl, module, moduleMembers)
+
+			// If exported, ensure the type's name is unique under the package.
+			if isUniqueInModule && typeDecl.IsExported() && typeDecl.TypeKind() != AliasType {
+				if existing, ok := packageNameMap.CheckAndTrack(module, typeDecl); !ok {
+					g.decorateWithError(modifier.Modify(typeDecl.GraphNode), "Exported name '%s' is already defined under package %s as '%s' %s", typeDecl.Name(), module.PackagePath(), existing.Title(), existing.Name())
+					hasError = true
+				}
+			}
 
 			// Ensure that the type's generics are unique.
 			ensureUniqueGenerics(typeDecl)

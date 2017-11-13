@@ -17,18 +17,6 @@ import (
 	"github.com/serulian/compiler/graphs/typegraph/proto"
 )
 
-type graphChildRep struct {
-	Predicate string
-	Child     *graphNodeRep
-}
-
-type graphNodeRep struct {
-	Key        string
-	Kind       interface{}
-	Children   map[string]graphChildRep
-	Predicates map[string]string
-}
-
 // GetJSONForm returns this type graph serialized to JSON. *For testing purposes only*.
 func (tg *TypeGraph) GetJSONForm() string {
 	return tg.GetFilteredJSONForm([]string{}, []compilergraph.TaggedValue{})
@@ -45,19 +33,19 @@ func (tg *TypeGraph) GetFilteredJSONForm(pathFilters []string, skipNodeKinds []c
 	// Start the walk at the type declarations.
 	var startingNodes = make([]compilergraph.GraphNode, 0)
 	for _, typeDecl := range tg.TypeDecls() {
-		if len(pathFilters) == 0 || filterMap[typeDecl.ParentModule().Path()] {
+		if len(pathFilters) == 0 || filterMap[string(typeDecl.ParentModule().Path())] {
 			startingNodes = append(startingNodes, typeDecl.Node())
 		}
 	}
 
 	for _, typeAlias := range tg.TypeAliases() {
-		if len(pathFilters) == 0 || filterMap[typeAlias.ParentModule().Path()] {
+		if len(pathFilters) == 0 || filterMap[string(typeAlias.ParentModule().Path())] {
 			startingNodes = append(startingNodes, typeAlias.Node())
 		}
 	}
 
 	for _, module := range tg.ModulesWithMembers() {
-		if len(pathFilters) == 0 || filterMap[module.Path()] {
+		if len(pathFilters) == 0 || filterMap[string(module.Path())] {
 			startingNodes = append(startingNodes, module.Node())
 		}
 	}
@@ -137,19 +125,19 @@ func (tg *TypeGraph) GetFilteredJSONForm(pathFilters []string, skipNodeKinds []c
 
 	rootReps := map[string]*graphNodeRep{}
 	for _, typeDecl := range tg.TypeDecls() {
-		if len(pathFilters) == 0 || filterMap[typeDecl.ParentModule().Path()] {
+		if len(pathFilters) == 0 || filterMap[string(typeDecl.ParentModule().Path())] {
 			rootReps[repMap[typeDecl.Node().NodeId].Key] = repMap[typeDecl.Node().NodeId]
 		}
 	}
 
 	for _, typeAlias := range tg.TypeAliases() {
-		if len(pathFilters) == 0 || filterMap[typeAlias.ParentModule().Path()] {
+		if len(pathFilters) == 0 || filterMap[string(typeAlias.ParentModule().Path())] {
 			rootReps[repMap[typeAlias.Node().NodeId].Key] = repMap[typeAlias.Node().NodeId]
 		}
 	}
 
 	for _, module := range tg.ModulesWithMembers() {
-		if len(pathFilters) == 0 || filterMap[module.Path()] {
+		if len(pathFilters) == 0 || filterMap[string(module.Path())] {
 			if _, exists := repMap[module.Node().NodeId]; exists {
 				rootReps[repMap[module.Node().NodeId].Key] = repMap[module.Node().NodeId]
 			}
@@ -159,4 +147,16 @@ func (tg *TypeGraph) GetFilteredJSONForm(pathFilters []string, skipNodeKinds []c
 	// Marshal the tree to JSON.
 	b, _ := json.MarshalIndent(rootReps, "", "    ")
 	return string(b)
+}
+
+type graphChildRep struct {
+	Predicate string
+	Child     *graphNodeRep
+}
+
+type graphNodeRep struct {
+	Key        string
+	Kind       interface{}
+	Children   map[string]graphChildRep
+	Predicates map[string]string
 }

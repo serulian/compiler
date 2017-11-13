@@ -100,6 +100,12 @@ func (t SRGType) Name() (string, bool) {
 	return t.GraphNode.TryGet(parser.NodeTypeDefinitionName)
 }
 
+// IsExported returns whether the given type is exported for use outside its package.
+func (t SRGType) IsExported() bool {
+	name, _ := t.Name()
+	return isExportedName(name)
+}
+
 // Node returns the underlying type node for this type.
 func (t SRGType) Node() compilergraph.GraphNode {
 	return t.GraphNode

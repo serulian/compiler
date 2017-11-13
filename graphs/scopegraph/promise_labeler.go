@@ -101,8 +101,8 @@ outerloop:
 
 				// If the member is under an interface, check it dynamically.
 				parent := member.Parent()
-				if parent.IsType() {
-					if parent.AsType().TypeKind() == typegraph.ImplicitInterfaceType {
+				if asType, isType := parent.AsType(); isType {
+					if asType.TypeKind() == typegraph.ImplicitInterfaceType {
 						if _, exists := dynamicNames[member.Name()]; exists {
 							labelEntrypoint(e, entrypoint, entrypointScope, proto.ScopeLabel_SML_PROMISING_MAYBE)
 							continue outerloop

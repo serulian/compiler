@@ -381,7 +381,7 @@ func (db *domBuilder) buildMappedCollectionExpression(node compilergraph.GraphNo
 
 // buildTemplateStringExpression builds the CodeDOM for a template string expression.
 func (db *domBuilder) buildTemplateStringExpression(node compilergraph.GraphNode) codedom.Expression {
-	member, found := db.scopegraph.TypeGraph().StringType().ParentModule().FindMember("formatTemplateString")
+	member, found := db.scopegraph.TypeGraph().StringType().ParentModule().GetMember("formatTemplateString")
 	if !found {
 		panic("Missing formatTemplateString under String's module")
 	}

@@ -82,6 +82,16 @@ func (tn TGTypeDecl) DescriptiveName() string {
 	return tn.Name()
 }
 
+// FullName returns the full name of this type, including its parent module's path.
+func (tn TGTypeDecl) FullName() string {
+	return string(tn.ParentModule().Path()) + "::" + tn.Name()
+}
+
+// PackagedName returns the packaged name of this type, including its parent package's path.
+func (tn TGTypeDecl) PackagedName() string {
+	return tn.ParentModule().PackagePath() + "::" + tn.Name()
+}
+
 // Title returns a nice title for the type.
 func (tn TGTypeDecl) Title() string {
 	nodeType := tn.GraphNode.Kind().(NodeType)
@@ -148,7 +158,7 @@ func (tn TGTypeDecl) ContainingType() (TGTypeDecl, bool) {
 
 // IsExported returns whether the type is exported.
 func (tn TGTypeDecl) IsExported() bool {
-	_, isExported := tn.GraphNode.TryGet(NodePredicateMemberExported)
+	_, isExported := tn.GraphNode.TryGet(NodePredicateTypeExported)
 	return isExported
 }
 
@@ -364,17 +374,13 @@ func (tn TGTypeDecl) IsType() bool {
 }
 
 // AsType returns this type.
-func (tn TGTypeDecl) AsType() TGTypeDecl {
-	return tn
+func (tn TGTypeDecl) AsType() (TGTypeDecl, bool) {
+	return tn, true
 }
 
-// AsGeneric returns this type as a generic. Will panic if this is not a generic.
-func (tn TGTypeDecl) AsGeneric() TGGeneric {
-	if tn.TypeKind() != GenericType {
-		panic("AsGeneric called on non-generic")
-	}
-
-	return TGGeneric{tn.Node(), tn.tdg}
+// AsGeneric returns this type as a generic.
+func (tn TGTypeDecl) AsGeneric() (TGGeneric, bool) {
+	return TGGeneric{tn.Node(), tn.tdg}, tn.TypeKind() == GenericType
 }
 
 // IsStatic returns whether this type is static (always true).
@@ -425,6 +431,20 @@ func (tn TGTypeDecl) RequiredFields() []TGMember {
 		}
 	}
 	return fields
+}
+
+// Attributes returns the attributes of this type.
+func (tn TGTypeDecl) Attributes() []TypeAttribute {
+	attributes := make([]TypeAttribute, 0, 1)
+
+	ait := tn.StartQuery().
+		Out(NodePredicateTypeAttribute).
+		BuildNodeIterator()
+	for ait.Next() {
+		attributes = append(attributes, TypeAttribute(ait.Node().Get(NodePredicateAttributeName)))
+	}
+
+	return attributes
 }
 
 // HasAttribute returns whether this type has the given attribute.

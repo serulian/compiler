@@ -61,6 +61,7 @@ func (stc *srgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
 		// Start the type definition.
 		typeBuilder := builder(moduleNode).
 			Name(typeName).
+			Exported(srgType.IsExported()).
 			GlobalId(srgType.UniqueId()).
 			Documentation(docString).
 			SourceNode(srgType.Node())
@@ -366,7 +367,7 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 
 		// Make sure instance members under interfaces do not have bodies (and static members do).
 		if parent.IsType() {
-			parentType := parent.AsType()
+			parentType, _ := parent.AsType()
 			if parentType.TypeKind() == typegraph.ImplicitInterfaceType {
 				memberName, _ := member.Name()
 				opDef, found := graph.GetOperatorDefinition(memberName)

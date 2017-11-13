@@ -24,6 +24,11 @@ func (tn TGGeneric) DescriptiveName() string {
 	return tn.AsType().DescriptiveName()
 }
 
+// GetTypeReference returns a new type reference to this generic.
+func (tn TGGeneric) GetTypeReference() TypeReference {
+	return tn.AsType().GetTypeReference()
+}
+
 // Node returns the underlying node in this declaration.
 func (tn TGGeneric) Node() compilergraph.GraphNode {
 	return tn.GraphNode
@@ -31,7 +36,12 @@ func (tn TGGeneric) Node() compilergraph.GraphNode {
 
 // Constraint returns the type constraint on this generic.
 func (tn TGGeneric) Constraint() TypeReference {
-	return tn.GraphNode.GetTagged(NodePredicateGenericSubtype, tn.tdg.AnyTypeReference()).(TypeReference)
+	constraint, hasConstraint := tn.GraphNode.TryGetTagged(NodePredicateGenericSubtype, tn.tdg.AnyTypeReference())
+	if hasConstraint {
+		return constraint.(TypeReference)
+	}
+
+	return tn.tdg.AnyTypeReference()
 }
 
 // Title returns a nice title for the generic.

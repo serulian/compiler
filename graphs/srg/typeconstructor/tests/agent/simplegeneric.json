@@ -1,6 +1,6 @@
 {
-    "7c5d0a9bdaee477e1a497854b5645737": {
-        "Key": "7c5d0a9bdaee477e1a497854b5645737",
+    "1fdbedb0a86f3988d6365100ecda3968": {
+        "Key": "1fdbedb0a86f3988d6365100ecda3968",
         "Kind": 6,
         "Children": {
             "2825dfad0263562c6dd7f10302403344": {
@@ -86,6 +86,7 @@
             "tdg-principal-type": "T",
             "tdg-source-module": "tests/agent/simplegeneric.seru",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-exported": "true",
             "tdg-type-globalid": "1fe8301a",
             "tdg-type-name": "SomeAgent"
         }

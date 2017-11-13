@@ -213,6 +213,7 @@ type typeBuilder struct {
 	modifier      compilergraph.GraphLayerModifier // The modifier being used.
 	module        TGModule                         // The parent module.
 	name          string                           // The name of the type.
+	exported      bool                             // Whether the type is exported publicly.
 	globalId      string                           // The global ID of the type.
 	globalAlias   string                           // The global alias of the type.
 	sourceNode    compilergraph.GraphNode          // The node for the type in the source graph.
@@ -225,6 +226,12 @@ type typeBuilder struct {
 // engine-native, this must be the name found in the context when the code is running.
 func (tb *typeBuilder) GlobalId(globalId string) *typeBuilder {
 	tb.globalId = globalId
+	return tb
+}
+
+// Exported sets whether the type is exported publicly.
+func (tb *typeBuilder) Exported(exported bool) *typeBuilder {
+	tb.exported = exported
 	return tb
 }
 
@@ -288,6 +295,10 @@ func (tb *typeBuilder) Define() getGenericBuilder {
 
 	if tb.documentation != "" {
 		typeNode.Decorate(NodePredicateDocumentation, tb.documentation)
+	}
+
+	if tb.exported {
+		typeNode.Decorate(NodePredicateTypeExported, "true")
 	}
 
 	if tb.globalAlias != "" {
@@ -498,7 +509,7 @@ func (mb *MemberBuilder) withGeneric(name string) *MemberBuilder {
 	return mb
 }
 
-// WithParameter adds a paramedter to this member.
+// WithParameter adds a parameter to this member.
 func (mb *MemberBuilder) WithParameter(name string, documentation string, sourceNode compilergraph.GraphNode) *MemberBuilder {
 	mb.memberParameters = append(mb.memberParameters, memberParameter{
 		name, documentation, sourceNode, true,
@@ -857,8 +868,10 @@ func (mb *MemberDecorator) checkAndComputeOperator(memberNode compilergraph.Modi
 	mb.readonly = !definition.IsAssignable
 
 	// Ensure that the declared return type is equal to that expected.
+	asType, _ := mb.parent().AsType()
+
 	declaredReturnType := mb.memberType.Generics()[0]
-	containingType := mb.tdg.NewInstanceTypeReference(mb.parent().AsType())
+	containingType := asType.GetTypeReference()
 	expectedReturnType := definition.ExpectedReturnType(containingType)
 
 	if !mb.skipOperatorChecking {

@@ -102,7 +102,7 @@ func TestGraphs(t *testing.T) {
 		assert.True(t, irgResult.Status, "Got error for IRG construction %v: %s", test.name, irgResult.Errors)
 
 		// Construct the type graph.
-		result, _ := typegraph.BuildTypeGraphWithOption(graph, typegraph.SkipBasicTypeValidation, GetConstructor(testIRG), typegraph.NewBasicTypesConstructor(graph))
+		result, _ := typegraph.BuildTypeGraphWithOption(graph, typegraph.BuildForTesting, GetConstructor(testIRG), typegraph.NewBasicTypesConstructorForTesting(graph))
 
 		if test.expectedError == "" {
 			// Make sure we had no errors during construction.

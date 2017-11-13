@@ -1,6 +1,6 @@
 {
-    "507a1e927d70ce141dcb783b0bd430e1": {
-        "Key": "507a1e927d70ce141dcb783b0bd430e1",
+    "45fbe3f393967f11bb82d95e46028f50": {
+        "Key": "45fbe3f393967f11bb82d95e46028f50",
         "Kind": 5,
         "Children": {
             "06e1faea83bc2ace2a53564c96ebecd0": {
@@ -327,6 +327,7 @@
             "tdg-node-kind": "5|NodeType|tdg",
             "tdg-source-module": "tests/struct/tagged.seru",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-exported": "true",
             "tdg-type-globalid": "f5b60063",
             "tdg-type-name": "SomeStruct"
         }

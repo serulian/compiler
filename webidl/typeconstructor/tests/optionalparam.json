@@ -1,6 +1,19 @@
 {
-    "0afacb500df23d576019168e5d740e4b": {
-        "Key": "0afacb500df23d576019168e5d740e4b",
+    "334450544b1d44e1d04b8f1d8753e4fb": {
+        "Key": "334450544b1d44e1d04b8f1d8753e4fb",
+        "Kind": 8,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "8|NodeType|tdg",
+            "tdg-source-module": "tests/optionalparam.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-exported": "true",
+            "tdg-type-globalid": "8bf7577c",
+            "tdg-type-name": "SomeInterface"
+        }
+    },
+    "5c9700b7b82c7033c03ee5303bd91eb2": {
+        "Key": "5c9700b7b82c7033c03ee5303bd91eb2",
         "Kind": 3,
         "Children": {
             "31d6362ede827447c00ed6461603c40e": {
@@ -83,44 +96,35 @@
             "tdg-node-kind": "3|NodeType|tdg",
             "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-exported": "true",
             "tdg-type-globalid": "SomeInterface",
             "tdg-type-name": "SomeInterface"
         }
     },
-    "4367653e2725b18c2e169644c0cf2db6": {
-        "Key": "4367653e2725b18c2e169644c0cf2db6",
+    "a6c1cf8c97c2b165b82c784189cdb0fa": {
+        "Key": "a6c1cf8c97c2b165b82c784189cdb0fa",
+        "Kind": 8,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "8|NodeType|tdg",
+            "tdg-source-module": "tests/optionalparam.webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-exported": "true",
+            "tdg-type-globalid": "6757ffcf",
+            "tdg-type-name": "Foo"
+        }
+    },
+    "ce541d21d4db40e6822609bef1d1ff73": {
+        "Key": "ce541d21d4db40e6822609bef1d1ff73",
         "Kind": 3,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
             "tdg-source-module": "(root).webidl",
             "tdg-source-node": "(NodeRef)",
+            "tdg-type-exported": "true",
             "tdg-type-globalid": "Foo",
             "tdg-type-name": "Foo"
-        }
-    },
-    "6fab3f45bf2bd4a1a159c5508ec0e04c": {
-        "Key": "6fab3f45bf2bd4a1a159c5508ec0e04c",
-        "Kind": 8,
-        "Children": {},
-        "Predicates": {
-            "tdg-node-kind": "8|NodeType|tdg",
-            "tdg-source-module": "tests/optionalparam.webidl",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "6757ffcf",
-            "tdg-type-name": "Foo"
-        }
-    },
-    "f9f9b3569fba07b35900da3c86c7eacd": {
-        "Key": "f9f9b3569fba07b35900da3c86c7eacd",
-        "Kind": 8,
-        "Children": {},
-        "Predicates": {
-            "tdg-node-kind": "8|NodeType|tdg",
-            "tdg-source-module": "tests/optionalparam.webidl",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-globalid": "8bf7577c",
-            "tdg-type-name": "SomeInterface"
         }
     }
 }

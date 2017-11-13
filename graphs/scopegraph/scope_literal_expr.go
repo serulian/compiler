@@ -343,7 +343,7 @@ func (sb *scopeBuilder) scopeTemplateStringExpression(node compilergraph.GraphNo
 
 	// Mark that we have a dependency on the template string function.
 	if isValid {
-		member, found := sb.sg.tdg.StringType().ParentModule().FindMember("formatTemplateString")
+		member, found := sb.sg.tdg.StringType().ParentModule().GetMember("formatTemplateString")
 		if !found {
 			panic("Missing formatTemplateString method")
 		}

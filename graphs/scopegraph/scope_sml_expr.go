@@ -211,7 +211,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 						sb.decorateWithSecondaryLabel(childNodes[index], proto.ScopeLabel_SML_CHILD_YIELD_FROM)
 
 						// Register a dependency on MapStream.
-						member, _ := sb.sg.tdg.StreamType().ParentModule().FindMember("MapStream")
+						member, _ := sb.sg.tdg.StreamType().ParentModule().GetMember("MapStream")
 						context.staticDependencyCollector.registerDependency(member)
 					} else {
 						if serr := childType.CheckSubTypeOf(streamValueType); serr != nil {

@@ -217,7 +217,7 @@ func (m SRGMember) IsStatic() bool {
 	return m.MemberKind() == OperatorMember || m.MemberKind() == ConstructorMember
 }
 
-// IsExported returns whether the given member is exported for use outside its module.
+// IsExported returns whether the given member is exported for use outside its package.
 func (m SRGMember) IsExported() bool {
 	name, _ := m.Name()
 	return isExportedName(name)
