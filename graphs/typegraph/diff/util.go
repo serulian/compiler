@@ -15,8 +15,11 @@ func getTypesAndMembers(modules []typegraph.TGModule) (map[string]typegraph.TGTy
 	members := map[string]typegraph.TGMember{}
 	for _, module := range modules {
 		for _, typedecl := range module.Types() {
-			// Filter aliases out.
-			if typedecl.TypeKind() == typegraph.AliasType {
+			// Aliases are treated as if their refer to their underlying type,
+			// just with the aliased name.
+			aliasedType, hasAliasedType := typedecl.AliasedType()
+			if hasAliasedType {
+				types[typedecl.Name()] = aliasedType
 				continue
 			}
 
