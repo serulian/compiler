@@ -53,7 +53,7 @@ type VCSCheckoutResult struct {
 // IsVCSRootDirectory returns true if the given local file system path is a VCS root directory.
 // Note that this method will return false if the path does not exist locally.
 func IsVCSRootDirectory(localPath string) bool {
-	_, hasHandler := detectHandler(localPath)
+	_, hasHandler := DetectHandler(localPath)
 	return hasHandler
 }
 
@@ -170,17 +170,17 @@ func PerformVCSCheckoutAndInspect(vcsPath string, pkgCacheRootPath string, cache
 		return InspectInfo{}, "", err
 	}
 
-	handler, _ := detectHandler(result.PackageDirectory)
-	sha, err := handler.inspect(result.PackageDirectory)
+	handler, _ := DetectHandler(result.PackageDirectory)
+	sha, err := handler.Inspect(result.PackageDirectory)
 	if err != nil {
 		return InspectInfo{}, "", err
 	}
 
 	tagGetter := func() ([]string, error) {
-		return handler.listTags(result.PackageDirectory)
+		return handler.ListTags(result.PackageDirectory)
 	}
 
-	return InspectInfo{string(handler.kind), sha, tagGetter}, result.Warning, nil
+	return InspectInfo{handler.Kind(), sha, tagGetter}, result.Warning, nil
 }
 
 // checkCacheAndPull conducts the cache check and necessary pulls.
@@ -211,18 +211,18 @@ func performFullCheckout(path vcsPackagePath, fullCacheDirectory string) (VCSPac
 	}
 
 	// Perform a full checkout.
-	handler, ok := vcsByKind[discovery.Kind]
+	handler, ok := GetHandlerByKind(discovery.Kind)
 	if !ok {
 		panic("Unknown VCS handler")
 	}
 
-	err = handler.checkout(path, discovery, fullCacheDirectory)
+	err = handler.Checkout(path, discovery.DownloadPath, fullCacheDirectory)
 	if err != nil {
 		return DetachedPackage, err
 	}
 
 	// Check if it currently points to a detached state.
-	isDetached, err := handler.isDetached(fullCacheDirectory)
+	isDetached, err := handler.IsDetached(fullCacheDirectory)
 	if err != nil {
 		return DetachedPackage, err
 	}
@@ -237,22 +237,22 @@ func performFullCheckout(path vcsPackagePath, fullCacheDirectory string) (VCSPac
 // performPossibleUpdateCheckout performs a VCS update of the given package path, if necessary.
 func performPossibleUpdateCheckout(path vcsPackagePath, fullCacheDirectory string) (VCSPackageStatus, error) {
 	// Detect the kind of VCS based on the checkout.
-	handler, ok := detectHandler(fullCacheDirectory)
+	handler, ok := DetectHandler(fullCacheDirectory)
 	if !ok {
 		return DetachedPackage, fmt.Errorf("Could not detect VCS for directory: %s", fullCacheDirectory)
 	}
 
 	// Check for any local file changes.
-	if handler.checkForLocalChanges(fullCacheDirectory) {
+	if handler.HasLocalChanges(fullCacheDirectory) {
 		log.Printf("Package %s is locally modified", fullCacheDirectory)
 		return LocallyModifiedPackage, nil
 	}
 
 	// Check for a detached package. If found, nothing more to do.
-	isDetached, err := handler.isDetached(fullCacheDirectory)
+	isDetached, err := handler.IsDetached(fullCacheDirectory)
 	if isDetached || err != nil {
 		return DetachedPackage, err
 	}
 
-	return BranchOrHEADPackage, handler.update(fullCacheDirectory)
+	return BranchOrHEADPackage, handler.Update(fullCacheDirectory)
 }

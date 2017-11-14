@@ -12,9 +12,9 @@ import (
 
 // VCSUrlInformation holds information about a VCS source URL.
 type VCSUrlInformation struct {
-	UrlPrefix    string  // The prefix matching the source URL.
-	Kind         VCSKind // The kind of VCS for the source URL.
-	DownloadPath string  // The VCS-specific download path.
+	UrlPrefix    string // The prefix matching the source URL.
+	Kind         string // The kind of VCS for the source URL.
+	DownloadPath string // The VCS-specific download path.
 }
 
 // discoveryUrlParamter holds the name of the parameter added to the URL to request it
@@ -98,13 +98,13 @@ func DiscoverVCSInformation(vcsUrl string) (VCSUrlInformation, error) {
 	}
 
 	// Find the associated VCS.
-	handler, ok := vcsByID[pieces[1]]
+	handler, ok := vcsByKind[pieces[1]]
 	if !ok {
 		err := fmt.Errorf("VCS url '%s' requires engine '%s', which is not currently supported", vcsUrl, pieces[1])
 		return VCSUrlInformation{}, err
 	}
 
-	return VCSUrlInformation{pieces[0], handler.kind, pieces[2]}, nil
+	return VCSUrlInformation{pieces[0], handler.Kind(), pieces[2]}, nil
 }
 
 // findVCSDiscoveryTag searches the parsed HTML DOM from the given start node, downward,
