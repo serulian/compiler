@@ -44,3 +44,7 @@ func (fgv fakeGitVcs) ListTags(checkoutDir string) ([]string, error) {
 func (fgv fakeGitVcs) IsDetached(checkoutDir string) (bool, error) {
 	panic("Fake git!")
 }
+
+func (fgv fakeGitVcs) GetPackagePath(checkoutDir string) (vcsPackagePath, error) {
+	panic("Fake git!")
+}

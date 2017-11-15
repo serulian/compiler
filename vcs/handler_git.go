@@ -150,3 +150,56 @@ func (gv gitVcs) IsDetached(checkoutDir string) (bool, error) {
 
 	return false, nil
 }
+
+func (gv gitVcs) GetPackagePath(checkoutDir string) (vcsPackagePath, error) {
+	// Find the origin URL.
+	originUrlStr, _, err := runCommand(checkoutDir, "git", "remote", "get-url", "origin")
+	if err != nil {
+		return vcsPackagePath{}, err
+	}
+
+	// Check for a branch.
+	branchStr, _, err := runCommand(checkoutDir, "git", "symbolic-ref", "-q", "--short", "HEAD")
+	if err != nil {
+		return vcsPackagePath{}, err
+	}
+
+	currentBranch := strings.TrimSpace(branchStr)
+	if len(currentBranch) > 0 {
+		return vcsPackagePath{
+			url:            strings.TrimSpace(originUrlStr),
+			branchOrCommit: branchStr,
+			tag:            "",
+			subpackage:     "",
+		}, nil
+	}
+
+	// Check for a tag.
+	tagStr, _, err := runCommand(checkoutDir, "git", "describe", "--tags", "--exact-match")
+	if err != nil {
+		return vcsPackagePath{}, err
+	}
+
+	currentTag := strings.TrimSpace(tagStr)
+	if len(currentTag) > 0 {
+		return vcsPackagePath{
+			url:            strings.TrimSpace(originUrlStr),
+			branchOrCommit: "",
+			tag:            currentTag,
+			subpackage:     "",
+		}, nil
+	}
+
+	// Use the inspect result.
+	currentSHA, err := gv.Inspect(checkoutDir)
+	if err != nil {
+		return vcsPackagePath{}, err
+	}
+
+	return vcsPackagePath{
+		url:            strings.TrimSpace(originUrlStr),
+		branchOrCommit: currentSHA,
+		tag:            "",
+		subpackage:     "",
+	}, nil
+}

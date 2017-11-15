@@ -29,6 +29,9 @@ type VCSHandler interface {
 
 	// IsDetached returns whether the checked out directory is in a detached state.
 	IsDetached(checkoutDir string) (bool, error)
+
+	// GetPackagePath returns the VCS Package Path information for the checked out directory.
+	GetPackagePath(checkoutDir string) (vcsPackagePath, error)
 }
 
 var vcsByKind = map[string]VCSHandler{
