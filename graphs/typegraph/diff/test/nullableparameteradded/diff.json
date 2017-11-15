@@ -1,8 +1,8 @@
 {
     "Packages": {
-        "test/nullableparameteradded": {
+        "nullableparameteradded": {
             "Kind": "changed",
-            "Path": "test/nullableparameteradded",
+            "Path": "nullableparameteradded",
             "ChangeReason": 64,
             "Types": [],
             "Members": [
@@ -13,8 +13,5 @@
                 }
             ]
         }
-    },
-    "Filters": [
-        "test/nullableparameteradded"
-    ]
+    }
 }

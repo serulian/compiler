@@ -21,10 +21,6 @@ type TypeGraphDiff struct {
 
 	// Updated is a reference to the updated type graph.
 	Updated *typegraph.TypeGraph `json:"-"`
-
-	// Filters, if non-empty, indicates that only packages matching the given
-	// filter *prefixes* will be returned.
-	Filters []string
 }
 
 // DiffKind defines the various diff kinds.

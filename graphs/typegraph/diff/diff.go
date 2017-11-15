@@ -5,17 +5,24 @@
 package diff
 
 import (
-	"strings"
+	"path/filepath"
 
 	"github.com/serulian/compiler/graphs/typegraph"
 )
 
+type TypeGraphInformation struct {
+	Graph           *typegraph.TypeGraph
+	PackageRootPath string
+}
+
+type DiffFilter func(module typegraph.TGModule) bool
+
 // ComputeDiff computes the differences between the original type graph and the
 // updated type graph.
-func ComputeDiff(original *typegraph.TypeGraph, updated *typegraph.TypeGraph, packageFilters ...string) TypeGraphDiff {
+func ComputeDiff(original TypeGraphInformation, updated TypeGraphInformation, filters ...DiffFilter) TypeGraphDiff {
 	// Find all the packages in both type graphs and compare.
-	originalPackages := computePackages(original, packageFilters)
-	updatedPackages := computePackages(updated, packageFilters)
+	originalPackages := computePackages(original, filters)
+	updatedPackages := computePackages(updated, filters)
 
 	diffs := map[string]PackageDiff{}
 
@@ -55,9 +62,8 @@ func ComputeDiff(original *typegraph.TypeGraph, updated *typegraph.TypeGraph, pa
 
 	return TypeGraphDiff{
 		Packages: diffs,
-		Original: original,
-		Updated:  updated,
-		Filters:  packageFilters,
+		Original: original.Graph,
+		Updated:  updated.Graph,
 	}
 }
 
@@ -66,14 +72,13 @@ type packageReference struct {
 	modules []typegraph.TGModule
 }
 
-func computePackages(graph *typegraph.TypeGraph, packageFilters []string) map[string]*packageReference {
+func computePackages(graphInfo TypeGraphInformation, filters []DiffFilter) map[string]*packageReference {
 	packages := map[string]*packageReference{}
-	for _, module := range graph.Modules() {
-		packagePath := module.PackagePath()
-		if len(packageFilters) > 0 {
+	for _, module := range graphInfo.Graph.Modules() {
+		if len(filters) > 0 {
 			var found = false
-			for _, filter := range packageFilters {
-				if strings.HasPrefix(packagePath, filter) {
+			for _, filter := range filters {
+				if filter(module) {
 					found = true
 					break
 				}
@@ -83,14 +88,20 @@ func computePackages(graph *typegraph.TypeGraph, packageFilters []string) map[st
 			}
 		}
 
-		if _, found := packages[packagePath]; !found {
-			packages[packagePath] = &packageReference{
-				source:  packagePath,
+		packagePath := module.PackagePath()
+		relativePath, err := filepath.Rel(graphInfo.PackageRootPath, packagePath)
+		if err != nil {
+			continue
+		}
+
+		if _, found := packages[relativePath]; !found {
+			packages[relativePath] = &packageReference{
+				source:  relativePath,
 				modules: []typegraph.TGModule{},
 			}
 		}
 
-		packages[packagePath].modules = append(packages[packagePath].modules, module)
+		packages[relativePath].modules = append(packages[relativePath].modules, module)
 	}
 	return packages
 }

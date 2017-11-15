@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/serulian/compiler/compilergraph"
@@ -23,7 +24,6 @@ type diffTest struct {
 	name            string
 	originalModules []typegraph.TestModule
 	updatedModules  []typegraph.TestModule
-	filters         []string
 	expectedKind    map[string]DiffKind
 }
 
@@ -54,7 +54,6 @@ var diffTests = []diffTest{
 				[]typegraph.TestMember{},
 			},
 		},
-		[]string{"."},
 		map[string]DiffKind{
 			".": Same,
 		},
@@ -105,7 +104,6 @@ var diffTests = []diffTest{
 				[]typegraph.TestMember{},
 			},
 		},
-		[]string{"foo"},
 		map[string]DiffKind{
 			"foopackage": Same,
 		},
@@ -125,7 +123,6 @@ var diffTests = []diffTest{
 			},
 		},
 		[]typegraph.TestModule{},
-		[]string{""},
 		map[string]DiffKind{
 			"somepackage": Removed,
 		},
@@ -145,7 +142,6 @@ var diffTests = []diffTest{
 				[]typegraph.TestMember{},
 			},
 		},
-		[]string{""},
 		map[string]DiffKind{
 			"somepackage": Added,
 		},
@@ -176,7 +172,6 @@ var diffTests = []diffTest{
 				[]typegraph.TestMember{},
 			},
 		},
-		[]string{""},
 		map[string]DiffKind{
 			"somepackage": Changed,
 		},
@@ -207,7 +202,6 @@ var diffTests = []diffTest{
 				[]typegraph.TestMember{},
 			},
 		},
-		[]string{""},
 		map[string]DiffKind{
 			"somepackage": Same,
 		},
@@ -219,7 +213,10 @@ func TestDiff(t *testing.T) {
 		originalGraph := typegraph.ConstructTypeGraphWithBasicTypes(test.originalModules...)
 		updatedGraph := typegraph.ConstructTypeGraphWithBasicTypes(test.updatedModules...)
 
-		diff := ComputeDiff(originalGraph, updatedGraph, test.filters...)
+		diff := ComputeDiff(
+			TypeGraphInformation{originalGraph, ""},
+			TypeGraphInformation{updatedGraph, ""})
+
 		for path, kind := range test.expectedKind {
 			packageDiff, found := diff.Packages[path]
 			if !assert.True(t, found, "Missing expected package diff %s for test %s", path, test.name) {
@@ -297,7 +294,15 @@ func TestSourcedDiff(t *testing.T) {
 			return
 		}
 
-		diff := ComputeDiff(originalGraph, updatedGraph, "test/"+test)
+		filter := func(module typegraph.TGModule) bool {
+			return strings.HasPrefix(module.PackagePath(), "test")
+		}
+
+		diff := ComputeDiff(
+			TypeGraphInformation{originalGraph, "test"},
+			TypeGraphInformation{updatedGraph, "test"},
+			filter)
+
 		b, _ := json.MarshalIndent(diff, "", "    ")
 		diffJson := string(b)
 
