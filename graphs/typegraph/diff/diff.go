@@ -24,6 +24,7 @@ func ComputeDiff(original TypeGraphInformation, updated TypeGraphInformation, fi
 	originalPackages := computePackages(original, filters)
 	updatedPackages := computePackages(updated, filters)
 
+	context := diffContext{original, updated}
 	diffs := map[string]PackageDiff{}
 
 	for path, originalPackage := range originalPackages {
@@ -41,7 +42,7 @@ func ComputeDiff(original TypeGraphInformation, updated TypeGraphInformation, fi
 			continue
 		}
 
-		diffs[path] = diffPackage(path, originalPackage.modules, updatedPackage.modules)
+		diffs[path] = diffPackage(path, originalPackage.modules, updatedPackage.modules, context)
 	}
 
 	for path, updatedPackage := range updatedPackages {

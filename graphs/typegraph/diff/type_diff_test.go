@@ -225,7 +225,8 @@ func TestTypeDiff(t *testing.T) {
 		originalType, _ := originalGraph.LookupType(test.originalType.Name, compilercommon.InputSource("somemodule"))
 		updatedType, _ := updatedGraph.LookupType(test.originalType.Name, compilercommon.InputSource("somemodule"))
 
-		diff := diffType(originalType, updatedType)
+		context := diffContext{TypeGraphInformation{originalGraph, ""}, TypeGraphInformation{updatedGraph, ""}}
+		diff := diffType(originalType, updatedType, context)
 		if !assert.Equal(t, test.expectedChangeReason, diff.ChangeReason, "Mismatch in expected diffs for test %s: %s vs %s", test.name, test.expectedChangeReason.String(), diff.ChangeReason.String()) {
 			continue
 		}

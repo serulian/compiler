@@ -1272,6 +1272,54 @@ func (tr TypeReference) ReplaceType(typeDecl TGTypeDecl, replacement TypeReferen
 	}
 }
 
+// TypeLookup is a function for finding the equivalent type for a type declaration in
+// another type graph.
+type TypeLookup func(existingType TGTypeDecl) (TGTypeDecl, bool)
+
+// AdoptReferenceInto attempts to turn the current type reference into a reference to the *equivalent*
+// type found in the specified type graph. Type equivalency matching is done via the lookup method. This
+// method is used in libraries that operate on multiple type graphs and need to perform comparison between
+// them.
+func (tr TypeReference) AdoptReferenceInto(graph *TypeGraph, lookup TypeLookup) (TypeReference, error) {
+	if !tr.IsNormal() {
+		return TypeReference{graph, tr.value}, nil
+	}
+
+	referredType := tr.ReferredType()
+	equivalentType, found := lookup(referredType)
+	if !found {
+		return TypeReference{}, fmt.Errorf("Could not find equivalent type for type `%s` under `%s`", referredType.Name(), tr)
+	}
+
+	if equivalentType.tdg != graph {
+		panic("Wrong typegraph returned!")
+	}
+
+	var newRef = graph.NewTypeReference(equivalentType)
+	for _, generic := range tr.Generics() {
+		updatedGeneric, err := generic.AdoptReferenceInto(graph, lookup)
+		if err != nil {
+			return TypeReference{}, err
+		}
+
+		newRef = newRef.WithGeneric(updatedGeneric)
+	}
+	for _, parameter := range tr.Parameters() {
+		updatedParameter, err := parameter.AdoptReferenceInto(graph, lookup)
+		if err != nil {
+			return TypeReference{}, err
+		}
+
+		newRef = newRef.WithParameter(updatedParameter)
+	}
+
+	if tr.IsNullable() {
+		newRef = newRef.AsNullable()
+	}
+
+	return newRef, nil
+}
+
 type humanStringOption int
 
 const (

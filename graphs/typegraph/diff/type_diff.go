@@ -14,7 +14,7 @@ type typeHolder interface {
 }
 
 // diffTypes performs a diff between two sets of types.
-func diffTypes(original typeHolder, updated typeHolder) []TypeDiff {
+func diffTypes(original typeHolder, updated typeHolder, context diffContext) []TypeDiff {
 	originalTypes := original.Types()
 	encounteredNames := map[string]bool{}
 
@@ -38,7 +38,7 @@ func diffTypes(original typeHolder, updated typeHolder) []TypeDiff {
 			continue
 		}
 
-		diffs = append(diffs, diffType(currentType, updatedType))
+		diffs = append(diffs, diffType(currentType, updatedType, context))
 	}
 
 	for _, updatedType := range updated.Types() {
@@ -59,7 +59,7 @@ func diffTypes(original typeHolder, updated typeHolder) []TypeDiff {
 }
 
 // diffType performs a diff between two instances of a type.
-func diffType(original typegraph.TGTypeDecl, updated typegraph.TGTypeDecl) TypeDiff {
+func diffType(original typegraph.TGTypeDecl, updated typegraph.TGTypeDecl, context diffContext) TypeDiff {
 	if original.TypeKind() == typegraph.AliasType ||
 		updated.TypeKind() == typegraph.AliasType {
 		panic("Cannot diff aliases")
@@ -73,7 +73,7 @@ func diffType(original typegraph.TGTypeDecl, updated typegraph.TGTypeDecl) TypeD
 	}
 
 	// Compare the generics of the types.
-	if !compareGenerics(original.Generics(), updated.Generics()) {
+	if !compareGenerics(original.Generics(), updated.Generics(), context) {
 		changeReason = changeReason | TypeDiffReasonGenericsChanged
 	}
 
@@ -84,7 +84,7 @@ func diffType(original typegraph.TGTypeDecl, updated typegraph.TGTypeDecl) TypeD
 		changeReason = changeReason | TypeDiffReasonParentTypesChanged
 	} else {
 		for index := range originalParentTypes {
-			if !compareTypes(originalParentTypes[index], updatedParentTypes[index]) {
+			if !compareTypes(originalParentTypes[index], updatedParentTypes[index], context) {
 				changeReason = changeReason | TypeDiffReasonParentTypesChanged
 				break
 			}
@@ -98,7 +98,7 @@ func diffType(original typegraph.TGTypeDecl, updated typegraph.TGTypeDecl) TypeD
 		if hasOriginalPrincipalType != hasUpdatedPrincipalType {
 			changeReason = changeReason | TypeDiffReasonPricipalTypeChanged
 		} else if hasOriginalPrincipalType && hasUpdatedPrincipalType {
-			if !compareTypes(originalPricipalType, updatedPricipalType) {
+			if !compareTypes(originalPricipalType, updatedPricipalType, context) {
 				changeReason = changeReason | TypeDiffReasonPricipalTypeChanged
 			}
 		}
@@ -121,7 +121,7 @@ func diffType(original typegraph.TGTypeDecl, updated typegraph.TGTypeDecl) TypeD
 	}
 
 	// Compare the members of the type.
-	memberDiffs := diffMembers(original, updated)
+	memberDiffs := diffMembers(original, updated, context)
 	for _, memberDiff := range memberDiffs {
 		switch memberDiff.Kind {
 		case Added:

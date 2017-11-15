@@ -10,14 +10,15 @@ import (
 
 // diffPackage performs a diff between two packages in a type graph.
 func diffPackage(path string, originalModules []typegraph.TGModule,
-	updatedModules []typegraph.TGModule) PackageDiff {
+	updatedModules []typegraph.TGModule, context diffContext) PackageDiff {
+
 	// Collect all members and types under all modules.
 	originalTypes, originalMembers := getTypesAndMembers(originalModules)
 	updatedTypes, updatedMembers := getTypesAndMembers(updatedModules)
 
 	// Diff all the types and members.
-	typeDiffs := diffTypes(typeHolderWrap(originalTypes), typeHolderWrap(updatedTypes))
-	memberDiffs := diffMembers(memberHolderWrap(originalMembers), memberHolderWrap(updatedMembers))
+	typeDiffs := diffTypes(typeHolderWrap(originalTypes), typeHolderWrap(updatedTypes), context)
+	memberDiffs := diffMembers(memberHolderWrap(originalMembers), memberHolderWrap(updatedMembers), context)
 
 	// Compute how the package has changed, if any.
 	var changeReason = PackageDiffReasonNotApplicable

@@ -5,26 +5,68 @@
 package diff
 
 import (
+	"path/filepath"
+
 	"github.com/serulian/compiler/graphs/typegraph"
 )
 
-func compareTypes(original typegraph.TypeReference, updated typegraph.TypeReference) bool {
-	// Fast path check: If both types are exactly the same, nothing more to do.
-	if original.PackageQualifiedString() == updated.PackageQualifiedString() {
-		return true
+func findEquivalentType(originalType typegraph.TGTypeDecl, context diffContext) (typegraph.TGTypeDecl, bool) {
+	containingType, hasContainingType := originalType.ContainingType()
+	if hasContainingType {
+		equivalentContainingType, found := findEquivalentType(containingType, context)
+		if !found {
+			return typegraph.TGTypeDecl{}, false
+		}
+
+		equivalentGeneric, found := equivalentContainingType.LookupGeneric(originalType.Name())
+		if !found {
+			return typegraph.TGTypeDecl{}, false
+		}
+
+		return equivalentGeneric.AsType(), true
 	}
 
-	// Otherwise, compare the types using their shape. Only types with the exact shape are
-	// considered the same.
-	if !original.IsNormal() || !updated.IsNormal() {
+	// Search all modules under the same package as the original type for a type with
+	// the same name.
+	relativePackagePath, err := filepath.Rel(context.originalGraph.PackageRootPath, originalType.ParentModule().PackagePath())
+	if err != nil {
+		// Cannot find, as it is not under the main package.
+		return typegraph.TGTypeDecl{}, false
+	}
+
+	for _, updatedModule := range context.updatedGraph.Graph.Modules() {
+		updatedRelativePackagePath, err := filepath.Rel(context.updatedGraph.PackageRootPath, updatedModule.PackagePath())
+		if err != nil {
+			continue
+		}
+
+		if updatedRelativePackagePath != relativePackagePath {
+			continue
+		}
+
+		updatedType, found := context.updatedGraph.Graph.LookupType(originalType.Name(), updatedModule.Path())
+		if found {
+			return updatedType, true
+		}
+	}
+
+	return typegraph.TGTypeDecl{}, false
+}
+
+func compareTypes(original typegraph.TypeReference, updated typegraph.TypeReference, context diffContext) bool {
+	// Adopt the original type reference into the updated graph.
+	adopted, err := original.AdoptReferenceInto(context.updatedGraph.Graph, func(originalType typegraph.TGTypeDecl) (typegraph.TGTypeDecl, bool) {
+		return findEquivalentType(originalType, context)
+	})
+
+	if err != nil {
 		return false
 	}
 
-	// TODO(jschorr): This.
-	return false
+	return adopted == updated
 }
 
-func compareParameters(original []typegraph.TGParameter, updated []typegraph.TGParameter) MemberDiffReason {
+func compareParameters(original []typegraph.TGParameter, updated []typegraph.TGParameter, context diffContext) MemberDiffReason {
 	if len(updated) < len(original) {
 		return MemberDiffReasonParametersNotCompatible
 	}
@@ -33,7 +75,7 @@ func compareParameters(original []typegraph.TGParameter, updated []typegraph.TGP
 	for index := range original {
 		originalType := original[index].DeclaredType()
 		updatedType := updated[index].DeclaredType()
-		if !compareTypes(originalType, updatedType) {
+		if !compareTypes(originalType, updatedType, context) {
 			return MemberDiffReasonParametersNotCompatible
 		}
 	}
@@ -52,7 +94,7 @@ func compareParameters(original []typegraph.TGParameter, updated []typegraph.TGP
 	return MemberDiffReasonNotApplicable
 }
 
-func compareGenerics(original []typegraph.TGGeneric, updated []typegraph.TGGeneric) bool {
+func compareGenerics(original []typegraph.TGGeneric, updated []typegraph.TGGeneric, context diffContext) bool {
 	if len(original) != len(updated) {
 		return false
 	}
@@ -62,7 +104,7 @@ func compareGenerics(original []typegraph.TGGeneric, updated []typegraph.TGGener
 			return false
 		}
 
-		if originalGeneric.Constraint().String() != updated[index].Constraint().String() {
+		if !compareTypes(originalGeneric.Constraint(), updated[index].Constraint(), context) {
 			return false
 		}
 	}

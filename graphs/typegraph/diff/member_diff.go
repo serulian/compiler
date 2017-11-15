@@ -14,7 +14,7 @@ type memberHolder interface {
 }
 
 // diffMembers performs a diff between two sets of members.
-func diffMembers(original memberHolder, updated memberHolder) []MemberDiff {
+func diffMembers(original memberHolder, updated memberHolder, context diffContext) []MemberDiff {
 	originalMembers := original.Members()
 	encounteredNames := map[string]bool{}
 
@@ -38,7 +38,7 @@ func diffMembers(original memberHolder, updated memberHolder) []MemberDiff {
 			continue
 		}
 
-		diffs = append(diffs, diffMember(member, updatedMember))
+		diffs = append(diffs, diffMember(member, updatedMember, context))
 	}
 
 	for _, member := range updated.Members() {
@@ -61,7 +61,7 @@ func diffMembers(original memberHolder, updated memberHolder) []MemberDiff {
 // diffMember performs a diff between two instances of a type or module member with the *same name*
 // and *same parent*. If given a member with different names or under a different parent, this method
 // will produce an incomplete diff.
-func diffMember(original typegraph.TGMember, updated typegraph.TGMember) MemberDiff {
+func diffMember(original typegraph.TGMember, updated typegraph.TGMember, context diffContext) MemberDiff {
 	var changeReason = MemberDiffReasonNotApplicable
 
 	// Compare kinds.
@@ -73,17 +73,17 @@ func diffMember(original typegraph.TGMember, updated typegraph.TGMember) MemberD
 	originalType := original.DeclaredType()
 	updatedType := updated.DeclaredType()
 
-	if !compareTypes(originalType, updatedType) {
+	if !compareTypes(originalType, updatedType, context) {
 		changeReason = changeReason | MemberDiffReasonTypeNotCompatible
 	}
 
 	// Compare generics.
-	if !compareGenerics(original.Generics(), updated.Generics()) {
+	if !compareGenerics(original.Generics(), updated.Generics(), context) {
 		changeReason = changeReason | MemberDiffReasonGenericsChanged
 	}
 
 	// Compare parameters.
-	changeReason = changeReason | compareParameters(original.Parameters(), updated.Parameters())
+	changeReason = changeReason | compareParameters(original.Parameters(), updated.Parameters(), context)
 
 	var kind = Changed
 	if changeReason == MemberDiffReasonNotApplicable {
