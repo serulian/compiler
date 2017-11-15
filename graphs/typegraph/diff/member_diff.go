@@ -14,7 +14,7 @@ type memberHolder interface {
 }
 
 // diffMembers performs a diff between two sets of members.
-func diffMembers(original memberHolder, updated memberHolder) []MemberDiff {
+func diffMembers(original memberHolder, updated memberHolder, context diffContext) []MemberDiff {
 	originalMembers := original.Members()
 	encounteredNames := map[string]bool{}
 
@@ -38,7 +38,7 @@ func diffMembers(original memberHolder, updated memberHolder) []MemberDiff {
 			continue
 		}
 
-		diffs = append(diffs, diffMember(member, updatedMember))
+		diffs = append(diffs, diffMember(member, updatedMember, context))
 	}
 
 	for _, member := range updated.Members() {
@@ -61,7 +61,7 @@ func diffMembers(original memberHolder, updated memberHolder) []MemberDiff {
 // diffMember performs a diff between two instances of a type or module member with the *same name*
 // and *same parent*. If given a member with different names or under a different parent, this method
 // will produce an incomplete diff.
-func diffMember(original typegraph.TGMember, updated typegraph.TGMember) MemberDiff {
+func diffMember(original typegraph.TGMember, updated typegraph.TGMember, context diffContext) MemberDiff {
 	var changeReason = MemberDiffReasonNotApplicable
 
 	// Compare kinds.
@@ -73,17 +73,17 @@ func diffMember(original typegraph.TGMember, updated typegraph.TGMember) MemberD
 	originalType := original.DeclaredType()
 	updatedType := updated.DeclaredType()
 
-	if !compareTypes(originalType, updatedType) {
+	if !compareTypes(originalType, updatedType, context) {
 		changeReason = changeReason | MemberDiffReasonTypeNotCompatible
 	}
 
 	// Compare generics.
-	if !compareGenerics(original.Generics(), updated.Generics()) {
+	if !compareGenerics(original.Generics(), updated.Generics(), context) {
 		changeReason = changeReason | MemberDiffReasonGenericsChanged
 	}
 
 	// Compare parameters.
-	changeReason = changeReason | compareParameters(original.Parameters(), updated.Parameters())
+	changeReason = changeReason | compareParameters(original.Parameters(), updated.Parameters(), context)
 
 	var kind = Changed
 	if changeReason == MemberDiffReasonNotApplicable {
@@ -97,66 +97,4 @@ func diffMember(original typegraph.TGMember, updated typegraph.TGMember) MemberD
 		Original:     &original,
 		Updated:      &updated,
 	}
-}
-
-func compareTypes(original typegraph.TypeReference, updated typegraph.TypeReference) bool {
-	// Fast path check: If both types are exactly the same, nothing more to do.
-	if original.PackageQualifiedString() == updated.PackageQualifiedString() {
-		return true
-	}
-
-	// Otherwise, compare the types using their shape. Only types with the exact shape are
-	// considered the same.
-	if !original.IsNormal() || !updated.IsNormal() {
-		return false
-	}
-
-	// TODO(jschorr): This.
-	return false
-}
-
-func compareParameters(original []typegraph.TGParameter, updated []typegraph.TGParameter) MemberDiffReason {
-	if len(updated) < len(original) {
-		return MemberDiffReasonParametersNotCompatible
-	}
-
-	// For each of the original parameters, ensure that a updated parameter exists and has an assignable type.
-	for index := range original {
-		originalType := original[index].DeclaredType()
-		updatedType := updated[index].DeclaredType()
-		if !compareTypes(originalType, updatedType) {
-			return MemberDiffReasonParametersNotCompatible
-		}
-	}
-
-	// Ensure each of the additional updated parameters (if any) are nullable, making them optional.
-	for _, updatedParam := range updated[len(original):] {
-		if !updatedParam.DeclaredType().NullValueAllowed() {
-			return MemberDiffReasonParametersNotCompatible
-		}
-	}
-
-	if len(updated) > len(original) {
-		return MemberDiffReasonParametersCompatible
-	}
-
-	return MemberDiffReasonNotApplicable
-}
-
-func compareGenerics(original []typegraph.TGGeneric, updated []typegraph.TGGeneric) bool {
-	if len(original) != len(updated) {
-		return false
-	}
-
-	for index, originalGeneric := range original {
-		if originalGeneric.Name() != updated[index].Name() {
-			return false
-		}
-
-		if originalGeneric.Constraint().String() != updated[index].Constraint().String() {
-			return false
-		}
-	}
-
-	return true
 }

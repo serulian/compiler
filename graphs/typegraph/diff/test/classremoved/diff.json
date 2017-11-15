@@ -1,8 +1,8 @@
 {
     "Packages": {
-        "test/classremoved": {
+        "classremoved": {
             "Kind": "changed",
-            "Path": "test/classremoved",
+            "Path": "classremoved",
             "ChangeReason": 2,
             "Types": [
                 {
@@ -26,8 +26,5 @@
             ],
             "Members": []
         }
-    },
-    "Filters": [
-        "test/classremoved"
-    ]
+    }
 }

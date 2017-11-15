@@ -1,8 +1,8 @@
 {
     "Packages": {
-        "test/unexportedtypechanged": {
+        "unexportedtypechanged": {
             "Kind": "same",
-            "Path": "test/unexportedtypechanged",
+            "Path": "unexportedtypechanged",
             "ChangeReason": 0,
             "Types": [
                 {
@@ -20,8 +20,5 @@
             ],
             "Members": []
         }
-    },
-    "Filters": [
-        "test/unexportedtypechanged"
-    ]
+    }
 }

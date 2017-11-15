@@ -144,7 +144,8 @@ func TestMemberDiff(t *testing.T) {
 		originalMember, _ := originalModuleRef.GetMember(test.originalMember.Name)
 		updatedMember, _ := updatedModuleRef.GetMember(test.originalMember.Name)
 
-		diff := diffMember(originalMember, updatedMember)
+		context := diffContext{TypeGraphInformation{originalGraph, ""}, TypeGraphInformation{updatedGraph, ""}}
+		diff := diffMember(originalMember, updatedMember, context)
 
 		assert.Equal(t, originalMember.Name(), diff.Original.Name())
 		assert.Equal(t, updatedMember.Name(), diff.Updated.Name())
@@ -259,7 +260,8 @@ func TestMembersDiff(t *testing.T) {
 		originalModuleRef, _ := originalGraph.LookupModule(compilercommon.InputSource("somemodule"))
 		updatedModuleRef, _ := updatedGraph.LookupModule(compilercommon.InputSource("somemodule"))
 
-		diffs := diffMembers(originalModuleRef, updatedModuleRef)
+		context := diffContext{TypeGraphInformation{originalGraph, ""}, TypeGraphInformation{updatedGraph, ""}}
+		diffs := diffMembers(originalModuleRef, updatedModuleRef, context)
 		if !assert.Equal(t, len(test.expectedDiffs), len(diffs), "Mismatch in expected diffs for test %s", test.name) {
 			continue
 		}

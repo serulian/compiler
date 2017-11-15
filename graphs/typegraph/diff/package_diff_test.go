@@ -255,7 +255,8 @@ func TestPackageDiff(t *testing.T) {
 			updatedModules = append(updatedModules, module)
 		}
 
-		diff := diffPackage("", originalModules, updatedModules)
+		context := diffContext{TypeGraphInformation{originalGraph, ""}, TypeGraphInformation{updatedGraph, ""}}
+		diff := diffPackage("", originalModules, updatedModules, context)
 		assert.Equal(t, test.expectedChangeReason, diff.ChangeReason, "Mismatch in expected change reason for test %s", test.name)
 	}
 }

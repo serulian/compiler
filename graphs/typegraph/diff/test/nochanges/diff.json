@@ -1,8 +1,8 @@
 {
     "Packages": {
-        "test/nochanges": {
+        "nochanges": {
             "Kind": "same",
-            "Path": "test/nochanges",
+            "Path": "nochanges",
             "ChangeReason": 0,
             "Types": [
                 {
@@ -20,8 +20,5 @@
             ],
             "Members": []
         }
-    },
-    "Filters": [
-        "test/nochanges"
-    ]
+    }
 }

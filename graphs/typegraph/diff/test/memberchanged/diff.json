@@ -1,8 +1,8 @@
 {
     "Packages": {
-        "test/memberchanged": {
+        "memberchanged": {
             "Kind": "changed",
-            "Path": "test/memberchanged",
+            "Path": "memberchanged",
             "ChangeReason": 64,
             "Types": [],
             "Members": [
@@ -13,8 +13,5 @@
                 }
             ]
         }
-    },
-    "Filters": [
-        "test/memberchanged"
-    ]
+    }
 }
