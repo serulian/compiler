@@ -6,6 +6,7 @@ package typeconstructor
 
 import (
 	"fmt"
+	"path"
 	"strings"
 
 	"github.com/serulian/compiler/compilercommon"
@@ -28,22 +29,34 @@ type irgTypeConstructor struct {
 	tc  *webidl.TypeCollapser // The type collapser for tracking all collapsed types.
 }
 
+// rootModuleName is the name of the synthesized module that contains all the real
+// definitions of the collapsed types.
+const rootModuleName = "(root).webidl"
+
 func (itc *irgTypeConstructor) DefineModules(builder typegraph.GetModuleBuilder) {
-	// Define a module node for the root node.
-	builder().
-		Name("(root).webidl").
-		Path("(root).webidl").
-		SourceNode(itc.irg.RootModuleNode()).
-		Define()
+	modules := itc.irg.GetModules()
+	modulePaths := make([]string, 0, len(modules))
 
 	// Define a module node for each module.
-	for _, module := range itc.irg.GetModules() {
+	for _, module := range modules {
+		path := string(module.InputSource())
+		modulePaths = append(modulePaths, path)
+
 		builder().
 			Name(module.Name()).
-			Path(string(module.InputSource())).
+			Path(path).
 			SourceNode(module.Node()).
 			Define()
 	}
+
+	// Define a module node for the root node.
+	rootModulePath := path.Join(determineSharedRootDirectory(modulePaths), rootModuleName)
+	builder().
+		Name(rootModuleName).
+		Path(rootModulePath).
+		SourceNode(itc.irg.RootModuleNode()).
+		Define()
+
 }
 
 func (itc *irgTypeConstructor) DefineTypes(builder typegraph.GetTypeBuilder) {
