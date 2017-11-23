@@ -280,6 +280,13 @@ var sourceDiffTests = []string{
 	"memberchanged",
 	"unexportedmemberchanged",
 	"nullableparameteradded",
+	"generics",
+	"withwebidl",
+	"withwebidlchanges",
+	"withcorelibref",
+	"withwebidlsubpackage",
+	"operatorchanged",
+	"operatorsame",
 }
 
 func TestSourcedDiff(t *testing.T) {

@@ -1,0 +1,2 @@
+function<void> DoSomething(foo int, bar string) {}
+function<void> anotherFunction(foo bool, bar []string) {}

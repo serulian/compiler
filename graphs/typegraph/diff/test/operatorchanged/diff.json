@@ -1,0 +1,29 @@
+{
+    "Packages": {
+        "operatorchanged": {
+            "Kind": "changed",
+            "Path": "operatorchanged",
+            "ChangeReason": 8,
+            "Types": [
+                {
+                    "Kind": "changed",
+                    "Name": "SomeClass",
+                    "ChangeReason": 512,
+                    "Members": [
+                        {
+                            "Kind": "same",
+                            "Name": "new",
+                            "ChangeReason": 0
+                        },
+                        {
+                            "Kind": "changed",
+                            "Name": "•equals",
+                            "ChangeReason": 2
+                        }
+                    ]
+                }
+            ],
+            "Members": []
+        }
+    }
+}

@@ -1,0 +1,3 @@
+from webidl`sub` import SomeInterface
+
+function<void> DoSomething(param SomeInterface) {}

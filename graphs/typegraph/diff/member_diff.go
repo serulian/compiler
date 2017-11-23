@@ -9,24 +9,24 @@ import (
 )
 
 type memberHolder interface {
-	Members() []typegraph.TGMember
-	GetMember(name string) (typegraph.TGMember, bool)
+	MembersAndOperators() []typegraph.TGMember
+	GetMemberOrOperator(name string) (typegraph.TGMember, bool)
 }
 
 // diffMembers performs a diff between two sets of members.
 func diffMembers(original memberHolder, updated memberHolder, context diffContext) []MemberDiff {
-	originalMembers := original.Members()
+	originalMembers := original.MembersAndOperators()
 	encounteredNames := map[string]bool{}
 
 	diffs := make([]MemberDiff, 0, len(originalMembers))
 
 	for _, member := range originalMembers {
 		currentMember := member
-		memberName := member.Name()
+		memberName := member.ChildName()
 		encounteredNames[memberName] = true
 
 		// Find the member in the updated type or module.
-		updatedMember, hasUpdatedMember := updated.GetMember(memberName)
+		updatedMember, hasUpdatedMember := updated.GetMemberOrOperator(memberName)
 		if !hasUpdatedMember {
 			diffs = append(diffs, MemberDiff{
 				Kind:         Removed,
@@ -41,9 +41,9 @@ func diffMembers(original memberHolder, updated memberHolder, context diffContex
 		diffs = append(diffs, diffMember(member, updatedMember, context))
 	}
 
-	for _, member := range updated.Members() {
+	for _, member := range updated.MembersAndOperators() {
 		currentMember := member
-		memberName := member.Name()
+		memberName := member.ChildName()
 		if _, found := encounteredNames[memberName]; !found {
 			diffs = append(diffs, MemberDiff{
 				Kind:         Added,
@@ -66,6 +66,10 @@ func diffMember(original typegraph.TGMember, updated typegraph.TGMember, context
 
 	// Compare kinds.
 	if original.Signature().MemberKind != updated.Signature().MemberKind {
+		changeReason = changeReason | MemberDiffReasonKindChanged
+	}
+
+	if original.IsExported() != updated.IsExported() {
 		changeReason = changeReason | MemberDiffReasonKindChanged
 	}
 
@@ -92,7 +96,7 @@ func diffMember(original typegraph.TGMember, updated typegraph.TGMember, context
 
 	return MemberDiff{
 		Kind:         kind,
-		Name:         original.Name(),
+		Name:         original.ChildName(),
 		ChangeReason: changeReason,
 		Original:     &original,
 		Updated:      &updated,

@@ -1,0 +1,29 @@
+{
+    "Packages": {
+        "operatorsame": {
+            "Kind": "same",
+            "Path": "operatorsame",
+            "ChangeReason": 0,
+            "Types": [
+                {
+                    "Kind": "same",
+                    "Name": "SomeClass",
+                    "ChangeReason": 0,
+                    "Members": [
+                        {
+                            "Kind": "same",
+                            "Name": "new",
+                            "ChangeReason": 0
+                        },
+                        {
+                            "Kind": "same",
+                            "Name": "•equals",
+                            "ChangeReason": 0
+                        }
+                    ]
+                }
+            ],
+            "Members": []
+        }
+    }
+}

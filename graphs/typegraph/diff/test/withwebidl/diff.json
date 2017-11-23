@@ -1,0 +1,24 @@
+{
+    "Packages": {
+        "withwebidl": {
+            "Kind": "same",
+            "Path": "withwebidl",
+            "ChangeReason": 0,
+            "Types": [
+                {
+                    "Kind": "same",
+                    "Name": "SomeType",
+                    "ChangeReason": 0,
+                    "Members": []
+                }
+            ],
+            "Members": [
+                {
+                    "Kind": "same",
+                    "Name": "DoSomething",
+                    "ChangeReason": 0
+                }
+            ]
+        }
+    }
+}

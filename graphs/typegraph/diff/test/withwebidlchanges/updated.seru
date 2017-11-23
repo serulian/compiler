@@ -1,0 +1,3 @@
+from webidl`updated` import SomeOtherType
+
+function<void> DoSomething(st SomeOtherType) {}

@@ -25,7 +25,7 @@ func getTypesAndMembers(modules []typegraph.TGModule) (map[string]typegraph.TGTy
 
 			types[typedecl.Name()] = typedecl
 		}
-		for _, member := range module.Members() {
+		for _, member := range module.MembersAndOperators() {
 			members[member.Name()] = member
 		}
 	}
@@ -49,12 +49,12 @@ func (thw typeHolderWrap) Types() []typegraph.TGTypeDecl {
 
 type memberHolderWrap map[string]typegraph.TGMember
 
-func (mhw memberHolderWrap) GetMember(name string) (typegraph.TGMember, bool) {
+func (mhw memberHolderWrap) GetMemberOrOperator(name string) (typegraph.TGMember, bool) {
 	member, ok := mhw[name]
 	return member, ok
 }
 
-func (mhw memberHolderWrap) Members() []typegraph.TGMember {
+func (mhw memberHolderWrap) MembersAndOperators() []typegraph.TGMember {
 	members := make([]typegraph.TGMember, 0, len(mhw))
 	for _, member := range mhw {
 		members = append(members, member)

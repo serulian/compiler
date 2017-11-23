@@ -1,0 +1,22 @@
+{
+    "Packages": {
+        "withcorelibref": {
+            "Kind": "same",
+            "Path": "withcorelibref",
+            "ChangeReason": 0,
+            "Types": [],
+            "Members": [
+                {
+                    "Kind": "same",
+                    "Name": "DoSomething",
+                    "ChangeReason": 0
+                },
+                {
+                    "Kind": "changed",
+                    "Name": "anotherFunction",
+                    "ChangeReason": 16
+                }
+            ]
+        }
+    }
+}
