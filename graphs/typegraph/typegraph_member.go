@@ -324,6 +324,21 @@ func (tn TGMember) Generics() []TGGeneric {
 	return generics
 }
 
+// LookupGeneric looks up the generic under this member with the given name and returns it, if any.
+func (tn TGMember) LookupGeneric(name string) (TGGeneric, bool) {
+	node, found := tn.GraphNode.
+		StartQuery().
+		Out(NodePredicateMemberGeneric).
+		Has(NodePredicateGenericName, name).
+		TryGetNode()
+
+	if !found {
+		return TGGeneric{}, false
+	}
+
+	return TGGeneric{node, tn.tdg}, true
+}
+
 // Parameters returns the parameters on this member.
 func (tn TGMember) Parameters() []TGParameter {
 	it := tn.GraphNode.StartQuery().
@@ -484,6 +499,16 @@ func (tn TGMember) SourceGraphId() string {
 // TypeGraph returns the type graph that contains this member.
 func (tn TGMember) TypeGraph() *TypeGraph {
 	return tn.tdg
+}
+
+// EntityPath returns the path of entities that chain to this member.
+func (tn TGMember) EntityPath() []Entity {
+	parentEntities := tn.Parent().EntityPath()
+	return append(parentEntities, Entity{
+		Kind:          EntityKindMember,
+		NameOrPath:    tn.ChildName(),
+		SourceGraphId: tn.SourceGraphId(),
+	})
 }
 
 // Code returns a code-like summarization of the member, for human consumption.

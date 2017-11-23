@@ -97,6 +97,126 @@ func assertAlias(t *testing.T, graph *TypeGraph, aliasName string, kind TypeKind
 	return true
 }
 
+func assertEntity(t *testing.T, graph *TypeGraph, expectedName string, entityPath ...Entity) {
+	assertEntityWithOption(t, graph, EntityResolveModulesExactly, expectedName, entityPath...)
+	assertEntityWithOption(t, graph, EntityResolveModulesAsPackages, expectedName, entityPath...)
+}
+
+func assertEntityWithOption(t *testing.T, graph *TypeGraph, option EntityResolveOption, expectedName string, entityPath ...Entity) {
+	entity, ok := graph.ResolveEntityByPath(entityPath, option)
+	if !assert.True(t, ok, "Expected to find entity with path %v", entityPath) {
+		return
+	}
+
+	if !assert.Equal(t, expectedName, entity.Name(), "Name mismatch on entity with path %v", entityPath) {
+		return
+	}
+
+	if option == EntityResolveModulesExactly {
+		assert.Equal(t, entityPath, entity.EntityPath(), "Mismatch in entity path")
+	}
+}
+
+func TestResolveEntityByPath(t *testing.T) {
+	testModule := TestModule{
+		"foo/testModule",
+
+		[]TestType{
+			// class SomeClass<T> {
+			//   function<int> DoSomething<Q>() {}
+			// }
+			TestType{"class", "SomeClass", "",
+				[]TestGeneric{
+					TestGeneric{"T", "any"},
+				},
+				[]TestMember{
+					TestMember{FunctionMemberSignature, "DoSomething", "int",
+						[]TestGeneric{
+							TestGeneric{"Q", "any"},
+						},
+						[]TestParam{}},
+				},
+			},
+		},
+
+		// function<int> AnotherFunction<R>() {}
+		[]TestMember{
+			TestMember{FunctionMemberSignature, "AnotherFunction", "int", []TestGeneric{
+				TestGeneric{"R", "any"},
+			}, []TestParam{}},
+		},
+	}
+
+	anotherModule := TestModule{
+		"foo/anotherModule",
+
+		[]TestType{},
+
+		// function<int> AnotherAnotherFunction<S>() {}
+		[]TestMember{
+			TestMember{FunctionMemberSignature, "AnotherAnotherFunction", "int", []TestGeneric{
+				TestGeneric{"S", "any"},
+			}, []TestParam{}},
+		},
+	}
+
+	graph := ConstructTypeGraphWithBasicTypes(testModule, anotherModule)
+
+	// foo/testModule.SomeClass
+	assertEntity(t, graph, "SomeClass",
+		Entity{EntityKindModule, "foo/testModule", "typegraph"},
+		Entity{EntityKindType, "SomeClass", "typegraph"})
+
+	// foo/testModule.SomeClass::T
+	assertEntity(t, graph, "T",
+		Entity{EntityKindModule, "foo/testModule", "typegraph"},
+		Entity{EntityKindType, "SomeClass", "typegraph"},
+		Entity{EntityKindType, "T", "typegraph"})
+
+	// foo/testModule.SomeClass.DoSomething
+	assertEntity(t, graph, "DoSomething",
+		Entity{EntityKindModule, "foo/testModule", "typegraph"},
+		Entity{EntityKindType, "SomeClass", "typegraph"},
+		Entity{EntityKindMember, "DoSomething", "typegraph"})
+
+	// foo/testModule.SomeClass.DoSomething::Q
+	assertEntity(t, graph, "Q",
+		Entity{EntityKindModule, "foo/testModule", "typegraph"},
+		Entity{EntityKindType, "SomeClass", "typegraph"},
+		Entity{EntityKindMember, "DoSomething", "typegraph"},
+		Entity{EntityKindType, "Q", "typegraph"})
+
+	// foo/testModule.AnotherFunction
+	assertEntity(t, graph, "AnotherFunction",
+		Entity{EntityKindModule, "foo/testModule", "typegraph"},
+		Entity{EntityKindMember, "AnotherFunction", "typegraph"})
+
+	// foo/testModule.AnotherFunction::R
+	assertEntity(t, graph, "R",
+		Entity{EntityKindModule, "foo/testModule", "typegraph"},
+		Entity{EntityKindMember, "AnotherFunction", "typegraph"},
+		Entity{EntityKindType, "R", "typegraph"})
+
+	// Try resolve under package.
+	// foo/testModule.AnotherAnotherFunction
+	assertEntityWithOption(t, graph, EntityResolveModulesAsPackages, "AnotherAnotherFunction",
+		Entity{EntityKindModule, "foo/testModule", "typegraph"},
+		Entity{EntityKindMember, "AnotherAnotherFunction", "typegraph"})
+
+	assertEntityWithOption(t, graph, EntityResolveModulesAsPackages, "S",
+		Entity{EntityKindModule, "foo/testModule", "typegraph"},
+		Entity{EntityKindMember, "AnotherAnotherFunction", "typegraph"},
+		Entity{EntityKindType, "S", "typegraph"})
+
+	_, ok := graph.ResolveEntityByPath(
+		[]Entity{
+			Entity{EntityKindModule, "foo/testModule", "typegraph"},
+			Entity{EntityKindMember, "AnotherAnotherFunction", "typegraph"},
+		}, EntityResolveModulesExactly)
+
+	assert.False(t, ok, "Expected to not find entity in different module")
+}
+
 func TestLookup(t *testing.T) {
 	testModule := TestModule{
 		"testModule",

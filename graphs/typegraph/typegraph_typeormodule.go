@@ -13,10 +13,13 @@ type TGTypeOrModule interface {
 	Name() string
 	Node() compilergraph.GraphNode
 	Members() []TGMember
+	MembersAndOperators() []TGMember
 	Title() string
 	IsType() bool
 	ParentModule() TGModule
 	GetMember(name string) (TGMember, bool)
+	GetMemberOrOperator(name string) (TGMember, bool)
 	AsType() (TGTypeDecl, bool)
 	SourceGraphId() string
+	EntityPath() []Entity
 }

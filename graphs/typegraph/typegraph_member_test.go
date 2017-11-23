@@ -192,6 +192,12 @@ func TestMemberAccessors(t *testing.T) {
 			} else {
 				member, hasMember = typeFound.GetMember(expectedMember.name)
 			}
+
+			if !assert.True(t, hasMember, "Could not find member %s", expectedMember.name) {
+				continue
+			}
+
+			member, hasMember = typeFound.GetMemberOrOperator(expectedMember.childName)
 		}
 
 		// Ensure we found the member.
@@ -207,6 +213,26 @@ func TestMemberAccessors(t *testing.T) {
 
 		if hasParentType {
 			assert.Equal(t, parentType.Name(), expectedMember.typeName, "Parent type name mismatch")
+		}
+
+		// Check the entities.
+		entities := member.EntityPath()
+		assert.Equal(t, entities[len(entities)-1].Kind, EntityKindMember, "Mismatch on final entity entry kind")
+		assert.Equal(t, entities[len(entities)-1].NameOrPath, expectedMember.childName, "Mismatch on final entity entry name")
+
+		if hasParentType {
+			if !assert.True(t, len(entities) > 2, "Expected type in entites path") {
+				continue
+			}
+
+			assert.Equal(t, entities[len(entities)-2].Kind, EntityKindType, "Mismatch on parent type entity entry kind")
+			assert.Equal(t, entities[len(entities)-2].NameOrPath, expectedMember.typeName, "Mismatch on parent type entity entry name")
+		}
+
+		// Ensure the entity path resolves to this member.
+		entity, ok := graph.ResolveEntityByPath(entities, EntityResolveModulesExactly)
+		if assert.True(t, ok, "Could not resolve entity path `%v`", entities) {
+			assert.Equal(t, entity.Node(), member.Node())
 		}
 
 		// Check its various accessors.
@@ -231,6 +257,13 @@ func TestMemberAccessors(t *testing.T) {
 			for index, generic := range member.Generics() {
 				assert.Equal(t, expectedMember.generics[index].Name, generic.Name())
 				assert.Equal(t, expectedMember.generics[index].Constraint, generic.Constraint().String())
+			}
+
+			for index, generic := range expectedMember.generics {
+				genericFound, ok := member.LookupGeneric(generic.Name)
+				assert.True(t, ok, "Expected generic with name `%s`", generic.Name)
+				assert.Equal(t, expectedMember.generics[index].Name, genericFound.Name())
+				assert.Equal(t, expectedMember.generics[index].Constraint, genericFound.Constraint().String())
 			}
 		}
 

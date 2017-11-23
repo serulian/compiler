@@ -146,7 +146,19 @@ func (tn TGTypeDecl) SourceNodeId() (compilergraph.GraphNodeId, bool) {
 	return idFound.NodeId(), true
 }
 
-// Returns the containing type. Will only return a type for generics.
+// OverallContainerType returns the type containing this type, even if this type is defined on a member.
+// Will only return a type for generics.
+func (tn TGTypeDecl) OverallContainerType() (TGTypeDecl, bool) {
+	containingMember, hasContainingMember := tn.ContainingMember()
+	if hasContainingMember {
+		parent := containingMember.Parent()
+		return parent.AsType()
+	}
+
+	return tn.ContainingType()
+}
+
+// ContainingType returns the *directly* containing type. Will only return a type for generics.
 func (tn TGTypeDecl) ContainingType() (TGTypeDecl, bool) {
 	containingTypeNode, hasContainingType := tn.GraphNode.TryGetIncomingNode(NodePredicateTypeGeneric)
 	if !hasContainingType {
@@ -154,6 +166,16 @@ func (tn TGTypeDecl) ContainingType() (TGTypeDecl, bool) {
 	}
 
 	return TGTypeDecl{containingTypeNode, tn.tdg}, true
+}
+
+// ContainingMember returns the *directly* containing member. Will only return a type for generics.
+func (tn TGTypeDecl) ContainingMember() (TGMember, bool) {
+	containingMemberNode, hasContainingMember := tn.GraphNode.TryGetIncomingNode(NodePredicateMemberGeneric)
+	if !hasContainingMember {
+		return TGMember{}, false
+	}
+
+	return TGMember{containingMemberNode, tn.tdg}, true
 }
 
 // IsExported returns whether the type is exported.
@@ -216,7 +238,22 @@ func (tn TGTypeDecl) GetOperator(name string) (TGMember, bool) {
 	return TGMember{node, tn.tdg}, true
 }
 
-// GetMember returns the member with the given name under this type, if any.
+// GetMemberOrOperator returns the member or operator with the given *child name* under this type, if any.
+func (tn TGTypeDecl) GetMemberOrOperator(name string) (TGMember, bool) {
+	node, found := tn.GraphNode.
+		StartQuery().
+		Out(NodePredicateMember, NodePredicateTypeOperator).
+		Has(NodePredicateMemberName, name).
+		TryGetNode()
+
+	if !found {
+		return TGMember{}, false
+	}
+
+	return TGMember{node, tn.tdg}, true
+}
+
+// GetMember returns the member (but not operator) with the given name under this type, if any.
 func (tn TGTypeDecl) GetMember(name string) (TGMember, bool) {
 	node, found := tn.GraphNode.
 		StartQuery().
@@ -263,10 +300,24 @@ func (tn TGTypeDecl) NonFieldMembers() []TGMember {
 	return members
 }
 
-// Members returns the type graph members for this type node.
-func (tn TGTypeDecl) Members() []TGMember {
+// MembersAndOperators returns the type graph members and operators for this type node.
+func (tn TGTypeDecl) MembersAndOperators() []TGMember {
 	it := tn.GraphNode.StartQuery().
 		Out(NodePredicateMember, NodePredicateTypeOperator).
+		BuildNodeIterator()
+
+	var members = make([]TGMember, 0)
+	for it.Next() {
+		members = append(members, TGMember{it.Node(), tn.tdg})
+	}
+
+	return members
+}
+
+// Members returns the type graph members (but not operartors) for this type node.
+func (tn TGTypeDecl) Members() []TGMember {
+	it := tn.GraphNode.StartQuery().
+		Out(NodePredicateMember).
 		BuildNodeIterator()
 
 	var members = make([]TGMember, 0)
@@ -353,14 +404,29 @@ func (tn TGTypeDecl) PrincipalType() (TypeReference, bool) {
 	return principalTypeRef.(TypeReference), true
 }
 
-// Parent returns themodule containing this type.
+// Parent returns the module containing this type.
 func (tn TGTypeDecl) Parent() TGTypeOrModule {
 	return tn.ParentModule()
 }
 
 // ParentModule returns the module containing this type.
 func (tn TGTypeDecl) ParentModule() TGModule {
-	return TGModule{tn.GraphNode.GetNode(NodePredicateTypeModule), tn.tdg}
+	moduleNode, hasParent := tn.GraphNode.TryGetNode(NodePredicateTypeModule)
+	if hasParent {
+		return TGModule{moduleNode, tn.tdg}
+	}
+
+	containingType, hasContainingType := tn.ContainingType()
+	if hasContainingType {
+		return containingType.ParentModule()
+	}
+
+	containingMember, hasContainingMember := tn.ContainingMember()
+	if hasContainingMember {
+		return containingMember.Parent().ParentModule()
+	}
+
+	panic("Missing parent module!")
 }
 
 // IsReadOnly returns whether the type is read-only (which is always true)
@@ -469,6 +535,36 @@ func (tn TGTypeDecl) AliasedType() (TGTypeDecl, bool) {
 	}
 
 	return TGTypeDecl{aliasedTypeNode, tn.tdg}, true
+}
+
+// EntityPath returns the path of entities that chain to this type.
+func (tn TGTypeDecl) EntityPath() []Entity {
+	containingMember, hasContainingMember := tn.ContainingMember()
+	if hasContainingMember {
+		parentEntities := containingMember.EntityPath()
+		return append(parentEntities, Entity{
+			Kind:          EntityKindType,
+			NameOrPath:    tn.Name(),
+			SourceGraphId: tn.SourceGraphId(),
+		})
+	}
+
+	containingType, hasContainingType := tn.ContainingType()
+	if hasContainingType {
+		parentEntities := containingType.EntityPath()
+		return append(parentEntities, Entity{
+			Kind:          EntityKindType,
+			NameOrPath:    tn.Name(),
+			SourceGraphId: tn.SourceGraphId(),
+		})
+	}
+
+	parentEntities := tn.ParentModule().EntityPath()
+	return append(parentEntities, Entity{
+		Kind:          EntityKindType,
+		NameOrPath:    tn.Name(),
+		SourceGraphId: tn.SourceGraphId(),
+	})
 }
 
 // Code returns a code-like summarization of the type, for human consumption.
