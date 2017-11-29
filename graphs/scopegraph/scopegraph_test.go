@@ -410,6 +410,10 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"Declarable function or constructor used in an SML declaration tag with attributes must have a 'props' parameter as parameter #1. Found: function<SomeClass>", ""},
 
+	scopegraphTest{"sml expression too many params count test", "sml", "toomanyparams",
+		[]expectedScopeEntry{},
+		"Declarable function used in an SML declaration tag cannot have a required parameter at position #3. Found: String", ""},
+
 	scopegraphTest{"sml expression void function test", "sml", "voidfunction",
 		[]expectedScopeEntry{},
 		"Declarable function used in an SML declaration tag cannot return void", ""},
