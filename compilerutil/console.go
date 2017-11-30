@@ -11,7 +11,7 @@ import (
 
 	"strings"
 
-	"github.com/fatih/color"
+	color "github.com/fatih/color"
 	"github.com/kr/text"
 	terminal "github.com/wayneashleyberry/terminal-dimensions"
 )
@@ -27,44 +27,58 @@ const (
 	ErrorLogLevel
 )
 
+var (
+	InfoColor       = color.New(color.FgBlue, color.Bold)
+	SuccessColor    = color.New(color.FgGreen, color.Bold)
+	WarningColor    = color.New(color.FgYellow, color.Bold)
+	ErrorColor      = color.New(color.FgRed, color.Bold)
+	BoldWhiteColor  = color.New(color.FgWhite, color.Bold)
+	FaintWhiteColor = color.New(color.FgWhite, color.Faint)
+	MessageColor    = color.New(color.FgHiWhite)
+)
+
 // LogToConsole logs a message to the console, with the given level and range.
 func LogToConsole(level ConsoleLogLevel, sourceRange compilercommon.SourceRange, message string, args ...interface{}) {
-	width, _ := terminal.Width()
-	if width <= 0 {
-		width = 80
-	}
-
-	locationColor := color.New(color.FgWhite)
-	messageColor := color.New(color.FgHiWhite)
-	codeColor := color.New(color.FgWhite)
 	prefixColor := color.New(color.FgWhite)
-
 	prefixText := ""
 
 	switch level {
 	case InfoLogLevel:
-		prefixColor = color.New(color.FgBlue, color.Bold)
+		prefixColor = InfoColor
 		prefixText = "INFO: "
 
 	case SuccessLogLevel:
-		prefixColor = color.New(color.FgGreen, color.Bold)
+		prefixColor = SuccessColor
 		prefixText = "SUCCESS: "
 
 	case WarningLogLevel:
-		prefixColor = color.New(color.FgYellow, color.Bold)
+		prefixColor = WarningColor
 		prefixText = "WARNING: "
 
 	case ErrorLogLevel:
-		prefixColor = color.New(color.FgRed, color.Bold)
+		prefixColor = ErrorColor
 		prefixText = "ERROR: "
 	}
 
+	LogMessageToConsole(prefixColor, prefixText, sourceRange, message, args...)
+}
+
+// LogMessageToConsole logs a message to the console, with the given level and range.
+func LogMessageToConsole(prefixColor *color.Color, prefixText string, sourceRange compilercommon.SourceRange, message string, args ...interface{}) {
 	formattedMessage := fmt.Sprintf(message, args...)
 
 	if sourceRange == nil {
 		prefixColor.Print(prefixText)
-		messageColor.Printf("%s\n", formattedMessage)
+		MessageColor.Printf("%s\n", formattedMessage)
 		return
+	}
+
+	locationColor := color.New(color.FgWhite)
+	codeColor := color.New(color.FgWhite)
+
+	width, _ := terminal.Width()
+	if width <= 0 {
+		width = 80
 	}
 
 	startLine, startCol, err := sourceRange.Start().LineAndColumn()
@@ -86,11 +100,11 @@ func LogToConsole(level ConsoleLogLevel, sourceRange compilercommon.SourceRange,
 	if len(prefixText+locationText+formattedMessage) > int(width) {
 		prefixColor.Print(prefixText)
 		locationColor.Print(locationText)
-		messageColor.Printf("\n%s\n\n", text.Indent(text.Wrap(formattedMessage, int(width)-len(INDENTATION)), INDENTATION))
+		MessageColor.Printf("\n%s\n\n", text.Indent(text.Wrap(formattedMessage, int(width)-len(INDENTATION)), INDENTATION))
 	} else {
 		prefixColor.Print(prefixText)
 		locationColor.Print(locationText)
-		messageColor.Printf(" %s\n", formattedMessage)
+		MessageColor.Printf(" %s\n", formattedMessage)
 	}
 
 	// Print the actual code line, and annotate the range.
