@@ -1,0 +1,29 @@
+{
+    "Packages": {
+        "fieldadded": {
+            "Kind": "changed",
+            "Path": "fieldadded",
+            "ChangeReason": 8,
+            "Types": [
+                {
+                    "Kind": "changed",
+                    "Name": "SomeClass",
+                    "ChangeReason": 1152,
+                    "Members": [
+                        {
+                            "Kind": "added",
+                            "Name": "SomeField",
+                            "ChangeReason": 0
+                        },
+                        {
+                            "Kind": "same",
+                            "Name": "new",
+                            "ChangeReason": 0
+                        }
+                    ]
+                }
+            ],
+            "Members": []
+        }
+    }
+}

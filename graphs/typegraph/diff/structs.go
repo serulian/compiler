@@ -40,6 +40,21 @@ const (
 	Same DiffKind = "same"
 )
 
+// ReasonCompatibility describes the compatibility implications of a change.
+type ReasonCompatibility string
+
+const (
+	// CompatibilityNotApplicable indicates that there are no changes.
+	CompatibilityNotApplicable ReasonCompatibility = "n/a"
+
+	// BackwardCompatible indicates that the change is backward-compatible.
+	BackwardCompatible = "compatible"
+
+	// BackwardIncompatible indicates that the change is backward-incompatible,
+	// and that existing users of the code will break.
+	BackwardIncompatible = "breaking"
+)
+
 // PackageDiffReason defines a bitwise enumeration specifying why a package changed.
 type PackageDiffReason int
 
@@ -65,6 +80,54 @@ const (
 	// PackageDiffReasonExportedMembersChanged indicates an exported member was changed.
 	PackageDiffReasonExportedMembersChanged
 )
+
+// Expand expands the package diff reason into individual enumeration values.
+func (pdr PackageDiffReason) Expand() []PackageDiffReason {
+	var reasons = make([]PackageDiffReason, 0)
+	appendReason := func(compare PackageDiffReason) {
+		if pdr&compare == compare {
+			reasons = append(reasons, compare)
+		}
+	}
+
+	appendReason(PackageDiffReasonExportedTypesRemoved)
+	appendReason(PackageDiffReasonExportedTypesAdded)
+	appendReason(PackageDiffReasonExportedTypesChanged)
+	appendReason(PackageDiffReasonExportedMembersRemoved)
+	appendReason(PackageDiffReasonExportedMembersAdded)
+	appendReason(PackageDiffReasonExportedMembersChanged)
+	return reasons
+}
+
+// Describe describes this package diff reason in its means of compatibility, as well as
+// its human-readable string.
+func (pdr PackageDiffReason) Describe() (ReasonCompatibility, string) {
+	switch pdr {
+	case PackageDiffReasonNotApplicable:
+		return CompatibilityNotApplicable, "No changes in the package"
+
+	case PackageDiffReasonExportedTypesRemoved:
+		return BackwardIncompatible, "An exported type in the package was removed"
+
+	case PackageDiffReasonExportedTypesAdded:
+		return BackwardCompatible, "An exported type in the package was added"
+
+	case PackageDiffReasonExportedTypesChanged:
+		return BackwardIncompatible, "An exported type in the package was changed in an incompatible manner"
+
+	case PackageDiffReasonExportedMembersRemoved:
+		return BackwardIncompatible, "An exported member in the package was removed"
+
+	case PackageDiffReasonExportedMembersAdded:
+		return BackwardCompatible, "An exported member in the package was added"
+
+	case PackageDiffReasonExportedMembersChanged:
+		return BackwardIncompatible, "An exported member in the package was changed in an incompatible manner"
+
+	default:
+		panic("Unknown package diff reason")
+	}
+}
 
 // PackageDiff defines the diff between two packages.
 type PackageDiff struct {
@@ -92,6 +155,18 @@ type PackageDiff struct {
 	// Members enumerates the differences of the module-level members between
 	// the two versions of the package.
 	Members []MemberDiff
+}
+
+// HasBreakingChange returns true if the package has any *forward incompatible* breaking
+// changes.
+func (pd PackageDiff) HasBreakingChange() bool {
+	return pd.HasChange(PackageDiffReasonExportedMembersRemoved) || pd.HasChange(PackageDiffReasonExportedMembersChanged) ||
+		pd.HasChange(PackageDiffReasonExportedTypesChanged) || pd.HasChange(PackageDiffReasonExportedTypesRemoved)
+}
+
+// HasChange returns true if the package has the given change as *one* of its changes.
+func (pd PackageDiff) HasChange(change PackageDiffReason) bool {
+	return pd.ChangeReason&change == change
 }
 
 // TypeDiffReason defines a bitwise enumeration specifying why a type changed.
@@ -130,7 +205,72 @@ const (
 	// TypeDiffReasonExportedMembersChanged indicates that some exported members
 	// of the type have been changed, in some manner.
 	TypeDiffReasonExportedMembersChanged
+
+	// TypeDiffReasonRequiredMemberAdded indicates that a *required* member
+	// of the type has been added.
+	TypeDiffReasonRequiredMemberAdded
 )
+
+// Expand expands the type diff reason into individual enumeration values.
+func (tdr TypeDiffReason) Expand() []TypeDiffReason {
+	var reasons = make([]TypeDiffReason, 0)
+	appendReason := func(compare TypeDiffReason) {
+		if tdr&compare == compare {
+			reasons = append(reasons, compare)
+		}
+	}
+
+	appendReason(TypeDiffReasonKindChanged)
+	appendReason(TypeDiffReasonGenericsChanged)
+	appendReason(TypeDiffReasonParentTypesChanged)
+	appendReason(TypeDiffReasonPricipalTypeChanged)
+	appendReason(TypeDiffReasonAttributesAdded)
+	appendReason(TypeDiffReasonAttributesRemoved)
+	appendReason(TypeDiffReasonExportedMembersAdded)
+	appendReason(TypeDiffReasonExportedMembersRemoved)
+	appendReason(TypeDiffReasonExportedMembersChanged)
+	appendReason(TypeDiffReasonRequiredMemberAdded)
+	return reasons
+}
+
+// Describe describes this type diff reason in its means of compatibility, as well as
+// its human-readable string.
+func (tdr TypeDiffReason) Describe() (ReasonCompatibility, string) {
+	switch tdr {
+	case TypeDiffReasonNotApplicable:
+		return CompatibilityNotApplicable, "No changes in the type"
+
+	case TypeDiffReasonGenericsChanged:
+		return BackwardIncompatible, "One or more generics on the type have been modified"
+
+	case TypeDiffReasonParentTypesChanged:
+		return BackwardIncompatible, "One or more parent types of the type have been modified"
+
+	case TypeDiffReasonPricipalTypeChanged:
+		return BackwardIncompatible, "The principal type of the agent type has been modified"
+
+	case TypeDiffReasonAttributesAdded:
+		return BackwardCompatible, "One or more attributes were added to the type"
+
+	case TypeDiffReasonAttributesRemoved:
+		return BackwardIncompatible, "One or more attributes were removed from the type"
+
+	case TypeDiffReasonExportedMembersAdded:
+		return BackwardCompatible, "An exported member was added to the type"
+
+	case TypeDiffReasonExportedMembersRemoved:
+		return BackwardIncompatible, "An exported member was removed from the type"
+
+	case TypeDiffReasonExportedMembersChanged:
+		return BackwardIncompatible, "An exported member under the type was changed in an incompatible fashion"
+
+	case TypeDiffReasonRequiredMemberAdded:
+		return BackwardCompatible, "A required member has been added under the type"
+
+	default:
+		panic("Unknown type diff reason")
+	}
+}
 
 // TypeDiff defines the diff between two versions of a type.
 type TypeDiff struct {
@@ -179,6 +319,47 @@ const (
 	// member has changed in a forward incompatible manner.
 	MemberDiffReasonTypeNotCompatible
 )
+
+// Expand expands the member diff reason into individual enumeration values.
+func (mdr MemberDiffReason) Expand() []MemberDiffReason {
+	var reasons = make([]MemberDiffReason, 0)
+	appendReason := func(compare MemberDiffReason) {
+		if mdr&compare == compare {
+			reasons = append(reasons, compare)
+		}
+	}
+
+	appendReason(MemberDiffReasonKindChanged)
+	appendReason(MemberDiffReasonGenericsChanged)
+	appendReason(MemberDiffReasonParametersCompatible)
+	appendReason(MemberDiffReasonParametersNotCompatible)
+	appendReason(MemberDiffReasonTypeNotCompatible)
+	return reasons
+}
+
+// Describe describes this member diff reason in its means of compatibility, as well as
+// its human-readable string.
+func (mdr MemberDiffReason) Describe() (ReasonCompatibility, string) {
+	switch mdr {
+	case MemberDiffReasonNotApplicable:
+		return CompatibilityNotApplicable, "No changes in the member"
+
+	case MemberDiffReasonGenericsChanged:
+		return BackwardIncompatible, "One or more generics on the member have been modified"
+
+	case MemberDiffReasonParametersCompatible:
+		return BackwardCompatible, "One or more of the parameters on the member have been modified in a backward compatible manner"
+
+	case MemberDiffReasonParametersNotCompatible:
+		return BackwardIncompatible, "One or more of the parameters on the member have been modified in a backward incompatible manner"
+
+	case MemberDiffReasonTypeNotCompatible:
+		return BackwardIncompatible, "The type signature of this member has been modified"
+
+	default:
+		panic("Unknown member diff reason")
+	}
+}
 
 // MemberDiff defines the diff between two versions of a member.
 type MemberDiff struct {

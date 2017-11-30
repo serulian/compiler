@@ -248,6 +248,22 @@ func (tn TGMember) InvokesAsync() bool {
 	return invokesAsync
 }
 
+// IsRequired returns whether this member is "required" under the parent type,
+// either by being a required field or by being the member of an interface that
+// is implemented.
+func (tn TGMember) IsRequired() bool {
+	if tn.IsRequiredField() {
+		return true
+	}
+
+	parentType, hasParentType := tn.ParentType()
+	if !hasParentType {
+		return false
+	}
+
+	return parentType.TypeKind() == ImplicitInterfaceType
+}
+
 // IsRequiredField returns whether this member is a field requiring initialization on
 // construction of an instance of the parent type.
 func (tn TGMember) IsRequiredField() bool {

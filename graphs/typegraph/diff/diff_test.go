@@ -287,6 +287,9 @@ var sourceDiffTests = []string{
 	"withwebidlsubpackage",
 	"operatorchanged",
 	"operatorsame",
+	"fieldadded",
+	"interfacefunctionadded",
+	"nonrequiredfieldadded",
 }
 
 func TestSourcedDiff(t *testing.T) {
