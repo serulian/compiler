@@ -246,6 +246,16 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 		}
 	}
 
+	// If there are any additional parameters, make sure they are nullable.
+	if len(parameters) > 2 {
+		for index, parameter := range parameters[2:] {
+			if !parameter.NullValueAllowed() {
+				sb.decorateWithError(node, "Declarable function used in an SML declaration tag cannot have a required parameter at position #%v. Found: %s", index+3, parameter)
+				return newScope().Invalid().GetScope()
+			}
+		}
+	}
+
 	return newScope().
 		IsValid(isValid).
 		Resolving(resolvedType).
