@@ -20,7 +20,7 @@ import (
 // generateImplementedMembers generates all the members under the given type or module into ES5.
 func (gen *es5generator) generateImplementedMembers(typeOrModule typegraph.TGTypeOrModule) *ordered_map.OrderedMap {
 	memberMap := ordered_map.NewOrderedMap()
-	members := typeOrModule.Members()
+	members := typeOrModule.MembersAndOperators()
 	for _, member := range members {
 		// Check for a base member. If one exists, generate the member has an aliased member.
 		_, hasBaseMember := member.BaseMember()

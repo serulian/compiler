@@ -440,7 +440,7 @@ func (g *TypeGraph) checkForDuplicateNames() bool {
 
 			// Check the members of the type.
 			typeMembers := map[string]bool{}
-			for _, typeMember := range typeDecl.Members() {
+			for _, typeMember := range typeDecl.MembersAndOperators() {
 				// Ensure the member name is unique.
 				ensureUniqueName(typeMember, typeDecl, typeMembers)
 

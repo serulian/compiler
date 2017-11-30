@@ -1,4 +1,17 @@
 {
+    "0fd1a78c883ac612f8acde7c272efb10": {
+        "Key": "0fd1a78c883ac612f8acde7c272efb10",
+        "Kind": 3,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-source-module": "tests/(root).webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-exported": "true",
+            "tdg-type-globalid": "HTMLDocument",
+            "tdg-type-name": "HTMLDocument"
+        }
+    },
     "1b5ba4a88d4b3121f2ed24180d32462d": {
         "Key": "1b5ba4a88d4b3121f2ed24180d32462d",
         "Kind": 8,
@@ -12,14 +25,14 @@
             "tdg-type-name": "HTMLWindow"
         }
     },
-    "a9b6b17ba8ca64b527f74253bd8e8c05": {
-        "Key": "a9b6b17ba8ca64b527f74253bd8e8c05",
+    "4585d20056dffee190cfde9a9f83bada": {
+        "Key": "4585d20056dffee190cfde9a9f83bada",
         "Kind": 3,
         "Children": {
-            "207af0dfb98906d99d38cd5a346c0fad": {
+            "f8901e93b13d45d8c5b47c661a223d4f": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "207af0dfb98906d99d38cd5a346c0fad",
+                    "Key": "f8901e93b13d45d8c5b47c661a223d4f",
                     "Kind": 9,
                     "Children": {},
                     "Predicates": {
@@ -29,7 +42,7 @@
                         "tdg-member-resolved-type": "HTMLDocument",
                         "tdg-member-signature": "\n\u0008document\u0010\t \u0001*\u000cHTMLDocument",
                         "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-module": "(root).webidl",
+                        "tdg-source-module": "tests/(root).webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
                 }
@@ -37,24 +50,11 @@
         },
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "(root).webidl",
+            "tdg-source-module": "tests/(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-exported": "true",
             "tdg-type-globalid": "HTMLWindow",
             "tdg-type-name": "HTMLWindow"
-        }
-    },
-    "bed415bc7e5dc84aada58cb833aa8442": {
-        "Key": "bed415bc7e5dc84aada58cb833aa8442",
-        "Kind": 3,
-        "Children": {},
-        "Predicates": {
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "(root).webidl",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-exported": "true",
-            "tdg-type-globalid": "HTMLDocument",
-            "tdg-type-name": "HTMLDocument"
         }
     },
     "e72add5c504f926800c8bb060fee5724": {

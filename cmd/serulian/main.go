@@ -14,6 +14,7 @@ import (
 	"github.com/serulian/compiler/builder"
 	"github.com/serulian/compiler/developer"
 	"github.com/serulian/compiler/formatter"
+	"github.com/serulian/compiler/packagetools"
 	"github.com/serulian/compiler/tester"
 	"github.com/serulian/compiler/version"
 
@@ -27,6 +28,7 @@ var (
 	debug                     bool
 	profile                   bool
 	addr                      string
+	verbose                   bool
 )
 
 func disableGC() {
@@ -204,6 +206,37 @@ func main() {
 		},
 	}
 
+	var cmdPackage = &cobra.Command{
+		Use:   "package",
+		Short: "Serulian package management tools",
+		Long:  `Tools and commands for managing updating and versioning of Serulian packages`,
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println(cmd.UsageString())
+			os.Exit(1)
+		},
+	}
+
+	var cmdDiff = &cobra.Command{
+		Use:   "diff [package path] (compare-version)",
+		Short: "Performs a diff of this package against latest tagged",
+		Long:  `Performs a diff between the current version of this package and the latest tagged (or that specified)`,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) < 1 {
+				fmt.Println("Expected package path")
+				os.Exit(-1)
+			}
+
+			compareVersion := ""
+			if len(args) > 1 {
+				compareVersion = args[1]
+			}
+
+			packagetools.OutputDiff(args[0], compareVersion, verbose, debug, vcsDevelopmentDirectories...)
+		},
+	}
+
+	cmdPackage.AddCommand(cmdDiff)
+
 	// Register command-specific flags.
 	cmdBuild.PersistentFlags().StringSliceVar(&vcsDevelopmentDirectories, "vcs-dev-dir", []string{},
 		"If specified, VCS packages without specification will be first checked against this path")
@@ -222,6 +255,9 @@ func main() {
 	cmdImports.PersistentFlags().StringSliceVar(&vcsDevelopmentDirectories, "vcs-dev-dir", []string{},
 		"If specified, VCS packages without specification will be first checked against this path")
 
+	cmdDiff.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false,
+		"Whether to show full diff output")
+
 	// Decorate the test commands.
 	tester.DecorateRunners(cmdTest, &vcsDevelopmentDirectories)
 
@@ -234,9 +270,10 @@ func main() {
 
 	rootCmd.AddCommand(cmdBuild)
 	rootCmd.AddCommand(cmdDevelop)
+	rootCmd.AddCommand(cmdTest)
 	rootCmd.AddCommand(cmdFormat)
 	rootCmd.AddCommand(cmdImports)
-	rootCmd.AddCommand(cmdTest)
+	rootCmd.AddCommand(cmdPackage)
 	rootCmd.AddCommand(cmdVersion)
 	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "If set to true, Serulian will print debug logs")
 	rootCmd.PersistentFlags().BoolVar(&profile, "profile", false, "If set to true, Serulian will be profiled")

@@ -1,25 +1,25 @@
 {
-    "3382bcb4d9c9e64dea63086dd65bd9e0": {
-        "Key": "3382bcb4d9c9e64dea63086dd65bd9e0",
+    "59adf6ec791cdfe2f6f7dcd8c49fc0b5": {
+        "Key": "59adf6ec791cdfe2f6f7dcd8c49fc0b5",
         "Kind": 3,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
             "tdg-parent-type": "Node",
-            "tdg-source-module": "(root).webidl",
+            "tdg-source-module": "tests/(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-exported": "true",
             "tdg-type-globalid": "Element",
             "tdg-type-name": "Element"
         }
     },
-    "4b606cdb254830ef6aa51f4a42ef0321": {
-        "Key": "4b606cdb254830ef6aa51f4a42ef0321",
+    "844f8c34aacaa43093b607dd52136c3d": {
+        "Key": "844f8c34aacaa43093b607dd52136c3d",
         "Kind": 3,
         "Children": {},
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "(root).webidl",
+            "tdg-source-module": "tests/(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-exported": "true",
             "tdg-type-globalid": "Node",

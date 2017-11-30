@@ -1,0 +1,30 @@
+{
+    "Packages": {
+        "withwebidlchanges": {
+            "Kind": "changed",
+            "Path": "withwebidlchanges",
+            "ChangeReason": 70,
+            "Types": [
+                {
+                    "Kind": "added",
+                    "Name": "SomeOtherType",
+                    "ChangeReason": 0,
+                    "Members": null
+                },
+                {
+                    "Kind": "removed",
+                    "Name": "SomeType",
+                    "ChangeReason": 0,
+                    "Members": null
+                }
+            ],
+            "Members": [
+                {
+                    "Kind": "changed",
+                    "Name": "DoSomething",
+                    "ChangeReason": 16
+                }
+            ]
+        }
+    }
+}

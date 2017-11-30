@@ -1,0 +1,7 @@
+class SomeClass<T1, Q1> {
+    function<void> DoSomething<R1, S1>(param1 T1, param2 Q1, param3 R1, param4 S1) {
+    }
+}
+
+function<void> DoSomething<R2, S2>(param3 R2, param4 S2) {
+}

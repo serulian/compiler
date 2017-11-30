@@ -86,6 +86,7 @@ func TestGraphs(t *testing.T) {
 		graph, err := compilergraph.NewGraph("tests/" + test.entrypoint + ".webidl")
 		if err != nil {
 			t.Errorf("Got error on test %s: %v", test.name, err)
+			continue
 		}
 
 		testIRG := webidl.NewIRG(graph)
@@ -99,7 +100,9 @@ func TestGraphs(t *testing.T) {
 		irgResult := loader.Load(secondaryLibs...)
 
 		// Make sure we had no errors during construction.
-		assert.True(t, irgResult.Status, "Got error for IRG construction %v: %s", test.name, irgResult.Errors)
+		if !assert.True(t, irgResult.Status, "Got error for IRG construction %v: %s", test.name, irgResult.Errors) {
+			continue
+		}
 
 		// Construct the type graph.
 		result, _ := typegraph.BuildTypeGraphWithOption(graph, typegraph.BuildForTesting, GetConstructor(testIRG), typegraph.NewBasicTypesConstructorForTesting(graph))
@@ -111,7 +114,7 @@ func TestGraphs(t *testing.T) {
 			}
 
 			currentLayerView := result.Graph.GetFilteredJSONForm(
-				[]string{"tests/" + test.entrypoint + ".webidl", "(root).webidl"},
+				[]string{"tests/" + test.entrypoint + ".webidl", "tests/(root).webidl"},
 				[]compilergraph.TaggedValue{typegraph.NodeTypeModule})
 
 			if os.Getenv("REGEN") == "true" {

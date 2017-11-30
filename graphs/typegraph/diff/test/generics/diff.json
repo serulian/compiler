@@ -1,0 +1,35 @@
+{
+    "Packages": {
+        "generics": {
+            "Kind": "same",
+            "Path": "generics",
+            "ChangeReason": 0,
+            "Types": [
+                {
+                    "Kind": "same",
+                    "Name": "SomeClass",
+                    "ChangeReason": 0,
+                    "Members": [
+                        {
+                            "Kind": "same",
+                            "Name": "DoSomething",
+                            "ChangeReason": 0
+                        },
+                        {
+                            "Kind": "same",
+                            "Name": "new",
+                            "ChangeReason": 0
+                        }
+                    ]
+                }
+            ],
+            "Members": [
+                {
+                    "Kind": "same",
+                    "Name": "DoSomething",
+                    "ChangeReason": 0
+                }
+            ]
+        }
+    }
+}

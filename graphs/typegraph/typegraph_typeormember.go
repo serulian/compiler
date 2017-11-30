@@ -26,6 +26,7 @@ type TGTypeOrMember interface {
 	Node() compilergraph.GraphNode
 	Generics() []TGGeneric
 	HasGenerics() bool
+	LookupGeneric(name string) (TGGeneric, bool)
 	IsReadOnly() bool
 	IsType() bool
 	IsStatic() bool
@@ -41,4 +42,5 @@ type TGTypeOrMember interface {
 	IsAccessibleTo(modulePath compilercommon.InputSource) bool
 	AsType() (TGTypeDecl, bool)
 	Code() (compilercommon.CodeSummary, bool)
+	EntityPath() []Entity
 }

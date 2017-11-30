@@ -10,8 +10,14 @@ import (
 	"github.com/serulian/compiler/graphs/typegraph"
 )
 
+// TypeGraphInformation specifies the graph information for a type graph to be diff-ed.
 type TypeGraphInformation struct {
-	Graph           *typegraph.TypeGraph
+	// Graph is the type graph to diff.
+	Graph *typegraph.TypeGraph
+
+	// PackageRootPath is the root path from which the type graph was constructed. Used
+	// to normalize all package paths relative to the root, for easy comparison across
+	// type graphs.
 	PackageRootPath string
 }
 

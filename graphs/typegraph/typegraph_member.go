@@ -248,6 +248,22 @@ func (tn TGMember) InvokesAsync() bool {
 	return invokesAsync
 }
 
+// IsRequired returns whether this member is "required" under the parent type,
+// either by being a required field or by being the member of an interface that
+// is implemented.
+func (tn TGMember) IsRequired() bool {
+	if tn.IsRequiredField() {
+		return true
+	}
+
+	parentType, hasParentType := tn.ParentType()
+	if !hasParentType {
+		return false
+	}
+
+	return parentType.TypeKind() == ImplicitInterfaceType
+}
+
 // IsRequiredField returns whether this member is a field requiring initialization on
 // construction of an instance of the parent type.
 func (tn TGMember) IsRequiredField() bool {
@@ -322,6 +338,21 @@ func (tn TGMember) Generics() []TGGeneric {
 	}
 
 	return generics
+}
+
+// LookupGeneric looks up the generic under this member with the given name and returns it, if any.
+func (tn TGMember) LookupGeneric(name string) (TGGeneric, bool) {
+	node, found := tn.GraphNode.
+		StartQuery().
+		Out(NodePredicateMemberGeneric).
+		Has(NodePredicateGenericName, name).
+		TryGetNode()
+
+	if !found {
+		return TGGeneric{}, false
+	}
+
+	return TGGeneric{node, tn.tdg}, true
 }
 
 // Parameters returns the parameters on this member.
@@ -484,6 +515,16 @@ func (tn TGMember) SourceGraphId() string {
 // TypeGraph returns the type graph that contains this member.
 func (tn TGMember) TypeGraph() *TypeGraph {
 	return tn.tdg
+}
+
+// EntityPath returns the path of entities that chain to this member.
+func (tn TGMember) EntityPath() []Entity {
+	parentEntities := tn.Parent().EntityPath()
+	return append(parentEntities, Entity{
+		Kind:          EntityKindMember,
+		NameOrPath:    tn.ChildName(),
+		SourceGraphId: tn.SourceGraphId(),
+	})
 }
 
 // Code returns a code-like summarization of the member, for human consumption.

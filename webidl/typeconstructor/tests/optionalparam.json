@@ -12,14 +12,27 @@
             "tdg-type-name": "SomeInterface"
         }
     },
-    "5c9700b7b82c7033c03ee5303bd91eb2": {
-        "Key": "5c9700b7b82c7033c03ee5303bd91eb2",
+    "73bd3823ac5e52c2dcb58022cbb73848": {
+        "Key": "73bd3823ac5e52c2dcb58022cbb73848",
+        "Kind": 3,
+        "Children": {},
+        "Predicates": {
+            "tdg-node-kind": "3|NodeType|tdg",
+            "tdg-source-module": "tests/(root).webidl",
+            "tdg-source-node": "(NodeRef)",
+            "tdg-type-exported": "true",
+            "tdg-type-globalid": "Foo",
+            "tdg-type-name": "Foo"
+        }
+    },
+    "9ed9815726334eab6b37167300d688d7": {
+        "Key": "9ed9815726334eab6b37167300d688d7",
         "Kind": 3,
         "Children": {
-            "31d6362ede827447c00ed6461603c40e": {
+            "e8c8f52134993c7d2f0cb6c9685bc418": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "31d6362ede827447c00ed6461603c40e",
+                    "Key": "e8c8f52134993c7d2f0cb6c9685bc418",
                     "Kind": 9,
                     "Children": {
                         "6833a3464d1974be735ad93c78c377fc": {
@@ -86,7 +99,7 @@
                         "tdg-member-resolved-type": "function\u003cvoid\u003e(Foo, Foo, Foo?, Foo?)",
                         "tdg-member-signature": "\n\u000csomefunction\u0010\u0007 \u0001*$function\u003cvoid\u003e(Foo, Foo, Foo?, Foo?)",
                         "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-module": "(root).webidl",
+                        "tdg-source-module": "tests/(root).webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
                 }
@@ -94,7 +107,7 @@
         },
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "(root).webidl",
+            "tdg-source-module": "tests/(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-exported": "true",
             "tdg-type-globalid": "SomeInterface",
@@ -111,19 +124,6 @@
             "tdg-source-node": "(NodeRef)",
             "tdg-type-exported": "true",
             "tdg-type-globalid": "6757ffcf",
-            "tdg-type-name": "Foo"
-        }
-    },
-    "ce541d21d4db40e6822609bef1d1ff73": {
-        "Key": "ce541d21d4db40e6822609bef1d1ff73",
-        "Kind": 3,
-        "Children": {},
-        "Predicates": {
-            "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "(root).webidl",
-            "tdg-source-node": "(NodeRef)",
-            "tdg-type-exported": "true",
-            "tdg-type-globalid": "Foo",
             "tdg-type-name": "Foo"
         }
     }

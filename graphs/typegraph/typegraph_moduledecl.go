@@ -57,6 +57,11 @@ func (tn TGModule) Members() []TGMember {
 	return members
 }
 
+// MembersAndOperators returns the members defined in this module.
+func (tn TGModule) MembersAndOperators() []TGMember {
+	return tn.Members()
+}
+
 // GetMember finds the member under this module with the given name, if any.
 func (tn TGModule) GetMember(name string) (TGMember, bool) {
 	node, found := tn.GraphNode.StartQuery().
@@ -69,6 +74,11 @@ func (tn TGModule) GetMember(name string) (TGMember, bool) {
 	}
 
 	return TGMember{node, tn.tdg}, true
+}
+
+// GetMemberOrOperator finds the member under this module with the given *child* name, if any.
+func (tn TGModule) GetMemberOrOperator(name string) (TGMember, bool) {
+	return tn.GetMember(name)
 }
 
 // IsType returns whether this module is a type (always false).
@@ -98,6 +108,17 @@ func (tn TGModule) Types() []TGTypeDecl {
 	}
 
 	return types
+}
+
+// EntityPath returns the path of entities that chain to this module.
+func (tn TGModule) EntityPath() []Entity {
+	return []Entity{
+		Entity{
+			Kind:          EntityKindModule,
+			NameOrPath:    string(tn.Path()),
+			SourceGraphId: tn.SourceGraphId(),
+		},
+	}
 }
 
 // SourceGraphId returns the ID of the source graph from which this module originated.

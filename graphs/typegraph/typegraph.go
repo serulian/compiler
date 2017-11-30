@@ -14,6 +14,7 @@ import (
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/compilerutil"
+	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/packageloader"
 )
 
@@ -532,6 +533,99 @@ func (g *TypeGraph) LookupReturnType(sourceNode compilergraph.GraphNode) (TypeRe
 func (g *TypeGraph) LookupGlobalAliasedType(alias string) (TGTypeDecl, bool) {
 	typeDecl, found := g.globalAliasedTypes[alias]
 	return typeDecl, found
+}
+
+// EntityResolveOption defines the various options for ResolveEntityByPath.
+type EntityResolveOption int
+
+const (
+	// EntityResolveModulesExactly indicates that module entities will be resolved
+	// as an exact match.
+	EntityResolveModulesExactly EntityResolveOption = iota
+
+	// EntityResolveModulesAsPackages indicates that module entities will be resolved
+	// as *packages*, searching all modules with the matching package path.
+	EntityResolveModulesAsPackages
+)
+
+// ResolveEntityByPath finds the entity with the matching set of entries in this type graph,
+// if any.
+func (g *TypeGraph) ResolveEntityByPath(entityPath []Entity, option EntityResolveOption) (TGEntity, bool) {
+	if len(entityPath) < 1 || entityPath[0].Kind != EntityKindModule {
+		return nil, false
+	}
+
+	if option == EntityResolveModulesExactly {
+		// Resolve the top level module under which to continue resolution.
+		matchingModule, found := g.LookupModule(compilercommon.InputSource(entityPath[0].NameOrPath))
+		if !found {
+			return nil, false
+		}
+
+		return g.resolveEntityByPathUnderModule(matchingModule, entityPath[1:])
+	}
+
+	for _, module := range g.Modules() {
+		if module.PackagePath() == srg.PackagePath(compilercommon.InputSource(entityPath[0].NameOrPath)) &&
+			module.SourceGraphId() == entityPath[0].SourceGraphId {
+			foundEntity, ok := g.resolveEntityByPathUnderModule(module, entityPath[1:])
+			if ok {
+				return foundEntity, true
+			}
+		}
+	}
+
+	return nil, false
+}
+
+func (g *TypeGraph) resolveEntityByPathUnderModule(module TGModule, entityPath []Entity) (TGEntity, bool) {
+	var current TGEntity = module
+	for _, entityEntry := range entityPath {
+		switch entityEntry.Kind {
+		case EntityKindModule:
+			panic("Cannot resolve a module under another module")
+
+		case EntityKindType:
+			switch asSpecific := current.(type) {
+			case TGModule:
+				typedecl, ok := g.LookupType(entityEntry.NameOrPath, asSpecific.Path())
+				if !ok {
+					return nil, false
+				}
+				current = typedecl
+
+			case TGTypeDecl:
+				generic, ok := asSpecific.LookupGeneric(entityEntry.NameOrPath)
+				if !ok {
+					return nil, false
+				}
+				current = generic.AsType()
+
+			case TGMember:
+				generic, ok := asSpecific.LookupGeneric(entityEntry.NameOrPath)
+				if !ok {
+					return nil, false
+				}
+				current = generic.AsType()
+
+			default:
+				panic("Unknown entity marked as type")
+			}
+
+		case EntityKindMember:
+			member, ok := current.(TGTypeOrModule).GetMemberOrOperator(entityEntry.NameOrPath)
+			if !ok {
+				return nil, false
+			}
+
+			current = member
+
+		default:
+			panic("Unknown entity kind")
+		}
+	}
+
+	return current, true
 }
 
 // SourceRangesOf returns the source ranges of the given in its *source* graph, if any.

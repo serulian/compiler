@@ -1,0 +1,31 @@
+{
+    "Packages": {
+        "withwebidlsubpackage": {
+            "Kind": "same",
+            "Path": "withwebidlsubpackage",
+            "ChangeReason": 0,
+            "Types": [],
+            "Members": [
+                {
+                    "Kind": "same",
+                    "Name": "DoSomething",
+                    "ChangeReason": 0
+                }
+            ]
+        },
+        "withwebidlsubpackage/sub": {
+            "Kind": "same",
+            "Path": "withwebidlsubpackage/sub",
+            "ChangeReason": 0,
+            "Types": [
+                {
+                    "Kind": "same",
+                    "Name": "SomeInterface",
+                    "ChangeReason": 0,
+                    "Members": []
+                }
+            ],
+            "Members": []
+        }
+    }
+}

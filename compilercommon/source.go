@@ -92,6 +92,9 @@ type SourceRange interface {
 
 	// AtStartPosition returns a SourceRange located only at the starting position of this range.
 	AtStartPosition() SourceRange
+
+	// String returns a (somewhat) human-readable form of the range.
+	String() string
 }
 
 // SourcePosition represents a single position in a source file.
@@ -107,6 +110,9 @@ type SourcePosition interface {
 
 	// LineText returns the text of the line for this position.
 	LineText() (string, error)
+
+	// String returns a (somewhat) human-readable form of the position.
+	String() string
 }
 
 // sourceRange implements the SourceRange interface.
@@ -153,6 +159,10 @@ func (sr sourceRange) ContainsPosition(position SourcePosition) (bool, error) {
 	}
 
 	return positionRune >= startRune && positionRune <= endRune, nil
+}
+
+func (sr sourceRange) String() string {
+	return fmt.Sprintf("%v -> %v", sr.start, sr.end)
 }
 
 // runeIndexedPosition implements the SourcePosition interface over a rune position.

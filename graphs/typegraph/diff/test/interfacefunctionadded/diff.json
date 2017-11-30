@@ -1,0 +1,24 @@
+{
+    "Packages": {
+        "interfacefunctionadded": {
+            "Kind": "changed",
+            "Path": "interfacefunctionadded",
+            "ChangeReason": 8,
+            "Types": [
+                {
+                    "Kind": "changed",
+                    "Name": "SomeInterface",
+                    "ChangeReason": 1152,
+                    "Members": [
+                        {
+                            "Kind": "added",
+                            "Name": "SomeFunction",
+                            "ChangeReason": 0
+                        }
+                    ]
+                }
+            ],
+            "Members": []
+        }
+    }
+}

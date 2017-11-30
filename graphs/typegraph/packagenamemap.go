@@ -24,7 +24,7 @@ func newPackageNameMap() packagenamemap {
 // instance seen. If it is not, then false and the existing type or member, under the
 // package, with the same name is returned.
 func (pnm packagenamemap) CheckAndTrack(module TGModule, typeOrMember TGTypeOrMember) (TGTypeOrMember, bool) {
-	key := fmt.Sprintf("%v::%v", module.PackagePath(), typeOrMember.Name())
+	key := fmt.Sprintf("%v::%v::%v", module.SourceGraphId(), module.PackagePath(), typeOrMember.Name())
 	if !pnm.internalmap.SetIfAbsent(key, typeOrMember) {
 		existing, _ := pnm.internalmap.Get(key)
 		return existing.(TGTypeOrMember), false

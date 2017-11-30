@@ -10,53 +10,40 @@ import (
 	"github.com/serulian/compiler/graphs/typegraph"
 )
 
-func findEquivalentType(originalType typegraph.TGTypeDecl, context diffContext) (typegraph.TGTypeDecl, bool) {
-	containingType, hasContainingType := originalType.ContainingType()
-	if hasContainingType {
-		equivalentContainingType, found := findEquivalentType(containingType, context)
-		if !found {
-			return typegraph.TGTypeDecl{}, false
-		}
-
-		equivalentGeneric, found := equivalentContainingType.LookupGeneric(originalType.Name())
-		if !found {
-			return typegraph.TGTypeDecl{}, false
-		}
-
-		return equivalentGeneric.AsType(), true
-	}
-
-	// Search all modules under the same package as the original type for a type with
-	// the same name.
-	relativePackagePath, err := filepath.Rel(context.originalGraph.PackageRootPath, originalType.ParentModule().PackagePath())
-	if err != nil {
-		// Cannot find, as it is not under the main package.
-		return typegraph.TGTypeDecl{}, false
-	}
-
-	for _, updatedModule := range context.updatedGraph.Graph.Modules() {
-		updatedRelativePackagePath, err := filepath.Rel(context.updatedGraph.PackageRootPath, updatedModule.PackagePath())
-		if err != nil {
-			continue
-		}
-
-		if updatedRelativePackagePath != relativePackagePath {
-			continue
-		}
-
-		updatedType, found := context.updatedGraph.Graph.LookupType(originalType.Name(), updatedModule.Path())
-		if found {
-			return updatedType, true
-		}
-	}
-
-	return typegraph.TGTypeDecl{}, false
-}
-
 func compareTypes(original typegraph.TypeReference, updated typegraph.TypeReference, context diffContext) bool {
 	// Adopt the original type reference into the updated graph.
 	adopted, err := original.AdoptReferenceInto(context.updatedGraph.Graph, func(originalType typegraph.TGTypeDecl) (typegraph.TGTypeDecl, bool) {
-		return findEquivalentType(originalType, context)
+		globalAlias, hasGlobalAlias := originalType.GlobalAlias()
+		if hasGlobalAlias {
+			return context.updatedGraph.Graph.LookupGlobalAliasedType(globalAlias)
+		}
+
+		relativeModulePath, err := filepath.Rel(context.originalGraph.PackageRootPath, string(originalType.ParentModule().Path()))
+		if err != nil {
+			// Cannot find, as it is not under the main package.
+			return typegraph.TGTypeDecl{}, false
+		}
+
+		updatedModulePath := filepath.Join(context.updatedGraph.PackageRootPath, relativeModulePath)
+
+		// Grab the entity path for the original type, and replace its initial module
+		// entry with one pointing to the new relative package path.
+		originalTypeEntityPath := originalType.EntityPath()
+		updatedTypeEntityPath := append([]typegraph.Entity{
+			typegraph.Entity{
+				Kind:          typegraph.EntityKindModule,
+				NameOrPath:    updatedModulePath,
+				SourceGraphId: originalTypeEntityPath[0].SourceGraphId,
+			},
+		}, originalTypeEntityPath[1:]...)
+
+		// Find the associated type, if any.
+		entity, ok := context.updatedGraph.Graph.ResolveEntityByPath(updatedTypeEntityPath, typegraph.EntityResolveModulesAsPackages)
+		if !ok {
+			return typegraph.TGTypeDecl{}, false
+		}
+
+		return entity.AsType()
 	})
 
 	if err != nil {

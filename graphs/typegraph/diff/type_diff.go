@@ -129,6 +129,10 @@ func diffType(original typegraph.TGTypeDecl, updated typegraph.TGTypeDecl, conte
 				changeReason = changeReason | TypeDiffReasonExportedMembersAdded
 			}
 
+			if memberDiff.Updated.IsRequired() {
+				changeReason = changeReason | TypeDiffReasonRequiredMemberAdded
+			}
+
 		case Removed:
 			if memberDiff.Original.IsExported() {
 				changeReason = changeReason | TypeDiffReasonExportedMembersRemoved

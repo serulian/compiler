@@ -12,32 +12,14 @@
             "tdg-type-name": "ISomeCollapsedType"
         }
     },
-    "87965a1a2e46c89eeda43e2ea07249e0": {
-        "Key": "87965a1a2e46c89eeda43e2ea07249e0",
+    "a4172017693956734259d1e238fc6204": {
+        "Key": "a4172017693956734259d1e238fc6204",
         "Kind": 3,
         "Children": {
-            "386f3d463c204cc0af01b7ee26485ffa": {
+            "3e14408f442353c597e2631a8e48a98d": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "386f3d463c204cc0af01b7ee26485ffa",
-                    "Kind": 9,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-exported": "true",
-                        "tdg-member-name": "First",
-                        "tdg-member-readonly": "true",
-                        "tdg-member-resolved-type": "any",
-                        "tdg-member-signature": "\n\u0005first\u0010\t \u0001*\u0003any",
-                        "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-module": "(root).webidl",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
-            "3951af39c7b249232008d383bffdf0ec": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "3951af39c7b249232008d383bffdf0ec",
+                    "Key": "3e14408f442353c597e2631a8e48a98d",
                     "Kind": 9,
                     "Children": {},
                     "Predicates": {
@@ -47,15 +29,15 @@
                         "tdg-member-resolved-type": "any",
                         "tdg-member-signature": "\n\u0005third\u0010\t \u0001*\u0003any",
                         "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-module": "(root).webidl",
+                        "tdg-source-module": "tests/(root).webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
                 }
             },
-            "c11c3e3313a0c563754eeb0c517d7046": {
+            "8af9e30929b1cccf44fc67cb202844cc": {
                 "Predicate": "tdg-node-member",
                 "Child": {
-                    "Key": "c11c3e3313a0c563754eeb0c517d7046",
+                    "Key": "8af9e30929b1cccf44fc67cb202844cc",
                     "Kind": 9,
                     "Children": {},
                     "Predicates": {
@@ -65,7 +47,25 @@
                         "tdg-member-resolved-type": "any",
                         "tdg-member-signature": "\n\u0006second\u0010\t \u0001*\u0003any",
                         "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-module": "(root).webidl",
+                        "tdg-source-module": "tests/(root).webidl",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "a4c55e2cfca4439905a8e5086a3a330f": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "a4c55e2cfca4439905a8e5086a3a330f",
+                    "Kind": 9,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-exported": "true",
+                        "tdg-member-name": "First",
+                        "tdg-member-readonly": "true",
+                        "tdg-member-resolved-type": "any",
+                        "tdg-member-signature": "\n\u0005first\u0010\t \u0001*\u0003any",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-module": "tests/(root).webidl",
                         "tdg-source-node": "(NodeRef)"
                     }
                 }
@@ -73,7 +73,7 @@
         },
         "Predicates": {
             "tdg-node-kind": "3|NodeType|tdg",
-            "tdg-source-module": "(root).webidl",
+            "tdg-source-module": "tests/(root).webidl",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-exported": "true",
             "tdg-type-globalid": "ISomeCollapsedType",
