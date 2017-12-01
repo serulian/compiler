@@ -25,7 +25,7 @@ func (fgv fakeGitVcs) Checkout(path vcsPackagePath, downloadPath string, checkou
 	panic("Fake git!")
 }
 
-func (fgv fakeGitVcs) HasLocalChanges(checkoutDir string) bool {
+func (fgv fakeGitVcs) HasLocalChanges(checkoutDir string, ignoreEntries ...string) bool {
 	panic("Fake git!")
 }
 
@@ -46,5 +46,9 @@ func (fgv fakeGitVcs) IsDetached(checkoutDir string) (bool, error) {
 }
 
 func (fgv fakeGitVcs) GetPackagePath(checkoutDir string) (vcsPackagePath, error) {
+	panic("Fake git!")
+}
+
+func (fgv fakeGitVcs) Tag(checkoutDir string, tag string, message string) error {
 	panic("Fake git!")
 }
