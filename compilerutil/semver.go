@@ -16,8 +16,54 @@ const (
 	UpdateVersionMinor UpdateVersionOption = "minor"
 
 	// UpdateVersionMajor indicates the both minor and major version updates are allowed.
-	UpdateVersionMajor = "major"
+	UpdateVersionMajor UpdateVersionOption = "major"
 )
+
+// NextVersionOption defines the options for the NextSemanticVersion method.
+type NextVersionOption string
+
+const (
+	// NextMajorVersion indicates that the major version field should be incremented.
+	NextMajorVersion NextVersionOption = "major"
+
+	// NextMinorVersion indicates that the minor version field should be incremented.
+	NextMinorVersion NextVersionOption = "minor"
+
+	// NextPatchVersion indicates that the patch version field should be incremented.
+	NextPatchVersion NextVersionOption = "patch"
+)
+
+// NextSemanticVersion returns the next logic semantic version from the current version, given the
+// update option.
+func NextSemanticVersion(currentVersionString string, option NextVersionOption) (string, error) {
+	version, err := semver.ParseTolerant(currentVersionString)
+	if err != nil {
+		return "", err
+	}
+
+	// Clear the Pre and Build fields.
+	version.Pre = []semver.PRVersion{}
+	version.Build = []string{}
+
+	switch option {
+	case NextMajorVersion:
+		version.Major++
+		version.Minor = 0
+		version.Patch = 0
+
+	case NextMinorVersion:
+		version.Minor++
+		version.Patch = 0
+
+	case NextPatchVersion:
+		version.Patch++
+
+	default:
+		panic("Unknown NextVersionOption")
+	}
+
+	return version.String(), nil
+}
 
 // LatestSemanticVersion returns the latest non-patch semantic version found in the list of available
 // versions, if any.
