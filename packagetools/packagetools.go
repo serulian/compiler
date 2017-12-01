@@ -21,11 +21,68 @@ import (
 	"github.com/serulian/compiler/vcs"
 )
 
+// Revise tags the current package with a semantic version computed by performing a diff of the package's current
+// contents against the version found in the same repository with (optional) comparison
+// version. If the comparison version is not specified, then the latest semver
+// of the package is used (if any).
+func Revise(packagePath string, comparisonVersion string, revisionNote string, verbose bool, debug bool, vcsDevelopmentDirectories ...string) {
+	// Perform the diff of the package, outputting if necessary. This will also verify the package is valid.
+	packageDiff, upstreamVersion, ok := getAndOutputDiff(packagePath, comparisonVersion, verbose, debug, vcsDevelopmentDirectories)
+	if !ok {
+		return
+	}
+
+	fmt.Println()
+
+	// Ensure there are no local uncommitted changes in the package.
+	handler, _ := vcs.DetectHandler(packagePath)
+	if handler.HasLocalChanges(packagePath, packageloader.SerulianPackageDirectory) {
+		compilerutil.LogToConsole(compilerutil.ErrorLogLevel, nil,
+			"Package `%s` contains uncommited changes", packagePath)
+		return
+	}
+
+	// Determine how to revise the semantic version.
+	var option = compilerutil.NextPatchVersion
+
+	switch {
+	case packageDiff.HasBreakingChange():
+		option = compilerutil.NextMajorVersion
+
+	case packageDiff.Kind != diff.Same:
+		option = compilerutil.NextMinorVersion
+	}
+
+	newVersion, err := compilerutil.NextSemanticVersion(upstreamVersion, option)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Tag the latest commit with the new semantic version.
+	if revisionNote == "" {
+		revisionNote = "Automatic revision to version " + newVersion
+	}
+
+	terr := handler.Tag(packagePath, newVersion, revisionNote)
+	if terr != nil {
+		compilerutil.LogToConsole(compilerutil.ErrorLogLevel, nil,
+			"Could not tag package with version `%s`: %v", newVersion, err)
+		return
+	}
+
+	compilerutil.LogToConsole(compilerutil.SuccessLogLevel, nil,
+		"Package `%s` tagged with revised version `%s`", packagePath, newVersion)
+}
+
 // OutputDiff outputs the diff between the Serulian package found at the given
 // path and the version found in the same repository with (optional) comparison
 // version. If the comparison version is not specified, then the latest semver
 // of the package is used (if any).
 func OutputDiff(packagePath string, comparisonVersion string, verbose bool, debug bool, vcsDevelopmentDirectories ...string) {
+	getAndOutputDiff(packagePath, comparisonVersion, verbose, debug, vcsDevelopmentDirectories)
+}
+
+func getAndOutputDiff(packagePath string, comparisonVersion string, verbose bool, debug bool, vcsDevelopmentDirectories []string) (diff.PackageDiff, string, bool) {
 	// Disable logging unless the debug flag is on.
 	if !debug {
 		log.SetOutput(ioutil.Discard)
@@ -36,7 +93,7 @@ func OutputDiff(packagePath string, comparisonVersion string, verbose bool, debu
 	if !hasHandler {
 		compilerutil.LogToConsole(compilerutil.ErrorLogLevel, nil,
 			"Path `%s` is not a valid Serulian package. Please make sure to point to the root of the Serulian package.", packagePath)
-		return
+		return diff.PackageDiff{}, "", false
 	}
 
 	// List the tags and find the latest release or specified comparison version.
@@ -46,7 +103,7 @@ func OutputDiff(packagePath string, comparisonVersion string, verbose bool, debu
 	if err != nil {
 		compilerutil.LogToConsole(compilerutil.ErrorLogLevel, nil,
 			"Could not list tags for package `%s`: %v", packagePath, err)
-		return
+		return diff.PackageDiff{}, "", false
 	}
 
 	if comparisonVersion == "" {
@@ -54,7 +111,7 @@ func OutputDiff(packagePath string, comparisonVersion string, verbose bool, debu
 		if !found {
 			compilerutil.LogToConsole(compilerutil.ErrorLogLevel, nil,
 				"Could not find a full semantic version for package `%s`. Package versions: %v", packagePath, tags)
-			return
+			return diff.PackageDiff{}, "", false
 		}
 
 		comparisonVersion = foundVersion
@@ -69,7 +126,7 @@ func OutputDiff(packagePath string, comparisonVersion string, verbose bool, debu
 		if !found {
 			compilerutil.LogToConsole(compilerutil.ErrorLogLevel, nil,
 				"Version `%s` not found for package `%s`. Package versions: %v", comparisonVersion, packagePath, tags)
-			return
+			return diff.PackageDiff{}, "", false
 		}
 	}
 
@@ -78,7 +135,7 @@ func OutputDiff(packagePath string, comparisonVersion string, verbose bool, debu
 	if err != nil {
 		compilerutil.LogToConsole(compilerutil.ErrorLogLevel, nil,
 			"Could not get path information for package `%s`: %v", packagePath, err)
-		return
+		return diff.PackageDiff{}, "", false
 	}
 
 	// Checkout the comparison version into a temporary directory.
@@ -94,20 +151,20 @@ func OutputDiff(packagePath string, comparisonVersion string, verbose bool, debu
 	if cerr != nil {
 		compilerutil.LogToConsole(compilerutil.ErrorLogLevel, nil,
 			"Could not clone version `%s` for package `%s`: %v", comparisonVersion, packagePath, cerr)
-		return
+		return diff.PackageDiff{}, "", false
 	}
 
 	// Scope and build both versions.
 	compilerutil.LogToConsole(compilerutil.InfoLogLevel, nil, "Analyzing version `%s`...", comparisonVersion)
 	originalGraph, ok := getTypeGraph(dir, vcsDevelopmentDirectories)
 	if !ok {
-		return
+		return diff.PackageDiff{}, "", false
 	}
 
 	compilerutil.LogToConsole(compilerutil.InfoLogLevel, nil, "Analyzing HEAD...")
 	updatedGraph, ok := getTypeGraph(packagePath, vcsDevelopmentDirectories)
 	if !ok {
-		return
+		return diff.PackageDiff{}, "", false
 	}
 
 	original := diff.TypeGraphInformation{Graph: originalGraph, PackageRootPath: dir}
@@ -129,7 +186,7 @@ func OutputDiff(packagePath string, comparisonVersion string, verbose bool, debu
 
 		if packageDiff.Kind == diff.Same {
 			compilerutil.MessageColor.Print(": No changes found\n")
-			break
+			return packageDiff, comparisonVersion, true
 		}
 
 		if packageDiff.HasBreakingChange() {
@@ -145,8 +202,10 @@ func OutputDiff(packagePath string, comparisonVersion string, verbose bool, debu
 		}
 
 		// We only care about a single package.
-		break
+		return packageDiff, comparisonVersion, true
 	}
+
+	return diff.PackageDiff{}, "", false
 }
 
 func outputDetailedDiff(packageDiff diff.PackageDiff) {
