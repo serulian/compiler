@@ -16,7 +16,7 @@ type VCSHandler interface {
 	Checkout(path vcsPackagePath, downloadPath string, checkoutDir string) error
 
 	// HasLocalChanges detects whether the directory has uncommitted code changes.
-	HasLocalChanges(checkoutDir string) bool
+	HasLocalChanges(checkoutDir string, ignoreEntries ...string) bool
 
 	// Update performs a pull/update of a checked out directory.
 	Update(checkoutDir string) error
@@ -32,6 +32,9 @@ type VCSHandler interface {
 
 	// GetPackagePath returns the VCS Package Path information for the checked out directory.
 	GetPackagePath(checkoutDir string) (vcsPackagePath, error)
+
+	// Tag tags the revision in the checked out directory with the given tag.
+	Tag(checkoutDir string, tag string, message string) error
 }
 
 var vcsByKind = map[string]VCSHandler{

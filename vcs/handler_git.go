@@ -99,7 +99,7 @@ func (gv gitVcs) Update(checkoutDir string) error {
 	return nil
 }
 
-func (gv gitVcs) HasLocalChanges(checkoutDir string) bool {
+func (gv gitVcs) HasLocalChanges(checkoutDir string, ignoreEntries ...string) bool {
 	var out bytes.Buffer
 
 	statusCmd := exec.Command("git", "status", "--porcelain")
@@ -110,7 +110,23 @@ func (gv gitVcs) HasLocalChanges(checkoutDir string) bool {
 		return true
 	}
 
-	return len(out.String()) > 0
+	lines := strings.Split(out.String(), "\n")
+lineLoop:
+	for _, line := range lines {
+		if len(strings.TrimSpace(line)) == 0 {
+			continue
+		}
+
+		for _, entry := range ignoreEntries {
+			if strings.Contains(line, entry) {
+				continue lineLoop
+			}
+		}
+
+		return true
+	}
+
+	return false
 }
 
 func (gv gitVcs) ListTags(checkoutDir string) ([]string, error) {
@@ -202,4 +218,9 @@ func (gv gitVcs) GetPackagePath(checkoutDir string) (vcsPackagePath, error) {
 		tag:            "",
 		subpackage:     "",
 	}, nil
+}
+
+func (gv gitVcs) Tag(checkoutDir string, tag string, message string) error {
+	_, _, err := runCommand(checkoutDir, "git", "tag", "-a", tag, "-m", message)
+	return err
 }

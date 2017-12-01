@@ -29,6 +29,7 @@ var (
 	profile                   bool
 	addr                      string
 	verbose                   bool
+	revisionNote              string
 )
 
 func disableGC() {
@@ -235,7 +236,27 @@ func main() {
 		},
 	}
 
+	var cmdRev = &cobra.Command{
+		Use:   "rev [package path] (compare-version)",
+		Short: "Tags this package with a semantic version computed against latest tagged",
+		Long:  `Tags this package with a semantic version computed against latest tagged (or that specified)`,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) < 1 {
+				fmt.Println("Expected package path")
+				os.Exit(-1)
+			}
+
+			compareVersion := ""
+			if len(args) > 1 {
+				compareVersion = args[1]
+			}
+
+			packagetools.Revise(args[0], compareVersion, revisionNote, verbose, debug, vcsDevelopmentDirectories...)
+		},
+	}
+
 	cmdPackage.AddCommand(cmdDiff)
+	cmdPackage.AddCommand(cmdRev)
 
 	// Register command-specific flags.
 	cmdBuild.PersistentFlags().StringSliceVar(&vcsDevelopmentDirectories, "vcs-dev-dir", []string{},
@@ -257,6 +278,12 @@ func main() {
 
 	cmdDiff.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false,
 		"Whether to show full diff output")
+
+	cmdRev.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false,
+		"Whether to show full diff output")
+
+	cmdRev.PersistentFlags().StringVarP(&revisionNote, "revision-note", "n", "",
+		"If specified, the note to use when tagging the new version")
 
 	// Decorate the test commands.
 	tester.DecorateRunners(cmdTest, &vcsDevelopmentDirectories)
