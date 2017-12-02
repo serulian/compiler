@@ -17,6 +17,7 @@ import (
 	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 
 	glob "github.com/ryanuber/go-glob"
 )
@@ -88,9 +89,9 @@ func (ih importHandlingInfo) logSuccess(node formatterNode, message string, args
 
 func (ih importHandlingInfo) log(level compilerutil.ConsoleLogLevel, node formatterNode, message string, args ...interface{}) {
 	if ih.logProgress {
-		startRune, _ := strconv.Atoi(node.getProperty(parser.NodePredicateStartRune))
-		endRune, _ := strconv.Atoi(node.getProperty(parser.NodePredicateEndRune))
-		inputSource := compilercommon.InputSource(node.getProperty(parser.NodePredicateSource))
+		startRune, _ := strconv.Atoi(node.getProperty(sourceshape.NodePredicateStartRune))
+		endRune, _ := strconv.Atoi(node.getProperty(sourceshape.NodePredicateEndRune))
+		inputSource := compilercommon.InputSource(node.getProperty(sourceshape.NodePredicateSource))
 		sourceRange := inputSource.RangeForRunePositions(startRune, endRune, compilercommon.LocalFilePositionMapper{})
 		compilerutil.LogToConsole(level, sourceRange, message, args...)
 	}
@@ -149,7 +150,7 @@ func formatFiles(path string, importHandling importHandlingInfo, debug bool) boo
 	}
 
 	filesWalked, err := compilerutil.WalkSourcePath(path, func(currentPath string, info os.FileInfo) (bool, error) {
-		if !strings.HasSuffix(info.Name(), parser.SERULIAN_FILE_EXTENSION) {
+		if !strings.HasSuffix(info.Name(), sourceshape.SerulianFileExtension) {
 			return false, nil
 		}
 

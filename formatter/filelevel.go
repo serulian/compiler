@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/serulian/compiler/compilerutil"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 	"github.com/serulian/compiler/vcs"
 )
 
@@ -20,7 +20,7 @@ func (sf *sourceFormatter) emitFile(node formatterNode) {
 	sf.emitImports(node)
 
 	// Emit the module-level definitions.
-	sf.emitOrderedNodes(node.getChildren(parser.NodePredicateChild))
+	sf.emitOrderedNodes(node.getChildren(sourceshape.NodePredicateChild))
 }
 
 // importInfo is a struct that represents the parsed information about an import.
@@ -61,23 +61,23 @@ func (s byImportSortKey) Less(i, j int) bool {
 // emitImports emits the import statements for the source file.
 func (sf *sourceFormatter) emitImports(node formatterNode) {
 	var sortedImports = make([]importInfo, 0)
-	for _, importNode := range node.getChildrenOfType(parser.NodePredicateChild, parser.NodeTypeImport) {
+	for _, importNode := range node.getChildrenOfType(sourceshape.NodePredicateChild, sourceshape.NodeTypeImport) {
 		// Remove any padding around the source name for VCS or non-Serulian imports.
-		var source = importNode.getProperty(parser.NodeImportPredicateSource)
+		var source = importNode.getProperty(sourceshape.NodeImportPredicateSource)
 		if strings.HasPrefix(source, "`") || strings.HasPrefix(source, "\"") {
 			source = source[1 : len(source)-1]
 		}
 
 		// Pull out the various pieces of the import.
-		kind := importNode.getProperty(parser.NodeImportPredicateKind)
+		kind := importNode.getProperty(sourceshape.NodeImportPredicateKind)
 
 		// Pull out the package name(s).
 		var packages = make([]importPackageInfo, 0)
 		var packagesKey = ""
-		for _, packageNode := range importNode.getChildren(parser.NodeImportPredicatePackageRef) {
-			subsource := packageNode.getProperty(parser.NodeImportPredicateSubsource)
-			name := packageNode.getProperty(parser.NodeImportPredicateName)
-			packageName := packageNode.getProperty(parser.NodeImportPredicatePackageName)
+		for _, packageNode := range importNode.getChildren(sourceshape.NodeImportPredicatePackageRef) {
+			subsource := packageNode.getProperty(sourceshape.NodeImportPredicateSubsource)
+			name := packageNode.getProperty(sourceshape.NodeImportPredicateName)
+			packageName := packageNode.getProperty(sourceshape.NodeImportPredicatePackageName)
 
 			packagesKey += ":" + subsource + ":" + name + ":" + packageName
 

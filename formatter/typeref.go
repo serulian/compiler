@@ -4,11 +4,11 @@
 
 package formatter
 
-import "github.com/serulian/compiler/parser"
+import "github.com/serulian/compiler/sourceshape"
 
 // emitTypeReference emits the formatted type reference.
 func (sf *sourceFormatter) emitTypeReference(node formatterNode) {
-	typePath := node.getChild(parser.NodeTypeReferencePath)
+	typePath := node.getChild(sourceshape.NodeTypeReferencePath)
 
 	sf.emitNode(typePath)
 
@@ -19,52 +19,52 @@ func (sf *sourceFormatter) emitTypeReference(node formatterNode) {
 	parensOption := parensOptional
 
 	// If the type is `function`, then we must add parens.
-	if typePath.hasType(parser.NodeTypeIdentifierPath) &&
-		typePath.getChild(parser.NodeIdentifierPathRoot).getProperty(parser.NodeIdentifierAccessName) == "function" {
+	if typePath.hasType(sourceshape.NodeTypeIdentifierPath) &&
+		typePath.getChild(sourceshape.NodeIdentifierPathRoot).getProperty(sourceshape.NodeIdentifierAccessName) == "function" {
 		parensOption = parensRequired
 	}
 
-	sf.emitParameters(node, parser.NodeTypeReferenceParameter, parensOption)
+	sf.emitParameters(node, sourceshape.NodeTypeReferenceParameter, parensOption)
 }
 
 // emitIdentifierPath emits the formatted path of an identifier.
 func (sf *sourceFormatter) emitIdentifierPath(node formatterNode) {
-	sf.emitNode(node.getChild(parser.NodeIdentifierPathRoot))
+	sf.emitNode(node.getChild(sourceshape.NodeIdentifierPathRoot))
 }
 
 // emitIdentifierAccess emits a formatted access of a name under an identifier.
 func (sf *sourceFormatter) emitIdentifierAccess(node formatterNode) {
-	if node.hasChild(parser.NodeIdentifierAccessSource) {
-		sf.emitNode(node.getChild(parser.NodeIdentifierAccessSource))
+	if node.hasChild(sourceshape.NodeIdentifierAccessSource) {
+		sf.emitNode(node.getChild(sourceshape.NodeIdentifierAccessSource))
 		sf.append(".")
 	}
 
-	sf.append(node.getProperty(parser.NodeIdentifierAccessName))
+	sf.append(node.getProperty(sourceshape.NodeIdentifierAccessName))
 }
 
 // isSliceOrMappingRef returns true if the given node is a mapping or slice reference.
 func (sf *sourceFormatter) isSliceOrMappingRef(node formatterNode) bool {
-	return node.GetType() == parser.NodeTypeSlice || node.GetType() == parser.NodeTypeMapping
+	return node.GetType() == sourceshape.NodeTypeSlice || node.GetType() == sourceshape.NodeTypeMapping
 }
 
 // emitNullableTypeRef emits a nullable type reference.
 func (sf *sourceFormatter) emitNullableTypeRef(node formatterNode) {
-	if sf.isSliceOrMappingRef(node.getChild(parser.NodeTypeReferenceInnerType)) {
+	if sf.isSliceOrMappingRef(node.getChild(sourceshape.NodeTypeReferenceInnerType)) {
 		sf.append("?")
-		sf.emitNode(node.getChild(parser.NodeTypeReferenceInnerType))
+		sf.emitNode(node.getChild(sourceshape.NodeTypeReferenceInnerType))
 	} else {
-		sf.emitNode(node.getChild(parser.NodeTypeReferenceInnerType))
+		sf.emitNode(node.getChild(sourceshape.NodeTypeReferenceInnerType))
 		sf.append("?")
 	}
 }
 
 // emitStreamTypeRef emits a stream type reference.
 func (sf *sourceFormatter) emitStreamTypeRef(node formatterNode) {
-	if sf.isSliceOrMappingRef(node.getChild(parser.NodeTypeReferenceInnerType)) {
+	if sf.isSliceOrMappingRef(node.getChild(sourceshape.NodeTypeReferenceInnerType)) {
 		sf.append("*")
-		sf.emitNode(node.getChild(parser.NodeTypeReferenceInnerType))
+		sf.emitNode(node.getChild(sourceshape.NodeTypeReferenceInnerType))
 	} else {
-		sf.emitNode(node.getChild(parser.NodeTypeReferenceInnerType))
+		sf.emitNode(node.getChild(sourceshape.NodeTypeReferenceInnerType))
 		sf.append("*")
 	}
 }
@@ -87,19 +87,19 @@ func (sf *sourceFormatter) emitVoidTypeRef(node formatterNode) {
 // emitMappingTypeRef emits a mapping type reference.
 func (sf *sourceFormatter) emitMappingTypeRef(node formatterNode) {
 	sf.append("[]{")
-	sf.emitNode(node.getChild(parser.NodeTypeReferenceInnerType))
+	sf.emitNode(node.getChild(sourceshape.NodeTypeReferenceInnerType))
 	sf.append("}")
 }
 
 // emitSliceTypeRef emits a slice type reference.
 func (sf *sourceFormatter) emitSliceTypeRef(node formatterNode) {
 	sf.append("[]")
-	sf.emitNode(node.getChild(parser.NodeTypeReferenceInnerType))
+	sf.emitNode(node.getChild(sourceshape.NodeTypeReferenceInnerType))
 }
 
 // emitReferenceGenerics emits the generics declared on the given type reference node (if any).
 func (sf *sourceFormatter) emitReferenceGenerics(node formatterNode) {
-	generics := node.getChildren(parser.NodeTypeReferenceGeneric)
+	generics := node.getChildren(sourceshape.NodeTypeReferenceGeneric)
 	if len(generics) == 0 {
 		return
 	}
