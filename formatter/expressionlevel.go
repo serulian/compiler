@@ -11,7 +11,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/serulian/compiler/parser"
+	v0parser "github.com/serulian/compiler/parser/v0"
 	"github.com/serulian/compiler/sourceshape"
 )
 
@@ -124,7 +124,7 @@ func (sf *sourceFormatter) determineWrappingPrecedence(binaryExpr formatterNode,
 	var binaryIndex = -1
 	var childIndex = -1
 
-	for index, current := range parser.BinaryOperators {
+	for index, current := range v0parser.BinaryOperators {
 		if current.BinaryExpressionNodeType == binaryExprType {
 			binaryIndex = index
 		}

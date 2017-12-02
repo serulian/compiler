@@ -9,6 +9,7 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/parser/shared"
 	"github.com/serulian/compiler/sourceshape"
 )
 
@@ -28,7 +29,7 @@ func (sh *srgSourceHandler) PackageFileExtension() string {
 }
 
 // buildASTNode constructs a new node in the SRG.
-func (h *srgSourceHandler) buildASTNode(source compilercommon.InputSource, kind sourceshape.NodeType) parser.AstNode {
+func (h *srgSourceHandler) buildASTNode(source compilercommon.InputSource, kind sourceshape.NodeType) shared.AstNode {
 	graphNode := h.modifier.CreateNode(kind)
 	return &srgASTNode{
 		graphNode: graphNode,

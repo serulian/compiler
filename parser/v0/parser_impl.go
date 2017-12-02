@@ -10,6 +10,7 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/packageloader"
+	"github.com/serulian/compiler/parser/shared"
 	"github.com/serulian/compiler/sourceshape"
 )
 
@@ -17,7 +18,7 @@ import (
 type bytePosition int
 
 // tryParserFn is a function that attempts to build an AST node.
-type tryParserFn func() (AstNode, bool)
+type tryParserFn func() (shared.AstNode, bool)
 
 // lookaheadParserFn is a function that performs lookahead.
 type lookaheadParserFn func(currentToken lexeme) bool
@@ -25,7 +26,7 @@ type lookaheadParserFn func(currentToken lexeme) bool
 // rightNodeConstructor is a function which takes in a left expr node and the
 // token consumed for a left-recursive operator, and returns a newly constructed
 // operator expression if a right expression could be found.
-type rightNodeConstructor func(AstNode, lexeme) (AstNode, bool)
+type rightNodeConstructor func(shared.AstNode, lexeme) (shared.AstNode, bool)
 
 // commentedLexeme is a lexeme with comments attached.
 type commentedLexeme struct {
@@ -38,7 +39,7 @@ type sourceParser struct {
 	startIndex        bytePosition                // The start index for position decoration on nodes.
 	source            compilercommon.InputSource  // the name of the input; used only for error reports
 	lex               *peekableLexer              // a reference to the lexer used for tokenization
-	builder           NodeBuilder                 // the builder function for creating AstNode instances
+	builder           shared.NodeBuilder          // the builder function for creating shared.AstNode instances
 	nodes             *nodeStack                  // the stack of the current nodes
 	errorProductions  *errorProductionStack       // the stack of error productions
 	currentToken      commentedLexeme             // the current token
@@ -63,7 +64,7 @@ var ignoredTokenTypes = map[tokenType]bool{
 }
 
 // parseExpression parses the given string as an expression, starting at the given start index.
-func parseExpression(builder NodeBuilder, importReporter packageloader.ImportHandler, source compilercommon.InputSource, startIndex bytePosition, input string) (AstNode, commentedLexeme, *sourceParser, bool) {
+func parseExpression(builder shared.NodeBuilder, importReporter packageloader.ImportHandler, source compilercommon.InputSource, startIndex bytePosition, input string) (shared.AstNode, commentedLexeme, *sourceParser, bool) {
 	p := buildParser(builder, importReporter, source, startIndex, input)
 	p.consumeToken()
 	node, ok := p.tryConsumeExpression(consumeExpressionNoBraces)
@@ -71,7 +72,7 @@ func parseExpression(builder NodeBuilder, importReporter packageloader.ImportHan
 }
 
 // buildParser returns a new sourceParser instance.
-func buildParser(builder NodeBuilder, importReporter packageloader.ImportHandler, source compilercommon.InputSource, startIndex bytePosition, input string) *sourceParser {
+func buildParser(builder shared.NodeBuilder, importReporter packageloader.ImportHandler, source compilercommon.InputSource, startIndex bytePosition, input string) *sourceParser {
 	l := peekable_lex(lex(source, input))
 	return &sourceParser{
 		startIndex:        startIndex,
@@ -93,28 +94,28 @@ func (p *sourceParser) reportImport(value string, kind string) (string, error) {
 		return "", nil
 	}
 
-	importPath, importType, err := ParseImportValue(value)
+	importPath, importType, err := shared.ParseImportValue(value)
 	if err != nil {
 		return "", err
 	}
 
 	var packageImportType = packageloader.ImportTypeLocal
-	if importType == ParsedImportTypeVCS {
+	if importType == shared.ParsedImportTypeVCS {
 		packageImportType = packageloader.ImportTypeVCS
-	} else if importType == ParsedImportTypeAlias {
+	} else if importType == shared.ParsedImportTypeAlias {
 		packageImportType = packageloader.ImportTypeAlias
 	}
 
 	return p.importReporter(kind, importPath, packageImportType, p.source, int(p.currentToken.position)), nil
 }
 
-// createNode creates a new AstNode and returns it.
-func (p *sourceParser) createNode(kind sourceshape.NodeType) AstNode {
+// createNode creates a new shared.AstNode and returns it.
+func (p *sourceParser) createNode(kind sourceshape.NodeType) shared.AstNode {
 	return p.builder(p.source, kind)
 }
 
 // createErrorNode creates a new error node and returns it.
-func (p *sourceParser) createErrorNode(format string, args ...interface{}) AstNode {
+func (p *sourceParser) createErrorNode(format string, args ...interface{}) shared.AstNode {
 	message := fmt.Sprintf(format, args...)
 	node := p.startNode(sourceshape.NodeTypeError).Decorate(sourceshape.NodePredicateErrorMessage, message)
 	p.finishNode()
@@ -135,7 +136,7 @@ func (p *sourceParser) popErrorProduction() {
 
 // startNode creates a new node of the given type, decorates it with the current token's
 // position as its start position, and pushes it onto the nodes stack.
-func (p *sourceParser) startNode(kind sourceshape.NodeType) AstNode {
+func (p *sourceParser) startNode(kind sourceshape.NodeType) shared.AstNode {
 	node := p.createNode(kind)
 	p.decorateStartRuneAndComments(node, p.currentToken)
 	p.nodes.push(node)
@@ -149,13 +150,13 @@ func (p *sourceParser) bytePosition(token lexeme) int {
 
 // decorateStartRuneAndComments decorates the given node with the location of the given token as its
 // starting rune, as well as any comments attached to the token.
-func (p *sourceParser) decorateStartRuneAndComments(node AstNode, token commentedLexeme) {
+func (p *sourceParser) decorateStartRuneAndComments(node shared.AstNode, token commentedLexeme) {
 	p.decorateStartRune(node, token.lexeme)
 	p.decorateComments(node, token.comments)
 }
 
 // decorateComments decorates the given node with the specified comments.
-func (p *sourceParser) decorateComments(node AstNode, comments []lexeme) {
+func (p *sourceParser) decorateComments(node shared.AstNode, comments []lexeme) {
 	for _, commentLexeme := range comments {
 		commentNode := p.createNode(sourceshape.NodeTypeComment)
 		commentNode.Decorate(sourceshape.NodeCommentPredicateValue, commentLexeme.value)
@@ -167,20 +168,20 @@ func (p *sourceParser) decorateComments(node AstNode, comments []lexeme) {
 
 // decorateStartRune decorates the given node with the location of the given token as its
 // start rune, as well as its sourceshape.
-func (p *sourceParser) decorateStartRune(node AstNode, token lexeme) {
+func (p *sourceParser) decorateStartRune(node shared.AstNode, token lexeme) {
 	node.Decorate(sourceshape.NodePredicateSource, string(p.source))
 	node.DecorateWithInt(sourceshape.NodePredicateStartRune, p.bytePosition(token))
 }
 
 // decorateEndRune decorates the given node with the location of the given token as its
 // ending rune.
-func (p *sourceParser) decorateEndRune(node AstNode, token lexeme) {
+func (p *sourceParser) decorateEndRune(node shared.AstNode, token lexeme) {
 	position := int(token.position) + len(token.value) - 1 + int(p.startIndex)
 	node.DecorateWithInt(sourceshape.NodePredicateEndRune, position)
 }
 
 // currentNode returns the node at the top of the stack.
-func (p *sourceParser) currentNode() AstNode {
+func (p *sourceParser) currentNode() shared.AstNode {
 	return p.nodes.topValue()
 }
 
@@ -453,7 +454,7 @@ func (p *sourceParser) consumeUntil(types ...tokenType) lexeme {
 
 // oneOf runs each of the sub parser functions, in order, until one returns true. Otherwise
 // returns nil and false.
-func (p *sourceParser) oneOf(subParsers ...tryParserFn) (AstNode, bool) {
+func (p *sourceParser) oneOf(subParsers ...tryParserFn) (shared.AstNode, bool) {
 	for _, subParser := range subParsers {
 		node, ok := subParser()
 		if ok {
@@ -468,7 +469,7 @@ func (p *sourceParser) oneOf(subParsers ...tryParserFn) (AstNode, bool) {
 // operator token types found. If none found, the left expression is returned. Otherwise, the
 // rightNodeBuilder is called to attempt to construct an operator expression. This method also
 // properly handles decoration of the nodes with their proper start and end run locations.
-func (p *sourceParser) performLeftRecursiveParsing(subTryExprFn tryParserFn, rightNodeBuilder rightNodeConstructor, rightTokenTester lookaheadParserFn, operatorTokens ...tokenType) (AstNode, bool) {
+func (p *sourceParser) performLeftRecursiveParsing(subTryExprFn tryParserFn, rightNodeBuilder rightNodeConstructor, rightTokenTester lookaheadParserFn, operatorTokens ...tokenType) (shared.AstNode, bool) {
 	startingLeftToken := p.currentToken
 
 	// Consume the left side of the expression.
@@ -486,7 +487,7 @@ func (p *sourceParser) performLeftRecursiveParsing(subTryExprFn tryParserFn, rig
 	// Keep consuming pairs of operators and child expressions until such
 	// time as no more can be consumed. We use this loop+custom build rather than recursion
 	// because these operators are *left* recursive, not right.
-	var currentLeftNode AstNode
+	var currentLeftNode shared.AstNode
 	currentLeftNode = leftNode
 
 	for {

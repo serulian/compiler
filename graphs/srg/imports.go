@@ -9,7 +9,7 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/parser/shared"
 	"github.com/serulian/compiler/sourceshape"
 )
 
@@ -35,13 +35,13 @@ func (i SRGImport) Source() (string, bool) {
 }
 
 // ParsedSource returns the source for this import, parsed.
-func (i SRGImport) ParsedSource() (string, parser.ParsedImportType, error) {
+func (i SRGImport) ParsedSource() (string, shared.ParsedImportType, error) {
 	source, hasSource := i.Source()
 	if !hasSource {
-		return "", parser.ParsedImportTypeLocal, fmt.Errorf("Missing source")
+		return "", shared.ParsedImportTypeLocal, fmt.Errorf("Missing source")
 	}
 
-	return parser.ParseImportValue(source)
+	return shared.ParseImportValue(source)
 }
 
 // Code returns a code-like summarization of the import, for human consumption.

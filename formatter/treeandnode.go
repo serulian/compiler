@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	"github.com/serulian/compiler/compilercommon"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/parser/shared"
 	"github.com/serulian/compiler/sourceshape"
 )
 
@@ -52,7 +52,7 @@ func (pt *parseTree) getLineNumber(characterIndex int) int {
 	return len(pt.lines)
 }
 
-func (pt *parseTree) createAstNode(source compilercommon.InputSource, kind sourceshape.NodeType) parser.AstNode {
+func (pt *parseTree) createAstNode(source compilercommon.InputSource, kind sourceshape.NodeType) shared.AstNode {
 	node := formatterNode{
 		nodeType:   kind,
 		properties: make(map[string]string),
@@ -169,7 +169,7 @@ func (fn formatterNode) GetType() sourceshape.NodeType {
 	return fn.nodeType
 }
 
-func (fn formatterNode) Connect(predicate string, other parser.AstNode) parser.AstNode {
+func (fn formatterNode) Connect(predicate string, other shared.AstNode) shared.AstNode {
 	if fn.children[predicate] == nil {
 		fn.children[predicate] = list.New()
 	}
@@ -178,7 +178,7 @@ func (fn formatterNode) Connect(predicate string, other parser.AstNode) parser.A
 	return fn
 }
 
-func (fn formatterNode) Decorate(property string, value string) parser.AstNode {
+func (fn formatterNode) Decorate(property string, value string) shared.AstNode {
 	if _, ok := fn.properties[property]; ok {
 		panic(fmt.Sprintf("Existing key for property %s\n\tNode: %v", property, fn.properties))
 	}
@@ -187,6 +187,6 @@ func (fn formatterNode) Decorate(property string, value string) parser.AstNode {
 	return fn
 }
 
-func (fn formatterNode) DecorateWithInt(property string, value int) parser.AstNode {
+func (fn formatterNode) DecorateWithInt(property string, value int) shared.AstNode {
 	return fn.Decorate(property, strconv.Itoa(value))
 }

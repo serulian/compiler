@@ -8,6 +8,7 @@ import (
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/parser/shared"
 	"github.com/serulian/compiler/sourceshape"
 )
 
@@ -26,7 +27,7 @@ func ParseExpression(expressionString string, source compilercommon.InputSource,
 	modifier := layer.NewModifier()
 	defer modifier.Apply()
 
-	astNode, ok := parser.ParseExpression(func(source compilercommon.InputSource, kind sourceshape.NodeType) parser.AstNode {
+	astNode, ok := parser.ParseExpression(func(source compilercommon.InputSource, kind sourceshape.NodeType) shared.AstNode {
 		graphNode := modifier.CreateNode(kind)
 		return &srgASTNode{
 			graphNode: graphNode,

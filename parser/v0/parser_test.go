@@ -16,6 +16,7 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/packageloader"
+	"github.com/serulian/compiler/parser/shared"
 	"github.com/serulian/compiler/sourceshape"
 
 	"github.com/stretchr/testify/assert"
@@ -57,7 +58,7 @@ func (pt *parserTest) writeTree(value string) {
 	}
 }
 
-func createAstNode(source compilercommon.InputSource, kind sourceshape.NodeType) AstNode {
+func createAstNode(source compilercommon.InputSource, kind sourceshape.NodeType) shared.AstNode {
 	return &testNode{
 		nodeType:   kind,
 		properties: make(map[string]string),
@@ -69,7 +70,7 @@ func (tn *testNode) GetType() sourceshape.NodeType {
 	return tn.nodeType
 }
 
-func (tn *testNode) Connect(predicate string, other AstNode) AstNode {
+func (tn *testNode) Connect(predicate string, other shared.AstNode) shared.AstNode {
 	if tn.children[predicate] == nil {
 		tn.children[predicate] = list.New()
 	}
@@ -78,7 +79,7 @@ func (tn *testNode) Connect(predicate string, other AstNode) AstNode {
 	return tn
 }
 
-func (tn *testNode) Decorate(property string, value string) AstNode {
+func (tn *testNode) Decorate(property string, value string) shared.AstNode {
 	if _, ok := tn.properties[property]; ok {
 		panic(fmt.Sprintf("Existing key for property %s\n\tNode: %v", property, tn.properties))
 	}
@@ -87,7 +88,7 @@ func (tn *testNode) Decorate(property string, value string) AstNode {
 	return tn
 }
 
-func (tn *testNode) DecorateWithInt(property string, value int) AstNode {
+func (tn *testNode) DecorateWithInt(property string, value int) shared.AstNode {
 	return tn.Decorate(property, strconv.Itoa(value))
 }
 

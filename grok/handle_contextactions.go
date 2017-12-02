@@ -12,7 +12,7 @@ import (
 	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/formatter"
 	"github.com/serulian/compiler/packageloader"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/parser/shared"
 	"github.com/serulian/compiler/vcs"
 )
 
@@ -117,7 +117,7 @@ func (gh Handle) GetPositionalActions(sourcePosition compilercommon.SourcePositi
 		}
 
 		// Make sure this import is pulling from VCS.
-		if kind != parser.ParsedImportTypeVCS {
+		if kind != shared.ParsedImportTypeVCS {
 			continue
 		}
 
@@ -214,7 +214,7 @@ func (gh Handle) GetContextActions(source compilercommon.InputSource) ([]CodeCon
 		}
 
 		// Make sure this import is pulling from VCS.
-		if kind != parser.ParsedImportTypeVCS {
+		if kind != shared.ParsedImportTypeVCS {
 			continue
 		}
 
