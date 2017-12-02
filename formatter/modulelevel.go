@@ -4,24 +4,24 @@
 
 package formatter
 
-import "github.com/serulian/compiler/parser"
+import "github.com/serulian/compiler/sourceshape"
 
 // emitVariable emits the specified variable.
 func (sf *sourceFormatter) emitVariable(node formatterNode) {
 	sf.append("var")
 
-	if node.hasChild(parser.NodePredicateTypeMemberDeclaredType) {
+	if node.hasChild(sourceshape.NodePredicateTypeMemberDeclaredType) {
 		sf.append("<")
-		sf.emitNode(node.getChild(parser.NodePredicateTypeMemberDeclaredType))
+		sf.emitNode(node.getChild(sourceshape.NodePredicateTypeMemberDeclaredType))
 		sf.append(">")
 	}
 
 	sf.append(" ")
-	sf.append(node.getProperty(parser.NodeVariableStatementName))
+	sf.append(node.getProperty(sourceshape.NodeVariableStatementName))
 
-	if node.hasChild(parser.NodePredicateTypeFieldDefaultValue) {
+	if node.hasChild(sourceshape.NodePredicateTypeFieldDefaultValue) {
 		sf.append(" = ")
-		sf.emitNode(node.getChild(parser.NodePredicateTypeFieldDefaultValue))
+		sf.emitNode(node.getChild(sourceshape.NodePredicateTypeFieldDefaultValue))
 	}
 
 	sf.appendLine()
@@ -30,29 +30,29 @@ func (sf *sourceFormatter) emitVariable(node formatterNode) {
 // emitDecorator emits the source for a decorator.
 func (sf *sourceFormatter) emitDecorator(node formatterNode) {
 	sf.append("@•")
-	sf.append(node.getProperty(parser.NodeDecoratorPredicateInternal))
-	sf.emitParameters(node, parser.NodeDecoratorPredicateParameter, parensRequired)
+	sf.append(node.getProperty(sourceshape.NodeDecoratorPredicateInternal))
+	sf.emitParameters(node, sourceshape.NodeDecoratorPredicateParameter, parensRequired)
 	sf.appendLine()
 }
 
 // emitTypeDefinition emits the source of a declared interface.
 func (sf *sourceFormatter) emitTypeDefinition(node formatterNode, kind string) {
-	sf.emitOrderedNodes(node.getChildren(parser.NodeTypeDefinitionDecorator))
+	sf.emitOrderedNodes(node.getChildren(sourceshape.NodeTypeDefinitionDecorator))
 
 	sf.append(kind)
 
-	if node.hasChild(parser.NodeAgentPredicatePrincipalType) {
+	if node.hasChild(sourceshape.NodeAgentPredicatePrincipalType) {
 		sf.append("<")
-		sf.emitNode(node.getChild(parser.NodeAgentPredicatePrincipalType))
+		sf.emitNode(node.getChild(sourceshape.NodeAgentPredicatePrincipalType))
 		sf.append(">")
 	}
 
 	sf.append(" ")
-	sf.append(node.getProperty(parser.NodeTypeDefinitionName))
-	sf.emitGenerics(node, parser.NodeTypeDefinitionGeneric)
+	sf.append(node.getProperty(sourceshape.NodeTypeDefinitionName))
+	sf.emitGenerics(node, sourceshape.NodeTypeDefinitionGeneric)
 
-	if node.GetType() == parser.NodeTypeNominal {
-		baseType := node.getChild(parser.NodeNominalPredicateBaseType)
+	if node.GetType() == sourceshape.NodeTypeNominal {
+		baseType := node.getChild(sourceshape.NodeNominalPredicateBaseType)
 		sf.append(" : ")
 		sf.emitNode(baseType)
 	} else {
@@ -61,7 +61,7 @@ func (sf *sourceFormatter) emitTypeDefinition(node formatterNode, kind string) {
 
 	sf.append(" {")
 
-	members := node.getChildren(parser.NodeTypeDefinitionMember)
+	members := node.getChildren(sourceshape.NodeTypeDefinitionMember)
 	if len(members) > 0 {
 		sf.appendLine()
 		sf.indent()
@@ -71,18 +71,18 @@ func (sf *sourceFormatter) emitTypeDefinition(node formatterNode, kind string) {
 		// Variables (no default)
 		// Variables (defaults)
 		sf.emitTypeMembers(members, false, func(current formatterNode) bool {
-			return !current.hasChild(parser.NodePredicateTypeFieldDefaultValue)
-		}, parser.NodeTypeField)
+			return !current.hasChild(sourceshape.NodePredicateTypeFieldDefaultValue)
+		}, sourceshape.NodeTypeField)
 
 		sf.emitTypeMembers(members, false, func(current formatterNode) bool {
-			return current.hasChild(parser.NodePredicateTypeFieldDefaultValue)
-		}, parser.NodeTypeField)
+			return current.hasChild(sourceshape.NodePredicateTypeFieldDefaultValue)
+		}, sourceshape.NodeTypeField)
 
 		// Constructors
-		sf.emitTypeMembers(members, true, nil, parser.NodeTypeConstructor)
+		sf.emitTypeMembers(members, true, nil, sourceshape.NodeTypeConstructor)
 
 		// All other members
-		sf.emitTypeMembers(members, true, nil, parser.NodeTypeProperty, parser.NodeTypeFunction, parser.NodeTypeOperator)
+		sf.emitTypeMembers(members, true, nil, sourceshape.NodeTypeProperty, sourceshape.NodeTypeFunction, sourceshape.NodeTypeOperator)
 
 		sf.dedent()
 	}
@@ -94,8 +94,8 @@ func (sf *sourceFormatter) emitTypeDefinition(node formatterNode, kind string) {
 type nodeFilter func(node formatterNode) bool
 
 // emitTypeMembers emits the type members of the specified kind.
-func (sf *sourceFormatter) emitTypeMembers(members []formatterNode, ensureBlankLine bool, filter nodeFilter, types ...parser.NodeType) {
-	hasType := map[parser.NodeType]bool{}
+func (sf *sourceFormatter) emitTypeMembers(members []formatterNode, ensureBlankLine bool, filter nodeFilter, types ...sourceshape.NodeType) {
+	hasType := map[sourceshape.NodeType]bool{}
 	for _, allowedType := range types {
 		hasType[allowedType] = true
 	}
@@ -131,12 +131,12 @@ func (sf *sourceFormatter) emitGenerics(node formatterNode, genericsPredicate st
 		}
 
 		// T
-		sf.append(generic.getProperty(parser.NodeGenericPredicateName))
+		sf.append(generic.getProperty(sourceshape.NodeGenericPredicateName))
 
 		// : int
-		if generic.hasChild(parser.NodeGenericSubtype) {
+		if generic.hasChild(sourceshape.NodeGenericSubtype) {
 			sf.append(" : ")
-			sf.emitNode(generic.getChild(parser.NodeGenericSubtype))
+			sf.emitNode(generic.getChild(sourceshape.NodeGenericSubtype))
 		}
 	}
 	sf.append(">")
@@ -171,7 +171,7 @@ func (sf *sourceFormatter) emitParameters(node formatterNode, parametersPredicat
 
 // emitComposition emits the agents composed into this type (if any.)
 func (sf *sourceFormatter) emitComposition(node formatterNode) {
-	agents := node.getChildren(parser.NodePredicateComposedAgent)
+	agents := node.getChildren(sourceshape.NodePredicateComposedAgent)
 	if len(agents) == 0 {
 		return
 	}
@@ -189,10 +189,10 @@ func (sf *sourceFormatter) emitComposition(node formatterNode) {
 
 // emitAgentReference emits source of an agent reference.
 func (sf *sourceFormatter) emitAgentReference(agent formatterNode) {
-	sf.emitNode(agent.getChild(parser.NodeAgentReferencePredicateReferenceType))
-	if agent.hasProperty(parser.NodeAgentReferencePredicateAlias) {
+	sf.emitNode(agent.getChild(sourceshape.NodeAgentReferencePredicateReferenceType))
+	if agent.hasProperty(sourceshape.NodeAgentReferencePredicateAlias) {
 		sf.append(" as ")
-		sf.append(agent.getProperty(parser.NodeAgentReferencePredicateAlias))
+		sf.append(agent.getProperty(sourceshape.NodeAgentReferencePredicateAlias))
 	}
 
 }

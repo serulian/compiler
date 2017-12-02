@@ -18,7 +18,7 @@ import (
 	"github.com/serulian/compiler/generator/es5"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/packageloader"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
@@ -73,7 +73,7 @@ func runTestsViaRunner(runner TestRunner, path string, vcsDevelopmentDirectories
 	// runner.
 	overallSuccess := true
 	filesWalked, err := compilerutil.WalkSourcePath(path, func(currentPath string, info os.FileInfo) (bool, error) {
-		if !strings.HasSuffix(info.Name(), packageloader.SerulianTestSuffix+parser.SERULIAN_FILE_EXTENSION) {
+		if !strings.HasSuffix(info.Name(), packageloader.SerulianTestSuffix+sourceshape.SerulianFileExtension) {
 			return false, nil
 		}
 
@@ -119,7 +119,7 @@ func buildAndRunTests(filePath string, vcsDevelopmentDirectories []string, runne
 	}
 
 	// Save the source (with an adjusted call), in a temporary directory.
-	moduleName := filename[0 : len(filename)-len(parser.SERULIAN_FILE_EXTENSION)]
+	moduleName := filename[0 : len(filename)-len(sourceshape.SerulianFileExtension)]
 	adjusted := fmt.Sprintf(`
 		%s
 

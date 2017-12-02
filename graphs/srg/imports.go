@@ -9,13 +9,14 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/parser/shared"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // GetImport returns an SRGImport wrapper around the given import node. Will panic if the node
 // is not an import node.
 func (g *SRG) GetImport(importNode compilergraph.GraphNode) SRGImport {
-	if importNode.Kind() != parser.NodeTypeImport {
+	if importNode.Kind() != sourceshape.NodeTypeImport {
 		panic("Expected import node")
 	}
 
@@ -30,17 +31,17 @@ type SRGImport struct {
 
 // Source returns the source of the import.
 func (i SRGImport) Source() (string, bool) {
-	return i.GraphNode.TryGet(parser.NodeImportPredicateSource)
+	return i.GraphNode.TryGet(sourceshape.NodeImportPredicateSource)
 }
 
 // ParsedSource returns the source for this import, parsed.
-func (i SRGImport) ParsedSource() (string, parser.ParsedImportType, error) {
+func (i SRGImport) ParsedSource() (string, shared.ParsedImportType, error) {
 	source, hasSource := i.Source()
 	if !hasSource {
-		return "", parser.ParsedImportTypeLocal, fmt.Errorf("Missing source")
+		return "", shared.ParsedImportTypeLocal, fmt.Errorf("Missing source")
 	}
 
-	return parser.ParseImportValue(source)
+	return shared.ParseImportValue(source)
 }
 
 // Code returns a code-like summarization of the import, for human consumption.
@@ -62,7 +63,7 @@ func (i SRGImport) SourceRange() (compilercommon.SourceRange, bool) {
 func (i SRGImport) PackageImports() []SRGPackageImport {
 	pit := i.GraphNode.
 		StartQuery().
-		Out(parser.NodeImportPredicatePackageRef).
+		Out(sourceshape.NodeImportPredicatePackageRef).
 		BuildNodeIterator()
 
 	var packageImports = make([]SRGPackageImport, 0)
@@ -75,7 +76,7 @@ func (i SRGImport) PackageImports() []SRGPackageImport {
 // GetPackageImport returns an SRGPackageImport wrapper around the given import package node.
 // Will panic if the node is not an import package node.
 func (g *SRG) GetPackageImport(packageNode compilergraph.GraphNode) SRGPackageImport {
-	if packageNode.Kind() != parser.NodeTypeImportPackage {
+	if packageNode.Kind() != sourceshape.NodeTypeImportPackage {
 		panic("Expected import package node")
 	}
 
@@ -90,12 +91,12 @@ type SRGPackageImport struct {
 
 // Subsource returns the subsource for this package import, if any.
 func (i SRGPackageImport) Subsource() (string, bool) {
-	return i.GraphNode.TryGet(parser.NodeImportPredicateSubsource)
+	return i.GraphNode.TryGet(sourceshape.NodeImportPredicateSubsource)
 }
 
 // Alias returns the local alias for this package import, if any.
 func (i SRGPackageImport) Alias() (string, bool) {
-	return i.GraphNode.TryGet(parser.NodeImportPredicateName)
+	return i.GraphNode.TryGet(sourceshape.NodeImportPredicateName)
 }
 
 // SourceRange returns the source range for this import.
@@ -118,7 +119,7 @@ func (i SRGPackageImport) ResolvedTypeOrMember() (SRGTypeOrMember, bool) {
 
 // Code returns a code-like summarization of the import, for human consumption.
 func (i SRGPackageImport) Code() (compilercommon.CodeSummary, bool) {
-	importNode := i.GraphNode.GetIncomingNode(parser.NodeImportPredicatePackageRef)
+	importNode := i.GraphNode.GetIncomingNode(sourceshape.NodeImportPredicatePackageRef)
 	importRef := SRGImport{importNode, i.srg}
 
 	source, hasSource := importRef.Source()

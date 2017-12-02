@@ -4,25 +4,25 @@
 
 package formatter
 
-import "github.com/serulian/compiler/parser"
+import "github.com/serulian/compiler/sourceshape"
 
 // emitField emits the source of a declared field.
 func (sf *sourceFormatter) emitField(node formatterNode) {
-	if sf.nodeList.Front().Next().Value.(formatterNode).GetType() == parser.NodeTypeStruct {
-		sf.append(node.getProperty(parser.NodePredicateTypeMemberName))
+	if sf.nodeList.Front().Next().Value.(formatterNode).GetType() == sourceshape.NodeTypeStruct {
+		sf.append(node.getProperty(sourceshape.NodePredicateTypeMemberName))
 		sf.append(" ")
-		sf.emitNode(node.getChild(parser.NodePredicateTypeMemberDeclaredType))
+		sf.emitNode(node.getChild(sourceshape.NodePredicateTypeMemberDeclaredType))
 
 		// Handle default value.
-		if node.hasChild(parser.NodePredicateTypeFieldDefaultValue) {
+		if node.hasChild(sourceshape.NodePredicateTypeFieldDefaultValue) {
 			sf.append(" = ")
-			sf.emitNode(node.getChild(parser.NodePredicateTypeFieldDefaultValue))
+			sf.emitNode(node.getChild(sourceshape.NodePredicateTypeFieldDefaultValue))
 		}
 
 		// Handle any tags.
-		if node.hasChild(parser.NodePredicateTypeMemberTag) {
+		if node.hasChild(sourceshape.NodePredicateTypeMemberTag) {
 			sf.append(" `")
-			for index, child := range node.getChildren(parser.NodePredicateTypeMemberTag) {
+			for index, child := range node.getChildren(sourceshape.NodePredicateTypeMemberTag) {
 				if index > 0 {
 					sf.append(" ")
 				}
@@ -39,11 +39,11 @@ func (sf *sourceFormatter) emitField(node formatterNode) {
 	sf.append("var")
 	sf.emitDeclaredType(node)
 	sf.append(" ")
-	sf.append(node.getProperty(parser.NodePredicateTypeMemberName))
+	sf.append(node.getProperty(sourceshape.NodePredicateTypeMemberName))
 
-	if node.hasChild(parser.NodePredicateTypeFieldDefaultValue) {
+	if node.hasChild(sourceshape.NodePredicateTypeFieldDefaultValue) {
 		sf.append(" = ")
-		sf.emitNode(node.getChild(parser.NodePredicateTypeFieldDefaultValue))
+		sf.emitNode(node.getChild(sourceshape.NodePredicateTypeFieldDefaultValue))
 	}
 
 	sf.appendLine()
@@ -51,10 +51,10 @@ func (sf *sourceFormatter) emitField(node formatterNode) {
 
 // emitMemberTag emits the source of a tag on a type member.
 func (sf *sourceFormatter) emitMemberTag(node formatterNode) {
-	sf.append(node.getProperty(parser.NodePredicateTypeMemberTagName))
+	sf.append(node.getProperty(sourceshape.NodePredicateTypeMemberTagName))
 	sf.append(":")
 	sf.append("\"")
-	sf.append(node.getProperty(parser.NodePredicateTypeMemberTagValue))
+	sf.append(node.getProperty(sourceshape.NodePredicateTypeMemberTagValue))
 	sf.append("\"")
 }
 
@@ -62,8 +62,8 @@ func (sf *sourceFormatter) emitMemberTag(node formatterNode) {
 func (sf *sourceFormatter) emitConstructor(node formatterNode) {
 	sf.append("constructor")
 	sf.append(" ")
-	sf.append(node.getProperty(parser.NodePredicateTypeMemberName))
-	sf.emitParameters(node, parser.NodePredicateTypeMemberParameter, parensRequired)
+	sf.append(node.getProperty(sourceshape.NodePredicateTypeMemberName))
+	sf.emitParameters(node, sourceshape.NodePredicateTypeMemberParameter, parensRequired)
 	sf.emitBody(node)
 	sf.appendLine()
 }
@@ -73,11 +73,11 @@ func (sf *sourceFormatter) emitProperty(node formatterNode) {
 	sf.append("property")
 	sf.emitDeclaredType(node)
 	sf.append(" ")
-	sf.append(node.getProperty(parser.NodePredicateTypeMemberName))
+	sf.append(node.getProperty(sourceshape.NodePredicateTypeMemberName))
 
-	if !node.hasChild(parser.NodePropertyGetter) {
+	if !node.hasChild(sourceshape.NodePropertyGetter) {
 		// Interface property.
-		if node.hasProperty(parser.NodePropertyReadOnly) {
+		if node.hasProperty(sourceshape.NodePropertyReadOnly) {
 			sf.append(" { get }")
 		}
 
@@ -88,7 +88,7 @@ func (sf *sourceFormatter) emitProperty(node formatterNode) {
 	sf.append(" ")
 	sf.append("{")
 
-	getter := node.getChild(parser.NodePropertyGetter)
+	getter := node.getChild(sourceshape.NodePropertyGetter)
 	sf.appendLine()
 	sf.indent()
 	sf.append("get")
@@ -96,8 +96,8 @@ func (sf *sourceFormatter) emitProperty(node formatterNode) {
 	sf.dedent()
 	sf.appendLine()
 
-	if node.hasChild(parser.NodePropertySetter) {
-		setter := node.getChild(parser.NodePropertySetter)
+	if node.hasChild(sourceshape.NodePropertySetter) {
+		setter := node.getChild(sourceshape.NodePropertySetter)
 		sf.appendLine()
 		sf.indent()
 		sf.append("set")
@@ -115,9 +115,9 @@ func (sf *sourceFormatter) emitFunction(node formatterNode) {
 	sf.append("function")
 	sf.emitReturnType(node)
 	sf.append(" ")
-	sf.append(node.getProperty(parser.NodePredicateTypeMemberName))
-	sf.emitGenerics(node, parser.NodePredicateTypeMemberGeneric)
-	sf.emitParameters(node, parser.NodePredicateTypeMemberParameter, parensRequired)
+	sf.append(node.getProperty(sourceshape.NodePredicateTypeMemberName))
+	sf.emitGenerics(node, sourceshape.NodePredicateTypeMemberGeneric)
+	sf.emitParameters(node, sourceshape.NodePredicateTypeMemberParameter, parensRequired)
 	sf.emitBody(node)
 	sf.appendLine()
 }
@@ -127,47 +127,47 @@ func (sf *sourceFormatter) emitOperator(node formatterNode) {
 	sf.append("operator")
 	sf.emitDeclaredType(node)
 	sf.append(" ")
-	sf.append(node.getProperty(parser.NodeOperatorName))
-	sf.emitParameters(node, parser.NodePredicateTypeMemberParameter, parensRequired)
+	sf.append(node.getProperty(sourceshape.NodeOperatorName))
+	sf.emitParameters(node, sourceshape.NodePredicateTypeMemberParameter, parensRequired)
 	sf.emitBody(node)
 	sf.appendLine()
 }
 
 // emitParameter emits the source of a parameter.
 func (sf *sourceFormatter) emitParameter(node formatterNode) {
-	sf.append(node.getProperty(parser.NodeParameterName))
+	sf.append(node.getProperty(sourceshape.NodeParameterName))
 
-	if node.hasChild(parser.NodeParameterType) {
+	if node.hasChild(sourceshape.NodeParameterType) {
 		sf.append(" ")
-		sf.emitNode(node.getChild(parser.NodeParameterType))
+		sf.emitNode(node.getChild(sourceshape.NodeParameterType))
 	}
 }
 
 func (sf *sourceFormatter) emitBody(node formatterNode) {
-	if !node.hasChild(parser.NodePredicateBody) {
+	if !node.hasChild(sourceshape.NodePredicateBody) {
 		return
 	}
 
 	sf.append(" ")
-	sf.emitNode(node.getChild(parser.NodePredicateBody))
+	sf.emitNode(node.getChild(sourceshape.NodePredicateBody))
 }
 
 func (sf *sourceFormatter) emitDeclaredType(node formatterNode) {
-	if !node.hasChild(parser.NodePredicateTypeMemberDeclaredType) {
+	if !node.hasChild(sourceshape.NodePredicateTypeMemberDeclaredType) {
 		return
 	}
 
 	sf.append("<")
-	sf.emitNode(node.getChild(parser.NodePredicateTypeMemberDeclaredType))
+	sf.emitNode(node.getChild(sourceshape.NodePredicateTypeMemberDeclaredType))
 	sf.append(">")
 }
 
 func (sf *sourceFormatter) emitReturnType(node formatterNode) {
-	if !node.hasChild(parser.NodePredicateTypeMemberReturnType) {
+	if !node.hasChild(sourceshape.NodePredicateTypeMemberReturnType) {
 		return
 	}
 
 	sf.append("<")
-	sf.emitNode(node.getChild(parser.NodePredicateTypeMemberReturnType))
+	sf.emitNode(node.getChild(sourceshape.NodePredicateTypeMemberReturnType))
 	sf.append(">")
 }

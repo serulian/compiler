@@ -8,29 +8,29 @@ import (
 	"bytes"
 
 	"github.com/serulian/compiler/compilergraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // IdentifierPathString returns the string form of the identifier path referenced
 // by the given node. Will return false if the node is not an identifier path.
 func IdentifierPathString(node compilergraph.GraphNode) (string, bool) {
 	switch node.Kind() {
-	case parser.NodeTypeIdentifierExpression:
-		return node.Get(parser.NodeIdentifierExpressionName), true
+	case sourceshape.NodeTypeIdentifierExpression:
+		return node.Get(sourceshape.NodeIdentifierExpressionName), true
 
-	case parser.NodeThisLiteralExpression:
+	case sourceshape.NodeThisLiteralExpression:
 		return "this", true
 
-	case parser.NodePrincipalLiteralExpression:
+	case sourceshape.NodePrincipalLiteralExpression:
 		return "principal", true
 
-	case parser.NodeMemberAccessExpression:
-		parentPath, ok := IdentifierPathString(node.GetNode(parser.NodeMemberAccessChildExpr))
+	case sourceshape.NodeMemberAccessExpression:
+		parentPath, ok := IdentifierPathString(node.GetNode(sourceshape.NodeMemberAccessChildExpr))
 		if !ok {
 			return "", false
 		}
 
-		return parentPath + "." + node.Get(parser.NodeMemberAccessIdentifier), true
+		return parentPath + "." + node.Get(sourceshape.NodeMemberAccessIdentifier), true
 
 	default:
 		return "", false

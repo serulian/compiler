@@ -11,7 +11,7 @@ import (
 	"github.com/serulian/compiler/generator/es5/codedom"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/typegraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 var _ = fmt.Printf
@@ -19,7 +19,7 @@ var _ = fmt.Printf
 // buildStatementBlock builds the CodeDOM for a statement block.
 func (db *domBuilder) buildStatementBlock(node compilergraph.GraphNode) (codedom.Statement, codedom.Statement) {
 	sit := node.StartQuery().
-		Out(parser.NodeStatementBlockStatement).
+		Out(sourceshape.NodeStatementBlockStatement).
 		BuildNodeIterator()
 
 	startStatement := codedom.EmptyStatement(node)
@@ -42,7 +42,7 @@ func (db *domBuilder) buildStatementBlock(node compilergraph.GraphNode) (codedom
 
 // buildExpressionStatement builds the CodeDOM for an expression at the statement level.
 func (db *domBuilder) buildExpressionStatement(node compilergraph.GraphNode) codedom.Statement {
-	childExpr := db.getExpression(node, parser.NodeExpressionStatementExpression)
+	childExpr := db.getExpression(node, sourceshape.NodeExpressionStatementExpression)
 	return codedom.ExpressionStatement(childExpr, node)
 }
 
@@ -68,45 +68,45 @@ func (db *domBuilder) buildContinueStatement(node compilergraph.GraphNode) coded
 
 // buildReturnStatement builds the CodeDOM for a return statement.
 func (db *domBuilder) buildReturnStatement(node compilergraph.GraphNode) codedom.Statement {
-	returnExpr, _ := db.tryGetExpression(node, parser.NodeReturnStatementValue)
+	returnExpr, _ := db.tryGetExpression(node, sourceshape.NodeReturnStatementValue)
 	return codedom.Resolution(returnExpr, node)
 }
 
 // buildRejectStatement builds the CodeDOM for a reject statement.
 func (db *domBuilder) buildRejectStatement(node compilergraph.GraphNode) codedom.Statement {
-	rejectExpr := db.getExpression(node, parser.NodeRejectStatementValue)
+	rejectExpr := db.getExpression(node, sourceshape.NodeRejectStatementValue)
 	return codedom.Rejection(rejectExpr, node)
 }
 
 // buildYieldStatement builds the CodeDOM for a yield statement.
 func (db *domBuilder) buildYieldStatement(node compilergraph.GraphNode) codedom.Statement {
-	if _, isBreak := node.TryGet(parser.NodeYieldStatementBreak); isBreak {
+	if _, isBreak := node.TryGet(sourceshape.NodeYieldStatementBreak); isBreak {
 		return codedom.YieldBreak(node)
 	}
 
-	if streamExpr, hasStreamExpr := db.tryGetExpression(node, parser.NodeYieldStatementStreamValue); hasStreamExpr {
-		streamScope, _ := db.scopegraph.GetScope(node.GetNode(parser.NodeYieldStatementStreamValue))
+	if streamExpr, hasStreamExpr := db.tryGetExpression(node, sourceshape.NodeYieldStatementStreamValue); hasStreamExpr {
+		streamScope, _ := db.scopegraph.GetScope(node.GetNode(sourceshape.NodeYieldStatementStreamValue))
 		streamType := streamScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
 		return codedom.YieldStream(streamExpr, streamType, node)
 	}
 
-	return codedom.YieldValue(db.getExpression(node, parser.NodeYieldStatementValue), node)
+	return codedom.YieldValue(db.getExpression(node, sourceshape.NodeYieldStatementValue), node)
 }
 
 // buildConditionalStatement builds the CodeDOM for a conditional statement.
 func (db *domBuilder) buildConditionalStatement(node compilergraph.GraphNode) (codedom.Statement, codedom.Statement) {
-	conditionalExpr := db.getExpression(node, parser.NodeConditionalStatementConditional)
+	conditionalExpr := db.getExpression(node, sourceshape.NodeConditionalStatementConditional)
 
 	// A conditional is buildd as a jump statement that jumps to the true statement when the
 	// expression is true and to the false statement (which may have an 'else') when it is false.
 	// Both statements then jump to a final statement once complete.
 	finalStatement := codedom.EmptyStatement(node)
-	trueStart, trueEnd := db.getStatements(node, parser.NodeConditionalStatementBlock)
+	trueStart, trueEnd := db.getStatements(node, sourceshape.NodeConditionalStatementBlock)
 
 	// The true statement needs to jump to the final statement once complete.
 	codedom.AssignNextStatement(trueEnd, codedom.UnconditionalJump(finalStatement, node))
 
-	elseStart, elseEnd, hasElse := db.tryGetStatements(node, parser.NodeConditionalStatementElseClause)
+	elseStart, elseEnd, hasElse := db.tryGetStatements(node, sourceshape.NodeConditionalStatementElseClause)
 	if hasElse {
 		// The else statement needs to jump to the final statement once complete.
 		codedom.AssignNextStatement(elseEnd, codedom.UnconditionalJump(finalStatement, node))
@@ -130,15 +130,15 @@ func (db *domBuilder) buildLoopStatement(node compilergraph.GraphNode) (codedom.
 
 	// A loop statement is buildd as a start statement which conditionally jumps to either the loop body
 	// (on true) or, on false, jumps to a final state after the loop.
-	if loopExpr, hasLoopExpr := db.tryGetExpression(node, parser.NodeLoopStatementExpression); hasLoopExpr {
+	if loopExpr, hasLoopExpr := db.tryGetExpression(node, sourceshape.NodeLoopStatementExpression); hasLoopExpr {
 		// Check for a named value under the loop. If found, this is a loop over a stream or streamable.
-		namedValue, hasNamedValue := node.TryGetNode(parser.NodeStatementNamedValue)
+		namedValue, hasNamedValue := node.TryGetNode(sourceshape.NodeStatementNamedValue)
 		if hasNamedValue {
-			namedValueName := namedValue.Get(parser.NodeNamedValueName)
+			namedValueName := namedValue.Get(sourceshape.NodeNamedValueName)
 			resultVarName := db.generateScopeVarName(node)
 
 			namedValueScope, _ := db.scopegraph.GetScope(namedValue)
-			loopExpressionScope, _ := db.scopegraph.GetScope(node.GetNode(parser.NodeLoopStatementExpression))
+			loopExpressionScope, _ := db.scopegraph.GetScope(node.GetNode(sourceshape.NodeLoopStatementExpression))
 			loopExpressionType := loopExpressionScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
 
 			// Create the stream variable.
@@ -191,7 +191,7 @@ func (db *domBuilder) buildLoopStatement(node compilergraph.GraphNode) (codedom.
 				namedValue)
 
 			// Jump to the body state if the second part of the tuple in the result variable is true.
-			bodyStart, bodyEnd := db.getStatements(node, parser.NodeLoopStatementBlock)
+			bodyStart, bodyEnd := db.getStatements(node, sourceshape.NodeLoopStatementBlock)
 
 			checkJump := codedom.ConditionalJump(
 				codedom.NativeAccess(codedom.LocalReference(resultVarName, node), "Second", node),
@@ -221,7 +221,7 @@ func (db *domBuilder) buildLoopStatement(node compilergraph.GraphNode) (codedom.
 
 			return startStatement, finalStatement
 		} else {
-			bodyStart, bodyEnd := db.getStatements(node, parser.NodeLoopStatementBlock)
+			bodyStart, bodyEnd := db.getStatements(node, sourceshape.NodeLoopStatementBlock)
 
 			// Loop over a direct boolean expression which is evaluated on each iteration.
 			initialJump := codedom.ConditionalJump(loopExpr, bodyStart, finalStatement, node)
@@ -233,7 +233,7 @@ func (db *domBuilder) buildLoopStatement(node compilergraph.GraphNode) (codedom.
 			return startStatement, finalStatement
 		}
 	} else {
-		bodyStart, bodyEnd := db.getStatements(node, parser.NodeLoopStatementBlock)
+		bodyStart, bodyEnd := db.getStatements(node, sourceshape.NodeLoopStatementBlock)
 
 		// A loop without an expression just loops infinitely over the body.
 		directJump := codedom.UnconditionalJump(bodyStart, node)
@@ -247,8 +247,8 @@ func (db *domBuilder) buildLoopStatement(node compilergraph.GraphNode) (codedom.
 
 // buildAssignStatement builds the CodeDOM for an assignment statement.
 func (db *domBuilder) buildAssignStatement(node compilergraph.GraphNode) codedom.Statement {
-	targetNode := node.GetNode(parser.NodeAssignStatementName)
-	valueNode := node.GetNode(parser.NodeAssignStatementValue)
+	targetNode := node.GetNode(sourceshape.NodeAssignStatementName)
+	valueNode := node.GetNode(sourceshape.NodeAssignStatementValue)
 
 	exprValue := db.buildExpressionWithOption(valueNode, buildExprCheckNominalShortcutting)
 	return codedom.ExpressionStatement(db.buildAssignmentExpression(targetNode, exprValue, node), node)
@@ -256,8 +256,8 @@ func (db *domBuilder) buildAssignStatement(node compilergraph.GraphNode) codedom
 
 // buildVarStatement builds the CodeDOM for a variable statement.
 func (db *domBuilder) buildVarStatement(node compilergraph.GraphNode) codedom.Statement {
-	name := node.Get(parser.NodeVariableStatementName)
-	initExpr, _ := db.tryGetExpression(node, parser.NodeVariableStatementExpression)
+	name := node.Get(sourceshape.NodeVariableStatementName)
+	initExpr, _ := db.tryGetExpression(node, sourceshape.NodeVariableStatementExpression)
 	if initExpr == nil {
 		// If no init expression was specified, then the variable is initialized to null.
 		initExpr = codedom.LiteralValue("null", node)
@@ -268,22 +268,22 @@ func (db *domBuilder) buildVarStatement(node compilergraph.GraphNode) codedom.St
 
 // buildWithStatement builds the CodeDOM for a with statement.
 func (db *domBuilder) buildWithStatement(node compilergraph.GraphNode) codedom.Statement {
-	namedVar, hasNamed := node.TryGetNode(parser.NodeStatementNamedValue)
+	namedVar, hasNamed := node.TryGetNode(sourceshape.NodeStatementNamedValue)
 
 	var resourceVar = ""
 	if hasNamed {
-		resourceVar = namedVar.Get(parser.NodeNamedValueName)
+		resourceVar = namedVar.Get(sourceshape.NodeNamedValueName)
 	} else {
 		resourceVar = db.generateScopeVarName(node)
 	}
 
-	resourceExpr := node.GetNode(parser.NodeWithStatementExpression)
+	resourceExpr := node.GetNode(sourceshape.NodeWithStatementExpression)
 	resourceScope, _ := db.scopegraph.GetScope(resourceExpr)
 	resourceType := resourceScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
 	releaseMethod, _ := resourceType.ResolveMember("Release", typegraph.MemberResolutionInstance)
 
 	resourceDomExpr := db.buildExpression(resourceExpr)
-	withStatement, _ := db.getStatements(node, parser.NodeWithStatementBlock)
+	withStatement, _ := db.getStatements(node, sourceshape.NodeWithStatementBlock)
 
 	return codedom.ResourceBlock(resourceVar, resourceDomExpr, withStatement, releaseMethod, node)
 }
@@ -292,14 +292,14 @@ func (db *domBuilder) buildWithStatement(node compilergraph.GraphNode) codedom.S
 func (db *domBuilder) buildMatchStatement(node compilergraph.GraphNode) (codedom.Statement, codedom.Statement) {
 	// Retrieve (or generate) the name of a variable to hold the value being matched against.
 	var matchExprVarName = ""
-	if namedValue, hasNamedValue := node.TryGetNode(parser.NodeStatementNamedValue); hasNamedValue {
-		matchExprVarName = namedValue.Get(parser.NodeNamedValueName)
+	if namedValue, hasNamedValue := node.TryGetNode(sourceshape.NodeStatementNamedValue); hasNamedValue {
+		matchExprVarName = namedValue.Get(sourceshape.NodeNamedValueName)
 	} else {
 		matchExprVarName = db.generateScopeVarName(node)
 	}
 
 	// Set the match expression's value into the variable.
-	startStatement := codedom.VarDefinitionWithInit(matchExprVarName, db.getExpression(node, parser.NodeMatchStatementExpression), node)
+	startStatement := codedom.VarDefinitionWithInit(matchExprVarName, db.getExpression(node, sourceshape.NodeMatchStatementExpression), node)
 
 	getCheckExpression := func(caseTypeRefNode compilergraph.GraphNode) codedom.Expression {
 		caseTypeLiteral, _ := db.scopegraph.ResolveSRGTypeRef(
@@ -316,8 +316,8 @@ func (db *domBuilder) buildMatchStatement(node compilergraph.GraphNode) (codedom
 			caseTypeRefNode)
 	}
 
-	return db.buildJumpingCaseStatement(node, parser.NodeMatchStatementCase,
-		parser.NodeMatchStatementCaseStatement, parser.NodeMatchStatementCaseTypeReference,
+	return db.buildJumpingCaseStatement(node, sourceshape.NodeMatchStatementCase,
+		sourceshape.NodeMatchStatementCaseStatement, sourceshape.NodeMatchStatementCaseTypeReference,
 		startStatement, getCheckExpression)
 }
 
@@ -333,10 +333,10 @@ func (db *domBuilder) buildSwitchStatement(node compilergraph.GraphNode) (codedo
 	// Check for a switch-level expression. If not present, then the switch compares each case
 	// as a boolean value. If present, then we compare the case branches to this expression,
 	// which is placed into a new variable.
-	switchExpr, hasSwitchExpr := db.tryGetExpression(node, parser.NodeSwitchStatementExpression)
+	switchExpr, hasSwitchExpr := db.tryGetExpression(node, sourceshape.NodeSwitchStatementExpression)
 	if hasSwitchExpr {
 		switchVarName = db.generateScopeVarName(node)
-		switchVarNode = node.GetNode(parser.NodeSwitchStatementExpression)
+		switchVarNode = node.GetNode(sourceshape.NodeSwitchStatementExpression)
 		startStatement = codedom.VarDefinitionWithInit(switchVarName, switchExpr, node)
 
 		switchScope, _ := db.scopegraph.GetScope(switchVarNode)
@@ -362,8 +362,8 @@ func (db *domBuilder) buildSwitchStatement(node compilergraph.GraphNode) (codedo
 			caseExpressionNode)
 	}
 
-	return db.buildJumpingCaseStatement(node, parser.NodeSwitchStatementCase,
-		parser.NodeSwitchStatementCaseStatement, parser.NodeSwitchStatementCaseExpression,
+	return db.buildJumpingCaseStatement(node, sourceshape.NodeSwitchStatementCase,
+		sourceshape.NodeSwitchStatementCaseStatement, sourceshape.NodeSwitchStatementCaseExpression,
 		startStatement, getCheckExpression)
 }
 
@@ -456,10 +456,10 @@ func (db *domBuilder) buildAssignmentExpression(targetNode compilergraph.GraphNo
 func (db *domBuilder) buildArrowStatement(node compilergraph.GraphNode) (codedom.Statement, codedom.Statement) {
 	sourceExpr := codedom.RuntimeFunctionCall(
 		codedom.TranslatePromiseFunction,
-		[]codedom.Expression{db.getExpression(node, parser.NodeArrowStatementSource)},
+		[]codedom.Expression{db.getExpression(node, sourceshape.NodeArrowStatementSource)},
 		node)
 
-	destinationNode := node.GetNode(parser.NodeArrowStatementDestination)
+	destinationNode := node.GetNode(sourceshape.NodeArrowStatementDestination)
 	destinationScope, _ := db.scopegraph.GetScope(destinationNode)
 
 	var destinationTarget codedom.Expression = nil
@@ -471,7 +471,7 @@ func (db *domBuilder) buildArrowStatement(node compilergraph.GraphNode) (codedom
 	}
 
 	// Retrieve the expression of the rejection variable.
-	rejectionNode, hasRejection := node.TryGetNode(parser.NodeArrowStatementRejection)
+	rejectionNode, hasRejection := node.TryGetNode(sourceshape.NodeArrowStatementRejection)
 	if hasRejection {
 		rejectionScope, _ := db.scopegraph.GetScope(rejectionNode)
 		if !rejectionScope.GetIsAnonymousReference() {
@@ -486,11 +486,11 @@ func (db *domBuilder) buildArrowStatement(node compilergraph.GraphNode) (codedom
 
 // buildResolveStatement builds the CodeDOM for a resolve statement.
 func (db *domBuilder) buildResolveStatement(node compilergraph.GraphNode) (codedom.Statement, codedom.Statement) {
-	sourceExpr := db.getExpression(node, parser.NodeResolveStatementSource)
+	sourceExpr := db.getExpression(node, sourceshape.NodeResolveStatementSource)
 
-	destinationNode := node.GetNode(parser.NodeAssignedDestination)
+	destinationNode := node.GetNode(sourceshape.NodeAssignedDestination)
 	destinationScope, _ := db.scopegraph.GetScope(destinationNode)
-	destinationName := destinationNode.Get(parser.NodeNamedValueName)
+	destinationName := destinationNode.Get(sourceshape.NodeNamedValueName)
 
 	var destinationStatement codedom.Statement = nil
 	if !destinationScope.GetIsAnonymousReference() {
@@ -502,9 +502,9 @@ func (db *domBuilder) buildResolveStatement(node compilergraph.GraphNode) (coded
 
 	// If the resolve statement has a rejection value, then we need to wrap the source expression
 	// call to catch any rejections *or* exceptions.
-	rejectionNode, hasRejection := node.TryGetNode(parser.NodeAssignedRejection)
+	rejectionNode, hasRejection := node.TryGetNode(sourceshape.NodeAssignedRejection)
 	if hasRejection {
-		rejectionName := rejectionNode.Get(parser.NodeNamedValueName)
+		rejectionName := rejectionNode.Get(sourceshape.NodeNamedValueName)
 		rejectionScope, _ := db.scopegraph.GetScope(rejectionNode)
 		if rejectionScope.GetIsAnonymousReference() {
 			rejectionName = ""

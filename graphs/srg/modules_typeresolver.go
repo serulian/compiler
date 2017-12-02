@@ -10,7 +10,7 @@ import (
 
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/packageloader"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // TypeResolutionResult defines the result of resolving a type or package.
@@ -84,7 +84,7 @@ func (m SRGModule) resolveTypePathNoCaching(path string) (TypeResolutionResult, 
 			return TypeResolutionResult{}, false
 		}
 
-		return packageInfo.ResolveType(importPackageNode.Get(parser.NodeImportPredicateSubsource))
+		return packageInfo.ResolveType(importPackageNode.Get(sourceshape.NodeImportPredicateSubsource))
 	}
 
 	// Otherwise, we first need to find an import.
@@ -143,17 +143,17 @@ func resultForExternalPackage(path string, packageInfo packageloader.PackageInfo
 func (m SRGModule) findImportPackageNode(name string, predicate compilergraph.Predicate) (compilergraph.GraphNode, bool) {
 	return m.srg.layer.StartQuery(name).
 		In(predicate).
-		IsKind(parser.NodeTypeImportPackage).
-		Has(parser.NodePredicateSource, string(m.InputSource())).
+		IsKind(sourceshape.NodeTypeImportPackage).
+		Has(sourceshape.NodePredicateSource, string(m.InputSource())).
 		TryGetNode()
 }
 
 // findImportWithLocalName attempts to find an import package in this module with the given local name.
 func (m SRGModule) findImportWithLocalName(name string) (compilergraph.GraphNode, bool) {
-	return m.findImportPackageNode(name, parser.NodeImportPredicateName)
+	return m.findImportPackageNode(name, sourceshape.NodeImportPredicateName)
 }
 
 // findImportByPackageName searches for the import package with the given package name and returns it, if any.
 func (m SRGModule) findImportByPackageName(packageName string) (compilergraph.GraphNode, bool) {
-	return m.findImportPackageNode(packageName, parser.NodeImportPredicatePackageName)
+	return m.findImportPackageNode(packageName, sourceshape.NodeImportPredicatePackageName)
 }

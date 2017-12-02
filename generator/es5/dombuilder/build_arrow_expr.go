@@ -7,14 +7,14 @@ package dombuilder
 import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/codedom"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // buildAwaitExpression builds the CodeDOM for an await expression.
 func (db *domBuilder) buildAwaitExpression(node compilergraph.GraphNode) codedom.Expression {
 	sourceExpr := codedom.RuntimeFunctionCall(
 		codedom.TranslatePromiseFunction,
-		[]codedom.Expression{db.getExpression(node, parser.NodeAwaitExpressionSource)},
+		[]codedom.Expression{db.getExpression(node, sourceshape.NodeAwaitExpressionSource)},
 		node)
 
 	return codedom.AwaitPromise(sourceExpr, node)

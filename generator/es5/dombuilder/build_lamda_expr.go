@@ -8,19 +8,19 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/codedom"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // buildLambdaExpression builds the CodeDOM for a lambda expression.
 func (db *domBuilder) buildLambdaExpression(node compilergraph.GraphNode) codedom.Expression {
-	if blockNode, ok := node.TryGetNode(parser.NodeLambdaExpressionBlock); ok {
+	if blockNode, ok := node.TryGetNode(sourceshape.NodeLambdaExpressionBlock); ok {
 		blockStatement, _ := db.buildStatements(blockNode)
 		bodyScope, _ := db.scopegraph.GetScope(blockNode)
 		isGenerator := bodyScope.HasLabel(proto.ScopeLabel_GENERATOR_STATEMENT)
-		return db.buildLambdaExpressionInternal(node, parser.NodeLambdaExpressionParameter, blockStatement, isGenerator)
+		return db.buildLambdaExpressionInternal(node, sourceshape.NodeLambdaExpressionParameter, blockStatement, isGenerator)
 	} else {
-		bodyExpr := db.getExpression(node, parser.NodeLambdaExpressionChildExpr)
-		return db.buildLambdaExpressionInternal(node, parser.NodeLambdaExpressionInferredParameter, bodyExpr, false)
+		bodyExpr := db.getExpression(node, sourceshape.NodeLambdaExpressionChildExpr)
+		return db.buildLambdaExpressionInternal(node, sourceshape.NodeLambdaExpressionInferredParameter, bodyExpr, false)
 	}
 }
 
@@ -30,19 +30,19 @@ func (db *domBuilder) buildLambdaExpressionInternal(node compilergraph.GraphNode
 	var parameters = make([]string, 0)
 
 	git := node.StartQuery().
-		Out(parser.NodePredicateTypeMemberGeneric).
-		BuildNodeIterator(parser.NodeGenericPredicateName)
+		Out(sourceshape.NodePredicateTypeMemberGeneric).
+		BuildNodeIterator(sourceshape.NodeGenericPredicateName)
 
 	for git.Next() {
-		generics = append(generics, git.GetPredicate(parser.NodeGenericPredicateName).String())
+		generics = append(generics, git.GetPredicate(sourceshape.NodeGenericPredicateName).String())
 	}
 
 	pit := node.StartQuery().
 		Out(paramPredicate).
-		BuildNodeIterator(parser.NodeLambdaExpressionParameterName)
+		BuildNodeIterator(sourceshape.NodeLambdaExpressionParameterName)
 
 	for pit.Next() {
-		parameters = append(parameters, pit.GetPredicate(parser.NodeLambdaExpressionParameterName).String())
+		parameters = append(parameters, pit.GetPredicate(sourceshape.NodeLambdaExpressionParameterName).String())
 	}
 
 	// Check for a generator.

@@ -9,12 +9,12 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 func (gh Handle) checkRangeUnderTypeReference(node compilergraph.GraphNode, sourcePosition compilercommon.SourcePosition) (RangeInformation, error) {
 	// Check for a direct parent.
-	parentRef, hasParentRef := node.TryGetIncomingNode(parser.NodeTypeReferencePath)
+	parentRef, hasParentRef := node.TryGetIncomingNode(sourceshape.NodeTypeReferencePath)
 	if hasParentRef {
 		unresolvedTypeRef := gh.scopeResult.Graph.SourceGraph().GetTypeRef(parentRef)
 		resolvedTypeRef, _ := gh.scopeResult.Graph.ResolveSRGTypeRef(unresolvedTypeRef)
@@ -26,12 +26,12 @@ func (gh Handle) checkRangeUnderTypeReference(node compilergraph.GraphNode, sour
 	}
 
 	// Check for a parent identifier path.
-	parentPath, hasParentPath := node.TryGetIncomingNode(parser.NodeIdentifierPathRoot)
+	parentPath, hasParentPath := node.TryGetIncomingNode(sourceshape.NodeIdentifierPathRoot)
 	if hasParentPath {
 		return gh.checkRangeUnderTypeReference(parentPath, sourcePosition)
 	}
 
-	parentPath, hasParentPath = node.TryGetIncomingNode(parser.NodeIdentifierAccessSource)
+	parentPath, hasParentPath = node.TryGetIncomingNode(sourceshape.NodeIdentifierAccessSource)
 	if hasParentPath {
 		return gh.checkRangeUnderTypeReference(parentPath, sourcePosition)
 	}
@@ -82,7 +82,7 @@ func (gh Handle) LookupSourcePosition(sourcePosition compilercommon.SourcePositi
 	// Based on the kind of the node, return range information.
 	switch node.Kind() {
 	// Import.
-	case parser.NodeTypeImport:
+	case sourceshape.NodeTypeImport:
 		importInfo := sourceGraph.GetImport(node)
 		source, hasSource := importInfo.Source()
 		if !hasSource {
@@ -97,7 +97,7 @@ func (gh Handle) LookupSourcePosition(sourcePosition compilercommon.SourcePositi
 			PackageOrModule: source,
 		}, nil
 
-	case parser.NodeTypeImportPackage:
+	case sourceshape.NodeTypeImportPackage:
 		// Find the type or member to which the import references.
 		packageImport := sourceGraph.GetPackageImport(node)
 		srgTypeOrMember, found := packageImport.ResolvedTypeOrMember()
@@ -123,10 +123,10 @@ func (gh Handle) LookupSourcePosition(sourcePosition compilercommon.SourcePositi
 		}, nil
 
 	// Type References.
-	case parser.NodeTypeAny:
+	case sourceshape.NodeTypeAny:
 		fallthrough
 
-	case parser.NodeTypeTypeReference:
+	case sourceshape.NodeTypeTypeReference:
 		unresolvedTypeRef := sourceGraph.GetTypeRef(node)
 		resolvedTypeRef, _ := gh.scopeResult.Graph.ResolveSRGTypeRef(unresolvedTypeRef)
 		return RangeInformation{
@@ -136,19 +136,19 @@ func (gh Handle) LookupSourcePosition(sourcePosition compilercommon.SourcePositi
 		}, nil
 
 	// Types.
-	case parser.NodeTypeClass:
+	case sourceshape.NodeTypeClass:
 		fallthrough
 
-	case parser.NodeTypeInterface:
+	case sourceshape.NodeTypeInterface:
 		fallthrough
 
-	case parser.NodeTypeNominal:
+	case sourceshape.NodeTypeNominal:
 		fallthrough
 
-	case parser.NodeTypeStruct:
+	case sourceshape.NodeTypeStruct:
 		fallthrough
 
-	case parser.NodeTypeAgent:
+	case sourceshape.NodeTypeAgent:
 		srgType := gh.scopeResult.Graph.SourceGraph().GetDefinedTypeReference(node)
 		referencedName := gh.scopeResult.Graph.ReferencedNameForNamedScope(srgType.AsNamedScope())
 
@@ -160,8 +160,8 @@ func (gh Handle) LookupSourcePosition(sourcePosition compilercommon.SourcePositi
 		}, nil
 
 	// Agent reference.
-	case parser.NodeTypeAgentReference:
-		agentTypeRef, hasAgentTypeRef := node.TryGetNode(parser.NodeAgentReferencePredicateReferenceType)
+	case sourceshape.NodeTypeAgentReference:
+		agentTypeRef, hasAgentTypeRef := node.TryGetNode(sourceshape.NodeAgentReferencePredicateReferenceType)
 		if !hasAgentTypeRef {
 			return RangeInformation{
 				Kind: NotFound,
@@ -177,22 +177,22 @@ func (gh Handle) LookupSourcePosition(sourcePosition compilercommon.SourcePositi
 		}, nil
 
 	// Members.
-	case parser.NodeTypeField:
+	case sourceshape.NodeTypeField:
 		fallthrough
 
-	case parser.NodeTypeFunction:
+	case sourceshape.NodeTypeFunction:
 		fallthrough
 
-	case parser.NodeTypeProperty:
+	case sourceshape.NodeTypeProperty:
 		fallthrough
 
-	case parser.NodeTypeOperator:
+	case sourceshape.NodeTypeOperator:
 		fallthrough
 
-	case parser.NodeTypeConstructor:
+	case sourceshape.NodeTypeConstructor:
 		fallthrough
 
-	case parser.NodeTypeVariable:
+	case sourceshape.NodeTypeVariable:
 		srgMember := gh.scopeResult.Graph.SourceGraph().GetMemberReference(node)
 		referencedName := gh.scopeResult.Graph.ReferencedNameForNamedScope(srgMember.AsNamedScope())
 
@@ -204,7 +204,7 @@ func (gh Handle) LookupSourcePosition(sourcePosition compilercommon.SourcePositi
 		}, nil
 
 	// Parameters.
-	case parser.NodeTypeParameter:
+	case sourceshape.NodeTypeParameter:
 		srgParameter := gh.scopeResult.Graph.SourceGraph().GetParameterReference(node)
 		referencedName := gh.scopeResult.Graph.ReferencedNameForNamedScope(srgParameter.AsNamedScope())
 
@@ -216,10 +216,10 @@ func (gh Handle) LookupSourcePosition(sourcePosition compilercommon.SourcePositi
 		}, nil
 
 	// Sml.
-	case parser.NodeTypeSmlAttribute:
+	case sourceshape.NodeTypeSmlAttribute:
 		// Get the scope of the parent SML expression, and lookup the scope of the attribute,
 		// if any.
-		parentExpression := node.GetIncomingNode(parser.NodeSmlExpressionAttribute)
+		parentExpression := node.GetIncomingNode(sourceshape.NodeSmlExpressionAttribute)
 		parentScopeInfo, hasParentScope := gh.scopeResult.Graph.GetScope(parentExpression)
 		if !hasParentScope {
 			return RangeInformation{
@@ -227,7 +227,7 @@ func (gh Handle) LookupSourcePosition(sourcePosition compilercommon.SourcePositi
 			}, nil
 		}
 
-		attributeName := node.Get(parser.NodeSmlAttributeName)
+		attributeName := node.Get(sourceshape.NodeSmlAttributeName)
 
 		// Find the scope of the attribute under the SML expression. If not found, this is a
 		// string literal key to a props mapping.
@@ -251,36 +251,36 @@ func (gh Handle) LookupSourcePosition(sourcePosition compilercommon.SourcePositi
 		}, nil
 
 	// Literals.
-	case parser.NodeStringLiteralExpression:
+	case sourceshape.NodeStringLiteralExpression:
 		fallthrough
 
-	case parser.NodeNumericLiteralExpression:
+	case sourceshape.NodeNumericLiteralExpression:
 		fallthrough
 
-	case parser.NodeBooleanLiteralExpression:
+	case sourceshape.NodeBooleanLiteralExpression:
 		return RangeInformation{
 			Kind:         Literal,
-			LiteralValue: node.Get(parser.NodeBooleanLiteralExpressionValue), // Literals share the same predicate value.
+			LiteralValue: node.Get(sourceshape.NodeBooleanLiteralExpressionValue), // Literals share the same predicate value.
 		}, nil
 
 	// Keywords.
-	case parser.NodeTypeVoid:
+	case sourceshape.NodeTypeVoid:
 		return RangeInformation{
 			Kind:    Keyword,
 			Keyword: "void",
 		}, nil
 
-	case parser.NodeValLiteralExpression:
+	case sourceshape.NodeValLiteralExpression:
 		return gh.rangeForLocalName("val", node, sourcePosition)
 
-	case parser.NodeThisLiteralExpression:
+	case sourceshape.NodeThisLiteralExpression:
 		return gh.rangeForLocalName("this", node, sourcePosition)
 
-	case parser.NodePrincipalLiteralExpression:
+	case sourceshape.NodePrincipalLiteralExpression:
 		return gh.rangeForLocalName("principal", node, sourcePosition)
 
 	// Assigned value.
-	case parser.NodeTypeAssignedValue:
+	case sourceshape.NodeTypeAssignedValue:
 		scopeInfo, hasScope := gh.scopeResult.Graph.GetScope(node)
 		if hasScope {
 			sourceRange, hasSourceRange := gh.scopeResult.Graph.SourceGraph().SourceRangeOf(node)
@@ -289,7 +289,7 @@ func (gh Handle) LookupSourcePosition(sourcePosition compilercommon.SourcePositi
 				return RangeInformation{
 					Kind:          LocalValue,
 					SourceRanges:  []compilercommon.SourceRange{sourceRange},
-					LocalName:     node.Get(parser.NodeNamedValueName),
+					LocalName:     node.Get(sourceshape.NodeNamedValueName),
 					TypeReference: referencedType,
 				}, nil
 			}

@@ -11,7 +11,8 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/serulian/compiler/parser"
+	v0parser "github.com/serulian/compiler/parser/v0"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 var _ = fmt.Sprintf
@@ -19,55 +20,55 @@ var _ = fmt.Sprintf
 // emitAwaitExpression emits an await arrow expression.
 func (sf *sourceFormatter) emitAwaitExpression(node formatterNode) {
 	sf.append("<- ")
-	sf.emitNode(node.getChild(parser.NodeAwaitExpressionSource))
+	sf.emitNode(node.getChild(sourceshape.NodeAwaitExpressionSource))
 }
 
 // emitLambdaExpression emits a lambda expression.
 func (sf *sourceFormatter) emitLambdaExpression(node formatterNode) {
-	if block, ok := node.tryGetChild(parser.NodeLambdaExpressionBlock); ok {
+	if block, ok := node.tryGetChild(sourceshape.NodeLambdaExpressionBlock); ok {
 		sf.append("function")
 
-		if returnType, hasReturnType := node.tryGetChild(parser.NodeLambdaExpressionReturnType); hasReturnType {
+		if returnType, hasReturnType := node.tryGetChild(sourceshape.NodeLambdaExpressionReturnType); hasReturnType {
 			sf.append("<")
 			sf.emitNode(returnType)
 			sf.append(">")
 		}
 
-		sf.emitParameters(node, parser.NodeLambdaExpressionParameter, parensRequired)
+		sf.emitParameters(node, sourceshape.NodeLambdaExpressionParameter, parensRequired)
 		sf.append(" ")
 		sf.emitNode(block)
 	} else {
-		sf.emitParameters(node, parser.NodeLambdaExpressionInferredParameter, parensRequired)
+		sf.emitParameters(node, sourceshape.NodeLambdaExpressionInferredParameter, parensRequired)
 		sf.append(" => ")
-		sf.emitNode(node.getChild(parser.NodeLambdaExpressionChildExpr))
+		sf.emitNode(node.getChild(sourceshape.NodeLambdaExpressionChildExpr))
 	}
 }
 
 // emitLambdaParameter emits a parameter to a lambda expression.
 func (sf *sourceFormatter) emitLambdaParameter(node formatterNode) {
-	sf.append(node.getProperty(parser.NodeLambdaExpressionParameterName))
+	sf.append(node.getProperty(sourceshape.NodeLambdaExpressionParameterName))
 }
 
 // nonWrappingUnaryNodeKinds defines the node types of children of a unary that do *not*
 // need to be wrapped.
-var nonWrappingUnaryNodeKinds = []parser.NodeType{
-	parser.NodeTypeTemplateString,
-	parser.NodeStringLiteralExpression,
-	parser.NodeBooleanLiteralExpression,
-	parser.NodeNumericLiteralExpression,
-	parser.NodeTypeIdentifierExpression,
-	parser.NodeListLiteralExpression,
-	parser.NodeMapLiteralExpression,
-	parser.NodeMemberAccessExpression,
-	parser.NodeDynamicMemberAccessExpression,
-	parser.NodeStreamMemberAccessExpression,
-	parser.NodeNullableMemberAccessExpression,
-	parser.NodeSliceExpression,
+var nonWrappingUnaryNodeKinds = []sourceshape.NodeType{
+	sourceshape.NodeTypeTemplateString,
+	sourceshape.NodeStringLiteralExpression,
+	sourceshape.NodeBooleanLiteralExpression,
+	sourceshape.NodeNumericLiteralExpression,
+	sourceshape.NodeTypeIdentifierExpression,
+	sourceshape.NodeListLiteralExpression,
+	sourceshape.NodeMapLiteralExpression,
+	sourceshape.NodeMemberAccessExpression,
+	sourceshape.NodeDynamicMemberAccessExpression,
+	sourceshape.NodeStreamMemberAccessExpression,
+	sourceshape.NodeNullableMemberAccessExpression,
+	sourceshape.NodeSliceExpression,
 }
 
 // emitUnaryOperator emits a unary operator with a child expression.
 func (sf *sourceFormatter) emitUnaryOperator(node formatterNode, op string) {
-	childNode := node.getChild(parser.NodeUnaryExpressionChildExpr)
+	childNode := node.getChild(sourceshape.NodeUnaryExpressionChildExpr)
 	requiresWrapping := !childNode.hasType(nonWrappingUnaryNodeKinds...)
 
 	sf.append(op)
@@ -89,14 +90,14 @@ func (sf *sourceFormatter) emitNotNullExpression(node formatterNode) {
 
 	parentNode, hasParent := sf.parentNode()
 	if hasParent {
-		requiresOuterWrapping = parentNode.hasType(parser.NodeMemberAccessExpression)
+		requiresOuterWrapping = parentNode.hasType(sourceshape.NodeMemberAccessExpression)
 	}
 
 	if requiresOuterWrapping {
 		sf.append("(")
 	}
 
-	childNode := node.getChild(parser.NodeUnaryExpressionChildExpr)
+	childNode := node.getChild(sourceshape.NodeUnaryExpressionChildExpr)
 	sf.emitNode(childNode)
 	sf.append("!")
 
@@ -107,10 +108,10 @@ func (sf *sourceFormatter) emitNotNullExpression(node formatterNode) {
 
 // binaryOrderingImportant lists the types of binary nodes where ordering within the same node
 // is important.
-var binaryOrderingImportant = []parser.NodeType{
-	parser.NodeBinarySubtractExpression,
-	parser.NodeBinaryDivideExpression,
-	parser.NodeNullComparisonExpression,
+var binaryOrderingImportant = []sourceshape.NodeType{
+	sourceshape.NodeBinarySubtractExpression,
+	sourceshape.NodeBinaryDivideExpression,
+	sourceshape.NodeNullComparisonExpression,
 }
 
 // determineWrappingPrecedence determines whether due to precedence the given binary op child
@@ -123,7 +124,7 @@ func (sf *sourceFormatter) determineWrappingPrecedence(binaryExpr formatterNode,
 	var binaryIndex = -1
 	var childIndex = -1
 
-	for index, current := range parser.BinaryOperators {
+	for index, current := range v0parser.BinaryOperators {
 		if current.BinaryExpressionNodeType == binaryExprType {
 			binaryIndex = index
 		}
@@ -145,8 +146,8 @@ func (sf *sourceFormatter) determineWrappingPrecedence(binaryExpr formatterNode,
 
 // emitBinaryOperator emits a binary operator with a child expression.
 func (sf *sourceFormatter) emitBinaryOperator(node formatterNode, op string) {
-	leftExpr := node.getChild(parser.NodeBinaryExpressionLeftExpr)
-	rightExpr := node.getChild(parser.NodeBinaryExpressionRightExpr)
+	leftExpr := node.getChild(sourceshape.NodeBinaryExpressionLeftExpr)
+	rightExpr := node.getChild(sourceshape.NodeBinaryExpressionRightExpr)
 
 	requiresLeftWrapping := sf.determineWrappingPrecedence(node, leftExpr, true)
 	requiresRightWrapping := sf.determineWrappingPrecedence(node, rightExpr, false)
@@ -178,8 +179,8 @@ func (sf *sourceFormatter) emitBinaryOperator(node formatterNode, op string) {
 
 // emitAccessExpression emits an access expression.
 func (sf *sourceFormatter) emitAccessExpression(node formatterNode, op string) {
-	childExpr := node.getChild(parser.NodeMemberAccessChildExpr)
-	requiresWrapping := childExpr.hasType(parser.NodeMappingLiteralExpression, parser.NodeMapLiteralExpression)
+	childExpr := node.getChild(sourceshape.NodeMemberAccessChildExpr)
+	requiresWrapping := childExpr.hasType(sourceshape.NodeMappingLiteralExpression, sourceshape.NodeMapLiteralExpression)
 	if requiresWrapping {
 		sf.append("(")
 	}
@@ -191,22 +192,22 @@ func (sf *sourceFormatter) emitAccessExpression(node formatterNode, op string) {
 	}
 
 	sf.append(op)
-	sf.append(node.getProperty(parser.NodeMemberAccessIdentifier))
+	sf.append(node.getProperty(sourceshape.NodeMemberAccessIdentifier))
 }
 
 // emitCastExpression emits the source of a cast expression.
 func (sf *sourceFormatter) emitCastExpression(node formatterNode) {
-	sf.emitNode(node.getChild(parser.NodeCastExpressionChildExpr))
+	sf.emitNode(node.getChild(sourceshape.NodeCastExpressionChildExpr))
 	sf.append(".(")
-	sf.emitNode(node.getChild(parser.NodeCastExpressionType))
+	sf.emitNode(node.getChild(sourceshape.NodeCastExpressionType))
 	sf.append(")")
 }
 
 // emitFunctionCallExpression emits the source of a function call.
 func (sf *sourceFormatter) emitFunctionCallExpression(node formatterNode) {
-	arguments := node.getChildren(parser.NodeFunctionCallArgument)
+	arguments := node.getChildren(sourceshape.NodeFunctionCallArgument)
 
-	sf.emitNode(node.getChild(parser.NodeFunctionCallExpressionChildExpr))
+	sf.emitNode(node.getChild(sourceshape.NodeFunctionCallExpressionChildExpr))
 	sf.append("(")
 
 	for index, arg := range arguments {
@@ -222,21 +223,21 @@ func (sf *sourceFormatter) emitFunctionCallExpression(node formatterNode) {
 
 // nonWrappingSliceNodeKinds defines the node types of children of a slice expression that do *not*
 // need to be wrapped.
-var nonWrappingSliceNodeKinds = []parser.NodeType{
-	parser.NodeTypeTemplateString,
-	parser.NodeStringLiteralExpression,
-	parser.NodeBooleanLiteralExpression,
-	parser.NodeNumericLiteralExpression,
-	parser.NodeTypeIdentifierExpression,
-	parser.NodeListLiteralExpression,
-	parser.NodeMemberAccessExpression,
-	parser.NodeDynamicMemberAccessExpression,
-	parser.NodeStreamMemberAccessExpression,
+var nonWrappingSliceNodeKinds = []sourceshape.NodeType{
+	sourceshape.NodeTypeTemplateString,
+	sourceshape.NodeStringLiteralExpression,
+	sourceshape.NodeBooleanLiteralExpression,
+	sourceshape.NodeNumericLiteralExpression,
+	sourceshape.NodeTypeIdentifierExpression,
+	sourceshape.NodeListLiteralExpression,
+	sourceshape.NodeMemberAccessExpression,
+	sourceshape.NodeDynamicMemberAccessExpression,
+	sourceshape.NodeStreamMemberAccessExpression,
 }
 
 // emitSliceExpression emits the source of a slice expression.
 func (sf *sourceFormatter) emitSliceExpression(node formatterNode) {
-	childExpr := node.getChild(parser.NodeSliceExpressionChildExpr)
+	childExpr := node.getChild(sourceshape.NodeSliceExpressionChildExpr)
 	requiresWrapping := !childExpr.hasType(nonWrappingSliceNodeKinds...)
 
 	if requiresWrapping {
@@ -249,16 +250,16 @@ func (sf *sourceFormatter) emitSliceExpression(node formatterNode) {
 
 	sf.append("[")
 
-	if index, ok := node.tryGetChild(parser.NodeSliceExpressionIndex); ok {
+	if index, ok := node.tryGetChild(sourceshape.NodeSliceExpressionIndex); ok {
 		sf.emitNode(index)
 	} else {
-		if left, ok := node.tryGetChild(parser.NodeSliceExpressionLeftIndex); ok {
+		if left, ok := node.tryGetChild(sourceshape.NodeSliceExpressionLeftIndex); ok {
 			sf.emitNode(left)
 		}
 
 		sf.append(":")
 
-		if right, ok := node.tryGetChild(parser.NodeSliceExpressionRightIndex); ok {
+		if right, ok := node.tryGetChild(sourceshape.NodeSliceExpressionRightIndex); ok {
 			sf.emitNode(right)
 		}
 	}
@@ -268,10 +269,10 @@ func (sf *sourceFormatter) emitSliceExpression(node formatterNode) {
 
 // emitGenericSpecifierExpression emits the source of a generic specifier.
 func (sf *sourceFormatter) emitGenericSpecifierExpression(node formatterNode) {
-	sf.emitNode(node.getChild(parser.NodeGenericSpecifierChildExpr))
+	sf.emitNode(node.getChild(sourceshape.NodeGenericSpecifierChildExpr))
 	sf.append("<")
 
-	arguments := node.getChildren(parser.NodeGenericSpecifierType)
+	arguments := node.getChildren(sourceshape.NodeGenericSpecifierType)
 	for index, arg := range arguments {
 		if index > 0 {
 			sf.append(", ")
@@ -285,18 +286,18 @@ func (sf *sourceFormatter) emitGenericSpecifierExpression(node formatterNode) {
 
 // emitTaggedTemplateString emits a tagged template string literal.
 func (sf *sourceFormatter) emitTaggedTemplateString(node formatterNode) {
-	sf.emitNode(node.getChild(parser.NodeTaggedTemplateCallExpression))
-	sf.emitNode(node.getChild(parser.NodeTaggedTemplateParsed))
+	sf.emitNode(node.getChild(sourceshape.NodeTaggedTemplateCallExpression))
+	sf.emitNode(node.getChild(sourceshape.NodeTaggedTemplateParsed))
 }
 
 // emitTemplateString emits a template string literal.
 func (sf *sourceFormatter) emitTemplateString(node formatterNode) {
-	pieces := node.getChildren(parser.NodeTemplateStringPiece)
+	pieces := node.getChildren(sourceshape.NodeTemplateStringPiece)
 	sf.append("`")
 
 	for _, piece := range pieces {
-		if piece.GetType() == parser.NodeStringLiteralExpression {
-			value := piece.getProperty(parser.NodeStringLiteralExpressionValue)
+		if piece.GetType() == sourceshape.NodeStringLiteralExpression {
+			value := piece.getProperty(sourceshape.NodeStringLiteralExpressionValue)
 			sf.appendRaw(value[1 : len(value)-1]) // Remove the ``
 		} else {
 			sf.append("${")
@@ -311,7 +312,7 @@ func (sf *sourceFormatter) emitTemplateString(node formatterNode) {
 // emitListLiteralExpression emits a list literal expression.
 func (sf *sourceFormatter) emitListLiteralExpression(node formatterNode) {
 	sf.append("[")
-	exprs := node.getChildren(parser.NodeListLiteralExpressionValue)
+	exprs := node.getChildren(sourceshape.NodeListLiteralExpressionValue)
 	sf.emitInnerExpressions(exprs)
 	sf.append("]")
 }
@@ -319,9 +320,9 @@ func (sf *sourceFormatter) emitListLiteralExpression(node formatterNode) {
 // emitSliceLiteralExpression emits a slice literal expression.
 func (sf *sourceFormatter) emitSliceLiteralExpression(node formatterNode) {
 	sf.append("[]")
-	sf.emitNode(node.getChild(parser.NodeSliceLiteralExpressionType))
+	sf.emitNode(node.getChild(sourceshape.NodeSliceLiteralExpressionType))
 	sf.append("{")
-	exprs := node.getChildren(parser.NodeSliceLiteralExpressionValue)
+	exprs := node.getChildren(sourceshape.NodeSliceLiteralExpressionValue)
 	sf.emitInnerExpressions(exprs)
 	sf.append("}")
 }
@@ -330,7 +331,7 @@ func (sf *sourceFormatter) emitSliceLiteralExpression(node formatterNode) {
 func (sf *sourceFormatter) emitMapLiteralExpression(node formatterNode) {
 	sf.append("{")
 
-	entries := node.getChildren(parser.NodeMapLiteralExpressionChildEntry)
+	entries := node.getChildren(sourceshape.NodeMapLiteralExpressionChildEntry)
 	sf.emitInnerExpressions(entries)
 
 	sf.append("}")
@@ -338,18 +339,18 @@ func (sf *sourceFormatter) emitMapLiteralExpression(node formatterNode) {
 
 // emitMapLiteralExpressionEntry emits a single entry under a map literal expression.
 func (sf *sourceFormatter) emitMapLiteralExpressionEntry(node formatterNode) {
-	sf.emitNode(node.getChild(parser.NodeMapLiteralExpressionEntryKey))
+	sf.emitNode(node.getChild(sourceshape.NodeMapLiteralExpressionEntryKey))
 	sf.append(": ")
-	sf.emitNode(node.getChild(parser.NodeMapLiteralExpressionEntryValue))
+	sf.emitNode(node.getChild(sourceshape.NodeMapLiteralExpressionEntryValue))
 }
 
 // emitMappingLiteralExpression emits a mapping literal expression value.
 func (sf *sourceFormatter) emitMappingLiteralExpression(node formatterNode) {
 	sf.append("[]{")
-	sf.emitNode(node.getChild(parser.NodeMappingLiteralExpressionType))
+	sf.emitNode(node.getChild(sourceshape.NodeMappingLiteralExpressionType))
 	sf.append("}{")
 
-	entries := node.getChildren(parser.NodeMappingLiteralExpressionEntryRef)
+	entries := node.getChildren(sourceshape.NodeMappingLiteralExpressionEntryRef)
 	sf.emitInnerExpressions(entries)
 
 	sf.append("}")
@@ -357,17 +358,17 @@ func (sf *sourceFormatter) emitMappingLiteralExpression(node formatterNode) {
 
 // emitMappingLiteralExpressionEntry emits a single entry under a mapping literal expression.
 func (sf *sourceFormatter) emitMappingLiteralExpressionEntry(node formatterNode) {
-	sf.emitNode(node.getChild(parser.NodeMappingLiteralExpressionEntryKey))
+	sf.emitNode(node.getChild(sourceshape.NodeMappingLiteralExpressionEntryKey))
 	sf.append(": ")
-	sf.emitNode(node.getChild(parser.NodeMappingLiteralExpressionEntryValue))
+	sf.emitNode(node.getChild(sourceshape.NodeMappingLiteralExpressionEntryValue))
 }
 
 // emitStructuralNewExpression emits a structural new expression.
 func (sf *sourceFormatter) emitStructuralNewExpression(node formatterNode) {
-	sf.emitNode(node.getChild(parser.NodeStructuralNewTypeExpression))
+	sf.emitNode(node.getChild(sourceshape.NodeStructuralNewTypeExpression))
 	sf.append("{")
 
-	entries := node.getChildren(parser.NodeStructuralNewExpressionChildEntry)
+	entries := node.getChildren(sourceshape.NodeStructuralNewExpressionChildEntry)
 	sf.emitInnerExpressions(entries)
 
 	sf.append("}")
@@ -375,9 +376,9 @@ func (sf *sourceFormatter) emitStructuralNewExpression(node formatterNode) {
 
 // emitStructuralNewExpressionEntry emits a single entry under a structural new expression.
 func (sf *sourceFormatter) emitStructuralNewExpressionEntry(node formatterNode) {
-	sf.append(node.getProperty(parser.NodeStructuralNewEntryKey))
+	sf.append(node.getProperty(sourceshape.NodeStructuralNewEntryKey))
 	sf.append(": ")
-	sf.emitNode(node.getChild(parser.NodeStructuralNewEntryValue))
+	sf.emitNode(node.getChild(sourceshape.NodeStructuralNewEntryValue))
 }
 
 // emitInnerExpressions emits the given expressions found under another literal (mapping, list, etc),
@@ -424,26 +425,26 @@ func (sf *sourceFormatter) emitInnerExpressions(exprs []formatterNode) {
 
 // emitLoopExpression emits a loop expression.
 func (sf *sourceFormatter) emitLoopExpression(node formatterNode) {
-	sf.emitNode(node.getChild(parser.NodeLoopExpressionMapExpression))
+	sf.emitNode(node.getChild(sourceshape.NodeLoopExpressionMapExpression))
 	sf.append(" for ")
-	sf.emitNode(node.getChild(parser.NodeLoopExpressionNamedValue))
+	sf.emitNode(node.getChild(sourceshape.NodeLoopExpressionNamedValue))
 	sf.append(" in ")
-	sf.emitNode(node.getChild(parser.NodeLoopExpressionStreamExpression))
+	sf.emitNode(node.getChild(sourceshape.NodeLoopExpressionStreamExpression))
 }
 
 // emitConditionalExpression emits a conditional expression.
 func (sf *sourceFormatter) emitConditionalExpression(node formatterNode) {
-	sf.emitNode(node.getChild(parser.NodeConditionalExpressionThenExpression))
+	sf.emitNode(node.getChild(sourceshape.NodeConditionalExpressionThenExpression))
 	sf.append(" if ")
-	sf.emitNode(node.getChild(parser.NodeConditionalExpressionCheckExpression))
+	sf.emitNode(node.getChild(sourceshape.NodeConditionalExpressionCheckExpression))
 	sf.append(" else ")
-	sf.emitNode(node.getChild(parser.NodeConditionalExpressionElseExpression))
+	sf.emitNode(node.getChild(sourceshape.NodeConditionalExpressionElseExpression))
 }
 
 // emitKeywordNotExpression emits a not keyword expression.
 func (sf *sourceFormatter) emitKeywordNotExpression(node formatterNode) {
 	sf.append("not ")
-	sf.emitNode(node.getChild(parser.NodeUnaryExpressionChildExpr))
+	sf.emitNode(node.getChild(sourceshape.NodeUnaryExpressionChildExpr))
 }
 
 // emitSmlAttributes emits all the attributes/decorators under the given SML expression
@@ -457,7 +458,7 @@ func (sf *sourceFormatter) emitSmlAttributes(node formatterNode, predicate strin
 	newline := false
 	for _, attribute := range attributes {
 		// Skip nested attributes.
-		if attribute.hasProperty(parser.NodeSmlAttributeNested) {
+		if attribute.hasProperty(sourceshape.NodeSmlAttributeNested) {
 			continue
 		}
 
@@ -488,31 +489,31 @@ func (sf *sourceFormatter) formatSmlChildren(children []formatterNode, childStar
 	childSource := make([]string, len(children))
 	hasMultilineChild := false
 	hasAdjacentNonText := false
-	onlyIsExpression := len(children) == 1 && (children[0].GetType() == parser.NodeTypeSmlExpression || children[0].GetType() == parser.NodeTypeSmlAttribute)
+	onlyIsExpression := len(children) == 1 && (children[0].GetType() == sourceshape.NodeTypeSmlExpression || children[0].GetType() == sourceshape.NodeTypeSmlAttribute)
 
 	for index, child := range children {
 		switch {
-		case child.GetType() == parser.NodeTypeSmlText:
-			value := child.getProperty(parser.NodeSmlTextValue)
+		case child.GetType() == sourceshape.NodeTypeSmlText:
+			value := child.getProperty(sourceshape.NodeSmlTextValue)
 			childSource[index] = value
 			hasMultilineChild = hasMultilineChild || strings.Contains(strings.TrimSpace(value), "\n")
 
-		case child.GetType() == parser.NodeTypeSmlAttribute:
+		case child.GetType() == sourceshape.NodeTypeSmlAttribute:
 			fallthrough
 
-		case child.GetType() == parser.NodeTypeSmlExpression:
-			hasAdjacentNonText = hasAdjacentNonText || (index > 0 && children[index-1].GetType() != parser.NodeTypeSmlText)
+		case child.GetType() == sourceshape.NodeTypeSmlExpression:
+			hasAdjacentNonText = hasAdjacentNonText || (index > 0 && children[index-1].GetType() != sourceshape.NodeTypeSmlText)
 
 			formatted, hasNewline := sf.formatNode(child)
 			childSource[index] = formatted
 			hasMultilineChild = hasMultilineChild || hasNewline
 
-		case child.GetType() == parser.NodeTypeLoopExpression && child.getChild(parser.NodeLoopExpressionMapExpression).GetType() == parser.NodeTypeSmlExpression:
+		case child.GetType() == sourceshape.NodeTypeLoopExpression && child.getChild(sourceshape.NodeLoopExpressionMapExpression).GetType() == sourceshape.NodeTypeSmlExpression:
 			// If there is a loop expression containing a single markup as its child, then we specially format it
 			// as <Tag [loop expression]>...</Tag>, which is technically backwards but easier to read.
-			hasAdjacentNonText = hasAdjacentNonText || (index > 0 && children[index-1].GetType() != parser.NodeTypeSmlText)
+			hasAdjacentNonText = hasAdjacentNonText || (index > 0 && children[index-1].GetType() != sourceshape.NodeTypeSmlText)
 
-			smlExprNode := child.getChild(parser.NodeLoopExpressionMapExpression)
+			smlExprNode := child.getChild(sourceshape.NodeLoopExpressionMapExpression)
 			formatted, hasNewline := sf.formatNodeViaEmitter(func(formatter *sourceFormatter) {
 				formatter.emitSmlExpressionWithOptionalLoop(smlExprNode, &child)
 			})
@@ -521,7 +522,7 @@ func (sf *sourceFormatter) formatSmlChildren(children []formatterNode, childStar
 			hasMultilineChild = hasMultilineChild || hasNewline
 
 		default:
-			hasAdjacentNonText = hasAdjacentNonText || (index > 0 && children[index-1].GetType() != parser.NodeTypeSmlText)
+			hasAdjacentNonText = hasAdjacentNonText || (index > 0 && children[index-1].GetType() != sourceshape.NodeTypeSmlText)
 
 			formatted, hasNewline := sf.formatNode(child)
 			childSource[index] = "{" + formatted + "}"
@@ -547,7 +548,7 @@ func (sf *sourceFormatter) formatSmlChildren(children []formatterNode, childStar
 			// If the child is an SML expression, respect extra whitespace added by the user between
 			// it and any previous expression. Sometimes users like the extra whitespace, so we compact
 			// it down to a single blank line for them.
-			if child.GetType() == parser.NodeTypeSmlExpression {
+			if child.GetType() == sourceshape.NodeTypeSmlExpression {
 				if previousEndLine >= 0 && startLine > (previousEndLine+1) {
 					// Ensure that there is a blank line.
 					cf.ensureBlankLine()
@@ -629,7 +630,7 @@ func (s byAttributeName) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
 func (s byAttributeName) Less(i, j int) bool {
-	return s[i].getProperty(parser.NodeSmlAttributeName) < s[j].getProperty(parser.NodeSmlAttributeName)
+	return s[i].getProperty(sourceshape.NodeSmlAttributeName) < s[j].getProperty(sourceshape.NodeSmlAttributeName)
 }
 
 // emitSmlExpression emits an SML expression value.
@@ -639,12 +640,12 @@ func (sf *sourceFormatter) emitSmlExpression(node formatterNode) {
 
 // emitSmlExpression emits an SML expression value.
 func (sf *sourceFormatter) emitSmlExpressionWithOptionalLoop(node formatterNode, loopNode *formatterNode) {
-	children := node.getChildren(parser.NodeSmlExpressionChild)
+	children := node.getChildren(sourceshape.NodeSmlExpressionChild)
 	nestedAttributes := []formatterNode{}
 
 	// Collect the nested attributes, in order by name.
-	for _, attrNode := range node.getChildren(parser.NodeSmlExpressionAttribute) {
-		if attrNode.hasProperty(parser.NodeSmlAttributeNested) {
+	for _, attrNode := range node.getChildren(sourceshape.NodeSmlExpressionAttribute) {
+		if attrNode.hasProperty(sourceshape.NodeSmlAttributeNested) {
 			nestedAttributes = append(nestedAttributes, attrNode)
 		}
 	}
@@ -661,23 +662,23 @@ func (sf *sourceFormatter) emitSmlExpressionWithOptionalLoop(node formatterNode,
 
 	// Start the opening tag.
 	sf.append("<")
-	sf.emitNode(node.getChild(parser.NodeSmlExpressionTypeOrFunction))
+	sf.emitNode(node.getChild(sourceshape.NodeSmlExpressionTypeOrFunction))
 
 	// Add the (optional) loop.
 	if loopNode != nil {
 		sf.append(" [")
 		sf.append("for ")
-		sf.emitNode(loopNode.getChild(parser.NodeLoopExpressionNamedValue))
+		sf.emitNode(loopNode.getChild(sourceshape.NodeLoopExpressionNamedValue))
 		sf.append(" in ")
-		sf.emitNode(loopNode.getChild(parser.NodeLoopExpressionStreamExpression))
+		sf.emitNode(loopNode.getChild(sourceshape.NodeLoopExpressionStreamExpression))
 		sf.append("]")
 	}
 
 	// Add attributes and decorators.
 	postTagPosition := sf.existingLineLength
 
-	attrNewLine := sf.emitSmlAttributes(node, parser.NodeSmlExpressionAttribute, postTagPosition)
-	decoratorNewLine := sf.emitSmlAttributes(node, parser.NodeSmlExpressionDecorator, postTagPosition)
+	attrNewLine := sf.emitSmlAttributes(node, sourceshape.NodeSmlExpressionAttribute, postTagPosition)
+	decoratorNewLine := sf.emitSmlAttributes(node, sourceshape.NodeSmlExpressionDecorator, postTagPosition)
 	attributesNewLine := attrNewLine || decoratorNewLine
 
 	// Finish the opening tag.
@@ -691,7 +692,7 @@ func (sf *sourceFormatter) emitSmlExpressionWithOptionalLoop(node formatterNode,
 
 	// Add the close tag.
 	sf.append("</")
-	sf.emitNode(node.getChild(parser.NodeSmlExpressionTypeOrFunction))
+	sf.emitNode(node.getChild(sourceshape.NodeSmlExpressionTypeOrFunction))
 	sf.append(">")
 }
 
@@ -726,7 +727,7 @@ func (sf *sourceFormatter) emitSmlTagContents(children []formatterNode, attribut
 
 // emitSmlAttribute emits an SML attribute.
 func (sf *sourceFormatter) emitSmlAttribute(node formatterNode) {
-	if node.hasProperty(parser.NodeSmlAttributeNested) {
+	if node.hasProperty(sourceshape.NodeSmlAttributeNested) {
 		sf.emitNestedSmlAttribute(node)
 		return
 	}
@@ -736,28 +737,28 @@ func (sf *sourceFormatter) emitSmlAttribute(node formatterNode) {
 
 // emitNestedSmlAttribute emits an SML attribute in nested form.
 func (sf *sourceFormatter) emitNestedSmlAttribute(node formatterNode) {
-	children := node.getChildren(parser.NodeSmlAttributeValue)
+	children := node.getChildren(sourceshape.NodeSmlAttributeValue)
 
 	sf.append("<.")
-	sf.append(node.getProperty(parser.NodeSmlAttributeName))
+	sf.append(node.getProperty(sourceshape.NodeSmlAttributeName))
 	sf.append(">")
 	sf.emitSmlTagContents(children, false)
 	sf.append("</.")
-	sf.append(node.getProperty(parser.NodeSmlAttributeName))
+	sf.append(node.getProperty(sourceshape.NodeSmlAttributeName))
 	sf.append(">")
 }
 
 // emitInlineSmlAttribute emits an SML attribute in inline form.
 func (sf *sourceFormatter) emitInlineSmlAttribute(node formatterNode) {
-	sf.append(node.getProperty(parser.NodeSmlAttributeName))
-	if !node.hasChild(parser.NodeSmlAttributeValue) {
+	sf.append(node.getProperty(sourceshape.NodeSmlAttributeName))
+	if !node.hasChild(sourceshape.NodeSmlAttributeValue) {
 		return
 	}
 
 	sf.append("=")
 
-	value := node.getChild(parser.NodeSmlAttributeValue)
-	if value.GetType() == parser.NodeStringLiteralExpression {
+	value := node.getChild(sourceshape.NodeSmlAttributeValue)
+	if value.GetType() == sourceshape.NodeStringLiteralExpression {
 		sf.emitNode(value)
 	} else {
 		sf.append("{")
@@ -769,11 +770,11 @@ func (sf *sourceFormatter) emitInlineSmlAttribute(node formatterNode) {
 // emitSmlDecorator emits an SML decorator.
 func (sf *sourceFormatter) emitSmlDecorator(node formatterNode) {
 	sf.append("@")
-	sf.emitNode(node.getChild(parser.NodeSmlDecoratorPath))
+	sf.emitNode(node.getChild(sourceshape.NodeSmlDecoratorPath))
 	sf.append("=")
 
-	value := node.getChild(parser.NodeSmlDecoratorValue)
-	if value.GetType() == parser.NodeStringLiteralExpression {
+	value := node.getChild(sourceshape.NodeSmlDecoratorValue)
+	if value.GetType() == sourceshape.NodeStringLiteralExpression {
 		sf.emitNode(value)
 	} else {
 		sf.append("{")
@@ -784,25 +785,25 @@ func (sf *sourceFormatter) emitSmlDecorator(node formatterNode) {
 
 // emitSmlText emits an SML text block.
 func (sf *sourceFormatter) emitSmlText(node formatterNode) {
-	sf.appendRaw(node.getProperty(parser.NodeSmlTextValue))
+	sf.appendRaw(node.getProperty(sourceshape.NodeSmlTextValue))
 }
 
 // emitIdentifierExpression emits an identifier expression value.
 func (sf *sourceFormatter) emitIdentifierExpression(node formatterNode) {
-	sf.append(node.getProperty(parser.NodeIdentifierExpressionName))
+	sf.append(node.getProperty(sourceshape.NodeIdentifierExpressionName))
 }
 
 // emitStringLiteral emits a string literal value.
 func (sf *sourceFormatter) emitStringLiteral(node formatterNode) {
-	sf.append(node.getProperty(parser.NodeStringLiteralExpressionValue))
+	sf.append(node.getProperty(sourceshape.NodeStringLiteralExpressionValue))
 }
 
 // emitBooleanLiteral emits a boolean literal value.
 func (sf *sourceFormatter) emitBooleanLiteral(node formatterNode) {
-	sf.append(node.getProperty(parser.NodeBooleanLiteralExpressionValue))
+	sf.append(node.getProperty(sourceshape.NodeBooleanLiteralExpressionValue))
 }
 
 // emitNumericLiteral emits a numeric literal value.
 func (sf *sourceFormatter) emitNumericLiteral(node formatterNode) {
-	sf.append(node.getProperty(parser.NodeNumericLiteralExpressionValue))
+	sf.append(node.getProperty(sourceshape.NodeNumericLiteralExpressionValue))
 }

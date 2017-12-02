@@ -6,17 +6,21 @@
 
 package parser
 
+import (
+	"github.com/serulian/compiler/parser/shared"
+)
+
 type nodeStack struct {
 	top  *nodeElement
 	size int
 }
 
 type nodeElement struct {
-	value AstNode
+	value shared.AstNode
 	next  *nodeElement
 }
 
-func (s *nodeStack) topValue() AstNode {
+func (s *nodeStack) topValue() shared.AstNode {
 	if s.size == 0 {
 		return nil
 	}
@@ -25,13 +29,13 @@ func (s *nodeStack) topValue() AstNode {
 }
 
 // Push pushes a node onto the stack.
-func (s *nodeStack) push(value AstNode) {
+func (s *nodeStack) push(value shared.AstNode) {
 	s.top = &nodeElement{value, s.top}
 	s.size++
 }
 
 // Pop removes the node from the stack and returns it.
-func (s *nodeStack) pop() (value AstNode) {
+func (s *nodeStack) pop() (value shared.AstNode) {
 	if s.size > 0 {
 		value, s.top = s.top.value, s.top.next
 		s.size--

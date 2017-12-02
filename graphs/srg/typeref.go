@@ -13,7 +13,7 @@ import (
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/compilerutil"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // SRGTypeRef represents a type reference defined in the SRG.
@@ -43,7 +43,7 @@ func (g *SRG) GetTypeRef(node compilergraph.GraphNode) SRGTypeRef {
 
 // GetTypeReferences returns all the type references in the SRG.
 func (g *SRG) GetTypeReferences() []SRGTypeRef {
-	it := g.findAllNodes(parser.NodeTypeTypeReference).
+	it := g.findAllNodes(sourceshape.NodeTypeTypeReference).
 		BuildNodeIterator()
 
 	var refs []SRGTypeRef
@@ -74,12 +74,12 @@ func (t SRGTypeRef) ResolutionPath() string {
 
 	var resolvePathPieces = make([]string, 0)
 	var currentPath compilergraph.GraphNode = t.GraphNode.
-		GetNode(parser.NodeTypeReferencePath).
-		GetNode(parser.NodeIdentifierPathRoot)
+		GetNode(sourceshape.NodeTypeReferencePath).
+		GetNode(sourceshape.NodeIdentifierPathRoot)
 
 	for {
 		// Add the path piece to the array.
-		name, hasName := currentPath.TryGet(parser.NodeIdentifierAccessName)
+		name, hasName := currentPath.TryGet(sourceshape.NodeIdentifierAccessName)
 		if !hasName {
 			break
 		}
@@ -87,7 +87,7 @@ func (t SRGTypeRef) ResolutionPath() string {
 		resolvePathPieces = append([]string{name}, resolvePathPieces...)
 
 		// If there is a source, continue searching.
-		source, found := currentPath.TryGetNode(parser.NodeIdentifierAccessSource)
+		source, found := currentPath.TryGetNode(sourceshape.NodeIdentifierAccessSource)
 		if !found {
 			break
 		}
@@ -102,7 +102,7 @@ func (t SRGTypeRef) ResolutionPath() string {
 // Panics if this is not a RefKind of TypeRefPath.
 func (t SRGTypeRef) ResolveType() (TypeResolutionResult, bool) {
 	// Find the parent module.
-	source := compilercommon.InputSource(t.GraphNode.Get(parser.NodePredicateSource))
+	source := compilercommon.InputSource(t.GraphNode.Get(sourceshape.NodePredicateSource))
 	srgModule, found := t.srg.FindModuleBySource(source)
 	if !found {
 		panic(fmt.Sprintf("Unknown parent module: %s", source))
@@ -129,20 +129,20 @@ func (t SRGTypeRef) ResolveType() (TypeResolutionResult, bool) {
 		// contains the range of the start and end rune, respectively, of the typeref. Since
 		// we know both nodes are in the same module, and the SRG is a tree, this validates
 		// that we are in the correct scope without having to walk the tree upward.
-		startRune := t.GraphNode.GetValue(parser.NodePredicateStartRune).Int()
-		endRune := t.GraphNode.GetValue(parser.NodePredicateEndRune).Int()
+		startRune := t.GraphNode.GetValue(sourceshape.NodePredicateStartRune).Int()
+		endRune := t.GraphNode.GetValue(sourceshape.NodePredicateEndRune).Int()
 
 		return q.
-			In(parser.NodeTypeDefinitionGeneric, parser.NodePredicateTypeMemberGeneric).
-			HasWhere(parser.NodePredicateStartRune, compilergraph.WhereLTE, startRune).
-			HasWhere(parser.NodePredicateEndRune, compilergraph.WhereGTE, endRune)
+			In(sourceshape.NodeTypeDefinitionGeneric, sourceshape.NodePredicateTypeMemberGeneric).
+			HasWhere(sourceshape.NodePredicateStartRune, compilergraph.WhereLTE, startRune).
+			HasWhere(sourceshape.NodePredicateEndRune, compilergraph.WhereGTE, endRune)
 	}
 
 	resolvedGenericNode, genericFound := t.srg.layer.
 		StartQuery().                                         // Find a node...
-		Has(parser.NodeGenericPredicateName, resolutionPath). // With the generic name..
-		Has(parser.NodePredicateSource, string(source)).      // That is in this module...
-		IsKind(parser.NodeTypeGeneric).                       // That is a generic...
+		Has(sourceshape.NodeGenericPredicateName, resolutionPath). // With the generic name..
+		Has(sourceshape.NodePredicateSource, string(source)).      // That is in this module...
+		IsKind(sourceshape.NodeTypeGeneric).                       // That is a generic...
 		FilterBy(containingFilter).                           // Filter by whether its defining type or member contains this typeref.
 		TryGetNode()
 
@@ -151,7 +151,7 @@ func (t SRGTypeRef) ResolveType() (TypeResolutionResult, bool) {
 
 // InnerReference returns the inner type reference, if this is a nullable or stream.
 func (t SRGTypeRef) InnerReference() (SRGTypeRef, bool) {
-	innerReference, hasInnerReference := t.GraphNode.TryGetNode(parser.NodeTypeReferenceInnerType)
+	innerReference, hasInnerReference := t.GraphNode.TryGetNode(sourceshape.NodeTypeReferenceInnerType)
 	if !hasInnerReference {
 		return SRGTypeRef{}, false
 	}
@@ -162,24 +162,24 @@ func (t SRGTypeRef) InnerReference() (SRGTypeRef, bool) {
 // Generics returns the generics defined on this type ref.
 // Panics if this is not a RefKind of TypeRefPath.
 func (t SRGTypeRef) Generics() []SRGTypeRef {
-	return t.subReferences(parser.NodeTypeReferenceGeneric)
+	return t.subReferences(sourceshape.NodeTypeReferenceGeneric)
 }
 
 // HasGenerics returns whether this type reference has generics.
 func (t SRGTypeRef) HasGenerics() bool {
-	_, found := t.GraphNode.TryGetNode(parser.NodeTypeReferenceGeneric)
+	_, found := t.GraphNode.TryGetNode(sourceshape.NodeTypeReferenceGeneric)
 	return found
 }
 
 // Parameters returns the parameters defined on this type ref.
 // Panics if this is not a RefKind of TypeRefPath.
 func (t SRGTypeRef) Parameters() []SRGTypeRef {
-	return t.subReferences(parser.NodeTypeReferenceParameter)
+	return t.subReferences(sourceshape.NodeTypeReferenceParameter)
 }
 
 // HasParameters returns whether this type reference has parameters.
 func (t SRGTypeRef) HasParameters() bool {
-	_, found := t.GraphNode.TryGetNode(parser.NodeTypeReferenceParameter)
+	_, found := t.GraphNode.TryGetNode(sourceshape.NodeTypeReferenceParameter)
 	return found
 }
 
@@ -195,7 +195,7 @@ func (t SRGTypeRef) subReferences(predicate compilergraph.Predicate) []SRGTypeRe
 
 // String returns the human-readable string form of this type reference.
 func (t SRGTypeRef) String() string {
-	nodeKind := t.GraphNode.Kind().(parser.NodeType)
+	nodeKind := t.GraphNode.Kind().(sourceshape.NodeType)
 
 	innerReferenceString := "?"
 	if innerReference, hasInnerReference := t.InnerReference(); hasInnerReference {
@@ -203,28 +203,28 @@ func (t SRGTypeRef) String() string {
 	}
 
 	switch nodeKind {
-	case parser.NodeTypeVoid:
+	case sourceshape.NodeTypeVoid:
 		return "void"
 
-	case parser.NodeTypeAny:
+	case sourceshape.NodeTypeAny:
 		return "any"
 
-	case parser.NodeTypeStructReference:
+	case sourceshape.NodeTypeStructReference:
 		return "struct"
 
-	case parser.NodeTypeStream:
+	case sourceshape.NodeTypeStream:
 		return innerReferenceString + "*"
 
-	case parser.NodeTypeSlice:
+	case sourceshape.NodeTypeSlice:
 		return "[]" + innerReferenceString
 
-	case parser.NodeTypeMapping:
+	case sourceshape.NodeTypeMapping:
 		return "[]{" + innerReferenceString + "}"
 
-	case parser.NodeTypeNullable:
+	case sourceshape.NodeTypeNullable:
 		return innerReferenceString + "?"
 
-	case parser.NodeTypeTypeReference:
+	case sourceshape.NodeTypeTypeReference:
 		var buffer bytes.Buffer
 		buffer.WriteString(t.ResolutionName())
 
@@ -261,30 +261,30 @@ func (t SRGTypeRef) String() string {
 
 // RefKind returns the kind of this type reference.
 func (t SRGTypeRef) RefKind() TypeRefKind {
-	nodeKind := t.GraphNode.Kind().(parser.NodeType)
+	nodeKind := t.GraphNode.Kind().(sourceshape.NodeType)
 	switch nodeKind {
-	case parser.NodeTypeVoid:
+	case sourceshape.NodeTypeVoid:
 		return TypeRefVoid
 
-	case parser.NodeTypeAny:
+	case sourceshape.NodeTypeAny:
 		return TypeRefAny
 
-	case parser.NodeTypeStructReference:
+	case sourceshape.NodeTypeStructReference:
 		return TypeRefStruct
 
-	case parser.NodeTypeStream:
+	case sourceshape.NodeTypeStream:
 		return TypeRefStream
 
-	case parser.NodeTypeSlice:
+	case sourceshape.NodeTypeSlice:
 		return TypeRefSlice
 
-	case parser.NodeTypeMapping:
+	case sourceshape.NodeTypeMapping:
 		return TypeRefMapping
 
-	case parser.NodeTypeNullable:
+	case sourceshape.NodeTypeNullable:
 		return TypeRefNullable
 
-	case parser.NodeTypeTypeReference:
+	case sourceshape.NodeTypeTypeReference:
 		return TypeRefPath
 
 	default:

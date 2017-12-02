@@ -7,7 +7,7 @@ package srg
 import (
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // SRGTypeOrGeneric represents a resolved reference to a type or generic.
@@ -27,7 +27,7 @@ func (t SRGTypeOrGeneric) Name() (string, bool) {
 
 // IsGeneric returns whether this represents a reference to a generic.
 func (t SRGTypeOrGeneric) IsGeneric() bool {
-	return t.Kind() == parser.NodeTypeGeneric
+	return t.Kind() == sourceshape.NodeTypeGeneric
 }
 
 // Node returns the underlying node.

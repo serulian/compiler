@@ -13,7 +13,7 @@ import (
 	"github.com/serulian/compiler/generator/es5/shared"
 	"github.com/serulian/compiler/generator/escommon/esbuilder"
 	"github.com/serulian/compiler/graphs/scopegraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 var _ = fmt.Printf
@@ -335,13 +335,13 @@ func (s ByKey) Less(i, j int) bool {
 	if lvn, ok := iKey.(*codedom.LiteralValueNode); ok {
 		iKeyString = lvn.Value
 	} else {
-		iKeyString = strconv.Itoa(iKey.BasisNode().GetValue(parser.NodePredicateStartRune).Int())
+		iKeyString = strconv.Itoa(iKey.BasisNode().GetValue(sourceshape.NodePredicateStartRune).Int())
 	}
 
 	if lvn, ok := jKey.(*codedom.LiteralValueNode); ok {
 		jKeyString = lvn.Value
 	} else {
-		jKeyString = strconv.Itoa(jKey.BasisNode().GetValue(parser.NodePredicateStartRune).Int())
+		jKeyString = strconv.Itoa(jKey.BasisNode().GetValue(sourceshape.NodePredicateStartRune).Int())
 	}
 
 	return iKeyString < jKeyString

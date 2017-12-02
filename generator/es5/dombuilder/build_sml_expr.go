@@ -12,14 +12,14 @@ import (
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/typegraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // buildSmlExpression builds the CodeDOM for a SML expression.
 func (db *domBuilder) buildSmlExpression(node compilergraph.GraphNode) codedom.Expression {
 	smlScope, _ := db.scopegraph.GetScope(node)
 
-	funcOrTypeRefNode := node.GetNode(parser.NodeSmlExpressionTypeOrFunction)
+	funcOrTypeRefNode := node.GetNode(sourceshape.NodeSmlExpressionTypeOrFunction)
 	funcOrTypeRefScope, _ := db.scopegraph.GetScope(funcOrTypeRefNode)
 
 	// Build the expression for the function or constructor to be called to construct the expression.
@@ -42,15 +42,15 @@ func (db *domBuilder) buildSmlExpression(node compilergraph.GraphNode) codedom.E
 		attributeExpressions := map[string]codedom.Expression{}
 
 		ait := node.StartQuery().
-			Out(parser.NodeSmlExpressionAttribute).
+			Out(sourceshape.NodeSmlExpressionAttribute).
 			BuildNodeIterator()
 
 		for ait.Next() {
 			attributeNode := ait.Node()
-			attributeName := attributeNode.Get(parser.NodeSmlAttributeName)
+			attributeName := attributeNode.Get(sourceshape.NodeSmlAttributeName)
 			attributeExpressions[attributeName] = db.getExpressionOrDefault(
 				attributeNode,
-				parser.NodeSmlAttributeValue,
+				sourceshape.NodeSmlAttributeValue,
 				codedom.NominalWrapping(
 					codedom.LiteralValue("true", attributeNode),
 					db.scopegraph.TypeGraph().BoolType(),
@@ -69,7 +69,7 @@ func (db *domBuilder) buildSmlExpression(node compilergraph.GraphNode) codedom.E
 	// If the SML expression expects any children, then construct the children stream or value (if any).
 	if len(declFunctionParams) > 1 {
 		cit := node.StartQuery().
-			Out(parser.NodeSmlExpressionChild).
+			Out(sourceshape.NodeSmlExpressionChild).
 			BuildNodeIterator()
 
 		children := db.buildExpressions(cit, buildExprNormally)
@@ -124,18 +124,18 @@ func (db *domBuilder) buildSmlExpression(node compilergraph.GraphNode) codedom.E
 
 	// Add any decorators as wrapping around the definition call.
 	dit := node.StartQuery().
-		Out(parser.NodeSmlExpressionDecorator).
+		Out(sourceshape.NodeSmlExpressionDecorator).
 		BuildNodeIterator()
 
 	for dit.Next() {
 		decoratorNode := dit.Node()
-		decoratorFunc := db.getExpression(decoratorNode, parser.NodeSmlDecoratorPath)
+		decoratorFunc := db.getExpression(decoratorNode, sourceshape.NodeSmlDecoratorPath)
 
 		// The value for the decorator is either the value expression given or the literal
 		// value "true" if none specified.
 		decoratorValue := db.getExpressionOrDefault(
 			decoratorNode,
-			parser.NodeSmlDecoratorValue,
+			sourceshape.NodeSmlDecoratorValue,
 			codedom.NominalWrapping(
 				codedom.LiteralValue("true", decoratorNode),
 				db.scopegraph.TypeGraph().BoolType(),
@@ -151,6 +151,6 @@ func (db *domBuilder) buildSmlExpression(node compilergraph.GraphNode) codedom.E
 
 // buildSmlText builds the CodeDOM for a SML text literal.
 func (db *domBuilder) buildSmlText(node compilergraph.GraphNode) codedom.Expression {
-	stringValueStr := strconv.Quote(node.Get(parser.NodeSmlTextValue))
+	stringValueStr := strconv.Quote(node.Get(sourceshape.NodeSmlTextValue))
 	return codedom.NominalWrapping(codedom.LiteralValue(stringValueStr, node), db.scopegraph.TypeGraph().StringType(), node)
 }

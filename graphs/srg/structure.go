@@ -9,7 +9,7 @@ import (
 
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/compilerutil"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // SourceStructureFinder defines a helper type for looking up various structure within the
@@ -53,18 +53,18 @@ func (g *SRG) NewSourceStructureFinder() *SourceStructureFinder {
 }
 
 // TryGetContainingNode returns the containing node of the given node that is one of the given types, if any.
-func (f *SourceStructureFinder) TryGetContainingNode(node compilergraph.GraphNode, nodeTypes ...parser.NodeType) (compilergraph.GraphNode, bool) {
+func (f *SourceStructureFinder) TryGetContainingNode(node compilergraph.GraphNode, nodeTypes ...sourceshape.NodeType) (compilergraph.GraphNode, bool) {
 	containingFilter := func(q compilergraph.GraphQuery) compilergraph.Query {
-		startRune := node.GetValue(parser.NodePredicateStartRune).Int()
-		endRune := node.GetValue(parser.NodePredicateEndRune).Int()
+		startRune := node.GetValue(sourceshape.NodePredicateStartRune).Int()
+		endRune := node.GetValue(sourceshape.NodePredicateEndRune).Int()
 
 		return q.
-			HasWhere(parser.NodePredicateStartRune, compilergraph.WhereLTE, startRune).
-			HasWhere(parser.NodePredicateEndRune, compilergraph.WhereGTE, endRune)
+			HasWhere(sourceshape.NodePredicateStartRune, compilergraph.WhereLTE, startRune).
+			HasWhere(sourceshape.NodePredicateEndRune, compilergraph.WhereGTE, endRune)
 	}
 
 	return f.srg.findAllNodes(nodeTypes...).
-		Has(parser.NodePredicateSource, node.Get(parser.NodePredicateSource)).
+		Has(sourceshape.NodePredicateSource, node.Get(sourceshape.NodePredicateSource)).
 		FilterBy(containingFilter).
 		TryGetNode()
 }
@@ -80,25 +80,25 @@ func (s nodes) Len() int      { return len(s) }
 func (s nodes) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
 
 func (s byStartRune) Less(i, j int) bool {
-	iStart := s.startRune - s.nodes[i].GetValue(parser.NodePredicateStartRune).Int()
-	jStart := s.startRune - s.nodes[j].GetValue(parser.NodePredicateStartRune).Int()
+	iStart := s.startRune - s.nodes[i].GetValue(sourceshape.NodePredicateStartRune).Int()
+	jStart := s.startRune - s.nodes[j].GetValue(sourceshape.NodePredicateStartRune).Int()
 	return iStart < jStart
 }
 
 // TryGetNearestContainingNode returns the containing node of the given node that is one of the given types, if any. If there are multiple such
 // nodes, the node which is closest (by rune position) is returned.
-func (f *SourceStructureFinder) TryGetNearestContainingNode(node compilergraph.GraphNode, nodeTypes ...parser.NodeType) (compilergraph.GraphNode, bool) {
-	startRune := node.GetValue(parser.NodePredicateStartRune).Int()
-	endRune := node.GetValue(parser.NodePredicateEndRune).Int()
+func (f *SourceStructureFinder) TryGetNearestContainingNode(node compilergraph.GraphNode, nodeTypes ...sourceshape.NodeType) (compilergraph.GraphNode, bool) {
+	startRune := node.GetValue(sourceshape.NodePredicateStartRune).Int()
+	endRune := node.GetValue(sourceshape.NodePredicateEndRune).Int()
 
 	containingFilter := func(q compilergraph.GraphQuery) compilergraph.Query {
 		return q.
-			HasWhere(parser.NodePredicateStartRune, compilergraph.WhereLTE, startRune).
-			HasWhere(parser.NodePredicateEndRune, compilergraph.WhereGTE, endRune)
+			HasWhere(sourceshape.NodePredicateStartRune, compilergraph.WhereLTE, startRune).
+			HasWhere(sourceshape.NodePredicateEndRune, compilergraph.WhereGTE, endRune)
 	}
 
 	nit := f.srg.findAllNodes(nodeTypes...).
-		Has(parser.NodePredicateSource, node.Get(parser.NodePredicateSource)).
+		Has(sourceshape.NodePredicateSource, node.Get(sourceshape.NodePredicateSource)).
 		FilterBy(containingFilter).
 		BuildNodeIterator()
 
@@ -118,7 +118,7 @@ func (f *SourceStructureFinder) TryGetNearestContainingNode(node compilergraph.G
 
 // TryGetContainingModule returns the containing module of the given SRG node, if any.
 func (f *SourceStructureFinder) TryGetContainingModule(node compilergraph.GraphNode) (SRGModule, bool) {
-	moduleNode, found := f.TryGetContainingNode(node, parser.NodeTypeFile)
+	moduleNode, found := f.TryGetContainingNode(node, sourceshape.NodeTypeFile)
 	if !found {
 		return SRGModule{}, false
 	}
@@ -173,10 +173,10 @@ func (f *SourceStructureFinder) TryGetContainingImplemented(node compilergraph.G
 // TryGetContainingImplementedWithOption returns the containing implemented of the given node with the given option,
 // if any.
 func (f *SourceStructureFinder) TryGetContainingImplementedWithOption(node compilergraph.GraphNode, option ContainingImplementedOption) (SRGImplementable, bool) {
-	startRune := node.GetValue(parser.NodePredicateStartRune).Int()
-	endRune := node.GetValue(parser.NodePredicateEndRune).Int()
+	startRune := node.GetValue(sourceshape.NodePredicateStartRune).Int()
+	endRune := node.GetValue(sourceshape.NodePredicateEndRune).Int()
 
-	source := node.Get(parser.NodePredicateSource)
+	source := node.Get(sourceshape.NodePredicateSource)
 
 	if option == ContainingImplementedExclusive {
 		startRune = startRune - 1
@@ -209,9 +209,9 @@ func (f *SourceStructureFinder) ScopeInContext(node compilergraph.GraphNode) []S
 		// Find all variables and values in the range between the parent implemented's start rune and the start rune
 		// of the node.
 		vit := f.variablesAndValuesUnderContext(
-			node.Get(parser.NodePredicateSource),
-			parentImplemented.GetValue(parser.NodePredicateStartRune).Int(),
-			node.GetValue(parser.NodePredicateStartRune).Int())
+			node.Get(sourceshape.NodePredicateSource),
+			parentImplemented.GetValue(sourceshape.NodePredicateStartRune).Int(),
+			node.GetValue(sourceshape.NodePredicateStartRune).Int())
 
 		for vit.Next() {
 			namedScopes = append(namedScopes, f.importedName(vit.Node()))
@@ -295,12 +295,12 @@ func (f *SourceStructureFinder) importedNameWithAlias(node compilergraph.GraphNo
 func (f *SourceStructureFinder) variablesAndValuesUnderContext(source string, startRune int, endRune int) compilergraph.NodeIterator {
 	containingFilter := func(q compilergraph.GraphQuery) compilergraph.Query {
 		return q.
-			HasWhere(parser.NodePredicateStartRune, compilergraph.WhereGTE, startRune).
-			HasWhere(parser.NodePredicateEndRune, compilergraph.WhereLTE, endRune)
+			HasWhere(sourceshape.NodePredicateStartRune, compilergraph.WhereGTE, startRune).
+			HasWhere(sourceshape.NodePredicateEndRune, compilergraph.WhereLTE, endRune)
 	}
 
-	return f.srg.findAllNodes(parser.NodeTypeVariableStatement, parser.NodeTypeNamedValue).
-		Has(parser.NodePredicateSource, source).
+	return f.srg.findAllNodes(sourceshape.NodeTypeVariableStatement, sourceshape.NodeTypeNamedValue).
+		Has(sourceshape.NodePredicateSource, source).
 		FilterBy(containingFilter).
 		BuildNodeIterator()
 }

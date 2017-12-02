@@ -7,6 +7,9 @@ package parser
 import (
 	"fmt"
 	"strings"
+
+	"github.com/serulian/compiler/parser/shared"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // Useful for debugging.
@@ -84,8 +87,8 @@ const (
 )
 
 // consumeTopLevel attempts to consume the top-level constructs of a Serulian source file.
-func (p *sourceParser) consumeTopLevel() AstNode {
-	rootNode := p.startNode(NodeTypeFile)
+func (p *sourceParser) consumeTopLevel() shared.AstNode {
+	rootNode := p.startNode(sourceshape.NodeTypeFile)
 	defer p.finishNode()
 
 	// Start at the first token.
@@ -132,24 +135,24 @@ Loop:
 				continue Loop
 			}
 
-			p.currentNode().Connect(NodePredicateChild, p.consumeImport())
+			p.currentNode().Connect(sourceshape.NodePredicateChild, p.consumeImport())
 
 		// type definitions.
 		case p.isToken(tokenTypeAtSign) || p.isKeyword("class") || p.isKeyword("interface") || p.isKeyword("type") || p.isKeyword("struct") || p.isKeyword("agent"):
 			seenNonImport = true
-			p.currentNode().Connect(NodePredicateChild, p.consumeTypeDefinition())
+			p.currentNode().Connect(sourceshape.NodePredicateChild, p.consumeTypeDefinition())
 			p.tryConsumeStatementTerminator()
 
 		// functions.
 		case p.isKeyword("function"):
 			seenNonImport = true
-			p.currentNode().Connect(NodePredicateChild, p.consumeFunction(typeMemberDefinition))
+			p.currentNode().Connect(sourceshape.NodePredicateChild, p.consumeFunction(typeMemberDefinition))
 			p.tryConsumeStatementTerminator()
 
 		// variables.
 		case p.isKeyword("var"):
 			seenNonImport = true
-			p.currentNode().Connect(NodePredicateChild, p.consumeVar(NodeTypeVariable, NodePredicateTypeMemberName, NodePredicateTypeMemberDeclaredType, NodePredicateTypeFieldDefaultValue, consumeVarRequireExplicitType))
+			p.currentNode().Connect(sourceshape.NodePredicateChild, p.consumeVar(sourceshape.NodeTypeVariable, sourceshape.NodePredicateTypeMemberName, sourceshape.NodePredicateTypeMemberDeclaredType, sourceshape.NodePredicateTypeFieldDefaultValue, consumeVarRequireExplicitType))
 			p.tryConsumeStatementTerminator()
 
 		// EOF.
@@ -181,12 +184,12 @@ Loop:
 // Supported internal form:
 // @•identifier
 // @•identifier(literal parameters)
-func (p *sourceParser) tryConsumeDecorator() (AstNode, bool) {
+func (p *sourceParser) tryConsumeDecorator() (shared.AstNode, bool) {
 	if !p.isToken(tokenTypeAtSign) {
 		return nil, false
 	}
 
-	decoratorNode := p.startNode(NodeTypeDecorator)
+	decoratorNode := p.startNode(sourceshape.NodeTypeDecorator)
 	defer p.finishNode()
 
 	// @
@@ -203,7 +206,7 @@ func (p *sourceParser) tryConsumeDecorator() (AstNode, bool) {
 		return decoratorNode, true
 	}
 
-	decoratorNode.Decorate(NodeDecoratorPredicateInternal, path)
+	decoratorNode.Decorate(sourceshape.NodeDecoratorPredicateInternal, path)
 
 	// Parameters (optional).
 	// (
@@ -213,7 +216,7 @@ func (p *sourceParser) tryConsumeDecorator() (AstNode, bool) {
 
 	// literalValue (, another)
 	for {
-		decoratorNode.Connect(NodeDecoratorPredicateParameter, p.consumeLiteralValue())
+		decoratorNode.Connect(sourceshape.NodeDecoratorPredicateParameter, p.consumeLiteralValue())
 
 		if _, ok := p.tryConsume(tokenTypeComma); !ok {
 			break
@@ -254,8 +257,8 @@ const (
 // import something as foobar
 // import "somestring" as barbaz
 // import somekind`somestring` as something
-func (p *sourceParser) consumeImport() AstNode {
-	importNode := p.startNode(NodeTypeImport)
+func (p *sourceParser) consumeImport() shared.AstNode {
+	importNode := p.startNode(sourceshape.NodeTypeImport)
 	defer p.finishNode()
 
 	// from ...
@@ -273,8 +276,8 @@ func (p *sourceParser) consumeImport() AstNode {
 
 		for {
 			// Create the import package node.
-			packageNode := p.startNode(NodeTypeImportPackage)
-			importNode.Connect(NodeImportPredicatePackageRef, packageNode)
+			packageNode := p.startNode(sourceshape.NodeTypeImportPackage)
+			importNode.Connect(sourceshape.NodeImportPredicatePackageRef, packageNode)
 
 			// Consume the subsource for the import.
 			sourceName, subvalid := p.consumeImportSubsource(packageNode)
@@ -284,7 +287,7 @@ func (p *sourceParser) consumeImport() AstNode {
 			}
 
 			// ... as ...
-			p.consumeImportAlias(packageNode, sourceName, NodeImportPredicateName)
+			p.consumeImportAlias(packageNode, sourceName, sourceshape.NodeImportPredicateName)
 			p.finishNode()
 
 			if _, ok := p.tryConsume(tokenTypeComma); !ok {
@@ -304,29 +307,29 @@ func (p *sourceParser) consumeImport() AstNode {
 	}
 
 	// Create the import package node.
-	packageNode := p.startNode(NodeTypeImportPackage)
-	importNode.Connect(NodeImportPredicatePackageRef, packageNode)
+	packageNode := p.startNode(sourceshape.NodeTypeImportPackage)
+	importNode.Connect(sourceshape.NodeImportPredicatePackageRef, packageNode)
 
 	// ... as ...
-	p.consumeImportAlias(packageNode, sourceName, NodeImportPredicatePackageName)
+	p.consumeImportAlias(packageNode, sourceName, sourceshape.NodeImportPredicatePackageName)
 	p.consumeStatementTerminator()
 	p.finishNode()
 
 	return importNode
 }
 
-func (p *sourceParser) consumeImportSource(importNode AstNode, aliasOption importSourceOption) (string, bool) {
-	decorateAndReport := func(source string, kind string) {
-		importLocation, err := p.reportImport(source, kind)
+func (p *sourceParser) consumeImportSource(importNode shared.AstNode, aliasOption importSourceOption) (string, bool) {
+	decorateAndReport := func(importSource string, kind string) {
+		importLocation, err := p.reportImport(importSource, kind)
 		if err != nil {
 			p.emitError("%s", err)
 		} else {
 			if kind != "" {
-				importNode.Decorate(NodeImportPredicateKind, kind)
+				importNode.Decorate(sourceshape.NodeImportPredicateKind, kind)
 			}
 
-			importNode.Decorate(NodeImportPredicateLocation, importLocation)
-			importNode.Decorate(NodeImportPredicateSource, source)
+			importNode.Decorate(sourceshape.NodeImportPredicateLocation, importLocation)
+			importNode.Decorate(sourceshape.NodeImportPredicateSource, importSource)
 		}
 	}
 
@@ -364,18 +367,18 @@ func (p *sourceParser) consumeImportSource(importNode AstNode, aliasOption impor
 	return "", false
 }
 
-func (p *sourceParser) consumeImportSubsource(importPackageNode AstNode) (string, bool) {
+func (p *sourceParser) consumeImportSubsource(importPackageNode shared.AstNode) (string, bool) {
 	// something
 	value, ok := p.consumeIdentifier()
 	if !ok {
 		return "", false
 	}
 
-	importPackageNode.Decorate(NodeImportPredicateSubsource, value)
+	importPackageNode.Decorate(sourceshape.NodeImportPredicateSubsource, value)
 	return value, true
 }
 
-func (p *sourceParser) consumeImportAlias(importPackageNode AstNode, sourceName string, namePredicate string) bool {
+func (p *sourceParser) consumeImportAlias(importPackageNode shared.AstNode, sourceName string, namePredicate string) bool {
 	// as something (sometimes optional)
 	if p.tryConsumeKeyword("as") {
 		named, ok := p.consumeIdentifier()
@@ -397,12 +400,12 @@ func (p *sourceParser) consumeImportAlias(importPackageNode AstNode, sourceName 
 }
 
 // consumeTypeDefinition attempts to consume a type definition.
-func (p *sourceParser) consumeTypeDefinition() AstNode {
+func (p *sourceParser) consumeTypeDefinition() shared.AstNode {
 	// Consume any decorator.
 	decoratorNode, ok := p.tryConsumeDecorator()
 
 	// Consume the type itself.
-	var typeDef AstNode
+	var typeDef shared.AstNode
 	if p.isKeyword("class") {
 		typeDef = p.consumeClassDefinition()
 	} else if p.isKeyword("interface") {
@@ -419,7 +422,7 @@ func (p *sourceParser) consumeTypeDefinition() AstNode {
 
 	if ok {
 		// Add the decorator to the type.
-		typeDef.Connect(NodeTypeDefinitionDecorator, decoratorNode)
+		typeDef.Connect(sourceshape.NodeTypeDefinitionDecorator, decoratorNode)
 	}
 
 	return typeDef
@@ -428,8 +431,8 @@ func (p *sourceParser) consumeTypeDefinition() AstNode {
 // consumeStructuralDefinition consumes a structural type definition.
 //
 // struct Identifer<T> { ... }
-func (p *sourceParser) consumeStructuralDefinition() AstNode {
-	structuralNode := p.startNode(NodeTypeStruct)
+func (p *sourceParser) consumeStructuralDefinition() shared.AstNode {
+	structuralNode := p.startNode(sourceshape.NodeTypeStruct)
 	defer p.finishNode()
 
 	// struct ...
@@ -441,10 +444,10 @@ func (p *sourceParser) consumeStructuralDefinition() AstNode {
 		return structuralNode
 	}
 
-	structuralNode.Decorate(NodeTypeDefinitionName, typeName)
+	structuralNode.Decorate(sourceshape.NodeTypeDefinitionName, typeName)
 
 	// Generics (optional).
-	p.consumeGenerics(structuralNode, NodeTypeDefinitionGeneric)
+	p.consumeGenerics(structuralNode, sourceshape.NodeTypeDefinitionGeneric)
 
 	// Open bracket.
 	if _, ok := p.consume(tokenTypeLeftBrace); !ok {
@@ -463,8 +466,8 @@ func (p *sourceParser) consumeStructuralDefinition() AstNode {
 // consumeNominalDefinition consumes a nominal type definition.
 //
 // type Identifier<T> : BaseType.Path { ... }
-func (p *sourceParser) consumeNominalDefinition() AstNode {
-	nominalNode := p.startNode(NodeTypeNominal)
+func (p *sourceParser) consumeNominalDefinition() shared.AstNode {
+	nominalNode := p.startNode(sourceshape.NodeTypeNominal)
 	defer p.finishNode()
 
 	// type ...
@@ -476,10 +479,10 @@ func (p *sourceParser) consumeNominalDefinition() AstNode {
 		return nominalNode
 	}
 
-	nominalNode.Decorate(NodeTypeDefinitionName, typeName)
+	nominalNode.Decorate(sourceshape.NodeTypeDefinitionName, typeName)
 
 	// Generics (optional).
-	p.consumeGenerics(nominalNode, NodeTypeDefinitionGeneric)
+	p.consumeGenerics(nominalNode, sourceshape.NodeTypeDefinitionGeneric)
 
 	// :
 	if _, ok := p.consume(tokenTypeColon); !ok {
@@ -487,7 +490,7 @@ func (p *sourceParser) consumeNominalDefinition() AstNode {
 	}
 
 	// Base type.
-	nominalNode.Connect(NodeNominalPredicateBaseType, p.consumeTypeReference(typeReferenceNoSpecialTypes))
+	nominalNode.Connect(sourceshape.NodeNominalPredicateBaseType, p.consumeTypeReference(typeReferenceNoSpecialTypes))
 
 	// Open bracket.
 	if _, ok := p.consume(tokenTypeLeftBrace); !ok {
@@ -509,8 +512,8 @@ func (p *sourceParser) consumeNominalDefinition() AstNode {
 // agent<TypeRef> Identifier with Agent1 + Agent2 { ... }
 // agent<TypeRef> Identifier<Generic> { ... }
 // agent<TypeRef> Identifier<Generic> with Agent1 + Agent2 { ... }
-func (p *sourceParser) consumeAgentDefinition() AstNode {
-	agentNode := p.startNode(NodeTypeAgent)
+func (p *sourceParser) consumeAgentDefinition() shared.AstNode {
+	agentNode := p.startNode(sourceshape.NodeTypeAgent)
 	defer p.finishNode()
 
 	// agent<PrincipalType> ...
@@ -520,7 +523,7 @@ func (p *sourceParser) consumeAgentDefinition() AstNode {
 		return agentNode
 	}
 
-	agentNode.Connect(NodeAgentPredicatePrincipalType, p.consumeTypeReference(typeReferenceNoSpecialTypes))
+	agentNode.Connect(sourceshape.NodeAgentPredicatePrincipalType, p.consumeTypeReference(typeReferenceNoSpecialTypes))
 
 	if _, ok := p.consume(tokenTypeGreaterThan); !ok {
 		return agentNode
@@ -536,8 +539,8 @@ func (p *sourceParser) consumeAgentDefinition() AstNode {
 // class Identifier with Agent1 + Agent2 { ... }
 // class Identifier<Generic> { ... }
 // class Identifier<Generic> with Agent1 + Agent2 { ... }
-func (p *sourceParser) consumeClassDefinition() AstNode {
-	classNode := p.startNode(NodeTypeClass)
+func (p *sourceParser) consumeClassDefinition() shared.AstNode {
+	classNode := p.startNode(sourceshape.NodeTypeClass)
 	defer p.finishNode()
 
 	// class ...
@@ -546,23 +549,23 @@ func (p *sourceParser) consumeClassDefinition() AstNode {
 	return classNode
 }
 
-func (p *sourceParser) consumeClassOrAgent(typeNode AstNode) {
+func (p *sourceParser) consumeClassOrAgent(typeNode shared.AstNode) {
 	// Identifier
 	typeName, ok := p.consumeIdentifier()
 	if !ok {
 		return
 	}
 
-	typeNode.Decorate(NodeTypeDefinitionName, typeName)
+	typeNode.Decorate(sourceshape.NodeTypeDefinitionName, typeName)
 
 	// Generics (optional).
-	p.consumeGenerics(typeNode, NodeTypeDefinitionGeneric)
+	p.consumeGenerics(typeNode, sourceshape.NodeTypeDefinitionGeneric)
 
 	// Agents.
 	if ok := p.tryConsumeKeyword("with"); ok {
 		// Consume agent inclusions until we don't find a plus.
 		for {
-			typeNode.Connect(NodePredicateComposedAgent, p.consumeAgentReference())
+			typeNode.Connect(sourceshape.NodePredicateComposedAgent, p.consumeAgentReference())
 			if _, ok := p.tryConsume(tokenTypePlus); !ok {
 				break
 			}
@@ -585,15 +588,15 @@ func (p *sourceParser) consumeClassOrAgent(typeNode AstNode) {
 // SomeType
 // SomeType<Generic>
 // SomeType as foobar
-func (p *sourceParser) consumeAgentReference() AstNode {
-	agentReferenceNode := p.startNode(NodeTypeAgentReference)
+func (p *sourceParser) consumeAgentReference() shared.AstNode {
+	agentReferenceNode := p.startNode(sourceshape.NodeTypeAgentReference)
 	defer p.finishNode()
 
-	agentReferenceNode.Connect(NodeAgentReferencePredicateReferenceType, p.consumeTypeReference(typeReferenceNoSpecialTypes))
+	agentReferenceNode.Connect(sourceshape.NodeAgentReferencePredicateReferenceType, p.consumeTypeReference(typeReferenceNoSpecialTypes))
 
 	if ok := p.tryConsumeKeyword("as"); ok {
 		alias, _ := p.consumeIdentifier()
-		agentReferenceNode.Decorate(NodeAgentReferencePredicateAlias, alias)
+		agentReferenceNode.Decorate(sourceshape.NodeAgentReferencePredicateAlias, alias)
 	}
 
 	return agentReferenceNode
@@ -603,8 +606,8 @@ func (p *sourceParser) consumeAgentReference() AstNode {
 //
 // interface Identifier { ... }
 // interface Identifier<Generic> { ... }
-func (p *sourceParser) consumeInterfaceDefinition() AstNode {
-	interfaceNode := p.startNode(NodeTypeInterface)
+func (p *sourceParser) consumeInterfaceDefinition() shared.AstNode {
+	interfaceNode := p.startNode(sourceshape.NodeTypeInterface)
 	defer p.finishNode()
 
 	// interface ...
@@ -616,10 +619,10 @@ func (p *sourceParser) consumeInterfaceDefinition() AstNode {
 		return interfaceNode
 	}
 
-	interfaceNode.Decorate(NodeTypeDefinitionName, interfaceName)
+	interfaceNode.Decorate(sourceshape.NodeTypeDefinitionName, interfaceName)
 
 	// Generics (optional).
-	p.consumeGenerics(interfaceNode, NodeTypeDefinitionGeneric)
+	p.consumeGenerics(interfaceNode, sourceshape.NodeTypeDefinitionGeneric)
 
 	// Open bracket.
 	if _, ok := p.consume(tokenTypeLeftBrace); !ok {
@@ -635,7 +638,7 @@ func (p *sourceParser) consumeInterfaceDefinition() AstNode {
 }
 
 // consumeStructuralTypeMembers consumes the member definitions of a structural type.
-func (p *sourceParser) consumeStructuralTypeMembers(typeNode AstNode) {
+func (p *sourceParser) consumeStructuralTypeMembers(typeNode shared.AstNode) {
 	for {
 		// Check for a close token.
 		if p.isToken(tokenTypeRightBrace) {
@@ -643,7 +646,7 @@ func (p *sourceParser) consumeStructuralTypeMembers(typeNode AstNode) {
 		}
 
 		// Otherwise, consume the structural type member.
-		typeNode.Connect(NodeTypeDefinitionMember, p.consumeStructField())
+		typeNode.Connect(sourceshape.NodeTypeDefinitionMember, p.consumeStructField())
 
 		// If we have another identifer, immediate continue. This case will occur
 		// if the type did not end in an identifier (like 'int?').
@@ -665,8 +668,8 @@ func (p *sourceParser) consumeStructuralTypeMembers(typeNode AstNode) {
 // consumeStructField consumes a field of a struct.
 //
 // FieldName TypeName
-func (p *sourceParser) consumeStructField() AstNode {
-	fieldNode := p.startNode(NodeTypeField)
+func (p *sourceParser) consumeStructField() shared.AstNode {
+	fieldNode := p.startNode(sourceshape.NodeTypeField)
 	defer p.finishNode()
 
 	// FieldName.
@@ -675,14 +678,14 @@ func (p *sourceParser) consumeStructField() AstNode {
 		return fieldNode
 	}
 
-	fieldNode.Decorate(NodePredicateTypeMemberName, identifier)
+	fieldNode.Decorate(sourceshape.NodePredicateTypeMemberName, identifier)
 
 	// TypeName
-	fieldNode.Connect(NodePredicateTypeMemberDeclaredType, p.consumeTypeReference(typeReferenceNoVoid))
+	fieldNode.Connect(sourceshape.NodePredicateTypeMemberDeclaredType, p.consumeTypeReference(typeReferenceNoVoid))
 
 	// Optional default value.
 	if _, ok := p.tryConsume(tokenTypeEquals); ok {
-		fieldNode.Connect(NodePredicateTypeFieldDefaultValue, p.consumeExpression(consumeExpressionAllowBraces))
+		fieldNode.Connect(sourceshape.NodePredicateTypeFieldDefaultValue, p.consumeExpression(consumeExpressionAllowBraces))
 	}
 
 	// Optional tag.
@@ -692,7 +695,7 @@ func (p *sourceParser) consumeStructField() AstNode {
 }
 
 // consumeOptionalMemberTags consumes any member tags defined on a member.
-func (p *sourceParser) consumeOptionalMemberTags(memberNode AstNode) {
+func (p *sourceParser) consumeOptionalMemberTags(memberNode shared.AstNode) {
 	if !p.isToken(tokenTypeTemplateStringLiteral) {
 		return
 	}
@@ -730,13 +733,13 @@ func (p *sourceParser) consumeOptionalMemberTags(memberNode AstNode) {
 		startRune := commentedLexeme{lexeme{name.kind, bytePosition(int(name.position) + offset), name.value}, []lexeme{}}
 		endRune := commentedLexeme{lexeme{value.kind, bytePosition(int(value.position) + offset), value.value}, []lexeme{}}
 
-		tagNode := p.createNode(NodeTypeMemberTag)
-		tagNode.Decorate(NodePredicateTypeMemberTagName, name.value)
-		tagNode.Decorate(NodePredicateTypeMemberTagValue, value.value[1:len(value.value)-1])
+		tagNode := p.createNode(sourceshape.NodeTypeMemberTag)
+		tagNode.Decorate(sourceshape.NodePredicateTypeMemberTagName, name.value)
+		tagNode.Decorate(sourceshape.NodePredicateTypeMemberTagValue, value.value[1:len(value.value)-1])
 
 		p.decorateStartRuneAndComments(tagNode, startRune)
 		p.decorateEndRune(tagNode, endRune.lexeme)
-		memberNode.Connect(NodePredicateTypeMemberTag, tagNode)
+		memberNode.Connect(sourceshape.NodePredicateTypeMemberTag, tagNode)
 
 		next := l.nextToken()
 		if next.kind == tokenTypeEOF {
@@ -751,20 +754,20 @@ func (p *sourceParser) consumeOptionalMemberTags(memberNode AstNode) {
 }
 
 // consumeNominalTypeMembers consumes the member definitions of a nominal type.
-func (p *sourceParser) consumeNominalTypeMembers(typeNode AstNode) {
+func (p *sourceParser) consumeNominalTypeMembers(typeNode shared.AstNode) {
 	for {
 		switch {
 		case p.isKeyword("function"):
-			typeNode.Connect(NodeTypeDefinitionMember, p.consumeFunction(typeMemberDefinition))
+			typeNode.Connect(sourceshape.NodeTypeDefinitionMember, p.consumeFunction(typeMemberDefinition))
 
 		case p.isKeyword("constructor"):
-			typeNode.Connect(NodeTypeDefinitionMember, p.consumeConstructor())
+			typeNode.Connect(sourceshape.NodeTypeDefinitionMember, p.consumeConstructor())
 
 		case p.isKeyword("property"):
-			typeNode.Connect(NodeTypeDefinitionMember, p.consumeProperty(typeMemberDefinition))
+			typeNode.Connect(sourceshape.NodeTypeDefinitionMember, p.consumeProperty(typeMemberDefinition))
 
 		case p.isKeyword("operator"):
-			typeNode.Connect(NodeTypeDefinitionMember, p.consumeOperator(typeMemberDefinition))
+			typeNode.Connect(sourceshape.NodeTypeDefinitionMember, p.consumeOperator(typeMemberDefinition))
 
 		case p.isToken(tokenTypeRightBrace):
 			// End of the nominal type members list
@@ -778,7 +781,7 @@ func (p *sourceParser) consumeNominalTypeMembers(typeNode AstNode) {
 }
 
 // consumeImplementedTypeMembers consumes the member definitions of a class or agent.
-func (p *sourceParser) consumeImplementedTypeMembers(typeNode AstNode) {
+func (p *sourceParser) consumeImplementedTypeMembers(typeNode shared.AstNode) {
 	p.pushErrorProduction(func(token commentedLexeme) bool {
 		if token.isKeyword("var") || token.isKeyword("function") || token.isKeyword("constructor") || token.isKeyword("property") || token.isKeyword("operator") {
 			return true
@@ -795,20 +798,20 @@ func (p *sourceParser) consumeImplementedTypeMembers(typeNode AstNode) {
 	for {
 		switch {
 		case p.isKeyword("var"):
-			typeNode.Connect(NodeTypeDefinitionMember, p.consumeVar(NodeTypeField, NodePredicateTypeMemberName, NodePredicateTypeMemberDeclaredType, NodePredicateTypeFieldDefaultValue, consumeVarRequireExplicitType))
+			typeNode.Connect(sourceshape.NodeTypeDefinitionMember, p.consumeVar(sourceshape.NodeTypeField, sourceshape.NodePredicateTypeMemberName, sourceshape.NodePredicateTypeMemberDeclaredType, sourceshape.NodePredicateTypeFieldDefaultValue, consumeVarRequireExplicitType))
 			p.consumeStatementTerminator()
 
 		case p.isKeyword("function"):
-			typeNode.Connect(NodeTypeDefinitionMember, p.consumeFunction(typeMemberDefinition))
+			typeNode.Connect(sourceshape.NodeTypeDefinitionMember, p.consumeFunction(typeMemberDefinition))
 
 		case p.isKeyword("constructor"):
-			typeNode.Connect(NodeTypeDefinitionMember, p.consumeConstructor())
+			typeNode.Connect(sourceshape.NodeTypeDefinitionMember, p.consumeConstructor())
 
 		case p.isKeyword("property"):
-			typeNode.Connect(NodeTypeDefinitionMember, p.consumeProperty(typeMemberDefinition))
+			typeNode.Connect(sourceshape.NodeTypeDefinitionMember, p.consumeProperty(typeMemberDefinition))
 
 		case p.isKeyword("operator"):
-			typeNode.Connect(NodeTypeDefinitionMember, p.consumeOperator(typeMemberDefinition))
+			typeNode.Connect(sourceshape.NodeTypeDefinitionMember, p.consumeOperator(typeMemberDefinition))
 
 		case p.isToken(tokenTypeRightBrace):
 			// End of the class members list
@@ -823,20 +826,20 @@ func (p *sourceParser) consumeImplementedTypeMembers(typeNode AstNode) {
 }
 
 // consumeInterfaceMembers consumes the member definitions of an interface.
-func (p *sourceParser) consumeInterfaceMembers(typeNode AstNode) {
+func (p *sourceParser) consumeInterfaceMembers(typeNode shared.AstNode) {
 	for {
 		switch {
 		case p.isKeyword("function"):
-			typeNode.Connect(NodeTypeDefinitionMember, p.consumeFunction(typeMemberDeclaration))
+			typeNode.Connect(sourceshape.NodeTypeDefinitionMember, p.consumeFunction(typeMemberDeclaration))
 
 		case p.isKeyword("constructor"):
-			typeNode.Connect(NodeTypeDefinitionMember, p.consumeConstructor())
+			typeNode.Connect(sourceshape.NodeTypeDefinitionMember, p.consumeConstructor())
 
 		case p.isKeyword("property"):
-			typeNode.Connect(NodeTypeDefinitionMember, p.consumeProperty(typeMemberDeclaration))
+			typeNode.Connect(sourceshape.NodeTypeDefinitionMember, p.consumeProperty(typeMemberDeclaration))
 
 		case p.isKeyword("operator"):
-			typeNode.Connect(NodeTypeDefinitionMember, p.consumeOperator(typeMemberDeclaration))
+			typeNode.Connect(sourceshape.NodeTypeDefinitionMember, p.consumeOperator(typeMemberDeclaration))
 
 		case p.isToken(tokenTypeRightBrace):
 			// End of the class members list
@@ -854,8 +857,8 @@ func (p *sourceParser) consumeInterfaceMembers(typeNode AstNode) {
 //
 // Supported forms:
 // operator Plus (leftValue SomeType, rightValue SomeType)
-func (p *sourceParser) consumeOperator(option typeMemberOption) AstNode {
-	operatorNode := p.startNode(NodeTypeOperator)
+func (p *sourceParser) consumeOperator(option typeMemberOption) shared.AstNode {
+	operatorNode := p.startNode(sourceshape.NodeTypeOperator)
 	defer p.finishNode()
 
 	// operator
@@ -863,7 +866,7 @@ func (p *sourceParser) consumeOperator(option typeMemberOption) AstNode {
 
 	// Optional: Return type.
 	if _, ok := p.tryConsume(tokenTypeLessThan); ok {
-		operatorNode.Connect(NodePredicateTypeMemberDeclaredType, p.consumeTypeReference(typeReferenceNoVoid))
+		operatorNode.Connect(sourceshape.NodePredicateTypeMemberDeclaredType, p.consumeTypeReference(typeReferenceNoVoid))
 
 		if _, ok := p.consume(tokenTypeGreaterThan); !ok {
 			return operatorNode
@@ -876,7 +879,7 @@ func (p *sourceParser) consumeOperator(option typeMemberOption) AstNode {
 		return operatorNode
 	}
 
-	operatorNode.Decorate(NodeOperatorName, identifier)
+	operatorNode.Decorate(sourceshape.NodeOperatorName, identifier)
 
 	// Parameters.
 	// (
@@ -886,7 +889,7 @@ func (p *sourceParser) consumeOperator(option typeMemberOption) AstNode {
 
 	// identifier TypeReference (, another)
 	for {
-		operatorNode.Connect(NodePredicateTypeMemberParameter, p.consumeParameter())
+		operatorNode.Connect(sourceshape.NodePredicateTypeMemberParameter, p.consumeParameter())
 
 		if _, ok := p.tryConsume(tokenTypeComma); !ok {
 			break
@@ -906,7 +909,7 @@ func (p *sourceParser) consumeOperator(option typeMemberOption) AstNode {
 		}
 	}
 
-	operatorNode.Connect(NodePredicateBody, p.consumeStatementBlock(statementBlockWithTerminator))
+	operatorNode.Connect(sourceshape.NodePredicateBody, p.consumeStatementBlock(statementBlockWithTerminator))
 	return operatorNode
 }
 
@@ -920,8 +923,8 @@ func (p *sourceParser) consumeOperator(option typeMemberOption) AstNode {
 //   set { .. }
 // }
 //
-func (p *sourceParser) consumeProperty(option typeMemberOption) AstNode {
-	propertyNode := p.startNode(NodeTypeProperty)
+func (p *sourceParser) consumeProperty(option typeMemberOption) shared.AstNode {
+	propertyNode := p.startNode(sourceshape.NodeTypeProperty)
 	defer p.finishNode()
 
 	// property
@@ -932,7 +935,7 @@ func (p *sourceParser) consumeProperty(option typeMemberOption) AstNode {
 		return propertyNode
 	}
 
-	propertyNode.Connect(NodePredicateTypeMemberDeclaredType, p.consumeTypeReference(typeReferenceNoVoid))
+	propertyNode.Connect(sourceshape.NodePredicateTypeMemberDeclaredType, p.consumeTypeReference(typeReferenceNoVoid))
 
 	if _, ok := p.consume(tokenTypeGreaterThan); !ok {
 		return propertyNode
@@ -944,7 +947,7 @@ func (p *sourceParser) consumeProperty(option typeMemberOption) AstNode {
 		return propertyNode
 	}
 
-	propertyNode.Decorate(NodePredicateTypeMemberName, identifier)
+	propertyNode.Decorate(sourceshape.NodePredicateTypeMemberName, identifier)
 
 	// If this is a declaration, then having a brace is optional.
 	if option == typeMemberDeclaration {
@@ -955,7 +958,7 @@ func (p *sourceParser) consumeProperty(option typeMemberOption) AstNode {
 			return propertyNode
 		}
 
-		propertyNode.Decorate(NodePropertyReadOnly, "true")
+		propertyNode.Decorate(sourceshape.NodePropertyReadOnly, "true")
 		if !p.consumeKeyword("get") {
 			return propertyNode
 		}
@@ -973,13 +976,13 @@ func (p *sourceParser) consumeProperty(option typeMemberOption) AstNode {
 	}
 
 	// Add the getter (required)
-	propertyNode.Connect(NodePropertyGetter, p.consumePropertyBlock("get"))
+	propertyNode.Connect(sourceshape.NodePropertyGetter, p.consumePropertyBlock("get"))
 
 	// Add the setter (optional)
 	if p.isKeyword("set") {
-		propertyNode.Connect(NodePropertySetter, p.consumePropertyBlock("set"))
+		propertyNode.Connect(sourceshape.NodePropertySetter, p.consumePropertyBlock("set"))
 	} else {
-		propertyNode.Decorate(NodePropertyReadOnly, "true")
+		propertyNode.Decorate(sourceshape.NodePropertyReadOnly, "true")
 	}
 
 	p.consume(tokenTypeRightBrace)
@@ -988,9 +991,9 @@ func (p *sourceParser) consumeProperty(option typeMemberOption) AstNode {
 }
 
 // consumePropertyBlock consumes a get or set block for a property definition
-func (p *sourceParser) consumePropertyBlock(keyword string) AstNode {
-	blockNode := p.startNode(NodeTypePropertyBlock)
-	blockNode.Decorate(NodePropertyBlockType, keyword)
+func (p *sourceParser) consumePropertyBlock(keyword string) shared.AstNode {
+	blockNode := p.startNode(sourceshape.NodeTypePropertyBlock)
+	blockNode.Decorate(sourceshape.NodePropertyBlockType, keyword)
 	defer p.finishNode()
 
 	// get or set
@@ -999,7 +1002,7 @@ func (p *sourceParser) consumePropertyBlock(keyword string) AstNode {
 	}
 
 	// Statement block.
-	blockNode.Connect(NodePredicateBody, p.consumeStatementBlock(statementBlockWithTerminator))
+	blockNode.Connect(sourceshape.NodePredicateBody, p.consumeStatementBlock(statementBlockWithTerminator))
 	return blockNode
 }
 
@@ -1010,8 +1013,8 @@ func (p *sourceParser) consumePropertyBlock(keyword string) AstNode {
 // constructor SomeName<SomeGeneric>() {}
 // constructor SomeName(someArg int) {}
 //
-func (p *sourceParser) consumeConstructor() AstNode {
-	constructorNode := p.startNode(NodeTypeConstructor)
+func (p *sourceParser) consumeConstructor() shared.AstNode {
+	constructorNode := p.startNode(sourceshape.NodeTypeConstructor)
 	defer p.finishNode()
 
 	// constructor
@@ -1023,10 +1026,10 @@ func (p *sourceParser) consumeConstructor() AstNode {
 		return constructorNode
 	}
 
-	constructorNode.Decorate(NodePredicateTypeMemberName, identifier)
+	constructorNode.Decorate(sourceshape.NodePredicateTypeMemberName, identifier)
 
 	// Generics (optional).
-	p.consumeGenerics(constructorNode, NodePredicateTypeMemberGeneric)
+	p.consumeGenerics(constructorNode, sourceshape.NodePredicateTypeMemberGeneric)
 
 	// Parameters.
 	// (
@@ -1037,7 +1040,7 @@ func (p *sourceParser) consumeConstructor() AstNode {
 	if _, ok := p.tryConsume(tokenTypeRightParen); !ok {
 		// identifier TypeReference (, another)
 		for {
-			constructorNode.Connect(NodePredicateTypeMemberParameter, p.consumeParameter())
+			constructorNode.Connect(sourceshape.NodePredicateTypeMemberParameter, p.consumeParameter())
 
 			if _, ok := p.tryConsume(tokenTypeComma); !ok {
 				break
@@ -1051,7 +1054,7 @@ func (p *sourceParser) consumeConstructor() AstNode {
 	}
 
 	// Constructors always have a body.
-	constructorNode.Connect(NodePredicateBody, p.consumeStatementBlock(statementBlockWithTerminator))
+	constructorNode.Connect(sourceshape.NodePredicateBody, p.consumeStatementBlock(statementBlockWithTerminator))
 	return constructorNode
 }
 
@@ -1061,8 +1064,8 @@ func (p *sourceParser) consumeConstructor() AstNode {
 // function<ReturnType> SomeName()
 // function<ReturnType> SomeName<SomeGeneric>()
 //
-func (p *sourceParser) consumeFunction(option typeMemberOption) AstNode {
-	functionNode := p.startNode(NodeTypeFunction)
+func (p *sourceParser) consumeFunction(option typeMemberOption) shared.AstNode {
+	functionNode := p.startNode(sourceshape.NodeTypeFunction)
 	defer p.finishNode()
 
 	// function
@@ -1073,7 +1076,7 @@ func (p *sourceParser) consumeFunction(option typeMemberOption) AstNode {
 		return functionNode
 	}
 
-	functionNode.Connect(NodePredicateTypeMemberReturnType, p.consumeTypeReference(typeReferenceAllowAll))
+	functionNode.Connect(sourceshape.NodePredicateTypeMemberReturnType, p.consumeTypeReference(typeReferenceAllowAll))
 
 	if _, ok := p.consume(tokenTypeGreaterThan); !ok {
 		return functionNode
@@ -1085,10 +1088,10 @@ func (p *sourceParser) consumeFunction(option typeMemberOption) AstNode {
 		return functionNode
 	}
 
-	functionNode.Decorate(NodePredicateTypeMemberName, identifier)
+	functionNode.Decorate(sourceshape.NodePredicateTypeMemberName, identifier)
 
 	// Generics (optional).
-	p.consumeGenerics(functionNode, NodePredicateTypeMemberGeneric)
+	p.consumeGenerics(functionNode, sourceshape.NodePredicateTypeMemberGeneric)
 
 	// Parameters.
 	// (
@@ -1102,7 +1105,7 @@ func (p *sourceParser) consumeFunction(option typeMemberOption) AstNode {
 			break
 		}
 
-		functionNode.Connect(NodePredicateTypeMemberParameter, p.consumeParameter())
+		functionNode.Connect(sourceshape.NodePredicateTypeMemberParameter, p.consumeParameter())
 
 		if _, ok := p.tryConsume(tokenTypeComma); !ok {
 			break
@@ -1122,13 +1125,13 @@ func (p *sourceParser) consumeFunction(option typeMemberOption) AstNode {
 	}
 
 	// Otherwise, we need a function body.
-	functionNode.Connect(NodePredicateBody, p.consumeStatementBlock(statementBlockWithTerminator))
+	functionNode.Connect(sourceshape.NodePredicateBody, p.consumeStatementBlock(statementBlockWithTerminator))
 	return functionNode
 }
 
 // consumeParameter consumes a function or other type member parameter definition
-func (p *sourceParser) consumeParameter() AstNode {
-	parameterNode := p.startNode(NodeTypeParameter)
+func (p *sourceParser) consumeParameter() shared.AstNode {
+	parameterNode := p.startNode(sourceshape.NodeTypeParameter)
 	defer p.finishNode()
 
 	// Parameter name.
@@ -1137,22 +1140,22 @@ func (p *sourceParser) consumeParameter() AstNode {
 		return parameterNode
 	}
 
-	parameterNode.Decorate(NodeParameterName, identifier)
+	parameterNode.Decorate(sourceshape.NodeParameterName, identifier)
 
 	// Parameter type.
-	parameterNode.Connect(NodeParameterType, p.consumeTypeReference(typeReferenceNoVoid))
+	parameterNode.Connect(sourceshape.NodeParameterType, p.consumeTypeReference(typeReferenceNoVoid))
 	return parameterNode
 }
 
 // typeReferenceMap contains a map from tokenType to associated node type for the
 // specialized type reference modifiers (nullable, stream, etc).
-var typeReferenceMap = map[tokenType]NodeType{
-	tokenTypeTimes:        NodeTypeStream,
-	tokenTypeQuestionMark: NodeTypeNullable,
+var typeReferenceMap = map[tokenType]sourceshape.NodeType{
+	tokenTypeTimes:        sourceshape.NodeTypeStream,
+	tokenTypeQuestionMark: sourceshape.NodeTypeNullable,
 }
 
 // consumeTypeReference consumes a type reference
-func (p *sourceParser) consumeTypeReference(option typeReferenceOption) AstNode {
+func (p *sourceParser) consumeTypeReference(option typeReferenceOption) shared.AstNode {
 	// If no special types are allowed, consume a simple reference.
 	if option == typeReferenceNoSpecialTypes {
 		typeref, _ := p.consumeSimpleTypeReference()
@@ -1161,7 +1164,7 @@ func (p *sourceParser) consumeTypeReference(option typeReferenceOption) AstNode 
 
 	// If void is allowed, check for it first.
 	if option == typeReferenceAllowAll && p.isKeyword("void") {
-		voidNode := p.startNode(NodeTypeVoid)
+		voidNode := p.startNode(sourceshape.NodeTypeVoid)
 		p.consumeKeyword("void")
 		p.finishNode()
 		return voidNode
@@ -1169,15 +1172,15 @@ func (p *sourceParser) consumeTypeReference(option typeReferenceOption) AstNode 
 
 	// Check for a prefixed slice or nullable.
 	if _, ok := p.tryConsume(tokenTypeTimes); ok {
-		streamNode := p.startNode(NodeTypeStream)
-		streamNode.Connect(NodeTypeReferenceInnerType, p.consumeTypeReference(typeReferenceNoVoid))
+		streamNode := p.startNode(sourceshape.NodeTypeStream)
+		streamNode.Connect(sourceshape.NodeTypeReferenceInnerType, p.consumeTypeReference(typeReferenceNoVoid))
 		p.finishNode()
 		return streamNode
 	}
 
 	if _, ok := p.tryConsume(tokenTypeQuestionMark); ok {
-		nullableNode := p.startNode(NodeTypeNullable)
-		nullableNode.Connect(NodeTypeReferenceInnerType, p.consumeTypeReference(typeReferenceNoVoid))
+		nullableNode := p.startNode(sourceshape.NodeTypeNullable)
+		nullableNode.Connect(sourceshape.NodeTypeReferenceInnerType, p.consumeTypeReference(typeReferenceNoVoid))
 		p.finishNode()
 		return nullableNode
 	}
@@ -1189,27 +1192,27 @@ func (p *sourceParser) consumeTypeReference(option typeReferenceOption) AstNode 
 		t.matchToken(tokenTypeRightBracket)
 		if _, ok := t.matchToken(tokenTypeLeftBrace); ok {
 			// Mapping.
-			mappingNode := p.startNode(NodeTypeMapping)
+			mappingNode := p.startNode(sourceshape.NodeTypeMapping)
 			p.consume(tokenTypeLeftBracket)
 			p.consume(tokenTypeRightBracket)
 			p.consume(tokenTypeLeftBrace)
-			mappingNode.Connect(NodeTypeReferenceInnerType, p.consumeTypeReference(typeReferenceNoVoid))
+			mappingNode.Connect(sourceshape.NodeTypeReferenceInnerType, p.consumeTypeReference(typeReferenceNoVoid))
 			p.consume(tokenTypeRightBrace)
 			p.finishNode()
 			return mappingNode
 		}
 
 		// Slice.
-		sliceNode := p.startNode(NodeTypeSlice)
+		sliceNode := p.startNode(sourceshape.NodeTypeSlice)
 		p.consume(tokenTypeLeftBracket)
 		p.consume(tokenTypeRightBracket)
-		sliceNode.Connect(NodeTypeReferenceInnerType, p.consumeTypeReference(typeReferenceNoVoid))
+		sliceNode.Connect(sourceshape.NodeTypeReferenceInnerType, p.consumeTypeReference(typeReferenceNoVoid))
 		p.finishNode()
 		return sliceNode
 	}
 
 	// Otherwise, left recursively build a type reference.
-	rightNodeBuilder := func(leftNode AstNode, operatorToken lexeme) (AstNode, bool) {
+	rightNodeBuilder := func(leftNode shared.AstNode, operatorToken lexeme) (shared.AstNode, bool) {
 		nodeType, ok := typeReferenceMap[operatorToken.kind]
 		if !ok {
 			panic(fmt.Sprintf("Unknown type reference modifier: %v", operatorToken.kind))
@@ -1217,7 +1220,7 @@ func (p *sourceParser) consumeTypeReference(option typeReferenceOption) AstNode 
 
 		// Create the node representing the wrapped type reference.
 		parentNode := p.createNode(nodeType)
-		parentNode.Connect(NodeTypeReferenceInnerType, leftNode)
+		parentNode.Connect(sourceshape.NodeTypeReferenceInnerType, leftNode)
 		return parentNode, true
 	}
 
@@ -1228,10 +1231,10 @@ func (p *sourceParser) consumeTypeReference(option typeReferenceOption) AstNode 
 
 // consumeSimpleOrAnyTypeReference consumes a type reference that cannot be void, nullable
 // or streamable.
-func (p *sourceParser) consumeSimpleOrAnyTypeReference() (AstNode, bool) {
+func (p *sourceParser) consumeSimpleOrAnyTypeReference() (shared.AstNode, bool) {
 	// Check for the "any" keyword.
 	if p.isKeyword("any") {
-		anyNode := p.startNode(NodeTypeAny)
+		anyNode := p.startNode(sourceshape.NodeTypeAny)
 		p.consumeKeyword("any")
 		p.finishNode()
 		return anyNode, true
@@ -1239,7 +1242,7 @@ func (p *sourceParser) consumeSimpleOrAnyTypeReference() (AstNode, bool) {
 
 	// Check for the "struct" keyword.
 	if p.isKeyword("struct") {
-		structNode := p.startNode(NodeTypeStructReference)
+		structNode := p.startNode(sourceshape.NodeTypeStructReference)
 		p.consumeKeyword("struct")
 		p.finishNode()
 		return structNode, true
@@ -1250,17 +1253,17 @@ func (p *sourceParser) consumeSimpleOrAnyTypeReference() (AstNode, bool) {
 
 // consumeSimpleTypeReference consumes a type reference that cannot be void, nullable
 // or streamable or any.
-func (p *sourceParser) consumeSimpleTypeReference() (AstNode, bool) {
+func (p *sourceParser) consumeSimpleTypeReference() (shared.AstNode, bool) {
 	// Check for 'function'. If found, we consume via a custom path.
 	if p.isKeyword("function") {
 		return p.consumeFunctionTypeReference()
 	}
 
-	typeRefNode := p.startNode(NodeTypeTypeReference)
+	typeRefNode := p.startNode(sourceshape.NodeTypeTypeReference)
 	defer p.finishNode()
 
 	// Identifier path.
-	typeRefNode.Connect(NodeTypeReferencePath, p.consumeIdentifierPath())
+	typeRefNode.Connect(sourceshape.NodeTypeReferencePath, p.consumeIdentifierPath())
 
 	// Optional generics:
 	// <
@@ -1270,7 +1273,7 @@ func (p *sourceParser) consumeSimpleTypeReference() (AstNode, bool) {
 
 	// Foo, Bar, Baz
 	for {
-		typeRefNode.Connect(NodeTypeReferenceGeneric, p.consumeTypeReference(typeReferenceNoVoid))
+		typeRefNode.Connect(sourceshape.NodeTypeReferenceGeneric, p.consumeTypeReference(typeReferenceNoVoid))
 
 		if _, ok := p.tryConsume(tokenTypeComma); !ok {
 			break
@@ -1283,16 +1286,16 @@ func (p *sourceParser) consumeSimpleTypeReference() (AstNode, bool) {
 }
 
 // consumeFunctionTypeReference consumes a function type reference.
-func (p *sourceParser) consumeFunctionTypeReference() (AstNode, bool) {
-	typeRefNode := p.startNode(NodeTypeTypeReference)
+func (p *sourceParser) consumeFunctionTypeReference() (shared.AstNode, bool) {
+	typeRefNode := p.startNode(sourceshape.NodeTypeTypeReference)
 	defer p.finishNode()
 
 	// Consume "function" as the identifier path.
-	identifierPath := p.startNode(NodeTypeIdentifierPath)
-	identifierPath.Connect(NodeIdentifierPathRoot, p.consumeIdentifierAccess(identifierAccessAllowFunction))
+	identifierPath := p.startNode(sourceshape.NodeTypeIdentifierPath)
+	identifierPath.Connect(sourceshape.NodeIdentifierPathRoot, p.consumeIdentifierAccess(identifierAccessAllowFunction))
 	p.finishNode()
 
-	typeRefNode.Connect(NodeTypeReferencePath, identifierPath)
+	typeRefNode.Connect(sourceshape.NodeTypeReferencePath, identifierPath)
 
 	// Consume the single generic argument.
 	if _, ok := p.consume(tokenTypeLessThan); !ok {
@@ -1300,7 +1303,7 @@ func (p *sourceParser) consumeFunctionTypeReference() (AstNode, bool) {
 	}
 
 	// Consume the generic typeref.
-	typeRefNode.Connect(NodeTypeReferenceGeneric, p.consumeTypeReference(typeReferenceAllowAll))
+	typeRefNode.Connect(sourceshape.NodeTypeReferenceGeneric, p.consumeTypeReference(typeReferenceAllowAll))
 
 	// >
 	p.consume(tokenTypeGreaterThan)
@@ -1312,7 +1315,7 @@ func (p *sourceParser) consumeFunctionTypeReference() (AstNode, bool) {
 
 	if !p.isToken(tokenTypeRightParen) {
 		for {
-			typeRefNode.Connect(NodeTypeReferenceParameter, p.consumeTypeReference(typeReferenceNoVoid))
+			typeRefNode.Connect(sourceshape.NodeTypeReferenceParameter, p.consumeTypeReference(typeReferenceNoVoid))
 			if _, ok := p.tryConsume(tokenTypeComma); !ok {
 				break
 			}
@@ -1333,7 +1336,7 @@ func (p *sourceParser) consumeFunctionTypeReference() (AstNode, bool) {
 // <Foo, Bar>
 // <Foo : SomePath>
 // <Foo : SomePath, Bar>
-func (p *sourceParser) consumeGenerics(parentNode AstNode, predicate string) {
+func (p *sourceParser) consumeGenerics(parentNode shared.AstNode, predicate string) {
 	// <
 	if _, ok := p.tryConsume(tokenTypeLessThan); !ok {
 		return
@@ -1357,8 +1360,8 @@ func (p *sourceParser) consumeGenerics(parentNode AstNode, predicate string) {
 // Supported Forms:
 // Foo
 // Foo : Bar
-func (p *sourceParser) consumeGeneric() AstNode {
-	genericNode := p.startNode(NodeTypeGeneric)
+func (p *sourceParser) consumeGeneric() shared.AstNode {
+	genericNode := p.startNode(sourceshape.NodeTypeGeneric)
 	defer p.finishNode()
 
 	// Generic name.
@@ -1367,14 +1370,14 @@ func (p *sourceParser) consumeGeneric() AstNode {
 		return genericNode
 	}
 
-	genericNode.Decorate(NodeGenericPredicateName, genericName)
+	genericNode.Decorate(sourceshape.NodeGenericPredicateName, genericName)
 
 	// Optional: subtype.
 	if _, ok := p.tryConsume(tokenTypeColon); !ok {
 		return genericNode
 	}
 
-	genericNode.Connect(NodeGenericSubtype, p.consumeTypeReference(typeReferenceNoVoid))
+	genericNode.Connect(sourceshape.NodeGenericSubtype, p.consumeTypeReference(typeReferenceNoVoid))
 	return genericNode
 }
 
@@ -1390,15 +1393,15 @@ const (
 // Supported Forms:
 // foo
 // foo(.bar)*
-func (p *sourceParser) consumeIdentifierPath() AstNode {
-	identifierPath := p.startNode(NodeTypeIdentifierPath)
+func (p *sourceParser) consumeIdentifierPath() shared.AstNode {
+	identifierPath := p.startNode(sourceshape.NodeTypeIdentifierPath)
 	defer p.finishNode()
 
-	var currentNode AstNode
+	var currentNode shared.AstNode
 	for {
 		nextNode := p.consumeIdentifierAccess(identifierAccessDisallowFunction)
 		if currentNode != nil {
-			nextNode.Connect(NodeIdentifierAccessSource, currentNode)
+			nextNode.Connect(sourceshape.NodeIdentifierAccessSource, currentNode)
 		}
 
 		currentNode = nextNode
@@ -1409,25 +1412,25 @@ func (p *sourceParser) consumeIdentifierPath() AstNode {
 		}
 	}
 
-	identifierPath.Connect(NodeIdentifierPathRoot, currentNode)
+	identifierPath.Connect(sourceshape.NodeIdentifierPathRoot, currentNode)
 	return identifierPath
 }
 
 // consumeIdentifierAccess consumes an identifier and returns an IdentifierAccessNode.
-func (p *sourceParser) consumeIdentifierAccess(option identifierAccessOption) AstNode {
-	identifierAccessNode := p.startNode(NodeTypeIdentifierAccess)
+func (p *sourceParser) consumeIdentifierAccess(option identifierAccessOption) shared.AstNode {
+	identifierAccessNode := p.startNode(sourceshape.NodeTypeIdentifierAccess)
 	defer p.finishNode()
 
 	// Consume the next step in the path.
 	if option == identifierAccessAllowFunction && p.tryConsumeKeyword("function") {
-		identifierAccessNode.Decorate(NodeIdentifierAccessName, "function")
+		identifierAccessNode.Decorate(sourceshape.NodeIdentifierAccessName, "function")
 	} else {
 		identifier, ok := p.consumeIdentifier()
 		if !ok {
 			return identifierAccessNode
 		}
 
-		identifierAccessNode.Decorate(NodeIdentifierAccessName, identifier)
+		identifierAccessNode.Decorate(sourceshape.NodeIdentifierAccessName, identifier)
 	}
 
 	return identifierAccessNode
@@ -1436,24 +1439,24 @@ func (p *sourceParser) consumeIdentifierAccess(option identifierAccessOption) As
 // consumeSimpleAccessPath consumes a simple member access path under an identifier.
 // This is different from consumeIdentifierPath in that it returns actual identifier and
 // member access expresssions, as well as the string value of path found.
-func (p *sourceParser) consumeSimpleAccessPath() (AstNode, string) {
+func (p *sourceParser) consumeSimpleAccessPath() (shared.AstNode, string) {
 	startToken := p.currentToken
 
-	identifierNode := p.startNode(NodeTypeIdentifierExpression)
+	identifierNode := p.startNode(sourceshape.NodeTypeIdentifierExpression)
 	identifier, _ := p.consumeIdentifier()
-	identifierNode.Decorate(NodeIdentifierExpressionName, identifier)
+	identifierNode.Decorate(sourceshape.NodeIdentifierExpressionName, identifier)
 	p.finishNode()
 
 	if _, ok := p.tryConsume(tokenTypeDotAccessOperator); !ok {
 		return identifierNode, identifier
 	}
 
-	memberAccessNode := p.createNode(NodeMemberAccessExpression)
+	memberAccessNode := p.createNode(sourceshape.NodeMemberAccessExpression)
 	p.decorateStartRuneAndComments(memberAccessNode, startToken)
-	memberAccessNode.Connect(NodeMemberAccessChildExpr, identifierNode)
+	memberAccessNode.Connect(sourceshape.NodeMemberAccessChildExpr, identifierNode)
 
 	member, _ := p.consumeIdentifier()
-	memberAccessNode.Decorate(NodeMemberAccessIdentifier, member)
+	memberAccessNode.Decorate(sourceshape.NodeMemberAccessIdentifier, member)
 
 	p.decorateEndRune(memberAccessNode, p.currentToken.lexeme)
 	return memberAccessNode, identifier + "." + member
@@ -1463,8 +1466,8 @@ func (p *sourceParser) consumeSimpleAccessPath() (AstNode, string) {
 //
 // Form:
 // { ... statements ... }
-func (p *sourceParser) consumeStatementBlock(option statementBlockOption) AstNode {
-	statementBlockNode := p.startNode(NodeTypeStatementBlock)
+func (p *sourceParser) consumeStatementBlock(option statementBlockOption) shared.AstNode {
+	statementBlockNode := p.startNode(sourceshape.NodeTypeStatementBlock)
 	defer p.finishNode()
 
 	p.pushErrorProduction(func(token commentedLexeme) bool {
@@ -1497,11 +1500,11 @@ func (p *sourceParser) consumeStatementBlock(option statementBlockOption) AstNod
 
 		// Add the label to the statement (if any).
 		if statementLabel != "" {
-			statementNode.Decorate(NodeStatementLabel, statementLabel)
+			statementNode.Decorate(sourceshape.NodeStatementLabel, statementLabel)
 		}
 
 		// Connect the statement to the block.
-		statementBlockNode.Connect(NodeStatementBlockStatement, statementNode)
+		statementBlockNode.Connect(sourceshape.NodeStatementBlockStatement, statementNode)
 
 		// Consume the terminator for the statement.
 		if p.isToken(tokenTypeRightBrace) {
@@ -1523,7 +1526,7 @@ func (p *sourceParser) consumeStatementBlock(option statementBlockOption) AstNod
 }
 
 // tryConsumeStatement attempts to consume a statement.
-func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
+func (p *sourceParser) tryConsumeStatement() (shared.AstNode, bool) {
 	p.pushErrorProduction(func(token commentedLexeme) bool {
 		return token.isToken(tokenTypeSyntheticSemicolon) || token.isToken(tokenTypeSemicolon)
 	})
@@ -1548,7 +1551,7 @@ func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
 
 	// Var statement.
 	case p.isKeyword("var"):
-		return p.consumeVar(NodeTypeVariableStatement, NodeVariableStatementName, NodeVariableStatementDeclaredType, NodeVariableStatementExpression, consumeVarAllowInferredType), true
+		return p.consumeVar(sourceshape.NodeTypeVariableStatement, sourceshape.NodeVariableStatementName, sourceshape.NodeVariableStatementDeclaredType, sourceshape.NodeVariableStatementExpression, consumeVarAllowInferredType), true
 
 	// If statement.
 	case p.isKeyword("if"):
@@ -1568,11 +1571,11 @@ func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
 
 	// Break statement.
 	case p.isKeyword("break"):
-		return p.consumeJumpStatement("break", NodeTypeBreakStatement, NodeBreakStatementLabel), true
+		return p.consumeJumpStatement("break", sourceshape.NodeTypeBreakStatement, sourceshape.NodeBreakStatementLabel), true
 
 	// Continue statement.
 	case p.isKeyword("continue"):
-		return p.consumeJumpStatement("continue", NodeTypeContinueStatement, NodeContinueStatementLabel), true
+		return p.consumeJumpStatement("continue", sourceshape.NodeTypeContinueStatement, sourceshape.NodeContinueStatementLabel), true
 
 	default:
 		// Look for an arrow statement.
@@ -1594,8 +1597,8 @@ func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
 		exprToken := p.currentToken
 
 		if exprNode, ok := p.tryConsumeExpression(consumeExpressionAllowBraces); ok {
-			exprStatementNode := p.createNode(NodeTypeExpressionStatement)
-			exprStatementNode.Connect(NodeExpressionStatementExpression, exprNode)
+			exprStatementNode := p.createNode(sourceshape.NodeTypeExpressionStatement)
+			exprStatementNode.Connect(sourceshape.NodeExpressionStatementExpression, exprNode)
 			p.decorateStartRuneAndComments(exprStatementNode, exprToken)
 			p.decorateEndRune(exprStatementNode, p.currentToken.lexeme)
 
@@ -1607,7 +1610,7 @@ func (p *sourceParser) tryConsumeStatement() (AstNode, bool) {
 }
 
 // consumeAssignableExpression consume an expression which is assignable.
-func (p *sourceParser) consumeAssignableExpression() AstNode {
+func (p *sourceParser) consumeAssignableExpression() shared.AstNode {
 	if memberAccess, ok := p.tryConsumeCallAccessExpression(); ok {
 		return memberAccess
 	}
@@ -1620,27 +1623,27 @@ func (p *sourceParser) consumeAssignableExpression() AstNode {
 // Forms:
 // a := expression
 // a, b := expression
-func (p *sourceParser) tryConsumeResolveStatement() (AstNode, bool) {
+func (p *sourceParser) tryConsumeResolveStatement() (shared.AstNode, bool) {
 	// To determine if we have a resolve statement, we need to perform some
 	// lookahead, as there can be multiple forms.
 	if !p.lookaheadResolveStatement() {
 		return nil, false
 	}
 
-	resolveNode := p.startNode(NodeTypeResolveStatement)
+	resolveNode := p.startNode(sourceshape.NodeTypeResolveStatement)
 	defer p.finishNode()
 
-	resolveNode.Connect(NodeAssignedDestination, p.consumeAssignedValue())
+	resolveNode.Connect(sourceshape.NodeAssignedDestination, p.consumeAssignedValue())
 
 	if _, ok := p.tryConsume(tokenTypeComma); ok {
-		resolveNode.Connect(NodeAssignedRejection, p.consumeAssignedValue())
+		resolveNode.Connect(sourceshape.NodeAssignedRejection, p.consumeAssignedValue())
 	}
 
 	// :=
 	p.consume(tokenTypeColon)
 	p.consume(tokenTypeEquals)
 
-	resolveNode.Connect(NodeResolveStatementSource, p.consumeExpression(consumeExpressionAllowBraces))
+	resolveNode.Connect(sourceshape.NodeResolveStatementSource, p.consumeExpression(consumeExpressionAllowBraces))
 	return resolveNode, true
 }
 
@@ -1679,7 +1682,7 @@ func (p *sourceParser) lookaheadResolveStatement() bool {
 // Forms:
 // a = expression
 // a.b = expression
-func (p *sourceParser) tryConsumeAssignStatement() (AstNode, bool) {
+func (p *sourceParser) tryConsumeAssignStatement() (shared.AstNode, bool) {
 	// To determine if we have an assignment statement, we need to perform
 	// a non-insignificant amount of lookahead, as this form can be mistaken for
 	// expressions with ease:
@@ -1687,14 +1690,14 @@ func (p *sourceParser) tryConsumeAssignStatement() (AstNode, bool) {
 		return nil, false
 	}
 
-	assignNode := p.startNode(NodeTypeAssignStatement)
+	assignNode := p.startNode(sourceshape.NodeTypeAssignStatement)
 	defer p.finishNode()
 
 	// Consume the identifier or member access.
-	assignNode.Connect(NodeAssignStatementName, p.consumeAssignableExpression())
+	assignNode.Connect(sourceshape.NodeAssignStatementName, p.consumeAssignableExpression())
 
 	p.consume(tokenTypeEquals)
-	assignNode.Connect(NodeAssignStatementValue, p.consumeExpression(consumeExpressionAllowBraces))
+	assignNode.Connect(sourceshape.NodeAssignStatementValue, p.consumeExpression(consumeExpressionAllowBraces))
 	return assignNode, true
 }
 
@@ -1807,19 +1810,19 @@ TopLoop:
 //   default:
 //		statements
 // }
-func (p *sourceParser) consumeMatchStatement() AstNode {
-	matchNode := p.startNode(NodeTypeMatchStatement)
+func (p *sourceParser) consumeMatchStatement() shared.AstNode {
+	matchNode := p.startNode(sourceshape.NodeTypeMatchStatement)
 	defer p.finishNode()
 
 	// match
 	p.consumeKeyword("match")
 
 	// match expression
-	matchNode.Connect(NodeMatchStatementExpression, p.consumeExpression(consumeExpressionNoBraces))
+	matchNode.Connect(sourceshape.NodeMatchStatementExpression, p.consumeExpression(consumeExpressionNoBraces))
 
 	// Optional: 'as' and then an identifier.
 	if p.tryConsumeKeyword("as") {
-		matchNode.Connect(NodeStatementNamedValue, p.consumeNamedValue())
+		matchNode.Connect(sourceshape.NodeStatementNamedValue, p.consumeNamedValue())
 	}
 
 	// Consume the opening of the block.
@@ -1833,12 +1836,12 @@ func (p *sourceParser) consumeMatchStatement() AstNode {
 		if !ok {
 			break
 		}
-		matchNode.Connect(NodeMatchStatementCase, caseNode)
+		matchNode.Connect(sourceshape.NodeMatchStatementCase, caseNode)
 	}
 
 	// Consume a default statement.
 	if defaultCaseNode, ok := p.tryConsumeMatchCase("default", matchCaseWithoutType); ok {
-		matchNode.Connect(NodeMatchStatementCase, defaultCaseNode)
+		matchNode.Connect(sourceshape.NodeMatchStatementCase, defaultCaseNode)
 	}
 
 	// Consume the closing of the block.
@@ -1850,18 +1853,18 @@ func (p *sourceParser) consumeMatchStatement() AstNode {
 }
 
 // tryConsumeMatchCase tries to consume a case block under a match node.
-func (p *sourceParser) tryConsumeMatchCase(keyword string, option matchCaseOption) (AstNode, bool) {
+func (p *sourceParser) tryConsumeMatchCase(keyword string, option matchCaseOption) (shared.AstNode, bool) {
 	if !p.tryConsumeKeyword(keyword) {
 		return nil, false
 	}
 
 	// Create the case node.
-	caseNode := p.startNode(NodeTypeMatchStatementCase)
+	caseNode := p.startNode(sourceshape.NodeTypeMatchStatementCase)
 	defer p.finishNode()
 
 	// Consume the type reference.
 	if option == matchCaseWithType {
-		caseNode.Connect(NodeMatchStatementCaseTypeReference, p.consumeTypeReference(typeReferenceNoVoid))
+		caseNode.Connect(sourceshape.NodeMatchStatementCaseTypeReference, p.consumeTypeReference(typeReferenceNoVoid))
 	}
 
 	// Colon after the type reference.
@@ -1870,9 +1873,9 @@ func (p *sourceParser) tryConsumeMatchCase(keyword string, option matchCaseOptio
 	}
 
 	// Consume one (or more) statements, followed by statement terminators.
-	blockNode := p.startNode(NodeTypeStatementBlock)
+	blockNode := p.startNode(sourceshape.NodeTypeStatementBlock)
 
-	caseNode.Connect(NodeMatchStatementCaseStatement, blockNode)
+	caseNode.Connect(sourceshape.NodeMatchStatementCaseStatement, blockNode)
 
 	for {
 		statementNode, ok := p.tryConsumeStatement()
@@ -1880,7 +1883,7 @@ func (p *sourceParser) tryConsumeMatchCase(keyword string, option matchCaseOptio
 			break
 		}
 
-		blockNode.Connect(NodeStatementBlockStatement, statementNode)
+		blockNode.Connect(sourceshape.NodeStatementBlockStatement, statementNode)
 
 		if _, ok := p.consumeStatementTerminator(); !ok {
 			return caseNode, true
@@ -1915,8 +1918,8 @@ func (p *sourceParser) tryConsumeMatchCase(keyword string, option matchCaseOptio
 //   default:
 //      statements
 // }
-func (p *sourceParser) consumeSwitchStatement() AstNode {
-	switchNode := p.startNode(NodeTypeSwitchStatement)
+func (p *sourceParser) consumeSwitchStatement() shared.AstNode {
+	switchNode := p.startNode(sourceshape.NodeTypeSwitchStatement)
 	defer p.finishNode()
 
 	// switch
@@ -1924,7 +1927,7 @@ func (p *sourceParser) consumeSwitchStatement() AstNode {
 
 	// Consume a switch expression (if any).
 	if expression, ok := p.tryConsumeExpression(consumeExpressionNoBraces); ok {
-		switchNode.Connect(NodeSwitchStatementExpression, expression)
+		switchNode.Connect(sourceshape.NodeSwitchStatementExpression, expression)
 	}
 
 	// Consume the opening of the block.
@@ -1938,12 +1941,12 @@ func (p *sourceParser) consumeSwitchStatement() AstNode {
 		if !ok {
 			break
 		}
-		switchNode.Connect(NodeSwitchStatementCase, caseNode)
+		switchNode.Connect(sourceshape.NodeSwitchStatementCase, caseNode)
 	}
 
 	// Consume a default statement.
 	if defaultCaseNode, ok := p.tryConsumeSwitchCase("default", switchCaseWithoutExpression); ok {
-		switchNode.Connect(NodeSwitchStatementCase, defaultCaseNode)
+		switchNode.Connect(sourceshape.NodeSwitchStatementCase, defaultCaseNode)
 	}
 
 	// Consume the closing of the block.
@@ -1956,18 +1959,18 @@ func (p *sourceParser) consumeSwitchStatement() AstNode {
 
 // tryConsumeSwitchCase tries to consume a case block under a switch node
 // with the given keyword.
-func (p *sourceParser) tryConsumeSwitchCase(keyword string, option switchCaseOption) (AstNode, bool) {
+func (p *sourceParser) tryConsumeSwitchCase(keyword string, option switchCaseOption) (shared.AstNode, bool) {
 	// keyword
 	if !p.tryConsumeKeyword(keyword) {
 		return nil, false
 	}
 
 	// Create the case node.
-	caseNode := p.startNode(NodeTypeSwitchStatementCase)
+	caseNode := p.startNode(sourceshape.NodeTypeSwitchStatementCase)
 	defer p.finishNode()
 
 	if option == switchCaseWithExpression {
-		caseNode.Connect(NodeSwitchStatementCaseExpression, p.consumeExpression(consumeExpressionNoBraces))
+		caseNode.Connect(sourceshape.NodeSwitchStatementCaseExpression, p.consumeExpression(consumeExpressionNoBraces))
 	}
 
 	// Colon after the expression or keyword.
@@ -1976,9 +1979,9 @@ func (p *sourceParser) tryConsumeSwitchCase(keyword string, option switchCaseOpt
 	}
 
 	// Consume one (or more) statements, followed by statement terminators.
-	blockNode := p.startNode(NodeTypeStatementBlock)
+	blockNode := p.startNode(sourceshape.NodeTypeStatementBlock)
 
-	caseNode.Connect(NodeSwitchStatementCaseStatement, blockNode)
+	caseNode.Connect(sourceshape.NodeSwitchStatementCaseStatement, blockNode)
 
 	for {
 		statementNode, ok := p.tryConsumeStatement()
@@ -1986,7 +1989,7 @@ func (p *sourceParser) tryConsumeSwitchCase(keyword string, option switchCaseOpt
 			break
 		}
 
-		blockNode.Connect(NodeStatementBlockStatement, statementNode)
+		blockNode.Connect(sourceshape.NodeStatementBlockStatement, statementNode)
 
 		if _, ok := p.consumeStatementTerminator(); !ok {
 			return caseNode, true
@@ -2003,23 +2006,23 @@ func (p *sourceParser) tryConsumeSwitchCase(keyword string, option switchCaseOpt
 // Forms:
 // with someExpr {}
 // with someExpr as someIdentifier {}
-func (p *sourceParser) consumeWithStatement() AstNode {
-	withNode := p.startNode(NodeTypeWithStatement)
+func (p *sourceParser) consumeWithStatement() shared.AstNode {
+	withNode := p.startNode(sourceshape.NodeTypeWithStatement)
 	defer p.finishNode()
 
 	// with
 	p.consumeKeyword("with")
 
 	// Scoped expression.
-	withNode.Connect(NodeWithStatementExpression, p.consumeExpression(consumeExpressionNoBraces))
+	withNode.Connect(sourceshape.NodeWithStatementExpression, p.consumeExpression(consumeExpressionNoBraces))
 
 	// Optional: 'as' and then an identifier.
 	if p.tryConsumeKeyword("as") {
-		withNode.Connect(NodeStatementNamedValue, p.consumeNamedValue())
+		withNode.Connect(sourceshape.NodeStatementNamedValue, p.consumeNamedValue())
 	}
 
 	// Consume the statement block.
-	withNode.Connect(NodeWithStatementBlock, p.consumeStatementBlock(statementBlockWithoutTerminator))
+	withNode.Connect(sourceshape.NodeWithStatementBlock, p.consumeStatementBlock(statementBlockWithoutTerminator))
 	return withNode
 }
 
@@ -2029,8 +2032,8 @@ func (p *sourceParser) consumeWithStatement() AstNode {
 // for {}
 // for someExpr {}
 // for varName in someExpr {}
-func (p *sourceParser) consumeForStatement() AstNode {
-	forNode := p.startNode(NodeTypeLoopStatement)
+func (p *sourceParser) consumeForStatement() shared.AstNode {
+	forNode := p.startNode(sourceshape.NodeTypeLoopStatement)
 	defer p.finishNode()
 
 	// for
@@ -2039,16 +2042,16 @@ func (p *sourceParser) consumeForStatement() AstNode {
 	// If the next two tokens are an identifier and the operator "in",
 	// then we have a variable declaration of the for loop.
 	if p.isToken(tokenTypeIdentifer) && p.isNextToken(tokenTypeInOperator) {
-		forNode.Connect(NodeStatementNamedValue, p.consumeNamedValue())
+		forNode.Connect(sourceshape.NodeStatementNamedValue, p.consumeNamedValue())
 		p.consume(tokenTypeInOperator)
 	}
 
 	// Consume the expression (if any).
 	if expression, ok := p.tryConsumeExpression(consumeExpressionNoBraces); ok {
-		forNode.Connect(NodeLoopStatementExpression, expression)
+		forNode.Connect(sourceshape.NodeLoopStatementExpression, expression)
 	}
 
-	forNode.Connect(NodeLoopStatementBlock, p.consumeStatementBlock(statementBlockWithoutTerminator))
+	forNode.Connect(sourceshape.NodeLoopStatementBlock, p.consumeStatementBlock(statementBlockWithoutTerminator))
 	return forNode
 }
 
@@ -2056,8 +2059,8 @@ func (p *sourceParser) consumeForStatement() AstNode {
 //
 // Forms:
 // someName
-func (p *sourceParser) consumeAssignedValue() AstNode {
-	valueNode := p.startNode(NodeTypeAssignedValue)
+func (p *sourceParser) consumeAssignedValue() shared.AstNode {
+	valueNode := p.startNode(sourceshape.NodeTypeAssignedValue)
 	defer p.finishNode()
 
 	name, found := p.consumeIdentifier()
@@ -2065,7 +2068,7 @@ func (p *sourceParser) consumeAssignedValue() AstNode {
 		p.emitError("An identifier was expected here for the name of the value assigned")
 	}
 
-	valueNode.Decorate(NodeNamedValueName, name)
+	valueNode.Decorate(sourceshape.NodeNamedValueName, name)
 	return valueNode
 }
 
@@ -2073,8 +2076,8 @@ func (p *sourceParser) consumeAssignedValue() AstNode {
 //
 // Forms:
 // someName
-func (p *sourceParser) consumeNamedValue() AstNode {
-	valueNode := p.startNode(NodeTypeNamedValue)
+func (p *sourceParser) consumeNamedValue() shared.AstNode {
+	valueNode := p.startNode(sourceshape.NodeTypeNamedValue)
 	defer p.finishNode()
 
 	name, found := p.consumeIdentifier()
@@ -2082,7 +2085,7 @@ func (p *sourceParser) consumeNamedValue() AstNode {
 		p.emitError("An identifier was expected here for the name of the value emitted")
 	}
 
-	valueNode.Decorate(NodeNamedValueName, name)
+	valueNode.Decorate(sourceshape.NodeNamedValueName, name)
 	return valueNode
 }
 
@@ -2092,7 +2095,7 @@ func (p *sourceParser) consumeNamedValue() AstNode {
 // var<SomeType> someName
 // var<SomeType> someName = someExpr
 // var someName = someExpr
-func (p *sourceParser) consumeVar(nodeType NodeType, namePredicate string, typePredicate string, exprPredicate string, option consumeVarOption) AstNode {
+func (p *sourceParser) consumeVar(nodeType sourceshape.NodeType, namePredicate string, typePredicate string, exprPredicate string, option consumeVarOption) shared.AstNode {
 	variableNode := p.startNode(nodeType)
 	defer p.finishNode()
 
@@ -2141,18 +2144,18 @@ func (p *sourceParser) consumeVar(nodeType NodeType, namePredicate string, typeP
 // if someExpr { ... }
 // if someExpr { ... } else { ... }
 // if someExpr { ... } else if { ... }
-func (p *sourceParser) consumeIfStatement() AstNode {
-	conditionalNode := p.startNode(NodeTypeConditionalStatement)
+func (p *sourceParser) consumeIfStatement() shared.AstNode {
+	conditionalNode := p.startNode(sourceshape.NodeTypeConditionalStatement)
 	defer p.finishNode()
 
 	// if
 	p.consumeKeyword("if")
 
 	// Expression.
-	conditionalNode.Connect(NodeConditionalStatementConditional, p.consumeExpression(consumeExpressionNoBraces))
+	conditionalNode.Connect(sourceshape.NodeConditionalStatementConditional, p.consumeExpression(consumeExpressionNoBraces))
 
 	// Statement block.
-	conditionalNode.Connect(NodeConditionalStatementBlock, p.consumeStatementBlock(statementBlockWithoutTerminator))
+	conditionalNode.Connect(sourceshape.NodeConditionalStatementBlock, p.consumeStatementBlock(statementBlockWithoutTerminator))
 
 	// Optional 'else'.
 	if !p.tryConsumeKeyword("else") {
@@ -2161,9 +2164,9 @@ func (p *sourceParser) consumeIfStatement() AstNode {
 
 	// After an 'else' can be either another if statement OR a statement block.
 	if p.isKeyword("if") {
-		conditionalNode.Connect(NodeConditionalStatementElseClause, p.consumeIfStatement())
+		conditionalNode.Connect(sourceshape.NodeConditionalStatementElseClause, p.consumeIfStatement())
 	} else {
-		conditionalNode.Connect(NodeConditionalStatementElseClause, p.consumeStatementBlock(statementBlockWithoutTerminator))
+		conditionalNode.Connect(sourceshape.NodeConditionalStatementElseClause, p.consumeStatementBlock(statementBlockWithoutTerminator))
 	}
 
 	return conditionalNode
@@ -2175,8 +2178,8 @@ func (p *sourceParser) consumeIfStatement() AstNode {
 // yield someExpression
 // yield in someExpression
 // yield break
-func (p *sourceParser) consumeYieldStatement() AstNode {
-	yieldNode := p.startNode(NodeTypeYieldStatement)
+func (p *sourceParser) consumeYieldStatement() shared.AstNode {
+	yieldNode := p.startNode(sourceshape.NodeTypeYieldStatement)
 	defer p.finishNode()
 
 	// yield
@@ -2184,11 +2187,11 @@ func (p *sourceParser) consumeYieldStatement() AstNode {
 
 	// Check for the "in" operator or the "break" keyword.
 	if _, ok := p.tryConsume(tokenTypeInOperator); ok {
-		yieldNode.Connect(NodeYieldStatementStreamValue, p.consumeExpression(consumeExpressionAllowBraces))
+		yieldNode.Connect(sourceshape.NodeYieldStatementStreamValue, p.consumeExpression(consumeExpressionAllowBraces))
 	} else if p.tryConsumeKeyword("break") {
-		yieldNode.Decorate(NodeYieldStatementBreak, "true")
+		yieldNode.Decorate(sourceshape.NodeYieldStatementBreak, "true")
 	} else {
-		yieldNode.Connect(NodeYieldStatementValue, p.consumeExpression(consumeExpressionAllowBraces))
+		yieldNode.Connect(sourceshape.NodeYieldStatementValue, p.consumeExpression(consumeExpressionAllowBraces))
 	}
 
 	return yieldNode
@@ -2198,13 +2201,13 @@ func (p *sourceParser) consumeYieldStatement() AstNode {
 //
 // Forms:
 // reject someExpr
-func (p *sourceParser) consumeRejectStatement() AstNode {
-	rejectNode := p.startNode(NodeTypeRejectStatement)
+func (p *sourceParser) consumeRejectStatement() shared.AstNode {
+	rejectNode := p.startNode(sourceshape.NodeTypeRejectStatement)
 	defer p.finishNode()
 
 	// reject
 	p.consumeKeyword("reject")
-	rejectNode.Connect(NodeRejectStatementValue, p.consumeExpression(consumeExpressionAllowBraces))
+	rejectNode.Connect(sourceshape.NodeRejectStatementValue, p.consumeExpression(consumeExpressionAllowBraces))
 	return rejectNode
 }
 
@@ -2213,8 +2216,8 @@ func (p *sourceParser) consumeRejectStatement() AstNode {
 // Forms:
 // return
 // return someExpr
-func (p *sourceParser) consumeReturnStatement() AstNode {
-	returnNode := p.startNode(NodeTypeReturnStatement)
+func (p *sourceParser) consumeReturnStatement() shared.AstNode {
+	returnNode := p.startNode(sourceshape.NodeTypeReturnStatement)
 	defer p.finishNode()
 
 	// return
@@ -2225,7 +2228,7 @@ func (p *sourceParser) consumeReturnStatement() AstNode {
 		return returnNode
 	}
 
-	returnNode.Connect(NodeReturnStatementValue, p.consumeExpression(consumeExpressionAllowBraces))
+	returnNode.Connect(sourceshape.NodeReturnStatementValue, p.consumeExpression(consumeExpressionAllowBraces))
 	return returnNode
 }
 
@@ -2236,7 +2239,7 @@ func (p *sourceParser) consumeReturnStatement() AstNode {
 // break
 // continue
 // continue SomeLabel
-func (p *sourceParser) consumeJumpStatement(keyword string, nodeType NodeType, labelPredicate string) AstNode {
+func (p *sourceParser) consumeJumpStatement(keyword string, nodeType sourceshape.NodeType, labelPredicate string) shared.AstNode {
 	jumpNode := p.startNode(nodeType)
 	defer p.finishNode()
 
@@ -2252,7 +2255,7 @@ func (p *sourceParser) consumeJumpStatement(keyword string, nodeType NodeType, l
 }
 
 // consumeExpression consumes an expression.
-func (p *sourceParser) consumeExpression(option consumeExpressionOption) AstNode {
+func (p *sourceParser) consumeExpression(option consumeExpressionOption) shared.AstNode {
 	if exprNode, ok := p.tryConsumeExpression(option); ok {
 		return exprNode
 	}
@@ -2264,15 +2267,15 @@ func (p *sourceParser) consumeExpression(option consumeExpressionOption) AstNode
 // **not** decorate the end rune, which is the responsibility of the **caller**.
 //
 // Form: {expr} for something in somethingelse
-func (p *sourceParser) consumePartialLoopExpression(exprNode AstNode, startToken commentedLexeme, option consumeExpressionOption) AstNode {
-	loopNode := p.createNode(NodeTypeLoopExpression)
-	loopNode.Connect(NodeLoopExpressionMapExpression, exprNode)
+func (p *sourceParser) consumePartialLoopExpression(exprNode shared.AstNode, startToken commentedLexeme, option consumeExpressionOption) shared.AstNode {
+	loopNode := p.createNode(sourceshape.NodeTypeLoopExpression)
+	loopNode.Connect(sourceshape.NodeLoopExpressionMapExpression, exprNode)
 
 	p.consumeKeyword("for")
-	loopNode.Connect(NodeLoopExpressionNamedValue, p.consumeNamedValue())
+	loopNode.Connect(sourceshape.NodeLoopExpressionNamedValue, p.consumeNamedValue())
 
 	p.consume(tokenTypeInOperator)
-	loopNode.Connect(NodeLoopExpressionStreamExpression, p.consumeExpression(option))
+	loopNode.Connect(sourceshape.NodeLoopExpressionStreamExpression, p.consumeExpression(option))
 
 	p.decorateStartRuneAndComments(loopNode, startToken)
 	return loopNode
@@ -2280,8 +2283,8 @@ func (p *sourceParser) consumePartialLoopExpression(exprNode AstNode, startToken
 
 // tryConsumeExpression attempts to consume an expression. If an expression
 // could not be found, returns false.
-func (p *sourceParser) tryConsumeExpression(option consumeExpressionOption) (AstNode, bool) {
-	nonArrow := func() (AstNode, bool) {
+func (p *sourceParser) tryConsumeExpression(option consumeExpressionOption) (shared.AstNode, bool) {
+	nonArrow := func() (shared.AstNode, bool) {
 		return p.tryConsumeNonArrowExpression(option)
 	}
 
@@ -2295,9 +2298,9 @@ func (p *sourceParser) tryConsumeExpression(option consumeExpressionOption) (Ast
 
 		// Check for a template literal string. If found, then the expression tags the template literal string.
 		if p.isToken(tokenTypeTemplateStringLiteral) {
-			templateNode := p.createNode(NodeTaggedTemplateLiteralString)
-			templateNode.Connect(NodeTaggedTemplateCallExpression, node)
-			templateNode.Connect(NodeTaggedTemplateParsed, p.consumeTemplateString())
+			templateNode := p.createNode(sourceshape.NodeTaggedTemplateLiteralString)
+			templateNode.Connect(sourceshape.NodeTaggedTemplateCallExpression, node)
+			templateNode.Connect(sourceshape.NodeTaggedTemplateParsed, p.consumeTemplateString())
 
 			p.decorateStartRuneAndComments(templateNode, startToken)
 			p.decorateEndRune(templateNode, p.currentToken.lexeme)
@@ -2314,13 +2317,13 @@ func (p *sourceParser) tryConsumeExpression(option consumeExpressionOption) (Ast
 
 		// Check for an if keyword. If found, then the expression starts a conditional expression.
 		if p.isKeyword("if") {
-			conditionalNode := p.createNode(NodeTypeConditionalExpression)
-			conditionalNode.Connect(NodeConditionalExpressionThenExpression, node)
+			conditionalNode := p.createNode(sourceshape.NodeTypeConditionalExpression)
+			conditionalNode.Connect(sourceshape.NodeConditionalExpressionThenExpression, node)
 
 			p.consumeKeyword("if")
-			conditionalNode.Connect(NodeConditionalExpressionCheckExpression, p.consumeExpression(option))
+			conditionalNode.Connect(sourceshape.NodeConditionalExpressionCheckExpression, p.consumeExpression(option))
 			p.consumeKeyword("else")
-			conditionalNode.Connect(NodeConditionalExpressionElseExpression, p.consumeExpression(option))
+			conditionalNode.Connect(sourceshape.NodeConditionalExpressionElseExpression, p.consumeExpression(option))
 
 			p.decorateStartRuneAndComments(conditionalNode, startToken)
 			p.decorateEndRune(conditionalNode, p.currentToken.lexeme)
@@ -2337,7 +2340,7 @@ func (p *sourceParser) tryConsumeExpression(option consumeExpressionOption) (Ast
 // tryConsumeMarkupExpression tries to consume a markup expression of the following form:
 // <somepath attr="value" attr={value} />
 // <somepath attr="value" attr={value}>...</somepath>
-func (p *sourceParser) tryConsumeMarkupExpression() (AstNode, bool) {
+func (p *sourceParser) tryConsumeMarkupExpression() (shared.AstNode, bool) {
 	if !p.isToken(tokenTypeLessThan) {
 		return nil, false
 	}
@@ -2346,10 +2349,10 @@ func (p *sourceParser) tryConsumeMarkupExpression() (AstNode, bool) {
 }
 
 // consumeMarkupExpression consumes a markup expression.
-func (p *sourceParser) consumeMarkupExpression() AstNode {
+func (p *sourceParser) consumeMarkupExpression() shared.AstNode {
 	startToken := p.currentToken
 
-	markupNode := p.startNode(NodeTypeSmlExpression)
+	markupNode := p.startNode(sourceshape.NodeTypeSmlExpression)
 	defer p.finishNode()
 
 	var topNode = markupNode
@@ -2362,7 +2365,7 @@ func (p *sourceParser) consumeMarkupExpression() AstNode {
 
 	// Consume the identifier path.
 	access, path := p.consumeSimpleAccessPath()
-	markupNode.Connect(NodeSmlExpressionTypeOrFunction, access)
+	markupNode.Connect(sourceshape.NodeSmlExpressionTypeOrFunction, access)
 
 	// Check for a statement terminator followed by a keyword. If found, then this is an open
 	// tag and we don't want to consume the statement terminator.
@@ -2408,9 +2411,9 @@ func (p *sourceParser) consumeMarkupExpression() AstNode {
 
 			// Attributes must start with an identifier or an at sign.
 			if p.isToken(tokenTypeAtSign) {
-				markupNode.Connect(NodeSmlExpressionDecorator, p.consumeMarkupAttribute(NodeTypeSmlDecorator, NodeSmlDecoratorValue))
+				markupNode.Connect(sourceshape.NodeSmlExpressionDecorator, p.consumeMarkupAttribute(sourceshape.NodeTypeSmlDecorator, sourceshape.NodeSmlDecoratorValue))
 			} else if p.isToken(tokenTypeIdentifer) || p.isToken(tokenTypeKeyword) {
-				markupNode.Connect(NodeSmlExpressionAttribute, p.consumeMarkupAttribute(NodeTypeSmlAttribute, NodeSmlAttributeValue))
+				markupNode.Connect(sourceshape.NodeSmlExpressionAttribute, p.consumeMarkupAttribute(sourceshape.NodeTypeSmlAttribute, sourceshape.NodeSmlAttributeValue))
 			} else {
 				break
 			}
@@ -2449,14 +2452,14 @@ func (p *sourceParser) consumeMarkupExpression() AstNode {
 
 		// Check for a nested attribute.
 		if p.isToken(tokenTypeLessThan) && p.isNextToken(tokenTypeDotAccessOperator) {
-			markupNode.Connect(NodeSmlExpressionAttribute, p.consumeMarkupNestedAttribute())
+			markupNode.Connect(sourceshape.NodeSmlExpressionAttribute, p.consumeMarkupNestedAttribute())
 			continue
 		}
 
 		// Otherwise, consume a child.
 		child, valid := p.consumeMarkupChild()
 		if valid {
-			markupNode.Connect(NodeSmlExpressionChild, child)
+			markupNode.Connect(sourceshape.NodeSmlExpressionChild, child)
 		}
 	}
 
@@ -2485,9 +2488,9 @@ func (p *sourceParser) consumeMarkupExpression() AstNode {
 //
 // Form:
 // <.SomeAttr>...</.SomeAttr>
-func (p *sourceParser) consumeMarkupNestedAttribute() AstNode {
-	attrNode := p.startNode(NodeTypeSmlAttribute)
-	attrNode.Decorate(NodeSmlAttributeNested, "true")
+func (p *sourceParser) consumeMarkupNestedAttribute() shared.AstNode {
+	attrNode := p.startNode(sourceshape.NodeTypeSmlAttribute)
+	attrNode.Decorate(sourceshape.NodeSmlAttributeNested, "true")
 	defer p.finishNode()
 
 	// <.
@@ -2500,7 +2503,7 @@ func (p *sourceParser) consumeMarkupNestedAttribute() AstNode {
 		return attrNode
 	}
 
-	attrNode.Decorate(NodeSmlAttributeName, attrName)
+	attrNode.Decorate(sourceshape.NodeSmlAttributeName, attrName)
 
 	// >
 	if _, ok := p.consume(tokenTypeGreaterThan); !ok {
@@ -2513,7 +2516,7 @@ func (p *sourceParser) consumeMarkupNestedAttribute() AstNode {
 		return attrNode
 	}
 
-	attrNode.Connect(NodeSmlAttributeValue, child)
+	attrNode.Connect(sourceshape.NodeSmlAttributeValue, child)
 
 	// Consume the closing tag.
 	// </.
@@ -2554,7 +2557,7 @@ func (p *sourceParser) consumeMarkupNestedAttribute() AstNode {
 // <nested mark="up"/>
 // { nestedExpression }
 // some text
-func (p *sourceParser) consumeMarkupChild() (AstNode, bool) {
+func (p *sourceParser) consumeMarkupChild() (shared.AstNode, bool) {
 	// Check for the beginning of a nested markup tag.
 	if p.isToken(tokenTypeLessThan) {
 		return p.consumeMarkupExpression(), true
@@ -2575,7 +2578,7 @@ func (p *sourceParser) consumeMarkupChild() (AstNode, bool) {
 	}
 
 	// Otherwise, we consume as text until we see a closing tag.
-	textNode := p.startNode(NodeTypeSmlText)
+	textNode := p.startNode(sourceshape.NodeTypeSmlText)
 	defer p.finishNode()
 
 	// Before consuming the text, save the previous token if it was a brace or tag close.
@@ -2607,7 +2610,7 @@ func (p *sourceParser) consumeMarkupChild() (AstNode, bool) {
 		return nil, false
 	}
 
-	textNode.Decorate(NodeSmlTextValue, text)
+	textNode.Decorate(sourceshape.NodeSmlTextValue, text)
 	return textNode, true
 }
 
@@ -2623,14 +2626,14 @@ func (p *sourceParser) consumeMarkupChild() (AstNode, bool) {
 // @some-attribute
 // @some-attribute="somevalue"
 // @some-attribute={someexpression}
-func (p *sourceParser) consumeMarkupAttribute(kind NodeType, valuePredicate string) AstNode {
+func (p *sourceParser) consumeMarkupAttribute(kind sourceshape.NodeType, valuePredicate string) shared.AstNode {
 	attributeNode := p.startNode(kind)
 	defer p.finishNode()
 
 	if _, ok := p.tryConsume(tokenTypeAtSign); ok {
 		// Attribute path.
 		access, _ := p.consumeSimpleAccessPath()
-		attributeNode.Connect(NodeSmlDecoratorPath, access)
+		attributeNode.Connect(sourceshape.NodeSmlDecoratorPath, access)
 	} else {
 		// Attribute name. Can have dashes.
 		var name = ""
@@ -2645,7 +2648,7 @@ func (p *sourceParser) consumeMarkupAttribute(kind NodeType, valuePredicate stri
 			name = name + "-"
 		}
 
-		attributeNode.Decorate(NodeSmlAttributeName, name)
+		attributeNode.Decorate(sourceshape.NodeSmlAttributeName, name)
 	}
 
 	// Check for value after an equals sign, which is optional.
@@ -2669,7 +2672,7 @@ func (p *sourceParser) consumeMarkupAttribute(kind NodeType, valuePredicate stri
 // tryConsumeLambdaExpression tries to consume a lambda expression of one of the following forms:
 // (arg1, arg2) => expression
 // function<ReturnType> (arg1 type, arg2 type) { ... }
-func (p *sourceParser) tryConsumeLambdaExpression() (AstNode, bool) {
+func (p *sourceParser) tryConsumeLambdaExpression() (shared.AstNode, bool) {
 	// Check for the function keyword. If found, we potentially have a full definition lambda function.
 	if p.isKeyword("function") {
 		if p.lookaheadFullLambdaExpr() {
@@ -2691,7 +2694,7 @@ func (p *sourceParser) tryConsumeLambdaExpression() (AstNode, bool) {
 
 	// If we've reached this point, we've found a lambda expression and can start properly
 	// consuming it.
-	lambdaNode := p.startNode(NodeTypeLambdaExpression)
+	lambdaNode := p.startNode(sourceshape.NodeTypeLambdaExpression)
 	defer p.finishNode()
 
 	// (
@@ -2700,7 +2703,7 @@ func (p *sourceParser) tryConsumeLambdaExpression() (AstNode, bool) {
 	// Optional: arguments.
 	if !p.isToken(tokenTypeRightParen) {
 		for {
-			lambdaNode.Connect(NodeLambdaExpressionInferredParameter, p.consumeLambdaParameter())
+			lambdaNode.Connect(sourceshape.NodeLambdaExpressionInferredParameter, p.consumeLambdaParameter())
 			if _, ok := p.tryConsume(tokenTypeComma); !ok {
 				break
 			}
@@ -2714,7 +2717,7 @@ func (p *sourceParser) tryConsumeLambdaExpression() (AstNode, bool) {
 	p.consume(tokenTypeLambdaArrowOperator)
 
 	// expression.
-	lambdaNode.Connect(NodeLambdaExpressionChildExpr, p.consumeExpression(consumeExpressionAllowBraces))
+	lambdaNode.Connect(sourceshape.NodeLambdaExpressionChildExpr, p.consumeExpression(consumeExpressionAllowBraces))
 	return lambdaNode, true
 }
 
@@ -2722,8 +2725,8 @@ func (p *sourceParser) tryConsumeLambdaExpression() (AstNode, bool) {
 //
 // Form:
 // someIdentifier
-func (p *sourceParser) consumeLambdaParameter() AstNode {
-	parameterNode := p.startNode(NodeTypeLambdaParameter)
+func (p *sourceParser) consumeLambdaParameter() shared.AstNode {
+	parameterNode := p.startNode(sourceshape.NodeTypeLambdaParameter)
 	defer p.finishNode()
 
 	value, ok := p.consumeIdentifier()
@@ -2731,7 +2734,7 @@ func (p *sourceParser) consumeLambdaParameter() AstNode {
 		return parameterNode
 	}
 
-	parameterNode.Decorate(NodeLambdaExpressionParameterName, value)
+	parameterNode.Decorate(sourceshape.NodeLambdaExpressionParameterName, value)
 	return parameterNode
 }
 
@@ -2804,8 +2807,8 @@ func (p *sourceParser) lookaheadLambdaExpr() bool {
 //
 // Form:
 // function<ReturnType> (arg1 type, arg2 type) { ... }
-func (p *sourceParser) consumeFullLambdaExpression() AstNode {
-	funcNode := p.startNode(NodeTypeLambdaExpression)
+func (p *sourceParser) consumeFullLambdaExpression() shared.AstNode {
+	funcNode := p.startNode(sourceshape.NodeTypeLambdaExpression)
 	defer p.finishNode()
 
 	// function
@@ -2813,7 +2816,7 @@ func (p *sourceParser) consumeFullLambdaExpression() AstNode {
 
 	// return type (optional)
 	if _, ok := p.tryConsume(tokenTypeLessThan); ok {
-		funcNode.Connect(NodeLambdaExpressionReturnType, p.consumeTypeReference(typeReferenceAllowAll))
+		funcNode.Connect(sourceshape.NodeLambdaExpressionReturnType, p.consumeTypeReference(typeReferenceAllowAll))
 		p.consume(tokenTypeGreaterThan)
 	}
 
@@ -2824,7 +2827,7 @@ func (p *sourceParser) consumeFullLambdaExpression() AstNode {
 
 	if !p.isToken(tokenTypeRightParen) {
 		for {
-			funcNode.Connect(NodeLambdaExpressionParameter, p.consumeParameter())
+			funcNode.Connect(sourceshape.NodeLambdaExpressionParameter, p.consumeParameter())
 			if _, ok := p.tryConsume(tokenTypeComma); !ok {
 				break
 			}
@@ -2836,11 +2839,11 @@ func (p *sourceParser) consumeFullLambdaExpression() AstNode {
 	}
 
 	// Block.
-	funcNode.Connect(NodeLambdaExpressionBlock, p.consumeStatementBlock(statementBlockWithoutTerminator))
+	funcNode.Connect(sourceshape.NodeLambdaExpressionBlock, p.consumeStatementBlock(statementBlockWithoutTerminator))
 	return funcNode
 }
 
-func (p *sourceParser) consumeNonArrowExpression() AstNode {
+func (p *sourceParser) consumeNonArrowExpression() shared.AstNode {
 	if node, ok := p.tryConsumeNonArrowExpression(consumeExpressionAllowBraces); ok {
 		return node
 	}
@@ -2851,15 +2854,15 @@ func (p *sourceParser) consumeNonArrowExpression() AstNode {
 // tryConsumeAwaitExpression tries to consume an await expression.
 //
 // Form: <- a
-func (p *sourceParser) tryConsumeAwaitExpression() (AstNode, bool) {
+func (p *sourceParser) tryConsumeAwaitExpression() (shared.AstNode, bool) {
 	if _, ok := p.tryConsume(tokenTypeArrowPortOperator); !ok {
 		return nil, false
 	}
 
-	exprNode := p.startNode(NodeTypeAwaitExpression)
+	exprNode := p.startNode(sourceshape.NodeTypeAwaitExpression)
 	defer p.finishNode()
 
-	exprNode.Connect(NodeAwaitExpressionSource, p.consumeNonArrowExpression())
+	exprNode.Connect(sourceshape.NodeAwaitExpressionSource, p.consumeNonArrowExpression())
 	return exprNode, true
 }
 
@@ -2902,81 +2905,81 @@ func (p *sourceParser) lookaheadArrowStatement() bool {
 // Forms:
 // a <- b
 // a, b <- c
-func (p *sourceParser) tryConsumeArrowStatement() (AstNode, bool) {
+func (p *sourceParser) tryConsumeArrowStatement() (shared.AstNode, bool) {
 	if !p.lookaheadArrowStatement() {
 		return nil, false
 	}
 
-	arrowNode := p.startNode(NodeTypeArrowStatement)
+	arrowNode := p.startNode(sourceshape.NodeTypeArrowStatement)
 	defer p.finishNode()
 
-	arrowNode.Connect(NodeArrowStatementDestination, p.consumeAssignableExpression())
+	arrowNode.Connect(sourceshape.NodeArrowStatementDestination, p.consumeAssignableExpression())
 
 	if _, ok := p.tryConsume(tokenTypeComma); ok {
-		arrowNode.Connect(NodeArrowStatementRejection, p.consumeAssignableExpression())
+		arrowNode.Connect(sourceshape.NodeArrowStatementRejection, p.consumeAssignableExpression())
 	}
 
 	p.consume(tokenTypeArrowPortOperator)
-	arrowNode.Connect(NodeArrowStatementSource, p.consumeNonArrowExpression())
+	arrowNode.Connect(sourceshape.NodeArrowStatementSource, p.consumeNonArrowExpression())
 	return arrowNode, true
 }
 
 // BinaryOperators defines the binary operators in precedence order.
 var BinaryOperators = []boe{
 	// Stream operators
-	boe{tokenTypeEllipsis, NodeDefineRangeExpression},
-	boe{tokenTypeExclusiveEllipsis, NodeDefineExclusiveRangeExpression},
+	boe{tokenTypeEllipsis, sourceshape.NodeDefineRangeExpression},
+	boe{tokenTypeExclusiveEllipsis, sourceshape.NodeDefineExclusiveRangeExpression},
 
 	// Boolean operators.
-	boe{tokenTypeBooleanOr, NodeBooleanOrExpression},
-	boe{tokenTypeBooleanAnd, NodeBooleanAndExpression},
+	boe{tokenTypeBooleanOr, sourceshape.NodeBooleanOrExpression},
+	boe{tokenTypeBooleanAnd, sourceshape.NodeBooleanAndExpression},
 
 	// Comparison operators.
-	boe{tokenTypeEqualsEquals, NodeComparisonEqualsExpression},
-	boe{tokenTypeNotEquals, NodeComparisonNotEqualsExpression},
+	boe{tokenTypeEqualsEquals, sourceshape.NodeComparisonEqualsExpression},
+	boe{tokenTypeNotEquals, sourceshape.NodeComparisonNotEqualsExpression},
 
-	boe{tokenTypeLTE, NodeComparisonLTEExpression},
-	boe{tokenTypeGTE, NodeComparisonGTEExpression},
+	boe{tokenTypeLTE, sourceshape.NodeComparisonLTEExpression},
+	boe{tokenTypeGTE, sourceshape.NodeComparisonGTEExpression},
 
-	boe{tokenTypeLessThan, NodeComparisonLTExpression},
-	boe{tokenTypeGreaterThan, NodeComparisonGTExpression},
+	boe{tokenTypeLessThan, sourceshape.NodeComparisonLTExpression},
+	boe{tokenTypeGreaterThan, sourceshape.NodeComparisonGTExpression},
 
 	// Nullable operators.
-	boe{tokenTypeNullOrValueOperator, NodeNullComparisonExpression},
+	boe{tokenTypeNullOrValueOperator, sourceshape.NodeNullComparisonExpression},
 
 	// Bitwise operators.
-	boe{tokenTypePipe, NodeBitwiseOrExpression},
-	boe{tokenTypeAnd, NodeBitwiseAndExpression},
-	boe{tokenTypeXor, NodeBitwiseXorExpression},
-	boe{tokenTypeBitwiseShiftLeft, NodeBitwiseShiftLeftExpression},
+	boe{tokenTypePipe, sourceshape.NodeBitwiseOrExpression},
+	boe{tokenTypeAnd, sourceshape.NodeBitwiseAndExpression},
+	boe{tokenTypeXor, sourceshape.NodeBitwiseXorExpression},
+	boe{tokenTypeBitwiseShiftLeft, sourceshape.NodeBitwiseShiftLeftExpression},
 
 	// TODO(jschorr): Find a solution for the >> issue.
 	//boe{tokenTypeGreaterThan, NodeBitwiseShiftRightExpression},
 
 	// Numeric operators.
-	boe{tokenTypePlus, NodeBinaryAddExpression},
-	boe{tokenTypeMinus, NodeBinarySubtractExpression},
-	boe{tokenTypeModulo, NodeBinaryModuloExpression},
-	boe{tokenTypeTimes, NodeBinaryMultiplyExpression},
-	boe{tokenTypeDiv, NodeBinaryDivideExpression},
+	boe{tokenTypePlus, sourceshape.NodeBinaryAddExpression},
+	boe{tokenTypeMinus, sourceshape.NodeBinarySubtractExpression},
+	boe{tokenTypeModulo, sourceshape.NodeBinaryModuloExpression},
+	boe{tokenTypeTimes, sourceshape.NodeBinaryMultiplyExpression},
+	boe{tokenTypeDiv, sourceshape.NodeBinaryDivideExpression},
 
 	// 'is' operator.
-	boe{tokenTypeIsOperator, NodeIsComparisonExpression},
+	boe{tokenTypeIsOperator, sourceshape.NodeIsComparisonExpression},
 
 	// 'in' operator.
-	boe{tokenTypeInOperator, NodeInCollectionExpression},
+	boe{tokenTypeInOperator, sourceshape.NodeInCollectionExpression},
 }
 
 // tryConsumeNonArrowExpression tries to consume an expression that cannot contain an arrow.
-func (p *sourceParser) tryConsumeNonArrowExpression(option consumeExpressionOption) (AstNode, bool) {
+func (p *sourceParser) tryConsumeNonArrowExpression(option consumeExpressionOption) (shared.AstNode, bool) {
 	// Special case: `not` has a lower precedence than other unary operators.
 	if p.isKeyword("not") {
 		p.consumeKeyword("not")
-		exprNode := p.startNode(NodeKeywordNotExpression)
+		exprNode := p.startNode(sourceshape.NodeKeywordNotExpression)
 		defer p.finishNode()
 
 		node, ok := p.tryConsumeNonArrowExpression(option)
-		exprNode.Connect(NodeUnaryExpressionChildExpr, node)
+		exprNode.Connect(sourceshape.NodeUnaryExpressionChildExpr, node)
 		return exprNode, ok
 	}
 
@@ -2991,7 +2994,7 @@ type boe struct {
 	BinaryOperatorToken tokenType
 
 	// The type of node to create for this expression.
-	BinaryExpressionNodeType NodeType
+	BinaryExpressionNodeType sourceshape.NodeType
 }
 
 // buildBinaryOperatorExpressionFnTree builds a tree of functions to try to consume a set of binary
@@ -2999,14 +3002,14 @@ type boe struct {
 func (p *sourceParser) buildBinaryOperatorExpressionFnTree(option consumeExpressionOption, operators ...boe) tryParserFn {
 	// Start with a base expression function.
 	var currentParseFn tryParserFn
-	currentParseFn = func() (AstNode, bool) {
+	currentParseFn = func() (shared.AstNode, bool) {
 		return p.tryConsumeValueExpression(option)
 	}
 
 	for i := range operators {
 		// Note: We have to reverse this to ensure we have proper precedence.
 		currentParseFn = func(operatorInfo boe, currentFn tryParserFn) tryParserFn {
-			return (func() (AstNode, bool) {
+			return (func() (shared.AstNode, bool) {
 				return p.tryConsumeBinaryExpression(currentFn, operatorInfo.BinaryOperatorToken, operatorInfo.BinaryExpressionNodeType)
 			})
 		}(operators[len(operators)-i-1], currentParseFn)
@@ -3016,8 +3019,8 @@ func (p *sourceParser) buildBinaryOperatorExpressionFnTree(option consumeExpress
 }
 
 // tryConsumeBinaryExpression tries to consume a binary operator expression.
-func (p *sourceParser) tryConsumeBinaryExpression(subTryExprFn tryParserFn, binaryTokenType tokenType, nodeType NodeType) (AstNode, bool) {
-	rightNodeBuilder := func(leftNode AstNode, operatorToken lexeme) (AstNode, bool) {
+func (p *sourceParser) tryConsumeBinaryExpression(subTryExprFn tryParserFn, binaryTokenType tokenType, nodeType sourceshape.NodeType) (shared.AstNode, bool) {
+	rightNodeBuilder := func(leftNode shared.AstNode, operatorToken lexeme) (shared.AstNode, bool) {
 		rightNode, ok := subTryExprFn()
 		if !ok {
 			return nil, false
@@ -3025,8 +3028,8 @@ func (p *sourceParser) tryConsumeBinaryExpression(subTryExprFn tryParserFn, bina
 
 		// Create the expression node representing the binary expression.
 		exprNode := p.createNode(nodeType)
-		exprNode.Connect(NodeBinaryExpressionLeftExpr, leftNode)
-		exprNode.Connect(NodeBinaryExpressionRightExpr, rightNode)
+		exprNode.Connect(sourceshape.NodeBinaryExpressionLeftExpr, leftNode)
+		exprNode.Connect(sourceshape.NodeBinaryExpressionRightExpr, rightNode)
 		return exprNode, true
 	}
 
@@ -3035,15 +3038,15 @@ func (p *sourceParser) tryConsumeBinaryExpression(subTryExprFn tryParserFn, bina
 
 // memberAccessExprMap contains a map from the member access token types to their
 // associated node types.
-var memberAccessExprMap = map[tokenType]NodeType{
-	tokenTypeDotAccessOperator:     NodeMemberAccessExpression,
-	tokenTypeArrowAccessOperator:   NodeDynamicMemberAccessExpression,
-	tokenTypeNullDotAccessOperator: NodeNullableMemberAccessExpression,
-	tokenTypeStreamAccessOperator:  NodeStreamMemberAccessExpression,
+var memberAccessExprMap = map[tokenType]sourceshape.NodeType{
+	tokenTypeDotAccessOperator:     sourceshape.NodeMemberAccessExpression,
+	tokenTypeArrowAccessOperator:   sourceshape.NodeDynamicMemberAccessExpression,
+	tokenTypeNullDotAccessOperator: sourceshape.NodeNullableMemberAccessExpression,
+	tokenTypeStreamAccessOperator:  sourceshape.NodeStreamMemberAccessExpression,
 }
 
 // tryConsumeValueExpression consumes an expression which forms a value under a binary operator.
-func (p *sourceParser) tryConsumeValueExpression(option consumeExpressionOption) (AstNode, bool) {
+func (p *sourceParser) tryConsumeValueExpression(option consumeExpressionOption) (shared.AstNode, bool) {
 	startToken := p.currentToken
 	consumed, ok := p.tryConsumeCallAccessExpression()
 	if !ok {
@@ -3052,8 +3055,8 @@ func (p *sourceParser) tryConsumeValueExpression(option consumeExpressionOption)
 
 	// Check for a null assert.
 	if p.isToken(tokenTypeNot) {
-		assertNode := p.createNode(NodeAssertNotNullExpression)
-		assertNode.Connect(NodeUnaryExpressionChildExpr, consumed)
+		assertNode := p.createNode(sourceshape.NodeAssertNotNullExpression)
+		assertNode.Connect(sourceshape.NodeUnaryExpressionChildExpr, consumed)
 		p.consume(tokenTypeNot)
 
 		p.decorateStartRuneAndComments(assertNode, startToken)
@@ -3063,8 +3066,8 @@ func (p *sourceParser) tryConsumeValueExpression(option consumeExpressionOption)
 
 	// Check for an open brace. If found, this is a new structural expression.
 	if option == consumeExpressionAllowBraces && p.isToken(tokenTypeLeftBrace) {
-		structuralNode := p.createNode(NodeStructuralNewExpression)
-		structuralNode.Connect(NodeStructuralNewTypeExpression, consumed)
+		structuralNode := p.createNode(sourceshape.NodeStructuralNewExpression)
+		structuralNode.Connect(sourceshape.NodeStructuralNewTypeExpression, consumed)
 
 		p.consume(tokenTypeLeftBrace)
 
@@ -3073,7 +3076,7 @@ func (p *sourceParser) tryConsumeValueExpression(option consumeExpressionOption)
 				break
 			}
 
-			structuralNode.Connect(NodeStructuralNewExpressionChildEntry, p.consumeStructuralNewExpressionEntry())
+			structuralNode.Connect(sourceshape.NodeStructuralNewExpressionChildEntry, p.consumeStructuralNewExpressionEntry())
 			if _, ok := p.tryConsume(tokenTypeComma); !ok {
 				break
 			}
@@ -3096,8 +3099,8 @@ func (p *sourceParser) tryConsumeValueExpression(option consumeExpressionOption)
 
 // tryConsumeCallAccessExpression attempts to consume call expressions (function calls, slices, generic specifier)
 // or member accesses (dot, nullable, stream, etc.)
-func (p *sourceParser) tryConsumeCallAccessExpression() (AstNode, bool) {
-	rightNodeBuilder := func(leftNode AstNode, operatorToken lexeme) (AstNode, bool) {
+func (p *sourceParser) tryConsumeCallAccessExpression() (shared.AstNode, bool) {
+	rightNodeBuilder := func(leftNode shared.AstNode, operatorToken lexeme) (shared.AstNode, bool) {
 		// If this is a member access of some kind, we next look for an identifier.
 		if operatorNodeType, ok := memberAccessExprMap[operatorToken.kind]; ok {
 			// Consume an identifier.
@@ -3108,8 +3111,8 @@ func (p *sourceParser) tryConsumeCallAccessExpression() (AstNode, bool) {
 
 			// Create the expression node.
 			exprNode := p.createNode(operatorNodeType)
-			exprNode.Connect(NodeMemberAccessChildExpr, leftNode)
-			exprNode.Decorate(NodeMemberAccessIdentifier, identifier)
+			exprNode.Connect(sourceshape.NodeMemberAccessChildExpr, leftNode)
+			exprNode.Decorate(sourceshape.NodeMemberAccessIdentifier, identifier)
 			return exprNode, true
 		}
 
@@ -3122,21 +3125,21 @@ func (p *sourceParser) tryConsumeCallAccessExpression() (AstNode, bool) {
 			// Consume the close parens.
 			p.consume(tokenTypeRightParen)
 
-			exprNode := p.createNode(NodeCastExpression)
-			exprNode.Connect(NodeCastExpressionType, typeReferenceNode)
-			exprNode.Connect(NodeCastExpressionChildExpr, leftNode)
+			exprNode := p.createNode(sourceshape.NodeCastExpression)
+			exprNode.Connect(sourceshape.NodeCastExpressionType, typeReferenceNode)
+			exprNode.Connect(sourceshape.NodeCastExpressionChildExpr, leftNode)
 			return exprNode, true
 
 		case tokenTypeLeftParen:
 			// Function call: a(b)
-			exprNode := p.createNode(NodeFunctionCallExpression)
-			exprNode.Connect(NodeFunctionCallExpressionChildExpr, leftNode)
+			exprNode := p.createNode(sourceshape.NodeFunctionCallExpression)
+			exprNode.Connect(sourceshape.NodeFunctionCallExpressionChildExpr, leftNode)
 
 			// Consume zero (or more) parameters.
 			if !p.isToken(tokenTypeRightParen) {
 				for {
 					// Consume an expression.
-					exprNode.Connect(NodeFunctionCallArgument, p.consumeExpression(consumeExpressionAllowBraces))
+					exprNode.Connect(sourceshape.NodeFunctionCallArgument, p.consumeExpression(consumeExpressionAllowBraces))
 
 					// Consume an (optional) comma.
 					if _, ok := p.tryConsume(tokenTypeComma); !ok {
@@ -3154,14 +3157,14 @@ func (p *sourceParser) tryConsumeCallAccessExpression() (AstNode, bool) {
 			// a<b>
 
 			// Consume the generic specifier.
-			genericNode := p.createNode(NodeGenericSpecifierExpression)
+			genericNode := p.createNode(sourceshape.NodeGenericSpecifierExpression)
 
 			// child expression
-			genericNode.Connect(NodeGenericSpecifierChildExpr, leftNode)
+			genericNode.Connect(sourceshape.NodeGenericSpecifierChildExpr, leftNode)
 
 			// Consume the generic type references.
 			for {
-				genericNode.Connect(NodeGenericSpecifierType, p.consumeTypeReference(typeReferenceNoVoid))
+				genericNode.Connect(sourceshape.NodeGenericSpecifierType, p.consumeTypeReference(typeReferenceNoVoid))
 				if _, ok := p.tryConsume(tokenTypeComma); !ok {
 					break
 				}
@@ -3177,13 +3180,13 @@ func (p *sourceParser) tryConsumeCallAccessExpression() (AstNode, bool) {
 			// a[b:c]
 			// a[:b]
 			// a[b:]
-			exprNode := p.createNode(NodeSliceExpression)
-			exprNode.Connect(NodeSliceExpressionChildExpr, leftNode)
+			exprNode := p.createNode(sourceshape.NodeSliceExpression)
+			exprNode.Connect(sourceshape.NodeSliceExpressionChildExpr, leftNode)
 
 			// Check for a colon token. If found, this is a right-side-only
 			// slice.
 			if _, ok := p.tryConsume(tokenTypeColon); ok {
-				exprNode.Connect(NodeSliceExpressionRightIndex, p.consumeExpression(consumeExpressionNoBraces))
+				exprNode.Connect(sourceshape.NodeSliceExpressionRightIndex, p.consumeExpression(consumeExpressionNoBraces))
 				p.consume(tokenTypeRightBracket)
 				return exprNode, true
 			}
@@ -3193,7 +3196,7 @@ func (p *sourceParser) tryConsumeCallAccessExpression() (AstNode, bool) {
 
 			// If we find a right bracket after the expression, then we're done.
 			if _, ok := p.tryConsume(tokenTypeRightBracket); ok {
-				exprNode.Connect(NodeSliceExpressionIndex, indexNode)
+				exprNode.Connect(sourceshape.NodeSliceExpressionIndex, indexNode)
 				return exprNode, true
 			}
 
@@ -3205,12 +3208,12 @@ func (p *sourceParser) tryConsumeCallAccessExpression() (AstNode, bool) {
 
 			// Consume the (optional right expression).
 			if _, ok := p.tryConsume(tokenTypeRightBracket); ok {
-				exprNode.Connect(NodeSliceExpressionLeftIndex, indexNode)
+				exprNode.Connect(sourceshape.NodeSliceExpressionLeftIndex, indexNode)
 				return exprNode, true
 			}
 
-			exprNode.Connect(NodeSliceExpressionLeftIndex, indexNode)
-			exprNode.Connect(NodeSliceExpressionRightIndex, p.consumeExpression(consumeExpressionNoBraces))
+			exprNode.Connect(sourceshape.NodeSliceExpressionLeftIndex, indexNode)
+			exprNode.Connect(sourceshape.NodeSliceExpressionRightIndex, p.consumeExpression(consumeExpressionNoBraces))
 			p.consume(tokenTypeRightBracket)
 			return exprNode, true
 		}
@@ -3239,7 +3242,7 @@ func (p *sourceParser) tryConsumeCallAccessExpression() (AstNode, bool) {
 }
 
 // consumeLiteralValue consumes a literal value.
-func (p *sourceParser) consumeLiteralValue() AstNode {
+func (p *sourceParser) consumeLiteralValue() shared.AstNode {
 	node, found := p.tryConsumeLiteralValue()
 	if !found {
 		p.emitError("Expected literal value, found: %v", p.currentToken.kind)
@@ -3250,25 +3253,25 @@ func (p *sourceParser) consumeLiteralValue() AstNode {
 }
 
 // tryConsumeLiteralValue attempts to consume a literal value.
-func (p *sourceParser) tryConsumeLiteralValue() (AstNode, bool) {
+func (p *sourceParser) tryConsumeLiteralValue() (shared.AstNode, bool) {
 	switch {
 	// Numeric literal.
 	case p.isToken(tokenTypeNumericLiteral):
-		literalNode := p.startNode(NodeNumericLiteralExpression)
+		literalNode := p.startNode(sourceshape.NodeNumericLiteralExpression)
 		defer p.finishNode()
 
 		token, _ := p.consume(tokenTypeNumericLiteral)
-		literalNode.Decorate(NodeNumericLiteralExpressionValue, token.value)
+		literalNode.Decorate(sourceshape.NodeNumericLiteralExpressionValue, token.value)
 
 		return literalNode, true
 
 	// Boolean literal.
 	case p.isToken(tokenTypeBooleanLiteral):
-		literalNode := p.startNode(NodeBooleanLiteralExpression)
+		literalNode := p.startNode(sourceshape.NodeBooleanLiteralExpression)
 		defer p.finishNode()
 
 		token, _ := p.consume(tokenTypeBooleanLiteral)
-		literalNode.Decorate(NodeBooleanLiteralExpressionValue, token.value)
+		literalNode.Decorate(sourceshape.NodeBooleanLiteralExpressionValue, token.value)
 
 		return literalNode, true
 
@@ -3282,7 +3285,7 @@ func (p *sourceParser) tryConsumeLiteralValue() (AstNode, bool) {
 
 	// null literal.
 	case p.isKeyword("null"):
-		literalNode := p.startNode(NodeNullLiteralExpression)
+		literalNode := p.startNode(sourceshape.NodeNullLiteralExpression)
 		defer p.finishNode()
 
 		p.consumeKeyword("null")
@@ -3290,7 +3293,7 @@ func (p *sourceParser) tryConsumeLiteralValue() (AstNode, bool) {
 
 	// principal literal.
 	case p.isKeyword("principal"):
-		literalNode := p.startNode(NodePrincipalLiteralExpression)
+		literalNode := p.startNode(sourceshape.NodePrincipalLiteralExpression)
 		defer p.finishNode()
 
 		p.consumeKeyword("principal")
@@ -3298,7 +3301,7 @@ func (p *sourceParser) tryConsumeLiteralValue() (AstNode, bool) {
 
 	// this literal.
 	case p.isKeyword("this"):
-		literalNode := p.startNode(NodeThisLiteralExpression)
+		literalNode := p.startNode(sourceshape.NodeThisLiteralExpression)
 		defer p.finishNode()
 
 		p.consumeKeyword("this")
@@ -3306,7 +3309,7 @@ func (p *sourceParser) tryConsumeLiteralValue() (AstNode, bool) {
 
 	// val literal.
 	case p.isKeyword("val"):
-		literalNode := p.startNode(NodeValLiteralExpression)
+		literalNode := p.startNode(sourceshape.NodeValLiteralExpression)
 		defer p.finishNode()
 
 		p.consumeKeyword("val")
@@ -3317,22 +3320,22 @@ func (p *sourceParser) tryConsumeLiteralValue() (AstNode, bool) {
 }
 
 // consumeStringLiteral consumes a string literal.
-func (p *sourceParser) consumeStringLiteral() AstNode {
-	literalNode := p.startNode(NodeStringLiteralExpression)
+func (p *sourceParser) consumeStringLiteral() shared.AstNode {
+	literalNode := p.startNode(sourceshape.NodeStringLiteralExpression)
 	defer p.finishNode()
 
 	token, foundString := p.consume(tokenTypeStringLiteral)
 	if foundString {
-		literalNode.Decorate(NodeStringLiteralExpressionValue, token.value)
+		literalNode.Decorate(sourceshape.NodeStringLiteralExpressionValue, token.value)
 	} else {
-		literalNode.Decorate(NodeStringLiteralExpressionValue, "''")
+		literalNode.Decorate(sourceshape.NodeStringLiteralExpressionValue, "''")
 	}
 
 	return literalNode
 }
 
 // tryConsumeBaseExpression attempts to consume base expressions (literals, identifiers, parenthesis).
-func (p *sourceParser) tryConsumeBaseExpression() (AstNode, bool) {
+func (p *sourceParser) tryConsumeBaseExpression() (shared.AstNode, bool) {
 	switch {
 
 	// List expression, slice literal expression or mapping literal expression.
@@ -3343,14 +3346,14 @@ func (p *sourceParser) tryConsumeBaseExpression() (AstNode, bool) {
 	case p.isToken(tokenTypeMinus):
 		// If the next token is numeric, then this is a negative number.
 		if p.isNextToken(tokenTypeNumericLiteral) {
-			literalNode := p.startNode(NodeNumericLiteralExpression)
+			literalNode := p.startNode(sourceshape.NodeNumericLiteralExpression)
 			defer p.finishNode()
 
 			// Consume the minus sign.
 			p.consume(tokenTypeMinus)
 
 			token, _ := p.consume(tokenTypeNumericLiteral)
-			literalNode.Decorate(NodeNumericLiteralExpressionValue, "-"+token.value)
+			literalNode.Decorate(sourceshape.NodeNumericLiteralExpressionValue, "-"+token.value)
 			return literalNode, true
 		}
 
@@ -3358,36 +3361,36 @@ func (p *sourceParser) tryConsumeBaseExpression() (AstNode, bool) {
 	case p.isKeyword("not"):
 		p.consumeKeyword("not")
 
-		exprNode := p.startNode(NodeKeywordNotExpression)
+		exprNode := p.startNode(sourceshape.NodeKeywordNotExpression)
 		defer p.finishNode()
-		exprNode.Connect(NodeUnaryExpressionChildExpr, p.consumeAssignableExpression())
+		exprNode.Connect(sourceshape.NodeUnaryExpressionChildExpr, p.consumeAssignableExpression())
 		return exprNode, true
 
 	// Unary: &
 	case p.isToken(tokenTypeAnd):
 		p.consume(tokenTypeAnd)
 
-		valueNode := p.startNode(NodeRootTypeExpression)
+		valueNode := p.startNode(sourceshape.NodeRootTypeExpression)
 		defer p.finishNode()
-		valueNode.Connect(NodeUnaryExpressionChildExpr, p.consumeAssignableExpression())
+		valueNode.Connect(sourceshape.NodeUnaryExpressionChildExpr, p.consumeAssignableExpression())
 		return valueNode, true
 
 	// Unary: ~
 	case p.isToken(tokenTypeTilde):
 		p.consume(tokenTypeTilde)
 
-		bitNode := p.startNode(NodeBitwiseNotExpression)
+		bitNode := p.startNode(sourceshape.NodeBitwiseNotExpression)
 		defer p.finishNode()
-		bitNode.Connect(NodeUnaryExpressionChildExpr, p.consumeAssignableExpression())
+		bitNode.Connect(sourceshape.NodeUnaryExpressionChildExpr, p.consumeAssignableExpression())
 		return bitNode, true
 
 	// Unary: !
 	case p.isToken(tokenTypeNot):
 		p.consume(tokenTypeNot)
 
-		notNode := p.startNode(NodeBooleanNotExpression)
+		notNode := p.startNode(sourceshape.NodeBooleanNotExpression)
 		defer p.finishNode()
-		notNode.Connect(NodeUnaryExpressionChildExpr, p.consumeAssignableExpression())
+		notNode.Connect(sourceshape.NodeUnaryExpressionChildExpr, p.consumeAssignableExpression())
 		return notNode, true
 
 	// Nested expression.
@@ -3523,8 +3526,8 @@ func (p *sourceParser) lookaheadTypeReference(t *lookaheadTracker) bool {
 }
 
 // consumeStructuralNewExpressionEntry consumes an entry of an inline map expression.
-func (p *sourceParser) consumeStructuralNewExpressionEntry() AstNode {
-	entryNode := p.startNode(NodeStructuralNewExpressionEntry)
+func (p *sourceParser) consumeStructuralNewExpressionEntry() shared.AstNode {
+	entryNode := p.startNode(sourceshape.NodeStructuralNewExpressionEntry)
 	defer p.finishNode()
 
 	// Consume an identifier.
@@ -3533,24 +3536,24 @@ func (p *sourceParser) consumeStructuralNewExpressionEntry() AstNode {
 		return entryNode
 	}
 
-	entryNode.Decorate(NodeStructuralNewEntryKey, identifier)
+	entryNode.Decorate(sourceshape.NodeStructuralNewEntryKey, identifier)
 
 	// Consume a colon.
 	p.consume(tokenTypeColon)
 
 	// Consume an expression.
-	entryNode.Connect(NodeStructuralNewEntryValue, p.consumeExpression(consumeExpressionAllowBraces))
+	entryNode.Connect(sourceshape.NodeStructuralNewEntryValue, p.consumeExpression(consumeExpressionAllowBraces))
 
 	return entryNode
 }
 
 // tryConsumeMapExpression tries to consume an inline map expression.
-func (p *sourceParser) tryConsumeMapExpression() (AstNode, bool) {
+func (p *sourceParser) tryConsumeMapExpression() (shared.AstNode, bool) {
 	if !p.isToken(tokenTypeLeftBrace) {
 		return nil, false
 	}
 
-	mapNode := p.startNode(NodeMapLiteralExpression)
+	mapNode := p.startNode(sourceshape.NodeMapLiteralExpression)
 	defer p.finishNode()
 
 	// {
@@ -3560,7 +3563,7 @@ func (p *sourceParser) tryConsumeMapExpression() (AstNode, bool) {
 
 	if !p.isToken(tokenTypeRightBrace) {
 		for {
-			mapNode.Connect(NodeMapLiteralExpressionChildEntry, p.consumeMapExpressionEntry())
+			mapNode.Connect(sourceshape.NodeMapLiteralExpressionChildEntry, p.consumeMapExpressionEntry())
 
 			if _, ok := p.tryConsume(tokenTypeComma); !ok {
 				break
@@ -3578,25 +3581,25 @@ func (p *sourceParser) tryConsumeMapExpression() (AstNode, bool) {
 }
 
 // consumeMapExpressionEntry consumes an entry of an inline map expression.
-func (p *sourceParser) consumeMapExpressionEntry() AstNode {
-	entryNode := p.startNode(NodeMapLiteralExpressionEntry)
+func (p *sourceParser) consumeMapExpressionEntry() shared.AstNode {
+	entryNode := p.startNode(sourceshape.NodeMapLiteralExpressionEntry)
 	defer p.finishNode()
 
 	// Consume an expression.
-	entryNode.Connect(NodeMapLiteralExpressionEntryKey, p.consumeExpression(consumeExpressionNoBraces))
+	entryNode.Connect(sourceshape.NodeMapLiteralExpressionEntryKey, p.consumeExpression(consumeExpressionNoBraces))
 
 	// Consume a colon.
 	p.consume(tokenTypeColon)
 
 	// Consume an expression.
-	entryNode.Connect(NodeMapLiteralExpressionEntryValue, p.consumeExpression(consumeExpressionAllowBraces))
+	entryNode.Connect(sourceshape.NodeMapLiteralExpressionEntryValue, p.consumeExpression(consumeExpressionAllowBraces))
 
 	return entryNode
 }
 
 // consumeBracketedLiteralExpression consumes an inline list, slice literal expression or mapping literal
 // expression.
-func (p *sourceParser) consumeBracketedLiteralExpression() AstNode {
+func (p *sourceParser) consumeBracketedLiteralExpression() shared.AstNode {
 	// Lookahead for a slice literal by searching for []identifier or []keyword.
 	// Lookahead for a mapping literal by searching for []{identifier or []{keyword
 	t := p.newLookaheadTracker()
@@ -3621,8 +3624,8 @@ func (p *sourceParser) consumeBracketedLiteralExpression() AstNode {
 }
 
 // consumeMappingLiteralExpression consumes a mapping literal expression.
-func (p *sourceParser) consumeMappingLiteralExpression() AstNode {
-	mappingNode := p.startNode(NodeMappingLiteralExpression)
+func (p *sourceParser) consumeMappingLiteralExpression() shared.AstNode {
+	mappingNode := p.startNode(sourceshape.NodeMappingLiteralExpression)
 	defer p.finishNode()
 
 	// [
@@ -3635,7 +3638,7 @@ func (p *sourceParser) consumeMappingLiteralExpression() AstNode {
 	p.consume(tokenTypeLeftBrace)
 
 	// Type Reference.
-	mappingNode.Connect(NodeMappingLiteralExpressionType, p.consumeTypeReference(typeReferenceNoVoid))
+	mappingNode.Connect(sourceshape.NodeMappingLiteralExpressionType, p.consumeTypeReference(typeReferenceNoVoid))
 
 	// }
 	if _, ok := p.consume(tokenTypeRightBrace); !ok {
@@ -3654,7 +3657,7 @@ func (p *sourceParser) consumeMappingLiteralExpression() AstNode {
 				break
 			}
 
-			mappingNode.Connect(NodeMappingLiteralExpressionEntryRef, p.consumeMappingLiteralEntry())
+			mappingNode.Connect(sourceshape.NodeMappingLiteralExpressionEntryRef, p.consumeMappingLiteralEntry())
 
 			if p.isToken(tokenTypeRightBrace) {
 				break
@@ -3679,25 +3682,25 @@ func (p *sourceParser) consumeMappingLiteralExpression() AstNode {
 }
 
 // consumeMappingLiteralEntry consumes a mapping literal entry.
-func (p *sourceParser) consumeMappingLiteralEntry() AstNode {
-	entryNode := p.startNode(NodeMappingLiteralExpressionEntry)
+func (p *sourceParser) consumeMappingLiteralEntry() shared.AstNode {
+	entryNode := p.startNode(sourceshape.NodeMappingLiteralExpressionEntry)
 	defer p.finishNode()
 
 	// Consume an expression.
-	entryNode.Connect(NodeMappingLiteralExpressionEntryKey, p.consumeExpression(consumeExpressionNoBraces))
+	entryNode.Connect(sourceshape.NodeMappingLiteralExpressionEntryKey, p.consumeExpression(consumeExpressionNoBraces))
 
 	// Consume a colon.
 	p.consume(tokenTypeColon)
 
 	// Consume an expression.
-	entryNode.Connect(NodeMappingLiteralExpressionEntryValue, p.consumeExpression(consumeExpressionAllowBraces))
+	entryNode.Connect(sourceshape.NodeMappingLiteralExpressionEntryValue, p.consumeExpression(consumeExpressionAllowBraces))
 
 	return entryNode
 }
 
 // consumeSliceLiteralExpression consumes a slice literal expression.
-func (p *sourceParser) consumeSliceLiteralExpression() AstNode {
-	sliceNode := p.startNode(NodeSliceLiteralExpression)
+func (p *sourceParser) consumeSliceLiteralExpression() shared.AstNode {
+	sliceNode := p.startNode(sourceshape.NodeSliceLiteralExpression)
 	defer p.finishNode()
 
 	// [
@@ -3707,7 +3710,7 @@ func (p *sourceParser) consumeSliceLiteralExpression() AstNode {
 	p.consume(tokenTypeRightBracket)
 
 	// Type Reference.
-	sliceNode.Connect(NodeSliceLiteralExpressionType, p.consumeTypeReference(typeReferenceNoSpecialTypes))
+	sliceNode.Connect(sourceshape.NodeSliceLiteralExpressionType, p.consumeTypeReference(typeReferenceNoSpecialTypes))
 
 	// {
 	if _, ok := p.consume(tokenTypeLeftBrace); !ok {
@@ -3722,7 +3725,7 @@ func (p *sourceParser) consumeSliceLiteralExpression() AstNode {
 			}
 
 			e := p.consumeExpression(consumeExpressionAllowBraces)
-			sliceNode.Connect(NodeSliceLiteralExpressionValue, e)
+			sliceNode.Connect(sourceshape.NodeSliceLiteralExpressionValue, e)
 
 			if p.isToken(tokenTypeRightBrace) {
 				break
@@ -3747,8 +3750,8 @@ func (p *sourceParser) consumeSliceLiteralExpression() AstNode {
 }
 
 // consumeListExpression consumes an inline list expression.
-func (p *sourceParser) consumeListExpression() AstNode {
-	listNode := p.startNode(NodeListLiteralExpression)
+func (p *sourceParser) consumeListExpression() shared.AstNode {
+	listNode := p.startNode(sourceshape.NodeListLiteralExpression)
 	defer p.finishNode()
 
 	// [
@@ -3763,7 +3766,7 @@ func (p *sourceParser) consumeListExpression() AstNode {
 				break
 			}
 
-			listNode.Connect(NodeListLiteralExpressionValue, p.consumeExpression(consumeExpressionAllowBraces))
+			listNode.Connect(sourceshape.NodeListLiteralExpressionValue, p.consumeExpression(consumeExpressionAllowBraces))
 
 			if p.isToken(tokenTypeRightBracket) {
 				break
@@ -3781,8 +3784,8 @@ func (p *sourceParser) consumeListExpression() AstNode {
 }
 
 // consumeTemplateString consumes a template string literal.
-func (p *sourceParser) consumeTemplateString() AstNode {
-	templateNode := p.startNode(NodeTypeTemplateString)
+func (p *sourceParser) consumeTemplateString() shared.AstNode {
+	templateNode := p.startNode(sourceshape.NodeTypeTemplateString)
 	defer p.finishNode()
 
 	// Consume the template string literal token.
@@ -3810,9 +3813,9 @@ func (p *sourceParser) consumeTemplateString() AstNode {
 			prefix = ""
 		}
 
-		literalNode := p.createNode(NodeStringLiteralExpression)
-		literalNode.Decorate(NodeStringLiteralExpressionValue, "`"+prefix+"`")
-		templateNode.Connect(NodeTemplateStringPiece, literalNode)
+		literalNode := p.createNode(sourceshape.NodeStringLiteralExpression)
+		literalNode.Decorate(sourceshape.NodeStringLiteralExpressionValue, "`"+prefix+"`")
+		templateNode.Connect(sourceshape.NodeTemplateStringPiece, literalNode)
 
 		// If there is no expression after the literal text, nothing more to do.
 		if startIndex < 0 {
@@ -3828,12 +3831,12 @@ func (p *sourceParser) consumeTemplateString() AstNode {
 		exprStartIndex := bytePosition(offset + int(token.position))
 		expr, lastToken, _, ok := parseExpression(p.builder, p.importReporter, p.source, exprStartIndex, tokenValue)
 		if !ok {
-			templateNode.Connect(NodeTemplateStringPiece, p.createErrorNode("Could not parse expression in template string"))
+			templateNode.Connect(sourceshape.NodeTemplateStringPiece, p.createErrorNode("Could not parse expression in template string"))
 			return templateNode
 		}
 
 		// Add the expression found to the template.
-		templateNode.Connect(NodeTemplateStringPiece, expr)
+		templateNode.Connect(sourceshape.NodeTemplateStringPiece, expr)
 
 		// Create a new starting index for the template string after the end of the expression.
 		newStartIndex := int(lastToken.position) + len(lastToken.value)
@@ -3852,7 +3855,7 @@ func (p *sourceParser) consumeTemplateString() AstNode {
 //
 // Form:
 // someIdentifier
-func (p *sourceParser) tryConsumeIdentifierExpression() (AstNode, bool) {
+func (p *sourceParser) tryConsumeIdentifierExpression() (shared.AstNode, bool) {
 	if p.isToken(tokenTypeIdentifer) {
 		return p.consumeIdentifierExpression(), true
 	}
@@ -3864,8 +3867,8 @@ func (p *sourceParser) tryConsumeIdentifierExpression() (AstNode, bool) {
 //
 // Form:
 // someIdentifier
-func (p *sourceParser) consumeIdentifierExpression() AstNode {
-	identifierNode := p.startNode(NodeTypeIdentifierExpression)
+func (p *sourceParser) consumeIdentifierExpression() shared.AstNode {
+	identifierNode := p.startNode(sourceshape.NodeTypeIdentifierExpression)
 	defer p.finishNode()
 
 	value, ok := p.consumeIdentifier()
@@ -3873,6 +3876,6 @@ func (p *sourceParser) consumeIdentifierExpression() AstNode {
 		return identifierNode
 	}
 
-	identifierNode.Decorate(NodeIdentifierExpressionName, value)
+	identifierNode.Decorate(sourceshape.NodeIdentifierExpressionName, value)
 	return identifierNode
 }

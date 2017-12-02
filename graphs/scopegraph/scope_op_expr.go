@@ -11,19 +11,19 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/typegraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 var _ = fmt.Printf
 
 // scopeTypeConversionExpression scopes a conversion from a nominal type to a base type.
 func (sb *scopeBuilder) scopeTypeConversionExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	childScope := sb.getScopeForPredicate(node, parser.NodeFunctionCallExpressionChildExpr, context)
+	childScope := sb.getScopeForPredicate(node, sourceshape.NodeFunctionCallExpressionChildExpr, context)
 	conversionType := childScope.StaticTypeRef(sb.sg.tdg)
 
 	// Ensure that the function call has a single argument.
 	ait := node.StartQuery().
-		Out(parser.NodeFunctionCallArgument).
+		Out(sourceshape.NodeFunctionCallArgument).
 		BuildNodeIterator()
 
 	var index = 0
@@ -92,7 +92,7 @@ func (sb *scopeBuilder) checkArgumentTypeWithAutounboxing(argumentType typegraph
 // scopeFunctionCallExpression scopes a function call expression in the SRG.
 func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Scope the child expression.
-	childExpr, hasChildExpr := node.TryGetNode(parser.NodeFunctionCallExpressionChildExpr)
+	childExpr, hasChildExpr := node.TryGetNode(sourceshape.NodeFunctionCallExpressionChildExpr)
 	if !hasChildExpr {
 		return newScope().Invalid().GetScope()
 	}
@@ -157,7 +157,7 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 		// TODO: It might be a good idea to revisit this decision if we find `someNullableFunc()` to
 		// be a useful pattern as well.
 		if !childType.HasReferredType(sb.sg.tdg.FunctionType()) ||
-			childExpr.Kind() != parser.NodeNullableMemberAccessExpression {
+			childExpr.Kind() != sourceshape.NodeNullableMemberAccessExpression {
 			sb.decorateWithError(node, "Cannot invoke function call on non-function '%v'.", childType)
 			return newScope().Invalid().GetScope()
 		}
@@ -176,7 +176,7 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 	// Ensure that the parameters of the function call match those of the child type.
 	var index = -1
 	ait := node.StartQuery().
-		Out(parser.NodeFunctionCallArgument).
+		Out(sourceshape.NodeFunctionCallArgument).
 		BuildNodeIterator()
 
 	var isValid = true
@@ -220,7 +220,7 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 	// arrow, warn.
 	if isValid && returnType.IsDirectReferenceTo(sb.sg.tdg.AwaitableType()) {
 		if !returnType.Generics()[0].IsVoid() {
-			if _, underStatement := node.TryGetIncomingNode(parser.NodeExpressionStatementExpression); underStatement {
+			if _, underStatement := node.TryGetIncomingNode(sourceshape.NodeExpressionStatementExpression); underStatement {
 				sb.decorateWithWarning(node, "Returned Awaitable resolves a value of type %v which is not handled", returnType.Generics()[0])
 			}
 		}
@@ -233,7 +233,7 @@ func (sb *scopeBuilder) scopeFunctionCallExpression(node compilergraph.GraphNode
 // scopeSliceExpression scopes a slice expression in the SRG.
 func (sb *scopeBuilder) scopeSliceExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Check if this is a slice vs an index.
-	_, isIndexer := node.TryGetNode(parser.NodeSliceExpressionIndex)
+	_, isIndexer := node.TryGetNode(sourceshape.NodeSliceExpressionIndex)
 	if isIndexer {
 		return sb.scopeIndexerExpression(node, context)
 	}
@@ -245,13 +245,13 @@ func (sb *scopeBuilder) scopeSliceExpression(node compilergraph.GraphNode, conte
 // is valid and the associated operator found, if any.
 func (sb *scopeBuilder) scopeSliceChildExpression(node compilergraph.GraphNode, opName string, context scopeContext) (typegraph.TGMember, typegraph.TypeReference, bool) {
 	// Scope the child expression of the slice.
-	childScope := sb.getScopeForPredicate(node, parser.NodeSliceExpressionChildExpr, context)
+	childScope := sb.getScopeForPredicate(node, sourceshape.NodeSliceExpressionChildExpr, context)
 	if !childScope.GetIsValid() {
 		return typegraph.TGMember{}, sb.sg.tdg.AnyTypeReference(), false
 	}
 
 	childType := childScope.ResolvedTypeRef(sb.sg.tdg)
-	module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
+	module := compilercommon.InputSource(node.Get(sourceshape.NodePredicateSource))
 	operator, rerr := childType.ResolveAccessibleMember(opName, module, typegraph.MemberResolutionOperator)
 	if rerr != nil {
 		sb.decorateWithError(node, "Operator '%v' is not defined on type '%v'", opName, childType)
@@ -293,8 +293,8 @@ func (sb *scopeBuilder) scopeSlicerExpression(node compilergraph.GraphNode, cont
 	}
 
 	// Check the left and/or right expressions.
-	leftNode, hasLeftNode := node.TryGetNode(parser.NodeSliceExpressionLeftIndex)
-	rightNode, hasRightNode := node.TryGetNode(parser.NodeSliceExpressionRightIndex)
+	leftNode, hasLeftNode := node.TryGetNode(sourceshape.NodeSliceExpressionLeftIndex)
+	rightNode, hasRightNode := node.TryGetNode(sourceshape.NodeSliceExpressionRightIndex)
 
 	if hasLeftNode && !scopeAndCheckExpr(leftNode) {
 		isValid = false
@@ -326,7 +326,7 @@ func (sb *scopeBuilder) scopeIndexerExpression(node compilergraph.GraphNode, con
 	}
 
 	// Scope the index expression.
-	exprScope := sb.getScopeForPredicate(node, parser.NodeSliceExpressionIndex, context)
+	exprScope := sb.getScopeForPredicate(node, sourceshape.NodeSliceExpressionIndex, context)
 	if !exprScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
@@ -335,7 +335,7 @@ func (sb *scopeBuilder) scopeIndexerExpression(node compilergraph.GraphNode, con
 	argumentType := exprScope.ResolvedTypeRef(sb.sg.tdg)
 	parameterType := operator.ParameterTypes()[0].TransformUnder(childType)
 
-	argumentNode := node.GetNode(parser.NodeSliceExpressionIndex)
+	argumentNode := node.GetNode(sourceshape.NodeSliceExpressionIndex)
 	if !sb.checkArgumentTypeWithAutounboxing(argumentType, parameterType, argumentNode,
 		"Indexer parameter must be type %v", parameterType) {
 		return newScope().Invalid().GetScope()
@@ -352,8 +352,8 @@ func (sb *scopeBuilder) scopeIndexerExpression(node compilergraph.GraphNode, con
 // scopeInCollectionExpression scopes an 'in' collection expression in the SRG.
 func (sb *scopeBuilder) scopeInCollectionExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Get the scope of the left and right expressions.
-	leftScope := sb.getScopeForPredicate(node, parser.NodeBinaryExpressionLeftExpr, context)
-	rightScope := sb.getScopeForPredicate(node, parser.NodeBinaryExpressionRightExpr, context)
+	leftScope := sb.getScopeForPredicate(node, sourceshape.NodeBinaryExpressionLeftExpr, context)
+	rightScope := sb.getScopeForPredicate(node, sourceshape.NodeBinaryExpressionRightExpr, context)
 
 	// Ensure that both scopes are valid.
 	if !leftScope.GetIsValid() || !rightScope.GetIsValid() {
@@ -362,7 +362,7 @@ func (sb *scopeBuilder) scopeInCollectionExpression(node compilergraph.GraphNode
 
 	// Ensure that the right side has a 'contains' operator defined.
 	rightType := rightScope.ResolvedTypeRef(sb.sg.tdg)
-	module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
+	module := compilercommon.InputSource(node.Get(sourceshape.NodePredicateSource))
 	operator, rerr := rightType.ResolveAccessibleMember("contains", module, typegraph.MemberResolutionOperator)
 	if rerr != nil {
 		sb.decorateWithError(node, "Operator 'contains' is not defined on type '%v'", rightType)
@@ -389,8 +389,8 @@ func (sb *scopeBuilder) scopeInCollectionExpression(node compilergraph.GraphNode
 // scopeIsComparisonExpression scopes an 'is' comparison expression in the SRG.
 func (sb *scopeBuilder) scopeIsComparisonExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Get the scope of the left and right expressions.
-	leftScope := sb.getScopeForPredicate(node, parser.NodeBinaryExpressionLeftExpr, context)
-	rightScope := sb.getScopeForPredicate(node, parser.NodeBinaryExpressionRightExpr, context)
+	leftScope := sb.getScopeForPredicate(node, sourceshape.NodeBinaryExpressionLeftExpr, context)
+	rightScope := sb.getScopeForPredicate(node, sourceshape.NodeBinaryExpressionRightExpr, context)
 
 	// Ensure that both scopes are valid.
 	if !leftScope.GetIsValid() || !rightScope.GetIsValid() {
@@ -399,13 +399,13 @@ func (sb *scopeBuilder) scopeIsComparisonExpression(node compilergraph.GraphNode
 
 	// Ensure the right hand side is null or the 'not' keyword (which itself will make sure it
 	// has a null)
-	rightNode, hasRightNode := node.TryGetNode(parser.NodeBinaryExpressionRightExpr)
+	rightNode, hasRightNode := node.TryGetNode(sourceshape.NodeBinaryExpressionRightExpr)
 	if !hasRightNode {
 		return newScope().Invalid().GetScope()
 	}
 
 	rightKind := rightNode.Kind()
-	if rightKind != parser.NodeKeywordNotExpression && rightKind != parser.NodeNullLiteralExpression {
+	if rightKind != sourceshape.NodeKeywordNotExpression && rightKind != sourceshape.NodeNullLiteralExpression {
 		sb.decorateWithError(node, "Right side of 'is' operator must be 'null' or 'not null'")
 		return newScope().Invalid().Resolving(sb.sg.tdg.BoolTypeReference()).GetScope()
 	}
@@ -422,7 +422,7 @@ func (sb *scopeBuilder) scopeIsComparisonExpression(node compilergraph.GraphNode
 // scopeAssertNotNullExpression scopes an assert-not-null operator expression in the SRG.
 func (sb *scopeBuilder) scopeAssertNotNullExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Get the scope of the child expression.
-	childScope := sb.getScopeForPredicate(node, parser.NodeUnaryExpressionChildExpr, context)
+	childScope := sb.getScopeForPredicate(node, sourceshape.NodeUnaryExpressionChildExpr, context)
 	if !childScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
@@ -441,8 +441,8 @@ func (sb *scopeBuilder) scopeAssertNotNullExpression(node compilergraph.GraphNod
 // scopeNullComparisonExpression scopes a nullable comparison expression in the SRG.
 func (sb *scopeBuilder) scopeNullComparisonExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Get the scope of the left and right expressions.
-	leftScope := sb.getScopeForPredicate(node, parser.NodeBinaryExpressionLeftExpr, context)
-	rightScope := sb.getScopeForPredicate(node, parser.NodeBinaryExpressionRightExpr, context)
+	leftScope := sb.getScopeForPredicate(node, sourceshape.NodeBinaryExpressionLeftExpr, context)
+	rightScope := sb.getScopeForPredicate(node, sourceshape.NodeBinaryExpressionRightExpr, context)
 
 	// Ensure that both scopes are valid.
 	if !leftScope.GetIsValid() || !rightScope.GetIsValid() {
@@ -492,7 +492,7 @@ func (sb *scopeBuilder) scopeEqualsExpression(node compilergraph.GraphNode, cont
 // scopeBooleanUnaryExpression scopes a boolean unary operator expression in the SRG.
 func (sb *scopeBuilder) scopeBooleanUnaryExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Get the scope of the child expression.
-	childScope := sb.getScopeForPredicate(node, parser.NodeUnaryExpressionChildExpr, context)
+	childScope := sb.getScopeForPredicate(node, sourceshape.NodeUnaryExpressionChildExpr, context)
 
 	// Ensure that the child scope is valid.
 	if !childScope.GetIsValid() {
@@ -514,8 +514,8 @@ func (sb *scopeBuilder) scopeBooleanUnaryExpression(node compilergraph.GraphNode
 // scopeBooleanBinaryExpression scopes a boolean binary operator expression in the SRG.
 func (sb *scopeBuilder) scopeBooleanBinaryExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Get the scope of the left and right expressions.
-	leftScope := sb.getScopeForPredicate(node, parser.NodeBinaryExpressionLeftExpr, context)
-	rightScope := sb.getScopeForPredicate(node, parser.NodeBinaryExpressionRightExpr, context)
+	leftScope := sb.getScopeForPredicate(node, sourceshape.NodeBinaryExpressionLeftExpr, context)
+	rightScope := sb.getScopeForPredicate(node, sourceshape.NodeBinaryExpressionRightExpr, context)
 
 	// Ensure that both scopes are valid.
 	if !leftScope.GetIsValid() || !rightScope.GetIsValid() {
@@ -577,7 +577,7 @@ func (sb *scopeBuilder) scopeBitwiseShiftRightExpression(node compilergraph.Grap
 
 // scopeBitwiseNotExpression scopes a bitwise not operator expression in the SRG.
 func (sb *scopeBuilder) scopeBitwiseNotExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	return sb.scopeUnaryExpression(node, "not", parser.NodeUnaryExpressionChildExpr, context).GetScope()
+	return sb.scopeUnaryExpression(node, "not", sourceshape.NodeUnaryExpressionChildExpr, context).GetScope()
 }
 
 // scopeBinaryAddExpression scopes an add operator expression in the SRG.
@@ -608,8 +608,8 @@ func (sb *scopeBuilder) scopeBinaryModuloExpression(node compilergraph.GraphNode
 // scopeBinaryExpression scopes a binary expression in the SRG.
 func (sb *scopeBuilder) scopeBinaryExpression(node compilergraph.GraphNode, opName string, context scopeContext) *scopeInfoBuilder {
 	// Get the scope of the left and right expressions.
-	leftScope := sb.getScopeForPredicate(node, parser.NodeBinaryExpressionLeftExpr, context)
-	rightScope := sb.getScopeForPredicate(node, parser.NodeBinaryExpressionRightExpr, context)
+	leftScope := sb.getScopeForPredicate(node, sourceshape.NodeBinaryExpressionLeftExpr, context)
+	rightScope := sb.getScopeForPredicate(node, sourceshape.NodeBinaryExpressionRightExpr, context)
 
 	// Ensure that both scopes are valid.
 	if !leftScope.GetIsValid() || !rightScope.GetIsValid() {
@@ -626,7 +626,7 @@ func (sb *scopeBuilder) scopeBinaryExpression(node compilergraph.GraphNode, opNa
 	}
 
 	// Ensure that the operator exists under the resolved type.
-	module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
+	module := compilercommon.InputSource(node.Get(sourceshape.NodePredicateSource))
 	operator, rerr := leftType.ResolveAccessibleMember(opName, module, typegraph.MemberResolutionOperator)
 	if rerr != nil {
 		sb.decorateWithError(node, "Operator '%v' is not defined on type '%v'", opName, leftType)
@@ -654,7 +654,7 @@ func (sb *scopeBuilder) scopeBinaryExpression(node compilergraph.GraphNode, opNa
 	// streams (which are the most common).
 	// TODO: Remove this stupid hack once we have an inlining optimization pass that makes it unnecessary
 	// OR we find a better way to identify the types of streams being produced.
-	if node.Kind() == parser.NodeDefineRangeExpression && leftType == sb.sg.tdg.IntTypeReference() {
+	if node.Kind() == sourceshape.NodeDefineRangeExpression && leftType == sb.sg.tdg.IntTypeReference() {
 		operatorReturnType = sb.sg.tdg.IntStreamType().GetTypeReference()
 	}
 
@@ -673,7 +673,7 @@ func (sb *scopeBuilder) scopeUnaryExpression(node compilergraph.GraphNode, opNam
 
 	// Ensure that the operator exists under the resolved type.
 	childType := childScope.ResolvedTypeRef(sb.sg.tdg)
-	module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
+	module := compilercommon.InputSource(node.Get(sourceshape.NodePredicateSource))
 	operator, rerr := childType.ResolveAccessibleMember(opName, module, typegraph.MemberResolutionOperator)
 	if rerr != nil {
 		sb.decorateWithError(node, "Operator '%v' is not defined on type '%v'", opName, childType)
@@ -694,7 +694,7 @@ func (sb *scopeBuilder) scopeUnaryExpression(node compilergraph.GraphNode, opNam
 // scopeRootTypeExpression scopes a root-type expression in the SRG.
 func (sb *scopeBuilder) scopeRootTypeExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Get the scope of the sub expression.
-	childScope := sb.getScopeForPredicate(node, parser.NodeUnaryExpressionChildExpr, context)
+	childScope := sb.getScopeForPredicate(node, sourceshape.NodeUnaryExpressionChildExpr, context)
 
 	// Ensure that the child scope is valid.
 	if !childScope.GetIsValid() {
@@ -735,14 +735,14 @@ func (sb *scopeBuilder) scopeRootTypeExpression(node compilergraph.GraphNode, co
 // scopeKeywordNotExpression scopes a keyword not expression in the SRG.
 func (sb *scopeBuilder) scopeKeywordNotExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Check for 'is not null' case.
-	parentExpr, hasParentExpr := node.TryGetIncomingNode(parser.NodeBinaryExpressionRightExpr)
-	if hasParentExpr && parentExpr.Kind() == parser.NodeIsComparisonExpression {
-		childNode, hasChildNode := node.TryGetNode(parser.NodeUnaryExpressionChildExpr)
+	parentExpr, hasParentExpr := node.TryGetIncomingNode(sourceshape.NodeBinaryExpressionRightExpr)
+	if hasParentExpr && parentExpr.Kind() == sourceshape.NodeIsComparisonExpression {
+		childNode, hasChildNode := node.TryGetNode(sourceshape.NodeUnaryExpressionChildExpr)
 		if !hasChildNode {
 			return newScope().Invalid().GetScope()
 		}
 
-		if childNode.Kind() != parser.NodeNullLiteralExpression {
+		if childNode.Kind() != sourceshape.NodeNullLiteralExpression {
 			sb.decorateWithError(node, "Expression under an 'is not' must be 'null'")
 			return newScope().Invalid().GetScope()
 		}
@@ -750,5 +750,5 @@ func (sb *scopeBuilder) scopeKeywordNotExpression(node compilergraph.GraphNode, 
 	}
 
 	// Check for normal bool-eable.
-	return sb.scopeUnaryExpression(node, "bool", parser.NodeUnaryExpressionChildExpr, context).GetScope()
+	return sb.scopeUnaryExpression(node, "bool", sourceshape.NodeUnaryExpressionChildExpr, context).GetScope()
 }

@@ -8,6 +8,8 @@ import (
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/parser/shared"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // ParseExpression parses the given expression string and returns its node. Note that the
@@ -19,13 +21,13 @@ func ParseExpression(expressionString string, source compilercommon.InputSource,
 		return compilergraph.GraphNode{}, false
 	}
 
-	layer := graph.NewGraphLayer("exprlayer", parser.NodeTypeTagged)
+	layer := graph.NewGraphLayer("exprlayer", sourceshape.NodeTypeTagged)
 	defer layer.Freeze()
 
 	modifier := layer.NewModifier()
 	defer modifier.Apply()
 
-	astNode, ok := parser.ParseExpression(func(source compilercommon.InputSource, kind parser.NodeType) parser.AstNode {
+	astNode, ok := parser.ParseExpression(func(source compilercommon.InputSource, kind sourceshape.NodeType) shared.AstNode {
 		graphNode := modifier.CreateNode(kind)
 		return &srgASTNode{
 			graphNode: graphNode,

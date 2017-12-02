@@ -6,7 +6,7 @@ package srg
 
 import (
 	"github.com/serulian/compiler/compilergraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // SRGImplementableIterator is an iterator of SRGImplementable's.
@@ -32,7 +32,7 @@ type SRGImplementable struct {
 // Body returns the statement block forming the implementation body for
 // this implementable, if any.
 func (m SRGImplementable) Body() (compilergraph.GraphNode, bool) {
-	return m.TryGetNode(parser.NodePredicateBody)
+	return m.TryGetNode(sourceshape.NodePredicateBody)
 }
 
 // Name returns the name of the implementable, if any.
@@ -54,10 +54,10 @@ func (m SRGImplementable) Parameters() []SRGParameter {
 	// Otherwise, check for a function lambda (of either kind) and return its
 	// parameters.
 	switch m.GraphNode.Kind() {
-	case parser.NodeTypeLambdaExpression:
+	case sourceshape.NodeTypeLambdaExpression:
 		var parameters = make([]SRGParameter, 0)
 		pit := m.GraphNode.StartQuery().
-			Out(parser.NodeLambdaExpressionParameter, parser.NodeLambdaExpressionInferredParameter).
+			Out(sourceshape.NodeLambdaExpressionParameter, sourceshape.NodeLambdaExpressionInferredParameter).
 			BuildNodeIterator()
 		for pit.Next() {
 			parameters = append(parameters, SRGParameter{pit.Node(), m.srg})
@@ -81,11 +81,11 @@ func (m SRGImplementable) ContainingMember() SRGMember {
 		return SRGMember{m.GraphNode, m.srg}
 	}
 
-	if parentProp, found := m.GraphNode.TryGetIncomingNode(parser.NodePropertyGetter); found {
+	if parentProp, found := m.GraphNode.TryGetIncomingNode(sourceshape.NodePropertyGetter); found {
 		return SRGMember{parentProp, m.srg}
 	}
 
-	if parentProp, found := m.GraphNode.TryGetIncomingNode(parser.NodePropertySetter); found {
+	if parentProp, found := m.GraphNode.TryGetIncomingNode(sourceshape.NodePropertySetter); found {
 		return SRGMember{parentProp, m.srg}
 	}
 
@@ -110,22 +110,22 @@ func (m SRGImplementable) IsPropertySetter() bool {
 // IsMember returns true if this implementable is an SRGMember.
 func (m SRGImplementable) IsMember() bool {
 	switch m.GraphNode.Kind() {
-	case parser.NodeTypeConstructor:
+	case sourceshape.NodeTypeConstructor:
 		fallthrough
 
-	case parser.NodeTypeFunction:
+	case sourceshape.NodeTypeFunction:
 		fallthrough
 
-	case parser.NodeTypeProperty:
+	case sourceshape.NodeTypeProperty:
 		fallthrough
 
-	case parser.NodeTypeOperator:
+	case sourceshape.NodeTypeOperator:
 		fallthrough
 
-	case parser.NodeTypeField:
+	case sourceshape.NodeTypeField:
 		fallthrough
 
-	case parser.NodeTypeVariable:
+	case sourceshape.NodeTypeVariable:
 		return true
 
 	default:
@@ -136,25 +136,25 @@ func (m SRGImplementable) IsMember() bool {
 // AsImplementable returns the given node as an SRGImplementable (if applicable).
 func (g *SRG) AsImplementable(node compilergraph.GraphNode) (SRGImplementable, bool) {
 	switch node.Kind() {
-	case parser.NodeTypeConstructor:
+	case sourceshape.NodeTypeConstructor:
 		fallthrough
 
-	case parser.NodeTypeFunction:
+	case sourceshape.NodeTypeFunction:
 		fallthrough
 
-	case parser.NodeTypeProperty:
+	case sourceshape.NodeTypeProperty:
 		fallthrough
 
-	case parser.NodeTypeOperator:
+	case sourceshape.NodeTypeOperator:
 		fallthrough
 
-	case parser.NodeTypeField:
+	case sourceshape.NodeTypeField:
 		fallthrough
 
-	case parser.NodeTypeVariable:
+	case sourceshape.NodeTypeVariable:
 		fallthrough
 
-	case parser.NodeTypePropertyBlock:
+	case sourceshape.NodeTypePropertyBlock:
 		return SRGImplementable{node, g}, true
 
 	default:

@@ -17,6 +17,7 @@ import (
 	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 
 	glob "github.com/ryanuber/go-glob"
 )
@@ -88,9 +89,9 @@ func (ih importHandlingInfo) logSuccess(node formatterNode, message string, args
 
 func (ih importHandlingInfo) log(level compilerutil.ConsoleLogLevel, node formatterNode, message string, args ...interface{}) {
 	if ih.logProgress {
-		startRune, _ := strconv.Atoi(node.getProperty(parser.NodePredicateStartRune))
-		endRune, _ := strconv.Atoi(node.getProperty(parser.NodePredicateEndRune))
-		inputSource := compilercommon.InputSource(node.getProperty(parser.NodePredicateSource))
+		startRune, _ := strconv.Atoi(node.getProperty(sourceshape.NodePredicateStartRune))
+		endRune, _ := strconv.Atoi(node.getProperty(sourceshape.NodePredicateEndRune))
+		inputSource := compilercommon.InputSource(node.getProperty(sourceshape.NodePredicateSource))
 		sourceRange := inputSource.RangeForRunePositions(startRune, endRune, compilercommon.LocalFilePositionMapper{})
 		compilerutil.LogToConsole(level, sourceRange, message, args...)
 	}
@@ -99,61 +100,61 @@ func (ih importHandlingInfo) log(level compilerutil.ConsoleLogLevel, node format
 // FreezeAt formats the source files at the given path and freezes the specified VCS import pattern at the given
 // commit or tag.
 func FreezeAt(path string, importPattern string, commitOrTag CommitOrTag, vcsDevelopmentDirectories []string, debug bool) bool {
-	return formatFiles(path, importHandlingInfo{importHandlingCustomFreeze, []string{importPattern}, vcsDevelopmentDirectories, false, commitOrTag}, debug)
+	return formatFiles(path, importHandlingInfo{importHandlingCustomFreeze, []string{importPattern}, vcsDevelopmentDirectories, false, commitOrTag}, false, debug)
 }
 
 // UnfreezeAt formats the source files at the given path and unfreezes the specified
 // VCS import pattern.
 func UnfreezeAt(path string, importPattern string, vcsDevelopmentDirectories []string, debug bool) bool {
-	return formatFiles(path, importHandlingInfo{importHandlingUnfreeze, []string{importPattern}, vcsDevelopmentDirectories, false, CommitOrTag{}}, debug)
+	return formatFiles(path, importHandlingInfo{importHandlingUnfreeze, []string{importPattern}, vcsDevelopmentDirectories, false, CommitOrTag{}}, false, debug)
 }
 
 // Freeze formats the source files at the given path and freezes the specified
 // VCS import patterns.
 func Freeze(path string, importPatterns []string, vcsDevelopmentDirectories []string, debug bool) bool {
-	return formatFiles(path, importHandlingInfo{importHandlingFreeze, importPatterns, vcsDevelopmentDirectories, true, CommitOrTag{}}, debug)
+	return formatFiles(path, importHandlingInfo{importHandlingFreeze, importPatterns, vcsDevelopmentDirectories, true, CommitOrTag{}}, false, debug)
 }
 
 // Unfreeze formats the source files at the given path and unfreezes the specified
 // VCS import patterns.
 func Unfreeze(path string, importPatterns []string, vcsDevelopmentDirectories []string, debug bool) bool {
-	return formatFiles(path, importHandlingInfo{importHandlingUnfreeze, importPatterns, vcsDevelopmentDirectories, true, CommitOrTag{}}, debug)
+	return formatFiles(path, importHandlingInfo{importHandlingUnfreeze, importPatterns, vcsDevelopmentDirectories, true, CommitOrTag{}}, false, debug)
 }
 
 // Update formats the source files at the given path and updates the specified
 // VCS import patterns by moving forward their minor version, as per semvar.
 func Update(path string, importPatterns []string, vcsDevelopmentDirectories []string, debug bool) bool {
-	return formatFiles(path, importHandlingInfo{importHandlingUpdate, importPatterns, vcsDevelopmentDirectories, true, CommitOrTag{}}, debug)
+	return formatFiles(path, importHandlingInfo{importHandlingUpdate, importPatterns, vcsDevelopmentDirectories, true, CommitOrTag{}}, false, debug)
 }
 
 // Upgrade formats the source files at the given path and upgrades the specified
 // VCS import patterns by making them refer to the latest stable version, as per semvar.
 func Upgrade(path string, importPatterns []string, vcsDevelopmentDirectories []string, debug bool) bool {
-	return formatFiles(path, importHandlingInfo{importHandlingUpgrade, importPatterns, vcsDevelopmentDirectories, true, CommitOrTag{}}, debug)
+	return formatFiles(path, importHandlingInfo{importHandlingUpgrade, importPatterns, vcsDevelopmentDirectories, true, CommitOrTag{}}, false, debug)
 }
 
 // Format formats the source files at the given path.
-func Format(path string, debug bool) bool {
-	return formatFiles(path, importHandlingInfo{importHandlingNone, []string{}, []string{}, false, CommitOrTag{}}, debug)
+func Format(path string, supportOlderSyntax bool, debug bool) bool {
+	return formatFiles(path, importHandlingInfo{importHandlingNone, []string{}, []string{}, false, CommitOrTag{}}, supportOlderSyntax, debug)
 }
 
 // FormatSource formats the given Serulian source code.
 func FormatSource(source string) (string, error) {
-	return formatSource(source, importHandlingInfo{importHandlingNone, []string{}, []string{}, false, CommitOrTag{}})
+	return formatSource(source, importHandlingInfo{importHandlingNone, []string{}, []string{}, false, CommitOrTag{}}, false)
 }
 
 // formatFiles runs formatting of all matching source files found at the given source path.
-func formatFiles(path string, importHandling importHandlingInfo, debug bool) bool {
+func formatFiles(path string, importHandling importHandlingInfo, supportOlderSyntax bool, debug bool) bool {
 	if !debug {
 		log.SetOutput(ioutil.Discard)
 	}
 
 	filesWalked, err := compilerutil.WalkSourcePath(path, func(currentPath string, info os.FileInfo) (bool, error) {
-		if !strings.HasSuffix(info.Name(), parser.SERULIAN_FILE_EXTENSION) {
+		if !strings.HasSuffix(info.Name(), sourceshape.SerulianFileExtension) {
 			return false, nil
 		}
 
-		return true, parseAndFormatSourceFile(currentPath, info, importHandling)
+		return true, parseAndFormatSourceFile(currentPath, info, importHandling, supportOlderSyntax)
 	}, packageloader.SerulianPackageDirectory)
 
 	if filesWalked == 0 {
@@ -166,14 +167,14 @@ func formatFiles(path string, importHandling importHandlingInfo, debug bool) boo
 
 // parseAndFormatSourceFile parses the source file at the given path (with associated file info),
 // formats it and, if changed, writes it back to that path.
-func parseAndFormatSourceFile(sourceFilePath string, info os.FileInfo, importHandling importHandlingInfo) error {
+func parseAndFormatSourceFile(sourceFilePath string, info os.FileInfo, importHandling importHandlingInfo, supportOlderSyntax bool) error {
 	// Load the source from the file.
 	source, err := ioutil.ReadFile(sourceFilePath)
 	if err != nil {
 		return err
 	}
 
-	formatted, err := formatSource(string(source), importHandling)
+	formatted, err := formatSource(string(source), importHandling, supportOlderSyntax)
 	if err != nil {
 		return err
 	}
@@ -188,11 +189,17 @@ func parseAndFormatSourceFile(sourceFilePath string, info os.FileInfo, importHan
 }
 
 // formatSource formats the given Serulian source code, with the given import handling.
-func formatSource(source string, importHandling importHandlingInfo) (string, error) {
+func formatSource(source string, importHandling importHandlingInfo, supportOlderSyntax bool) (string, error) {
 	// Conduct the parsing.
 	parseTree := newParseTree([]byte(source))
 	inputSource := compilercommon.InputSource("(formatting)")
-	rootNode := parser.Parse(parseTree.createAstNode, nil, inputSource, string(source))
+
+	parsingFunction := parser.Parse
+	if supportOlderSyntax {
+		parsingFunction = parser.ParseWithCompatability
+	}
+
+	rootNode := parsingFunction(parseTree.createAstNode, nil, inputSource, string(source))
 
 	// Report any errors found.
 	if len(parseTree.errors) > 0 {

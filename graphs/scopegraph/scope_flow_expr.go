@@ -9,14 +9,14 @@ import (
 
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 var _ = fmt.Printf
 
 // scopeConditionalExpression scopes a conditional expression in the SRG.
 func (sb *scopeBuilder) scopeConditionalExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	conditionalExprNode, hasConditionalExpression := node.TryGetNode(parser.NodeConditionalExpressionCheckExpression)
+	conditionalExprNode, hasConditionalExpression := node.TryGetNode(sourceshape.NodeConditionalExpressionCheckExpression)
 	if !hasConditionalExpression {
 		return newScope().Invalid().GetScope()
 	}
@@ -26,8 +26,8 @@ func (sb *scopeBuilder) scopeConditionalExpression(node compilergraph.GraphNode,
 
 	// Scope the child expressions.
 	checkScope := sb.getScope(conditionalExprNode, context)
-	thenScope := sb.getScopeForPredicate(node, parser.NodeConditionalExpressionThenExpression, thenContext)
-	elseScope := sb.getScopeForPredicate(node, parser.NodeConditionalExpressionElseExpression, elseContext)
+	thenScope := sb.getScopeForPredicate(node, sourceshape.NodeConditionalExpressionThenExpression, thenContext)
+	elseScope := sb.getScopeForPredicate(node, sourceshape.NodeConditionalExpressionElseExpression, elseContext)
 
 	if !checkScope.GetIsValid() || !thenScope.GetIsValid() || !elseScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
@@ -51,20 +51,20 @@ func (sb *scopeBuilder) scopeConditionalExpression(node compilergraph.GraphNode,
 
 // scopeLoopExpression scopes a loop expression in the SRG.
 func (sb *scopeBuilder) scopeLoopExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	streamScope := sb.getScopeForPredicate(node, parser.NodeLoopExpressionStreamExpression, context)
+	streamScope := sb.getScopeForPredicate(node, sourceshape.NodeLoopExpressionStreamExpression, context)
 	if !streamScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
 
 	// Note: The following will ensure the streamScope refers to a stream.
-	namedValueScope := sb.getScopeForPredicate(node, parser.NodeLoopExpressionNamedValue, context)
+	namedValueScope := sb.getScopeForPredicate(node, sourceshape.NodeLoopExpressionNamedValue, context)
 	if !namedValueScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
 
 	// Scope the mapping expression. The resolved type of the loop expression is a Stream of
 	// the type of the mapping expression.
-	mapScope := sb.getScopeForPredicate(node, parser.NodeLoopExpressionMapExpression, context)
+	mapScope := sb.getScopeForPredicate(node, sourceshape.NodeLoopExpressionMapExpression, context)
 	if !mapScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}

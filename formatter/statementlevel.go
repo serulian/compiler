@@ -7,24 +7,24 @@ package formatter
 import (
 	"container/list"
 
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // emitStatementBlock emits the statement block.
 func (sf *sourceFormatter) emitStatementBlock(node formatterNode) {
 	sf.append("{")
 
-	statements := node.getChildren(parser.NodeStatementBlockStatement)
+	statements := node.getChildren(sourceshape.NodeStatementBlockStatement)
 	if len(statements) > 0 {
 		// Special case: A single return or reject statement with character length <= 50 and
 		// (if under a conditional), the condition does not have an else clause.
 		if len(statements) == 1 {
-			valid := statements[0].GetType() == parser.NodeTypeReturnStatement ||
-				statements[0].GetType() == parser.NodeTypeRejectStatement
+			valid := statements[0].GetType() == sourceshape.NodeTypeReturnStatement ||
+				statements[0].GetType() == sourceshape.NodeTypeRejectStatement
 
 			parentNode, hasParentNode := sf.parentNode()
-			if valid && hasParentNode && parentNode.GetType() == parser.NodeTypeConditionalStatement {
-				_, hasElse := parentNode.tryGetChild(parser.NodeConditionalStatementElseClause)
+			if valid && hasParentNode && parentNode.GetType() == sourceshape.NodeTypeConditionalStatement {
+				_, hasElse := parentNode.tryGetChild(sourceshape.NodeConditionalStatementElseClause)
 				valid = !hasElse
 			}
 
@@ -65,7 +65,7 @@ func (sf *sourceFormatter) emitStatementBlock(node formatterNode) {
 func (sf *sourceFormatter) emitReturnStatement(node formatterNode) {
 	sf.append("return")
 
-	if value, ok := node.tryGetChild(parser.NodeReturnStatementValue); ok {
+	if value, ok := node.tryGetChild(sourceshape.NodeReturnStatementValue); ok {
 		sf.append(" ")
 		sf.emitNode(value)
 	}
@@ -74,47 +74,47 @@ func (sf *sourceFormatter) emitReturnStatement(node formatterNode) {
 // emitRejectStatement emits the source of a reject statement.
 func (sf *sourceFormatter) emitRejectStatement(node formatterNode) {
 	sf.append("reject ")
-	sf.emitNode(node.getChild(parser.NodeRejectStatementValue))
+	sf.emitNode(node.getChild(sourceshape.NodeRejectStatementValue))
 }
 
 // emitArrowStatement emits the source of an arrow statement.
 func (sf *sourceFormatter) emitArrowStatement(node formatterNode) {
-	sf.emitNode(node.getChild(parser.NodeArrowStatementDestination))
+	sf.emitNode(node.getChild(sourceshape.NodeArrowStatementDestination))
 
-	if reject, ok := node.tryGetChild(parser.NodeArrowStatementRejection); ok {
+	if reject, ok := node.tryGetChild(sourceshape.NodeArrowStatementRejection); ok {
 		sf.append(", ")
 		sf.emitNode(reject)
 	}
 
 	sf.append(" <- ")
-	sf.emitNode(node.getChild(parser.NodeArrowStatementSource))
+	sf.emitNode(node.getChild(sourceshape.NodeArrowStatementSource))
 }
 
 // emitLoopStatement emits the source of a loop statement.
 func (sf *sourceFormatter) emitLoopStatement(node formatterNode) {
 	sf.append("for ")
 
-	if named, ok := node.tryGetChild(parser.NodeStatementNamedValue); ok {
+	if named, ok := node.tryGetChild(sourceshape.NodeStatementNamedValue); ok {
 		sf.emitNode(named)
 		sf.append(" in ")
 	}
 
-	if expr, ok := node.tryGetChild(parser.NodeLoopStatementExpression); ok {
+	if expr, ok := node.tryGetChild(sourceshape.NodeLoopStatementExpression); ok {
 		sf.emitNode(expr)
 		sf.append(" ")
 	}
 
-	sf.emitNode(node.getChild(parser.NodeLoopStatementBlock))
+	sf.emitNode(node.getChild(sourceshape.NodeLoopStatementBlock))
 }
 
 // emitConditionalStatement emits the source of a conditional statement.
 func (sf *sourceFormatter) emitConditionalStatement(node formatterNode) {
 	sf.append("if ")
-	sf.emitNode(node.getChild(parser.NodeConditionalStatementConditional))
+	sf.emitNode(node.getChild(sourceshape.NodeConditionalStatementConditional))
 	sf.append(" ")
-	sf.emitNode(node.getChild(parser.NodeConditionalStatementBlock))
+	sf.emitNode(node.getChild(sourceshape.NodeConditionalStatementBlock))
 
-	if elseBlock, ok := node.tryGetChild(parser.NodeConditionalStatementElseClause); ok {
+	if elseBlock, ok := node.tryGetChild(sourceshape.NodeConditionalStatementElseClause); ok {
 		sf.append(" else ")
 		sf.emitNode(elseBlock)
 	}
@@ -124,11 +124,11 @@ func (sf *sourceFormatter) emitConditionalStatement(node formatterNode) {
 func (sf *sourceFormatter) emitYieldStatement(node formatterNode) {
 	sf.append("yield")
 
-	if _, ok := node.tryGetProperty(parser.NodeYieldStatementBreak); ok {
+	if _, ok := node.tryGetProperty(sourceshape.NodeYieldStatementBreak); ok {
 		sf.append(" break")
 	} else {
 		sf.append(" ")
-		sf.emitNode(node.getChild(parser.NodeYieldStatementValue))
+		sf.emitNode(node.getChild(sourceshape.NodeYieldStatementValue))
 	}
 }
 
@@ -136,7 +136,7 @@ func (sf *sourceFormatter) emitYieldStatement(node formatterNode) {
 func (sf *sourceFormatter) emitBreakStatement(node formatterNode) {
 	sf.append("break")
 
-	if label, ok := node.tryGetProperty(parser.NodeBreakStatementLabel); ok {
+	if label, ok := node.tryGetProperty(sourceshape.NodeBreakStatementLabel); ok {
 		sf.append(" ")
 		sf.append(label)
 	}
@@ -146,7 +146,7 @@ func (sf *sourceFormatter) emitBreakStatement(node formatterNode) {
 func (sf *sourceFormatter) emitContinueStatement(node formatterNode) {
 	sf.append("continue")
 
-	if label, ok := node.tryGetProperty(parser.NodeContinueStatementLabel); ok {
+	if label, ok := node.tryGetProperty(sourceshape.NodeContinueStatementLabel); ok {
 		sf.append(" ")
 		sf.append(label)
 	}
@@ -156,16 +156,16 @@ func (sf *sourceFormatter) emitContinueStatement(node formatterNode) {
 func (sf *sourceFormatter) emitVariableStatement(node formatterNode) {
 	sf.append("var")
 
-	if declaredType, ok := node.tryGetChild(parser.NodeVariableStatementDeclaredType); ok {
+	if declaredType, ok := node.tryGetChild(sourceshape.NodeVariableStatementDeclaredType); ok {
 		sf.append("<")
 		sf.emitNode(declaredType)
 		sf.append(">")
 	}
 
 	sf.append(" ")
-	sf.append(node.getProperty(parser.NodeVariableStatementName))
+	sf.append(node.getProperty(sourceshape.NodeVariableStatementName))
 
-	if expr, ok := node.tryGetChild(parser.NodeVariableStatementExpression); ok {
+	if expr, ok := node.tryGetChild(sourceshape.NodeVariableStatementExpression); ok {
 		sf.append(" = ")
 		sf.emitNode(expr)
 	}
@@ -174,27 +174,27 @@ func (sf *sourceFormatter) emitVariableStatement(node formatterNode) {
 // emitWithStatement emits the source for a with resource statement.
 func (sf *sourceFormatter) emitWithStatement(node formatterNode) {
 	sf.append("with ")
-	sf.emitNode(node.getChild(parser.NodeWithStatementExpression))
+	sf.emitNode(node.getChild(sourceshape.NodeWithStatementExpression))
 
-	if name, ok := node.tryGetChild(parser.NodeStatementNamedValue); ok {
+	if name, ok := node.tryGetChild(sourceshape.NodeStatementNamedValue); ok {
 		sf.append(" as ")
 		sf.emitNode(name)
 	}
 
 	sf.append(" ")
-	sf.emitNode(node.getChild(parser.NodeWithStatementBlock))
+	sf.emitNode(node.getChild(sourceshape.NodeWithStatementBlock))
 }
 
 // emitSwitchStatement emits the source for a switch statement.
 func (sf *sourceFormatter) emitSwitchStatement(node formatterNode) {
 	sf.append("switch")
 
-	if expr, ok := node.tryGetChild(parser.NodeSwitchStatementExpression); ok {
+	if expr, ok := node.tryGetChild(sourceshape.NodeSwitchStatementExpression); ok {
 		sf.append(" ")
 		sf.emitNode(expr)
 	}
 
-	cases := node.getChildren(parser.NodeSwitchStatementCase)
+	cases := node.getChildren(sourceshape.NodeSwitchStatementCase)
 	sf.append(" {")
 
 	if len(cases) > 0 {
@@ -209,7 +209,7 @@ func (sf *sourceFormatter) emitSwitchStatement(node formatterNode) {
 
 // emitSwitchStatementCase emits the source for a case under a switch statement.
 func (sf *sourceFormatter) emitSwitchStatementCase(node formatterNode) {
-	if expr, ok := node.tryGetChild(parser.NodeSwitchStatementCaseExpression); ok {
+	if expr, ok := node.tryGetChild(sourceshape.NodeSwitchStatementCaseExpression); ok {
 		sf.append("case ")
 		sf.emitNode(expr)
 		sf.append(":")
@@ -217,7 +217,7 @@ func (sf *sourceFormatter) emitSwitchStatementCase(node formatterNode) {
 		sf.append("default:")
 	}
 
-	statements := node.getChild(parser.NodeSwitchStatementCaseStatement).getChildren(parser.NodeStatementBlockStatement)
+	statements := node.getChild(sourceshape.NodeSwitchStatementCaseStatement).getChildren(sourceshape.NodeStatementBlockStatement)
 	sf.appendLine()
 	sf.indent()
 	sf.hasNewScope = true
@@ -227,8 +227,8 @@ func (sf *sourceFormatter) emitSwitchStatementCase(node formatterNode) {
 
 	// Ensure that there is a blank line iff this isn't the last match case.
 	parent, _ := sf.parentNode()
-	cases := parent.getChildren(parser.NodeSwitchStatementCase)
-	if cases[len(cases)-1].getProperty(parser.NodePredicateStartRune) != node.getProperty(parser.NodePredicateStartRune) {
+	cases := parent.getChildren(sourceshape.NodeSwitchStatementCase)
+	if cases[len(cases)-1].getProperty(sourceshape.NodePredicateStartRune) != node.getProperty(sourceshape.NodePredicateStartRune) {
 		sf.ensureBlankLine()
 	}
 }
@@ -237,16 +237,16 @@ func (sf *sourceFormatter) emitSwitchStatementCase(node formatterNode) {
 func (sf *sourceFormatter) emitMatchStatement(node formatterNode) {
 	sf.append("match")
 
-	expr := node.getChild(parser.NodeMatchStatementExpression)
+	expr := node.getChild(sourceshape.NodeMatchStatementExpression)
 	sf.append(" ")
 	sf.emitNode(expr)
 
-	if namedValue, hasNamedValue := node.tryGetChild(parser.NodeStatementNamedValue); hasNamedValue {
+	if namedValue, hasNamedValue := node.tryGetChild(sourceshape.NodeStatementNamedValue); hasNamedValue {
 		sf.append(" as ")
 		sf.emitNode(namedValue)
 	}
 
-	cases := node.getChildren(parser.NodeMatchStatementCase)
+	cases := node.getChildren(sourceshape.NodeMatchStatementCase)
 	sf.append(" {")
 
 	if len(cases) > 0 {
@@ -261,7 +261,7 @@ func (sf *sourceFormatter) emitMatchStatement(node formatterNode) {
 
 // emitMatchStatementCase emits the source for a case under a match statement.
 func (sf *sourceFormatter) emitMatchStatementCase(node formatterNode) {
-	if expr, ok := node.tryGetChild(parser.NodeMatchStatementCaseTypeReference); ok {
+	if expr, ok := node.tryGetChild(sourceshape.NodeMatchStatementCaseTypeReference); ok {
 		sf.append("case ")
 		sf.emitNode(expr)
 		sf.append(":")
@@ -269,7 +269,7 @@ func (sf *sourceFormatter) emitMatchStatementCase(node formatterNode) {
 		sf.append("default:")
 	}
 
-	statements := node.getChild(parser.NodeMatchStatementCaseStatement).getChildren(parser.NodeStatementBlockStatement)
+	statements := node.getChild(sourceshape.NodeMatchStatementCaseStatement).getChildren(sourceshape.NodeStatementBlockStatement)
 	sf.appendLine()
 	sf.indent()
 	sf.hasNewScope = true
@@ -279,38 +279,38 @@ func (sf *sourceFormatter) emitMatchStatementCase(node formatterNode) {
 
 	// Ensure that there is a blank line iff this isn't the last match case.
 	parent, _ := sf.parentNode()
-	cases := parent.getChildren(parser.NodeMatchStatementCase)
-	if cases[len(cases)-1].getProperty(parser.NodePredicateStartRune) != node.getProperty(parser.NodePredicateStartRune) {
+	cases := parent.getChildren(sourceshape.NodeMatchStatementCase)
+	if cases[len(cases)-1].getProperty(sourceshape.NodePredicateStartRune) != node.getProperty(sourceshape.NodePredicateStartRune) {
 		sf.ensureBlankLine()
 	}
 }
 
 // emitAssignStatement emits the source for an assignment statement.
 func (sf *sourceFormatter) emitAssignStatement(node formatterNode) {
-	sf.emitNode(node.getChild(parser.NodeAssignStatementName))
+	sf.emitNode(node.getChild(sourceshape.NodeAssignStatementName))
 	sf.append(" = ")
-	sf.emitNode(node.getChild(parser.NodeAssignStatementValue))
+	sf.emitNode(node.getChild(sourceshape.NodeAssignStatementValue))
 }
 
 // emitExpressionStatement emits the source for an expression statement.
 func (sf *sourceFormatter) emitExpressionStatement(node formatterNode) {
-	sf.emitNode(node.getChild(parser.NodeExpressionStatementExpression))
+	sf.emitNode(node.getChild(sourceshape.NodeExpressionStatementExpression))
 }
 
 // emitNamedValue emits the source for a named value under a loop or with statement.
 func (sf *sourceFormatter) emitNamedValue(node formatterNode) {
-	sf.append(node.getProperty(parser.NodeNamedValueName))
+	sf.append(node.getProperty(sourceshape.NodeNamedValueName))
 }
 
 // emitResolveStatement emits the source for a resolve statement.
 func (sf *sourceFormatter) emitResolveStatement(node formatterNode) {
-	sf.emitNode(node.getChild(parser.NodeAssignedDestination))
+	sf.emitNode(node.getChild(sourceshape.NodeAssignedDestination))
 
-	if rejection, ok := node.tryGetChild(parser.NodeAssignedRejection); ok {
+	if rejection, ok := node.tryGetChild(sourceshape.NodeAssignedRejection); ok {
 		sf.append(", ")
 		sf.emitNode(rejection)
 	}
 
 	sf.append(" := ")
-	sf.emitNode(node.getChild(parser.NodeResolveStatementSource))
+	sf.emitNode(node.getChild(sourceshape.NodeResolveStatementSource))
 }

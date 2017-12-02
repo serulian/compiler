@@ -12,7 +12,7 @@ import (
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/packageloader"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // GetCompletionsForPosition returns the autocompletion information for the given activationString at the given position.
@@ -106,8 +106,8 @@ func (gh Handle) addAccessCompletions(node compilergraph.GraphNode, activationSt
 	}
 
 	// Parse the activation string into an expression.
-	source := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
-	startRune := node.GetValue(parser.NodePredicateStartRune).Int()
+	source := compilercommon.InputSource(node.Get(sourceshape.NodePredicateSource))
+	startRune := node.GetValue(sourceshape.NodePredicateStartRune).Int()
 	parsed, ok := srg.ParseExpression(expressionString, source, startRune)
 	if !ok {
 		return
@@ -166,10 +166,10 @@ func (gh Handle) addSmlCompletions(node compilergraph.GraphNode, activationStrin
 	// First lookup the parent SML expression (if any). If one is found, offer it as the closing
 	// completion if applicable.
 	if activationString == "<" || strings.HasPrefix(activationString, "</") {
-		smlExpression, isUnderExpression := gh.structureFinder.TryGetNearestContainingNode(node, parser.NodeTypeSmlExpression)
+		smlExpression, isUnderExpression := gh.structureFinder.TryGetNearestContainingNode(node, sourceshape.NodeTypeSmlExpression)
 		if isUnderExpression {
 			// Grab the name of the expression and add it as a completion.
-			smlPathExpression := smlExpression.GetNode(parser.NodeSmlExpressionTypeOrFunction)
+			smlPathExpression := smlExpression.GetNode(sourceshape.NodeSmlExpressionTypeOrFunction)
 			pathString, hasPathString := srg.IdentifierPathString(smlPathExpression)
 			if hasPathString {
 				if activationString == "<" {
@@ -198,11 +198,11 @@ func (gh Handle) addSmlCompletions(node compilergraph.GraphNode, activationStrin
 		}
 
 		switch scope.NamedScope().Kind() {
-		case parser.NodeTypeClass:
+		case sourceshape.NodeTypeClass:
 			// TODO: Check for a Declare constructor?
 			return strings.HasPrefix(localName, activationString[1:])
 
-		case parser.NodeTypeFunction:
+		case sourceshape.NodeTypeFunction:
 			return strings.HasPrefix(localName, activationString[1:])
 		}
 

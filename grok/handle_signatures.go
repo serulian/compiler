@@ -9,7 +9,7 @@ import (
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/packageloader"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // GetSignatureForPosition returns the parameter signature information for the given activationString at the given position.
@@ -54,8 +54,8 @@ func (gh Handle) GetSignature(activationString string, sourcePosition compilerco
 	}
 
 	// Parse the expression string into an expression.
-	source := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
-	startRune := node.GetValue(parser.NodePredicateStartRune).Int()
+	source := compilercommon.InputSource(node.Get(sourceshape.NodePredicateSource))
+	startRune := node.GetValue(sourceshape.NodePredicateStartRune).Int()
 	parsed, ok := srg.ParseExpression(expressionString, source, startRune)
 	if !ok {
 		return SignatureInformation{}, nil

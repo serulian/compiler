@@ -12,7 +12,7 @@ import (
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/graphs/typegraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 var _ = fmt.Printf
@@ -249,7 +249,7 @@ func (nsi *namedScopeInfo) definedValueOrGenericType(context scopeContext) (type
 
 		// TODO: We should probably cache this in the type graph instead of resolving here.
 		srg := nsi.sb.sg.srg
-		parameterTypeNode := nsi.srgInfo.GraphNode.GetNode(parser.NodeParameterType)
+		parameterTypeNode := nsi.srgInfo.GraphNode.GetNode(sourceshape.NodeParameterType)
 		typeref, _ := nsi.sb.sg.ResolveSRGTypeRef(srg.GetTypeRef(parameterTypeNode))
 		return typeref, true
 

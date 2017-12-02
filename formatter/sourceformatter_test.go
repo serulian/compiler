@@ -13,14 +13,15 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 	"github.com/stretchr/testify/assert"
 )
 
 // ignoredNodeTypes defines the list of node types that can be skipped in the formatting
 // tests.
-var ignoredNodeTypes = []parser.NodeType{
+var ignoredNodeTypes = []sourceshape.NodeType{
 	// SKIPPED: Parser currently cannot parse >>, as it conflicts with generic type refs.
-	parser.NodeBitwiseShiftRightExpression,
+	sourceshape.NodeBitwiseShiftRightExpression,
 }
 
 type goldenTest struct {
@@ -96,7 +97,7 @@ func conductParsing(t *testing.T, test goldenTest, source []byte) (*parseTree, f
 	return parseTree, rootNode.(formatterNode)
 }
 
-func addEncounteredNodeTypes(node formatterNode, encounteredNodeTypes map[parser.NodeType]bool) {
+func addEncounteredNodeTypes(node formatterNode, encounteredNodeTypes map[sourceshape.NodeType]bool) {
 	encounteredNodeTypes[node.GetType()] = true
 	for _, child := range node.getAllChildren() {
 		addEncounteredNodeTypes(child, encounteredNodeTypes)
@@ -104,7 +105,7 @@ func addEncounteredNodeTypes(node formatterNode, encounteredNodeTypes map[parser
 }
 
 func TestGolden(t *testing.T) {
-	encounteredNodeTypes := map[parser.NodeType]bool{}
+	encounteredNodeTypes := map[sourceshape.NodeType]bool{}
 
 	for _, test := range goldenTests {
 		if os.Getenv("FILTER") != "" {
@@ -153,8 +154,8 @@ func TestGolden(t *testing.T) {
 	// tests, as the filter will almost certainly skip node types we need.
 	if os.Getenv("FILTER") == "" {
 	outer:
-		for i := int(parser.NodeTypeError) + 1; i < int(parser.NodeTypeTagged); i++ {
-			current := parser.NodeType(i)
+		for i := int(sourceshape.NodeTypeError) + 1; i < int(sourceshape.NodeTypeTagged); i++ {
+			current := sourceshape.NodeType(i)
 			for _, skipped := range ignoredNodeTypes {
 				if current == skipped {
 					continue outer

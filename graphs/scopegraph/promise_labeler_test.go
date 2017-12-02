@@ -14,7 +14,7 @@ import (
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/packageloader"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -268,9 +268,9 @@ func TestPromisingLabels(t *testing.T) {
 
 			if len(pieces) > 2 {
 				if pieces[2] == "get" {
-					sourceNode = sourceNode.GetNode(parser.NodePropertyGetter)
+					sourceNode = sourceNode.GetNode(sourceshape.NodePropertyGetter)
 				} else if pieces[2] == "set" {
-					sourceNode = sourceNode.GetNode(parser.NodePropertySetter)
+					sourceNode = sourceNode.GetNode(sourceshape.NodePropertySetter)
 				}
 			}
 

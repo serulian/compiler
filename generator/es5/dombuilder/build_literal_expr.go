@@ -13,7 +13,7 @@ import (
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/typegraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 
 	"strconv"
 )
@@ -25,25 +25,25 @@ const DEFINED_PRINCIPAL_PARAMETER = "$this.$principal"
 // buildStructuralNewExpression builds the CodeDOM for a structural new expression.
 func (db *domBuilder) buildStructuralNewExpression(node compilergraph.GraphNode) codedom.Expression {
 	nodeScope, _ := db.scopegraph.GetScope(node)
-	childScope, _ := db.scopegraph.GetScope(node.GetNode(parser.NodeStructuralNewTypeExpression))
+	childScope, _ := db.scopegraph.GetScope(node.GetNode(sourceshape.NodeStructuralNewTypeExpression))
 
 	// Collect the full set of initializers, by member.
 	initializers := map[string]codedom.Expression{}
 	eit := node.StartQuery().
-		Out(parser.NodeStructuralNewExpressionChildEntry).
+		Out(sourceshape.NodeStructuralNewExpressionChildEntry).
 		BuildNodeIterator()
 
 	for eit.Next() {
 		entryScope, _ := db.scopegraph.GetScope(eit.Node())
 
-		var name = eit.Node().Get(parser.NodeStructuralNewEntryKey)
+		var name = eit.Node().Get(sourceshape.NodeStructuralNewEntryKey)
 		if !nodeScope.HasLabel(proto.ScopeLabel_STRUCTURAL_FUNCTION_EXPR) {
 			entryName, _ := db.scopegraph.GetReferencedName(entryScope)
 			entryMember, _ := entryName.Member()
 			name = entryMember.Name()
 		}
 
-		initializers[name] = db.getExpression(eit.Node(), parser.NodeStructuralNewEntryValue)
+		initializers[name] = db.getExpression(eit.Node(), sourceshape.NodeStructuralNewEntryValue)
 	}
 
 	if nodeScope.HasLabel(proto.ScopeLabel_STRUCTURAL_UPDATE_EXPR) {
@@ -65,7 +65,7 @@ func (db *domBuilder) buildStructuralNewExpression(node compilergraph.GraphNode)
 // which is constructed structurally.
 func (db *domBuilder) buildStructFunctionExpression(mapType typegraph.TypeReference, initializers map[string]codedom.Expression, node compilergraph.GraphNode) codedom.Expression {
 	mapValueExpression := db.buildMappingInitializerExpression(mapType, initializers, node)
-	funcExpr := db.buildExpression(node.GetNode(parser.NodeStructuralNewTypeExpression))
+	funcExpr := db.buildExpression(node.GetNode(sourceshape.NodeStructuralNewTypeExpression))
 	return codedom.InvokeFunction(
 		funcExpr,
 		[]codedom.Expression{mapValueExpression},
@@ -83,7 +83,7 @@ func (db *domBuilder) buildStructCloneExpression(structType typegraph.TypeRefere
 
 	cloneCall := codedom.MemberCall(
 		codedom.MemberReference(
-			db.getExpression(node, parser.NodeStructuralNewTypeExpression),
+			db.getExpression(node, sourceshape.NodeStructuralNewTypeExpression),
 			cloneMethod,
 			node),
 		cloneMethod,
@@ -168,7 +168,7 @@ func (db *domBuilder) buildNullLiteral(node compilergraph.GraphNode) codedom.Exp
 
 // buildNumericLiteral builds the CodeDOM for a numeric literal.
 func (db *domBuilder) buildNumericLiteral(node compilergraph.GraphNode) codedom.Expression {
-	numericValueStr := node.Get(parser.NodeNumericLiteralExpressionValue)
+	numericValueStr := node.Get(sourceshape.NodeNumericLiteralExpressionValue)
 	if strings.HasSuffix(numericValueStr, "f") {
 		numericValueStr = numericValueStr[0 : len(numericValueStr)-1]
 	}
@@ -192,13 +192,13 @@ func (db *domBuilder) buildNumericLiteral(node compilergraph.GraphNode) codedom.
 
 // buildBooleanLiteral builds the CodeDOM for a boolean literal.
 func (db *domBuilder) buildBooleanLiteral(node compilergraph.GraphNode) codedom.Expression {
-	booleanValueStr := node.Get(parser.NodeBooleanLiteralExpressionValue)
+	booleanValueStr := node.Get(sourceshape.NodeBooleanLiteralExpressionValue)
 	return codedom.NominalWrapping(codedom.LiteralValue(booleanValueStr, node), db.scopegraph.TypeGraph().BoolType(), node)
 }
 
 // buildStringLiteral builds the CodeDOM for a string literal.
 func (db *domBuilder) buildStringLiteral(node compilergraph.GraphNode) codedom.Expression {
-	stringValueStr := node.Get(parser.NodeStringLiteralExpressionValue)
+	stringValueStr := node.Get(sourceshape.NodeStringLiteralExpressionValue)
 	if stringValueStr[0] == '`' {
 		unquoted := stringValueStr[1 : len(stringValueStr)-1]
 		stringValueStr = strconv.Quote(unquoted)
@@ -224,12 +224,12 @@ func (db *domBuilder) buildPrincipalLiteral(node compilergraph.GraphNode) codedo
 
 // buildSliceLiteralExpression builds the CodeDOM for a slice literal expression.
 func (db *domBuilder) buildSliceLiteralExpression(node compilergraph.GraphNode) codedom.Expression {
-	return db.buildCollectionLiteralExpression(node, parser.NodeSliceLiteralExpressionValue, "Empty", "overArray")
+	return db.buildCollectionLiteralExpression(node, sourceshape.NodeSliceLiteralExpressionValue, "Empty", "overArray")
 }
 
 // buildListLiteralExpression builds the CodeDOM for a list literal expression.
 func (db *domBuilder) buildListLiteralExpression(node compilergraph.GraphNode) codedom.Expression {
-	return db.buildCollectionLiteralExpression(node, parser.NodeListLiteralExpressionValue, "Empty", "overArray")
+	return db.buildCollectionLiteralExpression(node, sourceshape.NodeListLiteralExpressionValue, "Empty", "overArray")
 }
 
 // buildCollectionLiteralExpression builds a literal collection expression.
@@ -300,17 +300,17 @@ func (db *domBuilder) buildMappingInitializerExpression(mappingType typegraph.Ty
 // buildMapLiteralExpression builds the CodeDOM for a map literal expression.
 func (db *domBuilder) buildMapLiteralExpression(node compilergraph.GraphNode) codedom.Expression {
 	return db.buildMappedCollectionExpression(node,
-		parser.NodeMapLiteralExpressionChildEntry,
-		parser.NodeMapLiteralExpressionEntryKey,
-		parser.NodeMapLiteralExpressionEntryValue)
+		sourceshape.NodeMapLiteralExpressionChildEntry,
+		sourceshape.NodeMapLiteralExpressionEntryKey,
+		sourceshape.NodeMapLiteralExpressionEntryValue)
 }
 
 // buildMappingLiteralExpression builds the CodeDOM for a mapping literal expression.
 func (db *domBuilder) buildMappingLiteralExpression(node compilergraph.GraphNode) codedom.Expression {
 	return db.buildMappedCollectionExpression(node,
-		parser.NodeMappingLiteralExpressionEntryRef,
-		parser.NodeMappingLiteralExpressionEntryKey,
-		parser.NodeMappingLiteralExpressionEntryValue)
+		sourceshape.NodeMappingLiteralExpressionEntryRef,
+		sourceshape.NodeMappingLiteralExpressionEntryKey,
+		sourceshape.NodeMappingLiteralExpressionEntryValue)
 }
 
 // buildMappedCollectionExpression builds the CodeDOM for a map or mapping literal expression.
@@ -391,14 +391,14 @@ func (db *domBuilder) buildTemplateStringExpression(node compilergraph.GraphNode
 
 // buildTaggedTemplateString builds the CodeDOM for a tagged template string expression.
 func (db *domBuilder) buildTaggedTemplateString(node compilergraph.GraphNode) codedom.Expression {
-	childExpr := db.getExpression(node, parser.NodeTaggedTemplateCallExpression)
-	return db.buildTemplateStringCall(node.GetNode(parser.NodeTaggedTemplateParsed), childExpr, true)
+	childExpr := db.getExpression(node, sourceshape.NodeTaggedTemplateCallExpression)
+	return db.buildTemplateStringCall(node.GetNode(sourceshape.NodeTaggedTemplateParsed), childExpr, true)
 }
 
 // buildTemplateStringCall builds the CodeDOM representing the call to a template string function.
 func (db *domBuilder) buildTemplateStringCall(node compilergraph.GraphNode, funcExpr codedom.Expression, isTagged bool) codedom.Expression {
 	pit := node.StartQuery().
-		Out(parser.NodeTemplateStringPiece).
+		Out(sourceshape.NodeTemplateStringPiece).
 		BuildNodeIterator()
 
 	var pieceExprs = make([]codedom.Expression, 0)

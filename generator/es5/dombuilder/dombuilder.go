@@ -12,7 +12,7 @@ import (
 	"github.com/serulian/compiler/generator/es5/codedom"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // domBuilder defines a helper type for converting Serulian SRG into CodeDOM.
@@ -142,75 +142,75 @@ func (db *domBuilder) buildExpression(node compilergraph.GraphNode) codedom.Expr
 	switch node.Kind() {
 
 	// Access Expressions.
-	case parser.NodeMemberAccessExpression:
+	case sourceshape.NodeMemberAccessExpression:
 		fallthrough
 
-	case parser.NodeNullableMemberAccessExpression:
+	case sourceshape.NodeNullableMemberAccessExpression:
 		fallthrough
 
-	case parser.NodeDynamicMemberAccessExpression:
+	case sourceshape.NodeDynamicMemberAccessExpression:
 		return db.buildMemberAccessExpression(node)
 
-	case parser.NodeTypeIdentifierExpression:
+	case sourceshape.NodeTypeIdentifierExpression:
 		return db.buildIdentifierExpression(node)
 
-	case parser.NodeGenericSpecifierExpression:
+	case sourceshape.NodeGenericSpecifierExpression:
 		return db.buildGenericSpecifierExpression(node)
 
-	case parser.NodeCastExpression:
+	case sourceshape.NodeCastExpression:
 		return db.buildCastExpression(node)
 
-	case parser.NodeStreamMemberAccessExpression:
+	case sourceshape.NodeStreamMemberAccessExpression:
 		return db.buildStreamMemberAccessExpression(node)
 
 	// Await Expression.
-	case parser.NodeTypeAwaitExpression:
+	case sourceshape.NodeTypeAwaitExpression:
 		return db.buildAwaitExpression(node)
 
 	// Lambda Expressions.
-	case parser.NodeTypeLambdaExpression:
+	case sourceshape.NodeTypeLambdaExpression:
 		return db.buildLambdaExpression(node)
 
 	// SML Expressions.
-	case parser.NodeTypeSmlExpression:
+	case sourceshape.NodeTypeSmlExpression:
 		return db.buildSmlExpression(node)
 
-	case parser.NodeTypeSmlText:
+	case sourceshape.NodeTypeSmlText:
 		return db.buildSmlText(node)
 
 	// Flow Expressions.
-	case parser.NodeTypeConditionalExpression:
+	case sourceshape.NodeTypeConditionalExpression:
 		return db.buildConditionalExpression(node)
 
-	case parser.NodeTypeLoopExpression:
+	case sourceshape.NodeTypeLoopExpression:
 		return db.buildLoopExpression(node)
 
 	// Op Expressions.
-	case parser.NodeRootTypeExpression:
+	case sourceshape.NodeRootTypeExpression:
 		return db.buildRootTypeExpression(node)
 
-	case parser.NodeFunctionCallExpression:
+	case sourceshape.NodeFunctionCallExpression:
 		return db.buildFunctionCall(node)
 
-	case parser.NodeSliceExpression:
+	case sourceshape.NodeSliceExpression:
 		return db.buildSliceExpression(node)
 
-	case parser.NodeNullComparisonExpression:
+	case sourceshape.NodeNullComparisonExpression:
 		return db.buildNullComparisonExpression(node)
 
-	case parser.NodeAssertNotNullExpression:
+	case sourceshape.NodeAssertNotNullExpression:
 		return db.buildAssertNotNullExpression(node)
 
-	case parser.NodeIsComparisonExpression:
+	case sourceshape.NodeIsComparisonExpression:
 		return db.buildIsComparisonExpression(node)
 
-	case parser.NodeInCollectionExpression:
+	case sourceshape.NodeInCollectionExpression:
 		return db.buildInCollectionExpression(node)
 
-	case parser.NodeBitwiseNotExpression:
+	case sourceshape.NodeBitwiseNotExpression:
 		return db.buildUnaryOperatorExpression(node, nil)
 
-	case parser.NodeKeywordNotExpression:
+	case sourceshape.NodeKeywordNotExpression:
 		return db.buildUnaryOperatorExpression(node, func(expr codedom.Expression) codedom.Expression {
 			boolType := db.scopegraph.TypeGraph().BoolTypeReference()
 			childExpr := codedom.UnaryOperation("!", codedom.NominalUnwrapping(expr, boolType, node), node)
@@ -220,46 +220,46 @@ func (db *domBuilder) buildExpression(node compilergraph.GraphNode) codedom.Expr
 				node)
 		})
 
-	case parser.NodeDefineExclusiveRangeExpression:
+	case sourceshape.NodeDefineExclusiveRangeExpression:
 		fallthrough
 
-	case parser.NodeDefineRangeExpression:
+	case sourceshape.NodeDefineRangeExpression:
 		fallthrough
 
-	case parser.NodeBitwiseXorExpression:
+	case sourceshape.NodeBitwiseXorExpression:
 		fallthrough
 
-	case parser.NodeBitwiseOrExpression:
+	case sourceshape.NodeBitwiseOrExpression:
 		fallthrough
 
-	case parser.NodeBitwiseAndExpression:
+	case sourceshape.NodeBitwiseAndExpression:
 		fallthrough
 
-	case parser.NodeBitwiseShiftLeftExpression:
+	case sourceshape.NodeBitwiseShiftLeftExpression:
 		fallthrough
 
-	case parser.NodeBitwiseShiftRightExpression:
+	case sourceshape.NodeBitwiseShiftRightExpression:
 		fallthrough
 
-	case parser.NodeBinaryAddExpression:
+	case sourceshape.NodeBinaryAddExpression:
 		fallthrough
 
-	case parser.NodeBinarySubtractExpression:
+	case sourceshape.NodeBinarySubtractExpression:
 		fallthrough
 
-	case parser.NodeBinaryMultiplyExpression:
+	case sourceshape.NodeBinaryMultiplyExpression:
 		fallthrough
 
-	case parser.NodeBinaryDivideExpression:
+	case sourceshape.NodeBinaryDivideExpression:
 		fallthrough
 
-	case parser.NodeBinaryModuloExpression:
+	case sourceshape.NodeBinaryModuloExpression:
 		return db.buildBinaryOperatorExpression(node, nil)
 
-	case parser.NodeComparisonEqualsExpression:
+	case sourceshape.NodeComparisonEqualsExpression:
 		return db.buildBinaryOperatorExpression(node, nil)
 
-	case parser.NodeComparisonNotEqualsExpression:
+	case sourceshape.NodeComparisonNotEqualsExpression:
 		return db.buildBinaryOperatorExpression(node, func(expr codedom.Expression) codedom.Expression {
 			boolType := db.scopegraph.TypeGraph().BoolTypeReference()
 			childExpr := codedom.UnaryOperation("!", codedom.NominalUnwrapping(expr, boolType, node), node)
@@ -270,7 +270,7 @@ func (db *domBuilder) buildExpression(node compilergraph.GraphNode) codedom.Expr
 				node)
 		})
 
-	case parser.NodeComparisonLTEExpression:
+	case sourceshape.NodeComparisonLTEExpression:
 		return db.buildBinaryOperatorExpression(node, func(expr codedom.Expression) codedom.Expression {
 			intType := db.scopegraph.TypeGraph().IntTypeReference()
 			boolType := db.scopegraph.TypeGraph().BoolTypeReference()
@@ -282,7 +282,7 @@ func (db *domBuilder) buildExpression(node compilergraph.GraphNode) codedom.Expr
 				node)
 		})
 
-	case parser.NodeComparisonLTExpression:
+	case sourceshape.NodeComparisonLTExpression:
 		return db.buildBinaryOperatorExpression(node, func(expr codedom.Expression) codedom.Expression {
 			intType := db.scopegraph.TypeGraph().IntTypeReference()
 			boolType := db.scopegraph.TypeGraph().BoolTypeReference()
@@ -294,7 +294,7 @@ func (db *domBuilder) buildExpression(node compilergraph.GraphNode) codedom.Expr
 				node)
 		})
 
-	case parser.NodeComparisonGTEExpression:
+	case sourceshape.NodeComparisonGTEExpression:
 		return db.buildBinaryOperatorExpression(node, func(expr codedom.Expression) codedom.Expression {
 			intType := db.scopegraph.TypeGraph().IntTypeReference()
 			boolType := db.scopegraph.TypeGraph().BoolTypeReference()
@@ -306,7 +306,7 @@ func (db *domBuilder) buildExpression(node compilergraph.GraphNode) codedom.Expr
 				node)
 		})
 
-	case parser.NodeComparisonGTExpression:
+	case sourceshape.NodeComparisonGTExpression:
 		return db.buildBinaryOperatorExpression(node, func(expr codedom.Expression) codedom.Expression {
 			intType := db.scopegraph.TypeGraph().IntTypeReference()
 			boolType := db.scopegraph.TypeGraph().BoolTypeReference()
@@ -319,56 +319,56 @@ func (db *domBuilder) buildExpression(node compilergraph.GraphNode) codedom.Expr
 		})
 
 	// Boolean operators.
-	case parser.NodeBooleanAndExpression:
+	case sourceshape.NodeBooleanAndExpression:
 		return db.buildBooleanBinaryExpression(node, "&&")
 
-	case parser.NodeBooleanOrExpression:
+	case sourceshape.NodeBooleanOrExpression:
 		return db.buildBooleanBinaryExpression(node, "||")
 
-	case parser.NodeBooleanNotExpression:
+	case sourceshape.NodeBooleanNotExpression:
 		return db.buildBooleanUnaryExpression(node, "!")
 
 	// Literals.
-	case parser.NodeStructuralNewExpression:
+	case sourceshape.NodeStructuralNewExpression:
 		return db.buildStructuralNewExpression(node)
 
-	case parser.NodeNumericLiteralExpression:
+	case sourceshape.NodeNumericLiteralExpression:
 		return db.buildNumericLiteral(node)
 
-	case parser.NodeBooleanLiteralExpression:
+	case sourceshape.NodeBooleanLiteralExpression:
 		return db.buildBooleanLiteral(node)
 
-	case parser.NodeStringLiteralExpression:
+	case sourceshape.NodeStringLiteralExpression:
 		return db.buildStringLiteral(node)
 
-	case parser.NodeNullLiteralExpression:
+	case sourceshape.NodeNullLiteralExpression:
 		return db.buildNullLiteral(node)
 
-	case parser.NodeThisLiteralExpression:
+	case sourceshape.NodeThisLiteralExpression:
 		return db.buildThisLiteral(node)
 
-	case parser.NodePrincipalLiteralExpression:
+	case sourceshape.NodePrincipalLiteralExpression:
 		return db.buildPrincipalLiteral(node)
 
-	case parser.NodeValLiteralExpression:
+	case sourceshape.NodeValLiteralExpression:
 		return db.buildValLiteral(node)
 
-	case parser.NodeListLiteralExpression:
+	case sourceshape.NodeListLiteralExpression:
 		return db.buildListLiteralExpression(node)
 
-	case parser.NodeSliceLiteralExpression:
+	case sourceshape.NodeSliceLiteralExpression:
 		return db.buildSliceLiteralExpression(node)
 
-	case parser.NodeMappingLiteralExpression:
+	case sourceshape.NodeMappingLiteralExpression:
 		return db.buildMappingLiteralExpression(node)
 
-	case parser.NodeMapLiteralExpression:
+	case sourceshape.NodeMapLiteralExpression:
 		return db.buildMapLiteralExpression(node)
 
-	case parser.NodeTypeTemplateString:
+	case sourceshape.NodeTypeTemplateString:
 		return db.buildTemplateStringExpression(node)
 
-	case parser.NodeTaggedTemplateLiteralString:
+	case sourceshape.NodeTaggedTemplateLiteralString:
 		return db.buildTaggedTemplateString(node)
 
 	default:
@@ -380,61 +380,61 @@ func (db *domBuilder) buildExpression(node compilergraph.GraphNode) codedom.Expr
 // buildStatements builds the CodeDOM for the given SRG node and returns it as start and end statements.
 func (db *domBuilder) buildStatements(node compilergraph.GraphNode) (codedom.Statement, codedom.Statement) {
 	switch node.Kind() {
-	case parser.NodeTypeStatementBlock:
+	case sourceshape.NodeTypeStatementBlock:
 		return db.buildStatementBlock(node)
 
-	case parser.NodeTypeReturnStatement:
+	case sourceshape.NodeTypeReturnStatement:
 		stm := db.buildReturnStatement(node)
 		return stm, stm
 
-	case parser.NodeTypeRejectStatement:
+	case sourceshape.NodeTypeRejectStatement:
 		stm := db.buildRejectStatement(node)
 		return stm, stm
 
-	case parser.NodeTypeYieldStatement:
+	case sourceshape.NodeTypeYieldStatement:
 		stm := db.buildYieldStatement(node)
 		return stm, stm
 
-	case parser.NodeTypeConditionalStatement:
+	case sourceshape.NodeTypeConditionalStatement:
 		return db.buildConditionalStatement(node)
 
-	case parser.NodeTypeLoopStatement:
+	case sourceshape.NodeTypeLoopStatement:
 		return db.buildLoopStatement(node)
 
-	case parser.NodeTypeExpressionStatement:
+	case sourceshape.NodeTypeExpressionStatement:
 		stm := db.buildExpressionStatement(node)
 		return stm, stm
 
-	case parser.NodeTypeContinueStatement:
+	case sourceshape.NodeTypeContinueStatement:
 		stm := db.buildContinueStatement(node)
 		return stm, stm
 
-	case parser.NodeTypeBreakStatement:
+	case sourceshape.NodeTypeBreakStatement:
 		stm := db.buildBreakStatement(node)
 		return stm, stm
 
-	case parser.NodeTypeAssignStatement:
+	case sourceshape.NodeTypeAssignStatement:
 		stm := db.buildAssignStatement(node)
 		return stm, stm
 
-	case parser.NodeTypeVariableStatement:
+	case sourceshape.NodeTypeVariableStatement:
 		stm := db.buildVarStatement(node)
 		return stm, stm
 
-	case parser.NodeTypeWithStatement:
+	case sourceshape.NodeTypeWithStatement:
 		stm := db.buildWithStatement(node)
 		return stm, stm
 
-	case parser.NodeTypeSwitchStatement:
+	case sourceshape.NodeTypeSwitchStatement:
 		return db.buildSwitchStatement(node)
 
-	case parser.NodeTypeMatchStatement:
+	case sourceshape.NodeTypeMatchStatement:
 		return db.buildMatchStatement(node)
 
-	case parser.NodeTypeArrowStatement:
+	case sourceshape.NodeTypeArrowStatement:
 		return db.buildArrowStatement(node)
 
-	case parser.NodeTypeResolveStatement:
+	case sourceshape.NodeTypeResolveStatement:
 		return db.buildResolveStatement(node)
 
 	default:

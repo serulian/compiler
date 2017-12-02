@@ -15,7 +15,7 @@ import (
 	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/integration"
 	"github.com/serulian/compiler/packageloader"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 
 	"github.com/cevaris/ordered_map"
 )
@@ -198,7 +198,7 @@ func buildImplicitLambdaScopes(builder *scopeBuilder, filter ScopeFilter) {
 	for lit.Next() {
 		node := lit.Node()
 
-		if filter != nil && !filter(compilercommon.InputSource(node.Get(parser.NodePredicateSource))) {
+		if filter != nil && !filter(compilercommon.InputSource(node.Get(sourceshape.NodePredicateSource))) {
 			continue
 		}
 

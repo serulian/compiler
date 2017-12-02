@@ -15,7 +15,7 @@ import (
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/packageloader"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 var _ = fmt.Printf
@@ -252,7 +252,7 @@ func getAllNamedRanges(handle Handle) (map[string]namedRange, error) {
 	// and check them against the expected results.
 	it := handle.scopeResult.Graph.SourceGraph().AllComments()
 	for it.Next() {
-		commentValue := it.Node().Get(parser.NodeCommentPredicateValue)
+		commentValue := it.Node().Get(sourceshape.NodeCommentPredicateValue)
 		if !strings.HasPrefix(commentValue, "///") {
 			continue
 		}
@@ -273,7 +273,7 @@ func getAllNamedRanges(handle Handle) (map[string]namedRange, error) {
 // getNamedRanges returns all the named ranges as found in the given comment node.
 func getNamedRanges(commentNode compilergraph.GraphNode) (map[string]namedRange, error) {
 	// Load the source text.
-	sourcePath := commentNode.Get(parser.NodePredicateSource)
+	sourcePath := commentNode.Get(sourceshape.NodePredicateSource)
 	sourceBytes, err := ioutil.ReadFile(sourcePath)
 	if err != nil {
 		return map[string]namedRange{}, err
@@ -282,14 +282,14 @@ func getNamedRanges(commentNode compilergraph.GraphNode) (map[string]namedRange,
 	sourceText := string(sourceBytes)
 
 	// Find the source of the node decorated with the comment.
-	decoratedNode := commentNode.GetIncomingNode(parser.NodePredicateChild)
-	decoratedStartRune := decoratedNode.GetValue(parser.NodePredicateStartRune).Int()
-	decoratedEndRune := decoratedNode.GetValue(parser.NodePredicateEndRune).Int()
+	decoratedNode := commentNode.GetIncomingNode(sourceshape.NodePredicateChild)
+	decoratedStartRune := decoratedNode.GetValue(sourceshape.NodePredicateStartRune).Int()
+	decoratedEndRune := decoratedNode.GetValue(sourceshape.NodePredicateEndRune).Int()
 	decoratedSource := sourceText[decoratedStartRune : decoratedEndRune+1]
 
 	// Find all the named ranges in the comment, which will be delineated by
 	// brackets.
-	commentValue := commentNode.Get(parser.NodeCommentPredicateValue)
+	commentValue := commentNode.Get(sourceshape.NodeCommentPredicateValue)
 	namedRangesMap := map[string]namedRange{}
 
 	var rangeStartIndex = -1

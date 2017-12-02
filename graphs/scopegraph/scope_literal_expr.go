@@ -12,7 +12,7 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/typegraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 var _ = fmt.Printf
@@ -20,7 +20,7 @@ var _ = fmt.Printf
 // scopeStructuralNewExpression scopes a structural new-type expressions.
 func (sb *scopeBuilder) scopeStructuralNewExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Scope the child expression and ensure it refers to a type or an existing struct.
-	childScope := sb.getScopeForPredicate(node, parser.NodeStructuralNewTypeExpression, context)
+	childScope := sb.getScopeForPredicate(node, sourceshape.NodeStructuralNewTypeExpression, context)
 	if !childScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
@@ -49,15 +49,15 @@ func (sb *scopeBuilder) scopeStructuralNewExpression(node compilergraph.GraphNod
 func (sb *scopeBuilder) scopeStructuralFunctionExpression(node compilergraph.GraphNode, childScope *proto.ScopeInfo, context scopeContext) proto.ScopeInfo {
 	// Scope each of the entries, determine the combined value type, and check for duplicate entry keys.
 	eit := node.StartQuery().
-		Out(parser.NodeStructuralNewExpressionChildEntry).
-		BuildNodeIterator(parser.NodeStructuralNewEntryKey)
+		Out(sourceshape.NodeStructuralNewExpressionChildEntry).
+		BuildNodeIterator(sourceshape.NodeStructuralNewEntryKey)
 
 	var isValid = true
 	var valueType = sb.sg.tdg.VoidTypeReference()
 	var encountered = map[string]bool{}
 
 	for eit.Next() {
-		entryValue, hasEntryValue := eit.Node().TryGetNode(parser.NodeStructuralNewEntryValue)
+		entryValue, hasEntryValue := eit.Node().TryGetNode(sourceshape.NodeStructuralNewEntryValue)
 		if !hasEntryValue {
 			isValid = false
 			continue
@@ -71,7 +71,7 @@ func (sb *scopeBuilder) scopeStructuralFunctionExpression(node compilergraph.Gra
 
 		valueType = valueType.Intersect(entryScope.ResolvedTypeRef(sb.sg.tdg))
 
-		entryKey := eit.GetPredicate(parser.NodeStructuralNewEntryKey).String()
+		entryKey := eit.GetPredicate(sourceshape.NodeStructuralNewEntryKey).String()
 		if _, exists := encountered[entryKey]; exists {
 			isValid = false
 			sb.decorateWithError(node, "Structural mapping contains duplicate key: %s", entryKey)
@@ -135,13 +135,13 @@ func (sb *scopeBuilder) scopeStructuralNewEntries(node compilergraph.GraphNode, 
 	// added.
 	encountered := map[string]bool{}
 	eit := node.StartQuery().
-		Out(parser.NodeStructuralNewExpressionChildEntry).
-		BuildNodeIterator(parser.NodeStructuralNewEntryKey)
+		Out(sourceshape.NodeStructuralNewExpressionChildEntry).
+		BuildNodeIterator(sourceshape.NodeStructuralNewEntryKey)
 
 	var isValid = true
 	for eit.Next() {
 		// Scope the entry.
-		entryName := eit.GetPredicate(parser.NodeStructuralNewEntryKey).String()
+		entryName := eit.GetPredicate(sourceshape.NodeStructuralNewEntryKey).String()
 		entryScope := sb.getScope(eit.Node(), context)
 		if !entryScope.GetIsValid() {
 			isValid = false
@@ -185,7 +185,7 @@ func (sb *scopeBuilder) scopeStructuralNewTypeExpression(node compilergraph.Grap
 	case typegraph.ClassType:
 		// Classes and agents can only be constructed structurally if they are in the same module as this call.
 		// Otherwise, an exported constructor must be used.
-		module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
+		module := compilercommon.InputSource(node.Get(sourceshape.NodePredicateSource))
 		_, rerr := staticTypeRef.ResolveAccessibleMember("new", module, typegraph.MemberResolutionStatic)
 		if rerr != nil {
 			sb.decorateWithError(node, "Cannot structurally construct type %v, as it is imported from another module", staticTypeRef)
@@ -230,27 +230,27 @@ func (sb *scopeBuilder) scopeStructuralNewTypeExpression(node compilergraph.Grap
 
 // scopeStructuralNewExpressionEntry scopes a single entry in a structural new expression.
 func (sb *scopeBuilder) scopeStructuralNewExpressionEntry(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	parentNode := node.GetIncomingNode(parser.NodeStructuralNewExpressionChildEntry)
-	parentExprScope := sb.getScopeForPredicate(parentNode, parser.NodeStructuralNewTypeExpression, context)
+	parentNode := node.GetIncomingNode(sourceshape.NodeStructuralNewExpressionChildEntry)
+	parentExprScope := sb.getScopeForPredicate(parentNode, sourceshape.NodeStructuralNewTypeExpression, context)
 
 	parentType := parentExprScope.StaticTypeRef(sb.sg.tdg)
 	if parentExprScope.GetKind() == proto.ScopeKind_VALUE {
 		parentType = parentExprScope.ResolvedTypeRef(sb.sg.tdg)
 	}
 
-	entryName, hasEntryName := node.TryGet(parser.NodeStructuralNewEntryKey)
+	entryName, hasEntryName := node.TryGet(sourceshape.NodeStructuralNewEntryKey)
 	if !hasEntryName {
 		return newScope().Invalid().GetScope()
 	}
 
 	// Get the scope for the value.
-	valueScope := sb.getScopeForPredicate(node, parser.NodeStructuralNewEntryValue, context)
+	valueScope := sb.getScopeForPredicate(node, sourceshape.NodeStructuralNewEntryValue, context)
 	if !valueScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
 
 	// Lookup the member associated with the entry name.
-	module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
+	module := compilercommon.InputSource(node.Get(sourceshape.NodePredicateSource))
 	member, rerr := parentType.ResolveAccessibleMember(entryName, module, typegraph.MemberResolutionInstance)
 	if rerr != nil {
 		sb.decorateWithError(node, "%v", rerr)
@@ -281,13 +281,13 @@ func (sb *scopeBuilder) scopeTaggedTemplateString(node compilergraph.GraphNode, 
 	var isValid = true
 
 	// Scope the tagging expression.
-	tagScope := sb.getScopeForPredicate(node, parser.NodeTaggedTemplateCallExpression, context)
+	tagScope := sb.getScopeForPredicate(node, sourceshape.NodeTaggedTemplateCallExpression, context)
 	if !tagScope.GetIsValid() {
 		isValid = false
 	}
 
 	// Scope the template string.
-	templateScope := sb.getScopeForPredicate(node, parser.NodeTaggedTemplateParsed, context)
+	templateScope := sb.getScopeForPredicate(node, sourceshape.NodeTaggedTemplateParsed, context)
 	if !templateScope.GetIsValid() {
 		isValid = false
 	}
@@ -322,7 +322,7 @@ func (sb *scopeBuilder) scopeTaggedTemplateString(node compilergraph.GraphNode, 
 func (sb *scopeBuilder) scopeTemplateStringExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Scope each of the pieces of the template string. All pieces must be strings or Stringable.
 	pit := node.StartQuery().
-		Out(parser.NodeTemplateStringPiece).
+		Out(sourceshape.NodeTemplateStringPiece).
 		BuildNodeIterator()
 
 	var isValid = true
@@ -361,14 +361,14 @@ func (sb *scopeBuilder) scopeMapLiteralExpression(node compilergraph.GraphNode, 
 
 	// Scope each of the entries and determine the map value types based on the entries found.
 	eit := node.StartQuery().
-		Out(parser.NodeMapLiteralExpressionChildEntry).
+		Out(sourceshape.NodeMapLiteralExpressionChildEntry).
 		BuildNodeIterator()
 
 	for eit.Next() {
 		entryNode := eit.Node()
 
-		keyNode, hasKeyNode := entryNode.TryGetNode(parser.NodeMapLiteralExpressionEntryKey)
-		valueNode, hasValueNode := entryNode.TryGetNode(parser.NodeMapLiteralExpressionEntryValue)
+		keyNode, hasKeyNode := entryNode.TryGetNode(sourceshape.NodeMapLiteralExpressionEntryKey)
+		valueNode, hasValueNode := entryNode.TryGetNode(sourceshape.NodeMapLiteralExpressionEntryValue)
 
 		if !hasKeyNode || !hasValueNode {
 			isValid = false
@@ -408,7 +408,7 @@ func (sb *scopeBuilder) scopeListLiteralExpression(node compilergraph.GraphNode,
 
 	// Scope each of the expressions and determine the slice type based on its contents.
 	vit := node.StartQuery().
-		Out(parser.NodeListLiteralExpressionValue).
+		Out(sourceshape.NodeListLiteralExpressionValue).
 		BuildNodeIterator()
 
 	for vit.Next() {
@@ -432,7 +432,7 @@ func (sb *scopeBuilder) scopeListLiteralExpression(node compilergraph.GraphNode,
 func (sb *scopeBuilder) scopeSliceLiteralExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	var isValid = true
 
-	declaredTypeNode, hasDeclaredType := node.TryGetNode(parser.NodeSliceLiteralExpressionType)
+	declaredTypeNode, hasDeclaredType := node.TryGetNode(sourceshape.NodeSliceLiteralExpressionType)
 	if !hasDeclaredType {
 		return newScope().Invalid().GetScope()
 	}
@@ -445,7 +445,7 @@ func (sb *scopeBuilder) scopeSliceLiteralExpression(node compilergraph.GraphNode
 
 	// Scope each of the expressions and ensure they match the slice type.
 	vit := node.StartQuery().
-		Out(parser.NodeSliceLiteralExpressionValue).
+		Out(sourceshape.NodeSliceLiteralExpressionValue).
 		BuildNodeIterator()
 
 	for vit.Next() {
@@ -468,7 +468,7 @@ func (sb *scopeBuilder) scopeSliceLiteralExpression(node compilergraph.GraphNode
 func (sb *scopeBuilder) scopeMappingLiteralExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	var isValid = true
 
-	declaredTypeNode, hasDeclaredType := node.TryGetNode(parser.NodeMappingLiteralExpressionType)
+	declaredTypeNode, hasDeclaredType := node.TryGetNode(sourceshape.NodeMappingLiteralExpressionType)
 	if !hasDeclaredType {
 		return newScope().Invalid().GetScope()
 	}
@@ -481,14 +481,14 @@ func (sb *scopeBuilder) scopeMappingLiteralExpression(node compilergraph.GraphNo
 
 	// Scope each of the entries and ensure they match the mapping value type.
 	eit := node.StartQuery().
-		Out(parser.NodeMappingLiteralExpressionEntryRef).
+		Out(sourceshape.NodeMappingLiteralExpressionEntryRef).
 		BuildNodeIterator()
 
 	for eit.Next() {
 		entryNode := eit.Node()
 
-		keyNode, hasKeyNode := entryNode.TryGetNode(parser.NodeMappingLiteralExpressionEntryKey)
-		valueNode, hasValueNode := entryNode.TryGetNode(parser.NodeMappingLiteralExpressionEntryValue)
+		keyNode, hasKeyNode := entryNode.TryGetNode(sourceshape.NodeMappingLiteralExpressionEntryKey)
+		valueNode, hasValueNode := entryNode.TryGetNode(sourceshape.NodeMappingLiteralExpressionEntryValue)
 
 		if !hasKeyNode || !hasValueNode {
 			isValid = false
@@ -540,7 +540,7 @@ func (sb *scopeBuilder) scopeBooleanLiteralExpression(node compilergraph.GraphNo
 
 // scopeNumericLiteralExpression scopes a numeric literal expression in the SRG.
 func (sb *scopeBuilder) scopeNumericLiteralExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	numericValueStr, hasNumericValue := node.TryGet(parser.NodeNumericLiteralExpressionValue)
+	numericValueStr, hasNumericValue := node.TryGet(sourceshape.NodeNumericLiteralExpressionValue)
 	if !hasNumericValue {
 		return newScope().Invalid().GetScope()
 	}

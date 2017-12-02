@@ -9,7 +9,7 @@ import (
 
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 var _ = fmt.Printf
@@ -17,7 +17,7 @@ var _ = fmt.Printf
 // scopeAwaitExpression scopes an await expression in the SRG.
 func (sb *scopeBuilder) scopeAwaitExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Scope the source node.
-	sourceNode, hasSourceNode := node.TryGetNode(parser.NodeAwaitExpressionSource)
+	sourceNode, hasSourceNode := node.TryGetNode(sourceshape.NodeAwaitExpressionSource)
 	if !hasSourceNode {
 		return newScope().Invalid().GetScope()
 	}

@@ -12,7 +12,7 @@ import (
 	"strings"
 
 	"github.com/serulian/compiler/packageloader"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 	"github.com/serulian/compiler/vcs"
 )
 
@@ -81,350 +81,350 @@ func (sf *sourceFormatter) emitNode(node formatterNode) {
 	sf.nodeList.PushFront(node)
 	defer sf.nodeList.Remove(sf.nodeList.Front())
 
-	if node.nodeType != parser.NodeTypeImport {
+	if node.nodeType != sourceshape.NodeTypeImport {
 		sf.emitCommentsForNode(node)
 	}
 
 	switch node.nodeType {
 	// File
-	case parser.NodeTypeFile:
+	case sourceshape.NodeTypeFile:
 		sf.emitFile(node)
 
-	case parser.NodeTypeImport:
+	case sourceshape.NodeTypeImport:
 		// Handled by emitFile.
 		return
 
 	// Module
-	case parser.NodeTypeVariable:
+	case sourceshape.NodeTypeVariable:
 		sf.emitVariable(node)
 
-	case parser.NodeTypeInterface:
+	case sourceshape.NodeTypeInterface:
 		sf.emitTypeDefinition(node, "interface")
 
-	case parser.NodeTypeClass:
+	case sourceshape.NodeTypeClass:
 		sf.emitTypeDefinition(node, "class")
 
-	case parser.NodeTypeNominal:
+	case sourceshape.NodeTypeNominal:
 		sf.emitTypeDefinition(node, "type")
 
-	case parser.NodeTypeStruct:
+	case sourceshape.NodeTypeStruct:
 		sf.emitTypeDefinition(node, "struct")
 
-	case parser.NodeTypeAgent:
+	case sourceshape.NodeTypeAgent:
 		sf.emitTypeDefinition(node, "agent")
 
-	case parser.NodeTypeDecorator:
+	case sourceshape.NodeTypeDecorator:
 		sf.emitDecorator(node)
 
-	case parser.NodeTypeAgentReference:
+	case sourceshape.NodeTypeAgentReference:
 		sf.emitAgentReference(node)
 
 	// Type definition
-	case parser.NodeTypeProperty:
+	case sourceshape.NodeTypeProperty:
 		sf.emitProperty(node)
 
-	case parser.NodeTypeFunction:
+	case sourceshape.NodeTypeFunction:
 		sf.emitFunction(node)
 
-	case parser.NodeTypeField:
+	case sourceshape.NodeTypeField:
 		sf.emitField(node)
 
-	case parser.NodeTypeConstructor:
+	case sourceshape.NodeTypeConstructor:
 		sf.emitConstructor(node)
 
-	case parser.NodeTypeOperator:
+	case sourceshape.NodeTypeOperator:
 		sf.emitOperator(node)
 
-	case parser.NodeTypeParameter:
+	case sourceshape.NodeTypeParameter:
 		sf.emitParameter(node)
 
-	case parser.NodeTypeMemberTag:
+	case sourceshape.NodeTypeMemberTag:
 		sf.emitMemberTag(node)
 
 	// Statements
-	case parser.NodeTypeStatementBlock:
+	case sourceshape.NodeTypeStatementBlock:
 		sf.emitStatementBlock(node)
 
-	case parser.NodeTypeReturnStatement:
+	case sourceshape.NodeTypeReturnStatement:
 		sf.emitReturnStatement(node)
 
-	case parser.NodeTypeRejectStatement:
+	case sourceshape.NodeTypeRejectStatement:
 		sf.emitRejectStatement(node)
 
-	case parser.NodeTypeArrowStatement:
+	case sourceshape.NodeTypeArrowStatement:
 		sf.emitArrowStatement(node)
 
-	case parser.NodeTypeLoopStatement:
+	case sourceshape.NodeTypeLoopStatement:
 		sf.emitLoopStatement(node)
 
-	case parser.NodeTypeConditionalStatement:
+	case sourceshape.NodeTypeConditionalStatement:
 		sf.emitConditionalStatement(node)
 
-	case parser.NodeTypeBreakStatement:
+	case sourceshape.NodeTypeBreakStatement:
 		sf.emitBreakStatement(node)
 
-	case parser.NodeTypeContinueStatement:
+	case sourceshape.NodeTypeContinueStatement:
 		sf.emitContinueStatement(node)
 
-	case parser.NodeTypeYieldStatement:
+	case sourceshape.NodeTypeYieldStatement:
 		sf.emitYieldStatement(node)
 
-	case parser.NodeTypeVariableStatement:
+	case sourceshape.NodeTypeVariableStatement:
 		sf.emitVariableStatement(node)
 
-	case parser.NodeTypeWithStatement:
+	case sourceshape.NodeTypeWithStatement:
 		sf.emitWithStatement(node)
 
-	case parser.NodeTypeMatchStatement:
+	case sourceshape.NodeTypeMatchStatement:
 		sf.emitMatchStatement(node)
 
-	case parser.NodeTypeMatchStatementCase:
+	case sourceshape.NodeTypeMatchStatementCase:
 		sf.emitMatchStatementCase(node)
 
-	case parser.NodeTypeSwitchStatement:
+	case sourceshape.NodeTypeSwitchStatement:
 		sf.emitSwitchStatement(node)
 
-	case parser.NodeTypeSwitchStatementCase:
+	case sourceshape.NodeTypeSwitchStatementCase:
 		sf.emitSwitchStatementCase(node)
 
-	case parser.NodeTypeAssignStatement:
+	case sourceshape.NodeTypeAssignStatement:
 		sf.emitAssignStatement(node)
 
-	case parser.NodeTypeExpressionStatement:
+	case sourceshape.NodeTypeExpressionStatement:
 		sf.emitExpressionStatement(node)
 
-	case parser.NodeTypeResolveStatement:
+	case sourceshape.NodeTypeResolveStatement:
 		sf.emitResolveStatement(node)
 
-	case parser.NodeTypeAssignedValue:
+	case sourceshape.NodeTypeAssignedValue:
 		sf.emitNamedValue(node)
 
-	case parser.NodeTypeNamedValue:
+	case sourceshape.NodeTypeNamedValue:
 		sf.emitNamedValue(node)
 
 	// Type reference
-	case parser.NodeTypeTypeReference:
+	case sourceshape.NodeTypeTypeReference:
 		sf.emitTypeReference(node)
 
-	case parser.NodeTypeSlice:
+	case sourceshape.NodeTypeSlice:
 		sf.emitSliceTypeRef(node)
 
-	case parser.NodeTypeMapping:
+	case sourceshape.NodeTypeMapping:
 		sf.emitMappingTypeRef(node)
 
-	case parser.NodeTypeNullable:
+	case sourceshape.NodeTypeNullable:
 		sf.emitNullableTypeRef(node)
 
-	case parser.NodeTypeStream:
+	case sourceshape.NodeTypeStream:
 		sf.emitStreamTypeRef(node)
 
-	case parser.NodeTypeStructReference:
+	case sourceshape.NodeTypeStructReference:
 		sf.emitStructTypeRef(node)
 
-	case parser.NodeTypeAny:
+	case sourceshape.NodeTypeAny:
 		sf.emitAnyTypeRef(node)
 
-	case parser.NodeTypeVoid:
+	case sourceshape.NodeTypeVoid:
 		sf.emitVoidTypeRef(node)
 
-	case parser.NodeTypeIdentifierPath:
+	case sourceshape.NodeTypeIdentifierPath:
 		sf.emitIdentifierPath(node)
 
-	case parser.NodeTypeIdentifierAccess:
+	case sourceshape.NodeTypeIdentifierAccess:
 		sf.emitIdentifierAccess(node)
 
 	// Expressions
-	case parser.NodeTypeAwaitExpression:
+	case sourceshape.NodeTypeAwaitExpression:
 		sf.emitAwaitExpression(node)
 
-	case parser.NodeTypeLambdaExpression:
+	case sourceshape.NodeTypeLambdaExpression:
 		sf.emitLambdaExpression(node)
 
-	case parser.NodeTypeLambdaParameter:
+	case sourceshape.NodeTypeLambdaParameter:
 		sf.emitLambdaParameter(node)
 
-	case parser.NodeTypeConditionalExpression:
+	case sourceshape.NodeTypeConditionalExpression:
 		sf.emitConditionalExpression(node)
 
-	case parser.NodeTypeLoopExpression:
+	case sourceshape.NodeTypeLoopExpression:
 		sf.emitLoopExpression(node)
 
 	// Operators
-	case parser.NodeBitwiseXorExpression:
+	case sourceshape.NodeBitwiseXorExpression:
 		sf.emitBinaryOperator(node, "^")
 
-	case parser.NodeBitwiseOrExpression:
+	case sourceshape.NodeBitwiseOrExpression:
 		sf.emitBinaryOperator(node, "|")
 
-	case parser.NodeBitwiseAndExpression:
+	case sourceshape.NodeBitwiseAndExpression:
 		sf.emitBinaryOperator(node, "&")
 
-	case parser.NodeBitwiseShiftLeftExpression:
+	case sourceshape.NodeBitwiseShiftLeftExpression:
 		sf.emitBinaryOperator(node, "<<")
 
-	case parser.NodeBitwiseShiftRightExpression:
+	case sourceshape.NodeBitwiseShiftRightExpression:
 		sf.emitBinaryOperator(node, ">>")
 
-	case parser.NodeBitwiseNotExpression:
+	case sourceshape.NodeBitwiseNotExpression:
 		sf.emitUnaryOperator(node, "~")
 
-	case parser.NodeBooleanOrExpression:
+	case sourceshape.NodeBooleanOrExpression:
 		sf.emitBinaryOperator(node, "||")
 
-	case parser.NodeBooleanAndExpression:
+	case sourceshape.NodeBooleanAndExpression:
 		sf.emitBinaryOperator(node, "&&")
 
-	case parser.NodeBooleanNotExpression:
+	case sourceshape.NodeBooleanNotExpression:
 		sf.emitUnaryOperator(node, "!")
 
-	case parser.NodeRootTypeExpression:
+	case sourceshape.NodeRootTypeExpression:
 		sf.emitUnaryOperator(node, "&")
 
-	case parser.NodeComparisonEqualsExpression:
+	case sourceshape.NodeComparisonEqualsExpression:
 		sf.emitBinaryOperator(node, "==")
 
-	case parser.NodeComparisonNotEqualsExpression:
+	case sourceshape.NodeComparisonNotEqualsExpression:
 		sf.emitBinaryOperator(node, "!=")
 
-	case parser.NodeComparisonLTEExpression:
+	case sourceshape.NodeComparisonLTEExpression:
 		sf.emitBinaryOperator(node, "<=")
 
-	case parser.NodeComparisonGTEExpression:
+	case sourceshape.NodeComparisonGTEExpression:
 		sf.emitBinaryOperator(node, ">=")
 
-	case parser.NodeComparisonLTExpression:
+	case sourceshape.NodeComparisonLTExpression:
 		sf.emitBinaryOperator(node, "<")
 
-	case parser.NodeComparisonGTExpression:
+	case sourceshape.NodeComparisonGTExpression:
 		sf.emitBinaryOperator(node, ">")
 
-	case parser.NodeNullComparisonExpression:
+	case sourceshape.NodeNullComparisonExpression:
 		sf.emitBinaryOperator(node, "??")
 
-	case parser.NodeIsComparisonExpression:
+	case sourceshape.NodeIsComparisonExpression:
 		sf.emitBinaryOperator(node, "is")
 
-	case parser.NodeInCollectionExpression:
+	case sourceshape.NodeInCollectionExpression:
 		sf.emitBinaryOperator(node, "in")
 
-	case parser.NodeDefineRangeExpression:
+	case sourceshape.NodeDefineRangeExpression:
 		sf.emitBinaryOperator(node, "..")
 
-	case parser.NodeDefineExclusiveRangeExpression:
+	case sourceshape.NodeDefineExclusiveRangeExpression:
 		sf.emitBinaryOperator(node, "..<")
 
-	case parser.NodeBinaryAddExpression:
+	case sourceshape.NodeBinaryAddExpression:
 		sf.emitBinaryOperator(node, "+")
 
-	case parser.NodeBinarySubtractExpression:
+	case sourceshape.NodeBinarySubtractExpression:
 		sf.emitBinaryOperator(node, "-")
 
-	case parser.NodeBinaryMultiplyExpression:
+	case sourceshape.NodeBinaryMultiplyExpression:
 		sf.emitBinaryOperator(node, "*")
 
-	case parser.NodeBinaryDivideExpression:
+	case sourceshape.NodeBinaryDivideExpression:
 		sf.emitBinaryOperator(node, "/")
 
-	case parser.NodeBinaryModuloExpression:
+	case sourceshape.NodeBinaryModuloExpression:
 		sf.emitBinaryOperator(node, "%")
 
-	case parser.NodeAssertNotNullExpression:
+	case sourceshape.NodeAssertNotNullExpression:
 		sf.emitNotNullExpression(node)
 
-	case parser.NodeKeywordNotExpression:
+	case sourceshape.NodeKeywordNotExpression:
 		sf.emitKeywordNotExpression(node)
 
 	// Access
-	case parser.NodeMemberAccessExpression:
+	case sourceshape.NodeMemberAccessExpression:
 		sf.emitAccessExpression(node, ".")
 
-	case parser.NodeNullableMemberAccessExpression:
+	case sourceshape.NodeNullableMemberAccessExpression:
 		sf.emitAccessExpression(node, "?.")
 
-	case parser.NodeDynamicMemberAccessExpression:
+	case sourceshape.NodeDynamicMemberAccessExpression:
 		sf.emitAccessExpression(node, "->")
 
-	case parser.NodeStreamMemberAccessExpression:
+	case sourceshape.NodeStreamMemberAccessExpression:
 		sf.emitAccessExpression(node, "*.")
 
-	case parser.NodeCastExpression:
+	case sourceshape.NodeCastExpression:
 		sf.emitCastExpression(node)
 
-	case parser.NodeFunctionCallExpression:
+	case sourceshape.NodeFunctionCallExpression:
 		sf.emitFunctionCallExpression(node)
 
-	case parser.NodeSliceExpression:
+	case sourceshape.NodeSliceExpression:
 		sf.emitSliceExpression(node)
 
-	case parser.NodeGenericSpecifierExpression:
+	case sourceshape.NodeGenericSpecifierExpression:
 		sf.emitGenericSpecifierExpression(node)
 
 	// SML
-	case parser.NodeTypeSmlExpression:
+	case sourceshape.NodeTypeSmlExpression:
 		sf.emitSmlExpression(node)
 
-	case parser.NodeTypeSmlAttribute:
+	case sourceshape.NodeTypeSmlAttribute:
 		sf.emitSmlAttribute(node)
 
-	case parser.NodeTypeSmlDecorator:
+	case sourceshape.NodeTypeSmlDecorator:
 		sf.emitSmlDecorator(node)
 
-	case parser.NodeTypeSmlText:
+	case sourceshape.NodeTypeSmlText:
 		sf.emitSmlText(node)
 
 	// Literals
-	case parser.NodeTaggedTemplateLiteralString:
+	case sourceshape.NodeTaggedTemplateLiteralString:
 		sf.emitTaggedTemplateString(node)
 
-	case parser.NodeTypeTemplateString:
+	case sourceshape.NodeTypeTemplateString:
 		sf.emitTemplateString(node)
 
-	case parser.NodeNumericLiteralExpression:
+	case sourceshape.NodeNumericLiteralExpression:
 		sf.emitNumericLiteral(node)
 
-	case parser.NodeStringLiteralExpression:
+	case sourceshape.NodeStringLiteralExpression:
 		sf.emitStringLiteral(node)
 
-	case parser.NodeBooleanLiteralExpression:
+	case sourceshape.NodeBooleanLiteralExpression:
 		sf.emitBooleanLiteral(node)
 
-	case parser.NodeThisLiteralExpression:
+	case sourceshape.NodeThisLiteralExpression:
 		sf.append("this")
 
-	case parser.NodePrincipalLiteralExpression:
+	case sourceshape.NodePrincipalLiteralExpression:
 		sf.append("principal")
 
-	case parser.NodeNullLiteralExpression:
+	case sourceshape.NodeNullLiteralExpression:
 		sf.append("null")
 
-	case parser.NodeValLiteralExpression:
+	case sourceshape.NodeValLiteralExpression:
 		sf.append("val")
 
-	case parser.NodeTypeIdentifierExpression:
+	case sourceshape.NodeTypeIdentifierExpression:
 		sf.emitIdentifierExpression(node)
 
-	case parser.NodeListLiteralExpression:
+	case sourceshape.NodeListLiteralExpression:
 		sf.emitListLiteralExpression(node)
 
-	case parser.NodeSliceLiteralExpression:
+	case sourceshape.NodeSliceLiteralExpression:
 		sf.emitSliceLiteralExpression(node)
 
-	case parser.NodeMappingLiteralExpression:
+	case sourceshape.NodeMappingLiteralExpression:
 		sf.emitMappingLiteralExpression(node)
 
-	case parser.NodeMappingLiteralExpressionEntry:
+	case sourceshape.NodeMappingLiteralExpressionEntry:
 		sf.emitMappingLiteralExpressionEntry(node)
 
-	case parser.NodeStructuralNewExpression:
+	case sourceshape.NodeStructuralNewExpression:
 		sf.emitStructuralNewExpression(node)
 
-	case parser.NodeStructuralNewExpressionEntry:
+	case sourceshape.NodeStructuralNewExpressionEntry:
 		sf.emitStructuralNewExpressionEntry(node)
 
-	case parser.NodeMapLiteralExpression:
+	case sourceshape.NodeMapLiteralExpression:
 		sf.emitMapLiteralExpression(node)
 
-	case parser.NodeMapLiteralExpressionEntry:
+	case sourceshape.NodeMapLiteralExpressionEntry:
 		sf.emitMapLiteralExpressionEntry(node)
 
 	default:
@@ -434,15 +434,15 @@ func (sf *sourceFormatter) emitNode(node formatterNode) {
 
 // emitCommentsForNode emits any comments attached to the node.
 func (sf *sourceFormatter) emitCommentsForNode(node formatterNode) {
-	comments := node.getChildrenOfType(parser.NodePredicateChild, parser.NodeTypeComment)
+	comments := node.getChildrenOfType(sourceshape.NodePredicateChild, sourceshape.NodeTypeComment)
 
 	var hasPreviousLine = false
 	if len(comments) > 0 {
 		nodeStartLine, _ := sf.getLineNumberOf(node)
 
 		for _, comment := range comments {
-			commentValue := comment.getProperty(parser.NodeCommentPredicateValue)
-			startRune := comment.getProperty(parser.NodePredicateStartRune)
+			commentValue := comment.getProperty(sourceshape.NodeCommentPredicateValue)
+			startRune := comment.getProperty(sourceshape.NodePredicateStartRune)
 
 			// Make sure we don't emit comments multiple times. This can happen because
 			// comments get attached to multiple nodes in the parse tree.
@@ -540,8 +540,8 @@ func (sf *sourceFormatter) parentNode() (formatterNode, bool) {
 
 // getLineNumberOf returns the 0-indexed line number of the beginning and end of the given node.
 func (sf *sourceFormatter) getLineNumberOf(node formatterNode) (int, int) {
-	startRune, _ := strconv.Atoi(node.getProperty(parser.NodePredicateStartRune))
-	endRune, _ := strconv.Atoi(node.getProperty(parser.NodePredicateEndRune))
+	startRune, _ := strconv.Atoi(node.getProperty(sourceshape.NodePredicateStartRune))
+	endRune, _ := strconv.Atoi(node.getProperty(sourceshape.NodePredicateEndRune))
 	return sf.tree.getLineNumber(startRune), sf.tree.getLineNumber(endRune)
 }
 

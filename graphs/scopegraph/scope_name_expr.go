@@ -9,18 +9,18 @@ import (
 
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 var _ = fmt.Printf
 
 const ANONYMOUS_REFERENCE = "_"
 
-var ALLOWED_ANONYMOUS = []compilergraph.Predicate{parser.NodeArrowStatementDestination, parser.NodeArrowStatementRejection}
+var ALLOWED_ANONYMOUS = []compilergraph.Predicate{sourceshape.NodeArrowStatementDestination, sourceshape.NodeArrowStatementRejection}
 
 // scopeIdentifierExpression scopes an identifier expression in the SRG.
 func (sb *scopeBuilder) scopeIdentifierExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	name, hasName := node.TryGet(parser.NodeIdentifierExpressionName)
+	name, hasName := node.TryGet(sourceshape.NodeIdentifierExpressionName)
 	if !hasName {
 		return newScope().Invalid().GetScope()
 	}
