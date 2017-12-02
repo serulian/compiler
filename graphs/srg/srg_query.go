@@ -10,11 +10,11 @@ import (
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/compilerutil"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // findAllNodes starts a new query over the SRG from nodes of the given type.
-func (g *SRG) findAllNodes(nodeTypes ...parser.NodeType) compilergraph.GraphQuery {
+func (g *SRG) findAllNodes(nodeTypes ...sourceshape.NodeType) compilergraph.GraphQuery {
 	var nodeTypesTagged []compilergraph.TaggedValue = make([]compilergraph.TaggedValue, len(nodeTypes))
 	for index, nodeType := range nodeTypes {
 		nodeTypesTagged[index] = nodeType
@@ -101,20 +101,20 @@ func (g *SRG) FindNodeForPosition(sourcePosition compilercommon.SourcePosition) 
 
 	containingFilter := func(q compilergraph.GraphQuery) compilergraph.Query {
 		return q.
-			HasWhere(parser.NodePredicateStartRune, compilergraph.WhereLTE, runePosition).
-			HasWhere(parser.NodePredicateEndRune, compilergraph.WhereGTE, runePosition)
+			HasWhere(sourceshape.NodePredicateStartRune, compilergraph.WhereLTE, runePosition).
+			HasWhere(sourceshape.NodePredicateEndRune, compilergraph.WhereGTE, runePosition)
 	}
 
 	nit := g.layer.StartQuery().
-		Has(parser.NodePredicateSource, string(sourcePosition.Source())).
+		Has(sourceshape.NodePredicateSource, string(sourcePosition.Source())).
 		FilterBy(containingFilter).
-		BuildNodeIterator(parser.NodePredicateStartRune, parser.NodePredicateEndRune)
+		BuildNodeIterator(sourceshape.NodePredicateStartRune, sourceshape.NodePredicateEndRune)
 
 	var results = make(locationResultNodes, 0)
 	for nit.Next() {
 		node := nit.Node()
-		startIndex := nit.GetPredicate(parser.NodePredicateStartRune).Int()
-		endIndex := nit.GetPredicate(parser.NodePredicateEndRune).Int()
+		startIndex := nit.GetPredicate(sourceshape.NodePredicateStartRune).Int()
+		endIndex := nit.GetPredicate(sourceshape.NodePredicateEndRune).Int()
 		results = append(results, locationResultNode{node, startIndex, endIndex, endIndex - startIndex})
 	}
 
@@ -135,21 +135,21 @@ func (g *SRG) FindNodeForPosition(sourcePosition compilercommon.SourcePosition) 
 func (g *SRG) calculateContainingImplemented(sourcePath string, runeRange compilerutil.IntRange) (compilerutil.IntRange, interface{}) {
 	containingFilter := func(q compilergraph.GraphQuery) compilergraph.Query {
 		return q.
-			HasWhere(parser.NodePredicateStartRune, compilergraph.WhereLTE, runeRange.StartPosition).
-			HasWhere(parser.NodePredicateEndRune, compilergraph.WhereGTE, runeRange.EndPosition)
+			HasWhere(sourceshape.NodePredicateStartRune, compilergraph.WhereLTE, runeRange.StartPosition).
+			HasWhere(sourceshape.NodePredicateEndRune, compilergraph.WhereGTE, runeRange.EndPosition)
 	}
 
 	// Check for a lambda first.
-	node, found := g.findAllNodes(parser.NodeTypeStatementBlock).
-		Has(parser.NodePredicateSource, sourcePath).
-		In(parser.NodeLambdaExpressionBlock).
+	node, found := g.findAllNodes(sourceshape.NodeTypeStatementBlock).
+		Has(sourceshape.NodePredicateSource, sourcePath).
+		In(sourceshape.NodeLambdaExpressionBlock).
 		FilterBy(containingFilter).
 		TryGetNode()
 
 	if !found {
-		node, found = g.findAllNodes(parser.NodeTypeStatementBlock).
-			Has(parser.NodePredicateSource, sourcePath).
-			In(parser.NodePredicateBody).
+		node, found = g.findAllNodes(sourceshape.NodeTypeStatementBlock).
+			Has(sourceshape.NodePredicateSource, sourcePath).
+			In(sourceshape.NodePredicateBody).
 			FilterBy(containingFilter).
 			TryGetNode()
 
@@ -158,7 +158,7 @@ func (g *SRG) calculateContainingImplemented(sourcePath string, runeRange compil
 		}
 	}
 
-	startRune := node.GetValue(parser.NodePredicateStartRune).Int()
-	endRune := node.GetValue(parser.NodePredicateEndRune).Int()
+	startRune := node.GetValue(sourceshape.NodePredicateStartRune).Int()
+	endRune := node.GetValue(sourceshape.NodePredicateEndRune).Int()
 	return compilerutil.IntRange{startRune, endRune}, node
 }

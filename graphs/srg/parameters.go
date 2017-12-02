@@ -9,7 +9,7 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // GetParameterReference returns an SRGParameter wrapper around the given SRG parameter node. Panics
@@ -28,7 +28,7 @@ type SRGParameter struct {
 
 // Name returns the name of this parameter. May not exist in the partial-parsing case for tooling.
 func (p SRGParameter) Name() (string, bool) {
-	return p.GraphNode.TryGet(parser.NodeParameterName)
+	return p.GraphNode.TryGet(sourceshape.NodeParameterName)
 }
 
 // Node returns the underlying node.
@@ -43,7 +43,7 @@ func (p SRGParameter) SourceRange() (compilercommon.SourceRange, bool) {
 
 // DeclaredType returns the declared type for this parameter, if any.
 func (p SRGParameter) DeclaredType() (SRGTypeRef, bool) {
-	typeNode, exists := p.GraphNode.StartQuery().Out(parser.NodeParameterType).TryGetNode()
+	typeNode, exists := p.GraphNode.StartQuery().Out(sourceshape.NodeParameterType).TryGetNode()
 	return SRGTypeRef{typeNode, p.srg}, exists
 }
 
@@ -54,7 +54,7 @@ func (p SRGParameter) AsNamedScope() SRGNamedScope {
 
 // Documentation returns the documentation associated with this parameter, if any.
 func (p SRGParameter) Documentation() (SRGDocumentation, bool) {
-	return getParameterDocumentation(p.srg, p, parser.NodePredicateTypeMemberParameter)
+	return getParameterDocumentation(p.srg, p, sourceshape.NodePredicateTypeMemberParameter)
 }
 
 // Code returns a code-like summarization of the parameter, for human consumption.

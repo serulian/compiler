@@ -6,7 +6,7 @@ package srg
 
 import (
 	"github.com/serulian/compiler/compilergraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // SRGComposedAgent wraps an agent that is being composed under another type
@@ -18,13 +18,13 @@ type SRGComposedAgent struct {
 
 // AgentType returns the type of the agent being composed into the parent type.
 func (a SRGComposedAgent) AgentType() SRGTypeRef {
-	return SRGTypeRef{a.GraphNode.GetNode(parser.NodeAgentReferencePredicateReferenceType), a.srg}
+	return SRGTypeRef{a.GraphNode.GetNode(sourceshape.NodeAgentReferencePredicateReferenceType), a.srg}
 }
 
 // CompositionAlias returns the alias used for composition of the agent under the
 // parent type, if any.
 func (a SRGComposedAgent) CompositionAlias() (string, bool) {
-	return a.GraphNode.TryGet(parser.NodeAgentReferencePredicateAlias)
+	return a.GraphNode.TryGet(sourceshape.NodeAgentReferencePredicateAlias)
 }
 
 // CompositionName returns the name used for composition of the agent under the

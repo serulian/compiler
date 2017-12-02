@@ -14,7 +14,7 @@ import (
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/packageloader"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 
 	cmap "github.com/streamrail/concurrent-map"
 )
@@ -45,7 +45,7 @@ type SRG struct {
 func NewSRG(graph *compilergraph.SerulianGraph) *SRG {
 	g := &SRG{
 		Graph: graph,
-		layer: graph.NewGraphLayer("srg", parser.NodeTypeTagged),
+		layer: graph.NewGraphLayer("srg", sourceshape.NodeTypeTagged),
 
 		aliasMap:      map[string]SRGType{},
 		modulePathMap: nil,
@@ -58,7 +58,7 @@ func NewSRG(graph *compilergraph.SerulianGraph) *SRG {
 
 // GetUniqueId returns a unique hash ID for the SRG node that is stable across compilations.
 func GetUniqueId(srgNode compilergraph.GraphNode) string {
-	hashBytes := []byte(srgNode.Get(parser.NodePredicateSource) + ":" + strconv.Itoa(srgNode.GetValue(parser.NodePredicateStartRune).Int()))
+	hashBytes := []byte(srgNode.Get(sourceshape.NodePredicateSource) + ":" + strconv.Itoa(srgNode.GetValue(sourceshape.NodePredicateStartRune).Int()))
 	sha256bytes := sha256.Sum256(hashBytes)
 	return hex.EncodeToString(sha256bytes[:])[0:8]
 }
@@ -91,9 +91,9 @@ func (g *SRG) SourceHandler() packageloader.SourceHandler {
 
 // SourceRangeOf returns a SourceRange for the given graph node.
 func (g *SRG) SourceRangeOf(node compilergraph.GraphNode) (compilercommon.SourceRange, bool) {
-	startRune, hasStartRune := node.TryGetValue(parser.NodePredicateStartRune)
-	endRune, hasEndRune := node.TryGetValue(parser.NodePredicateEndRune)
-	sourcePath, hasSource := node.TryGet(parser.NodePredicateSource)
+	startRune, hasStartRune := node.TryGetValue(sourceshape.NodePredicateStartRune)
+	endRune, hasEndRune := node.TryGetValue(sourceshape.NodePredicateEndRune)
+	sourcePath, hasSource := node.TryGet(sourceshape.NodePredicateSource)
 
 	if !hasStartRune || !hasEndRune || !hasSource {
 		return nil, false
@@ -110,9 +110,9 @@ func (g *SRG) SourceRangeOf(node compilergraph.GraphNode) (compilercommon.Source
 func (g *SRG) findVariableTypeWithName(name string) SRGTypeRef {
 	typerefNode := g.layer.
 		StartQuery(name).
-		In(parser.NodePredicateTypeMemberName, parser.NodeVariableStatementName).
-		IsKind(parser.NodeTypeVariable, parser.NodeTypeVariableStatement).
-		Out(parser.NodePredicateTypeMemberDeclaredType, parser.NodeVariableStatementDeclaredType).
+		In(sourceshape.NodePredicateTypeMemberName, sourceshape.NodeVariableStatementName).
+		IsKind(sourceshape.NodeTypeVariable, sourceshape.NodeTypeVariableStatement).
+		Out(sourceshape.NodePredicateTypeMemberDeclaredType, sourceshape.NodeVariableStatementDeclaredType).
 		GetNode()
 
 	return SRGTypeRef{typerefNode, g}

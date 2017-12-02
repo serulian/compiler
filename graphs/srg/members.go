@@ -12,7 +12,7 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // SRGMemberIterator is an iterator of SRGMembers's.
@@ -61,18 +61,18 @@ func (m SRGMember) UniqueId() string {
 
 // Module returns the module under which the member is defined.
 func (m SRGMember) Module() SRGModule {
-	source := m.GraphNode.Get(parser.NodePredicateSource)
+	source := m.GraphNode.Get(sourceshape.NodePredicateSource)
 	module, _ := m.srg.FindModuleBySource(compilercommon.InputSource(source))
 	return module
 }
 
 // Name returns the name of this member. Can not exist in the partial-parsing case for tooling.
 func (m SRGMember) Name() (string, bool) {
-	if m.GraphNode.Kind() == parser.NodeTypeOperator {
-		return m.GraphNode.TryGet(parser.NodeOperatorName)
+	if m.GraphNode.Kind() == sourceshape.NodeTypeOperator {
+		return m.GraphNode.TryGet(sourceshape.NodeOperatorName)
 	}
 
-	return m.GraphNode.TryGet(parser.NodePredicateTypeMemberName)
+	return m.GraphNode.TryGet(sourceshape.NodePredicateTypeMemberName)
 }
 
 // Documentation returns the documentation on the member, if any.
@@ -93,22 +93,22 @@ func (m SRGMember) SourceRange() (compilercommon.SourceRange, bool) {
 // MemberKind returns the kind matching the member definition/declaration node type.
 func (m SRGMember) MemberKind() MemberKind {
 	switch m.GraphNode.Kind() {
-	case parser.NodeTypeConstructor:
+	case sourceshape.NodeTypeConstructor:
 		return ConstructorMember
 
-	case parser.NodeTypeFunction:
+	case sourceshape.NodeTypeFunction:
 		return FunctionMember
 
-	case parser.NodeTypeProperty:
+	case sourceshape.NodeTypeProperty:
 		return PropertyMember
 
-	case parser.NodeTypeOperator:
+	case sourceshape.NodeTypeOperator:
 		return OperatorMember
 
-	case parser.NodeTypeField:
+	case sourceshape.NodeTypeField:
 		return VarMember
 
-	case parser.NodeTypeVariable:
+	case sourceshape.NodeTypeVariable:
 		return VarMember
 
 	default:
@@ -119,14 +119,14 @@ func (m SRGMember) MemberKind() MemberKind {
 // Initializer returns the expression forming the initializer for this variable or field, if any.
 func (m SRGMember) Initializer() (compilergraph.GraphNode, bool) {
 	switch m.GraphNode.Kind() {
-	case parser.NodeTypeVariable:
+	case sourceshape.NodeTypeVariable:
 		fallthrough
 
-	case parser.NodeTypeField:
-		return m.TryGetNode(parser.NodePredicateTypeFieldDefaultValue)
+	case sourceshape.NodeTypeField:
+		return m.TryGetNode(sourceshape.NodePredicateTypeFieldDefaultValue)
 
-	case parser.NodeTypeVariableStatement:
-		return m.TryGetNode(parser.NodeVariableStatementExpression)
+	case sourceshape.NodeTypeVariableStatement:
+		return m.TryGetNode(sourceshape.NodeVariableStatementExpression)
 
 	default:
 		panic("Expected variable or field node")
@@ -139,12 +139,12 @@ func (m SRGMember) Body() (compilergraph.GraphNode, bool) {
 		panic("Expected non-variable node")
 	}
 
-	return m.TryGetNode(parser.NodePredicateBody)
+	return m.TryGetNode(sourceshape.NodePredicateBody)
 }
 
 // ReturnType returns a type reference to the declared type of this member, if any.
 func (m SRGMember) DeclaredType() (SRGTypeRef, bool) {
-	typeRefNode, found := m.GraphNode.TryGetNode(parser.NodePredicateTypeMemberDeclaredType)
+	typeRefNode, found := m.GraphNode.TryGetNode(sourceshape.NodePredicateTypeMemberDeclaredType)
 	if !found {
 		return SRGTypeRef{}, false
 	}
@@ -154,7 +154,7 @@ func (m SRGMember) DeclaredType() (SRGTypeRef, bool) {
 
 // ReturnType returns a type reference to the return type of this member, if any.
 func (m SRGMember) ReturnType() (SRGTypeRef, bool) {
-	typeRefNode, found := m.GraphNode.TryGetNode(parser.NodePredicateTypeMemberReturnType)
+	typeRefNode, found := m.GraphNode.TryGetNode(sourceshape.NodePredicateTypeMemberReturnType)
 	if !found {
 		return SRGTypeRef{}, false
 	}
@@ -168,7 +168,7 @@ func (m SRGMember) Getter() (SRGImplementable, bool) {
 		panic("Expected property node")
 	}
 
-	node, found := m.GraphNode.TryGetNode(parser.NodePropertyGetter)
+	node, found := m.GraphNode.TryGetNode(sourceshape.NodePropertyGetter)
 	if !found {
 		return SRGImplementable{}, false
 	}
@@ -182,7 +182,7 @@ func (m SRGMember) Setter() (SRGImplementable, bool) {
 		panic("Expected property node")
 	}
 
-	node, found := m.GraphNode.TryGetNode(parser.NodePropertySetter)
+	node, found := m.GraphNode.TryGetNode(sourceshape.NodePropertySetter)
 	if !found {
 		return SRGImplementable{}, false
 	}
@@ -196,7 +196,7 @@ func (m SRGMember) AsImplementable() SRGImplementable {
 
 // IsReadOnly returns whether the member is marked as explicitly read-only.
 func (m SRGMember) IsReadOnly() bool {
-	_, exists := m.GraphNode.TryGet(parser.NodePropertyReadOnly)
+	_, exists := m.GraphNode.TryGet(sourceshape.NodePropertyReadOnly)
 	return exists
 }
 
@@ -209,7 +209,7 @@ func (m SRGMember) HasSetter() bool {
 
 // IsStatic returns whether the given member is static.
 func (m SRGMember) IsStatic() bool {
-	_, hasType := m.GraphNode.TryGetIncomingNode(parser.NodeTypeDefinitionMember)
+	_, hasType := m.GraphNode.TryGetIncomingNode(sourceshape.NodeTypeDefinitionMember)
 	if !hasType {
 		return true
 	}
@@ -246,7 +246,7 @@ func (m SRGMember) HasImplementation() bool {
 			return false
 		}
 
-		_, hasGetterBody := getter.TryGetNode(parser.NodePredicateBody)
+		_, hasGetterBody := getter.TryGetNode(sourceshape.NodePredicateBody)
 		return hasGetterBody
 
 	case ConstructorMember:
@@ -266,7 +266,7 @@ func (m SRGMember) HasImplementation() bool {
 // Generics returns the generics on this member.
 func (m SRGMember) Generics() []SRGGeneric {
 	it := m.GraphNode.StartQuery().
-		Out(parser.NodePredicateTypeMemberGeneric).
+		Out(sourceshape.NodePredicateTypeMemberGeneric).
 		BuildNodeIterator()
 
 	var generics = make([]SRGGeneric, 0)
@@ -280,7 +280,7 @@ func (m SRGMember) Generics() []SRGGeneric {
 // Parameters returns the parameters on this member.
 func (m SRGMember) Parameters() []SRGParameter {
 	it := m.GraphNode.StartQuery().
-		Out(parser.NodePredicateTypeMemberParameter).
+		Out(sourceshape.NodePredicateTypeMemberParameter).
 		BuildNodeIterator()
 
 	var parameters = make([]SRGParameter, 0)
@@ -296,12 +296,12 @@ func (m SRGMember) Tags() map[string]string {
 	tags := map[string]string{}
 
 	it := m.GraphNode.StartQuery().
-		Out(parser.NodePredicateTypeMemberTag).
-		BuildNodeIterator(parser.NodePredicateTypeMemberTagName, parser.NodePredicateTypeMemberTagValue)
+		Out(sourceshape.NodePredicateTypeMemberTag).
+		BuildNodeIterator(sourceshape.NodePredicateTypeMemberTagName, sourceshape.NodePredicateTypeMemberTagValue)
 
 	for it.Next() {
-		tagName := it.GetPredicate(parser.NodePredicateTypeMemberTagName).String()
-		tagValue := it.GetPredicate(parser.NodePredicateTypeMemberTagValue).String()
+		tagName := it.GetPredicate(sourceshape.NodePredicateTypeMemberTagName).String()
+		tagValue := it.GetPredicate(sourceshape.NodePredicateTypeMemberTagValue).String()
 		tags[tagName] = tagValue
 	}
 
@@ -310,7 +310,7 @@ func (m SRGMember) Tags() map[string]string {
 
 // ContainingType returns the type containing this member, if any.
 func (m SRGMember) ContainingType() (SRGType, bool) {
-	containingTypeNode, hasContainingType := m.TryGetIncomingNode(parser.NodeTypeDefinitionMember)
+	containingTypeNode, hasContainingType := m.TryGetIncomingNode(sourceshape.NodeTypeDefinitionMember)
 	return SRGType{containingTypeNode, m.srg}, hasContainingType
 }
 
@@ -328,12 +328,12 @@ func (m SRGMember) Code() (compilercommon.CodeSummary, bool) {
 
 	var buffer bytes.Buffer
 	switch m.GraphNode.Kind() {
-	case parser.NodeTypeConstructor:
+	case sourceshape.NodeTypeConstructor:
 		buffer.WriteString("constructor ")
 		buffer.WriteString(name)
 		writeCodeParameters(m, &buffer)
 
-	case parser.NodeTypeFunction:
+	case sourceshape.NodeTypeFunction:
 		returnType, _ := m.ReturnType()
 
 		buffer.WriteString("function<")
@@ -344,7 +344,7 @@ func (m SRGMember) Code() (compilercommon.CodeSummary, bool) {
 		writeCodeGenerics(m, &buffer)
 		writeCodeParameters(m, &buffer)
 
-	case parser.NodeTypeProperty:
+	case sourceshape.NodeTypeProperty:
 		declaredType, _ := m.DeclaredType()
 		buffer.WriteString("property<")
 		buffer.WriteString(declaredType.String())
@@ -356,7 +356,7 @@ func (m SRGMember) Code() (compilercommon.CodeSummary, bool) {
 			buffer.WriteString(" { get }")
 		}
 
-	case parser.NodeTypeOperator:
+	case sourceshape.NodeTypeOperator:
 		returnType, hasReturnType := m.ReturnType()
 
 		if hasReturnType {
@@ -370,10 +370,10 @@ func (m SRGMember) Code() (compilercommon.CodeSummary, bool) {
 		buffer.WriteString(name)
 		writeCodeParameters(m, &buffer)
 
-	case parser.NodeTypeField:
+	case sourceshape.NodeTypeField:
 		fallthrough
 
-	case parser.NodeTypeVariable:
+	case sourceshape.NodeTypeVariable:
 		declaredType, _ := m.DeclaredType()
 
 		containingType, hasContainingType := m.ContainingType()

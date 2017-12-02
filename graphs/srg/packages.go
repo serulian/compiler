@@ -11,7 +11,7 @@ import (
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/packageloader"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // InSamePackage returns true if the given input source paths are found *directly* under the same
@@ -29,17 +29,17 @@ func PackagePath(modulePath compilercommon.InputSource) string {
 // package node or an error if none. Note that error should only ever be returned if we have an
 // "incomplete" graph because this is a call from groking.
 func (g *SRG) getPackageForImport(importPackageNode compilergraph.GraphNode) (importedPackage, error) {
-	importNode := importPackageNode.GetIncomingNode(parser.NodeImportPredicatePackageRef)
+	importNode := importPackageNode.GetIncomingNode(sourceshape.NodeImportPredicatePackageRef)
 
 	// Note: There may not be a kind, in which case this will return empty string, which is the
 	// default kind.
-	packageKind, _ := importNode.TryGet(parser.NodeImportPredicateKind)
-	packageLocation := importNode.Get(parser.NodeImportPredicateLocation)
+	packageKind, _ := importNode.TryGet(sourceshape.NodeImportPredicateKind)
+	packageLocation := importNode.Get(sourceshape.NodeImportPredicateLocation)
 
 	packageInfo, ok := g.packageMap.Get(packageKind, packageLocation)
 	if !ok {
-		source := importNode.Get(parser.NodeImportPredicateSource)
-		subsource, _ := importPackageNode.TryGet(parser.NodeImportPredicateSubsource)
+		source := importNode.Get(sourceshape.NodeImportPredicateSource)
+		subsource, _ := importPackageNode.TryGet(sourceshape.NodeImportPredicateSubsource)
 		err := fmt.Errorf("Missing package info for import %s %s (reference %v::%v) (node %v)\nPackage Map: %v",
 			source, subsource, packageKind, packageLocation, importNode, g.packageMap)
 		return importedPackage{}, err
@@ -48,7 +48,7 @@ func (g *SRG) getPackageForImport(importPackageNode compilergraph.GraphNode) (im
 	return importedPackage{
 		srg:          g,
 		packageInfo:  packageInfo,
-		importSource: compilercommon.InputSource(importPackageNode.Get(parser.NodePredicateSource)),
+		importSource: compilercommon.InputSource(importPackageNode.Get(sourceshape.NodePredicateSource)),
 	}, nil
 }
 

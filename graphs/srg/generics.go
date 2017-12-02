@@ -9,7 +9,7 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // SRGGeneric represents a generic declaration on a type or type member.
@@ -20,7 +20,7 @@ type SRGGeneric struct {
 
 // Name returns the name of this generic. May not existing in the partial-parsing case for tooling.
 func (t SRGGeneric) Name() (string, bool) {
-	return t.GraphNode.TryGet(parser.NodeGenericPredicateName)
+	return t.GraphNode.TryGet(sourceshape.NodeGenericPredicateName)
 }
 
 // Node returns the underlying node.
@@ -41,13 +41,13 @@ func (t SRGGeneric) HasConstraint() bool {
 
 // GetConstraint returns the constraint for this generic, if any.
 func (t SRGGeneric) GetConstraint() (SRGTypeRef, bool) {
-	constraint, exists := t.GraphNode.StartQuery().Out(parser.NodeGenericSubtype).TryGetNode()
+	constraint, exists := t.GraphNode.StartQuery().Out(sourceshape.NodeGenericSubtype).TryGetNode()
 	return SRGTypeRef{constraint, t.srg}, exists
 }
 
 // Documentation returns the documentation associated with this generic, if any.
 func (t SRGGeneric) Documentation() (SRGDocumentation, bool) {
-	return getParameterDocumentation(t.srg, t, parser.NodePredicateTypeMemberGeneric)
+	return getParameterDocumentation(t.srg, t, sourceshape.NodePredicateTypeMemberGeneric)
 }
 
 // Code returns a code-like summarization of the generic, for human consumption.

@@ -6,37 +6,37 @@ package srg
 
 import (
 	"github.com/serulian/compiler/compilergraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
-var TYPE_KINDS = []parser.NodeType{
-	parser.NodeTypeClass,
-	parser.NodeTypeInterface,
-	parser.NodeTypeNominal,
-	parser.NodeTypeStruct,
-	parser.NodeTypeAgent,
+var TYPE_KINDS = []sourceshape.NodeType{
+	sourceshape.NodeTypeClass,
+	sourceshape.NodeTypeInterface,
+	sourceshape.NodeTypeNominal,
+	sourceshape.NodeTypeStruct,
+	sourceshape.NodeTypeAgent,
 }
 
-var TYPE_MEMBER_KINDS = []parser.NodeType{
-	parser.NodeTypeFunction,
-	parser.NodeTypeVariable,
-	parser.NodeTypeConstructor,
-	parser.NodeTypeProperty,
-	parser.NodeTypeOperator,
+var TYPE_MEMBER_KINDS = []sourceshape.NodeType{
+	sourceshape.NodeTypeFunction,
+	sourceshape.NodeTypeVariable,
+	sourceshape.NodeTypeConstructor,
+	sourceshape.NodeTypeProperty,
+	sourceshape.NodeTypeOperator,
 }
 
 var MEMBER_OR_TYPE_KINDS = append(TYPE_MEMBER_KINDS, TYPE_KINDS...)
 
 var TYPE_KINDS_TAGGED = []compilergraph.TaggedValue{
-	parser.NodeTypeClass,
-	parser.NodeTypeInterface,
-	parser.NodeTypeNominal,
-	parser.NodeTypeStruct,
-	parser.NodeTypeAgent,
+	sourceshape.NodeTypeClass,
+	sourceshape.NodeTypeInterface,
+	sourceshape.NodeTypeNominal,
+	sourceshape.NodeTypeStruct,
+	sourceshape.NodeTypeAgent,
 }
 
 var MODULE_MEMBER_KINDS_TAGGED = append(TYPE_KINDS_TAGGED,
 	[]compilergraph.TaggedValue{
-		parser.NodeTypeVariable,
-		parser.NodeTypeFunction,
+		sourceshape.NodeTypeVariable,
+		sourceshape.NodeTypeFunction,
 	}...)

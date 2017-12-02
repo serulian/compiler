@@ -12,7 +12,7 @@ import (
 	"github.com/serulian/compiler/graphs/srg/typerefresolver"
 	"github.com/serulian/compiler/graphs/typegraph"
 
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // GetConstructor returns a TypeGraph constructor for the given SRG.
@@ -315,7 +315,7 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 		isReadOnly = false
 		isField = true
 
-		_, hasDefaultValue = member.Node().TryGetNode(parser.NodePredicateTypeFieldDefaultValue)
+		_, hasDefaultValue = member.Node().TryGetNode(sourceshape.NodePredicateTypeFieldDefaultValue)
 		if !hasDefaultValue {
 			isPromising = typegraph.MemberNotPromising
 		}

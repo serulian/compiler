@@ -9,6 +9,7 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // srgSourceHandler implements the SourceHandler interface from the packageloader for
@@ -27,7 +28,7 @@ func (sh *srgSourceHandler) PackageFileExtension() string {
 }
 
 // buildASTNode constructs a new node in the SRG.
-func (h *srgSourceHandler) buildASTNode(source compilercommon.InputSource, kind parser.NodeType) parser.AstNode {
+func (h *srgSourceHandler) buildASTNode(source compilercommon.InputSource, kind sourceshape.NodeType) parser.AstNode {
 	graphNode := h.modifier.CreateNode(kind)
 	return &srgASTNode{
 		graphNode: graphNode,
@@ -51,8 +52,8 @@ func (sh *srgSourceHandler) Verify(errorReporter packageloader.ErrorReporter, wa
 	g := sh.srg
 
 	// Collect any parse errors found and add them to the result.
-	eit := g.findAllNodes(parser.NodeTypeError).BuildNodeIterator(
-		parser.NodePredicateErrorMessage)
+	eit := g.findAllNodes(sourceshape.NodeTypeError).BuildNodeIterator(
+		sourceshape.NodePredicateErrorMessage)
 
 	for eit.Next() {
 		sourceRange, hasRange := sh.srg.SourceRangeOf(eit.Node())
@@ -60,13 +61,13 @@ func (sh *srgSourceHandler) Verify(errorReporter packageloader.ErrorReporter, wa
 			panic("Missing source range")
 		}
 
-		errorReporter(compilercommon.NewSourceError(sourceRange, eit.GetPredicate(parser.NodePredicateErrorMessage).String()))
+		errorReporter(compilercommon.NewSourceError(sourceRange, eit.GetPredicate(sourceshape.NodePredicateErrorMessage).String()))
 	}
 
 	// Verify all 'from ... import ...' are valid.
-	fit := g.findAllNodes(parser.NodeTypeImportPackage).
-		Has(parser.NodeImportPredicateSubsource).
-		BuildNodeIterator(parser.NodeImportPredicateSubsource)
+	fit := g.findAllNodes(sourceshape.NodeTypeImportPackage).
+		Has(sourceshape.NodeImportPredicateSubsource).
+		BuildNodeIterator(sourceshape.NodeImportPredicateSubsource)
 
 	for fit.Next() {
 		// Load the package information.
@@ -76,10 +77,10 @@ func (sh *srgSourceHandler) Verify(errorReporter packageloader.ErrorReporter, wa
 		}
 
 		// Search for the subsource.
-		subsource := fit.GetPredicate(parser.NodeImportPredicateSubsource).String()
+		subsource := fit.GetPredicate(sourceshape.NodeImportPredicateSubsource).String()
 		_, found := packageInfo.FindTypeOrMemberByName(subsource)
 		if !found {
-			source := fit.Node().GetIncomingNode(parser.NodeImportPredicatePackageRef).Get(parser.NodeImportPredicateSource)
+			source := fit.Node().GetIncomingNode(sourceshape.NodeImportPredicatePackageRef).Get(sourceshape.NodeImportPredicateSource)
 			sourceRange, hasRange := sh.srg.SourceRangeOf(fit.Node())
 			if !hasRange {
 				panic("Missing source range")
@@ -90,15 +91,15 @@ func (sh *srgSourceHandler) Verify(errorReporter packageloader.ErrorReporter, wa
 	}
 
 	// Build the map for globally aliased types.
-	ait := g.findAllNodes(parser.NodeTypeDecorator).
-		Has(parser.NodeDecoratorPredicateInternal, aliasInternalDecoratorName).
+	ait := g.findAllNodes(sourceshape.NodeTypeDecorator).
+		Has(sourceshape.NodeDecoratorPredicateInternal, aliasInternalDecoratorName).
 		BuildNodeIterator()
 
 	for ait.Next() {
 		// Find the name of the alias.
 		decorator := ait.Node()
-		parameter, ok := decorator.TryGetNode(parser.NodeDecoratorPredicateParameter)
-		if !ok || parameter.Kind() != parser.NodeStringLiteralExpression {
+		parameter, ok := decorator.TryGetNode(sourceshape.NodeDecoratorPredicateParameter)
+		if !ok || parameter.Kind() != sourceshape.NodeStringLiteralExpression {
 			sourceRange, hasRange := sh.srg.SourceRangeOf(decorator)
 			if !hasRange {
 				panic("Missing source range")
@@ -108,10 +109,10 @@ func (sh *srgSourceHandler) Verify(errorReporter packageloader.ErrorReporter, wa
 			continue
 		}
 
-		var aliasName = parameter.Get(parser.NodeStringLiteralExpressionValue)
+		var aliasName = parameter.Get(sourceshape.NodeStringLiteralExpressionValue)
 		aliasName = aliasName[1 : len(aliasName)-1] // Remove the quotes.
 
-		aliasedType := SRGType{decorator.GetIncomingNode(parser.NodeTypeDefinitionDecorator), g}
+		aliasedType := SRGType{decorator.GetIncomingNode(sourceshape.NodeTypeDefinitionDecorator), g}
 		g.aliasMap[aliasName] = aliasedType
 	}
 }

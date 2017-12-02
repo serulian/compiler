@@ -13,7 +13,7 @@ import (
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/packageloader"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // SRGScopeOrImport represents a named scope or an external package import.
@@ -162,7 +162,7 @@ func (ns SRGNamedScope) IsStatic() bool {
 		return true
 
 	case NamedScopeMember:
-		return ns.Kind() == parser.NodeTypeConstructor
+		return ns.Kind() == sourceshape.NodeTypeConstructor
 
 	case NamedScopeImport:
 		return true
@@ -190,7 +190,7 @@ func (ns SRGNamedScope) AccessIsUsage() bool {
 		return false
 
 	case NamedScopeMember:
-		return ns.Kind() == parser.NodeTypeProperty
+		return ns.Kind() == sourceshape.NodeTypeProperty
 
 	case NamedScopeImport:
 		return false
@@ -214,61 +214,61 @@ func (ns SRGNamedScope) ScopeKind() NamedScopeKind {
 	switch ns.Kind() {
 
 	/* Types */
-	case parser.NodeTypeClass:
+	case sourceshape.NodeTypeClass:
 		return NamedScopeType
 
-	case parser.NodeTypeInterface:
+	case sourceshape.NodeTypeInterface:
 		return NamedScopeType
 
-	case parser.NodeTypeNominal:
+	case sourceshape.NodeTypeNominal:
 		return NamedScopeType
 
-	case parser.NodeTypeStruct:
+	case sourceshape.NodeTypeStruct:
 		return NamedScopeType
 
-	case parser.NodeTypeAgent:
+	case sourceshape.NodeTypeAgent:
 		return NamedScopeType
 
 	/* Generic */
-	case parser.NodeTypeGeneric:
+	case sourceshape.NodeTypeGeneric:
 		return NamedScopeType
 
 	/* Import */
-	case parser.NodeTypeImportPackage:
+	case sourceshape.NodeTypeImportPackage:
 		return NamedScopeImport
 
 	/* Members */
-	case parser.NodeTypeVariable:
+	case sourceshape.NodeTypeVariable:
 		return NamedScopeMember
 
-	case parser.NodeTypeField:
+	case sourceshape.NodeTypeField:
 		return NamedScopeMember
 
-	case parser.NodeTypeFunction:
+	case sourceshape.NodeTypeFunction:
 		return NamedScopeMember
 
-	case parser.NodeTypeConstructor:
+	case sourceshape.NodeTypeConstructor:
 		return NamedScopeMember
 
-	case parser.NodeTypeProperty:
+	case sourceshape.NodeTypeProperty:
 		return NamedScopeMember
 
 	/* Parameter */
-	case parser.NodeTypeParameter:
+	case sourceshape.NodeTypeParameter:
 		return NamedScopeParameter
 
-	case parser.NodeTypeLambdaParameter:
+	case sourceshape.NodeTypeLambdaParameter:
 		return NamedScopeParameter
 
 	/* Named Value */
-	case parser.NodeTypeNamedValue:
+	case sourceshape.NodeTypeNamedValue:
 		return NamedScopeValue
 
-	case parser.NodeTypeAssignedValue:
+	case sourceshape.NodeTypeAssignedValue:
 		return NamedScopeValue
 
 	/* Variable */
-	case parser.NodeTypeVariableStatement:
+	case sourceshape.NodeTypeVariableStatement:
 		return NamedScopeVariable
 
 	default:
@@ -289,10 +289,10 @@ func (ns SRGNamedScope) Documentation() (SRGDocumentation, bool) {
 	}
 
 	switch ns.Kind() {
-	case parser.NodeTypeParameter:
+	case sourceshape.NodeTypeParameter:
 		fallthrough
 
-	case parser.NodeTypeLambdaParameter:
+	case sourceshape.NodeTypeLambdaParameter:
 		docInfo, hasDocInfo := comment.Documentation()
 		if !hasDocInfo {
 			return SRGDocumentation{}, false
@@ -354,56 +354,56 @@ func (ns SRGNamedScope) Code() (compilercommon.CodeSummary, bool) {
 func (ns SRGNamedScope) Name() (string, bool) {
 	switch ns.Kind() {
 
-	case parser.NodeTypeClass:
-		return ns.TryGet(parser.NodeTypeDefinitionName)
+	case sourceshape.NodeTypeClass:
+		return ns.TryGet(sourceshape.NodeTypeDefinitionName)
 
-	case parser.NodeTypeInterface:
-		return ns.TryGet(parser.NodeTypeDefinitionName)
+	case sourceshape.NodeTypeInterface:
+		return ns.TryGet(sourceshape.NodeTypeDefinitionName)
 
-	case parser.NodeTypeNominal:
-		return ns.TryGet(parser.NodeTypeDefinitionName)
+	case sourceshape.NodeTypeNominal:
+		return ns.TryGet(sourceshape.NodeTypeDefinitionName)
 
-	case parser.NodeTypeStruct:
-		return ns.TryGet(parser.NodeTypeDefinitionName)
+	case sourceshape.NodeTypeStruct:
+		return ns.TryGet(sourceshape.NodeTypeDefinitionName)
 
-	case parser.NodeTypeAgent:
-		return ns.TryGet(parser.NodeTypeDefinitionName)
+	case sourceshape.NodeTypeAgent:
+		return ns.TryGet(sourceshape.NodeTypeDefinitionName)
 
-	case parser.NodeTypeImportPackage:
-		return ns.TryGet(parser.NodeImportPredicatePackageName)
+	case sourceshape.NodeTypeImportPackage:
+		return ns.TryGet(sourceshape.NodeImportPredicatePackageName)
 
-	case parser.NodeTypeGeneric:
-		return ns.TryGet(parser.NodeGenericPredicateName)
+	case sourceshape.NodeTypeGeneric:
+		return ns.TryGet(sourceshape.NodeGenericPredicateName)
 
-	case parser.NodeTypeProperty:
+	case sourceshape.NodeTypeProperty:
 		fallthrough
 
-	case parser.NodeTypeConstructor:
+	case sourceshape.NodeTypeConstructor:
 		fallthrough
 
-	case parser.NodeTypeVariable:
+	case sourceshape.NodeTypeVariable:
 		fallthrough
 
-	case parser.NodeTypeField:
+	case sourceshape.NodeTypeField:
 		fallthrough
 
-	case parser.NodeTypeFunction:
-		return ns.TryGet(parser.NodePredicateTypeMemberName)
+	case sourceshape.NodeTypeFunction:
+		return ns.TryGet(sourceshape.NodePredicateTypeMemberName)
 
-	case parser.NodeTypeParameter:
-		return ns.TryGet(parser.NodeParameterName)
+	case sourceshape.NodeTypeParameter:
+		return ns.TryGet(sourceshape.NodeParameterName)
 
-	case parser.NodeTypeLambdaParameter:
-		return ns.TryGet(parser.NodeLambdaExpressionParameterName)
+	case sourceshape.NodeTypeLambdaParameter:
+		return ns.TryGet(sourceshape.NodeLambdaExpressionParameterName)
 
-	case parser.NodeTypeVariableStatement:
-		return ns.TryGet(parser.NodeVariableStatementName)
+	case sourceshape.NodeTypeVariableStatement:
+		return ns.TryGet(sourceshape.NodeVariableStatementName)
 
-	case parser.NodeTypeNamedValue:
-		return ns.TryGet(parser.NodeNamedValueName)
+	case sourceshape.NodeTypeNamedValue:
+		return ns.TryGet(sourceshape.NodeNamedValueName)
 
-	case parser.NodeTypeAssignedValue:
-		return ns.TryGet(parser.NodeNamedValueName)
+	case sourceshape.NodeTypeAssignedValue:
+		return ns.TryGet(sourceshape.NodeNamedValueName)
 
 	default:
 		panic(fmt.Sprintf("Unknown scoped name %v", ns.Kind()))
@@ -413,19 +413,19 @@ func (ns SRGNamedScope) Name() (string, bool) {
 // GetMember returns the member pointed to by this scope, if any.
 func (ns SRGNamedScope) GetMember() (SRGMember, bool) {
 	switch ns.Kind() {
-	case parser.NodeTypeProperty:
+	case sourceshape.NodeTypeProperty:
 		fallthrough
 
-	case parser.NodeTypeConstructor:
+	case sourceshape.NodeTypeConstructor:
 		fallthrough
 
-	case parser.NodeTypeVariable:
+	case sourceshape.NodeTypeVariable:
 		fallthrough
 
-	case parser.NodeTypeField:
+	case sourceshape.NodeTypeField:
 		fallthrough
 
-	case parser.NodeTypeFunction:
+	case sourceshape.NodeTypeFunction:
 		return SRGMember{ns.GraphNode, ns.srg}, true
 	}
 
@@ -435,10 +435,10 @@ func (ns SRGNamedScope) GetMember() (SRGMember, bool) {
 // GetParameter returns the parameter pointed to by this scope, if any.
 func (ns SRGNamedScope) GetParameter() (SRGParameter, bool) {
 	switch ns.Kind() {
-	case parser.NodeTypeParameter:
+	case sourceshape.NodeTypeParameter:
 		fallthrough
 
-	case parser.NodeTypeLambdaParameter:
+	case sourceshape.NodeTypeLambdaParameter:
 		return SRGParameter{ns.GraphNode, ns.srg}, true
 	}
 
@@ -471,7 +471,7 @@ func (ns SRGNamedScope) DeclaredType() (SRGTypeRef, bool) {
 
 // ResolveNameUnderScope attempts to resolve the given name under this scope. Only applies to imports.
 func (ns SRGNamedScope) ResolveNameUnderScope(name string) (SRGScopeOrImport, bool) {
-	if ns.Kind() != parser.NodeTypeImportPackage {
+	if ns.Kind() != sourceshape.NodeTypeImportPackage {
 		return SRGNamedScope{}, false
 	}
 
@@ -504,18 +504,18 @@ func (g *SRG) FindReferencesInScope(name string, node compilergraph.GraphNode) c
 	// Note: This filter ensures that the name is accessible in the scope of the given node by checking that
 	// the node referencing the name is contained by the given node.
 	containingFilter := func(q compilergraph.GraphQuery) compilergraph.Query {
-		startRune := node.GetValue(parser.NodePredicateStartRune).Int()
-		endRune := node.GetValue(parser.NodePredicateEndRune).Int()
+		startRune := node.GetValue(sourceshape.NodePredicateStartRune).Int()
+		endRune := node.GetValue(sourceshape.NodePredicateEndRune).Int()
 
 		return q.
-			HasWhere(parser.NodePredicateStartRune, compilergraph.WhereGT, startRune).
-			HasWhere(parser.NodePredicateEndRune, compilergraph.WhereLT, endRune)
+			HasWhere(sourceshape.NodePredicateStartRune, compilergraph.WhereGT, startRune).
+			HasWhere(sourceshape.NodePredicateEndRune, compilergraph.WhereLT, endRune)
 	}
 
 	return g.layer.StartQuery(name).
-		In(parser.NodeIdentifierExpressionName).
-		IsKind(parser.NodeTypeIdentifierExpression).
-		Has(parser.NodePredicateSource, node.Get(parser.NodePredicateSource)).
+		In(sourceshape.NodeIdentifierExpressionName).
+		IsKind(sourceshape.NodeTypeIdentifierExpression).
+		Has(sourceshape.NodePredicateSource, node.Get(sourceshape.NodePredicateSource)).
 		FilterBy(containingFilter).
 		BuildNodeIterator()
 }
@@ -529,7 +529,7 @@ func (g *SRG) FindNameInScope(name string, node compilergraph.GraphNode) (SRGSco
 	}
 
 	// If still not found, try to resolve as a type or import.
-	nodeSource := node.Get(parser.NodePredicateSource)
+	nodeSource := node.Get(sourceshape.NodePredicateSource)
 	parentModule, parentModuleFound := g.FindModuleBySource(compilercommon.InputSource(nodeSource))
 	if !parentModuleFound {
 		panic(fmt.Sprintf("Missing module for source %v", nodeSource))
@@ -550,7 +550,7 @@ func (g *SRG) FindNameInScope(name string, node compilergraph.GraphNode) (SRGSco
 			return SRGNamedScope{}, false
 		}
 
-		resolutionName := localImportNode.Get(parser.NodeImportPredicateSubsource)
+		resolutionName := localImportNode.Get(sourceshape.NodeImportPredicateSubsource)
 
 		// If an SRG package, then continue with the resolution. Otherwise,
 		// we return a named scope that says that the name needs to be furthered
@@ -596,53 +596,53 @@ func (slice scopeResultNodes) Swap(i, j int) {
 
 // findAddedNameInScope finds the {parameter, with, loop, var} node exposing the given name, if any.
 func (g *SRG) findAddedNameInScope(name string, node compilergraph.GraphNode) (compilergraph.GraphNode, bool) {
-	nodeSource := node.Get(parser.NodePredicateSource)
-	nodeStartIndex := node.GetValue(parser.NodePredicateStartRune).Int()
+	nodeSource := node.Get(sourceshape.NodePredicateSource)
+	nodeStartIndex := node.GetValue(sourceshape.NodePredicateStartRune).Int()
 
 	// Note: This filter ensures that the name is accessible in the scope of the given node by checking that
 	// the node adding the name contains the given node.
 	containingFilter := func(q compilergraph.GraphQuery) compilergraph.Query {
-		startRune := node.GetValue(parser.NodePredicateStartRune).Int()
-		endRune := node.GetValue(parser.NodePredicateEndRune).Int()
+		startRune := node.GetValue(sourceshape.NodePredicateStartRune).Int()
+		endRune := node.GetValue(sourceshape.NodePredicateEndRune).Int()
 
 		return q.
-			In(parser.NodePredicateTypeMemberParameter,
-				parser.NodeLambdaExpressionInferredParameter,
-				parser.NodeLambdaExpressionParameter,
-				parser.NodePredicateTypeMemberGeneric,
-				parser.NodeStatementNamedValue,
-				parser.NodeAssignedDestination,
-				parser.NodeAssignedRejection,
-				parser.NodePredicateChild,
-				parser.NodeStatementBlockStatement).
-			InIfKind(parser.NodeStatementBlockStatement, parser.NodeTypeResolveStatement).
-			HasWhere(parser.NodePredicateStartRune, compilergraph.WhereLTE, startRune).
-			HasWhere(parser.NodePredicateEndRune, compilergraph.WhereGTE, endRune)
+			In(sourceshape.NodePredicateTypeMemberParameter,
+				sourceshape.NodeLambdaExpressionInferredParameter,
+				sourceshape.NodeLambdaExpressionParameter,
+				sourceshape.NodePredicateTypeMemberGeneric,
+				sourceshape.NodeStatementNamedValue,
+				sourceshape.NodeAssignedDestination,
+				sourceshape.NodeAssignedRejection,
+				sourceshape.NodePredicateChild,
+				sourceshape.NodeStatementBlockStatement).
+			InIfKind(sourceshape.NodeStatementBlockStatement, sourceshape.NodeTypeResolveStatement).
+			HasWhere(sourceshape.NodePredicateStartRune, compilergraph.WhereLTE, startRune).
+			HasWhere(sourceshape.NodePredicateEndRune, compilergraph.WhereGTE, endRune)
 	}
 
 	nit := g.layer.StartQuery(name).
 		In("named").
-		Has(parser.NodePredicateSource, nodeSource).
-		IsKind(parser.NodeTypeParameter, parser.NodeTypeNamedValue, parser.NodeTypeAssignedValue,
-			parser.NodeTypeVariableStatement, parser.NodeTypeLambdaParameter, parser.NodeTypeGeneric).
+		Has(sourceshape.NodePredicateSource, nodeSource).
+		IsKind(sourceshape.NodeTypeParameter, sourceshape.NodeTypeNamedValue, sourceshape.NodeTypeAssignedValue,
+			sourceshape.NodeTypeVariableStatement, sourceshape.NodeTypeLambdaParameter, sourceshape.NodeTypeGeneric).
 		FilterBy(containingFilter).
-		BuildNodeIterator(parser.NodePredicateStartRune, parser.NodePredicateEndRune)
+		BuildNodeIterator(sourceshape.NodePredicateStartRune, sourceshape.NodePredicateEndRune)
 
 	// Sort the nodes found by location and choose the closest node.
 	var results = make(scopeResultNodes, 0)
 	for nit.Next() {
 		node := nit.Node()
-		startIndex := nit.GetPredicate(parser.NodePredicateStartRune).Int()
+		startIndex := nit.GetPredicate(sourceshape.NodePredicateStartRune).Int()
 
 		// If the node is a variable statement or assigned value, we have do to additional checks
 		// (since they are not block scoped but rather statement scoped).
-		if node.Kind() == parser.NodeTypeVariableStatement || node.Kind() == parser.NodeTypeAssignedValue {
-			endIndex := nit.GetPredicate(parser.NodePredicateEndRune).Int()
-			if node.Kind() == parser.NodeTypeAssignedValue {
-				if parentNode, ok := node.TryGetIncomingNode(parser.NodeAssignedDestination); ok {
-					endIndex = parentNode.GetValue(parser.NodePredicateEndRune).Int()
-				} else if parentNode, ok := node.TryGetIncomingNode(parser.NodeAssignedRejection); ok {
-					endIndex = parentNode.GetValue(parser.NodePredicateEndRune).Int()
+		if node.Kind() == sourceshape.NodeTypeVariableStatement || node.Kind() == sourceshape.NodeTypeAssignedValue {
+			endIndex := nit.GetPredicate(sourceshape.NodePredicateEndRune).Int()
+			if node.Kind() == sourceshape.NodeTypeAssignedValue {
+				if parentNode, ok := node.TryGetIncomingNode(sourceshape.NodeAssignedDestination); ok {
+					endIndex = parentNode.GetValue(sourceshape.NodePredicateEndRune).Int()
+				} else if parentNode, ok := node.TryGetIncomingNode(sourceshape.NodeAssignedRejection); ok {
+					endIndex = parentNode.GetValue(sourceshape.NodePredicateEndRune).Int()
 				} else {
 					panic("Missing assigned parent")
 				}

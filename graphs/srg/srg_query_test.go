@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/serulian/compiler/compilercommon"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -20,8 +20,8 @@ func TestFindNodeForPosition(t *testing.T) {
 		comment := SRGComment{cit.Node(), testSRG}
 		parent := comment.ParentNode()
 
-		source := parent.Get(parser.NodePredicateSource)
-		startRune := parent.GetValue(parser.NodePredicateStartRune).Int()
+		source := parent.Get(sourceshape.NodePredicateSource)
+		startRune := parent.GetValue(sourceshape.NodePredicateStartRune).Int()
 
 		sourcePosition := compilercommon.InputSource(source).PositionForRunePosition(startRune, nil)
 		node, found := testSRG.FindNodeForPosition(sourcePosition)

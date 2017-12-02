@@ -12,7 +12,7 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // SRGType wraps a type declaration or definition in the SRG.
@@ -49,7 +49,7 @@ func (g *SRG) GetTypes() []SRGType {
 // GetGenericTypes returns all the generic types defined in the SRG.
 func (g *SRG) GetGenericTypes() []SRGType {
 	it := g.findAllNodes(TYPE_KINDS...).
-		With(parser.NodeTypeDefinitionGeneric).
+		With(sourceshape.NodeTypeDefinitionGeneric).
 		BuildNodeIterator()
 
 	var types []SRGType
@@ -64,7 +64,7 @@ func (g *SRG) GetGenericTypes() []SRGType {
 // GetTypeGenerics returns all the generics defined under types in the SRG.
 func (g *SRG) GetTypeGenerics() []SRGGeneric {
 	it := g.findAllNodes(TYPE_KINDS...).
-		Out(parser.NodeTypeDefinitionGeneric).
+		Out(sourceshape.NodeTypeDefinitionGeneric).
 		BuildNodeIterator()
 
 	var generics []SRGGeneric
@@ -86,7 +86,7 @@ func (g *SRG) GetDefinedTypeReference(node compilergraph.GraphNode) SRGType {
 
 // Module returns the module under which the type is defined.
 func (t SRGType) Module() SRGModule {
-	moduleNode := t.GraphNode.StartQuery().In(parser.NodePredicateChild).GetNode()
+	moduleNode := t.GraphNode.StartQuery().In(sourceshape.NodePredicateChild).GetNode()
 	return SRGModule{moduleNode, t.srg}
 }
 
@@ -97,7 +97,7 @@ func (m SRGType) UniqueId() string {
 
 // Name returns the name of this type. Can not exist in the partial-parsing case in tooling.
 func (t SRGType) Name() (string, bool) {
-	return t.GraphNode.TryGet(parser.NodeTypeDefinitionName)
+	return t.GraphNode.TryGet(sourceshape.NodeTypeDefinitionName)
 }
 
 // IsExported returns whether the given type is exported for use outside its package.
@@ -124,19 +124,19 @@ func (t SRGType) Documentation() (SRGDocumentation, bool) {
 // GetTypeKind returns the kind matching the type definition/declaration node type.
 func (t SRGType) TypeKind() TypeKind {
 	switch t.GraphNode.Kind() {
-	case parser.NodeTypeClass:
+	case sourceshape.NodeTypeClass:
 		return ClassType
 
-	case parser.NodeTypeInterface:
+	case sourceshape.NodeTypeInterface:
 		return InterfaceType
 
-	case parser.NodeTypeNominal:
+	case sourceshape.NodeTypeNominal:
 		return NominalType
 
-	case parser.NodeTypeStruct:
+	case sourceshape.NodeTypeStruct:
 		return StructType
 
-	case parser.NodeTypeAgent:
+	case sourceshape.NodeTypeAgent:
 		return AgentType
 
 	default:
@@ -147,8 +147,8 @@ func (t SRGType) TypeKind() TypeKind {
 // FindOperator returns the operator with the given name under this type, if any.
 func (t SRGType) FindOperator(name string) (SRGMember, bool) {
 	memberNode, found := t.GraphNode.StartQuery().
-		Out(parser.NodeTypeDefinitionMember).
-		Has(parser.NodeOperatorName, name).
+		Out(sourceshape.NodeTypeDefinitionMember).
+		Has(sourceshape.NodeOperatorName, name).
 		TryGetNode()
 
 	if !found {
@@ -161,8 +161,8 @@ func (t SRGType) FindOperator(name string) (SRGMember, bool) {
 // FindMember returns the type member with the given name under this type, if any.
 func (t SRGType) FindMember(name string) (SRGMember, bool) {
 	memberNode, found := t.GraphNode.StartQuery().
-		Out(parser.NodeTypeDefinitionMember).
-		Has(parser.NodePredicateTypeMemberName, name).
+		Out(sourceshape.NodeTypeDefinitionMember).
+		Has(sourceshape.NodePredicateTypeMemberName, name).
 		TryGetNode()
 
 	if !found {
@@ -176,7 +176,7 @@ func (t SRGType) FindMember(name string) (SRGMember, bool) {
 // return a valid reference for AgentTypes.
 func (t SRGType) PrincipalType() (SRGTypeRef, bool) {
 	if t.TypeKind() == AgentType {
-		return SRGTypeRef{t.GraphNode.GetNode(parser.NodeAgentPredicatePrincipalType), t.srg}, true
+		return SRGTypeRef{t.GraphNode.GetNode(sourceshape.NodeAgentPredicatePrincipalType), t.srg}, true
 	}
 
 	return SRGTypeRef{}, false
@@ -186,7 +186,7 @@ func (t SRGType) PrincipalType() (SRGTypeRef, bool) {
 // return a valid reference for NominalTypes.
 func (t SRGType) WrappedType() (SRGTypeRef, bool) {
 	if t.TypeKind() == NominalType {
-		return SRGTypeRef{t.GraphNode.GetNode(parser.NodeNominalPredicateBaseType), t.srg}, true
+		return SRGTypeRef{t.GraphNode.GetNode(sourceshape.NodeNominalPredicateBaseType), t.srg}, true
 	}
 
 	return SRGTypeRef{}, false
@@ -196,7 +196,7 @@ func (t SRGType) WrappedType() (SRGTypeRef, bool) {
 // if any.
 func (t SRGType) ComposedAgents() []SRGComposedAgent {
 	it := t.GraphNode.StartQuery().
-		Out(parser.NodePredicateComposedAgent).
+		Out(sourceshape.NodePredicateComposedAgent).
 		BuildNodeIterator()
 
 	var agents = make([]SRGComposedAgent, 0)
@@ -209,14 +209,14 @@ func (t SRGType) ComposedAgents() []SRGComposedAgent {
 
 // HasComposedAgents returns true if this SRG type composes any agents.
 func (t SRGType) HasComposedAgents() bool {
-	_, hasComposedAgents := t.TryGetNode(parser.NodePredicateComposedAgent)
+	_, hasComposedAgents := t.TryGetNode(sourceshape.NodePredicateComposedAgent)
 	return hasComposedAgents
 }
 
 // GetMembers returns the members on this type.
 func (t SRGType) GetMembers() []SRGMember {
 	it := t.GraphNode.StartQuery().
-		Out(parser.NodeTypeDefinitionMember).
+		Out(sourceshape.NodeTypeDefinitionMember).
 		BuildNodeIterator()
 
 	var members = make([]SRGMember, 0)
@@ -230,7 +230,7 @@ func (t SRGType) GetMembers() []SRGMember {
 // Generics returns the generics on this type.
 func (t SRGType) Generics() []SRGGeneric {
 	it := t.GraphNode.StartQuery().
-		Out(parser.NodeTypeDefinitionGeneric).
+		Out(sourceshape.NodeTypeDefinitionGeneric).
 		BuildNodeIterator()
 
 	var generics = make([]SRGGeneric, 0)
@@ -244,18 +244,18 @@ func (t SRGType) Generics() []SRGGeneric {
 // Alias returns the global alias for this type, if any.
 func (t SRGType) Alias() (string, bool) {
 	dit := t.GraphNode.StartQuery().
-		Out(parser.NodeTypeDefinitionDecorator).
-		Has(parser.NodeDecoratorPredicateInternal, aliasInternalDecoratorName).
+		Out(sourceshape.NodeTypeDefinitionDecorator).
+		Has(sourceshape.NodeDecoratorPredicateInternal, aliasInternalDecoratorName).
 		BuildNodeIterator()
 
 	for dit.Next() {
 		decorator := dit.Node()
-		parameter, ok := decorator.TryGetNode(parser.NodeDecoratorPredicateParameter)
-		if !ok || parameter.Kind() != parser.NodeStringLiteralExpression {
+		parameter, ok := decorator.TryGetNode(sourceshape.NodeDecoratorPredicateParameter)
+		if !ok || parameter.Kind() != sourceshape.NodeStringLiteralExpression {
 			continue
 		}
 
-		var aliasName = parameter.Get(parser.NodeStringLiteralExpressionValue)
+		var aliasName = parameter.Get(sourceshape.NodeStringLiteralExpressionValue)
 		aliasName = aliasName[1 : len(aliasName)-1] // Remove the quotes.
 		return aliasName, true
 	}
@@ -295,18 +295,18 @@ func (t SRGType) Code() (compilercommon.CodeSummary, bool) {
 	}
 
 	switch t.GraphNode.Kind() {
-	case parser.NodeTypeClass:
+	case sourceshape.NodeTypeClass:
 		buffer.WriteString("class ")
 		buffer.WriteString(name)
 		writeCodeGenerics(t, &buffer)
 		writeComposition()
 
-	case parser.NodeTypeInterface:
+	case sourceshape.NodeTypeInterface:
 		buffer.WriteString("interface ")
 		buffer.WriteString(name)
 		writeCodeGenerics(t, &buffer)
 
-	case parser.NodeTypeNominal:
+	case sourceshape.NodeTypeNominal:
 		buffer.WriteString("type ")
 		buffer.WriteString(name)
 		writeCodeGenerics(t, &buffer)
@@ -321,12 +321,12 @@ func (t SRGType) Code() (compilercommon.CodeSummary, bool) {
 			buffer.WriteString("?")
 		}
 
-	case parser.NodeTypeStruct:
+	case sourceshape.NodeTypeStruct:
 		buffer.WriteString("struct ")
 		buffer.WriteString(name)
 		writeCodeGenerics(t, &buffer)
 
-	case parser.NodeTypeAgent:
+	case sourceshape.NodeTypeAgent:
 		buffer.WriteString("agent<")
 
 		// Note: Agents should always have principal types, but since this method can be called

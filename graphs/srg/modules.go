@@ -9,7 +9,7 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 type ModuleResolutionOption int
@@ -29,9 +29,9 @@ type SRGModule struct {
 func (g *SRG) getModulesMap() map[compilercommon.InputSource]SRGModule {
 	if g.modulePathMap == nil {
 		moduleMap := map[compilercommon.InputSource]SRGModule{}
-		it := g.findAllNodes(parser.NodeTypeFile).BuildNodeIterator(parser.NodePredicateSource)
+		it := g.findAllNodes(sourceshape.NodeTypeFile).BuildNodeIterator(sourceshape.NodePredicateSource)
 		for it.Next() {
-			moduleMap[compilercommon.InputSource(it.GetPredicate(parser.NodePredicateSource).String())] = SRGModule{it.Node(), g}
+			moduleMap[compilercommon.InputSource(it.GetPredicate(sourceshape.NodePredicateSource).String())] = SRGModule{it.Node(), g}
 		}
 
 		// Cache the map.
@@ -61,7 +61,7 @@ func (g *SRG) FindModuleBySource(source compilercommon.InputSource) (SRGModule, 
 
 // InputSource returns the input source for this module.
 func (m SRGModule) InputSource() compilercommon.InputSource {
-	return compilercommon.InputSource(m.GraphNode.Get(parser.NodePredicateSource))
+	return compilercommon.InputSource(m.GraphNode.Get(sourceshape.NodePredicateSource))
 }
 
 // Name returns the name of the module.
@@ -77,7 +77,7 @@ func (m SRGModule) Node() compilergraph.GraphNode {
 // GetTypes returns the types declared directly under the module.
 func (m SRGModule) GetTypes() []SRGType {
 	it := m.GraphNode.StartQuery().
-		Out(parser.NodePredicateChild).
+		Out(sourceshape.NodePredicateChild).
 		IsKind(TYPE_KINDS_TAGGED...).
 		BuildNodeIterator()
 
@@ -92,8 +92,8 @@ func (m SRGModule) GetTypes() []SRGType {
 // GetMembers returns the members declared directly under the module.
 func (m SRGModule) GetMembers() []SRGMember {
 	it := m.GraphNode.StartQuery().
-		Out(parser.NodePredicateChild).
-		IsKind(parser.NodeTypeFunction, parser.NodeTypeVariable).
+		Out(sourceshape.NodePredicateChild).
+		IsKind(sourceshape.NodeTypeFunction, sourceshape.NodeTypeVariable).
 		BuildNodeIterator()
 
 	var members []SRGMember
@@ -107,8 +107,8 @@ func (m SRGModule) GetMembers() []SRGMember {
 // GetImports returns the imports declared under the module.
 func (m SRGModule) GetImports() []SRGImport {
 	it := m.GraphNode.StartQuery().
-		Out(parser.NodePredicateChild).
-		IsKind(parser.NodeTypeImport).
+		Out(sourceshape.NodePredicateChild).
+		IsKind(sourceshape.NodeTypeImport).
 		BuildNodeIterator()
 
 	var imports []SRGImport
@@ -130,7 +130,7 @@ func (m SRGModule) FindTypeOrMemberByName(name string, option ModuleResolutionOp
 
 	// Find matching types and members in the module.
 	nodeFound, found := m.StartQuery().
-		Out(parser.NodePredicateChild).
+		Out(sourceshape.NodePredicateChild).
 		Has("named", name).
 		IsKind(MODULE_MEMBER_KINDS_TAGGED...).
 		TryGetNode()

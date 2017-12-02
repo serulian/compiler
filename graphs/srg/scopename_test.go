@@ -11,7 +11,7 @@ import (
 	"testing"
 
 	"github.com/serulian/compiler/compilercommon"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -21,7 +21,7 @@ var _ = fmt.Printf
 type expectedScopeResult struct {
 	isValid          bool
 	isExternal       bool
-	expectedNodeType parser.NodeType
+	expectedNodeType sourceshape.NodeType
 	expectedName     string
 	expectedKind     NamedScopeKind
 }
@@ -37,167 +37,167 @@ type nameScopeTest struct {
 var nameScopeTests = []nameScopeTest{
 	// Resolve "SomeClass" under function "DoSomething"
 	nameScopeTest{"basic type scoping", "basic", "dosomething", "SomeClass",
-		expectedScopeResult{true, false, parser.NodeTypeClass, "SomeClass", NamedScopeType},
+		expectedScopeResult{true, false, sourceshape.NodeTypeClass, "SomeClass", NamedScopeType},
 	},
 
 	// Resolve "AnotherClass" under function "DoSomething"
 	nameScopeTest{"imported type scoping", "basic", "dosomething", "AnotherClass",
-		expectedScopeResult{true, false, parser.NodeTypeClass, "AnotherClass", NamedScopeType},
+		expectedScopeResult{true, false, sourceshape.NodeTypeClass, "AnotherClass", NamedScopeType},
 	},
 
 	// Resolve "TC" under function "DoSomething"
 	nameScopeTest{"imported aliased type scoping", "basic", "dosomething", "TC",
-		expectedScopeResult{true, false, parser.NodeTypeClass, "ThirdClass", NamedScopeType},
+		expectedScopeResult{true, false, sourceshape.NodeTypeClass, "ThirdClass", NamedScopeType},
 	},
 
 	// Resolve "anotherfile" under function "DoSomething"
 	nameScopeTest{"import module scoping", "basic", "dosomething", "anotherfile",
-		expectedScopeResult{true, false, parser.NodeTypeImportPackage, "anotherfile", NamedScopeImport},
+		expectedScopeResult{true, false, sourceshape.NodeTypeImportPackage, "anotherfile", NamedScopeImport},
 	},
 
 	// Resolve "somepackage" under function "DoSomething"
 	nameScopeTest{"import package scoping", "basic", "dosomething", "somepackage",
-		expectedScopeResult{true, false, parser.NodeTypeImportPackage, "somepackage", NamedScopeImport},
+		expectedScopeResult{true, false, sourceshape.NodeTypeImportPackage, "somepackage", NamedScopeImport},
 	},
 
 	// Resolve "someparam" under function "DoSomething"
 	nameScopeTest{"param scoping", "basic", "dosomething", "someparam",
-		expectedScopeResult{true, false, parser.NodeTypeParameter, "someparam", NamedScopeParameter},
+		expectedScopeResult{true, false, sourceshape.NodeTypeParameter, "someparam", NamedScopeParameter},
 	},
 
 	// Attempt to resolve "someparam" under function "DoSomething"
 	nameScopeTest{"invalid param scoping", "basic", "anotherfunc", "someparam",
-		expectedScopeResult{false, false, parser.NodeTypeTagged, "", NamedScopeParameter},
+		expectedScopeResult{false, false, sourceshape.NodeTypeTagged, "", NamedScopeParameter},
 	},
 
 	// Resolve "someparam" under the if statement.
 	nameScopeTest{"param under if scoping", "basic", "if", "someparam",
-		expectedScopeResult{true, false, parser.NodeTypeParameter, "someparam", NamedScopeParameter},
+		expectedScopeResult{true, false, sourceshape.NodeTypeParameter, "someparam", NamedScopeParameter},
 	},
 
 	// Resolve "someVar" under the if statement.
 	nameScopeTest{"var under if scoping", "basic", "if", "someVar",
-		expectedScopeResult{true, false, parser.NodeTypeVariableStatement, "someVar", NamedScopeVariable},
+		expectedScopeResult{true, false, sourceshape.NodeTypeVariableStatement, "someVar", NamedScopeVariable},
 	},
 
 	// Attempt to resolve "someVar" under the function "DoSomething"
 	nameScopeTest{"var under function scoping", "basic", "dosomething", "someVar",
-		expectedScopeResult{false, false, parser.NodeTypeTagged, "", NamedScopeVariable},
+		expectedScopeResult{false, false, sourceshape.NodeTypeTagged, "", NamedScopeVariable},
 	},
 
 	// Resolve "aliased" under function "AliasTest".
 	nameScopeTest{"aliased var under function", "basic", "aliasfn", "aliased",
-		expectedScopeResult{true, false, parser.NodeTypeParameter, "aliased", NamedScopeParameter},
+		expectedScopeResult{true, false, sourceshape.NodeTypeParameter, "aliased", NamedScopeParameter},
 	},
 
 	// Resolve "aliased" under the if statement under the function "AliasTest".
 	nameScopeTest{"aliased var under if", "basic", "aliasif", "aliased",
-		expectedScopeResult{true, false, parser.NodeTypeVariableStatement, "aliased", NamedScopeVariable},
+		expectedScopeResult{true, false, sourceshape.NodeTypeVariableStatement, "aliased", NamedScopeVariable},
 	},
 
 	// Resolve "UEF" under the if statement under the function "AliasTest".
 	nameScopeTest{"unexported function under if", "basic", "aliasif", "UEF",
-		expectedScopeResult{true, false, parser.NodeTypeFunction, "unexportedFunction", NamedScopeMember},
+		expectedScopeResult{true, false, sourceshape.NodeTypeFunction, "unexportedFunction", NamedScopeMember},
 	},
 
 	// Resolve "EF" under the if statement under the function "AliasTest".
 	nameScopeTest{"exported function under if", "basic", "aliasif", "EF",
-		expectedScopeResult{true, false, parser.NodeTypeFunction, "ExportedFunction", NamedScopeMember},
+		expectedScopeResult{true, false, sourceshape.NodeTypeFunction, "ExportedFunction", NamedScopeMember},
 	},
 
 	// Resolve "SEF" under the if statement under the function "AliasTest".
 	nameScopeTest{"other exported function under if", "basic", "aliasif", "SEF",
-		expectedScopeResult{true, false, parser.NodeTypeFunction, "ExportedFunction", NamedScopeMember},
+		expectedScopeResult{true, false, sourceshape.NodeTypeFunction, "ExportedFunction", NamedScopeMember},
 	},
 
 	// Attempt to resolve "SomeName" under function "WithTest".
 	nameScopeTest{"above with scoping test", "basic", "withfn", "SomeName",
-		expectedScopeResult{false, false, parser.NodeTypeTagged, "", NamedScopeVariable},
+		expectedScopeResult{false, false, sourceshape.NodeTypeTagged, "", NamedScopeVariable},
 	},
 
 	// Resolve "SomeName" under the with statement under the function "WithTest".
 	nameScopeTest{"with scoping test", "basic", "withblock", "SomeName",
-		expectedScopeResult{true, false, parser.NodeTypeNamedValue, "SomeName", NamedScopeValue},
+		expectedScopeResult{true, false, sourceshape.NodeTypeNamedValue, "SomeName", NamedScopeValue},
 	},
 
 	// Attempt to resolve "SomeLoopValue" under function "LoopTest".
 	nameScopeTest{"above loop scoping test", "basic", "loopfn", "SomeLoopValue",
-		expectedScopeResult{false, false, parser.NodeTypeTagged, "", NamedScopeVariable},
+		expectedScopeResult{false, false, sourceshape.NodeTypeTagged, "", NamedScopeVariable},
 	},
 
 	// Resolve "SomeLoopValue" under the loop statement under the function "LoopTest".
 	nameScopeTest{"loop scoping test", "basic", "loopblock", "SomeLoopValue",
-		expectedScopeResult{true, false, parser.NodeTypeNamedValue, "SomeLoopValue", NamedScopeValue},
+		expectedScopeResult{true, false, sourceshape.NodeTypeNamedValue, "SomeLoopValue", NamedScopeValue},
 	},
 
 	// Resolve "a" under the lambda expression.
 	nameScopeTest{"lambda expression param test", "basic", "lambdaexpr", "a",
-		expectedScopeResult{true, false, parser.NodeTypeLambdaParameter, "a", NamedScopeParameter},
+		expectedScopeResult{true, false, sourceshape.NodeTypeLambdaParameter, "a", NamedScopeParameter},
 	},
 
 	// Resolve "a" under the full lambda expression.
 	nameScopeTest{"full lambda expression param test", "basic", "fulllambdabody", "a",
-		expectedScopeResult{true, false, parser.NodeTypeParameter, "a", NamedScopeParameter},
+		expectedScopeResult{true, false, sourceshape.NodeTypeParameter, "a", NamedScopeParameter},
 	},
 
 	// Attempt to resolve "someVar" under its own expression.
 	nameScopeTest{"variable under itself test", "basic", "somevarexpr", "someVar",
-		expectedScopeResult{false, false, parser.NodeTypeTagged, "", NamedScopeVariable},
+		expectedScopeResult{false, false, sourceshape.NodeTypeTagged, "", NamedScopeVariable},
 	},
 
 	// Attempt to resolve "anotherValue" under its own expression.
 	nameScopeTest{"variable under its own closure test", "basic", "funcclosure", "anotherValue",
-		expectedScopeResult{false, false, parser.NodeTypeTagged, "", NamedScopeVariable},
+		expectedScopeResult{false, false, sourceshape.NodeTypeTagged, "", NamedScopeVariable},
 	},
 
 	// Resolve "someVar" under the function clousre.
 	nameScopeTest{"variable under other closure test", "basic", "funcclosure", "someVar",
-		expectedScopeResult{true, false, parser.NodeTypeVariableStatement, "someVar", NamedScopeVariable},
+		expectedScopeResult{true, false, sourceshape.NodeTypeVariableStatement, "someVar", NamedScopeVariable},
 	},
 
 	// Resolve "externalpackage" under the function.
 	nameScopeTest{"external package test", "external", "somefunction", "externalpackage",
-		expectedScopeResult{true, false, parser.NodeTypeImportPackage, "externalpackage", NamedScopeImport},
+		expectedScopeResult{true, false, sourceshape.NodeTypeImportPackage, "externalpackage", NamedScopeImport},
 	},
 
 	// Resolve "ExternalMember" under the function.
 	nameScopeTest{"external member test", "external", "somefunction", "ExternalMember",
-		expectedScopeResult{true, true, parser.NodeTypeTagged, "ExternalMember", NamedScopeValue},
+		expectedScopeResult{true, true, sourceshape.NodeTypeTagged, "ExternalMember", NamedScopeValue},
 	},
 
 	// Resolve "CoolMember" under the function.
 	nameScopeTest{"aliased external member test", "external", "somefunction", "CoolMember",
-		expectedScopeResult{true, true, parser.NodeTypeTagged, "AnotherMember", NamedScopeValue},
+		expectedScopeResult{true, true, sourceshape.NodeTypeTagged, "AnotherMember", NamedScopeValue},
 	},
 
 	// Resolve "CoolMember" under the function.
 	nameScopeTest{"aliased external member test", "external", "somefunction", "CoolMember",
-		expectedScopeResult{true, true, parser.NodeTypeTagged, "AnotherMember", NamedScopeValue},
+		expectedScopeResult{true, true, sourceshape.NodeTypeTagged, "AnotherMember", NamedScopeValue},
 	},
 
 	// Attempt to resolve "a" under the resolve statement.
 	nameScopeTest{"resolved value under source test", "basic", "resolvesource", "a",
-		expectedScopeResult{false, false, parser.NodeTypeTagged, "", NamedScopeVariable},
+		expectedScopeResult{false, false, sourceshape.NodeTypeTagged, "", NamedScopeVariable},
 	},
 
 	// Attempt to resolve "b" under the resolve statement.
 	nameScopeTest{"resolved rejection under source test", "basic", "resolvesource", "b",
-		expectedScopeResult{false, false, parser.NodeTypeTagged, "", NamedScopeVariable},
+		expectedScopeResult{false, false, sourceshape.NodeTypeTagged, "", NamedScopeVariable},
 	},
 
 	// Resolve "a" under a statement after the resolve statement.
 	nameScopeTest{"resolved value after source test", "basic", "afterresolve", "a",
-		expectedScopeResult{true, false, parser.NodeTypeAssignedValue, "a", NamedScopeValue},
+		expectedScopeResult{true, false, sourceshape.NodeTypeAssignedValue, "a", NamedScopeValue},
 	},
 
 	// Attempt to resolve "b" under the resolve statement.
 	nameScopeTest{"resolved rejection after source test", "basic", "afterresolve", "b",
-		expectedScopeResult{true, false, parser.NodeTypeAssignedValue, "b", NamedScopeValue},
+		expectedScopeResult{true, false, sourceshape.NodeTypeAssignedValue, "b", NamedScopeValue},
 	},
 
 	// Resolve "doSomething" under function "SomeFunction"
 	nameScopeTest{"same name test", "samename", "somefn", "doSomething",
-		expectedScopeResult{true, false, parser.NodeTypeVariable, "doSomething", NamedScopeMember},
+		expectedScopeResult{true, false, sourceshape.NodeTypeVariable, "doSomething", NamedScopeMember},
 	},
 }
 

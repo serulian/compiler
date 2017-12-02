@@ -10,21 +10,21 @@ import (
 	"strings"
 
 	"github.com/serulian/compiler/compilergraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // FindCommentedNode attempts to find the node in the SRG with the given comment attached.
 func (g *SRG) FindCommentedNode(commentValue string) (compilergraph.GraphNode, bool) {
 	return g.layer.StartQuery(commentValue).
-		In(parser.NodeCommentPredicateValue).
-		In(parser.NodePredicateChild).
+		In(sourceshape.NodeCommentPredicateValue).
+		In(sourceshape.NodePredicateChild).
 		TryGetNode()
 }
 
 // FindComment attempts to find the comment in the SRG with the given value.
 func (g *SRG) FindComment(commentValue string) (SRGComment, bool) {
 	commentNode, ok := g.layer.StartQuery(commentValue).
-		In(parser.NodeCommentPredicateValue).
+		In(sourceshape.NodeCommentPredicateValue).
 		TryGetNode()
 
 	if !ok {
@@ -36,14 +36,14 @@ func (g *SRG) FindComment(commentValue string) (SRGComment, bool) {
 
 // AllComments returns an iterator over all the comment nodes found in the SRG.
 func (g *SRG) AllComments() compilergraph.NodeIterator {
-	return g.layer.StartQuery().Has(parser.NodeCommentPredicateValue).BuildNodeIterator()
+	return g.layer.StartQuery().Has(sourceshape.NodeCommentPredicateValue).BuildNodeIterator()
 }
 
 // getDocumentationForNode returns the documentation attached to the given node, if any.
 func (g *SRG) getDocumentationForNode(node compilergraph.GraphNode) (SRGDocumentation, bool) {
 	cit := node.StartQuery().
-		Out(parser.NodePredicateChild).
-		Has(parser.NodeCommentPredicateValue).
+		Out(sourceshape.NodePredicateChild).
+		Has(sourceshape.NodeCommentPredicateValue).
 		BuildNodeIterator()
 
 	var docComment *SRGComment
@@ -71,8 +71,8 @@ func (g *SRG) getDocumentationForNode(node compilergraph.GraphNode) (SRGDocument
 func (g *SRG) getDocumentationCommentForNode(node compilergraph.GraphNode) (SRGComment, bool) {
 	// The documentation on a node is its *last* comment.
 	cit := node.StartQuery().
-		Out(parser.NodePredicateChild).
-		Has(parser.NodeCommentPredicateValue).
+		Out(sourceshape.NodePredicateChild).
+		Has(sourceshape.NodeCommentPredicateValue).
 		BuildNodeIterator()
 
 	var comment SRGComment
@@ -151,7 +151,7 @@ type SRGComment struct {
 
 // kind returns the kind of the comment.
 func (c SRGComment) kind() srgCommentKind {
-	value := c.GraphNode.Get(parser.NodeCommentPredicateValue)
+	value := c.GraphNode.Get(sourceshape.NodeCommentPredicateValue)
 	kind, isValid := getCommentKind(value)
 	if !isValid {
 		panic("Invalid comment kind")
@@ -167,12 +167,12 @@ func (c SRGComment) IsDocComment() bool {
 
 // ParentNode returns the node that contains this comment.
 func (c SRGComment) ParentNode() compilergraph.GraphNode {
-	return c.GraphNode.GetIncomingNode(parser.NodePredicateChild)
+	return c.GraphNode.GetIncomingNode(sourceshape.NodePredicateChild)
 }
 
 // Contents returns the trimmed contents of the comment.
 func (c SRGComment) Contents() string {
-	value := c.GraphNode.Get(parser.NodeCommentPredicateValue)
+	value := c.GraphNode.Get(sourceshape.NodeCommentPredicateValue)
 	return getTrimmedCommentContentsString(value)
 }
 
