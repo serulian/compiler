@@ -12,7 +12,7 @@ import (
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/typegraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 var _ = fmt.Printf
@@ -20,30 +20,30 @@ var _ = fmt.Printf
 type exprModifier func(codedom.Expression) codedom.Expression
 
 var operatorMap = map[compilergraph.TaggedValue]string{
-	parser.NodeBinaryAddExpression:      "+",
-	parser.NodeBinarySubtractExpression: "-",
-	parser.NodeBinaryDivideExpression:   "/",
-	parser.NodeBinaryMultiplyExpression: "*",
-	parser.NodeBinaryModuloExpression:   "%",
+	sourceshape.NodeBinaryAddExpression:      "+",
+	sourceshape.NodeBinarySubtractExpression: "-",
+	sourceshape.NodeBinaryDivideExpression:   "/",
+	sourceshape.NodeBinaryMultiplyExpression: "*",
+	sourceshape.NodeBinaryModuloExpression:   "%",
 
-	parser.NodeBitwiseAndExpression:        "&",
-	parser.NodeBitwiseNotExpression:        "~",
-	parser.NodeBitwiseOrExpression:         "|",
-	parser.NodeBitwiseXorExpression:        "^",
-	parser.NodeBitwiseShiftLeftExpression:  "<<",
-	parser.NodeBitwiseShiftRightExpression: ">>",
+	sourceshape.NodeBitwiseAndExpression:        "&",
+	sourceshape.NodeBitwiseNotExpression:        "~",
+	sourceshape.NodeBitwiseOrExpression:         "|",
+	sourceshape.NodeBitwiseXorExpression:        "^",
+	sourceshape.NodeBitwiseShiftLeftExpression:  "<<",
+	sourceshape.NodeBitwiseShiftRightExpression: ">>",
 
-	parser.NodeComparisonEqualsExpression:    "==",
-	parser.NodeComparisonNotEqualsExpression: "!=",
-	parser.NodeComparisonGTEExpression:       ">=",
-	parser.NodeComparisonLTEExpression:       "<=",
-	parser.NodeComparisonGTExpression:        ">",
-	parser.NodeComparisonLTExpression:        "<",
+	sourceshape.NodeComparisonEqualsExpression:    "==",
+	sourceshape.NodeComparisonNotEqualsExpression: "!=",
+	sourceshape.NodeComparisonGTEExpression:       ">=",
+	sourceshape.NodeComparisonLTEExpression:       "<=",
+	sourceshape.NodeComparisonGTExpression:        ">",
+	sourceshape.NodeComparisonLTExpression:        "<",
 }
 
 // buildRootTypeExpression builds the CodeDOM for a root type expression.
 func (db *domBuilder) buildRootTypeExpression(node compilergraph.GraphNode) codedom.Expression {
-	childExprNode := node.GetNode(parser.NodeUnaryExpressionChildExpr)
+	childExprNode := node.GetNode(sourceshape.NodeUnaryExpressionChildExpr)
 	childScope, _ := db.scopegraph.GetScope(childExprNode)
 	childType := childScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
 
@@ -53,13 +53,13 @@ func (db *domBuilder) buildRootTypeExpression(node compilergraph.GraphNode) code
 
 // buildFunctionCall builds the CodeDOM for a function call.
 func (db *domBuilder) buildFunctionCall(node compilergraph.GraphNode) codedom.Expression {
-	childExprNode := node.GetNode(parser.NodeFunctionCallExpressionChildExpr)
+	childExprNode := node.GetNode(sourceshape.NodeFunctionCallExpressionChildExpr)
 	childScope, _ := db.scopegraph.GetScope(childExprNode)
 
 	// Check if the child expression has a static scope. If so, this is a type conversion between
 	// a nominal type and a base type.
 	if childScope.GetKind() == proto.ScopeKind_STATIC {
-		wrappedExprNode := node.GetNode(parser.NodeFunctionCallArgument)
+		wrappedExprNode := node.GetNode(sourceshape.NodeFunctionCallArgument)
 		wrappedExprScope, _ := db.scopegraph.GetScope(wrappedExprNode)
 		wrappedExprType := wrappedExprScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
 
@@ -77,7 +77,7 @@ func (db *domBuilder) buildFunctionCall(node compilergraph.GraphNode) codedom.Ex
 
 	// Collect the expressions for the arguments.
 	ait := node.StartQuery().
-		Out(parser.NodeFunctionCallArgument).
+		Out(sourceshape.NodeFunctionCallArgument).
 		BuildNodeIterator()
 
 	arguments := db.buildExpressions(ait, buildExprCheckNominalShortcutting)
@@ -88,7 +88,7 @@ func (db *domBuilder) buildFunctionCall(node compilergraph.GraphNode) codedom.Ex
 	if isNamed && !namedRef.IsLocal() {
 		member, _ := namedRef.Member()
 
-		if childExprNode.Kind() == parser.NodeNullableMemberAccessExpression {
+		if childExprNode.Kind() == sourceshape.NodeNullableMemberAccessExpression {
 			return codedom.NullableMemberCall(childExpr, member, arguments, node)
 		}
 
@@ -102,7 +102,7 @@ func (db *domBuilder) buildFunctionCall(node compilergraph.GraphNode) codedom.Ex
 // buildSliceExpression builds the CodeDOM for a slicer or indexer expression.
 func (db *domBuilder) buildSliceExpression(node compilergraph.GraphNode) codedom.Expression {
 	// Check if this is a slice vs an index.
-	_, isIndexer := node.TryGetNode(parser.NodeSliceExpressionIndex)
+	_, isIndexer := node.TryGetNode(sourceshape.NodeSliceExpressionIndex)
 	if isIndexer {
 		return db.buildIndexerExpression(node)
 	}
@@ -112,10 +112,10 @@ func (db *domBuilder) buildSliceExpression(node compilergraph.GraphNode) codedom
 
 // buildIndexerExpression builds the CodeDOM for an indexer call.
 func (db *domBuilder) buildIndexerExpression(node compilergraph.GraphNode) codedom.Expression {
-	indexExprNode := node.GetNode(parser.NodeSliceExpressionIndex)
+	indexExprNode := node.GetNode(sourceshape.NodeSliceExpressionIndex)
 	indexExpr := db.buildExpressionWithOption(indexExprNode, buildExprCheckNominalShortcutting)
 
-	childExpr := db.getExpression(node, parser.NodeSliceExpressionChildExpr)
+	childExpr := db.getExpression(node, sourceshape.NodeSliceExpressionChildExpr)
 
 	scope, _ := db.scopegraph.GetScope(node)
 	operator, _ := scope.CalledOperator(db.scopegraph.TypeGraph())
@@ -126,9 +126,9 @@ func (db *domBuilder) buildIndexerExpression(node compilergraph.GraphNode) coded
 
 // buildSlicerExpression builds the CodeDOM for a slice call.
 func (db *domBuilder) buildSlicerExpression(node compilergraph.GraphNode) codedom.Expression {
-	childExpr := db.getExpression(node, parser.NodeSliceExpressionChildExpr)
-	leftExpr := db.getExpressionOrDefault(node, parser.NodeSliceExpressionLeftIndex, codedom.LiteralValue("null", node))
-	rightExpr := db.getExpressionOrDefault(node, parser.NodeSliceExpressionRightIndex, codedom.LiteralValue("null", node))
+	childExpr := db.getExpression(node, sourceshape.NodeSliceExpressionChildExpr)
+	leftExpr := db.getExpressionOrDefault(node, sourceshape.NodeSliceExpressionLeftIndex, codedom.LiteralValue("null", node))
+	rightExpr := db.getExpressionOrDefault(node, sourceshape.NodeSliceExpressionRightIndex, codedom.LiteralValue("null", node))
 
 	scope, _ := db.scopegraph.GetScope(node)
 	operator, _ := scope.CalledOperator(db.scopegraph.TypeGraph())
@@ -139,21 +139,21 @@ func (db *domBuilder) buildSlicerExpression(node compilergraph.GraphNode) codedo
 
 // buildAssertNotNullExpression builds the CodeDOM for an assert not null (expr!) operator.
 func (db *domBuilder) buildAssertNotNullExpression(node compilergraph.GraphNode) codedom.Expression {
-	childExpr := db.getExpression(node, parser.NodeUnaryExpressionChildExpr)
+	childExpr := db.getExpression(node, sourceshape.NodeUnaryExpressionChildExpr)
 	return codedom.RuntimeFunctionCall(codedom.AssertNotNullFunction, []codedom.Expression{childExpr}, node)
 }
 
 // buildNullComparisonExpression builds the CodeDOM for a null comparison (??) operator.
 func (db *domBuilder) buildNullComparisonExpression(node compilergraph.GraphNode) codedom.Expression {
-	leftExpr := db.getExpression(node, parser.NodeBinaryExpressionLeftExpr)
-	rightExpr := db.getExpression(node, parser.NodeBinaryExpressionRightExpr)
+	leftExpr := db.getExpression(node, sourceshape.NodeBinaryExpressionLeftExpr)
+	rightExpr := db.getExpression(node, sourceshape.NodeBinaryExpressionRightExpr)
 	return codedom.BinaryOperation(leftExpr, "??", rightExpr, node)
 }
 
 // buildInCollectionExpression builds the CodeDOM for an in collection operator.
 func (db *domBuilder) buildInCollectionExpression(node compilergraph.GraphNode) codedom.Expression {
-	valueExpr := db.getExpression(node, parser.NodeBinaryExpressionLeftExpr)
-	childExpr := db.getExpression(node, parser.NodeBinaryExpressionRightExpr)
+	valueExpr := db.getExpression(node, sourceshape.NodeBinaryExpressionLeftExpr)
+	childExpr := db.getExpression(node, sourceshape.NodeBinaryExpressionRightExpr)
 
 	scope, _ := db.scopegraph.GetScope(node)
 	operator, _ := scope.CalledOperator(db.scopegraph.TypeGraph())
@@ -163,14 +163,14 @@ func (db *domBuilder) buildInCollectionExpression(node compilergraph.GraphNode) 
 
 // buildIsComparisonExpression builds the CodeDOM for an is comparison operator.
 func (db *domBuilder) buildIsComparisonExpression(node compilergraph.GraphNode) codedom.Expression {
-	generatedLeftExpr := db.getExpression(node, parser.NodeBinaryExpressionLeftExpr)
+	generatedLeftExpr := db.getExpression(node, sourceshape.NodeBinaryExpressionLeftExpr)
 
 	// Check for a `not` subexpression. If found, we invert the check.
 	op := "=="
-	rightExpr := node.GetNode(parser.NodeBinaryExpressionRightExpr)
-	if rightExpr.Kind() == parser.NodeKeywordNotExpression {
+	rightExpr := node.GetNode(sourceshape.NodeBinaryExpressionRightExpr)
+	if rightExpr.Kind() == sourceshape.NodeKeywordNotExpression {
 		op = "!="
-		rightExpr = rightExpr.GetNode(parser.NodeUnaryExpressionChildExpr)
+		rightExpr = rightExpr.GetNode(sourceshape.NodeUnaryExpressionChildExpr)
 	}
 
 	generatedRightExpr := db.buildExpression(rightExpr)
@@ -183,8 +183,8 @@ func (db *domBuilder) buildIsComparisonExpression(node compilergraph.GraphNode) 
 // buildBooleanBinaryExpression builds the CodeDOM for a boolean unary operator.
 func (db *domBuilder) buildBooleanBinaryExpression(node compilergraph.GraphNode, op string) codedom.Expression {
 	boolType := db.scopegraph.TypeGraph().BoolTypeReference()
-	leftExpr := codedom.NominalUnwrapping(db.getExpression(node, parser.NodeBinaryExpressionLeftExpr), boolType, node)
-	rightExpr := codedom.NominalUnwrapping(db.getExpression(node, parser.NodeBinaryExpressionRightExpr), boolType, node)
+	leftExpr := codedom.NominalUnwrapping(db.getExpression(node, sourceshape.NodeBinaryExpressionLeftExpr), boolType, node)
+	rightExpr := codedom.NominalUnwrapping(db.getExpression(node, sourceshape.NodeBinaryExpressionRightExpr), boolType, node)
 	return codedom.NominalWrapping(
 		codedom.BinaryOperation(leftExpr, op, rightExpr, node),
 		db.scopegraph.TypeGraph().BoolType(),
@@ -194,7 +194,7 @@ func (db *domBuilder) buildBooleanBinaryExpression(node compilergraph.GraphNode,
 // buildBooleanUnaryExpression builds the CodeDOM for a native unary operator.
 func (db *domBuilder) buildBooleanUnaryExpression(node compilergraph.GraphNode, op string) codedom.Expression {
 	boolType := db.scopegraph.TypeGraph().BoolTypeReference()
-	childExpr := codedom.NominalUnwrapping(db.getExpression(node, parser.NodeUnaryExpressionChildExpr), boolType, node)
+	childExpr := codedom.NominalUnwrapping(db.getExpression(node, sourceshape.NodeUnaryExpressionChildExpr), boolType, node)
 	return codedom.NominalWrapping(
 		codedom.UnaryOperation(op, childExpr, node),
 		db.scopegraph.TypeGraph().BoolType(),
@@ -203,14 +203,14 @@ func (db *domBuilder) buildBooleanUnaryExpression(node compilergraph.GraphNode, 
 
 // buildNativeBinaryExpression builds the CodeDOM for a native unary operator.
 func (db *domBuilder) buildNativeBinaryExpression(node compilergraph.GraphNode, op string) codedom.Expression {
-	leftExpr := db.getExpression(node, parser.NodeBinaryExpressionLeftExpr)
-	rightExpr := db.getExpression(node, parser.NodeBinaryExpressionRightExpr)
+	leftExpr := db.getExpression(node, sourceshape.NodeBinaryExpressionLeftExpr)
+	rightExpr := db.getExpression(node, sourceshape.NodeBinaryExpressionRightExpr)
 	return codedom.BinaryOperation(leftExpr, op, rightExpr, node)
 }
 
 // buildNativeUnaryExpression builds the CodeDOM for a native unary operator.
 func (db *domBuilder) buildNativeUnaryExpression(node compilergraph.GraphNode, op string) codedom.Expression {
-	childExpr := db.getExpression(node, parser.NodeUnaryExpressionChildExpr)
+	childExpr := db.getExpression(node, sourceshape.NodeUnaryExpressionChildExpr)
 	return codedom.UnaryOperation(op, childExpr, node)
 }
 
@@ -223,10 +223,10 @@ func (db *domBuilder) buildUnaryOperatorExpression(node compilergraph.GraphNode,
 		return db.buildNativeUnaryExpression(node, operatorMap[node.Kind()])
 	}
 
-	childScope, _ := db.scopegraph.GetScope(node.GetNode(parser.NodeUnaryExpressionChildExpr))
+	childScope, _ := db.scopegraph.GetScope(node.GetNode(sourceshape.NodeUnaryExpressionChildExpr))
 	parentType := childScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
 
-	childExpr := db.getExpression(node, parser.NodeUnaryExpressionChildExpr)
+	childExpr := db.getExpression(node, sourceshape.NodeUnaryExpressionChildExpr)
 	callExpr := codedom.MemberCall(codedom.StaticMemberReference(operator, parentType, node), operator, []codedom.Expression{childExpr}, node)
 	if modifier != nil {
 		return modifier(callExpr)
@@ -273,20 +273,20 @@ func (db *domBuilder) buildOptimizedBinaryOperatorExpression(node compilergraph.
 	resultType := db.scopegraph.TypeGraph().BoolTypeReference()
 
 	switch node.Kind() {
-	case parser.NodeComparisonEqualsExpression:
+	case sourceshape.NodeComparisonEqualsExpression:
 		fallthrough
 
-	case parser.NodeComparisonNotEqualsExpression:
+	case sourceshape.NodeComparisonNotEqualsExpression:
 		// Always allowed.
 		break
 
-	case parser.NodeComparisonLTEExpression:
+	case sourceshape.NodeComparisonLTEExpression:
 		fallthrough
-	case parser.NodeComparisonLTExpression:
+	case sourceshape.NodeComparisonLTExpression:
 		fallthrough
-	case parser.NodeComparisonGTEExpression:
+	case sourceshape.NodeComparisonGTEExpression:
 		fallthrough
-	case parser.NodeComparisonGTExpression:
+	case sourceshape.NodeComparisonGTExpression:
 		// Only allowed for number.
 		if !isNumeric {
 			return nil, false
@@ -316,10 +316,10 @@ func (db *domBuilder) buildBinaryOperatorExpression(node compilergraph.GraphNode
 		return db.buildNativeBinaryExpression(node, operatorMap[node.Kind()])
 	}
 
-	leftExpr := db.getExpression(node, parser.NodeBinaryExpressionLeftExpr)
-	rightExpr := db.getExpression(node, parser.NodeBinaryExpressionRightExpr)
+	leftExpr := db.getExpression(node, sourceshape.NodeBinaryExpressionLeftExpr)
+	rightExpr := db.getExpression(node, sourceshape.NodeBinaryExpressionRightExpr)
 
-	leftScope, _ := db.scopegraph.GetScope(node.GetNode(parser.NodeBinaryExpressionLeftExpr))
+	leftScope, _ := db.scopegraph.GetScope(node.GetNode(sourceshape.NodeBinaryExpressionLeftExpr))
 	parentType := leftScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
 
 	optimized, wasOptimized := db.buildOptimizedBinaryOperatorExpression(node, operator, parentType, leftExpr, rightExpr)

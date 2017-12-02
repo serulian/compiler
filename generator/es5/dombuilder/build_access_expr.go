@@ -8,18 +8,18 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/generator/es5/codedom"
 	"github.com/serulian/compiler/graphs/scopegraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // buildMemberAccessExpression builds the CodeDOM for a member access expression.
 func (db *domBuilder) buildMemberAccessExpression(node compilergraph.GraphNode) codedom.Expression {
-	childExpr := node.GetNode(parser.NodeMemberAccessChildExpr)
-	return db.buildNamedAccess(node, node.Get(parser.NodeMemberAccessIdentifier), &childExpr)
+	childExpr := node.GetNode(sourceshape.NodeMemberAccessChildExpr)
+	return db.buildNamedAccess(node, node.Get(sourceshape.NodeMemberAccessIdentifier), &childExpr)
 }
 
 // buildIdentifierExpression builds the CodeDOM for an identifier expression.
 func (db *domBuilder) buildIdentifierExpression(node compilergraph.GraphNode) codedom.Expression {
-	return db.buildNamedAccess(node, node.Get(parser.NodeIdentifierExpressionName), nil)
+	return db.buildNamedAccess(node, node.Get(sourceshape.NodeIdentifierExpressionName), nil)
 }
 
 // buildNamedAccess builds the CodeDOM for a member access expression.
@@ -56,8 +56,8 @@ func (db *domBuilder) buildNamedAccess(node compilergraph.GraphNode, name string
 			// bound under ES5.
 			isAliasedFunctionReference := scope.ResolvedTypeRef(db.scopegraph.TypeGraph()).HasReferredType(db.scopegraph.TypeGraph().FunctionType())
 			if isAliasedFunctionReference {
-				_, underFuncCall := node.TryGetIncomingNode(parser.NodeFunctionCallExpressionChildExpr)
-				_, underSmlCall := node.TryGetIncomingNode(parser.NodeSmlExpressionTypeOrFunction)
+				_, underFuncCall := node.TryGetIncomingNode(sourceshape.NodeFunctionCallExpressionChildExpr)
+				_, underSmlCall := node.TryGetIncomingNode(sourceshape.NodeSmlExpressionTypeOrFunction)
 
 				if !underFuncCall && !underSmlCall {
 					isPromising := db.scopegraph.IsPromisingMember(memberRef, scopegraph.PromisingAccessImplicitGet)
@@ -66,7 +66,7 @@ func (db *domBuilder) buildNamedAccess(node compilergraph.GraphNode, name string
 			}
 
 			// Handle nullable member references with a special case.
-			if node.Kind() == parser.NodeNullableMemberAccessExpression {
+			if node.Kind() == sourceshape.NodeNullableMemberAccessExpression {
 				return codedom.NullableMemberReference(childExpr, memberRef, node)
 			} else {
 				return codedom.MemberReference(childExpr, memberRef, node)
@@ -83,8 +83,8 @@ func (db *domBuilder) buildNamedAccess(node compilergraph.GraphNode, name string
 
 // buildStreamMemberAccessExpression builds the CodeDOM for a stream member access expression (*.)
 func (db *domBuilder) buildStreamMemberAccessExpression(node compilergraph.GraphNode) codedom.Expression {
-	childExpr := db.getExpression(node, parser.NodeMemberAccessChildExpr)
-	memberName := codedom.LiteralValue("'"+node.Get(parser.NodeMemberAccessIdentifier)+"'", node)
+	childExpr := db.getExpression(node, sourceshape.NodeMemberAccessChildExpr)
+	memberName := codedom.LiteralValue("'"+node.Get(sourceshape.NodeMemberAccessIdentifier)+"'", node)
 
 	return codedom.RuntimeFunctionCall(codedom.StreamMemberAccessFunction,
 		[]codedom.Expression{childExpr, memberName},
@@ -94,7 +94,7 @@ func (db *domBuilder) buildStreamMemberAccessExpression(node compilergraph.Graph
 
 // buildCastExpression builds the CodeDOM for a cast expression.
 func (db *domBuilder) buildCastExpression(node compilergraph.GraphNode) codedom.Expression {
-	childExpr := db.getExpression(node, parser.NodeCastExpressionChildExpr)
+	childExpr := db.getExpression(node, sourceshape.NodeCastExpressionChildExpr)
 
 	// Determine the resulting type.
 	scope, _ := db.scopegraph.GetScope(node)
@@ -102,7 +102,7 @@ func (db *domBuilder) buildCastExpression(node compilergraph.GraphNode) codedom.
 
 	// If the resulting type is a structural subtype of the child expression's type, then
 	// we are accessing the automatically composited inner instance.
-	childScope, _ := db.scopegraph.GetScope(node.GetNode(parser.NodeCastExpressionChildExpr))
+	childScope, _ := db.scopegraph.GetScope(node.GetNode(sourceshape.NodeCastExpressionChildExpr))
 	childType := childScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
 
 	if childType.CheckStructuralSubtypeOf(resultingType) {
@@ -121,11 +121,11 @@ func (db *domBuilder) buildCastExpression(node compilergraph.GraphNode) codedom.
 
 // buildGenericSpecifierExpression builds the CodeDOM for a generic specification of a function or type.
 func (db *domBuilder) buildGenericSpecifierExpression(node compilergraph.GraphNode) codedom.Expression {
-	childExpr := db.getExpression(node, parser.NodeGenericSpecifierChildExpr)
+	childExpr := db.getExpression(node, sourceshape.NodeGenericSpecifierChildExpr)
 
 	// Collect the generic types being specified.
 	git := node.StartQuery().
-		Out(parser.NodeGenericSpecifierType).
+		Out(sourceshape.NodeGenericSpecifierType).
 		BuildNodeIterator()
 
 	var genericTypes = make([]codedom.Expression, 0, 2)
