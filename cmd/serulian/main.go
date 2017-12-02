@@ -30,6 +30,7 @@ var (
 	addr                      string
 	verbose                   bool
 	revisionNote              string
+	upgrade                   bool
 )
 
 func disableGC() {
@@ -96,7 +97,7 @@ func main() {
 				os.Exit(-1)
 			}
 
-			if !formatter.Format(args[0], debug) {
+			if !formatter.Format(args[0], upgrade, debug) {
 				os.Exit(-1)
 			}
 		},
@@ -268,6 +269,9 @@ func main() {
 
 	cmdTest.PersistentFlags().StringSliceVar(&vcsDevelopmentDirectories, "vcs-dev-dir", []string{},
 		"If specified, VCS packages without specification will be first checked against this path")
+
+	cmdFormat.PersistentFlags().BoolVarP(&upgrade, "upgrade", "u", false,
+		"If true, older forms of source code syntax are supported for parsing and formatting")
 
 	cmdImports.AddCommand(cmdFreeze)
 	cmdImports.AddCommand(cmdUnfreeze)
