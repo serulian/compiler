@@ -16,12 +16,13 @@ import (
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/packageloader"
+	"github.com/serulian/compiler/sourceshape"
 
 	"github.com/stretchr/testify/assert"
 )
 
 type testNode struct {
-	nodeType   NodeType
+	nodeType   sourceshape.NodeType
 	properties map[string]string
 	children   map[string]*list.List
 }
@@ -56,7 +57,7 @@ func (pt *parserTest) writeTree(value string) {
 	}
 }
 
-func createAstNode(source compilercommon.InputSource, kind NodeType) AstNode {
+func createAstNode(source compilercommon.InputSource, kind sourceshape.NodeType) AstNode {
 	return &testNode{
 		nodeType:   kind,
 		properties: make(map[string]string),
@@ -64,7 +65,7 @@ func createAstNode(source compilercommon.InputSource, kind NodeType) AstNode {
 	}
 }
 
-func (tn *testNode) GetType() NodeType {
+func (tn *testNode) GetType() sourceshape.NodeType {
 	return tn.nodeType
 }
 
@@ -395,24 +396,24 @@ func getParseTree(t *testing.T, currentNode *testNode, indentation int) string {
 
 type parseExpressionTest struct {
 	expressionString string
-	expectedNodeType NodeType
+	expectedNodeType sourceshape.NodeType
 	isOkay           bool
 }
 
 var parseExpressionTests = []parseExpressionTest{
 	// Success tests.
-	parseExpressionTest{"this", NodeThisLiteralExpression, true},
-	parseExpressionTest{"principal", NodePrincipalLiteralExpression, true},
-	parseExpressionTest{"a.b", NodeMemberAccessExpression, true},
-	parseExpressionTest{"a.b.c", NodeMemberAccessExpression, true},
-	parseExpressionTest{"a.b.c.d", NodeMemberAccessExpression, true},
-	parseExpressionTest{"a[1]", NodeSliceExpression, true},
-	parseExpressionTest{"a == b", NodeComparisonEqualsExpression, true},
+	parseExpressionTest{"this", sourceshape.NodeThisLiteralExpression, true},
+	parseExpressionTest{"principal", sourceshape.NodePrincipalLiteralExpression, true},
+	parseExpressionTest{"a.b", sourceshape.NodeMemberAccessExpression, true},
+	parseExpressionTest{"a.b.c", sourceshape.NodeMemberAccessExpression, true},
+	parseExpressionTest{"a.b.c.d", sourceshape.NodeMemberAccessExpression, true},
+	parseExpressionTest{"a[1]", sourceshape.NodeSliceExpression, true},
+	parseExpressionTest{"a == b", sourceshape.NodeComparisonEqualsExpression, true},
 
 	// Failure tests.
-	parseExpressionTest{"a +", NodeTypeError, false},
-	parseExpressionTest{"a ++", NodeTypeError, false},
-	parseExpressionTest{"a....b", NodeTypeError, false},
+	parseExpressionTest{"a +", sourceshape.NodeTypeError, false},
+	parseExpressionTest{"a ++", sourceshape.NodeTypeError, false},
+	parseExpressionTest{"a....b", sourceshape.NodeTypeError, false},
 }
 
 func TestParseExpression(t *testing.T) {
@@ -431,7 +432,7 @@ func TestParseExpression(t *testing.T) {
 			continue
 		}
 
-		if !assert.Equal(t, fmt.Sprintf("%v", index+10), testNode.properties[NodePredicateStartRune], "Mismatch in start rune") {
+		if !assert.Equal(t, fmt.Sprintf("%v", index+10), testNode.properties[sourceshape.NodePredicateStartRune], "Mismatch in start rune") {
 			continue
 		}
 	}
