@@ -9,7 +9,7 @@ import (
 
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/typegraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 var _ = fmt.Printf
@@ -82,18 +82,18 @@ func (sb *scopeBuilder) checkAgentConstruction(node compilergraph.GraphNode,
 	}
 
 	// Ensure the call is directly under a `return` statement.
-	_, directlyUnderReturn := node.TryGetIncomingNode(parser.NodeReturnStatementValue)
+	_, directlyUnderReturn := node.TryGetIncomingNode(sourceshape.NodeReturnStatementValue)
 	if directlyUnderReturn {
 		return true
 	}
 
-	callNode, underCall := node.TryGetIncomingNode(parser.NodeFunctionCallExpressionChildExpr)
+	callNode, underCall := node.TryGetIncomingNode(sourceshape.NodeFunctionCallExpressionChildExpr)
 	if !underCall {
 		sb.decorateWithError(node, "Cannot construct agent '%v' outside a return statement in its own constructor", agentType)
 		return false
 	}
 
-	_, callUnderReturn := callNode.TryGetIncomingNode(parser.NodeReturnStatementValue)
+	_, callUnderReturn := callNode.TryGetIncomingNode(sourceshape.NodeReturnStatementValue)
 	if callUnderReturn {
 		return true
 	}

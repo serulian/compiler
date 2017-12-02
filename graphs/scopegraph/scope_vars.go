@@ -10,7 +10,7 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/typegraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 var _ = fmt.Printf
@@ -24,23 +24,23 @@ const (
 
 // scopeField scopes a field member in the SRG.
 func (sb *scopeBuilder) scopeField(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	return sb.scopeDeclaredValue(node, "Field", noRequiredInitializer, compilergraph.Predicate(parser.NodePredicateTypeFieldDefaultValue), context)
+	return sb.scopeDeclaredValue(node, "Field", noRequiredInitializer, compilergraph.Predicate(sourceshape.NodePredicateTypeFieldDefaultValue), context)
 }
 
 // scopeVariable scopes a variable module member in the SRG.
 func (sb *scopeBuilder) scopeVariable(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	return sb.scopeDeclaredValue(node, "Variable", requiresInitializer, compilergraph.Predicate(parser.NodePredicateTypeFieldDefaultValue), context)
+	return sb.scopeDeclaredValue(node, "Variable", requiresInitializer, compilergraph.Predicate(sourceshape.NodePredicateTypeFieldDefaultValue), context)
 }
 
 // scopeVariableStatement scopes a variable statement in the SRG.
 func (sb *scopeBuilder) scopeVariableStatement(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	return sb.scopeDeclaredValue(node, "Variable", requiresInitializer, compilergraph.Predicate(parser.NodeVariableStatementExpression), context)
+	return sb.scopeDeclaredValue(node, "Variable", requiresInitializer, compilergraph.Predicate(sourceshape.NodeVariableStatementExpression), context)
 }
 
 // getDeclaredVariableType returns the declared type of a variable statement, member or type field (if any).
 func (sb *scopeBuilder) getDeclaredVariableType(node compilergraph.GraphNode) (typegraph.TypeReference, bool) {
 	declaredTypeNode, hasDeclaredType := node.StartQuery().
-		Out(parser.NodeVariableStatementDeclaredType, parser.NodePredicateTypeMemberDeclaredType).
+		Out(sourceshape.NodeVariableStatementDeclaredType, sourceshape.NodePredicateTypeMemberDeclaredType).
 		TryGetNode()
 
 	if !hasDeclaredType {
@@ -78,7 +78,7 @@ func (sb *scopeBuilder) scopeDeclaredValue(node compilergraph.GraphNode, title s
 		return newScope().Valid().AssignableResolvedTypeOf(exprScope).GetScope()
 	}
 
-	varName, hasVarName := node.TryGet(parser.NodeVariableStatementName)
+	varName, hasVarName := node.TryGet(sourceshape.NodeVariableStatementName)
 	if !hasVarName {
 		return newScope().Invalid().GetScope()
 	}

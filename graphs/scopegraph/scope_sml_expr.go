@@ -11,7 +11,7 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/typegraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 var _ = fmt.Printf
@@ -29,7 +29,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 	//     3) A mapping
 	//
 	//  - Parameter #2 (optional) represents the children (contents).
-	typeOrFuncScope := sb.getScopeForPredicate(node, parser.NodeSmlExpressionTypeOrFunction, context)
+	typeOrFuncScope := sb.getScopeForPredicate(node, sourceshape.NodeSmlExpressionTypeOrFunction, context)
 	if !typeOrFuncScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
@@ -50,7 +50,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 
 	case proto.ScopeKind_STATIC:
 		// Type. Ensure it has a Declare constructor.
-		module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
+		module := compilercommon.InputSource(node.Get(sourceshape.NodePredicateSource))
 		staticType := typeOrFuncScope.StaticTypeRef(sb.sg.tdg)
 
 		declareConstructor, rerr := staticType.ResolveAccessibleMember("Declare", module, typegraph.MemberResolutionStatic)
@@ -91,7 +91,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 	// Check for attributes.
 	var isValid = true
 	var resolvedType = declaredType
-	if _, ok := node.TryGetNode(parser.NodeSmlExpressionAttribute); ok || len(parameters) >= 1 {
+	if _, ok := node.TryGetNode(sourceshape.NodeSmlExpressionAttribute); ok || len(parameters) >= 1 {
 		if len(parameters) < 1 {
 			sb.decorateWithError(node, "Declarable function or constructor used in an SML declaration tag with attributes must have a 'props' parameter as parameter #1. Found: %v", functionType)
 			return newScope().Invalid().Resolving(declaredType).GetScope()
@@ -132,7 +132,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 		// At this point we know we have a declarable function used in the tag.
 		// Scope the attributes to match the props type.
 		ait := node.StartQuery().
-			Out(parser.NodeSmlExpressionAttribute).
+			Out(sourceshape.NodeSmlExpressionAttribute).
 			BuildNodeIterator()
 
 		for ait.Next() {
@@ -154,7 +154,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 
 	// Scope decorators.
 	dit := node.StartQuery().
-		Out(parser.NodeSmlExpressionDecorator).
+		Out(sourceshape.NodeSmlExpressionDecorator).
 		BuildNodeIterator()
 
 	for dit.Next() {
@@ -164,7 +164,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 	}
 
 	// Scope the children to match the childs type.
-	if _, ok := node.TryGetNode(parser.NodeSmlExpressionChild); ok || len(parameters) >= 2 {
+	if _, ok := node.TryGetNode(sourceshape.NodeSmlExpressionChild); ok || len(parameters) >= 2 {
 		if len(parameters) < 2 {
 			sb.decorateWithError(node, "Declarable function or constructor used in an SML declaration tag with children must have a 'children' parameter. Found: %v", functionType)
 			return newScope().Invalid().Resolving(resolvedType).GetScope()
@@ -177,7 +177,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 		var childNodes = make([]compilergraph.GraphNode, 0)
 
 		cit := node.StartQuery().
-			Out(parser.NodeSmlExpressionChild).
+			Out(sourceshape.NodeSmlExpressionChild).
 			BuildNodeIterator()
 
 		for cit.Next() {
@@ -269,7 +269,7 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 // scopeSmlDecoratorAttribute scopes a decorator SML expression attribute under a declaration.
 func (sb *scopeBuilder) scopeSmlDecorator(node compilergraph.GraphNode, declaredType typegraph.TypeReference, context scopeContext) (typegraph.TypeReference, bool) {
 	// Resolve the scope of the decorator.
-	decoratorScope := sb.getScopeForPredicate(node, parser.NodeSmlDecoratorPath, context)
+	decoratorScope := sb.getScopeForPredicate(node, sourceshape.NodeSmlDecoratorPath, context)
 	if !decoratorScope.GetIsValid() {
 		return declaredType, false
 	}
@@ -300,7 +300,7 @@ func (sb *scopeBuilder) scopeSmlDecorator(node compilergraph.GraphNode, declared
 	// Scope the attribute value (if any).
 	var attributeValueType = sb.sg.tdg.BoolTypeReference()
 
-	valueNode, hasValueNode := node.TryGetNode(parser.NodeSmlDecoratorValue)
+	valueNode, hasValueNode := node.TryGetNode(sourceshape.NodeSmlDecoratorValue)
 	if hasValueNode {
 		attributeValueScope := sb.getScope(valueNode, context)
 		if !attributeValueScope.GetIsValid() {
@@ -337,7 +337,7 @@ func (sb *scopeBuilder) scopeSmlDecorator(node compilergraph.GraphNode, declared
 
 // scopeSmlNormalAttribute scopes an SML expression attribute under a declaration.
 func (sb *scopeBuilder) scopeSmlAttribute(node compilergraph.GraphNode, propsType typegraph.TypeReference, context scopeContext) (*proto.ScopeInfo, string, bool) {
-	attributeName, hasAttributeName := node.TryGet(parser.NodeSmlAttributeName)
+	attributeName, hasAttributeName := node.TryGet(sourceshape.NodeSmlAttributeName)
 	if !hasAttributeName {
 		return nil, attributeName, false
 	}
@@ -347,7 +347,7 @@ func (sb *scopeBuilder) scopeSmlAttribute(node compilergraph.GraphNode, propsTyp
 	var scopeInfo *proto.ScopeInfo
 
 	if propsType.IsRefToStruct() || propsType.IsRefToClass() {
-		module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
+		module := compilercommon.InputSource(node.Get(sourceshape.NodePredicateSource))
 		resolvedMember, rerr := propsType.ResolveAccessibleMember(attributeName, module, typegraph.MemberResolutionInstance)
 		if rerr != nil {
 			sb.decorateWithError(node, "%v", rerr)
@@ -368,7 +368,7 @@ func (sb *scopeBuilder) scopeSmlAttribute(node compilergraph.GraphNode, propsTyp
 	// Scope the attribute value (if any). If none, then we default to a boolean value.
 	var attributeValueType = sb.sg.tdg.BoolTypeReference()
 
-	valueNode, hasValueNode := node.TryGetNode(parser.NodeSmlAttributeValue)
+	valueNode, hasValueNode := node.TryGetNode(sourceshape.NodeSmlAttributeValue)
 	if hasValueNode {
 		attributeValueScope := sb.getScope(valueNode, context)
 		if !attributeValueScope.GetIsValid() {

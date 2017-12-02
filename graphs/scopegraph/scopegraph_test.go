@@ -14,7 +14,7 @@ import (
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/packageloader"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -1746,7 +1746,7 @@ func TestBuildTransientScope(t *testing.T) {
 		}
 
 		source := compilercommon.InputSource(entrypointFile)
-		startRune := commentNode.GetValue(parser.NodePredicateStartRune).Int()
+		startRune := commentNode.GetValue(sourceshape.NodePredicateStartRune).Int()
 
 		transientNode, parsed := srg.ParseExpression(test.expression, source, startRune)
 		if !assert.True(t, parsed, "Could not parse transient scope expression for %s comment node", test.commentValue) {

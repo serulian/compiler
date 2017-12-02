@@ -11,7 +11,7 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/typegraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 var _ = fmt.Printf
@@ -27,7 +27,7 @@ var makeStream = func(tr typegraph.TypeReference) typegraph.TypeReference {
 // scopeGenericSpecifierExpression scopes a generic specifier in the SRG.
 func (sb *scopeBuilder) scopeGenericSpecifierExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Scope the child expression.
-	childScope := sb.getScopeForPredicate(node, parser.NodeGenericSpecifierChildExpr, context)
+	childScope := sb.getScopeForPredicate(node, sourceshape.NodeGenericSpecifierChildExpr, context)
 	if !childScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
@@ -57,7 +57,7 @@ func (sb *scopeBuilder) scopeGenericSpecifierExpression(node compilergraph.Graph
 	}
 
 	git := node.StartQuery().
-		Out(parser.NodeGenericSpecifierType).
+		Out(sourceshape.NodeGenericSpecifierType).
 		BuildNodeIterator()
 
 	var genericIndex = 0
@@ -121,13 +121,13 @@ func (sb *scopeBuilder) scopeGenericSpecifierExpression(node compilergraph.Graph
 // scopeCastExpression scopes a cast expression in the SRG.
 func (sb *scopeBuilder) scopeCastExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Scope the child expression.
-	childScope := sb.getScopeForPredicate(node, parser.NodeCastExpressionChildExpr, context)
+	childScope := sb.getScopeForPredicate(node, sourceshape.NodeCastExpressionChildExpr, context)
 	if !childScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
 
 	// Resolve the type reference.
-	typeref := sb.sg.srg.GetTypeRef(node.GetNode(parser.NodeCastExpressionType))
+	typeref := sb.sg.srg.GetTypeRef(node.GetNode(sourceshape.NodeCastExpressionType))
 	castType, rerr := sb.sg.ResolveSRGTypeRef(typeref)
 	if rerr != nil {
 		sb.decorateWithError(node, "Invalid cast type found: %v", rerr)
@@ -162,17 +162,17 @@ func (sb *scopeBuilder) scopeCastExpression(node compilergraph.GraphNode, contex
 // scopeStreamMemberAccessExpression scopes a stream member access expression in the SRG.
 func (sb *scopeBuilder) scopeStreamMemberAccessExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Get the scope of the child expression.
-	childScope := sb.getScopeForPredicate(node, parser.NodeMemberAccessChildExpr, context)
+	childScope := sb.getScopeForPredicate(node, sourceshape.NodeMemberAccessChildExpr, context)
 	if !childScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
 
-	memberName, hasMemberName := node.TryGet(parser.NodeMemberAccessIdentifier)
+	memberName, hasMemberName := node.TryGet(sourceshape.NodeMemberAccessIdentifier)
 	if !hasMemberName {
 		return newScope().Invalid().GetScope()
 	}
 
-	module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
+	module := compilercommon.InputSource(node.Get(sourceshape.NodePredicateSource))
 
 	switch childScope.GetKind() {
 	case proto.ScopeKind_VALUE:
@@ -215,17 +215,17 @@ func (sb *scopeBuilder) scopeStreamMemberAccessExpression(node compilergraph.Gra
 // scopeDynamicMemberAccessExpression scopes a dynamic member access expression in the SRG.
 func (sb *scopeBuilder) scopeDynamicMemberAccessExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Get the scope of the child expression.
-	childScope := sb.getScopeForPredicate(node, parser.NodeMemberAccessChildExpr, context)
+	childScope := sb.getScopeForPredicate(node, sourceshape.NodeMemberAccessChildExpr, context)
 	if !childScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
 
-	memberName, hasMemberName := node.TryGet(parser.NodeMemberAccessIdentifier)
+	memberName, hasMemberName := node.TryGet(sourceshape.NodeMemberAccessIdentifier)
 	if !hasMemberName {
 		return newScope().Invalid().GetScope()
 	}
 
-	module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
+	module := compilercommon.InputSource(node.Get(sourceshape.NodePredicateSource))
 
 	scopeMemberAccess := func(childType typegraph.TypeReference, expectStatic bool) proto.ScopeInfo {
 		// If the child type is any, then this operator returns another value of any, regardless of name.
@@ -300,17 +300,17 @@ func (sb *scopeBuilder) scopeDynamicMemberAccessExpression(node compilergraph.Gr
 // scopeNullableMemberAccessExpression scopes a nullable member access expression in the SRG.
 func (sb *scopeBuilder) scopeNullableMemberAccessExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Get the scope of the child expression.
-	childScope := sb.getScopeForPredicate(node, parser.NodeMemberAccessChildExpr, context)
+	childScope := sb.getScopeForPredicate(node, sourceshape.NodeMemberAccessChildExpr, context)
 	if !childScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
 
-	memberName, hasMemberName := node.TryGet(parser.NodeMemberAccessIdentifier)
+	memberName, hasMemberName := node.TryGet(sourceshape.NodeMemberAccessIdentifier)
 	if !hasMemberName {
 		return newScope().Invalid().GetScope()
 	}
 
-	module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
+	module := compilercommon.InputSource(node.Get(sourceshape.NodePredicateSource))
 
 	switch childScope.GetKind() {
 	case proto.ScopeKind_VALUE:
@@ -350,17 +350,17 @@ func (sb *scopeBuilder) scopeNullableMemberAccessExpression(node compilergraph.G
 // scopeMemberAccessExpression scopes a member access expression in the SRG.
 func (sb *scopeBuilder) scopeMemberAccessExpression(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Get the scope of the child expression.
-	childScope := sb.getScopeForPredicate(node, parser.NodeMemberAccessChildExpr, context)
+	childScope := sb.getScopeForPredicate(node, sourceshape.NodeMemberAccessChildExpr, context)
 	if !childScope.GetIsValid() {
 		return newScope().Invalid().GetScope()
 	}
 
-	memberName, hasMemberName := node.TryGet(parser.NodeMemberAccessIdentifier)
+	memberName, hasMemberName := node.TryGet(sourceshape.NodeMemberAccessIdentifier)
 	if !hasMemberName {
 		return newScope().Invalid().GetScope()
 	}
 
-	module := compilercommon.InputSource(node.Get(parser.NodePredicateSource))
+	module := compilercommon.InputSource(node.Get(sourceshape.NodePredicateSource))
 
 	switch childScope.GetKind() {
 

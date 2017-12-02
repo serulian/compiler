@@ -7,12 +7,12 @@ package scopegraph
 import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 )
 
 // scopeImplementedMember scopes an implemented type member.
 func (sb *scopeBuilder) scopeImplementedMember(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
-	if body, hasBody := node.TryGetNode(parser.NodePredicateBody); hasBody {
+	if body, hasBody := node.TryGetNode(sourceshape.NodePredicateBody); hasBody {
 		scope := sb.getScope(body, context)
 		return *scope
 	}

@@ -11,7 +11,7 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/typegraph"
-	"github.com/serulian/compiler/parser"
+	"github.com/serulian/compiler/sourceshape"
 
 	"github.com/cevaris/ordered_map"
 	cmap "github.com/streamrail/concurrent-map"
@@ -69,265 +69,265 @@ func newScopeBuilder(sg *ScopeGraph, applier scopeBuilderApplier) *scopeBuilder 
 func (sb *scopeBuilder) getScopeHandler(node compilergraph.GraphNode) scopeHandler {
 	switch node.Kind() {
 	// Members.
-	case parser.NodeTypeProperty:
+	case sourceshape.NodeTypeProperty:
 		fallthrough
 
-	case parser.NodeTypePropertyBlock:
+	case sourceshape.NodeTypePropertyBlock:
 		fallthrough
 
-	case parser.NodeTypeFunction:
+	case sourceshape.NodeTypeFunction:
 		fallthrough
 
-	case parser.NodeTypeConstructor:
+	case sourceshape.NodeTypeConstructor:
 		fallthrough
 
-	case parser.NodeTypeOperator:
+	case sourceshape.NodeTypeOperator:
 		return sb.scopeImplementedMember
 
-	case parser.NodeTypeVariable:
+	case sourceshape.NodeTypeVariable:
 		return sb.scopeVariable
 
-	case parser.NodeTypeField:
+	case sourceshape.NodeTypeField:
 		return sb.scopeField
 
 	// Statements.
-	case parser.NodeTypeStatementBlock:
+	case sourceshape.NodeTypeStatementBlock:
 		return sb.scopeStatementBlock
 
-	case parser.NodeTypeBreakStatement:
+	case sourceshape.NodeTypeBreakStatement:
 		return sb.scopeBreakStatement
 
-	case parser.NodeTypeContinueStatement:
+	case sourceshape.NodeTypeContinueStatement:
 		return sb.scopeContinueStatement
 
-	case parser.NodeTypeYieldStatement:
+	case sourceshape.NodeTypeYieldStatement:
 		return sb.scopeYieldStatement
 
-	case parser.NodeTypeReturnStatement:
+	case sourceshape.NodeTypeReturnStatement:
 		return sb.scopeReturnStatement
 
-	case parser.NodeTypeRejectStatement:
+	case sourceshape.NodeTypeRejectStatement:
 		return sb.scopeRejectStatement
 
-	case parser.NodeTypeConditionalStatement:
+	case sourceshape.NodeTypeConditionalStatement:
 		return sb.scopeConditionalStatement
 
-	case parser.NodeTypeLoopStatement:
+	case sourceshape.NodeTypeLoopStatement:
 		return sb.scopeLoopStatement
 
-	case parser.NodeTypeWithStatement:
+	case sourceshape.NodeTypeWithStatement:
 		return sb.scopeWithStatement
 
-	case parser.NodeTypeVariableStatement:
+	case sourceshape.NodeTypeVariableStatement:
 		return sb.scopeVariableStatement
 
-	case parser.NodeTypeSwitchStatement:
+	case sourceshape.NodeTypeSwitchStatement:
 		return sb.scopeSwitchStatement
 
-	case parser.NodeTypeMatchStatement:
+	case sourceshape.NodeTypeMatchStatement:
 		return sb.scopeMatchStatement
 
-	case parser.NodeTypeAssignStatement:
+	case sourceshape.NodeTypeAssignStatement:
 		return sb.scopeAssignStatement
 
-	case parser.NodeTypeExpressionStatement:
+	case sourceshape.NodeTypeExpressionStatement:
 		return sb.scopeExpressionStatement
 
-	case parser.NodeTypeNamedValue:
+	case sourceshape.NodeTypeNamedValue:
 		return sb.scopeNamedValue
 
-	case parser.NodeTypeAssignedValue:
+	case sourceshape.NodeTypeAssignedValue:
 		return sb.scopeAssignedValue
 
-	case parser.NodeTypeArrowStatement:
+	case sourceshape.NodeTypeArrowStatement:
 		return sb.scopeArrowStatement
 
-	case parser.NodeTypeResolveStatement:
+	case sourceshape.NodeTypeResolveStatement:
 		return sb.scopeResolveStatement
 
 	// Await expression.
-	case parser.NodeTypeAwaitExpression:
+	case sourceshape.NodeTypeAwaitExpression:
 		return sb.scopeAwaitExpression
 
 	// SML expression.
-	case parser.NodeTypeSmlExpression:
+	case sourceshape.NodeTypeSmlExpression:
 		return sb.scopeSmlExpression
 
-	case parser.NodeTypeSmlText:
+	case sourceshape.NodeTypeSmlText:
 		return sb.scopeSmlText
 
 	// Flow expressions.
-	case parser.NodeTypeConditionalExpression:
+	case sourceshape.NodeTypeConditionalExpression:
 		return sb.scopeConditionalExpression
 
-	case parser.NodeTypeLoopExpression:
+	case sourceshape.NodeTypeLoopExpression:
 		return sb.scopeLoopExpression
 
 	// Access expressions.
-	case parser.NodeCastExpression:
+	case sourceshape.NodeCastExpression:
 		return sb.scopeCastExpression
 
-	case parser.NodeMemberAccessExpression:
+	case sourceshape.NodeMemberAccessExpression:
 		return sb.scopeMemberAccessExpression
 
-	case parser.NodeNullableMemberAccessExpression:
+	case sourceshape.NodeNullableMemberAccessExpression:
 		return sb.scopeNullableMemberAccessExpression
 
-	case parser.NodeDynamicMemberAccessExpression:
+	case sourceshape.NodeDynamicMemberAccessExpression:
 		return sb.scopeDynamicMemberAccessExpression
 
-	case parser.NodeStreamMemberAccessExpression:
+	case sourceshape.NodeStreamMemberAccessExpression:
 		return sb.scopeStreamMemberAccessExpression
 
 	// Operator expressions.
-	case parser.NodeDefineRangeExpression:
+	case sourceshape.NodeDefineRangeExpression:
 		return sb.scopeDefineRangeExpression
 
-	case parser.NodeDefineExclusiveRangeExpression:
+	case sourceshape.NodeDefineExclusiveRangeExpression:
 		return sb.scopeDefineExclusiveRangeExpression
 
-	case parser.NodeSliceExpression:
+	case sourceshape.NodeSliceExpression:
 		return sb.scopeSliceExpression
 
-	case parser.NodeBitwiseXorExpression:
+	case sourceshape.NodeBitwiseXorExpression:
 		return sb.scopeBitwiseXorExpression
 
-	case parser.NodeBitwiseOrExpression:
+	case sourceshape.NodeBitwiseOrExpression:
 		return sb.scopeBitwiseOrExpression
 
-	case parser.NodeBitwiseAndExpression:
+	case sourceshape.NodeBitwiseAndExpression:
 		return sb.scopeBitwiseAndExpression
 
-	case parser.NodeBitwiseShiftLeftExpression:
+	case sourceshape.NodeBitwiseShiftLeftExpression:
 		return sb.scopeBitwiseShiftLeftExpression
 
-	case parser.NodeBitwiseShiftRightExpression:
+	case sourceshape.NodeBitwiseShiftRightExpression:
 		return sb.scopeBitwiseShiftRightExpression
 
-	case parser.NodeBitwiseNotExpression:
+	case sourceshape.NodeBitwiseNotExpression:
 		return sb.scopeBitwiseNotExpression
 
-	case parser.NodeBinaryAddExpression:
+	case sourceshape.NodeBinaryAddExpression:
 		return sb.scopeBinaryAddExpression
 
-	case parser.NodeBinarySubtractExpression:
+	case sourceshape.NodeBinarySubtractExpression:
 		return sb.scopeBinarySubtractExpression
 
-	case parser.NodeBinaryMultiplyExpression:
+	case sourceshape.NodeBinaryMultiplyExpression:
 		return sb.scopeBinaryMultiplyExpression
 
-	case parser.NodeBinaryDivideExpression:
+	case sourceshape.NodeBinaryDivideExpression:
 		return sb.scopeBinaryDivideExpression
 
-	case parser.NodeBinaryModuloExpression:
+	case sourceshape.NodeBinaryModuloExpression:
 		return sb.scopeBinaryModuloExpression
 
-	case parser.NodeBooleanAndExpression:
+	case sourceshape.NodeBooleanAndExpression:
 		return sb.scopeBooleanBinaryExpression
 
-	case parser.NodeBooleanOrExpression:
+	case sourceshape.NodeBooleanOrExpression:
 		return sb.scopeBooleanBinaryExpression
 
-	case parser.NodeBooleanNotExpression:
+	case sourceshape.NodeBooleanNotExpression:
 		return sb.scopeBooleanUnaryExpression
 
-	case parser.NodeKeywordNotExpression:
+	case sourceshape.NodeKeywordNotExpression:
 		return sb.scopeKeywordNotExpression
 
-	case parser.NodeComparisonEqualsExpression:
+	case sourceshape.NodeComparisonEqualsExpression:
 		return sb.scopeEqualsExpression
 
-	case parser.NodeComparisonNotEqualsExpression:
+	case sourceshape.NodeComparisonNotEqualsExpression:
 		return sb.scopeEqualsExpression
 
-	case parser.NodeComparisonLTEExpression:
+	case sourceshape.NodeComparisonLTEExpression:
 		return sb.scopeComparisonExpression
 
-	case parser.NodeComparisonLTExpression:
+	case sourceshape.NodeComparisonLTExpression:
 		return sb.scopeComparisonExpression
 
-	case parser.NodeComparisonGTEExpression:
+	case sourceshape.NodeComparisonGTEExpression:
 		return sb.scopeComparisonExpression
 
-	case parser.NodeComparisonGTExpression:
+	case sourceshape.NodeComparisonGTExpression:
 		return sb.scopeComparisonExpression
 
-	case parser.NodeNullComparisonExpression:
+	case sourceshape.NodeNullComparisonExpression:
 		return sb.scopeNullComparisonExpression
 
-	case parser.NodeAssertNotNullExpression:
+	case sourceshape.NodeAssertNotNullExpression:
 		return sb.scopeAssertNotNullExpression
 
-	case parser.NodeIsComparisonExpression:
+	case sourceshape.NodeIsComparisonExpression:
 		return sb.scopeIsComparisonExpression
 
-	case parser.NodeInCollectionExpression:
+	case sourceshape.NodeInCollectionExpression:
 		return sb.scopeInCollectionExpression
 
-	case parser.NodeFunctionCallExpression:
+	case sourceshape.NodeFunctionCallExpression:
 		return sb.scopeFunctionCallExpression
 
-	case parser.NodeGenericSpecifierExpression:
+	case sourceshape.NodeGenericSpecifierExpression:
 		return sb.scopeGenericSpecifierExpression
 
-	case parser.NodeRootTypeExpression:
+	case sourceshape.NodeRootTypeExpression:
 		return sb.scopeRootTypeExpression
 
 	// Literal expressions.
-	case parser.NodeBooleanLiteralExpression:
+	case sourceshape.NodeBooleanLiteralExpression:
 		return sb.scopeBooleanLiteralExpression
 
-	case parser.NodeNumericLiteralExpression:
+	case sourceshape.NodeNumericLiteralExpression:
 		return sb.scopeNumericLiteralExpression
 
-	case parser.NodeStringLiteralExpression:
+	case sourceshape.NodeStringLiteralExpression:
 		return sb.scopeStringLiteralExpression
 
-	case parser.NodeListLiteralExpression:
+	case sourceshape.NodeListLiteralExpression:
 		return sb.scopeListLiteralExpression
 
-	case parser.NodeSliceLiteralExpression:
+	case sourceshape.NodeSliceLiteralExpression:
 		return sb.scopeSliceLiteralExpression
 
-	case parser.NodeMappingLiteralExpression:
+	case sourceshape.NodeMappingLiteralExpression:
 		return sb.scopeMappingLiteralExpression
 
-	case parser.NodeMapLiteralExpression:
+	case sourceshape.NodeMapLiteralExpression:
 		return sb.scopeMapLiteralExpression
 
-	case parser.NodeNullLiteralExpression:
+	case sourceshape.NodeNullLiteralExpression:
 		return sb.scopeNullLiteralExpression
 
-	case parser.NodeThisLiteralExpression:
+	case sourceshape.NodeThisLiteralExpression:
 		return sb.scopeThisLiteralExpression
 
-	case parser.NodePrincipalLiteralExpression:
+	case sourceshape.NodePrincipalLiteralExpression:
 		return sb.scopePrincipalLiteralExpression
 
-	case parser.NodeTypeLambdaExpression:
+	case sourceshape.NodeTypeLambdaExpression:
 		return sb.scopeLambdaExpression
 
-	case parser.NodeValLiteralExpression:
+	case sourceshape.NodeValLiteralExpression:
 		return sb.scopeValLiteralExpression
 
-	case parser.NodeStructuralNewExpression:
+	case sourceshape.NodeStructuralNewExpression:
 		return sb.scopeStructuralNewExpression
 
-	case parser.NodeStructuralNewExpressionEntry:
+	case sourceshape.NodeStructuralNewExpressionEntry:
 		return sb.scopeStructuralNewExpressionEntry
 
 	// Template string.
-	case parser.NodeTaggedTemplateLiteralString:
+	case sourceshape.NodeTaggedTemplateLiteralString:
 		return sb.scopeTaggedTemplateString
 
-	case parser.NodeTypeTemplateString:
+	case sourceshape.NodeTypeTemplateString:
 		return sb.scopeTemplateStringExpression
 
 	// Named expressions.
-	case parser.NodeTypeIdentifierExpression:
+	case sourceshape.NodeTypeIdentifierExpression:
 		return sb.scopeIdentifierExpression
 
-	case parser.NodeTypeError:
+	case sourceshape.NodeTypeError:
 		return sb.scopeError
 
 	default:
