@@ -13,9 +13,9 @@ import (
 )
 
 // Parse performs parsing of the given input string and returns the root AST node.
-func Parse(builder shared.NodeBuilder, importReporter packageloader.ImportHandler, source compilercommon.InputSource, input string) shared.AstNode {
+func Parse(builder shared.NodeBuilder, importReporter packageloader.ImportHandler, source compilercommon.InputSource, input string) (shared.AstNode, bool) {
 	p := buildParser(builder, importReporter, source, bytePosition(0), input)
-	return p.consumeTopLevel()
+	return p.consumeTopLevel(), p.lastErrorPosition == -1
 }
 
 // ParseExpression parses the given string as an expression.

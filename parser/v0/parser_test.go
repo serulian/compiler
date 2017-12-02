@@ -333,7 +333,7 @@ func TestParser(t *testing.T) {
 			}
 		}
 
-		rootNode := Parse(createAstNode, reportImport, compilercommon.InputSource(test.name), test.input())
+		rootNode, _ := Parse(createAstNode, reportImport, compilercommon.InputSource(test.name), test.input())
 		parseTree := getParseTree(t, (rootNode).(*testNode), 0)
 		assert := assert.New(t)
 
