@@ -27,3 +27,6 @@ cmd/serulian/serulian
 releases/*
 node_modules
 node_modules/*
+
+.vscode/*
+yarn.lock
