@@ -772,15 +772,17 @@ func (sf *sourceFormatter) emitInlineSmlAttribute(node formatterNode) {
 func (sf *sourceFormatter) emitSmlDecorator(node formatterNode) {
 	sf.append("@")
 	sf.emitNode(node.getChild(sourceshape.NodeSmlDecoratorPath))
-	sf.append("=")
+	if node.hasChild(sourceshape.NodeSmlDecoratorValue) {
+		sf.append("=")
 
-	value := node.getChild(sourceshape.NodeSmlDecoratorValue)
-	if value.GetType() == sourceshape.NodeStringLiteralExpression {
-		sf.emitNode(value)
-	} else {
-		sf.append("{")
-		sf.emitNode(value)
-		sf.append("}")
+		value := node.getChild(sourceshape.NodeSmlDecoratorValue)
+		if value.GetType() == sourceshape.NodeStringLiteralExpression {
+			sf.emitNode(value)
+		} else {
+			sf.append("{")
+			sf.emitNode(value)
+			sf.append("}")
+		}
 	}
 }
 

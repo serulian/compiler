@@ -40,7 +40,7 @@ function SomeFunction() {
 		'andanotherawesomekey': morestuffgoeshere,
 	}} />
 
-	var tenth = <Foo @Bar={someType{foo: 'foo', bar: 'bar'}} />
+	var tenth = <Foo @Bar={someType{foo: 'foo', bar: 'bar'}} @Baz />
 
 	var eleventh = <Foo>
 		<.Bar>Hi!</.Bar>
