@@ -395,7 +395,11 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 		isReadOnly = true
 
 		// Functions have type function<ReturnType>(parameters).
-		returnType, _ := stc.resolvePossibleType(member.Node(), member.ReturnType, graph, reporter)
+		_, hasReturnType := member.ReturnType()
+		var returnType = graph.VoidTypeReference()
+		if hasReturnType {
+			returnType, _ = stc.resolvePossibleType(member.Node(), member.ReturnType, graph, reporter)
+		}
 
 		// Decorate the function with its return type.
 		decorator.CreateReturnable(member.Node(), returnType)
