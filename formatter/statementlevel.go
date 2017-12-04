@@ -126,9 +126,12 @@ func (sf *sourceFormatter) emitYieldStatement(node formatterNode) {
 
 	if _, ok := node.tryGetProperty(sourceshape.NodeYieldStatementBreak); ok {
 		sf.append(" break")
-	} else {
+	} else if node.hasChild(sourceshape.NodeYieldStatementValue) {
 		sf.append(" ")
 		sf.emitNode(node.getChild(sourceshape.NodeYieldStatementValue))
+	} else {
+		sf.append(" in ")
+		sf.emitNode(node.getChild(sourceshape.NodeYieldStatementStreamValue))
 	}
 }
 

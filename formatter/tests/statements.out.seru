@@ -29,4 +29,5 @@ function SomeFunction() {
 
 	yield foo
 	yield break
+	yield in something
 }
