@@ -1,5 +1,5 @@
-var<int> doSomething = 42
+var doSomething int = 42
 
 class Foo {
-	function<void> doSomething() {}
+	function doSomething() {}
 }

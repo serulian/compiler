@@ -1,6 +1,9 @@
 class AnotherClass {}
+
 class ThirdClass {}
+
 class unexportedClass {}
 
-function<void> ExportedFunction() {}
-function<void> unexportedFunction() {}
+function ExportedFunction() {}
+
+function unexportedFunction() {}

@@ -6,5 +6,5 @@ class Boolean {}
 
 @•typealias('port')
 interface Port<T> {
-  function<void> AwaitNext(callback function<void>(T))
+	function AwaitNext(callback function<void>(T))
 }

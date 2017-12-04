@@ -1,16 +1,17 @@
 class TestClass {
-	function<AnotherClass> SomeFunction<T>(foo SomeClass, bar T) {}
-
-	property<SomeClass> SomeProperty {
-		get {}
-	}
+	var SomeVar SomeClass
 
 	constructor BuildMe<T, Q>(first T, second Q) {}
 
-	operator Plus(left SomeClass, right SomeClass) {}
+	function SomeFunction<T>(foo SomeClass, bar T) AnotherClass {}
 
-	var<SomeClass> SomeVar
+	property SomeProperty SomeClass {
+		get {}
+	}
+
+	operator Plus(left SomeClass, right SomeClass) {}
 }
 
 class SomeClass {}
+
 class AnotherClass {}

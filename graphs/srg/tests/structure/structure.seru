@@ -2,21 +2,21 @@ import anotherfile
 from anotherfile import AnotherClass
 from anotherfile import AnotherClass as af
 
-function<void> DoSomething<T>(foo int) {
-    /* foo */foo
+function DoSomething<T>(foo int) {
+	/* foo */foo
 }
 
 class SomeClass<R> {
-    function<void> SomeClassFunction<T, Q>(someParam T) {
-        /* someParam */someParam
-        var<int> someVar = 0
-        /* someParam2 */someParam
+	function SomeClassFunction<T, Q>(someParam T) {
+		/* someParam */someParam
+		var someVar int = 0
+		/* someParam2 */someParam
 
-        var<function<void>()> someLambda = function<void> (aParam int) {
-            /* someParam3 */someParam
-            function<void> (bParam string) {
-                /* someParam4 */someParam
-            }
-        }
-    }
+		var someLambda function<void>() = function(aParam int) {
+			/* someParam3 */someParam
+			function(bParam string) {
+				/* someParam4 */someParam
+			}
+		}
+	}
 }

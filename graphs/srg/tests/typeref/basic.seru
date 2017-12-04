@@ -1,29 +1,41 @@
-from othermod import AnotherClass
 import othermod as om
+from othermod import AnotherClass
 
 class BasicClass {}
 
-class GenericClass<T, Q>{}
+class GenericClass<T, Q> {}
 
-var<BasicClass> basicref
-var<AnotherClass> anotherref
-var<om.AnotherClass> multipart
-var<BasicClass?> nullable
-var<AnotherClass*> stream
-var<om.AnotherClass*> streammultipart
-var<GenericClass<BasicClass, AnotherClass>> generic
-var<InvalidClass> invalid
-var<InvalidClass*> streaminvalid
-var<om.UnknownClass> invalidpath
-var<invalid.AnotherClass> invalidpath2
+var basicref BasicClass
+
+var anotherref AnotherClass
+
+var multipart om.AnotherClass
+
+var nullable BasicClass?
+
+var stream AnotherClass*
+
+var streammultipart om.AnotherClass*
+
+var generic GenericClass<BasicClass, AnotherClass>
+
+var invalid InvalidClass
+
+var streaminvalid InvalidClass*
+
+var invalidpath om.UnknownClass
+
+var invalidpath2 invalid.AnotherClass
 
 class ParentClass<T> {
-	function<void> ParentFunction<Q>() {
-		var<T> typegeneric
-		var<Q> membergeneric
+	function ParentFunction<Q>() {
+		var typegeneric T
+		var membergeneric Q
 	}
 }
 
-var<T> invalidgeneric
-var<stream> somealiasref
-var<bool> anotheraliasref
+var invalidgeneric T
+
+var somealiasref stream
+
+var anotheraliasref bool
