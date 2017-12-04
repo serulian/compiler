@@ -1,9 +1,7 @@
 class SomeClass {
-	operator contains(someValue int) {
-		return true
-	}
+	operator contains(someValue int) { return true }
 }
 
-function<void> DoSomething(sc SomeClass?) {
+function DoSomething(sc SomeClass?) {
 	42 in sc
 }

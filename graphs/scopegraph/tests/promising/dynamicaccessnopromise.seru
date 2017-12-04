@@ -1,11 +1,9 @@
 class SomeClass {
-	property<int> SomeProperty {
-		get {
-			return 42
-		}
+	property SomeProperty int {
+		get { return 42 }
 	}
 }
 
-function<void> DynamicAccess(f any) {
+function DynamicAccess(f any) {
 	f->SomeProperty
 }

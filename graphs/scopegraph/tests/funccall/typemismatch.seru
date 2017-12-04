@@ -1,5 +1,5 @@
-function<void> EmptyFunc(someparam int) {}
+function EmptyFunc(someparam int) {}
 
-function<void> DoSomething() {
+function DoSomething() {
 	EmptyFunc(true)
 }

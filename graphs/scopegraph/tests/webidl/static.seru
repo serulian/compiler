@@ -1,5 +1,5 @@
 import webidl`local` as global
 
-function<void> DoSomething() {
+function DoSomething() {
 	global.SomeType.SomeFunction()
 }

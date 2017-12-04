@@ -1,5 +1,5 @@
 class SomeClass {}
 
-function<void> DoSomething(first string, sc SomeClass) {
+function DoSomething(first string, sc SomeClass) {
 	`${sc}: This is a cool ${first} string`
 }

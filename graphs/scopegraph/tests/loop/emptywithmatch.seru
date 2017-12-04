@@ -1,5 +1,5 @@
-function<int> DoSomething(someValue any) {
-	/* emptyloop */for {		
+function DoSomething(someValue any) int {
+	/* emptyloop */for {
 		match someValue as typedValue {
 			case int:
 				return typedValue

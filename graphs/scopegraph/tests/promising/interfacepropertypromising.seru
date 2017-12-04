@@ -1,14 +1,11 @@
-function<bool> DoSomethingAsync() {
-	return true
-}
+function DoSomethingAsync() bool { return true }
 
 class SomeClass {
-	var<bool> SomeBool = false
+	var SomeBool bool = false
 
-	property<bool> SomeProp {
-		get {
-			return <- DoSomethingAsync()
-		}
+	property SomeProp bool {
+		get { return <- DoSomethingAsync() }
+
 		set {
 			this.SomeBool = val
 		}
@@ -16,9 +13,9 @@ class SomeClass {
 }
 
 interface SomeInterface {
-	property<bool> SomeProp
+	property SomeProp bool
 }
 
-function<any> TEST(si SomeInterface) {
+function TEST(si SomeInterface) any {
 	return si.SomeProp
 }

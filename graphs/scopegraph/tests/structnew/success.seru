@@ -3,12 +3,12 @@ from anotherfile import SomeStruct
 class EmptyClass {}
 
 class NonRequiredClass {
-	var<int?> SomeField
-	var<bool> AnotherField = false
+	var SomeField int?
+	var AnotherField bool = false
 }
 
 class RequiredClass {
-	var<int> SomeField
+	var SomeField int
 }
 
 struct GenericStruct<T> {
@@ -20,35 +20,23 @@ struct WithDefaults {
 	AnotherField string = 'hello world'
 }
 
-function<void> DoSomething() {
-	/* empty */ (EmptyClass{})
+function DoSomething() {
+	/* empty */(EmptyClass{})
 	/* nonempty */(NonRequiredClass{})
 
-	/* nonesome */(NonRequiredClass{
-		SomeField: 2,
-	})
+	/* nonesome */(NonRequiredClass{SomeField: 2})
 
-	/* noneanother */(NonRequiredClass{
-		AnotherField: true,
-	})
+	/* noneanother */(NonRequiredClass{AnotherField: true})
 
 	/* somestruct */(SomeStruct{})
 
-	/* required */(RequiredClass{
-		SomeField: 6,
-	})
+	/* required */(RequiredClass{SomeField: 6})
 
-	var generic = /* generic */(GenericStruct<int>{
-		SomeThing: 42,
-	})
+	var generic = /* generic */(GenericStruct<int>{SomeThing: 42})
 
-	/* genericmodified */(generic{
-		SomeThing: 43,
-	})
+	/* genericmodified */(generic{SomeThing: 43})
 
 	/* withdefaults */(WithDefaults{})
 
-	/* withdefaults2 */(WithDefaults{
-		SomeField: 2,
-	})
+	/* withdefaults2 */(WithDefaults{SomeField: 2})
 }

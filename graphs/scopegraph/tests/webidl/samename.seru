@@ -1,7 +1,7 @@
-from webidl`samename` import something
 from webidl`samename` import Foo
+from webidl`samename` import something
 
-function<void> DoSomething(foo Foo) {
+function DoSomething(foo Foo) {
 	/* global */(something)
 	/* local */(foo.something)
 }

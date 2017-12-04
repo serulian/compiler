@@ -1,5 +1,3 @@
-function<void> SomeFunc() {
-	for 1234 {
-
-	}
+function SomeFunc() {
+	for 1234 {}
 }

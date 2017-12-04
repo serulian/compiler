@@ -1,6 +1,6 @@
 interface SomeInterface {}
 
-agent<SomeInterface> SomeAgent {
+agent SomeAgent for SomeInterface {
 	constructor Build() {
 		principal
 		return SomeAgent.new()

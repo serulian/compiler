@@ -1,6 +1,5 @@
 class SomeClass {
-	function<void> DoSomething() {
-		if 1 {		
-		}
+	function DoSomething() {
+		if 1 {}
 	}
 }

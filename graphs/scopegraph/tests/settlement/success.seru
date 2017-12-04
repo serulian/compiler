@@ -1,12 +1,10 @@
 class SomeError {
-	property<string> Message {
-		get {
-			return 'hello'
-		}
-	}	
+	property Message string {
+		get { return 'hello' }
+	}
 }
 
-function<void> DoSomething() {
+function DoSomething() {
 	if true {
 		return
 	} else {
@@ -14,7 +12,7 @@ function<void> DoSomething() {
 	}
 }
 
-function<int> SomeValue() {
+function SomeValue() int {
 	if true {
 		return 2
 	} else {
@@ -22,6 +20,6 @@ function<int> SomeValue() {
 	}
 }
 
-function<int> AnotherFunction() {
+function AnotherFunction() int {
 	reject SomeError.new()
 }

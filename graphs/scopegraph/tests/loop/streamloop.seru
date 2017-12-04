@@ -1,5 +1,5 @@
-function<void> SomeFunc() {
-	/* loop */ for a in 1 .. 2 {
+function SomeFunc() {
+	/* loop */for a in 1 .. 2 {
 		/* a */a
 	}
 }

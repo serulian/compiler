@@ -1,7 +1,5 @@
 class SomeClass {
-	function<void> DoSomething() {
-		/* conditional */if true {
-			return
-		}
+	function DoSomething() {
+		/* conditional */if true { return }
 	}
 }

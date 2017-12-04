@@ -1,5 +1,5 @@
-function<void> CalledFunction() {}
+function CalledFunction() {}
 
-function<void> CallingFunction() {
+function CallingFunction() {
 	CalledFunction()
 }

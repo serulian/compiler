@@ -1,4 +1,4 @@
-function<void> DoSomething() {
+function DoSomething() {
 	var someVar = 2
 	someVar{}
 }

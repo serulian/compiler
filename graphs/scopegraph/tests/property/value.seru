@@ -1,10 +1,9 @@
 class SomeClass {
-	property<bool> SomeProp {
-		get {
-			return true
-		}
+	property SomeProp bool {
+		get { return true }
+
 		set {
-			/* val */val			
+			/* val */val
 		}
 	}
 }

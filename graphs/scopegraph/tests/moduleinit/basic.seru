@@ -1,6 +1,7 @@
-var<int> bar = 2
-var<int> foo = bar
+var bar int = 2
 
-function<void> DoSomething() {
+var foo int = bar
+
+function DoSomething() {
 	foo
 }

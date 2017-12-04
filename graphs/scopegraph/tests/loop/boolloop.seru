@@ -1,5 +1,3 @@
-function<void> SomeFunc() {
-	/* loop */ for /* loopexpr */true {
-
-	}
+function SomeFunc() {
+	/* loop */for /* loopexpr */true {}
 }

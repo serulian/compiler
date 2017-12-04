@@ -1,10 +1,10 @@
 class SomeClass {
-	function<void> DoSomething() {
-		var<SomeClass> sc = SomeClass.new()
-		var<ISomeInterface> isi = SomeClass.new()
+	function DoSomething() {
+		var sc SomeClass = SomeClass.new()
+		var isi ISomeInterface = SomeClass.new()
 
-		var<SomeClass?> scn
-		var<ISomeInterface?> isn
+		var scn SomeClass?
+		var isn ISomeInterface?
 
 		/* cnullclass */(scn ?? sc)
 		/* cnullinter */(scn ?? isi)
@@ -15,5 +15,5 @@ class SomeClass {
 }
 
 interface ISomeInterface {
-	function<void> DoSomething()
+	function DoSomething()
 }

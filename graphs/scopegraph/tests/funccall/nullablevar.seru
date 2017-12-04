@@ -1,3 +1,3 @@
-function<void> DoSomething(s function<void>()?) {
+function DoSomething(s function<void>()?) {
 	s()
 }

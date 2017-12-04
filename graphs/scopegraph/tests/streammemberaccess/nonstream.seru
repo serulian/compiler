@@ -1,4 +1,4 @@
-function<void> DoSomething() {
-	var<int> nonstream = 2
+function DoSomething() {
+	var nonstream int = 2
 	nonstream*.something
 }

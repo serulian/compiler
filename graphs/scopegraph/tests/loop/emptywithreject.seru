@@ -1,9 +1,9 @@
 class SomeError {
-	property<string> Message { return '' }
+	property Message string {
+		get { return '' }
+	}
 }
 
-function<int> SomeFunc() {
-	/* emptyloop */ for {
-		reject SomeError.new()
-	}
+function SomeFunc() int {
+	/* emptyloop */for { reject SomeError.new() }
 }

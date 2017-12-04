@@ -1,7 +1,5 @@
-function<int> DoSomethingAsync() {
-  return 42
-}
+function DoSomethingAsync() int { return 42 }
 
-function<void> DoSomething() {
+function DoSomething() {
 	DoSomethingAsync()
 }

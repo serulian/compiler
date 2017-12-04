@@ -1,5 +1,5 @@
 class SomeClass<T> {}
 
-function<void> DoSomething() {
+function DoSomething() {
 	SomeClass*.something
 }

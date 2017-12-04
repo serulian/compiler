@@ -1,4 +1,4 @@
-function<void> DoSomething() {
-	var someVar = /* someVar */function (a int, b bool) {}
+function DoSomething() {
+	var someVar = /* someVar */function(a int, b bool) {}
 	var anotherVar = /* anotherVar */someVar
 }

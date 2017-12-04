@@ -1,6 +1,5 @@
-function<int> SomeValue() {
+function SomeValue() int {
 	if true {
 		return 2
-	} else {
-	}
+	} else {}
 }

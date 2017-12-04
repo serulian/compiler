@@ -1,4 +1,4 @@
-function<void> DoSomething(someValue int) {
+function DoSomething(someValue int) {
 	match someValue {
 		case string:
 			return

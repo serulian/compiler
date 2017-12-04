@@ -1,7 +1,5 @@
-function<void> GenericFunc<T>() {
-	
-}
+function GenericFunc<T>() {}
 
-function<void> DoSomething() {
+function DoSomething() {
 	GenericFunc.someMember
 }

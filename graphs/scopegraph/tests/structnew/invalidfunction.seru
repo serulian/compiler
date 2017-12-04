@@ -1,7 +1,5 @@
-function<int> DoSomething() {
-    return 2
-}
+function DoSomething() int { return 2 }
 
-function<void> TEST() {
-    DoSomething{}
+function TEST() {
+	DoSomething{}
 }

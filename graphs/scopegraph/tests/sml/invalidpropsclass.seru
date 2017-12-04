@@ -1,9 +1,9 @@
 class SomeClass {}
 
-function<int> SomeFunction(props SomeClass, another any) {
+function SomeFunction(props SomeClass, another any) int {
 	return 2
 }
 
-function<void> DoSomething() {
-	<SomeFunction/>
+function DoSomething() {
+	<SomeFunction />
 }

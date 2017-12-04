@@ -1,21 +1,23 @@
 struct SomeType {}
+
 struct AnotherType {}
+
 struct ThirdType {}
 
-struct AnotherTypeEntirely{}
+struct AnotherTypeEntirely {}
 
-function<SomeType> BuildMe(props []{string}, child any) {
+function BuildMe(props []{string}, child any) SomeType {
 	return SomeType{}
 }
 
-function<AnotherType> first(decorated SomeType, value string) {
+function first(decorated SomeType, value string) AnotherType {
 	return AnotherType{}
 }
 
-function<ThirdType> second(decorated AnotherTypeEntirely, value string) {
+function second(decorated AnotherTypeEntirely, value string) ThirdType {
 	return ThirdType{}
 }
 
-function<void> DoSomething() {
-	<BuildMe @first="worst" @second="best"/>
+function DoSomething() {
+	<BuildMe @first="worst" @second="best" />
 }

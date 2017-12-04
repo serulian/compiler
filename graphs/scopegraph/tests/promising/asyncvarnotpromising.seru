@@ -1,9 +1,5 @@
-function<int> DoSomethingAsync() {
-	return 42
-}
+function DoSomethingAsync() int { return 42 }
 
-var<int> SomeVar = <- DoSomethingAsync()
+var SomeVar int = <- DoSomethingAsync()
 
-function<int> TEST() {
-	return SomeVar + 10
-}
+function TEST() int { return SomeVar + 10 }

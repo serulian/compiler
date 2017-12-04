@@ -1,5 +1,5 @@
 class SomeClass {}
 
-function<void> DoSomething(value SomeClass) {
+function DoSomething(value SomeClass) {
 	not value
 }

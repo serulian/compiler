@@ -5,9 +5,8 @@ class SomeClass {
 	}
 }
 
-function<any> TEST() {
+function TEST() any {
 	sc := SomeClass.new()
-	for i in sc..sc {
-	}
+	for i in sc .. sc {}
 	return 1
 }

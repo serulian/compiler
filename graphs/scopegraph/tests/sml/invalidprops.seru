@@ -1,7 +1,7 @@
-function<int> SomeFunction(props int, another any) {
+function SomeFunction(props int, another any) int {
 	return 2
 }
 
-function<void> DoSomething() {
-	<SomeFunction/>
+function DoSomething() {
+	<SomeFunction />
 }

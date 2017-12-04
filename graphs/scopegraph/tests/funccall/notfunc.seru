@@ -1,6 +1,6 @@
 class SomeClass {}
 
-function<void> DoSomething() {
-	var<SomeClass> sc = SomeClass.new()
+function DoSomething() {
+	var sc SomeClass = SomeClass.new()
 	sc()
 }

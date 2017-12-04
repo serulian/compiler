@@ -1,4 +1,4 @@
-function<int*> DoSomething(anotherStream int*) {
+function DoSomething(anotherStream int*) int* {
 	yield 1
 	yield 2
 	yield in anotherStream

@@ -1,11 +1,10 @@
 interface ISomeInterface {}
 
-agent<ISomeInterface> SomeAgent {}
+agent SomeAgent for ISomeInterface {}
 
-class SomeClass with SomeAgent {
-}
+class SomeClass with SomeAgent {}
 
-function<void> DoSomething() {
-	var<SomeClass> scs = SomeClass.new(SomeAgent.new())
+function DoSomething() {
+	var scs SomeClass = SomeClass.new(SomeAgent.new())
 	scs.(SomeAgent)
 }

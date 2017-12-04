@@ -1,5 +1,5 @@
-function<void> EmptyFunc() {}
+function EmptyFunc() {}
 
-function<void> DoSomething() {
+function DoSomething() {
 	EmptyFunc(2)
 }

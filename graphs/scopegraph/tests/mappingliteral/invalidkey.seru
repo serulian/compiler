@@ -1,7 +1,5 @@
 class SomeClass {}
 
-function<void> DoSomething(s SomeClass) {
-	[]{int}{
-		s: 1,
-	}
+function DoSomething(s SomeClass) {
+	[]{int}{s: 1}
 }

@@ -1,8 +1,8 @@
-function<void> DoSomething() {
+function DoSomething() {
 	var someVar = /* varref */(a, b) => true
 	someVar(1, 'hello')
 
-	var<function<bool>(bool, bool)> anotherVar = /* vardeclare */(b, c) => true
+	var anotherVar function<bool>(bool, bool) = /* vardeclare */(b, c) => true
 
 	(/* callref */(b, c) => true)('hello', 'hi')
 

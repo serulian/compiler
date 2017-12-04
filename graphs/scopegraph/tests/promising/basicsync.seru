@@ -1,7 +1,3 @@
-function<int> DoSomething() {
-	return 42
-}
+function DoSomething() int { return 42 }
 
-function<any> TEST() {
-	return DoSomething() == 42
-}
+function TEST() any { return DoSomething() == 42 }

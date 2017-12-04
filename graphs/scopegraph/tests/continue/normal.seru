@@ -1,5 +1,5 @@
 class SomeClass {
-	function<void> DoSomething() {
+	function DoSomething() {
 		for {
 			continue
 			return

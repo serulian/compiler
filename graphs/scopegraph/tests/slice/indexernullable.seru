@@ -1,9 +1,7 @@
 class SomeClass {
-	operator<int> index(value int) {
-		return value
-	}
+	operator index(value int) int { return value }
 }
 
-function<void> DoSomething(sc SomeClass?) {
+function DoSomething(sc SomeClass?) {
 	sc[4]
 }

@@ -2,7 +2,7 @@ class SomeClass {}
 
 type AnotherType : SomeClass {}
 
-function<void> DoSomething(at AnotherType) {
-    var<SomeClass?> sc
-    sc = at
+function DoSomething(at AnotherType) {
+	var sc SomeClass?
+	sc = at
 }

@@ -1,7 +1,5 @@
 class SomeOtherClass {
-	function<int> DoSomething() {
-		/* with */with 2 {
-			return 2
-		}
-	}	
+	function DoSomething() int {
+		/* with */with 2 { return 2 }
+	}
 }

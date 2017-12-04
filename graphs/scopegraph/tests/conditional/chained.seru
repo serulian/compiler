@@ -1,5 +1,5 @@
 class SomeClass {
-	function<int> DoSomething() {
+	function DoSomething() int {
 		/* conditional */if true /* true1block */{
 			return 1
 		} else if false /* true2block */{

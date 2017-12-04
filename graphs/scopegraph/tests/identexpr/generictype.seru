@@ -1,5 +1,5 @@
 class SomeClass<T> {}
 
-function<void> DoSomething() {
-	/* typeref */SomeClass	
+function DoSomething() {
+	/* typeref */SomeClass
 }

@@ -1,7 +1,5 @@
 class SomeClass {
-	function<int> DoSomething() {
-		if true {
-			return 1		
-		}
+	function DoSomething() int {
+		if true { return 1 }
 	}
 }

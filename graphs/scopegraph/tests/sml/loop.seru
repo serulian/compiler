@@ -1,13 +1,11 @@
-function<bool> li(props []{any}, child any) {
+function li(props []{any}, child any) bool {
 	return true
 }
 
-function<bool> ul(props []{any}, child any*) {
+function ul(props []{any}, child any*) bool {
 	return true
 }
 
-function<void> DoSomething(somestream int*) {
-	<ul>{
-		<li>{/* something */something}</li> for something in somestream
-	}</ul>
+function DoSomething(somestream int*) {
+	<ul><li [for something in somestream]>{/* something */something}</li></ul>
 }

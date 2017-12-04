@@ -1,4 +1,4 @@
-function<void> DoSomething(a int?) {
+function DoSomething(a int?) {
 	/* isresult */(a is null)
 
 	if a is not null {
@@ -6,7 +6,7 @@ function<void> DoSomething(a int?) {
 	}
 
 	if !(a is null) {
-		/* aundercheck2 */(a)	
+		/* aundercheck2 */(a)
 	}
 
 	if a is null {

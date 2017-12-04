@@ -1,6 +1,6 @@
 interface SomeInterface {}
 
-agent<SomeInterface> SomeAgent<T> {}
+agent SomeAgent<T> for SomeInterface {}
 
 class SomeClass with SomeAgent<int> {
 	constructor Declare() {

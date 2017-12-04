@@ -4,7 +4,7 @@ class SomeClass<T> {
 	}
 }
 
-function<void> DoSomething() {
+function DoSomething() {
 	var sc = SomeClass<int>.new()
-	/* result */(sc + sc)
+	/* result */sc + sc
 }

@@ -1,10 +1,7 @@
-function<int> DoSomething(arg mapping<string>) {
-    return 2
+function DoSomething(arg mapping<string>) int {
+	return 2
 }
 
-function<void> TEST() {
-    DoSomething{
-        Foo: 'bar',
-        Foo: 'baz',
-    }
+function TEST() {
+	DoSomething{Foo: 'bar', Foo: 'baz'}
 }

@@ -1,6 +1,6 @@
 interface SomeInterface {}
 
-agent<SomeInterface> SomeAgent {}
+agent SomeAgent for SomeInterface {}
 
 class SomeClass with SomeAgent {
 	constructor Declare() {
@@ -8,7 +8,7 @@ class SomeClass with SomeAgent {
 	}
 }
 
-agent<SomeInterface> SomeGenericAgent<T> {
+agent SomeGenericAgent<T> for SomeInterface {
 	constructor Declare() {
 		return SomeGenericAgent<T>.new()
 	}

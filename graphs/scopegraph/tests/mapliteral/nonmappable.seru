@@ -1,7 +1,5 @@
 class SomeClass {}
 
-function<void> DoSomething(sc SomeClass) {
-	var a = {
-		sc: 'foo',
-	}
+function DoSomething(sc SomeClass) {
+	var a = {sc: 'foo'}
 }

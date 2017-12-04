@@ -1,26 +1,24 @@
-function<int> SomeFunction() {
-	return 2
-}
+function SomeFunction() int { return 2 }
 
-function<void> VoidFunction() {}
+function VoidFunction() {}
 
-function<void> DoSomething() {
+function DoSomething() {
 	first := 2
-	/* firstref */(first)
+	/* firstref */first
 
 	second := SomeFunction()
-	/* secondref */(second)
+	/* secondref */second
 
 	thirdresolve, thirdreject := SomeFunction()
-	/* thirdresolveref */(thirdresolve)
-	/* thirdrejectref */(thirdreject)
+	/* thirdresolveref */thirdresolve
+	/* thirdrejectref */thirdreject
 
 	fourthresolve, _ := SomeFunction()
-	/* fourthresolveref */(fourthresolve)
+	/* fourthresolveref */fourthresolve
 
 	_, fifthreject := SomeFunction()
-	/* fifthrejectref */(fifthreject)
+	/* fifthrejectref */fifthreject
 
 	_, voidreject := VoidFunction()
-	/* voidrejectref */(voidreject)
+	/* voidrejectref */voidreject
 }

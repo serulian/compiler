@@ -1,6 +1,6 @@
-function<void> SomeFunc() {
+function SomeFunc() {
 	/* emptyloop */ for {
-
+		
 	}
 	return
 }

@@ -1,15 +1,13 @@
-function<int> DoSomethingAsync() {
-	return 2
-}
+function DoSomethingAsync() int { return 2 }
 
-function<int*> SomeGenerator() {
+function SomeGenerator() int* {
 	yield <- DoSomethingAsync()
 }
 
-function<int*> AnotherGenerator() {
+function AnotherGenerator() int* {
 	yield 42
 }
 
-function<void> TEST() {
+function TEST() {
 	for i in AnotherGenerator() {}
 }

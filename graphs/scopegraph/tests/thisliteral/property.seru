@@ -1,11 +1,10 @@
 class SomeClass {
-	property<bool> SomeProp {
+	property SomeProp bool {
 		get {
 			/* scthis */this
 			return true
 		}
-		set {
-			
-		}
+
+		set {}
 	}
 }

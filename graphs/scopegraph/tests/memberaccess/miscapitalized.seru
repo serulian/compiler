@@ -1,7 +1,7 @@
 class SomeClass {
-	function<void> DoSomething() {}
+	function DoSomething() {}
 }
 
-function<void> DoSomething(sc SomeClass) {
+function DoSomething(sc SomeClass) {
 	sc.doSomething()
 }

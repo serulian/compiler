@@ -2,10 +2,10 @@ struct SomeType {
 	SomeAttribute int
 }
 
-function<int> SomeFunction(props SomeType, child any) {
+function SomeFunction(props SomeType, child any) int {
 	return 2
 }
 
-function<void> DoSomething() {
-	<SomeFunction SomeAttribute="whatever"/>
+function DoSomething() {
+	<SomeFunction SomeAttribute="whatever" />
 }

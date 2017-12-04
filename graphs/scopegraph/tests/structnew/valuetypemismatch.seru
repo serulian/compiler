@@ -1,9 +1,7 @@
 class SomeClass {
-	var<bool> SomeField
+	var SomeField bool
 }
 
-function<void> DoSomething() {
-	SomeClass{
-		SomeField: 2,
-	}
+function DoSomething() {
+	SomeClass{SomeField: 2}
 }

@@ -1,11 +1,11 @@
 class SomeClass<T> {
-	operator<T> slice(start int?, end int?) {
-		var<any> s = ''
+	operator slice(start int?, end int?) T {
+		var s any = ''
 		return s.(T)
 	}
 }
 
-function<void> DoSomething() {
+function DoSomething() {
 	var sc = SomeClass<bool>.new()
 	/* getter */(sc[2:3])
 }

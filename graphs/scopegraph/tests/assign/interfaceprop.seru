@@ -1,7 +1,7 @@
 interface SomeInterface {
-	property<string> SomeProp
+	property SomeProp string
 }
 
-function<void> DoSomething(sp SomeInterface) {
+function DoSomething(sp SomeInterface) {
 	sp.SomeProp = 'hello world!'
 }

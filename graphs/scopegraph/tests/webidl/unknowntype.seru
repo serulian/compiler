@@ -1,4 +1,3 @@
 import webidl`local` as global
 
-function<void> DoSomething(someParam global.UnknownType) {
-}
+function DoSomething(someParam global.UnknownType) {}

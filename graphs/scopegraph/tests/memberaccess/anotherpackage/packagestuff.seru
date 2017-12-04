@@ -1,5 +1,5 @@
 class AnotherClass {}
 
 class ThirdClass {
-	function<void> doSomething() {}
+	function doSomething() {}
 }

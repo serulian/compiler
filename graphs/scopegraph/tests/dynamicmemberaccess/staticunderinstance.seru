@@ -4,7 +4,7 @@ class SomeClass {
 	}
 }
 
-function<void> DoSomething() {
-	var<SomeClass> sc = SomeClass.Build(2)
+function DoSomething() {
+	var sc SomeClass = SomeClass.Build(2)
 	sc->Build
 }

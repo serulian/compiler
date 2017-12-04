@@ -1,7 +1,5 @@
 class SomeClass {}
 
-function<void> DoSomething() {
-	SomeClass{
-		SomeField: foo,
-	}
+function DoSomething() {
+	SomeClass{SomeField: foo}
 }

@@ -1,12 +1,10 @@
 struct SomeStruct {
-    field int
+	field int
 }
 
-function<int> doSomething() {
-    ss := SomeStruct{
-        field: 42,
-    }
+function doSomething() int {
+	ss := SomeStruct{field: 42}
 
-    var<any> ssa = ss
-    return ssa->field.(int)
+	var ssa any = ss
+	return ssa->field.(int)
 }

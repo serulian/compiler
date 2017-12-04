@@ -1,37 +1,20 @@
 class SomeClass {
-	function<string> String() {
-		return 'hey!'
-	}
+	function String() string { return 'hey!' }
 }
 
-function<void> DoSomething() {
+function DoSomething() {
 	/* emptymap */{}
-	/* intmap */{
-		'a': 1,
-		'b': 2,
-	}
+	/* intmap */{'a': 1, 'b': 2}
 
-	/* mixedmap */{
-		'a': 1,
-		'b': true,
-	}
+	/* mixedmap */{'a': 1, 'b': true}
 
-	var<int> a = 2
-	var<bool> b = false
-	var<SomeClass> c = SomeClass.new()
+	var a int = 2
+	var b bool = false
+	var c SomeClass = SomeClass.new()
 
-	/* intkeymap */{
-		a: 1,
-	}
+	/* intkeymap */{a: 1}
 
-	/* mixedkeymap */{
-		a: 1,
-		b: 2,
-	}
+	/* mixedkeymap */{a: 1, b: 2}
 
-	/* mixedkeymap2 */{
-		a: 1,
-		b: 2,
-		c: 3,
-	}
+	/* mixedkeymap2 */{a: 1, b: 2, c: 3}
 }

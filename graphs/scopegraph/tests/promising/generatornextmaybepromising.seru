@@ -1,11 +1,9 @@
-function<int> DoSomethingAsync() {
-	return 2
-}
+function DoSomethingAsync() int { return 2 }
 
-function<int*> SomeGenerator() {
+function SomeGenerator() int* {
 	yield <- DoSomethingAsync()
 }
 
-function<void> TEST(s stream<int>) {
+function TEST(s stream<int>) {
 	s.Next()
 }

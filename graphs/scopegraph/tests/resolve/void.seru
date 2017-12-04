@@ -1,5 +1,5 @@
-function<void> SomeFunction() {}
+function SomeFunction() {}
 
-function<void> AnotherFunction() {
-    foo, _ := SomeFunction()
+function AnotherFunction() {
+	foo, _ := SomeFunction()
 }

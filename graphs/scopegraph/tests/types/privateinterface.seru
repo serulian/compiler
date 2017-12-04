@@ -1,11 +1,11 @@
 interface SomeInterface {
-	function<void> privateMember()
+	function privateMember()
 }
 
 class someClass {
-	function<void> privateMember() {}
+	function privateMember() {}
 }
 
-function<void> DoSomething() {
-	var<SomeInterface> si = someClass.new()
+function DoSomething() {
+	var si SomeInterface = someClass.new()
 }

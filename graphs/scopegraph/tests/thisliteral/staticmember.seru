@@ -1,6 +1,6 @@
 class SomeClass {
 	constructor Build() {
-		var<SomeClass> sc = SomeClass.new()
+		var sc SomeClass = SomeClass.new()
 		this
 		return sc
 	}

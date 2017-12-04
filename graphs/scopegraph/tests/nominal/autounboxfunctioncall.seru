@@ -2,8 +2,8 @@ class SomeClass {}
 
 type SomeType : SomeClass {}
 
-function<void> AnotherFunction(sc SomeClass) {}
+function AnotherFunction(sc SomeClass) {}
 
-function<void> DoSomething(st SomeType) {
+function DoSomething(st SomeType) {
 	AnotherFunction(st)
 }

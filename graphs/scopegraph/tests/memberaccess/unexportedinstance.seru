@@ -1,5 +1,5 @@
 from anotherpackage import ThirdClass
 
-function<void> DoSomething(tc ThirdClass) {
+function DoSomething(tc ThirdClass) {
 	tc.doSomething()
 }

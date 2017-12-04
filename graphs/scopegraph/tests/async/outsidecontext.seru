@@ -1,5 +1,5 @@
-var<int> outside = 2
+var outside int = 2
 
-function<void> DoSomethingAsync() {
-	outside	
+function DoSomethingAsync() {
+	outside
 }

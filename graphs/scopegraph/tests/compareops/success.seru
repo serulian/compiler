@@ -8,7 +8,7 @@ class SomeClass {
 	}
 }
 
-function<void> DoSomething(left SomeClass, right SomeClass) {
+function DoSomething(left SomeClass, right SomeClass) {
 	/* equals */(left == right)
 	/* notequals */(left != right)
 

@@ -1,8 +1,8 @@
-function<void> DoSomething() {
-	/* int1 */(124)
-	/* int2 */(0x14)
-	/* int3 */(-42)
-	/* float1 */(1.24)
-	/* float2 */(124f)
-	/* float3 */(-124f)
+function DoSomething() {
+	/* int1 */124
+	/* int2 */0x14
+	/* int3 */-42
+	/* float1 */1.24
+	/* float2 */124f
+	/* float3 */-124f
 }

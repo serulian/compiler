@@ -1,2 +1,1 @@
-function<int> DoSomething() /* emptyblock */ {
-}
+function DoSomething() int /* emptyblock */{}

@@ -1,11 +1,11 @@
 class SomeClass {
-	function<void> DoSomething() {
+	function DoSomething() {
 		/* scthis */this
 	}
 }
 
 class AnotherClass<T> {
-	function<void> DoSomething() {
+	function DoSomething() {
 		/* acthis */this
 	}
 }

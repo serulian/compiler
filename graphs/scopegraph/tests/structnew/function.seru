@@ -1,19 +1,12 @@
-function<int> SomeFunction(value mapping<string>) {
-    return 42
+function SomeFunction(value mapping<string>) int {
+	return 42
 }
 
-function<bool> AnotherFunction(value mapping<any>) {
-    return true
+function AnotherFunction(value mapping<any>) bool {
+	return true
 }
 
-function<void> DoSomething() {
-    /* call1 */(SomeFunction{
-        Foo: 'bar',
-        Meh: 'baz',
-    })
-
-    /* call2 */(AnotherFunction{
-        Foo: 'bar',
-        Meh: 42,
-    })
+function DoSomething() {
+	/* call1 */(SomeFunction{Foo: 'bar', Meh: 'baz'})
+	/* call2 */(AnotherFunction{Foo: 'bar', Meh: 42})
 }
