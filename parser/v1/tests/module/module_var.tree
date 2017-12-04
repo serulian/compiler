@@ -1,0 +1,32 @@
+NodeTypeFile
+  end-rune = 20
+  input-source = module variable test
+  start-rune = 0
+  child-node =>
+    NodeTypeVariable
+      end-rune = 20
+      input-source = module variable test
+      named = something
+      start-rune = 0
+      typemember-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 16
+          input-source = module variable test
+          start-rune = 14
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 16
+              input-source = module variable test
+              start-rune = 14
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 16
+                  identifieraccess-name = int
+                  input-source = module variable test
+                  start-rune = 14
+      typemember-field-default-value =>
+        NodeNumericLiteralExpression
+          end-rune = 20
+          input-source = module variable test
+          literal-value = 2
+          start-rune = 20

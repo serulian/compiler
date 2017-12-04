@@ -1,0 +1,27 @@
+NodeTypeFile
+  end-rune = 51
+  input-source = variable no type success test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 51
+      input-source = variable no type success test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 51
+          input-source = variable no type success test
+          start-rune = 24
+          block-child =>
+            NodeTypeVariableStatement
+              end-rune = 49
+              input-source = variable no type success test
+              named = someName
+              start-rune = 27
+              var-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 49
+                  identexpr-name = someExpr
+                  input-source = variable no type success test
+                  start-rune = 42

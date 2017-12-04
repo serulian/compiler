@@ -1,0 +1,21 @@
+NodeTypeFile
+  end-rune = 45
+  input-source = labeled statement test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 45
+      input-source = labeled statement test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 45
+          input-source = labeled statement test
+          start-rune = 24
+          block-child =>
+            NodeTypeReturnStatement
+              end-rune = 43
+              input-source = labeled statement test
+              start-rune = 38
+              statement-label = someLabel

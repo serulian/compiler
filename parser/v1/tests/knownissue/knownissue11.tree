@@ -1,0 +1,42 @@
+NodeTypeFile
+  end-rune = 41
+  input-source = known issue 11 test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 41
+      input-source = known issue 11 test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 41
+          input-source = known issue 11 test
+          start-rune = 23
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 40
+              input-source = known issue 11 test
+              start-rune = 26
+              expr-statement-expr =>
+                NodeNullComparisonExpression
+                  end-rune = 39
+                  input-source = known issue 11 test
+                  start-rune = 26
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 28
+                      identexpr-name = foo
+                      input-source = known issue 11 test
+                      start-rune = 26
+                  binary-expression-right =>
+                    NodeStructuralNewExpression
+                      end-rune = 40
+                      input-source = known issue 11 test
+                      start-rune = 33
+                      structural-new-type-expr =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 35
+                          identexpr-name = Bar
+                          input-source = known issue 11 test
+                          start-rune = 33

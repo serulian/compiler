@@ -1,0 +1,50 @@
+NodeTypeFile
+  end-rune = 40
+  input-source = multiple access expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 40
+      input-source = multiple access expr test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 40
+          input-source = multiple access expr test
+          start-rune = 24
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 39
+              input-source = multiple access expr test
+              start-rune = 27
+              expr-statement-expr =>
+                NodeDynamicMemberAccessExpression
+                  end-rune = 38
+                  input-source = multiple access expr test
+                  member-access-identifier = e
+                  start-rune = 27
+                  member-access-expr =>
+                    NodeStreamMemberAccessExpression
+                      end-rune = 35
+                      input-source = multiple access expr test
+                      member-access-identifier = d
+                      start-rune = 27
+                      member-access-expr =>
+                        NodeNullableMemberAccessExpression
+                          end-rune = 32
+                          input-source = multiple access expr test
+                          member-access-identifier = c
+                          start-rune = 27
+                          member-access-expr =>
+                            NodeMemberAccessExpression
+                              end-rune = 29
+                              input-source = multiple access expr test
+                              member-access-identifier = b
+                              start-rune = 27
+                              member-access-expr =>
+                                NodeTypeIdentifierExpression
+                                  end-rune = 27
+                                  identexpr-name = a
+                                  input-source = multiple access expr test
+                                  start-rune = 27

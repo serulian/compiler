@@ -1,0 +1,5 @@
+struct SomeStruct {
+	SomeField int					`name:"somefield"`
+	AnotherField string				`foo:"anotherfield" bar:"something"`
+	ThirdField AnotherStruct<int>
+}

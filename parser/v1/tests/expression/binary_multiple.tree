@@ -1,0 +1,92 @@
+NodeTypeFile
+  end-rune = 53
+  input-source = multiple binary expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 53
+      input-source = multiple binary expr test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 53
+          input-source = multiple binary expr test
+          start-rune = 24
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 52
+              input-source = multiple binary expr test
+              start-rune = 27
+              expr-statement-expr =>
+                NodeBinaryAddExpression
+                  end-rune = 51
+                  input-source = multiple binary expr test
+                  start-rune = 27
+                  binary-expression-left =>
+                    NodeBinaryAddExpression
+                      end-rune = 39
+                      input-source = multiple binary expr test
+                      start-rune = 27
+                      binary-expression-left =>
+                        NodeBinarySubtractExpression
+                          end-rune = 35
+                          input-source = multiple binary expr test
+                          start-rune = 27
+                          binary-expression-left =>
+                            NodeBinaryDivideExpression
+                              end-rune = 31
+                              input-source = multiple binary expr test
+                              start-rune = 27
+                              binary-expression-left =>
+                                NodeTypeIdentifierExpression
+                                  end-rune = 27
+                                  identexpr-name = a
+                                  input-source = multiple binary expr test
+                                  start-rune = 27
+                              binary-expression-right =>
+                                NodeTypeIdentifierExpression
+                                  end-rune = 31
+                                  identexpr-name = b
+                                  input-source = multiple binary expr test
+                                  start-rune = 31
+                          binary-expression-right =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 35
+                              identexpr-name = c
+                              input-source = multiple binary expr test
+                              start-rune = 35
+                      binary-expression-right =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 39
+                          identexpr-name = d
+                          input-source = multiple binary expr test
+                          start-rune = 39
+                  binary-expression-right =>
+                    NodeBinaryModuloExpression
+                      end-rune = 51
+                      input-source = multiple binary expr test
+                      start-rune = 43
+                      binary-expression-left =>
+                        NodeBinaryMultiplyExpression
+                          end-rune = 47
+                          input-source = multiple binary expr test
+                          start-rune = 43
+                          binary-expression-left =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 43
+                              identexpr-name = e
+                              input-source = multiple binary expr test
+                              start-rune = 43
+                          binary-expression-right =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 47
+                              identexpr-name = f
+                              input-source = multiple binary expr test
+                              start-rune = 47
+                      binary-expression-right =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 51
+                          identexpr-name = g
+                          input-source = multiple binary expr test
+                          start-rune = 51

@@ -1,0 +1,80 @@
+NodeTypeFile
+  end-rune = 79
+  input-source = basic class operator with return type test
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 79
+      input-source = basic class operator with return type test
+      named = SomeClass
+      start-rune = 0
+      type-member =>
+        NodeTypeOperator
+          end-rune = 78
+          input-source = basic class operator with return type test
+          operator-named = Plus
+          start-rune = 19
+          definition-body =>
+            NodeTypeStatementBlock
+              end-rune = 78
+              input-source = basic class operator with return type test
+              start-rune = 76
+          typemember-declared-type =>
+            NodeTypeTypeReference
+              end-rune = 74
+              input-source = basic class operator with return type test
+              start-rune = 66
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 74
+                  input-source = basic class operator with return type test
+                  start-rune = 66
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 74
+                      identifieraccess-name = SomeClass
+                      input-source = basic class operator with return type test
+                      start-rune = 66
+          typemember-parameter =>
+            NodeTypeParameter
+              end-rune = 46
+              input-source = basic class operator with return type test
+              named = left
+              start-rune = 33
+              parameter-type =>
+                NodeTypeTypeReference
+                  end-rune = 46
+                  input-source = basic class operator with return type test
+                  start-rune = 38
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 46
+                      input-source = basic class operator with return type test
+                      start-rune = 38
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 46
+                          identifieraccess-name = SomeClass
+                          input-source = basic class operator with return type test
+                          start-rune = 38
+            NodeTypeParameter
+              end-rune = 63
+              input-source = basic class operator with return type test
+              named = right
+              start-rune = 49
+              parameter-type =>
+                NodeTypeTypeReference
+                  end-rune = 63
+                  input-source = basic class operator with return type test
+                  start-rune = 55
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 63
+                      input-source = basic class operator with return type test
+                      start-rune = 55
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 63
+                          identifieraccess-name = SomeClass
+                          input-source = basic class operator with return type test
+                          start-rune = 55

@@ -1,0 +1,10 @@
+NodeTypeFile
+  end-rune = 18
+  input-source = basic formatted class test
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 18
+      input-source = basic formatted class test
+      named = SomeClass
+      start-rune = 0

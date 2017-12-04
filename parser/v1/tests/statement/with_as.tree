@@ -1,0 +1,37 @@
+NodeTypeFile
+  end-rune = 56
+  input-source = with as test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 56
+      input-source = with as test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 56
+          input-source = with as test
+          start-rune = 24
+          block-child =>
+            NodeTypeWithStatement
+              end-rune = 54
+              input-source = with as test
+              start-rune = 27
+              named-value =>
+                NodeTypeNamedValue
+                  end-rune = 51
+                  input-source = with as test
+                  named = someName
+                  start-rune = 44
+              with-block =>
+                NodeTypeStatementBlock
+                  end-rune = 54
+                  input-source = with as test
+                  start-rune = 53
+              with-expression =>
+                NodeTypeIdentifierExpression
+                  end-rune = 39
+                  identexpr-name = someExpr
+                  input-source = with as test
+                  start-rune = 32

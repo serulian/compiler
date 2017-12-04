@@ -1,0 +1,54 @@
+NodeTypeFile
+  end-rune = 71
+  input-source = basic class property test
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 71
+      input-source = basic class property test
+      named = SomeClass
+      start-rune = 0
+      type-member =>
+        NodeTypeProperty
+          end-rune = 70
+          input-source = basic class property test
+          named = MyProperty
+          start-rune = 19
+          property-getter =>
+            NodeTypePropertyBlock
+              end-rune = 58
+              input-source = basic class property test
+              propertyblock-type = get
+              start-rune = 52
+              definition-body =>
+                NodeTypeStatementBlock
+                  end-rune = 58
+                  input-source = basic class property test
+                  start-rune = 56
+          property-setter =>
+            NodeTypePropertyBlock
+              end-rune = 67
+              input-source = basic class property test
+              propertyblock-type = set
+              start-rune = 61
+              definition-body =>
+                NodeTypeStatementBlock
+                  end-rune = 67
+                  input-source = basic class property test
+                  start-rune = 65
+          typemember-declared-type =>
+            NodeTypeTypeReference
+              end-rune = 46
+              input-source = basic class property test
+              start-rune = 39
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 46
+                  input-source = basic class property test
+                  start-rune = 39
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 46
+                      identifieraccess-name = SomeType
+                      input-source = basic class property test
+                      start-rune = 39

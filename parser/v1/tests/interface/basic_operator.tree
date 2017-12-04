@@ -1,0 +1,80 @@
+NodeTypeFile
+  end-rune = 115
+  input-source = basic interface operator test
+  start-rune = 0
+  child-node =>
+    NodeTypeInterface
+      end-rune = 115
+      input-source = basic interface operator test
+      named = ISomeInterface
+      start-rune = 0
+      type-member =>
+        NodeTypeOperator
+          end-rune = 87
+          input-source = basic interface operator test
+          operator-named = Plus
+          start-rune = 28
+          definition-body =>
+            NodeTypeStatementBlock
+              end-rune = 87
+              input-source = basic interface operator test
+              start-rune = 85
+          typemember-parameter =>
+            NodeTypeParameter
+              end-rune = 60
+              input-source = basic interface operator test
+              named = left
+              start-rune = 42
+              parameter-type =>
+                NodeTypeTypeReference
+                  end-rune = 60
+                  input-source = basic interface operator test
+                  start-rune = 47
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 60
+                      input-source = basic interface operator test
+                      start-rune = 47
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 60
+                          identifieraccess-name = ISomeInterface
+                          input-source = basic interface operator test
+                          start-rune = 47
+            NodeTypeParameter
+              end-rune = 82
+              input-source = basic interface operator test
+              named = right
+              start-rune = 63
+              parameter-type =>
+                NodeTypeTypeReference
+                  end-rune = 82
+                  input-source = basic interface operator test
+                  start-rune = 69
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 82
+                      input-source = basic interface operator test
+                      start-rune = 69
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 82
+                          identifieraccess-name = ISomeInterface
+                          input-source = basic interface operator test
+                          start-rune = 69
+        NodeTypeOperator
+          end-rune = 114
+          input-source = basic interface operator test
+          operator-named = Index
+          start-rune = 89
+          typemember-parameter =>
+            NodeTypeParameter
+              end-rune = 112
+              input-source = basic interface operator test
+              named = index
+              start-rune = 104
+              parameter-type =>
+                NodeTypeAny
+                  end-rune = 112
+                  input-source = basic interface operator test
+                  start-rune = 110

@@ -1,0 +1,53 @@
+NodeTypeFile
+  end-rune = 51
+  input-source = partial member access test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 51
+      input-source = partial member access test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 51
+          input-source = partial member access test
+          start-rune = 27
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 47
+              input-source = partial member access test
+              start-rune = 33
+              expr-statement-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 35
+                  identexpr-name = foo
+                  input-source = partial member access test
+                  start-rune = 33
+          child-node =>
+            NodeTypeError
+              end-rune = 36
+              error-message = Expected identifier, found token tokenTypeKeyword
+              input-source = partial member access test
+              start-rune = 42
+            NodeTypeError
+              end-rune = 51
+              error-message = Expected end of statement or definition, found: tokenTypeRightBrace
+              input-source = partial member access test
+              start-rune = 52
+      typemember-return-type =>
+        NodeTypeTypeReference
+          end-rune = 25
+          input-source = partial member access test
+          start-rune = 23
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 25
+              input-source = partial member access test
+              start-rune = 23
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 25
+                  identifieraccess-name = int
+                  input-source = partial member access test
+                  start-rune = 23

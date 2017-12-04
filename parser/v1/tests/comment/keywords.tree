@@ -1,0 +1,15 @@
+NodeTypeFile
+  end-rune = 96
+  input-source = comment keywords test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 96
+      input-source = comment keywords test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 96
+          input-source = comment keywords test
+          start-rune = 23

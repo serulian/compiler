@@ -1,0 +1,3 @@
+class SomeClass {
+	function SomeFunction(someParam int, anotherParam A.B.C) SomeType {}
+}

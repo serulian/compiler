@@ -1,0 +1,44 @@
+NodeTypeFile
+  end-rune = 35
+  input-source = basic access expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 35
+      input-source = basic access expr test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 35
+          input-source = basic access expr test
+          start-rune = 24
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 34
+              input-source = basic access expr test
+              start-rune = 27
+              expr-statement-expr =>
+                NodeMemberAccessExpression
+                  end-rune = 33
+                  input-source = basic access expr test
+                  member-access-identifier = d
+                  start-rune = 27
+                  member-access-expr =>
+                    NodeMemberAccessExpression
+                      end-rune = 31
+                      input-source = basic access expr test
+                      member-access-identifier = c
+                      start-rune = 27
+                      member-access-expr =>
+                        NodeMemberAccessExpression
+                          end-rune = 29
+                          input-source = basic access expr test
+                          member-access-identifier = b
+                          start-rune = 27
+                          member-access-expr =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 27
+                              identexpr-name = a
+                              input-source = basic access expr test
+                              start-rune = 27

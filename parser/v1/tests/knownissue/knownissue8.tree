@@ -1,0 +1,64 @@
+NodeTypeFile
+  end-rune = 62
+  input-source = known issue 8 test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 62
+      input-source = known issue 8 test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 62
+          input-source = known issue 8 test
+          start-rune = 23
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 61
+              input-source = known issue 8 test
+              start-rune = 26
+              expr-statement-expr =>
+                NodeFunctionCallExpression
+                  end-rune = 60
+                  input-source = known issue 8 test
+                  start-rune = 26
+                  function-call-argument =>
+                    NodeStringLiteralExpression
+                      end-rune = 59
+                      input-source = known issue 8 test
+                      literal-value = '{"foo": 2}'
+                      start-rune = 48
+                  function-call-expr =>
+                    NodeGenericSpecifierExpression
+                      end-rune = 46
+                      input-source = known issue 8 test
+                      start-rune = 26
+                      generic-specifier-expr =>
+                        NodeMemberAccessExpression
+                          end-rune = 41
+                          input-source = known issue 8 test
+                          member-access-identifier = Parse
+                          start-rune = 26
+                          member-access-expr =>
+                            NodeFunctionCallExpression
+                              end-rune = 35
+                              input-source = known issue 8 test
+                              start-rune = 26
+                              function-call-expr =>
+                                NodeMemberAccessExpression
+                                  end-rune = 33
+                                  input-source = known issue 8 test
+                                  member-access-identifier = Get
+                                  start-rune = 26
+                                  member-access-expr =>
+                                    NodeTypeIdentifierExpression
+                                      end-rune = 29
+                                      identexpr-name = JSON
+                                      input-source = known issue 8 test
+                                      start-rune = 26
+                      generic-specifier-type =>
+                        NodeTypeAny
+                          end-rune = 45
+                          input-source = known issue 8 test
+                          start-rune = 43

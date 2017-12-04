@@ -1,0 +1,7 @@
+class SomeClass {
+
+}
+
+agent SomeAgent for Foo
+
+class ThirdClass {}

@@ -1,0 +1,12 @@
+function SomeFunction() {
+	switch someExpr {
+		case foobar:
+			return
+
+		case barbaz:
+			someExpr
+
+		default:
+			break
+	}
+}

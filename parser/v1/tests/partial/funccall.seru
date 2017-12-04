@@ -1,0 +1,8 @@
+function DoSomething() bool {
+    SomeCall(
+    return true
+}
+
+function AnotherFunction(someParam int) {
+    someParam + 2
+}

@@ -1,0 +1,48 @@
+NodeTypeFile
+  end-rune = 69
+  input-source = generic agent test
+  start-rune = 0
+  child-node =>
+    NodeTypeAgent
+      end-rune = 69
+      input-source = generic agent test
+      named = SomeAgent
+      start-rune = 0
+      agent-principaltypepath =>
+        NodeTypeTypeReference
+          end-rune = 38
+          input-source = generic agent test
+          start-rune = 26
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 38
+              input-source = generic agent test
+              start-rune = 26
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 38
+                  identifieraccess-name = SomeInterface
+                  input-source = generic agent test
+                  start-rune = 26
+      type-generic =>
+        NodeTypeGeneric
+          end-rune = 16
+          input-source = generic agent test
+          named = T
+          start-rune = 16
+        NodeTypeGeneric
+          end-rune = 19
+          input-source = generic agent test
+          named = Q
+          start-rune = 19
+      type-member =>
+        NodeTypeFunction
+          end-rune = 68
+          input-source = generic agent test
+          named = DoSomething
+          start-rune = 43
+          definition-body =>
+            NodeTypeStatementBlock
+              end-rune = 68
+              input-source = generic agent test
+              start-rune = 66

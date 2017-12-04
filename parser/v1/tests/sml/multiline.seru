@@ -1,0 +1,11 @@
+function DoSomething() {
+	<foo bar="baz"
+		 @decorator="foo"
+		 bar={true}
+		 feh="foobar"
+		 @some.other={1 + 2 + 3}
+		 disabled
+		 @enabled>
+		some child
+	</foo>
+}

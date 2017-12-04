@@ -1,0 +1,64 @@
+NodeTypeFile
+  end-rune = 83
+  input-source = basic variable test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 83
+      input-source = basic variable test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 83
+          input-source = basic variable test
+          start-rune = 24
+          block-child =>
+            NodeTypeVariableStatement
+              end-rune = 47
+              input-source = basic variable test
+              named = someName
+              start-rune = 27
+              var-declared-type =>
+                NodeTypeTypeReference
+                  end-rune = 47
+                  input-source = basic variable test
+                  start-rune = 40
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 47
+                      input-source = basic variable test
+                      start-rune = 40
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 47
+                          identifieraccess-name = SomeType
+                          input-source = basic variable test
+                          start-rune = 40
+            NodeTypeVariableStatement
+              end-rune = 81
+              input-source = basic variable test
+              named = someName
+              start-rune = 50
+              var-declared-type =>
+                NodeTypeTypeReference
+                  end-rune = 70
+                  input-source = basic variable test
+                  start-rune = 63
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 70
+                      input-source = basic variable test
+                      start-rune = 63
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 70
+                          identifieraccess-name = SomeType
+                          input-source = basic variable test
+                          start-rune = 63
+              var-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 81
+                  identexpr-name = someExpr
+                  input-source = basic variable test
+                  start-rune = 74

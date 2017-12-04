@@ -1,0 +1,31 @@
+NodeTypeFile
+  end-rune = 39
+  input-source = await expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 39
+      input-source = await expr test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 39
+          input-source = await expr test
+          start-rune = 24
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 38
+              input-source = await expr test
+              start-rune = 27
+              expr-statement-expr =>
+                NodeTypeAwaitExpression
+                  end-rune = 37
+                  input-source = await expr test
+                  start-rune = 30
+                  await-expression-source =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 37
+                      identexpr-name = someExpr
+                      input-source = await expr test
+                      start-rune = 30

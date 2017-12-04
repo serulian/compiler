@@ -1,0 +1,173 @@
+NodeTypeFile
+  end-rune = 139
+  input-source = parens expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 139
+      input-source = parens expr test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 139
+          input-source = parens expr test
+          start-rune = 24
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 39
+              input-source = parens expr test
+              start-rune = 28
+              expr-statement-expr =>
+                NodeBinarySubtractExpression
+                  end-rune = 38
+                  input-source = parens expr test
+                  start-rune = 28
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 28
+                      identexpr-name = a
+                      input-source = parens expr test
+                      start-rune = 28
+                  binary-expression-right =>
+                    NodeBinarySubtractExpression
+                      end-rune = 37
+                      input-source = parens expr test
+                      start-rune = 33
+                      binary-expression-left =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 33
+                          identexpr-name = b
+                          input-source = parens expr test
+                          start-rune = 33
+                      binary-expression-right =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 37
+                          identexpr-name = c
+                          input-source = parens expr test
+                          start-rune = 37
+            NodeTypeExpressionStatement
+              end-rune = 51
+              input-source = parens expr test
+              start-rune = 42
+              expr-statement-expr =>
+                NodeFunctionCallExpression
+                  end-rune = 50
+                  input-source = parens expr test
+                  start-rune = 42
+                  function-call-expr =>
+                    NodeBinaryAddExpression
+                      end-rune = 47
+                      input-source = parens expr test
+                      start-rune = 43
+                      binary-expression-left =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 43
+                          identexpr-name = a
+                          input-source = parens expr test
+                          start-rune = 43
+                      binary-expression-right =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 47
+                          identexpr-name = b
+                          input-source = parens expr test
+                          start-rune = 47
+            NodeTypeExpressionStatement
+              end-rune = 73
+              input-source = parens expr test
+              start-rune = 54
+              expr-statement-expr =>
+                NodeBooleanAndExpression
+                  end-rune = 72
+                  input-source = parens expr test
+                  start-rune = 54
+                  binary-expression-left =>
+                    NodeBooleanOrExpression
+                      end-rune = 64
+                      input-source = parens expr test
+                      start-rune = 55
+                      binary-expression-left =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 57
+                          identexpr-name = foo
+                          input-source = parens expr test
+                          start-rune = 55
+                      binary-expression-right =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 64
+                          identexpr-name = bar
+                          input-source = parens expr test
+                          start-rune = 62
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 72
+                      identexpr-name = baz
+                      input-source = parens expr test
+                      start-rune = 70
+            NodeTypeExpressionStatement
+              end-rune = 89
+              input-source = parens expr test
+              start-rune = 76
+              expr-statement-expr =>
+                NodeFunctionCallExpression
+                  end-rune = 88
+                  input-source = parens expr test
+                  start-rune = 76
+                  function-call-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 85
+                      identexpr-name = something
+                      input-source = parens expr test
+                      start-rune = 77
+            NodeTypeExpressionStatement
+              end-rune = 114
+              input-source = parens expr test
+              start-rune = 92
+              expr-statement-expr =>
+                NodeSliceExpression
+                  end-rune = 113
+                  input-source = parens expr test
+                  start-rune = 92
+                  slice-expr-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 105
+                      identexpr-name = somethingElse
+                      input-source = parens expr test
+                      start-rune = 93
+                  slice-expr-index =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 112
+                      identexpr-name = index
+                      input-source = parens expr test
+                      start-rune = 108
+            NodeTypeExpressionStatement
+              end-rune = 138
+              input-source = parens expr test
+              start-rune = 117
+              expr-statement-expr =>
+                NodeCastExpression
+                  end-rune = 137
+                  input-source = parens expr test
+                  start-rune = 117
+                  cast-expr-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 129
+                      identexpr-name = somethingBad
+                      input-source = parens expr test
+                      start-rune = 118
+                  cast-expr-type =>
+                    NodeTypeTypeReference
+                      end-rune = 136
+                      input-source = parens expr test
+                      start-rune = 133
+                      typereference-path =>
+                        NodeTypeIdentifierPath
+                          end-rune = 136
+                          input-source = parens expr test
+                          start-rune = 133
+                          identifierpath-root =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 136
+                              identifieraccess-name = good
+                              input-source = parens expr test
+                              start-rune = 133

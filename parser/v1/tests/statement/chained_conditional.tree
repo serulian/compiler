@@ -1,0 +1,52 @@
+NodeTypeFile
+  end-rune = 81
+  input-source = chained conditional statement test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 81
+      input-source = chained conditional statement test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 81
+          input-source = chained conditional statement test
+          start-rune = 24
+          block-child =>
+            NodeTypeConditionalStatement
+              end-rune = 79
+              input-source = chained conditional statement test
+              start-rune = 27
+              conditional-block =>
+                NodeTypeStatementBlock
+                  end-rune = 43
+                  input-source = chained conditional statement test
+                  start-rune = 39
+              conditional-else =>
+                NodeTypeConditionalStatement
+                  end-rune = 79
+                  input-source = chained conditional statement test
+                  start-rune = 50
+                  conditional-block =>
+                    NodeTypeStatementBlock
+                      end-rune = 69
+                      input-source = chained conditional statement test
+                      start-rune = 65
+                  conditional-else =>
+                    NodeTypeStatementBlock
+                      end-rune = 79
+                      input-source = chained conditional statement test
+                      start-rune = 76
+                  conditional-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 63
+                      identexpr-name = anotherExpr
+                      input-source = chained conditional statement test
+                      start-rune = 53
+              conditional-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 37
+                  identexpr-name = someExpr
+                  input-source = chained conditional statement test
+                  start-rune = 30

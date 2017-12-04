@@ -1,0 +1,21 @@
+NodeTypeFile
+  end-rune = 44
+  input-source = class constructor no params stest
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 44
+      input-source = class constructor no params stest
+      named = SomeClass
+      start-rune = 0
+      type-member =>
+        NodeTypeConstructor
+          end-rune = 43
+          input-source = class constructor no params stest
+          named = Build
+          start-rune = 19
+          definition-body =>
+            NodeTypeStatementBlock
+              end-rune = 43
+              input-source = class constructor no params stest
+              start-rune = 39

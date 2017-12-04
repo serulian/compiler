@@ -1,0 +1,52 @@
+NodeTypeFile
+  end-rune = 54
+  input-source = yield in statement test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 54
+      input-source = yield in statement test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 54
+          input-source = yield in statement test
+          start-rune = 28
+          block-child =>
+            NodeTypeYieldStatement
+              end-rune = 52
+              input-source = yield in statement test
+              start-rune = 31
+              yield-stream-value =>
+                NodeFunctionCallExpression
+                  end-rune = 52
+                  input-source = yield in statement test
+                  start-rune = 40
+                  function-call-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 50
+                      identexpr-name = DoSomething
+                      input-source = yield in statement test
+                      start-rune = 40
+      typemember-return-type =>
+        NodeTypeStream
+          end-rune = 26
+          input-source = yield in statement test
+          start-rune = 23
+          typereference-inner-type =>
+            NodeTypeTypeReference
+              end-rune = 25
+              input-source = yield in statement test
+              start-rune = 23
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 25
+                  input-source = yield in statement test
+                  start-rune = 23
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 25
+                      identifieraccess-name = int
+                      input-source = yield in statement test
+                      start-rune = 23

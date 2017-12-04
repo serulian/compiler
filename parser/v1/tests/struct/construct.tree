@@ -1,0 +1,91 @@
+NodeTypeFile
+  end-rune = 122
+  input-source = construct struct test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 122
+      input-source = construct struct test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 122
+          input-source = construct struct test
+          start-rune = 23
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 121
+              input-source = construct struct test
+              start-rune = 26
+              expr-statement-expr =>
+                NodeStructuralNewExpression
+                  end-rune = 121
+                  input-source = construct struct test
+                  start-rune = 26
+                  structural-new-entry =>
+                    NodeStructuralNewExpressionEntry
+                      end-rune = 51
+                      input-source = construct struct test
+                      start-rune = 40
+                      structural-new-entry-key = SomeField
+                      structural-new-entry-value =>
+                        NodeNumericLiteralExpression
+                          end-rune = 51
+                          input-source = construct struct test
+                          literal-value = 2
+                          start-rune = 51
+                    NodeStructuralNewExpressionEntry
+                      end-rune = 76
+                      input-source = construct struct test
+                      start-rune = 56
+                      structural-new-entry-key = AnotherField
+                      structural-new-entry-value =>
+                        NodeStringLiteralExpression
+                          end-rune = 76
+                          input-source = construct struct test
+                          literal-value = 'hello'
+                          start-rune = 70
+                    NodeStructuralNewExpressionEntry
+                      end-rune = 116
+                      input-source = construct struct test
+                      start-rune = 81
+                      structural-new-entry-key = ThirdField
+                      structural-new-entry-value =>
+                        NodeStructuralNewExpression
+                          end-rune = 117
+                          input-source = construct struct test
+                          start-rune = 93
+                          structural-new-type-expr =>
+                            NodeGenericSpecifierExpression
+                              end-rune = 110
+                              input-source = construct struct test
+                              start-rune = 93
+                              generic-specifier-expr =>
+                                NodeTypeIdentifierExpression
+                                  end-rune = 105
+                                  identexpr-name = AnotherStruct
+                                  input-source = construct struct test
+                                  start-rune = 93
+                              generic-specifier-type =>
+                                NodeTypeTypeReference
+                                  end-rune = 109
+                                  input-source = construct struct test
+                                  start-rune = 107
+                                  typereference-path =>
+                                    NodeTypeIdentifierPath
+                                      end-rune = 109
+                                      input-source = construct struct test
+                                      start-rune = 107
+                                      identifierpath-root =>
+                                        NodeTypeIdentifierAccess
+                                          end-rune = 109
+                                          identifieraccess-name = int
+                                          input-source = construct struct test
+                                          start-rune = 107
+                  structural-new-type-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 35
+                      identexpr-name = SomeStruct
+                      input-source = construct struct test
+                      start-rune = 26

@@ -1,0 +1,16 @@
+NodeTypeFile
+  end-rune = 15
+  input-source = missing subtype nominal type test
+  start-rune = 0
+  child-node =>
+    NodeTypeNominal
+      end-rune = 15
+      input-source = missing subtype nominal type test
+      named = SomeType
+      start-rune = 0
+      child-node =>
+        NodeTypeError
+          end-rune = 12
+          error-message = Expected one of: [tokenTypeColon], found: tokenTypeLeftBrace
+          input-source = missing subtype nominal type test
+          start-rune = 14

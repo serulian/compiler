@@ -1,0 +1,32 @@
+NodeTypeFile
+  end-rune = 37
+  input-source = basic class field test
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 37
+      input-source = basic class field test
+      named = SomeClass
+      start-rune = 0
+      type-member =>
+        NodeTypeField
+          end-rune = 35
+          input-source = basic class field test
+          named = someField
+          start-rune = 19
+          typemember-declared-type =>
+            NodeTypeTypeReference
+              end-rune = 35
+              input-source = basic class field test
+              start-rune = 33
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 35
+                  input-source = basic class field test
+                  start-rune = 33
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 35
+                      identifieraccess-name = int
+                      input-source = basic class field test
+                      start-rune = 33

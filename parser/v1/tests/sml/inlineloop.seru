@@ -1,0 +1,3 @@
+function DoSomething() {
+	<ul><li [for something in somestream]>{something}</li></ul>
+}

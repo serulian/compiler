@@ -1,0 +1,7 @@
+from SomeLibrary import Console
+
+class SimpleClass {
+	function SayHelloWorld() {
+		Console.Println('hello world!')
+	}
+}

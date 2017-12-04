@@ -1,0 +1,3 @@
+function DoSomething() {
+	someIndex < 2 && someIndex >= 6
+}

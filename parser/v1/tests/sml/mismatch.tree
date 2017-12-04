@@ -1,0 +1,37 @@
+NodeTypeFile
+  end-rune = 38
+  input-source = mismatch sml test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 38
+      input-source = mismatch sml test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 38
+          input-source = mismatch sml test
+          start-rune = 23
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 37
+              input-source = mismatch sml test
+              start-rune = 26
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 36
+                  input-source = mismatch sml test
+                  start-rune = 26
+                  child-node =>
+                    NodeTypeError
+                      end-rune = 35
+                      error-message = Expected closing tag for <foo>, found </bar>
+                      input-source = mismatch sml test
+                      start-rune = 36
+                  sml-expression-typefunc =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 29
+                      identexpr-name = foo
+                      input-source = mismatch sml test
+                      start-rune = 27

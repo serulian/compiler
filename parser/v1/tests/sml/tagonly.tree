@@ -1,0 +1,46 @@
+NodeTypeFile
+  end-rune = 42
+  input-source = tag only sml test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 42
+      input-source = tag only sml test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 42
+          input-source = tag only sml test
+          start-rune = 23
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 33
+              input-source = tag only sml test
+              start-rune = 26
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 32
+                  input-source = tag only sml test
+                  start-rune = 26
+                  sml-expression-typefunc =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 29
+                      identexpr-name = foo
+                      input-source = tag only sml test
+                      start-rune = 27
+            NodeTypeExpressionStatement
+              end-rune = 41
+              input-source = tag only sml test
+              start-rune = 35
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 40
+                  input-source = tag only sml test
+                  start-rune = 35
+                  sml-expression-typefunc =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 38
+                      identexpr-name = foo
+                      input-source = tag only sml test
+                      start-rune = 36

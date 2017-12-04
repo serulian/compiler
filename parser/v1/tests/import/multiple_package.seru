@@ -1,0 +1,3 @@
+from foo import bar as blah, baz
+from "github.com/some/thing" import meh, yarg as blarg
+from subpackage import FirstClass, SecondClass

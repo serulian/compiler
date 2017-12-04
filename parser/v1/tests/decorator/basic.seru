@@ -1,0 +1,3 @@
+@•typealias('soc') class SomeOtherClass {}
+@•typealias('at')
+interface AnotherType {}

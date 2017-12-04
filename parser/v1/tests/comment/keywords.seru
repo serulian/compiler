@@ -1,0 +1,4 @@
+function DoSomething() {
+	/* not */
+	/* this is a comment with some not so function keywords */
+}

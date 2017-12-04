@@ -1,0 +1,18 @@
+NodeTypeFile
+  end-rune = 24
+  input-source = from import test
+  start-rune = 0
+  child-node =>
+    NodeTypeImport
+      end-rune = 24
+      import-location-ref = location:foobar
+      import-source = foobar
+      input-source = from import test
+      start-rune = 0
+      import-package =>
+        NodeTypeImportPackage
+          end-rune = 24
+          import-subsource = barbaz
+          input-source = from import test
+          named = barbaz
+          start-rune = 19

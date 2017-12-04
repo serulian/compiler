@@ -1,0 +1,85 @@
+NodeTypeFile
+  end-rune = 86
+  input-source = known issue 3 test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 86
+      input-source = known issue 3 test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 86
+          input-source = known issue 3 test
+          start-rune = 23
+          block-child =>
+            NodeTypeConditionalStatement
+              end-rune = 84
+              input-source = known issue 3 test
+              start-rune = 26
+              conditional-block =>
+                NodeTypeStatementBlock
+                  end-rune = 43
+                  input-source = known issue 3 test
+                  start-rune = 34
+                  block-child =>
+                    NodeTypeExpressionStatement
+                      end-rune = 41
+                      input-source = known issue 3 test
+                      start-rune = 38
+                      expr-statement-expr =>
+                        NodeNumericLiteralExpression
+                          end-rune = 40
+                          input-source = known issue 3 test
+                          literal-value = 123
+                          start-rune = 38
+              conditional-else =>
+                NodeTypeConditionalStatement
+                  end-rune = 84
+                  input-source = known issue 3 test
+                  start-rune = 50
+                  conditional-block =>
+                    NodeTypeStatementBlock
+                      end-rune = 68
+                      input-source = known issue 3 test
+                      start-rune = 59
+                      block-child =>
+                        NodeTypeExpressionStatement
+                          end-rune = 66
+                          input-source = known issue 3 test
+                          start-rune = 63
+                          expr-statement-expr =>
+                            NodeNumericLiteralExpression
+                              end-rune = 65
+                              input-source = known issue 3 test
+                              literal-value = 456
+                              start-rune = 63
+                  conditional-else =>
+                    NodeTypeStatementBlock
+                      end-rune = 84
+                      input-source = known issue 3 test
+                      start-rune = 75
+                      block-child =>
+                        NodeTypeExpressionStatement
+                          end-rune = 82
+                          input-source = known issue 3 test
+                          start-rune = 79
+                          expr-statement-expr =>
+                            NodeNumericLiteralExpression
+                              end-rune = 81
+                              input-source = known issue 3 test
+                              literal-value = 789
+                              start-rune = 79
+                  conditional-expr =>
+                    NodeBooleanLiteralExpression
+                      end-rune = 57
+                      input-source = known issue 3 test
+                      literal-value = false
+                      start-rune = 53
+              conditional-expr =>
+                NodeBooleanLiteralExpression
+                  end-rune = 32
+                  input-source = known issue 3 test
+                  literal-value = true
+                  start-rune = 29

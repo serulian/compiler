@@ -1,0 +1,3 @@
+function SomeFunction() {
+	var someName = someExpr
+}

@@ -1,0 +1,74 @@
+NodeTypeFile
+  end-rune = 49
+  input-source = partial type ref test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 49
+      input-source = partial type ref test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 49
+          input-source = partial type ref test
+          start-rune = 33
+          block-child =>
+            NodeTypeReturnStatement
+              end-rune = 47
+              input-source = partial type ref test
+              start-rune = 39
+              return-expr =>
+                NodeNumericLiteralExpression
+                  end-rune = 47
+                  input-source = partial type ref test
+                  literal-value = 42
+                  start-rune = 46
+      typemember-parameter =>
+        NodeTypeParameter
+          end-rune = 26
+          input-source = partial type ref test
+          named = foo
+          start-rune = 21
+          parameter-type =>
+            NodeTypeSlice
+              end-rune = 26
+              input-source = partial type ref test
+              start-rune = 25
+              typereference-inner-type =>
+                NodeTypeTypeReference
+                  end-rune = 26
+                  input-source = partial type ref test
+                  start-rune = 27
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 26
+                      input-source = partial type ref test
+                      start-rune = 27
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 26
+                          input-source = partial type ref test
+                          start-rune = 27
+                          child-node =>
+                            NodeTypeError
+                              end-rune = 26
+                              error-message = Expected identifier, found token tokenTypeRightParen
+                              input-source = partial type ref test
+                              start-rune = 27
+      typemember-return-type =>
+        NodeTypeTypeReference
+          end-rune = 31
+          input-source = partial type ref test
+          start-rune = 29
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 31
+              input-source = partial type ref test
+              start-rune = 29
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 31
+                  identifieraccess-name = int
+                  input-source = partial type ref test
+                  start-rune = 29

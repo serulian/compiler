@@ -1,0 +1,54 @@
+NodeTypeFile
+  end-rune = 57
+  input-source = keyword attribute sml test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 57
+      input-source = keyword attribute sml test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 57
+          input-source = keyword attribute sml test
+          start-rune = 23
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 56
+              input-source = keyword attribute sml test
+              start-rune = 26
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 55
+                  input-source = keyword attribute sml test
+                  start-rune = 26
+                  sml-expression-attribute =>
+                    NodeTypeSmlAttribute
+                      end-rune = 40
+                      input-source = keyword attribute sml test
+                      sml-attribute-name = type
+                      start-rune = 31
+                      sml-attribute-value =>
+                        NodeStringLiteralExpression
+                          end-rune = 40
+                          input-source = keyword attribute sml test
+                          literal-value = "baz"
+                          start-rune = 36
+                    NodeTypeSmlAttribute
+                      end-rune = 52
+                      input-source = keyword attribute sml test
+                      sml-attribute-name = class
+                      start-rune = 42
+                      sml-attribute-value =>
+                        NodeStringLiteralExpression
+                          end-rune = 52
+                          input-source = keyword attribute sml test
+                          literal-value = "baz"
+                          start-rune = 48
+                  sml-expression-typefunc =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 29
+                      identexpr-name = foo
+                      input-source = keyword attribute sml test
+                      start-rune = 27

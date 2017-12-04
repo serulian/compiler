@@ -1,0 +1,6 @@
+class SomeClass {
+	property MyProperty SomeType {
+		get {}
+		set {}
+	}
+}

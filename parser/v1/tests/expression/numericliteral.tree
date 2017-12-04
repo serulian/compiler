@@ -1,0 +1,36 @@
+NodeTypeFile
+  end-rune = 41
+  input-source = numeric literal expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 41
+      input-source = numeric literal expr test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 41
+          input-source = numeric literal expr test
+          start-rune = 23
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 31
+              input-source = numeric literal expr test
+              start-rune = 29
+              expr-statement-expr =>
+                NodeNumericLiteralExpression
+                  end-rune = 30
+                  input-source = numeric literal expr test
+                  literal-value = -1
+                  start-rune = 29
+            NodeTypeExpressionStatement
+              end-rune = 40
+              input-source = numeric literal expr test
+              start-rune = 36
+              expr-statement-expr =>
+                NodeNumericLiteralExpression
+                  end-rune = 39
+                  input-source = numeric literal expr test
+                  literal-value = 1234
+                  start-rune = 36

@@ -1,0 +1,20 @@
+NodeTypeFile
+  end-rune = 34
+  input-source = return no value statement test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 34
+      input-source = return no value statement test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 34
+          input-source = return no value statement test
+          start-rune = 24
+          block-child =>
+            NodeTypeReturnStatement
+              end-rune = 32
+              input-source = return no value statement test
+              start-rune = 27

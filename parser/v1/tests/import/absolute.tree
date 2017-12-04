@@ -1,0 +1,20 @@
+NodeTypeFile
+  end-rune = 23
+  input-source = absolute import test
+  start-rune = 0
+  child-node =>
+    NodeTypeImport
+      end-rune = 23
+      input-source = absolute import test
+      start-rune = 0
+      child-node =>
+        NodeTypeError
+          end-rune = 23
+          error-message = Import path cannot be absolute. Found: /some/path/here
+          input-source = absolute import test
+          start-rune = 24
+      import-package =>
+        NodeTypeImportPackage
+          end-rune = 23
+          input-source = absolute import test
+          start-rune = 24

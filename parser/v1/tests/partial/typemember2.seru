@@ -1,0 +1,6 @@
+class SomeClass {
+    function DoSomething() {
+        this
+
+    function DoSomethingElse() {}
+}

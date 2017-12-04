@@ -1,0 +1,43 @@
+NodeTypeFile
+  end-rune = 52
+  input-source = keyword class operator test
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 52
+      input-source = keyword class operator test
+      named = SomeClass
+      start-rune = 0
+      type-member =>
+        NodeTypeOperator
+          end-rune = 51
+          input-source = keyword class operator test
+          operator-named = not
+          start-rune = 19
+          definition-body =>
+            NodeTypeStatementBlock
+              end-rune = 51
+              input-source = keyword class operator test
+              start-rune = 49
+          typemember-parameter =>
+            NodeTypeParameter
+              end-rune = 46
+              input-source = keyword class operator test
+              named = value
+              start-rune = 32
+              parameter-type =>
+                NodeTypeTypeReference
+                  end-rune = 46
+                  input-source = keyword class operator test
+                  start-rune = 38
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 46
+                      input-source = keyword class operator test
+                      start-rune = 38
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 46
+                          identifieraccess-name = SomeClass
+                          input-source = keyword class operator test
+                          start-rune = 38

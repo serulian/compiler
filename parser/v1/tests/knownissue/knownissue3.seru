@@ -1,0 +1,9 @@
+function DoSomething() {
+	if true {
+		123
+	} else if false {
+		456
+	} else {
+		789
+	}
+}

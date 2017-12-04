@@ -1,0 +1,42 @@
+NodeTypeFile
+  end-rune = 45
+  input-source = missing principal type agent test
+  start-rune = 0
+  child-node =>
+    NodeTypeAgent
+      end-rune = 45
+      input-source = missing principal type agent test
+      named = SomeAgent
+      start-rune = 0
+      agent-principaltypepath =>
+        NodeTypeTypeReference
+          end-rune = 14
+          input-source = missing principal type agent test
+          start-rune = 16
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 14
+              input-source = missing principal type agent test
+              start-rune = 16
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 14
+                  input-source = missing principal type agent test
+                  start-rune = 16
+      child-node =>
+        NodeTypeError
+          end-rune = 14
+          error-message = Expected keyword for, found token tokenTypeLeftBrace
+          input-source = missing principal type agent test
+          start-rune = 16
+      type-member =>
+        NodeTypeFunction
+          end-rune = 44
+          input-source = missing principal type agent test
+          named = DoSomething
+          start-rune = 19
+          definition-body =>
+            NodeTypeStatementBlock
+              end-rune = 44
+              input-source = missing principal type agent test
+              start-rune = 42

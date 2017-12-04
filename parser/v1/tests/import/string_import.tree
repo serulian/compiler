@@ -1,0 +1,17 @@
+NodeTypeFile
+  end-rune = 54
+  input-source = string import test
+  start-rune = 0
+  child-node =>
+    NodeTypeImport
+      end-rune = 54
+      import-location-ref = location:github.com/Serulian/something
+      import-source = "github.com/Serulian/something"
+      input-source = string import test
+      start-rune = 0
+      import-package =>
+        NodeTypeImportPackage
+          end-rune = 54
+          import-package-name = SomethingElse
+          input-source = string import test
+          start-rune = 39

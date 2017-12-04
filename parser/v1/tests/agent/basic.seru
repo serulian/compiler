@@ -1,0 +1,3 @@
+agent SomeAgent for SomeInterface {
+	function DoSomething() {}
+}

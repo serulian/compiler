@@ -1,0 +1,4 @@
+function DoSomething() int {
+    foo.
+    return 42
+}

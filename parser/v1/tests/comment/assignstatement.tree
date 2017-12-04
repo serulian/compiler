@@ -1,0 +1,44 @@
+NodeTypeFile
+  end-rune = 53
+  input-source = comment assign statement test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 53
+      input-source = comment assign statement test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 53
+          input-source = comment assign statement test
+          start-rune = 23
+          block-child =>
+            NodeTypeAssignStatement
+              end-rune = 51
+              input-source = comment assign statement test
+              start-rune = 43
+              assign-statement-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 51
+                  identexpr-name = bar
+                  input-source = comment assign statement test
+                  start-rune = 49
+              assign-statement-name =>
+                NodeTypeIdentifierExpression
+                  end-rune = 45
+                  identexpr-name = foo
+                  input-source = comment assign statement test
+                  start-rune = 43
+                  child-node =>
+                    NodeTypeComment
+                      comment-value = // Some comment
+                      end-rune = 40
+                      input-source = comment assign statement test
+                      start-rune = 26
+              child-node =>
+                NodeTypeComment
+                  comment-value = // Some comment
+                  end-rune = 40
+                  input-source = comment assign statement test
+                  start-rune = 26

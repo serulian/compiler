@@ -1,0 +1,31 @@
+NodeTypeFile
+  end-rune = 44
+  input-source = basic with test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 44
+      input-source = basic with test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 44
+          input-source = basic with test
+          start-rune = 24
+          block-child =>
+            NodeTypeWithStatement
+              end-rune = 42
+              input-source = basic with test
+              start-rune = 27
+              with-block =>
+                NodeTypeStatementBlock
+                  end-rune = 42
+                  input-source = basic with test
+                  start-rune = 41
+              with-expression =>
+                NodeTypeIdentifierExpression
+                  end-rune = 39
+                  identexpr-name = someExpr
+                  input-source = basic with test
+                  start-rune = 32

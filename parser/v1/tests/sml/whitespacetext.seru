@@ -1,0 +1,10 @@
+function DoSomething() {
+	<first>  first text here   </first>
+	<second>
+		second text here
+	</second>
+	<third>text with an {expression} inline</third>
+	<fourth>text{around}expr</fourth>
+	<fifth>text with a <tag/> inline</fifth>
+	<sixth>text<around/>tag</sixth>
+}

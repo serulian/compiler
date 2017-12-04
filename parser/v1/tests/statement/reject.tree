@@ -1,0 +1,26 @@
+NodeTypeFile
+  end-rune = 37
+  input-source = reject value statement test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 37
+      input-source = reject value statement test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 37
+          input-source = reject value statement test
+          start-rune = 23
+          block-child =>
+            NodeTypeRejectStatement
+              end-rune = 35
+              input-source = reject value statement test
+              start-rune = 26
+              reject-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 35
+                  identexpr-name = foo
+                  input-source = reject value statement test
+                  start-rune = 33

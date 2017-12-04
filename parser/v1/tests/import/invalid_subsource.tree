@@ -1,0 +1,22 @@
+NodeTypeFile
+  end-rune = 16
+  input-source = invalid subsource
+  start-rune = 0
+  child-node =>
+    NodeTypeImport
+      end-rune = 16
+      import-location-ref = location:foo
+      import-source = "foo"
+      input-source = invalid subsource
+      start-rune = 0
+      import-package =>
+        NodeTypeImportPackage
+          end-rune = 16
+          input-source = invalid subsource
+          start-rune = 18
+          child-node =>
+            NodeTypeError
+              end-rune = 16
+              error-message = Expected identifier, found token tokenTypeStringLiteral
+              input-source = invalid subsource
+              start-rune = 18

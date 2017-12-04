@@ -1,0 +1,4 @@
+function DoSomething() {
+	something<a.b.c?>
+	somethingelse<a>
+}

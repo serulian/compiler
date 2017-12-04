@@ -1,0 +1,4 @@
+from "some-git-repo" import Something as SomethingElse
+from SomeLocalFile import Blah as Foobar
+from webidl`coolthing` import WebIDLThing
+import anotherkind`some url` as SomethingNeat

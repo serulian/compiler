@@ -1,0 +1,56 @@
+NodeTypeFile
+  end-rune = 22
+  input-source = missing agent test
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 22
+      input-source = missing agent test
+      named = Foo
+      start-rune = 0
+      composed-agent =>
+        NodeTypeAgentReference
+          end-rune = 17
+          input-source = missing agent test
+          start-rune = 15
+          agent-reference-reftypepath =>
+            NodeTypeTypeReference
+              end-rune = 17
+              input-source = missing agent test
+              start-rune = 15
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 17
+                  input-source = missing agent test
+                  start-rune = 15
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 17
+                      identifieraccess-name = Bar
+                      input-source = missing agent test
+                      start-rune = 15
+        NodeTypeAgentReference
+          end-rune = 19
+          input-source = missing agent test
+          start-rune = 21
+          agent-reference-reftypepath =>
+            NodeTypeTypeReference
+              end-rune = 19
+              input-source = missing agent test
+              start-rune = 21
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 19
+                  input-source = missing agent test
+                  start-rune = 21
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 19
+                      input-source = missing agent test
+                      start-rune = 21
+                      child-node =>
+                        NodeTypeError
+                          end-rune = 19
+                          error-message = Expected identifier, found token tokenTypeLeftBrace
+                          input-source = missing agent test
+                          start-rune = 21

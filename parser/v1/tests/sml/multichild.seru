@@ -1,0 +1,8 @@
+function DoSomething() {
+	<table>
+		<thead>Some table</thead>
+		<tbody>
+			{ <tr><td>some {cool} text</td></tr> for row in rows }
+		</tbody>
+	</table>
+}

@@ -1,0 +1,9 @@
+function DoSomething() {
+	Some.template.String`foobar`
+}
+
+function AnotherFunction() {
+	`Hello ${adj.modifier} world ${suffix}`
+	`${startingexpr}foo`
+	`${onlyexpr}`
+}

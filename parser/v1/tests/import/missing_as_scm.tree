@@ -1,0 +1,22 @@
+NodeTypeFile
+  end-rune = 29
+  input-source = missing as for SCM test
+  start-rune = 0
+  child-node =>
+    NodeTypeImport
+      end-rune = 29
+      import-location-ref = location:github.com/some/thing
+      import-source = "github.com/some/thing"
+      input-source = missing as for SCM test
+      start-rune = 0
+      import-package =>
+        NodeTypeImportPackage
+          end-rune = 29
+          input-source = missing as for SCM test
+          start-rune = 30
+          child-node =>
+            NodeTypeError
+              end-rune = 29
+              error-message = Path package import requires an 'as' clause
+              input-source = missing as for SCM test
+              start-rune = 30

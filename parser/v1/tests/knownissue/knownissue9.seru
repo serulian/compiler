@@ -1,0 +1,7 @@
+function DoSomething() {
+	Foo{
+	  Bar: Meh[
+	  	Thing,
+	  ],
+	}
+}

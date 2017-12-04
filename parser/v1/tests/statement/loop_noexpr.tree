@@ -1,0 +1,25 @@
+NodeTypeFile
+  end-rune = 34
+  input-source = no expr loop statement test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 34
+      input-source = no expr loop statement test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 34
+          input-source = no expr loop statement test
+          start-rune = 24
+          block-child =>
+            NodeTypeLoopStatement
+              end-rune = 32
+              input-source = no expr loop statement test
+              start-rune = 27
+              loop-block =>
+                NodeTypeStatementBlock
+                  end-rune = 32
+                  input-source = no expr loop statement test
+                  start-rune = 31

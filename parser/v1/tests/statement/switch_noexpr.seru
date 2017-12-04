@@ -1,0 +1,7 @@
+function SomeFunction() {
+	switch {
+		case foobar:
+			someOtherExpr
+			return
+	}
+}

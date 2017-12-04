@@ -1,0 +1,50 @@
+NodeTypeFile
+  end-rune = 75
+  input-source = known issue 5 test
+  start-rune = 0
+  child-node =>
+    NodeTypeInterface
+      end-rune = 31
+      input-source = known issue 5 test
+      named = Test
+      start-rune = 15
+      child-node =>
+        NodeTypeComment
+          comment-value = /**
+ * Foo
+ */
+          end-rune = 13
+          input-source = known issue 5 test
+          start-rune = 0
+    NodeTypeFunction
+      end-rune = 75
+      input-source = known issue 5 test
+      named = DoSomething
+      start-rune = 34
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 75
+          input-source = known issue 5 test
+          start-rune = 57
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 74
+              input-source = known issue 5 test
+              start-rune = 70
+              child-node =>
+                NodeTypeComment
+                  comment-value = /** foo */
+                  end-rune = 69
+                  input-source = known issue 5 test
+                  start-rune = 60
+              expr-statement-expr =>
+                NodeThisLiteralExpression
+                  end-rune = 73
+                  input-source = known issue 5 test
+                  start-rune = 70
+                  child-node =>
+                    NodeTypeComment
+                      comment-value = /** foo */
+                      end-rune = 69
+                      input-source = known issue 5 test
+                      start-rune = 60

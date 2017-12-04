@@ -1,0 +1,31 @@
+NodeTypeFile
+  end-rune = 42
+  input-source = basic conditional statement test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 42
+      input-source = basic conditional statement test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 42
+          input-source = basic conditional statement test
+          start-rune = 24
+          block-child =>
+            NodeTypeConditionalStatement
+              end-rune = 40
+              input-source = basic conditional statement test
+              start-rune = 27
+              conditional-block =>
+                NodeTypeStatementBlock
+                  end-rune = 40
+                  input-source = basic conditional statement test
+                  start-rune = 39
+              conditional-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 37
+                  identexpr-name = someExpr
+                  input-source = basic conditional statement test
+                  start-rune = 30

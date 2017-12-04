@@ -1,0 +1,95 @@
+NodeTypeFile
+  end-rune = 62
+  input-source = generic specifier expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 62
+      input-source = generic specifier expr test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 62
+          input-source = generic specifier expr test
+          start-rune = 23
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 43
+              input-source = generic specifier expr test
+              start-rune = 26
+              expr-statement-expr =>
+                NodeGenericSpecifierExpression
+                  end-rune = 42
+                  input-source = generic specifier expr test
+                  start-rune = 26
+                  generic-specifier-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 34
+                      identexpr-name = something
+                      input-source = generic specifier expr test
+                      start-rune = 26
+                  generic-specifier-type =>
+                    NodeTypeNullable
+                      end-rune = 41
+                      input-source = generic specifier expr test
+                      start-rune = 36
+                      typereference-inner-type =>
+                        NodeTypeTypeReference
+                          end-rune = 40
+                          input-source = generic specifier expr test
+                          start-rune = 36
+                          typereference-path =>
+                            NodeTypeIdentifierPath
+                              end-rune = 40
+                              input-source = generic specifier expr test
+                              start-rune = 36
+                              identifierpath-root =>
+                                NodeTypeIdentifierAccess
+                                  end-rune = 40
+                                  identifieraccess-name = c
+                                  input-source = generic specifier expr test
+                                  start-rune = 40
+                                  identifieraccess-source =>
+                                    NodeTypeIdentifierAccess
+                                      end-rune = 38
+                                      identifieraccess-name = b
+                                      input-source = generic specifier expr test
+                                      start-rune = 38
+                                      identifieraccess-source =>
+                                        NodeTypeIdentifierAccess
+                                          end-rune = 36
+                                          identifieraccess-name = a
+                                          input-source = generic specifier expr test
+                                          start-rune = 36
+            NodeTypeExpressionStatement
+              end-rune = 61
+              input-source = generic specifier expr test
+              start-rune = 45
+              expr-statement-expr =>
+                NodeGenericSpecifierExpression
+                  end-rune = 60
+                  input-source = generic specifier expr test
+                  start-rune = 45
+                  generic-specifier-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 57
+                      identexpr-name = somethingelse
+                      input-source = generic specifier expr test
+                      start-rune = 45
+                  generic-specifier-type =>
+                    NodeTypeTypeReference
+                      end-rune = 59
+                      input-source = generic specifier expr test
+                      start-rune = 59
+                      typereference-path =>
+                        NodeTypeIdentifierPath
+                          end-rune = 59
+                          input-source = generic specifier expr test
+                          start-rune = 59
+                          identifierpath-root =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 59
+                              identifieraccess-name = a
+                              input-source = generic specifier expr test
+                              start-rune = 59

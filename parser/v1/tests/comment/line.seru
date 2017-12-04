@@ -1,0 +1,6 @@
+class Integer {
+	operator Range(start int, end int) {
+		// TODO: fix this once we can actually create a stream
+		return 2
+	}
+}

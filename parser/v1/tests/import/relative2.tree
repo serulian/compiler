@@ -1,0 +1,17 @@
+NodeTypeFile
+  end-rune = 30
+  input-source = relative import test 2
+  start-rune = 0
+  child-node =>
+    NodeTypeImport
+      end-rune = 30
+      import-location-ref = location:../../here
+      import-source = "../../here"
+      input-source = relative import test 2
+      start-rune = 0
+      import-package =>
+        NodeTypeImportPackage
+          end-rune = 30
+          import-package-name = relative
+          input-source = relative import test 2
+          start-rune = 20

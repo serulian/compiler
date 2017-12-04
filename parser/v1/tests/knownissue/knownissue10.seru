@@ -1,0 +1,5 @@
+function TEST() any {
+	var someclass = SomeClass.ForThings([]Thing{})
+	someclass.Apply()
+	return null
+}

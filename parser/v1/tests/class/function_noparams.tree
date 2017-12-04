@@ -1,0 +1,21 @@
+NodeTypeFile
+  end-rune = 45
+  input-source = class function no parameters test
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 45
+      input-source = class function no parameters test
+      named = SomeClass
+      start-rune = 0
+      type-member =>
+        NodeTypeFunction
+          end-rune = 44
+          input-source = class function no parameters test
+          named = DoSomething
+          start-rune = 19
+          definition-body =>
+            NodeTypeStatementBlock
+              end-rune = 44
+              input-source = class function no parameters test
+              start-rune = 42
