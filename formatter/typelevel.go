@@ -63,6 +63,7 @@ func (sf *sourceFormatter) emitConstructor(node formatterNode) {
 	sf.append("constructor")
 	sf.append(" ")
 	sf.append(node.getProperty(sourceshape.NodePredicateTypeMemberName))
+	sf.emitGenerics(node, sourceshape.NodePredicateTypeMemberGeneric)
 	sf.emitParameters(node, sourceshape.NodePredicateTypeMemberParameter, parensRequired)
 	sf.emitBody(node)
 	sf.appendLine()

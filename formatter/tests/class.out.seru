@@ -5,6 +5,8 @@ class SomeClass<T : int> {
 	var noInit int?
 	var foo int = bar
 
+	constructor SomeGenericConstructor<Q>() {}
+
 	constructor SecondConstructor() {
 		return SomeClass<T>.new()
 	}

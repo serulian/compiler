@@ -2,6 +2,19 @@
  * SomeClass is some cool class
  */
 class SomeClass<T : int> {
+	var<int?> noInit
+	var<int> foo = bar
+
+	constructor SomeGenericConstructor<Q>() {}
+
+	constructor SecondConstructor() {
+		return SomeClass<T>.new()
+	}
+
+	constructor FirstConstructor(oneParam Here) {
+		reject Because.ThatsWhy()
+	}
+
 	function<void> DoSomething<Q : any>(firstParam int, secondParam string*) {
 		return
 	}
@@ -10,9 +23,8 @@ class SomeClass<T : int> {
 	 * SomeProp is some sort of prop.
 	 */
 	property<SomeType?> SomeProp {
-		get { 
-			return null
-		}
+		get { return null }
+
 		set {
 			this.foo = val
 		}
@@ -30,18 +42,5 @@ class SomeClass<T : int> {
 		return someThing
 	}
 
-	constructor SecondConstructor() {
-		return SomeClass<T>.new()
-	}
-
-	var<int> foo = bar
-	var<int?> noInit
-
-	constructor FirstConstructor(oneParam Here) {
-		reject Because.ThatsWhy()
-	}
-
-	function<int> AnotherFunction() {
-		return 33
-	}
+	function<int> AnotherFunction() { return 33 }
 }
