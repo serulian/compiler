@@ -1,17 +1,17 @@
-from webidl`basic` import Number
-from webidl`basic` import String as NativeString
-from webidl`basic` import Boolean as NativeBoolean
 from webidl`basic` import Array
-from webidl`basic` import Math
-from webidl`basic` import Object
+from webidl`basic` import Boolean as NativeBoolean
 from webidl`basic` import Error as NativeError
-from webidl`basic` import debugprint
 from webidl`basic` import JSON as NativeJSON
+from webidl`basic` import Math
+from webidl`basic` import Number
+from webidl`basic` import Object
+from webidl`basic` import String as NativeString
 from webidl`basic` import __serulian_internal as Internal
+from webidl`basic` import debugprint
 
-function<string> formatTemplateString(pieces []string, values []stringable) {
+function formatTemplateString(pieces []string, values []stringable) string {
 	var result = ''
-	for i in 0 .. (pieces.Length - 1) {
+	for i in 0 .. pieces.Length - 1 {
 		result = result + pieces[i]
 		if i < values.Length {
 			result = result + values[i].String()
@@ -20,7 +20,7 @@ function<string> formatTemplateString(pieces []string, values []stringable) {
 	return result
 }
 
-function<Q*> MapStream<T, Q>(stream T*, mapper function<Q>(T)) {
+function MapStream<T, Q>(stream T*, mapper function<Q>(T)) Q* {
 	for item in stream {
 		yield mapper(item)
 	}
@@ -28,8 +28,8 @@ function<Q*> MapStream<T, Q>(stream T*, mapper function<Q>(T)) {
 
 @•typealias('tuple')
 class Tuple<T, Q> {
-	var<T?> First = null
-	var<Q?> Second = null
+	var First T? = null
+	var Second Q? = null
 
 	constructor Build(first T, second Q) {
 		var tuple = Tuple<T, Q>.new()
@@ -42,44 +42,40 @@ class Tuple<T, Q> {
 @•typealias('mapping')
 type Mapping<T> : Object {
 	constructor Empty() {
-	    return Mapping<T>(Object.new())
+		return Mapping<T>(Object.new())
 	}
 
 	constructor overObject(obj Object) {
 		return Mapping<T>(obj)
 	}
 
-	property<[]string> Keys {
+	property Keys []string {
 		get {
 			return Slice<string>.overArray(Object.keys(Object(this)))
 		}
 	}
 
-	operator<T?> Index(key string) {
-		var value = Object(this)[NativeString(key)]
-		if value is null {
-			return null
-		}
+	operator Index(key string) T? {
+		var value = (Object(this))[NativeString(key)]
+		if value is null { return null }
 
 		return value.(T)
-	}	
+	}
 }
 
 @•typealias('slice')
 type Slice<T> : Array {
-	constructor Empty() {
-		return Slice<T>(Array.new())
-	}
+	constructor Empty() { return Slice<T>(Array.new()) }
 
 	constructor overArray(arr Array) {
 		return Slice<T>(arr)
 	}
 
-	operator<T> Index(index int) {
-		return Array(this)[Number(index)].(T)
+	operator Index(index int) T {
+		return (Array(this))[Number(index)].(T)
 	}
 
-	operator<Slice<T>> Slice(startindex int?, endindex int?) {
+	operator Slice(startindex int?, endindex int?) Slice<T> {
 		var start = startindex ?? 0
 		var end = endindex ?? this.Length
 
@@ -91,49 +87,46 @@ type Slice<T> : Array {
 			end = end + this.Length
 		}
 
-		if start >= end {
-			return Slice<T>.Empty()
-		}
+		if start >= end { return Slice<T>.Empty() }
 
 		return Slice<T>.overArray(Array(this).slice(Number(start), Number(end)))
 	}
 
-	property<int> Length {
-		get {
-			return int(Array(this).length)
-		}
+	property Length int {
+		get { return int(Array(this).length) }
 	}
 }
 
 @•typealias('stringable')
 interface Stringable {
-	function<string> String()
+	function String() string
 }
 
 @•typealias('stream')
 interface Stream<T> {
-	function<Tuple<T, bool>> Next()
+	function Next() Tuple<T, bool>
 }
 
 @•typealias('streamable')
 interface Streamable<T> {
-	function<Stream<T>> Stream()
+	function Stream() Stream<T>
 }
 
 @•typealias('error')
 interface Error {
-	property<string> Message { get }
+	property Message string { get }
 }
 
 @•typealias('awaitable')
 interface Awaitable<T> {
-	function<Awaitable<T>> Then(callback function<void>(T))
-	function<Awaitable<T>> Catch(callback function<void>(error))
+	function Then(callback function<void>(T)) Awaitable<T>
+
+	function Catch(callback function<void>(error)) Awaitable<T>
 }
 
 @•typealias('releasable')
 interface Releasable {
-	function<void> Release()
+	function Release()
 }
 
 @•typealias('function')
@@ -141,9 +134,9 @@ class Function<T> {}
 
 @•typealias('$intstream')
 class IntStream {
-	var<int> start = 0
-	var<int> end = -1
-	var<int> current = 0
+	var start int = 0
+	var end int = -1
+	var current int = 0
 
 	constructor OverRange(start int, end int) {
 		var s = IntStream.new()
@@ -153,7 +146,7 @@ class IntStream {
 		return s
 	}
 
-	function<Tuple<int, bool>> Next() {
+	function Next() Tuple<int, bool> {
 		if this.current <= this.end {
 			var t = Tuple<int, bool>.Build(this.current, true)
 			this.current = this.current + 1
@@ -198,13 +191,13 @@ type Integer : Number {
 		return Integer(Number(left) - Number(right))
 	}
 
-	function<void> Release() {}
+	function Release() {}
 
-	property<Stringable> MapKey {
+	property MapKey Stringable {
 		get { return this }
 	}
 
-	function<string> String() {
+	function String() string {
 		return String(Number(this).toString())
 	}
 }
@@ -212,9 +205,7 @@ type Integer : Number {
 @•typealias('bool')
 type Boolean : NativeBoolean {
 	operator Compare(left bool, right bool) {
-		if left == right {
-			return 0
-		}
+		if left == right { return 0 }
 
 		return -1
 	}
@@ -223,27 +214,25 @@ type Boolean : NativeBoolean {
 		return Boolean(NativeBoolean(left) == NativeBoolean(right))
 	}
 
-	function<string> String() {
+	function String() string {
 		return String(NativeBoolean(this).toString())
 	}
 
-	property<Stringable> MapKey {
+	property MapKey Stringable {
 		get { return this }
 	}
 }
 
 @•typealias('float64')
 type Float64 : Number {
-	function<int> Floor() {
+	function Floor() int {
 		return Integer(Math.floor(Number(this)))
 	}
 }
 
 @•typealias('string')
 type String : NativeString {
-	function<string> String() {
-		return this
-	}
+	function String() string { return this }
 
 	operator Equals(first string, second string) {
 		return Boolean(NativeString(first) == NativeString(second))
@@ -253,43 +242,39 @@ type String : NativeString {
 		return String(NativeString(first) + NativeString(second))
 	}
 
-	property<Stringable> MapKey {
+	property MapKey Stringable {
 		get { return this }
 	}
 
-	property<int> Length {
-		get {
-			return Integer(NativeString(this).length)
-		}
+	property Length int {
+		get { return Integer(NativeString(this).length) }
 	}
 }
 
 @•typealias('mappable')
 interface Mappable {
-	property<Stringable> MapKey { get }
+	property MapKey Stringable { get }
 }
 
 @•typealias('list')
 class List<T> {
-	var<Array> items = Array.new()
-	
+	var items Array = Array.new()
+
 	constructor forArray(arr Array) {
 		var l = List<T>.new()
 		l.items = arr
 		return l
 	}
 
-	property<int> Count {
-		get {
-			return int(this.items.length)
-		}
+	property Count int {
+		get { return int(this.items.length) }
 	}
 
-	operator<T> Index(index int) {
+	operator Index(index int) T {
 		return this.items[&index].(T)
 	}
 
-	operator<Slice<T>> Slice(startindex int?, endindex int?) {
+	operator Slice(startindex int?, endindex int?) Slice<T> {
 		var start = startindex ?? 0
 		var end = endindex ?? this.Count
 
@@ -301,9 +286,7 @@ class List<T> {
 			end = end + this.Count
 		}
 
-		if start >= end {
-			return Slice<T>.Empty()
-		}
+		if start >= end { return Slice<T>.Empty() }
 
 		return Slice<T>.overArray(this.items.slice(Number(start), Number(end)))
 	}
@@ -311,32 +294,28 @@ class List<T> {
 
 @•typealias('map')
 class Map<T : Mappable, Q> {
-	var<Object> internalObject = Object.new()
+	var internalObject Object = Object.new()
 
-	constructor Empty() {
-		return Map<T, Q>.new()
-	}
+	constructor Empty() { return Map<T, Q>.new() }
 
 	constructor forArrays(keys Array, values Array) {
 		var map = Map<T, Q>.new()
 		var len = int(keys.length)
-		for i in 0..(len - 1) {
+		for i in 0 .. len - 1 {
 			var tKey = keys[Number(i)].(T)
 			map[tKey] = values[Number(i)].(Q)
 		}
 		return map
 	}
 
-	function<Mapping<Q>> Mapping() {
+	function Mapping() Mapping<Q> {
 		return Mapping<Q>(this.internalObject)
 	}
 
-	operator<Q?> Index(key T) {
+	operator Index(key T) Q? {
 		var keyString = key.MapKey.String()
 		var value = this.internalObject[NativeString(keyString)]
-		if value is null {
-			return null
-		}
+		if value is null { return null }
 
 		return value.(Q)
 	}
@@ -349,35 +328,29 @@ class Map<T : Mappable, Q> {
 
 @•typealias('json')
 class JSON {
-	constructor Get() {
-		return JSON.new()
-	}
+	constructor Get() { return JSON.new() }
 
-	function<string> Stringify(value mapping<any>) {
+	function Stringify(value mapping<any>) string {
 		return string(NativeJSON.stringify(Object(value), Internal.autoUnbox))
 	}
 
-	function<mapping<any>> Parse(value string) {
+	function Parse(value string) mapping<any> {
 		return mapping<any>(NativeJSON.parse(NativeString(value), Internal.autoBox))
 	}
 }
 
 @•typealias('$stringifier')
 interface Stringifier {
-	constructor Get() {
-		return JSON.new()
-	}
+	constructor Get() { return JSON.new() }
 
-	function<string> Stringify(value mapping<any>)
+	function Stringify(value mapping<any>) string
 }
 
 @•typealias('$parser')
 interface Parser {
-	constructor Get() {
-		return JSON.new()
-	}
+	constructor Get() { return JSON.new() }
 
-	function<mapping<any>> Parse(value string)
+	function Parse(value string) mapping<any>
 }
 
 @•typealias('wrappederror')
@@ -386,9 +359,7 @@ type WrappedError : NativeError {
 		return WrappedError(err)
 	}
 
-	property<string> Message {
-		get {
-			return string(NativeError(this).message)
-		}
+	property Message string {
+		get { return string(NativeError(this).message) }
 	}
 }
