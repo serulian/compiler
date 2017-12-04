@@ -1,4 +1,4 @@
-function<any> Render(context Context) {
+function Render(context Context) any {
     <Button className="btn" disabled>
         Shared
     </Button>

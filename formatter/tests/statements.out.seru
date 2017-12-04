@@ -27,6 +27,9 @@ function SomeFunction() {
 		foo
 	}
 
+	var someThing = 42
+	var someThing int = 42
+
 	yield foo
 	yield break
 	yield in something

@@ -158,15 +158,13 @@ func (sf *sourceFormatter) emitContinueStatement(node formatterNode) {
 // emitVariableStatement emits the source for a variable statement.
 func (sf *sourceFormatter) emitVariableStatement(node formatterNode) {
 	sf.append("var")
-
-	if declaredType, ok := node.tryGetChild(sourceshape.NodeVariableStatementDeclaredType); ok {
-		sf.append("<")
-		sf.emitNode(declaredType)
-		sf.append(">")
-	}
-
 	sf.append(" ")
 	sf.append(node.getProperty(sourceshape.NodeVariableStatementName))
+
+	if declaredType, ok := node.tryGetChild(sourceshape.NodeVariableStatementDeclaredType); ok {
+		sf.append(" ")
+		sf.emitNode(declaredType)
+	}
 
 	if expr, ok := node.tryGetChild(sourceshape.NodeVariableStatementExpression); ok {
 		sf.append(" = ")

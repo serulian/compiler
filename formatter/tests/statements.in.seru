@@ -1,4 +1,4 @@
-function<void> SomeFunction() {
+function SomeFunction() {
 	a <- foo
 	a, b <- foo
 	_, b <- foo
@@ -26,6 +26,9 @@ function<void> SomeFunction() {
 	with a {
 		foo
 	}
+
+	var someThing = 42
+	var someThing int = 42
 
 	yield foo
 	yield break

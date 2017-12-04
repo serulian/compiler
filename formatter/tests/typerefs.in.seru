@@ -1,26 +1,26 @@
-var<int> basic
-var<int?> nullable
-var<int*> streamable
-var<SomeGeneric<T>> generic
-var<SomeGeneric<T, Q>> multigeneric
-var<SomeGeneric<T?, Q>> nested
-var<SomeGeneric<T>?> nullablegeneric
-var<SomeGeneric<T>*> streamgeneric
-var<SomeGeneric<List<T?>, Map<T, Q>*>> multinested
-var<Some.Reference.To.Type> pathed
-var<Some.Type?> nullablepathed
-var<Some.Type*> streamablepathed
-var<Some.Type<T>> genercipathed
-var<int?*> nullablestream
-var<function<void>()> functype
-var<function<void>(int)> functypewithparam
-var<any> anyref
-var<SomeClass<any>> anyinnerref
-var<[]SomeClass> sliceref
-var<[]{SomeClass}> mappingref
-var<any*> anystream
-var<?[]SomeClass> nullableslice
-var<?int> nullableprefix
-var<*int> streamableprefix
-var<struct> structref
-var<struct?> nullablestructref
+var basic int
+var nullable int?
+var streamable int*
+var generic SomeGeneric<T>
+var multigeneric SomeGeneric<T, Q>
+var nested SomeGeneric<T?, Q>
+var nullablegeneric SomeGeneric<T>?
+var streamgeneric SomeGeneric<T>*
+var multinested SomeGeneric<List<T?>, Map<T, Q>*>
+var pathed Some.Reference.To.Type
+var nullablepathed Some.Type?
+var streamablepathed Some.Type*
+var genercipathed Some.Type<T>
+var nullablestream int?*
+var functype function<void>()
+var functypewithparam function<void>(int)
+var anyref any
+var anyinnerref SomeClass<any>
+var sliceref []SomeClass
+var mappingref []{SomeClass}
+var anystream any*
+var nullableslice ?[]SomeClass
+var nullableprefix int?
+var streamableprefix int*
+var structref struct
+var nullablestructref struct?
