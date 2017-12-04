@@ -6,6 +6,6 @@ struct SomeStruct<T> {
 
 class SomeClass {}
 
-function<void> DoSomething() {
-	var<SomeStruct<SomeClass>?> s
+function DoSomething() {
+	var s SomeStruct<SomeClass>?
 }

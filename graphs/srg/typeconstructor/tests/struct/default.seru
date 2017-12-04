@@ -1,11 +1,9 @@
 struct AnotherStruct {
-	AnotherField int	
+	AnotherField int
 }
 
 struct SomeStruct {
 	SomeField int = 2
 	AnotherField string = 'hello world'
-	ThirdField AnotherStruct = AnotherStruct{
-		AnotherField: 2,
-	}
+	ThirdField AnotherStruct = AnotherStruct{AnotherField: 2}
 }

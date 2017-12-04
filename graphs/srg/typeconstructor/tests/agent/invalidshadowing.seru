@@ -1,7 +1,7 @@
 interface SomeInterface {}
 
-agent<SomeInterface> SomeAgent {}
+agent SomeAgent for SomeInterface {}
 
 class SomeClass with SomeAgent as sa {
-	var<int> sa
+	var sa int
 }

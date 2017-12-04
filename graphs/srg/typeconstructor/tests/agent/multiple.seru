@@ -1,6 +1,7 @@
 interface SomeInterface {}
 
-agent<SomeInterface> SomeAgent {}
-agent<SomeInterface> AnotherAgent {}
+agent SomeAgent for SomeInterface {}
+
+agent AnotherAgent for SomeInterface {}
 
 class SomeClass with SomeAgent + AnotherAgent {}

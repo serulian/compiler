@@ -1,7 +1,7 @@
 class SomeClass {
-	function<int> DoSomething() {}
+	function DoSomething() int {}
 
-	property<SomeClass> SomeProp {
+	property SomeProp SomeClass {
 		get {}
 	}
 }

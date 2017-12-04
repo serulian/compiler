@@ -1,14 +1,13 @@
 interface ISomeInterface {
-	function<int> DoSomething(foo int, bar int)
+	function DoSomething(foo int, bar int) int
 }
 
-class SomeClass<T : ISomeInterface> {
-}
+class SomeClass<T : ISomeInterface> {}
 
 class ThirdClass {
-   function<int> AnotherThing() {}
+	function AnotherThing() int {}
 }
 
 class AnotherClass {
-	var<SomeClass<ThirdClass>> someClass
+	var someClass SomeClass<ThirdClass>
 }

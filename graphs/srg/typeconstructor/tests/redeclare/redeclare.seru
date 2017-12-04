@@ -1,2 +1,3 @@
 class SomeClass {}
+
 interface SomeClass {}

@@ -1,9 +1,9 @@
 interface SomeInterface {
-	function<void> DoSomething()
+	function DoSomething()
 }
 
-agent<SomeInterface> SomeAgent {
-	function<void> DoSomething() {}
+agent SomeAgent for SomeInterface {
+	function DoSomething() {}
 }
 
 class SomeClass with SomeAgent {}

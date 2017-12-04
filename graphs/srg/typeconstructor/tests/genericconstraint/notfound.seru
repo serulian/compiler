@@ -1,1 +1,1 @@
-class SomeClass<T : UnknownType>{}
+class SomeClass<T : UnknownType> {}

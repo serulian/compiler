@@ -135,8 +135,8 @@
             "tdg-type-name": "SomeClass"
         }
     },
-    "de8836b58bcb6c8ed7cf9f74c0a90549": {
-        "Key": "de8836b58bcb6c8ed7cf9f74c0a90549",
+    "c5d99f536be02a78b5c1e7f21269bc61": {
+        "Key": "c5d99f536be02a78b5c1e7f21269bc61",
         "Kind": 1,
         "Children": {
             "babbc047afc17f47223a26b53fa144e4": {
@@ -192,7 +192,7 @@
             "tdg-source-module": "tests/complexgeneric/complexgeneric.seru",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-exported": "true",
-            "tdg-type-globalid": "17909c88",
+            "tdg-type-globalid": "51d5ff86",
             "tdg-type-name": "AnotherClass"
         }
     }

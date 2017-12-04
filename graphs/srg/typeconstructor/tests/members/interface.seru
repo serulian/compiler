@@ -1,9 +1,13 @@
 class SomeClass {}
 
 interface SomeInterface {
-	function<void> DoSomething(first SomeClass, second SomeClass)
 	constructor BuildMe<C>(param C) {}
-	operator Plus (left SomeInterface, right SomeInterface) {}
-	property<int> ReadOnlyProp { get }
-	property<bool> ReadWriteProp
+
+	function DoSomething(first SomeClass, second SomeClass)
+
+	operator Plus(left SomeInterface, right SomeInterface) {}
+
+	property ReadOnlyProp int { get }
+
+	property ReadWriteProp bool
 }

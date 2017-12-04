@@ -1,2 +1,3 @@
 class SomeClass<T, Q : AnotherClass> {}
+
 class AnotherClass {}

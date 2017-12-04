@@ -1,11 +1,11 @@
 interface SomeInterface {}
 
-agent<SomeInterface> SomeAgent {
-	function<void> DoSomething() {}
+agent SomeAgent for SomeInterface {
+	function DoSomething() {}
 }
 
 class SomeClass with SomeAgent {
-	property<int> DoSomething {
+	property DoSomething int {
 		get { return 42 }
-	}	
+	}
 }
