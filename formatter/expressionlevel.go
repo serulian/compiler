@@ -27,15 +27,16 @@ func (sf *sourceFormatter) emitAwaitExpression(node formatterNode) {
 func (sf *sourceFormatter) emitLambdaExpression(node formatterNode) {
 	if block, ok := node.tryGetChild(sourceshape.NodeLambdaExpressionBlock); ok {
 		sf.append("function")
-
-		if returnType, hasReturnType := node.tryGetChild(sourceshape.NodeLambdaExpressionReturnType); hasReturnType {
-			sf.append("<")
-			sf.emitNode(returnType)
-			sf.append(">")
-		}
-
 		sf.emitParameters(node, sourceshape.NodeLambdaExpressionParameter, parensRequired)
 		sf.append(" ")
+
+		if returnType, hasReturnType := node.tryGetChild(sourceshape.NodeLambdaExpressionReturnType); hasReturnType {
+			if returnType.nodeType != sourceshape.NodeTypeVoid {
+				sf.emitNode(returnType)
+				sf.append(" ")
+			}
+		}
+
 		sf.emitNode(block)
 	} else {
 		sf.emitParameters(node, sourceshape.NodeLambdaExpressionInferredParameter, parensRequired)

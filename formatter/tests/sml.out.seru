@@ -1,4 +1,4 @@
-function<void> SomeFunction() {
+function SomeFunction() {
 	var first = <SomeTag />
 	var second = <SomeTag>some text goes here <FollowedByATag /></SomeTag>
 

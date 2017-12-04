@@ -1,4 +1,4 @@
-function<void> SomeFunction() {
+function SomeFunction() {
 	a <- foo
 	a, b <- foo
 	_, b <- foo

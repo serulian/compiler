@@ -9,15 +9,10 @@ import "github.com/serulian/compiler/sourceshape"
 // emitVariable emits the specified variable.
 func (sf *sourceFormatter) emitVariable(node formatterNode) {
 	sf.append("var")
-
-	if node.hasChild(sourceshape.NodePredicateTypeMemberDeclaredType) {
-		sf.append("<")
-		sf.emitNode(node.getChild(sourceshape.NodePredicateTypeMemberDeclaredType))
-		sf.append(">")
-	}
-
 	sf.append(" ")
 	sf.append(node.getProperty(sourceshape.NodeVariableStatementName))
+
+	sf.emitDeclaredType(node)
 
 	if node.hasChild(sourceshape.NodePredicateTypeFieldDefaultValue) {
 		sf.append(" = ")
@@ -38,18 +33,15 @@ func (sf *sourceFormatter) emitDecorator(node formatterNode) {
 // emitTypeDefinition emits the source of a declared interface.
 func (sf *sourceFormatter) emitTypeDefinition(node formatterNode, kind string) {
 	sf.emitOrderedNodes(node.getChildren(sourceshape.NodeTypeDefinitionDecorator))
-
 	sf.append(kind)
-
-	if node.hasChild(sourceshape.NodeAgentPredicatePrincipalType) {
-		sf.append("<")
-		sf.emitNode(node.getChild(sourceshape.NodeAgentPredicatePrincipalType))
-		sf.append(">")
-	}
-
 	sf.append(" ")
 	sf.append(node.getProperty(sourceshape.NodeTypeDefinitionName))
 	sf.emitGenerics(node, sourceshape.NodeTypeDefinitionGeneric)
+
+	if node.hasChild(sourceshape.NodeAgentPredicatePrincipalType) {
+		sf.append(" for ")
+		sf.emitNode(node.getChild(sourceshape.NodeAgentPredicatePrincipalType))
+	}
 
 	if node.GetType() == sourceshape.NodeTypeNominal {
 		baseType := node.getChild(sourceshape.NodeNominalPredicateBaseType)

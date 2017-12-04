@@ -10,14 +10,14 @@ type SomeNominal<T : int> : BaseClass {
 		reject Because.ThatsWhy()
 	}
 
-	function<void> DoSomething<Q : any>(firstParam int, secondParam string*) {
+	function DoSomething<Q : any>(firstParam int, secondParam string*) {
 		return
 	}
 
 	/**
 	 * SomeProp is some sort of prop.
 	 */
-	property<SomeType?> SomeProp {
+	property SomeProp SomeType? {
 		get { return null }
 
 		set {
@@ -25,7 +25,7 @@ type SomeNominal<T : int> : BaseClass {
 		}
 	}
 
-	property<bool> GetterProp {
+	property GetterProp bool {
 		get { return true }
 	}
 
@@ -33,9 +33,9 @@ type SomeNominal<T : int> : BaseClass {
 		return someStream
 	}
 
-	operator<someOpReturn> someOp(onlyOneParam here) {
+	operator someOp(onlyOneParam here) someOpReturn {
 		return someThing
 	}
 
-	function<int> AnotherFunction() { return 33 }
+	function AnotherFunction() int { return 33 }
 }

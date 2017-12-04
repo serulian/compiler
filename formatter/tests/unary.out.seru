@@ -1,4 +1,4 @@
-function<void> DoSomething() {
+function DoSomething() {
 	!a
 	!a.b
 	!true
