@@ -3,7 +3,7 @@ struct AnotherStruct {
 }
 
 type SomeNominal : AnotherStruct {
-	function<bool> GetValue() {
+	function GetValue() bool {
 		return AnotherStruct(this).AnotherBool
 	}
 }
@@ -12,16 +12,12 @@ struct SomeStruct {
 	Nested SomeNominal
 }
 
-function<any> TEST() {
-	var s = SomeStruct{
-		Nested: SomeNominal(AnotherStruct{
-			AnotherBool: true,
-		}),
-	}
+function TEST() any {
+	var s = SomeStruct{Nested: SomeNominal(AnotherStruct{AnotherBool: true})}
 
 	var jsonString = '{"Nested":{"AnotherBool":true}}'
-	var correct = (s.Stringify<json>() == jsonString)
+	var correct = s.Stringify<json>() == jsonString
 
 	var parsed = SomeStruct.Parse<json>(jsonString)
-	return correct && (parsed.Nested.GetValue())
+	return correct && parsed.Nested.GetValue()
 }

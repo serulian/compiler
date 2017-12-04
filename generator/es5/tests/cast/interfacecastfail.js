@@ -1,6 +1,6 @@
 $module('interfacecastfail', function () {
   var $static = this;
-  this.$class('206031eb', 'SomeClass', false, '', function () {
+  this.$class('90a7ad6b', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -16,7 +16,7 @@ $module('interfacecastfail', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeValue|3|7243cf1b": true,
+        "SomeValue|3|f22a98b6": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -29,7 +29,7 @@ $module('interfacecastfail', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeValue|3|f361570c": true,
+        "SomeValue|3|5e61c39d": true,
       };
       return this.$cachedtypesig = computed;
     };

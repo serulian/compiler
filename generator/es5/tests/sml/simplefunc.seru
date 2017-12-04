@@ -1,7 +1,3 @@
-function<bool> SimpleFunction() {
-	return true
-}
+function SimpleFunction() bool { return true }
 
-function<any> TEST() {
-	return <SimpleFunction />
-}
+function TEST() any { return <SimpleFunction /> }

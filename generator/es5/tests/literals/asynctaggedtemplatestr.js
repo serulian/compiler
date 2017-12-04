@@ -1,6 +1,6 @@
 $module('asynctaggedtemplatestr', function () {
   var $static = this;
-  $static.DoSomethingAsync = $t.workerwrap('9c7a98cc', function () {
+  $static.DoSomethingAsync = $t.workerwrap('f7b645e4', function () {
     return $t.fastbox(30, $g.________testlib.basictypes.Integer);
   });
   $static.myFunction = $t.markpromising(function (pieces, values) {

@@ -1,4 +1,4 @@
-function<bool> SimpleFunction(props []{string}, children int*) {
+function SimpleFunction(props []{string}, children int*) bool {
 	var counter = 0
 	for value in children {
 		counter = counter + value
@@ -6,6 +6,10 @@ function<bool> SimpleFunction(props []{string}, children int*) {
 	return counter == 6
 }
 
-function<any> TEST() {
-	return <SimpleFunction>{ 1 }{ 2 }{ 3 }</SimpleFunction>
+function TEST() any {
+	return <SimpleFunction>
+		{1}
+		{2}
+		{3}
+	</SimpleFunction>
 }

@@ -61,7 +61,7 @@ $module('asyncchildren', function () {
     };
     return $promise.new($continue);
   });
-  $static.DoSomethingAsync = $t.workerwrap('a6e86a18', function (i) {
+  $static.DoSomethingAsync = $t.workerwrap('cb426ec7', function (i) {
     return $t.fastbox(i.$wrapped + 1, $g.________testlib.basictypes.Integer);
   });
   $static.GetSomething = $t.markpromising(function (i) {

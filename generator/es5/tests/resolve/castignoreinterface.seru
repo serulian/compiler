@@ -1,19 +1,17 @@
 interface SomeInterface {
-	function<void> SomeFunction(value bool)
+	function SomeFunction(value bool)
 }
 
-function<bool> DoSomethingAsync() {
-	return true
-}
+function DoSomethingAsync() bool { return true }
 
 class SomeClass {
-	function<void> SomeFunction(value bool) {
+	function SomeFunction(value bool) {
 		<- DoSomethingAsync()
 	}
 }
 
-function<any> TEST() {
-	var<any> somevalue = 'hello'
+function TEST() any {
+	var somevalue any = 'hello'
 	a, _ := somevalue.(SomeInterface)
 	a?.SomeFunction(true)
 

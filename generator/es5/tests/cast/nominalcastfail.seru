@@ -1,10 +1,11 @@
 class SomeClass {}
+
 class AnotherClass {}
 
 type SomeNominal : SomeClass {}
 
-function<void> TEST() {
+function TEST() {
 	var sc = SomeClass.new()
-	var<any> ac = AnotherClass.new()
+	var ac any = AnotherClass.new()
 	ac.(SomeNominal)
 }

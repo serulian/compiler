@@ -1,7 +1,7 @@
-function<bool> SimpleFunction(props []{string}, child string) {
+function SimpleFunction(props []{string}, child string) bool {
 	return child.Length == 5
 }
 
-function<any> TEST() {
+function TEST() any {
 	return <SimpleFunction>hello</SimpleFunction>
 }

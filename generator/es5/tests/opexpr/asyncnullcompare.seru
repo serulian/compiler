@@ -1,8 +1,6 @@
-function<bool> DoSomethingAsync() {
-	return true
-}
+function DoSomethingAsync() bool { return true }
 
-function<any> TEST() {
-	var<bool?> someBool = null
+function TEST() any {
+	var someBool bool? = null
 	return someBool ?? (<- DoSomethingAsync())
 }

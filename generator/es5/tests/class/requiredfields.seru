@@ -1,9 +1,9 @@
 class SomeClass {
-	var<int> SomeField
-	var<bool> AnotherField = true
+	var SomeField int
+	var AnotherField bool = true
 }
 
-function<any> TEST() {
+function TEST() any {
 	var sc = SomeClass.new(2)
-	return (sc.SomeField == 2) && sc.AnotherField
+	return sc.SomeField == 2 && sc.AnotherField
 }

@@ -1,6 +1,6 @@
 $module('loopstreamable', function () {
   var $static = this;
-  this.$class('4f99dc7f', 'SomeStreamable', false, '', function () {
+  this.$class('f88b971b', 'SomeStreamable', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -16,13 +16,13 @@ $module('loopstreamable', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Stream|2|2549c819<47956471<f361570c>>": true,
+        "Stream|2|0b2e6e78<9fefaaf9<5e61c39d>>": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  this.$class('e6a7b534', 'SomeStream', false, '', function () {
+  this.$class('7d710bf7', 'SomeStream', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -42,7 +42,7 @@ $module('loopstreamable', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Next|2|2549c819<4b63a755<f361570c,f361570c>>": true,
+        "Next|2|0b2e6e78<8abdfedc<5e61c39d,5e61c39d>>": true,
       };
       return this.$cachedtypesig = computed;
     };

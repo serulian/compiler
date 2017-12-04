@@ -1,12 +1,10 @@
 class SomeClass {
-	var<bool> boolValue	
+	var boolValue bool
 
-	operator bool(sc SomeClass) {
-		return sc.boolValue
-	}
+	operator bool(sc SomeClass) { return sc.boolValue }
 }
 
-function<any> TEST() {
+function TEST() any {
 	var sc = SomeClass.new(false)
 	return not sc
 }

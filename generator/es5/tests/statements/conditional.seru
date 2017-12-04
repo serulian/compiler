@@ -1,7 +1,5 @@
-function<any> TEST() {
-	if true {
-		return true
-	}
+function TEST() any {
+	if true { return true }
 
 	return false
 }

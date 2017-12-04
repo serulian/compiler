@@ -8,14 +8,12 @@ struct SomeStruct {
 	SomeInstance AnotherStruct
 }
 
-function<any> TEST() {
+function TEST() any {
 	var ss = SomeStruct{
 		SomeField: 42,
 		AnotherField: true,
-		SomeInstance: AnotherStruct{
-			AnotherBool: true,
-		},
+		SomeInstance: AnotherStruct{AnotherBool: true},
 	}
 
-	return (ss.SomeField == 42) && ss.AnotherField && ss.SomeInstance.AnotherBool
+	return ss.SomeField == 42 && ss.AnotherField && ss.SomeInstance.AnotherBool
 }

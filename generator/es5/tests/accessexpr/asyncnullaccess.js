@@ -1,6 +1,6 @@
 $module('asyncnullaccess', function () {
   var $static = this;
-  this.$class('b0e74b83', 'SomeClass', false, '', function () {
+  this.$class('dc245233', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -43,13 +43,13 @@ $module('asyncnullaccess', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeProperty|3|f361570c": true,
+        "SomeProperty|3|5e61c39d": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  $static.DoSomethingAsync = $t.workerwrap('69732a26', function () {
+  $static.DoSomethingAsync = $t.workerwrap('0df2120d', function () {
     return $t.fastbox(42, $g.________testlib.basictypes.Integer);
   });
   $static.TEST = $t.markpromising(function () {

@@ -1,4 +1,4 @@
-function<bool> SimpleFunction(props []{string}, children int*) {
+function SimpleFunction(props []{string}, children int*) bool {
 	var counter = 0
 	for value in children {
 		counter = counter + value
@@ -6,17 +6,15 @@ function<bool> SimpleFunction(props []{string}, children int*) {
 	return counter == 5
 }
 
-function<int> DoSomethingAsync(i int) {
-	return i + 1
-}
+function DoSomethingAsync(i int) int { return i + 1 }
 
-function<int> GetSomething(i int) {
+function GetSomething(i int) int {
 	return <- DoSomethingAsync(i)
 }
 
-function<any> TEST() {
+function TEST() any {
 	return <SimpleFunction>
-		{ GetSomething(1) }
-		{ GetSomething(2) }
+		{GetSomething(1)}
+		{GetSomething(2)}
 	</SimpleFunction>
 }

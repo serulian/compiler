@@ -1,4 +1,4 @@
-function<int*> AnotherGenerator() {
+function AnotherGenerator() int* {
 	yield 1
 
 	if true {
@@ -10,13 +10,13 @@ function<int*> AnotherGenerator() {
 	yield 4
 }
 
-function<int*> SomeGenerator() {
+function SomeGenerator() int* {
 	yield in AnotherGenerator()
 	yield 5
 }
 
-function<bool?> TEST() {
-	var<int> v = 0
+function TEST() bool? {
+	var v int = 0
 	for value in SomeGenerator() {
 		v = v + value
 	}

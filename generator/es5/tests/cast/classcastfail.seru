@@ -1,8 +1,9 @@
 class SomeClass {}
+
 class AnotherClass {}
 
-function<void> TEST() {
+function TEST() {
 	var sc = SomeClass.new()
-	var<any> ac = AnotherClass.new()
+	var ac any = AnotherClass.new()
 	ac.(SomeClass)
 }

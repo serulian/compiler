@@ -1,21 +1,15 @@
 class SomeError {
-	property<string> Message {
+	property Message string {
 		get { return 'huh?' }
 	}
 }
 
-function<bool> getValue() {
-	return true
-}
+function getValue() bool { return true }
 
-function<bool> failValue() {
-	reject SomeError.new()
-}
+function failValue() bool { reject SomeError.new() }
 
-function<int> getIntValue() {
-	return 45
-}
+function getIntValue() int { return 45 }
 
-function<bool> TEST() {
-	return failValue() if getIntValue() == 2 else getValue()	
+function TEST() bool {
+	return failValue() if getIntValue() == 2 else getValue()
 }

@@ -1,6 +1,6 @@
 $module('genericinterfacecast', function () {
   var $static = this;
-  this.$class('58a4c803', 'SomeClass', false, '', function () {
+  this.$class('e2eb07d6', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -16,7 +16,7 @@ $module('genericinterfacecast', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeValue|3|f361570c": true,
+        "SomeValue|3|5e61c39d": true,
       };
       return this.$cachedtypesig = computed;
     };

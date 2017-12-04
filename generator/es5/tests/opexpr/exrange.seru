@@ -1,8 +1,8 @@
-function<any> TEST() {
-    var<int> counter = 0
-    for i in 0..<2 {
-        counter = counter + i
-    }
+function TEST() any {
+	var counter int = 0
+	for i in 0 ..< 2 {
+		counter = counter + i
+	}
 
-    return counter == 1
+	return counter == 1
 }

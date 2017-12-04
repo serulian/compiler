@@ -1,11 +1,7 @@
-var<bool> someBool = true
+var someBool bool = true
 
-function<bool> AnotherFunction() {
-	return someBool
-}
+function AnotherFunction() bool { return someBool }
 
-var<bool> anotherBool = AnotherFunction()
+var anotherBool bool = AnotherFunction()
 
-function<any> TEST() {
-	return anotherBool
-}
+function TEST() any { return anotherBool }

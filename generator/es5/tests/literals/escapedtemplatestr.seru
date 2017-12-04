@@ -1,4 +1,4 @@
-function<void> DoSomething() {
+function DoSomething() {
 	`hello 'world'! "This is a
 	long quote!"`
 }

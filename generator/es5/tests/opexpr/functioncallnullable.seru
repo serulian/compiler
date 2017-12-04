@@ -1,18 +1,14 @@
 class SomeClass {
-	function<bool> SomeMethod() {
-		return true
-	}	
+	function SomeMethod() bool { return true }
 }
 
 class AnotherClass {
-	function<bool> AnotherMethod() {
-		return false
-	}	
+	function AnotherMethod() bool { return false }
 }
 
-function<any> TEST() {
-	var<SomeClass?> sc = SomeClass.new()
-	var<AnotherClass?> ac = null
+function TEST() any {
+	var sc SomeClass? = SomeClass.new()
+	var ac AnotherClass? = null
 
-	return (sc?.SomeMethod() ?? false) && (ac?.AnotherMethod() ?? true)
+	return sc?.SomeMethod() ?? false && ac?.AnotherMethod() ?? true
 }

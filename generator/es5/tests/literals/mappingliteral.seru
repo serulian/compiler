@@ -1,6 +1,3 @@
-function<any> TEST() {
-	return ([]{bool}{
-		'somekey': true,
-		'anotherkey': false,
-	})['somekey']
+function TEST() any {
+	return ([]{bool}{'somekey': true, 'anotherkey': false})['somekey']
 }

@@ -1,6 +1,6 @@
 $module('maybeasyncfunction', function () {
   var $static = this;
-  this.$class('a01c770d', 'SomeClass', false, '', function () {
+  this.$class('63735d1b', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -43,13 +43,13 @@ $module('maybeasyncfunction', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SimpleFunction|2|2549c819<f361570c>": true,
+        "SimpleFunction|2|0b2e6e78<5e61c39d>": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  this.$class('f2231d14', 'AnotherClass', false, '', function () {
+  this.$class('93608c9a', 'AnotherClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -65,26 +65,26 @@ $module('maybeasyncfunction', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SimpleFunction|2|2549c819<f361570c>": true,
+        "SimpleFunction|2|0b2e6e78<5e61c39d>": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  this.$interface('a2ac6388', 'ISimple', false, '', function () {
+  this.$interface('1f1ff333', 'ISimple', false, '', function () {
     var $static = this;
     this.$typesig = function () {
       if (this.$cachedtypesig) {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SimpleFunction|2|2549c819<f361570c>": true,
+        "SimpleFunction|2|0b2e6e78<5e61c39d>": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  $static.DoSomethingAsync = $t.workerwrap('b6375801', function () {
+  $static.DoSomethingAsync = $t.workerwrap('9cca6f95', function () {
     return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
   });
   $static.TEST = $t.markpromising(function () {

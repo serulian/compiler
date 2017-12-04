@@ -1,6 +1,6 @@
-function<any> TEST() {
+function TEST() any {
 	var first = true
 	var second = false
 
-	return (first && second) || first || !second
+	return first && second || first || !second
 }

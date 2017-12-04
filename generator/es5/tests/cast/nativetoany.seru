@@ -1,4 +1,4 @@
-function<any> TEST() {
-	var<any> b = &true
+function TEST() any {
+	var b any = &true
 	return b.(any).(bool)
 }

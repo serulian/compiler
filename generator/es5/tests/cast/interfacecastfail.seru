@@ -1,14 +1,14 @@
 interface SomeInterface {
-	property<bool> SomeValue { get }
+	property SomeValue bool { get }
 }
 
 class SomeClass {
-	property<int> SomeValue {
+	property SomeValue int {
 		get { return 2 }
 	}
 }
 
-function<void> TEST() {
-	var<any> sc = SomeClass.new()
+function TEST() {
+	var sc any = SomeClass.new()
 	sc.(SomeInterface)
 }

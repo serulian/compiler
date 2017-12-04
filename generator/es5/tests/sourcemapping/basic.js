@@ -791,7 +791,7 @@ this.Serulian = (function ($global) {
   };
   $module('________testlib.basictypes', function () {
     var $static = this;
-    this.$class('4b63a755', 'Tuple', true, 'tuple', function (T, Q) {
+    this.$class('8abdfedc', 'Tuple', true, 'tuple', function (T, Q) {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -813,12 +813,12 @@ this.Serulian = (function ($global) {
         }
         var computed = {
         };
-        computed[((("Build|1|2549c819<4b63a755<" + $t.typeid(T)) + ",") + $t.typeid(Q)) + ">>"] = true;
+        computed[((("Build|1|0b2e6e78<8abdfedc<" + $t.typeid(T)) + ",") + $t.typeid(Q)) + ">>"] = true;
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$class('2549c819', 'Function', true, 'function', function (T) {
+    this.$class('0b2e6e78', 'Function', true, 'function', function (T) {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -831,7 +831,7 @@ this.Serulian = (function ($global) {
       };
     });
 
-    this.$class('f884cf2a', 'IntStream', false, '$intstream', function () {
+    this.$class('990f1337', 'IntStream', false, '$intstream', function () {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -883,14 +883,14 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "OverRange|1|2549c819<f884cf2a>": true,
-          "Next|2|2549c819<4b63a755<7243cf1b,f361570c>>": true,
+          "OverRange|1|0b2e6e78<990f1337>": true,
+          "Next|2|0b2e6e78<8abdfedc<f22a98b6,5e61c39d>>": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$class('969963a7', 'List', true, 'list', function (T) {
+    this.$class('b210add1', 'List', true, 'list', function (T) {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -956,7 +956,7 @@ this.Serulian = (function ($global) {
               continue syncloop;
 
             case 4:
-              if (/*#start >= end {#*/start.$wrapped >= /*#end {#*/end.$wrapped) /*#end {#*/{
+              if (/*#start >= end { return Slice<T>.Empty() }#*/start.$wrapped >= /*#end { return Slice<T>.Empty() }#*/end.$wrapped) /*#end { return Slice<T>.Empty() }#*/{
                 $current = 5;
                 continue syncloop;
               } else {
@@ -981,15 +981,15 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Count|3|7243cf1b": true,
+          "Count|3|f22a98b6": true,
         };
-        computed[("index|4|2549c819<" + $t.typeid(T)) + ">"] = true;
-        computed[("slice|4|2549c819<fe002889<" + $t.typeid(T)) + ">>"] = true;
+        computed[("index|4|0b2e6e78<" + $t.typeid(T)) + ">"] = true;
+        computed[("slice|4|0b2e6e78<add4a088<" + $t.typeid(T)) + ">>"] = true;
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$class('5b1201ed', 'Map', true, 'map', function (T, Q) {
+    this.$class('627b0944', 'Map', true, 'map', function (T, Q) {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -1017,14 +1017,14 @@ this.Serulian = (function ($global) {
               continue syncloop;
 
             case 1:
-              $temp1 = /*#0..(len - 1) {#*/$g.________testlib.basictypes.Integer.$range(/*#0..(len - 1) {#*/$t.fastbox(/*#0..(len - 1) {#*/0, /*#0..(len - 1) {#*/$g.________testlib.basictypes.Integer), /*#len - 1) {#*/$t.fastbox(/*#len - 1) {#*/len.$wrapped - /*#len - 1) {#*/1, /*#len - 1) {#*/$g.________testlib.basictypes.Integer));
+              $temp1 = /*#0 .. len - 1 {#*/$g.________testlib.basictypes.Integer.$range(/*#0 .. len - 1 {#*/$t.fastbox(/*#0 .. len - 1 {#*/0, /*#0 .. len - 1 {#*/$g.________testlib.basictypes.Integer), /*#len - 1 {#*/$t.fastbox(/*#len - 1 {#*/len.$wrapped - /*#len - 1 {#*/1, /*#len - 1 {#*/$g.________testlib.basictypes.Integer));
               $current = 2;
               continue syncloop;
 
             case 2:
-/*#i in 0..(len - 1) {#*/              $temp0 = /*#for i in 0..(len - 1) {#*/$temp1.Next();
-/*#i in 0..(len - 1) {#*/              i = /*#i in 0..(len - 1) {#*/$temp0.First;
-              if (/*#for i in 0..(len - 1) {#*/$temp0.Second.$wrapped) /*#for i in 0..(len - 1) {#*/{
+/*#i in 0 .. len - 1 {#*/              $temp0 = /*#for i in 0 .. len - 1 {#*/$temp1.Next();
+/*#i in 0 .. len - 1 {#*/              i = /*#i in 0 .. len - 1 {#*/$temp0.First;
+              if (/*#for i in 0 .. len - 1 {#*/$temp0.Second.$wrapped) /*#for i in 0 .. len - 1 {#*/{
                 $current = 3;
                 continue syncloop;
               } else {
@@ -1061,7 +1061,7 @@ this.Serulian = (function ($global) {
             case 0:
               keyString = /*#key.MapKey.String()#*/key.MapKey().String();
               value = /*#this.internalObject[NativeString(keyString)]#*/$this.internalObject[/*#keyString)]#*/keyString.$wrapped];
-              if (/*#value is null {#*/value == /*#null {#*/null) /*#null {#*/{
+              if (/*#value is null { return null }#*/value == /*#null { return null }#*/null) /*#null { return null }#*/{
                 $current = 1;
                 continue syncloop;
               } else {
@@ -1093,16 +1093,16 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "setindex|4|2549c819<void>": true,
+          "setindex|4|0b2e6e78<void>": true,
         };
-        computed[((("Empty|1|2549c819<5b1201ed<" + $t.typeid(T)) + ",") + $t.typeid(Q)) + ">>"] = true;
-        computed[("Mapping|2|2549c819<95776681<" + $t.typeid(Q)) + ">>"] = true;
-        computed[("index|4|2549c819<" + $t.typeid(Q)) + ">"] = true;
+        computed[((("Empty|1|0b2e6e78<627b0944<" + $t.typeid(T)) + ",") + $t.typeid(Q)) + ">>"] = true;
+        computed[("Mapping|2|0b2e6e78<204295f9<" + $t.typeid(Q)) + ">>"] = true;
+        computed[("index|4|0b2e6e78<" + $t.typeid(Q)) + ">"] = true;
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$class('5f5f1f6f', 'JSON', false, 'json', function () {
+    this.$class('6ae32d67', 'JSON', false, 'json', function () {
       var $static = this;
       var $instance = this.prototype;
       $static.new = function () {
@@ -1125,41 +1125,28 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Get|1|2549c819<5f5f1f6f>": true,
-          "Stringify|2|2549c819<ec87fc3f>": true,
-          "Parse|2|2549c819<95776681<any>>": true,
+          "Get|1|0b2e6e78<6ae32d67>": true,
+          "Stringify|2|0b2e6e78<c509e19d>": true,
+          "Parse|2|0b2e6e78<204295f9<any>>": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('10d66da0', 'Stringable', false, 'stringable', function () {
+    this.$interface('e403222d', 'Stringable', false, 'stringable', function () {
       var $static = this;
       this.$typesig = function () {
         if (this.$cachedtypesig) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "String|2|2549c819<ec87fc3f>": true,
+          "String|2|0b2e6e78<c509e19d>": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('47956471', 'Stream', true, 'stream', function (T) {
-      var $static = this;
-      this.$typesig = function () {
-        if (this.$cachedtypesig) {
-          return this.$cachedtypesig;
-        }
-        var computed = {
-        };
-        computed[("Next|2|2549c819<4b63a755<" + $t.typeid(T)) + ",f361570c>>"] = true;
-        return this.$cachedtypesig = computed;
-      };
-    });
-
-    this.$interface('7d230f2f', 'Streamable', true, 'streamable', function (T) {
+    this.$interface('9fefaaf9', 'Stream', true, 'stream', function (T) {
       var $static = this;
       this.$typesig = function () {
         if (this.$cachedtypesig) {
@@ -1167,25 +1154,12 @@ this.Serulian = (function ($global) {
         }
         var computed = {
         };
-        computed[("Stream|2|2549c819<47956471<" + $t.typeid(T)) + ">>"] = true;
+        computed[("Next|2|0b2e6e78<8abdfedc<" + $t.typeid(T)) + ",5e61c39d>>"] = true;
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('04a4d70b', 'Error', false, 'error', function () {
-      var $static = this;
-      this.$typesig = function () {
-        if (this.$cachedtypesig) {
-          return this.$cachedtypesig;
-        }
-        var computed = {
-          "Message|3|ec87fc3f": true,
-        };
-        return this.$cachedtypesig = computed;
-      };
-    });
-
-    this.$interface('837d6211', 'Awaitable', true, 'awaitable', function (T) {
+    this.$interface('0d4528b3', 'Streamable', true, 'streamable', function (T) {
       var $static = this;
       this.$typesig = function () {
         if (this.$cachedtypesig) {
@@ -1193,56 +1167,65 @@ this.Serulian = (function ($global) {
         }
         var computed = {
         };
-        computed[("Then|2|2549c819<837d6211<" + $t.typeid(T)) + ">>"] = true;
-        computed[("Catch|2|2549c819<837d6211<" + $t.typeid(T)) + ">>"] = true;
+        computed[("Stream|2|0b2e6e78<9fefaaf9<" + $t.typeid(T)) + ">>"] = true;
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('6234a420', 'Releasable', false, 'releasable', function () {
+    this.$interface('18a79690', 'Error', false, 'error', function () {
       var $static = this;
       this.$typesig = function () {
         if (this.$cachedtypesig) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Release|2|2549c819<void>": true,
+          "Message|3|c509e19d": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('8e9e617a', 'Mappable', false, 'mappable', function () {
+    this.$interface('9fc228ba', 'Awaitable', true, 'awaitable', function (T) {
       var $static = this;
       this.$typesig = function () {
         if (this.$cachedtypesig) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "MapKey|3|10d66da0": true,
         };
+        computed[("Then|2|0b2e6e78<9fc228ba<" + $t.typeid(T)) + ">>"] = true;
+        computed[("Catch|2|0b2e6e78<9fc228ba<" + $t.typeid(T)) + ">>"] = true;
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('d93f43e3', 'Stringifier', false, '$stringifier', function () {
+    this.$interface('6882bfe7', 'Releasable', false, 'releasable', function () {
       var $static = this;
-      $static.Get = function () {
-        return $g.________testlib.basictypes.JSON.new();
-      };
       this.$typesig = function () {
         if (this.$cachedtypesig) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Get|1|2549c819<d93f43e3>": true,
-          "Stringify|2|2549c819<ec87fc3f>": true,
+          "Release|2|0b2e6e78<void>": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$interface('445b8e8e', 'Parser', false, '$parser', function () {
+    this.$interface('b5bea91f', 'Mappable', false, 'mappable', function () {
+      var $static = this;
+      this.$typesig = function () {
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "MapKey|3|e403222d": true,
+        };
+        return this.$cachedtypesig = computed;
+      };
+    });
+
+    this.$interface('09600da0', 'Stringifier', false, '$stringifier', function () {
       var $static = this;
       $static.Get = function () {
         return $g.________testlib.basictypes.JSON.new();
@@ -1252,14 +1235,31 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Get|1|2549c819<445b8e8e>": true,
-          "Parse|2|2549c819<95776681<any>>": true,
+          "Get|1|0b2e6e78<09600da0>": true,
+          "Stringify|2|0b2e6e78<c509e19d>": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('95776681', 'Mapping', true, 'mapping', function (T) {
+    this.$interface('3d8ab1ed', 'Parser', false, '$parser', function () {
+      var $static = this;
+      $static.Get = function () {
+        return $g.________testlib.basictypes.JSON.new();
+      };
+      this.$typesig = function () {
+        if (this.$cachedtypesig) {
+          return this.$cachedtypesig;
+        }
+        var computed = {
+          "Get|1|0b2e6e78<3d8ab1ed>": true,
+          "Parse|2|0b2e6e78<204295f9<any>>": true,
+        };
+        return this.$cachedtypesig = computed;
+      };
+    });
+
+    this.$type('204295f9', 'Mapping', true, 'mapping', function (T) {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1287,8 +1287,8 @@ this.Serulian = (function ($global) {
         syncloop: while (true) {
           switch ($current) {
             case 0:
-              value = /*#this)[NativeString(key)]#*/$this.$wrapped[/*#key)]#*/key.$wrapped];
-              if (/*#value is null {#*/value == /*#null {#*/null) /*#null {#*/{
+              value = /*#this))[NativeString(key)]#*/$this.$wrapped[/*#key)]#*/key.$wrapped];
+              if (/*#value is null { return null }#*/value == /*#null { return null }#*/null) /*#null { return null }#*/{
                 $current = 1;
                 continue syncloop;
               } else {
@@ -1313,15 +1313,15 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Keys|3|fe002889<ec87fc3f>": true,
+          "Keys|3|add4a088<c509e19d>": true,
         };
-        computed[("Empty|1|2549c819<95776681<" + $t.typeid(T)) + ">>"] = true;
-        computed[("index|4|2549c819<" + $t.typeid(T)) + ">"] = true;
+        computed[("Empty|1|0b2e6e78<204295f9<" + $t.typeid(T)) + ">>"] = true;
+        computed[("index|4|0b2e6e78<" + $t.typeid(T)) + ">"] = true;
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('fe002889', 'Slice', true, 'slice', function (T) {
+    this.$type('add4a088', 'Slice', true, 'slice', function (T) {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1386,7 +1386,7 @@ this.Serulian = (function ($global) {
               continue syncloop;
 
             case 4:
-              if (/*#start >= end {#*/start.$wrapped >= /*#end {#*/end.$wrapped) /*#end {#*/{
+              if (/*#start >= end { return Slice<T>.Empty() }#*/start.$wrapped >= /*#end { return Slice<T>.Empty() }#*/end.$wrapped) /*#end { return Slice<T>.Empty() }#*/{
                 $current = 5;
                 continue syncloop;
               } else {
@@ -1415,16 +1415,16 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Length|3|7243cf1b": true,
+          "Length|3|f22a98b6": true,
         };
-        computed[("Empty|1|2549c819<fe002889<" + $t.typeid(T)) + ">>"] = true;
-        computed[("index|4|2549c819<" + $t.typeid(T)) + ">"] = true;
-        computed[("slice|4|2549c819<fe002889<" + $t.typeid(T)) + ">>"] = true;
+        computed[("Empty|1|0b2e6e78<add4a088<" + $t.typeid(T)) + ">>"] = true;
+        computed[("index|4|0b2e6e78<" + $t.typeid(T)) + ">"] = true;
+        computed[("slice|4|0b2e6e78<add4a088<" + $t.typeid(T)) + ">>"] = true;
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('7243cf1b', 'Integer', false, 'int', function () {
+    this.$type('f22a98b6', 'Integer', false, 'int', function () {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1476,23 +1476,23 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "range|4|2549c819<47956471<7243cf1b>>": true,
-          "exclusiverange|4|2549c819<47956471<7243cf1b>>": true,
-          "compare|4|2549c819<7243cf1b>": true,
-          "equals|4|2549c819<f361570c>": true,
-          "plus|4|2549c819<7243cf1b>": true,
-          "times|4|2549c819<7243cf1b>": true,
-          "div|4|2549c819<7243cf1b>": true,
-          "minus|4|2549c819<7243cf1b>": true,
-          "Release|2|2549c819<void>": true,
-          "MapKey|3|10d66da0": true,
-          "String|2|2549c819<ec87fc3f>": true,
+          "range|4|0b2e6e78<9fefaaf9<f22a98b6>>": true,
+          "exclusiverange|4|0b2e6e78<9fefaaf9<f22a98b6>>": true,
+          "compare|4|0b2e6e78<f22a98b6>": true,
+          "equals|4|0b2e6e78<5e61c39d>": true,
+          "plus|4|0b2e6e78<f22a98b6>": true,
+          "times|4|0b2e6e78<f22a98b6>": true,
+          "div|4|0b2e6e78<f22a98b6>": true,
+          "minus|4|0b2e6e78<f22a98b6>": true,
+          "Release|2|0b2e6e78<void>": true,
+          "MapKey|3|e403222d": true,
+          "String|2|0b2e6e78<c509e19d>": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('f361570c', 'Boolean', false, 'bool', function () {
+    this.$type('5e61c39d', 'Boolean', false, 'bool', function () {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1508,7 +1508,7 @@ this.Serulian = (function ($global) {
         syncloop: while (true) {
           switch ($current) {
             case 0:
-              if (/*#left == right {#*/$g.________testlib.basictypes.Boolean.$equals(/*#left == right {#*/left, /*#right {#*/right).$wrapped) /*#right {#*/{
+              if (/*#left == right { return 0 }#*/$g.________testlib.basictypes.Boolean.$equals(/*#left == right { return 0 }#*/left, /*#right { return 0 }#*/right).$wrapped) /*#right { return 0 }#*/{
                 $current = 1;
                 continue syncloop;
               } else {
@@ -1544,16 +1544,16 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "compare|4|2549c819<7243cf1b>": true,
-          "equals|4|2549c819<f361570c>": true,
-          "String|2|2549c819<ec87fc3f>": true,
-          "MapKey|3|10d66da0": true,
+          "compare|4|0b2e6e78<f22a98b6>": true,
+          "equals|4|0b2e6e78<5e61c39d>": true,
+          "String|2|0b2e6e78<c509e19d>": true,
+          "MapKey|3|e403222d": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('b54a5518', 'Float64', false, 'float64', function () {
+    this.$type('4bb5f076', 'Float64', false, 'float64', function () {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1573,13 +1573,13 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "Floor|2|2549c819<7243cf1b>": true,
+          "Floor|2|0b2e6e78<f22a98b6>": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('ec87fc3f', 'String', false, 'string', function () {
+    this.$type('c509e19d', 'String', false, 'string', function () {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1613,17 +1613,17 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "String|2|2549c819<ec87fc3f>": true,
-          "equals|4|2549c819<f361570c>": true,
-          "plus|4|2549c819<ec87fc3f>": true,
-          "MapKey|3|10d66da0": true,
-          "Length|3|7243cf1b": true,
+          "String|2|0b2e6e78<c509e19d>": true,
+          "equals|4|0b2e6e78<5e61c39d>": true,
+          "plus|4|0b2e6e78<c509e19d>": true,
+          "MapKey|3|e403222d": true,
+          "Length|3|f22a98b6": true,
         };
         return this.$cachedtypesig = computed;
       };
     });
 
-    this.$type('49139d13', 'WrappedError', false, 'wrappederror', function () {
+    this.$type('f01ea3c6', 'WrappedError', false, 'wrappederror', function () {
       var $instance = this.prototype;
       var $static = this;
       this.$box = function ($wrapped) {
@@ -1646,8 +1646,8 @@ this.Serulian = (function ($global) {
           return this.$cachedtypesig;
         }
         var computed = {
-          "For|1|2549c819<49139d13>": true,
-          "Message|3|ec87fc3f": true,
+          "For|1|0b2e6e78<f01ea3c6>": true,
+          "Message|3|c509e19d": true,
         };
         return this.$cachedtypesig = computed;
       };
@@ -1667,14 +1667,14 @@ this.Serulian = (function ($global) {
             continue syncloop;
 
           case 1:
-            $temp1 = /*#0 .. (pieces.Length - 1) {#*/$g.________testlib.basictypes.Integer.$range(/*#0 .. (pieces.Length - 1) {#*/$t.fastbox(/*#0 .. (pieces.Length - 1) {#*/0, /*#0 .. (pieces.Length - 1) {#*/$g.________testlib.basictypes.Integer), /*#pieces.Length - 1) {#*/$t.fastbox(/*#pieces.Length - 1) {#*/pieces.Length().$wrapped - /*#pieces.Length - 1) {#*/1, /*#pieces.Length - 1) {#*/$g.________testlib.basictypes.Integer));
+            $temp1 = /*#0 .. pieces.Length - 1 {#*/$g.________testlib.basictypes.Integer.$range(/*#0 .. pieces.Length - 1 {#*/$t.fastbox(/*#0 .. pieces.Length - 1 {#*/0, /*#0 .. pieces.Length - 1 {#*/$g.________testlib.basictypes.Integer), /*#pieces.Length - 1 {#*/$t.fastbox(/*#pieces.Length - 1 {#*/pieces.Length().$wrapped - /*#pieces.Length - 1 {#*/1, /*#pieces.Length - 1 {#*/$g.________testlib.basictypes.Integer));
             $current = 2;
             continue syncloop;
 
           case 2:
-/*#i in 0 .. (pieces.Length - 1) {#*/            $temp0 = /*#for i in 0 .. (pieces.Length - 1) {#*/$temp1.Next();
-/*#i in 0 .. (pieces.Length - 1) {#*/            i = /*#i in 0 .. (pieces.Length - 1) {#*/$temp0.First;
-            if (/*#for i in 0 .. (pieces.Length - 1) {#*/$temp0.Second.$wrapped) /*#for i in 0 .. (pieces.Length - 1) {#*/{
+/*#i in 0 .. pieces.Length - 1 {#*/            $temp0 = /*#for i in 0 .. pieces.Length - 1 {#*/$temp1.Next();
+/*#i in 0 .. pieces.Length - 1 {#*/            i = /*#i in 0 .. pieces.Length - 1 {#*/$temp0.First;
+            if (/*#for i in 0 .. pieces.Length - 1 {#*/$temp0.Second.$wrapped) /*#for i in 0 .. pieces.Length - 1 {#*/{
               $current = 3;
               continue syncloop;
             } else {

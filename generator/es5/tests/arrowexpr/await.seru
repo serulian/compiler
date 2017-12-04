@@ -1,18 +1,18 @@
 class SomePromise {
-	function<awaitable<bool>> Then(resolve function<void>(bool)) {
+	function Then(resolve function<void>(bool)) awaitable<bool> {
 		resolve(true)
 		return this
 	}
 
-	function<awaitable<bool>> Catch(rejection function<void>(error)) {
+	function Catch(rejection function<void>(error)) awaitable<bool> {
 		return this
 	}
 }
 
-function<bool?> DoSomething(p awaitable<bool>) {
-   return <- p
+function DoSomething(p awaitable<bool>) bool? {
+	return <- p
 }
 
-function<any> TEST() {
-  return DoSomething(SomePromise.new())
+function TEST() any {
+	return DoSomething(SomePromise.new())
 }

@@ -1,6 +1,6 @@
 $module('asyncfunctioncallnullable', function () {
   var $static = this;
-  this.$class('78bb1c18', 'SomeClass', false, '', function () {
+  this.$class('543abf8a', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -43,13 +43,13 @@ $module('asyncfunctioncallnullable', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeMethod|2|2549c819<f361570c>": true,
+        "SomeMethod|2|0b2e6e78<5e61c39d>": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  $static.DoSomethingAsync = $t.workerwrap('af11cc4a', function () {
+  $static.DoSomethingAsync = $t.workerwrap('46d4c151', function () {
     return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
   });
   $static.TEST = $t.markpromising(function () {

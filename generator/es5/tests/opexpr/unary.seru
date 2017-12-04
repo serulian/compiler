@@ -1,9 +1,7 @@
 class SomeClass {
-	operator not(instance SomeClass) {
-		return instance
-	}
+	operator not(instance SomeClass) { return instance }
 }
 
-function<void> DoSomething(first SomeClass) {
+function DoSomething(first SomeClass) {
 	~first
 }

@@ -1,5 +1,5 @@
-function<any> TEST() {
-	var<bool> result = false
+function TEST() any {
+	var result bool = false
 
 	(function() {
 		result = true

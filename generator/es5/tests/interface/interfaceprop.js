@@ -1,6 +1,6 @@
 $module('interfaceprop', function () {
   var $static = this;
-  this.$class('03095ee7', 'SomeClass', false, '', function () {
+  this.$class('4ad5dfcb', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -22,13 +22,13 @@ $module('interfaceprop', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeProperty|3|f361570c": true,
+        "SomeProperty|3|5e61c39d": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  this.$class('48a8f275', 'AnotherClass', false, '', function () {
+  this.$class('4804101f', 'AnotherClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -75,26 +75,26 @@ $module('interfaceprop', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeProperty|3|f361570c": true,
+        "SomeProperty|3|5e61c39d": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  this.$interface('ec209969', 'SomeInterface', false, '', function () {
+  this.$interface('d7bcf940', 'SomeInterface', false, '', function () {
     var $static = this;
     this.$typesig = function () {
       if (this.$cachedtypesig) {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeProperty|3|f361570c": true,
+        "SomeProperty|3|5e61c39d": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  $static.DoSomethingAsync = $t.workerwrap('c342c45f', function () {
+  $static.DoSomethingAsync = $t.workerwrap('5783aea4', function () {
     return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
   });
   $static.TEST = $t.markpromising(function () {

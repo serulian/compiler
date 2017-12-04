@@ -1,7 +1,5 @@
-function<int> DoSomethingAsync(a int) {
-  return a
-}
+function DoSomethingAsync(a int) int { return a }
 
-function<any> TEST() {
+function TEST() any {
 	return (<- DoSomethingAsync(3)) == 3
 }

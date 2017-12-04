@@ -1,5 +1,5 @@
-function<any> TEST() {
-	var<any> somevalue = 'hello'
+function TEST() any {
+	var somevalue any = 'hello'
 	a, _ := somevalue.(int)
 	return a is null
 }

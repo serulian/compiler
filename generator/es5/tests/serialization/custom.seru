@@ -1,13 +1,11 @@
 class CustomJSON {
-	constructor Get() {
-		return CustomJSON.new()
-	}
+	constructor Get() { return CustomJSON.new() }
 
-	function<string> Stringify(value mapping<any>) {
+	function Stringify(value mapping<any>) string {
 		return json.Get().Stringify(value)
 	}
 
-	function<mapping<any>> Parse(value string) {
+	function Parse(value string) mapping<any> {
 		return json.Get().Parse(value)
 	}
 }
@@ -22,17 +20,15 @@ struct SomeStruct {
 	SomeInstance AnotherStruct
 }
 
-function<any> TEST() {
+function TEST() any {
 	var s = SomeStruct{
 		SomeField: 2,
 		AnotherField: false,
-		SomeInstance: AnotherStruct{
-			AnotherBool: true,
-		},
+		SomeInstance: AnotherStruct{AnotherBool: true},
 	}
 
 	var jsonString = '{"AnotherField":false,"SomeField":2,"SomeInstance":{"AnotherBool":true}}'
 	var parsed = SomeStruct.Parse<CustomJSON>(jsonString)
 
-	return (parsed.SomeField == 2) && (!parsed.AnotherField) && (parsed.SomeInstance.AnotherBool)
+	return parsed.SomeField == 2 && !parsed.AnotherField && parsed.SomeInstance.AnotherBool
 }

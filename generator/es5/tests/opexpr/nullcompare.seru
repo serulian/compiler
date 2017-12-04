@@ -1,4 +1,4 @@
-function<any> TEST() {
-	var<bool?> someBool = null
+function TEST() any {
+	var someBool bool? = null
 	return someBool ?? true
 }

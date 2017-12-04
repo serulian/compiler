@@ -16,13 +16,13 @@ $module('unwrapnullable', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeProperty|3|f361570c": true,
+        "SomeProperty|3|5e61c39d": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  this.$type('117075e6', 'SomeType', false, '', function () {
+  this.$type('3753f9a6', 'SomeType', false, '', function () {
     var $instance = this.prototype;
     var $static = this;
     this.$box = function ($wrapped) {

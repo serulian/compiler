@@ -3,15 +3,10 @@ struct SomeStruct {
 	AnotherField bool
 }
 
-function<any> TEST() {
-	var first = SomeStruct{
-		SomeField: 42,
-		AnotherField: false,
-	}
+function TEST() any {
+	var first = SomeStruct{SomeField: 42, AnotherField: false}
 
-	var second = first{
-		AnotherField: true,
-	}
+	var second = first{AnotherField: true}
 
 	return second.SomeField == 42 && second.AnotherField && !first.AnotherField
 }

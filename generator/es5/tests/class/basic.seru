@@ -1,15 +1,13 @@
-function<bool> CoolFunction() {
-	return true
-}
+function CoolFunction() bool { return true }
 
 class SomeClass {
-	var<int> SomeInt = 2
-	var<bool> AnotherBool = CoolFunction()
-	var<int?> NullableInt
+	var NullableInt int?
+	var SomeInt int = 2
+	var AnotherBool bool = CoolFunction()
 
-	function<void> AnotherFunction() {}
+	function AnotherFunction() {}
 }
 
-function<any> TEST() {
+function TEST() any {
 	return SomeClass.new().AnotherBool
 }

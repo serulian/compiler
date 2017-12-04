@@ -1,18 +1,16 @@
 interface SomeInterface {}
 
-agent<SomeInterface> SomeAgent {
-	var<int> SomeField
+agent SomeAgent for SomeInterface {
+	var SomeField int
 }
 
 class SomeClass with SomeAgent {
 	constructor Declare() {
-		return SomeClass{
-			SomeAgent: SomeAgent.new(42),
-		}
+		return SomeClass{SomeAgent: SomeAgent.new(42)}
 	}
 }
 
-function<bool> TEST() {
+function TEST() bool {
 	sc := SomeClass.Declare()
 	return sc.SomeField == 42
 }

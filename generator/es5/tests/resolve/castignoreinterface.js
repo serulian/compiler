@@ -1,6 +1,6 @@
 $module('castignoreinterface', function () {
   var $static = this;
-  this.$class('7fd03495', 'SomeClass', false, '', function () {
+  this.$class('168ef7a7', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -43,7 +43,7 @@ $module('castignoreinterface', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeFunction|2|2549c819<void>": true,
+        "SomeFunction|2|0b2e6e78<void>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -56,13 +56,13 @@ $module('castignoreinterface', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeFunction|2|2549c819<void>": true,
+        "SomeFunction|2|0b2e6e78<void>": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  $static.DoSomethingAsync = $t.workerwrap('7c17decb', function () {
+  $static.DoSomethingAsync = $t.workerwrap('ebc8e6b3', function () {
     return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
   });
   $static.TEST = $t.markpromising(function () {

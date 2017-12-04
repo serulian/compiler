@@ -6,25 +6,17 @@ struct SomeStruct {
 	Values []AnotherStruct
 }
 
-function<any> TEST() {
+function TEST() any {
 	var values = [
-		AnotherStruct{
-			AnotherInt: 1,
-		},
-		AnotherStruct{
-			AnotherInt: 2,
-		},
-		AnotherStruct{
-			AnotherInt: 3,
-		},
+		AnotherStruct{AnotherInt: 1},
+		AnotherStruct{AnotherInt: 2},
+		AnotherStruct{AnotherInt: 3},
 	]
 
-	var s = SomeStruct{
-		Values: values[0:],
-	}
+	var s = SomeStruct{Values: values[0:]}
 
 	var jsonString = '{"Values":[{"AnotherInt":1},{"AnotherInt":2},{"AnotherInt":3}]}'
-	var correct = (s.Stringify<json>() == jsonString)
+	var correct = s.Stringify<json>() == jsonString
 
 	var parsed = SomeStruct.Parse<json>(jsonString)
 

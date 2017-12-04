@@ -23,15 +23,15 @@ $module('custom', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Get|1|2549c819<38a26367>": true,
-        "Stringify|2|2549c819<ec87fc3f>": true,
-        "Parse|2|2549c819<95776681<any>>": true,
+        "Get|1|0b2e6e78<38a26367>": true,
+        "Stringify|2|0b2e6e78<c509e19d>": true,
+        "Parse|2|0b2e6e78<204295f9<any>>": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  this.$struct('9a932bd6', 'AnotherStruct', false, '', function () {
+  this.$struct('ba519ef3', 'AnotherStruct', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function (AnotherBool) {
@@ -53,18 +53,18 @@ $module('custom', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Parse|1|2549c819<9a932bd6>": true,
-        "equals|4|2549c819<f361570c>": true,
-        "Stringify|2|2549c819<ec87fc3f>": true,
-        "Mapping|2|2549c819<95776681<any>>": true,
-        "Clone|2|2549c819<9a932bd6>": true,
-        "String|2|2549c819<ec87fc3f>": true,
+        "Parse|1|0b2e6e78<ba519ef3>": true,
+        "equals|4|0b2e6e78<5e61c39d>": true,
+        "Stringify|2|0b2e6e78<c509e19d>": true,
+        "Mapping|2|0b2e6e78<204295f9<any>>": true,
+        "Clone|2|0b2e6e78<ba519ef3>": true,
+        "String|2|0b2e6e78<c509e19d>": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  this.$struct('f97a88eb', 'SomeStruct', false, '', function () {
+  this.$struct('be88a8fa', 'SomeStruct', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function (SomeField, AnotherField, SomeInstance) {
@@ -98,12 +98,12 @@ $module('custom', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Parse|1|2549c819<f97a88eb>": true,
-        "equals|4|2549c819<f361570c>": true,
-        "Stringify|2|2549c819<ec87fc3f>": true,
-        "Mapping|2|2549c819<95776681<any>>": true,
-        "Clone|2|2549c819<f97a88eb>": true,
-        "String|2|2549c819<ec87fc3f>": true,
+        "Parse|1|0b2e6e78<be88a8fa>": true,
+        "equals|4|0b2e6e78<5e61c39d>": true,
+        "Stringify|2|0b2e6e78<c509e19d>": true,
+        "Mapping|2|0b2e6e78<204295f9<any>>": true,
+        "Clone|2|0b2e6e78<be88a8fa>": true,
+        "String|2|0b2e6e78<c509e19d>": true,
       };
       return this.$cachedtypesig = computed;
     };

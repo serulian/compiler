@@ -1,12 +1,10 @@
-function<int> DoSomethingAsync() {
-	return 30
-}
+function DoSomethingAsync() int { return 30 }
 
-function<int> myFunction(pieces []string, values []stringable) {
+function myFunction(pieces []string, values []stringable) int {
 	return values[0].(int) + values.Length + (<- DoSomethingAsync())
 }
 
-function<any> TEST() {
+function TEST() any {
 	var a = 10
 	var b = true
 	var result = myFunction`This function is #${a}! It is ${b}!`

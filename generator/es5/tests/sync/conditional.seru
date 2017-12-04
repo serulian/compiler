@@ -1,8 +1,6 @@
-function<int> DoSomething() {
-	return 42
-}
+function DoSomething() int { return 42 }
 
-function<any> TEST() {
+function TEST() any {
 	if DoSomething() == 42 {
 		return true
 	} else {

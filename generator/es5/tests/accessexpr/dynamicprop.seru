@@ -1,18 +1,19 @@
 class SomeClass {
-	var<int> value = 42
+	var value int = 42
 
-	property<int> SomeProp {
+	property SomeProp int {
 		get { return this.value }
+
 		set {
 			this.value = val
 		}
 	}
 }
 
-function<any> TEST() {
+function TEST() any {
 	var sc = SomeClass.new()
 	sc.SomeProp = 123
 
-	var<any> sca = sc
+	var sca any = sc
 	return sca->SomeProp.(int) == 123 && sc.SomeProp == 123
 }

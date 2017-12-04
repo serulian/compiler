@@ -1,11 +1,11 @@
 from webidl`basic` import SomeBrowserThing
 from webidl`basic` import boolValue
 
-function<void> AnotherFunction() {}
+function AnotherFunction() {}
 
-function<void> DoSomething() {
+function DoSomething() {
 	AnotherFunction()
-	
+
 	SomeBrowserThing.SomeStaticAttribute
 	SomeBrowserThing.SomeStaticFunction()
 	SomeBrowserThing.SomeStaticFunction
@@ -23,6 +23,4 @@ function<void> DoSomething() {
 	first['hello'] = second
 }
 
-function<any> TEST() {
-	return bool(boolValue)
-}
+function TEST() any { return bool(boolValue) }

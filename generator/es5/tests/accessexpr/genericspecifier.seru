@@ -1,7 +1,5 @@
-function<bool> SomeFunction<T, Q>() {
-   return true
-}
+function SomeFunction<T, Q>() bool { return true }
 
-function<any> TEST() {
+function TEST() any {
 	return SomeFunction<int, string>()
 }

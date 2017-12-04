@@ -1,7 +1,5 @@
-function<any> TEST() {
-	return AnotherFunction(false)
-}
+function TEST() any { return AnotherFunction(false) }
 
-function<bool> AnotherFunction(param bool) {
-  return !param
+function AnotherFunction(param bool) bool {
+	return !param
 }
