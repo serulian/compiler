@@ -1,0 +1,9 @@
+function DoSomething() {
+    ((b, c) => true)('hello', 'hi')
+    (<- DoSomethingAsync(3)) == 3
+    (<- p) + (<- q)
+    someBool ?? (<- DoSomethingAsync())
+    (&st).SomeProperty
+    first := (&st)?.SomeProperty ?? false
+    (function() {})()
+}

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"unicode"
 
-	v0parser "github.com/serulian/compiler/parser/v0"
+	v1parser "github.com/serulian/compiler/parser/v1"
 	"github.com/serulian/compiler/sourceshape"
 )
 
@@ -115,9 +115,18 @@ var binaryOrderingImportant = []sourceshape.NodeType{
 	sourceshape.NodeNullComparisonExpression,
 }
 
+// requiresBinaryWrappingKinds defines the types of nodes that must always be wrapped under a binary expr.
+var requiresBinaryWrappingKinds = []sourceshape.NodeType{
+	sourceshape.NodeTypeAwaitExpression,
+}
+
 // determineWrappingPrecedence determines whether due to precedence the given binary op child
 // expression must be wrapped.
 func (sf *sourceFormatter) determineWrappingPrecedence(binaryExpr formatterNode, childExpr formatterNode, isLeft bool) bool {
+	if childExpr.hasType(requiresBinaryWrappingKinds...) {
+		return true
+	}
+
 	binaryExprType := binaryExpr.GetType()
 	childExprType := childExpr.GetType()
 
@@ -125,7 +134,7 @@ func (sf *sourceFormatter) determineWrappingPrecedence(binaryExpr formatterNode,
 	var binaryIndex = -1
 	var childIndex = -1
 
-	for index, current := range v0parser.BinaryOperators {
+	for index, current := range v1parser.BinaryOperators {
 		if current.BinaryExpressionNodeType == binaryExprType {
 			binaryIndex = index
 		}
@@ -178,10 +187,18 @@ func (sf *sourceFormatter) emitBinaryOperator(node formatterNode, op string) {
 	}
 }
 
+// wrappedAccessChildKinds defines the node types that must be wrapped under an
+// access expression.
+var wrappedAccessChildKinds = []sourceshape.NodeType{
+	sourceshape.NodeMappingLiteralExpression,
+	sourceshape.NodeMapLiteralExpression,
+	sourceshape.NodeRootTypeExpression,
+}
+
 // emitAccessExpression emits an access expression.
 func (sf *sourceFormatter) emitAccessExpression(node formatterNode, op string) {
 	childExpr := node.getChild(sourceshape.NodeMemberAccessChildExpr)
-	requiresWrapping := childExpr.hasType(sourceshape.NodeMappingLiteralExpression, sourceshape.NodeMapLiteralExpression)
+	requiresWrapping := childExpr.hasType(wrappedAccessChildKinds...)
 	if requiresWrapping {
 		sf.append("(")
 	}
@@ -204,11 +221,34 @@ func (sf *sourceFormatter) emitCastExpression(node formatterNode) {
 	sf.append(")")
 }
 
+// nonWrappingSliceOrCallNodeKinds defines the node types of children of a slice or
+// call expression that do *not* need to be wrapped.
+var nonWrappingSliceOrCallNodeKinds = []sourceshape.NodeType{
+	sourceshape.NodeTypeTemplateString,
+	sourceshape.NodeStringLiteralExpression,
+	sourceshape.NodeBooleanLiteralExpression,
+	sourceshape.NodeNumericLiteralExpression,
+	sourceshape.NodeTypeIdentifierExpression,
+	sourceshape.NodeListLiteralExpression,
+	sourceshape.NodeMemberAccessExpression,
+	sourceshape.NodeDynamicMemberAccessExpression,
+	sourceshape.NodeStreamMemberAccessExpression,
+}
+
 // emitFunctionCallExpression emits the source of a function call.
 func (sf *sourceFormatter) emitFunctionCallExpression(node formatterNode) {
+	childExpr := node.getChild(sourceshape.NodeFunctionCallExpressionChildExpr)
 	arguments := node.getChildren(sourceshape.NodeFunctionCallArgument)
 
-	sf.emitNode(node.getChild(sourceshape.NodeFunctionCallExpressionChildExpr))
+	requiresWrapping := !childExpr.hasType(nonWrappingSliceOrCallNodeKinds...)
+	if requiresWrapping {
+		sf.append("(")
+	}
+	sf.emitNode(childExpr)
+	if requiresWrapping {
+		sf.append(")")
+	}
+
 	sf.append("(")
 
 	for index, arg := range arguments {
@@ -222,24 +262,10 @@ func (sf *sourceFormatter) emitFunctionCallExpression(node formatterNode) {
 	sf.append(")")
 }
 
-// nonWrappingSliceNodeKinds defines the node types of children of a slice expression that do *not*
-// need to be wrapped.
-var nonWrappingSliceNodeKinds = []sourceshape.NodeType{
-	sourceshape.NodeTypeTemplateString,
-	sourceshape.NodeStringLiteralExpression,
-	sourceshape.NodeBooleanLiteralExpression,
-	sourceshape.NodeNumericLiteralExpression,
-	sourceshape.NodeTypeIdentifierExpression,
-	sourceshape.NodeListLiteralExpression,
-	sourceshape.NodeMemberAccessExpression,
-	sourceshape.NodeDynamicMemberAccessExpression,
-	sourceshape.NodeStreamMemberAccessExpression,
-}
-
 // emitSliceExpression emits the source of a slice expression.
 func (sf *sourceFormatter) emitSliceExpression(node formatterNode) {
 	childExpr := node.getChild(sourceshape.NodeSliceExpressionChildExpr)
-	requiresWrapping := !childExpr.hasType(nonWrappingSliceNodeKinds...)
+	requiresWrapping := !childExpr.hasType(nonWrappingSliceOrCallNodeKinds...)
 
 	if requiresWrapping {
 		sf.append("(")

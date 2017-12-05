@@ -84,6 +84,7 @@ var goldenTests = []goldenTest{
 	{"mappings test", "mappings"},
 	{"nested sml loop test", "nestedsmlloop"},
 	{"known issue test", "knownissue"},
+	{"precedence test", "precedence"},
 }
 
 func conductParsing(t *testing.T, test goldenTest, source []byte) (*parseTree, formatterNode) {
