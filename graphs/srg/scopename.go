@@ -445,6 +445,11 @@ func (ns SRGNamedScope) GetParameter() (SRGParameter, bool) {
 	return SRGParameter{}, false
 }
 
+// IsFunction returns whether the named scope refers to a function.
+func (ns SRGNamedScope) IsFunction() bool {
+	return ns.Kind() == sourceshape.NodeTypeFunction
+}
+
 // DefinedReturnType returns the defined return type of the scoped node, if any.
 func (ns SRGNamedScope) DefinedReturnType() (SRGTypeRef, bool) {
 	if member, isMember := ns.GetMember(); isMember {
