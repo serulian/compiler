@@ -142,7 +142,7 @@ func (m SRGMember) Body() (compilergraph.GraphNode, bool) {
 	return m.TryGetNode(sourceshape.NodePredicateBody)
 }
 
-// ReturnType returns a type reference to the declared type of this member, if any.
+// DeclaredType returns a type reference to the declared type of this member, if any.
 func (m SRGMember) DeclaredType() (SRGTypeRef, bool) {
 	typeRefNode, found := m.GraphNode.TryGetNode(sourceshape.NodePredicateTypeMemberDeclaredType)
 	if !found {
@@ -152,8 +152,8 @@ func (m SRGMember) DeclaredType() (SRGTypeRef, bool) {
 	return SRGTypeRef{typeRefNode, m.srg}, true
 }
 
-// ReturnType returns a type reference to the return type of this member, if any.
-func (m SRGMember) ReturnType() (SRGTypeRef, bool) {
+// DefinedReturnType returns a type reference to the defined return type of this member, if any.
+func (m SRGMember) DefinedReturnType() (SRGTypeRef, bool) {
 	typeRefNode, found := m.GraphNode.TryGetNode(sourceshape.NodePredicateTypeMemberReturnType)
 	if !found {
 		return SRGTypeRef{}, false
@@ -334,41 +334,38 @@ func (m SRGMember) Code() (compilercommon.CodeSummary, bool) {
 		writeCodeParameters(m, &buffer)
 
 	case sourceshape.NodeTypeFunction:
-		returnType, _ := m.ReturnType()
-
-		buffer.WriteString("function<")
-		buffer.WriteString(returnType.String())
-		buffer.WriteString("> ")
-
+		buffer.WriteString("function ")
 		buffer.WriteString(name)
 		writeCodeGenerics(m, &buffer)
 		writeCodeParameters(m, &buffer)
 
+		returnType, hasReturnType := m.DefinedReturnType()
+		if hasReturnType && returnType.RefKind() != TypeRefVoid {
+			buffer.WriteString(" ")
+			buffer.WriteString(returnType.String())
+		}
+
 	case sourceshape.NodeTypeProperty:
 		declaredType, _ := m.DeclaredType()
-		buffer.WriteString("property<")
-		buffer.WriteString(declaredType.String())
-		buffer.WriteString("> ")
-
+		buffer.WriteString("property ")
 		buffer.WriteString(name)
+		buffer.WriteString(" ")
+		buffer.WriteString(declaredType.String())
 
 		if !m.HasSetter() {
 			buffer.WriteString(" { get }")
 		}
 
 	case sourceshape.NodeTypeOperator:
-		returnType, hasReturnType := m.ReturnType()
-
-		if hasReturnType {
-			buffer.WriteString("operator<")
-			buffer.WriteString(returnType.String())
-			buffer.WriteString("> ")
-		} else {
-			buffer.WriteString("operator ")
-		}
-
+		buffer.WriteString("operator ")
 		buffer.WriteString(name)
 		writeCodeParameters(m, &buffer)
+
+		declaredType, hasDeclaredType := m.DeclaredType()
+		if hasDeclaredType {
+			buffer.WriteString(" ")
+			buffer.WriteString(declaredType.String())
+		}
 
 	case sourceshape.NodeTypeField:
 		fallthrough
@@ -382,11 +379,10 @@ func (m SRGMember) Code() (compilercommon.CodeSummary, bool) {
 			buffer.WriteString(" ")
 			buffer.WriteString(declaredType.String())
 		} else {
-			buffer.WriteString("var<")
-			buffer.WriteString(declaredType.String())
-			buffer.WriteString("> ")
-
+			buffer.WriteString("var ")
 			buffer.WriteString(name)
+			buffer.WriteString(" ")
+			buffer.WriteString(declaredType.String())
 		}
 
 	default:

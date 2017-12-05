@@ -35,7 +35,7 @@ var memberTests = []memberTest{
 		[]string{"foo", "bar"},
 		expectedTypeRef{},
 		expectedTypeRef{"AnotherClass", TypeRefPath, true, false, []expectedTypeRef{}},
-		"function<AnotherClass> SomeFunction<T>(foo SomeClass, bar T)",
+		"function SomeFunction<T>(foo SomeClass, bar T) AnotherClass",
 	},
 
 	memberTest{"class property test", "class", "TestClass", "SomeProperty",
@@ -44,7 +44,7 @@ var memberTests = []memberTest{
 		[]string{},
 		expectedTypeRef{"SomeClass", TypeRefPath, true, false, []expectedTypeRef{}},
 		expectedTypeRef{},
-		"property<SomeClass> SomeProperty { get }",
+		"property SomeProperty SomeClass { get }",
 	},
 
 	memberTest{"class constructor test", "class", "TestClass", "BuildMe",
@@ -62,7 +62,7 @@ var memberTests = []memberTest{
 		[]string{},
 		expectedTypeRef{"SomeClass", TypeRefPath, true, false, []expectedTypeRef{}},
 		expectedTypeRef{},
-		"var<SomeClass> SomeVar",
+		"var SomeVar SomeClass",
 	},
 
 	memberTest{"class operator test", "class", "TestClass", "Plus",
@@ -81,7 +81,7 @@ var memberTests = []memberTest{
 		[]string{"foo", "bar"},
 		expectedTypeRef{},
 		expectedTypeRef{"AnotherClass", TypeRefPath, true, false, []expectedTypeRef{}},
-		"function<AnotherClass> SomeFunction<T>(foo SomeClass, bar T)",
+		"function SomeFunction<T>(foo SomeClass, bar T) AnotherClass",
 	},
 
 	memberTest{"interface property test", "interface", "TestInterface", "SomeProperty",
@@ -90,7 +90,7 @@ var memberTests = []memberTest{
 		[]string{},
 		expectedTypeRef{"SomeClass", TypeRefPath, true, false, []expectedTypeRef{}},
 		expectedTypeRef{},
-		"property<SomeClass> SomeProperty { get }",
+		"property SomeProperty SomeClass { get }",
 	},
 
 	memberTest{"interface constructor test", "interface", "TestInterface", "BuildMe",
@@ -109,6 +109,15 @@ var memberTests = []memberTest{
 		expectedTypeRef{},
 		expectedTypeRef{},
 		"operator Plus(left SomeClass, right SomeClass)",
+	},
+
+	memberTest{"interface operator with defined type test", "interface", "TestInterface", "Index",
+		OperatorMember,
+		[]string{},
+		[]string{"index"},
+		expectedTypeRef{},
+		expectedTypeRef{},
+		"operator Index(index int) SomeClass",
 	},
 }
 
@@ -201,7 +210,7 @@ func TestTypeMembers(t *testing.T) {
 		}
 
 		if test.expectedReturnType.kind != typeRefUnknown {
-			returnTypeRef, rtrFound := member.ReturnType()
+			returnTypeRef, rtrFound := member.DefinedReturnType()
 			if assert.True(t, rtrFound, "Missing return type on member %s", memberName) {
 				assertTypeRef(t, test.name, returnTypeRef, test.expectedReturnType)
 			}

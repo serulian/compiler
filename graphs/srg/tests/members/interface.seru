@@ -6,6 +6,8 @@ interface TestInterface {
 	property SomeProperty SomeClass { get }
 
 	operator Plus(left SomeClass, right SomeClass) {}
+
+	operator Index(index int) SomeClass {}
 }
 
 class SomeClass {}
