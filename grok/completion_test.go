@@ -129,12 +129,12 @@ var grokCompletionTests = []grokCompletionTest{
 	grokCompletionTest{"types",
 		[]grokCompletionSubTest{
 			// Type completions.
-			grokCompletionSubTest{"sl", "var<", []expectedCompletion{
+			/*grokCompletionSubTest{"sl", "var<", []expectedCompletion{
 				expectedCompletion{TypeCompletion, "T", "T", "", "void"},
 				expectedCompletion{TypeCompletion, "SomeClass", "SomeClass", "", "void"},
 				expectedCompletion{TypeCompletion, "AnotherClass", "AnotherClass", "", "void"},
 				expectedCompletion{TypeCompletion, "ThirdClass", "ThirdClass", "", "void"},
-			}},
+			}},*/
 
 			// Context completions.
 			grokCompletionSubTest{"sl", "a", []expectedCompletion{
@@ -181,9 +181,9 @@ var grokCompletionTests = []grokCompletionTest{
 	grokCompletionTest{"imports",
 		[]grokCompletionSubTest{
 			// Type completions.
-			grokCompletionSubTest{"af3", "var<", []expectedCompletion{
+			/*grokCompletionSubTest{"af3", "var<", []expectedCompletion{
 				expectedCompletion{TypeCompletion, "SomeClass", "SomeClass", "", "void"},
-			}},
+			}},*/
 
 			// Context completions.
 			grokCompletionSubTest{"af3", "", []expectedCompletion{
@@ -297,8 +297,8 @@ func TestGrokCompletion(t *testing.T) {
 				}
 
 				if !assert.Equal(t, expectedCompletion.typeref, foundCompletion.TypeReference.String(),
-					"Mismatch in expected completion typeref on range %s under test %s",
-					grokCompletionSubTest.rangeName, grokCompletionTest.name) {
+					"Mismatch in expected completion `%s` typeref on range %s under test %s",
+					expectedCompletion.title, grokCompletionSubTest.rangeName, grokCompletionTest.name) {
 					continue
 				}
 			}

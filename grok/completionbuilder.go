@@ -127,7 +127,7 @@ func (cb *completionBuilder) addScopeOrImport(scopeOrImport srg.SRGContextScopeN
 	// Lookup the declared type for the scope.
 	var typeref = cb.handle.scopeResult.Graph.TypeGraph().VoidTypeReference()
 
-	returnType, hasReturnType := namedScope.ReturnType()
+	returnType, hasReturnType := namedScope.DefinedReturnType()
 	declaredType, hasDeclaredType := namedScope.DeclaredType()
 
 	if hasReturnType {
@@ -135,6 +135,8 @@ func (cb *completionBuilder) addScopeOrImport(scopeOrImport srg.SRGContextScopeN
 		typeref = cb.handle.scopeResult.Graph.TypeGraph().FunctionTypeReference(returnTypeRef)
 	} else if hasDeclaredType {
 		typeref, _ = cb.handle.scopeResult.Graph.ResolveSRGTypeRef(declaredType)
+	} else if namedScope.IsFunction() {
+		typeref = cb.handle.scopeResult.Graph.TypeGraph().FunctionTypeReference(cb.handle.scopeResult.Graph.TypeGraph().VoidTypeReference())
 	} else {
 		// Check if there is scope for the node and, if so, grab the type from there. This handles
 		// the dynamic case, such as inferred variable types.

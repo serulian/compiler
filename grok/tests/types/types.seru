@@ -3,7 +3,7 @@ from anotherfile import AnotherClass, ThirdClass
 
 class SomeClass {}
 
-function<void> DoSomething<T>() {
+function DoSomething<T>() {
 /// [sl        ]
 'string literal'
 }

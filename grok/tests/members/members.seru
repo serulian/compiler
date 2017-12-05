@@ -3,10 +3,10 @@ class SomeClass<T> {
         return SomeClass.new()
     }
 
-    function<void> DoSomething (someParam T) {}
+    function DoSomething (someParam T) {}
 }
 
-function<void> SomeFunction() {
+function SomeFunction() {
     var sc = SomeClass<int>.new()
 
 /// [sl     ]

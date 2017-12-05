@@ -1,6 +1,6 @@
 from webidl`notreal` import SomeType
 
-function<void> DoSomething(someParam SomeType) {
+function DoSomething(someParam SomeType) {
 	/// [sp ]
 	someParam
 }

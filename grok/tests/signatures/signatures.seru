@@ -1,6 +1,6 @@
 class SomeClass {
     // A cool indexer, that takes `index`.
-    operator<int> Index(index int) {
+    operator Index(index int) int {
         return index
     }
 
@@ -10,7 +10,7 @@ class SomeClass {
 }
 
 // DoSomething does something. When `someParam` is specified, good things happen. `anotherParam` controls other things.
-function<void> DoSomething(someParam int, anotherParam string) {
+function DoSomething(someParam int, anotherParam string) {
     var sc = SomeClass.new()
 
     /// [ids  ]

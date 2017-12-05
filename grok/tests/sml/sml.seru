@@ -5,23 +5,23 @@ struct SomeStruct {
 /**
  * Some really cool function
  */
-function<int> SomeFunction(props SomeStruct) {
+function SomeFunction(props SomeStruct) int {
     return 2
 }
 
 /*
  * AnotherFunction without a 'doc' comment
  */
-function<int> AnotherFunction(props []{string}) {
+function AnotherFunction(props []{string}) int {
     return 3
 }
 
 // SomeDecorator loves normal comments!
-function<int> SomeDecorator(value int) {
+function SomeDecorator(value int) int {
     return value
 }
 
-function<void> DoSomething() {
+function DoSomething() {
 ///  [sf    ] [sp        ]      [sd         ]
 <SomeFunction SomeProperty={2} @SomeDecorator={true}/>
 
