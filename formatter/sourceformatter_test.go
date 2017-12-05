@@ -12,6 +12,8 @@ import (
 	"testing"
 
 	"github.com/serulian/compiler/compilercommon"
+	"github.com/serulian/compiler/compilerutil"
+	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/parser"
 	"github.com/serulian/compiler/sourceshape"
 	"github.com/stretchr/testify/assert"
@@ -168,4 +170,40 @@ func TestGolden(t *testing.T) {
 			}
 		}
 	}
+}
+
+func TestAll(t *testing.T) {
+	// For every .seru file found in the entire compiler package, parse, and if parseable, format
+	// and parse again. This ensures that formatting never breaks on any test files.
+	compilerutil.WalkSourcePath("../...", func(filePath string, info os.FileInfo) (bool, error) {
+		if !strings.HasSuffix(info.Name(), sourceshape.SerulianFileExtension) {
+			return false, nil
+		}
+
+		// Load the source file.
+		source, err := ioutil.ReadFile(filePath)
+		if err != nil {
+			return false, err
+		}
+
+		// Parse the source file.
+		parseTree := newParseTree(source)
+		inputSource := compilercommon.InputSource(filePath)
+		rootNode := parser.Parse(parseTree.createAstNode, nil, inputSource, string(source))
+		if len(parseTree.errors) > 0 {
+			t.Logf("Skipping file %s\n", filePath)
+			return true, nil
+		}
+
+		t.Logf("Checking file %s\n", filePath)
+
+		// Format the source file.
+		formatted := buildFormattedSource(parseTree, rootNode.(formatterNode), importHandlingInfo{})
+
+		// Re-parse the file, and ensure there are no errors.
+		formattedParseTree := newParseTree(source)
+		parser.Parse(formattedParseTree.createAstNode, nil, inputSource, string(formatted))
+		assert.Equal(t, 0, len(parseTree.errors), "Got parse error on formatted source file %s: %v", inputSource, parseTree.errors)
+		return true, nil
+	}, packageloader.SerulianPackageDirectory)
 }
