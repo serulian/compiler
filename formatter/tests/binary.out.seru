@@ -21,4 +21,7 @@ function DoSomething() {
 
 	&foo is null
 	&(foo is null)
+
+	(left - right).Floor()
+	(not foo).Bar()
 }
