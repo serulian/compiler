@@ -1,3 +1,6 @@
 class SomeClass {
 	var someField int
+	var someOtherField string?
+	var children any*
+	var fourthField bool
 }
