@@ -1,5 +1,26 @@
 # Change Log
 
+## [v0.2.0](https://github.com/serulian/compiler/tree/v0.2.0) (2017-12-09)
+[Full Changelog](https://github.com/serulian/compiler/compare/v0.1.0...v0.2.0)
+
+**Implemented enhancements:**
+
+- Add support for upgrading the syntax of source code via the formatter [\#272](https://github.com/serulian/compiler/pull/272) ([josephschorr](https://github.com/josephschorr))
+- Add new toolkit command: package rev [\#271](https://github.com/serulian/compiler/pull/271) ([josephschorr](https://github.com/josephschorr))
+- Add a new toolkit command: package diff [\#270](https://github.com/serulian/compiler/pull/270) ([josephschorr](https://github.com/josephschorr))
+
+**Fixed bugs:**
+
+- Fix bug in SML scope check which allows functions with extra non-nullable parameters to be used [\#269](https://github.com/serulian/compiler/pull/269) ([josephschorr](https://github.com/josephschorr))
+- Fix fmt statements [\#266](https://github.com/serulian/compiler/pull/266) ([josephschorr](https://github.com/josephschorr))
+
+**Merged pull requests:**
+
+- Update Serulian's syntax for the declared and return type of type and module members [\#273](https://github.com/serulian/compiler/pull/273) ([josephschorr](https://github.com/josephschorr))
+- Improvements to the diff engine [\#268](https://github.com/serulian/compiler/pull/268) ([josephschorr](https://github.com/josephschorr))
+- Add library for computing the difference between the contents of two type graphs [\#267](https://github.com/serulian/compiler/pull/267) ([josephschorr](https://github.com/josephschorr))
+- More performant ImmutableMap [\#265](https://github.com/serulian/compiler/pull/265) ([josephschorr](https://github.com/josephschorr))
+
 ## [v0.1.0](https://github.com/serulian/compiler/tree/v0.1.0) (2017-11-02)
 [Full Changelog](https://github.com/serulian/compiler/compare/v0.0.2...v0.1.0)
 
