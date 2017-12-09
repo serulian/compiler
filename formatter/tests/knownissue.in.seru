@@ -3,3 +3,23 @@ function Render(context Context) any {
         Shared
     </Button>
 }
+
+function AnotherFunction() {
+	copy[&existingKey] = this[existingKey]
+    
+    val[1]
+    someArray := Array(this)[12]
+    something := Mapping<T>(copy)
+
+    if (this.IndexOf(value) ?? -1) >= 0 {
+        return
+    }
+
+    if !this.Contains(item) {
+        return
+    }
+
+	if not key in keys {
+        return
+    }
+}

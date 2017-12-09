@@ -65,6 +65,9 @@ var nonWrappingUnaryNodeKinds = []sourceshape.NodeType{
 	sourceshape.NodeStreamMemberAccessExpression,
 	sourceshape.NodeNullableMemberAccessExpression,
 	sourceshape.NodeSliceExpression,
+	sourceshape.NodeFunctionCallExpression,
+	sourceshape.NodeThisLiteralExpression,
+	sourceshape.NodeValLiteralExpression,
 }
 
 // emitUnaryOperator emits a unary operator with a child expression.
@@ -233,6 +236,10 @@ var nonWrappingSliceOrCallNodeKinds = []sourceshape.NodeType{
 	sourceshape.NodeMemberAccessExpression,
 	sourceshape.NodeDynamicMemberAccessExpression,
 	sourceshape.NodeStreamMemberAccessExpression,
+	sourceshape.NodeFunctionCallExpression,
+	sourceshape.NodeGenericSpecifierExpression,
+	sourceshape.NodeThisLiteralExpression,
+	sourceshape.NodeValLiteralExpression,
 }
 
 // emitFunctionCallExpression emits the source of a function call.
