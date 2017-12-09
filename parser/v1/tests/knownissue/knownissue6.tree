@@ -1,0 +1,53 @@
+NodeTypeFile
+  end-rune = 46
+  input-source = known issue 6 test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 46
+      input-source = known issue 6 test
+      named = TEST
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 46
+          input-source = known issue 6 test
+          start-rune = 23
+          block-child =>
+            NodeTypeReturnStatement
+              end-rune = 44
+              input-source = known issue 6 test
+              start-rune = 26
+              return-expr =>
+                NodeFunctionCallExpression
+                  end-rune = 44
+                  input-source = known issue 6 test
+                  start-rune = 33
+                  function-call-expr =>
+                    NodeMemberAccessExpression
+                      end-rune = 42
+                      input-source = known issue 6 test
+                      member-access-identifier = String
+                      start-rune = 33
+                      member-access-expr =>
+                        NodeNumericLiteralExpression
+                          end-rune = 35
+                          input-source = known issue 6 test
+                          literal-value = 123
+                          start-rune = 33
+      typemember-return-type =>
+        NodeTypeTypeReference
+          end-rune = 21
+          input-source = known issue 6 test
+          start-rune = 16
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 21
+              input-source = known issue 6 test
+              start-rune = 16
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 21
+                  identifieraccess-name = string
+                  input-source = known issue 6 test
+                  start-rune = 16

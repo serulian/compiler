@@ -1,0 +1,59 @@
+NodeTypeFile
+  end-rune = 62
+  input-source = known issue 13 test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 62
+      input-source = known issue 13 test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 62
+          input-source = known issue 13 test
+          start-rune = 23
+          block-child =>
+            NodeTypeAssignStatement
+              end-rune = 60
+              input-source = known issue 13 test
+              start-rune = 26
+              assign-statement-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 60
+                  identexpr-name = newBranch
+                  input-source = known issue 13 test
+                  start-rune = 52
+              assign-statement-name =>
+                NodeSliceExpression
+                  end-rune = 48
+                  input-source = known issue 13 test
+                  start-rune = 26
+                  slice-expr-expr =>
+                    NodeMemberAccessExpression
+                      end-rune = 38
+                      input-source = known issue 13 test
+                      member-access-identifier = children
+                      start-rune = 26
+                      member-access-expr =>
+                        NodeThisLiteralExpression
+                          end-rune = 29
+                          input-source = known issue 13 test
+                          start-rune = 26
+                  slice-expr-index =>
+                    NodeSliceExpression
+                      end-rune = 47
+                      input-source = known issue 13 test
+                      start-rune = 40
+                      slice-expr-expr =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 44
+                          identexpr-name = parts
+                          input-source = known issue 13 test
+                          start-rune = 40
+                      slice-expr-index =>
+                        NodeNumericLiteralExpression
+                          end-rune = 46
+                          input-source = known issue 13 test
+                          literal-value = 0
+                          start-rune = 46

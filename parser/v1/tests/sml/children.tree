@@ -1,0 +1,101 @@
+NodeTypeFile
+  end-rune = 130
+  input-source = children sml test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 130
+      input-source = children sml test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 130
+          input-source = children sml test
+          start-rune = 23
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 50
+              input-source = children sml test
+              start-rune = 26
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 49
+                  input-source = children sml test
+                  start-rune = 26
+                  sml-expression-child =>
+                    NodeTypeSmlExpression
+                      end-rune = 43
+                      input-source = children sml test
+                      start-rune = 31
+                      sml-expression-typefunc =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 41
+                          identexpr-name = anothertag
+                          input-source = children sml test
+                          start-rune = 32
+                  sml-expression-typefunc =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 29
+                      identexpr-name = foo
+                      input-source = children sml test
+                      start-rune = 27
+            NodeTypeExpressionStatement
+              end-rune = 82
+              input-source = children sml test
+              start-rune = 52
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 81
+                  input-source = children sml test
+                  start-rune = 52
+                  sml-expression-child =>
+                    NodeTypeSmlText
+                      end-rune = 75
+                      input-source = children sml test
+                      sml-text-value = some text goes here
+                      start-rune = 57
+                  sml-expression-typefunc =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 55
+                      identexpr-name = foo
+                      input-source = children sml test
+                      start-rune = 53
+            NodeTypeExpressionStatement
+              end-rune = 129
+              input-source = children sml test
+              start-rune = 84
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 128
+                  input-source = children sml test
+                  start-rune = 84
+                  sml-expression-child =>
+                    NodeSliceExpression
+                      end-rune = 120
+                      input-source = children sml test
+                      start-rune = 91
+                      slice-expr-expr =>
+                        NodeMemberAccessExpression
+                          end-rune = 103
+                          input-source = children sml test
+                          member-access-identifier = that
+                          start-rune = 91
+                          member-access-expr =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 98
+                              identexpr-name = someExpr
+                              input-source = children sml test
+                              start-rune = 91
+                      slice-expr-index =>
+                        NodeStringLiteralExpression
+                          end-rune = 119
+                          input-source = children sml test
+                          literal-value = 'doesSomething'
+                          start-rune = 105
+                  sml-expression-typefunc =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 87
+                      identexpr-name = foo
+                      input-source = children sml test
+                      start-rune = 85

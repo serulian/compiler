@@ -33,12 +33,12 @@ $module('structprops', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Parse|1|2549c819<3f6b14fb>": true,
-        "equals|4|2549c819<f361570c>": true,
-        "Stringify|2|2549c819<ec87fc3f>": true,
-        "Mapping|2|2549c819<95776681<any>>": true,
-        "Clone|2|2549c819<3f6b14fb>": true,
-        "String|2|2549c819<ec87fc3f>": true,
+        "Parse|1|0b2e6e78<3f6b14fb>": true,
+        "equals|4|0b2e6e78<5e61c39d>": true,
+        "Stringify|2|0b2e6e78<c509e19d>": true,
+        "Mapping|2|0b2e6e78<204295f9<any>>": true,
+        "Clone|2|0b2e6e78<3f6b14fb>": true,
+        "String|2|0b2e6e78<c509e19d>": true,
       };
       return this.$cachedtypesig = computed;
     };

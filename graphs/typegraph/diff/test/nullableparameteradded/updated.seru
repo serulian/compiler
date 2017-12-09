@@ -1,1 +1,1 @@
-function<void> DoSomething(someParam int?) {}
+function DoSomething(someParam int?) {}

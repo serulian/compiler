@@ -1,1 +1,1 @@
-class SomeClass<T : Q, Q>{}
+class SomeClass<T : Q, Q> {}

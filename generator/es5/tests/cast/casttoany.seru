@@ -1,6 +1,6 @@
 class SomeClass {}
 
-function<bool> TEST() {
+function TEST() bool {
 	'hello'.(any)
 	123.(any)
 	SomeClass.new().(any)

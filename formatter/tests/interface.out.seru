@@ -11,18 +11,18 @@ interface SomeInterface<T : int, R : arrrrr> {
 		reject Because.ThatsWhy()
 	}
 
-	function<void> DoSomething<Q : any>(firstParam int, secondParam string*)
+	function DoSomething<Q : any>(firstParam int, secondParam string*)
 
 	/**
 	 * SomeProp is some sort of prop.
 	 */
-	property<SomeType?> SomeProp
+	property SomeProp SomeType?
 
-	property<bool> GetterProp { get }
+	property GetterProp bool { get }
 
 	operator Range(first int, second int)
 
-	operator<someOpReturn> someOp(onlyOneParam here)
+	operator someOp(onlyOneParam here) someOpReturn
 
-	function<int> AnotherFunction()
+	function AnotherFunction() int
 }

@@ -1,4 +1,4 @@
-function<void> DoSomething(someExpr releasable) {
+function DoSomething(someExpr releasable) {
 	123
 	with someExpr as someName {
 		456

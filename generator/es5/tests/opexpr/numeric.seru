@@ -1,8 +1,8 @@
-function<bool> TEST() {
-    var<bool> result = true
-    result = result && (1 + 2 == 3)
-    result = result && (2 - 1 == 1)
-    result = result && (2 * 1 == 2)
-    result = result && (5 / 2 == 2)
-    return result
+function TEST() bool {
+	var result bool = true
+	result = result && 1 + 2 == 3
+	result = result && 2 - 1 == 1
+	result = result && 2 * 1 == 2
+	result = result && 5 / 2 == 2
+	return result
 }

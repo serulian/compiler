@@ -3,14 +3,14 @@ class SomeClass {
         return left
     }
 
-    operator<int> Index(someIndex int) {
+    operator Index(someIndex int) int {
         return someIndex
     }
 
-    function<void> SomeFunction() {}
+    function SomeFunction() {}
 }
 
-function<int> DoSomething(sc SomeClass) {
+function DoSomething(sc SomeClass) int {
     /// [r  ]
     return 42
 }

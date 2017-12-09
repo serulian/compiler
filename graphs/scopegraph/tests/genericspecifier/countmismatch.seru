@@ -1,5 +1,5 @@
 class SomeClass<T, Q> {}
 
-function<void> DoSomething() {
+function DoSomething() {
 	SomeClass<int>
 }

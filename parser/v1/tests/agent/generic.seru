@@ -1,0 +1,3 @@
+agent SomeAgent<T, Q> for SomeInterface {
+	function DoSomething() {}
+}

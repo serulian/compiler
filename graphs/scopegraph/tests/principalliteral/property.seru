@@ -1,13 +1,12 @@
 interface SomeInterface {}
 
-agent<SomeInterface> SomeAgent {
-	property<bool> SomeProp {
+agent SomeAgent for SomeInterface {
+	property SomeProp bool {
 		get {
 			/* scprincipal */principal
 			return true
 		}
-		set {
-			
-		}
+
+		set {}
 	}
 }

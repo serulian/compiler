@@ -1,12 +1,13 @@
-var<int> SomeInt = 2
-var<int> someUnexportedThing = 4
+var SomeInt int = 2
 
-function<void> SomeFunction() {
-}
+var someUnexportedThing int = 4
+
+function SomeFunction() {}
 
 class AnotherClass {}
+
 class GenericType<T> {}
 
 class ThirdClass {
-	function<void> doSomething() {}
+	function doSomething() {}
 }

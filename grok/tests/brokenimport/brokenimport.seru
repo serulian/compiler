@@ -1,4 +1,4 @@
 from something import somethingelse
 
 class SomeClass {}
-function<void> DoSomething() {}
+function DoSomething() {}

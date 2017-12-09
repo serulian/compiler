@@ -1,0 +1,5 @@
+function SomeFunction() {
+	{
+		'a': 2
+	}
+}

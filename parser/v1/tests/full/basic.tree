@@ -1,0 +1,62 @@
+NodeTypeFile
+  end-rune = 118
+  input-source = basic full example test
+  start-rune = 0
+  child-node =>
+    NodeTypeImport
+      end-rune = 31
+      import-location-ref = location:SomeLibrary
+      import-source = SomeLibrary
+      input-source = basic full example test
+      start-rune = 0
+      import-package =>
+        NodeTypeImportPackage
+          end-rune = 30
+          import-subsource = Console
+          input-source = basic full example test
+          named = Console
+          start-rune = 24
+    NodeTypeClass
+      end-rune = 118
+      input-source = basic full example test
+      named = SimpleClass
+      start-rune = 33
+      type-member =>
+        NodeTypeFunction
+          end-rune = 117
+          input-source = basic full example test
+          named = SayHelloWorld
+          start-rune = 54
+          definition-body =>
+            NodeTypeStatementBlock
+              end-rune = 117
+              input-source = basic full example test
+              start-rune = 79
+              block-child =>
+                NodeTypeExpressionStatement
+                  end-rune = 114
+                  input-source = basic full example test
+                  start-rune = 83
+                  expr-statement-expr =>
+                    NodeFunctionCallExpression
+                      end-rune = 113
+                      input-source = basic full example test
+                      start-rune = 83
+                      function-call-argument =>
+                        NodeStringLiteralExpression
+                          end-rune = 112
+                          input-source = basic full example test
+                          literal-value = 'hello world!'
+                          start-rune = 99
+                      function-call-expr =>
+                        NodeMemberAccessExpression
+                          end-rune = 97
+                          input-source = basic full example test
+                          member-access-identifier = Println
+                          start-rune = 83
+                          member-access-expr =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 89
+                              identexpr-name = Console
+                              input-source = basic full example test
+                              start-rune = 83

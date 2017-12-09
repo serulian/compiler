@@ -1,11 +1,9 @@
 class SomeClass {}
 
-function<void> AnotherFunction() {
+function AnotherFunction() {}
 
-}
-
-function<void> DoSomething(someParam int) {
-	var<int> someVar = 2
+function DoSomething(someParam int) {
+	var someVar int = 2
 	SomeClass
 	AnotherFunction
 	someParam

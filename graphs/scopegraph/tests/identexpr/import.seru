@@ -1,5 +1,5 @@
 import parameter
 
-function<void> DoSomething() {
-	/* importref */parameter	
+function DoSomething() {
+	/* importref */parameter
 }

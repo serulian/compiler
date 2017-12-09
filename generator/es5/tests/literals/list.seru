@@ -1,4 +1,4 @@
-function<any> TEST() {
+function TEST() any {
 	var l = [1, 2, 3, true]
 	return l.Length == 4
 }

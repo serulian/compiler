@@ -1,5 +1,5 @@
 class SomeClass {}
 
-function<void> DoSomething(sc SomeClass) {
+function DoSomething(sc SomeClass) {
 	42 in sc
 }

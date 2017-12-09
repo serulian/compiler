@@ -1,4 +1,4 @@
-function</*void*/void> DoSomething() {
+function DoSomething() {
     (/*foo*/foo)
     (/*helloworld*/'hello world')
 

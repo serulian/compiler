@@ -1,0 +1,6 @@
+function SomeFunction() {
+	[]
+	[1, 2, 3]
+	[1, true, 'hello world']
+	[a + b, (c - d), foo.bar(), `baz`]
+}

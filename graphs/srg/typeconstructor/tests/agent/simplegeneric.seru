@@ -1,1 +1,1 @@
-agent<T> SomeAgent<T, Q> {}
+agent SomeAgent<T, Q> for T {}

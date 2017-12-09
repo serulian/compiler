@@ -2,12 +2,12 @@ interface SomeInterface {
 	
 }
 
-agent<SomeInterface> SomeAgent {
-	function<void> DoSomething() {
+agent SomeAgent for SomeInterface {
+	function DoSomething() {
 		principal
 	}
 }
 
-agent<SomeInterface> AnotherAgent<T> {}
+agent AnotherAgent<T> for SomeInterface {}
 
 class SomeClass with SomeAgent + AnotherAgent<int>{}

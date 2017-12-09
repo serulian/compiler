@@ -1,0 +1,6 @@
+function DoSomething() {
+	a := foo
+	a, b := foo
+	a, _ := bar
+	_, b := bar
+}

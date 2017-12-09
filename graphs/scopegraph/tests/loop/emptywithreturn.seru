@@ -1,5 +1,3 @@
-function<int> SomeFunc() {
-	/* emptyloop */ for {
-		return 2
-	}
+function SomeFunc() int {
+	/* emptyloop */for { return 2 }
 }

@@ -1,0 +1,130 @@
+NodeTypeFile
+  end-rune = 157
+  input-source = switch statement multi statement test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 157
+      input-source = switch statement multi statement test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 157
+          input-source = switch statement multi statement test
+          start-rune = 24
+          block-child =>
+            NodeTypeSwitchStatement
+              end-rune = 155
+              input-source = switch statement multi statement test
+              start-rune = 27
+              switch-case =>
+                NodeTypeSwitchStatementCase
+                  end-rune = 55
+                  input-source = switch statement multi statement test
+                  start-rune = 52
+                  switch-case-expression =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 54
+                      identexpr-name = foo
+                      input-source = switch statement multi statement test
+                      start-rune = 52
+                  switch-case-statement =>
+                    NodeTypeStatementBlock
+                      end-rune = 55
+                      input-source = switch statement multi statement test
+                      start-rune = 84
+                      child-node =>
+                        NodeTypeComment
+                          comment-value = // No statement here
+                          end-rune = 79
+                          input-source = switch statement multi statement test
+                          start-rune = 60
+                NodeTypeSwitchStatementCase
+                  end-rune = 121
+                  input-source = switch statement multi statement test
+                  start-rune = 89
+                  switch-case-expression =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 91
+                      identexpr-name = bar
+                      input-source = switch statement multi statement test
+                      start-rune = 89
+                  switch-case-statement =>
+                    NodeTypeStatementBlock
+                      end-rune = 121
+                      input-source = switch statement multi statement test
+                      start-rune = 97
+                      block-child =>
+                        NodeTypeExpressionStatement
+                          end-rune = 102
+                          input-source = switch statement multi statement test
+                          start-rune = 97
+                          expr-statement-expr =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 101
+                              identexpr-name = first
+                              input-source = switch statement multi statement test
+                              start-rune = 97
+                        NodeTypeExpressionStatement
+                          end-rune = 112
+                          input-source = switch statement multi statement test
+                          start-rune = 106
+                          expr-statement-expr =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 111
+                              identexpr-name = second
+                              input-source = switch statement multi statement test
+                              start-rune = 106
+                        NodeTypeExpressionStatement
+                          end-rune = 121
+                          input-source = switch statement multi statement test
+                          start-rune = 116
+                          expr-statement-expr =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 120
+                              identexpr-name = third
+                              input-source = switch statement multi statement test
+                              start-rune = 116
+                NodeTypeSwitchStatementCase
+                  end-rune = 153
+                  input-source = switch statement multi statement test
+                  start-rune = 130
+                  switch-case-expression =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 132
+                      identexpr-name = meh
+                      input-source = switch statement multi statement test
+                      start-rune = 130
+                  switch-case-statement =>
+                    NodeTypeStatementBlock
+                      end-rune = 153
+                      input-source = switch statement multi statement test
+                      start-rune = 138
+                      block-child =>
+                        NodeTypeExpressionStatement
+                          end-rune = 144
+                          input-source = switch statement multi statement test
+                          start-rune = 138
+                          expr-statement-expr =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 143
+                              identexpr-name = fourth
+                              input-source = switch statement multi statement test
+                              start-rune = 138
+                        NodeTypeExpressionStatement
+                          end-rune = 153
+                          input-source = switch statement multi statement test
+                          start-rune = 148
+                          expr-statement-expr =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 152
+                              identexpr-name = fifth
+                              input-source = switch statement multi statement test
+                              start-rune = 148
+              switch-expression =>
+                NodeTypeIdentifierExpression
+                  end-rune = 41
+                  identexpr-name = someExpr
+                  input-source = switch statement multi statement test
+                  start-rune = 34

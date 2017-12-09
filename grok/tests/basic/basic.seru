@@ -1,11 +1,11 @@
 ///   [sc     ]
 class SomeClass {
-  ///      [fbbdef ]
-  var<int> FooBarBaz
+  /// [fbbdef ]
+  var FooBarBaz int
 }
 
-///      [v ]  [d        ] [sp     ] [i]            [scref  ]
-function<void> DoSomething(someParam int, someClass SomeClass) {
+///      [d        ] [sp     ] [i]            [scref  ]
+function DoSomething(someParam int, someClass SomeClass) {
   /// [sl     ]
   'hello world'
 

@@ -1,0 +1,78 @@
+NodeTypeFile
+  end-rune = 89
+  input-source = lambda expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 89
+      input-source = lambda expr test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 89
+          input-source = lambda expr test
+          start-rune = 24
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 41
+              input-source = lambda expr test
+              start-rune = 27
+              expr-statement-expr =>
+                NodeTypeLambdaExpression
+                  end-rune = 40
+                  input-source = lambda expr test
+                  start-rune = 27
+                  lambda-expression-child-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 40
+                      identexpr-name = someExpr
+                      input-source = lambda expr test
+                      start-rune = 33
+            NodeTypeExpressionStatement
+              end-rune = 63
+              input-source = lambda expr test
+              start-rune = 43
+              expr-statement-expr =>
+                NodeTypeLambdaExpression
+                  end-rune = 62
+                  input-source = lambda expr test
+                  start-rune = 43
+                  lambda-expression-child-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 62
+                      identexpr-name = someOtherExpr
+                      input-source = lambda expr test
+                      start-rune = 50
+                  lambda-expression-inferred-parameter =>
+                    NodeTypeLambdaParameter
+                      end-rune = 44
+                      input-source = lambda expr test
+                      named = a
+                      start-rune = 44
+            NodeTypeExpressionStatement
+              end-rune = 88
+              input-source = lambda expr test
+              start-rune = 65
+              expr-statement-expr =>
+                NodeTypeLambdaExpression
+                  end-rune = 87
+                  input-source = lambda expr test
+                  start-rune = 65
+                  lambda-expression-child-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 87
+                      identexpr-name = someThirdExpr
+                      input-source = lambda expr test
+                      start-rune = 75
+                  lambda-expression-inferred-parameter =>
+                    NodeTypeLambdaParameter
+                      end-rune = 66
+                      input-source = lambda expr test
+                      named = a
+                      start-rune = 66
+                    NodeTypeLambdaParameter
+                      end-rune = 69
+                      input-source = lambda expr test
+                      named = b
+                      start-rune = 69

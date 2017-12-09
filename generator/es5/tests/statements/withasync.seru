@@ -1,16 +1,14 @@
-function<bool> DoSomethingAsync() {
-  return true
-}
+function DoSomethingAsync() bool { return true }
 
-var<bool> someBool = false
+var someBool bool = false
 
 class SomeReleasable {
-	function<void> Release() {
+	function Release() {
 		someBool = <- DoSomethingAsync()
 	}
 }
 
-function<any> TEST() {
+function TEST() any {
 	123
 	with SomeReleasable.new() {
 		456

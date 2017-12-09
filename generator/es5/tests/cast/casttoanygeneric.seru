@@ -1,10 +1,10 @@
 class SomeClass {}
 
-function<void> test<T>(value any) {
+function test<T>(value any) {
 	value.(T)
 }
 
-function<bool> TEST() {
+function TEST() bool {
 	test<any>('hello world')
 	test<any>(1234)
 	test<any>(SomeClass.new())

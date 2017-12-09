@@ -1,7 +1,9 @@
 import testp`externalpackage` as testpackage
-from testp`externalpackage` import SomeExternalType
 from testp`externalpackage` import AnotherExternalType as CoolType
+from testp`externalpackage` import SomeExternalType
 
-var<testpackage.TestType> externalpackage
-var<SomeExternalType> externaltype
-var<CoolType> aliasedexternaltype
+var externalpackage testpackage.TestType
+
+var externaltype SomeExternalType
+
+var aliasedexternaltype CoolType

@@ -1,0 +1,4 @@
+function DoSomething() {
+    <Div
+    return 42
+}

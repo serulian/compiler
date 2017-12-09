@@ -1,8 +1,9 @@
 from other import SomeClass
 
-var<SomeClass> sc = SomeClass.NewThing(1)
-var<SomeClass> sc2 = SomeClass.NewThing(2)
+var sc SomeClass = SomeClass.NewThing(1)
 
-function<any> TEST() {
+var sc2 SomeClass = SomeClass.NewThing(2)
+
+function TEST() any {
 	return sc.value == 2 && sc2.value == 4
 }

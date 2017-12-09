@@ -1,0 +1,7 @@
+function DoSomethingElse() {
+	a<b>
+}
+
+function DoSomething() {
+	a < b
+}

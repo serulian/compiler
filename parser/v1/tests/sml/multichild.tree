@@ -1,0 +1,113 @@
+NodeTypeFile
+  end-rune = 151
+  input-source = multiple children sml test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 151
+      input-source = multiple children sml test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 151
+          input-source = multiple children sml test
+          start-rune = 23
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 150
+              input-source = multiple children sml test
+              start-rune = 26
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 149
+                  input-source = multiple children sml test
+                  start-rune = 26
+                  sml-expression-child =>
+                    NodeTypeSmlExpression
+                      end-rune = 60
+                      input-source = multiple children sml test
+                      start-rune = 36
+                      sml-expression-child =>
+                        NodeTypeSmlText
+                          end-rune = 52
+                          input-source = multiple children sml test
+                          sml-text-value = Some table
+                          start-rune = 43
+                      sml-expression-typefunc =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 41
+                          identexpr-name = thead
+                          input-source = multiple children sml test
+                          start-rune = 37
+                    NodeTypeSmlExpression
+                      end-rune = 139
+                      input-source = multiple children sml test
+                      start-rune = 64
+                      sml-expression-child =>
+                        NodeTypeLoopExpression
+                          end-rune = 128
+                          input-source = multiple children sml test
+                          start-rune = 77
+                          loop-expr-map-expr =>
+                            NodeTypeSmlExpression
+                              end-rune = 110
+                              input-source = multiple children sml test
+                              start-rune = 77
+                              sml-expression-child =>
+                                NodeTypeSmlExpression
+                                  end-rune = 105
+                                  input-source = multiple children sml test
+                                  start-rune = 81
+                                  sml-expression-child =>
+                                    NodeTypeSmlText
+                                      end-rune = 89
+                                      input-source = multiple children sml test
+                                      sml-text-value = some 
+                                      start-rune = 85
+                                    NodeTypeIdentifierExpression
+                                      end-rune = 94
+                                      identexpr-name = cool
+                                      input-source = multiple children sml test
+                                      start-rune = 91
+                                    NodeTypeSmlText
+                                      end-rune = 100
+                                      input-source = multiple children sml test
+                                      sml-text-value =  text
+                                      start-rune = 97
+                                  sml-expression-typefunc =>
+                                    NodeTypeIdentifierExpression
+                                      end-rune = 83
+                                      identexpr-name = td
+                                      input-source = multiple children sml test
+                                      start-rune = 82
+                              sml-expression-typefunc =>
+                                NodeTypeIdentifierExpression
+                                  end-rune = 79
+                                  identexpr-name = tr
+                                  input-source = multiple children sml test
+                                  start-rune = 78
+                          loop-expr-stream-expr =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 126
+                              identexpr-name = rows
+                              input-source = multiple children sml test
+                              start-rune = 123
+                          named-value =>
+                            NodeTypeNamedValue
+                              end-rune = 118
+                              input-source = multiple children sml test
+                              named = row
+                              start-rune = 116
+                      sml-expression-typefunc =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 69
+                          identexpr-name = tbody
+                          input-source = multiple children sml test
+                          start-rune = 65
+                  sml-expression-typefunc =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 31
+                      identexpr-name = table
+                      input-source = multiple children sml test
+                      start-rune = 27

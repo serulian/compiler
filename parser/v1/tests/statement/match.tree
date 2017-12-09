@@ -1,0 +1,200 @@
+NodeTypeFile
+  end-rune = 139
+  input-source = match statement basic test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 139
+      input-source = match statement basic test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 139
+          input-source = match statement basic test
+          start-rune = 23
+          block-child =>
+            NodeTypeMatchStatement
+              end-rune = 137
+              input-source = match statement basic test
+              start-rune = 26
+              match-case =>
+                NodeTypeMatchStatementCase
+                  end-rune = 69
+                  input-source = match statement basic test
+                  start-rune = 50
+                  match-case-statement =>
+                    NodeTypeStatementBlock
+                      end-rune = 69
+                      input-source = match statement basic test
+                      start-rune = 58
+                      block-child =>
+                        NodeTypeExpressionStatement
+                          end-rune = 59
+                          input-source = match statement basic test
+                          start-rune = 58
+                          expr-statement-expr =>
+                            NodeNumericLiteralExpression
+                              end-rune = 58
+                              input-source = match statement basic test
+                              literal-value = 1
+                              start-rune = 58
+                        NodeTypeExpressionStatement
+                          end-rune = 64
+                          input-source = match statement basic test
+                          start-rune = 63
+                          expr-statement-expr =>
+                            NodeNumericLiteralExpression
+                              end-rune = 63
+                              input-source = match statement basic test
+                              literal-value = 2
+                              start-rune = 63
+                        NodeTypeExpressionStatement
+                          end-rune = 69
+                          input-source = match statement basic test
+                          start-rune = 68
+                          expr-statement-expr =>
+                            NodeNumericLiteralExpression
+                              end-rune = 68
+                              input-source = match statement basic test
+                              literal-value = 3
+                              start-rune = 68
+                  match-case-typeref =>
+                    NodeTypeTypeReference
+                      end-rune = 52
+                      input-source = match statement basic test
+                      start-rune = 50
+                      typereference-path =>
+                        NodeTypeIdentifierPath
+                          end-rune = 52
+                          input-source = match statement basic test
+                          start-rune = 50
+                          identifierpath-root =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 52
+                              identifieraccess-name = Foo
+                              input-source = match statement basic test
+                              start-rune = 50
+                NodeTypeMatchStatementCase
+                  end-rune = 97
+                  input-source = match statement basic test
+                  start-rune = 78
+                  match-case-statement =>
+                    NodeTypeStatementBlock
+                      end-rune = 97
+                      input-source = match statement basic test
+                      start-rune = 86
+                      block-child =>
+                        NodeTypeExpressionStatement
+                          end-rune = 87
+                          input-source = match statement basic test
+                          start-rune = 86
+                          expr-statement-expr =>
+                            NodeNumericLiteralExpression
+                              end-rune = 86
+                              input-source = match statement basic test
+                              literal-value = 4
+                              start-rune = 86
+                        NodeTypeExpressionStatement
+                          end-rune = 92
+                          input-source = match statement basic test
+                          start-rune = 91
+                          expr-statement-expr =>
+                            NodeNumericLiteralExpression
+                              end-rune = 91
+                              input-source = match statement basic test
+                              literal-value = 5
+                              start-rune = 91
+                        NodeTypeExpressionStatement
+                          end-rune = 97
+                          input-source = match statement basic test
+                          start-rune = 96
+                          expr-statement-expr =>
+                            NodeNumericLiteralExpression
+                              end-rune = 96
+                              input-source = match statement basic test
+                              literal-value = 6
+                              start-rune = 96
+                  match-case-typeref =>
+                    NodeTypeTypeReference
+                      end-rune = 80
+                      input-source = match statement basic test
+                      start-rune = 78
+                      typereference-path =>
+                        NodeTypeIdentifierPath
+                          end-rune = 80
+                          input-source = match statement basic test
+                          start-rune = 78
+                          identifierpath-root =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 80
+                              identifieraccess-name = Bar
+                              input-source = match statement basic test
+                              start-rune = 78
+                NodeTypeMatchStatementCase
+                  end-rune = 135
+                  input-source = match statement basic test
+                  start-rune = 106
+                  match-case-statement =>
+                    NodeTypeStatementBlock
+                      end-rune = 135
+                      input-source = match statement basic test
+                      start-rune = 124
+                      block-child =>
+                        NodeTypeExpressionStatement
+                          end-rune = 125
+                          input-source = match statement basic test
+                          start-rune = 124
+                          expr-statement-expr =>
+                            NodeNumericLiteralExpression
+                              end-rune = 124
+                              input-source = match statement basic test
+                              literal-value = 7
+                              start-rune = 124
+                        NodeTypeExpressionStatement
+                          end-rune = 130
+                          input-source = match statement basic test
+                          start-rune = 129
+                          expr-statement-expr =>
+                            NodeNumericLiteralExpression
+                              end-rune = 129
+                              input-source = match statement basic test
+                              literal-value = 8
+                              start-rune = 129
+                        NodeTypeExpressionStatement
+                          end-rune = 135
+                          input-source = match statement basic test
+                          start-rune = 134
+                          expr-statement-expr =>
+                            NodeNumericLiteralExpression
+                              end-rune = 134
+                              input-source = match statement basic test
+                              literal-value = 9
+                              start-rune = 134
+                  match-case-typeref =>
+                    NodeTypeMapping
+                      end-rune = 118
+                      input-source = match statement basic test
+                      start-rune = 106
+                      typereference-inner-type =>
+                        NodeTypeTypeReference
+                          end-rune = 117
+                          input-source = match statement basic test
+                          start-rune = 109
+                          typereference-path =>
+                            NodeTypeIdentifierPath
+                              end-rune = 117
+                              input-source = match statement basic test
+                              start-rune = 109
+                              identifierpath-root =>
+                                NodeTypeIdentifierAccess
+                                  end-rune = 117
+                                  identifieraccess-name = Something
+                                  input-source = match statement basic test
+                                  start-rune = 109
+              match-expression =>
+                NodeTypeIdentifierExpression
+                  end-rune = 39
+                  identexpr-name = someExpr
+                  input-source = match statement basic test
+                  start-rune = 32

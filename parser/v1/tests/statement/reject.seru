@@ -1,0 +1,3 @@
+function DoSomething() {
+	reject foo
+}

@@ -2,7 +2,7 @@ struct SomeStruct {
 	SomeField int = 42
 }
 
-function<any> TEST() {
+function TEST() any {
 	var jsonString = '{}'
 	parsed := SomeStruct.Parse<json>(jsonString)
 	return parsed.SomeField == 42

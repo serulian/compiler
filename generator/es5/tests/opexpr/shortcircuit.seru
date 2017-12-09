@@ -1,17 +1,17 @@
 class someError {
-	property<string> Message {
-		get { return 'WHY CALLED? '}
+	property Message string {
+		get { return 'WHY CALLED? ' }
 	}
 }
 
-function<bool> neverCalled() {
+function neverCalled() bool {
 	reject someError.new()
 }
 
-function<bool> anotherNeverCalled() {
+function anotherNeverCalled() bool {
 	reject someError.new()
 }
 
-function<any> TEST() {
-	return (!(false && neverCalled()) || anotherNeverCalled())
+function TEST() any {
+	return !(false && neverCalled()) || anotherNeverCalled()
 }

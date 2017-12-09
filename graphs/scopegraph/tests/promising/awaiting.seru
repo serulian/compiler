@@ -1,7 +1,7 @@
-function<void> Awaiting(p awaitable<string>) {
+function Awaiting(p awaitable<string>) {
 	<- p
 }
 
-function<void> CallsAwaiting(p awaitable<string>) {
+function CallsAwaiting(p awaitable<string>) {
 	Awaiting(p)
 }

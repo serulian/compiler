@@ -1,0 +1,37 @@
+NodeTypeFile
+  end-rune = 44
+  input-source = module function test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 44
+      input-source = module function test
+      named = SomeModuleFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 44
+          input-source = module function test
+          start-rune = 43
+      typemember-parameter =>
+        NodeTypeParameter
+          end-rune = 40
+          input-source = module function test
+          named = someParam
+          start-rune = 28
+          parameter-type =>
+            NodeTypeTypeReference
+              end-rune = 40
+              input-source = module function test
+              start-rune = 38
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 40
+                  input-source = module function test
+                  start-rune = 38
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 40
+                      identifieraccess-name = int
+                      input-source = module function test
+                      start-rune = 38

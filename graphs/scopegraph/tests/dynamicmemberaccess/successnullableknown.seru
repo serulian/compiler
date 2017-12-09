@@ -1,8 +1,8 @@
 class SomeClass {
-	var<int> someInt = 2
+	var someInt int = 2
 }
 
-function<void> DoSomething() {
-	var<SomeClass?> sc
+function DoSomething() {
+	var sc SomeClass?
 	/* dynaccess */(sc->someInt)
 }

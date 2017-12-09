@@ -1,0 +1,52 @@
+NodeTypeFile
+  end-rune = 59
+  input-source = open and close sml test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 59
+      input-source = open and close sml test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 59
+          input-source = open and close sml test
+          start-rune = 23
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 37
+              input-source = open and close sml test
+              start-rune = 26
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 36
+                  input-source = open and close sml test
+                  start-rune = 26
+                  sml-expression-typefunc =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 29
+                      identexpr-name = foo
+                      input-source = open and close sml test
+                      start-rune = 27
+            NodeTypeExpressionStatement
+              end-rune = 58
+              input-source = open and close sml test
+              start-rune = 39
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 57
+                  input-source = open and close sml test
+                  start-rune = 39
+                  sml-expression-typefunc =>
+                    NodeMemberAccessExpression
+                      end-rune = 47
+                      input-source = open and close sml test
+                      member-access-identifier = bar
+                      start-rune = 40
+                      member-access-expr =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 42
+                          identexpr-name = foo
+                          input-source = open and close sml test
+                          start-rune = 40

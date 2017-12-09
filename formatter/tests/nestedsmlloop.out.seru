@@ -1,4 +1,4 @@
-function<void> SomeFunction() {
+function SomeFunction() {
 	var something = <Ul>
 		<Li>Foo</Li>
 		<Li [for foo1 in bar]>{foo2}</Li>

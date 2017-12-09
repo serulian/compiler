@@ -1,0 +1,59 @@
+NodeTypeFile
+  end-rune = 58
+  input-source = known issue 7 test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 58
+      input-source = known issue 7 test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 58
+          input-source = known issue 7 test
+          start-rune = 23
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 57
+              input-source = known issue 7 test
+              start-rune = 26
+              expr-statement-expr =>
+                NodeBooleanAndExpression
+                  end-rune = 56
+                  input-source = known issue 7 test
+                  start-rune = 26
+                  binary-expression-left =>
+                    NodeComparisonLTExpression
+                      end-rune = 38
+                      input-source = known issue 7 test
+                      start-rune = 26
+                      binary-expression-left =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 34
+                          identexpr-name = someIndex
+                          input-source = known issue 7 test
+                          start-rune = 26
+                      binary-expression-right =>
+                        NodeNumericLiteralExpression
+                          end-rune = 38
+                          input-source = known issue 7 test
+                          literal-value = 2
+                          start-rune = 38
+                  binary-expression-right =>
+                    NodeComparisonGTEExpression
+                      end-rune = 56
+                      input-source = known issue 7 test
+                      start-rune = 43
+                      binary-expression-left =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 51
+                          identexpr-name = someIndex
+                          input-source = known issue 7 test
+                          start-rune = 43
+                      binary-expression-right =>
+                        NodeNumericLiteralExpression
+                          end-rune = 56
+                          input-source = known issue 7 test
+                          literal-value = 6
+                          start-rune = 56

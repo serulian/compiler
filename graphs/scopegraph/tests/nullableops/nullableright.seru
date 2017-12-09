@@ -1,6 +1,6 @@
 class SomeClass {
-	function<void> DoSomething() {
-		var<SomeClass?> scn
+	function DoSomething() {
+		var scn SomeClass?
 		scn ?? scn
 	}
 }

@@ -1,4 +1,4 @@
-function<void> SomeFunction() {
+function SomeFunction() {
 	<- a
 	a + b
 	a - b

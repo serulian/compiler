@@ -1,5 +1,5 @@
-function<void> DoSomething() {
-	var<string?> someString = null
+function DoSomething() {
+	var someString string? = null
 	if someString is null {
 		someString = 'hello world'
 	}

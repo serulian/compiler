@@ -1,0 +1,58 @@
+NodeTypeFile
+  end-rune = 182
+  input-source = complex imports test
+  start-rune = 0
+  child-node =>
+    NodeTypeImport
+      end-rune = 54
+      import-location-ref = location:some-git-repo
+      import-source = "some-git-repo"
+      input-source = complex imports test
+      start-rune = 0
+      import-package =>
+        NodeTypeImportPackage
+          end-rune = 53
+          import-subsource = Something
+          input-source = complex imports test
+          named = SomethingElse
+          start-rune = 28
+    NodeTypeImport
+      end-rune = 95
+      import-location-ref = location:SomeLocalFile
+      import-source = SomeLocalFile
+      input-source = complex imports test
+      start-rune = 55
+      import-package =>
+        NodeTypeImportPackage
+          end-rune = 94
+          import-subsource = Blah
+          input-source = complex imports test
+          named = Foobar
+          start-rune = 81
+    NodeTypeImport
+      end-rune = 137
+      import-kind = webidl
+      import-location-ref = location:coolthing
+      import-source = `coolthing`
+      input-source = complex imports test
+      start-rune = 96
+      import-package =>
+        NodeTypeImportPackage
+          end-rune = 136
+          import-subsource = WebIDLThing
+          input-source = complex imports test
+          named = WebIDLThing
+          start-rune = 126
+    NodeTypeImport
+      end-rune = 182
+      import-kind = anotherkind
+      import-location-ref = location:some url
+      import-source = `some url`
+      input-source = complex imports test
+      start-rune = 138
+      import-package =>
+        NodeTypeImportPackage
+          end-rune = 182
+          import-package-name = SomethingNeat
+          input-source = complex imports test
+          start-rune = 167

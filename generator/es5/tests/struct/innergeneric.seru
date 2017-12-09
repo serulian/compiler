@@ -6,12 +6,8 @@ struct SomeStruct<T> {
 	SomeField T
 }
 
-function<any> TEST() {
-	var ss = SomeStruct<struct>{
-		SomeField: AnotherStruct{
-			BoolValue: true,
-		},
-	}
+function TEST() any {
+	var ss = SomeStruct<struct>{SomeField: AnotherStruct{BoolValue: true}}
 
 	var jsonString = ss.Stringify<json>()
 	var sscopy = SomeStruct<AnotherStruct>.Parse<json>(jsonString)

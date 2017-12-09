@@ -1,6 +1,6 @@
 $module('withexit', function () {
   var $static = this;
-  this.$class('f9c7b1df', 'SomeReleasable', false, '', function () {
+  this.$class('1ac0891b', 'SomeReleasable', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -17,7 +17,7 @@ $module('withexit', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Release|2|2549c819<void>": true,
+        "Release|2|0b2e6e78<void>": true,
       };
       return this.$cachedtypesig = computed;
     };

@@ -1,19 +1,19 @@
 class SomeClass {
-	property<bool> Value {
+	property Value bool {
 		get { return true }
 	}
 }
 
-function<any> TEST() {
+function TEST() any {
 	var firstBool = false
 	var secondBool = false
 	var thirdBool = false
 	var fourthBool = false
 
-	var<any> firstValue = SomeClass.new()
-	var<any> secondValue = 1234
-	var<any> thirdValue = 'hello world'
-	var<any> fourthValue = null
+	var firstValue any = SomeClass.new()
+	var secondValue any = 1234
+	var thirdValue any = 'hello world'
+	var fourthValue any = null
 
 	match firstValue as firstThing {
 		case SomeClass:

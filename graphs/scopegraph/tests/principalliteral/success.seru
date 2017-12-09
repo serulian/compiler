@@ -1,7 +1,7 @@
 interface SomeInterface {}
 
-agent<SomeInterface> SomeAgent {
-	function<void> DoSomething() {
-		/* principal */ principal
+agent SomeAgent for SomeInterface {
+	function DoSomething() {
+		/* principal */principal
 	}
 }

@@ -1,0 +1,78 @@
+NodeTypeFile
+  end-rune = 75
+  input-source = known issue 12 test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 75
+      input-source = known issue 12 test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 75
+          input-source = known issue 12 test
+          start-rune = 23
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 74
+              input-source = known issue 12 test
+              start-rune = 26
+              expr-statement-expr =>
+                NodeFunctionCallExpression
+                  end-rune = 73
+                  input-source = known issue 12 test
+                  start-rune = 26
+                  function-call-expr =>
+                    NodeMemberAccessExpression
+                      end-rune = 71
+                      input-source = known issue 12 test
+                      member-access-identifier = Empty
+                      start-rune = 26
+                      member-access-expr =>
+                        NodeGenericSpecifierExpression
+                          end-rune = 65
+                          input-source = known issue 12 test
+                          start-rune = 26
+                          generic-specifier-expr =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 28
+                              identexpr-name = Map
+                              input-source = known issue 12 test
+                              start-rune = 26
+                          generic-specifier-type =>
+                            NodeTypeTypeReference
+                              end-rune = 46
+                              input-source = known issue 12 test
+                              start-rune = 30
+                              typereference-path =>
+                                NodeTypeIdentifierPath
+                                  end-rune = 46
+                                  input-source = known issue 12 test
+                                  start-rune = 30
+                                  identifierpath-root =>
+                                    NodeTypeIdentifierAccess
+                                      end-rune = 46
+                                      identifieraccess-name = FunctionReference
+                                      input-source = known issue 12 test
+                                      start-rune = 30
+                            NodeTypeTypeReference
+                              end-rune = 64
+                              input-source = known issue 12 test
+                              start-rune = 49
+                              typereference-generic =>
+                                NodeTypeVoid
+                                  end-rune = 61
+                                  input-source = known issue 12 test
+                                  start-rune = 58
+                              typereference-path =>
+                                NodeTypeIdentifierPath
+                                  end-rune = 56
+                                  input-source = known issue 12 test
+                                  start-rune = 49
+                                  identifierpath-root =>
+                                    NodeTypeIdentifierAccess
+                                      end-rune = 56
+                                      identifieraccess-name = function
+                                      input-source = known issue 12 test
+                                      start-rune = 49

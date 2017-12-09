@@ -1,9 +1,9 @@
 class SomeClass {
 	operator Plus(first SomeClass, second SomeClass) {
 		return first
-	}	
+	}
 }
 
-function<void> DoSomething(p awaitable<SomeClass>, q awaitable<SomeClass>) {
-   (<- p) + (<- q)
+function DoSomething(p awaitable<SomeClass>, q awaitable<SomeClass>) {
+	(<- p) + (<- q)
 }

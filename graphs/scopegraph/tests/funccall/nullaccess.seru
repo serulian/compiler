@@ -1,9 +1,7 @@
 class SomeClass {
-	function<int> SomeMethod() {
-		return 2
-	}	
+	function SomeMethod() int { return 2 }
 }
 
-function<void> DoSomething(sc SomeClass?) {
+function DoSomething(sc SomeClass?) {
 	/* sm */(sc?.SomeMethod())
 }

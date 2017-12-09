@@ -1,0 +1,3 @@
+function DoSomething() {
+	someExpr.doSomething for someExpr in someOtherExpr
+}

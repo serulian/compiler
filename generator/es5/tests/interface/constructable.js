@@ -1,6 +1,6 @@
 $module('constructable', function () {
   var $static = this;
-  this.$class('ceb86b8e', 'SomeClass', false, '', function () {
+  this.$class('5fd250f1', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -19,14 +19,14 @@ $module('constructable', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Get|1|2549c819<ceb86b8e>": true,
-        "SomeBool|3|f361570c": true,
+        "Get|1|0b2e6e78<5fd250f1>": true,
+        "SomeBool|3|5e61c39d": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  this.$interface('ba50ace2', 'SomeInterface', false, '', function () {
+  this.$interface('cd09b8fb', 'SomeInterface', false, '', function () {
     var $static = this;
     $static.Get = function () {
       return $g.constructable.SomeClass.new();
@@ -36,8 +36,8 @@ $module('constructable', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Get|1|2549c819<ba50ace2>": true,
-        "SomeBool|3|f361570c": true,
+        "Get|1|0b2e6e78<cd09b8fb>": true,
+        "SomeBool|3|5e61c39d": true,
       };
       return this.$cachedtypesig = computed;
     };

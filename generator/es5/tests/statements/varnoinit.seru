@@ -1,4 +1,4 @@
-function<void> DoSomething() {
-	var<int?> i
+function DoSomething() {
+	var i int?
 	1234
 }

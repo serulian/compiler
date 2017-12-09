@@ -1,9 +1,7 @@
-var<int> foo = DoSomething()
+var foo int = DoSomething()
 
-function<int> DoSomething() {
+function DoSomething() int {
 	return DoSomethingElse()
 }
 
-function<int> DoSomethingElse() {
-	return foo
-}
+function DoSomethingElse() int { return foo }

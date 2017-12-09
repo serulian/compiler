@@ -1,21 +1,22 @@
 class SomeClass {
-	var<bool> SomeBool = false
+	var SomeBool bool = false
 
-	property<bool> SomeProp {
+	property SomeProp bool {
 		get { return this.SomeBool }
+
 		set {
 			this.SomeBool = val
 		}
 	}
 }
 
-function<bool> AnotherFunction(sc SomeClass) {
+function AnotherFunction(sc SomeClass) bool {
 	sc.SomeBool
 	sc.SomeProp
 	sc.SomeProp = true
 	return sc.SomeProp
 }
 
-function<any> TEST() {
+function TEST() any {
 	return AnotherFunction(SomeClass.new())
 }

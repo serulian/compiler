@@ -1,0 +1,125 @@
+NodeTypeFile
+  end-rune = 105
+  input-source = match statement as test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 105
+      input-source = match statement as test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 105
+          input-source = match statement as test
+          start-rune = 23
+          block-child =>
+            NodeTypeMatchStatement
+              end-rune = 103
+              input-source = match statement as test
+              start-rune = 26
+              match-case =>
+                NodeTypeMatchStatementCase
+                  end-rune = 66
+                  input-source = match statement as test
+                  start-rune = 57
+                  match-case-statement =>
+                    NodeTypeStatementBlock
+                      end-rune = 66
+                      input-source = match statement as test
+                      start-rune = 65
+                      block-child =>
+                        NodeTypeExpressionStatement
+                          end-rune = 66
+                          input-source = match statement as test
+                          start-rune = 65
+                          expr-statement-expr =>
+                            NodeNumericLiteralExpression
+                              end-rune = 65
+                              input-source = match statement as test
+                              literal-value = 1
+                              start-rune = 65
+                  match-case-typeref =>
+                    NodeTypeTypeReference
+                      end-rune = 59
+                      input-source = match statement as test
+                      start-rune = 57
+                      typereference-path =>
+                        NodeTypeIdentifierPath
+                          end-rune = 59
+                          input-source = match statement as test
+                          start-rune = 57
+                          identifierpath-root =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 59
+                              identifieraccess-name = Foo
+                              input-source = match statement as test
+                              start-rune = 57
+                NodeTypeMatchStatementCase
+                  end-rune = 84
+                  input-source = match statement as test
+                  start-rune = 75
+                  match-case-statement =>
+                    NodeTypeStatementBlock
+                      end-rune = 84
+                      input-source = match statement as test
+                      start-rune = 83
+                      block-child =>
+                        NodeTypeExpressionStatement
+                          end-rune = 84
+                          input-source = match statement as test
+                          start-rune = 83
+                          expr-statement-expr =>
+                            NodeNumericLiteralExpression
+                              end-rune = 83
+                              input-source = match statement as test
+                              literal-value = 2
+                              start-rune = 83
+                  match-case-typeref =>
+                    NodeTypeTypeReference
+                      end-rune = 77
+                      input-source = match statement as test
+                      start-rune = 75
+                      typereference-path =>
+                        NodeTypeIdentifierPath
+                          end-rune = 77
+                          input-source = match statement as test
+                          start-rune = 75
+                          identifierpath-root =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 77
+                              identifieraccess-name = Bar
+                              input-source = match statement as test
+                              start-rune = 75
+                NodeTypeMatchStatementCase
+                  end-rune = 101
+                  input-source = match statement as test
+                  start-rune = 95
+                  match-case-statement =>
+                    NodeTypeStatementBlock
+                      end-rune = 101
+                      input-source = match statement as test
+                      start-rune = 100
+                      block-child =>
+                        NodeTypeExpressionStatement
+                          end-rune = 101
+                          input-source = match statement as test
+                          start-rune = 100
+                          expr-statement-expr =>
+                            NodeNumericLiteralExpression
+                              end-rune = 100
+                              input-source = match statement as test
+                              literal-value = 3
+                              start-rune = 100
+              match-expression =>
+                NodeTypeIdentifierExpression
+                  end-rune = 39
+                  identexpr-name = someExpr
+                  input-source = match statement as test
+                  start-rune = 32
+              named-value =>
+                NodeTypeNamedValue
+                  end-rune = 46
+                  input-source = match statement as test
+                  named = bar
+                  start-rune = 44

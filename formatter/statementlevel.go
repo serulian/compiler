@@ -126,9 +126,12 @@ func (sf *sourceFormatter) emitYieldStatement(node formatterNode) {
 
 	if _, ok := node.tryGetProperty(sourceshape.NodeYieldStatementBreak); ok {
 		sf.append(" break")
-	} else {
+	} else if node.hasChild(sourceshape.NodeYieldStatementValue) {
 		sf.append(" ")
 		sf.emitNode(node.getChild(sourceshape.NodeYieldStatementValue))
+	} else {
+		sf.append(" in ")
+		sf.emitNode(node.getChild(sourceshape.NodeYieldStatementStreamValue))
 	}
 }
 
@@ -155,15 +158,13 @@ func (sf *sourceFormatter) emitContinueStatement(node formatterNode) {
 // emitVariableStatement emits the source for a variable statement.
 func (sf *sourceFormatter) emitVariableStatement(node formatterNode) {
 	sf.append("var")
-
-	if declaredType, ok := node.tryGetChild(sourceshape.NodeVariableStatementDeclaredType); ok {
-		sf.append("<")
-		sf.emitNode(declaredType)
-		sf.append(">")
-	}
-
 	sf.append(" ")
 	sf.append(node.getProperty(sourceshape.NodeVariableStatementName))
+
+	if declaredType, ok := node.tryGetChild(sourceshape.NodeVariableStatementDeclaredType); ok {
+		sf.append(" ")
+		sf.emitNode(declaredType)
+	}
 
 	if expr, ok := node.tryGetChild(sourceshape.NodeVariableStatementExpression); ok {
 		sf.append(" = ")

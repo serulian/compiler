@@ -1,0 +1,5 @@
+function SomeFunction() {
+    not key
+    not key in keys
+    a is not b
+}

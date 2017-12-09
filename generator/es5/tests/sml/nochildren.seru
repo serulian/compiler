@@ -1,4 +1,4 @@
-function<bool> SimpleFunction(props []{string}, children int*) {
+function SimpleFunction(props []{string}, children int*) bool {
 	var found = true
 	for value in children {
 		found = false
@@ -6,6 +6,4 @@ function<bool> SimpleFunction(props []{string}, children int*) {
 	return found
 }
 
-function<any> TEST() {
-	return <SimpleFunction />
-}
+function TEST() any { return <SimpleFunction /> }

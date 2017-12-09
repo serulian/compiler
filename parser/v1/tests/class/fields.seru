@@ -1,0 +1,5 @@
+class SomeClass {
+    var someInt int?
+    var anotherInt int = 42
+    var thirdInt int?
+}

@@ -1,6 +1,6 @@
 $module('basic', function () {
   var $static = this;
-  this.$class('78afdb83', 'SomeClass', false, '', function () {
+  this.$class('eaf2f2d0', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function (SomeAgent) {
@@ -26,9 +26,9 @@ $module('basic', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Declare|1|2549c819<78afdb83>": true,
-        "GetValue|2|2549c819<7243cf1b>": true,
-        "GetMainValue|2|2549c819<7243cf1b>": true,
+        "Declare|1|0b2e6e78<eaf2f2d0>": true,
+        "GetValue|2|0b2e6e78<f22a98b6>": true,
+        "GetMainValue|2|0b2e6e78<f22a98b6>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -41,13 +41,13 @@ $module('basic', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "GetValue|2|2549c819<7243cf1b>": true,
+        "GetValue|2|0b2e6e78<f22a98b6>": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  this.$agent('96b99731', 'SomeAgent', false, '', function () {
+  this.$agent('a48d0eec', 'SomeAgent', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -63,7 +63,7 @@ $module('basic', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "GetMainValue|2|2549c819<7243cf1b>": true,
+        "GetMainValue|2|0b2e6e78<f22a98b6>": true,
       };
       return this.$cachedtypesig = computed;
     };

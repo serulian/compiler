@@ -1,15 +1,15 @@
-var<any> someValue = null
+var someValue any = null
 
 interface SomeInterface {
-	function<void> SomeFunction()
+	function SomeFunction()
 }
 
 class SomeClass {
-	function<void> SomeFunction(f function<void>()) {
+	function SomeFunction(f function<void>()) {
 		f()
 	}
 }
 
-function<void> TEST(si SomeInterface?) {
+function TEST(si SomeInterface?) {
 	si?.SomeFunction()
 }

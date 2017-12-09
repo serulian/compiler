@@ -1,4 +1,4 @@
-function<any> TEST() {
+function TEST() any {
 	var lambda = (someParam) => !someParam
 	return lambda(false)
 }

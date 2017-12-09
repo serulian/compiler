@@ -1,0 +1,98 @@
+NodeTypeFile
+  end-rune = 97
+  input-source = conditional expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 97
+      input-source = conditional expr test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 97
+          input-source = conditional expr test
+          start-rune = 23
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 45
+              input-source = conditional expr test
+              start-rune = 26
+              expr-statement-expr =>
+                NodeTypeConditionalExpression
+                  end-rune = 45
+                  input-source = conditional expr test
+                  start-rune = 26
+                  comparison-expr-check =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 35
+                      identexpr-name = bar
+                      input-source = conditional expr test
+                      start-rune = 33
+                  comparison-expr-else =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 44
+                      identexpr-name = baz
+                      input-source = conditional expr test
+                      start-rune = 42
+                  comparison-expr-then =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 28
+                      identexpr-name = foo
+                      input-source = conditional expr test
+                      start-rune = 26
+            NodeTypeExpressionStatement
+              end-rune = 96
+              input-source = conditional expr test
+              start-rune = 47
+              expr-statement-expr =>
+                NodeTypeConditionalExpression
+                  end-rune = 96
+                  input-source = conditional expr test
+                  start-rune = 47
+                  comparison-expr-check =>
+                    NodeSliceExpression
+                      end-rune = 85
+                      input-source = conditional expr test
+                      start-rune = 64
+                      slice-expr-expr =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 72
+                          identexpr-name = someValue
+                          input-source = conditional expr test
+                          start-rune = 64
+                      slice-expr-index =>
+                        NodeStringLiteralExpression
+                          end-rune = 84
+                          input-source = conditional expr test
+                          literal-value = 'something'
+                          start-rune = 74
+                  comparison-expr-else =>
+                    NodeNumericLiteralExpression
+                      end-rune = 95
+                      input-source = conditional expr test
+                      literal-value = 1245
+                      start-rune = 92
+                  comparison-expr-then =>
+                    NodeFunctionCallExpression
+                      end-rune = 59
+                      input-source = conditional expr test
+                      start-rune = 47
+                      function-call-expr =>
+                        NodeMemberAccessExpression
+                          end-rune = 57
+                          input-source = conditional expr test
+                          member-access-identifier = baz
+                          start-rune = 47
+                          member-access-expr =>
+                            NodeMemberAccessExpression
+                              end-rune = 53
+                              input-source = conditional expr test
+                              member-access-identifier = bar
+                              start-rune = 47
+                              member-access-expr =>
+                                NodeTypeIdentifierExpression
+                                  end-rune = 49
+                                  identexpr-name = foo
+                                  input-source = conditional expr test
+                                  start-rune = 47

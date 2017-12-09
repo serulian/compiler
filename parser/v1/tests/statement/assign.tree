@@ -1,0 +1,59 @@
+NodeTypeFile
+  end-rune = 57
+  input-source = assignment statement test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 57
+      input-source = assignment statement test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 57
+          input-source = assignment statement test
+          start-rune = 24
+          block-child =>
+            NodeTypeAssignStatement
+              end-rune = 38
+              input-source = assignment statement test
+              start-rune = 27
+              assign-statement-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 38
+                  identexpr-name = someExpr
+                  input-source = assignment statement test
+                  start-rune = 31
+              assign-statement-name =>
+                NodeTypeIdentifierExpression
+                  end-rune = 27
+                  identexpr-name = a
+                  input-source = assignment statement test
+                  start-rune = 27
+            NodeTypeAssignStatement
+              end-rune = 55
+              input-source = assignment statement test
+              start-rune = 41
+              assign-statement-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 55
+                  identexpr-name = someExpr
+                  input-source = assignment statement test
+                  start-rune = 48
+              assign-statement-name =>
+                NodeSliceExpression
+                  end-rune = 44
+                  input-source = assignment statement test
+                  start-rune = 41
+                  slice-expr-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 41
+                      identexpr-name = a
+                      input-source = assignment statement test
+                      start-rune = 41
+                  slice-expr-index =>
+                    NodeNumericLiteralExpression
+                      end-rune = 43
+                      input-source = assignment statement test
+                      literal-value = 1
+                      start-rune = 43

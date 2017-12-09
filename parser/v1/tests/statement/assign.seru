@@ -1,0 +1,4 @@
+function SomeFunction() {
+	a = someExpr
+	a[1] = someExpr
+}

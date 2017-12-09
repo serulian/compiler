@@ -1,4 +1,4 @@
-function<any> TEST() {
+function TEST() any {
 	var finalIndex = -2
-	return finalIndex >= 10 || finalIndex < 0 
+	return finalIndex >= 10 || finalIndex < 0
 }

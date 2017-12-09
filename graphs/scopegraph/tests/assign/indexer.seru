@@ -1,9 +1,7 @@
 class SomeClass {
-	operator SetIndex(index int, value bool) {
-
-	}
+	operator SetIndex(index int, value bool) {}
 }
 
-function<void> DoSomething(sc SomeClass) {
+function DoSomething(sc SomeClass) {
 	sc[1] = true
 }

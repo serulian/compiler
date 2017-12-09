@@ -1,0 +1,44 @@
+NodeTypeFile
+  end-rune = 62
+  input-source = readonly class property test
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 62
+      input-source = readonly class property test
+      named = SomeClass
+      start-rune = 0
+      type-member =>
+        NodeTypeProperty
+          end-rune = 61
+          input-source = readonly class property test
+          named = MyProperty
+          start-rune = 19
+          typemember-readonly = true
+          property-getter =>
+            NodeTypePropertyBlock
+              end-rune = 58
+              input-source = readonly class property test
+              propertyblock-type = get
+              start-rune = 52
+              definition-body =>
+                NodeTypeStatementBlock
+                  end-rune = 58
+                  input-source = readonly class property test
+                  start-rune = 56
+          typemember-declared-type =>
+            NodeTypeTypeReference
+              end-rune = 46
+              input-source = readonly class property test
+              start-rune = 39
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 46
+                  input-source = readonly class property test
+                  start-rune = 39
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 46
+                      identifieraccess-name = SomeType
+                      input-source = readonly class property test
+                      start-rune = 39

@@ -13,7 +13,7 @@ $module('classcastfail', function () {
     };
   });
 
-  this.$class('750445b9', 'AnotherClass', false, '', function () {
+  this.$class('d2da6853', 'AnotherClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {

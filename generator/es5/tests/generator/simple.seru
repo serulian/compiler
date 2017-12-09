@@ -1,10 +1,10 @@
-function<bool*> SomeGenerator() {
+function SomeGenerator() bool* {
 	yield false
 	yield true
 }
 
-function<bool?> TEST() {
-	var<bool?> v = null
+function TEST() bool? {
+	var v bool? = null
 	for value in SomeGenerator() {
 		v = value
 	}

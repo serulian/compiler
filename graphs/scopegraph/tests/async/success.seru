@@ -1,7 +1,5 @@
-function<void> DoSomethingAsync(a int, b bool) {
+function DoSomethingAsync(a int, b bool) {
 	DoSomethingAsync(a, b)
 }
 
-function<int> AnotherAsync() {
-	return 5
-}
+function AnotherAsync() int { return 5 }

@@ -1,0 +1,884 @@
+NodeTypeFile
+  end-rune = 760
+  input-source = all type reference test
+  start-rune = 0
+  child-node =>
+    NodeTypeVariable
+      end-rune = 12
+      input-source = all type reference test
+      named = basic
+      start-rune = 0
+      typemember-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 12
+          input-source = all type reference test
+          start-rune = 10
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 12
+              input-source = all type reference test
+              start-rune = 10
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 12
+                  identifieraccess-name = int
+                  input-source = all type reference test
+                  start-rune = 10
+    NodeTypeVariable
+      end-rune = 30
+      input-source = all type reference test
+      named = nullable
+      start-rune = 14
+      typemember-declared-type =>
+        NodeTypeNullable
+          end-rune = 30
+          input-source = all type reference test
+          start-rune = 27
+          typereference-inner-type =>
+            NodeTypeTypeReference
+              end-rune = 29
+              input-source = all type reference test
+              start-rune = 27
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 29
+                  input-source = all type reference test
+                  start-rune = 27
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 29
+                      identifieraccess-name = int
+                      input-source = all type reference test
+                      start-rune = 27
+    NodeTypeVariable
+      end-rune = 50
+      input-source = all type reference test
+      named = streamable
+      start-rune = 32
+      typemember-declared-type =>
+        NodeTypeStream
+          end-rune = 50
+          input-source = all type reference test
+          start-rune = 47
+          typereference-inner-type =>
+            NodeTypeTypeReference
+              end-rune = 49
+              input-source = all type reference test
+              start-rune = 47
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 49
+                  input-source = all type reference test
+                  start-rune = 47
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 49
+                      identifieraccess-name = int
+                      input-source = all type reference test
+                      start-rune = 47
+    NodeTypeVariable
+      end-rune = 77
+      input-source = all type reference test
+      named = generic
+      start-rune = 52
+      typemember-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 77
+          input-source = all type reference test
+          start-rune = 64
+          typereference-generic =>
+            NodeTypeTypeReference
+              end-rune = 76
+              input-source = all type reference test
+              start-rune = 76
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 76
+                  input-source = all type reference test
+                  start-rune = 76
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 76
+                      identifieraccess-name = T
+                      input-source = all type reference test
+                      start-rune = 76
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 74
+              input-source = all type reference test
+              start-rune = 64
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 74
+                  identifieraccess-name = SomeGeneric
+                  input-source = all type reference test
+                  start-rune = 64
+    NodeTypeVariable
+      end-rune = 112
+      input-source = all type reference test
+      named = multigeneric
+      start-rune = 79
+      typemember-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 112
+          input-source = all type reference test
+          start-rune = 96
+          typereference-generic =>
+            NodeTypeTypeReference
+              end-rune = 108
+              input-source = all type reference test
+              start-rune = 108
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 108
+                  input-source = all type reference test
+                  start-rune = 108
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 108
+                      identifieraccess-name = T
+                      input-source = all type reference test
+                      start-rune = 108
+            NodeTypeTypeReference
+              end-rune = 111
+              input-source = all type reference test
+              start-rune = 111
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 111
+                  input-source = all type reference test
+                  start-rune = 111
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 111
+                      identifieraccess-name = Q
+                      input-source = all type reference test
+                      start-rune = 111
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 106
+              input-source = all type reference test
+              start-rune = 96
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 106
+                  identifieraccess-name = SomeGeneric
+                  input-source = all type reference test
+                  start-rune = 96
+    NodeTypeVariable
+      end-rune = 142
+      input-source = all type reference test
+      named = nested
+      start-rune = 114
+      typemember-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 142
+          input-source = all type reference test
+          start-rune = 125
+          typereference-generic =>
+            NodeTypeNullable
+              end-rune = 138
+              input-source = all type reference test
+              start-rune = 137
+              typereference-inner-type =>
+                NodeTypeTypeReference
+                  end-rune = 137
+                  input-source = all type reference test
+                  start-rune = 137
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 137
+                      input-source = all type reference test
+                      start-rune = 137
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 137
+                          identifieraccess-name = T
+                          input-source = all type reference test
+                          start-rune = 137
+            NodeTypeTypeReference
+              end-rune = 141
+              input-source = all type reference test
+              start-rune = 141
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 141
+                  input-source = all type reference test
+                  start-rune = 141
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 141
+                      identifieraccess-name = Q
+                      input-source = all type reference test
+                      start-rune = 141
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 135
+              input-source = all type reference test
+              start-rune = 125
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 135
+                  identifieraccess-name = SomeGeneric
+                  input-source = all type reference test
+                  start-rune = 125
+    NodeTypeVariable
+      end-rune = 178
+      input-source = all type reference test
+      named = nullablegeneric
+      start-rune = 144
+      typemember-declared-type =>
+        NodeTypeNullable
+          end-rune = 178
+          input-source = all type reference test
+          start-rune = 164
+          typereference-inner-type =>
+            NodeTypeTypeReference
+              end-rune = 177
+              input-source = all type reference test
+              start-rune = 164
+              typereference-generic =>
+                NodeTypeTypeReference
+                  end-rune = 176
+                  input-source = all type reference test
+                  start-rune = 176
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 176
+                      input-source = all type reference test
+                      start-rune = 176
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 176
+                          identifieraccess-name = T
+                          input-source = all type reference test
+                          start-rune = 176
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 174
+                  input-source = all type reference test
+                  start-rune = 164
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 174
+                      identifieraccess-name = SomeGeneric
+                      input-source = all type reference test
+                      start-rune = 164
+    NodeTypeVariable
+      end-rune = 212
+      input-source = all type reference test
+      named = streamgeneric
+      start-rune = 180
+      typemember-declared-type =>
+        NodeTypeStream
+          end-rune = 212
+          input-source = all type reference test
+          start-rune = 198
+          typereference-inner-type =>
+            NodeTypeTypeReference
+              end-rune = 211
+              input-source = all type reference test
+              start-rune = 198
+              typereference-generic =>
+                NodeTypeTypeReference
+                  end-rune = 210
+                  input-source = all type reference test
+                  start-rune = 210
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 210
+                      input-source = all type reference test
+                      start-rune = 210
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 210
+                          identifieraccess-name = T
+                          input-source = all type reference test
+                          start-rune = 210
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 208
+                  input-source = all type reference test
+                  start-rune = 198
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 208
+                      identifieraccess-name = SomeGeneric
+                      input-source = all type reference test
+                      start-rune = 198
+    NodeTypeVariable
+      end-rune = 262
+      input-source = all type reference test
+      named = multinested
+      start-rune = 214
+      typemember-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 262
+          input-source = all type reference test
+          start-rune = 230
+          typereference-generic =>
+            NodeTypeTypeReference
+              end-rune = 249
+              input-source = all type reference test
+              start-rune = 242
+              typereference-generic =>
+                NodeTypeNullable
+                  end-rune = 248
+                  input-source = all type reference test
+                  start-rune = 247
+                  typereference-inner-type =>
+                    NodeTypeTypeReference
+                      end-rune = 247
+                      input-source = all type reference test
+                      start-rune = 247
+                      typereference-path =>
+                        NodeTypeIdentifierPath
+                          end-rune = 247
+                          input-source = all type reference test
+                          start-rune = 247
+                          identifierpath-root =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 247
+                              identifieraccess-name = T
+                              input-source = all type reference test
+                              start-rune = 247
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 245
+                  input-source = all type reference test
+                  start-rune = 242
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 245
+                      identifieraccess-name = List
+                      input-source = all type reference test
+                      start-rune = 242
+            NodeTypeStream
+              end-rune = 261
+              input-source = all type reference test
+              start-rune = 252
+              typereference-inner-type =>
+                NodeTypeTypeReference
+                  end-rune = 260
+                  input-source = all type reference test
+                  start-rune = 252
+                  typereference-generic =>
+                    NodeTypeTypeReference
+                      end-rune = 256
+                      input-source = all type reference test
+                      start-rune = 256
+                      typereference-path =>
+                        NodeTypeIdentifierPath
+                          end-rune = 256
+                          input-source = all type reference test
+                          start-rune = 256
+                          identifierpath-root =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 256
+                              identifieraccess-name = T
+                              input-source = all type reference test
+                              start-rune = 256
+                    NodeTypeTypeReference
+                      end-rune = 259
+                      input-source = all type reference test
+                      start-rune = 259
+                      typereference-path =>
+                        NodeTypeIdentifierPath
+                          end-rune = 259
+                          input-source = all type reference test
+                          start-rune = 259
+                          identifierpath-root =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 259
+                              identifieraccess-name = Q
+                              input-source = all type reference test
+                              start-rune = 259
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 254
+                      input-source = all type reference test
+                      start-rune = 252
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 254
+                          identifieraccess-name = Map
+                          input-source = all type reference test
+                          start-rune = 252
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 240
+              input-source = all type reference test
+              start-rune = 230
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 240
+                  identifieraccess-name = SomeGeneric
+                  input-source = all type reference test
+                  start-rune = 230
+    NodeTypeVariable
+      end-rune = 296
+      input-source = all type reference test
+      named = pathed
+      start-rune = 264
+      typemember-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 296
+          input-source = all type reference test
+          start-rune = 275
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 296
+              input-source = all type reference test
+              start-rune = 275
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 296
+                  identifieraccess-name = Type
+                  input-source = all type reference test
+                  start-rune = 293
+                  identifieraccess-source =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 291
+                      identifieraccess-name = To
+                      input-source = all type reference test
+                      start-rune = 290
+                      identifieraccess-source =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 288
+                          identifieraccess-name = Reference
+                          input-source = all type reference test
+                          start-rune = 280
+                          identifieraccess-source =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 278
+                              identifieraccess-name = Some
+                              input-source = all type reference test
+                              start-rune = 275
+    NodeTypeVariable
+      end-rune = 326
+      input-source = all type reference test
+      named = nullablepathed
+      start-rune = 298
+      typemember-declared-type =>
+        NodeTypeNullable
+          end-rune = 326
+          input-source = all type reference test
+          start-rune = 317
+          typereference-inner-type =>
+            NodeTypeTypeReference
+              end-rune = 325
+              input-source = all type reference test
+              start-rune = 317
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 325
+                  input-source = all type reference test
+                  start-rune = 317
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 325
+                      identifieraccess-name = Type
+                      input-source = all type reference test
+                      start-rune = 322
+                      identifieraccess-source =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 320
+                          identifieraccess-name = Some
+                          input-source = all type reference test
+                          start-rune = 317
+    NodeTypeVariable
+      end-rune = 358
+      input-source = all type reference test
+      named = streamablepathed
+      start-rune = 328
+      typemember-declared-type =>
+        NodeTypeStream
+          end-rune = 358
+          input-source = all type reference test
+          start-rune = 349
+          typereference-inner-type =>
+            NodeTypeTypeReference
+              end-rune = 357
+              input-source = all type reference test
+              start-rune = 349
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 357
+                  input-source = all type reference test
+                  start-rune = 349
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 357
+                      identifieraccess-name = Type
+                      input-source = all type reference test
+                      start-rune = 354
+                      identifieraccess-source =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 352
+                          identifieraccess-name = Some
+                          input-source = all type reference test
+                          start-rune = 349
+    NodeTypeVariable
+      end-rune = 389
+      input-source = all type reference test
+      named = genercipathed
+      start-rune = 360
+      typemember-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 389
+          input-source = all type reference test
+          start-rune = 378
+          typereference-generic =>
+            NodeTypeTypeReference
+              end-rune = 388
+              input-source = all type reference test
+              start-rune = 388
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 388
+                  input-source = all type reference test
+                  start-rune = 388
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 388
+                      identifieraccess-name = T
+                      input-source = all type reference test
+                      start-rune = 388
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 386
+              input-source = all type reference test
+              start-rune = 378
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 386
+                  identifieraccess-name = Type
+                  input-source = all type reference test
+                  start-rune = 383
+                  identifieraccess-source =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 381
+                      identifieraccess-name = Some
+                      input-source = all type reference test
+                      start-rune = 378
+    NodeTypeVariable
+      end-rune = 414
+      input-source = all type reference test
+      named = nullablestream
+      start-rune = 391
+      typemember-declared-type =>
+        NodeTypeStream
+          end-rune = 414
+          input-source = all type reference test
+          start-rune = 410
+          typereference-inner-type =>
+            NodeTypeNullable
+              end-rune = 413
+              input-source = all type reference test
+              start-rune = 410
+              typereference-inner-type =>
+                NodeTypeTypeReference
+                  end-rune = 412
+                  input-source = all type reference test
+                  start-rune = 410
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 412
+                      input-source = all type reference test
+                      start-rune = 410
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 412
+                          identifieraccess-name = int
+                          input-source = all type reference test
+                          start-rune = 410
+    NodeTypeVariable
+      end-rune = 444
+      input-source = all type reference test
+      named = functype
+      start-rune = 416
+      typemember-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 444
+          input-source = all type reference test
+          start-rune = 429
+          typereference-generic =>
+            NodeTypeVoid
+              end-rune = 441
+              input-source = all type reference test
+              start-rune = 438
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 436
+              input-source = all type reference test
+              start-rune = 429
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 436
+                  identifieraccess-name = function
+                  input-source = all type reference test
+                  start-rune = 429
+    NodeTypeVariable
+      end-rune = 486
+      input-source = all type reference test
+      named = functypewithparam
+      start-rune = 446
+      typemember-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 486
+          input-source = all type reference test
+          start-rune = 468
+          typereference-generic =>
+            NodeTypeVoid
+              end-rune = 480
+              input-source = all type reference test
+              start-rune = 477
+          typereference-parameter =>
+            NodeTypeTypeReference
+              end-rune = 485
+              input-source = all type reference test
+              start-rune = 483
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 485
+                  input-source = all type reference test
+                  start-rune = 483
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 485
+                      identifieraccess-name = int
+                      input-source = all type reference test
+                      start-rune = 483
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 475
+              input-source = all type reference test
+              start-rune = 468
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 475
+                  identifieraccess-name = function
+                  input-source = all type reference test
+                  start-rune = 468
+    NodeTypeVariable
+      end-rune = 501
+      input-source = all type reference test
+      named = anyref
+      start-rune = 488
+      typemember-declared-type =>
+        NodeTypeAny
+          end-rune = 501
+          input-source = all type reference test
+          start-rune = 499
+    NodeTypeVariable
+      end-rune = 532
+      input-source = all type reference test
+      named = anyinnerref
+      start-rune = 503
+      typemember-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 532
+          input-source = all type reference test
+          start-rune = 519
+          typereference-generic =>
+            NodeTypeAny
+              end-rune = 531
+              input-source = all type reference test
+              start-rune = 529
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 527
+              input-source = all type reference test
+              start-rune = 519
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 527
+                  identifieraccess-name = SomeClass
+                  input-source = all type reference test
+                  start-rune = 519
+    NodeTypeVariable
+      end-rune = 557
+      input-source = all type reference test
+      named = sliceref
+      start-rune = 534
+      typemember-declared-type =>
+        NodeTypeSlice
+          end-rune = 557
+          input-source = all type reference test
+          start-rune = 547
+          typereference-inner-type =>
+            NodeTypeTypeReference
+              end-rune = 557
+              input-source = all type reference test
+              start-rune = 549
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 557
+                  input-source = all type reference test
+                  start-rune = 549
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 557
+                      identifieraccess-name = SomeClass
+                      input-source = all type reference test
+                      start-rune = 549
+    NodeTypeVariable
+      end-rune = 586
+      input-source = all type reference test
+      named = mappingref
+      start-rune = 559
+      typemember-declared-type =>
+        NodeTypeMapping
+          end-rune = 586
+          input-source = all type reference test
+          start-rune = 574
+          typereference-inner-type =>
+            NodeTypeTypeReference
+              end-rune = 585
+              input-source = all type reference test
+              start-rune = 577
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 585
+                  input-source = all type reference test
+                  start-rune = 577
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 585
+                      identifieraccess-name = SomeClass
+                      input-source = all type reference test
+                      start-rune = 577
+    NodeTypeVariable
+      end-rune = 605
+      input-source = all type reference test
+      named = anystream
+      start-rune = 588
+      typemember-declared-type =>
+        NodeTypeStream
+          end-rune = 605
+          input-source = all type reference test
+          start-rune = 602
+          typereference-inner-type =>
+            NodeTypeAny
+              end-rune = 604
+              input-source = all type reference test
+              start-rune = 602
+    NodeTypeVariable
+      end-rune = 636
+      input-source = all type reference test
+      named = nullableslice
+      start-rune = 607
+      typemember-declared-type =>
+        NodeTypeNullable
+          end-rune = 636
+          input-source = all type reference test
+          start-rune = 626
+          typereference-inner-type =>
+            NodeTypeSlice
+              end-rune = 636
+              input-source = all type reference test
+              start-rune = 626
+              typereference-inner-type =>
+                NodeTypeTypeReference
+                  end-rune = 636
+                  input-source = all type reference test
+                  start-rune = 628
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 636
+                      input-source = all type reference test
+                      start-rune = 628
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 636
+                          identifieraccess-name = SomeClass
+                          input-source = all type reference test
+                          start-rune = 628
+    NodeTypeVariable
+      end-rune = 660
+      input-source = all type reference test
+      named = nullableprefix
+      start-rune = 638
+      typemember-declared-type =>
+        NodeTypeNullable
+          end-rune = 660
+          input-source = all type reference test
+          start-rune = 657
+          typereference-inner-type =>
+            NodeTypeTypeReference
+              end-rune = 659
+              input-source = all type reference test
+              start-rune = 657
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 659
+                  input-source = all type reference test
+                  start-rune = 657
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 659
+                      identifieraccess-name = int
+                      input-source = all type reference test
+                      start-rune = 657
+    NodeTypeVariable
+      end-rune = 686
+      input-source = all type reference test
+      named = streamableprefix
+      start-rune = 662
+      typemember-declared-type =>
+        NodeTypeStream
+          end-rune = 686
+          input-source = all type reference test
+          start-rune = 683
+          typereference-inner-type =>
+            NodeTypeTypeReference
+              end-rune = 685
+              input-source = all type reference test
+              start-rune = 683
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 685
+                  input-source = all type reference test
+                  start-rune = 683
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 685
+                      identifieraccess-name = int
+                      input-source = all type reference test
+                      start-rune = 683
+    NodeTypeVariable
+      end-rune = 717
+      input-source = all type reference test
+      named = structuralReference
+      start-rune = 688
+      typemember-declared-type =>
+        NodeTypeStructReference
+          end-rune = 717
+          input-source = all type reference test
+          start-rune = 712
+    NodeTypeVariable
+      end-rune = 759
+      input-source = all type reference test
+      named = structuralGeneric
+      start-rune = 719
+      typemember-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 759
+          input-source = all type reference test
+          start-rune = 741
+          typereference-generic =>
+            NodeTypeStructReference
+              end-rune = 758
+              input-source = all type reference test
+              start-rune = 753
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 751
+              input-source = all type reference test
+              start-rune = 741
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 751
+                  identifieraccess-name = SomeGeneric
+                  input-source = all type reference test
+                  start-rune = 741

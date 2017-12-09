@@ -17,5 +17,5 @@ $module('basic', function () {
       $static.anotherBool = $g.basic.AnotherFunction();
       resolve();
     });
-  }, 'c4254aac', ['af4b3683']);
+  }, '0893c862', ['af4b3683']);
 });

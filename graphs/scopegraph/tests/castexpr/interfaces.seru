@@ -1,12 +1,12 @@
 interface First {
-	function<void> FirstFunc()
+	function FirstFunc()
 }
 
 interface Second {
-	function<void> SecondFunc()
+	function SecondFunc()
 }
 
-function<void> DoSomething(first First, second Second) {
+function DoSomething(first First, second Second) {
 	first.(Second)
 	second.(First)
 }

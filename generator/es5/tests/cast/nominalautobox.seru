@@ -1,12 +1,12 @@
 class SomeClass {}
 
 type SomeNominal : SomeClass {
-	property<bool> SomeValue {
+	property SomeValue bool {
 		get { return true }
 	}
 }
 
-function<any> TEST() {
-	var<any> sc = SomeClass.new()
+function TEST() any {
+	var sc any = SomeClass.new()
 	return sc.(SomeNominal).SomeValue
 }

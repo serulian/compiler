@@ -1,1 +1,1 @@
-function<void> DoSomething(a int, b bool) { return }
+function DoSomething(a int, b bool) { return }

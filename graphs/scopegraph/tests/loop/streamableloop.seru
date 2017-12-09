@@ -1,11 +1,9 @@
 class SomeClass {
-	function<stream<int>> Stream() {
-		return 1 .. 2
-	}	
+	function Stream() stream<int> { return 1 .. 2 }
 }
 
-function<void> SomeFunc(s SomeClass) {
-	/* loop */ for a in s {
+function SomeFunc(s SomeClass) {
+	/* loop */for a in s {
 		/* a */a
 	}
 }

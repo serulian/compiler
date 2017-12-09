@@ -1,5 +1,3 @@
-function<void> DoSomething() {
-	var a = {
-		null: 'foo',
-	}
+function DoSomething() {
+	var a = {null: 'foo'}
 }

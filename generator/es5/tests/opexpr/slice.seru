@@ -1,10 +1,10 @@
 class SomeClass {
-	operator<bool> slice(start int?, end int?) {
+	operator slice(start int?, end int?) bool {
 		return true
 	}
 }
 
-function<any> TEST() {
+function TEST() any {
 	var c = SomeClass.new()
 	c[1:2]
 	c[:1]

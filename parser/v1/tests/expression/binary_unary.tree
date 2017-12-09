@@ -1,0 +1,48 @@
+NodeTypeFile
+  end-rune = 59
+  input-source = binary unary expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 59
+      input-source = binary unary expr test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 59
+          input-source = binary unary expr test
+          start-rune = 23
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 58
+              input-source = binary unary expr test
+              start-rune = 26
+              expr-statement-expr =>
+                NodeBooleanAndExpression
+                  end-rune = 57
+                  input-source = binary unary expr test
+                  start-rune = 26
+                  binary-expression-left =>
+                    NodeBooleanNotExpression
+                      end-rune = 44
+                      input-source = binary unary expr test
+                      start-rune = 27
+                      unary-expression-child =>
+                        NodeMemberAccessExpression
+                          end-rune = 44
+                          input-source = binary unary expr test
+                          member-access-identifier = IsElement
+                          start-rune = 27
+                          member-access-expr =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 34
+                              identexpr-name = existing
+                              input-source = binary unary expr test
+                              start-rune = 27
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 57
+                      identexpr-name = something
+                      input-source = binary unary expr test
+                      start-rune = 49

@@ -1,0 +1,90 @@
+NodeTypeFile
+  end-rune = 87
+  input-source = basic struct test
+  start-rune = 0
+  child-node =>
+    NodeTypeStruct
+      end-rune = 87
+      input-source = basic struct test
+      named = SomeStruct
+      start-rune = 0
+      type-member =>
+        NodeTypeField
+          end-rune = 33
+          input-source = basic struct test
+          named = SomeField
+          start-rune = 21
+          typemember-declared-type =>
+            NodeTypeTypeReference
+              end-rune = 33
+              input-source = basic struct test
+              start-rune = 31
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 33
+                  input-source = basic struct test
+                  start-rune = 31
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 33
+                      identifieraccess-name = int
+                      input-source = basic struct test
+                      start-rune = 31
+        NodeTypeField
+          end-rune = 54
+          input-source = basic struct test
+          named = AnotherField
+          start-rune = 36
+          typemember-declared-type =>
+            NodeTypeTypeReference
+              end-rune = 54
+              input-source = basic struct test
+              start-rune = 49
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 54
+                  input-source = basic struct test
+                  start-rune = 49
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 54
+                      identifieraccess-name = string
+                      input-source = basic struct test
+                      start-rune = 49
+        NodeTypeField
+          end-rune = 85
+          input-source = basic struct test
+          named = ThirdField
+          start-rune = 57
+          typemember-declared-type =>
+            NodeTypeTypeReference
+              end-rune = 85
+              input-source = basic struct test
+              start-rune = 68
+              typereference-generic =>
+                NodeTypeTypeReference
+                  end-rune = 84
+                  input-source = basic struct test
+                  start-rune = 82
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 84
+                      input-source = basic struct test
+                      start-rune = 82
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 84
+                          identifieraccess-name = int
+                          input-source = basic struct test
+                          start-rune = 82
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 80
+                  input-source = basic struct test
+                  start-rune = 68
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 80
+                      identifieraccess-name = AnotherStruct
+                      input-source = basic struct test
+                      start-rune = 68

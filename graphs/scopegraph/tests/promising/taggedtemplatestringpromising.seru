@@ -1,11 +1,9 @@
-function<string> DoSomethingAsync() {
-	return 'foo'
-}
+function DoSomethingAsync() string { return 'foo' }
 
-function<string> SomeTemplateString(pieces []string, values []stringable) {
+function SomeTemplateString(pieces []string, values []stringable) string {
 	return <- DoSomethingAsync()
 }
 
-function<void> TEST() {
+function TEST() {
 	SomeTemplateString`foobar`
 }

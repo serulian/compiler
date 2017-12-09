@@ -2,11 +2,11 @@
  * SomeClass is some awesome class.
  */
 class SomeClass {
-    /**
-     * DoSomething does.... something...
-     * over multiple lines!
-     */
-    function<void> DoSomething() {}
+	/**
+	 * DoSomething does.... something...
+	 * over multiple lines!
+	 */
+	function DoSomething() {}
 }
 
 // AnotherClass does other cool things.

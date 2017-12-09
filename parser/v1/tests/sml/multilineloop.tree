@@ -1,0 +1,65 @@
+NodeTypeFile
+  end-rune = 100
+  input-source = multiline loop sml test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 100
+      input-source = multiline loop sml test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 100
+          input-source = multiline loop sml test
+          start-rune = 23
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 99
+              input-source = multiline loop sml test
+              start-rune = 26
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 98
+                  input-source = multiline loop sml test
+                  start-rune = 26
+                  sml-expression-child =>
+                    NodeTypeLoopExpression
+                      end-rune = 88
+                      input-source = multiline loop sml test
+                      start-rune = 40
+                      loop-expr-map-expr =>
+                        NodeTypeSmlExpression
+                          end-rune = 59
+                          input-source = multiline loop sml test
+                          start-rune = 40
+                          sml-expression-child =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 53
+                              identexpr-name = something
+                              input-source = multiline loop sml test
+                              start-rune = 45
+                          sml-expression-typefunc =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 42
+                              identexpr-name = li
+                              input-source = multiline loop sml test
+                              start-rune = 41
+                      loop-expr-stream-expr =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 87
+                          identexpr-name = somestream
+                          input-source = multiline loop sml test
+                          start-rune = 78
+                      named-value =>
+                        NodeTypeNamedValue
+                          end-rune = 73
+                          input-source = multiline loop sml test
+                          named = something
+                          start-rune = 65
+                  sml-expression-typefunc =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 28
+                      identexpr-name = ul
+                      input-source = multiline loop sml test
+                      start-rune = 27

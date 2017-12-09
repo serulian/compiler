@@ -1,19 +1,15 @@
 class SomeClass {
-	var<bool> value
+	var value bool
 
-	function<bool> SomeFunction() {
-		return this.value
-	}
+	function SomeFunction() bool { return this.value }
 }
 
-function<bool> AnotherFunction(toCall function<bool>()) {
+function AnotherFunction(toCall function<bool>()) bool {
 	return toCall()
 }
 
-function<any> TEST() {
-	var sc = SomeClass{
-		value: true,
-	}
+function TEST() any {
+	var sc = SomeClass{value: true}
 
 	return AnotherFunction(sc.SomeFunction)
 }

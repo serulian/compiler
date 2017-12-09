@@ -1,1 +1,1 @@
-function<void> DoSomething() { return }
+function DoSomething() { return }

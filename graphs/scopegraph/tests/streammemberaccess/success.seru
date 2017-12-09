@@ -1,16 +1,16 @@
 class SomeClass<T> {
-	var<T?> SomeGenericVar
+	var SomeGenericVar T?
 }
 
 class SomeStream<T> {
-	function<tuple<SomeClass<T>, bool>> Next() {
+	function Next() tuple<SomeClass<T>, bool> {
 		return tuple<SomeClass<T>, bool>.Build(SomeClass<T>.new(), true)
 	}
 }
 
-function<void> DoSomething() {
-	var<SomeClass<int>*> intstream = SomeStream<int>.new()
-	var<SomeClass<bool>*> boolstream = SomeStream<bool>.new()
+function DoSomething() {
+	var intstream SomeClass<int>* = SomeStream<int>.new()
+	var boolstream SomeClass<bool>* = SomeStream<bool>.new()
 
 	/* intstream */(intstream*.SomeGenericVar)
 	/* boolstream */(boolstream*.SomeGenericVar)

@@ -1,15 +1,13 @@
 class SomeClass {
-	property<bool> Value {
-		get {
-			return true
-		}
+	property Value bool {
+		get { return true }
 	}
 }
 
 interface ISomeInterface {
-	property<bool> Value { get }
+	property Value bool { get }
 }
 
-function<void> DoSomething(a ISomeInterface?) {
+function DoSomething(a ISomeInterface?) {
 	a.(SomeClass)
 }

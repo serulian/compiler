@@ -1,0 +1,3 @@
+function DoSomething() int* {
+	yield 2
+}

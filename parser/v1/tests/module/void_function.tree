@@ -1,0 +1,20 @@
+NodeTypeFile
+  end-rune = 29
+  input-source = void function test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 29
+      input-source = void function test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 29
+          input-source = void function test
+          start-rune = 28
+      typemember-return-type =>
+        NodeTypeVoid
+          end-rune = 26
+          input-source = void function test
+          start-rune = 23

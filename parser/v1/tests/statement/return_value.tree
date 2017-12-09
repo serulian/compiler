@@ -1,0 +1,26 @@
+NodeTypeFile
+  end-rune = 43
+  input-source = return value statement test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 43
+      input-source = return value statement test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 43
+          input-source = return value statement test
+          start-rune = 24
+          block-child =>
+            NodeTypeReturnStatement
+              end-rune = 41
+              input-source = return value statement test
+              start-rune = 27
+              return-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 41
+                  identexpr-name = someExpr
+                  input-source = return value statement test
+                  start-rune = 34

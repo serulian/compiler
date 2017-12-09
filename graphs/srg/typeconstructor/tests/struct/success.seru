@@ -4,4 +4,4 @@ struct SomeStruct<T> {
 	GenericField T
 }
 
-function<void> DoSomething(s SomeStruct<int>) {}
+function DoSomething(s SomeStruct<int>) {}

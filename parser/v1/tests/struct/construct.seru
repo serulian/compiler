@@ -1,0 +1,8 @@
+function DoSomething() {
+	SomeStruct{
+		SomeField: 2,
+		AnotherField: 'hello',
+		ThirdField: AnotherStruct<int>{	
+		},
+	}
+}

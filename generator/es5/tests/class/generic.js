@@ -17,12 +17,12 @@ $module('generic', function () {
       }
       var computed = {
       };
-      computed[("Something|2|2549c819<" + $t.typeid(T)) + ">"] = true;
+      computed[("Something|2|0b2e6e78<" + $t.typeid(T)) + ">"] = true;
       return this.$cachedtypesig = computed;
     };
   });
 
-  this.$class('e0aeb390', 'A', false, '', function () {
+  this.$class('92ebaa06', 'A', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -35,7 +35,7 @@ $module('generic', function () {
     };
   });
 
-  this.$class('2989c0d0', 'B', false, '', function () {
+  this.$class('eff03fa4', 'B', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -48,27 +48,27 @@ $module('generic', function () {
     };
   });
 
-  this.$interface('9be13b13', 'ASomething', false, '', function () {
+  this.$interface('ee806320', 'ASomething', false, '', function () {
     var $static = this;
     this.$typesig = function () {
       if (this.$cachedtypesig) {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Something|2|2549c819<e0aeb390>": true,
+        "Something|2|0b2e6e78<92ebaa06>": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  this.$interface('7c58da5e', 'BSomething', false, '', function () {
+  this.$interface('d938503c', 'BSomething', false, '', function () {
     var $static = this;
     this.$typesig = function () {
       if (this.$cachedtypesig) {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Something|2|2549c819<2989c0d0>": true,
+        "Something|2|0b2e6e78<eff03fa4>": true,
       };
       return this.$cachedtypesig = computed;
     };

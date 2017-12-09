@@ -1,6 +1,6 @@
 {
-    "03640bbffea719b48b692d56b0c4e840": {
-        "Key": "03640bbffea719b48b692d56b0c4e840",
+    "3c1ec37cb6c6f8b28bceb74a2c411f7b": {
+        "Key": "3c1ec37cb6c6f8b28bceb74a2c411f7b",
         "Kind": 1,
         "Children": {
             "1e542d1b516d2467917311d395865917": {
@@ -134,7 +134,7 @@
             "tdg-source-module": "tests/agent/generic.seru",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-exported": "true",
-            "tdg-type-globalid": "b6d9cb59",
+            "tdg-type-globalid": "41933b6e",
             "tdg-type-name": "SomeClass"
         }
     },

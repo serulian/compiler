@@ -1,0 +1,54 @@
+NodeTypeFile
+  end-rune = 74
+  input-source = arrow expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 74
+      input-source = arrow expr test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 74
+          input-source = arrow expr test
+          start-rune = 24
+          block-child =>
+            NodeTypeArrowStatement
+              end-rune = 51
+              input-source = arrow expr test
+              start-rune = 27
+              arrow-statement-destination =>
+                NodeTypeIdentifierExpression
+                  end-rune = 34
+                  identexpr-name = someExpr
+                  input-source = arrow expr test
+                  start-rune = 27
+              arrow-statement-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 51
+                  identexpr-name = someOtherExpr
+                  input-source = arrow expr test
+                  start-rune = 39
+            NodeTypeArrowStatement
+              end-rune = 72
+              input-source = arrow expr test
+              start-rune = 54
+              arrow-statement-destination =>
+                NodeTypeIdentifierExpression
+                  end-rune = 54
+                  identexpr-name = a
+                  input-source = arrow expr test
+                  start-rune = 54
+              arrow-statement-rejection =>
+                NodeTypeIdentifierExpression
+                  end-rune = 57
+                  identexpr-name = b
+                  input-source = arrow expr test
+                  start-rune = 57
+              arrow-statement-right =>
+                NodeTypeIdentifierExpression
+                  end-rune = 72
+                  identexpr-name = somePromise
+                  input-source = arrow expr test
+                  start-rune = 62

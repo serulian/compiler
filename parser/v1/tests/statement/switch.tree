@@ -1,0 +1,87 @@
+NodeTypeFile
+  end-rune = 122
+  input-source = switch statement basic test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 122
+      input-source = switch statement basic test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 122
+          input-source = switch statement basic test
+          start-rune = 24
+          block-child =>
+            NodeTypeSwitchStatement
+              end-rune = 120
+              input-source = switch statement basic test
+              start-rune = 27
+              switch-case =>
+                NodeTypeSwitchStatementCase
+                  end-rune = 69
+                  input-source = switch statement basic test
+                  start-rune = 52
+                  switch-case-expression =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 57
+                      identexpr-name = foobar
+                      input-source = switch statement basic test
+                      start-rune = 52
+                  switch-case-statement =>
+                    NodeTypeStatementBlock
+                      end-rune = 69
+                      input-source = switch statement basic test
+                      start-rune = 63
+                      block-child =>
+                        NodeTypeReturnStatement
+                          end-rune = 68
+                          input-source = switch statement basic test
+                          start-rune = 63
+                NodeTypeSwitchStatementCase
+                  end-rune = 97
+                  input-source = switch statement basic test
+                  start-rune = 78
+                  switch-case-expression =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 83
+                      identexpr-name = barbaz
+                      input-source = switch statement basic test
+                      start-rune = 78
+                  switch-case-statement =>
+                    NodeTypeStatementBlock
+                      end-rune = 97
+                      input-source = switch statement basic test
+                      start-rune = 89
+                      block-child =>
+                        NodeTypeExpressionStatement
+                          end-rune = 97
+                          input-source = switch statement basic test
+                          start-rune = 89
+                          expr-statement-expr =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 96
+                              identexpr-name = someExpr
+                              input-source = switch statement basic test
+                              start-rune = 89
+                NodeTypeSwitchStatementCase
+                  end-rune = 118
+                  input-source = switch statement basic test
+                  start-rune = 108
+                  switch-case-statement =>
+                    NodeTypeStatementBlock
+                      end-rune = 118
+                      input-source = switch statement basic test
+                      start-rune = 113
+                      block-child =>
+                        NodeTypeBreakStatement
+                          end-rune = 117
+                          input-source = switch statement basic test
+                          start-rune = 113
+              switch-expression =>
+                NodeTypeIdentifierExpression
+                  end-rune = 41
+                  identexpr-name = someExpr
+                  input-source = switch statement basic test
+                  start-rune = 34

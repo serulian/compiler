@@ -1,0 +1,140 @@
+NodeTypeFile
+  end-rune = 103
+  input-source = list expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 103
+      input-source = list expr test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 103
+          input-source = list expr test
+          start-rune = 24
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 29
+              input-source = list expr test
+              start-rune = 27
+              expr-statement-expr =>
+                NodeListLiteralExpression
+                  end-rune = 28
+                  input-source = list expr test
+                  start-rune = 27
+            NodeTypeExpressionStatement
+              end-rune = 40
+              input-source = list expr test
+              start-rune = 31
+              expr-statement-expr =>
+                NodeListLiteralExpression
+                  end-rune = 39
+                  input-source = list expr test
+                  start-rune = 31
+                  list-expr-value =>
+                    NodeNumericLiteralExpression
+                      end-rune = 32
+                      input-source = list expr test
+                      literal-value = 1
+                      start-rune = 32
+                    NodeNumericLiteralExpression
+                      end-rune = 35
+                      input-source = list expr test
+                      literal-value = 2
+                      start-rune = 35
+                    NodeNumericLiteralExpression
+                      end-rune = 38
+                      input-source = list expr test
+                      literal-value = 3
+                      start-rune = 38
+            NodeTypeExpressionStatement
+              end-rune = 66
+              input-source = list expr test
+              start-rune = 42
+              expr-statement-expr =>
+                NodeListLiteralExpression
+                  end-rune = 65
+                  input-source = list expr test
+                  start-rune = 42
+                  list-expr-value =>
+                    NodeNumericLiteralExpression
+                      end-rune = 43
+                      input-source = list expr test
+                      literal-value = 1
+                      start-rune = 43
+                    NodeBooleanLiteralExpression
+                      end-rune = 49
+                      input-source = list expr test
+                      literal-value = true
+                      start-rune = 46
+                    NodeStringLiteralExpression
+                      end-rune = 64
+                      input-source = list expr test
+                      literal-value = 'hello world'
+                      start-rune = 52
+            NodeTypeExpressionStatement
+              end-rune = 102
+              input-source = list expr test
+              start-rune = 68
+              expr-statement-expr =>
+                NodeListLiteralExpression
+                  end-rune = 101
+                  input-source = list expr test
+                  start-rune = 68
+                  list-expr-value =>
+                    NodeBinaryAddExpression
+                      end-rune = 73
+                      input-source = list expr test
+                      start-rune = 69
+                      binary-expression-left =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 69
+                          identexpr-name = a
+                          input-source = list expr test
+                          start-rune = 69
+                      binary-expression-right =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 73
+                          identexpr-name = b
+                          input-source = list expr test
+                          start-rune = 73
+                    NodeBinarySubtractExpression
+                      end-rune = 81
+                      input-source = list expr test
+                      start-rune = 77
+                      binary-expression-left =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 77
+                          identexpr-name = c
+                          input-source = list expr test
+                          start-rune = 77
+                      binary-expression-right =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 81
+                          identexpr-name = d
+                          input-source = list expr test
+                          start-rune = 81
+                    NodeFunctionCallExpression
+                      end-rune = 93
+                      input-source = list expr test
+                      start-rune = 85
+                      function-call-expr =>
+                        NodeMemberAccessExpression
+                          end-rune = 91
+                          input-source = list expr test
+                          member-access-identifier = bar
+                          start-rune = 85
+                          member-access-expr =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 87
+                              identexpr-name = foo
+                              input-source = list expr test
+                              start-rune = 85
+                    NodeTypeTemplateString
+                      end-rune = 100
+                      input-source = list expr test
+                      start-rune = 96
+                      template-string-piece =>
+                        NodeStringLiteralExpression
+                          literal-value = `baz`

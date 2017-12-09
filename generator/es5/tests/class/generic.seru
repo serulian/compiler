@@ -1,21 +1,20 @@
 class SomeClass<T> {
-	function<T?> Something() {
-		return null;
-	}
+	function Something() T? { return null }
 }
 
 class A {}
+
 class B {}
 
 interface ASomething {
-	function<A?> Something()
+	function Something() A?
 }
 
 interface BSomething {
-	function<B?> Something()
+	function Something() B?
 }
 
-function<any> TEST() {
+function TEST() any {
 	var asc = SomeClass<A>.new()
 	var asc2 = SomeClass<A>.new()
 	var bsc = SomeClass<B>.new()

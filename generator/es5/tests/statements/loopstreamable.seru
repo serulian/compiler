@@ -1,4 +1,4 @@
-function<void> DoSomething(somethingElse streamable<int>) {
+function DoSomething(somethingElse streamable<int>) {
 	1234
 	for something in somethingElse {
 		7654
@@ -7,23 +7,23 @@ function<void> DoSomething(somethingElse streamable<int>) {
 }
 
 class SomeStreamable {
-	function<stream<bool>> Stream() {
+	function Stream() stream<bool> {
 		return SomeStream.new()
 	}
 }
 
 class SomeStream {
-	var<bool> wasChecked = false
+	var wasChecked bool = false
 
-	function<tuple<bool, bool>> Next() {
-		var r = this.wasChecked		
+	function Next() tuple<bool, bool> {
+		var r = this.wasChecked
 		this.wasChecked = true
 		return tuple<bool, bool>.Build(true, !r)
 	}
 }
 
-function<any> TEST() {
-	var<any> result = 'noloop'
+function TEST() any {
+	var result any = 'noloop'
 
 	var s = SomeStreamable.new()
 	for i in s {

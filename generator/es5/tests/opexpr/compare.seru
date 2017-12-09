@@ -8,7 +8,7 @@ class SomeClass {
 	}
 }
 
-function<any> TEST() {
+function TEST() any {
 	var first = SomeClass.new()
 	var second = SomeClass.new()
 

@@ -1,0 +1,149 @@
+NodeTypeFile
+  end-rune = 164
+  input-source = multiline sml test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 164
+      input-source = multiline sml test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 164
+          input-source = multiline sml test
+          start-rune = 23
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 163
+              input-source = multiline sml test
+              start-rune = 26
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 162
+                  input-source = multiline sml test
+                  start-rune = 26
+                  sml-expression-attribute =>
+                    NodeTypeSmlAttribute
+                      end-rune = 39
+                      input-source = multiline sml test
+                      sml-attribute-name = bar
+                      start-rune = 31
+                      sml-attribute-value =>
+                        NodeStringLiteralExpression
+                          end-rune = 39
+                          input-source = multiline sml test
+                          literal-value = "baz"
+                          start-rune = 35
+                    NodeTypeSmlAttribute
+                      end-rune = 73
+                      input-source = multiline sml test
+                      sml-attribute-name = bar
+                      start-rune = 64
+                      sml-attribute-value =>
+                        NodeBooleanLiteralExpression
+                          end-rune = 72
+                          input-source = multiline sml test
+                          literal-value = true
+                          start-rune = 69
+                    NodeTypeSmlAttribute
+                      end-rune = 89
+                      input-source = multiline sml test
+                      sml-attribute-name = feh
+                      start-rune = 78
+                      sml-attribute-value =>
+                        NodeStringLiteralExpression
+                          end-rune = 89
+                          input-source = multiline sml test
+                          literal-value = "foobar"
+                          start-rune = 82
+                    NodeTypeSmlAttribute
+                      end-rune = 128
+                      input-source = multiline sml test
+                      sml-attribute-name = disabled
+                      start-rune = 121
+                  sml-expression-child =>
+                    NodeTypeSmlText
+                      end-rune = 156
+                      input-source = multiline sml test
+                      sml-text-value = 
+		some child
+	
+                      start-rune = 142
+                  sml-expression-decorator =>
+                    NodeTypeSmlDecorator
+                      end-rune = 59
+                      input-source = multiline sml test
+                      start-rune = 44
+                      sml-decorator-path =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 53
+                          identexpr-name = decorator
+                          input-source = multiline sml test
+                          start-rune = 45
+                      sml-decorator-value =>
+                        NodeStringLiteralExpression
+                          end-rune = 59
+                          input-source = multiline sml test
+                          literal-value = "foo"
+                          start-rune = 55
+                    NodeTypeSmlDecorator
+                      end-rune = 116
+                      input-source = multiline sml test
+                      start-rune = 94
+                      sml-decorator-path =>
+                        NodeMemberAccessExpression
+                          end-rune = 105
+                          input-source = multiline sml test
+                          member-access-identifier = other
+                          start-rune = 95
+                          member-access-expr =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 98
+                              identexpr-name = some
+                              input-source = multiline sml test
+                              start-rune = 95
+                      sml-decorator-value =>
+                        NodeBinaryAddExpression
+                          end-rune = 115
+                          input-source = multiline sml test
+                          start-rune = 107
+                          binary-expression-left =>
+                            NodeBinaryAddExpression
+                              end-rune = 111
+                              input-source = multiline sml test
+                              start-rune = 107
+                              binary-expression-left =>
+                                NodeNumericLiteralExpression
+                                  end-rune = 107
+                                  input-source = multiline sml test
+                                  literal-value = 1
+                                  start-rune = 107
+                              binary-expression-right =>
+                                NodeNumericLiteralExpression
+                                  end-rune = 111
+                                  input-source = multiline sml test
+                                  literal-value = 2
+                                  start-rune = 111
+                          binary-expression-right =>
+                            NodeNumericLiteralExpression
+                              end-rune = 115
+                              input-source = multiline sml test
+                              literal-value = 3
+                              start-rune = 115
+                    NodeTypeSmlDecorator
+                      end-rune = 140
+                      input-source = multiline sml test
+                      start-rune = 133
+                      sml-decorator-path =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 140
+                          identexpr-name = enabled
+                          input-source = multiline sml test
+                          start-rune = 134
+                  sml-expression-typefunc =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 29
+                      identexpr-name = foo
+                      input-source = multiline sml test
+                      start-rune = 27

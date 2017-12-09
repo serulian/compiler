@@ -1,0 +1,170 @@
+NodeTypeFile
+  end-rune = 97
+  input-source = complex expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 97
+      input-source = complex expr test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 97
+          input-source = complex expr test
+          start-rune = 23
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 57
+              input-source = complex expr test
+              start-rune = 26
+              expr-statement-expr =>
+                NodeMemberAccessExpression
+                  end-rune = 56
+                  input-source = complex expr test
+                  member-access-identifier = baz
+                  start-rune = 26
+                  member-access-expr =>
+                    NodeCastExpression
+                      end-rune = 52
+                      input-source = complex expr test
+                      start-rune = 26
+                      cast-expr-expr =>
+                        NodeMemberAccessExpression
+                          end-rune = 40
+                          input-source = complex expr test
+                          member-access-identifier = bar
+                          start-rune = 26
+                          member-access-expr =>
+                            NodeSliceExpression
+                              end-rune = 36
+                              input-source = complex expr test
+                              start-rune = 26
+                              slice-expr-expr =>
+                                NodeMemberAccessExpression
+                                  end-rune = 33
+                                  input-source = complex expr test
+                                  member-access-identifier = foo
+                                  start-rune = 26
+                                  member-access-expr =>
+                                    NodeThisLiteralExpression
+                                      end-rune = 29
+                                      input-source = complex expr test
+                                      start-rune = 26
+                              slice-expr-index =>
+                                NodeNumericLiteralExpression
+                                  end-rune = 35
+                                  input-source = complex expr test
+                                  literal-value = 1
+                                  start-rune = 35
+                      cast-expr-type =>
+                        NodeTypeTypeReference
+                          end-rune = 51
+                          input-source = complex expr test
+                          start-rune = 43
+                          typereference-path =>
+                            NodeTypeIdentifierPath
+                              end-rune = 51
+                              input-source = complex expr test
+                              start-rune = 43
+                              identifierpath-root =>
+                                NodeTypeIdentifierAccess
+                                  end-rune = 51
+                                  identifieraccess-name = something
+                                  input-source = complex expr test
+                                  start-rune = 43
+            NodeTypeExpressionStatement
+              end-rune = 72
+              input-source = complex expr test
+              start-rune = 59
+              expr-statement-expr =>
+                NodeGenericSpecifierExpression
+                  end-rune = 71
+                  input-source = complex expr test
+                  start-rune = 59
+                  generic-specifier-expr =>
+                    NodeMemberAccessExpression
+                      end-rune = 66
+                      input-source = complex expr test
+                      member-access-identifier = foo
+                      start-rune = 59
+                      member-access-expr =>
+                        NodeThisLiteralExpression
+                          end-rune = 62
+                          input-source = complex expr test
+                          start-rune = 59
+                  generic-specifier-type =>
+                    NodeTypeTypeReference
+                      end-rune = 70
+                      input-source = complex expr test
+                      start-rune = 68
+                      typereference-path =>
+                        NodeTypeIdentifierPath
+                          end-rune = 70
+                          input-source = complex expr test
+                          start-rune = 68
+                          identifierpath-root =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 70
+                              identifieraccess-name = bar
+                              input-source = complex expr test
+                              start-rune = 68
+            NodeTypeExpressionStatement
+              end-rune = 96
+              input-source = complex expr test
+              start-rune = 74
+              expr-statement-expr =>
+                NodeSliceExpression
+                  end-rune = 95
+                  input-source = complex expr test
+                  start-rune = 74
+                  slice-expr-expr =>
+                    NodeMemberAccessExpression
+                      end-rune = 90
+                      input-source = complex expr test
+                      member-access-identifier = baz
+                      start-rune = 74
+                      member-access-expr =>
+                        NodeGenericSpecifierExpression
+                          end-rune = 86
+                          input-source = complex expr test
+                          start-rune = 74
+                          generic-specifier-expr =>
+                            NodeMemberAccessExpression
+                              end-rune = 81
+                              input-source = complex expr test
+                              member-access-identifier = foo
+                              start-rune = 74
+                              member-access-expr =>
+                                NodeThisLiteralExpression
+                                  end-rune = 77
+                                  input-source = complex expr test
+                                  start-rune = 74
+                          generic-specifier-type =>
+                            NodeTypeTypeReference
+                              end-rune = 85
+                              input-source = complex expr test
+                              start-rune = 83
+                              typereference-path =>
+                                NodeTypeIdentifierPath
+                                  end-rune = 85
+                                  input-source = complex expr test
+                                  start-rune = 83
+                                  identifierpath-root =>
+                                    NodeTypeIdentifierAccess
+                                      end-rune = 85
+                                      identifieraccess-name = bar
+                                      input-source = complex expr test
+                                      start-rune = 83
+                  slice-expr-left-index =>
+                    NodeNumericLiteralExpression
+                      end-rune = 92
+                      input-source = complex expr test
+                      literal-value = 1
+                      start-rune = 92
+                  slice-expr-right-index =>
+                    NodeNumericLiteralExpression
+                      end-rune = 94
+                      input-source = complex expr test
+                      literal-value = 2
+                      start-rune = 94

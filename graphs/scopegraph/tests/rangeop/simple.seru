@@ -10,7 +10,7 @@ class SomeClass {
 	}
 }
 
-function<void> DoSomething(sc SomeClass) {
-	/* range */(sc..sc)
-	/* exrange */(sc..<sc)
+function DoSomething(sc SomeClass) {
+	/* range */(sc .. sc)
+	/* exrange */(sc ..< sc)
 }

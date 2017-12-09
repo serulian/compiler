@@ -188,8 +188,8 @@ var scopeGraphTests = []scopegraphTest{
 	}, "", ""},
 
 	// Empty with reject loop test.
-	scopegraphTest{"empty with reject loop test", "loop", "emptywithreturn", []expectedScopeEntry{
-		expectedScopeEntry{"emptyloop", expectedScope{true, proto.ScopeKind_VALUE, "void", "Integer"}},
+	scopegraphTest{"empty with reject loop test", "loop", "emptywithreject", []expectedScopeEntry{
+		expectedScopeEntry{"emptyloop", expectedScope{true, proto.ScopeKind_VALUE, "void", "void"}},
 	}, "", ""},
 
 	// Empty with match that returns loop test.

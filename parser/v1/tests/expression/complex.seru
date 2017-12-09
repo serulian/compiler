@@ -1,0 +1,5 @@
+function DoSomething() {
+	this.foo[1].bar.(something).baz
+	this.foo<bar>
+	this.foo<bar>.baz[1:2]
+}

@@ -1,0 +1,26 @@
+NodeTypeFile
+  end-rune = 36
+  input-source = expression statement test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 36
+      input-source = expression statement test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 36
+          input-source = expression statement test
+          start-rune = 24
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 35
+              input-source = expression statement test
+              start-rune = 27
+              expr-statement-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 34
+                  identexpr-name = someExpr
+                  input-source = expression statement test
+                  start-rune = 27

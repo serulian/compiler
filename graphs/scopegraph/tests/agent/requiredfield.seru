@@ -1,15 +1,11 @@
 interface SomeInterface {}
 
-agent<SomeInterface> SomeAgent {
-	var<int> SomeField
+agent SomeAgent for SomeInterface {
+	var SomeField int
 }
 
 class SomeClass with SomeAgent {
 	constructor Declare() {
-		return SomeClass{
-			SomeAgent: SomeAgent{
-				SomeField: 42,
-			},
-		}
+		return SomeClass{SomeAgent: SomeAgent{SomeField: 42}}
 	}
 }

@@ -1,0 +1,6 @@
+function DoSomething() {
+	a!
+	a.b!
+	(a)!
+	a + b!
+}

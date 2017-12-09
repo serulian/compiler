@@ -1,0 +1,3 @@
+interface ISomeInterface {
+	constructor DoSomething(a int, b double) {}
+}

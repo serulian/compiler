@@ -1,9 +1,10 @@
 class SomeClass {}
+
 interface SomeInterface {}
 
 type SomeType : SomeClass {}
 
-function<void> DoSomething<T>(st SomeType, si SomeInterface, t T) {
+function DoSomething<T>(st SomeType, si SomeInterface, t T) {
 	/* someclass */(&st)
 	/* generic */(&t)
 	/* interface */(&si)

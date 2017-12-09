@@ -1,15 +1,11 @@
 class SomeClass {
-	constructor Build() {
-		return SomeClass.new()
-	}
+	constructor Build() { return SomeClass.new() }
 }
 
 interface SomeInterface {
-	constructor Build() {
-		return SomeClass.new()
-	}
+	constructor Build() { return SomeClass.new() }
 }
 
-function<void> DoSomething<T : SomeInterface>() {
+function DoSomething<T : SomeInterface>() {
 	DoSomething<SomeClass>()
 }

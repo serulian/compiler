@@ -1,4 +1,4 @@
-function<void> SomeFunction() {
+function SomeFunction() {
 	var first = <SomeTag />
 	var second = <SomeTag>some text goes here <FollowedByATag /></SomeTag>
 
@@ -40,7 +40,7 @@ function<void> SomeFunction() {
 		'andanotherawesomekey': morestuffgoeshere,
 	}} />
 
-	var tenth = <Foo @Bar={someType{foo: 'foo', bar: 'bar'}} />
+	var tenth = <Foo @Bar={someType{foo: 'foo', bar: 'bar'}} @Baz />
 
 	var eleventh = <Foo>
 		<.Bar>Hi!</.Bar>

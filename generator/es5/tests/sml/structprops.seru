@@ -4,10 +4,10 @@ struct SomeProps {
 	OptionalValue int?
 }
 
-function<bool> SimpleFunction(props SomeProps) {
+function SimpleFunction(props SomeProps) bool {
 	return props.StringValue == "hello world" && props.BoolValue && !(props.OptionalValue is null)
 }
 
-function<any> TEST() {
+function TEST() any {
 	return <SimpleFunction StringValue="hello world" OptionalValue={42} BoolValue />
 }

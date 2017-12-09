@@ -2,8 +2,10 @@
  * SomeClass is some cool class
  */
 class SomeClass<T : int> {
-	var<int?> noInit
-	var<int> foo = bar
+	var noInit int?
+	var foo int = bar
+
+	constructor SomeGenericConstructor<Q>() {}
 
 	constructor SecondConstructor() {
 		return SomeClass<T>.new()
@@ -13,14 +15,14 @@ class SomeClass<T : int> {
 		reject Because.ThatsWhy()
 	}
 
-	function<void> DoSomething<Q : any>(firstParam int, secondParam string*) {
+	function DoSomething<Q : any>(firstParam int, secondParam string*) {
 		return
 	}
 
 	/**
 	 * SomeProp is some sort of prop.
 	 */
-	property<SomeType?> SomeProp {
+	property SomeProp SomeType? {
 		get { return null }
 
 		set {
@@ -28,7 +30,7 @@ class SomeClass<T : int> {
 		}
 	}
 
-	property<bool> GetterProp {
+	property GetterProp bool {
 		get { return true }
 	}
 
@@ -36,9 +38,9 @@ class SomeClass<T : int> {
 		return someStream
 	}
 
-	operator<someOpReturn> someOp(onlyOneParam here) {
+	operator someOp(onlyOneParam here) someOpReturn {
 		return someThing
 	}
 
-	function<int> AnotherFunction() { return 33 }
+	function AnotherFunction() int { return 33 }
 }

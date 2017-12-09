@@ -1,6 +1,6 @@
 $module('basic', function () {
   var $static = this;
-  this.$class('7dbf4efd', 'SomeClass', false, '', function () {
+  this.$class('0021bde7', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -18,7 +18,7 @@ $module('basic', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "AnotherFunction|2|2549c819<void>": true,
+        "AnotherFunction|2|0b2e6e78<void>": true,
       };
       return this.$cachedtypesig = computed;
     };

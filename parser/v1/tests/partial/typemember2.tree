@@ -1,0 +1,47 @@
+NodeTypeFile
+  end-rune = 95
+  input-source = partial type member test 2
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 95
+      input-source = partial type member test 2
+      named = SomeClass
+      start-rune = 0
+      type-member =>
+        NodeTypeFunction
+          end-rune = 59
+          input-source = partial type member test 2
+          named = DoSomething
+          start-rune = 22
+          definition-body =>
+            NodeTypeStatementBlock
+              end-rune = 59
+              input-source = partial type member test 2
+              start-rune = 45
+              block-child =>
+                NodeTypeExpressionStatement
+                  end-rune = 59
+                  input-source = partial type member test 2
+                  start-rune = 55
+                  expr-statement-expr =>
+                    NodeThisLiteralExpression
+                      end-rune = 58
+                      input-source = partial type member test 2
+                      start-rune = 55
+              child-node =>
+                NodeTypeError
+                  end-rune = 59
+                  error-message = Expected one of: [tokenTypeRightBrace], found: tokenTypeKeyword
+                  input-source = partial type member test 2
+                  start-rune = 65
+        NodeTypeFunction
+          end-rune = 94
+          input-source = partial type member test 2
+          named = DoSomethingElse
+          start-rune = 65
+          definition-body =>
+            NodeTypeStatementBlock
+              end-rune = 94
+              input-source = partial type member test 2
+              start-rune = 92

@@ -1,0 +1,37 @@
+NodeTypeFile
+  end-rune = 42
+  input-source = generic interface test
+  start-rune = 0
+  child-node =>
+    NodeTypeInterface
+      end-rune = 42
+      input-source = generic interface test
+      named = ISomeInterface
+      start-rune = 0
+      type-generic =>
+        NodeTypeGeneric
+          end-rune = 27
+          input-source = generic interface test
+          named = Foo
+          start-rune = 25
+        NodeTypeGeneric
+          end-rune = 38
+          input-source = generic interface test
+          named = Bar
+          start-rune = 30
+          generic-subtype =>
+            NodeTypeTypeReference
+              end-rune = 38
+              input-source = generic interface test
+              start-rune = 36
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 38
+                  input-source = generic interface test
+                  start-rune = 36
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 38
+                      identifieraccess-name = Baz
+                      input-source = generic interface test
+                      start-rune = 36

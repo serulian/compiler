@@ -1,10 +1,10 @@
-function<int*> SomeGenerator() {
+function SomeGenerator() int* {
 	yield 1
 	yield 2
 	yield 3
 }
 
-function<any> TEST() {
+function TEST() any {
 	var s = s + 1 for s in SomeGenerator()
 	var counter = 0
 	for entry in s {

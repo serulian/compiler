@@ -1,9 +1,7 @@
 class SomeClass {
-	constructor Declare() {
-		return SomeClass.new()
-	}
+	constructor Declare() { return SomeClass.new() }
 }
 
-function<void> DoSomething() {
+function DoSomething() {
 	<SomeClass>foo</SomeClass>
 }

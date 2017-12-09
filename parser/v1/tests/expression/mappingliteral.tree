@@ -1,0 +1,163 @@
+NodeTypeFile
+  end-rune = 201
+  input-source = mapping literal expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 201
+      input-source = mapping literal expr test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 201
+          input-source = mapping literal expr test
+          start-rune = 23
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 70
+              input-source = mapping literal expr test
+              start-rune = 26
+              expr-statement-expr =>
+                NodeMappingLiteralExpression
+                  end-rune = 69
+                  input-source = mapping literal expr test
+                  start-rune = 26
+                  mapping-literal-expr-entry =>
+                    NodeMappingLiteralExpressionEntry
+                      end-rune = 65
+                      input-source = mapping literal expr test
+                      start-rune = 40
+                      mapping-literal-entry-key =>
+                        NodeStringLiteralExpression
+                          end-rune = 50
+                          input-source = mapping literal expr test
+                          literal-value = 'styleName'
+                          start-rune = 40
+                      mapping-literal-entry-value =>
+                        NodeStringLiteralExpression
+                          end-rune = 65
+                          input-source = mapping literal expr test
+                          literal-value = 'color: blue'
+                          start-rune = 53
+                  mapping-literal-expr-type =>
+                    NodeTypeTypeReference
+                      end-rune = 34
+                      input-source = mapping literal expr test
+                      start-rune = 29
+                      typereference-path =>
+                        NodeTypeIdentifierPath
+                          end-rune = 34
+                          input-source = mapping literal expr test
+                          start-rune = 29
+                          identifierpath-root =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 34
+                              identifieraccess-name = string
+                              input-source = mapping literal expr test
+                              start-rune = 29
+            NodeTypeExpressionStatement
+              end-rune = 128
+              input-source = mapping literal expr test
+              start-rune = 73
+              expr-statement-expr =>
+                NodeMappingLiteralExpression
+                  end-rune = 127
+                  input-source = mapping literal expr test
+                  start-rune = 73
+                  mapping-literal-expr-entry =>
+                    NodeMappingLiteralExpressionEntry
+                      end-rune = 109
+                      input-source = mapping literal expr test
+                      start-rune = 84
+                      mapping-literal-entry-key =>
+                        NodeStringLiteralExpression
+                          end-rune = 94
+                          input-source = mapping literal expr test
+                          literal-value = 'styleName'
+                          start-rune = 84
+                      mapping-literal-entry-value =>
+                        NodeStringLiteralExpression
+                          end-rune = 109
+                          input-source = mapping literal expr test
+                          literal-value = 'color: blue'
+                          start-rune = 97
+                    NodeMappingLiteralExpressionEntry
+                      end-rune = 123
+                      input-source = mapping literal expr test
+                      start-rune = 114
+                      mapping-literal-entry-key =>
+                        NodeNumericLiteralExpression
+                          end-rune = 117
+                          input-source = mapping literal expr test
+                          literal-value = 1234
+                          start-rune = 114
+                      mapping-literal-entry-value =>
+                        NodeNullLiteralExpression
+                          end-rune = 123
+                          input-source = mapping literal expr test
+                          start-rune = 120
+                  mapping-literal-expr-type =>
+                    NodeTypeAny
+                      end-rune = 78
+                      input-source = mapping literal expr test
+                      start-rune = 76
+            NodeTypeExpressionStatement
+              end-rune = 200
+              input-source = mapping literal expr test
+              start-rune = 131
+              expr-statement-expr =>
+                NodeStructuralNewExpression
+                  end-rune = 200
+                  input-source = mapping literal expr test
+                  start-rune = 131
+                  structural-new-entry =>
+                    NodeStructuralNewExpressionEntry
+                      end-rune = 195
+                      input-source = mapping literal expr test
+                      start-rune = 143
+                      structural-new-entry-key = SomeMapping
+                      structural-new-entry-value =>
+                        NodeMappingLiteralExpression
+                          end-rune = 195
+                          input-source = mapping literal expr test
+                          start-rune = 156
+                          mapping-literal-expr-entry =>
+                            NodeMappingLiteralExpressionEntry
+                              end-rune = 190
+                              input-source = mapping literal expr test
+                              start-rune = 173
+                              mapping-literal-entry-key =>
+                                NodeTypeIdentifierExpression
+                                  end-rune = 179
+                                  identexpr-name = someKey
+                                  input-source = mapping literal expr test
+                                  start-rune = 173
+                              mapping-literal-entry-value =>
+                                NodeTypeIdentifierExpression
+                                  end-rune = 190
+                                  identexpr-name = someValue
+                                  input-source = mapping literal expr test
+                                  start-rune = 182
+                          mapping-literal-expr-type =>
+                            NodeTypeTypeReference
+                              end-rune = 166
+                              input-source = mapping literal expr test
+                              start-rune = 159
+                              typereference-path =>
+                                NodeTypeIdentifierPath
+                                  end-rune = 166
+                                  input-source = mapping literal expr test
+                                  start-rune = 159
+                                  identifierpath-root =>
+                                    NodeTypeIdentifierAccess
+                                      end-rune = 166
+                                      identifieraccess-name = sometype
+                                      input-source = mapping literal expr test
+                                      start-rune = 159
+                  structural-new-type-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 138
+                      identexpr-name = SomeType
+                      input-source = mapping literal expr test
+                      start-rune = 131

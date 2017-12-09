@@ -1,5 +1,3 @@
-function<void> DoSomething() {
-	[]{int}{
-		'someString': true,
-	}
+function DoSomething() {
+	[]{int}{'someString': true}
 }

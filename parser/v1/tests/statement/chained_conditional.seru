@@ -1,0 +1,6 @@
+function SomeFunction() {
+	if someExpr {	
+	} else if anotherExpr {	
+	} else {
+	}
+}

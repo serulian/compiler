@@ -1,13 +1,11 @@
 struct SomeType {}
 
-function<int> SomeFunction(props SomeType, child any) {
+function SomeFunction(props SomeType, child any) int {
 	return 2
 }
 
-function<int> sd(foo int, bar bool) {
-	return 2
-}
+function sd(foo int, bar bool) int { return 2 }
 
-function<void> DoSomething() {
-	<SomeFunction @sd="something"/>
+function DoSomething() {
+	<SomeFunction @sd="something" />
 }

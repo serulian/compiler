@@ -1,9 +1,9 @@
 interface ISomeInterface {
-	function<void> DoSomething()	
+	function DoSomething()
 }
 
 class SomeClass<T : ISomeInterface> {}
 
-function<void> DoSomething() {
+function DoSomething() {
 	SomeClass<bool>
 }

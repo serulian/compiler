@@ -16,13 +16,13 @@ $module('cast', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Result|3|f361570c": true,
+        "Result|3|5e61c39d": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  this.$interface('71f32d90', 'ISomeInterface', false, '', function () {
+  this.$interface('f5c8ee15', 'ISomeInterface', false, '', function () {
     var $static = this;
     this.$typesig = function () {
       return {

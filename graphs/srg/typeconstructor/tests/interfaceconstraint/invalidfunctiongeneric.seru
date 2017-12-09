@@ -1,13 +1,13 @@
 interface ISomeInterface {
-	function<int> DoSomething<T : int>(foo T)
+	function DoSomething<T : int>(foo T) int
 }
 
 class SomeClass {
-	function<int> DoSomething<T : int, Q>(foo T) {}
+	function DoSomething<T : int, Q>(foo T) int {}
 }
 
 class AnotherClass<T : ISomeInterface> {}
 
 class Tester {
-	var<AnotherClass<SomeClass>> anotherClass
+	var anotherClass AnotherClass<SomeClass>
 }

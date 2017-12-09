@@ -1,14 +1,12 @@
-function<bool> DoSomethingAsync() {
-	return true
-}
+function DoSomethingAsync() bool { return true }
 
-function<bool*> SomeGenerator() {
+function SomeGenerator() bool* {
 	yield false
-	yield <-DoSomethingAsync()
+	yield <- DoSomethingAsync()
 }
 
-function<bool?> TEST() {
-	var<bool?> v = null
+function TEST() bool? {
+	var v bool? = null
 	for value in SomeGenerator() {
 		v = value
 	}

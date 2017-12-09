@@ -1,4 +1,4 @@
-function<void> DoSomething(foobars int) {
+function DoSomething(foobars int) {
     /// [f]
     foobars.
 }

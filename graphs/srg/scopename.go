@@ -445,10 +445,15 @@ func (ns SRGNamedScope) GetParameter() (SRGParameter, bool) {
 	return SRGParameter{}, false
 }
 
-// ReturnType returns the return type of the scoped node, if any.
-func (ns SRGNamedScope) ReturnType() (SRGTypeRef, bool) {
+// IsFunction returns whether the named scope refers to a function.
+func (ns SRGNamedScope) IsFunction() bool {
+	return ns.Kind() == sourceshape.NodeTypeFunction
+}
+
+// DefinedReturnType returns the defined return type of the scoped node, if any.
+func (ns SRGNamedScope) DefinedReturnType() (SRGTypeRef, bool) {
 	if member, isMember := ns.GetMember(); isMember {
-		return member.ReturnType()
+		return member.DefinedReturnType()
 	}
 
 	return SRGTypeRef{}, false

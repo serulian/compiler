@@ -1,0 +1,26 @@
+var basic int
+var nullable int?
+var streamable int*
+var generic SomeGeneric<T>
+var multigeneric SomeGeneric<T, Q>
+var nested SomeGeneric<T?, Q>
+var nullablegeneric SomeGeneric<T>?
+var streamgeneric SomeGeneric<T>*
+var multinested SomeGeneric<List<T?>, Map<T, Q>*>
+var pathed Some.Reference.To.Type
+var nullablepathed Some.Type?
+var streamablepathed Some.Type*
+var genercipathed Some.Type<T>
+var nullablestream int?*
+var functype function<void>()
+var functypewithparam function<void>(int)
+var anyref any
+var anyinnerref SomeClass<any>
+var sliceref []SomeClass
+var mappingref []{SomeClass}
+var anystream any*
+var nullableslice ?[]SomeClass
+var nullableprefix int?
+var streamableprefix int*
+var structuralReference struct
+var structuralGeneric SomeGeneric<struct>

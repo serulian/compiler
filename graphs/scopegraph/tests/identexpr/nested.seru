@@ -4,8 +4,8 @@ class SomeClass {
 	}
 }
 
-function<void> DoSomething() {
+function DoSomething() {
 	var someIndex = SomeClass.new()
 
-	if (/* first */someIndex) < someIndex && (/* second */someIndex) >= someIndex {}
+	if /* first */someIndex < someIndex && /* second */someIndex >= someIndex {}
 }

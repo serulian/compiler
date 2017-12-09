@@ -1,0 +1,15 @@
+NodeTypeFile
+  end-rune = 10
+  input-source = invalid source
+  start-rune = 0
+  child-node =>
+    NodeTypeImport
+      end-rune = 10
+      input-source = invalid source
+      start-rune = 0
+      child-node =>
+        NodeTypeError
+          end-rune = 5
+          error-message = Expected one of: [tokenTypeIdentifer tokenTypeStringLiteral], found: tokenTypeNumericLiteral
+          input-source = invalid source
+          start-rune = 7

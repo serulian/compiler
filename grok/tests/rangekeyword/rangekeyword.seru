@@ -1,5 +1,5 @@
 class SomeClass {
-  function<void> SomeFunction() {
+  function SomeFunction() {
     ///             [th]
     var something = this
   }
@@ -7,9 +7,9 @@ class SomeClass {
 
 interface SomeInterface {}
 
-///   [si         ]  [sa     ]
-agent<SomeInterface> SomeAgent {
-  function<void> SomeAgentFunction() {
+///   [sa     ]     [si         ]  
+agent SomeAgent for SomeInterface {
+  function SomeAgentFunction() {
     /// [pri]
     principal
 
@@ -19,7 +19,7 @@ agent<SomeInterface> SomeAgent {
     } 
   }
 
-  property<int> SomeProperty {
+  property SomeProperty int {
       get {
          return 2 
       }

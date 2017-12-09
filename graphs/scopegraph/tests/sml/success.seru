@@ -1,15 +1,13 @@
 class SimpleClass {
-	constructor Declare() {
-		return SimpleClass.new()
-	}
+	constructor Declare() { return SimpleClass.new() }
 }
 
 class PropsClass {
-	var<string> something
-	var<int> somethingElse = 2
+	var something string
+	var somethingElse int = 2
 }
 
-function<string> FunctionWithPropsClass(props PropsClass) {
+function FunctionWithPropsClass(props PropsClass) string {
 	return props.something
 }
 
@@ -19,7 +17,7 @@ class ClassWithProps {
 	}
 }
 
-function<int> FuncWithProps(props []{any}) {
+function FuncWithProps(props []{any}) int {
 	return 42
 }
 
@@ -29,62 +27,70 @@ struct SomePropsStruct {
 	PropC bool?
 }
 
-function<SomePropsStruct> WithPropsStruct(props SomePropsStruct) {
+function WithPropsStruct(props SomePropsStruct) SomePropsStruct {
 	return props
 }
 
-function<string> WithOptionalChild(props []{any}, child string?) {
+function WithOptionalChild(props []{any}, child string?) string {
 	return child ?? 'default!'
 }
 
-function<string> WithRequiredChild(props []{any}, child string) {
+function WithRequiredChild(props []{any}, child string) string {
 	return child
 }
 
-function<bool> ChildStream(props []{any}, child int*) {
+function ChildStream(props []{any}, child int*) bool {
 	return true
 }
 
 class AnotherClass {}
+
 class ThirdClass {}
 
-function<AnotherClass> SomeCoolDecorator(decorated SimpleClass, value bool) {
+function SomeCoolDecorator(decorated SimpleClass, value bool) AnotherClass {
 	return AnotherClass.new()
 }
 
-function<ThirdClass> ChainedDecorator(decorated AnotherClass, value string) {
+function ChainedDecorator(decorated AnotherClass, value string) ThirdClass {
 	return ThirdClass.new()
 }
 
-function<int> SubtypeDecorator(decorated any, value any) {
+function SubtypeDecorator(decorated any, value any) int {
 	return 42
 }
 
-function<void> DoSomething(someStream int*) {
-	/* simple */(<SimpleClass />)
-	/* classwithprops */(<ClassWithProps a="hello" b="wassup" />)
-	/* funcwithprops */(<FuncWithProps a="hello" b="wassup" />)
+function DoSomething(someStream int*) {
+	/* simple */<SimpleClass />
+	/* classwithprops */<ClassWithProps a="hello" b="wassup" />
+	/* funcwithprops */<FuncWithProps a="hello" b="wassup" />
 
-	/* propsstruct */(<WithPropsStruct PropA={123} PropB="hello" PropC />)
+	/* propsstruct */<WithPropsStruct PropA={123} PropB="hello" PropC />
 
-	/* optionalchild */(<WithOptionalChild />)
-	/* optionalchild2 */(<WithOptionalChild>hello world!</WithOptionalChild>)
+	/* optionalchild */<WithOptionalChild />
+	/* optionalchild2 */<WithOptionalChild>hello world!</WithOptionalChild>
 
-	/* requiredchild */(<WithRequiredChild>hello world!</WithRequiredChild>)
+	/* requiredchild */<WithRequiredChild>hello world!</WithRequiredChild>
 
-	/* childstream1 */(<ChildStream />)
-	/* childstream2 */(<ChildStream></ChildStream>)
-	/* childstream3 */(<ChildStream>{ 1 }{ 2 }{ 3 }</ChildStream>)
-	/* childstream4 */(<ChildStream>{ value for value in someStream }</ChildStream>)
+	/* childstream1 */<ChildStream />
+	/* childstream2 */<ChildStream />
+	/* childstream3 */<ChildStream>
+		{1}
+		{2}
+		{3}
+	</ChildStream>
+	/* childstream4 */<ChildStream>{value for value in someStream}</ChildStream>
 
-	/* decorator */(<SimpleClass @SomeCoolDecorator={false} />)
-	/* decorator2 */(<SimpleClass @SomeCoolDecorator />)
+	/* decorator */<SimpleClass @SomeCoolDecorator={false} />
+	/* decorator2 */<SimpleClass @SomeCoolDecorator />
 
-	/* chaineddecorator */(<SimpleClass @SomeCoolDecorator @ChainedDecorator="somevalue" />)
+	/* chaineddecorator */<SimpleClass @SomeCoolDecorator
+	                                   @ChainedDecorator="somevalue" />
 
-	/* subtypedecorator */(<SimpleClass @SubtypeDecorator="foo" />)
+	/* subtypedecorator */<SimpleClass @SubtypeDecorator="foo" />
 
-	/* propsclass */(<FunctionWithPropsClass something="hello" />)
-	/* propsclass2 */(<FunctionWithPropsClass something="hello" somethingElse={42} />)
-	/* propsclass3 */(<FunctionWithPropsClass somethingElse={42}><.something>hello</.something></FunctionWithPropsClass>)
+	/* propsclass */<FunctionWithPropsClass something="hello" />
+	/* propsclass2 */<FunctionWithPropsClass something="hello" somethingElse={42} />
+	/* propsclass3 */<FunctionWithPropsClass somethingElse={42}>
+		<.something>hello</.something>
+	</FunctionWithPropsClass>
 }

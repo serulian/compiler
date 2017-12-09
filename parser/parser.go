@@ -11,23 +11,25 @@ import (
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/parser/shared"
 	v0parser "github.com/serulian/compiler/parser/v0"
+	v1parser "github.com/serulian/compiler/parser/v1"
 )
 
 type parseFunction func(builder shared.NodeBuilder, importReporter packageloader.ImportHandler, source compilercommon.InputSource, input string) (shared.AstNode, bool)
 
 var parsers = []parseFunction{
+	v1parser.Parse,
 	v0parser.Parse,
 }
 
 // Parse performs parsing of the given input string and returns the root AST node.
 func Parse(builder shared.NodeBuilder, importReporter packageloader.ImportHandler, source compilercommon.InputSource, input string) shared.AstNode {
-	rootNode, _ := v0parser.Parse(builder, importReporter, source, input)
+	rootNode, _ := v1parser.Parse(builder, importReporter, source, input)
 	return rootNode
 }
 
 // ParseExpression parses the given string as an expression.
 func ParseExpression(builder shared.NodeBuilder, source compilercommon.InputSource, startIndex int, input string) (shared.AstNode, bool) {
-	return v0parser.ParseExpression(builder, source, startIndex, input)
+	return v1parser.ParseExpression(builder, source, startIndex, input)
 }
 
 // ParseWithCompatability performs parsing of the given input string and returns the root AST node. Unlike the normal Parse,

@@ -1,5 +1,5 @@
-function<bool> DoSomething() {
-	var<int> foo = 1
-	var<string> bar = 'hi there!'
+function DoSomething() bool {
+	var foo int = 1
+	var bar string = 'hi there!'
 	return foo == 2 && bar == 'hello world'
 }

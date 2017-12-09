@@ -1,0 +1,3 @@
+function TEST() string {
+	return 123.String()
+}

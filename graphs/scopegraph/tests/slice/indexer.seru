@@ -1,7 +1,7 @@
 class SomeClass {
-	var<bool> result = false
+	var result bool = false
 
-	operator<bool> index(someParam bool) {
+	operator index(someParam bool) bool {
 		return this.result && !someParam
 	}
 

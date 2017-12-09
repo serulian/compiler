@@ -1,0 +1,6 @@
+function SomeFunction() {
+	break
+	continue
+	break someLabel
+	continue anotherLabel
+}

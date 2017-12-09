@@ -37,9 +37,9 @@ func (sf *sourceFormatter) emitField(node formatterNode) {
 	}
 
 	sf.append("var")
-	sf.emitDeclaredType(node)
 	sf.append(" ")
 	sf.append(node.getProperty(sourceshape.NodePredicateTypeMemberName))
+	sf.emitDeclaredType(node)
 
 	if node.hasChild(sourceshape.NodePredicateTypeFieldDefaultValue) {
 		sf.append(" = ")
@@ -63,6 +63,7 @@ func (sf *sourceFormatter) emitConstructor(node formatterNode) {
 	sf.append("constructor")
 	sf.append(" ")
 	sf.append(node.getProperty(sourceshape.NodePredicateTypeMemberName))
+	sf.emitGenerics(node, sourceshape.NodePredicateTypeMemberGeneric)
 	sf.emitParameters(node, sourceshape.NodePredicateTypeMemberParameter, parensRequired)
 	sf.emitBody(node)
 	sf.appendLine()
@@ -71,9 +72,9 @@ func (sf *sourceFormatter) emitConstructor(node formatterNode) {
 // emitProperty emits the source of a declared property.
 func (sf *sourceFormatter) emitProperty(node formatterNode) {
 	sf.append("property")
-	sf.emitDeclaredType(node)
 	sf.append(" ")
 	sf.append(node.getProperty(sourceshape.NodePredicateTypeMemberName))
+	sf.emitDeclaredType(node)
 
 	if !node.hasChild(sourceshape.NodePropertyGetter) {
 		// Interface property.
@@ -113,11 +114,11 @@ func (sf *sourceFormatter) emitProperty(node formatterNode) {
 // emitFunction emits the source of a declared function.
 func (sf *sourceFormatter) emitFunction(node formatterNode) {
 	sf.append("function")
-	sf.emitReturnType(node)
 	sf.append(" ")
 	sf.append(node.getProperty(sourceshape.NodePredicateTypeMemberName))
 	sf.emitGenerics(node, sourceshape.NodePredicateTypeMemberGeneric)
 	sf.emitParameters(node, sourceshape.NodePredicateTypeMemberParameter, parensRequired)
+	sf.emitReturnType(node)
 	sf.emitBody(node)
 	sf.appendLine()
 }
@@ -125,10 +126,10 @@ func (sf *sourceFormatter) emitFunction(node formatterNode) {
 // emitOperator emits the source of a declared operator.
 func (sf *sourceFormatter) emitOperator(node formatterNode) {
 	sf.append("operator")
-	sf.emitDeclaredType(node)
 	sf.append(" ")
 	sf.append(node.getProperty(sourceshape.NodeOperatorName))
 	sf.emitParameters(node, sourceshape.NodePredicateTypeMemberParameter, parensRequired)
+	sf.emitDeclaredType(node)
 	sf.emitBody(node)
 	sf.appendLine()
 }
@@ -157,9 +158,8 @@ func (sf *sourceFormatter) emitDeclaredType(node formatterNode) {
 		return
 	}
 
-	sf.append("<")
+	sf.append(" ")
 	sf.emitNode(node.getChild(sourceshape.NodePredicateTypeMemberDeclaredType))
-	sf.append(">")
 }
 
 func (sf *sourceFormatter) emitReturnType(node formatterNode) {
@@ -167,7 +167,11 @@ func (sf *sourceFormatter) emitReturnType(node formatterNode) {
 		return
 	}
 
-	sf.append("<")
+	returnType := node.getChild(sourceshape.NodePredicateTypeMemberReturnType)
+	if returnType.nodeType == sourceshape.NodeTypeVoid {
+		return
+	}
+
+	sf.append(" ")
 	sf.emitNode(node.getChild(sourceshape.NodePredicateTypeMemberReturnType))
-	sf.append(">")
 }

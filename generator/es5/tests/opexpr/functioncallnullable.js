@@ -16,13 +16,13 @@ $module('functioncallnullable', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeMethod|2|2549c819<f361570c>": true,
+        "SomeMethod|2|0b2e6e78<5e61c39d>": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  this.$class('97cf7b5c', 'AnotherClass', false, '', function () {
+  this.$class('122f947d', 'AnotherClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -38,7 +38,7 @@ $module('functioncallnullable', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "AnotherMethod|2|2549c819<f361570c>": true,
+        "AnotherMethod|2|0b2e6e78<5e61c39d>": true,
       };
       return this.$cachedtypesig = computed;
     };

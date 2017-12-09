@@ -1,10 +1,8 @@
-function<any> TEST() {
+function TEST() any {
 	var first = 10
 	var second = 2
 
-	if second <= first {
-		return true
-	}
+	if second <= first { return true }
 
 	return false
 }

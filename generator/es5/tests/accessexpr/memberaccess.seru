@@ -3,22 +3,19 @@ from maimport import AnotherFunction
 from maimport import AnotherFunction as af
 
 class SomeClass {
-	var<int> someInt = 2
-	var<bool> someBool = true
+	var someInt int = 2
+	var someBool bool = true
 
-	constructor Build() {
-		return SomeClass.new()
-	}
+	constructor Build() { return SomeClass.new() }
 
-	function<void> InstanceFunc() {
-	}
+	function InstanceFunc() {}
 
-	property<int> SomeProp {
+	property SomeProp int {
 		get { return this.someInt }
 	}
 }
 
-function<void> DoSomething(sc SomeClass, scn SomeClass?) {
+function DoSomething(sc SomeClass, scn SomeClass?) {
 	sc.someInt
 	SomeClass.Build
 
@@ -39,7 +36,7 @@ function<void> DoSomething(sc SomeClass, scn SomeClass?) {
 	scn->SomeProp
 }
 
-function<any> TEST() {
+function TEST() any {
 	var sc = SomeClass.new()
 	return sc.someBool && sc->someBool
 }

@@ -1,9 +1,9 @@
 class SomeClass {
-	var<int> someVar
-	var<string?> anotherVar
-	var<bool> coolVar
+	var someVar int
+	var anotherVar string?
+	var coolVar bool
 }
 
-function<void> DoSomething() {
+function DoSomething() {
 	/* new */(SomeClass.new)
 }

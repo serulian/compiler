@@ -1,15 +1,14 @@
-class SomeClass {
-}
+class SomeClass {}
 
 interface ISomeInterface {
-	function<void> DoSomething()	
+	function DoSomething()
 }
 
 class AnotherClass {
-	function<void> DoSomething() {}
+	function DoSomething() {}
 }
 
-function<void> DoSomething() {
-	var<ISomeInterface> isi = AnotherClass.new()
+function DoSomething() {
+	var isi ISomeInterface = AnotherClass.new()
 	isi.(SomeClass)
 }

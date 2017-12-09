@@ -1,6 +1,6 @@
 class SomeClass {}
 
-function<void> DoSomething(sc SomeClass) {
+function DoSomething(sc SomeClass) {
 	switch sc {
 		case sc:
 			break

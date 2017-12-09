@@ -1,0 +1,37 @@
+NodeTypeFile
+  end-rune = 37
+  input-source = nullable field struct test
+  start-rune = 0
+  child-node =>
+    NodeTypeStruct
+      end-rune = 37
+      input-source = nullable field struct test
+      named = AnotherStruct
+      start-rune = 0
+      type-member =>
+        NodeTypeField
+          end-rune = 35
+          input-source = nullable field struct test
+          named = SomeInt
+          start-rune = 24
+          typemember-declared-type =>
+            NodeTypeNullable
+              end-rune = 35
+              input-source = nullable field struct test
+              start-rune = 32
+              typereference-inner-type =>
+                NodeTypeTypeReference
+                  end-rune = 34
+                  input-source = nullable field struct test
+                  start-rune = 32
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 34
+                      input-source = nullable field struct test
+                      start-rune = 32
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 34
+                          identifieraccess-name = int
+                          input-source = nullable field struct test
+                          start-rune = 32

@@ -1,0 +1,8 @@
+class SomeClass {
+    function DoSomething() {
+        this
+
+    property DoSomethingElse int {
+        get { return 42 }
+    }
+}

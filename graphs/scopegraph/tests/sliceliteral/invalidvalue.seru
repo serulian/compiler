@@ -1,7 +1,7 @@
 class SomeClass {
-	function<void> SomeFunction() {}
+	function SomeFunction() {}
 }
 
-function<void> DoSomething() {
+function DoSomething() {
 	[]SomeClass{'hello world'}
 }

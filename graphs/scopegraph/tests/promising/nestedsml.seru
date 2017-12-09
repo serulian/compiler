@@ -1,15 +1,15 @@
-function<int> anotherfunction(props []{any}) {
-    return 42
+function anotherfunction(props []{any}) int {
+	return 42
 }
 
-function<bool> somefunction(props []{any}, child int*) {
+function somefunction(props []{any}, child int*) bool {
 	return true
 }
 
-function<void> TEST(somestream int*) {
+function TEST(somestream int*) {
 	<somefunction>
-        <anotherfunction />
-        <anotherfunction [for index in 0..2] />
-        <anotherfunction />
-    </somefunction>
+		<anotherfunction />
+		<anotherfunction [for index in 0 .. 2] />
+		<anotherfunction />
+	</somefunction>
 }

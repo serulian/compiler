@@ -5,15 +5,11 @@ struct AnotherStruct {
 struct SomeStruct {
 	SomeField int = 42
 	AnotherField bool = false
-	SomeInstance AnotherStruct = AnotherStruct{
-		AnotherBool: true,
-	}
+	SomeInstance AnotherStruct = AnotherStruct{AnotherBool: true}
 }
 
-function<any> TEST() {
-	var ss = SomeStruct{
-		AnotherField: true,
-	}
+function TEST() any {
+	var ss = SomeStruct{AnotherField: true}
 
-	return (ss.SomeField == 42) && ss.AnotherField && ss.SomeInstance.AnotherBool
+	return ss.SomeField == 42 && ss.AnotherField && ss.SomeInstance.AnotherBool
 }

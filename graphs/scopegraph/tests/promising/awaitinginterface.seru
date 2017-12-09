@@ -1,13 +1,13 @@
 interface Foo {
-	function<void> SomeFunction(p awaitable<string>)
+	function SomeFunction(p awaitable<string>)
 }
 
 class SomeClass {
-	function<void> SomeFunction(p awaitable<string>) {
+	function SomeFunction(p awaitable<string>) {
 		<- p
 	}
 }
 
-function<void> AnotherFunction(f Foo, p awaitable<string>) {
+function AnotherFunction(f Foo, p awaitable<string>) {
 	f.SomeFunction(p)
 }

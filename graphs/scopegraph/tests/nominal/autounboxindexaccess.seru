@@ -3,11 +3,9 @@ class SomeClass {}
 type SomeType : SomeClass {}
 
 class ThirdClass {
-    operator<bool> index(sc SomeClass) {
-        return true
-    }
+	operator index(sc SomeClass) bool { return true }
 }
 
-function<void> DoSomething(st SomeType, tc ThirdClass) {
+function DoSomething(st SomeType, tc ThirdClass) {
 	tc[st]
 }

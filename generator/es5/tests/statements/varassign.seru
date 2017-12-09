@@ -1,5 +1,5 @@
-function<void> DoSomething() {
-	var<int> i = 2
+function DoSomething() {
+	var i int = 2
 	i = 3
 	1234
 }

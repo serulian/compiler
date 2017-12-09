@@ -1,8 +1,8 @@
-function<void> DoSomething(someParam SomeClass) {
+function DoSomething(someParam SomeClass) {
 	/// [sp ]
 	someParam
 }
 
 class SomeClass {
-	function<void> SomeFunction() {}
+	function SomeFunction() {}
 }

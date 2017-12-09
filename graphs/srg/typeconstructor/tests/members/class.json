@@ -1,6 +1,6 @@
 {
-    "8b466226bd21bb4f46cf3f6fe457e704": {
-        "Key": "8b466226bd21bb4f46cf3f6fe457e704",
+    "70cf9022f0eac0e13bebbecf2776c1f2": {
+        "Key": "70cf9022f0eac0e13bebbecf2776c1f2",
         "Kind": 1,
         "Children": {
             "1ec2adf78c1bb17b9004ec3994721b1b": {
@@ -40,12 +40,12 @@
             "tdg-source-module": "tests/members/class.seru",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-exported": "true",
-            "tdg-type-globalid": "06d4f15f",
+            "tdg-type-globalid": "fe5410c2",
             "tdg-type-name": "ThirdClass"
         }
     },
-    "982b3716d4b887713c6261904585cc46": {
-        "Key": "982b3716d4b887713c6261904585cc46",
+    "8a029c0547fb4f88ac9f2c405b717950": {
+        "Key": "8a029c0547fb4f88ac9f2c405b717950",
         "Kind": 1,
         "Children": {
             "65cde5840cde466c5f68b366ba54aefe": {
@@ -85,7 +85,7 @@
             "tdg-source-module": "tests/members/class.seru",
             "tdg-source-node": "(NodeRef)",
             "tdg-type-exported": "true",
-            "tdg-type-globalid": "8ce85edd",
+            "tdg-type-globalid": "a6c7aa1c",
             "tdg-type-name": "AnotherClass"
         }
     },

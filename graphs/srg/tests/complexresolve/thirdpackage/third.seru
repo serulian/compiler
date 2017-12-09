@@ -1,2 +1,3 @@
 class ThirdClass {}
-function<void> ThirdFunction() {}
+
+function ThirdFunction() {}

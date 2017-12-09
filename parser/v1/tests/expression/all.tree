@@ -1,0 +1,1595 @@
+NodeTypeFile
+  end-rune = 833
+  input-source = all expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 833
+      input-source = all expr test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 833
+          input-source = all expr test
+          start-rune = 24
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 31
+              input-source = all expr test
+              start-rune = 27
+              expr-statement-expr =>
+                NodeTypeAwaitExpression
+                  end-rune = 30
+                  input-source = all expr test
+                  start-rune = 30
+                  await-expression-source =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 30
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 30
+            NodeTypeExpressionStatement
+              end-rune = 38
+              input-source = all expr test
+              start-rune = 33
+              expr-statement-expr =>
+                NodeBinaryAddExpression
+                  end-rune = 37
+                  input-source = all expr test
+                  start-rune = 33
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 33
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 33
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 37
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 37
+            NodeTypeExpressionStatement
+              end-rune = 45
+              input-source = all expr test
+              start-rune = 40
+              expr-statement-expr =>
+                NodeBinarySubtractExpression
+                  end-rune = 44
+                  input-source = all expr test
+                  start-rune = 40
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 40
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 40
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 44
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 44
+            NodeTypeExpressionStatement
+              end-rune = 52
+              input-source = all expr test
+              start-rune = 47
+              expr-statement-expr =>
+                NodeBinaryMultiplyExpression
+                  end-rune = 51
+                  input-source = all expr test
+                  start-rune = 47
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 47
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 47
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 51
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 51
+            NodeTypeExpressionStatement
+              end-rune = 59
+              input-source = all expr test
+              start-rune = 54
+              expr-statement-expr =>
+                NodeBinaryDivideExpression
+                  end-rune = 58
+                  input-source = all expr test
+                  start-rune = 54
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 54
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 54
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 58
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 58
+            NodeTypeExpressionStatement
+              end-rune = 66
+              input-source = all expr test
+              start-rune = 61
+              expr-statement-expr =>
+                NodeBinaryModuloExpression
+                  end-rune = 65
+                  input-source = all expr test
+                  start-rune = 61
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 61
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 61
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 65
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 65
+            NodeTypeExpressionStatement
+              end-rune = 73
+              input-source = all expr test
+              start-rune = 68
+              expr-statement-expr =>
+                NodeBitwiseOrExpression
+                  end-rune = 72
+                  input-source = all expr test
+                  start-rune = 68
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 68
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 68
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 72
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 72
+            NodeTypeExpressionStatement
+              end-rune = 80
+              input-source = all expr test
+              start-rune = 75
+              expr-statement-expr =>
+                NodeBitwiseAndExpression
+                  end-rune = 79
+                  input-source = all expr test
+                  start-rune = 75
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 75
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 75
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 79
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 79
+            NodeTypeExpressionStatement
+              end-rune = 87
+              input-source = all expr test
+              start-rune = 82
+              expr-statement-expr =>
+                NodeBitwiseXorExpression
+                  end-rune = 86
+                  input-source = all expr test
+                  start-rune = 82
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 82
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 82
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 86
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 86
+            NodeTypeExpressionStatement
+              end-rune = 95
+              input-source = all expr test
+              start-rune = 89
+              expr-statement-expr =>
+                NodeBitwiseShiftLeftExpression
+                  end-rune = 94
+                  input-source = all expr test
+                  start-rune = 89
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 89
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 89
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 94
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 94
+            NodeTypeExpressionStatement
+              end-rune = 103
+              input-source = all expr test
+              start-rune = 97
+              expr-statement-expr =>
+                NodeBooleanAndExpression
+                  end-rune = 102
+                  input-source = all expr test
+                  start-rune = 97
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 97
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 97
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 102
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 102
+            NodeTypeExpressionStatement
+              end-rune = 111
+              input-source = all expr test
+              start-rune = 105
+              expr-statement-expr =>
+                NodeBooleanOrExpression
+                  end-rune = 110
+                  input-source = all expr test
+                  start-rune = 105
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 105
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 105
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 110
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 110
+            NodeTypeExpressionStatement
+              end-rune = 119
+              input-source = all expr test
+              start-rune = 113
+              expr-statement-expr =>
+                NodeComparisonEqualsExpression
+                  end-rune = 118
+                  input-source = all expr test
+                  start-rune = 113
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 113
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 113
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 118
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 118
+            NodeTypeExpressionStatement
+              end-rune = 127
+              input-source = all expr test
+              start-rune = 121
+              expr-statement-expr =>
+                NodeComparisonNotEqualsExpression
+                  end-rune = 126
+                  input-source = all expr test
+                  start-rune = 121
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 121
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 121
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 126
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 126
+            NodeTypeExpressionStatement
+              end-rune = 135
+              input-source = all expr test
+              start-rune = 129
+              expr-statement-expr =>
+                NodeComparisonLTEExpression
+                  end-rune = 134
+                  input-source = all expr test
+                  start-rune = 129
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 129
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 129
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 134
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 134
+            NodeTypeExpressionStatement
+              end-rune = 143
+              input-source = all expr test
+              start-rune = 137
+              expr-statement-expr =>
+                NodeComparisonGTEExpression
+                  end-rune = 142
+                  input-source = all expr test
+                  start-rune = 137
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 137
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 137
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 142
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 142
+            NodeTypeExpressionStatement
+              end-rune = 150
+              input-source = all expr test
+              start-rune = 145
+              expr-statement-expr =>
+                NodeComparisonLTExpression
+                  end-rune = 149
+                  input-source = all expr test
+                  start-rune = 145
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 145
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 145
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 149
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 149
+            NodeTypeExpressionStatement
+              end-rune = 157
+              input-source = all expr test
+              start-rune = 152
+              expr-statement-expr =>
+                NodeComparisonGTExpression
+                  end-rune = 156
+                  input-source = all expr test
+                  start-rune = 152
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 152
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 152
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 156
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 156
+            NodeTypeExpressionStatement
+              end-rune = 165
+              input-source = all expr test
+              start-rune = 159
+              expr-statement-expr =>
+                NodeNullComparisonExpression
+                  end-rune = 164
+                  input-source = all expr test
+                  start-rune = 159
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 159
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 159
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 164
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 164
+            NodeTypeExpressionStatement
+              end-rune = 173
+              input-source = all expr test
+              start-rune = 167
+              expr-statement-expr =>
+                NodeDefineRangeExpression
+                  end-rune = 172
+                  input-source = all expr test
+                  start-rune = 167
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 167
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 167
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 172
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 172
+            NodeTypeExpressionStatement
+              end-rune = 182
+              input-source = all expr test
+              start-rune = 175
+              expr-statement-expr =>
+                NodeDefineExclusiveRangeExpression
+                  end-rune = 181
+                  input-source = all expr test
+                  start-rune = 175
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 175
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 175
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 181
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 181
+            NodeTypeExpressionStatement
+              end-rune = 187
+              input-source = all expr test
+              start-rune = 184
+              expr-statement-expr =>
+                NodeMemberAccessExpression
+                  end-rune = 186
+                  input-source = all expr test
+                  member-access-identifier = b
+                  start-rune = 184
+                  member-access-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 184
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 184
+            NodeTypeExpressionStatement
+              end-rune = 193
+              input-source = all expr test
+              start-rune = 189
+              expr-statement-expr =>
+                NodeDynamicMemberAccessExpression
+                  end-rune = 192
+                  input-source = all expr test
+                  member-access-identifier = b
+                  start-rune = 189
+                  member-access-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 189
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 189
+            NodeTypeExpressionStatement
+              end-rune = 199
+              input-source = all expr test
+              start-rune = 195
+              expr-statement-expr =>
+                NodeNullableMemberAccessExpression
+                  end-rune = 198
+                  input-source = all expr test
+                  member-access-identifier = b
+                  start-rune = 195
+                  member-access-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 195
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 195
+            NodeTypeExpressionStatement
+              end-rune = 205
+              input-source = all expr test
+              start-rune = 201
+              expr-statement-expr =>
+                NodeStreamMemberAccessExpression
+                  end-rune = 204
+                  input-source = all expr test
+                  member-access-identifier = b
+                  start-rune = 201
+                  member-access-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 201
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 201
+            NodeTypeExpressionStatement
+              end-rune = 212
+              input-source = all expr test
+              start-rune = 207
+              expr-statement-expr =>
+                NodeCastExpression
+                  end-rune = 211
+                  input-source = all expr test
+                  start-rune = 207
+                  cast-expr-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 207
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 207
+                  cast-expr-type =>
+                    NodeTypeTypeReference
+                      end-rune = 210
+                      input-source = all expr test
+                      start-rune = 210
+                      typereference-path =>
+                        NodeTypeIdentifierPath
+                          end-rune = 210
+                          input-source = all expr test
+                          start-rune = 210
+                          identifierpath-root =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 210
+                              identifieraccess-name = b
+                              input-source = all expr test
+                              start-rune = 210
+            NodeTypeExpressionStatement
+              end-rune = 224
+              input-source = all expr test
+              start-rune = 214
+              expr-statement-expr =>
+                NodeFunctionCallExpression
+                  end-rune = 223
+                  input-source = all expr test
+                  start-rune = 214
+                  function-call-argument =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 216
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 216
+                    NodeTypeIdentifierExpression
+                      end-rune = 219
+                      identexpr-name = c
+                      input-source = all expr test
+                      start-rune = 219
+                    NodeTypeIdentifierExpression
+                      end-rune = 222
+                      identexpr-name = d
+                      input-source = all expr test
+                      start-rune = 222
+                  function-call-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 214
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 214
+            NodeTypeExpressionStatement
+              end-rune = 230
+              input-source = all expr test
+              start-rune = 226
+              expr-statement-expr =>
+                NodeSliceExpression
+                  end-rune = 229
+                  input-source = all expr test
+                  start-rune = 226
+                  slice-expr-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 226
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 226
+                  slice-expr-index =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 228
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 228
+            NodeTypeExpressionStatement
+              end-rune = 237
+              input-source = all expr test
+              start-rune = 232
+              expr-statement-expr =>
+                NodeSliceExpression
+                  end-rune = 236
+                  input-source = all expr test
+                  start-rune = 232
+                  slice-expr-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 232
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 232
+                  slice-expr-left-index =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 234
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 234
+            NodeTypeExpressionStatement
+              end-rune = 244
+              input-source = all expr test
+              start-rune = 239
+              expr-statement-expr =>
+                NodeSliceExpression
+                  end-rune = 243
+                  input-source = all expr test
+                  start-rune = 239
+                  slice-expr-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 239
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 239
+                  slice-expr-right-index =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 242
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 242
+            NodeTypeExpressionStatement
+              end-rune = 252
+              input-source = all expr test
+              start-rune = 246
+              expr-statement-expr =>
+                NodeSliceExpression
+                  end-rune = 251
+                  input-source = all expr test
+                  start-rune = 246
+                  slice-expr-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 246
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 246
+                  slice-expr-left-index =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 248
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 248
+                  slice-expr-right-index =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 250
+                      identexpr-name = c
+                      input-source = all expr test
+                      start-rune = 250
+            NodeTypeExpressionStatement
+              end-rune = 256
+              input-source = all expr test
+              start-rune = 254
+              expr-statement-expr =>
+                NodeBooleanNotExpression
+                  end-rune = 255
+                  input-source = all expr test
+                  start-rune = 255
+                  unary-expression-child =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 255
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 255
+            NodeTypeExpressionStatement
+              end-rune = 260
+              input-source = all expr test
+              start-rune = 258
+              expr-statement-expr =>
+                NodeRootTypeExpression
+                  end-rune = 259
+                  input-source = all expr test
+                  start-rune = 259
+                  unary-expression-child =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 259
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 259
+            NodeTypeExpressionStatement
+              end-rune = 269
+              input-source = all expr test
+              start-rune = 262
+              expr-statement-expr =>
+                NodeBinaryAddExpression
+                  end-rune = 267
+                  input-source = all expr test
+                  start-rune = 263
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 263
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 263
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 267
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 267
+            NodeTypeExpressionStatement
+              end-rune = 275
+              input-source = all expr test
+              start-rune = 271
+              expr-statement-expr =>
+                NodeNumericLiteralExpression
+                  end-rune = 274
+                  input-source = all expr test
+                  literal-value = 1234
+                  start-rune = 271
+            NodeTypeExpressionStatement
+              end-rune = 282
+              input-source = all expr test
+              start-rune = 277
+              expr-statement-expr =>
+                NodeNumericLiteralExpression
+                  end-rune = 281
+                  input-source = all expr test
+                  literal-value = 1.245
+                  start-rune = 277
+            NodeTypeExpressionStatement
+              end-rune = 287
+              input-source = all expr test
+              start-rune = 284
+              expr-statement-expr =>
+                NodeNumericLiteralExpression
+                  end-rune = 286
+                  input-source = all expr test
+                  literal-value = 42f
+                  start-rune = 284
+            NodeTypeExpressionStatement
+              end-rune = 294
+              input-source = all expr test
+              start-rune = 289
+              expr-statement-expr =>
+                NodeNumericLiteralExpression
+                  end-rune = 293
+                  input-source = all expr test
+                  literal-value = 42.5f
+                  start-rune = 289
+            NodeTypeExpressionStatement
+              end-rune = 300
+              input-source = all expr test
+              start-rune = 296
+              expr-statement-expr =>
+                NodeBooleanLiteralExpression
+                  end-rune = 299
+                  input-source = all expr test
+                  literal-value = true
+                  start-rune = 296
+            NodeTypeExpressionStatement
+              end-rune = 307
+              input-source = all expr test
+              start-rune = 302
+              expr-statement-expr =>
+                NodeBooleanLiteralExpression
+                  end-rune = 306
+                  input-source = all expr test
+                  literal-value = false
+                  start-rune = 302
+            NodeTypeExpressionStatement
+              end-rune = 322
+              input-source = all expr test
+              start-rune = 309
+              expr-statement-expr =>
+                NodeStringLiteralExpression
+                  end-rune = 321
+                  input-source = all expr test
+                  literal-value = 'hello world'
+                  start-rune = 309
+            NodeTypeExpressionStatement
+              end-rune = 337
+              input-source = all expr test
+              start-rune = 324
+              expr-statement-expr =>
+                NodeStringLiteralExpression
+                  end-rune = 336
+                  input-source = all expr test
+                  literal-value = "hello world"
+                  start-rune = 324
+            NodeTypeExpressionStatement
+              end-rune = 353
+              input-source = all expr test
+              start-rune = 339
+              expr-statement-expr =>
+                NodeTypeTemplateString
+                  end-rune = 352
+                  input-source = all expr test
+                  start-rune = 339
+                  template-string-piece =>
+                    NodeStringLiteralExpression
+                      literal-value = `hello
+	world`
+            NodeTypeExpressionStatement
+              end-rune = 357
+              input-source = all expr test
+              start-rune = 355
+              expr-statement-expr =>
+                NodeListLiteralExpression
+                  end-rune = 356
+                  input-source = all expr test
+                  start-rune = 355
+            NodeTypeExpressionStatement
+              end-rune = 362
+              input-source = all expr test
+              start-rune = 359
+              expr-statement-expr =>
+                NodeListLiteralExpression
+                  end-rune = 361
+                  input-source = all expr test
+                  start-rune = 359
+                  list-expr-value =>
+                    NodeNumericLiteralExpression
+                      end-rune = 360
+                      input-source = all expr test
+                      literal-value = 1
+                      start-rune = 360
+            NodeTypeExpressionStatement
+              end-rune = 373
+              input-source = all expr test
+              start-rune = 364
+              expr-statement-expr =>
+                NodeListLiteralExpression
+                  end-rune = 372
+                  input-source = all expr test
+                  start-rune = 364
+                  list-expr-value =>
+                    NodeNumericLiteralExpression
+                      end-rune = 365
+                      input-source = all expr test
+                      literal-value = 1
+                      start-rune = 365
+                    NodeNumericLiteralExpression
+                      end-rune = 368
+                      input-source = all expr test
+                      literal-value = 2
+                      start-rune = 368
+                    NodeNumericLiteralExpression
+                      end-rune = 371
+                      input-source = all expr test
+                      literal-value = 3
+                      start-rune = 371
+            NodeTypeExpressionStatement
+              end-rune = 384
+              input-source = all expr test
+              start-rune = 375
+              expr-statement-expr =>
+                NodeBitwiseNotExpression
+                  end-rune = 383
+                  input-source = all expr test
+                  start-rune = 376
+                  unary-expression-child =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 383
+                      identexpr-name = someName
+                      input-source = all expr test
+                      start-rune = 376
+            NodeTypeExpressionStatement
+              end-rune = 395
+              input-source = all expr test
+              start-rune = 386
+              expr-statement-expr =>
+                NodeBooleanNotExpression
+                  end-rune = 394
+                  input-source = all expr test
+                  start-rune = 387
+                  unary-expression-child =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 394
+                      identexpr-name = someName
+                      input-source = all expr test
+                      start-rune = 387
+            NodeTypeExpressionStatement
+              end-rune = 447
+              input-source = all expr test
+              start-rune = 397
+              expr-statement-expr =>
+                NodeTypeLambdaExpression
+                  end-rune = 446
+                  input-source = all expr test
+                  start-rune = 397
+                  lambda-expression-block =>
+                    NodeTypeStatementBlock
+                      end-rune = 446
+                      input-source = all expr test
+                      start-rune = 431
+                      block-child =>
+                        NodeTypeReturnStatement
+                          end-rune = 444
+                          input-source = all expr test
+                          start-rune = 433
+                          return-expr =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 444
+                              identexpr-name = first
+                              input-source = all expr test
+                              start-rune = 440
+                  lambda-expression-parameter =>
+                    NodeTypeParameter
+                      end-rune = 415
+                      input-source = all expr test
+                      named = first
+                      start-rune = 407
+                      parameter-type =>
+                        NodeTypeTypeReference
+                          end-rune = 415
+                          input-source = all expr test
+                          start-rune = 413
+                          typereference-path =>
+                            NodeTypeIdentifierPath
+                              end-rune = 415
+                              input-source = all expr test
+                              start-rune = 413
+                              identifierpath-root =>
+                                NodeTypeIdentifierAccess
+                                  end-rune = 415
+                                  identifieraccess-name = int
+                                  input-source = all expr test
+                                  start-rune = 413
+                    NodeTypeParameter
+                      end-rune = 428
+                      input-source = all expr test
+                      named = second
+                      start-rune = 418
+                      parameter-type =>
+                        NodeTypeTypeReference
+                          end-rune = 428
+                          input-source = all expr test
+                          start-rune = 425
+                          typereference-path =>
+                            NodeTypeIdentifierPath
+                              end-rune = 428
+                              input-source = all expr test
+                              start-rune = 425
+                              identifierpath-root =>
+                                NodeTypeIdentifierAccess
+                                  end-rune = 428
+                                  identifieraccess-name = bool
+                                  input-source = all expr test
+                                  start-rune = 425
+            NodeTypeExpressionStatement
+              end-rune = 463
+              input-source = all expr test
+              start-rune = 449
+              expr-statement-expr =>
+                NodeTypeLambdaExpression
+                  end-rune = 462
+                  input-source = all expr test
+                  start-rune = 449
+                  lambda-expression-child-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 462
+                      identexpr-name = someExpr
+                      input-source = all expr test
+                      start-rune = 455
+            NodeTypeExpressionStatement
+              end-rune = 467
+              input-source = all expr test
+              start-rune = 465
+              expr-statement-expr =>
+                NodeMapLiteralExpression
+                  end-rune = 466
+                  input-source = all expr test
+                  start-rune = 465
+            NodeTypeExpressionStatement
+              end-rune = 483
+              input-source = all expr test
+              start-rune = 469
+              expr-statement-expr =>
+                NodeMapLiteralExpression
+                  end-rune = 482
+                  input-source = all expr test
+                  start-rune = 469
+                  map-expr-entry =>
+                    NodeMapLiteralExpressionEntry
+                      end-rune = 478
+                      input-source = all expr test
+                      start-rune = 473
+                      map-entry-key =>
+                        NodeStringLiteralExpression
+                          end-rune = 475
+                          input-source = all expr test
+                          literal-value = 'a'
+                          start-rune = 473
+                      map-entry-value =>
+                        NodeNumericLiteralExpression
+                          end-rune = 478
+                          input-source = all expr test
+                          literal-value = 2
+                          start-rune = 478
+            NodeTypeExpressionStatement
+              end-rune = 497
+              input-source = all expr test
+              start-rune = 485
+              expr-statement-expr =>
+                NodeMapLiteralExpression
+                  end-rune = 496
+                  input-source = all expr test
+                  start-rune = 485
+                  map-expr-entry =>
+                    NodeMapLiteralExpressionEntry
+                      end-rune = 492
+                      input-source = all expr test
+                      start-rune = 489
+                      map-entry-key =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 489
+                          identexpr-name = a
+                          input-source = all expr test
+                          start-rune = 489
+                      map-entry-value =>
+                        NodeNumericLiteralExpression
+                          end-rune = 492
+                          input-source = all expr test
+                          literal-value = 2
+                          start-rune = 492
+            NodeTypeExpressionStatement
+              end-rune = 503
+              input-source = all expr test
+              start-rune = 499
+              expr-statement-expr =>
+                NodeNullLiteralExpression
+                  end-rune = 502
+                  input-source = all expr test
+                  start-rune = 499
+            NodeTypeExpressionStatement
+              end-rune = 509
+              input-source = all expr test
+              start-rune = 505
+              expr-statement-expr =>
+                NodeThisLiteralExpression
+                  end-rune = 508
+                  input-source = all expr test
+                  start-rune = 505
+            NodeTypeExpressionStatement
+              end-rune = 520
+              input-source = all expr test
+              start-rune = 511
+              expr-statement-expr =>
+                NodePrincipalLiteralExpression
+                  end-rune = 519
+                  input-source = all expr test
+                  start-rune = 511
+            NodeTypeExpressionStatement
+              end-rune = 526
+              input-source = all expr test
+              start-rune = 522
+              expr-statement-expr =>
+                NodeGenericSpecifierExpression
+                  end-rune = 525
+                  input-source = all expr test
+                  start-rune = 522
+                  generic-specifier-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 522
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 522
+                  generic-specifier-type =>
+                    NodeTypeTypeReference
+                      end-rune = 524
+                      input-source = all expr test
+                      start-rune = 524
+                      typereference-path =>
+                        NodeTypeIdentifierPath
+                          end-rune = 524
+                          input-source = all expr test
+                          start-rune = 524
+                          identifierpath-root =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 524
+                              identifieraccess-name = b
+                              input-source = all expr test
+                              start-rune = 524
+            NodeTypeExpressionStatement
+              end-rune = 536
+              input-source = all expr test
+              start-rune = 528
+              expr-statement-expr =>
+                NodeGenericSpecifierExpression
+                  end-rune = 535
+                  input-source = all expr test
+                  start-rune = 528
+                  generic-specifier-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 528
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 528
+                  generic-specifier-type =>
+                    NodeTypeNullable
+                      end-rune = 534
+                      input-source = all expr test
+                      start-rune = 530
+                      typereference-inner-type =>
+                        NodeTypeTypeReference
+                          end-rune = 533
+                          input-source = all expr test
+                          start-rune = 530
+                          typereference-generic =>
+                            NodeTypeTypeReference
+                              end-rune = 532
+                              input-source = all expr test
+                              start-rune = 532
+                              typereference-path =>
+                                NodeTypeIdentifierPath
+                                  end-rune = 532
+                                  input-source = all expr test
+                                  start-rune = 532
+                                  identifierpath-root =>
+                                    NodeTypeIdentifierAccess
+                                      end-rune = 532
+                                      identifieraccess-name = c
+                                      input-source = all expr test
+                                      start-rune = 532
+                          typereference-path =>
+                            NodeTypeIdentifierPath
+                              end-rune = 530
+                              input-source = all expr test
+                              start-rune = 530
+                              identifierpath-root =>
+                                NodeTypeIdentifierAccess
+                                  end-rune = 530
+                                  identifieraccess-name = b
+                                  input-source = all expr test
+                                  start-rune = 530
+            NodeTypeExpressionStatement
+              end-rune = 544
+              input-source = all expr test
+              start-rune = 538
+              expr-statement-expr =>
+                NodeInCollectionExpression
+                  end-rune = 543
+                  input-source = all expr test
+                  start-rune = 538
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 538
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 538
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 543
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 543
+            NodeTypeExpressionStatement
+              end-rune = 556
+              input-source = all expr test
+              start-rune = 546
+              expr-statement-expr =>
+                NodeInCollectionExpression
+                  end-rune = 555
+                  input-source = all expr test
+                  start-rune = 546
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 546
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 546
+                  binary-expression-right =>
+                    NodeMemberAccessExpression
+                      end-rune = 555
+                      input-source = all expr test
+                      member-access-identifier = foo
+                      start-rune = 551
+                      member-access-expr =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 551
+                          identexpr-name = b
+                          input-source = all expr test
+                          start-rune = 551
+            NodeTypeExpressionStatement
+              end-rune = 566
+              input-source = all expr test
+              start-rune = 558
+              expr-statement-expr =>
+                NodeIsComparisonExpression
+                  end-rune = 565
+                  input-source = all expr test
+                  start-rune = 558
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 558
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 558
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 565
+                      identexpr-name = foo
+                      input-source = all expr test
+                      start-rune = 563
+            NodeTypeExpressionStatement
+              end-rune = 580
+              input-source = all expr test
+              start-rune = 568
+              expr-statement-expr =>
+                NodeIsComparisonExpression
+                  end-rune = 579
+                  input-source = all expr test
+                  start-rune = 568
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 568
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 568
+                  binary-expression-right =>
+                    NodeKeywordNotExpression
+                      end-rune = 579
+                      input-source = all expr test
+                      start-rune = 577
+                      unary-expression-child =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 579
+                          identexpr-name = foo
+                          input-source = all expr test
+                          start-rune = 577
+            NodeTypeExpressionStatement
+              end-rune = 595
+              input-source = all expr test
+              start-rune = 582
+              expr-statement-expr =>
+                NodeTypeConditionalExpression
+                  end-rune = 595
+                  input-source = all expr test
+                  start-rune = 582
+                  comparison-expr-check =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 587
+                      identexpr-name = b
+                      input-source = all expr test
+                      start-rune = 587
+                  comparison-expr-else =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 594
+                      identexpr-name = c
+                      input-source = all expr test
+                      start-rune = 594
+                  comparison-expr-then =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 582
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 582
+            NodeTypeExpressionStatement
+              end-rune = 609
+              input-source = all expr test
+              start-rune = 597
+              expr-statement-expr =>
+                NodeTypeLoopExpression
+                  end-rune = 609
+                  input-source = all expr test
+                  start-rune = 597
+                  loop-expr-map-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 597
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 597
+                  loop-expr-stream-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 608
+                      identexpr-name = c
+                      input-source = all expr test
+                      start-rune = 608
+                  named-value =>
+                    NodeTypeNamedValue
+                      end-rune = 603
+                      input-source = all expr test
+                      named = b
+                      start-rune = 603
+            NodeTypeExpressionStatement
+              end-rune = 616
+              input-source = all expr test
+              start-rune = 611
+              expr-statement-expr =>
+                NodeKeywordNotExpression
+                  end-rune = 615
+                  input-source = all expr test
+                  start-rune = 615
+                  unary-expression-child =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 615
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 615
+            NodeTypeExpressionStatement
+              end-rune = 620
+              input-source = all expr test
+              start-rune = 618
+              expr-statement-expr =>
+                NodeAssertNotNullExpression
+                  end-rune = 620
+                  input-source = all expr test
+                  start-rune = 618
+                  unary-expression-child =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 618
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 618
+            NodeTypeExpressionStatement
+              end-rune = 648
+              input-source = all expr test
+              start-rune = 622
+              expr-statement-expr =>
+                NodeSliceLiteralExpression
+                  end-rune = 647
+                  input-source = all expr test
+                  start-rune = 622
+                  slice-literal-expr-type =>
+                    NodeTypeTypeReference
+                      end-rune = 629
+                      input-source = all expr test
+                      start-rune = 624
+                      typereference-path =>
+                        NodeTypeIdentifierPath
+                          end-rune = 629
+                          input-source = all expr test
+                          start-rune = 624
+                          identifierpath-root =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 629
+                              identifieraccess-name = string
+                              input-source = all expr test
+                              start-rune = 624
+                  slice-literal-expr-value =>
+                    NodeStringLiteralExpression
+                      end-rune = 637
+                      input-source = all expr test
+                      literal-value = 'hello'
+                      start-rune = 631
+                    NodeStringLiteralExpression
+                      end-rune = 646
+                      input-source = all expr test
+                      literal-value = 'world'
+                      start-rune = 640
+            NodeTypeExpressionStatement
+              end-rune = 660
+              input-source = all expr test
+              start-rune = 650
+              expr-statement-expr =>
+                NodeSliceLiteralExpression
+                  end-rune = 659
+                  input-source = all expr test
+                  start-rune = 650
+                  slice-literal-expr-type =>
+                    NodeTypeTypeReference
+                      end-rune = 657
+                      input-source = all expr test
+                      start-rune = 652
+                      typereference-path =>
+                        NodeTypeIdentifierPath
+                          end-rune = 657
+                          input-source = all expr test
+                          start-rune = 652
+                          identifierpath-root =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 657
+                              identifieraccess-name = string
+                              input-source = all expr test
+                              start-rune = 652
+            NodeTypeExpressionStatement
+              end-rune = 689
+              input-source = all expr test
+              start-rune = 662
+              expr-statement-expr =>
+                NodeMappingLiteralExpression
+                  end-rune = 688
+                  input-source = all expr test
+                  start-rune = 662
+                  mapping-literal-expr-entry =>
+                    NodeMappingLiteralExpressionEntry
+                      end-rune = 677
+                      input-source = all expr test
+                      start-rune = 670
+                      mapping-literal-entry-key =>
+                        NodeStringLiteralExpression
+                          end-rune = 674
+                          input-source = all expr test
+                          literal-value = 'foo'
+                          start-rune = 670
+                      mapping-literal-entry-value =>
+                        NodeNumericLiteralExpression
+                          end-rune = 677
+                          input-source = all expr test
+                          literal-value = 2
+                          start-rune = 677
+                    NodeMappingLiteralExpressionEntry
+                      end-rune = 687
+                      input-source = all expr test
+                      start-rune = 680
+                      mapping-literal-entry-key =>
+                        NodeStringLiteralExpression
+                          end-rune = 684
+                          input-source = all expr test
+                          literal-value = 'bar'
+                          start-rune = 680
+                      mapping-literal-entry-value =>
+                        NodeNumericLiteralExpression
+                          end-rune = 687
+                          input-source = all expr test
+                          literal-value = 3
+                          start-rune = 687
+                  mapping-literal-expr-type =>
+                    NodeTypeTypeReference
+                      end-rune = 667
+                      input-source = all expr test
+                      start-rune = 665
+                      typereference-path =>
+                        NodeTypeIdentifierPath
+                          end-rune = 667
+                          input-source = all expr test
+                          start-rune = 665
+                          identifierpath-root =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 667
+                              identifieraccess-name = int
+                              input-source = all expr test
+                              start-rune = 665
+            NodeTypeExpressionStatement
+              end-rune = 700
+              input-source = all expr test
+              start-rune = 691
+              expr-statement-expr =>
+                NodeMappingLiteralExpression
+                  end-rune = 699
+                  input-source = all expr test
+                  start-rune = 691
+                  mapping-literal-expr-type =>
+                    NodeTypeTypeReference
+                      end-rune = 696
+                      input-source = all expr test
+                      start-rune = 694
+                      typereference-path =>
+                        NodeTypeIdentifierPath
+                          end-rune = 696
+                          input-source = all expr test
+                          start-rune = 694
+                          identifierpath-root =>
+                            NodeTypeIdentifierAccess
+                              end-rune = 696
+                              identifieraccess-name = int
+                              input-source = all expr test
+                              start-rune = 694
+            NodeTypeExpressionStatement
+              end-rune = 812
+              input-source = all expr test
+              start-rune = 702
+              expr-statement-expr =>
+                NodeStructuralNewExpression
+                  end-rune = 812
+                  input-source = all expr test
+                  start-rune = 702
+                  structural-new-entry =>
+                    NodeStructuralNewExpressionEntry
+                      end-rune = 728
+                      input-source = all expr test
+                      start-rune = 716
+                      structural-new-entry-key = FirstField
+                      structural-new-entry-value =>
+                        NodeNumericLiteralExpression
+                          end-rune = 728
+                          input-source = all expr test
+                          literal-value = 1
+                          start-rune = 728
+                    NodeStructuralNewExpressionEntry
+                      end-rune = 746
+                      input-source = all expr test
+                      start-rune = 733
+                      structural-new-entry-key = SecondField
+                      structural-new-entry-value =>
+                        NodeNumericLiteralExpression
+                          end-rune = 746
+                          input-source = all expr test
+                          literal-value = 2
+                          start-rune = 746
+                    NodeStructuralNewExpressionEntry
+                      end-rune = 807
+                      input-source = all expr test
+                      start-rune = 751
+                      structural-new-entry-key = NestedField
+                      structural-new-entry-value =>
+                        NodeStructuralNewExpression
+                          end-rune = 808
+                          input-source = all expr test
+                          start-rune = 764
+                          structural-new-entry =>
+                            NodeStructuralNewExpressionEntry
+                              end-rune = 802
+                              input-source = all expr test
+                              start-rune = 782
+                              structural-new-entry-key = NestedField
+                              structural-new-entry-value =>
+                                NodeStringLiteralExpression
+                                  end-rune = 802
+                                  input-source = all expr test
+                                  literal-value = 'hello!'
+                                  start-rune = 795
+                          structural-new-type-expr =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 776
+                              identexpr-name = AnotherStruct
+                              input-source = all expr test
+                              start-rune = 764
+                  structural-new-type-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 711
+                      identexpr-name = SomeStruct
+                      input-source = all expr test
+                      start-rune = 702
+            NodeTypeExpressionStatement
+              end-rune = 817
+              input-source = all expr test
+              start-rune = 814
+              expr-statement-expr =>
+                NodeBinaryAddExpression
+                  end-rune = 816
+                  input-source = all expr test
+                  start-rune = 814
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 814
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 814
+                  binary-expression-right =>
+                    NodeNumericLiteralExpression
+                      end-rune = 816
+                      input-source = all expr test
+                      literal-value = 1
+                      start-rune = 816
+            NodeTypeExpressionStatement
+              end-rune = 822
+              input-source = all expr test
+              start-rune = 819
+              expr-statement-expr =>
+                NodeBinarySubtractExpression
+                  end-rune = 821
+                  input-source = all expr test
+                  start-rune = 819
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 819
+                      identexpr-name = a
+                      input-source = all expr test
+                      start-rune = 819
+                  binary-expression-right =>
+                    NodeNumericLiteralExpression
+                      end-rune = 821
+                      input-source = all expr test
+                      literal-value = 1
+                      start-rune = 821
+            NodeTypeExpressionStatement
+              end-rune = 826
+              input-source = all expr test
+              start-rune = 824
+              expr-statement-expr =>
+                NodeNumericLiteralExpression
+                  end-rune = 825
+                  input-source = all expr test
+                  literal-value = -1
+                  start-rune = 824
+            NodeTypeExpressionStatement
+              end-rune = 832
+              input-source = all expr test
+              start-rune = 828
+              expr-statement-expr =>
+                NodeNumericLiteralExpression
+                  end-rune = 831
+                  input-source = all expr test
+                  literal-value = 1234
+                  start-rune = 828

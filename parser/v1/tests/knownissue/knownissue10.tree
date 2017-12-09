@@ -1,0 +1,94 @@
+NodeTypeFile
+  end-rune = 102
+  input-source = known issue 10 test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 102
+      input-source = known issue 10 test
+      named = TEST
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 102
+          input-source = known issue 10 test
+          start-rune = 20
+          block-child =>
+            NodeTypeVariableStatement
+              end-rune = 68
+              input-source = known issue 10 test
+              named = someclass
+              start-rune = 23
+              var-expr =>
+                NodeFunctionCallExpression
+                  end-rune = 68
+                  input-source = known issue 10 test
+                  start-rune = 39
+                  function-call-argument =>
+                    NodeSliceLiteralExpression
+                      end-rune = 67
+                      input-source = known issue 10 test
+                      start-rune = 59
+                      slice-literal-expr-type =>
+                        NodeTypeTypeReference
+                          end-rune = 65
+                          input-source = known issue 10 test
+                          start-rune = 61
+                          typereference-path =>
+                            NodeTypeIdentifierPath
+                              end-rune = 65
+                              input-source = known issue 10 test
+                              start-rune = 61
+                              identifierpath-root =>
+                                NodeTypeIdentifierAccess
+                                  end-rune = 65
+                                  identifieraccess-name = Thing
+                                  input-source = known issue 10 test
+                                  start-rune = 61
+                  function-call-expr =>
+                    NodeMemberAccessExpression
+                      end-rune = 57
+                      input-source = known issue 10 test
+                      member-access-identifier = ForThings
+                      start-rune = 39
+                      member-access-expr =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 47
+                          identexpr-name = SomeClass
+                          input-source = known issue 10 test
+                          start-rune = 39
+            NodeTypeExpressionStatement
+              end-rune = 88
+              input-source = known issue 10 test
+              start-rune = 71
+              expr-statement-expr =>
+                NodeFunctionCallExpression
+                  end-rune = 87
+                  input-source = known issue 10 test
+                  start-rune = 71
+                  function-call-expr =>
+                    NodeMemberAccessExpression
+                      end-rune = 85
+                      input-source = known issue 10 test
+                      member-access-identifier = Apply
+                      start-rune = 71
+                      member-access-expr =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 79
+                          identexpr-name = someclass
+                          input-source = known issue 10 test
+                          start-rune = 71
+            NodeTypeReturnStatement
+              end-rune = 100
+              input-source = known issue 10 test
+              start-rune = 90
+              return-expr =>
+                NodeNullLiteralExpression
+                  end-rune = 100
+                  input-source = known issue 10 test
+                  start-rune = 97
+      typemember-return-type =>
+        NodeTypeAny
+          end-rune = 18
+          input-source = known issue 10 test
+          start-rune = 16

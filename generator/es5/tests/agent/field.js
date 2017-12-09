@@ -1,6 +1,6 @@
 $module('field', function () {
   var $static = this;
-  this.$class('ad638208', 'SomeClass', false, '', function () {
+  this.$class('6c0ca75a', 'SomeClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function (SomeAgent) {
@@ -25,7 +25,7 @@ $module('field', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Declare|1|2549c819<ad638208>": true,
+        "Declare|1|0b2e6e78<6c0ca75a>": true,
       };
       return this.$cachedtypesig = computed;
     };

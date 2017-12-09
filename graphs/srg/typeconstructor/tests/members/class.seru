@@ -1,17 +1,25 @@
 class SomeClass {
-	function<AnotherClass> DoSomething(first ThirdClass, second AnotherClass) {}
-	var<AnotherClass> SomeVar
+	var SomeVar AnotherClass
+
 	constructor BuildMe<C>(param C) {}
-	operator Plus (left SomeClass, right SomeClass) {}
-	function<[]int> SomeSlice() {}
-	property<int> ReadOnlyProp {
-		get{ return 2 }
+
+	function DoSomething(first ThirdClass, second AnotherClass) AnotherClass {}
+
+	operator Plus(left SomeClass, right SomeClass) {}
+
+	function SomeSlice() []int {}
+
+	property ReadOnlyProp int {
+		get { return 2 }
 	}
-	property<bool> ReadWriteProp {
+
+	property ReadWriteProp bool {
 		get { return false }
-		set { }
+
+		set {}
 	}
 }
 
 class ThirdClass {}
+
 class AnotherClass {}

@@ -1,5 +1,5 @@
-function<any> TEST() {
-	var lambda = function<bool>(firstParam int, secondParam bool) {
+function TEST() any {
+	var lambda = function(firstParam int, secondParam bool) bool {
 		return secondParam
 	}
 

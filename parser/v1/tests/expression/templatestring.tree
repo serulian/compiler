@@ -1,0 +1,128 @@
+NodeTypeFile
+  end-rune = 165
+  input-source = template string expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 56
+      input-source = template string expr test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 56
+          input-source = template string expr test
+          start-rune = 23
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 54
+              input-source = template string expr test
+              start-rune = 26
+              expr-statement-expr =>
+                NodeTaggedTemplateLiteralString
+                  end-rune = 54
+                  input-source = template string expr test
+                  start-rune = 26
+                  tagged-template-callexpr =>
+                    NodeMemberAccessExpression
+                      end-rune = 45
+                      input-source = template string expr test
+                      member-access-identifier = String
+                      start-rune = 26
+                      member-access-expr =>
+                        NodeMemberAccessExpression
+                          end-rune = 38
+                          input-source = template string expr test
+                          member-access-identifier = template
+                          start-rune = 26
+                          member-access-expr =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 29
+                              identexpr-name = Some
+                              input-source = template string expr test
+                              start-rune = 26
+                  tagged-template-parsed =>
+                    NodeTypeTemplateString
+                      end-rune = 53
+                      input-source = template string expr test
+                      start-rune = 46
+                      template-string-piece =>
+                        NodeStringLiteralExpression
+                          literal-value = `foobar`
+    NodeTypeFunction
+      end-rune = 165
+      input-source = template string expr test
+      named = AnotherFunction
+      start-rune = 58
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 165
+          input-source = template string expr test
+          start-rune = 85
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 127
+              input-source = template string expr test
+              start-rune = 88
+              expr-statement-expr =>
+                NodeTypeTemplateString
+                  end-rune = 126
+                  input-source = template string expr test
+                  start-rune = 88
+                  template-string-piece =>
+                    NodeStringLiteralExpression
+                      literal-value = `Hello `
+                    NodeMemberAccessExpression
+                      end-rune = 108
+                      input-source = template string expr test
+                      member-access-identifier = modifier
+                      start-rune = 97
+                      member-access-expr =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 99
+                          identexpr-name = adj
+                          input-source = template string expr test
+                          start-rune = 97
+                    NodeStringLiteralExpression
+                      literal-value = ` world `
+                    NodeTypeIdentifierExpression
+                      end-rune = 124
+                      identexpr-name = suffix
+                      input-source = template string expr test
+                      start-rune = 119
+            NodeTypeExpressionStatement
+              end-rune = 149
+              input-source = template string expr test
+              start-rune = 129
+              expr-statement-expr =>
+                NodeTypeTemplateString
+                  end-rune = 148
+                  input-source = template string expr test
+                  start-rune = 129
+                  template-string-piece =>
+                    NodeStringLiteralExpression
+                      literal-value = ``
+                    NodeTypeIdentifierExpression
+                      end-rune = 143
+                      identexpr-name = startingexpr
+                      input-source = template string expr test
+                      start-rune = 132
+                    NodeStringLiteralExpression
+                      literal-value = `foo`
+            NodeTypeExpressionStatement
+              end-rune = 164
+              input-source = template string expr test
+              start-rune = 151
+              expr-statement-expr =>
+                NodeTypeTemplateString
+                  end-rune = 163
+                  input-source = template string expr test
+                  start-rune = 151
+                  template-string-piece =>
+                    NodeStringLiteralExpression
+                      literal-value = ``
+                    NodeTypeIdentifierExpression
+                      end-rune = 161
+                      identexpr-name = onlyexpr
+                      input-source = template string expr test
+                      start-rune = 154

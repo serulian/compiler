@@ -1,6 +1,6 @@
 $module('async', function () {
   var $static = this;
-  $static.DoSomethingAsync = $t.workerwrap('f4772373', function () {
+  $static.DoSomethingAsync = $t.workerwrap('5f7de1e8', function () {
     return $t.fastbox(true, $g.________testlib.basictypes.Boolean);
   });
   $static.SomeGenerator = function () {

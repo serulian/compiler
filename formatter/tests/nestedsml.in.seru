@@ -1,4 +1,4 @@
-function<void> SomeFunction() {
+function SomeFunction() {
 	var first = <SomeTag>
 		  <SomeTag @First="first!" SomeAttribute="helloworld" @Second={second} AnotherAttr={someExpr} EvenMoreAttributesGo="Here!" />
 	</SomeTag>

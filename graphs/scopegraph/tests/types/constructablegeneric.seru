@@ -1,25 +1,21 @@
 class SomeClass {
-	constructor Get() {
-		return SomeClass.new()
-	}
+	constructor Get() { return SomeClass.new() }
 
-	property<bool> SomeBool {
+	property SomeBool bool {
 		get { return true }
 	}
 }
 
 interface SomeInterface {
-	constructor Get() {
-		return SomeClass.new()
-	}
+	constructor Get() { return SomeClass.new() }
 
-	property<bool> SomeBool { get }
+	property SomeBool bool { get }
 }
 
-function<SomeInterface> DoSomething<T : SomeInterface>() {
+function DoSomething<T : SomeInterface>() SomeInterface {
 	return /* get */(T.Get())
 }
 
-function<void> AnotherFunction() {
-	DoSomething<SomeInterface>().SomeBool	
+function AnotherFunction() {
+	DoSomething<SomeInterface>().SomeBool
 }

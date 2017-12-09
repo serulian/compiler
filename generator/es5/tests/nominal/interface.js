@@ -16,26 +16,26 @@ $module('interface', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeValue|3|7243cf1b": true,
+        "SomeValue|3|f22a98b6": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  this.$interface('0c7df867', 'Valuable', false, '', function () {
+  this.$interface('d317a9be', 'Valuable', false, '', function () {
     var $static = this;
     this.$typesig = function () {
       if (this.$cachedtypesig) {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeValue|3|7243cf1b": true,
+        "SomeValue|3|f22a98b6": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  this.$type('76c61a88', 'Valued', false, '', function () {
+  this.$type('f7b1981d', 'Valued', false, '', function () {
     var $instance = this.prototype;
     var $static = this;
     this.$box = function ($wrapped) {
@@ -55,7 +55,7 @@ $module('interface', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "GetValue|2|2549c819<7243cf1b>": true,
+        "GetValue|2|0b2e6e78<f22a98b6>": true,
       };
       return this.$cachedtypesig = computed;
     };

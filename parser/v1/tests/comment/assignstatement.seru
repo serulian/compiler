@@ -1,0 +1,4 @@
+function DoSomething() {
+	// Some comment
+	foo = bar
+}

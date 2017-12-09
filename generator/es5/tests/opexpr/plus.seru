@@ -1,7 +1,3 @@
-function<int> SomeFunction() {
-    return 1 + 2
-}
+function SomeFunction() int { return 1 + 2 }
 
-function<bool> TEST() {
-    return SomeFunction() == 3
-}
+function TEST() bool { return SomeFunction() == 3 }

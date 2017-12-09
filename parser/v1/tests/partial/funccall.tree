@@ -1,0 +1,113 @@
+NodeTypeFile
+  end-rune = 123
+  input-source = partial function call test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 61
+      input-source = partial function call test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 61
+          input-source = partial function call test
+          start-rune = 28
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 59
+              input-source = partial function call test
+              start-rune = 34
+              expr-statement-expr =>
+                NodeFunctionCallExpression
+                  end-rune = 58
+                  input-source = partial function call test
+                  start-rune = 34
+                  function-call-argument =>
+                    NodeTypeError
+                      end-rune = 42
+                      error-message = Could not parse expected expression
+                      input-source = partial function call test
+                      start-rune = 48
+                  function-call-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 41
+                      identexpr-name = SomeCall
+                      input-source = partial function call test
+                      start-rune = 34
+          child-node =>
+            NodeTypeError
+              end-rune = 42
+              error-message = Expected one of: [tokenTypeRightParen], found: tokenTypeKeyword
+              input-source = partial function call test
+              start-rune = 48
+      typemember-return-type =>
+        NodeTypeTypeReference
+          end-rune = 26
+          input-source = partial function call test
+          start-rune = 23
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 26
+              input-source = partial function call test
+              start-rune = 23
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 26
+                  identifieraccess-name = bool
+                  input-source = partial function call test
+                  start-rune = 23
+    NodeTypeFunction
+      end-rune = 123
+      input-source = partial function call test
+      named = AnotherFunction
+      start-rune = 63
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 123
+          input-source = partial function call test
+          start-rune = 103
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 122
+              input-source = partial function call test
+              start-rune = 109
+              expr-statement-expr =>
+                NodeBinaryAddExpression
+                  end-rune = 121
+                  input-source = partial function call test
+                  start-rune = 109
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 117
+                      identexpr-name = someParam
+                      input-source = partial function call test
+                      start-rune = 109
+                  binary-expression-right =>
+                    NodeNumericLiteralExpression
+                      end-rune = 121
+                      input-source = partial function call test
+                      literal-value = 2
+                      start-rune = 121
+      typemember-parameter =>
+        NodeTypeParameter
+          end-rune = 100
+          input-source = partial function call test
+          named = someParam
+          start-rune = 88
+          parameter-type =>
+            NodeTypeTypeReference
+              end-rune = 100
+              input-source = partial function call test
+              start-rune = 98
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 100
+                  input-source = partial function call test
+                  start-rune = 98
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 100
+                      identifieraccess-name = int
+                      input-source = partial function call test
+                      start-rune = 98

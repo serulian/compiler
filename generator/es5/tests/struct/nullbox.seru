@@ -2,10 +2,8 @@ struct SomeStruct {
 	Value string?
 }
 
-function<any> TEST() {
-	var s = SomeStruct{
-		Value: null,
-	}
+function TEST() any {
+	var s = SomeStruct{Value: null}
 
-	return (s.Value is null) && (s.Mapping()['Value'] is null)
+	return s.Value is null && (s.Mapping())['Value'] is null
 }

@@ -16,13 +16,13 @@ $module('autounboxassign', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeValue|3|7243cf1b": true,
+        "SomeValue|3|f22a98b6": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  this.$type('2cec5b57', 'AnotherType', false, '', function () {
+  this.$type('4aabeb94', 'AnotherType', false, '', function () {
     var $instance = this.prototype;
     var $static = this;
     this.$box = function ($wrapped) {

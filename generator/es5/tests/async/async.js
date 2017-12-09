@@ -1,6 +1,6 @@
 $module('async', function () {
   var $static = this;
-  $static.DoSomethingAsync = $t.workerwrap('0af00909', function (a) {
+  $static.DoSomethingAsync = $t.workerwrap('8a260667', function (a) {
     return a;
   });
   $static.TEST = $t.markpromising(function () {

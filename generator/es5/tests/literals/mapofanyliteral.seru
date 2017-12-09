@@ -1,4 +1,4 @@
-function<any> TEST() {
+function TEST() any {
 	var map = {
 		'hello': true,
 		1234: 'hello world',

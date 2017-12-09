@@ -1,35 +1,35 @@
 class SomeType {
-	function<void> DoSomething() {}
+	function DoSomething() {}
 }
 
 type MyType : SomeType {
-	function<void> AnotherFunction() {
-		/* this */this
+	function AnotherFunction() {
+		/* this */(this)
 		/* sometype */(SomeType(this))
 		SomeType(this).DoSomething()
 	}
 }
 
 type AnotherType : MyType {
-	function<void> AnotherFunction() {
+	function AnotherFunction() {
 		MyType(this)
 		SomeType(this)
 	}
 }
 
 type GenericType<T> : MyType {
-	function<T> DoSomething(someParam T) {
+	function DoSomething(someParam T) T {
 		return someParam
 	}
 }
 
-function<void> CoolFunction(m MyType) {
-	/* m */m
+function CoolFunction(m MyType) {
+	/* m */(m)
 	m.AnotherFunction()
 
 	/* at */(AnotherType(m))
 	/* gt */(GenericType<int>(m))
 
-	var<MyType?> nm = m
+	var nm MyType? = m
 	/* nat */(AnotherType(nm))
 }

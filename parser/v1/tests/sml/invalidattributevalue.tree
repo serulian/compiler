@@ -1,0 +1,55 @@
+NodeTypeFile
+  end-rune = 39
+  input-source = invalid attribute value sml test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 39
+      input-source = invalid attribute value sml test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 39
+          input-source = invalid attribute value sml test
+          start-rune = 23
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 39
+              input-source = invalid attribute value sml test
+              start-rune = 26
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 38
+                  input-source = invalid attribute value sml test
+                  start-rune = 26
+                  child-node =>
+                    NodeTypeError
+                      end-rune = 38
+                      error-message = Expected one of: [tokenTypeGreaterThan], found: tokenTypeRightBrace
+                      input-source = invalid attribute value sml test
+                      start-rune = 39
+                  sml-expression-attribute =>
+                    NodeTypeSmlAttribute
+                      end-rune = 37
+                      input-source = invalid attribute value sml test
+                      sml-attribute-name = bar
+                      start-rune = 31
+                      sml-attribute-value =>
+                        NodeStringLiteralExpression
+                          end-rune = 37
+                          input-source = invalid attribute value sml test
+                          literal-value = ''
+                          start-rune = 35
+                          child-node =>
+                            NodeTypeError
+                              end-rune = 34
+                              error-message = Expected one of: [tokenTypeStringLiteral], found: tokenTypeNumericLiteral
+                              input-source = invalid attribute value sml test
+                              start-rune = 35
+                  sml-expression-typefunc =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 29
+                      identexpr-name = foo
+                      input-source = invalid attribute value sml test
+                      start-rune = 27

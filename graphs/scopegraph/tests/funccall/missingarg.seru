@@ -1,6 +1,5 @@
-function<void> DoSomething(someParam string) {
-}
+function DoSomething(someParam string) {}
 
-function<void> DoSomethingElse() {
+function DoSomethingElse() {
 	DoSomething()
 }

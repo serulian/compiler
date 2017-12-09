@@ -1,5 +1,5 @@
-var<int> someVar = 2
+var someVar int = 2
 
-function<void> DoSomething() {
+function DoSomething() {
 	/* memberref */someVar
 }

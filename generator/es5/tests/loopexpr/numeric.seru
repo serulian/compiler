@@ -1,13 +1,13 @@
-function<void> doSomething() {
-    (function() {})()
+function doSomething() {
+	(function() {})()
 }
 
-function<any> TEST() {
-    var<int> counter = 0
-    for i in 0..2 {
-        counter = counter + i
-        doSomething()
-    }
+function TEST() any {
+	var counter int = 0
+	for i in 0 .. 2 {
+		counter = counter + i
+		doSomething()
+	}
 
-    return counter == 3
+	return counter == 3
 }

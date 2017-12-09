@@ -1,0 +1,5 @@
+function DoSomething() {
+	<foo><anothertag/></foo>
+	<foo>some text goes here</foo>
+	<foo>{ someExpr.that['doesSomething'] }</foo>
+}

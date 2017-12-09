@@ -1,0 +1,1 @@
+interface ISomeInterface<Foo, Bar : Baz> {}

@@ -1,0 +1,38 @@
+NodeTypeFile
+  end-rune = 49
+  input-source = comment literal test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 49
+      input-source = comment literal test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 49
+          input-source = comment literal test
+          start-rune = 24
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 48
+              input-source = comment literal test
+              start-rune = 44
+              child-node =>
+                NodeTypeComment
+                  comment-value = /* someliteral */
+                  end-rune = 43
+                  input-source = comment literal test
+                  start-rune = 27
+              expr-statement-expr =>
+                NodeBooleanLiteralExpression
+                  end-rune = 47
+                  input-source = comment literal test
+                  literal-value = true
+                  start-rune = 44
+                  child-node =>
+                    NodeTypeComment
+                      comment-value = /* someliteral */
+                      end-rune = 43
+                      input-source = comment literal test
+                      start-rune = 27

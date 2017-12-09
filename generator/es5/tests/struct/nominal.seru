@@ -4,11 +4,9 @@ struct SomeStruct {
 	someField CoolBool
 }
 
-function<any> TEST() {
+function TEST() any {
 	var c = CoolBool(true)
-	var s = SomeStruct{
-		someField: c,
-	}
+	var s = SomeStruct{someField: c}
 
 	var s2 = SomeStruct.Parse<json>('{"someField": true}')
 	return bool(s2.someField) && bool(s.someField)

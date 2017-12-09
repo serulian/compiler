@@ -1,0 +1,88 @@
+function SomeFunction() {
+	<- a
+	a + b
+	a - b
+	a * b
+	a / b
+	a % b
+	a | b
+	a & b
+	a ^ b
+	a << b
+	a && b
+	a || b
+	a == b
+	a != b
+	a <= b
+	a >= b
+	a < b
+	a > b
+	a ?? b
+	a .. b
+	a ..< b
+	a.b
+	a->b
+	a?.b
+	a*.b
+	a.(b)
+	a(b, c, d)
+	a[b]
+	a[b:]
+	a[:b]
+	a[b:c]
+	!a
+	&a
+	(a + b)
+	1234
+	1.245
+	42f
+	42.5f
+	true
+	false
+	'hello world'
+	"hello world"
+	`hello
+	world`
+	[]
+	[1]
+	[1, 2, 3]
+	~someName
+	!someName
+	function (first int, second bool) { return first }
+	() => someExpr
+	{}
+	{
+		'a': 2,
+	}
+	{
+		a: 2,
+	}
+	null
+	this
+	principal
+	a<b>
+	a<b<c>?>
+	a in b
+	a in b.foo
+	a is foo
+	a is not foo
+	a if b else c
+	a for b in c
+	not a
+	a!
+	[]string{'hello', 'world'}
+	[]string{}
+	[]{int}{'foo': 2, 'bar': 3}
+	[]{int}{}
+	SomeStruct{
+		FirstField: 1,
+		SecondField: 2,
+		NestedField: AnotherStruct{
+			NestedField: 'hello!',
+		},
+	}
+	a+1
+	a-1
+	-1
+	1234
+}

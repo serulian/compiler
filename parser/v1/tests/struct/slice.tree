@@ -1,0 +1,174 @@
+NodeTypeFile
+  end-rune = 281
+  input-source = slice struct test
+  start-rune = 0
+  child-node =>
+    NodeTypeStruct
+      end-rune = 39
+      input-source = slice struct test
+      named = AnotherStruct
+      start-rune = 0
+      type-member =>
+        NodeTypeField
+          end-rune = 37
+          input-source = slice struct test
+          named = AnotherInt
+          start-rune = 24
+          typemember-declared-type =>
+            NodeTypeTypeReference
+              end-rune = 37
+              input-source = slice struct test
+              start-rune = 35
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 37
+                  input-source = slice struct test
+                  start-rune = 35
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 37
+                      identifieraccess-name = int
+                      input-source = slice struct test
+                      start-rune = 35
+    NodeTypeStruct
+      end-rune = 86
+      input-source = slice struct test
+      named = SomeStruct
+      start-rune = 42
+      type-member =>
+        NodeTypeField
+          end-rune = 84
+          input-source = slice struct test
+          named = Values
+          start-rune = 63
+          typemember-declared-type =>
+            NodeTypeSlice
+              end-rune = 84
+              input-source = slice struct test
+              start-rune = 70
+              typereference-inner-type =>
+                NodeTypeTypeReference
+                  end-rune = 84
+                  input-source = slice struct test
+                  start-rune = 72
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 84
+                      input-source = slice struct test
+                      start-rune = 72
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 84
+                          identifieraccess-name = AnotherStruct
+                          input-source = slice struct test
+                          start-rune = 72
+    NodeTypeFunction
+      end-rune = 281
+      input-source = slice struct test
+      named = TEST
+      start-rune = 89
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 281
+          input-source = slice struct test
+          start-rune = 109
+          block-child =>
+            NodeTypeVariableStatement
+              end-rune = 279
+              input-source = slice struct test
+              named = s
+              start-rune = 112
+              var-expr =>
+                NodeStructuralNewExpression
+                  end-rune = 280
+                  input-source = slice struct test
+                  start-rune = 120
+                  structural-new-entry =>
+                    NodeStructuralNewExpressionEntry
+                      end-rune = 275
+                      input-source = slice struct test
+                      start-rune = 134
+                      structural-new-entry-key = Values
+                      structural-new-entry-value =>
+                        NodeListLiteralExpression
+                          end-rune = 275
+                          input-source = slice struct test
+                          start-rune = 142
+                          list-expr-value =>
+                            NodeStructuralNewExpression
+                              end-rune = 185
+                              input-source = slice struct test
+                              start-rune = 147
+                              structural-new-entry =>
+                                NodeStructuralNewExpressionEntry
+                                  end-rune = 178
+                                  input-source = slice struct test
+                                  start-rune = 166
+                                  structural-new-entry-key = AnotherInt
+                                  structural-new-entry-value =>
+                                    NodeNumericLiteralExpression
+                                      end-rune = 178
+                                      input-source = slice struct test
+                                      literal-value = 1
+                                      start-rune = 178
+                              structural-new-type-expr =>
+                                NodeTypeIdentifierExpression
+                                  end-rune = 159
+                                  identexpr-name = AnotherStruct
+                                  input-source = slice struct test
+                                  start-rune = 147
+                            NodeStructuralNewExpression
+                              end-rune = 228
+                              input-source = slice struct test
+                              start-rune = 190
+                              structural-new-entry =>
+                                NodeStructuralNewExpressionEntry
+                                  end-rune = 221
+                                  input-source = slice struct test
+                                  start-rune = 209
+                                  structural-new-entry-key = AnotherInt
+                                  structural-new-entry-value =>
+                                    NodeNumericLiteralExpression
+                                      end-rune = 221
+                                      input-source = slice struct test
+                                      literal-value = 2
+                                      start-rune = 221
+                              structural-new-type-expr =>
+                                NodeTypeIdentifierExpression
+                                  end-rune = 202
+                                  identexpr-name = AnotherStruct
+                                  input-source = slice struct test
+                                  start-rune = 190
+                            NodeStructuralNewExpression
+                              end-rune = 271
+                              input-source = slice struct test
+                              start-rune = 233
+                              structural-new-entry =>
+                                NodeStructuralNewExpressionEntry
+                                  end-rune = 264
+                                  input-source = slice struct test
+                                  start-rune = 252
+                                  structural-new-entry-key = AnotherInt
+                                  structural-new-entry-value =>
+                                    NodeNumericLiteralExpression
+                                      end-rune = 264
+                                      input-source = slice struct test
+                                      literal-value = 3
+                                      start-rune = 264
+                              structural-new-type-expr =>
+                                NodeTypeIdentifierExpression
+                                  end-rune = 245
+                                  identexpr-name = AnotherStruct
+                                  input-source = slice struct test
+                                  start-rune = 233
+                  structural-new-type-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 129
+                      identexpr-name = SomeStruct
+                      input-source = slice struct test
+                      start-rune = 120
+      typemember-return-type =>
+        NodeTypeAny
+          end-rune = 107
+          input-source = slice struct test
+          start-rune = 105

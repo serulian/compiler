@@ -1,0 +1,4 @@
+function SomeFunction() {
+	someExpr <- someOtherExpr
+	a, b <- somePromise
+}

@@ -1,18 +1,18 @@
-function<string> thirdfunction(props []{any}) {
-    return 'hello'
+function thirdfunction(props []{any}) string {
+	return 'hello'
 }
 
-function<int> anotherfunction(props []{any}) {
-    return 42
+function anotherfunction(props []{any}) int {
+	return 42
 }
 
-function<bool> somefunction(props []{any}, child int*) {
+function somefunction(props []{any}, child int*) bool {
 	return true
 }
 
-function<void> DoSomething(somestream int*) {
+function DoSomething(somestream int*) {
 	<somefunction>
-        <thirdfunction />
-        <anotherfunction [for index in 0..2] />
-    </somefunction>
+		<thirdfunction />
+		<anotherfunction [for index in 0 .. 2] />
+	</somefunction>
 }

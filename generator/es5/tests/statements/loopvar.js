@@ -1,6 +1,6 @@
 $module('loopvar', function () {
   var $static = this;
-  this.$class('8caa43e9', 'SomeStream', false, '', function () {
+  this.$class('4d328172', 'SomeStream', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -20,7 +20,7 @@ $module('loopvar', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Next|2|2549c819<4b63a755<f361570c,f361570c>>": true,
+        "Next|2|0b2e6e78<8abdfedc<5e61c39d,5e61c39d>>": true,
       };
       return this.$cachedtypesig = computed;
     };

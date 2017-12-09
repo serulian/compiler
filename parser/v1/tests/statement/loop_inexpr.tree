@@ -1,0 +1,37 @@
+NodeTypeFile
+  end-rune = 55
+  input-source = in expr loop statement test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 55
+      input-source = in expr loop statement test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 55
+          input-source = in expr loop statement test
+          start-rune = 24
+          block-child =>
+            NodeTypeLoopStatement
+              end-rune = 53
+              input-source = in expr loop statement test
+              start-rune = 27
+              loop-block =>
+                NodeTypeStatementBlock
+                  end-rune = 53
+                  input-source = in expr loop statement test
+                  start-rune = 52
+              loop-expression =>
+                NodeTypeIdentifierExpression
+                  end-rune = 50
+                  identexpr-name = someExpr
+                  input-source = in expr loop statement test
+                  start-rune = 43
+              named-value =>
+                NodeTypeNamedValue
+                  end-rune = 38
+                  input-source = in expr loop statement test
+                  named = someName
+                  start-rune = 31

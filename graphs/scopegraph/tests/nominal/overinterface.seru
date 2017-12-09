@@ -1,15 +1,15 @@
 class SomeClass {
-	property<bool> SomeValue {
+	property SomeValue bool {
 		get { return true }
 	}
 }
 
 interface SomeInterface {
-	property<bool> SomeValue { get }
+	property SomeValue bool { get }
 }
 
 type SomeNominal : SomeInterface {}
 
-function<void> DoSomething(sc SomeClass) {
-  /* sn */(SomeNominal(sc))
+function DoSomething(sc SomeClass) {
+	/* sn */(SomeNominal(sc))
 }

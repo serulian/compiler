@@ -1,26 +1,26 @@
 import anothermodule
 
 class SomeClass {
-	var<int> someInt = 2
+	var someInt int = 2
 
 	constructor Build(someparam int) {
 		return SomeClass.new()
 	}
 
-	property<int> SomeProp {
-	 	get { return 2 }
+	property SomeProp int {
+		get { return 2 }
 	}
 }
 
 class LocalClass<T> {
-	var<T?> SomeGenericVar
+	var SomeGenericVar T?
 }
 
-function<void> DoSomething() {
-	var<SomeClass> sc = SomeClass.Build(2)
-	var<LocalClass<bool>> gcbool = LocalClass<bool>.new()
-	var<LocalClass<int>> gcint = LocalClass<int>.new()
-	
+function DoSomething() {
+	var sc SomeClass = SomeClass.Build(2)
+	var gcbool LocalClass<bool> = LocalClass<bool>.new()
+	var gcint LocalClass<int> = LocalClass<int>.new()
+
 	/* varmember */(sc.someInt)
 	/* constructor */(SomeClass.Build)
 	/* prop */(sc.SomeProp)

@@ -1,0 +1,17 @@
+NodeTypeFile
+  end-rune = 15
+  input-source = basic import test
+  start-rune = 0
+  child-node =>
+    NodeTypeImport
+      end-rune = 15
+      import-location-ref = location:Something
+      import-source = Something
+      input-source = basic import test
+      start-rune = 0
+      import-package =>
+        NodeTypeImportPackage
+          end-rune = 15
+          import-package-name = Something
+          input-source = basic import test
+          start-rune = 16

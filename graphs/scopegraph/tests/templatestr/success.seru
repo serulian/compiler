@@ -1,10 +1,8 @@
 class SomeClass {
-	function<string> String() {
-		return ''
-	}	
+	function String() string { return '' }
 }
 
-function<void> DoSomething(first string, sc SomeClass) {
-	/* templatestr */(`${sc}: This is a cool
-	${first} string`)
+function DoSomething(first string, sc SomeClass) {
+	/* templatestr */`${sc}: This is a cool
+	${first} string`
 }

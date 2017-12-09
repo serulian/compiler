@@ -16,13 +16,13 @@ $module('shortcut', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Value|3|f361570c": true,
+        "Value|3|5e61c39d": true,
       };
       return this.$cachedtypesig = computed;
     };
   });
 
-  this.$type('7b5c3f1e', 'SomeNominalType', false, '', function () {
+  this.$type('8bc26aa4', 'SomeNominalType', false, '', function () {
     var $instance = this.prototype;
     var $static = this;
     this.$box = function ($wrapped) {

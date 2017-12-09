@@ -1,7 +1,7 @@
 /**
  * Some doc comment
  */
-function<void> DoSomething(/* someparam */a int) /* someblock */ {
+function DoSomething(/* someparam */a int) /* someblock */ {
 	// First comment
 
 
@@ -15,7 +15,7 @@ function<void> DoSomething(/* someparam */a int) /* someblock */ {
 	/**
 * Another doc comment
     */
-  function<void> AnotherFunction() {
+  function AnotherFunction() {
   	if /* someexpr */true {
   		dosomething
      	} else if /* anotherexpr */anotherexpr {
@@ -26,4 +26,4 @@ function<void> DoSomething(/* someparam */a int) /* someblock */ {
 /*
 another cool thing 
 */
-var<string> foo = bar
+var foo string = bar

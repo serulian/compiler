@@ -13,7 +13,7 @@ $module('nominalcastfail', function () {
     };
   });
 
-  this.$class('bad71184', 'AnotherClass', false, '', function () {
+  this.$class('8547cbac', 'AnotherClass', false, '', function () {
     var $static = this;
     var $instance = this.prototype;
     $static.new = function () {
@@ -26,7 +26,7 @@ $module('nominalcastfail', function () {
     };
   });
 
-  this.$type('b7296a0e', 'SomeNominal', false, '', function () {
+  this.$type('8fbb83dc', 'SomeNominal', false, '', function () {
     var $instance = this.prototype;
     var $static = this;
     this.$box = function ($wrapped) {

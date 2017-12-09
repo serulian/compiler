@@ -1,8 +1,5 @@
-function<any> TEST() {
-	var map = {
-		'hello': true,
-		'hi': false,
-	}
+function TEST() any {
+	var map = {'hello': true, 'hi': false}
 
-	return (map['hello'] ?? false) && !(map['hi'] ?? true)
+	return map['hello'] ?? false && !(map['hi'] ?? true)
 }

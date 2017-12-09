@@ -1,14 +1,13 @@
 interface ISomeInterface {
-	operator Plus (left ISomeInterface, right ISomeInterface) {}
+	operator Plus(left ISomeInterface, right ISomeInterface) {}
 }
 
-class SomeClass<T : ISomeInterface> {
-}
+class SomeClass<T : ISomeInterface> {}
 
 class ThirdClass {
-	operator Plus (left ThirdClass, right ThirdClass) {}
+	operator Plus(left ThirdClass, right ThirdClass) {}
 }
 
 class AnotherClass {
-	var<SomeClass<ThirdClass>> someClass
+	var someClass SomeClass<ThirdClass>
 }

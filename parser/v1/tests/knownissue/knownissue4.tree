@@ -1,0 +1,81 @@
+NodeTypeFile
+  end-rune = 77
+  input-source = known issue 4 test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 77
+      input-source = known issue 4 test
+      named = AnotherFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 77
+          input-source = known issue 4 test
+          start-rune = 39
+          block-child =>
+            NodeTypeAssignStatement
+              end-rune = 56
+              input-source = known issue 4 test
+              start-rune = 42
+              assign-statement-expr =>
+                NodeNumericLiteralExpression
+                  end-rune = 56
+                  input-source = known issue 4 test
+                  literal-value = 4
+                  start-rune = 56
+              assign-statement-name =>
+                NodeMemberAccessExpression
+                  end-rune = 52
+                  input-source = known issue 4 test
+                  member-access-identifier = SomeProp
+                  start-rune = 42
+                  member-access-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 43
+                      identexpr-name = sc
+                      input-source = known issue 4 test
+                      start-rune = 42
+            NodeTypeAssignStatement
+              end-rune = 75
+              input-source = known issue 4 test
+              start-rune = 59
+              assign-statement-expr =>
+                NodeNumericLiteralExpression
+                  end-rune = 75
+                  input-source = known issue 4 test
+                  literal-value = 5
+                  start-rune = 75
+              assign-statement-name =>
+                NodeMemberAccessExpression
+                  end-rune = 71
+                  input-source = known issue 4 test
+                  member-access-identifier = SomeProp
+                  start-rune = 59
+                  member-access-expr =>
+                    NodeThisLiteralExpression
+                      end-rune = 62
+                      input-source = known issue 4 test
+                      start-rune = 59
+      typemember-parameter =>
+        NodeTypeParameter
+          end-rune = 36
+          input-source = known issue 4 test
+          named = sc
+          start-rune = 25
+          parameter-type =>
+            NodeTypeTypeReference
+              end-rune = 36
+              input-source = known issue 4 test
+              start-rune = 28
+              typereference-path =>
+                NodeTypeIdentifierPath
+                  end-rune = 36
+                  input-source = known issue 4 test
+                  start-rune = 28
+                  identifierpath-root =>
+                    NodeTypeIdentifierAccess
+                      end-rune = 36
+                      identifieraccess-name = SomeClass
+                      input-source = known issue 4 test
+                      start-rune = 28

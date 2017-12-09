@@ -4,6 +4,9 @@ class SomeClass {
 	}
 }
 
-function<void> DoSomething() {
-	<SomeClass>{ 1 }{ 2 }</SomeClass>
+function DoSomething() {
+	<SomeClass>
+		{1}
+		{2}
+	</SomeClass>
 }

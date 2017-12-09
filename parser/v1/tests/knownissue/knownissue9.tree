@@ -1,0 +1,69 @@
+NodeTypeFile
+  end-rune = 63
+  input-source = known issue 9 test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 63
+      input-source = known issue 9 test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 63
+          input-source = known issue 9 test
+          start-rune = 23
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 62
+              input-source = known issue 9 test
+              start-rune = 26
+              expr-statement-expr =>
+                NodeStructuralNewExpression
+                  end-rune = 62
+                  input-source = known issue 9 test
+                  start-rune = 26
+                  structural-new-entry =>
+                    NodeStructuralNewExpressionEntry
+                      end-rune = 52
+                      input-source = known issue 9 test
+                      start-rune = 34
+                      structural-new-entry-key = Bar
+                      child-node =>
+                        NodeTypeError
+                          end-rune = 52
+                          error-message = Expected colon in slice, found: ,
+                          input-source = known issue 9 test
+                          start-rune = 53
+                      structural-new-entry-value =>
+                        NodeSliceExpression
+                          end-rune = 52
+                          input-source = known issue 9 test
+                          start-rune = 39
+                          slice-expr-expr =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 41
+                              identexpr-name = Meh
+                              input-source = known issue 9 test
+                              start-rune = 39
+                    NodeStructuralNewExpressionEntry
+                      end-rune = 53
+                      input-source = known issue 9 test
+                      start-rune = 58
+                      child-node =>
+                        NodeTypeError
+                          end-rune = 53
+                          error-message = Expected identifier, found token tokenTypeRightBracket
+                          input-source = known issue 9 test
+                          start-rune = 58
+                  structural-new-type-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 28
+                      identexpr-name = Foo
+                      input-source = known issue 9 test
+                      start-rune = 26
+    NodeTypeError
+      end-rune = 63
+      error-message = Unexpected token at root level: tokenTypeRightBrace
+      input-source = known issue 9 test
+      start-rune = 64

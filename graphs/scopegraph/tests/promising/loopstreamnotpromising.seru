@@ -1,5 +1,4 @@
-function<any> TEST() {
-	for i in 1..2 {
-	}
+function TEST() any {
+	for i in 1 .. 2 {}
 	return 1
 }

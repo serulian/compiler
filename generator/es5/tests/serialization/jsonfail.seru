@@ -8,7 +8,7 @@ struct SomeStruct {
 	SomeInstance AnotherStruct
 }
 
-function<any> TEST() {
+function TEST() any {
 	var jsonString = '{"SomeField":"hello world"}'
 	parsed, err := SomeStruct.Parse<json>(jsonString)
 	return parsed is null && err is not null

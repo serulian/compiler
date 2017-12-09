@@ -1,12 +1,12 @@
-var<bool> someBool = false
+var someBool bool = false
 
 class SomeReleasable {
-	function<void> Release() {
+	function Release() {
 		someBool = true
 	}
 }
 
-function<any> TEST() {
+function TEST() any {
 	123
 	for {
 		with SomeReleasable.new() {

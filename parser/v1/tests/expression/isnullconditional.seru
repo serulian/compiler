@@ -1,0 +1,5 @@
+function DoSomething() {
+	if value is null {
+		return null
+	}
+}

@@ -1,10 +1,7 @@
 class SomeResource {
-	function<void> Release() {
-	}
+	function Release() {}
 }
 
-function<void> TEST(sr SomeResource) {
-	with sr {
-
-	}
+function TEST(sr SomeResource) {
+	with sr {}
 }

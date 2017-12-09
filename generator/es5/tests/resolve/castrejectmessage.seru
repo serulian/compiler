@@ -1,5 +1,5 @@
-function<any> TEST() {
-	var<any> somevalue = 'hello'
+function TEST() any {
+	var somevalue any = 'hello'
 	_, b := somevalue.(int)
-	return (b?.Message ?? '') == 'Cannot auto-box function String() {} to function Integer() {}'
+	return b?.Message ?? '' == 'Cannot auto-box function String() {} to function Integer() {}'
 }

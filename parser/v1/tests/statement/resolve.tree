@@ -1,0 +1,98 @@
+NodeTypeFile
+  end-rune = 74
+  input-source = resolve statement test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 74
+      input-source = resolve statement test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 74
+          input-source = resolve statement test
+          start-rune = 23
+          block-child =>
+            NodeTypeResolveStatement
+              end-rune = 33
+              input-source = resolve statement test
+              start-rune = 26
+              assigned-value-destination =>
+                NodeTypeAssignedValue
+                  end-rune = 26
+                  input-source = resolve statement test
+                  named = a
+                  start-rune = 26
+              resolve-statement-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 33
+                  identexpr-name = foo
+                  input-source = resolve statement test
+                  start-rune = 31
+            NodeTypeResolveStatement
+              end-rune = 46
+              input-source = resolve statement test
+              start-rune = 36
+              assigned-value-destination =>
+                NodeTypeAssignedValue
+                  end-rune = 36
+                  input-source = resolve statement test
+                  named = a
+                  start-rune = 36
+              assigned-value-rejection =>
+                NodeTypeAssignedValue
+                  end-rune = 39
+                  input-source = resolve statement test
+                  named = b
+                  start-rune = 39
+              resolve-statement-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 46
+                  identexpr-name = foo
+                  input-source = resolve statement test
+                  start-rune = 44
+            NodeTypeResolveStatement
+              end-rune = 59
+              input-source = resolve statement test
+              start-rune = 49
+              assigned-value-destination =>
+                NodeTypeAssignedValue
+                  end-rune = 49
+                  input-source = resolve statement test
+                  named = a
+                  start-rune = 49
+              assigned-value-rejection =>
+                NodeTypeAssignedValue
+                  end-rune = 52
+                  input-source = resolve statement test
+                  named = _
+                  start-rune = 52
+              resolve-statement-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 59
+                  identexpr-name = bar
+                  input-source = resolve statement test
+                  start-rune = 57
+            NodeTypeResolveStatement
+              end-rune = 72
+              input-source = resolve statement test
+              start-rune = 62
+              assigned-value-destination =>
+                NodeTypeAssignedValue
+                  end-rune = 62
+                  input-source = resolve statement test
+                  named = _
+                  start-rune = 62
+              assigned-value-rejection =>
+                NodeTypeAssignedValue
+                  end-rune = 65
+                  input-source = resolve statement test
+                  named = b
+                  start-rune = 65
+              resolve-statement-expr =>
+                NodeTypeIdentifierExpression
+                  end-rune = 72
+                  identexpr-name = bar
+                  input-source = resolve statement test
+                  start-rune = 70

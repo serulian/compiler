@@ -1,4 +1,4 @@
-function<any> TEST(a int?) {
-	var<int?> b = 1234
+function TEST(a int?) any {
+	var b int? = 1234
 	return a is null && b is not null
 }

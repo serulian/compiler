@@ -1,5 +1,5 @@
 import anotherpackage
 
-function<void> DoSomething() {
+function DoSomething() {
 	anotherpackage.someUnexportedThing
 }

@@ -1,7 +1,7 @@
-function<bool> ChildStream(props []{any}, child int*, anotherParam string) {
+function ChildStream(props []{any}, child int*, anotherParam string) bool {
 	return true
 }
 
-function<void> DoSomething() {
+function DoSomething() {
 	<ChildStream />
 }

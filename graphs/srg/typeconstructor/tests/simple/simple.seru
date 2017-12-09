@@ -1,2 +1,3 @@
-class SomeClass{}
-interface SomeInterface{}
+class SomeClass {}
+
+interface SomeInterface {}

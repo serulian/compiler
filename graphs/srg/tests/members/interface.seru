@@ -1,12 +1,15 @@
 interface TestInterface {
-	function<AnotherClass> SomeFunction<T>(foo SomeClass, bar T)
-
-	property<SomeClass> SomeProperty { get }
-
 	constructor BuildMe<T, Q>(first T, second Q) {}
 
+	function SomeFunction<T>(foo SomeClass, bar T) AnotherClass
+
+	property SomeProperty SomeClass { get }
+
 	operator Plus(left SomeClass, right SomeClass) {}
+
+	operator Index(index int) SomeClass {}
 }
 
 class SomeClass {}
+
 class AnotherClass {}

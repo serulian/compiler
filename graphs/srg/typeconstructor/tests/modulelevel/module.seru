@@ -1,9 +1,5 @@
-var<int> SomeVar
+var SomeVar int
 
-function<int> DoSomething() {
-	
-}
+function DoSomething() int {}
 
-function<void> DoSomethingAsync() {
-	
-}
+function DoSomethingAsync() {}

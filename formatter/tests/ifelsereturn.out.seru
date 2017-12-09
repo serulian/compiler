@@ -1,4 +1,4 @@
-function<int> DoSomething() {
+function DoSomething() int {
 	if true {
 		return 2
 	} else {

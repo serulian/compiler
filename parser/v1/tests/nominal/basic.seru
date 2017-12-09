@@ -1,0 +1,12 @@
+type SomeType : SomeOther.TypeHere {
+	function DoSomething() {
+	}
+
+	constructor Build() {}
+
+	property DoSomethingElse int {
+		get { }
+	}
+
+	operator Plus(first SomeType, second SomeType) {}
+}

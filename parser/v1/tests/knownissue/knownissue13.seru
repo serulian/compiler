@@ -1,0 +1,3 @@
+function DoSomething() {
+	this.children[parts[0]] = newBranch
+}

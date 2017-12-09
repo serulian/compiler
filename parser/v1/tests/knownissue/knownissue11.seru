@@ -1,0 +1,4 @@
+function DoSomething() {
+	foo ?? Bar{
+	}
+}

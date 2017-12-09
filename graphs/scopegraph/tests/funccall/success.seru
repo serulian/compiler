@@ -1,18 +1,17 @@
 class SomeClass {}
 
-function<void> EmptyFunc() {}
-function<int> SomeFunc(someparam int) {
-	return 2
-}
+function EmptyFunc() {}
 
-function<bool> AnotherFunc(first int, second bool) {
+function SomeFunc(someparam int) int { return 2 }
+
+function AnotherFunc(first int, second bool) bool {
 	return true
 }
 
-function<void> FuncWithOptionalArgs(first int, second bool?, third int?) {}
+function FuncWithOptionalArgs(first int, second bool?, third int?) {}
 
-function<void> DoSomething() {
-	var<SomeClass> sc = SomeClass.new()
+function DoSomething() {
+	var sc SomeClass = SomeClass.new()
 
 	/* empty */(EmptyFunc())
 	/* somefunc */(SomeFunc(2))

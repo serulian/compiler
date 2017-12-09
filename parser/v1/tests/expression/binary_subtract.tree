@@ -1,0 +1,48 @@
+NodeTypeFile
+  end-rune = 37
+  input-source = subtract binary expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 37
+      input-source = subtract binary expr test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 37
+          input-source = subtract binary expr test
+          start-rune = 24
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 36
+              input-source = subtract binary expr test
+              start-rune = 27
+              expr-statement-expr =>
+                NodeBinarySubtractExpression
+                  end-rune = 35
+                  input-source = subtract binary expr test
+                  start-rune = 27
+                  binary-expression-left =>
+                    NodeBinarySubtractExpression
+                      end-rune = 31
+                      input-source = subtract binary expr test
+                      start-rune = 27
+                      binary-expression-left =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 27
+                          identexpr-name = a
+                          input-source = subtract binary expr test
+                          start-rune = 27
+                      binary-expression-right =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 31
+                          identexpr-name = b
+                          input-source = subtract binary expr test
+                          start-rune = 31
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 35
+                      identexpr-name = c
+                      input-source = subtract binary expr test
+                      start-rune = 35

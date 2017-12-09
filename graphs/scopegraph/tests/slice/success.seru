@@ -1,15 +1,13 @@
 class SomeClass {
-	operator<bool> slice(startIndex int?, endIndex int?) {
+	operator slice(startIndex int?, endIndex int?) bool {
 		return true
 	}
 
-	operator<int> index(value int) {
-		return value
-	}
+	operator index(value int) int { return value }
 }
 
-function<void> DoSomething() {
-	var<SomeClass> sc = SomeClass.new()
+function DoSomething() {
+	var sc SomeClass = SomeClass.new()
 	/* slice */(sc[0:1])
 	/* endslice */(sc[:1])
 	/* startslice */(sc[1:])

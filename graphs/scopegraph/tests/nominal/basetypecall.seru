@@ -1,9 +1,9 @@
 class SomeClass {
-	function<void> DoSomething() {}
+	function DoSomething() {}
 }
 
 type MyType : SomeClass {
-	function<void> AnotherFunction() {
-		this.DoSomething();
+	function AnotherFunction() {
+		this.DoSomething()
 	}
 }

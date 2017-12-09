@@ -1,0 +1,194 @@
+NodeTypeFile
+  end-rune = 261
+  input-source = whitespace text sml test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 261
+      input-source = whitespace text sml test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 261
+          input-source = whitespace text sml test
+          start-rune = 23
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 61
+              input-source = whitespace text sml test
+              start-rune = 26
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 60
+                  input-source = whitespace text sml test
+                  start-rune = 26
+                  sml-expression-child =>
+                    NodeTypeSmlText
+                      end-rune = 52
+                      input-source = whitespace text sml test
+                      sml-text-value =  first text here   
+                      start-rune = 35
+                  sml-expression-typefunc =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 31
+                      identexpr-name = first
+                      input-source = whitespace text sml test
+                      start-rune = 27
+            NodeTypeExpressionStatement
+              end-rune = 101
+              input-source = whitespace text sml test
+              start-rune = 63
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 100
+                  input-source = whitespace text sml test
+                  start-rune = 63
+                  sml-expression-child =>
+                    NodeTypeSmlText
+                      end-rune = 91
+                      input-source = whitespace text sml test
+                      sml-text-value = 
+		second text here
+	
+                      start-rune = 71
+                  sml-expression-typefunc =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 69
+                      identexpr-name = second
+                      input-source = whitespace text sml test
+                      start-rune = 64
+            NodeTypeExpressionStatement
+              end-rune = 150
+              input-source = whitespace text sml test
+              start-rune = 103
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 149
+                  input-source = whitespace text sml test
+                  start-rune = 103
+                  sml-expression-child =>
+                    NodeTypeSmlText
+                      end-rune = 122
+                      input-source = whitespace text sml test
+                      sml-text-value = text with an 
+                      start-rune = 110
+                    NodeTypeIdentifierExpression
+                      end-rune = 133
+                      identexpr-name = expression
+                      input-source = whitespace text sml test
+                      start-rune = 124
+                    NodeTypeSmlText
+                      end-rune = 141
+                      input-source = whitespace text sml test
+                      sml-text-value =  inline
+                      start-rune = 136
+                  sml-expression-typefunc =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 108
+                      identexpr-name = third
+                      input-source = whitespace text sml test
+                      start-rune = 104
+            NodeTypeExpressionStatement
+              end-rune = 185
+              input-source = whitespace text sml test
+              start-rune = 152
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 184
+                  input-source = whitespace text sml test
+                  start-rune = 152
+                  sml-expression-child =>
+                    NodeTypeSmlText
+                      end-rune = 163
+                      input-source = whitespace text sml test
+                      sml-text-value = text
+                      start-rune = 160
+                    NodeTypeIdentifierExpression
+                      end-rune = 170
+                      identexpr-name = around
+                      input-source = whitespace text sml test
+                      start-rune = 165
+                    NodeTypeSmlText
+                      end-rune = 175
+                      input-source = whitespace text sml test
+                      sml-text-value = expr
+                      start-rune = 172
+                  sml-expression-typefunc =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 158
+                      identexpr-name = fourth
+                      input-source = whitespace text sml test
+                      start-rune = 153
+            NodeTypeExpressionStatement
+              end-rune = 227
+              input-source = whitespace text sml test
+              start-rune = 187
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 226
+                  input-source = whitespace text sml test
+                  start-rune = 187
+                  sml-expression-child =>
+                    NodeTypeSmlText
+                      end-rune = 205
+                      input-source = whitespace text sml test
+                      sml-text-value = text with a 
+                      start-rune = 194
+                    NodeTypeSmlExpression
+                      end-rune = 211
+                      input-source = whitespace text sml test
+                      start-rune = 206
+                      sml-expression-typefunc =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 209
+                          identexpr-name = tag
+                          input-source = whitespace text sml test
+                          start-rune = 207
+                    NodeTypeSmlText
+                      end-rune = 218
+                      input-source = whitespace text sml test
+                      sml-text-value =  inline
+                      start-rune = 213
+                  sml-expression-typefunc =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 192
+                      identexpr-name = fifth
+                      input-source = whitespace text sml test
+                      start-rune = 188
+            NodeTypeExpressionStatement
+              end-rune = 260
+              input-source = whitespace text sml test
+              start-rune = 229
+              expr-statement-expr =>
+                NodeTypeSmlExpression
+                  end-rune = 259
+                  input-source = whitespace text sml test
+                  start-rune = 229
+                  sml-expression-child =>
+                    NodeTypeSmlText
+                      end-rune = 239
+                      input-source = whitespace text sml test
+                      sml-text-value = text
+                      start-rune = 236
+                    NodeTypeSmlExpression
+                      end-rune = 248
+                      input-source = whitespace text sml test
+                      start-rune = 240
+                      sml-expression-typefunc =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 246
+                          identexpr-name = around
+                          input-source = whitespace text sml test
+                          start-rune = 241
+                    NodeTypeSmlText
+                      end-rune = 251
+                      input-source = whitespace text sml test
+                      sml-text-value = tag
+                      start-rune = 249
+                  sml-expression-typefunc =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 234
+                      identexpr-name = sixth
+                      input-source = whitespace text sml test
+                      start-rune = 230

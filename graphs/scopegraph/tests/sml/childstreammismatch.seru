@@ -4,6 +4,6 @@ class SomeClass {
 	}
 }
 
-function<void> DoSomething() {
+function DoSomething() {
 	<SomeClass>hello world</SomeClass>
 }

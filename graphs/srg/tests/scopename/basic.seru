@@ -1,63 +1,49 @@
-from anotherfile import AnotherClass
-from anotherfile import ThirdClass as TC
-from anotherfile import ExportedFunction as EF
-from anotherfile import unexportedFunction as UEF
-
 import anotherfile
 import somepackage
-
+from anotherfile import AnotherClass
+from anotherfile import ExportedFunction as EF
+from anotherfile import ThirdClass as TC
+from anotherfile import unexportedFunction as UEF
 from somepackage import ExportedFunction as SEF
 
-class SomeClass {
-	
+class SomeClass {}
+
+function DoSomething(someparam int) /* dosomething */{
+	var someVar int
+	if true /* if */{}
 }
 
-function<void> DoSomething(someparam int) /* dosomething */{
-	var<int> someVar
-	if true /* if */{
-	}
+function AnotherFunc() /* anotherfunc */{}
+
+function AliasTest(aliased int) /* aliasfn */{
+	var aliased bool
+	if true /* aliasif */{}
 }
 
-function<void> AnotherFunc() /* anotherfunc */{
+function WithTest() /* withfn */{
+	with something as SomeName /* withblock */{}
 }
 
-function<void> AliasTest(aliased int) /* aliasfn */{
-	var<bool> aliased
-	if true /* aliasif */{
-
-	}
+function LoopTest() /* loopfn */{
+	for SomeLoopValue in something /* loopblock */{}
 }
 
-function<void> WithTest() /* withfn */{
-	with something as SomeName /* withblock */{
-
-	}
-}
-
-function<void> LoopTest() /* loopfn */{
-	for SomeLoopValue in something /* loopblock */{
-
-	}
-}
-
-function<void> LambdaTest() {
+function LambdaTest() {
 	(a, b) => /* lambdaexpr */a
 }
 
-function<void> FullLambdaTest() {
-	function (a int, b bool) {
+function FullLambdaTest() {
+	function(a int, b bool) {
 		/* fulllambdabody */a
 	}
 }
 
-function<void> VarReference() {
+function VarReference() {
 	var someVar = /* somevarexpr */2
-	var anotherVar = function () /* funcclosure */{}
+	var anotherVar = function() /* funcclosure */{}
 }
 
-function<void> ResolveReference() {
-	a, b := /* resolvesource */ 1234
-	if true /* afterresolve */{
-
-	}
+function ResolveReference() {
+	a, b := /* resolvesource */1234
+	if true /* afterresolve */{}
 }

@@ -1,0 +1,36 @@
+NodeTypeFile
+  end-rune = 36
+  input-source = is null expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 36
+      input-source = is null expr test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 36
+          input-source = is null expr test
+          start-rune = 23
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 35
+              input-source = is null expr test
+              start-rune = 26
+              expr-statement-expr =>
+                NodeIsComparisonExpression
+                  end-rune = 34
+                  input-source = is null expr test
+                  start-rune = 26
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 26
+                      identexpr-name = a
+                      input-source = is null expr test
+                      start-rune = 26
+                  binary-expression-right =>
+                    NodeNullLiteralExpression
+                      end-rune = 34
+                      input-source = is null expr test
+                      start-rune = 31

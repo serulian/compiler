@@ -1,14 +1,12 @@
-function<bool> DoSomethingAsync() {
-	return true
-}
+function DoSomethingAsync() bool { return true }
 
 class SomeClass {
-	function<bool> SomeMethod() {
+	function SomeMethod() bool {
 		return <- DoSomethingAsync()
-	}	
+	}
 }
 
-function<any> TEST() {
-	var<SomeClass?> sc = SomeClass.new()
-	return (sc?.SomeMethod() ?? false)
+function TEST() any {
+	var sc SomeClass? = SomeClass.new()
+	return sc?.SomeMethod() ?? false
 }

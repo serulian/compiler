@@ -6,11 +6,11 @@ class SomeClass<T> {
 
 struct SomeStruct<T> {}
 
-function<T?> SomeFunction<T, Q>(someparam Q) {
+function SomeFunction<T, Q>(someparam Q) T? {
 	return null
 }
 
-function<void> DoSomething() {
+function DoSomething() {
 	/* someclassint */(SomeClass<int>)
 	/* someclassintbuild */(SomeClass<int>.Build)
 

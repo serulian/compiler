@@ -1,9 +1,9 @@
 class SomeClass {
-	function<void> Release() {}
+	function Release() {}
 }
 
-function<int*> DoSomething(anotherStream int*, something SomeClass) {
-	if (true) {
+function DoSomething(anotherStream int*, something SomeClass) int* {
+	if true {
 		for {
 			switch {
 				case true:

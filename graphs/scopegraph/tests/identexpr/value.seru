@@ -1,9 +1,9 @@
 class SomeClass {
-	function<void> Release() {}	
+	function Release() {}
 }
 
-function<void> DoSomething() {
-	var<SomeClass> something = SomeClass.new()
+function DoSomething() {
+	var something SomeClass = SomeClass.new()
 
 	with something as somethingElse {
 		/* valueref */somethingElse

@@ -1,17 +1,17 @@
 class SomePromise {
-	function<awaitable<int>> Then(callback function<void>(int)) {
+	function Then(callback function<void>(int)) awaitable<int> {
 		return this
 	}
 
-	function<awaitable<int>> Catch(callback function<void>(error)) {
-		return this	
+	function Catch(callback function<void>(error)) awaitable<int> {
+		return this
 	}
 }
 
-function<void> DoSomething() {
-	var<SomePromise> promise = SomePromise.new()
-	var<int> someInt = 2
-	var<bool> someError = false
+function DoSomething() {
+	var promise SomePromise = SomePromise.new()
+	var someInt int = 2
+	var someError bool = false
 
 	someInt, someError <- promise
 }

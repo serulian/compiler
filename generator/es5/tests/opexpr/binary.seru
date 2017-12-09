@@ -15,9 +15,7 @@ class SomeClass {
 		return left
 	}
 
-	operator not(value SomeClass) {
-		return value
-	}
+	operator not(value SomeClass) { return value }
 
 	operator plus(left SomeClass, right SomeClass) {
 		return left
@@ -40,11 +38,9 @@ class SomeClass {
 	}
 }
 
-function<void> DoSomething(first SomeClass, second SomeClass) {
+function DoSomething(first SomeClass, second SomeClass) {
 	first + second
 	first - second
 }
 
-function<any> TEST() {
-	return (1 + 2) == 3
-}
+function TEST() any { return 1 + 2 == 3 }

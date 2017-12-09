@@ -1,0 +1,51 @@
+NodeTypeFile
+  end-rune = 81
+  input-source = switch statement no expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 81
+      input-source = switch statement no expr test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 81
+          input-source = switch statement no expr test
+          start-rune = 24
+          block-child =>
+            NodeTypeSwitchStatement
+              end-rune = 79
+              input-source = switch statement no expr test
+              start-rune = 27
+              switch-case =>
+                NodeTypeSwitchStatementCase
+                  end-rune = 77
+                  input-source = switch statement no expr test
+                  start-rune = 43
+                  switch-case-expression =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 48
+                      identexpr-name = foobar
+                      input-source = switch statement no expr test
+                      start-rune = 43
+                  switch-case-statement =>
+                    NodeTypeStatementBlock
+                      end-rune = 77
+                      input-source = switch statement no expr test
+                      start-rune = 54
+                      block-child =>
+                        NodeTypeExpressionStatement
+                          end-rune = 67
+                          input-source = switch statement no expr test
+                          start-rune = 54
+                          expr-statement-expr =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 66
+                              identexpr-name = someOtherExpr
+                              input-source = switch statement no expr test
+                              start-rune = 54
+                        NodeTypeReturnStatement
+                          end-rune = 76
+                          input-source = switch statement no expr test
+                          start-rune = 71

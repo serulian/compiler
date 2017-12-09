@@ -1,12 +1,11 @@
-var<int> counter = 0
+var counter int = 0
 
 class SomeClass {
-	var<int> value
+	var value int
+
 	constructor NewThing(value int) {
 		counter = counter + 1
 
-		return SomeClass{
-			value: value + counter,
-		}
+		return SomeClass{value: value + counter}
 	}
 }

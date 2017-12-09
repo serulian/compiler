@@ -1,20 +1,18 @@
 class SomeClass {
-	var<int> SomeField
-	var<bool> anotherField = false
+	var SomeField int
+	var anotherField bool = false
 
-	property<bool> AnotherField {
+	property AnotherField bool {
 		get { return this.anotherField }
+
 		set {
 			this.anotherField = val
 		}
 	}
 }
 
-function<any> TEST() {
-	var sc = SomeClass{
-		SomeField: 2,
-		AnotherField: true,
-	}
+function TEST() any {
+	var sc = SomeClass{SomeField: 2, AnotherField: true}
 
-	return (sc.SomeField == 2) && sc.anotherField
+	return sc.SomeField == 2 && sc.anotherField
 }

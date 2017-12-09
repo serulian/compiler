@@ -1,0 +1,27 @@
+NodeTypeFile
+  end-rune = 40
+  input-source = variable no type failure test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 40
+      input-source = variable no type failure test
+      named = SomeFunction
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 40
+          input-source = variable no type failure test
+          start-rune = 24
+          block-child =>
+            NodeTypeVariableStatement
+              end-rune = 38
+              input-source = variable no type failure test
+              named = someName
+              start-rune = 27
+              child-node =>
+                NodeTypeError
+                  end-rune = 38
+                  error-message = An initializer is required for variable someName, as it has no declared type
+                  input-source = variable no type failure test
+                  start-rune = 39

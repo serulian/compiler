@@ -1,7 +1,7 @@
 interface Empty {}
 
-///   [em ]
-agent<Empty> SomeAgent {}
+///                 [em ]
+agent SomeAgent for Empty {}
 
 ///   [ac        ]      [sa     ]
 class AnotherClass with SomeAgent {}

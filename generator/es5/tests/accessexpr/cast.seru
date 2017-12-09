@@ -1,15 +1,15 @@
 class SomeClass {
-	property<bool> Result {
+	property Result bool {
 		get { return true }
 	}
 }
 
 interface ISomeInterface {}
 
-function<bool> DoSomething(i ISomeInterface) {
+function DoSomething(i ISomeInterface) bool {
 	return i.(SomeClass).Result
 }
 
-function<any> TEST() {
+function TEST() any {
 	return DoSomething(SomeClass.new())
 }

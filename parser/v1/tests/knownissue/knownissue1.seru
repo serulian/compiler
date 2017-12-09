@@ -1,0 +1,7 @@
+interface IEmpty {}
+class SomeClass {}
+class AnotherClass {}
+
+var empty IEmpty
+var someClass SomeClass
+var anotherClass AnotherClass

@@ -1,6 +1,7 @@
-function<int> DoSomething() {
+function DoSomething() int {
 	/* switch */switch {
 		case true:
+
 		case false:
 			return 67
 	}

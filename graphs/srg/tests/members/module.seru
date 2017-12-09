@@ -1,5 +1,5 @@
 class SomeClass {}
 
-var<SomeClass> SomeVar
+var SomeVar SomeClass
 
-function<SomeClass> SomeFunction() {}
+function SomeFunction() SomeClass {}

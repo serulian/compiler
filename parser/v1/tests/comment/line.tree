@@ -1,0 +1,81 @@
+NodeTypeFile
+  end-rune = 125
+  input-source = comment line test
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 125
+      input-source = comment line test
+      named = Integer
+      start-rune = 0
+      type-member =>
+        NodeTypeOperator
+          end-rune = 124
+          input-source = comment line test
+          operator-named = Range
+          start-rune = 17
+          definition-body =>
+            NodeTypeStatementBlock
+              end-rune = 124
+              input-source = comment line test
+              start-rune = 52
+              block-child =>
+                NodeTypeReturnStatement
+                  end-rune = 120
+                  input-source = comment line test
+                  start-rune = 113
+                  child-node =>
+                    NodeTypeComment
+                      comment-value = // TODO: fix this once we can actually create a stream
+                      end-rune = 109
+                      input-source = comment line test
+                      start-rune = 56
+                  return-expr =>
+                    NodeNumericLiteralExpression
+                      end-rune = 120
+                      input-source = comment line test
+                      literal-value = 2
+                      start-rune = 120
+          typemember-parameter =>
+            NodeTypeParameter
+              end-rune = 40
+              input-source = comment line test
+              named = start
+              start-rune = 32
+              parameter-type =>
+                NodeTypeTypeReference
+                  end-rune = 40
+                  input-source = comment line test
+                  start-rune = 38
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 40
+                      input-source = comment line test
+                      start-rune = 38
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 40
+                          identifieraccess-name = int
+                          input-source = comment line test
+                          start-rune = 38
+            NodeTypeParameter
+              end-rune = 49
+              input-source = comment line test
+              named = end
+              start-rune = 43
+              parameter-type =>
+                NodeTypeTypeReference
+                  end-rune = 49
+                  input-source = comment line test
+                  start-rune = 47
+                  typereference-path =>
+                    NodeTypeIdentifierPath
+                      end-rune = 49
+                      input-source = comment line test
+                      start-rune = 47
+                      identifierpath-root =>
+                        NodeTypeIdentifierAccess
+                          end-rune = 49
+                          identifieraccess-name = int
+                          input-source = comment line test
+                          start-rune = 47

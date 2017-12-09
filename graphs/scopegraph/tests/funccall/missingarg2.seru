@@ -1,7 +1,7 @@
-function<bool> someFunction(first string, second bool) {
+function someFunction(first string, second bool) bool {
 	return true
 }
 
-function<void> DoSomething() {
+function DoSomething() {
 	someFunction('hello')
 }

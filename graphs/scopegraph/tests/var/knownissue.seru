@@ -1,16 +1,14 @@
-class Thing {
-	
-}
+class Thing {}
 
 class SomeClass {
 	constructor ForThings(things []Thing) {
 		return SomeClass.new()
 	}
 
-	function<void> Apply() {}
+	function Apply() {}
 }
 
-function<any> TEST() {
+function TEST() any {
 	var someclass = SomeClass.ForThings([]Thing{})
 	someclass.Apply()
 	return null

@@ -154,7 +154,11 @@ func formatFiles(path string, importHandling importHandlingInfo, supportOlderSyn
 			return false, nil
 		}
 
-		return true, parseAndFormatSourceFile(currentPath, info, importHandling, supportOlderSyntax)
+		err := parseAndFormatSourceFile(currentPath, info, importHandling, supportOlderSyntax)
+		if err != nil {
+			compilerutil.LogToConsole(compilerutil.WarningLogLevel, nil, "Found syntax errors for path: `%s`; skipping format", currentPath)
+		}
+		return true, nil
 	}, packageloader.SerulianPackageDirectory)
 
 	if filesWalked == 0 {

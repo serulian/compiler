@@ -1,0 +1,312 @@
+NodeTypeFile
+  end-rune = 132
+  input-source = range expr test
+  start-rune = 0
+  child-node =>
+    NodeTypeFunction
+      end-rune = 132
+      input-source = range expr test
+      named = DoSomething
+      start-rune = 0
+      definition-body =>
+        NodeTypeStatementBlock
+          end-rune = 132
+          input-source = range expr test
+          start-rune = 23
+          block-child =>
+            NodeTypeExpressionStatement
+              end-rune = 30
+              input-source = range expr test
+              start-rune = 26
+              expr-statement-expr =>
+                NodeDefineRangeExpression
+                  end-rune = 29
+                  input-source = range expr test
+                  start-rune = 26
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 26
+                      identexpr-name = a
+                      input-source = range expr test
+                      start-rune = 26
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 29
+                      identexpr-name = b
+                      input-source = range expr test
+                      start-rune = 29
+            NodeTypeExpressionStatement
+              end-rune = 36
+              input-source = range expr test
+              start-rune = 32
+              expr-statement-expr =>
+                NodeDefineRangeExpression
+                  end-rune = 35
+                  input-source = range expr test
+                  start-rune = 32
+                  binary-expression-left =>
+                    NodeNumericLiteralExpression
+                      end-rune = 32
+                      input-source = range expr test
+                      literal-value = 0
+                      start-rune = 32
+                  binary-expression-right =>
+                    NodeNumericLiteralExpression
+                      end-rune = 35
+                      input-source = range expr test
+                      literal-value = 1
+                      start-rune = 35
+            NodeTypeExpressionStatement
+              end-rune = 43
+              input-source = range expr test
+              start-rune = 38
+              expr-statement-expr =>
+                NodeDefineRangeExpression
+                  end-rune = 42
+                  input-source = range expr test
+                  start-rune = 38
+                  binary-expression-left =>
+                    NodeNumericLiteralExpression
+                      end-rune = 39
+                      input-source = range expr test
+                      literal-value = -1
+                      start-rune = 38
+                  binary-expression-right =>
+                    NodeNumericLiteralExpression
+                      end-rune = 42
+                      input-source = range expr test
+                      literal-value = 1
+                      start-rune = 42
+            NodeTypeExpressionStatement
+              end-rune = 54
+              input-source = range expr test
+              start-rune = 45
+              expr-statement-expr =>
+                NodeDefineRangeExpression
+                  end-rune = 53
+                  input-source = range expr test
+                  start-rune = 45
+                  binary-expression-left =>
+                    NodeNumericLiteralExpression
+                      end-rune = 48
+                      input-source = range expr test
+                      literal-value = -1.1
+                      start-rune = 45
+                  binary-expression-right =>
+                    NodeNumericLiteralExpression
+                      end-rune = 53
+                      input-source = range expr test
+                      literal-value = 5.6
+                      start-rune = 51
+            NodeTypeExpressionStatement
+              end-rune = 64
+              input-source = range expr test
+              start-rune = 56
+              expr-statement-expr =>
+                NodeDefineRangeExpression
+                  end-rune = 63
+                  input-source = range expr test
+                  start-rune = 56
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 56
+                      identexpr-name = a
+                      input-source = range expr test
+                      start-rune = 56
+                  binary-expression-right =>
+                    NodeBinaryAddExpression
+                      end-rune = 63
+                      input-source = range expr test
+                      start-rune = 59
+                      binary-expression-left =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 59
+                          identexpr-name = b
+                          input-source = range expr test
+                          start-rune = 59
+                      binary-expression-right =>
+                        NodeNumericLiteralExpression
+                          end-rune = 63
+                          input-source = range expr test
+                          literal-value = 1
+                          start-rune = 63
+            NodeTypeExpressionStatement
+              end-rune = 74
+              input-source = range expr test
+              start-rune = 66
+              expr-statement-expr =>
+                NodeDefineRangeExpression
+                  end-rune = 73
+                  input-source = range expr test
+                  start-rune = 66
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 66
+                      identexpr-name = a
+                      input-source = range expr test
+                      start-rune = 66
+                  binary-expression-right =>
+                    NodeBinarySubtractExpression
+                      end-rune = 73
+                      input-source = range expr test
+                      start-rune = 69
+                      binary-expression-left =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 69
+                          identexpr-name = b
+                          input-source = range expr test
+                          start-rune = 69
+                      binary-expression-right =>
+                        NodeNumericLiteralExpression
+                          end-rune = 73
+                          input-source = range expr test
+                          literal-value = 1
+                          start-rune = 73
+            NodeTypeExpressionStatement
+              end-rune = 82
+              input-source = range expr test
+              start-rune = 77
+              expr-statement-expr =>
+                NodeDefineExclusiveRangeExpression
+                  end-rune = 81
+                  input-source = range expr test
+                  start-rune = 77
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 77
+                      identexpr-name = a
+                      input-source = range expr test
+                      start-rune = 77
+                  binary-expression-right =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 81
+                      identexpr-name = b
+                      input-source = range expr test
+                      start-rune = 81
+            NodeTypeExpressionStatement
+              end-rune = 89
+              input-source = range expr test
+              start-rune = 84
+              expr-statement-expr =>
+                NodeDefineExclusiveRangeExpression
+                  end-rune = 88
+                  input-source = range expr test
+                  start-rune = 84
+                  binary-expression-left =>
+                    NodeNumericLiteralExpression
+                      end-rune = 84
+                      input-source = range expr test
+                      literal-value = 0
+                      start-rune = 84
+                  binary-expression-right =>
+                    NodeNumericLiteralExpression
+                      end-rune = 88
+                      input-source = range expr test
+                      literal-value = 1
+                      start-rune = 88
+            NodeTypeExpressionStatement
+              end-rune = 97
+              input-source = range expr test
+              start-rune = 91
+              expr-statement-expr =>
+                NodeDefineExclusiveRangeExpression
+                  end-rune = 96
+                  input-source = range expr test
+                  start-rune = 91
+                  binary-expression-left =>
+                    NodeNumericLiteralExpression
+                      end-rune = 92
+                      input-source = range expr test
+                      literal-value = -1
+                      start-rune = 91
+                  binary-expression-right =>
+                    NodeNumericLiteralExpression
+                      end-rune = 96
+                      input-source = range expr test
+                      literal-value = 1
+                      start-rune = 96
+            NodeTypeExpressionStatement
+              end-rune = 109
+              input-source = range expr test
+              start-rune = 99
+              expr-statement-expr =>
+                NodeDefineExclusiveRangeExpression
+                  end-rune = 108
+                  input-source = range expr test
+                  start-rune = 99
+                  binary-expression-left =>
+                    NodeNumericLiteralExpression
+                      end-rune = 102
+                      input-source = range expr test
+                      literal-value = -1.1
+                      start-rune = 99
+                  binary-expression-right =>
+                    NodeNumericLiteralExpression
+                      end-rune = 108
+                      input-source = range expr test
+                      literal-value = 5.6
+                      start-rune = 106
+            NodeTypeExpressionStatement
+              end-rune = 120
+              input-source = range expr test
+              start-rune = 111
+              expr-statement-expr =>
+                NodeDefineExclusiveRangeExpression
+                  end-rune = 119
+                  input-source = range expr test
+                  start-rune = 111
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 111
+                      identexpr-name = a
+                      input-source = range expr test
+                      start-rune = 111
+                  binary-expression-right =>
+                    NodeBinaryAddExpression
+                      end-rune = 119
+                      input-source = range expr test
+                      start-rune = 115
+                      binary-expression-left =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 115
+                          identexpr-name = b
+                          input-source = range expr test
+                          start-rune = 115
+                      binary-expression-right =>
+                        NodeNumericLiteralExpression
+                          end-rune = 119
+                          input-source = range expr test
+                          literal-value = 1
+                          start-rune = 119
+            NodeTypeExpressionStatement
+              end-rune = 131
+              input-source = range expr test
+              start-rune = 122
+              expr-statement-expr =>
+                NodeDefineExclusiveRangeExpression
+                  end-rune = 130
+                  input-source = range expr test
+                  start-rune = 122
+                  binary-expression-left =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 122
+                      identexpr-name = a
+                      input-source = range expr test
+                      start-rune = 122
+                  binary-expression-right =>
+                    NodeBinarySubtractExpression
+                      end-rune = 130
+                      input-source = range expr test
+                      start-rune = 126
+                      binary-expression-left =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 126
+                          identexpr-name = b
+                          input-source = range expr test
+                          start-rune = 126
+                      binary-expression-right =>
+                        NodeNumericLiteralExpression
+                          end-rune = 130
+                          input-source = range expr test
+                          literal-value = 1
+                          start-rune = 130

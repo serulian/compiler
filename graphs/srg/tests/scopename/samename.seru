@@ -1,6 +1,4 @@
-from anothermodule import doSomething
 from anothermodule import Foo
+from anothermodule import doSomething
 
-function<void> SomeFunction() /* somefn */{
-	
-}
+function SomeFunction() /* somefn */{}

@@ -1,13 +1,13 @@
 interface ISomething {
-	function<int> privateFunc()
+	function privateFunc() int
 }
 
 class SomeClass {
-	function<int> privateFunc() {}
+	function privateFunc() int {}
 }
 
-class GenericClass<T : ISomething>{}
+class GenericClass<T : ISomething> {}
 
 class AnotherClass {
-	var<GenericClass<SomeClass>> genericClass
+	var genericClass GenericClass<SomeClass>
 }
