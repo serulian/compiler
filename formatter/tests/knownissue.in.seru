@@ -22,4 +22,10 @@ function AnotherFunction() {
 	if not key in keys {
         return
     }
+
+	detachEvented?.Detached(domNode)
+
+	currentVirtualNode := (componentVirtualNode.Get(component))!
+	context := (componentsContext.Get(component))!
+	node := (componentDOMNode.Get(component))!
 }

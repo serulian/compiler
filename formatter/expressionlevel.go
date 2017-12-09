@@ -240,6 +240,7 @@ var nonWrappingSliceOrCallNodeKinds = []sourceshape.NodeType{
 	sourceshape.NodeTypeIdentifierExpression,
 	sourceshape.NodeListLiteralExpression,
 	sourceshape.NodeMemberAccessExpression,
+	sourceshape.NodeNullableMemberAccessExpression,
 	sourceshape.NodeDynamicMemberAccessExpression,
 	sourceshape.NodeStreamMemberAccessExpression,
 	sourceshape.NodeFunctionCallExpression,
