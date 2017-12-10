@@ -8,14 +8,18 @@ package builder
 import (
 	"io/ioutil"
 	"log"
+	"os"
 	"path"
+	"path/filepath"
 	"sort"
+	"strings"
 
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilerutil"
 	"github.com/serulian/compiler/generator/es5"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/packageloader"
+	"github.com/serulian/compiler/sourceshape"
 	"github.com/serulian/compiler/version"
 )
 
@@ -77,11 +81,32 @@ func OutputErrors(errors []compilercommon.SourceError) {
 	}
 }
 
+func isDirectory(path string) (bool, error) {
+	fileInfo, err := os.Stat(path)
+	return fileInfo.IsDir(), err
+}
+
 // BuildSource invokes the compiler starting at the given root source file path.
 func BuildSource(rootSourceFilePath string, debug bool, vcsDevelopmentDirectories ...string) bool {
 	// Disable logging unless the debug flag is on.
 	if !debug {
 		log.SetOutput(ioutil.Discard)
+	}
+
+	isDirectory, err := isDirectory(rootSourceFilePath)
+	if err != nil {
+		compilerutil.LogToConsole(compilerutil.ErrorLogLevel, nil, "%s", err.Error())
+		return false
+	}
+
+	if isDirectory {
+		compilerutil.LogToConsole(compilerutil.ErrorLogLevel, nil, "Entrypoint must be a Serulian source file: `%s` is a directory", rootSourceFilePath)
+		return false
+	}
+
+	if !strings.HasSuffix(rootSourceFilePath, sourceshape.SerulianFileExtension) {
+		compilerutil.LogToConsole(compilerutil.ErrorLogLevel, nil, "Entrypoint must be a Serulian source file: `%s` does not have the `%s` extension", rootSourceFilePath, sourceshape.SerulianFileExtension)
+		return false
 	}
 
 	for _, vcsDevelopmentDir := range vcsDevelopmentDirectories {
@@ -105,7 +130,14 @@ func BuildSource(rootSourceFilePath string, debug bool, vcsDevelopmentDirectorie
 	}
 
 	// Generate the program's source.
-	filename := path.Base(rootSourceFilePath) + ".js"
+	abs, err := filepath.Abs(rootSourceFilePath)
+	if err != nil {
+		compilerutil.LogToConsole(compilerutil.ErrorLogLevel, nil, "%s", err.Error())
+		return false
+	}
+
+	fileprefix := path.Base(abs)
+	filename := fileprefix + ".js"
 	mapname := filename + ".map"
 
 	log.Println("Generating ES5")
