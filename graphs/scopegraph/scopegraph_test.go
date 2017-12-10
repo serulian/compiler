@@ -1611,6 +1611,10 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"known issue panic test", "knownissues", "knownissue1",
 		[]expectedScopeEntry{},
 		"Operator 'equals' is not defined on type 'T'", ""},
+
+	scopegraphTest{"known issue 2 panic test", "knownissues", "knownissue2",
+		[]expectedScopeEntry{},
+		"Type 'foo.bar.baz' could not be found", ""},
 }
 
 func TestGraphs(t *testing.T) {
