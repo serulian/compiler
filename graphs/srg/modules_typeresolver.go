@@ -54,8 +54,13 @@ func (m SRGModule) ResolveTypePath(path string) (TypeResolutionResult, bool) {
 func (m SRGModule) resolveTypePathNoCaching(path string) (TypeResolutionResult, bool) {
 	pieces := strings.Split(path, ".")
 
-	if len(pieces) < 1 || len(pieces) > 2 {
-		panic(fmt.Sprintf("Expected type string with one or two pieces, found: %v", pieces))
+	if len(pieces) < 1 {
+		panic(fmt.Sprintf("Expected type string with at least one piece, found: %v", pieces))
+	}
+
+	if len(pieces) > 2 {
+		// Parseable but can never resolve.
+		return TypeResolutionResult{}, false
 	}
 
 	// If there is only a single piece, this is a local-module type, alias or reference to
