@@ -1,1 +1,2 @@
 var something int = 2
+const someConst string = 'hello world'

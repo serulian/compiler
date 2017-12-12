@@ -214,7 +214,7 @@ var promisingLabelTests = []promisingLabelTest{
 
 	promisingLabelTest{"async var does not cause promising test", "asyncvarnotpromising",
 		[]expectedPromiseLabel{
-			expectedPromiseLabel{"SomeVar", proto.ScopeLabel_SML_PROMISING_YES},
+			expectedPromiseLabel{"someVar", proto.ScopeLabel_SML_PROMISING_YES},
 			expectedPromiseLabel{"TEST", proto.ScopeLabel_SML_PROMISING_NO},
 		},
 	},

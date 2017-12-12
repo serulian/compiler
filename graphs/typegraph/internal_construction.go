@@ -410,11 +410,20 @@ func (g *TypeGraph) checkForDuplicateNames() bool {
 		for _, member := range module.Members() {
 			// Ensure the member name is unique.
 			isUniqueInModule := ensureUniqueName(member, module, moduleMembers)
+			isExported := member.IsExported()
 
 			// If exported, ensure the member's name is unique under the package.
-			if isUniqueInModule && member.IsExported() {
+			if isUniqueInModule && isExported {
 				if existing, ok := packageNameMap.CheckAndTrack(module, member); !ok {
 					g.decorateWithError(modifier.Modify(member.GraphNode), "Exported name '%s' is already defined under package %s as '%s' %s", member.Name(), module.PackagePath(), existing.Title(), existing.Name())
+					hasError = true
+				}
+			}
+
+			// If an exported module-level field, ensure it is read-only.
+			if isExported && member.IsField() && member.IsStatic() {
+				if !member.IsReadOnly() {
+					g.decorateWithError(modifier.Modify(member.GraphNode), "Exported module field '%s' must be declared as constant to be exported", member.Name())
 					hasError = true
 				}
 			}

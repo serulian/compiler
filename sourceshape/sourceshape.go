@@ -385,6 +385,7 @@ const (
 	NodeVariableStatementDeclaredType = "var-declared-type"
 	NodeVariableStatementName         = "named"
 	NodeVariableStatementExpression   = "var-expr"
+	NodeVariableStatementConstant     = "var-const"
 
 	//
 	// NodeTypeSmlExpression

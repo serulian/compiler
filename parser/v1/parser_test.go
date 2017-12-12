@@ -115,6 +115,7 @@ var parserTests = []parserTest{
 	// Module success tests.
 	{"module variable test", "module/module_var"},
 	{"module variable no declared type test", "module/module_var_nodeclare"},
+	{"module const no declared type test", "module/module_const_nodeclare"},
 	{"module function test", "module/module_function"},
 	{"void function test", "module/void_function"},
 
@@ -170,6 +171,7 @@ var parserTests = []parserTest{
 	{"class fields test", "class/fields"},
 	{"basic class operator with return type test", "class/operator_returns"},
 	{"class constructor no params stest", "class/constructor_noparams"},
+	{"class const not allowed test", "class/class_const"},
 
 	// Interface member success tests.
 	{"basic interface function test", "interface/basic_function"},

@@ -1584,6 +1584,18 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"Initialization cycle found on module member foo: module member foo -> module member DoSomething -> module member DoSomethingElse -> module member foo", ""},
 
+	/////////// const var tests /////////////////
+
+	scopegraphTest{"const var success test", "constvar", "success",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"somestring", expectedScope{true, proto.ScopeKind_VALUE, "String", "void"}},
+		},
+		"", ""},
+
+	scopegraphTest{"const var assignment failure test", "constvar", "assignfailure",
+		[]expectedScopeEntry{},
+		"Cannot assign to non-assignable module member SomeString", ""},
+
 	/////////// agent tests /////////////////
 
 	scopegraphTest{"agent constructor success test", "agent", "constructor",

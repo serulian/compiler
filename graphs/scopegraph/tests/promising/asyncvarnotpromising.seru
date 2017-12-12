@@ -1,5 +1,5 @@
 function DoSomethingAsync() int { return 42 }
 
-var SomeVar int = <- DoSomethingAsync()
+var someVar int = <- DoSomethingAsync()
 
-function TEST() int { return SomeVar + 10 }
+function TEST() int { return someVar + 10 }

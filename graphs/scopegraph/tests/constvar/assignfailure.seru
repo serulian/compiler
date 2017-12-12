@@ -1,0 +1,5 @@
+const SomeString string = 'hello world'
+
+function DoSomething() {
+    SomeString = 'foo'
+}

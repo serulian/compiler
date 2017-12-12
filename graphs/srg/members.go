@@ -194,7 +194,14 @@ func (m SRGMember) AsImplementable() SRGImplementable {
 	return SRGImplementable{m.GraphNode, m.srg}
 }
 
-// IsReadOnly returns whether the member is marked as explicitly read-only.
+// IsConstant returns whether the member is marked as explicitly constant. Only applies to variables
+// under modules.
+func (m SRGMember) IsConstant() bool {
+	_, exists := m.GraphNode.TryGet(sourceshape.NodeVariableStatementConstant)
+	return exists
+}
+
+// IsReadOnly returns whether the member is marked as explicitly read-only. Only applies to properties.
 func (m SRGMember) IsReadOnly() bool {
 	_, exists := m.GraphNode.TryGet(sourceshape.NodePropertyReadOnly)
 	return exists

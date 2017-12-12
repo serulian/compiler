@@ -4,4 +4,6 @@ function AnotherFunction() bool { return someBool }
 
 var anotherBool bool = AnotherFunction()
 
-function TEST() any { return anotherBool }
+const anotherInt int  = 42
+
+function TEST() any { return anotherBool && anotherInt == 42 }
