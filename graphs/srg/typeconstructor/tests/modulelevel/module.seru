@@ -1,4 +1,5 @@
-var SomeVar int
+var SomeVar int = 42
+const SomeConstant string = 'hello world'
 
 function DoSomething() int {}
 

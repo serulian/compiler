@@ -299,11 +299,11 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 	var memberType typegraph.TypeReference = graph.AnyTypeReference()
 	var memberKind typegraph.MemberSignatureKind = typegraph.CustomMemberSignature
 
-	var isReadOnly bool = true
-	var isStatic bool = false
+	var isReadOnly = true
+	var isStatic = false
 	var isPromising = typegraph.MemberPromisingDynamic
-	var isImplicitlyCalled bool = false
-	var hasDefaultValue bool = false
+	var isImplicitlyCalled = false
+	var hasDefaultValue = false
 	var isField = false
 
 	switch member.MemberKind() {
@@ -312,7 +312,7 @@ func (stc *srgTypeConstructor) decorateMember(member srg.SRGMember, parent typeg
 		memberType, _ = stc.resolvePossibleType(member.Node(), member.DeclaredType, graph, reporter)
 		memberKind = typegraph.FieldMemberSignature
 
-		isReadOnly = false
+		isReadOnly = member.IsConstant()
 		isField = true
 
 		_, hasDefaultValue = member.Node().TryGetNode(sourceshape.NodePredicateTypeFieldDefaultValue)
