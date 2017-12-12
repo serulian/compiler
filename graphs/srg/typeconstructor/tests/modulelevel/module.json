@@ -3,27 +3,6 @@
         "Key": "397026063ed7ec70d02fafaf759e4a68",
         "Kind": 7,
         "Children": {
-            "251c4a5593b49ba10ea8ddc12f43b888": {
-                "Predicate": "tdg-node-member",
-                "Child": {
-                    "Key": "251c4a5593b49ba10ea8ddc12f43b888",
-                    "Kind": 9,
-                    "Children": {},
-                    "Predicates": {
-                        "tdg-member-exported": "true",
-                        "tdg-member-field": "true",
-                        "tdg-member-hasdefault": "true",
-                        "tdg-member-name": "SomeVar",
-                        "tdg-member-promising": "1",
-                        "tdg-member-resolved-type": "Integer",
-                        "tdg-member-signature": "\n\u0007somevar\u0010\u0005\u0018\u0001 \u0001*\u0007Integer",
-                        "tdg-member-static": "true",
-                        "tdg-node-kind": "9|NodeType|tdg",
-                        "tdg-source-module": "tests/modulelevel/module.seru",
-                        "tdg-source-node": "(NodeRef)"
-                    }
-                }
-            },
             "5245507d7fabdbbef61cac86597788c2": {
                 "Predicate": "tdg-node-member",
                 "Child": {
@@ -51,6 +30,26 @@
                         "tdg-member-readonly": "true",
                         "tdg-member-resolved-type": "function\u003cAwaitable\u003cvoid\u003e\u003e",
                         "tdg-member-signature": "\n\u0010dosomethingasync\u0010\u0002 \u0001*\u0019function\u003cAwaitable\u003cvoid\u003e\u003e",
+                        "tdg-member-static": "true",
+                        "tdg-node-kind": "9|NodeType|tdg",
+                        "tdg-source-module": "tests/modulelevel/module.seru",
+                        "tdg-source-node": "(NodeRef)"
+                    }
+                }
+            },
+            "5d2f9d85c7be526fcea02014301d22d5": {
+                "Predicate": "tdg-node-member",
+                "Child": {
+                    "Key": "5d2f9d85c7be526fcea02014301d22d5",
+                    "Kind": 9,
+                    "Children": {},
+                    "Predicates": {
+                        "tdg-member-field": "true",
+                        "tdg-member-hasdefault": "true",
+                        "tdg-member-name": "someVar",
+                        "tdg-member-promising": "1",
+                        "tdg-member-resolved-type": "Integer",
+                        "tdg-member-signature": "\n\u0007somevar\u0010\u0005\u0018\u0001*\u0007Integer",
                         "tdg-member-static": "true",
                         "tdg-node-kind": "9|NodeType|tdg",
                         "tdg-source-module": "tests/modulelevel/module.seru",

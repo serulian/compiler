@@ -1,4 +1,4 @@
-var SomeInt int = 2
+const SomeInt int = 2
 
 var someUnexportedThing int = 4
 
