@@ -1,5 +1,5 @@
 NodeTypeFile
-  end-rune = 20
+  end-rune = 60
   input-source = module variable test
   start-rune = 0
   child-node =>
@@ -30,3 +30,31 @@ NodeTypeFile
           input-source = module variable test
           literal-value = 2
           start-rune = 20
+    NodeTypeVariable
+      end-rune = 59
+      input-source = module variable test
+      named = someConst
+      start-rune = 22
+      var-const = true
+      typemember-declared-type =>
+        NodeTypeTypeReference
+          end-rune = 43
+          input-source = module variable test
+          start-rune = 38
+          typereference-path =>
+            NodeTypeIdentifierPath
+              end-rune = 43
+              input-source = module variable test
+              start-rune = 38
+              identifierpath-root =>
+                NodeTypeIdentifierAccess
+                  end-rune = 43
+                  identifieraccess-name = string
+                  input-source = module variable test
+                  start-rune = 38
+      typemember-field-default-value =>
+        NodeStringLiteralExpression
+          end-rune = 59
+          input-source = module variable test
+          literal-value = 'hello world'
+          start-rune = 47

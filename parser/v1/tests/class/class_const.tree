@@ -1,0 +1,16 @@
+NodeTypeFile
+  end-rune = 50
+  input-source = class const not allowed test
+  start-rune = 0
+  child-node =>
+    NodeTypeClass
+      end-rune = 50
+      input-source = class const not allowed test
+      named = SomeClass
+      start-rune = 0
+      child-node =>
+        NodeTypeError
+          end-rune = 16
+          error-message = Expected type member, found const
+          input-source = class const not allowed test
+          start-rune = 22

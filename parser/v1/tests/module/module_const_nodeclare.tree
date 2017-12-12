@@ -1,0 +1,23 @@
+NodeTypeFile
+  end-rune = 12
+  input-source = module const no declared type test
+  start-rune = 0
+  child-node =>
+    NodeTypeVariable
+      end-rune = 12
+      input-source = module const no declared type test
+      named = foo
+      start-rune = 0
+      var-const = true
+      child-node =>
+        NodeTypeError
+          end-rune = 8
+          error-message = Member or class-level constant foo requires an explicitly declared type
+          input-source = module const no declared type test
+          start-rune = 10
+      typemember-field-default-value =>
+        NodeNumericLiteralExpression
+          end-rune = 12
+          input-source = module const no declared type test
+          literal-value = 2
+          start-rune = 12

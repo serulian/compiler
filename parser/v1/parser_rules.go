@@ -149,8 +149,8 @@ Loop:
 			p.currentNode().Connect(sourceshape.NodePredicateChild, p.consumeFunction(typeMemberDefinition))
 			p.tryConsumeStatementTerminator()
 
-		// variables.
-		case p.isKeyword("var"):
+		// variables and consts.
+		case p.isKeyword("var") || p.isKeyword("const"):
 			seenNonImport = true
 			p.currentNode().Connect(sourceshape.NodePredicateChild, p.consumeVar(sourceshape.NodeTypeVariable, sourceshape.NodePredicateTypeMemberName, sourceshape.NodePredicateTypeMemberDeclaredType, sourceshape.NodePredicateTypeFieldDefaultValue, consumeVarRequireExplicitType))
 			p.tryConsumeStatementTerminator()
@@ -2083,12 +2083,21 @@ func (p *sourceParser) consumeNamedValue() shared.AstNode {
 // var someName SomeType
 // var someName SomeType = someExpr
 // var someName = someExpr
+// const someName SomeType
+// const someName SomeType = someExpr
 func (p *sourceParser) consumeVar(nodeType sourceshape.NodeType, namePredicate string, typePredicate string, exprPredicate string, option consumeVarOption) shared.AstNode {
 	variableNode := p.startNode(nodeType)
 	defer p.finishNode()
 
-	// var
-	p.consumeKeyword("var")
+	// var or const
+	var title = "variable"
+	if option == consumeVarRequireExplicitType && p.isKeyword("const") {
+		p.consumeKeyword("const")
+		variableNode.Decorate(sourceshape.NodeVariableStatementConstant, "true")
+		title = "constant"
+	} else {
+		p.consumeKeyword("var")
+	}
 
 	// Name.
 	identifier, ok := p.consumeIdentifier()
@@ -2105,12 +2114,12 @@ func (p *sourceParser) consumeVar(nodeType sourceshape.NodeType, namePredicate s
 	}
 
 	if !hasType && option == consumeVarRequireExplicitType {
-		p.emitError("Member or class-level variable %s requires an explicitly declared type", identifier)
+		p.emitError("Member or class-level %s %s requires an explicitly declared type", title, identifier)
 	}
 
 	// Initializer expression. Optional if a type given, otherwise required.
 	if !hasType && !p.isToken(tokenTypeEquals) {
-		p.emitError("An initializer is required for variable %s, as it has no declared type", identifier)
+		p.emitError("An initializer is required for %s %s, as it has no declared type", title, identifier)
 	}
 
 	if _, ok := p.tryConsume(tokenTypeEquals); ok {
