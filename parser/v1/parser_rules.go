@@ -2679,6 +2679,7 @@ func (p *sourceParser) tryConsumeLambdaExpression() (shared.AstNode, bool) {
 	// () => expression
 	// (arg1) => expression
 	// (arg1, arg2) => expression
+	// (arg1 someType, arg2) => expression
 	if !p.lookaheadLambdaExpr() {
 		return nil, false
 	}
@@ -2716,16 +2717,24 @@ func (p *sourceParser) tryConsumeLambdaExpression() (shared.AstNode, bool) {
 //
 // Form:
 // someIdentifier
+// someIdentifier someType
 func (p *sourceParser) consumeLambdaParameter() shared.AstNode {
 	parameterNode := p.startNode(sourceshape.NodeTypeLambdaParameter)
 	defer p.finishNode()
 
+	// Parameter name.
 	value, ok := p.consumeIdentifier()
 	if !ok {
 		return parameterNode
 	}
 
 	parameterNode.Decorate(sourceshape.NodeLambdaExpressionParameterName, value)
+
+	// Optional explicit type.
+	if paramType, hasDefinedType := p.tryConsumeTypeReferenceUnless(typeReferenceAllowAll, tokenTypeComma, tokenTypeRightParen); hasDefinedType {
+		parameterNode.Connect(sourceshape.NodeLambdaExpressionParameterExplicitType, paramType)
+	}
+
 	return parameterNode
 }
 
@@ -2762,6 +2771,9 @@ func (p *sourceParser) lookaheadLambdaExpr() bool {
 			if _, ok := t.matchToken(tokenTypeIdentifer); !ok {
 				return false
 			}
+
+			// optional type reference
+			p.lookaheadTypeReference(t)
 
 			// comma
 			if _, ok := t.matchToken(tokenTypeComma); !ok {
@@ -3428,6 +3440,34 @@ func (p *sourceParser) lookaheadGenericSpecifier(t *lookaheadTracker) bool {
 func (p *sourceParser) lookaheadTypeReference(t *lookaheadTracker) bool {
 	// Match any nullable or streams.
 	t.matchToken(tokenTypeTimes, tokenTypeQuestionMark)
+
+	// Slices and mappings.
+	// []type
+	// []{type}
+	if _, ok := t.matchToken(tokenTypeLeftBracket); ok {
+		// ]
+		if _, ok := t.matchToken(tokenTypeRightBracket); !ok {
+			return false
+		}
+
+		// {
+		if _, ok := t.matchToken(tokenTypeLeftBrace); ok {
+			if !p.lookaheadTypeReference(t) {
+				return false
+			}
+
+			// }
+			if _, ok := t.matchToken(tokenTypeRightBrace); !ok {
+				return false
+			}
+		}
+
+		if !p.lookaheadTypeReference(t) {
+			return false
+		}
+
+		return true
+	}
 
 	for {
 		// Type name or path.
