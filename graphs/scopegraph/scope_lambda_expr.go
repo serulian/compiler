@@ -89,14 +89,28 @@ func (sb *scopeBuilder) scopeInlineLambaExpression(node compilergraph.GraphNode,
 		BuildNodeIterator()
 
 	for pit.Next() {
-		parameterType, hasParameterType := sb.inferredParameterTypes.Get(string(pit.Node().NodeId))
+		paramNode := pit.Node()
+		currentContext = currentContext.withLocalNamed(paramNode, sb)
+
+		// If there is an explicitly defined type on the parameter, we use that.
+		definedTypeNode, hasDefinedType := paramNode.TryGetNode(sourceshape.NodeLambdaExpressionParameterExplicitType)
+		if hasDefinedType {
+			definedTypeRef, derr := sb.sg.ResolveSRGTypeRef(sb.sg.srg.GetTypeRef(definedTypeNode))
+			if derr != nil {
+				return newScope().Invalid().GetScope()
+			}
+
+			parameterTypes = append(parameterTypes, definedTypeRef)
+			continue
+		}
+
+		// Otherwise, check for an inferred parameter type.
+		parameterType, hasParameterType := sb.inferredParameterTypes.Get(string(paramNode.NodeId))
 		if hasParameterType {
 			parameterTypes = append(parameterTypes, parameterType.(typegraph.TypeReference))
 		} else {
 			parameterTypes = append(parameterTypes, sb.sg.tdg.AnyTypeReference())
 		}
-
-		currentContext = currentContext.withLocalNamed(pit.Node(), sb)
 	}
 
 	// Scope the lambda's internal expression.

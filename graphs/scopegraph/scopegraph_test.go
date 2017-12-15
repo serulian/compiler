@@ -1325,6 +1325,12 @@ var scopeGraphTests = []scopegraphTest{
 		},
 		"", ""},
 
+	scopegraphTest{"lambda expression mixed inference test", "lambda", "mixed",
+		[]expectedScopeEntry{
+			expectedScopeEntry{"varref", expectedScope{true, proto.ScopeKind_VALUE, "function<Boolean>(Integer, String?)", "void"}},
+		},
+		"", ""},
+
 	scopegraphTest{"lambda expression full definition test", "lambda", "full",
 		[]expectedScopeEntry{
 			expectedScopeEntry{"implicitreturn", expectedScope{true, proto.ScopeKind_VALUE, "function<Integer>(Integer, Boolean)", "void"}},
