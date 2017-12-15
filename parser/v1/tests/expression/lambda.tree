@@ -1,16 +1,16 @@
 NodeTypeFile
-  end-rune = 89
+  end-rune = 195
   input-source = lambda expr test
   start-rune = 0
   child-node =>
     NodeTypeFunction
-      end-rune = 89
+      end-rune = 195
       input-source = lambda expr test
       named = SomeFunction
       start-rune = 0
       definition-body =>
         NodeTypeStatementBlock
-          end-rune = 89
+          end-rune = 195
           input-source = lambda expr test
           start-rune = 24
           block-child =>
@@ -76,3 +76,171 @@ NodeTypeFile
                       input-source = lambda expr test
                       named = b
                       start-rune = 69
+            NodeTypeExpressionStatement
+              end-rune = 125
+              input-source = lambda expr test
+              start-rune = 90
+              expr-statement-expr =>
+                NodeTypeLambdaExpression
+                  end-rune = 124
+                  input-source = lambda expr test
+                  start-rune = 90
+                  lambda-expression-child-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 124
+                      identexpr-name = someTypedExpr
+                      input-source = lambda expr test
+                      start-rune = 112
+                  lambda-expression-inferred-parameter =>
+                    NodeTypeLambdaParameter
+                      end-rune = 95
+                      input-source = lambda expr test
+                      named = a
+                      start-rune = 91
+                      lambda-expression-parameter-explicit-type =>
+                        NodeTypeTypeReference
+                          end-rune = 95
+                          input-source = lambda expr test
+                          start-rune = 93
+                          typereference-path =>
+                            NodeTypeIdentifierPath
+                              end-rune = 95
+                              input-source = lambda expr test
+                              start-rune = 93
+                              identifierpath-root =>
+                                NodeTypeIdentifierAccess
+                                  end-rune = 95
+                                  identifieraccess-name = int
+                                  input-source = lambda expr test
+                                  start-rune = 93
+                    NodeTypeLambdaParameter
+                      end-rune = 106
+                      input-source = lambda expr test
+                      named = b
+                      start-rune = 98
+                      lambda-expression-parameter-explicit-type =>
+                        NodeTypeStream
+                          end-rune = 106
+                          input-source = lambda expr test
+                          start-rune = 100
+                          typereference-inner-type =>
+                            NodeTypeTypeReference
+                              end-rune = 105
+                              input-source = lambda expr test
+                              start-rune = 100
+                              typereference-path =>
+                                NodeTypeIdentifierPath
+                                  end-rune = 105
+                                  input-source = lambda expr test
+                                  start-rune = 100
+                                  identifierpath-root =>
+                                    NodeTypeIdentifierAccess
+                                      end-rune = 105
+                                      identifieraccess-name = string
+                                      input-source = lambda expr test
+                                      start-rune = 100
+            NodeTypeExpressionStatement
+              end-rune = 160
+              input-source = lambda expr test
+              start-rune = 127
+              expr-statement-expr =>
+                NodeTypeLambdaExpression
+                  end-rune = 159
+                  input-source = lambda expr test
+                  start-rune = 127
+                  lambda-expression-child-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 159
+                      identexpr-name = anotherExpr
+                      input-source = lambda expr test
+                      start-rune = 149
+                  lambda-expression-inferred-parameter =>
+                    NodeTypeLambdaParameter
+                      end-rune = 128
+                      input-source = lambda expr test
+                      named = a
+                      start-rune = 128
+                    NodeTypeLambdaParameter
+                      end-rune = 140
+                      input-source = lambda expr test
+                      named = b
+                      start-rune = 131
+                      lambda-expression-parameter-explicit-type =>
+                        NodeTypeSlice
+                          end-rune = 140
+                          input-source = lambda expr test
+                          start-rune = 133
+                          typereference-inner-type =>
+                            NodeTypeTypeReference
+                              end-rune = 140
+                              input-source = lambda expr test
+                              start-rune = 135
+                              typereference-path =>
+                                NodeTypeIdentifierPath
+                                  end-rune = 140
+                                  input-source = lambda expr test
+                                  start-rune = 135
+                                  identifierpath-root =>
+                                    NodeTypeIdentifierAccess
+                                      end-rune = 140
+                                      identifieraccess-name = string
+                                      input-source = lambda expr test
+                                      start-rune = 135
+                    NodeTypeLambdaParameter
+                      end-rune = 143
+                      input-source = lambda expr test
+                      named = c
+                      start-rune = 143
+            NodeTypeExpressionStatement
+              end-rune = 194
+              input-source = lambda expr test
+              start-rune = 162
+              expr-statement-expr =>
+                NodeTypeLambdaExpression
+                  end-rune = 193
+                  input-source = lambda expr test
+                  start-rune = 162
+                  lambda-expression-child-expr =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 193
+                      identexpr-name = anotherExpr
+                      input-source = lambda expr test
+                      start-rune = 183
+                  lambda-expression-inferred-parameter =>
+                    NodeTypeLambdaParameter
+                      end-rune = 163
+                      input-source = lambda expr test
+                      named = a
+                      start-rune = 163
+                    NodeTypeLambdaParameter
+                      end-rune = 174
+                      input-source = lambda expr test
+                      named = b
+                      start-rune = 166
+                      lambda-expression-parameter-explicit-type =>
+                        NodeTypeTypeReference
+                          end-rune = 174
+                          input-source = lambda expr test
+                          start-rune = 168
+                          typereference-path =>
+                            NodeTypeIdentifierPath
+                              end-rune = 174
+                              input-source = lambda expr test
+                              start-rune = 168
+                              identifierpath-root =>
+                                NodeTypeIdentifierAccess
+                                  end-rune = 174
+                                  identifieraccess-name = bar
+                                  input-source = lambda expr test
+                                  start-rune = 172
+                                  identifieraccess-source =>
+                                    NodeTypeIdentifierAccess
+                                      end-rune = 170
+                                      identifieraccess-name = foo
+                                      input-source = lambda expr test
+                                      start-rune = 168
+                    NodeTypeLambdaParameter
+                      end-rune = 177
+                      input-source = lambda expr test
+                      named = c
+                      start-rune = 177

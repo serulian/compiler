@@ -521,7 +521,8 @@ const (
 	//
 	//	NodeTypeLambdaParameter
 	//
-	NodeLambdaExpressionParameterName = "named"
+	NodeLambdaExpressionParameterName         = "named"
+	NodeLambdaExpressionParameterExplicitType = "lambda-expression-parameter-explicit-type"
 
 	//
 	// Binary expressions.

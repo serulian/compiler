@@ -1,0 +1,4 @@
+function DoSomething() {
+	var someVar = /* varref */(a, b string?) => true
+	someVar(1)
+}
