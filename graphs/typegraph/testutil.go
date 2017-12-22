@@ -26,7 +26,7 @@ func ConstructTypeGraphWithBasicTypes(modules ...TestModule) *TypeGraph {
 }
 
 // NewBasicTypesConstructorForTesting returns a new TypeGraphConstructor which adds the basic types for testing.
-func NewBasicTypesConstructorForTesting(graph *compilergraph.SerulianGraph) TypeGraphConstructor {
+func NewBasicTypesConstructorForTesting(graph compilergraph.SerulianGraph) TypeGraphConstructor {
 	fsg := graph.NewGraphLayer("test", fakeNodeTypeTagged)
 	return &testBasicTypesConstructor{emptyTypeConstructor{}, fsg, nil}
 }

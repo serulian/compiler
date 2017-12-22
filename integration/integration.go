@@ -15,7 +15,7 @@ import (
 // over a Serulian graph.
 type LanguageIntegrationProvider interface {
 	// GetIntegration returns a new LanguageIntegration instance over the given graph.
-	GetIntegration(graph *compilergraph.SerulianGraph) LanguageIntegration
+	GetIntegration(graph compilergraph.SerulianGraph) LanguageIntegration
 }
 
 // LanguageIntegration defines an integration of an external language or system into Serulian.

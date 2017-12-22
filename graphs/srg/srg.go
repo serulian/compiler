@@ -29,9 +29,9 @@ const srgSourceKind = ""
 
 // SRG represents the SRG layer and all its associated helper methods.
 type SRG struct {
-	Graph *compilergraph.SerulianGraph // The root graph.
+	Graph compilergraph.SerulianGraph // The root graph.
 
-	layer         *compilergraph.GraphLayer      // The SRG layer in the graph.
+	layer         compilergraph.GraphLayer       // The SRG layer in the graph.
 	packageMap    packageloader.LoadedPackageMap // Map from package kind and path to info.
 	sourceTracker packageloader.SourceTracker    // The source tracker.
 
@@ -42,7 +42,7 @@ type SRG struct {
 }
 
 // NewSRG returns a new SRG for populating the graph with parsed source.
-func NewSRG(graph *compilergraph.SerulianGraph) *SRG {
+func NewSRG(graph compilergraph.SerulianGraph) *SRG {
 	g := &SRG{
 		Graph: graph,
 		layer: graph.NewGraphLayer("srg", sourceshape.NodeTypeTagged),

@@ -28,7 +28,7 @@ func loadSRG(t *testing.T, path string, libPaths ...string) (*SRG, packageloader
 	testLoader := &testTypePackageLoader{graph}
 
 	loader := packageloader.NewPackageLoader(packageloader.Config{
-		Entrypoint:                packageloader.Entrypoint(graph.RootSourceFilePath),
+		Entrypoint:                packageloader.Entrypoint(graph.RootSourceFilePath()),
 		VCSDevelopmentDirectories: []string{},
 		SourceHandlers:            []packageloader.SourceHandler{testSRG.SourceHandler(), testLoader},
 	})
@@ -48,7 +48,7 @@ func getSRG(t *testing.T, path string, libPaths ...string) *SRG {
 }
 
 type testTypePackageLoader struct {
-	graph *compilergraph.SerulianGraph
+	graph compilergraph.SerulianGraph
 }
 
 func (t testTypePackageLoader) Kind() string {

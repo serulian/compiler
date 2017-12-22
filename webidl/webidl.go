@@ -23,7 +23,7 @@ type webidlProvider struct {
 }
 
 // WebIDLProvider returns a provider of a WebIDL integration.
-func WebIDLProvider(graph *compilergraph.SerulianGraph) webidlProvider {
+func WebIDLProvider(graph compilergraph.SerulianGraph) webidlProvider {
 	return webidlProvider{irg.NewIRG(graph)}
 }
 
