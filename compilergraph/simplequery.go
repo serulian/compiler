@@ -12,7 +12,7 @@ import (
 // newSimpleDirectionalIterator returns a new SimpleDirectionalIterator over nodes in the given
 // layer, starting at the given starting name and looking either inward or outward over the given
 // predicate *already prefixed for the layer*.
-func newSimpleDirectionalIterator(layer *GraphLayer, startingQuadValue quad.Value,
+func newSimpleDirectionalIterator(layer *graphLayer, startingQuadValue quad.Value,
 	prefixedPredicate quad.Value,
 	direction int) NodeIterator {
 
@@ -38,7 +38,7 @@ func newSimpleDirectionalIterator(layer *GraphLayer, startingQuadValue quad.Valu
 // in a single direction, over a single predicate). This is a good ~25% faster than using the
 // complicated Cayley iterators.
 type simpleDirectionalIterator struct {
-	layer             *GraphLayer        // The graph layer.
+	layer             *graphLayer        // The graph layer.
 	quadIterator      *memstore.Iterator // The internal iterator over all the quads from the name.
 	prefixedPredicate quad.Value         // The predicate to check, already prefixed for the layer.
 	direction         quad.Direction     // The direction in which values are being returned.

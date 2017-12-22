@@ -11,15 +11,13 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/serulian/compiler/compilerutil"
-
 	"github.com/cayleygraph/cayley"
 	"github.com/cayleygraph/cayley/graph/memstore"
 	"github.com/cayleygraph/cayley/quad"
 )
 
-// GraphLayer represents a single layer in the overall project graph.
-type GraphLayer struct {
+// graphLayer represents a single layer in the overall project graph.
+type graphLayer struct {
 	id                string         // Unique ID for the layer.
 	prefix            string         // The predicate prefix
 	cayleyStore       *cayley.Handle // Handle to the cayley store.
@@ -28,19 +26,8 @@ type GraphLayer struct {
 	isFrozen          bool           // Whether the layer is frozen. Once frozen, a layer cannot be modified.
 }
 
-// NewGraphLayer returns a new graph layer of the given kind.
-func (sg *SerulianGraph) NewGraphLayer(uniqueID string, nodeKindEnum TaggedValue) *GraphLayer {
-	return &GraphLayer{
-		id:                compilerutil.NewUniqueId(),
-		prefix:            uniqueID,
-		cayleyStore:       sg.cayleyStore,
-		nodeKindPredicate: "node-kind",
-		nodeKindEnum:      nodeKindEnum,
-	}
-}
-
 // NewModifier returns a new layer modifier for modifying the graph.
-func (gl *GraphLayer) NewModifier() GraphLayerModifier {
+func (gl *graphLayer) NewModifier() GraphLayerModifier {
 	if gl.isFrozen {
 		panic("Cannot modify a frozen graph layer")
 	}
@@ -49,17 +36,17 @@ func (gl *GraphLayer) NewModifier() GraphLayerModifier {
 }
 
 // Freeze freezes the layer, preventing any further modification.
-func (gl *GraphLayer) Freeze() {
+func (gl *graphLayer) Freeze() {
 	gl.isFrozen = true
 }
 
 // Unfreeze unfreezes the layer, allowing for additional modification.
-func (gl *GraphLayer) Unfreeze() {
+func (gl *graphLayer) Unfreeze() {
 	gl.isFrozen = false
 }
 
 // GetNode returns a node found in the graph layer.
-func (gl *GraphLayer) GetNode(nodeID GraphNodeId) GraphNode {
+func (gl *graphLayer) GetNode(nodeID GraphNodeId) GraphNode {
 	result, found := gl.TryGetNode(nodeID)
 	if !found {
 		panic(fmt.Sprintf("Unknown node %s in layer %s (%s)", nodeID, gl.prefix, gl.id))
@@ -68,7 +55,7 @@ func (gl *GraphLayer) GetNode(nodeID GraphNodeId) GraphNode {
 }
 
 // TryGetNode tries to return a node found in the graph layer.
-func (gl *GraphLayer) TryGetNode(nodeID GraphNodeId) (GraphNode, bool) {
+func (gl *graphLayer) TryGetNode(nodeID GraphNodeId) (GraphNode, bool) {
 	// Note: For efficiency reasons related to the overhead of constructing Cayley iterators,
 	// we instead perform the lookup of the node directly off of the memstore's QuadIterator.
 	// This code was originally:
@@ -92,22 +79,10 @@ func (gl *GraphLayer) TryGetNode(nodeID GraphNodeId) (GraphNode, bool) {
 	return GraphNode{}, false
 }
 
-// WalkResult is a result for each step of a walk.
-type WalkResult struct {
-	ParentNode        *GraphNode        // The parent node that led to this node in the walk. May be nil.
-	IncomingPredicate string            // The predicate followed from the parent node to this node.
-	Node              GraphNode         // The current node.
-	Predicates        map[string]string // The list of outgoing predicates on this node.
-}
-
-// WalkCallback is a callback invoked for each step of a walk. If the callback returns false, the
-// walk is terminated immediately.
-type WalkCallback func(result *WalkResult) bool
-
 // WalkOutward walks the graph layer outward, starting from the specified nodes, and hitting each
 // node found from the outgoing predicates in the layer. Note that this method can be quite slow,
 // so it should only be used for testing.
-func (gl *GraphLayer) WalkOutward(startingNodes []GraphNode, callback WalkCallback) {
+func (gl *graphLayer) WalkOutward(startingNodes []GraphNode, callback WalkCallback) {
 	encountered := map[GraphNodeId]bool{}
 	var workList = make([]*WalkResult, len(startingNodes))
 
@@ -192,24 +167,24 @@ const taggedDelimeter = '|'
 
 // getTaggedKey returns a unique Quad value representing the tagged name and associated value, such
 // that it doesn't conflict with other tagged values in the system with the same data.
-func (gl *GraphLayer) getTaggedKey(value TaggedValue) quad.Value {
+func (gl *graphLayer) getTaggedKey(value TaggedValue) quad.Value {
 	return taggedValueDataToValue(value.Value() + string(taggedDelimeter) + value.Name() + string(taggedDelimeter) + gl.prefix)
 }
 
 // parseTaggedKey parses an tagged value key (as returned by getTaggedKey) and returns the underlying value.
-func (gl *GraphLayer) parseTaggedKey(value quad.Value, example TaggedValue) interface{} {
+func (gl *graphLayer) parseTaggedKey(value quad.Value, example TaggedValue) interface{} {
 	strValue := valueToTaggedValueData(value)
 	endIndex := strings.IndexByte(strValue, taggedDelimeter)
 	return example.Build(strValue[0:endIndex])
 }
 
 // getPrefixedPredicate returns the given predicate prefixed with the layer prefix.
-func (gl *GraphLayer) getPrefixedPredicate(predicate Predicate) quad.Value {
+func (gl *graphLayer) getPrefixedPredicate(predicate Predicate) quad.Value {
 	return predicateToValue(Predicate(gl.prefix + "-" + string(predicate)))
 }
 
 // getPrefixedPredicates returns the given predicates prefixed with the layer prefix.
-func (gl *GraphLayer) getPrefixedPredicates(predicates ...Predicate) []interface{} {
+func (gl *graphLayer) getPrefixedPredicates(predicates ...Predicate) []interface{} {
 	adjusted := make([]interface{}, len(predicates))
 	for index, predicate := range predicates {
 		fullPredicate := gl.getPrefixedPredicate(predicate)
@@ -220,7 +195,7 @@ func (gl *GraphLayer) getPrefixedPredicates(predicates ...Predicate) []interface
 
 // getPredicatesListForDebugging returns a developer-friendly set of predicate description strings
 // for all the predicates on a node.
-func (gl *GraphLayer) getPredicatesListForDebugging(graphNode GraphNode) []string {
+func (gl *graphLayer) getPredicatesListForDebugging(graphNode GraphNode) []string {
 	var predicates = make([]string, 0)
 
 	nodeIDValue := gl.cayleyStore.ValueOf(nodeIdToValue(graphNode.NodeId))

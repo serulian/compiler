@@ -14,11 +14,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func createClientQueryTestLayer(t *testing.T) *GraphLayer {
+func createClientQueryTestLayer(t *testing.T) *graphLayer {
 	store, err := cayley.NewMemoryGraph()
 	assert.Nil(t, err, "Could not construct Cayley graph")
 
-	gl := &GraphLayer{
+	gl := &graphLayer{
 		id:                compilerutil.NewUniqueId(),
 		prefix:            "testprefix",
 		cayleyStore:       store,
@@ -54,7 +54,7 @@ func createClientQueryTestLayer(t *testing.T) *GraphLayer {
 	return gl
 }
 
-func getTestNode(gl *GraphLayer, name string) GraphNode {
+func getTestNode(gl *graphLayer, name string) GraphNode {
 	return gl.StartQuery(name).In("test-id").GetNode()
 }
 

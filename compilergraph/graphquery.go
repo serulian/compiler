@@ -18,7 +18,7 @@ var _ = fmt.Printf
 // the graph layer.
 type GraphQuery struct {
 	path     *path.Path  // The wrapped Cayley Path.
-	layer    *GraphLayer // The layer under which this query was created.
+	layer    *graphLayer // The layer under which this query was created.
 	tagCount int         // The number of tags.
 
 	singleStartingValue quad.Value // The single starting value, if any.
@@ -28,7 +28,7 @@ type GraphQuery struct {
 
 // StartQuery returns a new query starting at the nodes with the given values (either graph node IDs
 // or arbitrary values).
-func (gl *GraphLayer) StartQuery(values ...interface{}) GraphQuery {
+func (gl *graphLayer) StartQuery(values ...interface{}) GraphQuery {
 	quadValues := toQuadValues(values, gl)
 
 	var singleStartingValue quad.Value = nil
@@ -48,7 +48,7 @@ func (gl *GraphLayer) StartQuery(values ...interface{}) GraphQuery {
 }
 
 // StartQueryFromNods returns a new query starting at the node with the given IDs.
-func (gl *GraphLayer) StartQueryFromNode(nodeId GraphNodeId) GraphQuery {
+func (gl *graphLayer) StartQueryFromNode(nodeId GraphNodeId) GraphQuery {
 	singleStartingValue := nodeIdToValue(nodeId)
 	return GraphQuery{
 		path:     cayley.StartPath(gl.cayleyStore, singleStartingValue),
@@ -62,7 +62,7 @@ func (gl *GraphLayer) StartQueryFromNode(nodeId GraphNodeId) GraphQuery {
 }
 
 // StartQueryFromNodes returns a new query starting at the nodes with the given IDs.
-func (gl *GraphLayer) StartQueryFromNodes(nodeIds ...GraphNodeId) GraphQuery {
+func (gl *graphLayer) StartQueryFromNodes(nodeIds ...GraphNodeId) GraphQuery {
 	quadValues := graphIdsToQuadValues(nodeIds)
 
 	var singleStartingValue quad.Value = nil
@@ -82,7 +82,7 @@ func (gl *GraphLayer) StartQueryFromNodes(nodeIds ...GraphNodeId) GraphQuery {
 }
 
 // FindNodesOfKind returns a new query starting at the nodes who have the given kind in this layer.
-func (gl *GraphLayer) FindNodesOfKind(kinds ...TaggedValue) GraphQuery {
+func (gl *graphLayer) FindNodesOfKind(kinds ...TaggedValue) GraphQuery {
 	return gl.FindNodesWithTaggedType(gl.nodeKindPredicate, kinds...)
 }
 
@@ -93,7 +93,7 @@ func (gl *GraphLayer) FindNodesOfKind(kinds ...TaggedValue) GraphQuery {
 //
 // `FindNodesWithTaggedType("parser-ast-node-type", NodeType.Class, NodeType.Interface)`
 // would return all classes and interfaces.
-func (gl *GraphLayer) FindNodesWithTaggedType(predicate Predicate, values ...TaggedValue) GraphQuery {
+func (gl *graphLayer) FindNodesWithTaggedType(predicate Predicate, values ...TaggedValue) GraphQuery {
 	var interfaceValues []interface{}
 	for _, value := range values {
 		interfaceValues = append(interfaceValues, value)

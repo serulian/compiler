@@ -63,7 +63,7 @@ func (fq FilteredQuery) TryGetNode() (GraphNode, bool) {
 // filteredIteratorWrapper wraps the filtered iterator and returns the nodes not found
 // at the end of the query, but the beginning (as marked with the markID).
 type filteredIteratorWrapper struct {
-	layer            *GraphLayer
+	layer            *graphLayer
 	filteredIterator NodeIterator
 	markID           string
 }

@@ -15,7 +15,7 @@ import (
 type GraphNode struct {
 	NodeId    GraphNodeId // Unique ID for the node.
 	kindValue quad.Value  // The kind of the node.
-	layer     *GraphLayer // The layer that owns the node.
+	layer     *graphLayer // The layer that owns the node.
 }
 
 // Kind returns the kind of this node.
@@ -44,7 +44,7 @@ func (gn GraphNode) StartQuery() GraphQuery {
 }
 
 // StartQueryToLayer starts a new query on the specified graph layer, with its origin being the current node.
-func (gn GraphNode) StartQueryToLayer(layer *GraphLayer) GraphQuery {
+func (gn GraphNode) StartQueryToLayer(layer GraphLayer) GraphQuery {
 	return layer.StartQueryFromNode(gn.NodeId)
 }
 
@@ -86,7 +86,7 @@ func (gn GraphNode) GetNode(predicate Predicate) GraphNode {
 }
 
 // GetNodeInLayer returns the node in the specified layer found off of the given predicate found on this node and panics otherwise.
-func (gn GraphNode) GetNodeInLayer(predicate Predicate, layer *GraphLayer) GraphNode {
+func (gn GraphNode) GetNodeInLayer(predicate Predicate, layer GraphLayer) GraphNode {
 	result, found := gn.TryGetNodeInLayer(predicate, layer)
 	if !found {
 		panic(fmt.Sprintf("Could not find node for predicate %s on node %s (%v)", predicate, gn.NodeId, gn.Kind()))
@@ -106,7 +106,7 @@ func (gn GraphNode) GetIncomingNode(predicate Predicate) GraphNode {
 }
 
 // TryGetNodeInLayer returns the node found off of the given predicate  found on this node (if any).
-func (gn GraphNode) TryGetNodeInLayer(predicate Predicate, layer *GraphLayer) (GraphNode, bool) {
+func (gn GraphNode) TryGetNodeInLayer(predicate Predicate, layer GraphLayer) (GraphNode, bool) {
 	result, found := gn.tryGet(predicate)
 	if !found {
 		return GraphNode{}, false
@@ -206,18 +206,6 @@ func (gn GraphNode) TryGetIncomingValue(predicate Predicate) (GraphValue, bool) 
 	return buildGraphValueForValue(value), true
 }
 
-// OutgoingNodeIterator returns an OutgoingNodeIterator instance for this graph node. The
-// iterator provides an easy way of iterating over all the outgoing nodes accessible directly
-// from this node *in this node's layer*.
-func (gn GraphNode) OutgoingNodeIterator() OutgoingNodeIterator {
-	nodeIdValue := gn.layer.cayleyStore.ValueOf(nodeIdToValue(gn.NodeId))
-	if it, ok := gn.layer.cayleyStore.QuadIterator(quad.Subject, nodeIdValue).(*memstore.Iterator); ok {
-		return OutgoingNodeIterator{gn.layer, it}
-	}
-
-	return OutgoingNodeIterator{gn.layer, nil}
-}
-
 // tryGet returns the value of the given predicate found on this node (if any).
 func (gn GraphNode) tryGet(predicate Predicate) (quad.Value, bool) {
 	// Note: For efficiency reasons related to the overhead of constructing Cayley iterators,
@@ -226,10 +214,10 @@ func (gn GraphNode) tryGet(predicate Predicate) (quad.Value, bool) {
 	//	return gn.StartQuery().Out(predicate).GetValue()
 
 	prefixedPredicate := gn.layer.getPrefixedPredicate(predicate)
-	nodeIdValue := gn.layer.cayleyStore.ValueOf(nodeIdToValue(gn.NodeId))
+	nodeIDValue := gn.layer.cayleyStore.ValueOf(nodeIdToValue(gn.NodeId))
 
 	// Search for all quads starting with this node's ID as the subject.
-	if it, ok := gn.layer.cayleyStore.QuadIterator(quad.Subject, nodeIdValue).(*memstore.Iterator); ok {
+	if it, ok := gn.layer.cayleyStore.QuadIterator(quad.Subject, nodeIDValue).(*memstore.Iterator); ok {
 		for it.Next() {
 			quad := gn.layer.cayleyStore.Quad(it.Result())
 			if quad.Predicate == prefixedPredicate {

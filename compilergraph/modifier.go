@@ -20,14 +20,22 @@ type GraphNodeInterface interface {
 
 // GraphLayerModifier defines the interface for modifying a graph layer.
 type GraphLayerModifier interface {
+	// CreateNode enqueues the creation of a new node of the given kind.
 	CreateNode(nodeKind TaggedValue) ModifiableGraphNode
+
+	// Modify returns a ModifiableGraphNode for decorating or connecting an existing
+	// node in the layer.
 	Modify(node GraphNode) ModifiableGraphNode
+
+	// Apply applies all queued changes to the underlying graph layer.
 	Apply()
+
+	// Close closes the modifier, discarding any enqueued changes.
 	Close()
 }
 
 // createNewModifier creates a new, concrete graph modifier.
-func (gl *GraphLayer) createNewModifier() GraphLayerModifier {
+func (gl *graphLayer) createNewModifier() GraphLayerModifier {
 	modifier := &graphLayerModifierStruct{
 		layer:        gl,
 		quads:        make([]quad.Quad, 0, 100),
@@ -43,7 +51,7 @@ func (gl *GraphLayer) createNewModifier() GraphLayerModifier {
 // graphLayerModifier defines a small helper type for constructing quads to be applied
 // safely to a graph layer.
 type graphLayerModifierStruct struct {
-	layer        *GraphLayer // The layer being modified.
+	layer        *graphLayer // The layer being modified.
 	quads        []quad.Quad // The quads to apply to the graph.
 	wg           sync.WaitGroup
 	quadChannel  chan quad.Quad
