@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// compilergraph package defines methods for loading and populating the overall Serulian graph.
+// Package compilergraph defines methods for loading and populating the overall Serulian graph.
 package compilergraph
 
 import (
@@ -11,13 +11,8 @@ import (
 	"github.com/cayleygraph/cayley"
 )
 
-import _ "github.com/cayleygraph/cayley/graph/bolt"
-
-// The length of node IDs in characters.
+// NodeIDLength is the length of node IDs in characters.
 const NodeIDLength = 36
-
-// The filename for the cached Serulian graph.
-const serulianGraphStoragePath = ".graph"
 
 // SerulianGraph represents a full Serulian graph, including its AST (SRG), type system (TG)
 // and other various graphs used by the compiler.
