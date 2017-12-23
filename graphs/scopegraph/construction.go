@@ -26,7 +26,7 @@ func performConstruction(target BuildTarget, srg *srg.SRG, tdg *typegraph.TypeGr
 
 	integrationsMap := map[string]integration.LanguageIntegration{}
 	for _, integration := range integrations {
-		integrationsMap[integration.GraphID()] = integration
+		integrationsMap[integration.SourceHandler().Kind()] = integration
 	}
 
 	// Build the scope graph, making sure to freeze once complete.

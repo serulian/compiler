@@ -14,8 +14,6 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/srg/typerefresolver"
 
-	"path"
-
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/srg"
 	srgtc "github.com/serulian/compiler/graphs/srg/typeconstructor"
@@ -24,9 +22,6 @@ import (
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/webidl"
 )
-
-// DYNAMIC_LANGUAGE_DIRECTORY is the directory under the entrypoint dir that contains language extension binaries.
-const DYNAMIC_LANGUAGE_DIRECTORY = ".langext"
 
 // PromisingAccessType defines an enumeration of access types for the IsPromisingMember check.
 type PromisingAccessType int
@@ -156,14 +151,15 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 	integrations := []integration.LanguageIntegration{webidl}
 
 	// Load the dynamic integrations.
-	dynamicLanguagePath := path.Join(config.Entrypoint.EntrypointDirectoryPath(config.PathLoader), DYNAMIC_LANGUAGE_DIRECTORY)
-	dynamicIntegrationProviders, err := integration.LoadLanguageIntegrationProviders(dynamicLanguagePath)
+	dynamicIntegrationProviders, err := integration.LoadIntegrationProviders()
 	if err != nil {
 		return Result{}, err
 	}
 
 	for _, provider := range dynamicIntegrationProviders {
-		integrations = append(integrations, provider.GetIntegration(graph))
+		for _, integration := range integration.GetLanguageIntegrations(provider, graph) {
+			integrations = append(integrations, integration)
+		}
 	}
 
 	sourceHandlers := []packageloader.SourceHandler{sourcegraph.SourceHandler()}

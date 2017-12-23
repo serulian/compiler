@@ -7,66 +7,73 @@ package integration
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"path"
+	"path/filepath"
 	"plugin"
 	"strings"
 
 	"github.com/phayes/permbits"
 )
 
-// PROVIDER_SYMBOL_NAME defines the name of the symbol to be exported by dynamic language integration provider
-// plugins.
-const PROVIDER_SYMBOL_NAME = "Provider"
+// integrationSubDirectory its the subdirectory in which to search for integrations.
+const integrationSubDirectory = ".int"
 
-// LoadLanguageIntegrationProviders loads all the language integration providers found under the given
-// path. *All* files in the directory without an extension will be treated as a potential provider, so
-// callers should make sure that the directory is clean otherwise. Note that if the path does not exist,
-// the list returned will be *empty*.
-func LoadLanguageIntegrationProviders(providerDirPath string) ([]LanguageIntegrationProvider, error) {
+// LoadIntegrationProviders loads all the integration providers found for the current toolkit.
+func LoadIntegrationProviders() ([]IntegrationsProvider, error) {
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return loadIntegrationProvidersUnderPath(path.Join(dir, integrationSubDirectory))
+}
+
+func loadIntegrationProvidersUnderPath(providerDirPath string) ([]IntegrationsProvider, error) {
 	_, err := os.Stat(providerDirPath)
 	if os.IsNotExist(err) {
-		return []LanguageIntegrationProvider{}, nil
+		return []IntegrationsProvider{}, nil
 	}
 
 	if err != nil {
-		return []LanguageIntegrationProvider{}, err
+		return []IntegrationsProvider{}, err
 	}
 
 	// Iterate the directory, finding all binaries and trying to load the integrations found within.
 	files, err := ioutil.ReadDir(providerDirPath)
 	if err != nil {
-		return []LanguageIntegrationProvider{}, err
+		return []IntegrationsProvider{}, err
 	}
 
 	if len(files) == 0 {
-		return []LanguageIntegrationProvider{}, nil
+		return []IntegrationsProvider{}, nil
 	}
 
-	providers := make([]LanguageIntegrationProvider, 0, len(files))
+	providers := make([]IntegrationsProvider, 0, len(files))
 	for _, f := range files {
 		if f.Mode().IsRegular() && !strings.Contains(f.Name(), ".") {
 			fullPath := path.Join(providerDirPath, f.Name())
 			permissions, err := permbits.Stat(fullPath)
 			if err != nil {
-				return []LanguageIntegrationProvider{}, err
+				return []IntegrationsProvider{}, err
 			}
 
 			if permissions.UserExecute() || permissions.GroupExecute() || permissions.OtherExecute() {
 				// Found a binary. Attempt to load the provider from it.
 				p, err := plugin.Open(fullPath)
 				if err != nil {
-					return []LanguageIntegrationProvider{}, err
+					return []IntegrationsProvider{}, err
 				}
 
-				providerSymbol, err := p.Lookup(PROVIDER_SYMBOL_NAME)
+				providerSymbol, err := p.Lookup(IntegrationProviderConstName)
 				if err != nil {
-					return []LanguageIntegrationProvider{}, err
+					return []IntegrationsProvider{}, err
 				}
 
-				provider, castOk := providerSymbol.(LanguageIntegrationProvider)
+				provider, castOk := providerSymbol.(IntegrationsProvider)
 				if !castOk {
-					return []LanguageIntegrationProvider{}, fmt.Errorf("Could find language integration provider in plugin `%s`", f.Name())
+					return []IntegrationsProvider{}, fmt.Errorf("Could find integration provider in integration `%s`", f.Name())
 				}
 
 				providers = append(providers, provider)
