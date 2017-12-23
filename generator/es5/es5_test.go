@@ -21,6 +21,7 @@ import (
 	"github.com/serulian/compiler/packageloader"
 
 	"github.com/robertkrimen/otto"
+	"github.com/sergi/go-diff/diffmatchpatch"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -574,7 +575,11 @@ func TestSourceMapping(t *testing.T) {
 		} else {
 			// Compare the generated source to the expected.
 			expectedSource := test.expected()
-			assert.Equal(t, expectedSource, source, "Mapped mismatch on test %s\nExpected: %v\nActual: %v\n\n", test.name, expectedSource, source)
+			if !assert.Equal(t, expectedSource, source, "Mapped mismatch on test %s\n\n", test.name) {
+				dmp := diffmatchpatch.New()
+				diffs := dmp.DiffMain(expectedSource, source, false)
+				fmt.Println(dmp.DiffPrettyText(diffs))
+			}
 		}
 	}
 }

@@ -856,7 +856,7 @@ this.Serulian = (function ($global) {
         syncloop: while (true) {
           switch ($current) {
             case 0:
-              if (/*#this.current <= this.end {#*/$this.current.$wrapped <= /*#this.end {#*/$this.end.$wrapped) /*#this.end {#*/{
+/*#this.end {#*/              if (/*#this.current <= this.end {#*/$this.current.$wrapped <= /*#this.end {#*/$this.end.$wrapped) /*#this.end {#*/{
                 $current = 1;
                 continue syncloop;
               } else {
@@ -926,7 +926,7 @@ this.Serulian = (function ($global) {
               end = /*#endindex ?? this.Count#*/$t.syncnullcompare(/*#endindex ?? this.Count#*/endindex, function () {
                 return $this.Count();
               });
-              if (/*#start < 0 {#*/start.$wrapped < /*#start < 0 {#*/0) /*#start < 0 {#*/{
+/*#start < 0 {#*/              if (/*#start < 0 {#*/start.$wrapped < /*#start < 0 {#*/0) /*#start < 0 {#*/{
                 $current = 1;
                 continue syncloop;
               } else {
@@ -941,7 +941,7 @@ this.Serulian = (function ($global) {
               continue syncloop;
 
             case 2:
-              if (/*#end < 0 {#*/end.$wrapped < /*#end < 0 {#*/0) /*#end < 0 {#*/{
+/*#end < 0 {#*/              if (/*#end < 0 {#*/end.$wrapped < /*#end < 0 {#*/0) /*#end < 0 {#*/{
                 $current = 3;
                 continue syncloop;
               } else {
@@ -956,7 +956,7 @@ this.Serulian = (function ($global) {
               continue syncloop;
 
             case 4:
-              if (/*#start >= end { return Slice<T>.Empty() }#*/start.$wrapped >= /*#end { return Slice<T>.Empty() }#*/end.$wrapped) /*#end { return Slice<T>.Empty() }#*/{
+/*#end { return Slice<T>.Empty() }#*/              if (/*#start >= end { return Slice<T>.Empty() }#*/start.$wrapped >= /*#end { return Slice<T>.Empty() }#*/end.$wrapped) /*#end { return Slice<T>.Empty() }#*/{
                 $current = 5;
                 continue syncloop;
               } else {
@@ -1024,7 +1024,7 @@ this.Serulian = (function ($global) {
             case 2:
 /*#i in 0 .. len - 1 {#*/              $temp0 = /*#for i in 0 .. len - 1 {#*/$temp1.Next();
 /*#i in 0 .. len - 1 {#*/              i = /*#i in 0 .. len - 1 {#*/$temp0.First;
-              if (/*#for i in 0 .. len - 1 {#*/$temp0.Second.$wrapped) /*#for i in 0 .. len - 1 {#*/{
+/*#for i in 0 .. len - 1 {#*/              if (/*#for i in 0 .. len - 1 {#*/$temp0.Second.$wrapped) /*#for i in 0 .. len - 1 {#*/{
                 $current = 3;
                 continue syncloop;
               } else {
@@ -1061,7 +1061,7 @@ this.Serulian = (function ($global) {
             case 0:
               keyString = /*#key.MapKey.String()#*/key.MapKey().String();
               value = /*#this.internalObject[NativeString(keyString)]#*/$this.internalObject[/*#keyString)]#*/keyString.$wrapped];
-              if (/*#value is null { return null }#*/value == /*#null { return null }#*/null) /*#null { return null }#*/{
+/*#null { return null }#*/              if (/*#value is null { return null }#*/value == /*#null { return null }#*/null) /*#null { return null }#*/{
                 $current = 1;
                 continue syncloop;
               } else {
@@ -1288,7 +1288,7 @@ this.Serulian = (function ($global) {
           switch ($current) {
             case 0:
               value = /*#this))[NativeString(key)]#*/$this.$wrapped[/*#key)]#*/key.$wrapped];
-              if (/*#value is null { return null }#*/value == /*#null { return null }#*/null) /*#null { return null }#*/{
+/*#null { return null }#*/              if (/*#value is null { return null }#*/value == /*#null { return null }#*/null) /*#null { return null }#*/{
                 $current = 1;
                 continue syncloop;
               } else {
@@ -1356,7 +1356,7 @@ this.Serulian = (function ($global) {
               end = /*#endindex ?? this.Length#*/$t.syncnullcompare(/*#endindex ?? this.Length#*/endindex, function () {
                 return $this.Length();
               });
-              if (/*#start < 0 {#*/start.$wrapped < /*#start < 0 {#*/0) /*#start < 0 {#*/{
+/*#start < 0 {#*/              if (/*#start < 0 {#*/start.$wrapped < /*#start < 0 {#*/0) /*#start < 0 {#*/{
                 $current = 1;
                 continue syncloop;
               } else {
@@ -1371,7 +1371,7 @@ this.Serulian = (function ($global) {
               continue syncloop;
 
             case 2:
-              if (/*#end < 0 {#*/end.$wrapped < /*#end < 0 {#*/0) /*#end < 0 {#*/{
+/*#end < 0 {#*/              if (/*#end < 0 {#*/end.$wrapped < /*#end < 0 {#*/0) /*#end < 0 {#*/{
                 $current = 3;
                 continue syncloop;
               } else {
@@ -1386,7 +1386,7 @@ this.Serulian = (function ($global) {
               continue syncloop;
 
             case 4:
-              if (/*#start >= end { return Slice<T>.Empty() }#*/start.$wrapped >= /*#end { return Slice<T>.Empty() }#*/end.$wrapped) /*#end { return Slice<T>.Empty() }#*/{
+/*#end { return Slice<T>.Empty() }#*/              if (/*#start >= end { return Slice<T>.Empty() }#*/start.$wrapped >= /*#end { return Slice<T>.Empty() }#*/end.$wrapped) /*#end { return Slice<T>.Empty() }#*/{
                 $current = 5;
                 continue syncloop;
               } else {
@@ -1508,7 +1508,7 @@ this.Serulian = (function ($global) {
         syncloop: while (true) {
           switch ($current) {
             case 0:
-              if (/*#left == right { return 0 }#*/$g.________testlib.basictypes.Boolean.$equals(/*#left == right { return 0 }#*/left, /*#right { return 0 }#*/right).$wrapped) /*#right { return 0 }#*/{
+/*#right { return 0 }#*/              if (/*#left == right { return 0 }#*/$g.________testlib.basictypes.Boolean.$equals(/*#left == right { return 0 }#*/left, /*#right { return 0 }#*/right).$wrapped) /*#right { return 0 }#*/{
                 $current = 1;
                 continue syncloop;
               } else {
@@ -1674,7 +1674,7 @@ this.Serulian = (function ($global) {
           case 2:
 /*#i in 0 .. pieces.Length - 1 {#*/            $temp0 = /*#for i in 0 .. pieces.Length - 1 {#*/$temp1.Next();
 /*#i in 0 .. pieces.Length - 1 {#*/            i = /*#i in 0 .. pieces.Length - 1 {#*/$temp0.First;
-            if (/*#for i in 0 .. pieces.Length - 1 {#*/$temp0.Second.$wrapped) /*#for i in 0 .. pieces.Length - 1 {#*/{
+/*#for i in 0 .. pieces.Length - 1 {#*/            if (/*#for i in 0 .. pieces.Length - 1 {#*/$temp0.Second.$wrapped) /*#for i in 0 .. pieces.Length - 1 {#*/{
               $current = 3;
               continue syncloop;
             } else {
@@ -1685,7 +1685,7 @@ this.Serulian = (function ($global) {
 
           case 3:
 /*#result = result + pieces[i]#*/            result = /*#result + pieces[i]#*/$g.________testlib.basictypes.String.$plus(/*#result + pieces[i]#*/result, /*#pieces[i]#*/pieces.$index(/*#i]#*/i));
-            if (/*#i < values.Length {#*/i.$wrapped < /*#values.Length {#*/values.Length().$wrapped) /*#values.Length {#*/{
+/*#values.Length {#*/            if (/*#i < values.Length {#*/i.$wrapped < /*#values.Length {#*/values.Length().$wrapped) /*#values.Length {#*/{
               $current = 4;
               continue syncloop;
             } else {
@@ -1746,7 +1746,7 @@ this.Serulian = (function ($global) {
 
               case 3:
 /*#item in stream {#*/                item = /*#item in stream {#*/$temp0.First;
-                if (/*#for item in stream {#*/$temp0.Second.$wrapped) /*#for item in stream {#*/{
+/*#for item in stream {#*/                if (/*#for item in stream {#*/$temp0.Second.$wrapped) /*#for item in stream {#*/{
                   $current = 4;
                   $continue($yield, $yieldin, $reject, $done);
                   return;
