@@ -64,7 +64,7 @@ func (g *WebIRG) RootModuleNode() compilergraph.GraphNode {
 
 // SourceHandler returns a SourceHandler for populating the IRG via a package loader.
 func (g *WebIRG) SourceHandler() packageloader.SourceHandler {
-	return &irgSourceHandler{g, g.layer.NewModifier()}
+	return irgSourceHandler{g}
 }
 
 // findAllNodes starts a new query over the IRG from nodes of the given type.

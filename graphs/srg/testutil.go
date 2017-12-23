@@ -59,14 +59,20 @@ func (t testTypePackageLoader) PackageFileExtension() string {
 	return ".testp"
 }
 
-func (t testTypePackageLoader) Parse(source compilercommon.InputSource, input string, importHandler packageloader.ImportHandler) {
+func (t testTypePackageLoader) NewParser() packageloader.SourceHandlerParser {
+	return testTypePackageLoaderParser{}
+}
+
+type testTypePackageLoaderParser struct{}
+
+func (t testTypePackageLoaderParser) Parse(source compilercommon.InputSource, input string, importHandler packageloader.ImportHandler) {
 
 }
 
-func (t testTypePackageLoader) Apply(packageMap packageloader.LoadedPackageMap, sourceTracker packageloader.SourceTracker) {
+func (t testTypePackageLoaderParser) Apply(packageMap packageloader.LoadedPackageMap, sourceTracker packageloader.SourceTracker) {
 
 }
 
-func (t testTypePackageLoader) Verify(errorReporter packageloader.ErrorReporter, warningReporter packageloader.WarningReporter) {
+func (t testTypePackageLoaderParser) Verify(errorReporter packageloader.ErrorReporter, warningReporter packageloader.WarningReporter) {
 
 }

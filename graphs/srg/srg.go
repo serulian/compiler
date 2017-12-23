@@ -86,7 +86,7 @@ func (g *SRG) TryGetNode(nodeId compilergraph.GraphNodeId) (compilergraph.GraphN
 
 // SourceHandler returns a SourceHandler for populating the SRG via a package loader.
 func (g *SRG) SourceHandler() packageloader.SourceHandler {
-	return &srgSourceHandler{g, g.layer.NewModifier()}
+	return srgSourceHandler{g}
 }
 
 // SourceRangeOf returns a SourceRange for the given graph node.
