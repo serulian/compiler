@@ -70,7 +70,7 @@ func buildGraphValueForValue(value quad.Value) GraphValue {
 
 // taggedToQuadValues converts a slice of TaggedValue's under a layer into their
 // Cayley values.
-func taggedToQuadValues(values []TaggedValue, gl *GraphLayer) []quad.Value {
+func taggedToQuadValues(values []TaggedValue, gl *graphLayer) []quad.Value {
 	quadValues := make([]quad.Value, len(values))
 	for index, v := range values {
 		quadValues[index] = gl.getTaggedKey(v)
@@ -88,7 +88,7 @@ func graphIdsToQuadValues(values []GraphNodeId) []quad.Value {
 }
 
 // toQuadValues converts a slice of arbitrary values into their Cayley values.
-func toQuadValues(values []interface{}, gl *GraphLayer) []quad.Value {
+func toQuadValues(values []interface{}, gl *graphLayer) []quad.Value {
 	quadValues := make([]quad.Value, len(values))
 	for index, v := range values {
 		switch v := v.(type) {

@@ -30,7 +30,7 @@ func TestBasicQuery(t *testing.T) {
 	store, err := cayley.NewMemoryGraph()
 	assert.Nil(t, err, "Could not construct Cayley graph")
 
-	gl := &GraphLayer{
+	gl := &graphLayer{
 		id:                compilerutil.NewUniqueId(),
 		prefix:            "testprefix",
 		cayleyStore:       store,

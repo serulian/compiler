@@ -7,7 +7,7 @@ package compilergraph
 // ClientQuery represents a query which does client-side processing of nodes returned by
 // Cayley.
 type ClientQuery struct {
-	layer   *GraphLayer         // The parent graph layer.
+	layer   *graphLayer         // The parent graph layer.
 	query   Query               // The parent query.
 	filters []clientQueryFilter // The filters.
 }
@@ -54,7 +54,7 @@ func (cq *ClientQuery) TryGetNode() (GraphNode, bool) {
 }
 
 // getClientQuery returns a new ClientQuery wrapping another Query.
-func getClientQuery(layer *GraphLayer, query Query, predicate Predicate, op clientQueryOperation, value interface{}) *ClientQuery {
+func getClientQuery(layer *graphLayer, query Query, predicate Predicate, op clientQueryOperation, value interface{}) *ClientQuery {
 	return &ClientQuery{
 		layer:   layer,
 		query:   query,

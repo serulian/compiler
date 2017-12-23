@@ -25,8 +25,8 @@ var TYPE_NODE_TYPES_TAGGED = []compilergraph.TaggedValue{NodeTypeClass, NodeType
 
 // TypeGraph represents the TypeGraph layer and all its associated helper methods.
 type TypeGraph struct {
-	graph              *compilergraph.SerulianGraph  // The root graph.
-	layer              *compilergraph.GraphLayer     // The TypeGraph layer in the graph.
+	graph              compilergraph.SerulianGraph   // The root graph.
+	layer              compilergraph.GraphLayer      // The TypeGraph layer in the graph.
 	operators          map[string]operatorDefinition // The supported operators.
 	globalAliasedTypes map[string]TGTypeDecl         // The aliased types.
 	constructors       []TypeGraphConstructor        // The constructors for this type graph.
@@ -53,12 +53,12 @@ const (
 )
 
 // BuildTypeGraph returns a new TypeGraph that is populated from the given constructors.
-func BuildTypeGraph(graph *compilergraph.SerulianGraph, constructors ...TypeGraphConstructor) (*Result, error) {
+func BuildTypeGraph(graph compilergraph.SerulianGraph, constructors ...TypeGraphConstructor) (*Result, error) {
 	return BuildTypeGraphWithOption(graph, FullBuild, constructors...)
 }
 
 // BuildTypeGraphWithOption returns a new TypeGraph that is populated from the given constructors.
-func BuildTypeGraphWithOption(graph *compilergraph.SerulianGraph, buildOption BuildOption, constructors ...TypeGraphConstructor) (*Result, error) {
+func BuildTypeGraphWithOption(graph compilergraph.SerulianGraph, buildOption BuildOption, constructors ...TypeGraphConstructor) (*Result, error) {
 	//Create the type graph.
 	typeGraph := &TypeGraph{
 		graph:              graph,

@@ -19,10 +19,10 @@ import (
 
 // WebIRG defines an interface representation graph for the supported subset of WebIDL.
 type WebIRG struct {
-	graph *compilergraph.SerulianGraph // The root graph.
+	graph compilergraph.SerulianGraph // The root graph.
 
-	layer          *compilergraph.GraphLayer // The IRG layer in the graph.
-	rootModuleNode compilergraph.GraphNode   // The root module node.
+	layer          compilergraph.GraphLayer // The IRG layer in the graph.
+	rootModuleNode compilergraph.GraphNode  // The root module node.
 
 	packageMap    map[string]packageloader.PackageInfo // Map from package internal ID to info.
 	sourceTracker packageloader.SourceTracker          // The source tracker.
@@ -31,7 +31,7 @@ type WebIRG struct {
 }
 
 // NewIRG returns a new IRG for populating the graph with parsed source.
-func NewIRG(graph *compilergraph.SerulianGraph) *WebIRG {
+func NewIRG(graph compilergraph.SerulianGraph) *WebIRG {
 	irg := &WebIRG{
 		graph: graph,
 		layer: graph.NewGraphLayer("webirg", parser.NodeTypeTagged),
@@ -64,7 +64,7 @@ func (g *WebIRG) RootModuleNode() compilergraph.GraphNode {
 
 // SourceHandler returns a SourceHandler for populating the IRG via a package loader.
 func (g *WebIRG) SourceHandler() packageloader.SourceHandler {
-	return &irgSourceHandler{g, g.layer.NewModifier()}
+	return irgSourceHandler{g}
 }
 
 // findAllNodes starts a new query over the IRG from nodes of the given type.

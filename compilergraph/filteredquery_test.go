@@ -18,7 +18,7 @@ func TestBasicFiltering(t *testing.T) {
 	store, err := cayley.NewMemoryGraph()
 	assert.Nil(t, err, "Could not construct Cayley graph")
 
-	gl := &GraphLayer{
+	gl := &graphLayer{
 		id:                compilerutil.NewUniqueId(),
 		prefix:            "testprefix",
 		cayleyStore:       store,
@@ -59,7 +59,7 @@ func TestEmptyFiltering(t *testing.T) {
 	store, err := cayley.NewMemoryGraph()
 	assert.Nil(t, err, "Could not construct Cayley graph")
 
-	gl := &GraphLayer{
+	gl := &graphLayer{
 		id:                compilerutil.NewUniqueId(),
 		prefix:            "testprefix",
 		cayleyStore:       store,
@@ -99,7 +99,7 @@ func TestFilteringViaClientQuery(t *testing.T) {
 	store, err := cayley.NewMemoryGraph()
 	assert.Nil(t, err, "Could not construct Cayley graph")
 
-	gl := &GraphLayer{
+	gl := &graphLayer{
 		id:                compilerutil.NewUniqueId(),
 		prefix:            "testprefix",
 		cayleyStore:       store,
@@ -140,7 +140,7 @@ func BenchmarkFilteredQuery(b *testing.B) {
 	store, err := cayley.NewMemoryGraph()
 	assert.Nil(b, err, "Could not construct Cayley graph")
 
-	gl := &GraphLayer{
+	gl := &graphLayer{
 		id:                compilerutil.NewUniqueId(),
 		prefix:            "testprefix",
 		cayleyStore:       store,

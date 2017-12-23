@@ -124,7 +124,7 @@ func TestGraphs(t *testing.T) {
 		testIDL := webidl.WebIDLProvider(graph)
 
 		loader := packageloader.NewPackageLoader(
-			packageloader.NewBasicConfig(graph.RootSourceFilePath, testSRG.SourceHandler(), testIDL.SourceHandler()))
+			packageloader.NewBasicConfig(graph.RootSourceFilePath(), testSRG.SourceHandler(), testIDL.SourceHandler()))
 
 		srgResult := loader.Load(packageloader.Library{TESTLIB_PATH, false, "", "testcore"})
 
@@ -142,7 +142,7 @@ func TestGraphs(t *testing.T) {
 				continue
 			}
 
-			currentLayerView := result.Graph.GetFilteredJSONForm([]string{graph.RootSourceFilePath}, []compilergraph.TaggedValue{})
+			currentLayerView := result.Graph.GetFilteredJSONForm([]string{graph.RootSourceFilePath()}, []compilergraph.TaggedValue{})
 
 			if os.Getenv("REGEN") == "true" {
 				test.writeJson(currentLayerView)
@@ -173,7 +173,7 @@ func TestLookupReturnType(t *testing.T) {
 	testSRG := srg.NewSRG(graph)
 	testIDL := webidl.WebIDLProvider(graph)
 
-	loader := packageloader.NewPackageLoader(packageloader.NewBasicConfig(graph.RootSourceFilePath, testSRG.SourceHandler(), testIDL.SourceHandler()))
+	loader := packageloader.NewPackageLoader(packageloader.NewBasicConfig(graph.RootSourceFilePath(), testSRG.SourceHandler(), testIDL.SourceHandler()))
 
 	srgResult := loader.Load(packageloader.Library{TESTLIB_PATH, false, "", "testcore"})
 	if !assert.True(t, srgResult.Status, "Got error for SRG construction: %v", srgResult.Errors) {

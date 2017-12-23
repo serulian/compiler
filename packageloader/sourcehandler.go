@@ -18,6 +18,16 @@ type SourceHandler interface {
 	// handler under packages.
 	PackageFileExtension() string
 
+	// NewParser returns a new SourceHandlerParser for parsing source files into the graph.
+	// NOTE: SourceHandlers will typically open a modifier when this method is called, so it
+	// is *critical* that callers make sure to call the `Apply` method, or the modifier will
+	// be left open.
+	NewParser() SourceHandlerParser
+}
+
+// SourceHandlerParser defines a handle for parsing zero or more source files into the
+// underlying graph.
+type SourceHandlerParser interface {
 	// Parse parses the given source file, typically applying the AST to the underlying
 	// graph being constructed by this handler. importHandler should be invoked for any
 	// imports found, to indicate to the package loader that the imports should be followed

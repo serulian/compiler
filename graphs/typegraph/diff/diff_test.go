@@ -241,7 +241,7 @@ func getTypeGraphFromSource(t *testing.T, path string) (*typegraph.TypeGraph, bo
 	testIDL := webidl.WebIDLProvider(graph)
 
 	loader := packageloader.NewPackageLoader(
-		packageloader.NewBasicConfig(graph.RootSourceFilePath, testIDL.SourceHandler(), testSRG.SourceHandler()))
+		packageloader.NewBasicConfig(graph.RootSourceFilePath(), testIDL.SourceHandler(), testSRG.SourceHandler()))
 
 	srgResult := loader.Load(packageloader.Library{TESTLIB_PATH, false, "", "testcore"})
 

@@ -14,24 +14,32 @@ import (
 // irgSourceHandler implements the SourceHandler interface from the packageloader for
 // populating the WebIDL IRG from webidl files.
 type irgSourceHandler struct {
-	irg      *WebIRG                          // The IRG being populated.
-	modifier compilergraph.GraphLayerModifier // Modifier used to write the parsed AST.
+	irg *WebIRG // The IRG being populated.
 }
 
-func (sh *irgSourceHandler) Kind() string {
+func (sh irgSourceHandler) Kind() string {
 	return "webidl"
 }
 
-func (sh *irgSourceHandler) PackageFileExtension() string {
+func (sh irgSourceHandler) PackageFileExtension() string {
 	return ".webidl"
 }
 
-func (sh *irgSourceHandler) Parse(source compilercommon.InputSource, input string, importHandler packageloader.ImportHandler) {
+func (sh irgSourceHandler) NewParser() packageloader.SourceHandlerParser {
+	return irgSourceHandlerParser{sh.irg, sh.irg.layer.NewModifier()}
+}
+
+type irgSourceHandlerParser struct {
+	irg      *WebIRG // The IRG being populated.
+	modifier compilergraph.GraphLayerModifier
+}
+
+func (sh irgSourceHandlerParser) Parse(source compilercommon.InputSource, input string, importHandler packageloader.ImportHandler) {
 	rootNode := sh.modifier.Modify(sh.irg.rootModuleNode)
 	parser.Parse(&irgASTNode{rootNode}, sh.buildASTNode, source, input)
 }
 
-func (sh *irgSourceHandler) Apply(packageMap packageloader.LoadedPackageMap, sourceTracker packageloader.SourceTracker) {
+func (sh irgSourceHandlerParser) Apply(packageMap packageloader.LoadedPackageMap, sourceTracker packageloader.SourceTracker) {
 	// Apply the changes to the graph.
 	sh.modifier.Apply()
 
@@ -48,7 +56,7 @@ func (sh *irgSourceHandler) Apply(packageMap packageloader.LoadedPackageMap, sou
 	sh.irg.typeCollapser = createTypeCollapser(sh.irg, modifier)
 }
 
-func (sh *irgSourceHandler) Verify(errorReporter packageloader.ErrorReporter, warningReporter packageloader.WarningReporter) {
+func (sh irgSourceHandlerParser) Verify(errorReporter packageloader.ErrorReporter, warningReporter packageloader.WarningReporter) {
 	g := sh.irg
 
 	// Collect any parse errors found and add them to the result.
@@ -66,7 +74,7 @@ func (sh *irgSourceHandler) Verify(errorReporter packageloader.ErrorReporter, wa
 }
 
 // buildASTNode constructs a new node in the IRG.
-func (sh *irgSourceHandler) buildASTNode(source compilercommon.InputSource, kind parser.NodeType) parser.AstNode {
+func (sh irgSourceHandlerParser) buildASTNode(source compilercommon.InputSource, kind parser.NodeType) parser.AstNode {
 	graphNode := sh.modifier.CreateNode(kind)
 	return &irgASTNode{
 		graphNode: graphNode,

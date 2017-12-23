@@ -16,7 +16,7 @@ var _ = fmt.Printf
 // graphNodeIterator represents an iterator over a GraphQuery, with each call to Next()
 // updating the iterator with a node ID and a map of values found off of the specified predicates.
 type graphNodeIterator struct {
-	layer    *GraphLayer    // The parent graph layer.
+	layer    *graphLayer    // The parent graph layer.
 	iterator graph.Iterator // The wrapped Cayley Iterator.
 	tagCount int            // The number of tags expected in tagResults.
 

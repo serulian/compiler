@@ -54,14 +54,14 @@ type ScopeGraph struct {
 	srg           *srg.SRG                     // The SRG behind this scope graph.
 	tdg           *typegraph.TypeGraph         // The TDG behind this scope graph.
 	packageLoader *packageloader.PackageLoader // The package loader behind this scope graph.
-	graph         *compilergraph.SerulianGraph // The root graph.
+	graph         compilergraph.SerulianGraph  // The root graph.
 
 	integrations map[string]integration.LanguageIntegration // The language integrations used when constructing this graph, by source ID.
 
 	srgRefResolver        *typerefresolver.TypeReferenceResolver // The resolver to use for SRG type refs.
 	dynamicPromisingNames map[string]bool
 
-	layer *compilergraph.GraphLayer // The ScopeGraph layer in the graph.
+	layer compilergraph.GraphLayer // The ScopeGraph layer in the graph.
 }
 
 // Result represents the results of building a scope graph.
@@ -226,7 +226,7 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 
 // RootSourceFilePath returns the root source file for this scope graph.
 func (sg *ScopeGraph) RootSourceFilePath() string {
-	return sg.graph.RootSourceFilePath
+	return sg.graph.RootSourceFilePath()
 }
 
 // SourceGraph returns the SRG behind this scope graph.

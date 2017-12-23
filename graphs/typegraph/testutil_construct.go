@@ -19,7 +19,7 @@ var _ = fmt.Sprint
 type testTypeGraphConstructor struct {
 	emptyTypeConstructor
 
-	layer       *compilergraph.GraphLayer
+	layer       compilergraph.GraphLayer
 	moduleNode  *compilergraph.GraphNode
 	moduleName  string
 	testTypes   []TestType
@@ -30,7 +30,7 @@ type testTypeGraphConstructor struct {
 
 // newtestTypeGraphConstructor returns a type graph constructor which adds all the given test types
 // to a fake module with the given name.
-func newtestTypeGraphConstructor(graph *compilergraph.SerulianGraph, moduleName string, testTypes []TestType, testMembers []TestMember) *testTypeGraphConstructor {
+func newtestTypeGraphConstructor(graph compilergraph.SerulianGraph, moduleName string, testTypes []TestType, testMembers []TestMember) *testTypeGraphConstructor {
 	return &testTypeGraphConstructor{
 		moduleName:  moduleName,
 		testTypes:   testTypes,
@@ -80,7 +80,7 @@ func (t *emptyTypeConstructor) GetRanges(sourceNodeID compilergraph.GraphNodeId)
 	return []compilercommon.SourceRange{}
 }
 
-func newBasicTypesConstructor(graph *compilergraph.SerulianGraph) TypeGraphConstructor {
+func newBasicTypesConstructor(graph compilergraph.SerulianGraph) TypeGraphConstructor {
 	fsg := graph.NewGraphLayer("test", fakeNodeTypeTagged)
 	return &testBasicTypesConstructor{emptyTypeConstructor{}, fsg, nil}
 }
@@ -88,7 +88,7 @@ func newBasicTypesConstructor(graph *compilergraph.SerulianGraph) TypeGraphConst
 type testBasicTypesConstructor struct {
 	emptyTypeConstructor
 
-	layer      *compilergraph.GraphLayer
+	layer      compilergraph.GraphLayer
 	moduleNode *compilergraph.GraphNode
 }
 

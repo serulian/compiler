@@ -74,7 +74,8 @@ type PackageLoader struct {
 	errors   chan compilercommon.SourceError   // Errors are reported on this channel
 	warnings chan compilercommon.SourceWarning // Warnings are reported on this channel
 
-	handlers map[string]SourceHandler // The handlers for each of the supported package kinds.
+	handlers map[string]SourceHandler       // The handlers for each of the supported package kinds.
+	parsers  map[string]SourceHandlerParser // The parsers for each of the supported package kinds.
 
 	pathKindsEncountered cmap.ConcurrentMap    // The path+kinds processed by the loader goroutine
 	vcsPathsLoaded       cmap.ConcurrentMap    // The VCS paths that have been loaded, mapping to their checkout dir
@@ -165,6 +166,7 @@ func NewPackageLoader(config Config) *PackageLoader {
 		warnings: make(chan compilercommon.SourceWarning, 32),
 
 		handlers: handlersMap,
+		parsers:  nil,
 
 		pathKindsEncountered: cmap.New(),
 		packageMap:           newMutablePackageMap(),
@@ -181,6 +183,13 @@ func NewPackageLoader(config Config) *PackageLoader {
 // Load performs the loading of a Serulian package found at the directory path.
 // Any libraries specified will be loaded as well.
 func (p *PackageLoader) Load(libraries ...Library) LoadResult {
+	// Start the parsers for each of the handlers.
+	parsersMap := map[string]SourceHandlerParser{}
+	for _, handler := range p.handlers {
+		parsersMap[handler.Kind()] = handler.NewParser()
+	}
+	p.parsers = parsersMap
+
 	// Populate the libraries map.
 	for _, library := range libraries {
 		p.libraries[library.Alias] = library
@@ -230,12 +239,12 @@ func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 	result.PackageMap = p.packageMap.Build()
 	result.SourceTracker = p.sourceTracker.Freeze()
 
-	// Apply all handler changes.
-	for _, handler := range p.handlers {
-		handler.Apply(result.PackageMap, result.SourceTracker)
+	// Apply all parser changes.
+	for _, parser := range p.parsers {
+		parser.Apply(result.PackageMap, result.SourceTracker)
 	}
 
-	// Perform verification in all handlers.
+	// Perform verification in all parsers.
 	if p.alwaysValidate || len(result.Errors) == 0 {
 		errorReporter := func(err compilercommon.SourceError) {
 			result.Errors = append(result.Errors, err)
@@ -246,8 +255,8 @@ func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 			result.Warnings = append(result.Warnings, warning)
 		}
 
-		for _, handler := range p.handlers {
-			handler.Verify(errorReporter, warningReporter)
+		for _, parser := range p.parsers {
+			parser.Verify(errorReporter, warningReporter)
 		}
 	}
 
@@ -534,12 +543,12 @@ func (p *PackageLoader) conductParsing(sourceFile pathInformation) {
 	p.sourceTracker.AddSourceFile(compilercommon.InputSource(sourceFile.path), sourceFile.sourceKind, contents, revisionID)
 
 	// Parse the source file.
-	handler, hasHandler := p.handlers[sourceFile.sourceKind]
-	if !hasHandler {
+	parser, hasParser := p.parsers[sourceFile.sourceKind]
+	if !hasParser {
 		log.Fatalf("Missing handler for source file of kind: [%v]", sourceFile.sourceKind)
 	}
 
-	handler.Parse(inputSource, string(contents), p.handleImport)
+	parser.Parse(inputSource, string(contents), p.handleImport)
 }
 
 // verifyNoVCSBoundaryCross does a check to ensure that walking from the given start path

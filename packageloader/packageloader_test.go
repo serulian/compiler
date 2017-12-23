@@ -35,19 +35,27 @@ func (tt *testTracker) Kind() string {
 	return ""
 }
 
+func (tt *testTracker) NewParser() SourceHandlerParser {
+	return &testParser{tt}
+}
+
 func (tt *testTracker) createHandler() SourceHandler {
 	return tt
 }
 
-func (tt *testTracker) Apply(packageMap LoadedPackageMap, sourceTracker SourceTracker) {
+type testParser struct {
+	tt *testTracker
+}
+
+func (tt *testParser) Apply(packageMap LoadedPackageMap, sourceTracker SourceTracker) {
 
 }
 
-func (tt *testTracker) Verify(errorReporter ErrorReporter, warningReporter WarningReporter) {
+func (tt *testParser) Verify(errorReporter ErrorReporter, warningReporter WarningReporter) {
 }
 
-func (tt *testTracker) Parse(source compilercommon.InputSource, input string, importHandler ImportHandler) {
-	tt.pathsImported.Set(string(source), true)
+func (tt *testParser) Parse(source compilercommon.InputSource, input string, importHandler ImportHandler) {
+	tt.tt.pathsImported.Set(string(source), true)
 
 	file := testFile{}
 	json.Unmarshal([]byte(input), &file)

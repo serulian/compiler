@@ -29,7 +29,7 @@ type GraphValue struct {
 }
 
 // Tagged returns the GraphValue as a TaggedValue.
-func (gv GraphValue) Tagged(graphLayer *GraphLayer, example TaggedValue) interface{} {
+func (gv GraphValue) Tagged(graphLayer GraphLayer, example TaggedValue) interface{} {
 	return graphLayer.parseTaggedKey(gv.Value, example)
 }
 

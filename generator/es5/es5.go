@@ -22,10 +22,10 @@ import (
 
 // es5generator defines a generator for producing ECMAScript 5 code.
 type es5generator struct {
-	graph      *compilergraph.SerulianGraph // The root graph.
-	scopegraph *scopegraph.ScopeGraph       // The scope graph.
-	templater  *shared.Templater            // The caching templater.
-	pather     shared.Pather                // The pather being used.
+	graph      compilergraph.SerulianGraph // The root graph.
+	scopegraph *scopegraph.ScopeGraph      // The scope graph.
+	templater  *shared.Templater           // The caching templater.
+	pather     shared.Pather               // The pather being used.
 }
 
 // generateModules generates all the modules found in the given scope graph into source.
