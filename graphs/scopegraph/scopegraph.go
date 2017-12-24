@@ -151,13 +151,13 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 	integrations := []integration.LanguageIntegration{webidl}
 
 	// Load the dynamic integrations.
-	dynamicIntegrationProviders, err := integration.LoadIntegrationProviders()
+	integrationInfo, err := integration.LoadIntegrations()
 	if err != nil {
 		return Result{}, err
 	}
 
-	for _, provider := range dynamicIntegrationProviders {
-		for _, integration := range integration.GetLanguageIntegrations(provider, graph) {
+	for _, info := range integrationInfo {
+		for _, integration := range integration.GetLanguageIntegrations(info, graph) {
 			integrations = append(integrations, integration)
 		}
 	}

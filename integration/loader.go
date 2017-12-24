@@ -17,69 +17,81 @@ import (
 	"github.com/phayes/permbits"
 )
 
-// integrationSubDirectory its the subdirectory in which to search for integrations.
-const integrationSubDirectory = ".int"
+// integrationSuffix is the suffix for all integrations.
+const integrationSuffix = ".int"
 
-// LoadIntegrationProviders loads all the integration providers found for the current toolkit.
-func LoadIntegrationProviders() ([]IntegrationsProvider, error) {
+func getIntegrationSubDirectory() string {
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	return loadIntegrationProvidersUnderPath(path.Join(dir, integrationSubDirectory))
+	return dir
 }
 
-func loadIntegrationProvidersUnderPath(providerDirPath string) ([]IntegrationsProvider, error) {
-	_, err := os.Stat(providerDirPath)
+// LoadIntegrations loads all the integration found for the current toolkit.
+func LoadIntegrations() ([]IntegrationInformation, error) {
+	return loadIntegrationsUnderPath(getIntegrationSubDirectory())
+}
+
+func loadIntegrationsUnderPath(dirPath string) ([]IntegrationInformation, error) {
+	_, err := os.Stat(dirPath)
 	if os.IsNotExist(err) {
-		return []IntegrationsProvider{}, nil
+		return []IntegrationInformation{}, nil
 	}
 
 	if err != nil {
-		return []IntegrationsProvider{}, err
+		return []IntegrationInformation{}, err
 	}
 
 	// Iterate the directory, finding all binaries and trying to load the integrations found within.
-	files, err := ioutil.ReadDir(providerDirPath)
+	files, err := ioutil.ReadDir(dirPath)
 	if err != nil {
-		return []IntegrationsProvider{}, err
+		return []IntegrationInformation{}, err
 	}
 
 	if len(files) == 0 {
-		return []IntegrationsProvider{}, nil
+		return []IntegrationInformation{}, nil
 	}
 
-	providers := make([]IntegrationsProvider, 0, len(files))
+	integrations := make([]IntegrationInformation, 0, len(files))
 	for _, f := range files {
-		if f.Mode().IsRegular() && !strings.Contains(f.Name(), ".") {
-			fullPath := path.Join(providerDirPath, f.Name())
+		if strings.HasSuffix(f.Name(), integrationSuffix) {
+			fullPath := path.Join(dirPath, f.Name())
 			permissions, err := permbits.Stat(fullPath)
 			if err != nil {
-				return []IntegrationsProvider{}, err
+				return []IntegrationInformation{}, err
 			}
 
 			if permissions.UserExecute() || permissions.GroupExecute() || permissions.OtherExecute() {
-				// Found a binary. Attempt to load the provider from it.
-				p, err := plugin.Open(fullPath)
+				integrationInfo, err := loadIntegrationAtPath(fullPath)
 				if err != nil {
-					return []IntegrationsProvider{}, err
+					return []IntegrationInformation{}, err
 				}
 
-				providerSymbol, err := p.Lookup(IntegrationProviderConstName)
-				if err != nil {
-					return []IntegrationsProvider{}, err
-				}
-
-				provider, castOk := providerSymbol.(IntegrationsProvider)
-				if !castOk {
-					return []IntegrationsProvider{}, fmt.Errorf("Could find integration provider in integration `%s`", f.Name())
-				}
-
-				providers = append(providers, provider)
+				integrations = append(integrations, integrationInfo)
 			}
 		}
 	}
 
-	return providers, nil
+	return integrations, nil
+}
+
+func loadIntegrationAtPath(fullPath string) (IntegrationInformation, error) {
+	p, err := plugin.Open(fullPath)
+	if err != nil {
+		return IntegrationInformation{}, err
+	}
+
+	integrationSymbol, err := p.Lookup(IntegrationConstName)
+	if err != nil {
+		return IntegrationInformation{}, err
+	}
+
+	integration, castOk := integrationSymbol.(Integration)
+	if !castOk {
+		return IntegrationInformation{}, fmt.Errorf("Could find integration in integration binary `%s`", fullPath)
+	}
+
+	return IntegrationInformation{fullPath, integration}, nil
 }

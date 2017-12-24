@@ -14,6 +14,7 @@ import (
 	"github.com/serulian/compiler/builder"
 	"github.com/serulian/compiler/developer"
 	"github.com/serulian/compiler/formatter"
+	"github.com/serulian/compiler/integration"
 	"github.com/serulian/compiler/packagetools"
 	"github.com/serulian/compiler/tester"
 	"github.com/serulian/compiler/version"
@@ -31,6 +32,7 @@ var (
 	verbose                   bool
 	revisionNote              string
 	upgrade                   bool
+	yes                       bool
 )
 
 func disableGC() {
@@ -192,7 +194,17 @@ func main() {
 		Short: "Commands for modifying imports",
 		Long:  "Commands for modifying imports",
 		Run: func(cmd *cobra.Command, args []string) {
-			cmd.UsageFunc()
+			fmt.Println(cmd.UsageString())
+			os.Exit(1)
+		},
+	}
+
+	var cmdIntegrations = &cobra.Command{
+		Use:   "integrations",
+		Short: "Commands for working with integrations",
+		Long:  "Commands for listing, installing, uninstalling and upgrading integrations",
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println(cmd.UsageString())
 			os.Exit(1)
 		},
 	}
@@ -256,6 +268,87 @@ func main() {
 		},
 	}
 
+	var cmdListIntegrations = &cobra.Command{
+		Use:   "list",
+		Short: "Lists all installed integrations",
+		Long:  `Lists all Serulian integrations installed`,
+		Run: func(cmd *cobra.Command, args []string) {
+			if !integration.ListIntegrations() {
+				os.Exit(1)
+			}
+		},
+	}
+
+	var cmdDescribeIntegration = &cobra.Command{
+		Use:   "describe [id]",
+		Short: "Describes an integration",
+		Long:  `Describes an installed Serulian integration`,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) < 1 {
+				fmt.Println("Expected ID")
+				os.Exit(-1)
+			}
+
+			if !integration.DescribeIntegration(args[0]) {
+				os.Exit(1)
+			}
+		},
+	}
+
+	var cmdInstallIntegration = &cobra.Command{
+		Use:   "install [integration repository URL]",
+		Short: "Installs an integration",
+		Long:  `Installs a Serulian integration from its VCS repository URL`,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) < 1 {
+				fmt.Println("Expected url")
+				os.Exit(-1)
+			}
+
+			if !integration.InstallIntegration(args[0], debug) {
+				os.Exit(1)
+			}
+		},
+	}
+
+	var cmdUninstallIntegration = &cobra.Command{
+		Use:   "uninstall [id]",
+		Short: "Uninstalls an integration",
+		Long:  `Uninstalls an installed Serulian integration`,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) < 1 {
+				fmt.Println("Expected ID")
+				os.Exit(-1)
+			}
+
+			if !integration.UninstallIntegration(args[0], yes) {
+				os.Exit(1)
+			}
+		},
+	}
+
+	var cmdUpgradeIntegration = &cobra.Command{
+		Use:   "upgrade [id]",
+		Short: "Upgrades an integration",
+		Long:  `Upgrades an installed Serulian integration`,
+		Run: func(cmd *cobra.Command, args []string) {
+			if len(args) < 1 {
+				fmt.Println("Expected ID")
+				os.Exit(-1)
+			}
+
+			if !integration.UpgradeIntegration(args[0], yes, debug) {
+				os.Exit(1)
+			}
+		},
+	}
+
+	cmdIntegrations.AddCommand(cmdListIntegrations)
+	cmdIntegrations.AddCommand(cmdDescribeIntegration)
+	cmdIntegrations.AddCommand(cmdInstallIntegration)
+	cmdIntegrations.AddCommand(cmdUninstallIntegration)
+	cmdIntegrations.AddCommand(cmdUpgradeIntegration)
+
 	cmdPackage.AddCommand(cmdDiff)
 	cmdPackage.AddCommand(cmdRev)
 
@@ -289,6 +382,12 @@ func main() {
 	cmdRev.PersistentFlags().StringVarP(&revisionNote, "revision-note", "n", "",
 		"If specified, the note to use when tagging the new version")
 
+	cmdUpgradeIntegration.PersistentFlags().BoolVarP(&yes, "yes", "y", false,
+		"If true, the prompt will be skipped")
+
+	cmdUninstallIntegration.PersistentFlags().BoolVarP(&yes, "yes", "y", false,
+		"If true, the prompt will be skipped")
+
 	// Decorate the test commands.
 	tester.DecorateRunners(cmdTest, &vcsDevelopmentDirectories)
 
@@ -305,6 +404,7 @@ func main() {
 	rootCmd.AddCommand(cmdFormat)
 	rootCmd.AddCommand(cmdImports)
 	rootCmd.AddCommand(cmdPackage)
+	rootCmd.AddCommand(cmdIntegrations)
 	rootCmd.AddCommand(cmdVersion)
 	rootCmd.PersistentFlags().BoolVar(&debug, "debug", false, "If set to true, Serulian will print debug logs")
 	rootCmd.PersistentFlags().BoolVar(&profile, "profile", false, "If set to true, Serulian will be profiled")

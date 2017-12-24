@@ -10,11 +10,11 @@ import (
 	"github.com/serulian/compiler/packageloader"
 )
 
-// GetLanguageIntegrations returns all language integrations provided by the given provider.
-func GetLanguageIntegrations(provider IntegrationsProvider, graph compilergraph.SerulianGraph) []LanguageIntegration {
+// GetLanguageIntegrations returns all language integrations provided by the given integration.
+func GetLanguageIntegrations(integrationInfo IntegrationInformation, graph compilergraph.SerulianGraph) []LanguageIntegration {
 	var languageIntegrations = []LanguageIntegration{}
-	for _, integration := range provider.SerulianIntegrations() {
-		langIntegration, isLangIntegration := integration.(LanguageIntegration)
+	for _, implementation := range integrationInfo.integration.IntegrationImplementations() {
+		langIntegration, isLangIntegration := implementation.(LanguageIntegration)
 		if isLangIntegration {
 			languageIntegrations = append(languageIntegrations, langIntegration)
 		}

@@ -7,6 +7,7 @@
 _obj
 _test
 .pkg
+.int
 
 # Architecture specific extensions/prefixes
 *.[568vq]
