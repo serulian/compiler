@@ -120,8 +120,7 @@ func buildAndRunTests(filePath string, vcsDevelopmentDirectories []string, runne
 
 	// Save the source (with an adjusted call), in a temporary directory.
 	moduleName := filename[0 : len(filename)-len(sourceshape.SerulianFileExtension)]
-	adjusted := fmt.Sprintf(`
-		%s
+	adjusted := fmt.Sprintf(`%s
 
 		window.Serulian.then(function(global) {
 			global.%s.TEST().then(function(a) {
