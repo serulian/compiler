@@ -54,11 +54,16 @@ func Run(addr string, rootSourceFilePath string, debug bool, vcsDevelopmentDirec
 		transaction.ServeSourceFile(w, r)
 	}
 
+	serveBundleFile := func(w http.ResponseWriter, r *http.Request) {
+		transaction.ServeBundleFile(w, r)
+	}
+
 	rtr := mux.NewRouter()
 	rtr.HandleFunc("/"+name+".js", serveRuntime).Methods("GET")
 	rtr.HandleFunc("/"+name+".develop.js", serveAndRecompile).Methods("GET")
 	rtr.HandleFunc("/"+name+".develop.js.map", serveSourceMap).Methods("GET")
 	rtr.HandleFunc("/source/{path:.+}", serveSourceFile).Methods("GET")
+	rtr.HandleFunc("/{path:.+}", serveBundleFile).Methods("GET")
 
 	http.Handle("/", rtr)
 

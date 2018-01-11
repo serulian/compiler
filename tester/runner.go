@@ -14,8 +14,8 @@ import (
 	"strings"
 
 	"github.com/serulian/compiler/builder"
+	"github.com/serulian/compiler/bundle"
 	"github.com/serulian/compiler/compilerutil"
-	"github.com/serulian/compiler/generator/es5"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/sourceshape"
@@ -112,14 +112,22 @@ func buildAndRunTests(filePath string, vcsDevelopmentDirectories []string, runne
 		return false
 	}
 
-	// Generate the source.
-	generated, sourceMap, err := es5.GenerateES5(scopeResult.Graph)
+	// Create a temp directory for the outputting bundle.
+	dir, err := ioutil.TempDir("", "testing")
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// Clean up once complete.
+	defer os.RemoveAll(dir)
+
+	// Generate the source.
+	sourceBundle := builder.GenerateSourceAndBundle(scopeResult.Graph)
+
 	// Save the source (with an adjusted call), in a temporary directory.
 	moduleName := filename[0 : len(filename)-len(sourceshape.SerulianFileExtension)]
+	sourceFilename := moduleName + ".js"
+
 	adjusted := fmt.Sprintf(`%s
 
 		window.Serulian.then(function(global) {
@@ -129,35 +137,20 @@ func buildAndRunTests(filePath string, vcsDevelopmentDirectories []string, runne
 		  })
 		})
 
-		//# sourceMappingURL=/%s.js.map
-	`, generated, moduleName, filename)
+		//# sourceMappingURL=/%s.map
+	`, sourceBundle.Source(), moduleName, sourceFilename)
 
-	dir, err := ioutil.TempDir("", "testing")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Clean up once complete.
-	defer os.RemoveAll(dir)
+	fullBundle := sourceBundle.BundleWithSource(sourceFilename, "")
+	adjustedBundle := bundle.WithFile(fullBundle, bundle.FileFromString(sourceFilename, bundle.Script, adjusted))
 
 	// Write the source and map into the directory.
-	marshalled, err := sourceMap.Build(filename+".js", "").Marshal()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = ioutil.WriteFile(path.Join(dir, filename+".js"), []byte(adjusted), 0777)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = ioutil.WriteFile(path.Join(dir, filename+".js.map"), marshalled, 0777)
+	err = bundle.WriteToFileSystem(adjustedBundle, dir)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Call the runner with the test file.
-	success, err := runner.Run(testingRootPath, path.Join(dir, filename+".js"))
+	success, err := runner.Run(testingRootPath, path.Join(dir, sourceFilename))
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -16,9 +16,10 @@ import (
 	"strings"
 
 	"github.com/gorilla/mux"
+
 	"github.com/serulian/compiler/builder"
+	"github.com/serulian/compiler/bundle"
 	"github.com/serulian/compiler/compilercommon"
-	"github.com/serulian/compiler/generator/es5"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/sourcemap"
 )
@@ -34,12 +35,13 @@ const developerRuntimeTemplateStr = `
 // developTransaction represents a single transaction of loading source via the development
 // server.
 type developTransaction struct {
-	vcsDevelopmentDirectories []string             // VCS development directory paths.
-	rootSourceFilePath        string               // The root source file
-	addr                      string               // The address of the running server.
-	name                      string               // The name of the source being developed.
-	offsetCount               int                  // The number of emitted call lines that offsets the generated source.
-	sourceMap                 *sourcemap.SourceMap // The constructed source map.
+	vcsDevelopmentDirectories []string                 // VCS development directory paths.
+	rootSourceFilePath        string                   // The root source file
+	addr                      string                   // The address of the running server.
+	name                      string                   // The name of the source being developed.
+	offsetCount               int                      // The number of emitted call lines that offsets the generated source.
+	sourceMap                 *sourcemap.SourceMap     // The constructed source map.
+	bundle                    *builder.SourceAndBundle // The generated bundle and source, if any.
 }
 
 func newDevelopTransaction(rootSourceFilePath string, vcsDevelopmentDirectories []string, addr string, name string) *developTransaction {
@@ -92,6 +94,7 @@ func (dt *developTransaction) Build(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !scopeResult.Status {
+		dt.bundle = nil
 		dt.sourceMap = sourcemap.NewSourceMap()
 
 		for _, warning := range scopeResult.Warnings {
@@ -106,12 +109,12 @@ func (dt *developTransaction) Build(w http.ResponseWriter, r *http.Request) {
 		dt.closeGroup(w)
 	} else {
 		// Generate the program's source.
-		generated, sourceMap, err := es5.GenerateES5(scopeResult.Graph)
-		if err != nil {
-			panic(err)
-		}
+		bundle := builder.GenerateSourceAndBundle(scopeResult.Graph)
 
-		dt.sourceMap = sourceMap
+		dt.bundle = &bundle
+		dt.sourceMap = bundle.SourceMap()
+
+		generated := bundle.Source()
 
 		fmt.Fprint(w, generated)
 		dt.emitInfo(w, "Build completed successfully")
@@ -134,6 +137,34 @@ func (dt *developTransaction) ServeSourceMap(w http.ResponseWriter, r *http.Requ
 	}
 
 	fmt.Fprint(w, string(marshalled))
+}
+
+func (dt *developTransaction) ServeBundleFile(w http.ResponseWriter, r *http.Request) {
+	currentBundle := dt.bundle
+	if currentBundle == nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	params := mux.Vars(r)
+	path := params["path"]
+	file, ok := currentBundle.BundledFiles().LookupFile(path)
+	if !ok {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	contentType, _ := bundle.DetectContentType(file)
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", contentType)
+
+	fileBytes, err := ioutil.ReadAll(file.Reader())
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	w.Write(fileBytes)
 }
 
 func (dt *developTransaction) ServeSourceFile(w http.ResponseWriter, r *http.Request) {

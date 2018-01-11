@@ -14,9 +14,9 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/serulian/compiler/bundle"
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilerutil"
-	"github.com/serulian/compiler/generator/es5"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/sourceshape"
@@ -136,31 +136,14 @@ func BuildSource(rootSourceFilePath string, debug bool, vcsDevelopmentDirectorie
 		return false
 	}
 
-	fileprefix := path.Base(abs)
-	filename := fileprefix + ".js"
-	mapname := filename + ".map"
-
 	log.Println("Generating ES5")
-	generated, sourceMap, err := es5.GenerateES5(scopeResult.Graph)
-	if err != nil {
-		panic(err)
-	}
-
-	marshalledMap, err := sourceMap.Build(filename, "").Marshal()
-	if err != nil {
-		panic(err)
-	}
-
-	generated += "\n//# sourceMappingURL=" + mapname
+	fullBundle := GenerateSourceAndBundle(scopeResult.Graph).BundleWithSource(path.Base(abs)+".js", "")
 
 	// Write the source and its map.
-	filepath := path.Join(path.Dir(rootSourceFilePath), filename)
-	mappath := path.Join(path.Dir(rootSourceFilePath), mapname)
+	err = bundle.WriteToFileSystem(fullBundle, path.Dir(rootSourceFilePath))
+	if err != nil {
+		panic(err)
+	}
 
-	log.Printf("Writing generated source to %s\n", filepath)
-	ioutil.WriteFile(filepath, []byte(generated), 0644)
-	ioutil.WriteFile(mappath, marshalledMap, 0644)
-
-	log.Println("Work completed")
 	return true
 }

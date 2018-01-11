@@ -48,9 +48,36 @@ func (imb inmemoryBundle) Files() []BundledFile {
 	return files
 }
 
+type bundledFile struct {
+	baseBundle Bundle
+	file       BundledFile
+}
+
+func (bf bundledFile) LookupFile(name string) (BundledFile, bool) {
+	if name == bf.file.Filename() {
+		return bf.file, true
+	}
+	return bf.baseBundle.LookupFile(name)
+}
+
+func (bf bundledFile) Files() []BundledFile {
+	files := bf.baseBundle.Files()
+	return append(files, bf.file)
+}
+
+// WithFile returns a new file bundle that includes the given file.
+func WithFile(bundle Bundle, file BundledFile) Bundle {
+	return bundledFile{bundle, file}
+}
+
 // InMemoryBundle returns an in-memory bundle of files.
 func InMemoryBundle(files map[string]BundledFile) Bundle {
 	return inmemoryBundle{files}
+}
+
+// EmptyBundle returns an empty bundle of files.
+func EmptyBundle() Bundle {
+	return inmemoryBundle{map[string]BundledFile{}}
 }
 
 // FileFromBytes returns a BundledFile from byte data.
