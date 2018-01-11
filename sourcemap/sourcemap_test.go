@@ -76,12 +76,12 @@ func TestSourceMap(t *testing.T) {
 		}
 
 		// Test encoding.
-		sourceMap := NewSourceMap("out.js", "")
+		sourceMap := NewSourceMap()
 		for original, mapping := range test.mappings {
 			sourceMap.AddMapping(original.lineNumber, original.columnPosition, mapping)
 		}
 
-		jsonValue, err := sourceMap.Build().Marshal()
+		jsonValue, err := sourceMap.Build("out.js", "").Marshal()
 		if !assert.Nil(t, err, "Error when marshaling source map in test %s", test.name) {
 			continue
 		}

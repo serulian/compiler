@@ -141,12 +141,12 @@ func BuildSource(rootSourceFilePath string, debug bool, vcsDevelopmentDirectorie
 	mapname := filename + ".map"
 
 	log.Println("Generating ES5")
-	generated, sourceMap, err := es5.GenerateES5(scopeResult.Graph, mapname, "")
+	generated, sourceMap, err := es5.GenerateES5(scopeResult.Graph)
 	if err != nil {
 		panic(err)
 	}
 
-	marshalledMap, err := sourceMap.Build().Marshal()
+	marshalledMap, err := sourceMap.Build(filename, "").Marshal()
 	if err != nil {
 		panic(err)
 	}

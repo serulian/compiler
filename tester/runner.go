@@ -113,7 +113,7 @@ func buildAndRunTests(filePath string, vcsDevelopmentDirectories []string, runne
 	}
 
 	// Generate the source.
-	generated, sourceMap, err := es5.GenerateES5(scopeResult.Graph, filename+".js", "")
+	generated, sourceMap, err := es5.GenerateES5(scopeResult.Graph)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -141,7 +141,7 @@ func buildAndRunTests(filePath string, vcsDevelopmentDirectories []string, runne
 	defer os.RemoveAll(dir)
 
 	// Write the source and map into the directory.
-	marshalled, err := sourceMap.Build().Marshal()
+	marshalled, err := sourceMap.Build(filename+".js", "").Marshal()
 	if err != nil {
 		log.Fatal(err)
 	}

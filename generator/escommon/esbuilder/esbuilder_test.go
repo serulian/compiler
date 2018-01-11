@@ -191,13 +191,13 @@ var generationTests = []builderTest{
 
 func TestGeneration(t *testing.T) {
 	for _, test := range generationTests {
-		sm := sourcemap.NewSourceMap("", "")
+		sm := sourcemap.NewSourceMap()
 		buf := BuildSourceAndMap(test.node, sm)
 		if !assert.Equal(t, buf.String(), test.expectedCode, "Mismatch on generation test %s", test.name) {
 			continue
 		}
 
-		built := sm.Build()
+		built := sm.Build("", "")
 		for _, expectedMapping := range test.expectedMappings {
 			mapping, ok := built.LookupMapping(expectedMapping.lineNumber, expectedMapping.colPosition)
 			if !assert.True(t, ok, "Expected mapping %v on test %s", expectedMapping, test.name) {

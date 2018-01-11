@@ -42,7 +42,7 @@ func generateModules(sg *scopegraph.ScopeGraph) map[typegraph.TGModule]esbuilder
 }
 
 // GenerateES5 produces ES5 code from the given scope graph.
-func GenerateES5(sg *scopegraph.ScopeGraph, generatedFilePath string, sourceRoot string) (string, *sourcemap.SourceMap, error) {
+func GenerateES5(sg *scopegraph.ScopeGraph) (string, *sourcemap.SourceMap, error) {
 	generated := generateModules(sg)
 
 	// Order the modules by their paths.
@@ -67,7 +67,7 @@ func GenerateES5(sg *scopegraph.ScopeGraph, generatedFilePath string, sourceRoot
 	// Generate the unformatted code and source map.
 	template := esbuilder.Template("es5", runtimeTemplate, ordered)
 
-	sm := sourcemap.NewSourceMap(generatedFilePath, sourceRoot)
+	sm := sourcemap.NewSourceMap()
 	unformatted := esbuilder.BuildSourceAndMap(template, sm)
 
 	// Format the code.

@@ -26,7 +26,7 @@ import (
 
 // FormatECMASource parses and formats the given ECMAScript source code.
 func FormatECMASource(source string) (string, error) {
-	formatted, _, err := FormatMappedECMASource(source, sourcemap.NewSourceMap("", ""))
+	formatted, _, err := FormatMappedECMASource(source, sourcemap.NewSourceMap())
 	return formatted, err
 }
 
@@ -56,7 +56,7 @@ func FormatMappedECMASource(source string, sm *sourcemap.SourceMap) (string, *so
 		expressionStack: &compilerutil.Stack{},
 
 		existingSourceMap:  sm,
-		formattedSourceMap: sourcemap.NewSourceMap(sm.GeneratedFilePath(), sm.SourceRoot()),
+		formattedSourceMap: sourcemap.NewSourceMap(),
 
 		positionMapper: compilercommon.CreateSourcePositionMapper([]byte(source)),
 	}

@@ -92,7 +92,7 @@ func (dt *developTransaction) Build(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !scopeResult.Status {
-		dt.sourceMap = sourcemap.NewSourceMap(dt.name+".develop.js", "source/")
+		dt.sourceMap = sourcemap.NewSourceMap()
 
 		for _, warning := range scopeResult.Warnings {
 			dt.emitWarning(w, warning)
@@ -106,7 +106,7 @@ func (dt *developTransaction) Build(w http.ResponseWriter, r *http.Request) {
 		dt.closeGroup(w)
 	} else {
 		// Generate the program's source.
-		generated, sourceMap, err := es5.GenerateES5(scopeResult.Graph, dt.name+".develop.js", "source/")
+		generated, sourceMap, err := es5.GenerateES5(scopeResult.Graph)
 		if err != nil {
 			panic(err)
 		}
@@ -128,7 +128,7 @@ func (dt *developTransaction) Build(w http.ResponseWriter, r *http.Request) {
 }
 
 func (dt *developTransaction) ServeSourceMap(w http.ResponseWriter, r *http.Request) {
-	marshalled, err := dt.sourceMap.Build().Marshal()
+	marshalled, err := dt.sourceMap.Build(dt.name+".develop.js", "source/").Marshal()
 	if err != nil {
 		panic(err)
 	}
