@@ -141,7 +141,7 @@ func buildSourceWithCoreLib(rootSourceFilePath string, debug bool, vcsDevelopmen
 	}
 
 	log.Println("Generating ES5")
-	fullBundle := GenerateSourceAndBundle(scopeResult.Graph).BundleWithSource(path.Base(abs)+".js", "")
+	fullBundle := GenerateSourceAndBundle(scopeResult).BundleWithSource(path.Base(abs)+".js", "")
 
 	// Write the source and its map.
 	err = bundle.WriteToFileSystem(fullBundle, path.Dir(rootSourceFilePath))

@@ -61,11 +61,12 @@ type ScopeGraph struct {
 
 // Result represents the results of building a scope graph.
 type Result struct {
-	Status        bool                           // Whether the construction succeeded.
-	Warnings      []compilercommon.SourceWarning // Any warnings encountered during construction.
-	Errors        []compilercommon.SourceError   // Any errors encountered during construction.
-	Graph         *ScopeGraph                    // The constructed scope graph.
-	SourceTracker packageloader.SourceTracker    // The source tracker.
+	Status               bool                              // Whether the construction succeeded.
+	Warnings             []compilercommon.SourceWarning    // Any warnings encountered during construction.
+	Errors               []compilercommon.SourceError      // Any errors encountered during construction.
+	Graph                *ScopeGraph                       // The constructed scope graph.
+	SourceTracker        packageloader.SourceTracker       // The source tracker.
+	LanguageIntegrations []integration.LanguageIntegration // The language integrations used when scoping.
 }
 
 // BuildTarget defines the target of the scoping being performed.
@@ -212,11 +213,12 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 	// Construct the scope graph.
 	scopeResult := performConstruction(config.Target, sourcegraph, typeResult.Graph, integrations, resolver, loader, config.ScopeFilter)
 	return Result{
-		Status:        scopeResult.Status && typeResult.Status && loaderResult.Status,
-		Errors:        combineErrors(loaderResult.Errors, typeResult.Errors, scopeResult.Errors),
-		Warnings:      combineWarnings(loaderResult.Warnings, typeResult.Warnings, scopeResult.Warnings),
-		Graph:         scopeResult.Graph,
-		SourceTracker: loaderResult.SourceTracker,
+		Status:               scopeResult.Status && typeResult.Status && loaderResult.Status,
+		Errors:               combineErrors(loaderResult.Errors, typeResult.Errors, scopeResult.Errors),
+		Warnings:             combineWarnings(loaderResult.Warnings, typeResult.Warnings, scopeResult.Warnings),
+		Graph:                scopeResult.Graph,
+		SourceTracker:        loaderResult.SourceTracker,
+		LanguageIntegrations: integrations,
 	}, nil
 }
 

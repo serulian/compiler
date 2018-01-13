@@ -122,7 +122,7 @@ func buildAndRunTests(filePath string, vcsDevelopmentDirectories []string, runne
 	defer os.RemoveAll(dir)
 
 	// Generate the source.
-	sourceBundle := builder.GenerateSourceAndBundle(scopeResult.Graph)
+	sourceBundle := builder.GenerateSourceAndBundle(scopeResult)
 
 	// Save the source (with an adjusted call), in a temporary directory.
 	moduleName := filename[0 : len(filename)-len(sourceshape.SerulianFileExtension)]

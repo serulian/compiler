@@ -8,6 +8,7 @@ import (
 	"github.com/serulian/compiler/bundle"
 	"github.com/serulian/compiler/generator/es5"
 	"github.com/serulian/compiler/graphs/scopegraph"
+	"github.com/serulian/compiler/integration"
 	"github.com/serulian/compiler/sourcemap"
 )
 
@@ -23,17 +24,33 @@ type SourceAndBundle struct {
 	sourceMap *sourcemap.SourceMap
 }
 
-// GenerateSourceAndBundle generates the full ECMAScript source for the given scope graph, as well as its
+// GenerateSourceAndBundle generates the full ECMAScript source for the given scope result, as well as its
 // sourcemap, and any additional bundled files produced by language integrations.
-func GenerateSourceAndBundle(scopeGraph *scopegraph.ScopeGraph) SourceAndBundle {
-	generated, sourceMap, err := es5.GenerateES5(scopeGraph)
+func GenerateSourceAndBundle(scopeResult scopegraph.Result) SourceAndBundle {
+	if !scopeResult.Status {
+		panic("GenerateSourceAndBundle given an invalid scope result.")
+	}
+
+	// Generate the source and its map.
+	generated, sourceMap, err := es5.GenerateES5(scopeResult.Graph)
 	if err != nil {
 		panic(err)
 	}
 
-	// TODO: add bundled files.
+	bundler := bundle.NewBundler()
+
+	// Have the language integrations add any additional files necessary to the bundle.
+	for _, langIntegration := range scopeResult.LanguageIntegrations {
+		bundlerIntegration, isBundler := langIntegration.(integration.BundlerIntegration)
+		if !isBundler {
+			continue
+		}
+
+		bundlerIntegration.PopulateFilesToBundle(bundler)
+	}
+
 	return SourceAndBundle{
-		bundledFiles: bundle.EmptyBundle(),
+		bundledFiles: bundler.Freeze(bundle.InMemoryBundle),
 		source:       generated,
 		sourceMap:    sourceMap,
 	}

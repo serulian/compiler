@@ -24,7 +24,7 @@ func TestBundling(t *testing.T) {
 		return
 	}
 
-	sourceAndBundle := GenerateSourceAndBundle(result.Graph)
+	sourceAndBundle := GenerateSourceAndBundle(result)
 	assert.True(t, len(sourceAndBundle.Source()) > 0)
 	assert.NotNil(t, sourceAndBundle.SourceMap())
 

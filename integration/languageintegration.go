@@ -5,6 +5,7 @@
 package integration
 
 import (
+	"github.com/serulian/compiler/bundle"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/typegraph"
 	"github.com/serulian/compiler/packageloader"
@@ -37,6 +38,17 @@ type LanguageIntegration interface {
 	// PathHandler returns a handler for translating generated paths to those provided by the integration.
 	// If the integration returns nil, then no translation is done.
 	PathHandler() PathHandler
+}
+
+// BundlerIntegration defines an integration that adds files to the bundle produced by the builder.
+type BundlerIntegration interface {
+	LanguageIntegration
+
+	// PopulateFilesToBundle is invoked by the builder to have the integration populate the file bundle produced
+	// by the builder with any files necessary. Note that this method is invoked *before* the source is
+	// added to the file bundle, which means it will be overridden if added by this integration
+	// (which, in any case, it shouldn't do).
+	PopulateFilesToBundle(bundler bundle.Bundler)
 }
 
 // PathHandler translates various paths encountered during code generation into those provided by the integration,

@@ -109,7 +109,7 @@ func (dt *developTransaction) Build(w http.ResponseWriter, r *http.Request) {
 		dt.closeGroup(w)
 	} else {
 		// Generate the program's source.
-		bundle := builder.GenerateSourceAndBundle(scopeResult.Graph)
+		bundle := builder.GenerateSourceAndBundle(scopeResult)
 
 		dt.bundle = &bundle
 		dt.sourceMap = bundle.SourceMap()
