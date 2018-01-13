@@ -186,7 +186,11 @@ func (p *PackageLoader) Load(libraries ...Library) LoadResult {
 	// Start the parsers for each of the handlers.
 	parsersMap := map[string]SourceHandlerParser{}
 	for _, handler := range p.handlers {
-		parsersMap[handler.Kind()] = handler.NewParser()
+		parser := handler.NewParser()
+		if parser == nil {
+			panic(fmt.Sprintf("Got a nil parser from handler `%s`", handler.Kind()))
+		}
+		parsersMap[handler.Kind()] = parser
 	}
 	p.parsers = parsersMap
 
