@@ -88,6 +88,10 @@ func isDirectory(path string) (bool, error) {
 
 // BuildSource invokes the compiler starting at the given root source file path.
 func BuildSource(rootSourceFilePath string, debug bool, vcsDevelopmentDirectories ...string) bool {
+	return buildSourceWithCoreLib(rootSourceFilePath, debug, vcsDevelopmentDirectories, CORE_LIBRARY)
+}
+
+func buildSourceWithCoreLib(rootSourceFilePath string, debug bool, vcsDevelopmentDirectories []string, corelib packageloader.Library) bool {
 	// Disable logging unless the debug flag is on.
 	if !debug {
 		log.SetOutput(ioutil.Discard)
