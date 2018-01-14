@@ -112,6 +112,10 @@ type Config struct {
 	// ScopeFilter defines the filter, if any, to use when scoping. If specified, only those entrypoints
 	// for which the filter returns true, will be scoped.
 	ScopeFilter ScopeFilter
+
+	// LanguageIntegration defines the language integrations to be used when performing parsing and scoping. If not specified,
+	// the integrations are loaded from the binary's directory.
+	LanguageIntegrations []integration.LanguageIntegration
 }
 
 // ParseAndBuildScopeGraph conducts full parsing, type graph construction and scoping for the project
@@ -149,23 +153,29 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 
 	// Create the IRG and register it as an integration.
 	webidl := webidl.WebIDLProvider(graph)
-	integrations := []integration.LanguageIntegration{webidl}
+	langIntegrations := []integration.LanguageIntegration{webidl}
 
 	// Load the dynamic integrations.
-	integrationInfo, err := integration.LoadIntegrations()
-	if err != nil {
-		return Result{}, err
-	}
+	if config.LanguageIntegrations != nil {
+		for _, langIntegration := range config.LanguageIntegrations {
+			langIntegrations = append(langIntegrations, langIntegration)
+		}
+	} else {
+		integrations, err := integration.LoadIntegrations()
+		if err != nil {
+			return Result{}, err
+		}
 
-	for _, info := range integrationInfo {
-		for _, integration := range integration.GetLanguageIntegrations(info, graph) {
-			integrations = append(integrations, integration)
+		for _, current := range integrations {
+			for _, langIntegration := range integration.GetLanguageIntegrations(current, graph) {
+				langIntegrations = append(langIntegrations, langIntegration)
+			}
 		}
 	}
 
 	sourceHandlers := []packageloader.SourceHandler{sourcegraph.SourceHandler()}
-	for _, integration := range integrations {
-		sourceHandlers = append(sourceHandlers, integration.SourceHandler())
+	for _, langIntegration := range langIntegrations {
+		sourceHandlers = append(sourceHandlers, langIntegration.SourceHandler())
 	}
 
 	// Conduct package and library loading.
@@ -211,14 +221,14 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 	resolver.FreezeCache()
 
 	// Construct the scope graph.
-	scopeResult := performConstruction(config.Target, sourcegraph, typeResult.Graph, integrations, resolver, loader, config.ScopeFilter)
+	scopeResult := performConstruction(config.Target, sourcegraph, typeResult.Graph, langIntegrations, resolver, loader, config.ScopeFilter)
 	return Result{
 		Status:               scopeResult.Status && typeResult.Status && loaderResult.Status,
 		Errors:               combineErrors(loaderResult.Errors, typeResult.Errors, scopeResult.Errors),
 		Warnings:             combineWarnings(loaderResult.Warnings, typeResult.Warnings, scopeResult.Warnings),
 		Graph:                scopeResult.Graph,
 		SourceTracker:        loaderResult.SourceTracker,
-		LanguageIntegrations: integrations,
+		LanguageIntegrations: langIntegrations,
 	}, nil
 }
 

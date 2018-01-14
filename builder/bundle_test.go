@@ -19,7 +19,14 @@ const TESTLIB_PATH = "../testlib"
 
 func TestBundling(t *testing.T) {
 	entrypointFile := "tests/simple.seru"
-	result, _ := scopegraph.ParseAndBuildScopeGraph(entrypointFile, []string{}, packageloader.Library{TESTLIB_PATH, false, "", "testcore"})
+	result, _ := scopegraph.ParseAndBuildScopeGraphWithConfig(scopegraph.Config{
+		Entrypoint:                packageloader.Entrypoint(entrypointFile),
+		VCSDevelopmentDirectories: []string{},
+		Libraries:                 []packageloader.Library{packageloader.Library{TESTLIB_PATH, false, "", "testcore"}},
+		Target:                    scopegraph.Compilation,
+		PathLoader:                packageloader.LocalFilePathLoader{},
+	})
+
 	if !assert.True(t, result.Status, "Expected no failure") {
 		return
 	}

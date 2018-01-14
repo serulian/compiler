@@ -12,9 +12,9 @@ import (
 )
 
 // GetLanguageIntegrations returns all language integrations provided by the given integration.
-func GetLanguageIntegrations(integrationInfo IntegrationInformation, graph compilergraph.SerulianGraph) []LanguageIntegration {
+func GetLanguageIntegrations(integration Integration, graph compilergraph.SerulianGraph) []LanguageIntegration {
 	var languageIntegrations = []LanguageIntegration{}
-	for _, implementation := range integrationInfo.integration.IntegrationImplementations() {
+	for _, implementation := range integration.IntegrationImplementations() {
 		langIntegration, isLangIntegration := implementation.(LanguageIntegration)
 		if isLangIntegration {
 			languageIntegrations = append(languageIntegrations, langIntegration)

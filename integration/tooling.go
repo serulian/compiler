@@ -27,7 +27,7 @@ import (
 
 // ListIntegrations lists all installed integrations on the command line.
 func ListIntegrations() bool {
-	integrations, err := LoadIntegrations()
+	integrations, err := LoadIntegrationsAndInfo()
 	if err != nil {
 		compilerutil.LogToConsole(compilerutil.ErrorLogLevel, nil, "Could not list installed integrations: %v", err)
 		return false
@@ -344,7 +344,7 @@ func UninstallIntegration(integrationID string, skipPrompt bool) bool {
 }
 
 func lookupIntegrationByID(integrationID string) (IntegrationInformation, error) {
-	integrations, err := LoadIntegrations()
+	integrations, err := LoadIntegrationsAndInfo()
 	if err != nil {
 		return IntegrationInformation{}, err
 	}

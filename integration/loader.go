@@ -29,9 +29,23 @@ func getIntegrationSubDirectory() string {
 	return dir
 }
 
-// LoadIntegrations loads all the integration found for the current toolkit.
-func LoadIntegrations() ([]IntegrationInformation, error) {
+// LoadIntegrationsAndInfo loads all the integration found for the current toolkit.
+func LoadIntegrationsAndInfo() ([]IntegrationInformation, error) {
 	return loadIntegrationsUnderPath(getIntegrationSubDirectory())
+}
+
+// LoadIntegrations loads all the integrations found for the current toolkit.
+func LoadIntegrations() ([]Integration, error) {
+	withInfo, err := LoadIntegrationsAndInfo()
+	if err != nil {
+		return []Integration{}, err
+	}
+
+	integrations := make([]Integration, 0, len(withInfo))
+	for _, info := range withInfo {
+		integrations = append(integrations, info.integration)
+	}
+	return integrations, nil
 }
 
 func loadIntegrationsUnderPath(dirPath string) ([]IntegrationInformation, error) {
