@@ -131,9 +131,6 @@ func TestModuleMembers(t *testing.T) {
 	if !assert.Equal(t, 2, len(members), "Expected 2 members found") {
 		return
 	}
-
-	assert.Equal(t, members[0].MemberKind(), VarMember)
-	assert.Equal(t, members[1].MemberKind(), FunctionMember)
 }
 
 func TestTypeMembers(t *testing.T) {

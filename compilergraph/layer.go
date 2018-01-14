@@ -68,7 +68,7 @@ func (gl *graphLayer) TryGetNode(nodeID GraphNodeId) (GraphNode, bool) {
 		// indicates this is a node in this layer.
 		fullKindPredicate := gl.getPrefixedPredicate(gl.nodeKindPredicate)
 
-		for it.Next() {
+		for it.Next(nil) {
 			quad := gl.cayleyStore.Quad(it.Result())
 			if quad.Predicate == fullKindPredicate {
 				return GraphNode{GraphNodeId(nodeID), quad.Object, gl}, true
@@ -114,7 +114,7 @@ outer:
 
 		var nextWorkList = make([]*WalkResult, 0)
 
-		for it.Next() {
+		for it.Next(nil) {
 			currentQuad := gl.cayleyStore.Quad(it.Result())
 
 			// Note: We skip any predicates that are not part of this graph layer.
@@ -125,7 +125,7 @@ outer:
 
 			// Try to retrieve the object as a node. If found, then we have another step in the walk.
 			// Otherwise, we have a string predicate value.
-			_, isPossibleNodeID := currentQuad.Object.(quad.Raw)
+			_, isPossibleNodeID := currentQuad.Object.(quad.IRI)
 			found := false
 			targetNode := GraphNode{}
 
@@ -137,18 +137,18 @@ outer:
 				nextWorkList = append(nextWorkList, &WalkResult{&currentResult.Node, predicate, targetNode, map[string]string{}})
 			} else {
 				// This is a value predicate.
-				switch objectValue := currentQuad.Object.(type) {
-				case quad.String:
-					currentResult.Predicates[predicate] = string(objectValue)
+				switch objectValue := currentQuad.Object.Native().(type) {
+				case string:
+					currentResult.Predicates[predicate] = objectValue
 
-				case quad.Raw:
-					currentResult.Predicates[predicate] = string(objectValue)
+				case int:
+					currentResult.Predicates[predicate] = strconv.Itoa(objectValue)
 
-				case quad.Int:
-					currentResult.Predicates[predicate] = strconv.Itoa(int(objectValue))
+				case quad.IRI:
+					currentResult.Predicates[predicate] = iriToString(objectValue)
 
 				default:
-					panic("Unknown object value type")
+					panic(fmt.Sprintf("Unknown object value type: %T", objectValue))
 				}
 			}
 		}
@@ -200,13 +200,13 @@ func (gl *graphLayer) getPredicatesListForDebugging(graphNode GraphNode) []strin
 
 	nodeIDValue := gl.cayleyStore.ValueOf(nodeIdToValue(graphNode.NodeId))
 	iit := gl.cayleyStore.QuadIterator(quad.Subject, nodeIDValue)
-	for iit.Next() {
+	for iit.Next(nil) {
 		quad := gl.cayleyStore.Quad(iit.Result())
 		predicates = append(predicates, fmt.Sprintf("Outgoing predicate: %v => %v", quad.Predicate, quad.Object))
 	}
 
 	oit := gl.cayleyStore.QuadIterator(quad.Object, nodeIDValue)
-	for oit.Next() {
+	for oit.Next(nil) {
 		quad := gl.cayleyStore.Quad(oit.Result())
 		predicates = append(predicates, fmt.Sprintf("Incoming predicate: %v <= %v", quad.Predicate, quad.Subject))
 	}
