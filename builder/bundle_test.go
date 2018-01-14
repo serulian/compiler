@@ -49,11 +49,11 @@ type testSourceHandler struct {
 }
 
 func (t testSourceHandler) Kind() string {
-	return "test"
+	return "testy"
 }
 
 func (t testSourceHandler) PackageFileExtension() string {
-	return ".test"
+	return ".testy"
 }
 
 func (t testSourceHandler) NewParser() packageloader.SourceHandlerParser {
@@ -127,6 +127,6 @@ func TestBundling(t *testing.T) {
 
 	assert.True(t, strings.HasSuffix(string(source), "\n//# sourceMappingURL=simple.js.map"))
 
-	_, someFileExists := bundledWithSource.LookupFile("somefile.test")
+	_, someFileExists := bundledWithSource.LookupFile("somefile.testy")
 	assert.True(t, someFileExists)
 }
