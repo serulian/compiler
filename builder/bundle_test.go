@@ -93,7 +93,7 @@ func TestBundling(t *testing.T) {
 		LanguageIntegrations:      []integration.LanguageIntegration{tli},
 	})
 
-	if !assert.True(t, result.Status, "Expected no failure") {
+	if !assert.True(t, result.Status, "Expected no failure. Got: %v", result.Errors) {
 		return
 	}
 
