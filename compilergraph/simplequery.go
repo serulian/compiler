@@ -45,7 +45,7 @@ type simpleDirectionalIterator struct {
 }
 
 func (sdi simpleDirectionalIterator) Next() bool {
-	for sdi.quadIterator.Next() {
+	for sdi.quadIterator.Next(nil) {
 		quad := sdi.layer.cayleyStore.Quad(sdi.quadIterator.Result())
 		if quad.Predicate == sdi.prefixedPredicate {
 			return true

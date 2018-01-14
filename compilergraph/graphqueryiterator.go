@@ -62,7 +62,7 @@ func (gni *graphNodeIterator) getMarked(name string) quad.Value {
 
 // Next move the iterator forward.
 func (gni *graphNodeIterator) Next() bool {
-	if !gni.iterator.Next() {
+	if !gni.iterator.Next(nil) {
 		return false
 	}
 

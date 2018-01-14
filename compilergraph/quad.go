@@ -18,12 +18,12 @@ import (
 
 // nodeIdToValue returns a Cayley value for a Graph Node ID.
 func nodeIdToValue(nodeId GraphNodeId) quad.Value {
-	return quad.Raw(nodeId)
+	return quad.IRI(nodeId)
 }
 
 // valueToNodeId returns a Graph Node ID for a Cayley value.
 func valueToNodeId(value quad.Value) GraphNodeId {
-	return GraphNodeId(value.(quad.Raw))
+	return GraphNodeId(value.(quad.IRI))
 }
 
 // predicateToValue converts a Predicate to a Cayley value.
@@ -49,7 +49,7 @@ func iriToString(iri quad.Value) string {
 // valueToTaggedValueData returns the internal string presentation of a
 // tagged value for a Cayley value.
 func valueToTaggedValueData(value quad.Value) string {
-	return string(value.(quad.Raw))
+	return string(value.(quad.String))
 }
 
 // taggedValueDataToValue returns a Cayley value for the given internal

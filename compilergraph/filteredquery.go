@@ -40,7 +40,13 @@ func (fq FilteredQuery) BuildNodeIterator(predicates ...Predicate) NodeIterator 
 	// Otherwise, create a new query starting from the nodes found and send it
 	// to the filtering function.
 	fullKindPredicate := fq.query.layer.getPrefixedPredicate(fq.query.layer.nodeKindPredicate)
-	markID := uuid.NewV1().String()
+
+	uuid, err := uuid.NewV1()
+	if err != nil {
+		panic(err)
+	}
+
+	markID := uuid.String()
 	subQuery := fq.query.layer.StartQueryFromNodes(nodeIds...).mark(markID).save(fullKindPredicate, markID+"-kind")
 	filteredQuery := fq.filter(subQuery)
 

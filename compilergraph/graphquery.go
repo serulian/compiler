@@ -228,7 +228,7 @@ func (gq GraphQuery) save(via interface{}, name string) GraphQuery {
 func (gq GraphQuery) getValues() []quad.Value {
 	var values = make([]quad.Value, 0)
 	it := gq.path.BuildIterator()
-	for it.Next() {
+	for it.Next(nil) {
 		values = append(values, gq.layer.cayleyStore.NameOf(it.Result()))
 	}
 	return values

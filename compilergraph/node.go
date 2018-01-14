@@ -218,7 +218,7 @@ func (gn GraphNode) tryGet(predicate Predicate) (quad.Value, bool) {
 
 	// Search for all quads starting with this node's ID as the subject.
 	if it, ok := gn.layer.cayleyStore.QuadIterator(quad.Subject, nodeIDValue).(*memstore.Iterator); ok {
-		for it.Next() {
+		for it.Next(nil) {
 			quad := gn.layer.cayleyStore.Quad(it.Result())
 			if quad.Predicate == prefixedPredicate {
 				return quad.Object, true
@@ -241,7 +241,7 @@ func (gn GraphNode) tryGetIncoming(predicate Predicate) (quad.Value, bool) {
 
 	// Search for all quads starting with this node's ID as the object.
 	if it, ok := gn.layer.cayleyStore.QuadIterator(quad.Object, nodeIdValue).(*memstore.Iterator); ok {
-		for it.Next() {
+		for it.Next(nil) {
 			quad := gn.layer.cayleyStore.Quad(it.Result())
 			if quad.Predicate == prefixedPredicate {
 				return quad.Subject, true
