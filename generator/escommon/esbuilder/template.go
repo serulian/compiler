@@ -65,7 +65,7 @@ func (builder templateBuilder) mapping() (sourcemap.SourceMapping, bool) {
 }
 
 func (builder templateBuilder) emitSource(sb *sourceBuilder) {
-	var maps []offsetedSourceMap = make([]offsetedSourceMap, 0)
+	var maps = make([]offsetedSourceMap, 0)
 	var source bytes.Buffer
 
 	// Register an `emit` function which does two things:
@@ -79,14 +79,14 @@ func (builder templateBuilder) emitSource(sb *sourceBuilder) {
 
 		if sb.sourcemap != nil {
 			currentIndex := source.Len()
-			sm := sourcemap.NewSourceMap("", "")
+			sm := sourcemap.NewSourceMap()
 			buf := BuildSourceAndMap(node, sm)
 			maps = append(maps, offsetedSourceMap{currentIndex, sm})
 			return buf.String()
-		} else {
-			buf := BuildSource(node)
-			return buf.String()
 		}
+
+		buf := BuildSource(node)
+		return buf.String()
 	}
 
 	funcMap := template.FuncMap{

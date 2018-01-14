@@ -43,12 +43,6 @@ type sourceMapData struct {
 
 // SourceMap is an in-memory representation of a source map being constructed.
 type SourceMap struct {
-	// The path of the generated source file.
-	generatedFilePath string
-
-	// The source root for the source map.
-	sourceRoot string
-
 	// lineMappings is a map from 0-indexed line number in the generated source
 	// to a map of SourceMapping's, indexed by the 0-indexed column position
 	// in the generated source.
@@ -108,8 +102,8 @@ func Parse(encoded []byte) (*ParsedSourceMap, error) {
 }
 
 // NewSourceMap returns a new source map for construction.
-func NewSourceMap(generatedFilePath string, sourceRoot string) *SourceMap {
-	return &SourceMap{generatedFilePath, sourceRoot, map[int]map[int]SourceMapping{}, newOrderedStringSet(), newOrderedStringSet()}
+func NewSourceMap() *SourceMap {
+	return &SourceMap{map[int]map[int]SourceMapping{}, newOrderedStringSet(), newOrderedStringSet()}
 }
 
 // GetMapping returns the source mapping entry for the given generated line number and column position,
@@ -127,16 +121,6 @@ func (sm *SourceMap) GetMapping(lineNumber int, colPosition int) (SourceMapping,
 	}
 
 	return SourceMapping{}, false
-}
-
-// GeneratedFilePath returns the generated file path for the source map.
-func (sm *SourceMap) GeneratedFilePath() string {
-	return sm.generatedFilePath
-}
-
-// SourceRoot returns the source root for the source map, if any.
-func (sm *SourceMap) SourceRoot() string {
-	return sm.sourceRoot
 }
 
 // AddMapping adds a new mapping for the given generated line number and column position to this map.
@@ -164,7 +148,7 @@ func (sm *SourceMap) AddMapping(lineNumber int, colPosition int, mapping SourceM
 func (sm *SourceMap) OffsetBy(value string) *SourceMap {
 	lines := strings.Split(value, "\n")
 
-	om := NewSourceMap(sm.generatedFilePath, sm.sourceRoot)
+	om := NewSourceMap()
 	for lineNumber, mappings := range sm.lineMappings {
 		for colPosition, mapping := range mappings {
 			var updatedLineNumber = lineNumber + len(lines) - 1
@@ -190,7 +174,7 @@ func (sm *SourceMap) AppendMap(other *SourceMap) {
 }
 
 // Build returns the built source map.
-func (sm *SourceMap) Build() *ParsedSourceMap {
+func (sm *SourceMap) Build(generatedFilePath string, sourceRoot string) *ParsedSourceMap {
 	// Sort both sets to ensure consistent source map production.
 	sm.namesMap.Sort()
 	sm.sourcesMap.Sort()
@@ -275,8 +259,8 @@ func (sm *SourceMap) Build() *ParsedSourceMap {
 	}
 
 	return &ParsedSourceMap{
-		generatedFilePath: sm.generatedFilePath,
-		sourceRoot:        sm.sourceRoot,
+		generatedFilePath: generatedFilePath,
+		sourceRoot:        sourceRoot,
 		sources:           sm.sourcesMap.OrderedItems(),
 		names:             sm.namesMap.OrderedItems(),
 		lineMappings:      lineMappings,

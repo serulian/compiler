@@ -348,7 +348,7 @@ func TestGenerator(t *testing.T) {
 			assert.Equal(t, expectedSource, source, "Source mismatch on test %s\nExpected: %v\nActual: %v\n\n", test.name, expectedSource, source)
 
 			if test.integrationTest != integrationTestNone {
-				fullSource, _, err := GenerateES5(result.Graph, "", "")
+				fullSource, _, err := GenerateES5(result.Graph)
 				if !assert.Nil(t, err, "Error generating full source for test %s: %v", test.name, err) {
 					continue
 				}
@@ -533,15 +533,14 @@ func TestSourceMapping(t *testing.T) {
 		}
 
 		filename := path.Base(entrypointFile) + ".js"
-		mapname := filename + ".map"
 
 		// Generate the formatted ES5 code.
-		generated, sourceMap, err := GenerateES5(scopeResult.Graph, mapname, "")
+		generated, sourceMap, err := GenerateES5(scopeResult.Graph)
 		if !assert.Nil(t, err, "Error when generating ES5 for mapping test %s", test.name) {
 			continue
 		}
 
-		builtMap := sourceMap.Build()
+		builtMap := sourceMap.Build(filename, "")
 
 		// Create a variant of the ES5 code, with inline comments to the original source.
 		var buf bytes.Buffer

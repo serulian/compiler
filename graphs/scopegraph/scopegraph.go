@@ -14,8 +14,6 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/srg/typerefresolver"
 
-	"path"
-
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/srg"
 	srgtc "github.com/serulian/compiler/graphs/srg/typeconstructor"
@@ -24,9 +22,6 @@ import (
 	"github.com/serulian/compiler/packageloader"
 	"github.com/serulian/compiler/webidl"
 )
-
-// DYNAMIC_LANGUAGE_DIRECTORY is the directory under the entrypoint dir that contains language extension binaries.
-const DYNAMIC_LANGUAGE_DIRECTORY = ".langext"
 
 // PromisingAccessType defines an enumeration of access types for the IsPromisingMember check.
 type PromisingAccessType int
@@ -66,11 +61,12 @@ type ScopeGraph struct {
 
 // Result represents the results of building a scope graph.
 type Result struct {
-	Status        bool                           // Whether the construction succeeded.
-	Warnings      []compilercommon.SourceWarning // Any warnings encountered during construction.
-	Errors        []compilercommon.SourceError   // Any errors encountered during construction.
-	Graph         *ScopeGraph                    // The constructed scope graph.
-	SourceTracker packageloader.SourceTracker    // The source tracker.
+	Status               bool                              // Whether the construction succeeded.
+	Warnings             []compilercommon.SourceWarning    // Any warnings encountered during construction.
+	Errors               []compilercommon.SourceError      // Any errors encountered during construction.
+	Graph                *ScopeGraph                       // The constructed scope graph.
+	SourceTracker        packageloader.SourceTracker       // The source tracker.
+	LanguageIntegrations []integration.LanguageIntegration // The language integrations used when scoping.
 }
 
 // BuildTarget defines the target of the scoping being performed.
@@ -116,6 +112,10 @@ type Config struct {
 	// ScopeFilter defines the filter, if any, to use when scoping. If specified, only those entrypoints
 	// for which the filter returns true, will be scoped.
 	ScopeFilter ScopeFilter
+
+	// LanguageIntegration defines the language integrations to be used when performing parsing and scoping. If not specified,
+	// the integrations are loaded from the binary's directory.
+	LanguageIntegrations []integration.LanguageIntegration
 }
 
 // ParseAndBuildScopeGraph conducts full parsing, type graph construction and scoping for the project
@@ -153,22 +153,29 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 
 	// Create the IRG and register it as an integration.
 	webidl := webidl.WebIDLProvider(graph)
-	integrations := []integration.LanguageIntegration{webidl}
+	langIntegrations := []integration.LanguageIntegration{webidl}
 
 	// Load the dynamic integrations.
-	dynamicLanguagePath := path.Join(config.Entrypoint.EntrypointDirectoryPath(config.PathLoader), DYNAMIC_LANGUAGE_DIRECTORY)
-	dynamicIntegrationProviders, err := integration.LoadLanguageIntegrationProviders(dynamicLanguagePath)
-	if err != nil {
-		return Result{}, err
-	}
+	if config.LanguageIntegrations != nil {
+		for _, langIntegration := range config.LanguageIntegrations {
+			langIntegrations = append(langIntegrations, langIntegration)
+		}
+	} else {
+		integrations, err := integration.LoadIntegrations()
+		if err != nil {
+			return Result{}, err
+		}
 
-	for _, provider := range dynamicIntegrationProviders {
-		integrations = append(integrations, provider.GetIntegration(graph))
+		for _, current := range integrations {
+			for _, langIntegration := range integration.GetLanguageIntegrations(current, graph) {
+				langIntegrations = append(langIntegrations, langIntegration)
+			}
+		}
 	}
 
 	sourceHandlers := []packageloader.SourceHandler{sourcegraph.SourceHandler()}
-	for _, integration := range integrations {
-		sourceHandlers = append(sourceHandlers, integration.SourceHandler())
+	for _, langIntegration := range langIntegrations {
+		sourceHandlers = append(sourceHandlers, langIntegration.SourceHandler())
 	}
 
 	// Conduct package and library loading.
@@ -214,13 +221,14 @@ func ParseAndBuildScopeGraphWithConfig(config Config) (Result, error) {
 	resolver.FreezeCache()
 
 	// Construct the scope graph.
-	scopeResult := performConstruction(config.Target, sourcegraph, typeResult.Graph, integrations, resolver, loader, config.ScopeFilter)
+	scopeResult := performConstruction(config.Target, sourcegraph, typeResult.Graph, langIntegrations, resolver, loader, config.ScopeFilter)
 	return Result{
-		Status:        scopeResult.Status && typeResult.Status && loaderResult.Status,
-		Errors:        combineErrors(loaderResult.Errors, typeResult.Errors, scopeResult.Errors),
-		Warnings:      combineWarnings(loaderResult.Warnings, typeResult.Warnings, scopeResult.Warnings),
-		Graph:         scopeResult.Graph,
-		SourceTracker: loaderResult.SourceTracker,
+		Status:               scopeResult.Status && typeResult.Status && loaderResult.Status,
+		Errors:               combineErrors(loaderResult.Errors, typeResult.Errors, scopeResult.Errors),
+		Warnings:             combineWarnings(loaderResult.Warnings, typeResult.Warnings, scopeResult.Warnings),
+		Graph:                scopeResult.Graph,
+		SourceTracker:        loaderResult.SourceTracker,
+		LanguageIntegrations: langIntegrations,
 	}, nil
 }
 

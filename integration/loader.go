@@ -7,72 +7,105 @@ package integration
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"path"
+	"path/filepath"
 	"plugin"
 	"strings"
 
 	"github.com/phayes/permbits"
 )
 
-// PROVIDER_SYMBOL_NAME defines the name of the symbol to be exported by dynamic language integration provider
-// plugins.
-const PROVIDER_SYMBOL_NAME = "Provider"
+// integrationSuffix is the suffix for all integrations.
+const integrationSuffix = ".int"
 
-// LoadLanguageIntegrationProviders loads all the language integration providers found under the given
-// path. *All* files in the directory without an extension will be treated as a potential provider, so
-// callers should make sure that the directory is clean otherwise. Note that if the path does not exist,
-// the list returned will be *empty*.
-func LoadLanguageIntegrationProviders(providerDirPath string) ([]LanguageIntegrationProvider, error) {
-	_, err := os.Stat(providerDirPath)
+func getIntegrationSubDirectory() string {
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return dir
+}
+
+// LoadIntegrationsAndInfo loads all the integration found for the current toolkit.
+func LoadIntegrationsAndInfo() ([]IntegrationInformation, error) {
+	return loadIntegrationsUnderPath(getIntegrationSubDirectory())
+}
+
+// LoadIntegrations loads all the integrations found for the current toolkit.
+func LoadIntegrations() ([]Integration, error) {
+	withInfo, err := LoadIntegrationsAndInfo()
+	if err != nil {
+		return []Integration{}, err
+	}
+
+	integrations := make([]Integration, 0, len(withInfo))
+	for _, info := range withInfo {
+		integrations = append(integrations, info.integration)
+	}
+	return integrations, nil
+}
+
+func loadIntegrationsUnderPath(dirPath string) ([]IntegrationInformation, error) {
+	_, err := os.Stat(dirPath)
 	if os.IsNotExist(err) {
-		return []LanguageIntegrationProvider{}, nil
+		return []IntegrationInformation{}, nil
 	}
 
 	if err != nil {
-		return []LanguageIntegrationProvider{}, err
+		return []IntegrationInformation{}, err
 	}
 
 	// Iterate the directory, finding all binaries and trying to load the integrations found within.
-	files, err := ioutil.ReadDir(providerDirPath)
+	files, err := ioutil.ReadDir(dirPath)
 	if err != nil {
-		return []LanguageIntegrationProvider{}, err
+		return []IntegrationInformation{}, err
 	}
 
 	if len(files) == 0 {
-		return []LanguageIntegrationProvider{}, nil
+		return []IntegrationInformation{}, nil
 	}
 
-	providers := make([]LanguageIntegrationProvider, 0, len(files))
+	integrations := make([]IntegrationInformation, 0, len(files))
 	for _, f := range files {
-		if f.Mode().IsRegular() && !strings.Contains(f.Name(), ".") {
-			fullPath := path.Join(providerDirPath, f.Name())
+		if strings.HasSuffix(f.Name(), integrationSuffix) {
+			fullPath := path.Join(dirPath, f.Name())
 			permissions, err := permbits.Stat(fullPath)
 			if err != nil {
-				return []LanguageIntegrationProvider{}, err
+				return []IntegrationInformation{}, err
 			}
 
 			if permissions.UserExecute() || permissions.GroupExecute() || permissions.OtherExecute() {
-				// Found a binary. Attempt to load the provider from it.
-				p, err := plugin.Open(fullPath)
+				integrationInfo, err := loadIntegrationAtPath(fullPath)
 				if err != nil {
-					return []LanguageIntegrationProvider{}, err
+					return []IntegrationInformation{}, err
 				}
 
-				providerSymbol, err := p.Lookup(PROVIDER_SYMBOL_NAME)
-				if err != nil {
-					return []LanguageIntegrationProvider{}, err
-				}
-
-				provider, castOk := providerSymbol.(LanguageIntegrationProvider)
-				if !castOk {
-					return []LanguageIntegrationProvider{}, fmt.Errorf("Could find language integration provider in plugin `%s`", f.Name())
-				}
-
-				providers = append(providers, provider)
+				integrations = append(integrations, integrationInfo)
 			}
 		}
 	}
 
-	return providers, nil
+	return integrations, nil
+}
+
+func loadIntegrationAtPath(fullPath string) (IntegrationInformation, error) {
+	p, err := plugin.Open(fullPath)
+	if err != nil {
+		return IntegrationInformation{}, err
+	}
+
+	integrationSymbol, err := p.Lookup(IntegrationConstName)
+	if err != nil {
+		return IntegrationInformation{}, err
+	}
+
+	integration, castOk := integrationSymbol.(Integration)
+	if !castOk {
+		return IntegrationInformation{}, fmt.Errorf("Could find integration in integration binary `%s`", fullPath)
+	}
+
+	return IntegrationInformation{fullPath, integration}, nil
 }

@@ -20,6 +20,8 @@ type ConsoleLogLevel int
 
 const INDENTATION = "  "
 
+var RunningUnderTest = false
+
 const (
 	InfoLogLevel ConsoleLogLevel = iota
 	SuccessLogLevel
@@ -65,6 +67,10 @@ func LogToConsole(level ConsoleLogLevel, sourceRange compilercommon.SourceRange,
 
 // LogMessageToConsole logs a message to the console, with the given level and range.
 func LogMessageToConsole(prefixColor *color.Color, prefixText string, sourceRange compilercommon.SourceRange, message string, args ...interface{}) {
+	if RunningUnderTest {
+		return
+	}
+
 	formattedMessage := fmt.Sprintf(message, args...)
 
 	if sourceRange == nil {
