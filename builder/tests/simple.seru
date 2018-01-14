@@ -1,1 +1,3 @@
+from test`somefile` import something
+
 function DoNothing() {}
