@@ -126,7 +126,7 @@ func buildAndRunTests(filePath string, vcsDevelopmentDirectories []string, runne
 
 	// Save the source (with an adjusted call), in a temporary directory.
 	moduleName := filename[0 : len(filename)-len(sourceshape.SerulianFileExtension)]
-	sourceFilename := moduleName + ".js"
+	sourceFilename := moduleName + ".seru.js"
 
 	adjusted := fmt.Sprintf(`%s
 
