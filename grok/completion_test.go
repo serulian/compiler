@@ -129,12 +129,12 @@ var grokCompletionTests = []grokCompletionTest{
 	grokCompletionTest{"types",
 		[]grokCompletionSubTest{
 			// Type completions.
-			/*grokCompletionSubTest{"sl", "var<", []expectedCompletion{
+			grokCompletionSubTest{"sl", "var SomeVar ", []expectedCompletion{
 				expectedCompletion{TypeCompletion, "T", "T", "", "void"},
 				expectedCompletion{TypeCompletion, "SomeClass", "SomeClass", "", "void"},
 				expectedCompletion{TypeCompletion, "AnotherClass", "AnotherClass", "", "void"},
 				expectedCompletion{TypeCompletion, "ThirdClass", "ThirdClass", "", "void"},
-			}},*/
+			}},
 
 			// Context completions.
 			grokCompletionSubTest{"sl", "a", []expectedCompletion{
@@ -181,9 +181,13 @@ var grokCompletionTests = []grokCompletionTest{
 	grokCompletionTest{"imports",
 		[]grokCompletionSubTest{
 			// Type completions.
-			/*grokCompletionSubTest{"af3", "var<", []expectedCompletion{
+			grokCompletionSubTest{"af3", "var SomeVar ", []expectedCompletion{
 				expectedCompletion{TypeCompletion, "SomeClass", "SomeClass", "", "void"},
-			}},*/
+			}},
+
+			grokCompletionSubTest{"af3", "function SomeFunction() ", []expectedCompletion{
+				expectedCompletion{TypeCompletion, "SomeClass", "SomeClass", "", "void"},
+			}},
 
 			// Context completions.
 			grokCompletionSubTest{"af3", "", []expectedCompletion{

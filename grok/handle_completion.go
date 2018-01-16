@@ -12,6 +12,7 @@ import (
 	"github.com/serulian/compiler/graphs/scopegraph/proto"
 	"github.com/serulian/compiler/graphs/srg"
 	"github.com/serulian/compiler/packageloader"
+	"github.com/serulian/compiler/parser"
 	"github.com/serulian/compiler/sourceshape"
 )
 
@@ -60,18 +61,18 @@ func (gh Handle) GetCompletions(activationString string, sourcePosition compiler
 		// Autocomplete under an expression.
 		gh.addAccessCompletions(node, activationString, builder)
 
-	case strings.HasSuffix(activationString, "<"):
-		// Autocomplete of types.
-		gh.addContextCompletions(node, builder, func(scope srg.SRGContextScopeName) bool {
-			return scope.NamedScope().ScopeKind() == srg.NamedScopeType
-		})
-
 	case strings.HasPrefix(activationString, "from ") || strings.HasPrefix(activationString, "import "):
 		// Imports.
 		importSnippet, ok := buildImportSnippet(activationString)
 		if ok {
 			importSnippet.populateCompletions(builder, sourcePosition.Source())
 		}
+
+	case parser.IsTypePrefix(activationString):
+		// Autocomplete of types.
+		gh.addContextCompletions(node, builder, func(scope srg.SRGContextScopeName) bool {
+			return scope.NamedScope().ScopeKind() == srg.NamedScopeType
+		})
 
 	default:
 		// Context autocomplete.

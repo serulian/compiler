@@ -32,6 +32,13 @@ func ParseExpression(builder shared.NodeBuilder, source compilercommon.InputSour
 	return v1parser.ParseExpression(builder, source, startIndex, input)
 }
 
+// IsTypePrefix returns whether the given input string is a prefix that supports a type reference declared right
+// after it. For example, the string `function DoSomething() ` will return `true`, as a type can be specified right
+// after that code snippet.
+func IsTypePrefix(input string) bool {
+	return v1parser.IsTypePrefix(input)
+}
+
 // ParseWithCompatability performs parsing of the given input string and returns the root AST node. Unlike the normal Parse,
 // this method will try *all* parser versions, starting at the latest and working backwards, until a parse succeeds or there
 // are no additional versions.
