@@ -1,0 +1,15 @@
+function DoSomethingAsync() bool { return true }
+
+function somenumber(props []{any}, value int) int {
+	<- DoSomethingAsync()
+	return value
+}
+
+function somesum(props []{any}, numbers int*) int {
+	return 42
+}
+
+function TEST() any {
+	result := <somesum><somenumber [for index in 0 .. 2]>{index}</somenumber></somesum>
+	return result == 42
+}
