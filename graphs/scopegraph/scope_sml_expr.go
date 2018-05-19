@@ -194,8 +194,10 @@ func (sb *scopeBuilder) scopeSmlExpression(node compilergraph.GraphNode, context
 		// Check if the children parameter is a stream. If so, we match the stream type. Otherwise,
 		// we check if the child matches the value expected.
 		if childsType.IsDirectReferenceTo(sb.sg.tdg.StreamType()) {
-			// If there is a single child that is also a matching stream, then we use the stream directly.
+			// If there is a single child that is also a matching stream (i.e. same type of stream or a Stream<subtype of childsType's stream generic>), then we use the stream directly.
 			if len(childrenTypes) == 1 && childrenTypes[0] == childsType {
+				childrenLabel = proto.ScopeLabel_SML_STREAM_CHILD
+			} else if len(childrenTypes) == 1 && childrenTypes[0].IsDirectReferenceTo(sb.sg.tdg.StreamType()) && childrenTypes[0].CheckSubTypeOf(childsType.Generics()[0]) == nil {
 				childrenLabel = proto.ScopeLabel_SML_STREAM_CHILD
 			} else {
 				// Otherwise, the children must either match the type of the stream, or the type of the *values*

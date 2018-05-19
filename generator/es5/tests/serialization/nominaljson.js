@@ -20,7 +20,7 @@ $module('nominaljson', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "GetValue|2|0b2e6e78<5e61c39d>": true,
+        "GetValue|2|fb1385bf<71258460>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -48,12 +48,12 @@ $module('nominaljson', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Parse|1|0b2e6e78<c267cdf9>": true,
-        "equals|4|0b2e6e78<5e61c39d>": true,
-        "Stringify|2|0b2e6e78<c509e19d>": true,
-        "Mapping|2|0b2e6e78<204295f9<any>>": true,
-        "Clone|2|0b2e6e78<c267cdf9>": true,
-        "String|2|0b2e6e78<c509e19d>": true,
+        "Parse|1|fb1385bf<c267cdf9>": true,
+        "equals|4|fb1385bf<71258460>": true,
+        "Stringify|2|fb1385bf<b2b53db7>": true,
+        "Mapping|2|fb1385bf<204295f9<any>>": true,
+        "Clone|2|fb1385bf<c267cdf9>": true,
+        "String|2|fb1385bf<b2b53db7>": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -81,12 +81,12 @@ $module('nominaljson', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Parse|1|0b2e6e78<eda8a36d>": true,
-        "equals|4|0b2e6e78<5e61c39d>": true,
-        "Stringify|2|0b2e6e78<c509e19d>": true,
-        "Mapping|2|0b2e6e78<204295f9<any>>": true,
-        "Clone|2|0b2e6e78<eda8a36d>": true,
-        "String|2|0b2e6e78<c509e19d>": true,
+        "Parse|1|fb1385bf<eda8a36d>": true,
+        "equals|4|fb1385bf<71258460>": true,
+        "Stringify|2|fb1385bf<b2b53db7>": true,
+        "Mapping|2|fb1385bf<204295f9<any>>": true,
+        "Clone|2|fb1385bf<eda8a36d>": true,
+        "String|2|fb1385bf<b2b53db7>": true,
       };
       return this.$cachedtypesig = computed;
     };

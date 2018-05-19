@@ -1,11 +1,37 @@
 $module('numeric', function () {
   var $static = this;
-  $static.doSomething = function () {
-    (function () {
-      return;
-    })();
-    return;
-  };
+  $static.doSomething = $t.markpromising(function () {
+    var $result;
+    var $current = 0;
+    var $continue = function ($resolve, $reject) {
+      localasyncloop: while (true) {
+        switch ($current) {
+          case 0:
+            $promise.maybe((function () {
+              return;
+            })()).then(function ($result0) {
+              $result = $result0;
+              $current = 1;
+              $continue($resolve, $reject);
+              return;
+            }).catch(function (err) {
+              $reject(err);
+              return;
+            });
+            return;
+
+          case 1:
+            $resolve();
+            return;
+
+          default:
+            $resolve();
+            return;
+        }
+      }
+    };
+    return $promise.new($continue);
+  });
   $static.TEST = $t.markpromising(function () {
     var $result;
     var $temp0;

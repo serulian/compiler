@@ -7,11 +7,37 @@ $module('arrow', function () {
       var instance = new $static();
       return instance;
     };
-    $instance.Then = function (resolve) {
+    $instance.Then = $t.markpromising(function (resolve) {
       var $this = this;
-      resolve($t.fastbox(true, $g.________testlib.basictypes.Boolean));
-      return $this;
-    };
+      var $result;
+      var $current = 0;
+      var $continue = function ($resolve, $reject) {
+        localasyncloop: while (true) {
+          switch ($current) {
+            case 0:
+              $promise.maybe(resolve($t.fastbox(true, $g.________testlib.basictypes.Boolean))).then(function ($result0) {
+                $result = $result0;
+                $current = 1;
+                $continue($resolve, $reject);
+                return;
+              }).catch(function (err) {
+                $reject(err);
+                return;
+              });
+              return;
+
+            case 1:
+              $resolve($this);
+              return;
+
+            default:
+              $resolve();
+              return;
+          }
+        }
+      };
+      return $promise.new($continue);
+    });
     $instance.Catch = function (rejection) {
       var $this = this;
       return $this;
@@ -21,8 +47,8 @@ $module('arrow', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Then|2|0b2e6e78<9fc228ba<5e61c39d>>": true,
-        "Catch|2|0b2e6e78<9fc228ba<5e61c39d>>": true,
+        "Then|2|fb1385bf<414fa52a<71258460>>": true,
+        "Catch|2|fb1385bf<414fa52a<71258460>>": true,
       };
       return this.$cachedtypesig = computed;
     };

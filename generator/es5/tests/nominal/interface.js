@@ -16,7 +16,7 @@ $module('interface', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeValue|3|f22a98b6": true,
+        "SomeValue|3|db1c26c2": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -29,7 +29,7 @@ $module('interface', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeValue|3|f22a98b6": true,
+        "SomeValue|3|db1c26c2": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -55,7 +55,7 @@ $module('interface', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "GetValue|2|0b2e6e78<f22a98b6>": true,
+        "GetValue|2|fb1385bf<db1c26c2>": true,
       };
       return this.$cachedtypesig = computed;
     };

@@ -29,10 +29,12 @@ func IsMaybePromisingMember(member typegraph.TGMember) bool {
 func InvokeFunction(callExpr Expression, arguments []Expression, callType scopegraph.PromisingAccessType, sg *scopegraph.ScopeGraph, basisNode compilergraph.GraphNode) Expression {
 	functionCall := FunctionCall(callExpr, arguments, basisNode)
 
-	// Check if the expression references a member. If not, this is a simple function call.
+	// Check if the expression references a member. If not, this is a simple function call, and we need to
+	// always await a possible promise.
 	referencedMember, isMemberRef := callExpr.ReferencedMember()
 	if !isMemberRef {
-		return functionCall
+		functionCall = RuntimeFunctionCall(MaybePromiseFunction, []Expression{functionCall}, basisNode)
+		return AwaitPromise(functionCall, basisNode)
 	}
 
 	// If the member is promising, await on its result.

@@ -247,6 +247,10 @@ this.Serulian = (function($global) {
         case 'interface':
           // Check if the other type implements the interface by comparing type signatures.
           var targetSignature = type.$typesig();
+          if (!value.constructor.$typesig) {
+            return false;
+          }
+
           var valueSignature = value.constructor.$typesig();
 
           var expectedKeys = Object.keys(targetSignature);

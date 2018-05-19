@@ -1,0 +1,11 @@
+function DoSomethingAsync() int { return 32 }
+
+function SomeMethod() int {
+	return <- DoSomethingAsync()
+}
+
+function AnotherMethod(toCall function<int>()) int {
+	return toCall() + 10
+}
+
+function TEST() any { return AnotherMethod(SomeMethod) == 42 }

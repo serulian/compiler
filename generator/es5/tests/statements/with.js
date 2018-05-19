@@ -17,7 +17,7 @@ $module('with', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Release|2|0b2e6e78<void>": true,
+        "Release|2|fb1385bf<void>": true,
       };
       return this.$cachedtypesig = computed;
     };
