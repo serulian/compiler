@@ -156,7 +156,7 @@ $module('inlineloopbroken', function () {
                             }
                           }
                         };
-                        return $generator.new($continue, false);
+                        return $generator.new($continue, false, $g.________testlib.basictypes.String);
                       })())).then(function ($result0) {
                         $result = $result0;
                         $current = 1;

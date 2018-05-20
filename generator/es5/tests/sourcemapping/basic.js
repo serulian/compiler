@@ -155,10 +155,10 @@ this.Serulian = (function ($global) {
 
         case 'interface':
           var targetSignature = type.$typesig();
-          if (!value.constructor.$typesig) {
-            return false;
+          var valueSignature = value.constructor.$typesig ? value.constructor.$typesig() : null;
+          if (!valueSignature && value.$streamType) {
+            valueSignature = $a.stream(value.$streamType).$typesig();
           }
-          var valueSignature = value.constructor.$typesig();
           var expectedKeys = Object.keys(targetSignature);
           for (var i = 0; i < expectedKeys.length; ++i) {
             var expectedKey = expectedKeys[i];
@@ -482,20 +482,22 @@ this.Serulian = (function ($global) {
     },
   };
   var $generator = {
-    directempty: function () {
+    directempty: function (opt_yieldType) {
       var stream = {
         Next: function () {
           return $a['tuple']($t.any, $a['bool']).Build(null, false);
         },
+        $streamType: opt_yieldType || $t.any,
       };
       return stream;
     },
-    empty: function () {
-      return $generator.directempty();
+    empty: function (yieldType) {
+      return $generator.directempty(yieldType);
     },
-    new: function (f, isAsync) {
+    new: function (f, isAsync, yieldType) {
       if (isAsync) {
         var stream = {
+          $streamType: yieldType,
           $is: null,
           Next: function () {
             return $promise.new(function (resolve, reject) {
@@ -529,6 +531,7 @@ this.Serulian = (function ($global) {
         return stream;
       } else {
         var stream = {
+          $streamType: yieldType,
           $is: null,
           Next: function () {
             if (stream.$is != null) {
@@ -1852,7 +1855,7 @@ this.Serulian = (function ($global) {
             }
           }
         };
-        return $generator.new($continue, true);
+        return $generator.new($continue, true, Q);
       };
       return $f;
     };

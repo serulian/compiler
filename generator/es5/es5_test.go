@@ -270,6 +270,7 @@ var generationTests = []generationTest{
 	generationTest{"nested generator success test", "generator", "nested", integrationTestSuccessExpected, ""},
 	generationTest{"resource generator success test", "generator", "resource", integrationTestSuccessExpected, ""},
 	generationTest{"async generator success test", "generator", "async", integrationTestSuccessExpected, ""},
+	generationTest{"generator cast success test", "generator", "cast", integrationTestSuccessExpected, ""},
 
 	generationTest{"empty resolve statement test", "resolve", "empty", integrationTestNone, ""},
 	generationTest{"simple resolve statement test", "resolve", "simple", integrationTestSuccessExpected, ""},

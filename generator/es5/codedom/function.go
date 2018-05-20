@@ -8,6 +8,7 @@ import (
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/scopegraph"
 	"github.com/serulian/compiler/graphs/srg"
+	"github.com/serulian/compiler/graphs/typegraph"
 )
 
 type SpecializedFunction int
@@ -27,13 +28,15 @@ const (
 // FunctionDefinitionNode represents the definition of a function.
 type FunctionDefinitionNode struct {
 	expressionBase
-	Generics       []string              // The names of the generics of the function, if any.
-	Parameters     []string              // The names of the parameters of the function, if any.
-	Body           StatementOrExpression // The body for the function.
-	RequiresThis   bool                  // Whether the function needs '$this' defined.
-	Specialization SpecializedFunction   // The specialization for this function, if any.
+	Generics           []string                 // The names of the generics of the function, if any.
+	Parameters         []string                 // The names of the parameters of the function, if any.
+	Body               StatementOrExpression    // The body for the function.
+	RequiresThis       bool                     // Whether the function needs '$this' defined.
+	GeneratorYieldType *typegraph.TypeReference // The type of items being yielded, if this is a generator.
+	Specialization     SpecializedFunction      // The specialization for this function, if any.
 }
 
+// FunctionDefinition constructs a new function definition.
 func FunctionDefinition(generics []string, parameters []string, body StatementOrExpression, requiresThis bool, specialization SpecializedFunction, basisNode compilergraph.GraphNode) *FunctionDefinitionNode {
 	return &FunctionDefinitionNode{
 		expressionBase{domBase{basisNode}},
@@ -41,7 +44,21 @@ func FunctionDefinition(generics []string, parameters []string, body StatementOr
 		parameters,
 		body,
 		requiresThis,
+		nil,
 		specialization,
+	}
+}
+
+// GeneratorDefinition constructs a new function definition for a generator function.
+func GeneratorDefinition(generics []string, parameters []string, body StatementOrExpression, requiresThis bool, yieldType typegraph.TypeReference, basisNode compilergraph.GraphNode) *FunctionDefinitionNode {
+	return &FunctionDefinitionNode{
+		expressionBase{domBase{basisNode}},
+		generics,
+		parameters,
+		body,
+		requiresThis,
+		&yieldType,
+		GeneratorFunction,
 	}
 }
 

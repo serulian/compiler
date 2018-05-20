@@ -51,9 +51,9 @@ func (eg *expressionGenerator) generateFunctionDefinition(function *codedom.Func
 					{{ if .Item.IsGenerator }}
 						{{ if $body }}
 							{{ emit $body }}
-							return $generator.new($continue, {{ .BodyAsync }});
+							return $generator.new($continue, {{ .BodyAsync }}, {{ emit .GeneratorYieldType }});
 						{{ else }}
-							return $generator.empty();
+							return $generator.empty({{ emit .GeneratorYieldType }});
 						{{ end }}						
 					{{ else }}
 						{{ if .Async }}
@@ -89,12 +89,18 @@ func (eg *expressionGenerator) generateFunctionDefinition(function *codedom.Func
 	isGenerator := function.IsGenerator()
 	functionTraits := shared.FunctionTraits(isAsync, isGenerator, function.ManagesResources())
 
+	generatorYieldType := esbuilder.Snippet("")
+	if isGenerator {
+		generatorYieldType = esbuilder.Snippet(eg.pather.TypeReferenceCall(*function.GeneratorYieldType))
+	}
+
 	data := struct {
-		Item          *codedom.FunctionDefinitionNode
-		GeneratedBody esbuilder.SourceBuilder
-		Async         bool
-		BodyAsync     bool
-	}{function, eg.machineBuilder(function.Body, functionTraits), isAsync, bodyAsync}
+		Item               *codedom.FunctionDefinitionNode
+		GeneratedBody      esbuilder.SourceBuilder
+		Async              bool
+		BodyAsync          bool
+		GeneratorYieldType esbuilder.SourceBuilder
+	}{function, eg.machineBuilder(function.Body, functionTraits), isAsync, bodyAsync, generatorYieldType}
 
 	return esbuilder.Template("functiondef", templateStr, data).AsExpression()
 }

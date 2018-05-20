@@ -145,7 +145,7 @@ $module('asyncchildren', function () {
                   }
                 }
               };
-              return $generator.new($continue, true);
+              return $generator.new($continue, true, $g.________testlib.basictypes.Integer);
             })())).then(function ($result0) {
               $result = $result0;
               $current = 1;

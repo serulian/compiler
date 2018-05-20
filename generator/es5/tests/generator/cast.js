@@ -1,4 +1,4 @@
-$module('basic', function () {
+$module('cast', function () {
   var $static = this;
   $static.SomeGenerator = function () {
     var $current = 0;
@@ -6,18 +6,13 @@ $module('basic', function () {
       while (true) {
         switch ($current) {
           case 0:
-            $yield($t.fastbox(1, $g.________testlib.basictypes.Integer));
+            $yield($t.fastbox(false, $g.________testlib.basictypes.Boolean));
             $current = 1;
             return;
 
           case 1:
-            $yield($t.fastbox(2, $g.________testlib.basictypes.Integer));
+            $yield($t.fastbox(true, $g.________testlib.basictypes.Boolean));
             $current = 2;
-            return;
-
-          case 2:
-            $yield($t.fastbox(3, $g.________testlib.basictypes.Integer));
-            $current = 3;
             return;
 
           default:
@@ -26,29 +21,25 @@ $module('basic', function () {
         }
       }
     };
-    return $generator.new($continue, false, $g.________testlib.basictypes.Integer);
+    return $generator.new($continue, false, $g.________testlib.basictypes.Boolean);
   };
   $static.TEST = $t.markpromising(function () {
     var $result;
     var $temp0;
     var $temp1;
-    var counter;
-    var entry;
-    var s;
+    var v;
+    var value;
     var $current = 0;
     var $continue = function ($resolve, $reject) {
       localasyncloop: while (true) {
         switch ($current) {
           case 0:
-            s = $g.________testlib.basictypes.MapStream($g.________testlib.basictypes.Integer, $g.________testlib.basictypes.Integer)($g.basic.SomeGenerator(), function (s) {
-              return $t.fastbox(s.$wrapped + 1, $g.________testlib.basictypes.Integer);
-            });
-            counter = $t.fastbox(0, $g.________testlib.basictypes.Integer);
+            v = null;
             $current = 1;
             continue localasyncloop;
 
           case 1:
-            $temp1 = s;
+            $temp1 = $t.cast($g.cast.SomeGenerator(), $g.________testlib.basictypes.Stream($g.________testlib.basictypes.Boolean), false);
             $current = 2;
             continue localasyncloop;
 
@@ -66,7 +57,7 @@ $module('basic', function () {
             return;
 
           case 3:
-            entry = $temp0.First;
+            value = $temp0.First;
             if ($temp0.Second.$wrapped) {
               $current = 4;
               continue localasyncloop;
@@ -77,12 +68,12 @@ $module('basic', function () {
             break;
 
           case 4:
-            counter = $t.fastbox(counter.$wrapped + entry.$wrapped, $g.________testlib.basictypes.Integer);
+            v = value;
             $current = 2;
             continue localasyncloop;
 
           case 5:
-            $resolve($t.fastbox(counter.$wrapped == 9, $g.________testlib.basictypes.Boolean));
+            $resolve(v);
             return;
 
           default:

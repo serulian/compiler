@@ -94,14 +94,18 @@ func (db *domBuilder) buildSmlExpression(node compilergraph.GraphNode) codedom.E
 					codedom.RuntimeFunctionCall(codedom.EmptyGeneratorDirect, []codedom.Expression{}, node))
 			} else {
 				yielders := make([]codedom.Statement, len(children))
+				yieldType := db.scopegraph.TypeGraph().VoidTypeReference()
+
 				for index, child := range children {
 					if db.scopegraph.HasSecondaryLabel(child.BasisNode(), proto.ScopeLabel_SML_CHILD_YIELD_FROM) {
 						streamScope, _ := db.scopegraph.GetScope(child.BasisNode())
 						streamType := streamScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
-
 						yielders[index] = codedom.YieldStream(child, streamType, child.BasisNode())
+						yieldType = yieldType.Intersect(streamType.StreamYieldTypeOrAny())
 					} else {
 						yielders[index] = codedom.YieldValue(child, child.BasisNode())
+						valueScope, _ := db.scopegraph.GetScope(child.BasisNode())
+						yieldType = yieldType.Intersect(valueScope.ResolvedTypeRef(db.scopegraph.TypeGraph()))
 					}
 
 					if index > 0 {
@@ -109,7 +113,7 @@ func (db *domBuilder) buildSmlExpression(node compilergraph.GraphNode) codedom.E
 					}
 				}
 
-				generatorFunc := codedom.FunctionDefinition([]string{}, []string{}, yielders[0], false, codedom.GeneratorFunction, node)
+				generatorFunc := codedom.GeneratorDefinition([]string{}, []string{}, yielders[0], false, yieldType, node)
 				generatorExpr := codedom.AnonymousClosureCall(generatorFunc, []codedom.Expression{}, node)
 				declarationArguments = append(declarationArguments, generatorExpr)
 			}

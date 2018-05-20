@@ -36,7 +36,7 @@ $module('async', function () {
         }
       }
     };
-    return $generator.new($continue, true);
+    return $generator.new($continue, true, $g.________testlib.basictypes.Boolean);
   };
   $static.TEST = $t.markpromising(function () {
     var $result;

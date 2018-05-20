@@ -46,10 +46,12 @@ func (db *domBuilder) buildLambdaExpressionInternal(node compilergraph.GraphNode
 	}
 
 	// Check for a generator.
-	specialization := codedom.NormalFunction
 	if isGenerator {
-		specialization = codedom.GeneratorFunction
+		// Extract out the type yielded from the return type of the lambda.
+		lambdaScope, _ := db.scopegraph.GetScope(node)
+		lambdaType := lambdaScope.ResolvedTypeRef(db.scopegraph.TypeGraph())
+		return codedom.GeneratorDefinition(generics, parameters, body, false, lambdaType.StreamYieldTypeOrAny(), node)
 	}
 
-	return codedom.FunctionDefinition(generics, parameters, body, false, specialization, node)
+	return codedom.FunctionDefinition(generics, parameters, body, false, codedom.NormalFunction, node)
 }
