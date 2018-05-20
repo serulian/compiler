@@ -1,0 +1,21 @@
+function Value(props []{any}, value any*) string {
+	for v in value { return v.(string) }
+	return ''
+}
+
+function Collector(props []{any}, chars any*) string {
+	var final = ''
+	for c in chars {
+		final = c.(string) + final
+	}
+
+	return final
+}
+
+function TEST() any {
+	characters := 'hello world'
+	result := <Collector>
+		<Value [for index in 0 ..< characters.Length]>{characters[index:index + 1]}</Value>
+	</Collector>
+	return result == 'dlrow olleh'
+}

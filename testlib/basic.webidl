@@ -13,6 +13,7 @@ interface __serulian_internal {
 interface String {
 	serializer;
 	readonly attribute Number length;
+  String substring(any start, any end);
 };
 
 [Constructor(any value), NativeOperator=Equals]

@@ -16,7 +16,7 @@ $module('interfacecastfail', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeValue|3|f22a98b6": true,
+        "SomeValue|3|db1c26c2": true,
       };
       return this.$cachedtypesig = computed;
     };
@@ -29,7 +29,7 @@ $module('interfacecastfail', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "SomeValue|3|5e61c39d": true,
+        "SomeValue|3|71258460": true,
       };
       return this.$cachedtypesig = computed;
     };

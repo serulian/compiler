@@ -16,7 +16,7 @@ $module('nullcomparecall', function () {
         return this.$cachedtypesig;
       }
       var computed = {
-        "Message|3|c509e19d": true,
+        "Message|3|b2b53db7": true,
       };
       return this.$cachedtypesig = computed;
     };

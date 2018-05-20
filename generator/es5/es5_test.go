@@ -186,6 +186,7 @@ var generationTests = []generationTest{
 	generationTest{"function call", "opexpr", "functioncall", integrationTestSuccessExpected, ""},
 	generationTest{"function call nullable", "opexpr", "functioncallnullable", integrationTestSuccessExpected, ""},
 	generationTest{"async function call nullable", "opexpr", "asyncfunctioncallnullable", integrationTestSuccessExpected, ""},
+	generationTest{"anonymous function call", "opexpr", "anonymousfunctioncall", integrationTestSuccessExpected, ""},
 	generationTest{"boolean operators", "opexpr", "boolean", integrationTestSuccessExpected, ""},
 	generationTest{"binary op expressions", "opexpr", "binary", integrationTestSuccessExpected, ""},
 	generationTest{"unary op expressions", "opexpr", "unary", integrationTestNone, ""},
@@ -302,6 +303,7 @@ var generationTests = []generationTest{
 	generationTest{"sml inline loop test", "sml", "inlineloop", integrationTestSuccessExpected, ""},
 	generationTest{"sml loop and elements test", "sml", "loopandelements", integrationTestSuccessExpected, ""},
 	generationTest{"sml inline loop async test", "sml", "inlineloopasync", integrationTestSuccessExpected, ""},
+	generationTest{"sml inline loop broken test", "sml", "inlineloopbroken", integrationTestSuccessExpected, ""},
 
 	generationTest{"native new integration test", "nativenew", "nativenew", integrationTestSuccessExpected, ""},
 	generationTest{"dynamic access non-promising test", "dynamicaccess", "nonpromising", integrationTestSuccessExpected, ""},
