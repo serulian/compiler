@@ -1092,6 +1092,28 @@ func (tr TypeReference) AsNonNullable() TypeReference {
 	return tr.withFlag(trhSlotFlagNullable, nullableFlagFalse)
 }
 
+// StreamYieldType returns the type of items yielded by this stream or an error if
+// this type is not a concrete subtype of Stream<T>.
+func (tr TypeReference) StreamYieldType() (TypeReference, error) {
+	generics, err := tr.CheckConcreteSubtypeOf(tr.tdg.StreamType())
+	if err != nil {
+		return tr.tdg.VoidTypeReference(), err
+	}
+
+	return generics[0], nil
+}
+
+// StreamYieldTypeOrAny returns the type of the items yielded by this stream, or `any`
+// if none.
+func (tr TypeReference) StreamYieldTypeOrAny() TypeReference {
+	yieldType, err := tr.StreamYieldType()
+	if err != nil {
+		return tr.tdg.AnyTypeReference()
+	}
+
+	return yieldType
+}
+
 // Intersect returns the type common to both type references or any if they are uncommon.
 func (tr TypeReference) Intersect(other TypeReference) TypeReference {
 	if tr.IsVoid() {

@@ -53,7 +53,7 @@ $module('nested', function () {
         }
       }
     };
-    return $generator.new($continue, false);
+    return $generator.new($continue, false, $g.________testlib.basictypes.Integer);
   };
   $static.SomeGenerator = function () {
     var $current = 0;
@@ -76,7 +76,7 @@ $module('nested', function () {
         }
       }
     };
-    return $generator.new($continue, true);
+    return $generator.new($continue, true, $g.________testlib.basictypes.Integer);
   };
   $static.TEST = $t.markpromising(function () {
     var $result;

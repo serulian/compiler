@@ -247,11 +247,13 @@ this.Serulian = (function($global) {
         case 'interface':
           // Check if the other type implements the interface by comparing type signatures.
           var targetSignature = type.$typesig();
-          if (!value.constructor.$typesig) {
-            return false;
-          }
+          var valueSignature = value.constructor.$typesig ? value.constructor.$typesig() : null;
 
-          var valueSignature = value.constructor.$typesig();
+          // Check for stream's constructed by the runtime, which won't have a $typesig defined
+          // on the constructor, but *will* have a $streamtype.
+          if (!valueSignature && value.$streamType) {
+            valueSignature = $a.stream(value.$streamType).$typesig();
+          }
 
           var expectedKeys = Object.keys(targetSignature);
           for (var i = 0; i < expectedKeys.length; ++i) {
@@ -699,25 +701,27 @@ this.Serulian = (function($global) {
   // $generator defines helper methods around constructing generators for Streams.
   var $generator = {
     // directempty returns a new empty generator.
-    'directempty': function() {
+    'directempty': function(opt_yieldType) {
       var stream = {
         'Next': function() {
            return $a['tuple']($t.any, $a['bool']).Build(null, false);
         },
+        '$streamType': opt_yieldType || $t.any
       };
       return stream;
     },
 
     // empty returns a new empty stream.
-    'empty': function() {
-      return $generator.directempty();
+    'empty': function(yieldType) {
+      return $generator.directempty(yieldType);
     },
 
     // new returns a stream wrapping the given generator function.
-    'new': function (f, isAsync) {
+    'new': function (f, isAsync, yieldType) {
       if (isAsync) {
         // Async Stream
         var stream = {
+          '$streamType': yieldType,
           '$is': null,
           'Next': function () {
             return $promise.new(function (resolve, reject) {
@@ -757,6 +761,7 @@ this.Serulian = (function($global) {
       } else {
         // Sync stream
         var stream = {
+          '$streamType': yieldType,
           '$is': null,
           'Next': function () {
             if (stream.$is != null) {

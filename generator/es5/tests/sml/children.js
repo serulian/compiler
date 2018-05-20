@@ -94,7 +94,7 @@ $module('children', function () {
                   }
                 }
               };
-              return $generator.new($continue, false);
+              return $generator.new($continue, false, $g.________testlib.basictypes.Integer);
             })())).then(function ($result0) {
               $result = $result0;
               $current = 1;

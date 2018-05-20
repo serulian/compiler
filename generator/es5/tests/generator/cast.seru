@@ -1,0 +1,12 @@
+function SomeGenerator() bool* {
+	yield false
+	yield true
+}
+
+function TEST() bool? {
+	var v bool? = null
+	for value in SomeGenerator().(bool*) {
+		v = value
+	}
+	return v
+}

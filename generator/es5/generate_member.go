@@ -142,12 +142,12 @@ func (gm generatingMember) InnerInstanceName() string {
 // FunctionSource returns the generated code for the implementation for this member.
 func (gm generatingMember) FunctionSource() esbuilder.SourceBuilder {
 	functionDef := statemachine.FunctionDef{
-		Generics:       gm.Generics(),
-		Parameters:     gm.Parameters(),
-		RequiresThis:   gm.RequiresThis(),
-		WorkerExecutes: gm.WorkerExecutes(),
-		IsGenerator:    gm.IsGenerator(),
-		BodyNode:       gm.BodyNode(),
+		Generics:           gm.Generics(),
+		Parameters:         gm.Parameters(),
+		RequiresThis:       gm.RequiresThis(),
+		WorkerExecutes:     gm.WorkerExecutes(),
+		GeneratorYieldType: gm.GeneratorYieldType(gm.BodyNode()),
+		BodyNode:           gm.BodyNode(),
 	}
 
 	return statemachine.GenerateFunctionSource(functionDef, gm.Generator.scopegraph)
@@ -158,16 +158,13 @@ func (gm generatingMember) GetterSource() esbuilder.SourceBuilder {
 	getterNode, _ := gm.SRGMember.Getter()
 	getterBodyNode, _ := getterNode.Body()
 
-	bodyScope, _ := gm.Generator.scopegraph.GetScope(getterBodyNode)
-	isGenerator := bodyScope.HasLabel(proto.ScopeLabel_GENERATOR_STATEMENT)
-
 	functionDef := statemachine.FunctionDef{
-		Generics:       []string{},
-		Parameters:     []string{},
-		RequiresThis:   true,
-		WorkerExecutes: false,
-		IsGenerator:    isGenerator,
-		BodyNode:       getterBodyNode,
+		Generics:           []string{},
+		Parameters:         []string{},
+		RequiresThis:       true,
+		WorkerExecutes:     false,
+		GeneratorYieldType: gm.GeneratorYieldType(getterBodyNode),
+		BodyNode:           getterBodyNode,
 	}
 
 	return statemachine.GenerateFunctionSource(functionDef, gm.Generator.scopegraph)
@@ -178,19 +175,27 @@ func (gm generatingMember) SetterSource() esbuilder.SourceBuilder {
 	setterNode, _ := gm.SRGMember.Setter()
 	setterBodyNode, _ := setterNode.Body()
 
-	bodyScope, _ := gm.Generator.scopegraph.GetScope(setterBodyNode)
-	isGenerator := bodyScope.HasLabel(proto.ScopeLabel_GENERATOR_STATEMENT)
-
 	functionDef := statemachine.FunctionDef{
-		Generics:       []string{},
-		Parameters:     []string{"val"},
-		RequiresThis:   true,
-		WorkerExecutes: false,
-		IsGenerator:    isGenerator,
-		BodyNode:       setterBodyNode,
+		Generics:           []string{},
+		Parameters:         []string{"val"},
+		RequiresThis:       true,
+		WorkerExecutes:     false,
+		GeneratorYieldType: gm.GeneratorYieldType(setterBodyNode),
+		BodyNode:           setterBodyNode,
 	}
 
 	return statemachine.GenerateFunctionSource(functionDef, gm.Generator.scopegraph)
+}
+
+func (gm generatingMember) GeneratorYieldType(bodyNode compilergraph.GraphNode) *typegraph.TypeReference {
+	bodyScope, _ := gm.Generator.scopegraph.GetScope(bodyNode)
+	isGenerator := bodyScope.HasLabel(proto.ScopeLabel_GENERATOR_STATEMENT)
+	if !isGenerator {
+		return nil
+	}
+
+	tr := gm.ReturnType().StreamYieldTypeOrAny()
+	return &tr
 }
 
 func (gm generatingMember) ReturnType() typegraph.TypeReference {

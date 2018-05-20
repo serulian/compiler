@@ -21,7 +21,7 @@ $module('simple', function () {
         }
       }
     };
-    return $generator.new($continue, false);
+    return $generator.new($continue, false, $g.________testlib.basictypes.Boolean);
   };
   $static.TEST = $t.markpromising(function () {
     var $result;
