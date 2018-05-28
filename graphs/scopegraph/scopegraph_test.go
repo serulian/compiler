@@ -1558,6 +1558,10 @@ var scopeGraphTests = []scopegraphTest{
 		[]expectedScopeEntry{},
 		"Non-nullable type member 'SomeField' is required to construct type SomeClass", ""},
 
+	scopegraphTest{"structural new repeated field test", "structnew", "repeatedfield",
+		[]expectedScopeEntry{},
+		"Entry `SomeField` already defined in this expression", ""},
+
 	/////////// async function tests /////////////////
 
 	scopegraphTest{"async under class test", "async", "underclass",
