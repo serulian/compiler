@@ -121,6 +121,7 @@ var binaryOrderingImportant = []sourceshape.NodeType{
 // requiresBinaryWrappingKinds defines the types of nodes that must always be wrapped under a binary expr.
 var requiresBinaryWrappingKinds = []sourceshape.NodeType{
 	sourceshape.NodeTypeAwaitExpression,
+	sourceshape.NodeTypeConditionalExpression,
 }
 
 // determineWrappingPrecedence determines whether due to precedence the given binary op child
