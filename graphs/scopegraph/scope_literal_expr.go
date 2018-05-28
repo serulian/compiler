@@ -147,6 +147,11 @@ func (sb *scopeBuilder) scopeStructuralNewEntries(node compilergraph.GraphNode, 
 			isValid = false
 		}
 
+		if _, ok := encountered[entryName]; ok {
+			sb.decorateWithError(eit.Node(), "Entry `%s` already defined in this expression", entryName)
+			isValid = false
+		}
+
 		encountered[entryName] = true
 	}
 
