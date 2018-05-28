@@ -1,0 +1,14 @@
+function DoSomething() int {
+	var l = function() int* {
+		yield 1
+		yield 2
+	}
+
+	var total = 0
+	for value in l() {
+		total = total + value
+	}
+	return total
+}
+
+function TEST() bool? { return DoSomething() == 3 }
