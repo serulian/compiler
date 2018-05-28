@@ -1,16 +1,16 @@
 NodeTypeFile
-  end-rune = 97
+  end-rune = 248
   input-source = conditional expr test
   start-rune = 0
   child-node =>
     NodeTypeFunction
-      end-rune = 97
+      end-rune = 248
       input-source = conditional expr test
       named = DoSomething
       start-rune = 0
       definition-body =>
         NodeTypeStatementBlock
-          end-rune = 97
+          end-rune = 248
           input-source = conditional expr test
           start-rune = 23
           block-child =>
@@ -96,3 +96,144 @@ NodeTypeFile
                                   identexpr-name = foo
                                   input-source = conditional expr test
                                   start-rune = 47
+            NodeTypeExpressionStatement
+              end-rune = 142
+              input-source = conditional expr test
+              start-rune = 98
+              expr-statement-expr =>
+                NodeTypeConditionalExpression
+                  end-rune = 142
+                  input-source = conditional expr test
+                  start-rune = 98
+                  comparison-expr-check =>
+                    NodeBinaryAddExpression
+                      end-rune = 119
+                      input-source = conditional expr test
+                      start-rune = 111
+                      binary-expression-left =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 113
+                          identexpr-name = bar
+                          input-source = conditional expr test
+                          start-rune = 111
+                      binary-expression-right =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 119
+                          identexpr-name = baz
+                          input-source = conditional expr test
+                          start-rune = 117
+                  comparison-expr-else =>
+                    NodeBinaryAddExpression
+                      end-rune = 141
+                      input-source = conditional expr test
+                      start-rune = 126
+                      binary-expression-left =>
+                        NodeBooleanNotExpression
+                          end-rune = 129
+                          input-source = conditional expr test
+                          start-rune = 127
+                          unary-expression-child =>
+                            NodeTypeIdentifierExpression
+                              end-rune = 129
+                              identexpr-name = meg
+                              input-source = conditional expr test
+                              start-rune = 127
+                      binary-expression-right =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 141
+                          identexpr-name = something
+                          input-source = conditional expr test
+                          start-rune = 133
+                  comparison-expr-then =>
+                    NodeBinaryAddExpression
+                      end-rune = 106
+                      input-source = conditional expr test
+                      start-rune = 98
+                      binary-expression-left =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 100
+                          identexpr-name = foo
+                          input-source = conditional expr test
+                          start-rune = 98
+                      binary-expression-right =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 106
+                          identexpr-name = bar
+                          input-source = conditional expr test
+                          start-rune = 104
+            NodeTypeExpressionStatement
+              end-rune = 195
+              input-source = conditional expr test
+              start-rune = 144
+              expr-statement-expr =>
+                NodeBinaryAddExpression
+                  end-rune = 194
+                  input-source = conditional expr test
+                  start-rune = 144
+                  binary-expression-left =>
+                    NodeStringLiteralExpression
+                      end-rune = 156
+                      input-source = conditional expr test
+                      literal-value = 'somestring '
+                      start-rune = 144
+                  binary-expression-right =>
+                    NodeTypeConditionalExpression
+                      end-rune = 194
+                      input-source = conditional expr test
+                      start-rune = 161
+                      comparison-expr-check =>
+                        NodeTypeIdentifierExpression
+                          end-rune = 185
+                          identexpr-name = allow_suffix
+                          input-source = conditional expr test
+                          start-rune = 174
+                      comparison-expr-else =>
+                        NodeStringLiteralExpression
+                          end-rune = 193
+                          input-source = conditional expr test
+                          literal-value = ''
+                          start-rune = 192
+                      comparison-expr-then =>
+                        NodeStringLiteralExpression
+                          end-rune = 169
+                          input-source = conditional expr test
+                          literal-value = 'suffix '
+                          start-rune = 161
+            NodeTypeExpressionStatement
+              end-rune = 246
+              input-source = conditional expr test
+              start-rune = 197
+              expr-statement-expr =>
+                NodeTypeConditionalExpression
+                  end-rune = 246
+                  input-source = conditional expr test
+                  start-rune = 197
+                  comparison-expr-check =>
+                    NodeTypeIdentifierExpression
+                      end-rune = 237
+                      identexpr-name = allow_suffix
+                      input-source = conditional expr test
+                      start-rune = 226
+                  comparison-expr-else =>
+                    NodeStringLiteralExpression
+                      end-rune = 245
+                      input-source = conditional expr test
+                      literal-value = ''
+                      start-rune = 244
+                  comparison-expr-then =>
+                    NodeBinaryAddExpression
+                      end-rune = 221
+                      input-source = conditional expr test
+                      start-rune = 197
+                      binary-expression-left =>
+                        NodeStringLiteralExpression
+                          end-rune = 209
+                          input-source = conditional expr test
+                          literal-value = 'somestring '
+                          start-rune = 197
+                      binary-expression-right =>
+                        NodeStringLiteralExpression
+                          end-rune = 221
+                          input-source = conditional expr test
+                          literal-value = 'suffix '
+                          start-rune = 213

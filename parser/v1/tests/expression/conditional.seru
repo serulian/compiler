@@ -1,4 +1,7 @@
 function DoSomething() {
 	foo if bar else baz
 	foo.bar.baz() if someValue['something'] else 1245
+	foo + bar if bar + baz else !meg + something
+	'somestring ' + ('suffix ' if allow_suffix else '')
+	'somestring ' + 'suffix ' if allow_suffix else ''
 }
