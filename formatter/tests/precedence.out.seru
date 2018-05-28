@@ -6,4 +6,7 @@ function DoSomething() {
 	(&st).SomeProperty
 	first := (&st)?.SomeProperty ?? false
 	(function() {})()
+	"foo" + "bar" if true else false
+	"foo" if "foo" + "bar" == "foobar" else false
+	'somestring ' + ('suffix ' if allow_suffix else '')
 }

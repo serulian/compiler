@@ -1,0 +1,7 @@
+function DoSomething() {
+	var something = <Div>
+		<Button [for index in 0 ..< this.characters.Length]
+		                                                    onclick={(evt) => this.addCharacter(this.characters[index:index + 1])} />
+		<Button [for index in 0 ..< this.characters.Length] onclick="foo" />
+	</Div>
+}
