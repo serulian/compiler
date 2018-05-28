@@ -706,6 +706,8 @@ func (sf *sourceFormatter) emitSmlExpressionWithOptionalLoop(node formatterNode,
 	sf.append("<")
 	sf.emitNode(node.getChild(sourceshape.NodeSmlExpressionTypeOrFunction))
 
+	postTagPosition := sf.existingLineLength
+
 	// Add the (optional) loop.
 	if loopNode != nil {
 		sf.append(" [")
@@ -717,8 +719,6 @@ func (sf *sourceFormatter) emitSmlExpressionWithOptionalLoop(node formatterNode,
 	}
 
 	// Add attributes and decorators.
-	postTagPosition := sf.existingLineLength
-
 	attrNewLine := sf.emitSmlAttributes(node, sourceshape.NodeSmlExpressionAttribute, postTagPosition)
 	decoratorNewLine := sf.emitSmlAttributes(node, sourceshape.NodeSmlExpressionDecorator, postTagPosition)
 	attributesNewLine := attrNewLine || decoratorNewLine
