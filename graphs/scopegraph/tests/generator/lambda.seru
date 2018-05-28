@@ -1,0 +1,8 @@
+function DoSomething(anotherStream int*) {
+	var l = function() int* {
+		yield 1
+		yield 2
+		yield in anotherStream
+		yield break
+	}
+}
