@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/serulian/compiler/sourceshape"
+
 	"github.com/serulian/compiler/compilercommon"
 	"github.com/serulian/compiler/compilergraph"
 	"github.com/serulian/compiler/graphs/srg/typerefresolver"
@@ -313,6 +315,27 @@ func (sg *ScopeGraph) HasSecondaryLabel(srgNode compilergraph.GraphNode, label p
 // ResolveSRGTypeRef builds an SRG type reference into a resolved type reference.
 func (sg *ScopeGraph) ResolveSRGTypeRef(srgTypeRef srg.SRGTypeRef) (typegraph.TypeReference, error) {
 	return sg.srgRefResolver.ResolveTypeRef(srgTypeRef, sg.tdg)
+}
+
+// GetReturnType returns the return type defined for the given node, whether it be
+// a member, a property getter or a lambda expression.
+func (sg *ScopeGraph) GetReturnType(node compilergraph.GraphNode) (typegraph.TypeReference, bool) {
+	returnType, found := sg.tdg.LookupReturnType(node)
+	if found {
+		return returnType, true
+	}
+
+	lambdaReturnType, found := node.TryGetNode(sourceshape.NodeLambdaExpressionReturnType)
+	if !found {
+		return sg.tdg.AnyTypeReference(), false
+	}
+
+	resolved, err := sg.ResolveSRGTypeRef(sg.srg.GetTypeRef(lambdaReturnType))
+	if err != nil {
+		return sg.tdg.AnyTypeReference(), false
+	}
+
+	return resolved, true
 }
 
 // IsDynamicPromisingName returns true if the given name is considered dynamically promising in the graph.

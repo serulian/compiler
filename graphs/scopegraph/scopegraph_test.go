@@ -90,6 +90,10 @@ var scopeGraphTests = []scopegraphTest{
 	scopegraphTest{"async generator test", "generator", "async", []expectedScopeEntry{},
 		"Asynchronous function DoSomethingAsync must return a structural type: Stream<Integer> is not structural nor serializable", ""},
 
+	// Yield under lambda.
+	scopegraphTest{"lambda generator test", "generator", "lambda", []expectedScopeEntry{},
+		"", ""},
+
 	/////////// Settling (return and reject) ///////////
 
 	// Success test.
@@ -1337,6 +1341,10 @@ var scopeGraphTests = []scopegraphTest{
 			expectedScopeEntry{"explicitreturn", expectedScope{true, proto.ScopeKind_VALUE, "function<String>(Integer, Boolean)", "void"}},
 		},
 		"", ""},
+
+	scopegraphTest{"lambda expression defined return mismatch test", "lambda", "returnmismatch",
+		[]expectedScopeEntry{},
+		"Expected return value of type 'String': 'Integer' cannot be used in place of non-interface 'String'", ""},
 
 	/////////// chained inference test ///////////
 

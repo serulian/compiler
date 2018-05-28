@@ -698,7 +698,7 @@ func (sb *scopeBuilder) scopeReturnStatement(node compilergraph.GraphNode, conte
 	}
 
 	// Ensure the return types match.
-	expectedReturnType, _ := sb.sg.tdg.LookupReturnType(context.parentImplemented)
+	expectedReturnType, _ := sb.sg.GetReturnType(context.parentImplemented)
 	if expectedReturnType.IsVoid() {
 		if !actualReturnType.IsVoid() {
 			sb.decorateWithError(node, "No return value expected here, found value of type '%v'", actualReturnType)
@@ -733,7 +733,7 @@ func (sb *scopeBuilder) scopeReturnStatement(node compilergraph.GraphNode, conte
 // scopeYieldStatement scopes a yield statement in the SRG.
 func (sb *scopeBuilder) scopeYieldStatement(node compilergraph.GraphNode, context scopeContext) proto.ScopeInfo {
 	// Ensure it returns a stream.
-	returnType, ok := sb.sg.tdg.LookupReturnType(context.parentImplemented)
+	returnType, ok := sb.sg.GetReturnType(context.parentImplemented)
 	if !ok || !returnType.IsDirectReferenceTo(sb.sg.tdg.StreamType()) {
 		sb.decorateWithError(node, "'yield' statement must be under a function or property returning a Stream. Found: %v", returnType)
 		return newScope().
@@ -863,7 +863,7 @@ func (sb *scopeBuilder) scopeStatementBlock(node compilergraph.GraphNode, contex
 		} else {
 			parentDef, hasParent := node.StartQuery().In(sourceshape.NodePredicateBody).TryGetNode()
 			if hasParent {
-				returnTypeExpected, hasReturnType := sb.sg.tdg.LookupReturnType(parentDef)
+				returnTypeExpected, hasReturnType := sb.sg.GetReturnType(parentDef)
 				if hasReturnType {
 					// If the return type expected is void, ensure no branch returned any values.
 					if returnTypeExpected.IsVoid() {
