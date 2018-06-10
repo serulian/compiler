@@ -37,6 +37,11 @@ type Config struct {
 // WithCancel returns the config with added support for cancelation.
 func (c Config) WithCancel() (Config, compilerutil.CancelFunction) {
 	handle := compilerutil.NewCancelationHandle()
+	return c.WithCancelationHandle(handle), handle.Cancel
+}
+
+// WithCancelationHandle returns the config with the cancelation handle set to that given.
+func (c Config) WithCancelationHandle(handle compilerutil.CancelationHandle) Config {
 	return Config{
 		Entrypoint:                c.Entrypoint,
 		VCSDevelopmentDirectories: c.VCSDevelopmentDirectories,
@@ -45,7 +50,7 @@ func (c Config) WithCancel() (Config, compilerutil.CancelFunction) {
 		AlwaysValidate:            c.AlwaysValidate,
 		SkipVCSRefresh:            c.SkipVCSRefresh,
 		cancelationHandle:         handle,
-	}, handle.Cancel
+	}
 }
 
 // NewBasicConfig returns PackageLoader Config for a root source file and source handlers.
